@@ -3,7 +3,7 @@ import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('deprecated attribute', async () => {
+test('[deprecated-attr-invalid-001] deprecated attribute', async () => {
 	const { violations } = await mlRuleTest(rule, '<img align="top">');
 	expect(violations).toStrictEqual([
 		{
@@ -16,7 +16,7 @@ test('deprecated attribute', async () => {
 	]);
 });
 
-test('deprecated global attribute', async () => {
+test('[deprecated-attr-invalid-002] deprecated global attribute', async () => {
 	const { violations } = await mlRuleTest(rule, '<img xml:lang="en-US">');
 	expect(violations).toStrictEqual([
 		{
@@ -29,7 +29,7 @@ test('deprecated global attribute', async () => {
 	]);
 });
 
-test('svg', async () => {
+test('[deprecated-attr-invalid-003] svg', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`<svg viewBox="0 0 160 40" xmlns="http://www.w3.org/2000/svg">

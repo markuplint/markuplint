@@ -4,7 +4,7 @@ import { describe, test, expect } from 'vitest';
 import rule from './index.js';
 
 describe('browser support (BCD-based)', () => {
-	test('element not supported in IE 11', async () => {
+	test('[no-unsupported-features-invalid-001] element not supported in IE 11', async () => {
 		const { violations } = await mlRuleTest(rule, '<dialog></dialog>', {
 			rule: {
 				options: {
@@ -19,7 +19,7 @@ describe('browser support (BCD-based)', () => {
 		expect(violations[0]?.message).toContain('Internet Explorer');
 	});
 
-	test('common element supported everywhere', async () => {
+	test('[no-unsupported-features-valid-001] common element supported everywhere', async () => {
 		const { violations } = await mlRuleTest(rule, '<div></div>', {
 			rule: {
 				options: {
@@ -30,7 +30,7 @@ describe('browser support (BCD-based)', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('attribute not supported in old browsers', async () => {
+	test('[no-unsupported-features-invalid-002] attribute not supported in old browsers', async () => {
 		// <dialog> element and its "open" attribute are both unsupported in IE
 		const { violations } = await mlRuleTest(rule, '<dialog open></dialog>', {
 			rule: {
@@ -47,7 +47,7 @@ describe('browser support (BCD-based)', () => {
 		expect(violations[1]?.message).toContain('attribute');
 	});
 
-	test('common attribute supported everywhere', async () => {
+	test('[no-unsupported-features-valid-002] common attribute supported everywhere', async () => {
 		const { violations } = await mlRuleTest(rule, '<input type="text">', {
 			rule: {
 				options: {
@@ -58,7 +58,7 @@ describe('browser support (BCD-based)', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('multiple browsers - only unsupported ones reported', async () => {
+	test('[no-unsupported-features-invalid-003] multiple browsers - only unsupported ones reported', async () => {
 		const { violations } = await mlRuleTest(rule, '<dialog></dialog>', {
 			rule: {
 				options: {
@@ -73,7 +73,7 @@ describe('browser support (BCD-based)', () => {
 });
 
 describe('attribute-only unsupported (element is supported)', () => {
-	test('element supported but attribute unsupported', async () => {
+	test('[no-unsupported-features-invalid-004] element supported but attribute unsupported', async () => {
 		// <video> is supported since Chrome 3, but "controlslist" was added in Chrome 58.
 		// Target Chrome 50 so the element is supported but the attribute is not.
 		const { violations } = await mlRuleTest(rule, '<video controlslist="nodownload"></video>', {
@@ -95,12 +95,12 @@ describe('attribute-only unsupported (element is supported)', () => {
 });
 
 describe('no-op without browserslist', () => {
-	test('no error without browserslist config', async () => {
+	test('[no-unsupported-features-valid-003] no error without browserslist config', async () => {
 		const { violations } = await mlRuleTest(rule, '<dialog></dialog>');
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('no error with empty options', async () => {
+	test('[no-unsupported-features-valid-004] no error with empty options', async () => {
 		const { violations } = await mlRuleTest(rule, '<dialog></dialog>', {
 			rule: {
 				options: {},
@@ -111,7 +111,7 @@ describe('no-op without browserslist', () => {
 });
 
 describe('ignoreFeatures', () => {
-	test('ignore element by name', async () => {
+	test('[no-unsupported-features-valid-005] ignore element by name', async () => {
 		const { violations } = await mlRuleTest(rule, '<dialog></dialog>', {
 			rule: {
 				options: {
@@ -123,7 +123,7 @@ describe('ignoreFeatures', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('ignore attribute by pattern', async () => {
+	test('[no-unsupported-features-valid-006] ignore attribute by pattern', async () => {
 		const { violations } = await mlRuleTest(rule, '<dialog open></dialog>', {
 			rule: {
 				options: {
@@ -138,7 +138,7 @@ describe('ignoreFeatures', () => {
 });
 
 describe('checkExperimental', () => {
-	test('no warning by default for experimental attribute', async () => {
+	test('[no-unsupported-features-invalid-005] no warning by default for experimental attribute', async () => {
 		// "credentialless" on <iframe> is experimental in spec data
 		const { violations } = await mlRuleTest(rule, '<iframe credentialless></iframe>', {
 			rule: {
@@ -149,7 +149,7 @@ describe('checkExperimental', () => {
 		expect(experimentalViolation).toBeUndefined();
 	});
 
-	test('warns about experimental attributes when enabled', async () => {
+	test('[no-unsupported-features-invalid-006] warns about experimental attributes when enabled', async () => {
 		// "credentialless" on <iframe> is experimental in spec data
 		const { violations } = await mlRuleTest(rule, '<iframe credentialless></iframe>', {
 			rule: {
@@ -163,7 +163,7 @@ describe('checkExperimental', () => {
 		expect(violations[0]?.message).toContain('"credentialless"');
 	});
 
-	test('works without browserslist config', async () => {
+	test('[no-unsupported-features-invalid-007] works without browserslist config', async () => {
 		// checkExperimental should work independently of browserslist
 		const { violations } = await mlRuleTest(rule, '<iframe credentialless></iframe>', {
 			rule: {
@@ -178,7 +178,7 @@ describe('checkExperimental', () => {
 });
 
 describe('checkNonStandard', () => {
-	test('no warning by default for non-standard attribute', async () => {
+	test('[no-unsupported-features-valid-007] no warning by default for non-standard attribute', async () => {
 		// "moz-opaque" on canvas is nonStandard in spec data
 		const { violations } = await mlRuleTest(rule, '<canvas moz-opaque></canvas>', {
 			rule: {
@@ -188,7 +188,7 @@ describe('checkNonStandard', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('warns about non-standard attributes when enabled', async () => {
+	test('[no-unsupported-features-invalid-008] warns about non-standard attributes when enabled', async () => {
 		// "moz-opaque" on canvas is nonStandard in spec data
 		const { violations } = await mlRuleTest(rule, '<canvas moz-opaque></canvas>', {
 			rule: {
@@ -202,7 +202,7 @@ describe('checkNonStandard', () => {
 		expect(violations[0]?.message).toContain('non-standard');
 	});
 
-	test('works without browserslist config', async () => {
+	test('[no-unsupported-features-invalid-009] works without browserslist config', async () => {
 		// Should work even without browserslist
 		const { violations } = await mlRuleTest(rule, '<canvas moz-opaque></canvas>', {
 			rule: {
@@ -217,7 +217,7 @@ describe('checkNonStandard', () => {
 });
 
 describe('default severity', () => {
-	test('severity is warning by default', async () => {
+	test('[no-unsupported-features-invalid-010] severity is warning by default', async () => {
 		const { violations } = await mlRuleTest(rule, '<dialog></dialog>', {
 			rule: {
 				options: {
@@ -231,7 +231,7 @@ describe('default severity', () => {
 });
 
 describe('SVG elements are skipped', () => {
-	test('SVG content is not checked', async () => {
+	test('[no-unsupported-features-invalid-011] SVG content is not checked', async () => {
 		const { violations } = await mlRuleTest(rule, '<svg><circle></circle></svg>', {
 			rule: {
 				options: {

@@ -3,7 +3,7 @@ import { test, expect, describe } from 'vitest';
 
 import rule from './index.js';
 
-test('warns if specified attribute is not appeared', async () => {
+test('[required-attr-invalid-001] warns if specified attribute is not appeared', async () => {
 	const { violations } = await mlRuleTest(rule, '<img src="/path/to/image.png">', {
 		nodeRule: [
 			{
@@ -27,7 +27,7 @@ test('warns if specified attribute is not appeared', async () => {
 	]);
 });
 
-test('multiple required attributes', async () => {
+test('[required-attr-invalid-002] multiple required attributes', async () => {
 	const { violations } = await mlRuleTest(rule, '<img src="/path/to/image.png">', {
 		nodeRule: [
 			{
@@ -65,13 +65,13 @@ test('multiple required attributes', async () => {
 	]);
 });
 
-test('"alt" attribute on "<area>" is required only if the href attribute is used', async () => {
+test('[required-attr-invalid-003] "alt" attribute on "<area>" is required only if the href attribute is used', async () => {
 	expect((await mlRuleTest(rule, '<area href="path/to">')).violations.length).toBe(1);
 
 	expect((await mlRuleTest(rule, '<area href="path/to" alt="alternate text">')).violations.length).toBe(0);
 });
 
-test('At least one of data and type must be defined to <object>.', async () => {
+test('[required-attr-invalid-004] At least one of data and type must be defined to <object>.', async () => {
 	expect((await mlRuleTest(rule, '<object data="https://example.com/data">')).violations.length).toBe(0);
 
 	expect((await mlRuleTest(rule, '<object type="XXXX_YYYY_ZZZZ">')).violations.length).toBe(0);
@@ -79,7 +79,7 @@ test('At least one of data and type must be defined to <object>.', async () => {
 	expect((await mlRuleTest(rule, '<object>')).violations.length).toBe(1);
 });
 
-test('The ancestors of the <source> element.', async () => {
+test('[required-attr-invalid-005] The ancestors of the <source> element.', async () => {
 	expect((await mlRuleTest(rule, '<audio><source></audio>')).violations).toStrictEqual([
 		{
 			severity: 'error',
@@ -111,15 +111,15 @@ test('The ancestors of the <source> element.', async () => {
 	]);
 });
 
-test('"srcset" attribute is required if "src" attribute is not used', async () => {
+test('[required-attr-valid-001] "srcset" attribute is required if "src" attribute is not used', async () => {
 	expect((await mlRuleTest(rule, '<img srcset="path/to" />')).violations).toStrictEqual([]);
 });
 
-test('"src" attribute is required if "srcset" attribute is not used', async () => {
+test('[required-attr-valid-002] "src" attribute is required if "srcset" attribute is not used', async () => {
 	expect((await mlRuleTest(rule, '<img src="path/to" />')).violations).toStrictEqual([]);
 });
 
-test('with value requirement', async () => {
+test('[required-attr-invalid-006] with value requirement', async () => {
 	expect(
 		(
 			await mlRuleTest(rule, '<img />', {
@@ -177,7 +177,7 @@ test('with value requirement', async () => {
 	]);
 });
 
-test('with value requirement (regex)', async () => {
+test('[required-attr-invalid-007] with value requirement (regex)', async () => {
 	expect(
 		(
 			await mlRuleTest(rule, '<img src="./path/to" /><img src="/path/to" />', {
@@ -221,7 +221,7 @@ test('with value requirement (regex)', async () => {
 	]);
 });
 
-test('nodeRules', async () => {
+test('[required-attr-invalid-008] nodeRules', async () => {
 	const { violations } = await mlRuleTest(rule, '<img src="path/to.svg" alt="text" />', {
 		nodeRule: [
 			{
@@ -242,7 +242,7 @@ test('nodeRules', async () => {
 	]);
 });
 
-test('Foreign element', async () => {
+test('[required-attr-invalid-009] Foreign element', async () => {
 	expect(
 		(
 			await mlRuleTest(rule, '<svg></svg>', {
@@ -268,7 +268,7 @@ test('Foreign element', async () => {
 	]);
 });
 
-test('svg', async () => {
+test('[required-attr-invalid-010] svg', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -315,7 +315,7 @@ test('svg', async () => {
 	]);
 });
 
-test('Pug', async () => {
+test('[required-attr-parser-001] Pug', async () => {
 	expect(
 		(
 			await mlRuleTest(rule, 'img', {
@@ -335,7 +335,7 @@ test('Pug', async () => {
 	]);
 });
 
-test('Vue', async () => {
+test('[required-attr-parser-002] Vue', async () => {
 	expect(
 		(
 			await mlRuleTest(rule, '<template><img :src="src"></template>', {
@@ -350,7 +350,7 @@ test('Vue', async () => {
 	).toBe(0);
 });
 
-test('React', async () => {
+test('[required-attr-parser-003] React', async () => {
 	expect(
 		(
 			await mlRuleTest(rule, '<img alt={alt} />', {
@@ -380,7 +380,7 @@ test('React', async () => {
 	).toStrictEqual([]);
 });
 
-test('custom element', async () => {
+test('[required-attr-invalid-011] custom element', async () => {
 	expect(
 		(
 			await mlRuleTest(rule, '<Link href="path/to"></Link>', {
@@ -426,7 +426,7 @@ test('custom element', async () => {
 	]);
 });
 
-test('The `as` attribute', async () => {
+test('[required-attr-valid-003] The `as` attribute', async () => {
 	expect(
 		(
 			await mlRuleTest(rule, '<x-img as="img" src="/path/to/image.png"></x-img>', {
@@ -455,7 +455,7 @@ test('The `as` attribute', async () => {
 });
 
 describe('Issues', () => {
-	test('#2223', async () => {
+	test('[required-attr-issue-2223] #2223', async () => {
 		const { violations } = await mlRuleTest(rule, '<meta httpEquiv="x-ua-compatible" content="ie=edge" />', {
 			parser: {
 				'.*': '@markuplint/jsx-parser',
@@ -467,7 +467,7 @@ describe('Issues', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('#2455', async () => {
+	test('[required-attr-issue-2455] #2455', async () => {
 		const sourceCode = `<picture>
   <source src="path/to" media="(query: value)">
   <source srcset="path/to" media="(query: value)">
@@ -534,7 +534,7 @@ describe('Issues', () => {
 // https://html.spec.whatwg.org/multipage/semantics.html#the-link-element
 // > One or both of the href or imagesrcset attributes must be present.
 describe('link element requires href or imagesrcset (#717)', () => {
-	test('violation: link without href or imagesrcset', async () => {
+	test('[required-attr-issue-717-001] violation: link without href or imagesrcset', async () => {
 		expect((await mlRuleTest(rule, '<link rel="stylesheet">')).violations).toStrictEqual([
 			{
 				severity: 'error',
@@ -546,7 +546,7 @@ describe('link element requires href or imagesrcset (#717)', () => {
 		]);
 	});
 
-	test('violation: bare link reports both href/imagesrcset and rel/itemprop violations', async () => {
+	test('[required-attr-issue-717-002] violation: bare link reports both href/imagesrcset and rel/itemprop violations', async () => {
 		const { violations } = await mlRuleTest(rule, '<link>');
 		expect(violations).toStrictEqual([
 			{
@@ -566,7 +566,7 @@ describe('link element requires href or imagesrcset (#717)', () => {
 		]);
 	});
 
-	test('violation: itemprop path also requires href or imagesrcset', async () => {
+	test('[required-attr-issue-717-003] violation: itemprop path also requires href or imagesrcset', async () => {
 		expect((await mlRuleTest(rule, '<link itemprop="url">')).violations).toStrictEqual([
 			{
 				severity: 'error',
@@ -578,18 +578,18 @@ describe('link element requires href or imagesrcset (#717)', () => {
 		]);
 	});
 
-	test('no violation: link with href', async () => {
+	test('[required-attr-issue-717-004] no violation: link with href', async () => {
 		expect((await mlRuleTest(rule, '<link rel="stylesheet" href="./style.css">')).violations).toStrictEqual([]);
 	});
 
-	test('no violation: link with imagesrcset satisfies "href or imagesrcset" requirement', async () => {
+	test('[required-attr-issue-717-005] no violation: link with imagesrcset satisfies "href or imagesrcset" requirement', async () => {
 		expect(
 			(await mlRuleTest(rule, '<link rel="preload" as="image" imagesrcset="/img.png 1x" imagesizes="100vw">'))
 				.violations,
 		).toStrictEqual([]);
 	});
 
-	test('no violation: link with both href and imagesrcset', async () => {
+	test('[required-attr-issue-717-006] no violation: link with both href and imagesrcset', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -602,7 +602,7 @@ describe('link element requires href or imagesrcset (#717)', () => {
 });
 
 describe('MDX parser', () => {
-	test('MDX img element requires alt attribute', async () => {
+	test('[required-attr-parser-004] MDX img element requires alt attribute', async () => {
 		const { violations } = await mlRuleTest(rule, '<img src="photo.png" />\n', {
 			parser: {
 				'.*': '@markuplint/mdx-parser',
@@ -621,7 +621,7 @@ describe('MDX parser', () => {
 		expect(violations[0].message).toContain('alt');
 	});
 
-	test('MDX img with alt passes required-attr', async () => {
+	test('[required-attr-parser-005] MDX img with alt passes required-attr', async () => {
 		const { violations } = await mlRuleTest(rule, '<img src="photo.png" alt="A photo" />\n', {
 			parser: {
 				'.*': '@markuplint/mdx-parser',
@@ -641,7 +641,7 @@ describe('MDX parser', () => {
 });
 
 describe('Markdown parser', () => {
-	test('Markdown image with alt text passes required-attr for alt', async () => {
+	test('[required-attr-parser-006] Markdown image with alt text passes required-attr for alt', async () => {
 		const { violations } = await mlRuleTest(rule, '![alt text](img.png)\n', {
 			parser: {
 				'.*': '@markuplint/markdown-parser',
@@ -659,7 +659,7 @@ describe('Markdown parser', () => {
 		expect(violations.length).toBe(0);
 	});
 
-	test('Markdown image with empty alt passes required-attr (attribute exists)', async () => {
+	test('[required-attr-parser-007] Markdown image with empty alt passes required-attr (attribute exists)', async () => {
 		const { violations } = await mlRuleTest(rule, '![](img.png)\n', {
 			parser: {
 				'.*': '@markuplint/markdown-parser',
@@ -677,7 +677,7 @@ describe('Markdown parser', () => {
 		expect(violations.length).toBe(0);
 	});
 
-	test('Markdown image missing required src reports correct position', async () => {
+	test('[required-attr-parser-008] Markdown image missing required src reports correct position', async () => {
 		const { violations } = await mlRuleTest(rule, 'Text\n\n![alt](img.png)\n', {
 			parser: {
 				'.*': '@markuplint/markdown-parser',
@@ -700,7 +700,7 @@ describe('Markdown parser', () => {
 });
 
 describe('ignoreAttrs option (#690)', () => {
-	test('ignores spec-required attribute when listed in ignoreAttrs', async () => {
+	test('[required-attr-issue-690-001] ignores spec-required attribute when listed in ignoreAttrs', async () => {
 		// <area href="..."> requires "alt" per spec; ignoring it should suppress the violation
 		const { violations } = await mlRuleTest(rule, '<area href="path/to">', {
 			rule: {
@@ -712,7 +712,7 @@ describe('ignoreAttrs option (#690)', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('still reports non-ignored spec-required attributes', async () => {
+	test('[required-attr-issue-690-002] still reports non-ignored spec-required attributes', async () => {
 		const { violations } = await mlRuleTest(rule, '<img>', {
 			nodeRule: [
 				{
@@ -737,7 +737,7 @@ describe('ignoreAttrs option (#690)', () => {
 		]);
 	});
 
-	test('no option behaves the same as before (backward compatibility)', async () => {
+	test('[required-attr-issue-690-003] no option behaves the same as before (backward compatibility)', async () => {
 		const { violations } = await mlRuleTest(rule, '<img>');
 		expect(violations).toStrictEqual([
 			{
@@ -750,7 +750,7 @@ describe('ignoreAttrs option (#690)', () => {
 		]);
 	});
 
-	test('empty ignoreAttrs behaves the same as no option', async () => {
+	test('[required-attr-issue-690-004] empty ignoreAttrs behaves the same as no option', async () => {
 		const { violations } = await mlRuleTest(rule, '<img>', {
 			rule: {
 				options: {
@@ -769,7 +769,7 @@ describe('ignoreAttrs option (#690)', () => {
 		]);
 	});
 
-	test('requiredEither: ignoring one candidate keeps the other required', async () => {
+	test('[required-attr-issue-690-005] requiredEither: ignoring one candidate keeps the other required', async () => {
 		const { violations } = await mlRuleTest(rule, '<link rel="stylesheet">', {
 			rule: {
 				options: {
@@ -788,7 +788,7 @@ describe('ignoreAttrs option (#690)', () => {
 		]);
 	});
 
-	test('requiredEither: ignoring all candidates suppresses the violation', async () => {
+	test('[required-attr-issue-690-006] requiredEither: ignoring all candidates suppresses the violation', async () => {
 		const { violations } = await mlRuleTest(rule, '<img>', {
 			rule: {
 				options: {
@@ -799,7 +799,7 @@ describe('ignoreAttrs option (#690)', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('ignores custom required attribute specified via value', async () => {
+	test('[required-attr-issue-690-007] ignores custom required attribute specified via value', async () => {
 		const { violations } = await mlRuleTest(rule, '<img src="/path/to/image.png">', {
 			nodeRule: [
 				{
@@ -824,7 +824,7 @@ describe('ignoreAttrs option (#690)', () => {
 		]);
 	});
 
-	test('ignores value-constrained required attribute', async () => {
+	test('[required-attr-issue-690-008] ignores value-constrained required attribute', async () => {
 		const { violations } = await mlRuleTest(rule, '<img src="/path/to/image.png">', {
 			nodeRule: [
 				{
@@ -850,7 +850,7 @@ describe('ignoreAttrs option (#690)', () => {
 	});
 });
 
-test('bdo requires dir attribute', async () => {
+test('[required-attr-valid-004] bdo requires dir attribute', async () => {
 	expect((await mlRuleTest(rule, '<bdo>text</bdo>')).violations).toStrictEqual([
 		{
 			severity: 'error',

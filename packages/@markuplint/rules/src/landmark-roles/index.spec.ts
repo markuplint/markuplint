@@ -3,7 +3,7 @@ import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('No warning', async () => {
+test('[landmark-roles-valid-001] No warning', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`
@@ -25,7 +25,7 @@ test('No warning', async () => {
 	expect(violations).toStrictEqual([]);
 });
 
-test('Top level landmarks', async () => {
+test('[landmark-roles-valid-002] Top level landmarks', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`
@@ -47,7 +47,7 @@ test('Top level landmarks', async () => {
 	expect(violations).toStrictEqual([]);
 });
 
-test('Top level landmarks: disabled', async () => {
+test('[landmark-roles-valid-003] Top level landmarks: disabled', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`
@@ -77,7 +77,7 @@ test('Top level landmarks: disabled', async () => {
 	expect(violations).toStrictEqual([]);
 });
 
-test('Top level landmarks: ignoreRoles option', async () => {
+test('[landmark-roles-valid-004] Top level landmarks: ignoreRoles option', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`
@@ -106,7 +106,7 @@ test('Top level landmarks: ignoreRoles option', async () => {
 	expect(violations).toStrictEqual([]);
 });
 
-test('Duplicated area: has-label', async () => {
+test('[landmark-roles-valid-005] Duplicated area: has-label', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`
@@ -135,7 +135,7 @@ test('Duplicated area: has-label', async () => {
 	expect(violations).toStrictEqual([]);
 });
 
-test('Duplicated area: no-label', async () => {
+test('[landmark-roles-invalid-001] Duplicated area: no-label', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`
@@ -179,7 +179,7 @@ test('Duplicated area: no-label', async () => {
 	]);
 });
 
-test('The `as` attribute', async () => {
+test('[landmark-roles-invalid-002] The `as` attribute', async () => {
 	expect(
 		(
 			await mlRuleTest(

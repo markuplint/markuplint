@@ -3,7 +3,7 @@ import { test, expect, describe } from 'vitest';
 
 import rule from './index.js';
 
-test('basic', async () => {
+test('[end-tag-valid-001] basic', async () => {
 	expect((await mlRuleTest(rule, '<html><body></body></html>')).violations.length).toBe(0);
 	expect((await mlRuleTest(rule, '<html><body></body>')).violations).toStrictEqual([
 		{
@@ -16,7 +16,7 @@ test('basic', async () => {
 	]);
 });
 
-test('HTML', async () => {
+test('[end-tag-invalid-001] HTML', async () => {
 	expect((await mlRuleTest(rule, '<div><span><span /></div>')).violations).toStrictEqual([
 		{
 			severity: 'warning',
@@ -35,11 +35,11 @@ test('HTML', async () => {
 	]);
 });
 
-test('HTML', async () => {
+test('[end-tag-valid-002] HTML', async () => {
 	expect((await mlRuleTest(rule, '<div><img><img /></div>')).violations).toStrictEqual([]);
 });
 
-test('SVG', async () => {
+test('[end-tag-invalid-002] SVG', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -57,7 +57,7 @@ test('SVG', async () => {
 	).toStrictEqual([]);
 });
 
-test('pug', async () => {
+test('[end-tag-parser-001] pug', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -75,7 +75,7 @@ test('pug', async () => {
 	).toBe(0);
 });
 
-test('React', async () => {
+test('[end-tag-parser-002] React', async () => {
 	expect(
 		(
 			await mlRuleTest(rule, '<div><span><span /></div>', {
@@ -95,7 +95,7 @@ test('React', async () => {
 	]);
 });
 
-test('Vue', async () => {
+test('[end-tag-parser-003] Vue', async () => {
 	expect(
 		(
 			await mlRuleTest(rule, '<template><div><span><span /></div></template>', {
@@ -115,7 +115,7 @@ test('Vue', async () => {
 	]);
 });
 
-test('Svelte', async () => {
+test('[end-tag-parser-004] Svelte', async () => {
 	expect(
 		(
 			await mlRuleTest(rule, '<div><span><span /></div>', {
@@ -135,7 +135,7 @@ test('Svelte', async () => {
 	]);
 });
 
-test('Astro', async () => {
+test('[end-tag-parser-005] Astro', async () => {
 	expect(
 		(
 			await mlRuleTest(rule, '<div><span><span /></div>', {
@@ -156,7 +156,7 @@ test('Astro', async () => {
 });
 
 describe('Issues', () => {
-	test('#1349', async () => {
+	test('[end-tag-issue-1349] #1349', async () => {
 		expect(
 			(
 				await mlRuleTest(

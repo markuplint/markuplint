@@ -3,7 +3,7 @@ import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('is hard-coded', async () => {
+test('[no-hard-code-id-invalid-001] is hard-coded', async () => {
 	const { violations } = await mlRuleTest(rule, '<div id="foo"></div>');
 	expect(violations).toStrictEqual([
 		{
@@ -16,17 +16,17 @@ test('is hard-coded', async () => {
 	]);
 });
 
-test("does't have id", async () => {
+test("[no-hard-code-id-valid-001] does't have id", async () => {
 	const { violations } = await mlRuleTest(rule, '<div class="foo"></div>');
 	expect(violations).toStrictEqual([]);
 });
 
-test("does't have id", async () => {
+test("[no-hard-code-id-valid-002] does't have id", async () => {
 	const { violations } = await mlRuleTest(rule, '<div data-id="foo"></div>');
 	expect(violations).toStrictEqual([]);
 });
 
-test('is hard-coded', async () => {
+test('[no-hard-code-id-invalid-002] is hard-coded', async () => {
 	const { violations } = await mlRuleTest(rule, 'div#foo', {
 		parser: {
 			'/.*/': '@markuplint/pug-parser',
@@ -43,7 +43,7 @@ test('is hard-coded', async () => {
 	]);
 });
 
-test('is hard-coded', async () => {
+test('[no-hard-code-id-invalid-003] is hard-coded', async () => {
 	const { violations } = await mlRuleTest(rule, 'div(id="foo")', {
 		parser: {
 			'/.*/': '@markuplint/pug-parser',
@@ -60,7 +60,7 @@ test('is hard-coded', async () => {
 	]);
 });
 
-test('is hard-coded', async () => {
+test('[no-hard-code-id-invalid-004] is hard-coded', async () => {
 	const { violations } = await mlRuleTest(rule, '<div id="foo"></div>', {
 		parser: {
 			'.*': '@markuplint/jsx-parser',
@@ -77,7 +77,7 @@ test('is hard-coded', async () => {
 	]);
 });
 
-test('is no hard-coded', async () => {
+test('[no-hard-code-id-valid-003] is no hard-coded', async () => {
 	const { violations } = await mlRuleTest(rule, 'div(id=foo)', {
 		parser: {
 			'/.*/': '@markuplint/pug-parser',
@@ -86,7 +86,7 @@ test('is no hard-coded', async () => {
 	expect(violations.length).toBe(0);
 });
 
-test('is no hard-coded', async () => {
+test('[no-hard-code-id-valid-004] is no hard-coded', async () => {
 	const { violations } = await mlRuleTest(rule, '<div id={foo}></div>', {
 		parser: {
 			'/.*/': '@markuplint/jsx-parser',
@@ -95,7 +95,7 @@ test('is no hard-coded', async () => {
 	expect(violations.length).toBe(0);
 });
 
-test('is no fragment', async () => {
+test('[no-hard-code-id-valid-005] is no fragment', async () => {
 	const { violations } = await mlRuleTest(rule, '<html><body><div id="foo"></div></body></html>');
 	expect(violations.length).toBe(0);
 });

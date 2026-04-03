@@ -3,7 +3,7 @@ import { describe, test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('Consecutive', async () => {
+test('[no-consecutive-br-invalid-001] Consecutive', async () => {
 	const { violations } = await mlRuleTest(rule, '<p>A<br data-first> <br data-second>B</p>');
 	expect(violations).toStrictEqual([
 		{
@@ -16,30 +16,30 @@ test('Consecutive', async () => {
 	]);
 });
 
-test('No consecutive', async () => {
+test('[no-consecutive-br-valid-001] No consecutive', async () => {
 	const { violations } = await mlRuleTest(rule, '<p>A<br data-first>B<br data-second>C</p>');
 	expect(violations.length).toBe(0);
 });
 
 describe('fix', () => {
-	test('remove second consecutive br', async () => {
+	test('[no-consecutive-br-fix-001] remove second consecutive br', async () => {
 		const { fixedCode } = await mlRuleTest(rule, '<p>text<br><br></p>', undefined, true);
 		expect(fixedCode).toBe('<p>text<br></p>');
 	});
 
-	test('three consecutive br elements', async () => {
+	test('[no-consecutive-br-fix-002] three consecutive br elements', async () => {
 		const { fixedCode } = await mlRuleTest(rule, '<p>text<br><br><br></p>', undefined, true);
 		expect(fixedCode).toBe('<p>text<br></p>');
 	});
 
-	test('consecutive br with whitespace between', async () => {
+	test('[no-consecutive-br-fix-003] consecutive br with whitespace between', async () => {
 		const { fixedCode } = await mlRuleTest(rule, '<p>text<br>  \n  <br></p>', undefined, true);
 		expect(fixedCode).toBe('<p>text<br>  \n  </p>');
 	});
 });
 
 describe('fix with parsers', () => {
-	test('fix: Pug remove consecutive br', async () => {
+	test('[no-consecutive-br-fix-004] fix: Pug remove consecutive br', async () => {
 		const { fixedCode } = await mlRuleTest(
 			rule,
 			'p\n\tbr\n\tbr',
@@ -50,7 +50,7 @@ describe('fix with parsers', () => {
 		expect(fixedCode).toBe('p\n\tbr\n\t');
 	});
 
-	test('fix: Markdown raw HTML remove consecutive br', async () => {
+	test('[no-consecutive-br-fix-005] fix: Markdown raw HTML remove consecutive br', async () => {
 		const { fixedCode } = await mlRuleTest(
 			rule,
 			'Paragraph\n\n<p>text<br><br></p>\n',

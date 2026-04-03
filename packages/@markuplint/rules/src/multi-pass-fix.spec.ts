@@ -2,7 +2,7 @@ import { mlTest } from 'markuplint';
 import { describe, test, expect } from 'vitest';
 
 describe('multi-pass fix', () => {
-	test('no overlap (single pass resolves all)', async () => {
+	test('[multi-pass-fix-fix-001] no overlap (single pass resolves all)', async () => {
 		const { fixedCode } = await mlTest(
 			"<DIV CLASS='a'></DIV>",
 			{
@@ -18,7 +18,7 @@ describe('multi-pass fix', () => {
 		expect(fixedCode).toBe('<div CLASS="a"></div>');
 	});
 
-	test('overlap resolved in multi-pass', async () => {
+	test('[multi-pass-fix-fix-002] overlap resolved in multi-pass', async () => {
 		const { fixedCode } = await mlTest(
 			"<DIV DATA-FOO='val'></DIV>",
 			{
@@ -35,7 +35,7 @@ describe('multi-pass fix', () => {
 		expect(fixedCode).toBe('<div data-foo="val"></div>');
 	});
 
-	test('fix produces no changes on valid code', async () => {
+	test('[multi-pass-fix-fix-003] fix produces no changes on valid code', async () => {
 		const { fixedCode } = await mlTest(
 			'<div></div>',
 			{
@@ -52,7 +52,7 @@ describe('multi-pass fix', () => {
 		expect(fixedCode).toBe('<div></div>');
 	});
 
-	test('5+ rules applied together (overlap only, no cascading)', async () => {
+	test('[multi-pass-fix-fix-004] 5+ rules applied together (overlap only, no cascading)', async () => {
 		const { fixedCode } = await mlTest(
 			"<DIV CLASS='a' CLASS='b' DATA-FOO='val'></DIV>",
 			{
@@ -73,7 +73,7 @@ describe('multi-pass fix', () => {
 });
 
 describe('multi-pass fix with parsers', () => {
-	test('Pug: attr-value-quotes + no-boolean-attr-value', async () => {
+	test('[multi-pass-fix-fix-005] Pug: attr-value-quotes + no-boolean-attr-value', async () => {
 		const { fixedCode } = await mlTest(
 			"input(disabled='disabled' type='text')",
 			{
@@ -91,7 +91,7 @@ describe('multi-pass fix with parsers', () => {
 		expect(fixedCode).toBe('input(disabled type="text")');
 	});
 
-	test('Pug: attr-value-quotes + no-default-value', async () => {
+	test('[multi-pass-fix-fix-006] Pug: attr-value-quotes + no-default-value', async () => {
 		const { fixedCode } = await mlTest(
 			"input(type='text' placeholder='enter')",
 			{
@@ -110,7 +110,7 @@ describe('multi-pass fix with parsers', () => {
 		expect(fixedCode).toBe('input( placeholder="enter")');
 	});
 
-	test('Vue: attr-value-quotes + no-boolean-attr-value', async () => {
+	test('[multi-pass-fix-fix-007] Vue: attr-value-quotes + no-boolean-attr-value', async () => {
 		const { fixedCode } = await mlTest(
 			"<template><input disabled='disabled' data-foo='bar' /></template>",
 			{
@@ -127,7 +127,7 @@ describe('multi-pass fix with parsers', () => {
 		expect(fixedCode).toBe('<template><input disabled data-foo="bar" /></template>');
 	});
 
-	test('Vue: attr-value-quotes + attr-duplication', async () => {
+	test('[multi-pass-fix-fix-008] Vue: attr-value-quotes + attr-duplication', async () => {
 		const { fixedCode } = await mlTest(
 			"<template><div class='a' class='b'></div></template>",
 			{
@@ -145,7 +145,7 @@ describe('multi-pass fix with parsers', () => {
 		expect(fixedCode).toBe('<template><div class="a"></div></template>');
 	});
 
-	test('JSX: no-boolean-attr-value on element with multiple attrs', async () => {
+	test('[multi-pass-fix-fix-009] JSX: no-boolean-attr-value on element with multiple attrs', async () => {
 		const { fixedCode } = await mlTest(
 			'<><input disabled="disabled" required="required" /></>',
 			{
@@ -161,7 +161,7 @@ describe('multi-pass fix with parsers', () => {
 		expect(fixedCode).toBe('<><input disabled required /></>');
 	});
 
-	test('Markdown: attr-value-quotes + no-boolean-attr-value on raw HTML', async () => {
+	test('[multi-pass-fix-fix-010] Markdown: attr-value-quotes + no-boolean-attr-value on raw HTML', async () => {
 		const { fixedCode } = await mlTest(
 			"Some text\n\n<input disabled='disabled' data-foo='bar' />\n",
 			{

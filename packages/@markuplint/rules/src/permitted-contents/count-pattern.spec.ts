@@ -9,7 +9,7 @@ function c(models: any, innerHtml: string) {
 	return countPattern(models, [...el.childNodes], specs, { ignoreHasMutableChildren: true }, 0);
 }
 
-test('require: a', () => {
+test('[permitted-contents-invalid-001] require: a', () => {
 	expect(c({ require: 'a' }, '<a></a>').type).toBe('MATCHED');
 	expect(c({ require: 'a' }, '<b></b>').type).toBe('MISSING_NODE_REQUIRED');
 	expect(c({ require: 'a' }, '<c></c>').type).toBe('MISSING_NODE_REQUIRED');
@@ -23,7 +23,7 @@ test('require: a', () => {
 	expect(c({ require: 'a' }, '').matched.length).toBe(0);
 });
 
-test('optional: a', () => {
+test('[permitted-contents-invalid-002] optional: a', () => {
 	expect(c({ optional: 'a' }, '<a></a>').type).toBe('MATCHED');
 	expect(c({ optional: 'a' }, '<a></a><a></a>').type).toBe('UNEXPECTED_EXTRA_NODE');
 	expect(c({ optional: 'a' }, '<b></b>').type).toBe('MATCHED_ZERO');
@@ -39,7 +39,7 @@ test('optional: a', () => {
 	expect(c({ optional: 'a' }, '').matched.length).toBe(0);
 });
 
-test('oneOrMore: a', () => {
+test('[permitted-contents-invalid-003] oneOrMore: a', () => {
 	expect(c({ oneOrMore: 'a' }, '<a></a>').type).toBe('MATCHED');
 	expect(c({ oneOrMore: 'a' }, '<b></b>').type).toBe('MISSING_NODE_ONE_OR_MORE');
 	expect(c({ oneOrMore: 'a' }, '<c></c>').type).toBe('MISSING_NODE_ONE_OR_MORE');
@@ -57,7 +57,7 @@ test('oneOrMore: a', () => {
 	expect(c({ oneOrMore: 'a' }, '<a></a><c></c><c></c>').matched.length).toBe(1);
 });
 
-test('zeroOrMore: a', () => {
+test('[permitted-contents-invalid-004] zeroOrMore: a', () => {
 	expect(c({ zeroOrMore: 'a' }, '<a></a>').type).toBe('MATCHED');
 	expect(c({ zeroOrMore: 'a' }, '<b></b>').type).toBe('MATCHED_ZERO');
 	expect(c({ zeroOrMore: 'a' }, '<c></c>').type).toBe('MATCHED_ZERO');
@@ -75,7 +75,7 @@ test('zeroOrMore: a', () => {
 	expect(c({ zeroOrMore: 'a' }, '<a></a><c></c><c></c>').matched.length).toBe(1);
 });
 
-test('require: #flow', () => {
+test('[permitted-contents-invalid-005] require: #flow', () => {
 	expect(c({ require: '#flow' }, '<a></a>').type).toBe('MATCHED');
 	expect(c({ require: '#flow' }, '<b></b>').type).toBe('MATCHED');
 	expect(c({ require: '#flow' }, '<c></c>').type).toBe('MATCHED_ZERO');
@@ -100,7 +100,7 @@ test('require: #flow', () => {
 	expect(c({ require: '#flow' }, '<a></a>').matched[0]?.nodeName).toBe('A');
 });
 
-test('optional: #flow', () => {
+test('[permitted-contents-invalid-006] optional: #flow', () => {
 	expect(c({ optional: '#flow' }, '<a></a>').type).toBe('MATCHED');
 	expect(c({ optional: '#flow' }, '<b></b>').type).toBe('MATCHED');
 	expect(c({ optional: '#flow' }, '<c></c>').type).toBe('MATCHED_ZERO');
@@ -114,7 +114,7 @@ test('optional: #flow', () => {
 	expect(c({ optional: '#flow' }, '').matched.length).toBe(0);
 });
 
-test('oneOrMore: #flow', () => {
+test('[permitted-contents-invalid-007] oneOrMore: #flow', () => {
 	expect(c({ oneOrMore: '#flow' }, '<a></a>').type).toBe('MATCHED');
 	expect(c({ oneOrMore: '#flow' }, '<b></b>').type).toBe('MATCHED');
 	expect(c({ oneOrMore: '#flow' }, '<c></c>').type).toBe('MATCHED_ZERO');
@@ -132,7 +132,7 @@ test('oneOrMore: #flow', () => {
 	expect(c({ oneOrMore: '#flow' }, '<a></a><c></c><c></c>').matched.length).toBe(1);
 });
 
-test('zeroOrMore: #flow', () => {
+test('[permitted-contents-invalid-008] zeroOrMore: #flow', () => {
 	expect(c({ zeroOrMore: '#flow' }, '<a></a>').type).toBe('MATCHED');
 	expect(c({ zeroOrMore: '#flow' }, '<b></b>').type).toBe('MATCHED');
 	expect(c({ zeroOrMore: '#flow' }, '<c></c>').type).toBe('MATCHED_ZERO');
@@ -150,7 +150,7 @@ test('zeroOrMore: #flow', () => {
 	expect(c({ zeroOrMore: '#flow' }, '<a></a><c></c><c></c>').matched.length).toBe(1);
 });
 
-test('zeroOrMore: :model(script-supporting)', () => {
+test('[permitted-contents-invalid-009] zeroOrMore: :model(script-supporting)', () => {
 	expect(c({ zeroOrMore: ':model(script-supporting)' }, '<a></a>').type).toBe('MATCHED_ZERO');
 	expect(c({ zeroOrMore: ':model(script-supporting)' }, '<b></b>').type).toBe('MATCHED_ZERO');
 	expect(c({ zeroOrMore: ':model(script-supporting)' }, '<c></c>').type).toBe('MATCHED_ZERO');
@@ -168,7 +168,7 @@ test('zeroOrMore: :model(script-supporting)', () => {
 	expect(c({ zeroOrMore: ':model(script-supporting)' }, '<template></template>').matched.length).toBe(1);
 });
 
-test('min/max', () => {
+test('[permitted-contents-invalid-010] min/max', () => {
 	expect(c({ require: 'c', min: 2 }, '').type).toBe('MISSING_NODE_REQUIRED');
 	expect(c({ require: 'c', min: 2 }, '<c></c>').type).toBe('MISSING_NODE_REQUIRED');
 	expect(c({ require: 'c', min: 2 }, '<c></c><c></c>').type).toBe('MATCHED');
@@ -176,7 +176,7 @@ test('min/max', () => {
 	expect(c({ require: 'c', max: 1 }, '<c></c><c></c>').hint?.max).toBe(1);
 });
 
-test('the dl element', () => {
+test('[permitted-contents-invalid-011] the dl element', () => {
 	const models = {
 		oneOrMore: [
 			{
@@ -205,7 +205,7 @@ test('the dl element', () => {
 	expect(c(models, '<dt></dt><dd></dd><dd></dd><dt></dt>').type).toBe('MISSING_NODE_ONE_OR_MORE');
 });
 
-test('part of the ruby element #1', () => {
+test('[permitted-contents-invalid-012] part of the ruby element #1', () => {
 	const models = {
 		// 1. One or the other of the following:
 		oneOrMore: [
@@ -227,7 +227,7 @@ test('part of the ruby element #1', () => {
 	expect(c(models, '<ruby><ruby></ruby></ruby>').query).toBe('ruby:not(:has(ruby))');
 });
 
-test('part of the ruby element #2', () => {
+test('[permitted-contents-invalid-013] part of the ruby element #2', () => {
 	const models = {
 		// The content model of ruby elements consists of one or more of the following sequences:
 		oneOrMore: [
@@ -288,7 +288,7 @@ test('part of the ruby element #2', () => {
 	expect(c(models, 'text<rp></rp><rt></rt><rp></rp>text2<rt></rt>').type).toBe('MATCHED');
 });
 
-test('part of the ruby element #3', () => {
+test('[permitted-contents-invalid-014] part of the ruby element #3', () => {
 	const models = {
 		// followed by one or more rt elements, each of which is itself followed by an rp element
 		oneOrMore: [
@@ -310,7 +310,7 @@ test('part of the ruby element #3', () => {
 });
 
 describe('Issues', () => {
-	test('#1146 1/2', () => {
+	test('[permitted-contents-issue-1146-001] #1146 1/2', () => {
 		const models = {
 			oneOrMore: [
 				{
@@ -329,7 +329,7 @@ describe('Issues', () => {
 		expect(c(models, '<b></b><b></b>').type).toBe('MATCHED');
 	});
 
-	test('#1146 2/2', () => {
+	test('[permitted-contents-issue-1146-002] #1146 2/2', () => {
 		const models = {
 			oneOrMore: [
 				{

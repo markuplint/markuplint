@@ -13,7 +13,7 @@ beforeAll(() => {
 	t = translator(locale);
 });
 
-test('OneCodePointChar List', () => {
+test('[attr-check-invalid-001] OneCodePointChar List', () => {
 	expect(
 		valueCheck(t, 'accesskey', '@ 12', {
 			token: 'OneCodePointChar',
@@ -30,7 +30,7 @@ test('OneCodePointChar List', () => {
 	]);
 });
 
-test('BrowsingContextNameOrKeyword', () => {
+test('[attr-check-invalid-002] BrowsingContextNameOrKeyword', () => {
 	expect(valueCheck(t, 'target', '', 'BrowsingContextNameOrKeyword')).toStrictEqual([
 		'the "target" attribute must not be empty. It expects either "_blank", "_self", "_parent", "_top", "browsing context name" (https://html.spec.whatwg.org/multipage/browsers.html#valid-browsing-context-name-or-keyword)',
 		{
@@ -41,14 +41,14 @@ test('BrowsingContextNameOrKeyword', () => {
 	]);
 });
 
-test('BCP47', () => {
+test('[attr-check-invalid-003] BCP47', () => {
 	// Empty string is valid per HTML LS (language set to unknown)
 	expect(valueCheck(t, 'lang', '', 'BCP47')).toBe(false);
 	// Invalid BCP47 should return error
 	expect(valueCheck(t, 'lang', ':::', 'BCP47')).not.toBe(false);
 });
 
-test('DateTime', () => {
+test('[attr-check-invalid-004] DateTime', () => {
 	expect(valueCheck(t, 'datetime', '200-1-1', 'DateTime')).toStrictEqual([
 		'the year part of the "datetime" attribute expects four or more digits (https://html.spec.whatwg.org/multipage/text-level-semantics.html#datetime-value)',
 		{
@@ -75,7 +75,7 @@ test('DateTime', () => {
 	]);
 });
 
-test('Directive', () => {
+test('[attr-check-invalid-005] Directive', () => {
 	const directive = {
 		directive: ['find '],
 		token: '<complex-selector-list>',

@@ -4,7 +4,7 @@ import { test, expect, describe } from 'vitest';
 import rule from './index.js';
 
 describe('Basic', () => {
-	test('Correct', async () => {
+	test('[neighbor-popovers-invalid-001] Correct', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -18,7 +18,7 @@ describe('Basic', () => {
 		).toBe(0);
 	});
 
-	test('Incorrect', async () => {
+	test('[neighbor-popovers-invalid-002] Incorrect', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -43,7 +43,7 @@ describe('Basic', () => {
 });
 
 describe('Complex', () => {
-	test('Correct', async () => {
+	test('[neighbor-popovers-invalid-003] Correct', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -64,7 +64,7 @@ describe('Complex', () => {
 		).toBe(0);
 	});
 
-	test('Correct 2', async () => {
+	test('[neighbor-popovers-invalid-004] Correct 2', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -86,7 +86,7 @@ describe('Complex', () => {
 		).toBe(0);
 	});
 
-	test('Incorrect', async () => {
+	test('[neighbor-popovers-invalid-005] Incorrect', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -108,7 +108,7 @@ describe('Complex', () => {
 		).toBe(1);
 	});
 
-	test('Incorrect 2', async () => {
+	test('[neighbor-popovers-invalid-006] Incorrect 2', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -130,7 +130,7 @@ describe('Complex', () => {
 		).toBe(1);
 	});
 
-	test('Incorrect 3', async () => {
+	test('[neighbor-popovers-invalid-007] Incorrect 3', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -152,7 +152,7 @@ describe('Complex', () => {
 		).toBe(1);
 	});
 
-	test('Incorrect 4', async () => {
+	test('[neighbor-popovers-invalid-008] Incorrect 4', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -175,7 +175,7 @@ describe('Complex', () => {
 });
 
 describe('Invoker Commands API (commandfor + command)', () => {
-	test('Correct: toggle-popover', async () => {
+	test('[neighbor-popovers-invalid-009] Correct: toggle-popover', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -189,7 +189,7 @@ describe('Invoker Commands API (commandfor + command)', () => {
 		).toBe(0);
 	});
 
-	test('Correct: show-popover', async () => {
+	test('[neighbor-popovers-invalid-010] Correct: show-popover', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -203,7 +203,7 @@ describe('Invoker Commands API (commandfor + command)', () => {
 		).toBe(0);
 	});
 
-	test('Correct: hide-popover', async () => {
+	test('[neighbor-popovers-invalid-011] Correct: hide-popover', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -217,7 +217,7 @@ describe('Invoker Commands API (commandfor + command)', () => {
 		).toBe(0);
 	});
 
-	test('Incorrect: perceptible content between trigger and target', async () => {
+	test('[neighbor-popovers-invalid-012] Incorrect: perceptible content between trigger and target', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -240,7 +240,7 @@ describe('Invoker Commands API (commandfor + command)', () => {
 		]);
 	});
 
-	test('Correct: non-popover command is ignored', async () => {
+	test('[neighbor-popovers-invalid-013] Correct: non-popover command is ignored', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -255,7 +255,7 @@ describe('Invoker Commands API (commandfor + command)', () => {
 		).toBe(0);
 	});
 
-	test('Correct: commandfor without command is ignored', async () => {
+	test('[neighbor-popovers-invalid-014] Correct: commandfor without command is ignored', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -270,7 +270,7 @@ describe('Invoker Commands API (commandfor + command)', () => {
 		).toBe(0);
 	});
 
-	test('Case-insensitive command value', async () => {
+	test('[neighbor-popovers-invalid-015] Case-insensitive command value', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -285,7 +285,7 @@ describe('Invoker Commands API (commandfor + command)', () => {
 		).toBe(1);
 	});
 
-	test('Incorrect: complex nested case', async () => {
+	test('[neighbor-popovers-invalid-016] Incorrect: complex nested case', async () => {
 		expect(
 			(
 				await mlRuleTest(

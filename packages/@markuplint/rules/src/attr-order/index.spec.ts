@@ -4,12 +4,12 @@ import { describe, test, expect } from 'vitest';
 import rule from './index.js';
 
 describe('alphabetical order (value: true)', () => {
-	test('no violation - already sorted', async () => {
+	test('[attr-order-valid-001] no violation - already sorted', async () => {
 		const { violations } = await mlRuleTest(rule, '<div class="a" id="b" style="c"></div>');
 		expect(violations.length).toBe(0);
 	});
 
-	test('violation - not sorted', async () => {
+	test('[attr-order-invalid-001] violation - not sorted', async () => {
 		const { violations } = await mlRuleTest(rule, '<div style="x" class="a"></div>');
 		expect(violations).toStrictEqual([
 			{
@@ -22,22 +22,22 @@ describe('alphabetical order (value: true)', () => {
 		]);
 	});
 
-	test('no violation - single attribute', async () => {
+	test('[attr-order-valid-002] no violation - single attribute', async () => {
 		const { violations } = await mlRuleTest(rule, '<div class="a"></div>');
 		expect(violations.length).toBe(0);
 	});
 
-	test('no violation - no attributes', async () => {
+	test('[attr-order-valid-003] no violation - no attributes', async () => {
 		const { violations } = await mlRuleTest(rule, '<div></div>');
 		expect(violations.length).toBe(0);
 	});
 
-	test('no violation - boolean attributes sorted', async () => {
+	test('[attr-order-valid-004] no violation - boolean attributes sorted', async () => {
 		const { violations } = await mlRuleTest(rule, '<input disabled readonly />');
 		expect(violations.length).toBe(0);
 	});
 
-	test('violation - boolean attributes not sorted', async () => {
+	test('[attr-order-invalid-002] violation - boolean attributes not sorted', async () => {
 		const { violations } = await mlRuleTest(rule, '<input readonly disabled />');
 		expect(violations).toStrictEqual([
 			{
@@ -52,14 +52,14 @@ describe('alphabetical order (value: true)', () => {
 });
 
 describe('priority list', () => {
-	test('no violation - matches priority order', async () => {
+	test('[attr-order-valid-005] no violation - matches priority order', async () => {
 		const { violations } = await mlRuleTest(rule, '<div id="a" class="b" style="c"></div>', {
 			rule: { value: ['id', 'class', 'style'] },
 		});
 		expect(violations.length).toBe(0);
 	});
 
-	test('violation - class before id', async () => {
+	test('[attr-order-invalid-003] violation - class before id', async () => {
 		const { violations } = await mlRuleTest(rule, '<div class="a" id="b"></div>', {
 			rule: { value: ['id', 'class'] },
 		});
@@ -74,14 +74,14 @@ describe('priority list', () => {
 		]);
 	});
 
-	test('unmatched attributes go to the end alphabetically', async () => {
+	test('[attr-order-invalid-004] unmatched attributes go to the end alphabetically', async () => {
 		const { violations } = await mlRuleTest(rule, '<div id="a" data-z="z" class="b" data-a="a"></div>', {
 			rule: { value: ['id', 'class'] },
 		});
 		expect(violations.length).toBe(1);
 	});
 
-	test('unmatched attributes preserve source order when alphabetical: false', async () => {
+	test('[attr-order-invalid-005] unmatched attributes preserve source order when alphabetical: false', async () => {
 		const { violations } = await mlRuleTest(rule, '<div id="a" data-z="z" class="b" data-a="a"></div>', {
 			rule: { value: ['id', 'class'], options: { alphabetical: false } },
 		});
@@ -91,7 +91,7 @@ describe('priority list', () => {
 });
 
 describe('group matching', () => {
-	test('global group - class and id should precede data-x', async () => {
+	test('[attr-order-invalid-006] global group - class and id should precede data-x', async () => {
 		const { violations } = await mlRuleTest(rule, '<div data-x="1" class="a" id="b"></div>', {
 			rule: { value: [{ group: 'global' }] },
 		});
@@ -106,28 +106,28 @@ describe('group matching', () => {
 		]);
 	});
 
-	test('global → aria order', async () => {
+	test('[attr-order-invalid-007] global → aria order', async () => {
 		const { violations } = await mlRuleTest(rule, '<div aria-label="x" class="a"></div>', {
 			rule: { value: [{ group: 'global' }, { group: 'aria' }] },
 		});
 		expect(violations.length).toBe(1);
 	});
 
-	test('no violation - global → aria → data correct order', async () => {
+	test('[attr-order-valid-006] no violation - global → aria → data correct order', async () => {
 		const { violations } = await mlRuleTest(rule, '<div class="a" id="b" aria-label="x" data-x="1"></div>', {
 			rule: { value: [{ group: 'global' }, { group: 'aria' }, { group: 'data' }] },
 		});
 		expect(violations.length).toBe(0);
 	});
 
-	test('event group', async () => {
+	test('[attr-order-invalid-008] event group', async () => {
 		const { violations } = await mlRuleTest(rule, '<div onclick="x" class="a"></div>', {
 			rule: { value: [{ group: 'global' }, { group: 'event' }] },
 		});
 		expect(violations.length).toBe(1);
 	});
 
-	test('data group', async () => {
+	test('[attr-order-invalid-009] data group', async () => {
 		const { violations } = await mlRuleTest(rule, '<div data-a="1" class="a"></div>', {
 			rule: { value: [{ group: 'global' }, { group: 'data' }] },
 		});
@@ -136,7 +136,7 @@ describe('group matching', () => {
 });
 
 describe('pattern matching', () => {
-	test('data- pattern first', async () => {
+	test('[attr-order-invalid-010] data- pattern first', async () => {
 		const { violations } = await mlRuleTest(rule, '<div class="a" data-x="1"></div>', {
 			rule: { value: [{ pattern: '^data-' }] },
 		});
@@ -144,7 +144,7 @@ describe('pattern matching', () => {
 		expect(violations.length).toBe(1);
 	});
 
-	test('no violation - data- pattern first, already sorted', async () => {
+	test('[attr-order-valid-007] no violation - data- pattern first, already sorted', async () => {
 		const { violations } = await mlRuleTest(rule, '<div data-x="1" class="a"></div>', {
 			rule: { value: [{ pattern: '^data-' }] },
 		});
@@ -153,7 +153,7 @@ describe('pattern matching', () => {
 });
 
 describe('conflict resolution (first-match-wins)', () => {
-	test('explicit name vs global group - explicit wins', async () => {
+	test('[attr-order-valid-008] explicit name vs global group - explicit wins', async () => {
 		const { violations } = await mlRuleTest(rule, '<div id="b" class="a"></div>', {
 			rule: { value: ['id', { group: 'global' }] },
 		});
@@ -162,7 +162,7 @@ describe('conflict resolution (first-match-wins)', () => {
 		expect(violations.length).toBe(0);
 	});
 
-	test('explicit name vs global group - id should come before class', async () => {
+	test('[attr-order-invalid-011] explicit name vs global group - id should come before class', async () => {
 		const { violations } = await mlRuleTest(rule, '<div class="a" id="b"></div>', {
 			rule: { value: ['id', { group: 'global' }] },
 		});
@@ -171,7 +171,7 @@ describe('conflict resolution (first-match-wins)', () => {
 		expect(violations.length).toBe(1);
 	});
 
-	test('overlapping patterns - first pattern wins', async () => {
+	test('[attr-order-valid-009] overlapping patterns - first pattern wins', async () => {
 		const { violations } = await mlRuleTest(rule, '<div data-bar="2" data-foo="1" class="a"></div>', {
 			rule: { value: [{ pattern: '^d' }, { pattern: '^data-' }] },
 		});
@@ -181,7 +181,7 @@ describe('conflict resolution (first-match-wins)', () => {
 		expect(violations.length).toBe(0);
 	});
 
-	test('aria pattern vs aria group - first match wins', async () => {
+	test('[attr-order-valid-010] aria pattern vs aria group - first match wins', async () => {
 		const { violations } = await mlRuleTest(rule, '<div aria-label="x" aria-hidden="y"></div>', {
 			rule: { value: [{ pattern: '^aria-label' }, { group: 'aria' }] },
 		});
@@ -192,7 +192,7 @@ describe('conflict resolution (first-match-wins)', () => {
 });
 
 describe('group-internal order', () => {
-	test('alphabetical order within group (default)', async () => {
+	test('[attr-order-invalid-012] alphabetical order within group (default)', async () => {
 		const { violations } = await mlRuleTest(rule, '<div id="b" class="a"></div>', {
 			rule: { value: [{ group: 'global', order: 'alphabetical' }] },
 		});
@@ -200,7 +200,7 @@ describe('group-internal order', () => {
 		expect(violations.length).toBe(1);
 	});
 
-	test('source-order within group', async () => {
+	test('[attr-order-valid-011] source-order within group', async () => {
 		const { violations } = await mlRuleTest(rule, '<div id="b" class="a"></div>', {
 			rule: { value: [{ group: 'global', order: 'source-order' }] },
 		});
@@ -208,7 +208,7 @@ describe('group-internal order', () => {
 		expect(violations.length).toBe(0);
 	});
 
-	test('fixed order array within group', async () => {
+	test('[attr-order-invalid-013] fixed order array within group', async () => {
 		const { violations } = await mlRuleTest(rule, '<div aria-describedby="x" aria-label="y"></div>', {
 			rule: { value: [{ group: 'aria', order: ['aria-label', 'aria-describedby'] }] },
 		});
@@ -216,7 +216,7 @@ describe('group-internal order', () => {
 		expect(violations.length).toBe(1);
 	});
 
-	test('no violation - fixed order array correct', async () => {
+	test('[attr-order-valid-012] no violation - fixed order array correct', async () => {
 		const { violations } = await mlRuleTest(rule, '<div aria-label="y" aria-describedby="x"></div>', {
 			rule: { value: [{ group: 'aria', order: ['aria-label', 'aria-describedby'] }] },
 		});
@@ -225,17 +225,17 @@ describe('group-internal order', () => {
 });
 
 describe('fix', () => {
-	test('fix: alphabetical sort', async () => {
+	test('[attr-order-fix-001] fix: alphabetical sort', async () => {
 		const { fixedCode } = await mlRuleTest(rule, '<div style="x" class="a"></div>', undefined, true);
 		expect(fixedCode).toBe('<div class="a" style="x"></div>');
 	});
 
-	test('fix: three attributes alphabetical', async () => {
+	test('[attr-order-fix-002] fix: three attributes alphabetical', async () => {
 		const { fixedCode } = await mlRuleTest(rule, '<div style="x" class="a" id="b"></div>', undefined, true);
 		expect(fixedCode).toBe('<div class="a" id="b" style="x"></div>');
 	});
 
-	test('fix: priority list', async () => {
+	test('[attr-order-fix-003] fix: priority list', async () => {
 		const { fixedCode } = await mlRuleTest(
 			rule,
 			'<div class="a" id="b"></div>',
@@ -245,17 +245,17 @@ describe('fix', () => {
 		expect(fixedCode).toBe('<div id="b" class="a"></div>');
 	});
 
-	test('fix: multiline attributes preserve spacing', async () => {
+	test('[attr-order-fix-004] fix: multiline attributes preserve spacing', async () => {
 		const { fixedCode } = await mlRuleTest(rule, '<div\n  style="x"\n  class="a"\n></div>', undefined, true);
 		expect(fixedCode).toBe('<div\n  class="a"\n  style="x"\n></div>');
 	});
 
-	test('fix: boolean attributes', async () => {
+	test('[attr-order-fix-005] fix: boolean attributes', async () => {
 		const { fixedCode } = await mlRuleTest(rule, '<input readonly disabled />', undefined, true);
 		expect(fixedCode).toBe('<input disabled readonly />');
 	});
 
-	test('fix: group order', async () => {
+	test('[attr-order-fix-006] fix: group order', async () => {
 		const { fixedCode } = await mlRuleTest(
 			rule,
 			'<div data-x="1" class="a" id="b"></div>',
@@ -265,7 +265,7 @@ describe('fix', () => {
 		expect(fixedCode).toBe('<div class="a" id="b" data-x="1"></div>');
 	});
 
-	test('fix: options.alphabetical false - unmatched preserve source order', async () => {
+	test('[attr-order-fix-007] fix: options.alphabetical false - unmatched preserve source order', async () => {
 		const { fixedCode } = await mlRuleTest(
 			rule,
 			'<div data-z="z" id="b" data-a="a"></div>',
@@ -280,7 +280,7 @@ describe('fix', () => {
 });
 
 describe('fix with parsers', () => {
-	test('fix: Vue', async () => {
+	test('[attr-order-fix-008] fix: Vue', async () => {
 		const { fixedCode } = await mlRuleTest(
 			rule,
 			'<template><div style="x" class="a"></div></template>',
@@ -290,7 +290,7 @@ describe('fix with parsers', () => {
 		expect(fixedCode).toBe('<template><div class="a" style="x"></div></template>');
 	});
 
-	test('fix: JSX', async () => {
+	test('[attr-order-fix-009] fix: JSX', async () => {
 		const { fixedCode } = await mlRuleTest(
 			rule,
 			'<div style="x" className="a"></div>',
@@ -302,7 +302,7 @@ describe('fix with parsers', () => {
 });
 
 describe('name property matching', () => {
-	test('object form { name: "id" } works like string "id"', async () => {
+	test('[attr-order-invalid-014] object form { name: "id" } works like string "id"', async () => {
 		const { violations } = await mlRuleTest(rule, '<div class="a" id="b"></div>', {
 			rule: { value: [{ name: 'id' }, { name: 'class' }] },
 		});
@@ -317,14 +317,14 @@ describe('name property matching', () => {
 		]);
 	});
 
-	test('no violation - { name } form correct order', async () => {
+	test('[attr-order-valid-013] no violation - { name } form correct order', async () => {
 		const { violations } = await mlRuleTest(rule, '<div id="b" class="a"></div>', {
 			rule: { value: [{ name: 'id' }, { name: 'class' }] },
 		});
 		expect(violations.length).toBe(0);
 	});
 
-	test('fix: { name } form', async () => {
+	test('[attr-order-fix-010] fix: { name } form', async () => {
 		const { fixedCode } = await mlRuleTest(
 			rule,
 			'<div class="a" id="b"></div>',
@@ -336,7 +336,7 @@ describe('name property matching', () => {
 });
 
 describe('spread group', () => {
-	test('spread attributes placed after global group', async () => {
+	test('[attr-order-valid-014] spread attributes placed after global group', async () => {
 		const { violations } = await mlRuleTest(rule, '<div {...props} className="a"></div>', {
 			parser: { '.*': '@markuplint/jsx-parser' },
 			rule: { value: [{ group: 'global' }, { group: 'spread' }] },
@@ -345,7 +345,7 @@ describe('spread group', () => {
 		expect(violations.length).toBe(0);
 	});
 
-	test('violation - spread before named attrs', async () => {
+	test('[attr-order-invalid-015] violation - spread before named attrs', async () => {
 		const { violations } = await mlRuleTest(rule, '<div {...props} id="a" className="b"></div>', {
 			parser: { '.*': '@markuplint/jsx-parser' },
 			rule: { value: ['id', 'className', { group: 'spread' }] },
@@ -353,7 +353,7 @@ describe('spread group', () => {
 		expect(violations.length).toBe(1);
 	});
 
-	test('fix: spread to end - no-op when spread has no nameNode', async () => {
+	test('[attr-order-fix-011] fix: spread to end - no-op when spread has no nameNode', async () => {
 		const { fixedCode } = await mlRuleTest(
 			rule,
 			'<div {...props} id="a" className="b"></div>',
@@ -367,7 +367,7 @@ describe('spread group', () => {
 		expect(fixedCode).toBe('<div {...props} id="a" className="b"></div>');
 	});
 
-	test('spread group defaults to source-order', async () => {
+	test('[attr-order-valid-015] spread group defaults to source-order', async () => {
 		const { violations } = await mlRuleTest(rule, '<div id="a" {...props} {...other}></div>', {
 			parser: { '.*': '@markuplint/jsx-parser' },
 			rule: { value: ['id', { group: 'spread' }] },
@@ -378,7 +378,7 @@ describe('spread group', () => {
 });
 
 describe('invalid regex pattern', () => {
-	test('invalid pattern does not crash', async () => {
+	test('[attr-order-valid-016] invalid pattern does not crash', async () => {
 		const { violations } = await mlRuleTest(rule, '<div class="a" id="b"></div>', {
 			rule: { value: [{ pattern: '[invalid' }] },
 		});
@@ -388,7 +388,7 @@ describe('invalid regex pattern', () => {
 });
 
 describe('fixed order array - unlisted attributes', () => {
-	test('unlisted attributes within group fall back to alphabetical', async () => {
+	test('[attr-order-invalid-016] unlisted attributes within group fall back to alphabetical', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<div aria-hidden="y" aria-describedby="x" aria-label="z"></div>',
@@ -400,7 +400,7 @@ describe('fixed order array - unlisted attributes', () => {
 		expect(violations.length).toBe(1);
 	});
 
-	test('fix: unlisted attributes within group sorted alphabetically', async () => {
+	test('[attr-order-fix-012] fix: unlisted attributes within group sorted alphabetically', async () => {
 		const { fixedCode } = await mlRuleTest(
 			rule,
 			'<div aria-hidden="y" aria-describedby="x" aria-label="z"></div>',
@@ -414,12 +414,12 @@ describe('fixed order array - unlisted attributes', () => {
 });
 
 describe('edge cases', () => {
-	test('value: true with single element', async () => {
+	test('[attr-order-valid-017] value: true with single element', async () => {
 		const { violations } = await mlRuleTest(rule, '<input type="text" />');
 		expect(violations.length).toBe(0);
 	});
 
-	test('mixed case attribute names', async () => {
+	test('[attr-order-invalid-017] mixed case attribute names', async () => {
 		const { violations } = await mlRuleTest(rule, '<div Style="x" Class="a"></div>', {
 			parser: { '.*': '@markuplint/jsx-parser' },
 		});
@@ -428,13 +428,13 @@ describe('edge cases', () => {
 		expect(violations.length).toBe(1);
 	});
 
-	test('empty value array treated as alphabetical', async () => {
+	test('[attr-order-invalid-018] empty value array treated as alphabetical', async () => {
 		const { violations } = await mlRuleTest(rule, '<div style="x" class="a"></div>', { rule: { value: [] } });
 		// empty value → alphabetical
 		expect(violations.length).toBe(1);
 	});
 
-	test('empty value with alphabetical: false is a no-op', async () => {
+	test('[attr-order-valid-018] empty value with alphabetical: false is a no-op', async () => {
 		const { violations } = await mlRuleTest(rule, '<div style="x" class="a"></div>', {
 			rule: { value: [], options: { alphabetical: false } },
 		});
@@ -442,13 +442,13 @@ describe('edge cases', () => {
 		expect(violations.length).toBe(0);
 	});
 
-	test('multiple elements sorted independently', async () => {
+	test('[attr-order-invalid-019] multiple elements sorted independently', async () => {
 		const { violations } = await mlRuleTest(rule, '<div class="a" id="b"></div><span style="x" class="y"></span>');
 		// div: class < id → OK. span: style > class → violation
 		expect(violations.length).toBe(1);
 	});
 
-	test('severity error uses "must" in message', async () => {
+	test('[attr-order-invalid-020] severity error uses "must" in message', async () => {
 		const { violations } = await mlRuleTest(rule, '<div style="x" class="a"></div>', {
 			rule: { severity: 'error' },
 		});

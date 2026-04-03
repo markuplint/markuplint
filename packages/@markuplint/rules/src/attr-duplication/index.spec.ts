@@ -3,7 +3,7 @@ import { describe, test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('is test 1', async () => {
+test('[attr-duplication-invalid-001] is test 1', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`
@@ -32,7 +32,7 @@ test('is test 1', async () => {
 	]);
 });
 
-test('is test 2', async () => {
+test('[attr-duplication-invalid-002] is test 2', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`
@@ -64,13 +64,13 @@ test('is test 2', async () => {
 	]);
 });
 
-test('is test 3', async () => {
+test('[attr-duplication-invalid-003] is test 3', async () => {
 	const { violations } = await mlRuleTest(rule, '<img src="/" SRC="/" >', undefined, false, 'ja');
 
 	expect(violations.map(_ => _.message)).toStrictEqual(['属性名が重複しています']);
 });
 
-test('nodeRules disable', async () => {
+test('[attr-duplication-invalid-004] nodeRules disable', async () => {
 	const { violations } = await mlRuleTest(rule, '<div><span attr attr></span></div>', {
 		nodeRule: [
 			{
@@ -83,7 +83,7 @@ test('nodeRules disable', async () => {
 	expect(violations.length).toStrictEqual(0);
 });
 
-test('Vue', async () => {
+test('[attr-duplication-parser-001] Vue', async () => {
 	const { violations } = await mlRuleTest(rule, '<template><div attr v-bind:attr /></template>', {
 		parser: {
 			'.*': '@markuplint/vue-parser',
@@ -104,7 +104,7 @@ test('Vue', async () => {
 	]);
 });
 
-test('Vue (exception)', async () => {
+test('[attr-duplication-parser-002] Vue (exception)', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<template><div class="foo" v-bind:class="bar" style="a: b;" :style="{c: d}" /></template>',
@@ -121,7 +121,7 @@ test('Vue (exception)', async () => {
 	expect(violations.length).toBe(0);
 });
 
-test('React', async () => {
+test('[attr-duplication-parser-003] React', async () => {
 	const { violations } = await mlRuleTest(rule, '<div tabindex tabIndex />', {
 		parser: {
 			'.*': '@markuplint/vue-parser',
@@ -131,7 +131,7 @@ test('React', async () => {
 	expect(violations).toStrictEqual([]);
 });
 
-test('Pug', async () => {
+test('[attr-duplication-parser-004] Pug', async () => {
 	expect(
 		(
 			await mlRuleTest(rule, '.hoge.hoge2.hoge3', {
@@ -152,7 +152,7 @@ test('Pug', async () => {
 	).toBe(0);
 });
 
-test('Svelte', async () => {
+test('[attr-duplication-parser-005] Svelte', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<div class:selected="{isSelected}" class:focused="{isFocused}"></div>',
@@ -166,7 +166,7 @@ test('Svelte', async () => {
 	expect(violations.length).toBe(0);
 });
 
-test('Astro', async () => {
+test('[attr-duplication-parser-006] Astro', async () => {
 	const { violations } = await mlRuleTest(rule, '<div class:list="a" class="b"></div>', {
 		parser: {
 			'.*': '@markuplint/astro-parser',
@@ -177,17 +177,17 @@ test('Astro', async () => {
 });
 
 describe('fix', () => {
-	test('remove duplicate attribute', async () => {
+	test('[attr-duplication-fix-001] remove duplicate attribute', async () => {
 		const { fixedCode } = await mlRuleTest(rule, '<div class="a" class="b"></div>', undefined, true);
 		expect(fixedCode).toBe('<div class="a"></div>');
 	});
 
-	test('remove duplicate boolean attribute', async () => {
+	test('[attr-duplication-fix-002] remove duplicate boolean attribute', async () => {
 		const { fixedCode } = await mlRuleTest(rule, '<input disabled disabled />', undefined, true);
 		expect(fixedCode).toBe('<input disabled />');
 	});
 
-	test('remove third duplicate attribute', async () => {
+	test('[attr-duplication-fix-003] remove third duplicate attribute', async () => {
 		const { fixedCode } = await mlRuleTest(
 			rule,
 			'<div data-attr="value" data-Attr=\'db\' data-attR=tr></div>',
@@ -199,7 +199,7 @@ describe('fix', () => {
 });
 
 describe('fix with parsers', () => {
-	test('fix: Pug duplicate attr (no fix — Pug merges class attributes)', async () => {
+	test('[attr-duplication-fix-004] fix: Pug duplicate attr (no fix — Pug merges class attributes)', async () => {
 		const { fixedCode } = await mlRuleTest(
 			rule,
 			'div(class="a" class="b")',
@@ -210,7 +210,7 @@ describe('fix with parsers', () => {
 		expect(fixedCode).toBe('div(class="a" class="b")');
 	});
 
-	test('fix: Vue remove duplicate attr', async () => {
+	test('[attr-duplication-fix-005] fix: Vue remove duplicate attr', async () => {
 		const { fixedCode } = await mlRuleTest(
 			rule,
 			'<template><div class="a" class="b"></div></template>',

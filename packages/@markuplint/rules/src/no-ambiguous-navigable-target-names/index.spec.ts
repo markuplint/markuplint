@@ -3,7 +3,7 @@ import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('_blank', async () => {
+test('[no-ambiguous-navigable-target-names-valid-001] _blank', async () => {
 	expect((await mlRuleTest(rule, '<a href="path/to" target="_blank"></a>')).violations.length).toBe(0);
 	expect((await mlRuleTest(rule, '<a href="path/to" target="blank"></a>')).violations).toStrictEqual([
 		{
@@ -16,7 +16,7 @@ test('_blank', async () => {
 	]);
 });
 
-test('_self', async () => {
+test('[no-ambiguous-navigable-target-names-valid-002] _self', async () => {
 	expect((await mlRuleTest(rule, '<a href="path/to" target="_self"></a>')).violations.length).toBe(0);
 	expect((await mlRuleTest(rule, '<a href="path/to" target="self"></a>')).violations).toStrictEqual([
 		{
@@ -29,7 +29,7 @@ test('_self', async () => {
 	]);
 });
 
-test('_parent', async () => {
+test('[no-ambiguous-navigable-target-names-valid-003] _parent', async () => {
 	expect((await mlRuleTest(rule, '<a href="path/to" target="_parent"></a>')).violations.length).toBe(0);
 	expect((await mlRuleTest(rule, '<a href="path/to" target="parent"></a>')).violations).toStrictEqual([
 		{
@@ -42,7 +42,7 @@ test('_parent', async () => {
 	]);
 });
 
-test('_top', async () => {
+test('[no-ambiguous-navigable-target-names-valid-004] _top', async () => {
 	expect((await mlRuleTest(rule, '<iframe src="path/to" name="_top"></iframe>')).violations.length).toBe(0);
 	expect((await mlRuleTest(rule, '<iframe src="path/to" name="top"></iframe>')).violations).toStrictEqual([
 		{
@@ -55,7 +55,7 @@ test('_top', async () => {
 	]);
 });
 
-test('_foo (invalid keyword)', async () => {
+test('[no-ambiguous-navigable-target-names-valid-005] _foo (invalid keyword)', async () => {
 	expect((await mlRuleTest(rule, '<a href="path/to" target="_foo"></a>')).violations.length).toBe(0);
 	expect((await mlRuleTest(rule, '<a href="path/to" target="foo"></a>')).violations.length).toBe(0);
 });

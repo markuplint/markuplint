@@ -4,7 +4,7 @@ import { describe, test, expect } from 'vitest';
 import rule from './index.js';
 
 describe('verify', () => {
-	test('a', async () => {
+	test('[permitted-contents-invalid-001] a', async () => {
 		const { violations: violations1 } = await mlRuleTest(rule, '<a><div></div><span></span><em></em></a>');
 		expect(violations1).toStrictEqual([]);
 
@@ -78,7 +78,7 @@ describe('verify', () => {
 		]);
 	});
 
-	test('address', async () => {
+	test('[permitted-contents-invalid-002] address', async () => {
 		const { violations: violations1 } = await mlRuleTest(rule, '<address><address></address></address>');
 		expect(violations1).toStrictEqual([
 			{
@@ -105,7 +105,7 @@ describe('verify', () => {
 		]);
 	});
 
-	test('audio', async () => {
+	test('[permitted-contents-invalid-003] audio', async () => {
 		const { violations: violations1 } = await mlRuleTest(rule, '<div><audio src="path/to"><source></audio></div>');
 		expect(violations1).toStrictEqual([
 			{
@@ -149,7 +149,7 @@ describe('verify', () => {
 		]);
 	});
 
-	test('dl', async () => {
+	test('[permitted-contents-invalid-004] dl', async () => {
 		const { violations: violations1 } = await mlRuleTest(
 			rule,
 			`<dl>
@@ -275,7 +275,7 @@ describe('verify', () => {
 		]);
 	});
 
-	test('table', async () => {
+	test('[permitted-contents-invalid-005] table', async () => {
 		const { violations: violations1 } = await mlRuleTest(
 			rule,
 			`<table>
@@ -309,7 +309,7 @@ describe('verify', () => {
 		]);
 	});
 
-	test('ruby', async () => {
+	test('[permitted-contents-invalid-006] ruby', async () => {
 		const { violations: violations1 } = await mlRuleTest(
 			rule,
 			`<ruby>
@@ -352,7 +352,7 @@ describe('verify', () => {
 		expect(violations3).toStrictEqual([]);
 	});
 
-	test('ul', async () => {
+	test('[permitted-contents-invalid-007] ul', async () => {
 		const { violations: violations1 } = await mlRuleTest(rule, '<ul><div></div></ul>');
 		expect(violations1).toStrictEqual([
 			{
@@ -382,7 +382,7 @@ describe('verify', () => {
 		expect(violations4).toStrictEqual([]);
 	});
 
-	// test('area', async () => {
+	// test('[permitted-contents-invalid-008] area', async () => {
 	// 	const { violations: violations1 } = await mlRuleTest(rule, '<div><area></div>');
 	// 	expect(violations1).toStrictEqual([
 	// 		{
@@ -401,7 +401,7 @@ describe('verify', () => {
 	// 	expect(violations3).toStrictEqual([]);
 	// });
 
-	test('meta', async () => {
+	test('[permitted-contents-invalid-009] meta', async () => {
 		const { violations: violations1 } = await mlRuleTest(
 			rule,
 			`<ol>
@@ -445,7 +445,7 @@ describe('verify', () => {
 		expect(violations2).toStrictEqual([]);
 	});
 
-	test('hgroup', async () => {
+	test('[permitted-contents-invalid-010] hgroup', async () => {
 		const { violations: violations1 } = await mlRuleTest(
 			rule,
 			`<hgroup>
@@ -511,7 +511,7 @@ describe('verify', () => {
 		]);
 	});
 
-	test('select', async () => {
+	test('[permitted-contents-invalid-011] select', async () => {
 		const { violations: violations1 } = await mlRuleTest(
 			rule,
 			`<select>
@@ -603,7 +603,7 @@ describe('verify', () => {
 		]);
 	});
 
-	test('script', async () => {
+	test('[permitted-contents-invalid-012] script', async () => {
 		const { violations: violations1 } = await mlRuleTest(
 			rule,
 			`<script>
@@ -613,7 +613,7 @@ describe('verify', () => {
 		expect(violations1).toStrictEqual([]);
 	});
 
-	test('style', async () => {
+	test('[permitted-contents-invalid-013] style', async () => {
 		const { violations: violations1 } = await mlRuleTest(
 			rule,
 			`<style>
@@ -625,7 +625,7 @@ describe('verify', () => {
 		expect(violations1).toStrictEqual([]);
 	});
 
-	test('Multiple', async () => {
+	test('[permitted-contents-invalid-014] Multiple', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -663,17 +663,17 @@ describe('verify', () => {
 		]);
 	});
 
-	test('Dep exp named capture in interleave', async () => {
+	test('[permitted-contents-invalid-015] Dep exp named capture in interleave', async () => {
 		const { violations: violations1 } = await mlRuleTest(rule, '<figure><img><figcaption></figure>');
 		expect(violations1).toStrictEqual([]);
 	});
 
-	test('Custom element', async () => {
+	test('[permitted-contents-invalid-016] Custom element', async () => {
 		const { violations: violations1 } = await mlRuleTest(rule, '<div><x-item></x-item></div>');
 		expect(violations1).toStrictEqual([]);
 	});
 
-	test('svg:a', async () => {
+	test('[permitted-contents-invalid-017] svg:a', async () => {
 		const { violations: violations1 } = await mlRuleTest(rule, '<svg><a><text>text</text></a></svg>');
 		expect(violations1).toStrictEqual([]);
 
@@ -690,7 +690,7 @@ describe('verify', () => {
 		]);
 	});
 
-	test('svg:foreignObject', async () => {
+	test('[permitted-contents-invalid-018] svg:foreignObject', async () => {
 		const { violations: violations1 } = await mlRuleTest(
 			rule,
 			'<svg><foreignObject><div>text</div></foreignObject></svg>',
@@ -718,7 +718,7 @@ describe('verify', () => {
 		]);
 	});
 
-	test('Interactive Element in SVG', async () => {
+	test('[permitted-contents-invalid-019] Interactive Element in SVG', async () => {
 		const { violations: violations1 } = await mlRuleTest(rule, '<svg><video></video></svg>');
 		expect(violations1).toStrictEqual([
 			{
@@ -731,7 +731,7 @@ describe('verify', () => {
 		]);
 	});
 
-	test('mml:mfrac', async () => {
+	test('[permitted-contents-invalid-020] mml:mfrac', async () => {
 		// OK: exactly 2 children
 		const { violations: v1 } = await mlRuleTest(rule, '<math><mfrac><mi>a</mi><mi>b</mi></mfrac></math>');
 		expect(v1).toStrictEqual([]);
@@ -741,13 +741,13 @@ describe('verify', () => {
 		expect(v2.length).toBeGreaterThan(0);
 	});
 
-	test('mml:math', async () => {
+	test('[permitted-contents-invalid-021] mml:math', async () => {
 		// OK: MathML presentation elements
 		const { violations: v1 } = await mlRuleTest(rule, '<math><mi>x</mi><mo>+</mo><mn>1</mn></math>');
 		expect(v1).toStrictEqual([]);
 	});
 
-	test('The SVG <image> element and the HTML obsolete <image> element', async () => {
+	test('[permitted-contents-valid-001] The SVG <image> element and the HTML obsolete <image> element', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<svg><g><image width="100" height="100" xlink:href="path/to"/></g></svg>',
@@ -768,7 +768,7 @@ describe('verify', () => {
 		]);
 	});
 
-	test('Custom element', async () => {
+	test('[permitted-contents-invalid-022] Custom element', async () => {
 		const o = {
 			rule: [
 				{
@@ -850,7 +850,7 @@ describe('verify', () => {
 		]);
 	});
 
-	test('special content models', async () => {
+	test('[permitted-contents-invalid-023] special content models', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -930,7 +930,7 @@ describe('React', () => {
 		},
 	};
 
-	test('case-sensitive', async () => {
+	test('[permitted-contents-parser-001] case-sensitive', async () => {
 		expect((await mlRuleTest(rule, '<A><button></button></A>')).violations).toStrictEqual([
 			{
 				severity: 'error',
@@ -956,7 +956,7 @@ describe('React', () => {
 		expect((await mlRuleTest(rule, '<A><button></button></A>', jsxRuleOn)).violations).toStrictEqual([]);
 	});
 
-	test('Components', async () => {
+	test('[permitted-contents-parser-002] Components', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -968,7 +968,7 @@ describe('React', () => {
 		).toStrictEqual([]);
 	});
 
-	test('Expect to contain a text node', async () => {
+	test('[permitted-contents-parser-003] Expect to contain a text node', async () => {
 		expect((await mlRuleTest(rule, '<head><title>{variable}</title></head>')).violations).toStrictEqual([]);
 		expect((await mlRuleTest(rule, '<head><title>\n</title></head>')).violations).toStrictEqual([]);
 		expect((await mlRuleTest(rule, '<head><title>\n</title></head>', jsxRuleOn)).violations).toStrictEqual([]);
@@ -980,7 +980,7 @@ describe('React', () => {
 		);
 	});
 
-	test('Element has only custom components', async () => {
+	test('[permitted-contents-parser-004] Element has only custom components', async () => {
 		expect((await mlRuleTest(rule, '<div><Component/></div>', jsxRuleOn)).violations).toStrictEqual([]);
 		expect((await mlRuleTest(rule, '<ul><Component/></ul>', jsxRuleOn)).violations).toStrictEqual([
 			{
@@ -1010,7 +1010,7 @@ describe('Pretenders Option', () => {
 		},
 	};
 
-	test('Element', async () => {
+	test('[permitted-contents-invalid-024] Element', async () => {
 		expect(
 			(
 				await mlRuleTest(rule, '<ul><MyComponent/></ul>', {
@@ -1087,7 +1087,7 @@ describe('Pretenders Option', () => {
 		]);
 	});
 
-	test('Attr', async () => {
+	test('[permitted-contents-invalid-025] Attr', async () => {
 		expect(
 			(
 				await mlRuleTest(rule, '<a href><MyComponent/></a>', {
@@ -1118,7 +1118,7 @@ describe('Pretenders Option', () => {
 		]);
 	});
 
-	test('The `as` attribute', async () => {
+	test('[permitted-contents-invalid-026] The `as` attribute', async () => {
 		expect(
 			(
 				await mlRuleTest(rule, '<ul><MyComponent as="li"/></ul>', {
@@ -1174,7 +1174,7 @@ describe('Vue', () => {
 		},
 	};
 
-	test('Element has only custom components', async () => {
+	test('[permitted-contents-parser-005] Element has only custom components', async () => {
 		expect(
 			(await mlRuleTest(rule, '<template><div><x-component/></div></template>', vueRuleOn)).violations,
 		).toStrictEqual([]);
@@ -1210,7 +1210,7 @@ describe('EJS', () => {
 		},
 	};
 
-	test('PSBlock', async () => {
+	test('[permitted-contents-parser-006] PSBlock', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -1241,7 +1241,7 @@ describe('EJS', () => {
 		]);
 	});
 
-	test('PSBlock', async () => {
+	test('[permitted-contents-parser-007] PSBlock', async () => {
 		expect((await mlRuleTest(rule, '<title><%- "title" _%></title>', ejsRuleOn)).violations).toStrictEqual([]);
 	});
 });
@@ -1258,7 +1258,7 @@ describe('Conditional Child Nodes', () => {
 		},
 	};
 
-	test('if: details > summary', async () => {
+	test('[permitted-contents-invalid-027] if: details > summary', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -1285,7 +1285,7 @@ body
 		]);
 	});
 
-	test('if: a > button', async () => {
+	test('[permitted-contents-invalid-028] if: a > button', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -1312,7 +1312,7 @@ body
 		]);
 	});
 
-	test('each: ul > li', async () => {
+	test('[permitted-contents-invalid-029] each: ul > li', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -1341,7 +1341,7 @@ body
 });
 
 describe('Loop blocks', () => {
-	test('Svelte', async () => {
+	test('[permitted-contents-parser-008] Svelte', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -1377,7 +1377,7 @@ describe('Loop blocks', () => {
 		]);
 	});
 
-	test('Vue', async () => {
+	test('[permitted-contents-parser-009] Vue', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -1411,7 +1411,7 @@ describe('Loop blocks', () => {
 		]);
 	});
 
-	test('Pug', async () => {
+	test('[permitted-contents-parser-010] Pug', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -1443,7 +1443,7 @@ dl
 		]);
 	});
 
-	test('Alpine', async () => {
+	test('[permitted-contents-parser-011] Alpine', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -1479,7 +1479,7 @@ dl
 		]);
 	});
 
-	test('JSX', async () => {
+	test('[permitted-contents-parser-012] JSX', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -1527,7 +1527,7 @@ dl
 		]);
 	});
 
-	test('Astro', async () => {
+	test('[permitted-contents-parser-013] Astro', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -1577,7 +1577,7 @@ dl
 });
 
 describe('Issues', () => {
-	test('#396', async () => {
+	test('[permitted-contents-issue-396] #396', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -1600,7 +1600,7 @@ describe('Issues', () => {
 		).toStrictEqual([]);
 	});
 
-	test('#398', async () => {
+	test('[permitted-contents-issue-398] #398', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -1622,7 +1622,7 @@ describe('Issues', () => {
 		).toStrictEqual([]);
 	});
 
-	test('#491', async () => {
+	test('[permitted-contents-issue-491] #491', async () => {
 		expect((await mlRuleTest(rule, '<hgroup><p>HEADING</p></hgroup>')).violations.length).toBe(1);
 		expect((await mlRuleTest(rule, '<hgroup><h1>HEADING</h1></hgroup>')).violations.length).toBe(0);
 		expect((await mlRuleTest(rule, '<hgroup><h2>HEADING</h1></hgroup>')).violations.length).toBe(0);
@@ -1631,7 +1631,7 @@ describe('Issues', () => {
 		).toBe(0);
 	});
 
-	test('#566', async () => {
+	test('[permitted-contents-issue-566] #566', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -1653,7 +1653,7 @@ describe('Issues', () => {
 		]);
 	});
 
-	test('#606', async () => {
+	test('[permitted-contents-issue-606] #606', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -1678,7 +1678,7 @@ describe('Issues', () => {
 		]);
 	});
 
-	test('#617', async () => {
+	test('[permitted-contents-issue-617] #617', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -1766,7 +1766,7 @@ describe('Issues', () => {
 		).toStrictEqual([]);
 	});
 
-	test('#637', async () => {
+	test('[permitted-contents-issue-637] #637', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -1782,7 +1782,7 @@ describe('Issues', () => {
 		).toStrictEqual([]);
 	});
 
-	test('#1046', async () => {
+	test('[permitted-contents-issue-1046] #1046', async () => {
 		const sourceCode = '<span><div></div></span>';
 		expect(
 			(
@@ -1806,12 +1806,12 @@ describe('Issues', () => {
 		]);
 	});
 
-	test('#1146', async () => {
+	test('[permitted-contents-issue-1146] #1146', async () => {
 		const sourceCode = '<datalist><option></option></datalist>';
 		expect((await mlRuleTest(rule, sourceCode)).violations).toStrictEqual([]);
 	});
 
-	test('#1023', async () => {
+	test('[permitted-contents-issue-1023] #1023', async () => {
 		const sourceCode = `<body>
 	<h1>Reproduction</h1>
 	<!-- There're typos. The intended element is x-item, not x-itm -->
@@ -1843,12 +1843,12 @@ describe('Issues', () => {
 		]);
 	});
 
-	test('#1359', async () => {
+	test('[permitted-contents-issue-1359] #1359', async () => {
 		const sourceCode = '<svg><text><tspan>Text</tspan></text></svg>';
 		expect((await mlRuleTest(rule, sourceCode)).violations).toStrictEqual([]);
 	});
 
-	test('#1451', async () => {
+	test('[permitted-contents-issue-1451] #1451', async () => {
 		const astro = { parser: { '.*': '@markuplint/astro-parser' } };
 		const jsx = { parser: { '.*': '@markuplint/jsx-parser' } };
 		const pug = { parser: { '.*': '@markuplint/pug-parser' } };
@@ -1873,7 +1873,7 @@ describe('Issues', () => {
 		);
 	});
 
-	test('#1502', async () => {
+	test('[permitted-contents-issue-1502] #1502', async () => {
 		const sourceCode = `<svg>
 	<defs>
 		<filter>
@@ -1884,7 +1884,7 @@ describe('Issues', () => {
 		expect((await mlRuleTest(rule, sourceCode)).violations).toStrictEqual([]);
 	});
 
-	test('#1767', async () => {
+	test('[permitted-contents-issue-1767] #1767', async () => {
 		const parser = {
 			parser: {
 				'.*': '@markuplint/jsx-parser',
@@ -1895,7 +1895,7 @@ describe('Issues', () => {
 		expect((await mlRuleTest(rule, '<ul><><div></div></></ul>', parser)).violations.length).toBe(1);
 	});
 
-	test('#1848', async () => {
+	test('[permitted-contents-issue-1848] #1848', async () => {
 		const sourceCode = '<XComponent></XComponent>';
 		expect(
 			(
@@ -1914,7 +1914,7 @@ describe('Issues', () => {
 		).toStrictEqual([]);
 	});
 
-	test('#2302', async () => {
+	test('[permitted-contents-issue-2302] #2302', async () => {
 		const sourceCode = `
 <svg>
 	{list.map(item => (
@@ -1935,7 +1935,7 @@ describe('Issues', () => {
 
 	// Timeout: 5s — the old Cartesian-product algorithm took 30s+ for this case;
 	// the incremental algorithm completes in <100ms.
-	test('#3249 - many transparent siblings should not cause exponential slowdown', async () => {
+	test('[permitted-contents-issue-3249] #3249 - many transparent siblings should not cause exponential slowdown', async () => {
 		const anchors = Array.from({ length: 12 }, (_, i) => `<a><span>link${i}</span><em>text${i}</em></a>`).join(
 			'\n',
 		);
