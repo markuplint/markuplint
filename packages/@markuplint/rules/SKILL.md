@@ -58,6 +58,7 @@ const { violations } = await mlRuleTest(rule, '<button role="separator" ...>', {
 - `toStrictEqual` with exact `{ severity, line, col, message, raw }` — **never** loose assertions
 - Always include both valid and invalid cases
 - Some roles need ARIA attributes in HTML: `separator` → `aria-valuenow`, `meter` → `aria-valuenow`
+- **Every `test()` MUST have a unique ID prefix** — see `CLAUDE.md` in this package for the full convention
 
 ## Task: update-test-expectations
 

@@ -215,6 +215,23 @@ test("input exceeding max length is truncated")
 
 With tests like these, you can understand "this function accepts empty lists" and "it handles negative numbers" without reading the README.
 
+### 9a. Rule Test ID Convention (markuplint-specific)
+
+Every `test()` block in `packages/@markuplint/rules/src/**/*.spec.ts` **MUST** have a unique ID prefix:
+
+```
+[rule-name-category-NNN] description
+```
+
+**Categories:** `valid`, `invalid`, `fix`, `parser`, `issue-NNNN`
+
+**Detection patterns:**
+- A new rule test without an ID prefix → reject
+- Duplicate IDs within the same file → reject
+- Issue regression tests without the issue number in the ID → reject
+
+**Verification:** Run `node .claude/commands/scripts/list-rule-test.mjs --no-id` — output must be empty.
+
 ### 10. Cross-Platform and Cross-Runtime Compatibility
 
 Code developed on Node.js + Linux may silently break on Windows, Deno, Bun, or other environments. Review changes for assumptions that only hold in the developer's own environment.

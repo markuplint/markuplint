@@ -83,6 +83,10 @@ Each package has a `SKILL.md` with package-specific maintenance guidance.
 - **Full build**: `yarn build` (no arguments)
 - **Single package**: `yarn build --scope @markuplint/<package>`
 
+## Rule Test ID Convention
+
+Every `test()` in rule spec files MUST have a unique `[rule-name-category-NNN]` prefix. See [`packages/@markuplint/rules/CLAUDE.md`](packages/@markuplint/rules/CLAUDE.md) for the full convention.
+
 ## Worktree Usage (MANDATORY)
 
 **CRITICAL: Direct commits to `dev` are BLOCKED. All work requires a feature branch.**
