@@ -244,6 +244,15 @@ export const defs: Defs = {
 	 * Uses `new URL()` for structural parsing plus strict checks for illegal
 	 * whitespace, malformed percent-encoding, and C0 control characters.
 	 * Relative URLs are resolved against a dummy base for syntax validation.
+	 *
+	 * Previously this was always-matched ("NO IMPLEMENT NEVER") because
+	 * relative URLs accept almost any character string. After investigating
+	 * nu-html-checker's galimatias parser, we found that resolving relative
+	 * URLs against a dummy base and applying strict pre-checks effectively
+	 * catches common URL errors (illegal whitespace, malformed encoding,
+	 * control characters, structurally broken URLs).
+	 *
+	 * @see https://github.com/markuplint/markuplint/issues/3595
 	 */
 	URL: {
 		ref: 'https://html.spec.whatwg.org/multipage/urls-and-fetching.html#valid-url-potentially-surrounded-by-spaces',
