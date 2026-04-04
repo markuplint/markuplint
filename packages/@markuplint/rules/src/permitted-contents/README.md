@@ -1,11 +1,11 @@
 ---
 id: permitted-contents
-description: Warn if a child element has a not allowed element or text node, or if an element appears as a descendant of a forbidden ancestor.
+description: Warn if a child element has a not allowed element or text node, if an element appears as a descendant of a forbidden ancestor, or if a required ancestor is missing.
 ---
 
 # `permitted-contents`
 
-Warn if a child element has a not allowed element or text node, or if an element appears as a descendant of a forbidden ancestor.
+Warn if a child element has a not allowed element or text node, if an element appears as a descendant of a forbidden ancestor, or if a required ancestor is missing.
 
 This rule refer [HTML Living Standard](https://html.spec.whatwg.org/) based [MDN Web docs](https://developer.mozilla.org/en/docs/Web/HTML). It has settings in [`@markuplint/html-spec`](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/html-spec/src).
 

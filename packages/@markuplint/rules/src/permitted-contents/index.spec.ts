@@ -1983,6 +1983,29 @@ describe('Issues', () => {
 		);
 	});
 
+	test('[permitted-contents-issue-3670-001] area outside map is invalid', async () => {
+		const { violations } = await mlRuleTest(rule, '<div><area alt="x" href="#"></div>');
+		const descendantViolations = violations.filter(v => v.message?.includes('must appear as a descendant'));
+		expect(descendantViolations).toStrictEqual([
+			expect.objectContaining({
+				severity: 'error',
+				message: 'The "area" element must appear as a descendant of the "map" element',
+			}),
+		]);
+	});
+
+	test('[permitted-contents-issue-3670-002] area inside map is valid', async () => {
+		const { violations } = await mlRuleTest(rule, '<map name="m"><area alt="x" href="#"></map>');
+		const descendantViolations = violations.filter(v => v.message?.includes('descendant'));
+		expect(descendantViolations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-3670-003] area inside deeply nested map has no descendantOf violation', async () => {
+		const { violations } = await mlRuleTest(rule, '<map name="m"><div><p><area alt="x" href="#"></p></div></map>');
+		const descendantViolations = violations.filter(v => v.message?.includes('descendant'));
+		expect(descendantViolations).toStrictEqual([]);
+	});
+
 	test('[permitted-contents-issue-3632-004] footer in header', async () => {
 		const { violations } = await mlRuleTest(rule, '<header><footer>x</footer></header>');
 		expect(violations).toContainEqual(

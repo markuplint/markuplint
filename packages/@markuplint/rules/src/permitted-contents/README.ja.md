@@ -1,10 +1,10 @@
 ---
-description: 許可されていない要素もしくはテキストノードを子要素にもつ場合、または禁止された祖先要素の子孫として要素が出現した場合に警告します。
+description: 許可されていない要素もしくはテキストノードを子要素にもつ場合、禁止された祖先要素の子孫として要素が出現した場合、または必須の祖先要素が存在しない場合に警告します。
 ---
 
 # `permitted-contents`
 
-許可されていない要素もしくはテキストノードを子要素にもつ場合、または禁止された祖先要素の子孫として要素が出現した場合に警告します。
+許可されていない要素もしくはテキストノードを子要素にもつ場合、禁止された祖先要素の子孫として要素が出現した場合、または必須の祖先要素が存在しない場合に警告します。
 
 [HTML Living Standard](https://momdo.github.io/html/)を基準として[MDN Web docs](https://developer.mozilla.org/ja/docs/Web/HTML)から最新情報を確認しています。 [`@markuplint/html-spec`](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/html-spec/src)に設定値を持っています。
 
