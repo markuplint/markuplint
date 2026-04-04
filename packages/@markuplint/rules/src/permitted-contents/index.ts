@@ -20,6 +20,8 @@ import { transparentMode } from './represent-transparent-nodes.js';
  * disallowed content through transparent models. It also checks forbidden ancestor
  * constraints — elements like `<header>`, `<footer>`, `<main>`, and `<address>` must
  * not appear as descendants of certain other elements as defined by the HTML spec.
+ * Additionally, it enforces required ancestor constraints (`descendantOf`) — certain
+ * elements must appear as descendants of specific other elements.
  */
 export default createRule<TagRule[], Options>({
 	meta: meta,
@@ -48,6 +50,30 @@ export default createRule<TagRule[], Options>({
 						break;
 					}
 					ancestor = ancestor.parentElement;
+				}
+			}
+
+			// Check required ancestor (descendantOf)
+			const descendantOf = elSpec?.contentModel?.descendantOf;
+			if (descendantOf) {
+				let ancestor = el.parentElement;
+				let found = false;
+				while (ancestor) {
+					if (ancestor.matches(descendantOf)) {
+						found = true;
+						break;
+					}
+					ancestor = ancestor.parentElement;
+				}
+				if (!found) {
+					report({
+						scope: el,
+						message: t(
+							'{0} must appear as a descendant of {1}',
+							t('the "{0}" {1}', el.localName, 'element'),
+							t('the "{0}" {1}', descendantOf, 'element'),
+						),
+					});
 				}
 			}
 
