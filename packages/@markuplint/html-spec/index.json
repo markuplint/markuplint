@@ -823,7 +823,7 @@
 					}
 				},
 				"integrity": {
-					"type": "Any"
+					"type": "SRIHash"
 				},
 				"media": {
 					"type": "<media-query-list>"
