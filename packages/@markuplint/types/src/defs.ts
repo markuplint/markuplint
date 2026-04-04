@@ -284,6 +284,37 @@ export const defs: Defs = {
 		is: matches(isAbsURL()),
 	},
 
+	/**
+	 * Subresource Integrity metadata: one or more space-separated
+	 * `hash-algo-base64` tokens where algo is sha256, sha384, or sha512.
+	 *
+	 * Note: The SRI spec also allows `?options` suffix (e.g., `sha256-abc?ct=...`)
+	 * but this is not widely used and not tested by nu-validator.
+	 *
+	 * @see https://w3c.github.io/webappsec-subresource-integrity/#integrity-metadata-description
+	 */
+	SRIHash: {
+		ref: 'https://w3c.github.io/webappsec-subresource-integrity/#integrity-metadata-description',
+		expects: [
+			{
+				type: 'format',
+				value: 'SRI hash',
+			},
+		],
+		is(value) {
+			const tokens = value.trim().split(/\s+/);
+			if (tokens.length === 0 || (tokens.length === 1 && tokens[0] === '')) {
+				return unmatched(value, 'empty-token');
+			}
+			for (const token of tokens) {
+				if (!/^sha(?:256|384|512)-[\w+/]+=*$/.test(token)) {
+					return unmatched(value, 'unexpected-token');
+				}
+			}
+			return matched();
+		},
+	},
+
 	HashName: {
 		ref: 'https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#valid-hash-name-reference',
 		expects: [

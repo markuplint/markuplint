@@ -2144,3 +2144,16 @@ describe('srcset validation (#3599)', () => {
 		);
 	});
 });
+
+describe('integrity SRI hash validation (#3626)', () => {
+	test('[invalid-attr-issue-3626-001] integrity rejects md5 hash', async () => {
+		const { violations } = await mlRuleTest(rule, '<script src="x" integrity="md5-abc123"></script>');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-issue-3626-002] integrity accepts sha256 hash', async () => {
+		expect(
+			(await mlRuleTest(rule, '<script src="x" integrity="sha256-abc123"></script>')).violations,
+		).toStrictEqual([]);
+	});
+});
