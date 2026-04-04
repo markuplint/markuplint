@@ -60,6 +60,10 @@ pub struct Tokenizer<'a> {
     last_start_tag_name: Option<String>,
     /// Character reference: code point being accumulated.
     char_ref_code: u32,
+    /// Source position of the `&` that started the current character reference.
+    /// Used to pass source position to emitted Character tokens so that
+    /// downstream consumers can slice the original source text.
+    char_ref_start: Position,
 }
 
 impl<'a> Tokenizer<'a> {
@@ -132,6 +136,11 @@ impl<'a> Tokenizer<'a> {
             temp_buffer: String::new(),
             last_start_tag_name: None,
             char_ref_code: 0,
+            char_ref_start: Position {
+                offset: 0,
+                line: 1,
+                col: 1,
+            },
         }
     }
 
@@ -170,6 +179,21 @@ impl<'a> Tokenizer<'a> {
             offset: pos.offset,
             line: pos.line,
             col: pos.col,
+            source_offset: pos.offset,
+            source_line: pos.line,
+            source_col: pos.col,
+        });
+    }
+
+    fn emit_char_with_source_pos(&mut self, ch: char, pos: Position, source_pos: Position) {
+        self.emit(Token::Character {
+            ch,
+            offset: pos.offset,
+            line: pos.line,
+            col: pos.col,
+            source_offset: source_pos.offset,
+            source_line: source_pos.line,
+            source_col: source_pos.col,
         });
     }
 
@@ -2310,6 +2334,9 @@ impl<'a> Tokenizer<'a> {
     // §13.2.5.72–80 Character reference states
     // ========================================================================
     fn state_character_reference(&mut self) {
+        // Record the source position of '&' for Character token metadata.
+        // prev_position() points to '&' which was consumed before entering this state.
+        self.char_ref_start = self.input.prev_position();
         self.temp_buffer.clear();
         self.temp_buffer.push('&');
 
@@ -2537,8 +2564,9 @@ impl<'a> Tokenizer<'a> {
             }
         } else {
             let pos = self.input.prev_position();
+            let source_pos = self.char_ref_start;
             for ch in buf {
-                self.emit_char(ch, pos);
+                self.emit_char_with_source_pos(ch, pos, source_pos);
             }
         }
     }
@@ -2758,7 +2786,9 @@ mod tests {
         let tokens = tokenize("ab");
         assert_eq!(tokens.len(), 2);
         match &tokens[0] {
-            Token::Character { ch, offset, line, col } => {
+            Token::Character {
+                ch, offset, line, col, ..
+            } => {
                 assert_eq!(*ch, 'a');
                 assert_eq!(*offset, 0);
                 assert_eq!(*line, 1);
@@ -2767,7 +2797,9 @@ mod tests {
             _ => panic!("expected Character"),
         }
         match &tokens[1] {
-            Token::Character { ch, offset, line, col } => {
+            Token::Character {
+                ch, offset, line, col, ..
+            } => {
                 assert_eq!(*ch, 'b');
                 assert_eq!(*offset, 1);
                 assert_eq!(*line, 1);

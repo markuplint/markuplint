@@ -15,6 +15,10 @@ pub type NodeId = usize;
 pub struct DomArena {
     pub(crate) nodes: Vec<DomNode>,
     pub(crate) uuid_to_id: HashMap<String, NodeId>,
+    /// Original HTML source text (available when built from HTML parser).
+    /// Used by rules that need to access source text at specific offsets
+    /// (e.g., character-reference rule checking unresolved entity text).
+    pub(crate) source: Option<String>,
 }
 
 impl DomArena {
@@ -24,7 +28,14 @@ impl DomArena {
         Self {
             nodes: Vec::new(),
             uuid_to_id: HashMap::new(),
+            source: None,
         }
+    }
+
+    /// Get the original HTML source text, if available.
+    #[must_use]
+    pub fn source(&self) -> Option<&str> {
+        self.source.as_deref()
     }
 
     /// Get a node by its `NodeId`. Returns `None` if out of range.
@@ -102,6 +113,11 @@ impl DomArenaBuilder {
     /// Get a mutable reference to a node for wiring parent/child/sibling links.
     pub fn get_mut(&mut self, id: NodeId) -> Option<&mut DomNode> {
         self.arena.get_mut(id)
+    }
+
+    /// Set the original HTML source text on the arena.
+    pub fn set_source(&mut self, source: String) {
+        self.arena.source = Some(source);
     }
 
     /// Consume the builder and return the finished arena.

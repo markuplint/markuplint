@@ -232,19 +232,32 @@ impl TreeBuilder<'_> {
     #[allow(clippy::too_many_lines)]
     pub(super) fn process_foreign_content(&mut self, token: Token) {
         match &token {
-            Token::Character { ch, offset, line, col } => {
+            Token::Character {
+                ch,
+                offset,
+                line,
+                col,
+                source_offset,
+                source_line,
+                source_col,
+            } => {
                 let pos = crate::input::Position {
                     offset: *offset,
                     line: *line,
                     col: *col,
                 };
+                let source_pos = crate::input::Position {
+                    offset: *source_offset,
+                    line: *source_line,
+                    col: *source_col,
+                };
                 if *ch == '\0' {
-                    self.insert_character('\u{FFFD}', pos);
+                    self.insert_character_with_source('\u{FFFD}', pos, source_pos);
                 } else {
                     if !ch.is_ascii_whitespace() {
                         self.frameset_ok = false;
                     }
-                    self.insert_character(*ch, pos);
+                    self.insert_character_with_source(*ch, pos, source_pos);
                 }
             }
             Token::Comment { data, span } => {
@@ -311,7 +324,13 @@ impl TreeBuilder<'_> {
                     adjust_foreign_attributes(attributes)
                 };
 
-                self.insert_element_for_token(&adjusted_name, &adjusted_attrs, *span, current_ns);
+                self.insert_element_for_token_with_self_closing(
+                    &adjusted_name,
+                    &adjusted_attrs,
+                    *span,
+                    current_ns,
+                    *self_closing,
+                );
 
                 if *self_closing {
                     self.open_elements.pop();

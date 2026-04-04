@@ -18,6 +18,7 @@ use crate::node::{CommentData, DoctypeData, DocumentData, DomNode, ElementData, 
 #[must_use]
 pub fn build_from_html_arena(source: &str, parser_arena: &ParserArena, is_fragment: bool) -> DomArena {
     let mut dom = DomArena::new();
+    dom.source = Some(source.to_owned());
 
     // Document root (always id=0).
     // If the parser encountered tree construction parse errors (e.g., unclosed
@@ -110,7 +111,7 @@ fn convert_parser_node(
             tag_name,
             namespace,
             attributes,
-            ..
+            self_closing,
         } => {
             let dom_id = dom.len();
             let uuid = dom_id.to_string();
@@ -202,7 +203,7 @@ fn convert_parser_node(
                 block_behavior: None,
                 pair_node_id: None,
                 tag_open_char: "<".to_owned(),
-                tag_close_char: ">".to_owned(),
+                tag_close_char: if *self_closing { "/>".to_owned() } else { ">".to_owned() },
                 is_ghost: node.is_implicit,
                 close_tag: node.end_tag_span.map(|s| crate::node::CloseTagInfo {
                     raw: slice_span(source, s.start.offset, s.end.offset),
