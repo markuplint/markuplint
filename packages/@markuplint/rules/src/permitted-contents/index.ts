@@ -28,6 +28,27 @@ export default createRule<TagRule[], Options>({
 	},
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {
+			// Check forbidden ancestors
+			const elSpec = document.specs.specs.find(s => s.name === el.localName);
+			const forbiddenAncestors = elSpec?.contentModel?.forbiddenAncestors;
+			if (forbiddenAncestors && forbiddenAncestors.length > 0) {
+				let ancestor = el.parentElement;
+				while (ancestor) {
+					if (forbiddenAncestors.some(selector => ancestor!.matches(selector))) {
+						report({
+							scope: el,
+							message: t(
+								'{0} must not appear as a descendant of {1}',
+								t('the "{0}" {1}', el.localName, 'element'),
+								t('the "{0}" {1}', ancestor.localName, 'element'),
+							),
+						});
+						break;
+					}
+					ancestor = ancestor.parentElement;
+				}
+			}
+
 			const results = contentModel(el, el.rule.value, el.rule.options);
 			for (const { type, scope, query, hint } of results) {
 				let message = '';

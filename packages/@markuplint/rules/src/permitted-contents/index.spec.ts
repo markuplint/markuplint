@@ -88,6 +88,13 @@ describe('verify', () => {
 				message: 'The "address" element is not allowed in the "address" element in this context',
 				raw: '<address>',
 			},
+			{
+				severity: 'error',
+				line: 1,
+				col: 10,
+				message: 'The "address" element must not appear as a descendant of the "address" element',
+				raw: '<address>',
+			},
 		]);
 
 		const { violations: violations2 } = await mlRuleTest(
@@ -100,6 +107,13 @@ describe('verify', () => {
 				line: 1,
 				col: 25,
 				message: 'The "address" element is not allowed in the "address" element in this context',
+				raw: '<address>',
+			},
+			{
+				severity: 'error',
+				line: 1,
+				col: 25,
+				message: 'The "address" element must not appear as a descendant of the "address" element',
 				raw: '<address>',
 			},
 		]);
@@ -1944,4 +1958,37 @@ describe('Issues', () => {
 		const { violations } = await mlRuleTest(rule, sourceCode);
 		expect(violations).toStrictEqual([]);
 	}, 5000);
+
+	test('[permitted-contents-issue-3632-001] main must not be descendant of article', async () => {
+		const { violations } = await mlRuleTest(rule, '<article><main>x</main></article>');
+		expect(violations).toContainEqual(
+			expect.objectContaining({
+				message: 'The "main" element must not appear as a descendant of the "article" element',
+			}),
+		);
+	});
+
+	test('[permitted-contents-issue-3632-002] main standalone is valid', async () => {
+		const { violations } = await mlRuleTest(rule, '<main>x</main>');
+		const ancestorViolations = violations.filter(v => v.message.includes('must not appear'));
+		expect(ancestorViolations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-3632-003] main in deeply nested nav', async () => {
+		const { violations } = await mlRuleTest(rule, '<nav><div><div><main>x</main></div></div></nav>');
+		expect(violations).toContainEqual(
+			expect.objectContaining({
+				message: 'The "main" element must not appear as a descendant of the "nav" element',
+			}),
+		);
+	});
+
+	test('[permitted-contents-issue-3632-004] footer in header', async () => {
+		const { violations } = await mlRuleTest(rule, '<header><footer>x</footer></header>');
+		expect(violations).toContainEqual(
+			expect.objectContaining({
+				message: 'The "footer" element must not appear as a descendant of the "header" element',
+			}),
+		);
+	});
 });
