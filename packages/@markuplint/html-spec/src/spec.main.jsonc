@@ -7,7 +7,11 @@
 			{
 				"oneOrMore": ":model(flow)"
 			}
-		]
+		],
+		// https://html.spec.whatwg.org/multipage/grouping-content.html#the-main-element
+		// "There must not be more than one visible main element in a document."
+		// "The main element must not appear as a descendant of:"
+		"forbiddenAncestors": ["article", "aside", "footer", "header", "nav"]
 	},
 	"globalAttrs": {
 		"#HTMLGlobalAttrs": true,

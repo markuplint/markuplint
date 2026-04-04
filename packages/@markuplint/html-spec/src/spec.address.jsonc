@@ -8,7 +8,10 @@
 			{
 				"oneOrMore": ":model(flow):not(address, :model(heading), :model(sectioning), header, foooter, :has(address, :model(heading), :model(sectioning), header, foooter))"
 			}
-		]
+		],
+		// https://html.spec.whatwg.org/multipage/sections.html#the-address-element
+		// "The address element must not appear as a descendant of an address element."
+		"forbiddenAncestors": ["address"]
 	},
 	"globalAttrs": {
 		"#HTMLGlobalAttrs": true,

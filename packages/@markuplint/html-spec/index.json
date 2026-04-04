@@ -48966,7 +48966,8 @@
 					{
 						"oneOrMore": ":model(flow):not(address, :model(heading), :model(sectioning), header, foooter, :has(address, :model(heading), :model(sectioning), header, foooter))"
 					}
-				]
+				],
+				"forbiddenAncestors": ["address"]
 			},
 			"aria": {
 				"implicitRole": "group",
@@ -50678,7 +50679,8 @@
 					{
 						"oneOrMore": ":model(flow):not(header, footer, :has(header, footer))"
 					}
-				]
+				],
+				"forbiddenAncestors": ["header", "footer"]
 			},
 			"aria": {
 				"implicitRole": "contentinfo",
@@ -51069,7 +51071,8 @@
 					{
 						"oneOrMore": ":model(flow):not(header, footer, :has(header, footer))"
 					}
-				]
+				],
+				"forbiddenAncestors": ["header", "footer"]
 			},
 			"aria": {
 				"implicitRole": "banner",
@@ -52892,7 +52895,8 @@
 					{
 						"oneOrMore": ":model(flow)"
 					}
-				]
+				],
+				"forbiddenAncestors": ["article", "aside", "footer", "header", "nav"]
 			},
 			"aria": {
 				"implicitRole": "main",
