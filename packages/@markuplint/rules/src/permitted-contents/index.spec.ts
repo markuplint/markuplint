@@ -2006,6 +2006,47 @@ describe('Issues', () => {
 		expect(descendantViolations).toStrictEqual([]);
 	});
 
+	test('[permitted-contents-issue-3640-001] multiple track default is invalid', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<video><track kind="subtitles" src="a.vtt" default><track kind="captions" src="b.vtt" default></video>',
+		);
+		const uniqueViolations = violations.filter(v => v.message?.includes('"default" attribute'));
+		expect(uniqueViolations).toStrictEqual([
+			expect.objectContaining({
+				severity: 'error',
+				raw: '<track kind="captions" src="b.vtt" default>',
+				message:
+					'The "default" attribute must not appear on more than one "track" element within the same parent',
+			}),
+		]);
+	});
+
+	test('[permitted-contents-issue-3640-002] single track default is valid', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<video><track kind="subtitles" src="a.vtt" default><track kind="captions" src="b.vtt"></video>',
+		);
+		const uniqueViolations = violations.filter(v => v.message?.includes('"default" attribute'));
+		expect(uniqueViolations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-3640-003] multiple track default in audio is invalid', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<audio><track kind="subtitles" src="a.vtt" default><track kind="captions" src="b.vtt" default></audio>',
+		);
+		const uniqueViolations = violations.filter(v => v.message?.includes('"default" attribute'));
+		expect(uniqueViolations).toStrictEqual([
+			expect.objectContaining({
+				severity: 'error',
+				raw: '<track kind="captions" src="b.vtt" default>',
+				message:
+					'The "default" attribute must not appear on more than one "track" element within the same parent',
+			}),
+		]);
+	});
+
 	test('[permitted-contents-issue-3632-004] footer in header', async () => {
 		const { violations } = await mlRuleTest(rule, '<header><footer>x</footer></header>');
 		expect(violations).toContainEqual(

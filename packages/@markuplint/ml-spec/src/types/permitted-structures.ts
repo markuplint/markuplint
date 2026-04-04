@@ -61,6 +61,15 @@ export interface ContentModel {
 	 * @see https://html.spec.whatwg.org/multipage/ (per-element "Contexts" sections)
 	 */
 	forbiddenAncestors?: string[];
+	/**
+	 * Attributes that must be unique among sibling elements of the same type.
+	 * If this element has one of these attributes, no other sibling element
+	 * of the same type may also have it.
+	 *
+	 * @example ["default"] for <track> — only one <track> per parent may have `default`
+	 * @see https://html.spec.whatwg.org/multipage/media.html#attr-track-default
+	 */
+	uniqueAttrs?: string[];
 	conditional?: {
 		condition: string;
 		contents: PermittedContentPattern[] | boolean;

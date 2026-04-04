@@ -21,7 +21,9 @@ import { transparentMode } from './represent-transparent-nodes.js';
  * constraints — elements like `<header>`, `<footer>`, `<main>`, and `<address>` must
  * not appear as descendants of certain other elements as defined by the HTML spec.
  * Additionally, it enforces required ancestor constraints (`descendantOf`) — certain
- * elements must appear as descendants of specific other elements.
+ * elements must appear as descendants of specific other elements. It also validates
+ * sibling-unique attribute constraints (`uniqueAttrs`) — certain attributes must not
+ * appear on more than one element of the same type within the same parent.
  */
 export default createRule<TagRule[], Options>({
 	meta: meta,
@@ -74,6 +76,36 @@ export default createRule<TagRule[], Options>({
 							t('the "{0}" {1}', descendantOf, 'element'),
 						),
 					});
+				}
+			}
+
+			// Check unique attributes among siblings of the same type
+			const uniqueAttrs = elSpec?.contentModel?.uniqueAttrs;
+			if (uniqueAttrs && uniqueAttrs.length > 0) {
+				for (const attrName of uniqueAttrs) {
+					if (!el.hasAttribute(attrName)) {
+						continue;
+					}
+					const parent = el.parentElement;
+					if (!parent) {
+						continue;
+					}
+					// Only report on the second (and subsequent) element that has the attribute
+					const precedingSiblings = [...parent.children];
+					const elIndex = precedingSiblings.indexOf(el);
+					const hasPrecedingDuplicate = precedingSiblings
+						.slice(0, elIndex)
+						.some(child => child.localName === el.localName && child.hasAttribute(attrName));
+					if (hasPrecedingDuplicate) {
+						report({
+							scope: el,
+							message: t(
+								'The "{0}" attribute must not appear on more than one "{1}" element within the same parent',
+								attrName,
+								el.localName,
+							),
+						});
+					}
 				}
 			}
 
