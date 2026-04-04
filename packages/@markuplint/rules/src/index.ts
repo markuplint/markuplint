@@ -35,7 +35,10 @@ import NoAmbiguousNavigableTargetNames from './no-ambiguous-navigable-target-nam
 import NoBooleanAttrValue from './no-boolean-attr-value/index.js';
 import NoConsecutiveBr from './no-consecutive-br/index.js';
 import NoDefaultValue from './no-default-value/index.js';
+import NoDuplicateAutofocus from './no-duplicate-autofocus/index.js';
+import NoDuplicateCharset from './no-duplicate-charset/index.js';
 import NoDuplicateDt from './no-duplicate-dt/index.js';
+import NoDuplicateVisibleMain from './no-duplicate-visible-main/index.js';
 import NoEmptyPalpableContent from './no-empty-palpable-content/index.js';
 import NoHardCodeId from './no-hard-code-id/index.js';
 import NoOrphanedEndTag from './no-orphaned-end-tag/index.js';
@@ -87,7 +90,10 @@ const rules = {
 	'no-boolean-attr-value': NoBooleanAttrValue,
 	'no-consecutive-br': NoConsecutiveBr,
 	'no-default-value': NoDefaultValue,
+	'no-duplicate-autofocus': NoDuplicateAutofocus,
+	'no-duplicate-charset': NoDuplicateCharset,
 	'no-duplicate-dt': NoDuplicateDt,
+	'no-duplicate-visible-main': NoDuplicateVisibleMain,
 	'no-empty-palpable-content': NoEmptyPalpableContent,
 	'no-hard-code-id': NoHardCodeId,
 	'no-orphaned-end-tag': NoOrphanedEndTag,
