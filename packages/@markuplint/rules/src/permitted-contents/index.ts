@@ -17,7 +17,9 @@ import { transparentMode } from './represent-transparent-nodes.js';
  * For each element, it resolves the applicable content model (from the HTML spec or
  * user-defined tag rules), evaluates the element's children against that model, and
  * reports violations such as unexpected elements, missing required elements, or
- * disallowed content through transparent models.
+ * disallowed content through transparent models. It also checks forbidden ancestor
+ * constraints — elements like `<header>`, `<footer>`, `<main>`, and `<address>` must
+ * not appear as descendants of certain other elements as defined by the HTML spec.
  */
 export default createRule<TagRule[], Options>({
 	meta: meta,

@@ -1,10 +1,10 @@
 ---
-description: 許可されていない要素もしくはテキストノードを子要素にもつ場合、警告します。
+description: 許可されていない要素もしくはテキストノードを子要素にもつ場合、または禁止された祖先要素の子孫として要素が出現した場合に警告します。
 ---
 
 # `permitted-contents`
 
-許可されていない要素もしくはテキストノードを子要素にもつ場合、警告します。
+許可されていない要素もしくはテキストノードを子要素にもつ場合、または禁止された祖先要素の子孫として要素が出現した場合に警告します。
 
 [HTML Living Standard](https://momdo.github.io/html/)を基準として[MDN Web docs](https://developer.mozilla.org/ja/docs/Web/HTML)から最新情報を確認しています。 [`@markuplint/html-spec`](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/html-spec/src)に設定値を持っています。
 
@@ -28,6 +28,13 @@ description: 許可されていない要素もしくはテキストノードを�
 	<tfoot><tr><td>許可されていない順番のtfoot要素<td></tr></tfoot>
 	<tbody><tr><td>ボディセル<td></tr></tbody>
 </table>
+
+<!-- 禁止された祖先: header要素はheaderやfooterの子孫として出現してはならない -->
+<header>
+	<div>
+		<header>許可されていないネストされたheader</header>
+	</div>
+</header>
 ```
 <!-- prettier-ignore-end -->
 
@@ -45,6 +52,10 @@ description: 許可されていない要素もしくはテキストノードを�
 	<tbody><tr><td>ボディセル<td></tr></tbody>
 	<tfoot><tr><td>フッタセル<td></tr></tfoot>
 </table>
+
+<header>
+	<nav>ナビゲーション</nav>
+</header>
 ```
 <!-- prettier-ignore-end -->
 
