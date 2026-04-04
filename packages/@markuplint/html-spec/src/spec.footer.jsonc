@@ -7,7 +7,10 @@
 			{
 				"oneOrMore": ":model(flow):not(header, footer, :has(header, footer))"
 			}
-		]
+		],
+		// https://html.spec.whatwg.org/multipage/sections.html#the-footer-element
+		// "A footer element must not appear as a descendant of a header or footer element."
+		"forbiddenAncestors": ["header", "footer"]
 	},
 	"globalAttrs": {
 		"#HTMLGlobalAttrs": true,

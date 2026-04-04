@@ -53,6 +53,14 @@ export interface ContentModelsSchema {
 export interface ContentModel {
 	contents: PermittedContentPattern[] | boolean;
 	descendantOf?: string;
+	/**
+	 * Elements that this element must NOT appear as a descendant of.
+	 * Each entry is a CSS selector matching forbidden ancestor elements.
+	 *
+	 * @example ["article", "aside", "footer", "header", "nav"]
+	 * @see https://html.spec.whatwg.org/multipage/ (per-element "Contexts" sections)
+	 */
+	forbiddenAncestors?: string[];
 	conditional?: {
 		condition: string;
 		contents: PermittedContentPattern[] | boolean;

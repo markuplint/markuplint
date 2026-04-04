@@ -17,7 +17,9 @@ import { transparentMode } from './represent-transparent-nodes.js';
  * For each element, it resolves the applicable content model (from the HTML spec or
  * user-defined tag rules), evaluates the element's children against that model, and
  * reports violations such as unexpected elements, missing required elements, or
- * disallowed content through transparent models.
+ * disallowed content through transparent models. It also checks forbidden ancestor
+ * constraints — elements like `<header>`, `<footer>`, `<main>`, and `<address>` must
+ * not appear as descendants of certain other elements as defined by the HTML spec.
  */
 export default createRule<TagRule[], Options>({
 	meta: meta,
@@ -28,6 +30,27 @@ export default createRule<TagRule[], Options>({
 	},
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {
+			// Check forbidden ancestors
+			const elSpec = document.specs.specs.find(s => s.name === el.localName);
+			const forbiddenAncestors = elSpec?.contentModel?.forbiddenAncestors;
+			if (forbiddenAncestors && forbiddenAncestors.length > 0) {
+				let ancestor = el.parentElement;
+				while (ancestor) {
+					if (forbiddenAncestors.some(selector => ancestor!.matches(selector))) {
+						report({
+							scope: el,
+							message: t(
+								'{0} must not appear as a descendant of {1}',
+								t('the "{0}" {1}', el.localName, 'element'),
+								t('the "{0}" {1}', ancestor.localName, 'element'),
+							),
+						});
+						break;
+					}
+					ancestor = ancestor.parentElement;
+				}
+			}
+
 			const results = contentModel(el, el.rule.value, el.rule.options);
 			for (const { type, scope, query, hint } of results) {
 				let message = '';

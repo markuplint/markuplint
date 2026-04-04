@@ -1,11 +1,11 @@
 ---
 id: permitted-contents
-description: Warn if a child element has a not allowed element or text node.
+description: Warn if a child element has a not allowed element or text node, or if an element appears as a descendant of a forbidden ancestor.
 ---
 
 # `permitted-contents`
 
-Warn if a child element has a not allowed element or text node.
+Warn if a child element has a not allowed element or text node, or if an element appears as a descendant of a forbidden ancestor.
 
 This rule refer [HTML Living Standard](https://html.spec.whatwg.org/) based [MDN Web docs](https://developer.mozilla.org/en/docs/Web/HTML). It has settings in [`@markuplint/html-spec`](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/html-spec/src).
 
@@ -25,6 +25,13 @@ It is possible to make the structure robust by setting element relationships on 
 	<tfoot><tr><td>Wrong ordered TFOOT element<td></tr></tfoot>
 	<tbody><tr><td>Body cell<td></tr></tbody>
 </table>
+
+<!-- Forbidden ancestor: header must not appear inside header or footer -->
+<header>
+	<div>
+		<header>Not allowed nested header</header>
+	</div>
+</header>
 ```
 <!-- prettier-ignore-end -->
 
@@ -42,6 +49,10 @@ It is possible to make the structure robust by setting element relationships on 
 	<tbody><tr><td>Body cell<td></tr></tbody>
 	<tfoot><tr><td>Footer cell<td></tr></tfoot>
 </table>
+
+<header>
+	<nav>Navigation</nav>
+</header>
 ```
 <!-- prettier-ignore-end -->
 
