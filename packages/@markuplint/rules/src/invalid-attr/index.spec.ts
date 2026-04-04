@@ -2126,3 +2126,21 @@ describe('script conditional attributes (#3631)', () => {
 		expect((await mlRuleTest(rule, '<script src="app.js" async></script>')).violations).toStrictEqual([]);
 	});
 });
+
+describe('srcset validation (#3599)', () => {
+	test('[invalid-attr-issue-3599-001] srcset rejects zero width descriptor', async () => {
+		const { violations } = await mlRuleTest(rule, '<img srcset="x 0w" sizes="100vw" src=x alt=x>');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-issue-3599-002] srcset rejects zero density descriptor', async () => {
+		const { violations } = await mlRuleTest(rule, '<img srcset="x 0x" src=x alt=x>');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-issue-3599-003] srcset accepts valid width descriptor', async () => {
+		expect((await mlRuleTest(rule, '<img srcset="x 100w" sizes="100vw" src=x alt=x>')).violations).toStrictEqual(
+			[],
+		);
+	});
+});

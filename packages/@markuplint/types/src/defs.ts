@@ -493,7 +493,8 @@ export const defs: Defs = {
 					const { num, unit } = splitUnit(descriptor.value);
 					switch (unit) {
 						case 'w': {
-							if (!isUint(num)) {
+							// Width descriptor must be a positive integer (> 0)
+							if (!isUint(num) || Number(num) <= 0) {
 								return unmatched(value, 'unexpected-token', {
 									expects: [
 										{
@@ -507,7 +508,8 @@ export const defs: Defs = {
 							break;
 						}
 						case 'x': {
-							if (!isFloat(num)) {
+							// Pixel density descriptor must be a positive number (> 0)
+							if (!isFloat(num) || Number(num) <= 0) {
 								return unmatched(value, 'unexpected-token', {
 									expects: [
 										{
