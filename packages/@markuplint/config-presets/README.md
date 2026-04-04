@@ -53,6 +53,9 @@ No use deprecated attr|Authors must not use deprecated attributes from the viewp
 No use deprecated element|Authors must not use deprecated elements from the viewpoint of compatibility.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [Require `doctype`](https://html.spec.whatwg.org/multipage/syntax.html#syntax-doctype)|It has the effect of avoiding quirks mode.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 Must not skip heading levels| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
+[No duplicate autofocus](https://html.spec.whatwg.org/multipage/interaction.html#the-autofocus-attribute)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
+[No duplicate visible main](https://html.spec.whatwg.org/multipage/grouping-content.html#the-main-element)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
+[No duplicate charset](https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-charset)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 No use ineffective attr| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [No duplicate names in `<dl>`](https://html.spec.whatwg.org/multipage/grouping-content.html#the-dl-element:~:text=Within%20a%20single%20dl%20element%2C%20there%20should%20not%20be%20more%20than%20one%20dt%20element%20for%20each%20name)|Within a single dl element, there should not be more than one dt element for each name.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 No use **orphaned end tag**| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|

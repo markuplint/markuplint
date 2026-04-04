@@ -75,6 +75,50 @@
 		},
 
 		/**
+		 * No duplicate autofocus
+		 *
+		 * There must not be two elements with the autofocus attribute specified
+		 * in the same document.
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/interaction.html#the-autofocus-attribute
+		 */
+		"html-standard/no-duplicate-autofocus": {
+			"specConformance": "normative",
+			"rules": {
+				"no-duplicate-autofocus": true
+			}
+		},
+
+		/**
+		 * No duplicate visible main
+		 *
+		 * There must not be more than one visible main element in a document.
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/grouping-content.html#the-main-element
+		 */
+		"html-standard/no-duplicate-visible-main": {
+			"specConformance": "normative",
+			"rules": {
+				"no-duplicate-visible-main": true
+			}
+		},
+
+		/**
+		 * No duplicate charset
+		 *
+		 * There must not be more than one meta element with a charset attribute
+		 * per document.
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-charset
+		 */
+		"html-standard/no-duplicate-charset": {
+			"specConformance": "normative",
+			"rules": {
+				"no-duplicate-charset": true
+			}
+		},
+
+		/**
 		 * No use ineffective attr
 		 *
 		 */

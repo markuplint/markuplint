@@ -109,7 +109,19 @@ test('default-rules', () => {
 			category: 'style',
 			defaultValue: false,
 		},
+		'no-duplicate-autofocus': {
+			category: 'validation',
+			defaultValue: true,
+		},
+		'no-duplicate-charset': {
+			category: 'validation',
+			defaultValue: true,
+		},
 		'no-duplicate-dt': {
+			category: 'validation',
+			defaultValue: true,
+		},
+		'no-duplicate-visible-main': {
 			category: 'validation',
 			defaultValue: true,
 		},
