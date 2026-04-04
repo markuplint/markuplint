@@ -68,6 +68,14 @@ test('Srcset', () => {
 	expect(check('a.jpg 480w, b.jpg', 'Srcset').matched).toBe(false);
 	expect(check('a.jpg 480w, b.jpg 2x', 'Srcset').matched).toBe(false);
 	expect(check('a.jpg 480w, b.jpg 2x, c.jpg', 'Srcset').matched).toBe(false);
+
+	// Width descriptor must be > 0
+	expect(check('a.jpg 0w', 'Srcset').matched).toBe(false);
+
+	// Pixel density descriptor must be > 0
+	expect(check('a.jpg 0x', 'Srcset').matched).toBe(false);
+	expect(check('a.jpg 0.0x', 'Srcset').matched).toBe(false);
+	expect(check('a.jpg -1x', 'Srcset').matched).toBe(false);
 });
 
 test('IconSize', () => {
