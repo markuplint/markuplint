@@ -55488,7 +55488,8 @@
 			"description": "The <track> HTML element is used as a child of the media elements, <audio> and <video>. Each track element lets you specify a timed text track (or time-based data) that can be displayed in parallel with the media element, for example to overlay subtitles or closed captions on top of a video or alongside audio tracks. Multiple tracks can be specified for a media element, containing different kinds of timed text data, or timed text data that has been translated for different locales. The data that is used will either be the track that has been set to be the default, or a kind and translation based on user preferences. The tracks are formatted in WebVTT format (.vtt files) — Web Video Text Tracks.",
 			"categories": [],
 			"contentModel": {
-				"contents": false
+				"contents": false,
+				"uniqueAttrs": ["default"]
 			},
 			"aria": {
 				"implicitRole": false,

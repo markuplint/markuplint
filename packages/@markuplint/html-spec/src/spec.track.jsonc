@@ -3,7 +3,11 @@
 // https://w3c.github.io/html-aria/#el-track
 {
 	"contentModel": {
-		"contents": false
+		"contents": false,
+		// https://html.spec.whatwg.org/multipage/media.html#attr-track-default
+		// "There must not be more than one track element with the same parent node
+		//  with the default attribute specified."
+		"uniqueAttrs": ["default"]
 	},
 	"globalAttrs": {
 		"#HTMLGlobalAttrs": true,
