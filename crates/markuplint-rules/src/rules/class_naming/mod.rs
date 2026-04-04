@@ -8,6 +8,9 @@ use regex::Regex;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
+#[cfg(test)]
+mod tests;
+
 /// The `class-naming` rule.
 pub struct ClassNaming;
 
@@ -49,7 +52,12 @@ impl Rule for ClassNaming {
                 continue;
             }
 
-            let display_pattern = pattern_strs.join(", ");
+            // TS format: quoted patterns joined by ", "
+            let display_pattern = pattern_strs
+                .iter()
+                .map(|p| format!("\"{p}\""))
+                .collect::<Vec<_>>()
+                .join(", ");
 
             for attr in &el.attributes {
                 let MLASTAttr::HTMLAttr(html_attr) = attr else {
@@ -61,18 +69,34 @@ impl Rule for ClassNaming {
                 }
 
                 let value = &html_attr.value.raw;
+                // Track position within the value string to compute per-class col
+                let value_start_line = html_attr.value.line;
+                let value_start_col = html_attr.value.col;
+                let mut search_from = 0;
+
                 for class_name in value.split_whitespace() {
+                    // Find position of this class name within the value string
+                    let pos_in_value = value[search_from..].find(class_name).unwrap_or(0) + search_from;
+                    search_from = pos_in_value + class_name.len();
+
+                    // Compute col (assumes single-line class attribute value)
+                    #[allow(clippy::cast_possible_truncation)]
+                    let class_col = value_start_col + pos_in_value as u32;
+
                     // Class must match at least one pattern
                     let matches_any = regexes.iter().any(|(_, re)| re.is_match(class_name));
                     if !matches_any {
+                        // TS reports at the class name position with raw = class name
                         violations.push(Violation {
                             rule_id: self.id().to_string(),
                             name: None,
                             severity: rule_config.severity,
-                            message: format!("\"{class_name}\" is unmatched with the pattern: {display_pattern}"),
-                            line: html_attr.name.line,
-                            col: html_attr.name.col,
-                            raw: html_attr.raw.clone(),
+                            message: format!(
+                                "The \"{class_name}\" class name is unmatched with the below patterns: {display_pattern}"
+                            ),
+                            line: value_start_line,
+                            col: class_col,
+                            raw: class_name.to_string(),
                         });
                     }
                 }
@@ -93,75 +117,5 @@ fn strip_regex_delimiters(pattern: &str) -> String {
         }
     } else {
         pattern.to_string()
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::rule::{RuleConfig, RuleConfigSet};
-    use crate::rules::attr_duplication::tests::make_element_with_attrs;
-    use markuplint_types::spec::load_spec;
-    use markuplint_types::spec::types::MLMLSpec;
-
-    fn spec() -> MLMLSpec {
-        load_spec(include_str!("../../../../packages/@markuplint/html-spec/index.json")).unwrap()
-    }
-
-    #[test]
-    fn matching_class_no_violation() {
-        let arena = make_element_with_attrs("div", &[("class", "foo-bar")]);
-        let s = spec();
-        let rule = ClassNaming;
-        let config = RuleConfig {
-            value: serde_json::Value::String("^[a-z][a-z0-9-]*$".to_string()),
-            ..Default::default()
-        };
-        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
-        assert!(violations.is_empty());
-    }
-
-    #[test]
-    fn non_matching_class_reported() {
-        let arena = make_element_with_attrs("div", &[("class", "FooBar")]);
-        let s = spec();
-        let rule = ClassNaming;
-        let config = RuleConfig {
-            value: serde_json::Value::String("^[a-z][a-z0-9-]*$".to_string()),
-            ..Default::default()
-        };
-        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
-        assert_eq!(violations.len(), 1);
-        assert_eq!(
-            violations[0].message,
-            "\"FooBar\" is unmatched with the pattern: ^[a-z][a-z0-9-]*$"
-        );
-    }
-
-    #[test]
-    fn multiple_classes_mixed() {
-        let arena = make_element_with_attrs("div", &[("class", "valid-name InvalidName")]);
-        let s = spec();
-        let rule = ClassNaming;
-        let config = RuleConfig {
-            value: serde_json::Value::String("^[a-z][a-z0-9-]*$".to_string()),
-            ..Default::default()
-        };
-        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
-        assert_eq!(violations.len(), 1);
-        assert!(violations[0].message.contains("InvalidName"));
-    }
-
-    #[test]
-    fn null_config_disabled() {
-        let arena = make_element_with_attrs("div", &[("class", "anything")]);
-        let s = spec();
-        let rule = ClassNaming;
-        let config = RuleConfig {
-            value: serde_json::Value::Null,
-            ..Default::default()
-        };
-        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
-        assert!(violations.is_empty());
     }
 }

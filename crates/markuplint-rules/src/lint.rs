@@ -712,7 +712,7 @@ mod tests {
         let result = lint(&arena, &spec, &config);
         // Only <div> should have a violation, <main> is disabled
         assert_eq!(result.violations.len(), 1);
-        assert!(result.violations[0].raw.contains("class"));
+        assert_eq!(result.violations[0].raw, "INVALID");
     }
 
     #[test]
@@ -746,8 +746,8 @@ mod tests {
             .iter()
             .find(|v| v.severity == Severity::Warning)
             .unwrap();
-        assert!(div_v.raw.contains("class"));
-        assert!(main_v.raw.contains("class"));
+        assert_eq!(div_v.raw, "INVALID");
+        assert_eq!(main_v.raw, "INVALID");
     }
 
     #[test]
