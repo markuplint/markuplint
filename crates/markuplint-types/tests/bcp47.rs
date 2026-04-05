@@ -12,7 +12,9 @@ fn ja_jp() {
 
 #[test]
 fn empty() {
-    assert!(!is_bcp47(""));
+    // Empty string is valid per HTML spec: lang="" means "language unknown"
+    // Matches TS behavior: check('', 'BCP47').matched === true
+    assert!(is_bcp47(""));
 }
 
 #[test]

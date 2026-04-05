@@ -118,6 +118,103 @@ fn has_duplicates(tokens: &[&str]) -> bool {
     false
 }
 
+/// Result of autocomplete validation with position of the invalid token.
+pub struct AutoCompleteResult {
+    pub valid: bool,
+    /// Index of the first invalid token in the input (0-based byte offset).
+    /// Only set when `valid` is false and a specific token caused the failure.
+    pub invalid_token_offset: Option<usize>,
+    /// The raw text of the invalid token.
+    pub invalid_token: Option<String>,
+}
+
+/// Validates an autocomplete attribute value and returns position info for errors.
+#[must_use]
+pub fn check_autocomplete_with_position(value: &str) -> AutoCompleteResult {
+    let tokens: Vec<&str> = value.split_ascii_whitespace().collect();
+
+    if tokens.is_empty() {
+        return AutoCompleteResult { valid: false, invalid_token_offset: None, invalid_token: None };
+    }
+
+    if has_duplicates(&tokens) {
+        return AutoCompleteResult { valid: false, invalid_token_offset: None, invalid_token: None };
+    }
+
+    if tokens[0].eq_ignore_ascii_case("on") || tokens[0].eq_ignore_ascii_case("off") {
+        if tokens.len() == 1 {
+            return AutoCompleteResult { valid: true, invalid_token_offset: None, invalid_token: None };
+        }
+        return invalid_at(value, tokens[1]);
+    }
+
+    if let Some(last) = tokens.last()
+        && (last.eq_ignore_ascii_case("on") || last.eq_ignore_ascii_case("off"))
+    {
+        return invalid_at(value, last);
+    }
+
+    let mut index = tokens.len() - 1;
+
+    let Some(mut category) = determine_field_category(tokens[index]) else {
+        return invalid_at(value, tokens[index]);
+    };
+
+    if category == FieldCategory::Credential {
+        if index == 0 {
+            return AutoCompleteResult { valid: true, invalid_token_offset: None, invalid_token: None };
+        }
+        index -= 1;
+        match determine_field_category(tokens[index]) {
+            Some(FieldCategory::Credential) | None => return invalid_at(value, tokens[index]),
+            Some(cat) => { category = cat; }
+        }
+    }
+
+    if index == 0 {
+        return AutoCompleteResult { valid: true, invalid_token_offset: None, invalid_token: None };
+    }
+    index -= 1;
+
+    if category == FieldCategory::Contact && matches_any(tokens[index], CONTACTING_TOKENS) {
+        if index == 0 {
+            return AutoCompleteResult { valid: true, invalid_token_offset: None, invalid_token: None };
+        }
+        index -= 1;
+    }
+
+    if category == FieldCategory::Normal && matches_any(tokens[index], CONTACTING_TOKENS) {
+        return invalid_at(value, tokens[index]);
+    }
+
+    if tokens[index].eq_ignore_ascii_case("shipping") || tokens[index].eq_ignore_ascii_case("billing") {
+        if index == 0 {
+            return AutoCompleteResult { valid: true, invalid_token_offset: None, invalid_token: None };
+        }
+        index -= 1;
+    }
+
+    if is_section_prefix(tokens[index]) {
+        if index == 0 {
+            return AutoCompleteResult { valid: true, invalid_token_offset: None, invalid_token: None };
+        }
+        // Extra tokens before section
+        return invalid_at(value, tokens[0]);
+    }
+
+    // Extra tokens remain
+    invalid_at(value, tokens[index])
+}
+
+fn invalid_at(value: &str, token: &str) -> AutoCompleteResult {
+    let offset = value.find(token);
+    AutoCompleteResult {
+        valid: false,
+        invalid_token_offset: offset,
+        invalid_token: Some(token.to_string()),
+    }
+}
+
 /// Validates an autocomplete attribute value.
 ///
 /// Returns `true` if the value is a valid autocomplete string per the WHATWG spec.

@@ -25,6 +25,11 @@ pub fn check_number(value: &str, type_def: &NumberType, ref_: Option<&str>) -> C
         NumericKind::Float => is_float(value),
     };
     if !valid_syntax {
+        let base = match type_def.number_type {
+            NumericKind::Integer => "integer",
+            NumericKind::Float => "number",
+        };
+        let desc = format_number_description(base, type_def);
         return unmatched_with(
             value,
             Reason::UnexpectedToken,
@@ -32,10 +37,7 @@ pub fn check_number(value: &str, type_def: &NumberType, ref_: Option<&str>) -> C
                 ref_: ref_.map(str::to_owned),
                 expects: Some(vec![Expect {
                     type_: ExpectType::Format,
-                    value: match type_def.number_type {
-                        NumericKind::Integer => "integer".to_owned(),
-                        NumericKind::Float => "number".to_owned(),
-                    },
+                    value: desc,
                 }]),
                 ..Default::default()
             },
@@ -100,6 +102,25 @@ fn clamp_candidate(value: &str, type_def: &NumberType) -> Option<String> {
         return type_def.lt.map(|lt| format_number(lt - 1.0, &type_def.number_type));
     }
     None
+}
+
+/// Generate a human-readable description of a number type with its range constraints.
+/// Matches TS behavior: "integer greater than or equal to 0 less than or equal to 8".
+fn format_number_description(base: &str, type_def: &NumberType) -> String {
+    let mut parts = vec![base.to_owned()];
+    if let Some(gt) = type_def.gt {
+        parts.push(format!("greater than {}", format_number(gt, &type_def.number_type)));
+    }
+    if let Some(gte) = type_def.gte {
+        parts.push(format!("greater than or equal to {}", format_number(gte, &type_def.number_type)));
+    }
+    if let Some(lt) = type_def.lt {
+        parts.push(format!("less than {}", format_number(lt, &type_def.number_type)));
+    }
+    if let Some(lte) = type_def.lte {
+        parts.push(format!("less than or equal to {}", format_number(lte, &type_def.number_type)));
+    }
+    parts.join(" ")
 }
 
 fn format_number(n: f64, kind: &NumericKind) -> String {

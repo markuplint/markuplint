@@ -435,7 +435,11 @@ impl<'a> Matcher<'a> {
         if let Some(Token::Function(fn_name)) = self.peek()
             && fn_name.eq_ignore_ascii_case(name)
         {
-            return self.consume_function_call();
+            // Consume only the Function token (name + opening paren).
+            // The argument tokens and closing ) are matched by subsequent
+            // nodes in the parent group's Juxtaposition sequence.
+            self.advance();
+            return true;
         }
         self.record_expected(&format!("{name}()"));
         false

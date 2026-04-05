@@ -4,7 +4,7 @@
 //! their validator functions.
 
 use super::custom;
-use super::types::{CheckResult, Reason, matched, unmatched};
+use super::types::{CheckResult, Expect, ExpectType, Reason, UnmatchedOpts, matched, unmatched, unmatched_with};
 
 /// Validate a value against a keyword type by looking it up in the registry.
 ///
@@ -18,7 +18,48 @@ pub fn check_keyword_type(value: &str, keyword: &str) -> CheckResult {
     }
 
     // CSS syntax types (e.g., "<color>", "<'transform'>", "<length>")
-    // and any unknown types return matched as graceful fallback.
+    // Delegate to the CSS value match engine.
+    if keyword.starts_with('<') && keyword.ends_with('>') {
+        let inner = &keyword[1..keyword.len() - 1];
+        let syntax_name = if inner.starts_with('\'') && inner.ends_with('\'') {
+            &inner[1..inner.len() - 1]
+        } else {
+            inner
+        };
+
+        // Try as CSS property syntax first
+        if let Some(syntax) = crate::css::value_match::registry::lookup_property(syntax_name) {
+            return match crate::css::value_match::match_property(syntax, value) {
+                Ok(()) => matched(),
+                Err(info) => {
+                    let raw = if info.length > 0 && info.offset + info.length <= value.len() {
+                        &value[info.offset..info.offset + info.length]
+                    } else {
+                        value
+                    };
+                    unmatched_with(
+                        raw,
+                        Reason::SyntaxError,
+                        UnmatchedOpts {
+                            offset: Some(info.offset),
+                            column: Some(info.offset + 1),
+                            expects: Some(vec![Expect {
+                                type_: ExpectType::Syntax,
+                                value: format!("the CSS Syntax \"{keyword}\" (https://csstree.github.io/docs/syntax/#Property:{syntax_name})"),
+                            }]),
+                            ..Default::default()
+                        },
+                    )
+                }
+            };
+        }
+
+        // CSS type syntax (e.g., <color>, <length>) — not validated here.
+        // Only property syntax (<'mask'>, <'transform'>) is validated by the CSS engine.
+        // Type references are resolved internally by the CSS engine when matching properties.
+    }
+
+    // Unknown non-CSS types return matched as graceful fallback.
     matched()
 }
 
@@ -174,7 +215,28 @@ fn get_validator(keyword: &str) -> Option<Validator> {
             if crate::simple_patterns::is_valid_custom_command(v) {
                 matched()
             } else {
-                unmatched(v, Reason::UnexpectedToken)
+                // Suggest adding "--" prefix if the value doesn't start with it
+                let candidate = if !v.starts_with("--") && !v.is_empty() {
+                    Some(format!("--{v}"))
+                } else {
+                    None
+                };
+                unmatched_with(
+                    v,
+                    Reason::UnexpectedToken,
+                    UnmatchedOpts {
+                        expects: Some(vec![Expect {
+                            type_: ExpectType::Syntax,
+                            value: "the custom command format".to_owned(),
+                        }]),
+                        extra: Some(Expect {
+                            type_: ExpectType::Syntax,
+                            value: "https://html.spec.whatwg.org/multipage/form-elements.html#valid-custom-command".to_owned(),
+                        }),
+                        candidate,
+                        ..Default::default()
+                    },
+                )
             }
         }),
 
@@ -187,14 +249,35 @@ fn get_validator(keyword: &str) -> Option<Validator> {
             }
         }),
         "AutoComplete" => Some(|v| {
-            if crate::whatwg::autocomplete::is_autocomplete(v) {
-                matched()
+            let result = crate::whatwg::autocomplete::check_autocomplete_with_position(v);
+            if result.valid {
+                return matched();
+            }
+            let expects = Some(vec![Expect {
+                type_: ExpectType::Syntax,
+                value: "autofill field name (https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill-field)".to_owned(),
+            }]);
+            if let (Some(offset), Some(token)) = (result.invalid_token_offset, result.invalid_token) {
+                unmatched_with(
+                    &token,
+                    Reason::SyntaxError,
+                    UnmatchedOpts {
+                        offset: Some(offset),
+                        column: Some(offset + 1),
+                        expects,
+                        ..Default::default()
+                    },
+                )
             } else {
-                unmatched(v, Reason::SyntaxError)
+                unmatched_with(v, Reason::SyntaxError, UnmatchedOpts {
+                    expects,
+                    ..Default::default()
+                })
             }
         }),
         "ItemProp" => Some(custom::check_item_prop),
         "Srcset" => Some(custom::check_srcset),
+        "SRIHash" => Some(custom::check_sri_hash),
         "IconSize" => Some(custom::check_icon_size),
         "Accept" => Some(custom::check_accept),
         "SerializedPermissionsPolicy" => Some(|v| {
