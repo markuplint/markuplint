@@ -37,7 +37,7 @@ fn end_tag_valid_001() {
     let arena = html_arena("<html><body></body></html>");
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
-        "rules": { "end-tag": { "severity": "warning" } }
+        "rules": { "end-tag": true }
     }))
     .unwrap();
     let result = lint(&arena, &spec, &config);
@@ -61,7 +61,7 @@ fn end_tag_invalid_001() {
     let arena = html_arena("<div><span><span /></div>");
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
-        "rules": { "end-tag": { "severity": "warning" } }
+        "rules": { "end-tag": true }
     }))
     .unwrap();
     let result = lint(&arena, &spec, &config);
@@ -85,7 +85,7 @@ fn end_tag_valid_002() {
     let arena = html_arena("<div><img><img /></div>");
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
-        "rules": { "end-tag": { "severity": "warning" } }
+        "rules": { "end-tag": true }
     }))
     .unwrap();
     let result = lint(&arena, &spec, &config);
@@ -102,7 +102,7 @@ fn end_tag_invalid_002() {
     );
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
-        "rules": { "end-tag": { "severity": "warning" } }
+        "rules": { "end-tag": true }
     }))
     .unwrap();
     let result = lint(&arena, &spec, &config);
