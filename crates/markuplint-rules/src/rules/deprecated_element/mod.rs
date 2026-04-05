@@ -8,6 +8,9 @@ use markuplint_types::spec::types::{MLMLSpec, Obsolete};
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
+#[cfg(test)]
+mod tests;
+
 /// The `deprecated-element` rule.
 pub struct DeprecatedElement;
 
@@ -43,6 +46,7 @@ impl Rule for DeprecatedElement {
                     line: el.base.line,
                     col: el.base.col,
                     raw: el.base.raw.clone(),
+                    reason: None,
                 });
                 continue;
             }
@@ -57,62 +61,11 @@ impl Rule for DeprecatedElement {
                     line: el.base.line,
                     col: el.base.col,
                     raw: el.base.raw.clone(),
+                    reason: None,
                 });
             }
         }
 
         violations
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::rule::{RuleConfig, RuleConfigSet};
-    use crate::rules::attr_duplication::tests::make_element_with_attrs;
-    use markuplint_types::spec::load_spec;
-
-    fn spec() -> MLMLSpec {
-        load_spec(include_str!("../../../../packages/@markuplint/html-spec/index.json")).unwrap()
-    }
-
-    #[test]
-    fn normal_element_no_violation() {
-        let arena = make_element_with_attrs("div", &[]);
-        let s = spec();
-        let rule = DeprecatedElement;
-        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
-        assert!(violations.is_empty());
-    }
-
-    #[test]
-    fn unknown_element_no_violation() {
-        let arena = make_element_with_attrs("x-custom", &[]);
-        let s = spec();
-        let rule = DeprecatedElement;
-        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
-        assert!(violations.is_empty());
-    }
-
-    #[test]
-    fn hgroup_not_deprecated() {
-        // <hgroup> was restored in HTML Living Standard and is NOT deprecated
-        let arena = make_element_with_attrs("hgroup", &[]);
-        let s = spec();
-        let rule = DeprecatedElement;
-        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
-        assert!(violations.is_empty());
-    }
-
-    #[test]
-    fn deprecated_element_reported() {
-        // No HTML/SVG element currently has deprecated=true in the spec.
-        // <marquee> is obsolete (not deprecated). Verify the obsolete message is reported.
-        let arena = make_element_with_attrs("marquee", &[]);
-        let s = spec();
-        let rule = DeprecatedElement;
-        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
-        assert_eq!(violations.len(), 1);
-        assert_eq!(violations[0].message, "The \"marquee\" element is obsolete");
     }
 }

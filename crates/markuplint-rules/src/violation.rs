@@ -31,4 +31,8 @@ pub struct Violation {
     pub col: u32,
     /// Raw source text at the violation location.
     pub raw: String,
+    /// Human-readable reason for this rule configuration.
+    /// Populated from the `reason` field in rule config (nodeRules/childNodeRules).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub reason: Option<String>,
 }

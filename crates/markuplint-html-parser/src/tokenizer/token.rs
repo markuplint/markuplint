@@ -55,6 +55,12 @@ pub enum Token {
         offset: usize,
         line: u32,
         col: u32,
+        /// Source position of this character in the original HTML.
+        /// For character references (e.g., `&#9660;`), this points to `&`.
+        /// For normal characters, this equals `(offset, line, col)`.
+        source_offset: usize,
+        source_line: u32,
+        source_col: u32,
     },
     Comment {
         data: String,

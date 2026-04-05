@@ -51,6 +51,7 @@ impl Rule for NoHardCodeId {
                         line: html_attr.name.line,
                         col: html_attr.name.col,
                         raw: html_attr.raw.clone(),
+                        reason: None,
                     });
                 }
             }

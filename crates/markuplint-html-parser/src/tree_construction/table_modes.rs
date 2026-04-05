@@ -149,7 +149,10 @@ impl TreeBuilder<'_> {
     // §13.2.6.4.10 In table text
     // ========================================================================
     pub(super) fn process_in_table_text(&mut self, token: Token) {
-        if let Token::Character { ch, offset, line, col } = &token {
+        if let Token::Character {
+            ch, offset, line, col, ..
+        } = &token
+        {
             if *ch == '\0' {
                 // Parse error. Ignore.
             } else {
@@ -176,6 +179,9 @@ impl TreeBuilder<'_> {
                         offset: pos.offset,
                         line: pos.line,
                         col: pos.col,
+                        source_offset: pos.offset,
+                        source_line: pos.line,
+                        source_col: pos.col,
                     };
                     self.foster_parenting = true;
                     self.process_in_body(char_token);

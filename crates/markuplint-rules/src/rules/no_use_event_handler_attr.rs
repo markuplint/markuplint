@@ -85,6 +85,7 @@ impl Rule for NoUseEventHandlerAttr {
                     line: html_attr.name.line,
                     col: html_attr.name.col,
                     raw: html_attr.raw.clone(),
+                    reason: None,
                 });
             }
         }
@@ -145,6 +146,7 @@ mod tests {
             value: serde_json::Value::Bool(false),
             options: serde_json::Value::Null,
             disabled: false,
+            reason: None,
         };
         let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
         assert!(violations.is_empty());

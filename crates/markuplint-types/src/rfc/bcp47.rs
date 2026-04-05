@@ -9,5 +9,10 @@ use language_tags::LanguageTag;
 /// Accepts both normal language tags (e.g. "en", "en-US", "ja-JP")
 /// and private use tags (e.g. "x-default", "x-custom").
 pub fn is_bcp47(value: &str) -> bool {
+    // Empty string is valid per HTML spec: lang="" means "language unknown"
+    // Matches TS behavior: check('', 'BCP47').matched === true
+    if value.is_empty() {
+        return true;
+    }
     value.parse::<LanguageTag>().is_ok()
 }

@@ -124,6 +124,7 @@ fn check_element(
             line: el.base.line,
             col: el.base.col,
             raw: el.base.raw.clone(),
+            reason: None,
         });
     }
 }
@@ -145,6 +146,7 @@ fn make_violation(rule_id: &str, rule_config: &RuleConfig, message: &str, el: &E
         line: el.base.line,
         col: el.base.col,
         raw: raw.to_string(),
+        reason: None,
     }
 }
 

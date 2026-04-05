@@ -127,6 +127,7 @@ fn check_required_elements(
                 line,
                 col,
                 raw,
+                reason: None,
             });
         }
     }

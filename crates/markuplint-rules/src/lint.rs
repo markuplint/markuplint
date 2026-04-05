@@ -175,6 +175,7 @@ pub fn lint(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig) -> LintResul
                     &config.child_node_rules,
                     arena,
                     spec,
+                    rule.default_severity(),
                 )
             } else {
                 RuleConfigSet::global_only(global_config)
@@ -202,6 +203,7 @@ pub fn lint(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig) -> LintResul
                 &config.child_node_rules,
                 arena,
                 spec,
+                rule.default_severity(),
             );
             let rule_violations = rule.verify(arena, spec, &config_set);
             violations.extend(rule_violations);
@@ -209,10 +211,21 @@ pub fn lint(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig) -> LintResul
 
         // Run the rule once per matching config entry
         for (config_key, config_value) in entries {
-            let Some(global_config) = parse_rule_config(config_value) else {
+            let Some(mut global_config) = parse_rule_config(config_value) else {
                 // Disabled (e.g., `false`) — skip this entry
                 continue;
             };
+            // Apply rule's default severity if config didn't specify one.
+            // TS: each rule has `defaultSeverity` (e.g., class-naming = 'warning').
+            // parse_rule_config defaults to Error; override if config had no explicit severity.
+            // A string like "warning"/"error"/"info" IS an explicit severity — don't override.
+            let has_explicit_severity = config_value
+                .as_str()
+                .is_some_and(|s| matches!(s, "error" | "warning" | "info"))
+                || config_value.as_object().is_some_and(|o| o.get("severity").is_some());
+            if !has_explicit_severity {
+                global_config.severity = rule.default_severity();
+            }
 
             let config_set = if has_node_rules && in_node_rules {
                 rule_mapper::build_rule_config_set(
@@ -222,6 +235,7 @@ pub fn lint(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig) -> LintResul
                     &config.child_node_rules,
                     arena,
                     spec,
+                    rule.default_severity(),
                 )
             } else {
                 RuleConfigSet::global_only(global_config)
@@ -282,6 +296,7 @@ fn get_parse_error(arena: &DomArena) -> Option<Violation> {
             line,
             col,
             raw,
+            reason: None,
         });
     }
     None
@@ -365,9 +380,14 @@ fn run_named_entries(
                 continue;
             };
 
-            let Some(config_set) =
-                rule_mapper::build_named_rule_config_set(base_rule_id, entry, is_child_rule, arena, spec)
-            else {
+            let Some(config_set) = rule_mapper::build_named_rule_config_set(
+                base_rule_id,
+                entry,
+                is_child_rule,
+                arena,
+                spec,
+                rule.default_severity(),
+            ) else {
                 continue;
             };
 
@@ -513,11 +533,13 @@ pub fn parse_rule_config(value: &Value) -> Option<RuleConfig> {
                 });
             let rule_value = obj.get("value").cloned().unwrap_or(Value::Bool(true));
             let options = obj.get("options").cloned().unwrap_or(Value::Null);
+            let reason = obj.get("reason").and_then(|v| v.as_str()).map(String::from);
             Some(RuleConfig {
                 severity,
                 value: rule_value,
                 options,
                 disabled: false,
+                reason,
             })
         }
         // Arrays and other JSON values are treated as the rule value
@@ -712,22 +734,22 @@ mod tests {
         let result = lint(&arena, &spec, &config);
         // Only <div> should have a violation, <main> is disabled
         assert_eq!(result.violations.len(), 1);
-        assert!(result.violations[0].raw.contains("class"));
+        assert_eq!(result.violations[0].raw, "INVALID");
     }
 
     #[test]
     fn node_rules_severity_override() {
-        // class-naming is "error" globally, but "warning" for <main>
-        let arena = html_arena(r#"<div class="INVALID"><main class="INVALID"></main></div>"#);
+        // attr-duplication is "error" by default, but "warning" for <main>
+        let arena = html_arena(r#"<div id="a" id="b"><main id="c" id="d"></main></div>"#);
         let spec = html_spec();
         let config: LintConfig = serde_json::from_value(serde_json::json!({
             "rules": {
-                "class-naming": "/^[a-z][a-z0-9-]*$/"
+                "attr-duplication": true
             },
             "nodeRules": [
                 {
                     "selector": "main",
-                    "rules": { "class-naming": "warning" }
+                    "rules": { "attr-duplication": "warning" }
                 }
             ]
         }))
@@ -746,8 +768,8 @@ mod tests {
             .iter()
             .find(|v| v.severity == Severity::Warning)
             .unwrap();
-        assert!(div_v.raw.contains("class"));
-        assert!(main_v.raw.contains("class"));
+        assert_eq!(div_v.raw, "id");
+        assert_eq!(main_v.raw, "id");
     }
 
     #[test]

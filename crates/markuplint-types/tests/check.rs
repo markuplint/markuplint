@@ -63,7 +63,9 @@ fn bcp47() {
     assert!(check("en-US", &Type::Keyword("BCP47".into()), None).is_matched());
     assert!(check("ja", &Type::Keyword("BCP47".into()), None).is_matched());
     assert!(!check(" ja ", &Type::Keyword("BCP47".into()), None).is_matched());
-    assert!(!check("", &Type::Keyword("BCP47".into()), None).is_matched());
+    // Empty string is valid per HTML spec: lang="" means "language unknown"
+    // Matches TS behavior: check('', 'BCP47').matched === true
+    assert!(check("", &Type::Keyword("BCP47".into()), None).is_matched());
     assert!(!check("zh/cn", &Type::Keyword("BCP47".into()), None).is_matched());
 }
 
@@ -411,6 +413,20 @@ fn serialized_permissions_policy() {
     let kw = Type::Keyword("SerializedPermissionsPolicy".into());
     assert!(check("autoplay", &kw, None).is_matched());
     assert!(check("fullscreen", &kw, None).is_matched());
+    assert!(!check("", &kw, None).is_matched());
+}
+
+// --- SRIHash ---
+
+#[test]
+fn sri_hash() {
+    let kw = Type::Keyword("SRIHash".into());
+    assert!(check("sha256-abc123", &kw, None).is_matched());
+    assert!(check("sha384-abc123==", &kw, None).is_matched());
+    assert!(check("sha512-abc+def/ghi=", &kw, None).is_matched());
+    assert!(check("sha256-abc123 sha384-def456", &kw, None).is_matched());
+    assert!(!check("md5-abc123", &kw, None).is_matched());
+    assert!(!check("sha1-abc123", &kw, None).is_matched());
     assert!(!check("", &kw, None).is_matched());
 }
 

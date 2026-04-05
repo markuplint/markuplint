@@ -7,7 +7,10 @@ use markuplint_types::spec::lookup::get_attr_specs;
 use markuplint_types::spec::types::MLMLSpec;
 
 use crate::rule::{Rule, RuleConfigSet};
-use crate::violation::Violation;
+use crate::violation::{Severity, Violation};
+
+#[cfg(test)]
+mod tests;
 
 /// The `case-sensitive-attr-name` rule.
 pub struct CaseSensitiveAttrName;
@@ -55,10 +58,14 @@ impl Rule for CaseSensitiveAttrName {
                 };
 
                 if !is_correct {
-                    let message = match case {
-                        "upper" => "Attribute names must be uppercase".to_string(),
-                        _ => "Attribute names must be lowercase".to_string(),
+                    // TS uses "should" for warning, "must" for error
+                    let verb = if rule_config.severity == Severity::Warning {
+                        "should"
+                    } else {
+                        "must"
                     };
+                    let case_str = if case == "upper" { "uppercase" } else { "lowercase" };
+                    let message = format!("Attribute names of HTML elements {verb} be {case_str}");
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
                         name: None,
@@ -66,60 +73,13 @@ impl Rule for CaseSensitiveAttrName {
                         message,
                         line: html_attr.name.line,
                         col: html_attr.name.col,
-                        raw: html_attr.raw.clone(),
+                        raw: html_attr.name.raw.clone(),
+                        reason: None,
                     });
                 }
             }
         }
 
         violations
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::rule::{RuleConfig, RuleConfigSet};
-    use crate::rules::attr_duplication::tests::make_element_with_attrs;
-    use crate::violation::Severity;
-    use markuplint_types::spec::load_spec;
-
-    fn spec() -> MLMLSpec {
-        load_spec(include_str!("../../../../packages/@markuplint/html-spec/index.json")).unwrap()
-    }
-
-    #[test]
-    fn lowercase_attr_no_violation() {
-        let arena = make_element_with_attrs("div", &[("class", "foo")]);
-        let s = spec();
-        let rule = CaseSensitiveAttrName;
-        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
-        assert!(violations.is_empty());
-    }
-
-    #[test]
-    fn uppercase_attr_violation() {
-        let arena = make_element_with_attrs("div", &[("CLASS", "foo")]);
-        let s = spec();
-        let rule = CaseSensitiveAttrName;
-        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
-        assert_eq!(violations.len(), 1);
-        assert_eq!(violations[0].message, "Attribute names must be lowercase");
-    }
-
-    #[test]
-    fn uppercase_mode_lowercase_violation() {
-        let arena = make_element_with_attrs("div", &[("class", "foo")]);
-        let s = spec();
-        let rule = CaseSensitiveAttrName;
-        let config = RuleConfig {
-            severity: Severity::Error,
-            value: serde_json::json!("upper"),
-            options: serde_json::Value::Null,
-            disabled: false,
-        };
-        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
-        assert_eq!(violations.len(), 1);
-        assert_eq!(violations[0].message, "Attribute names must be uppercase");
     }
 }

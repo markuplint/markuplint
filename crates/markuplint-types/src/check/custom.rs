@@ -91,6 +91,10 @@ pub fn check_srcset(value: &str) -> CheckResult {
                         if !is_float(&result.num) {
                             return unmatched(value, Reason::UnexpectedToken);
                         }
+                        // Zero density is not valid per WHATWG spec
+                        if result.num.parse::<f64>().is_ok_and(|n| n == 0.0) {
+                            return unmatched(value, Reason::UnexpectedToken);
+                        }
                         has_density = true;
                     }
                     _ => {
@@ -108,6 +112,29 @@ pub fn check_srcset(value: &str) -> CheckResult {
     // Cannot mix width and density descriptors
     if has_width && has_density {
         return unmatched(value, Reason::UnexpectedToken);
+    }
+
+    matched()
+}
+
+/// Validate an SRI (Subresource Integrity) hash value.
+///
+/// Space-separated `hash-algo-base64` tokens where algo is sha256, sha384, or sha512.
+/// @see <https://w3c.github.io/webappsec-subresource-integrity/#integrity-metadata-description>
+#[must_use]
+pub fn check_sri_hash(value: &str) -> CheckResult {
+    if value.is_empty() {
+        return unmatched(value, Reason::EmptyToken);
+    }
+
+    for token in value.split_ascii_whitespace() {
+        let Some((algo, _hash)) = token.split_once('-') else {
+            return unmatched(value, Reason::SyntaxError);
+        };
+        match algo {
+            "sha256" | "sha384" | "sha512" => {}
+            _ => return unmatched(value, Reason::UnexpectedToken),
+        }
     }
 
     matched()

@@ -94,6 +94,7 @@ impl Rule for LandmarkRoles {
                         line: el.base.line,
                         col: el.base.col,
                         raw: el.base.raw.clone(),
+                        reason: None,
                     });
                 }
 
@@ -140,6 +141,7 @@ impl Rule for LandmarkRoles {
                         line,
                         col,
                         raw: raw.clone(),
+                        reason: None,
                     });
                 }
             }

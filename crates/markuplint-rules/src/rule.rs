@@ -13,6 +13,12 @@ pub trait Rule: Send + Sync {
     /// Rule identifier (e.g., `"attr-duplication"`).
     fn id(&self) -> &str;
 
+    /// Default severity when not specified in config.
+    /// Matches TS `defaultSeverity` in `createRule()`.
+    fn default_severity(&self) -> crate::violation::Severity {
+        crate::violation::Severity::Error
+    }
+
     /// Verify the DOM tree and return violations.
     ///
     /// `config` provides the rule configuration, which may include per-node
@@ -31,6 +37,8 @@ pub struct RuleConfig {
     pub options: Value,
     /// Whether this rule is disabled for the node.
     pub disabled: bool,
+    /// Human-readable reason for this rule configuration.
+    pub reason: Option<String>,
 }
 
 impl Default for RuleConfig {
@@ -40,6 +48,7 @@ impl Default for RuleConfig {
             value: Value::Bool(true),
             options: Value::Null,
             disabled: false,
+            reason: None,
         }
     }
 }

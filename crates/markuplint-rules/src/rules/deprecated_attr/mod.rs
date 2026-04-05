@@ -2,11 +2,15 @@
 
 use markuplint_core::mlast::MLASTAttr;
 use markuplint_dom::arena::DomArena;
+use markuplint_dom::helpers::get_raw_attr_name;
 use markuplint_types::spec::lookup::{get_attr_specs, get_spec};
 use markuplint_types::spec::types::MLMLSpec;
 
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
+
+#[cfg(test)]
+mod tests;
 
 /// The `deprecated-attr` rule.
 pub struct DeprecatedAttr;
@@ -48,25 +52,30 @@ impl Rule for DeprecatedAttr {
                     _ => get_global_attr_deprecated_flags(spec, &qualified_name, &attr_name_lower),
                 };
 
+                // Use raw attr name from source for message (preserves original case)
+                let raw_name = get_raw_attr_name(html_attr);
+
                 if is_deprecated {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
                         name: None,
                         severity: rule_config.severity,
-                        message: format!("The \"{}\" attribute is deprecated", html_attr.node_name),
+                        message: format!("The \"{raw_name}\" attribute is deprecated"),
                         line: html_attr.name.line,
                         col: html_attr.name.col,
-                        raw: html_attr.raw.clone(),
+                        raw: html_attr.name.raw.clone(),
+                        reason: None,
                     });
                 } else if is_obsolete {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
                         name: None,
                         severity: rule_config.severity,
-                        message: format!("The \"{}\" attribute is obsolete", html_attr.node_name),
+                        message: format!("The \"{raw_name}\" attribute is obsolete"),
                         line: html_attr.name.line,
                         col: html_attr.name.col,
-                        raw: html_attr.raw.clone(),
+                        raw: html_attr.name.raw.clone(),
+                        reason: None,
                     });
                 }
             }
@@ -97,56 +106,4 @@ fn get_global_attr_deprecated_flags(spec: &MLMLSpec, element_name: &str, attr_na
         }
     }
     (false, false)
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::rule::{RuleConfig, RuleConfigSet};
-    use crate::rules::attr_duplication::tests::make_element_with_attrs;
-    use markuplint_types::spec::load_spec;
-
-    fn spec() -> MLMLSpec {
-        load_spec(include_str!("../../../../packages/@markuplint/html-spec/index.json")).unwrap()
-    }
-
-    #[test]
-    fn normal_attr_no_violation() {
-        let arena = make_element_with_attrs("div", &[("class", "foo")]);
-        let s = spec();
-        let rule = DeprecatedAttr;
-        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
-        assert!(violations.is_empty());
-    }
-
-    #[test]
-    fn unknown_attr_no_violation() {
-        let arena = make_element_with_attrs("div", &[("data-x", "y")]);
-        let s = spec();
-        let rule = DeprecatedAttr;
-        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
-        assert!(violations.is_empty());
-    }
-
-    #[test]
-    fn normal_element_with_standard_attr_no_violation() {
-        // <input type="text"> — "type" on <input> is a standard, non-deprecated attribute
-        let arena = make_element_with_attrs("input", &[("type", "text")]);
-        let s = spec();
-        let rule = DeprecatedAttr;
-        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
-        assert!(violations.is_empty());
-    }
-
-    #[test]
-    fn deprecated_charset_on_link() {
-        // "charset" on <link> is deprecated (and obsolete) in the html-spec
-        // deprecated is checked first, so message says "deprecated"
-        let arena = make_element_with_attrs("link", &[("charset", "utf-8")]);
-        let s = spec();
-        let rule = DeprecatedAttr;
-        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
-        assert_eq!(violations.len(), 1);
-        assert_eq!(violations[0].message, "The \"charset\" attribute is deprecated");
-    }
 }

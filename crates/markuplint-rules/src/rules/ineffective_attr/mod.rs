@@ -2,6 +2,7 @@
 
 use markuplint_core::mlast::MLASTAttr;
 use markuplint_dom::arena::DomArena;
+use markuplint_dom::helpers::get_raw_attr_name;
 use markuplint_selector::matcher;
 use markuplint_selector::parser;
 use markuplint_types::spec::lookup::get_attr_specs;
@@ -10,12 +11,20 @@ use markuplint_types::spec::types::{AttributeCondition, MLMLSpec};
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
+#[cfg(test)]
+mod tests;
+
 /// The `ineffective-attr` rule.
 pub struct IneffectiveAttr;
 
 impl Rule for IneffectiveAttr {
     fn id(&self) -> &'static str {
         "ineffective-attr"
+    }
+
+    /// Matches TS `createRule({ defaultSeverity: 'warning' })`.
+    fn default_severity(&self) -> crate::violation::Severity {
+        crate::violation::Severity::Warning
     }
 
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
@@ -55,69 +64,22 @@ impl Rule for IneffectiveAttr {
                 });
 
                 if is_ineffective {
+                    let raw_name = get_raw_attr_name(html_attr);
+                    // TS: The "name" attribute is ineffective. It doesn't need the attribute
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
                         name: None,
                         severity: rule_config.severity,
-                        message: format!("The \"{}\" attribute is ineffective", html_attr.node_name),
+                        message: format!("The \"{raw_name}\" attribute is ineffective. It doesn't need the attribute"),
                         line: html_attr.name.line,
                         col: html_attr.name.col,
-                        raw: html_attr.raw.clone(),
+                        raw: html_attr.name.raw.clone(),
+                        reason: None,
                     });
                 }
             }
         }
 
         violations
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::rule::{RuleConfig, RuleConfigSet};
-    use crate::rules::attr_duplication::tests::make_element_with_attrs;
-    use markuplint_types::spec::load_spec;
-
-    fn spec() -> MLMLSpec {
-        load_spec(include_str!("../../../../packages/@markuplint/html-spec/index.json")).unwrap()
-    }
-
-    #[test]
-    fn normal_attr_no_violation() {
-        let arena = make_element_with_attrs("div", &[("class", "foo")]);
-        let s = spec();
-        let rule = IneffectiveAttr;
-        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
-        assert!(violations.is_empty());
-    }
-
-    #[test]
-    fn unknown_attr_no_violation() {
-        let arena = make_element_with_attrs("div", &[("data-x", "y")]);
-        let s = spec();
-        let rule = IneffectiveAttr;
-        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
-        assert!(violations.is_empty());
-    }
-
-    #[test]
-    fn input_type_text_with_alt_no_violation() {
-        // alt on input[type=text] is not ineffective per spec
-        let arena = make_element_with_attrs("input", &[("type", "text"), ("alt", "photo")]);
-        let s = spec();
-        let rule = IneffectiveAttr;
-        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
-        assert!(violations.is_empty());
-    }
-
-    #[test]
-    fn attribute_without_ineffective_spec_no_violation() {
-        // The "class" attribute on <div> has no ineffective condition in the spec
-        let arena = make_element_with_attrs("div", &[("class", "container")]);
-        let s = spec();
-        let rule = IneffectiveAttr;
-        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
-        assert!(violations.is_empty());
     }
 }

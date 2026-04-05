@@ -367,10 +367,21 @@ impl<'a> TreeBuilder<'a> {
         span: Span,
         namespace: Namespace,
     ) -> NodeId {
+        self.insert_element_for_token_with_self_closing(tag_name, attributes, span, namespace, false)
+    }
+
+    fn insert_element_for_token_with_self_closing(
+        &mut self,
+        tag_name: &str,
+        attributes: &[RawAttribute],
+        span: Span,
+        namespace: Namespace,
+        self_closing: bool,
+    ) -> NodeId {
         let attrs = convert_attributes(attributes, span);
         let node_id = self
             .arena
-            .create_element(tag_name.to_owned(), namespace, attrs, false, span, false);
+            .create_element(tag_name.to_owned(), namespace, attrs, self_closing, span, false);
         self.insert_at_appropriate_position(node_id);
         self.open_elements.push(node_id);
         node_id
@@ -396,6 +407,10 @@ impl<'a> TreeBuilder<'a> {
     }
 
     pub(super) fn insert_character(&mut self, ch: char, pos: Position) {
+        self.insert_character_with_source(ch, pos, pos);
+    }
+
+    pub(super) fn insert_character_with_source(&mut self, ch: char, pos: Position, source_pos: Position) {
         let (target, before) = self.appropriate_insert_position();
 
         // Merge with existing adjacent text node if possible.
@@ -425,7 +440,7 @@ impl<'a> TreeBuilder<'a> {
         }
 
         let span = Span::new(
-            pos,
+            source_pos,
             Position {
                 offset: pos.offset + ch.len_utf8(),
                 line: pos.line,
@@ -742,9 +757,12 @@ impl<'a> TreeBuilder<'a> {
 
     pub(super) fn set_end_tag_span(&mut self, tag_name: &str, span: Span) {
         // Find the matching open element and set its end_tag_span.
+        // Check both HTML elements and foreign elements (SVG/MathML).
         for id in self.open_elements.iter_top_to_bottom() {
             let node = self.arena.get(*id);
-            if node.is_html_element(tag_name) {
+            let matches =
+                node.is_html_element(tag_name) || node.tag_name().is_some_and(|n| n.eq_ignore_ascii_case(tag_name));
+            if matches {
                 self.arena.get_mut(*id).end_tag_span = Some(span);
                 break;
             }
@@ -1180,7 +1198,15 @@ impl<'a> TreeBuilder<'a> {
     #[allow(clippy::too_many_lines, clippy::needless_pass_by_value)]
     pub(super) fn process_in_body(&mut self, token: Token) {
         match &token {
-            Token::Character { ch, offset, line, col } => {
+            Token::Character {
+                ch,
+                offset,
+                line,
+                col,
+                source_offset,
+                source_line,
+                source_col,
+            } => {
                 if *ch == '\0' {
                     // Parse error. Ignore.
                 } else {
@@ -1188,12 +1214,17 @@ impl<'a> TreeBuilder<'a> {
                     if !ch.is_ascii_whitespace() {
                         self.frameset_ok = false;
                     }
-                    self.insert_character(
+                    self.insert_character_with_source(
                         *ch,
                         Position {
                             offset: *offset,
                             line: *line,
                             col: *col,
+                        },
+                        Position {
+                            offset: *source_offset,
+                            line: *source_line,
+                            col: *source_col,
                         },
                     );
                 }
@@ -1830,13 +1861,26 @@ impl<'a> TreeBuilder<'a> {
     // ========================================================================
     fn process_text(&mut self, token: Token) {
         match &token {
-            Token::Character { ch, offset, line, col } => {
-                self.insert_character(
+            Token::Character {
+                ch,
+                offset,
+                line,
+                col,
+                source_offset,
+                source_line,
+                source_col,
+            } => {
+                self.insert_character_with_source(
                     *ch,
                     Position {
                         offset: *offset,
                         line: *line,
                         col: *col,
+                    },
+                    Position {
+                        offset: *source_offset,
+                        line: *source_line,
+                        col: *source_col,
                     },
                 );
             }
@@ -1865,18 +1909,31 @@ impl<'a> TreeBuilder<'a> {
     #[allow(clippy::too_many_lines)]
     fn process_in_select(&mut self, token: Token) {
         match &token {
-            Token::Character { ch, offset, line, col } => {
+            Token::Character {
+                ch,
+                offset,
+                line,
+                col,
+                source_offset,
+                source_line,
+                source_col,
+            } => {
                 if *ch != '\0' {
                     // Customizable <select>: reconstruct active formatting
                     // elements so that text inside formatted option content
                     // gets wrapped in the correct elements (e.g. <b>).
                     self.reconstruct_active_formatting_elements();
-                    self.insert_character(
+                    self.insert_character_with_source(
                         *ch,
                         Position {
                             offset: *offset,
                             line: *line,
                             col: *col,
+                        },
+                        Position {
+                            offset: *source_offset,
+                            line: *source_line,
+                            col: *source_col,
                         },
                     );
                 }
