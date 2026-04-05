@@ -15,6 +15,7 @@ export type Model = ContentType | ContentType[];
 export type ContentType = string | Category;
 export type Category =
 	| '#text'
+	| '#nonEmptyText'
 	| '#phrasing'
 	| '#flow'
 	| '#interactive'
