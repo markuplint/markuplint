@@ -35,7 +35,9 @@ import NoAmbiguousNavigableTargetNames from './no-ambiguous-navigable-target-nam
 import NoBooleanAttrValue from './no-boolean-attr-value/index.js';
 import NoConsecutiveBr from './no-consecutive-br/index.js';
 import NoDefaultValue from './no-default-value/index.js';
+import NoDuplicateAutofocus from './no-duplicate-autofocus/index.js';
 import NoDuplicateDt from './no-duplicate-dt/index.js';
+import NoDuplicateVisibleMain from './no-duplicate-visible-main/index.js';
 import NoEmptyPalpableContent from './no-empty-palpable-content/index.js';
 import NoHardCodeId from './no-hard-code-id/index.js';
 import NoOrphanedEndTag from './no-orphaned-end-tag/index.js';
@@ -55,6 +57,22 @@ import RequiredH1 from './required-h1/index.js';
 import TableRowColumnAlignment from './table-row-column-alignment/index.js';
 import UseList from './use-list/index.js';
 import WaiAria from './wai-aria/index.js';
+import WaiAriaAbstractRole from './wai-aria-abstract-role/index.js';
+import WaiAriaDefaultValue from './wai-aria-default-value/index.js';
+import WaiAriaDeprecatedProps from './wai-aria-deprecated-props/index.js';
+import WaiAriaDeprecatedRole from './wai-aria-deprecated-role/index.js';
+import WaiAriaDisallowedProps from './wai-aria-disallowed-props/index.js';
+import WaiAriaImplicitProps from './wai-aria-implicit-props/index.js';
+import WaiAriaImplicitRole from './wai-aria-implicit-role/index.js';
+import WaiAriaInteractionInHidden from './wai-aria-interaction-in-hidden/index.js';
+import WaiAriaNoGlobalProp from './wai-aria-no-global-prop/index.js';
+import WaiAriaNonExistentRole from './wai-aria-non-existent-role/index.js';
+import WaiAriaPermittedRoles from './wai-aria-permitted-roles/index.js';
+import WaiAriaPresentationalChildren from './wai-aria-presentational-children/index.js';
+import WaiAriaRequiredOwnedElements from './wai-aria-required-owned-elements/index.js';
+import WaiAriaRequiredParentRole from './wai-aria-required-parent-role/index.js';
+import WaiAriaRequiredProps from './wai-aria-required-props/index.js';
+import WaiAriaValue from './wai-aria-value/index.js';
 
 /**
  * Registry of all built-in markuplint rules, mapping rule names to their seed definitions.
@@ -87,7 +105,9 @@ const rules = {
 	'no-boolean-attr-value': NoBooleanAttrValue,
 	'no-consecutive-br': NoConsecutiveBr,
 	'no-default-value': NoDefaultValue,
+	'no-duplicate-autofocus': NoDuplicateAutofocus,
 	'no-duplicate-dt': NoDuplicateDt,
+	'no-duplicate-visible-main': NoDuplicateVisibleMain,
 	'no-empty-palpable-content': NoEmptyPalpableContent,
 	'no-hard-code-id': NoHardCodeId,
 	'no-orphaned-end-tag': NoOrphanedEndTag,
@@ -107,6 +127,22 @@ const rules = {
 	'table-row-column-alignment': TableRowColumnAlignment,
 	'use-list': UseList,
 	'wai-aria': WaiAria,
+	'wai-aria-abstract-role': WaiAriaAbstractRole,
+	'wai-aria-default-value': WaiAriaDefaultValue,
+	'wai-aria-deprecated-props': WaiAriaDeprecatedProps,
+	'wai-aria-deprecated-role': WaiAriaDeprecatedRole,
+	'wai-aria-disallowed-props': WaiAriaDisallowedProps,
+	'wai-aria-implicit-props': WaiAriaImplicitProps,
+	'wai-aria-implicit-role': WaiAriaImplicitRole,
+	'wai-aria-interaction-in-hidden': WaiAriaInteractionInHidden,
+	'wai-aria-no-global-prop': WaiAriaNoGlobalProp,
+	'wai-aria-non-existent-role': WaiAriaNonExistentRole,
+	'wai-aria-permitted-roles': WaiAriaPermittedRoles,
+	'wai-aria-presentational-children': WaiAriaPresentationalChildren,
+	'wai-aria-required-owned-elements': WaiAriaRequiredOwnedElements,
+	'wai-aria-required-parent-role': WaiAriaRequiredParentRole,
+	'wai-aria-required-props': WaiAriaRequiredProps,
+	'wai-aria-value': WaiAriaValue,
 } as const satisfies Record<string, AnyRuleSeed<any, any>>;
 
 export default rules;

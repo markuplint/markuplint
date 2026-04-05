@@ -17,8 +17,11 @@
 	},
 	"attributes": {
 		// https://html.spec.whatwg.org/multipage/form-elements.html#attr-optgroup-label
+		// https://html.spec.whatwg.org/multipage/form-elements.html#attr-optgroup-label
+		// "This attribute is mandatory."
+		// The label must not be empty — it provides the group name for the UI.
 		"label": {
-			"type": "Any",
+			"type": "NoEmptyAny",
 			"required": true
 		}
 	},

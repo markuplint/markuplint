@@ -89,3 +89,109 @@ test('[disallowed-element-invalid-003] Recommend', async () => {
 		},
 	]);
 });
+
+test('[disallowed-element-issue-3634-001] duplicate meta charset via sibling selector', async () => {
+	const { violations } = await mlRuleTest(rule, '<head><meta charset="UTF-8"><meta charset="UTF-8"></head>', {
+		rule: ['meta[charset] ~ meta[charset]'],
+	});
+	expect(violations).toStrictEqual([
+		expect.objectContaining({
+			severity: 'error',
+			col: 29,
+			raw: '<meta charset="UTF-8">',
+			message: 'The "meta[charset] ~ meta[charset]" element is disallowed',
+		}),
+	]);
+});
+
+test('[disallowed-element-issue-3634-002] single meta charset is valid', async () => {
+	const { violations } = await mlRuleTest(rule, '<head><meta charset="UTF-8"><title>test</title></head>', {
+		rule: ['meta[charset] ~ meta[charset]'],
+	});
+	expect(violations).toStrictEqual([]);
+});
+
+test('[disallowed-element-issue-3634-003] duplicate meta description via sibling selector', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<head><meta name="description" content="a"><meta name="description" content="b"></head>',
+		{ rule: ['meta[name="description" i] ~ meta[name="description" i]'] },
+	);
+	expect(violations).toStrictEqual([
+		expect.objectContaining({
+			severity: 'error',
+			raw: '<meta name="description" content="b">',
+		}),
+	]);
+});
+
+test('[disallowed-element-issue-3634-004] single meta description is valid', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<head><meta name="description" content="page desc"><title>test</title></head>',
+		{ rule: ['meta[name="description" i] ~ meta[name="description" i]'] },
+	);
+	expect(violations).toStrictEqual([]);
+});
+
+test('[disallowed-element-issue-3634-005] meta charset and http-equiv content-type coexistence', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<head><meta charset="UTF-8"><meta http-equiv="content-type" content="text/html; charset=UTF-8"></head>',
+		{
+			rule: [
+				'meta[charset] ~ meta[http-equiv="content-type" i]',
+				'meta[http-equiv="content-type" i] ~ meta[charset]',
+			],
+		},
+	);
+	expect(violations).toStrictEqual([
+		expect.objectContaining({
+			severity: 'error',
+			raw: '<meta http-equiv="content-type" content="text/html; charset=UTF-8">',
+		}),
+	]);
+});
+
+test('[disallowed-element-issue-3634-008] http-equiv content-type before charset coexistence', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<head><meta http-equiv="content-type" content="text/html; charset=UTF-8"><meta charset="UTF-8"></head>',
+		{
+			rule: [
+				'meta[charset] ~ meta[http-equiv="content-type" i]',
+				'meta[http-equiv="content-type" i] ~ meta[charset]',
+			],
+		},
+	);
+	expect(violations).toStrictEqual([
+		expect.objectContaining({
+			severity: 'error',
+			raw: '<meta charset="UTF-8">',
+		}),
+	]);
+});
+
+test('[disallowed-element-issue-3634-006] meta charset alone without http-equiv is valid', async () => {
+	const { violations } = await mlRuleTest(rule, '<head><meta charset="UTF-8"><title>test</title></head>', {
+		rule: [
+			'meta[charset] ~ meta[http-equiv="content-type" i]',
+			'meta[http-equiv="content-type" i] ~ meta[charset]',
+		],
+	});
+	expect(violations).toStrictEqual([]);
+});
+
+test('[disallowed-element-issue-3634-007] meta description case insensitive match', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<head><meta name="Description" content="a"><meta name="description" content="b"></head>',
+		{ rule: ['meta[name="description" i] ~ meta[name="description" i]'] },
+	);
+	expect(violations).toStrictEqual([
+		expect.objectContaining({
+			severity: 'error',
+			raw: '<meta name="description" content="b">',
+		}),
+	]);
+});

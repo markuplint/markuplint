@@ -1,13 +1,19 @@
 ---
 id: permitted-contents
-description: Warn if a child element has a not allowed element or text node.
+description: Validate the content model and structural constraints of HTML elements.
 ---
 
 # `permitted-contents`
 
-Warn if a child element has a not allowed element or text node.
+Validate the content model and structural constraints of HTML elements according to the [HTML Living Standard](https://html.spec.whatwg.org/). It has settings in [`@markuplint/html-spec`](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/html-spec/src).
 
-This rule refer [HTML Living Standard](https://html.spec.whatwg.org/) based [MDN Web docs](https://developer.mozilla.org/en/docs/Web/HTML). It has settings in [`@markuplint/html-spec`](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/html-spec/src).
+This rule warns when:
+
+- A child element or text node is not allowed by the parent's content model
+- An element appears as a descendant of a forbidden ancestor (e.g., `<header>` inside `<header>`)
+- A required ancestor is missing (e.g., `<area>` outside `<map>`)
+- A sibling-unique attribute appears on multiple elements of the same type (e.g., multiple `<track default>`)
+- An element that requires non-empty text content is empty or contains only whitespace (e.g., `<title>`, `<option>` without `label`)
 
 It is possible to make the structure robust by setting element relationships on template engines such as custom elements and Vue.
 
@@ -25,6 +31,13 @@ It is possible to make the structure robust by setting element relationships on 
 	<tfoot><tr><td>Wrong ordered TFOOT element<td></tr></tfoot>
 	<tbody><tr><td>Body cell<td></tr></tbody>
 </table>
+
+<!-- Forbidden ancestor: header must not appear inside header or footer -->
+<header>
+	<div>
+		<header>Not allowed nested header</header>
+	</div>
+</header>
 ```
 <!-- prettier-ignore-end -->
 
@@ -42,6 +55,10 @@ It is possible to make the structure robust by setting element relationships on 
 	<tbody><tr><td>Body cell<td></tr></tbody>
 	<tfoot><tr><td>Footer cell<td></tr></tfoot>
 </table>
+
+<header>
+	<nav>Navigation</nav>
+</header>
 ```
 <!-- prettier-ignore-end -->
 

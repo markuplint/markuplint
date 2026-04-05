@@ -823,7 +823,7 @@
 					}
 				},
 				"integrity": {
-					"type": "Any"
+					"type": "SRIHash"
 				},
 				"media": {
 					"type": "<media-query-list>"
@@ -48966,7 +48966,8 @@
 					{
 						"oneOrMore": ":model(flow):not(address, :model(heading), :model(sectioning), header, foooter, :has(address, :model(heading), :model(sectioning), header, foooter))"
 					}
-				]
+				],
+				"forbiddenAncestors": ["address"]
 			},
 			"aria": {
 				"implicitRole": "group",
@@ -50678,7 +50679,8 @@
 					{
 						"oneOrMore": ":model(flow):not(header, footer, :has(header, footer))"
 					}
-				]
+				],
+				"forbiddenAncestors": ["header", "footer"]
 			},
 			"aria": {
 				"implicitRole": "contentinfo",
@@ -51069,7 +51071,8 @@
 					{
 						"oneOrMore": ":model(flow):not(header, footer, :has(header, footer))"
 					}
-				]
+				],
+				"forbiddenAncestors": ["header", "footer"]
 			},
 			"aria": {
 				"implicitRole": "banner",
@@ -52892,7 +52895,8 @@
 					{
 						"oneOrMore": ":model(flow)"
 					}
-				]
+				],
+				"forbiddenAncestors": ["article", "aside", "footer", "header", "nav"]
 			},
 			"aria": {
 				"implicitRole": "main",
@@ -53578,7 +53582,7 @@
 				},
 				"label": {
 					"description": "The name of the group of options, which the browser can use when labeling the options in the user interface. This attribute is mandatory if this element is used.",
-					"type": "Any",
+					"type": "NoEmptyAny",
 					"required": true
 				}
 			}
@@ -53591,7 +53595,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"optional": "#text"
+						"require": "#nonEmptyText"
 					}
 				],
 				"conditional": [
@@ -53601,6 +53605,14 @@
 					},
 					{
 						"condition": "label",
+						"contents": [
+							{
+								"optional": "#text"
+							}
+						]
+					},
+					{
+						"condition": "datalist > :scope",
 						"contents": [
 							{
 								"optional": "#text"
@@ -55411,7 +55423,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"require": "#text"
+						"require": "#nonEmptyText"
 					}
 				]
 			},
@@ -55484,7 +55496,8 @@
 			"description": "The <track> HTML element is used as a child of the media elements, <audio> and <video>. Each track element lets you specify a timed text track (or time-based data) that can be displayed in parallel with the media element, for example to overlay subtitles or closed captions on top of a video or alongside audio tracks. Multiple tracks can be specified for a media element, containing different kinds of timed text data, or timed text data that has been translated for different locales. The data that is used will either be the track that has been set to be the default, or a kind and translation based on user preferences. The tracks are formatted in WebVTT format (.vtt files) — Web Video Text Tracks.",
 			"categories": [],
 			"contentModel": {
-				"contents": false
+				"contents": false,
+				"uniqueAttrs": ["default"]
 			},
 			"aria": {
 				"implicitRole": false,

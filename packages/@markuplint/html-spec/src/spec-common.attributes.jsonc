@@ -722,7 +722,7 @@
 		// https://html.spec.whatwg.org/multipage/semantics.html#attr-link-integrity
 		"integrity": {
 			// The type is hash-source (https://w3c.github.io/webappsec-subresource-integrity/#integrity-metadata-description)
-			"type": "Any"
+			"type": "SRIHash"
 		},
 		// https://html.spec.whatwg.org/multipage/semantics.html#attr-link-media
 		"media": {

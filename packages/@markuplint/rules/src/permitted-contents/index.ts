@@ -17,7 +17,13 @@ import { transparentMode } from './represent-transparent-nodes.js';
  * For each element, it resolves the applicable content model (from the HTML spec or
  * user-defined tag rules), evaluates the element's children against that model, and
  * reports violations such as unexpected elements, missing required elements, or
- * disallowed content through transparent models.
+ * disallowed content through transparent models. It also checks forbidden ancestor
+ * constraints — elements like `<header>`, `<footer>`, `<main>`, and `<address>` must
+ * not appear as descendants of certain other elements as defined by the HTML spec.
+ * Additionally, it enforces required ancestor constraints (`descendantOf`) — certain
+ * elements must appear as descendants of specific other elements. It also validates
+ * sibling-unique attribute constraints (`uniqueAttrs`) — certain attributes must not
+ * appear on more than one element of the same type within the same parent.
  */
 export default createRule<TagRule[], Options>({
 	meta: meta,
@@ -28,6 +34,81 @@ export default createRule<TagRule[], Options>({
 	},
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {
+			// Check forbidden ancestors
+			const elSpec = document.specs.specs.find(s => s.name === el.localName);
+			const forbiddenAncestors = elSpec?.contentModel?.forbiddenAncestors;
+			if (forbiddenAncestors && forbiddenAncestors.length > 0) {
+				let ancestor = el.parentElement;
+				while (ancestor) {
+					if (forbiddenAncestors.some(selector => ancestor!.matches(selector))) {
+						report({
+							scope: el,
+							message: t(
+								'{0} must not appear as a descendant of {1}',
+								t('the "{0}" {1}', el.localName, 'element'),
+								t('the "{0}" {1}', ancestor.localName, 'element'),
+							),
+						});
+						break;
+					}
+					ancestor = ancestor.parentElement;
+				}
+			}
+
+			// Check required ancestor (descendantOf)
+			const descendantOf = elSpec?.contentModel?.descendantOf;
+			if (descendantOf) {
+				let ancestor = el.parentElement;
+				let found = false;
+				while (ancestor) {
+					if (ancestor.matches(descendantOf)) {
+						found = true;
+						break;
+					}
+					ancestor = ancestor.parentElement;
+				}
+				if (!found) {
+					report({
+						scope: el,
+						message: t(
+							'{0} must appear as a descendant of {1}',
+							t('the "{0}" {1}', el.localName, 'element'),
+							t('the "{0}" {1}', descendantOf, 'element'),
+						),
+					});
+				}
+			}
+
+			// Check unique attributes among siblings of the same type
+			const uniqueAttrs = elSpec?.contentModel?.uniqueAttrs;
+			if (uniqueAttrs && uniqueAttrs.length > 0) {
+				for (const attrName of uniqueAttrs) {
+					if (!el.hasAttribute(attrName)) {
+						continue;
+					}
+					const parent = el.parentElement;
+					if (!parent) {
+						continue;
+					}
+					// Only report on the second (and subsequent) element that has the attribute
+					const precedingSiblings = [...parent.children];
+					const elIndex = precedingSiblings.indexOf(el);
+					const hasPrecedingDuplicate = precedingSiblings
+						.slice(0, elIndex)
+						.some(child => child.localName === el.localName && child.hasAttribute(attrName));
+					if (hasPrecedingDuplicate) {
+						report({
+							scope: el,
+							message: t(
+								'The "{0}" attribute must not appear on more than one "{1}" element within the same parent',
+								attrName,
+								el.localName,
+							),
+						});
+					}
+				}
+			}
+
 			const results = contentModel(el, el.rule.value, el.rule.options);
 			for (const { type, scope, query, hint } of results) {
 				let message = '';

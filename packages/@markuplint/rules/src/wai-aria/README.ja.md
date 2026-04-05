@@ -30,6 +30,12 @@ description: WAI-ARIAおよびARIA in HTMLの仕様のとおりrole属性また�
 
 <!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
 
+> [!TIP]
+> このルールは、きめ細かなseverity制御のために個別のサブルールに分割されました。
+> `markuplint:a11y`プリセットを使用すると、各チェックが独立したルール
+> （例: `wai-aria-non-existent-role`、`wai-aria-implicit-role`）として実行されます。
+> `wai-aria: true`を使用すれば、従来通り全てのチェックをまとめて有効化できます。
+
 ❌ 間違ったコード例
 
 ```html

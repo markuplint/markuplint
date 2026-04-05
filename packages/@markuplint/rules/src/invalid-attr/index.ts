@@ -70,6 +70,19 @@ export default createRule<boolean, Option>({
 				return;
 			}
 
+			// https://html.spec.whatwg.org/multipage/custom-elements.html#attr-is
+			// "The is attribute must not be specified on an autonomous custom element"
+			if (attr.name === 'is' && attr.ownerElement.elementType === 'web-component') {
+				report({
+					scope: attr,
+					line: attr.nameNode?.startLine,
+					col: attr.nameNode?.startCol,
+					raw: attr.nameNode?.raw,
+					message: t('The "{0}" attribute must not be specified on an autonomous custom element', 'is'),
+				});
+				return;
+			}
+
 			const attrSpecs = getAttrSpecs(attr.ownerElement, document.specs);
 
 			const attrName = attr.nameNode;

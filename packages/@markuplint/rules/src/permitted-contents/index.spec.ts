@@ -11,7 +11,7 @@ describe('verify', () => {
 		const { violations: violations2 } = await mlRuleTest(rule, '<a><h1></h1></a>');
 		expect(violations2).toStrictEqual([]);
 
-		const { violations: violations3 } = await mlRuleTest(rule, '<div><a><option></option></a></div>');
+		const { violations: violations3 } = await mlRuleTest(rule, '<div><a><option>x</option></a></div>');
 		expect(violations3).toStrictEqual([
 			{
 				severity: 'error',
@@ -88,6 +88,13 @@ describe('verify', () => {
 				message: 'The "address" element is not allowed in the "address" element in this context',
 				raw: '<address>',
 			},
+			{
+				severity: 'error',
+				line: 1,
+				col: 10,
+				message: 'The "address" element must not appear as a descendant of the "address" element',
+				raw: '<address>',
+			},
 		]);
 
 		const { violations: violations2 } = await mlRuleTest(
@@ -100,6 +107,13 @@ describe('verify', () => {
 				line: 1,
 				col: 25,
 				message: 'The "address" element is not allowed in the "address" element in this context',
+				raw: '<address>',
+			},
+			{
+				severity: 'error',
+				line: 1,
+				col: 25,
+				message: 'The "address" element must not appear as a descendant of the "address" element',
 				raw: '<address>',
 			},
 		]);
@@ -970,8 +984,20 @@ describe('React', () => {
 
 	test('[permitted-contents-parser-003] Expect to contain a text node', async () => {
 		expect((await mlRuleTest(rule, '<head><title>{variable}</title></head>')).violations).toStrictEqual([]);
-		expect((await mlRuleTest(rule, '<head><title>\n</title></head>')).violations).toStrictEqual([]);
-		expect((await mlRuleTest(rule, '<head><title>\n</title></head>', jsxRuleOn)).violations).toStrictEqual([]);
+		expect((await mlRuleTest(rule, '<head><title>\n</title></head>')).violations).toStrictEqual([
+			expect.objectContaining({
+				severity: 'error',
+				raw: '<title>',
+				message: 'Require an element. (Need "#nonEmptyText")',
+			}),
+		]);
+		expect((await mlRuleTest(rule, '<head><title>\n</title></head>', jsxRuleOn)).violations).toStrictEqual([
+			expect.objectContaining({
+				severity: 'error',
+				raw: '<title>',
+				message: 'Require an element. (Need "#nonEmptyText")',
+			}),
+		]);
 		expect((await mlRuleTest(rule, '<head><title>_variable_</title></head>', jsxRuleOn)).violations).toStrictEqual(
 			[],
 		);
@@ -1944,4 +1970,154 @@ describe('Issues', () => {
 		const { violations } = await mlRuleTest(rule, sourceCode);
 		expect(violations).toStrictEqual([]);
 	}, 5000);
+
+	test('[permitted-contents-issue-3632-001] main must not be descendant of article', async () => {
+		const { violations } = await mlRuleTest(rule, '<article><main>x</main></article>');
+		expect(violations).toContainEqual(
+			expect.objectContaining({
+				message: 'The "main" element must not appear as a descendant of the "article" element',
+			}),
+		);
+	});
+
+	test('[permitted-contents-issue-3632-002] main standalone is valid', async () => {
+		const { violations } = await mlRuleTest(rule, '<main>x</main>');
+		const ancestorViolations = violations.filter(v => v.message.includes('must not appear'));
+		expect(ancestorViolations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-3632-003] main in deeply nested nav', async () => {
+		const { violations } = await mlRuleTest(rule, '<nav><div><div><main>x</main></div></div></nav>');
+		expect(violations).toContainEqual(
+			expect.objectContaining({
+				message: 'The "main" element must not appear as a descendant of the "nav" element',
+			}),
+		);
+	});
+
+	test('[permitted-contents-issue-3670-001] area outside map is invalid', async () => {
+		const { violations } = await mlRuleTest(rule, '<div><area alt="x" href="#"></div>');
+		const descendantViolations = violations.filter(v => v.message?.includes('must appear as a descendant'));
+		expect(descendantViolations).toStrictEqual([
+			expect.objectContaining({
+				severity: 'error',
+				message: 'The "area" element must appear as a descendant of the "map" element',
+			}),
+		]);
+	});
+
+	test('[permitted-contents-issue-3670-002] area inside map is valid', async () => {
+		const { violations } = await mlRuleTest(rule, '<map name="m"><area alt="x" href="#"></map>');
+		const descendantViolations = violations.filter(v => v.message?.includes('descendant'));
+		expect(descendantViolations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-3670-003] area inside deeply nested map has no descendantOf violation', async () => {
+		const { violations } = await mlRuleTest(rule, '<map name="m"><div><p><area alt="x" href="#"></p></div></map>');
+		const descendantViolations = violations.filter(v => v.message?.includes('descendant'));
+		expect(descendantViolations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-3640-001] multiple track default is invalid', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<video><track kind="subtitles" src="a.vtt" default><track kind="captions" src="b.vtt" default></video>',
+		);
+		const uniqueViolations = violations.filter(v => v.message?.includes('"default" attribute'));
+		expect(uniqueViolations).toStrictEqual([
+			expect.objectContaining({
+				severity: 'error',
+				raw: '<track kind="captions" src="b.vtt" default>',
+				message:
+					'The "default" attribute must not appear on more than one "track" element within the same parent',
+			}),
+		]);
+	});
+
+	test('[permitted-contents-issue-3640-002] single track default is valid', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<video><track kind="subtitles" src="a.vtt" default><track kind="captions" src="b.vtt"></video>',
+		);
+		const uniqueViolations = violations.filter(v => v.message?.includes('"default" attribute'));
+		expect(uniqueViolations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-3640-003] multiple track default in audio is invalid', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<audio><track kind="subtitles" src="a.vtt" default><track kind="captions" src="b.vtt" default></audio>',
+		);
+		const uniqueViolations = violations.filter(v => v.message?.includes('"default" attribute'));
+		expect(uniqueViolations).toStrictEqual([
+			expect.objectContaining({
+				severity: 'error',
+				raw: '<track kind="captions" src="b.vtt" default>',
+				message:
+					'The "default" attribute must not appear on more than one "track" element within the same parent',
+			}),
+		]);
+	});
+
+	test('[permitted-contents-issue-3635-001] empty title is invalid', async () => {
+		const { violations } = await mlRuleTest(rule, '<html><head><title></title></head><body></body></html>');
+		expect(violations).toContainEqual(
+			expect.objectContaining({
+				severity: 'error',
+				raw: '<title>',
+				message: 'Require an element. (Need "#nonEmptyText")',
+			}),
+		);
+	});
+
+	test('[permitted-contents-issue-3635-002] whitespace-only title is invalid', async () => {
+		const { violations } = await mlRuleTest(rule, '<html><head><title>  </title></head><body></body></html>');
+		expect(violations).toContainEqual(
+			expect.objectContaining({
+				severity: 'error',
+				raw: '<title>',
+				message: 'Require an element. (Need "#nonEmptyText")',
+			}),
+		);
+	});
+
+	test('[permitted-contents-issue-3635-003] non-empty title is valid', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<html><head><title>Page Title</title></head><body></body></html>',
+		);
+		const titleViolations = violations.filter(v => v.raw?.includes('title'));
+		expect(titleViolations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-3635-004] empty option without label is invalid', async () => {
+		const { violations } = await mlRuleTest(rule, '<select><option></option></select>');
+		expect(violations).toContainEqual(
+			expect.objectContaining({
+				severity: 'error',
+				raw: '<option>',
+				message: 'Require an element. (Need "#nonEmptyText")',
+			}),
+		);
+	});
+
+	test('[permitted-contents-issue-3635-005] option with label can be empty', async () => {
+		const { violations } = await mlRuleTest(rule, '<select><option label="x" value="v"></option></select>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-3635-006] option with text content is valid', async () => {
+		const { violations } = await mlRuleTest(rule, '<select><option>Text</option></select>');
+		const optionViolations = violations.filter(v => v.raw?.includes('option'));
+		expect(optionViolations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-3632-004] footer in header', async () => {
+		const { violations } = await mlRuleTest(rule, '<header><footer>x</footer></header>');
+		expect(violations).toContainEqual(
+			expect.objectContaining({
+				message: 'The "footer" element must not appear as a descendant of the "header" element',
+			}),
+		);
+	});
 });

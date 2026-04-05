@@ -29,6 +29,12 @@ Warn if:
   - Set ARIA attributes on descendants of roles whose children are presentational.
   - Use focusable interactive elements hidden via `aria-hidden`.
 
+> [!TIP]
+> This rule has been split into individual sub-rules for granular severity control.
+> When using the `markuplint:a11y` preset, each check runs as an independent rule
+> (e.g., `wai-aria-non-existent-role`, `wai-aria-implicit-role`).
+> You can still use `wai-aria: true` to enable all checks at once.
+
 ❌ Examples of **incorrect** code for this rule
 
 ```html

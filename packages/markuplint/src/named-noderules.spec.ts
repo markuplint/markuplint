@@ -939,13 +939,13 @@ describe('Named nodeRules integration', () => {
 							selector: '.ignore',
 							inheritance: true,
 							rules: {
-								'wai-aria': false,
+								'wai-aria-non-existent-role': false,
 							},
 						},
 					],
 				},
 			);
-			const waiAriaViolations = violations.filter(v => v.ruleId === 'wai-aria');
+			const waiAriaViolations = violations.filter(v => v.ruleId === 'wai-aria-non-existent-role');
 			expect(waiAriaViolations).toHaveLength(0);
 		});
 
@@ -959,13 +959,13 @@ describe('Named nodeRules integration', () => {
 							selector: '.ignore',
 							inheritance: true,
 							rules: {
-								'wai-aria': false,
+								'wai-aria-non-existent-role': false,
 							},
 						},
 					],
 				},
 			);
-			const waiAriaViolations = violations.filter(v => v.ruleId === 'wai-aria');
+			const waiAriaViolations = violations.filter(v => v.ruleId === 'wai-aria-non-existent-role');
 			// role="foo" outside .ignore is still reported; role="bar" inside .ignore is suppressed
 			expect(waiAriaViolations).toHaveLength(1);
 			expect(waiAriaViolations[0]!.message).toContain('foo');
@@ -980,13 +980,13 @@ describe('Named nodeRules integration', () => {
 						{
 							selector: 'div',
 							rules: {
-								'wai-aria': false,
+								'wai-aria-non-existent-role': false,
 							},
 						},
 					],
 				},
 			);
-			const waiAriaViolations = violations.filter(v => v.ruleId === 'wai-aria');
+			const waiAriaViolations = violations.filter(v => v.ruleId === 'wai-aria-non-existent-role');
 			expect(waiAriaViolations).toHaveLength(0);
 		});
 
@@ -1033,7 +1033,7 @@ describe('Named nodeRules integration', () => {
 			expect(a11yViolations).toHaveLength(0);
 		});
 
-		it('propagates option override from base rule name to virtual rules', async () => {
+		it('propagates disable from base rule name to virtual rules via nodeRules', async () => {
 			const { violations } = await mlTest(
 				'<!doctype html><html lang="en"><head><meta charset="UTF-8"></head><body><img src="icon.svg" alt="icon" role="img" /></body></html>',
 				{
@@ -1042,22 +1042,20 @@ describe('Named nodeRules integration', () => {
 						{
 							selector: 'img[src$=".svg"]',
 							rules: {
-								'wai-aria': {
-									options: {
-										disallowSetImplicitRole: false,
-									},
-								},
+								'wai-aria-implicit-role': false,
 							},
 						},
 					],
 				},
 			);
-			// Base rule name option override propagates to a11y/wai-aria virtual rule
-			const implicitRoleViolations = violations.filter(v => v.ruleId === 'wai-aria' && v.message.includes('img'));
+			// Base rule name disable propagates to a11y/wai-aria/implicit-role virtual rule
+			const implicitRoleViolations = violations.filter(
+				v => v.ruleId === 'wai-aria-implicit-role' && v.message.includes('img'),
+			);
 			expect(implicitRoleViolations).toHaveLength(0);
 		});
 
-		it('propagates option override via childNodeRules to virtual rules', async () => {
+		it('propagates disable via childNodeRules to virtual rules', async () => {
 			const { violations } = await mlTest(
 				'<!doctype html><html lang="en"><head><meta charset="UTF-8"></head><body><div class="svg-section"><img src="icon.svg" alt="icon" role="img" /></div></body></html>',
 				{
@@ -1067,17 +1065,15 @@ describe('Named nodeRules integration', () => {
 							selector: '.svg-section',
 							inheritance: true,
 							rules: {
-								'wai-aria': {
-									options: {
-										disallowSetImplicitRole: false,
-									},
-								},
+								'wai-aria-implicit-role': false,
 							},
 						},
 					],
 				},
 			);
-			const implicitRoleViolations = violations.filter(v => v.ruleId === 'wai-aria' && v.message.includes('img'));
+			const implicitRoleViolations = violations.filter(
+				v => v.ruleId === 'wai-aria-implicit-role' && v.message.includes('img'),
+			);
 			expect(implicitRoleViolations).toHaveLength(0);
 		});
 

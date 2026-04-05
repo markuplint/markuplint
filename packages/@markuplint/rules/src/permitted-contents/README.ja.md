@@ -1,12 +1,18 @@
 ---
-description: 許可されていない要素もしくはテキストノードを子要素にもつ場合、警告します。
+description: HTML要素のコンテンツモデルと構造的な制約を検証します。
 ---
 
 # `permitted-contents`
 
-許可されていない要素もしくはテキストノードを子要素にもつ場合、警告します。
+[HTML Living Standard](https://momdo.github.io/html/)に基づき、HTML要素のコンテンツモデルと構造的な制約を検証します。[`@markuplint/html-spec`](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/html-spec/src)に設定値を持っています。
 
-[HTML Living Standard](https://momdo.github.io/html/)を基準として[MDN Web docs](https://developer.mozilla.org/ja/docs/Web/HTML)から最新情報を確認しています。 [`@markuplint/html-spec`](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/html-spec/src)に設定値を持っています。
+以下の場合に警告します:
+
+- 親要素のコンテンツモデルで許可されていない子要素やテキストノードが存在する
+- 禁止された祖先要素の子孫として要素が出現している（例: `<header>`内の`<header>`）
+- 必須の祖先要素が存在しない（例: `<map>`外の`<area>`）
+- 兄弟要素間でユニークであるべき属性が重複している（例: 複数の`<track default>`）
+- 非空テキストコンテンツが必要な要素が空またはホワイトスペースのみである（例: `<title>`、`label`属性のない`<option>`）
 
 オプションに独自のルールを設けることができます。カスタム要素やVueなどのテンプレートエンジン上での要素関係を設定することで、構造を堅牢にできます。
 
@@ -28,6 +34,13 @@ description: 許可されていない要素もしくはテキストノードを�
 	<tfoot><tr><td>許可されていない順番のtfoot要素<td></tr></tfoot>
 	<tbody><tr><td>ボディセル<td></tr></tbody>
 </table>
+
+<!-- 禁止された祖先: header要素はheaderやfooterの子孫として出現してはならない -->
+<header>
+	<div>
+		<header>許可されていないネストされたheader</header>
+	</div>
+</header>
 ```
 <!-- prettier-ignore-end -->
 
@@ -45,6 +58,10 @@ description: 許可されていない要素もしくはテキストノードを�
 	<tbody><tr><td>ボディセル<td></tr></tbody>
 	<tfoot><tr><td>フッタセル<td></tr></tfoot>
 </table>
+
+<header>
+	<nav>ナビゲーション</nav>
+</header>
 ```
 <!-- prettier-ignore-end -->
 

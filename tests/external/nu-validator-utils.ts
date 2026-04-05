@@ -22,7 +22,24 @@ export const allRulesConfig: Config = {
 		'deprecated-element': true,
 		'deprecated-attr': true,
 		'id-duplication': true,
-		'wai-aria': true,
+		'no-duplicate-autofocus': true,
+		'no-duplicate-visible-main': true,
+		'placeholder-label-option': true,
+		'link-types': { options: { allowMicroformats: true } },
+		'no-orphaned-end-tag': true,
+		'srcset-sizes-constraint': true,
+		// Normative-only ARIA sub-rules.
+		// Non-normative checks (implicit-role, deprecated-role, etc.)
+		// are excluded because they don't correspond to nu-validator checks.
+		'wai-aria-non-existent-role': true,
+		'wai-aria-abstract-role': true,
+		'wai-aria-permitted-roles': true,
+		'wai-aria-required-props': true,
+		'wai-aria-disallowed-props': true,
+		'wai-aria-value': true,
+		'wai-aria-required-owned-elements': true,
+		'wai-aria-required-parent-role': true,
+		'wai-aria-no-global-prop': true,
 	},
 };
 
@@ -52,13 +69,72 @@ export function getExpectedResult(filename: string): 'error' | 'valid' | 'skip' 
 }
 
 /**
- * Returns true if the file is testable (not a haswarn/hasinfo file).
+ * Returns true if the file is testable (not a haswarn/hasinfo file
+ * and not a known spec leniency case).
  *
- * @param filename - The HTML test filename
+ * @param filePath - The full path or relative path to the HTML test file
  * @returns Whether the file should be included in benchmarks
  */
-export function isTestable(filename: string): boolean {
-	return getExpectedResult(filename) !== 'skip';
+export function isTestable(filePath: string): boolean {
+	const filename = path.basename(filePath);
+	if (getExpectedResult(filename) === 'skip') {
+		return false;
+	}
+	if (isNuValidatorSpecLeniency(filePath)) {
+		return false;
+	}
+	return true;
+}
+
+/**
+ * Identifies nu-validator test files where nu-validator's interpretation
+ * is more lenient than the W3C ARIA specification. In these cases,
+ * markuplint's stricter behavior is spec-correct and should not be
+ * counted as a discrepancy.
+ *
+ * Excluded cases:
+ * - `roles-properties-supported-inherited/*-aria-expanded-*`:
+ *   aria-expanded is NOT a global property and is NOT inherited from
+ *   roletype. It is only defined on specific roles (button, combobox, etc.).
+ *   Verified against ARIA 1.2 and 1.3.
+ * - `mixed-value/*` and `*-aria-checked-mixed/undefined*` on non-tristate roles:
+ *   aria-checked on radio/menuitemradio/option only accepts true/false.
+ *   tristate (mixed) is only valid on checkbox/menuitemcheckbox per ARIA 1.2.
+ *
+ * @param filePath - The full path or relative path to the HTML test file
+ * @returns Whether the file is a known nu-validator spec leniency case
+ */
+export function isNuValidatorSpecLeniency(filePath: string): boolean {
+	const normalized = filePath.replaceAll(path.sep, '/');
+
+	// aria-expanded on roles that don't define it (not inherited from roletype)
+	if (
+		normalized.includes('roles-properties-supported-inherited/') &&
+		normalized.includes('-aria-expanded-')
+	) {
+		return true;
+	}
+
+	// aria-checked="mixed" on non-tristate roles (radio, menuitemradio, option)
+	if (normalized.includes('mixed-value/')) {
+		return true;
+	}
+	if (
+		normalized.includes('-aria-checked-mixed') ||
+		normalized.includes('-aria-checked-undefined')
+	) {
+		// Only exclude for roles where tristate is not valid
+		// (checkbox and menuitemcheckbox DO support tristate — don't exclude those)
+		if (
+			normalized.includes('radio-') ||
+			normalized.includes('menuitemradio-') ||
+			normalized.includes('option-')
+		) {
+			return true;
+		}
+	}
+
+	return false;
 }
 
 /**
@@ -89,7 +165,7 @@ export function collectHtmlFiles(dir: string): string[] {
  * @returns Absolute paths to testable `.html` files
  */
 export function collectTestableHtmlFiles(dir: string): string[] {
-	return collectHtmlFiles(dir).filter(f => isTestable(path.basename(f)));
+	return collectHtmlFiles(dir).filter(f => isTestable(f));
 }
 
 /**

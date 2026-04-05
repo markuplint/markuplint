@@ -50,6 +50,16 @@ test('BCP47', () => {
 	expect(check('zh/cn', 'BCP47').matched).toBe(false);
 });
 
+test('SRIHash', () => {
+	expect(check('sha256-abc123', 'SRIHash').matched).toBe(true);
+	expect(check('sha384-abc123==', 'SRIHash').matched).toBe(true);
+	expect(check('sha512-abc+def/ghi=', 'SRIHash').matched).toBe(true);
+	expect(check('sha256-abc123 sha384-def456', 'SRIHash').matched).toBe(true);
+	expect(check('md5-abc123', 'SRIHash').matched).toBe(false);
+	expect(check('sha1-abc123', 'SRIHash').matched).toBe(false);
+	expect(check('', 'SRIHash').matched).toBe(false);
+});
+
 test('Srcset', () => {
 	expect(check('a/bb/ccc/dddd', 'Srcset').matched).toBe(true);
 	expect(check('a/bb/ccc/dddd 200w', 'Srcset').matched).toBe(true);
@@ -68,6 +78,14 @@ test('Srcset', () => {
 	expect(check('a.jpg 480w, b.jpg', 'Srcset').matched).toBe(false);
 	expect(check('a.jpg 480w, b.jpg 2x', 'Srcset').matched).toBe(false);
 	expect(check('a.jpg 480w, b.jpg 2x, c.jpg', 'Srcset').matched).toBe(false);
+
+	// Width descriptor must be > 0
+	expect(check('a.jpg 0w', 'Srcset').matched).toBe(false);
+
+	// Pixel density descriptor must be > 0
+	expect(check('a.jpg 0x', 'Srcset').matched).toBe(false);
+	expect(check('a.jpg 0.0x', 'Srcset').matched).toBe(false);
+	expect(check('a.jpg -1x', 'Srcset').matched).toBe(false);
 });
 
 test('IconSize', () => {
