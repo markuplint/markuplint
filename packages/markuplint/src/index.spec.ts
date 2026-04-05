@@ -174,39 +174,51 @@ describe('basic test', () => {
 			'require-accessible-name',
 			'require-accessible-name',
 			'require-accessible-name',
-			'wai-aria',
-			'wai-aria',
-			'wai-aria',
-			'wai-aria',
-			'wai-aria',
-			'wai-aria',
-			'wai-aria',
-			'wai-aria',
-			'wai-aria',
-			'wai-aria',
-			'wai-aria',
-			'wai-aria',
-			'wai-aria',
-			'wai-aria',
-			'wai-aria',
-			'wai-aria',
-			'wai-aria',
-			'wai-aria',
-			'wai-aria',
-			'wai-aria',
-			'wai-aria',
-			'wai-aria',
-			'wai-aria',
-			'wai-aria',
-			'wai-aria',
-			'wai-aria',
-			'wai-aria',
-			'wai-aria',
-			'wai-aria',
-			'wai-aria',
-			'wai-aria',
-			'wai-aria',
-			'wai-aria',
+			'wai-aria-non-existent-role',
+			'wai-aria-non-existent-role',
+			'wai-aria-abstract-role',
+			'wai-aria-abstract-role',
+			'wai-aria-permitted-roles',
+			'wai-aria-permitted-roles',
+			'wai-aria-permitted-roles',
+			'wai-aria-permitted-roles',
+			'wai-aria-permitted-roles',
+			'wai-aria-permitted-roles',
+			'wai-aria-permitted-roles',
+			'wai-aria-implicit-role',
+			'wai-aria-implicit-role',
+			'wai-aria-implicit-role',
+			'wai-aria-implicit-role',
+			'wai-aria-implicit-role',
+			'wai-aria-implicit-role',
+			'wai-aria-implicit-role',
+			'wai-aria-implicit-props',
+			'wai-aria-implicit-props',
+			'wai-aria-implicit-props',
+			'wai-aria-implicit-props',
+			'wai-aria-implicit-props',
+			'wai-aria-implicit-props',
+			'wai-aria-required-props',
+			'wai-aria-required-props',
+			'wai-aria-disallowed-props',
+			'wai-aria-disallowed-props',
+			'wai-aria-disallowed-props',
+			'wai-aria-disallowed-props',
+			'wai-aria-disallowed-props',
+			'wai-aria-disallowed-props',
+			'wai-aria-disallowed-props',
+			'wai-aria-disallowed-props',
+			'wai-aria-disallowed-props',
+			'wai-aria-disallowed-props',
+			'wai-aria-disallowed-props',
+			'wai-aria-disallowed-props',
+			'wai-aria-disallowed-props',
+			'wai-aria-value',
+			'wai-aria-value',
+			'wai-aria-value',
+			'wai-aria-value',
+			'wai-aria-value',
+			'wai-aria-value',
 			'required-element',
 			'required-attr',
 			'required-attr',
@@ -239,6 +251,26 @@ describe('basic test', () => {
 	it('is ignoring 008.html', async () => {
 		const { violations } = await mlTestFile('test/fixture/008.html');
 		expect(violations).toStrictEqual([]);
+	});
+});
+
+describe('wai-aria sub-rule severity via preset', () => {
+	test('normative sub-rule reports as error', async () => {
+		const { violations } = await mlTest('<div role="hoge"></div>', {
+			extends: ['markuplint:a11y'],
+		});
+		const nonExistentRole = violations.find(v => v.ruleId === 'wai-aria-non-existent-role');
+		expect(nonExistentRole).toBeDefined();
+		expect(nonExistentRole!.severity).toBe('error');
+	});
+
+	test('non-normative sub-rule reports as warning', async () => {
+		const { violations } = await mlTest('<nav role="navigation"></nav>', {
+			extends: ['markuplint:a11y'],
+		});
+		const implicitRole = violations.find(v => v.ruleId === 'wai-aria-implicit-role');
+		expect(implicitRole).toBeDefined();
+		expect(implicitRole!.severity).toBe('warning');
 	});
 });
 

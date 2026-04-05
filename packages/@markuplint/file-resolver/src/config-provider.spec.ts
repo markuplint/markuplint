@@ -230,9 +230,9 @@ test('Config Presets', async () => {
 	const key = path.resolve(testDir, '007', '.markuplintrc');
 	const file = getFile(path.resolve(testDir, '007', 'target.html'));
 	const configSet = await configProvider.resolve(file, [key]);
-	expect(configSet.config.rules?.['a11y/wai-aria']).toStrictEqual({
+	expect(configSet.config.rules?.['a11y/wai-aria/non-existent-role']).toStrictEqual({
 		specConformance: 'normative',
-		rules: { 'wai-aria': true },
+		rules: { 'wai-aria-non-existent-role': true },
 	});
 });
 

@@ -130,9 +130,9 @@ describe('Config Priority', () => {
 		// @ts-ignore
 		expect(configSet?.config.rules?.__hoge).toBe(true);
 		// @ts-ignore
-		expect(configSet?.config.rules?.['a11y/wai-aria']).toStrictEqual({
+		expect(configSet?.config.rules?.['a11y/wai-aria/non-existent-role']).toStrictEqual({
 			specConformance: 'normative',
-			rules: { 'wai-aria': true },
+			rules: { 'wai-aria-non-existent-role': true },
 		});
 	});
 
@@ -155,9 +155,9 @@ describe('Config Priority', () => {
 		// @ts-ignore
 		expect(configSet?.config.rules?.__hoge).toBe(undefined);
 		// @ts-ignore
-		expect(configSet?.config.rules?.['a11y/wai-aria']).toStrictEqual({
+		expect(configSet?.config.rules?.['a11y/wai-aria/non-existent-role']).toStrictEqual({
 			specConformance: 'normative',
-			rules: { 'wai-aria': true },
+			rules: { 'wai-aria-non-existent-role': true },
 		});
 	});
 
