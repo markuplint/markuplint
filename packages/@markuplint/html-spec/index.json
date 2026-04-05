@@ -53595,7 +53595,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"optional": "#text"
+						"require": "#nonEmptyText"
 					}
 				],
 				"conditional": [
@@ -53605,6 +53605,14 @@
 					},
 					{
 						"condition": "label",
+						"contents": [
+							{
+								"optional": "#text"
+							}
+						]
+					},
+					{
+						"condition": "datalist > :scope",
 						"contents": [
 							{
 								"optional": "#text"
@@ -55415,7 +55423,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"require": "#text"
+						"require": "#nonEmptyText"
 					}
 				]
 			},
