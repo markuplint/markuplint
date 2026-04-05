@@ -32,9 +32,8 @@ fn ineffective_attr_invalid_001() {
     const _ID: &str = "ineffective-attr-invalid-001";
     let arena = html_arena(r#"<script defer>const foo = "foo";</script>"#);
     let spec = spec();
-    // style rule → default severity warning
     let config: LintConfig = serde_json::from_value(serde_json::json!({
-        "rules": { "ineffective-attr": { "severity": "warning" } }
+        "rules": { "ineffective-attr": true }
     }))
     .unwrap();
     let result = lint(&arena, &spec, &config);
@@ -56,7 +55,7 @@ fn ineffective_attr_invalid_002() {
     let arena = html_arena(r#"<script type="module" src="path/to" defer></script>"#);
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
-        "rules": { "ineffective-attr": { "severity": "warning" } }
+        "rules": { "ineffective-attr": true }
     }))
     .unwrap();
     let result = lint(&arena, &spec, &config);
