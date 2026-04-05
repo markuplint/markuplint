@@ -21,7 +21,15 @@ export type SelectorResult = Result<'UNMATCHED_SELECTOR_BUT_MAY_EMPTY' | 'MISSIN
 type Condition = {
 	selector: string;
 	hasCustom: boolean;
+	/** Whether the query allows any text node (including empty/whitespace-only). */
 	hasText: boolean;
+	/**
+	 * Whether the query requires a non-empty text node (`#nonEmptyText`).
+	 * Unlike `hasText`, this rejects text nodes that are empty or contain
+	 * only inter-element whitespace. Used for elements like `<title>` and
+	 * `<option>` (without `label`) where the spec mandates non-empty text content.
+	 */
+	hasNonEmptyText: boolean;
 };
 
 /**
@@ -47,7 +55,7 @@ export function matchesSelector(
 ): SelectorResult {
 	const nodeLog = cmLog.extend(`node#${depth}`);
 
-	const { selector, hasText, hasCustom } = optCondition(query, specs);
+	const { selector, hasText, hasNonEmptyText, hasCustom } = optCondition(query, specs);
 
 	if (childNode == null) {
 		if (hasText) {
@@ -61,6 +69,7 @@ export function matchesSelector(
 				hint: {},
 			};
 		}
+		// #nonEmptyText requires actual non-empty text — missing node is not acceptable
 		return {
 			type: 'MISSING_NODE',
 			matched: [],
@@ -72,6 +81,29 @@ export function matchesSelector(
 	}
 
 	if (childNode.is(childNode.TEXT_NODE)) {
+		if (hasNonEmptyText) {
+			if (childNode.isWhitespace()) {
+				nodeLog('<#nonEmptyText>.matches(%s) => WHITESPACE (rejected)', query);
+				return {
+					type: 'MISSING_NODE',
+					matched: [],
+					unmatched: [],
+					zeroMatch: false,
+					query,
+					hint: {},
+				};
+			}
+			nodeLog('<#nonEmptyText>.matches(%s) => "%s"', query, childNode.raw.trim());
+			return {
+				type: 'MATCHED',
+				matched: [childNode],
+				unmatched: [],
+				zeroMatch: false,
+				query,
+				hint: {},
+			};
+		}
+
 		if (hasText) {
 			nodeLog('<#text>.matches(%s) => "%s"', query, childNode.raw.trim());
 			return {
@@ -113,7 +145,7 @@ export function matchesSelector(
 			type: 'MATCHED',
 			matched: [childNode],
 			unmatched: [],
-			zeroMatch: !!hasText,
+			zeroMatch: !!(hasText || hasNonEmptyText),
 			query,
 			hint: {},
 		};
@@ -189,11 +221,19 @@ const conditionWithoutSpecs: Record<string, Condition> = {
 		selector: '#custom',
 		hasCustom: true,
 		hasText: false,
+		hasNonEmptyText: false,
 	},
 	'#text': {
 		selector: '#text',
 		hasCustom: false,
 		hasText: true,
+		hasNonEmptyText: false,
+	},
+	'#nonEmptyText': {
+		selector: '#nonEmptyText',
+		hasCustom: false,
+		hasText: false,
+		hasNonEmptyText: true,
 	},
 };
 
@@ -229,9 +269,15 @@ function optCondition(query: string, specs: Specs): Readonly<Condition> {
 
 	let hasCustom = false;
 	let hasText = false;
+	let hasNonEmptyText = false;
 
 	const selector = query.replace(/^:model\(([^)]+)\)|^#([a-z-]+)/, (_, $model, _model) => {
-		const _selectors = contentModelCategoryToTagNames(`#${$model ?? _model}` as Category, specs.def);
+		const tag = `#${$model ?? _model}`;
+		if (tag === '#nonEmptyText') {
+			hasNonEmptyText = true;
+			return '';
+		}
+		const _selectors = contentModelCategoryToTagNames(tag as Category, specs.def);
 		if (_selectors.length === 0) {
 			throw new Error(`${$model ?? _model} is empty`);
 		}
@@ -256,6 +302,7 @@ function optCondition(query: string, specs: Specs): Readonly<Condition> {
 		selector,
 		hasCustom,
 		hasText,
+		hasNonEmptyText,
 	};
 
 	queryCaches.set(query, result);

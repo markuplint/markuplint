@@ -3,9 +3,12 @@
 // https://w3c.github.io/html-aria/#el-title
 {
 	"contentModel": {
+		// https://html.spec.whatwg.org/multipage/semantics.html#the-title-element
+		// "The title element must contain at least one character that is not
+		//  inter-element whitespace."
 		"contents": [
 			{
-				"require": "#text"
+				"require": "#nonEmptyText"
 			}
 		]
 	},

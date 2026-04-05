@@ -3,9 +3,11 @@
 // https://w3c.github.io/html-aria/#el-option
 {
 	"contentModel": {
+		// https://html.spec.whatwg.org/multipage/form-elements.html#the-option-element
+		// Without the label attribute, the text content must not be empty.
 		"contents": [
 			{
-				"optional": "#text"
+				"require": "#nonEmptyText"
 			}
 		],
 		"conditional": [
@@ -15,6 +17,15 @@
 			},
 			{
 				"condition": "label",
+				"contents": [
+					{
+						"optional": "#text"
+					}
+				]
+			},
+			{
+				// In datalist, option text is optional (value attribute is used as suggestion)
+				"condition": "datalist > :scope",
 				"contents": [
 					{
 						"optional": "#text"

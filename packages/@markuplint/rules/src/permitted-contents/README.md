@@ -13,6 +13,7 @@ This rule warns when:
 - An element appears as a descendant of a forbidden ancestor (e.g., `<header>` inside `<header>`)
 - A required ancestor is missing (e.g., `<area>` outside `<map>`)
 - A sibling-unique attribute appears on multiple elements of the same type (e.g., multiple `<track default>`)
+- An element that requires non-empty text content is empty or contains only whitespace (e.g., `<title>`, `<option>` without `label`)
 
 It is possible to make the structure robust by setting element relationships on template engines such as custom elements and Vue.
 

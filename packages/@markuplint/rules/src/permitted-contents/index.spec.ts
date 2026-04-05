@@ -11,7 +11,7 @@ describe('verify', () => {
 		const { violations: violations2 } = await mlRuleTest(rule, '<a><h1></h1></a>');
 		expect(violations2).toStrictEqual([]);
 
-		const { violations: violations3 } = await mlRuleTest(rule, '<div><a><option></option></a></div>');
+		const { violations: violations3 } = await mlRuleTest(rule, '<div><a><option>x</option></a></div>');
 		expect(violations3).toStrictEqual([
 			{
 				severity: 'error',
@@ -984,8 +984,20 @@ describe('React', () => {
 
 	test('[permitted-contents-parser-003] Expect to contain a text node', async () => {
 		expect((await mlRuleTest(rule, '<head><title>{variable}</title></head>')).violations).toStrictEqual([]);
-		expect((await mlRuleTest(rule, '<head><title>\n</title></head>')).violations).toStrictEqual([]);
-		expect((await mlRuleTest(rule, '<head><title>\n</title></head>', jsxRuleOn)).violations).toStrictEqual([]);
+		expect((await mlRuleTest(rule, '<head><title>\n</title></head>')).violations).toStrictEqual([
+			expect.objectContaining({
+				severity: 'error',
+				raw: '<title>',
+				message: 'Require an element. (Need "#nonEmptyText")',
+			}),
+		]);
+		expect((await mlRuleTest(rule, '<head><title>\n</title></head>', jsxRuleOn)).violations).toStrictEqual([
+			expect.objectContaining({
+				severity: 'error',
+				raw: '<title>',
+				message: 'Require an element. (Need "#nonEmptyText")',
+			}),
+		]);
 		expect((await mlRuleTest(rule, '<head><title>_variable_</title></head>', jsxRuleOn)).violations).toStrictEqual(
 			[],
 		);
@@ -2045,6 +2057,59 @@ describe('Issues', () => {
 					'The "default" attribute must not appear on more than one "track" element within the same parent',
 			}),
 		]);
+	});
+
+	test('[permitted-contents-issue-3635-001] empty title is invalid', async () => {
+		const { violations } = await mlRuleTest(rule, '<html><head><title></title></head><body></body></html>');
+		expect(violations).toContainEqual(
+			expect.objectContaining({
+				severity: 'error',
+				raw: '<title>',
+				message: 'Require an element. (Need "#nonEmptyText")',
+			}),
+		);
+	});
+
+	test('[permitted-contents-issue-3635-002] whitespace-only title is invalid', async () => {
+		const { violations } = await mlRuleTest(rule, '<html><head><title>  </title></head><body></body></html>');
+		expect(violations).toContainEqual(
+			expect.objectContaining({
+				severity: 'error',
+				raw: '<title>',
+				message: 'Require an element. (Need "#nonEmptyText")',
+			}),
+		);
+	});
+
+	test('[permitted-contents-issue-3635-003] non-empty title is valid', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<html><head><title>Page Title</title></head><body></body></html>',
+		);
+		const titleViolations = violations.filter(v => v.raw?.includes('title'));
+		expect(titleViolations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-3635-004] empty option without label is invalid', async () => {
+		const { violations } = await mlRuleTest(rule, '<select><option></option></select>');
+		expect(violations).toContainEqual(
+			expect.objectContaining({
+				severity: 'error',
+				raw: '<option>',
+				message: 'Require an element. (Need "#nonEmptyText")',
+			}),
+		);
+	});
+
+	test('[permitted-contents-issue-3635-005] option with label can be empty', async () => {
+		const { violations } = await mlRuleTest(rule, '<select><option label="x" value="v"></option></select>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-3635-006] option with text content is valid', async () => {
+		const { violations } = await mlRuleTest(rule, '<select><option>Text</option></select>');
+		const optionViolations = violations.filter(v => v.raw?.includes('option'));
+		expect(optionViolations).toStrictEqual([]);
 	});
 
 	test('[permitted-contents-issue-3632-004] footer in header', async () => {
