@@ -36,7 +36,6 @@ import NoBooleanAttrValue from './no-boolean-attr-value/index.js';
 import NoConsecutiveBr from './no-consecutive-br/index.js';
 import NoDefaultValue from './no-default-value/index.js';
 import NoDuplicateAutofocus from './no-duplicate-autofocus/index.js';
-import NoDuplicateCharset from './no-duplicate-charset/index.js';
 import NoDuplicateDt from './no-duplicate-dt/index.js';
 import NoDuplicateVisibleMain from './no-duplicate-visible-main/index.js';
 import NoEmptyPalpableContent from './no-empty-palpable-content/index.js';
@@ -91,7 +90,6 @@ const rules = {
 	'no-consecutive-br': NoConsecutiveBr,
 	'no-default-value': NoDefaultValue,
 	'no-duplicate-autofocus': NoDuplicateAutofocus,
-	'no-duplicate-charset': NoDuplicateCharset,
 	'no-duplicate-dt': NoDuplicateDt,
 	'no-duplicate-visible-main': NoDuplicateVisibleMain,
 	'no-empty-palpable-content': NoEmptyPalpableContent,
