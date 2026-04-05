@@ -45,7 +45,9 @@ pub fn check_keyword_type(value: &str, keyword: &str) -> CheckResult {
                             column: Some(info.offset + 1),
                             expects: Some(vec![Expect {
                                 type_: ExpectType::Syntax,
-                                value: format!("the CSS Syntax \"{keyword}\" (https://csstree.github.io/docs/syntax/#Property:{syntax_name})"),
+                                value: format!(
+                                    "the CSS Syntax \"{keyword}\" (https://csstree.github.io/docs/syntax/#Property:{syntax_name})"
+                                ),
                             }]),
                             ..Default::default()
                         },
@@ -231,7 +233,8 @@ fn get_validator(keyword: &str) -> Option<Validator> {
                         }]),
                         extra: Some(Expect {
                             type_: ExpectType::Syntax,
-                            value: "https://html.spec.whatwg.org/multipage/form-elements.html#valid-custom-command".to_owned(),
+                            value: "https://html.spec.whatwg.org/multipage/form-elements.html#valid-custom-command"
+                                .to_owned(),
                         }),
                         candidate,
                         ..Default::default()
@@ -269,10 +272,14 @@ fn get_validator(keyword: &str) -> Option<Validator> {
                     },
                 )
             } else {
-                unmatched_with(v, Reason::SyntaxError, UnmatchedOpts {
-                    expects,
-                    ..Default::default()
-                })
+                unmatched_with(
+                    v,
+                    Reason::SyntaxError,
+                    UnmatchedOpts {
+                        expects,
+                        ..Default::default()
+                    },
+                )
             }
         }),
         "ItemProp" => Some(custom::check_item_prop),

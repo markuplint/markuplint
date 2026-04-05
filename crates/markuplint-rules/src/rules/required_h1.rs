@@ -60,7 +60,7 @@ impl Rule for RequiredH1 {
                     line: 1,
                     col: 1,
                     raw: doc.raw.clone(),
-            reason: None,
+                    reason: None,
                 });
             }
         } else if expected_once && h1_elements.len() > 1 {
@@ -74,7 +74,7 @@ impl Rule for RequiredH1 {
                     line: el.base.line,
                     col: el.base.col,
                     raw: el.base.raw.clone(),
-            reason: None,
+                    reason: None,
                 });
             }
         }

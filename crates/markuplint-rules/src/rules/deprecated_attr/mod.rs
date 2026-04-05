@@ -64,8 +64,8 @@ impl Rule for DeprecatedAttr {
                         line: html_attr.name.line,
                         col: html_attr.name.col,
                         raw: html_attr.name.raw.clone(),
-                    reason: None,
-            });
+                        reason: None,
+                    });
                 } else if is_obsolete {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
@@ -75,8 +75,8 @@ impl Rule for DeprecatedAttr {
                         line: html_attr.name.line,
                         col: html_attr.name.col,
                         raw: html_attr.name.raw.clone(),
-                    reason: None,
-            });
+                        reason: None,
+                    });
                 }
             }
         }

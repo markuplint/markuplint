@@ -140,7 +140,7 @@ impl Rule for UseList {
                 line: text.base.line,
                 col: text.base.col,
                 raw: text.base.raw.clone(),
-            reason: None,
+                reason: None,
             });
         }
 

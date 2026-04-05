@@ -79,7 +79,7 @@ impl Rule for NeighborPopovers {
                         line: el.base.line,
                         col: el.base.col,
                         raw: el.base.raw.clone(),
-            reason: None,
+                        reason: None,
                     });
                     break; // One violation per trigger
                 }

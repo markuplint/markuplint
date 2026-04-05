@@ -57,7 +57,7 @@ impl Rule for Doctype {
                         line: dt.base.line,
                         col: dt.base.col,
                         raw: dt.base.raw.clone(),
-            reason: None,
+                        reason: None,
                     });
                 }
             }
@@ -72,7 +72,7 @@ impl Rule for Doctype {
                 line: 1,
                 col: 1,
                 raw: String::new(),
-            reason: None,
+                reason: None,
             });
         }
 

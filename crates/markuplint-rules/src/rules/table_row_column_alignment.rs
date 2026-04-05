@@ -405,8 +405,8 @@ impl Rule for TableRowColumnAlignment {
                             line: row_el.base.line,
                             col: row_el.base.col,
                             raw: row_el.base.raw.clone(),
-                        reason: None,
-            });
+                            reason: None,
+                        });
                     }
                 }
             }
@@ -420,7 +420,7 @@ impl Rule for TableRowColumnAlignment {
                     line: el.base.line,
                     col: el.base.col,
                     raw: el.base.raw.clone(),
-            reason: None,
+                    reason: None,
                 });
             }
         }

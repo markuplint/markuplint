@@ -73,8 +73,8 @@ impl Rule for IneffectiveAttr {
                         line: html_attr.name.line,
                         col: html_attr.name.col,
                         raw: html_attr.name.raw.clone(),
-                    reason: None,
-            });
+                        reason: None,
+                    });
                 }
             }
         }

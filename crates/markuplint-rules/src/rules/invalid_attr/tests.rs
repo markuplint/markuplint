@@ -592,7 +592,10 @@ fn invalid_attr_invalid_001() {
     assert_eq!(result.violations[0].severity, Severity::Error);
     assert_eq!(result.violations[0].line, 1);
     assert_eq!(result.violations[0].col, 4);
-    assert_eq!(result.violations[0].message, "The \"invalid-attr\" attribute is disallowed");
+    assert_eq!(
+        result.violations[0].message,
+        "The \"invalid-attr\" attribute is disallowed"
+    );
     assert_eq!(result.violations[0].raw, "invalid-attr");
     assert_eq!(result.violations[1].severity, Severity::Error);
     assert_eq!(result.violations[1].line, 1);
@@ -616,12 +619,37 @@ fn invalid_attr_invalid_003() {
         .unwrap()
     };
     // Valid hidden values
-    assert_eq!(lint(&html_arena("<div hidden></div>"), &spec, &mk_config()).violations.len(), 0);
-    assert_eq!(lint(&html_arena(r#"<div hidden=""></div>"#), &spec, &mk_config()).violations.len(), 0);
-    assert_eq!(lint(&html_arena(r#"<div hidden="hidden"></div>"#), &spec, &mk_config()).violations.len(), 0);
-    assert_eq!(lint(&html_arena(r#"<div hidden="until-found"></div>"#), &spec, &mk_config()).violations.len(), 0);
+    assert_eq!(
+        lint(&html_arena("<div hidden></div>"), &spec, &mk_config())
+            .violations
+            .len(),
+        0
+    );
+    assert_eq!(
+        lint(&html_arena(r#"<div hidden=""></div>"#), &spec, &mk_config())
+            .violations
+            .len(),
+        0
+    );
+    assert_eq!(
+        lint(&html_arena(r#"<div hidden="hidden"></div>"#), &spec, &mk_config())
+            .violations
+            .len(),
+        0
+    );
+    assert_eq!(
+        lint(&html_arena(r#"<div hidden="until-found"></div>"#), &spec, &mk_config())
+            .violations
+            .len(),
+        0
+    );
     // Invalid hidden value
-    assert_eq!(lint(&html_arena(r#"<div hidden="invalid"></div>"#), &spec, &mk_config()).violations.len(), 1);
+    assert_eq!(
+        lint(&html_arena(r#"<div hidden="invalid"></div>"#), &spec, &mk_config())
+            .violations
+            .len(),
+        1
+    );
 }
 
 /// TS: `[invalid-attr-valid-003]` — input type case-insensitive
@@ -633,8 +661,18 @@ fn invalid_attr_valid_003() {
         "rules": { "invalid-attr": true }
     }))
     .unwrap();
-    assert_eq!(lint(&html_arena(r#"<input type="checkbox" checked>"#), &spec, &config).violations.len(), 0);
-    assert_eq!(lint(&html_arena(r#"<input type="checkBox" checked>"#), &spec, &config).violations.len(), 0);
+    assert_eq!(
+        lint(&html_arena(r#"<input type="checkbox" checked>"#), &spec, &config)
+            .violations
+            .len(),
+        0
+    );
+    assert_eq!(
+        lint(&html_arena(r#"<input type="checkBox" checked>"#), &spec, &config)
+            .violations
+            .len(),
+        0
+    );
 }
 
 /// TS: `[invalid-attr-invalid-005]` — unknown attr, allow via options
@@ -673,7 +711,12 @@ fn invalid_attr_valid_004() {
         "rules": { "invalid-attr": true }
     }))
     .unwrap();
-    assert_eq!(lint(&html_arena("<x-div x-attr></x-div>"), &spec, &config1).violations.len(), 0);
+    assert_eq!(
+        lint(&html_arena("<x-div x-attr></x-div>"), &spec, &config1)
+            .violations
+            .len(),
+        0
+    );
     // With disallowAttrs: violation
     let config2: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "invalid-attr": { "options": { "disallowAttrs": ["x-attr"] } } }
@@ -698,7 +741,12 @@ fn invalid_attr_invalid_006() {
         "rules": { "invalid-attr": { "options": { "disallowAttrs": [{ "name": "x-attr", "value": { "enum": ["b"] } }] } } }
     }))
     .unwrap();
-    assert_eq!(lint(&html_arena(r#"<x-div x-attr="a"></x-div>"#), &spec, &config).violations.len(), 0);
+    assert_eq!(
+        lint(&html_arena(r#"<x-div x-attr="a"></x-div>"#), &spec, &config)
+            .violations
+            .len(),
+        0
+    );
     // Value "b" in disallowed enum ["a","b","c"] — violation
     let config2: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "invalid-attr": { "options": { "disallowAttrs": [{ "name": "x-attr", "value": { "enum": ["a","b","c"] } }] } } }
@@ -709,7 +757,10 @@ fn invalid_attr_invalid_006() {
     assert_eq!(result2.violations[0].severity, Severity::Error);
     assert_eq!(result2.violations[0].line, 1);
     assert_eq!(result2.violations[0].col, 16);
-    assert_eq!(result2.violations[0].message, "The \"x-attr\" attribute is disallowed to accept the following values: \"a\", \"b\", \"c\"");
+    assert_eq!(
+        result2.violations[0].message,
+        "The \"x-attr\" attribute is disallowed to accept the following values: \"a\", \"b\", \"c\""
+    );
     assert_eq!(result2.violations[0].raw, "b");
 }
 
@@ -723,14 +774,22 @@ fn invalid_attr_invalid_007() {
         "rules": { "invalid-attr": { "options": { "disallowAttrs": [{ "name": "x-attr", "value": { "pattern": "/^a{2,}$/" } }] } } }
     }))
     .unwrap();
-    assert_eq!(lint(&html_arena(r#"<x-div x-attr="a"></x-div>"#), &spec, &config).violations.len(), 0);
+    assert_eq!(
+        lint(&html_arena(r#"<x-div x-attr="a"></x-div>"#), &spec, &config)
+            .violations
+            .len(),
+        0
+    );
     // Value "aa" matches pattern /^a{2,}$/ — violation
     let result = lint(&html_arena(r#"<x-div x-attr="aa"></x-div>"#), &spec, &config);
     assert_eq!(result.violations.len(), 1);
     assert_eq!(result.violations[0].severity, Severity::Error);
     assert_eq!(result.violations[0].line, 1);
     assert_eq!(result.violations[0].col, 16);
-    assert_eq!(result.violations[0].message, "The \"x-attr\" attribute is matched with the below disallowed patterns: /^a{2,}$/");
+    assert_eq!(
+        result.violations[0].message,
+        "The \"x-attr\" attribute is matched with the below disallowed patterns: /^a{2,}$/"
+    );
     assert_eq!(result.violations[0].raw, "aa");
 }
 
@@ -744,13 +803,21 @@ fn invalid_attr_invalid_008() {
         "rules": { "invalid-attr": { "options": { "disallowAttrs": { "x-attr": { "pattern": "/^a{2,}$/" } } } } }
     }))
     .unwrap();
-    assert_eq!(lint(&html_arena(r#"<x-div x-attr="a"></x-div>"#), &spec, &config).violations.len(), 0);
+    assert_eq!(
+        lint(&html_arena(r#"<x-div x-attr="a"></x-div>"#), &spec, &config)
+            .violations
+            .len(),
+        0
+    );
     let result = lint(&html_arena(r#"<x-div x-attr="aa"></x-div>"#), &spec, &config);
     assert_eq!(result.violations.len(), 1);
     assert_eq!(result.violations[0].severity, Severity::Error);
     assert_eq!(result.violations[0].line, 1);
     assert_eq!(result.violations[0].col, 16);
-    assert_eq!(result.violations[0].message, "The \"x-attr\" attribute is matched with the below disallowed patterns: /^a{2,}$/");
+    assert_eq!(
+        result.violations[0].message,
+        "The \"x-attr\" attribute is matched with the below disallowed patterns: /^a{2,}$/"
+    );
     assert_eq!(result.violations[0].raw, "aa");
 }
 
@@ -764,14 +831,22 @@ fn invalid_attr_invalid_009() {
     }))
     .unwrap();
     // "1.1" is not Int — no violation from disallow
-    assert_eq!(lint(&html_arena(r#"<x-div x-attr="1.1"></x-div>"#), &spec, &config).violations.len(), 0);
+    assert_eq!(
+        lint(&html_arena(r#"<x-div x-attr="1.1"></x-div>"#), &spec, &config)
+            .violations
+            .len(),
+        0
+    );
     // "1" is Int — violation
     let result = lint(&html_arena(r#"<x-div x-attr="1"></x-div>"#), &spec, &config);
     assert_eq!(result.violations.len(), 1);
     assert_eq!(result.violations[0].severity, Severity::Error);
     assert_eq!(result.violations[0].line, 1);
     assert_eq!(result.violations[0].col, 16);
-    assert_eq!(result.violations[0].message, "The type of the \"x-attr\" attribute is disallowed");
+    assert_eq!(
+        result.violations[0].message,
+        "The type of the \"x-attr\" attribute is disallowed"
+    );
     assert_eq!(result.violations[0].raw, "1");
 }
 
@@ -784,12 +859,19 @@ fn invalid_attr_invalid_010() {
         "rules": { "invalid-attr": { "options": { "allowAttrs": { "x-attr": { "pattern": "/[a-z]+/" } } } } }
     }))
     .unwrap();
-    let result = lint(&html_arena(r#"<x-el x-attr="123"></x-el><x-el x-attr="abc"></x-el>"#), &spec, &config);
+    let result = lint(
+        &html_arena(r#"<x-el x-attr="123"></x-el><x-el x-attr="abc"></x-el>"#),
+        &spec,
+        &config,
+    );
     assert_eq!(result.violations.len(), 1, "violations: {:#?}", result.violations);
     assert_eq!(result.violations[0].severity, Severity::Error);
     assert_eq!(result.violations[0].line, 1);
     assert_eq!(result.violations[0].col, 15);
-    assert_eq!(result.violations[0].message, "The \"x-attr\" attribute expects regular expression (/[a-z]+/)");
+    assert_eq!(
+        result.violations[0].message,
+        "The \"x-attr\" attribute expects regular expression (/[a-z]+/)"
+    );
     assert_eq!(result.violations[0].raw, "123");
 }
 
@@ -802,12 +884,19 @@ fn invalid_attr_invalid_011() {
         "rules": { "invalid-attr": { "options": { "allowAttrs": [{ "name": "x-attr", "value": { "pattern": "/[a-z]+/" } }] } } }
     }))
     .unwrap();
-    let result = lint(&html_arena(r#"<x-el x-attr="123"></x-el><x-el x-attr="abc"></x-el>"#), &spec, &config);
+    let result = lint(
+        &html_arena(r#"<x-el x-attr="123"></x-el><x-el x-attr="abc"></x-el>"#),
+        &spec,
+        &config,
+    );
     assert_eq!(result.violations.len(), 1, "violations: {:#?}", result.violations);
     assert_eq!(result.violations[0].severity, Severity::Error);
     assert_eq!(result.violations[0].line, 1);
     assert_eq!(result.violations[0].col, 15);
-    assert_eq!(result.violations[0].message, "The \"x-attr\" attribute expects regular expression (/[a-z]+/)");
+    assert_eq!(
+        result.violations[0].message,
+        "The \"x-attr\" attribute expects regular expression (/[a-z]+/)"
+    );
     assert_eq!(result.violations[0].raw, "123");
 }
 
@@ -820,12 +909,19 @@ fn invalid_attr_invalid_012() {
         "rules": { "invalid-attr": { "options": { "allowAttrs": { "x-attr": "Int" } } } }
     }))
     .unwrap();
-    let result = lint(&html_arena(r#"<x-el x-attr="123"></x-el><x-el x-attr="abc"></x-el>"#), &spec, &config);
+    let result = lint(
+        &html_arena(r#"<x-el x-attr="123"></x-el><x-el x-attr="abc"></x-el>"#),
+        &spec,
+        &config,
+    );
     assert_eq!(result.violations.len(), 1, "violations: {:#?}", result.violations);
     assert_eq!(result.violations[0].severity, Severity::Error);
     assert_eq!(result.violations[0].line, 1);
     assert_eq!(result.violations[0].col, 41);
-    assert_eq!(result.violations[0].message, "It includes unexpected characters. the \"x-attr\" attribute expects integer");
+    assert_eq!(
+        result.violations[0].message,
+        "It includes unexpected characters. the \"x-attr\" attribute expects integer"
+    );
     assert_eq!(result.violations[0].raw, "abc");
 }
 
@@ -841,14 +937,24 @@ fn invalid_attr_invalid_015() {
         "rules": { "invalid-attr": true }
     }))
     .unwrap();
-    let result = lint(&html_arena(r#"<div v-bind:title="title" :class="classes" @click="click"></div>"#), &spec, &config);
+    let result = lint(
+        &html_arena(r#"<div v-bind:title="title" :class="classes" @click="click"></div>"#),
+        &spec,
+        &config,
+    );
     assert_eq!(result.violations.len(), 3, "violations: {:#?}", result.violations);
     assert_eq!(result.violations[0].col, 6);
-    assert_eq!(result.violations[0].message, "The \"v-bind:title\" attribute is disallowed");
+    assert_eq!(
+        result.violations[0].message,
+        "The \"v-bind:title\" attribute is disallowed"
+    );
     assert_eq!(result.violations[0].raw, "v-bind:title");
     assert_eq!(result.violations[1].col, 27);
     // Levenshtein: `:class` → `class` (distance 1) — suggestion via typo detection
-    assert_eq!(result.violations[1].message, "The \":class\" attribute is disallowed. Did you mean \"class\"?");
+    assert_eq!(
+        result.violations[1].message,
+        "The \":class\" attribute is disallowed. Did you mean \"class\"?"
+    );
     assert_eq!(result.violations[1].raw, ":class");
     assert_eq!(result.violations[2].col, 44);
     // TS suggests "onclick" via parser candidate, but Levenshtein distance too large
@@ -865,7 +971,16 @@ fn invalid_attr_valid_006() {
         "rules": { "invalid-attr": { "options": { "ignoreAttrNamePrefix": ["v-bind:", ":", "@"] } } }
     }))
     .unwrap();
-    assert_eq!(lint(&html_arena(r#"<div v-bind:title="title" :class="classes" @click="click"></div>"#), &spec, &config).violations.len(), 0);
+    assert_eq!(
+        lint(
+            &html_arena(r#"<div v-bind:title="title" :class="classes" @click="click"></div>"#),
+            &spec,
+            &config
+        )
+        .violations
+        .len(),
+        0
+    );
 }
 
 /// TS: `[invalid-attr-valid-007]` — URL attribute
@@ -877,18 +992,82 @@ fn invalid_attr_valid_007() {
         "rules": { "invalid-attr": true }
     }))
     .unwrap();
-    assert_eq!(lint(&html_arena(r#"<img src="https://sample.com/path/to">"#), &spec, &config).violations.len(), 0);
-    assert_eq!(lint(&html_arena(r#"<img src="//sample.com/path/to">"#), &spec, &config).violations.len(), 0);
-    assert_eq!(lint(&html_arena(r#"<img src="//user:pass@sample.com/path/to">"#), &spec, &config).violations.len(), 0);
-    assert_eq!(lint(&html_arena(r#"<img src="/path/to">"#), &spec, &config).violations.len(), 0);
-    assert_eq!(lint(&html_arena(r#"<img src="/path/to?param=value">"#), &spec, &config).violations.len(), 0);
-    assert_eq!(lint(&html_arena(r#"<img src="/?param=value">"#), &spec, &config).violations.len(), 0);
-    assert_eq!(lint(&html_arena(r#"<img src="?param=value">"#), &spec, &config).violations.len(), 0);
-    assert_eq!(lint(&html_arena(r#"<img src="path/to">"#), &spec, &config).violations.len(), 0);
-    assert_eq!(lint(&html_arena(r#"<img src="./path/to">"#), &spec, &config).violations.len(), 0);
-    assert_eq!(lint(&html_arena(r#"<img src="../path/to">"#), &spec, &config).violations.len(), 0);
-    assert_eq!(lint(&html_arena(r#"<img src="/path/to#hash">"#), &spec, &config).violations.len(), 0);
-    assert_eq!(lint(&html_arena(r##"<img src="#hash">"##), &spec, &config).violations.len(), 0);
+    assert_eq!(
+        lint(&html_arena(r#"<img src="https://sample.com/path/to">"#), &spec, &config)
+            .violations
+            .len(),
+        0
+    );
+    assert_eq!(
+        lint(&html_arena(r#"<img src="//sample.com/path/to">"#), &spec, &config)
+            .violations
+            .len(),
+        0
+    );
+    assert_eq!(
+        lint(
+            &html_arena(r#"<img src="//user:pass@sample.com/path/to">"#),
+            &spec,
+            &config
+        )
+        .violations
+        .len(),
+        0
+    );
+    assert_eq!(
+        lint(&html_arena(r#"<img src="/path/to">"#), &spec, &config)
+            .violations
+            .len(),
+        0
+    );
+    assert_eq!(
+        lint(&html_arena(r#"<img src="/path/to?param=value">"#), &spec, &config)
+            .violations
+            .len(),
+        0
+    );
+    assert_eq!(
+        lint(&html_arena(r#"<img src="/?param=value">"#), &spec, &config)
+            .violations
+            .len(),
+        0
+    );
+    assert_eq!(
+        lint(&html_arena(r#"<img src="?param=value">"#), &spec, &config)
+            .violations
+            .len(),
+        0
+    );
+    assert_eq!(
+        lint(&html_arena(r#"<img src="path/to">"#), &spec, &config)
+            .violations
+            .len(),
+        0
+    );
+    assert_eq!(
+        lint(&html_arena(r#"<img src="./path/to">"#), &spec, &config)
+            .violations
+            .len(),
+        0
+    );
+    assert_eq!(
+        lint(&html_arena(r#"<img src="../path/to">"#), &spec, &config)
+            .violations
+            .len(),
+        0
+    );
+    assert_eq!(
+        lint(&html_arena(r#"<img src="/path/to#hash">"#), &spec, &config)
+            .violations
+            .len(),
+        0
+    );
+    assert_eq!(
+        lint(&html_arena(r##"<img src="#hash">"##), &spec, &config)
+            .violations
+            .len(),
+        0
+    );
 }
 
 /// TS: `[invalid-attr-valid-008]` — Foreign element (SVG)
@@ -900,7 +1079,16 @@ fn invalid_attr_valid_008() {
         "rules": { "invalid-attr": true }
     }))
     .unwrap();
-    assert_eq!(lint(&html_arena(r#"<div><svg width="10px" height="10px" viewBox="0 0 10 10"></svg></div>"#), &spec, &config).violations.len(), 0);
+    assert_eq!(
+        lint(
+            &html_arena(r#"<div><svg width="10px" height="10px" viewBox="0 0 10 10"></svg></div>"#),
+            &spec,
+            &config
+        )
+        .violations
+        .len(),
+        0
+    );
 }
 
 /// TS: `[invalid-attr-invalid-018]` — custom rule: disallowed
@@ -948,7 +1136,12 @@ fn invalid_attr_valid_009() {
         "rules": { "invalid-attr": { "options": { "allowAttrs": [{ "name": "tabindex", "value": { "enum": ["-1", "0"] } }] } } }
     }))
     .unwrap();
-    assert_eq!(lint(&html_arena(r#"<dialog tabindex="0"></dialog>"#), &spec, &config).violations.len(), 0);
+    assert_eq!(
+        lint(&html_arena(r#"<dialog tabindex="0"></dialog>"#), &spec, &config)
+            .violations
+            .len(),
+        0
+    );
 }
 
 /// TS: `[invalid-attr-valid-010]` — Booleanish (contenteditable)
@@ -960,7 +1153,12 @@ fn invalid_attr_valid_010() {
         "rules": { "invalid-attr": true }
     }))
     .unwrap();
-    assert_eq!(lint(&html_arena("<div contenteditable></div>"), &spec, &config).violations.len(), 0);
+    assert_eq!(
+        lint(&html_arena("<div contenteditable></div>"), &spec, &config)
+            .violations
+            .len(),
+        0
+    );
 }
 
 /// TS: `[invalid-attr-valid-011]` — WAI-Adapt attributes
@@ -972,8 +1170,26 @@ fn invalid_attr_valid_011() {
         "rules": { "invalid-attr": true }
     }))
     .unwrap();
-    assert_eq!(lint(&html_arena(r#"<p adapt-simplification="critical"></p>"#), &spec, &config).violations.len(), 0);
-    assert_eq!(lint(&html_arena(r#"<span adapt-easylang="90% of the time this happens"></span>"#), &spec, &config).violations.len(), 0);
+    assert_eq!(
+        lint(
+            &html_arena(r#"<p adapt-simplification="critical"></p>"#),
+            &spec,
+            &config
+        )
+        .violations
+        .len(),
+        0
+    );
+    assert_eq!(
+        lint(
+            &html_arena(r#"<span adapt-easylang="90% of the time this happens"></span>"#),
+            &spec,
+            &config
+        )
+        .violations
+        .len(),
+        0
+    );
     assert_eq!(lint(&html_arena(
         "<label for=\"address\" adapt-symbol=\"14885\">Your Principal Residence</label>\n<input type=\"text\" id=\"address\" adapt-purpose=\"street-address\">"
     ), &spec, &config).violations.len(), 0);
@@ -1003,7 +1219,12 @@ fn invalid_attr_valid_014() {
         "rules": { "invalid-attr": true }
     }))
     .unwrap();
-    assert_eq!(lint(&html_arena(r#"<div style="prop: var(--x)"></div>"#), &spec, &config).violations.len(), 0);
+    assert_eq!(
+        lint(&html_arena(r#"<div style="prop: var(--x)"></div>"#), &spec, &config)
+            .violations
+            .len(),
+        0
+    );
 }
 
 /// TS: `[invalid-attr-issue-553]` — link preload
@@ -1015,7 +1236,16 @@ fn invalid_attr_issue_553() {
         "rules": { "invalid-attr": true }
     }))
     .unwrap();
-    assert_eq!(lint(&html_arena(r#"<link rel="preload" imagesrcset="path/to" as="image" imagesizes="100vw" />"#), &spec, &config).violations.len(), 0);
+    assert_eq!(
+        lint(
+            &html_arena(r#"<link rel="preload" imagesrcset="path/to" as="image" imagesizes="100vw" />"#),
+            &spec,
+            &config
+        )
+        .violations
+        .len(),
+        0
+    );
 }
 
 /// TS: `[invalid-attr-issue-564]` — class with colon (Tailwind)
@@ -1027,8 +1257,18 @@ fn invalid_attr_issue_564() {
         "rules": { "invalid-attr": true }
     }))
     .unwrap();
-    assert_eq!(lint(&html_arena(r#"<div class="md:flex"></div>"#), &spec, &config).violations.len(), 0);
-    assert_eq!(lint(&html_arena(r#"<svg><rect class="md:flex"/></svg>"#), &spec, &config).violations.len(), 0);
+    assert_eq!(
+        lint(&html_arena(r#"<div class="md:flex"></div>"#), &spec, &config)
+            .violations
+            .len(),
+        0
+    );
+    assert_eq!(
+        lint(&html_arena(r#"<svg><rect class="md:flex"/></svg>"#), &spec, &config)
+            .violations
+            .len(),
+        0
+    );
 }
 
 /// TS: `[invalid-attr-issue-1078]` — referrerpolicy on script and img
@@ -1040,8 +1280,26 @@ fn invalid_attr_issue_1078() {
         "rules": { "invalid-attr": true }
     }))
     .unwrap();
-    assert_eq!(lint(&html_arena(r#"<script src="foo.js" referrerpolicy="no-referrer"></script>"#), &spec, &config).violations.len(), 0);
-    assert_eq!(lint(&html_arena(r#"<img src="foo.png" referrerpolicy="no-referrer"></img>"#), &spec, &config).violations.len(), 0);
+    assert_eq!(
+        lint(
+            &html_arena(r#"<script src="foo.js" referrerpolicy="no-referrer"></script>"#),
+            &spec,
+            &config
+        )
+        .violations
+        .len(),
+        0
+    );
+    assert_eq!(
+        lint(
+            &html_arena(r#"<img src="foo.png" referrerpolicy="no-referrer"></img>"#),
+            &spec,
+            &config
+        )
+        .violations
+        .len(),
+        0
+    );
 }
 
 /// TS: `[invalid-attr-issue-1357]` — SVG rect transform
@@ -1053,7 +1311,16 @@ fn invalid_attr_issue_1357() {
         "rules": { "invalid-attr": true }
     }))
     .unwrap();
-    assert_eq!(lint(&html_arena(r#"<svg><rect transform="translate(300 300) rotate(180)" /></svg>"#), &spec, &config).violations.len(), 0);
+    assert_eq!(
+        lint(
+            &html_arena(r#"<svg><rect transform="translate(300 300) rotate(180)" /></svg>"#),
+            &spec,
+            &config
+        )
+        .violations
+        .len(),
+        0
+    );
 }
 
 /// TS: `[invalid-attr-issue-1487-001]` — typo suggestion (nama → name)
@@ -1070,7 +1337,10 @@ fn invalid_attr_issue_1487_001() {
     assert_eq!(result.violations[0].severity, Severity::Error);
     assert_eq!(result.violations[0].line, 1);
     assert_eq!(result.violations[0].col, 8);
-    assert_eq!(result.violations[0].message, "The \"nama\" attribute is disallowed. Did you mean \"name\"?");
+    assert_eq!(
+        result.violations[0].message,
+        "The \"nama\" attribute is disallowed. Did you mean \"name\"?"
+    );
     assert_eq!(result.violations[0].raw, "nama");
 }
 
@@ -1088,7 +1358,10 @@ fn invalid_attr_issue_1487_002() {
     assert_eq!(result.violations[0].severity, Severity::Error);
     assert_eq!(result.violations[0].line, 1);
     assert_eq!(result.violations[0].col, 6);
-    assert_eq!(result.violations[0].message, "The \"clss\" attribute is disallowed. Did you mean \"class\"?");
+    assert_eq!(
+        result.violations[0].message,
+        "The \"clss\" attribute is disallowed. Did you mean \"class\"?"
+    );
     assert_eq!(result.violations[0].raw, "clss");
 }
 
@@ -1119,9 +1392,25 @@ fn invalid_attr_valid_021() {
         "rules": { "invalid-attr": true }
     }))
     .unwrap();
-    assert_eq!(lint(&html_arena(r#"<html lang=""></html>"#), &spec, &config).violations.len(), 0, "empty lang on html");
-    assert_eq!(lint(&html_arena("<html lang></html>"), &spec, &config).violations.len(), 0, "boolean lang on html");
-    assert_eq!(lint(&html_arena(r#"<div lang=""></div>"#), &spec, &config).violations.len(), 0, "empty lang on div");
+    assert_eq!(
+        lint(&html_arena(r#"<html lang=""></html>"#), &spec, &config)
+            .violations
+            .len(),
+        0,
+        "empty lang on html"
+    );
+    assert_eq!(
+        lint(&html_arena("<html lang></html>"), &spec, &config).violations.len(),
+        0,
+        "boolean lang on html"
+    );
+    assert_eq!(
+        lint(&html_arena(r#"<div lang=""></div>"#), &spec, &config)
+            .violations
+            .len(),
+        0,
+        "empty lang on div"
+    );
 }
 
 /// TS: `[invalid-attr-invalid-029]` — script type="speculationrules" is valid
@@ -1133,7 +1422,16 @@ fn invalid_attr_invalid_029() {
         "rules": { "invalid-attr": true }
     }))
     .unwrap();
-    assert_eq!(lint(&html_arena(r#"<script type="speculationrules">{"prerender":[{"urls":["/page"]}]}</script>"#), &spec, &config).violations.len(), 0);
+    assert_eq!(
+        lint(
+            &html_arena(r#"<script type="speculationrules">{"prerender":[{"urls":["/page"]}]}</script>"#),
+            &spec,
+            &config
+        )
+        .violations
+        .len(),
+        0
+    );
 }
 
 /// TS: `[invalid-attr-invalid-004]` — complex type (autocomplete)
@@ -1145,7 +1443,11 @@ fn invalid_attr_invalid_004() {
         "rules": { "invalid-attr": true }
     }))
     .unwrap();
-    let result = lint(&html_arena(r#"<input autocomplete="section-a section-b"/>"#), &spec, &config);
+    let result = lint(
+        &html_arena(r#"<input autocomplete="section-a section-b"/>"#),
+        &spec,
+        &config,
+    );
     assert_eq!(result.violations.len(), 1, "violations: {:#?}", result.violations);
     assert_eq!(result.violations[0].severity, Severity::Error);
     assert_eq!(result.violations[0].line, 1);
@@ -1162,8 +1464,22 @@ fn invalid_attr_valid_012() {
         "rules": { "invalid-attr": true }
     }))
     .unwrap();
-    assert_eq!(lint(&html_arena(r#"<button command="toggle-popover"></button>"#), &spec, &config).violations.len(), 0);
-    assert_eq!(lint(&html_arena(r#"<button command="--custom"></button>"#), &spec, &config).violations.len(), 0);
+    assert_eq!(
+        lint(
+            &html_arena(r#"<button command="toggle-popover"></button>"#),
+            &spec,
+            &config
+        )
+        .violations
+        .len(),
+        0
+    );
+    assert_eq!(
+        lint(&html_arena(r#"<button command="--custom"></button>"#), &spec, &config)
+            .violations
+            .len(),
+        0
+    );
     let result = lint(&html_arena(r#"<button command="invalid"></button>"#), &spec, &config);
     assert_eq!(result.violations.len(), 1, "violations: {:#?}", result.violations);
     assert_eq!(result.violations[0].col, 18);
@@ -1183,7 +1499,16 @@ fn invalid_attr_valid_015() {
         "rules": { "invalid-attr": true }
     }))
     .unwrap();
-    assert_eq!(lint(&html_arena(r#"<dialog id="d"><button command="request-close" commandfor="d">Close</button></dialog>"#), &spec, &config).violations.len(), 0);
+    assert_eq!(
+        lint(
+            &html_arena(r#"<dialog id="d"><button command="request-close" commandfor="d">Close</button></dialog>"#),
+            &spec,
+            &config
+        )
+        .violations
+        .len(),
+        0
+    );
 }
 
 /// TS: `[invalid-attr-valid-016]` — command="close" is valid
@@ -1195,7 +1520,16 @@ fn invalid_attr_valid_016() {
         "rules": { "invalid-attr": true }
     }))
     .unwrap();
-    assert_eq!(lint(&html_arena(r#"<dialog id="d"><button command="close" commandfor="d">Close</button></dialog>"#), &spec, &config).violations.len(), 0);
+    assert_eq!(
+        lint(
+            &html_arena(r#"<dialog id="d"><button command="close" commandfor="d">Close</button></dialog>"#),
+            &spec,
+            &config
+        )
+        .violations
+        .len(),
+        0
+    );
 }
 
 /// TS: `[invalid-attr-invalid-027]` — command="invalid-value" is invalid
@@ -1207,7 +1541,11 @@ fn invalid_attr_invalid_027() {
         "rules": { "invalid-attr": true }
     }))
     .unwrap();
-    let result = lint(&html_arena(r#"<dialog id="d"><button command="invalid-value" commandfor="d">Close</button></dialog>"#), &spec, &config);
+    let result = lint(
+        &html_arena(r#"<dialog id="d"><button command="invalid-value" commandfor="d">Close</button></dialog>"#),
+        &spec,
+        &config,
+    );
     assert_eq!(result.violations.len(), 1, "violations: {:#?}", result.violations);
     assert_eq!(result.violations[0].severity, Severity::Error);
     assert_eq!(result.violations[0].line, 1);
@@ -1228,7 +1566,16 @@ fn invalid_attr_valid_017() {
         "rules": { "invalid-attr": true }
     }))
     .unwrap();
-    assert_eq!(lint(&html_arena(r#"<section headingoffset="1"><h2>Title</h2></section>"#), &spec, &config).violations.len(), 0);
+    assert_eq!(
+        lint(
+            &html_arena(r#"<section headingoffset="1"><h2>Title</h2></section>"#),
+            &spec,
+            &config
+        )
+        .violations
+        .len(),
+        0
+    );
 }
 
 /// TS: `[invalid-attr-valid-018]` — headingoffset="0" is valid
@@ -1240,7 +1587,16 @@ fn invalid_attr_valid_018() {
         "rules": { "invalid-attr": true }
     }))
     .unwrap();
-    assert_eq!(lint(&html_arena(r#"<div headingoffset="0"><h1>Title</h1></div>"#), &spec, &config).violations.len(), 0);
+    assert_eq!(
+        lint(
+            &html_arena(r#"<div headingoffset="0"><h1>Title</h1></div>"#),
+            &spec,
+            &config
+        )
+        .violations
+        .len(),
+        0
+    );
 }
 
 /// TS: `[invalid-attr-valid-019]` — headingoffset="8" is valid (max)
@@ -1252,7 +1608,16 @@ fn invalid_attr_valid_019() {
         "rules": { "invalid-attr": true }
     }))
     .unwrap();
-    assert_eq!(lint(&html_arena(r#"<div headingoffset="8"><h1>Title</h1></div>"#), &spec, &config).violations.len(), 0);
+    assert_eq!(
+        lint(
+            &html_arena(r#"<div headingoffset="8"><h1>Title</h1></div>"#),
+            &spec,
+            &config
+        )
+        .violations
+        .len(),
+        0
+    );
 }
 
 /// TS: `[invalid-attr-invalid-028]` — headingoffset with non-integer value
@@ -1264,7 +1629,11 @@ fn invalid_attr_invalid_028() {
         "rules": { "invalid-attr": true }
     }))
     .unwrap();
-    let result = lint(&html_arena(r#"<div headingoffset="abc"><h1>Title</h1></div>"#), &spec, &config);
+    let result = lint(
+        &html_arena(r#"<div headingoffset="abc"><h1>Title</h1></div>"#),
+        &spec,
+        &config,
+    );
     assert_eq!(result.violations.len(), 1, "violations: {:#?}", result.violations);
     assert_eq!(result.violations[0].severity, Severity::Error);
     assert_eq!(result.violations[0].line, 1);
@@ -1285,7 +1654,12 @@ fn invalid_attr_valid_020() {
         "rules": { "invalid-attr": true }
     }))
     .unwrap();
-    assert_eq!(lint(&html_arena("<div headingreset><h1>Title</h1></div>"), &spec, &config).violations.len(), 0);
+    assert_eq!(
+        lint(&html_arena("<div headingreset><h1>Title</h1></div>"), &spec, &config)
+            .violations
+            .len(),
+        0
+    );
 }
 
 /// TS: `[invalid-attr-issue-3384-001]` — focusgroup with valid behavior keyword
@@ -1297,7 +1671,12 @@ fn invalid_attr_issue_3384_001() {
         "rules": { "invalid-attr": true }
     }))
     .unwrap();
-    assert_eq!(lint(&html_arena(r#"<div focusgroup="toolbar"></div>"#), &spec, &config).violations.len(), 0);
+    assert_eq!(
+        lint(&html_arena(r#"<div focusgroup="toolbar"></div>"#), &spec, &config)
+            .violations
+            .len(),
+        0
+    );
 }
 
 /// TS: `[invalid-attr-issue-3384-002]` — focusgroup with multiple valid tokens
@@ -1309,7 +1688,16 @@ fn invalid_attr_issue_3384_002() {
         "rules": { "invalid-attr": true }
     }))
     .unwrap();
-    assert_eq!(lint(&html_arena(r#"<div focusgroup="tablist inline wrap"></div>"#), &spec, &config).violations.len(), 0);
+    assert_eq!(
+        lint(
+            &html_arena(r#"<div focusgroup="tablist inline wrap"></div>"#),
+            &spec,
+            &config
+        )
+        .violations
+        .len(),
+        0
+    );
 }
 
 /// TS: `[invalid-attr-issue-3384-003]` — focusgroup with all valid tokens
@@ -1321,7 +1709,16 @@ fn invalid_attr_issue_3384_003() {
         "rules": { "invalid-attr": true }
     }))
     .unwrap();
-    assert_eq!(lint(&html_arena(r#"<ul focusgroup="menu block nowrap nomemory"></ul>"#), &spec, &config).violations.len(), 0);
+    assert_eq!(
+        lint(
+            &html_arena(r#"<ul focusgroup="menu block nowrap nomemory"></ul>"#),
+            &spec,
+            &config
+        )
+        .violations
+        .len(),
+        0
+    );
 }
 
 /// TS: `[invalid-attr-issue-3384-004]` — focusgroup with invalid token
@@ -1350,7 +1747,12 @@ fn invalid_attr_issue_3384_006() {
         "rules": { "invalid-attr": true }
     }))
     .unwrap();
-    assert_eq!(lint(&html_arena(r#"<li focusgroup="none"></li>"#), &spec, &config).violations.len(), 0);
+    assert_eq!(
+        lint(&html_arena(r#"<li focusgroup="none"></li>"#), &spec, &config)
+            .violations
+            .len(),
+        0
+    );
 }
 
 /// TS: `[invalid-attr-issue-3384-009]` — focusgroup with empty value is valid
@@ -1362,7 +1764,12 @@ fn invalid_attr_issue_3384_009() {
         "rules": { "invalid-attr": true }
     }))
     .unwrap();
-    assert_eq!(lint(&html_arena(r#"<div focusgroup=""></div>"#), &spec, &config).violations.len(), 0);
+    assert_eq!(
+        lint(&html_arena(r#"<div focusgroup=""></div>"#), &spec, &config)
+            .violations
+            .len(),
+        0
+    );
 }
 
 /// TS: `[invalid-attr-issue-3384-010]` — focusgroupstart boolean attribute is valid
@@ -1374,7 +1781,12 @@ fn invalid_attr_issue_3384_010() {
         "rules": { "invalid-attr": true }
     }))
     .unwrap();
-    assert_eq!(lint(&html_arena("<button focusgroupstart></button>"), &spec, &config).violations.len(), 0);
+    assert_eq!(
+        lint(&html_arena("<button focusgroupstart></button>"), &spec, &config)
+            .violations
+            .len(),
+        0
+    );
 }
 
 /// TS: `[invalid-attr-issue-3384-011]` — focusgroup on any element (global attribute)
@@ -1386,8 +1798,18 @@ fn invalid_attr_issue_3384_011() {
         "rules": { "invalid-attr": true }
     }))
     .unwrap();
-    assert_eq!(lint(&html_arena(r#"<nav focusgroup="menubar"></nav>"#), &spec, &config).violations.len(), 0);
-    assert_eq!(lint(&html_arena("<span focusgroupstart></span>"), &spec, &config).violations.len(), 0);
+    assert_eq!(
+        lint(&html_arena(r#"<nav focusgroup="menubar"></nav>"#), &spec, &config)
+            .violations
+            .len(),
+        0
+    );
+    assert_eq!(
+        lint(&html_arena("<span focusgroupstart></span>"), &spec, &config)
+            .violations
+            .len(),
+        0
+    );
 }
 
 /// TS: `[invalid-attr-issue-3631-001]` — importmap must not have src
@@ -1399,7 +1821,11 @@ fn invalid_attr_issue_3631_001() {
         "rules": { "invalid-attr": true }
     }))
     .unwrap();
-    let result = lint(&html_arena(r#"<script type="importmap" src="map.json"></script>"#), &spec, &config);
+    let result = lint(
+        &html_arena(r#"<script type="importmap" src="map.json"></script>"#),
+        &spec,
+        &config,
+    );
     assert_eq!(result.violations.len(), 1, "violations: {:#?}", result.violations);
     assert_eq!(result.violations[0].severity, Severity::Error);
     assert_eq!(result.violations[0].line, 1);
@@ -1416,7 +1842,11 @@ fn invalid_attr_issue_3631_002() {
         "rules": { "invalid-attr": true }
     }))
     .unwrap();
-    let result = lint(&html_arena(r#"<script type="speculationrules" src="rules.json"></script>"#), &spec, &config);
+    let result = lint(
+        &html_arena(r#"<script type="speculationrules" src="rules.json"></script>"#),
+        &spec,
+        &config,
+    );
     assert_eq!(result.violations.len(), 1, "violations: {:#?}", result.violations);
     assert_eq!(result.violations[0].col, 33);
     assert_eq!(result.violations[0].message, "The \"src\" attribute is disallowed");
@@ -1431,7 +1861,11 @@ fn invalid_attr_issue_3631_003() {
         "rules": { "invalid-attr": true }
     }))
     .unwrap();
-    let result = lint(&html_arena(r#"<script type="importmap" async></script>"#), &spec, &config);
+    let result = lint(
+        &html_arena(r#"<script type="importmap" async></script>"#),
+        &spec,
+        &config,
+    );
     assert_eq!(result.violations.len(), 1, "violations: {:#?}", result.violations);
     assert_eq!(result.violations[0].col, 26);
     assert_eq!(result.violations[0].message, "The \"async\" attribute is disallowed");
@@ -1446,7 +1880,11 @@ fn invalid_attr_issue_3631_004() {
         "rules": { "invalid-attr": true }
     }))
     .unwrap();
-    let result = lint(&html_arena(r#"<script type="importmap" defer></script>"#), &spec, &config);
+    let result = lint(
+        &html_arena(r#"<script type="importmap" defer></script>"#),
+        &spec,
+        &config,
+    );
     assert_eq!(result.violations.len(), 1, "violations: {:#?}", result.violations);
     assert_eq!(result.violations[0].col, 26);
     assert_eq!(result.violations[0].message, "The \"defer\" attribute is disallowed");
@@ -1461,7 +1899,11 @@ fn invalid_attr_issue_3631_005() {
         "rules": { "invalid-attr": true }
     }))
     .unwrap();
-    let result = lint(&html_arena(r#"<script type="importmap" nomodule></script>"#), &spec, &config);
+    let result = lint(
+        &html_arena(r#"<script type="importmap" nomodule></script>"#),
+        &spec,
+        &config,
+    );
     assert_eq!(result.violations.len(), 1, "violations: {:#?}", result.violations);
     assert_eq!(result.violations[0].col, 26);
     assert_eq!(result.violations[0].message, "The \"nomodule\" attribute is disallowed");
@@ -1476,7 +1918,16 @@ fn invalid_attr_issue_3631_006() {
         "rules": { "invalid-attr": true }
     }))
     .unwrap();
-    assert_eq!(lint(&html_arena(r#"<script type="module" src="m.js" defer></script>"#), &spec, &config).violations.len(), 0);
+    assert_eq!(
+        lint(
+            &html_arena(r#"<script type="module" src="m.js" defer></script>"#),
+            &spec,
+            &config
+        )
+        .violations
+        .len(),
+        0
+    );
 }
 
 /// TS: `[invalid-attr-issue-3631-007]` — charset requires src
@@ -1503,7 +1954,12 @@ fn invalid_attr_issue_3631_008() {
         "rules": { "invalid-attr": true }
     }))
     .unwrap();
-    assert_eq!(lint(&html_arena(r#"<script type="module" async>x</script>"#), &spec, &config).violations.len(), 0);
+    assert_eq!(
+        lint(&html_arena(r#"<script type="module" async>x</script>"#), &spec, &config)
+            .violations
+            .len(),
+        0
+    );
 }
 
 /// TS: `[invalid-attr-issue-3631-009]` — valid: classic with src and defer
@@ -1515,7 +1971,12 @@ fn invalid_attr_issue_3631_009() {
         "rules": { "invalid-attr": true }
     }))
     .unwrap();
-    assert_eq!(lint(&html_arena(r#"<script src="app.js" defer></script>"#), &spec, &config).violations.len(), 0);
+    assert_eq!(
+        lint(&html_arena(r#"<script src="app.js" defer></script>"#), &spec, &config)
+            .violations
+            .len(),
+        0
+    );
 }
 
 /// TS: `[invalid-attr-issue-3631-010]` — valid: classic with src and async
@@ -1527,7 +1988,12 @@ fn invalid_attr_issue_3631_010() {
         "rules": { "invalid-attr": true }
     }))
     .unwrap();
-    assert_eq!(lint(&html_arena(r#"<script src="app.js" async></script>"#), &spec, &config).violations.len(), 0);
+    assert_eq!(
+        lint(&html_arena(r#"<script src="app.js" async></script>"#), &spec, &config)
+            .violations
+            .len(),
+        0
+    );
 }
 
 /// TS: `[invalid-attr-issue-3599-001]` — srcset rejects zero width descriptor
@@ -1539,7 +2005,11 @@ fn invalid_attr_issue_3599_001() {
         "rules": { "invalid-attr": true }
     }))
     .unwrap();
-    let result = lint(&html_arena(r#"<img srcset="x 0w" sizes="100vw" src=x alt=x>"#), &spec, &config);
+    let result = lint(
+        &html_arena(r#"<img srcset="x 0w" sizes="100vw" src=x alt=x>"#),
+        &spec,
+        &config,
+    );
     assert!(result.violations.len() > 0, "srcset zero width should be invalid");
 }
 
@@ -1553,7 +2023,11 @@ fn invalid_attr_issue_3599_002() {
     }))
     .unwrap();
     let result = lint(&html_arena(r#"<img srcset="x 0x" src=x alt=x>"#), &spec, &config);
-    assert!(result.violations.len() > 0, "srcset zero density should be invalid: {:#?}", result.violations);
+    assert!(
+        result.violations.len() > 0,
+        "srcset zero density should be invalid: {:#?}",
+        result.violations
+    );
 }
 
 /// TS: `[invalid-attr-issue-3599-003]` — srcset accepts valid width descriptor
@@ -1565,7 +2039,16 @@ fn invalid_attr_issue_3599_003() {
         "rules": { "invalid-attr": true }
     }))
     .unwrap();
-    assert_eq!(lint(&html_arena(r#"<img srcset="x 100w" sizes="100vw" src=x alt=x>"#), &spec, &config).violations.len(), 0);
+    assert_eq!(
+        lint(
+            &html_arena(r#"<img srcset="x 100w" sizes="100vw" src=x alt=x>"#),
+            &spec,
+            &config
+        )
+        .violations
+        .len(),
+        0
+    );
 }
 
 // invalid-attr-issue-3626-001 — SKIP: Blocked by spec sync (#3675).
@@ -1593,7 +2076,16 @@ fn invalid_attr_issue_3626_002() {
         "rules": { "invalid-attr": true }
     }))
     .unwrap();
-    assert_eq!(lint(&html_arena(r#"<script src="x" integrity="sha256-abc123"></script>"#), &spec, &config).violations.len(), 0);
+    assert_eq!(
+        lint(
+            &html_arena(r#"<script src="x" integrity="sha256-abc123"></script>"#),
+            &spec,
+            &config
+        )
+        .violations
+        .len(),
+        0
+    );
 }
 
 /// TS: `[invalid-attr-invalid-013]` — custom element and custom rule (nodeRule)
@@ -1609,7 +2101,11 @@ fn invalid_attr_invalid_013() {
         }]
     }))
     .unwrap();
-    let result = lint(&html_arena(r#"<custom-element any-attr="any-string"></custom-element>"#), &spec, &config);
+    let result = lint(
+        &html_arena(r#"<custom-element any-attr="any-string"></custom-element>"#),
+        &spec,
+        &config,
+    );
     assert_eq!(result.violations.len(), 1, "violations: {:#?}", result.violations);
 }
 
@@ -1626,7 +2122,11 @@ fn invalid_attr_invalid_014() {
         }]
     }))
     .unwrap();
-    let result = lint(&html_arena(r#"<custom-element any-attr="any-string"></custom-element>"#), &spec, &config);
+    let result = lint(
+        &html_arena(r#"<custom-element any-attr="any-string"></custom-element>"#),
+        &spec,
+        &config,
+    );
     assert_eq!(result.violations.len(), 1, "violations: {:#?}", result.violations);
 }
 
@@ -1640,29 +2140,131 @@ fn invalid_attr_issue_1987() {
     }))
     .unwrap();
     // Valid preload destinations
-    assert_eq!(lint(&html_arena(r#"<link rel="preload" as="fetch" href="/api" />"#), &spec, &config).violations.len(), 0);
-    assert_eq!(lint(&html_arena(r#"<link rel="preload" as="font" href="/font.woff2" />"#), &spec, &config).violations.len(), 0);
-    assert_eq!(lint(&html_arena(r#"<link rel="preload" as="script" href="/app.js" />"#), &spec, &config).violations.len(), 0);
-    assert_eq!(lint(&html_arena(r#"<link rel="preload" as="style" href="/app.css" />"#), &spec, &config).violations.len(), 0);
-    assert_eq!(lint(&html_arena(r#"<link rel="preload" as="track" href="/sub.vtt" />"#), &spec, &config).violations.len(), 0);
+    assert_eq!(
+        lint(
+            &html_arena(r#"<link rel="preload" as="fetch" href="/api" />"#),
+            &spec,
+            &config
+        )
+        .violations
+        .len(),
+        0
+    );
+    assert_eq!(
+        lint(
+            &html_arena(r#"<link rel="preload" as="font" href="/font.woff2" />"#),
+            &spec,
+            &config
+        )
+        .violations
+        .len(),
+        0
+    );
+    assert_eq!(
+        lint(
+            &html_arena(r#"<link rel="preload" as="script" href="/app.js" />"#),
+            &spec,
+            &config
+        )
+        .violations
+        .len(),
+        0
+    );
+    assert_eq!(
+        lint(
+            &html_arena(r#"<link rel="preload" as="style" href="/app.css" />"#),
+            &spec,
+            &config
+        )
+        .violations
+        .len(),
+        0
+    );
+    assert_eq!(
+        lint(
+            &html_arena(r#"<link rel="preload" as="track" href="/sub.vtt" />"#),
+            &spec,
+            &config
+        )
+        .violations
+        .len(),
+        0
+    );
     // Valid modulepreload destinations
-    assert_eq!(lint(&html_arena(r#"<link rel="modulepreload" as="script" href="/mod.js" />"#), &spec, &config).violations.len(), 0);
-    assert_eq!(lint(&html_arena(r#"<link rel="modulepreload" as="worker" href="/worker.js" />"#), &spec, &config).violations.len(), 0);
-    assert_eq!(lint(&html_arena(r#"<link rel="modulepreload" as="json" href="/data.json" />"#), &spec, &config).violations.len(), 0);
-    assert_eq!(lint(&html_arena(r#"<link rel="modulepreload" as="style" href="/mod.css" />"#), &spec, &config).violations.len(), 0);
-    assert_eq!(lint(&html_arena(r#"<link rel="modulepreload" as="audioworklet" href="/audio.js" />"#), &spec, &config).violations.len(), 0);
+    assert_eq!(
+        lint(
+            &html_arena(r#"<link rel="modulepreload" as="script" href="/mod.js" />"#),
+            &spec,
+            &config
+        )
+        .violations
+        .len(),
+        0
+    );
+    assert_eq!(
+        lint(
+            &html_arena(r#"<link rel="modulepreload" as="worker" href="/worker.js" />"#),
+            &spec,
+            &config
+        )
+        .violations
+        .len(),
+        0
+    );
+    assert_eq!(
+        lint(
+            &html_arena(r#"<link rel="modulepreload" as="json" href="/data.json" />"#),
+            &spec,
+            &config
+        )
+        .violations
+        .len(),
+        0
+    );
+    assert_eq!(
+        lint(
+            &html_arena(r#"<link rel="modulepreload" as="style" href="/mod.css" />"#),
+            &spec,
+            &config
+        )
+        .violations
+        .len(),
+        0
+    );
+    assert_eq!(
+        lint(
+            &html_arena(r#"<link rel="modulepreload" as="audioworklet" href="/audio.js" />"#),
+            &spec,
+            &config
+        )
+        .violations
+        .len(),
+        0
+    );
     // Invalid: values removed from spec
     let expected_msg = "The \"as\" attribute expects either \"audioworklet\", \"fetch\", \"font\", \"image\", \"json\", \"paintworklet\", \"script\", \"serviceworker\", \"sharedworker\", \"style\", \"track\", \"worker\"";
-    let r1 = lint(&html_arena(r#"<link rel="preload" as="audio" href="/audio.mp3" />"#), &spec, &config);
+    let r1 = lint(
+        &html_arena(r#"<link rel="preload" as="audio" href="/audio.mp3" />"#),
+        &spec,
+        &config,
+    );
     assert_eq!(r1.violations.len(), 1, "as=audio: {:#?}", r1.violations);
     assert_eq!(r1.violations[0].col, 25);
     assert_eq!(r1.violations[0].message, expected_msg);
     assert_eq!(r1.violations[0].raw, "audio");
-    let r2 = lint(&html_arena(r#"<link rel="preload" as="video" href="/video.mp4" />"#), &spec, &config);
+    let r2 = lint(
+        &html_arena(r#"<link rel="preload" as="video" href="/video.mp4" />"#),
+        &spec,
+        &config,
+    );
     assert_eq!(r2.violations.len(), 1, "as=video: {:#?}", r2.violations);
     assert_eq!(r2.violations[0].message, expected_msg);
     assert_eq!(r2.violations[0].raw, "video");
-    let r3 = lint(&html_arena(r#"<link rel="preload" as="document" href="/page" />"#), &spec, &config);
+    let r3 = lint(
+        &html_arena(r#"<link rel="preload" as="document" href="/page" />"#),
+        &spec,
+        &config,
+    );
     assert_eq!(r3.violations.len(), 1, "as=document: {:#?}", r3.violations);
     assert_eq!(r3.violations[0].message, expected_msg);
     assert_eq!(r3.violations[0].raw, "document");
@@ -1727,12 +2329,19 @@ fn invalid_attr_issue_716_001() {
         }]
     }))
     .unwrap();
-    let result = lint(&html_arena(r#"<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">"#), &spec, &config);
+    let result = lint(
+        &html_arena(r#"<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">"#),
+        &spec,
+        &config,
+    );
     assert_eq!(result.violations.len(), 1, "violations: {:#?}", result.violations);
     assert_eq!(result.violations[0].severity, Severity::Error);
     assert_eq!(result.violations[0].line, 1);
     assert_eq!(result.violations[0].col, 32);
-    assert_eq!(result.violations[0].raw, "width=device-width, initial-scale=1, user-scalable=no");
+    assert_eq!(
+        result.violations[0].raw,
+        "width=device-width, initial-scale=1, user-scalable=no"
+    );
     assert_eq!(
         result.violations[0].message,
         "The \"content\" attribute is matched with the below disallowed patterns: /user-scalable\\s*=\\s*(no|0)\\b/i"
@@ -1754,12 +2363,19 @@ fn invalid_attr_issue_716_004() {
         }]
     }))
     .unwrap();
-    let result = lint(&html_arena(r#"<meta name="viewport" content="width=device-width, user-scalable = no">"#), &spec, &config);
+    let result = lint(
+        &html_arena(r#"<meta name="viewport" content="width=device-width, user-scalable = no">"#),
+        &spec,
+        &config,
+    );
     assert_eq!(result.violations.len(), 1, "violations: {:#?}", result.violations);
     assert_eq!(result.violations[0].severity, Severity::Error);
     assert_eq!(result.violations[0].line, 1);
     assert_eq!(result.violations[0].col, 32);
-    assert_eq!(result.violations[0].message, "The \"content\" attribute is matched with the below disallowed patterns: /user-scalable\\s*=\\s*(no|0)\\b/i");
+    assert_eq!(
+        result.violations[0].message,
+        "The \"content\" attribute is matched with the below disallowed patterns: /user-scalable\\s*=\\s*(no|0)\\b/i"
+    );
     assert_eq!(result.violations[0].raw, "width=device-width, user-scalable = no");
 }
 
@@ -1778,7 +2394,16 @@ fn invalid_attr_issue_716_005() {
         }]
     }))
     .unwrap();
-    assert_eq!(lint(&html_arena(r#"<meta name="viewport" content="width=device-width, initial-scale=1">"#), &spec, &config).violations.len(), 0);
+    assert_eq!(
+        lint(
+            &html_arena(r#"<meta name="viewport" content="width=device-width, initial-scale=1">"#),
+            &spec,
+            &config
+        )
+        .violations
+        .len(),
+        0
+    );
 }
 
 /// TS: `[invalid-attr-issue-716-008]` — non-viewport meta is not affected
@@ -1796,7 +2421,16 @@ fn invalid_attr_issue_716_008() {
         }]
     }))
     .unwrap();
-    assert_eq!(lint(&html_arena(r#"<meta name="description" content="user-scalable=no">"#), &spec, &config).violations.len(), 0);
+    assert_eq!(
+        lint(
+            &html_arena(r#"<meta name="description" content="user-scalable=no">"#),
+            &spec,
+            &config
+        )
+        .violations
+        .len(),
+        0
+    );
 }
 
 /// TS: `[invalid-attr-issue-3384-005]` — focusgroup with valid and invalid tokens mixed
@@ -1808,7 +2442,11 @@ fn invalid_attr_issue_3384_005() {
         "rules": { "invalid-attr": true }
     }))
     .unwrap();
-    let result = lint(&html_arena(r#"<div focusgroup="toolbar invalidmod"></div>"#), &spec, &config);
+    let result = lint(
+        &html_arena(r#"<div focusgroup="toolbar invalidmod"></div>"#),
+        &spec,
+        &config,
+    );
     assert_eq!(result.violations.len(), 1, "violations: {:#?}", result.violations);
     assert_eq!(result.violations[0].raw, "invalidmod");
 }
@@ -1822,8 +2460,22 @@ fn invalid_attr_issue_3384_007() {
         "rules": { "invalid-attr": true }
     }))
     .unwrap();
-    assert_eq!(lint(&html_arena(r#"<div focusgroup="TOOLBAR"></div>"#), &spec, &config).violations.len(), 0);
-    assert_eq!(lint(&html_arena(r#"<div focusgroup="Menu Inline Wrap"></div>"#), &spec, &config).violations.len(), 0);
+    assert_eq!(
+        lint(&html_arena(r#"<div focusgroup="TOOLBAR"></div>"#), &spec, &config)
+            .violations
+            .len(),
+        0
+    );
+    assert_eq!(
+        lint(
+            &html_arena(r#"<div focusgroup="Menu Inline Wrap"></div>"#),
+            &spec,
+            &config
+        )
+        .violations
+        .len(),
+        0
+    );
 }
 
 /// TS: `[invalid-attr-issue-3384-008]` — focusgroup rejects duplicate tokens
@@ -1835,8 +2487,16 @@ fn invalid_attr_issue_3384_008() {
         "rules": { "invalid-attr": true }
     }))
     .unwrap();
-    let result = lint(&html_arena(r#"<div focusgroup="toolbar toolbar"></div>"#), &spec, &config);
-    assert!(result.violations.len() >= 1, "duplicate tokens should be rejected: {:#?}", result.violations);
+    let result = lint(
+        &html_arena(r#"<div focusgroup="toolbar toolbar"></div>"#),
+        &spec,
+        &config,
+    );
+    assert!(
+        result.violations.len() >= 1,
+        "duplicate tokens should be rejected: {:#?}",
+        result.violations
+    );
 }
 
 /// TS: `[invalid-attr-invalid-020]` — SVG unknown attr (cz on circle)
@@ -1854,10 +2514,12 @@ fn invalid_attr_invalid_020() {
     assert_eq!(result.violations[0].severity, Severity::Error);
     assert_eq!(result.violations[0].line, 2);
     assert_eq!(result.violations[0].col, 30);
-    assert_eq!(result.violations[0].message, "The \"cz\" attribute is disallowed. Did you mean \"cx\"?");
+    assert_eq!(
+        result.violations[0].message,
+        "The \"cz\" attribute is disallowed. Did you mean \"cx\"?"
+    );
     assert_eq!(result.violations[0].raw, "cz");
 }
-
 
 /// TS: `[invalid-attr-invalid-021]` — SVG rect mask invalid CSS
 #[test]
@@ -1874,7 +2536,10 @@ fn invalid_attr_invalid_021() {
     assert_eq!(result.violations[0].severity, Severity::Error);
     assert_eq!(result.violations[0].line, 3);
     assert_eq!(result.violations[0].col, 6);
-    assert_eq!(result.violations[0].message, "The value part of the \"mask\" attribute expects the CSS Syntax \"<'mask'>\" (https://csstree.github.io/docs/syntax/#Property:mask)");
+    assert_eq!(
+        result.violations[0].message,
+        "The value part of the \"mask\" attribute expects the CSS Syntax \"<'mask'>\" (https://csstree.github.io/docs/syntax/#Property:mask)"
+    );
     assert_eq!(result.violations[0].raw, "hogehoge");
 }
 
@@ -1888,7 +2553,18 @@ fn invalid_attr_invalid_022() {
     }))
     .unwrap();
     // TS: empty violations (transform value is valid)
-    assert_eq!(lint(&html_arena("<svg>\n\t\t\t\t\t\t<rect transform=\"translate(300px, 300px)\" />\n\t\t\t\t\t</svg>\n\t\t\t\t\t"), &spec, &config).violations.len(), 0);
+    assert_eq!(
+        lint(
+            &html_arena(
+                "<svg>\n\t\t\t\t\t\t<rect transform=\"translate(300px, 300px)\" />\n\t\t\t\t\t</svg>\n\t\t\t\t\t"
+            ),
+            &spec,
+            &config
+        )
+        .violations
+        .len(),
+        0
+    );
 }
 
 /// TS: `[invalid-attr-issue-716-002]` — viewport user-scalable=0 violation
@@ -1906,10 +2582,17 @@ fn invalid_attr_issue_716_002() {
         }]
     }))
     .unwrap();
-    let result = lint(&html_arena(r#"<meta name="viewport" content="width=device-width, user-scalable=0">"#), &spec, &config);
+    let result = lint(
+        &html_arena(r#"<meta name="viewport" content="width=device-width, user-scalable=0">"#),
+        &spec,
+        &config,
+    );
     assert_eq!(result.violations.len(), 1, "violations: {:#?}", result.violations);
     assert_eq!(result.violations[0].col, 32);
-    assert_eq!(result.violations[0].message, "The \"content\" attribute is matched with the below disallowed patterns: /user-scalable\\s*=\\s*(no|0)\\b/i");
+    assert_eq!(
+        result.violations[0].message,
+        "The \"content\" attribute is matched with the below disallowed patterns: /user-scalable\\s*=\\s*(no|0)\\b/i"
+    );
     assert_eq!(result.violations[0].raw, "width=device-width, user-scalable=0");
 }
 
@@ -1928,9 +2611,16 @@ fn invalid_attr_issue_716_003() {
         }]
     }))
     .unwrap();
-    let result = lint(&html_arena(r#"<meta name="viewport" content="width=device-width, user-scalable=NO">"#), &spec, &config);
+    let result = lint(
+        &html_arena(r#"<meta name="viewport" content="width=device-width, user-scalable=NO">"#),
+        &spec,
+        &config,
+    );
     assert_eq!(result.violations.len(), 1, "violations: {:#?}", result.violations);
-    assert_eq!(result.violations[0].message, "The \"content\" attribute is matched with the below disallowed patterns: /user-scalable\\s*=\\s*(no|0)\\b/i");
+    assert_eq!(
+        result.violations[0].message,
+        "The \"content\" attribute is matched with the below disallowed patterns: /user-scalable\\s*=\\s*(no|0)\\b/i"
+    );
     assert_eq!(result.violations[0].raw, "width=device-width, user-scalable=NO");
 }
 
@@ -1949,7 +2639,16 @@ fn invalid_attr_issue_716_006() {
         }]
     }))
     .unwrap();
-    assert_eq!(lint(&html_arena(r#"<meta name="viewport" content="width=device-width, user-scalable=yes">"#), &spec, &config).violations.len(), 0);
+    assert_eq!(
+        lint(
+            &html_arena(r#"<meta name="viewport" content="width=device-width, user-scalable=yes">"#),
+            &spec,
+            &config
+        )
+        .violations
+        .len(),
+        0
+    );
 }
 
 /// TS: `[invalid-attr-issue-716-007]` — no violation: user-scalable=1
@@ -1967,7 +2666,16 @@ fn invalid_attr_issue_716_007() {
         }]
     }))
     .unwrap();
-    assert_eq!(lint(&html_arena(r#"<meta name="viewport" content="width=device-width, user-scalable=1">"#), &spec, &config).violations.len(), 0);
+    assert_eq!(
+        lint(
+            &html_arena(r#"<meta name="viewport" content="width=device-width, user-scalable=1">"#),
+            &spec,
+            &config
+        )
+        .violations
+        .len(),
+        0
+    );
 }
 
 /// TS: `[invalid-attr-invalid-016]` — Overwrite type (object form allowAttrs)
@@ -1980,19 +2688,35 @@ fn invalid_attr_invalid_016() {
         "rules": { "invalid-attr": { "options": { "allowAttrs": { "datetime": { "enum": ["overwrite-type"] } } } } }
     }))
     .unwrap();
-    let result1 = lint(&html_arena(r#"<time datetime="overwrite-type"></time><time datetime="2000-01-01"></time>"#), &spec, &config1);
-    assert_eq!(result1.violations.len(), 1, "overwrite config: {:#?}", result1.violations);
+    let result1 = lint(
+        &html_arena(r#"<time datetime="overwrite-type"></time><time datetime="2000-01-01"></time>"#),
+        &spec,
+        &config1,
+    );
+    assert_eq!(
+        result1.violations.len(),
+        1,
+        "overwrite config: {:#?}",
+        result1.violations
+    );
     assert_eq!(result1.violations[0].severity, Severity::Error);
     assert_eq!(result1.violations[0].line, 1);
     assert_eq!(result1.violations[0].col, 56);
-    assert_eq!(result1.violations[0].message, "The \"datetime\" attribute expects overwrite-type");
+    assert_eq!(
+        result1.violations[0].message,
+        "The \"datetime\" attribute expects overwrite-type"
+    );
     assert_eq!(result1.violations[0].raw, "2000-01-01");
     // Without overwrite: "overwrite-type" is invalid datetime
     let config2: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "invalid-attr": true }
     }))
     .unwrap();
-    let result2 = lint(&html_arena(r#"<time datetime="overwrite-type"></time><time datetime="2000-01-01"></time>"#), &spec, &config2);
+    let result2 = lint(
+        &html_arena(r#"<time datetime="overwrite-type"></time><time datetime="2000-01-01"></time>"#),
+        &spec,
+        &config2,
+    );
     assert_eq!(result2.violations.len(), 1, "default config: {:#?}", result2.violations);
     assert_eq!(result2.violations[0].line, 1);
     assert_eq!(result2.violations[0].col, 17);
@@ -2008,16 +2732,32 @@ fn invalid_attr_invalid_017() {
         "rules": { "invalid-attr": { "options": { "allowAttrs": [{ "name": "datetime", "value": { "enum": ["overwrite-type"] } }] } } }
     }))
     .unwrap();
-    let result1 = lint(&html_arena(r#"<time datetime="overwrite-type"></time><time datetime="2000-01-01"></time>"#), &spec, &config1);
-    assert_eq!(result1.violations.len(), 1, "overwrite config: {:#?}", result1.violations);
+    let result1 = lint(
+        &html_arena(r#"<time datetime="overwrite-type"></time><time datetime="2000-01-01"></time>"#),
+        &spec,
+        &config1,
+    );
+    assert_eq!(
+        result1.violations.len(),
+        1,
+        "overwrite config: {:#?}",
+        result1.violations
+    );
     assert_eq!(result1.violations[0].col, 56);
-    assert_eq!(result1.violations[0].message, "The \"datetime\" attribute expects overwrite-type");
+    assert_eq!(
+        result1.violations[0].message,
+        "The \"datetime\" attribute expects overwrite-type"
+    );
     assert_eq!(result1.violations[0].raw, "2000-01-01");
     let config2: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "invalid-attr": true }
     }))
     .unwrap();
-    let result2 = lint(&html_arena(r#"<time datetime="overwrite-type"></time><time datetime="2000-01-01"></time>"#), &spec, &config2);
+    let result2 = lint(
+        &html_arena(r#"<time datetime="overwrite-type"></time><time datetime="2000-01-01"></time>"#),
+        &spec,
+        &config2,
+    );
     assert_eq!(result2.violations.len(), 1, "default config: {:#?}", result2.violations);
     assert_eq!(result2.violations[0].col, 17);
     assert_eq!(result2.violations[0].raw, "overwrite-type");
@@ -2049,12 +2789,18 @@ fn invalid_attr_invalid_024() {
     assert_eq!(result.violations[0].severity, Severity::Error);
     assert_eq!(result.violations[0].line, 2);
     assert_eq!(result.violations[0].col, 18);
-    assert_eq!(result.violations[0].message, "The \"srcset\" attribute expects either \"logo@2x.png 2x\", \"logo@3x.png 3x\"");
+    assert_eq!(
+        result.violations[0].message,
+        "The \"srcset\" attribute expects either \"logo@2x.png 2x\", \"logo@3x.png 3x\""
+    );
     assert_eq!(result.violations[0].raw, "logo-3x.png 3x");
     assert_eq!(result.violations[1].severity, Severity::Error);
     assert_eq!(result.violations[1].line, 4);
     assert_eq!(result.violations[1].col, 18);
-    assert_eq!(result.violations[1].message, "The \"srcset\" attribute expects either \"logo@2x.png 2x\", \"logo@3x.png 3x\"");
+    assert_eq!(
+        result.violations[1].message,
+        "The \"srcset\" attribute expects either \"logo@2x.png 2x\", \"logo@3x.png 3x\""
+    );
     assert_eq!(result.violations[1].raw, "logo-2x.png 2x");
 }
 
@@ -2083,10 +2829,16 @@ fn invalid_attr_invalid_025() {
     assert_eq!(result.violations.len(), 2, "violations: {:#?}", result.violations);
     assert_eq!(result.violations[0].line, 2);
     assert_eq!(result.violations[0].col, 18);
-    assert_eq!(result.violations[0].message, "The \"srcset\" attribute expects either \"logo@2x.png 2x\", \"logo@3x.png 3x\"");
+    assert_eq!(
+        result.violations[0].message,
+        "The \"srcset\" attribute expects either \"logo@2x.png 2x\", \"logo@3x.png 3x\""
+    );
     assert_eq!(result.violations[0].raw, "logo-3x.png 3x");
     assert_eq!(result.violations[1].line, 4);
     assert_eq!(result.violations[1].col, 18);
-    assert_eq!(result.violations[1].message, "The \"srcset\" attribute expects either \"logo@2x.png 2x\", \"logo@3x.png 3x\"");
+    assert_eq!(
+        result.violations[1].message,
+        "The \"srcset\" attribute expects either \"logo@2x.png 2x\", \"logo@3x.png 3x\""
+    );
     assert_eq!(result.violations[1].raw, "logo-2x.png 2x");
 }

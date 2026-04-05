@@ -312,20 +312,38 @@ fn class_naming_invalid_005() {
     assert_eq!(result.violations[0].line, 19);
     assert_eq!(result.violations[0].col, 14);
     assert_eq!(result.violations[0].raw, "Heading__lv3");
-    assert_eq!(result.violations[0].message, "The \"Heading__lv3\" class name is unmatched with the below patterns: \"/^Card__[a-z][a-z0-9-]+$/\", \"/^([A-Z][a-z0-9]+)$/\"");
-    assert_eq!(result.violations[0].reason.as_deref(), Some("Do not allow include the element in a no-own block."));
+    assert_eq!(
+        result.violations[0].message,
+        "The \"Heading__lv3\" class name is unmatched with the below patterns: \"/^Card__[a-z][a-z0-9-]+$/\", \"/^([A-Z][a-z0-9]+)$/\""
+    );
+    assert_eq!(
+        result.violations[0].reason.as_deref(),
+        Some("Do not allow include the element in a no-own block.")
+    );
     assert_eq!(result.violations[1].severity, Severity::Warning);
     assert_eq!(result.violations[1].line, 24);
     assert_eq!(result.violations[1].col, 14);
     assert_eq!(result.violations[1].raw, "List__group");
-    assert_eq!(result.violations[1].message, "The \"List__group\" class name is unmatched with the below patterns: \"/^Card__[a-z][a-z0-9-]+$/\", \"/^([A-Z][a-z0-9]+)$/\"");
-    assert_eq!(result.violations[1].reason.as_deref(), Some("Do not allow include the element in a no-own block."));
+    assert_eq!(
+        result.violations[1].message,
+        "The \"List__group\" class name is unmatched with the below patterns: \"/^Card__[a-z][a-z0-9-]+$/\", \"/^([A-Z][a-z0-9]+)$/\""
+    );
+    assert_eq!(
+        result.violations[1].reason.as_deref(),
+        Some("Do not allow include the element in a no-own block.")
+    );
     assert_eq!(result.violations[2].severity, Severity::Warning);
     assert_eq!(result.violations[2].line, 31);
     assert_eq!(result.violations[2].col, 15);
     assert_eq!(result.violations[2].raw, "Card__list");
-    assert_eq!(result.violations[2].message, "The \"Card__list\" class name is unmatched with the below patterns: \"/^List__[a-z][a-z0-9-]+$/\", \"/^([A-Z][a-z0-9]+)$/\"");
-    assert_eq!(result.violations[2].reason.as_deref(), Some("Do not allow include the element in a no-own block."));
+    assert_eq!(
+        result.violations[2].message,
+        "The \"Card__list\" class name is unmatched with the below patterns: \"/^List__[a-z][a-z0-9-]+$/\", \"/^([A-Z][a-z0-9]+)$/\""
+    );
+    assert_eq!(
+        result.violations[2].reason.as_deref(),
+        Some("Do not allow include the element in a no-own block.")
+    );
 }
 
 /// TS: `[class-naming-invalid-006]` — regexSelector inheritance
@@ -361,14 +379,26 @@ fn class_naming_invalid_006() {
     assert_eq!(result.violations[0].line, 9);
     assert_eq!(result.violations[0].col, 14);
     assert_eq!(result.violations[0].raw, "Heading_text");
-    assert_eq!(result.violations[0].message, "The \"Heading_text\" class name is unmatched with the below patterns: \"/^Card__[a-z][a-z0-9-]+$/\", \"/^([A-Z][a-z0-9]+)$/\"");
-    assert_eq!(result.violations[0].reason.as_deref(), Some("Do not allow include the element in a no-own block."));
+    assert_eq!(
+        result.violations[0].message,
+        "The \"Heading_text\" class name is unmatched with the below patterns: \"/^Card__[a-z][a-z0-9-]+$/\", \"/^([A-Z][a-z0-9]+)$/\""
+    );
+    assert_eq!(
+        result.violations[0].reason.as_deref(),
+        Some("Do not allow include the element in a no-own block.")
+    );
     assert_eq!(result.violations[1].severity, Severity::Warning);
     assert_eq!(result.violations[1].line, 10);
     assert_eq!(result.violations[1].col, 14);
     assert_eq!(result.violations[1].raw, "Card_text");
-    assert_eq!(result.violations[1].message, "The \"Card_text\" class name is unmatched with the below patterns: \"/^Card__[a-z][a-z0-9-]+$/\", \"/^([A-Z][a-z0-9]+)$/\"");
-    assert_eq!(result.violations[1].reason.as_deref(), Some("Do not allow include the element in a no-own block."));
+    assert_eq!(
+        result.violations[1].message,
+        "The \"Card_text\" class name is unmatched with the below patterns: \"/^Card__[a-z][a-z0-9-]+$/\", \"/^([A-Z][a-z0-9]+)$/\""
+    );
+    assert_eq!(
+        result.violations[1].reason.as_deref(),
+        Some("Do not allow include the element in a no-own block.")
+    );
 }
 
 /// TS: `[class-naming-issue-1263]` — regexSelector + childNodeRule (valid)

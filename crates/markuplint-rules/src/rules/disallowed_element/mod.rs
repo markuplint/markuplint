@@ -40,8 +40,8 @@ impl Rule for DisallowedElement {
                         line: el.base.line,
                         col: el.base.col,
                         raw: el.base.raw.clone(),
-                    reason: None,
-            });
+                        reason: None,
+                    });
                 }
             }
         }
@@ -84,8 +84,8 @@ impl Rule for DisallowedElement {
                             line: desc_el.base.line,
                             col: desc_el.base.col,
                             raw: desc_el.base.raw.clone(),
-                        reason: None,
-            });
+                            reason: None,
+                        });
                     }
                 }
             }

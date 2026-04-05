@@ -112,13 +112,19 @@ fn format_number_description(base: &str, type_def: &NumberType) -> String {
         parts.push(format!("greater than {}", format_number(gt, &type_def.number_type)));
     }
     if let Some(gte) = type_def.gte {
-        parts.push(format!("greater than or equal to {}", format_number(gte, &type_def.number_type)));
+        parts.push(format!(
+            "greater than or equal to {}",
+            format_number(gte, &type_def.number_type)
+        ));
     }
     if let Some(lt) = type_def.lt {
         parts.push(format!("less than {}", format_number(lt, &type_def.number_type)));
     }
     if let Some(lte) = type_def.lte {
-        parts.push(format!("less than or equal to {}", format_number(lte, &type_def.number_type)));
+        parts.push(format!(
+            "less than or equal to {}",
+            format_number(lte, &type_def.number_type)
+        ));
     }
     parts.join(" ")
 }

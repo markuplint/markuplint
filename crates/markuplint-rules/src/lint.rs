@@ -222,9 +222,7 @@ pub fn lint(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig) -> LintResul
             let has_explicit_severity = config_value
                 .as_str()
                 .is_some_and(|s| matches!(s, "error" | "warning" | "info"))
-                || config_value
-                    .as_object()
-                    .is_some_and(|o| o.get("severity").is_some());
+                || config_value.as_object().is_some_and(|o| o.get("severity").is_some());
             if !has_explicit_severity {
                 global_config.severity = rule.default_severity();
             }

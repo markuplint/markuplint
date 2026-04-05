@@ -134,16 +134,28 @@ pub fn check_autocomplete_with_position(value: &str) -> AutoCompleteResult {
     let tokens: Vec<&str> = value.split_ascii_whitespace().collect();
 
     if tokens.is_empty() {
-        return AutoCompleteResult { valid: false, invalid_token_offset: None, invalid_token: None };
+        return AutoCompleteResult {
+            valid: false,
+            invalid_token_offset: None,
+            invalid_token: None,
+        };
     }
 
     if has_duplicates(&tokens) {
-        return AutoCompleteResult { valid: false, invalid_token_offset: None, invalid_token: None };
+        return AutoCompleteResult {
+            valid: false,
+            invalid_token_offset: None,
+            invalid_token: None,
+        };
     }
 
     if tokens[0].eq_ignore_ascii_case("on") || tokens[0].eq_ignore_ascii_case("off") {
         if tokens.len() == 1 {
-            return AutoCompleteResult { valid: true, invalid_token_offset: None, invalid_token: None };
+            return AutoCompleteResult {
+                valid: true,
+                invalid_token_offset: None,
+                invalid_token: None,
+            };
         }
         return invalid_at(value, tokens[1]);
     }
@@ -162,23 +174,37 @@ pub fn check_autocomplete_with_position(value: &str) -> AutoCompleteResult {
 
     if category == FieldCategory::Credential {
         if index == 0 {
-            return AutoCompleteResult { valid: true, invalid_token_offset: None, invalid_token: None };
+            return AutoCompleteResult {
+                valid: true,
+                invalid_token_offset: None,
+                invalid_token: None,
+            };
         }
         index -= 1;
         match determine_field_category(tokens[index]) {
             Some(FieldCategory::Credential) | None => return invalid_at(value, tokens[index]),
-            Some(cat) => { category = cat; }
+            Some(cat) => {
+                category = cat;
+            }
         }
     }
 
     if index == 0 {
-        return AutoCompleteResult { valid: true, invalid_token_offset: None, invalid_token: None };
+        return AutoCompleteResult {
+            valid: true,
+            invalid_token_offset: None,
+            invalid_token: None,
+        };
     }
     index -= 1;
 
     if category == FieldCategory::Contact && matches_any(tokens[index], CONTACTING_TOKENS) {
         if index == 0 {
-            return AutoCompleteResult { valid: true, invalid_token_offset: None, invalid_token: None };
+            return AutoCompleteResult {
+                valid: true,
+                invalid_token_offset: None,
+                invalid_token: None,
+            };
         }
         index -= 1;
     }
@@ -189,14 +215,22 @@ pub fn check_autocomplete_with_position(value: &str) -> AutoCompleteResult {
 
     if tokens[index].eq_ignore_ascii_case("shipping") || tokens[index].eq_ignore_ascii_case("billing") {
         if index == 0 {
-            return AutoCompleteResult { valid: true, invalid_token_offset: None, invalid_token: None };
+            return AutoCompleteResult {
+                valid: true,
+                invalid_token_offset: None,
+                invalid_token: None,
+            };
         }
         index -= 1;
     }
 
     if is_section_prefix(tokens[index]) {
         if index == 0 {
-            return AutoCompleteResult { valid: true, invalid_token_offset: None, invalid_token: None };
+            return AutoCompleteResult {
+                valid: true,
+                invalid_token_offset: None,
+                invalid_token: None,
+            };
         }
         // Extra tokens before section
         return invalid_at(value, tokens[0]);

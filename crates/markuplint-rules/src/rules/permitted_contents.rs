@@ -97,7 +97,7 @@ impl Rule for PermittedContents {
                             line: el.base.line,
                             col: el.base.col,
                             raw: el.base.raw.clone(),
-            reason: None,
+                            reason: None,
                         });
                     }
                 }
@@ -173,8 +173,8 @@ impl Rule for PermittedContents {
                                     line: if child.line > 0 { child.line } else { el.base.line },
                                     col: if child.col > 0 { child.col } else { el.base.col },
                                     raw: child.raw.clone(),
-                                reason: None,
-            });
+                                    reason: None,
+                                });
                             }
                         }
                         ResultType::MissingNodeRequired => {
@@ -186,8 +186,8 @@ impl Rule for PermittedContents {
                                 line: el.base.line,
                                 col: el.base.col,
                                 raw: el.base.raw.clone(),
-                            reason: None,
-            });
+                                reason: None,
+                            });
                         }
                         ResultType::MissingNodeOneOrMore => {
                             // Scope: first unmatched child if available, else parent
@@ -221,7 +221,7 @@ impl Rule for PermittedContents {
                                 line: el.base.line,
                                 col: el.base.col,
                                 raw: el.base.raw.clone(),
-            reason: None,
+                                reason: None,
                             });
                         }
                         ResultType::TransparentModelDisallows => {

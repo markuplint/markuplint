@@ -64,7 +64,7 @@ impl Rule for IdDuplication {
                         line,
                         col,
                         raw: raw.clone(),
-            reason: None,
+                        reason: None,
                     });
                 }
             }

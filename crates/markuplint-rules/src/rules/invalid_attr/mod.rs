@@ -192,7 +192,7 @@ fn attr_violation(
         line: html_attr.name.line,
         col: html_attr.name.col,
         raw: html_attr.name.raw.clone(),
-            reason: None,
+        reason: None,
     }
 }
 
@@ -211,7 +211,7 @@ fn attr_full_violation(
         line: html_attr.name.line,
         col: html_attr.name.col,
         raw: html_attr.raw.clone(),
-            reason: None,
+        reason: None,
     }
 }
 
@@ -231,7 +231,7 @@ fn attr_value_violation(
         line: html_attr.value.line,
         col: html_attr.value.col,
         raw: html_attr.value.raw.clone(),
-            reason: None,
+        reason: None,
     }
 }
 
@@ -322,11 +322,7 @@ fn check_allow(
                         let list = values.iter().map(|v| format!("\"{v}\"")).collect::<Vec<_>>().join(", ");
                         format!("The \"{name}\" attribute expects either {list}")
                     };
-                    EntryCheckResult::Violated(attr_value_violation(
-                        ctx,
-                        html_attr,
-                        msg,
-                    ))
+                    EntryCheckResult::Violated(attr_value_violation(ctx, html_attr, msg))
                 }
             }
             ValueConstraint::Pattern(re, original) => {
@@ -408,9 +404,7 @@ fn check_disallow(
                     EntryCheckResult::Violated(attr_value_violation(
                         ctx,
                         html_attr,
-                        format!(
-                            "The \"{name}\" attribute is matched with the below disallowed patterns: {original}",
-                        ),
+                        format!("The \"{name}\" attribute is matched with the below disallowed patterns: {original}",),
                     ))
                 } else {
                     EntryCheckResult::Allowed // Value doesn't match pattern
@@ -442,7 +436,10 @@ fn check_spec_validation(
 ) -> Option<Violation> {
     // Look up attribute in spec (case-insensitive for SVG mixed-case attrs like viewBox)
     let attr_spec = ctx.attr_specs.get(name_lower).copied().or_else(|| {
-        ctx.attr_specs.iter().find(|(k, _)| k.eq_ignore_ascii_case(name_lower)).map(|(_, v)| *v)
+        ctx.attr_specs
+            .iter()
+            .find(|(k, _)| k.eq_ignore_ascii_case(name_lower))
+            .map(|(_, v)| *v)
     });
 
     if let Some(spec) = attr_spec {
@@ -483,9 +480,10 @@ fn check_spec_validation(
         // Validate attribute value against spec type.
         // If element-specific attr has no type defined, fall back to global attr type
         // (e.g., referrerpolicy on <a> has type in #HTMLLinkAndFetchingAttrs category).
-        let effective_type = if spec.attr_type.is_null() || (spec.attr_type.is_object() && spec.attr_type.as_object().unwrap().is_empty()) {
-            get_global_attr_type(ctx.spec, ctx.el_name, name_lower)
-                .unwrap_or(serde_json::Value::Null)
+        let effective_type = if spec.attr_type.is_null()
+            || (spec.attr_type.is_object() && spec.attr_type.as_object().unwrap().is_empty())
+        {
+            get_global_attr_type(ctx.spec, ctx.el_name, name_lower).unwrap_or(serde_json::Value::Null)
         } else {
             spec.attr_type.clone()
         };
@@ -676,27 +674,32 @@ fn check_attr_value_type(
     // Use partial match position from first failure if available
     // (matching TS: valueNode.startLine + matches.line, valueNode.startCol + matches.column)
     if let Some(CheckResult::Unmatched(info)) = all_failures.first()
-        && (info.line > 0 || info.column > 0 || !info.raw.is_empty()) {
-            // Calculate line/col from byte offset within the value string
-            let (extra_lines, col_in_line) = offset_to_line_col(value, info.offset);
-            let line = html_attr.value.line + extra_lines;
-            let col = if extra_lines == 0 {
-                html_attr.value.col + col_in_line
-            } else {
-                col_in_line + 1 // 1-based
-            };
-            let raw = if info.raw == value { html_attr.value.raw.clone() } else { info.raw.clone() };
-            return Some(Violation {
-                rule_id: ctx.rule_id.to_string(),
-                name: None,
-                severity: *ctx.severity,
-                message,
-                line,
-                col,
-                raw,
-                reason: None,
-            });
-        }
+        && (info.line > 0 || info.column > 0 || !info.raw.is_empty())
+    {
+        // Calculate line/col from byte offset within the value string
+        let (extra_lines, col_in_line) = offset_to_line_col(value, info.offset);
+        let line = html_attr.value.line + extra_lines;
+        let col = if extra_lines == 0 {
+            html_attr.value.col + col_in_line
+        } else {
+            col_in_line + 1 // 1-based
+        };
+        let raw = if info.raw == value {
+            html_attr.value.raw.clone()
+        } else {
+            info.raw.clone()
+        };
+        return Some(Violation {
+            rule_id: ctx.rule_id.to_string(),
+            name: None,
+            severity: *ctx.severity,
+            message,
+            line,
+            col,
+            raw,
+            reason: None,
+        });
+    }
 
     Some(attr_value_violation(ctx, html_attr, message))
 }
@@ -776,20 +779,17 @@ fn generate_type_error_message(
 
         // Candidate suggestion only (no expects)
         if let Some(candidate) = &info.candidate {
-            return format!(
-                "The \"{attr_name}\" attribute value is invalid. Did you mean \"{candidate}\"?"
-            );
+            return format!("The \"{attr_name}\" attribute value is invalid. Did you mean \"{candidate}\"?");
         }
     }
 
     // Keyword type fallback: generate human-readable description from type name
     for type_val in type_json_values {
         if let Some(type_name) = type_val.as_str()
-            && let Some(desc) = keyword_type_description(type_name) {
-                return format!(
-                    "It includes unexpected characters. the \"{attr_name}\" attribute expects {desc}"
-                );
-            }
+            && let Some(desc) = keyword_type_description(type_name)
+        {
+            return format!("It includes unexpected characters. the \"{attr_name}\" attribute expects {desc}");
+        }
     }
 
     // Generic fallback
@@ -825,9 +825,10 @@ fn get_global_attr_type(spec: &MLMLSpec, element_name: &str, attr_name: &str) ->
         // Check if this element uses only a subset of the category's attrs.
         // If cat_value is an array, only those listed attrs are enabled.
         if let Some(arr) = cat_value.as_array()
-            && !arr.iter().any(|v| v.as_str() == Some(attr_name)) {
-                continue;
-            }
+            && !arr.iter().any(|v| v.as_str() == Some(attr_name))
+        {
+            continue;
+        }
         if let Some(attrs_map) = spec.def.global_attrs.get(category)
             && let Some(attr_val) = attrs_map.get(attr_name)
         {
