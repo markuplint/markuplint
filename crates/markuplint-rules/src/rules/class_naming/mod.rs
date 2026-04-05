@@ -19,6 +19,7 @@ impl Rule for ClassNaming {
         "class-naming"
     }
 
+    /// Matches TS `createRule({ defaultSeverity: 'warning' })`.
     fn default_severity(&self) -> crate::violation::Severity {
         crate::violation::Severity::Warning
     }

@@ -22,6 +22,7 @@ impl Rule for LabelHasControl {
         "label-has-control"
     }
 
+    /// Matches TS `createRule({ defaultSeverity: 'warning' })`.
     fn default_severity(&self) -> crate::violation::Severity {
         crate::violation::Severity::Warning
     }

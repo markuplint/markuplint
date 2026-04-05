@@ -13,6 +13,8 @@ src/rules/
 
 **NEVER** put tests inline in `mod.rs`. **NEVER** use a single `<rule_name>.rs` file.
 
+> **Note:** As of this writing, 16 rules follow this structure. The remaining rules still use single-file format and will be migrated incrementally.
+
 ## Test ID Convention (MANDATORY)
 
 Every `#[test]` function MUST use an ID that matches the TS test suite (`packages/@markuplint/rules/`).
@@ -99,7 +101,7 @@ fn spec() -> MLMLSpec {
 
 When a test has the same ID as a TS test, it MUST use:
 - **The same HTML input** as the TS test
-- **The same expected violations** (count, severity, message, line, col, raw)
+- **The same expected violations** (count, severity, message, line, col, raw, reason)
 - **Hardcoded assertion values** — no computed expectations
 
 ```rust

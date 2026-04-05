@@ -106,8 +106,5 @@ fn end_tag_invalid_002() {
     }))
     .unwrap();
     let result = lint(&arena, &spec, &config);
-    for (i, v) in result.violations.iter().enumerate() {
-        eprintln!("violation[{i}]: raw={:?} msg={:?}", v.raw, v.message);
-    }
     assert_eq!(result.violations.len(), 0);
 }
