@@ -2156,4 +2156,27 @@ describe('integrity SRI hash validation (#3626)', () => {
 			(await mlRuleTest(rule, '<script src="x" integrity="sha256-abc123"></script>')).violations,
 		).toStrictEqual([]);
 	});
+
+	test('[invalid-attr-issue-3639-001] is attribute on autonomous custom element is disallowed', async () => {
+		const { violations } = await mlRuleTest(rule, '<my-element is="my-other"></my-element>');
+		expect(violations).toStrictEqual([
+			expect.objectContaining({
+				severity: 'error',
+				raw: 'is',
+				message: 'The "is" attribute must not be specified on an autonomous custom element',
+			}),
+		]);
+	});
+
+	test('[invalid-attr-issue-3639-002] is attribute on built-in element is valid', async () => {
+		const { violations } = await mlRuleTest(rule, '<button is="fancy-button">Click</button>');
+		const isViolations = violations.filter(v => v.message?.includes('"is"'));
+		expect(isViolations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-issue-3639-003] autonomous custom element without is attribute is valid', async () => {
+		const { violations } = await mlRuleTest(rule, '<my-element data-foo="bar"></my-element>');
+		const isViolations = violations.filter(v => v.message?.includes('"is"'));
+		expect(isViolations).toStrictEqual([]);
+	});
 });
