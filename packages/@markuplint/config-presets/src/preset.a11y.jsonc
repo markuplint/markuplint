@@ -161,13 +161,78 @@
 
 		/**
 		 * Conform to **WAI-ARIA**
-		 *
 		 */
-		"a11y/wai-aria": {
+		"a11y/wai-aria/non-existent-role": {
 			"specConformance": "normative",
-			"rules": {
-				"wai-aria": true
-			}
+			"rules": { "wai-aria-non-existent-role": true }
+		},
+		"a11y/wai-aria/abstract-role": {
+			"specConformance": "normative",
+			"rules": { "wai-aria-abstract-role": true }
+		},
+		"a11y/wai-aria/permitted-roles": {
+			"specConformance": "normative",
+			"rules": { "wai-aria-permitted-roles": true }
+		},
+		"a11y/wai-aria/implicit-role": {
+			"specConformance": "non-normative",
+			"severity": "warning",
+			"rules": { "wai-aria-implicit-role": true }
+		},
+		"a11y/wai-aria/implicit-props": {
+			"specConformance": "non-normative",
+			"severity": "warning",
+			"rules": { "wai-aria-implicit-props": true }
+		},
+		"a11y/wai-aria/required-props": {
+			"specConformance": "normative",
+			"rules": { "wai-aria-required-props": true }
+		},
+		"a11y/wai-aria/disallowed-props": {
+			"specConformance": "normative",
+			"rules": { "wai-aria-disallowed-props": true }
+		},
+		"a11y/wai-aria/deprecated-role": {
+			"specConformance": "non-normative",
+			"severity": "warning",
+			"rules": { "wai-aria-deprecated-role": true }
+		},
+		"a11y/wai-aria/deprecated-props": {
+			"specConformance": "non-normative",
+			"severity": "warning",
+			"rules": { "wai-aria-deprecated-props": true }
+		},
+		"a11y/wai-aria/value": {
+			"specConformance": "normative",
+			"rules": { "wai-aria-value": true }
+		},
+		"a11y/wai-aria/required-owned-elements": {
+			"specConformance": "normative",
+			"severity": "warning",
+			"rules": { "wai-aria-required-owned-elements": true }
+		},
+		"a11y/wai-aria/required-parent-role": {
+			"specConformance": "normative",
+			"rules": { "wai-aria-required-parent-role": true }
+		},
+		"a11y/wai-aria/presentational-children": {
+			"specConformance": "non-normative",
+			"severity": "warning",
+			"rules": { "wai-aria-presentational-children": true }
+		},
+		"a11y/wai-aria/no-global-prop": {
+			"specConformance": "normative",
+			"rules": { "wai-aria-no-global-prop": true }
+		},
+		"a11y/wai-aria/default-value": {
+			"specConformance": "non-normative",
+			"severity": "warning",
+			"rules": { "wai-aria-default-value": true }
+		},
+		"a11y/wai-aria/interaction-in-hidden": {
+			"specConformance": "non-normative",
+			"severity": "warning",
+			"rules": { "wai-aria-interaction-in-hidden": true }
 		}
 	},
 	"nodeRules": [
