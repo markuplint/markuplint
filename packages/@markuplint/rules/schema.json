@@ -149,6 +149,54 @@
 				},
 				"wai-aria": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/wai-aria/schema.json"
+				},
+				"wai-aria-abstract-role": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/wai-aria-abstract-role/schema.json"
+				},
+				"wai-aria-default-value": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/wai-aria-default-value/schema.json"
+				},
+				"wai-aria-deprecated-props": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/wai-aria-deprecated-props/schema.json"
+				},
+				"wai-aria-deprecated-role": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/wai-aria-deprecated-role/schema.json"
+				},
+				"wai-aria-disallowed-props": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/wai-aria-disallowed-props/schema.json"
+				},
+				"wai-aria-implicit-props": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/wai-aria-implicit-props/schema.json"
+				},
+				"wai-aria-implicit-role": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/wai-aria-implicit-role/schema.json"
+				},
+				"wai-aria-interaction-in-hidden": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/wai-aria-interaction-in-hidden/schema.json"
+				},
+				"wai-aria-no-global-prop": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/wai-aria-no-global-prop/schema.json"
+				},
+				"wai-aria-non-existent-role": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/wai-aria-non-existent-role/schema.json"
+				},
+				"wai-aria-permitted-roles": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/wai-aria-permitted-roles/schema.json"
+				},
+				"wai-aria-presentational-children": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/wai-aria-presentational-children/schema.json"
+				},
+				"wai-aria-required-owned-elements": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/wai-aria-required-owned-elements/schema.json"
+				},
+				"wai-aria-required-parent-role": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/wai-aria-required-parent-role/schema.json"
+				},
+				"wai-aria-required-props": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/wai-aria-required-props/schema.json"
+				},
+				"wai-aria-value": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/wai-aria-value/schema.json"
 				}
 			}
 		}

@@ -1,10 +1,10 @@
 import type { Options } from './types.js';
 
 import { createRule, getAttrSpecs, getComputedRole, ariaSpecs, getSpec } from '@markuplint/ml-core';
-import type { ARIAVersion } from '@markuplint/ml-spec';
 import { ARIA_RECOMMENDED_VERSION } from '@markuplint/ml-spec';
 
 import { Collection } from '../helpers.js';
+import { defaultOptions } from './default-options.js';
 
 import { checkingAbstractRole } from './checkings/abstract-role.js';
 import { checkingDefaultValue } from './checkings/default-value.js';
@@ -36,21 +36,7 @@ import meta from './meta.js';
  */
 export default createRule<boolean, Options>({
 	meta: meta,
-	defaultOptions: {
-		checkingValue: true,
-		checkingDeprecatedRole: true,
-		checkingDeprecatedProps: true,
-		permittedAriaRoles: true,
-		checkingAllowedAccessibilityChildRoles: true,
-		checkingRequiredOwnedElements: true,
-		checkingRequiredAccessibilityParentRole: true,
-		checkingPresentationalChildren: false,
-		checkingInteractionInHidden: false,
-		disallowSetImplicitRole: true,
-		disallowSetImplicitProps: true,
-		disallowDefaultValue: false,
-		version: undefined as ARIAVersion | undefined,
-	},
+	defaultOptions,
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {
 			const roleAttr = el.getAttributeNode('role');

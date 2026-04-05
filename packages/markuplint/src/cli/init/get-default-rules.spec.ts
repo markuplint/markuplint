@@ -197,5 +197,69 @@ test('default-rules', () => {
 			category: 'a11y',
 			defaultValue: true,
 		},
+		'wai-aria-abstract-role': {
+			category: 'a11y',
+			defaultValue: true,
+		},
+		'wai-aria-default-value': {
+			category: 'a11y',
+			defaultValue: false,
+		},
+		'wai-aria-deprecated-props': {
+			category: 'a11y',
+			defaultValue: false,
+		},
+		'wai-aria-deprecated-role': {
+			category: 'a11y',
+			defaultValue: false,
+		},
+		'wai-aria-disallowed-props': {
+			category: 'a11y',
+			defaultValue: true,
+		},
+		'wai-aria-implicit-props': {
+			category: 'a11y',
+			defaultValue: false,
+		},
+		'wai-aria-implicit-role': {
+			category: 'a11y',
+			defaultValue: false,
+		},
+		'wai-aria-interaction-in-hidden': {
+			category: 'a11y',
+			defaultValue: false,
+		},
+		'wai-aria-no-global-prop': {
+			category: 'a11y',
+			defaultValue: true,
+		},
+		'wai-aria-non-existent-role': {
+			category: 'a11y',
+			defaultValue: true,
+		},
+		'wai-aria-permitted-roles': {
+			category: 'a11y',
+			defaultValue: true,
+		},
+		'wai-aria-presentational-children': {
+			category: 'a11y',
+			defaultValue: false,
+		},
+		'wai-aria-required-owned-elements': {
+			category: 'a11y',
+			defaultValue: false,
+		},
+		'wai-aria-required-parent-role': {
+			category: 'a11y',
+			defaultValue: true,
+		},
+		'wai-aria-required-props': {
+			category: 'a11y',
+			defaultValue: true,
+		},
+		'wai-aria-value': {
+			category: 'a11y',
+			defaultValue: true,
+		},
 	});
 });
