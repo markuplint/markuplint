@@ -35,7 +35,7 @@ fn label_has_control_invalid_001() {
     let spec = spec();
     // a11y category → default severity warning
     let config: LintConfig = serde_json::from_value(serde_json::json!({
-        "rules": { "label-has-control": { "severity": "warning" } }
+        "rules": { "label-has-control": true }
     }))
     .unwrap();
     let result = lint(&arena, &spec, &config);
@@ -57,7 +57,7 @@ fn label_has_control_invalid_002() {
     let arena = html_arena("<label><input><select></select></label>");
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
-        "rules": { "label-has-control": { "severity": "warning" } }
+        "rules": { "label-has-control": true }
     }))
     .unwrap();
     let result = lint(&arena, &spec, &config);
