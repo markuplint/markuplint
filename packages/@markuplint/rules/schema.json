@@ -87,9 +87,6 @@
 				"no-duplicate-autofocus": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-duplicate-autofocus/schema.json"
 				},
-				"no-duplicate-charset": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-duplicate-charset/schema.json"
-				},
 				"no-duplicate-dt": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-duplicate-dt/schema.json"
 				},

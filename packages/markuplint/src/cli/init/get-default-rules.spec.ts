@@ -113,10 +113,6 @@ test('default-rules', () => {
 			category: 'validation',
 			defaultValue: true,
 		},
-		'no-duplicate-charset': {
-			category: 'validation',
-			defaultValue: true,
-		},
 		'no-duplicate-dt': {
 			category: 'validation',
 			defaultValue: true,

@@ -55,7 +55,6 @@ No use deprecated element|Authors must not use deprecated elements from the view
 Must not skip heading levels| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [No duplicate autofocus](https://html.spec.whatwg.org/multipage/interaction.html#the-autofocus-attribute)|There must not be two elements with the autofocus attribute specified in the same document.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [No duplicate visible main](https://html.spec.whatwg.org/multipage/grouping-content.html#the-main-element)|There must not be more than one visible main element in a document.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
-[No duplicate charset](https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-charset)|There must not be more than one meta element with a charset attribute per document.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 No use ineffective attr| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [No duplicate names in `<dl>`](https://html.spec.whatwg.org/multipage/grouping-content.html#the-dl-element:~:text=Within%20a%20single%20dl%20element%2C%20there%20should%20not%20be%20more%20than%20one%20dt%20element%20for%20each%20name)|Within a single dl element, there should not be more than one dt element for each name.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 No use **orphaned end tag**| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
@@ -66,6 +65,9 @@ Specify required attr| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [Enforce WHATWG constraints between `srcset`, `sizes`, and `loading` attributes](https://html.spec.whatwg.org/multipage/images.html#srcset-attributes)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [Validate link type keywords](https://html.spec.whatwg.org/multipage/links.html#linkTypes)|Validates that `rel` attribute keywords are allowed on the given element and context (e.g., body-ok for `<link>` inside `<body>`).|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [Specify `charset=UTF-8`](https://html.spec.whatwg.org/multipage/semantics.html#charset)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
+[No duplicate meta charset](https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-charset)|There must not be more than one meta element with a charset attribute per document.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
+[No duplicate meta description](https://html.spec.whatwg.org/multipage/semantics.html#standard-metadata-names)|There must not be more than one meta element where the name attribute value is an ASCII case-insensitive match for "description" per document.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
+[No coexistence of meta charset and meta http-equiv content-type](https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-charset)|A document must not contain both a meta element with an http-equiv attribute in the Encoding declaration state and a meta element with the charset attribute.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [No use `<small>` as **subheadings**](https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-small-element)|The small element must not be used for subheadings.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [No use `<caption>` within `<figure>`](https://html.spec.whatwg.org/multipage/tables.html#the-caption-element)|When `<table>` is the only content in `<figure>` other than `<figcaption>`, `<caption>` should be omitted in favor of `<figcaption>`.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [Require `title` attr in `<input pattern>`](https://html.spec.whatwg.org/multipage/input.html#attr-input-pattern)|When an `<input>` element has a `pattern` attribute specified, authors should include a `title` attribute to give a description of the pattern.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|

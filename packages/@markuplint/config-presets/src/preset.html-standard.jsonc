@@ -104,21 +104,6 @@
 		},
 
 		/**
-		 * No duplicate charset
-		 *
-		 * There must not be more than one meta element with a charset attribute
-		 * per document.
-		 *
-		 * @see https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-charset
-		 */
-		"html-standard/no-duplicate-charset": {
-			"specConformance": "normative",
-			"rules": {
-				"no-duplicate-charset": true
-			}
-		},
-
-		/**
 		 * No use ineffective attr
 		 *
 		 */
@@ -250,6 +235,64 @@
 			"selector": ":where(head)",
 			"rules": {
 				"required-element": ["meta[charset=\"UTF-8\" i]"]
+			}
+		},
+		{
+			/**
+			 * No duplicate meta charset
+			 *
+			 * There must not be more than one meta element with a charset attribute
+			 * per document.
+			 *
+			 * @see https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-charset
+			 */
+			"name": "html-standard/no-duplicate-charset",
+			"specConformance": "normative",
+			"selector": ":where(head)",
+			"rules": {
+				"disallowed-element": {
+					"value": ["meta[charset] ~ meta[charset]"]
+				}
+			}
+		},
+		{
+			/**
+			 * No duplicate meta description
+			 *
+			 * There must not be more than one meta element where the name attribute
+			 * value is an ASCII case-insensitive match for "description" per document.
+			 *
+			 * @see https://html.spec.whatwg.org/multipage/semantics.html#standard-metadata-names
+			 */
+			"name": "html-standard/no-duplicate-description",
+			"specConformance": "normative",
+			"selector": ":where(head)",
+			"rules": {
+				"disallowed-element": {
+					"value": ["meta[name=\"description\" i] ~ meta[name=\"description\" i]"]
+				}
+			}
+		},
+		{
+			/**
+			 * No coexistence of meta charset and meta http-equiv content-type
+			 *
+			 * A document must not contain both a meta element with an http-equiv
+			 * attribute in the Encoding declaration state and a meta element with
+			 * the charset attribute.
+			 *
+			 * @see https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-charset
+			 */
+			"name": "html-standard/no-charset-http-equiv-coexist",
+			"specConformance": "normative",
+			"selector": ":where(head)",
+			"rules": {
+				"disallowed-element": {
+					"value": [
+						"meta[charset] ~ meta[http-equiv=\"content-type\" i]",
+						"meta[http-equiv=\"content-type\" i] ~ meta[charset]"
+					]
+				}
 			}
 		},
 		{
