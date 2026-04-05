@@ -59,6 +59,7 @@ impl Rule for HeadingLevels {
                     line,
                     col,
                     raw: raw.clone(),
+            reason: None,
                 });
             }
             prev_level = Some(level);

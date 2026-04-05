@@ -52,6 +52,7 @@ fn check_chars(
                 line,
                 col,
                 raw: ch.to_string(),
+            reason: None,
             });
         }
         if ch == '\n' {

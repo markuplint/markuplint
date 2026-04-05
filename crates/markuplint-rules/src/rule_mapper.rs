@@ -65,6 +65,7 @@ pub fn build_rule_config_set(
     child_node_rules: &[NodeRuleEntry],
     arena: &DomArena,
     spec: &MLMLSpec,
+    default_severity: Severity,
 ) -> RuleConfigSet {
     let mut node_map: HashMap<NodeId, MappingLayer> = HashMap::new();
     let aria_resolver = SpecAriaResolver { spec };
@@ -83,7 +84,7 @@ pub fn build_rule_config_set(
 
         for (node_id, _el) in arena.elements() {
             if let Some((specificity, captured)) = match_entry(entry, arena, node_id, spec, &aria_resolver) {
-                let config = build_node_config(rule_value, global_config, &captured);
+                let config = build_node_config(rule_value, global_config, &captured, default_severity);
                 set_if_higher(&mut node_map, node_id, specificity, config);
             }
         }
@@ -105,7 +106,7 @@ pub fn build_rule_config_set(
 
         for (node_id, _el) in arena.elements() {
             if let Some((specificity, captured)) = match_entry(entry, arena, node_id, spec, &aria_resolver) {
-                let config = build_node_config(rule_value, global_config, &captured);
+                let config = build_node_config(rule_value, global_config, &captured, default_severity);
 
                 let targets = if inheritance {
                     collect_descendants(arena, node_id)
@@ -137,6 +138,7 @@ pub fn build_named_rule_config_set(
     is_child_rule: bool,
     arena: &DomArena,
     spec: &MLMLSpec,
+    default_severity: Severity,
 ) -> Option<RuleConfigSet> {
     let rules = entry.rules.as_ref()?;
     let rule_value = rules.get(rule_id)?;
@@ -150,7 +152,7 @@ pub fn build_named_rule_config_set(
         let inheritance = entry.inheritance.unwrap_or(false);
         for (node_id, _el) in arena.elements() {
             if let Some((_specificity, captured)) = match_entry(entry, arena, node_id, spec, &aria_resolver) {
-                let config = build_node_config(rule_value, &base_config, &captured);
+                let config = build_node_config(rule_value, &base_config, &captured, default_severity);
                 let targets = if inheritance {
                     collect_descendants(arena, node_id)
                 } else {
@@ -164,7 +166,7 @@ pub fn build_named_rule_config_set(
     } else {
         for (node_id, _el) in arena.elements() {
             if let Some((_specificity, captured)) = match_entry(entry, arena, node_id, spec, &aria_resolver) {
-                let config = build_node_config(rule_value, &base_config, &captured);
+                let config = build_node_config(rule_value, &base_config, &captured, default_severity);
                 node_map.insert(node_id, config);
             }
         }
@@ -232,21 +234,29 @@ fn match_regex_selector(
 ///
 /// Mirrors TS `mergeRule(globalRule, convertedRule)`.
 /// `captured` is used for regex capture replacement (`exchangeValueOnRule`).
-fn build_node_config(rule_value: &Value, global_config: &RuleConfig, captured: &HashMap<String, String>) -> RuleConfig {
-    let node_config = parse_node_rule_value(rule_value);
+fn build_node_config(
+    rule_value: &Value,
+    global_config: &RuleConfig,
+    captured: &HashMap<String, String>,
+    default_severity: Severity,
+) -> RuleConfig {
+    let node_config = parse_node_rule_value(rule_value, default_severity);
     let node_config = exchange_value_on_rule(node_config, captured);
     merge_rule(global_config, &node_config)
 }
 
 /// Parse a rule value from a nodeRule entry.
 /// Same format as global rules: `true`, `false`, `"error"`, `{ severity, value, options }`.
-fn parse_node_rule_value(value: &Value) -> RuleConfig {
+fn parse_node_rule_value(value: &Value, default_severity: Severity) -> RuleConfig {
     match value {
         Value::Bool(false) => RuleConfig {
             disabled: true,
             ..Default::default()
         },
-        Value::Bool(true) => RuleConfig::default(),
+        Value::Bool(true) => RuleConfig {
+            severity: default_severity,
+            ..Default::default()
+        },
         Value::String(s) => {
             if let Some(severity) = match s.as_str() {
                 "error" => Some(Severity::Error),
@@ -260,6 +270,7 @@ fn parse_node_rule_value(value: &Value) -> RuleConfig {
                 }
             } else {
                 RuleConfig {
+                    severity: default_severity,
                     value: Value::String(s.clone()),
                     ..Default::default()
                 }
@@ -280,15 +291,18 @@ fn parse_node_rule_value(value: &Value) -> RuleConfig {
             });
             let rule_value = obj.get("value").cloned();
             let options = obj.get("options").cloned();
+            let reason = obj.get("reason").and_then(|v| v.as_str()).map(String::from);
             RuleConfig {
-                severity: severity.unwrap_or(Severity::Error),
+                severity: severity.unwrap_or(default_severity),
                 value: rule_value.unwrap_or(Value::Bool(true)),
                 options: options.unwrap_or(Value::Null),
                 disabled: false,
+                reason,
             }
         }
         // Arrays and other JSON values are treated as the rule value
         other => RuleConfig {
+            severity: default_severity,
             value: other.clone(),
             ..Default::default()
         },
@@ -362,6 +376,7 @@ fn merge_rule(global: &RuleConfig, node: &RuleConfig) -> RuleConfig {
             node.options.clone()
         },
         disabled: false,
+        reason: node.reason.clone().or_else(|| global.reason.clone()),
     }
 }
 

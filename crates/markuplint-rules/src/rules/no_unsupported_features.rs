@@ -82,7 +82,8 @@ impl Rule for NoUnsupportedFeatures {
                     line: el.base.line,
                     col: el.base.col,
                     raw: el.base.raw.clone(),
-                });
+                reason: None,
+            });
             }
 
             // Check element-level non-standard
@@ -98,7 +99,8 @@ impl Rule for NoUnsupportedFeatures {
                     line: el.base.line,
                     col: el.base.col,
                     raw: el.base.raw.clone(),
-                });
+                reason: None,
+            });
             }
 
             // Check attributes
@@ -130,7 +132,8 @@ impl Rule for NoUnsupportedFeatures {
                         line: html_attr.line,
                         col: html_attr.col,
                         raw: html_attr.raw.clone(),
-                    });
+                    reason: None,
+            });
                 }
 
                 if check_non_standard
@@ -145,7 +148,8 @@ impl Rule for NoUnsupportedFeatures {
                         line: html_attr.line,
                         col: html_attr.col,
                         raw: html_attr.raw.clone(),
-                    });
+                    reason: None,
+            });
                 }
             }
         }

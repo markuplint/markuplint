@@ -46,7 +46,8 @@ impl Rule for DeprecatedElement {
                     line: el.base.line,
                     col: el.base.col,
                     raw: el.base.raw.clone(),
-                });
+                reason: None,
+            });
                 continue;
             }
 
@@ -60,7 +61,8 @@ impl Rule for DeprecatedElement {
                     line: el.base.line,
                     col: el.base.col,
                     raw: el.base.raw.clone(),
-                });
+                reason: None,
+            });
             }
         }
 

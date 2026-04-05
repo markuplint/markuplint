@@ -97,6 +97,7 @@ impl Rule for PermittedContents {
                             line: el.base.line,
                             col: el.base.col,
                             raw: el.base.raw.clone(),
+            reason: None,
                         });
                     }
                 }
@@ -172,7 +173,8 @@ impl Rule for PermittedContents {
                                     line: if child.line > 0 { child.line } else { el.base.line },
                                     col: if child.col > 0 { child.col } else { el.base.col },
                                     raw: child.raw.clone(),
-                                });
+                                reason: None,
+            });
                             }
                         }
                         ResultType::MissingNodeRequired => {
@@ -184,7 +186,8 @@ impl Rule for PermittedContents {
                                 line: el.base.line,
                                 col: el.base.col,
                                 raw: el.base.raw.clone(),
-                            });
+                            reason: None,
+            });
                         }
                         ResultType::MissingNodeOneOrMore => {
                             // Scope: first unmatched child if available, else parent
@@ -206,6 +209,7 @@ impl Rule for PermittedContents {
                                 line,
                                 col,
                                 raw,
+                                reason: None,
                             });
                         }
                         ResultType::Nothing => {
@@ -217,6 +221,7 @@ impl Rule for PermittedContents {
                                 line: el.base.line,
                                 col: el.base.col,
                                 raw: el.base.raw.clone(),
+            reason: None,
                             });
                         }
                         ResultType::TransparentModelDisallows => {
@@ -233,7 +238,8 @@ impl Rule for PermittedContents {
                                     line: if child.line > 0 { child.line } else { el.base.line },
                                     col: if child.col > 0 { child.col } else { el.base.col },
                                     raw: child.raw.clone(),
-                                });
+                                reason: None,
+            });
                             }
                         }
                         // Matched/MatchedZero and internal intermediate types
@@ -533,7 +539,8 @@ fn check_own_transparent_constraint(
                     line: violator.line,
                     col: violator.col,
                     raw: violator.raw.clone(),
-                });
+                reason: None,
+            });
                 continue;
             }
             if let Some(parent_el) = arena.get(node_id).and_then(|n| n.as_element()) {
@@ -548,7 +555,8 @@ fn check_own_transparent_constraint(
                     line: if child.line > 0 { child.line } else { parent_el.base.line },
                     col: if child.col > 0 { child.col } else { parent_el.base.col },
                     raw: child.raw.clone(),
-                });
+                reason: None,
+            });
             }
         }
     }

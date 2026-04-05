@@ -19,6 +19,10 @@ impl Rule for ClassNaming {
         "class-naming"
     }
 
+    fn default_severity(&self) -> crate::violation::Severity {
+        crate::violation::Severity::Warning
+    }
+
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
 
@@ -97,6 +101,7 @@ impl Rule for ClassNaming {
                             line: value_start_line,
                             col: class_col,
                             raw: class_name.to_string(),
+                            reason: rule_config.reason.clone(),
                         });
                     }
                 }

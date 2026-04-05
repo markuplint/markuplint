@@ -192,6 +192,7 @@ fn attr_violation(
         line: html_attr.name.line,
         col: html_attr.name.col,
         raw: html_attr.name.raw.clone(),
+            reason: None,
     }
 }
 
@@ -210,6 +211,7 @@ fn attr_full_violation(
         line: html_attr.name.line,
         col: html_attr.name.col,
         raw: html_attr.raw.clone(),
+            reason: None,
     }
 }
 
@@ -229,6 +231,7 @@ fn attr_value_violation(
         line: html_attr.value.line,
         col: html_attr.value.col,
         raw: html_attr.value.raw.clone(),
+            reason: None,
     }
 }
 
@@ -691,6 +694,7 @@ fn check_attr_value_type(
                 line,
                 col,
                 raw,
+                reason: None,
             });
         }
 

@@ -57,6 +57,7 @@ impl Rule for EndTag {
                 line: el.base.line,
                 col: el.base.col,
                 raw: el.base.raw.clone(),
+            reason: None,
             });
         }
 

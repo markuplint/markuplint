@@ -50,6 +50,7 @@ impl Rule for NoConsecutiveBr {
                     line: next_el.base.line,
                     col: next_el.base.col,
                     raw: next_el.base.raw.clone(),
+            reason: None,
                 });
             }
         }

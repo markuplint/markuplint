@@ -33,6 +33,7 @@ impl Rule for NoOrphanedEndTag {
                     line: text.base.line,
                     col: text.base.col,
                     raw: text.base.raw.clone(),
+            reason: None,
                 });
             }
             // Also check EndTag nodes (from MLAST JSON path)
@@ -45,6 +46,7 @@ impl Rule for NoOrphanedEndTag {
                     line: end_tag.base.line,
                     col: end_tag.base.col,
                     raw: end_tag.base.raw.clone(),
+            reason: None,
                 });
             }
         }

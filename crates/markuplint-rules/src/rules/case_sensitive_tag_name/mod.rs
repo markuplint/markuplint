@@ -63,6 +63,7 @@ impl Rule for CaseSensitiveTagName {
                     line: el.base.line,
                     col: name_col,
                     raw: raw_name.to_string(),
+            reason: None,
                 });
             }
 
@@ -84,6 +85,7 @@ impl Rule for CaseSensitiveTagName {
                         line: ct.line,
                         col: ct.col,
                         raw: ct.raw.clone(),
+            reason: None,
                     });
                 }
             }

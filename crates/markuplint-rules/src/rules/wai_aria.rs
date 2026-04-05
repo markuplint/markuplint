@@ -294,6 +294,7 @@ fn check_role_attr(
                 line: role_attr_node.value.line,
                 col: role_attr_node.value.col,
                 raw: role_attr_node.raw.clone(),
+            reason: None,
             });
             break;
         }
@@ -307,6 +308,7 @@ fn check_role_attr(
                 line: role_attr_node.value.line,
                 col: role_attr_node.value.col,
                 raw: role_attr_node.raw.clone(),
+            reason: None,
             });
             break;
         }
@@ -327,7 +329,8 @@ fn check_role_attr(
                     line: role_attr_node.value.line,
                     col: role_attr_node.value.col,
                     raw: role_attr_node.raw.clone(),
-                });
+                reason: None,
+            });
                 break;
             }
         }
@@ -371,7 +374,8 @@ fn check_role_attr(
                     line: role_attr_node.value.line,
                     col: role_attr_node.value.col,
                     raw: role_attr_node.raw.clone(),
-                });
+                reason: None,
+            });
                 break;
             }
         }
@@ -430,6 +434,7 @@ fn check_permitted_roles(
                 line: role_attr.name.line,
                 col: role_attr.name.col,
                 raw: role_attr.raw.clone(),
+            reason: None,
             });
         }
         // permittedRoles is a specific list → check each token
@@ -451,7 +456,8 @@ fn check_permitted_roles(
                         line: role_attr.value.line,
                         col: role_attr.value.col,
                         raw: role_attr.raw.clone(),
-                    });
+                    reason: None,
+            });
                     break;
                 }
             }
@@ -543,7 +549,8 @@ fn check_deprecated_prop(
             line: attr.name.line,
             col: attr.name.col,
             raw: attr.raw.clone(),
-        });
+        reason: None,
+            });
     }
 }
 
@@ -634,7 +641,8 @@ fn check_required_prop(
             line: el.base.line,
             col: el.base.col,
             raw: el.base.raw.clone(),
-        });
+        reason: None,
+            });
     }
 }
 
@@ -729,6 +737,7 @@ fn check_disallowed_prop(
                 line: attr.name.line,
                 col: attr.name.col,
                 raw: attr.raw.clone(),
+            reason: None,
             });
             return;
         }
@@ -754,7 +763,8 @@ fn check_disallowed_prop(
             line: attr.name.line,
             col: attr.name.col,
             raw: attr.raw.clone(),
-        });
+        reason: None,
+            });
     }
 }
 
@@ -935,7 +945,8 @@ fn check_implicit_props(
                     line: attr.name.line,
                     col: attr.name.col,
                     raw: attr.raw.clone(),
-                });
+                reason: None,
+            });
                 return;
             }
 
@@ -960,6 +971,7 @@ fn check_implicit_props(
                 line: attr.name.line,
                 col: attr.name.col,
                 raw: attr.raw.clone(),
+            reason: None,
             });
             return;
         } else if aria_value == "true" && equiv.is_not_strict_equivalent != Some(true) {
@@ -981,7 +993,8 @@ fn check_implicit_props(
                     line: attr.name.line,
                     col: attr.name.col,
                     raw: attr.raw.clone(),
-                });
+                reason: None,
+            });
                 return;
             }
         }
@@ -1040,6 +1053,7 @@ fn check_value(
             line: attr.name.line,
             col: attr.name.col,
             raw: attr.raw.clone(),
+            reason: None,
         });
     }
 }
@@ -1095,7 +1109,8 @@ fn check_default_value(
             line: attr.name.line,
             col: attr.name.col,
             raw: attr.raw.clone(),
-        });
+        reason: None,
+            });
     }
 }
 
@@ -1171,7 +1186,8 @@ fn check_allowed_child_roles(
             line: el.base.line,
             col: el.base.col,
             raw: el.base.raw.clone(),
-        });
+        reason: None,
+            });
     } else {
         violations.push(Violation {
             rule_id: rule_id.to_string(),
@@ -1184,7 +1200,8 @@ fn check_allowed_child_roles(
             line: el.base.line,
             col: el.base.col,
             raw: el.base.raw.clone(),
-        });
+        reason: None,
+            });
     }
 }
 
@@ -1344,7 +1361,8 @@ fn check_required_parent_role(
                     line: el.base.line,
                     col: el.base.col,
                     raw: el.base.raw.clone(),
-                });
+                reason: None,
+            });
                 return;
             }
         }
@@ -1400,6 +1418,7 @@ fn check_presentational_children(
                 line: el.base.line,
                 col: el.base.col,
                 raw: el.base.raw.clone(),
+            reason: None,
             });
             return;
         }
@@ -1437,6 +1456,7 @@ fn check_interaction_in_hidden(
             line: el.base.line,
             col: el.base.col,
             raw: el.base.raw.clone(),
+            reason: None,
         });
         return;
     }
@@ -1461,6 +1481,7 @@ fn check_interaction_in_hidden(
                 line: el.base.line,
                 col: el.base.col,
                 raw: el.base.raw.clone(),
+            reason: None,
             });
             return;
         }

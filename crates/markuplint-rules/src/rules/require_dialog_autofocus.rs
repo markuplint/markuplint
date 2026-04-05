@@ -91,6 +91,7 @@ impl Rule for RequireDialogAutofocus {
                 line: target_el.base.line,
                 col: target_el.base.col,
                 raw: target_el.base.raw.clone(),
+            reason: None,
             });
         }
 

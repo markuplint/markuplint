@@ -334,6 +334,7 @@ impl Rule for TableRowColumnAlignment {
                                     line,
                                     col,
                                     raw,
+                                    reason: None,
                                 });
                             }
                         }
@@ -391,6 +392,7 @@ impl Rule for TableRowColumnAlignment {
                             line,
                             col,
                             raw,
+                            reason: None,
                         });
                     } else if col_length < base_col_length {
                         let diff = base_col_length - col_length;
@@ -403,7 +405,8 @@ impl Rule for TableRowColumnAlignment {
                             line: row_el.base.line,
                             col: row_el.base.col,
                             raw: row_el.base.raw.clone(),
-                        });
+                        reason: None,
+            });
                     }
                 }
             }
@@ -417,6 +420,7 @@ impl Rule for TableRowColumnAlignment {
                     line: el.base.line,
                     col: el.base.col,
                     raw: el.base.raw.clone(),
+            reason: None,
                 });
             }
         }

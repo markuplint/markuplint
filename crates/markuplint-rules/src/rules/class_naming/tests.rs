@@ -6,13 +6,13 @@
 //!   class-naming-invalid-002  → class_naming_invalid_002
 //!   class-naming-invalid-003  → class_naming_invalid_003
 //!   class-naming-valid-002    → class_naming_valid_002
-//!   class-naming-invalid-004  — SKIP: childNodeRules multi selectors (complex config)
-//!   class-naming-valid-003    — SKIP: childNodeRules multi selectors
-//!   class-naming-valid-004    — SKIP: dynamic value (JSX/Vue)
-//!   class-naming-invalid-005  — SKIP: regexSelector
-//!   class-naming-invalid-006  — SKIP: regexSelector inheritance
+//!   class-naming-invalid-004  → class_naming_invalid_004
+//!   class-naming-valid-003    → class_naming_valid_003
+//!   class-naming-invalid-005  → class_naming_invalid_005
+//!   class-naming-invalid-006  → class_naming_invalid_006
+//!   class-naming-issue-1263   → class_naming_issue_1263
+//!   class-naming-valid-004    — SKIP: dynamic value (JSX parser)
 //!   class-naming-parser-001   — SKIP: Pug parser
-//!   class-naming-issue-1263   — SKIP: Pug parser
 //!   v6_class_naming_001       — Rust-only: null config disabled
 
 use crate::lint::{LintConfig, lint};
@@ -140,29 +140,28 @@ fn class_naming_invalid_002() {
 fn class_naming_invalid_003() {
     const _ID: &str = "class-naming-invalid-003";
     let arena = html_arena(
-        "\n\t\t<div class=\"c-root\">\n\t\t\t<div class=\"c-root__el\"></div>\n\t\t\t<div class=\"c-root__el2\"></div>\n\t\t</div>\n\t\t",
+        "\n\t\t<div class=\"c-root\">\n\t\t\t<div class=\"c-root__x\">\n\t\t\t\t<div class=\"c-root__y\"></div>\n\t\t\t\t<main>\n\t\t\t\t\t<div class=\"hoge\"></div>\n\t\t\t\t</main>\n\t\t\t</div>\n\t\t</div>\n\t\t",
     );
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": {
             "class-naming": {
                 "severity": "error",
-                "value": "/^c-[a-z]+__[a-z0-9]+/"
+                "value": "/^c-[a-z]+/"
             }
         }
     }))
     .unwrap();
     let result = lint(&arena, &spec, &config);
-    // "c-root" doesn't match /^c-[a-z]+__[a-z0-9]+/
     assert_eq!(result.violations.len(), 1);
     assert_eq!(result.violations[0].severity, Severity::Error);
     assert_eq!(
         result.violations[0].message,
-        "The \"c-root\" class name is unmatched with the below patterns: \"/^c-[a-z]+__[a-z0-9]+/\""
+        "The \"hoge\" class name is unmatched with the below patterns: \"/^c-[a-z]+/\""
     );
-    assert_eq!(result.violations[0].line, 2);
-    assert_eq!(result.violations[0].col, 15);
-    assert_eq!(result.violations[0].raw, "c-root");
+    assert_eq!(result.violations[0].line, 6);
+    assert_eq!(result.violations[0].col, 18);
+    assert_eq!(result.violations[0].raw, "hoge");
 }
 
 /// TS: `[class-naming-valid-002]` — multi pattern
@@ -170,14 +169,14 @@ fn class_naming_invalid_003() {
 fn class_naming_valid_002() {
     const _ID: &str = "class-naming-valid-002";
     let arena = html_arena(
-        "\n\t\t<div class=\"c-root\">\n\t\t\t<div class=\"c-root__el\"></div>\n\t\t\t<div class=\"c-root__el2\"></div>\n\t\t</div>\n\t\t",
+        "\n\t\t<div class=\"c-root\">\n\t\t\t<div class=\"c-root__el\"></div>\n\t\t\t<div class=\"exceptional\"></div>\n\t\t</div>\n\t\t",
     );
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": {
             "class-naming": {
                 "severity": "error",
-                "value": ["/^c-[a-z]+$/", "/^c-[a-z]+__[a-z0-9]+$/"]
+                "value": ["/^c-[a-z]+/", "exceptional"]
             }
         }
     }))
@@ -309,15 +308,24 @@ fn class_naming_invalid_005() {
     .unwrap();
     let result = lint(&arena, &spec, &config);
     assert_eq!(result.violations.len(), 3);
+    assert_eq!(result.violations[0].severity, Severity::Warning);
     assert_eq!(result.violations[0].line, 19);
     assert_eq!(result.violations[0].col, 14);
     assert_eq!(result.violations[0].raw, "Heading__lv3");
+    assert_eq!(result.violations[0].message, "The \"Heading__lv3\" class name is unmatched with the below patterns: \"/^Card__[a-z][a-z0-9-]+$/\", \"/^([A-Z][a-z0-9]+)$/\"");
+    assert_eq!(result.violations[0].reason.as_deref(), Some("Do not allow include the element in a no-own block."));
+    assert_eq!(result.violations[1].severity, Severity::Warning);
     assert_eq!(result.violations[1].line, 24);
     assert_eq!(result.violations[1].col, 14);
     assert_eq!(result.violations[1].raw, "List__group");
+    assert_eq!(result.violations[1].message, "The \"List__group\" class name is unmatched with the below patterns: \"/^Card__[a-z][a-z0-9-]+$/\", \"/^([A-Z][a-z0-9]+)$/\"");
+    assert_eq!(result.violations[1].reason.as_deref(), Some("Do not allow include the element in a no-own block."));
+    assert_eq!(result.violations[2].severity, Severity::Warning);
     assert_eq!(result.violations[2].line, 31);
     assert_eq!(result.violations[2].col, 15);
     assert_eq!(result.violations[2].raw, "Card__list");
+    assert_eq!(result.violations[2].message, "The \"Card__list\" class name is unmatched with the below patterns: \"/^List__[a-z][a-z0-9-]+$/\", \"/^([A-Z][a-z0-9]+)$/\"");
+    assert_eq!(result.violations[2].reason.as_deref(), Some("Do not allow include the element in a no-own block."));
 }
 
 /// TS: `[class-naming-invalid-006]` — regexSelector inheritance
@@ -349,12 +357,47 @@ fn class_naming_invalid_006() {
     .unwrap();
     let result = lint(&arena, &spec, &config);
     assert_eq!(result.violations.len(), 2);
+    assert_eq!(result.violations[0].severity, Severity::Warning);
     assert_eq!(result.violations[0].line, 9);
     assert_eq!(result.violations[0].col, 14);
     assert_eq!(result.violations[0].raw, "Heading_text");
+    assert_eq!(result.violations[0].message, "The \"Heading_text\" class name is unmatched with the below patterns: \"/^Card__[a-z][a-z0-9-]+$/\", \"/^([A-Z][a-z0-9]+)$/\"");
+    assert_eq!(result.violations[0].reason.as_deref(), Some("Do not allow include the element in a no-own block."));
+    assert_eq!(result.violations[1].severity, Severity::Warning);
     assert_eq!(result.violations[1].line, 10);
     assert_eq!(result.violations[1].col, 14);
     assert_eq!(result.violations[1].raw, "Card_text");
+    assert_eq!(result.violations[1].message, "The \"Card_text\" class name is unmatched with the below patterns: \"/^Card__[a-z][a-z0-9-]+$/\", \"/^([A-Z][a-z0-9]+)$/\"");
+    assert_eq!(result.violations[1].reason.as_deref(), Some("Do not allow include the element in a no-own block."));
+}
+
+/// TS: `[class-naming-issue-1263]` — regexSelector + childNodeRule (valid)
+#[test]
+fn class_naming_issue_1263() {
+    const _ID: &str = "class-naming-issue-1263";
+    let arena = html_arena(
+        "\n\t\t\t<div class=\"Carousel\">\n\t\t\t\t<div class=\"Carousel__slides\" aria-live=\"off\" >\n\t\t\t\t\t<div class=\"Carousel__slide\">\n\t\t\t\t\t<p class=\"Carousel__label\">slide 1</p>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t",
+    );
+    let spec = spec();
+    let config: LintConfig = serde_json::from_value(serde_json::json!({
+        "rules": { "class-naming": "/.+/" },
+        "childNodeRules": [
+            {
+                "regexSelector": {
+                    "attrName": "class",
+                    "attrValue": "/^(?<BlockName>[A-Z][a-z0-9]+)(?:__[a-z][a-z0-9-]+)?$/"
+                },
+                "rules": {
+                    "class-naming": {
+                        "value": ["/^{{BlockName}}__[a-z][a-z0-9-]+$/", "/^([A-Z][a-z0-9]+)$/"]
+                    }
+                }
+            }
+        ]
+    }))
+    .unwrap();
+    let result = lint(&arena, &spec, &config);
+    assert_eq!(result.violations.len(), 0, "violations: {:#?}", result.violations);
 }
 
 /// Rust-only: null config disabled

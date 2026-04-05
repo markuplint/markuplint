@@ -107,7 +107,8 @@ impl Rule for NoReferToNonExistentId {
                                 line: html_attr.value.line,
                                 col: html_attr.value.col,
                                 raw: html_attr.value.raw.clone(),
-                            });
+                            reason: None,
+            });
                         }
                     }
                     DomIdType::SpaceList => {
@@ -130,7 +131,8 @@ impl Rule for NoReferToNonExistentId {
                         line: html_attr.value.line,
                         col: html_attr.value.col,
                         raw: html_attr.value.raw.clone(),
-                    });
+                    reason: None,
+            });
                 }
             }
         }
@@ -269,6 +271,7 @@ fn check_space_separated_ids(
                 line: html_attr.value.line,
                 col: html_attr.value.col,
                 raw: html_attr.value.raw.clone(),
+            reason: None,
             });
         }
     }
