@@ -40,6 +40,6 @@
 		"type-fest": "5.5.0"
 	},
 	"devDependencies": {
-		"@typescript-eslint/typescript-estree": "8.58.0"
+		"@typescript-eslint/typescript-estree": "8.58.1"
 	}
 }
