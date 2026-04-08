@@ -6,6 +6,7 @@
 		"cspell.json",
 		".github/ISSUE_TEMPLATE/*",
 		"test/fixture/**",
+		"tests/external/**",
 		"packages/@markuplint/html-spec/src/*.jsonc",
 		"packages/@markuplint/html-spec/index.json"
 	],
