@@ -2,7 +2,11 @@
 	"name": "@markuplint/tagged-template-literal-parser",
 	"version": "5.0.0-rc.1",
 	"description": "Tagged template literal parser for markuplint",
-	"repository": "git@github.com:markuplint/markuplint.git",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/markuplint/markuplint.git",
+		"directory": "packages/@markuplint/tagged-template-literal-parser"
+	},
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
 	"engines": {

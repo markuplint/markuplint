@@ -2,7 +2,11 @@
 	"name": "@markuplint/astro-parser",
 	"version": "5.0.0-rc.1",
 	"description": "astro parser for markuplint",
-	"repository": "git@github.com:markuplint/markuplint.git",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/markuplint/markuplint.git",
+		"directory": "packages/@markuplint/astro-parser"
+	},
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
 	"engines": {

@@ -2,7 +2,11 @@
 	"name": "@markuplint/types",
 	"version": "5.0.0-rc.1",
 	"description": "Type declaration and value checker",
-	"repository": "git@github.com:markuplint/markuplint.git",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/markuplint/markuplint.git",
+		"directory": "packages/@markuplint/types"
+	},
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
 	"engines": {

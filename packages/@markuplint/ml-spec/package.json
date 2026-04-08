@@ -2,7 +2,11 @@
 	"name": "@markuplint/ml-spec",
 	"version": "5.0.0-rc.1",
 	"description": "Types and schema that specs of the Markup languages for markuplint",
-	"repository": "git@github.com:markuplint/markuplint.git",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/markuplint/markuplint.git",
+		"directory": "packages/@markuplint/ml-spec"
+	},
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
 	"engines": {

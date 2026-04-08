@@ -2,7 +2,11 @@
 	"name": "@markuplint/parser-utils",
 	"version": "5.0.0-rc.1",
 	"description": "Utility module for markuplint parser plugin",
-	"repository": "git@github.com:markuplint/markuplint.git",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/markuplint/markuplint.git",
+		"directory": "packages/@markuplint/parser-utils"
+	},
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
 	"engines": {

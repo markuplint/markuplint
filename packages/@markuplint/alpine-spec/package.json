@@ -2,7 +2,11 @@
 	"name": "@markuplint/alpine-spec",
 	"version": "5.0.0-rc.1",
 	"description": "Extended specification for tags and attributes in Alpine.js",
-	"repository": "git@github.com:markuplint/markuplint.git",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/markuplint/markuplint.git",
+		"directory": "packages/@markuplint/alpine-spec"
+	},
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
 	"engines": {

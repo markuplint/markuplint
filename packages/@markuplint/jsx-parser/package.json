@@ -2,7 +2,11 @@
 	"name": "@markuplint/jsx-parser",
 	"version": "5.0.0-rc.1",
 	"description": "JSX parser for markuplint",
-	"repository": "git@github.com:markuplint/markuplint.git",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/markuplint/markuplint.git",
+		"directory": "packages/@markuplint/jsx-parser"
+	},
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "BSD-2-Clause",
 	"engines": {

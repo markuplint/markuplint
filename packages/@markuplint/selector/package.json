@@ -2,7 +2,11 @@
 	"name": "@markuplint/selector",
 	"version": "5.0.0-rc.1",
 	"description": "Extended W3C Selectors matcher",
-	"repository": "git@github.com:markuplint/markuplint.git",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/markuplint/markuplint.git",
+		"directory": "packages/@markuplint/selector"
+	},
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
 	"engines": {

@@ -2,7 +2,11 @@
 	"name": "@markuplint/shared",
 	"version": "5.0.0-rc.1",
 	"description": "Shared functions for Markuplint",
-	"repository": "git@github.com:markuplint/markuplint.git",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/markuplint/markuplint.git",
+		"directory": "packages/@markuplint/shared"
+	},
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
 	"engines": {

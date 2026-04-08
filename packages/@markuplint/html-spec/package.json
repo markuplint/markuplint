@@ -2,7 +2,11 @@
 	"name": "@markuplint/html-spec",
 	"version": "5.0.0-rc.1",
 	"description": "A specification of HTML Living Standard for markuplint",
-	"repository": "git@github.com:markuplint/markuplint.git",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/markuplint/markuplint.git",
+		"directory": "packages/@markuplint/html-spec"
+	},
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
 	"engines": {

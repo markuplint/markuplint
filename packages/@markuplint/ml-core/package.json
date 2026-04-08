@@ -2,7 +2,11 @@
 	"name": "@markuplint/ml-core",
 	"version": "5.0.0-rc.1",
 	"description": "The core module of markuplint",
-	"repository": "git@github.com:markuplint/markuplint.git",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/markuplint/markuplint.git",
+		"directory": "packages/@markuplint/ml-core"
+	},
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
 	"engines": {

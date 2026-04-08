@@ -2,7 +2,11 @@
 	"name": "@markuplint/rules",
 	"version": "5.0.0-rc.1",
 	"description": "Built-in rules of markuplint",
-	"repository": "git@github.com:markuplint/markuplint.git",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/markuplint/markuplint.git",
+		"directory": "packages/@markuplint/rules"
+	},
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
 	"engines": {

@@ -2,7 +2,11 @@
 	"name": "@markuplint/pug-parser",
 	"version": "5.0.0-rc.1",
 	"description": "Pug parser for markuplint",
-	"repository": "git@github.com:markuplint/markuplint.git",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/markuplint/markuplint.git",
+		"directory": "packages/@markuplint/pug-parser"
+	},
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
 	"engines": {

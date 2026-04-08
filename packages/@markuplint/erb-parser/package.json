@@ -2,7 +2,11 @@
 	"name": "@markuplint/erb-parser",
 	"version": "5.0.0-rc.1",
 	"description": "eRuby template parser for markuplint",
-	"repository": "git@github.com:markuplint/markuplint.git",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/markuplint/markuplint.git",
+		"directory": "packages/@markuplint/erb-parser"
+	},
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
 	"engines": {
