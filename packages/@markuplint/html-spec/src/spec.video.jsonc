@@ -45,6 +45,11 @@
 		]
 	},
 	"attributes": {
+		"loading": {
+			// MDN incorrectly marks this as experimental, but it is defined in the HTML Living Standard.
+			// https://html.spec.whatwg.org/multipage/media.html#the-video-element
+			"experimental": false
+		},
 		// https://html.spec.whatwg.org/multipage/media.html#attr-video-poster
 		"poster": {
 			"type": "URL"
