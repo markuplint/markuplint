@@ -4,7 +4,7 @@
 
 `@markuplint/html-spec` は HTML Living Standard のデータセットプロバイダです。TypeScript ソースコードを含まない純粋なデータパッケージであり、208 個の要素 JSON 仕様ファイル（HTML、SVG、MathML）と 2 個の共通定義ファイルから構成されます。
 
-ビルド時に `@markuplint/spec-generator` が外部ソース（MDN、W3C ARIA 1.1/1.2/1.3、HTML Living Standard、SVG 仕様、MathML 仕様）からデータをフェッチし、手動で管理されたローカル仕様とマージして、統合された `index.json`（48,000 行以上、約 1.4MB）を生成します。手動データは常に外部データより優先され、仕様の正確性を保証します。
+ビルド時に `generator/` のスクリプトが外部ソース（MDN、W3C ARIA 1.1/1.2/1.3、HTML Living Standard、SVG 仕様、MathML 仕様）からデータをフェッチし、手動で管理されたローカル仕様とマージして、統合された `index.json`（48,000 行以上、約 1.4MB）を生成します。手動データは常に外部データより優先され、仕様の正確性を保証します。
 
 ## ディレクトリ構成
 
@@ -18,7 +18,7 @@ src/
 ├── spec-common.attributes.jsonc      # 20 個のグローバル属性カテゴリ定義
 └── spec-common.contents.jsonc        # HTML 10 + SVG 19 + MathML 3 のコンテンツモデルカテゴリ定義
 
-build.mjs                             # @markuplint/spec-generator を呼び出すビルドスクリプト
+build.ts                              # generator/ モジュールを呼び出すビルドスクリプト
 index.json                            # 生成出力（48K 行以上、編集不可）
 index.js                              # CommonJS エントリーポイント
 index.d.ts                            # TypeScript 型宣言
@@ -38,7 +38,7 @@ flowchart TD
 
     subgraph build ["ビルドパイプライン"]
         buildMjs["build.mjs"]
-        specGen["@markuplint/spec-generator\nmain()"]
+        specGen["generator/\nmain()"]
     end
 
     subgraph external ["外部データソース"]
@@ -119,7 +119,7 @@ export = json;
 | -------------- | --------------------------------------- | ------------------------------------------------------------- |
 | ソース仕様     | `src/spec.*.jsonc`（208 ファイル）      | 要素ごとの仕様定義（コンテンツモデル、属性、ARIA マッピング） |
 | 共通定義       | `src/spec-common.*.jsonc`（2 ファイル） | グローバル属性カテゴリとコンテンツモデルマクロの共有定義      |
-| ビルドシステム | `build.mjs`                             | `@markuplint/spec-generator` の `main()` を呼び出すエントリー |
+| ビルドシステム | `build.ts`                              | `generator/` の `main()` を呼び出すエントリー                 |
 | 生成出力       | `index.json`                            | 統合データセット（48K 行以上、直接編集不可）                  |
 | 型宣言         | `index.d.ts`                            | `@markuplint/ml-spec` からの型を再エクスポート                |
 | スキーマ検証   | `test/structure.spec.mjs`               | Ajv ベースの JSON スキーマ検証テスト                          |
@@ -186,19 +186,7 @@ export = json;
 
 ## ビルドパイプライン
 
-ビルドは `build.mjs` を通じて `@markuplint/spec-generator` の `main()` 関数を呼び出します。
-
-```javascript
-import path from 'node:path';
-import { main } from '@markuplint/spec-generator';
-
-await main({
-  outputFilePath: path.resolve(import.meta.dirname, 'index.json'),
-  htmlFilePattern: path.resolve(import.meta.dirname, 'src', 'spec.*.jsonc'),
-  commonAttrsFilePath: path.resolve(import.meta.dirname, 'src', 'spec-common.attributes.jsonc'),
-  commonContentsFilePath: path.resolve(import.meta.dirname, 'src', 'spec-common.contents.jsonc'),
-});
-```
+ビルドは `build.ts` を通じて `generator/` の `main()` 関数を呼び出します。
 
 ビルドプロセスの流れ:
 
@@ -231,18 +219,17 @@ yarn gen:prettier
 
 ## 外部依存パッケージ
 
-| パッケージ                   | 種別 | 用途                                         |
-| ---------------------------- | ---- | -------------------------------------------- |
-| `@markuplint/ml-spec`        | 本番 | 型定義（`Cites`, `ElementSpec`, `SpecDefs`） |
-| `@markuplint/spec-generator` | 開発 | ビルドパイプライン                           |
-| `@markuplint/test-tools`     | 開発 | テストユーティリティ（`glob` 等）            |
+| パッケージ               | 種別 | 用途                                         |
+| ------------------------ | ---- | -------------------------------------------- |
+| `@markuplint/ml-spec`    | 本番 | 型定義（`Cites`, `ElementSpec`, `SpecDefs`） |
+| `@markuplint/test-tools` | 開発 | テストユーティリティ（`glob` 等）            |
 
 ## 他パッケージとの連携
 
 ```mermaid
 flowchart LR
     subgraph upstream ["上流パッケージ"]
-        specGen["@markuplint/spec-generator\n(ビルドパイプライン)"]
+        specGen["generator/\n(ビルドパイプライン)"]
         mlSpecTypes["@markuplint/ml-spec\n(型定義)"]
     end
 
@@ -273,7 +260,7 @@ flowchart LR
 ### 上流
 
 - **`@markuplint/ml-spec`** は `index.d.ts` で使用される型定義（`Cites`, `ElementSpec`, `SpecDefs`）を提供します。
-- **`@markuplint/spec-generator`** はビルド時に外部仕様のフェッチとデータ統合を担当します。
+- **`generator/`** はビルド時に外部仕様のフェッチとデータ統合を担当します。
 
 ### 下流
 
@@ -285,5 +272,5 @@ flowchart LR
 ## ドキュメントマップ
 
 - [要素仕様フォーマット](docs/element-spec-format.ja.md) -- 要素 JSON の構造、フィールド定義、条件分岐パターン
-- [ビルドパイプライン](docs/build-pipeline.ja.md) -- spec-generator の動作、外部データフェッチ、マージ戦略
+- [ビルドパイプライン](docs/build-pipeline.ja.md) -- generator の動作、外部データフェッチ、マージ戦略
 - [メンテナンスガイド](docs/maintenance.ja.md) -- 新規要素の追加、属性更新、外部仕様の変更対応

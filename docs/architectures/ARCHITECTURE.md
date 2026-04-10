@@ -218,7 +218,7 @@ The data generation process is a key architectural decision that influences the 
 
 ```
 Individual JSONC Sources (spec.table.jsonc, spec.tr.jsonc...)
-    ↓ @markuplint/spec-generator processing
+    ↓ generator/ scripts processing
 External Data Enrichment (MDN, W3C ARIA, HTML Standard)
     ↓ Consolidation and validation
 Single JSON Output (index.json, 48K+ lines)
@@ -413,14 +413,14 @@ The ml-spec package follows a taxonomy-based organization that improves code cla
   ↓
 @markuplint/ml-spec (gen/gen.ts) → schemas/*.json
   ↓
-@markuplint/html-spec (build.mjs + @markuplint/spec-generator) → index.json
+@markuplint/html-spec (build.ts + generator/) → index.json
   ↓
 Framework-specific specs (extend base data)
 ```
 
 **Responsibility Boundaries**:
 
-- **@markuplint/spec-generator**: External data fetching and enrichment (MDN scraping, W3C ARIA downloading)
+- **@markuplint/html-spec/generator/**: External data fetching and enrichment (MDN scraping, W3C ARIA downloading)
 - **@markuplint/ml-spec/gen/**: Schema structure generation and type-to-schema transformations
 - **Package build scripts**: Local data processing and file operations
 
@@ -438,7 +438,7 @@ Framework-specific specs (extend base data)
 1. **Package Separation**: Would create artificial boundaries and reduce performance
 2. **Algorithm Extraction to Separate Package**: Would break specification coupling and reduce maintainability
 3. **Data Structure Changes**: Would require extensive migration with minimal benefits
-4. **Generator Responsibility Mixing**: Moving schema operations to spec-generator would muddy architectural boundaries
+4. **Generator Responsibility Mixing**: Moving schema operations to the generator would muddy architectural boundaries
 
 ## Package Operation Order
 

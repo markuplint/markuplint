@@ -1,5 +1,5 @@
 /**
- * @module @markuplint/spec-generator
+ * @module @markuplint/html-spec/generator
  *
  * Generates the markuplint extended specification JSON file by scraping W3C and MDN web standards
  * documentation. Aggregates HTML/SVG element specs, global attributes, ARIA roles and properties,

@@ -4,7 +4,7 @@
 
 ## 概要
 
-`@markuplint/html-spec` は `@markuplint/spec-generator` を使用して、単一の統合 `index.json` ファイルを生成します。ビルドプロセス:
+`@markuplint/html-spec` は `generator/` のスクリプトを使用して、単一の統合 `index.json` ファイルを生成します。ビルドプロセス:
 
 1. `src/` から 208 個の要素 JSON 仕様ファイル（HTML、SVG、MathML）と 2 個の共通定義ファイルを読み込む
 2. MDN Web Docs、W3C ARIA 仕様、HTML Living Standard から外部データをフェッチ
@@ -24,8 +24,8 @@ flowchart TD
     end
 
     subgraph build ["ビルド"]
-        buildScript["build.mjs"]
-        specGen["@markuplint/spec-generator"]
+        buildScript["build.ts"]
+        specGen["generator/"]
     end
 
     subgraph external ["外部データソース"]
@@ -54,30 +54,11 @@ flowchart TD
 
 ## ビルドエントリポイント
 
-`build.mjs` が `@markuplint/spec-generator` の `main()` を呼び出します。
-
-```javascript
-import path from 'node:path';
-import { main } from '@markuplint/spec-generator';
-
-await main({
-  outputFilePath: path.resolve(import.meta.dirname, 'index.json'),
-  htmlFilePattern: path.resolve(import.meta.dirname, 'src', 'spec.*.jsonc'),
-  commonAttrsFilePath: path.resolve(import.meta.dirname, 'src', 'spec-common.attributes.jsonc'),
-  commonContentsFilePath: path.resolve(import.meta.dirname, 'src', 'spec-common.contents.jsonc'),
-});
-```
-
-| オプション               | 説明                                       |
-| ------------------------ | ------------------------------------------ |
-| `outputFilePath`         | `index.json` の出力先パス                  |
-| `htmlFilePattern`        | 要素仕様ファイルにマッチする glob パターン |
-| `commonAttrsFilePath`    | グローバル属性定義ファイルのパス           |
-| `commonContentsFilePath` | コンテンツモデルマクロ定義ファイルのパス   |
+`build.ts` が `generator/` の `main()` を呼び出します。
 
 ## 外部データソース
 
-spec-generator はビルド時に以下の外部ソースからデータをフェッチします。
+generator はビルド時に以下の外部ソースからデータをフェッチします。
 
 | ソース                                    | 提供データ                                                   |
 | ----------------------------------------- | ------------------------------------------------------------ |
@@ -90,7 +71,7 @@ spec-generator はビルド時に以下の外部ソースからデータをフ�
 | Graphics ARIA                             | グラフィックス固有 ARIA ロール                               |
 | HTML-ARIA（`w3.org/TR/html-aria/`）       | HTML 属性から ARIA プロパティへのマッピング                  |
 
-spec-generator の内部アーキテクチャ（スクレイピング、キャッシュ、モジュール構成）の詳細は `@markuplint/spec-generator` 自身のドキュメントを参照してください。
+generator の内部アーキテクチャ（スクレイピング、キャッシュ、モジュール構成）の詳細は `generator/` ディレクトリを参照してください。
 
 ## データ優先順位ルール
 

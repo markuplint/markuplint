@@ -216,7 +216,7 @@ description の表現変更などの表面的な変更は、更新された `ind
 
 要素を非推奨にする方法は2つある:
 
-- **ハードコードリスト経由**: `packages/@markuplint/spec-generator/src/html-elements.ts` の `obsoleteList` 配列に要素名を追加
+- **ハードコードリスト経由**: `packages/@markuplint/html-spec/generator/html-elements.ts` の `obsoleteList` 配列に要素名を追加
 - **手動仕様経由**: 要素の仕様ファイルに `"obsolete": true` を設定
 
 非推奨要素には自動的に以下が設定される:
@@ -285,12 +285,11 @@ yarn workspace @markuplint/html-spec run test
 
 ### 開発依存
 
-- **`@markuplint/spec-generator`**: ビルドツール。外部データのスクレイピングとマージを担当
 - **`@markuplint/test-tools`**: テストユーティリティ。`glob` 関数などを提供
 
 ### 依存関係更新時の注意
 
-1. `@markuplint/spec-generator` 更新後は必ず再生成を実行
+1. `generator/` 更新後は必ず再生成を実行
 2. `index.json` の差分を注意深くレビュー（外部データソースの変更により予期しない差分が出る場合がある）
 3. テストを実行してスキーマ検証が通ることを確認
 4. `@markuplint/ml-spec` のスキーマが変更された場合、ソースJSONファイルの更新が必要になることがある

@@ -2,9 +2,9 @@
 
 ## Overview
 
-`@markuplint/html-spec` is the canonical HTML Living Standard dataset provider for markuplint. It is a pure data package with no TypeScript source code. It contains 208 per-element JSON specification files (HTML, SVG, and MathML) and 2 common definition files that are processed by `@markuplint/spec-generator` to produce a single consolidated `index.json` (48K+ lines, 1.4MB).
+`@markuplint/html-spec` is the canonical HTML Living Standard dataset provider for markuplint. It is a pure data package with no TypeScript source code. It contains 208 per-element JSON specification files (HTML, SVG, and MathML) and 2 common definition files that are processed by `generator/` scripts to produce a single consolidated `index.json` (48K+ lines, 1.4MB).
 
-During the build, `@markuplint/spec-generator` fetches live data from MDN, W3C ARIA specifications (1.1, 1.2, 1.3), Graphics ARIA, DPub ARIA, HTML-ARIA mappings, the HTML Living Standard, SVG specifications, and MathML specifications, then merges that external data with the hand-authored JSON files. Manual specifications always take precedence over fetched data, ensuring stable, curated definitions while still benefiting from automated enrichment.
+During the build, `generator/` fetches live data from MDN, W3C ARIA specifications (1.1, 1.2, 1.3), Graphics ARIA, DPub ARIA, HTML-ARIA mappings, the HTML Living Standard, SVG specifications, and MathML specifications, then merges that external data with the hand-authored JSON files. Manual specifications always take precedence over fetched data, ensuring stable, curated definitions while still benefiting from automated enrichment.
 
 ## Directory Structure
 
@@ -18,7 +18,7 @@ src/
 ├── spec-common.attributes.jsonc      # 20 global attribute category definitions
 └── spec-common.contents.jsonc        # 10 HTML + 19 SVG + 3 MathML content model category definitions
 
-build.mjs                             # Build script invoking @markuplint/spec-generator
+build.ts                              # Build script invoking generator/ modules
 index.json                            # Generated output (48K+ lines, DO NOT EDIT)
 index.js                              # CommonJS entry point (re-exports index.json)
 index.d.ts                            # TypeScript type declarations
@@ -38,7 +38,7 @@ flowchart TD
 
     subgraph build ["Build Pipeline"]
         buildScript["build.mjs"]
-        specGen["@markuplint/spec-generator\nmain()"]
+        specGen["generator/\nmain()"]
     end
 
     subgraph external ["External Data Sources"]
@@ -142,18 +142,17 @@ An array of element specifications. Each entry defines a single HTML, SVG, or Ma
 | --------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------ |
 | Source Specifications | 208 `src/spec.*.jsonc` files                                 | Per-element definitions: content models, attributes, ARIA mappings             |
 | Common Definitions    | `spec-common.attributes.jsonc`, `spec-common.contents.jsonc` | Shared global attribute categories and content model category macros           |
-| Build System          | `build.mjs`                                                  | Invokes `@markuplint/spec-generator` to merge sources with external data       |
+| Build System          | `build.ts`                                                   | Invokes `generator/` to merge sources with external data                       |
 | Generated Output      | `index.json`                                                 | Single consolidated dataset consumed by downstream packages                    |
 | Type Declarations     | `index.d.ts`                                                 | Re-exports `Cites`, `ElementSpec`, `SpecDefs` from `@markuplint/ml-spec`       |
 | Schema Validation     | `test/structure.spec.mjs`                                    | Ajv-based validation of generated output against `@markuplint/ml-spec` schemas |
 
 ## External Dependencies
 
-| Dependency                   | Type       | Purpose                                                      |
-| ---------------------------- | ---------- | ------------------------------------------------------------ |
-| `@markuplint/ml-spec`        | Production | Type definitions (`Cites`, `ElementSpec`, `SpecDefs`)        |
-| `@markuplint/spec-generator` | Dev        | Build pipeline: merges manual specs with MDN/W3C/WHATWG data |
-| `@markuplint/test-tools`     | Dev        | Test utilities (`glob` for file discovery)                   |
+| Dependency               | Type       | Purpose                                               |
+| ------------------------ | ---------- | ----------------------------------------------------- |
+| `@markuplint/ml-spec`    | Production | Type definitions (`Cites`, `ElementSpec`, `SpecDefs`) |
+| `@markuplint/test-tools` | Dev        | Test utilities (`glob` for file discovery)            |
 
 ## Integration Points
 
@@ -161,7 +160,7 @@ An array of element specifications. Each entry defines a single HTML, SVG, or Ma
 flowchart LR
     subgraph upstream ["Upstream"]
         mlSpec["@markuplint/ml-spec\n(types + schemas)"]
-        specGen["@markuplint/spec-generator\n(build tool)"]
+        specGen["generator/\n(build scripts)"]
     end
 
     subgraph pkg ["@markuplint/html-spec"]
@@ -192,7 +191,7 @@ flowchart LR
 ### Upstream
 
 - **`@markuplint/ml-spec`** provides the TypeScript type definitions (`MLMLSpec`, `ElementSpec`, `SpecDefs`) and JSON schemas used to validate the generated output. The `index.d.ts` re-exports these types.
-- **`@markuplint/spec-generator`** is the build tool invoked by `build.mjs`. It reads the source JSON files, fetches live data from MDN Web Docs, W3C ARIA specifications (versions 1.1, 1.2, 1.3), Graphics ARIA, DPub ARIA, HTML-ARIA mappings, the HTML Living Standard, SVG specifications, and MathML specifications, then merges everything into `index.json`.
+- **`generator/`** is the build module invoked by `build.ts`. It reads the source JSON files, fetches live data from MDN Web Docs, W3C ARIA specifications (versions 1.1, 1.2, 1.3), Graphics ARIA, DPub ARIA, HTML-ARIA mappings, the HTML Living Standard, SVG specifications, and MathML specifications, then merges everything into `index.json`.
 
 ### Downstream
 
@@ -203,5 +202,5 @@ flowchart LR
 ## Documentation Map
 
 - [Element Specification Format](docs/element-spec-format.md) -- Structure and fields of per-element JSON files
-- [Build Pipeline](docs/build-pipeline.md) -- How build.mjs and spec-generator produce index.json
+- [Build Pipeline](docs/build-pipeline.md) -- How build.ts and generator/ produce index.json
 - [Maintenance Guide](docs/maintenance.md) -- Adding elements, updating external sources, troubleshooting
