@@ -83,8 +83,7 @@ console.log(result.violations);
 
 ### ユーティリティ
 
-| パッケージ                                                                                                             | NPM                                                                                                                                    |
-| ---------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| [`@markuplint/pretenders`](https://github.com/markuplint/markuplint/tree/main/packages/@markuplint/pretenders)         | [![npm version](https://badge.fury.io/js/%40markuplint%2Fpretenders.svg)](https://badge.fury.io/js/%40markuplint%2Fpretenders)         |
-| [`@markuplint/create-rule`](https://github.com/markuplint/markuplint/tree/main/packages/@markuplint/create-rule)       | [![npm version](https://badge.fury.io/js/%40markuplint%2Fcreate-rule.svg)](https://badge.fury.io/js/%40markuplint%2Fcreate-rule)       |
-| [`@markuplint/spec-generator`](https://github.com/markuplint/markuplint/tree/main/packages/@markuplint/spec-generator) | [![npm version](https://badge.fury.io/js/%40markuplint%2Fspec-generator.svg)](https://badge.fury.io/js/%40markuplint%2Fspec-generator) |
+| パッケージ                                                                                                       | NPM                                                                                                                              |
+| ---------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| [`@markuplint/pretenders`](https://github.com/markuplint/markuplint/tree/main/packages/@markuplint/pretenders)   | [![npm version](https://badge.fury.io/js/%40markuplint%2Fpretenders.svg)](https://badge.fury.io/js/%40markuplint%2Fpretenders)   |
+| [`@markuplint/create-rule`](https://github.com/markuplint/markuplint/tree/main/packages/@markuplint/create-rule) | [![npm version](https://badge.fury.io/js/%40markuplint%2Fcreate-rule.svg)](https://badge.fury.io/js/%40markuplint%2Fcreate-rule) |

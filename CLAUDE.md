@@ -43,7 +43,6 @@ Each package has a `SKILL.md` with package-specific maintenance guidance.
 | `@markuplint/parser-utils`    | Maintenance tasks for parser-utils                                    | [SKILL.md](packages/@markuplint/parser-utils/SKILL.md)    |
 | `@markuplint/html-parser`     | Maintenance tasks for html-parser                                     | [SKILL.md](packages/@markuplint/html-parser/SKILL.md)     |
 | `@markuplint/html-spec`       | Maintenance tasks for html-spec                                       | [SKILL.md](packages/@markuplint/html-spec/SKILL.md)       |
-| `@markuplint/spec-generator`  | Maintenance tasks for spec-generator                                  | [SKILL.md](packages/@markuplint/spec-generator/SKILL.md)  |
 | `@markuplint/i18n`            | Maintenance tasks for i18n (internationalization)                     | [SKILL.md](packages/@markuplint/i18n/SKILL.md)            |
 | `@markuplint/create-rule`     | Maintenance tasks for create-rule (CLI scaffolding tool)              | [SKILL.md](packages/@markuplint/create-rule/SKILL.md)     |
 | `@markuplint/react-spec`      | Maintenance tasks for react-spec                                      | [SKILL.md](packages/@markuplint/react-spec/SKILL.md)      |

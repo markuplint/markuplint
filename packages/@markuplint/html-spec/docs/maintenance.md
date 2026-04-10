@@ -15,14 +15,14 @@ This is a practical operations and maintenance guide for contributors working on
 
 The generation process (`gen`) performs two steps in sequence via `npm-run-all`:
 
-1. **`gen:build`** -- Executes `build.mjs`, which calls the `main()` function from
-   `@markuplint/spec-generator`. This reads all `src/spec.*.jsonc` files, merges them
+1. **`gen:build`** -- Executes `build.ts`, which calls the `main()` function from
+   `generator/`. This reads all `src/spec.*.jsonc` files, merges them
    with scraped MDN data and the common attribute/content files, appends obsolete
    element stubs, and writes the consolidated output to `index.json`.
 2. **`gen:prettier`** -- Runs Prettier on `index.json` to ensure consistent formatting
    across regenerations.
 
-The build is network-dependent because `@markuplint/spec-generator` fetches live data
+The build is network-dependent because `generator/` fetches live data
 from MDN for each element (descriptions, compatibility flags, attribute metadata).
 Expect the build to take several minutes on a clean run.
 
@@ -275,7 +275,7 @@ what has changed in web standards and ensuring the spec data remains accurate.
 
 Elements can be marked obsolete in two ways:
 
-- **Via the hardcoded list**: Add the element name to the `obsoleteList` array in `packages/@markuplint/spec-generator/src/html-elements.ts`
+- **Via the hardcoded list**: Add the element name to the `obsoleteList` array in `packages/@markuplint/html-spec/generator/html-elements.ts`
 - **Via manual spec**: Set `"obsolete": true` in the element's spec file
 
 Obsolete elements automatically get:
@@ -358,15 +358,11 @@ grep -A5 '"accept"' index.json
 
 ### Dev Dependencies
 
-- **`@markuplint/spec-generator`**: The build tool. Updates may change:
-  - How MDN pages are scraped (if MDN layout changes)
-  - Which ARIA spec versions are fetched
-  - The output format of `index.json`
 - **`@markuplint/test-tools`**: Test utilities. Updates are generally safe.
 
 ### When Updating Dependencies
 
-1. Always regenerate after updating `@markuplint/spec-generator`: `yarn workspace @markuplint/html-spec run gen`
+1. Always regenerate after updating `generator/`: `yarn up:gen`
 2. Review `index.json` diff carefully for unexpected changes
 3. Run tests to ensure schema validation passes
 
@@ -380,7 +376,7 @@ grep -A5 '"accept"' index.json
 
 - Check network connectivity
 - Failed fetches are cached as empty strings; the build will continue but affected elements will have missing metadata
-- If MDN page structure changed, `@markuplint/spec-generator` scraping selectors may need updating
+- If MDN page structure changed, `generator/` scraping selectors may need updating
 
 ### Schema Validation Error
 

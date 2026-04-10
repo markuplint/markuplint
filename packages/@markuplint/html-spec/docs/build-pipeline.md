@@ -4,7 +4,7 @@ This document describes how `index.json` is generated from the source files and 
 
 ## Overview
 
-The `@markuplint/html-spec` package uses `@markuplint/spec-generator` to produce a single consolidated `index.json` file. The build process:
+The `@markuplint/html-spec` package uses `generator/` scripts to produce a single consolidated `index.json` file. The build process:
 
 1. Reads 208 per-element JSON spec files (HTML, SVG, MathML) and 2 common definition files from `src/`
 2. Fetches external data from MDN Web Docs, W3C ARIA specifications, and the HTML Living Standard
@@ -24,8 +24,8 @@ flowchart TD
     end
 
     subgraph build ["Build"]
-        buildScript["build.mjs"]
-        specGen["@markuplint/spec-generator"]
+        buildScript["build.ts"]
+        specGen["generator/"]
     end
 
     subgraph external ["External Data Sources"]
@@ -54,30 +54,11 @@ flowchart TD
 
 ## Build Entry Point
 
-The build is triggered via `build.mjs`:
-
-```javascript
-import path from 'node:path';
-import { main } from '@markuplint/spec-generator';
-
-await main({
-  outputFilePath: path.resolve(import.meta.dirname, 'index.json'),
-  htmlFilePattern: path.resolve(import.meta.dirname, 'src', 'spec.*.jsonc'),
-  commonAttrsFilePath: path.resolve(import.meta.dirname, 'src', 'spec-common.attributes.jsonc'),
-  commonContentsFilePath: path.resolve(import.meta.dirname, 'src', 'spec-common.contents.jsonc'),
-});
-```
-
-| Option                   | Description                                      |
-| ------------------------ | ------------------------------------------------ |
-| `outputFilePath`         | Absolute path where `index.json` will be written |
-| `htmlFilePattern`        | Glob pattern matching per-element spec files     |
-| `commonAttrsFilePath`    | Path to global attribute definitions             |
-| `commonContentsFilePath` | Path to content model macro definitions          |
+The build is triggered via `build.ts`, which calls the `main()` function from `generator/index.ts`.
 
 ## External Data Sources
 
-The spec-generator fetches live data from the following sources during the build:
+The generator fetches live data from the following sources during the build:
 
 | Source                                   | Data Provided                                                                     |
 | ---------------------------------------- | --------------------------------------------------------------------------------- |
@@ -90,7 +71,7 @@ The spec-generator fetches live data from the following sources during the build
 | Graphics ARIA                            | Graphics-specific ARIA roles                                                      |
 | HTML-ARIA (`w3.org/TR/html-aria/`)       | HTML attribute to ARIA property mappings                                          |
 
-For details on the spec-generator's internal architecture (scraping, caching, module structure), see `@markuplint/spec-generator`'s own documentation.
+For details on the generator's internal architecture (scraping, caching, module structure), see the `generator/` directory.
 
 ## Data Precedence Rules
 

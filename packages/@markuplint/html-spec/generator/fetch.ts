@@ -19,7 +19,7 @@ const RETRY_BASE_DELAY_MS = 1000;
 /**
  * User-Agent header sent with all fetch requests.
  */
-const USER_AGENT = 'markuplint-spec-generator (https://github.com/markuplint/markuplint)';
+const USER_AGENT = 'markuplint-html-spec-generator (https://github.com/markuplint/markuplint)';
 
 /**
  * In-memory cache mapping URLs to their raw HTML text responses.

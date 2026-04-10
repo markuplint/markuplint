@@ -64,7 +64,11 @@ async function getDpubRoles() {
 
 	$roleList.each((_, el) => {
 		const $el = $(el);
-		const name = $el.find('.role-name').attr('title')?.trim() ?? '';
+		// ARIA 1.2 uses `<h4 class="role-name" title="...">`, but ARIA 1.3 dropped that
+		// structure in favor of `<h4><code>name</code> role</h4>`. The `section.role` wrapper
+		// always carries the role name as its `id`, so fall back to that when the legacy
+		// selector yields nothing.
+		const name = $el.find('.role-name').attr('title')?.trim() || $el.attr('id')?.trim() || '';
 		const description = $el
 			.find('.role-description p')
 			.toArray()
@@ -185,7 +189,11 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 
 	$roleList.each((_, el) => {
 		const $el = $(el);
-		const name = $el.find('.role-name').attr('title')?.trim() ?? '';
+		// ARIA 1.2 uses `<h4 class="role-name" title="...">`, but ARIA 1.3 dropped that
+		// structure in favor of `<h4><code>name</code> role</h4>`. The `section.role` wrapper
+		// always carries the role name as its `id`, so fall back to that when the legacy
+		// selector yields nothing.
+		const name = $el.find('.role-name').attr('title')?.trim() || $el.attr('id')?.trim() || '';
 		const description = $el
 			.find('.role-description p')
 			.toArray()

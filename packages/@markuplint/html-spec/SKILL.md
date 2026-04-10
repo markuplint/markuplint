@@ -46,7 +46,7 @@ and review what has changed.
 yarn up:gen
 ```
 
-This runs `@markuplint/spec-generator`, which scrapes live MDN data and merges it with
+This runs the generator scripts in `generator/`, which scrape live MDN data and merge it with
 the manual spec files in `src/`. The result is written to `index.json`.
 
 ### Step 2: Review the diff
@@ -191,9 +191,9 @@ Mark an element as obsolete. Follow recipe #8 in `docs/maintenance.md`.
 
 There are two approaches:
 
-- **Via spec-generator's hardcoded list** (preferred for standard obsolete elements):
+- **Via generator's hardcoded list** (preferred for standard obsolete elements):
   Add the element name to the `obsoleteList` array in
-  `packages/@markuplint/spec-generator/src/html-elements.ts`
+  `packages/@markuplint/html-spec/generator/html-elements.ts`
 - **Via manual spec file**: Set `"obsolete": true` in the element's
   `src/spec.<element>.jsonc`
 

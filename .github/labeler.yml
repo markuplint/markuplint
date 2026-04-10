@@ -85,7 +85,7 @@ Specs:
     - changed-files:
           - any-glob-to-any-file:
                 - packages/@markuplint/*-spec/src/**/*
-                - packages/@markuplint/spec-generator/src/**/*
+                - packages/@markuplint/html-spec/generator/**/*
 
 VS Code Extension:
     - changed-files:
