@@ -66,4 +66,12 @@ describe('Email', () => {
 	test('invalid: domain ends with hyphen', () => {
 		expect(check('user@example-.com', 'Email').matched).toBe(false);
 	});
+
+	test('invalid: Unicode local part (spec requires ASCII only)', () => {
+		expect(check('\u30E6\u30FC\u30B6\u30FC@example.com', 'Email').matched).toBe(false);
+	});
+
+	test('invalid: Unicode domain', () => {
+		expect(check('user@\u4F8B.jp', 'Email').matched).toBe(false);
+	});
 });
