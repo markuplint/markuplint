@@ -52782,23 +52782,30 @@
 			"attributes": {
 				"as": {
 					"description": "This attribute is required when rel=\"preload\" has been set on the <link> element, optional when rel=\"modulepreload\" has been set, and otherwise should not be used. It specifies the type of content being loaded by the <link>, which is necessary for request matching, application of correct content security policy, and setting of correct Accept request header. Furthermore, rel=\"preload\" uses this as a signal for request prioritization. The table below lists the valid values for this attribute and the elements or resources they apply to. Value Applies To audio <audio> elements document <iframe> and <frame> elements embed <embed> elements fetch fetch, XHR Note: This value also requires <link> to contain the crossorigin attribute, see CORS-enabled fetches. font CSS @font-face Note: This value also requires <link> to contain the crossorigin attribute, see CORS-enabled fetches. image <img> and <picture> elements with srcset or imageset attributes, SVG <image> elements, CSS *-image rules json modulepreload destinations. object <object> elements script <script> elements, Worker importScripts, and modulepreload destinations. style <link rel=stylesheet> elements, CSS @import and modulepreload destinations. track <track> elements video <video> elements worker Worker, SharedWorker",
-					"type": {
-						"enum": [
-							"audioworklet",
-							"fetch",
-							"font",
-							"image",
-							"json",
-							"paintworklet",
-							"script",
-							"serviceworker",
-							"sharedworker",
-							"style",
-							"track",
-							"worker"
-						]
-					},
-					"condition": ["[rel='preload' i]", "[rel='modulepreload' i]"]
+					"type": [
+						{
+							"condition": "[rel~='preload' i]",
+							"type": {
+								"enum": ["fetch", "font", "image", "script", "style", "track"]
+							}
+						},
+						{
+							"condition": "[rel~='modulepreload' i]",
+							"type": {
+								"enum": [
+									"audioworklet",
+									"json",
+									"paintworklet",
+									"script",
+									"serviceworker",
+									"sharedworker",
+									"style",
+									"worker"
+								]
+							}
+						}
+					],
+					"condition": ["[rel~='preload' i]", "[rel~='modulepreload' i]"]
 				},
 				"blocking": {
 					"description": "This attribute explicitly indicates that certain operations should be blocked until specific conditions are met. It must only be used when the rel attribute contains the expect or stylesheet keywords. With rel=\"expect\", it indicates that operations should be blocked until a specific DOM node has been parsed. With rel=\"stylesheet\", it indicates that operations should be blocked until an external stylesheet and its critical subresources have been fetched and applied to the document. The operations that are to be blocked must be a space-separated list of blocking tokens listed below. Currently there is only one token: render: The rendering of content on the screen is blocked. Note: Only link elements in the document's <head> can possibly block rendering. By default, a link element with rel=\"stylesheet\" in the <head> blocks rendering when the browser discovers it during parsing. If such a link element is added dynamically via script, you must additionally set blocking = \"render\" for it to block rendering.",
