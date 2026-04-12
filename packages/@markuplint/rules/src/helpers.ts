@@ -126,6 +126,9 @@ export function isValidAttr(
 			return node.matches(cond);
 		});
 		log?.('ConditionalAttributeType resolution for %s: %o', name, matched);
+		// Fallback to 'Any' when no condition matches: input types without an explicit
+		// entry (text, search, tel, password, hidden, checkbox, radio, file, submit,
+		// image, reset, button) have no value constraints per the HTML spec.
 		spec = { ...spec, type: matched ? matched.type : 'Any' };
 	}
 
