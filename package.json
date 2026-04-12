@@ -92,7 +92,7 @@
 		"textlint-rule-preset-jtf-style": "3.0.3",
 		"ts-node": "10.9.2",
 		"tsx": "4.21.0",
-		"typedoc": "0.28.18",
+		"typedoc": "0.28.19",
 		"typedoc-plugin-mdn-links": "5.1.1",
 		"typedoc-plugin-resolve-crossmodule-references": "0.3.3",
 		"typescript": "6.0.2",

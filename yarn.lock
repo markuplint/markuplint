@@ -11556,7 +11556,7 @@ __metadata:
     textlint-rule-preset-jtf-style: "npm:3.0.3"
     ts-node: "npm:10.9.2"
     tsx: "npm:4.21.0"
-    typedoc: "npm:0.28.18"
+    typedoc: "npm:0.28.19"
     typedoc-plugin-mdn-links: "npm:5.1.1"
     typedoc-plugin-resolve-crossmodule-references: "npm:0.3.3"
     typescript: "npm:6.0.2"
@@ -12657,7 +12657,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minimatch@npm:10.2.4, minimatch@npm:^10.0.3, minimatch@npm:^10.1.1, minimatch@npm:^10.2.2, minimatch@npm:^10.2.4":
+"minimatch@npm:10.2.4, minimatch@npm:^10.0.3, minimatch@npm:^10.1.1, minimatch@npm:^10.2.2":
   version: 10.2.4
   resolution: "minimatch@npm:10.2.4"
   dependencies:
@@ -12666,7 +12666,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minimatch@npm:10.2.5":
+"minimatch@npm:10.2.5, minimatch@npm:^10.2.5":
   version: 10.2.5
   resolution: "minimatch@npm:10.2.5"
   dependencies:
@@ -17290,20 +17290,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typedoc@npm:0.28.18":
-  version: 0.28.18
-  resolution: "typedoc@npm:0.28.18"
+"typedoc@npm:0.28.19":
+  version: 0.28.19
+  resolution: "typedoc@npm:0.28.19"
   dependencies:
     "@gerrit0/mini-shiki": "npm:^3.23.0"
     lunr: "npm:^2.3.9"
     markdown-it: "npm:^14.1.1"
-    minimatch: "npm:^10.2.4"
-    yaml: "npm:^2.8.2"
+    minimatch: "npm:^10.2.5"
+    yaml: "npm:^2.8.3"
   peerDependencies:
     typescript: 5.0.x || 5.1.x || 5.2.x || 5.3.x || 5.4.x || 5.5.x || 5.6.x || 5.7.x || 5.8.x || 5.9.x || 6.0.x
   bin:
     typedoc: bin/typedoc
-  checksum: 10c0/cb5ba76e4c7ffdaaff9aeb6bfd5f22410c3c16b713e2a863c0090cfdae092d40394915221020ee48f596d73c3ebd68aaa026123d827acc74919bffd66a8819d6
+  checksum: 10c0/a46ea8ec4e661320dacf27f1d68595bdf9d671383f20060b590f212e6ebbf9a65d4962e698e8a43804a14add1f04a3528381c338801350dc03ddc6baf33fb898
   languageName: node
   linkType: hard
 
