@@ -12767,16 +12767,12 @@
 						"requiredContextRole": [],
 						"requiredOwnedElements": [],
 						"accessibleNameRequired": false,
-						"accessibleNameFromAuthor": true,
-						"accessibleNameFromContent": true,
-						"accessibleNameProhibited": false,
+						"accessibleNameFromAuthor": false,
+						"accessibleNameFromContent": false,
+						"accessibleNameProhibited": true,
 						"ownedProperties": [
 							{
 								"name": "aria-atomic",
-								"inherited": true
-							},
-							{
-								"name": "aria-braillelabel",
 								"inherited": true
 							},
 							{
@@ -12848,14 +12844,6 @@
 								"inherited": true
 							},
 							{
-								"name": "aria-label",
-								"inherited": true
-							},
-							{
-								"name": "aria-labelledby",
-								"inherited": true
-							},
-							{
 								"name": "aria-live",
 								"inherited": true
 							},
@@ -12872,7 +12860,7 @@
 								"inherited": true
 							}
 						],
-						"prohibitedProperties": []
+						"prohibitedProperties": ["aria-braillelabel", "aria-label", "aria-labelledby"]
 					},
 					{
 						"name": "tree",
