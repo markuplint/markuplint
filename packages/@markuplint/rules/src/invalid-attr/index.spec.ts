@@ -2248,4 +2248,55 @@ describe('#3598 input value validation', () => {
 		const { violations } = await mlRuleTest(rule, '<input type="date" value="2024-01-15">');
 		expect(violations.some(v => v.raw === '2024-01-15')).toBe(false);
 	});
+
+	test('[invalid-attr-issue-3598-013] input[type=range] with valid value', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="range" value="50">');
+		expect(violations.some(v => v.raw === '50')).toBe(false);
+	});
+
+	test('[invalid-attr-issue-3598-014] input[type=range] with invalid value', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="range" value="abc">');
+		expect(violations.some(v => v.raw === 'abc')).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3598-015] input[type=time] with valid value', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="time" value="12:30">');
+		expect(violations.some(v => v.raw === '12:30')).toBe(false);
+	});
+
+	test('[invalid-attr-issue-3598-016] input[type=time] with invalid value', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="time" value="25:99">');
+		// Token-based checker reports the first invalid part ("25"), not the whole value.
+		expect(violations.some(v => v.message.includes('"value"'))).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3598-017] input[type=month] with valid value', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="month" value="2024-01">');
+		expect(violations.some(v => v.raw === '2024-01')).toBe(false);
+	});
+
+	test('[invalid-attr-issue-3598-018] input[type=month] with invalid value', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="month" value="2024-13">');
+		expect(violations.some(v => v.message.includes('"value"'))).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3598-019] input[type=week] with valid value', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="week" value="2024-W03">');
+		expect(violations.some(v => v.raw === '2024-W03')).toBe(false);
+	});
+
+	test('[invalid-attr-issue-3598-020] input[type=week] with invalid value', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="week" value="2024-03">');
+		expect(violations.some(v => v.message.includes('"value"'))).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3598-021] input[type=datetime-local] with valid value', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="datetime-local" value="2024-01-15T12:30">');
+		expect(violations.some(v => v.raw === '2024-01-15T12:30')).toBe(false);
+	});
+
+	test('[invalid-attr-issue-3598-022] input[type=datetime-local] with invalid value', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="datetime-local" value="2024-01-15">');
+		expect(violations.some(v => v.message.includes('"value"'))).toBe(true);
+	});
 });

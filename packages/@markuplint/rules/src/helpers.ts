@@ -166,6 +166,8 @@ export function toNormalizedValue(value: string, spec: Attribute) {
 		normalized = normalized.toLowerCase();
 	}
 
+	// When spec.type is an array (AttributeType[] or ConditionalAttributeType[]),
+	// type-specific normalization is skipped — only caseSensitive applies above.
 	if (typeof spec.type === 'string') {
 		if (spec.type[0] === '<') {
 			normalized = normalized.toLowerCase().trim().replaceAll(/\s+/g, ' ');

@@ -117,7 +117,7 @@ test('[helpers-issue-3598-003] resolves second condition: valid URL', () => {
 });
 
 test('[helpers-issue-3598-004] resolves second condition: invalid URL', () => {
-	const el = createTestElement('<input type="url" value="not a url">');
+	const el = createTestElement('<input type="url" value="http://example.com/a b">');
 	const attrSpecs: readonly Attribute[] = [
 		{
 			name: 'value',
@@ -127,7 +127,8 @@ test('[helpers-issue-3598-004] resolves second condition: invalid URL', () => {
 			],
 		},
 	];
-	const result = isValidAttr(t, 'value', 'not a url', false, el, attrSpecs);
+	// Absolute URL with unencoded space — reliably rejected by the URL checker.
+	const result = isValidAttr(t, 'value', 'http://example.com/a b', false, el, attrSpecs);
 	expect(result).not.toBe(false);
 });
 
@@ -174,5 +175,18 @@ test('[helpers-issue-3598-007] array condition (OR logic)', () => {
 		},
 	];
 	const result = isValidAttr(t, 'value', '42', false, el, attrSpecs);
+	expect(result).toBe(false);
+});
+
+test('[helpers-issue-3598-008] isDynamicValue suppresses invalid-value after conditional resolution', () => {
+	const el = createTestElement('<input type="color" value="red">');
+	const attrSpecs: readonly Attribute[] = [
+		{
+			name: 'value',
+			type: [{ condition: "[type='color' i]", type: 'SimpleColor' }],
+		},
+	];
+	// "red" is invalid SimpleColor, but isDynamicValue=true should suppress invalid-value errors.
+	const result = isValidAttr(t, 'value', 'red', true, el, attrSpecs);
 	expect(result).toBe(false);
 });
