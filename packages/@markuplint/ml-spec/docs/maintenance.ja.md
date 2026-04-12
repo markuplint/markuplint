@@ -230,6 +230,34 @@ AttributeJSON: {
 
 再生成すると、新しいフィールドが `src/types/attributes.ts` にオプショナルプロパティとして反映されます。
 
+> **警告:** `schemas/attributes.schema.json` と `schemas/global-attributes.schema.json` は `gen/gen.ts` によって _上書き_ されます。**これらのファイルを直接編集してはいけません** — 次に `schema:json`（または `yarn up:schema`）が走った瞬間に変更が消えます。すべての編集は `gen/gen.ts` に対して行ってください。
+
+### 3b. `attributes.schema.json` に新しい definition を追加する（新しいスキーマ型）
+
+`AttributeJSON` のフィールドではなく、まったく新しい definition を追加したい場合 — 例えば #3685 の `ConditionalAttributeType` のような新しい構造化型バリアント — は、`gen/gen.ts` の 2 つめの `fs.writeFileSync` 呼び出し内の `definitions` オブジェクトに、`AttributeJSON` の隣に配置してください。
+
+```ts
+fs.writeFileSync(
+  path.resolve(import.meta.dirname, '..', 'schemas', 'attributes.schema.json'),
+  JSON.stringify({
+    definitions: {
+      // ...既存の definitions...
+      NewType: {
+        type: 'object',
+        additionalProperties: false,
+        required: ['foo'],
+        properties: { foo: { type: 'string' } },
+      },
+      AttributeJSON: {
+        /* ... */
+      },
+    },
+  }),
+);
+```
+
+再生成すると、新しい definition は TypeScript の `interface` として `src/types/attributes.ts` から export されます。下流パッケージ（例: `@markuplint/rules`）で narrowing が必要な場合は、`src/utils/` に型ガードを追加し `src/index.ts` から再 export してください — #3685 で確立したパターンは `is-conditional-attribute-type.ts` を参照してください。
+
 ### 4. ARIA ロール/プロパティスキーマを変更する
 
 `schemas/aria.schema.json` を直接編集します。例えば、ロール定義に新しいフィールドを追加する場合:

@@ -230,6 +230,34 @@ AttributeJSON: {
 
 Then regenerate. The new field will appear in `src/types/attributes.ts` as an optional property.
 
+> **Warning:** `schemas/attributes.schema.json` and `schemas/global-attributes.schema.json` are both _overwritten_ by `gen/gen.ts`. **Never hand-edit those files** — your changes will be blown away the next time `schema:json` (or `yarn up:schema`) runs. All edits must live in `gen/gen.ts`.
+
+### 3b. Add a new definition to `attributes.schema.json` (new schema type)
+
+When you need to add a brand-new definition (not just a field on `AttributeJSON`) — for example, adding a new structured type variant like `ConditionalAttributeType` (#3685) — edit `gen/gen.ts` and place the new definition alongside `AttributeJSON` inside the `definitions` object of the second `fs.writeFileSync` call.
+
+```ts
+fs.writeFileSync(
+  path.resolve(import.meta.dirname, '..', 'schemas', 'attributes.schema.json'),
+  JSON.stringify({
+    definitions: {
+      // ...existing definitions...
+      NewType: {
+        type: 'object',
+        additionalProperties: false,
+        required: ['foo'],
+        properties: { foo: { type: 'string' } },
+      },
+      AttributeJSON: {
+        /* ... */
+      },
+    },
+  }),
+);
+```
+
+After regeneration, the new definition is exported from `src/types/attributes.ts` as a TypeScript `interface`. If downstream packages (e.g. `@markuplint/rules`) need to narrow against it, add a type guard in `src/utils/` and re-export from `src/index.ts` — see `is-conditional-attribute-type.ts` for the pattern established by #3685.
+
 ### 4. Modify ARIA role/property schema
 
 Edit `schemas/aria.schema.json` directly. For example, to add a new field to the role definition:

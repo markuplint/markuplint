@@ -35,6 +35,7 @@ export * from './utils/schema-to-spec.js';
 export * from './utils/resolve-namespace.js';
 export * from './utils/validate-aria-version.js';
 export * from './utils/directive-resolver.js';
+export * from './utils/is-conditional-attribute-type.js';
 
 // Type definitions
 export * from './types/index.js';

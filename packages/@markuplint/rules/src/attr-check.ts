@@ -3,6 +3,7 @@ import type { Attribute as AttrSpec, AttributeType } from '@markuplint/ml-spec';
 import type { Type } from '@markuplint/types';
 import type { ReadonlyDeep } from 'type-fest';
 
+import { isConditionalAttributeTypeArray } from '@markuplint/ml-spec';
 import { toNonNullableArrayFromItemOrArray } from '@markuplint/shared';
 import { check, getCandidate } from '@markuplint/types';
 
@@ -44,7 +45,9 @@ type Loc = {
  * 2. Verifies the attribute exists in the spec
  * 3. Checks case-sensitive name matching
  * 4. Checks whether the attribute is marked as `noUse` (disallowed)
- * 5. Validates the attribute value against all declared types
+ * 5. Short-circuits to valid when the spec declares a `ConditionalAttributeType[]`
+ *    (#3685); conditional value validation is deferred to follow-up issues #3598 and #3189
+ * 6. Validates the attribute value against all declared types
  *
  * @param t - The i18n translator for generating localized error messages
  * @param name - The attribute name to check
@@ -117,6 +120,14 @@ export function attrCheck(
 			invalidType: 'disallowed-attr',
 			message: t('{0} is {1:c}', t('the "{0*}" {1}', name, 'attribute'), 'disallowed'),
 		};
+	}
+
+	// TODO(#3598, #3189): `ConditionalAttributeType[]` ships as a type-only extension
+	// in v5.0 (#3685). Value-conditional validation (`input[type=color]` value, etc.)
+	// will be implemented in follow-up issues. Until then, short-circuit to "valid".
+	if (isConditionalAttributeTypeArray(spec.type)) {
+		log('The "%s" attribute uses ConditionalAttributeType[] — skipping (v5.0 type-only, #3685)', name);
+		return false;
 	}
 
 	const types = toNonNullableArrayFromItemOrArray(spec.type);
