@@ -2180,3 +2180,72 @@ describe('integrity SRI hash validation (#3626)', () => {
 		expect(isViolations).toStrictEqual([]);
 	});
 });
+
+/*
+ * #3598 — input value validation based on type attribute.
+ * ConditionalAttributeType[] in spec.input.jsonc activates type-dependent
+ * value checking via the resolution logic in isValidAttr().
+ */
+describe('#3598 input value validation', () => {
+	test('[invalid-attr-issue-3598-001] input[type=color] with invalid value', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="color" value="red">');
+		const valueViolation = violations.find(v => v.raw === 'red');
+		expect(valueViolation).toBeDefined();
+		expect(valueViolation!.message).toContain('simple color');
+	});
+
+	test('[invalid-attr-issue-3598-002] input[type=color] with valid value', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="color" value="#ff0000">');
+		expect(violations.some(v => v.raw === '#ff0000')).toBe(false);
+	});
+
+	test('[invalid-attr-issue-3598-003] input[type=url] with invalid value', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="url" value="http://example.com/path with space">');
+		expect(violations.some(v => v.raw === 'http://example.com/path with space')).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3598-004] input[type=url] with valid value', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="url" value="https://example.com">');
+		expect(violations.some(v => v.raw === 'https://example.com')).toBe(false);
+	});
+
+	test('[invalid-attr-issue-3598-005] input[type=number] with invalid value', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="number" value="abc">');
+		expect(violations.some(v => v.raw === 'abc')).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3598-006] input[type=number] with valid value', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="number" value="42">');
+		expect(violations.some(v => v.raw === '42')).toBe(false);
+	});
+
+	test('[invalid-attr-issue-3598-007] input[type=text] value is not validated (Any fallback)', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="text" value="anything goes">');
+		expect(violations.some(v => v.raw === 'anything goes')).toBe(false);
+	});
+
+	test('[invalid-attr-issue-3598-008] input without type: value is not validated (Any fallback)', async () => {
+		const { violations } = await mlRuleTest(rule, '<input value="anything">');
+		expect(violations.some(v => v.raw === 'anything')).toBe(false);
+	});
+
+	test('[invalid-attr-issue-3598-009] input[type=email] with invalid value', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="email" value="not-an-email">');
+		expect(violations.some(v => v.raw === 'not-an-email')).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3598-010] input[type=email] with valid value', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="email" value="user@example.com">');
+		expect(violations.some(v => v.raw === 'user@example.com')).toBe(false);
+	});
+
+	test('[invalid-attr-issue-3598-011] input[type=date] with invalid value', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="date" value="2024/01/15">');
+		expect(violations.some(v => v.raw === '2024/01/15')).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3598-012] input[type=date] with valid value', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="date" value="2024-01-15">');
+		expect(violations.some(v => v.raw === '2024-01-15')).toBe(false);
+	});
+});
