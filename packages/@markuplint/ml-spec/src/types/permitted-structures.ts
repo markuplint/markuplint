@@ -55,20 +55,11 @@ export interface ContentModel {
 	contents: PermittedContentPattern[] | boolean;
 	descendantOf?: string;
 	/**
-	 * Elements that this element must NOT appear as a descendant of.
-	 * Each entry is a CSS selector matching forbidden ancestor elements.
-	 *
-	 * @example ["article", "aside", "footer", "header", "nav"]
-	 * @see https://html.spec.whatwg.org/multipage/ (per-element "Contexts" sections)
+	 * Elements that this element must NOT appear as a descendant of. Each entry is a CSS selector matching forbidden ancestor elements.
 	 */
 	forbiddenAncestors?: string[];
 	/**
-	 * Attributes that must be unique among sibling elements of the same type.
-	 * If this element has one of these attributes, no other sibling element
-	 * of the same type may also have it.
-	 *
-	 * @example ["default"] for <track> — only one <track> per parent may have `default`
-	 * @see https://html.spec.whatwg.org/multipage/media.html#attr-track-default
+	 * Attributes that must be unique among sibling elements of the same type. If this element has one of these attributes, no other sibling element of the same type may also have it. Example: `["default"]` for `<track>` — only one `<track>` per parent may have `default`.
 	 */
 	uniqueAttrs?: string[];
 	conditional?: {
