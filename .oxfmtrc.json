@@ -22,6 +22,10 @@
 		"packages/@markuplint/config-presets/preset.*.json",
 		"packages/@markuplint/i18n/cjs",
 		"packages/@markuplint/i18n/esm",
+		"packages/@markuplint/ml-spec/src/types/aria.ts",
+		"packages/@markuplint/ml-spec/src/types/attributes.ts",
+		"packages/@markuplint/ml-spec/src/types/permitted-structures.ts",
+		"packages/@markuplint/types/src/types.schema.ts",
 		"vscode/out/"
 	]
 }
