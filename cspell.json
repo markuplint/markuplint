@@ -8,7 +8,12 @@
 		"test/fixture/**",
 		"tests/external/**",
 		"packages/@markuplint/html-spec/src/*.jsonc",
-		"packages/@markuplint/html-spec/index.json"
+		"packages/@markuplint/html-spec/index.json",
+		"packages/@markuplint/ml-spec/src/types/aria.ts",
+		"packages/@markuplint/ml-spec/src/types/attributes.ts",
+		"packages/@markuplint/ml-spec/src/types/permitted-structures.ts",
+		"packages/@markuplint/types/src/types.schema.ts",
+		"packages/@markuplint/types/types.schema.json"
 	],
 	"dictionaries": [
 		"css",
