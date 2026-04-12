@@ -6,14 +6,14 @@ The `@markuplint/types` package provides a type system for validating HTML attri
 
 ## Type Union
 
-The core of the type system is a five-member union type called `Type`, defined in `src/types.schema.ts`:
+The core of the type system is a six-member union type called `Type`, defined in `src/types.schema.ts`:
 
 ```ts
 // src/types.schema.ts
-export type Type = KeywordDefinedType | List | Enum | Number | Directive;
+export type Type = KeywordDefinedType | List | Enum | Number | Directive | Pattern;
 ```
 
-Every attribute value specification in markuplint resolves to one of these five forms. The dispatcher in `src/check-base.ts` identifies which variant is being used and routes to the corresponding checker:
+Every attribute value specification in markuplint resolves to one of these six forms. The dispatcher in `src/check-base.ts` identifies which variant is being used and routes to the corresponding checker:
 
 ```ts
 // src/check-base.ts
@@ -23,6 +23,7 @@ export function checkBase(value: string, type: ReadonlyDeep<Type>, defs: Defs, r
   if (isEnum(type)) return checkEnum(value, type, ref);
   if (isNumber(type)) return checkNumber(value, type, ref);
   if (isDirective(type)) return checkDirective(value, type, defs, ref, cache);
+  if (isPattern(type)) return checkPattern(value, type);
   throw new Error('Unknown type');
 }
 ```
@@ -36,6 +37,7 @@ export function checkBase(value: string, type: ReadonlyDeep<Type>, defs: Defs, r
 | **Enum**               | `object`       | `'enum' in type`                     | Fixed set of allowed string values                 | `{ enum: ["auto", "ltr", "rtl"] }`       |
 | **Number**             | `object`       | `type.type === 'float' \| 'integer'` | Numeric values with optional range constraints     | `{ type: "integer", gte: 0 }`            |
 | **Directive**          | `object`       | `'directive' in type`                | Composite attribute values with separators         | `{ directive: [";"], token: "URL" }`     |
+| **Pattern**            | `object`       | `'pattern' in type`                  | Regex or exact-string value matching               | `{ pattern: "/^[a-z]+$/i" }`             |
 
 ### KeywordDefinedType
 
@@ -422,7 +424,7 @@ The type system's type definitions are available both as TypeScript types and as
 
 ```mermaid
 flowchart LR
-    A["gen/specific-schema.json<br/>(List, Enum, Number, Directive)"] --> D["gen/types.ts<br/>(generator script)"]
+    A["gen/specific-schema.json<br/>(List, Enum, Number, Directive, Pattern)"] --> D["gen/types.ts<br/>(generator script)"]
     B["css-tree lexer<br/>(CSS properties + types)"] --> D
     C["src/defs.ts + src/css-defs.ts<br/>(extended types)"] --> D
     E["src/css-tokenizers.ts<br/>(custom tokenizers)"] --> D
@@ -432,7 +434,7 @@ flowchart LR
 
 ### How It Works
 
-1. **`gen/specific-schema.json`** defines the JSON Schema for `List`, `Enum`, `Number`, and `Directive` -- the non-keyword type variants.
+1. **`gen/specific-schema.json`** defines the JSON Schema for `List`, `Enum`, `Number`, `Directive`, and `Pattern` -- the non-keyword type variants.
 
 2. **`gen/types.ts`** is the generator script. It:
    - Reads all CSS property names and type names from css-tree's lexer
@@ -445,16 +447,74 @@ flowchart LR
    - `extended-type` -- All custom type identifiers as a string enum
    - `html-attr-requirement` -- Currently just `["Boolean"]`
    - `keyword-defined-type` -- A `oneOf` of the three above
-   - `list`, `enum`, `number`, `directive` -- From `specific-schema.json`
-   - `type` -- A `oneOf` of all five type variants
+   - `list`, `enum`, `number`, `directive`, `pattern` -- From `specific-schema.json`
+   - `type` -- A `oneOf` of all six type variants
 
-4. **`src/types.schema.ts`** is generated from `types.schema.json` using `json-schema-to-typescript`. This file exports the TypeScript types (`Type`, `List`, `Enum`, `Number`, `Directive`, `KeywordDefinedType`, `CssSyntax`, `ExtendedType`, `HtmlAttrRequirement`) that the rest of the codebase imports.
+4. **`src/types.schema.ts`** is generated from `types.schema.json` using `json-schema-to-typescript`. This file exports the TypeScript types (`Type`, `List`, `Enum`, `Number`, `Directive`, `Pattern`, `KeywordDefinedType`, `CssSyntax`, `ExtendedType`, `HtmlAttrRequirement`) that the rest of the codebase imports.
 
 ### Purpose
 
 - **Configuration validation:** The JSON Schema is referenced by markuplint's configuration schema, providing autocompletion and validation when users edit `.markuplintrc` files in their IDE.
 - **Type safety:** The generated TypeScript types ensure that the codebase can only reference valid type identifiers at compile time.
 - **Single source of truth:** CSS-tree's lexer database and the custom definitions in `defs.ts`/`cssDefs.ts` are the authoritative sources; the schema and TypeScript types are always derived from them.
+
+### Adding a New Type Variant
+
+> **Warning:** `packages/@markuplint/types/types.schema.json` and `packages/@markuplint/types/src/types.schema.ts` are both **generated files**. Never hand-edit them — your changes will be blown away the next time `yarn workspace @markuplint/types run schema` runs. All type-variant additions must start from `gen/specific-schema.json`.
+
+To add a brand-new discriminated variant of `Type` (alongside `List`, `Enum`, `Number`, `Directive`, `Pattern`), follow this recipe:
+
+1. **Add the variant to `gen/specific-schema.json`**
+   Place the new definition alongside `list`, `enum`, `number`, `directive`, `pattern` inside `definitions`. Use a discriminant key that does not collide with the other variants. For example, a hypothetical `range` variant:
+
+   ```jsonc
+   "range": {
+     "type": "object",
+     "required": ["range"],
+     "additionalProperties": false,
+     "properties": {
+       "range": {
+         "type": "object",
+         "required": ["from", "to"],
+         "properties": {
+           "from": { "type": "number" },
+           "to": { "type": "number" }
+         }
+       }
+     }
+   }
+   ```
+
+   The key (`range`) becomes the discriminant; `gen/types.ts` auto-includes every `Object.keys(specific.definitions)` entry into the top-level `type.oneOf`, so no additional wiring is needed.
+
+2. **Implement the runtime type guard and checker**
+   Add an **exported** `isRange()` function to `src/check-base.ts` next to `isList`, `isEnum`, `isNumber`, `isDirective`, `isPattern`. The type guards in `check-base.ts` are all `export`ed because downstream packages may narrow a `Type` value themselves. Implement the matching `checkRange()` function either inline in `check-base.ts` or in a dedicated file (e.g. `src/range.ts`, mirroring `src/pattern.ts`). Finally, wire the new branch into the `checkBase` dispatcher, keeping the order consistent with the existing variants.
+
+3. **Re-export the new TypeScript type and runtime checker**
+   After regeneration, the interface (e.g. `Range`) is available from `src/types.schema.ts`. The type re-export flow in this package is two-layered:
+   - **Types** — Add `Range` to the re-export list in `src/types.ts` (the central type hub that proxies `types.schema.ts`), alongside `Pattern`, `Directive`, etc. `src/index.ts` then forwards all types via its `export type * from './types.js'` line, so no change is needed there for the type.
+   - **Runtime checker** — If you placed `checkRange()` in a dedicated file like `src/range.ts`, add an explicit named export in `src/index.ts` (see how `export { checkPattern } from './pattern.js';` is wired).
+
+   Do **not** add types directly to `src/index.ts`; that bypasses the `src/types.ts` hub and makes downstream import paths inconsistent.
+
+4. **Regenerate the schema and types**
+
+   ```bash
+   yarn workspace @markuplint/types run schema
+   yarn lint           # formats with oxfmt
+   yarn build          # verifies the generated types compile
+   yarn test           # runs the full suite
+   ```
+
+5. **Add tests**
+   Cover both the runtime checker and the integration path:
+   - **Runtime checker tests**: See `src/check.spec.ts:29-40` for the `Pattern` variant's test pattern — both the keyword form (`check('.*', 'Pattern')`) and the object form (`check('hello', { pattern: '/^he/' })`) are tested. Mirror the same structure for your new variant.
+   - **Integration tests**: If the variant is consumed by `@markuplint/ml-spec`, add a test in `@markuplint/rules/src/helpers.spec.ts` showing that `isValidAttr` handles an attribute spec declaring your new variant.
+
+6. **Document the new variant**
+   Update this file's **Type Union** table and the **How It Works** section so the count of variants (currently six) stays in sync with the implementation.
+
+The `Pattern` variant was added this way (commit `06528bd63`); use it as a working reference.
 
 ## CSS Definitions
 

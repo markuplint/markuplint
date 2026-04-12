@@ -6,14 +6,14 @@
 
 ## 型の共用体（Type Union）
 
-型システムの中核は、`src/types.schema.ts` で定義される 5 つのメンバーから成る共用体型 `Type` です。
+型システムの中核は、`src/types.schema.ts` で定義される 6 つのメンバーから成る共用体型 `Type` です。
 
 ```ts
 // src/types.schema.ts
-export type Type = KeywordDefinedType | List | Enum | Number | Directive;
+export type Type = KeywordDefinedType | List | Enum | Number | Directive | Pattern;
 ```
 
-markuplint のすべての属性値仕様は、最終的にこの 5 つの形式のいずれかに解決されます。`src/check-base.ts` のディスパッチャーが型の構造を判別し、対応するチェッカーに処理を振り分けます。
+markuplint のすべての属性値仕様は、最終的にこの 6 つの形式のいずれかに解決されます。`src/check-base.ts` のディスパッチャーが型の構造を判別し、対応するチェッカーに処理を振り分けます。
 
 ```ts
 // src/check-base.ts
@@ -23,6 +23,7 @@ export function checkBase(value: string, type: ReadonlyDeep<Type>, defs: Defs, r
   if (isEnum(type)) return checkEnum(value, type, ref);
   if (isNumber(type)) return checkNumber(value, type, ref);
   if (isDirective(type)) return checkDirective(value, type, defs, ref, cache);
+  if (isPattern(type)) return checkPattern(value, type);
   throw new Error('Unknown type');
 }
 ```
@@ -36,6 +37,7 @@ export function checkBase(value: string, type: ReadonlyDeep<Type>, defs: Defs, r
 | **Enum**               | `object` | `'enum' in type`                     | 許可された文字列値の固定集合                 | `{ enum: ["auto", "ltr", "rtl"] }`       |
 | **Number**             | `object` | `type.type === 'float' \| 'integer'` | 範囲制約付きの数値                           | `{ type: "integer", gte: 0 }`            |
 | **Directive**          | `object` | `'directive' in type`                | セパレータで分割して個別検証する複合値       | `{ directive: [";"], token: "URL" }`     |
+| **Pattern**            | `object` | `'pattern' in type`                  | 正規表現または完全一致による値検証           | `{ pattern: "/^[a-z]+$/i" }`             |
 
 ### KeywordDefinedType
 
@@ -422,7 +424,7 @@ export function check(value: string, type: ReadonlyDeep<Type>, ref?: string, cac
 
 ```mermaid
 flowchart LR
-    A["gen/specific-schema.json<br/>(List, Enum, Number, Directive)"] --> D["gen/types.ts<br/>(ジェネレータスクリプト)"]
+    A["gen/specific-schema.json<br/>(List, Enum, Number, Directive, Pattern)"] --> D["gen/types.ts<br/>(ジェネレータスクリプト)"]
     B["css-tree lexer<br/>(CSS プロパティ + 型)"] --> D
     C["src/defs.ts + src/css-defs.ts<br/>(拡張型)"] --> D
     E["src/css-tokenizers.ts<br/>(カスタムトークナイザ)"] --> D
@@ -432,7 +434,7 @@ flowchart LR
 
 ### 仕組み
 
-1. **`gen/specific-schema.json`** は `List`、`Enum`、`Number`、`Directive`（キーワード以外の型バリアント）の JSON Schema を定義しています。
+1. **`gen/specific-schema.json`** は `List`、`Enum`、`Number`、`Directive`、`Pattern`（キーワード以外の型バリアント）の JSON Schema を定義しています。
 
 2. **`gen/types.ts`** はジェネレータスクリプトです。以下の処理を行います。
    - css-tree のレキサーからすべての CSS プロパティ名と型名を取得
@@ -445,16 +447,74 @@ flowchart LR
    - `extended-type` -- すべてのカスタム型識別子の文字列 enum
    - `html-attr-requirement` -- 現時点では `["Boolean"]` のみ
    - `keyword-defined-type` -- 上記 3 つの `oneOf`
-   - `list`、`enum`、`number`、`directive` -- `specific-schema.json` からの定義
-   - `type` -- 5 つの型バリアントすべての `oneOf`
+   - `list`、`enum`、`number`、`directive`、`pattern` -- `specific-schema.json` からの定義
+   - `type` -- 6 つの型バリアントすべての `oneOf`
 
-4. **`src/types.schema.ts`** は `types.schema.json` から `json-schema-to-typescript` を使って生成されます。コードベースの他の部分がインポートする TypeScript 型（`Type`、`List`、`Enum`、`Number`、`Directive`、`KeywordDefinedType`、`CssSyntax`、`ExtendedType`、`HtmlAttrRequirement`）をエクスポートします。
+4. **`src/types.schema.ts`** は `types.schema.json` から `json-schema-to-typescript` を使って生成されます。コードベースの他の部分がインポートする TypeScript 型（`Type`、`List`、`Enum`、`Number`、`Directive`、`Pattern`、`KeywordDefinedType`、`CssSyntax`、`ExtendedType`、`HtmlAttrRequirement`）をエクスポートします。
 
 ### 目的
 
 - **設定ファイルの検証:** JSON Schema は markuplint の設定スキーマから参照され、ユーザーが IDE で `.markuplintrc` ファイルを編集する際の自動補完とバリデーションを提供します。
 - **型安全性:** 生成された TypeScript 型により、コードベースがコンパイル時に有効な型識別子のみを参照できることが保証されます。
 - **唯一の信頼できるソース:** css-tree のレキサーデータベースと `defs.ts`/`cssDefs.ts` のカスタム定義が権威あるソースであり、スキーマと TypeScript 型は常にそこから導出されます。
+
+### 新しい Type バリアントを追加する
+
+> **警告:** `packages/@markuplint/types/types.schema.json` と `packages/@markuplint/types/src/types.schema.ts` はどちらも**生成ファイル**です。絶対に直接編集しないでください — 次に `yarn workspace @markuplint/types run schema` が実行された瞬間に変更は消えます。すべての型バリアント追加は `gen/specific-schema.json` から始める必要があります。
+
+`Type` に新しい判別共用体バリアントを追加する（`List`、`Enum`、`Number`、`Directive`、`Pattern` の仲間として）には、以下の手順に従ってください。
+
+1. **`gen/specific-schema.json` にバリアントを追加**
+   `definitions` 内の `list`、`enum`、`number`、`directive`、`pattern` の隣に新しい定義を配置します。他のバリアントと衝突しない判別キーを使用してください。例えば仮想的な `range` バリアントの場合:
+
+   ```jsonc
+   "range": {
+     "type": "object",
+     "required": ["range"],
+     "additionalProperties": false,
+     "properties": {
+       "range": {
+         "type": "object",
+         "required": ["from", "to"],
+         "properties": {
+           "from": { "type": "number" },
+           "to": { "type": "number" }
+         }
+       }
+     }
+   }
+   ```
+
+   キー（`range`）が判別子になります。`gen/types.ts` はトップレベルの `type.oneOf` に `Object.keys(specific.definitions)` を自動的に取り込むため、追加の配線は不要です。
+
+2. **ランタイムの型ガードとチェッカーを実装**
+   `src/check-base.ts` 内に、`isList`、`isEnum`、`isNumber`、`isDirective`、`isPattern` と並べて **`export` された** `isRange()` 関数を追加します。`check-base.ts` の型ガードはすべて `export` されています — 下流パッケージが自分で `Type` 値を narrowing するケースに対応するためです。対応する `checkRange()` 関数は、`check-base.ts` 内にインラインで実装するか、専用ファイル（例: `src/range.ts`、`src/pattern.ts` と同じパターン）に切り出します。最後に、`checkBase` ディスパッチャーに新しい分岐を配線し、既存バリアントと順序を揃えてください。
+
+3. **新しい TypeScript 型とランタイムチェッカーを再 export**
+   再生成後、interface（例: `Range`）は `src/types.schema.ts` から利用可能になります。このパッケージの型 re-export は 2 層構造です:
+   - **型** — `src/types.ts`（`types.schema.ts` をプロキシする型のハブ）の再 export リストに `Pattern`、`Directive` などと並べて `Range` を追加します。`src/index.ts` はその後 `export type * from './types.js'` ですべての型を転送するので、型については `src/index.ts` に変更は不要です。
+   - **ランタイムチェッカー** — `checkRange()` を `src/range.ts` のような専用ファイルに配置した場合は、`src/index.ts` に明示的な named export を追加します（`export { checkPattern } from './pattern.js';` がどのように配線されているか参照してください）。
+
+   **`src/index.ts` に型を直接追加してはいけません** — `src/types.ts` のハブをバイパスし、下流パッケージの import パスが一貫しなくなります。
+
+4. **スキーマと型を再生成**
+
+   ```bash
+   yarn workspace @markuplint/types run schema
+   yarn lint           # oxfmt でフォーマット
+   yarn build          # 生成された型がコンパイルできるか検証
+   yarn test           # フルスイートを実行
+   ```
+
+5. **テストを追加**
+   ランタイムチェッカーと統合パスの両方をカバーしてください:
+   - **ランタイムチェッカーテスト**: `src/check.spec.ts:29-40` の `Pattern` テストパターンを参照 — キーワード形式（`check('.*', 'Pattern')`）とオブジェクト形式（`check('hello', { pattern: '/^he/' })`）の両方がテストされています。新しいバリアントも同じ構造を模倣してください。
+   - **統合テスト**: バリアントが `@markuplint/ml-spec` から消費される場合は、`@markuplint/rules/src/helpers.spec.ts`（`[helpers-issue-3685-*]` テストのパターン参照）に新しいバリアントを宣言する属性仕様を `isValidAttr` が処理できることを示すテストを追加してください。
+
+6. **新しいバリアントをドキュメント化**
+   このファイルの **型の共用体（Type Union）** 表と **仕組み** セクションを更新し、バリアント数（現在 6 つ）を実装と同期させてください。
+
+`Pattern` バリアントはこの手順で追加されました（commit `06528bd63`）。実例として参照してください。
 
 ## CSS 定義
 
