@@ -449,7 +449,7 @@ interface ConditionalAttributeType {
 }
 ```
 
-> **Status (#3685 / v5.0):** The type definition ships in v5.0, but the validation logic that actually resolves conditional types is deferred to follow-up issues: [#3598](https://github.com/markuplint/markuplint/issues/3598) (`input[value]` by `type`) and [#3189](https://github.com/markuplint/markuplint/issues/3189) (`link[as]` by `rel`). Until those land, `invalid-attr` short-circuits any attribute whose spec declares a `ConditionalAttributeType[]` — it is treated as valid, never as a violation. See `packages/@markuplint/rules/src/attr-check.ts` and the `isConditionalAttributeTypeArray` helper in `@markuplint/ml-spec`.
+> **Status:** The type definition shipped in v5.0 (#3685). Conditional resolution for `input[value]` by `type` is implemented in [#3598](https://github.com/markuplint/markuplint/issues/3598) — `isValidAttr()` in `helpers.ts` matches the element against each condition and validates against the resolved type; unmatched conditions fall back to `Any`. Resolution for `link[as]` by `rel` ([#3189](https://github.com/markuplint/markuplint/issues/3189)) is not yet implemented — `attrCheck()` retains a safety-net guard that treats unresolved `ConditionalAttributeType[]` as valid.
 
 **`List`** -- Structured type for space-separated or comma-separated token lists.
 

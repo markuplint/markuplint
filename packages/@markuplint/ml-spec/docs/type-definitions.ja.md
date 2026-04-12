@@ -449,7 +449,7 @@ interface ConditionalAttributeType {
 }
 ```
 
-> **ステータス (#3685 / v5.0):** 型定義は v5.0 で先行投入されていますが、条件付き型を実際に解決するバリデーションロジックは follow-up Issue に先送りされています: [#3598](https://github.com/markuplint/markuplint/issues/3598)（`type` による `input[value]`）と [#3189](https://github.com/markuplint/markuplint/issues/3189)（`rel` による `link[as]`）。それらが着地するまでは、`invalid-attr` は `ConditionalAttributeType[]` が宣言されている属性を短絡的に有効扱いにし、違反として報告しません。詳細は `packages/@markuplint/rules/src/attr-check.ts` および `@markuplint/ml-spec` の `isConditionalAttributeTypeArray` ヘルパーを参照してください。
+> **ステータス:** 型定義は v5.0 で投入済み (#3685)。`type` による `input[value]` の条件解決は [#3598](https://github.com/markuplint/markuplint/issues/3598) で実装済み — `helpers.ts` の `isValidAttr()` が要素を各条件にマッチさせ、解決された型でバリデーションを行います。条件に一致しない場合は `Any` にフォールバックします。`rel` による `link[as]` の解決 ([#3189](https://github.com/markuplint/markuplint/issues/3189)) は未実装 — `attrCheck()` に安全ネットガードが残っており、未解決の `ConditionalAttributeType[]` は有効として扱います。
 
 **`List`** -- スペース区切りまたはカンマ区切りのトークンリスト用の構造化型です。
 
