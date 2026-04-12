@@ -29,11 +29,9 @@
 		"build": "tsc --project tsconfig.build.json",
 		"dev": "tsc --watch --project tsconfig.build.json",
 		"clean": "tsc --build --clean tsconfig.build.json",
-		"schema": "run-s schema:types schema:schema build schema:prettier schema:eslint schema:prettier",
-		"schema:types": "tsx \"./gen/types.ts\"",
-		"schema:schema": "npx json2ts \"./types.schema.json\" > \"./src/types.schema.ts\"",
-		"schema:eslint": "npx eslint --fix \"./src/types.schema.ts\"",
-		"schema:prettier": "npx prettier --write \"./src/types.schema.ts\" \"./types.schema.json\" --log-level warn"
+		"schema": "run-s schema:types schema:schema",
+		"schema:types": "npx tsx \"./gen/types.ts\"",
+		"schema:schema": "npx json2ts \"./types.schema.json\" > \"./src/types.schema.ts\""
 	},
 	"dependencies": {
 		"@markuplint/shared": "5.0.0-rc.1",
