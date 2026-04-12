@@ -59,6 +59,37 @@
 4. `yarn workspace @markuplint/html-spec run gen` を実行
 5. `index.json` で属性が正しいメタデータとともに表示されることを確認
 
+### 2b. 条件付き値型（`ConditionalAttributeType[]`）の使用
+
+属性の期待する値型が（属性の存在可否ではなく）**別の属性の値に依存する**場合、`type` フィールドに単一の `AttributeType` ではなく `ConditionalAttributeType[]` を使用します。
+
+これは属性レベルの `condition` フィールド（レシピ2）とは異なります。`condition` は**属性自体が有効かどうか**を制御しますが、条件付き値型は**どの値が有効か**を要素の状態に応じて制御します。
+
+**例** -- `input[value]` の型は `type` 属性に依存:
+
+```jsonc
+"value": {
+    "type": [
+        { "condition": "[type='color' i]", "type": "SimpleColor" },
+        { "condition": "[type='url' i]", "type": "URL" },
+        { "condition": "[type='email' i]", "type": "Email" },
+        { "condition": ["[type='number' i]", "[type='range' i]"], "type": { "type": "float" } },
+        { "condition": "[type='date' i]", "type": "DateString" }
+    ]
+}
+```
+
+**ランタイムの動作:**
+
+1. `@markuplint/rules` の `isValidAttr()` が `ConditionalAttributeType[]` を検出
+2. 各エントリの `condition`（CSSセレクタまたはセレクタの配列）を要素に対してマッチ
+3. 最初にマッチしたエントリの `type` でバリデーションを実行
+4. どの条件にもマッチしない場合は `Any`（制約なし）にフォールバック
+
+**使用タイミング:** HTML仕様が「属性 Y が Z のとき、値は X でなければならない」と規定している場合 — 例: `type=color` のとき `<input value>` は valid simple color でなければならない。
+
+**参照:** `@markuplint/ml-spec` ドキュメント（`docs/type-definitions.md`）の `ConditionalAttributeType` セクション。
+
 ### 3. SVG要素の追加
 
 1. `src/spec.svg_<localname>.jsonc` を作成（例: `src/spec.svg_circle.jsonc`）

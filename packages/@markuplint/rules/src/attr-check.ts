@@ -45,8 +45,8 @@ type Loc = {
  * 2. Verifies the attribute exists in the spec
  * 3. Checks case-sensitive name matching
  * 4. Checks whether the attribute is marked as `noUse` (disallowed)
- * 5. Short-circuits to valid when the spec declares a `ConditionalAttributeType[]`
- *    (#3685); conditional value validation is deferred to follow-up issues #3598 and #3189
+ * 5. Safety-net fallback for `ConditionalAttributeType[]` (#3685); in normal flow,
+ *    `isValidAttr()` resolves conditional types before calling this function (#3598)
  * 6. Validates the attribute value against all declared types
  *
  * @param t - The i18n translator for generating localized error messages
@@ -122,11 +122,10 @@ export function attrCheck(
 		};
 	}
 
-	// TODO(#3598, #3189): `ConditionalAttributeType[]` ships as a type-only extension
-	// in v5.0 (#3685). Value-conditional validation (`input[type=color]` value, etc.)
-	// will be implemented in follow-up issues. Until then, short-circuit to "valid".
+	// Safety net: In normal flow, `isValidAttr()` resolves ConditionalAttributeType[]
+	// before calling this function (#3598). This guard handles direct calls.
 	if (isConditionalAttributeTypeArray(spec.type)) {
-		log('The "%s" attribute uses ConditionalAttributeType[] — skipping (v5.0 type-only, #3685)', name);
+		log('The "%s" attribute uses ConditionalAttributeType[] — unresolved, treating as valid', name);
 		return false;
 	}
 

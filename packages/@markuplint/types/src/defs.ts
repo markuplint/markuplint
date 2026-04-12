@@ -9,6 +9,11 @@ import { Token, TokenCollection } from './token/index.js';
 import { checkSerializedPermissionsPolicy } from './w3c/check-serialized-permissions-policy.js';
 import { checkAutoComplete } from './whatwg/check-autocomplete.js';
 import { checkDateTime } from './whatwg/check-datetime/index.js';
+import { checkDateString } from './whatwg/check-datetime/date-string.js';
+import { checkLocalDateAndTimeString } from './whatwg/check-datetime/local-date-and-time-string.js';
+import { checkMonthString } from './whatwg/check-datetime/month-string.js';
+import { checkTimeString } from './whatwg/check-datetime/time-string.js';
+import { checkWeekString } from './whatwg/check-datetime/week-string.js';
 import { checkMIMEType } from './whatwg/check-mime-type.js';
 import { checkURL } from './whatwg/check-url.js';
 import { isAbsURL } from './whatwg/is-abs-url.js';
@@ -17,6 +22,8 @@ import { isCustomElementName } from './whatwg/is-custom-element-name.js';
 import { isItempropName } from './whatwg/is-itemprop-name.js';
 import { isNavigableTargetName } from './whatwg/is-navigable-target-name.js';
 import { checkLinkType } from './whatwg/check-link-type.js';
+import { isEmail } from './whatwg/check-email.js';
+import { isSimpleColor } from './whatwg/check-simple-color.js';
 
 /**
  * Built-in type definitions registry for HTML attribute value validation.
@@ -200,6 +207,83 @@ export const defs: Defs = {
 			},
 		],
 		is: checkDateTime(),
+	},
+
+	SimpleColor: {
+		ref: 'https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#valid-simple-colour',
+		expects: [
+			{
+				type: 'format',
+				value: 'simple color',
+			},
+		],
+		is: matches(isSimpleColor()),
+	},
+
+	Email: {
+		ref: 'https://html.spec.whatwg.org/multipage/input.html#valid-e-mail-address',
+		expects: [
+			{
+				type: 'format',
+				value: 'email address',
+			},
+		],
+		is: matches(isEmail()),
+	},
+
+	DateString: {
+		ref: 'https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#dates',
+		expects: [
+			{
+				type: 'format',
+				value: 'date string',
+			},
+		],
+		is: checkDateString(),
+	},
+
+	TimeString: {
+		ref: 'https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#times',
+		expects: [
+			{
+				type: 'format',
+				value: 'time string',
+			},
+		],
+		is: checkTimeString(),
+	},
+
+	MonthString: {
+		ref: 'https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#months',
+		expects: [
+			{
+				type: 'format',
+				value: 'month string',
+			},
+		],
+		is: checkMonthString(),
+	},
+
+	WeekString: {
+		ref: 'https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#weeks',
+		expects: [
+			{
+				type: 'format',
+				value: 'week string',
+			},
+		],
+		is: checkWeekString(),
+	},
+
+	LocalDateTimeString: {
+		ref: 'https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#local-dates-and-times',
+		expects: [
+			{
+				type: 'format',
+				value: 'local date and time string',
+			},
+		],
+		is: checkLocalDateAndTimeString(),
 	},
 
 	/**

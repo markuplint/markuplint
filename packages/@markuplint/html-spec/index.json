@@ -52503,7 +52503,46 @@
 				},
 				"value": {
 					"description": "The input control's value. When specified in the HTML, this is the initial value, and from then on it can be altered or retrieved at any time using JavaScript to access the respective HTMLInputElement object's value property. The value attribute is always optional, though should be considered mandatory for checkbox, radio, and hidden.",
-					"type": "Any"
+					"type": [
+						{
+							"condition": "[type='color' i]",
+							"type": "SimpleColor"
+						},
+						{
+							"condition": "[type='url' i]",
+							"type": "URL"
+						},
+						{
+							"condition": "[type='email' i]",
+							"type": "Email"
+						},
+						{
+							"condition": ["[type='number' i]", "[type='range' i]"],
+							"type": {
+								"type": "float"
+							}
+						},
+						{
+							"condition": "[type='date' i]",
+							"type": "DateString"
+						},
+						{
+							"condition": "[type='month' i]",
+							"type": "MonthString"
+						},
+						{
+							"condition": "[type='week' i]",
+							"type": "WeekString"
+						},
+						{
+							"condition": "[type='time' i]",
+							"type": "TimeString"
+						},
+						{
+							"condition": "[type='datetime-local' i]",
+							"type": "LocalDateTimeString"
+						}
+					]
 				},
 				"webkitdirectory": {
 					"description": "The Boolean webkitdirectory attribute, if present, indicates that only directories should be available to be selected by the user in the file picker interface. See HTMLInputElement.webkitdirectory for additional details and examples. Though originally implemented only for WebKit-based browsers, webkitdirectory is also usable in Microsoft Edge as well as Firefox 50 and later. However, even though it has relatively broad support, it is still not standard and should not be used unless you have no alternative.",

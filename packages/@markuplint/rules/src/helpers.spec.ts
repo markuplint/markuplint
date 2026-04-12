@@ -16,15 +16,14 @@ beforeAll(() => {
 });
 
 /*
- * #3685 — Integration tests for `isValidAttr`.
+ * #3685 / #3598 — Integration tests for `isValidAttr` with ConditionalAttributeType[].
  *
  * These exercise the boundary where the `invalid-attr` rule meets the
- * attribute spec data. `ConditionalAttributeType[]` is a v5.0 type-only
- * extension (validation logic lands in #3598 / #3189). Until then, an
- * attribute whose spec uses `ConditionalAttributeType[]` must be treated
- * as valid — no crash, no false positive reported through the rule pipeline.
+ * attribute spec data. `isValidAttr` resolves `ConditionalAttributeType[]` by
+ * matching the element against each condition and validating against the
+ * matched type. If no condition matches, it falls back to `Any`.
  */
-test('[helpers-issue-3685-001] isValidAttr passes through ConditionalAttributeType[] without false positives', () => {
+test('[helpers-issue-3685-001] isValidAttr falls back to Any when no condition matches', () => {
 	const el = createTestElement('<custom-el value="not-a-url-or-color"></custom-el>');
 	const attrSpecs: readonly Attribute[] = [
 		{
@@ -36,7 +35,7 @@ test('[helpers-issue-3685-001] isValidAttr passes through ConditionalAttributeTy
 		},
 	];
 	const result = isValidAttr(t, 'value', 'not-a-url-or-color', false, el, attrSpecs);
-	// v5.0: short-circuits to valid — follow-up #3598/#3189 implements logic.
+	// No condition matches (element has no `type` attribute) → fallback to Any → valid.
 	expect(result).toBe(false);
 });
 
@@ -67,4 +66,127 @@ test('[helpers-issue-3685-003] isValidAttr does not crash when attribute is abse
 	const result = isValidAttr(t, 'unknown-attr', 'x', false, el, attrSpecs);
 	expect(result).not.toBe(false);
 	expect(result).toHaveProperty('invalidType', 'non-existent');
+});
+
+/*
+ * #3598 — Conditional type resolution tests.
+ */
+test('[helpers-issue-3598-001] resolves condition and validates: valid simple color', () => {
+	const el = createTestElement('<input type="color" value="#ff0000">');
+	const attrSpecs: readonly Attribute[] = [
+		{
+			name: 'value',
+			type: [
+				{ condition: "[type='color' i]", type: 'SimpleColor' },
+				{ condition: "[type='url' i]", type: 'URL' },
+			],
+		},
+	];
+	const result = isValidAttr(t, 'value', '#ff0000', false, el, attrSpecs);
+	expect(result).toBe(false);
+});
+
+test('[helpers-issue-3598-002] resolves condition and validates: invalid simple color', () => {
+	const el = createTestElement('<input type="color" value="red">');
+	const attrSpecs: readonly Attribute[] = [
+		{
+			name: 'value',
+			type: [
+				{ condition: "[type='color' i]", type: 'SimpleColor' },
+				{ condition: "[type='url' i]", type: 'URL' },
+			],
+		},
+	];
+	const result = isValidAttr(t, 'value', 'red', false, el, attrSpecs);
+	expect(result).not.toBe(false);
+});
+
+test('[helpers-issue-3598-003] resolves second condition: valid URL', () => {
+	const el = createTestElement('<input type="url" value="https://example.com">');
+	const attrSpecs: readonly Attribute[] = [
+		{
+			name: 'value',
+			type: [
+				{ condition: "[type='color' i]", type: 'SimpleColor' },
+				{ condition: "[type='url' i]", type: 'URL' },
+			],
+		},
+	];
+	const result = isValidAttr(t, 'value', 'https://example.com', false, el, attrSpecs);
+	expect(result).toBe(false);
+});
+
+test('[helpers-issue-3598-004] resolves second condition: invalid URL', () => {
+	const el = createTestElement('<input type="url" value="http://example.com/a b">');
+	const attrSpecs: readonly Attribute[] = [
+		{
+			name: 'value',
+			type: [
+				{ condition: "[type='color' i]", type: 'SimpleColor' },
+				{ condition: "[type='url' i]", type: 'URL' },
+			],
+		},
+	];
+	// Absolute URL with unencoded space — reliably rejected by the URL checker.
+	const result = isValidAttr(t, 'value', 'http://example.com/a b', false, el, attrSpecs);
+	expect(result).not.toBe(false);
+});
+
+test('[helpers-issue-3598-005] unmatched type falls back to Any', () => {
+	const el = createTestElement('<input type="text" value="anything">');
+	const attrSpecs: readonly Attribute[] = [
+		{
+			name: 'value',
+			type: [
+				{ condition: "[type='color' i]", type: 'SimpleColor' },
+				{ condition: "[type='url' i]", type: 'URL' },
+			],
+		},
+	];
+	const result = isValidAttr(t, 'value', 'anything', false, el, attrSpecs);
+	// type=text matches no condition → fallback to Any → valid.
+	expect(result).toBe(false);
+});
+
+test('[helpers-issue-3598-006] case-insensitive condition matching', () => {
+	const el = createTestElement('<input type="COLOR" value="red">');
+	const attrSpecs: readonly Attribute[] = [
+		{
+			name: 'value',
+			type: [{ condition: "[type='color' i]", type: 'SimpleColor' }],
+		},
+	];
+	const result = isValidAttr(t, 'value', 'red', false, el, attrSpecs);
+	// type=COLOR matches [type='color' i] → validates as SimpleColor → "red" is invalid.
+	expect(result).not.toBe(false);
+});
+
+test('[helpers-issue-3598-007] array condition (OR logic)', () => {
+	const el = createTestElement('<input type="number" value="42">');
+	const attrSpecs: readonly Attribute[] = [
+		{
+			name: 'value',
+			type: [
+				{
+					condition: ["[type='number' i]", "[type='range' i]"],
+					type: { type: 'float' },
+				},
+			],
+		},
+	];
+	const result = isValidAttr(t, 'value', '42', false, el, attrSpecs);
+	expect(result).toBe(false);
+});
+
+test('[helpers-issue-3598-008] isDynamicValue suppresses invalid-value after conditional resolution', () => {
+	const el = createTestElement('<input type="color" value="red">');
+	const attrSpecs: readonly Attribute[] = [
+		{
+			name: 'value',
+			type: [{ condition: "[type='color' i]", type: 'SimpleColor' }],
+		},
+	];
+	// "red" is invalid SimpleColor, but isDynamicValue=true should suppress invalid-value errors.
+	const result = isValidAttr(t, 'value', 'red', true, el, attrSpecs);
+	expect(result).toBe(false);
 });

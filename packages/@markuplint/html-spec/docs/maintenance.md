@@ -77,6 +77,37 @@ will cause the element to be silently excluded from the build output.
 4. Run `yarn workspace @markuplint/html-spec run gen`
 5. Check `index.json` to confirm the attribute appears with correct metadata
 
+### 2b. Using Conditional Value Types (`ConditionalAttributeType[]`)
+
+When an attribute's expected value type depends on **another attribute's value** (not just its existence), use `ConditionalAttributeType[]` as the `type` field instead of a single `AttributeType`.
+
+This is different from the attribute-level `condition` field (Recipe 2), which controls **whether the attribute is valid at all**. Conditional value types control **what values are valid** depending on element state.
+
+**Example** -- `input[value]` type depends on the `type` attribute:
+
+```jsonc
+"value": {
+    "type": [
+        { "condition": "[type='color' i]", "type": "SimpleColor" },
+        { "condition": "[type='url' i]", "type": "URL" },
+        { "condition": "[type='email' i]", "type": "Email" },
+        { "condition": ["[type='number' i]", "[type='range' i]"], "type": { "type": "float" } },
+        { "condition": "[type='date' i]", "type": "DateString" }
+    ]
+}
+```
+
+**How it works at runtime:**
+
+1. `isValidAttr()` in `@markuplint/rules` detects `ConditionalAttributeType[]`
+2. Each entry's `condition` (a CSS selector or array of selectors) is matched against the element
+3. The first matching entry's `type` is used for validation
+4. If no condition matches, the value falls back to `Any` (no constraint)
+
+**When to use:** When the HTML spec says "the value must be X when attribute Y is Z" — e.g., `<input value>` must be a valid simple color when `type=color`.
+
+**See also:** `ConditionalAttributeType` in `@markuplint/ml-spec` docs (`docs/type-definitions.md`).
+
 ### 3. Adding an SVG Element
 
 1. Create `src/spec.svg_<localname>.jsonc` (e.g., `src/spec.svg_circle.jsonc`)

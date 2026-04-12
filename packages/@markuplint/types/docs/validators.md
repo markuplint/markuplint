@@ -84,6 +84,18 @@ export function isFloat(value: string) {
 
 WHATWG validators implement the microsyntaxes defined in the [HTML Living Standard](https://html.spec.whatwg.org/multipage/common-microsyntaxes.html).
 
+### SimpleColor
+
+**File:** `src/whatwg/check-simple-color.ts`
+
+Validates a [valid simple color](https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#valid-simple-colour): exactly seven characters — `#` followed by six ASCII hex digits (e.g., `#ff0000`). This is **not** the same as the CSS `<color>` type, which accepts named colors, `rgb()`, `hsl()`, etc. Used for `input[type=color]` value validation.
+
+### Email
+
+**File:** `src/whatwg/check-email.ts`
+
+Validates a [valid email address](https://html.spec.whatwg.org/multipage/input.html#valid-e-mail-address) per the HTML spec. The regex is the verbatim pattern from the spec, using explicit ASCII ranges (`[a-zA-Z0-9]`) instead of `\w` to guarantee ASCII-only matching. Used for `input[type=email]` value validation.
+
 ### DateTime Subsystem
 
 The DateTime subsystem validates all date and time formats defined by the WHATWG specification. It is the most complex validator group, consisting of 12 individual format checkers that share a common token validation layer.

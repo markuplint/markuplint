@@ -84,6 +84,18 @@ export function isFloat(value: string) {
 
 WHATWGバリデータは、[HTML Living Standard](https://html.spec.whatwg.org/multipage/common-microsyntaxes.html)で定義されたマイクロシンタックスを実装しています。
 
+### SimpleColor
+
+**ファイル:** `src/whatwg/check-simple-color.ts`
+
+[valid simple color](https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#valid-simple-colour) を検証します。正確に7文字 — `#` に続く6桁のASCII16進数字（例: `#ff0000`）です。CSSの `<color>` 型（名前付き色、`rgb()`、`hsl()` 等を受け入れる）とは**異なります**。`input[type=color]` の value 属性バリデーションに使用されます。
+
+### Email
+
+**ファイル:** `src/whatwg/check-email.ts`
+
+HTML仕様に基づく [valid email address](https://html.spec.whatwg.org/multipage/input.html#valid-e-mail-address) を検証します。正規表現は仕様からの逐語的なパターンで、ASCII専用マッチングを保証するため `\w` ではなく明示的なASCII範囲（`[a-zA-Z0-9]`）を使用しています。`input[type=email]` の value 属性バリデーションに使用されます。
+
 ### DateTimeサブシステム
 
 DateTimeサブシステムは、WHATWG仕様が定義するすべての日時フォーマットを検証します。12個の個別フォーマットチェッカーで構成されており、共通のトークン検証レイヤーを共有する最も複雑なバリデータ群です。

@@ -5,6 +5,8 @@ import type { Element, RuleConfigValue, Document } from '@markuplint/ml-core';
 import type { Attribute } from '@markuplint/ml-spec';
 import type { WritableDeep } from 'type-fest';
 
+import { isConditionalAttributeTypeArray } from '@markuplint/ml-spec';
+
 import { attrCheck } from './attr-check.js';
 
 /**
@@ -114,8 +116,22 @@ export function isValidAttr(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	log?: Log,
 ) {
-	const spec = attrSpecs.find(s => s.name.toLowerCase() === name.toLowerCase());
+	let spec = attrSpecs.find(s => s.name.toLowerCase() === name.toLowerCase());
 	log?.('Spec of the %s attr: %o', name, spec);
+
+	// Resolve ConditionalAttributeType[] to a concrete type based on element matching (#3598).
+	if (spec && isConditionalAttributeTypeArray(spec.type)) {
+		const matched = spec.type.find(entry => {
+			const cond = typeof entry.condition === 'string' ? entry.condition : entry.condition.join(',');
+			return node.matches(cond);
+		});
+		log?.('ConditionalAttributeType resolution for %s: %o', name, matched);
+		// Fallback to 'Any' when no condition matches: input types without an explicit
+		// entry (text, search, tel, password, hidden, checkbox, radio, file, submit,
+		// image, reset, button) have no value constraints per the HTML spec.
+		spec = { ...spec, type: matched ? matched.type : 'Any' };
+	}
+
 	const allAttrNames = attrSpecs.map(s => s.name);
 	let invalid: ReturnType<typeof attrCheck> = attrCheck(t, name, value, false, spec, allAttrNames);
 	if (
@@ -153,6 +169,8 @@ export function toNormalizedValue(value: string, spec: Attribute) {
 		normalized = normalized.toLowerCase();
 	}
 
+	// When spec.type is an array (AttributeType[] or ConditionalAttributeType[]),
+	// type-specific normalization is skipped — only caseSensitive applies above.
 	if (typeof spec.type === 'string') {
 		if (spec.type[0] === '<') {
 			normalized = normalized.toLowerCase().trim().replaceAll(/\s+/g, ' ');
