@@ -23,7 +23,6 @@ export type CssSyntax =
 	| "<'-moz-control-character-visibility'>"
 	| "<'-moz-float-edge'>"
 	| "<'-moz-force-broken-image-icon'>"
-	| "<'-moz-image-region'>"
 	| "<'-moz-orient'>"
 	| "<'-moz-osx-font-smoothing'>"
 	| "<'-moz-outline-radius'>"
@@ -160,9 +159,9 @@ export type CssSyntax =
 	| "<'animation-range-start'>"
 	| "<'animation-timeline'>"
 	| "<'animation-timing-function'>"
+	| "<'animation-trigger'>"
 	| "<'appearance'>"
 	| "<'aspect-ratio'>"
-	| "<'azimuth'>"
 	| "<'backdrop-filter'>"
 	| "<'backface-visibility'>"
 	| "<'background'>"
@@ -178,6 +177,7 @@ export type CssSyntax =
 	| "<'background-repeat'>"
 	| "<'background-size'>"
 	| "<'baseline-shift'>"
+	| "<'baseline-source'>"
 	| "<'behavior'>"
 	| "<'block-size'>"
 	| "<'border'>"
@@ -258,6 +258,7 @@ export type CssSyntax =
 	| "<'break-inside'>"
 	| "<'caption-side'>"
 	| "<'caret'>"
+	| "<'caret-animation'>"
 	| "<'caret-color'>"
 	| "<'caret-shape'>"
 	| "<'clear'>"
@@ -270,12 +271,14 @@ export type CssSyntax =
 	| "<'column-count'>"
 	| "<'column-fill'>"
 	| "<'column-gap'>"
+	| "<'column-height'>"
 	| "<'column-rule'>"
 	| "<'column-rule-color'>"
 	| "<'column-rule-style'>"
 	| "<'column-rule-width'>"
 	| "<'column-span'>"
 	| "<'column-width'>"
+	| "<'column-wrap'>"
 	| "<'columns'>"
 	| "<'contain'>"
 	| "<'contain-intrinsic-block-size'>"
@@ -288,6 +291,23 @@ export type CssSyntax =
 	| "<'container-type'>"
 	| "<'content'>"
 	| "<'content-visibility'>"
+	| "<'corner-block-end-shape'>"
+	| "<'corner-block-start-shape'>"
+	| "<'corner-bottom-left-shape'>"
+	| "<'corner-bottom-right-shape'>"
+	| "<'corner-bottom-shape'>"
+	| "<'corner-end-end-shape'>"
+	| "<'corner-end-start-shape'>"
+	| "<'corner-inline-end-shape'>"
+	| "<'corner-inline-start-shape'>"
+	| "<'corner-left-shape'>"
+	| "<'corner-right-shape'>"
+	| "<'corner-shape'>"
+	| "<'corner-start-end-shape'>"
+	| "<'corner-start-start-shape'>"
+	| "<'corner-top-left-shape'>"
+	| "<'corner-top-right-shape'>"
+	| "<'corner-top-shape'>"
 	| "<'counter-increment'>"
 	| "<'counter-reset'>"
 	| "<'counter-set'>"
@@ -301,6 +321,7 @@ export type CssSyntax =
 	| "<'direction'>"
 	| "<'display'>"
 	| "<'dominant-baseline'>"
+	| "<'dynamic-range-limit'>"
 	| "<'empty-cells'>"
 	| "<'field-sizing'>"
 	| "<'fill'>"
@@ -315,6 +336,8 @@ export type CssSyntax =
 	| "<'flex-shrink'>"
 	| "<'flex-wrap'>"
 	| "<'float'>"
+	| "<'flood-color'>"
+	| "<'flood-opacity'>"
 	| "<'font'>"
 	| "<'font-family'>"
 	| "<'font-feature-settings'>"
@@ -342,6 +365,7 @@ export type CssSyntax =
 	| "<'font-variant-position'>"
 	| "<'font-variation-settings'>"
 	| "<'font-weight'>"
+	| "<'font-width'>"
 	| "<'forced-color-adjust'>"
 	| "<'gap'>"
 	| "<'glyph-orientation-horizontal'>"
@@ -376,7 +400,6 @@ export type CssSyntax =
 	| "<'initial-letter'>"
 	| "<'initial-letter-align'>"
 	| "<'inline-size'>"
-	| "<'input-security'>"
 	| "<'inset'>"
 	| "<'inset-block'>"
 	| "<'inset-block-end'>"
@@ -384,6 +407,10 @@ export type CssSyntax =
 	| "<'inset-inline'>"
 	| "<'inset-inline-end'>"
 	| "<'inset-inline-start'>"
+	| "<'interactivity'>"
+	| "<'interest-delay'>"
+	| "<'interest-delay-end'>"
+	| "<'interest-delay-start'>"
 	| "<'interpolate-size'>"
 	| "<'isolation'>"
 	| "<'justify-content'>"
@@ -393,6 +420,7 @@ export type CssSyntax =
 	| "<'kerning'>"
 	| "<'left'>"
 	| "<'letter-spacing'>"
+	| "<'lighting-color'>"
 	| "<'line-break'>"
 	| "<'line-clamp'>"
 	| "<'line-height'>"
@@ -450,6 +478,7 @@ export type CssSyntax =
 	| "<'mix-blend-mode'>"
 	| "<'object-fit'>"
 	| "<'object-position'>"
+	| "<'object-view-box'>"
 	| "<'offset'>"
 	| "<'offset-anchor'>"
 	| "<'offset-distance'>"
@@ -509,11 +538,14 @@ export type CssSyntax =
 	| "<'position-area'>"
 	| "<'position-try'>"
 	| "<'position-try-fallbacks'>"
+	| "<'position-try-options'>"
 	| "<'position-try-order'>"
 	| "<'position-visibility'>"
 	| "<'print-color-adjust'>"
 	| "<'quotes'>"
 	| "<'r'>"
+	| "<'reading-flow'>"
+	| "<'reading-order'>"
 	| "<'resize'>"
 	| "<'rest'>"
 	| "<'rest-after'>"
@@ -523,11 +555,13 @@ export type CssSyntax =
 	| "<'row-gap'>"
 	| "<'ruby-align'>"
 	| "<'ruby-merge'>"
+	| "<'ruby-overhang'>"
 	| "<'ruby-position'>"
 	| "<'rx'>"
 	| "<'ry'>"
 	| "<'scale'>"
 	| "<'scroll-behavior'>"
+	| "<'scroll-initial-target'>"
 	| "<'scroll-margin'>"
 	| "<'scroll-margin-block'>"
 	| "<'scroll-margin-block-end'>"
@@ -539,6 +573,7 @@ export type CssSyntax =
 	| "<'scroll-margin-left'>"
 	| "<'scroll-margin-right'>"
 	| "<'scroll-margin-top'>"
+	| "<'scroll-marker-group'>"
 	| "<'scroll-padding'>"
 	| "<'scroll-padding-block'>"
 	| "<'scroll-padding-block-end'>"
@@ -559,6 +594,7 @@ export type CssSyntax =
 	| "<'scroll-snap-type'>"
 	| "<'scroll-snap-type-x'>"
 	| "<'scroll-snap-type-y'>"
+	| "<'scroll-target-group'>"
 	| "<'scroll-timeline'>"
 	| "<'scroll-timeline-axis'>"
 	| "<'scroll-timeline-name'>"
@@ -571,8 +607,10 @@ export type CssSyntax =
 	| "<'shape-rendering'>"
 	| "<'speak'>"
 	| "<'speak-as'>"
-	| "<'src'>"
+	| "<'stop-color'>"
+	| "<'stop-opacity'>"
 	| "<'stroke'>"
+	| "<'stroke-color'>"
 	| "<'stroke-dasharray'>"
 	| "<'stroke-dashoffset'>"
 	| "<'stroke-linecap'>"
@@ -585,9 +623,14 @@ export type CssSyntax =
 	| "<'text-align'>"
 	| "<'text-align-last'>"
 	| "<'text-anchor'>"
+	| "<'text-autospace'>"
+	| "<'text-box'>"
+	| "<'text-box-edge'>"
+	| "<'text-box-trim'>"
 	| "<'text-combine-upright'>"
 	| "<'text-decoration'>"
 	| "<'text-decoration-color'>"
+	| "<'text-decoration-inset'>"
 	| "<'text-decoration-line'>"
 	| "<'text-decoration-skip'>"
 	| "<'text-decoration-skip-ink'>"
@@ -612,6 +655,15 @@ export type CssSyntax =
 	| "<'text-wrap-mode'>"
 	| "<'text-wrap-style'>"
 	| "<'timeline-scope'>"
+	| "<'timeline-trigger'>"
+	| "<'timeline-trigger-exit-range'>"
+	| "<'timeline-trigger-exit-range-end'>"
+	| "<'timeline-trigger-exit-range-start'>"
+	| "<'timeline-trigger-name'>"
+	| "<'timeline-trigger-range'>"
+	| "<'timeline-trigger-range-end'>"
+	| "<'timeline-trigger-range-start'>"
+	| "<'timeline-trigger-source'>"
 	| "<'top'>"
 	| "<'touch-action'>"
 	| "<'transform'>"
@@ -625,8 +677,8 @@ export type CssSyntax =
 	| "<'transition-property'>"
 	| "<'transition-timing-function'>"
 	| "<'translate'>"
+	| "<'trigger-scope'>"
 	| "<'unicode-bidi'>"
-	| "<'unicode-range'>"
 	| "<'user-select'>"
 	| "<'vector-effect'>"
 	| "<'vertical-align'>"
@@ -634,6 +686,7 @@ export type CssSyntax =
 	| "<'view-timeline-axis'>"
 	| "<'view-timeline-inset'>"
 	| "<'view-timeline-name'>"
+	| "<'view-transition-class'>"
 	| "<'view-transition-name'>"
 	| "<'visibility'>"
 	| "<'voice-balance'>"
@@ -691,15 +744,13 @@ export type CssSyntax =
 	| '<[-token>'
 	| '<]-token>'
 	| '<abs()>'
-	| '<absolute-color-base>'
-	| '<absolute-color-function>'
 	| '<absolute-size>'
 	| '<acos()>'
 	| '<age>'
 	| '<alpha-value>'
+	| '<an+b>'
 	| '<an-plus-b>'
 	| '<anchor()>'
-	| '<anchor-element>'
 	| '<anchor-name>'
 	| '<anchor-side>'
 	| '<anchor-size()>'
@@ -710,6 +761,7 @@ export type CssSyntax =
 	| '<angular-color-stop-list>'
 	| '<angular-color-stop>'
 	| '<animateable-feature>'
+	| '<animation-action>'
 	| '<any-value>'
 	| '<asin()>'
 	| '<at-keyword-token>'
@@ -721,13 +773,17 @@ export type CssSyntax =
 	| '<attr-matcher>'
 	| '<attr-modifier>'
 	| '<attr-name>'
+	| '<attr-type>'
+	| '<attr-unit>'
 	| '<attribute-selector>'
 	| '<auto-repeat>'
 	| '<auto-track-list>'
+	| '<autospace>'
 	| '<axis>'
 	| '<bad-string-token>'
 	| '<bad-url-token>'
 	| '<baseline-position>'
+	| '<basic-shape-rect>'
 	| '<basic-shape>'
 	| '<bcp-47>'
 	| '<bg-clip>'
@@ -738,11 +794,12 @@ export type CssSyntax =
 	| '<blend-mode>'
 	| '<blur()>'
 	| '<bottom>'
-	| '<box>'
 	| '<brightness()>'
 	| '<calc()>'
 	| '<calc-constant>'
 	| '<calc-product>'
+	| '<calc-size()>'
+	| '<calc-size-basis>'
 	| '<calc-sum>'
 	| '<calc-value>'
 	| '<cf-final-image>'
@@ -769,6 +826,7 @@ export type CssSyntax =
 	| '<comma-token>'
 	| '<common-lig-values>'
 	| '<compat-auto>'
+	| '<compat-special>'
 	| '<complex-real-selector-list>'
 	| '<complex-real-selector>'
 	| '<complex-selector-list>'
@@ -779,8 +837,10 @@ export type CssSyntax =
 	| '<compound-selector-list>'
 	| '<compound-selector>'
 	| '<conic-gradient()>'
+	| '<conic-gradient-syntax>'
 	| '<container-condition>'
 	| '<container-name>'
+	| '<container-query>'
 	| '<content-distribution>'
 	| '<content-list>'
 	| '<content-position>'
@@ -788,6 +848,7 @@ export type CssSyntax =
 	| '<contextual-alt-values>'
 	| '<contrast()>'
 	| '<coord-box>'
+	| '<corner-shape-value>'
 	| '<cos()>'
 	| '<counter()>'
 	| '<counter-name>'
@@ -796,11 +857,16 @@ export type CssSyntax =
 	| '<counter>'
 	| '<counters()>'
 	| '<cross-fade()>'
-	| '<cubic-bezier-timing-function>'
+	| '<cubic-bezier()>'
+	| '<cubic-bezier-easing-function>'
+	| '<cursor-predefined>'
 	| '<custom-color-space>'
 	| '<custom-ident>'
+	| '<custom-params>'
 	| '<custom-property-name>'
+	| '<dasharray>'
 	| '<dashed-ident>'
+	| '<dashndashdigit-ident>'
 	| '<decibel>'
 	| '<declaration-list>'
 	| '<declaration-value>'
@@ -818,12 +884,12 @@ export type CssSyntax =
 	| '<display-listitem>'
 	| '<display-outside>'
 	| '<drop-shadow()>'
+	| '<dynamic-range-limit-mix()>'
 	| '<easing-function>'
 	| '<east-asian-variant-values>'
 	| '<east-asian-width-values>'
 	| '<element()>'
 	| '<ellipse()>'
-	| '<ending-shape>'
 	| '<env()>'
 	| '<exp()>'
 	| '<explicit-track-list>'
@@ -835,21 +901,21 @@ export type CssSyntax =
 	| '<feature-value-declaration-list>'
 	| '<feature-value-declaration>'
 	| '<feature-value-name>'
-	| '<fill-rule>'
-	| '<filter-function-list>'
 	| '<filter-function>'
+	| '<filter-value-list>'
 	| '<final-bg-layer>'
+	| '<fit-content()>'
 	| '<fixed-breadth>'
 	| '<fixed-repeat>'
 	| '<fixed-size>'
 	| '<flex>'
 	| '<font-stretch-absolute>'
-	| '<font-variant-css21>'
 	| '<font-variant-css2>'
 	| '<font-weight-absolute>'
 	| '<font-width-css3>'
 	| '<forgiving-relative-selector-list>'
 	| '<forgiving-selector-list>'
+	| '<form-control-identifier>'
 	| '<frequency-percentage>'
 	| '<frequency>'
 	| '<function-token>'
@@ -858,7 +924,6 @@ export type CssSyntax =
 	| '<generic-complete>'
 	| '<generic-family>'
 	| '<generic-incomplete>'
-	| '<generic-name>'
 	| '<generic-script-specific>'
 	| '<generic-voice>'
 	| '<geometry-box>'
@@ -888,8 +953,8 @@ export type CssSyntax =
 	| '<inset()>'
 	| '<inset-area>'
 	| '<integer>'
+	| '<intrinsic-size-keyword>'
 	| '<invert()>'
-	| '<keyframe-block-list>'
 	| '<keyframe-block>'
 	| '<keyframe-selector>'
 	| '<keyframes-name>'
@@ -909,9 +974,12 @@ export type CssSyntax =
 	| '<line-names>'
 	| '<line-style>'
 	| '<line-width>'
+	| '<linear()>'
 	| '<linear-color-hint>'
 	| '<linear-color-stop>'
+	| '<linear-easing-function>'
 	| '<linear-gradient()>'
+	| '<linear-gradient-syntax>'
 	| '<log()>'
 	| '<mask-layer>'
 	| '<mask-position>'
@@ -940,11 +1008,14 @@ export type CssSyntax =
 	| '<minmax()>'
 	| '<mod()>'
 	| '<modern-device-cmyk-syntax>'
+	| '<n-dimension>'
 	| '<name-repeat>'
 	| '<named-color>'
 	| '<namespace-prefix>'
+	| '<ndash-dimension>'
+	| '<ndashdigit-dimension>'
+	| '<ndashdigit-ident>'
 	| '<ns-prefix>'
-	| '<nth>'
 	| '<number-one-or-greater>'
 	| '<number-percentage>'
 	| '<number-token>'
@@ -957,6 +1028,8 @@ export type CssSyntax =
 	| '<oklab()>'
 	| '<oklch()>'
 	| '<opacity()>'
+	| '<opacity-value>'
+	| '<outline-line-style>'
 	| '<outline-radius>'
 	| '<overflow-position>'
 	| '<page-body>'
@@ -966,8 +1039,10 @@ export type CssSyntax =
 	| '<page-selector>'
 	| '<page-size>'
 	| '<paint()>'
+	| '<paint-box>'
 	| '<paint>'
 	| '<palette-identifier>'
+	| '<palette-mix()>'
 	| '<path()>'
 	| '<percentage-token>'
 	| '<percentage>'
@@ -985,7 +1060,11 @@ export type CssSyntax =
 	| '<pseudo-page>'
 	| '<query-in-parens>'
 	| '<quote>'
+	| '<radial-extent>'
 	| '<radial-gradient()>'
+	| '<radial-gradient-syntax>'
+	| '<radial-shape>'
+	| '<radial-size>'
 	| '<ratio>'
 	| '<ray()>'
 	| '<ray-size>'
@@ -1022,6 +1101,9 @@ export type CssSyntax =
 	| '<scope-end>'
 	| '<scope-start>'
 	| '<scroll()>'
+	| '<scroll-state-feature>'
+	| '<scroll-state-in-parens>'
+	| '<scroll-state-query>'
 	| '<scroller>'
 	| '<selector-list>'
 	| '<self-position>'
@@ -1031,10 +1113,11 @@ export type CssSyntax =
 	| '<shadow-t>'
 	| '<shadow>'
 	| '<shape-box>'
-	| '<shape-radius>'
 	| '<shape>'
 	| '<side-or-corner>'
 	| '<sign()>'
+	| '<signed-integer>'
+	| '<signless-integer>'
 	| '<simple-selector-list>'
 	| '<simple-selector>'
 	| '<sin()>'
@@ -1053,8 +1136,9 @@ export type CssSyntax =
 	| '<skewX()>'
 	| '<skewY()>'
 	| '<sqrt()>'
+	| '<step-easing-function>'
 	| '<step-position>'
-	| '<step-timing-function>'
+	| '<steps()>'
 	| '<string-token>'
 	| '<string>'
 	| '<style-condition>'
@@ -1062,6 +1146,7 @@ export type CssSyntax =
 	| '<style-in-parens>'
 	| '<style-query>'
 	| '<subclass-selector>'
+	| '<superellipse()>'
 	| '<supports-condition>'
 	| '<supports-decl>'
 	| '<supports-feature>'
@@ -1070,6 +1155,15 @@ export type CssSyntax =
 	| '<svg-length>'
 	| '<svg-writing-mode>'
 	| '<symbol>'
+	| '<symbols()>'
+	| '<symbols-type>'
+	| '<syntax-combinator>'
+	| '<syntax-component>'
+	| '<syntax-multiplier>'
+	| '<syntax-single-component>'
+	| '<syntax-string>'
+	| '<syntax-type-name>'
+	| '<syntax>'
 	| '<system-color>'
 	| '<system-family-name>'
 	| '<tan()>'
@@ -1077,6 +1171,7 @@ export type CssSyntax =
 	| '<target-counters()>'
 	| '<target-text()>'
 	| '<target>'
+	| '<text-edge>'
 	| '<time-percentage>'
 	| '<time>'
 	| '<timeline-range-name>'
@@ -1111,6 +1206,7 @@ export type CssSyntax =
 	| '<xywh()>'
 	| '<xyz-params>'
 	| '<xyz-space>'
+	| '<xyz>'
 	| '<y>'
 	| '<zero>'
 	| '<{-token>'
@@ -1176,6 +1272,7 @@ export type ExtendedType =
 	| 'OneCodePointChar'
 	| 'OneLineAny'
 	| 'Pattern'
+	| 'SRIHash'
 	| 'SerializedPermissionsPolicy'
 	| 'SourceSizeList'
 	| 'Srcset'
@@ -1247,6 +1344,9 @@ export interface Directive {
 	token: Type;
 	ref?: string;
 }
+/**
+ * Validates a value against a regular expression pattern or an exact string match. Use a `/regex/flags` literal form to match a regex, or a plain string for exact equality.
+ */
 export interface Pattern {
 	pattern: string;
 }

@@ -116,6 +116,17 @@
 					"type": "string"
 				}
 			}
+		},
+		"pattern": {
+			"description": "Validates a value against a regular expression pattern or an exact string match. Use a `/regex/flags` literal form to match a regex, or a plain string for exact equality.",
+			"type": "object",
+			"required": ["pattern"],
+			"additionalProperties": false,
+			"properties": {
+				"pattern": {
+					"type": "string"
+				}
+			}
 		}
 	}
 }

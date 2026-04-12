@@ -1,3 +1,5 @@
+import type { Pattern } from './types.js';
+
 import { test, expect } from 'vitest';
 
 import { check } from './check.js';
@@ -38,6 +40,20 @@ test('Pattern (object)', () => {
 	expect(check('foo', { pattern: 'foo' }).matched).toBe(true);
 	expect(check('foo', { pattern: 'bar' }).matched).toBe(false);
 	expect(check('Hello', { pattern: '/hello/i' }).matched).toBe(true);
+});
+
+/**
+ * Regression sentinel for schema drift.
+ *
+ * If `gen/specific-schema.json` ever loses its `pattern` definition, the next
+ * `yarn workspace @markuplint/types run schema` drops the `Pattern` interface
+ * from `src/types.schema.ts`, and this test fails at compile time because the
+ * `Pattern` import and the annotated variable can no longer be resolved.
+ */
+test('Pattern type is exported from types.schema.ts (drift sentinel)', () => {
+	const type: Pattern = { pattern: '/^foo$/' };
+	expect(check('foo', type).matched).toBe(true);
+	expect(check('bar', type).matched).toBe(false);
 });
 
 test('BCP47', () => {
