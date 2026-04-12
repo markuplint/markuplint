@@ -336,9 +336,21 @@
 			"defaultValue": "text"
 		},
 		// https://html.spec.whatwg.org/multipage/input.html#attr-input-value
+		// The value type depends on the `type` attribute.
+		// Types not listed here (text, search, tel, password, hidden, checkbox, radio,
+		// file, submit, image, reset, button) have no value constraints and fall back to Any.
 		"value": {
-			// The `type` attribute determines the type
-			"type": "Any"
+			"type": [
+				{ "condition": "[type='color' i]", "type": "SimpleColor" },
+				{ "condition": "[type='url' i]", "type": "URL" },
+				{ "condition": "[type='email' i]", "type": "Email" },
+				{ "condition": ["[type='number' i]", "[type='range' i]"], "type": { "type": "float" } },
+				{ "condition": "[type='date' i]", "type": "DateString" },
+				{ "condition": "[type='month' i]", "type": "MonthString" },
+				{ "condition": "[type='week' i]", "type": "WeekString" },
+				{ "condition": "[type='time' i]", "type": "TimeString" },
+				{ "condition": "[type='datetime-local' i]", "type": "LocalDateTimeString" }
+			]
 		},
 		// https://html.spec.whatwg.org/multipage/embedded-content-other.html#attr-dim-width
 		"width": {
