@@ -1,5 +1,5 @@
 import type { ARIA } from './aria.js';
-import type { AttributeJSON, AttributeType, GlobalAttributes } from './attributes.js';
+import type { AttributeJSON, AttributeType, ConditionalAttributeType, GlobalAttributes } from './attributes.js';
 import type { ContentModel, Category } from './permitted-structures.js';
 import type { ariaVersions } from '../utils/aria-version.js';
 import type { NamespaceURI } from '@markuplint/ml-ast';
@@ -229,7 +229,10 @@ type ElementCondition = {
  */
 export type Attribute = {
 	readonly name: string;
-	readonly type: ReadonlyDeep<AttributeType> | readonly ReadonlyDeep<AttributeType>[];
+	readonly type:
+		| ReadonlyDeep<AttributeType>
+		| readonly ReadonlyDeep<AttributeType>[]
+		| readonly ReadonlyDeep<ConditionalAttributeType>[];
 	readonly description?: string;
 	readonly caseSensitive?: true;
 	readonly experimental?: boolean;

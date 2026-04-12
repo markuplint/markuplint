@@ -113,7 +113,10 @@ Describes a single HTML/SVG attribute with its type, description, and status fla
 ```ts
 type Attribute = {
   readonly name: string;
-  readonly type: ReadonlyDeep<AttributeType> | readonly ReadonlyDeep<AttributeType>[];
+  readonly type:
+    | ReadonlyDeep<AttributeType>
+    | readonly ReadonlyDeep<AttributeType>[]
+    | readonly ReadonlyDeep<ConditionalAttributeType>[];
   readonly description?: string;
   readonly caseSensitive?: true;
   readonly experimental?: boolean;
@@ -124,6 +127,8 @@ type Attribute = {
 ```
 
 The `& ExtendableAttributeSpec` intersection adds fields from the generated `AttributeJSON` type (excluding `type`, which is overridden with the `ReadonlyDeep` wrapper): `defaultValue`, `required`, `requiredEither`, `noUse`, `condition`, `ineffective`, `animatable`.
+
+The `type` union includes `readonly ReadonlyDeep<ConditionalAttributeType>[]` for attributes whose value type depends on another attribute's value (see [`ConditionalAttributeType`](#from-attributesschemajson----srctypesattributests) below). This variant is shipped type-only in v5.0 (#3685); follow-ups #3598 and #3189 implement the runtime resolution.
 
 ## ARIA Types
 
@@ -419,7 +424,10 @@ interface GlobalAttributes {
 
 ```ts
 interface AttributeJSON {
-  type?: AttributeType | [AttributeType, ...AttributeType[]];
+  type?:
+    | AttributeType
+    | [AttributeType, ...AttributeType[]]
+    | [ConditionalAttributeType, ...ConditionalAttributeType[]];
   defaultValue?: string;
   deprecated?: boolean;
   required?: boolean | AttributeCondition;
@@ -431,6 +439,17 @@ interface AttributeJSON {
   experimental?: boolean;
 }
 ```
+
+**`ConditionalAttributeType`** -- Conditional type switching: declares that an attribute's expected value type depends on the value of _another_ attribute on the same element. Used when the spec states, for example, that `<input value>` is `<'color'>` when `type=color` but a `URL` when `type=url`.
+
+```ts
+interface ConditionalAttributeType {
+  condition: AttributeCondition; // CSS selector against the owning element
+  type: AttributeType | [AttributeType, ...AttributeType[]];
+}
+```
+
+> **Status (#3685 / v5.0):** The type definition ships in v5.0, but the validation logic that actually resolves conditional types is deferred to follow-up issues: [#3598](https://github.com/markuplint/markuplint/issues/3598) (`input[value]` by `type`) and [#3189](https://github.com/markuplint/markuplint/issues/3189) (`link[as]` by `rel`). Until those land, `invalid-attr` short-circuits any attribute whose spec declares a `ConditionalAttributeType[]` — it is treated as valid, never as a violation. See `packages/@markuplint/rules/src/attr-check.ts` and the `isConditionalAttributeTypeArray` helper in `@markuplint/ml-spec`.
 
 **`List`** -- Structured type for space-separated or comma-separated token lists.
 

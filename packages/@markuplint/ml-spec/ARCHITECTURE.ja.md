@@ -146,12 +146,12 @@ flowchart TD
 
 型システムは、マークアップ言語仕様・要素仕様・ARIA ロール・属性の構造を定義します。
 
-| ファイル                        | 役割                                                                                                  |
-| ------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| `types/index.ts`                | 手書き型: `MLMLSpec`, `ElementSpec`, `ExtendedSpec`, `ARIARole`, `ComputedRole` 等                    |
-| `types/aria.ts`                 | 生成型: `ARIA`, `PermittedRoles`, `ImplicitRole`, `PermittedARIAProperties`, `ImplicitProperties`     |
-| `types/attributes.ts`           | 生成型: `AttributeType`, `GlobalAttributes`, `AttributeJSON`, `List`, `Enum`, `Number`                |
-| `types/permitted-structures.ts` | 生成型: `PermittedContentPattern`, `ContentModel`, `Category`（HTML 13 + SVG 19 + MathML 3 カテゴリ） |
+| ファイル                        | 役割                                                                                                                            |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `types/index.ts`                | 手書き型: `MLMLSpec`, `ElementSpec`, `ExtendedSpec`, `ARIARole`, `ComputedRole` 等                                              |
+| `types/aria.ts`                 | 生成型: `ARIA`, `PermittedRoles`, `ImplicitRole`, `PermittedARIAProperties`, `ImplicitProperties`                               |
+| `types/attributes.ts`           | 生成型: `AttributeType`, `ConditionalAttributeType`, `GlobalAttributes`, `AttributeJSON`, `List`, `Enum`, `Number`, `Directive` |
+| `types/permitted-structures.ts` | 生成型: `PermittedContentPattern`, `ContentModel`, `Category`（HTML 13 + SVG 19 + MathML 3 カテゴリ）                           |
 
 ### 2. ARIA アルゴリズム
 

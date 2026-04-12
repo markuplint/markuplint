@@ -113,7 +113,10 @@ type ElementSpec = {
 ```ts
 type Attribute = {
   readonly name: string;
-  readonly type: ReadonlyDeep<AttributeType> | readonly ReadonlyDeep<AttributeType>[];
+  readonly type:
+    | ReadonlyDeep<AttributeType>
+    | readonly ReadonlyDeep<AttributeType>[]
+    | readonly ReadonlyDeep<ConditionalAttributeType>[];
   readonly description?: string;
   readonly caseSensitive?: true;
   readonly experimental?: boolean;
@@ -124,6 +127,8 @@ type Attribute = {
 ```
 
 `& ExtendableAttributeSpec` の交差型により、生成された `AttributeJSON` 型のフィールド（`type` を除く。`ReadonlyDeep` ラッパーでオーバーライドされるため）が追加されます: `defaultValue`、`required`、`requiredEither`、`noUse`、`condition`、`ineffective`、`animatable`。
+
+`type` の共用体には、別の属性の値によって値型が切り替わる属性のために `readonly ReadonlyDeep<ConditionalAttributeType>[]` が含まれます（下記 [`ConditionalAttributeType`](#attributesschemajson-から----srctypesattributests) を参照）。このバリアントは v5.0 では型定義のみで先行投入されており（#3685）、実ロジックは follow-up Issue #3598 / #3189 で実装されます。
 
 ## ARIA 型
 
@@ -419,7 +424,10 @@ interface GlobalAttributes {
 
 ```ts
 interface AttributeJSON {
-  type?: AttributeType | [AttributeType, ...AttributeType[]];
+  type?:
+    | AttributeType
+    | [AttributeType, ...AttributeType[]]
+    | [ConditionalAttributeType, ...ConditionalAttributeType[]];
   defaultValue?: string;
   deprecated?: boolean;
   required?: boolean | AttributeCondition;
@@ -431,6 +439,17 @@ interface AttributeJSON {
   experimental?: boolean;
 }
 ```
+
+**`ConditionalAttributeType`** -- 条件付き型切り替え: ある属性の期待する値型が、同じ要素上の _別の_ 属性の値によって切り替わることを宣言します。例えば `<input value>` は `type=color` のとき `<'color'>`、`type=url` のとき `URL` となる、といった仕様表現に使われます。
+
+```ts
+interface ConditionalAttributeType {
+  condition: AttributeCondition; // 所属要素に対する CSS セレクター
+  type: AttributeType | [AttributeType, ...AttributeType[]];
+}
+```
+
+> **ステータス (#3685 / v5.0):** 型定義は v5.0 で先行投入されていますが、条件付き型を実際に解決するバリデーションロジックは follow-up Issue に先送りされています: [#3598](https://github.com/markuplint/markuplint/issues/3598)（`type` による `input[value]`）と [#3189](https://github.com/markuplint/markuplint/issues/3189)（`rel` による `link[as]`）。それらが着地するまでは、`invalid-attr` は `ConditionalAttributeType[]` が宣言されている属性を短絡的に有効扱いにし、違反として報告しません。詳細は `packages/@markuplint/rules/src/attr-check.ts` および `@markuplint/ml-spec` の `isConditionalAttributeTypeArray` ヘルパーを参照してください。
 
 **`List`** -- スペース区切りまたはカンマ区切りのトークンリスト用の構造化型です。
 

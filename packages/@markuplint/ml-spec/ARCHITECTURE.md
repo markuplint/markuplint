@@ -146,12 +146,12 @@ flowchart TD
 
 The type system defines the structure of markup language specifications, element specs, ARIA roles, and attributes.
 
-| File                            | Purpose                                                                                                   |
-| ------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| `types/index.ts`                | Hand-written types: `MLMLSpec`, `ElementSpec`, `ExtendedSpec`, `ARIARole`, `ComputedRole`, etc.           |
-| `types/aria.ts`                 | Generated: `ARIA`, `PermittedRoles`, `ImplicitRole`, `PermittedARIAProperties`, `ImplicitProperties`      |
-| `types/attributes.ts`           | Generated: `AttributeType`, `GlobalAttributes`, `AttributeJSON`, `List`, `Enum`, `Number`                 |
-| `types/permitted-structures.ts` | Generated: `PermittedContentPattern`, `ContentModel`, `Category` (HTML 13 + SVG 19 + MathML 3 categories) |
+| File                            | Purpose                                                                                                                            |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `types/index.ts`                | Hand-written types: `MLMLSpec`, `ElementSpec`, `ExtendedSpec`, `ARIARole`, `ComputedRole`, etc.                                    |
+| `types/aria.ts`                 | Generated: `ARIA`, `PermittedRoles`, `ImplicitRole`, `PermittedARIAProperties`, `ImplicitProperties`                               |
+| `types/attributes.ts`           | Generated: `AttributeType`, `ConditionalAttributeType`, `GlobalAttributes`, `AttributeJSON`, `List`, `Enum`, `Number`, `Directive` |
+| `types/permitted-structures.ts` | Generated: `PermittedContentPattern`, `ContentModel`, `Category` (HTML 13 + SVG 19 + MathML 3 categories)                          |
 
 ### 2. ARIA Algorithms
 

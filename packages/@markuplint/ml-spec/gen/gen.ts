@@ -115,6 +115,37 @@ fs.writeFileSync(
 			AttributeType: {
 				$ref: '../../types/types.schema.json#/definitions/type',
 			},
+			// #3685: ConditionalAttributeType lets an attribute declare different
+			// value types depending on another attribute's value (e.g. `input[value]`
+			// is a color when `type=color`, a URL when `type=url`). v5.0 ships the
+			// type only; validation logic lands in follow-up issues #3598 / #3189.
+			ConditionalAttributeType: {
+				description:
+					"Declares that an attribute value type depends on a condition (a CSS selector) matched against the owning element. Used when an attribute's valid values differ based on the value of another attribute — for example, `<input value>` is `<'color'>` when `type=color`, or a `URL` when `type=url`. Shipped type-only in v5.0 (#3685); validation logic is deferred to #3598 and #3189.",
+				type: 'object',
+				additionalProperties: false,
+				required: ['condition', 'type'],
+				properties: {
+					condition: {
+						$ref: '#/definitions/AttributeCondition',
+					},
+					type: {
+						oneOf: [
+							{
+								$ref: '#/definitions/AttributeType',
+							},
+							{
+								type: 'array',
+								minItems: 1,
+								uniqueItems: true,
+								items: {
+									$ref: '#/definitions/AttributeType',
+								},
+							},
+						],
+					},
+				},
+			},
 			AttributeJSON: {
 				type: 'object',
 				additionalProperties: false,
@@ -131,6 +162,14 @@ fs.writeFileSync(
 								uniqueItems: true,
 								items: {
 									$ref: '#/definitions/AttributeType',
+								},
+							},
+							{
+								type: 'array',
+								minItems: 1,
+								uniqueItems: true,
+								items: {
+									$ref: '#/definitions/ConditionalAttributeType',
 								},
 							},
 						],

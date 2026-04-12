@@ -1,10 +1,11 @@
 import type { Translator } from '@markuplint/i18n';
+import type { Attribute as AttrSpec } from '@markuplint/ml-spec';
 
 import { translator } from '@markuplint/i18n';
 import { i18n } from 'markuplint';
 import { test, expect, beforeAll } from 'vitest';
 
-import { valueCheck } from './attr-check.js';
+import { attrCheck, valueCheck } from './attr-check.js';
 
 let t: Translator;
 
@@ -89,4 +90,55 @@ test('[attr-check-invalid-005] Directive', () => {
 			raw: 'fin #id',
 		},
 	]);
+});
+
+/*
+ * #3685 — ConditionalAttributeType[] ships as a type-only extension in v5.0.
+ * Until follow-ups #3598 / #3189 implement value-conditional validation,
+ * attrCheck must short-circuit to "valid" when a spec declares such a type.
+ * These tests lock the guard in place so a regression cannot silently remove it.
+ */
+test('[attr-check-issue-3685-001] ConditionalAttributeType[] short-circuits to valid', () => {
+	const spec: AttrSpec = {
+		name: 'value',
+		type: [
+			{ condition: "[type='color' i]", type: "<'color'>" },
+			{ condition: "[type='url' i]", type: 'URL' },
+		],
+	};
+	// Any value must pass because validation is deferred to follow-up issues.
+	expect(attrCheck(t, 'value', 'not-a-url-or-color', true, spec)).toBe(false);
+	expect(attrCheck(t, 'value', '', true, spec)).toBe(false);
+});
+
+test('[attr-check-issue-3685-002] array of Enum is NOT treated as conditional (falls through)', () => {
+	const spec: AttrSpec = {
+		name: 'autocomplete',
+		type: [{ enum: ['on', 'off'] }],
+	};
+	// 'on' matches the enum → normal path → early-return `false` (valid).
+	expect(attrCheck(t, 'autocomplete', 'on', true, spec)).toBe(false);
+	// 'bogus' matches no enum member → real violation reported (proves guard did NOT fire).
+	const invalid = attrCheck(t, 'autocomplete', 'bogus', true, spec);
+	expect(Array.isArray(invalid)).toBe(true);
+	expect((invalid as readonly unknown[]).length).toBeGreaterThan(0);
+});
+
+test('[attr-check-issue-3685-003] empty type array falls through to normal path', () => {
+	const spec: AttrSpec = { name: 'x-attr', type: [] };
+	// Empty types array → guard returns false (length 0) → normal loop doesn't run → empty violations.
+	expect(attrCheck(t, 'x-attr', 'anything', true, spec)).toStrictEqual([]);
+});
+
+test('[attr-check-issue-3685-004] array of Number is NOT treated as conditional', () => {
+	const spec: AttrSpec = {
+		name: 'count',
+		type: [{ type: 'integer', gte: 0 }],
+	};
+	// '42' is a valid non-negative integer → early-return `false` (valid).
+	expect(attrCheck(t, 'count', '42', true, spec)).toBe(false);
+	// '-1' violates `gte: 0` → real violation reported (proves guard did NOT fire).
+	const invalid = attrCheck(t, 'count', '-1', true, spec);
+	expect(Array.isArray(invalid)).toBe(true);
+	expect((invalid as readonly unknown[]).length).toBeGreaterThan(0);
 });

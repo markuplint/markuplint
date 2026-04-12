@@ -1640,7 +1640,10 @@ export interface Attributes {
  * via the `patternProperty` ".*".
  */
 export interface AttributeJSON {
-  type?: AttributeType | [AttributeType, ...AttributeType[]];
+  type?:
+    | AttributeType
+    | [AttributeType, ...AttributeType[]]
+    | [ConditionalAttributeType, ...ConditionalAttributeType[]];
   defaultValue?: string;
   deprecated?: boolean;
   required?: boolean | AttributeCondition;
@@ -1786,4 +1789,11 @@ export interface Directive {
  */
 export interface Pattern {
   pattern: string;
+}
+/**
+ * Declares that an attribute value type depends on a condition (a CSS selector) matched against the owning element. Used when an attribute's valid values differ based on the value of another attribute — for example, `<input value>` is `<'color'>` when `type=color`, or a `URL` when `type=url`. Shipped type-only in v5.0 (#3685); validation logic is deferred to #3598 and #3189.
+ */
+export interface ConditionalAttributeType {
+  condition: AttributeCondition;
+  type: AttributeType | [AttributeType, ...AttributeType[]];
 }
