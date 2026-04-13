@@ -440,7 +440,7 @@ interface AttributeJSON {
 }
 ```
 
-**`ConditionalAttributeType`** -- Conditional type switching: declares that an attribute's expected value type depends on the value of _another_ attribute on the same element. Used when the spec states, for example, that `<input value>` is `<'color'>` when `type=color` but a `URL` when `type=url`.
+**`ConditionalAttributeType`** -- Conditional type switching: declares that an attribute's expected value type depends on the value of _another_ attribute on the same element. Used when the spec states, for example, that `<input value>` must be a valid simple color when `type=color` but a valid URL when `type=url`, or that `<link as>` accepts different destination keywords depending on whether `rel` is `preload` or `modulepreload`.
 
 ```ts
 interface ConditionalAttributeType {

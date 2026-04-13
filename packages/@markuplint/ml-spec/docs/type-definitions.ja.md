@@ -440,7 +440,7 @@ interface AttributeJSON {
 }
 ```
 
-**`ConditionalAttributeType`** -- 条件付き型切り替え: ある属性の期待する値型が、同じ要素上の _別の_ 属性の値によって切り替わることを宣言します。例えば `<input value>` は `type=color` のとき `<'color'>`、`type=url` のとき `URL` となる、といった仕様表現に使われます。
+**`ConditionalAttributeType`** -- 条件付き型切り替え: ある属性の期待する値型が、同じ要素上の _別の_ 属性の値によって切り替わることを宣言します。例えば `<input value>` は `type=color` のとき valid simple color、`type=url` のとき valid URL でなければならない、あるいは `<link as>` は `rel` が `preload` か `modulepreload` かによって異なる destination キーワードを受け入れる、といった仕様表現に使われます。
 
 ```ts
 interface ConditionalAttributeType {

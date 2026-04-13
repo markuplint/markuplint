@@ -106,6 +106,26 @@ This is different from the attribute-level `condition` field (Recipe 2), which c
 
 **When to use:** When the HTML spec says "the value must be X when attribute Y is Z" — e.g., `<input value>` must be a valid simple color when `type=color`.
 
+**Example 2** -- `link[as]` valid values depend on `rel`:
+
+```jsonc
+"as": {
+    "type": [
+        {
+            "condition": "[rel~='preload' i]",
+            "type": { "enum": ["fetch", "font", "image", "script", "style", "track"] }
+        },
+        {
+            "condition": "[rel~='modulepreload' i]",
+            "type": { "enum": ["audioworklet", "json", "paintworklet", "script", "serviceworker", "sharedworker", "style", "worker"] }
+        }
+    ],
+    "condition": ["[rel~='preload' i]", "[rel~='modulepreload' i]"]
+}
+```
+
+Note: The attribute-level `condition` controls whether the `as` attribute is valid at all (only with `rel=preload` or `rel=modulepreload`), while the type-level `ConditionalAttributeType[]` controls which enum values are valid for each `rel` value.
+
 **See also:** `ConditionalAttributeType` in `@markuplint/ml-spec` docs (`docs/type-definitions.md`).
 
 ### 3. Adding an SVG Element
