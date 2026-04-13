@@ -2361,8 +2361,24 @@ describe('#3189 link[as] conditional enum', () => {
 
 	test('[invalid-attr-issue-3189-009] no rel: as attribute is disallowed (condition check)', async () => {
 		const { violations } = await mlRuleTest(rule, '<link href="/a.css" as="style">');
-		// `as` has condition=["[rel='preload' i]","[rel='modulepreload' i]"],
+		// `as` has condition=["[rel~='preload' i]","[rel~='modulepreload' i]"],
 		// so without rel=preload/modulepreload, the attribute itself is disallowed.
 		expect(violations.some(v => v.message.includes('"as"'))).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3189-010] rel with multiple tokens: preload + stylesheet', async () => {
+		// condition uses ~= (space-separated token match), so "preload stylesheet" must match
+		const { violations } = await mlRuleTest(rule, '<link rel="preload stylesheet" href="/a.css" as="style">');
+		expect(violations.some(v => v.raw === 'style')).toBe(false);
+	});
+
+	test('[invalid-attr-issue-3189-011] rel=modulepreload as=fetch is invalid (fetch is preload-only)', async () => {
+		const { violations } = await mlRuleTest(rule, '<link rel="modulepreload" href="/a" as="fetch">');
+		expect(violations.some(v => v.raw === 'fetch')).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3189-012] case-insensitive rel matching: rel=PRELOAD', async () => {
+		const { violations } = await mlRuleTest(rule, '<link rel="PRELOAD" href="/a.js" as="script">');
+		expect(violations.some(v => v.raw === 'script')).toBe(false);
 	});
 });
