@@ -449,7 +449,7 @@ interface ConditionalAttributeType {
 }
 ```
 
-> **Status:** The type definition shipped in v5.0 (#3685). Conditional resolution for `input[value]` by `type` is implemented in [#3598](https://github.com/markuplint/markuplint/issues/3598) — `isValidAttr()` in `helpers.ts` matches the element against each condition and validates against the resolved type; unmatched conditions fall back to `Any`. Resolution for `link[as]` by `rel` ([#3189](https://github.com/markuplint/markuplint/issues/3189)) is not yet implemented — `attrCheck()` retains a safety-net guard that treats unresolved `ConditionalAttributeType[]` as valid.
+> **Status:** The type definition shipped in v5.0 (#3685). Conditional resolution is fully implemented: `input[value]` by `type` in [#3598](https://github.com/markuplint/markuplint/issues/3598), `link[as]` by `rel` in [#3189](https://github.com/markuplint/markuplint/issues/3189). `isValidAttr()` in `helpers.ts` matches the element against each condition and validates against the resolved type; unmatched conditions fall back to `Any`. A safety-net guard in `attrCheck()` treats any remaining unresolved `ConditionalAttributeType[]` as valid for direct callers.
 
 **`List`** -- Structured type for space-separated or comma-separated token lists.
 
