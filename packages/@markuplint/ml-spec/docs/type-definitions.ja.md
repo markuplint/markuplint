@@ -440,7 +440,7 @@ interface AttributeJSON {
 }
 ```
 
-**`ConditionalAttributeType`** -- 条件付き型切り替え: ある属性の期待する値型が、同じ要素上の _別の_ 属性の値によって切り替わることを宣言します。例えば `<input value>` は `type=color` のとき `<'color'>`、`type=url` のとき `URL` となる、といった仕様表現に使われます。
+**`ConditionalAttributeType`** -- 条件付き型切り替え: ある属性の期待する値型が、同じ要素上の _別の_ 属性の値によって切り替わることを宣言します。例えば `<input value>` は `type=color` のとき valid simple color、`type=url` のとき valid URL でなければならない、あるいは `<link as>` は `rel` が `preload` か `modulepreload` かによって異なる destination キーワードを受け入れる、といった仕様表現に使われます。
 
 ```ts
 interface ConditionalAttributeType {
@@ -449,7 +449,7 @@ interface ConditionalAttributeType {
 }
 ```
 
-> **ステータス:** 型定義は v5.0 で投入済み (#3685)。`type` による `input[value]` の条件解決は [#3598](https://github.com/markuplint/markuplint/issues/3598) で実装済み — `helpers.ts` の `isValidAttr()` が要素を各条件にマッチさせ、解決された型でバリデーションを行います。条件に一致しない場合は `Any` にフォールバックします。`rel` による `link[as]` の解決 ([#3189](https://github.com/markuplint/markuplint/issues/3189)) は未実装 — `attrCheck()` に安全ネットガードが残っており、未解決の `ConditionalAttributeType[]` は有効として扱います。
+> **ステータス:** 型定義は v5.0 で投入済み (#3685)。条件解決は完全に実装済み: `type` による `input[value]` は [#3598](https://github.com/markuplint/markuplint/issues/3598)、`rel` による `link[as]` は [#3189](https://github.com/markuplint/markuplint/issues/3189)。`helpers.ts` の `isValidAttr()` が要素を各条件にマッチさせ、解決された型でバリデーションを行います。条件に一致しない場合は `Any` にフォールバックします。直接呼び出し元向けに、`attrCheck()` に安全ネットガードが残っており、未解決の `ConditionalAttributeType[]` は有効として扱います。
 
 **`List`** -- スペース区切りまたはカンマ区切りのトークンリスト用の構造化型です。
 

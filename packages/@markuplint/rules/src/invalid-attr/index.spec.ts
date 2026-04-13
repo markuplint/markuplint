@@ -1545,7 +1545,7 @@ describe('Issues', () => {
 			(await mlRuleTest(rule, '<link rel="modulepreload" as="audioworklet" href="/audio.js" />')).violations,
 		).toStrictEqual([]);
 
-		// Invalid: values removed from the spec (no longer valid for either preload or modulepreload)
+		// Invalid: values not valid for preload (condition-specific enum after #3189)
 		expect(
 			(await mlRuleTest(rule, '<link rel="preload" as="audio" href="/audio.mp3" />')).violations,
 		).toStrictEqual([
@@ -1553,8 +1553,7 @@ describe('Issues', () => {
 				severity: 'error',
 				line: 1,
 				col: 25,
-				message:
-					'The "as" attribute expects either "audioworklet", "fetch", "font", "image", "json", "paintworklet", "script", "serviceworker", "sharedworker", "style", "track", "worker"',
+				message: 'The "as" attribute expects either "fetch", "font", "image", "script", "style", "track"',
 				raw: 'audio',
 			},
 		]);
@@ -1565,8 +1564,7 @@ describe('Issues', () => {
 				severity: 'error',
 				line: 1,
 				col: 25,
-				message:
-					'The "as" attribute expects either "audioworklet", "fetch", "font", "image", "json", "paintworklet", "script", "serviceworker", "sharedworker", "style", "track", "worker"',
+				message: 'The "as" attribute expects either "fetch", "font", "image", "script", "style", "track"',
 				raw: 'video',
 			},
 		]);
@@ -1575,8 +1573,7 @@ describe('Issues', () => {
 				severity: 'error',
 				line: 1,
 				col: 25,
-				message:
-					'The "as" attribute expects either "audioworklet", "fetch", "font", "image", "json", "paintworklet", "script", "serviceworker", "sharedworker", "style", "track", "worker"',
+				message: 'The "as" attribute expects either "fetch", "font", "image", "script", "style", "track"',
 				raw: 'document',
 			},
 		]);
@@ -2298,5 +2295,90 @@ describe('#3598 input value validation', () => {
 	test('[invalid-attr-issue-3598-022] input[type=datetime-local] with invalid value', async () => {
 		const { violations } = await mlRuleTest(rule, '<input type="datetime-local" value="2024-01-15">');
 		expect(violations.some(v => v.message.includes('"value"'))).toBe(true);
+	});
+});
+
+/*
+ * #3189 — link[as] condition-specific enum values.
+ * The `as` attribute has different valid values depending on `rel`:
+ * - rel=preload → fetch, font, image, script, style, track
+ * - rel=modulepreload → json, style, audioworklet, paintworklet, script,
+ *   serviceworker, sharedworker, worker
+ */
+describe('#3189 link[as] conditional enum', () => {
+	test('[invalid-attr-issue-3189-001] rel=preload with valid as value', async () => {
+		const { violations } = await mlRuleTest(rule, '<link rel="preload" href="/a.js" as="script">');
+		expect(violations.some(v => v.raw === 'script')).toBe(false);
+	});
+
+	test('[invalid-attr-issue-3189-002] rel=preload with invalid as value (json is modulepreload-only)', async () => {
+		const { violations } = await mlRuleTest(rule, '<link rel="preload" href="/a.json" as="json">');
+		expect(violations.some(v => v.raw === 'json')).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3189-003] rel=modulepreload with valid as value', async () => {
+		const { violations } = await mlRuleTest(rule, '<link rel="modulepreload" href="/a.js" as="script">');
+		expect(violations.some(v => v.raw === 'script')).toBe(false);
+	});
+
+	test('[invalid-attr-issue-3189-004] rel=modulepreload with valid as=json', async () => {
+		const { violations } = await mlRuleTest(rule, '<link rel="modulepreload" href="/a.json" as="json">');
+		expect(violations.some(v => v.raw === 'json')).toBe(false);
+	});
+
+	test('[invalid-attr-issue-3189-005] rel=modulepreload with invalid as value (track is preload-only)', async () => {
+		const { violations } = await mlRuleTest(rule, '<link rel="modulepreload" href="/a.vtt" as="track">');
+		expect(violations.some(v => v.raw === 'track')).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3189-006] rel=preload with all valid preload destinations', async () => {
+		for (const dest of ['fetch', 'font', 'image', 'script', 'style', 'track']) {
+			const { violations } = await mlRuleTest(rule, `<link rel="preload" href="/a" as="${dest}">`);
+			expect(violations.some(v => v.raw === dest)).toBe(false);
+		}
+	});
+
+	test('[invalid-attr-issue-3189-007] rel=modulepreload with all valid module destinations', async () => {
+		for (const dest of [
+			'json',
+			'style',
+			'audioworklet',
+			'paintworklet',
+			'script',
+			'serviceworker',
+			'sharedworker',
+			'worker',
+		]) {
+			const { violations } = await mlRuleTest(rule, `<link rel="modulepreload" href="/a" as="${dest}">`);
+			expect(violations.some(v => v.raw === dest)).toBe(false);
+		}
+	});
+
+	test('[invalid-attr-issue-3189-008] rel=preload with completely bogus as value', async () => {
+		const { violations } = await mlRuleTest(rule, '<link rel="preload" href="/a" as="bogus">');
+		expect(violations.some(v => v.raw === 'bogus')).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3189-009] no rel: as attribute is disallowed (condition check)', async () => {
+		const { violations } = await mlRuleTest(rule, '<link href="/a.css" as="style">');
+		// `as` has condition=["[rel~='preload' i]","[rel~='modulepreload' i]"],
+		// so without rel=preload/modulepreload, the attribute itself is disallowed.
+		expect(violations.some(v => v.message.includes('"as"'))).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3189-010] rel with multiple tokens: preload + stylesheet', async () => {
+		// condition uses ~= (space-separated token match), so "preload stylesheet" must match
+		const { violations } = await mlRuleTest(rule, '<link rel="preload stylesheet" href="/a.css" as="style">');
+		expect(violations.some(v => v.raw === 'style')).toBe(false);
+	});
+
+	test('[invalid-attr-issue-3189-011] rel=modulepreload as=fetch is invalid (fetch is preload-only)', async () => {
+		const { violations } = await mlRuleTest(rule, '<link rel="modulepreload" href="/a" as="fetch">');
+		expect(violations.some(v => v.raw === 'fetch')).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3189-012] case-insensitive rel matching: rel=PRELOAD', async () => {
+		const { violations } = await mlRuleTest(rule, '<link rel="PRELOAD" href="/a.js" as="script">');
+		expect(violations.some(v => v.raw === 'script')).toBe(false);
 	});
 });

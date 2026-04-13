@@ -88,6 +88,26 @@
 
 **使用タイミング:** HTML仕様が「属性 Y が Z のとき、値は X でなければならない」と規定している場合 — 例: `type=color` のとき `<input value>` は valid simple color でなければならない。
 
+**例2** -- `link[as]` の有効な値は `rel` に依存:
+
+```jsonc
+"as": {
+    "type": [
+        {
+            "condition": "[rel~='preload' i]",
+            "type": { "enum": ["fetch", "font", "image", "script", "style", "track"] }
+        },
+        {
+            "condition": "[rel~='modulepreload' i]",
+            "type": { "enum": ["audioworklet", "json", "paintworklet", "script", "serviceworker", "sharedworker", "style", "worker"] }
+        }
+    ],
+    "condition": ["[rel~='preload' i]", "[rel~='modulepreload' i]"]
+}
+```
+
+注: 属性レベルの `condition` は `as` 属性自体が有効かどうか（`rel=preload` または `rel=modulepreload` の場合のみ）を制御し、型レベルの `ConditionalAttributeType[]` は各 `rel` 値に対してどの enum 値が有効かを制御します。
+
 **参照:** `@markuplint/ml-spec` ドキュメント（`docs/type-definitions.md`）の `ConditionalAttributeType` セクション。
 
 ### 3. SVG要素の追加

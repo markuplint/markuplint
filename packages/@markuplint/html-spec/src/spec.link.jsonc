@@ -68,27 +68,26 @@
 		// https://html.spec.whatwg.org/multipage/semantics.html#attr-link-as
 		// https://html.spec.whatwg.org/multipage/links.html#link-type-preload
 		// https://html.spec.whatwg.org/multipage/links.html#link-type-modulepreload
-		// The enumerated values are the union of preload destinations and module preload destinations.
-		// Preload destinations: fetch, font, image, script, style, track
-		// Module preload destinations: json, style, and script-like destinations (audioworklet, paintworklet, script, serviceworker, sharedworker, worker)
+		// The valid values differ per link type:
+		// - Preload destinations: fetch, font, image, script, style, track
+		// - Module preload destinations: json, style, and script-like destinations
+		//   (audioworklet, paintworklet, script, serviceworker, sharedworker, worker)
 		"as": {
-			"type": {
-				"enum": [
-					"audioworklet",
-					"fetch",
-					"font",
-					"image",
-					"json",
-					"paintworklet",
-					"script",
-					"serviceworker",
-					"sharedworker",
-					"style",
-					"track",
-					"worker"
-				]
-			},
-			"condition": ["[rel='preload' i]", "[rel='modulepreload' i]"]
+			"type": [
+				{
+					"condition": "[rel~='preload' i]",
+					"type": {
+						"enum": ["fetch", "font", "image", "script", "style", "track"]
+					}
+				},
+				{
+					"condition": "[rel~='modulepreload' i]",
+					"type": {
+						"enum": ["audioworklet", "json", "paintworklet", "script", "serviceworker", "sharedworker", "style", "worker"]
+					}
+				}
+			],
+			"condition": ["[rel~='preload' i]", "[rel~='modulepreload' i]"]
 		},
 		// https://html.spec.whatwg.org/multipage/urls-and-fetching.html#blocking-attributes
 		"blocking": {
