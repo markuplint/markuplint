@@ -8,7 +8,10 @@
 				"choice": [
 					[
 						{
-							"oneOrMore": [
+							// HTML spec: "Zero or more groups each consisting of
+							// one or more dt elements followed by one or more dd elements"
+							// @see https://html.spec.whatwg.org/multipage/grouping-content.html#the-dl-element
+							"zeroOrMore": [
 								{
 									"zeroOrMore": ":model(script-supporting)"
 								},
