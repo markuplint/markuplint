@@ -310,6 +310,38 @@ test('[permitted-contents-invalid-014] part of the ruby element #3', () => {
 });
 
 describe('Issues', () => {
+	// #3592: verify min=0 guard doesn't break optional with nested require
+	test('[permitted-contents-issue-3592-001] optional with nested require — empty is valid', () => {
+		expect(c({ optional: [{ require: 'dt' }, { require: 'dd' }] }, '').type).toBe('MATCHED_ZERO');
+	});
+
+	test('[permitted-contents-issue-3592-002] optional with nested require — partial is invalid', () => {
+		expect(c({ optional: [{ require: 'dt' }, { require: 'dd' }] }, '<dt></dt>').type).toBe('MISSING_NODE_REQUIRED');
+	});
+
+	test('[permitted-contents-issue-3592-003] zeroOrMore with nested sequence — empty is valid', () => {
+		// This is the actual pattern used by the dl element fix
+		expect(
+			c(
+				{
+					zeroOrMore: [{ oneOrMore: 'dt' }, { oneOrMore: 'dd' }],
+				},
+				'',
+			).type,
+		).toBe('MATCHED_ZERO');
+	});
+
+	test('[permitted-contents-issue-3592-004] zeroOrMore with nested sequence — match is valid', () => {
+		expect(
+			c(
+				{
+					zeroOrMore: [{ oneOrMore: 'dt' }, { oneOrMore: 'dd' }],
+				},
+				'<dt></dt><dd></dd>',
+			).type,
+		).toBe('MATCHED');
+	});
+
 	test('[permitted-contents-issue-1146-001] #1146 1/2', () => {
 		const models = {
 			oneOrMore: [
