@@ -51568,14 +51568,18 @@
 						"permittedRoles": [
 							"checkbox",
 							"combobox",
+							"gridcell",
 							"link",
 							"menuitem",
 							"menuitemcheckbox",
 							"menuitemradio",
 							"option",
 							"radio",
+							"separator",
+							"slider",
 							"switch",
-							"tab"
+							"tab",
+							"treeitem"
 						]
 					},
 					"[type='checkbox' i]": {
@@ -51658,7 +51662,21 @@
 					},
 					"[type='image' i]": {
 						"implicitRole": "button",
-						"permittedRoles": ["link", "menuitem", "menuitemcheckbox", "menuitemradio", "radio", "switch"]
+						"permittedRoles": [
+							"checkbox",
+							"gridcell",
+							"link",
+							"menuitem",
+							"menuitemcheckbox",
+							"menuitemradio",
+							"option",
+							"radio",
+							"separator",
+							"slider",
+							"switch",
+							"tab",
+							"treeitem"
+						]
 					},
 					"[type='month' i]": {
 						"implicitRole": false,
@@ -51764,11 +51782,22 @@
 					},
 					"[type='reset' i]": {
 						"implicitRole": "button",
-						"permittedRoles": false,
-						"properties": {
-							"global": true,
-							"role": "button"
-						}
+						"permittedRoles": [
+							"checkbox",
+							"combobox",
+							"gridcell",
+							"link",
+							"menuitem",
+							"menuitemcheckbox",
+							"menuitemradio",
+							"option",
+							"radio",
+							"separator",
+							"slider",
+							"switch",
+							"tab",
+							"treeitem"
+						]
 					},
 					"[type='search' i]:not([list])": {
 						"implicitRole": "searchbox",
@@ -51780,11 +51809,22 @@
 					},
 					"[type='submit' i]": {
 						"implicitRole": "button",
-						"permittedRoles": false,
-						"properties": {
-							"global": true,
-							"role": "button"
-						}
+						"permittedRoles": [
+							"checkbox",
+							"combobox",
+							"gridcell",
+							"link",
+							"menuitem",
+							"menuitemcheckbox",
+							"menuitemradio",
+							"option",
+							"radio",
+							"separator",
+							"slider",
+							"switch",
+							"tab",
+							"treeitem"
+						]
 					},
 					"[type='tel' i]:not([list])": {
 						"implicitRole": "textbox",
@@ -51840,6 +51880,7 @@
 						"[type='button' i]": {
 							"implicitRole": "button",
 							"permittedRoles": [
+								"checkbox",
 								"link",
 								"menuitem",
 								"menuitemcheckbox",
@@ -51927,12 +51968,15 @@
 						"[type='image' i]": {
 							"implicitRole": "button",
 							"permittedRoles": [
+								"checkbox",
 								"link",
 								"menuitem",
 								"menuitemcheckbox",
 								"menuitemradio",
+								"option",
 								"radio",
-								"switch"
+								"switch",
+								"tab"
 							]
 						},
 						"[type='month' i]": {
@@ -52039,11 +52083,17 @@
 						},
 						"[type='reset' i]": {
 							"implicitRole": "button",
-							"permittedRoles": false,
-							"properties": {
-								"global": true,
-								"role": "button"
-							}
+							"permittedRoles": [
+								"checkbox",
+								"link",
+								"menuitem",
+								"menuitemcheckbox",
+								"menuitemradio",
+								"option",
+								"radio",
+								"switch",
+								"tab"
+							]
 						},
 						"[type='search' i]:not([list])": {
 							"implicitRole": "searchbox",
@@ -52055,11 +52105,17 @@
 						},
 						"[type='submit' i]": {
 							"implicitRole": "button",
-							"permittedRoles": false,
-							"properties": {
-								"global": true,
-								"role": "button"
-							}
+							"permittedRoles": [
+								"checkbox",
+								"link",
+								"menuitem",
+								"menuitemcheckbox",
+								"menuitemradio",
+								"option",
+								"radio",
+								"switch",
+								"tab"
+							]
 						},
 						"[type='tel' i]:not([list])": {
 							"implicitRole": "textbox",
@@ -57513,7 +57569,7 @@
 			},
 			"attributes": {
 				"keyPoints": {
-					"description": "This attribute indicate, in the range [0,1], how far is the object along the path for each keyTimes associated values. Value type: <number>*; Default value: none; Animatable: no",
+					"description": "This attribute indicates, in the range [0,1], how far the object is along the path for each associated value in keyTimes. Value type: <number>*; Default value: none; Animatable: no",
 					"type": "<key-points>"
 				},
 				"origin": {
