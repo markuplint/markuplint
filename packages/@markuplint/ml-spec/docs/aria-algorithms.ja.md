@@ -325,7 +325,6 @@ if (result.role) {
 1. `getVersionResolvedARIA()` を呼び出します。この関数は：
    - タグ名と名前空間で要素仕様を検索します。
    - `resolveVersion()` を適用して、ベース ARIA 仕様の上にバージョン固有のオーバーライドをマージします。
-   - 許可ロールの最適化：許可ロール配列に `"presentation"` がある場合は `"none"` を追加し、逆も同様です（WAI-ARIA 1.2 の `none` ロールに関する注記に準拠）。ARIA 1.3 では、`"image"` がある場合は `"img"` を追加し、逆も同様です（ARIA 1.3 の `image`/`img` シノニムに準拠）。
    - 結果を `localName + namespace + version` をキーとしてキャッシュします。
 
 2. 条件付きオーバーライド（ARIA 仕様の `conditions` ブロック）を評価します：
@@ -333,7 +332,9 @@ if (result.role) {
    - マッチする条件ごとに、`implicitRole`、`permittedRoles`、`implicitProperties`、`properties`、`namingProhibited` を上書きします。
    - 後の条件は前の条件よりも優先されます。
 
-3. 最終的に解決された ARIA 仕様を返します。要素の仕様が存在しない場合は `null` を返します。
+3. 許可ロールの最適化（ベース値と条件オーバーライド値の両方に適用）：許可ロール配列に `"presentation"` がある場合は `"none"` を追加し、逆も同様です（WAI-ARIA 1.2 の `none` ロールに関する注記に準拠）。ARIA 1.3 では、`"image"` がある場合は `"img"` を追加し、逆も同様です（ARIA 1.3 の `image`/`img` シノニムに準拠）。
+
+4. 最終的に解決された ARIA 仕様を返します。要素の仕様が存在しない場合は `null` を返します。
 
 **例:** `<input>` の場合、ベース仕様は汎用的な暗黙のロールを定義しますが、条件 `[type=checkbox]` がそれを `"checkbox"` ロールに上書きします。
 
