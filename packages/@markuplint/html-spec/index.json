@@ -57513,7 +57513,7 @@
 			},
 			"attributes": {
 				"keyPoints": {
-					"description": "This attribute indicate, in the range [0,1], how far is the object along the path for each keyTimes associated values. Value type: <number>*; Default value: none; Animatable: no",
+					"description": "This attribute indicates, in the range [0,1], how far the object is along the path for each associated value in keyTimes. Value type: <number>*; Default value: none; Animatable: no",
 					"type": "<key-points>"
 				},
 				"origin": {
