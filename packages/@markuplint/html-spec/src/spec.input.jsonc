@@ -366,17 +366,22 @@
 		"conditions": {
 			"[type='button' i]": {
 				"implicitRole": "button",
+				// @see https://w3c.github.io/html-aria/#el-input-button
 				"permittedRoles": [
 					"checkbox",
 					"combobox",
+					"gridcell",
 					"link",
 					"menuitem",
 					"menuitemcheckbox",
 					"menuitemradio",
 					"option",
 					"radio",
+					"separator",
+					"slider",
 					"switch",
-					"tab"
+					"tab",
+					"treeitem"
 				]
 			},
 			"[type='checkbox' i]": {
@@ -467,7 +472,23 @@
 			},
 			"[type='image' i]": {
 				"implicitRole": "button",
-				"permittedRoles": ["link", "menuitem", "menuitemcheckbox", "menuitemradio", "radio", "switch"]
+				// @see https://w3c.github.io/html-aria/#el-input-image
+				// Same as button element but WITHOUT combobox
+				"permittedRoles": [
+					"checkbox",
+					"gridcell",
+					"link",
+					"menuitem",
+					"menuitemcheckbox",
+					"menuitemradio",
+					"option",
+					"radio",
+					"separator",
+					"slider",
+					"switch",
+					"tab",
+					"treeitem"
+				]
 			},
 			"[type='month' i]": {
 				"implicitRole": false,
@@ -577,11 +598,24 @@
 			},
 			"[type='reset' i]": {
 				"implicitRole": "button",
-				"permittedRoles": false,
-				"properties": {
-					"global": true,
-					"role": "button"
-				}
+				// @see https://w3c.github.io/html-aria/#el-input-reset
+				// Same permitted roles as button element
+				"permittedRoles": [
+					"checkbox",
+					"combobox",
+					"gridcell",
+					"link",
+					"menuitem",
+					"menuitemcheckbox",
+					"menuitemradio",
+					"option",
+					"radio",
+					"separator",
+					"slider",
+					"switch",
+					"tab",
+					"treeitem"
+				]
 			},
 			"[type='search' i]:not([list])": {
 				"implicitRole": "searchbox",
@@ -593,11 +627,24 @@
 			},
 			"[type='submit' i]": {
 				"implicitRole": "button",
-				"permittedRoles": false,
-				"properties": {
-					"global": true,
-					"role": "button"
-				}
+				// @see https://w3c.github.io/html-aria/#el-input-submit
+				// Same permitted roles as button element
+				"permittedRoles": [
+					"checkbox",
+					"combobox",
+					"gridcell",
+					"link",
+					"menuitem",
+					"menuitemcheckbox",
+					"menuitemradio",
+					"option",
+					"radio",
+					"separator",
+					"slider",
+					"switch",
+					"tab",
+					"treeitem"
+				]
 			},
 			"[type='tel' i]:not([list])": {
 				"implicitRole": "textbox",
@@ -648,6 +695,8 @@
 			}
 		},
 		"1.1": {
+			// Frozen snapshot — ARIA 1.1 is a finalized W3C Recommendation.
+			// Do NOT add roles that were introduced in ARIA 1.2 or later.
 			// No condition:
 			// > input type=text or with a missing or invalid type, with no list attribute
 			// https://www.w3.org/TR/html-aria/#el-input-text
@@ -657,6 +706,7 @@
 				"[type='button' i]": {
 					"implicitRole": "button",
 					"permittedRoles": [
+						"checkbox",
 						"link",
 						"menuitem",
 						"menuitemcheckbox",
@@ -749,7 +799,17 @@
 				},
 				"[type='image' i]": {
 					"implicitRole": "button",
-					"permittedRoles": ["link", "menuitem", "menuitemcheckbox", "menuitemradio", "radio", "switch"]
+					"permittedRoles": [
+						"checkbox",
+						"link",
+						"menuitem",
+						"menuitemcheckbox",
+						"menuitemradio",
+						"option",
+						"radio",
+						"switch",
+						"tab"
+					]
 				},
 				"[type='month' i]": {
 					"implicitRole": false,
@@ -859,11 +919,17 @@
 				},
 				"[type='reset' i]": {
 					"implicitRole": "button",
-					"permittedRoles": false,
-					"properties": {
-						"global": true,
-						"role": "button"
-					}
+					"permittedRoles": [
+						"checkbox",
+						"link",
+						"menuitem",
+						"menuitemcheckbox",
+						"menuitemradio",
+						"option",
+						"radio",
+						"switch",
+						"tab"
+					]
 				},
 				"[type='search' i]:not([list])": {
 					"implicitRole": "searchbox",
@@ -875,11 +941,17 @@
 				},
 				"[type='submit' i]": {
 					"implicitRole": "button",
-					"permittedRoles": false,
-					"properties": {
-						"global": true,
-						"role": "button"
-					}
+					"permittedRoles": [
+						"checkbox",
+						"link",
+						"menuitem",
+						"menuitemcheckbox",
+						"menuitemradio",
+						"option",
+						"radio",
+						"switch",
+						"tab"
+					]
 				},
 				"[type='tel' i]:not([list])": {
 					"implicitRole": "textbox",

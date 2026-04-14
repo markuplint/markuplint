@@ -2473,3 +2473,184 @@ describe('Issue #970 — Required Accessibility Parent Role check', () => {
 		expect(violations).toStrictEqual([]);
 	});
 });
+
+// #3588: input element permitted roles false positives
+describe('Issue #3588 — input element permitted roles', () => {
+	// input[type=reset] should allow same roles as button element
+	test('[wai-aria-issue-3588-001] input[type=reset] with role="link" is valid', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="reset" role="link">');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[wai-aria-issue-3588-002] input[type=reset] with role="switch" — no permitted-roles violation', async () => {
+		// switch requires aria-checked, so a required-state violation is expected,
+		// but there must be NO "Cannot overwrite" permitted-roles violation.
+		const { violations } = await mlRuleTest(rule, '<input type="reset" role="switch">');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'Require the "aria-checked" ARIA state on the "switch" role',
+				raw: '<input type="reset" role="switch">',
+			},
+		]);
+	});
+
+	test('[wai-aria-issue-3588-003] input[type=reset] with role="switch" and aria-checked is fully valid', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="reset" role="switch" aria-checked="true">');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[wai-aria-issue-3588-004] input[type=reset] with role="tab" is valid', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="reset" role="tab">');
+		expect(violations).toStrictEqual([]);
+	});
+
+	// input[type=submit] should allow same roles as button element
+	test('[wai-aria-issue-3588-005] input[type=submit] with role="menuitem" is valid', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="submit" role="menuitem">');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[wai-aria-issue-3588-006] input[type=submit] with role="checkbox" — no permitted-roles violation', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="submit" role="checkbox">');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'Require the "aria-checked" ARIA state on the "checkbox" role',
+				raw: '<input type="submit" role="checkbox">',
+			},
+		]);
+	});
+
+	test('[wai-aria-issue-3588-007] input[type=submit] with role="checkbox" and aria-checked is fully valid', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="submit" role="checkbox" aria-checked="false">');
+		expect(violations).toStrictEqual([]);
+	});
+
+	// input[type=image] should allow button-like roles (except combobox)
+	test('[wai-aria-issue-3588-008] input[type=image] with role="checkbox" — no permitted-roles violation', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="image" role="checkbox" alt="Toggle">');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'Require the "aria-checked" ARIA state on the "checkbox" role',
+				raw: '<input type="image" role="checkbox" alt="Toggle">',
+			},
+		]);
+	});
+
+	test('[wai-aria-issue-3588-009] input[type=image] with role="checkbox" and aria-checked is fully valid', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<input type="image" role="checkbox" aria-checked="false" alt="Toggle">',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[wai-aria-issue-3588-010] input[type=image] with role="tab" is valid', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="image" role="tab" alt="Tab">');
+		expect(violations).toStrictEqual([]);
+	});
+
+	// input[type=button] with new 1.2 roles
+	test('[wai-aria-issue-3588-011] input[type=button] with role="gridcell" is valid', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="button" role="gridcell" value="Cell">');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[wai-aria-issue-3588-012] input[type=button] with role="treeitem" is valid', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="button" role="treeitem" value="Item">');
+		expect(violations).toStrictEqual([]);
+	});
+
+	// Invalid cases — should still report violations after fix
+	test('[wai-aria-issue-3588-013] input[type=reset] with role="navigation" is not permitted', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="reset" role="navigation">');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 27,
+				message:
+					'Cannot overwrite the "navigation" role to the "input" element according to ARIA in HTML specification',
+				raw: 'navigation',
+			},
+		]);
+	});
+
+	test('[wai-aria-issue-3588-014] input[type=image] with role="combobox" is not permitted', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="image" role="combobox" alt="Combo">');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 27,
+				message:
+					'Cannot overwrite the "combobox" role to the "input" element according to ARIA in HTML specification',
+				raw: 'combobox',
+			},
+		]);
+	});
+
+	// Cascading fix: permitted role → correct computed role → props valid
+	test('[wai-aria-issue-3588-015] input[type=submit] role=switch aria-checked — no cascade violation', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="submit" role="switch" aria-checked="true">');
+		expect(violations).toStrictEqual([]);
+	});
+
+	// Default behavior preserved after properties removal
+	test('[wai-aria-issue-3588-016] input[type=reset] without role — default behavior preserved', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="reset">');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[wai-aria-issue-3588-017] input[type=submit] without role — default behavior preserved', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="submit">');
+		expect(violations).toStrictEqual([]);
+	});
+
+	// ARIA 1.1 boundary: roles added in 1.2 must be rejected in 1.1
+	test('[wai-aria-issue-3588-018] input[type=reset] with role="gridcell" is NOT permitted in 1.1', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="reset" role="gridcell">', {
+			rule: { options: { version: '1.1' } },
+		});
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 27,
+				message:
+					'Cannot overwrite the "gridcell" role to the "input" element according to ARIA in HTML specification',
+				raw: 'gridcell',
+			},
+		]);
+	});
+
+	test('[wai-aria-issue-3588-019] input[type=image] with role="treeitem" is NOT permitted in 1.1', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="image" role="treeitem" alt="Item">', {
+			rule: { options: { version: '1.1' } },
+		});
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 27,
+				message:
+					'Cannot overwrite the "treeitem" role to the "input" element according to ARIA in HTML specification',
+				raw: 'treeitem',
+			},
+		]);
+	});
+
+	// Focusable separator with required aria-valuenow
+	test('[wai-aria-issue-3588-020] input[type=submit] with role="separator" and aria-valuenow is valid', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="submit" role="separator" aria-valuenow="50">');
+		expect(violations).toStrictEqual([]);
+	});
+});
