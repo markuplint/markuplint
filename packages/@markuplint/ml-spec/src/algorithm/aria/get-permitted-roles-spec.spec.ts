@@ -231,17 +231,22 @@ describe('getPermittedRoles', () => {
 			'button',
 			'checkbox',
 			'combobox',
+			'gridcell',
 			'link',
 			'menuitem',
 			'menuitemcheckbox',
 			'menuitemradio',
 			'option',
 			'radio',
+			'separator',
+			'slider',
 			'switch',
 			'tab',
+			'treeitem',
 		]);
 		expect(c('<input type="button">', '1.1')).toStrictEqual([
 			'button',
+			'checkbox',
 			'link',
 			'menuitem',
 			'menuitemcheckbox',
@@ -252,6 +257,100 @@ describe('getPermittedRoles', () => {
 			'tab',
 		]);
 		expect(c('<input type="checkbox" aria-pressed="true">', '1.2')).toStrictEqual(['checkbox', 'button']);
+	});
+
+	test('the input element — reset, submit, image (#3588)', () => {
+		// input[type=reset] — same permitted roles as button element
+		expect(c('<input type="reset">', '1.2')).toStrictEqual([
+			'button',
+			'checkbox',
+			'combobox',
+			'gridcell',
+			'link',
+			'menuitem',
+			'menuitemcheckbox',
+			'menuitemradio',
+			'option',
+			'radio',
+			'separator',
+			'slider',
+			'switch',
+			'tab',
+			'treeitem',
+		]);
+		expect(c('<input type="reset">', '1.1')).toStrictEqual([
+			'button',
+			'checkbox',
+			'link',
+			'menuitem',
+			'menuitemcheckbox',
+			'menuitemradio',
+			'option',
+			'radio',
+			'switch',
+			'tab',
+		]);
+
+		// input[type=submit] — same permitted roles as button element
+		expect(c('<input type="submit">', '1.2')).toStrictEqual([
+			'button',
+			'checkbox',
+			'combobox',
+			'gridcell',
+			'link',
+			'menuitem',
+			'menuitemcheckbox',
+			'menuitemradio',
+			'option',
+			'radio',
+			'separator',
+			'slider',
+			'switch',
+			'tab',
+			'treeitem',
+		]);
+		expect(c('<input type="submit">', '1.1')).toStrictEqual([
+			'button',
+			'checkbox',
+			'link',
+			'menuitem',
+			'menuitemcheckbox',
+			'menuitemradio',
+			'option',
+			'radio',
+			'switch',
+			'tab',
+		]);
+
+		// input[type=image] — same as button but WITHOUT combobox
+		expect(c('<input type="image">', '1.2')).toStrictEqual([
+			'button',
+			'checkbox',
+			'gridcell',
+			'link',
+			'menuitem',
+			'menuitemcheckbox',
+			'menuitemradio',
+			'option',
+			'radio',
+			'separator',
+			'slider',
+			'switch',
+			'tab',
+			'treeitem',
+		]);
+		expect(c('<input type="image">', '1.1')).toStrictEqual([
+			'button',
+			'checkbox',
+			'link',
+			'menuitem',
+			'menuitemcheckbox',
+			'menuitemradio',
+			'option',
+			'radio',
+			'switch',
+			'tab',
+		]);
 	});
 
 	test('the img element', () => {
