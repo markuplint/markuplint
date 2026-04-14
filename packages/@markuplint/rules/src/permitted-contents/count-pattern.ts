@@ -202,10 +202,15 @@ export function countPattern(
 			matchedCount,
 		);
 
+		// When min=0 and no elements were consumed, the pattern legitimately
+		// matched zero times — don't propagate the inner sequence's failure.
+		// This enables zeroOrMore([oneOrMore dt, oneOrMore dd]) to accept
+		// empty content (e.g., <dl></dl>). See #3592.
 		if (
-			result.type === 'MISSING_NODE_REQUIRED' ||
-			result.type === 'MISSING_NODE_ONE_OR_MORE' ||
-			result.type === 'TRANSPARENT_MODEL_DISALLOWS'
+			(collection.matchedCount > 0 || min > 0) &&
+			(result.type === 'MISSING_NODE_REQUIRED' ||
+				result.type === 'MISSING_NODE_ONE_OR_MORE' ||
+				result.type === 'TRANSPARENT_MODEL_DISALLOWS')
 		) {
 			return compereResult(
 				{
