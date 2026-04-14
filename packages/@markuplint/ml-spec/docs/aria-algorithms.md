@@ -325,7 +325,6 @@ Gets the version-resolved ARIA specification for an element, evaluating conditio
 1. Calls `getVersionResolvedARIA()` which:
    - Looks up the element spec by tag name and namespace.
    - Applies `resolveVersion()` to merge version-specific overrides on top of the base ARIA spec.
-   - Optimizes permitted roles: if `"presentation"` is in the permitted roles array, `"none"` is added, and vice versa (per WAI-ARIA 1.2 note on the `none` role). In ARIA 1.3, if `"image"` is present, `"img"` is added, and vice versa (per the ARIA 1.3 `image`/`img` synonym).
    - Caches results by `localName + namespace + version`.
 
 2. Evaluates conditional overrides (the `conditions` block in the ARIA spec):
@@ -333,7 +332,9 @@ Gets the version-resolved ARIA specification for an element, evaluating conditio
    - For each matching condition, overrides `implicitRole`, `permittedRoles`, `implicitProperties`, `properties`, and `namingProhibited`.
    - Later conditions take precedence over earlier ones.
 
-3. Returns the final resolved ARIA spec, or `null` if no spec exists for the element.
+3. Optimizes permitted roles (applied to both base and condition-overridden values): if `"presentation"` is in the permitted roles array, `"none"` is added, and vice versa (per WAI-ARIA 1.2 note on the `none` role). In ARIA 1.3, if `"image"` is present, `"img"` is added, and vice versa (per the ARIA 1.3 `image`/`img` synonym).
+
+4. Returns the final resolved ARIA spec, or `null` if no spec exists for the element.
 
 **Example:** For `<input>`, the base spec may define a generic implicit role, but the condition `[type=checkbox]` overrides it to `"checkbox"`.
 

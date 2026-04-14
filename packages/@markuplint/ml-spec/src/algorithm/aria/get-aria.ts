@@ -32,7 +32,10 @@ export function getARIA(
 	}
 	const conditions = aria.conditions;
 	if (!conditions) {
-		return aria;
+		return {
+			...aria,
+			permittedRoles: optimizePermittedRoles(aria.permittedRoles, version),
+		};
 	}
 	const conditionKeys = Object.keys(conditions);
 	let { implicitRole, permittedRoles, implicitProperties, properties, namingProhibited } = aria;
@@ -67,13 +70,17 @@ export function getARIA(
 	}
 	return {
 		implicitRole,
-		permittedRoles,
+		permittedRoles: optimizePermittedRoles(permittedRoles, version),
 		implicitProperties,
 		properties,
 		namingProhibited,
 	};
 }
 
+/**
+ * Returns raw ARIA spec without permittedRoles optimization.
+ * Callers must apply optimizePermittedRoles() to the result.
+ */
 function getVersionResolvedARIA(specs: MLMLSpec, localName: string, namespace: string | null, version: ARIAVersion) {
 	const key = localName + namespace + version;
 	let aria = cache.get(key);
@@ -86,12 +93,6 @@ function getVersionResolvedARIA(specs: MLMLSpec, localName: string, namespace: s
 		return null;
 	}
 	aria = resolveVersion(spec, version);
-	if (aria.permittedRoles !== false) {
-		aria = {
-			...aria,
-			permittedRoles: optimizePermittedRoles(aria.permittedRoles, version),
-		};
-	}
 	cache.set(key, aria);
 	return aria;
 }
