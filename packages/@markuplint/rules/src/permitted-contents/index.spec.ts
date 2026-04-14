@@ -2120,4 +2120,49 @@ describe('Issues', () => {
 			}),
 		);
 	});
+
+	// #3592: empty dl is valid (zero or more groups)
+	test('[permitted-contents-issue-3592-001] empty dl is valid', async () => {
+		expect((await mlRuleTest(rule, '<dl></dl>')).violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-3592-002] dl with dt+dd is still valid', async () => {
+		expect((await mlRuleTest(rule, '<dl><dt>term</dt><dd>def</dd></dl>')).violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-3592-003] dl with div is still valid', async () => {
+		expect((await mlRuleTest(rule, '<dl><div><dt>term</dt><dd>def</dd></div></dl>')).violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-3592-004] dl with only dt is still invalid', async () => {
+		const { violations } = await mlRuleTest(rule, '<dl><dt>term</dt></dl>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'Require one or more elements. (Need "dd")',
+				raw: '<dl>',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-3592-005] dl with only dd is still invalid', async () => {
+		const { violations } = await mlRuleTest(rule, '<dl><dd>def</dd></dl>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'Require one or more elements. (Need "dt")',
+				raw: '<dl>',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-3592-006] dl with multiple dt+dd groups is valid', async () => {
+		expect((await mlRuleTest(rule, '<dl><dt>a</dt><dd>b</dd><dt>c</dt><dd>d</dd></dl>')).violations).toStrictEqual(
+			[],
+		);
+	});
 });

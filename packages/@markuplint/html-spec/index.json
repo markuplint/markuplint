@@ -50370,7 +50370,7 @@
 						"choice": [
 							[
 								{
-									"oneOrMore": [
+									"zeroOrMore": [
 										{
 											"zeroOrMore": ":model(script-supporting)"
 										},
