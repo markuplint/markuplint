@@ -282,6 +282,17 @@ If the raw string contains multiple attributes, only the first is parsed and the
 
 Also attempts to detect spread attributes via `visitSpreadAttr()`.
 
+#### Options
+
+| Option                    | Default                                                                                | Description                                                                                                                                                                                                                                                                                                                                 |
+| ------------------------- | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `quoteSet`                | `[{ start: '"', end: '"', type: 'string' }, { start: "'", end: "'", type: 'string' }]` | Quote delimiters recognized for the attribute value. Override to add expression delimiters such as `{` `}` (JSX / Vue / Svelte / Astro / MDX) with `type: 'script'`.                                                                                                                                                                        |
+| `noQuoteValueType`        | `'string'`                                                                             | Value type assigned when the value is unquoted.                                                                                                                                                                                                                                                                                             |
+| `endOfUnquotedValueChars` | `['\t', '\n', '\f', '\r', ' ', '>']`                                                   | Characters that terminate an unquoted attribute value. Matches the WHATWG HTML "attribute value (unquoted) state" — whitespace and `>` only. `/` is NOT a terminator and is included in the value (self-closing `/` is handled earlier, in the before/after attribute name state). Pass `[]` to disable termination entirely (used by Pug). |
+| `startState`              | `AttrState.BeforeName`                                                                 | Initial state of the attribute tokenizer. Use `AttrState.BeforeValue` to start directly at the value (e.g., for bare expression attributes like JSX `{...spread}`).                                                                                                                                                                         |
+
+> See: [WHATWG HTML — attribute value (unquoted) state](<https://html.spec.whatwg.org/multipage/parsing.html#attribute-value-(unquoted)-state>)
+
 ### visitSpreadAttr()
 
 ```ts

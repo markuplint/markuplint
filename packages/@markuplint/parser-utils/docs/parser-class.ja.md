@@ -282,6 +282,17 @@ visitAttr(
 
 また、`visitSpreadAttr()` を通じてスプレッド属性の検出も試みます。
 
+#### オプション
+
+| オプション                | デフォルト                                                                             | 説明                                                                                                                                                                                                                                                                                |
+| ------------------------- | -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `quoteSet`                | `[{ start: '"', end: '"', type: 'string' }, { start: "'", end: "'", type: 'string' }]` | 属性値として認識される引用符のセット。JSX / Vue / Svelte / Astro / MDX では `{` `}` を `type: 'script'` として追加する。                                                                                                                                                            |
+| `noQuoteValueType`        | `'string'`                                                                             | 引用符で囲まれていない値に割り当てられる値の型。                                                                                                                                                                                                                                    |
+| `endOfUnquotedValueChars` | `['\t', '\n', '\f', '\r', ' ', '>']`                                                   | 引用符なし属性値を終端する文字。WHATWG HTML の "attribute value (unquoted) state" に準拠し、空白類と `>` のみ。`/` は終端ではなく値に含まれる（自己閉じの `/` は前段の before/after attribute name state で処理される）。終端判定を完全に無効化するには `[]` を渡す（Pug で利用）。 |
+| `startState`              | `AttrState.BeforeName`                                                                 | 属性トークナイザの初期状態。JSX の `{...spread}` のような式のみの属性を扱う場合は `AttrState.BeforeValue` を指定する。                                                                                                                                                              |
+
+> 参照: [WHATWG HTML — attribute value (unquoted) state](<https://html.spec.whatwg.org/multipage/parsing.html#attribute-value-(unquoted)-state>)
+
 ### visitSpreadAttr()
 
 ```ts

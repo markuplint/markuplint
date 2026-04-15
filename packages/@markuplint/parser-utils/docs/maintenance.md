@@ -120,6 +120,27 @@ visitAttr(token: Token) {
 }
 ```
 
+#### Customizing Unquoted Value Terminators
+
+The default `endOfUnquotedValueChars` follows the WHATWG HTML "attribute value (unquoted) state": only whitespace and `>` terminate the value. `/` is part of the value.
+
+Pass a custom list when the host language requires different rules:
+
+```ts
+// Pug: never terminate by character — the Pug lexer already delimits attrs
+super.visitAttr(token, {
+  quoteSet: [],
+  endOfUnquotedValueChars: [],
+});
+```
+
+```ts
+// Treat `/` as a terminator (e.g., to read `a=x/>` as attribute `a="x"` + self-closing `/>`)
+super.visitAttr(token, {
+  endOfUnquotedValueChars: ['\t', '\n', '\f', '\r', ' ', '/', '>'],
+});
+```
+
 ### 5. Adding an IDL Attribute Mapping
 
 The IDL attribute map is defined in `src/idl-attributes.ts`. To add a new mapping:

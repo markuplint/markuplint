@@ -120,6 +120,27 @@ visitAttr(token: Token) {
 }
 ```
 
+#### 引用符なし属性値の終端文字のカスタマイズ
+
+`endOfUnquotedValueChars` のデフォルトは WHATWG HTML の "attribute value (unquoted) state" に準拠し、空白類と `>` のみが値を終端する。`/` は値の一部として扱われる。
+
+ホスト言語が異なる規則を要求する場合はカスタムリストを渡す:
+
+```ts
+// Pug: 文字による終端を無効化 — Pug レクサが属性境界を既に区切っている
+super.visitAttr(token, {
+  quoteSet: [],
+  endOfUnquotedValueChars: [],
+});
+```
+
+```ts
+// `/` を終端文字として扱う（例: `a=x/>` を属性 `a="x"` + 自己閉じ `/>` として読む）
+super.visitAttr(token, {
+  endOfUnquotedValueChars: ['\t', '\n', '\f', '\r', ' ', '/', '>'],
+});
+```
+
 ### 5. IDL属性マッピングの追加
 
 IDL属性マップは `src/idl-attributes.ts` で定義されています。新しいマッピングを追加するには:
