@@ -5,12 +5,21 @@ import type { ARIAProperty, ARIARole } from '@markuplint/ml-spec';
 import { ARIA_RECOMMENDED_VERSION, getARIA } from '@markuplint/ml-spec';
 
 /**
+ * ARIA naming attributes subject to the "naming prohibition" constraint
+ * defined by ARIA in HTML.
+ *
+ * @see https://w3c.github.io/html-aria/#dfn-naming-prohibited
+ */
+const NAMING_ATTRS = new Set(['aria-label', 'aria-labelledby', 'aria-braillelabel']);
+
+/**
  * Checks whether an ARIA property or state is disallowed on the element's computed role.
  *
  * Each ARIA role defines a set of supported states and properties. This checker reports
  * usage of ARIA attributes that are not in that set. It also considers element-specific
  * restrictions from the ARIA in HTML specification (e.g., properties that should not
- * be used on certain native HTML elements).
+ * be used on certain native HTML elements, and naming prohibition for elements with
+ * no implicit role such as `<cite>` or `<abbr>`).
  *
  * @param attr - The ARIA attribute node to inspect.
  * @param role - The computed ARIA role of the element.
@@ -29,9 +38,6 @@ export const checkingDisallowedProp: AttrChecker<
 > =
 	({ attr, role, propSpecs, disallowSetImplicitProps }) =>
 	t => {
-		if (!role) {
-			return;
-		}
 		if (!/^aria-/i.test(attr.name)) {
 			return;
 		}
@@ -40,7 +46,6 @@ export const checkingDisallowedProp: AttrChecker<
 			attr.rule.options?.version ??
 			attr.ownerMLDocument.ruleCommonSettings?.ariaVersion ??
 			ARIA_RECOMMENDED_VERSION;
-		const statesAndProp = role.ownedProperties.find(p => p.name === attr.name);
 		const propSpec = propSpecs.find(p => p.name === attr.name);
 		const elAriaSpec = getARIA(
 			attr.ownerMLDocument.specs,
@@ -49,6 +54,34 @@ export const checkingDisallowedProp: AttrChecker<
 			ariaVersion,
 			attr.ownerElement.matches.bind(attr.ownerElement),
 		);
+
+		// Naming prohibition (ARIA in HTML): elements with namingProhibited=true
+		// must not use aria-label / aria-labelledby / aria-braillelabel unless
+		// an explicit role that supports naming is set. When `role` is null and
+		// the element is namingProhibited, the naming attrs are prohibited.
+		// At time of writing, the affected elements (implicitRole=false +
+		// namingProhibited=true in html-spec) are:
+		//   abbr, cite, figcaption, kbd, label, legend, mark, rt, var
+		// This list is not hard-coded here; it is derived from html-spec data.
+		if (!role && NAMING_ATTRS.has(attr.name) && elAriaSpec?.namingProhibited === true) {
+			return {
+				scope: attr,
+				message: t(
+					'{0:c} on {1}',
+					t(
+						'{0} is {1:c}',
+						t('the "{0*}" {1}', attr.name, `ARIA ${propSpec?.type ?? 'property'}`),
+						'prohibited',
+					),
+					t('the "{0*}" {1}', attr.ownerElement.localName, 'element'),
+				),
+			};
+		}
+
+		if (!role) {
+			return;
+		}
+		const statesAndProp = role.ownedProperties.find(p => p.name === attr.name);
 
 		if (disallowSetImplicitProps && elAriaSpec?.properties !== false && elAriaSpec?.properties?.without) {
 			for (const ignore of elAriaSpec.properties.without) {
