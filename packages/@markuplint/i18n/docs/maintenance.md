@@ -89,6 +89,7 @@ Complement keywords use the `c:` prefix and are resolved when a placeholder has 
 | ---------------------------------------- | -------------------------------------------- | ------------------------------ |
 | `"c:deprecated": "は非推奨です"`         | `"{0} is {1:c}"` with keyword `"deprecated"` | `「要素」は非推奨です`         |
 | `"c:disallowed": "は許可されていません"` | `"{0} is {1:c}"` with keyword `"disallowed"` | `「属性」は許可されていません` |
+| `"c:prohibited": "は禁止されています"`   | `"{0} is {1:c}"` with keyword `"prohibited"` | `「属性」は禁止されています`   |
 
 When adding a complement keyword:
 
