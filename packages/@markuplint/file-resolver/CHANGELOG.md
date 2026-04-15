@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-rc.2](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.1...v5.0.0-rc.2) (2026-04-15)
+
+- feat(file-resolver)!: remove deprecated autoLoad parameter from resolveRules ([71cab2d](https://github.com/markuplint/markuplint/commit/71cab2d5fe5bedb3e28b162666cbad3d0a2773ff))
+
+### BREAKING CHANGES
+
+- The autoLoad parameter has been removed from resolveRules().
+  Rules are now always auto-loaded unconditionally.
+
 # [5.0.0-rc.1](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.0...v5.0.0-rc.1) (2026-03-27)
 
 ### Bug Fixes

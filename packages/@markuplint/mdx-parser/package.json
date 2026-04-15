@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/mdx-parser",
-	"version": "5.0.0-rc.1",
+	"version": "5.0.0-rc.2",
 	"description": "MDX parser for markuplint",
 	"repository": {
 		"type": "git",
@@ -28,9 +28,9 @@
 		"clean": "tsc --build --clean tsconfig.build.json"
 	},
 	"dependencies": {
-		"@markuplint/markdown-parser": "5.0.0-rc.1",
-		"@markuplint/ml-ast": "5.0.0-rc.1",
-		"@markuplint/parser-utils": "5.0.0-rc.1",
+		"@markuplint/markdown-parser": "5.0.0-rc.2",
+		"@markuplint/ml-ast": "5.0.0-rc.2",
+		"@markuplint/parser-utils": "5.0.0-rc.2",
 		"remark-frontmatter": "5.0.0",
 		"remark-gfm": "4.0.1",
 		"remark-mdx": "3.1.1",

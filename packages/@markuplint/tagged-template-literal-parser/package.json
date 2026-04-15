@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/tagged-template-literal-parser",
-	"version": "5.0.0-rc.1",
+	"version": "5.0.0-rc.2",
 	"description": "Tagged template literal parser for markuplint",
 	"repository": {
 		"type": "git",
@@ -28,9 +28,9 @@
 		"clean": "tsc --build --clean tsconfig.build.json"
 	},
 	"dependencies": {
-		"@markuplint/html-parser": "5.0.0-rc.1",
-		"@markuplint/ml-ast": "5.0.0-rc.1",
-		"@markuplint/parser-utils": "5.0.0-rc.1",
+		"@markuplint/html-parser": "5.0.0-rc.2",
+		"@markuplint/ml-ast": "5.0.0-rc.2",
+		"@markuplint/parser-utils": "5.0.0-rc.2",
 		"@typescript-eslint/types": "8.58.2",
 		"@typescript-eslint/typescript-estree": "8.58.2"
 	}

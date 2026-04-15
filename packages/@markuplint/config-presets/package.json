@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/config-presets",
-	"version": "5.0.0-rc.1",
+	"version": "5.0.0-rc.2",
 	"description": "markuplint config presets",
 	"repository": {
 		"type": "git",

@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-rc.2](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.1...v5.0.0-rc.2) (2026-04-15)
+
+### Bug Fixes
+
+- **rules:** allow zeroOrMore to match zero times in countPattern ([f5da340](https://github.com/markuplint/markuplint/commit/f5da340ac264c831ba0c74adfd039a1d0b6ff3fb)), closes [#3592](https://github.com/markuplint/markuplint/issues/3592)
+- **rules:** apply permitted-contents user rule on pretended elements ([04c42d1](https://github.com/markuplint/markuplint/commit/04c42d165aabde754d6544486ca5d39ef4a868bc)), closes [#3739](https://github.com/markuplint/markuplint/issues/3739)
+- **rules:** enforce descendantOf constraint in permitted-contents rule ([5375207](https://github.com/markuplint/markuplint/commit/5375207f169d26c65be6510f28c904d39454d08e))
+- **rules:** preserve role name in permitted-roles message, dedupe with implicit-role ([3123cd6](https://github.com/markuplint/markuplint/commit/3123cd690e140e142a94c09d6948bb9cf0dfd23e)), closes [#3641](https://github.com/markuplint/markuplint/issues/3641) [#3641](https://github.com/markuplint/markuplint/issues/3641) [#3641](https://github.com/markuplint/markuplint/issues/3641)
+- **types:** reject zero and negative srcset descriptors ([5584d20](https://github.com/markuplint/markuplint/commit/5584d2089fe1dfe508d43601fa14aeff4e08b265))
+
+### Features
+
+- **ml-spec:** add ConditionalAttributeType to Attribute.type union ([#3685](https://github.com/markuplint/markuplint/issues/3685)) ([a619a07](https://github.com/markuplint/markuplint/commit/a619a071d93566dd8aa7ab8dee2ed751c2e8756c)), closes [#3598](https://github.com/markuplint/markuplint/issues/3598) [#3189](https://github.com/markuplint/markuplint/issues/3189)
+- **rules:** add #nonEmptyText matching to permitted-contents engine ([4b91cf3](https://github.com/markuplint/markuplint/commit/4b91cf37cb8d54b86e8bfe125276251f2d8cb97b))
+- **rules:** add document uniqueness rules (autofocus, visible-main, charset) ([1befb20](https://github.com/markuplint/markuplint/commit/1befb2051015df7669fbd07da3fea3a0b6542a90))
+- **rules:** check forbiddenAncestors in permitted-contents rule ([0633c05](https://github.com/markuplint/markuplint/commit/0633c05df91a2f51361a72efe8ebb2e604a53918))
+- **rules:** check uniqueAttrs constraint in permitted-contents rule ([6b2cf6b](https://github.com/markuplint/markuplint/commit/6b2cf6b9fc7d5320543acdc9271de12e46677b9f))
+- **rules:** disallow is attribute on autonomous custom elements ([ed7ec78](https://github.com/markuplint/markuplint/commit/ed7ec78c058030caacc8bd23c90c489c77c40b27))
+- **rules:** enforce ARIA naming prohibition on elements without role ([f67bd5d](https://github.com/markuplint/markuplint/commit/f67bd5dcb33f28ef3daf3ecd3b5d30ad4ced7814)), closes [#3630](https://github.com/markuplint/markuplint/issues/3630)
+- **rules:** implement conditional type resolution for input value ([#3598](https://github.com/markuplint/markuplint/issues/3598)) ([d478ce6](https://github.com/markuplint/markuplint/commit/d478ce669387c868dd2e4b81cad32bcccddef7f2))
+- **rules:** split wai-aria into 16 granular sub-rules ([1aded91](https://github.com/markuplint/markuplint/commit/1aded912ca839a75b89d14f3ae6ba30c2701a61b)), closes [#3645](https://github.com/markuplint/markuplint/issues/3645)
+
 # [5.0.0-rc.1](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.0...v5.0.0-rc.1) (2026-03-27)
 
 **Note:** Version bump only for package @markuplint/rules

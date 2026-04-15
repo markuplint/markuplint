@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-rc.2](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.1...v5.0.0-rc.2) (2026-04-15)
+
+### Bug Fixes
+
+- **markuplint:** add default export condition and re-export isFatalError ([55a990a](https://github.com/markuplint/markuplint/commit/55a990affeec62c23a96cf15b42327fcb867e809))
+- **markuplint:** add missing status property to github-reporter test data ([bb7ba62](https://github.com/markuplint/markuplint/commit/bb7ba62e9350c173987f76de2741aaeb3ba0997b))
+
+- build!: remove ESLint and replace with oxlint ([1e0a337](https://github.com/markuplint/markuplint/commit/1e0a337707f76b903b16beeeb8c4d4fc0d8fc9e4))
+- feat(markuplint)!: remove deprecated autoLoad option and MLResultInfo_v1 interface ([4eb1d05](https://github.com/markuplint/markuplint/commit/4eb1d05eb2829019cd4073afa153a512b1c4c8fa))
+
+### Features
+
+- **config-presets:** add document uniqueness rules to html-standard preset ([6ed848b](https://github.com/markuplint/markuplint/commit/6ed848bd800416d1220b9de95ece7a3d752d881f))
+- **markuplint:** add CLI summary output ([4743ba0](https://github.com/markuplint/markuplint/commit/4743ba0be7311288ea2b28fb9345567cf97c1a23))
+- **markuplint:** add suppressions subpath export and editor severity downgrade ([362adef](https://github.com/markuplint/markuplint/commit/362adef1a040c66fec36c01bd8d8fcbe9a66c453))
+- **vscode:** add suppressed message prefix and blame parser tests ([cd80a80](https://github.com/markuplint/markuplint/commit/cd80a802c3bad29a8a1d510d2160a21a6f0a2682))
+
+### BREAKING CHANGES
+
+- ESLint is no longer used. Use oxlint instead.
+- The autoLoad option has been removed from APIOptions.
+  Rules are now always auto-loaded unconditionally.
+  The MLResultInfo_v1 interface has also been removed.
+
 # [5.0.0-rc.1](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.0...v5.0.0-rc.1) (2026-03-27)
 
 ### Bug Fixes

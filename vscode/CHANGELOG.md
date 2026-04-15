@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-rc.2](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.1...v5.0.0-rc.2) (2026-04-15)
+
+### Bug Fixes
+
+- **vscode:** fix git blame porcelain parsing for repeated commits ([b5bb18d](https://github.com/markuplint/markuplint/commit/b5bb18d68b64f35228c7e352fd944afb284a6fe5))
+- **vscode:** import isFatalError via markuplint/suppressions ([17226e4](https://github.com/markuplint/markuplint/commit/17226e4bd01adf8b7df7f7682d33cd28564ea5cd))
+
+- build!: remove ESLint and replace with oxlint ([1e0a337](https://github.com/markuplint/markuplint/commit/1e0a337707f76b903b16beeeb8c4d4fc0d8fc9e4))
+
+### Features
+
+- **vscode:** add suppressed message prefix and blame parser tests ([cd80a80](https://github.com/markuplint/markuplint/commit/cd80a802c3bad29a8a1d510d2160a21a6f0a2682))
+- **vscode:** add v5 handler with bulk suppression severity downgrade ([f31c0c9](https://github.com/markuplint/markuplint/commit/f31c0c93810a312aba948906f7f80e8814fc4078)), closes [#3536](https://github.com/markuplint/markuplint/issues/3536)
+
+### BREAKING CHANGES
+
+- ESLint is no longer used. Use oxlint instead.
+
 # [5.0.0-rc.1](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.0...v5.0.0-rc.1) (2026-03-27)
 
 **Note:** Version bump only for package vscode-markuplint

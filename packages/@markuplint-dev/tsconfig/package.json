@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint-dev/tsconfig",
-	"version": "5.0.0-rc.1",
+	"version": "5.0.0-rc.2",
 	"description": "TypeScript configuration for Markuplint projects",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",

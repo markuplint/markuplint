@@ -3,6 +3,39 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-rc.2](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.1...v5.0.0-rc.2) (2026-04-15)
+
+### Bug Fixes
+
+- **html-spec:** add dir as required attribute for bdo element ([81a6c1f](https://github.com/markuplint/markuplint/commit/81a6c1f40630b3b9a904d380aed47042dfb90972))
+- **html-spec:** change dl content model from oneOrMore to zeroOrMore groups ([e29f6e4](https://github.com/markuplint/markuplint/commit/e29f6e4beb6cee1143d2aa4f53b770d97624dd0a)), closes [#3592](https://github.com/markuplint/markuplint/issues/3592)
+- **html-spec:** change optgroup label type from Any to NoEmptyAny ([c6b0e88](https://github.com/markuplint/markuplint/commit/c6b0e887cbb7576e9139a269c98b8718bcaffb18))
+- **html-spec:** correct permittedRoles for input[type=button/image/reset/submit] ([054e8e2](https://github.com/markuplint/markuplint/commit/054e8e2b1ca9c1b85fa5a0bcd18f72a22669f4a5)), closes [#3588](https://github.com/markuplint/markuplint/issues/3588)
+- **html-spec:** override MDN incorrect experimental flag on audio loading attribute ([09d5898](https://github.com/markuplint/markuplint/commit/09d5898256ef0880bcdce9d8a514fbcae6b4d226))
+- **html-spec:** override MDN incorrect experimental flag on video loading attribute ([52def75](https://github.com/markuplint/markuplint/commit/52def759157d046cacc0660422db188e4d8da753)), closes [#3697](https://github.com/markuplint/markuplint/issues/3697)
+- **html-spec:** remove global attr overrides that drop type definitions ([6ff2f0d](https://github.com/markuplint/markuplint/commit/6ff2f0d2ac8c0410b90af5e9ccb6be126ec96c39))
+- **html-spec:** restore ARIA 1.3 role name extraction ([01b9ce3](https://github.com/markuplint/markuplint/commit/01b9ce350b472e9f37f04238be446c3898e317a8))
+
+- refactor(html-spec)!: migrate spec-generator into html-spec and run via native TypeScript ([8f928cc](https://github.com/markuplint/markuplint/commit/8f928ccf17a959447f477eb4c3d0db13ab2ba730))
+
+### Features
+
+- **html-spec:** add conditional attribute constraints for script element ([9abbf95](https://github.com/markuplint/markuplint/commit/9abbf95c43d8bcedbfa19d0c09223a322967bc3b))
+- **html-spec:** add conditional value types for input element ([#3598](https://github.com/markuplint/markuplint/issues/3598)) ([290be1c](https://github.com/markuplint/markuplint/commit/290be1cde53165f1f6165731bf2ec184b0c46b54))
+- **html-spec:** add forbiddenAncestors for main, header, footer, address ([e51b745](https://github.com/markuplint/markuplint/commit/e51b745c0fd7662946b267b67f94b1bfbf95b89c))
+- **html-spec:** add loading attribute type for audio and video elements ([12a03f7](https://github.com/markuplint/markuplint/commit/12a03f7252bfb8bae2bd427dbb9a553e2038ecb3)), closes [#3542](https://github.com/markuplint/markuplint/issues/3542)
+- **html-spec:** add speculationrules to script type attribute enum ([3568ee6](https://github.com/markuplint/markuplint/commit/3568ee6012b3f30e3f913f346e000519939c1448))
+- **html-spec:** add touch event handler attributes (ontouchstart, etc.) ([9be2b57](https://github.com/markuplint/markuplint/commit/9be2b57ea39ec33c7d3f24bca530a40b6e4d7708))
+- **html-spec:** add uniqueAttrs for track default attribute ([ccafb65](https://github.com/markuplint/markuplint/commit/ccafb65fbda86e42f509566eb95798cfac271c11))
+- **html-spec:** split link[as] enum by rel condition ([#3189](https://github.com/markuplint/markuplint/issues/3189)) ([6aa1fe8](https://github.com/markuplint/markuplint/commit/6aa1fe896223a3b7437e38a3c2b5092edefcd240))
+- **html-spec:** use #nonEmptyText for title and option elements ([ede5d4c](https://github.com/markuplint/markuplint/commit/ede5d4c87c72b7e2e95f17799f3632eb9108feef))
+- **types:** add SRIHash type for integrity attribute validation ([7672999](https://github.com/markuplint/markuplint/commit/7672999a17f7d96dc286aabfcea5cc0861b73be5))
+
+### BREAKING CHANGES
+
+- @markuplint/spec-generator package is removed.
+  Its functionality is now internal to @markuplint/html-spec.
+
 # [5.0.0-rc.1](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.0...v5.0.0-rc.1) (2026-03-27)
 
 **Note:** Version bump only for package @markuplint/html-spec
