@@ -1215,6 +1215,45 @@ describe('Issues', () => {
 			'[11:2]>[12:2](60,67)body: <body⏎>',
 		]);
 	});
+
+	// https://html.spec.whatwg.org/multipage/syntax.html#attributes-2
+	// `/` is a valid character in an unquoted attribute value. The parser must not throw.
+	test('#3594 unquoted attribute value containing "/"', () => {
+		expect(() => parse('<picture><source srcset=x type=image/gif><img src=x alt=x></picture>')).not.toThrow();
+
+		const doc = parse('<picture><source srcset=x type=image/gif><img src=x alt=x></picture>');
+		const source = doc.nodeList.find(n => n.nodeName === 'source') as MLASTElement;
+		expect(source).toBeDefined();
+		const typeAttr = source.attributes.find(a => a.type === 'attr' && a.name.raw === 'type')!;
+		expect(typeAttr.type).toBe('attr');
+		expect((typeAttr as Extract<typeof typeAttr, { type: 'attr' }>).value.raw).toBe('image/gif');
+
+		expect(() => parse('<script src=/foo.js></script>')).not.toThrow();
+		expect(() => parse('<img src=/a/b alt=x>')).not.toThrow();
+	});
+
+	// https://html.spec.whatwg.org/multipage/parsing.html#attribute-value-(unquoted)-state
+	// Per the HTML spec, `/` in the attribute value (unquoted) state is NOT a terminator.
+	// Self-closing `/>` only applies in the before/after attribute name state.
+	// Therefore `<input type=text/>` is parsed as `type="text/"`, not self-closing with type="text".
+	test('#3594 spec: "/" before ">" is part of the unquoted value', () => {
+		const doc = parse('<input type=text/>');
+		const input = doc.nodeList.find(n => n.nodeName === 'input') as MLASTElement;
+		expect(input).toBeDefined();
+		const typeAttr = input.attributes.find(a => a.type === 'attr' && a.name.raw === 'type')!;
+		expect(typeAttr.type).toBe('attr');
+		expect((typeAttr as Extract<typeof typeAttr, { type: 'attr' }>).value.raw).toBe('text/');
+	});
+
+	// Ensure the outer tag tokenizer still handles self-closing slashes in the
+	// "before attribute name" state (i.e., with no preceding unquoted value).
+	test('#3594 spec: "<br/>" remains a well-formed void-element tag', () => {
+		expect(() => parse('<br/>')).not.toThrow();
+		const doc = parse('<br/>');
+		const br = doc.nodeList.find(n => n.nodeName === 'br') as MLASTElement | undefined;
+		expect(br).toBeDefined();
+		expect(br?.type).toBe('starttag');
+	});
 });
 
 describe('Circular reference removal', () => {
