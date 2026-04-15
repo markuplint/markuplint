@@ -22,20 +22,41 @@ export const checkingPermittedRoles: AttrChecker<boolean, Options> =
 			ARIA_RECOMMENDED_VERSION;
 		const el = attr.ownerElement;
 		const permittedRoles = getPermittedRoles(el, ariaVersion, attr.ownerMLDocument.specs);
+		const tokens = attr.tokenList?.allTokens();
+		// When no explicit role is permitted on this element, report against each token
+		// so the offending role name is preserved in the message (same scope as the
+		// per-token branch below). If there are no tokens, fall back to the whole attr.
 		if (permittedRoles.length === 0) {
+			if (!tokens || tokens.length === 0) {
+				return {
+					scope: attr,
+					message: t(
+						'{0} according to {1}',
+						t(
+							'Cannot overwrite {0}',
+							t('{0} of {1}', t('the {0}', 'role'), t('the "{0*}" {1}', el.localName, 'element')),
+						),
+						'ARIA in HTML specification',
+					),
+				};
+			}
+			const firstToken = tokens[0];
+			if (!firstToken) {
+				return;
+			}
 			return {
-				scope: attr,
+				scope: firstToken,
 				message: t(
 					'{0} according to {1}',
 					t(
-						'Cannot overwrite {0}',
-						t('{0} of {1}', t('the {0}', 'role'), t('the "{0*}" {1}', el.localName, 'element')),
+						'Cannot overwrite {0} to {1}',
+						t('the "{0*}" {1}', firstToken.raw, 'role'),
+						t('the "{0*}" {1}', el.localName, 'element'),
 					),
 					'ARIA in HTML specification',
 				),
 			};
 		}
-		const tokens = attr.tokenList?.allTokens();
 		if (!tokens) {
 			return;
 		}
