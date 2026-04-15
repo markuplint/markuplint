@@ -240,15 +240,18 @@ The spec-level implementation for computing permitted ARIA roles. Operates on ta
 2. Reads `implicitRole` and `permittedRoles` from the spec.
 3. Builds the permitted role list based on the `permittedRoles` value:
 
-| `permittedRoles` value        | Behavior                                                                                                                 |
-| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `true`                        | All non-abstract roles from the ARIA spec (including DPub roles) are permitted.                                          |
-| `PermittedARIAAAMInfo` object | If `core-aam` is `true`, adds all non-abstract roles. If `graphics-aam` is `true`, adds all non-abstract graphics roles. |
-| Array of strings/objects      | The specific listed roles are permitted.                                                                                 |
-| `false`                       | No roles are permitted (empty list before implicit role).                                                                |
+| `permittedRoles` value        | Behavior                                                                                                                                                     |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `true`                        | All non-abstract roles from the ARIA spec (including DPub roles) are permitted.                                                                              |
+| `PermittedARIAAAMInfo` object | If `core-aam` is `true`, adds all non-abstract roles. If `graphics-aam` is `true`, adds all non-abstract graphics roles.                                     |
+| Array of strings/objects      | The specific listed roles are permitted.                                                                                                                     |
+| `false`                       | **No explicit role is permitted** — returns an empty list and skips the implicit-role merge below. This models ARIA in HTML's "No role permitted" directive. |
 
-4. Always includes the implicit role in the result. If the implicit role is `"presentation"` or `"none"`, both equivalents are included. In ARIA 1.3, if the implicit role is `"img"` or `"image"`, both synonyms are included.
+4. If `permittedRoles` was not `false`, includes the implicit role in the result. If the implicit role is `"presentation"` or `"none"`, both equivalents are included. In ARIA 1.3, if the implicit role is `"img"` or `"image"`, both synonyms are included.
 5. Returns the merged, deduplicated list.
+
+> [!NOTE]
+> `permittedRoles: false` is strict: even a value matching the implicit role (e.g. `<img alt="" role="presentation">`) is rejected. This mirrors the [ARIA in HTML](https://w3c.github.io/html-aria/) spec, where rows marked "No role permitted" forbid _any_ explicit `role` attribute. See Issue #3641 for background.
 
 ---
 
