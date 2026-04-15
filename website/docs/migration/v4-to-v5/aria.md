@@ -9,13 +9,14 @@ v5 adds ARIA 1.3 support and changes the default ARIA version to 1.3. The `wai-a
 
 ## What changed
 
-| Change                                    | Who is affected                                      |
-| ----------------------------------------- | ---------------------------------------------------- |
-| ARIA 1.3 support added (now default)      | All users                                            |
-| `generic` role becomes transparent in 1.3 | All users                                            |
-| `<aside>` conditional role mapping in 1.3 | All users                                            |
-| `image` / `img` role synonym in 1.3       | All users                                            |
-| `wai-aria` option renamed                 | Users with `checkingRequiredOwnedElements` in config |
+| Change                                          | Who is affected                                      |
+| ----------------------------------------------- | ---------------------------------------------------- |
+| ARIA 1.3 support added (now default)            | All users                                            |
+| `generic` role becomes transparent in 1.3       | All users                                            |
+| `<aside>` conditional role mapping in 1.3       | All users                                            |
+| `image` / `img` role synonym in 1.3             | All users                                            |
+| "No role permitted" now strictly forbids `role` | Users writing `role="presentation"` etc. on `<img>`  |
+| `wai-aria` option renamed                       | Users with `checkingRequiredOwnedElements` in config |
 
 ## ARIA version configuration
 
