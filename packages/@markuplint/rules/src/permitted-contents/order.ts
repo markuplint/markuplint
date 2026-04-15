@@ -1,4 +1,4 @@
-import type { ChildNode, Options, Result, Specs } from './types.js';
+import type { ChildNode, Mode, Options, Result, Specs, TagRule } from './types.js';
 import type { PermittedContentPattern } from '@markuplint/ml-spec';
 import type { ReadonlyDeep } from 'type-fest';
 
@@ -29,9 +29,11 @@ export function order(
 	contents: ReadonlyDeep<PermittedContentPattern[]>,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	childNodes: readonly ChildNode[],
+	rules: readonly TagRule[],
 	specs: Specs,
 	options: Options,
 	depth: number,
+	mode: Mode,
 ): Result {
 	const orderLog = cmLog.extend(`order#${depth}`);
 	const btLog = cmLog.extend(`backtrack#${depth}`);
@@ -49,7 +51,7 @@ export function order(
 	const unmatchedResults: Result[] = [];
 
 	while (patterns.length > 0 && patterns[0]) {
-		result = complexBranch(patterns[0], collection.unmatched, specs, options, depth);
+		result = complexBranch(patterns[0], collection.unmatched, rules, specs, options, depth, mode);
 		collection.addMatched(result.matched);
 
 		if (result.type !== 'UNEXPECTED_EXTRA_NODE' && result.type !== 'MATCHED' && result.type !== 'MATCHED_ZERO') {

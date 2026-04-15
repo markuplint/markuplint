@@ -1,4 +1,4 @@
-import type { ChildNode, Options, Result, Specs } from './types.js';
+import type { ChildNode, Mode, Options, Result, Specs, TagRule } from './types.js';
 import type {
 	PermittedContentOneOrMore,
 	PermittedContentOptional,
@@ -37,9 +37,11 @@ export function countPattern(
 		| ReadonlyDeep<PermittedContentZeroOrMore>,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	childNodes: readonly ChildNode[],
+	rules: readonly TagRule[],
 	specs: Specs,
 	options: Options,
 	depth: number,
+	mode: Mode,
 ): Result {
 	const ptLog = cmLog.extend(`countPattern#${depth}`);
 	const collection = new Collection(childNodes);
@@ -55,7 +57,7 @@ export function countPattern(
 	while (true) {
 		loopCount++;
 		ptLog('Check#%s: %s', loopCount, collection);
-		const result = recursiveBranch(model, collection.unmatched, specs, options, depth);
+		const result = recursiveBranch(model, collection.unmatched, rules, specs, options, depth, mode);
 		const added = collection.addMatched(result.matched);
 		const { matchedCount } = collection;
 

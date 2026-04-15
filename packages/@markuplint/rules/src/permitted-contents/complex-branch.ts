@@ -1,4 +1,4 @@
-import type { ChildNode, Options, Result, Specs } from './types.js';
+import type { ChildNode, Mode, Options, Result, Specs, TagRule } from './types.js';
 import type { PermittedContentPattern } from '@markuplint/ml-spec';
 import type { ReadonlyDeep } from 'type-fest';
 
@@ -25,17 +25,19 @@ export function complexBranch(
 	pattern: ReadonlyDeep<PermittedContentPattern>,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	childNodes: readonly ChildNode[],
+	rules: readonly TagRule[],
 	specs: Specs,
 	options: Options,
 	depth: number,
+	mode: Mode,
 ): Result {
 	if (isChoice(pattern)) {
-		return choice(pattern, childNodes, specs, options, depth);
+		return choice(pattern, childNodes, rules, specs, options, depth, mode);
 	}
 
 	if (isTransparent(pattern)) {
 		return transparent(childNodes);
 	}
 
-	return countPattern(pattern, childNodes, specs, options, depth);
+	return countPattern(pattern, childNodes, rules, specs, options, depth, mode);
 }

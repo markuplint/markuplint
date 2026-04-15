@@ -2166,3 +2166,105 @@ describe('Issues', () => {
 		);
 	});
 });
+
+describe('#3739 (pretender + user tag rule)', () => {
+	const breadcrumbsConfig = {
+		parser: {
+			'.*': '@markuplint/jsx-parser',
+		},
+		pretenders: [
+			{ selector: 'Breadcrumbs', as: 'nav' },
+			{ selector: 'BreadcrumbsLabel', as: 'span' },
+			{ selector: 'BreadcrumbList', as: 'ol' },
+			{ selector: 'BreadcrumbItem', as: 'li' },
+			{ selector: 'BreadcrumbLink', as: 'a' },
+		],
+		rule: [
+			{
+				tag: 'Breadcrumbs',
+				contents: [{ optional: 'BreadcrumbsLabel' }, { require: 'BreadcrumbList' }],
+			},
+			{
+				tag: 'BreadcrumbList',
+				contents: [{ oneOrMore: 'BreadcrumbItem' }],
+			},
+			{
+				tag: 'BreadcrumbItem',
+				contents: [{ require: 'BreadcrumbLink' }],
+			},
+			{
+				tag: 'BreadcrumbLink',
+				contents: [{ require: '#text' }],
+			},
+		],
+	};
+
+	test('[permitted-contents-issue-3739-001] origin-mode reports a violation for disallowed child between optional and require', async () => {
+		// The sequential content-model matcher consumes `<BreadcrumbsLabel>` for the
+		// `optional` slot and then expects `<BreadcrumbList>` next. `<div>` breaks
+		// the sequence so the violation is reported as a missing required element
+		// on `<Breadcrumbs>` — the same wording produced for the non-pretendered
+		// path. The critical regression guard is that *some* violation is now
+		// reported (previously the rule was silently bypassed).
+		const source =
+			'<Breadcrumbs>' +
+			'<BreadcrumbsLabel>Label</BreadcrumbsLabel>' +
+			'<div>UNEXPECTED</div>' +
+			'<BreadcrumbList>' +
+			'<BreadcrumbItem><BreadcrumbLink>Home</BreadcrumbLink></BreadcrumbItem>' +
+			'</BreadcrumbList>' +
+			'</Breadcrumbs>';
+		const { violations } = await mlRuleTest(rule, source, breadcrumbsConfig);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				raw: '<Breadcrumbs>',
+				message: 'Require an element. (Need "BreadcrumbList")',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-3739-002] user-model satisfied produces no origin-mode violation', async () => {
+		const source =
+			'<Breadcrumbs>' +
+			'<BreadcrumbsLabel>Label</BreadcrumbsLabel>' +
+			'<BreadcrumbList>' +
+			'<BreadcrumbItem><BreadcrumbLink>Home</BreadcrumbLink></BreadcrumbItem>' +
+			'</BreadcrumbList>' +
+			'</Breadcrumbs>';
+		const { violations } = await mlRuleTest(rule, source, breadcrumbsConfig);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-3739-003] pretended-mode still detects HTML-spec violation', async () => {
+		// <Section> pretends to <section>, user declares it may contain only <BreadcrumbList>.
+		// In origin mode the child <Breadcrumbs> is disallowed; in pretended mode <section>
+		// permits flow content so pretended mode does not fire. Ensures the pretended path
+		// keeps working when the user rule restricts it further.
+		const source = '<Section><Nope/></Section>';
+		const { violations } = await mlRuleTest(rule, source, {
+			parser: { '.*': '@markuplint/jsx-parser' },
+			pretenders: [
+				{ selector: 'Section', as: 'section' },
+				{ selector: 'Nope', as: 'div' },
+			],
+			rule: [
+				{
+					tag: 'Section',
+					contents: [{ require: 'BreadcrumbList' }],
+				},
+			],
+		});
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				raw: '<Section>',
+				message: 'Require an element. (Need "BreadcrumbList")',
+			},
+		]);
+	});
+});

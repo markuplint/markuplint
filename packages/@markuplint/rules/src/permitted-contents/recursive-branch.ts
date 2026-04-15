@@ -1,5 +1,5 @@
 import type { SelectorResult } from './matches-selector.js';
-import type { ChildNode, Options, Specs } from './types.js';
+import type { ChildNode, Mode, Options, Specs, TagRule } from './types.js';
 import type { PermittedContentPattern, Model } from '@markuplint/ml-spec';
 import type { ReadonlyDeep } from 'type-fest';
 
@@ -28,23 +28,25 @@ export function recursiveBranch(
 	model: ReadonlyDeep<Model | PermittedContentPattern[]>,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	childNodes: readonly ChildNode[],
+	rules: readonly TagRule[],
 	specs: Specs,
 	options: Options,
 	depth: number,
+	mode: Mode,
 ): SelectorResult {
 	if (!isModel(model)) {
-		return order(model, childNodes, specs, options, depth + 1);
+		return order(model, childNodes, rules, specs, options, depth + 1, mode);
 	}
 
 	if (typeof model === 'string') {
-		return matchesSelector(model, childNodes[0], specs, depth);
+		return matchesSelector(model, childNodes[0], specs, depth, mode);
 	}
 
 	const collection = new Collection(childNodes);
 
 	let lastUnmatched: SelectorResult | null = null;
 	for (const query of model) {
-		const result = matchesSelector(query, collection.unmatched[0], specs, depth);
+		const result = matchesSelector(query, collection.unmatched[0], specs, depth, mode);
 		collection.addMatched(result.matched);
 
 		if (result.type === 'MATCHED' || result.type === 'MATCHED_ZERO') {

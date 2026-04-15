@@ -9,10 +9,17 @@ function c(html: string, selector = '') {
 	const root = createTestElement(html, { specs: htmlSpecs });
 	const el = selector ? root.querySelector(selector) : root;
 	if (!el) throw new Error('Not found target element');
-	return start(getContentModel(el, specs)!, el, htmlSpecs, {
-		ignoreHasMutableChildren: true,
-		evaluateConditionalChildNodes: true,
-	});
+	return start(
+		getContentModel(el, specs)!,
+		el,
+		[],
+		htmlSpecs,
+		{
+			ignoreHasMutableChildren: true,
+			evaluateConditionalChildNodes: true,
+		},
+		'pretended',
+	);
 }
 
 test('[permitted-contents-invalid-001] transparent: <a>', () => {

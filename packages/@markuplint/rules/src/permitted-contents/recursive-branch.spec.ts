@@ -6,7 +6,7 @@ import { recursiveBranch } from './recursive-branch.js';
 
 function c(models: any, innerHtml: string) {
 	const el = createTestElement(`<div>${innerHtml}</div>`);
-	return recursiveBranch(models, [...el.childNodes], specs, { ignoreHasMutableChildren: true }, 0);
+	return recursiveBranch(models, [...el.childNodes], [], specs, { ignoreHasMutableChildren: true }, 0, 'pretended');
 }
 
 test('[permitted-contents-invalid-001] a', () => {

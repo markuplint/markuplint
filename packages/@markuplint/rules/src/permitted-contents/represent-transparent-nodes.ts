@@ -1,7 +1,6 @@
-import type { ChildNode, Options, Result, Specs } from './types.js';
+import type { ChildNode, Mode, Options, Result, Specs, TagRule } from './types.js';
 
-import { getContentModel } from '@markuplint/ml-spec';
-
+import { resolveContentModel } from './content-model.js';
 import { order } from './order.js';
 import { Collection, isTransparent, matches } from './utils.js';
 
@@ -99,12 +98,14 @@ const MAX_PATTERNS = 1024;
 export function representTransparentNodes(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	childNodes: readonly ChildNode[],
+	rules: readonly TagRule[],
 	specs: Specs,
 	options: Options,
+	mode: Mode,
 ): TransparentNode[] {
 	const parentElement = childNodes[0]?.parentElement;
 	const parentResults = parentElement
-		? representTransparentNodes([parentElement], specs, options)
+		? representTransparentNodes([parentElement], rules, specs, options, mode)
 		: [{ nodes: [], errors: [] }];
 
 	let patterns: (ChildNode | Result)[][] = [[]];
@@ -117,7 +118,7 @@ export function representTransparentNodes(
 			continue;
 		}
 
-		const models = getContentModel(childNode, specs.specs);
+		const models = resolveContentModel(childNode, rules, specs, mode);
 
 		if (models == null || typeof models === 'boolean') {
 			for (const p of patterns) {
@@ -150,9 +151,11 @@ export function representTransparentNodes(
 				const result = order(
 					noTransparentModels,
 					collection.unmatched,
+					rules,
 					specs,
 					options,
 					Number.POSITIVE_INFINITY,
+					mode,
 				);
 				unmatched = result.unmatched;
 			} else {
@@ -177,7 +180,7 @@ export function representTransparentNodes(
 				transparentMode.set(child, true);
 
 				if (child.is(child.ELEMENT_NODE)) {
-					const transparentCondMatched = matches(transparent.transparent, child, specs);
+					const transparentCondMatched = matches(transparent.transparent, child, specs, mode);
 
 					if (!transparentCondMatched.matched) {
 						branchChildren.push({
