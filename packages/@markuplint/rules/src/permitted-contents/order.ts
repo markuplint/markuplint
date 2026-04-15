@@ -20,9 +20,16 @@ import { Collection, mergeHints, modelLog } from './utils.js';
  *
  * @param contents - An ordered array of content model patterns to match sequentially.
  * @param childNodes - The child nodes to validate against the patterns.
+ * @param rules - User-defined tag rules. `order` does not consult them directly; they are
+ *                threaded through so nested helpers (especially `representTransparentNodes`)
+ *                can resolve content models via `resolveContentModel`. Do not remove even if
+ *                it looks unused here.
  * @param specs - The resolved spec data for content model lookups.
  * @param options - Validation behavior options.
  * @param depth - The current recursion depth, used for debug logging and nested pattern matching.
+ * @param mode - Whether we are evaluating the element's `'origin'` or `'pretended'` identity.
+ *               Propagated unchanged into `complexBranch` so downstream selector matching
+ *               honors the same view.
  * @returns A result indicating overall match status and the matched/unmatched node partitioning.
  */
 export function order(

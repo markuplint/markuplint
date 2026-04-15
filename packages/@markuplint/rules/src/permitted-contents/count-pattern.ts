@@ -24,9 +24,12 @@ const cLog = cmLog.extend('countCompereResult');
  *
  * @param pattern - A quantified content model pattern (require, optional, oneOrMore, or zeroOrMore).
  * @param childNodes - The child nodes to validate against the repeated pattern.
+ * @param rules - User-defined tag rules. Threaded through for transparent-model recursion;
+ *                not consulted here directly. See `order` for the rationale.
  * @param specs - The resolved spec data for content model lookups.
  * @param options - Validation behavior options.
  * @param depth - The current recursion depth, used for debug logging and nested evaluation.
+ * @param mode - Whether we are evaluating the element's `'origin'` or `'pretended'` identity.
  * @returns A result indicating whether the required count of matches was achieved.
  */
 export function countPattern(
