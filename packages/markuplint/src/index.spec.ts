@@ -408,3 +408,52 @@ describe('fixSummary pipeline', () => {
 		expect(fixSummary).toBeUndefined();
 	});
 });
+
+// Regression guard for Issue #3594.
+//
+// Primary impact: markuplint's attr tokenizer used to reject `<source type=image/gif>`
+// as "Invalid tag syntax". That false-positive `ParserError` replaced the whole
+// document with a single `parse-error` violation, silencing every other rule.
+//
+// This test pins the END-TO-END contract: valid HTML (per the WHATWG spec's
+// "attribute value (unquoted) state") must NOT emit `parse-error`, and unrelated
+// rules must still run. A unit test on attr-tokenizer alone cannot catch this
+// because the collateral silencing happens in MLCore, not in the tokenizer.
+describe('Issue #3594 — unquoted "/" does not block the lint pipeline', () => {
+	const cases = [
+		{
+			label: '<source srcset=x type=image/gif>',
+			html: '<!doctype html>\n<html lang=en><head><meta charset=utf-8><title>t</title></head><body><picture><source srcset=x type=image/gif><img src=x alt=x></picture></body></html>',
+		},
+		{
+			label: '<script src=/foo.js>',
+			html: '<!doctype html>\n<html lang=en><head><meta charset=utf-8><title>t</title></head><body><script src=/foo.js></script></body></html>',
+		},
+		{
+			label: '<img src=/a/b alt=x>',
+			html: '<!doctype html>\n<html lang=en><head><meta charset=utf-8><title>t</title></head><body><img src=/a/b alt=x></body></html>',
+		},
+	];
+
+	for (const { label, html } of cases) {
+		it(`does not emit parse-error for ${label}`, async () => {
+			const { violations } = await mlTest(html, { extends: ['markuplint:recommended'] });
+			const parseErrors = violations.filter(v => v.ruleId === 'parse-error');
+			expect(parseErrors).toStrictEqual([]);
+		});
+	}
+
+	// Before the fix, the `parse-error` violation short-circuited the pipeline
+	// by replacing MLCore's #document with the ParserError, so no other rule
+	// ever ran. This case deliberately includes an `attr-value-quotes` target
+	// (`src=x` is unquoted) to prove the rest of the pipeline keeps executing.
+	it('other rules keep running on documents that previously threw', async () => {
+		const { violations } = await mlTest(
+			'<!doctype html>\n<html lang=en><head><meta charset=utf-8><title>t</title></head><body><picture><source srcset=x type=image/gif><img src=x alt=x></picture></body></html>',
+			{ rules: { 'attr-value-quotes': true } },
+		);
+		const unrelated = violations.filter(v => v.ruleId !== 'parse-error');
+		expect(unrelated.length).toBeGreaterThan(0);
+		expect(unrelated.some(v => v.ruleId === 'attr-value-quotes')).toBe(true);
+	});
+});
