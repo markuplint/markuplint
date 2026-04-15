@@ -227,6 +227,8 @@ const Component = ({ list }) => {
 
 必要であれば、設定の[`pretenders`](/docs/configuration/properties#pretenders)プロパティの詳細を参照してください。
 
+コンポーネント間の構造上の関係（たとえば`<Breadcrumbs>`の中に必ず`<BreadcrumbList>`を置くなど）を検証したい場合は、`pretenders`を[`permitted-contents`](/docs/rules/permitted-contents)ルールと組み合わせてください。タグルールのエントリーはコンポーネントのソースレベル名に対して、pretend後のHTMLコンテンツモデルとは別に評価されるため、元のHTMLと併せてコンポーネントレベルの構造を検証できます。
+
 ### 動的スキャン {#pretenders-scan}
 
 :::caution[実験的機能]
