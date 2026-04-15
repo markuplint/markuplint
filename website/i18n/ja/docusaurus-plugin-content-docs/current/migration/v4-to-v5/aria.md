@@ -109,6 +109,34 @@ ARIA 1.3 では `image` がプライマリロール名、`img` がシノニム�
 <img alt="photo" />
 ```
 
+## 「No role permitted」の厳密適用
+
+[ARIA in HTML](https://w3c.github.io/html-aria/) で要素の状態が「No role permitted（明示 role 禁止）」と規定されている場合、v5 では暗黙ロールに一致する値であっても明示的な `role` 属性を一切許可しません。v4 では暗黙ロールに一致する値は黙って通していました。
+
+代表的な影響例:
+
+```html
+<!-- ❌ v5 ではエラー — 暗黙ロールは `presentation` だが明示 role は禁止 -->
+<img src="spacer.png" alt="" role="presentation" />
+<img src="spacer.png" alt="" role="none" />
+```
+
+同じ規則で新たに対象となる主な要素（暗黙ロールに一致する明示 role を書いていた場合）:
+
+| パターン                                                                   | 暗黙ロール | 対応          |
+| -------------------------------------------------------------------------- | ---------- | ------------- |
+| `<img>`（`alt` なし・他のアクセシブル名なし）+ 任意の role                 | `img`      | `role` を削除 |
+| `<area href="...">` + 任意の role                                          | `link`     | `role` を削除 |
+| `<figure><figcaption>...</figcaption></figure>` + `<figure>` に任意の role | `figure`   | `role` を削除 |
+| `<tr>`（`<table>` / `[role=table\|grid\|treegrid]` 配下）+ 任意の role     | `row`      | `role` を削除 |
+| `<html role="document">`（ARIA 1.1）                                       | `document` | `role` を削除 |
+| `<meter>` + 任意の role                                                    | `meter`    | `role` を削除 |
+| `<input type="email\|number\|password\|...">` + 暗黙ロールに一致する role  | （様々）   | `role` を削除 |
+
+**マイグレーション:** 該当する `role` 属性を削除してください。HTML-AAM 由来の暗黙ロールは引き続き適用されるため、アクセシビリティ挙動は維持されます。
+
+背景は Issue [#3641](https://github.com/markuplint/markuplint/issues/3641) を参照してください。
+
 ## ルールオプションのリネーム
 
 `wai-aria` ルールのオプション `checkingRequiredOwnedElements` がリネームされました:

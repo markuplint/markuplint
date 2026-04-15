@@ -109,6 +109,34 @@ In ARIA 1.3, `image` is the primary role name and `img` is a synonym. When eithe
 <img alt="photo" />
 ```
 
+## "No role permitted" is now strict
+
+When [ARIA in HTML](https://w3c.github.io/html-aria/) marks an element state as "No role permitted", v5 forbids _any_ explicit `role` attribute on that element — even a value matching the implicit role. v4 silently allowed values matching the implicit role.
+
+Most commonly affected:
+
+```html
+<!-- ❌ v5 errors — implicit role is `presentation` but explicit role is forbidden -->
+<img src="spacer.png" alt="" role="presentation" />
+<img src="spacer.png" alt="" role="none" />
+```
+
+Other elements newly affected by the same rule (when they were previously written with a role matching the implicit):
+
+| Pattern                                                                       | Implicit role | Action        |
+| ----------------------------------------------------------------------------- | ------------- | ------------- |
+| `<img>` (no `alt`, no accessible name) + any role                             | `img`         | Remove `role` |
+| `<area href="...">` + any role                                                | `link`        | Remove `role` |
+| `<figure><figcaption>...</figcaption></figure>` + any role on `<figure>`      | `figure`      | Remove `role` |
+| `<tr>` inside `<table>` / `[role=table\|grid\|treegrid]` + any role on `<tr>` | `row`         | Remove `role` |
+| `<html role="document">` (ARIA 1.1)                                           | `document`    | Remove `role` |
+| `<meter>` + any role                                                          | `meter`       | Remove `role` |
+| `<input type="email\|number\|password\|...">` + matching implicit role        | various       | Remove `role` |
+
+**Migration:** remove the offending `role` attribute. The implicit role from HTML-AAM still applies, so accessibility behavior is preserved.
+
+See Issue [#3641](https://github.com/markuplint/markuplint/issues/3641) for background.
+
 ## Rule option renamed
 
 The `wai-aria` rule option `checkingRequiredOwnedElements` has been renamed:
