@@ -1,4 +1,4 @@
-import type { ChildNode, Hints, MissingNodeReason, RepeatSign, Specs } from './types.js';
+import type { ChildNode, Hints, MissingNodeReason, Mode, RepeatSign, Specs } from './types.js';
 import type {
 	PermittedContentPattern,
 	PermittedContentChoice,
@@ -49,9 +49,18 @@ export function isModel(model: ReadonlyDeep<Model | PermittedContentPattern[]>):
  * selector engine. Returns whether the node matched and, if not, the deepest
  * unmatched descendant node for diagnostic purposes.
  *
+ * When `mode === 'origin'` and the node has an active pretender context, the
+ * context is temporarily suppressed so that the selector engine reads the
+ * element's original AST identity (`rawName` / original attrs) instead of the
+ * pretender target. The mutation mirrors the pattern already used by
+ * `MLElement.matchMLSelector` and is safe because the selector engine runs
+ * synchronously — the original context is restored in `finally` before the
+ * call returns.
+ *
  * @param selector - The CSS selector string to test against.
  * @param node - The child node to test.
  * @param specs - The spec data passed to the selector engine for attribute resolution.
+ * @param mode - Which identity to match against (`'pretended'` is the default view).
  * @returns An object with `matched: true` if the node matches, or `matched: false` with an optional `not` node.
  */
 export function matches(
@@ -59,26 +68,71 @@ export function matches(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	node: ChildNode,
 	specs: Specs,
+	mode: Mode,
 ) {
-	const selectorResult = createSelector(selector, specs as MLMLSpec).search(node);
-
-	const matched = selectorResult.filter((r): r is SelectorMatchedResult => r.matched);
-
-	if (matched.length > 0) {
-		return {
-			matched: true,
-		};
+	let savedPretenderContext: ReturnType<typeof suppressPretender> = null;
+	if (mode === 'origin') {
+		savedPretenderContext = suppressPretender(node);
 	}
+	try {
+		const selectorResult = createSelector(selector, specs as MLMLSpec).search(node);
 
-	const not = selectorResult
-		.flatMap(r => (r.matched ? [] : (r.not ?? [])))
-		.flatMap(descendants)
-		.shift();
+		const matched = selectorResult.filter((r): r is SelectorMatchedResult => r.matched);
 
-	return {
-		matched: false,
-		not,
-	};
+		if (matched.length > 0) {
+			return {
+				matched: true,
+			};
+		}
+
+		const not = selectorResult
+			.flatMap(r => (r.matched ? [] : (r.not ?? [])))
+			.flatMap(descendants)
+			.shift();
+
+		return {
+			matched: false,
+			not,
+		};
+	} finally {
+		if (savedPretenderContext) {
+			restorePretender(node, savedPretenderContext);
+		}
+	}
+}
+
+/**
+ * Temporarily hides the pretender context on an element so that selector
+ * matching sees its original AST identity. Returns the saved context for
+ * later restoration, or `null` if the node is not an element with an active
+ * pretender.
+ */
+function suppressPretender(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	node: ChildNode,
+) {
+	if (!node.is(node.ELEMENT_NODE)) {
+		return null;
+	}
+	const pretenderContext = node.pretenderContext;
+	if (pretenderContext?.type !== 'pretender') {
+		return null;
+	}
+	node.pretenderContext = null;
+	return pretenderContext;
+}
+
+/**
+ * Restores a pretender context previously saved by {@link suppressPretender}.
+ */
+function restorePretender(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	node: ChildNode,
+	saved: NonNullable<ReturnType<typeof suppressPretender>>,
+) {
+	if (node.is(node.ELEMENT_NODE)) {
+		node.pretenderContext = saved;
+	}
 }
 
 /**

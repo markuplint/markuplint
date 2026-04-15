@@ -7,7 +7,7 @@ import { matchesSelector } from './matches-selector.js';
 function c(model: any, innerHtml: string) {
 	const el = createTestElement(`<div>${innerHtml}</div>`, { specs });
 	const child = [...el.childNodes][0];
-	return matchesSelector(model, child, specs, 0);
+	return matchesSelector(model, child, specs, 0, 'pretended');
 }
 
 test('[permitted-contents-invalid-001] a', () => {

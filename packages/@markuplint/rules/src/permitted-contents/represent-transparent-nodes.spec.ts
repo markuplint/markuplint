@@ -6,10 +6,16 @@ import { representTransparentNodes, transparentMode } from './represent-transpar
 
 function c(html: string, evaluateConditionalChildNodes = true) {
 	const el = createTestElement(`<div>${html}</div>`);
-	const patterns = representTransparentNodes([...el.children], specs, {
-		ignoreHasMutableChildren: true,
-		evaluateConditionalChildNodes,
-	});
+	const patterns = representTransparentNodes(
+		[...el.children],
+		[],
+		specs,
+		{
+			ignoreHasMutableChildren: true,
+			evaluateConditionalChildNodes,
+		},
+		'pretended',
+	);
 	return patterns.map(({ nodes }) => nodes.map(n => n.nodeName.toLowerCase() + (transparentMode.has(n) ? '*' : '')));
 }
 

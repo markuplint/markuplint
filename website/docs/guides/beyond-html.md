@@ -226,6 +226,8 @@ This works well for small projects, but manually maintaining the list becomes te
 
 See the details of [`pretenders`](/docs/configuration/properties#pretenders) property on the configuration if you want.
 
+To enforce structural relationships between components (e.g., a `<Breadcrumbs>` must contain a `<BreadcrumbList>`), combine pretenders with the [`permitted-contents`](/docs/rules/permitted-contents) rule. Its tag-rule entries are evaluated against the component's source-level name in addition to the pretended HTML content model, so component-level structure can be validated alongside the underlying HTML.
+
 ### Dynamic scanning {#pretenders-scan}
 
 :::caution[Experimental]

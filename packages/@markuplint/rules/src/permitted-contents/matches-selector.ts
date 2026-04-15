@@ -1,4 +1,4 @@
-import type { ChildNode, Result, Specs } from './types.js';
+import type { ChildNode, Mode, Result, Specs } from './types.js';
 import type { Category } from '@markuplint/ml-spec';
 
 import { contentModelCategoryToTagNames } from '@markuplint/ml-spec';
@@ -52,6 +52,7 @@ export function matchesSelector(
 	childNode: ChildNode | undefined,
 	specs: Specs,
 	depth: number,
+	mode: Mode,
 ): SelectorResult {
 	const nodeLog = cmLog.extend(`node#${depth}`);
 
@@ -164,7 +165,7 @@ export function matchesSelector(
 			};
 		}
 
-		const result = matches(selector, childNode, specs);
+		const result = matches(selector, childNode, specs, mode);
 		nodeLog('%s.matches(%s) => %s', childNode.raw, query, result.matched);
 
 		if (result.matched) {

@@ -2166,3 +2166,228 @@ describe('Issues', () => {
 		);
 	});
 });
+
+describe('#3739 (pretender + user tag rule)', () => {
+	const breadcrumbsConfig = {
+		parser: {
+			'.*': '@markuplint/jsx-parser',
+		},
+		pretenders: [
+			{ selector: 'Breadcrumbs', as: 'nav' },
+			{ selector: 'BreadcrumbsLabel', as: 'span' },
+			{ selector: 'BreadcrumbList', as: 'ol' },
+			{ selector: 'BreadcrumbItem', as: 'li' },
+			{ selector: 'BreadcrumbLink', as: 'a' },
+		],
+		rule: [
+			{
+				tag: 'Breadcrumbs',
+				contents: [{ optional: 'BreadcrumbsLabel' }, { require: 'BreadcrumbList' }],
+			},
+			{
+				tag: 'BreadcrumbList',
+				contents: [{ oneOrMore: 'BreadcrumbItem' }],
+			},
+			{
+				tag: 'BreadcrumbItem',
+				contents: [{ require: 'BreadcrumbLink' }],
+			},
+			{
+				tag: 'BreadcrumbLink',
+				contents: [{ require: '#text' }],
+			},
+		],
+	};
+
+	test('[permitted-contents-issue-3739-001] origin-mode reports a violation for disallowed child between optional and require', async () => {
+		// The sequential content-model matcher consumes `<BreadcrumbsLabel>` for the
+		// `optional` slot and then expects `<BreadcrumbList>` next. `<div>` breaks
+		// the sequence so the violation is reported as a missing required element
+		// on `<Breadcrumbs>` — the same wording produced for the non-pretendered
+		// path. The critical regression guard is that *some* violation is now
+		// reported (previously the rule was silently bypassed).
+		const source =
+			'<Breadcrumbs>' +
+			'<BreadcrumbsLabel>Label</BreadcrumbsLabel>' +
+			'<div>UNEXPECTED</div>' +
+			'<BreadcrumbList>' +
+			'<BreadcrumbItem><BreadcrumbLink>Home</BreadcrumbLink></BreadcrumbItem>' +
+			'</BreadcrumbList>' +
+			'</Breadcrumbs>';
+		const { violations } = await mlRuleTest(rule, source, breadcrumbsConfig);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				raw: '<Breadcrumbs>',
+				message: 'Require an element. (Need "BreadcrumbList")',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-3739-002] user-model satisfied produces no origin-mode violation', async () => {
+		const source =
+			'<Breadcrumbs>' +
+			'<BreadcrumbsLabel>Label</BreadcrumbsLabel>' +
+			'<BreadcrumbList>' +
+			'<BreadcrumbItem><BreadcrumbLink>Home</BreadcrumbLink></BreadcrumbItem>' +
+			'</BreadcrumbList>' +
+			'</Breadcrumbs>';
+		const { violations } = await mlRuleTest(rule, source, breadcrumbsConfig);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-3739-003] origin-mode reports missing required child when the user model is stricter than the pretended spec', async () => {
+		// `<Section>` pretends to `<section>` (flow content, permissive); the
+		// pretended pass alone would happily accept `<Nope>/<div>`. The user
+		// tag rule is only consulted in origin mode, where it requires a
+		// `<BreadcrumbList>` child — which is absent — so origin mode reports
+		// the violation. This pins the fact that origin mode can report
+		// violations that pretended mode silently allows.
+		const source = '<Section><Nope/></Section>';
+		const { violations } = await mlRuleTest(rule, source, {
+			parser: { '.*': '@markuplint/jsx-parser' },
+			pretenders: [
+				{ selector: 'Section', as: 'section' },
+				{ selector: 'Nope', as: 'div' },
+			],
+			rule: [
+				{
+					tag: 'Section',
+					contents: [{ require: 'BreadcrumbList' }],
+				},
+			],
+		});
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				raw: '<Section>',
+				message: 'Require an element. (Need "BreadcrumbList")',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-3739-004] pretended-mode detects HTML-spec violation independently of origin user rule', async () => {
+		// `<Opt>` pretends to `<option>` whose content model is text-only.
+		// The user tag rule on `<Opt>` permits any combination of text and
+		// `<Span>`, so origin mode has no objection. Embedding `<Span>`
+		// (pretends to `<span>`) as a child must still be rejected by the
+		// pretended pass because HTML's `<option>` forbids element children.
+		// Ensures the historical pretended-mode path is not weakened by the
+		// new origin-mode plumbing.
+		const source = '<Opt>Label<Span>nope</Span></Opt>';
+		const { violations } = await mlRuleTest(rule, source, {
+			parser: { '.*': '@markuplint/jsx-parser' },
+			pretenders: [
+				{ selector: 'Opt', as: 'option' },
+				{ selector: 'Span', as: 'span' },
+			],
+			rule: [{ tag: 'Opt', contents: [{ zeroOrMore: ['#text', 'Span'] }] }],
+		});
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 11,
+				raw: '<Span>',
+				message: 'The "span" element is not allowed in the "option" element in this context',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-3739-005] origin-mode handles transparent-model pretender children', async () => {
+		// `<MyLink>` pretends to `<a>`, whose content model is transparent.
+		// The surrounding `<p>`-pretending `<Para>` declares a user rule that
+		// allows an `<a>`. Origin mode must recurse into the transparent
+		// child's content model via `resolveContentModel` without losing the
+		// mode, and the user model on the ancestor must not be disrupted by
+		// the transparent recursion.
+		const source = '<Para><MyLink>text</MyLink></Para>';
+		const { violations } = await mlRuleTest(rule, source, {
+			parser: { '.*': '@markuplint/jsx-parser' },
+			pretenders: [
+				{ selector: 'Para', as: 'p' },
+				{ selector: 'MyLink', as: 'a' },
+			],
+			rule: [{ tag: 'Para', contents: [{ oneOrMore: 'MyLink' }] }],
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-3739-006] origin-mode evaluates choice patterns under pretender', async () => {
+		// The user rule on `<Switcher>` uses a `choice` pattern so mode
+		// propagation through `choice.ts` is exercised. Branch A requires a
+		// `<CaseA>`; Branch B requires a `<CaseB>`. Supplying `<CaseB>` must
+		// satisfy the second branch. This guarantees the mode argument flows
+		// through choice → order → recursiveBranch correctly.
+		const source = '<Switcher><CaseB/></Switcher>';
+		const { violations } = await mlRuleTest(rule, source, {
+			parser: { '.*': '@markuplint/jsx-parser' },
+			pretenders: [
+				{ selector: 'Switcher', as: 'div' },
+				{ selector: 'CaseA', as: 'span' },
+				{ selector: 'CaseB', as: 'em' },
+			],
+			rule: [
+				{
+					tag: 'Switcher',
+					contents: [{ choice: [[{ require: 'CaseA' }], [{ require: 'CaseB' }]] }],
+				},
+			],
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-3739-007] origin-mode does not fire when the user has no rule for rawName', async () => {
+		// Pretender is active but the user defined no tag rule keyed on the
+		// component name. The walkOn guard in index.ts should therefore NOT
+		// enqueue origin mode, so the only pass that runs is pretended mode
+		// and there should be no spurious origin-mode noise. Functions as a
+		// regression test for the mode enablement guard.
+		const source = '<Widget><div>ok</div></Widget>';
+		const { violations } = await mlRuleTest(rule, source, {
+			parser: { '.*': '@markuplint/jsx-parser' },
+			pretenders: [{ selector: 'Widget', as: 'section' }],
+			// No `rule:` entry for Widget — origin mode must stay dormant.
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-3739-010] origin-mode rejects a native child that coincides with the pretender target name', async () => {
+		// The full Breadcrumbs family of pretenders AND user tag rules is
+		// wired up, matching the production-style config. Inside a
+		// `<BreadcrumbList>` (which pretends to `<ol>` and has a user rule
+		// requiring `<BreadcrumbItem>`) we drop a raw `<li>`. In the
+		// pretended pass `<ol>` happily accepts `<li>`; in the origin pass
+		// the user selector `BreadcrumbItem` must NOT match the native
+		// `<li>`. This pins that the `<li>`/`BreadcrumbItem` name collision
+		// does not leak across modes.
+		const source = '<BreadcrumbList><li>native</li></BreadcrumbList>';
+		const { violations } = await mlRuleTest(rule, source, breadcrumbsConfig);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				raw: '<BreadcrumbList>',
+				message: 'Require one or more elements. (Need "BreadcrumbItem")',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-3739-011] native parent without a user rule passes even when pretendered children are present', async () => {
+		// Again the full Breadcrumbs family is configured, but the parent
+		// here is a raw `<ul>` for which no user tag rule exists. The
+		// `rules.some(r => r.tag === el.rawName)` guard must keep origin
+		// mode dormant on `<ul>`, so only the pretended pass runs: `<ul>`
+		// accepts the pretendered `<li>` (originally `<BreadcrumbItem>`)
+		// and the tree is valid. Pins that mode enablement is per-parent —
+		// a pretendered child does not drag origin mode onto its parent.
+		const source = '<ul><BreadcrumbItem><BreadcrumbLink>Home</BreadcrumbLink></BreadcrumbItem></ul>';
+		const { violations } = await mlRuleTest(rule, source, breadcrumbsConfig);
+		expect(violations).toStrictEqual([]);
+	});
+});
