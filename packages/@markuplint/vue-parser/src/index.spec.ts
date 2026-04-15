@@ -606,4 +606,16 @@ h3 {
 		expect(parse('<template><x-div></x-div></template>').nodeList[0].elementType).toBe('web-component');
 		expect(parse('<template><Div></Div></template>').nodeList[0].elementType).toBe('authored');
 	});
+
+	// Pins the cross-package impact of Issue #3594's default change.
+	// Vue parser relies on the default `endOfUnquotedValueChars` from parser-utils.
+	// After the fix, `/` is no longer a terminator, so unquoted values in Vue
+	// templates inherit the HTML-spec behavior: `/` is part of the value.
+	test('#3594 Vue inherits HTML-spec unquoted "/" handling', () => {
+		expect(() => parse('<template><img src=/a/b.png alt=x></template>')).not.toThrow();
+		const doc = parse('<template><img src=/a/b.png alt=x></template>');
+		const img = doc.nodeList.find(n => n.nodeName === 'img');
+		const srcAttr = img.attributes.find(a => a.name?.raw === 'src');
+		expect(srcAttr.value.raw).toBe('/a/b.png');
+	});
 });

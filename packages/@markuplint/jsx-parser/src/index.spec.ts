@@ -644,6 +644,19 @@ const C = () => {
 		expect(nodeListToDebugMaps(doc.nodeList, true)).toStrictEqual(['[9:10]>[9:17](148,155)div: <div␣/>']);
 	});
 
+	// Pins the cross-package impact of Issue #3594's default change.
+	// JSX does not allow unquoted string attribute values at the language level
+	// (typescript-estree rejects them), so the default change is behaviorally
+	// inert for JSX. This test pins that fact: `/` in curly-brace expressions
+	// stays untouched because the tokenizer switches to `script` quote type
+	// before `endOfUnquotedValueChars` is consulted.
+	test('#3594 JSX curly-brace expressions still parse paths containing "/"', () => {
+		const doc = parse('const C = () => <img src={"/foo/bar.png"} alt="x" />;');
+		const img = doc.nodeList.find(n => n.nodeName === 'img');
+		const srcAttr = img.attributes.find(a => a.name?.raw === 'src');
+		expect(srcAttr.value.raw).toBe('"/foo/bar.png"');
+	});
+
 	test('#1451', () => {
 		expect(parse('<div></div>').nodeList[0].elementType).toBe('html');
 		expect(parse('<x-div></x-div>').nodeList[0].elementType).toBe('web-component');

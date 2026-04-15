@@ -101,6 +101,7 @@ Customize attribute parsing behavior for a specific parser. Follow recipe #4 in 
    - `quoteSet` -- custom quote delimiters (e.g., `{` `}` for JSX)
    - `startState` -- initial AttrState (usually `BeforeName`)
    - `noQuoteValueType` -- value type for unquoted values
+   - `endOfUnquotedValueChars` -- characters that terminate an unquoted value (default: whitespace and `>`, matching the WHATWG HTML spec)
 
 ### Step 2: Post-process
 
