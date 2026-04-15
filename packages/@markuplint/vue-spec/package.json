@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/vue-spec",
-	"version": "5.0.0-rc.1",
+	"version": "5.0.0-rc.2",
 	"description": "Extended specification for tags and attributes in Vue",
 	"repository": {
 		"type": "git",
@@ -28,6 +28,6 @@
 		"clean": "tsc --build --clean tsconfig.build.json"
 	},
 	"dependencies": {
-		"@markuplint/ml-spec": "5.0.0-rc.1"
+		"@markuplint/ml-spec": "5.0.0-rc.2"
 	}
 }

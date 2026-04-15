@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-rc.2](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.1...v5.0.0-rc.2) (2026-04-15)
+
+### Bug Fixes
+
+- **ml-spec:** apply optimizePermittedRoles to condition-specific overrides ([f6ad782](https://github.com/markuplint/markuplint/commit/f6ad7823c298011fb690cd3360392bc2893c05f2)), closes [#3724](https://github.com/markuplint/markuplint/issues/3724)
+- **ml-spec:** back-port content-model fields to schema source ([835d4d8](https://github.com/markuplint/markuplint/commit/835d4d8e4aa6bc2329b087194748159a8c1f86f6))
+- **ml-spec:** treat permittedRoles:false as forbidding all explicit roles ([098cc41](https://github.com/markuplint/markuplint/commit/098cc4167297599e7721bf88119af7d8f3c2df08)), closes [#3641](https://github.com/markuplint/markuplint/issues/3641)
+
+### Features
+
+- **html-spec:** add conditional value types for input element ([#3598](https://github.com/markuplint/markuplint/issues/3598)) ([290be1c](https://github.com/markuplint/markuplint/commit/290be1cde53165f1f6165731bf2ec184b0c46b54))
+- **ml-spec:** add #nonEmptyText to Category type ([d60be3f](https://github.com/markuplint/markuplint/commit/d60be3f43bff6cc5d9c1cfa9dcdbe5d69f8697b8))
+- **ml-spec:** add ConditionalAttributeType to Attribute.type union ([#3685](https://github.com/markuplint/markuplint/issues/3685)) ([a619a07](https://github.com/markuplint/markuplint/commit/a619a071d93566dd8aa7ab8dee2ed751c2e8756c)), closes [#3598](https://github.com/markuplint/markuplint/issues/3598) [#3189](https://github.com/markuplint/markuplint/issues/3189)
+- **ml-spec:** add forbiddenAncestors field to ContentModel type ([5b32af5](https://github.com/markuplint/markuplint/commit/5b32af5ee7041843b63ca1542cb811d3192e8527))
+- **ml-spec:** add uniqueAttrs field to ContentModel type ([d9e6f16](https://github.com/markuplint/markuplint/commit/d9e6f169888e92c9e8c85de884775cf026c2d1bf))
+
 # [5.0.0-rc.1](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.0...v5.0.0-rc.1) (2026-03-27)
 
 **Note:** Version bump only for package @markuplint/ml-spec
