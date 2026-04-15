@@ -176,9 +176,10 @@ describe('Use the not permitted role according to ARIA in HTML', () => {
 			{
 				severity: 'error',
 				line: 1,
-				col: 9,
-				message: 'Cannot overwrite the role of the "script" element according to ARIA in HTML specification',
-				raw: 'role="link"',
+				col: 15,
+				message:
+					'Cannot overwrite the "link" role to the "script" element according to ARIA in HTML specification',
+				raw: 'link',
 			},
 		]);
 	});
@@ -1618,16 +1619,25 @@ describe('ARIA 1.3 — image/img synonym in permitted roles', () => {
 		]);
 	});
 
-	test('[wai-aria-invalid-048] img[alt=""] with role="none" is valid in 1.3', async () => {
-		// The implicit role of <img alt=""> is "presentation". Although "none" and "presentation"
-		// are synonyms, the implicit role checker compares strings, so no violation is raised.
+	test('[wai-aria-invalid-048] img[alt=""] with role="none" is disallowed (Issue #3641)', async () => {
+		// Per ARIA in HTML §3.4: `<img alt="">` has "No role permitted" — any role
+		// attribute, including synonyms of the implicit role, is disallowed.
 		expect(
 			(
 				await mlRuleTest(rule, '<img src="spacer.gif" alt="" role="none">', {
 					rule: { options: { version: '1.3' } },
 				})
 			).violations,
-		).toStrictEqual([]);
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 36,
+				message:
+					'Cannot overwrite the "none" role to the "img" element according to ARIA in HTML specification',
+				raw: 'none',
+			},
+		]);
 	});
 });
 

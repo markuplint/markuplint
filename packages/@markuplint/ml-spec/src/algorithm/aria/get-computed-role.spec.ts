@@ -137,7 +137,10 @@ describe('1.2', () => {
 		).toStrictEqual([
 			['table', 'table'],
 			['tbody', 'rowgroup'],
-			['tr', 'row'],
+			// Per ARIA in HTML §3.4 `tr` conditional: "No role permitted" inside a
+			// table with default/table/grid/treegrid role — even `role="row"` matching
+			// the implicit role is disallowed.
+			['tr', 'row', 'NO_PERMITTED'],
 			['td', 'cell', 'NO_PERMITTED'],
 		]);
 		expect(
@@ -148,8 +151,10 @@ describe('1.2', () => {
 		).toStrictEqual([
 			['table', 'grid'],
 			['tbody', 'rowgroup'],
-			['tr', 'row'],
-			['td', 'gridcell'],
+			// Per ARIA in HTML §3.4 `tr` conditional: "No role permitted" when parent
+			// table has default/table/grid/treegrid role. `td` inherits the same.
+			['tr', 'row', 'NO_PERMITTED'],
+			['td', 'gridcell', 'NO_PERMITTED'],
 		]);
 	});
 
@@ -278,7 +283,9 @@ describe('1.3', () => {
 		).toStrictEqual([
 			['table', 'table'],
 			['tbody', 'rowgroup'],
-			['tr', 'row'],
+			// Per ARIA in HTML §3.4 `tr` conditional: "No role permitted" inside a
+			// table — even `role="row"` matching the implicit role is disallowed.
+			['tr', 'row', 'NO_PERMITTED'],
 			['td', 'cell', 'NO_PERMITTED'],
 		]);
 		expect(
@@ -289,8 +296,10 @@ describe('1.3', () => {
 		).toStrictEqual([
 			['table', 'grid'],
 			['tbody', 'rowgroup'],
-			['tr', 'row'],
-			['td', 'gridcell'],
+			// Per ARIA in HTML §3.4 `tr` conditional: "No role permitted" when parent
+			// table has default/table/grid/treegrid role.
+			['tr', 'row', 'NO_PERMITTED'],
+			['td', 'gridcell', 'NO_PERMITTED'],
 		]);
 	});
 

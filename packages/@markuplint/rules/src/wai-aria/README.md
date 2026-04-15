@@ -139,3 +139,6 @@ The selector `img[src$=.svg]` **limits** the rule to the element that is loading
 Then, disabling the `disallowSetImplicitRole` option **allows** setting `role="img"` which is the implicit role of the `img` element.
 Furthermore, Change to require to specify the `role` attribute through the `required-attr` rule, and allows only the `img` value for the `role` attribute through the `invalid-attr` rule.
 Doing this will urge add `role="img"` to the `img[src$=.svg]` element.
+
+> [!IMPORTANT]
+> Make sure the `<img>` carries an `alt` attribute (or `aria-label`). Per [ARIA in HTML](https://w3c.github.io/html-aria/#el-img), `<img>` without an accessible name has "No role permitted" — `permittedAriaRoles` will reject `role="img"` in that state. The example above assumes the SVG image has alt text.

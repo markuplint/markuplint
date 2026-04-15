@@ -143,4 +143,7 @@ description: WAI-ARIAおよびARIA in HTMLの仕様のとおりrole属性また�
 
 <!-- textlint-enable ja-technical-writing/sentence-length -->
 
+> [!IMPORTANT]
+> `<img>` には必ず `alt` 属性（または `aria-label`）を付与してください。[ARIA in HTML](https://w3c.github.io/html-aria/#el-img) によると、アクセシブル名を持たない `<img>` は「No role permitted」となり、`permittedAriaRoles` が `role="img"` を拒否します。上記の例は SVG 画像が alt テキストを持つことを前提としています。
+
 <!-- textlint-enable ja-technical-writing/ja-no-mixed-period -->

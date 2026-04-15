@@ -84,11 +84,14 @@ export default createRule<boolean, Options>({
 					report(checkingDeprecatedRole({ attr: roleAttr, role: computed.role }));
 				}
 
-				if (el.rule.options.disallowSetImplicitRole) {
-					report(checkingImplicitRole({ attr: roleAttr }));
-				}
+				// If the explicit role duplicates the implicit role, surface only that
+				// (more specific) message. Otherwise fall through to the general
+				// permitted-roles check to avoid emitting two violations for the same
+				// offending token.
+				const implicitRoleViolated =
+					el.rule.options.disallowSetImplicitRole && report(checkingImplicitRole({ attr: roleAttr }));
 
-				if (el.rule.options.permittedAriaRoles) {
+				if (el.rule.options.permittedAriaRoles && !implicitRoleViolated) {
 					report(checkingPermittedRoles({ attr: roleAttr }));
 				}
 			}
