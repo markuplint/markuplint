@@ -2355,4 +2355,39 @@ describe('#3739 (pretender + user tag rule)', () => {
 		});
 		expect(violations).toStrictEqual([]);
 	});
+
+	test('[permitted-contents-issue-3739-010] origin-mode rejects a native child that coincides with the pretender target name', async () => {
+		// The full Breadcrumbs family of pretenders AND user tag rules is
+		// wired up, matching the production-style config. Inside a
+		// `<BreadcrumbList>` (which pretends to `<ol>` and has a user rule
+		// requiring `<BreadcrumbItem>`) we drop a raw `<li>`. In the
+		// pretended pass `<ol>` happily accepts `<li>`; in the origin pass
+		// the user selector `BreadcrumbItem` must NOT match the native
+		// `<li>`. This pins that the `<li>`/`BreadcrumbItem` name collision
+		// does not leak across modes.
+		const source = '<BreadcrumbList><li>native</li></BreadcrumbList>';
+		const { violations } = await mlRuleTest(rule, source, breadcrumbsConfig);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				raw: '<BreadcrumbList>',
+				message: 'Require one or more elements. (Need "BreadcrumbItem")',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-3739-011] native parent without a user rule passes even when pretendered children are present', async () => {
+		// Again the full Breadcrumbs family is configured, but the parent
+		// here is a raw `<ul>` for which no user tag rule exists. The
+		// `rules.some(r => r.tag === el.rawName)` guard must keep origin
+		// mode dormant on `<ul>`, so only the pretended pass runs: `<ul>`
+		// accepts the pretendered `<li>` (originally `<BreadcrumbItem>`)
+		// and the tree is valid. Pins that mode enablement is per-parent —
+		// a pretendered child does not drag origin mode onto its parent.
+		const source = '<ul><BreadcrumbItem><BreadcrumbLink>Home</BreadcrumbLink></BreadcrumbItem></ul>';
+		const { violations } = await mlRuleTest(rule, source, breadcrumbsConfig);
+		expect(violations).toStrictEqual([]);
+	});
 });
