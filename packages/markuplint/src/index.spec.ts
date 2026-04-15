@@ -94,7 +94,7 @@ describe('basic test', () => {
 			'Require accessible name',
 			'Require accessible name',
 			'Cannot overwrite the "document" role to the "a" element according to ARIA in HTML specification',
-			'Cannot overwrite the role of the "label" element according to ARIA in HTML specification',
+			'Cannot overwrite the "button" role to the "label" element according to ARIA in HTML specification',
 			'The "script" element expects the "defer" attribute',
 			'The "script" element expects the "defer" attribute',
 			'The "img" element expects the "width" attribute',
