@@ -2594,9 +2594,9 @@ __metadata:
   linkType: soft
 
 "@mdn/browser-compat-data@npm:^7.3.2":
-  version: 7.3.11
-  resolution: "@mdn/browser-compat-data@npm:7.3.11"
-  checksum: 10c0/c61c980cef6e47b3ce6866fdfe94447caf208170e010065e959df33b17d048a2406a9727f1ae740723fcbdd69748edbc1c15f901f4628d41c1c36343579a29ac
+  version: 7.3.12
+  resolution: "@mdn/browser-compat-data@npm:7.3.12"
+  checksum: 10c0/f7c62a272823bbb5ed5470e661f8020676494d1fc8e04c9d2ed4470d69b5129cd50e7da587a7709a441a393a5d6af819f498029a050dec200c81adeb1aa95558
   languageName: node
   linkType: hard
 
