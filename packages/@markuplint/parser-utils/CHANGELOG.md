@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-rc.3](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.2...v5.0.0-rc.3) (2026-04-19)
+
+**Note:** Version bump only for package @markuplint/parser-utils
+
 # [5.0.0-rc.2](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.1...v5.0.0-rc.2) (2026-04-15)
 
 - fix(parser-utils)!: align unquoted attribute value tokenizer with HTML spec ([5168c04](https://github.com/markuplint/markuplint/commit/5168c041a1d37a7080f12e3c7569b5bbacd5a2f1))

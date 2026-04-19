@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/create-rule",
-	"version": "5.0.0-rc.2",
+	"version": "5.0.0-rc.3",
 	"description": "Rule generator for markuplint",
 	"repository": {
 		"type": "git",
@@ -29,8 +29,8 @@
 		"clean": "tsc --build --clean tsconfig.build.json"
 	},
 	"dependencies": {
-		"@markuplint/cli-utils": "5.0.0-rc.2",
-		"@markuplint/ml-core": "5.0.0-rc.2",
+		"@markuplint/cli-utils": "5.0.0-rc.3",
+		"@markuplint/ml-core": "5.0.0-rc.3",
 		"glob": "13.0.6",
 		"prettier": "3.8.3",
 		"typescript": "6.0.2"

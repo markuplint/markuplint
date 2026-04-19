@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-rc.3](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.2...v5.0.0-rc.3) (2026-04-19)
+
+- feat(vscode)!: migrate publisher to markuplint namespace ([f46e4b1](https://github.com/markuplint/markuplint/commit/f46e4b159598f36cdcdb7a98025ff93147f04eb7))
+
+### Features
+
+- **vscode:** support prerelease extension packaging and publishing ([b7399c9](https://github.com/markuplint/markuplint/commit/b7399c90c5c407d9d859a96087d2dab53a9c8459)), closes [#3754](https://github.com/markuplint/markuplint/issues/3754)
+
+### BREAKING CHANGES
+
+- The VS Code extension is now published under the `markuplint`
+  publisher (Marketplace ID: `markuplint.vscode-markuplint`). The legacy
+  `yusukehirao.vscode-markuplint` ID is deprecated from `v5.0.0-rc.3` onwards
+  and no longer receives updates; users must install the new extension.
+
 # [5.0.0-rc.2](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.1...v5.0.0-rc.2) (2026-04-15)
 
 ### Bug Fixes
