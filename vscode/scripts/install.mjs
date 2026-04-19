@@ -14,9 +14,14 @@ const packageJsonPath = path.join(rootDir, 'package.json');
 const backupPath = path.join(rootDir, 'package.json.bak');
 const vscodeDir = path.join(rootDir, 'vscode');
 
-// Check if this is release mode
-const isRelease = process.argv.includes('release');
-const mode = isRelease ? 'release' : 'package';
+// Resolve mode from argv
+const validModes = ['package', 'release', 'pre-package', 'pre-release'];
+const arg = process.argv[2];
+if (arg && !validModes.includes(arg)) {
+	console.error(`Invalid mode: ${arg}. Valid: ${validModes.join(', ')}`);
+	process.exit(1);
+}
+const mode = arg ?? 'package';
 
 console.log(`Starting VS Code extension ${mode} process...`);
 

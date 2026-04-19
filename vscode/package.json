@@ -193,7 +193,9 @@
 		"vscode:test:pre": "esbuild \"test/*.ts\" --platform=node --target=node20.9 --format=cjs --outdir=\"test/suite\"",
 		"vscode:login": "vsce login yusukehirao",
 		"vscode:package": "npx @vscode/vsce package --no-yarn",
-		"vscode:release": "npx @vscode/vsce publish --no-yarn"
+		"vscode:release": "npx @vscode/vsce publish --no-yarn",
+		"vscode:pre-package": "npx @vscode/vsce package --pre-release --no-yarn",
+		"vscode:pre-release": "npx @vscode/vsce publish --pre-release --no-yarn"
 	},
 	"devDependencies": {
 		"@markuplint-dev/tsconfig": "5.0.0-rc.2",
