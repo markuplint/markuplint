@@ -435,6 +435,14 @@ jobs:
                   cp -r ${{ github.workspace }}/test ${{ github.workspace }}/../sandbox
                   find ${{ github.workspace }}/../sandbox/test -maxdepth 1 2>/dev/null || true
 
+            # Capture the root packageManager BEFORE the deletion step below,
+            # so the sandbox Setup step can reuse the same Yarn version
+            # without drifting from the repository's pin.
+            - name: Capture root packageManager
+              if: matrix.pm == 'yarn'
+              id: capture-package-manager
+              run: echo "value=$(jq -er '.packageManager' package.json)" >> "$GITHUB_OUTPUT"
+
             - name: Delete package manager settings
               run: jq 'del(.packageManager)' package.json > tmp.json && mv tmp.json package.json
 
@@ -448,12 +456,18 @@ jobs:
             - name: Setup Yarn v4 for sandbox
               if: matrix.pm == 'yarn'
               working-directory: ../sandbox/test/isolated-env/${{ matrix.env }}
+              env:
+                  PACKAGE_MANAGER: ${{ steps.capture-package-manager.outputs.value }}
               run: |
                   cp ${{ github.workspace }}/.yarnrc.yml .yarnrc.yml
                   echo 'enableHardenedMode: false' >> .yarnrc.yml
                   # Build resolutions from dependencies to force yarn to use file: versions
-                  # for transitive dependencies (prevents npm registry fallback)
-                  jq '. + {"packageManager": "yarn@4.12.0"} + {"resolutions": .dependencies}' package.json > tmp.json && mv tmp.json package.json
+                  # for transitive dependencies (prevents npm registry fallback).
+                  # PACKAGE_MANAGER is captured from the root package.json before the
+                  # "Delete package manager settings" step, so the sandbox stays in sync
+                  # with the repository's Yarn version on every bump.
+                  echo "Using packageManager from root: $PACKAGE_MANAGER"
+                  jq --arg pm "$PACKAGE_MANAGER" '. + {"packageManager": $pm} + {"resolutions": .dependencies}' package.json > tmp.json && mv tmp.json package.json
 
             - name: Install dependencies
               working-directory: ../sandbox/test/isolated-env/${{ matrix.env }}
