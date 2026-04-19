@@ -4,7 +4,7 @@
 
 ### I am a beginner. Is it OK to use it?
 
-Absolutely. With VS Code, you can start immediately — just install [the extension](https://marketplace.visualstudio.com/items?itemName=yusukehirao.vscode-markuplint) and open an HTML file. No Node.js or command line knowledge is needed. You can also try it on the [Playground](https://playground.markuplint.dev) without installing anything.
+Absolutely. With VS Code, you can start immediately — just install [the extension](https://marketplace.visualstudio.com/items?itemName=markuplint.vscode-markuplint) and open an HTML file. No Node.js or command line knowledge is needed. You can also try it on the [Playground](https://playground.markuplint.dev) without installing anything.
 
 ### Can I use it with React?
 

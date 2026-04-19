@@ -6,7 +6,7 @@
 
 ### 初心者ですが使っても大丈夫ですか？
 
-大丈夫です。VS Codeであれば[拡張機能](https://marketplace.visualstudio.com/items?itemName=yusukehirao.vscode-markuplint)をインストールするだけですぐに利用できます。Node.jsやコマンドラインの知識は不要です。また、[プレイグラウンドサイト](https://playground.markuplint.dev)でインストールなしに試すこともできます。
+大丈夫です。VS Codeであれば[拡張機能](https://marketplace.visualstudio.com/items?itemName=markuplint.vscode-markuplint)をインストールするだけですぐに利用できます。Node.jsやコマンドラインの知識は不要です。また、[プレイグラウンドサイト](https://playground.markuplint.dev)でインストールなしに試すこともできます。
 
 ### Reactで使えますか？
 
