@@ -1,10 +1,31 @@
 #!/usr/bin/env node
 /* eslint-disable no-console */
 
+/**
+ * VS Code extension build driver.
+ *
+ * Usage: `node vscode/scripts/install.mjs [mode]`
+ *
+ * Accepted modes (see `./resolve-mode.mjs` for the authoritative list):
+ *
+ * | Mode           | Effect                                                      |
+ * | -------------- | ----------------------------------------------------------- |
+ * | `package`      | Build a stable .vsix (default when no arg is given)         |
+ * | `release`      | Publish a stable version to Marketplace                     |
+ * | `pre-package`  | Build a prerelease .vsix (vsce --pre-release)               |
+ * | `pre-release`  | Publish a prerelease version to Marketplace (vsce --pre-release) |
+ *
+ * Any other argument exits with code 1.
+ *
+ * SEE: https://code.visualstudio.com/api/working-with-extensions/publishing-extension#prerelease-extensions
+ */
+
 import fs from 'node:fs';
 import path from 'node:path';
 import { execSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+
+import { resolveMode } from './resolve-mode.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -14,14 +35,13 @@ const packageJsonPath = path.join(rootDir, 'package.json');
 const backupPath = path.join(rootDir, 'package.json.bak');
 const vscodeDir = path.join(rootDir, 'vscode');
 
-// Resolve mode from argv
-const validModes = ['package', 'release', 'pre-package', 'pre-release'];
-const arg = process.argv[2];
-if (arg && !validModes.includes(arg)) {
-	console.error(`Invalid mode: ${arg}. Valid: ${validModes.join(', ')}`);
+let mode;
+try {
+	mode = resolveMode(process.argv);
+} catch (error) {
+	console.error(error.message);
 	process.exit(1);
 }
-const mode = arg ?? 'package';
 
 console.log(`Starting VS Code extension ${mode} process...`);
 
