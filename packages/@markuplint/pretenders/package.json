@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/pretenders",
-	"version": "5.0.0-rc.2",
+	"version": "5.0.0-rc.4",
 	"description": "It loads components and then creates the pretenders data from them.",
 	"repository": {
 		"type": "git",
@@ -32,17 +32,17 @@
 		"clean": "tsc --build --clean tsconfig.build.json"
 	},
 	"dependencies": {
-		"@markuplint/ml-ast": "5.0.0-rc.2",
-		"@markuplint/ml-config": "5.0.0-rc.2",
-		"@markuplint/parser-utils": "5.0.0-rc.2",
+		"@markuplint/ml-ast": "5.0.0-rc.4",
+		"@markuplint/ml-config": "5.0.0-rc.4",
+		"@markuplint/parser-utils": "5.0.0-rc.4",
 		"es-module-lexer": "2.0.0",
 		"glob": "13.0.6",
 		"meow": "14.1.0",
 		"typescript": "6.0.2"
 	},
 	"optionalDependencies": {
-		"@markuplint/astro-parser": "5.0.0-rc.2",
-		"@markuplint/svelte-parser": "5.0.0-rc.2",
-		"@markuplint/vue-parser": "5.0.0-rc.2"
+		"@markuplint/astro-parser": "5.0.0-rc.4",
+		"@markuplint/svelte-parser": "5.0.0-rc.4",
+		"@markuplint/vue-parser": "5.0.0-rc.4"
 	}
 }

@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/svelte-parser",
-	"version": "5.0.0-rc.2",
+	"version": "5.0.0-rc.4",
 	"description": "Svelte parser for markuplint",
 	"repository": {
 		"type": "git",
@@ -40,9 +40,9 @@
 		"clean": "tsc --build --clean tsconfig.build.json"
 	},
 	"dependencies": {
-		"@markuplint/html-parser": "5.0.0-rc.2",
-		"@markuplint/ml-ast": "5.0.0-rc.2",
-		"@markuplint/parser-utils": "5.0.0-rc.2",
+		"@markuplint/html-parser": "5.0.0-rc.4",
+		"@markuplint/ml-ast": "5.0.0-rc.4",
+		"@markuplint/parser-utils": "5.0.0-rc.4",
 		"svelte": "5.55.4"
 	}
 }

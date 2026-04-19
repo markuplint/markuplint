@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/pug-parser",
-	"version": "5.0.0-rc.2",
+	"version": "5.0.0-rc.4",
 	"description": "Pug parser for markuplint",
 	"repository": {
 		"type": "git",
@@ -28,9 +28,9 @@
 		"clean": "tsc --build --clean tsconfig.build.json"
 	},
 	"dependencies": {
-		"@markuplint/html-parser": "5.0.0-rc.2",
-		"@markuplint/ml-ast": "5.0.0-rc.2",
-		"@markuplint/parser-utils": "5.0.0-rc.2",
+		"@markuplint/html-parser": "5.0.0-rc.4",
+		"@markuplint/ml-ast": "5.0.0-rc.4",
+		"@markuplint/parser-utils": "5.0.0-rc.4",
 		"pug-lexer": "5.0.1",
 		"pug-parser": "6.0.0"
 	}
