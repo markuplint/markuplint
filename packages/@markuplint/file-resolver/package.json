@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/file-resolver",
-	"version": "5.0.0-rc.3",
+	"version": "5.0.0-rc.4",
 	"description": "The file resolver of markuplint",
 	"repository": {
 		"type": "git",
@@ -34,15 +34,15 @@
 		"@types/node": "24.5.1"
 	},
 	"dependencies": {
-		"@markuplint/html-parser": "5.0.0-rc.3",
-		"@markuplint/ml-ast": "5.0.0-rc.3",
-		"@markuplint/ml-config": "5.0.0-rc.3",
-		"@markuplint/ml-core": "5.0.0-rc.3",
-		"@markuplint/ml-spec": "5.0.0-rc.3",
-		"@markuplint/parser-utils": "5.0.0-rc.3",
-		"@markuplint/pretenders": "5.0.0-rc.3",
-		"@markuplint/selector": "5.0.0-rc.3",
-		"@markuplint/shared": "5.0.0-rc.3",
+		"@markuplint/html-parser": "5.0.0-rc.4",
+		"@markuplint/ml-ast": "5.0.0-rc.4",
+		"@markuplint/ml-config": "5.0.0-rc.4",
+		"@markuplint/ml-core": "5.0.0-rc.4",
+		"@markuplint/ml-spec": "5.0.0-rc.4",
+		"@markuplint/parser-utils": "5.0.0-rc.4",
+		"@markuplint/pretenders": "5.0.0-rc.4",
+		"@markuplint/selector": "5.0.0-rc.4",
+		"@markuplint/shared": "5.0.0-rc.4",
 		"cosmiconfig": "9.0.1",
 		"debug": "4.4.3",
 		"glob": "13.0.6",

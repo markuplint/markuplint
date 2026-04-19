@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/liquid-parser",
-	"version": "5.0.0-rc.3",
+	"version": "5.0.0-rc.4",
 	"description": "Liquid template parser for markuplint",
 	"repository": {
 		"type": "git",
@@ -28,9 +28,9 @@
 		"clean": "tsc --build --clean tsconfig.build.json"
 	},
 	"dependencies": {
-		"@markuplint/html-parser": "5.0.0-rc.3"
+		"@markuplint/html-parser": "5.0.0-rc.4"
 	},
 	"devDependencies": {
-		"@markuplint/parser-utils": "5.0.0-rc.3"
+		"@markuplint/parser-utils": "5.0.0-rc.4"
 	}
 }
