@@ -82,4 +82,4 @@ If not set, markuplint uses the parent directory of each file as the working dir
 
 ## Release
 
-[Changelog](https://marketplace.visualstudio.com/items/yusukehirao.vscode-markuplint/changelog)
+[Changelog](https://marketplace.visualstudio.com/items/markuplint.vscode-markuplint/changelog)

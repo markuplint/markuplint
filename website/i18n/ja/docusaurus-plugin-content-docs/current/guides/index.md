@@ -4,7 +4,7 @@
 
 ### もっとも簡単な方法: VS Code 拡張 {#the-quickest-way-vs-code-extension}
 
-[Markuplint拡張](https://marketplace.visualstudio.com/items?itemName=yusukehirao.vscode-markuplint)をVisual Studio Marketplaceからインストールするか、VS Codeの拡張機能パネルで「markuplint」と検索してください。
+[Markuplint拡張](https://marketplace.visualstudio.com/items?itemName=markuplint.vscode-markuplint)をVisual Studio Marketplaceからインストールするか、VS Codeの拡張機能パネルで「markuplint」と検索してください。
 
 ![VS Codeの拡張機能パネル: 「markuplint」で検索するとYusuke Hirao作のMarkuplint拡張が表示される](/img/guides/vscode-search.png)
 

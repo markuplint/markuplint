@@ -35,3 +35,57 @@ When you wrote code then:
   - For the improved code: @yusukehirao
   - For plugins: @yusukehirao
   - For documents/website: @yusukehirao, @kagankan
+
+## Publishing the VS Code Extension
+
+The npm packages are published automatically from CI (npm trusted publisher).
+The VS Code extension, in contrast, is published **manually** after the core
+packages land.
+
+### Publisher
+
+The extension is published under the `markuplint` publisher
+(Marketplace ID: `markuplint.vscode-markuplint`).
+
+The legacy `yusukehirao.vscode-markuplint` ID is deprecated from
+`v5.0.0-rc.3` onwards and no longer receives updates.
+
+`yarn vscode:login` runs `vsce login markuplint`, so the Azure DevOps
+Personal Access Token you authenticate with must have rights on the
+`markuplint` publisher.
+
+### Versioning
+
+All packages — including the VS Code extension — share a single version
+because Lerna is configured in non-independent mode. The extension version
+therefore always matches the core version (e.g. `5.0.0`, `5.0.0-rc.2`).
+
+VS Code's recommended odd/even minor split is **not** used. Instead,
+semver prerelease tags (`-alpha.x` / `-beta.x` / `-rc.x`) are mapped to the
+Marketplace prerelease channel.
+
+### When to publish which mode
+
+| Core version tag                 | Command                   | Marketplace channel |
+| -------------------------------- | ------------------------- | ------------------- |
+| Stable (e.g. `5.0.0`)            | `yarn vscode:release`     | Stable              |
+| `-alpha.x` / `-beta.x` / `-rc.x` | `yarn vscode:pre-release` | Prerelease          |
+
+`vscode:package` / `vscode:pre-package` produce a local `.vsix` without
+publishing — use these for smoke-testing before running the publish commands.
+
+### Workflow
+
+1. Wait for the core packages to be published to npm by CI
+2. Pull the release tag locally (`git pull --tags`)
+3. (First time only) `yarn vscode:login` to authenticate with Marketplace
+4. Run `yarn vscode:release` **or** `yarn vscode:pre-release` depending on the
+   tag (see the table above)
+
+Valid modes accepted by `vscode/scripts/install.mjs`: `package`, `release`,
+`pre-package`, `pre-release`. Any other argument exits non-zero.
+
+### Reference
+
+- [VS Code: Prerelease Extensions](https://code.visualstudio.com/api/working-with-extensions/publishing-extension#prerelease-extensions)
+- [@vscode/vsce](https://github.com/microsoft/vscode-vsce)
