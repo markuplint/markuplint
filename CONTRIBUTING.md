@@ -42,6 +42,18 @@ The npm packages are published automatically from CI (npm trusted publisher).
 The VS Code extension, in contrast, is published **manually** after the core
 packages land.
 
+### Publisher
+
+The extension is published under the `markuplint` publisher
+(Marketplace ID: `markuplint.vscode-markuplint`).
+
+The legacy `yusukehirao.vscode-markuplint` ID is deprecated from
+`v5.0.0-rc.3` onwards and no longer receives updates.
+
+`yarn vscode:login` runs `vsce login markuplint`, so the Azure DevOps
+Personal Access Token you authenticate with must have rights on the
+`markuplint` publisher.
+
 ### Versioning
 
 All packages — including the VS Code extension — share a single version
