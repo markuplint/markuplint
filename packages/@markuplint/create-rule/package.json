@@ -33,7 +33,7 @@
 		"@markuplint/ml-core": "5.0.0-rc.4",
 		"glob": "13.0.6",
 		"prettier": "3.8.3",
-		"typescript": "6.0.2"
+		"typescript": "6.0.3"
 	},
 	"devDependencies": {
 		"@types/fs-extra": "11.0.4",
