@@ -229,6 +229,17 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	/**
 	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
 	 *
+	 * @deprecated
+	 * @unsupported
+	 * @implements DOM API: `Document`
+	 */
+	get activeViewTransition(): ViewTransition | null {
+		throw new UnexpectedCallError('Not supported "activeViewTransition" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
@@ -360,6 +371,17 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 */
 	get currentScript(): HTMLOrSVGScriptElement | null {
 		throw new UnexpectedCallError('Not supported "currentScript" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @deprecated
+	 * @unsupported
+	 * @implements DOM API: `Document`
+	 */
+	get customElementRegistry(): CustomElementRegistry | null {
+		throw new UnexpectedCallError('Not supported "customElementRegistry" property');
 	}
 
 	/**
@@ -932,6 +954,24 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		  ) => any)
 		| null {
 		throw new UnexpectedCallError('Not supported "onclose" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @deprecated
+	 * @unsupported
+	 * @implements DOM API: `Document`
+	 */
+	get oncommand():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
+		throw new UnexpectedCallError('Not supported "oncommand" property');
 	}
 
 	/**

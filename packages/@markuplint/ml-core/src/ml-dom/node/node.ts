@@ -890,6 +890,21 @@ export abstract class MLNode<
 	}
 
 	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @unsupported
+	 * @implements DOM API: `Node`
+	 */
+	moveBefore(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		node: Node,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		child: Node | null,
+	): Node {
+		throw new UnexpectedCallError('Not supported "moveBefore" method');
+	}
+
+	/**
 	 * @implements `@markuplint/ml-core` API: `MLNode`
 	 */
 	is<NType extends NodeType>(nodeType: NType): this is NodeTypeOf<NType, T, O> {
