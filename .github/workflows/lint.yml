@@ -5,6 +5,7 @@ on:
         branches:
             - dev
             - v3
+            - v4
             - next
         paths:
             - '.github/workflows/lint.yml'
