@@ -21,7 +21,7 @@ Its purpose is all developers are able to better markup and fit each of diverse 
 You need:
 
 - Node.js v24 or later (the exact version is pinned in `.mise.toml`; install [mise](https://mise.jdx.dev/) and run `mise install` to match it)
-- Yarn
+- Yarn 4.x (pinned in both `.mise.toml` and `package.json#packageManager` — bump them together; CI derives the sandbox Yarn version from the latter)
 
 After cloning this repository, you can also install them through [Docker](https://github.com/markuplint/markuplint/blob/main/Dockerfile).
 
