@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.5.24](https://github.com/markuplint/markuplint/compare/@markuplint/svelte-spec@4.5.23...@markuplint/svelte-spec@4.5.24) (2026-04-21)
+
+**Note:** Version bump only for package @markuplint/svelte-spec
+
 ## [4.5.23](https://github.com/markuplint/markuplint/compare/@markuplint/svelte-spec@4.5.22...@markuplint/svelte-spec@4.5.23) (2026-02-10)
 
 **Note:** Version bump only for package @markuplint/svelte-spec

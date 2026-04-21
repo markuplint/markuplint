@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.10.3](https://github.com/markuplint/markuplint/compare/@markuplint/ml-spec@4.10.2...@markuplint/ml-spec@4.10.3) (2026-04-21)
+
+### Bug Fixes
+
+- **deps:** adapt code to breaking changes from upgrade ([ced7fab](https://github.com/markuplint/markuplint/commit/ced7fab5b50ea3effd844e17b1f676fce790b53c))
+- resolve additional eslint-plugin-unicorn v63 errors ([e58a72c](https://github.com/markuplint/markuplint/commit/e58a72c17c97bbec522f9513b99777fac6904d64))
+
 ## [4.10.2](https://github.com/markuplint/markuplint/compare/@markuplint/ml-spec@4.10.1...@markuplint/ml-spec@4.10.2) (2026-02-10)
 
 **Note:** Version bump only for package @markuplint/ml-spec

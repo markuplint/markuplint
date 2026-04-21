@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.9.2](https://github.com/markuplint/markuplint/compare/vscode-markuplint@4.9.1...vscode-markuplint@4.9.2) (2026-04-21)
+
+### Reverts
+
+- keep vitest 3 and plain markuplint ref for CI compat ([82ba2f9](https://github.com/markuplint/markuplint/commit/82ba2f948c33a145b90517033833e11b76f04bb3))
+
 ## [4.9.1](https://github.com/markuplint/markuplint/compare/vscode-markuplint@4.9.0...vscode-markuplint@4.9.1) (2026-02-10)
 
 **Note:** Version bump only for package vscode-markuplint

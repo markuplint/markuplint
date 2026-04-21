@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.5.24](https://github.com/markuplint/markuplint/compare/@markuplint/test-tools@4.5.23...@markuplint/test-tools@4.5.24) (2026-04-21)
+
+### Bug Fixes
+
+- support TypeScript 6.0 ([0dcf708](https://github.com/markuplint/markuplint/commit/0dcf70835eb40b581589c4da824080c512ba198c)), closes [#3759](https://github.com/markuplint/markuplint/issues/3759) [#3759](https://github.com/markuplint/markuplint/issues/3759)
+
+### Reverts
+
+- keep vitest 3 and plain markuplint ref for CI compat ([82ba2f9](https://github.com/markuplint/markuplint/commit/82ba2f948c33a145b90517033833e11b76f04bb3))
+- pin jsdom to 26 for Node 18 support ([a82d280](https://github.com/markuplint/markuplint/commit/a82d280cce06b52746b6a7912b3eca9d22a4296d))
+
 ## [4.5.23](https://github.com/markuplint/markuplint/compare/@markuplint/test-tools@4.5.22...@markuplint/test-tools@4.5.23) (2026-02-10)
 
 **Note:** Version bump only for package @markuplint/test-tools

@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.4.12](https://github.com/markuplint/markuplint/compare/@markuplint/ml-ast@4.4.11...@markuplint/ml-ast@4.4.12) (2026-04-21)
+
+**Note:** Version bump only for package @markuplint/ml-ast
+
 ## [4.4.11](https://github.com/markuplint/markuplint/compare/@markuplint/ml-ast@4.4.10...@markuplint/ml-ast@4.4.11) (2026-02-10)
 
 **Note:** Version bump only for package @markuplint/ml-ast

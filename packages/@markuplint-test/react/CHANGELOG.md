@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.0.22](https://github.com/markuplint/markuplint/compare/@markuplint-test/react@0.0.21...@markuplint-test/react@0.0.22) (2026-04-21)
+
+**Note:** Version bump only for package @markuplint-test/react
+
 ## [0.0.21](https://github.com/markuplint/markuplint/compare/@markuplint-test/react@0.0.20...@markuplint-test/react@0.0.21) (2026-02-10)
 
 **Note:** Version bump only for package @markuplint-test/react

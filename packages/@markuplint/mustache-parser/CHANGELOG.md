@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.6.24](https://github.com/markuplint/markuplint/compare/@markuplint/mustache-parser@4.6.23...@markuplint/mustache-parser@4.6.24) (2026-04-21)
+
+**Note:** Version bump only for package @markuplint/mustache-parser
+
 ## [4.6.23](https://github.com/markuplint/markuplint/compare/@markuplint/mustache-parser@4.6.22...@markuplint/mustache-parser@4.6.23) (2026-02-10)
 
 **Note:** Version bump only for package @markuplint/mustache-parser

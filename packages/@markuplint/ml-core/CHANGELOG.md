@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.13.4](https://github.com/markuplint/markuplint/compare/@markuplint/ml-core@4.13.3...@markuplint/ml-core@4.13.4) (2026-04-21)
+
+### Bug Fixes
+
+- support TypeScript 6.0 ([0dcf708](https://github.com/markuplint/markuplint/commit/0dcf70835eb40b581589c4da824080c512ba198c)), closes [#3759](https://github.com/markuplint/markuplint/issues/3759) [#3759](https://github.com/markuplint/markuplint/issues/3759)
+
 ## [4.13.3](https://github.com/markuplint/markuplint/compare/@markuplint/ml-core@4.13.2...@markuplint/ml-core@4.13.3) (2026-02-10)
 
 **Note:** Version bump only for package @markuplint/ml-core

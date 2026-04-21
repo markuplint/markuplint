@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.8.12](https://github.com/markuplint/markuplint/compare/@markuplint/parser-utils@4.8.11...@markuplint/parser-utils@4.8.12) (2026-04-21)
+
+### Bug Fixes
+
+- resolve additional eslint-plugin-unicorn v63 errors ([e58a72c](https://github.com/markuplint/markuplint/commit/e58a72c17c97bbec522f9513b99777fac6904d64))
+
+### Reverts
+
+- pin uuid to 13 for Node 18 support ([b2bae14](https://github.com/markuplint/markuplint/commit/b2bae1460a0810f6a17fefa2d042d44eab5f0641))
+
 ## [4.8.11](https://github.com/markuplint/markuplint/compare/@markuplint/parser-utils@4.8.10...@markuplint/parser-utils@4.8.11) (2026-02-10)
 
 **Note:** Version bump only for package @markuplint/parser-utils
