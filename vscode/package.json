@@ -140,7 +140,7 @@
 		"@markuplint/ml-spec": "4.10.2",
 		"debug": "4.4.3",
 		"glob": "13.0.6",
-		"markuplint": "workspace:packages/markuplint",
+		"markuplint": "4.13.0",
 		"mocha": "11.7.5",
 		"semver": "7.7.4",
 		"vscode-languageclient": "9.0.1",
