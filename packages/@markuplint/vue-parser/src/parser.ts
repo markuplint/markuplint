@@ -1,6 +1,6 @@
 import type { ASTNode, ASTComment } from './vue-parser/index.js';
 import type { MLASTParentNode, MLASTNodeTreeItem } from '@markuplint/ml-ast';
-import type { Token } from '@markuplint/parser-utils';
+import type { Token, Tokenized } from '@markuplint/parser-utils';
 
 import { ParserError, Parser } from '@markuplint/parser-utils';
 
@@ -30,7 +30,7 @@ class VueParser extends Parser<ASTNode, State> {
 		);
 	}
 
-	tokenize() {
+	tokenize(): Tokenized<ASTNode, State> {
 		const ast = vueParse(this.rawCode);
 		if (ast.templateBody?.comments) {
 			this.state.comments = ast.templateBody.comments;
