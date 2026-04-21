@@ -8,6 +8,7 @@
 		":pinDevDependencies",
 		":semanticCommitTypeAll(chore)"
 	],
+	"baseBranches": ["dev", "v4"],
 	"lockFileMaintenance": {
 		"enabled": true,
 		"automerge": true
