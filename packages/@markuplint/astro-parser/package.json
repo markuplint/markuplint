@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/astro-parser",
-	"version": "4.6.24",
+	"version": "4.18.0-alpha.0",
 	"description": "astro parser for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -21,8 +21,8 @@
 		"clean": "tsc --build --clean tsconfig.build.json"
 	},
 	"dependencies": {
-		"@markuplint/ml-ast": "4.4.12",
-		"@markuplint/parser-utils": "4.8.12",
+		"@markuplint/ml-ast": "4.18.0-alpha.0",
+		"@markuplint/parser-utils": "4.18.0-alpha.0",
 		"astro-eslint-parser": "1.4.0"
 	},
 	"devDependencies": {
