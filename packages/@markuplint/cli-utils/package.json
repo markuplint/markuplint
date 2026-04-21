@@ -26,6 +26,6 @@
 		"enquirer": "2.4.1",
 		"has-yarn": "4.0.0",
 		"picocolors": "1.1.1",
-		"strip-ansi": "7.1.2"
+		"strip-ansi": "7.2.0"
 	}
 }

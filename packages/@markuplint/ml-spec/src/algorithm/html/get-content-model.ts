@@ -21,7 +21,7 @@ export function getContentModel(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element,
 	specs: Specs,
-) {
+): ReadonlyDeep<PermittedContentPattern[]> | boolean | null {
 	const cacheByEl = cachesBySpecs.get(specs) ?? new Map<Element, PermittedContentPattern[] | boolean>();
 	const cached = cacheByEl.get(el);
 	if (cached !== undefined) {

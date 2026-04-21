@@ -24,7 +24,7 @@
 		"@markuplint/html-parser": "4.6.23",
 		"@markuplint/ml-ast": "4.4.11",
 		"@markuplint/parser-utils": "4.8.11",
-		"@typescript-eslint/types": "8.55.0",
-		"@typescript-eslint/typescript-estree": "8.55.0"
+		"@typescript-eslint/types": "8.59.0",
+		"@typescript-eslint/typescript-estree": "8.59.0"
 	}
 }

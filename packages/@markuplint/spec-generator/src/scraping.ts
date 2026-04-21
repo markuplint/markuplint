@@ -181,7 +181,7 @@ function getAttributes(
 ) {
 	const $section = $(`.content-section[aria-labelledby="${id}"]`);
 	const attributes: Record<string, Attribute> = {};
-	for (const dt of $section.find('> dl > dt').toArray()) {
+	for (const dt of $section.find('> dl > dt')) {
 		const $dt = $(dt);
 		const name = $dt.find('code').text().trim();
 		if (!name) {

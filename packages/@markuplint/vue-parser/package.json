@@ -24,6 +24,6 @@
 		"@markuplint/html-parser": "4.6.23",
 		"@markuplint/ml-ast": "4.4.11",
 		"@markuplint/parser-utils": "4.8.11",
-		"vue-eslint-parser": "10.2.0"
+		"vue-eslint-parser": "10.4.0"
 	}
 }
