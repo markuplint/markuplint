@@ -328,7 +328,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get ariaControlsElements(): readonly MLElement<T, O>[] {
+	get ariaControlsElements(): readonly MLElement<T, O>[] | null {
 		throw new UnexpectedCallError('Not supported "ariaControlsElements" property');
 	}
 
@@ -350,7 +350,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get ariaDescribedByElements(): readonly MLElement<T, O>[] {
+	get ariaDescribedByElements(): readonly MLElement<T, O>[] | null {
 		throw new UnexpectedCallError('Not supported "ariaDescribedByElements" property');
 	}
 
@@ -372,7 +372,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get ariaDetailsElements(): readonly MLElement<T, O>[] {
+	get ariaDetailsElements(): readonly MLElement<T, O>[] | null {
 		throw new UnexpectedCallError('Not supported "ariaDetailsElements" property');
 	}
 
@@ -394,7 +394,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get ariaErrorMessageElements(): readonly MLElement<T, O>[] {
+	get ariaErrorMessageElements(): readonly MLElement<T, O>[] | null {
 		throw new UnexpectedCallError('Not supported "ariaErrorMessageElements" property');
 	}
 
@@ -416,7 +416,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get ariaFlowToElements(): readonly MLElement<T, O>[] {
+	get ariaFlowToElements(): readonly MLElement<T, O>[] | null {
 		throw new UnexpectedCallError('Not supported "ariaFlowToElements" property');
 	}
 
@@ -482,7 +482,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get ariaLabelledByElements(): readonly MLElement<T, O>[] {
+	get ariaLabelledByElements(): readonly MLElement<T, O>[] | null {
 		throw new UnexpectedCallError('Not supported "ariaLabelledByElements" property');
 	}
 
@@ -559,7 +559,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get ariaOwnsElements(): readonly MLElement<T, O>[] {
+	get ariaOwnsElements(): readonly MLElement<T, O>[] | null {
 		throw new UnexpectedCallError('Not supported "ariaOwnsElements" property');
 	}
 
@@ -939,6 +939,17 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
+	get customElementRegistry(): CustomElementRegistry | null {
+		throw new UnexpectedCallError('Not supported "customElementRegistry" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @deprecated
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 */
 	get dataset(): DOMStringMap {
 		throw new UnexpectedCallError('Not supported "dataset" property');
 	}
@@ -1147,7 +1158,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
-	get nonce(): string | undefined {
+	get nonce(): string {
 		throw new UnexpectedCallError('Not supported "nonce" property');
 	}
 
@@ -1492,6 +1503,24 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		  ) => any)
 		| null {
 		throw new UnexpectedCallError('Not supported "onclose" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @deprecated
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 */
+	get oncommand():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
+		throw new UnexpectedCallError('Not supported "oncommand" property');
 	}
 
 	/**
@@ -3800,6 +3829,11 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @implements DOM API: `Element`
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-element-matches%E2%91%A0
 	 */
+	matches<K extends keyof HTMLElementTagNameMap>(selectors: K): this is HTMLElementTagNameMap[K];
+	matches<K extends keyof SVGElementTagNameMap>(selectors: K): this is SVGElementTagNameMap[K];
+	matches<K extends keyof MathMLElementTagNameMap>(selectors: K): this is MathMLElementTagNameMap[K];
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	matches(selectors: string, scope?: MLParentNode<T, O>): boolean;
 	matches(
 		selector: string,
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
