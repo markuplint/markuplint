@@ -23,9 +23,9 @@
 	"dependencies": {
 		"@markuplint/ml-ast": "4.4.11",
 		"@markuplint/parser-utils": "4.8.11",
-		"astro-eslint-parser": "1.2.2"
+		"astro-eslint-parser": "1.4.0"
 	},
 	"devDependencies": {
-		"@astrojs/compiler": "2.13.1"
+		"@astrojs/compiler": "3.0.1"
 	}
 }

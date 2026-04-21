@@ -25,20 +25,20 @@
 		"clean": "tsc --build --clean tsconfig.build.json"
 	},
 	"dependencies": {
-		"@vitest/coverage-v8": "3.2.4",
+		"@vitest/coverage-v8": "4.1.4",
 		"browser-resolve": "2.0.0",
 		"coveralls": "3.1.1",
 		"execa": "9.6.1",
-		"glob": "13.0.2",
-		"jsdom": "26.1.0",
+		"glob": "13.0.6",
+		"jsdom": "29.0.2",
 		"strip-json-comments": "5.0.3",
 		"textlint-rule-prh": "6.1.0",
-		"type-fest": "4.41.0",
-		"vitest": "3.2.4"
+		"type-fest": "5.6.0",
+		"vitest": "4.1.4"
 	},
 	"optionalDependencies": {
-		"@esbuild/linux-x64": "0.27.3",
-		"@esbuild/win32-x64": "0.27.3",
-		"@rollup/rollup-linux-x64-gnu": "4.57.1"
+		"@esbuild/linux-x64": "0.28.0",
+		"@esbuild/win32-x64": "0.28.0",
+		"@rollup/rollup-linux-x64-gnu": "4.60.2"
 	}
 }
