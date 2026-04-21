@@ -8,9 +8,16 @@
 		":pinDevDependencies",
 		":semanticCommitTypeAll(chore)"
 	],
+	"baseBranches": ["dev", "v4"],
 	"lockFileMaintenance": {
 		"enabled": true,
 		"automerge": true
+	},
+	"minimumReleaseAge": "7 days",
+	"internalChecksFilter": "strict",
+	"osvVulnerabilityAlerts": true,
+	"vulnerabilityAlerts": {
+		"minimumReleaseAge": null
 	},
 	"autoApprove": true,
 	"labels": ["Dependencies", "Renovate"],
