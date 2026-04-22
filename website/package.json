@@ -37,7 +37,7 @@
     "@types/glob": "9.0.0",
     "eslint-plugin-react": "7.37.5",
     "eslint-plugin-react-hooks": "7.0.1",
-    "stylelint": "17.2.0",
+    "stylelint": "17.7.0",
     "stylelint-config-recess-order": "7.6.1",
     "stylelint-config-standard": "40.0.0",
     "stylelint-order": "7.0.1",
