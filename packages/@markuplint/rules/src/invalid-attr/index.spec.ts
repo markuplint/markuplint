@@ -2382,3 +2382,48 @@ describe('#3189 link[as] conditional enum', () => {
 		expect(violations.some(v => v.raw === 'script')).toBe(false);
 	});
 });
+
+describe('#3629 URL forbidden code points', () => {
+	test('[invalid-attr-issue-3629-001] C1 control U+0080 in href', async () => {
+		const { violations } = await mlRuleTest(rule, '<a href="http://example.com/\u0080">x</a>');
+		expect(violations.some(v => v.message.includes('unexpected characters'))).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3629-002] C1 control U+009F in href', async () => {
+		const { violations } = await mlRuleTest(rule, '<a href="http://example.com/\u009F">x</a>');
+		expect(violations.some(v => v.message.includes('unexpected characters'))).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3629-003] BMP noncharacter U+FDD0 in href', async () => {
+		const { violations } = await mlRuleTest(rule, '<a href="http://example.com/\uFDD0">x</a>');
+		expect(violations.some(v => v.message.includes('unexpected characters'))).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3629-004] BMP noncharacter U+FFFE in href', async () => {
+		const { violations } = await mlRuleTest(rule, '<a href="http://example.com/\uFFFE">x</a>');
+		expect(violations.some(v => v.message.includes('unexpected characters'))).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3629-005] supplementary plane noncharacter U+1FFFE in href', async () => {
+		const { violations } = await mlRuleTest(rule, '<a href="http://example.com/\u{1FFFE}">x</a>');
+		expect(violations.some(v => v.message.includes('unexpected characters'))).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3629-006] trailing vertical tab U+000B in href is not silently stripped', async () => {
+		// Regression for JavaScript String.prototype.trim() stripping U+000B
+		// before the forbidden-code-point check.
+		const { violations } = await mlRuleTest(rule, '<a href="http://example.com/\u000B">x</a>');
+		expect(violations.some(v => v.message.includes('unexpected characters'))).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3629-007] PUA code point in href is accepted', async () => {
+		// Guard against over-broad regex: U+E000 (BMP PUA) is not forbidden.
+		const { violations } = await mlRuleTest(rule, '<a href="http://example.com/\uE000">x</a>');
+		expect(violations.some(v => v.message.includes('unexpected characters'))).toBe(false);
+	});
+
+	test('[invalid-attr-issue-3629-008] emoji (U+1F4A9) in href is accepted', async () => {
+		const { violations } = await mlRuleTest(rule, '<a href="http://example.com/\u{1F4A9}">x</a>');
+		expect(violations.some(v => v.message.includes('unexpected characters'))).toBe(false);
+	});
+});
