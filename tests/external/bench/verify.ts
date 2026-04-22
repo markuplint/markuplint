@@ -9,6 +9,10 @@ import { readJson } from './fs-utils.ts';
 import { ML_SNAPSHOTS_DIR, VALIDATOR_TESTS_DIR } from './paths.ts';
 import type { MarkuplintSnapshot, MlViolation } from './types.ts';
 
+function sanitizeMessage(message: string): string {
+	return (message.split('\n')[0] ?? message).trim();
+}
+
 function toKey(v: MlViolation): string {
 	return `${v.line}:${v.col}:${v.ruleId}:${v.message}`;
 }
@@ -24,7 +28,7 @@ export async function verifyEntry(htmlRelPath: string): Promise<void> {
 		.map<MlViolation>(v => ({
 			ruleId: v.ruleId,
 			severity: v.severity,
-			message: v.message,
+			message: sanitizeMessage(v.message),
 			line: v.line,
 			col: v.col,
 			raw: v.raw,

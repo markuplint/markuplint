@@ -23,6 +23,13 @@ export type RunMarkuplintResult = {
 	readonly parseErrors: number;
 };
 
+function sanitizeMessage(message: string): string {
+	// Internal markuplint errors embed stack traces with absolute file paths;
+	// keep only the first line so snapshots are reproducible across machines.
+	const firstLine = message.split('\n')[0] ?? message;
+	return firstLine.trim();
+}
+
 function sortViolations(violations: readonly MlViolation[]): MlViolation[] {
 	return [...violations].sort((a, b) => {
 		return (
@@ -64,7 +71,7 @@ export async function runMarkuplint(options: RunMarkuplintOptions = {}): Promise
 			violations = raw.map(v => ({
 				ruleId: v.ruleId,
 				severity: v.severity,
-				message: v.message,
+				message: sanitizeMessage(v.message),
 				line: v.line,
 				col: v.col,
 				raw: v.raw,
