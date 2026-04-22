@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/rules",
-	"version": "4.18.0-alpha.0",
+	"version": "4.18.0",
 	"description": "Built-in rules of markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -24,12 +24,12 @@
 		"./lib/permitted-contents/debug.js": "./lib/permitted-contents/debug.browser.js"
 	},
 	"dependencies": {
-		"@markuplint/html-spec": "4.18.0-alpha.0",
-		"@markuplint/ml-core": "4.18.0-alpha.0",
-		"@markuplint/ml-spec": "4.18.0-alpha.0",
-		"@markuplint/selector": "4.18.0-alpha.0",
-		"@markuplint/shared": "4.18.0-alpha.0",
-		"@markuplint/types": "4.18.0-alpha.0",
+		"@markuplint/html-spec": "4.18.0",
+		"@markuplint/ml-core": "4.18.0",
+		"@markuplint/ml-spec": "4.18.0",
+		"@markuplint/selector": "4.18.0",
+		"@markuplint/shared": "4.18.0",
+		"@markuplint/types": "4.18.0",
 		"@types/debug": "4.1.13",
 		"@ungap/structured-clone": "1.3.0",
 		"ansi-colors": "4.1.3",

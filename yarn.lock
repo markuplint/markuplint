@@ -2606,7 +2606,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@markuplint-dev/tsconfig@npm:4.18.0-alpha.0, @markuplint-dev/tsconfig@workspace:packages/@markuplint-dev/tsconfig":
+"@markuplint-dev/tsconfig@npm:4.18.0, @markuplint-dev/tsconfig@workspace:packages/@markuplint-dev/tsconfig":
   version: 0.0.0-use.local
   resolution: "@markuplint-dev/tsconfig@workspace:packages/@markuplint-dev/tsconfig"
   languageName: unknown
@@ -2616,7 +2616,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@markuplint-test/react@workspace:packages/@markuplint-test/react"
   dependencies:
-    "@markuplint/pretenders": "npm:4.18.0-alpha.0"
+    "@markuplint/pretenders": "npm:4.18.0"
   languageName: unknown
   linkType: soft
 
@@ -2624,9 +2624,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@markuplint/alpine-parser@workspace:packages/@markuplint/alpine-parser"
   dependencies:
-    "@markuplint/html-parser": "npm:4.18.0-alpha.0"
-    "@markuplint/ml-spec": "npm:4.18.0-alpha.0"
-    "@markuplint/parser-utils": "npm:4.18.0-alpha.0"
+    "@markuplint/html-parser": "npm:4.18.0"
+    "@markuplint/ml-spec": "npm:4.18.0"
+    "@markuplint/parser-utils": "npm:4.18.0"
   languageName: unknown
   linkType: soft
 
@@ -2635,13 +2635,13 @@ __metadata:
   resolution: "@markuplint/astro-parser@workspace:packages/@markuplint/astro-parser"
   dependencies:
     "@astrojs/compiler": "npm:3.0.1"
-    "@markuplint/ml-ast": "npm:4.18.0-alpha.0"
-    "@markuplint/parser-utils": "npm:4.18.0-alpha.0"
+    "@markuplint/ml-ast": "npm:4.18.0"
+    "@markuplint/parser-utils": "npm:4.18.0"
     astro-eslint-parser: "npm:1.4.0"
   languageName: unknown
   linkType: soft
 
-"@markuplint/cli-utils@npm:4.18.0-alpha.0, @markuplint/cli-utils@workspace:packages/@markuplint/cli-utils":
+"@markuplint/cli-utils@npm:4.18.0, @markuplint/cli-utils@workspace:packages/@markuplint/cli-utils":
   version: 0.0.0-use.local
   resolution: "@markuplint/cli-utils@workspace:packages/@markuplint/cli-utils"
   dependencies:
@@ -2654,7 +2654,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@markuplint/config-presets@npm:4.18.0-alpha.0, @markuplint/config-presets@workspace:packages/@markuplint/config-presets":
+"@markuplint/config-presets@npm:4.18.0, @markuplint/config-presets@workspace:packages/@markuplint/config-presets":
   version: 0.0.0-use.local
   resolution: "@markuplint/config-presets@workspace:packages/@markuplint/config-presets"
   dependencies:
@@ -2669,8 +2669,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@markuplint/create-rule@workspace:packages/@markuplint/create-rule"
   dependencies:
-    "@markuplint/cli-utils": "npm:4.18.0-alpha.0"
-    "@markuplint/ml-core": "npm:4.18.0-alpha.0"
+    "@markuplint/cli-utils": "npm:4.18.0"
+    "@markuplint/ml-core": "npm:4.18.0"
     "@types/fs-extra": "npm:11.0.4"
     fs-extra: "npm:11.3.4"
     glob: "npm:13.0.6"
@@ -2685,8 +2685,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@markuplint/ejs-parser@workspace:packages/@markuplint/ejs-parser"
   dependencies:
-    "@markuplint/html-parser": "npm:4.18.0-alpha.0"
-    "@markuplint/parser-utils": "npm:4.18.0-alpha.0"
+    "@markuplint/html-parser": "npm:4.18.0"
+    "@markuplint/parser-utils": "npm:4.18.0"
   languageName: unknown
   linkType: soft
 
@@ -2694,23 +2694,23 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@markuplint/erb-parser@workspace:packages/@markuplint/erb-parser"
   dependencies:
-    "@markuplint/html-parser": "npm:4.18.0-alpha.0"
-    "@markuplint/parser-utils": "npm:4.18.0-alpha.0"
+    "@markuplint/html-parser": "npm:4.18.0"
+    "@markuplint/parser-utils": "npm:4.18.0"
   languageName: unknown
   linkType: soft
 
-"@markuplint/file-resolver@npm:4.18.0-alpha.0, @markuplint/file-resolver@workspace:packages/@markuplint/file-resolver":
+"@markuplint/file-resolver@npm:4.18.0, @markuplint/file-resolver@workspace:packages/@markuplint/file-resolver":
   version: 0.0.0-use.local
   resolution: "@markuplint/file-resolver@workspace:packages/@markuplint/file-resolver"
   dependencies:
-    "@markuplint/html-parser": "npm:4.18.0-alpha.0"
-    "@markuplint/ml-ast": "npm:4.18.0-alpha.0"
-    "@markuplint/ml-config": "npm:4.18.0-alpha.0"
-    "@markuplint/ml-core": "npm:4.18.0-alpha.0"
-    "@markuplint/ml-spec": "npm:4.18.0-alpha.0"
-    "@markuplint/parser-utils": "npm:4.18.0-alpha.0"
-    "@markuplint/selector": "npm:4.18.0-alpha.0"
-    "@markuplint/shared": "npm:4.18.0-alpha.0"
+    "@markuplint/html-parser": "npm:4.18.0"
+    "@markuplint/ml-ast": "npm:4.18.0"
+    "@markuplint/ml-config": "npm:4.18.0"
+    "@markuplint/ml-core": "npm:4.18.0"
+    "@markuplint/ml-spec": "npm:4.18.0"
+    "@markuplint/parser-utils": "npm:4.18.0"
+    "@markuplint/selector": "npm:4.18.0"
+    "@markuplint/shared": "npm:4.18.0"
     "@types/node": "npm:24.12.2"
     cosmiconfig: "npm:9.0.1"
     debug: "npm:4.4.3"
@@ -2722,24 +2722,24 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@markuplint/html-parser@npm:4.18.0-alpha.0, @markuplint/html-parser@workspace:packages/@markuplint/html-parser":
+"@markuplint/html-parser@npm:4.18.0, @markuplint/html-parser@workspace:packages/@markuplint/html-parser":
   version: 0.0.0-use.local
   resolution: "@markuplint/html-parser@workspace:packages/@markuplint/html-parser"
   dependencies:
-    "@markuplint/ml-ast": "npm:4.18.0-alpha.0"
-    "@markuplint/parser-utils": "npm:4.18.0-alpha.0"
+    "@markuplint/ml-ast": "npm:4.18.0"
+    "@markuplint/parser-utils": "npm:4.18.0"
     parse5: "npm:8.0.1"
     type-fest: "npm:5.6.0"
   languageName: unknown
   linkType: soft
 
-"@markuplint/html-spec@npm:4.18.0-alpha.0, @markuplint/html-spec@workspace:packages/@markuplint/html-spec":
+"@markuplint/html-spec@npm:4.18.0, @markuplint/html-spec@workspace:packages/@markuplint/html-spec":
   version: 0.0.0-use.local
   resolution: "@markuplint/html-spec@workspace:packages/@markuplint/html-spec"
   dependencies:
-    "@markuplint/ml-spec": "npm:4.18.0-alpha.0"
-    "@markuplint/spec-generator": "npm:4.18.0-alpha.0"
-    "@markuplint/test-tools": "npm:4.18.0-alpha.0"
+    "@markuplint/ml-spec": "npm:4.18.0"
+    "@markuplint/spec-generator": "npm:4.18.0"
+    "@markuplint/test-tools": "npm:4.18.0"
   languageName: unknown
   linkType: soft
 
@@ -2747,13 +2747,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@markuplint/htmx-parser@workspace:packages/@markuplint/htmx-parser"
   dependencies:
-    "@markuplint/html-parser": "npm:4.18.0-alpha.0"
-    "@markuplint/ml-spec": "npm:4.18.0-alpha.0"
-    "@markuplint/parser-utils": "npm:4.18.0-alpha.0"
+    "@markuplint/html-parser": "npm:4.18.0"
+    "@markuplint/ml-spec": "npm:4.18.0"
+    "@markuplint/parser-utils": "npm:4.18.0"
   languageName: unknown
   linkType: soft
 
-"@markuplint/i18n@npm:4.18.0-alpha.0, @markuplint/i18n@workspace:packages/@markuplint/i18n":
+"@markuplint/i18n@npm:4.18.0, @markuplint/i18n@workspace:packages/@markuplint/i18n":
   version: 0.0.0-use.local
   resolution: "@markuplint/i18n@workspace:packages/@markuplint/i18n"
   languageName: unknown
@@ -2763,9 +2763,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@markuplint/jsx-parser@workspace:packages/@markuplint/jsx-parser"
   dependencies:
-    "@markuplint/html-parser": "npm:4.18.0-alpha.0"
-    "@markuplint/ml-ast": "npm:4.18.0-alpha.0"
-    "@markuplint/parser-utils": "npm:4.18.0-alpha.0"
+    "@markuplint/html-parser": "npm:4.18.0"
+    "@markuplint/ml-ast": "npm:4.18.0"
+    "@markuplint/parser-utils": "npm:4.18.0"
     "@typescript-eslint/types": "npm:8.59.0"
     "@typescript-eslint/typescript-estree": "npm:8.59.0"
   languageName: unknown
@@ -2775,25 +2775,25 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@markuplint/liquid-parser@workspace:packages/@markuplint/liquid-parser"
   dependencies:
-    "@markuplint/html-parser": "npm:4.18.0-alpha.0"
-    "@markuplint/parser-utils": "npm:4.18.0-alpha.0"
+    "@markuplint/html-parser": "npm:4.18.0"
+    "@markuplint/parser-utils": "npm:4.18.0"
   languageName: unknown
   linkType: soft
 
-"@markuplint/ml-ast@npm:4.18.0-alpha.0, @markuplint/ml-ast@workspace:packages/@markuplint/ml-ast":
+"@markuplint/ml-ast@npm:4.18.0, @markuplint/ml-ast@workspace:packages/@markuplint/ml-ast":
   version: 0.0.0-use.local
   resolution: "@markuplint/ml-ast@workspace:packages/@markuplint/ml-ast"
   languageName: unknown
   linkType: soft
 
-"@markuplint/ml-config@npm:4.18.0-alpha.0, @markuplint/ml-config@workspace:packages/@markuplint/ml-config":
+"@markuplint/ml-config@npm:4.18.0, @markuplint/ml-config@workspace:packages/@markuplint/ml-config":
   version: 0.0.0-use.local
   resolution: "@markuplint/ml-config@workspace:packages/@markuplint/ml-config"
   dependencies:
-    "@markuplint/ml-ast": "npm:4.18.0-alpha.0"
-    "@markuplint/ml-spec": "npm:4.18.0-alpha.0"
-    "@markuplint/selector": "npm:4.18.0-alpha.0"
-    "@markuplint/shared": "npm:4.18.0-alpha.0"
+    "@markuplint/ml-ast": "npm:4.18.0"
+    "@markuplint/ml-spec": "npm:4.18.0"
+    "@markuplint/selector": "npm:4.18.0"
+    "@markuplint/shared": "npm:4.18.0"
     "@types/mustache": "npm:4.2.6"
     deepmerge: "npm:4.3.1"
     is-plain-object: "npm:5.0.0"
@@ -2802,20 +2802,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@markuplint/ml-core@npm:4.18.0-alpha.0, @markuplint/ml-core@workspace:packages/@markuplint/ml-core":
+"@markuplint/ml-core@npm:4.18.0, @markuplint/ml-core@workspace:packages/@markuplint/ml-core":
   version: 0.0.0-use.local
   resolution: "@markuplint/ml-core@workspace:packages/@markuplint/ml-core"
   dependencies:
-    "@markuplint/config-presets": "npm:4.18.0-alpha.0"
-    "@markuplint/html-parser": "npm:4.18.0-alpha.0"
-    "@markuplint/html-spec": "npm:4.18.0-alpha.0"
-    "@markuplint/i18n": "npm:4.18.0-alpha.0"
-    "@markuplint/ml-ast": "npm:4.18.0-alpha.0"
-    "@markuplint/ml-config": "npm:4.18.0-alpha.0"
-    "@markuplint/ml-spec": "npm:4.18.0-alpha.0"
-    "@markuplint/parser-utils": "npm:4.18.0-alpha.0"
-    "@markuplint/selector": "npm:4.18.0-alpha.0"
-    "@markuplint/shared": "npm:4.18.0-alpha.0"
+    "@markuplint/config-presets": "npm:4.18.0"
+    "@markuplint/html-parser": "npm:4.18.0"
+    "@markuplint/html-spec": "npm:4.18.0"
+    "@markuplint/i18n": "npm:4.18.0"
+    "@markuplint/ml-ast": "npm:4.18.0"
+    "@markuplint/ml-config": "npm:4.18.0"
+    "@markuplint/ml-spec": "npm:4.18.0"
+    "@markuplint/parser-utils": "npm:4.18.0"
+    "@markuplint/selector": "npm:4.18.0"
+    "@markuplint/shared": "npm:4.18.0"
     "@types/debug": "npm:4.1.13"
     debug: "npm:4.4.3"
     is-plain-object: "npm:5.0.0"
@@ -2823,13 +2823,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@markuplint/ml-spec@npm:4.18.0-alpha.0, @markuplint/ml-spec@workspace:packages/@markuplint/ml-spec":
+"@markuplint/ml-spec@npm:4.18.0, @markuplint/ml-spec@workspace:packages/@markuplint/ml-spec":
   version: 0.0.0-use.local
   resolution: "@markuplint/ml-spec@workspace:packages/@markuplint/ml-spec"
   dependencies:
-    "@markuplint/ml-ast": "npm:4.18.0-alpha.0"
-    "@markuplint/test-tools": "npm:4.18.0-alpha.0"
-    "@markuplint/types": "npm:4.18.0-alpha.0"
+    "@markuplint/ml-ast": "npm:4.18.0"
+    "@markuplint/test-tools": "npm:4.18.0"
+    "@markuplint/types": "npm:4.18.0"
     dom-accessibility-api: "npm:0.7.1"
     is-plain-object: "npm:5.0.0"
     json-schema-to-typescript: "npm:15.0.4"
@@ -2841,8 +2841,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@markuplint/mustache-parser@workspace:packages/@markuplint/mustache-parser"
   dependencies:
-    "@markuplint/html-parser": "npm:4.18.0-alpha.0"
-    "@markuplint/parser-utils": "npm:4.18.0-alpha.0"
+    "@markuplint/html-parser": "npm:4.18.0"
+    "@markuplint/parser-utils": "npm:4.18.0"
   languageName: unknown
   linkType: soft
 
@@ -2850,18 +2850,18 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@markuplint/nunjucks-parser@workspace:packages/@markuplint/nunjucks-parser"
   dependencies:
-    "@markuplint/html-parser": "npm:4.18.0-alpha.0"
-    "@markuplint/parser-utils": "npm:4.18.0-alpha.0"
+    "@markuplint/html-parser": "npm:4.18.0"
+    "@markuplint/parser-utils": "npm:4.18.0"
   languageName: unknown
   linkType: soft
 
-"@markuplint/parser-utils@npm:4.18.0-alpha.0, @markuplint/parser-utils@workspace:packages/@markuplint/parser-utils":
+"@markuplint/parser-utils@npm:4.18.0, @markuplint/parser-utils@workspace:packages/@markuplint/parser-utils":
   version: 0.0.0-use.local
   resolution: "@markuplint/parser-utils@workspace:packages/@markuplint/parser-utils"
   dependencies:
-    "@markuplint/ml-ast": "npm:4.18.0-alpha.0"
-    "@markuplint/ml-spec": "npm:4.18.0-alpha.0"
-    "@markuplint/types": "npm:4.18.0-alpha.0"
+    "@markuplint/ml-ast": "npm:4.18.0"
+    "@markuplint/ml-spec": "npm:4.18.0"
+    "@markuplint/types": "npm:4.18.0"
     "@types/uuid": "npm:11.0.0"
     "@typescript-eslint/typescript-estree": "npm:8.59.0"
     debug: "npm:4.4.3"
@@ -2875,17 +2875,17 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@markuplint/php-parser@workspace:packages/@markuplint/php-parser"
   dependencies:
-    "@markuplint/html-parser": "npm:4.18.0-alpha.0"
-    "@markuplint/parser-utils": "npm:4.18.0-alpha.0"
+    "@markuplint/html-parser": "npm:4.18.0"
+    "@markuplint/parser-utils": "npm:4.18.0"
   languageName: unknown
   linkType: soft
 
-"@markuplint/pretenders@npm:4.18.0-alpha.0, @markuplint/pretenders@workspace:packages/@markuplint/pretenders":
+"@markuplint/pretenders@npm:4.18.0, @markuplint/pretenders@workspace:packages/@markuplint/pretenders":
   version: 0.0.0-use.local
   resolution: "@markuplint/pretenders@workspace:packages/@markuplint/pretenders"
   dependencies:
-    "@markuplint/ml-config": "npm:4.18.0-alpha.0"
-    "@markuplint/parser-utils": "npm:4.18.0-alpha.0"
+    "@markuplint/ml-config": "npm:4.18.0"
+    "@markuplint/parser-utils": "npm:4.18.0"
     glob: "npm:13.0.6"
     meow: "npm:14.1.0"
     typescript: "npm:6.0.3"
@@ -2898,9 +2898,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@markuplint/pug-parser@workspace:packages/@markuplint/pug-parser"
   dependencies:
-    "@markuplint/html-parser": "npm:4.18.0-alpha.0"
-    "@markuplint/ml-ast": "npm:4.18.0-alpha.0"
-    "@markuplint/parser-utils": "npm:4.18.0-alpha.0"
+    "@markuplint/html-parser": "npm:4.18.0"
+    "@markuplint/ml-ast": "npm:4.18.0"
+    "@markuplint/parser-utils": "npm:4.18.0"
     pug-lexer: "npm:5.0.1"
     pug-parser: "npm:6.0.0"
   languageName: unknown
@@ -2910,7 +2910,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@markuplint/react-spec@workspace:packages/@markuplint/react-spec"
   dependencies:
-    "@markuplint/ml-spec": "npm:4.18.0-alpha.0"
+    "@markuplint/ml-spec": "npm:4.18.0"
   languageName: unknown
   linkType: soft
 
@@ -2918,24 +2918,24 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@markuplint/rule-textlint@workspace:packages/@markuplint/rule-textlint"
   dependencies:
-    "@markuplint/ml-core": "npm:4.18.0-alpha.0"
+    "@markuplint/ml-core": "npm:4.18.0"
     "@textlint/kernel": "npm:15.5.4"
-    markuplint: "npm:4.18.0-alpha.0"
+    markuplint: "npm:4.18.0"
     textlint-plugin-html: "npm:1.0.1"
     textlint-rule-prh: "npm:6.1.0"
   languageName: unknown
   linkType: soft
 
-"@markuplint/rules@npm:4.18.0-alpha.0, @markuplint/rules@workspace:packages/@markuplint/rules":
+"@markuplint/rules@npm:4.18.0, @markuplint/rules@workspace:packages/@markuplint/rules":
   version: 0.0.0-use.local
   resolution: "@markuplint/rules@workspace:packages/@markuplint/rules"
   dependencies:
-    "@markuplint/html-spec": "npm:4.18.0-alpha.0"
-    "@markuplint/ml-core": "npm:4.18.0-alpha.0"
-    "@markuplint/ml-spec": "npm:4.18.0-alpha.0"
-    "@markuplint/selector": "npm:4.18.0-alpha.0"
-    "@markuplint/shared": "npm:4.18.0-alpha.0"
-    "@markuplint/types": "npm:4.18.0-alpha.0"
+    "@markuplint/html-spec": "npm:4.18.0"
+    "@markuplint/ml-core": "npm:4.18.0"
+    "@markuplint/ml-spec": "npm:4.18.0"
+    "@markuplint/selector": "npm:4.18.0"
+    "@markuplint/shared": "npm:4.18.0"
+    "@markuplint/types": "npm:4.18.0"
     "@types/debug": "npm:4.1.13"
     "@ungap/structured-clone": "npm:1.3.0"
     ansi-colors: "npm:4.1.3"
@@ -2945,11 +2945,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@markuplint/selector@npm:4.18.0-alpha.0, @markuplint/selector@workspace:packages/@markuplint/selector":
+"@markuplint/selector@npm:4.18.0, @markuplint/selector@workspace:packages/@markuplint/selector":
   version: 0.0.0-use.local
   resolution: "@markuplint/selector@workspace:packages/@markuplint/selector"
   dependencies:
-    "@markuplint/ml-spec": "npm:4.18.0-alpha.0"
+    "@markuplint/ml-spec": "npm:4.18.0"
     "@types/debug": "npm:4.1.13"
     "@types/jsdom": "npm:27.0.0"
     debug: "npm:4.4.3"
@@ -2959,7 +2959,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@markuplint/shared@npm:4.18.0-alpha.0, @markuplint/shared@workspace:packages/@markuplint/shared":
+"@markuplint/shared@npm:4.18.0, @markuplint/shared@workspace:packages/@markuplint/shared":
   version: 0.0.0-use.local
   resolution: "@markuplint/shared@workspace:packages/@markuplint/shared"
   dependencies:
@@ -2971,17 +2971,17 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@markuplint/smarty-parser@workspace:packages/@markuplint/smarty-parser"
   dependencies:
-    "@markuplint/html-parser": "npm:4.18.0-alpha.0"
-    "@markuplint/parser-utils": "npm:4.18.0-alpha.0"
+    "@markuplint/html-parser": "npm:4.18.0"
+    "@markuplint/parser-utils": "npm:4.18.0"
   languageName: unknown
   linkType: soft
 
-"@markuplint/spec-generator@npm:4.18.0-alpha.0, @markuplint/spec-generator@workspace:packages/@markuplint/spec-generator":
+"@markuplint/spec-generator@npm:4.18.0, @markuplint/spec-generator@workspace:packages/@markuplint/spec-generator":
   version: 0.0.0-use.local
   resolution: "@markuplint/spec-generator@workspace:packages/@markuplint/spec-generator"
   dependencies:
-    "@markuplint/ml-spec": "npm:4.18.0-alpha.0"
-    "@markuplint/test-tools": "npm:4.18.0-alpha.0"
+    "@markuplint/ml-spec": "npm:4.18.0"
+    "@markuplint/test-tools": "npm:4.18.0"
     "@types/cheerio": "npm:1.0.0"
     "@types/cli-progress": "npm:3.11.6"
     ajv: "npm:8.18.0"
@@ -2998,9 +2998,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@markuplint/svelte-parser@workspace:packages/@markuplint/svelte-parser"
   dependencies:
-    "@markuplint/html-parser": "npm:4.18.0-alpha.0"
-    "@markuplint/ml-ast": "npm:4.18.0-alpha.0"
-    "@markuplint/parser-utils": "npm:4.18.0-alpha.0"
+    "@markuplint/html-parser": "npm:4.18.0"
+    "@markuplint/ml-ast": "npm:4.18.0"
+    "@markuplint/parser-utils": "npm:4.18.0"
     svelte: "npm:5.55.4"
   languageName: unknown
   linkType: soft
@@ -3009,11 +3009,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@markuplint/svelte-spec@workspace:packages/@markuplint/svelte-spec"
   dependencies:
-    "@markuplint/ml-spec": "npm:4.18.0-alpha.0"
+    "@markuplint/ml-spec": "npm:4.18.0"
   languageName: unknown
   linkType: soft
 
-"@markuplint/test-tools@npm:4.18.0-alpha.0, @markuplint/test-tools@workspace:packages/@markuplint/test-tools":
+"@markuplint/test-tools@npm:4.18.0, @markuplint/test-tools@workspace:packages/@markuplint/test-tools":
   version: 0.0.0-use.local
   resolution: "@markuplint/test-tools@workspace:packages/@markuplint/test-tools"
   dependencies:
@@ -3040,11 +3040,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@markuplint/types@npm:4.18.0-alpha.0, @markuplint/types@workspace:packages/@markuplint/types":
+"@markuplint/types@npm:4.18.0, @markuplint/types@workspace:packages/@markuplint/types":
   version: 0.0.0-use.local
   resolution: "@markuplint/types@workspace:packages/@markuplint/types"
   dependencies:
-    "@markuplint/shared": "npm:4.18.0-alpha.0"
+    "@markuplint/shared": "npm:4.18.0"
     "@types/css-tree": "npm:2.3.11"
     "@types/debug": "npm:4.1.13"
     "@types/whatwg-mimetype": "npm:5.0.0"
@@ -3061,9 +3061,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@markuplint/vue-parser@workspace:packages/@markuplint/vue-parser"
   dependencies:
-    "@markuplint/html-parser": "npm:4.18.0-alpha.0"
-    "@markuplint/ml-ast": "npm:4.18.0-alpha.0"
-    "@markuplint/parser-utils": "npm:4.18.0-alpha.0"
+    "@markuplint/html-parser": "npm:4.18.0"
+    "@markuplint/ml-ast": "npm:4.18.0"
+    "@markuplint/parser-utils": "npm:4.18.0"
     vue-eslint-parser: "npm:10.4.0"
   languageName: unknown
   linkType: soft
@@ -3072,7 +3072,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@markuplint/vue-spec@workspace:packages/@markuplint/vue-spec"
   dependencies:
-    "@markuplint/ml-spec": "npm:4.18.0-alpha.0"
+    "@markuplint/ml-spec": "npm:4.18.0"
   languageName: unknown
   linkType: soft
 
@@ -12935,17 +12935,17 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "markuplint@workspace:packages/markuplint"
   dependencies:
-    "@markuplint/cli-utils": "npm:4.18.0-alpha.0"
-    "@markuplint/file-resolver": "npm:4.18.0-alpha.0"
-    "@markuplint/html-parser": "npm:4.18.0-alpha.0"
-    "@markuplint/html-spec": "npm:4.18.0-alpha.0"
-    "@markuplint/i18n": "npm:4.18.0-alpha.0"
-    "@markuplint/ml-ast": "npm:4.18.0-alpha.0"
-    "@markuplint/ml-config": "npm:4.18.0-alpha.0"
-    "@markuplint/ml-core": "npm:4.18.0-alpha.0"
-    "@markuplint/ml-spec": "npm:4.18.0-alpha.0"
-    "@markuplint/rules": "npm:4.18.0-alpha.0"
-    "@markuplint/shared": "npm:4.18.0-alpha.0"
+    "@markuplint/cli-utils": "npm:4.18.0"
+    "@markuplint/file-resolver": "npm:4.18.0"
+    "@markuplint/html-parser": "npm:4.18.0"
+    "@markuplint/html-spec": "npm:4.18.0"
+    "@markuplint/i18n": "npm:4.18.0"
+    "@markuplint/ml-ast": "npm:4.18.0"
+    "@markuplint/ml-config": "npm:4.18.0"
+    "@markuplint/ml-core": "npm:4.18.0"
+    "@markuplint/ml-spec": "npm:4.18.0"
+    "@markuplint/rules": "npm:4.18.0"
+    "@markuplint/shared": "npm:4.18.0"
     "@types/debug": "npm:4.1.13"
     chokidar: "npm:5.0.0"
     debug: "npm:4.4.3"
@@ -19042,10 +19042,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "vscode-markuplint@workspace:vscode"
   dependencies:
-    "@markuplint-dev/tsconfig": "npm:4.18.0-alpha.0"
-    "@markuplint/file-resolver": "npm:4.18.0-alpha.0"
-    "@markuplint/i18n": "npm:4.18.0-alpha.0"
-    "@markuplint/ml-spec": "npm:4.18.0-alpha.0"
+    "@markuplint-dev/tsconfig": "npm:4.18.0"
+    "@markuplint/file-resolver": "npm:4.18.0"
+    "@markuplint/i18n": "npm:4.18.0"
+    "@markuplint/ml-spec": "npm:4.18.0"
     "@types/mocha": "npm:10.0.10"
     "@types/node": "npm:22.19.17"
     "@types/semver": "npm:7.7.1"
@@ -19055,7 +19055,7 @@ __metadata:
     debug: "npm:4.4.3"
     esbuild: "npm:0.28.0"
     glob: "npm:13.0.6"
-    markuplint: "npm:4.18.0-alpha.0"
+    markuplint: "npm:4.18.0"
     mocha: "npm:11.7.5"
     semver: "npm:7.7.4"
     typescript: "npm:6.0.3"
