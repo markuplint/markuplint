@@ -91,3 +91,7 @@ packages/@markuplint/rules/src/__*
 # Worktrees
 .worktree/
 
+# nu-validator benchmark raw snapshots (regenerated locally)
+tests/external/snapshots/nu-validator/
+tests/external/snapshots/markuplint/
+
