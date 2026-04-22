@@ -91,5 +91,3 @@ packages/@markuplint/rules/src/__*
 # Worktrees
 .worktree/
 
-# Generated reports
-tests/external/nu-validator-report.md
