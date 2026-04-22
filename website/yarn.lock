@@ -9741,7 +9741,7 @@ __metadata:
     stylelint: "npm:17.7.0"
     stylelint-config-recess-order: "npm:7.7.0"
     stylelint-config-standard: "npm:40.0.0"
-    stylelint-order: "npm:7.0.1"
+    stylelint-order: "npm:8.1.1"
     tsx: "npm:4.21.0"
     typescript: "npm:5.9.3"
     unist-util-visit: "npm:5.1.0"
@@ -12292,12 +12292,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss-sorting@npm:^9.1.0":
-  version: 9.1.0
-  resolution: "postcss-sorting@npm:9.1.0"
+"postcss-sorting@npm:^10.0.0":
+  version: 10.0.0
+  resolution: "postcss-sorting@npm:10.0.0"
   peerDependencies:
     postcss: ^8.4.20
-  checksum: 10c0/1faea84bf00d85929228d297587798fa9c384a02966a28a942777b2de553a8186087cfdcd0aca3dd40e4b2793aee050792d807458db8cf4880867c98c7bf22fd
+  checksum: 10c0/2e53560ccfaefb6ccfaa44cd258735f815de7a06ff6c79e6fb0fe789422f10242266044902c716e2eec9680879d7e0872b4ecd5d89e9bd8670f6d9f6c3ce5adc
   languageName: node
   linkType: hard
 
@@ -12340,7 +12340,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:^8.4.21, postcss@npm:^8.4.24, postcss@npm:^8.4.33, postcss@npm:^8.5.4, postcss@npm:^8.5.6":
+"postcss@npm:^8.4.21, postcss@npm:^8.4.24, postcss@npm:^8.4.33, postcss@npm:^8.5.4":
   version: 8.5.6
   resolution: "postcss@npm:8.5.6"
   dependencies:
@@ -14111,15 +14111,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"stylelint-order@npm:7.0.1":
-  version: 7.0.1
-  resolution: "stylelint-order@npm:7.0.1"
+"stylelint-order@npm:8.1.1":
+  version: 8.1.1
+  resolution: "stylelint-order@npm:8.1.1"
   dependencies:
-    postcss: "npm:^8.5.6"
-    postcss-sorting: "npm:^9.1.0"
+    postcss: "npm:^8.5.8"
+    postcss-sorting: "npm:^10.0.0"
   peerDependencies:
     stylelint: ^16.18.0 || ^17.0.0
-  checksum: 10c0/dfe3ab8f18725c9c2fead65f2940a6590208591ca267da6d25ee191c6e5f1df04813a6f6a76791bfe5f6fda33fbf6d81369c17c71831bfbd6802dfed26559845
+  checksum: 10c0/ef135a414d3ed98a53cc19e52f1cdff25105e34d96430ecc805d831dbdf4f505031d692dba0f2275b6e7b3a4f4b406f352d85a3924e2e3d89931af65a64eb047
   languageName: node
   linkType: hard
 
