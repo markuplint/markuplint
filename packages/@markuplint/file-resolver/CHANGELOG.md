@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.18.0](https://github.com/markuplint/markuplint/compare/v4.14.1...v4.18.0) (2026-04-22)
+
+**Note:** Version bump only for package @markuplint/file-resolver
+
 ## [4.9.19](https://github.com/markuplint/markuplint/compare/@markuplint/file-resolver@4.9.18...@markuplint/file-resolver@4.9.19) (2026-04-21)
 
 **Note:** Version bump only for package @markuplint/file-resolver

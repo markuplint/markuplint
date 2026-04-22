@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.18.0](https://github.com/markuplint/markuplint/compare/v4.14.1...v4.18.0) (2026-04-22)
+
+### Bug Fixes
+
+- **deps:** adapt code to breaking changes from upgrade ([ced7fab](https://github.com/markuplint/markuplint/commit/ced7fab5b50ea3effd844e17b1f676fce790b53c))
+
+### Reverts
+
+- pin meow and os-locale for Node 18 support ([ed61c88](https://github.com/markuplint/markuplint/commit/ed61c8829aca912b81fd6efb518b4518199db2ca))
+
 ## [4.14.2](https://github.com/markuplint/markuplint/compare/markuplint@4.14.1...markuplint@4.14.2) (2026-04-21)
 
 ### Bug Fixes
