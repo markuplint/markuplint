@@ -5,7 +5,7 @@ import { parseArgs } from 'node:util';
 import { runCompare } from './compare.ts';
 import { readJson, writeJson } from './fs-utils.ts';
 import { generateSpec } from './generate-spec.ts';
-import { EXTERNAL_DIR, META_PATH } from './paths.ts';
+import { EXTERNAL_DIR, META_PATH, NU_FAILURES_PATH } from './paths.ts';
 import { runReport } from './report.ts';
 import { runMarkuplint } from './run-markuplint.ts';
 import { runNuValidator } from './run-nu-validator.ts';
@@ -23,10 +23,16 @@ function submoduleSha(): string {
 	try {
 		const output = execFileSync('git', ['rev-parse', 'HEAD'], {
 			cwd: `${EXTERNAL_DIR}/validator`,
-			stdio: ['ignore', 'pipe', 'ignore'],
+			stdio: ['ignore', 'pipe', 'pipe'],
 		});
 		return output.toString('utf8').trim();
-	} catch {
+	} catch (error) {
+		const msg = error instanceof Error ? error.message : String(error);
+		console.warn(
+			`[meta] could not resolve validator submodule SHA (${msg.split('\n')[0]}). ` +
+				`Run 'git submodule update --init tests/external/validator' if the submodule has not been initialised. ` +
+				'meta.json will record "unknown".',
+		);
 		return 'unknown';
 	}
 }
@@ -54,16 +60,21 @@ async function main(): Promise<void> {
 
 	let nuDigest = previous.nuValidatorImage ?? '';
 	let mlVersion = previous.markuplintVersion ?? '';
-	let totalFiles = previous.totalFiles ?? 0;
+	let totalFilesNu = previous.totalFilesNu ?? 0;
+	let totalFilesMl = previous.totalFilesMl ?? 0;
 	let totalNuMessages = previous.totalNuMessages ?? 0;
 	let totalMlViolations = previous.totalMlViolations ?? 0;
+	let totalNuFailures = previous.totalNuFailures ?? 0;
+	let nuFailures: readonly { path: string; error: string }[] = [];
 
 	if (target === 'nu' || target === 'all') {
 		console.log(`[nu] running nu-validator snapshot update (filter=${filter ?? '**/*.html'})`);
 		const result = await runNuValidator({ filter, concurrency, imageTag, dryRun });
 		nuDigest = result.imageDigest;
-		totalFiles = Math.max(totalFiles, result.totalFiles);
+		totalFilesNu = result.totalFiles;
 		totalNuMessages = result.totalMessages;
+		totalNuFailures = result.failures.length;
+		nuFailures = result.failures;
 		console.log(
 			`[nu] files=${result.totalFiles} messages=${result.totalMessages} failures=${result.failures.length}`,
 		);
@@ -76,7 +87,7 @@ async function main(): Promise<void> {
 		console.log(`[ml] running markuplint snapshot update (filter=${filter ?? '**/*.html'})`);
 		const result = await runMarkuplint({ filter, concurrency, dryRun });
 		mlVersion = result.version;
-		totalFiles = Math.max(totalFiles, result.totalFiles);
+		totalFilesMl = result.totalFiles;
 		totalMlViolations = result.totalViolations;
 		console.log(
 			`[ml] files=${result.totalFiles} violations=${result.totalViolations} parseErrors=${result.parseErrors}`,
@@ -94,12 +105,19 @@ async function main(): Promise<void> {
 		nuValidatorImage: nuDigest,
 		markuplintVersion: mlVersion,
 		nodeVersion: process.versions.node,
-		totalFiles,
+		totalFilesNu,
+		totalFilesMl,
 		totalNuMessages,
 		totalMlViolations,
+		totalNuFailures,
 	};
 	await writeJson(META_PATH, meta);
 	console.log('[meta] written', META_PATH);
+
+	if (target === 'nu' || target === 'all') {
+		await writeJson(NU_FAILURES_PATH, { entries: nuFailures });
+		console.log(`[nu-failures] wrote ${nuFailures.length} entries`);
+	}
 
 	if (skipRefresh) {
 		console.log('[refresh] skipped (--skip-refresh)');

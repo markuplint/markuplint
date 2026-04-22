@@ -3,6 +3,7 @@ import { writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 import { readJson } from './fs-utils.ts';
+import { isCliEntry } from './is-cli-entry.ts';
 import { DIFF_DIR, META_PATH, SNAPSHOTS_DIR } from './paths.ts';
 import type { Coverage, CoverageEntry, ExcludedIds, Meta, OverDetectionEntry, Verdict } from './types.ts';
 
@@ -130,7 +131,7 @@ export async function runReport(): Promise<void> {
 	console.log('[report] wrote', outPath);
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (isCliEntry(import.meta.url)) {
 	runReport().catch(err => {
 		console.error(err);
 		process.exit(1);

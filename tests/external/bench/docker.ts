@@ -49,7 +49,10 @@ export async function ensureDaemon(): Promise<void> {
 }
 
 export async function removeExistingContainer(name: string = CONTAINER_NAME): Promise<void> {
-	await runDocker(['rm', '-f', name]);
+	const result = await runDocker(['rm', '-f', name]);
+	if (result.exitCode !== 0 && !/No such container/i.test(result.stderr)) {
+		console.warn(`[docker] rm -f ${name} returned ${result.exitCode}: ${result.stderr.trim()}`);
+	}
 }
 
 export async function pullImage(image: string): Promise<string> {

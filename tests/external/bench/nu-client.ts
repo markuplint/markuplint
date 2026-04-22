@@ -1,3 +1,5 @@
+import { isFatalError } from '@markuplint/shared';
+
 export type NuClientOptions = {
 	readonly baseUrl: string;
 	readonly timeoutMs?: number;
@@ -50,6 +52,9 @@ export async function validate(html: string, options: NuClientOptions): Promise<
 			const body = (await response.json()) as NuApiResponse;
 			return { ok: true, messages: body.messages ?? [] };
 		} catch (err) {
+			if (isFatalError(err)) {
+				throw err;
+			}
 			lastError = err;
 			if (controller.signal.aborted) {
 				timedOut = true;

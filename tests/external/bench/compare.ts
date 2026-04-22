@@ -4,6 +4,7 @@ import { glob } from 'node:fs/promises';
 import { join, relative } from 'node:path';
 
 import { inferCategory } from './categories.ts';
+import { isCliEntry } from './is-cli-entry.ts';
 import { readJson, writeJson } from './fs-utils.ts';
 import { DIFF_DIR, EXCLUDED_IDS_PATH, ML_SNAPSHOTS_DIR, NU_SNAPSHOTS_DIR } from './paths.ts';
 import type {
@@ -26,6 +27,10 @@ export type CompareOutput = {
 	readonly coverage: Coverage;
 	readonly mlOverDetection: readonly OverDetectionEntry[];
 	readonly nuOverDetection: readonly OverDetectionEntry[];
+	readonly unpaired: {
+		readonly nuOnly: readonly string[];
+		readonly mlOnly: readonly string[];
+	};
 };
 
 async function collectSnapshotPaths(root: string): Promise<string[]> {
@@ -108,10 +113,20 @@ export function compare(inputs: CompareInputs): CompareOutput {
 	const entries: CoverageEntry[] = [];
 	const mlOver: OverDetectionEntry[] = [];
 	const nuOver: OverDetectionEntry[] = [];
+	const nuOnly: string[] = [];
+	const mlOnly: string[] = [];
 
 	for (const path of sortedPaths) {
 		const nuSnap = inputs.nuSnapshots.get(path);
 		const mlSnap = inputs.mlSnapshots.get(path);
+		if (!nuSnap && mlSnap) {
+			mlOnly.push(path);
+			continue;
+		}
+		if (nuSnap && !mlSnap) {
+			nuOnly.push(path);
+			continue;
+		}
 		if (!nuSnap || !mlSnap) continue;
 
 		const nu = judgeNuState(nuSnap, inputs.excludedIds);
@@ -140,6 +155,7 @@ export function compare(inputs: CompareInputs): CompareOutput {
 		coverage: { entries },
 		mlOverDetection: mlOver,
 		nuOverDetection: nuOver,
+		unpaired: { nuOnly, mlOnly },
 	};
 }
 
@@ -163,11 +179,20 @@ export async function runCompare(): Promise<CompareOutput> {
 	console.log(
 		`[compare] entries=${output.coverage.entries.length} match-error=${summary['match-error']} match-clean=${summary['match-clean']} ml-over=${summary['ml-over']} nu-over=${summary['nu-over']}`,
 	);
+	const unpairedCount = output.unpaired.nuOnly.length + output.unpaired.mlOnly.length;
+	if (unpairedCount > 0) {
+		console.warn(
+			`[compare] unpaired: ${unpairedCount} files present in only one snapshot tree (nu-only=${output.unpaired.nuOnly.length} ml-only=${output.unpaired.mlOnly.length}). ` +
+				'Run yarn bench:update with the same filter on both targets to realign.',
+		);
+		for (const path of output.unpaired.nuOnly.slice(0, 5)) console.warn(`[compare]   nu-only: ${path}`);
+		for (const path of output.unpaired.mlOnly.slice(0, 5)) console.warn(`[compare]   ml-only: ${path}`);
+	}
 	console.log(`[compare] wrote ${relative(process.cwd(), DIFF_DIR)}/{coverage,markuplint-over-detection,nu-over-detection}.json`);
 	return output;
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (isCliEntry(import.meta.url)) {
 	runCompare().catch(err => {
 		console.error(err);
 		process.exit(1);

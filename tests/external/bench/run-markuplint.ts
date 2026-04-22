@@ -2,12 +2,14 @@ import { readFile } from 'node:fs/promises';
 import { availableParallelism } from 'node:os';
 import { join } from 'node:path';
 
+import { isFatalError } from '@markuplint/shared';
 import { mlTest } from 'markuplint';
 import pkg from 'markuplint/package.json' with { type: 'json' };
 
 import { BENCHMARK_CONFIG_ID, benchmarkConfig } from './config.ts';
 import { collectHtmlFiles, pLimit, sha256Hex, writeJson } from './fs-utils.ts';
 import { ML_SNAPSHOTS_DIR, VALIDATOR_TESTS_DIR } from './paths.ts';
+import { sanitizeMessage } from './sanitize.ts';
 import type { MarkuplintSnapshot, MlViolation } from './types.ts';
 
 export type RunMarkuplintOptions = {
@@ -22,13 +24,6 @@ export type RunMarkuplintResult = {
 	readonly totalViolations: number;
 	readonly parseErrors: number;
 };
-
-function sanitizeMessage(message: string): string {
-	// Internal markuplint errors embed stack traces with absolute file paths;
-	// keep only the first line so snapshots are reproducible across machines.
-	const firstLine = message.split('\n')[0] ?? message;
-	return firstLine.trim();
-}
 
 function sortViolations(violations: readonly MlViolation[]): MlViolation[] {
 	return [...violations].sort((a, b) => {
@@ -65,6 +60,7 @@ export async function runMarkuplint(options: RunMarkuplintOptions = {}): Promise
 		const html = await readFile(absolute, 'utf8');
 
 		let parseError = false;
+		let parseErrorMessage: string | null = null;
 		let violations: readonly MlViolation[] = [];
 		try {
 			const { violations: raw } = await mlTest(html, benchmarkConfig);
@@ -76,9 +72,14 @@ export async function runMarkuplint(options: RunMarkuplintOptions = {}): Promise
 				col: v.col,
 				raw: v.raw,
 			}));
-		} catch {
+		} catch (error) {
+			if (isFatalError(error)) {
+				throw error;
+			}
 			parseError = true;
+			parseErrorMessage = sanitizeMessage(error instanceof Error ? error.message : String(error));
 			parseErrors += 1;
+			console.warn(`[ml] parseError on ${relPath}: ${parseErrorMessage}`);
 		}
 
 		const sorted = sortViolations(violations);
@@ -94,6 +95,7 @@ export async function runMarkuplint(options: RunMarkuplintOptions = {}): Promise
 				configId: BENCHMARK_CONFIG_ID,
 				violations: sorted,
 				parseError,
+				parseErrorMessage,
 			},
 		};
 

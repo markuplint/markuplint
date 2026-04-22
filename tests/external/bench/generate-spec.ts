@@ -1,6 +1,7 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
 
+import { isCliEntry } from './is-cli-entry.ts';
 import { SPEC_PATH } from './paths.ts';
 
 const SPEC_CONTENT = `// Generated from ../snapshots/diff/coverage.json by bench/generate-spec.ts.
@@ -40,7 +41,7 @@ export async function generateSpec(): Promise<void> {
 	console.log('[generate-spec] wrote', SPEC_PATH);
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (isCliEntry(import.meta.url)) {
 	generateSpec().catch(err => {
 		console.error(err);
 		process.exit(1);

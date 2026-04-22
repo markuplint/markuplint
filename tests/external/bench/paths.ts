@@ -12,4 +12,5 @@ export const ML_SNAPSHOTS_DIR = join(SNAPSHOTS_DIR, 'markuplint');
 export const DIFF_DIR = join(SNAPSHOTS_DIR, 'diff');
 export const META_PATH = join(SNAPSHOTS_DIR, 'meta.json');
 export const EXCLUDED_IDS_PATH = join(SNAPSHOTS_DIR, 'excluded-ids.json');
+export const NU_FAILURES_PATH = join(DIFF_DIR, 'nu-failures.json');
 export const SPEC_PATH = join(EXTERNAL_DIR, 'spec', 'nu-validator.spec.ts');

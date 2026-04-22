@@ -48,6 +48,7 @@ export type MarkuplintSnapshot = {
 		readonly configId: string;
 		readonly violations: readonly MlViolation[];
 		readonly parseError: boolean;
+		readonly parseErrorMessage: string | null;
 	};
 };
 
@@ -93,7 +94,9 @@ export type Meta = {
 	readonly nuValidatorImage: string;
 	readonly markuplintVersion: string;
 	readonly nodeVersion: string;
-	readonly totalFiles: number;
+	readonly totalFilesNu: number;
+	readonly totalFilesMl: number;
 	readonly totalNuMessages: number;
 	readonly totalMlViolations: number;
+	readonly totalNuFailures: number;
 };
