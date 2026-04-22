@@ -3,6 +3,8 @@ import type { CustomSyntaxChecker } from '../types.js';
 import { log } from '../debug.js';
 import { matched, unmatched } from '../match-result.js';
 
+// cspell:ignore FDEF FFFE XFFFE XFFFF AFFFE AFFFF BFFFE BFFFF CFFFE CFFFF DFFFE DFFFF EFFFE EFFFF FFFFE FFFFF
+
 /**
  * Dummy base URL for resolving relative URLs.
  * Used only for syntax validation — the actual base URL is irrelevant.
