@@ -2,8 +2,11 @@ import { execFileSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { parseArgs } from 'node:util';
 
+import { runCompare } from './compare.ts';
 import { readJson, writeJson } from './fs-utils.ts';
+import { generateSpec } from './generate-spec.ts';
 import { EXTERNAL_DIR, META_PATH } from './paths.ts';
+import { runReport } from './report.ts';
 import { runMarkuplint } from './run-markuplint.ts';
 import { runNuValidator } from './run-nu-validator.ts';
 import type { Meta } from './types.ts';
@@ -36,6 +39,7 @@ async function main(): Promise<void> {
 			concurrency: { type: 'string' },
 			'image-tag': { type: 'string' },
 			'dry-run': { type: 'boolean' },
+			'skip-refresh': { type: 'boolean' },
 		},
 	});
 
@@ -44,6 +48,7 @@ async function main(): Promise<void> {
 	const concurrency = values.concurrency ? Number.parseInt(values.concurrency, 10) : undefined;
 	const imageTag = values['image-tag'];
 	const dryRun = values['dry-run'] ?? false;
+	const skipRefresh = values['skip-refresh'] ?? false;
 
 	const previous: Partial<Meta> = existsSync(META_PATH) ? await readJson<Meta>(META_PATH) : {};
 
@@ -95,6 +100,15 @@ async function main(): Promise<void> {
 	};
 	await writeJson(META_PATH, meta);
 	console.log('[meta] written', META_PATH);
+
+	if (skipRefresh) {
+		console.log('[refresh] skipped (--skip-refresh)');
+		return;
+	}
+
+	await runCompare();
+	await generateSpec();
+	await runReport();
 }
 
 main().catch(error => {

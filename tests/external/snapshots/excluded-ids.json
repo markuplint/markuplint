@@ -1,0 +1,4 @@
+{
+	"$schema": "../bench/schema/excluded-ids.schema.json",
+	"entries": []
+}
