@@ -11,40 +11,50 @@
 			}
 		},
 		"rules": {
-			"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/schema.json#/definitions/rules",
-			"additionalProperties": false,
-			"patternProperties": {
-				"^[^/]+/.+$": {
-					"oneOf": [
-						{
-							"$ref": "#/definitions/custom-rule-value"
-						},
-						{
-							"type": "object",
-							"additionalProperties": false,
-							"properties": {
-								"value": {
+			"oneOf": [
+				{
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/schema.json#/definitions/rules"
+				},
+				{
+					"title": "Custom rule",
+					"description": "@see https://markuplint.dev/docs/guides/applying-rules#applying-custom-rules",
+					"examples": ["[plugin-name]/[rule-name]"],
+					"type": "object",
+					"additionalProperties": false,
+					"patternProperties": {
+						"^[^/]+/.+$": {
+							"oneOf": [
+								{
 									"$ref": "#/definitions/custom-rule-value"
 								},
-								"severity": {
-									"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/ml-config/schema.json#/definitions/severity"
+								{
+									"type": "object",
+									"additionalProperties": false,
+									"properties": {
+										"value": {
+											"$ref": "#/definitions/custom-rule-value"
+										},
+										"severity": {
+											"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/ml-config/schema.json#/definitions/severity"
+										},
+										"reason": {
+											"type": "string"
+										}
+									}
 								},
-								"reason": {
-									"type": "string"
+								{
+									"$ref": "#/definitions/namedRuleGroup"
 								}
-							}
+							]
 						},
-						{
-							"$ref": "#/definitions/namedRuleGroup"
+						"^[^/]+/\\*$": {
+							"type": "boolean",
+							"const": false,
+							"description": "Namespace wildcard disable. Disables all virtual rules with this namespace prefix (e.g., 'a11y/*': false)."
 						}
-					]
-				},
-				"^[^/]+/\\*$": {
-					"type": "boolean",
-					"const": false,
-					"description": "Namespace wildcard disable. Disables all virtual rules with this namespace prefix (e.g., 'a11y/*': false)."
+					}
 				}
-			}
+			]
 		},
 		"namedRuleGroup": {
 			"type": "object",
@@ -66,7 +76,6 @@
 		},
 		"baseRules": {
 			"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/schema.json#/definitions/rules",
-			"additionalProperties": false,
 			"description": "Rules without named rule group support. Used inside nodeRules, childNodeRules, and namedRuleGroup."
 		},
 		"custom-rule-value": {
