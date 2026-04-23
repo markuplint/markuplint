@@ -52,7 +52,8 @@
 		"bench:compare": "node --experimental-strip-types tests/external/bench/compare.ts",
 		"bench:generate-spec": "node --experimental-strip-types tests/external/bench/generate-spec.ts",
 		"bench:report": "node --experimental-strip-types tests/external/bench/report.ts",
-		"bench:verify": "vitest run --config vitest.nu-validator.config.ts"
+		"bench:verify": "vitest run --config vitest.nu-validator.config.ts",
+		"bench:xref": "node --experimental-strip-types tests/external/bench/xref-issue.ts"
 	},
 	"lint-staged": {
 		"./{{packages,website,vscode}/**/*,*}.{ts,tsx,js,cjs,mjs,json,md}": [
