@@ -236,7 +236,11 @@ function escapeRegExp(source: string): string {
 export type GhClient = {
 	readonly view: (issue: number) => string;
 	readonly edit: (issue: number, body: string) => void;
+	readonly state: (issue: number) => IssueState;
 };
+
+/** GitHub issue lifecycle state, as reported by `gh issue view --json state`. */
+export type IssueState = 'OPEN' | 'CLOSED';
 
 function explainGhError(action: string, issue: number, error: unknown): Error {
 	const msg = error instanceof Error ? error.message : String(error);
@@ -287,6 +291,20 @@ export function defaultGhClient(): GhClient {
 				throw explainGhError('edit body of', issue, error);
 			}
 		},
+		state(issue) {
+			const { state } = ghJson<{ state: string }>(
+				['issue', 'view', String(issue), '--json', 'state'],
+				'fetch state of',
+				issue,
+			);
+			// `gh` only ever returns "OPEN" or "CLOSED" for this field, but
+			// coerce defensively so a future schema drift fails loudly rather
+			// than silently matching the wrong branch.
+			if (state !== 'OPEN' && state !== 'CLOSED') {
+				throw new Error(`unexpected issue state ${JSON.stringify(state)} for #${issue}`);
+			}
+			return state;
+		},
 	};
 }
 
@@ -296,6 +314,7 @@ type CliOptions = {
 	readonly dryRun: boolean;
 	readonly write: boolean;
 	readonly filter?: RegExp;
+	readonly audit: boolean;
 };
 
 export function parseCliArgs(args: readonly string[] = process.argv.slice(2)): CliOptions {
@@ -307,6 +326,7 @@ export function parseCliArgs(args: readonly string[] = process.argv.slice(2)): C
 			'dry-run': { type: 'boolean' },
 			write: { type: 'boolean' },
 			filter: { type: 'string' },
+			audit: { type: 'boolean' },
 		},
 	});
 	let issue: number | undefined;
@@ -318,8 +338,18 @@ export function parseCliArgs(args: readonly string[] = process.argv.slice(2)): C
 		issue = parsed;
 	}
 	const all = values.all ?? false;
+	const audit = values.audit ?? false;
+	if (audit) {
+		// Audit is a standalone operation that walks the entire config; it
+		// must not be combined with per-issue / mutation / filter flags that
+		// would change its scope or side-effects.
+		if (issue !== undefined || values.filter !== undefined || values.write || values['dry-run']) {
+			throw new Error('--audit is standalone; drop --issue / --filter / --write / --dry-run when using it');
+		}
+		return { all: true, dryRun: false, write: false, audit: true };
+	}
 	if (issue === undefined && !all) {
-		throw new Error('provide either --issue <N> or --all');
+		throw new Error('provide either --issue <N>, --all, or --audit');
 	}
 	if (all && values.filter !== undefined && issue === undefined) {
 		// --filter is an ad-hoc override that only makes sense paired with a
@@ -333,7 +363,38 @@ export function parseCliArgs(args: readonly string[] = process.argv.slice(2)): C
 		dryRun: values['dry-run'] ?? false,
 		write: values.write ?? false,
 		filter: values.filter ? new RegExp(values.filter) : undefined,
+		audit: false,
 	};
+}
+
+/**
+ * Walk every mapping in the config and ask `gh` for the issue's current
+ * lifecycle state. Returns the numbers of any CLOSED issues (the ones that
+ * should be pruned from the config) so the caller can decide between a
+ * non-zero exit (pre-release gate) and a warning log.
+ *
+ * Pure w.r.t. `mappings` and `gh` — no filesystem or process globals — so
+ * unit tests can inject a fake client.
+ */
+export function runAudit(
+	mappings: readonly XrefMapping[],
+	gh: Pick<GhClient, 'state'>,
+	log: Pick<Console, 'log'> = console,
+): readonly number[] {
+	const closed: number[] = [];
+	for (const m of mappings) {
+		const state = gh.state(m.issue);
+		if (state === 'CLOSED') closed.push(m.issue);
+	}
+	if (closed.length === 0) {
+		log.log(`[xref] audit: all ${mappings.length} mapped issues are still OPEN`);
+	} else {
+		log.log(
+			`[xref] audit: ${closed.length} mapping(s) reference CLOSED issue(s): ${closed.map(n => `#${n}`).join(', ')}`,
+		);
+		log.log('[xref] audit: remove each entry from tests/external/bench/issue-xref.config.ts');
+	}
+	return closed;
 }
 
 export function processOne(
@@ -374,6 +435,16 @@ export function processOne(
 
 async function main(): Promise<void> {
 	const opts = parseCliArgs();
+
+	if (opts.audit) {
+		// `--audit` only needs `gh` + the config. Loading bench data would be
+		// pointless (and would fail on a fresh clone that hasn't run
+		// `yarn bench:update` yet), so skip it.
+		const closed = runAudit(xrefMappings, defaultGhClient());
+		if (closed.length > 0) process.exitCode = 1;
+		return;
+	}
+
 	const data = await loadBenchData();
 	const ctx: RenderContext = { data, mappings: xrefMappings };
 

@@ -512,6 +512,7 @@ or stub reason) lives in
 | `yarn bench:xref --all --dry-run --write` | Fetch each issue body from GitHub, show what the next body would look like (no write) |
 | `yarn bench:xref --issue <N> --write` | Fetch issue N, replace its `<!-- bench-xref:* -->` range (or append one if absent), push via `gh issue edit --body-file -` (stdin) |
 | `yarn bench:xref --all --write` | Same, across every configured issue |
+| `yarn bench:xref --audit` | Walk every mapping, call `gh issue view <N> --json state`, and list any CLOSED entries. No writes, no bench-data load. Exits non-zero if anything is CLOSED — safe to gate a pre-release check on. |
 
 Prerequisites: `gh` CLI installed and authenticated (`gh auth login`).
 If `gh` is missing or unauthenticated the CLI exits with a targeted
@@ -553,13 +554,22 @@ Before cutting a markuplint release that touches any rule the benchmark
 covers, run:
 
 ```
-yarn bench:update       # regenerate coverage.json (Docker required)
+yarn bench:xref --audit     # drop entries that point at CLOSED issues
+yarn bench:update           # regenerate coverage.json (Docker required)
 yarn bench:xref --all --write
 ```
 
-This keeps every referenced Issue's verdict tally in sync with the
-release that is about to land. Skipping it means the release notes
-can still reference stale claim counts.
+`--audit` is the cheapest gate: it only asks GitHub for each mapped
+issue's state and exits non-zero the moment a CLOSED reference slips
+into the config. Running it first lets you prune the config before
+`--all --write` pushes stale xref blocks to issues that were closed
+between releases (exactly the drift that removed #3619 and #3637 from
+this file in 2026-04).
+
+`yarn bench:update` + `yarn bench:xref --all --write` then keep every
+remaining referenced Issue's verdict tally in sync with the release
+that is about to land. Skipping it means the release notes can still
+reference stale claim counts.
 
 #### Marker version (`v1`) and future migration
 

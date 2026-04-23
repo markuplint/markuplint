@@ -57,10 +57,12 @@ export type UmbrellaMapping = {
 
 export type XrefMapping = PrimaryMapping | SecondaryMapping | UmbrellaMapping;
 
-// Body override for #3634: the original text listed 4 bullets and claimed
-// "~9 missed errors". Bench data shows 5 missed (not 9) and `<main>`
-// uniqueness is already detected by `no-duplicate-visible-main`. Text lives
-// in `issue-xref/3634-body.md` so it can be proof-read without escaping.
+// Body override for #3634: the original text listed 4 bullets including a
+// `<main>` uniqueness claim already covered by `no-duplicate-visible-main`,
+// and hard-coded a "~9 missed errors" count. The rewrite drops the `<main>`
+// bullet and defers the count to the xref block below it (single source of
+// truth). Text lives in `issue-xref/3634-body.md` so it can be proof-read
+// without escaping.
 
 export const xrefMappings: readonly XrefMapping[] = [
 	// === 1 次群: bench で裏取れる Issue ===
