@@ -91,5 +91,7 @@ packages/@markuplint/rules/src/__*
 # Worktrees
 .worktree/
 
-# Generated reports
-tests/external/nu-validator-report.md
+# nu-validator benchmark raw snapshots (regenerated locally)
+tests/external/snapshots/nu-validator/
+tests/external/snapshots/markuplint/
+

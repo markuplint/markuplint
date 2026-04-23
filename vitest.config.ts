@@ -6,6 +6,7 @@ export default defineConfig({
 			'./packages/**/*.spec.{js,mjs,ts}',
 			'./vscode/src/**/*.spec.{js,mjs,ts}',
 			'./vscode/scripts/**/*.spec.{js,mjs,ts}',
+			'./tests/external/bench/*.spec.{js,mjs,ts}',
 		],
 		testTimeout: 10000,
 	},

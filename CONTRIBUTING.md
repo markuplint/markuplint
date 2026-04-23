@@ -36,6 +36,13 @@ When you wrote code then:
   - For plugins: @yusukehirao
   - For documents/website: @yusukehirao, @kagankan
 
+### nu-validator compatibility benchmark
+
+`tests/external/` houses a local-only benchmark that compares markuplint
+with [Nu Html Checker](https://validator.github.io/validator/). It is not
+wired into CI. See [`tests/external/CLAUDE.md`](./tests/external/CLAUDE.md)
+for the setup, command list, and the Docker / `excluded-ids.json` workflow.
+
 ## Publishing the VS Code Extension
 
 The npm packages are published automatically from CI (npm trusted publisher).
