@@ -53228,7 +53228,16 @@
 				},
 				"content": {
 					"description": "This attribute contains the value for the http-equiv or name attribute, depending on which is used.",
-					"type": "Any",
+					"type": [
+						{
+							"condition": "[http-equiv='refresh' i]",
+							"type": "HTTPEquivRefresh"
+						},
+						{
+							"condition": "[http-equiv='content-type' i]",
+							"type": "HTTPEquivContentType"
+						}
+					],
 					"required": ["[name]", "[http-equiv]", "[itemprop]"],
 					"condition": ["[name]", "[http-equiv]", "[itemprop]"]
 				},

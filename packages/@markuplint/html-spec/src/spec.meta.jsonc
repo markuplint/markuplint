@@ -33,7 +33,23 @@
 		},
 		// https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-content
 		"content": {
-			"type": "Any",
+			// ConditionalAttributeType (#3685) — split by http-equiv value:
+			//   - refresh       → HTML LS §4.2.5.3 refresh directive grammar
+			//   - content-type  → HTML LS §4.2.5.2 Encoding declaration grammar
+			// Other http-equiv values (default-style, x-ua-compatible,
+			// content-security-policy) and `name` / `itemprop` fall through
+			// to "Any" at runtime (see `rules/helpers.ts` fallback for
+			// ConditionalAttributeType[] with no matching condition).
+			"type": [
+				{
+					"condition": "[http-equiv='refresh' i]",
+					"type": "HTTPEquivRefresh"
+				},
+				{
+					"condition": "[http-equiv='content-type' i]",
+					"type": "HTTPEquivContentType"
+				}
+			],
 			"required": ["[name]", "[http-equiv]", "[itemprop]"],
 			"condition": ["[name]", "[http-equiv]", "[itemprop]"]
 		},
