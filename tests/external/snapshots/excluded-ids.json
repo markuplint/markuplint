@@ -4,15 +4,8 @@
 	"patterns": [
 		{
 			"messageContains": "Fragment is not allowed for data: URIs according to RFC 2397",
-			"reason": "WHATWG URL Living Standard supersedes RFC 2397. data: URLs are parsed with an opaque path, and the URL parser recognises a fragment after it; a URL with scheme data: and a fragment IS a valid URL record, so HTML conformance (which requires a valid URL string) is satisfied.",
-			"specUrl": "https://url.spec.whatwg.org/#url-parsing",
-			"addedAt": "2026-04-23",
-			"addedBy": "hirao"
-		},
-		{
-			"messageContains": "must be less than or equal to",
-			"reason": "HTML LS explicitly defines semantics for reversed ranges on <meter>, <progress>, and <input type=range>: when min >= max the control is either 'empty' (meter) or has a reversed range (range). Ordering is a defined behaviour, not a conformance requirement.",
-			"specUrl": "https://html.spec.whatwg.org/multipage/form-elements.html#the-meter-element",
+			"reason": "WHATWG URL Living Standard supersedes RFC 2397. Per URL LS §4.3, 'A valid URL string must be either a relative-URL-with-fragment string or an absolute-URL-with-fragment string.' An absolute-URL-with-fragment string is 'an absolute-URL string, optionally followed by U+0023 (#) and a URL-fragment string.' Since 'data' is a non-special scheme, 'data:<body>#<fragment>' matches this grammar and is a valid URL string. HTML conformance (which requires a valid URL string) is therefore satisfied.",
+			"specUrl": "https://url.spec.whatwg.org/#url-writing",
 			"addedAt": "2026-04-23",
 			"addedBy": "hirao"
 		}

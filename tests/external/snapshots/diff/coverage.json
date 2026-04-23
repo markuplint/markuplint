@@ -13875,58 +13875,42 @@
 		{
 			"path": "html/assertions/meter-high-exceeds-max-novalid.html",
 			"category": "assertions",
-			"nu": "clean",
+			"nu": "error",
 			"ml": "clean",
-			"verdict": "match-clean",
-			"excludedIds": [
-				"nv-aab3a745e472"
-			]
+			"verdict": "nu-over",
+			"excludedIds": []
 		},
 		{
 			"path": "html/assertions/meter-low-exceeds-high-novalid.html",
 			"category": "assertions",
-			"nu": "clean",
+			"nu": "error",
 			"ml": "clean",
-			"verdict": "match-clean",
-			"excludedIds": [
-				"nv-1db1c04c5942",
-				"nv-ee8d4b67622d",
-				"nv-eb63d19774b6",
-				"nv-ffb04c756146"
-			]
+			"verdict": "nu-over",
+			"excludedIds": []
 		},
 		{
 			"path": "html/assertions/meter-min-exceeds-max-novalid.html",
 			"category": "assertions",
-			"nu": "clean",
+			"nu": "error",
 			"ml": "clean",
-			"verdict": "match-clean",
-			"excludedIds": [
-				"nv-cb1712721495",
-				"nv-a4632e9a103c"
-			]
+			"verdict": "nu-over",
+			"excludedIds": []
 		},
 		{
 			"path": "html/assertions/meter-optimum-below-min-novalid.html",
 			"category": "assertions",
-			"nu": "clean",
+			"nu": "error",
 			"ml": "clean",
-			"verdict": "match-clean",
-			"excludedIds": [
-				"nv-6cd0b91f17e9",
-				"nv-8ba2ef87ac58",
-				"nv-7eea3f0d259b"
-			]
+			"verdict": "nu-over",
+			"excludedIds": []
 		},
 		{
 			"path": "html/assertions/meter-optimum-exceeds-max-novalid.html",
 			"category": "assertions",
-			"nu": "clean",
+			"nu": "error",
 			"ml": "clean",
-			"verdict": "match-clean",
-			"excludedIds": [
-				"nv-8faf4e01f601"
-			]
+			"verdict": "nu-over",
+			"excludedIds": []
 		},
 		{
 			"path": "html/assertions/meter-valid-isvalid.html",
@@ -13939,23 +13923,18 @@
 		{
 			"path": "html/assertions/meter-value-below-min-novalid.html",
 			"category": "assertions",
-			"nu": "clean",
+			"nu": "error",
 			"ml": "clean",
-			"verdict": "match-clean",
-			"excludedIds": [
-				"nv-0274e824921d",
-				"nv-90c96a22fabd"
-			]
+			"verdict": "nu-over",
+			"excludedIds": []
 		},
 		{
 			"path": "html/assertions/meter-value-exceeds-max-novalid.html",
 			"category": "assertions",
-			"nu": "clean",
+			"nu": "error",
 			"ml": "clean",
-			"verdict": "match-clean",
-			"excludedIds": [
-				"nv-6a315801d64c"
-			]
+			"verdict": "nu-over",
+			"excludedIds": []
 		},
 		{
 			"path": "html/assertions/multiple-main-visible-novalid.html",
@@ -20015,9 +19994,7 @@
 			"nu": "error",
 			"ml": "error",
 			"verdict": "match-error",
-			"excludedIds": [
-				"nv-5a0fbe672d24"
-			]
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/colgroup/span-ignored-with-col-children-novalid.html",
@@ -31548,52 +31525,42 @@
 		{
 			"path": "html/elements/meter/high-below-min-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
+			"nu": "error",
 			"ml": "clean",
-			"verdict": "match-clean",
-			"excludedIds": [
-				"nv-fc3772045cd4"
-			]
+			"verdict": "nu-over",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/meter/high-exceeds-max-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
+			"nu": "error",
 			"ml": "clean",
-			"verdict": "match-clean",
-			"excludedIds": [
-				"nv-b44794b47432"
-			]
+			"verdict": "nu-over",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/meter/low-below-min-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
+			"nu": "error",
 			"ml": "clean",
-			"verdict": "match-clean",
-			"excludedIds": [
-				"nv-0e4078d742d6"
-			]
+			"verdict": "nu-over",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/meter/low-exceeds-high-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
+			"nu": "error",
 			"ml": "clean",
-			"verdict": "match-clean",
-			"excludedIds": [
-				"nv-7582f7aa877e"
-			]
+			"verdict": "nu-over",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/meter/low-exceeds-max-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
+			"nu": "error",
 			"ml": "clean",
-			"verdict": "match-clean",
-			"excludedIds": [
-				"nv-0ea2edc05d4e"
-			]
+			"verdict": "nu-over",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/meter/max-below-zero-novalid.html",
@@ -31606,65 +31573,50 @@
 		{
 			"path": "html/elements/meter/min-exceeds-max-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
+			"nu": "error",
 			"ml": "clean",
-			"verdict": "match-clean",
-			"excludedIds": [
-				"nv-42ea3699c36e",
-				"nv-cc81f2c35d98",
-				"nv-8df6c3f511e7"
-			]
+			"verdict": "nu-over",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/meter/min-exceeds-one-no-max-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
+			"nu": "error",
 			"ml": "clean",
-			"verdict": "match-clean",
-			"excludedIds": [
-				"nv-8bdfc0bf20ab",
-				"nv-ad4a36e8c36d"
-			]
+			"verdict": "nu-over",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/meter/min-exceeds-value-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
+			"nu": "error",
 			"ml": "clean",
-			"verdict": "match-clean",
-			"excludedIds": [
-				"nv-b2e77b2ca402"
-			]
+			"verdict": "nu-over",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/meter/optimum-below-min-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
+			"nu": "error",
 			"ml": "clean",
-			"verdict": "match-clean",
-			"excludedIds": [
-				"nv-abea8bde3e90"
-			]
+			"verdict": "nu-over",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/meter/optimum-exceeds-max-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
+			"nu": "error",
 			"ml": "clean",
-			"verdict": "match-clean",
-			"excludedIds": [
-				"nv-d88edf520c77"
-			]
+			"verdict": "nu-over",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/meter/value-below-min-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
+			"nu": "error",
 			"ml": "clean",
-			"verdict": "match-clean",
-			"excludedIds": [
-				"nv-d4d069f89f3d"
-			]
+			"verdict": "nu-over",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/meter/value-below-zero-no-min-novalid.html",
@@ -31677,12 +31629,10 @@
 		{
 			"path": "html/elements/meter/value-exceeds-max-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
+			"nu": "error",
 			"ml": "clean",
-			"verdict": "match-clean",
-			"excludedIds": [
-				"nv-331806de4adb"
-			]
+			"verdict": "nu-over",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/microdata/itemid-without-itemtype-novalid.html",
@@ -34281,22 +34231,18 @@
 		{
 			"path": "html/elements/progress/value-exceeds-max-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
+			"nu": "error",
 			"ml": "clean",
-			"verdict": "match-clean",
-			"excludedIds": [
-				"nv-ebd8f3d61422"
-			]
+			"verdict": "nu-over",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/progress/value-exceeds-one-no-max-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
+			"nu": "error",
 			"ml": "clean",
-			"verdict": "match-clean",
-			"excludedIds": [
-				"nv-077fa3dae0ce"
-			]
+			"verdict": "nu-over",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/progress/value-negative-novalid.html",
@@ -38062,9 +38008,7 @@
 			"nu": "error",
 			"ml": "error",
 			"verdict": "match-error",
-			"excludedIds": [
-				"nv-15fc570564ca"
-			]
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/table/colspan-exceeds-1000-novalid.html",
@@ -38072,9 +38016,7 @@
 			"nu": "error",
 			"ml": "error",
 			"verdict": "match-error",
-			"excludedIds": [
-				"nv-6d482cf178dd"
-			]
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/table/colspan-exceeds-max-novalid.html",
@@ -38082,9 +38024,7 @@
 			"nu": "error",
 			"ml": "error",
 			"verdict": "match-error",
-			"excludedIds": [
-				"nv-6c8eddf27a04"
-			]
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/table/headers-bad-idref-novalid.html",
@@ -38209,22 +38149,18 @@
 		{
 			"path": "html/elements/table/rowspan-exceeds-65534-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
+			"nu": "error",
 			"ml": "error",
-			"verdict": "ml-over",
-			"excludedIds": [
-				"nv-651f18282641"
-			]
+			"verdict": "match-error",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/table/rowspan-exceeds-max-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
+			"nu": "error",
 			"ml": "error",
-			"verdict": "ml-over",
-			"excludedIds": [
-				"nv-45bce3cc70ba"
-			]
+			"verdict": "match-error",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/table/td-with-role-in-role-table-novalid.html",

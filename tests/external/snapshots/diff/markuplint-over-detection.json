@@ -7491,20 +7491,6 @@
 			]
 		},
 		{
-			"path": "html/elements/table/rowspan-exceeds-65534-novalid.html",
-			"category": "invalid-attr",
-			"ruleIds": [
-				"invalid-attr"
-			]
-		},
-		{
-			"path": "html/elements/table/rowspan-exceeds-max-novalid.html",
-			"category": "invalid-attr",
-			"ruleIds": [
-				"invalid-attr"
-			]
-		},
-		{
 			"path": "html/elements/track/src-isvalid.html",
 			"category": "invalid-attr",
 			"ruleIds": [
