@@ -1259,6 +1259,8 @@
 				"DateTime",
 				"Email",
 				"FunctionBody",
+				"HTTPEquivContentType",
+				"HTTPEquivRefresh",
 				"HTTPSchemaURL",
 				"HashName",
 				"IconSize",

@@ -14,6 +14,8 @@ import { checkLocalDateAndTimeString } from './whatwg/check-datetime/local-date-
 import { checkMonthString } from './whatwg/check-datetime/month-string.js';
 import { checkTimeString } from './whatwg/check-datetime/time-string.js';
 import { checkWeekString } from './whatwg/check-datetime/week-string.js';
+import { checkHTTPEquivContentType } from './whatwg/check-http-equiv-content-type.js';
+import { checkHTTPEquivRefresh } from './whatwg/check-http-equiv-refresh.js';
 import { checkMIMEType } from './whatwg/check-mime-type.js';
 import { checkURL } from './whatwg/check-url.js';
 import { isAbsURL } from './whatwg/is-abs-url.js';
@@ -555,6 +557,28 @@ export const defs: Defs = {
 			},
 		],
 		is: checkMIMEType(),
+	},
+
+	HTTPEquivRefresh: {
+		ref: 'https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-http-equiv-refresh',
+		expects: [
+			{
+				type: 'format',
+				value: 'refresh directive (a non-negative integer, optionally followed by a URL)',
+			},
+		],
+		is: checkHTTPEquivRefresh(),
+	},
+
+	HTTPEquivContentType: {
+		ref: 'https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-http-equiv-content-type',
+		expects: [
+			{
+				type: 'format',
+				value: 'content-type directive (text/html; charset=<encoding>)',
+			},
+		],
+		is: checkHTTPEquivContentType(),
 	},
 
 	ItemProp: {

@@ -1257,6 +1257,8 @@ export type ExtendedType =
   | "DateTime"
   | "Email"
   | "FunctionBody"
+  | "HTTPEquivContentType"
+  | "HTTPEquivRefresh"
   | "HTTPSchemaURL"
   | "HashName"
   | "IconSize"
