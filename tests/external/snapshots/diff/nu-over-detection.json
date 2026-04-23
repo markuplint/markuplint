@@ -292,62 +292,6 @@
 			]
 		},
 		{
-			"path": "html/assertions/meter-high-exceeds-max-novalid.html",
-			"category": "assertions",
-			"nuMessageIds": [
-				"nv-aab3a745e472"
-			]
-		},
-		{
-			"path": "html/assertions/meter-low-exceeds-high-novalid.html",
-			"category": "assertions",
-			"nuMessageIds": [
-				"nv-1db1c04c5942",
-				"nv-ee8d4b67622d",
-				"nv-eb63d19774b6",
-				"nv-ffb04c756146"
-			]
-		},
-		{
-			"path": "html/assertions/meter-min-exceeds-max-novalid.html",
-			"category": "assertions",
-			"nuMessageIds": [
-				"nv-cb1712721495",
-				"nv-a4632e9a103c"
-			]
-		},
-		{
-			"path": "html/assertions/meter-optimum-below-min-novalid.html",
-			"category": "assertions",
-			"nuMessageIds": [
-				"nv-6cd0b91f17e9",
-				"nv-8ba2ef87ac58",
-				"nv-7eea3f0d259b"
-			]
-		},
-		{
-			"path": "html/assertions/meter-optimum-exceeds-max-novalid.html",
-			"category": "assertions",
-			"nuMessageIds": [
-				"nv-8faf4e01f601"
-			]
-		},
-		{
-			"path": "html/assertions/meter-value-below-min-novalid.html",
-			"category": "assertions",
-			"nuMessageIds": [
-				"nv-0274e824921d",
-				"nv-90c96a22fabd"
-			]
-		},
-		{
-			"path": "html/assertions/meter-value-exceeds-max-novalid.html",
-			"category": "assertions",
-			"nuMessageIds": [
-				"nv-6a315801d64c"
-			]
-		},
-		{
 			"path": "html/assertions/multiple-meta-charset-novalid.html",
 			"category": "assertions",
 			"nuMessageIds": [
@@ -578,13 +522,6 @@
 			"category": "invalid-attr",
 			"nuMessageIds": [
 				"nv-d0fb98c66c68"
-			]
-		},
-		{
-			"path": "html/elements/a/href/scheme-data-contains-fragment-haswarn.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-3a1dc1374ed4"
 			]
 		},
 		{
@@ -865,13 +802,6 @@
 			"category": "invalid-attr",
 			"nuMessageIds": [
 				"nv-57947531914f"
-			]
-		},
-		{
-			"path": "html/elements/area/href/scheme-data-contains-fragment-haswarn.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-cdb4535e049d"
 			]
 		},
 		{
@@ -1166,13 +1096,6 @@
 			"category": "invalid-attr",
 			"nuMessageIds": [
 				"nv-469d245cd5d7"
-			]
-		},
-		{
-			"path": "html/elements/audio/src/scheme-data-contains-fragment-haswarn.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-60706ef20301"
 			]
 		},
 		{
@@ -2032,13 +1955,6 @@
 			]
 		},
 		{
-			"path": "html/elements/blockquote/cite/scheme-data-contains-fragment-haswarn.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-ed1dbf9dfa0f"
-			]
-		},
-		{
 			"path": "html/elements/blockquote/cite/scheme-data-single-slash-novalid.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [
@@ -2333,13 +2249,6 @@
 			]
 		},
 		{
-			"path": "html/elements/button/formaction/scheme-data-contains-fragment-haswarn.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-82f38369e99e"
-			]
-		},
-		{
 			"path": "html/elements/button/formaction/scheme-data-single-slash-novalid.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [
@@ -2610,13 +2519,6 @@
 			"category": "invalid-attr",
 			"nuMessageIds": [
 				"nv-1911822778be"
-			]
-		},
-		{
-			"path": "html/elements/del/cite/scheme-data-contains-fragment-haswarn.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-6d168c2d3178"
 			]
 		},
 		{
@@ -2994,13 +2896,6 @@
 			]
 		},
 		{
-			"path": "html/elements/embed/src/scheme-data-contains-fragment-haswarn.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-27ddcd34ac6d"
-			]
-		},
-		{
 			"path": "html/elements/embed/src/scheme-data-single-slash-novalid.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [
@@ -3288,13 +3183,6 @@
 			]
 		},
 		{
-			"path": "html/elements/form/action/scheme-data-contains-fragment-haswarn.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-0a21d5f3b754"
-			]
-		},
-		{
 			"path": "html/elements/form/action/scheme-data-single-slash-novalid.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [
@@ -3579,13 +3467,6 @@
 			"category": "invalid-attr",
 			"nuMessageIds": [
 				"nv-9a8b207618df"
-			]
-		},
-		{
-			"path": "html/elements/iframe/src/scheme-data-contains-fragment-haswarn.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-344c8ec6a993"
 			]
 		},
 		{
@@ -3909,13 +3790,6 @@
 			"category": "invalid-attr",
 			"nuMessageIds": [
 				"nv-8bd94ec4b58f"
-			]
-		},
-		{
-			"path": "html/elements/img/src/scheme-data-contains-fragment-haswarn.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-8c9d69a03039"
 			]
 		},
 		{
@@ -4311,13 +4185,6 @@
 			]
 		},
 		{
-			"path": "html/elements/input/type-image-formaction/scheme-data-contains-fragment-haswarn.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-ad82b8a8c1e5"
-			]
-		},
-		{
 			"path": "html/elements/input/type-image-formaction/scheme-data-single-slash-novalid.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [
@@ -4605,13 +4472,6 @@
 			]
 		},
 		{
-			"path": "html/elements/input/type-image-src/scheme-data-contains-fragment-haswarn.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-e683359e52e5"
-			]
-		},
-		{
 			"path": "html/elements/input/type-image-src/scheme-data-single-slash-novalid.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [
@@ -4896,13 +4756,6 @@
 			"category": "invalid-attr",
 			"nuMessageIds": [
 				"nv-41a1b967fa75"
-			]
-		},
-		{
-			"path": "html/elements/input/type-submit-formaction/scheme-data-contains-fragment-haswarn.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-8c1d1d42e012"
 			]
 		},
 		{
@@ -5242,13 +5095,6 @@
 			]
 		},
 		{
-			"path": "html/elements/input/type-url-value/scheme-data-contains-fragment-haswarn.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-6872c643a823"
-			]
-		},
-		{
 			"path": "html/elements/input/type-url-value/scheme-data-single-slash-novalid.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [
@@ -5526,13 +5372,6 @@
 			"category": "invalid-attr",
 			"nuMessageIds": [
 				"nv-a4368fe28077"
-			]
-		},
-		{
-			"path": "html/elements/ins/cite/scheme-data-contains-fragment-haswarn.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-27b353000357"
 			]
 		},
 		{
@@ -5957,13 +5796,6 @@
 			]
 		},
 		{
-			"path": "html/elements/link/href/scheme-data-contains-fragment-haswarn.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-5b612865391d"
-			]
-		},
-		{
 			"path": "html/elements/link/href/scheme-data-single-slash-novalid.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [
@@ -6323,41 +6155,6 @@
 			]
 		},
 		{
-			"path": "html/elements/meter/high-below-min-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-fc3772045cd4"
-			]
-		},
-		{
-			"path": "html/elements/meter/high-exceeds-max-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-b44794b47432"
-			]
-		},
-		{
-			"path": "html/elements/meter/low-below-min-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-0e4078d742d6"
-			]
-		},
-		{
-			"path": "html/elements/meter/low-exceeds-high-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-7582f7aa877e"
-			]
-		},
-		{
-			"path": "html/elements/meter/low-exceeds-max-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-0ea2edc05d4e"
-			]
-		},
-		{
 			"path": "html/elements/meter/max-below-zero-novalid.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [
@@ -6366,62 +6163,10 @@
 			]
 		},
 		{
-			"path": "html/elements/meter/min-exceeds-max-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-42ea3699c36e",
-				"nv-cc81f2c35d98",
-				"nv-8df6c3f511e7"
-			]
-		},
-		{
-			"path": "html/elements/meter/min-exceeds-one-no-max-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-8bdfc0bf20ab",
-				"nv-ad4a36e8c36d"
-			]
-		},
-		{
-			"path": "html/elements/meter/min-exceeds-value-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-b2e77b2ca402"
-			]
-		},
-		{
-			"path": "html/elements/meter/optimum-below-min-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-abea8bde3e90"
-			]
-		},
-		{
-			"path": "html/elements/meter/optimum-exceeds-max-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-d88edf520c77"
-			]
-		},
-		{
-			"path": "html/elements/meter/value-below-min-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-d4d069f89f3d"
-			]
-		},
-		{
 			"path": "html/elements/meter/value-below-zero-no-min-novalid.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [
 				"nv-2aa240d32228"
-			]
-		},
-		{
-			"path": "html/elements/meter/value-exceeds-max-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-331806de4adb"
 			]
 		},
 		{
@@ -6485,13 +6230,6 @@
 			"category": "invalid-attr",
 			"nuMessageIds": [
 				"nv-4282d7b546e1"
-			]
-		},
-		{
-			"path": "html/elements/object/data/scheme-data-contains-fragment-haswarn.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-372749d0395d"
 			]
 		},
 		{
@@ -6919,20 +6657,6 @@
 			]
 		},
 		{
-			"path": "html/elements/progress/value-exceeds-max-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-ebd8f3d61422"
-			]
-		},
-		{
-			"path": "html/elements/progress/value-exceeds-one-no-max-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-077fa3dae0ce"
-			]
-		},
-		{
 			"path": "html/elements/progress/value-negative-novalid.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [
@@ -6979,13 +6703,6 @@
 			"category": "invalid-attr",
 			"nuMessageIds": [
 				"nv-f51fbe4723df"
-			]
-		},
-		{
-			"path": "html/elements/q/cite/scheme-data-contains-fragment-haswarn.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-3cd607b1d358"
 			]
 		},
 		{
@@ -7766,13 +7483,6 @@
 			]
 		},
 		{
-			"path": "html/elements/script/src/scheme-data-contains-fragment-haswarn.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-d2a73eb7f342"
-			]
-		},
-		{
 			"path": "html/elements/script/src/scheme-data-single-slash-novalid.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [
@@ -8092,13 +7802,6 @@
 			"category": "invalid-attr",
 			"nuMessageIds": [
 				"nv-8ca9e856545a"
-			]
-		},
-		{
-			"path": "html/elements/source/src/scheme-data-contains-fragment-haswarn.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-c98e0d290a6d"
 			]
 		},
 		{
@@ -8502,13 +8205,6 @@
 			]
 		},
 		{
-			"path": "html/elements/track/src/scheme-data-contains-fragment-haswarn.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-22da233e51c1"
-			]
-		},
-		{
 			"path": "html/elements/track/src/scheme-data-single-slash-novalid.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [
@@ -8796,13 +8492,6 @@
 			]
 		},
 		{
-			"path": "html/elements/video/poster/scheme-data-contains-fragment-haswarn.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-f66fce25c1d0"
-			]
-		},
-		{
 			"path": "html/elements/video/poster/scheme-data-single-slash-novalid.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [
@@ -9073,13 +8762,6 @@
 			"category": "invalid-attr",
 			"nuMessageIds": [
 				"nv-891187d4b5b1"
-			]
-		},
-		{
-			"path": "html/elements/video/src/scheme-data-contains-fragment-haswarn.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-1f2c65f495dc"
 			]
 		},
 		{
@@ -9412,13 +9094,6 @@
 			]
 		},
 		{
-			"path": "html/microdata/itemid-scheme-data-contains-fragment-haswarn.html",
-			"category": "uncategorized",
-			"nuMessageIds": [
-				"nv-72908421456b"
-			]
-		},
-		{
 			"path": "html/microdata/itemid-without-itemscope-novalid.html",
 			"category": "uncategorized",
 			"nuMessageIds": [
@@ -9731,13 +9406,6 @@
 			"category": "uncategorized",
 			"nuMessageIds": [
 				"nv-056325bb7b3f"
-			]
-		},
-		{
-			"path": "html/microdata/itemtype-scheme-data-contains-fragment-haswarn.html",
-			"category": "uncategorized",
-			"nuMessageIds": [
-				"nv-5e72124bb955"
 			]
 		},
 		{

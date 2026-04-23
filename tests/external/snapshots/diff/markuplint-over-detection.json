@@ -7162,6 +7162,13 @@
 			]
 		},
 		{
+			"path": "html/elements/base/href/scheme-data-contains-fragment-haswarn.html",
+			"category": "invalid-attr",
+			"ruleIds": [
+				"invalid-attr"
+			]
+		},
+		{
 			"path": "html/elements/base/href/scheme-data-no-slash-isvalid.html",
 			"category": "invalid-attr",
 			"ruleIds": [
@@ -7481,6 +7488,20 @@
 			"category": "invalid-attr",
 			"ruleIds": [
 				"deprecated-attr"
+			]
+		},
+		{
+			"path": "html/elements/table/rowspan-exceeds-65534-novalid.html",
+			"category": "invalid-attr",
+			"ruleIds": [
+				"invalid-attr"
+			]
+		},
+		{
+			"path": "html/elements/table/rowspan-exceeds-max-novalid.html",
+			"category": "invalid-attr",
+			"ruleIds": [
+				"invalid-attr"
 			]
 		},
 		{
