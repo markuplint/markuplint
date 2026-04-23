@@ -11,8 +11,7 @@
 - files: **5442**
 - match-error: **2058** (both tools flagged)
 - match-clean: **926** (neither flagged)
-- ml-only: **978** (only markuplint flagged; no spec ruling)
-- nu-only: **1455** (only nu-validator flagged; markuplint coverage candidates — file a markuplint issue after a spec read)
+- nu-only: **1455** (only nu-validator flagged; markuplint coverage candidates — open a markuplint issue after a spec read)
 - nu-over: **25** (nu-validator errors fully covered by spec-backed excluded-ids — confirmed over-detection)
 - overall match rate: **54.8%**
 - excluded-ids: 0 entries, 1 pattern(s)
@@ -32,7 +31,11 @@
 | required-attr | 5 | 80.0% | 4 | 0 | 0 | 1 | 0 |
 | uncategorized | 1307 | 28.5% | 211 | 162 | 766 | 166 | 2 |
 
-## Top ml-only rules (candidates for markuplint-vs-spec audit)
+## Informational: ml-only
+
+**978** fixtures are flagged only by markuplint. This project does not pursue upstream nu-validator reports, so those fixtures feed a narrower audit: confirm with the spec, and if markuplint is the wrong one, fix the rule. The full list lives in `snapshots/diff/markuplint-only.json`.
+
+### Top ml-only rules
 
 | Rule | Count |
 | --- | ---: |
@@ -47,5 +50,5 @@
 | wai-aria-value | 11 |
 | wai-aria-required-props | 8 |
 
-> `nu-only` entries are candidates for markuplint coverage work **after** verifying the relevant spec paragraph. `nu-over` entries are already confirmed nu-validator over-detection via `excluded-ids.json`. `ml-only` is neutral — either tool could be wrong; audit the spec before acting.
+> `nu-only` entries are candidates for markuplint coverage work **after** verifying the relevant spec paragraph. `nu-over` entries are already confirmed nu-validator over-detection via `excluded-ids.json`. `ml-only` is informational; audit the spec before acting on any individual row.
 

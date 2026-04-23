@@ -105,10 +105,7 @@ export async function runReport(): Promise<void> {
 	lines.push(`- match-error: **${verdictCounts['match-error'] ?? 0}** (both tools flagged)`);
 	lines.push(`- match-clean: **${verdictCounts['match-clean'] ?? 0}** (neither flagged)`);
 	lines.push(
-		`- ml-only: **${verdictCounts['ml-only'] ?? 0}** (only markuplint flagged; no spec ruling)`,
-	);
-	lines.push(
-		`- nu-only: **${verdictCounts['nu-only'] ?? 0}** (only nu-validator flagged; markuplint coverage candidates — file a markuplint issue after a spec read)`,
+		`- nu-only: **${verdictCounts['nu-only'] ?? 0}** (only nu-validator flagged; markuplint coverage candidates — open a markuplint issue after a spec read)`,
 	);
 	lines.push(
 		`- nu-over: **${verdictCounts['nu-over'] ?? 0}** (nu-validator errors fully covered by spec-backed excluded-ids — confirmed over-detection)`,
@@ -129,8 +126,14 @@ export async function runReport(): Promise<void> {
 	}
 	lines.push('');
 
+	lines.push('## Informational: ml-only', '');
+	lines.push(
+		`**${verdictCounts['ml-only'] ?? 0}** fixtures are flagged only by markuplint. This project does not pursue upstream nu-validator reports, so those fixtures feed a narrower audit: confirm with the spec, and if markuplint is the wrong one, fix the rule. The full list lives in \`snapshots/diff/markuplint-only.json\`.`,
+	);
+	lines.push('');
+
 	if (mlOnlyRules.length > 0) {
-		lines.push('## Top ml-only rules (candidates for markuplint-vs-spec audit)', '');
+		lines.push('### Top ml-only rules', '');
 		lines.push('| Rule | Count |');
 		lines.push('| --- | ---: |');
 		for (const [rule, n] of mlOnlyRules) {
@@ -140,7 +143,7 @@ export async function runReport(): Promise<void> {
 	}
 
 	lines.push(
-		'> `nu-only` entries are candidates for markuplint coverage work **after** verifying the relevant spec paragraph. `nu-over` entries are already confirmed nu-validator over-detection via `excluded-ids.json`. `ml-only` is neutral — either tool could be wrong; audit the spec before acting.',
+		'> `nu-only` entries are candidates for markuplint coverage work **after** verifying the relevant spec paragraph. `nu-over` entries are already confirmed nu-validator over-detection via `excluded-ids.json`. `ml-only` is informational; audit the spec before acting on any individual row.',
 	);
 	lines.push('');
 

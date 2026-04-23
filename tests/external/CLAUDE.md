@@ -14,9 +14,11 @@ Running the pipeline gives five derived artefacts under
 - `coverage.json` — per-file verdict against the `validator/validator`
   test suite. Verdict values:
   - `match-error` / `match-clean` — both tools agree (flag / don't flag).
-  - `ml-only` — only markuplint flagged. Mechanical fact. Could be a
-    markuplint false positive **or** a nu-validator gap; a spec read is
-    required before acting.
+  - `ml-only` — only markuplint flagged. Mechanical fact, kept for
+    reference rather than for upstream action (this project does not
+    pursue nu-validator bug reports). The actionable subset is "spec
+    says markuplint is wrong" → fix the markuplint rule. The other
+    half ("spec says nu is lax") is informational only.
   - `nu-only` — only nu-validator flagged, and no spec-backed exclusion
     covers it. Candidate for markuplint coverage work, **after** a spec
     read confirms nu is right.
@@ -119,7 +121,7 @@ What this means in practice:
 - **`--concurrency 1`** takes ~10–15 min and is fully deterministic.
   Reach for it when investigating a specific nu-only / nu-over entry (so you
   know the error actually reproduces), when bisecting a snapshot
-  diff, or when filing an upstream nu-validator report.
+  diff.
 
 `--concurrency` is purely a speed/determinism knob; the committed
 derivatives are stable enough for PR review regardless.
@@ -174,8 +176,9 @@ yarn bench:update --target nu --concurrency 1 --filter 'html-aria/**/<file>.html
 ```
 
 That leg finishes in seconds for a narrow filter and gives you a
-stable baseline before opening a markuplint issue (`nu-only`) or
-an upstream nu-validator issue (`nu-over`).
+stable baseline before opening a markuplint issue (`nu-only`, when
+the spec backs nu) or recording a new `excluded-ids.json` entry
+(`nu-over` confirmation).
 
 ### Auditing a claim against the benchmark
 
@@ -347,8 +350,8 @@ right or wrong until you read the spec.
 | verdict | what the verdict tells you | spec question | if spec forbids the markup | if spec permits the markup |
 | --- | --- | --- | --- | --- |
 | `match-error` | both tools flagged | Does the spec actually forbid this markup? | both correct, nothing to do | both over-detecting; open issues against both |
-| `match-clean` | neither tool flagged (and no nu errors were excluded) | Does the spec actually permit this markup? | both under-detecting; propose a new markuplint rule **and** file an upstream report to nu | both correct, nothing to do |
-| `ml-only` | only markuplint flagged, mechanical fact | Does the spec forbid this markup? | markuplint correct; nu-validator has a gap — file an upstream report | nu-validator correct; markuplint has a false positive — fix the markuplint rule |
+| `match-clean` | neither tool flagged (and no nu errors were excluded) | Does the spec actually permit this markup? | both under-detecting; propose a new markuplint rule or spec-data update (nu is not pursued upstream from here) | both correct, nothing to do |
+| `ml-only` | only markuplint flagged, mechanical fact | Does the spec forbid this markup? | markuplint correct, nu is lax — informational only (we don't file upstream nu reports) | nu-validator correct; markuplint has a false positive — fix the markuplint rule |
 | `nu-only` | only nu flagged, no spec-backed exclusion covers it | Does the spec forbid this markup? | nu correct; markuplint has a gap — open a markuplint issue / extend coverage | nu is over-detecting; add a spec-cited `excluded-ids.json` entry or pattern so the verdict becomes `nu-over` next run |
 | `nu-over` | nu flagged but every message is already excluded via a spec-backed rule | (already decided) | — | — |
 
