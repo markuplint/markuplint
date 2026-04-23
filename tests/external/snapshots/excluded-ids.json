@@ -1,6 +1,34 @@
 {
 	"$schema": "../bench/schema/excluded-ids.schema.json",
-	"entries": [],
+	"entries": [
+		{
+			"id": "nv-c57d9ac83548",
+			"path": "html/elements/meta/refresh-invalid-keyword-novalid.html",
+			"nuMessage": "Bad value “5; href=http://example.com” for attribute “content” on element “meta”: Expected a space character, but saw “h” instead.",
+			"reason": "HTML LS §4.2.5.3 clause 3.3 accepts the URL part as either 'URL=<url>' or a bare 'valid URL potentially surrounded by spaces'. `href=http://example.com` is itself a parseable relative-URL string (the '=' is a valid path code point per URL LS), so it matches the bare-URL alternative and the content value is spec-conformant. nu-validator treats only the literal 'URL=' keyword path as valid; that is stricter than HTML LS.",
+			"specUrl": "https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-http-equiv-refresh",
+			"addedAt": "2026-04-23",
+			"addedBy": "hirao"
+		},
+		{
+			"id": "nv-f26bf6cca5a8",
+			"path": "html/elements/meta/refresh-missing-space-novalid.html",
+			"nuMessage": "Bad value “5;url=http://example.com” for attribute “content” on element “meta”: Expected a space character, but saw “u” instead.",
+			"reason": "HTML LS §4.2.5.3 clause 3.2 — 'Optionally, ASCII whitespace.' — makes the whitespace after the ';' or ',' separator optional. `5;url=http://example.com` matches the grammar and is spec-conformant. nu-validator requires a space after the separator; that is stricter than HTML LS.",
+			"specUrl": "https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-http-equiv-refresh",
+			"addedAt": "2026-04-23",
+			"addedBy": "hirao"
+		},
+		{
+			"id": "nv-59fd76f96902",
+			"path": "html/elements/meta/refresh-quoted-url-novalid.html",
+			"nuMessage": "Bad value “5; url='http://example.com'” for attribute “content” on element “meta”: Expected an unquoted URL.",
+			"reason": "HTML LS §4.2.5.3 clause 3.3 requires a 'valid URL potentially surrounded by spaces'. U+0027 (') is a URL code point (URL LS §3.5), so `'http://example.com'` is a parseable relative-URL string — it serialises to a path segment containing the quotes. The content value is spec-conformant. nu-validator rejects single-quoted URLs by convention; that is stricter than HTML LS.",
+			"specUrl": "https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-http-equiv-refresh",
+			"addedAt": "2026-04-23",
+			"addedBy": "hirao"
+		}
+	],
 	"patterns": [
 		{
 			"messageContains": "Fragment is not allowed for data: URIs according to RFC 2397",
