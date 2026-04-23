@@ -125,13 +125,24 @@ export type ExcludedIds = {
 /**
  * Per-file judgment produced by `compare()`.
  *
+ * The four "mechanical" verdicts are purely observational — they record
+ * what each tool emitted, not who is right. Spec-backed judgement lives in
+ * `excluded-ids.json`; an entry there promotes `nu-only` to `nu-over`.
+ *
  * - `match-error`   — both tools reported an error.
- * - `match-clean`   — both tools cleared the file.
- * - `ml-over`       — markuplint reported an error that nu-validator did not.
- * - `nu-over`       — nu-validator reported an error that markuplint did not
- *                     (candidate for `excluded-ids.json`).
+ * - `match-clean`   — both tools cleared the file with nothing excluded.
+ * - `ml-only`       — markuplint reported an error, nu-validator did not.
+ *                     Without a spec audit this is unclassified; it could
+ *                     be a markuplint false positive or a nu-validator gap.
+ * - `nu-only`       — nu-validator reported an error, markuplint did not,
+ *                     and no spec-backed exclusion covers it. Candidate
+ *                     for markuplint coverage work.
+ * - `nu-over`       — nu-validator reported an error, every such error is
+ *                     covered by a spec-backed entry in `excluded-ids.json`,
+ *                     and markuplint is clean. Confirmed nu-validator
+ *                     over-detection; no markuplint change needed.
  */
-export type Verdict = 'match-error' | 'match-clean' | 'ml-over' | 'nu-over';
+export type Verdict = 'match-error' | 'match-clean' | 'ml-only' | 'nu-only' | 'nu-over';
 
 /** One entry of `snapshots/diff/coverage.json`. */
 export type CoverageEntry = {

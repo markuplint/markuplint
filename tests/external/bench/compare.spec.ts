@@ -83,8 +83,9 @@ describe('compare', () => {
 		);
 		expect(out.coverage.entries).toHaveLength(1);
 		expect(out.coverage.entries[0]?.verdict).toBe('match-error');
-		expect(out.mlOverDetection).toHaveLength(0);
-		expect(out.nuOverDetection).toHaveLength(0);
+		expect(out.mlOnly).toHaveLength(0);
+		expect(out.nuOnly).toHaveLength(0);
+		expect(out.nuOver).toHaveLength(0);
 	});
 
 	test('both clean → match-clean', () => {
@@ -92,27 +93,28 @@ describe('compare', () => {
 		expect(out.coverage.entries[0]?.verdict).toBe('match-clean');
 	});
 
-	test('ml flags, nu clean → ml-over', () => {
+	test('ml flags, nu clean → ml-only (mechanical, no spec ruling)', () => {
 		const out = compare(
 			inputs([nuSnap('html/elements/a.html')], [mlSnap('html/elements/a.html', [{ ruleId: 'invalid-attr' }])]),
 		);
-		expect(out.coverage.entries[0]?.verdict).toBe('ml-over');
-		expect(out.mlOverDetection).toHaveLength(1);
-		expect(out.mlOverDetection[0]?.ruleIds).toEqual(['invalid-attr']);
+		expect(out.coverage.entries[0]?.verdict).toBe('ml-only');
+		expect(out.mlOnly).toHaveLength(1);
+		expect(out.mlOnly[0]?.ruleIds).toEqual(['invalid-attr']);
 	});
 
-	test('nu flags, ml clean → nu-over', () => {
+	test('nu flags, ml clean, no exclusion → nu-only (markuplint gap candidate)', () => {
 		const out = compare(
 			inputs(
 				[nuSnap('html/elements/a.html', [{ id: 'nv-xxx', type: 'error', message: 'e' }])],
 				[mlSnap('html/elements/a.html')],
 			),
 		);
-		expect(out.coverage.entries[0]?.verdict).toBe('nu-over');
-		expect(out.nuOverDetection[0]?.nuMessageIds).toEqual(['nv-xxx']);
+		expect(out.coverage.entries[0]?.verdict).toBe('nu-only');
+		expect(out.nuOnly[0]?.nuMessageIds).toEqual(['nv-xxx']);
+		expect(out.nuOver).toHaveLength(0);
 	});
 
-	test('excluded ids collapse nu-over into match-clean', () => {
+	test('nu flags all excluded, ml clean → nu-over (spec-confirmed over-detection)', () => {
 		const out = compare(
 			inputs(
 				[nuSnap('html/elements/a.html', [{ id: 'nv-excluded', type: 'error' }])],
@@ -120,9 +122,28 @@ describe('compare', () => {
 				['nv-excluded'],
 			),
 		);
-		expect(out.coverage.entries[0]?.verdict).toBe('match-clean');
+		expect(out.coverage.entries[0]?.verdict).toBe('nu-over');
 		expect(out.coverage.entries[0]?.excludedIds).toEqual(['nv-excluded']);
-		expect(out.nuOverDetection).toHaveLength(0);
+		expect(out.nuOver[0]?.nuMessageIds).toEqual(['nv-excluded']);
+		expect(out.nuOnly).toHaveLength(0);
+	});
+
+	test('partial exclusion stays nu-only (not every nu error is excluded)', () => {
+		const out = compare(
+			inputs(
+				[
+					nuSnap('html/elements/a.html', [
+						{ id: 'nv-x', type: 'error', message: 'excluded' },
+						{ id: 'nv-y', type: 'error', message: 'still active' },
+					]),
+				],
+				[mlSnap('html/elements/a.html')],
+				['nv-x'],
+			),
+		);
+		expect(out.coverage.entries[0]?.verdict).toBe('nu-only');
+		expect(out.coverage.entries[0]?.excludedIds).toEqual(['nv-x']);
+		expect(out.nuOnly[0]?.nuMessageIds).toEqual(['nv-y']);
 	});
 
 	test('pattern exclusion matches any nu message containing the substring', () => {
@@ -140,12 +161,12 @@ describe('compare', () => {
 			),
 		);
 		const byPath = Object.fromEntries(out.coverage.entries.map(e => [e.path, e]));
-		expect(byPath['html/elements/a.html']?.verdict).toBe('match-clean');
+		expect(byPath['html/elements/a.html']?.verdict).toBe('nu-over');
 		expect(byPath['html/elements/a.html']?.excludedIds).toEqual(['nv-p1']);
-		expect(byPath['html/elements/b.html']?.verdict).toBe('nu-over');
+		expect(byPath['html/elements/b.html']?.verdict).toBe('nu-only');
 	});
 
-	test('pattern and id exclusions compose — both record the message id as excluded', () => {
+	test('pattern and id exclusions compose — the fixture becomes nu-over when both cover everything', () => {
 		const out = compare(
 			inputs(
 				[
@@ -159,7 +180,7 @@ describe('compare', () => {
 				[{ messageContains: 'must be less than or equal to' }],
 			),
 		);
-		expect(out.coverage.entries[0]?.verdict).toBe('match-clean');
+		expect(out.coverage.entries[0]?.verdict).toBe('nu-over');
 		expect(out.coverage.entries[0]?.excludedIds.sort()).toEqual(['nv-first', 'nv-second']);
 	});
 
@@ -192,8 +213,8 @@ describe('compare', () => {
 			),
 		);
 		expect(out.coverage.entries.map(e => e.path)).toEqual(['html/elements/a.html']);
-		expect(out.unpaired.nuOnly).toEqual(['html/elements/b.html']);
-		expect(out.unpaired.mlOnly).toEqual([]);
+		expect(out.unpaired.nuSnapshotOnly).toEqual(['html/elements/b.html']);
+		expect(out.unpaired.mlSnapshotOnly).toEqual([]);
 	});
 
 	test('category is populated from inferCategory', () => {
@@ -206,7 +227,7 @@ describe('compare', () => {
 		expect(out.coverage.entries[0]?.category).toBe('aria');
 	});
 
-	test('ml over-detection groups unique ruleIds in sorted order', () => {
+	test('ml-only groups unique ruleIds in sorted order', () => {
 		const out = compare(
 			inputs(
 				[nuSnap('html/elements/a.html')],
@@ -219,6 +240,6 @@ describe('compare', () => {
 				],
 			),
 		);
-		expect(out.mlOverDetection[0]?.ruleIds).toEqual(['invalid-attr', 'permitted-contents']);
+		expect(out.mlOnly[0]?.ruleIds).toEqual(['invalid-attr', 'permitted-contents']);
 	});
 });

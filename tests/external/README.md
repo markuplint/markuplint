@@ -20,5 +20,5 @@ are git-ignored and regenerate locally. Git tracks only the diff
 summary, exclusion list, metadata, and generated spec.
 
 Artefacts to review: `snapshots/diff/summary.md`,
-`snapshots/diff/coverage.json`, and the two `*-over-detection.json`
-files alongside them.
+`snapshots/diff/coverage.json`, and the `markuplint-only.json` /
+`nu-only.json` / `nu-over.json` splits alongside them.

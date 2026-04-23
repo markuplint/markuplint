@@ -29,5 +29,11 @@ export const META_PATH = join(SNAPSHOTS_DIR, 'meta.json');
 export const EXCLUDED_IDS_PATH = join(SNAPSHOTS_DIR, 'excluded-ids.json');
 /** `tests/external/snapshots/diff/nu-failures.json` — files where the nu call errored. */
 export const NU_FAILURES_PATH = join(DIFF_DIR, 'nu-failures.json');
+/** `tests/external/snapshots/diff/markuplint-only.json` — fixtures only markuplint flagged. */
+export const ML_ONLY_PATH = join(DIFF_DIR, 'markuplint-only.json');
+/** `tests/external/snapshots/diff/nu-only.json` — fixtures only nu-validator flagged (no spec ruling yet). */
+export const NU_ONLY_PATH = join(DIFF_DIR, 'nu-only.json');
+/** `tests/external/snapshots/diff/nu-over.json` — nu-validator errors confirmed as over-detection via spec-backed exclusions. */
+export const NU_OVER_PATH = join(DIFF_DIR, 'nu-over.json');
 /** `tests/external/spec/nu-validator.spec.ts` — generated dispatcher. */
 export const SPEC_PATH = join(EXTERNAL_DIR, 'spec', 'nu-validator.spec.ts');

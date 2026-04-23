@@ -4,7 +4,7 @@ import { join } from 'node:path';
 
 import { readJson } from './fs-utils.ts';
 import { isCliEntry } from './is-cli-entry.ts';
-import { DIFF_DIR, META_PATH, SNAPSHOTS_DIR } from './paths.ts';
+import { DIFF_DIR, META_PATH, ML_ONLY_PATH, NU_ONLY_PATH, NU_OVER_PATH, SNAPSHOTS_DIR } from './paths.ts';
 import type { Coverage, CoverageEntry, ExcludedIds, Meta, OverDetectionEntry, Verdict } from './types.ts';
 
 type Entries<T> = { readonly entries: readonly T[] };
@@ -52,10 +52,11 @@ export async function runReport(): Promise<void> {
 		throw new Error('coverage.json not found; run yarn bench:update && yarn bench:compare first');
 	}
 
-	const [coverage, mlOverData, nuOverData, meta] = await Promise.all([
+	const [coverage, mlOnlyData, nuOnlyData, nuOverData, meta] = await Promise.all([
 		readJson<Coverage>(join(DIFF_DIR, 'coverage.json')),
-		readJson<Entries<OverDetectionEntry>>(join(DIFF_DIR, 'markuplint-over-detection.json')),
-		readJson<Entries<OverDetectionEntry>>(join(DIFF_DIR, 'nu-over-detection.json')),
+		readJson<Entries<OverDetectionEntry>>(ML_ONLY_PATH),
+		readJson<Entries<OverDetectionEntry>>(NU_ONLY_PATH),
+		readJson<Entries<OverDetectionEntry>>(NU_OVER_PATH),
 		existsSync(META_PATH) ? readJson<Meta>(META_PATH) : Promise.resolve(null),
 	]);
 
@@ -77,14 +78,15 @@ export async function runReport(): Promise<void> {
 				matchRate: percent(match, list.length),
 				matchError: c['match-error'] ?? 0,
 				matchClean: c['match-clean'] ?? 0,
-				mlOver: c['ml-over'] ?? 0,
+				mlOnly: c['ml-only'] ?? 0,
+				nuOnly: c['nu-only'] ?? 0,
 				nuOver: c['nu-over'] ?? 0,
 			};
 		})
 		.sort((a, b) => a.category.localeCompare(b.category));
 
-	const mlOverRules = topN(
-		mlOverData.entries.flatMap(e => e.ruleIds ?? []),
+	const mlOnlyRules = topN(
+		mlOnlyData.entries.flatMap(e => e.ruleIds ?? []),
 		10,
 	);
 
@@ -100,10 +102,17 @@ export async function runReport(): Promise<void> {
 	}
 	lines.push('## Totals', '');
 	lines.push(`- files: **${total}**`);
-	lines.push(`- match-error: **${verdictCounts['match-error'] ?? 0}**`);
-	lines.push(`- match-clean: **${verdictCounts['match-clean'] ?? 0}**`);
-	lines.push(`- ml-over (markuplint over-detection): **${verdictCounts['ml-over'] ?? 0}**`);
-	lines.push(`- nu-over (nu-validator over-detection): **${verdictCounts['nu-over'] ?? 0}**`);
+	lines.push(`- match-error: **${verdictCounts['match-error'] ?? 0}** (both tools flagged)`);
+	lines.push(`- match-clean: **${verdictCounts['match-clean'] ?? 0}** (neither flagged)`);
+	lines.push(
+		`- ml-only: **${verdictCounts['ml-only'] ?? 0}** (only markuplint flagged; no spec ruling)`,
+	);
+	lines.push(
+		`- nu-only: **${verdictCounts['nu-only'] ?? 0}** (only nu-validator flagged; markuplint coverage candidates — file a markuplint issue after a spec read)`,
+	);
+	lines.push(
+		`- nu-over: **${verdictCounts['nu-over'] ?? 0}** (nu-validator errors fully covered by spec-backed excluded-ids — confirmed over-detection)`,
+	);
 	const matchCount = (verdictCounts['match-error'] ?? 0) + (verdictCounts['match-clean'] ?? 0);
 	lines.push(`- overall match rate: **${percent(matchCount, total)}**`);
 	const patternCount = excludedIds.patterns?.length ?? 0;
@@ -111,29 +120,35 @@ export async function runReport(): Promise<void> {
 	lines.push('');
 
 	lines.push('## Per-Category', '');
-	lines.push('| Category | Files | Match rate | match-error | match-clean | ml-over | nu-over |');
-	lines.push('| --- | ---: | ---: | ---: | ---: | ---: | ---: |');
+	lines.push('| Category | Files | Match rate | match-error | match-clean | ml-only | nu-only | nu-over |');
+	lines.push('| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |');
 	for (const row of categoryRows) {
 		lines.push(
-			`| ${row.category} | ${row.total} | ${row.matchRate} | ${row.matchError} | ${row.matchClean} | ${row.mlOver} | ${row.nuOver} |`,
+			`| ${row.category} | ${row.total} | ${row.matchRate} | ${row.matchError} | ${row.matchClean} | ${row.mlOnly} | ${row.nuOnly} | ${row.nuOver} |`,
 		);
 	}
 	lines.push('');
 
-	if (mlOverRules.length > 0) {
-		lines.push('## Top markuplint over-detection rules', '');
+	if (mlOnlyRules.length > 0) {
+		lines.push('## Top ml-only rules (candidates for markuplint-vs-spec audit)', '');
 		lines.push('| Rule | Count |');
 		lines.push('| --- | ---: |');
-		for (const [rule, n] of mlOverRules) {
+		for (const [rule, n] of mlOnlyRules) {
 			lines.push(`| ${rule} | ${n} |`);
 		}
 		lines.push('');
 	}
 
 	lines.push(
-		'> nu-over entries are candidates for excluded-ids.json when markuplint is correctly not flagging them.',
+		'> `nu-only` entries are candidates for markuplint coverage work **after** verifying the relevant spec paragraph. `nu-over` entries are already confirmed nu-validator over-detection via `excluded-ids.json`. `ml-only` is neutral — either tool could be wrong; audit the spec before acting.',
 	);
 	lines.push('');
+
+	// Suppress unused-variable warning; nuOnlyData / nuOverData are intentionally
+	// read so future sections (per-fixture drill-downs) can draw from them without
+	// another disk hit.
+	void nuOnlyData;
+	void nuOverData;
 
 	const outPath = join(DIFF_DIR, 'summary.md');
 	await writeFile(outPath, `${lines.join('\n')}\n`, 'utf8');

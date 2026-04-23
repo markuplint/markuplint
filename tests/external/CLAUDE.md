@@ -8,15 +8,27 @@ snapshot of the coverage gap between the two tools.
 
 ## What the benchmark produces
 
-Running the pipeline gives four derived artefacts under
+Running the pipeline gives five derived artefacts under
 `tests/external/snapshots/`:
 
-- `coverage.json` — per-file verdict (`match-error`, `match-clean`,
-  `ml-over`, `nu-over`) against the `validator/validator` test suite.
-- `markuplint-over-detection.json` — files where markuplint flags an
-  error that nu-validator doesn't.
-- `nu-over-detection.json` — files where nu-validator flags an error
-  that markuplint doesn't (candidates for `excluded-ids.json`).
+- `coverage.json` — per-file verdict against the `validator/validator`
+  test suite. Verdict values:
+  - `match-error` / `match-clean` — both tools agree (flag / don't flag).
+  - `ml-only` — only markuplint flagged. Mechanical fact. Could be a
+    markuplint false positive **or** a nu-validator gap; a spec read is
+    required before acting.
+  - `nu-only` — only nu-validator flagged, and no spec-backed exclusion
+    covers it. Candidate for markuplint coverage work, **after** a spec
+    read confirms nu is right.
+  - `nu-over` — nu-validator flagged, but every such error is covered
+    by a spec-backed entry in `excluded-ids.json`. Confirmed
+    over-detection; no markuplint change needed.
+- `markuplint-only.json` — files where only markuplint flagged
+  (mechanical list; no spec ruling).
+- `nu-only.json` — files where only nu-validator flagged without a
+  spec-backed exclusion (markuplint coverage candidates).
+- `nu-over.json` — files where nu-validator's errors were fully covered
+  by `excluded-ids.json` (audit trail for confirmed nu over-detection).
 - `summary.md` — human-readable totals and per-category match rates.
 
 The inputs to the comparison are two raw snapshot trees
@@ -101,11 +113,11 @@ What this means in practice:
 - **Default (`--concurrency 8`)** finishes in ~2 min on a 5 442-file
   suite. Use this for routine checks, including the summary numbers
   that you commit via `diff/*.json`. The file-level verdict counts
-  (match-error / match-clean / ml-over / nu-over) stay stable even
+  (match-error / match-clean / ml-only / nu-only / nu-over) stay stable even
   when individual messages flicker — the drift is small and cancels
   out in aggregate.
 - **`--concurrency 1`** takes ~10–15 min and is fully deterministic.
-  Reach for it when investigating a specific nu-over entry (so you
+  Reach for it when investigating a specific nu-only / nu-over entry (so you
   know the error actually reproduces), when bisecting a snapshot
   diff, or when filing an upstream nu-validator report.
 
@@ -151,7 +163,7 @@ Still regenerates the diff, spec, and report. Raw markuplint
 snapshots live only on your disk; commit the `diff/*.json` / spec
 changes that fall out of the rerun.
 
-### Reproducing a specific nu-over entry
+### Reproducing a specific nu-only / nu-over entry
 
 Because parallel nu-validator runs flicker on some aria-owns fixtures
 (see [Concurrency and determinism](#concurrency-and-determinism)),
@@ -162,7 +174,8 @@ yarn bench:update --target nu --concurrency 1 --filter 'html-aria/**/<file>.html
 ```
 
 That leg finishes in seconds for a narrow filter and gives you a
-stable baseline before opening an upstream nu-validator issue.
+stable baseline before opening a markuplint issue (`nu-only`) or
+an upstream nu-validator issue (`nu-over`).
 
 ### Auditing a claim against the benchmark
 
@@ -175,9 +188,9 @@ nu-validator message the claim is about.
 #### Step 1: Find fixtures relevant to the claim
 
 `snapshots/diff/coverage.json` contains one entry per fixture with a
-`verdict` (`match-error`, `match-clean`, `ml-over`, `nu-over`) and a
-`category`. Slice it by path pattern to see what the benchmark already
-knows:
+`verdict` (`match-error`, `match-clean`, `ml-only`, `nu-only`,
+`nu-over`) and a `category`. Slice it by path pattern to see what the
+benchmark already knows:
 
 ```sh
 # Paths mentioning "popover" — replace with the claim's pattern
@@ -191,13 +204,13 @@ j.entries
 
 A claim is suspect when:
 
-- Its "missed error" count is bigger than the `nu-over` slice.
+- Its "missed error" count is bigger than the `nu-only` slice.
 - It lists patterns that are all already `match-error` (markuplint
   already catches them, so "missed" is false).
-- It conflates an unrelated `ml-over` in the same area with the
+- It conflates an unrelated `ml-only` in the same area with the
   claim's own scope.
 
-#### Step 2: Inspect the nu-validator messages for a `nu-over` fixture
+#### Step 2: Inspect the nu-validator messages for a `nu-only` / `nu-over` fixture
 
 `snapshots/nu-validator/**` is gitignored, so regenerate it first if
 you have not already (`yarn bench:update --target nu`). Then read the
@@ -228,31 +241,31 @@ s.markuplint.violations.forEach(v =>
 );'
 ```
 
-Seeing zero violations on a `nu-over` fixture confirms the gap the
+Seeing zero violations on a `nu-only` fixture confirms the gap the
 claim describes. Seeing matching violations on what the claim says
-is a `nu-over` refutes the claim.
+is a `nu-only` refutes the claim.
 
 #### Step 4: Aggregate over a category
 
-Use `snapshots/diff/markuplint-over-detection.json` and
-`snapshots/diff/nu-over-detection.json` for rollups. For example, to
-see which markuplint rules fire most often on fixtures nu-validator
-accepts as valid:
+Use `snapshots/diff/markuplint-only.json`,
+`snapshots/diff/nu-only.json`, and `snapshots/diff/nu-over.json` for
+rollups. For example, to see which markuplint rules fire most often on
+fixtures nu-validator accepts as valid:
 
 ```sh
 node -e '
-const j = require("./tests/external/snapshots/diff/markuplint-over-detection.json");
+const j = require("./tests/external/snapshots/diff/markuplint-only.json");
 const c = {};
 for (const e of j.entries) for (const id of e.ruleIds ?? []) c[id] = (c[id] ?? 0) + 1;
 Object.entries(c).sort((a,b) => b[1]-a[1]).forEach(([r, n]) => console.log(n, r));
 '
 ```
 
-or, for nu-over by path prefix:
+or, for nu-only by path prefix (these are markuplint coverage candidates):
 
 ```sh
 node -e '
-const j = require("./tests/external/snapshots/diff/nu-over-detection.json");
+const j = require("./tests/external/snapshots/diff/nu-only.json");
 const c = {};
 for (const e of j.entries) {
   const prefix = e.path.split("/").slice(0, 3).join("/");
@@ -261,6 +274,10 @@ for (const e of j.entries) {
 Object.entries(c).sort((a,b) => b[1]-a[1]).forEach(([p, n]) => console.log(n, p));
 '
 ```
+
+`nu-over.json` holds the already-confirmed over-detection trail —
+useful to sanity-check that an `excluded-ids.json` entry is still
+doing what it was added for.
 
 #### Step 5: Pin a result against `--concurrency 1`
 
@@ -282,10 +299,10 @@ flipped, the earlier observation was noise, not a real gap.
 - Claim confirmed ⇒ keep it on the issue; optionally link the
   relevant snapshot paths so later readers can reproduce.
 - Claim refuted ⇒ close the issue, or rewrite its body so the surviving
-  bullets reference fixtures that really are `nu-over`.
+  bullets reference fixtures that really are `nu-only` / `ml-only`.
 - Scope drift ⇒ split into a narrower issue or follow-ups; include
-  any `ml-over` or `nu-over` fixtures the audit turned up that the
-  original claim did not mention.
+  any `ml-only` / `nu-only` / `nu-over` fixtures the audit turned up
+  that the original claim did not mention.
 
 Remember: the audit only tells you which of the two **tools** emits a
 diagnostic. It does not tell you which tool is **right**. Run the
@@ -323,17 +340,22 @@ markuplint (usually tracks `@markuplint/html-spec`).
 
 The benchmark verdict is a starting hypothesis, not the answer. For
 every fixture you plan to act on, quote the relevant spec paragraph
-verbatim and decide who is spec-conformant:
+verbatim and decide who is spec-conformant. `nu-only` and `ml-only`
+are mechanical facts — they do **not** imply the flagging tool is
+right or wrong until you read the spec.
 
-| verdict | spec question | tool to believe if spec forbids it | tool to believe if spec permits it |
-| --- | --- | --- | --- |
-| `match-error` | Does the spec actually forbid this markup? | both — nothing to do | both — both are over-detecting; open issues against both |
-| `match-clean` | Does the spec actually permit this markup? | both — both are under-detecting; propose a new markuplint rule **and** file an upstream report to nu | both — nothing to do |
-| `ml-over` | Does the spec forbid this markup? | markuplint (file an upstream report to nu) | nu-validator (fix the markuplint rule that fires wrongly) |
-| `nu-over` | Does the spec forbid this markup? | nu-validator (extend markuplint coverage; open an issue) | markuplint (declare the nu message in `excluded-ids.json` with the spec URL as `reason`) |
+| verdict | what the verdict tells you | spec question | if spec forbids the markup | if spec permits the markup |
+| --- | --- | --- | --- | --- |
+| `match-error` | both tools flagged | Does the spec actually forbid this markup? | both correct, nothing to do | both over-detecting; open issues against both |
+| `match-clean` | neither tool flagged (and no nu errors were excluded) | Does the spec actually permit this markup? | both under-detecting; propose a new markuplint rule **and** file an upstream report to nu | both correct, nothing to do |
+| `ml-only` | only markuplint flagged, mechanical fact | Does the spec forbid this markup? | markuplint correct; nu-validator has a gap — file an upstream report | nu-validator correct; markuplint has a false positive — fix the markuplint rule |
+| `nu-only` | only nu flagged, no spec-backed exclusion covers it | Does the spec forbid this markup? | nu correct; markuplint has a gap — open a markuplint issue / extend coverage | nu is over-detecting; add a spec-cited `excluded-ids.json` entry or pattern so the verdict becomes `nu-over` next run |
+| `nu-over` | nu flagged but every message is already excluded via a spec-backed rule | (already decided) | — | — |
 
-Four verdicts × two spec outcomes = eight cases. No verdict is "safe";
-every one of them has a path where both tools are wrong.
+The `nu-over` row is the post-decision state: all nu errors on that
+fixture have been audited and excluded. It is the terminal state for
+confirmed nu-validator over-detection; no further action beyond
+periodic re-audit.
 
 #### Recommended decision flow
 
@@ -362,12 +384,12 @@ every one of them has a path where both tools are wrong.
 
 - For ARIA, pair <https://w3c.github.io/html-aria/#el-&lt;element&gt;>
   with the `allowed roles` / `global states and properties` tables.
-  Most `nu-over` ARIA cases flow from a role dropped from `roletype`'s
+  Most `nu-only` ARIA cases flow from a role dropped from `roletype`'s
   inherited properties in ARIA 1.2 that nu-validator still allows.
 - For URL parsing (itemid, itemtype, href), the spec is the URL
   Living Standard, not the HTML spec. nu-validator embeds galimatias,
   which is older than the current URL spec; that lag accounts for
-  many URL-shaped `nu-over` and some `ml-over` cases.
+  many URL-shaped `nu-only` and some `ml-only` cases.
 - For Microdata, the cross-attribute constraints (`itemid` requires
   both `itemscope` and `itemtype`) live in HTML LS §5.7 and are
   easy to miss because the individual attribute definitions do not
@@ -407,8 +429,10 @@ yarn bench:generate-spec
 yarn bench:report
 ```
 
-The entry no longer counts as `nu-over` and the verdict collapses to
-`match-clean` (or `ml-over` if other active messages remain).
+The fixture's verdict switches from `nu-only` to `nu-over` once every
+active nu error on it is covered by the entry or pattern. If other
+active nu messages remain, the fixture stays `nu-only` (partial
+coverage is not a confirmed over-detection).
 
 #### Batch exclusion by message substring
 
@@ -454,10 +478,10 @@ sentence that justifies it.
 | `Illegal character in …` (path / fragment / domain / port) | **nu correct** — NOT excluded | URL LS validation error `invalid-URL-unit` covers non-URL code points and malformed percent-encoding, including tab, LF, and CR. |
 | `Windows drive letter uses …` | **nu correct** — NOT excluded | URL LS validation error `file-invalid-Windows-drive-letter` / `file-invalid-Windows-drive-letter-host`. |
 
-The rows above mean: most of the remaining `nu-over` volume — the URL-parsing
+The rows above mean: most of the remaining `nu-only` volume — the URL-parsing
 bulk — is **not** up for exclusion. It represents genuine markuplint gaps.
-Treat those rows as input to future markuplint coverage work, not as
-exclusion candidates.
+Treat those rows as input to future markuplint coverage work (open
+issues against markuplint), not as exclusion candidates.
 
 Any message substring not listed above is **unclassified**: do not exclude
 it without first adding a row with a verbatim spec quote and a source URL.
@@ -479,7 +503,7 @@ validator/tests/**/*.html
                                                              │
                               ┌──────────────────────────────┼───────────────────────────┐
                               ▼                              ▼                           ▼
-                      coverage.json         markuplint-over-detection.json    nu-over-detection.json
+                      coverage.json         markuplint-only.json               nu-only.json / nu-over.json
                               │                                                           │
                               │                                                           ▼
                               └──► generate-spec.ts ──► spec/nu-validator.spec.ts    report.ts ──► summary.md

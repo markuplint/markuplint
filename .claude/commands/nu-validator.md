@@ -43,7 +43,7 @@ yarn bench:update:ml
 ```
 
 If the user asks for deterministic output (e.g., to reproduce a
-specific `nu-over` case), add `--concurrency 1`. See
+specific `nu-only` / `nu-over` case), add `--concurrency 1`. See
 `tests/external/CLAUDE.md` for why this matters.
 
 ## Step 4: Show the summary
