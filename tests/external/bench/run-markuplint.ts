@@ -12,12 +12,14 @@ import { ML_SNAPSHOTS_DIR, VALIDATOR_TESTS_DIR } from './paths.ts';
 import { sanitizeMessage } from './sanitize.ts';
 import type { MarkuplintSnapshot, MlViolation } from './types.ts';
 
+/** Caller-facing knobs for `runMarkuplint`. */
 export type RunMarkuplintOptions = {
 	readonly filter?: string;
 	readonly concurrency?: number;
 	readonly dryRun?: boolean;
 };
 
+/** Aggregate statistics returned by `runMarkuplint`. */
 export type RunMarkuplintResult = {
 	readonly version: string;
 	readonly totalFiles: number;
@@ -36,6 +38,17 @@ function sortViolations(violations: readonly MlViolation[]): MlViolation[] {
 	});
 }
 
+/**
+ * Run `mlTest` against every matching HTML fixture with `benchmarkConfig`
+ * and write one JSON snapshot per file under `snapshots/markuplint/`.
+ * Fatal errors (Tier 1 per `docs/architectures/ERROR-HANDLING.md`)
+ * propagate; recoverable errors are recorded on the snapshot via
+ * `parseError` / `parseErrorMessage` and also logged to stderr so
+ * bench runs surface them immediately.
+ *
+ * @param options Filter / concurrency / dry-run overrides.
+ * @returns Aggregate statistics including parse-error count.
+ */
 export async function runMarkuplint(options: RunMarkuplintOptions = {}): Promise<RunMarkuplintResult> {
 	const files = await collectHtmlFiles(VALIDATOR_TESTS_DIR, options.filter);
 	if (files.length === 0) {

@@ -17,16 +17,23 @@ import type {
 	Verdict,
 } from './types.ts';
 
+/** All inputs required to derive `CompareOutput`. */
 export type CompareInputs = {
 	readonly nuSnapshots: Map<string, NuValidatorSnapshot>;
 	readonly mlSnapshots: Map<string, MarkuplintSnapshot>;
 	readonly excludedIds: Set<string>;
 };
 
+/** Pure result of comparing the two snapshot trees. */
 export type CompareOutput = {
 	readonly coverage: Coverage;
 	readonly mlOverDetection: readonly OverDetectionEntry[];
 	readonly nuOverDetection: readonly OverDetectionEntry[];
+	/**
+	 * Files that appear in only one snapshot tree. Should be empty on a
+	 * full `yarn bench:update`; non-empty when `--target` or `--filter`
+	 * narrowed one leg without the other.
+	 */
 	readonly unpaired: {
 		readonly nuOnly: readonly string[];
 		readonly mlOnly: readonly string[];
@@ -42,6 +49,14 @@ async function collectSnapshotPaths(root: string): Promise<string[]> {
 	return out.sort();
 }
 
+/**
+ * Load every snapshot from `snapshots/nu-validator/` and
+ * `snapshots/markuplint/`, plus the curated `excluded-ids.json`. Missing
+ * directories resolve to empty maps so a first-time run reports a clear
+ * "no snapshots found" error higher up.
+ *
+ * @returns Inputs ready to feed into `compare`.
+ */
 export async function loadSnapshots(): Promise<CompareInputs> {
 	const [nuFiles, mlFiles] = await Promise.all([
 		collectSnapshotPaths(NU_SNAPSHOTS_DIR),
@@ -104,6 +119,17 @@ function deriveVerdict(nu: 'error' | 'clean', ml: 'error' | 'clean'): Verdict {
 	return 'nu-over';
 }
 
+/**
+ * Derive verdict data from pre-loaded snapshots. Pure: no filesystem or
+ * network access. Verdict definitions live on the `Verdict` type.
+ *
+ * Excluded IDs are filtered out of the nu-validator error set before the
+ * verdict is computed, so adding an entry to `excluded-ids.json`
+ * automatically collapses that file from `nu-over` to `match-clean`.
+ *
+ * @param inputs Snapshot maps keyed by fixture path plus the exclusion set.
+ * @returns Coverage entries, over-detection breakdowns, and unpaired paths.
+ */
 export function compare(inputs: CompareInputs): CompareOutput {
 	const paths = new Set<string>();
 	for (const key of inputs.nuSnapshots.keys()) paths.add(key);
@@ -159,12 +185,27 @@ export function compare(inputs: CompareInputs): CompareOutput {
 	};
 }
 
+/**
+ * Persist the three diff JSONs under `snapshots/diff/`. Does not touch
+ * `summary.md` — that is written separately by `report.ts` so maintainers
+ * can regenerate just the human-readable view without re-walking snapshots.
+ *
+ * @param output The result of `compare`.
+ */
 export async function writeCompareOutputs(output: CompareOutput): Promise<void> {
 	await writeJson(join(DIFF_DIR, 'coverage.json'), output.coverage);
 	await writeJson(join(DIFF_DIR, 'markuplint-over-detection.json'), { entries: output.mlOverDetection });
 	await writeJson(join(DIFF_DIR, 'nu-over-detection.json'), { entries: output.nuOverDetection });
 }
 
+/**
+ * High-level entry: load snapshots, run `compare`, write the diff JSONs,
+ * and log a one-line summary plus unpaired-file warning (if any). Called
+ * both from the CLI entry and from `update-snapshots` orchestration.
+ *
+ * @returns The `CompareOutput` that was written, for further inspection.
+ * @throws If neither snapshot tree has entries to compare.
+ */
 export async function runCompare(): Promise<CompareOutput> {
 	const inputs = await loadSnapshots();
 	if (inputs.nuSnapshots.size === 0 || inputs.mlSnapshots.size === 0) {

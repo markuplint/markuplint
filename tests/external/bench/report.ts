@@ -39,6 +39,14 @@ function topN(items: Iterable<string>, n: number): [string, number][] {
 		.slice(0, n);
 }
 
+/**
+ * Regenerate `snapshots/diff/summary.md` from the existing diff JSONs and
+ * `meta.json`. Pure over the filesystem: reads the current diff + meta set,
+ * writes only `summary.md`.
+ *
+ * @throws If `coverage.json` is missing. Run `yarn bench:update` (or at
+ *   least `yarn bench:compare`) first.
+ */
 export async function runReport(): Promise<void> {
 	if (!existsSync(join(DIFF_DIR, 'coverage.json'))) {
 		throw new Error('coverage.json not found; run yarn bench:update && yarn bench:compare first');

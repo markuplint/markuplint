@@ -35,6 +35,16 @@ describe('nu-validator benchmark', () => {
 });
 `;
 
+/**
+ * Overwrite `tests/external/spec/nu-validator.spec.ts` with the dispatcher
+ * shown above. The output is a static file with a `// DO NOT EDIT` marker;
+ * contents never change unless this generator is edited, so running the
+ * generator twice in a row produces byte-identical output.
+ *
+ * The dispatcher itself iterates `coverage.json` at import time so it can
+ * grow or shrink without regeneration — regeneration only matters if the
+ * structural shape of the coverage data (e.g. category grouping) changes.
+ */
 export async function generateSpec(): Promise<void> {
 	await mkdir(dirname(SPEC_PATH), { recursive: true });
 	await writeFile(SPEC_PATH, SPEC_CONTENT, 'utf8');

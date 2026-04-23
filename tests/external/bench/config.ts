@@ -1,7 +1,18 @@
 import type { Config } from '@markuplint/ml-config';
 
+/**
+ * Stable identifier recorded on every markuplint snapshot so future
+ * benchmark variants (e.g. a minimal rule preset) can coexist without
+ * confusion.
+ */
 export const BENCHMARK_CONFIG_ID = 'all-rules';
 
+/**
+ * Markuplint configuration used for the benchmark. Enables every rule that
+ * maps onto a nu-validator capability so the coverage comparison is
+ * apples-to-apples. Not exported to end users — this is purely the config
+ * the benchmark feeds into `mlTest()`.
+ */
 export const benchmarkConfig: Config = {
 	rules: {
 		'permitted-contents': true,

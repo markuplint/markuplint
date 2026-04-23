@@ -10,6 +10,7 @@ import { validate } from './nu-client.ts';
 import { NU_SNAPSHOTS_DIR, VALIDATOR_TESTS_DIR } from './paths.ts';
 import type { NuMessage, NuValidatorSnapshot } from './types.ts';
 
+/** Caller-facing knobs for `runNuValidator`. */
 export type RunNuValidatorOptions = {
 	readonly filter?: string;
 	readonly concurrency?: number;
@@ -19,6 +20,7 @@ export type RunNuValidatorOptions = {
 	readonly healthcheckTimeoutMs?: number;
 };
 
+/** Aggregate statistics returned by `runNuValidator`. */
 export type RunNuValidatorResult = {
 	readonly imageDigest: string;
 	readonly totalFiles: number;
@@ -55,6 +57,19 @@ function sortMessages(messages: readonly NuMessage[]): NuMessage[] {
 	});
 }
 
+/**
+ * Run nu-validator against every matching HTML fixture and write one JSON
+ * snapshot per file under `snapshots/nu-validator/`. Starts and stops the
+ * Docker container for the caller; a SIGINT cleanup handler is installed
+ * so the container is torn down on interrupt.
+ *
+ * nu-validator is not deterministic under parallel load (see
+ * `tests/external/CLAUDE.md`), so pass `concurrency: 1` when reproducibility
+ * is more important than throughput.
+ *
+ * @param options Filter / concurrency / image overrides.
+ * @returns Aggregate statistics and the list of per-file failures.
+ */
 export async function runNuValidator(options: RunNuValidatorOptions = {}): Promise<RunNuValidatorResult> {
 	const files = await collectHtmlFiles(VALIDATOR_TESTS_DIR, options.filter);
 	if (files.length === 0) {

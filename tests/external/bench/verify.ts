@@ -15,6 +15,20 @@ function toKey(v: MlViolation): string {
 	return `${v.line}:${v.col}:${v.ruleId}:${v.message}`;
 }
 
+/**
+ * Re-run `mlTest` on one validator-test fixture and assert that the live
+ * output matches the stored `snapshots/markuplint/<path>.json`. Each
+ * violation is compared by `line:col:ruleId:message`; extra, missing, or
+ * reshaped violations cause the assertion to fail with guidance to rerun
+ * `yarn bench:update:ml`.
+ *
+ * Fatal markuplint errors (Tier 1) propagate directly to the test runner;
+ * recoverable errors are rethrown as an `Error` annotated with the fixture
+ * path so the failing entry is easy to spot.
+ *
+ * @param htmlRelPath Path relative to `validator/tests/`, as used in the
+ *   coverage entry.
+ */
 export async function verifyEntry(htmlRelPath: string): Promise<void> {
 	const mlPath = join(ML_SNAPSHOTS_DIR, htmlRelPath.replace(/\.html$/, '.json'));
 	const stored = await readJson<MarkuplintSnapshot>(mlPath);
