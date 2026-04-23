@@ -540,7 +540,7 @@ pointing at the evidence.
 | --- | --- |
 | New Issue filed that this bench can verify | Add a `primary` mapping with a focused `filter`; run `yarn bench:xref --issue <N>` and confirm the fixture list before merging the config change |
 | New Issue filed with no matching fixture | Add a `secondary` mapping with a `reason`. Plain dev-dependency / internal bug Issues go here too. |
-| Existing Issue closes | Remove the mapping entry. The umbrella block auto-derives from remaining primary mappings — no separate edit needed. |
+| Existing Issue closes | Detect via `yarn bench:xref --audit` (also enforced weekly and on config PRs by the `Bench xref audit` workflow), then remove the mapping entry. The umbrella block auto-derives from remaining primary mappings — no separate edit needed. |
 | Issue scope narrows or widens | Adjust `filter`; rerun `yarn bench:xref --issue <N>` to confirm the new fixture set. |
 | Claim in a primary Issue's body becomes inaccurate after bench reruns | Add or edit a `bodyOverride` (factory that reads an `.md` under `tests/external/bench/issue-xref/`). Keep the scope correction out of the code literal so it can be proof-read. |
 

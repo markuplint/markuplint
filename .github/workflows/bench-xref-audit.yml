@@ -1,0 +1,92 @@
+name: Bench xref audit
+
+# Flags config entries in `tests/external/bench/issue-xref.config.ts` that
+# reference issues closed on GitHub. Runs on PRs that touch the config and
+# on a weekly schedule. See `tests/external/CLAUDE.md` → "Pre-release
+# checklist integration" for the operator-facing guidance.
+
+on:
+    pull_request:
+        branches:
+            - dev
+            - next
+        paths:
+            - 'tests/external/bench/issue-xref.config.ts'
+            - 'tests/external/bench/xref-issue.ts'
+            - '.github/workflows/bench-xref-audit.yml'
+    schedule:
+        # Weekly: gives us signal even when the config is untouched but
+        # referenced issues have closed upstream. Monday 02:00 UTC keeps
+        # the run off the busiest CI windows.
+        - cron: '0 2 * * 1'
+    workflow_dispatch:
+
+permissions:
+    contents: read
+    issues: read
+
+concurrency:
+    group: bench-xref-audit-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    audit:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+            - name: Use Node.js 24
+              uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+              with:
+                  node-version: 24
+
+            - name: Enable Corepack and setup Yarn v4
+              run: |
+                  corepack enable
+                  yarn --version
+
+            - name: Install dependencies
+              run: yarn install --immutable
+
+            - name: Build @markuplint/shared
+              # `bench:xref` imports `isFatalError` from @markuplint/shared.
+              # Everything else in tests/external/bench/ is plain TypeScript
+              # picked up by --experimental-strip-types; one package build is
+              # enough to satisfy the only workspace import.
+              run: yarn build --scope @markuplint/shared
+
+            - name: Run audit
+              id: audit
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  set +e
+                  yarn bench:xref --audit --json > audit.json
+                  status=$?
+                  cat audit.json
+                  {
+                      echo "status=$status"
+                  } >> "$GITHUB_OUTPUT"
+                  exit $status
+
+            - name: Summarise
+              if: always()
+              env:
+                  AUDIT_STATUS: ${{ steps.audit.outputs.status }}
+              run: |
+                  # shellcheck disable=SC2016
+                  # Single-quoted Markdown backticks below are intentionally
+                  # literal — GitHub's Step Summary renders Markdown.
+                  if [ "$AUDIT_STATUS" = "0" ]; then
+                      echo "All xref-mapped issues are still OPEN." >> "$GITHUB_STEP_SUMMARY"
+                  else
+                      {
+                          echo "One or more xref-mapped issues are CLOSED:"
+                          echo
+                          echo '```json'
+                          cat audit.json
+                          echo '```'
+                          echo
+                          echo 'Remove each CLOSED entry from `tests/external/bench/issue-xref.config.ts`.'
+                      } >> "$GITHUB_STEP_SUMMARY"
+                  fi
