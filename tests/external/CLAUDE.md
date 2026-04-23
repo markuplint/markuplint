@@ -287,6 +287,95 @@ flipped, the earlier observation was noise, not a real gap.
   any `ml-over` or `nu-over` fixtures the audit turned up that the
   original claim did not mention.
 
+Remember: the audit only tells you which of the two **tools** emits a
+diagnostic. It does not tell you which tool is **right**. Run the
+next section before acting on the result.
+
+### Verifying against the standards (the real ground truth)
+
+Both nu-validator and markuplint are implementations. Either one —
+or both — can drift from the spec. The standards, not the tools, are
+the authority. This section turns an audit result into a spec-backed
+decision.
+
+#### Authoritative sources
+
+Use these directly. Keep them open while judging a case.
+
+- **HTML Living Standard** — <https://html.spec.whatwg.org/multipage/>
+- **DOM Living Standard** — <https://dom.spec.whatwg.org/>
+- **URL Living Standard** — <https://url.spec.whatwg.org/>
+- **WAI-ARIA 1.3** — <https://www.w3.org/TR/wai-aria-1.3/>
+- **ARIA in HTML** — <https://w3c.github.io/html-aria/>
+- **Microdata (HTML LS §5.7)** — <https://html.spec.whatwg.org/multipage/microdata.html>
+
+MDN and other tutorials are **not** authoritative for this benchmark.
+They frequently lag the specs or simplify corner cases. When a
+tutorial disagrees with the WHATWG / W3C document, quote the WHATWG /
+W3C document.
+
+Consult the spec's issue tracker when behaviour looks recent; the
+living standards do change. Recent normative revisions often explain
+drift between nu-validator (slower to pick up new language) and
+markuplint (usually tracks `@markuplint/html-spec`).
+
+#### Mapping each verdict to a spec question
+
+The benchmark verdict is a starting hypothesis, not the answer. For
+every fixture you plan to act on, quote the relevant spec paragraph
+verbatim and decide who is spec-conformant:
+
+| verdict | spec question | tool to believe if spec forbids it | tool to believe if spec permits it |
+| --- | --- | --- | --- |
+| `match-error` | Does the spec actually forbid this markup? | both — nothing to do | both — both are over-detecting; open issues against both |
+| `match-clean` | Does the spec actually permit this markup? | both — both are under-detecting; propose a new markuplint rule **and** file an upstream report to nu | both — nothing to do |
+| `ml-over` | Does the spec forbid this markup? | markuplint (file an upstream report to nu) | nu-validator (fix the markuplint rule that fires wrongly) |
+| `nu-over` | Does the spec forbid this markup? | nu-validator (extend markuplint coverage; open an issue) | markuplint (declare the nu message in `excluded-ids.json` with the spec URL as `reason`) |
+
+Four verdicts × two spec outcomes = eight cases. No verdict is "safe";
+every one of them has a path where both tools are wrong.
+
+#### Recommended decision flow
+
+1. Take a concrete fixture from the audit. Open its raw HTML under
+   `tests/external/validator/tests/<path>`.
+2. Identify the spec paragraph that governs the markup. Quote the
+   exact sentence in the issue, PR, or `excluded-ids.json#reason` —
+   not a paraphrase.
+3. Compare the spec sentence against what each tool reports:
+   - What the markuplint snapshot's `violations` say.
+   - What the nu snapshot's `messages` say.
+4. Classify the outcome:
+   - **Spec agrees with markuplint, nu is lenient** — add an entry to
+     `excluded-ids.json` with the spec URL in `reason`. Consider
+     filing an upstream report to <https://github.com/validator/validator>.
+   - **Spec agrees with nu, markuplint is lax** — open a markuplint
+     issue quoting the spec; treat the fixture as a benchmark gap to
+     close with a rule or `@markuplint/html-spec` update.
+   - **Spec disagrees with both** — open one issue per tool. This is
+     usually a recent normative revision neither tool has adopted.
+   - **Spec is ambiguous or under discussion** — note the URL of the
+     spec issue or PR next to the fixture in `snapshots/diff/summary.md`
+     when you write the follow-up; do not silently close.
+
+#### Practical cross-reference tips
+
+- For ARIA, pair <https://w3c.github.io/html-aria/#el-&lt;element&gt;>
+  with the `allowed roles` / `global states and properties` tables.
+  Most `nu-over` ARIA cases flow from a role dropped from `roletype`'s
+  inherited properties in ARIA 1.2 that nu-validator still allows.
+- For URL parsing (itemid, itemtype, href), the spec is the URL
+  Living Standard, not the HTML spec. nu-validator embeds galimatias,
+  which is older than the current URL spec; that lag accounts for
+  many URL-shaped `nu-over` and some `ml-over` cases.
+- For Microdata, the cross-attribute constraints (`itemid` requires
+  both `itemscope` and `itemtype`) live in HTML LS §5.7 and are
+  easy to miss because the individual attribute definitions do not
+  restate them.
+- For content models, read both the element section **and**
+  "4.X.2 Content model" or the `category` hierarchy; markuplint's
+  `permitted-contents` rule follows the spec's category approach.
+
 ### Declaring a nu-validator over-detection
 
 Nu-validator and markuplint legitimately disagree on some corners of
