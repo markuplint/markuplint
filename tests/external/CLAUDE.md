@@ -164,6 +164,129 @@ yarn bench:update --target nu --concurrency 1 --filter 'html-aria/**/<file>.html
 That leg finishes in seconds for a narrow filter and gives you a
 stable baseline before opening an upstream nu-validator issue.
 
+### Auditing a claim against the benchmark
+
+Issues, PRs, and spec memos often claim that "markuplint misses X" or
+"markuplint over-detects Y". Before acting on such a claim, confirm
+the current state against the snapshots. The workflow below is
+intentionally generic — plug in whatever path pattern, rule id, or
+nu-validator message the claim is about.
+
+#### Step 1: Find fixtures relevant to the claim
+
+`snapshots/diff/coverage.json` contains one entry per fixture with a
+`verdict` (`match-error`, `match-clean`, `ml-over`, `nu-over`) and a
+`category`. Slice it by path pattern to see what the benchmark already
+knows:
+
+```sh
+# Paths mentioning "popover" — replace with the claim's pattern
+node -e '
+const j = require("./tests/external/snapshots/diff/coverage.json");
+j.entries
+  .filter(e => /popover/i.test(e.path))
+  .forEach(e => console.log(e.verdict.padEnd(13), e.path));
+'
+```
+
+A claim is suspect when:
+
+- Its "missed error" count is bigger than the `nu-over` slice.
+- It lists patterns that are all already `match-error` (markuplint
+  already catches them, so "missed" is false).
+- It conflates an unrelated `ml-over` in the same area with the
+  claim's own scope.
+
+#### Step 2: Inspect the nu-validator messages for a `nu-over` fixture
+
+`snapshots/nu-validator/**` is gitignored, so regenerate it first if
+you have not already (`yarn bench:update --target nu`). Then read the
+raw JSON for one fixture to see every nu message and its `id`:
+
+```sh
+node -e '
+const p = "tests/external/snapshots/nu-validator/html/elements/meta/duplicate-charset-novalid.json";
+const s = require(p);
+s.nuValidator.messages.forEach(m =>
+  console.log(m.id, m.type, m.message.slice(0, 80))
+);'
+```
+
+The `id` values (`nv-<hex12>` with optional `-N` suffix) are the
+same keys you use in `excluded-ids.json`.
+
+#### Step 3: Inspect the markuplint violations
+
+Same for the markuplint side:
+
+```sh
+node -e '
+const p = "tests/external/snapshots/markuplint/html/elements/meta/duplicate-charset-novalid.json";
+const s = require(p);
+s.markuplint.violations.forEach(v =>
+  console.log(v.severity, v.ruleId, v.line + ":" + v.col, v.message.slice(0, 80))
+);'
+```
+
+Seeing zero violations on a `nu-over` fixture confirms the gap the
+claim describes. Seeing matching violations on what the claim says
+is a `nu-over` refutes the claim.
+
+#### Step 4: Aggregate over a category
+
+Use `snapshots/diff/markuplint-over-detection.json` and
+`snapshots/diff/nu-over-detection.json` for rollups. For example, to
+see which markuplint rules fire most often on fixtures nu-validator
+accepts as valid:
+
+```sh
+node -e '
+const j = require("./tests/external/snapshots/diff/markuplint-over-detection.json");
+const c = {};
+for (const e of j.entries) for (const id of e.ruleIds ?? []) c[id] = (c[id] ?? 0) + 1;
+Object.entries(c).sort((a,b) => b[1]-a[1]).forEach(([r, n]) => console.log(n, r));
+'
+```
+
+or, for nu-over by path prefix:
+
+```sh
+node -e '
+const j = require("./tests/external/snapshots/diff/nu-over-detection.json");
+const c = {};
+for (const e of j.entries) {
+  const prefix = e.path.split("/").slice(0, 3).join("/");
+  c[prefix] = (c[prefix] ?? 0) + 1;
+}
+Object.entries(c).sort((a,b) => b[1]-a[1]).forEach(([p, n]) => console.log(n, p));
+'
+```
+
+#### Step 5: Pin a result against `--concurrency 1`
+
+Before filing the finding, confirm determinism for the specific
+fixtures that mattered. Parallel nu-validator runs have known
+flicker (see [Concurrency and determinism](#concurrency-and-determinism)).
+A one-shot pin:
+
+```
+yarn bench:update --target nu --concurrency 1 --filter '<the/fixtures/you/care/about>'
+```
+
+Rerun `yarn bench:compare` afterwards so the diff JSONs reflect the
+pinned run, and re-check the slice from Step 1. If the verdict
+flipped, the earlier observation was noise, not a real gap.
+
+#### What to do with the audit result
+
+- Claim confirmed ⇒ keep it on the issue; optionally link the
+  relevant snapshot paths so later readers can reproduce.
+- Claim refuted ⇒ close the issue, or rewrite its body so the surviving
+  bullets reference fixtures that really are `nu-over`.
+- Scope drift ⇒ split into a narrower issue or follow-ups; include
+  any `ml-over` or `nu-over` fixtures the audit turned up that the
+  original claim did not mention.
+
 ### Declaring a nu-validator over-detection
 
 Nu-validator and markuplint legitimately disagree on some corners of
