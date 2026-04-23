@@ -410,6 +410,13 @@ export function parseCliArgs(args: readonly string[] = process.argv.slice(2)): C
 	};
 }
 
+/**
+ * Output shape chosen by `runAudit`'s caller.
+ *
+ * - `'text'` — human-readable `[xref] audit: …` prose log lines
+ * - `'json'` — a single `{ total, closed }` object on stdout, for CI and
+ *   scripted consumers that need to parse the result without grepping
+ */
 export type AuditFormat = 'text' | 'json';
 
 /**
