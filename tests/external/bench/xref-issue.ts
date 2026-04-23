@@ -116,7 +116,7 @@ export function buildPrimaryBlock(mapping: PrimaryMapping, data: BenchData): str
 	}
 	lines.push(
 		'',
-		'Reproduce: see [`tests/external/CLAUDE.md`](../blob/dev/tests/external/CLAUDE.md) "Auditing a claim against the benchmark".',
+		'Reproduce: see [`tests/external/CLAUDE.md`](https://github.com/markuplint/markuplint/blob/dev/tests/external/CLAUDE.md) "Auditing a claim against the benchmark".',
 		END_MARKER,
 	);
 	return lines.join('\n');
@@ -132,7 +132,7 @@ export function buildSecondaryBlock(mapping: SecondaryMapping, data: BenchData):
 		'',
 		`**Not directly verifiable against the current nu-validator fixture suite.** Reason: ${mapping.reason}`,
 		'',
-		'Fixtures could be authored manually under a separate tree, or contributed upstream to [`validator/validator`](https://github.com/validator/validator). See [`tests/external/CLAUDE.md`](../blob/dev/tests/external/CLAUDE.md) "Auditing a claim against the benchmark" for the audit workflow.',
+		'Fixtures could be authored manually under a separate tree, or contributed upstream to [`validator/validator`](https://github.com/validator/validator). See [`tests/external/CLAUDE.md`](https://github.com/markuplint/markuplint/blob/dev/tests/external/CLAUDE.md) "Auditing a claim against the benchmark" for the audit workflow.',
 		END_MARKER,
 	].join('\n');
 }
@@ -169,7 +169,7 @@ export function buildUmbrellaBlock(mapping: UmbrellaMapping, ctx: RenderContext)
 		'| --- | ---: | --- |',
 		...rows,
 		'',
-		'Each row links to the per-issue cross-reference block inside that issue. See [`tests/external/CLAUDE.md`](../blob/dev/tests/external/CLAUDE.md) for the workflow.',
+		'Each row links to the per-issue cross-reference block inside that issue. See [`tests/external/CLAUDE.md`](https://github.com/markuplint/markuplint/blob/dev/tests/external/CLAUDE.md) for the workflow.',
 		END_MARKER,
 	].join('\n');
 }

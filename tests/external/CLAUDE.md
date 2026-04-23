@@ -489,6 +489,44 @@ issues against markuplint), not as exclusion candidates.
 Any message substring not listed above is **unclassified**: do not exclude
 it without first adding a row with a verbatim spec quote and a source URL.
 
+### Syncing benchmark cross-references onto issues
+
+Related GitHub issues carry a `<!-- bench-xref:begin v1 --> ... <!--
+bench-xref:end -->` block at the end of their body. That block lists
+every fixture matching the issue's scope (filter regex) plus the
+current verdict tally. The block is generated from
+`snapshots/diff/*` and kept idempotent, so repeated syncs only update
+when the underlying numbers change.
+
+The mapping from issue number → filter (and optional `bodyOverride`
+or stub reason) lives in
+`tests/external/bench/issue-xref.config.ts`.
+
+| Command | What it does |
+| --- | --- |
+| `yarn bench:xref --issue <N>` | Print the rendered block for issue N to stdout (no network) |
+| `yarn bench:xref --issue <N> --filter '<regex>'` | Ad-hoc scope, bypassing the config |
+| `yarn bench:xref --all` | Print every configured issue's block to stdout |
+| `yarn bench:xref --all --dry-run --write` | Fetch each issue body from GitHub, show what the next body would look like (no write) |
+| `yarn bench:xref --issue <N> --write` | Fetch issue N, replace its `<!-- bench-xref:* -->` range (or append one if absent), push via `gh issue edit` |
+| `yarn bench:xref --all --write` | Same, across every configured issue |
+
+Routine operation after `yarn bench:update`:
+
+```
+yarn bench:xref --all --dry-run --write   # review intended diffs
+yarn bench:xref --all --write             # apply
+```
+
+Re-running is safe — `composeBody` replaces the existing marker range
+in place. If an issue is closed and should drop out of future syncs,
+remove its entry from `issue-xref.config.ts` (or change its `kind` to
+leave the block static).
+
+The block does not say who is right — that stays a spec-reading
+decision per the preceding audit sections. The xref is only
+pointing at the evidence.
+
 ## Architecture
 
 Data flow:
