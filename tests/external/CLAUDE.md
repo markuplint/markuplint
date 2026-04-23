@@ -438,16 +438,29 @@ load-bearing exclusion mechanism and must cite the standard that
 authorises them. If you cannot cite a spec paragraph, use a per-ID
 `entries[]` record instead so the scope stays narrow.
 
-#### Audit queue (known unfinished investigations)
+#### Audit log
 
-The seeded `patterns[]` covers what is currently
-spec-confirmed (`Fragment is not allowed for data: URIs`, reversed
-`min`/`max` constraints). The larger nu-over slice — URL-parsing
-validation errors, token-and-semicolon parser complaints, and similar
-— is **not** excluded, because each of those messages needs an
-individual URL LS / HTML LS read. Use the workflow above to audit one
-pattern at a time; when you can cite the spec, add it to
-`patterns[]`.
+Each entry here is a conclusion reached after reading the authoritative
+spec paragraph directly. Do not add a row without citing the exact
+sentence that justifies it.
+
+| Message substring | Verdict | Source |
+| --- | --- | --- |
+| `Fragment is not allowed for data: URIs according to RFC 2397` | **nu over-detection** — excluded in `patterns[]` | URL LS §4.3: `valid URL string` = `relative-URL-with-fragment` or `absolute-URL-with-fragment`; the latter is `absolute-URL string, optionally followed by U+0023 (#) and a URL-fragment string`. A non-special scheme (like `data`) followed by a relative-URL string and a fragment fits the grammar. |
+| `must be less than or equal to` (meter/progress/input min/max ordering) | **nu correct** — NOT excluded | HTML LS §4.10.14 Authoring requirements: *"The following inequalities must hold, as applicable: minimum ≤ value ≤ maximum; minimum ≤ low ≤ maximum (if low is specified); minimum ≤ high ≤ maximum (if high is specified); minimum ≤ optimum ≤ maximum (if optimum is specified); low ≤ high (if both low and high are specified)."* Explicit `must`. |
+| `URL includes credentials` | **nu correct** — NOT excluded | URL LS §1.1 validation errors: `invalid-credentials` — "The input includes credentials." HTML LS requires a valid URL string, so a validation error is a conformance error. |
+| `Expected a slash` (special-scheme URLs missing `//`) | **nu correct** — NOT excluded | URL LS validation error `special-scheme-missing-following-solidus`. |
+| `Backslash used as path segment delimiter` | **nu correct** — NOT excluded | URL LS validation error `invalid-reverse-solidus`. |
+| `Illegal character in …` (path / fragment / domain / port) | **nu correct** — NOT excluded | URL LS validation error `invalid-URL-unit` covers non-URL code points and malformed percent-encoding, including tab, LF, and CR. |
+| `Windows drive letter uses …` | **nu correct** — NOT excluded | URL LS validation error `file-invalid-Windows-drive-letter` / `file-invalid-Windows-drive-letter-host`. |
+
+The rows above mean: most of the remaining `nu-over` volume — the URL-parsing
+bulk — is **not** up for exclusion. It represents genuine markuplint gaps.
+Treat those rows as input to future markuplint coverage work, not as
+exclusion candidates.
+
+Any message substring not listed above is **unclassified**: do not exclude
+it without first adding a row with a verbatim spec quote and a source URL.
 
 ## Architecture
 
