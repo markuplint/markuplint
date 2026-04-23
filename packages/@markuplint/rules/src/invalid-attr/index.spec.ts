@@ -2427,3 +2427,92 @@ describe('#3629 URL forbidden code points', () => {
 		expect(violations.some(v => v.message.includes('unexpected characters'))).toBe(false);
 	});
 });
+
+/*
+ * #3734 — meta[content] validation split by http-equiv value.
+ * spec.meta.jsonc uses ConditionalAttributeType[] to select HTTPEquivRefresh
+ * or HTTPEquivContentType for the matching http-equiv directive; other
+ * http-equiv values (and `name` / `itemprop` variants of <meta>) fall
+ * through to `Any` in rules/helpers.ts.
+ */
+describe('#3734 meta[content] by http-equiv', () => {
+	// ----- http-equiv="refresh" ------------------------------------------
+	test('[invalid-attr-issue-3734-001] refresh: bare integer is valid', async () => {
+		const { violations } = await mlRuleTest(rule, '<meta http-equiv="refresh" content="30">');
+		expect(violations.some(v => v.raw === '30')).toBe(false);
+	});
+
+	test('[invalid-attr-issue-3734-002] refresh: integer + "; URL=<url>" is valid', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<meta http-equiv="refresh" content="0; URL=https://example.com/">',
+		);
+		expect(violations.some(v => v.raw === '0; URL=https://example.com/')).toBe(false);
+	});
+
+	test('[invalid-attr-issue-3734-003] refresh: empty content is invalid', async () => {
+		// Fixture: html/elements/meta/refresh-empty-novalid.html
+		const { violations } = await mlRuleTest(rule, '<meta http-equiv="refresh" content="">');
+		expect(violations.some(v => v.message.includes('refresh'))).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3734-004] refresh: missing separator is invalid', async () => {
+		// Fixture: html/elements/meta/refresh-missing-semicolon-novalid.html
+		const { violations } = await mlRuleTest(rule, '<meta http-equiv="refresh" content="5 url=http://example.com">');
+		expect(violations.some(v => v.raw === '5 url=http://example.com')).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3734-005] refresh: whitespace after ";" is optional (nu over-detects)', async () => {
+		// Fixture: html/elements/meta/refresh-missing-space-novalid.html.
+		// HTML LS §4.2.5.3 clause 3.2 marks the whitespace optional — this
+		// fixture is a nu over-detection recorded in excluded-ids.json.
+		const { violations } = await mlRuleTest(rule, '<meta http-equiv="refresh" content="5;url=http://example.com">');
+		expect(violations.some(v => v.raw === '5;url=http://example.com')).toBe(false);
+	});
+
+	// ----- http-equiv="content-type" -------------------------------------
+	test('[invalid-attr-issue-3734-006] content-type: canonical form is valid', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<meta http-equiv="content-type" content="text/html; charset=utf-8">',
+		);
+		expect(violations.some(v => v.raw === 'text/html; charset=utf-8')).toBe(false);
+	});
+
+	test('[invalid-attr-issue-3734-007] content-type: malformed MIME is invalid', async () => {
+		const { violations } = await mlRuleTest(rule, '<meta http-equiv="content-type" content="not a mime">');
+		expect(violations.some(v => v.raw === 'not a mime')).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3734-008] content-type: wrong MIME type is invalid', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<meta http-equiv="content-type" content="text/plain; charset=utf-8">',
+		);
+		expect(violations.some(v => v.raw === 'text/plain; charset=utf-8')).toBe(true);
+	});
+
+	// ----- unconditional fallback ----------------------------------------
+	test('[invalid-attr-issue-3734-009] other http-equiv values fall through to Any', async () => {
+		// `default-style`, `x-ua-compatible`, `content-security-policy`
+		// have no ConditionalAttributeType entry → rules/helpers.ts
+		// substitutes "Any", so any non-empty content passes.
+		const cases = [
+			'<meta http-equiv="x-ua-compatible" content="IE=edge">',
+			'<meta http-equiv="default-style" content="preferred">',
+			'<meta http-equiv="content-security-policy" content="default-src \'self\'">',
+		];
+		for (const html of cases) {
+			const { violations } = await mlRuleTest(rule, html);
+			// No violation targeting the `content` value.
+			expect(violations.some(v => v.message.includes('content'))).toBe(false);
+		}
+	});
+
+	test('[invalid-attr-issue-3734-010] name= variants fall through to Any', async () => {
+		// name=viewport / description / keywords — ConditionalAttributeType
+		// array does not match, Any applies, anything passes.
+		const { violations } = await mlRuleTest(rule, '<meta name="description" content="arbitrary description text">');
+		expect(violations.length).toBe(0);
+	});
+});
