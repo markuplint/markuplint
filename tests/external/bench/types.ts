@@ -160,10 +160,11 @@ export type Coverage = {
 };
 
 /**
- * One entry of `markuplint-over-detection.json` / `nu-over-detection.json`.
- * `ruleIds` populates the ml-over breakdown; `nuMessageIds` populates the
- * nu-over breakdown (so a reviewer can jump to the specific nu-validator
- * messages to evaluate for `excluded-ids.json`).
+ * One entry of `markuplint-only.json`, `nu-only.json`, or `nu-over.json`.
+ * `ruleIds` populates the markuplint-side breakdown; `nuMessageIds`
+ * populates the nu-validator-side breakdown (so a reviewer can jump to
+ * the specific nu-validator messages either to audit for exclusion or to
+ * drive markuplint coverage work).
  */
 export type OverDetectionEntry = {
 	readonly path: string;
