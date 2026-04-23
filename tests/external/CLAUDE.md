@@ -42,25 +42,6 @@ The first time you touch the benchmark on a fresh clone, run
 current) to populate the raw snapshots; otherwise `yarn bench:verify`
 and `yarn bench:compare` have nothing to read.
 
-## Migration from the pre-rebuild benchmark
-
-The previous benchmark (`tests/external/nu-validator-utils.ts`,
-`nu-validator-report.ts`, `nu-validator.spec.ts`) was removed in the
-`refactor!: drop legacy nu-validator benchmark ahead of rebuild`
-commit. If you have local scripts or muscle memory from that era,
-the replacements are:
-
-| Before | After |
-| --- | --- |
-| `node --experimental-strip-types tests/external/nu-validator-report.ts` | `yarn bench:update` |
-| `npx vitest run --config vitest.nu-validator.config.ts` | `yarn bench:verify` (raw snapshots must exist — run `yarn bench:update` first) |
-| `tests/external/nu-validator-report.md` (was git-ignored) | `tests/external/snapshots/diff/summary.md` (git-tracked) |
-| `nu-validator-utils.ts#allRulesConfig` | `tests/external/bench/config.ts#benchmarkConfig` |
-| `nu-validator-utils.ts#isNuValidatorSpecLeniency` (hard-coded exclusions) | `tests/external/snapshots/excluded-ids.json` (curated, auditable entries) |
-
-Only the benchmark tooling changed. The `markuplint` package and every
-other public API are unaffected by this rebuild.
-
 ## Prerequisites
 
 - Docker Desktop or Docker Engine (macOS / Linux; WSL2 on Windows).
