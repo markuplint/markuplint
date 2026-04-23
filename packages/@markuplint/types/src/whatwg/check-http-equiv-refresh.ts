@@ -7,7 +7,14 @@ import { checkURL } from './check-url.js';
 // `ASCII whitespace` per Infra: TAB, LF, FF, CR, SPACE.
 // https://infra.spec.whatwg.org/#ascii-whitespace
 const ASCII_WHITESPACE = /[\t\n\f\r ]/;
-const ASCII_DIGIT = /\d/;
+// `ASCII digit` per Infra. `\d` happens to match the same set today in
+// JavaScript regexes, but the HTML LS grammar is specific to U+0030–U+0039,
+// so we pin the class to that range to protect against accidental Unicode
+// broadening if the `u` flag or a future regex flavour drifts it.
+// oxlint: use-the-regex-literal-shorthand warns on `[0-9]`; suppress here so
+// the spec intent survives auto-fix passes.
+// eslint-disable-next-line regexp/prefer-d
+const ASCII_DIGIT = /[0-9]/;
 
 function isAsciiWhitespace(ch: string): boolean {
 	return ASCII_WHITESPACE.test(ch);

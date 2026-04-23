@@ -2451,9 +2451,13 @@ describe('#3734 meta[content] by http-equiv', () => {
 	});
 
 	test('[invalid-attr-issue-3734-003] refresh: empty content is invalid', async () => {
-		// Fixture: html/elements/meta/refresh-empty-novalid.html
+		// Fixture: html/elements/meta/refresh-empty-novalid.html.
+		// Assert on `raw` rather than on a substring of the message — the
+		// human wording comes from the type registration and is subject to
+		// wording changes, whereas `raw` is the concrete value the rule
+		// flagged.
 		const { violations } = await mlRuleTest(rule, '<meta http-equiv="refresh" content="">');
-		expect(violations.some(v => v.message.includes('refresh'))).toBe(true);
+		expect(violations.some(v => v.raw === '')).toBe(true);
 	});
 
 	test('[invalid-attr-issue-3734-004] refresh: missing separator is invalid', async () => {
@@ -2493,26 +2497,60 @@ describe('#3734 meta[content] by http-equiv', () => {
 	});
 
 	// ----- unconditional fallback ----------------------------------------
-	test('[invalid-attr-issue-3734-009] other http-equiv values fall through to Any', async () => {
-		// `default-style`, `x-ua-compatible`, `content-security-policy`
-		// have no ConditionalAttributeType entry → rules/helpers.ts
-		// substitutes "Any", so any non-empty content passes.
-		const cases = [
-			'<meta http-equiv="x-ua-compatible" content="IE=edge">',
-			'<meta http-equiv="default-style" content="preferred">',
-			'<meta http-equiv="content-security-policy" content="default-src \'self\'">',
-		];
-		for (const html of cases) {
-			const { violations } = await mlRuleTest(rule, html);
-			// No violation targeting the `content` value.
-			expect(violations.some(v => v.message.includes('content'))).toBe(false);
-		}
+	// These three http-equiv values have no ConditionalAttributeType entry,
+	// so rules/helpers.ts substitutes "Any" at runtime and any non-empty
+	// content passes. Kept as separate tests (not a loop / test.each) so a
+	// failure immediately names the offending http-equiv value.
+
+	test('[invalid-attr-issue-3734-009] http-equiv="x-ua-compatible" content falls through to Any', async () => {
+		const { violations } = await mlRuleTest(rule, '<meta http-equiv="x-ua-compatible" content="IE=edge">');
+		expect(violations.length).toBe(0);
 	});
 
-	test('[invalid-attr-issue-3734-010] name= variants fall through to Any', async () => {
+	test('[invalid-attr-issue-3734-010] http-equiv="default-style" content falls through to Any', async () => {
+		const { violations } = await mlRuleTest(rule, '<meta http-equiv="default-style" content="preferred">');
+		expect(violations.length).toBe(0);
+	});
+
+	test('[invalid-attr-issue-3734-011] http-equiv="content-security-policy" content falls through to Any', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<meta http-equiv="content-security-policy" content="default-src \'self\'">',
+		);
+		expect(violations.length).toBe(0);
+	});
+
+	test('[invalid-attr-issue-3734-012] name= variants fall through to Any', async () => {
 		// name=viewport / description / keywords — ConditionalAttributeType
 		// array does not match, Any applies, anything passes.
 		const { violations } = await mlRuleTest(rule, '<meta name="description" content="arbitrary description text">');
 		expect(violations.length).toBe(0);
+	});
+
+	test('[invalid-attr-issue-3734-013] itemprop= variants fall through to Any', async () => {
+		// itemprop is the third <meta> identifier besides name / http-equiv
+		// / charset. ConditionalAttributeType[] array does not match, Any
+		// applies, anything passes.
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div itemscope><meta itemprop="version" content="anything goes"></div>',
+		);
+		expect(violations.length).toBe(0);
+	});
+
+	// ----- case-insensitive selector matching ----------------------------
+	test('[invalid-attr-issue-3734-014] http-equiv value match is ASCII case-insensitive', async () => {
+		// spec.meta.jsonc condition uses `[http-equiv='refresh' i]`. Legacy
+		// HTML commonly writes `<META HTTP-EQUIV="REFRESH">`; the `i` flag
+		// must flow through the selector engine so the refresh validator
+		// still fires and we do not silently miss these elements.
+		const { violations } = await mlRuleTest(rule, '<meta http-equiv="REFRESH" content="garbage">');
+		expect(violations.some(v => v.raw === 'garbage')).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3734-015] content-type value match is ASCII case-insensitive', async () => {
+		// Same guarantee on the content-type branch.
+		const { violations } = await mlRuleTest(rule, '<meta http-equiv="Content-Type" content="not a mime">');
+		expect(violations.some(v => v.raw === 'not a mime')).toBe(true);
 	});
 });

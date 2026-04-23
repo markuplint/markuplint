@@ -64,6 +64,17 @@ describe('valid per HTML LS §4.2.5.3 "Refresh" conformance', () => {
 		// `excluded-ids.json`.
 		expect(check("5; url='http://example.com'").matched).toBe(true);
 	});
+
+	test('"URL=" keyword followed by an empty URL is accepted (checkURL treats empty as valid)', () => {
+		// Pins the current behaviour: the delegated `checkURL` returns
+		// `matched()` for an empty value (consistent with HTML attributes
+		// such as `<a href="">` that resolve to the document's own URL),
+		// so `5; URL=` parses as a refresh with an empty URL payload. If
+		// the refresh context later decides empty URLs are nonsensical,
+		// this test must flip to `false` and the implementation must
+		// reject it directly rather than relying on `checkURL`.
+		expect(check('5; URL=').matched).toBe(true);
+	});
 });
 
 describe('invalid per HTML LS §4.2.5.3', () => {
