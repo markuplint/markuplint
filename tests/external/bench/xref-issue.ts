@@ -1,6 +1,8 @@
-import { execFileSync } from 'node:child_process';
+import { execFile, execFileSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
-import { parseArgs } from 'node:util';
+import { parseArgs, promisify } from 'node:util';
+
+const execFileAsync = promisify(execFile);
 
 import { isFatalError } from '@markuplint/shared';
 
@@ -236,7 +238,16 @@ function escapeRegExp(source: string): string {
 export type GhClient = {
 	readonly view: (issue: number) => string;
 	readonly edit: (issue: number, body: string) => void;
+	/**
+	 * Async so `runAudit` can fan out `gh issue view --json state` in
+	 * parallel via `Promise.all` — a config with dozens of mappings would
+	 * otherwise serialise through ~400 ms of per-request latency.
+	 */
+	readonly state: (issue: number) => Promise<IssueState>;
 };
+
+/** GitHub issue lifecycle state, as reported by `gh issue view --json state`. */
+export type IssueState = 'OPEN' | 'CLOSED';
 
 function explainGhError(action: string, issue: number, error: unknown): Error {
 	const msg = error instanceof Error ? error.message : String(error);
@@ -258,6 +269,28 @@ function ghJson<T>(args: readonly string[], action: string, issue: number): T {
 		const out = execFileSync('gh', args as string[], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
 		return JSON.parse(out) as T;
 	} catch (error) {
+		// Tier 1 (Fatal): `JSON.parse` can throw `SyntaxError` on a truncated
+		// response, or a caller bug can surface as `TypeError`. These are
+		// programmer errors that `explainGhError` would otherwise flatten
+		// into a generic "gh view failed: …" message, making root-cause
+		// analysis harder. See `docs/architectures/ERROR-HANDLING.md`.
+		if (isFatalError(error)) throw error;
+		throw explainGhError(action, issue, error);
+	}
+}
+
+/**
+ * Async counterpart to `ghJson` — used by any GhClient method that needs to
+ * run in parallel under `Promise.all`. Uses `execFile` (not `execFileSync`)
+ * so multiple child processes genuinely overlap instead of serialising
+ * through the Node event loop one JVM startup at a time.
+ */
+async function ghJsonAsync<T>(args: readonly string[], action: string, issue: number): Promise<T> {
+	try {
+		const { stdout } = await execFileAsync('gh', args as string[], { encoding: 'utf8' });
+		return JSON.parse(stdout) as T;
+	} catch (error) {
+		if (isFatalError(error)) throw error;
 		throw explainGhError(action, issue, error);
 	}
 }
@@ -284,8 +317,23 @@ export function defaultGhClient(): GhClient {
 					stdio: ['pipe', 'inherit', 'inherit'],
 				});
 			} catch (error) {
+				if (isFatalError(error)) throw error;
 				throw explainGhError('edit body of', issue, error);
 			}
+		},
+		async state(issue) {
+			const { state } = await ghJsonAsync<{ state: string }>(
+				['issue', 'view', String(issue), '--json', 'state'],
+				'fetch state of',
+				issue,
+			);
+			// `gh` only ever returns "OPEN" or "CLOSED" for this field, but
+			// coerce defensively so a future schema drift fails loudly rather
+			// than silently matching the wrong branch.
+			if (state !== 'OPEN' && state !== 'CLOSED') {
+				throw new Error(`unexpected issue state ${JSON.stringify(state)} for #${issue}`);
+			}
+			return state;
 		},
 	};
 }
@@ -296,6 +344,8 @@ type CliOptions = {
 	readonly dryRun: boolean;
 	readonly write: boolean;
 	readonly filter?: RegExp;
+	readonly audit: boolean;
+	readonly json: boolean;
 };
 
 export function parseCliArgs(args: readonly string[] = process.argv.slice(2)): CliOptions {
@@ -307,6 +357,8 @@ export function parseCliArgs(args: readonly string[] = process.argv.slice(2)): C
 			'dry-run': { type: 'boolean' },
 			write: { type: 'boolean' },
 			filter: { type: 'string' },
+			audit: { type: 'boolean' },
+			json: { type: 'boolean' },
 		},
 	});
 	let issue: number | undefined;
@@ -318,8 +370,28 @@ export function parseCliArgs(args: readonly string[] = process.argv.slice(2)): C
 		issue = parsed;
 	}
 	const all = values.all ?? false;
+	const audit = values.audit ?? false;
+	const json = values.json ?? false;
+	if (audit) {
+		// Audit is a standalone operation that walks the entire config; it
+		// must not be combined with per-issue / mutation / filter flags that
+		// would change its scope or side-effects. `--json` is the only
+		// companion flag, swapping the text log for a machine-readable
+		// single-object output.
+		if (issue !== undefined || values.filter !== undefined || values.write || values['dry-run']) {
+			throw new Error('--audit is standalone; drop --issue / --filter / --write / --dry-run when using it');
+		}
+		return { all: true, dryRun: false, write: false, audit: true, json };
+	}
+	if (json) {
+		// Outside `--audit`, nothing in the pipeline emits structured output
+		// — the xref blocks are Markdown by definition. Fail loudly so a
+		// CI script calling `--json` without `--audit` does not silently
+		// fall back to unparseable Markdown.
+		throw new Error('--json only makes sense with --audit');
+	}
 	if (issue === undefined && !all) {
-		throw new Error('provide either --issue <N> or --all');
+		throw new Error('provide either --issue <N>, --all, or --audit');
 	}
 	if (all && values.filter !== undefined && issue === undefined) {
 		// --filter is an ad-hoc override that only makes sense paired with a
@@ -333,7 +405,65 @@ export function parseCliArgs(args: readonly string[] = process.argv.slice(2)): C
 		dryRun: values['dry-run'] ?? false,
 		write: values.write ?? false,
 		filter: values.filter ? new RegExp(values.filter) : undefined,
+		audit: false,
+		json: false,
 	};
+}
+
+/**
+ * Output shape chosen by `runAudit`'s caller.
+ *
+ * - `'text'` — human-readable `[xref] audit: …` prose log lines
+ * - `'json'` — a single `{ total, closed }` object on stdout, for CI and
+ *   scripted consumers that need to parse the result without grepping
+ */
+export type AuditFormat = 'text' | 'json';
+
+/**
+ * Walk every mapping in the config and ask `gh` for the issue's current
+ * lifecycle state. Returns the numbers of any CLOSED issues (the ones that
+ * should be pruned from the config) so the caller can decide between a
+ * non-zero exit (pre-release gate) and a warning log.
+ *
+ * `gh.state(...)` calls are fanned out through `Promise.all`. Order of the
+ * returned list still matches the order of `mappings` so the human-readable
+ * log stays stable and PR reviewers can diff it.
+ *
+ * Pure w.r.t. `mappings` and `gh` — no filesystem or process globals — so
+ * unit tests can inject a fake client.
+ *
+ * `format: 'json'` emits a single `{ total, closed }` object on stdout in
+ * place of the text lines, for CI/automation callers that want to parse the
+ * result without grepping.
+ */
+export async function runAudit(
+	mappings: readonly XrefMapping[],
+	gh: Pick<GhClient, 'state'>,
+	log: Pick<Console, 'log'> = console,
+	format: AuditFormat = 'text',
+): Promise<readonly number[]> {
+	// Fan out in parallel: 15 mappings × ~400 ms serial = 6 s → ~0.5 s here.
+	// Order-preserving: index-aligned with `mappings`, not completion order.
+	const states = await Promise.all(mappings.map(m => gh.state(m.issue)));
+	const closed: number[] = [];
+	for (const [i, m] of mappings.entries()) {
+		if (states[i] === 'CLOSED') closed.push(m.issue);
+	}
+
+	if (format === 'json') {
+		log.log(JSON.stringify({ total: mappings.length, closed }));
+		return closed;
+	}
+
+	if (closed.length === 0) {
+		log.log(`[xref] audit: all ${mappings.length} mapped issues are still OPEN`);
+	} else {
+		log.log(
+			`[xref] audit: ${closed.length} mapping(s) reference CLOSED issue(s): ${closed.map(n => `#${n}`).join(', ')}`,
+		);
+		log.log('[xref] audit: remove each entry from tests/external/bench/issue-xref.config.ts');
+	}
+	return closed;
 }
 
 export function processOne(
@@ -374,6 +504,21 @@ export function processOne(
 
 async function main(): Promise<void> {
 	const opts = parseCliArgs();
+
+	if (opts.audit) {
+		// `--audit` only needs `gh` + the config. Loading bench data would be
+		// pointless (and would fail on a fresh clone that hasn't run
+		// `yarn bench:update` yet), so skip it.
+		const closed = await runAudit(
+			xrefMappings,
+			defaultGhClient(),
+			console,
+			opts.json ? 'json' : 'text',
+		);
+		if (closed.length > 0) process.exitCode = 1;
+		return;
+	}
+
 	const data = await loadBenchData();
 	const ctx: RenderContext = { data, mappings: xrefMappings };
 

@@ -512,6 +512,8 @@ or stub reason) lives in
 | `yarn bench:xref --all --dry-run --write` | Fetch each issue body from GitHub, show what the next body would look like (no write) |
 | `yarn bench:xref --issue <N> --write` | Fetch issue N, replace its `<!-- bench-xref:* -->` range (or append one if absent), push via `gh issue edit --body-file -` (stdin) |
 | `yarn bench:xref --all --write` | Same, across every configured issue |
+| `yarn bench:xref --audit` | Walk every mapping, call `gh issue view <N> --json state`, and list any CLOSED entries. No writes, no bench-data load. Exits non-zero if anything is CLOSED — safe to gate a pre-release check on. |
+| `yarn bench:xref --audit --json` | Same audit, but emits a single `{ "total": N, "closed": [<issue>, …] }` object on stdout instead of the prose lines, for CI / automation callers. Exit code is unchanged (non-zero when `closed` is non-empty). `--json` without `--audit` is rejected to avoid silently falling back to unparseable Markdown. |
 
 Prerequisites: `gh` CLI installed and authenticated (`gh auth login`).
 If `gh` is missing or unauthenticated the CLI exits with a targeted
@@ -539,7 +541,7 @@ pointing at the evidence.
 | --- | --- |
 | New Issue filed that this bench can verify | Add a `primary` mapping with a focused `filter`; run `yarn bench:xref --issue <N>` and confirm the fixture list before merging the config change |
 | New Issue filed with no matching fixture | Add a `secondary` mapping with a `reason`. Plain dev-dependency / internal bug Issues go here too. |
-| Existing Issue closes | Remove the mapping entry. The umbrella block auto-derives from remaining primary mappings — no separate edit needed. |
+| Existing Issue closes | Detect via `yarn bench:xref --audit` (also enforced weekly and on config PRs by the `Bench xref audit` workflow), then remove the mapping entry. The umbrella block auto-derives from remaining primary mappings — no separate edit needed. |
 | Issue scope narrows or widens | Adjust `filter`; rerun `yarn bench:xref --issue <N>` to confirm the new fixture set. |
 | Claim in a primary Issue's body becomes inaccurate after bench reruns | Add or edit a `bodyOverride` (factory that reads an `.md` under `tests/external/bench/issue-xref/`). Keep the scope correction out of the code literal so it can be proof-read. |
 
@@ -553,13 +555,46 @@ Before cutting a markuplint release that touches any rule the benchmark
 covers, run:
 
 ```
-yarn bench:update       # regenerate coverage.json (Docker required)
+yarn bench:xref --audit     # drop entries that point at CLOSED issues
+yarn bench:update           # regenerate coverage.json (Docker required)
 yarn bench:xref --all --write
 ```
 
-This keeps every referenced Issue's verdict tally in sync with the
-release that is about to land. Skipping it means the release notes
-can still reference stale claim counts.
+`--audit` is the cheapest gate: it only asks GitHub for each mapped
+issue's state and exits non-zero the moment a CLOSED reference slips
+into the config. Running it first lets you prune the config before
+`--all --write` pushes stale xref blocks to issues that were closed
+between releases (exactly the drift that removed #3619 and #3637 from
+this file in 2026-04).
+
+`yarn bench:update` + `yarn bench:xref --all --write` then keep every
+remaining referenced Issue's verdict tally in sync with the release
+that is about to land. Skipping it means the release notes can still
+reference stale claim counts.
+
+#### CI: the `Bench xref audit` workflow
+
+[`.github/workflows/bench-xref-audit.yml`](../../.github/workflows/bench-xref-audit.yml)
+runs the same audit automatically in three scenarios:
+
+- **Pull requests** that touch `tests/external/bench/issue-xref.config.ts`
+  or `tests/external/bench/xref-issue.ts` — catches CLOSED mappings at
+  review time so they never land on `dev`.
+- **Weekly cron** (Monday 02:00 UTC) — catches issues that closed
+  upstream between PRs, so the config does not silently decay.
+- **Manual** (`workflow_dispatch`) — run from the Actions UI when a
+  maintainer wants a fresh check.
+
+The workflow authenticates with the default `GITHUB_TOKEN`
+(`permissions: issues: read`), installs deps, builds only
+`@markuplint/shared` (the single workspace import `bench:xref` needs),
+and invokes `yarn bench:xref --audit --json`. The emitted JSON is
+captured into the run's Step Summary so reviewers see the CLOSED list
+(if any) without opening the raw log.
+
+Fail mode: the job exits non-zero, which blocks merge on PRs and
+surfaces a red weekly status on `dev`. Fix it by removing each CLOSED
+entry from the config per the table above.
 
 #### Marker version (`v1`) and future migration
 

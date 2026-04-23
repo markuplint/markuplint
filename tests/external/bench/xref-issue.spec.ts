@@ -1,7 +1,7 @@
 import { describe, expect, test, vi } from 'vitest';
 
 import type { PrimaryMapping, SecondaryMapping, UmbrellaMapping, XrefMapping } from './issue-xref.config.ts';
-import type { BenchData, GhClient, RenderContext } from './xref-issue.ts';
+import type { BenchData, GhClient, IssueState, RenderContext } from './xref-issue.ts';
 import {
 	buildBlock,
 	buildPrimaryBlock,
@@ -10,6 +10,7 @@ import {
 	composeBody,
 	parseCliArgs,
 	processOne,
+	runAudit,
 } from './xref-issue.ts';
 
 function baseMeta() {
@@ -301,9 +302,36 @@ describe('parseCliArgs', () => {
 		expect(() => parseCliArgs(['--issue=-5'])).toThrow(/invalid --issue/);
 	});
 
-	test('requires either --issue or --all', () => {
-		expect(() => parseCliArgs([])).toThrow(/provide either --issue <N> or --all/);
-		expect(() => parseCliArgs(['--filter', 'foo'])).toThrow(/provide either --issue <N> or --all/);
+	test('requires one of --issue / --all / --audit', () => {
+		expect(() => parseCliArgs([])).toThrow(/provide either --issue <N>, --all, or --audit/);
+		expect(() => parseCliArgs(['--filter', 'foo'])).toThrow(/provide either --issue <N>, --all, or --audit/);
+	});
+
+	test('--audit alone opts into all:true with no writes', () => {
+		const opts = parseCliArgs(['--audit']);
+		expect(opts.audit).toBe(true);
+		expect(opts.all).toBe(true);
+		expect(opts.write).toBe(false);
+		expect(opts.dryRun).toBe(false);
+		expect(opts.issue).toBeUndefined();
+	});
+
+	test('--audit rejects combination with scope / mutation flags', () => {
+		expect(() => parseCliArgs(['--audit', '--issue', '1234'])).toThrow(/--audit is standalone/);
+		expect(() => parseCliArgs(['--audit', '--write'])).toThrow(/--audit is standalone/);
+		expect(() => parseCliArgs(['--audit', '--dry-run'])).toThrow(/--audit is standalone/);
+		expect(() => parseCliArgs(['--audit', '--filter', 'foo'])).toThrow(/--audit is standalone/);
+	});
+
+	test('--audit --json carries the structured-output flag through', () => {
+		const opts = parseCliArgs(['--audit', '--json']);
+		expect(opts.audit).toBe(true);
+		expect(opts.json).toBe(true);
+	});
+
+	test('--json outside --audit fails loudly instead of printing unparseable Markdown', () => {
+		expect(() => parseCliArgs(['--all', '--json'])).toThrow(/--json only makes sense with --audit/);
+		expect(() => parseCliArgs(['--issue', '1', '--json'])).toThrow(/--json only makes sense with --audit/);
 	});
 
 	test('rejects --filter paired with --all when no --issue is given', () => {
@@ -330,8 +358,8 @@ describe('parseCliArgs', () => {
 });
 
 describe('processOne (IO boundary)', () => {
-	function makeGh(initialBody: string): GhClient & { readonly calls: { view: number[]; edit: Array<{ issue: number; body: string }> } } {
-		const calls = { view: [] as number[], edit: [] as Array<{ issue: number; body: string }> };
+	function makeGh(initialBody: string): GhClient & { readonly calls: { view: number[]; edit: Array<{ issue: number; body: string }>; state: number[] } } {
+		const calls = { view: [] as number[], edit: [] as Array<{ issue: number; body: string }>, state: [] as number[] };
 		return {
 			calls,
 			view(issue: number) {
@@ -340,6 +368,10 @@ describe('processOne (IO boundary)', () => {
 			},
 			edit(issue: number, body: string) {
 				calls.edit.push({ issue, body });
+			},
+			async state(issue: number): Promise<IssueState> {
+				calls.state.push(issue);
+				return 'OPEN';
 			},
 		};
 	}
@@ -449,6 +481,128 @@ describe('processOne (IO boundary)', () => {
 	});
 });
 
+describe('runAudit', () => {
+	function makeStateClient(states: Readonly<Record<number, IssueState>>) {
+		const calls: number[] = [];
+		return {
+			calls,
+			async state(issue: number): Promise<IssueState> {
+				calls.push(issue);
+				const hit = states[issue];
+				if (hit === undefined) throw new Error(`test bug: no state seeded for #${issue}`);
+				return hit;
+			},
+		};
+	}
+	function makeLog() {
+		const lines: string[] = [];
+		return { log: (...args: unknown[]) => lines.push(args.map(String).join(' ')), lines };
+	}
+
+	test('returns empty and logs all-clear when every mapped issue is OPEN', async () => {
+		const mappings: readonly XrefMapping[] = [
+			{ kind: 'primary', issue: 100, filter: /x/ },
+			{ kind: 'secondary', issue: 200, reason: 'n/a' },
+			{ kind: 'umbrella', issue: 300 },
+		];
+		const gh = makeStateClient({ 100: 'OPEN', 200: 'OPEN', 300: 'OPEN' });
+		const log = makeLog();
+		const closed = await runAudit(mappings, gh, log);
+		expect(closed).toEqual([]);
+		// Order-insensitive: Promise.all may complete in any order. The
+		// contract is that every mapping was queried exactly once.
+		expect(new Set(gh.calls)).toEqual(new Set([100, 200, 300]));
+		expect(gh.calls).toHaveLength(3);
+		expect(log.lines.some(l => l.includes('all 3 mapped issues are still OPEN'))).toBe(true);
+	});
+
+	test('returns CLOSED issue numbers and points at the config file in the log', async () => {
+		const mappings: readonly XrefMapping[] = [
+			{ kind: 'primary', issue: 1, filter: /x/ },
+			{ kind: 'primary', issue: 2, filter: /x/ },
+			{ kind: 'secondary', issue: 3, reason: 'n/a' },
+		];
+		const gh = makeStateClient({ 1: 'OPEN', 2: 'CLOSED', 3: 'CLOSED' });
+		const log = makeLog();
+		const closed = await runAudit(mappings, gh, log);
+		// Result order tracks mapping order, not `Promise.all` completion.
+		expect(closed).toEqual([2, 3]);
+		expect(log.lines.some(l => l.includes('2 mapping(s) reference CLOSED issue(s): #2, #3'))).toBe(true);
+		expect(log.lines.some(l => l.includes('tests/external/bench/issue-xref.config.ts'))).toBe(true);
+	});
+
+	test('surfaces every CLOSED entry even when all mappings are closed', async () => {
+		const mappings: readonly XrefMapping[] = [
+			{ kind: 'primary', issue: 10, filter: /x/ },
+			{ kind: 'primary', issue: 20, filter: /x/ },
+		];
+		const gh = makeStateClient({ 10: 'CLOSED', 20: 'CLOSED' });
+		const log = makeLog();
+		expect(await runAudit(mappings, gh, log)).toEqual([10, 20]);
+	});
+
+	test('propagates fatal state errors from the client rather than swallowing them', async () => {
+		const mappings: readonly XrefMapping[] = [{ kind: 'primary', issue: 1, filter: /x/ }];
+		const gh = {
+			async state(): Promise<IssueState> {
+				throw new TypeError('boom from gh layer');
+			},
+		};
+		await expect(runAudit(mappings, gh)).rejects.toThrow(TypeError);
+	});
+
+	test("format: 'json' emits a single-object report and skips the prose lines", async () => {
+		const mappings: readonly XrefMapping[] = [
+			{ kind: 'primary', issue: 101, filter: /x/ },
+			{ kind: 'primary', issue: 202, filter: /x/ },
+			{ kind: 'secondary', issue: 303, reason: 'n/a' },
+		];
+		const gh = makeStateClient({ 101: 'OPEN', 202: 'CLOSED', 303: 'CLOSED' });
+		const log = makeLog();
+		const closed = await runAudit(mappings, gh, log, 'json');
+		expect(closed).toEqual([202, 303]);
+		expect(log.lines).toHaveLength(1);
+		const parsed = JSON.parse(log.lines[0] ?? '');
+		expect(parsed).toEqual({ total: 3, closed: [202, 303] });
+		// Text lines must not appear when JSON mode is requested.
+		expect(log.lines.some(l => l.includes('[xref] audit:'))).toBe(false);
+	});
+
+	test("format: 'json' still emits a report when everything is OPEN", async () => {
+		const mappings: readonly XrefMapping[] = [
+			{ kind: 'primary', issue: 1, filter: /x/ },
+		];
+		const gh = makeStateClient({ 1: 'OPEN' });
+		const log = makeLog();
+		await runAudit(mappings, gh, log, 'json');
+		expect(JSON.parse(log.lines[0] ?? '')).toEqual({ total: 1, closed: [] });
+	});
+
+	test('fans state() lookups out in parallel rather than serialising them', async () => {
+		// Each fake state() call waits 50 ms before resolving. If `runAudit`
+		// serialised the calls, 10 of them would take ≥ 500 ms. Running in
+		// parallel, wall-clock should be a hair over 50 ms. The assertion
+		// deliberately leaves a generous 200 ms ceiling to stay stable under
+		// loaded CI without losing the signal if the fan-out regresses.
+		const delay = 50;
+		const mappings: readonly XrefMapping[] = Array.from({ length: 10 }, (_, i) => ({
+			kind: 'primary' as const,
+			issue: i + 1,
+			filter: /x/,
+		}));
+		const gh = {
+			async state(): Promise<IssueState> {
+				await new Promise(r => setTimeout(r, delay));
+				return 'OPEN';
+			},
+		};
+		const started = Date.now();
+		await runAudit(mappings, gh);
+		const elapsed = Date.now() - started;
+		expect(elapsed).toBeLessThan(delay * 4);
+	});
+});
+
 // Ensure the config module does not eagerly read the filesystem at import
 // time just to register bodyOverride entries. Importing the config must
 // succeed even when the override factories are never invoked.
@@ -462,5 +616,36 @@ describe('issue-xref.config', () => {
 				expect(typeof m.bodyOverride).toBe('function');
 			}
 		}
+	});
+
+	test('no two primary mappings share an issue number', async () => {
+		const { xrefMappings } = await import('./issue-xref.config.ts');
+		const primaries = xrefMappings.filter(m => m.kind === 'primary');
+		const seen = new Map<number, number>();
+		for (const m of primaries) seen.set(m.issue, (seen.get(m.issue) ?? 0) + 1);
+		const duplicates = [...seen].filter(([, n]) => n > 1).map(([issue]) => issue);
+		expect(duplicates, `primary issue numbers duplicated: ${duplicates.join(', ')}`).toEqual([]);
+	});
+
+	test('every primary filter matches at least one fixture in the committed coverage snapshot', async () => {
+		// Catches a stale `filter` after the validator/validator submodule
+		// moves or renames fixture paths. Runs off `snapshots/diff/coverage.json`,
+		// which is committed — no bench regeneration needed.
+		const [{ xrefMappings }, coverageModule] = await Promise.all([
+			import('./issue-xref.config.ts'),
+			import('node:fs/promises').then(async fs => {
+				const { DIFF_DIR } = await import('./paths.ts');
+				const { join } = await import('node:path');
+				const raw = await fs.readFile(join(DIFF_DIR, 'coverage.json'), 'utf8');
+				return JSON.parse(raw) as { entries: readonly { path: string }[] };
+			}),
+		]);
+		const entries = coverageModule.entries;
+		const stale: number[] = [];
+		for (const m of xrefMappings) {
+			if (m.kind !== 'primary') continue;
+			if (!entries.some(e => m.filter.test(e.path))) stale.push(m.issue);
+		}
+		expect(stale, `primary mappings whose filter matches zero fixtures: ${stale.join(', ')}`).toEqual([]);
 	});
 });
