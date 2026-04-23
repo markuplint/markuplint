@@ -2,7 +2,7 @@ import { describe, expect, test } from 'vitest';
 
 import type { PrimaryMapping, SecondaryMapping, UmbrellaMapping } from './issue-xref.config.ts';
 import type { BenchData, RenderContext } from './xref-issue.ts';
-import { buildPrimaryBlock, buildSecondaryBlock, buildUmbrellaBlock, composeBody } from './xref-issue.ts';
+import { buildBlock, buildPrimaryBlock, buildSecondaryBlock, buildUmbrellaBlock, composeBody, parseCliArgs } from './xref-issue.ts';
 
 function baseMeta() {
 	return {
@@ -162,6 +162,23 @@ describe('composeBody', () => {
 		expect(second).toBe(first);
 	});
 
+	test('collapses multiple stale marker pairs into a single block', () => {
+		// Simulates a body that accumulated two xref blocks from manual edits
+		// or a prior bug where the replacement missed the `g` flag.
+		const dirty =
+			'Body.\n\n## Benchmark cross-reference\n\n<!-- bench-xref:begin v1 -->\nSTALE A\n<!-- bench-xref:end -->\n\n' +
+			'Intermezzo.\n\n## Benchmark cross-reference\n\n<!-- bench-xref:begin v1 -->\nSTALE B\n<!-- bench-xref:end -->\n';
+		const block =
+			'## Benchmark cross-reference\n\n<!-- bench-xref:begin v1 -->\nFRESH\n<!-- bench-xref:end -->';
+		const out = composeBody(dirty, block);
+		expect(out).not.toContain('STALE A');
+		expect(out).not.toContain('STALE B');
+		// exactly one pair in the output
+		expect(out.split('<!-- bench-xref:begin v1 -->').length).toBe(2);
+		expect(out).toContain('FRESH');
+		expect(out).toContain('Intermezzo.');
+	});
+
 	test('uses bodyOverride as the base when provided, replacing the original body entirely', () => {
 		const original = 'Outdated body that should be thrown away.';
 		const override = 'Rewritten scope. Short and to the point.';
@@ -173,11 +190,113 @@ describe('composeBody', () => {
 		expect(out).toContain('<!-- bench-xref:begin v1 -->');
 	});
 
+	test('bodyOverride discards even an existing xref block from the original body', () => {
+		const original =
+			'Old body.\n\n## Benchmark cross-reference\n\n<!-- bench-xref:begin v1 -->\nPRIOR\n<!-- bench-xref:end -->\n';
+		const override = 'Totally new body. No prior anything.';
+		const block =
+			'## Benchmark cross-reference\n\n<!-- bench-xref:begin v1 -->\nNEW\n<!-- bench-xref:end -->';
+		const out = composeBody(original, block, override);
+		expect(out).not.toContain('Old body');
+		expect(out).not.toContain('PRIOR');
+		expect(out).toContain('Totally new body.');
+		expect(out).toContain('NEW');
+		expect(out.split('<!-- bench-xref:begin v1 -->').length).toBe(2);
+	});
+
+	test('appends cleanly when the original body has no trailing newline', () => {
+		const block =
+			'## Benchmark cross-reference\n\n<!-- bench-xref:begin v1 -->\nx\n<!-- bench-xref:end -->';
+		const out = composeBody('Foo bar', block);
+		expect(out.startsWith('Foo bar\n\n##')).toBe(true);
+		expect(out.endsWith('<!-- bench-xref:end -->\n')).toBe(true);
+	});
+
+	test('accepts an empty original body', () => {
+		const block =
+			'## Benchmark cross-reference\n\n<!-- bench-xref:begin v1 -->\nfirst\n<!-- bench-xref:end -->';
+		const out = composeBody('', block);
+		expect(out).toContain('<!-- bench-xref:begin v1 -->');
+		// Only the block (plus the leading separator blank line + trailing newline).
+		expect(out.startsWith('\n\n## Benchmark')).toBe(true);
+	});
+
 	test('normalises CRLF line endings to LF before appending', () => {
 		const original = 'Line one.\r\nLine two.\r\n';
 		const block =
 			'## Benchmark cross-reference\n\n<!-- bench-xref:begin v1 -->\nx\n<!-- bench-xref:end -->';
 		const out = composeBody(original, block);
 		expect(out).not.toContain('\r');
+	});
+});
+
+describe('buildBlock dispatch', () => {
+	test('routes each kind to the matching builder', () => {
+		const primary: PrimaryMapping = { kind: 'primary', issue: 1, filter: /nothing-matches/ };
+		const secondary: SecondaryMapping = { kind: 'secondary', issue: 2, reason: 'r' };
+		const umbrella: UmbrellaMapping = { kind: 'umbrella', issue: 3, primaryIssues: [1] };
+		const data = makeData();
+		const ctx: RenderContext = { data, mappings: [primary, secondary, umbrella] };
+
+		expect(buildBlock(primary, ctx)).toBe(buildPrimaryBlock(primary, data));
+		expect(buildBlock(secondary, ctx)).toBe(buildSecondaryBlock(secondary, data));
+		expect(buildBlock(umbrella, ctx)).toBe(buildUmbrellaBlock(umbrella, ctx));
+	});
+});
+
+describe('buildUmbrellaBlock edge cases', () => {
+	test('renders a notice-only table when every primary reference is unknown', () => {
+		const umbrella: UmbrellaMapping = {
+			kind: 'umbrella',
+			issue: 4242,
+			primaryIssues: [9001, 9002],
+		};
+		const data = makeData();
+		const ctx: RenderContext = { data, mappings: [umbrella] };
+		const out = buildUmbrellaBlock(umbrella, ctx);
+		expect(out).toContain('| #9001 | — | primary mapping not found in config |');
+		expect(out).toContain('| #9002 | — | primary mapping not found in config |');
+		// header still present
+		expect(out).toContain('| Issue | Fixtures | Verdict tally |');
+	});
+});
+
+describe('parseCliArgs', () => {
+	test('rejects --issue with non-integer input', () => {
+		expect(() => parseCliArgs(['--issue', 'abc'])).toThrow(/invalid --issue/);
+	});
+
+	test('rejects --issue with zero or negative value', () => {
+		expect(() => parseCliArgs(['--issue', '0'])).toThrow(/invalid --issue/);
+		// `--issue=-5` uses the inline form so parseArgs does not mistake -5
+		// for a second flag.
+		expect(() => parseCliArgs(['--issue=-5'])).toThrow(/invalid --issue/);
+	});
+
+	test('requires either --issue or --all', () => {
+		expect(() => parseCliArgs([])).toThrow(/provide either --issue <N> or --all/);
+		expect(() => parseCliArgs(['--filter', 'foo'])).toThrow(/provide either --issue <N> or --all/);
+	});
+
+	test('rejects --filter paired with --all when no --issue is given', () => {
+		expect(() => parseCliArgs(['--all', '--filter', 'foo'])).toThrow(/--filter requires --issue/);
+	});
+
+	test('accepts --issue with a compiled RegExp filter', () => {
+		const opts = parseCliArgs(['--issue', '1234', '--filter', '^html/elements']);
+		expect(opts.issue).toBe(1234);
+		expect(opts.filter).toBeInstanceOf(RegExp);
+		// Assert by behaviour rather than `.source` — V8 serialises
+		// `new RegExp('^html/')` back as `^html\/`, which is an
+		// implementation detail of its escaping rules.
+		expect(opts.filter?.test('html/elements/a.html')).toBe(true);
+		expect(opts.filter?.test('tests/html/elements/a.html')).toBe(false);
+	});
+
+	test('accepts --all alone', () => {
+		const opts = parseCliArgs(['--all']);
+		expect(opts.issue).toBeUndefined();
+		expect(opts.all).toBe(true);
+		expect(opts.filter).toBeUndefined();
 	});
 });

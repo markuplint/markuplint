@@ -14,6 +14,16 @@
  *                 primary issues listed in `primaryIssues`.
  */
 
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const overrideDir = join(dirname(fileURLToPath(import.meta.url)), 'issue-xref');
+
+function loadBodyOverride(fileName: string): string {
+	return readFileSync(join(overrideDir, fileName), 'utf8').trimEnd();
+}
+
 export type PrimaryMapping = {
 	readonly kind: 'primary';
 	readonly issue: number;
@@ -38,29 +48,8 @@ export type XrefMapping = PrimaryMapping | SecondaryMapping | UmbrellaMapping;
 
 // Body override for #3634: the original text listed 4 bullets and claimed
 // "~9 missed errors". Bench data shows 5 missed (not 9) and `<main>`
-// uniqueness is already detected by `no-duplicate-visible-main`. Drop the
-// `<main>` bullet and correct the count.
-const ISSUE_3634_BODY_OVERRIDE = `## Summary
-
-Add validation for meta elements that must appear at most once per document or that must not coexist with conflicting siblings.
-
-## What to enforce
-
-- \`<meta charset>\` must not appear more than once
-- \`<meta name="description">\` must not appear more than once
-- \`<meta charset>\` and \`<meta http-equiv="content-type">\` must not coexist
-
-## Background
-
-Visible \`<main>\` uniqueness was originally listed here, but the nu-validator compatibility benchmark confirms markuplint's \`no-duplicate-visible-main\` rule already detects it (both relevant fixtures are \`match-error\`). Dropped from scope.
-
-## Spec reference
-
-- https://html.spec.whatwg.org/multipage/semantics.html#the-meta-element
-
-## Impact
-
-~5 missed errors in the nu-html-checker compatibility benchmark. See the cross-reference block below for the exact fixture list.`;
+// uniqueness is already detected by `no-duplicate-visible-main`. Text lives
+// in `issue-xref/3634-body.md` so it can be proof-read without escaping.
 
 export const xrefMappings: readonly XrefMapping[] = [
 	// === 1 次群: bench で裏取れる 8 件 ===
@@ -71,7 +60,7 @@ export const xrefMappings: readonly XrefMapping[] = [
 			/meta.*multiple-charset|meta.*duplicate-charset|meta.*multiple-description|charset-and-(content-type|http-equiv)|multiple-visible-main|multiple-main-visible/,
 		note:
 			'Visible `<main>` uniqueness is already covered by `no-duplicate-visible-main` (both fixtures are `match-error`). The remaining gap is meta uniqueness + charset/http-equiv coexistence.',
-		bodyOverride: ISSUE_3634_BODY_OVERRIDE,
+		bodyOverride: loadBodyOverride('3634-body.md'),
 	},
 	{
 		kind: 'primary',

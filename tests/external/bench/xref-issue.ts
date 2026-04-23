@@ -200,13 +200,16 @@ export function composeBody(currentBody: string, block: string, bodyOverride?: s
 	const base = bodyOverride ?? currentBody;
 	const trimmed = base.replace(/\r\n/g, '\n').replace(/\s+$/, '');
 
-	// Remove any existing xref section (heading + marker range) to rebuild.
+	// Remove every existing xref section (heading + marker range) to rebuild.
+	// `g` flag is required so a body that accumulated multiple marker pairs
+	// (manual edits, merge conflicts, prior buggy runs) collapses to one.
 	const stripped = trimmed.replace(
 		new RegExp(
 			// optional preceding heading
 			`(\\n*## Benchmark cross-reference\\n*)?` +
 				// begin marker through end marker, incl. everything between
 				`\\n*${escapeRegExp(BEGIN_MARKER)}[\\s\\S]*?${escapeRegExp(END_MARKER)}\\n*`,
+			'g',
 		),
 		'\n\n',
 	).replace(/\s+$/, '');
@@ -233,7 +236,14 @@ function fetchIssueBody(issue: number): string {
 }
 
 function writeIssueBody(issue: number, body: string): void {
-	execFileSync('gh', ['issue', 'edit', String(issue), '--body', body], { stdio: ['ignore', 'inherit', 'inherit'] });
+	// Pass the body through stdin rather than as an argv string so Windows'
+	// 32KB CreateProcess limit does not cap the maximum issue length we can
+	// sync, and so body text containing shell-meaningful characters never
+	// needs to round-trip through the command line.
+	execFileSync('gh', ['issue', 'edit', String(issue), '--body-file', '-'], {
+		input: body,
+		stdio: ['pipe', 'inherit', 'inherit'],
+	});
 }
 
 type CliOptions = {
@@ -244,8 +254,9 @@ type CliOptions = {
 	readonly filter?: RegExp;
 };
 
-function parseCliArgs(): CliOptions {
+export function parseCliArgs(args: readonly string[] = process.argv.slice(2)): CliOptions {
 	const { values } = parseArgs({
+		args: [...args],
 		options: {
 			issue: { type: 'string' },
 			all: { type: 'boolean' },
@@ -254,10 +265,23 @@ function parseCliArgs(): CliOptions {
 			filter: { type: 'string' },
 		},
 	});
-	const issue = values.issue ? Number.parseInt(values.issue, 10) : undefined;
+	let issue: number | undefined;
+	if (values.issue !== undefined) {
+		const parsed = Number.parseInt(values.issue, 10);
+		if (!Number.isFinite(parsed) || parsed <= 0) {
+			throw new Error(`invalid --issue ${JSON.stringify(values.issue)}: expected a positive integer`);
+		}
+		issue = parsed;
+	}
 	const all = values.all ?? false;
-	if (!issue && !all) {
+	if (issue === undefined && !all) {
 		throw new Error('provide either --issue <N> or --all');
+	}
+	if (all && values.filter !== undefined && issue === undefined) {
+		// --filter is an ad-hoc override that only makes sense paired with a
+		// single --issue. Silently applying it across --all would mask the
+		// configured per-issue filters.
+		throw new Error('--filter requires --issue; drop --all or drop --filter');
 	}
 	return {
 		issue,
