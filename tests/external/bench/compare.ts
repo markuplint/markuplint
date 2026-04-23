@@ -11,6 +11,7 @@ import type {
 	Coverage,
 	CoverageEntry,
 	ExcludedIds,
+	ExcludedPattern,
 	MarkuplintSnapshot,
 	NuValidatorSnapshot,
 	OverDetectionEntry,
@@ -22,6 +23,7 @@ export type CompareInputs = {
 	readonly nuSnapshots: Map<string, NuValidatorSnapshot>;
 	readonly mlSnapshots: Map<string, MarkuplintSnapshot>;
 	readonly excludedIds: Set<string>;
+	readonly excludedPatterns: readonly ExcludedPattern[];
 };
 
 /** Pure result of comparing the two snapshot trees. */
@@ -76,17 +78,30 @@ export async function loadSnapshots(): Promise<CompareInputs> {
 	}
 
 	const excludedIds = new Set<string>();
+	let excludedPatterns: readonly ExcludedPattern[] = [];
 	if (existsSync(EXCLUDED_IDS_PATH)) {
 		const excluded = await readJson<ExcludedIds>(EXCLUDED_IDS_PATH);
 		for (const entry of excluded.entries) {
 			excludedIds.add(entry.id);
 		}
+		excludedPatterns = excluded.patterns ?? [];
 	}
 
-	return { nuSnapshots, mlSnapshots, excludedIds };
+	return { nuSnapshots, mlSnapshots, excludedIds, excludedPatterns };
 }
 
-function judgeNuState(snap: NuValidatorSnapshot, excludedIds: ReadonlySet<string>): {
+function matchesPattern(message: string, patterns: readonly ExcludedPattern[]): boolean {
+	for (const pattern of patterns) {
+		if (message.includes(pattern.messageContains)) return true;
+	}
+	return false;
+}
+
+function judgeNuState(
+	snap: NuValidatorSnapshot,
+	excludedIds: ReadonlySet<string>,
+	excludedPatterns: readonly ExcludedPattern[],
+): {
 	state: 'error' | 'clean';
 	activeIds: readonly string[];
 	usedExclusions: readonly string[];
@@ -96,6 +111,10 @@ function judgeNuState(snap: NuValidatorSnapshot, excludedIds: ReadonlySet<string
 	for (const message of snap.nuValidator.messages) {
 		if (message.type !== 'error') continue;
 		if (excludedIds.has(message.id)) {
+			used.push(message.id);
+			continue;
+		}
+		if (matchesPattern(message.message, excludedPatterns)) {
 			used.push(message.id);
 			continue;
 		}
@@ -155,7 +174,7 @@ export function compare(inputs: CompareInputs): CompareOutput {
 		}
 		if (!nuSnap || !mlSnap) continue;
 
-		const nu = judgeNuState(nuSnap, inputs.excludedIds);
+		const nu = judgeNuState(nuSnap, inputs.excludedIds, inputs.excludedPatterns);
 		const ml = judgeMlState(mlSnap);
 		const verdict = deriveVerdict(nu.state, ml);
 		const category = inferCategory(path);

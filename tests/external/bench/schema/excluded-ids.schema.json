@@ -21,6 +21,21 @@
 					"addedBy": { "type": "string" }
 				}
 			}
+		},
+		"patterns": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"additionalProperties": false,
+				"required": ["messageContains", "reason", "specUrl", "addedAt", "addedBy"],
+				"properties": {
+					"messageContains": { "type": "string", "minLength": 1 },
+					"reason": { "type": "string" },
+					"specUrl": { "type": "string", "format": "uri" },
+					"addedAt": { "type": "string", "format": "date" },
+					"addedBy": { "type": "string" }
+				}
+			}
 		}
 	}
 }

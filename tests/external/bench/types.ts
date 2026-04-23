@@ -100,10 +100,26 @@ export type ExcludedIdEntry = {
 	readonly addedBy: string;
 };
 
+/**
+ * A substring-based exclusion. Useful when nu-validator emits the same
+ * diagnostic text on many fixtures (e.g. URL-parsing validation errors with
+ * different URL values). Every nu-validator message whose text contains
+ * `messageContains` is treated as excluded. `specUrl` is required so the
+ * audit trail always points back to the authoritative standard.
+ */
+export type ExcludedPattern = {
+	readonly messageContains: string;
+	readonly reason: string;
+	readonly specUrl: string;
+	readonly addedAt: string;
+	readonly addedBy: string;
+};
+
 /** Root shape of `snapshots/excluded-ids.json`. */
 export type ExcludedIds = {
 	readonly $schema?: string;
 	readonly entries: readonly ExcludedIdEntry[];
+	readonly patterns?: readonly ExcludedPattern[];
 };
 
 /**

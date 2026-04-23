@@ -57,11 +57,19 @@ function inputs(
 	nu: readonly NuValidatorSnapshot[],
 	ml: readonly MarkuplintSnapshot[],
 	excludedIds: readonly string[] = [],
+	excludedPatterns: readonly { messageContains: string }[] = [],
 ): CompareInputs {
 	return {
 		nuSnapshots: new Map(nu.map(s => [s.source.path, s])),
 		mlSnapshots: new Map(ml.map(s => [s.source.path, s])),
 		excludedIds: new Set(excludedIds),
+		excludedPatterns: excludedPatterns.map(p => ({
+			messageContains: p.messageContains,
+			reason: 'test',
+			specUrl: 'https://example.test/',
+			addedAt: '2026-04-23',
+			addedBy: 'test',
+		})),
 	};
 }
 
@@ -115,6 +123,44 @@ describe('compare', () => {
 		expect(out.coverage.entries[0]?.verdict).toBe('match-clean');
 		expect(out.coverage.entries[0]?.excludedIds).toEqual(['nv-excluded']);
 		expect(out.nuOverDetection).toHaveLength(0);
+	});
+
+	test('pattern exclusion matches any nu message containing the substring', () => {
+		const out = compare(
+			inputs(
+				[
+					nuSnap('html/elements/a.html', [
+						{ id: 'nv-p1', type: 'error', message: 'Something Fragment is not allowed for data: URIs foo' },
+					]),
+					nuSnap('html/elements/b.html', [{ id: 'nv-p2', type: 'error', message: 'unrelated' }]),
+				],
+				[mlSnap('html/elements/a.html'), mlSnap('html/elements/b.html')],
+				[],
+				[{ messageContains: 'Fragment is not allowed for data:' }],
+			),
+		);
+		const byPath = Object.fromEntries(out.coverage.entries.map(e => [e.path, e]));
+		expect(byPath['html/elements/a.html']?.verdict).toBe('match-clean');
+		expect(byPath['html/elements/a.html']?.excludedIds).toEqual(['nv-p1']);
+		expect(byPath['html/elements/b.html']?.verdict).toBe('nu-over');
+	});
+
+	test('pattern and id exclusions compose — both record the message id as excluded', () => {
+		const out = compare(
+			inputs(
+				[
+					nuSnap('html/elements/a.html', [
+						{ id: 'nv-first', type: 'error', message: 'must be less than or equal to max' },
+						{ id: 'nv-second', type: 'error', message: 'other' },
+					]),
+				],
+				[mlSnap('html/elements/a.html')],
+				['nv-second'],
+				[{ messageContains: 'must be less than or equal to' }],
+			),
+		);
+		expect(out.coverage.entries[0]?.verdict).toBe('match-clean');
+		expect(out.coverage.entries[0]?.excludedIds.sort()).toEqual(['nv-first', 'nv-second']);
 	});
 
 	test('non-error nu messages (warnings/info) do not count as an error', () => {

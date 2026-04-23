@@ -410,6 +410,45 @@ yarn bench:report
 The entry no longer counts as `nu-over` and the verdict collapses to
 `match-clean` (or `ml-over` if other active messages remain).
 
+#### Batch exclusion by message substring
+
+When nu-validator emits the same diagnostic on many fixtures (a common
+shape for URL-parsing validation errors, reversed-range constraints,
+and similar), declare one `patterns[]` entry instead of dozens of
+individual `entries[]` entries:
+
+```jsonc
+{
+  "entries": [ /* per-ID, as above */ ],
+  "patterns": [
+    {
+      "messageContains": "Fragment is not allowed for data: URIs",
+      "reason": "WHATWG URL LS supersedes RFC 2397; fragments ARE part of a data: URL record.",
+      "specUrl": "https://url.spec.whatwg.org/#url-parsing",
+      "addedAt": "2026-04-23",
+      "addedBy": "<github-handle>"
+    }
+  ]
+}
+```
+
+Every nu-validator error message that contains `messageContains` as a
+substring is excluded. `specUrl` is required — patterns are the most
+load-bearing exclusion mechanism and must cite the standard that
+authorises them. If you cannot cite a spec paragraph, use a per-ID
+`entries[]` record instead so the scope stays narrow.
+
+#### Audit queue (known unfinished investigations)
+
+The seeded `patterns[]` covers what is currently
+spec-confirmed (`Fragment is not allowed for data: URIs`, reversed
+`min`/`max` constraints). The larger nu-over slice — URL-parsing
+validation errors, token-and-semicolon parser complaints, and similar
+— is **not** excluded, because each of those messages needs an
+individual URL LS / HTML LS read. Use the workflow above to audit one
+pattern at a time; when you can cite the spec, add it to
+`patterns[]`.
+
 ## Architecture
 
 Data flow:

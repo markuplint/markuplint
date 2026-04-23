@@ -106,7 +106,8 @@ export async function runReport(): Promise<void> {
 	lines.push(`- nu-over (nu-validator over-detection): **${verdictCounts['nu-over'] ?? 0}**`);
 	const matchCount = (verdictCounts['match-error'] ?? 0) + (verdictCounts['match-clean'] ?? 0);
 	lines.push(`- overall match rate: **${percent(matchCount, total)}**`);
-	lines.push(`- excluded-ids: ${excludedIds.entries.length}`);
+	const patternCount = excludedIds.patterns?.length ?? 0;
+	lines.push(`- excluded-ids: ${excludedIds.entries.length} entries, ${patternCount} pattern(s)`);
 	lines.push('');
 
 	lines.push('## Per-Category', '');
