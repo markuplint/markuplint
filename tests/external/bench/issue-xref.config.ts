@@ -63,7 +63,7 @@ export type XrefMapping = PrimaryMapping | SecondaryMapping | UmbrellaMapping;
 // in `issue-xref/3634-body.md` so it can be proof-read without escaping.
 
 export const xrefMappings: readonly XrefMapping[] = [
-	// === 1 次群: bench で裏取れる 8 件 ===
+	// === 1 次群: bench で裏取れる Issue ===
 	{
 		kind: 'primary',
 		issue: 3634,
@@ -75,18 +75,10 @@ export const xrefMappings: readonly XrefMapping[] = [
 	},
 	{
 		kind: 'primary',
-		issue: 3637,
-		filter:
-			/select\/button-with-(role|aria-label)|selectedcontent\/aria-hidden-in-select|dl-with-div-child-with-role|figure\/with-figcaption-and-role/,
-		note:
-			'All five patterns are already `match-error` in the benchmark — markuplint catches them today. No missed-error gap. This issue can be closed as already implemented.',
-	},
-	{
-		kind: 'primary',
 		issue: 3682,
 		filter: /html-aria\/(misc|roles-plain-concrete|roles-properties-supported).*separator|warnings\/unnecessary-role-separator/,
 		note:
-			'`ml-only` rows here are markuplint over-detecting `aria-valuenow` on non-focusable separators. ARIA makes `aria-valuenow` required only for focusable separators; `html-spec` needs a conditional required flag.',
+			'`wai-aria-required-props` fires `aria-valuenow` on non-focusable separators here, which is over-detection: ARIA makes that property required only for focusable separators, so `html-spec` needs a conditional required flag. Note that some `ml-only` rows also include `wai-aria-disallowed-props` hits on `aria-expanded` — that half is spec-correct (nu is lax) and will stay `ml-only` after this fix.',
 	},
 	{
 		kind: 'primary',
@@ -111,20 +103,13 @@ export const xrefMappings: readonly XrefMapping[] = [
 	},
 	{
 		kind: 'primary',
-		issue: 3619,
-		filter: /html-svg\/(paths-data|masking-path|imp-path)/,
-		note:
-			'Direction is inverted. The issue asks for "missing validation", but 32 of the 34 `html-svg/paths-data` / `masking-path` fixtures are `ml-only` — markuplint currently rejects SVG path data that nu-validator (and the SVG spec) accept. The fix is to tighten the `<svg-path>` type into a real parser that stops emitting false positives, not to add more strict checks. Tracking the real work in a fresh issue; this one is closed as "not planned".',
-	},
-	{
-		kind: 'primary',
 		issue: 293,
 		filter: /html-svg\/filters-/,
 		note:
-			'Before adding a new `svg-filter-reference-relationship` rule, clean up the existing `ml-only` fixtures in the SVG filters area — markuplint is already over-detecting there. Adding more strictness on top would compound the false-positive load.',
+			'`ml-only` fixtures here are all W3C SVG 1.1 test-suite files; their violations are `deprecated-attr` / `invalid-attr` / `permitted-contents` on SVG 1.1 remnants (`version`, `baseProfile`, `xmlns:xlink`, `<font-face>` inside `<defs>`, `font-family` with a custom family), not on filter references. markuplint is spec-correct under SVG 2; nu-validator is lax on these SVG 1.1 features. The proposed `svg-filter-reference-relationship` rule is unrelated and not blocked by this noise.',
 	},
 
-	// === 2 次群: bench では裏取れない 8 件（ステルブロック） ===
+	// === 2 次群: bench では裏取れない Issue（ステルブロック） ===
 	{
 		kind: 'secondary',
 		issue: 3740,
