@@ -491,6 +491,8 @@ it without first adding a row with a verbatim spec quote and a source URL.
 
 ### Syncing benchmark cross-references onto issues
 
+<!-- keywords: cross-reference, xref, issue audit, claim verification, fixture linking, benchmark issue link -->
+
 Related GitHub issues carry a `<!-- bench-xref:begin v1 --> ... <!--
 bench-xref:end -->` block at the end of their body. That block lists
 every fixture matching the issue's scope (filter regex) plus the
@@ -508,8 +510,12 @@ or stub reason) lives in
 | `yarn bench:xref --issue <N> --filter '<regex>'` | Ad-hoc scope, bypassing the config |
 | `yarn bench:xref --all` | Print every configured issue's block to stdout |
 | `yarn bench:xref --all --dry-run --write` | Fetch each issue body from GitHub, show what the next body would look like (no write) |
-| `yarn bench:xref --issue <N> --write` | Fetch issue N, replace its `<!-- bench-xref:* -->` range (or append one if absent), push via `gh issue edit` |
+| `yarn bench:xref --issue <N> --write` | Fetch issue N, replace its `<!-- bench-xref:* -->` range (or append one if absent), push via `gh issue edit --body-file -` (stdin) |
 | `yarn bench:xref --all --write` | Same, across every configured issue |
+
+Prerequisites: `gh` CLI installed and authenticated (`gh auth login`).
+If `gh` is missing or unauthenticated the CLI exits with a targeted
+error pointing back to this doc.
 
 Routine operation after `yarn bench:update`:
 
@@ -519,13 +525,58 @@ yarn bench:xref --all --write             # apply
 ```
 
 Re-running is safe — `composeBody` replaces the existing marker range
-in place. If an issue is closed and should drop out of future syncs,
-remove its entry from `issue-xref.config.ts` (or change its `kind` to
-leave the block static).
+in place. Even if an issue body accumulated multiple marker pairs
+(manual edits, merge conflicts), the replacement regex uses the `g`
+flag and collapses them to a single block.
 
 The block does not say who is right — that stays a spec-reading
 decision per the preceding audit sections. The xref is only
 pointing at the evidence.
+
+#### Updating `issue-xref.config.ts`
+
+| Event | What to do |
+| --- | --- |
+| New Issue filed that this bench can verify | Add a `primary` mapping with a focused `filter`; run `yarn bench:xref --issue <N>` and confirm the fixture list before merging the config change |
+| New Issue filed with no matching fixture | Add a `secondary` mapping with a `reason`. Plain dev-dependency / internal bug Issues go here too. |
+| Existing Issue closes | Remove the mapping entry. The umbrella block auto-derives from remaining primary mappings — no separate edit needed. |
+| Issue scope narrows or widens | Adjust `filter`; rerun `yarn bench:xref --issue <N>` to confirm the new fixture set. |
+| Claim in a primary Issue's body becomes inaccurate after bench reruns | Add or edit a `bodyOverride` (factory that reads an `.md` under `tests/external/bench/issue-xref/`). Keep the scope correction out of the code literal so it can be proof-read. |
+
+Owner: whoever is triaging v5/v6 release-readiness for the nu-validator
+benchmark. The config is part of the repo, so updates ride through the
+normal PR review flow.
+
+#### Pre-release checklist integration
+
+Before cutting a markuplint release that touches any rule the benchmark
+covers, run:
+
+```
+yarn bench:update       # regenerate coverage.json (Docker required)
+yarn bench:xref --all --write
+```
+
+This keeps every referenced Issue's verdict tally in sync with the
+release that is about to land. Skipping it means the release notes
+can still reference stale claim counts.
+
+#### Marker version (`v1`) and future migration
+
+The `<!-- bench-xref:begin v1 -->` literal is baked into the
+`composeBody` regex. If the block format ever needs a breaking change
+(new field, reshaped table, etc.):
+
+1. Bump the marker to `v2` (`BEGIN_MARKER` / `END_MARKER` in
+   `xref-issue.ts`).
+2. Temporarily widen the regex in `composeBody` to match **both** `v1`
+   and `v2` markers (`bench-xref:begin v(1|2)`).
+3. Run `yarn bench:xref --all --write` once — every Issue collapses
+   to the new `v2` block, wiping `v1` remnants.
+4. Drop the `v1` match from the regex and commit.
+
+The reason `v1` lives in the marker at all is exactly this: to leave
+a single, cheap migration path the day the format needs to change.
 
 ## Architecture
 

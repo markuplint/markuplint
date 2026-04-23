@@ -144,8 +144,15 @@ export function buildUmbrellaBlock(mapping: UmbrellaMapping, ctx: RenderContext)
 		if (m.kind === 'primary') primaryByNumber.set(m.issue, m);
 	}
 
+	// Prefer explicit `primaryIssues`; otherwise auto-derive the list from
+	// every primary mapping in the config. Auto-derivation prevents drift
+	// when a new primary issue is added but the umbrella list is not.
+	const issueList =
+		mapping.primaryIssues
+		?? ctx.mappings.filter((m): m is PrimaryMapping => m.kind === 'primary').map(m => m.issue);
+
 	const rows: string[] = [];
-	for (const issue of mapping.primaryIssues) {
+	for (const issue of issueList) {
 		const p = primaryByNumber.get(issue);
 		if (!p) {
 			rows.push(`| #${issue} | — | primary mapping not found in config |`);
@@ -225,25 +232,62 @@ function escapeRegExp(source: string): string {
 // IO + CLI (side-effectful, not unit-tested directly).
 // ---------------------------------------------------------------------------
 
-function ghJson<T>(args: readonly string[]): T {
-	const out = execFileSync('gh', args as string[], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
-	return JSON.parse(out) as T;
+/** Thin abstraction over the `gh` CLI so tests can inject a fake. */
+export type GhClient = {
+	readonly view: (issue: number) => string;
+	readonly edit: (issue: number, body: string) => void;
+};
+
+function explainGhError(action: string, issue: number, error: unknown): Error {
+	const msg = error instanceof Error ? error.message : String(error);
+	if (/ENOENT|not found|command not found/.test(msg)) {
+		return new Error(
+			`gh CLI is not installed or not on PATH. Install from https://cli.github.com/ and authenticate with \`gh auth login\` before running \`yarn bench:xref --write\` (while trying to ${action} #${issue}).`,
+		);
+	}
+	if (/authentication|unauthorized|401|403|auth/i.test(msg)) {
+		return new Error(
+			`gh CLI rejected ${action} on #${issue} for authentication reasons. Run \`gh auth status\` and re-authenticate if needed. Original error: ${msg}`,
+		);
+	}
+	return new Error(`gh ${action} on #${issue} failed: ${msg}`);
 }
 
-function fetchIssueBody(issue: number): string {
-	const { body } = ghJson<{ body: string }>(['issue', 'view', String(issue), '--json', 'body']);
-	return body ?? '';
+function ghJson<T>(args: readonly string[], action: string, issue: number): T {
+	try {
+		const out = execFileSync('gh', args as string[], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
+		return JSON.parse(out) as T;
+	} catch (error) {
+		throw explainGhError(action, issue, error);
+	}
 }
 
-function writeIssueBody(issue: number, body: string): void {
-	// Pass the body through stdin rather than as an argv string so Windows'
-	// 32KB CreateProcess limit does not cap the maximum issue length we can
-	// sync, and so body text containing shell-meaningful characters never
-	// needs to round-trip through the command line.
-	execFileSync('gh', ['issue', 'edit', String(issue), '--body-file', '-'], {
-		input: body,
-		stdio: ['pipe', 'inherit', 'inherit'],
-	});
+/** Default `GhClient` that shells out to the `gh` CLI. */
+export function defaultGhClient(): GhClient {
+	return {
+		view(issue) {
+			const { body } = ghJson<{ body: string }>(
+				['issue', 'view', String(issue), '--json', 'body'],
+				'fetch body of',
+				issue,
+			);
+			return body ?? '';
+		},
+		edit(issue, body) {
+			try {
+				// Pass the body through stdin rather than as an argv string so
+				// Windows' 32KB CreateProcess limit does not cap the maximum issue
+				// length we can sync, and so body text containing shell-meaningful
+				// characters never needs to round-trip through the command line.
+				execFileSync('gh', ['issue', 'edit', String(issue), '--body-file', '-'], {
+					input: body,
+					stdio: ['pipe', 'inherit', 'inherit'],
+				});
+			} catch (error) {
+				throw explainGhError('edit body of', issue, error);
+			}
+		},
+	};
 }
 
 type CliOptions = {
@@ -292,34 +336,40 @@ export function parseCliArgs(args: readonly string[] = process.argv.slice(2)): C
 	};
 }
 
-function processOne(mapping: XrefMapping, ctx: RenderContext, opts: CliOptions): void {
+export function processOne(
+	mapping: XrefMapping,
+	ctx: RenderContext,
+	opts: CliOptions,
+	gh: GhClient,
+	log: Pick<Console, 'log'> = console,
+): void {
 	const block = buildBlock(mapping, ctx);
-	const override = mapping.kind === 'primary' ? mapping.bodyOverride : undefined;
+	const override = mapping.kind === 'primary' && mapping.bodyOverride ? mapping.bodyOverride() : undefined;
 
 	if (!opts.write) {
-		// stdout mode (default and --dry-run)
-		console.log(`\n===== issue #${mapping.issue} (${mapping.kind}) =====\n`);
-		console.log(block);
+		// stdout mode (default and --dry-run without --write)
+		log.log(`\n===== issue #${mapping.issue} (${mapping.kind}) =====\n`);
+		log.log(block);
 		if (override !== undefined) {
-			console.log('\n----- bodyOverride present (issue body will be replaced under --write) -----\n');
-			console.log(override);
+			log.log('\n----- bodyOverride present (issue body will be replaced under --write) -----\n');
+			log.log(override);
 		}
 		return;
 	}
 
-	const currentBody = fetchIssueBody(mapping.issue);
+	const currentBody = gh.view(mapping.issue);
 	const nextBody = composeBody(currentBody, block, override);
 	if (opts.dryRun) {
-		console.log(`\n===== DRY RUN #${mapping.issue} (${mapping.kind}) — new body preview =====\n`);
-		console.log(nextBody);
+		log.log(`\n===== DRY RUN #${mapping.issue} (${mapping.kind}) — new body preview =====\n`);
+		log.log(nextBody);
 		return;
 	}
 	if (currentBody === nextBody) {
-		console.log(`[xref] #${mapping.issue}: unchanged, skip`);
+		log.log(`[xref] #${mapping.issue}: unchanged, skip`);
 		return;
 	}
-	writeIssueBody(mapping.issue, nextBody);
-	console.log(`[xref] #${mapping.issue}: body updated`);
+	gh.edit(mapping.issue, nextBody);
+	log.log(`[xref] #${mapping.issue}: body updated`);
 }
 
 async function main(): Promise<void> {
@@ -335,8 +385,10 @@ async function main(): Promise<void> {
 			} satisfies PrimaryMapping)
 		: null;
 
+	const gh = defaultGhClient();
+
 	if (adhoc) {
-		processOne(adhoc, ctx, opts);
+		processOne(adhoc, ctx, opts, gh);
 		return;
 	}
 
@@ -350,7 +402,7 @@ async function main(): Promise<void> {
 
 	for (const mapping of selected) {
 		try {
-			processOne(mapping, ctx, opts);
+			processOne(mapping, ctx, opts, gh);
 		} catch (error) {
 			if (isFatalError(error)) throw error;
 			console.error(`[xref] #${mapping.issue} failed: ${error instanceof Error ? error.message : String(error)}`);

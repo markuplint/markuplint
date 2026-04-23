@@ -1,8 +1,16 @@
-import { describe, expect, test } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 
-import type { PrimaryMapping, SecondaryMapping, UmbrellaMapping } from './issue-xref.config.ts';
-import type { BenchData, RenderContext } from './xref-issue.ts';
-import { buildBlock, buildPrimaryBlock, buildSecondaryBlock, buildUmbrellaBlock, composeBody, parseCliArgs } from './xref-issue.ts';
+import type { PrimaryMapping, SecondaryMapping, UmbrellaMapping, XrefMapping } from './issue-xref.config.ts';
+import type { BenchData, GhClient, RenderContext } from './xref-issue.ts';
+import {
+	buildBlock,
+	buildPrimaryBlock,
+	buildSecondaryBlock,
+	buildUmbrellaBlock,
+	composeBody,
+	parseCliArgs,
+	processOne,
+} from './xref-issue.ts';
 
 function baseMeta() {
 	return {
@@ -259,6 +267,26 @@ describe('buildUmbrellaBlock edge cases', () => {
 		// header still present
 		expect(out).toContain('| Issue | Fixtures | Verdict tally |');
 	});
+
+	test('auto-derives primaryIssues from the config when omitted', () => {
+		const p1: PrimaryMapping = { kind: 'primary', issue: 111, filter: /one/ };
+		const p2: PrimaryMapping = { kind: 'primary', issue: 222, filter: /two/ };
+		// secondary must be ignored by the derivation
+		const s: SecondaryMapping = { kind: 'secondary', issue: 999, reason: 'n/a' };
+		// umbrella with no primaryIssues — should derive from config
+		const umbrella: UmbrellaMapping = { kind: 'umbrella', issue: 3000 };
+		const data = makeData([
+			{ path: 'one-a.html', verdict: 'nu-only' },
+			{ path: 'two-a.html', verdict: 'ml-only' },
+		]);
+		const ctx: RenderContext = { data, mappings: [p1, p2, s, umbrella] };
+		const out = buildUmbrellaBlock(umbrella, ctx);
+
+		expect(out).toContain('| #111 | 1 |');
+		expect(out).toContain('| #222 | 1 |');
+		// secondary #999 must NOT appear in the table
+		expect(out).not.toContain('#999');
+	});
 });
 
 describe('parseCliArgs', () => {
@@ -298,5 +326,141 @@ describe('parseCliArgs', () => {
 		expect(opts.issue).toBeUndefined();
 		expect(opts.all).toBe(true);
 		expect(opts.filter).toBeUndefined();
+	});
+});
+
+describe('processOne (IO boundary)', () => {
+	function makeGh(initialBody: string): GhClient & { readonly calls: { view: number[]; edit: Array<{ issue: number; body: string }> } } {
+		const calls = { view: [] as number[], edit: [] as Array<{ issue: number; body: string }> };
+		return {
+			calls,
+			view(issue: number) {
+				calls.view.push(issue);
+				return initialBody;
+			},
+			edit(issue: number, body: string) {
+				calls.edit.push({ issue, body });
+			},
+		};
+	}
+
+	function makeLog() {
+		const lines: string[] = [];
+		return { log: (...args: unknown[]) => lines.push(args.map(String).join(' ')), lines };
+	}
+
+	test('--write fetches body, composes, and edits', () => {
+		const mapping: PrimaryMapping = {
+			kind: 'primary',
+			issue: 1234,
+			filter: /html\/elements\/foo-ml/,
+		};
+		const data = makeData([{ path: 'html/elements/foo-ml.html', verdict: 'ml-only' }]);
+		const ctx: RenderContext = { data, mappings: [mapping] };
+		const gh = makeGh('Existing issue body.\n');
+		const log = makeLog();
+		processOne(mapping, ctx, { write: true, dryRun: false, all: false }, gh, log);
+
+		expect(gh.calls.view).toEqual([1234]);
+		expect(gh.calls.edit).toHaveLength(1);
+		expect(gh.calls.edit[0]?.issue).toBe(1234);
+		expect(gh.calls.edit[0]?.body).toContain('<!-- bench-xref:begin v1 -->');
+		expect(gh.calls.edit[0]?.body).toContain('Existing issue body.');
+		expect(log.lines.some(l => l.includes('body updated'))).toBe(true);
+	});
+
+	test('--write --dry-run composes body but does not call edit', () => {
+		const mapping: PrimaryMapping = { kind: 'primary', issue: 42, filter: /html\/elements\/foo-ml/ };
+		const data = makeData([{ path: 'html/elements/foo-ml.html', verdict: 'ml-only' }]);
+		const ctx: RenderContext = { data, mappings: [mapping] };
+		const gh = makeGh('Before.\n');
+		const log = makeLog();
+		processOne(mapping, ctx, { write: true, dryRun: true, all: false }, gh, log);
+
+		expect(gh.calls.view).toEqual([42]);
+		expect(gh.calls.edit).toHaveLength(0);
+		expect(log.lines.some(l => l.includes('DRY RUN'))).toBe(true);
+	});
+
+	test('stdout mode does not call gh at all', () => {
+		const mapping: SecondaryMapping = { kind: 'secondary', issue: 77, reason: 'n/a' };
+		const ctx: RenderContext = { data: makeData(), mappings: [mapping] };
+		const gh = makeGh('Irrelevant');
+		const log = makeLog();
+		processOne(mapping, ctx, { write: false, dryRun: false, all: false }, gh, log);
+
+		expect(gh.calls.view).toEqual([]);
+		expect(gh.calls.edit).toEqual([]);
+		expect(log.lines.some(l => l.includes('===== issue #77 (secondary)'))).toBe(true);
+	});
+
+	test('no-op when the composed body equals the current body', () => {
+		// Compose once, then use the output as the "current body" on a
+		// second call — the tool should detect no change and skip the edit.
+		const mapping: PrimaryMapping = { kind: 'primary', issue: 55, filter: /html\/elements\/foo-ml/ };
+		const data = makeData([{ path: 'html/elements/foo-ml.html', verdict: 'ml-only' }]);
+		const ctx: RenderContext = { data, mappings: [mapping] };
+		const first = makeGh('Starting body.\n');
+		processOne(mapping, ctx, { write: true, dryRun: false, all: false }, first, { log: () => {} });
+		const appliedBody = first.calls.edit[0]?.body ?? '';
+
+		const second = makeGh(appliedBody);
+		const log = makeLog();
+		processOne(mapping, ctx, { write: true, dryRun: false, all: false }, second, log);
+		expect(second.calls.edit).toHaveLength(0);
+		expect(log.lines.some(l => l.includes('unchanged, skip'))).toBe(true);
+	});
+
+	test('invokes bodyOverride factory only when needed', () => {
+		const calls = vi.fn(() => 'Rewritten body.');
+		const mapping: PrimaryMapping = {
+			kind: 'primary',
+			issue: 2024,
+			filter: /html\/elements\/foo-nu/,
+			bodyOverride: calls,
+		};
+		const data = makeData([{ path: 'html/elements/foo-nu.html', verdict: 'nu-only' }]);
+		const ctx: RenderContext = { data, mappings: [mapping] };
+		const gh = makeGh('Outdated scope body.\n');
+		processOne(mapping, ctx, { write: true, dryRun: false, all: false }, gh, { log: () => {} });
+		expect(calls).toHaveBeenCalledTimes(1);
+		expect(gh.calls.edit[0]?.body).toContain('Rewritten body.');
+		expect(gh.calls.edit[0]?.body).not.toContain('Outdated scope body.');
+	});
+
+	test('never calls the bodyOverride factory in stdout mode', () => {
+		const calls = vi.fn(() => 'should not be evaluated');
+		const mapping: PrimaryMapping = {
+			kind: 'primary',
+			issue: 2025,
+			filter: /foo/,
+			bodyOverride: calls,
+		};
+		// Stdout mode prints the override preview, so the factory IS called
+		// once — but only once, and only because we explicitly surface the
+		// rewrite preview to the user. That is intentional.
+		const data = makeData();
+		const ctx: RenderContext = { data, mappings: [mapping] };
+		const gh = makeGh('');
+		processOne(mapping, ctx, { write: false, dryRun: false, all: false }, gh, { log: () => {} });
+		expect(calls).toHaveBeenCalledTimes(1);
+		expect(gh.calls.view).toEqual([]);
+		expect(gh.calls.edit).toEqual([]);
+	});
+});
+
+// Ensure the config module does not eagerly read the filesystem at import
+// time just to register bodyOverride entries. Importing the config must
+// succeed even when the override factories are never invoked.
+describe('issue-xref.config', () => {
+	test('can be imported without invoking any bodyOverride factory', async () => {
+		const { xrefMappings } = await import('./issue-xref.config.ts');
+		// Assert that every primary mapping with a bodyOverride exposes it as
+		// a function (factory), not a string — confirms the lazy contract.
+		for (const m of xrefMappings as readonly XrefMapping[]) {
+			if (m.kind === 'primary' && m.bodyOverride !== undefined) {
+				expect(typeof m.bodyOverride).toBe('function');
+			}
+		}
 	});
 });

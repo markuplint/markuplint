@@ -29,7 +29,13 @@ export type PrimaryMapping = {
 	readonly issue: number;
 	readonly filter: RegExp;
 	readonly note?: string;
-	readonly bodyOverride?: string;
+	/**
+	 * Factory that returns the full replacement body. Lazy so importing the
+	 * config module does not touch the filesystem just to register the
+	 * mapping — only builds that actually render the primary block call
+	 * through.
+	 */
+	readonly bodyOverride?: () => string;
 };
 
 export type SecondaryMapping = {
@@ -41,7 +47,12 @@ export type SecondaryMapping = {
 export type UmbrellaMapping = {
 	readonly kind: 'umbrella';
 	readonly issue: number;
-	readonly primaryIssues: readonly number[];
+	/**
+	 * Explicit roll-up list. Omit to auto-derive from every `primary`
+	 * mapping in the config — preferred, because manual lists drift every
+	 * time a new primary issue is added.
+	 */
+	readonly primaryIssues?: readonly number[];
 };
 
 export type XrefMapping = PrimaryMapping | SecondaryMapping | UmbrellaMapping;
@@ -60,7 +71,7 @@ export const xrefMappings: readonly XrefMapping[] = [
 			/meta.*multiple-charset|meta.*duplicate-charset|meta.*multiple-description|charset-and-(content-type|http-equiv)|multiple-visible-main|multiple-main-visible/,
 		note:
 			'Visible `<main>` uniqueness is already covered by `no-duplicate-visible-main` (both fixtures are `match-error`). The remaining gap is meta uniqueness + charset/http-equiv coexistence.',
-		bodyOverride: loadBodyOverride('3634-body.md'),
+		bodyOverride: () => loadBodyOverride('3634-body.md'),
 	},
 	{
 		kind: 'primary',
@@ -161,9 +172,11 @@ export const xrefMappings: readonly XrefMapping[] = [
 	},
 
 	// === Umbrella ===
+	// `primaryIssues` omitted → auto-derived from the primaries above.
+	// Adding a primary mapping automatically includes it in the roll-up;
+	// no need to edit two places in lock-step.
 	{
 		kind: 'umbrella',
 		issue: 3684,
-		primaryIssues: [3634, 3637, 3682, 3733, 3734, 3735, 3619, 293],
 	},
 ];
