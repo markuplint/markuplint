@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.18.1](https://github.com/markuplint/markuplint/compare/v4.18.0...v4.18.1) (2026-04-24)
+
+### Bug Fixes
+
+- **ml-config:** restore `oneOf` structure in `rules` definition of `config.schema.json` ([bd74130](https://github.com/markuplint/markuplint/commit/bd74130bbc9e17df06f4b6bfa4d37b66eae0d1c3)), closes [#3743](https://github.com/markuplint/markuplint/issues/3743)
+- **vscode:** convert absolute paths to file:// URLs before import ([ad17316](https://github.com/markuplint/markuplint/commit/ad173168c300ea013c3c41407ccd6126d175e2bb)), closes [#3795](https://github.com/markuplint/markuplint/issues/3795)
+
 # [4.18.0](https://github.com/markuplint/markuplint/compare/v4.14.1...v4.18.0) (2026-04-22)
 
 ### Bug Fixes
