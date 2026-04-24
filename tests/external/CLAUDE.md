@@ -480,6 +480,7 @@ sentence that justifies it.
 | `Backslash used as path segment delimiter` | **nu correct** — NOT excluded | URL LS validation error `invalid-reverse-solidus`. |
 | `Illegal character in …` (path / fragment / domain / port) | **nu correct** — NOT excluded | URL LS validation error `invalid-URL-unit` covers non-URL code points and malformed percent-encoding, including tab, LF, and CR. |
 | `Windows drive letter uses …` | **nu correct** — NOT excluded | URL LS validation error `file-invalid-Windows-drive-letter` / `file-invalid-Windows-drive-letter-host`. |
+| `Expected a space character` / `Expected an unquoted URL` (on `<meta http-equiv="refresh">` content) | **nu over-detection** — excluded per-ID in `entries[]` (not pattern) | HTML LS §4.2.5.3 "Refresh" conformance grammar: clause 3.2 makes whitespace after the `;`/`,` separator *optional*; clause 3.3 alt 2 accepts any valid URL (including ones where `'` appears — it is a URL code point per URL LS §3.5 — or where a leading `href=` accidentally matches as part of a relative-URL path). Three fixtures affected (`refresh-missing-space`, `refresh-quoted-url`, `refresh-invalid-keyword`); per-ID because nu's wording overlaps with legitimate refresh errors we still want to flag, so we cannot safely substring-match on the message. |
 
 The rows above mean: most of the remaining `nu-only` volume — the URL-parsing
 bulk — is **not** up for exclusion. It represents genuine markuplint gaps.

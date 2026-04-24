@@ -40,7 +40,7 @@ When you wrote code then:
 
 `tests/external/` houses a local-only benchmark that compares markuplint
 with [Nu Html Checker](https://validator.github.io/validator/). It is not
-wired into CI. See [`tests/external/CLAUDE.md`](./tests/external/CLAUDE.md)
+wired into CI. See [`tests/external/CLAUDE.md`](https://github.com/markuplint/markuplint/blob/dev/tests/external/CLAUDE.md)
 for the setup, command list, and the Docker / `excluded-ids.json` workflow.
 
 ## Publishing the VS Code Extension
