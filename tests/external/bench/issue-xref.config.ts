@@ -91,13 +91,6 @@ export const xrefMappings: readonly XrefMapping[] = [
 	},
 	{
 		kind: 'primary',
-		issue: 3734,
-		filter: /meta\/refresh-.*novalid/,
-		note:
-			'Five refresh-syntax fixtures are `nu-only`. `http-equiv="content-type"` syntax has no dedicated fixture in the current nu-validator suite — that half of the issue needs either a manual test or a new upstream fixture.',
-	},
-	{
-		kind: 'primary',
 		issue: 3735,
 		filter: /aria-hidden-on-input-hidden|popovertarget-with-aria-expanded|aria-expanded-with-popovertarget/,
 		note:
