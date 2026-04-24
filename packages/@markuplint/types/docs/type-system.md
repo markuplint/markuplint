@@ -387,28 +387,30 @@ SourceSizeList: {
 
 The `defs` object in `src/defs.ts` registers over 30 built-in types. Here are some notable entries:
 
-| Type Identifier       | Validation Method                   | Specification          |
-| --------------------- | ----------------------------------- | ---------------------- |
-| `Any`                 | Always matches                      | --                     |
-| `NoEmptyAny`          | Rejects empty strings               | --                     |
-| `Number`              | Floating-point check                | --                     |
-| `Int`                 | Integer check                       | --                     |
-| `Uint`                | Non-negative integer check          | --                     |
-| `URL`                 | Always matches (see note)           | WHATWG URL             |
-| `DOMID`               | No whitespace, non-empty            | HTML #id               |
-| `DateTime`            | Full datetime parsing               | WHATWG datetime        |
-| `DateString`          | Date only (`YYYY-MM-DD`)            | WHATWG dates           |
-| `TimeString`          | Time only (`hh:mm[:ss]`)            | WHATWG times           |
-| `MonthString`         | Month only (`YYYY-MM`)              | WHATWG months          |
-| `WeekString`          | Week only (`YYYY-Www`)              | WHATWG weeks           |
-| `LocalDateTimeString` | Local datetime (`YYYY-MM-DDThh:mm`) | WHATWG local dates     |
-| `SimpleColor`         | Simple color (`#rrggbb`)            | WHATWG simple colour   |
-| `Email`               | Email address (ASCII only)          | HTML valid email       |
-| `BCP47`               | RFC BCP 47 language tag             | IETF BCP 47            |
-| `CustomElementName`   | Valid custom element name           | WHATWG Custom Elements |
-| `MIMEType`            | MIME type parsing                   | MIME Sniffing          |
-| `SourceSizeList`      | CSS syntax-based                    | HTML `<img sizes>`     |
-| `AutoComplete`        | Complex multi-token                 | HTML autocomplete      |
+| Type Identifier        | Validation Method                   | Specification          |
+| ---------------------- | ----------------------------------- | ---------------------- |
+| `Any`                  | Always matches                      | --                     |
+| `NoEmptyAny`           | Rejects empty strings               | --                     |
+| `Number`               | Floating-point check                | --                     |
+| `Int`                  | Integer check                       | --                     |
+| `Uint`                 | Non-negative integer check          | --                     |
+| `URL`                  | Always matches (see note)           | WHATWG URL             |
+| `DOMID`                | No whitespace, non-empty            | HTML #id               |
+| `DateTime`             | Full datetime parsing               | WHATWG datetime        |
+| `DateString`           | Date only (`YYYY-MM-DD`)            | WHATWG dates           |
+| `TimeString`           | Time only (`hh:mm[:ss]`)            | WHATWG times           |
+| `MonthString`          | Month only (`YYYY-MM`)              | WHATWG months          |
+| `WeekString`           | Week only (`YYYY-Www`)              | WHATWG weeks           |
+| `LocalDateTimeString`  | Local datetime (`YYYY-MM-DDThh:mm`) | WHATWG local dates     |
+| `SimpleColor`          | Simple color (`#rrggbb`)            | WHATWG simple colour   |
+| `Email`                | Email address (ASCII only)          | HTML valid email       |
+| `BCP47`                | RFC BCP 47 language tag             | IETF BCP 47            |
+| `CustomElementName`    | Valid custom element name           | WHATWG Custom Elements |
+| `MIMEType`             | MIME type parsing                   | MIME Sniffing          |
+| `HTTPEquivRefresh`     | Meta refresh directive grammar      | HTML meta http-equiv   |
+| `HTTPEquivContentType` | Meta encoding declaration grammar   | HTML meta http-equiv   |
+| `SourceSizeList`       | CSS syntax-based                    | HTML `<img sizes>`     |
+| `AutoComplete`         | Complex multi-token                 | HTML autocomplete      |
 
 > **Note:** The `URL` type always matches because relative URLs accept almost any string. To validate URL format strictly, use `AbsoluteURL` or `HTTPSchemaURL` instead.
 

@@ -279,6 +279,28 @@ MIMEType: {
 },
 ```
 
+### http-equiv ディレクティブバリデータ
+
+**ソース:** `src/whatwg/check-http-equiv-refresh.ts`、`src/whatwg/check-http-equiv-content-type.ts`
+
+`<meta http-equiv>` 要素の `content` 属性を検証する 2 つのバリデータです。実行時に `@markuplint/html-spec` の `meta.content` に設定された `ConditionalAttributeType[]` 経由で、`http-equiv` の値 (`refresh` / `content-type`) に応じて選択されます。それ以外の `http-equiv` 値は `@markuplint/rules/src/helpers.ts` のリゾルバで `Any` にフォールバックします。
+
+`checkHTTPEquivRefresh` は [HTML LS §4.2.5.3 "Refresh" 適合文法](https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-http-equiv-refresh) を実装します：任意の先頭 ASCII ホワイトスペース、有効な非負整数、および任意の後続句（`";"` または `","`、任意のホワイトスペース、ASCII 大文字小文字非区別の `"URL="` キーワード + URL、または URL 単独）。URL 部分は共有の `checkURL` に委譲し、禁止コードポイントや不正な空白の扱いを他と揃えています。
+
+`checkHTTPEquivContentType` は [HTML LS §4.2.5.2 "Encoding declaration" 文法](https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-http-equiv-content-type) を実装します：ASCII 大文字小文字非区別の `"text/html;"`、任意の ASCII ホワイトスペース、`"charset="`、[Encoding LS ラベル文法](https://encoding.spec.whatwg.org/#names-and-labels) に基づく文字エンコーディングラベル形状。このバリデータは意図的にラベルの _形状_ のみを検査し、列挙済みラベル表との突合は行いません。HTML LS の「文書は UTF-8 でなければならない」要件は文書レベルの関心事であり、別の層で検査されます。
+
+```typescript
+// defs.ts での呼び出し
+HTTPEquivRefresh: {
+  ref: 'https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-http-equiv-refresh',
+  is: checkHTTPEquivRefresh(),
+},
+HTTPEquivContentType: {
+  ref: 'https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-http-equiv-content-type',
+  is: checkHTTPEquivContentType(),
+},
+```
+
 ### URL・名前系バリデータ
 
 WHATWGが定義する各種名前フォーマットに対する、シンプルな述語ベースの検証を行います。

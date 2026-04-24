@@ -279,6 +279,28 @@ MIMEType: {
 },
 ```
 
+### HTTP-Equiv Directive Validators
+
+**Sources:** `src/whatwg/check-http-equiv-refresh.ts`, `src/whatwg/check-http-equiv-content-type.ts`
+
+Two validators for the `content` attribute of `<meta http-equiv>` elements. They are selected at runtime by a `ConditionalAttributeType[]` entry on `meta.content` in `@markuplint/html-spec`, keyed by the `http-equiv` value (`refresh` / `content-type`). Other `http-equiv` values fall through to `Any` via the resolver in `@markuplint/rules/src/helpers.ts`.
+
+`checkHTTPEquivRefresh` implements the [HTML LS §4.2.5.3 "Refresh" conformance grammar](https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-http-equiv-refresh): optional leading ASCII whitespace, a valid non-negative integer, and an optional trailing clause consisting of `";"` or `","`, optional whitespace, and either an ASCII case-insensitive `"URL="` keyword followed by a URL or a bare URL. The URL leg delegates to the shared `checkURL` so forbidden code points and illegal whitespace get the same treatment as elsewhere.
+
+`checkHTTPEquivContentType` implements the [HTML LS §4.2.5.2 "Encoding declaration" grammar](https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-http-equiv-content-type): an ASCII case-insensitive match for `"text/html;"`, optional ASCII whitespace, `"charset="`, and a character encoding label shape per the [Encoding LS label grammar](https://encoding.spec.whatwg.org/#names-and-labels). The validator intentionally checks label _shape_, not the enumerated label table, because HTML LS's "the document must be UTF-8" requirement is a document-level concern checked elsewhere.
+
+```typescript
+// Invocation in defs.ts
+HTTPEquivRefresh: {
+  ref: 'https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-http-equiv-refresh',
+  is: checkHTTPEquivRefresh(),
+},
+HTTPEquivContentType: {
+  ref: 'https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-http-equiv-content-type',
+  is: checkHTTPEquivContentType(),
+},
+```
+
 ### URL and Name Validators
 
 These validators implement simple predicate-based checks for various WHATWG-defined name formats.
