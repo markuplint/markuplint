@@ -63,6 +63,8 @@ src/
 │   │   └── index.spec.ts           # Tests
 │   ├── check-link-type.ts          # Link type validation (rel attribute)
 │   ├── check-mime-type.ts          # MIME type validation
+│   ├── check-http-equiv-refresh.ts # <meta http-equiv="refresh"> content grammar
+│   ├── check-http-equiv-content-type.ts # <meta http-equiv="content-type"> encoding declaration
 │   ├── is-abs-url.ts               # Absolute URL check
 │   ├── is-browser-context-name.ts  # Browsing context name check (deprecated)
 │   ├── is-custom-element-name.ts   # Custom element name check
@@ -195,12 +197,12 @@ The token system provides position-tracked string parsing for generating precise
 
 Domain-specific validators implementing checks for values defined in web standards.
 
-| Directory    | Validators                                                                                                                                                                                      |
-| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `primitive/` | `isFloat`, `isInt`, `isUint`, `isNonZeroUint`, `isQuantity`, `splitUnit`, `range`                                                                                                               |
-| `whatwg/`    | `checkDateTime` (8 sub-validators), `checkAutoComplete`, `checkMIMEType`, `checkLinkType`, `isAbsURL`, `isCustomElementName`, `isNavigableTargetName`, `isBrowserContextName`, `isItempropName` |
-| `rfc/`       | `isBCP47` (BCP 47 language tag validation)                                                                                                                                                      |
-| `w3c/`       | `checkSerializedPermissionsPolicy` (Permissions Policy)                                                                                                                                         |
+| Directory    | Validators                                                                                                                                                                                                                                            |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `primitive/` | `isFloat`, `isInt`, `isUint`, `isNonZeroUint`, `isQuantity`, `splitUnit`, `range`                                                                                                                                                                     |
+| `whatwg/`    | `checkDateTime` (8 sub-validators), `checkAutoComplete`, `checkMIMEType`, `checkLinkType`, `checkHTTPEquivRefresh`, `checkHTTPEquivContentType`, `isAbsURL`, `isCustomElementName`, `isNavigableTargetName`, `isBrowserContextName`, `isItempropName` |
+| `rfc/`       | `isBCP47` (BCP 47 language tag validation)                                                                                                                                                                                                            |
+| `w3c/`       | `checkSerializedPermissionsPolicy` (Permissions Policy)                                                                                                                                                                                               |
 
 ## External Dependencies
 
