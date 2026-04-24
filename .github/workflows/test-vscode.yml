@@ -10,17 +10,29 @@ on:
 
 jobs:
     test:
-        runs-on: ubuntu-latest
+        # Run the VS Code extension integration tests on both Linux and Windows.
+        # Windows coverage exists specifically because of bugs like #3795 — the
+        # `ERR_UNSUPPORTED_ESM_URL_SCHEME` crash that only manifested on Windows
+        # drive-letter paths and went undetected under ubuntu-only CI.
+        strategy:
+            fail-fast: false
+            matrix:
+                os:
+                    - ubuntu-latest
+                    - windows-latest
+        runs-on: ${{ matrix.os }}
         steps:
             - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
               with:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
 
-            - name: Install Xvfb
+            - name: Install Xvfb (Linux only)
+              if: runner.os == 'Linux'
               run: sudo apt-get update && sudo apt-get install -y xvfb
 
-            - name: Start Xvfb
+            - name: Start Xvfb (Linux only)
+              if: runner.os == 'Linux'
               run: |
                   Xvfb :99 &
                   echo "DISPLAY=:99.0" >> "$GITHUB_ENV"
@@ -31,12 +43,15 @@ jobs:
                   node-version: 22
 
             - name: Enable Corepack and setup Yarn v4
+              shell: bash
               run: |
                   corepack enable
                   yarn --version
 
             - name: Install dependencies
+              shell: bash
               run: yarn install --immutable && yarn run build
 
             - name: Run tests
+              shell: bash
               run: cd vscode && yarn install && npm run vscode:build && npm run vscode:test
