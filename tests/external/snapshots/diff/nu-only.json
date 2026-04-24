@@ -411,13 +411,6 @@
 			]
 		},
 		{
-			"path": "html/datatypes/charset-empty-novalid.html",
-			"category": "data-types",
-			"nuMessageIds": [
-				"nv-38fc63c8d2d6"
-			]
-		},
-		{
 			"path": "html/datatypes/charset-invalid-novalid.html",
 			"category": "data-types",
 			"nuMessageIds": [
@@ -480,20 +473,6 @@
 			"category": "data-types",
 			"nuMessageIds": [
 				"nv-b024a99ed9d6"
-			]
-		},
-		{
-			"path": "html/datatypes/refresh-empty-novalid.html",
-			"category": "data-types",
-			"nuMessageIds": [
-				"nv-d76d57a44e90"
-			]
-		},
-		{
-			"path": "html/datatypes/refresh-invalid-number-novalid.html",
-			"category": "data-types",
-			"nuMessageIds": [
-				"nv-3fa81d96340d"
 			]
 		},
 		{
@@ -6166,41 +6145,6 @@
 			"category": "invalid-attr",
 			"nuMessageIds": [
 				"nv-7e55d06632de"
-			]
-		},
-		{
-			"path": "html/elements/meta/refresh-empty-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-71cfdf8756da"
-			]
-		},
-		{
-			"path": "html/elements/meta/refresh-invalid-keyword-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-c57d9ac83548"
-			]
-		},
-		{
-			"path": "html/elements/meta/refresh-missing-semicolon-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-b757f8736a03"
-			]
-		},
-		{
-			"path": "html/elements/meta/refresh-missing-space-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-f26bf6cca5a8"
-			]
-		},
-		{
-			"path": "html/elements/meta/refresh-quoted-url-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-59fd76f96902"
 			]
 		},
 		{

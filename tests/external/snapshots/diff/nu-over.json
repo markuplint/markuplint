@@ -113,6 +113,27 @@
 			]
 		},
 		{
+			"path": "html/elements/meta/refresh-invalid-keyword-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-c57d9ac83548"
+			]
+		},
+		{
+			"path": "html/elements/meta/refresh-missing-space-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-f26bf6cca5a8"
+			]
+		},
+		{
+			"path": "html/elements/meta/refresh-quoted-url-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-59fd76f96902"
+			]
+		},
+		{
 			"path": "html/elements/object/data/scheme-data-contains-fragment-haswarn.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [

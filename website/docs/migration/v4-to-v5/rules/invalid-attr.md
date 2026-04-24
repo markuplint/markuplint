@@ -5,7 +5,7 @@ title: invalid-attr
 
 # `invalid-attr` Rule Changes
 
-This page covers breaking changes to the `invalid-attr` rule options. If you customized `allowAttrs`, `disallowAttrs`, or `attrs` in your config, read on.
+This page covers breaking changes to the `invalid-attr` rule options and a set of **new values that the default rule now flags** — markup that was silently accepted in v4 may surface as errors after upgrading, even with no config changes.
 
 ## Summary
 
@@ -14,6 +14,7 @@ This page covers breaking changes to the `invalid-attr` rule options. If you cus
 | `{ type: X }` wrapper removed | Configs using `{ "value": { "type": "Int" } }`                 |
 | `attrs` option deleted        | Configs using the deprecated `attrs` option                    |
 | Object format deprecated      | Configs using object format for `allowAttrs` / `disallowAttrs` |
+| Newly flagged values in v5    | Any project — new validations fire on existing markup          |
 
 ## `{ type: X }` wrapper removed
 
@@ -143,3 +144,21 @@ The object format for `allowAttrs` and `disallowAttrs` still works in v5, but it
   }
 }
 ```
+
+## Newly flagged values in v5
+
+:::info Behavioral change (no config action required)
+v5 tightens the default `invalid-attr` coverage in several areas that were previously accepted as `Any`. If you upgrade without touching your config, the markup below may raise violations it did not in v4.
+:::
+
+Each row cites the issue where the validation was introduced and the HTML / URL / Encoding Living Standard section that justifies it. If you hit a new violation you believe is incorrect, read the linked issue first — several of these land with spec-cited `excluded-ids.json` entries for cases where nu-validator was stricter than the spec.
+
+| Area                            | Example that now fails                          | Issue                                                         | Spec                                                                                                      |
+| ------------------------------- | ----------------------------------------------- | ------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `input[value]` by `type`        | `<input type="color" value="red">`              | [#3598](https://github.com/markuplint/markuplint/issues/3598) | [HTML LS — the `input` element](https://html.spec.whatwg.org/multipage/input.html#the-input-element)      |
+| `link[as]` by `rel`             | `<link rel="preload" as="audio">`               | [#3189](https://github.com/markuplint/markuplint/issues/3189) | [HTML LS — the `link` element](https://html.spec.whatwg.org/multipage/semantics.html#attr-link-as)        |
+| `img[role]` + `alt=""`          | `<img role="presentation" alt="">`              | [#3641](https://github.com/markuplint/markuplint/issues/3641) | [ARIA in HTML — `img`](https://w3c.github.io/html-aria/#el-img)                                           |
+| URL forbidden code points       | `<a href="http://example.com/">`                | [#3629](https://github.com/markuplint/markuplint/issues/3629) | [URL LS — URL code points](https://url.spec.whatwg.org/#url-code-points)                                  |
+| `meta[content]` by `http-equiv` | `<meta http-equiv="refresh" content="garbage">` | [#3734](https://github.com/markuplint/markuplint/issues/3734) | [HTML LS — meta `http-equiv`](https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-http-equiv) |
+
+No config change is needed to opt in; conversely, these stricter checks cannot be rolled back individually. If a specific case breaks your workflow, [file an issue](https://github.com/markuplint/markuplint/issues/new/choose) with the failing markup and cite the governing spec paragraph — fixes for real spec misreads will be reverted or narrowed.

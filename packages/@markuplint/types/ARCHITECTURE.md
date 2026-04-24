@@ -61,8 +61,13 @@ src/
 │   │   ├── time-zone-offset-string.ts
 │   │   ├── datetime-tokens.ts      # Shared token patterns
 │   │   └── index.spec.ts           # Tests
+│   ├── check-email.ts              # Valid e-mail address validation
+│   ├── check-http-equiv-content-type.ts # <meta http-equiv="content-type"> encoding declaration
+│   ├── check-http-equiv-refresh.ts # <meta http-equiv="refresh"> content grammar
 │   ├── check-link-type.ts          # Link type validation (rel attribute)
 │   ├── check-mime-type.ts          # MIME type validation
+│   ├── check-simple-color.ts       # Valid simple colour (#rrggbb) validation
+│   ├── check-url.ts                # Valid URL string validation (including surrounding spaces)
 │   ├── is-abs-url.ts               # Absolute URL check
 │   ├── is-browser-context-name.ts  # Browsing context name check (deprecated)
 │   ├── is-custom-element-name.ts   # Custom element name check
@@ -195,12 +200,12 @@ The token system provides position-tracked string parsing for generating precise
 
 Domain-specific validators implementing checks for values defined in web standards.
 
-| Directory    | Validators                                                                                                                                                                                      |
-| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `primitive/` | `isFloat`, `isInt`, `isUint`, `isNonZeroUint`, `isQuantity`, `splitUnit`, `range`                                                                                                               |
-| `whatwg/`    | `checkDateTime` (8 sub-validators), `checkAutoComplete`, `checkMIMEType`, `checkLinkType`, `isAbsURL`, `isCustomElementName`, `isNavigableTargetName`, `isBrowserContextName`, `isItempropName` |
-| `rfc/`       | `isBCP47` (BCP 47 language tag validation)                                                                                                                                                      |
-| `w3c/`       | `checkSerializedPermissionsPolicy` (Permissions Policy)                                                                                                                                         |
+| Directory    | Validators                                                                                                                                                                                                                                                                                    |
+| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `primitive/` | `isFloat`, `isInt`, `isUint`, `isNonZeroUint`, `isQuantity`, `splitUnit`, `range`                                                                                                                                                                                                             |
+| `whatwg/`    | `checkDateTime` (8 sub-validators), `checkAutoComplete`, `checkMIMEType`, `checkLinkType`, `checkURL`, `checkHTTPEquivRefresh`, `checkHTTPEquivContentType`, `isEmail`, `isSimpleColor`, `isAbsURL`, `isCustomElementName`, `isNavigableTargetName`, `isBrowserContextName`, `isItempropName` |
+| `rfc/`       | `isBCP47` (BCP 47 language tag validation)                                                                                                                                                                                                                                                    |
+| `w3c/`       | `checkSerializedPermissionsPolicy` (Permissions Policy)                                                                                                                                                                                                                                       |
 
 ## External Dependencies
 

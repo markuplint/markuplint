@@ -14500,8 +14500,8 @@
 			"path": "html/datatypes/charset-empty-novalid.html",
 			"category": "data-types",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -14812,16 +14812,16 @@
 			"path": "html/datatypes/refresh-empty-novalid.html",
 			"category": "data-types",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
 			"path": "html/datatypes/refresh-invalid-number-novalid.html",
 			"category": "data-types",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -31454,49 +31454,55 @@
 			"path": "html/elements/meta/refresh-empty-novalid.html",
 			"category": "invalid-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
 			"path": "html/elements/meta/refresh-invalid-keyword-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-c57d9ac83548"
+			]
 		},
 		{
 			"path": "html/elements/meta/refresh-isvalid.html",
 			"category": "invalid-attr",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html/elements/meta/refresh-missing-semicolon-novalid.html",
 			"category": "invalid-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
 			"path": "html/elements/meta/refresh-missing-space-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-f26bf6cca5a8"
+			]
 		},
 		{
 			"path": "html/elements/meta/refresh-quoted-url-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-59fd76f96902"
+			]
 		},
 		{
 			"path": "html/elements/meta/viewport-user-scalable-no-haswarn.html",

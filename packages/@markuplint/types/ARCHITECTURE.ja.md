@@ -61,8 +61,13 @@ src/
 │   │   ├── time-zone-offset-string.ts
 │   │   ├── datetime-tokens.ts      # 共通トークンパターン
 │   │   └── index.spec.ts           # テスト
+│   ├── check-email.ts              # 妥当なメールアドレスの検証
+│   ├── check-http-equiv-content-type.ts # <meta http-equiv="content-type"> エンコーディング宣言
+│   ├── check-http-equiv-refresh.ts # <meta http-equiv="refresh"> content の文法検証
 │   ├── check-link-type.ts          # リンクタイプの検証 (rel 属性)
 │   ├── check-mime-type.ts          # MIMEタイプの検証
+│   ├── check-simple-color.ts       # 単純な色 (#rrggbb) の検証
+│   ├── check-url.ts                # 妥当な URL 文字列（前後の空白を含む）の検証
 │   ├── is-abs-url.ts               # 絶対URLの判定
 │   ├── is-browser-context-name.ts  # ブラウジングコンテキスト名の判定 (非推奨)
 │   ├── is-custom-element-name.ts   # カスタム要素名の判定
@@ -195,12 +200,12 @@ flowchart TD
 
 Web標準の仕様に基づいた、個別の値検証ロジックを実装しています。
 
-| ディレクトリ | バリデーター                                                                                                                                                                                         |
-| ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `primitive/` | `isFloat`, `isInt`, `isUint`, `isNonZeroUint`, `isQuantity`, `splitUnit`, `range`                                                                                                                    |
-| `whatwg/`    | `checkDateTime` (8種のサブバリデーター), `checkAutoComplete`, `checkMIMEType`, `checkLinkType`, `isAbsURL`, `isCustomElementName`, `isNavigableTargetName`, `isBrowserContextName`, `isItempropName` |
-| `rfc/`       | `isBCP47` (BCP 47 言語タグ検証)                                                                                                                                                                      |
-| `w3c/`       | `checkSerializedPermissionsPolicy` (Permissions Policy 検証)                                                                                                                                         |
+| ディレクトリ | バリデーター                                                                                                                                                                                                                                                                                       |
+| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `primitive/` | `isFloat`, `isInt`, `isUint`, `isNonZeroUint`, `isQuantity`, `splitUnit`, `range`                                                                                                                                                                                                                  |
+| `whatwg/`    | `checkDateTime` (8種のサブバリデーター), `checkAutoComplete`, `checkMIMEType`, `checkLinkType`, `checkURL`, `checkHTTPEquivRefresh`, `checkHTTPEquivContentType`, `isEmail`, `isSimpleColor`, `isAbsURL`, `isCustomElementName`, `isNavigableTargetName`, `isBrowserContextName`, `isItempropName` |
+| `rfc/`       | `isBCP47` (BCP 47 言語タグ検証)                                                                                                                                                                                                                                                                    |
+| `w3c/`       | `checkSerializedPermissionsPolicy` (Permissions Policy 検証)                                                                                                                                                                                                                                       |
 
 ## 外部依存パッケージ
 

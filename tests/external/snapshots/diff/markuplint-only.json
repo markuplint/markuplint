@@ -7317,6 +7317,13 @@
 			]
 		},
 		{
+			"path": "html/elements/meta/refresh-isvalid.html",
+			"category": "invalid-attr",
+			"ruleIds": [
+				"invalid-attr"
+			]
+		},
+		{
 			"path": "html/elements/meter/aria-valuemax-haswarn.html",
 			"category": "invalid-attr",
 			"ruleIds": [
