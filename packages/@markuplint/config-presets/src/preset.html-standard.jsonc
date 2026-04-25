@@ -115,6 +115,16 @@
 		},
 
 		/**
+		 * No invalid attr
+		 *
+		 * Each element's attribute names and values must conform to the HTML
+		 * specification.
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/dom.html#attributes
+		 */
+		"invalid-attr": true,
+
+		/**
 		 * No duplicate names in `<dl>`
 		 *
 		 * Within a single dl element, there should not be more than one dt element for each name.
