@@ -2554,3 +2554,72 @@ describe('#3734 meta[content] by http-equiv', () => {
 		expect(violations.some(v => v.raw === 'not a mime')).toBe(true);
 	});
 });
+
+describe('#3803 meta[property] with rdfa-style allowAttrs', () => {
+	test('[invalid-attr-issue-3803-001] nodeRule allowAttrs permits property/content on meta[property]', async () => {
+		// Reproduces the structure of preset.rdfa.jsonc: an unnamed nodeRule
+		// whose options reach the base `invalid-attr` rule so spec validation
+		// treats `property` and `content` as allowed on meta[property].
+		const { violations } = await mlRuleTest(rule, '<meta property="og:title" content="Hello">', {
+			nodeRule: [
+				{
+					selector: ':where(meta[property])',
+					rule: {
+						options: {
+							allowAttrs: [
+								{ name: 'property', value: 'NoEmptyAny' },
+								{ name: 'content', value: 'NoEmptyAny' },
+							],
+						},
+					},
+				},
+			],
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-issue-3803-002] empty property value is still flagged as NoEmptyAny violation', async () => {
+		// The allowAttrs override uses `NoEmptyAny`, not `Any`: empty values
+		// must still be flagged so we do not silently allow `<meta property="">`.
+		const { violations } = await mlRuleTest(rule, '<meta property="" content="Hello">', {
+			nodeRule: [
+				{
+					selector: ':where(meta[property])',
+					rule: {
+						options: {
+							allowAttrs: [
+								{ name: 'property', value: 'NoEmptyAny' },
+								{ name: 'content', value: 'NoEmptyAny' },
+							],
+						},
+					},
+				},
+			],
+		});
+		// Still reports on the empty property value via attrCheck
+		expect(violations.length).toBeGreaterThan(0);
+		expect(violations.some(v => v.raw === '')).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3803-003] base rule still flags unknown attributes on meta[property]', async () => {
+		// The nodeRule extends what is allowed but does not silence
+		// spec-fallback for other attributes. `bogus` is not a valid meta
+		// attribute and must still be reported by the base rule.
+		const { violations } = await mlRuleTest(rule, '<meta property="og:title" content="Hello" bogus="x">', {
+			nodeRule: [
+				{
+					selector: ':where(meta[property])',
+					rule: {
+						options: {
+							allowAttrs: [
+								{ name: 'property', value: 'NoEmptyAny' },
+								{ name: 'content', value: 'NoEmptyAny' },
+							],
+						},
+					},
+				},
+			],
+		});
+		expect(violations.some(v => v.raw === 'bogus')).toBe(true);
+	});
+});
