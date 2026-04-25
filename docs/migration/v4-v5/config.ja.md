@@ -13,6 +13,8 @@
 | ARIA バージョンの解決優先度の変更 | `ariaVersion` / `version` オプションを使用するルール |
 | ARIA 1.3 サポートの追加 | `ariaVersion` / `version` オプションを使用するルール |
 | Named nodeRules（named rule） | 設定ファイル、プリセット作成者 |
+| `invalid-attr` をラップする named rule が narrow check として動作 | `a11y/*` や rdfa プリセットで仕様検証を無効化していた設定作成者 |
+| `markuplint:html-standard` がベースの `invalid-attr` ルールを有効化 | `markuplint:html-standard` を単独で利用するユーザー |
 | SpecConformance メタデータ | 設定ファイル、プリセット作成者 |
 | Named rule の名前空間一括無効化 | named nodeRules を持つプリセットを使用する設定ファイル |
 | `nodeRules`/`childNodeRules` の名前による重複排除 | `extends` で named nodeRules を使用する設定ファイル |
@@ -238,6 +240,39 @@ named nodeRule の `rules` に複数の非 `false` エントリがある場合�
 ```
 
 これは `a11y/img-alt` チェックのみを無効化し、他のコンテキストでの `required-attr` ベースルールは引き続き動作します。
+
+#### `invalid-attr` の Named Rule における Narrow-Check セマンティクス
+
+`invalid-attr` をラップする named nodeRule および named rule group（例: `a11y/no-accesskey`、`a11y/tabindex-restrict`）は **narrow check** として動作します。これらは `allowAttrs`/`disallowAttrs` に列挙された属性のみを報告し、それ以外の属性に対して HTML 仕様に基づく検証にフォールバックしません。
+
+HTML 仕様に基づく一般的な属性検証は、ベースの `invalid-attr` ルールが担当します。仕様ベースの検証が必要な場合は `markuplint:html-standard`（ベースの `invalid-attr` を有効化します）を extends するか、設定に `"invalid-attr": true` を追加してください。
+
+`invalid-attr` をラップする named rule が設定スコープ外の属性を報告していないように見える場合、それは意図した動作です。仕様違反を検出したい場合はベースルールを有効にしてください。
+
+特定の要素でベースの `invalid-attr` が許可する属性を拡張したい場合（例: RDFa 属性を許可する）は、**名前無し**の nodeRule を使用してください。こうすることでオプションがベースルールに直接届きます：
+
+```jsonc
+{
+  "nodeRules": [
+    {
+      // Unnamed: オプションがベースの `invalid-attr` ルールに流れる
+      "selector": ":where(meta[property])",
+      "rules": {
+        "invalid-attr": {
+          "options": {
+            "allowAttrs": [
+              { "name": "property", "value": "NoEmptyAny" },
+              { "name": "content", "value": "NoEmptyAny" }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}
+```
+
+同じ位置で**名前付き**の nodeRule を使用すると独立した仮想ルールが作られ、オプションがベースルールに届かず、ベースルールが `property`/`content` を不許可として flagged してしまいます。
 
 ### Named Rule を含む設定合成の例
 
