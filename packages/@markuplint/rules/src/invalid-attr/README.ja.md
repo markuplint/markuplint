@@ -46,6 +46,12 @@ const Component = (props) => {
 
 ## 詳細
 
+:::caution
+`invalid-attr` をラップする名前付き nodeRule（例: a11y プリセットの `a11y/no-accesskey`）は **narrow check** として動作します。これらは `allowAttrs`/`disallowAttrs` に列挙された属性のみを報告し、それ以外の属性に対して HTML 仕様ベースの検証にフォールバックしません。仕様ベースの検証はベースの `invalid-attr` ルールが担当します。仕様検証を有効にするには `markuplint:html-standard` を extends するか、設定に `"invalid-attr": true` を追加してください。
+
+特定の要素でベースルールが許可する内容を拡張したい場合は、オプションがベースルールに直接届くよう **名前無し** の nodeRule を使用してください。
+:::
+
 ### `allowAttrs`オプションの設定 {#setting-allow-attrs-option}
 
 :::caution

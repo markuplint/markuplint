@@ -111,6 +111,8 @@ See the [rulesets tables](#rulesets-of-base-presets) below for the full list of 
 
 ### `markuplint:html-standard` {#preset-html-standard}
 
+Also enables the base rule [`invalid-attr`](/docs/rules/invalid-attr) for spec-based attribute validation. Named rules wrapping `invalid-attr` (such as `a11y/no-accesskey`) perform only their narrow allow/disallow checks — general HTML-spec validation is handled by the base rule.
+
 | Named Rule                                  | Description                                                                                                                                     |
 | ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
 | `html-standard/id-duplication`              | Warns when `id` attribute values are duplicated in one document.                                                                                |
@@ -146,9 +148,9 @@ See the [rulesets tables](#rulesets-of-base-presets) below for the full list of 
 
 ### `markuplint:rdfa` {#preset-rdfa}
 
-| Named Rule           | Description                                                                                     |
-| -------------------- | ----------------------------------------------------------------------------------------------- |
-| `rdfa/meta-property` | Allows the `property` attribute on `<meta>` for **Open Graph** and similar RDFa-based metadata. |
+Extends `invalid-attr` to allow the `property` and `content` attributes on `<meta property>` so that RDFa-based metadata (e.g., **Open Graph**) does not trigger spec-validation violations. Also disables `required-attr` on the same elements.
+
+No named rules are exposed by this preset.
 
 ### `markuplint:recommended-static-html` {#preset-static-html}
 

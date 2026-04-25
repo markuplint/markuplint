@@ -62,6 +62,14 @@ export default createRule<boolean, Option>({
 	meta: meta,
 	defaultOptions: {},
 	async verify({ document, report, t }) {
+		// Named rule groups wrap this base rule (e.g., `a11y/no-accesskey`,
+		// `a11y/tabindex-restrict`). Virtual rules are narrow by design: they
+		// only check the attributes listed in their `allowAttrs`/`disallowAttrs`
+		// options. Spec validation is the base rule's job — otherwise every
+		// virtual rule wrapping `invalid-attr` would duplicate spec errors
+		// (see #3803).
+		const isVirtualRule = document.currentRule?.baseRuleId != null;
+
 		await document.walkOn('Attr', attr => {
 			// Default
 			const allowToAddPropertiesForPretender = attr.rule.options.allowToAddPropertiesForPretender ?? true;
@@ -184,7 +192,7 @@ export default createRule<boolean, Option>({
 						};
 					}
 				}
-			} else if (attr.ownerElement.elementType === 'html' && attrSpecs) {
+			} else if (!isVirtualRule && attr.ownerElement.elementType === 'html' && attrSpecs) {
 				log('Checking %s[%s="%s"]', attr.nodeName, name, value);
 				invalid = isValidAttr(t, name, value, attr.isDynamicValue || false, attr.ownerElement, attrSpecs, log);
 			}

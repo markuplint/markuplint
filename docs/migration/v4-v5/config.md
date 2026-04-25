@@ -13,6 +13,8 @@
 | ARIA version resolution priority changed | Rules using `ariaVersion` / `version` option |
 | ARIA 1.3 support added | Rules using `ariaVersion` / `version` option |
 | Named nodeRules (named rules) | Config files, preset authors |
+| Named rules wrapping `invalid-attr` now operate as narrow checks | Config authors who disabled spec validation via `a11y/*` or the rdfa preset |
+| `markuplint:html-standard` now enables the base `invalid-attr` rule | Users of `markuplint:html-standard` alone |
 | SpecConformance metadata | Config files, preset authors |
 | Namespace disable for named rules | Config files using presets with named nodeRules |
 | `nodeRules`/`childNodeRules` now deduplicate by name | Config files using `extends` with named nodeRules |
@@ -238,6 +240,39 @@ Built-in presets (`preset.html-standard.jsonc`, `preset.a11y.jsonc`) use named n
 ```
 
 This disables only the `a11y/img-alt` check while keeping the `required-attr` base rule active for other contexts.
+
+#### Narrow-Check Semantics for `invalid-attr` Named Rules
+
+Named nodeRules and named rule groups that wrap `invalid-attr` (e.g., `a11y/no-accesskey`, `a11y/tabindex-restrict`) operate as **narrow checks**: they report only the attributes listed in their `allowAttrs`/`disallowAttrs` options and do **not** fall back to HTML-spec validation for other attributes.
+
+General HTML-spec attribute validation is the responsibility of the base `invalid-attr` rule. To get spec-based validation, either extend `markuplint:html-standard` (which enables `invalid-attr` as a base rule) or add `"invalid-attr": true` to your config.
+
+If a named rule wrapping `invalid-attr` appears to under-report on attributes outside its configured scope, that is intentional — enable the base rule to catch spec-level violations.
+
+When you need to extend what the base `invalid-attr` allows on specific elements (e.g., to permit RDFa attributes), use an **unnamed** nodeRule so the options reach the base rule directly:
+
+```jsonc
+{
+  "nodeRules": [
+    {
+      // Unnamed: options flow to the base `invalid-attr` rule
+      "selector": ":where(meta[property])",
+      "rules": {
+        "invalid-attr": {
+          "options": {
+            "allowAttrs": [
+              { "name": "property", "value": "NoEmptyAny" },
+              { "name": "content", "value": "NoEmptyAny" }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}
+```
+
+A **named** nodeRule in this position creates an independent virtual rule whose options never reach the base rule, and the base rule would still flag `property`/`content` as disallowed.
 
 ### Config Composition Examples with Named Rules
 

@@ -111,6 +111,8 @@
 
 ### `markuplint:html-standard` {#preset-html-standard}
 
+仕様ベースの属性検証のため、基本ルール [`invalid-attr`](/docs/rules/invalid-attr) も有効にします。`invalid-attr` をラップする名前付きルール（例: `a11y/no-accesskey`）はそれぞれの狭い allow/disallow チェックのみを行い、HTML仕様に基づく全般的な検証は基本ルールが担当します。
+
 | 名前付きルール                              | 解説                                                                                                                           |
 | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
 | `html-standard/id-duplication`              | `id`属性値がドキュメント内で重複している場合に警告します。                                                                     |
@@ -146,9 +148,9 @@
 
 ### `markuplint:rdfa` {#preset-rdfa}
 
-| 名前付きルール       | 解説                                                                                   |
-| -------------------- | -------------------------------------------------------------------------------------- |
-| `rdfa/meta-property` | **Open Graph**等のRDFaベースのメタデータのため、`<meta>`の`property`属性を許容します。 |
+`<meta property>` 要素に対し、`invalid-attr` を拡張して `property` と `content` 属性を許可します。これにより、**Open Graph** 等のRDFaベースのメタデータが仕様検証の違反として報告されなくなります。また、同要素に対し `required-attr` を無効化します。
+
+このプリセットは名前付きルールを公開しません。
 
 ### `markuplint:recommended-static-html` {#preset-static-html}
 

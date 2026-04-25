@@ -1136,4 +1136,112 @@ describe('Named nodeRules integration', () => {
 			expect(idViolations).toHaveLength(0);
 		});
 	});
+
+	describe('rdfa preset (issue #3803)', () => {
+		it('markuplint:recommended does not flag <meta property> as invalid-attr', async () => {
+			const { violations } = await mlTest(
+				'<!doctype html><html lang="en"><head><meta charset="UTF-8"><title>t</title><meta property="og:title" content="Hello"></head><body><h1>x</h1></body></html>',
+				{
+					extends: ['markuplint:recommended'],
+				},
+			);
+			const invalidAttrViolations = violations.filter(v => v.ruleId === 'invalid-attr');
+			expect(invalidAttrViolations.map(v => v.raw)).toStrictEqual([]);
+		});
+
+		it('markuplint:rdfa alone allows <meta property> without invalid-attr violations', async () => {
+			const { violations } = await mlTest(
+				'<!doctype html><html lang="en"><head><meta property="og:title" content="Hello"></head><body></body></html>',
+				{
+					extends: ['markuplint:rdfa'],
+				},
+			);
+			const invalidAttrViolations = violations.filter(v => v.ruleId === 'invalid-attr');
+			expect(invalidAttrViolations).toStrictEqual([]);
+		});
+
+		it('markuplint:html-standard alone still flags <meta property> (no rdfa override)', async () => {
+			// Establishes the baseline: html-standard enables the base
+			// `invalid-attr` rule, which performs full spec validation. Without
+			// the rdfa preset's nodeRule, `property`/`content` are not HTML
+			// spec attributes on <meta> and must be reported.
+			const { violations } = await mlTest(
+				'<!doctype html><html lang="en"><head><meta property="og:title" content="Hello"></head><body></body></html>',
+				{
+					extends: ['markuplint:html-standard'],
+				},
+			);
+			const propertyErrors = violations.filter(v => v.ruleId === 'invalid-attr' && v.raw === 'property');
+			expect(propertyErrors.length).toBeGreaterThan(0);
+		});
+
+		it('accesskey on <meta property> is still reported by a11y/no-accesskey (narrow check preserved)', async () => {
+			// Ensures virtual rules retain their narrow allow/disallow checks
+			// regardless of the rdfa override reaching the base rule. If this
+			// test fails, the virtual rule has been contaminated or disabled.
+			const { violations } = await mlTest(
+				'<!doctype html><html lang="en"><head><meta property="og:title" content="x" accesskey="a"></head><body></body></html>',
+				{
+					extends: ['markuplint:recommended'],
+				},
+			);
+			const accesskeyViolation = violations.find(v => v.name === 'a11y/no-accesskey');
+			expect(accesskeyViolation).toBeDefined();
+			expect(accesskeyViolation!.raw).toBe('accesskey');
+		});
+
+		it('unknown attribute on <meta property> is reported exactly once by base rule (no virtual duplicates)', async () => {
+			// Regression guard for the root cause of #3803: virtual rules
+			// wrapping `invalid-attr` previously ran spec-fallback and each
+			// produced a duplicate error. The fix makes them narrow — only
+			// the base rule reports spec violations now.
+			const { violations } = await mlTest(
+				'<!doctype html><html lang="en"><head><meta property="og:title" content="x" bogus="y"></head><body></body></html>',
+				{
+					extends: ['markuplint:recommended'],
+				},
+			);
+			const bogusViolations = violations.filter(v => v.ruleId === 'invalid-attr' && v.raw === 'bogus');
+			expect(bogusViolations).toHaveLength(1);
+			// base rule report has no virtual alias `name`
+			expect(bogusViolations[0]!.name).toBeUndefined();
+		});
+
+		it('empty property value on <meta property> is flagged (NoEmptyAny)', async () => {
+			const { violations } = await mlTest(
+				'<!doctype html><html lang="en"><head><meta property="" content=""></head><body></body></html>',
+				{
+					extends: ['markuplint:recommended'],
+				},
+			);
+			const emptyValueViolations = violations.filter(v => v.ruleId === 'invalid-attr' && v.raw === '');
+			expect(emptyValueViolations.length).toBeGreaterThan(0);
+		});
+
+		it('markuplint:a11y alone does not flag <meta property> (virtual rules are narrow)', async () => {
+			// a11y preset does not enable base invalid-attr. Virtual rules of
+			// invalid-attr (a11y/no-accesskey etc.) are narrow — they do not
+			// perform spec validation. Hence `property` is not flagged.
+			const { violations } = await mlTest(
+				'<!doctype html><html lang="en"><head><meta property="og:title" content="x"></head><body></body></html>',
+				{
+					extends: ['markuplint:a11y'],
+				},
+			);
+			const invalidAttrViolations = violations.filter(v => v.ruleId === 'invalid-attr');
+			expect(invalidAttrViolations).toStrictEqual([]);
+		});
+
+		it('fully valid markuplint:recommended markup produces zero violations', async () => {
+			// Positive sanity check — if any rule over-reports on an otherwise
+			// conformant document, this anchors the regression.
+			const { violations } = await mlTest(
+				'<!doctype html><html lang="en"><head><meta charset="UTF-8"><title>t</title><meta property="og:title" content="Hello"></head><body><h1>x</h1></body></html>',
+				{
+					extends: ['markuplint:recommended'],
+				},
+			);
+			expect(violations).toStrictEqual([]);
+		});
+	});
 });
