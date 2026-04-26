@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.18.2](https://github.com/markuplint/markuplint/compare/v4.18.1...v4.18.2) (2026-04-26)
+
+### Bug Fixes
+
+- **vscode:** widen engines.vscode range to allow VS Code 1.117+ ([0f926c3](https://github.com/markuplint/markuplint/commit/0f926c34fc06dbfb4977f22c6350411ec688bb43)), closes [#3795](https://github.com/markuplint/markuplint/issues/3795)
+
 ## [4.18.1](https://github.com/markuplint/markuplint/compare/v4.18.0...v4.18.1) (2026-04-24)
 
 ### Bug Fixes

@@ -2,7 +2,7 @@
 	"name": "vscode-markuplint",
 	"displayName": "Markuplint",
 	"description": "Markuplint for VS Code",
-	"version": "4.18.1",
+	"version": "4.18.2",
 	"publisher": "yusukehirao",
 	"license": "MIT",
 	"private": true,
