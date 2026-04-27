@@ -363,7 +363,8 @@
 					"type": "CustomElementName"
 				},
 				"itemid": {
-					"type": "URL"
+					"type": "URL",
+					"condition": "[itemscope][itemtype]"
 				},
 				"itemprop": {
 					"type": {
@@ -389,7 +390,8 @@
 						"ordered": false,
 						"unique": true,
 						"separator": "space"
-					}
+					},
+					"condition": "[itemscope]"
 				},
 				"lang": {
 					"type": "BCP47"

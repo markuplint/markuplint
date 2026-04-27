@@ -135,7 +135,10 @@
 		},
 		// https://html.spec.whatwg.org/multipage/microdata.html#attr-itemid
 		"itemid": {
-			"type": "URL"
+			"type": "URL",
+			// HTML LS §5.7.4: itemid must not be specified on elements that do
+			// not have both an itemscope attribute and an itemtype attribute.
+			"condition": "[itemscope][itemtype]"
 		},
 		// https://html.spec.whatwg.org/multipage/microdata.html#names:-the-itemprop-attribute
 		"itemprop": {
@@ -165,7 +168,10 @@
 				"ordered": false,
 				"unique": true,
 				"separator": "space"
-			}
+			},
+			// HTML LS §5.7.4: itemtype must not be specified on elements that
+			// do not have an itemscope attribute specified.
+			"condition": "[itemscope]"
 		},
 		// https://html.spec.whatwg.org/multipage/dom.html#attr-lang
 		"lang": {
