@@ -276,6 +276,21 @@ description の表現変更などの表面的な変更は、更新された `ind
 - `contents: true`（任意のコンテンツ許可）
 - `permittedRoles: true`, `implicitRole: false`
 
+### 10. スクレイプ済みARIAロールデータのオーバーライド
+
+ARIAロール定義はW3C仕様からスクレイプされ、`src/spec.*.jsonc` には由来しない。仕様の本文がW3Cのソースマークアップに表現されない実行時条件を述べている場合（例: WAI-ARIAでは `separator` の `aria-valuenow` は要素がフォーカス可能なときのみ必須）、`generator/aria.ts` のロール処理ループ末尾で手動オーバーライドを適用する。
+
+**手順**:
+
+1. `packages/@markuplint/html-spec/generator/aria.ts` を開く
+2. ロールpushループの後（`return roles.toSorted(...)` の直前）にある既存の手動オーバーライドブロックを探す。ロール名でマッチさせ、対象の `ownedProperties` エントリのみを書き換える形で新しいオーバーライドを追加
+3. オーバーライドが新しいフィールド（例: `requiredCondition`）を導入する場合、`packages/@markuplint/ml-spec/src/types/index.ts` の対応するunion型（`ARIARoleOwnedProperties` / `ARIAProperty`）も拡張する
+4. 該当ルールが新フィールドを参照するよう、`packages/@markuplint/rules/` 側を更新する
+5. `yarn up:gen` で `index.json` を再生成。差分が対象のロール／プロパティエントリのみに収まっていること（surgicalであること）を確認
+6. 参照: WAI-ARIA https://www.w3.org/TR/wai-aria/、ARIA in HTML https://w3c.github.io/html-aria/
+
+**generatorオーバーライドを使わない判断**: オーバーライドが「要素ごと」に適用されるべき場合（ロール単位ではなく）、`src/spec.<element>.jsonc` を編集する。要素レベルのデータ（`implicitRole`、`permittedRoles` など）はそちらが本来の置き場所。
+
 ## ファイル分類
 
 ### 編集可能なファイル（これらを変更）

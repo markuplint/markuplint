@@ -289,11 +289,19 @@ export type ARIARoleInSchema = Partial<
 /**
  * Describes a property owned by an ARIA role, including whether it is inherited,
  * required, or deprecated.
+ *
+ * `requiredCondition` qualifies `required: true` so that the property is only
+ * required when the condition holds. The W3C ARIA source markup does not encode
+ * such conditions; values are populated by manual overrides in
+ * `@markuplint/html-spec/generator/aria.ts`. Currently the only value is
+ * `'focusable'` (applied to `separator`'s `aria-valuenow`); the `wai-aria`
+ * checker resolves this through `mayBeFocusable` from `@markuplint/ml-spec`.
  */
 export type ARIARoleOwnedProperties = {
 	readonly name: string;
 	readonly inherited?: true;
 	readonly required?: true;
+	readonly requiredCondition?: 'focusable';
 	readonly deprecated?: true;
 };
 

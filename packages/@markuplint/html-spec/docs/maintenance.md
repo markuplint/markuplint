@@ -335,6 +335,21 @@ Obsolete elements automatically get:
 - `contents: true` (any content allowed)
 - `permittedRoles: true`, `implicitRole: false`
 
+### 10. Overriding Scraped ARIA Role Data
+
+ARIA role definitions are scraped from W3C specifications and are NOT driven by `src/spec.*.jsonc`. When the spec text describes a runtime condition that the W3C source markup does not encode (e.g. WAI-ARIA: `separator`'s `aria-valuenow` is required only when the element is focusable), apply a manual override at the end of the role-processing loop in `generator/aria.ts`.
+
+**Procedure**:
+
+1. Open `packages/@markuplint/html-spec/generator/aria.ts`
+2. After the role-push loop (just before `return roles.toSorted(...)`), look for the existing manual-override block. Add a new override there, locating the role by name and rewriting only the affected `ownedProperties` entry.
+3. If the override introduces a new field (e.g. `requiredCondition`), extend the corresponding union type in `packages/@markuplint/ml-spec/src/types/index.ts` (`ARIARoleOwnedProperties` / `ARIAProperty`).
+4. Update the consuming rule(s) in `packages/@markuplint/rules/` to honor the new field.
+5. Run `yarn up:gen` to regenerate `index.json`. Confirm the diff is surgical -- it should touch only the targeted role/property entries.
+6. Reference: WAI-ARIA https://www.w3.org/TR/wai-aria/, ARIA in HTML https://w3c.github.io/html-aria/.
+
+**When NOT to use a generator override**: If the override would apply per-element rather than per-role, edit `src/spec.<element>.jsonc` instead -- element-level data is the right home for ARIA-in-HTML mappings (`implicitRole`, `permittedRoles`, etc.).
+
 ## File Classification
 
 ### Editable Files (modify these)

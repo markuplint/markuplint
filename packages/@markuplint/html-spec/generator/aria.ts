@@ -311,6 +311,26 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 		}
 	}
 
+	// Manual overrides for properties whose required state is conditional on a runtime
+	// quality the W3C source markup does not encode. ARIA only requires `aria-valuenow`
+	// on a `separator` when it is focusable; the spec text says so but the
+	// `.role-required-properties` table marks it unconditionally. The literal values
+	// allowed in `requiredCondition` are defined on `ARIARoleOwnedProperties` in
+	// `@markuplint/ml-spec/src/types/index.ts` — extend that union before adding new
+	// conditions here.
+	const separatorRoleIndex = roles.findIndex(role => role.name === 'separator');
+	if (separatorRoleIndex !== -1) {
+		const separatorRole = roles[separatorRoleIndex]!;
+		roles[separatorRoleIndex] = {
+			...separatorRole,
+			ownedProperties: separatorRole.ownedProperties?.map(prop =>
+				prop.name === 'aria-valuenow' && prop.required
+					? { ...prop, requiredCondition: 'focusable' as const }
+					: prop,
+			),
+		};
+	}
+
 	return roles.toSorted(nameCompare);
 }
 

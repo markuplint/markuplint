@@ -10685,7 +10685,8 @@
 							},
 							{
 								"name": "aria-valuenow",
-								"required": true
+								"required": true,
+								"requiredCondition": "focusable"
 							},
 							{
 								"name": "aria-valuetext"
@@ -26422,7 +26423,8 @@
 							},
 							{
 								"name": "aria-valuenow",
-								"required": true
+								"required": true,
+								"requiredCondition": "focusable"
 							},
 							{
 								"name": "aria-valuetext"
@@ -40909,7 +40911,8 @@
 							},
 							{
 								"name": "aria-valuenow",
-								"required": true
+								"required": true,
+								"requiredCondition": "focusable"
 							},
 							{
 								"name": "aria-valuetext"
