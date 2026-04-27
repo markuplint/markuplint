@@ -165,6 +165,50 @@ Still regenerates the diff, spec, and report. Raw markuplint
 snapshots live only on your disk; commit the `diff/*.json` / spec
 changes that fall out of the rerun.
 
+### Adding a preset virtual rule (gotcha)
+
+`bench/config.ts` curates rules explicitly; it does **not**
+`extends: ['markuplint:html-standard']`. The intent is to keep the
+benchmark surface aligned with nu-validator capabilities rather than
+the full preset.
+
+The trade-off: any new entry in a preset's `nodeRules[]` (virtual
+rule) is invisible to the benchmark until it is also mirrored in
+`bench/config.ts`'s `nodeRules[]` with the same selectors. Without
+this, fixtures the new virtual rule should detect remain stuck at
+`nu-only` and look like a missing markuplint feature when the rule
+already exists.
+
+This bit Issue #3634: the three meta-uniqueness virtual rules added
+to `preset.html-standard.jsonc` in PR #3677 never fired during bench
+runs until the same `disallowed-element` selectors were mirrored into
+`bench/config.ts`.
+
+When adding or modifying a preset virtual rule:
+
+1. Add the selector(s) to the relevant preset (`preset.html-standard.jsonc`).
+2. Mirror the same selectors in `bench/config.ts` `nodeRules[]` with a
+   comment naming the source preset rule.
+3. Run `yarn bench:update:ml` and verify the target fixtures flip
+   from `nu-only` → `match-error`.
+4. If the rule does not map onto any nu-validator capability, skip
+   step 2 and add a `// not mirrored: <reason>` comment to the
+   preset rule's JSDoc so the next maintainer knows it was a
+   conscious decision.
+
+Selector caveats worth knowing while writing nodeRules:
+
+- For HTML elements the selector engine matches attribute names ASCII
+  case-insensitively (per HTML LS / Selectors L4), so lowercase selectors
+  like `[charset]` match `<meta CHARSET>` as expected. Use lowercase to
+  match HTML's normative form.
+- The `i` flag (e.g. `[name="description" i]`) only applies to attribute
+  *values* — it is unnecessary for the attribute *name*, which is already
+  case-folded for HTML.
+- Sibling selectors (`~`) only match elements that follow the anchor.
+  Coexistence-style constraints typically need both directions
+  (`a ~ b` *and* `b ~ a`) so the rule fires regardless of source order.
+
 ### Reproducing a specific nu-only / nu-over entry
 
 Because parallel nu-validator runs flicker on some aria-owns fixtures
