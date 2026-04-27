@@ -2664,3 +2664,29 @@ describe('Issue #3588 — input element permitted roles', () => {
 		expect(violations).toStrictEqual([]);
 	});
 });
+
+// #3682: separator should only require aria-valuenow when focusable
+describe('Issue #3682 — separator focusable conditional aria-valuenow', () => {
+	test('[wai-aria-issue-3682-001] non-focusable separator without aria-valuenow is valid', async () => {
+		const { violations } = await mlRuleTest(rule, '<div role="separator"></div>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[wai-aria-issue-3682-002] focusable separator (tabindex="0") without aria-valuenow reports a missing required prop', async () => {
+		const { violations } = await mlRuleTest(rule, '<div role="separator" tabindex="0"></div>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'Require the "aria-valuenow" ARIA property on the "separator" role',
+				raw: '<div role="separator" tabindex="0">',
+			},
+		]);
+	});
+
+	test('[wai-aria-issue-3682-003] focusable separator with aria-valuenow is valid', async () => {
+		const { violations } = await mlRuleTest(rule, '<div role="separator" tabindex="0" aria-valuenow="50"></div>');
+		expect(violations).toStrictEqual([]);
+	});
+});

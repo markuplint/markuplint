@@ -1,7 +1,13 @@
 import type { Options } from '../types.js';
 import type { ElementChecker } from '@markuplint/ml-core';
 
-import { ARIA_RECOMMENDED_VERSION, getARIA, type ARIAProperty, type ARIARole } from '@markuplint/ml-spec';
+import {
+	ARIA_RECOMMENDED_VERSION,
+	getARIA,
+	mayBeFocusable,
+	type ARIAProperty,
+	type ARIARole,
+} from '@markuplint/ml-spec';
 
 /**
  * Checks whether all required ARIA properties for the element's computed role are present.
@@ -10,6 +16,10 @@ import { ARIA_RECOMMENDED_VERSION, getARIA, type ARIAProperty, type ARIARole } f
  * `aria-valuenow`). This checker verifies that explicitly-set roles have their required
  * properties. Implicit roles are skipped since the browser provides default semantics.
  * Alternative native HTML attributes that satisfy the requirement are also considered.
+ *
+ * If a property declares `requiredCondition: 'focusable'` (currently only `separator`'s
+ * `aria-valuenow`), the requirement is gated by `mayBeFocusable`: a non-focusable
+ * separator no longer reports a missing `aria-valuenow`.
  *
  * @param el - The element node to inspect for required properties.
  * @param role - The computed ARIA role (with an optional `isImplicit` flag).
@@ -29,8 +39,16 @@ export const checkingRequiredProp: ElementChecker<
 		if (role.isImplicit) {
 			return;
 		}
-		const requiredProps = role.ownedProperties.filter(s => s.required).map(s => s.name);
-		for (const requiredProp of requiredProps) {
+		const requiredProps = role.ownedProperties.filter(s => {
+			if (!s.required) return false;
+			// `requiredCondition: 'focusable'` makes the property required only when the
+			// element may be focusable (e.g. `separator`'s `aria-valuenow`).
+			if (s.requiredCondition === 'focusable' && !mayBeFocusable(el, el.ownerMLDocument.specs)) {
+				return false;
+			}
+			return true;
+		});
+		for (const { name: requiredProp } of requiredProps) {
 			const has = el.attributes.some(attr => {
 				const attrName = attr.name.toLowerCase();
 				return attrName === requiredProp;
