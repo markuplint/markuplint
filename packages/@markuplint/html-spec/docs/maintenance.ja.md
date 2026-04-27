@@ -55,9 +55,24 @@
 
 1. 該当する `src/spec.<element>.jsonc` を開く
 2. `attributes` オブジェクトにエントリを追加・変更
-3. 条件付き属性の場合、CSSセレクタで `condition` フィールドを追加
-4. `yarn workspace @markuplint/html-spec run gen` を実行
-5. `index.json` で属性が正しいメタデータとともに表示されることを確認
+3. 条件付き属性の場合、CSSセレクタで `condition` フィールドを追加:
+   ```jsonc
+   "accept": {
+     "type": { "token": "Accept", "separator": "comma" },
+     "condition": "[type='file' i]"
+   }
+   ```
+4. **他属性の存在を要求する制約**（「X は Y がないと指定できない」）を表現する場合は、必須となる他属性をセレクタに並べる。Microdata の `itemid` / `itemtype` / `itemref` は `src/spec-common.attributes.jsonc` でこのパターンを使用:
+   ```jsonc
+   // HTML LS §5.7.4: itemid は itemscope と itemtype の両方を持つ要素にしか指定できない
+   "itemid": {
+     "type": "URL",
+     "condition": "[itemscope][itemtype]"
+   }
+   ```
+   condition が失敗すると `invalid-attr` が `The "<attr>" attribute is disallowed` を報告する。新しいルールコードは不要 — `helpers.ts#isValidAttr` が condition を消費する。
+5. `yarn workspace @markuplint/html-spec run gen` を実行
+6. `index.json` で属性が正しいメタデータとともに表示されることを確認
 
 ### 2b. 条件付き値型（`ConditionalAttributeType[]`）の使用
 

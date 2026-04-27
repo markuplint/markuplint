@@ -74,8 +74,23 @@ will cause the element to be silently excluded from the build output.
      "condition": "[type='file' i]"
    }
    ```
-4. Run `yarn workspace @markuplint/html-spec run gen`
-5. Check `index.json` to confirm the attribute appears with correct metadata
+4. To express **cross-attribute presence constraints** ("X must not be specified
+   without Y"), use a selector that matches the required other attributes. This
+   is how Microdata's `itemid` / `itemtype` / `itemref` are encoded in
+   `src/spec-common.attributes.jsonc`:
+   ```jsonc
+   // HTML LS §5.7.4: itemid must not be specified on elements that do not have
+   // both an itemscope and itemtype attribute.
+   "itemid": {
+     "type": "URL",
+     "condition": "[itemscope][itemtype]"
+   }
+   ```
+   When the condition fails, `invalid-attr` reports
+   `The "<attr>" attribute is disallowed`. No new rule code is required — the
+   condition is consumed by `helpers.ts#isValidAttr`.
+5. Run `yarn workspace @markuplint/html-spec run gen`
+6. Check `index.json` to confirm the attribute appears with correct metadata
 
 ### 2b. Using Conditional Value Types (`ConditionalAttributeType[]`)
 
