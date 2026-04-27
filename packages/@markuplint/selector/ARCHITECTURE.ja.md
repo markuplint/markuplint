@@ -148,6 +148,20 @@ Selector
 - **StructuredSelector** -- 単一のセレクタ（カンマなし）を表現します。コンビネータで連結された `SelectorTarget` ノードのチェーンを構築します。マッチング時は右から左へチェーンをたどります。
 - **SelectorTarget** -- 単一の複合セレクタを要素に対してマッチングします。ID、タグ、クラス、属性、ユニバーサルセレクタ、擬似クラス（拡張擬似クラスを含む）を処理します。
 
+## HTML 名前空間の扱い
+
+HTML LS / Selectors L4 の規定により、要素が HTML 名前空間にある場合は名前比較を ASCII case-insensitive で行い、それ以外では case-sensitive のままとします。タグ名・属性名のいずれの比較も `isPureHTMLElement(el)` でガードしてから case-folding を適用するか判定します。
+
+| 比較対象 | HTML 要素                                                              | SVG / MathML / カスタム要素 |
+| -------- | ---------------------------------------------------------------------- | --------------------------- |
+| タグ名   | `SelectorTarget#matchWithoutCombineChecking` で case-fold              | そのまま比較                |
+| 属性名   | `attrMatch` で case-fold                                               | そのまま比較                |
+| 属性値   | `i` フラグ指定時のみ case-fold（仕様により値の casing は著者の制御下） | 同左                        |
+
+`isPureHTMLElement(el)`（`is.ts`）は `el.localName !== el.nodeName` のときに `true` を返します。HTML パーサーの慣例として localName は小文字形（例: `meta`）、nodeName は大文字形（例: `META`）になり、両者が異なるため成立します。SVG / MathML / カスタム要素では `localName === nodeName` となるため、ガードは自然に case-sensitive 比較側へ流れます。
+
+新しい比較ロジックを追加する際は、必ず同じガードを通してください。さもないと SVG の `viewBox` と HTML の `CHARSET` が逆方向にドリフトしていきます。
+
 ## 2 つのマッチングシステム
 
 ### CSS セレクタマッチング

@@ -348,13 +348,6 @@
 			]
 		},
 		{
-			"path": "html/assertions/multiple-meta-charset-novalid.html",
-			"category": "assertions",
-			"nuMessageIds": [
-				"nv-6d7f2118591b"
-			]
-		},
-		{
 			"path": "html/assertions/select-multiple-selected-novalid.html",
 			"category": "assertions",
 			"nuMessageIds": [
@@ -6084,20 +6077,6 @@
 			]
 		},
 		{
-			"path": "html/elements/meta/charset-and-content-type-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-c391183c18e8"
-			]
-		},
-		{
-			"path": "html/elements/meta/charset-and-http-equiv-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-3b48808fc6d6"
-			]
-		},
-		{
 			"path": "html/elements/meta/content-security-policy/csp-invalid-directive-haswarn.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [
@@ -6119,32 +6098,11 @@
 			]
 		},
 		{
-			"path": "html/elements/meta/duplicate-charset-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-a92b1a905045"
-			]
-		},
-		{
 			"path": "html/elements/meta/itemprop-with-name-novalid.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [
 				"nv-e421b32ec6be",
 				"nv-4fc0d9c94280"
-			]
-		},
-		{
-			"path": "html/elements/meta/multiple-charset-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-f1d2eea343f1"
-			]
-		},
-		{
-			"path": "html/elements/meta/multiple-description-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-7e55d06632de"
 			]
 		},
 		{

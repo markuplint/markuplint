@@ -7317,6 +7317,13 @@
 			]
 		},
 		{
+			"path": "html/elements/meta/names-standard-isvalid.html",
+			"category": "invalid-attr",
+			"ruleIds": [
+				"disallowed-element"
+			]
+		},
+		{
 			"path": "html/elements/meta/refresh-isvalid.html",
 			"category": "invalid-attr",
 			"ruleIds": [

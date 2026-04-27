@@ -57,11 +57,12 @@ export type UmbrellaMapping = {
 
 export type XrefMapping = PrimaryMapping | SecondaryMapping | UmbrellaMapping;
 
-// Body override for #3634: the original text listed 4 bullets including a
-// `<main>` uniqueness claim already covered by `no-duplicate-visible-main`,
-// and hard-coded a "~9 missed errors" count. The rewrite drops the `<main>`
-// bullet and defers the count to the xref block below it (single source of
-// truth). Text lives in `issue-xref/3634-body.md` so it can be proof-read
+// Body override for #3634: the original issue text framed the remaining
+// `nu-only` fixtures as a missing markuplint feature, but the three
+// constraints were already implemented in PR #3677 as preset virtual
+// rules. The fixtures stayed `nu-only` until those rules were mirrored
+// into `bench/config.ts`. The replacement body records that resolution
+// path; lives in `issue-xref/3634-body.md` so it can be proof-read
 // without escaping.
 
 export const xrefMappings: readonly XrefMapping[] = [
@@ -72,7 +73,7 @@ export const xrefMappings: readonly XrefMapping[] = [
 		filter:
 			/meta.*multiple-charset|meta.*duplicate-charset|meta.*multiple-description|charset-and-(content-type|http-equiv)|multiple-visible-main|multiple-main-visible/,
 		note:
-			'Visible `<main>` uniqueness is already covered by `no-duplicate-visible-main` (both fixtures are `match-error`). The remaining gap is meta uniqueness + charset/http-equiv coexistence.',
+			'All meta-uniqueness fixtures are `match-error` after PR #3677 introduced the preset virtual rules and the bench config mirrored their selectors. `<main>` uniqueness is covered separately by `no-duplicate-visible-main`.',
 		bodyOverride: () => loadBodyOverride('3634-body.md'),
 	},
 	{
