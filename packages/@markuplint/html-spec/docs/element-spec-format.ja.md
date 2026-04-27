@@ -531,6 +531,32 @@ CSS セレクタをキーとし、そのセレクタに合致する場合の ARI
 }
 ```
 
+**他属性の存在で `properties.without` を切り替える** `conditions` のセレクタは、同じ要素上の **他属性の存在条件**で `properties` を切り替える用途にも使えます。`<button popovertarget>` は popover API が expanded 状態を自動管理するため、手動の `aria-expanded` を仕様で禁じています:
+
+```jsonc
+"button": {
+  "aria": {
+    "conditions": {
+      "[popovertarget]": {
+        "properties": {
+          "global": true,
+          "role": true,
+          "without": [
+            {
+              "type": "must-not",
+              "name": "aria-expanded",
+              "alt": { "method": "set-attr", "target": "popovertarget" }
+            }
+          ]
+        }
+      }
+    }
+  }
+}
+```
+
+condition がマッチしたとき `wai-aria-disallowed-props` が `without` エントリを報告します。「属性 X は属性 Y があるとき指定してはならない」を表現する典型パターンです。
+
 ### `properties`
 
 ARIA プロパティの使用制約を定義します。
