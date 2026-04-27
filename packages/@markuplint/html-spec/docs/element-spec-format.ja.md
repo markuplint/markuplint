@@ -456,6 +456,18 @@ SVG 属性で使用される CSS やSVG 固有の型を山括弧記法で指定�
 }
 ```
 
+**他属性の存在 (cross-attribute presence)** `condition` のセレクタは、同じ要素上に**他の属性が存在する**ことを要求するためにも使用できます。Microdata の `itemref` / `itemid` / `itemtype` がこのパターンです。HTML Living Standard では、`itemid` は `itemscope` と `itemtype` の両方が指定された要素上でしか有効になりません:
+
+```jsonc
+// HTML LS §5.7.4: https://html.spec.whatwg.org/multipage/microdata.html#attr-itemid
+"itemid": {
+    "type": "URL",
+    "condition": "[itemscope][itemtype]"
+}
+```
+
+condition が満たされない場合、`@markuplint/rules` の `invalid-attr` が `The "<attr>" attribute is disallowed` を報告します。仕様文に「X must not be specified on elements that do not have Y (and Z)」と書かれている制約を表現する場合に使用します。
+
 ---
 
 ## `aria`

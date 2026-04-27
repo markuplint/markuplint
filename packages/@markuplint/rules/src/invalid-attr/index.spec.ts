@@ -2623,3 +2623,99 @@ describe('#3803 meta[property] with rdfa-style allowAttrs', () => {
 		expect(violations.some(v => v.raw === 'bogus')).toBe(true);
 	});
 });
+
+describe('#3733 Microdata cross-attribute constraints', () => {
+	test('[invalid-attr-issue-3733-001] itemscope alone is valid', async () => {
+		const { violations } = await mlRuleTest(rule, '<div itemscope></div>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-issue-3733-002] itemscope + itemtype is valid', async () => {
+		const { violations } = await mlRuleTest(rule, '<div itemscope itemtype="https://schema.org/Thing"></div>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-issue-3733-003] itemscope + itemtype + itemid is valid', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div itemscope itemtype="https://schema.org/Thing" itemid="https://example.com/r"></div>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-issue-3733-004] itemid without itemscope/itemtype is disallowed', async () => {
+		const { violations } = await mlRuleTest(rule, '<div itemid="https://example.com/r"></div>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 6,
+				message: 'The "itemid" attribute is disallowed',
+				raw: 'itemid',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3733-005] itemid with itemscope but without itemtype is disallowed', async () => {
+		const { violations } = await mlRuleTest(rule, '<div itemscope itemid="https://example.com/r"></div>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 16,
+				message: 'The "itemid" attribute is disallowed',
+				raw: 'itemid',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3733-006] itemid with itemtype but without itemscope is disallowed (both itemid and itemtype reported)', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div itemtype="https://schema.org/Thing" itemid="https://example.com/r"></div>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 6,
+				message: 'The "itemtype" attribute is disallowed',
+				raw: 'itemtype',
+			},
+			{
+				severity: 'error',
+				line: 1,
+				col: 42,
+				message: 'The "itemid" attribute is disallowed',
+				raw: 'itemid',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3733-007] itemtype without itemscope is disallowed', async () => {
+		const { violations } = await mlRuleTest(rule, '<div itemtype="https://schema.org/Thing"></div>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 6,
+				message: 'The "itemtype" attribute is disallowed',
+				raw: 'itemtype',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3733-008] invalid-value precedes condition: non-AbsoluteURL itemtype reports value error, not disallowed', async () => {
+		// helpers.ts isValidAttr: when attrCheck reports invalid-value, the
+		// condition-based 'disallowed' branch is skipped (the `if` requires
+		// `invalid === false`). Pin this order so future helpers refactors
+		// surface as a test failure here.
+		// Note: empty `itemtype=""` does NOT exercise this — empty token lists
+		// pass attrCheck and fall through to condition. A non-AbsoluteURL value
+		// is what triggers the value error first.
+		const { violations } = await mlRuleTest(rule, '<div itemtype="not-absolute"></div>');
+		expect(violations.some(v => v.message.includes('disallowed'))).toBe(false);
+		expect(violations.length).toBe(1);
+		expect(violations[0]?.raw).toBe('not-absolute');
+	});
+});

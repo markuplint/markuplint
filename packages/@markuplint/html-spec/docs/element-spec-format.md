@@ -307,6 +307,23 @@ single CSS selector string or an array. The `i` flag enables case-insensitive ma
 "checked": { "type": "Boolean", "condition": ["[type='checkbox' i]", "[type='radio' i]"] }
 ```
 
+**Cross-attribute presence.** `condition` selectors can also require that _other
+attributes_ exist on the same element. Microdata's `itemref`, `itemid`, and `itemtype`
+use this — for example, the HTML Living Standard says `itemid` is only valid on an
+element that already has both `itemscope` and `itemtype`:
+
+```jsonc
+// HTML LS §5.7.4: https://html.spec.whatwg.org/multipage/microdata.html#attr-itemid
+"itemid": {
+    "type": "URL",
+    "condition": "[itemscope][itemtype]"
+}
+```
+
+When the condition fails, `@markuplint/rules`' `invalid-attr` reports
+`The "<attr>" attribute is disallowed`. Use this whenever the spec wording is
+"X must not be specified on elements that do not have Y (and Z)".
+
 ## ARIA Integration
 
 The `aria` object defines ARIA role and property integration.
