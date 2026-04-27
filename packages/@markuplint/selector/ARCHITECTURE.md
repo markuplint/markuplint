@@ -148,6 +148,26 @@ Selector
 - **StructuredSelector** -- Represents a single selector (without commas). Builds a chain of `SelectorTarget` nodes linked by combinators. Traverses the chain from right to left during matching.
 - **SelectorTarget** -- Matches a single compound selector against an element. Handles ID, tag, class, attribute, universal selectors, and pseudo-classes (including extended pseudo-classes).
 
+## HTML Namespace Handling
+
+Per HTML LS / Selectors L4, name comparisons use ASCII case-insensitive
+matching when the element is in the HTML namespace, and case-sensitive
+matching otherwise. The selector engine routes both tag and attribute
+name comparisons through `isPureHTMLElement(el)` before deciding whether
+to fold case.
+
+| Comparison      | HTML element                                                                           | SVG / MathML / custom element |
+| --------------- | -------------------------------------------------------------------------------------- | ----------------------------- |
+| Tag name        | Folded in `SelectorTarget#matchWithoutCombineChecking`                                 | Compared as-is                |
+| Attribute name  | Folded in `attrMatch`                                                                  | Compared as-is                |
+| Attribute value | Folded only when the `i` flag is set (the spec puts value casing under author control) | Same                          |
+
+`isPureHTMLElement(el)` (`is.ts`) returns `true` when `el.localName !== el.nodeName`. That is the convention HTML parsers use: localName is the lowercased form, nodeName is uppercased (for example, `localName === 'meta'` while `nodeName === 'META'`). SVG / MathML / custom elements keep `localName === nodeName`, so the guard naturally falls through to case-sensitive comparison there.
+
+Adding new selector logic that compares names against an element should
+go through the same guard. Otherwise SVG content like `viewBox` and
+HTML content like `CHARSET` will start drifting in opposite directions.
+
 ## Two Matching Systems
 
 ### CSS Selector Matching

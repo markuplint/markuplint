@@ -599,8 +599,16 @@ function attrMatch(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: SelectorElement,
 ) {
+	// HTML LS / Selectors L4: attribute names are ASCII case-insensitive when
+	// the element is in the HTML namespace. SVG, MathML, and custom elements
+	// keep case-sensitive matching (e.g. SVG `viewBox`). The `isPureHTMLElement`
+	// guard mirrors the same convention used for tag-name matching in
+	// SelectorTarget#matchWithoutCombineChecking.
+	const isHTML = isPureHTMLElement(el);
+	const selectorAttrName = isHTML ? attr.attribute.toLowerCase() : attr.attribute;
 	return [...el.attributes].some(attrOfEl => {
-		if (attr.attribute !== attrOfEl.localName) {
+		const elAttrName = isHTML ? attrOfEl.localName.toLowerCase() : attrOfEl.localName;
+		if (selectorAttrName !== elAttrName) {
 			return false;
 		}
 		if (attr.namespace != null && attr.namespace !== true && attr.namespace !== '*') {
