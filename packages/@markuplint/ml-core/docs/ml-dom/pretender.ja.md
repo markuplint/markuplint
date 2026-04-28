@@ -32,6 +32,21 @@ MLDocument コンストラクタ
 
 `MLElement` の `pretending()` メソッドがコアの初期化ロジックです。ドキュメントのコンストラクション中に、要素ごとに1回呼び出されます。
 
+**ステップ 0: 標準 HTML 要素の拒否**
+
+```typescript
+if (
+  this.elementType === 'html' &&
+  getSpecByTagName(this.ownerMLDocument.specs.specs, this.localName, this.namespaceURI) != null
+) {
+  return;
+}
+```
+
+Pretender は仕様データに該当エントリを持つ標準 HTML 要素（例: `<button>`、`<marquee>`、`<input>`）には決して適用されません。これらを別の要素に偽装させると、元タグに対する仕様駆動のルール（deprecation 警告、ARIA role 制約、ブラウザサポートチェックなど）が暗黙に隠されてしまうためです（issue #3740 参照）。
+
+HTML パーサーが小文字化した非標準的な名前（例: `<SimpleButton>` が `simplebutton` になる）は `elementType === 'html'` を持ちますが、spec エントリがないため、以下のステップに進み pretender 対象として残ります。これは `pretenders.scan` のワークフローがコンポーネント名をルート HTML 要素にマッピングするために必要な動作です。
+
 **ステップ 1: マッチする設定を検索**
 
 ```typescript
@@ -49,7 +64,7 @@ const pretenderElement =
   (this.elementType === 'html' || !asAttrValue ? null : { element: asAttrValue, inheritAttrs: true });
 ```
 
-明示的な設定がマッチしないが、要素が非 HTML 要素（つまり `elementType !== 'html'`）で `as` 属性を持つ場合、その属性値をフォールバックとして使用します。これにより、明示的な設定なしで `<MyButton as="button">` が動作します。
+明示的な設定がマッチせず、要素が非 HTML 要素（`elementType !== 'html'`）で `as` 属性を持つ場合、その属性値をフォールバックとして使用します。これにより、明示的な設定なしで `<MyButton as="button">` が動作します。インライン `as` に対する `elementType === 'html'` ガードは #3740 以前から保持されています — `<SimpleButton>` のような非標準 HTML パース名は `pretenders` config 経由なら動作しますが、インライン `as` は引き続き無視されます。
 
 **ステップ 3: Pretender 定義の解決**
 

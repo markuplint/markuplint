@@ -182,6 +182,10 @@ const Component = ({ list }) => {
 
 **React**や**Vue**などでは、カスタムコンポーネントをHTML要素として評価ができません。つまり、markuplintのコンテンツモデルルール — [`permitted-contents`](/docs/rules/permitted-contents)など — は、コンポーネントが実際に何をレンダリングするか知る手段がありません。この情報がないと、`<button>`要素をレンダリングする`<Button>`コンポーネントは未知の要素として扱われ、`<a><Button /></a>`（インタラクティブコンテンツの中にインタラクティブコンテンツ）のような不正なネストが検出されません。
 
+:::note 適用範囲
+プリテンダーは**カスタムコンポーネントのみ**を対象とします — Web Components、JSX/Vue/Svelte 等の authored component、および HTML パースで spec エントリが存在しない名前です。標準 HTML 要素（`<marquee>`、`<button>` など）を指定しても何も起きません。これにより、元タグに紐づく deprecation・ARIA・ブラウザサポートルールが暗黙に隠されることを防いでいます。
+:::
+
 <!-- prettier-ignore-start -->
 ```jsx
 <List>{/* ネイティブのHTML要素として評価できない */}

@@ -335,6 +335,73 @@ div#hoge.foo.bar
 		expect(el.pretenderContext?.type).toBe('pretender');
 		expect([...(el.pretenderContext as any).as.childNodes].length).toBeGreaterThan(0);
 	});
+
+	// Issue #3740: HTML elements must never be pretendered. Allowing `<marquee as="div">`
+	// or a config-driven HTML→HTML pretender would silently mask standards-conformance
+	// violations (deprecation, ARIA role restrictions) on the original tag.
+	test('pretenders: ignored when selector matches an HTML element (issue-3740)', () => {
+		const el = createTestElement('<marquee>x</marquee>', {
+			specs,
+			pretenders: [
+				{
+					selector: 'marquee',
+					as: 'div',
+				},
+			],
+		});
+		expect(el.pretenderContext).toBeNull();
+		expect(el.localName).toBe('marquee');
+	});
+
+	test('pretenders: still applies to web-component selectors (issue-3740)', () => {
+		const el = createTestElement('<x-marquee>x</x-marquee>', {
+			specs,
+			pretenders: [
+				{
+					selector: 'x-marquee',
+					as: 'marquee',
+				},
+			],
+		});
+		expect(el.pretenderContext?.type).toBe('pretender');
+		expect(el.localName).toBe('marquee');
+	});
+
+	test('pretenders: applies to non-spec custom names parsed as HTML (issue-3740)', () => {
+		// `<SimpleButton>` lowercased by the HTML parser becomes `simplebutton`. It is
+		// not a hyphenated custom element, so the parser tags it `elementType='html'`,
+		// but the spec has no entry — pretender should still apply (covers the
+		// pretenders.scan workflow).
+		const el = createTestElement('<SimpleButton>x</SimpleButton>', {
+			specs,
+			pretenders: [
+				{
+					selector: 'SimpleButton',
+					as: 'button',
+				},
+			],
+		});
+		expect(el.pretenderContext?.type).toBe('pretender');
+		expect(el.localName).toBe('button');
+	});
+
+	test('pretenders: aria field on HTML selector is ignored (issue-3740)', () => {
+		// Even an `aria` payload cannot opt an HTML element back into pretender mode —
+		// the entire config entry is a no-op when the selector resolves to a standard
+		// HTML element. This guards against accidentally bypassing the standard-HTML
+		// reject by adding `aria.name`.
+		const el = createTestElement('<button>x</button>', {
+			specs,
+			pretenders: [
+				{
+					selector: 'button',
+					as: { element: 'a', aria: { name: 'overridden' } },
+				},
+			],
+		});
+		expect(el.pretenderContext).toBeNull();
+		expect(el.localName).toBe('button');
+	});
 });
 
 describe('Rule', () => {

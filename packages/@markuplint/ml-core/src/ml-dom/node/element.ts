@@ -23,7 +23,7 @@ import type {
 } from '@markuplint/ml-config';
 import type { ARIAVersion } from '@markuplint/ml-spec';
 
-import { resolveNamespace } from '@markuplint/ml-spec';
+import { getSpecByTagName, resolveNamespace } from '@markuplint/ml-spec';
 import type { SelectorMatches } from '@markuplint/selector';
 import { matchSelector } from '@markuplint/selector';
 
@@ -3926,6 +3926,22 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @param pretenders - Optional array of pretender configurations to match against
 	 */
 	pretending(pretenders?: readonly Pretender[]) {
+		// Pretender must not apply to a recognised standard HTML element (e.g. <marquee>,
+		// <h1>, <button>). Allowing such elements to masquerade as another would silently
+		// mask spec-driven rules — deprecation, ARIA role restrictions, browser support —
+		// keyed on the original tag. See issue #3740.
+		//
+		// Names that the HTML parser cannot distinguish from typos (PascalCase JSX-like
+		// usage in plain HTML such as `<SimpleButton>`) get `elementType === 'html'`
+		// from the parser but have no spec entry; those remain pretender-eligible
+		// (this is what `pretenders.scan` relies on). The legacy "no inline `as=` on
+		// HTML elements" guard is preserved further down for that case.
+		if (
+			this.elementType === 'html' &&
+			getSpecByTagName(this.ownerMLDocument.specs.specs, this.localName, this.namespaceURI) != null
+		) {
+			return;
+		}
 		const pretenderConfig = pretenders?.find(option => this.matches(option.selector));
 		const asAttrValue = this.getAttribute('as');
 		const pretenderElement: Pretender['as'] | null =

@@ -181,6 +181,10 @@ In addition, **spec plugins** include definitions for framework-specific attribu
 
 In **React**, **Vue**, and more, custom components cannot be evaluated as HTML elements. This means Markuplint's content model rules — such as [`permitted-contents`](/docs/rules/permitted-contents) — have no way of knowing what a component actually renders. Without this information, a `<Button>` component that renders a `<button>` element is treated as an unknown element, and invalid nesting like `<a><Button /></a>` (interactive content inside interactive content) goes undetected.
 
+:::note Scope
+Pretenders apply to **custom components only** — web components, JSX/Vue/Svelte authored components, and HTML-parsed names that have no spec entry. Targeting a standard HTML element (`<marquee>`, `<button>`, etc.) is a no-op so that deprecation, ARIA, and browser-support rules keyed on the original tag are not silently masked.
+:::
+
 <!-- prettier-ignore-start -->
 ```jsx
 <List>{/* No evaluate as native HTML Element */}
