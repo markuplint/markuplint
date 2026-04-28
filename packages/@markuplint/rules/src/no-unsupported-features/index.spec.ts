@@ -252,8 +252,14 @@ describe('pretender gap (issue #3740)', () => {
 			pretenders: [{ selector: 'Dialog', as: 'dialog' }],
 			rule: { options: { browserslist: 'ie 11' } },
 		});
-		const dialogViolation = violations.find(v => v.message.includes('"dialog"'));
-		expect(dialogViolation).toBeDefined();
+		expect(violations.length).toBe(1);
+		expect(violations[0]?.severity).toBe('warning');
+		expect(violations[0]?.message).toContain('"dialog"');
+		expect(violations[0]?.message).toContain('element');
+		expect(violations[0]?.message).toContain('Internet Explorer');
+		expect(violations[0]?.line).toBe(1);
+		expect(violations[0]?.col).toBe(1);
+		expect(violations[0]?.raw).toBe('<Dialog>');
 	});
 
 	test('[no-unsupported-features-issue-3740-002] JSX with object inheritAttrs pretender reports', async () => {
@@ -262,8 +268,11 @@ describe('pretender gap (issue #3740)', () => {
 			pretenders: [{ selector: 'Dialog', as: { element: 'dialog', inheritAttrs: true } }],
 			rule: { options: { browserslist: 'ie 11' } },
 		});
-		const dialogViolation = violations.find(v => v.message.includes('"dialog"'));
-		expect(dialogViolation).toBeDefined();
+		expect(violations.length).toBe(1);
+		expect(violations[0]?.severity).toBe('warning');
+		expect(violations[0]?.message).toContain('"dialog"');
+		expect(violations[0]?.message).toContain('Internet Explorer');
+		expect(violations[0]?.raw).toBe('<Dialog>');
 	});
 
 	test('[no-unsupported-features-issue-3740-003] HTML→HTML pretender ignored: original element checked', async () => {
@@ -273,8 +282,11 @@ describe('pretender gap (issue #3740)', () => {
 			pretenders: [{ selector: 'dialog', as: 'div' }],
 			rule: { options: { browserslist: 'ie 11' } },
 		});
-		const dialogViolation = violations.find(v => v.message.includes('"dialog"'));
-		expect(dialogViolation).toBeDefined();
+		expect(violations.length).toBe(1);
+		expect(violations[0]?.severity).toBe('warning');
+		expect(violations[0]?.message).toContain('"dialog"');
+		expect(violations[0]?.message).toContain('Internet Explorer');
+		expect(violations[0]?.raw).toBe('<dialog>');
 	});
 
 	test('[no-unsupported-features-issue-3740-004] web-component pretendered to experimental HTML reports', async () => {
@@ -282,9 +294,10 @@ describe('pretender gap (issue #3740)', () => {
 			pretenders: [{ selector: 'x-iframe', as: { element: 'iframe', inheritAttrs: true } }],
 			rule: { options: { checkExperimental: true } },
 		});
-		const experimentalViolation = violations.find(
-			v => v.message.includes('experimental') && v.message.includes('"credentialless"'),
-		);
-		expect(experimentalViolation).toBeDefined();
+		expect(violations.length).toBe(1);
+		expect(violations[0]?.severity).toBe('warning');
+		expect(violations[0]?.message).toContain('"credentialless"');
+		expect(violations[0]?.message).toContain('experimental');
+		expect(violations[0]?.raw).toBe('credentialless');
 	});
 });

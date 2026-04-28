@@ -103,3 +103,21 @@ test('[deprecated-element-issue-3740-004] web-component pretendered to obsolete 
 		},
 	]);
 });
+
+test('[deprecated-element-issue-3740-005] Vue web-component pretendered to obsolete HTML reports', async () => {
+	// Cross-parser regression: confirm the pretender filter relaxation works when
+	// the AST originates from `@markuplint/vue-parser`, not just JSX.
+	const { violations } = await mlRuleTest(rule, '<template><x-marquee>x</x-marquee></template>', {
+		parser: { '.*': '@markuplint/vue-parser' },
+		pretenders: [{ selector: 'x-marquee', as: 'marquee' }],
+	});
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			message: 'The "marquee" element is obsolete',
+			line: 1,
+			col: 11,
+			raw: '<x-marquee>',
+		},
+	]);
+});
