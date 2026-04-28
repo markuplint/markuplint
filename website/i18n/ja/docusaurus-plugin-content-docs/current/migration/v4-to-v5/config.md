@@ -9,16 +9,17 @@ v5 ではグローバル設定、名前付きルール、よりシンプルな�
 
 ## 変更一覧
 
-| 変更内容                                    | 影響を受ける人                              |
-| ------------------------------------------- | ------------------------------------------- |
-| 新しい `ruleCommonSettings` プロパティ      | すべての設定ファイル作成者                  |
-| Named nodeRules                             | プリセットのユーザーと作成者                |
-| `specConformance` メタデータ                | プリセット作成者                            |
-| nodeRules/childNodeRules が名前で重複排除   | `extends` で named nodeRules を使う設定     |
-| ルールの配列値が連結から上書きに変更        | `extends` で配列値を使う設定                |
-| ルール options が shallow merge に変更      | `extends` でネストされた options を使う設定 |
-| Pretender の `data` が上書きから追加に変更  | `extends` で pretenders を使う設定          |
-| `--config` フラグが指定ファイルのみ読み込み | `--config` を使う CLI ユーザー              |
+| 変更内容                                         | 影響を受ける人                              |
+| ------------------------------------------------ | ------------------------------------------- |
+| 新しい `ruleCommonSettings` プロパティ           | すべての設定ファイル作成者                  |
+| Named nodeRules                                  | プリセットのユーザーと作成者                |
+| `specConformance` メタデータ                     | プリセット作成者                            |
+| nodeRules/childNodeRules が名前で重複排除        | `extends` で named nodeRules を使う設定     |
+| ルールの配列値が連結から上書きに変更             | `extends` で配列値を使う設定                |
+| ルール options が shallow merge に変更           | `extends` でネストされた options を使う設定 |
+| Pretender の `data` が上書きから追加に変更       | `extends` で pretenders を使う設定          |
+| Pretender が標準 HTML 要素には適用されなくなった | `pretenders` で HTML 要素を指定している設定 |
+| `--config` フラグが指定ファイルのみ読み込み      | `--config` を使う CLI ユーザー              |
 
 ## `ruleCommonSettings`
 
@@ -311,6 +312,37 @@ v5 では `extends` 使用時の `nodeRules` と `childNodeRules` のマージ�
 | `data`     | 上書き    | **追加**  |
 
 **移行方法:** これは一般的に非破壊的な改善です。pretender データを完全に置き換える必要がある場合は、`extends` を使わず単一の設定ですべての pretenders を定義してください。
+
+## Pretender が標準 HTML 要素には適用されなくなった
+
+:::caution 破壊的変更
+`pretenders`（またはインライン `as=` 属性）で標準 HTML 要素を別の要素として振る舞わせていた場合、それらのエントリは無視されるようになりました。
+:::
+
+**理由:** セレクタが認識可能な HTML / SVG 要素にマッチする pretender エントリは、deprecation 警告・ARIA role 制約・ブラウザサポートチェックといった元タグに紐づく仕様ベースのルールを暗黙に隠してしまっていました。pretender はもともと custom component 専用の仕組みとして設計されており、v5 でその制約を実装に反映しました。詳細は [issue #3740](https://github.com/markuplint/markuplint/issues/3740) を参照してください。
+
+**変更前 (v4):** `<marquee as="div">` や `pretenders: [{ selector: 'marquee', as: 'div' }]` で marquee 要素を div として振る舞わせ、deprecation 警告を抑制できていました。
+
+```json
+{
+  "pretenders": [{ "selector": "marquee", "as": "div" }]
+}
+```
+
+**変更後 (v5):** pretender は元の要素が custom component の場合のみ適用されます。具体的には、`@markuplint/html-spec`（またはユーザー指定の spec）に登録された要素**以外**が対象です。
+
+| 元の要素                                                                               | pretender が適用される?               |
+| -------------------------------------------------------------------------------------- | ------------------------------------- |
+| 標準 HTML / SVG タグ（`<button>`, `<marquee>` など）                                   | いいえ                                |
+| Web component / autonomous custom element（`<x-foo>`）                                 | はい                                  |
+| Authored component（JSX/Vue/Svelte の `<MyButton>` など）                              | はい                                  |
+| HTML パーサーがハイフンなしで読み取った未登録名（`<SimpleButton>` → `<simplebutton>`） | はい — `pretenders.scan` のために維持 |
+
+**移行方法:**
+
+1. 設定ファイルを検索し、`pretenders` の `selector` が HTML / SVG 要素名にマッチしているエントリを削除してください。元要素はそのまま検査されます。
+2. テンプレート上のインライン `<HTMLElement as="…">` は v4 でも no-op だったため、挙動は変わりません。
+3. 標準タグの違反を意図的に黙らせていた場合（例: `<marquee>` を警告なしで使い続けたい）、pretender ではなく該当ルールの `disabled` 設定や `severity` / `ignore` で対応してください。
 
 ## `--config` フラグの動作
 
