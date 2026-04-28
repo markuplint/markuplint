@@ -1060,8 +1060,8 @@
 			"path": "html-aria/misc/aria-expanded-with-popovertarget-novalid.html",
 			"category": "aria",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -1092,16 +1092,16 @@
 			"path": "html-aria/misc/aria-hidden-on-input-hidden-novalid.html",
 			"category": "aria",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/misc/aria-hidden-on-meta-novalid.html",
 			"category": "aria",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -3036,8 +3036,8 @@
 			"path": "html-aria/presentational-children/testcase-839.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "error",
-			"verdict": "ml-only",
+			"ml": "clean",
+			"verdict": "match-clean",
 			"excludedIds": []
 		},
 		{
@@ -3644,8 +3644,8 @@
 			"path": "html-aria/roles-plain-concrete/roles-plain-concrete-separator.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "error",
-			"verdict": "ml-only",
+			"ml": "clean",
+			"verdict": "match-clean",
 			"excludedIds": []
 		},
 		{
@@ -5980,16 +5980,16 @@
 			"path": "html-aria/roles-properties-supported/roles-properties-supported-separator-aria-orientation-horizontal.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "error",
-			"verdict": "ml-only",
+			"ml": "clean",
+			"verdict": "match-clean",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-supported/roles-properties-supported-separator-aria-orientation-vertical.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "error",
-			"verdict": "ml-only",
+			"ml": "clean",
+			"verdict": "match-clean",
 			"excludedIds": []
 		},
 		{
@@ -13748,8 +13748,8 @@
 			"path": "html/assertions/itemid-without-itemtype-novalid.html",
 			"category": "assertions",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -13764,8 +13764,8 @@
 			"path": "html/assertions/itemtype-without-itemscope-novalid.html",
 			"category": "assertions",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -14380,8 +14380,8 @@
 			"path": "html/attributes/popovertarget-with-aria-expanded-novalid.html",
 			"category": "global-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -25730,8 +25730,8 @@
 			"path": "html/elements/input/type-hidden-with-aria-novalid.html",
 			"category": "invalid-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -31644,8 +31644,8 @@
 			"path": "html/elements/microdata/itemid-without-itemtype-novalid.html",
 			"category": "invalid-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -40900,16 +40900,16 @@
 			"path": "html/microdata/itemid-without-itemscope-novalid.html",
 			"category": "uncategorized",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
 			"path": "html/microdata/itemid-without-itemtype-novalid.html",
 			"category": "uncategorized",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -41606,8 +41606,8 @@
 			"path": "html/microdata/itemtype-without-itemscope-novalid.html",
 			"category": "uncategorized",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -43470,8 +43470,8 @@
 			"path": "html/warnings/unnecessary-role-separator-haswarn.html",
 			"category": "uncategorized",
 			"nu": "clean",
-			"ml": "error",
-			"verdict": "ml-only",
+			"ml": "clean",
+			"verdict": "match-clean",
 			"excludedIds": []
 		},
 		{
