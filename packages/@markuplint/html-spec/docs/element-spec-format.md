@@ -375,6 +375,37 @@ Maps CSS selectors to ARIA overrides. Condition keys use the same CSS selector s
 - `"dl > div"` -- div as direct child of dl
 - `"[type='checkbox' i][aria-pressed]"` -- compound selectors
 
+**Cross-attribute presence with `properties.without`.** A `conditions` selector
+can also gate `properties` on the presence of another attribute on the same
+element. `<button popovertarget>` triggers the popover API which manages the
+expanded state automatically, so the spec data forbids a manual `aria-expanded`:
+
+```jsonc
+"button": {
+  "aria": {
+    "conditions": {
+      "[popovertarget]": {
+        "properties": {
+          "global": true,
+          "role": true,
+          "without": [
+            {
+              "type": "must-not",
+              "name": "aria-expanded",
+              "alt": { "method": "set-attr", "target": "popovertarget" }
+            }
+          ]
+        }
+      }
+    }
+  }
+}
+```
+
+When the condition matches, `wai-aria-disallowed-props` reports the `without`
+entry. This is the canonical pattern for "attribute X must not appear when
+attribute Y is present".
+
 ### Version-Specific ARIA Overrides
 
 Use version keys (`"1.1"`, `"1.2"`) as sibling properties to override ARIA for specific

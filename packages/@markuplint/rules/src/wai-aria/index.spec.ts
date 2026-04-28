@@ -514,6 +514,25 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 
 		expect(violations).toStrictEqual([]);
 	});
+
+	// #3735 P1/P2 opt-out boundary: both `properties.without` (P1) and
+	// `properties === false` (P2) are gated on `disallowSetImplicitProps`. Pin
+	// this so a future refactor that drops the gate from one without the other
+	// surfaces here. (#3630 naming prohibition is intentionally NOT gated; that
+	// asymmetry is by design — see comments in `disallowed-prop.ts`.)
+	test('[wai-aria-issue-3735-001] disallowSetImplicitProps:false opts out of button[popovertarget] aria-expanded check', async () => {
+		const { violations } = await mlRuleTest(rule, '<button popovertarget="p" aria-expanded="false">x</button>', {
+			rule: { options: { disallowSetImplicitProps: false } },
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[wai-aria-issue-3735-002] disallowSetImplicitProps:false opts out of input[type=hidden] aria-* check', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="hidden" aria-hidden="true">', {
+			rule: { options: { disallowSetImplicitProps: false } },
+		});
+		expect(violations).toStrictEqual([]);
+	});
 });
 
 describe('Allowed Accessibility Child Roles', () => {

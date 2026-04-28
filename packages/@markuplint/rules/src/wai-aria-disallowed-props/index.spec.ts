@@ -128,3 +128,62 @@ test('[wai-aria-disallowed-props-issue-3630-010] custom element with aria-label 
 	// Custom elements are not in the namingProhibited list; no violation.
 	expect((await mlRuleTest(rule, '<my-widget aria-label="x">y</my-widget>')).violations).toStrictEqual([]);
 });
+
+// #3735 P1: button[popovertarget] must not have aria-expanded. The popover API
+// manages the expanded/collapsed state automatically, so a manual aria-expanded
+// is redundant and may drift from the actual state.
+test('[wai-aria-disallowed-props-issue-3735-001] button[popovertarget] aria-expanded is must-not', async () => {
+	const { violations } = await mlRuleTest(rule, '<button popovertarget="p" aria-expanded="false">x</button>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 27,
+			message:
+				'The "aria-expanded" ARIA state must not use on the "button" element. As its state is already provided by the "popovertarget" attribute',
+			raw: 'aria-expanded="false"',
+		},
+	]);
+});
+
+test('[wai-aria-disallowed-props-issue-3735-002] button without popovertarget allows aria-expanded', async () => {
+	// Sanity check: without popovertarget the conditional must not fire.
+	expect((await mlRuleTest(rule, '<button aria-expanded="false">x</button>')).violations).toStrictEqual([]);
+});
+
+// #3735 P2: input[type=hidden] sets `properties: false` in spec data, meaning
+// any aria-* attribute is disallowed. The check must fire even though the
+// element has no implicit role and no explicit role (same root cause as #3630
+// naming prohibition).
+test('[wai-aria-disallowed-props-issue-3735-003] aria-hidden on input[type=hidden] is disallowed', async () => {
+	const { violations } = await mlRuleTest(rule, '<input type="hidden" aria-hidden="true">');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 22,
+			message: 'The "aria-hidden" ARIA state is disallowed on the "input" element',
+			raw: 'aria-hidden="true"',
+		},
+	]);
+});
+
+test('[wai-aria-disallowed-props-issue-3735-004] any aria-* on input[type=hidden] is disallowed', async () => {
+	// Confirms the rule fires for arbitrary aria-* attrs, not only aria-hidden.
+	const { violations } = await mlRuleTest(rule, '<input type="hidden" aria-label="x">');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 22,
+			message: 'The "aria-label" ARIA property is disallowed on the "input" element',
+			raw: 'aria-label="x"',
+		},
+	]);
+});
+
+test('[wai-aria-disallowed-props-issue-3735-005] input[type=text] aria-hidden is allowed (properties not false)', async () => {
+	// Sanity check: properties=false is specific to type=hidden. type=text has
+	// implicitRole=textbox and supports global aria-* attrs including aria-hidden.
+	expect((await mlRuleTest(rule, '<input type="text" aria-hidden="true">')).violations).toStrictEqual([]);
+});

@@ -89,6 +89,28 @@
 			"tab",
 			"treeitem"
 		],
+		"conditions": {
+			// HTML LS Popover API: a button that triggers a popover via the
+			// popovertarget attribute manages the expanded/collapsed state
+			// automatically, so authors must not also set aria-expanded.
+			// @see https://html.spec.whatwg.org/multipage/popover.html#attr-popovertarget
+			"[popovertarget]": {
+				"properties": {
+					"global": true,
+					"role": true,
+					"without": [
+						{
+							"type": "must-not",
+							"name": "aria-expanded",
+							"alt": {
+								"method": "set-attr",
+								"target": "popovertarget"
+							}
+						}
+					]
+				}
+			}
+		},
 		"1.1": {
 			"permittedRoles": [
 				"checkbox",

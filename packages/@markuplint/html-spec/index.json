@@ -49656,6 +49656,24 @@
 					"tab",
 					"treeitem"
 				],
+				"conditions": {
+					"[popovertarget]": {
+						"properties": {
+							"global": true,
+							"role": true,
+							"without": [
+								{
+									"type": "must-not",
+									"name": "aria-expanded",
+									"alt": {
+										"method": "set-attr",
+										"target": "popovertarget"
+									}
+								}
+							]
+						}
+					}
+				},
 				"1.1": {
 					"permittedRoles": [
 						"checkbox",

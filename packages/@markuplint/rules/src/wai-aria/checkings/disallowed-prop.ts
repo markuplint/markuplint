@@ -78,6 +78,35 @@ export const checkingDisallowedProp: AttrChecker<
 			};
 		}
 
+		// Spec data may set `properties: false` to forbid every aria-* attribute on
+		// elements that have no implicit role and accept no explicit role
+		// (e.g. `input[type=hidden]`). The role-based check below would skip such
+		// elements because `role` is null, so handle that case here.
+		// Note: when an explicit `role=` is present, `role` is non-null and this
+		// branch is skipped — but `wai-aria-permitted-roles` already rejects the
+		// explicit role for elements whose spec says `permittedRoles: false`,
+		// so the user sees a violation either way.
+		//
+		// Design note on the gating asymmetry: naming prohibition (above) fires
+		// unconditionally because it is a hard ARIA-in-HTML rule, whereas this
+		// `properties: false` branch is gated on `disallowSetImplicitProps` to
+		// match the `properties.without` check below — both encode element-
+		// specific aria-* prohibitions that users may want to opt out of.
+		if (!role && disallowSetImplicitProps && elAriaSpec?.properties === false) {
+			return {
+				scope: attr,
+				message: t(
+					'{0:c} on {1}',
+					t(
+						'{0} is {1:c}',
+						t('the "{0*}" {1}', attr.name, `ARIA ${propSpec?.type ?? 'property'}`),
+						'disallowed',
+					),
+					t('the "{0*}" {1}', attr.ownerElement.localName, 'element'),
+				),
+			};
+		}
+
 		if (!role) {
 			return;
 		}

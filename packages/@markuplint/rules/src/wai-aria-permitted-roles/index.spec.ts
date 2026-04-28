@@ -112,3 +112,34 @@ test('[wai-aria-permitted-roles-valid-003] img with alt text and permitted role 
 test('[wai-aria-permitted-roles-valid-004] img with aria-label and role=img is valid', async () => {
 	expect((await mlRuleTest(rule, '<img src="x.png" aria-label="foo" role="img">')).violations).toStrictEqual([]);
 });
+
+// #3735 P3 regression: <summary> sets permittedRoles=false in html-spec, so
+// any explicit role is rejected — including the implicit "button" role. Pin
+// this so future spec updates do not silently start permitting role on summary.
+test('[wai-aria-permitted-roles-issue-3735-001] role=button on summary inside details is rejected', async () => {
+	const { violations } = await mlRuleTest(rule, '<details><summary role="button">x</summary><p>y</p></details>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 25,
+			message:
+				'Cannot overwrite the "button" role to the "summary" element according to ARIA in HTML specification',
+			raw: 'button',
+		},
+	]);
+});
+
+test('[wai-aria-permitted-roles-issue-3735-002] non-implicit role on summary is also rejected', async () => {
+	const { violations } = await mlRuleTest(rule, '<details><summary role="generic">x</summary><p>y</p></details>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 25,
+			message:
+				'Cannot overwrite the "generic" role to the "summary" element according to ARIA in HTML specification',
+			raw: 'generic',
+		},
+	]);
+});
