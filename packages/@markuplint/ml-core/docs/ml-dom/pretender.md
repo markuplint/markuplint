@@ -32,15 +32,20 @@ This ordering is intentional: pretenders must be established **before** rule map
 
 The `pretending()` method on `MLElement` is the core initialization logic. It is called once per element during document construction.
 
-**Step 0: Reject HTML elements**
+**Step 0: Reject standard HTML elements**
 
 ```typescript
-if (this.elementType === 'html') {
+if (
+  this.elementType === 'html' &&
+  getSpecByTagName(this.ownerMLDocument.specs.specs, this.localName, this.namespaceURI) != null
+) {
   return;
 }
 ```
 
-Pretenders apply only to non-HTML elements (web components and authored elements such as JSX, Vue, and Svelte components). Both the explicit `pretenders` config **and** the inline `as` attribute are no-ops on standard HTML elements. Allowing an HTML element to masquerade as another would silently mask spec-driven rules — deprecation warnings, ARIA role restrictions, browser-support checks — keyed on the original tag (see issue #3740).
+Pretenders never apply to a recognised standard HTML element (one with an entry in the active spec set, e.g. `<button>`, `<marquee>`, `<input>`). Allowing such elements to masquerade as another would silently mask spec-driven rules — deprecation warnings, ARIA role restrictions, browser-support checks — keyed on the original tag (see issue #3740).
+
+PascalCase or otherwise unconventional names parsed as plain HTML (such as `<SimpleButton>` lowered by the HTML parser to `simplebutton`) carry `elementType === 'html'` from the parser but have no spec entry. Those still reach the steps below and remain pretender-eligible — this is what the `pretenders.scan` workflow relies on to map component names to their root HTML element.
 
 **Step 1: Find matching config**
 
@@ -54,10 +59,12 @@ Iterate through the pretender configurations and find the first one whose CSS se
 
 ```typescript
 const asAttrValue = this.getAttribute('as');
-const pretenderElement = pretenderConfig?.as ?? (asAttrValue ? { element: asAttrValue, inheritAttrs: true } : null);
+const pretenderElement =
+  pretenderConfig?.as ??
+  (this.elementType === 'html' || !asAttrValue ? null : { element: asAttrValue, inheritAttrs: true });
 ```
 
-If no explicit config matches and the element has an `as` attribute, use that attribute value as a fallback. This allows `<MyButton as="button">` to work without explicit config. (HTML elements never reach this step, since Step 0 returns early.)
+If no explicit config matches but the element is a non-HTML element (`elementType !== 'html'`) and has an `as` attribute, use that attribute value as a fallback. This allows `<MyButton as="button">` to work without explicit config. The `elementType === 'html'` guard on the inline `as` attribute is preserved from before #3740 — non-spec HTML-parsed names like `<SimpleButton>` keep working through `pretenders` config but their inline `as` is still ignored.
 
 **Step 3: Resolve the pretender definition**
 
