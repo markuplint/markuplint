@@ -14,16 +14,6 @@
  *                 primary issues listed in `primaryIssues`.
  */
 
-import { readFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
-
-const overrideDir = join(dirname(fileURLToPath(import.meta.url)), 'issue-xref');
-
-function loadBodyOverride(fileName: string): string {
-	return readFileSync(join(overrideDir, fileName), 'utf8').trimEnd();
-}
-
 export type PrimaryMapping = {
 	readonly kind: 'primary';
 	readonly issue: number;
@@ -33,7 +23,8 @@ export type PrimaryMapping = {
 	 * Factory that returns the full replacement body. Lazy so importing the
 	 * config module does not touch the filesystem just to register the
 	 * mapping — only builds that actually render the primary block call
-	 * through.
+	 * through. Read overrides via `readFileSync(..., 'utf8').trimEnd()` from
+	 * a file under `tests/external/bench/issue-xref/`.
 	 */
 	readonly bodyOverride?: () => string;
 };
@@ -57,46 +48,8 @@ export type UmbrellaMapping = {
 
 export type XrefMapping = PrimaryMapping | SecondaryMapping | UmbrellaMapping;
 
-// Body override for #3634: the original issue text framed the remaining
-// `nu-only` fixtures as a missing markuplint feature, but the three
-// constraints were already implemented in PR #3677 as preset virtual
-// rules. The fixtures stayed `nu-only` until those rules were mirrored
-// into `bench/config.ts`. The replacement body records that resolution
-// path; lives in `issue-xref/3634-body.md` so it can be proof-read
-// without escaping.
-
 export const xrefMappings: readonly XrefMapping[] = [
 	// === 1 次群: bench で裏取れる Issue ===
-	{
-		kind: 'primary',
-		issue: 3634,
-		filter:
-			/meta.*multiple-charset|meta.*duplicate-charset|meta.*multiple-description|charset-and-(content-type|http-equiv)|multiple-visible-main|multiple-main-visible/,
-		note:
-			'All meta-uniqueness fixtures are `match-error` after PR #3677 introduced the preset virtual rules and the bench config mirrored their selectors. `<main>` uniqueness is covered separately by `no-duplicate-visible-main`.',
-		bodyOverride: () => loadBodyOverride('3634-body.md'),
-	},
-	{
-		kind: 'primary',
-		issue: 3682,
-		filter: /html-aria\/(misc|roles-plain-concrete|roles-properties-supported).*separator|warnings\/unnecessary-role-separator/,
-		note:
-			'`wai-aria-required-props` fires `aria-valuenow` on non-focusable separators here, which is over-detection: ARIA makes that property required only for focusable separators, so `html-spec` needs a conditional required flag. Note that some `ml-only` rows also include `wai-aria-disallowed-props` hits on `aria-expanded` — that half is spec-correct (nu is lax) and will stay `ml-only` after this fix.',
-	},
-	{
-		kind: 'primary',
-		issue: 3733,
-		filter: /itemid-without-itemtype|itemid-without-itemscope|itemtype-without-itemscope/,
-		note:
-			'All six fixtures are `nu-only` — markuplint misses itemid/itemtype cross-attribute constraints. HTML LS §5.7 makes `itemid` require both `itemscope` and `itemtype`.',
-	},
-	{
-		kind: 'primary',
-		issue: 3735,
-		filter: /aria-hidden-on-input-hidden|popovertarget-with-aria-expanded|aria-expanded-with-popovertarget/,
-		note:
-			'Two of three patterns (`input[type=hidden] aria-hidden`, `button[popovertarget] aria-expanded`) have `nu-only` fixtures and confirm the gap. `summary[role]` inside `<details>` has no fixture in the suite; keep the upstream manual check as the sole evidence for that third pattern.',
-	},
 	{
 		kind: 'primary',
 		issue: 293,
