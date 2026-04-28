@@ -23,8 +23,8 @@ export type PrimaryMapping = {
 	 * Factory that returns the full replacement body. Lazy so importing the
 	 * config module does not touch the filesystem just to register the
 	 * mapping — only builds that actually render the primary block call
-	 * through. Read overrides via `readFileSync(..., 'utf8').trimEnd()` from
-	 * a file under `tests/external/bench/issue-xref/`.
+	 * through. Reading from a co-located `.md` file is the recommended
+	 * pattern; recreate `tests/external/bench/issue-xref/<name>.md` if needed.
 	 */
 	readonly bodyOverride?: () => string;
 };
