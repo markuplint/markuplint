@@ -3936,13 +3936,11 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		// from the parser but have no spec entry; those remain pretender-eligible
 		// (this is what `pretenders.scan` relies on). The legacy "no inline `as=` on
 		// HTML elements" guard is preserved further down for that case.
-		if (this.elementType === 'html') {
-			const specs = this.ownerMLDocument.specs.specs;
-			// In tests, the spec collection can be omitted entirely. Be defensive and
-			// fall through to the legacy logic (production callers always supply specs).
-			if (specs && getSpecByTagName(specs, this.localName, this.namespaceURI) != null) {
-				return;
-			}
+		if (
+			this.elementType === 'html' &&
+			getSpecByTagName(this.ownerMLDocument.specs.specs, this.localName, this.namespaceURI) != null
+		) {
+			return;
 		}
 		const pretenderConfig = pretenders?.find(option => this.matches(option.selector));
 		const asAttrValue = this.getAttribute('as');

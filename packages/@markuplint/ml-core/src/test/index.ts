@@ -47,7 +47,7 @@ export function createTestDocument<T extends RuleConfigValue = any, O extends Pl
 	const document = new MLDocument<T, O>(
 		ast,
 		ruleset,
-		[options?.specs ?? ({} as any), {}],
+		[options?.specs ?? (spec as unknown as MLMLSpec), {}],
 		{ ariaVersion: ARIA_RECOMMENDED_VERSION },
 		options?.pretenders ? { pretenders: options.pretenders } : undefined,
 	);

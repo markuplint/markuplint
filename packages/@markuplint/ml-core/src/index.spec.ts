@@ -384,6 +384,24 @@ div#hoge.foo.bar
 		expect(el.pretenderContext?.type).toBe('pretender');
 		expect(el.localName).toBe('button');
 	});
+
+	test('pretenders: aria field on HTML selector is ignored (issue-3740)', () => {
+		// Even an `aria` payload cannot opt an HTML element back into pretender mode —
+		// the entire config entry is a no-op when the selector resolves to a standard
+		// HTML element. This guards against accidentally bypassing the standard-HTML
+		// reject by adding `aria.name`.
+		const el = createTestElement('<button>x</button>', {
+			specs,
+			pretenders: [
+				{
+					selector: 'button',
+					as: { element: 'a', aria: { name: 'overridden' } },
+				},
+			],
+		});
+		expect(el.pretenderContext).toBeNull();
+		expect(el.localName).toBe('button');
+	});
 });
 
 describe('Rule', () => {
