@@ -32,6 +32,16 @@ This ordering is intentional: pretenders must be established **before** rule map
 
 The `pretending()` method on `MLElement` is the core initialization logic. It is called once per element during document construction.
 
+**Step 0: Reject HTML elements**
+
+```typescript
+if (this.elementType === 'html') {
+  return;
+}
+```
+
+Pretenders apply only to non-HTML elements (web components and authored elements such as JSX, Vue, and Svelte components). Both the explicit `pretenders` config **and** the inline `as` attribute are no-ops on standard HTML elements. Allowing an HTML element to masquerade as another would silently mask spec-driven rules — deprecation warnings, ARIA role restrictions, browser-support checks — keyed on the original tag (see issue #3740).
+
 **Step 1: Find matching config**
 
 ```typescript
@@ -44,12 +54,10 @@ Iterate through the pretender configurations and find the first one whose CSS se
 
 ```typescript
 const asAttrValue = this.getAttribute('as');
-const pretenderElement =
-  pretenderConfig?.as ??
-  (this.elementType === 'html' || !asAttrValue ? null : { element: asAttrValue, inheritAttrs: true });
+const pretenderElement = pretenderConfig?.as ?? (asAttrValue ? { element: asAttrValue, inheritAttrs: true } : null);
 ```
 
-If no explicit config matches but the element is a non-HTML element (i.e., `elementType !== 'html'`) and has an `as` attribute, use that attribute value as a fallback. This allows `<MyButton as="button">` to work without explicit config.
+If no explicit config matches and the element has an `as` attribute, use that attribute value as a fallback. This allows `<MyButton as="button">` to work without explicit config. (HTML elements never reach this step, since Step 0 returns early.)
 
 **Step 3: Resolve the pretender definition**
 

@@ -32,6 +32,16 @@ MLDocument コンストラクタ
 
 `MLElement` の `pretending()` メソッドがコアの初期化ロジックです。ドキュメントのコンストラクション中に、要素ごとに1回呼び出されます。
 
+**ステップ 0: HTML 要素の拒否**
+
+```typescript
+if (this.elementType === 'html') {
+  return;
+}
+```
+
+Pretender は非 HTML 要素（Web Component および JSX/Vue/Svelte 等の authored 要素）にのみ適用されます。明示的な `pretenders` 設定もインライン `as` 属性も、標準 HTML 要素に対しては無視されます。HTML 要素を別の要素に偽装させると、その元タグに対する仕様駆動のルール（deprecation 警告、ARIA role 制約、ブラウザサポートチェックなど）が暗黙に隠されてしまうためです（issue #3740 参照）。
+
 **ステップ 1: マッチする設定を検索**
 
 ```typescript
@@ -44,12 +54,10 @@ Pretender 設定を反復し、CSS セレクタがこの要素にマッチする
 
 ```typescript
 const asAttrValue = this.getAttribute('as');
-const pretenderElement =
-  pretenderConfig?.as ??
-  (this.elementType === 'html' || !asAttrValue ? null : { element: asAttrValue, inheritAttrs: true });
+const pretenderElement = pretenderConfig?.as ?? (asAttrValue ? { element: asAttrValue, inheritAttrs: true } : null);
 ```
 
-明示的な設定がマッチしないが、要素が非 HTML 要素（つまり `elementType !== 'html'`）で `as` 属性を持つ場合、その属性値をフォールバックとして使用します。これにより、明示的な設定なしで `<MyButton as="button">` が動作します。
+明示的な設定がマッチせず、要素が `as` 属性を持つ場合、その属性値をフォールバックとして使用します。これにより、明示的な設定なしで `<MyButton as="button">` が動作します。（HTML 要素はステップ 0 で早期 return するため、ここには到達しません）
 
 **ステップ 3: Pretender 定義の解決**
 
