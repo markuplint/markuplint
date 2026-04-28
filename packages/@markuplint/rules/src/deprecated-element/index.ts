@@ -17,7 +17,10 @@ export default createRule({
 					el.namespaceURI === 'http://www.w3.org/1999/xhtml' ||
 					el.namespaceURI === 'http://www.w3.org/2000/svg'
 				) ||
-				el.elementType !== 'html'
+				// Web components and authored elements (JSX/Vue/Svelte) reach this rule
+				// through `pretenders`: they masquerade as a known HTML element via
+				// `el.localName`, so the spec lookup below resolves correctly. See #3740.
+				(el.elementType !== 'html' && el.pretenderContext?.type !== 'pretender')
 			) {
 				return;
 			}

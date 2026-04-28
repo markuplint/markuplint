@@ -143,3 +143,21 @@ test('[wai-aria-permitted-roles-issue-3735-002] non-implicit role on summary is 
 		},
 	]);
 });
+
+test('[wai-aria-permitted-roles-issue-3740-001] HTML→HTML pretender no-ops: original h1 role restriction still fires', async () => {
+	// Issue #3740: `pretenders` config with an HTML element selector is now ignored,
+	// so `<h1 role="button">` is checked against h1's permitted roles even when the
+	// user attempted to mask it with `as: 'div'`.
+	const { violations } = await mlRuleTest(rule, '<h1 role="button">x</h1>', {
+		pretenders: [{ selector: 'h1', as: 'div' }],
+	});
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 11,
+			message: 'Cannot overwrite the "button" role to the "h1" element according to ARIA in HTML specification',
+			raw: 'button',
+		},
+	]);
+});
