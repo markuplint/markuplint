@@ -1,18 +1,18 @@
 /**
  * Valid modes for the VS Code extension build script.
  *
- * - `package`      — build a stable .vsix
- * - `release`      — publish a stable version to Marketplace
- * - `pre-package`  — build a prerelease .vsix (passes --pre-release to vsce)
- * - `pre-release`  — publish a prerelease version to Marketplace
+ * - `package` — build a stable .vsix
+ * - `release` — publish a stable version to Marketplace
  *
  * Each mode maps 1:1 to the matching `npm run vscode:<mode>` script in
  * `vscode/package.json`. To add a new mode, update both `validModes` below
  * AND the corresponding script entry.
  *
- * SEE: https://code.visualstudio.com/api/working-with-extensions/publishing-extension#prerelease-extensions
+ * Prerelease modes (`pre-package` / `pre-release`) were removed when the
+ * Marketplace prerelease channel was retired in favour of attaching `.vsix`
+ * artifacts directly to GitHub Releases. See `vscode/CLAUDE.md`.
  */
-export const validModes = ['package', 'release', 'pre-package', 'pre-release'];
+export const validModes = ['package', 'release'];
 
 /**
  * Resolve the build mode from process.argv.
