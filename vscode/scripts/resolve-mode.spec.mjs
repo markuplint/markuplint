@@ -11,12 +11,12 @@ describe('resolveMode', () => {
 		expect(resolveMode(['node', 'install.mjs', 'release'])).toBe('release');
 	});
 
-	test('returns "pre-package" when "pre-package" is given', () => {
-		expect(resolveMode(['node', 'install.mjs', 'pre-package'])).toBe('pre-package');
+	test('throws on legacy "pre-package" mode (removed when prerelease channel was retired)', () => {
+		expect(() => resolveMode(['node', 'install.mjs', 'pre-package'])).toThrow(/Invalid mode/);
 	});
 
-	test('returns "pre-release" when "pre-release" is given', () => {
-		expect(resolveMode(['node', 'install.mjs', 'pre-release'])).toBe('pre-release');
+	test('throws on legacy "pre-release" mode (removed when prerelease channel was retired)', () => {
+		expect(() => resolveMode(['node', 'install.mjs', 'pre-release'])).toThrow(/Invalid mode/);
 	});
 
 	test('throws on unknown mode with a message that lists valid modes', () => {
