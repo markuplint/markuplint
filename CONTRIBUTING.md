@@ -65,34 +65,23 @@ Personal Access Token you authenticate with must have rights on the
 
 All packages — including the VS Code extension — share a single version
 because Lerna is configured in non-independent mode. The extension version
-therefore always matches the core version (e.g. `5.0.0`, `5.0.0-rc.2`).
-
-VS Code's recommended odd/even minor split is **not** used. Instead,
-semver prerelease tags (`-alpha.x` / `-beta.x` / `-rc.x`) are mapped to the
-Marketplace prerelease channel.
-
-### When to publish which mode
-
-| Core version tag                 | Command                   | Marketplace channel |
-| -------------------------------- | ------------------------- | ------------------- |
-| Stable (e.g. `5.0.0`)            | `yarn vscode:release`     | Stable              |
-| `-alpha.x` / `-beta.x` / `-rc.x` | `yarn vscode:pre-release` | Prerelease          |
-
-`vscode:package` / `vscode:pre-package` produce a local `.vsix` without
-publishing — use these for smoke-testing before running the publish commands.
+always matches the core version (e.g. `5.0.0`, `5.0.0-rc.2`).
 
 ### Workflow
+
+Only stable versions (`X.Y.Z` without a prerelease suffix) are published
+to the Marketplace.
 
 1. Wait for the core packages to be published to npm by CI
 2. Pull the release tag locally (`git pull --tags`)
 3. (First time only) `yarn vscode:login` to authenticate with Marketplace
-4. Run `yarn vscode:release` **or** `yarn vscode:pre-release` depending on the
-   tag (see the table above)
+4. Run `yarn vscode:release`
 
-Valid modes accepted by `vscode/scripts/install.mjs`: `package`, `release`,
-`pre-package`, `pre-release`. Any other argument exits non-zero.
+`yarn vscode:package` produces a local `.vsix` without publishing — use
+it for smoke-testing before running the publish command.
+
+Valid modes accepted by `vscode/scripts/install.mjs`: `package`, `release`.
 
 ### Reference
 
-- [VS Code: Prerelease Extensions](https://code.visualstudio.com/api/working-with-extensions/publishing-extension#prerelease-extensions)
 - [@vscode/vsce](https://github.com/microsoft/vscode-vsce)
