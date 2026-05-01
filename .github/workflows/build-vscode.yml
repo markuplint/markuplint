@@ -32,6 +32,3 @@ jobs:
 
             - name: Install dependencies and package
               run: yarn run vscode:package
-
-            - name: Package prerelease build
-              run: yarn run vscode:pre-package

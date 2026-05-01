@@ -8,16 +8,13 @@
  *
  * Accepted modes (see `./resolve-mode.mjs` for the authoritative list):
  *
- * | Mode           | Effect                                                      |
- * | -------------- | ----------------------------------------------------------- |
- * | `package`      | Build a stable .vsix (default when no arg is given)         |
- * | `release`      | Publish a stable version to Marketplace                     |
- * | `pre-package`  | Build a prerelease .vsix (vsce --pre-release)               |
- * | `pre-release`  | Publish a prerelease version to Marketplace (vsce --pre-release) |
+ * | Mode      | Effect                                              |
+ * | --------- | --------------------------------------------------- |
+ * | `package` | Build a stable .vsix (default when no arg is given) |
+ * | `release` | Publish a stable version to Marketplace             |
  *
- * Any other argument exits with code 1.
- *
- * SEE: https://code.visualstudio.com/api/working-with-extensions/publishing-extension#prerelease-extensions
+ * Any other argument exits with code 1. Prereleases are distributed only as
+ * `.vsix` attached to GitHub Releases (see `vscode/CLAUDE.md`).
  */
 
 import fs from 'node:fs';
