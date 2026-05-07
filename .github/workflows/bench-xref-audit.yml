@@ -2,8 +2,8 @@ name: Bench xref audit
 
 # Flags config entries in `tests/external/bench/issue-xref.config.ts` that
 # reference issues closed on GitHub. Runs on PRs that touch the config and
-# on a weekly schedule. See `tests/external/CLAUDE.md` → "Pre-release
-# checklist integration" for the operator-facing guidance.
+# on a weekly schedule. See `.claude/skills/bench-xref/SKILL.md`
+# → "Pre-release checklist" for the operator-facing guidance.
 
 on:
     pull_request:
