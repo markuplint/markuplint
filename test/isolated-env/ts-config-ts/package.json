@@ -46,6 +46,9 @@
 		"@markuplint/vue-spec": "file:../../../../markuplint/packages/@markuplint/vue-spec"
 	},
 	"pnpm": {
+		"onlyBuiltDependencies": [
+			"esbuild"
+		],
 		"overrides": {
 			"markuplint": "$markuplint",
 			"@markuplint/alpine-parser": "$@markuplint/alpine-parser",

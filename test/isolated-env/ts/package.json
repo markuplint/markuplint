@@ -52,6 +52,9 @@
 		"npm-run-all": "latest"
 	},
 	"pnpm": {
+		"onlyBuiltDependencies": [
+			"esbuild"
+		],
 		"overrides": {
 			"markuplint": "$markuplint",
 			"@markuplint/alpine-parser": "$@markuplint/alpine-parser",
