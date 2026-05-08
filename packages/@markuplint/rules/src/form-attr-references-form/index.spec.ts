@@ -4,7 +4,7 @@ import { test, expect } from 'vitest';
 import rule from './index.js';
 
 test('[form-attr-references-form-valid-001] form attribute references actual form element', async () => {
-	const { violations } = await mlRuleTest(rule, '<form id="myform"></form><input type="text" form="myform">');
+	const { violations } = await mlRuleTest(rule, '<form id="form1"></form><input type="text" form="form1">');
 	expect(violations).toStrictEqual([]);
 });
 

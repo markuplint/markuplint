@@ -19,6 +19,6 @@ ID existence itself is the responsibility of [`no-refer-to-non-existent-id`](../
 ✅ Examples of **correct** code for this rule
 
 ```html
-<form id="myform"><!-- ... --></form>
-<input type="text" form="myform" />
+<form id="form1"><!-- ... --></form>
+<input type="text" form="form1" />
 ```

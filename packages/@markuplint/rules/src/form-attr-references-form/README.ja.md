@@ -19,6 +19,6 @@ ID の存在自体は [`no-refer-to-non-existent-id`](../no-refer-to-non-existen
 ✅ このルールに適合する**正しい**コードの例
 
 ```html
-<form id="myform"><!-- ... --></form>
-<input type="text" form="myform" />
+<form id="form1"><!-- ... --></form>
+<input type="text" form="form1" />
 ```
