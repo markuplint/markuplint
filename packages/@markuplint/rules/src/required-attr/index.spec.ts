@@ -865,8 +865,10 @@ test('[required-attr-valid-004] bdo requires dir attribute', async () => {
 });
 
 test('[required-attr-invalid-012] link rel=preload requires as attribute', async () => {
-	// HTML LS link-type-preload §4.6.7.13.1: "The as attribute must be specified."
+	// HTML LS link-type-preload: "The as attribute must be specified."
 	// modulepreload makes `as` optional; the conditional `required` selector limits to preload.
+	// Mirrors tests/external/validator/tests/html/assertions/link-preload-missing-as-novalid.html
+	// — spec.link.jsonc edit must keep this fixture flipped to match-error.
 	const { violations } = await mlRuleTest(rule, '<link rel="preload" href="style.css">');
 	expect(violations).toStrictEqual([
 		{
