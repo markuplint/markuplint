@@ -231,6 +231,81 @@
 					"options": { "allowMicroformats": true }
 				}
 			}
+		},
+
+		/**
+		 * `<input type="button">` with empty `value`
+		 *
+		 * Mirrors nu-validator's hardcoded assertion. HTML LS itself does not
+		 * state this verbatim; see the rule's README for the precise sourcing.
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/input.html#button-state-(type=button)
+		 */
+		"html-standard/input-button-non-empty-value": {
+			"specConformance": "non-normative",
+			"rules": {
+				"input-button-non-empty-value": true
+			}
+		},
+
+		/**
+		 * `<input type="file">` value must be empty when specified
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/input.html#file-upload-state-(type=file)
+		 */
+		"html-standard/input-file-empty-value": {
+			"specConformance": "normative",
+			"rules": {
+				"input-file-empty-value": true
+			}
+		},
+
+		/**
+		 * `<label>` may contain at most one form-control descendant
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/forms.html#the-label-element
+		 */
+		"html-standard/label-no-multiple-controls": {
+			"specConformance": "normative",
+			"rules": {
+				"label-no-multiple-controls": true
+			}
+		},
+
+		/**
+		 * `<map>` `id` must equal `name` when both are specified
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/image-maps.html#the-map-element
+		 */
+		"html-standard/map-id-name-match": {
+			"specConformance": "normative",
+			"rules": {
+				"map-id-name-match": true
+			}
+		},
+
+		/**
+		 * `<meter>` attribute inequalities (min ≤ value ≤ max etc.)
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/form-elements.html#the-meter-element
+		 */
+		"html-standard/meter-value-bounds": {
+			"specConformance": "normative",
+			"rules": {
+				"meter-value-bounds": true
+			}
+		},
+
+		/**
+		 * Single `<select>` allows at most one selected `<option>`
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/form-elements.html#the-select-element
+		 */
+		"html-standard/no-extra-selected-options": {
+			"specConformance": "normative",
+			"rules": {
+				"no-extra-selected-options": true
+			}
 		}
 	},
 	"nodeRules": [
