@@ -13,7 +13,7 @@ Enforce the inequalities required by [HTML Living Standard §4.10.14 (the meter 
 - `min ≤ optimum ≤ max` (when `optimum` is specified)
 - `low ≤ high` (when both are specified)
 
-When `min` is omitted it defaults to `0`; when `max` is omitted it defaults to `1`; when `value` is omitted it defaults to `min`. Authored-but-unparseable attribute values are deferred to [`invalid-attr`](../invalid-attr/) and skipped here to avoid compounding diagnostics.
+When `min` is omitted it defaults to `0`; when `max` is omitted it defaults to `1`; when `value` is omitted it defaults to `min`. Authored-but-unparsable attribute values are deferred to [`invalid-attr`](../invalid-attr/) and skipped here to avoid compounding diagnostics.
 
 ❌ Examples of **incorrect** code for this rule
 

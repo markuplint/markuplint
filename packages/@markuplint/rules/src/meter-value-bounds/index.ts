@@ -56,7 +56,7 @@ export default createRule<boolean, null>({
 			const highNum = parseFloatAttr(highAttr?.value);
 			const optimumNum = parseFloatAttr(optimumAttr?.value);
 
-			// Authored-but-unparseable values are reported by `invalid-attr`; skip the bounds
+			// Authored-but-unparsable values are reported by `invalid-attr`; skip the bounds
 			// check entirely so we don't compound the diagnostic noise.
 			if (
 				(valueAttr && valueNum === null) ||

@@ -128,7 +128,7 @@ test('[meter-value-bounds-valid-005] dynamic value attributes are skipped', asyn
 	expect(violations.length).toBe(0);
 });
 
-test('[meter-value-bounds-valid-006] unparseable specified value is left to invalid-attr', async () => {
+test('[meter-value-bounds-valid-006] unparsable specified value is left to invalid-attr', async () => {
 	const { violations } = await mlRuleTest(rule, '<meter value="abc" max="10">abc</meter>');
 	expect(violations.length).toBe(0);
 });
