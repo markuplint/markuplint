@@ -3,13 +3,17 @@ import { createRule } from '@markuplint/ml-core';
 import meta from './meta.js';
 
 /**
- * `<input type="button">` may omit the `value` attribute (the user
- * agent supplies a default label) but, when specified, the attribute
- * must not be the empty string. This mirrors nu-validator's assertion
- * for the Button state and is the conservative reading of HTML LS
- * (omission allowed; empty-string-when-specified flagged).
+ * Mirror nu-validator's hardcoded assertion that `<input type="button">`
+ * must not carry `value=""`. HTML LS itself describes only that the user
+ * agent renders the value as the button label (and supplies a default
+ * when the attribute is missing); the explicit "non-empty" requirement
+ * is from nu-validator's `Assertions.java` (the same schematron-equiv
+ * file that drives the Button-state diagnostic). This rule fires only
+ * on the explicit empty-string case so spec-permitted omission is
+ * preserved.
  *
  * @see https://html.spec.whatwg.org/multipage/input.html#button-state-(type=button)
+ * @see https://github.com/validator/validator/blob/main/src/nu/validator/checker/schematronequiv/Assertions.java (search "must have non-empty attribute")
  */
 export default createRule<boolean, null>({
 	meta: meta,
@@ -18,6 +22,8 @@ export default createRule<boolean, null>({
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {
 			if (el.localName !== 'input') return;
+			// Pretender inputs with no `as` pin: attributes are unknown until typed.
+			if (el.pretenderContext?.type === 'pretender' && !el.hasAttribute('as')) return;
 
 			const typeAttr = el.getAttributeNode('type');
 			const valueAttr = el.getAttributeNode('value');

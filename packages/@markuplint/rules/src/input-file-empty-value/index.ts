@@ -17,6 +17,8 @@ export default createRule<boolean, null>({
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {
 			if (el.localName !== 'input') return;
+			// Pretender inputs with no `as` pin: attributes are unknown until typed.
+			if (el.pretenderContext?.type === 'pretender' && !el.hasAttribute('as')) return;
 
 			const typeAttr = el.getAttributeNode('type');
 			const valueAttr = el.getAttributeNode('value');

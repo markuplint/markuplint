@@ -23,10 +23,16 @@ test('[label-no-multiple-controls-invalid-001] two inputs', async () => {
 		rule,
 		'<label>Name: <input type="text" name="first"> <input type="text" name="last"></label>',
 	);
-	expect(violations.length).toBe(1);
-	expect(violations[0]?.message).toBe(
-		'The "label" element may contain at most one form-control descendant (button, input, meter, output, progress, select, or textarea)',
-	);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 47,
+			message:
+				'The "label" element may contain at most one form-control descendant (button, input, meter, output, progress, select, or textarea)',
+			raw: '<input type="text" name="last">',
+		},
+	]);
 });
 
 test('[label-no-multiple-controls-invalid-002] mixed control types', async () => {
@@ -35,6 +41,10 @@ test('[label-no-multiple-controls-invalid-002] mixed control types', async () =>
 		'<label>Score <progress value="50" max="100">50</progress> <input type="number"></label>',
 	);
 	expect(violations.length).toBe(1);
+	expect(violations[0]?.line).toBe(1);
+	// `<input type="number">` follows the closing </progress>; pin position so a future
+	// scope/serialisation change is caught here rather than only on the bench.
+	expect(violations[0]?.col).toBe(59);
 });
 
 test('[label-no-multiple-controls-invalid-003] three controls reports two excess', async () => {
@@ -43,4 +53,5 @@ test('[label-no-multiple-controls-invalid-003] three controls reports two excess
 		'<label><input> <select><option>x</option></select> <textarea></textarea></label>',
 	);
 	expect(violations.length).toBe(2);
+	expect(violations.map(v => v.col)).toStrictEqual([16, 52]);
 });

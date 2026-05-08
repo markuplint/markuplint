@@ -20,13 +20,19 @@ test('[input-button-non-empty-value-valid-003] non-button type with empty value'
 
 test('[input-button-non-empty-value-invalid-001] empty value on type=button', async () => {
 	const { violations } = await mlRuleTest(rule, '<input type="button" value="">');
-	expect(violations.length).toBe(1);
-	expect(violations[0]?.message).toBe(
-		'The "value" attribute on a "input" element with "type=button" must not be the empty string',
-	);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 29,
+			message: 'The "value" attribute on a "input" element with "type=button" must not be the empty string',
+			raw: '',
+		},
+	]);
 });
 
 test('[input-button-non-empty-value-invalid-002] case-insensitive type matching', async () => {
 	const { violations } = await mlRuleTest(rule, '<input type="BUTTON" value="">');
 	expect(violations.length).toBe(1);
+	expect(violations[0]?.raw).toBe('');
 });

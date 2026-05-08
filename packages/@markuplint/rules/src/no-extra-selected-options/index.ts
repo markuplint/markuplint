@@ -17,6 +17,8 @@ export default createRule<boolean, null>({
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {
 			if (el.localName !== 'select') return;
+			// Pretender selects with no `as` pin: descendants are unknown until typed.
+			if (el.pretenderContext?.type === 'pretender' && !el.hasAttribute('as')) return;
 			if (el.hasAttribute('multiple')) return;
 
 			const selected = [

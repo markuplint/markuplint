@@ -28,6 +28,8 @@ export default createRule<boolean, null>({
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {
 			if (el.localName !== 'meter') return;
+			// Pretender meters with no `as` pin: descendants/attributes are unknown until typed.
+			if (el.pretenderContext?.type === 'pretender' && !el.hasAttribute('as')) return;
 
 			const valueAttr = el.getAttributeNode('value');
 			const minAttr = el.getAttributeNode('min');
