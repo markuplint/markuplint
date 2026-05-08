@@ -24,6 +24,7 @@ export const benchmarkConfig: Config = {
 		'permitted-contents': true,
 		'required-attr': true,
 		'invalid-attr': true,
+		'label-no-multiple-controls': true,
 		'deprecated-element': true,
 		'deprecated-attr': true,
 		'id-duplication': true,

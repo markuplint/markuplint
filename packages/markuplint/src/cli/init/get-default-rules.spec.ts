@@ -81,6 +81,10 @@ test('default-rules', () => {
 			category: 'a11y',
 			defaultValue: false,
 		},
+		'label-no-multiple-controls': {
+			category: 'validation',
+			defaultValue: true,
+		},
 		'landmark-roles': {
 			category: 'a11y',
 			defaultValue: false,

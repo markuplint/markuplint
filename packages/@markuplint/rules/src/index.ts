@@ -28,6 +28,7 @@ import IdDuplication from './id-duplication/index.js';
 import IneffectiveAttr from './ineffective-attr/index.js';
 import InvalidAttr from './invalid-attr/index.js';
 import LabelHasControl from './label-has-control/index.js';
+import LabelNoMultipleControls from './label-no-multiple-controls/index.js';
 import LandmarkRoles from './landmark-roles/index.js';
 import LinkTypes from './link-types/index.js';
 import MapIdNameMatch from './map-id-name-match/index.js';
@@ -101,6 +102,7 @@ const rules = {
 	'ineffective-attr': IneffectiveAttr,
 	'invalid-attr': InvalidAttr,
 	'label-has-control': LabelHasControl,
+	'label-no-multiple-controls': LabelNoMultipleControls,
 	'landmark-roles': LandmarkRoles,
 	'link-types': LinkTypes,
 	'map-id-name-match': MapIdNameMatch,
