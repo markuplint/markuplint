@@ -29,13 +29,6 @@
 			]
 		},
 		{
-			"path": "html-aria/misc/aria-owns-broken-idref-novalid.html",
-			"category": "aria",
-			"ruleIds": [
-				"wai-aria-required-parent-role"
-			]
-		},
-		{
 			"path": "html-aria/misc/aria-valuemin-on-meter-haswarn.html",
 			"category": "aria",
 			"ruleIds": [

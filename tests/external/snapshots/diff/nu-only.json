@@ -255,13 +255,6 @@
 			]
 		},
 		{
-			"path": "html/assertions/link-preload-missing-as-novalid.html",
-			"category": "required-attr",
-			"nuMessageIds": [
-				"nv-193d8b9558bf"
-			]
-		},
-		{
 			"path": "html/attributes/command-with-aria-expanded-novalid.html",
 			"category": "global-attr",
 			"nuMessageIds": [
