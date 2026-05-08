@@ -33,6 +33,7 @@ you). Raw `snapshots/{nu-validator,markuplint}/**` are gitignored.
 | Triage a `nu-only` fixture; audit a coverage claim | `bench-triage` |
 | First-time setup, Docker / submodule trouble, repopulating raw snapshots | `bench-setup` |
 | New preset virtual rule (`nodeRules`) not firing on the bench | `bench-virtual-rule` |
+| Enable a flat rule on the bench, or override its severity | `bench-rule-enable` |
 | Sync `<!-- bench-xref -->` blocks onto GitHub Issue bodies; pre-release checklist | `bench-xref` |
 
 ## Architecture
