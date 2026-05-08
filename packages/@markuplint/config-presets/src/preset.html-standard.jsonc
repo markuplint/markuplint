@@ -234,6 +234,18 @@
 		},
 
 		/**
+		 * Form-associated `form` attribute must reference a form element
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fae-form
+		 */
+		"html-standard/form-attr-references-form": {
+			"specConformance": "normative",
+			"rules": {
+				"form-attr-references-form": true
+			}
+		},
+
+		/**
 		 * `<input type="button">` with empty `value`
 		 *
 		 * Mirrors nu-validator's hardcoded assertion. HTML LS itself does not
