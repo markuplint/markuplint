@@ -72,6 +72,11 @@
 		// - Preload destinations: fetch, font, image, script, style, track
 		// - Module preload destinations: json, style, and script-like destinations
 		//   (audioworklet, paintworklet, script, serviceworker, sharedworker, worker)
+		// HTML LS link-type-preload §4.6.7.13.1:
+		// > The as attribute must be specified.
+		// HTML LS link-type-modulepreload §4.6.7.13.2:
+		// > Optionally, the as attribute can be specified ...
+		// → required only for rel=preload, not modulepreload.
 		"as": {
 			"type": [
 				{
@@ -87,7 +92,8 @@
 					}
 				}
 			],
-			"condition": ["[rel~='preload' i]", "[rel~='modulepreload' i]"]
+			"condition": ["[rel~='preload' i]", "[rel~='modulepreload' i]"],
+			"required": "[rel~='preload' i]"
 		},
 		// https://html.spec.whatwg.org/multipage/urls-and-fetching.html#blocking-attributes
 		"blocking": {
