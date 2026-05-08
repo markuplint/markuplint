@@ -23,7 +23,10 @@ export const benchmarkConfig: Config = {
 	rules: {
 		'permitted-contents': true,
 		'required-attr': true,
+		'input-button-non-empty-value': true,
+		'input-file-empty-value': true,
 		'invalid-attr': true,
+		'label-no-multiple-controls': true,
 		'deprecated-element': true,
 		'deprecated-attr': true,
 		'id-duplication': true,
@@ -31,6 +34,9 @@ export const benchmarkConfig: Config = {
 		'no-duplicate-visible-main': true,
 		'placeholder-label-option': true,
 		'link-types': { options: { allowMicroformats: true } },
+		'map-id-name-match': true,
+		'meter-value-bounds': true,
+		'no-extra-selected-options': true,
 		'no-orphaned-end-tag': true,
 		'srcset-sizes-constraint': true,
 		'wai-aria-non-existent-role': true,
@@ -38,6 +44,10 @@ export const benchmarkConfig: Config = {
 		'wai-aria-permitted-roles': true,
 		'wai-aria-required-props': true,
 		'wai-aria-disallowed-props': true,
+		// HTML LS / ARIA in HTML conformance: native HTML attributes MUST be used in preference
+		// to their ARIA equivalents. The rule defaults to severity 'warning' for ergonomic reasons;
+		// the bench treats it as a hard error to align with ARIA-in-HTML §6.
+		'wai-aria-implicit-props': { severity: 'error' },
 		'wai-aria-value': true,
 		'wai-aria-required-owned-elements': true,
 		'wai-aria-required-parent-role': true,

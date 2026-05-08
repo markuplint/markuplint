@@ -2719,3 +2719,27 @@ describe('#3733 Microdata cross-attribute constraints', () => {
 		expect(violations[0]?.raw).toBe('not-absolute');
 	});
 });
+
+describe('bdo[dir] enum override (HTML LS §4.5.5)', () => {
+	// HTML LS forbids `dir="auto"` on `<bdo>`:
+	// "The dir global content attribute is required on this element. The attribute's value must not be the keyword auto."
+	// https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-bdo-element
+
+	test('[invalid-attr-invalid-030] bdo dir="auto" is forbidden', async () => {
+		const { violations } = await mlRuleTest(rule, '<bdo dir="auto">x</bdo>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 11,
+				message: 'The "dir" attribute expects either "ltr", "rtl"',
+				raw: 'auto',
+			},
+		]);
+	});
+
+	test('[invalid-attr-valid-022] bdo dir="ltr" and dir="rtl" are accepted', async () => {
+		expect((await mlRuleTest(rule, '<bdo dir="ltr">x</bdo>')).violations.length).toBe(0);
+		expect((await mlRuleTest(rule, '<bdo dir="rtl">x</bdo>')).violations.length).toBe(0);
+	});
+});

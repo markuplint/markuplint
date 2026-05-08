@@ -1,6 +1,41 @@
 {
 	"entries": [
 		{
+			"path": "html-aria/author-requirements/574.html",
+			"category": "aria",
+			"nuMessageIds": [
+				"nv-374285ecf319"
+			]
+		},
+		{
+			"path": "html-aria/author-requirements/575.html",
+			"category": "aria",
+			"nuMessageIds": [
+				"nv-00a3cfaf103b"
+			]
+		},
+		{
+			"path": "html-aria/author-requirements/576.html",
+			"category": "aria",
+			"nuMessageIds": [
+				"nv-b1c9dc6d3f45"
+			]
+		},
+		{
+			"path": "html-aria/author-requirements/577.html",
+			"category": "aria",
+			"nuMessageIds": [
+				"nv-b0be41d0320e"
+			]
+		},
+		{
+			"path": "html-aria/misc/aria-activedescendant-bad-value-haswarn.html",
+			"category": "aria",
+			"nuMessageIds": [
+				"nv-a3764348e85c"
+			]
+		},
+		{
 			"path": "html-aria/misc/aria-braillelabel-autonomous-custom-element-novalid.html",
 			"category": "aria",
 			"nuMessageIds": [
@@ -8,38 +43,10 @@
 			]
 		},
 		{
-			"path": "html-aria/misc/aria-controls-broken-idref-novalid.html",
-			"category": "aria",
-			"nuMessageIds": [
-				"nv-4bc475a786da"
-			]
-		},
-		{
-			"path": "html-aria/misc/aria-describedby-broken-idref-novalid.html",
-			"category": "aria",
-			"nuMessageIds": [
-				"nv-535915c8681f"
-			]
-		},
-		{
 			"path": "html-aria/misc/aria-expanded-with-command-novalid.html",
 			"category": "aria",
 			"nuMessageIds": [
 				"nv-5c22b7821665"
-			]
-		},
-		{
-			"path": "html-aria/misc/aria-flowto-broken-idref-novalid.html",
-			"category": "aria",
-			"nuMessageIds": [
-				"nv-ecd1cfd3e4e3"
-			]
-		},
-		{
-			"path": "html-aria/misc/aria-hidden-true-with-hidden-until-found-novalid.html",
-			"category": "aria",
-			"nuMessageIds": [
-				"nv-3356debcf7dc"
 			]
 		},
 		{
@@ -71,13 +78,6 @@
 			]
 		},
 		{
-			"path": "html-aria/misc/placeholder-and-aria-placeholder-novalid.html",
-			"category": "aria",
-			"nuMessageIds": [
-				"nv-19bdf3602b5c"
-			]
-		},
-		{
 			"path": "html-aria/misc/role-tab-with-no-role-tabpanel-novalid.html",
 			"category": "aria",
 			"nuMessageIds": [
@@ -101,17 +101,65 @@
 			]
 		},
 		{
-			"path": "html-aria/misc/unnecessary-role-listitem-novalid.html",
-			"category": "aria",
-			"nuMessageIds": [
-				"nv-2cb286280aff"
-			]
-		},
-		{
 			"path": "html-aria/misc/wbr-aria-atomic-novalid.html",
 			"category": "aria",
 			"nuMessageIds": [
 				"nv-d37ed4902519"
+			]
+		},
+		{
+			"path": "html-aria/presentational-children/testcase-839.html",
+			"category": "aria",
+			"nuMessageIds": [
+				"nv-8305ac8bd5a3",
+				"nv-bf7292cf8fa4",
+				"nv-25cfe8e63733",
+				"nv-8a6e3c27869e",
+				"nv-3289d779f642"
+			]
+		},
+		{
+			"path": "html-aria/presentational-children/testcase-840.html",
+			"category": "aria",
+			"nuMessageIds": [
+				"nv-49f0cdb7fcd8",
+				"nv-95d811d6ee5b",
+				"nv-e632316505a3",
+				"nv-ef08cddabb45",
+				"nv-fd7e8ba2e301"
+			]
+		},
+		{
+			"path": "html-aria/presentational-children/testcase-842.html",
+			"category": "aria",
+			"nuMessageIds": [
+				"nv-5b27d5e6eb26",
+				"nv-491a1baf670b",
+				"nv-09d98b44c8d4",
+				"nv-d0da1f3ae445",
+				"nv-5cc5acad4f63"
+			]
+		},
+		{
+			"path": "html-aria/presentational-children/testcase-843.html",
+			"category": "aria",
+			"nuMessageIds": [
+				"nv-ef7cd33b4f69",
+				"nv-c1dbccf437f6",
+				"nv-f850781a73d6",
+				"nv-147b44d11a09",
+				"nv-3c38e66bfd39"
+			]
+		},
+		{
+			"path": "html-aria/presentational-children/testcase-844.html",
+			"category": "aria",
+			"nuMessageIds": [
+				"nv-69d60981968f",
+				"nv-b67f48607a78",
+				"nv-e94e07105cb4",
+				"nv-9364f4d2a3d9",
+				"nv-72f27ad4c9e6"
 			]
 		},
 		{
@@ -207,115 +255,10 @@
 			]
 		},
 		{
-			"path": "html/assertions/aria-placeholder-invalid-novalid.html",
-			"category": "assertions",
-			"nuMessageIds": [
-				"nv-66e46bd99411"
-			]
-		},
-		{
-			"path": "html/assertions/bdo-dir-auto-novalid.html",
-			"category": "assertions",
-			"nuMessageIds": [
-				"nv-a87566e2a111"
-			]
-		},
-		{
-			"path": "html/assertions/input-button-empty-value-novalid.html",
-			"category": "assertions",
-			"nuMessageIds": [
-				"nv-b48d819ec363"
-			]
-		},
-		{
-			"path": "html/assertions/input-file-value-novalid.html",
-			"category": "assertions",
-			"nuMessageIds": [
-				"nv-54d1dac14d54"
-			]
-		},
-		{
-			"path": "html/assertions/label-one-control-novalid.html",
-			"category": "assertions",
-			"nuMessageIds": [
-				"nv-3284e8e57db0"
-			]
-		},
-		{
 			"path": "html/assertions/link-preload-missing-as-novalid.html",
 			"category": "required-attr",
 			"nuMessageIds": [
 				"nv-193d8b9558bf"
-			]
-		},
-		{
-			"path": "html/assertions/map-id-name-mismatch-novalid.html",
-			"category": "assertions",
-			"nuMessageIds": [
-				"nv-b82c4056c0a0"
-			]
-		},
-		{
-			"path": "html/assertions/meter-high-exceeds-max-novalid.html",
-			"category": "assertions",
-			"nuMessageIds": [
-				"nv-aab3a745e472"
-			]
-		},
-		{
-			"path": "html/assertions/meter-low-exceeds-high-novalid.html",
-			"category": "assertions",
-			"nuMessageIds": [
-				"nv-1db1c04c5942",
-				"nv-ee8d4b67622d",
-				"nv-eb63d19774b6",
-				"nv-ffb04c756146"
-			]
-		},
-		{
-			"path": "html/assertions/meter-min-exceeds-max-novalid.html",
-			"category": "assertions",
-			"nuMessageIds": [
-				"nv-cb1712721495",
-				"nv-a4632e9a103c"
-			]
-		},
-		{
-			"path": "html/assertions/meter-optimum-below-min-novalid.html",
-			"category": "assertions",
-			"nuMessageIds": [
-				"nv-6cd0b91f17e9",
-				"nv-8ba2ef87ac58",
-				"nv-7eea3f0d259b"
-			]
-		},
-		{
-			"path": "html/assertions/meter-optimum-exceeds-max-novalid.html",
-			"category": "assertions",
-			"nuMessageIds": [
-				"nv-8faf4e01f601"
-			]
-		},
-		{
-			"path": "html/assertions/meter-value-below-min-novalid.html",
-			"category": "assertions",
-			"nuMessageIds": [
-				"nv-0274e824921d",
-				"nv-90c96a22fabd"
-			]
-		},
-		{
-			"path": "html/assertions/meter-value-exceeds-max-novalid.html",
-			"category": "assertions",
-			"nuMessageIds": [
-				"nv-6a315801d64c"
-			]
-		},
-		{
-			"path": "html/assertions/select-multiple-selected-novalid.html",
-			"category": "assertions",
-			"nuMessageIds": [
-				"nv-0f6761c587c6"
 			]
 		},
 		{
@@ -330,13 +273,6 @@
 			"category": "global-attr",
 			"nuMessageIds": [
 				"nv-e8f89d0fb51b"
-			]
-		},
-		{
-			"path": "html/attributes/data/not-xml-serializable-novalid.html",
-			"category": "global-attr",
-			"nuMessageIds": [
-				"nv-a5c0244db6d3"
 			]
 		},
 		{
@@ -1884,20 +1820,6 @@
 			]
 		},
 		{
-			"path": "html/elements/bdo/dir-auto-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-6202c196e38a"
-			]
-		},
-		{
-			"path": "html/elements/bdo/invalid-dir-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-c7ee7c71ac1c"
-			]
-		},
-		{
 			"path": "html/elements/blockquote/cite/fragment-backslash-novalid.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [
@@ -2805,13 +2727,6 @@
 			"category": "invalid-attr",
 			"nuMessageIds": [
 				"nv-3d6315d9b07f"
-			]
-		},
-		{
-			"path": "html/elements/dir/bdo-auto-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-1d99fa553238"
 			]
 		},
 		{
@@ -4034,13 +3949,6 @@
 			"category": "invalid-attr",
 			"nuMessageIds": [
 				"nv-462837b137bf"
-			]
-		},
-		{
-			"path": "html/elements/input/button-empty-value-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-a7d5ad66a316"
 			]
 		},
 		{
@@ -5690,20 +5598,6 @@
 			]
 		},
 		{
-			"path": "html/elements/label/multiple-descendants-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-b67a2c92e95b"
-			]
-		},
-		{
-			"path": "html/elements/label/multiple-labelable-descendants-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-d9811e4913c8"
-			]
-		},
-		{
 			"path": "html/elements/link/alternate-stylesheet-without-title-novalid.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [
@@ -6020,13 +5914,6 @@
 			]
 		},
 		{
-			"path": "html/elements/map/id-name-mismatch-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-f287f675e24e"
-			]
-		},
-		{
 			"path": "html/elements/meta/content-security-policy/csp-invalid-directive-haswarn.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [
@@ -6060,108 +5947,6 @@
 			"category": "invalid-attr",
 			"nuMessageIds": [
 				"nv-006f6fbfb136"
-			]
-		},
-		{
-			"path": "html/elements/meter/high-below-min-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-fc3772045cd4"
-			]
-		},
-		{
-			"path": "html/elements/meter/high-exceeds-max-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-b44794b47432"
-			]
-		},
-		{
-			"path": "html/elements/meter/low-below-min-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-0e4078d742d6"
-			]
-		},
-		{
-			"path": "html/elements/meter/low-exceeds-high-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-7582f7aa877e"
-			]
-		},
-		{
-			"path": "html/elements/meter/low-exceeds-max-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-0ea2edc05d4e"
-			]
-		},
-		{
-			"path": "html/elements/meter/max-below-zero-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-06d8b4ca97d0",
-				"nv-a373b730b37c"
-			]
-		},
-		{
-			"path": "html/elements/meter/min-exceeds-max-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-42ea3699c36e",
-				"nv-cc81f2c35d98",
-				"nv-8df6c3f511e7"
-			]
-		},
-		{
-			"path": "html/elements/meter/min-exceeds-one-no-max-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-8bdfc0bf20ab",
-				"nv-ad4a36e8c36d"
-			]
-		},
-		{
-			"path": "html/elements/meter/min-exceeds-value-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-b2e77b2ca402"
-			]
-		},
-		{
-			"path": "html/elements/meter/optimum-below-min-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-abea8bde3e90"
-			]
-		},
-		{
-			"path": "html/elements/meter/optimum-exceeds-max-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-d88edf520c77"
-			]
-		},
-		{
-			"path": "html/elements/meter/value-below-min-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-d4d069f89f3d"
-			]
-		},
-		{
-			"path": "html/elements/meter/value-below-zero-no-min-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-2aa240d32228"
-			]
-		},
-		{
-			"path": "html/elements/meter/value-exceeds-max-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-331806de4adb"
 			]
 		},
 		{
@@ -7720,20 +7505,6 @@
 			"category": "invalid-attr",
 			"nuMessageIds": [
 				"nv-cf9799a27fc6"
-			]
-		},
-		{
-			"path": "html/elements/select/multiple-selected-without-multiple-attr-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-62acf4b0abcf"
-			]
-		},
-		{
-			"path": "html/elements/select/multiple-selected-without-multiple-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-6943133643e7"
 			]
 		},
 		{

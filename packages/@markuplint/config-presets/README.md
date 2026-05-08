@@ -65,6 +65,12 @@ Require the `datetime` attribute if the content of the `time` element is invalid
 Specify required attr| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [Enforce WHATWG constraints between `srcset`, `sizes`, and `loading` attributes](https://html.spec.whatwg.org/multipage/images.html#srcset-attributes)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [Validate link type keywords](https://html.spec.whatwg.org/multipage/links.html#linkTypes)|Validates that `rel` attribute keywords are allowed on the given element and context (e.g., body-ok for `<link>` inside `<body>`).|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
+[`<input type="button">` with empty `value`](https://html.spec.whatwg.org/multipage/input.html#button-state-(type=button))|Mirrors nu-validator's hardcoded assertion. HTML LS itself does not state this verbatim; see the rule's README for the precise sourcing.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
+[`<input type="file">` value must be empty when specified](https://html.spec.whatwg.org/multipage/input.html#file-upload-state-(type=file))| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
+[`<label>` may contain at most one form-control descendant](https://html.spec.whatwg.org/multipage/forms.html#the-label-element)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
+[`<map>` `id` must equal `name` when both are specified](https://html.spec.whatwg.org/multipage/image-maps.html#the-map-element)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
+[`<meter>` attribute inequalities (min ≤ value ≤ max etc.)](https://html.spec.whatwg.org/multipage/form-elements.html#the-meter-element)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
+[Single `<select>` allows at most one selected `<option>`](https://html.spec.whatwg.org/multipage/form-elements.html#the-select-element)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [Specify `charset=UTF-8`](https://html.spec.whatwg.org/multipage/semantics.html#charset)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [No duplicate meta charset](https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-charset)|There must not be more than one meta element with a charset attribute per document.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [No duplicate meta description](https://html.spec.whatwg.org/multipage/semantics.html#standard-metadata-names)|There must not be more than one meta element where the name attribute value is an ASCII case-insensitive match for "description" per document.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|

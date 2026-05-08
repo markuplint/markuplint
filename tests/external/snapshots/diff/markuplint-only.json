@@ -8,10 +8,31 @@
 			]
 		},
 		{
+			"path": "html-aria/misc/aria-disabled-true-on-disabled-haswarn.html",
+			"category": "aria",
+			"ruleIds": [
+				"wai-aria-implicit-props"
+			]
+		},
+		{
 			"path": "html-aria/misc/aria-haspopup-on-datalist-input-haswarn.html",
 			"category": "aria",
 			"ruleIds": [
 				"wai-aria-disallowed-props"
+			]
+		},
+		{
+			"path": "html-aria/misc/aria-labelledby-broken-idref-novalid.html",
+			"category": "aria",
+			"ruleIds": [
+				"wai-aria-disallowed-props"
+			]
+		},
+		{
+			"path": "html-aria/misc/aria-owns-broken-idref-novalid.html",
+			"category": "aria",
+			"ruleIds": [
+				"wai-aria-required-parent-role"
 			]
 		},
 		{
@@ -972,13 +993,6 @@
 			"category": "aria",
 			"ruleIds": [
 				"wai-aria-disallowed-props"
-			]
-		},
-		{
-			"path": "html-aria/setsize-posinset-level/testcase-769.html",
-			"category": "aria",
-			"ruleIds": [
-				"wai-aria-required-parent-role"
 			]
 		},
 		{

@@ -73,6 +73,14 @@ test('default-rules', () => {
 			category: 'style',
 			defaultValue: false,
 		},
+		'input-button-non-empty-value': {
+			category: 'validation',
+			defaultValue: true,
+		},
+		'input-file-empty-value': {
+			category: 'validation',
+			defaultValue: true,
+		},
 		'invalid-attr': {
 			category: 'validation',
 			defaultValue: true,
@@ -81,11 +89,23 @@ test('default-rules', () => {
 			category: 'a11y',
 			defaultValue: false,
 		},
+		'label-no-multiple-controls': {
+			category: 'validation',
+			defaultValue: true,
+		},
 		'landmark-roles': {
 			category: 'a11y',
 			defaultValue: false,
 		},
 		'link-types': {
+			category: 'validation',
+			defaultValue: true,
+		},
+		'map-id-name-match': {
+			category: 'validation',
+			defaultValue: true,
+		},
+		'meter-value-bounds': {
 			category: 'validation',
 			defaultValue: true,
 		},
@@ -124,6 +144,10 @@ test('default-rules', () => {
 		'no-empty-palpable-content': {
 			category: 'validation',
 			defaultValue: false,
+		},
+		'no-extra-selected-options': {
+			category: 'validation',
+			defaultValue: true,
 		},
 		'no-hard-code-id': {
 			category: 'maintainability',

@@ -1,0 +1,29 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"definitions": {
+		"value": {
+			"type": "boolean",
+			"description": "Require that, when both attributes are present on a map element, the id attribute has the same value as the name attribute.",
+			"description:ja": "map要素にidとnameの両方が指定されているとき、両者の値が一致することを要求します。"
+		}
+	},
+	"oneOf": [
+		{
+			"$ref": "#/definitions/value"
+		},
+		{
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"value": { "$ref": "#/definitions/value" },
+				"severity": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/ml-config/schema.json#/definitions/severity",
+					"default": "error"
+				},
+				"reason": {
+					"type": "string"
+				}
+			}
+		}
+	]
+}
