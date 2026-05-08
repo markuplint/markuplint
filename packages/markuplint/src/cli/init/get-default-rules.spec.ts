@@ -73,6 +73,10 @@ test('default-rules', () => {
 			category: 'style',
 			defaultValue: false,
 		},
+		'input-file-empty-value': {
+			category: 'validation',
+			defaultValue: true,
+		},
 		'invalid-attr': {
 			category: 'validation',
 			defaultValue: true,
