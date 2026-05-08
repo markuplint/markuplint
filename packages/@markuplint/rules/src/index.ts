@@ -26,6 +26,7 @@ import HeadElementOrder from './head-element-order/index.js';
 import HeadingLevels from './heading-levels/index.js';
 import IdDuplication from './id-duplication/index.js';
 import IneffectiveAttr from './ineffective-attr/index.js';
+import InputButtonNonEmptyValue from './input-button-non-empty-value/index.js';
 import InputFileEmptyValue from './input-file-empty-value/index.js';
 import InvalidAttr from './invalid-attr/index.js';
 import LabelHasControl from './label-has-control/index.js';
@@ -101,6 +102,7 @@ const rules = {
 	'heading-levels': HeadingLevels,
 	'id-duplication': IdDuplication,
 	'ineffective-attr': IneffectiveAttr,
+	'input-button-non-empty-value': InputButtonNonEmptyValue,
 	'input-file-empty-value': InputFileEmptyValue,
 	'invalid-attr': InvalidAttr,
 	'label-has-control': LabelHasControl,

@@ -57,6 +57,9 @@
 				"ineffective-attr": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/ineffective-attr/schema.json"
 				},
+				"input-button-non-empty-value": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/input-button-non-empty-value/schema.json"
+				},
 				"input-file-empty-value": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/input-file-empty-value/schema.json"
 				},

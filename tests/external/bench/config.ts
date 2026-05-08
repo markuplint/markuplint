@@ -23,6 +23,7 @@ export const benchmarkConfig: Config = {
 	rules: {
 		'permitted-contents': true,
 		'required-attr': true,
+		'input-button-non-empty-value': true,
 		'input-file-empty-value': true,
 		'invalid-attr': true,
 		'label-no-multiple-controls': true,

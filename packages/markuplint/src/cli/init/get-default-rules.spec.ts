@@ -73,6 +73,10 @@ test('default-rules', () => {
 			category: 'style',
 			defaultValue: false,
 		},
+		'input-button-non-empty-value': {
+			category: 'validation',
+			defaultValue: true,
+		},
 		'input-file-empty-value': {
 			category: 'validation',
 			defaultValue: true,
