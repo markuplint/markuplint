@@ -31,6 +31,7 @@ export const benchmarkConfig: Config = {
 		'no-duplicate-visible-main': true,
 		'placeholder-label-option': true,
 		'link-types': { options: { allowMicroformats: true } },
+		'map-id-name-match': true,
 		'meter-value-bounds': true,
 		'no-extra-selected-options': true,
 		'no-orphaned-end-tag': true,

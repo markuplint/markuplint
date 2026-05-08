@@ -69,6 +69,9 @@
 				"link-types": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/link-types/schema.json"
 				},
+				"map-id-name-match": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/map-id-name-match/schema.json"
+				},
 				"meter-value-bounds": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/meter-value-bounds/schema.json"
 				},

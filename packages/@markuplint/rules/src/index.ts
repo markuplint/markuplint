@@ -30,6 +30,7 @@ import InvalidAttr from './invalid-attr/index.js';
 import LabelHasControl from './label-has-control/index.js';
 import LandmarkRoles from './landmark-roles/index.js';
 import LinkTypes from './link-types/index.js';
+import MapIdNameMatch from './map-id-name-match/index.js';
 import MeterValueBounds from './meter-value-bounds/index.js';
 import NeighborPopovers from './neighbor-popovers/index.js';
 import NoAmbiguousNavigableTargetNames from './no-ambiguous-navigable-target-names/index.js';
@@ -102,6 +103,7 @@ const rules = {
 	'label-has-control': LabelHasControl,
 	'landmark-roles': LandmarkRoles,
 	'link-types': LinkTypes,
+	'map-id-name-match': MapIdNameMatch,
 	'meter-value-bounds': MeterValueBounds,
 	'neighbor-popovers': NeighborPopovers,
 	'no-ambiguous-navigable-target-names': NoAmbiguousNavigableTargetNames,
