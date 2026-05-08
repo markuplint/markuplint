@@ -65,6 +65,7 @@ Require the `datetime` attribute if the content of the `time` element is invalid
 Specify required attr| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [Enforce WHATWG constraints between `srcset`, `sizes`, and `loading` attributes](https://html.spec.whatwg.org/multipage/images.html#srcset-attributes)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [Validate link type keywords](https://html.spec.whatwg.org/multipage/links.html#linkTypes)|Validates that `rel` attribute keywords are allowed on the given element and context (e.g., body-ok for `<link>` inside `<body>`).|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
+[Form-associated `form` attribute must reference a form element](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fae-form)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [`<input type="button">` with empty `value`](https://html.spec.whatwg.org/multipage/input.html#button-state-(type=button))|Mirrors nu-validator's hardcoded assertion. HTML LS itself does not state this verbatim; see the rule's README for the precise sourcing.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [`<input type="file">` value must be empty when specified](https://html.spec.whatwg.org/multipage/input.html#file-upload-state-(type=file))| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [`<label>` may contain at most one form-control descendant](https://html.spec.whatwg.org/multipage/forms.html#the-label-element)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
