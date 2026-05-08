@@ -89,6 +89,10 @@ test('default-rules', () => {
 			category: 'validation',
 			defaultValue: true,
 		},
+		'meter-value-bounds': {
+			category: 'validation',
+			defaultValue: true,
+		},
 		'neighbor-popovers': {
 			category: 'a11y',
 			defaultValue: true,
