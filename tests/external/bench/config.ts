@@ -42,6 +42,10 @@ export const benchmarkConfig: Config = {
 		'wai-aria-permitted-roles': true,
 		'wai-aria-required-props': true,
 		'wai-aria-disallowed-props': true,
+		// HTML LS / ARIA in HTML conformance: native HTML attributes MUST be used in preference
+		// to their ARIA equivalents. The rule defaults to severity 'warning' for ergonomic reasons;
+		// the bench treats it as a hard error to align with ARIA-in-HTML §6.
+		'wai-aria-implicit-props': { severity: 'error' },
 		'wai-aria-value': true,
 		'wai-aria-required-owned-elements': true,
 		'wai-aria-required-parent-role': true,
