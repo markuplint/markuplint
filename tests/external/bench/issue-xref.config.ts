@@ -61,12 +61,6 @@ export const xrefMappings: readonly XrefMapping[] = [
 	// === 2 次群: bench では裏取れない Issue（ステルブロック） ===
 	{
 		kind: 'secondary',
-		issue: 3740,
-		reason:
-			'Pretender (custom-element-as-HTML) is a markuplint-specific feature; the nu-validator fixture suite has no equivalent. Track via markuplint unit tests.',
-	},
-	{
-		kind: 'secondary',
 		issue: 3675,
 		reason:
 			'Internal merge-order blocker; not a benchmark claim. Resolves once dev merges into the branch and the SRIHash type comes along.',
@@ -103,14 +97,5 @@ export const xrefMappings: readonly XrefMapping[] = [
 		issue: 460,
 		reason:
 			'`permitted-content` on elements containing mutable (preprocessor) children is a markuplint-internal concern; the nu-validator suite has no fixtures with mutable placeholders.',
-	},
-
-	// === Umbrella ===
-	// `primaryIssues` omitted → auto-derived from the primaries above.
-	// Adding a primary mapping automatically includes it in the roll-up;
-	// no need to edit two places in lock-step.
-	{
-		kind: 'umbrella',
-		issue: 3684,
 	},
 ];

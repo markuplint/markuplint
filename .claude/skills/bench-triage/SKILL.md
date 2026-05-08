@@ -1,0 +1,239 @@
+---
+name: bench-triage
+metadata:
+  internal: true
+description: >
+  Triage one nu-only fixture from tests/external/snapshots/diff/nu-only.json
+  by reading the spec, then drive its verdict to match-error, match-clean,
+  or nu-over by either fixing markuplint or recording an excluded-ids.json
+  entry. The core operation of the nu-validator coverage benchmark.
+  Use when reducing the nu-only backlog, when checking a coverage-claim
+  ("markuplint misses X" / "over-detects Y") against the bench, or when
+  classifying a specific fixture.
+  Trigger keywords: nu-only, ml-only, coverage gap, bench triage,
+  verdict, match-error, match-clean, nu-over, excluded-ids,
+  declare nu over-detection, claim audit, audit fixture,
+  reduce nu-only, mark-up valid per spec, spec-cited exclusion.
+---
+
+# nu-validator Bench Triage Skill
+
+Take one nu-only fixture and drive its verdict to a confirmed state.
+Repeat to reduce the nu-only backlog.
+
+Prerequisite: the bench must be runnable on this machine. If commands
+in this skill fail with "no snapshots found" / Docker errors, run
+the `bench-setup` skill first.
+
+## Verdict definitions
+
+| Verdict | Meaning |
+| --- | --- |
+| `match-error` | Both tools detected a violation. |
+| `match-clean` | Neither detected a violation (and no nu errors were excluded). |
+| `ml-only` | Only markuplint detected. |
+| `nu-only` | Only nu-validator detected, and `excluded-ids.json` does not cover the messages. |
+| `nu-over` | Only nu-validator detected, but every message is covered by `excluded-ids.json`. |
+
+`nu-only` is what this skill drives. `ml-only` is informational and
+not this skill's target — but if you need to understand it, see
+"Note: ml-only readings" at the end.
+
+## Step 1: Pick a fixture
+
+Slice `coverage.json` by path or category, or pull from
+`nu-only.json` directly:
+
+```sh
+node -e '
+const j = require("./tests/external/snapshots/diff/nu-only.json");
+j.entries.slice(0, 20).forEach(e => console.log(e.category.padEnd(15), e.path));
+'
+```
+
+When auditing a coverage claim instead, slice by the claim's pattern:
+
+```sh
+node -e '
+const j = require("./tests/external/snapshots/diff/coverage.json");
+j.entries
+  .filter(e => /popover/i.test(e.path))
+  .forEach(e => console.log(e.verdict.padEnd(13), e.path));
+'
+```
+
+## Step 2: Read nu-validator messages for the fixture
+
+Raw `snapshots/nu-validator/**` is gitignored — regenerate with
+`yarn bench:update --target nu` if missing. Each message has a
+stable `id` (`nv-<hex12>`, optionally `-N` on collisions); that's
+the key for `excluded-ids.json`.
+
+```sh
+node -e '
+const p = "tests/external/snapshots/nu-validator/<path>.json";
+require(p).nuValidator.messages.forEach(m =>
+  console.log(m.id, m.type, m.message.slice(0, 80))
+);'
+```
+
+## Step 3: Read markuplint output for the fixture
+
+```sh
+node -e '
+const p = "tests/external/snapshots/markuplint/<path>.json";
+require(p).markuplint.violations.forEach(v =>
+  console.log(v.severity, v.ruleId, v.line + ":" + v.col, v.message.slice(0, 80))
+);'
+```
+
+For a `nu-only` fixture, expect zero violations here. If
+markuplint already detected something, the verdict computation may
+be stale — re-run `yarn bench:compare`.
+
+## Step 4: Read the spec
+
+Open the raw HTML at `tests/external/validator/tests/<path>` and
+identify the relevant spec paragraph. Authoritative sources:
+
+- HTML LS — <https://html.spec.whatwg.org/multipage/>
+- DOM LS — <https://dom.spec.whatwg.org/>
+- URL LS — <https://url.spec.whatwg.org/>
+- WAI-ARIA 1.3 — <https://www.w3.org/TR/wai-aria-1.3/>
+- ARIA in HTML — <https://w3c.github.io/html-aria/>
+- Microdata (HTML LS §5.7) — <https://html.spec.whatwg.org/multipage/microdata.html>
+
+MDN is not authoritative — quote WHATWG / W3C when they disagree.
+Living standards change; recent normative revisions often explain
+why nu (slow) and markuplint (tracks `@markuplint/html-spec`) drift.
+
+Quote the exact sentence verbatim into the issue / PR /
+`excluded-ids.json#reason` — never a paraphrase.
+
+## Step 5: Decide and act
+
+For a `nu-only` fixture, the spec verdict gives a binary action:
+
+| Spec on the markup | Conclusion | Action |
+| --- | --- | --- |
+| **Forbidden** | nu correct, markuplint has a coverage gap. | Add or extend a markuplint rule. Open an Issue if the work is non-trivial. After fix, `yarn bench:update:ml` — fixture should flip to `match-error`. |
+| **Permitted** | nu over-detecting. | Record in `excluded-ids.json` (per-ID or pattern; see below). After edit, `yarn bench:compare` — fixture should flip to `nu-over`. |
+| **Ambiguous / under discussion** | Spec issue or PR ongoing. | Note the spec-tracker URL in `snapshots/diff/summary.md` follow-up. Do not silently close. |
+
+When the spec disagrees with **both** tools (recent normative
+revision neither has adopted), open one Issue per tool but pursue
+only the markuplint side from this repo — nu upstream reports are
+not part of this project's workflow.
+
+### How to record nu over-detection
+
+```jsonc
+{
+  "entries": [
+    {
+      "id": "nv-7f3c9a2b0e5d",
+      "path": "html-aria/.../example-novalid.html",
+      "nuMessage": "Attribute aria-expanded not allowed on element ...",
+      "reason": "ARIA 1.2 permits aria-expanded on this role; nu-validator's schema is stale.",
+      "addedAt": "<YYYY-MM-DD>",
+      "addedBy": "<github-handle>"
+    }
+  ]
+}
+```
+
+The verdict flips to `nu-over` only when *every* active nu message
+on the fixture is covered. Partial coverage stays `nu-only`.
+
+When the same diagnostic hits many fixtures, use `patterns[]`
+(message-substring) instead of dozens of per-`id` entries:
+
+```jsonc
+{
+  "patterns": [
+    {
+      "messageContains": "Fragment is not allowed for data: URIs",
+      "reason": "WHATWG URL LS supersedes RFC 2397; fragments ARE part of a data: URL record.",
+      "specUrl": "https://url.spec.whatwg.org/#url-parsing",
+      "addedAt": "<YYYY-MM-DD>",
+      "addedBy": "<github-handle>"
+    }
+  ]
+}
+```
+
+`specUrl` is required on patterns — they are the most load-bearing
+exclusion. If you cannot cite a paragraph, use a per-`id` entry.
+
+After editing `excluded-ids.json`:
+
+```
+yarn bench:compare
+yarn bench:generate-spec
+yarn bench:report
+```
+
+## Step 6: Pin against `--concurrency 1` before filing
+
+nu-validator is non-deterministic under parallel load. Before
+landing a coverage Issue or an `excluded-ids.json` entry, confirm
+the verdict survives a deterministic run:
+
+```
+yarn bench:update --target nu --concurrency 1 --filter '<the/fixture>'
+yarn bench:compare
+```
+
+If the verdict flipped, the original observation was parallel-run
+flicker, not a real signal.
+
+## Audit log of message-substring decisions
+
+Each row is a conclusion reached by reading the cited paragraph
+directly. Do not add a row without a verbatim spec quote and source URL.
+
+| Message substring | Verdict | Source |
+| --- | --- | --- |
+| `Fragment is not allowed for data: URIs according to RFC 2397` | **nu over-detection** — excluded in `patterns[]` | URL LS §4.3: a `valid URL string` may end in a fragment for any scheme. |
+| `must be less than or equal to` (meter / progress / input min/max) | **nu correct** — NOT excluded | HTML LS §4.10.14: "minimum ≤ value ≤ maximum; minimum ≤ low ≤ maximum (if low is specified); …" — explicit `must`. |
+| `URL includes credentials` | **nu correct** — NOT excluded | URL LS §1.1 `invalid-credentials`. HTML LS requires a valid URL string, so a URL validation error is a conformance error. |
+| `Expected a slash` (special-scheme URLs missing `//`) | **nu correct** — NOT excluded | URL LS `special-scheme-missing-following-solidus`. |
+| `Backslash used as path segment delimiter` | **nu correct** — NOT excluded | URL LS `invalid-reverse-solidus`. |
+| `Illegal character in …` (path / fragment / domain / port) | **nu correct** — NOT excluded | URL LS `invalid-URL-unit` covers non-URL code points and malformed percent-encoding. |
+| `Windows drive letter uses …` | **nu correct** — NOT excluded | URL LS `file-invalid-Windows-drive-letter` / `file-invalid-Windows-drive-letter-host`. |
+| `Expected a space character` / `Expected an unquoted URL` (`<meta http-equiv="refresh">` content) | **nu over-detection** — excluded per-ID in `entries[]` | HTML LS §4.2.5.3 Refresh grammar: clause 3.2 makes whitespace after `;`/`,` optional; clause 3.3 alt 2 accepts any valid URL. nu's wording overlaps with legitimate refresh errors, so substring-match is unsafe — per-ID. |
+
+The remaining `nu-only` bulk (URL parsing) is **not** for exclusion;
+it represents real markuplint gaps for future coverage work. Any
+substring not in the table is **unclassified** — do not exclude
+without first adding a row with a spec quote.
+
+## Note: ml-only readings (informational)
+
+When you encounter `ml-only` while triaging, classify by both spec
+verdict and markuplint rule intent:
+
+- Rule intends strict spec-conformance + spec **forbids** the markup
+  → markuplint correct, nu lax. Informational only (no upstream nu
+  reports from this repo).
+- Rule intends strict spec-conformance + spec **permits** the markup
+  → markuplint false positive. Fix the rule.
+- Rule intends to be stricter than the spec by design (best-practice
+  / anti-pattern, e.g. flagging spec-permitted but discouraged
+  markup) → working as intended. nu just doesn't share the stance.
+  No action.
+
+The bench config (`bench/config.ts`) curates a rule subset that maps
+onto nu-validator capability. It is not guaranteed to be strict
+spec-conformance only; some enabled rules legitimately go beyond the
+spec letter (e.g. `link-types` defaults to a narrower rel set than
+HTML LS registers). Always read the rule's documentation /
+implementation before classifying an `ml-only`.
+
+## Concurrency caveat
+
+Parallel nu runs flicker on aria-owns and similar fixtures (state
+shared across requests in nu's runtime). File-level verdict counts
+stay stable across runs; individual messages do not. Use
+`--concurrency 1` whenever you need a single fixture's output to
+reproduce reliably.
