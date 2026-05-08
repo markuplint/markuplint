@@ -863,3 +863,23 @@ test('[required-attr-valid-004] bdo requires dir attribute', async () => {
 	expect((await mlRuleTest(rule, '<bdo dir="ltr">text</bdo>')).violations).toStrictEqual([]);
 	expect((await mlRuleTest(rule, '<bdo dir="rtl">text</bdo>')).violations).toStrictEqual([]);
 });
+
+test('[required-attr-invalid-012] link rel=preload requires as attribute', async () => {
+	// HTML LS link-type-preload §4.6.7.13.1: "The as attribute must be specified."
+	// modulepreload makes `as` optional; the conditional `required` selector limits to preload.
+	const { violations } = await mlRuleTest(rule, '<link rel="preload" href="style.css">');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: 'The "link" element expects the "as" attribute',
+			raw: '<link rel="preload" href="style.css">',
+		},
+	]);
+});
+
+test('[required-attr-valid-005] link rel=preload with as, rel=modulepreload without as', async () => {
+	expect((await mlRuleTest(rule, '<link rel="preload" href="style.css" as="style">')).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<link rel="modulepreload" href="m.js">')).violations).toStrictEqual([]);
+});
