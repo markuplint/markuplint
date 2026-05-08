@@ -22,6 +22,7 @@ import DeprecatedElement from './deprecated-element/index.js';
 import DisallowedElement from './disallowed-element/index.js';
 import Doctype from './doctype/index.js';
 import EndTag from './end-tag/index.js';
+import FormAttrReferencesForm from './form-attr-references-form/index.js';
 import HeadElementOrder from './head-element-order/index.js';
 import HeadingLevels from './heading-levels/index.js';
 import IdDuplication from './id-duplication/index.js';
@@ -98,6 +99,7 @@ const rules = {
 	'disallowed-element': DisallowedElement,
 	doctype: Doctype,
 	'end-tag': EndTag,
+	'form-attr-references-form': FormAttrReferencesForm,
 	'head-element-order': HeadElementOrder,
 	'heading-levels': HeadingLevels,
 	'id-duplication': IdDuplication,

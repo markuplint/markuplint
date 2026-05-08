@@ -57,6 +57,10 @@ test('default-rules', () => {
 			category: 'style',
 			defaultValue: false,
 		},
+		'form-attr-references-form': {
+			category: 'validation',
+			defaultValue: true,
+		},
 		'head-element-order': {
 			category: 'style',
 			defaultValue: false,
