@@ -1707,9 +1707,9 @@
 		{
 			"path": "html-aria/misc/aria-owns-broken-idref-novalid.html",
 			"category": "aria",
-			"nu": "clean",
+			"nu": "error",
 			"ml": "error",
-			"verdict": "ml-only",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -13804,8 +13804,8 @@
 			"path": "html/assertions/link-preload-missing-as-novalid.html",
 			"category": "required-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{

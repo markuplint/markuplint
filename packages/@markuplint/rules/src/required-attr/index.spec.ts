@@ -863,3 +863,48 @@ test('[required-attr-valid-004] bdo requires dir attribute', async () => {
 	expect((await mlRuleTest(rule, '<bdo dir="ltr">text</bdo>')).violations).toStrictEqual([]);
 	expect((await mlRuleTest(rule, '<bdo dir="rtl">text</bdo>')).violations).toStrictEqual([]);
 });
+
+test('[required-attr-invalid-012] link rel=preload requires as attribute', async () => {
+	// HTML LS link-type-preload: "The as attribute must be specified."
+	// modulepreload makes `as` optional; the conditional `required` selector limits to preload.
+	// Mirrors tests/external/validator/tests/html/assertions/link-preload-missing-as-novalid.html
+	// — spec.link.jsonc edit must keep this fixture flipped to match-error.
+	const { violations } = await mlRuleTest(rule, '<link rel="preload" href="style.css">');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: 'The "link" element expects the "as" attribute',
+			raw: '<link rel="preload" href="style.css">',
+		},
+	]);
+});
+
+test('[required-attr-valid-005] link rel=preload with as; modulepreload/unrelated rel without as', async () => {
+	expect((await mlRuleTest(rule, '<link rel="preload" href="style.css" as="style">')).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<link rel="modulepreload" href="m.js">')).violations).toStrictEqual([]);
+	// guard: the conditional `required` must NOT bleed onto unrelated rel values
+	expect((await mlRuleTest(rule, '<link rel="stylesheet" href="x.css">')).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<link rel="icon" href="x.ico">')).violations).toStrictEqual([]);
+});
+
+test('[required-attr-invalid-013] link with multi-keyword rel containing preload still requires as', async () => {
+	// HTML LS allows `rel` to be a token list. The `[rel~="preload" i]` selector matches when
+	// preload appears anywhere in the list, so multi-keyword rel must still trigger required-as.
+	const cases = [
+		'<link rel="preload alternate" href="x.css">',
+		'<link rel="alternate preload" href="x.css">',
+		'<link rel="preload modulepreload" href="x">',
+	];
+	for (const src of cases) {
+		const { violations } = await mlRuleTest(rule, src);
+		expect(violations.some(v => v.message.includes('the "as" attribute'))).toBe(true);
+	}
+});
+
+test('[required-attr-invalid-014] link rel preload match is case-insensitive', async () => {
+	// The `i` flag on the attribute selector makes the keyword match case-insensitive.
+	expect((await mlRuleTest(rule, '<link rel="PRELOAD" href="x.css">')).violations.length).toBeGreaterThan(0);
+	expect((await mlRuleTest(rule, '<link rel="Preload" href="x.css">')).violations.length).toBeGreaterThan(0);
+});

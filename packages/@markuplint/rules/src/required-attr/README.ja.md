@@ -8,6 +8,8 @@ description: 設定された属性もしくは仕様上必須となっている�
 
 [HTML Living Standard](https://momdo.github.io/html/)を基準として[MDN Web docs](https://developer.mozilla.org/ja/docs/Web/HTML)から最新情報を確認しています。 [`@markuplint/html-spec`](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/html-spec/src)に設定値を持っています。
 
+属性によっては条件付きで必須となります（たとえば `<link rel="preload">` には `as` 属性が必須ですが、`<link rel="modulepreload">` では省略可能）。これらの条件付きルールは各要素の spec ファイル（[`@markuplint/html-spec/src/spec.<element>.jsonc`](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/html-spec/src)）に定義されています。`"required":` で検索すると、どの属性がどの条件で必須となるかが確認できます。
+
 `<img>` 要素の `src` 属性は[HTML Living Standard](https://momdo.github.io/html/)では必須となります。
 
 <!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->

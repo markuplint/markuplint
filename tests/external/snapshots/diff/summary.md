@@ -1,17 +1,17 @@
 # nu-validator Benchmark Summary
 
-- generated: 2026-05-08T07:14:49.330Z
+- generated: 2026-05-08T14:09:44.796Z
 - submodule: `142931395412c00434ffb40a14d65992efd17aa8`
-- nu-validator: `ghcr.io/validator/validator@sha256:1b4aa4233d684309a74d674f83306af06d84945e51fe00e75cd2c7852e12661c`
+- nu-validator: `ghcr.io/validator/validator@sha256:55c6ffb738db8b27ceef51a2320f0b9232266fa7eeecf42a0dc38e0c92edecfd`
 - markuplint: `5.0.0-rc.4`
 - node: `24.14.1`
 
 ## Totals
 
 - files: **5442**
-- match-error: **2118** (both tools flagged)
+- match-error: **2120** (both tools flagged)
 - match-clean: **923** (neither flagged)
-- nu-only: **1396** (only nu-validator flagged; markuplint coverage candidates — open a markuplint issue after a spec read)
+- nu-only: **1395** (only nu-validator flagged; markuplint coverage candidates — open a markuplint issue after a spec read)
 - nu-over: **28** (nu-validator errors fully covered by spec-backed excluded-ids — confirmed over-detection)
 - overall match rate: **55.9%**
 - excluded-ids: 3 entries, 1 pattern(s)
@@ -20,7 +20,7 @@
 
 | Category | Files | Match rate | match-error | match-clean | ml-only | nu-only | nu-over |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| aria | 780 | 79.2% | 163 | 455 | 142 | 20 | 0 |
+| aria | 780 | 79.4% | 164 | 455 | 141 | 20 | 0 |
 | assertions | 40 | 100.0% | 39 | 1 | 0 | 0 | 0 |
 | content-model | 98 | 98.0% | 48 | 48 | 0 | 2 | 0 |
 | data-types | 56 | 71.4% | 35 | 5 | 1 | 15 | 0 |
@@ -28,12 +28,12 @@
 | global-attr | 57 | 77.2% | 24 | 20 | 8 | 5 | 0 |
 | id-duplication | 1 | 100.0% | 1 | 0 | 0 | 0 | 0 |
 | invalid-attr | 3086 | 58.7% | 1579 | 231 | 60 | 1190 | 26 |
-| required-attr | 5 | 80.0% | 4 | 0 | 0 | 1 | 0 |
+| required-attr | 5 | 100.0% | 5 | 0 | 0 | 0 | 0 |
 | uncategorized | 1307 | 28.8% | 214 | 163 | 765 | 163 | 2 |
 
 ## Informational: ml-only
 
-**977** fixtures are flagged only by markuplint. This project does not pursue upstream nu-validator reports, so those fixtures feed a narrower audit: confirm with the spec, and if markuplint is the wrong one, fix the rule. The full list lives in `snapshots/diff/markuplint-only.json`.
+**976** fixtures are flagged only by markuplint. This project does not pursue upstream nu-validator reports, so those fixtures feed a narrower audit: confirm with the spec, and if markuplint is the wrong one, fix the rule. The full list lives in `snapshots/diff/markuplint-only.json`.
 
 ### Top ml-only rules
 
