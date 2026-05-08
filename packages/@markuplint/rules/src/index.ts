@@ -40,6 +40,7 @@ import NoDuplicateAutofocus from './no-duplicate-autofocus/index.js';
 import NoDuplicateDt from './no-duplicate-dt/index.js';
 import NoDuplicateVisibleMain from './no-duplicate-visible-main/index.js';
 import NoEmptyPalpableContent from './no-empty-palpable-content/index.js';
+import NoExtraSelectedOptions from './no-extra-selected-options/index.js';
 import NoHardCodeId from './no-hard-code-id/index.js';
 import NoOrphanedEndTag from './no-orphaned-end-tag/index.js';
 import NoReferToNonExistentId from './no-refer-to-non-existent-id/index.js';
@@ -111,6 +112,7 @@ const rules = {
 	'no-duplicate-dt': NoDuplicateDt,
 	'no-duplicate-visible-main': NoDuplicateVisibleMain,
 	'no-empty-palpable-content': NoEmptyPalpableContent,
+	'no-extra-selected-options': NoExtraSelectedOptions,
 	'no-hard-code-id': NoHardCodeId,
 	'no-orphaned-end-tag': NoOrphanedEndTag,
 	'no-refer-to-non-existent-id': NoReferToNonExistentId,

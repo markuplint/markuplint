@@ -32,6 +32,7 @@ export const benchmarkConfig: Config = {
 		'placeholder-label-option': true,
 		'link-types': { options: { allowMicroformats: true } },
 		'meter-value-bounds': true,
+		'no-extra-selected-options': true,
 		'no-orphaned-end-tag': true,
 		'srcset-sizes-constraint': true,
 		'wai-aria-non-existent-role': true,

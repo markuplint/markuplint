@@ -129,6 +129,10 @@ test('default-rules', () => {
 			category: 'validation',
 			defaultValue: false,
 		},
+		'no-extra-selected-options': {
+			category: 'validation',
+			defaultValue: true,
+		},
 		'no-hard-code-id': {
 			category: 'maintainability',
 			defaultValue: false,
