@@ -8467,13 +8467,6 @@
 			]
 		},
 		{
-			"path": "html/headings/skip-level-h1-to-h3-novalid.html",
-			"category": "uncategorized",
-			"nuMessageIds": [
-				"nv-08d98f1ea20b"
-			]
-		},
-		{
 			"path": "html/media-queries/002-novalid.html",
 			"category": "uncategorized",
 			"nuMessageIds": [
@@ -9084,13 +9077,6 @@
 			]
 		},
 		{
-			"path": "html/parser/almost-standards-doctype-novalid.html",
-			"category": "uncategorized",
-			"nuMessageIds": [
-				"nv-cebf608a36a7"
-			]
-		},
-		{
 			"path": "html/parser/astral-nonchar-in-stream-novalid.html",
 			"category": "uncategorized",
 			"nuMessageIds": [
@@ -9180,13 +9166,6 @@
 			"category": "uncategorized",
 			"nuMessageIds": [
 				"nv-7dab713d74db"
-			]
-		},
-		{
-			"path": "html/parser/duplicate-attr-novalid.html",
-			"category": "uncategorized",
-			"nuMessageIds": [
-				"nv-3b456b4466a7"
 			]
 		},
 		{
@@ -9291,13 +9270,6 @@
 			]
 		},
 		{
-			"path": "html/parser/legacy-doctype-novalid.html",
-			"category": "uncategorized",
-			"nuMessageIds": [
-				"nv-9866afb7bd80"
-			]
-		},
-		{
 			"path": "html/parser/lt-at-start-unquoted-attr-novalid.html",
 			"category": "uncategorized",
 			"nuMessageIds": [
@@ -9356,34 +9328,10 @@
 			]
 		},
 		{
-			"path": "html/parser/no-space-after-public-novalid.html",
-			"category": "uncategorized",
-			"nuMessageIds": [
-				"nv-0ecb6e6ddebd",
-				"nv-2e79050507ce"
-			]
-		},
-		{
-			"path": "html/parser/no-space-after-system-novalid.html",
-			"category": "uncategorized",
-			"nuMessageIds": [
-				"nv-ae153542275f",
-				"nv-3cabe8ffcd64"
-			]
-		},
-		{
 			"path": "html/parser/no-space-between-attrs-novalid.html",
 			"category": "uncategorized",
 			"nuMessageIds": [
 				"nv-9833a2af8fad"
-			]
-		},
-		{
-			"path": "html/parser/no-space-between-public-system-novalid.html",
-			"category": "uncategorized",
-			"nuMessageIds": [
-				"nv-43fbdf858426",
-				"nv-500ef706f067"
 			]
 		},
 		{
@@ -9428,13 +9376,6 @@
 			]
 		},
 		{
-			"path": "html/parser/quirky-doctype-novalid.html",
-			"category": "uncategorized",
-			"nuMessageIds": [
-				"nv-c20232cf2d03"
-			]
-		},
-		{
 			"path": "html/parser/range-charref-novalid.html",
 			"category": "uncategorized",
 			"nuMessageIds": [
@@ -9461,13 +9402,6 @@
 			"category": "uncategorized",
 			"nuMessageIds": [
 				"nv-11cdbe78de88"
-			]
-		},
-		{
-			"path": "html/parser/start-tag-without-doctype-novalid.html",
-			"category": "uncategorized",
-			"nuMessageIds": [
-				"nv-dafdbe7f46c7"
 			]
 		},
 		{
