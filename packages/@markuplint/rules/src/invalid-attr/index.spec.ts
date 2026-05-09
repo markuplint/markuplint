@@ -2743,3 +2743,90 @@ describe('bdo[dir] enum override (HTML LS §4.5.5)', () => {
 		expect((await mlRuleTest(rule, '<bdo dir="rtl">x</bdo>')).violations.length).toBe(0);
 	});
 });
+
+describe('input min/max per-type checking (data-types slice)', () => {
+	// Mirrors tests/external/validator/tests/html/datatypes/* fixtures.
+	// The previous generic ["DateTime", "Number"] tuple accepted out-of-range
+	// dates because DateTime's loose match passed without per-component
+	// validation. Per-type DateString/MonthString/WeekString/TimeString/
+	// LocalDateTimeString conditions reuse the strict checkers that already
+	// cover `value`.
+
+	test('[invalid-attr-invalid-031] input[type=date][min] rejects out-of-range month', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="date" min="2024-13-01">');
+		expect(violations.length).toBe(1);
+		// `raw` is the offending token (`13`), not the full attribute value, since
+		// the date checker reports per-component out-of-range failures.
+	});
+
+	test('[invalid-attr-invalid-032] input[type=date][min] rejects out-of-range day', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="date" min="2024-02-30">');
+		expect(violations.length).toBe(1);
+	});
+
+	test('[invalid-attr-invalid-033] input[type=date][min] rejects wrong format', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="date" min="12-31-2024">');
+		expect(violations.length).toBe(1);
+	});
+
+	test('[invalid-attr-invalid-034] input[type=time][min] rejects out-of-range hour', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="time" min="25:00">');
+		expect(violations.length).toBe(1);
+	});
+
+	test('[invalid-attr-invalid-035] input[type=month][min] rejects month 0', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="month" min="2024-00">');
+		expect(violations.length).toBe(1);
+	});
+
+	test('[invalid-attr-invalid-036] input[type=week][min] rejects week 54', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="week" min="2024-W54">');
+		expect(violations.length).toBe(1);
+	});
+
+	test('[invalid-attr-valid-023] input min/max accepts well-formed values per type', async () => {
+		const cases = [
+			'<input type="date" min="2024-01-01" max="2024-12-31">',
+			'<input type="month" min="2024-01" max="2024-12">',
+			'<input type="week" min="2024-W01" max="2024-W52">',
+			'<input type="time" min="00:00" max="23:59">',
+			'<input type="datetime-local" min="2024-01-01T00:00" max="2024-12-31T23:59">',
+			'<input type="number" min="0" max="100">',
+			'<input type="range" min="-5" max="5">',
+		];
+		for (const src of cases) {
+			const { violations } = await mlRuleTest(rule, src);
+			expect(violations.length, src).toBe(0);
+		}
+	});
+});
+
+describe('progress[max] must be greater than zero (HTML LS §4.10.13)', () => {
+	test('[invalid-attr-invalid-037] progress max="0" is rejected', async () => {
+		const { violations } = await mlRuleTest(rule, '<progress max="0"></progress>');
+		expect(violations.length).toBe(1);
+	});
+
+	test('[invalid-attr-invalid-038] progress max="-5" is rejected', async () => {
+		const { violations } = await mlRuleTest(rule, '<progress max="-5"></progress>');
+		expect(violations.length).toBe(1);
+	});
+
+	test('[invalid-attr-valid-024] progress max accepts positive values', async () => {
+		expect((await mlRuleTest(rule, '<progress max="1"></progress>')).violations.length).toBe(0);
+		expect((await mlRuleTest(rule, '<progress max="100"></progress>')).violations.length).toBe(0);
+		expect((await mlRuleTest(rule, '<progress max="0.5"></progress>')).violations.length).toBe(0);
+	});
+});
+
+describe('img[usemap] requires a non-empty hash-name (HashName type)', () => {
+	test('[invalid-attr-invalid-039] usemap="#" alone is rejected by the HashName type', async () => {
+		// usemap on img is conditional on the presence of a `<map>` reference, so
+		// invalid-attr's value-type check is the relevant assertion here. The
+		// HashName type rejects `#` because the spec requires a non-empty name part.
+		// We assert the raw token rather than the surrounding "disallowed/missing"
+		// branches so this test remains stable across the rule's other validations.
+		const { violations } = await mlRuleTest(rule, '<img src="x.png" usemap="#" alt="">');
+		expect(violations.some(v => v.raw === '#')).toBe(true);
+	});
+});
