@@ -122,8 +122,20 @@
 			]
 		},
 		// https://html.spec.whatwg.org/multipage/input.html#attr-input-max
+		// The valid shape of `max` depends on the input type. The previous
+		// generic ["DateTime", "Number"] tuple accepted out-of-range dates
+		// (e.g. 2024-13-01) because DateTime's loose match passed without
+		// per-component validation. Reuse the per-type checkers that already
+		// power `value` so min/max go through the same strict rules.
 		"max": {
-			"type": ["DateTime", "Number"],
+			"type": [
+				{ "condition": "[type='date' i]", "type": "DateString" },
+				{ "condition": "[type='month' i]", "type": "MonthString" },
+				{ "condition": "[type='week' i]", "type": "WeekString" },
+				{ "condition": "[type='time' i]", "type": "TimeString" },
+				{ "condition": "[type='datetime-local' i]", "type": "LocalDateTimeString" },
+				{ "condition": ["[type='number' i]", "[type='range' i]"], "type": { "type": "float" } }
+			],
 			"condition": [
 				"[type='date' i]",
 				"[type='month' i]",
@@ -147,8 +159,16 @@
 			]
 		},
 		// https://html.spec.whatwg.org/multipage/input.html#attr-input-min
+		// See `max` above for the rationale on per-type conditional types.
 		"min": {
-			"type": ["DateTime", "Number"],
+			"type": [
+				{ "condition": "[type='date' i]", "type": "DateString" },
+				{ "condition": "[type='month' i]", "type": "MonthString" },
+				{ "condition": "[type='week' i]", "type": "WeekString" },
+				{ "condition": "[type='time' i]", "type": "TimeString" },
+				{ "condition": "[type='datetime-local' i]", "type": "LocalDateTimeString" },
+				{ "condition": ["[type='number' i]", "[type='range' i]"], "type": { "type": "float" } }
+			],
 			"condition": [
 				"[type='date' i]",
 				"[type='month' i]",

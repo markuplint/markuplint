@@ -21,8 +21,12 @@
 			"type": "Number"
 		},
 		// https://html.spec.whatwg.org/multipage/form-elements.html#attr-progress-max
+		// HTML LS: "The max attribute, if present, must have a value greater than zero."
 		"max": {
-			"type": "Number"
+			"type": {
+				"type": "float",
+				"gt": 0
+			}
 		}
 	},
 	"aria": {
