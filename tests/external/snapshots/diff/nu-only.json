@@ -222,63 +222,6 @@
 			]
 		},
 		{
-			"path": "html/datatypes/date-day-out-of-range-novalid.html",
-			"category": "data-types",
-			"nuMessageIds": [
-				"nv-1ab23e6dc9fa"
-			]
-		},
-		{
-			"path": "html/datatypes/date-invalid-format-novalid.html",
-			"category": "data-types",
-			"nuMessageIds": [
-				"nv-1a639d8c2da3"
-			]
-		},
-		{
-			"path": "html/datatypes/date-month-out-of-range-novalid.html",
-			"category": "data-types",
-			"nuMessageIds": [
-				"nv-45a1b190edac"
-			]
-		},
-		{
-			"path": "html/datatypes/datetime-local-invalid-novalid.html",
-			"category": "data-types",
-			"nuMessageIds": [
-				"nv-7d4efbcbb5f5"
-			]
-		},
-		{
-			"path": "html/datatypes/float-positive-negative-novalid.html",
-			"category": "data-types",
-			"nuMessageIds": [
-				"nv-1783425eab4b"
-			]
-		},
-		{
-			"path": "html/datatypes/float-positive-zero-novalid.html",
-			"category": "data-types",
-			"nuMessageIds": [
-				"nv-85dfd0a050d3"
-			]
-		},
-		{
-			"path": "html/datatypes/hashname-only-hash-novalid.html",
-			"category": "data-types",
-			"nuMessageIds": [
-				"nv-6622de022e4a",
-				"nv-95e4183a0bb8"
-			]
-		},
-		{
-			"path": "html/datatypes/month-out-of-range-novalid.html",
-			"category": "data-types",
-			"nuMessageIds": [
-				"nv-b024a99ed9d6"
-			]
-		},
-		{
 			"path": "html/datatypes/sandbox-scripts-same-origin-haswarn.html",
 			"category": "data-types",
 			"nuMessageIds": [
@@ -286,38 +229,10 @@
 			]
 		},
 		{
-			"path": "html/datatypes/time-hour-out-of-range-novalid.html",
-			"category": "data-types",
-			"nuMessageIds": [
-				"nv-2105f619b3af"
-			]
-		},
-		{
-			"path": "html/datatypes/time-minute-out-of-range-novalid.html",
-			"category": "data-types",
-			"nuMessageIds": [
-				"nv-d5e34b012fe5"
-			]
-		},
-		{
-			"path": "html/datatypes/time-second-out-of-range-novalid.html",
-			"category": "data-types",
-			"nuMessageIds": [
-				"nv-e225d1439ff4"
-			]
-		},
-		{
 			"path": "html/datatypes/url-empty-novalid.html",
 			"category": "data-types",
 			"nuMessageIds": [
 				"nv-9b9e85d36b74"
-			]
-		},
-		{
-			"path": "html/datatypes/week-invalid-format-novalid.html",
-			"category": "data-types",
-			"nuMessageIds": [
-				"nv-5779093b674c"
 			]
 		},
 		{
