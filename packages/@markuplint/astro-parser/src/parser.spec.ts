@@ -663,4 +663,34 @@ describe('Issue', () => {
 `);
 		expect(ast).toBeTruthy();
 	});
+
+	describe('#3823 script tag diagnostics are not fatal', () => {
+		test('script type="module" parses to a script element', () => {
+			const ast = parse('<script type="module">console.log("hello");</script>');
+			expect(ast.parseError).toBeUndefined();
+			const map = nodeListToDebugMaps(ast.nodeList);
+			expect(map[0]).toBe('[1:1]>[1:23](0,22)script: <script␣type="module">');
+		});
+
+		test('script defer parses to a script element', () => {
+			const ast = parse('<script defer>console.log("hello");</script>');
+			expect(ast.parseError).toBeUndefined();
+			const map = nodeListToDebugMaps(ast.nodeList);
+			expect(map[0]).toBe('[1:1]>[1:15](0,14)script: <script␣defer>');
+		});
+
+		test('script with data-* attribute parses to a script element', () => {
+			const ast = parse('<script data-widget="example">console.log("hello");</script>');
+			expect(ast.parseError).toBeUndefined();
+			const map = nodeListToDebugMaps(ast.nodeList);
+			expect(map[0]).toBe('[1:1]>[1:31](0,30)script: <script␣data-widget="example">');
+		});
+
+		test('script with define:vars parses to a script element', () => {
+			const ast = parse('<script define:vars={{ foo: 1 }}>console.log(foo);</script>');
+			expect(ast.parseError).toBeUndefined();
+			const map = nodeListToDebugMaps(ast.nodeList);
+			expect(map[0]).toBe('[1:1]>[1:34](0,33)script: <script␣define:vars={{␣foo:␣1␣}}>');
+		});
+	});
 });
