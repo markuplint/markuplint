@@ -29,45 +29,10 @@
 			]
 		},
 		{
-			"path": "html-aria/misc/aria-braillelabel-autonomous-custom-element-novalid.html",
-			"category": "aria",
-			"nuMessageIds": [
-				"nv-137366a8dd10"
-			]
-		},
-		{
 			"path": "html-aria/misc/aria-expanded-with-command-novalid.html",
 			"category": "aria",
 			"nuMessageIds": [
 				"nv-5c22b7821665"
-			]
-		},
-		{
-			"path": "html-aria/misc/aria-label-autonomous-custom-element-novalid.html",
-			"category": "aria",
-			"nuMessageIds": [
-				"nv-53c4caac46d3"
-			]
-		},
-		{
-			"path": "html-aria/misc/aria-labelledby-autonomous-custom-element-novalid.html",
-			"category": "aria",
-			"nuMessageIds": [
-				"nv-13abc3950600"
-			]
-		},
-		{
-			"path": "html-aria/misc/br-aria-atomic-novalid.html",
-			"category": "aria",
-			"nuMessageIds": [
-				"nv-8cd680686e06"
-			]
-		},
-		{
-			"path": "html-aria/misc/img-aria-relevant-no-alt-novalid.html",
-			"category": "aria",
-			"nuMessageIds": [
-				"nv-fd61a4dfca69"
 			]
 		},
 		{
@@ -91,13 +56,6 @@
 			"nuMessageIds": [
 				"nv-a354a70fa4fe",
 				"nv-7e99c1fe9674"
-			]
-		},
-		{
-			"path": "html-aria/misc/wbr-aria-atomic-novalid.html",
-			"category": "aria",
-			"nuMessageIds": [
-				"nv-d37ed4902519"
 			]
 		},
 		{
@@ -3412,13 +3370,6 @@
 			]
 		},
 		{
-			"path": "html/elements/img/aria-without-alt-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-d2aed3291b9f"
-			]
-		},
-		{
 			"path": "html/elements/img/empty-src-without-alt-novalid.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [
@@ -3732,13 +3683,6 @@
 			"category": "invalid-attr",
 			"nuMessageIds": [
 				"nv-12d16f9c4d62"
-			]
-		},
-		{
-			"path": "html/elements/img/usemap-bad-value-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-3467f29dd97a"
 			]
 		},
 		{
@@ -6195,13 +6139,6 @@
 			"category": "invalid-attr",
 			"nuMessageIds": [
 				"nv-902400df810a"
-			]
-		},
-		{
-			"path": "html/elements/progress/max-zero-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-ae2011171a6c"
 			]
 		},
 		{

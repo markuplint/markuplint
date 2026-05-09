@@ -14,8 +14,12 @@ export default createRule<boolean, Options>({
 	async verify({ document, report }) {
 		await document.walkOn('Element', el => {
 			const elSpec = getSpec(el, document.specs.specs);
-			if (!elSpec) return;
-			if (!elSpec.globalAttrs['#ARIAAttrs']) return;
+			// Autonomous custom elements have no spec.<el>.jsonc entry. They
+			// still accept aria-* per the platform, so do not skip them here —
+			// `checkingDisallowedProp` enforces the ARIA in HTML §4.4 naming
+			// prohibition for unnamed-role custom elements.
+			if (!elSpec && el.elementType !== 'web-component') return;
+			if (elSpec && !elSpec.globalAttrs['#ARIAAttrs']) return;
 			const propAttrs = el.attributes.filter(attr => /^aria-/i.test(attr.name));
 			if (propAttrs.length === 0) return;
 			const ariaVersion =

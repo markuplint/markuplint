@@ -124,9 +124,121 @@ test('[wai-aria-disallowed-props-issue-3630-009] cite with empty role attribute 
 	]);
 });
 
-test('[wai-aria-disallowed-props-issue-3630-010] custom element with aria-label is allowed', async () => {
-	// Custom elements are not in the namingProhibited list; no violation.
-	expect((await mlRuleTest(rule, '<my-widget aria-label="x">y</my-widget>')).violations).toStrictEqual([]);
+test('[wai-aria-disallowed-props-issue-3630-010] autonomous custom element with aria-label is prohibited', async () => {
+	// Mirrors html-aria/misc/aria-label-autonomous-custom-element-novalid.html
+	// Per ARIA in HTML §4.4 / §6.4, autonomous custom elements have no implicit role.
+	// Naming attrs (aria-label / aria-labelledby / aria-braillelabel) are prohibited
+	// unless the author assigns an explicit role that supports naming. nu-validator
+	// fires on this; markuplint now mirrors that policy.
+	const { violations } = await mlRuleTest(rule, '<my-widget aria-label="x">y</my-widget>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 12,
+			message: 'The "aria-label" ARIA property is prohibited on the "my-widget" element',
+			raw: 'aria-label="x"',
+		},
+	]);
+});
+
+test('[wai-aria-disallowed-props-issue-3630-011] autonomous custom element with role + aria-label is allowed', async () => {
+	// Mirrors html-aria/misc/aria-label-autonomous-custom-element-novalid.html (positive case)
+	// Setting an explicit role that supports naming lifts the prohibition.
+	const { violations } = await mlRuleTest(rule, '<my-widget role="button" aria-label="x">y</my-widget>');
+	expect(violations).toStrictEqual([]);
+});
+
+test('[wai-aria-disallowed-props-issue-3630-012] autonomous custom element with non-naming aria attr is allowed', async () => {
+	// aria-hidden is not a naming attribute; the prohibition does not apply.
+	expect((await mlRuleTest(rule, '<my-widget aria-hidden="true">y</my-widget>')).violations).toStrictEqual([]);
+});
+
+test('[wai-aria-disallowed-props-issue-3630-013] br aria-atomic is disallowed (properties.only whitelist)', async () => {
+	// Mirrors html-aria/misc/br-aria-atomic-novalid.html
+	// spec.br.jsonc declares `properties: { only: ["aria-hidden"] }`. Any other
+	// aria-* attribute is rejected by the new properties.only branch in
+	// checkingDisallowedProp.
+	const { violations } = await mlRuleTest(rule, '<br aria-atomic="true">');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 5,
+			message: 'The "aria-atomic" ARIA property is disallowed on the "br" element',
+			raw: 'aria-atomic="true"',
+		},
+	]);
+});
+
+test('[wai-aria-disallowed-props-issue-3630-014] br aria-hidden is allowed (in properties.only whitelist)', async () => {
+	// aria-hidden IS in the only-list, so it must pass.
+	expect((await mlRuleTest(rule, '<br aria-hidden="true">')).violations).toStrictEqual([]);
+});
+
+test('[wai-aria-disallowed-props-issue-3630-015] wbr aria-atomic is disallowed (same properties.only mechanism)', async () => {
+	// Mirrors html-aria/misc/wbr-aria-atomic-novalid.html
+	const { violations } = await mlRuleTest(rule, '<wbr aria-atomic="true">');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 6,
+			message: 'The "aria-atomic" ARIA property is disallowed on the "wbr" element',
+			raw: 'aria-atomic="true"',
+		},
+	]);
+});
+
+test('[wai-aria-disallowed-props-issue-3630-016] custom element role="presentation" + aria-label currently allowed', async () => {
+	// `getComputedRole` cannot validate `role=` on unknown elements, so the
+	// branch reads the raw attribute and treats any non-empty value as "an
+	// explicit role is set". This is permissive — `role="presentation"` /
+	// `role="none"` do not actually support naming, but the rule does not
+	// reject the combination today. Pin the permissive behaviour explicitly
+	// so a future tightening (e.g. validating against namingProhibited roles)
+	// surfaces with a clear test failure.
+	const { violations } = await mlRuleTest(rule, '<my-widget role="presentation" aria-label="x">y</my-widget>');
+	expect(violations).toStrictEqual([]);
+});
+
+test('[wai-aria-disallowed-props-issue-3630-017] customised-built-in (`<button is="x-y">`) is unaffected', async () => {
+	// `is=` makes the element a customised built-in; the spec.<el>.jsonc path
+	// drives the check (here: `<button>` supports aria-label). The
+	// autonomous-custom-element branch must skip this case.
+	expect((await mlRuleTest(rule, '<button is="x-y" aria-label="x">y</button>')).violations).toStrictEqual([]);
+});
+
+test('[wai-aria-disallowed-props-issue-3630-018] img with no alt and aria-relevant is reported', async () => {
+	// Mirrors html-aria/misc/img-aria-relevant-no-alt-novalid.html
+	// img without alt has no implicit role; the rule's role-derived check
+	// rejects aria-relevant which is restricted to live-region roles.
+	const { violations } = await mlRuleTest(rule, '<img src="x.png" aria-relevant="all">');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 18,
+			message: 'The "aria-relevant" ARIA property is disallowed on the "img" element',
+			raw: 'aria-relevant="all"',
+		},
+	]);
+});
+
+test('[wai-aria-disallowed-props-issue-3630-019] custom element + non-naming aria does NOT double-fire with wai-aria-no-global-prop', async () => {
+	// Boundary check: wai-aria-disallowed-props handles autonomous custom elements
+	// only for naming attrs. Non-naming aria-* on a custom element without role
+	// goes to neither rule (wai-aria-no-global-prop early-returns when no
+	// spec.<el>.jsonc entry exists). Pin this so a future expansion of either
+	// rule's web-component coverage surfaces the responsibility split.
+	const { mlTest } = await import('markuplint');
+	const r = await mlTest('<my-widget aria-controls="x">y</my-widget>', {
+		rules: {
+			'wai-aria-disallowed-props': true,
+			'wai-aria-no-global-prop': true,
+		},
+	});
+	expect(r.violations).toStrictEqual([]);
 });
 
 // #3735 P1: button[popovertarget] must not have aria-expanded. The popover API
