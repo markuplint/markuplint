@@ -1283,4 +1283,24 @@ key: value
 		expect(createTestDocument(contents[1]).toString()).toBe(contents[1]);
 		expect(createTestDocument(contents[2]).toString()).toBe(contents[2]);
 	});
+
+	test('#3823 — Astro <script> with non-src attributes is parseable end-to-end', async () => {
+		// Reproduces https://github.com/markuplint/markuplint/issues/3823: in
+		// previous versions the Astro compiler's `is:inline` Hint reached
+		// markuplint as a fatal `parse-error`. The fix lives in
+		// `@markuplint/astro-parser`; this test pins the contract at the
+		// document-creation boundary so a regression in the parser package is
+		// caught at the integration seam, not just in the parser unit tests.
+		const parser = await import('@markuplint/astro-parser');
+		const cases = [
+			'<script define:vars={{ foo: 1 }}>console.log(foo);</script>',
+			'<script type="module">console.log("hello");</script>',
+			'<script data-widget="example">console.log("hello");</script>',
+			'<script defer>console.log("hello");</script>',
+		];
+		for (const code of cases) {
+			const doc = createTestDocument(code, { parser });
+			expect(doc.querySelector('script')).not.toBeNull();
+		}
+	});
 });
