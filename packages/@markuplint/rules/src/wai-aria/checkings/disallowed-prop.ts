@@ -133,8 +133,13 @@ export const checkingDisallowedProp: AttrChecker<
 		// element-specific restriction overrides the role-derived check. Like
 		// the `properties: false` branch above this is gated on
 		// `disallowSetImplicitProps` so users can opt out of the element-level
-		// prohibition. Entries may be either bare names (`"aria-hidden"`) or
-		// name/value pairs (`{ name, value? }`); we only need the name here.
+		// prohibition.
+		//
+		// The schema permits entries in either bare-name form (`"aria-hidden"`)
+		// or name/value pair form (`{ name, value? }`). No html-spec entry
+		// currently uses the value form, so we only key on the name. If the
+		// value form becomes necessary later, mirror the value-matching path
+		// already implemented in the `properties.without` branch below.
 		if (disallowSetImplicitProps && elAriaSpec?.properties !== false && elAriaSpec?.properties?.only) {
 			const onlyNames = elAriaSpec.properties.only.map(o => (typeof o === 'string' ? o : o.name));
 			if (!onlyNames.includes(attr.name)) {

@@ -225,6 +225,22 @@ test('[wai-aria-disallowed-props-issue-3630-018] img with no alt and aria-releva
 	]);
 });
 
+test('[wai-aria-disallowed-props-issue-3630-019] custom element + non-naming aria does NOT double-fire with wai-aria-no-global-prop', async () => {
+	// Boundary check: wai-aria-disallowed-props handles autonomous custom elements
+	// only for naming attrs. Non-naming aria-* on a custom element without role
+	// goes to neither rule (wai-aria-no-global-prop early-returns when no
+	// spec.<el>.jsonc entry exists). Pin this so a future expansion of either
+	// rule's web-component coverage surfaces the responsibility split.
+	const { mlTest } = await import('markuplint');
+	const r = await mlTest('<my-widget aria-controls="x">y</my-widget>', {
+		rules: {
+			'wai-aria-disallowed-props': true,
+			'wai-aria-no-global-prop': true,
+		},
+	});
+	expect(r.violations).toStrictEqual([]);
+});
+
 // #3735 P1: button[popovertarget] must not have aria-expanded. The popover API
 // manages the expanded/collapsed state automatically, so a manual aria-expanded
 // is redundant and may drift from the actual state.
