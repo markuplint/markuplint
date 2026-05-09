@@ -26,6 +26,20 @@ test('[heading-levels-valid-001] No skipped', async () => {
 	expect(violations.length).toBe(0);
 });
 
+test('[heading-levels-valid-002] First heading at h3 (no preceding heading lead)', async () => {
+	// HTML LS §4.3.11 only constrains a heading "following another heading lead".
+	// A document whose first heading is h3 has no lead, so it must not fire.
+	const { violations } = await mlRuleTest(
+		rule,
+		`
+<h3>...</h3>
+<p>...</p>
+<h4>...</h4>
+`,
+	);
+	expect(violations.length).toBe(0);
+});
+
 test('[heading-levels-invalid-001] Skipped', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
