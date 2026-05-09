@@ -8,10 +8,31 @@
 			]
 		},
 		{
+			"path": "html-aria/misc/aria-controls-broken-idref-novalid.html",
+			"category": "aria",
+			"ruleIds": [
+				"no-refer-to-non-existent-id"
+			]
+		},
+		{
+			"path": "html-aria/misc/aria-describedby-broken-idref-novalid.html",
+			"category": "aria",
+			"ruleIds": [
+				"no-refer-to-non-existent-id"
+			]
+		},
+		{
 			"path": "html-aria/misc/aria-disabled-true-on-disabled-haswarn.html",
 			"category": "aria",
 			"ruleIds": [
 				"wai-aria-implicit-props"
+			]
+		},
+		{
+			"path": "html-aria/misc/aria-flowto-broken-idref-novalid.html",
+			"category": "aria",
+			"ruleIds": [
+				"no-refer-to-non-existent-id"
 			]
 		},
 		{
@@ -25,7 +46,16 @@
 			"path": "html-aria/misc/aria-labelledby-broken-idref-novalid.html",
 			"category": "aria",
 			"ruleIds": [
+				"no-refer-to-non-existent-id",
 				"wai-aria-disallowed-props"
+			]
+		},
+		{
+			"path": "html-aria/misc/aria-owns-broken-idref-novalid.html",
+			"category": "aria",
+			"ruleIds": [
+				"no-refer-to-non-existent-id",
+				"wai-aria-required-parent-role"
 			]
 		},
 		{
@@ -7078,7 +7108,8 @@
 			"path": "html/elements/a/href-isvalid.html",
 			"category": "invalid-attr",
 			"ruleIds": [
-				"invalid-attr"
+				"invalid-attr",
+				"no-refer-to-non-existent-id"
 			]
 		},
 		{
@@ -7106,7 +7137,8 @@
 			"path": "html/elements/area/href-isvalid.html",
 			"category": "invalid-attr",
 			"ruleIds": [
-				"invalid-attr"
+				"invalid-attr",
+				"no-refer-to-non-existent-id"
 			]
 		},
 		{
@@ -7526,7 +7558,8 @@
 			"path": "html/svg/svg-transform-origin-transform-box-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"invalid-attr"
+				"invalid-attr",
+				"no-refer-to-non-existent-id"
 			]
 		},
 		{
