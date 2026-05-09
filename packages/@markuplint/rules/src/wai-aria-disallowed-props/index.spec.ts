@@ -124,9 +124,28 @@ test('[wai-aria-disallowed-props-issue-3630-009] cite with empty role attribute 
 	]);
 });
 
-test('[wai-aria-disallowed-props-issue-3630-010] custom element with aria-label is allowed', async () => {
-	// Custom elements are not in the namingProhibited list; no violation.
-	expect((await mlRuleTest(rule, '<my-widget aria-label="x">y</my-widget>')).violations).toStrictEqual([]);
+test('[wai-aria-disallowed-props-issue-3630-010] autonomous custom element with aria-label is prohibited', async () => {
+	// Per ARIA in HTML §4.4 / §6.4, autonomous custom elements have no implicit role.
+	// Naming attrs (aria-label / aria-labelledby / aria-braillelabel) are prohibited
+	// unless the author assigns an explicit role that supports naming. nu-validator
+	// fires on this; markuplint now mirrors that policy. The customised-built-in
+	// case (`<button is="x-y">`) still inherits the host element's spec data
+	// through the regular path.
+	const { violations } = await mlRuleTest(rule, '<my-widget aria-label="x">y</my-widget>');
+	expect(violations.length).toBe(1);
+	expect(violations[0]?.message).toContain('prohibited');
+	expect(violations[0]?.message).toContain('my-widget');
+});
+
+test('[wai-aria-disallowed-props-issue-3630-011] autonomous custom element with role + aria-label is allowed', async () => {
+	// Setting an explicit role that supports naming lifts the prohibition.
+	const { violations } = await mlRuleTest(rule, '<my-widget role="button" aria-label="x">y</my-widget>');
+	expect(violations).toStrictEqual([]);
+});
+
+test('[wai-aria-disallowed-props-issue-3630-012] autonomous custom element with non-naming aria attr is allowed', async () => {
+	// aria-hidden is not a naming attribute; the prohibition does not apply.
+	expect((await mlRuleTest(rule, '<my-widget aria-hidden="true">y</my-widget>')).violations).toStrictEqual([]);
 });
 
 // #3735 P1: button[popovertarget] must not have aria-expanded. The popover API
