@@ -184,3 +184,14 @@ test('JSON', () => {
 	expect(check('{"a": 1, "b": 2', 'JSON').matched).toBeFalsy();
 	expect(check('{"a": 1, "b": 2,}', 'JSON').matched).toBeFalsy();
 });
+
+test('HashName', () => {
+	// Valid: `#` followed by a non-empty name (existence is not the type's concern).
+	expect(check('#mymap', 'HashName').matched).toBe(true);
+	expect(check('#a', 'HashName').matched).toBe(true);
+	// Invalid per HTML LS valid-hash-name-reference: must have a non-empty name part.
+	expect(check('#', 'HashName').matched).toBe(false);
+	expect(check('', 'HashName').matched).toBe(false);
+	// Invalid: missing the leading hash sign.
+	expect(check('mymap', 'HashName').matched).toBe(false);
+});

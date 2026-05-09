@@ -409,7 +409,16 @@ export const defs: Defs = {
 				value: 'hash name',
 			},
 		],
-		is: value => (value[0] === '#' ? matched() : unmatched(value, 'unexpected-token')),
+		// HTML LS: "A string is a valid hash-name reference [...] if the string
+		// consists of a U+0023 NUMBER SIGN (#) followed by a string which
+		// exactly matches the value of the name attribute [...]". The spec
+		// requires the name part to be non-empty: `#` alone is not a valid
+		// hash-name reference.
+		is: value => {
+			if (value.length < 2) return unmatched(value, 'unexpected-token');
+			if (value[0] !== '#') return unmatched(value, 'unexpected-token');
+			return matched();
+		},
 	},
 
 	OneCodePointChar: {
