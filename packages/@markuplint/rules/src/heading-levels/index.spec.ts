@@ -40,6 +40,12 @@ test('[heading-levels-valid-002] First heading at h3 (no preceding heading lead)
 	expect(violations.length).toBe(0);
 });
 
+test('[heading-levels-valid-003] First heading at h6 (no preceding heading lead)', async () => {
+	// Confirms the relaxation extends to every level, not only h3.
+	const { violations } = await mlRuleTest(rule, '<h6>...</h6>');
+	expect(violations.length).toBe(0);
+});
+
 test('[heading-levels-invalid-001] Skipped', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
@@ -67,6 +73,51 @@ test('[heading-levels-invalid-001] Skipped', async () => {
 		{
 			severity: 'error',
 			line: 10,
+			col: 1,
+			message: 'Heading levels must not be skipped',
+			raw: '<h5>',
+		},
+	]);
+});
+
+test('[heading-levels-invalid-002] First h3 then h5 still fires on h5', async () => {
+	// Once the rule has a real previous heading lead (h3), a subsequent h5 is a
+	// real skip (3+1=4 < 5) and must fire — proving the relaxation does not
+	// suppress legitimate skips.
+	const { violations } = await mlRuleTest(
+		rule,
+		`
+<h3>...</h3>
+<p>...</p>
+<h5>...</h5>
+`,
+	);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 4,
+			col: 1,
+			message: 'Heading levels must not be skipped',
+			raw: '<h5>',
+		},
+	]);
+});
+
+test('[heading-levels-invalid-003] Descending then ascending fires only on the skip', async () => {
+	// Descents (h6 -> h3) are unconstrained. After h3 sets the new lead,
+	// jumping to h5 (3+1=4 < 5) is a real skip and must fire on h5 only.
+	const { violations } = await mlRuleTest(
+		rule,
+		`
+<h6>...</h6>
+<h3>...</h3>
+<h5>...</h5>
+`,
+	);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 4,
 			col: 1,
 			message: 'Heading levels must not be skipped',
 			raw: '<h5>',
