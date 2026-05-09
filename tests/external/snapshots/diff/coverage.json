@@ -740,8 +740,8 @@
 			"path": "html-aria/misc/aria-braillelabel-autonomous-custom-element-novalid.html",
 			"category": "aria",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -1140,8 +1140,8 @@
 			"path": "html-aria/misc/aria-label-autonomous-custom-element-novalid.html",
 			"category": "aria",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -1428,8 +1428,8 @@
 			"path": "html-aria/misc/aria-labelledby-autonomous-custom-element-novalid.html",
 			"category": "aria",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -1707,9 +1707,9 @@
 		{
 			"path": "html-aria/misc/aria-owns-broken-idref-novalid.html",
 			"category": "aria",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "error",
-			"verdict": "match-error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -1772,8 +1772,8 @@
 			"path": "html-aria/misc/br-aria-atomic-novalid.html",
 			"category": "aria",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -1852,8 +1852,8 @@
 			"path": "html-aria/misc/img-aria-relevant-no-alt-novalid.html",
 			"category": "aria",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -2396,8 +2396,8 @@
 			"path": "html-aria/misc/wbr-aria-atomic-novalid.html",
 			"category": "aria",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -24344,8 +24344,8 @@
 			"path": "html/elements/img/aria-without-alt-novalid.html",
 			"category": "invalid-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -25202,8 +25202,8 @@
 			"path": "html/elements/img/usemap-bad-value-novalid.html",
 			"category": "invalid-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -34230,8 +34230,8 @@
 			"path": "html/elements/progress/max-zero-novalid.html",
 			"category": "invalid-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
