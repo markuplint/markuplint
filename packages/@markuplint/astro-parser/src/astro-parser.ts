@@ -24,6 +24,27 @@ export type {
 } from '@astrojs/compiler/types';
 
 /**
+ * Type guard for `astro-eslint-parser`'s `ParseError` class. The class
+ * extends `SyntaxError` and carries a unique `originalAST` instance
+ * property; the duck-type check on that property identifies it without
+ * depending on the constructor name (which a future bundler could mangle).
+ *
+ * Why a positive identity check matters: `isFatalError()` from
+ * `@markuplint/shared` classifies *every* `SyntaxError` as Tier 1
+ * (implementation bug, must propagate). The Astro upstream chose to
+ * subclass `SyntaxError` for ergonomic reasons, but the value it raises is
+ * semantically a per-file parse failure that markuplint must convert to
+ * `ParserError` (Tier 3). See `docs/architectures/ERROR-HANDLING.md` —
+ * the Tier 1 row explicitly limits to "SyntaxError (from markuplint code)".
+ */
+function isAstroEslintParseError(error: unknown): error is SyntaxError & {
+	readonly lineNumber?: number;
+	readonly column?: number;
+} {
+	return error instanceof SyntaxError && 'originalAST' in error;
+}
+
+/**
  * Parses an Astro component source string into the Astro compiler's root AST node.
  *
  * ## Diagnostic handling policy
@@ -41,12 +62,14 @@ export type {
  *
  * ## Error normalization
  *
- * `parseTemplate()` itself throws on severity=Error diagnostics and on raw
+ * `parseTemplate()` itself raises an `astro-eslint-parser` `ParseError`
+ * (extending `SyntaxError`) on severity=Error diagnostics and on raw
  * template syntax errors (unterminated comments, unclosed expressions,
- * etc.) by raising a `SyntaxError`-derived `ParseError`. Those throws are
- * caught and normalized to `ParserError`, so the caller sees a single
- * Tier-3 (per-file violation) error type for every parse failure rather
- * than a Tier-1 fatal `SyntaxError` that would abort the whole lint run.
+ * etc.). Those — and only those — are normalized to `ParserError`, so the
+ * caller sees a single Tier-3 (per-file violation) error type for every
+ * parse failure. Any other throw, including a genuine `SyntaxError` from a
+ * markuplint invariant break, is allowed to propagate so the standard
+ * `isFatalError()` gate further up the stack can classify it as Tier 1.
  *
  * The defensive `find(severity === Error)` after `parseTemplate()` is dead
  * code today (upstream gates internally) but is retained as a safety net
@@ -65,13 +88,12 @@ export function astroParse(code: string): RootNode {
 	try {
 		({ result } = parseTemplate(code));
 	} catch (error) {
-		if (!(error instanceof SyntaxError)) {
+		if (!isAstroEslintParseError(error)) {
 			throw error;
 		}
-		const { lineNumber, column } = error as SyntaxError & { lineNumber?: number; column?: number };
 		throw new ParserError(error.message, {
-			line: lineNumber ?? 1,
-			col: column ?? 0,
+			line: typeof error.lineNumber === 'number' ? error.lineNumber : 1,
+			col: typeof error.column === 'number' ? error.column : 0,
 		});
 	}
 
