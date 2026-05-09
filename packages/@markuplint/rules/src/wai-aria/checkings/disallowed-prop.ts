@@ -63,7 +63,27 @@ export const checkingDisallowedProp: AttrChecker<
 		// namingProhibited=true in html-spec) are:
 		//   abbr, cite, figcaption, kbd, label, legend, mark, rt, var
 		// This list is not hard-coded here; it is derived from html-spec data.
-		if (!role && NAMING_ATTRS.has(attr.name) && elAriaSpec?.namingProhibited === true) {
+		//
+		// Autonomous custom elements (`<x-y>`, no `is=` attribute, no spec.<el>
+		// entry) are treated the same way: ARIA in HTML §4.4 forbids naming
+		// attrs unless an explicit role that supports naming is set. The
+		// `elementType === 'web-component'` discriminator excludes
+		// customised-built-in elements (`<button is="x-y">`) — those inherit
+		// the host element's namingProhibited flag through the regular path.
+		// `getComputedRole` returns null for custom elements even when a
+		// `role=` attribute is set (it can't validate the role against an
+		// unknown element's permittedRoles), so consult the raw attribute
+		// directly to detect "an explicit role that supports naming is set".
+		const isAutonomousCustomElement =
+			attr.ownerElement.elementType === 'web-component' && !attr.ownerElement.hasAttribute('is');
+		const hasExplicitRoleAttr =
+			isAutonomousCustomElement && (attr.ownerElement.getAttribute('role')?.trim() ?? '') !== '';
+		if (
+			!role &&
+			!hasExplicitRoleAttr &&
+			NAMING_ATTRS.has(attr.name) &&
+			(elAriaSpec?.namingProhibited === true || isAutonomousCustomElement)
+		) {
 			return {
 				scope: attr,
 				message: t(
@@ -105,6 +125,32 @@ export const checkingDisallowedProp: AttrChecker<
 					t('the "{0*}" {1}', attr.ownerElement.localName, 'element'),
 				),
 			};
+		}
+
+		// Spec data may set `properties: { only: [...] }` to whitelist a small
+		// set of aria-* attributes (e.g. `<br>` / `<wbr>` accept only
+		// `aria-hidden`). When the attribute is outside that whitelist, the
+		// element-specific restriction overrides the role-derived check. Like
+		// the `properties: false` branch above this is gated on
+		// `disallowSetImplicitProps` so users can opt out of the element-level
+		// prohibition. Entries may be either bare names (`"aria-hidden"`) or
+		// name/value pairs (`{ name, value? }`); we only need the name here.
+		if (disallowSetImplicitProps && elAriaSpec?.properties !== false && elAriaSpec?.properties?.only) {
+			const onlyNames = elAriaSpec.properties.only.map(o => (typeof o === 'string' ? o : o.name));
+			if (!onlyNames.includes(attr.name)) {
+				return {
+					scope: attr,
+					message: t(
+						'{0:c} on {1}',
+						t(
+							'{0} is {1:c}',
+							t('the "{0*}" {1}', attr.name, `ARIA ${propSpec?.type ?? 'property'}`),
+							'disallowed',
+						),
+						t('the "{0*}" {1}', attr.ownerElement.localName, 'element'),
+					),
+				};
+			}
 		}
 
 		if (!role) {
