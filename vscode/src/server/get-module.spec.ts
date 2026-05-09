@@ -36,7 +36,7 @@ describe('toImportSpecifier', () => {
 	});
 
 	test('URL-encodes reserved characters like ? in Windows paths', () => {
-		expect(toImportSpecifier('c:\\Users\\foo?bar\\lib.mjs')).toBe('file:///c:/Users/foo%3Fbar/lib.mjs');
+		expect(toImportSpecifier('c:\\Users\\foo?\\lib.mjs')).toBe('file:///c:/Users/foo%3F/lib.mjs');
 	});
 
 	test('converts a POSIX absolute path to a file:// URL', () => {
@@ -56,7 +56,7 @@ describe('toImportSpecifier', () => {
 	});
 
 	test('URL-encodes reserved characters like ? in POSIX paths', () => {
-		expect(toImportSpecifier('/home/foo?bar/lib.mjs')).toBe('file:///home/foo%3Fbar/lib.mjs');
+		expect(toImportSpecifier('/home/foo?/lib.mjs')).toBe('file:///home/foo%3F/lib.mjs');
 	});
 
 	test('does not convert bare module specifiers like "markuplint"', () => {
