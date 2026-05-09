@@ -1,6 +1,6 @@
 # nu-validator Benchmark Summary
 
-- generated: 2026-05-08T14:55:25.616Z
+- generated: 2026-05-09T04:38:35.414Z
 - submodule: `142931395412c00434ffb40a14d65992efd17aa8`
 - nu-validator: `ghcr.io/validator/validator@sha256:55c6ffb738db8b27ceef51a2320f0b9232266fa7eeecf42a0dc38e0c92edecfd`
 - markuplint: `5.0.0-rc.4`
@@ -9,21 +9,21 @@
 ## Totals
 
 - files: **5442**
-- match-error: **2138** (both tools flagged)
+- match-error: **2151** (both tools flagged)
 - match-clean: **920** (neither flagged)
-- nu-only: **1376** (only nu-validator flagged; markuplint coverage candidates — open a markuplint issue after a spec read)
+- nu-only: **1364** (only nu-validator flagged; markuplint coverage candidates — open a markuplint issue after a spec read)
 - nu-over: **28** (nu-validator errors fully covered by spec-backed excluded-ids — confirmed over-detection)
-- overall match rate: **56.2%**
+- overall match rate: **56.4%**
 - excluded-ids: 3 entries, 1 pattern(s)
 
 ## Per-Category
 
 | Category | Files | Match rate | match-error | match-clean | ml-only | nu-only | nu-over |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| aria | 780 | 79.6% | 169 | 452 | 145 | 14 | 0 |
+| aria | 780 | 79.7% | 170 | 452 | 144 | 14 | 0 |
 | assertions | 40 | 100.0% | 39 | 1 | 0 | 0 | 0 |
 | content-model | 98 | 98.0% | 48 | 48 | 0 | 2 | 0 |
-| data-types | 56 | 71.4% | 35 | 5 | 1 | 15 | 0 |
+| data-types | 56 | 92.9% | 47 | 5 | 1 | 3 | 0 |
 | deprecated | 12 | 91.7% | 11 | 0 | 1 | 0 | 0 |
 | global-attr | 57 | 80.7% | 26 | 20 | 8 | 3 | 0 |
 | id-duplication | 1 | 100.0% | 1 | 0 | 0 | 0 | 0 |
@@ -33,7 +33,7 @@
 
 ## Informational: ml-only
 
-**980** fixtures are flagged only by markuplint. This project does not pursue upstream nu-validator reports, so those fixtures feed a narrower audit: confirm with the spec, and if markuplint is the wrong one, fix the rule. The full list lives in `snapshots/diff/markuplint-only.json`.
+**979** fixtures are flagged only by markuplint. This project does not pursue upstream nu-validator reports, so those fixtures feed a narrower audit: confirm with the spec, and if markuplint is the wrong one, fix the rule. The full list lives in `snapshots/diff/markuplint-only.json`.
 
 ### Top ml-only rules
 
@@ -48,7 +48,7 @@
 | required-attr | 22 |
 | wai-aria-permitted-roles | 20 |
 | wai-aria-value | 11 |
-| no-refer-to-non-existent-id | 8 |
+| no-refer-to-non-existent-id | 7 |
 
 > `nu-only` entries are candidates for markuplint coverage work **after** verifying the relevant spec paragraph. `nu-over` entries are already confirmed nu-validator over-detection via `excluded-ids.json`. `ml-only` is informational; audit the spec before acting on any individual row.
 

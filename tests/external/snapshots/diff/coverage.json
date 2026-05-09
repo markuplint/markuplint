@@ -1707,9 +1707,9 @@
 		{
 			"path": "html-aria/misc/aria-owns-broken-idref-novalid.html",
 			"category": "aria",
-			"nu": "clean",
+			"nu": "error",
 			"ml": "error",
-			"verdict": "ml-only",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -14588,8 +14588,8 @@
 			"path": "html/datatypes/date-day-out-of-range-novalid.html",
 			"category": "data-types",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -14604,24 +14604,24 @@
 			"path": "html/datatypes/date-invalid-format-novalid.html",
 			"category": "data-types",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
 			"path": "html/datatypes/date-month-out-of-range-novalid.html",
 			"category": "data-types",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
 			"path": "html/datatypes/datetime-local-invalid-novalid.html",
 			"category": "data-types",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -14660,16 +14660,16 @@
 			"path": "html/datatypes/float-positive-negative-novalid.html",
 			"category": "data-types",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
 			"path": "html/datatypes/float-positive-zero-novalid.html",
 			"category": "data-types",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -14692,8 +14692,8 @@
 			"path": "html/datatypes/hashname-only-hash-novalid.html",
 			"category": "data-types",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -14796,8 +14796,8 @@
 			"path": "html/datatypes/month-out-of-range-novalid.html",
 			"category": "data-types",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -14884,24 +14884,24 @@
 			"path": "html/datatypes/time-hour-out-of-range-novalid.html",
 			"category": "data-types",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
 			"path": "html/datatypes/time-minute-out-of-range-novalid.html",
 			"category": "data-types",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
 			"path": "html/datatypes/time-second-out-of-range-novalid.html",
 			"category": "data-types",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -14916,8 +14916,8 @@
 			"path": "html/datatypes/week-invalid-format-novalid.html",
 			"category": "data-types",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
