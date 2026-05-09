@@ -2750,54 +2750,98 @@ describe('input min/max per-type checking (data-types slice)', () => {
 	// dates because DateTime's loose match passed without per-component
 	// validation. Per-type DateString/MonthString/WeekString/TimeString/
 	// LocalDateTimeString conditions reuse the strict checkers that already
-	// cover `value`.
+	// cover `value`. Each test pins the message substring naming the
+	// offending component so a future refactor that swaps the validator path
+	// surfaces here rather than silently passing the length-only check.
 
 	test('[invalid-attr-invalid-031] input[type=date][min] rejects out-of-range month', async () => {
 		const { violations } = await mlRuleTest(rule, '<input type="date" min="2024-13-01">');
 		expect(violations.length).toBe(1);
-		// `raw` is the offending token (`13`), not the full attribute value, since
-		// the date checker reports per-component out-of-range failures.
+		expect(violations[0]?.message).toContain('month part');
 	});
 
 	test('[invalid-attr-invalid-032] input[type=date][min] rejects out-of-range day', async () => {
 		const { violations } = await mlRuleTest(rule, '<input type="date" min="2024-02-30">');
 		expect(violations.length).toBe(1);
+		expect(violations[0]?.message).toContain('date part');
 	});
 
 	test('[invalid-attr-invalid-033] input[type=date][min] rejects wrong format', async () => {
 		const { violations } = await mlRuleTest(rule, '<input type="date" min="12-31-2024">');
 		expect(violations.length).toBe(1);
+		expect(violations[0]?.message).toContain('year part');
 	});
 
 	test('[invalid-attr-invalid-034] input[type=time][min] rejects out-of-range hour', async () => {
 		const { violations } = await mlRuleTest(rule, '<input type="time" min="25:00">');
 		expect(violations.length).toBe(1);
+		expect(violations[0]?.message).toContain('hour part');
 	});
 
 	test('[invalid-attr-invalid-035] input[type=month][min] rejects month 0', async () => {
 		const { violations } = await mlRuleTest(rule, '<input type="month" min="2024-00">');
 		expect(violations.length).toBe(1);
+		expect(violations[0]?.message).toContain('month part');
 	});
 
 	test('[invalid-attr-invalid-036] input[type=week][min] rejects week 54', async () => {
 		const { violations } = await mlRuleTest(rule, '<input type="week" min="2024-W54">');
 		expect(violations.length).toBe(1);
+		// week-string week-number is internally validated under the "date" component.
+		expect(violations[0]?.message).toContain('date part');
 	});
 
-	test('[invalid-attr-valid-023] input min/max accepts well-formed values per type', async () => {
-		const cases = [
-			'<input type="date" min="2024-01-01" max="2024-12-31">',
-			'<input type="month" min="2024-01" max="2024-12">',
-			'<input type="week" min="2024-W01" max="2024-W52">',
-			'<input type="time" min="00:00" max="23:59">',
+	test('[invalid-attr-invalid-040] input[type=date][min] rejects Feb 29 in non-leap year', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="date" min="2023-02-29">');
+		expect(violations.length).toBe(1);
+		expect(violations[0]?.message).toContain('date part');
+	});
+
+	// Each well-formed case is its own test so a failure does not mask later
+	// cases (per QA guidance on for-loop assertions).
+	test('[invalid-attr-valid-023] input[type=date] min/max accepts well-formed values', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="date" min="2024-01-01" max="2024-12-31">');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-valid-024] input[type=month] min/max accepts well-formed values', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="month" min="2024-01" max="2024-12">');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-valid-025] input[type=week] min/max accepts well-formed values', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="week" min="2024-W01" max="2024-W52">');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-valid-026] input[type=time] min/max accepts well-formed values', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="time" min="00:00" max="23:59">');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-valid-027] input[type=datetime-local] min/max accepts well-formed values', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
 			'<input type="datetime-local" min="2024-01-01T00:00" max="2024-12-31T23:59">',
-			'<input type="number" min="0" max="100">',
-			'<input type="range" min="-5" max="5">',
-		];
-		for (const src of cases) {
-			const { violations } = await mlRuleTest(rule, src);
-			expect(violations.length, src).toBe(0);
-		}
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-valid-028] input[type=number] min/max accepts integer floats', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="number" min="0" max="100">');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-valid-029] input[type=range] min/max accepts negative floats', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="range" min="-5" max="5">');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-valid-030] input[type=date][min] accepts Feb 29 in leap year', async () => {
+		// Pin the leap-year branch of datetimeTokenCheck.date so a future refactor
+		// that drops the year-aware day-of-month calculation is caught here.
+		const { violations } = await mlRuleTest(rule, '<input type="date" min="2024-02-29">');
+		expect(violations).toStrictEqual([]);
 	});
 });
 
@@ -2805,17 +2849,28 @@ describe('progress[max] must be greater than zero (HTML LS §4.10.13)', () => {
 	test('[invalid-attr-invalid-037] progress max="0" is rejected', async () => {
 		const { violations } = await mlRuleTest(rule, '<progress max="0"></progress>');
 		expect(violations.length).toBe(1);
+		expect(violations[0]?.message).toContain('greater than 0');
 	});
 
 	test('[invalid-attr-invalid-038] progress max="-5" is rejected', async () => {
 		const { violations } = await mlRuleTest(rule, '<progress max="-5"></progress>');
 		expect(violations.length).toBe(1);
+		expect(violations[0]?.message).toContain('greater than 0');
 	});
 
-	test('[invalid-attr-valid-024] progress max accepts positive values', async () => {
-		expect((await mlRuleTest(rule, '<progress max="1"></progress>')).violations.length).toBe(0);
-		expect((await mlRuleTest(rule, '<progress max="100"></progress>')).violations.length).toBe(0);
-		expect((await mlRuleTest(rule, '<progress max="0.5"></progress>')).violations.length).toBe(0);
+	test('[invalid-attr-valid-031] progress max="1" is accepted', async () => {
+		const { violations } = await mlRuleTest(rule, '<progress max="1"></progress>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-valid-032] progress max="100" is accepted', async () => {
+		const { violations } = await mlRuleTest(rule, '<progress max="100"></progress>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-valid-033] progress max="0.5" is accepted', async () => {
+		const { violations } = await mlRuleTest(rule, '<progress max="0.5"></progress>');
+		expect(violations).toStrictEqual([]);
 	});
 });
 

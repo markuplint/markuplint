@@ -194,4 +194,12 @@ test('HashName', () => {
 	expect(check('', 'HashName').matched).toBe(false);
 	// Invalid: missing the leading hash sign.
 	expect(check('mymap', 'HashName').matched).toBe(false);
+	// The type only enforces "# + at least one char". Per HTML LS, the name part
+	// must match an actual `name` attribute value somewhere in the document; the
+	// content syntax (whitespace, unicode, etc.) is delegated to the matching
+	// step. Pin the permissive behaviour explicitly so a future tightening of
+	// the syntax surfaces here rather than silently rejecting valid uses.
+	expect(check('#日本語', 'HashName').matched).toBe(true);
+	expect(check('#with space', 'HashName').matched).toBe(true);
+	expect(check('#name#extra', 'HashName').matched).toBe(true);
 });
