@@ -2,7 +2,6 @@ import type { Log } from '../types.js';
 import type { ARIAVersion } from '@markuplint/ml-spec';
 
 import path from 'node:path';
-import { pathToFileURL } from 'node:url';
 
 import { Files } from 'vscode-languageserver/node.js';
 
@@ -18,7 +17,10 @@ import { Files } from 'vscode-languageserver/node.js';
  * code path.
  *
  * Mirrors `packages/@markuplint/file-resolver/src/general-import.ts` —
- * keep the two in sync when adjusting Windows-path handling.
+ * keep the two in sync when adjusting Windows-path handling. Note:
+ * file-resolver currently still relies on `pathToFileURL()` and carries
+ * the same Windows / POSIX-absolute mismatch; tracked separately as
+ * #3840 (dev / v5).
  *
  * @param modPath - A module specifier — typically the result of `Files.resolve`
  *   or `require.resolve`, which may be a bare module name (`markuplint`), a
@@ -36,19 +38,28 @@ export function toImportSpecifier(modPath: string): string {
 	if (!isWindowsAbsolute && !isPosixAbsolute) {
 		return modPath;
 	}
+	// Build the `file://` URL explicitly for both branches. Node's
+	// `pathToFileURL()` is intentionally avoided: on Windows it resolves a
+	// POSIX-style absolute path against the *current drive* and emits
+	// `file:///D:/tmp/foo` instead of `file:///tmp/foo` (#3836); on POSIX
+	// it likewise mishandles Windows-style drive paths. Constructing the
+	// URL ourselves keeps the function OS-independent so POSIX CI exercises
+	// the Windows code path. Each segment is percent-encoded so that
+	// spaces (`Program Files`), non-ASCII characters (e.g. Japanese
+	// usernames), and URL-reserved characters like `#` / `?` do not get
+	// reinterpreted as fragment/query delimiters by Node's URL parser.
 	if (isWindowsAbsolute) {
-		// pathToFileURL on a POSIX runtime misinterprets Windows-style paths,
-		// so build the URL explicitly. Percent-encode each path segment so that
-		// spaces (`Program Files`), non-ASCII characters (e.g. Japanese
-		// usernames), and URL-reserved characters like `#` / `?` do not get
-		// reinterpreted as fragment/query delimiters by Node's URL parser.
 		// The drive-letter segment (`c:`) is kept as-is to match the
 		// `pathToFileURL` output shape on Windows (`file:///c:/...`).
 		const [drive, ...rest] = modPath.replaceAll('\\', '/').split('/');
 		const encoded = [drive, ...rest.map(segment => encodeURIComponent(segment))].join('/');
 		return `file:///${encoded}`;
 	}
-	return pathToFileURL(modPath).href;
+	// POSIX absolute path. Splitting `/tmp/foo` by `/` yields `['', 'tmp',
+	// 'foo']`; the leading empty element produces the `file:///` prefix
+	// after `join('/')`, so the round-trip is exactly `file:///tmp/foo`.
+	const segments = modPath.split('/').map(segment => encodeURIComponent(segment));
+	return `file://${segments.join('/')}`;
 }
 
 export async function getModule(log: Log): Promise<Module> {
