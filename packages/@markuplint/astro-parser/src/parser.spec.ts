@@ -806,6 +806,127 @@ describe('Issue', () => {
 			expect(debugMaps.some(line => line.includes('#ps:MustacheTag (each)'))).toBe(true);
 		});
 	});
+
+	describe('#3825 raw-text element body (script/style)', () => {
+		test('script body with HTML-like regex parses without parseError', () => {
+			const ast = parse('<script>const t = s.replace(/<br\\s*\\/?>/gi, " ");</script>');
+			expect(ast.parseError).toBeUndefined();
+			const tags = ast.nodeList.filter((n: any) => n.type === 'starttag' || n.type === 'endtag');
+			expect(tags.map((t: any) => `${t.type}:${t.nodeName}`)).toEqual(['starttag:script', 'endtag:script']);
+		});
+
+		test('issue example with frontmatter, title, and TS regex script', () => {
+			const ast = parse(`---
+const title = 'Script HTML-like regex';
+---
+
+<h1>{title}</h1>
+
+<script>
+  function normalizeDescription(source: string): string {
+    return source.replace(/<br\\s*\\/?>/gi, ' ');
+  }
+
+  console.log(normalizeDescription('line<br>break'));
+</script>`);
+			expect(ast.parseError).toBeUndefined();
+			const tags = ast.nodeList.filter((n: any) => n.type === 'starttag' || n.type === 'endtag');
+			const tagSig = tags.map((t: any) => `${t.type}:${t.nodeName}`);
+			// Strict equality: an extra phantom <script> or a swallowed <h1> would silently
+			// pass under `toContain`.
+			expect(tagSig).toEqual(['starttag:h1', 'endtag:h1', 'starttag:script', 'endtag:script']);
+		});
+
+		test('style body with HTML-like content parses without parseError', () => {
+			const ast = parse('<style>/* <br = */ a { color: red; }</style>');
+			expect(ast.parseError).toBeUndefined();
+			const tags = ast.nodeList.filter((n: any) => n.type === 'starttag' || n.type === 'endtag');
+			expect(tags.map((t: any) => `${t.type}:${t.nodeName}`)).toEqual(['starttag:style', 'endtag:style']);
+		});
+
+		test('script with attributes + body containing regex', () => {
+			const ast = parse('<script type="module" is:inline>const t = s.replace(/<br\\s*\\/?>/gi, " ");</script>');
+			expect(ast.parseError).toBeUndefined();
+			const map = nodeListToDebugMaps(ast.nodeList);
+			expect(map[0]).toBe('[1:1]>[1:33](0,32)script: <script␣type="module"␣is:inline>');
+			// End tag must still be emitted; without this guard a regression that
+			// drops the close tag would silently pass since `map[0]` only checks
+			// the start tag.
+			expect(map.at(-1)).toMatch(/script: <\/script>$/);
+		});
+
+		test('self-closing script (regression guard)', () => {
+			const ast = parse('<script src="x.js" />');
+			expect(ast.parseError).toBeUndefined();
+			const tags = ast.nodeList.filter((n: any) => n.type === 'starttag');
+			expect(tags).toHaveLength(1);
+			expect(tags[0].nodeName).toBe('script');
+		});
+
+		test('empty script (regression guard)', () => {
+			const ast = parse('<script></script>');
+			expect(ast.parseError).toBeUndefined();
+			const tags = ast.nodeList.filter((n: any) => n.type === 'starttag' || n.type === 'endtag');
+			expect(tags.map((t: any) => `${t.type}:${t.nodeName}`)).toEqual(['starttag:script', 'endtag:script']);
+		});
+
+		test('multi-line script body reports correct end tag position', () => {
+			const ast = parse(`<script>
+const t = s.replace(/<br\\s*\\/?>/gi, " ");
+</script>`);
+			expect(ast.parseError).toBeUndefined();
+			const endTag = ast.nodeList.find((n: any) => n.type === 'endtag' && n.nodeName === 'script');
+			expect(endTag).toBeDefined();
+			expect(endTag!.line).toBe(3);
+			expect(endTag!.col).toBe(1);
+			expect(endTag!.raw).toBe('</script>');
+		});
+
+		test('script close tag is matched ASCII-case-insensitively (uppercase close)', () => {
+			// Note: the reverse pairing (`<SCRIPT>...</script>`) is not testable here
+			// because Astro upstream classifies `<SCRIPT>` as a component (PascalCase
+			// component-name rule), not the HTML script element — its body is then
+			// parsed as JSX-style children, not raw text. Case-insensitive close-tag
+			// matching is a parser-utils concern, locked in only for the
+			// lowercase-open + uppercase-close direction here.
+			const ast = parse('<script>const t = "<br>";</SCRIPT>');
+			expect(ast.parseError).toBeUndefined();
+			const endTag = ast.nodeList.find((n: any) => n.type === 'endtag');
+			expect(endTag).toBeDefined();
+			expect(endTag!.raw).toBe('</SCRIPT>');
+		});
+
+		test('a different raw-text tag in the body does not terminate the script', () => {
+			// `</style>` inside a script string must NOT close the `<script>` because
+			// the tag names differ. Locks in the per-tag-name match in
+			// `parseCodeFragment`'s raw-text close pattern.
+			//
+			// Note: the stricter HTML LS §13.2.5.1 lookahead variant — `</scripts>`
+			// (same prefix + extra char) must not close — is not testable via Astro
+			// because the Astro upstream tokenizer rejects `</scriptX>` substrings
+			// inside script bodies before markuplint sees them.
+			const ast = parse('<script>const x = "</style>";</script>');
+			expect(ast.parseError).toBeUndefined();
+			const endTags = ast.nodeList.filter((n: any) => n.type === 'endtag' && n.nodeName === 'script');
+			expect(endTags).toHaveLength(1);
+			expect(endTags[0].raw).toBe('</script>');
+		});
+
+		test('unterminated script body falls back to the legacy parse path', () => {
+			// No </script> in the body — the raw-text short-circuit MUST NOT consume the
+			// body and MUST let the existing "unclosed tag" handling run.
+			// Locks in the `if (match)` else branch of `parseCodeFragment`'s raw-text guard.
+			expect(() => parse('<script>const x = 1;')).not.toThrow();
+		});
+
+		test('plain script body (no HTML-like content) still parses correctly (regression)', () => {
+			const ast = parse('<script>const x = 1;</script>');
+			expect(ast.parseError).toBeUndefined();
+			const map = nodeListToDebugMaps(ast.nodeList);
+			expect(map[0]).toBe('[1:1]>[1:9](0,8)script: <script>');
+			expect(map.at(-1)).toBe('[1:21]>[1:30](20,29)script: </script>');
+		});
+	});
 });
 
 describe('Directives', () => {
