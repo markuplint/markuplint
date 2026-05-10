@@ -48855,7 +48855,8 @@
 			"attributes": {
 				"attributionsrc": {
 					"description": "Specifies that you want the browser to send an Attribution-Reporting-Eligible header. On the server-side this is used to trigger sending an Attribution-Reporting-Register-Source header in the response, to register a navigation-based attribution source. The browser stores the source data associated with the navigation-based attribution source (as provided in the Attribution-Reporting-Register-Source response header) when the user clicks the link. See the Attribution Reporting API for more details. There are two versions of this attribute that you can set: Boolean, i.e., just the attributionsrc name. This specifies that you want the Attribution-Reporting-Eligible header sent to the same server as the href attribute points to. This is fine when you are handling the attribution source registration on the same server. Value containing one or more URLs, for example: htmlattributionsrc=\"https://a.example/register-source https://b.example/register-source\" This is useful in cases where the requested resource is not on a server you control, or you just want to handle registering the attribution source on a different server. In this case, you can specify one or more URLs as the value of attributionsrc. When the resource request occurs, the Attribution-Reporting-Eligible header will be sent to the URL(s) specified in attributionsrc in addition to the resource origin. These URLs can then respond with the Attribution-Reporting-Register-Source to complete registration. Note: Specifying multiple URLs means that multiple attribution sources can be registered on the same feature. You might for example have different campaigns that you are trying to measure the success of, which involve generating different reports on different data. <a> elements cannot be used as attribution triggers, only sources.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"charset": {
 					"description": "Hinted at the character encoding of the linked URL. Note: This attribute is deprecated and should not be used by authors. Use the HTTP Content-Type header on the linked URL.",
@@ -50323,7 +50324,8 @@
 			"attributes": {
 				"compact": {
 					"description": "This Boolean attribute hints that the list should be rendered in a compact style. The interpretation of this attribute depends on the user agent and it doesn't work in all browsers.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				}
 			}
 		},
@@ -50673,15 +50675,18 @@
 			"attributes": {
 				"color": {
 					"description": "This attribute sets the text color using either a named color or a color specified in the hexadecimal #RRGGBB format.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"face": {
 					"description": "This attribute contains a comma-separated list of one or more font names. The document text in the default style is rendered in the first font face that the client's browser supports. If no font listed is installed on the local system, the browser typically defaults to the proportional or fixed-width font for that system.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"size": {
 					"description": "This attribute specifies the font size as either a numeric or relative value. Numeric values range from 1 to 7 with 1 being the smallest and 3 the default. It can be defined using a relative value, like +2 or -3, which sets it relative to 3, the default value.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				}
 			}
 		},
@@ -50825,31 +50830,38 @@
 			"attributes": {
 				"frameborder": {
 					"description": "This attribute allows you to specify a frame's border.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"marginheight": {
 					"description": "This attribute defines the height of the margin between frames.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"marginwidth": {
 					"description": "This attribute defines the width of the margin between frames.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"name": {
 					"description": "This attribute is used for labeling frames. Without labeling, every link will open in the frame that it's in – the closest parent frame. See the target attribute for more information.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"noresize": {
 					"description": "This attribute prevents resizing of frames by users.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"scrolling": {
 					"description": "This attribute defines the existence of a scrollbar. If this attribute is not used, the browser adds a scrollbar when necessary. There are two choices: \"yes\" for forcing a scrollbar even when it is not necessary and \"no\" for forcing no scrollbar even when it is necessary.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"src": {
 					"description": "This attribute specifies the document that will be displayed by the frame.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				}
 			}
 		},
@@ -50871,11 +50883,13 @@
 			"attributes": {
 				"cols": {
 					"description": "This attribute specifies the number and size of horizontal spaces in a frameset.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"rows": {
 					"description": "This attribute specifies the number and size of vertical spaces in a frameset.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				}
 			}
 		},
@@ -51249,7 +51263,8 @@
 					"deprecated": true
 				},
 				"xmlns": {
-					"description": "Specifies the XML Namespace of the document. Default value is \"http://www.w3.org/1999/xhtml\". This is required in documents parsed with XML parsers, and optional in text/html documents."
+					"description": "Specifies the XML Namespace of the document. Default value is \"http://www.w3.org/1999/xhtml\". This is required in documents parsed with XML parsers, and optional in text/html documents.",
+					"nonStandard": true
 				}
 			}
 		},
@@ -51503,7 +51518,8 @@
 				},
 				"attributionsrc": {
 					"description": "Specifies that you want the browser to send an Attribution-Reporting-Eligible header along with the image request. On the server-side this is used to trigger sending an Attribution-Reporting-Register-Source or Attribution-Reporting-Register-Trigger header in the response, to register an image-based attribution source or attribution trigger, respectively. Which response header should be sent back depends on the value of the Attribution-Reporting-Eligible header that triggered the registration. The corresponding source or trigger event is set off once the browser receives the response containing the image file. Note: See the Attribution Reporting API for more details. There are two versions of this attribute that you can set: Boolean, i.e., just the attributionsrc name. This specifies that you want the Attribution-Reporting-Eligible header sent to the same server as the src attribute points to. This is fine when you are handling the attribution source or trigger registration on the same server. When registering an attribution trigger this property is optional, and a boolean value will be used if it is omitted. Value containing one or more URLs, for example: html<img src=\"image-file.png\" alt=\"My image file description\" attributionsrc=\"https://a.example/register-source https://b.example/register-source\" /> This is useful in cases where the requested resource is not on a server you control, or you just want to handle registering the attribution source on a different server. In this case, you can specify one or more URLs as the value of attributionsrc. When the resource request occurs the Attribution-Reporting-Eligible header will be sent to the URL(s) specified in attributionSrc in addition to the resource origin. These URLs can then respond with an Attribution-Reporting-Register-Source or Attribution-Reporting-Register-Trigger header as appropriate to complete registration. Note: Specifying multiple URLs means that multiple attribution sources can be registered on the same feature. You might for example have different campaigns that you are trying to measure the success of, which involve generating different reports on different data.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"border": {
 					"description": "The width of a border around the image. Use the border CSS property instead.",
@@ -53172,11 +53188,13 @@
 				},
 				"height": {
 					"description": "Sets the height in pixels or percentage value.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"hspace": {
 					"description": "Sets the horizontal margin",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"loop": {
 					"description": "Sets the number of times the marquee will scroll. If no value is specified, the default value is −1, which means the marquee will scroll continuously.",
@@ -53184,11 +53202,13 @@
 				},
 				"scrollamount": {
 					"description": "Sets the amount of scrolling at each interval in pixels. The default value is 6.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"scrolldelay": {
 					"description": "Sets the interval between each scroll movement in milliseconds. The default value is 85. Note that any value smaller than 60 is ignored and the value 60 is used instead unless truespeed is specified.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"truespeed": {
 					"description": "By default, scrolldelay values lower than 60 are ignored. If truespeed is present, those values are not ignored.",
@@ -53196,11 +53216,13 @@
 				},
 				"vspace": {
 					"description": "Sets the vertical margin in pixels or percentage value.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"width": {
 					"description": "Sets the width in pixels or percentage value.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				}
 			}
 		},
@@ -53947,19 +53969,23 @@
 			"attributes": {
 				"name": {
 					"description": "Name of the parameter.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"type": {
 					"description": "Only used if the valuetype is set to ref. Specifies the MIME type of values found at the URI specified by value.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"value": {
 					"description": "Specifies the value of the parameter.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"valuetype": {
 					"description": "Specifies the type of the value attribute. Possible values are: data: Default value. The value is passed to the object's implementation as a string. ref: The value is a URI to a resource where run-time values are stored. object: An ID of another <object> in the same document.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				}
 			}
 		},
@@ -54384,7 +54410,8 @@
 				},
 				"attributionsrc": {
 					"description": "Specifies that you want the browser to send an Attribution-Reporting-Eligible header along with the script resource request. On the server-side this is used to trigger sending an Attribution-Reporting-Register-Source or Attribution-Reporting-Register-Trigger header in the response, to register a JavaScript-based attribution source or attribution trigger, respectively. Which response header should be sent back depends on the value of the Attribution-Reporting-Eligible header that triggered the registration. Note: Alternatively, JavaScript-based attribution sources or triggers can be registered by sending a fetch() request containing the attributionReporting option (either set directly on the fetch() call or on a Request object passed into the fetch() call), or by sending an XMLHttpRequest with setAttributionReporting() invoked on the request object. There are two versions of this attribute that you can set: Boolean, i.e., just the attributionsrc name. This specifies that you want the Attribution-Reporting-Eligible header sent to the same server as the src attribute points to. This is fine when you are handling the attribution source or trigger registration on the same server. When registering an attribution trigger this property is optional, and an empty string value will be used if it is omitted. Value containing one or more URLs, for example: html<script src=\"myscript.js\" attributionsrc=\"https://a.example/register-source https://b.example/register-source\"></script> This is useful in cases where the requested resource is not on a server you control, or you just want to handle registering the attribution source on a different server. In this case, you can specify one or more URLs as the value of attributionsrc. When the resource request occurs the Attribution-Reporting-Eligible header will be sent to the URL(s) specified in attributionSrc in addition to the resource origin. These URLs can then respond with an Attribution-Reporting-Register-Source or Attribution-Reporting-Register-Trigger header as appropriate to complete registration. Note: Specifying multiple URLs means that multiple attribution sources can be registered on the same feature. You might for example have different campaigns that you are trying to measure the success of, which involve generating different reports on different data. See the Attribution Reporting API for more details.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"blocking": {
 					"description": "This attribute explicitly indicates that certain operations should be blocked until the script has executed. The operations that are to be blocked must be a space-separated list of blocking tokens. Currently there is only one token: render: The rendering of content on the screen is blocked. Note: Only script elements in the document's <head> can possibly block rendering. Scripts are not render-blocking by default; if a script element does not include type=\"module\", async, or defer, then it blocks parsing, not rendering. If such a script element is added dynamically via script, you must set blocking = \"render\" for it to block rendering.",
@@ -55115,7 +55142,8 @@
 				},
 				"bgcolor": {
 					"description": "Defines the background color of each body cell. The value is an HTML color; either a 6-digit hexadecimal RGB code, prefixed by a #, or a color keyword. Other CSS <color> values are not supported. Use the background-color CSS property instead, as this attribute is deprecated.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"char": {
 					"description": "Specifies the alignment of the content to a character of each body cell. Typical values for this include a period (.) when attempting to align numbers or monetary values. If align is not set to char, this attribute is ignored.",
@@ -55404,7 +55432,8 @@
 				},
 				"bgcolor": {
 					"description": "Defines the background color of each foot cell. The value is an HTML color; either a 6-digit hexadecimal RGB code, prefixed by a #, or a color keyword. Other CSS <color> values are not supported. Use the background-color CSS property instead, as this attribute is deprecated.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"char": {
 					"description": "Does nothing. It was originally intended to specify the alignment of the content to a character of each foot cell. Typical values for this include a period (.) when attempting to align numbers or monetary values. If align is not set to char, this attribute is ignored.",
@@ -55551,7 +55580,8 @@
 				},
 				"bgcolor": {
 					"description": "Defines the background color of each head cell. The value is an HTML color; either a 6-digit hexadecimal RGB code, prefixed by a #, or a color keyword. Other CSS <color> values are not supported. Use the background-color CSS property instead, as this attribute is deprecated.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"char": {
 					"description": "Does nothing. It was originally intended to specify the alignment of the content to a character of each head cell. If align is not set to char, this attribute is ignored.",
