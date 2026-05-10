@@ -194,7 +194,7 @@ function walkCondition(node: csstree.CssNode, source: string): ReturnType<typeof
 			const offset = child.loc?.start.offset ?? 0;
 			// Skip the leading `(` so the highlight lands on the feature name.
 			const nameOffset = source.slice(offset).search(/[A-Z]/i);
-			result = new Token(name, offset + (Math.max(nameOffset, 0)), source).unmatched({
+			result = new Token(name, offset + Math.max(nameOffset, 0), source).unmatched({
 				reason: 'doesnt-exist-in-enum',
 				expects,
 				partName: `deprecated media feature "${name}"`,
