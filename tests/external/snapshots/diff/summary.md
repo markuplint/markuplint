@@ -1,6 +1,6 @@
 # nu-validator Benchmark Summary
 
-- generated: 2026-05-10T17:56:53.177Z
+- generated: 2026-05-10T18:40:44.919Z
 - submodule: `142931395412c00434ffb40a14d65992efd17aa8`
 - nu-validator: `ghcr.io/validator/validator@sha256:9746b8663542cb5bded271fea08a3cc04ca12af6232f014baa341fccc01d3a21`
 - markuplint: `5.0.0-rc.4`
