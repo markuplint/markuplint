@@ -98,6 +98,20 @@ expect(debugMaps).toStrictEqual([
    });
    ```
 
+### 4. スプレッド属性の波括弧マッチャを更新する
+
+`{...EXPR}` のパースで新たなエッジケース（未考慮の文字列構文、コメント形式、エスケープシーケンス等）が報告された場合:
+
+1. エッジケースを `src/spread-attr.spec.ts` の `findMatchingBrace()` ユニットテストとして再現する。修正前は失敗するテストにする。
+2. 修正の置き場所を判断する:
+   - **文字列 / テンプレート / クォート処理** → `findMatchingBrace()` の `inString` 分岐を拡張
+   - **コメント処理** → `//` / `/* */` の分岐を拡張
+   - **エスケープシーケンスの偶奇判定** → `countPrecedingBackslashes()` を拡張
+3. 失敗ユニットテストが green になる最小の修正に留める。完全な JavaScript レキサーを実装してはいけない。
+4. 新しいケースが単体テストで自然に表現できない場合、`parser.spec.ts` の `#3856` describe に統合テストを追加する。
+5. マッチャがそのケースに対応できない場合（例: 正規表現リテラル）、`src/spread-attr.ts` の JSDoc の **Known limitations** に追記する。
+6. 検証: `yarn build --scope @markuplint/astro-parser && yarn test --scope @markuplint/astro-parser && yarn lint`。
+
 ## 上流影響チェックリスト
 
 上流パッケージの変更がこのパーサーに影響を与える可能性があります:

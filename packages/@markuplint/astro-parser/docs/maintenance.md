@@ -98,6 +98,26 @@ Namespace resolution is currently handled by the base `Parser` class from `@mark
    });
    ```
 
+### 4. Updating the spread-attribute brace matcher
+
+When a new edge case is reported for `{...EXPR}` parsing (a previously
+unconsidered string syntax, comment style, or escape sequence):
+
+1. Reproduce the edge case as a `findMatchingBrace()` unit test in
+   `src/spread-attr.spec.ts` — the test should fail before any fix.
+2. Decide where the fix belongs:
+   - **String / template / quote handling** → extend the `inString` switch in
+     `findMatchingBrace()`
+   - **Comment handling** → extend the `//` / `/* */` branches
+   - **Escape sequence parity** → extend `countPrecedingBackslashes()`
+3. Apply the minimum change that turns the failing unit test green; avoid
+   introducing a full JavaScript lexer.
+4. If the new case is not naturally expressible as a standalone unit test,
+   add an integration test in `parser.spec.ts` under the `#3856` describe.
+5. Update the **Known limitations** list in `src/spread-attr.ts` JSDoc if the
+   matcher still cannot handle the case (e.g., regex literals).
+6. Verify: `yarn build --scope @markuplint/astro-parser && yarn test --scope @markuplint/astro-parser && yarn lint`.
+
 ## Upstream Impact Checklist
 
 Changes to upstream packages can affect this parser:

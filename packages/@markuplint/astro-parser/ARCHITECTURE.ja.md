@@ -33,6 +33,7 @@ flowchart TD
         astroParser["AstroParser\nextends Parser‹Node›"]
         astroParseFn["astroParse()\nastro-eslint-parser ラッパー"]
         detectBlock["detectBlockBehavior()\n.map()/.filter() 検出"]
+        spreadAttr["extractSpreadAttribute()\n波括弧対応スプレッド抽出器"]
         compScanner["componentScanner\n(サブパス: ./component-scanner)"]
     end
 
@@ -47,6 +48,7 @@ flowchart TD
     astroCompiler -->|"Node 型"| astroParseFn
     astroParseFn -->|"RootNode.children"| astroParser
     detectBlock -->|"blockBehavior"| astroParser
+    spreadAttr -->|"visitAttr() の spread プリパス"| astroParser
     astroParser -->|"MLASTDocument を生成"| mlCore
     astroParser -->|"parse()"| compScanner
     compScanner -->|"ComponentScanResult"| pretenders
@@ -185,6 +187,8 @@ Astro テンプレートディレクティブは `name:modifier` 構文を使用
 - 波括弧を含む正規表現リテラル（例: `{...x.match(/}/) ? a : b}`）は認識しません。`/` は常に除算演算子として扱われます。遭遇した場合は変数に切り出して回避してください。
 
 **撤去条件**: `parser-utils/script-parser.ts` が TypeScript 構文を理解し、かつスプレッドの `}` を超えて伸びないように改善された場合、本パッケージの `src/spread-attr.ts` と `visitAttr()` のプリパスは削除し、基底パーサーのパスに戻すことが可能です。
+
+**`detectBlockBehavior()` との独立性**: スプレッドのプリパスは属性トークンに対して動作し、`detectBlockBehavior()` は `expression` AST ノードに対して走るため、両者は状態を共有しません。両者の相互作用は `parser.spec.ts` の `<Comp {...rest}>{list.map(...)}</Comp>` リグレッションテストで保証されています。
 
 ## jsx-parser との比較
 

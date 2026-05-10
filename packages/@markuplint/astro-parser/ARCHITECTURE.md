@@ -33,6 +33,7 @@ flowchart TD
         astroParser["AstroParser\nextends Parser‹Node›"]
         astroParseFn["astroParse()\nastro-eslint-parser wrapper"]
         detectBlock["detectBlockBehavior()\n.map()/.filter() detection"]
+        spreadAttr["extractSpreadAttribute()\nbrace-aware spread extractor"]
         compScanner["componentScanner\n(subpath: ./component-scanner)"]
     end
 
@@ -47,6 +48,7 @@ flowchart TD
     astroCompiler -->|"Node types"| astroParseFn
     astroParseFn -->|"RootNode.children"| astroParser
     detectBlock -->|"blockBehavior"| astroParser
+    spreadAttr -->|"spread pre-pass in visitAttr()"| astroParser
     astroParser -->|"produces MLASTDocument"| mlCore
     astroParser -->|"parse()"| compScanner
     compScanner -->|"ComponentScanResult"| pretenders
@@ -185,6 +187,8 @@ Both failure modes were reported in [#3824](https://github.com/markuplint/markup
 - Regular-expression literals containing braces (e.g. `{...x.match(/}/) ? a : b}`) are not recognised — `/` is always treated as a division operator. Rewrite via a variable indirection if encountered.
 
 **Retraction condition**: if `parser-utils/script-parser.ts` is upgraded to handle TypeScript syntax and to stop extending past the spread's `}`, this package's `src/spread-attr.ts` and the `visitAttr()` pre-pass can be removed and the base parser path restored.
+
+**Independence from `detectBlockBehavior()`**: the spread pre-pass operates on attribute tokens, while `detectBlockBehavior()` runs over `expression` AST nodes — they share no state. The interaction is locked down by the `<Comp {...rest}>{list.map(...)}</Comp>` regression test in `parser.spec.ts`.
 
 ## Comparison with jsx-parser
 
