@@ -28,3 +28,11 @@ Cite: [HTML Living Standard 4.3.11 Headings and outlines](https://html.spec.what
 <h2>Heading 2</h2>
 <h3>Heading 3</h3>
 ```
+
+The constraint applies only to a heading that _follows another heading lead_. A document (or fragment) whose first heading is at any level has no lead, so it is correct.
+
+```html
+<!-- Article fragment whose first heading is h3 -->
+<h3>Section heading</h3>
+<h4>Sub heading</h4>
+```

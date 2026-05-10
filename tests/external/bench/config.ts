@@ -38,6 +38,12 @@ export const benchmarkConfig: Config = {
 		'link-types': { options: { allowMicroformats: true } },
 		'map-id-name-match': true,
 		'meter-value-bounds': true,
+		// Catches skipped heading levels (HTML LS §4.3.11).
+		'heading-levels': true,
+		// Catches `<div id="a" id="b">`-style duplicate attribute names (HTML LS tokenizer).
+		'attr-duplication': true,
+		// Catches missing/legacy/quirky DOCTYPE (HTML LS §13.2 — non-`<!DOCTYPE html>` declarations).
+		doctype: true,
 		'no-extra-selected-options': true,
 		'no-orphaned-end-tag': true,
 		'srcset-sizes-constraint': true,

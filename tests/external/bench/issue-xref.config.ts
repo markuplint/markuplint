@@ -57,6 +57,13 @@ export const xrefMappings: readonly XrefMapping[] = [
 		note:
 			'`ml-only` fixtures here are all W3C SVG 1.1 test-suite files; their violations are `deprecated-attr` / `invalid-attr` / `permitted-contents` on SVG 1.1 remnants (`version`, `baseProfile`, `xmlns:xlink`, `<font-face>` inside `<defs>`, `font-family` with a custom family), not on filter references. markuplint is spec-correct under SVG 2; nu-validator is lax on these SVG 1.1 features. The proposed `svg-filter-reference-relationship` rule is unrelated and not blocked by this noise.',
 	},
+	{
+		kind: 'primary',
+		issue: 3844,
+		filter: /^html\/parser\//,
+		note:
+			'Two distinct gaps surface here: (A) `parse5` onParseError signals (HTML LS §13.2.5 tokenizer errors — bogus comment/doctype, EOF inside comment/doctype/system-id, character-reference malformations, U+0000/U+000B forbidden code points, unquoted-attr edge cases) are not surfaced as violations by `@markuplint/html-parser`; (B) `isDocumentFragment` heuristic treats any source not starting with `<!doctype html>` or `<html>` as a fragment, so the `doctype` rule skips full documents that begin with `<meta>`/`<title>` (`no-doctype`, `eof-without-doctype`, `bogus-doctype`, `nameless-doctype`, etc.). Closing both is a prerequisite for completing nu-validator parser-error coverage.',
+	},
 
 	// === 2 次群: bench では裏取れない Issue（ステルブロック） ===
 	{
