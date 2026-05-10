@@ -18,10 +18,18 @@ const expects = (withoutParameters: boolean) => [
  * unterminated (no closing DQUOTE before end-of-string), or `null` when every
  * quoted-string is properly closed.
  *
- * RFC 9110 §5.6.6 requires the closing DQUOTE in `quoted-string`; the WHATWG
- * MIME Sniffing parser tolerates the missing terminator and returns a partial
- * value (so `MIMEType.parse` cannot surface this conformance error). We do
- * the structural scan ourselves and run it before invoking the parser.
+ * [RFC 9110 §5.6.6](https://www.rfc-editor.org/rfc/rfc9110#name-parameters)
+ * requires the closing DQUOTE in `quoted-string`; the
+ * [WHATWG MIME Sniffing](https://mimesniff.spec.whatwg.org/#parse-a-mime-type)
+ * parser tolerates the missing terminator and returns a partial value (so
+ * `MIMEType.parse` cannot surface this conformance error). We do the
+ * structural scan ourselves and run it before invoking the parser.
+ *
+ * **Limitation:** the scan assumes the opening DQUOTE immediately follows
+ * the `=` byte. RFC 9110 allows OWS (optional whitespace) around `=`, but
+ * WHATWG MIME Sniffing's tokenizer (and every nu-validator-known input
+ * today) closes that gap. If a future fixture exercises `; charset = "..."`
+ * style spacing, extend this scan to skip OWS before checking for `"`.
  *
  * @param value Raw attribute value to scan.
  * @returns The offset of the opening DQUOTE of the unterminated parameter, or `null`.
