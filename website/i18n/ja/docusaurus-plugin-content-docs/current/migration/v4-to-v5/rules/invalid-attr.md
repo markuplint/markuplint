@@ -160,5 +160,6 @@ v5 では、これまで `Any` として素通りしていた領域について 
 | `img[role]` + `alt=""`                | `<img role="presentation" alt="">`              | [#3641](https://github.com/markuplint/markuplint/issues/3641) | [ARIA in HTML — img](https://w3c.github.io/html-aria/#el-img)                                             |
 | URL 内の禁止コードポイント            | `<a href="http://example.com/">`                | [#3629](https://github.com/markuplint/markuplint/issues/3629) | [URL LS — URL code points](https://url.spec.whatwg.org/#url-code-points)                                  |
 | `http-equiv` に応じた `meta[content]` | `<meta http-equiv="refresh" content="garbage">` | [#3734](https://github.com/markuplint/markuplint/issues/3734) | [HTML LS — meta `http-equiv`](https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-http-equiv) |
+| `media=` の MQL5 厳格文法             | `<link media="screen and (color: 1em)">`        | [#3850](https://github.com/markuplint/markuplint/issues/3850) | [Media Queries Level 5 §4](https://www.w3.org/TR/mediaqueries-5/#mq-features)                             |
 
 これらの厳格化を個別に無効化する設定はありません。特定のケースで問題がある場合は、失敗するマークアップと仕様の該当段落を添えて [Issue を起票](https://github.com/markuplint/markuplint/issues/new/choose) してください — 仕様の誤読が判明したものは修正または範囲を狭めます。
