@@ -199,3 +199,17 @@ yarn build --scope @markuplint/astro-parser && yarn test --scope @markuplint/ast
 3. Known limitations are listed in `src/spread-attr.ts` JSDoc — regular-expression literals containing braces are not handled. Document any additional limitations there.
 
 See [#3824](https://github.com/markuplint/markuplint/issues/3824) for the original report and the rationale for handling spread attributes locally instead of in `parser-utils`.
+
+### `<script>` or `<style>` body throws `Invalid tag syntax`
+
+**Symptom:** A `<script>` body containing JavaScript / TypeScript with HTML-like substrings (most commonly a regex such as `/<br\s*\/?>/gi` or `/<\/?p>/gi`) throws `ParserError: SyntaxError: Invalid tag syntax: "..."`. Same for `<style>` bodies that include CSS comments such as `/* <br = */`.
+
+**Cause:** `AstroParser.visitElement()` passes the entire element source (including body) to `parser-utils`'s `parseCodeFragment()`. Without raw-text awareness, `parseCodeFragment()` would treat the body as HTML and try to tokenize the regex's `<br...>` as a start tag, hitting `\s` (literal backslash) where an attribute name is expected.
+
+**Solution:** Raw-text safety lives in `parser-utils/parser.ts` `parseCodeFragment()` — after a non-self-closing start tag whose `nodeName.toLowerCase()` matches `rawTextElements`, the body is consumed verbatim until the next ASCII-case-insensitive `</tagName` followed by a tab/LF/FF/CR/space/`>` /`/` (HTML LS §13.2.5.1). If a regression appears here:
+
+1. Verify the failing fixture still reproduces by running `npx vitest run packages/@markuplint/astro-parser/src/parser.spec.ts -t "#3860"`.
+2. The fix is _not_ inside `astro-parser` — inspect `packages/@markuplint/parser-utils/src/parser.ts` `parseCodeFragment()` to confirm the raw-text branch is intact and the close-tag regex still matches the spec character class.
+3. If a different upstream parser is added that hands the full element raw to `parseCodeFragment` (similar to `astro-parser`), no extra wiring is needed — the same parser-utils branch covers it.
+
+See [#3860](https://github.com/markuplint/markuplint/issues/3860) (v4 backport of [#3825](https://github.com/markuplint/markuplint/issues/3825)) for the original report.
