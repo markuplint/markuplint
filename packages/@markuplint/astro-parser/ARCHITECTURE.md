@@ -190,6 +190,12 @@ Both failure modes were reported in [#3824](https://github.com/markuplint/markup
 
 **Independence from `detectBlockBehavior()`**: the spread pre-pass operates on attribute tokens, while `detectBlockBehavior()` runs over `expression` AST nodes — they share no state. The interaction is locked down by the `<Comp {...rest}>{list.map(...)}</Comp>` regression test in `parser.spec.ts`.
 
+### Raw-text Element Bodies (`<script>`, `<style>`)
+
+`AstroParser.visitElement()` hands the **entire element source** (including body and end tag) to `parser-utils`'s `parseCodeFragment()` and uses the first parsed node as the start tag and the last as the end tag. For `<script>` and `<style>`, the body would otherwise be re-tokenized as HTML — and a regex such as `/<br\s*\/?>/gi` inside a script body would be misread as a tag, causing `Invalid tag syntax` ([#3825](https://github.com/markuplint/markuplint/issues/3825)).
+
+Raw-text safety is delegated to `parser-utils`: `parseCodeFragment()` recognizes `rawTextElements` (default `['style', 'script']`) and consumes the body verbatim until the next ASCII-case-insensitive `</tagName` followed by a tab/LF/FF/CR/space/`>` /`/`, per [HTML LS §13.2.5.1](https://html.spec.whatwg.org/multipage/syntax.html#cdata-rcdata-restrictions). `astro-parser` requires no special-case branch — the existing `visitElement()` flow continues to work because the start tag and end tag still occupy `parsedNodes[0]` and `parsedNodes[-1]` respectively.
+
 ## Comparison with jsx-parser
 
 | Feature                   | `astro-parser`                                   | `jsx-parser`                                    |

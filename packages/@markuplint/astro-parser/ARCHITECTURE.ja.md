@@ -190,6 +190,12 @@ Astro テンプレートディレクティブは `name:modifier` 構文を使用
 
 **`detectBlockBehavior()` との独立性**: スプレッドのプリパスは属性トークンに対して動作し、`detectBlockBehavior()` は `expression` AST ノードに対して走るため、両者は状態を共有しません。両者の相互作用は `parser.spec.ts` の `<Comp {...rest}>{list.map(...)}</Comp>` リグレッションテストで保証されています。
 
+### Raw-text 要素の本文（`<script>`、`<style>`）
+
+`AstroParser.visitElement()` は **要素全体（本文・終了タグを含む）の raw 文字列**を `parser-utils` の `parseCodeFragment()` に渡し、最初のノードを開始タグ、最後のノードを終了タグとして使います。`<script>` や `<style>` の本文をそのまま再トークナイズすると、`/<br\s*\/?>/gi` のような正規表現がタグとして誤読され `Invalid tag syntax` で失敗します（[#3825](https://github.com/markuplint/markuplint/issues/3825)）。
+
+raw-text の安全性は `parser-utils` 側に委譲しています。`parseCodeFragment()` は `rawTextElements`（既定 `['style', 'script']`）を認識し、本文を次に現れる ASCII 大文字小文字非依存の `</tagName`（タブ/LF/FF/CR/空白/`>` /`/` のいずれかが続く）まで丸ごと消費します（[HTML LS §13.2.5.1](https://html.spec.whatwg.org/multipage/syntax.html#cdata-rcdata-restrictions)）。`astro-parser` 側に専用分岐は不要で、`parsedNodes[0]` と `parsedNodes[-1]` がそれぞれ開始タグ・終了タグになる既存フローのまま動作します。
+
 ## jsx-parser との比較
 
 | 機能                           | `astro-parser`                                  | `jsx-parser`                                      |
