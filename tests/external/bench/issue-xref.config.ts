@@ -95,9 +95,10 @@ export const xrefMappings: readonly XrefMapping[] = [
 	{
 		kind: 'primary',
 		issue: 3852,
-		filter: /^html\/microdata\/(itemprop-not-in-item|itemref-redundant|itemtype-empty)/,
+		filter:
+			/^(html\/microdata\/(itemprop-not-in-item|itemref-redundant|itemtype-empty)|html\/elements\/(link|meta)\/itemprop-with-)/,
 		note:
-			'Microdata semantic constraints. 3 fixtures: itemprop without itemscope ancestor (HTML LS §5.2.4), duplicate ids in itemref (§5.2.2), empty itemtype value (§5.2.1). Three small focused rules — distinct from the URL-syntax work in #3848.',
+			'Microdata semantic constraints. 5 fixtures: itemprop without itemscope ancestor (HTML LS §5.2.3 attribute def + §5.2.5 conformance constraint) — covers `html/microdata/itemprop-not-in-item` plus the bonus `html/elements/link/itemprop-with-rel` and `html/elements/meta/itemprop-with-name` orphan cases — duplicate ids in itemref (§5.2.2 Items), empty itemtype value (§5.2.2 Items). Distinct from the URL-syntax work in #3848.',
 	},
 
 	// === 2 次群: bench では裏取れない Issue（ステルブロック） ===

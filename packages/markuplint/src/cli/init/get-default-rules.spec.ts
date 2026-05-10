@@ -89,6 +89,10 @@ test('default-rules', () => {
 			category: 'validation',
 			defaultValue: true,
 		},
+		'itemprop-requires-itemscope': {
+			category: 'validation',
+			defaultValue: true,
+		},
 		'label-has-control': {
 			category: 'a11y',
 			defaultValue: false,

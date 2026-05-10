@@ -377,6 +377,7 @@
 				"itemref": {
 					"type": {
 						"token": "DOMID",
+						"unique": true,
 						"separator": "space"
 					},
 					"condition": "[itemscope]"
@@ -389,6 +390,7 @@
 						"token": "AbsoluteURL",
 						"ordered": false,
 						"unique": true,
+						"allowEmpty": false,
 						"separator": "space"
 					},
 					"condition": "[itemscope]"

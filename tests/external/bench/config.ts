@@ -44,6 +44,9 @@ export const benchmarkConfig: Config = {
 		'attr-duplication': true,
 		// Catches missing/legacy/quirky DOCTYPE (HTML LS §13.2 — non-`<!DOCTYPE html>` declarations).
 		doctype: true,
+		// Catches an `[itemprop]` element that is not part of any item
+		// (HTML LS §5.2.3 attribute def + §5.2.5 conformance constraint).
+		'itemprop-requires-itemscope': true,
 		'no-extra-selected-options': true,
 		'no-orphaned-end-tag': true,
 		'srcset-sizes-constraint': true,

@@ -170,6 +170,10 @@
 		// Specs
 		"closedby",
 		"DQUOTE",
+		"itemprop",
+		"itemref",
+		"itemscope",
+		"itemtype",
 		"khern",
 		"mathml",
 		"mfrac",
