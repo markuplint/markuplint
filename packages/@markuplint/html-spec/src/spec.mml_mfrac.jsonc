@@ -3,7 +3,7 @@
 	"contentModel": {
 		"contents": [
 			{
-				// MathML Core §3.5.6 — mfrac requires exactly two children
+				// MathML Core §3.3.2 — mfrac requires exactly two children
 				// (numerator and denominator).
 				"require": [
 					":model(MathMLPresentation)",

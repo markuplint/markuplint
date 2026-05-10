@@ -3,7 +3,7 @@
 	"contentModel": {
 		"contents": [
 			{
-				// MathML Core §3.6.2 — munderover requires exactly three children
+				// MathML Core §3.4.2 — munderover requires exactly three children
 				// (base, underscript, overscript).
 				"require": [
 					":model(MathMLPresentation)",

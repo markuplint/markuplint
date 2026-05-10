@@ -5,10 +5,11 @@
 			{
 				// MathML Core §2.1.1 — only Presentation MathML and <semantics>
 				// are valid direct children of <math>. Parent-restricted
-				// elements (`<mtr>`/`<mtd>` only inside `<mtable>`,
-				// `<mprescripts>` only inside `<mmultiscripts>`,
-				// `<annotation>`/`<annotation-xml>` only inside `<semantics>`)
-				// are intentionally absent here so misplacement fires.
+				// elements (`<mtr>` §3.5.2 / `<mtd>` §3.5.3 only inside
+				// `<mtable>` §3.5.1, `<mprescripts>` §3.4.3 only inside
+				// `<mmultiscripts>`, `<annotation>` / `<annotation-xml>`
+				// §3.7 only inside `<semantics>`) are intentionally absent
+				// here so misplacement fires.
 				"zeroOrMore": [
 					":model(MathMLPresentation)",
 					"mml|semantics",

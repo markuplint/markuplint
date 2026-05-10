@@ -3,7 +3,7 @@
 	"contentModel": {
 		"contents": [
 			{
-				// MathML Core §3.6.1 — msup requires exactly two children
+				// MathML Core §3.4.1 — msup requires exactly two children
 				// (base and superscript).
 				"require": [
 					":model(MathMLPresentation)",

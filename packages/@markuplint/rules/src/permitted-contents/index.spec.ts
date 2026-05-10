@@ -835,7 +835,7 @@ describe('verify', () => {
 			},
 		]);
 
-		// NG: 1 child (MathML Core §3.5.6 — mfrac requires exactly two children).
+		// NG: 1 child (MathML Core §3.3.2 — mfrac requires exactly two children).
 		// The previous spec used `oneOrMore` with `max: 2`, which silently
 		// allowed a single child. Locks down the require/min:2 fix.
 		const { violations: v3 } = await mlRuleTest(rule, '<math><mfrac><mi>a</mi></mfrac></math>');
@@ -855,7 +855,7 @@ describe('verify', () => {
 		const { violations: v1 } = await mlRuleTest(rule, '<math><mi>x</mi><mo>+</mo><mn>1</mn></math>');
 		expect(v1).toStrictEqual([]);
 
-		// NG: <mtr> is parent-restricted to <mtable> (MathML Core §3.5.6)
+		// NG: <mtr> is parent-restricted to <mtable> (MathML Core §3.5.2)
 		// and must not appear directly under <math>.
 		const { violations: v2 } = await mlRuleTest(rule, '<math><mtr><mtd><mn>1</mn></mtd></mtr></math>');
 		expect(v2).toStrictEqual([
@@ -868,7 +868,7 @@ describe('verify', () => {
 			},
 		]);
 
-		// NG: <annotation> is parent-restricted to <semantics> (MathML Core §3.7.1)
+		// NG: <annotation> is parent-restricted to <semantics> (MathML Core §3.7)
 		// and must not appear directly under <math>.
 		const { violations: v3 } = await mlRuleTest(rule, '<math><annotation>note</annotation></math>');
 		expect(v3).toStrictEqual([
@@ -881,7 +881,7 @@ describe('verify', () => {
 			},
 		]);
 
-		// NG: <mprescripts> is parent-restricted to <mmultiscripts> (MathML Core §3.6.5).
+		// NG: <mprescripts> is parent-restricted to <mmultiscripts> (MathML Core §3.4.3).
 		const { violations: v4 } = await mlRuleTest(rule, '<math><mprescripts/></math>');
 		expect(v4).toStrictEqual([
 			{
@@ -915,7 +915,7 @@ describe('verify', () => {
 	});
 
 	test('[permitted-contents-invalid-032] mml:msubsup arity (exactly 3 children)', async () => {
-		// MathML Core §3.6.1 — msubsup requires exactly three children
+		// MathML Core §3.4.1 — msubsup requires exactly three children
 		// (base, subscript, superscript). Representative spec test for the
 		// arity-3 group (covers munderover by analogy).
 
@@ -955,7 +955,7 @@ describe('verify', () => {
 	});
 
 	test('[permitted-contents-invalid-033] mml:mover arity (broader selector with annotation)', async () => {
-		// MathML Core §3.6.2 — mover requires exactly two children. Distinct
+		// MathML Core §3.4.2 — mover requires exactly two children. Distinct
 		// from mfrac in that the permitted-content selector also accepts
 		// `mml|annotation` and `mml|annotation-xml`. Guards against a future
 		// edit that removes either selector by mistake.

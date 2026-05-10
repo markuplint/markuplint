@@ -3,7 +3,7 @@
 	"contentModel": {
 		"contents": [
 			{
-				// MathML Core §3.5.7 — mroot requires exactly two children
+				// MathML Core §3.3.3 — mroot requires exactly two children
 				// (base and index).
 				"require": [
 					":model(MathMLPresentation)",

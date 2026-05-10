@@ -3,7 +3,7 @@
 	"contentModel": {
 		"contents": [
 			{
-				// MathML Core §3.6.2 — mover requires exactly two children
+				// MathML Core §3.4.2 — mover requires exactly two children
 				// (base and overscript).
 				"require": [
 					":model(MathMLPresentation)",

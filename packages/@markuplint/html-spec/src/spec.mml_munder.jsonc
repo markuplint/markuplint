@@ -3,7 +3,7 @@
 	"contentModel": {
 		"contents": [
 			{
-				// MathML Core §3.6.2 — munder requires exactly two children
+				// MathML Core §3.4.2 — munder requires exactly two children
 				// (base and underscript).
 				"require": [
 					":model(MathMLPresentation)",
