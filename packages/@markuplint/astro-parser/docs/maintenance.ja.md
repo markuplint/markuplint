@@ -112,12 +112,12 @@ expect(debugMaps).toStrictEqual([
 
 上流パッケージの変更がこのパーサーに影響を与える可能性があります:
 
-| パッケージ                                | 影響                                                                                                                          |
-| ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| `@markuplint/parser-utils`                | 基底 `Parser` クラスの変更は全オーバーライドメソッドに影響                                                                    |
-| `@markuplint/parser-utils/script-parser`  | TS 対応と非貪欲なパースが上流に入った場合、`src/spread-attr.ts` と `visitAttr()` のプリパスは削除可能                          |
-| `@markuplint/ml-ast`                      | AST 型の変更は `nodeize()` の戻り値の型に影響                                                                                 |
-| `astro-eslint-parser`                     | パーサー出力形式の変更は `tokenize()` と `nodeize()` に影響                                                                   |
+| パッケージ                               | 影響                                                                                                  |
+| ---------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `@markuplint/parser-utils`               | 基底 `Parser` クラスの変更は全オーバーライドメソッドに影響                                            |
+| `@markuplint/parser-utils/script-parser` | TS 対応と非貪欲なパースが上流に入った場合、`src/spread-attr.ts` と `visitAttr()` のプリパスは削除可能 |
+| `@markuplint/ml-ast`                     | AST 型の変更は `nodeize()` の戻り値の型に影響                                                         |
+| `astro-eslint-parser`                    | パーサー出力形式の変更は `tokenize()` と `nodeize()` に影響                                           |
 
 `astro-eslint-parser` を更新する場合:
 

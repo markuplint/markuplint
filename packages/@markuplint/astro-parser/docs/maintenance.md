@@ -194,7 +194,7 @@ yarn build --scope @markuplint/astro-parser && yarn test --scope @markuplint/ast
 
 **Solution:**
 
-1. Confirm `src/parser.ts` `visitAttr()` calls `extractSpreadAttribute()` from `./spread-attr.js` *before* `super.visitAttr()`. The order matters — falling through to the base path is what triggers the bug.
+1. Confirm `src/parser.ts` `visitAttr()` calls `extractSpreadAttribute()` from `./spread-attr.js` _before_ `super.visitAttr()`. The order matters — falling through to the base path is what triggers the bug.
 2. If a new edge case is reported, reproduce it as a unit test in `src/spread-attr.spec.ts` with `findMatchingBrace()` and decide whether the brace matcher needs an additional escape rule (string / template / comment / backslash).
 3. Known limitations are listed in `src/spread-attr.ts` JSDoc — regular-expression literals containing braces are not handled. Document any additional limitations there.
 

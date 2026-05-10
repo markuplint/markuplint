@@ -698,7 +698,9 @@ describe('Issue', () => {
 		const findStartTag = (ast: any) => ast.nodeList.find((n: any) => n.type === 'starttag');
 
 		test('TypeScript assertion in spread attribute', () => {
-			const ast = parse('<button type="button" {...{ command: "close" } as any} commandfor="dialog-id">close</button>');
+			const ast = parse(
+				'<button type="button" {...{ command: "close" } as any} commandfor="dialog-id">close</button>',
+			);
 			expect(ast.parseError).toBeUndefined();
 			const start = findStartTag(ast);
 			const spreads = start.attributes.filter((a: any) => a.type === 'spread');

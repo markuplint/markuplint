@@ -215,17 +215,17 @@ Both failure modes were reported in [#3824](https://github.com/markuplint/markup
 
 ## Comparison with jsx-parser
 
-| Feature                   | `astro-parser`                  | `jsx-parser`                                    |
-| ------------------------- | ------------------------------- | ----------------------------------------------- |
-| **Tokenizer**             | `astro-eslint-parser`           | TypeScript ESTree (`@typescript-eslint/parser`) |
-| **Frontmatter**           | Supported (`---...---` psblock) | Not applicable                                  |
-| **Expression syntax**     | `{expr}` as MustacheTag psblock | `{expr}` as JSXExpressionContainer psblock      |
-| **Template directives**   | `class:list`, `set:html`, etc.  | Not applicable                                  |
-| **Namespace management**  | Manual via `#updateScopeNS()`   | Delegates to `getNamespace()` from html-parser  |
-| **Component detection**   | `/^[A-Z]/` pattern              | `/^[A-Z]/` pattern                              |
-| **Self-close type**       | `html+xml`                      | Default (XML-only)                              |
-| **Booleanish attributes** | Not configured                  | `booleanish: true`                              |
-| **Nameless fragments**    | `<>...</>` supported            | `<>...</>` supported                            |
+| Feature                   | `astro-parser`                                   | `jsx-parser`                                    |
+| ------------------------- | ------------------------------------------------ | ----------------------------------------------- |
+| **Tokenizer**             | `astro-eslint-parser`                            | TypeScript ESTree (`@typescript-eslint/parser`) |
+| **Frontmatter**           | Supported (`---...---` psblock)                  | Not applicable                                  |
+| **Expression syntax**     | `{expr}` as MustacheTag psblock                  | `{expr}` as JSXExpressionContainer psblock      |
+| **Template directives**   | `class:list`, `set:html`, etc.                   | Not applicable                                  |
+| **Namespace management**  | Manual via `#updateScopeNS()`                    | Delegates to `getNamespace()` from html-parser  |
+| **Component detection**   | `/^[A-Z]/` pattern                               | `/^[A-Z]/` pattern                              |
+| **Self-close type**       | `html+xml`                                       | Default (XML-only)                              |
+| **Booleanish attributes** | Not configured                                   | `booleanish: true`                              |
+| **Nameless fragments**    | `<>...</>` supported                             | `<>...</>` supported                            |
 | **Spread attributes**     | Brace-aware pre-pass in `visitAttr()` (TS-aware) | Custom `visitSpreadAttr()` with IDL lookup      |
 
 ## Version Compatibility

@@ -215,18 +215,18 @@ Astro テンプレートディレクティブは `name:modifier` 構文を使用
 
 ## jsx-parser との比較
 
-| 機能                           | `astro-parser`                         | `jsx-parser`                                      |
-| ------------------------------ | -------------------------------------- | ------------------------------------------------- |
-| **トークナイザ**               | `astro-eslint-parser`                  | TypeScript ESTree（`@typescript-eslint/parser`）  |
-| **フロントマター**             | サポート（`---...---` psblock）        | 該当なし                                          |
-| **式の構文**                   | `{expr}` を MustacheTag psblock として | `{expr}` を JSXExpressionContainer psblock として |
-| **テンプレートディレクティブ** | `class:list`、`set:html` 等            | 該当なし                                          |
-| **名前空間管理**               | `#updateScopeNS()` で手動管理          | html-parser の `getNamespace()` に委譲            |
-| **コンポーネント検出**         | `/^[A-Z]/` パターン                    | `/^[A-Z]/` パターン                               |
-| **自己閉じタイプ**             | `html+xml`                             | デフォルト（XML のみ）                            |
-| **booleanish 属性**            | 未設定                                 | `booleanish: true`                                |
-| **名前なしフラグメント**       | `<>...</>` サポート                    | `<>...</>` サポート                               |
-| **スプレッド属性**             | `visitAttr()` 内の波括弧対応プリパス（TS 対応）       | カスタム `visitSpreadAttr()` で IDL ルックアップ  |
+| 機能                           | `astro-parser`                                  | `jsx-parser`                                      |
+| ------------------------------ | ----------------------------------------------- | ------------------------------------------------- |
+| **トークナイザ**               | `astro-eslint-parser`                           | TypeScript ESTree（`@typescript-eslint/parser`）  |
+| **フロントマター**             | サポート（`---...---` psblock）                 | 該当なし                                          |
+| **式の構文**                   | `{expr}` を MustacheTag psblock として          | `{expr}` を JSXExpressionContainer psblock として |
+| **テンプレートディレクティブ** | `class:list`、`set:html` 等                     | 該当なし                                          |
+| **名前空間管理**               | `#updateScopeNS()` で手動管理                   | html-parser の `getNamespace()` に委譲            |
+| **コンポーネント検出**         | `/^[A-Z]/` パターン                             | `/^[A-Z]/` パターン                               |
+| **自己閉じタイプ**             | `html+xml`                                      | デフォルト（XML のみ）                            |
+| **booleanish 属性**            | 未設定                                          | `booleanish: true`                                |
+| **名前なしフラグメント**       | `<>...</>` サポート                             | `<>...</>` サポート                               |
+| **スプレッド属性**             | `visitAttr()` 内の波括弧対応プリパス（TS 対応） | カスタム `visitSpreadAttr()` で IDL ルックアップ  |
 
 ## バージョン互換性
 
@@ -240,12 +240,12 @@ astro-eslint-parser → @astrojs/compiler → Astro 構文サポート
 
 ## 主要ソースファイル
 
-| ファイル          | 用途                                                                                  |
-| ----------------- | ------------------------------------------------------------------------------------- |
-| `parser.ts`       | `AstroParser` クラス — 全オーバーライドメソッドと名前空間スコーピング                 |
-| `astro-parser.ts` | `astroParse()` ラッパー — `astro-eslint-parser` に委譲し、診断を `ParserError` に変換 |
-| `spread-attr.ts`  | `visitAttr()` が使用する波括弧対応スプレッド属性抽出器（上記「スプレッド属性」を参照）|
-| `index.ts`        | 公開 API — シングルトン `parser` インスタンスを再エクスポート                         |
+| ファイル          | 用途                                                                                   |
+| ----------------- | -------------------------------------------------------------------------------------- |
+| `parser.ts`       | `AstroParser` クラス — 全オーバーライドメソッドと名前空間スコーピング                  |
+| `astro-parser.ts` | `astroParse()` ラッパー — `astro-eslint-parser` に委譲し、診断を `ParserError` に変換  |
+| `spread-attr.ts`  | `visitAttr()` が使用する波括弧対応スプレッド属性抽出器（上記「スプレッド属性」を参照） |
+| `index.ts`        | 公開 API — シングルトン `parser` インスタンスを再エクスポート                          |
 
 ## ドキュメントマップ
 
