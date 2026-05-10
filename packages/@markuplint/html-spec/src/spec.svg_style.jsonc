@@ -19,8 +19,11 @@
 			"defaultValue": "text/css"
 		},
 		// https://svgwg.org/svg2-draft/styling.html#StyleElementMediaAttribute
+		// See spec-common.attributes.jsonc `media` for the rationale on
+		// using the dedicated `MediaQueryList` checker rather than the
+		// generic CSS-syntax `<media-query-list>`.
 		"media": {
-			"type": "<media-query-list>",
+			"type": "MediaQueryList",
 			"defaultValue": "all"
 		},
 		// https://svgwg.org/svg2-draft/styling.html#StyleElementTitleAttribute

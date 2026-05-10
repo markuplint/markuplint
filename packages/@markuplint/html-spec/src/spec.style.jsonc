@@ -16,8 +16,11 @@
 	},
 	"attributes": {
 		// https://html.spec.whatwg.org/multipage/semantics.html#attr-style-media
+		// See spec-common.attributes.jsonc `media` for the rationale on
+		// using the dedicated `MediaQueryList` checker rather than the
+		// generic CSS-syntax `<media-query-list>`.
 		"media": {
-			"type": "<media-query-list>"
+			"type": "MediaQueryList"
 		},
 		// https://html.spec.whatwg.org/multipage/urls-and-fetching.html#blocking-attributes
 		"blocking": {

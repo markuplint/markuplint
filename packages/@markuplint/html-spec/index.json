@@ -830,7 +830,7 @@
 					"type": "SRIHash"
 				},
 				"media": {
-					"type": "<media-query-list>"
+					"type": "MediaQueryList"
 				},
 				"crossorigin": {
 					"type": {
@@ -54722,7 +54722,7 @@
 				},
 				"media": {
 					"description": "Specifies the media query for the resource's intended media.",
-					"type": "<media-query-list>"
+					"type": "MediaQueryList"
 				},
 				"sizes": {
 					"description": "Specifies a list of source sizes that describe the final rendered width of the image. Allowed if the parent of <source> is <picture>. Not allowed if the parent is <audio> or <video>. The list consists of source sizes separated by commas. Each source size is media condition-length pair. Before laying the page out, the browser uses this information to determine which image defined in srcset to display. Note that sizes will take effect only if width descriptors are provided with srcset, not pixel density descriptors (i.e., 200w should be used instead of 2x).",
@@ -54875,7 +54875,7 @@
 				},
 				"media": {
 					"description": "This attribute defines which media the style should be applied to. Its value is a media query, which defaults to all if the attribute is missing.",
-					"type": "<media-query-list>"
+					"type": "MediaQueryList"
 				},
 				"nonce": {
 					"description": "A cryptographic nonce (number used once) used to allow inline styles in a style-src Content-Security-Policy. The server must generate a unique nonce value each time it transmits a policy. It is critical to provide a nonce that cannot be guessed as bypassing a resource's policy is otherwise trivial."
@@ -62807,7 +62807,7 @@
 			"attributes": {
 				"media": {
 					"description": "This attribute defines to which media the style applies. Value type: <media-query-list>; Default value: all; Animatable: no",
-					"type": "<media-query-list>",
+					"type": "MediaQueryList",
 					"defaultValue": "all"
 				},
 				"title": {
