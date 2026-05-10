@@ -1,12 +1,12 @@
 {
-	"generatedAt": "2026-05-10T07:03:04.647Z",
+	"generatedAt": "2026-05-10T13:56:30.369Z",
 	"submoduleSha": "142931395412c00434ffb40a14d65992efd17aa8",
 	"nuValidatorImage": "ghcr.io/validator/validator@sha256:9746b8663542cb5bded271fea08a3cc04ca12af6232f014baa341fccc01d3a21",
 	"markuplintVersion": "5.0.0-rc.4",
 	"nodeVersion": "24.14.1",
 	"totalFilesNu": 5442,
 	"totalFilesMl": 5442,
-	"totalNuMessages": 9906,
-	"totalMlViolations": 9965,
+	"totalNuMessages": 9905,
+	"totalMlViolations": 9975,
 	"totalNuFailures": 0
 }

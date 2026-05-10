@@ -33,7 +33,11 @@
 		},
 		"media": {
 			// https://html.spec.whatwg.org/multipage/embedded-content.html#attr-source-media
-			"type": "<media-query-list>"
+			// See spec-common.attributes.jsonc `media` for the rationale on
+			// using the dedicated `MediaQueryList` checker rather than the
+			// generic CSS-syntax `<media-query-list>` (catches deprecated
+			// media types/features that the CSS-syntax route silently passes).
+			"type": "MediaQueryList"
 		},
 		"width": {
 			// https://html.spec.whatwg.org/multipage/embedded-content-other.html#attr-dim-width

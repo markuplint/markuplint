@@ -193,6 +193,11 @@
 		{
 			"filename": "packages/@markuplint/types/src/whatwg/check-autocomplete.spec.ts",
 			"words": ["neme", "emall"]
+		},
+		{
+			"filename": "packages/@markuplint/types/src/whatwg/check-media-query-list.{ts,spec.ts}",
+			"comment": "`alla` is the literal media-query value from html/media-queries/002-novalid fixture (typo of `all`); cited verbatim as a test input.",
+			"words": ["alla"]
 		}
 	]
 }

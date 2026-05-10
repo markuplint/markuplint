@@ -1271,6 +1271,7 @@ export type ExtendedType =
   | "LinkTypeForLinkElementInBody"
   | "LocalDateTimeString"
   | "MIMEType"
+  | "MediaQueryList"
   | "MonthString"
   | "NavigableTargetName"
   | "NavigableTargetNameOrKeyword"

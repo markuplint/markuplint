@@ -740,8 +740,11 @@
 			"type": "SRIHash"
 		},
 		// https://html.spec.whatwg.org/multipage/semantics.html#attr-link-media
+		// Media Queries Level 5 — validates syntax (via css-tree), rejects
+		// deprecated media types (tv/projection/etc.), unknown identifiers
+		// (alla/notscreen), and deprecated features (device-aspect-ratio etc.).
 		"media": {
-			"type": "<media-query-list>"
+			"type": "MediaQueryList"
 		},
 		// https://html.spec.whatwg.org/multipage/urls-and-fetching.html#cors-settings-attribute
 		"crossorigin": {
