@@ -823,15 +823,31 @@ describe('verify', () => {
 		const { violations: v1 } = await mlRuleTest(rule, '<math><mfrac><mi>a</mi><mi>b</mi></mfrac></math>');
 		expect(v1).toStrictEqual([]);
 
-		// NG: 3 children (too many)
+		// NG: 3 children (too many) — third child triggers the max overflow.
 		const { violations: v2 } = await mlRuleTest(rule, '<math><mfrac><mi>a</mi><mi>b</mi><mi>c</mi></mfrac></math>');
-		expect(v2.length).toBeGreaterThan(0);
+		expect(v2).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 34,
+				message: 'There is more content than it needs. the max number of elements required is two',
+				raw: '<mi>',
+			},
+		]);
 
 		// NG: 1 child (MathML Core §3.5.6 — mfrac requires exactly two children).
 		// The previous spec used `oneOrMore` with `max: 2`, which silently
 		// allowed a single child. Locks down the require/min:2 fix.
 		const { violations: v3 } = await mlRuleTest(rule, '<math><mfrac><mi>a</mi></mfrac></math>');
-		expect(v3.length).toBeGreaterThan(0);
+		expect(v3).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 7,
+				message: 'Require an element. (Need ":model(MathMLPresentation)")',
+				raw: '<mfrac>',
+			},
+		]);
 	});
 
 	test('[permitted-contents-invalid-021] mml:math', async () => {
@@ -842,16 +858,40 @@ describe('verify', () => {
 		// NG: <mtr> is parent-restricted to <mtable> (MathML Core §3.5.6)
 		// and must not appear directly under <math>.
 		const { violations: v2 } = await mlRuleTest(rule, '<math><mtr><mtd><mn>1</mn></mtd></mtr></math>');
-		expect(v2.length).toBeGreaterThan(0);
+		expect(v2).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 7,
+				message: 'The "mtr" element is not allowed in the "math" element in this context',
+				raw: '<mtr>',
+			},
+		]);
 
 		// NG: <annotation> is parent-restricted to <semantics> (MathML Core §3.7.1)
 		// and must not appear directly under <math>.
 		const { violations: v3 } = await mlRuleTest(rule, '<math><annotation>note</annotation></math>');
-		expect(v3.length).toBeGreaterThan(0);
+		expect(v3).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 7,
+				message: 'The "annotation" element is not allowed in the "math" element in this context',
+				raw: '<annotation>',
+			},
+		]);
 
 		// NG: <mprescripts> is parent-restricted to <mmultiscripts> (MathML Core §3.6.5).
 		const { violations: v4 } = await mlRuleTest(rule, '<math><mprescripts/></math>');
-		expect(v4.length).toBeGreaterThan(0);
+		expect(v4).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 7,
+				message: 'The "mprescripts" element is not allowed in the "math" element in this context',
+				raw: '<mprescripts/>',
+			},
+		]);
 
 		// OK regression: properly wrapped <annotation> inside <semantics>.
 		const { violations: v5 } = await mlRuleTest(
@@ -866,6 +906,87 @@ describe('verify', () => {
 			'<math><mtable><mtr><mtd><mn>1</mn></mtd></mtr></mtable></math>',
 		);
 		expect(v6).toStrictEqual([]);
+
+		// Note: `<math>` directly inside `<head>` (the html-math/math-in-head
+		// fixture) is NOT covered here. The HTML5 parser auto-corrects the
+		// `<math>` element out of `<head>` into `<body>` before rule
+		// evaluation, so a content-model fix at the `<head>` spec data level
+		// cannot reach it. Tracked under #3844 (parser-level error gap).
+	});
+
+	test('[permitted-contents-invalid-032] mml:msubsup arity (exactly 3 children)', async () => {
+		// MathML Core §3.6.1 — msubsup requires exactly three children
+		// (base, subscript, superscript). Representative spec test for the
+		// arity-3 group (covers munderover by analogy).
+
+		// OK: exactly 3 children
+		const { violations: v1 } = await mlRuleTest(
+			rule,
+			'<math><msubsup><mi>x</mi><mn>0</mn><mn>1</mn></msubsup></math>',
+		);
+		expect(v1).toStrictEqual([]);
+
+		// NG: 2 children (one short)
+		const { violations: v2 } = await mlRuleTest(rule, '<math><msubsup><mi>x</mi><mn>0</mn></msubsup></math>');
+		expect(v2).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 7,
+				message: 'Require an element. (Need ":model(MathMLPresentation)")',
+				raw: '<msubsup>',
+			},
+		]);
+
+		// NG: 4 children (one over)
+		const { violations: v3 } = await mlRuleTest(
+			rule,
+			'<math><msubsup><mi>x</mi><mn>0</mn><mn>1</mn><mn>2</mn></msubsup></math>',
+		);
+		expect(v3).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 46,
+				message: 'There is more content than it needs. the max number of elements required is three',
+				raw: '<mn>',
+			},
+		]);
+	});
+
+	test('[permitted-contents-invalid-033] mml:mover arity (broader selector with annotation)', async () => {
+		// MathML Core §3.6.2 — mover requires exactly two children. Distinct
+		// from mfrac in that the permitted-content selector also accepts
+		// `mml|annotation` and `mml|annotation-xml`. Guards against a future
+		// edit that removes either selector by mistake.
+
+		// OK: exactly 2 children
+		const { violations: v1 } = await mlRuleTest(rule, '<math><mover><mi>x</mi><mo>~</mo></mover></math>');
+		expect(v1).toStrictEqual([]);
+
+		// NG: 1 child
+		const { violations: v2 } = await mlRuleTest(rule, '<math><mover><mi>x</mi></mover></math>');
+		expect(v2).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 7,
+				message: 'Require an element. (Need ":model(MathMLPresentation)")',
+				raw: '<mover>',
+			},
+		]);
+
+		// NG: 3 children
+		const { violations: v3 } = await mlRuleTest(rule, '<math><mover><mi>x</mi><mo>~</mo><mi>y</mi></mover></math>');
+		expect(v3).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 34,
+				message: 'There is more content than it needs. the max number of elements required is two',
+				raw: '<mi>',
+			},
+		]);
 	});
 
 	test('[permitted-contents-valid-001] The SVG <image> element and the HTML obsolete <image> element', async () => {
