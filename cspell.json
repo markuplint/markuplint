@@ -172,6 +172,12 @@
 		"DQUOTE",
 		"khern",
 		"mathml",
+		"mfrac",
+		"mover",
+		"mprescripts",
+		"msubsup",
+		"munder",
+		"munderover",
 		"tref",
 		"vkern",
 
