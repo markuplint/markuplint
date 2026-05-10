@@ -151,24 +151,29 @@ The IDL attribute map is defined in `src/idl-attributes.ts`. To add a new mappin
 
 ## Downstream Impact Checklist
 
-Changes to this package can affect all 6 downstream parser packages:
+Changes to this package can affect every downstream parser. Direct subclasses extend `Parser` from this package; markdown-aware subclasses extend `MarkdownAwareParser` (which itself extends `Parser`).
 
-| Package                     | Key Dependencies                                                      |
-| --------------------------- | --------------------------------------------------------------------- |
-| `@markuplint/html-parser`   | Parser base class, visitText with researchTags                        |
-| `@markuplint/jsx-parser`    | Parser base class, visitAttr with quoteSet, detectElementType         |
-| `@markuplint/vue-parser`    | Parser base class, visitAttr, flattenNodes, detectElementType         |
-| `@markuplint/svelte-parser` | Parser base class, visitText, visitPsBlock, visitChildren, ignoreTags |
-| `@markuplint/astro-parser`  | Parser base class (via html-parser)                                   |
-| `@markuplint/pug-parser`    | Parser base class                                                     |
+| Package                       | Key Dependencies                                                                                                                                               |
+| ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@markuplint/html-parser`     | Parser base class, visitText with researchTags                                                                                                                 |
+| `@markuplint/jsx-parser`      | Parser base class, visitAttr with quoteSet, detectElementType, parseCodeFragment                                                                               |
+| `@markuplint/vue-parser`      | Parser base class, visitAttr, flattenNodes, detectElementType                                                                                                  |
+| `@markuplint/svelte-parser`   | Parser base class, visitText, visitPsBlock, visitChildren, ignoreTags                                                                                          |
+| `@markuplint/astro-parser`    | Parser base class (direct), visitElement, **parseCodeFragment with full element raw — the only caller that exercises the raw-text element body short-circuit** |
+| `@markuplint/pug-parser`      | Parser base class                                                                                                                                              |
+| `@markuplint/markdown-parser` | Parser base class (via MarkdownAwareParser)                                                                                                                    |
+| `@markuplint/mdx-parser`      | Parser base class (via MarkdownAwareParser), parseCodeFragment with start-tag-only token                                                                       |
 
 Always run tests across all parser packages when modifying the Parser class:
 
 ```shell
 yarn test --scope @markuplint/html-parser --scope @markuplint/jsx-parser \
   --scope @markuplint/vue-parser --scope @markuplint/svelte-parser \
-  --scope @markuplint/astro-parser --scope @markuplint/pug-parser
+  --scope @markuplint/astro-parser --scope @markuplint/pug-parser \
+  --scope @markuplint/markdown-parser --scope @markuplint/mdx-parser
 ```
+
+When touching `parseCodeFragment` (especially the raw-text element branch), `astro-parser` is the most sensitive caller — start there.
 
 ## Troubleshooting
 
@@ -195,3 +200,17 @@ yarn test --scope @markuplint/html-parser --scope @markuplint/jsx-parser \
 **Cause:** `ignoreFrontMatter` is not enabled in parse options.
 
 **Solution:** Ensure `options.ignoreFrontMatter` is `true` when calling `parse()`. Note: Svelte explicitly disables this.
+
+### `<script>` or `<style>` body throws `Invalid tag syntax` from `parseCodeFragment`
+
+**Symptom:** A subclass that hands the full element raw to `parseCodeFragment()` (e.g., `astro-parser`) throws `SyntaxError: Invalid tag syntax: "..."` when the script/style body contains HTML-like substrings such as `/<br\s*\/?>/gi` or `/* <br = */`. Originally reported as [#3825](https://github.com/markuplint/markuplint/issues/3825).
+
+**Cause:** Without raw-text awareness, `parseCodeFragment()` re-tokenizes the body and tries to parse the regex's `<br...>` as a start tag, hitting the `\s` (literal backslash) where an attribute name is expected.
+
+**Solution:** The fix lives in `parseCodeFragment()` (`src/parser.ts`). After parsing a non-self-closing start tag whose `nodeName.toLowerCase()` matches `rawTextElements`, the body is consumed verbatim until the next ASCII-case-insensitive `</tagName` followed by a tab/LF/FF/CR/space/`>` /`/`, per [HTML Living Standard §13.2.5.1](https://html.spec.whatwg.org/multipage/syntax.html#cdata-rcdata-restrictions). If a regression is suspected:
+
+1. Re-run the regression suite: `npx vitest run packages/@markuplint/astro-parser/src/parser.spec.ts -t "#3825"`.
+2. Inspect `parseCodeFragment()` — confirm the raw-text branch is intact, the `#getRawTextCloseTagPattern()` cache is being consulted, and the close-tag regex still uses the spec character class `[\t\n\f\r >/]`.
+3. The defensive jsx/mdx tests under `#3825 raw-text element body via ... expression child` exist to lock in upstream invariants — they do **not** exercise the parser-utils raw-text branch directly (their bodies are expression children, not raw element source).
+
+**Note on escapable raw text elements (`<title>`, `<textarea>`):** these are NOT in the default `rawTextElements`. HTML LS classifies them as escapable raw text — they require character-reference (`&amp;`) expansion that this branch does not implement. Add them to a parser's `rawTextElements` only if you accept that character refs in their body will be passed through verbatim instead of decoded.

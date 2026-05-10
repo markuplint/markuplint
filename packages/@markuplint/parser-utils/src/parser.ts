@@ -71,6 +71,13 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	readonly #selfCloseType: SelfCloseType = 'html';
 	readonly #spaceChars: readonly string[] = defaultSpaces;
 	readonly #rawTextElements: readonly string[] = ['style', 'script'];
+	/**
+	 * Compiled close-tag patterns for `#rawTextElements`, populated lazily on first
+	 * use and reused across every starttag in the same parse. Keyed by the original
+	 * tag name (as authored in source) so a `tagNameCaseSensitive` parser that
+	 * preserves casing reuses the same `RegExp` for every occurrence.
+	 */
+	readonly #rawTextCloseTagPatternCache = new Map<string, RegExp>();
 	#authoredElementName?: ParserAuthoredElementNameDistinguishing;
 	#originalRawCode = '';
 	#rawCode = '';
@@ -853,11 +860,22 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	/**
 	 * Re-parses a text token to discover embedded HTML/XML tags within it,
 	 * splitting the content into a sequence of tag and text AST nodes.
-	 * Handles self-closing detection, depth tracking, and void element recognition.
+	 * Handles self-closing detection, depth tracking, void element recognition,
+	 * and the raw-text element body short-circuit (HTML LS §13.2.5.1).
+	 *
+	 * Raw-text element handling only covers the elements listed in
+	 * `rawTextElements` (default `['style', 'script']`). HTML LS *escapable* raw
+	 * text elements — `<title>` and `<textarea>` — are intentionally NOT in the
+	 * default. They allow character references (`&amp;` etc.) in their body, and
+	 * decoding is not implemented in this short-circuit. A subclass that adds
+	 * them via the `rawTextElements` option will see character references passed
+	 * through verbatim.
 	 *
 	 * @param token - The child token containing the code fragment to re-parse
 	 * @param options - Controls whether nameless fragments (JSX `<>`) are recognized
 	 * @returns An array of tag and text AST nodes discovered in the code fragment
+	 * @see https://html.spec.whatwg.org/multipage/syntax.html#cdata-rcdata-restrictions
+	 * @see https://github.com/markuplint/markuplint/issues/3825
 	 */
 	parseCodeFragment(
 		token: ChildToken,
@@ -965,6 +983,52 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 				}
 
 				nodes.push(tag);
+			}
+
+			/**
+			 * Raw-text element body short-circuit (HTML Living Standard §13.2.5.1
+			 * — "Restrictions on the contents of raw text and escapable raw text
+			 * elements". The spec section anchor is `cdata-rcdata-restrictions`,
+			 * where RCDATA stands for "Raw text + Character REF data" — the broader
+			 * class that covers escapable raw text such as `<title>` / `<textarea>`).
+			 *
+			 * Per spec, the contents of `<script>` / `<style>` (and any caller-supplied
+			 * raw-text element) are NOT re-tokenized as HTML — the only thing that
+			 * terminates the body is `</tagName` followed by a tab/LF/FF/CR/space/`>`
+			 * /`/`. Without this guard, fragments like `<script>const t = s.replace(
+			 * /<br\s*\/?>/gi, " ");</script>` would feed the regex to `#parseTag`,
+			 * which would try to parse `<br\s*\/?>` as a tag and throw on the
+			 * backslash (#3825).
+			 *
+			 * This is dormant for `jsx-parser` and `mdx-parser` because their upstream
+			 * tokenizers reject bare `<` in element body before reaching here, but the
+			 * fix keeps `parseCodeFragment` honest for any future caller.
+			 *
+			 * @see https://html.spec.whatwg.org/multipage/syntax.html#cdata-rcdata-restrictions
+			 * @see https://github.com/markuplint/markuplint/issues/3825
+			 */
+			if (tag.type === 'starttag' && !isSelfClose && this.#rawTextElements.includes(tag.nodeName.toLowerCase())) {
+				const closeTagPattern = this.#getRawTextCloseTagPattern(tag.nodeName);
+				const match = closeTagPattern.exec(raw);
+				if (match) {
+					const bodyRaw = raw.slice(0, match.index);
+					if (bodyRaw) {
+						const bodyToken = this.createToken(bodyRaw, curOffset, curLine, curCol);
+						const bodyNode: MLASTText = {
+							...bodyToken,
+							type: 'text',
+							depth,
+							nodeName: '#text',
+							parentNode: null,
+							parentNodeUuid: null,
+						};
+						nodes.push(bodyNode);
+						({ offset: curOffset, line: curLine, col: curCol } = this.#getEndLocation(bodyToken));
+					}
+					raw = raw.slice(match.index);
+				}
+				// If no matching close tag is found, fall through to the generic loop
+				// so the existing "unclosed tag" handling remains in effect.
 			}
 		}
 		return nodes;
@@ -1378,6 +1442,27 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			line: getEndLine(token.raw, token.line),
 			col: getEndCol(token.raw, token.col),
 		} as const;
+	}
+
+	/**
+	 * Returns a cached close-tag pattern for a raw-text element, building it on first
+	 * use. The pattern matches `</tagName` followed by a tab/LF/FF/CR/space/`>`/`/`
+	 * (HTML LS §13.2.5.1) ASCII-case-insensitively. Caching avoids recompiling the
+	 * `RegExp` for every `<script>` / `<style>` start tag in large documents.
+	 */
+	#getRawTextCloseTagPattern(tagName: string): RegExp {
+		const cached = this.#rawTextCloseTagPatternCache.get(tagName);
+		if (cached) {
+			return cached;
+		}
+		const escapedName = tagName.replaceAll(/[$()*+.?[\\\]^{|}]/g, '\\$&');
+		// `regexp/strict` cannot statically verify a pattern built from the
+		// dynamic `escapedName` interpolation; the escape above is the contract
+		// that makes this safe for any caller-supplied `rawTextElements` value.
+		// eslint-disable-next-line regexp/strict
+		const pattern = new RegExp(`</${escapedName}(?=[\\t\\n\\f\\r >/])`, 'i');
+		this.#rawTextCloseTagPatternCache.set(tagName, pattern);
+		return pattern;
 	}
 
 	/**

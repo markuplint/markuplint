@@ -209,3 +209,17 @@ v4 は `startOffset` / `startLine` / `startCol`、dev は短縮形の `offset` /
 3. 既知の制限は `src/spread-attr.ts` の JSDoc に記載 — 波括弧を含む正規表現リテラルは扱えない。新たな制限が見つかったらそこに追記。
 
 オリジナルの報告とスプレッド属性を `parser-utils` ではなく本パッケージで処理する根拠については [#3824](https://github.com/markuplint/markuplint/issues/3824)（v4）と [#3856](https://github.com/markuplint/markuplint/issues/3856)（dev/v5）を参照。
+
+### `<script>` または `<style>` の本文で `Invalid tag syntax` が throw する
+
+**症状:** `<script>` 本文の JS/TS に HTML 風の部分文字列（典型的には `/<br\s*\/?>/gi` や `/<\/?p>/gi` のような正規表現）が含まれると `ParserError: SyntaxError: Invalid tag syntax: "..."` で落ちる。`<style>` 本文中の `/* <br = */` のような CSS コメントでも同種の症状が出る。
+
+**原因:** `AstroParser.visitElement()` は要素全体（本文を含む）の raw 文字列を `parser-utils` の `parseCodeFragment()` に渡している。raw-text 認識がないと `parseCodeFragment()` は本文を HTML として再トークナイズし、正規表現中の `<br...>` をタグ開始と解釈、続く `\s`（リテラルなバックスラッシュ）を属性名とみなして throw する。
+
+**解決策:** raw-text の安全性は `parser-utils/parser.ts` の `parseCodeFragment()` 内に実装されている。自閉でない開始タグの `nodeName.toLowerCase()` が `rawTextElements` に含まれる場合、本文は次に現れる ASCII 大文字小文字非依存の `</tagName`（タブ/LF/FF/CR/空白/`>` /`/` のいずれかが続く）まで丸ごと消費される（HTML LS §13.2.5.1）。リグレッションが疑われたら:
+
+1. `npx vitest run packages/@markuplint/astro-parser/src/parser.spec.ts -t "#3825"` で失敗フィクスチャがまだ再現するかを確認。
+2. 修正は `astro-parser` 内ではない。`packages/@markuplint/parser-utils/src/parser.ts` の `parseCodeFragment()` を見て raw-text 分岐が無傷か、close-tag 正規表現が仕様の文字クラスにまだ一致するかを確認する。
+3. 別の上流 parser が `astro-parser` と同様に要素全体の raw を `parseCodeFragment` に渡すケースが追加された場合、追加配線は不要 — 同じ parser-utils 分岐がそのままカバーする。
+
+オリジナルの報告は [#3825](https://github.com/markuplint/markuplint/issues/3825) を参照。

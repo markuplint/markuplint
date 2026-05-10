@@ -70,16 +70,16 @@ constructor(options?: ParserOptions, defaultState?: State)
 
 コンストラクタは `ParserOptions` オブジェクトとオプションのデフォルト状態値を受け取ります。
 
-| オプション             | 型                     | デフォルト                      | 説明                                                                                     |
-| ---------------------- | ---------------------- | ------------------------------- | ---------------------------------------------------------------------------------------- |
-| `booleanish`           | `boolean`              | `false`                         | 省略された属性値を `true` として扱う（例: JSX `<Component aria-hidden />`）              |
-| `endTagType`           | `EndTagType`           | `'omittable'`                   | `'xml'`: 終了タグ必須またはセルフクローズ; `'omittable'`: 省略可; `'never'`: 不要        |
-| `ignoreTags`           | `readonly IgnoreTag[]` | `[]`                            | パース前にマスクするコードブロックのパターン（例: テンプレート式）                       |
-| `maskChar`             | `string`               | `'\uE000'` (MASK_CHAR)          | マスクされたコードブロックを置換するために使用する文字                                   |
-| `tagNameCaseSensitive` | `boolean`              | `false`                         | タグ名の比較で大文字小文字を区別するか（例: JSX、Svelte）                                |
-| `selfCloseType`        | `SelfCloseType`        | `'html'`                        | `'html'`: void 要素のみセルフクローズ; `'xml'`: スラッシュで判定; `'html+xml'`: いずれか |
-| `spaceChars`           | `readonly string[]`    | `['\t', '\n', '\f', '\r', ' ']` | タグのパース時に空白として扱う文字                                                       |
-| `rawTextElements`      | `readonly string[]`    | `['style', 'script']`           | 子要素をトラバースしない要素（生テキストコンテンツ）                                     |
+| オプション             | 型                     | デフォルト                      | 説明                                                                                                                   |
+| ---------------------- | ---------------------- | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `booleanish`           | `boolean`              | `false`                         | 省略された属性値を `true` として扱う（例: JSX `<Component aria-hidden />`）                                            |
+| `endTagType`           | `EndTagType`           | `'omittable'`                   | `'xml'`: 終了タグ必須またはセルフクローズ; `'omittable'`: 省略可; `'never'`: 不要                                      |
+| `ignoreTags`           | `readonly IgnoreTag[]` | `[]`                            | パース前にマスクするコードブロックのパターン（例: テンプレート式）                                                     |
+| `maskChar`             | `string`               | `'\uE000'` (MASK_CHAR)          | マスクされたコードブロックを置換するために使用する文字                                                                 |
+| `tagNameCaseSensitive` | `boolean`              | `false`                         | タグ名の比較で大文字小文字を区別するか（例: JSX、Svelte）                                                              |
+| `selfCloseType`        | `SelfCloseType`        | `'html'`                        | `'html'`: void 要素のみセルフクローズ; `'xml'`: スラッシュで判定; `'html+xml'`: いずれか                               |
+| `spaceChars`           | `readonly string[]`    | `['\t', '\n', '\f', '\r', ' ']` | タグのパース時に空白として扱う文字                                                                                     |
+| `rawTextElements`      | `readonly string[]`    | `['style', 'script']`           | 子要素をトラバースせず、本文を `parseCodeFragment` が再トークナイズしない要素（HTML LS §13.2.5.1 の raw-text element） |
 
 ## パースパイプライン
 
@@ -227,6 +227,23 @@ visitText(
 ```
 
 テキストノードを作成します。`researchTags` が true の場合、`parseCodeFragment()` を通じてテキストを再パースし、埋め込まれた HTML タグを発見します。`invalidTagAsText` も true の場合、発見された開始タグによりコンテンツ全体が単一のテキストノードとして扱われます。
+
+### parseCodeFragment()
+
+```ts
+parseCodeFragment(
+  token: ChildToken,
+  options?: { namelessFragment?: boolean }
+): readonly (MLASTTag | MLASTText)[]
+```
+
+タグとテキストが混在した raw fragment を `MLASTTag` / `MLASTText` の列に再トークナイズします。サブクラス（例: `astro-parser` の `visitElement`）が、上流トークナイザーから要素全体に対する単一の raw 文字列しか得られないときに、開始タグ・本文・終了タグへ分解する目的で利用します。
+
+**Raw-text element の本文処理**: 自閉でない開始タグの `nodeName.toLowerCase()` が `rawTextElements`（既定値 `['style', 'script']`）に含まれる場合、本文は次に現れる ASCII 大文字小文字を問わない `</tagName`（タブ/LF/FF/CR/空白/`>` /`/` のいずれかが続く）まで丸ごと消費されます（[HTML Living Standard §13.2.5.1](https://html.spec.whatwg.org/multipage/syntax.html#cdata-rcdata-restrictions)）。本文は単一の `#text` ノードとなり、**再トークナイズはしません**。これがないと、`<script>` 本文中の `<br\s*\/?>` のような正規表現がタグとして解釈され `Invalid tag syntax` で throw します。
+
+このガードは、上流トークナイザーが要素本文中の裸の `<` をすでに弾く parser（TypeScript ESTree を使う `jsx-parser` や remark-mdx を使う `mdx-parser`）では dormant ですが、要素全体の raw を `parseCodeFragment` に渡す parser（例: `astro-parser`）では必須です。
+
+**Escapable raw text 要素 (`<title>`, `<textarea>`) は既定の `rawTextElements` に含めていません**。HTML LS では escapable raw text として分類され、本文中の文字参照（`&amp;` 等）の decode が要求されますが、上記 short-circuit はその decode を実装していません。意図的に `rawTextElements` に追加する場合は、本文中の文字参照が decode されず raw のまま渡されることを許容してください。
 
 ### visitComment()
 

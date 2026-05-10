@@ -178,6 +178,7 @@
 		"msubsup",
 		"munder",
 		"munderover",
+		"rcdata",
 		"tref",
 		"vkern",
 

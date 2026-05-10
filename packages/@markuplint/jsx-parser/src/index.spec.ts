@@ -798,4 +798,35 @@ const C = () => {
 			'[8:1]>[8:8](155,162)html: </html>',
 		]);
 	});
+
+	describe('#3825 raw-text element body via JSX expression child', () => {
+		// Note: JSX's <script>{`...`}</script> path does NOT exercise parser-utils'
+		// raw-text branch in `parseCodeFragment` — the body is a JSXExpressionContainer
+		// child and never re-tokenized. The primary value of these tests is to lock in
+		// the upstream invariant "TypeScript ESTree rejects bare `<` in element body
+		// before markuplint sees it", so a future upstream relaxation can't silently
+		// change observed JSX tag emissions.
+
+		test('script body wrapped in template literal expression child', () => {
+			const doc = parse('<div><script>{`const t = s.replace(/<br\\s*\\/?>/gi, " ");`}</script></div>');
+			const tags = doc.nodeList.filter((n: any) => n.type === 'starttag' || n.type === 'endtag');
+			expect(tags.map((t: any) => `${t.type}:${t.nodeName}`)).toEqual([
+				'starttag:div',
+				'starttag:script',
+				'endtag:script',
+				'endtag:div',
+			]);
+		});
+
+		test('style body wrapped in template literal expression child', () => {
+			const doc = parse('<div><style>{`/* <br = */ a{color:red}`}</style></div>');
+			const tags = doc.nodeList.filter((n: any) => n.type === 'starttag' || n.type === 'endtag');
+			expect(tags.map((t: any) => `${t.type}:${t.nodeName}`)).toEqual([
+				'starttag:div',
+				'starttag:style',
+				'endtag:style',
+				'endtag:div',
+			]);
+		});
+	});
 });
