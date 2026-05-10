@@ -3,11 +3,14 @@
 	"contentModel": {
 		"contents": [
 			{
-				"oneOrMore": [
+				// MathML Core §3.5.6 — mfrac requires exactly two children
+				// (numerator and denominator).
+				"require": [
 					":model(MathMLPresentation)",
 					"mml|semantics",
 					"#text"
 				],
+				"min": 2,
 				"max": 2
 			}
 		]

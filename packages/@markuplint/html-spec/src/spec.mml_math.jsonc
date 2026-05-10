@@ -3,14 +3,15 @@
 	"contentModel": {
 		"contents": [
 			{
+				// MathML Core §2.1.1 — only Presentation MathML and <semantics>
+				// are valid direct children of <math>. Parent-restricted
+				// elements (`<mtr>`/`<mtd>` only inside `<mtable>`,
+				// `<mprescripts>` only inside `<mmultiscripts>`,
+				// `<annotation>`/`<annotation-xml>` only inside `<semantics>`)
+				// are intentionally absent here so misplacement fires.
 				"zeroOrMore": [
 					":model(MathMLPresentation)",
 					"mml|semantics",
-					"mml|annotation",
-					"mml|annotation-xml",
-					"mml|mtr",
-					"mml|mtd",
-					"mml|mprescripts",
 					"#text"
 				]
 			}
