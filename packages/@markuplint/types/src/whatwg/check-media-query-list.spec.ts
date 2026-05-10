@@ -232,3 +232,48 @@ test('css-tree parse failures surface as `syntax-error` violations (not Tier-1 t
 	const result = check(' all ');
 	expect(result.matched).toBe(false);
 });
+
+test('negative <ratio> is rejected by Stage A (CSS Values <number [0,∞]>)', () => {
+	// css-tree's `<ratio>` grammar already excludes negatives, so the
+	// rejection partName comes from Stage A — *not* the MQL5 §4.5 guard.
+	// This test pins which stage owns the rejection so future refactors
+	// don't accidentally turn the §4.5 path into dead code for negatives.
+	const result = check('(aspect-ratio: -1/1)');
+	expect(result.matched).toBe(false);
+	if (result.matched) return;
+	expect(result.partName).toMatch(/^<ratio> required for "aspect-ratio"/);
+	expect(result.partName).not.toMatch(/MQL5 §4\.5/);
+});
+
+test('zero <ratio> is rejected by Stage B (MQL5 §4.5 — Stage A allows 0 in [0,∞])', () => {
+	// Stage A's `<ratio>` accepts `0` because CSS Values §6.7 defines it
+	// as `<number [0,∞]>` (zero is in range). Stage B narrows further
+	// to `> 0` per Media Queries Level 5 §4.5.
+	const result = check('(aspect-ratio: 0)');
+	expect(result.matched).toBe(false);
+	if (result.matched) return;
+	expect(result.partName).toMatch(/MQL5 §4\.5/);
+});
+
+test('negative <integer> is rejected by Stage B (MQL5 §4.4 — Stage A allows negatives)', () => {
+	// CSS Values §6.2 `<integer>` grammar accepts signed integers,
+	// so Stage A passes `-1`. The non-negative constraint comes from
+	// MQL5 §4.4 and is enforced by Stage B.
+	const result = check('(color: -1)');
+	expect(result.matched).toBe(false);
+	if (result.matched) return;
+	expect(result.partName).toMatch(/MQL5 §4\.4/);
+});
+
+test('Stage A error message surfaces the offending value detail to the user', () => {
+	// `(min-width: 400uu)` should mention "uu" / dimension mismatch via
+	// css-tree's `<length>` diagnostic — without it, the user only sees
+	// "<length> required for min-width" and has to guess what was wrong.
+	const result = check('(min-width: 400uu)');
+	expect(result.matched).toBe(false);
+	if (result.matched) return;
+	expect(result.partName).toMatch(/<length> required for "min-width"/);
+	// css-tree's diagnostic header is "Mismatch" — we just assert that
+	// SOME parenthesised detail trails the base message.
+	expect(result.partName).toMatch(/\(/);
+});

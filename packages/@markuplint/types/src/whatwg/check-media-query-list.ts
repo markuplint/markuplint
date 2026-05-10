@@ -295,23 +295,31 @@ function validateFeatureValue(
 	// `<length>` / `<integer>` / `<resolution>` / `<ratio>` definitions
 	// mirror CSS Values and Units Level 4 §6 and stay in sync as the
 	// language evolves (container query units, viewport-relative
-	// variants, etc.). `lexer.match()` returns `{ matched: object|null }`;
-	// `matched: null` means a mismatch.
-	// `@types/css-tree` only surfaces `error` on the result, but the
-	// runtime adds a `matched` field whose `null` value signals a
-	// mismatch; check via `error` to stay within the public typing.
+	// variants, etc.). `error: null` signals a successful match; a
+	// non-null `SyntaxMatchError` describes the mismatch and is included
+	// in the partName so the user sees which unit / dimension failed.
+	// `lexer.match()` *throws* a `SyntaxReferenceError` for unknown
+	// syntax names (e.g., a typo in `FEATURE_VALUE_TYPE`); let it bubble
+	// up as Tier-1 fatal so a programmer error never masquerades as a
+	// user-facing lint violation.
 	const lexerResult = csstree.lexer.match(expectedType, value);
 	if (lexerResult.error) {
+		const detail = lexerResult.error.message?.split('\n')[0] ?? '';
 		return new Token(raw, offset, source).unmatched({
 			reason: 'syntax-error',
 			expects,
-			partName: `${expectedType} required for "${feature}"`,
+			partName: detail
+				? `${expectedType} required for "${feature}" (${detail})`
+				: `${expectedType} required for "${feature}"`,
 		});
 	}
 	// Stage B: MQL5 semantic constraints that go beyond CSS Values §6.
-	// css-tree's `<integer>` accepts negatives (CSS Values §6.2 grammar),
-	// and `<ratio>` accepts non-positive numerator/denominator. Media
-	// Queries Level 5 §4.4 / §4.5 narrow both.
+	// Stage A already rejects negative numbers for `<ratio>` (the type's
+	// `<number [0,∞]>` range constraint excludes them), but accepts `0`
+	// as in-range — Stage B adds the strictly-positive constraint from
+	// MQL5 §4.5. Stage A also accepts negative `<integer>` per CSS Values
+	// §6.2 grammar, so MQL5 §4.4's non-negative requirement for
+	// `color` / `monochrome` / `*-viewport-segments` is enforced here.
 	if (
 		expectedType === '<integer>' &&
 		value.type === 'Number' &&
