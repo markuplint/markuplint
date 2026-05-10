@@ -71,7 +71,7 @@ export function findMatchingBrace(raw: string, start: number): number {
 		}
 
 		if (c === '"' || c === "'" || c === '`') {
-			inString = c as '"' | "'" | '`';
+			inString = c;
 			continue;
 		}
 
