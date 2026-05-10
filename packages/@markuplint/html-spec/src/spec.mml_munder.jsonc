@@ -3,13 +3,16 @@
 	"contentModel": {
 		"contents": [
 			{
-				"oneOrMore": [
+				// MathML Core §3.4.2 — munder requires exactly two children
+				// (base and underscript).
+				"require": [
 					":model(MathMLPresentation)",
 					"mml|semantics",
 					"mml|annotation",
 					"mml|annotation-xml",
 					"#text"
 				],
+				"min": 2,
 				"max": 2
 			}
 		]

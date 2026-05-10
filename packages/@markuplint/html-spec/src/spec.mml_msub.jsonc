@@ -3,13 +3,16 @@
 	"contentModel": {
 		"contents": [
 			{
-				"oneOrMore": [
+				// MathML Core §3.4.1 — msub requires exactly two children
+				// (base and subscript).
+				"require": [
 					":model(MathMLPresentation)",
 					"mml|semantics",
 					"mml|annotation",
 					"mml|annotation-xml",
 					"#text"
 				],
+				"min": 2,
 				"max": 2
 			}
 		]

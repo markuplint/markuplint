@@ -3,13 +3,16 @@
 	"contentModel": {
 		"contents": [
 			{
-				"oneOrMore": [
+				// MathML Core §3.4.2 — munderover requires exactly three children
+				// (base, underscript, overscript).
+				"require": [
 					":model(MathMLPresentation)",
 					"mml|semantics",
 					"mml|annotation",
 					"mml|annotation-xml",
 					"#text"
 				],
+				"min": 3,
 				"max": 3
 			}
 		]
