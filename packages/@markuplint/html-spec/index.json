@@ -56143,16 +56143,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": [
-							":model(MathMLPresentation)",
-							"mml|semantics",
-							"mml|annotation",
-							"mml|annotation-xml",
-							"mml|mtr",
-							"mml|mtd",
-							"mml|mprescripts",
-							"#text"
-						]
+						"zeroOrMore": [":model(MathMLPresentation)", "mml|semantics", "#text"]
 					}
 				]
 			},
@@ -56314,7 +56305,8 @@
 			"contentModel": {
 				"contents": [
 					{
-						"oneOrMore": [":model(MathMLPresentation)", "mml|semantics", "#text"],
+						"require": [":model(MathMLPresentation)", "mml|semantics", "#text"],
+						"min": 2,
 						"max": 2
 					}
 				]
@@ -56566,13 +56558,14 @@
 			"contentModel": {
 				"contents": [
 					{
-						"oneOrMore": [
+						"require": [
 							":model(MathMLPresentation)",
 							"mml|semantics",
 							"mml|annotation",
 							"mml|annotation-xml",
 							"#text"
 						],
+						"min": 2,
 						"max": 2
 					}
 				]
@@ -56710,7 +56703,8 @@
 			"contentModel": {
 				"contents": [
 					{
-						"oneOrMore": [":model(MathMLPresentation)", "mml|semantics", "#text"],
+						"require": [":model(MathMLPresentation)", "mml|semantics", "#text"],
+						"min": 2,
 						"max": 2
 					}
 				]
@@ -56917,13 +56911,14 @@
 			"contentModel": {
 				"contents": [
 					{
-						"oneOrMore": [
+						"require": [
 							":model(MathMLPresentation)",
 							"mml|semantics",
 							"mml|annotation",
 							"mml|annotation-xml",
 							"#text"
 						],
+						"min": 2,
 						"max": 2
 					}
 				]
@@ -56955,13 +56950,14 @@
 			"contentModel": {
 				"contents": [
 					{
-						"oneOrMore": [
+						"require": [
 							":model(MathMLPresentation)",
 							"mml|semantics",
 							"mml|annotation",
 							"mml|annotation-xml",
 							"#text"
 						],
+						"min": 3,
 						"max": 3
 					}
 				]
@@ -56998,13 +56994,14 @@
 			"contentModel": {
 				"contents": [
 					{
-						"oneOrMore": [
+						"require": [
 							":model(MathMLPresentation)",
 							"mml|semantics",
 							"mml|annotation",
 							"mml|annotation-xml",
 							"#text"
 						],
+						"min": 2,
 						"max": 2
 					}
 				]
@@ -57221,13 +57218,14 @@
 			"contentModel": {
 				"contents": [
 					{
-						"oneOrMore": [
+						"require": [
 							":model(MathMLPresentation)",
 							"mml|semantics",
 							"mml|annotation",
 							"mml|annotation-xml",
 							"#text"
 						],
+						"min": 2,
 						"max": 2
 					}
 				]
@@ -57261,13 +57259,14 @@
 			"contentModel": {
 				"contents": [
 					{
-						"oneOrMore": [
+						"require": [
 							":model(MathMLPresentation)",
 							"mml|semantics",
 							"mml|annotation",
 							"mml|annotation-xml",
 							"#text"
 						],
+						"min": 3,
 						"max": 3
 					}
 				]

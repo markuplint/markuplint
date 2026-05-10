@@ -1707,9 +1707,9 @@
 		{
 			"path": "html-aria/misc/aria-owns-broken-idref-novalid.html",
 			"category": "aria",
-			"nu": "clean",
+			"nu": "error",
 			"ml": "error",
-			"verdict": "ml-only",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -6964,8 +6964,8 @@
 			"path": "html-math/annotation-outside-semantics-novalid.html",
 			"category": "uncategorized",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -7084,8 +7084,8 @@
 			"path": "html-math/mfrac-wrong-children-novalid.html",
 			"category": "uncategorized",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -7140,8 +7140,8 @@
 			"path": "html-math/mover-wrong-children-novalid.html",
 			"category": "uncategorized",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -7164,8 +7164,8 @@
 			"path": "html-math/mprescripts-outside-mmultiscripts-novalid.html",
 			"category": "uncategorized",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -7180,8 +7180,8 @@
 			"path": "html-math/mroot-wrong-children-novalid.html",
 			"category": "uncategorized",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -7228,8 +7228,8 @@
 			"path": "html-math/msub-wrong-children-novalid.html",
 			"category": "uncategorized",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -7244,8 +7244,8 @@
 			"path": "html-math/msubsup-wrong-children-novalid.html",
 			"category": "uncategorized",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -7260,8 +7260,8 @@
 			"path": "html-math/msup-wrong-children-novalid.html",
 			"category": "uncategorized",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -7292,8 +7292,8 @@
 			"path": "html-math/mtr-outside-mtable-novalid.html",
 			"category": "uncategorized",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -7308,8 +7308,8 @@
 			"path": "html-math/munder-wrong-children-novalid.html",
 			"category": "uncategorized",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -7324,8 +7324,8 @@
 			"path": "html-math/munderover-wrong-children-novalid.html",
 			"category": "uncategorized",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
