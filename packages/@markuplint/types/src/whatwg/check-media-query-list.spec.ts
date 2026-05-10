@@ -269,11 +269,16 @@ test('Stage A error message surfaces the offending value detail to the user', ()
 	// `(min-width: 400uu)` should mention "uu" / dimension mismatch via
 	// css-tree's `<length>` diagnostic — without it, the user only sees
 	// "<length> required for min-width" and has to guess what was wrong.
+	//
+	// The exact wording of the diagnostic suffix is *not* contractual —
+	// it is whatever css-tree's `LexerMatchResult.error.message` says on
+	// its first line, and may evolve with css-tree releases. We only pin
+	// (1) the base "<length> required for ..." prefix and (2) that
+	// *something* trails in parentheses, so a future css-tree change
+	// that empties the diagnostic still surfaces a regression.
 	const result = check('(min-width: 400uu)');
 	expect(result.matched).toBe(false);
 	if (result.matched) return;
 	expect(result.partName).toMatch(/<length> required for "min-width"/);
-	// css-tree's diagnostic header is "Mismatch" — we just assert that
-	// SOME parenthesised detail trails the base message.
 	expect(result.partName).toMatch(/\(/);
 });

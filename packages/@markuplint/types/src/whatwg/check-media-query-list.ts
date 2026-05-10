@@ -68,6 +68,29 @@ const DEPRECATED_MEDIA_FEATURES = new Set([
  * feature-to-type association needs to live in markuplint because
  * css-tree does not expose a per-feature value-type registry.
  *
+ * **How to add a new MQL feature** when the spec extends the catalogue
+ * (e.g., a future Level 6 may add a new resolution or ratio feature):
+ *
+ * 1. Find the feature definition in
+ *    {@link https://www.w3.org/TR/mediaqueries-5/#mq-features Media Queries §4}
+ *    (or its successor) and read its `Value:` line — that's the CSS
+ *    type, expressed as `<length>` / `<integer>` / `<resolution>` /
+ *    `<ratio>` (or a discrete keyword set, which is *not* handled here).
+ * 2. Add an entry to this map. The value must be one of the four
+ *    string literals — keep this list narrow because each new type
+ *    string also needs to be a valid `csstree.lexer.match()` syntax.
+ * 3. If the new feature carries an MQL-side semantic constraint that
+ *    goes beyond CSS Values §6 (e.g., "must be non-negative" beyond
+ *    `<integer>`'s signed grammar, "must be strictly positive" beyond
+ *    `<ratio>`'s `[0,∞]` range), encode it in Stage B of
+ *    `validateFeatureValue()`.
+ * 4. Add table-driven cases in `check-media-query-list.spec.ts` —
+ *    cover at least one valid and one invalid value, plus one case
+ *    that exercises Stage B if applicable.
+ * 5. Discrete keyword features (e.g., `prefers-color-scheme: dark`)
+ *    intentionally fall through this map; they are validated by the
+ *    enum-driven attribute checking elsewhere.
+ *
  * @see https://www.w3.org/TR/mediaqueries-5/#mq-features
  */
 const FEATURE_VALUE_TYPE: Record<string, '<length>' | '<integer>' | '<resolution>' | '<ratio>'> = {
