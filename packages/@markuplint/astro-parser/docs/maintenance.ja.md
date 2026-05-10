@@ -102,11 +102,12 @@ expect(debugMaps).toStrictEqual([
 
 上流パッケージの変更がこのパーサーに影響を与える可能性があります:
 
-| パッケージ                 | 影響                                                        |
-| -------------------------- | ----------------------------------------------------------- |
-| `@markuplint/parser-utils` | 基底 `Parser` クラスの変更は全オーバーライドメソッドに影響  |
-| `@markuplint/ml-ast`       | AST 型の変更は `nodeize()` の戻り値の型に影響               |
-| `astro-eslint-parser`      | パーサー出力形式の変更は `tokenize()` と `nodeize()` に影響 |
+| パッケージ                               | 影響                                                                                                  |
+| ---------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `@markuplint/parser-utils`               | 基底 `Parser` クラスの変更は全オーバーライドメソッドに影響                                            |
+| `@markuplint/parser-utils/script-parser` | TS 対応と非貪欲なパースが上流に入った場合、`src/spread-attr.ts` と `visitAttr()` のプリパスは削除可能 |
+| `@markuplint/ml-ast`                     | AST 型の変更は `nodeize()` の戻り値の型に影響                                                         |
+| `astro-eslint-parser`                    | パーサー出力形式の変更は `tokenize()` と `nodeize()` に影響                                           |
 
 `astro-eslint-parser` を更新する場合:
 
@@ -170,3 +171,20 @@ yarn build --scope @markuplint/astro-parser && yarn test --scope @markuplint/ast
 1. 属性名の形式を確認 — 正規表現はコロンが1つだけで、両側に空でない部分が必要
 2. `switch (lowerCaseDirectiveName)` を確認 — ディレクティブプレフィックスがケースにマッチする必要がある
 3. 新しいディレクティブプレフィックスの場合は、新しいケースを追加（レシピ #1 参照）
+
+### スプレッド属性が途中で切れる、または `{...EXPR}` の直後に式の子があると `Invalid tag syntax` が発生する
+
+**症状:** 次のいずれか:
+
+- `{...{ command: 'close' } as any}` が部分的なスプレッドと不正な `as` / `any}` 属性に分割される。
+- `<div {...props}>{label}</div>`（または `{label}` のような式の子をスプレッド属性の直後に持つ要素）が `SyntaxError: Invalid tag syntax: ...` をスローする。
+
+**原因:** 要素の生トークンが、`src/spread-attr.ts` の波括弧対応抽出器ではなく `parser-utils/safeScriptParser`（espree ベース）にルーティングされている。`safeScriptParser` は TypeScript 構文（`as`）を理解せず、また「valid な JS プレフィックス」をスプレッドの `}` を超えて周囲の HTML まで伸ばすことがある（`{...props}>{label}` を二項 `>` 式として解釈）。
+
+**解決策:**
+
+1. `src/parser.ts` の `visitAttr()` が `super.visitAttr()` の **前**に `./spread-attr.js` の `extractSpreadAttribute()` を呼んでいることを確認。順序が重要 — 基底パスにフォールスルーするとバグが発動する。
+2. 新しいエッジケースが報告されたら、`src/spread-attr.spec.ts` で `findMatchingBrace()` のユニットテストとして再現し、波括弧マッチャに追加のエスケープルール（文字列 / テンプレート / コメント / バックスラッシュ）が必要かを判断。
+3. 既知の制限は `src/spread-attr.ts` の JSDoc に記載 — 波括弧を含む正規表現リテラルは扱えない。新たな制限が見つかったらそこに追記。
+
+オリジナルの報告とスプレッド属性を `parser-utils` ではなく本パッケージで処理する根拠については [#3824](https://github.com/markuplint/markuplint/issues/3824)（v4）と [#3856](https://github.com/markuplint/markuplint/issues/3856)（dev/v5）を参照。
