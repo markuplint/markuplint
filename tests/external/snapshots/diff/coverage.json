@@ -30942,8 +30942,8 @@
 			"path": "html/elements/link/itemprop-with-rel-novalid.html",
 			"category": "invalid-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -31406,8 +31406,8 @@
 			"path": "html/elements/meta/itemprop-with-name-novalid.html",
 			"category": "invalid-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -41548,8 +41548,8 @@
 			"path": "html/microdata/itemprop-not-in-item-novalid.html",
 			"category": "uncategorized",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -41564,8 +41564,8 @@
 			"path": "html/microdata/itemref-redundant-novalid.html",
 			"category": "uncategorized",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -41580,8 +41580,8 @@
 			"path": "html/microdata/itemtype-empty-novalid.html",
 			"category": "uncategorized",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{

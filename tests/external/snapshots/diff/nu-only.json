@@ -5541,14 +5541,6 @@
 			]
 		},
 		{
-			"path": "html/elements/link/itemprop-with-rel-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-a7c721263c03",
-				"nv-714e7c410510"
-			]
-		},
-		{
 			"path": "html/elements/meta/content-security-policy/csp-invalid-directive-haswarn.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [
@@ -5567,14 +5559,6 @@
 			"category": "invalid-attr",
 			"nuMessageIds": [
 				"nv-f76bf04a85bb"
-			]
-		},
-		{
-			"path": "html/elements/meta/itemprop-with-name-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-e421b32ec6be",
-				"nv-4fc0d9c94280"
 			]
 		},
 		{
@@ -8744,27 +8728,6 @@
 			"category": "uncategorized",
 			"nuMessageIds": [
 				"nv-f17ac3205810"
-			]
-		},
-		{
-			"path": "html/microdata/itemprop-not-in-item-novalid.html",
-			"category": "uncategorized",
-			"nuMessageIds": [
-				"nv-daf1fa858f68"
-			]
-		},
-		{
-			"path": "html/microdata/itemref-redundant-novalid.html",
-			"category": "uncategorized",
-			"nuMessageIds": [
-				"nv-b36b432a5bb7"
-			]
-		},
-		{
-			"path": "html/microdata/itemtype-empty-novalid.html",
-			"category": "uncategorized",
-			"nuMessageIds": [
-				"nv-056325bb7b3f"
 			]
 		},
 		{
