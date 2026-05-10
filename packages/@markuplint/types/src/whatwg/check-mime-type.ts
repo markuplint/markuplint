@@ -39,6 +39,7 @@ function findUnterminatedQuotedString(value: string): { readonly offset: number 
 		if (i >= value.length || value[i] !== '"') continue;
 		const start = i;
 		i++;
+		let terminated = false;
 		while (i < value.length) {
 			if (value[i] === '\\') {
 				i += 2;
@@ -46,11 +47,12 @@ function findUnterminatedQuotedString(value: string): { readonly offset: number 
 			}
 			if (value[i] === '"') {
 				i++;
+				terminated = true;
 				break;
 			}
 			i++;
 		}
-		if (i > value.length || (i === value.length && value[i - 1] !== '"')) {
+		if (!terminated) {
 			return { offset: start };
 		}
 	}
