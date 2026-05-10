@@ -113,6 +113,7 @@ describe('basic test', () => {
 			'Tag names of HTML elements should be lowercase',
 			'Tag names of HTML elements should be lowercase',
 			'It is the default value',
+			'The "color" attribute is non-standard',
 		]);
 	});
 
