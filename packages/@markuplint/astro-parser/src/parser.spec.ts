@@ -693,4 +693,113 @@ describe('Issue', () => {
 			expect(map[0]).toBe('[1:1]>[1:34](0,33)script: <script␣define:vars={{␣foo:␣1␣}}>');
 		});
 	});
+
+	describe('#3824 spread attribute parsing', () => {
+		const findStartTag = (ast: any) => ast.nodeList.find((n: any) => n.type === 'starttag');
+
+		test('TypeScript assertion in spread attribute', () => {
+			const ast = parse(
+				'<button type="button" {...{ command: "close" } as any} commandfor="dialog-id">close</button>',
+			);
+			expect(ast.parseError).toBeUndefined();
+			const start = findStartTag(ast);
+			const spreads = start.attributes.filter((a: any) => a.type === 'spread');
+			expect(spreads).toHaveLength(1);
+			expect(spreads[0].raw).toBe('{...{ command: "close" } as any}');
+			const attrNames = start.attributes.filter((a: any) => a.type === 'attr').map((a: any) => a.nodeName);
+			expect(attrNames).toEqual(['type', 'commandfor']);
+		});
+
+		test('spread attribute with expression child on same element', () => {
+			const ast = parse('<div {...props}>{label}</div>');
+			expect(ast.parseError).toBeUndefined();
+			const start = findStartTag(ast);
+			const spreads = start.attributes.filter((a: any) => a.type === 'spread');
+			expect(spreads).toHaveLength(1);
+			expect(spreads[0].raw).toBe('{...props}');
+		});
+
+		test('dynamic tag (PascalCase) with spread + expression child', () => {
+			const ast = parse('<ContainerTag class="container" {...containerProps}>{title}</ContainerTag>');
+			expect(ast.parseError).toBeUndefined();
+			const start = findStartTag(ast);
+			const spreads = start.attributes.filter((a: any) => a.type === 'spread');
+			expect(spreads).toHaveLength(1);
+			expect(spreads[0].raw).toBe('{...containerProps}');
+		});
+
+		test('textarea with conditional spread + expression child', () => {
+			const ast = parse(
+				"<textarea {...fieldSizingContent ? { 'data-field-sizing': 'content' } : {}}>{value}</textarea>",
+			);
+			expect(ast.parseError).toBeUndefined();
+			const start = findStartTag(ast);
+			const spreads = start.attributes.filter((a: any) => a.type === 'spread');
+			expect(spreads).toHaveLength(1);
+			expect(spreads[0].raw).toBe("{...fieldSizingContent ? { 'data-field-sizing': 'content' } : {}}");
+		});
+
+		test('multiple spread attributes on dynamic tag with expression child', () => {
+			const ast = parse(`<Element
+  {...iconOnly ? { title: label } : {}}
+  {...rest}
+>
+  {label}
+</Element>`);
+			expect(ast.parseError).toBeUndefined();
+			const start = findStartTag(ast);
+			const spreads = start.attributes.filter((a: any) => a.type === 'spread');
+			expect(spreads).toHaveLength(2);
+			expect(spreads[0].raw).toBe('{...iconOnly ? { title: label } : {}}');
+			expect(spreads[1].raw).toBe('{...rest}');
+		});
+
+		test('component with conditional spread and descendant expression child', () => {
+			const ast = parse(`<Comp {...enabled ? { title: title } : {}}>
+  <div>{title}</div>
+</Comp>`);
+			expect(ast.parseError).toBeUndefined();
+			const start = findStartTag(ast);
+			const spreads = start.attributes.filter((a: any) => a.type === 'spread');
+			expect(spreads).toHaveLength(1);
+			expect(spreads[0].raw).toBe('{...enabled ? { title: title } : {}}');
+		});
+
+		test('static spread + text child still works (regression guard)', () => {
+			const ast = parse('<div {...props}>text</div>');
+			expect(ast.parseError).toBeUndefined();
+			const start = findStartTag(ast);
+			const spreads = start.attributes.filter((a: any) => a.type === 'spread');
+			expect(spreads).toHaveLength(1);
+			expect(spreads[0].raw).toBe('{...props}');
+		});
+
+		test('simple spread shorthand still works (regression guard)', () => {
+			const ast = parse('<div {a} {...b} />');
+			expect(ast.parseError).toBeUndefined();
+			const start = findStartTag(ast);
+			const spreads = start.attributes.filter((a: any) => a.type === 'spread');
+			expect(spreads).toHaveLength(1);
+			expect(spreads[0].raw).toBe('{...b}');
+		});
+
+		test('multi-line spread reports correct line, column, and offset', () => {
+			const ast = parse('<Element\n  {...rest}\n/>');
+			const start = findStartTag(ast);
+			const spread = start.attributes.find((a: any) => a.type === 'spread');
+			expect(spread.startLine).toBe(2);
+			expect(spread.startCol).toBe(3);
+			expect(spread.startOffset).toBe(11);
+			expect(spread.raw).toBe('{...rest}');
+		});
+
+		test('CRLF line endings preserve correct line, column, and offset', () => {
+			const ast = parse('<Element\r\n  {...rest}\r\n/>');
+			const start = findStartTag(ast);
+			const spread = start.attributes.find((a: any) => a.type === 'spread');
+			expect(spread.startLine).toBe(2);
+			expect(spread.startCol).toBe(3);
+			expect(spread.raw).toBe('{...rest}');
+		});
+	});
 });

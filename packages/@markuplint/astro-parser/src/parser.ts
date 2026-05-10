@@ -5,6 +5,7 @@ import type { ChildToken, Token } from '@markuplint/parser-utils';
 import { AttrState, Parser, ParserError } from '@markuplint/parser-utils';
 
 import { astroParse } from './astro-parser.js';
+import { extractSpreadAttribute } from './spread-attr.js';
 
 type State = {
 	scopeNS: string;
@@ -250,12 +251,41 @@ class AstroParser extends Parser<Node, State> {
 	/**
 	 * Visits an attribute token, handling Astro-specific syntax including
 	 * curly-brace expression values, shorthand attributes (`{name}`),
-	 * and template directives (e.g., `class:list`, `set:html`).
+	 * spread attributes (`{...expr}`, including TypeScript and nested
+	 * expressions, see #3824), and template directives (e.g., `class:list`,
+	 * `set:html`).
 	 *
 	 * @param token - The token representing the attribute
 	 * @returns The parsed attribute node with Astro-specific metadata
 	 */
 	visitAttr(token: Token) {
+		const spreadHit = extractSpreadAttribute(token.raw);
+		if (spreadHit) {
+			let spreadStartLine = token.startLine;
+			let spreadStartCol = token.startCol;
+			for (const c of spreadHit.leadingSpace) {
+				if (c === '\n') {
+					spreadStartLine++;
+					spreadStartCol = 1;
+				} else {
+					spreadStartCol++;
+				}
+			}
+			const spread = super.visitSpreadAttr({
+				raw: spreadHit.spreadRaw,
+				startOffset: token.startOffset + spreadHit.leadingSpace.length,
+				startLine: spreadStartLine,
+				startCol: spreadStartCol,
+			});
+			// `extractSpreadAttribute` already validates the `{...EXPR}` shape
+			// so `super.visitSpreadAttr` is expected to return a node here.
+			// Falling through to the generic attr path is a defensive safeguard
+			// against future shape changes in the parent class.
+			if (spread) {
+				return spreadHit.leftover ? { ...spread, __rightText: spreadHit.leftover } : spread;
+			}
+		}
+
 		const attr = super.visitAttr(token, {
 			quoteSet: [
 				{ start: '"', end: '"', type: 'string' },
