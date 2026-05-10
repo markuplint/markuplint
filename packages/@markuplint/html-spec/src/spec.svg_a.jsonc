@@ -2,6 +2,11 @@
 // https://www.w3.org/TR/svg-aam-1.0/#details-id-0
 {
 	"contentModel": {
+		// The `svg|switch > svg|a` branch is functionally equivalent to the
+		// default branch today, but is preserved so future svg|switch-specific
+		// constraints can be expressed without restructuring spec consumers
+		// that walk this `conditional` shape (e.g., the rules engine and the
+		// generated `index.json`).
 		"conditional": [
 			{
 				"condition": "svg|switch > svg|a",
