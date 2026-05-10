@@ -920,4 +920,29 @@ describe('MDXParser', () => {
 			expect(text!.raw).toBe('deleted text');
 		});
 	});
+
+	describe('#3825 raw-text element body via MDX expression child', () => {
+		// Note: MDX's <script>{`...`}</script> path does NOT exercise parser-utils'
+		// raw-text branch in `parseCodeFragment` — the body is an MDX expression child
+		// and never re-tokenized. The primary value of these tests is to lock in the
+		// upstream invariant "remark-mdx rejects bare `<` in element body before
+		// markuplint sees it", so a future upstream relaxation can't silently change
+		// observed MDX tag emissions.
+
+		test('script body wrapped in template literal expression child', () => {
+			const doc = parse('# title\n\n<div><script>{`const t = s.replace(/<br\\s*\\/?>/gi, " ");`}</script></div>');
+			const tags = doc.nodeList.filter(n => n?.type === 'starttag' || n?.type === 'endtag');
+			const tagSig = tags.map(t => `${t!.type}:${t!.nodeName}`);
+			expect(tagSig).toContain('starttag:script');
+			expect(tagSig).toContain('endtag:script');
+		});
+
+		test('style body wrapped in template literal expression child', () => {
+			const doc = parse('# title\n\n<div><style>{`/* <br = */ a{color:red}`}</style></div>');
+			const tags = doc.nodeList.filter(n => n?.type === 'starttag' || n?.type === 'endtag');
+			const tagSig = tags.map(t => `${t!.type}:${t!.nodeName}`);
+			expect(tagSig).toContain('starttag:style');
+			expect(tagSig).toContain('endtag:style');
+		});
+	});
 });
