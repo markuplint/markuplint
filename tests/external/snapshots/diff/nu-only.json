@@ -8360,41 +8360,6 @@
 			]
 		},
 		{
-			"path": "html/media-queries/009-novalid.html",
-			"category": "uncategorized",
-			"nuMessageIds": [
-				"nv-0f8bcd9211ed"
-			]
-		},
-		{
-			"path": "html/media-queries/010-novalid.html",
-			"category": "uncategorized",
-			"nuMessageIds": [
-				"nv-6bb7bb0a555d"
-			]
-		},
-		{
-			"path": "html/media-queries/011-novalid.html",
-			"category": "uncategorized",
-			"nuMessageIds": [
-				"nv-6b8e06a0f028"
-			]
-		},
-		{
-			"path": "html/media-queries/019-novalid.html",
-			"category": "uncategorized",
-			"nuMessageIds": [
-				"nv-0ca0ba2490bb"
-			]
-		},
-		{
-			"path": "html/media-queries/024-novalid.html",
-			"category": "uncategorized",
-			"nuMessageIds": [
-				"nv-04fbb330c3f1"
-			]
-		},
-		{
 			"path": "html/microdata/itemid/fragment-backslash-novalid.html",
 			"category": "uncategorized",
 			"nuMessageIds": [
