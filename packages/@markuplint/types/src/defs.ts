@@ -16,6 +16,7 @@ import { checkTimeString } from './whatwg/check-datetime/time-string.js';
 import { checkWeekString } from './whatwg/check-datetime/week-string.js';
 import { checkHTTPEquivContentType } from './whatwg/check-http-equiv-content-type.js';
 import { checkHTTPEquivRefresh } from './whatwg/check-http-equiv-refresh.js';
+import { checkMediaQueryList } from './whatwg/check-media-query-list.js';
 import { checkMIMEType } from './whatwg/check-mime-type.js';
 import { checkURL } from './whatwg/check-url.js';
 import { isAbsURL } from './whatwg/is-abs-url.js';
@@ -566,6 +567,17 @@ export const defs: Defs = {
 			},
 		],
 		is: checkMIMEType(),
+	},
+
+	MediaQueryList: {
+		ref: 'https://www.w3.org/TR/mediaqueries-5/',
+		expects: [
+			{
+				type: 'format',
+				value: 'media query list',
+			},
+		],
+		is: checkMediaQueryList(),
 	},
 
 	HTTPEquivRefresh: {
