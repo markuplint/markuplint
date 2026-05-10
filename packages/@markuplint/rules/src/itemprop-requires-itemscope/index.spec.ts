@@ -27,6 +27,27 @@ describe('verify', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
+	test('[itemprop-requires-itemscope-valid-004] whitespace-only itemref contributes no entries; would-be target stays orphan', async () => {
+		// `itemref="  "` yields zero non-empty tokens, so the host claims no
+		// id at all. Exercises the `if (token)` filter inside the token-
+		// collection loop. The standalone span is therefore not reachable
+		// via itemref and falls into the orphan branch.
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div itemscope itemref="  "></div><span id="ref-name" itemprop="name">y</span>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 35,
+				message:
+					'The element must belong to an item via an ancestor `itemscope` or be referenced by an `itemref`',
+				raw: '<span id="ref-name" itemprop="name">',
+			},
+		]);
+	});
+
 	test('[itemprop-requires-itemscope-invalid-001] orphan itemprop with no ancestor itemscope and no itemref', async () => {
 		const { violations } = await mlRuleTest(rule, '<span itemprop="name">orphan</span>');
 		expect(violations).toStrictEqual([
@@ -62,8 +83,27 @@ describe('verify', () => {
 
 	test('[itemprop-requires-itemscope-invalid-003] each orphan in a sequence fires independently', async () => {
 		// Loop must process every [itemprop] match, not stop at the first.
+		// Pin both violations so a future change that accidentally narrows
+		// the loop (or fires for the wrong reason) is caught.
 		const { violations } = await mlRuleTest(rule, '<span itemprop="name">a</span><span itemprop="email">b</span>');
-		expect(violations).toHaveLength(2);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message:
+					'The element must belong to an item via an ancestor `itemscope` or be referenced by an `itemref`',
+				raw: '<span itemprop="name">',
+			},
+			{
+				severity: 'error',
+				line: 1,
+				col: 31,
+				message:
+					'The element must belong to an item via an ancestor `itemscope` or be referenced by an `itemref`',
+				raw: '<span itemprop="email">',
+			},
+		]);
 	});
 
 	test('[itemprop-requires-itemscope-invalid-004] explicit empty id falls into the orphan branch', async () => {

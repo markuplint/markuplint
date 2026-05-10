@@ -2919,6 +2919,9 @@ describe('img[usemap] requires a non-empty hash-name (HashName type)', () => {
 	test('[invalid-attr-invalid-040] itemref token list rejects duplicate ids (HTML LS §5.2.2)', async () => {
 		// Mirrors html/microdata/itemref-redundant-novalid.html. Locks down the
 		// `unique: true` flag added to the itemref token spec.
+		// Uses substring-only `.some(...)` (matches the invalid-039 pattern)
+		// so the test stays stable when invalid-attr's surrounding wording is
+		// tuned elsewhere.
 		const { violations } = await mlRuleTest(
 			rule,
 			'<div itemscope itemref="ref1 ref1"></div><div id="ref1" itemprop="name">x</div>',
@@ -2931,6 +2934,7 @@ describe('img[usemap] requires a non-empty hash-name (HashName type)', () => {
 	test('[invalid-attr-invalid-041] itemtype="" rejects empty token set (HTML LS §5.2.1)', async () => {
 		// Mirrors html/microdata/itemtype-empty-novalid.html. Locks down the
 		// `allowEmpty: false` flag added to the itemtype token spec.
+		// Uses substring-only match (see invalid-040 for rationale).
 		const { violations } = await mlRuleTest(rule, '<div itemtype="" itemscope></div>');
 		expect(
 			violations.some(
