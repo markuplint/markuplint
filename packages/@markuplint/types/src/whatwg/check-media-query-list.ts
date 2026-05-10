@@ -225,8 +225,14 @@ export const checkMediaQueryList: CustomSyntaxChecker = () => value => {
 	try {
 		ast = csstree.parse(value, { context: 'mediaQueryList', positions: true });
 	} catch (error) {
-		const message = error instanceof Error ? error.message : String(error);
-		return unmatched(value, 'syntax-error', { expects, partName: message });
+		// css-tree's parser raises a JS-builtin `SyntaxError` decorated
+		// with `source` / `offset` / `formattedMessage` for user-input
+		// parse failures (Tier-3 violations). Anything else — programmer-
+		// error fatal errors (`TypeError` / `ReferenceError` / bare
+		// `SyntaxError`) or non-`Error` throws — bubbles up so the three-
+		// tier policy can treat it as Tier-1.
+		if (!isCssTreeParseError(error)) throw error;
+		return unmatched(value, 'syntax-error', { expects, partName: error.message });
 	}
 	if (ast.type !== 'MediaQueryList') {
 		return unmatched(value, 'syntax-error', { expects });
@@ -342,11 +348,23 @@ function validateFeatureValue(
 	const offset = value.loc?.start.offset ?? 0;
 	const raw = source.slice(offset, value.loc?.end.offset ?? offset);
 	if (isInteger) {
-		if (value.type !== 'Number' || /[.e]/i.test((value as csstree.NumberNode).value)) {
+		const literal = value.type === 'Number' ? (value as csstree.NumberNode).value : undefined;
+		if (literal === undefined || /[.e]/i.test(literal)) {
 			return new Token(raw, offset, source).unmatched({
 				reason: 'syntax-error',
 				expects,
 				partName: `<integer> required for "${feature}"`,
+			});
+		}
+		// MQL5 §4.4 (color/monochrome/color-index) and §4.x (viewport-segments)
+		// require non-negative integers. The `device-posture` feature uses
+		// keywords (handled by enum-driven attribute checking elsewhere) and
+		// is not in INTEGER_FEATURES, so the rule applies uniformly here.
+		if (Number.parseInt(literal, 10) < 0) {
+			return new Token(raw, offset, source).unmatched({
+				reason: 'syntax-error',
+				expects,
+				partName: `<integer> for "${feature}" must be non-negative`,
 			});
 		}
 		return null;
@@ -398,15 +416,40 @@ function validateFeatureValue(
 		}
 		return null;
 	}
-	// isRatio — accept Ratio nodes and positive Number nodes.
-	if (value.type !== 'Ratio' && value.type !== 'Number') {
-		return new Token(raw, offset, source).unmatched({
-			reason: 'syntax-error',
-			expects,
-			partName: `<ratio> required for "${feature}"`,
-		});
+	// isRatio — MQL5 §4.5 mandates positive ratios. Both literal forms
+	// (Ratio `<n>/<d>` and bare `<number>`) must be > 0.
+	if (value.type === 'Ratio') {
+		// `@types/css-tree` declares `Ratio.left/.right` as `string`, but the
+		// runtime mediaQueryList parser emits `NumberNode` children — cast
+		// through `unknown` to consume the actual runtime shape.
+		const ratio = value as unknown as { left: csstree.NumberNode; right: csstree.NumberNode };
+		const left = Number.parseFloat(ratio.left.value);
+		const right = Number.parseFloat(ratio.right.value);
+		if (!(left > 0) || !(right > 0)) {
+			return new Token(raw, offset, source).unmatched({
+				reason: 'syntax-error',
+				expects,
+				partName: `<ratio> for "${feature}" must be positive (MQL5 §4.5)`,
+			});
+		}
+		return null;
 	}
-	return null;
+	if (value.type === 'Number') {
+		const n = Number.parseFloat((value as csstree.NumberNode).value);
+		if (!(n > 0)) {
+			return new Token(raw, offset, source).unmatched({
+				reason: 'syntax-error',
+				expects,
+				partName: `<ratio> for "${feature}" must be positive (MQL5 §4.5)`,
+			});
+		}
+		return null;
+	}
+	return new Token(raw, offset, source).unmatched({
+		reason: 'syntax-error',
+		expects,
+		partName: `<ratio> required for "${feature}"`,
+	});
 }
 
 /**
@@ -434,6 +477,20 @@ function nearestMediaType(input: string): string | undefined {
  * quoted-string production this scan would falsely flag the inner `;`
  * and need a string-aware tokenizer instead.
  */
+/**
+ * Distinguishes css-tree's user-input parse errors (Tier-3 violations)
+ * from JS-builtin `SyntaxError`s thrown elsewhere (Tier-1 fatal errors like
+ * `JSON.parse('bad')`). css-tree decorates its `SyntaxError` instances
+ * with `source` and `formattedMessage`; the JS builtin does not.
+ */
+function isCssTreeParseError(error: unknown): error is SyntaxError & { source: string } {
+	return (
+		error instanceof SyntaxError &&
+		typeof (error as { source?: unknown }).source === 'string' &&
+		typeof (error as { formattedMessage?: unknown }).formattedMessage === 'string'
+	);
+}
+
 function findSemicolonInsideParens(input: string): number | null {
 	let depth = 0;
 	for (let i = 0; i < input.length; i++) {

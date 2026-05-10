@@ -159,6 +159,10 @@ test.each([
 	['(color: 1em)', false], // dimension rejected
 	['(color: 1.5)', false], // fractional rejected
 	['(color: 1px)', false],
+	['(color: 1e2)', false], // scientific notation is <number>, not <integer>
+	['(color: -1)', false], // MQL5 §4.4 — non-negative integer required
+	['(monochrome: -2)', false],
+	['(min-color-index: -1)', false],
 ])('<integer> feature value validation: %s -> matched %s', (value, expected) => {
 	expect(check(value).matched).toBe(expected);
 });
@@ -178,22 +182,53 @@ test.each([
 	['(aspect-ratio: 1.5)', true], // unitless number form
 	['(min-aspect-ratio: 1/1)', true],
 	['(aspect-ratio: 16em)', false], // dimension rejected
+	// MQL5 §4.5 — ratios must be positive
+	['(aspect-ratio: -1/1)', false],
+	['(aspect-ratio: 1/-1)', false],
+	['(aspect-ratio: -1.5)', false],
+	['(aspect-ratio: 0)', false], // zero <number> not positive
+	['(aspect-ratio: 0/1)', false], // zero numerator
+	['(aspect-ratio: 1/0)', false], // zero denominator
 ])('<ratio> feature value validation: %s -> matched %s', (value, expected) => {
 	expect(check(value).matched).toBe(expected);
 });
 
-test('boolean form `(min-width)` skips value-type validation (MQL4 boolean syntax)', () => {
-	expect(check('(min-width)').matched).toBe(true);
-	expect(check('(grid)').matched).toBe(true);
+test.each([
+	['(min-width: 400PX)', true],
+	['(min-width: 400Px)', true],
+	['(resolution: 96DPI)', true],
+	['(min-color: 0)', true],
+])('CSS unit/keyword case-insensitivity: %s', (value, expected) => {
+	expect(check(value).matched).toBe(expected);
 });
 
-test('unknown feature is passed through (forward-compat for new MQL features)', () => {
-	// Hypothetical future feature; markuplint must not regress when MQL
-	// extends the feature catalogue. css-tree's permissive parse accepts
-	// it; only Stage 1 syntax-match would reject if grammar disagrees.
-	const result = check('(foo-bar: 42)');
-	if (!result.matched) {
-		// If rejected, it must be by syntax-match, not by our partName.
-		expect(result.partName).not.toMatch(/required for "foo-bar"/);
-	}
+test.each([
+	['(color)', true], // boolean form on integer feature
+	['(resolution)', true], // boolean form on resolution feature
+	['(aspect-ratio)', true], // boolean form on ratio feature
+	['(min-width)', true], // boolean form on length feature
+])('boolean form `%s` skips value-type validation', value => {
+	expect(check(value).matched).toBe(true);
+});
+
+test.each(['(foo-bar: 42)', '(unknown-feat: 5px)', '(future-prop: 1em)'])(
+	'unknown feature %s is passed through (forward-compat for new MQL features)',
+	value => {
+		// Stage-1 syntax-match may accept or reject the unknown feature;
+		// the assertion only ensures *our* value-type matrix never invents
+		// a rejection for a feature it doesn't model.
+		const result = check(value);
+		if (!result.matched) {
+			expect(result.partName ?? '').not.toMatch(/required for "(foo-bar|unknown-feat|future-prop)"/);
+		}
+	},
+);
+
+test('css-tree parse failures surface as `syntax-error` violations (not Tier-1 throws)', () => {
+	// Trailing whitespace inside a parenthesised media-condition trips
+	// css-tree's tokenizer with a bare `SyntaxError`. Without the
+	// css-tree-shape guard the catch block would re-throw it as Tier-1
+	// fatal and crash the lint run mid-file.
+	const result = check(' all ');
+	expect(result.matched).toBe(false);
 });
