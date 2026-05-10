@@ -248,8 +248,8 @@ class AstroParser extends Parser<Node> {
 	 * Visits an attribute token, handling Astro-specific syntax including
 	 * curly-brace expression values, shorthand attributes (`{name}`),
 	 * spread attributes (`{...expr}`, including TypeScript and nested
-	 * expressions, see #3856), and template directives (e.g., `class:list`,
-	 * `set:html`).
+	 * expressions, see #3856; root cause originally reported as #3824),
+	 * and template directives (e.g., `class:list`, `set:html`).
 	 *
 	 * @param token - The token representing the attribute
 	 * @returns The parsed attribute node with Astro-specific metadata

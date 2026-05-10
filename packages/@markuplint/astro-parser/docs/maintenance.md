@@ -122,6 +122,14 @@ yarn upgrade @astrojs/compiler --scope @markuplint/astro-parser --dev
 yarn build --scope @markuplint/astro-parser && yarn test --scope @markuplint/astro-parser
 ```
 
+### Porting fixes from v4
+
+When forward-porting an `astro-parser` fix from the `v4` branch to `dev`, beware
+the `Token` field rename: v4 uses `startOffset` / `startLine` / `startCol`;
+dev uses the short forms `offset` / `line` / `col`. The same rename also
+applies to AST node properties asserted in `*.spec.ts`. Build will surface
+the issue as `TS2339` on the renamed properties.
+
 ## Troubleshooting
 
 ### Frontmatter is not recognized

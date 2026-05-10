@@ -122,6 +122,13 @@ yarn upgrade @astrojs/compiler --scope @markuplint/astro-parser --dev
 yarn build --scope @markuplint/astro-parser && yarn test --scope @markuplint/astro-parser
 ```
 
+### v4 からの fix を forward-port するとき
+
+`v4` ブランチの `astro-parser` 修正を `dev` に持ってくる場合、`Token` のフィールド名 rename に注意:
+v4 は `startOffset` / `startLine` / `startCol`、dev は短縮形の `offset` / `line` / `col` を使用します。
+この rename は `*.spec.ts` でアサートしている AST ノードプロパティにも当てはまります。
+ビルド時に該当プロパティが `TS2339` で落ちるので、それを目印にすぐ気付けます。
+
 ## トラブルシューティング
 
 ### フロントマターが認識されない

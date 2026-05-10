@@ -25,7 +25,8 @@ function countPrecedingBackslashes(raw: string, i: number): number {
  * prefix" past the spread's closing brace into surrounding HTML
  * (e.g. `{...props}>{label}` is parsed as a binary `>` expression),
  * misclassifying both the spread end and any expression-child siblings.
- * See https://github.com/markuplint/markuplint/issues/3824.
+ * See https://github.com/markuplint/markuplint/issues/3824 (v4) and
+ * https://github.com/markuplint/markuplint/issues/3856 (dev/v5).
  *
  * Known limitation: regular-expression literals containing braces
  * (e.g. `{...x.match(/}/) ? a : b}`) are not recognised — `/` is always
