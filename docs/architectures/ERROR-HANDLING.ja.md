@@ -178,6 +178,15 @@ catch (error) {
 ### generalImport() の失敗
 
 `generalImport()` のモジュール import 失敗は throw せず `null` を返す。
+これは Tier 1 再スローポリシーの意図的な例外である: `await import()` /
+`require()` は第三者モジュールのコードを実行するため、この境界での
+TypeError / SyntaxError は import されたモジュール側に由来する可能性があり、
+markuplint 自身のコードと区別できない。上の Tier 1 表で SyntaxError に
+「from markuplint code」の qualifier が付いているのは、まさにこのケースを
+許容するためである。`generalImport()` はすべてのエラーを呑んで `null` を
+返し、missing module の意味付け（パーサー未インストール / 仕様不足 / etc.）は
+呼び出し元（config / parser / plugin loader）が決める。
+
 missing module の分類は呼び出し元が決定する:
 
 - **Tier 2**（パーサー未インストール → そのファイルタイプをスキップ）
