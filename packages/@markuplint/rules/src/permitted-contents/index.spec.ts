@@ -826,12 +826,46 @@ describe('verify', () => {
 		// NG: 3 children (too many)
 		const { violations: v2 } = await mlRuleTest(rule, '<math><mfrac><mi>a</mi><mi>b</mi><mi>c</mi></mfrac></math>');
 		expect(v2.length).toBeGreaterThan(0);
+
+		// NG: 1 child (MathML Core §3.5.6 — mfrac requires exactly two children).
+		// The previous spec used `oneOrMore` with `max: 2`, which silently
+		// allowed a single child. Locks down the require/min:2 fix.
+		const { violations: v3 } = await mlRuleTest(rule, '<math><mfrac><mi>a</mi></mfrac></math>');
+		expect(v3.length).toBeGreaterThan(0);
 	});
 
 	test('[permitted-contents-invalid-021] mml:math', async () => {
 		// OK: MathML presentation elements
 		const { violations: v1 } = await mlRuleTest(rule, '<math><mi>x</mi><mo>+</mo><mn>1</mn></math>');
 		expect(v1).toStrictEqual([]);
+
+		// NG: <mtr> is parent-restricted to <mtable> (MathML Core §3.5.6)
+		// and must not appear directly under <math>.
+		const { violations: v2 } = await mlRuleTest(rule, '<math><mtr><mtd><mn>1</mn></mtd></mtr></math>');
+		expect(v2.length).toBeGreaterThan(0);
+
+		// NG: <annotation> is parent-restricted to <semantics> (MathML Core §3.7.1)
+		// and must not appear directly under <math>.
+		const { violations: v3 } = await mlRuleTest(rule, '<math><annotation>note</annotation></math>');
+		expect(v3.length).toBeGreaterThan(0);
+
+		// NG: <mprescripts> is parent-restricted to <mmultiscripts> (MathML Core §3.6.5).
+		const { violations: v4 } = await mlRuleTest(rule, '<math><mprescripts/></math>');
+		expect(v4.length).toBeGreaterThan(0);
+
+		// OK regression: properly wrapped <annotation> inside <semantics>.
+		const { violations: v5 } = await mlRuleTest(
+			rule,
+			'<math><semantics><mrow><mi>x</mi></mrow><annotation>x</annotation></semantics></math>',
+		);
+		expect(v5).toStrictEqual([]);
+
+		// OK regression: properly wrapped <mtr> inside <mtable>.
+		const { violations: v6 } = await mlRuleTest(
+			rule,
+			'<math><mtable><mtr><mtd><mn>1</mn></mtd></mtr></mtable></math>',
+		);
+		expect(v6).toStrictEqual([]);
 	});
 
 	test('[permitted-contents-valid-001] The SVG <image> element and the HTML obsolete <image> element', async () => {
