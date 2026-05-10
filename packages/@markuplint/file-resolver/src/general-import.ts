@@ -1,13 +1,12 @@
 import fs from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import path from 'node:path';
-import { pathToFileURL } from 'node:url';
 
 import { isFatalError } from '@markuplint/shared';
 import { resolve } from 'import-meta-resolve';
 
 import { log } from './debug.js';
-import { fromFileURL } from './path-utils.js';
+import { fromFileURL, toFileURL } from './path-utils.js';
 
 const gLog = log.extend('general-import');
 const gLogSuccess = gLog.extend('success');
@@ -35,11 +34,11 @@ export async function generalImport<T>(name: string): Promise<T | null> {
 	}
 
 	try {
-		// Convert absolute paths to file:// URL format
-		let importPath = name;
-		if (path.isAbsolute(name)) {
-			// Use Node.js pathToFileURL function to convert to a proper URL
-			importPath = pathToFileURL(name).href;
+		// Convert absolute paths to file:// URL format. `toFileURL()` is
+		// OS-independent (see #3840 — Node's `pathToFileURL()` resolves a
+		// POSIX-style absolute path against the current Windows drive).
+		const importPath = toFileURL(name);
+		if (importPath !== name) {
 			gLog('Converted to file URL: %s', importPath);
 		}
 
@@ -49,6 +48,18 @@ export async function generalImport<T>(name: string): Promise<T | null> {
 		cache.set(name, mod);
 		return mod;
 	} catch (error) {
+		// NOTE: `isFatalError()` is intentionally NOT applied at this catch
+		// boundary. `await import()` / `require()` invoke third-party module
+		// code, so any Tier-1-shaped error (TypeError / SyntaxError / etc.)
+		// at this point may originate from inside the imported module and
+		// not from markuplint's own code — we cannot distinguish the two.
+		// The Tier 1 doctrine in `docs/architectures/ERROR-HANDLING.md`
+		// explicitly qualifies SyntaxError as "from markuplint code", which
+		// excludes third-party import failures (e.g. Node 22+ removing
+		// import assertion syntax, or bun's stricter ESM parser). Treating
+		// every error as a recoverable null-return is the correct policy
+		// here; callers (config / parser / plugin loaders) decide how to
+		// surface the missing module.
 		if (
 			// @ts-ignore
 			'code' in error &&

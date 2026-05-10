@@ -183,6 +183,15 @@ policy because accname failures can be caused by runtime environment differences
 ### generalImport() failures
 
 Module import failures in `generalImport()` return `null` instead of throwing.
+This is an intentional exception to the Tier 1 rethrow policy: `await import()`
+and `require()` invoke third-party module code, so a TypeError / SyntaxError
+at this boundary may originate from the imported module rather than from
+markuplint's own code, and the two cannot be distinguished. The Tier 1
+SyntaxError row above is qualified as "from markuplint code" precisely to
+allow this case. `generalImport()` therefore swallows every error and
+returns `null`; callers (config / parser / plugin loaders) decide how to
+surface the missing module.
+
 The caller is responsible for deciding whether a missing module is:
 
 - **Tier 2** (parser not installed → skip that file type)
