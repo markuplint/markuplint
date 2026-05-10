@@ -69,6 +69,13 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	readonly #selfCloseType: SelfCloseType = 'html';
 	readonly #spaceChars: readonly string[] = defaultSpaces;
 	readonly #rawTextElements: readonly string[] = ['style', 'script'];
+	/**
+	 * Compiled close-tag patterns for `#rawTextElements`, populated lazily on first
+	 * use and reused across every starttag in the same parse. Keyed by the original
+	 * tag name (as authored in source) so a `tagNameCaseSensitive` parser that
+	 * preserves casing reuses the same `RegExp` for every occurrence.
+	 */
+	readonly #rawTextCloseTagPatternCache = new Map<string, RegExp>();
 	#authoredElementName?: ParserAuthoredElementNameDistinguishing;
 	#originalRawCode = '';
 	#rawCode = '';
@@ -855,11 +862,22 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	/**
 	 * Re-parses a text token to discover embedded HTML/XML tags within it,
 	 * splitting the content into a sequence of tag and text AST nodes.
-	 * Handles self-closing detection, depth tracking, and void element recognition.
+	 * Handles self-closing detection, depth tracking, void element recognition,
+	 * and the raw-text element body short-circuit (HTML LS §13.2.5.1).
+	 *
+	 * Raw-text element handling only covers the elements listed in
+	 * `rawTextElements` (default `['style', 'script']`). HTML LS *escapable* raw
+	 * text elements — `<title>` and `<textarea>` — are intentionally NOT in the
+	 * default. They allow character references (`&amp;` etc.) in their body, and
+	 * decoding is not implemented in this short-circuit. A subclass that adds
+	 * them via the `rawTextElements` option will see character references passed
+	 * through verbatim.
 	 *
 	 * @param token - The child token containing the code fragment to re-parse
 	 * @param options - Controls whether nameless fragments (JSX `<>`) are recognized
 	 * @returns An array of tag and text AST nodes discovered in the code fragment
+	 * @see https://html.spec.whatwg.org/multipage/syntax.html#cdata-rcdata-restrictions
+	 * @see https://github.com/markuplint/markuplint/issues/3860
 	 */
 	parseCodeFragment(
 		token: ChildToken,
@@ -969,6 +987,54 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 
 				nodes.push(tag);
 			}
+
+			/**
+			 * Raw-text element body short-circuit (HTML Living Standard §13.2.5.1
+			 * — "Restrictions on the contents of raw text and escapable raw text
+			 * elements". The spec section anchor is `cdata-rcdata-restrictions`,
+			 * where RCDATA stands for "Raw text + Character REF data" — the broader
+			 * class that covers escapable raw text such as `<title>` / `<textarea>`).
+			 *
+			 * Per spec, the contents of `<script>` / `<style>` (and any caller-supplied
+			 * raw-text element) are NOT re-tokenized as HTML — the only thing that
+			 * terminates the body is `</tagName` followed by a tab/LF/FF/CR/space/`>`
+			 * /`/`. Without this guard, fragments like `<script>const t = s.replace(
+			 * /<br\s*\/?>/gi, " ");</script>` would feed the regex to `#parseTag`,
+			 * which would try to parse `<br\s*\/?>` as a tag and throw on the
+			 * backslash (#3860 / dev mirror #3825).
+			 *
+			 * This is dormant for `jsx-parser` and `mdx-parser` because their upstream
+			 * tokenizers reject bare `<` in element body before reaching here, but the
+			 * fix keeps `parseCodeFragment` honest for any future caller.
+			 *
+			 * @see https://html.spec.whatwg.org/multipage/syntax.html#cdata-rcdata-restrictions
+			 * @see https://github.com/markuplint/markuplint/issues/3860
+			 */
+			if (tag.type === 'starttag' && !isSelfClose && this.#rawTextElements.includes(tag.nodeName.toLowerCase())) {
+				const closeTagPattern = this.#getRawTextCloseTagPattern(tag.nodeName);
+				const match = closeTagPattern.exec(raw);
+				if (match) {
+					const bodyRaw = raw.slice(0, match.index);
+					if (bodyRaw) {
+						const bodyToken = this.createToken(bodyRaw, startOffset, startLine, startCol);
+						const bodyNode: MLASTText = {
+							...bodyToken,
+							type: 'text',
+							depth,
+							nodeName: '#text',
+							parentNode: null,
+						};
+						nodes.push(bodyNode);
+						const bodyEnd = this.#getEndLocation(bodyToken);
+						startOffset = bodyEnd.endOffset;
+						startLine = bodyEnd.endLine;
+						startCol = bodyEnd.endCol;
+					}
+					raw = raw.slice(match.index);
+				}
+				// If no matching close tag is found, fall through to the generic loop
+				// so the existing "unclosed tag" handling remains in effect.
+			}
 		}
 		return nodes;
 	}
@@ -980,7 +1046,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	 * @param node - The AST node whose location should be updated
 	 * @param props - The new position and depth values to apply (only provided values are changed)
 	 */
-	updateLocation(
+updateLocation(
 		node: MLASTNodeTreeItem,
 		props: Partial<Pick<MLASTNodeTreeItem, 'startOffset' | 'startLine' | 'startCol' | 'depth'>>,
 	) {
@@ -995,7 +1061,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		});
 	}
 
-	/**
+/**
 	 * Set new raw code to target node.
 	 *
 	 * Replace the raw code and update the start/end offset/line/column.
@@ -1003,7 +1069,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	 * @param node target node
 	 * @param raw new raw code
 	 */
-	updateRaw(node: MLASTToken, raw: string) {
+updateRaw(node: MLASTToken, raw: string) {
 		const startOffset = node.startOffset;
 		const startLine = node.startLine;
 		const startCol = node.startCol;
@@ -1022,20 +1088,20 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		});
 	}
 
-	/**
+/**
 	 * Updates the node name and/or element type of an element or close tag AST node.
 	 * Useful for renaming elements or changing their classification after initial parsing.
 	 *
 	 * @param el - The element or close tag AST node to update
 	 * @param props - The properties to overwrite on the element
 	 */
-	updateElement(el: MLASTElement, props: Partial<Pick<MLASTElement, 'nodeName' | 'elementType'>>): void;
-	updateElement(el: MLASTElementCloseTag, props: Partial<Pick<MLASTElementCloseTag, 'nodeName'>>): void;
-	updateElement(el: MLASTTag, props: Partial<Pick<MLASTElement, 'nodeName' | 'elementType'>>): void {
+updateElement(el: MLASTElement, props: Partial<Pick<MLASTElement, 'nodeName' | 'elementType'>>): void;
+updateElement(el: MLASTElementCloseTag, props: Partial<Pick<MLASTElementCloseTag, 'nodeName'>>): void;
+updateElement(el: MLASTTag, props: Partial<Pick<MLASTElement, 'nodeName' | 'elementType'>>): void {
 		Object.assign(el, props);
 	}
 
-	/**
+/**
 	 * Updates metadata properties on an HTML attribute AST node, such as marking
 	 * it as a directive, dynamic value, or setting its potential name/value
 	 * for preprocessor-specific attribute transformations.
@@ -1043,7 +1109,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	 * @param attr - The HTML attribute AST node to update
 	 * @param props - The metadata properties to overwrite on the attribute
 	 */
-	updateAttr(
+updateAttr(
 		attr: MLASTHTMLAttr,
 		props: Partial<
 			Pick<
@@ -1061,7 +1127,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		Object.assign(attr, props);
 	}
 
-	/**
+/**
 	 * Determines the element type (e.g., "html", "web-component", "authored") for a
 	 * given tag name, using the parser's authored element name distinguishing pattern.
 	 *
@@ -1069,11 +1135,11 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	 * @param defaultPattern - A fallback pattern if no authored element name pattern is set
 	 * @returns The element type classification
 	 */
-	detectElementType(nodeName: string, defaultPattern?: ParserAuthoredElementNameDistinguishing): ElementType {
+detectElementType(nodeName: string, defaultPattern?: ParserAuthoredElementNameDistinguishing): ElementType {
 		return detectElementType(nodeName, this.#authoredElementName, defaultPattern);
 	}
 
-	/**
+/**
 	 * Creates a new MLASTToken with a generated UUID and computed end position.
 	 * Accepts either a Token object or a raw string with explicit start coordinates.
 	 *
@@ -1083,9 +1149,9 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	 * @param startCol - The column number where the token starts (required when token is a string)
 	 * @returns A fully populated AST token with UUID, start/end positions, and raw content
 	 */
-	createToken(token: Token): MLASTToken;
-	createToken(token: string, startOffset: number, startLine: number, startCol: number): MLASTToken;
-	createToken(token: string | Token, startOffset?: number, startLine?: number, startCol?: number): MLASTToken {
+createToken(token: Token): MLASTToken;
+createToken(token: string, startOffset: number, startLine: number, startCol: number): MLASTToken;
+createToken(token: string | Token, startOffset?: number, startLine?: number, startCol?: number): MLASTToken {
 		const props =
 			typeof token === 'string'
 				? {
@@ -1414,6 +1480,27 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			endLine: getEndLine(token.raw, token.startLine),
 			endCol: getEndCol(token.raw, token.startCol),
 		} as const;
+	}
+
+	/**
+	 * Returns a cached close-tag pattern for a raw-text element, building it on first
+	 * use. The pattern matches `</tagName` followed by a tab/LF/FF/CR/space/`>`/`/`
+	 * (HTML LS §13.2.5.1) ASCII-case-insensitively. Caching avoids recompiling the
+	 * `RegExp` for every `<script>` / `<style>` start tag in large documents.
+	 */
+	#getRawTextCloseTagPattern(tagName: string): RegExp {
+		const cached = this.#rawTextCloseTagPatternCache.get(tagName);
+		if (cached) {
+			return cached;
+		}
+		const escapedName = tagName.replaceAll(/[$()*+.?[\\\]^{|}]/g, '\\$&');
+		// `regexp/strict` cannot statically verify a pattern built from the
+		// dynamic `escapedName` interpolation; the escape above is the contract
+		// that makes this safe for any caller-supplied `rawTextElements` value.
+		 
+		const pattern = new RegExp(`</${escapedName}(?=[\\t\\n\\f\\r >/])`, 'i');
+		this.#rawTextCloseTagPatternCache.set(tagName, pattern);
+		return pattern;
 	}
 
 	#orphanEndTagToBogusMark(nodeList: readonly MLASTNodeTreeItem[]) {
