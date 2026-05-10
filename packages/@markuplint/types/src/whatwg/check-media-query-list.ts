@@ -61,6 +61,106 @@ const DEPRECATED_MEDIA_FEATURES = new Set([
 	'max-device-aspect-ratio',
 ]);
 
+/**
+ * Media feature value-type classification per Media Queries Level 5 §4.
+ *
+ * Only features whose value type is statically constrained are listed.
+ * Discrete features (e.g., `prefers-color-scheme`, `pointer`) accept
+ * keyword values whose validation requires a per-feature enum table —
+ * not implemented here because nu-validator's coverage of these is
+ * already aligned with markuplint's enum-driven attribute checking.
+ *
+ * @see https://www.w3.org/TR/mediaqueries-5/#mq-features
+ */
+const LENGTH_FEATURES = new Set(['width', 'height', 'min-width', 'max-width', 'min-height', 'max-height']);
+const INTEGER_FEATURES = new Set([
+	'color',
+	'min-color',
+	'max-color',
+	'color-index',
+	'min-color-index',
+	'max-color-index',
+	'monochrome',
+	'min-monochrome',
+	'max-monochrome',
+	'horizontal-viewport-segments',
+	'min-horizontal-viewport-segments',
+	'max-horizontal-viewport-segments',
+	'vertical-viewport-segments',
+	'min-vertical-viewport-segments',
+	'max-vertical-viewport-segments',
+]);
+const RESOLUTION_FEATURES = new Set(['resolution', 'min-resolution', 'max-resolution']);
+const RATIO_FEATURES = new Set(['aspect-ratio', 'min-aspect-ratio', 'max-aspect-ratio']);
+
+/**
+ * CSS units recognised as `<length>` per CSS Values and Units Level 4
+ * §6.1. Includes container query units (`cqw`, `cqh`, etc.) added in
+ * CSS Containment Module Level 3.
+ *
+ * @see https://www.w3.org/TR/css-values-4/#lengths
+ * @see https://www.w3.org/TR/css-contain-3/#container-lengths
+ */
+const LENGTH_UNITS = new Set([
+	'px',
+	'em',
+	'rem',
+	'ex',
+	'rex',
+	'cap',
+	'rcap',
+	'ch',
+	'rch',
+	'ic',
+	'ric',
+	'lh',
+	'rlh',
+	'vw',
+	'vh',
+	'vmin',
+	'vmax',
+	'vi',
+	'vb',
+	'svw',
+	'svh',
+	'svmin',
+	'svmax',
+	'svi',
+	'svb',
+	'lvw',
+	'lvh',
+	'lvmin',
+	'lvmax',
+	'lvi',
+	'lvb',
+	'dvw',
+	'dvh',
+	'dvmin',
+	'dvmax',
+	'dvi',
+	'dvb',
+	'cqw',
+	'cqh',
+	'cqi',
+	'cqb',
+	'cqmin',
+	'cqmax',
+	'cm',
+	'mm',
+	'q',
+	'in',
+	'pt',
+	'pc',
+]);
+
+/**
+ * CSS units recognised as `<resolution>` per CSS Values and Units Level
+ * 4 §8.4. `x` is the alias for `dppx`.
+ *
+ * @see https://www.w3.org/TR/css-values-4/#resolution
+ */
+const RESOLUTION_UNITS = new Set(['dpi', 'dpcm', 'dppx', 'x']);
+
 type CSSTreeNode = ReturnType<typeof csstree.parse>;
 
 /**
@@ -82,11 +182,13 @@ type CSSTreeNode = ReturnType<typeof csstree.parse>;
  *    `device-aspect-ratio` and their min-/max- variants. MDN's `@media`
  *    reference marks them as
  *    [deprecated since Media Queries Level 4](https://developer.mozilla.org/en-US/docs/Web/CSS/@media).
- *
- * Limitation: per-feature value type checks (e.g., that `min-width: 400`
- * lacks a length unit, or that `color: 1em` mixes incompatible types) are
- * NOT implemented. `css-tree` rejects some of those at parse time but the
- * detailed value-type matrix is left for a future iteration.
+ * 4. **Wrong-type feature values** — `(min-width: 400)` (unitless
+ *    non-zero number for a `<length>` feature), `(min-width: 400dpi)`
+ *    (resolution unit on a length feature), `(color: 1em)` (length
+ *    on an integer feature). The matrix covers length / integer /
+ *    resolution / ratio features per Media Queries Level 5 §4. Unknown
+ *    features are passed through unchanged so forward-compat additions
+ *    do not regress to errors.
  *
  * @see https://www.w3.org/TR/mediaqueries-5/
  */
@@ -187,7 +289,8 @@ function walkCondition(node: csstree.CssNode, source: string): ReturnType<typeof
 		// `@types/css-tree`. Compare via cast to keep the narrow typing.
 		const childType = (child as { type: string }).type;
 		if (childType !== 'Feature' && childType !== 'MediaFeature') return;
-		const name = (child as { name?: string }).name;
+		const feat = child as { name?: string; value?: csstree.CssNode | null; loc?: typeof child.loc };
+		const name = feat.name;
 		if (typeof name !== 'string') return;
 		const lowered = name.toLowerCase();
 		if (DEPRECATED_MEDIA_FEATURES.has(lowered)) {
@@ -199,9 +302,111 @@ function walkCondition(node: csstree.CssNode, source: string): ReturnType<typeof
 				expects,
 				partName: `deprecated media feature "${name}"`,
 			});
+			return;
 		}
+		// Boolean form `(name)` carries `value: null` and is type-agnostic.
+		if (!feat.value) return;
+		const typeError = validateFeatureValue(lowered, feat.value, source);
+		if (typeError) result = typeError;
 	});
 	return result;
+}
+
+/**
+ * Cross-checks a media feature's parsed value against the expected
+ * type per Media Queries Level 5 §4. Returns an `unmatched` result
+ * when the value type does not satisfy the feature's grammar (e.g.,
+ * `<integer>` features given a `<dimension>`, or `<length>` features
+ * given a unitless non-zero number).
+ *
+ * Returns null for:
+ * - Unknown features (treated as forward-compat — defer to css-tree)
+ * - Custom CSS variables / functions / calc() (not statically reducible)
+ *
+ * @see https://www.w3.org/TR/mediaqueries-5/#mq-features
+ */
+function validateFeatureValue(
+	feature: string,
+	value: csstree.CssNode,
+	source: string,
+): ReturnType<typeof unmatched> | null {
+	const isLength = LENGTH_FEATURES.has(feature);
+	const isInteger = INTEGER_FEATURES.has(feature);
+	const isResolution = RESOLUTION_FEATURES.has(feature);
+	const isRatio = RATIO_FEATURES.has(feature);
+	if (!(isLength || isInteger || isResolution || isRatio)) return null;
+	// Defer calc()/var()/clamp() etc. — their static value cannot be
+	// computed without resolving cascades. css-tree accepts them; we
+	// trust nu-validator does the same in practice.
+	if (value.type === 'Function' || value.type === 'Parentheses') return null;
+	const offset = value.loc?.start.offset ?? 0;
+	const raw = source.slice(offset, value.loc?.end.offset ?? offset);
+	if (isInteger) {
+		if (value.type !== 'Number' || /[.e]/i.test((value as csstree.NumberNode).value)) {
+			return new Token(raw, offset, source).unmatched({
+				reason: 'syntax-error',
+				expects,
+				partName: `<integer> required for "${feature}"`,
+			});
+		}
+		return null;
+	}
+	if (isLength) {
+		if (value.type === 'Number') {
+			// Per CSS Values §3.3, only `0` is a valid unitless length.
+			// Compare numerically to accept any literal form (`0`, `0.0`,
+			// `.0`, `00`) — css-tree preserves the source spelling.
+			if (Number.parseFloat((value as csstree.NumberNode).value) === 0) return null;
+			return new Token(raw, offset, source).unmatched({
+				reason: 'syntax-error',
+				expects,
+				partName: `<length> required for "${feature}" (unitless non-zero number)`,
+			});
+		}
+		if (value.type === 'Dimension') {
+			const unit = (value as csstree.Dimension).unit.toLowerCase();
+			if (!LENGTH_UNITS.has(unit)) {
+				return new Token(raw, offset, source).unmatched({
+					reason: 'syntax-error',
+					expects,
+					partName: `<length> required for "${feature}" (unrecognised or wrong-category unit "${unit}")`,
+				});
+			}
+			return null;
+		}
+		return new Token(raw, offset, source).unmatched({
+			reason: 'syntax-error',
+			expects,
+			partName: `<length> required for "${feature}"`,
+		});
+	}
+	if (isResolution) {
+		if (value.type !== 'Dimension') {
+			return new Token(raw, offset, source).unmatched({
+				reason: 'syntax-error',
+				expects,
+				partName: `<resolution> required for "${feature}"`,
+			});
+		}
+		const unit = (value as csstree.Dimension).unit.toLowerCase();
+		if (!RESOLUTION_UNITS.has(unit)) {
+			return new Token(raw, offset, source).unmatched({
+				reason: 'syntax-error',
+				expects,
+				partName: `<resolution> required for "${feature}" (unrecognised unit "${unit}")`,
+			});
+		}
+		return null;
+	}
+	// isRatio — accept Ratio nodes and positive Number nodes.
+	if (value.type !== 'Ratio' && value.type !== 'Number') {
+		return new Token(raw, offset, source).unmatched({
+			reason: 'syntax-error',
+			expects,
+			partName: `<ratio> required for "${feature}"`,
+		});
+	}
+	return null;
 }
 
 /**

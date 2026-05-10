@@ -138,3 +138,62 @@ test('case-insensitive deprecated detection ("PROJECTION" still flagged)', () =>
 	expect(result.reason).toBe('doesnt-exist-in-enum');
 	expect(result.partName).toBe('deprecated media type "PROJECTION"');
 });
+
+test.each([
+	['(min-width: 400px)', true],
+	['(min-width: 0)', true], // CSS Values §3.3 — zero length unitless permitted
+	['(min-height: 50em)', true],
+	['(width: 100vh)', true],
+	['(min-width: 400)', false], // unitless non-zero rejected
+	['(min-width: 400uu)', false], // unknown unit
+	['(min-width: 400dpi)', false], // resolution unit on length feature
+	['(min-width: 5deg)', false], // angle unit on length feature
+])('<length> feature value validation: %s -> matched %s', (value, expected) => {
+	expect(check(value).matched).toBe(expected);
+});
+
+test.each([
+	['(color: 1)', true],
+	['(monochrome: 0)', true],
+	['(min-color-index: 256)', true],
+	['(color: 1em)', false], // dimension rejected
+	['(color: 1.5)', false], // fractional rejected
+	['(color: 1px)', false],
+])('<integer> feature value validation: %s -> matched %s', (value, expected) => {
+	expect(check(value).matched).toBe(expected);
+});
+
+test.each([
+	['(resolution: 96dpi)', true],
+	['(min-resolution: 2dppx)', true],
+	['(max-resolution: 1x)', true],
+	['(resolution: 96)', false], // unitless rejected
+	['(resolution: 96px)', false], // length unit rejected
+])('<resolution> feature value validation: %s -> matched %s', (value, expected) => {
+	expect(check(value).matched).toBe(expected);
+});
+
+test.each([
+	['(aspect-ratio: 16/9)', true],
+	['(aspect-ratio: 1.5)', true], // unitless number form
+	['(min-aspect-ratio: 1/1)', true],
+	['(aspect-ratio: 16em)', false], // dimension rejected
+])('<ratio> feature value validation: %s -> matched %s', (value, expected) => {
+	expect(check(value).matched).toBe(expected);
+});
+
+test('boolean form `(min-width)` skips value-type validation (MQL4 boolean syntax)', () => {
+	expect(check('(min-width)').matched).toBe(true);
+	expect(check('(grid)').matched).toBe(true);
+});
+
+test('unknown feature is passed through (forward-compat for new MQL features)', () => {
+	// Hypothetical future feature; markuplint must not regress when MQL
+	// extends the feature catalogue. css-tree's permissive parse accepts
+	// it; only Stage 1 syntax-match would reject if grammar disagrees.
+	const result = check('(foo-bar: 42)');
+	if (!result.matched) {
+		// If rejected, it must be by syntax-match, not by our partName.
+		expect(result.partName).not.toMatch(/required for "foo-bar"/);
+	}
+});
