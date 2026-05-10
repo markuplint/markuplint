@@ -5863,13 +5863,6 @@
 			]
 		},
 		{
-			"path": "html/elements/picture/always-matching-source-media-all-spaces-with-following-source-srcset-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-cfe83fc09a68"
-			]
-		},
-		{
 			"path": "html/elements/picture/always-matching-source-media-all-with-following-source-srcset-novalid.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [
@@ -8367,41 +8360,6 @@
 			]
 		},
 		{
-			"path": "html/media-queries/002-novalid.html",
-			"category": "uncategorized",
-			"nuMessageIds": [
-				"nv-aee5f864765d"
-			]
-		},
-		{
-			"path": "html/media-queries/003-novalid.html",
-			"category": "uncategorized",
-			"nuMessageIds": [
-				"nv-dabd94c27102"
-			]
-		},
-		{
-			"path": "html/media-queries/004-novalid.html",
-			"category": "uncategorized",
-			"nuMessageIds": [
-				"nv-6b057d6b052a"
-			]
-		},
-		{
-			"path": "html/media-queries/005-novalid.html",
-			"category": "uncategorized",
-			"nuMessageIds": [
-				"nv-14ef81843bb2"
-			]
-		},
-		{
-			"path": "html/media-queries/008-novalid.html",
-			"category": "uncategorized",
-			"nuMessageIds": [
-				"nv-cbe9f56a17b0"
-			]
-		},
-		{
 			"path": "html/media-queries/009-novalid.html",
 			"category": "uncategorized",
 			"nuMessageIds": [
@@ -8434,27 +8392,6 @@
 			"category": "uncategorized",
 			"nuMessageIds": [
 				"nv-04fbb330c3f1"
-			]
-		},
-		{
-			"path": "html/media-queries/device-aspect-ratio-novalid.html",
-			"category": "uncategorized",
-			"nuMessageIds": [
-				"nv-3d42dbaaaee9"
-			]
-		},
-		{
-			"path": "html/media-queries/projection-novalid.html",
-			"category": "uncategorized",
-			"nuMessageIds": [
-				"nv-93c86c3f5f88"
-			]
-		},
-		{
-			"path": "html/media-queries/tv-novalid.html",
-			"category": "uncategorized",
-			"nuMessageIds": [
-				"nv-6638003ecbd9"
 			]
 		},
 		{
