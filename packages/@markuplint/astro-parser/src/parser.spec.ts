@@ -792,6 +792,19 @@ describe('Issue', () => {
 			expect(spread.col).toBe(3);
 			expect(spread.raw).toBe('{...rest}');
 		});
+
+		test('spread attribute on component with block-behavior expression child (dev-specific)', () => {
+			// Guards the interaction between the new spread pre-pass (#3856) and
+			// dev's `detectBlockBehavior()` for `.map()` expression children.
+			const ast = parse('<Comp {...rest}>{list.map(item => <li>{item}</li>)}</Comp>');
+			expect(ast.parseError).toBeUndefined();
+			const start = findStartTag(ast);
+			const spreads = start.attributes.filter((a: any) => a.type === 'spread');
+			expect(spreads).toHaveLength(1);
+			expect(spreads[0].raw).toBe('{...rest}');
+			const debugMaps = nodeListToDebugMaps(ast.nodeList);
+			expect(debugMaps.some(line => line.includes('#ps:MustacheTag (each)'))).toBe(true);
+		});
 	});
 });
 
