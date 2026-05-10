@@ -46,6 +46,7 @@ Create a new parser extending the abstract Parser class. Follow recipe #1 in `do
 2. Implement `tokenize()` -- invoke the language-specific tokenizer on `this.rawCode`
 3. Implement `nodeize()` -- convert each AST node using visitor methods
 4. Set constructor options (`endTagType`, `tagNameCaseSensitive`, `ignoreTags`, etc.)
+   - The default `rawTextElements` is `['style', 'script']` (HTML LS §13.2.5.1). If your language treats additional elements as raw text, override it; if your language does NOT (e.g., `<script>` body is parsed as language-specific syntax), pass an empty array.
 
 ### Step 3: Export the parser module
 
