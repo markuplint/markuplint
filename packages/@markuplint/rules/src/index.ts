@@ -30,6 +30,7 @@ import IneffectiveAttr from './ineffective-attr/index.js';
 import InputButtonNonEmptyValue from './input-button-non-empty-value/index.js';
 import InputFileEmptyValue from './input-file-empty-value/index.js';
 import InvalidAttr from './invalid-attr/index.js';
+import ItempropRequiresItemscope from './itemprop-requires-itemscope/index.js';
 import LabelHasControl from './label-has-control/index.js';
 import LabelNoMultipleControls from './label-no-multiple-controls/index.js';
 import LandmarkRoles from './landmark-roles/index.js';
@@ -107,6 +108,7 @@ const rules = {
 	'input-button-non-empty-value': InputButtonNonEmptyValue,
 	'input-file-empty-value': InputFileEmptyValue,
 	'invalid-attr': InvalidAttr,
+	'itemprop-requires-itemscope': ItempropRequiresItemscope,
 	'label-has-control': LabelHasControl,
 	'label-no-multiple-controls': LabelNoMultipleControls,
 	'landmark-roles': LandmarkRoles,
