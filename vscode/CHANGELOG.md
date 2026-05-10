@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.18.3](https://github.com/markuplint/markuplint/compare/v4.18.2...v4.18.3) (2026-05-10)
+
+### Bug Fixes
+
+- **vscode:** make toImportSpecifier OS-independent for POSIX absolute paths ([6ac8ce4](https://github.com/markuplint/markuplint/commit/6ac8ce4d3521d6d76401d9500d68426fa10c051e)), closes [#3788](https://github.com/markuplint/markuplint/issues/3788) [#3834](https://github.com/markuplint/markuplint/issues/3834) [#3823](https://github.com/markuplint/markuplint/issues/3823) [#3840](https://github.com/markuplint/markuplint/issues/3840) [#3836](https://github.com/markuplint/markuplint/issues/3836)
+
 ## [4.18.2](https://github.com/markuplint/markuplint/compare/v4.18.1...v4.18.2) (2026-04-26)
 
 ### Bug Fixes

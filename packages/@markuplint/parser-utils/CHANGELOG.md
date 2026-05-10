@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.18.3](https://github.com/markuplint/markuplint/compare/v4.18.2...v4.18.3) (2026-05-10)
+
+### Bug Fixes
+
+- **parser-utils:** handle raw-text element body in parseCodeFragment per HTML LS §13.2.5.1 ([2904465](https://github.com/markuplint/markuplint/commit/2904465893f54153903c8d92c48349dfe62f9cf2)), closes [#3859](https://github.com/markuplint/markuplint/issues/3859) [#3860](https://github.com/markuplint/markuplint/issues/3860) [#3860](https://github.com/markuplint/markuplint/issues/3860) [#3825](https://github.com/markuplint/markuplint/issues/3825)
+
 # [4.18.0](https://github.com/markuplint/markuplint/compare/v4.14.1...v4.18.0) (2026-04-22)
 
 ### Bug Fixes

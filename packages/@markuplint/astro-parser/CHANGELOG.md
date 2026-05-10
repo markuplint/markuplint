@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.18.3](https://github.com/markuplint/markuplint/compare/v4.18.2...v4.18.3) (2026-05-10)
+
+### Bug Fixes
+
+- **astro-parser:** preserve spread attributes containing TypeScript and expression-child siblings ([fe76c34](https://github.com/markuplint/markuplint/commit/fe76c34f04b6ce2559c8fbfad01df525781ef34d)), closes [#3824](https://github.com/markuplint/markuplint/issues/3824)
+- **astro-parser:** stop surfacing non-fatal Astro diagnostics as parse errors ([3b51f6c](https://github.com/markuplint/markuplint/commit/3b51f6c34d200c04006c283a62becb5733673fac)), closes [#3823](https://github.com/markuplint/markuplint/issues/3823)
+
 # [4.18.0](https://github.com/markuplint/markuplint/compare/v4.14.1...v4.18.0) (2026-04-22)
 
 **Note:** Version bump only for package @markuplint/astro-parser
