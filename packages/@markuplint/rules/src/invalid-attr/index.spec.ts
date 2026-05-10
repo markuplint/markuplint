@@ -2916,7 +2916,7 @@ describe('img[usemap] requires a non-empty hash-name (HashName type)', () => {
 		expect(violations.some(v => v.raw === '#')).toBe(true);
 	});
 
-	test('[invalid-attr-invalid-040] itemref token list rejects duplicate ids (HTML LS §5.2.2)', async () => {
+	test('[invalid-attr-invalid-040] itemref token list rejects duplicate ids (HTML LS §5.2.2 Items)', async () => {
 		// Mirrors html/microdata/itemref-redundant-novalid.html. Locks down the
 		// `unique: true` flag added to the itemref token spec.
 		// Uses substring-only `.some(...)` (matches the invalid-039 pattern)
@@ -2931,7 +2931,7 @@ describe('img[usemap] requires a non-empty hash-name (HashName type)', () => {
 		).toBe(true);
 	});
 
-	test('[invalid-attr-invalid-041] itemtype="" rejects empty token set (HTML LS §5.2.1)', async () => {
+	test('[invalid-attr-invalid-041] itemtype="" rejects empty token set (HTML LS §5.2.2 Items)', async () => {
 		// Mirrors html/microdata/itemtype-empty-novalid.html. Locks down the
 		// `allowEmpty: false` flag added to the itemtype token spec.
 		// Uses substring-only match (see invalid-040 for rationale).

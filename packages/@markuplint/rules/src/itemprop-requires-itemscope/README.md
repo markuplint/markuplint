@@ -7,9 +7,9 @@ description: Require every itemprop to belong to an item.
 
 Warns about an `itemprop` attribute that does not contribute a property to any item.
 
-> For elements with no item, an `itemprop` attribute is in error.
+> A document must not contain any elements that have an `itemprop` attribute that would not be found to be a property of any of the items in that document.
 
-Cite: [HTML Living Standard §5.2.4 — Names: the itemprop attribute](https://html.spec.whatwg.org/multipage/microdata.html#names:-the-itemprop-attribute)
+Cite: [HTML Living Standard §5.2.5 — Associating names with items](https://html.spec.whatwg.org/multipage/microdata.html#associating-names-with-items). The `itemprop` attribute itself is defined in [§5.2.3 — Names: the itemprop attribute](https://html.spec.whatwg.org/multipage/microdata.html#names:-the-itemprop-attribute).
 
 An element belongs to an item if **either** of the following holds:
 

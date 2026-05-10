@@ -5,8 +5,12 @@ import meta from './meta.js';
 /**
  * Rule that requires every `itemprop` to belong to an item.
  *
- * Per HTML LS §5.2.4 ("Names: the itemprop attribute"), an element with
- * an `itemprop` attribute is in error unless one of the following is true:
+ * The `itemprop` attribute is defined in HTML LS §5.2.3 ("Names: the
+ * itemprop attribute"). The conformance constraint behind this rule sits
+ * under §5.2.5: a document must not contain an `itemprop` element that
+ * would not be found to be a property of any of its items. Practically,
+ * an element with `itemprop` belongs to an item when one of the following
+ * is true:
  *
  * - it has an ancestor element with an `itemscope` attribute, or
  * - its `id` is referenced by some `itemscope` element's `itemref` token list.
@@ -15,6 +19,7 @@ import meta from './meta.js';
  * `itemprop` is orphaned and contributes no property to any item.
  *
  * @see https://html.spec.whatwg.org/multipage/microdata.html#names:-the-itemprop-attribute
+ * @see https://html.spec.whatwg.org/multipage/microdata.html#associating-names-with-items
  */
 export default createRule<boolean, null>({
 	meta,

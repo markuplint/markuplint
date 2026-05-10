@@ -153,9 +153,9 @@
 		"itemref": {
 			"type": {
 				"token": "DOMID",
-				// HTML LS §5.2.2 — itemref value is "an unordered set of unique
-				// space-separated tokens that are case-sensitive". Without
-				// `unique`, `itemref="ref1 ref1"` silently passed.
+				// HTML LS §5.2.2 (Items) — itemref value is "an unordered set
+				// of unique space-separated tokens that are case-sensitive".
+				// Without `unique`, `itemref="ref1 ref1"` silently passed.
 				"unique": true,
 				"separator": "space"
 			},
@@ -171,10 +171,10 @@
 				"token": "AbsoluteURL",
 				"ordered": false,
 				"unique": true,
-				// HTML LS §5.2.1 — when itemtype is specified its value must
-				// be "an unordered set of unique tokens that are case-sensitive,
-				// each of which is a valid absolute URL". An empty value has
-				// no tokens at all and is non-conforming.
+				// HTML LS §5.2.2 (Items) — when itemtype is specified its
+				// value must be "an unordered set of unique tokens that are
+				// case-sensitive, each of which is a valid absolute URL".
+				// An empty value has no tokens at all and is non-conforming.
 				"allowEmpty": false,
 				"separator": "space"
 			},
