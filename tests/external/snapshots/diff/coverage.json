@@ -13060,8 +13060,8 @@
 			"path": "html-svg/svg-a-nested-in-svg-a-novalid.html",
 			"category": "uncategorized",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{

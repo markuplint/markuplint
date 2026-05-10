@@ -144,13 +144,6 @@
 			]
 		},
 		{
-			"path": "html-svg/svg-a-nested-in-svg-a-novalid.html",
-			"category": "uncategorized",
-			"nuMessageIds": [
-				"nv-da8c90c8321b"
-			]
-		},
-		{
 			"path": "html/attributes/command-with-aria-expanded-novalid.html",
 			"category": "global-attr",
 			"nuMessageIds": [
