@@ -98,15 +98,30 @@ expect(debugMaps).toStrictEqual([
    });
    ```
 
+### 4. スプレッド属性の波括弧マッチャを更新する
+
+`{...EXPR}` のパースで新たなエッジケース（未考慮の文字列構文、コメント形式、エスケープシーケンス等）が報告された場合:
+
+1. エッジケースを `src/spread-attr.spec.ts` の `findMatchingBrace()` ユニットテストとして再現する。修正前は失敗するテストにする。
+2. 修正の置き場所を判断する:
+   - **文字列 / テンプレート / クォート処理** → `findMatchingBrace()` の `inString` 分岐を拡張
+   - **コメント処理** → `//` / `/* */` の分岐を拡張
+   - **エスケープシーケンスの偶奇判定** → `countPrecedingBackslashes()` を拡張
+3. 失敗ユニットテストが green になる最小の修正に留める。完全な JavaScript レキサーを実装してはいけない。
+4. 新しいケースが単体テストで自然に表現できない場合、`parser.spec.ts` の `#3856` describe に統合テストを追加する。
+5. マッチャがそのケースに対応できない場合（例: 正規表現リテラル）、`src/spread-attr.ts` の JSDoc の **Known limitations** に追記する。
+6. 検証: `yarn build --scope @markuplint/astro-parser && yarn test --scope @markuplint/astro-parser && yarn lint`。
+
 ## 上流影響チェックリスト
 
 上流パッケージの変更がこのパーサーに影響を与える可能性があります:
 
-| パッケージ                 | 影響                                                        |
-| -------------------------- | ----------------------------------------------------------- |
-| `@markuplint/parser-utils` | 基底 `Parser` クラスの変更は全オーバーライドメソッドに影響  |
-| `@markuplint/ml-ast`       | AST 型の変更は `nodeize()` の戻り値の型に影響               |
-| `astro-eslint-parser`      | パーサー出力形式の変更は `tokenize()` と `nodeize()` に影響 |
+| パッケージ                               | 影響                                                                                                  |
+| ---------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `@markuplint/parser-utils`               | 基底 `Parser` クラスの変更は全オーバーライドメソッドに影響                                            |
+| `@markuplint/parser-utils/script-parser` | TS 対応と非貪欲なパースが上流に入った場合、`src/spread-attr.ts` と `visitAttr()` のプリパスは削除可能 |
+| `@markuplint/ml-ast`                     | AST 型の変更は `nodeize()` の戻り値の型に影響                                                         |
+| `astro-eslint-parser`                    | パーサー出力形式の変更は `tokenize()` と `nodeize()` に影響                                           |
 
 `astro-eslint-parser` を更新する場合:
 
@@ -120,6 +135,13 @@ yarn upgrade @astrojs/compiler --scope @markuplint/astro-parser --dev
 # 互換性を検証
 yarn build --scope @markuplint/astro-parser && yarn test --scope @markuplint/astro-parser
 ```
+
+### v4 からの fix を forward-port するとき
+
+`v4` ブランチの `astro-parser` 修正を `dev` に持ってくる場合、`Token` のフィールド名 rename に注意:
+v4 は `startOffset` / `startLine` / `startCol`、dev は短縮形の `offset` / `line` / `col` を使用します。
+この rename は `*.spec.ts` でアサートしている AST ノードプロパティにも当てはまります。
+ビルド時に該当プロパティが `TS2339` で落ちるので、それを目印にすぐ気付けます。
 
 ## トラブルシューティング
 
@@ -170,3 +192,20 @@ yarn build --scope @markuplint/astro-parser && yarn test --scope @markuplint/ast
 1. 属性名の形式を確認 — 正規表現はコロンが1つだけで、両側に空でない部分が必要
 2. `switch (lowerCaseDirectiveName)` を確認 — ディレクティブプレフィックスがケースにマッチする必要がある
 3. 新しいディレクティブプレフィックスの場合は、新しいケースを追加（レシピ #1 参照）
+
+### スプレッド属性が途中で切れる、または `{...EXPR}` の直後に式の子があると `Invalid tag syntax` が発生する
+
+**症状:** 次のいずれか:
+
+- `{...{ command: 'close' } as any}` が部分的なスプレッドと不正な `as` / `any}` 属性に分割される。
+- `<div {...props}>{label}</div>`（または `{label}` のような式の子をスプレッド属性の直後に持つ要素）が `SyntaxError: Invalid tag syntax: ...` をスローする。
+
+**原因:** 要素の生トークンが、`src/spread-attr.ts` の波括弧対応抽出器ではなく `parser-utils/safeScriptParser`（espree ベース）にルーティングされている。`safeScriptParser` は TypeScript 構文（`as`）を理解せず、また「valid な JS プレフィックス」をスプレッドの `}` を超えて周囲の HTML まで伸ばすことがある（`{...props}>{label}` を二項 `>` 式として解釈）。
+
+**解決策:**
+
+1. `src/parser.ts` の `visitAttr()` が `super.visitAttr()` の **前**に `./spread-attr.js` の `extractSpreadAttribute()` を呼んでいることを確認。順序が重要 — 基底パスにフォールスルーするとバグが発動する。
+2. 新しいエッジケースが報告されたら、`src/spread-attr.spec.ts` で `findMatchingBrace()` のユニットテストとして再現し、波括弧マッチャに追加のエスケープルール（文字列 / テンプレート / コメント / バックスラッシュ）が必要かを判断。
+3. 既知の制限は `src/spread-attr.ts` の JSDoc に記載 — 波括弧を含む正規表現リテラルは扱えない。新たな制限が見つかったらそこに追記。
+
+オリジナルの報告とスプレッド属性を `parser-utils` ではなく本パッケージで処理する根拠については [#3824](https://github.com/markuplint/markuplint/issues/3824)（v4）と [#3856](https://github.com/markuplint/markuplint/issues/3856)（dev/v5）を参照。

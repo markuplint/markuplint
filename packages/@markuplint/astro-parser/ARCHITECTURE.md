@@ -33,6 +33,7 @@ flowchart TD
         astroParser["AstroParser\nextends Parser‹Node›"]
         astroParseFn["astroParse()\nastro-eslint-parser wrapper"]
         detectBlock["detectBlockBehavior()\n.map()/.filter() detection"]
+        spreadAttr["extractSpreadAttribute()\nbrace-aware spread extractor"]
         compScanner["componentScanner\n(subpath: ./component-scanner)"]
     end
 
@@ -47,6 +48,7 @@ flowchart TD
     astroCompiler -->|"Node types"| astroParseFn
     astroParseFn -->|"RootNode.children"| astroParser
     detectBlock -->|"blockBehavior"| astroParser
+    spreadAttr -->|"spread pre-pass in visitAttr()"| astroParser
     astroParser -->|"produces MLASTDocument"| mlCore
     astroParser -->|"parse()"| compScanner
     compScanner -->|"ComponentScanResult"| pretenders
@@ -164,20 +166,44 @@ Any attribute whose start quote is `{` gets `isDynamicValue: true`. This applies
 - Shorthand attributes: `{prop}`
 - Nested expressions: `style={{ a: b }}`
 
+### Spread Attributes
+
+Spread attributes (`{...EXPR}`) are extracted by a brace-aware pre-pass in `visitAttr()` (see `src/spread-attr.ts`) **before** delegating to the base `Parser.visitAttr()`. The pre-pass walks the raw token character by character with awareness of:
+
+- string literals (`'`, `"`)
+- template literals with `${}` interpolation
+- line (`//`) and block (`/* */`) comments
+- backslash-escaped quotes (counting consecutive backslashes for parity)
+
+This bypasses the upstream `safeScriptParser` (espree-based) for spread tokens because espree:
+
+1. Does not understand TypeScript syntax such as `{...x as any}` and would terminate the spread early at `as`.
+2. May greedily extend a "valid JS prefix" past the spread's closing `}` into surrounding HTML — for example `{...props}>{label}` is interpreted as a binary `>` expression, swallowing the next sibling and producing `Invalid tag syntax`.
+
+Both failure modes were reported in [#3824](https://github.com/markuplint/markuplint/issues/3824) (v4) and tracked on dev as [#3856](https://github.com/markuplint/markuplint/issues/3856). The pre-pass solves them by treating the `{...}` boundary as a pure brace-matching problem.
+
+**Known limitations** of the brace matcher:
+
+- Regular-expression literals containing braces (e.g. `{...x.match(/}/) ? a : b}`) are not recognised — `/` is always treated as a division operator. Rewrite via a variable indirection if encountered.
+
+**Retraction condition**: if `parser-utils/script-parser.ts` is upgraded to handle TypeScript syntax and to stop extending past the spread's `}`, this package's `src/spread-attr.ts` and the `visitAttr()` pre-pass can be removed and the base parser path restored.
+
+**Independence from `detectBlockBehavior()`**: the spread pre-pass operates on attribute tokens, while `detectBlockBehavior()` runs over `expression` AST nodes — they share no state. The interaction is locked down by the `<Comp {...rest}>{list.map(...)}</Comp>` regression test in `parser.spec.ts`.
+
 ## Comparison with jsx-parser
 
-| Feature                   | `astro-parser`                  | `jsx-parser`                                    |
-| ------------------------- | ------------------------------- | ----------------------------------------------- |
-| **Tokenizer**             | `astro-eslint-parser`           | TypeScript ESTree (`@typescript-eslint/parser`) |
-| **Frontmatter**           | Supported (`---...---` psblock) | Not applicable                                  |
-| **Expression syntax**     | `{expr}` as MustacheTag psblock | `{expr}` as JSXExpressionContainer psblock      |
-| **Template directives**   | `class:list`, `set:html`, etc.  | Not applicable                                  |
-| **Namespace management**  | Delegates to base `Parser`      | Delegates to `getNamespace()` from html-parser  |
-| **Component detection**   | `/^[A-Z]/` pattern              | `/^[A-Z]/` pattern                              |
-| **Self-close type**       | `html+xml`                      | Default (XML-only)                              |
-| **Booleanish attributes** | Not configured                  | `booleanish: true`                              |
-| **Nameless fragments**    | `<>...</>` supported            | `<>...</>` supported                            |
-| **Spread attributes**     | Handled by base parser          | Custom `visitSpreadAttr()` with IDL lookup      |
+| Feature                   | `astro-parser`                                   | `jsx-parser`                                    |
+| ------------------------- | ------------------------------------------------ | ----------------------------------------------- |
+| **Tokenizer**             | `astro-eslint-parser`                            | TypeScript ESTree (`@typescript-eslint/parser`) |
+| **Frontmatter**           | Supported (`---...---` psblock)                  | Not applicable                                  |
+| **Expression syntax**     | `{expr}` as MustacheTag psblock                  | `{expr}` as JSXExpressionContainer psblock      |
+| **Template directives**   | `class:list`, `set:html`, etc.                   | Not applicable                                  |
+| **Namespace management**  | Delegates to base `Parser`                       | Delegates to `getNamespace()` from html-parser  |
+| **Component detection**   | `/^[A-Z]/` pattern                               | `/^[A-Z]/` pattern                              |
+| **Self-close type**       | `html+xml`                                       | Default (XML-only)                              |
+| **Booleanish attributes** | Not configured                                   | `booleanish: true`                              |
+| **Nameless fragments**    | `<>...</>` supported                             | `<>...</>` supported                            |
+| **Spread attributes**     | Brace-aware pre-pass in `visitAttr()` (TS-aware) | Custom `visitSpreadAttr()` with IDL lookup      |
 
 ## Version Compatibility
 
@@ -195,6 +221,7 @@ astro-eslint-parser → @astrojs/compiler → Astro syntax support
 | ---------------------- | -------------------------------------------------------------------------------------------------- |
 | `parser.ts`            | `AstroParser` class — all override methods and namespace scoping                                   |
 | `astro-parser.ts`      | `astroParse()` wrapper — delegates to `astro-eslint-parser`, converts diagnostics to `ParserError` |
+| `spread-attr.ts`       | Brace-aware spread-attribute extractor used by `visitAttr()` (see Spread Attributes above)         |
 | `index.ts`             | Public API — re-exports the singleton `parser` instance                                            |
 | `component-scanner.ts` | Component scanner for `@markuplint/pretenders` auto scan (subpath export `./component-scanner`)    |
 

@@ -98,15 +98,36 @@ Namespace resolution is currently handled by the base `Parser` class from `@mark
    });
    ```
 
+### 4. Updating the spread-attribute brace matcher
+
+When a new edge case is reported for `{...EXPR}` parsing (a previously
+unconsidered string syntax, comment style, or escape sequence):
+
+1. Reproduce the edge case as a `findMatchingBrace()` unit test in
+   `src/spread-attr.spec.ts` — the test should fail before any fix.
+2. Decide where the fix belongs:
+   - **String / template / quote handling** → extend the `inString` switch in
+     `findMatchingBrace()`
+   - **Comment handling** → extend the `//` / `/* */` branches
+   - **Escape sequence parity** → extend `countPrecedingBackslashes()`
+3. Apply the minimum change that turns the failing unit test green; avoid
+   introducing a full JavaScript lexer.
+4. If the new case is not naturally expressible as a standalone unit test,
+   add an integration test in `parser.spec.ts` under the `#3856` describe.
+5. Update the **Known limitations** list in `src/spread-attr.ts` JSDoc if the
+   matcher still cannot handle the case (e.g., regex literals).
+6. Verify: `yarn build --scope @markuplint/astro-parser && yarn test --scope @markuplint/astro-parser && yarn lint`.
+
 ## Upstream Impact Checklist
 
 Changes to upstream packages can affect this parser:
 
-| Package                    | Impact                                                           |
-| -------------------------- | ---------------------------------------------------------------- |
-| `@markuplint/parser-utils` | Base `Parser` class changes affect all override methods          |
-| `@markuplint/ml-ast`       | AST type changes affect `nodeize()` return types                 |
-| `astro-eslint-parser`      | Parser output format changes affect `tokenize()` and `nodeize()` |
+| Package                                  | Impact                                                                                                             |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `@markuplint/parser-utils`               | Base `Parser` class changes affect all override methods                                                            |
+| `@markuplint/parser-utils/script-parser` | If TS support and non-greedy parsing land here, `src/spread-attr.ts` and the `visitAttr()` pre-pass can be removed |
+| `@markuplint/ml-ast`                     | AST type changes affect `nodeize()` return types                                                                   |
+| `astro-eslint-parser`                    | Parser output format changes affect `tokenize()` and `nodeize()`                                                   |
 
 When updating `astro-eslint-parser`:
 
@@ -120,6 +141,14 @@ yarn upgrade @astrojs/compiler --scope @markuplint/astro-parser --dev
 # Verify compatibility
 yarn build --scope @markuplint/astro-parser && yarn test --scope @markuplint/astro-parser
 ```
+
+### Porting fixes from v4
+
+When forward-porting an `astro-parser` fix from the `v4` branch to `dev`, beware
+the `Token` field rename: v4 uses `startOffset` / `startLine` / `startCol`;
+dev uses the short forms `offset` / `line` / `col`. The same rename also
+applies to AST node properties asserted in `*.spec.ts`. Build will surface
+the issue as `TS2339` on the renamed properties.
 
 ## Troubleshooting
 
@@ -170,3 +199,20 @@ yarn build --scope @markuplint/astro-parser && yarn test --scope @markuplint/ast
 1. Verify the attribute name format — the regex requires exactly one colon with non-empty parts on both sides
 2. Check the `switch (lowerCaseDirectiveName)` — the directive prefix must match a case
 3. If it is a new directive prefix, add a new case (see Recipe #1)
+
+### Spread attribute is truncated, or `Invalid tag syntax` is thrown for `{...EXPR}` followed by an expression child
+
+**Symptom:** Either of the following:
+
+- `{...{ command: 'close' } as any}` is split into a partial spread plus bogus `as` / `any}` attributes.
+- `<div {...props}>{label}</div>` (or any element with a spread attribute followed immediately by an expression child like `{label}`) throws `SyntaxError: Invalid tag syntax: ...`.
+
+**Cause:** The element's raw token is being routed through `parser-utils/safeScriptParser` (espree-based) instead of the brace-aware extractor in `src/spread-attr.ts`. `safeScriptParser` does not understand TypeScript syntax (`as`) and may extend a "valid JS prefix" past the spread's `}` into the surrounding HTML (interpreting `{...props}>{label}` as a binary `>` expression).
+
+**Solution:**
+
+1. Confirm `src/parser.ts` `visitAttr()` calls `extractSpreadAttribute()` from `./spread-attr.js` _before_ `super.visitAttr()`. The order matters — falling through to the base path is what triggers the bug.
+2. If a new edge case is reported, reproduce it as a unit test in `src/spread-attr.spec.ts` with `findMatchingBrace()` and decide whether the brace matcher needs an additional escape rule (string / template / comment / backslash).
+3. Known limitations are listed in `src/spread-attr.ts` JSDoc — regular-expression literals containing braces are not handled. Document any additional limitations there.
+
+See [#3824](https://github.com/markuplint/markuplint/issues/3824) (v4) and [#3856](https://github.com/markuplint/markuplint/issues/3856) (dev/v5) for the original report and the rationale for handling spread attributes locally instead of in `parser-utils`.

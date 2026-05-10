@@ -33,6 +33,7 @@ flowchart TD
         astroParser["AstroParser\nextends Parser‹Node›"]
         astroParseFn["astroParse()\nastro-eslint-parser ラッパー"]
         detectBlock["detectBlockBehavior()\n.map()/.filter() 検出"]
+        spreadAttr["extractSpreadAttribute()\n波括弧対応スプレッド抽出器"]
         compScanner["componentScanner\n(サブパス: ./component-scanner)"]
     end
 
@@ -47,6 +48,7 @@ flowchart TD
     astroCompiler -->|"Node 型"| astroParseFn
     astroParseFn -->|"RootNode.children"| astroParser
     detectBlock -->|"blockBehavior"| astroParser
+    spreadAttr -->|"visitAttr() の spread プリパス"| astroParser
     astroParser -->|"MLASTDocument を生成"| mlCore
     astroParser -->|"parse()"| compScanner
     compScanner -->|"ComponentScanResult"| pretenders
@@ -164,20 +166,44 @@ Astro テンプレートディレクティブは `name:modifier` 構文を使用
 - ショートハンド属性: `{prop}`
 - ネストされた式: `style={{ a: b }}`
 
+### スプレッド属性
+
+スプレッド属性（`{...EXPR}`）は、基底の `Parser.visitAttr()` に委譲する **前**に、`visitAttr()` 内の波括弧対応プリパス（`src/spread-attr.ts` 参照）で抽出されます。プリパスは生のトークンを 1 文字ずつ走査し、以下を考慮します:
+
+- 文字列リテラル（`'`、`"`）
+- `${}` 補間付きテンプレートリテラル
+- 行コメント（`//`）とブロックコメント（`/* */`）
+- バックスラッシュでエスケープされたクォート（連続するバックスラッシュの偶奇判定）
+
+スプレッドトークンに対しては上流の `safeScriptParser`（espree ベース）を意図的に回避します。理由:
+
+1. espree は `{...x as any}` のような TypeScript 構文を理解せず、`as` の手前でスプレッドを誤って終端させる。
+2. espree は「valid な JS プレフィックス」をスプレッドの閉じ `}` を超えて貪欲に伸ばすことがあり、例えば `{...props}>{label}` を二項 `>` 式として解釈してしまい、次の兄弟ノードを呑み込み `Invalid tag syntax` エラーになる。
+
+両方とも v4 では [#3824](https://github.com/markuplint/markuplint/issues/3824) として、dev では [#3856](https://github.com/markuplint/markuplint/issues/3856) として追跡されています。プリパスは `{...}` 境界を純粋な波括弧マッチング問題として扱うことで両方を解消します。
+
+**波括弧マッチャの既知の制限**:
+
+- 波括弧を含む正規表現リテラル（例: `{...x.match(/}/) ? a : b}`）は認識しません。`/` は常に除算演算子として扱われます。遭遇した場合は変数に切り出して回避してください。
+
+**撤去条件**: `parser-utils/script-parser.ts` が TypeScript 構文を理解し、かつスプレッドの `}` を超えて伸びないように改善された場合、本パッケージの `src/spread-attr.ts` と `visitAttr()` のプリパスは削除し、基底パーサーのパスに戻すことが可能です。
+
+**`detectBlockBehavior()` との独立性**: スプレッドのプリパスは属性トークンに対して動作し、`detectBlockBehavior()` は `expression` AST ノードに対して走るため、両者は状態を共有しません。両者の相互作用は `parser.spec.ts` の `<Comp {...rest}>{list.map(...)}</Comp>` リグレッションテストで保証されています。
+
 ## jsx-parser との比較
 
-| 機能                           | `astro-parser`                         | `jsx-parser`                                      |
-| ------------------------------ | -------------------------------------- | ------------------------------------------------- |
-| **トークナイザ**               | `astro-eslint-parser`                  | TypeScript ESTree（`@typescript-eslint/parser`）  |
-| **フロントマター**             | サポート（`---...---` psblock）        | 該当なし                                          |
-| **式の構文**                   | `{expr}` を MustacheTag psblock として | `{expr}` を JSXExpressionContainer psblock として |
-| **テンプレートディレクティブ** | `class:list`、`set:html` 等            | 該当なし                                          |
-| **名前空間管理**               | 基底 `Parser` に委譲                   | html-parser の `getNamespace()` に委譲            |
-| **コンポーネント検出**         | `/^[A-Z]/` パターン                    | `/^[A-Z]/` パターン                               |
-| **自己閉じタイプ**             | `html+xml`                             | デフォルト（XML のみ）                            |
-| **booleanish 属性**            | 未設定                                 | `booleanish: true`                                |
-| **名前なしフラグメント**       | `<>...</>` サポート                    | `<>...</>` サポート                               |
-| **スプレッド属性**             | 基底パーサーで処理                     | カスタム `visitSpreadAttr()` で IDL ルックアップ  |
+| 機能                           | `astro-parser`                                  | `jsx-parser`                                      |
+| ------------------------------ | ----------------------------------------------- | ------------------------------------------------- |
+| **トークナイザ**               | `astro-eslint-parser`                           | TypeScript ESTree（`@typescript-eslint/parser`）  |
+| **フロントマター**             | サポート（`---...---` psblock）                 | 該当なし                                          |
+| **式の構文**                   | `{expr}` を MustacheTag psblock として          | `{expr}` を JSXExpressionContainer psblock として |
+| **テンプレートディレクティブ** | `class:list`、`set:html` 等                     | 該当なし                                          |
+| **名前空間管理**               | 基底 `Parser` に委譲                            | html-parser の `getNamespace()` に委譲            |
+| **コンポーネント検出**         | `/^[A-Z]/` パターン                             | `/^[A-Z]/` パターン                               |
+| **自己閉じタイプ**             | `html+xml`                                      | デフォルト（XML のみ）                            |
+| **booleanish 属性**            | 未設定                                          | `booleanish: true`                                |
+| **名前なしフラグメント**       | `<>...</>` サポート                             | `<>...</>` サポート                               |
+| **スプレッド属性**             | `visitAttr()` 内の波括弧対応プリパス（TS 対応） | カスタム `visitSpreadAttr()` で IDL ルックアップ  |
 
 ## バージョン互換性
 
@@ -195,6 +221,7 @@ astro-eslint-parser → @astrojs/compiler → Astro 構文サポート
 | ---------------------- | ------------------------------------------------------------------------------------------------------------- |
 | `parser.ts`            | `AstroParser` クラス — 全オーバーライドメソッドと名前空間スコーピング                                         |
 | `astro-parser.ts`      | `astroParse()` ラッパー — `astro-eslint-parser` に委譲し、診断を `ParserError` に変換                         |
+| `spread-attr.ts`       | `visitAttr()` が使用する波括弧対応スプレッド属性抽出器（上記「スプレッド属性」を参照）                        |
 | `index.ts`             | 公開 API — シングルトン `parser` インスタンスを再エクスポート                                                 |
 | `component-scanner.ts` | `@markuplint/pretenders` 自動スキャン用コンポーネントスキャナー（サブパスエクスポート `./component-scanner`） |
 
