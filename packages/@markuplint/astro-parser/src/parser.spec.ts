@@ -841,9 +841,7 @@ const title = 'Script HTML-like regex';
 		});
 
 		test('script with attributes + body containing regex', () => {
-			const ast = parse(
-				'<script type="module" is:inline>const t = s.replace(/<br\\s*\\/?>/gi, " ");</script>',
-			);
+			const ast = parse('<script type="module" is:inline>const t = s.replace(/<br\\s*\\/?>/gi, " ");</script>');
 			expect(ast.parseError).toBeUndefined();
 			const map = nodeListToDebugMaps(ast.nodeList);
 			expect(map[0]).toBe('[1:1]>[1:33](0,32)script: <script␣type="module"␣is:inline>');

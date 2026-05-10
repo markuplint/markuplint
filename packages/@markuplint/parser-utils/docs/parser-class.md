@@ -70,15 +70,15 @@ constructor(options?: ParserOptions, defaultState?: State)
 
 The constructor accepts a `ParserOptions` object and an optional default state value:
 
-| Option                 | Type                   | Default                         | Description                                                                                |
-| ---------------------- | ---------------------- | ------------------------------- | ------------------------------------------------------------------------------------------ |
-| `booleanish`           | `boolean`              | `false`                         | Treat omitted attribute values as `true` (e.g., JSX `<Component aria-hidden />`)           |
-| `endTagType`           | `EndTagType`           | `'omittable'`                   | `'xml'`: end tag required or self-close; `'omittable'`: may omit; `'never'`: never need    |
-| `ignoreTags`           | `readonly IgnoreTag[]` | `[]`                            | Patterns for code blocks to mask before parsing (e.g., template expressions)               |
-| `maskChar`             | `string`               | `'\uE000'` (MASK_CHAR)          | Character used to replace masked code blocks                                               |
-| `tagNameCaseSensitive` | `boolean`              | `false`                         | Whether tag name comparisons are case-sensitive (e.g., JSX, Svelte)                        |
-| `selfCloseType`        | `SelfCloseType`        | `'html'`                        | `'html'`: only void elements self-close; `'xml'`: solidus determines; `'html+xml'`: either |
-| `spaceChars`           | `readonly string[]`    | `['\t', '\n', '\f', '\r', ' ']` | Characters treated as whitespace in tag parsing                                            |
+| Option                 | Type                   | Default                         | Description                                                                                                                                    |
+| ---------------------- | ---------------------- | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `booleanish`           | `boolean`              | `false`                         | Treat omitted attribute values as `true` (e.g., JSX `<Component aria-hidden />`)                                                               |
+| `endTagType`           | `EndTagType`           | `'omittable'`                   | `'xml'`: end tag required or self-close; `'omittable'`: may omit; `'never'`: never need                                                        |
+| `ignoreTags`           | `readonly IgnoreTag[]` | `[]`                            | Patterns for code blocks to mask before parsing (e.g., template expressions)                                                                   |
+| `maskChar`             | `string`               | `'\uE000'` (MASK_CHAR)          | Character used to replace masked code blocks                                                                                                   |
+| `tagNameCaseSensitive` | `boolean`              | `false`                         | Whether tag name comparisons are case-sensitive (e.g., JSX, Svelte)                                                                            |
+| `selfCloseType`        | `SelfCloseType`        | `'html'`                        | `'html'`: only void elements self-close; `'xml'`: solidus determines; `'html+xml'`: either                                                     |
+| `spaceChars`           | `readonly string[]`    | `['\t', '\n', '\f', '\r', ' ']` | Characters treated as whitespace in tag parsing                                                                                                |
 | `rawTextElements`      | `readonly string[]`    | `['style', 'script']`           | Elements whose children are not traversed and whose body bypasses `parseCodeFragment` re-tokenization (raw text content per HTML LS §13.2.5.1) |
 
 ## Parse Pipeline

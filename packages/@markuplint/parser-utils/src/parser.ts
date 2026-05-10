@@ -1046,7 +1046,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	 * @param node - The AST node whose location should be updated
 	 * @param props - The new position and depth values to apply (only provided values are changed)
 	 */
-updateLocation(
+	updateLocation(
 		node: MLASTNodeTreeItem,
 		props: Partial<Pick<MLASTNodeTreeItem, 'startOffset' | 'startLine' | 'startCol' | 'depth'>>,
 	) {
@@ -1061,7 +1061,7 @@ updateLocation(
 		});
 	}
 
-/**
+	/**
 	 * Set new raw code to target node.
 	 *
 	 * Replace the raw code and update the start/end offset/line/column.
@@ -1069,7 +1069,7 @@ updateLocation(
 	 * @param node target node
 	 * @param raw new raw code
 	 */
-updateRaw(node: MLASTToken, raw: string) {
+	updateRaw(node: MLASTToken, raw: string) {
 		const startOffset = node.startOffset;
 		const startLine = node.startLine;
 		const startCol = node.startCol;
@@ -1088,20 +1088,20 @@ updateRaw(node: MLASTToken, raw: string) {
 		});
 	}
 
-/**
+	/**
 	 * Updates the node name and/or element type of an element or close tag AST node.
 	 * Useful for renaming elements or changing their classification after initial parsing.
 	 *
 	 * @param el - The element or close tag AST node to update
 	 * @param props - The properties to overwrite on the element
 	 */
-updateElement(el: MLASTElement, props: Partial<Pick<MLASTElement, 'nodeName' | 'elementType'>>): void;
-updateElement(el: MLASTElementCloseTag, props: Partial<Pick<MLASTElementCloseTag, 'nodeName'>>): void;
-updateElement(el: MLASTTag, props: Partial<Pick<MLASTElement, 'nodeName' | 'elementType'>>): void {
+	updateElement(el: MLASTElement, props: Partial<Pick<MLASTElement, 'nodeName' | 'elementType'>>): void;
+	updateElement(el: MLASTElementCloseTag, props: Partial<Pick<MLASTElementCloseTag, 'nodeName'>>): void;
+	updateElement(el: MLASTTag, props: Partial<Pick<MLASTElement, 'nodeName' | 'elementType'>>): void {
 		Object.assign(el, props);
 	}
 
-/**
+	/**
 	 * Updates metadata properties on an HTML attribute AST node, such as marking
 	 * it as a directive, dynamic value, or setting its potential name/value
 	 * for preprocessor-specific attribute transformations.
@@ -1109,7 +1109,7 @@ updateElement(el: MLASTTag, props: Partial<Pick<MLASTElement, 'nodeName' | 'elem
 	 * @param attr - The HTML attribute AST node to update
 	 * @param props - The metadata properties to overwrite on the attribute
 	 */
-updateAttr(
+	updateAttr(
 		attr: MLASTHTMLAttr,
 		props: Partial<
 			Pick<
@@ -1127,7 +1127,7 @@ updateAttr(
 		Object.assign(attr, props);
 	}
 
-/**
+	/**
 	 * Determines the element type (e.g., "html", "web-component", "authored") for a
 	 * given tag name, using the parser's authored element name distinguishing pattern.
 	 *
@@ -1135,11 +1135,11 @@ updateAttr(
 	 * @param defaultPattern - A fallback pattern if no authored element name pattern is set
 	 * @returns The element type classification
 	 */
-detectElementType(nodeName: string, defaultPattern?: ParserAuthoredElementNameDistinguishing): ElementType {
+	detectElementType(nodeName: string, defaultPattern?: ParserAuthoredElementNameDistinguishing): ElementType {
 		return detectElementType(nodeName, this.#authoredElementName, defaultPattern);
 	}
 
-/**
+	/**
 	 * Creates a new MLASTToken with a generated UUID and computed end position.
 	 * Accepts either a Token object or a raw string with explicit start coordinates.
 	 *
@@ -1149,9 +1149,9 @@ detectElementType(nodeName: string, defaultPattern?: ParserAuthoredElementNameDi
 	 * @param startCol - The column number where the token starts (required when token is a string)
 	 * @returns A fully populated AST token with UUID, start/end positions, and raw content
 	 */
-createToken(token: Token): MLASTToken;
-createToken(token: string, startOffset: number, startLine: number, startCol: number): MLASTToken;
-createToken(token: string | Token, startOffset?: number, startLine?: number, startCol?: number): MLASTToken {
+	createToken(token: Token): MLASTToken;
+	createToken(token: string, startOffset: number, startLine: number, startCol: number): MLASTToken;
+	createToken(token: string | Token, startOffset?: number, startLine?: number, startCol?: number): MLASTToken {
 		const props =
 			typeof token === 'string'
 				? {
@@ -1497,7 +1497,7 @@ createToken(token: string | Token, startOffset?: number, startLine?: number, sta
 		// `regexp/strict` cannot statically verify a pattern built from the
 		// dynamic `escapedName` interpolation; the escape above is the contract
 		// that makes this safe for any caller-supplied `rawTextElements` value.
-		 
+
 		const pattern = new RegExp(`</${escapedName}(?=[\\t\\n\\f\\r >/])`, 'i');
 		this.#rawTextCloseTagPatternCache.set(tagName, pattern);
 		return pattern;

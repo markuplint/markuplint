@@ -132,14 +132,14 @@ The IDL attribute map is defined in `src/idl-attributes.ts`. To add a new mappin
 
 Changes to this package can affect every downstream parser:
 
-| Package                     | Key Dependencies                                                                                                                                              |
-| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `@markuplint/html-parser`   | Parser base class, visitText with researchTags                                                                                                                |
-| `@markuplint/jsx-parser`    | Parser base class, visitAttr with quoteSet, detectElementType, parseCodeFragment                                                                              |
-| `@markuplint/vue-parser`    | Parser base class, visitAttr, flattenNodes, detectElementType                                                                                                 |
-| `@markuplint/svelte-parser` | Parser base class, visitText, visitPsBlock, visitChildren, ignoreTags                                                                                         |
+| Package                     | Key Dependencies                                                                                                                                               |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@markuplint/html-parser`   | Parser base class, visitText with researchTags                                                                                                                 |
+| `@markuplint/jsx-parser`    | Parser base class, visitAttr with quoteSet, detectElementType, parseCodeFragment                                                                               |
+| `@markuplint/vue-parser`    | Parser base class, visitAttr, flattenNodes, detectElementType                                                                                                  |
+| `@markuplint/svelte-parser` | Parser base class, visitText, visitPsBlock, visitChildren, ignoreTags                                                                                          |
 | `@markuplint/astro-parser`  | Parser base class (direct), visitElement, **parseCodeFragment with full element raw — the only caller that exercises the raw-text element body short-circuit** |
-| `@markuplint/pug-parser`    | Parser base class                                                                                                                                             |
+| `@markuplint/pug-parser`    | Parser base class                                                                                                                                              |
 
 Always run tests across all parser packages when modifying the Parser class:
 

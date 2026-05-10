@@ -132,14 +132,14 @@ IDL属性マップは `src/idl-attributes.ts` で定義されています。新�
 
 このパッケージへの変更は下流のすべてのパーサーに影響します:
 
-| パッケージ                  | 主な依存関係                                                                                                                                       |
-| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `@markuplint/html-parser`   | Parser 基底クラス、researchTags を使用した visitText                                                                                               |
-| `@markuplint/jsx-parser`    | Parser 基底クラス、quoteSet を使用した visitAttr、detectElementType、parseCodeFragment                                                             |
-| `@markuplint/vue-parser`    | Parser 基底クラス、visitAttr、flattenNodes、detectElementType                                                                                      |
-| `@markuplint/svelte-parser` | Parser 基底クラス、visitText、visitPsBlock、visitChildren、ignoreTags                                                                              |
+| パッケージ                  | 主な依存関係                                                                                                                                           |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `@markuplint/html-parser`   | Parser 基底クラス、researchTags を使用した visitText                                                                                                   |
+| `@markuplint/jsx-parser`    | Parser 基底クラス、quoteSet を使用した visitAttr、detectElementType、parseCodeFragment                                                                 |
+| `@markuplint/vue-parser`    | Parser 基底クラス、visitAttr、flattenNodes、detectElementType                                                                                          |
+| `@markuplint/svelte-parser` | Parser 基底クラス、visitText、visitPsBlock、visitChildren、ignoreTags                                                                                  |
 | `@markuplint/astro-parser`  | Parser 基底クラス（直接）、visitElement、**parseCodeFragment に要素全体の raw を渡す唯一の caller — raw-text element 本文の short-circuit 経路を踏む** |
-| `@markuplint/pug-parser`    | Parser 基底クラス                                                                                                                                  |
+| `@markuplint/pug-parser`    | Parser 基底クラス                                                                                                                                      |
 
 Parser クラスを変更する際は、必ずすべてのパーサーパッケージでテストを実行してください:
 

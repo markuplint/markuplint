@@ -70,15 +70,15 @@ constructor(options?: ParserOptions, defaultState?: State)
 
 コンストラクタは `ParserOptions` オブジェクトとオプションのデフォルト状態値を受け取ります。
 
-| オプション             | 型                     | デフォルト                      | 説明                                                                                     |
-| ---------------------- | ---------------------- | ------------------------------- | ---------------------------------------------------------------------------------------- |
-| `booleanish`           | `boolean`              | `false`                         | 省略された属性値を `true` として扱う（例: JSX `<Component aria-hidden />`）              |
-| `endTagType`           | `EndTagType`           | `'omittable'`                   | `'xml'`: 終了タグ必須またはセルフクローズ; `'omittable'`: 省略可; `'never'`: 不要        |
-| `ignoreTags`           | `readonly IgnoreTag[]` | `[]`                            | パース前にマスクするコードブロックのパターン（例: テンプレート式）                       |
-| `maskChar`             | `string`               | `'\uE000'` (MASK_CHAR)          | マスクされたコードブロックを置換するために使用する文字                                   |
-| `tagNameCaseSensitive` | `boolean`              | `false`                         | タグ名の比較で大文字小文字を区別するか（例: JSX、Svelte）                                |
-| `selfCloseType`        | `SelfCloseType`        | `'html'`                        | `'html'`: void 要素のみセルフクローズ; `'xml'`: スラッシュで判定; `'html+xml'`: いずれか |
-| `spaceChars`           | `readonly string[]`    | `['\t', '\n', '\f', '\r', ' ']` | タグのパース時に空白として扱う文字                                                       |
+| オプション             | 型                     | デフォルト                      | 説明                                                                                                                   |
+| ---------------------- | ---------------------- | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `booleanish`           | `boolean`              | `false`                         | 省略された属性値を `true` として扱う（例: JSX `<Component aria-hidden />`）                                            |
+| `endTagType`           | `EndTagType`           | `'omittable'`                   | `'xml'`: 終了タグ必須またはセルフクローズ; `'omittable'`: 省略可; `'never'`: 不要                                      |
+| `ignoreTags`           | `readonly IgnoreTag[]` | `[]`                            | パース前にマスクするコードブロックのパターン（例: テンプレート式）                                                     |
+| `maskChar`             | `string`               | `'\uE000'` (MASK_CHAR)          | マスクされたコードブロックを置換するために使用する文字                                                                 |
+| `tagNameCaseSensitive` | `boolean`              | `false`                         | タグ名の比較で大文字小文字を区別するか（例: JSX、Svelte）                                                              |
+| `selfCloseType`        | `SelfCloseType`        | `'html'`                        | `'html'`: void 要素のみセルフクローズ; `'xml'`: スラッシュで判定; `'html+xml'`: いずれか                               |
+| `spaceChars`           | `readonly string[]`    | `['\t', '\n', '\f', '\r', ' ']` | タグのパース時に空白として扱う文字                                                                                     |
 | `rawTextElements`      | `readonly string[]`    | `['style', 'script']`           | 子要素をトラバースせず、本文を `parseCodeFragment` が再トークナイズしない要素（HTML LS §13.2.5.1 の raw-text element） |
 
 ## パースパイプライン
