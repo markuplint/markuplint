@@ -162,4 +162,14 @@ v5 では、これまで `Any` として素通りしていた領域について 
 | `http-equiv` に応じた `meta[content]` | `<meta http-equiv="refresh" content="garbage">` | [#3734](https://github.com/markuplint/markuplint/issues/3734) | [HTML LS — meta `http-equiv`](https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-http-equiv) |
 | `media=` の MQL5 厳格文法             | `<link media="screen and (color: 1em)">`        | [#3850](https://github.com/markuplint/markuplint/issues/3850) | [Media Queries Level 5 §4](https://www.w3.org/TR/mediaqueries-5/#mq-features)                             |
 
+### `media=` で新たに違反となるパターン
+
+`link` / `style` / `source` / `svg|style` の `media` 属性は専用の `MediaQueryList` チェッカーで検証されるようになりました。v4 では汎用の `<media-query-list>` 経由で素通りしていた以下が、v5 では `invalid-attr` 違反となります。
+
+- **非推奨メディアタイプ** (MQL5 §2.3): `<link media="aural">`, `<link media="tv">`, `<link media="projection">`, `<link media="handheld">`, `<link media="braille">`, `<link media="embossed">`, `<link media="speech">`, `<link media="tty">` 等。`screen` / `print` / `all` への置き換え、もしくは feature query を利用してください。
+- **非推奨メディア特性** (MQL4): `(device-width: ...)`, `(device-height: ...)`, `(device-aspect-ratio: ...)` および `min-` / `max-` バリアント。`(width: ...)` / `(height: ...)` / `(aspect-ratio: ...)` を利用してください。
+- **特性ごとの値型違反** (MQL5 §4): `(min-width: 400)` (長さに単位なし)、`(min-width: 400dpi)` (長さに解像度単位)、`(color: 1em)` (整数に長さ単位)、`(resolution: 96)` (解像度に単位なし) 等。
+- **`<integer>` 特性に負値** (MQL5 §4.4): `(color: -1)`, `(monochrome: -2)`, `(min-color-index: -1)` 等。仕様は非負を要求しています。
+- **`<ratio>` 特性に非正値** (MQL5 §4.5): `(aspect-ratio: 0)`, `(aspect-ratio: 0/1)`, `(aspect-ratio: -1/1)` 等。仕様は厳密に正を要求しています。
+
 これらの厳格化を個別に無効化する設定はありません。特定のケースで問題がある場合は、失敗するマークアップと仕様の該当段落を添えて [Issue を起票](https://github.com/markuplint/markuplint/issues/new/choose) してください — 仕様の誤読が判明したものは修正または範囲を狭めます。
