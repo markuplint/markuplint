@@ -7,14 +7,17 @@
 				"condition": "svg|switch > svg|a",
 				"contents": [
 					{
-						"transparent": "*"
+						// SVG2 §17.6 — "may contain any element that its parent
+						// may contain, except itself".
+						"transparent": ":not(svg|a, :has(svg|a))"
 					}
 				]
 			}
 		],
 		"contents": [
 			{
-				"transparent": "*, :model(SVGDescriptive):not(svg|a, :has(svg|a))"
+				// SVG2 §17.6 — same self-exclusion applies outside <svg|switch>.
+				"transparent": ":not(svg|a, :has(svg|a))"
 			}
 		]
 	},
