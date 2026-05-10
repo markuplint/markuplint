@@ -65,6 +65,7 @@ src/
 │   ├── check-http-equiv-content-type.ts # <meta http-equiv="content-type"> エンコーディング宣言
 │   ├── check-http-equiv-refresh.ts # <meta http-equiv="refresh"> content の文法検証
 │   ├── check-link-type.ts          # リンクタイプの検証 (rel 属性)
+│   ├── check-media-query-list.ts   # CSS Media Queries Level 5 の検証 (`media=` 属性)
 │   ├── check-mime-type.ts          # MIMEタイプの検証
 │   ├── check-simple-color.ts       # 単純な色 (#rrggbb) の検証
 │   ├── check-url.ts                # 妥当な URL 文字列（前後の空白を含む）の検証
@@ -209,14 +210,14 @@ Web標準の仕様に基づいた、個別の値検証ロジックを実装し�
 
 ## 外部依存パッケージ
 
-| パッケージ        | 用途                                               | 使用箇所                                   |
-| ----------------- | -------------------------------------------------- | ------------------------------------------ |
-| `css-tree`        | CSS値定義構文のレキサーフォークによるマッチング    | `css-syntax.ts`                            |
-| `bcp-47`          | BCP 47 言語タグのパースと検証                      | `rfc/is-bcp-47.ts`, `css-tokenizers.ts`    |
-| `whatwg-mimetype` | WHATWG MIMEタイプのパース                          | `whatwg/check-mime-type.ts`                |
-| `leven`           | タイプミス検出のためのレーベンシュタイン距離計算   | `get-candidate.ts`                         |
-| `debug`           | 名前空間 `@markuplint/types` のデバッグログ        | `debug.ts`                                 |
-| `type-fest`       | 深い不変性のための `ReadonlyDeep` ユーティリティ型 | `check.ts`, `check-base.ts` 他各チェッカー |
+| パッケージ        | 用途                                               | 使用箇所                                            |
+| ----------------- | -------------------------------------------------- | --------------------------------------------------- |
+| `css-tree`        | CSS値定義構文のレキサーフォークによるマッチング    | `css-syntax.ts`, `whatwg/check-media-query-list.ts` |
+| `bcp-47`          | BCP 47 言語タグのパースと検証                      | `rfc/is-bcp-47.ts`, `css-tokenizers.ts`             |
+| `whatwg-mimetype` | WHATWG MIMEタイプのパース                          | `whatwg/check-mime-type.ts`                         |
+| `leven`           | タイプミス検出のためのレーベンシュタイン距離計算   | `get-candidate.ts`                                  |
+| `debug`           | 名前空間 `@markuplint/types` のデバッグログ        | `debug.ts`                                          |
+| `type-fest`       | 深い不変性のための `ReadonlyDeep` ユーティリティ型 | `check.ts`, `check-base.ts` 他各チェッカー          |
 
 ## 他パッケージとの連携
 
