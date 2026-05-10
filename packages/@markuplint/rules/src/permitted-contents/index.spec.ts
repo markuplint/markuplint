@@ -702,6 +702,79 @@ describe('verify', () => {
 				raw: '<feBlend />',
 			},
 		]);
+
+		// SVG2 §17.6 — "may contain any element that its parent may contain,
+		// except itself". Direct nested <svg|a> must be rejected.
+		const { violations: violations3 } = await mlRuleTest(rule, '<svg><a href="#"><a href="#">nested</a></a></svg>');
+		expect(violations3).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 18,
+				message: 'The "a" element is a transparent model but also disallows the "a" element in this context',
+				raw: '<a href="#">',
+			},
+		]);
+
+		// Transitive nesting (via <g>) must also be rejected. The primary
+		// violation is the inner <a>: the spec change (`:has(svg|a)` in the
+		// transparent expression) is what catches it. The follow-up text
+		// violation is INCIDENTAL — it falls out of how the engine surfaces
+		// children of a transparent-rejected node, and may shift if that
+		// propagation logic changes. Treat only the first entry as the
+		// load-bearing assertion for this PR.
+		const { violations: violations4 } = await mlRuleTest(
+			rule,
+			'<svg><a href="#"><g><a href="#">nested</a></g></a></svg>',
+		);
+		expect(violations4[0]).toStrictEqual({
+			severity: 'error',
+			line: 1,
+			col: 21,
+			message: 'The "a" element is a transparent model but also disallows the "a" element in this context',
+			raw: '<a href="#">',
+		});
+	});
+
+	test('[permitted-contents-valid-002] svg:a wrapping <g> without nested <a>', async () => {
+		// Regression guard: the `:has(svg|a)` constraint added for
+		// invalid-017 must not over-fire on wrappers that legitimately do
+		// not contain another <a>.
+		const { violations } = await mlRuleTest(
+			rule,
+			'<svg><a href="#"><g><rect width="10" height="10"/></g></a></svg>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-invalid-030] svg:a self-nesting inside svg:switch', async () => {
+		// Covers the conditional `svg|switch > svg|a` branch of spec.svg_a.jsonc.
+		// SVG2 §17.6's self-exclusion applies in this context too; without this
+		// test, deleting the conditional-branch fix would not break any test.
+		const { violations } = await mlRuleTest(
+			rule,
+			'<svg><switch><a href="#"><a href="#">nested</a></a></switch></svg>',
+		);
+		expect(violations[0]).toStrictEqual({
+			severity: 'error',
+			line: 1,
+			col: 26,
+			message: 'The "a" element is a transparent model but also disallows the "a" element in this context',
+			raw: '<a href="#">',
+		});
+	});
+
+	test('[permitted-contents-invalid-031] svg:a self-nesting via svg:defs wrapper', async () => {
+		// Wrapper-agnostic check: `:has(svg|a)` should reject any element that
+		// contains an <a>, regardless of which container is used.
+		const { violations } = await mlRuleTest(rule, '<svg><a href="#"><defs><a href="#">nested</a></defs></a></svg>');
+		expect(violations[0]).toStrictEqual({
+			severity: 'error',
+			line: 1,
+			col: 24,
+			message: 'The "a" element is a transparent model but also disallows the "a" element in this context',
+			raw: '<a href="#">',
+		});
 	});
 
 	test('[permitted-contents-invalid-018] svg:foreignObject', async () => {

@@ -57342,14 +57342,14 @@
 						"condition": "svg|switch > svg|a",
 						"contents": [
 							{
-								"transparent": "*"
+								"transparent": ":not(svg|a, :has(svg|a))"
 							}
 						]
 					}
 				],
 				"contents": [
 					{
-						"transparent": "*, :model(SVGDescriptive):not(svg|a, :has(svg|a))"
+						"transparent": ":not(svg|a, :has(svg|a))"
 					}
 				]
 			},
