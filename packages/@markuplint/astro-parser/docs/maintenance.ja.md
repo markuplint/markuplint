@@ -132,6 +132,23 @@ yarn upgrade @astrojs/compiler --scope @markuplint/astro-parser --dev
 yarn build --scope @markuplint/astro-parser && yarn test --scope @markuplint/astro-parser
 ```
 
+## dev (v5 RC) からの fix port 手順
+
+`dev` と `v4` は自動マージ不可 — 両方に当てる必要がある fix は手動で port する。最も頻発する port hazard は `Token` のフィールド名差:
+
+| v4 (本ブランチ)                                | dev (v5 RC)                                                 |
+| ---------------------------------------------- | ----------------------------------------------------------- |
+| `token.startOffset` / `startLine` / `startCol` | `token.offset` / `line` / `col`                             |
+| `token.endOffset` / `endLine` / `endCol`       | `#getEndLocation()` ヘルパが `{ offset, line, col }` を返す |
+| `MLASTText` は `parentNode` のみ               | `MLASTText` は `parentNodeUuid` も持つ                      |
+
+dev fix を port する手順:
+
+1. dev のソース変更とテストを両方読む。`token.line` / `token.col` / `token.offset` で assert しているテストは v4 では `startLine` / `startCol` / `startOffset` に書き換える。
+2. v4 のフィールド名でソース変更を適用。`yarn build` で `TS2339` が出れば見落としを fail-fast に検出できる。
+3. dev と同じ `#NNNN` describe id を v4 でも使う — id を揃えると後から両ブランチを grep で対比しやすい。
+4. JSDoc / `parser-class.md` / 該当パッケージの `maintenance.md` Troubleshooting に dev / v4 の Issue・PR を相互リンク。次に port する人が関係を再発見しなくて済む。
+
 ## トラブルシューティング
 
 ### フロントマターが認識されない
@@ -199,3 +216,17 @@ yarn build --scope @markuplint/astro-parser && yarn test --scope @markuplint/ast
 3. 既知の制限は `src/spread-attr.ts` の JSDoc に記載 — 波括弧を含む正規表現リテラルは扱えない。新たな制限が見つかったらそこに追記。
 
 オリジナルの報告とスプレッド属性を `parser-utils` ではなく本パッケージで処理する根拠については [#3824](https://github.com/markuplint/markuplint/issues/3824) を参照。
+
+### `<script>` または `<style>` の本文で `Invalid tag syntax` が throw する
+
+**症状:** `<script>` 本文の JS/TS に HTML 風の部分文字列（典型的には `/<br\s*\/?>/gi` や `/<\/?p>/gi` のような正規表現）が含まれると `ParserError: SyntaxError: Invalid tag syntax: "..."` で落ちる。`<style>` 本文中の `/* <br = */` のような CSS コメントでも同種の症状が出る。
+
+**原因:** `AstroParser.visitElement()` は要素全体（本文を含む）の raw 文字列を `parser-utils` の `parseCodeFragment()` に渡している。raw-text 認識がないと `parseCodeFragment()` は本文を HTML として再トークナイズし、正規表現中の `<br...>` をタグ開始と解釈、続く `\s`（リテラルなバックスラッシュ）を属性名とみなして throw する。
+
+**解決策:** raw-text の安全性は `parser-utils/parser.ts` の `parseCodeFragment()` 内に実装されている。自閉でない開始タグの `nodeName.toLowerCase()` が `rawTextElements` に含まれる場合、本文は次に現れる ASCII 大文字小文字非依存の `</tagName`（タブ/LF/FF/CR/空白/`>` /`/` のいずれかが続く）まで丸ごと消費される（HTML LS §13.2.5.1）。リグレッションが疑われたら:
+
+1. `npx vitest run packages/@markuplint/astro-parser/src/parser.spec.ts -t "#3860"` で失敗フィクスチャがまだ再現するかを確認。
+2. 修正は `astro-parser` 内ではない。`packages/@markuplint/parser-utils/src/parser.ts` の `parseCodeFragment()` を見て raw-text 分岐が無傷か、close-tag 正規表現が仕様の文字クラスにまだ一致するかを確認する。
+3. 別の上流 parser が `astro-parser` と同様に要素全体の raw を `parseCodeFragment` に渡すケースが追加された場合、追加配線は不要 — 同じ parser-utils 分岐がそのままカバーする。
+
+オリジナルの報告は [#3860](https://github.com/markuplint/markuplint/issues/3860)（[#3825](https://github.com/markuplint/markuplint/issues/3825) の v4 backport）を参照。dev (v5 RC) には [#3859](https://github.com/markuplint/markuplint/pull/3859) が先行マージされている。今後 raw-text 周りの変更を port する際は両 PR を diff 比較すること。

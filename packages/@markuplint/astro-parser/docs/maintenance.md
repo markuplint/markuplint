@@ -132,6 +132,23 @@ yarn upgrade @astrojs/compiler --scope @markuplint/astro-parser --dev
 yarn build --scope @markuplint/astro-parser && yarn test --scope @markuplint/astro-parser
 ```
 
+## Porting Fixes from dev (v5 RC)
+
+`dev` and `v4` cannot be merged automatically — fixes that need to land on both branches are ported manually. The most common port hazard is the `Token` field rename:
+
+| v4 (this branch)                               | dev (v5 RC)                                                                  |
+| ---------------------------------------------- | ---------------------------------------------------------------------------- |
+| `token.startOffset` / `startLine` / `startCol` | `token.offset` / `line` / `col`                                              |
+| `token.endOffset` / `endLine` / `endCol`       | computed via `#getEndLocation()` helper that returns `{ offset, line, col }` |
+| `MLASTText` has only `parentNode`              | `MLASTText` adds `parentNodeUuid`                                            |
+
+Procedure when porting a dev fix:
+
+1. Read both the dev source change and the dev tests, including any test that asserts on `token.line` / `token.col` / `token.offset` — those need to become `startLine` / `startCol` / `startOffset` on v4.
+2. Apply the source change with the v4 field names. `yarn build` should fail fast with `TS2339` on any field you missed.
+3. Re-run the v4 test fixtures against the same `#NNNN` describe id used on dev — keeping the id stable lets future maintainers grep across both branches.
+4. Cross-link both Issues / PRs in the JSDoc, `parser-class.md`, and the package's `maintenance.md` Troubleshooting entry so the next porter doesn't have to re-discover the relationship.
+
 ## Troubleshooting
 
 ### Frontmatter is not recognized
@@ -199,3 +216,17 @@ yarn build --scope @markuplint/astro-parser && yarn test --scope @markuplint/ast
 3. Known limitations are listed in `src/spread-attr.ts` JSDoc — regular-expression literals containing braces are not handled. Document any additional limitations there.
 
 See [#3824](https://github.com/markuplint/markuplint/issues/3824) for the original report and the rationale for handling spread attributes locally instead of in `parser-utils`.
+
+### `<script>` or `<style>` body throws `Invalid tag syntax`
+
+**Symptom:** A `<script>` body containing JavaScript / TypeScript with HTML-like substrings (most commonly a regex such as `/<br\s*\/?>/gi` or `/<\/?p>/gi`) throws `ParserError: SyntaxError: Invalid tag syntax: "..."`. Same for `<style>` bodies that include CSS comments such as `/* <br = */`.
+
+**Cause:** `AstroParser.visitElement()` passes the entire element source (including body) to `parser-utils`'s `parseCodeFragment()`. Without raw-text awareness, `parseCodeFragment()` would treat the body as HTML and try to tokenize the regex's `<br...>` as a start tag, hitting `\s` (literal backslash) where an attribute name is expected.
+
+**Solution:** Raw-text safety lives in `parser-utils/parser.ts` `parseCodeFragment()` — after a non-self-closing start tag whose `nodeName.toLowerCase()` matches `rawTextElements`, the body is consumed verbatim until the next ASCII-case-insensitive `</tagName` followed by a tab/LF/FF/CR/space/`>` /`/` (HTML LS §13.2.5.1). If a regression appears here:
+
+1. Verify the failing fixture still reproduces by running `npx vitest run packages/@markuplint/astro-parser/src/parser.spec.ts -t "#3860"`.
+2. The fix is _not_ inside `astro-parser` — inspect `packages/@markuplint/parser-utils/src/parser.ts` `parseCodeFragment()` to confirm the raw-text branch is intact and the close-tag regex still matches the spec character class.
+3. If a different upstream parser is added that hands the full element raw to `parseCodeFragment` (similar to `astro-parser`), no extra wiring is needed — the same parser-utils branch covers it.
+
+See [#3860](https://github.com/markuplint/markuplint/issues/3860) (v4 backport of [#3825](https://github.com/markuplint/markuplint/issues/3825)) for the original report. The dev (v5 RC) implementation landed first via [#3859](https://github.com/markuplint/markuplint/pull/3859) — diff-compare both PRs when porting future raw-text changes.

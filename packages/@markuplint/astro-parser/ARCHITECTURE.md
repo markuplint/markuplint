@@ -213,6 +213,12 @@ Both failure modes were reported in [#3824](https://github.com/markuplint/markup
 
 **Retraction condition**: if `parser-utils/script-parser.ts` is upgraded to handle TypeScript syntax and to stop extending past the spread's `}`, this package's `src/spread-attr.ts` and the `visitAttr()` pre-pass can be removed and the base parser path restored.
 
+### Raw-text Element Bodies (`<script>`, `<style>`)
+
+`AstroParser.visitElement()` hands the **entire element source** (including body and end tag) to `parser-utils`'s `parseCodeFragment()` and uses the first parsed node as the start tag and the last as the end tag. For `<script>` and `<style>`, the body would otherwise be re-tokenized as HTML — and a regex such as `/<br\s*\/?>/gi` inside a script body would be misread as a tag, causing `Invalid tag syntax` ([#3860](https://github.com/markuplint/markuplint/issues/3860), v4 backport of [#3825](https://github.com/markuplint/markuplint/issues/3825)).
+
+Raw-text safety is delegated to `parser-utils`: `parseCodeFragment()` recognizes `rawTextElements` (default `['style', 'script']`) and consumes the body verbatim until the next ASCII-case-insensitive `</tagName` followed by a tab/LF/FF/CR/space/`>` /`/`, per [HTML LS §13.2.5.1](https://html.spec.whatwg.org/multipage/syntax.html#cdata-rcdata-restrictions). `astro-parser` requires no special-case branch — the existing `visitElement()` flow continues to work because the start tag and end tag still occupy `parsedNodes[0]` and `parsedNodes[-1]` respectively.
+
 ## Comparison with jsx-parser
 
 | Feature                   | `astro-parser`                                   | `jsx-parser`                                    |
