@@ -79,7 +79,7 @@ The constructor accepts a `ParserOptions` object and an optional default state v
 | `tagNameCaseSensitive` | `boolean`              | `false`                         | Whether tag name comparisons are case-sensitive (e.g., JSX, Svelte)                        |
 | `selfCloseType`        | `SelfCloseType`        | `'html'`                        | `'html'`: only void elements self-close; `'xml'`: solidus determines; `'html+xml'`: either |
 | `spaceChars`           | `readonly string[]`    | `['\t', '\n', '\f', '\r', ' ']` | Characters treated as whitespace in tag parsing                                            |
-| `rawTextElements`      | `readonly string[]`    | `['style', 'script']`           | Elements whose children are not traversed (raw text content)                               |
+| `rawTextElements`      | `readonly string[]`    | `['style', 'script']`           | Elements whose children are not traversed and whose body bypasses `parseCodeFragment` re-tokenization (raw text content per HTML LS §13.2.5.1) |
 
 ## Parse Pipeline
 
@@ -227,6 +227,23 @@ visitText(
 ```
 
 Creates a text node. When `researchTags` is true, re-parses the text via `parseCodeFragment()` to discover embedded HTML tags. If `invalidTagAsText` is also true, any discovered start tags cause the entire content to be treated as a single text node.
+
+### parseCodeFragment()
+
+```ts
+parseCodeFragment(
+  token: ChildToken,
+  options?: { namelessFragment?: boolean }
+): readonly (MLASTTag | MLASTText)[]
+```
+
+Re-tokenizes a raw fragment that may contain a mix of tags and text into a sequence of `MLASTTag` and `MLASTText` nodes. Used by subclasses (e.g., `astro-parser`'s `visitElement`) when the upstream tokenizer produces a single raw blob covering an entire element — the subclass needs the start tag, body, and end tag to be split apart.
+
+**Raw-text element handling.** After parsing a non-self-closing start tag whose `nodeName.toLowerCase()` matches an entry in `rawTextElements` (default `['style', 'script']`), the body is consumed verbatim until the next ASCII-case-insensitive `</tagName` followed by a tab/LF/FF/CR/space/`>` /`/` (per [HTML Living Standard §13.2.5.1](https://html.spec.whatwg.org/multipage/syntax.html#cdata-rcdata-restrictions)). The body becomes a single `#text` node and is **not** re-tokenized — `<br\s*\/?>` inside a script body would otherwise be interpreted as a tag and throw `Invalid tag syntax`.
+
+This guard is dormant for parsers whose upstream tokenizer already rejects bare `<` in element body (`jsx-parser` via TypeScript ESTree) but is critical for parsers that hand the full raw element to `parseCodeFragment` (e.g., `astro-parser`).
+
+**Escapable raw text elements (`<title>`, `<textarea>`)** are NOT in the default `rawTextElements`. HTML LS classifies them as escapable raw text — they require character-reference (`&amp;` etc.) decoding inside the body, which the short-circuit above does not implement. Add them to `rawTextElements` only if you accept that character references will be passed through verbatim instead of decoded.
 
 ### visitComment()
 

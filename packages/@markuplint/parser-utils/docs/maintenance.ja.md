@@ -130,16 +130,16 @@ IDL属性マップは `src/idl-attributes.ts` で定義されています。新�
 
 ## 下流影響チェックリスト
 
-このパッケージへの変更は、下流の6つのパーサーパッケージすべてに影響を与える可能性があります:
+このパッケージへの変更は下流のすべてのパーサーに影響します:
 
-| パッケージ                  | 主な依存関係                                                          |
-| --------------------------- | --------------------------------------------------------------------- |
-| `@markuplint/html-parser`   | Parser 基底クラス、researchTags を使用した visitText                  |
-| `@markuplint/jsx-parser`    | Parser 基底クラス、quoteSet を使用した visitAttr、detectElementType   |
-| `@markuplint/vue-parser`    | Parser 基底クラス、visitAttr、flattenNodes、detectElementType         |
-| `@markuplint/svelte-parser` | Parser 基底クラス、visitText、visitPsBlock、visitChildren、ignoreTags |
-| `@markuplint/astro-parser`  | Parser 基底クラス（html-parser 経由）                                 |
-| `@markuplint/pug-parser`    | Parser 基底クラス                                                     |
+| パッケージ                  | 主な依存関係                                                                                                                                       |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@markuplint/html-parser`   | Parser 基底クラス、researchTags を使用した visitText                                                                                               |
+| `@markuplint/jsx-parser`    | Parser 基底クラス、quoteSet を使用した visitAttr、detectElementType、parseCodeFragment                                                             |
+| `@markuplint/vue-parser`    | Parser 基底クラス、visitAttr、flattenNodes、detectElementType                                                                                      |
+| `@markuplint/svelte-parser` | Parser 基底クラス、visitText、visitPsBlock、visitChildren、ignoreTags                                                                              |
+| `@markuplint/astro-parser`  | Parser 基底クラス（直接）、visitElement、**parseCodeFragment に要素全体の raw を渡す唯一の caller — raw-text element 本文の short-circuit 経路を踏む** |
+| `@markuplint/pug-parser`    | Parser 基底クラス                                                                                                                                  |
 
 Parser クラスを変更する際は、必ずすべてのパーサーパッケージでテストを実行してください:
 
@@ -148,6 +148,8 @@ yarn test --scope @markuplint/html-parser --scope @markuplint/jsx-parser \
   --scope @markuplint/vue-parser --scope @markuplint/svelte-parser \
   --scope @markuplint/astro-parser --scope @markuplint/pug-parser
 ```
+
+`parseCodeFragment`（特に raw-text element 分岐）に手を入れる場合は、`astro-parser` が最も影響を受けやすい caller — まずそこから確認してください。
 
 ## トラブルシューティング
 
@@ -174,3 +176,17 @@ yarn test --scope @markuplint/html-parser --scope @markuplint/jsx-parser \
 **原因:** パースオプションで `ignoreFrontMatter` が有効になっていない。
 
 **解決策:** `parse()` を呼び出す際に `options.ignoreFrontMatter` が `true` であることを確認する。注意: Svelte はこれを明示的に無効にしています。
+
+### `<script>` または `<style>` 本文で `parseCodeFragment` が `Invalid tag syntax` を throw する
+
+**症状:** 要素全体の raw を `parseCodeFragment()` に渡すサブクラス（例: `astro-parser`）で、script/style 本文に HTML 風部分文字列（`/<br\s*\/?>/gi` や `/* <br = */` など）が含まれると `SyntaxError: Invalid tag syntax: "..."` が throw する。[#3825](https://github.com/markuplint/markuplint/issues/3825) の v4 backport で、[#3860](https://github.com/markuplint/markuplint/issues/3860) として追跡。
+
+**原因:** raw-text 認識がないと `parseCodeFragment()` は本文を再トークナイズし、正規表現中の `<br...>` をタグ開始と解釈、続く `\s`（リテラルなバックスラッシュ）を属性名とみなして throw する。
+
+**解決策:** 修正は `parseCodeFragment()`（`src/parser.ts`）内に住んでいる。自閉でない開始タグの `nodeName.toLowerCase()` が `rawTextElements` に含まれる場合、本文は次に現れる ASCII 大文字小文字非依存の `</tagName`（タブ/LF/FF/CR/空白/`>` /`/` のいずれかが続く）まで丸ごと消費される（[HTML Living Standard §13.2.5.1](https://html.spec.whatwg.org/multipage/syntax.html#cdata-rcdata-restrictions)）。リグレッションが疑われたら:
+
+1. リグレッションスイートを再実行: `npx vitest run packages/@markuplint/astro-parser/src/parser.spec.ts -t "#3860"`。
+2. `parseCodeFragment()` を確認 — raw-text 分岐が無傷か、`#getRawTextCloseTagPattern()` のキャッシュが参照されているか、close-tag 正規表現がまだ仕様の文字クラス `[\t\n\f\r >/]` を使っているかをチェック。
+3. `#3860 raw-text element body via JSX expression child` の jsx 防衛テストは上流 invariant の lock-in が目的で、parser-utils の raw-text 分岐自体は経由しない（本文が expression child として処理されるため）。
+
+**Escapable raw text 要素 (`<title>`, `<textarea>`) について**: 既定の `rawTextElements` には含めていません。HTML LS では escapable raw text として分類され、本文中の文字参照（`&amp;` 等）の展開が要求されますが、本ブランチではその展開を実装していません。意図的に `rawTextElements` に追加する場合は、本文中の文字参照が decode されず raw のまま渡されることを許容してください。
