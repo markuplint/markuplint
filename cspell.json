@@ -169,6 +169,7 @@
 
 		// Specs
 		"closedby",
+		"DQUOTE",
 		"khern",
 		"mathml",
 		"tref",

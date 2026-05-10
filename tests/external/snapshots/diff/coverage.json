@@ -42382,8 +42382,8 @@
 			"path": "html/mime-types/008-novalid.html",
 			"category": "uncategorized",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -42398,8 +42398,8 @@
 			"path": "html/mime-types/009-novalid.html",
 			"category": "uncategorized",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{

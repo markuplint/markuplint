@@ -9056,20 +9056,6 @@
 			]
 		},
 		{
-			"path": "html/mime-types/008-novalid.html",
-			"category": "uncategorized",
-			"nuMessageIds": [
-				"nv-acac3ee7c070"
-			]
-		},
-		{
-			"path": "html/mime-types/009-novalid.html",
-			"category": "uncategorized",
-			"nuMessageIds": [
-				"nv-b80decc691d5"
-			]
-		},
-		{
 			"path": "html/parser/astral-nonchar-in-stream-novalid.html",
 			"category": "uncategorized",
 			"nuMessageIds": [
