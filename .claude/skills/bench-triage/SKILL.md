@@ -187,6 +187,36 @@ yarn bench:compare
 If the verdict flipped, the original observation was parallel-run
 flicker, not a real signal.
 
+## Step 7: Fact-check the Issue body before filing
+
+When the verdict points at "open or extend an Issue" and the Issue
+body cites specific repository assets — file paths, package names,
+spec data files, helper libraries — every reference MUST be verified
+to exist in the current tree before the Issue is filed. Implementers
+read the Issue first; a wrong path sends them to a dead end.
+
+Required pre-filing checks:
+
+1. **File paths**: every quoted path resolves (`ls <path>` or open in editor).
+2. **"Add new file" claims**: confirm the file is actually missing
+   (`find packages/... -name '<pattern>'`). If a file with the same
+   role already exists, change the wording to "extend" instead of
+   "add" and list the existing files explicitly.
+3. **Recommended npm libraries**: package exists and is currently
+   maintained (`npm view <pkg>` or check the npm/registry page).
+   Do not write `(or similar)` placeholders.
+4. **Spec section numbers**: dereference the cited URL once before
+   pasting; section numbers shift between drafts.
+5. **bench-xref registration**: when the Issue is `primary` (i.e.,
+   bench fixtures back its claim), add a mapping in
+   `tests/external/bench/issue-xref.config.ts` so `bench-xref` keeps
+   the body in sync on each release-prep cycle.
+
+Skipping any of these is the same failure mode as filing without a
+spec quote: it pollutes the inventory with stale or false references
+that other agents and humans will then act on. Treat it as a hard
+gate, not a polish step.
+
 ## Audit log of message-substring decisions
 
 Each row is a conclusion reached by reading the cited paragraph
