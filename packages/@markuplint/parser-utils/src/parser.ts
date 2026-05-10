@@ -877,7 +877,9 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	 * @param options - Controls whether nameless fragments (JSX `<>`) are recognized
 	 * @returns An array of tag and text AST nodes discovered in the code fragment
 	 * @see https://html.spec.whatwg.org/multipage/syntax.html#cdata-rcdata-restrictions
-	 * @see https://github.com/markuplint/markuplint/issues/3860
+	 * @see https://github.com/markuplint/markuplint/issues/3860 (v4 backport tracking issue)
+	 * @see https://github.com/markuplint/markuplint/issues/3825 (original dev report)
+	 * @see https://github.com/markuplint/markuplint/pull/3859 (dev fix that landed first)
 	 */
 	parseCodeFragment(
 		token: ChildToken,

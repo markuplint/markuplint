@@ -132,6 +132,23 @@ yarn upgrade @astrojs/compiler --scope @markuplint/astro-parser --dev
 yarn build --scope @markuplint/astro-parser && yarn test --scope @markuplint/astro-parser
 ```
 
+## Porting Fixes from dev (v5 RC)
+
+`dev` and `v4` cannot be merged automatically — fixes that need to land on both branches are ported manually. The most common port hazard is the `Token` field rename:
+
+| v4 (this branch)                               | dev (v5 RC)                                                                  |
+| ---------------------------------------------- | ---------------------------------------------------------------------------- |
+| `token.startOffset` / `startLine` / `startCol` | `token.offset` / `line` / `col`                                              |
+| `token.endOffset` / `endLine` / `endCol`       | computed via `#getEndLocation()` helper that returns `{ offset, line, col }` |
+| `MLASTText` has only `parentNode`              | `MLASTText` adds `parentNodeUuid`                                            |
+
+Procedure when porting a dev fix:
+
+1. Read both the dev source change and the dev tests, including any test that asserts on `token.line` / `token.col` / `token.offset` — those need to become `startLine` / `startCol` / `startOffset` on v4.
+2. Apply the source change with the v4 field names. `yarn build` should fail fast with `TS2339` on any field you missed.
+3. Re-run the v4 test fixtures against the same `#NNNN` describe id used on dev — keeping the id stable lets future maintainers grep across both branches.
+4. Cross-link both Issues / PRs in the JSDoc, `parser-class.md`, and the package's `maintenance.md` Troubleshooting entry so the next porter doesn't have to re-discover the relationship.
+
 ## Troubleshooting
 
 ### Frontmatter is not recognized
@@ -212,4 +229,4 @@ See [#3824](https://github.com/markuplint/markuplint/issues/3824) for the origin
 2. The fix is _not_ inside `astro-parser` — inspect `packages/@markuplint/parser-utils/src/parser.ts` `parseCodeFragment()` to confirm the raw-text branch is intact and the close-tag regex still matches the spec character class.
 3. If a different upstream parser is added that hands the full element raw to `parseCodeFragment` (similar to `astro-parser`), no extra wiring is needed — the same parser-utils branch covers it.
 
-See [#3860](https://github.com/markuplint/markuplint/issues/3860) (v4 backport of [#3825](https://github.com/markuplint/markuplint/issues/3825)) for the original report.
+See [#3860](https://github.com/markuplint/markuplint/issues/3860) (v4 backport of [#3825](https://github.com/markuplint/markuplint/issues/3825)) for the original report. The dev (v5 RC) implementation landed first via [#3859](https://github.com/markuplint/markuplint/pull/3859) — diff-compare both PRs when porting future raw-text changes.

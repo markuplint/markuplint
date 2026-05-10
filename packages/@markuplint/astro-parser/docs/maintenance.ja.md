@@ -132,6 +132,23 @@ yarn upgrade @astrojs/compiler --scope @markuplint/astro-parser --dev
 yarn build --scope @markuplint/astro-parser && yarn test --scope @markuplint/astro-parser
 ```
 
+## dev (v5 RC) からの fix port 手順
+
+`dev` と `v4` は自動マージ不可 — 両方に当てる必要がある fix は手動で port する。最も頻発する port hazard は `Token` のフィールド名差:
+
+| v4 (本ブランチ)                                | dev (v5 RC)                                                 |
+| ---------------------------------------------- | ----------------------------------------------------------- |
+| `token.startOffset` / `startLine` / `startCol` | `token.offset` / `line` / `col`                             |
+| `token.endOffset` / `endLine` / `endCol`       | `#getEndLocation()` ヘルパが `{ offset, line, col }` を返す |
+| `MLASTText` は `parentNode` のみ               | `MLASTText` は `parentNodeUuid` も持つ                      |
+
+dev fix を port する手順:
+
+1. dev のソース変更とテストを両方読む。`token.line` / `token.col` / `token.offset` で assert しているテストは v4 では `startLine` / `startCol` / `startOffset` に書き換える。
+2. v4 のフィールド名でソース変更を適用。`yarn build` で `TS2339` が出れば見落としを fail-fast に検出できる。
+3. dev と同じ `#NNNN` describe id を v4 でも使う — id を揃えると後から両ブランチを grep で対比しやすい。
+4. JSDoc / `parser-class.md` / 該当パッケージの `maintenance.md` Troubleshooting に dev / v4 の Issue・PR を相互リンク。次に port する人が関係を再発見しなくて済む。
+
 ## トラブルシューティング
 
 ### フロントマターが認識されない
@@ -212,4 +229,4 @@ yarn build --scope @markuplint/astro-parser && yarn test --scope @markuplint/ast
 2. 修正は `astro-parser` 内ではない。`packages/@markuplint/parser-utils/src/parser.ts` の `parseCodeFragment()` を見て raw-text 分岐が無傷か、close-tag 正規表現が仕様の文字クラスにまだ一致するかを確認する。
 3. 別の上流 parser が `astro-parser` と同様に要素全体の raw を `parseCodeFragment` に渡すケースが追加された場合、追加配線は不要 — 同じ parser-utils 分岐がそのままカバーする。
 
-オリジナルの報告は [#3860](https://github.com/markuplint/markuplint/issues/3860)（[#3825](https://github.com/markuplint/markuplint/issues/3825) の v4 backport）を参照。
+オリジナルの報告は [#3860](https://github.com/markuplint/markuplint/issues/3860)（[#3825](https://github.com/markuplint/markuplint/issues/3825) の v4 backport）を参照。dev (v5 RC) には [#3859](https://github.com/markuplint/markuplint/pull/3859) が先行マージされている。今後 raw-text 周りの変更を port する際は両 PR を diff 比較すること。

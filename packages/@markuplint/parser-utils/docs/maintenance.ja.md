@@ -189,4 +189,6 @@ yarn test --scope @markuplint/html-parser --scope @markuplint/jsx-parser \
 2. `parseCodeFragment()` を確認 — raw-text 分岐が無傷か、`#getRawTextCloseTagPattern()` のキャッシュが参照されているか、close-tag 正規表現がまだ仕様の文字クラス `[\t\n\f\r >/]` を使っているかをチェック。
 3. `#3860 raw-text element body via JSX expression child` の jsx 防衛テストは上流 invariant の lock-in が目的で、parser-utils の raw-text 分岐自体は経由しない（本文が expression child として処理されるため）。
 
+dev (v5 RC) には [#3859](https://github.com/markuplint/markuplint/pull/3859) が先行マージされている。今後の変更を port する際は両 PR を diff 比較すること。
+
 **Escapable raw text 要素 (`<title>`, `<textarea>`) について**: 既定の `rawTextElements` には含めていません。HTML LS では escapable raw text として分類され、本文中の文字参照（`&amp;` 等）の展開が要求されますが、本ブランチではその展開を実装していません。意図的に `rawTextElements` に追加する場合は、本文中の文字参照が decode されず raw のまま渡されることを許容してください。

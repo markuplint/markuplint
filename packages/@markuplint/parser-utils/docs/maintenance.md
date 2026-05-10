@@ -189,4 +189,6 @@ When touching `parseCodeFragment` (especially the raw-text element branch), `ast
 2. Inspect `parseCodeFragment()` — confirm the raw-text branch is intact, the `#getRawTextCloseTagPattern()` cache is being consulted, and the close-tag regex still uses the spec character class `[\t\n\f\r >/]`.
 3. The defensive jsx tests under `#3860 raw-text element body via JSX expression child` exist to lock in upstream invariants — they do **not** exercise the parser-utils raw-text branch directly (their bodies are expression children, not raw element source).
 
+The dev (v5 RC) implementation landed first via [#3859](https://github.com/markuplint/markuplint/pull/3859) — diff-compare both PRs when porting future changes.
+
 **Note on escapable raw text elements (`<title>`, `<textarea>`):** these are NOT in the default `rawTextElements`. HTML LS classifies them as escapable raw text — they require character-reference (`&amp;`) expansion that this branch does not implement. Add them to a parser's `rawTextElements` only if you accept that character refs in their body will be passed through verbatim instead of decoded.

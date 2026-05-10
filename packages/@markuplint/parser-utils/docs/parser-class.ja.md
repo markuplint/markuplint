@@ -245,6 +245,8 @@ parseCodeFragment(
 
 **Escapable raw text 要素 (`<title>`, `<textarea>`) は既定の `rawTextElements` に含めていません**。HTML LS では escapable raw text として分類され、本文中の文字参照（`&amp;` 等）の decode が要求されますが、上記 short-circuit はその decode を実装していません。意図的に `rawTextElements` に追加する場合は、本文中の文字参照が decode されず raw のまま渡されることを許容してください。
 
+この分岐は v4 では [#3860](https://github.com/markuplint/markuplint/issues/3860)（[#3825](https://github.com/markuplint/markuplint/issues/3825) の backport）で追加された。dev (v5 RC) には [#3859](https://github.com/markuplint/markuplint/pull/3859) が先行マージされている。今後 raw-text 周りに変更を加える際は両 PR を diff 比較すること。
+
 ### visitComment()
 
 ```ts

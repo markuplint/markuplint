@@ -245,6 +245,8 @@ This guard is dormant for parsers whose upstream tokenizer already rejects bare 
 
 **Escapable raw text elements (`<title>`, `<textarea>`)** are NOT in the default `rawTextElements`. HTML LS classifies them as escapable raw text — they require character-reference (`&amp;` etc.) decoding inside the body, which the short-circuit above does not implement. Add them to `rawTextElements` only if you accept that character references will be passed through verbatim instead of decoded.
 
+This branch was added in v4 via [#3860](https://github.com/markuplint/markuplint/issues/3860) (backport of [#3825](https://github.com/markuplint/markuplint/issues/3825)) — the dev (v5 RC) implementation landed first via [#3859](https://github.com/markuplint/markuplint/pull/3859). Diff-compare both PRs when porting future raw-text changes.
+
 ### visitComment()
 
 ```ts
