@@ -702,6 +702,45 @@ describe('verify', () => {
 				raw: '<feBlend />',
 			},
 		]);
+
+		// SVG2 §17.6 — "may contain any element that its parent may contain,
+		// except itself". Direct nested <svg|a> must be rejected.
+		const { violations: violations3 } = await mlRuleTest(rule, '<svg><a href="#"><a href="#">nested</a></a></svg>');
+		expect(violations3).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 18,
+				message: 'The "a" element is a transparent model but also disallows the "a" element in this context',
+				raw: '<a href="#">',
+			},
+		]);
+
+		// Transitive nesting (via <g>) must also be rejected. The inner <a>
+		// is reported directly through transparent self-exclusion; its text
+		// descendant then surfaces as a follow-up violation through <g>'s
+		// own transparent model.
+		const { violations: violations4 } = await mlRuleTest(
+			rule,
+			'<svg><a href="#"><g><a href="#">nested</a></g></a></svg>',
+		);
+		expect(violations4).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 21,
+				message: 'The "a" element is a transparent model but also disallows the "a" element in this context',
+				raw: '<a href="#">',
+			},
+			{
+				severity: 'error',
+				line: 1,
+				col: 33,
+				message:
+					'The text node is not allowed in the "g" element through the transparent model in this context',
+				raw: 'nested',
+			},
+		]);
 	});
 
 	test('[permitted-contents-invalid-018] svg:foreignObject', async () => {
