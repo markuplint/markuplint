@@ -59,88 +59,11 @@
 			]
 		},
 		{
-			"path": "html-math/annotation-outside-semantics-novalid.html",
-			"category": "uncategorized",
-			"nuMessageIds": [
-				"nv-6db259cf12d0"
-			]
-		},
-		{
 			"path": "html-math/math-in-head-novalid.html",
 			"category": "uncategorized",
 			"nuMessageIds": [
 				"nv-0c86320f6630",
 				"nv-8aff5b8981a2"
-			]
-		},
-		{
-			"path": "html-math/mfrac-wrong-children-novalid.html",
-			"category": "uncategorized",
-			"nuMessageIds": [
-				"nv-040639226b3a"
-			]
-		},
-		{
-			"path": "html-math/mover-wrong-children-novalid.html",
-			"category": "uncategorized",
-			"nuMessageIds": [
-				"nv-53183604e0dd"
-			]
-		},
-		{
-			"path": "html-math/mprescripts-outside-mmultiscripts-novalid.html",
-			"category": "uncategorized",
-			"nuMessageIds": [
-				"nv-9b9bc9ec3935"
-			]
-		},
-		{
-			"path": "html-math/mroot-wrong-children-novalid.html",
-			"category": "uncategorized",
-			"nuMessageIds": [
-				"nv-2515d13ecb23"
-			]
-		},
-		{
-			"path": "html-math/msub-wrong-children-novalid.html",
-			"category": "uncategorized",
-			"nuMessageIds": [
-				"nv-94f048f5b5f2"
-			]
-		},
-		{
-			"path": "html-math/msubsup-wrong-children-novalid.html",
-			"category": "uncategorized",
-			"nuMessageIds": [
-				"nv-0229f9179fba"
-			]
-		},
-		{
-			"path": "html-math/msup-wrong-children-novalid.html",
-			"category": "uncategorized",
-			"nuMessageIds": [
-				"nv-938f077237f4"
-			]
-		},
-		{
-			"path": "html-math/mtr-outside-mtable-novalid.html",
-			"category": "uncategorized",
-			"nuMessageIds": [
-				"nv-40d1c6012443"
-			]
-		},
-		{
-			"path": "html-math/munder-wrong-children-novalid.html",
-			"category": "uncategorized",
-			"nuMessageIds": [
-				"nv-619086335546"
-			]
-		},
-		{
-			"path": "html-math/munderover-wrong-children-novalid.html",
-			"category": "uncategorized",
-			"nuMessageIds": [
-				"nv-041ffbaa3a4c"
 			]
 		},
 		{
