@@ -62,104 +62,49 @@ const DEPRECATED_MEDIA_FEATURES = new Set([
 ]);
 
 /**
- * Media feature value-type classification per Media Queries Level 5 §4.
- *
- * Only features whose value type is statically constrained are listed.
- * Discrete features (e.g., `prefers-color-scheme`, `pointer`) accept
- * keyword values whose validation requires a per-feature enum table —
- * not implemented here because nu-validator's coverage of these is
- * already aligned with markuplint's enum-driven attribute checking.
+ * Maps each MQL5 §4 range/discrete-numeric feature to the CSS value
+ * type its argument must satisfy. The actual unit / sign / dimension
+ * checking is delegated to `csstree.lexer.match()` below — only the
+ * feature-to-type association needs to live in markuplint because
+ * css-tree does not expose a per-feature value-type registry.
  *
  * @see https://www.w3.org/TR/mediaqueries-5/#mq-features
  */
-const LENGTH_FEATURES = new Set(['width', 'height', 'min-width', 'max-width', 'min-height', 'max-height']);
-const INTEGER_FEATURES = new Set([
-	'color',
-	'min-color',
-	'max-color',
-	'color-index',
-	'min-color-index',
-	'max-color-index',
-	'monochrome',
-	'min-monochrome',
-	'max-monochrome',
-	'horizontal-viewport-segments',
-	'min-horizontal-viewport-segments',
-	'max-horizontal-viewport-segments',
-	'vertical-viewport-segments',
-	'min-vertical-viewport-segments',
-	'max-vertical-viewport-segments',
-]);
-const RESOLUTION_FEATURES = new Set(['resolution', 'min-resolution', 'max-resolution']);
-const RATIO_FEATURES = new Set(['aspect-ratio', 'min-aspect-ratio', 'max-aspect-ratio']);
-
-/**
- * CSS units recognised as `<length>` per CSS Values and Units Level 4
- * §6.1. Includes container query units (`cqw`, `cqh`, etc.) added in
- * CSS Containment Module Level 3.
- *
- * @see https://www.w3.org/TR/css-values-4/#lengths
- * @see https://www.w3.org/TR/css-contain-3/#container-lengths
- */
-const LENGTH_UNITS = new Set([
-	'px',
-	'em',
-	'rem',
-	'ex',
-	'rex',
-	'cap',
-	'rcap',
-	'ch',
-	'rch',
-	'ic',
-	'ric',
-	'lh',
-	'rlh',
-	'vw',
-	'vh',
-	'vmin',
-	'vmax',
-	'vi',
-	'vb',
-	'svw',
-	'svh',
-	'svmin',
-	'svmax',
-	'svi',
-	'svb',
-	'lvw',
-	'lvh',
-	'lvmin',
-	'lvmax',
-	'lvi',
-	'lvb',
-	'dvw',
-	'dvh',
-	'dvmin',
-	'dvmax',
-	'dvi',
-	'dvb',
-	'cqw',
-	'cqh',
-	'cqi',
-	'cqb',
-	'cqmin',
-	'cqmax',
-	'cm',
-	'mm',
-	'q',
-	'in',
-	'pt',
-	'pc',
-]);
-
-/**
- * CSS units recognised as `<resolution>` per CSS Values and Units Level
- * 4 §8.4. `x` is the alias for `dppx`.
- *
- * @see https://www.w3.org/TR/css-values-4/#resolution
- */
-const RESOLUTION_UNITS = new Set(['dpi', 'dpcm', 'dppx', 'x']);
+const FEATURE_VALUE_TYPE: Record<string, '<length>' | '<integer>' | '<resolution>' | '<ratio>'> = {
+	// <length>
+	width: '<length>',
+	height: '<length>',
+	'min-width': '<length>',
+	'max-width': '<length>',
+	'min-height': '<length>',
+	'max-height': '<length>',
+	// <integer> — MQL5 §4.4 imposes a non-negative additional constraint
+	// enforced separately below
+	color: '<integer>',
+	'min-color': '<integer>',
+	'max-color': '<integer>',
+	'color-index': '<integer>',
+	'min-color-index': '<integer>',
+	'max-color-index': '<integer>',
+	monochrome: '<integer>',
+	'min-monochrome': '<integer>',
+	'max-monochrome': '<integer>',
+	'horizontal-viewport-segments': '<integer>',
+	'min-horizontal-viewport-segments': '<integer>',
+	'max-horizontal-viewport-segments': '<integer>',
+	'vertical-viewport-segments': '<integer>',
+	'min-vertical-viewport-segments': '<integer>',
+	'max-vertical-viewport-segments': '<integer>',
+	// <resolution>
+	resolution: '<resolution>',
+	'min-resolution': '<resolution>',
+	'max-resolution': '<resolution>',
+	// <ratio> — MQL5 §4.5 imposes a positive additional constraint
+	// enforced separately below
+	'aspect-ratio': '<ratio>',
+	'min-aspect-ratio': '<ratio>',
+	'max-aspect-ratio': '<ratio>',
+};
 
 type CSSTreeNode = ReturnType<typeof csstree.parse>;
 
@@ -336,120 +281,71 @@ function validateFeatureValue(
 	value: csstree.CssNode,
 	source: string,
 ): ReturnType<typeof unmatched> | null {
-	const isLength = LENGTH_FEATURES.has(feature);
-	const isInteger = INTEGER_FEATURES.has(feature);
-	const isResolution = RESOLUTION_FEATURES.has(feature);
-	const isRatio = RATIO_FEATURES.has(feature);
-	if (!(isLength || isInteger || isResolution || isRatio)) return null;
-	// Defer calc()/var()/clamp() etc. — their static value cannot be
-	// computed without resolving cascades. css-tree accepts them; we
-	// trust nu-validator does the same in practice.
+	const expectedType = FEATURE_VALUE_TYPE[feature];
+	if (!expectedType) return null;
+	// Defer calc()/var()/clamp() — their static value cannot be computed
+	// without resolving cascades. css-tree accepts them; we trust
+	// nu-validator does the same in practice.
 	if (value.type === 'Function' || value.type === 'Parentheses') return null;
 	const offset = value.loc?.start.offset ?? 0;
 	const raw = source.slice(offset, value.loc?.end.offset ?? offset);
-	if (isInteger) {
-		const literal = value.type === 'Number' ? (value as csstree.NumberNode).value : undefined;
-		if (literal === undefined || /[.e]/i.test(literal)) {
-			return new Token(raw, offset, source).unmatched({
-				reason: 'syntax-error',
-				expects,
-				partName: `<integer> required for "${feature}"`,
-			});
-		}
-		// MQL5 §4.4 (color/monochrome/color-index) and §4.x (viewport-segments)
-		// require non-negative integers. The `device-posture` feature uses
-		// keywords (handled by enum-driven attribute checking elsewhere) and
-		// is not in INTEGER_FEATURES, so the rule applies uniformly here.
-		if (Number.parseInt(literal, 10) < 0) {
-			return new Token(raw, offset, source).unmatched({
-				reason: 'syntax-error',
-				expects,
-				partName: `<integer> for "${feature}" must be non-negative`,
-			});
-		}
-		return null;
-	}
-	if (isLength) {
-		if (value.type === 'Number') {
-			// Per CSS Values §3.3, only `0` is a valid unitless length.
-			// Compare numerically to accept any literal form (`0`, `0.0`,
-			// `.0`, `00`) — css-tree preserves the source spelling.
-			if (Number.parseFloat((value as csstree.NumberNode).value) === 0) return null;
-			return new Token(raw, offset, source).unmatched({
-				reason: 'syntax-error',
-				expects,
-				partName: `<length> required for "${feature}" (unitless non-zero number)`,
-			});
-		}
-		if (value.type === 'Dimension') {
-			const unit = (value as csstree.Dimension).unit.toLowerCase();
-			if (!LENGTH_UNITS.has(unit)) {
-				return new Token(raw, offset, source).unmatched({
-					reason: 'syntax-error',
-					expects,
-					partName: `<length> required for "${feature}" (unrecognised or wrong-category unit "${unit}")`,
-				});
-			}
-			return null;
-		}
+	// Stage A: CSS-syntax conformance — delegate the dimension / unit /
+	// fractional / scientific-notation matrix to `csstree.lexer.match()`
+	// rather than maintain a parallel hardcoded table. css-tree's
+	// `<length>` / `<integer>` / `<resolution>` / `<ratio>` definitions
+	// mirror CSS Values and Units Level 4 §6 and stay in sync as the
+	// language evolves (container query units, viewport-relative
+	// variants, etc.). `lexer.match()` returns `{ matched: object|null }`;
+	// `matched: null` means a mismatch.
+	// `@types/css-tree` only surfaces `error` on the result, but the
+	// runtime adds a `matched` field whose `null` value signals a
+	// mismatch; check via `error` to stay within the public typing.
+	const lexerResult = csstree.lexer.match(expectedType, value);
+	if (lexerResult.error) {
 		return new Token(raw, offset, source).unmatched({
 			reason: 'syntax-error',
 			expects,
-			partName: `<length> required for "${feature}"`,
+			partName: `${expectedType} required for "${feature}"`,
 		});
 	}
-	if (isResolution) {
-		if (value.type !== 'Dimension') {
-			return new Token(raw, offset, source).unmatched({
-				reason: 'syntax-error',
-				expects,
-				partName: `<resolution> required for "${feature}"`,
-			});
-		}
-		const unit = (value as csstree.Dimension).unit.toLowerCase();
-		if (!RESOLUTION_UNITS.has(unit)) {
-			return new Token(raw, offset, source).unmatched({
-				reason: 'syntax-error',
-				expects,
-				partName: `<resolution> required for "${feature}" (unrecognised unit "${unit}")`,
-			});
-		}
-		return null;
+	// Stage B: MQL5 semantic constraints that go beyond CSS Values §6.
+	// css-tree's `<integer>` accepts negatives (CSS Values §6.2 grammar),
+	// and `<ratio>` accepts non-positive numerator/denominator. Media
+	// Queries Level 5 §4.4 / §4.5 narrow both.
+	if (
+		expectedType === '<integer>' &&
+		value.type === 'Number' &&
+		Number.parseInt((value as csstree.NumberNode).value, 10) < 0
+	) {
+		return new Token(raw, offset, source).unmatched({
+			reason: 'syntax-error',
+			expects,
+			partName: `<integer> for "${feature}" must be non-negative (MQL5 §4.4)`,
+		});
 	}
-	// isRatio — MQL5 §4.5 mandates positive ratios. Both literal forms
-	// (Ratio `<n>/<d>` and bare `<number>`) must be > 0.
-	if (value.type === 'Ratio') {
+	if (expectedType === '<ratio>') {
 		// `@types/css-tree` declares `Ratio.left/.right` as `string`, but the
 		// runtime mediaQueryList parser emits `NumberNode` children — cast
 		// through `unknown` to consume the actual runtime shape.
-		const ratio = value as unknown as { left: csstree.NumberNode; right: csstree.NumberNode };
-		const left = Number.parseFloat(ratio.left.value);
-		const right = Number.parseFloat(ratio.right.value);
-		if (!(left > 0) || !(right > 0)) {
+		const ratio =
+			value.type === 'Ratio'
+				? (value as unknown as { left: csstree.NumberNode; right: csstree.NumberNode })
+				: null;
+		const numerator = ratio
+			? Number.parseFloat(ratio.left.value)
+			: value.type === 'Number'
+				? Number.parseFloat((value as csstree.NumberNode).value)
+				: undefined;
+		const denominator = ratio ? Number.parseFloat(ratio.right.value) : 1;
+		if (numerator !== undefined && (!(numerator > 0) || !(denominator > 0))) {
 			return new Token(raw, offset, source).unmatched({
 				reason: 'syntax-error',
 				expects,
 				partName: `<ratio> for "${feature}" must be positive (MQL5 §4.5)`,
 			});
 		}
-		return null;
 	}
-	if (value.type === 'Number') {
-		const n = Number.parseFloat((value as csstree.NumberNode).value);
-		if (!(n > 0)) {
-			return new Token(raw, offset, source).unmatched({
-				reason: 'syntax-error',
-				expects,
-				partName: `<ratio> for "${feature}" must be positive (MQL5 §4.5)`,
-			});
-		}
-		return null;
-	}
-	return new Token(raw, offset, source).unmatched({
-		reason: 'syntax-error',
-		expects,
-		partName: `<ratio> required for "${feature}"`,
-	});
+	return null;
 }
 
 /**
