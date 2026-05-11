@@ -479,41 +479,51 @@ test('[invalid-attr-valid-007] URL attribute', async () => {
 	const { violations: violations2 } = await mlRuleTest(rule, '<img src="//sample.com/path/to">');
 	expect(violations2.length).toBe(0);
 
-	const { violations: violations3 } = await mlRuleTest(rule, '<img src="/path/to">');
-	expect(violations3.length).toBe(0);
+	// BREAKING CHANGE (URL LS invalid-credentials, #3848 / PR #3867):
+	// `//user:pass@sample.com/path/to` now produces a violation. The original
+	// 0-violations assertion is preserved as a comment so this breaking change
+	// is visible in the test source itself, not only in git history.
+	// Positive coverage of the new behaviour lives in [invalid-attr-invalid-044].
+	// https://url.spec.whatwg.org/#invalid-credentials
+	const { violations: violations3 } = await mlRuleTest(rule, '<img src="//user:pass@sample.com/path/to">');
+	// expect(violations3.length).toBe(0); // pre-URL-LS-strict baseline
+	expect(violations3.length).toBe(1);
 
-	const { violations: violations4 } = await mlRuleTest(rule, '<img src="/path/to?param=value">');
+	const { violations: violations4 } = await mlRuleTest(rule, '<img src="/path/to">');
 	expect(violations4.length).toBe(0);
 
-	const { violations: violations5 } = await mlRuleTest(rule, '<img src="/?param=value">');
+	const { violations: violations5 } = await mlRuleTest(rule, '<img src="/path/to?param=value">');
 	expect(violations5.length).toBe(0);
 
-	const { violations: violations6 } = await mlRuleTest(rule, '<img src="?param=value">');
+	const { violations: violations6 } = await mlRuleTest(rule, '<img src="/?param=value">');
 	expect(violations6.length).toBe(0);
 
-	const { violations: violations7 } = await mlRuleTest(rule, '<img src="path/to">');
+	const { violations: violations7 } = await mlRuleTest(rule, '<img src="?param=value">');
 	expect(violations7.length).toBe(0);
 
-	const { violations: violations8 } = await mlRuleTest(rule, '<img src="./path/to">');
+	const { violations: violations8 } = await mlRuleTest(rule, '<img src="path/to">');
 	expect(violations8.length).toBe(0);
 
-	const { violations: violations9 } = await mlRuleTest(rule, '<img src="../path/to">');
+	const { violations: violations9 } = await mlRuleTest(rule, '<img src="./path/to">');
 	expect(violations9.length).toBe(0);
 
-	const { violations: violations10 } = await mlRuleTest(rule, '<img src="/path/to#hash">');
+	const { violations: violations10 } = await mlRuleTest(rule, '<img src="../path/to">');
 	expect(violations10.length).toBe(0);
 
-	const { violations: violations11 } = await mlRuleTest(rule, '<img src="#hash">');
+	const { violations: violations11 } = await mlRuleTest(rule, '<img src="/path/to#hash">');
 	expect(violations11.length).toBe(0);
+
+	const { violations: violations12 } = await mlRuleTest(rule, '<img src="#hash">');
+	expect(violations12.length).toBe(0);
 });
 
 test('[invalid-attr-invalid-044] URL Living Standard validation errors', async () => {
-	// invalid-credentials — URL LS forbids userinfo in special-scheme URLs.
+	// invalid-credentials with non-empty userinfo (`http://user:pass@host`) is
+	// already asserted in [invalid-attr-valid-007] violations3 — we do not
+	// duplicate it here. The empty-userinfo variant below exercises a separate
+	// regex branch (`SPECIAL_SCHEME_AUTHORITY_HAS_AT_SIGN` matching `@` without
+	// any chars before it), so it is covered here.
 	// https://url.spec.whatwg.org/#invalid-credentials
-	const { violations: credentials } = await mlRuleTest(rule, '<img src="//user:pass@sample.com/path/to">');
-	expect(credentials.length).toBe(1);
-
-	// invalid-credentials with empty userinfo — `http://@host`.
 	const { violations: emptyUserinfo } = await mlRuleTest(rule, '<a href="http://@example.com"></a>');
 	expect(emptyUserinfo.length).toBe(1);
 
