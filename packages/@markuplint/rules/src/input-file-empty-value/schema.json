@@ -3,7 +3,7 @@
 	"definitions": {
 		"value": {
 			"type": "boolean",
-			"description": "Require <input type=\"file\"> elements to omit the value attribute or set it to the empty string, per HTML LS §4.10.5.1.18.",
+			"description": "Require `<input type=\"file\">` elements to omit the value attribute or set it to the empty string, per HTML LS §4.10.5.1.18.",
 			"description:ja": "HTML LS §4.10.5.1.18 に従い、`<input type=\"file\">` の value 属性は省略または空文字列のみ許容します。"
 		}
 	},

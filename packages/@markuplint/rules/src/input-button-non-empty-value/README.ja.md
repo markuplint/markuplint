@@ -1,6 +1,6 @@
 ---
 id: input-button-non-empty-value
-description: `<input type="button">` に value 属性を指定する場合、空文字列にしてはならないことを強制します。
+description: '`<input type="button">` に value 属性を指定する場合、空文字列にしてはならないことを強制します。'
 ---
 
 # `input-button-non-empty-value`

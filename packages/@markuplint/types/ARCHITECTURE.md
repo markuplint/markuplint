@@ -65,6 +65,7 @@ src/
 │   ├── check-http-equiv-content-type.ts # <meta http-equiv="content-type"> encoding declaration
 │   ├── check-http-equiv-refresh.ts # <meta http-equiv="refresh"> content grammar
 │   ├── check-link-type.ts          # Link type validation (rel attribute)
+│   ├── check-media-query-list.ts   # CSS Media Queries Level 5 validation (`media=` attr)
 │   ├── check-mime-type.ts          # MIME type validation
 │   ├── check-simple-color.ts       # Valid simple colour (#rrggbb) validation
 │   ├── check-url.ts                # Valid URL string validation (including surrounding spaces)
@@ -209,14 +210,14 @@ Domain-specific validators implementing checks for values defined in web standar
 
 ## External Dependencies
 
-| Dependency        | Purpose                                             | Where Used                                |
-| ----------------- | --------------------------------------------------- | ----------------------------------------- |
-| `css-tree`        | CSS value definition syntax matching via lexer fork | `css-syntax.ts`                           |
-| `bcp-47`          | BCP 47 language tag parsing and validation          | `rfc/is-bcp-47.ts`, `css-tokenizers.ts`   |
-| `whatwg-mimetype` | WHATWG MIME type parsing                            | `whatwg/check-mime-type.ts`               |
-| `leven`           | Levenshtein distance for typo detection             | `get-candidate.ts`                        |
-| `debug`           | Debug logging with namespace `@markuplint/types`    | `debug.ts`                                |
-| `type-fest`       | `ReadonlyDeep` utility type for deep immutability   | `check.ts`, `check-base.ts`, and checkers |
+| Dependency        | Purpose                                             | Where Used                                          |
+| ----------------- | --------------------------------------------------- | --------------------------------------------------- |
+| `css-tree`        | CSS value definition syntax matching via lexer fork | `css-syntax.ts`, `whatwg/check-media-query-list.ts` |
+| `bcp-47`          | BCP 47 language tag parsing and validation          | `rfc/is-bcp-47.ts`, `css-tokenizers.ts`             |
+| `whatwg-mimetype` | WHATWG MIME type parsing                            | `whatwg/check-mime-type.ts`                         |
+| `leven`           | Levenshtein distance for typo detection             | `get-candidate.ts`                                  |
+| `debug`           | Debug logging with namespace `@markuplint/types`    | `debug.ts`                                          |
+| `type-fest`       | `ReadonlyDeep` utility type for deep immutability   | `check.ts`, `check-base.ts`, and checkers           |
 
 ## Integration Points
 
