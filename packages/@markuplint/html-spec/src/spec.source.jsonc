@@ -18,7 +18,7 @@
 		},
 		"src": {
 			// https://html.spec.whatwg.org/multipage/embedded-content.html#attr-source-src
-			"type": "URL",
+			"type": "NonEmptyURL",
 			"required": ":is(video, audio) > source",
 			"condition": ":is(video, audio) > source"
 		},

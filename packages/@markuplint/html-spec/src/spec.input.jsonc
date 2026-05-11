@@ -362,7 +362,7 @@
 		"value": {
 			"type": [
 				{ "condition": "[type='color' i]", "type": "SimpleColor" },
-				{ "condition": "[type='url' i]", "type": "URL" },
+				{ "condition": "[type='url' i]", "type": "AbsoluteURLOrEmpty" },
 				{ "condition": "[type='email' i]", "type": "Email" },
 				{ "condition": ["[type='number' i]", "[type='range' i]"], "type": { "type": "float" } },
 				{ "condition": "[type='date' i]", "type": "DateString" },
