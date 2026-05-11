@@ -161,6 +161,18 @@ v5 では、これまで `Any` として素通りしていた領域について 
 | URL 内の禁止コードポイント            | `<a href="http://example.com/">`                | [#3629](https://github.com/markuplint/markuplint/issues/3629) | [URL LS — URL code points](https://url.spec.whatwg.org/#url-code-points)                                  |
 | `http-equiv` に応じた `meta[content]` | `<meta http-equiv="refresh" content="garbage">` | [#3734](https://github.com/markuplint/markuplint/issues/3734) | [HTML LS — meta `http-equiv`](https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-http-equiv) |
 | `media=` の MQL5 厳格文法             | `<link media="screen and (color: 1em)">`        | [#3850](https://github.com/markuplint/markuplint/issues/3850) | [Media Queries Level 5 §4](https://www.w3.org/TR/mediaqueries-5/#mq-features)                             |
+| URL 系属性の URL LS 厳格検証          | `<a href="http://user:pass@example.com">`       | [#3848](https://github.com/markuplint/markuplint/issues/3848) | [URL LS — URL parsing](https://url.spec.whatwg.org/#url-parsing)                                          |
+
+### URL 系属性 (`href` / `src` / `action` / `cite` / `itemid` / `itemtype` 等) で新たに違反となるパターン
+
+`URL` 型チェッカーが、`new URL()` が暗黙的に自動補正してしまう URL Living Standard の validation error を捕捉するようになりました。v4 で受理されていた以下のパターンが、v5 では `invalid-attr` 違反となります。
+
+- **invalid-credentials** ([URL LS §1.1](https://url.spec.whatwg.org/#invalid-credentials)): `<a href="http://user:pass@example.com">`, `<a href="//user@example.com">`, さらに `<a href="http://@example.com">` (空の userinfo も authority に `@` を含む点で違反)。URL から userinfo を除いてください。
+- **special-scheme-missing-following-solidus** ([URL LS](https://url.spec.whatwg.org/#special-scheme-missing-following-solidus)): `<a href="http:foo">`, `<a href="https:/foo">`, `<a href="ftp:bar">`。スペシャルスキーム URL は `scheme://` を要求します。
+- **file-scheme-missing-following-solidus** ([URL LS](https://url.spec.whatwg.org/#file-scheme-missing-following-solidus)): `<a href="file:foo">`, `<a href="file:/foo">`, `<a href="file:">`。三本スラッシュ形式 `file:///path` を使用してください。
+- **invalid-reverse-solidus** ([URL LS](https://url.spec.whatwg.org/#invalid-reverse-solidus)): `<a href="http://example.com\foo">`, `<a href="/foo\bar">`。URL LS はスペシャルスキーム URL の `\` を `/` に自動変換しますが validation error として報告します。非スペシャルスキーム (`data:`, `mailto:`) は opaque path の一部として扱うため引き続き受理されます。
+- **file-invalid-Windows-drive-letter** ([URL LS](https://url.spec.whatwg.org/#file-invalid-windows-drive-letter)): `<a href="file:///C|/foo">`。URL LS が `C|` を `C:` に自動補正します。コロン形式を使用してください。
+- **複数の `#`** ([URL LS — invalid-URL-unit](https://url.spec.whatwg.org/#invalid-url-unit) fragment state): `<a href="http://example.com/#a#b">`。2 つ目の `#` は自動 percent-encode されますが URL writing 文法では不正です。内側の `#` を `%23` に percent-encode するか除去してください。
 
 ### `media=` で新たに違反となるパターン
 

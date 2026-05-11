@@ -68,7 +68,7 @@ src/
 │   ├── check-media-query-list.ts   # CSS Media Queries Level 5 の検証 (`media=` 属性)
 │   ├── check-mime-type.ts          # MIMEタイプの検証
 │   ├── check-simple-color.ts       # 単純な色 (#rrggbb) の検証
-│   ├── check-url.ts                # 妥当な URL 文字列（前後の空白を含む）の検証
+│   ├── check-url.ts                # 妥当な URL 文字列の検証 — `new URL()` が暗黙的に自動補正してしまう URL Living Standard の validation error（invalid-credentials、special-scheme-missing-following-solidus、invalid-reverse-solidus、file-invalid-Windows-drive-letter 等）を捕捉
 │   ├── is-abs-url.ts               # 絶対URLの判定
 │   ├── is-browser-context-name.ts  # ブラウジングコンテキスト名の判定 (非推奨)
 │   ├── is-custom-element-name.ts   # カスタム要素名の判定

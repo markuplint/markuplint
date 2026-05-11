@@ -319,6 +319,49 @@ These validators implement simple predicate-based checks for various WHATWG-defi
 
 All of these are `FormattedPrimitiveTypeCreator` factories -- they return `() => (value: string) => boolean`.
 
+### URL Living Standard Validator
+
+**Source:** `src/whatwg/check-url.ts`
+
+`checkURL` validates the [HTML LS "valid URL potentially surrounded by spaces"](https://html.spec.whatwg.org/multipage/urls-and-fetching.html#valid-url-potentially-surrounded-by-spaces) production used by `<a href>`, `<area href>`, `<audio src>`, `<base href>`, `<blockquote cite>`, `<embed src>`, `<form action>`, `<iframe src>`, `<img src>`, `<input formaction>`, `<input src>`, `<link href>`, `<q cite>`, `<script src>`, `<source src>`, `<track src>`, `<video poster>`, `<video src>`, etc. It is also reused by [`checkHTTPEquivRefresh`](#http-equiv-directive-validators) for the `URL=` clause.
+
+The validator surfaces URL Living Standard validation errors that the platform's `URL.canParse` / `new URL()` silently auto-corrects but [nu-html-checker](https://validator.w3.org/nu/) (galimatias) reports. Each check is gated to special-scheme / scheme-relative URLs so non-special schemes (`data:`, `mailto:`, `javascript:`, `tel:`) keep their opaque-path semantics.
+
+| Validation error                                                                                                  | Detection                                                                             | Example caught                                                |
+| ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| invalid-URL-unit (controls, noncharacters)                                                                        | `FORBIDDEN_CODE_POINT` regex on raw input                                             | `http://example.com/`                                         |
+| invalid-URL-unit (whitespace)                                                                                     | `ILLEGAL_WHITESPACE` (TAB/LF/CR), `UNENCODED_SPACE` (mid-URL space)                   | `http://exa\tmple.com`, `http://x/path with space`            |
+| malformed percent-encoding                                                                                        | `MALFORMED_PERCENT` regex                                                             | `http://example.com/%2`                                       |
+| [special-scheme-missing-following-solidus](https://url.spec.whatwg.org/#special-scheme-missing-following-solidus) | `SPECIAL_SCHEME_MISSING_SOLIDUS` regex                                                | `http:foo`, `https:/foo` (single-slash variant)               |
+| [file-scheme-missing-following-solidus](https://url.spec.whatwg.org/#file-scheme-missing-following-solidus)       | Same regex (file is a special scheme)                                                 | `file:foo`, `file:/foo`, `file:`                              |
+| [file-invalid-Windows-drive-letter](https://url.spec.whatwg.org/#file-invalid-windows-drive-letter)               | `FILE_WINDOWS_DRIVE_LETTER_WITH_BAR` regex                                            | `file:///C\|/foo`                                             |
+| [invalid-reverse-solidus](https://url.spec.whatwg.org/#invalid-reverse-solidus)                                   | `\` literal in special-scheme / scheme-relative URL via `isSpecialOrSchemeless`       | `http://example.com\foo`, `/foo\bar`                          |
+| [invalid-credentials](https://url.spec.whatwg.org/#invalid-credentials)                                           | `SPECIAL_SCHEME_AUTHORITY_HAS_AT_SIGN` regex (catches even empty userinfo `http://@`) | `http://user:pass@host`, `http://@example.com`, `//user@host` |
+| invalid-URL-unit (multiple `#` in fragment)                                                                       | `MULTIPLE_HASH` regex, gated to special schemes                                       | `http://example.com/#a#b`                                     |
+| structural parse failure                                                                                          | `URL.canParse(value) \|\| URL.canParse(value, DUMMY_BASE)` — both `false` ⇒ unmatched | `http://[invalid-ipv6]/`                                      |
+
+Why both regex _and_ `URL.canParse`: `URL.canParse` only reports total parse failure (returns `false`). It does not report the auto-correctable validation errors above (which are non-fatal per URL LS but conformance errors per HTML LS). The regex layer surfaces them on the raw input before any auto-correction happens.
+
+```typescript
+// Invocation in defs.ts
+URL: {
+  ref: 'https://html.spec.whatwg.org/multipage/urls-and-fetching.html#valid-url-potentially-surrounded-by-spaces',
+  is: checkURL(),
+},
+```
+
+#### Adding a new URL LS validation category
+
+The remaining `nu-only` URL fixtures on the bench coverage corpus are tracked in [Issue #3848](https://github.com/markuplint/markuplint/issues/3848). To extend `checkURL` with another category:
+
+1. Find the validation error code in [URL LS § 1.1 Validation errors](https://url.spec.whatwg.org/#validation-error). Note the input shape and which states of the URL state machine produce it.
+2. Add a regex constant near the top of `check-url.ts` with a JSDoc that links the spec section and lists 1–2 example inputs that match.
+3. Insert the check **before** `URL.canParse(...)` (so the regex fires on the raw input prior to auto-correction). Gate it with `isSpecialOrSchemeless(...)` if the error only applies to special-scheme URLs.
+4. Add unit tests in `check-url.spec.ts` under a labelled block (`// invalid-XXX`) covering positive cases (must reject) **and** negative cases (non-special schemes that must remain accepted).
+5. Add an integration test entry in `packages/@markuplint/rules/src/invalid-attr/index.spec.ts` under `[invalid-attr-invalid-044]` to confirm the rule-level pipeline catches it.
+6. Refresh the bench: `yarn bench:update:ml` then inspect `tests/external/snapshots/diff/summary.md` — `match-error` should grow, `ml-only` must NOT (no false positives).
+7. Add a row to `website/docs/migration/v4-to-v5/rules/invalid-attr.md` (and the `i18n/ja/...` mirror) under "Patterns now flagged on URL-typed attributes" with a before/after example.
+
 ---
 
 ## RFC Validators

@@ -479,8 +479,15 @@ test('[invalid-attr-valid-007] URL attribute', async () => {
 	const { violations: violations2 } = await mlRuleTest(rule, '<img src="//sample.com/path/to">');
 	expect(violations2.length).toBe(0);
 
+	// BREAKING CHANGE (URL LS invalid-credentials, #3848 / PR #3867):
+	// `//user:pass@sample.com/path/to` now produces a violation. The original
+	// 0-violations assertion is preserved as a comment so this breaking change
+	// is visible in the test source itself, not only in git history.
+	// Positive coverage of the new behaviour lives in [invalid-attr-invalid-044].
+	// https://url.spec.whatwg.org/#invalid-credentials
 	const { violations: violations3 } = await mlRuleTest(rule, '<img src="//user:pass@sample.com/path/to">');
-	expect(violations3.length).toBe(0);
+	// expect(violations3.length).toBe(0); // pre-URL-LS-strict baseline
+	expect(violations3.length).toBe(1);
 
 	const { violations: violations4 } = await mlRuleTest(rule, '<img src="/path/to">');
 	expect(violations4.length).toBe(0);
@@ -508,6 +515,46 @@ test('[invalid-attr-valid-007] URL attribute', async () => {
 
 	const { violations: violations12 } = await mlRuleTest(rule, '<img src="#hash">');
 	expect(violations12.length).toBe(0);
+});
+
+test('[invalid-attr-invalid-044] URL Living Standard validation errors', async () => {
+	// invalid-credentials with non-empty userinfo (`http://user:pass@host`) is
+	// already asserted in [invalid-attr-valid-007] violations3 — we do not
+	// duplicate it here. The empty-userinfo variant below exercises a separate
+	// regex branch (`SPECIAL_SCHEME_AUTHORITY_HAS_AT_SIGN` matching `@` without
+	// any chars before it), so it is covered here.
+	// https://url.spec.whatwg.org/#invalid-credentials
+	const { violations: emptyUserinfo } = await mlRuleTest(rule, '<a href="http://@example.com"></a>');
+	expect(emptyUserinfo.length).toBe(1);
+
+	// special-scheme-missing-following-solidus — `http:foo` (no `//`).
+	// https://url.spec.whatwg.org/#special-scheme-missing-following-solidus
+	const { violations: missingSolidus } = await mlRuleTest(rule, '<a href="http:foo"></a>');
+	expect(missingSolidus.length).toBe(1);
+
+	// special-scheme single-slash variant — `http:/foo` (only one `/`).
+	const { violations: singleSlash } = await mlRuleTest(rule, '<a href="http:/foo"></a>');
+	expect(singleSlash.length).toBe(1);
+
+	// file-scheme-missing-following-solidus — `file:foo`.
+	// https://url.spec.whatwg.org/#file-scheme-missing-following-solidus
+	const { violations: fileNoSolidus } = await mlRuleTest(rule, '<a href="file:foo"></a>');
+	expect(fileNoSolidus.length).toBe(1);
+
+	// invalid-reverse-solidus — `\` in special-scheme URL.
+	// https://url.spec.whatwg.org/#invalid-reverse-solidus
+	const { violations: reverseSolidus } = await mlRuleTest(rule, '<a href="http://example.com\\foo"></a>');
+	expect(reverseSolidus.length).toBe(1);
+
+	// file-invalid-Windows-drive-letter — `C|` instead of `C:`.
+	// https://url.spec.whatwg.org/#file-invalid-windows-drive-letter
+	const { violations: windowsDrive } = await mlRuleTest(rule, '<a href="file:///C|/foo"></a>');
+	expect(windowsDrive.length).toBe(1);
+
+	// multiple `#` — second `#` is invalid-URL-unit in fragment grammar.
+	// https://url.spec.whatwg.org/#invalid-url-unit
+	const { violations: multipleHash } = await mlRuleTest(rule, '<a href="http://example.com/#a#b"></a>');
+	expect(multipleHash.length).toBe(1);
 });
 
 test('[invalid-attr-invalid-016] Overwrite type', async () => {

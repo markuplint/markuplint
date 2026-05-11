@@ -198,6 +198,11 @@
 			"filename": "packages/@markuplint/types/src/whatwg/check-media-query-list.{ts,spec.ts}",
 			"comment": "`alla` is the literal media-query value from html/media-queries/002-novalid fixture (typo of `all`); cited verbatim as a test input.",
 			"words": ["alla"]
+		},
+		{
+			"filename": "packages/@markuplint/types/src/whatwg/check-url.{ts,spec.ts}",
+			"comment": "URL Living Standard validation error names: `solidus`, `noncharacters`, `userinfo`, plus galimatias (nu-validator's URL parser library).",
+			"words": ["galimatias", "noncharacters", "solidus", "userinfo"]
 		}
 	]
 }

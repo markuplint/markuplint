@@ -68,7 +68,7 @@ src/
 │   ├── check-media-query-list.ts   # CSS Media Queries Level 5 validation (`media=` attr)
 │   ├── check-mime-type.ts          # MIME type validation
 │   ├── check-simple-color.ts       # Valid simple colour (#rrggbb) validation
-│   ├── check-url.ts                # Valid URL string validation (including surrounding spaces)
+│   ├── check-url.ts                # Valid URL string validation — surfaces URL Living Standard validation errors that `new URL()` silently auto-corrects (invalid-credentials, special-scheme-missing-following-solidus, invalid-reverse-solidus, file-invalid-Windows-drive-letter, etc.)
 │   ├── is-abs-url.ts               # Absolute URL check
 │   ├── is-browser-context-name.ts  # Browsing context name check (deprecated)
 │   ├── is-custom-element-name.ts   # Custom element name check
