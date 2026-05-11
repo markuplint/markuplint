@@ -479,9 +479,6 @@ test('[invalid-attr-valid-007] URL attribute', async () => {
 	const { violations: violations2 } = await mlRuleTest(rule, '<img src="//sample.com/path/to">');
 	expect(violations2.length).toBe(0);
 
-	const { violations: violations3 } = await mlRuleTest(rule, '<img src="//user:pass@sample.com/path/to">');
-	expect(violations3.length).toBe(0);
-
 	const { violations: violations4 } = await mlRuleTest(rule, '<img src="/path/to">');
 	expect(violations4.length).toBe(0);
 
@@ -508,6 +505,28 @@ test('[invalid-attr-valid-007] URL attribute', async () => {
 
 	const { violations: violations12 } = await mlRuleTest(rule, '<img src="#hash">');
 	expect(violations12.length).toBe(0);
+});
+
+test('[invalid-attr-invalid-044] URL Living Standard validation errors', async () => {
+	// invalid-credentials — URL LS forbids userinfo in special-scheme URLs.
+	// https://url.spec.whatwg.org/#invalid-credentials
+	const { violations: credentials } = await mlRuleTest(rule, '<img src="//user:pass@sample.com/path/to">');
+	expect(credentials.length).toBe(1);
+
+	// special-scheme-missing-following-solidus — `http:foo` (no `//`).
+	// https://url.spec.whatwg.org/#special-scheme-missing-following-solidus
+	const { violations: missingSolidus } = await mlRuleTest(rule, '<a href="http:foo"></a>');
+	expect(missingSolidus.length).toBe(1);
+
+	// invalid-reverse-solidus — `\` in special-scheme URL.
+	// https://url.spec.whatwg.org/#invalid-reverse-solidus
+	const { violations: reverseSolidus } = await mlRuleTest(rule, '<a href="http://example.com\\foo"></a>');
+	expect(reverseSolidus.length).toBe(1);
+
+	// file-invalid-Windows-drive-letter — `C|` instead of `C:`.
+	// https://url.spec.whatwg.org/#file-invalid-windows-drive-letter
+	const { violations: windowsDrive } = await mlRuleTest(rule, '<a href="file:///C|/foo"></a>');
+	expect(windowsDrive.length).toBe(1);
 });
 
 test('[invalid-attr-invalid-016] Overwrite type', async () => {
