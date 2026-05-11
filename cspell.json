@@ -201,8 +201,8 @@
 		},
 		{
 			"filename": "packages/@markuplint/types/src/whatwg/check-url.{ts,spec.ts}",
-			"comment": "URL Living Standard validation error names: `solidus`, `noncharacter`, `userinfo`, plus galimatias (nu-validator's URL parser library).",
-			"words": ["galimatias", "noncharacter", "noncharacters", "solidus", "userinfo"]
+			"comment": "URL Living Standard validation error names: `solidus`, `noncharacters`, `userinfo`, plus galimatias (nu-validator's URL parser library).",
+			"words": ["galimatias", "noncharacters", "solidus", "userinfo"]
 		}
 	]
 }
