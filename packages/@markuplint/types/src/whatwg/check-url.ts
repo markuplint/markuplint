@@ -264,30 +264,22 @@ export const checkURL: CustomSyntaxChecker = () =>
 			return unmatched(trimmed, 'unexpected-token');
 		}
 
-		// Try parsing as absolute URL first
-		let parsed: URL;
-		try {
-			parsed = new URL(trimmed);
-		} catch {
-			// Not a valid absolute URL — try as relative
-			try {
-				parsed = new URL(trimmed, DUMMY_BASE);
-			} catch {
-				// Both absolute and relative parsing failed
-				return unmatched(trimmed, 'unexpected-token');
-			}
-		}
-
-		// invalid-credentials: special-scheme URLs MUST NOT include userinfo.
-		// `new URL()` parses them out into username/password fields; we surface
-		// any non-empty userinfo as an error.
+		// Structural parse — `URL.canParse` is preferred over `new URL()` +
+		// try/catch because it returns a boolean instead of throwing, which
+		// would otherwise need an `isFatalError` guard per the project's
+		// Three-Tier Error policy. (Available since Node 19; the package
+		// requires Node 22+.)
 		//
-		// Non-special schemes (e.g., `mailto:user@example.com`) put everything
-		// after the scheme into the opaque path, so username/password remain
-		// empty there — no false positive.
-		if (parsed.username !== '' || parsed.password !== '') {
-			return unmatched(trimmed, 'unexpected-token');
+		// invalid-credentials with a non-empty userinfo (`http://user:pass@`)
+		// is also caught structurally here — the regex above
+		// (`SPECIAL_SCHEME_AUTHORITY_HAS_AT_SIGN`) already covers every
+		// `@`-in-authority case (including the empty-userinfo variant), so a
+		// post-parse `parsed.username/password` check would be unreachable.
+		if (URL.canParse(trimmed)) {
+			return matched();
 		}
-
-		return matched();
+		if (URL.canParse(trimmed, DUMMY_BASE)) {
+			return matched();
+		}
+		return unmatched(trimmed, 'unexpected-token');
 	};
