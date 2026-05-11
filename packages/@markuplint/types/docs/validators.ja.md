@@ -319,6 +319,49 @@ WHATWGが定義する各種名前フォーマットに対する、シンプル�
 
 これらはすべて `FormattedPrimitiveTypeCreator` ファクトリであり、`() => (value: string) => boolean` の形式を返します。
 
+### URL Living Standard バリデータ
+
+**ソース:** `src/whatwg/check-url.ts`
+
+`checkURL` は [HTML LS の "valid URL potentially surrounded by spaces"](https://html.spec.whatwg.org/multipage/urls-and-fetching.html#valid-url-potentially-surrounded-by-spaces) プロダクションを検証します。`<a href>`、`<area href>`、`<audio src>`、`<base href>`、`<blockquote cite>`、`<embed src>`、`<form action>`、`<iframe src>`、`<img src>`、`<input formaction>`、`<input src>`、`<link href>`、`<q cite>`、`<script src>`、`<source src>`、`<track src>`、`<video poster>`、`<video src>` 等で使用されます。[`checkHTTPEquivRefresh`](#http-equivディレクティブバリデータ) の `URL=` 句からも再利用されます。
+
+このバリデータは、プラットフォームの `URL.canParse` / `new URL()` が暗黙的に自動補正してしまうが [nu-html-checker](https://validator.w3.org/nu/) (galimatias) が報告する URL Living Standard の validation error を捕捉します。各チェックは special-scheme / scheme-relative URL に gate されており、非 special scheme (`data:`、`mailto:`、`javascript:`、`tel:`) は opaque-path セマンティクスを保ちます。
+
+| Validation error                                                                                                  | 検出方法                                                                             | 例 (拒否される)                                               |
+| ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ | ------------------------------------------------------------- |
+| invalid-URL-unit (制御文字、noncharacters)                                                                        | `FORBIDDEN_CODE_POINT` regex を生入力に適用                                          | `http://example.com/`                                         |
+| invalid-URL-unit (空白)                                                                                           | `ILLEGAL_WHITESPACE` (TAB/LF/CR)、`UNENCODED_SPACE` (URL 中の space)                 | `http://exa\tmple.com`、`http://x/path with space`            |
+| 不正な percent-encoding                                                                                           | `MALFORMED_PERCENT` regex                                                            | `http://example.com/%2`                                       |
+| [special-scheme-missing-following-solidus](https://url.spec.whatwg.org/#special-scheme-missing-following-solidus) | `SPECIAL_SCHEME_MISSING_SOLIDUS` regex                                               | `http:foo`、`https:/foo` (single-slash 変種)                  |
+| [file-scheme-missing-following-solidus](https://url.spec.whatwg.org/#file-scheme-missing-following-solidus)       | 同上 regex (file は special scheme)                                                  | `file:foo`、`file:/foo`、`file:`                              |
+| [file-invalid-Windows-drive-letter](https://url.spec.whatwg.org/#file-invalid-windows-drive-letter)               | `FILE_WINDOWS_DRIVE_LETTER_WITH_BAR` regex                                           | `file:///C\|/foo`                                             |
+| [invalid-reverse-solidus](https://url.spec.whatwg.org/#invalid-reverse-solidus)                                   | `\` literal を special-scheme / scheme-relative URL で検出 (`isSpecialOrSchemeless`) | `http://example.com\foo`、`/foo\bar`                          |
+| [invalid-credentials](https://url.spec.whatwg.org/#invalid-credentials)                                           | `SPECIAL_SCHEME_AUTHORITY_HAS_AT_SIGN` regex (空 userinfo `http://@` も捕捉)         | `http://user:pass@host`、`http://@example.com`、`//user@host` |
+| invalid-URL-unit (fragment 内の複数 `#`)                                                                          | `MULTIPLE_HASH` regex を special scheme に gate                                      | `http://example.com/#a#b`                                     |
+| 構造的パース失敗                                                                                                  | `URL.canParse(value) \|\| URL.canParse(value, DUMMY_BASE)` 両方 `false` ⇒ unmatched  | `http://[invalid-ipv6]/`                                      |
+
+なぜ regex と `URL.canParse` の両方を使うか: `URL.canParse` は完全なパース失敗のみ報告 (`false` 戻り) します。上表の auto-correct 可能な validation error (URL LS では non-fatal だが HTML LS では適合エラー) は報告しません。regex 層は auto-correct 前の生入力でこれらを表面化させます。
+
+```typescript
+// defs.ts での呼び出し
+URL: {
+  ref: 'https://html.spec.whatwg.org/multipage/urls-and-fetching.html#valid-url-potentially-surrounded-by-spaces',
+  is: checkURL(),
+},
+```
+
+#### 新しい URL LS validation カテゴリの追加手順
+
+bench coverage corpus で残った URL 系 `nu-only` fixture は [Issue #3848](https://github.com/markuplint/markuplint/issues/3848) で追跡しています。新カテゴリを `checkURL` に追加する手順:
+
+1. [URL LS § 1.1 Validation errors](https://url.spec.whatwg.org/#validation-error) で error code を特定。入力形と URL state machine のどの状態で発生するかを把握する。
+2. `check-url.ts` 上部に regex 定数を追加。JSDoc に spec link と該当する例 1〜2 件を記載する。
+3. チェックは `URL.canParse(...)` の **前** に挿入する (auto-correct 前の生入力で発火させるため)。special-scheme URL 限定の error なら `isSpecialOrSchemeless(...)` で gate する。
+4. `check-url.spec.ts` にラベル付きブロック (`// invalid-XXX`) でユニットテストを追加。拒否される positive ケースに加え、非 special scheme で受理されるべき negative ケースも必ず入れる。
+5. `packages/@markuplint/rules/src/invalid-attr/index.spec.ts` の `[invalid-attr-invalid-044]` に integration テストを追加し、rule レベルの pipeline で捕捉されることを確認する。
+6. ベンチを refresh: `yarn bench:update:ml` 実行後、`tests/external/snapshots/diff/summary.md` を確認する。`match-error` が増え、`ml-only` が **増えない** ことが必須 (false positive 0)。
+7. `website/docs/migration/v4-to-v5/rules/invalid-attr.md` (および `i18n/ja/...` ミラー) の「URL 系属性で新たに違反となるパターン」セクションに、before/after 例とともに行を追加する。
+
 ---
 
 ## RFCバリデータ
