@@ -479,32 +479,32 @@ test('[invalid-attr-valid-007] URL attribute', async () => {
 	const { violations: violations2 } = await mlRuleTest(rule, '<img src="//sample.com/path/to">');
 	expect(violations2.length).toBe(0);
 
-	const { violations: violations4 } = await mlRuleTest(rule, '<img src="/path/to">');
+	const { violations: violations3 } = await mlRuleTest(rule, '<img src="/path/to">');
+	expect(violations3.length).toBe(0);
+
+	const { violations: violations4 } = await mlRuleTest(rule, '<img src="/path/to?param=value">');
 	expect(violations4.length).toBe(0);
 
-	const { violations: violations5 } = await mlRuleTest(rule, '<img src="/path/to?param=value">');
+	const { violations: violations5 } = await mlRuleTest(rule, '<img src="/?param=value">');
 	expect(violations5.length).toBe(0);
 
-	const { violations: violations6 } = await mlRuleTest(rule, '<img src="/?param=value">');
+	const { violations: violations6 } = await mlRuleTest(rule, '<img src="?param=value">');
 	expect(violations6.length).toBe(0);
 
-	const { violations: violations7 } = await mlRuleTest(rule, '<img src="?param=value">');
+	const { violations: violations7 } = await mlRuleTest(rule, '<img src="path/to">');
 	expect(violations7.length).toBe(0);
 
-	const { violations: violations8 } = await mlRuleTest(rule, '<img src="path/to">');
+	const { violations: violations8 } = await mlRuleTest(rule, '<img src="./path/to">');
 	expect(violations8.length).toBe(0);
 
-	const { violations: violations9 } = await mlRuleTest(rule, '<img src="./path/to">');
+	const { violations: violations9 } = await mlRuleTest(rule, '<img src="../path/to">');
 	expect(violations9.length).toBe(0);
 
-	const { violations: violations10 } = await mlRuleTest(rule, '<img src="../path/to">');
+	const { violations: violations10 } = await mlRuleTest(rule, '<img src="/path/to#hash">');
 	expect(violations10.length).toBe(0);
 
-	const { violations: violations11 } = await mlRuleTest(rule, '<img src="/path/to#hash">');
+	const { violations: violations11 } = await mlRuleTest(rule, '<img src="#hash">');
 	expect(violations11.length).toBe(0);
-
-	const { violations: violations12 } = await mlRuleTest(rule, '<img src="#hash">');
-	expect(violations12.length).toBe(0);
 });
 
 test('[invalid-attr-invalid-044] URL Living Standard validation errors', async () => {
@@ -513,10 +513,23 @@ test('[invalid-attr-invalid-044] URL Living Standard validation errors', async (
 	const { violations: credentials } = await mlRuleTest(rule, '<img src="//user:pass@sample.com/path/to">');
 	expect(credentials.length).toBe(1);
 
+	// invalid-credentials with empty userinfo — `http://@host`.
+	const { violations: emptyUserinfo } = await mlRuleTest(rule, '<a href="http://@example.com"></a>');
+	expect(emptyUserinfo.length).toBe(1);
+
 	// special-scheme-missing-following-solidus — `http:foo` (no `//`).
 	// https://url.spec.whatwg.org/#special-scheme-missing-following-solidus
 	const { violations: missingSolidus } = await mlRuleTest(rule, '<a href="http:foo"></a>');
 	expect(missingSolidus.length).toBe(1);
+
+	// special-scheme single-slash variant — `http:/foo` (only one `/`).
+	const { violations: singleSlash } = await mlRuleTest(rule, '<a href="http:/foo"></a>');
+	expect(singleSlash.length).toBe(1);
+
+	// file-scheme-missing-following-solidus — `file:foo`.
+	// https://url.spec.whatwg.org/#file-scheme-missing-following-solidus
+	const { violations: fileNoSolidus } = await mlRuleTest(rule, '<a href="file:foo"></a>');
+	expect(fileNoSolidus.length).toBe(1);
 
 	// invalid-reverse-solidus — `\` in special-scheme URL.
 	// https://url.spec.whatwg.org/#invalid-reverse-solidus
@@ -527,6 +540,11 @@ test('[invalid-attr-invalid-044] URL Living Standard validation errors', async (
 	// https://url.spec.whatwg.org/#file-invalid-windows-drive-letter
 	const { violations: windowsDrive } = await mlRuleTest(rule, '<a href="file:///C|/foo"></a>');
 	expect(windowsDrive.length).toBe(1);
+
+	// multiple `#` — second `#` is invalid-URL-unit in fragment grammar.
+	// https://url.spec.whatwg.org/#invalid-url-unit
+	const { violations: multipleHash } = await mlRuleTest(rule, '<a href="http://example.com/#a#b"></a>');
+	expect(multipleHash.length).toBe(1);
 });
 
 test('[invalid-attr-invalid-016] Overwrite type', async () => {
