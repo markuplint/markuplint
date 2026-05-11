@@ -51,6 +51,14 @@
 			]
 		},
 		{
+			"path": "html-aria/misc/aria-owns-broken-idref-novalid.html",
+			"category": "aria",
+			"ruleIds": [
+				"no-refer-to-non-existent-id",
+				"wai-aria-required-parent-role"
+			]
+		},
+		{
 			"path": "html-aria/misc/aria-valuemin-on-meter-haswarn.html",
 			"category": "aria",
 			"ruleIds": [
@@ -7159,6 +7167,13 @@
 			"category": "invalid-attr",
 			"ruleIds": [
 				"no-duplicate-autofocus"
+			]
+		},
+		{
+			"path": "html/elements/base/href/host-IP-address-broken-isvalid.html",
+			"category": "invalid-attr",
+			"ruleIds": [
+				"invalid-attr"
 			]
 		},
 		{
