@@ -1,6 +1,6 @@
 ---
 id: input-button-non-empty-value
-description: Forbid an empty value attribute on <input type="button"> elements; if specified the value must be non-empty.
+description: Forbid an empty value attribute on `<input type="button">` elements; if specified the value must be non-empty.
 ---
 
 # `input-button-non-empty-value`

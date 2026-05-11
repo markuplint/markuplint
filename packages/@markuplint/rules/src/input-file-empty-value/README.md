@@ -1,6 +1,6 @@
 ---
 id: input-file-empty-value
-description: Require <input type="file"> elements to omit the value attribute or set it to the empty string, per HTML LS §4.10.5.1.18.
+description: Require `<input type="file">` elements to omit the value attribute or set it to the empty string, per HTML LS §4.10.5.1.18.
 ---
 
 # `input-file-empty-value`
