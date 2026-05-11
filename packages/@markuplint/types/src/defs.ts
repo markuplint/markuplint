@@ -28,6 +28,11 @@ import { checkLinkType } from './whatwg/check-link-type.js';
 import { isEmail } from './whatwg/check-email.js';
 import { isSimpleColor } from './whatwg/check-simple-color.js';
 
+// Hoist the URL Living Standard checker once so type entries that wrap it
+// (e.g. `BaseURL`, which adds the `<base>`-specific data:/javascript: filter
+// on top) do not pay closure-construction cost per attribute value.
+const checkURLOnce = checkURL();
+
 /**
  * Built-in type definitions registry for HTML attribute value validation.
  *
@@ -343,7 +348,30 @@ export const defs: Defs = {
 	 */
 	URL: {
 		ref: 'https://html.spec.whatwg.org/multipage/urls-and-fetching.html#valid-url-potentially-surrounded-by-spaces',
-		is: checkURL(),
+		is: checkURLOnce,
+	},
+
+	/**
+	 * Validates a "valid non-empty URL potentially surrounded by spaces". HTML
+	 * LS uses this stricter production for `src` attributes on
+	 * `<audio>`/`<embed>`/`<iframe>`/`<img>`/`<input type=image>`/`<script>`/
+	 * `<source>`/`<track>`/`<video>` — the URL token MUST contain at least one
+	 * non-whitespace character.
+	 *
+	 * Delegates to `checkURL` for syntax validation; rejects values that are
+	 * empty after stripping ASCII whitespace.
+	 *
+	 * @see https://html.spec.whatwg.org/multipage/urls-and-fetching.html#valid-non-empty-url
+	 * @see https://html.spec.whatwg.org/multipage/urls-and-fetching.html#valid-non-empty-url-potentially-surrounded-by-spaces
+	 */
+	NonEmptyURL: {
+		ref: 'https://html.spec.whatwg.org/multipage/urls-and-fetching.html#valid-non-empty-url-potentially-surrounded-by-spaces',
+		is(value) {
+			if (value.replaceAll(/^[\t\n\f\r ]+|[\t\n\f\r ]+$/g, '') === '') {
+				return unmatched(value, 'unexpected-token');
+			}
+			return checkURLOnce(value);
+		},
 	},
 
 	/**
@@ -358,17 +386,57 @@ export const defs: Defs = {
 	BaseURL: {
 		ref: 'https://html.spec.whatwg.org/multipage/semantics.html#set-the-frozen-base-url',
 		is(value) {
-			value = value.toLowerCase().trim();
-			if (value.startsWith('data:') || value.startsWith('javascript:')) {
+			// `<base href>` is forbidden from declaring `data:` / `javascript:`
+			// schemes (HTML LS — "set the frozen base URL"). Surface that
+			// constraint first because it is `<base>`-specific, then delegate
+			// to the shared URL Living Standard validator so all URL LS
+			// validation errors (invalid-credentials, scheme-missing-solidus,
+			// invalid-reverse-solidus, etc.) are reported uniformly with
+			// `URL` / `HTTPSchemaURL` / etc.
+			const normalised = value.toLowerCase().trim();
+			if (normalised.startsWith('data:') || normalised.startsWith('javascript:')) {
 				return unmatched(value, 'unexpected-token');
 			}
-			return matched();
+			return checkURLOnce(value);
 		},
 	},
 
 	AbsoluteURL: {
 		ref: 'https://url.spec.whatwg.org/#syntax-url-absolute',
-		is: matches(isAbsURL()),
+		is(value) {
+			// `AbsoluteURL` is used by per-token list types (e.g. `itemtype`),
+			// where each token must be a valid absolute URL. Reject
+			// non-absolute / unparseable values first, then run the full URL
+			// Living Standard validator so callers get the same
+			// auto-correction error coverage as `URL` (invalid-credentials,
+			// invalid-reverse-solidus, multiple `#`, etc.).
+			if (!isAbsURL()(value)) {
+				return unmatched(value, 'unexpected-token');
+			}
+			return checkURLOnce(value);
+		},
+	},
+
+	/**
+	 * Validates `<input type="url" value="...">` per HTML LS §4.10.5.1.7:
+	 * "if specified and not empty, must have a value that is a valid absolute
+	 * URL potentially surrounded by ASCII whitespace." Accepts empty values
+	 * (no default URL) and absolute URLs that pass URL Living Standard
+	 * validation; rejects relative URLs and URL LS validation errors.
+	 *
+	 * @see https://html.spec.whatwg.org/multipage/input.html#url-state-(type=url)
+	 */
+	AbsoluteURLOrEmpty: {
+		ref: 'https://html.spec.whatwg.org/multipage/input.html#url-state-(type=url)',
+		is(value) {
+			if (value.replaceAll(/^[\t\n\f\r ]+|[\t\n\f\r ]+$/g, '') === '') {
+				return matched();
+			}
+			if (!isAbsURL()(value)) {
+				return unmatched(value, 'unexpected-token');
+			}
+			return checkURLOnce(value);
+		},
 	},
 
 	/**

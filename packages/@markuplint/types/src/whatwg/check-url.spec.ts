@@ -298,3 +298,35 @@ test('multiple `#` in non-special-scheme URL is accepted', () => {
 	expect(check('data:text/plain,a#b#c').matched).toBe(true);
 	expect(check('javascript:alert("a#b#c")').matched).toBe(true);
 });
+
+// invalid-URL-unit: brackets outside the IPv6 host position
+test('brackets outside host are rejected', () => {
+	// Relative URL that looks like IPv6 (square brackets, colons).
+	expect(check('[61:24:74]:98').matched).toBe(false);
+	// Brackets in path of special-scheme URL.
+	expect(check('http://example.com/path[a]').matched).toBe(false);
+	// Brackets in opaque path of non-special scheme.
+	expect(check('data:[foo]').matched).toBe(false);
+	// Brackets in fragment.
+	expect(check('http://example.com/#[a]').matched).toBe(false);
+});
+
+test('IPv6 host brackets are accepted', () => {
+	// `[::1]` and other IPv6 literals are the only legitimate use of
+	// `[`/`]` in a URL — they delimit the host of a special-scheme URL.
+	expect(check('http://[::1]/path').matched).toBe(true);
+	expect(check('http://[2001:db8::1]:8080/path').matched).toBe(true);
+});
+
+// RFC 2397 data: URL grammar
+test('data: URL without `,` is rejected', () => {
+	expect(check('data:').matched).toBe(false);
+	expect(check('data:/example.com/').matched).toBe(false);
+	expect(check('data:text/plain').matched).toBe(false);
+});
+
+test('data: URL with `,` is accepted', () => {
+	expect(check('data:,hello').matched).toBe(true);
+	expect(check('data:text/plain,foo').matched).toBe(true);
+	expect(check('data:text/plain;base64,SGVsbG8=').matched).toBe(true);
+});

@@ -81,6 +81,50 @@ const SPECIAL_SCHEME_AUTHORITY_HAS_AT_SIGN = /^(?:(?:ftp|file|https?|wss?):)?\/\
 const MULTIPLE_HASH = /#.*#/;
 
 /**
+ * Pattern: a URL whose path / query / fragment contains `[` or `]`.
+ *
+ * Square brackets are URL code points **only** in the host position of a
+ * special-scheme URL, where they delimit an IPv6 address (e.g.,
+ * `http://[::1]/`). Outside the authority component they are not URL code
+ * points and trigger `invalid-URL-unit`.
+ *
+ * Detection: strip the authority portion (everything between `://` and the
+ * first `/`/`?`/`#`) and check the remainder for any `[` or `]`. Relative
+ * URLs without `://` are checked as-is.
+ *
+ * Examples caught:
+ * - `[61:24:74]:98` — relative URL with IPv6-looking brackets in path
+ * - `http://example.com/path[a]` — brackets in path of special-scheme URL
+ * - `data:[foo]` — brackets in opaque path of non-special scheme
+ *
+ * @see https://url.spec.whatwg.org/#invalid-url-unit
+ * @see https://url.spec.whatwg.org/#url-code-points
+ */
+function hasBracketsOutsideHost(value: string): boolean {
+	if (!/[[\]]/.test(value)) {
+		return false;
+	}
+	// Strip the authority component (host[:port][@userinfo]) if present.
+	// The optional scheme prefix matches both special and non-special schemes;
+	// the `[^/?#]*` swallows everything up to the first path/query/fragment
+	// delimiter, which includes a legitimate `[::1]` IPv6 host.
+	const withoutAuthority = value.replace(/^(?:[a-z][a-z0-9+.-]*:)?\/\/[^/?#]*/i, '');
+	return /[[\]]/.test(withoutAuthority);
+}
+
+/**
+ * Pattern: a `data:` URL with no `,` separator.
+ *
+ * RFC 2397 requires the form `data:[<mediatype>][;base64],<data>`; the
+ * `,` is mandatory. `data:` URLs without a comma (e.g., `data:/example.com/`,
+ * `data:`) are syntactically invalid even though `URL.canParse` accepts them
+ * as opaque-path non-special-scheme URLs.
+ *
+ * @see https://datatracker.ietf.org/doc/html/rfc2397
+ */
+const DATA_URL_MISSING_COMMA = /^data:[^,]*$/i;
+
+/**
  * Pattern: file-scheme URL with a Windows drive letter that uses `|` instead of `:`.
  *
  * URL LS §6 says `C|` is auto-corrected to `C:` and triggers a
@@ -261,6 +305,16 @@ export const checkURL: CustomSyntaxChecker = () =>
 		// schemes (`data:`, `javascript:`) treat everything before/after as
 		// opaque content where extra `#` is the user's own data.
 		if (isSpecialOrSchemeless(trimmed) && MULTIPLE_HASH.test(trimmed)) {
+			return unmatched(trimmed, 'unexpected-token');
+		}
+
+		// invalid-URL-unit: `[` or `]` outside the IPv6 host position.
+		if (hasBracketsOutsideHost(trimmed)) {
+			return unmatched(trimmed, 'unexpected-token');
+		}
+
+		// data: URL without a comma — RFC 2397 violation.
+		if (DATA_URL_MISSING_COMMA.test(trimmed)) {
 			return unmatched(trimmed, 'unexpected-token');
 		}
 
