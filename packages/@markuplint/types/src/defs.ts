@@ -406,7 +406,7 @@ export const defs: Defs = {
 		is(value) {
 			// `AbsoluteURL` is used by per-token list types (e.g. `itemtype`),
 			// where each token must be a valid absolute URL. Reject
-			// non-absolute / unparseable values first, then run the full URL
+			// non-absolute / unparsable values first, then run the full URL
 			// Living Standard validator so callers get the same
 			// auto-correction error coverage as `URL` (invalid-credentials,
 			// invalid-reverse-solidus, multiple `#`, etc.).
