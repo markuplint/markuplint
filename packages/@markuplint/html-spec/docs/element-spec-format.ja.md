@@ -335,6 +335,18 @@ spec.mml_mn.jsonc       # <mml:mn> 要素
 }
 ```
 
+**URL ファミリー** — HTML LS の属性定義文言に合わせて使い分けます。
+
+| 型識別子               | 使用する条件                                                                                              |
+| ---------------------- | --------------------------------------------------------------------------------------------------------- |
+| `"URL"`                | 「valid URL potentially surrounded by spaces」 — 空値受理 (例: `a[href]`、`q[cite]`、`form[action]`)。    |
+| `"NonEmptyURL"`        | 「valid non-empty URL potentially surrounded by spaces」 — 空 / 空白のみは拒否 (例: メディア系の `src`)。 |
+| `"BaseURL"`            | `<base href>` 専用 — `URL` の上に `data:` / `javascript:` スキーム禁止を被せる。                          |
+| `"AbsoluteURL"`        | 各トークンが絶対 URL でなければならないリスト型属性 (例: `itemtype`)。                                    |
+| `"AbsoluteURLOrEmpty"` | `<input type="url" value>` — 空は許容、相対 URL は拒否 (HTML LS §4.10.5.1.7)。                            |
+
+各バリアントが内包する検証カテゴリと、新バリアントの追加手順は [`@markuplint/types/docs/validators.md` の「URL Living Standard Validator」](../../types/docs/validators.md#url-living-standard-validator) を参照してください。
+
 #### 列挙型オブジェクト
 
 有効な値の列挙を定義します。
