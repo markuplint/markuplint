@@ -557,6 +557,49 @@ test('[invalid-attr-invalid-044] URL Living Standard validation errors', async (
 	expect(multipleHash.length).toBe(1);
 });
 
+test('[invalid-attr-invalid-045] URL Living Standard Phase 2 categories', async () => {
+	// `BaseURL` now delegates to `checkURL` after the existing data:/javascript:
+	// scheme filter; previously it accepted everything else without further
+	// validation. Regression guard for #3868.
+	// https://html.spec.whatwg.org/multipage/semantics.html#set-the-frozen-base-url
+	const { violations: baseHrefCredentials } = await mlRuleTest(rule, '<base href="http://user:pass@example.com/">');
+	expect(baseHrefCredentials.length).toBe(1);
+
+	// `NonEmptyURL` rejects empty / whitespace-only `src` on media elements.
+	// https://html.spec.whatwg.org/multipage/urls-and-fetching.html#valid-non-empty-url-potentially-surrounded-by-spaces
+	const { violations: imgSrcEmpty } = await mlRuleTest(rule, '<img src="" alt>');
+	expect(imgSrcEmpty.length).toBe(1);
+	const { violations: imgSrcWhitespace } = await mlRuleTest(rule, '<img src="   " alt>');
+	expect(imgSrcWhitespace.length).toBe(1);
+	const { violations: scriptSrcEmpty } = await mlRuleTest(rule, '<script src=""></script>');
+	expect(scriptSrcEmpty.length).toBe(1);
+
+	// `AbsoluteURLOrEmpty` — `<input type=url value>` accepts empty but
+	// rejects relative URLs (HTML LS §4.10.5.1.7).
+	const { violations: inputUrlEmpty } = await mlRuleTest(rule, '<input type="url" value="">');
+	expect(inputUrlEmpty.length).toBe(0);
+	const { violations: inputUrlRelative } = await mlRuleTest(rule, '<input type="url" value="/relative">');
+	expect(inputUrlRelative.length).toBe(1);
+
+	// `[` / `]` outside the IPv6 host position — invalid-URL-unit.
+	// https://url.spec.whatwg.org/#invalid-url-unit
+	const { violations: brackets } = await mlRuleTest(rule, '<a href="[61:24:74]:98"></a>');
+	expect(brackets.length).toBe(1);
+
+	// `data:` URL without `,` — RFC 2397 grammar violation.
+	// https://datatracker.ietf.org/doc/html/rfc2397
+	const { violations: dataNoComma } = await mlRuleTest(rule, '<a href="data:/example.com/"></a>');
+	expect(dataNoComma.length).toBe(1);
+
+	// `AbsoluteURL` now delegates to `checkURL` — itemtype tokens get the
+	// URL LS validation surface (multi-hash etc.).
+	const { violations: itemtypeMultiHash } = await mlRuleTest(
+		rule,
+		'<div itemscope itemtype="http://example.com/#a#b"></div>',
+	);
+	expect(itemtypeMultiHash.length).toBe(1);
+});
+
 test('[invalid-attr-invalid-016] Overwrite type', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
