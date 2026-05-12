@@ -338,6 +338,8 @@ WHATWGが定義する各種名前フォーマットに対する、シンプル�
 | [invalid-reverse-solidus](https://url.spec.whatwg.org/#invalid-reverse-solidus)                                   | `\` literal を special-scheme / scheme-relative URL で検出 (`isSpecialOrSchemeless`) | `http://example.com\foo`、`/foo\bar`                          |
 | [invalid-credentials](https://url.spec.whatwg.org/#invalid-credentials)                                           | `SPECIAL_SCHEME_AUTHORITY_HAS_AT_SIGN` regex (空 userinfo `http://@` も捕捉)         | `http://user:pass@host`、`http://@example.com`、`//user@host` |
 | invalid-URL-unit (fragment 内の複数 `#`)                                                                          | `MULTIPLE_HASH` regex を special scheme に gate                                      | `http://example.com/#a#b`                                     |
+| invalid-URL-unit (IPv6 host 以外の `[` / `]`)                                                                     | `hasBracketsOutsideHost` で authority を除去した残りに `[`/`]` が無いか確認          | `[61:24:74]:98` (相対 URL)、`http://example.com/path[a]`      |
+| RFC 2397 — `data:` URL に `,` が無い                                                                              | `DATA_URL_MISSING_COMMA` regex                                                       | `data:`、`data:/example.com/`、`data:text/plain`              |
 | 構造的パース失敗                                                                                                  | `URL.canParse(value) \|\| URL.canParse(value, DUMMY_BASE)` 両方 `false` ⇒ unmatched  | `http://[invalid-ipv6]/`                                      |
 
 なぜ regex と `URL.canParse` の両方を使うか: `URL.canParse` は完全なパース失敗のみ報告 (`false` 戻り) します。上表の auto-correct 可能な validation error (URL LS では non-fatal だが HTML LS では適合エラー) は報告しません。regex 層は auto-correct 前の生入力でこれらを表面化させます。
@@ -350,9 +352,21 @@ URL: {
 },
 ```
 
+#### `checkURL` を内部利用する関連 URL 型
+
+| 型識別子             | 役割                                                                                                                                                                                                 | 使用箇所                                                                                                                                          |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `URL`                | ベース。「valid URL potentially surrounded by spaces」— 空文字は受理 (document URL に解決)。                                                                                                         | `<a href>`、`<area href>`、`<form action>`、`<input formaction>`、`<link href>`、`<blockquote cite>`、`<q cite>`、`<del cite>`、`<ins cite>` 等。 |
+| `NonEmptyURL`        | 「valid non-empty URL potentially surrounded by spaces」 — `src` 系属性向け。ASCII 空白を剥がした結果が空なら拒否、それ以外は `checkURL` に委譲。                                                    | `<audio src>`、`<embed src>`、`<iframe src>`、`<img src>`、`<input type=image src>`、`<script src>`、`<source src>`、`<track src>`、`<video src>` |
+| `BaseURL`            | `<base href>` 専用。`data:` / `javascript:` スキーム禁止 (HTML LS "set the frozen base URL") を `checkURL` の前段に挟む。                                                                            | `<base href>` のみ。                                                                                                                              |
+| `AbsoluteURL`        | リスト系トークン向け。`isAbsURL` で絶対 URL であることを確認し、その後 `checkURL` の URL LS 検証一式を実行。                                                                                         | `itemtype` (空白区切りの各トークン)。                                                                                                             |
+| `AbsoluteURLOrEmpty` | `<input type="url" value>` 専用 — HTML LS §4.10.5.1.7「指定されかつ非空なら、ASCII 空白で挟まれた valid absolute URL でなければならない」。空文字は受理、それ以外は `AbsoluteURL` の流れを走らせる。 | `<input type="url" value>` (`ConditionalAttributeType` で `[type='url' i]` 条件下)。                                                              |
+
+5 つの型はすべて hoisted な `checkURLOnce = checkURL()` を共有し、どの surface (free URL / 非空 src / 絶対トークン 等) に当たっても URL LS 検証は属性値あたり 1 回だけ走る。
+
 #### 新しい URL LS validation カテゴリの追加手順
 
-bench coverage corpus で残った URL 系 `nu-only` fixture は [Issue #3848](https://github.com/markuplint/markuplint/issues/3848) で追跡しています。新カテゴリを `checkURL` に追加する手順:
+過去の `nu-only` URL fixture は [#3848](https://github.com/markuplint/markuplint/issues/3848) (Phase 1、886件) と [#3868](https://github.com/markuplint/markuplint/issues/3868) (Phase 2、+183件 — `BaseURL`/`AbsoluteURL` 委譲、brackets-outside-host、RFC 2397 `data:` comma、media `src` 用 `NonEmptyURL`、`input[type=url]` 用 `AbsoluteURLOrEmpty`) で追跡してきました。新カテゴリを `checkURL` に追加する手順:
 
 1. [URL LS § 1.1 Validation errors](https://url.spec.whatwg.org/#validation-error) で error code を特定。入力形と URL state machine のどの状態で発生するかを把握する。
 2. `check-url.ts` 上部に regex 定数を追加。JSDoc に spec link と該当する例 1〜2 件を記載する。
@@ -361,6 +375,21 @@ bench coverage corpus で残った URL 系 `nu-only` fixture は [Issue #3848](h
 5. `packages/@markuplint/rules/src/invalid-attr/index.spec.ts` の `[invalid-attr-invalid-044]` に integration テストを追加し、rule レベルの pipeline で捕捉されることを確認する。
 6. ベンチを refresh: `yarn bench:update:ml` 実行後、`tests/external/snapshots/diff/summary.md` を確認する。`match-error` が増え、`ml-only` が **増えない** ことが必須 (false positive 0)。
 7. `website/docs/migration/v4-to-v5/rules/invalid-attr.md` (および `i18n/ja/...` ミラー) の「URL 系属性で新たに違反となるパターン」セクションに、before/after 例とともに行を追加する。
+
+##### 属性ごとの新しい URL バリアント型を追加する手順
+
+新カテゴリではなく、属性レベルの制約 (「非空必須」「絶対 URL 限定」「特定スキーム禁止」等) を表現する新 `XxxURL` エイリアスを `checkURL` の上に被せて追加したい場合:
+
+1. `defs.ts` の既存 URL ファミリー (`URL` / `NonEmptyURL` / `BaseURL` / `AbsoluteURL` / `AbsoluteURLOrEmpty`) の隣にエントリを追加する。URL LS 検証は hoisted な `checkURLOnce` を再利用し、属性ごとの追加制約はその外側に被せる。
+2. JSON schema を再生成して新しい型識別子が spec data 上で有効になるようにする:
+   ```bash
+   cd packages/@markuplint/types && npx run-s schema:types schema:schema
+   ```
+3. 該当する属性に新型を割り当てる。`packages/@markuplint/html-spec/src/spec.<element>.jsonc` の attributes (もしくは共有グループ `spec-common.attributes.jsonc`) を更新。要素が `src` / `href` を local で `type: "URL"` 定義している場合、local 側が共有グループを shadow するので local 側も書き換える。
+4. html-spec の index を再生成: `yarn up:gen`。
+5. `packages/@markuplint/types/src/check.spec.ts` に defs レベルのユニットテストを追加する。empty 処理・scheme 禁止・absolute 要件など wrapper 層の挙動を、URL LS の上で検証する。URL LS のカバレッジ自体はここでは再テストせず、`check-url.spec.ts` に任せる。
+6. `packages/@markuplint/rules/src/invalid-attr/index.spec.ts` の URL LS テストブロックに rule 層 integration テストを追加し、schema → resolver → type → checker の pipeline が動くことを確認する。
+7. 本ファイル前方の「`checkURL` を内部利用する関連 URL 型」テーブルに新識別子・役割・対象属性を追記する。
 
 ---
 

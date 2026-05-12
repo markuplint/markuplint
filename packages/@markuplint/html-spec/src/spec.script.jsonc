@@ -19,7 +19,7 @@
 		// https://html.spec.whatwg.org/multipage/scripting.html#attr-script-src
 		// importmap and speculationrules must not have src
 		"src": {
-			"type": "URL",
+			"type": "NonEmptyURL",
 			"condition": ":not([type='importmap' i]):not([type='speculationrules' i])"
 		},
 		// https://html.spec.whatwg.org/multipage/scripting.html#attr-script-type

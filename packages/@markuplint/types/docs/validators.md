@@ -338,6 +338,8 @@ The validator surfaces URL Living Standard validation errors that the platform's
 | [invalid-reverse-solidus](https://url.spec.whatwg.org/#invalid-reverse-solidus)                                   | `\` literal in special-scheme / scheme-relative URL via `isSpecialOrSchemeless`       | `http://example.com\foo`, `/foo\bar`                          |
 | [invalid-credentials](https://url.spec.whatwg.org/#invalid-credentials)                                           | `SPECIAL_SCHEME_AUTHORITY_HAS_AT_SIGN` regex (catches even empty userinfo `http://@`) | `http://user:pass@host`, `http://@example.com`, `//user@host` |
 | invalid-URL-unit (multiple `#` in fragment)                                                                       | `MULTIPLE_HASH` regex, gated to special schemes                                       | `http://example.com/#a#b`                                     |
+| invalid-URL-unit (`[` / `]` outside IPv6 host)                                                                    | `hasBracketsOutsideHost` strips the authority and scans the remainder                 | `[61:24:74]:98` (relative), `http://example.com/path[a]`      |
+| RFC 2397 — `data:` URL missing `,`                                                                                | `DATA_URL_MISSING_COMMA` regex                                                        | `data:`, `data:/example.com/`, `data:text/plain`              |
 | structural parse failure                                                                                          | `URL.canParse(value) \|\| URL.canParse(value, DUMMY_BASE)` — both `false` ⇒ unmatched | `http://[invalid-ipv6]/`                                      |
 
 Why both regex _and_ `URL.canParse`: `URL.canParse` only reports total parse failure (returns `false`). It does not report the auto-correctable validation errors above (which are non-fatal per URL LS but conformance errors per HTML LS). The regex layer surfaces them on the raw input before any auto-correction happens.
@@ -350,9 +352,21 @@ URL: {
 },
 ```
 
+#### Sibling URL types that compose `checkURL`
+
+| Type identifier      | Purpose                                                                                                                                                                                                                                                                            | Where used                                                                                                                                         |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `URL`                | Base case: "valid URL potentially surrounded by spaces" — empty value is accepted (it resolves to the document URL).                                                                                                                                                               | `<a href>`, `<area href>`, `<form action>`, `<input formaction>`, `<link href>`, `<blockquote cite>`, `<q cite>`, `<del cite>`, `<ins cite>`, etc. |
+| `NonEmptyURL`        | "Valid non-empty URL potentially surrounded by spaces" — the `src`-attribute variant. Rejects values that are empty after stripping ASCII whitespace; otherwise delegates to `checkURL`.                                                                                           | `<audio src>`, `<embed src>`, `<iframe src>`, `<img src>`, `<input type=image src>`, `<script src>`, `<source src>`, `<track src>`, `<video src>`  |
+| `BaseURL`            | `<base href>`-specific variant. Adds the `data:` / `javascript:` scheme prohibition on top of `checkURL` (HTML LS "set the frozen base URL").                                                                                                                                      | `<base href>` only.                                                                                                                                |
+| `AbsoluteURL`        | Per-token variant for list types. Requires the value to parse as an absolute URL (via `isAbsURL`) before delegating to `checkURL` for the full URL LS validation surface.                                                                                                          | `itemtype` (each space-separated token).                                                                                                           |
+| `AbsoluteURLOrEmpty` | `<input type="url" value>` variant — HTML LS §4.10.5.1.7: "if specified and not empty, must have a value that is a valid absolute URL potentially surrounded by ASCII whitespace." Accepts empty values (no default URL); otherwise applies the `AbsoluteURL` validation pipeline. | `<input type="url" value>` (via `ConditionalAttributeType` keyed on `[type='url' i]`).                                                             |
+
+All five share the same hoisted `checkURLOnce = checkURL()` closure so URL Living Standard validation runs once per attribute value regardless of which surface (free URL, non-empty src, absolute token, etc.) is matched.
+
 #### Adding a new URL LS validation category
 
-The remaining `nu-only` URL fixtures on the bench coverage corpus are tracked in [Issue #3848](https://github.com/markuplint/markuplint/issues/3848). To extend `checkURL` with another category:
+Earlier residual `nu-only` URL fixtures were tracked in [#3848](https://github.com/markuplint/markuplint/issues/3848) (Phase 1, 886 fixtures) and [#3868](https://github.com/markuplint/markuplint/issues/3868) (Phase 2, +183 fixtures — `BaseURL`/`AbsoluteURL` delegation, brackets-outside-host, RFC 2397 `data:` comma, `NonEmptyURL` for media `src`, `AbsoluteURLOrEmpty` for `input[type=url]`). To extend `checkURL` with another category:
 
 1. Find the validation error code in [URL LS § 1.1 Validation errors](https://url.spec.whatwg.org/#validation-error). Note the input shape and which states of the URL state machine produce it.
 2. Add a regex constant near the top of `check-url.ts` with a JSDoc that links the spec section and lists 1–2 example inputs that match.
@@ -361,6 +375,21 @@ The remaining `nu-only` URL fixtures on the bench coverage corpus are tracked in
 5. Add an integration test entry in `packages/@markuplint/rules/src/invalid-attr/index.spec.ts` under `[invalid-attr-invalid-044]` to confirm the rule-level pipeline catches it.
 6. Refresh the bench: `yarn bench:update:ml` then inspect `tests/external/snapshots/diff/summary.md` — `match-error` should grow, `ml-only` must NOT (no false positives).
 7. Add a row to `website/docs/migration/v4-to-v5/rules/invalid-attr.md` (and the `i18n/ja/...` mirror) under "Patterns now flagged on URL-typed attributes" with a before/after example.
+
+##### Adding a new per-attribute URL variant type
+
+If you need a new `XxxURL` alias on top of `checkURL` (e.g., to encode a per-attribute restriction such as "must be non-empty", "must be absolute", or "must reject a specific scheme") instead of a new generic URL LS error category:
+
+1. Add the entry to `defs.ts` next to the existing URL family (`URL`, `NonEmptyURL`, `BaseURL`, `AbsoluteURL`, `AbsoluteURLOrEmpty`). Reuse the hoisted `checkURLOnce` for the URL LS validation step; layer the extra per-attribute constraints around it.
+2. Regenerate the JSON schema so the new type identifier becomes valid in spec data:
+   ```bash
+   cd packages/@markuplint/types && npx run-s schema:types schema:schema
+   ```
+3. Wire the new type into the relevant attributes in `packages/@markuplint/html-spec/src/spec.<element>.jsonc` (or the shared `spec-common.attributes.jsonc` group). If an element specifies the `src` / `href` locally with `type: "URL"`, the local entry shadows the shared group — update it too.
+4. Regenerate the html-spec index: `yarn up:gen`.
+5. Add `defs`-level unit tests in `packages/@markuplint/types/src/check.spec.ts` that exercise the new wrapper layer (empty handling, scheme prohibition, absolute requirement) on top of the URL LS surface. Do **not** re-test URL LS coverage there — that belongs in `check-url.spec.ts`.
+6. Add rule-level integration tests in `packages/@markuplint/rules/src/invalid-attr/index.spec.ts` under the URL LS test block so the schema → resolver → type → checker pipeline is exercised.
+7. Update the "Sibling URL types that compose `checkURL`" table earlier in this file with the new identifier, purpose, and consuming attributes.
 
 ---
 

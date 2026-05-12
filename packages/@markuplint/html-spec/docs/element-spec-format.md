@@ -235,6 +235,19 @@ set that particular flag.
 `"String"`, `"URL"`, `"Boolean"`, `"DOMID"`, `"Any"`, `"Number"`, `"Pattern"`,
 `"OneLineAny"`, `"CustomElementName"`, `"DateTime"`
 
+**URL family** — pick the variant that matches the HTML LS wording for the
+attribute:
+
+| Type identifier        | Use when the attribute is...                                                                                      |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `"URL"`                | "valid URL potentially surrounded by spaces" — empty value accepted (e.g., `a[href]`, `q[cite]`, `form[action]`). |
+| `"NonEmptyURL"`        | "valid non-empty URL potentially surrounded by spaces" — empty / whitespace-only rejected (e.g., media `src`).    |
+| `"BaseURL"`            | `<base href>` only — forbids `data:` / `javascript:` schemes on top of `URL`.                                     |
+| `"AbsoluteURL"`        | Per-token list element where each token must be absolute (e.g., `itemtype`).                                      |
+| `"AbsoluteURLOrEmpty"` | `<input type="url" value>` — empty accepted, relative rejected (HTML LS §4.10.5.1.7).                             |
+
+See [`@markuplint/types/docs/validators.md` § "URL Living Standard Validator"](../../types/docs/validators.md#url-living-standard-validator) for the validation surface each variant carries and the procedure to add a new variant.
+
 **Enumerated type:**
 
 ```json

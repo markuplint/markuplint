@@ -153,15 +153,18 @@ v5 では、これまで `Any` として素通りしていた領域について 
 
 各行は検証追加を導入した Issue と、その根拠となる HTML / URL / Encoding Living Standard のセクションを示します。新しい違反に納得できない場合は、まずリンク先の Issue を確認してください — いくつかは、nu-validator が仕様より厳しく解釈していたケースについて仕様引用つきで `excluded-ids.json` に記録しながら導入されています。
 
-| 対象領域                              | v5 で失敗する例                                 | Issue                                                         | 仕様                                                                                                      |
-| ------------------------------------- | ----------------------------------------------- | ------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| `type` に応じた `input[value]`        | `<input type="color" value="red">`              | [#3598](https://github.com/markuplint/markuplint/issues/3598) | [HTML LS — input 要素](https://html.spec.whatwg.org/multipage/input.html#the-input-element)               |
-| `rel` に応じた `link[as]`             | `<link rel="preload" as="audio">`               | [#3189](https://github.com/markuplint/markuplint/issues/3189) | [HTML LS — link 要素](https://html.spec.whatwg.org/multipage/semantics.html#attr-link-as)                 |
-| `img[role]` + `alt=""`                | `<img role="presentation" alt="">`              | [#3641](https://github.com/markuplint/markuplint/issues/3641) | [ARIA in HTML — img](https://w3c.github.io/html-aria/#el-img)                                             |
-| URL 内の禁止コードポイント            | `<a href="http://example.com/">`                | [#3629](https://github.com/markuplint/markuplint/issues/3629) | [URL LS — URL code points](https://url.spec.whatwg.org/#url-code-points)                                  |
-| `http-equiv` に応じた `meta[content]` | `<meta http-equiv="refresh" content="garbage">` | [#3734](https://github.com/markuplint/markuplint/issues/3734) | [HTML LS — meta `http-equiv`](https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-http-equiv) |
-| `media=` の MQL5 厳格文法             | `<link media="screen and (color: 1em)">`        | [#3850](https://github.com/markuplint/markuplint/issues/3850) | [Media Queries Level 5 §4](https://www.w3.org/TR/mediaqueries-5/#mq-features)                             |
-| URL 系属性の URL LS 厳格検証          | `<a href="http://user:pass@example.com">`       | [#3848](https://github.com/markuplint/markuplint/issues/3848) | [URL LS — URL parsing](https://url.spec.whatwg.org/#url-parsing)                                          |
+| 対象領域                              | v5 で失敗する例                                 | Issue                                                         | 仕様                                                                                                                                                |
+| ------------------------------------- | ----------------------------------------------- | ------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `type` に応じた `input[value]`        | `<input type="color" value="red">`              | [#3598](https://github.com/markuplint/markuplint/issues/3598) | [HTML LS — input 要素](https://html.spec.whatwg.org/multipage/input.html#the-input-element)                                                         |
+| `rel` に応じた `link[as]`             | `<link rel="preload" as="audio">`               | [#3189](https://github.com/markuplint/markuplint/issues/3189) | [HTML LS — link 要素](https://html.spec.whatwg.org/multipage/semantics.html#attr-link-as)                                                           |
+| `img[role]` + `alt=""`                | `<img role="presentation" alt="">`              | [#3641](https://github.com/markuplint/markuplint/issues/3641) | [ARIA in HTML — img](https://w3c.github.io/html-aria/#el-img)                                                                                       |
+| URL 内の禁止コードポイント            | `<a href="http://example.com/">`                | [#3629](https://github.com/markuplint/markuplint/issues/3629) | [URL LS — URL code points](https://url.spec.whatwg.org/#url-code-points)                                                                            |
+| `http-equiv` に応じた `meta[content]` | `<meta http-equiv="refresh" content="garbage">` | [#3734](https://github.com/markuplint/markuplint/issues/3734) | [HTML LS — meta `http-equiv`](https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-http-equiv)                                           |
+| `media=` の MQL5 厳格文法             | `<link media="screen and (color: 1em)">`        | [#3850](https://github.com/markuplint/markuplint/issues/3850) | [Media Queries Level 5 §4](https://www.w3.org/TR/mediaqueries-5/#mq-features)                                                                       |
+| URL 系属性の URL LS 厳格検証          | `<a href="http://user:pass@example.com">`       | [#3848](https://github.com/markuplint/markuplint/issues/3848) | [URL LS — URL parsing](https://url.spec.whatwg.org/#url-parsing)                                                                                    |
+| メディア系 `src` の非空必須           | `<img src="">`                                  | [#3868](https://github.com/markuplint/markuplint/issues/3868) | [HTML LS — valid non-empty URL](https://html.spec.whatwg.org/multipage/urls-and-fetching.html#valid-non-empty-url-potentially-surrounded-by-spaces) |
+| `<base href>` の URL LS 厳格化        | `<base href="http://user@example.com/">`        | [#3868](https://github.com/markuplint/markuplint/issues/3868) | [HTML LS — set the frozen base URL](https://html.spec.whatwg.org/multipage/semantics.html#set-the-frozen-base-url)                                  |
+| `<input type=url value>` の絶対URL    | `<input type="url" value="/relative">`          | [#3868](https://github.com/markuplint/markuplint/issues/3868) | [HTML LS — URL state](<https://html.spec.whatwg.org/multipage/input.html#url-state-(type=url)>)                                                     |
 
 ### URL 系属性 (`href` / `src` / `action` / `cite` / `itemid` / `itemtype` 等) で新たに違反となるパターン
 
@@ -173,6 +176,20 @@ v5 では、これまで `Any` として素通りしていた領域について 
 - **invalid-reverse-solidus** ([URL LS](https://url.spec.whatwg.org/#invalid-reverse-solidus)): `<a href="http://example.com\foo">`, `<a href="/foo\bar">`。URL LS はスペシャルスキーム URL の `\` を `/` に自動変換しますが validation error として報告します。非スペシャルスキーム (`data:`, `mailto:`) は opaque path の一部として扱うため引き続き受理されます。
 - **file-invalid-Windows-drive-letter** ([URL LS](https://url.spec.whatwg.org/#file-invalid-windows-drive-letter)): `<a href="file:///C|/foo">`。URL LS が `C|` を `C:` に自動補正します。コロン形式を使用してください。
 - **複数の `#`** ([URL LS — invalid-URL-unit](https://url.spec.whatwg.org/#invalid-url-unit) fragment state): `<a href="http://example.com/#a#b">`。2 つ目の `#` は自動 percent-encode されますが URL writing 文法では不正です。内側の `#` を `%23` に percent-encode するか除去してください。
+- **IPv6 host 以外の `[`/`]`** ([URL LS — invalid-URL-unit](https://url.spec.whatwg.org/#invalid-url-unit)): `<a href="[61:24:74]:98">` (IPv6 風の相対 URL)、`<a href="http://example.com/path[a]">`。`[`/`]` は special scheme URL の host 位置でのみ許容される URL code point です。
+- **`data:` URL に `,` が無い** ([RFC 2397](https://datatracker.ietf.org/doc/html/rfc2397)): `<a href="data:">`、`<a href="data:/example.com/">`。データ本体の直前に必須の `,` を入れてください。
+
+### メディア `src`・`<base href>`・`<input type=url value>` で新たに違反となるパターン
+
+上記の URL LS パイプラインに加え、3 つの専用型でさらに厳格化されています。
+
+- **`<audio src>` / `<embed src>` / `<iframe src>` / `<img src>` / `<input type=image src>` / `<script src>` / `<source src>` / `<track src>` / `<video src>`** は `NonEmptyURL` 型を使うようになり、ASCII 空白を剥がした結果が空 (空白のみ含む場合も) の値を拒否します。HTML LS §4.8 はこれらを「valid non-empty URL potentially surrounded by spaces」と定義しています。
+- **`<base href>`** は既存の `data:`/`javascript:` スキーム禁止に加え、URL LS の完全な検証も実行するようになりました。以前は `data:`/`javascript:` 以外なら無検査で受理していました。
+- **`<input type="url" value>`** は絶対 URL 限定の variant を使うようになりました。空の値は受理 (HTML LS §4.10.5.1.7 「指定されかつ非空なら」) ですが、相対 URL は拒否します。完全な `https://…` 形式を使うか、属性を空にしてください。
+
+:::note 仕様より厳しい既知ケース
+`<base href>` を完全な URL Living Standard パイプラインに通したことで、Node の `URL.canParse` の厳格さも `<base href>` に適用されるようになりました。副作用として、IPv4 形式で最終オクテットが 255 を超えるホスト値 (例: `<base href="http://192.168.0.257/">`) が markuplint で違反扱いになります。URL LS の host parser は IPv4 parse 失敗時に通常のホスト名としてフォールバックする規定があり nu-validator はこれを許容しますが、`URL.canParse` はこのフォールバックを実装していません。実利用に影響が出る場合は [Issue を起票](https://github.com/markuplint/markuplint/issues/new/choose) してください — 厳格な仕様要件ではなく「仕様より厳しいコーナーケース」として追跡しています。
+:::
 
 ### `media=` で新たに違反となるパターン
 

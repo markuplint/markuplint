@@ -768,8 +768,11 @@
 	},
 	"#HTMLEmbededAndMediaContentAttrs": {
 		// https://html.spec.whatwg.org/multipage/media.html#attr-media-src
+		// "valid non-empty URL potentially surrounded by spaces" — non-empty
+		// is mandated by the per-element src attribute definitions in
+		// HTML LS §4.8 (audio/embed/iframe/img/input[type=image]/source/track/video).
 		"src": {
-			"type": "URL"
+			"type": "NonEmptyURL"
 		},
 		// https://html.spec.whatwg.org/multipage/media.html#attr-media-preload
 		"preload": {

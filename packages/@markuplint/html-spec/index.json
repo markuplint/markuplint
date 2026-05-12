@@ -852,7 +852,7 @@
 			},
 			"#HTMLEmbededAndMediaContentAttrs": {
 				"src": {
-					"type": "URL"
+					"type": "NonEmptyURL"
 				},
 				"preload": {
 					"type": {
@@ -50531,7 +50531,7 @@
 				},
 				"src": {
 					"description": "The URL of the resource being embedded.",
-					"type": "URL",
+					"type": "NonEmptyURL",
 					"required": "[itemprop]"
 				},
 				"type": {
@@ -51573,7 +51573,7 @@
 				},
 				"src": {
 					"description": "The image URL. At least one of src and srcset is required for an <img> element. If srcset is specified, src is used in one of two ways: as a fallback for browsers that don't support srcset. if srcset uses the \"x\" descriptor, then src is equivalent to a source with the density descriptor 1x; that is, the image specified by src is used on low-density screens (such as typical 72 DPI or 96 DPI displays).",
-					"type": "URL",
+					"type": "NonEmptyURL",
 					"requiredEither": ["srcset"]
 				},
 				"srcset": {
@@ -52664,7 +52664,7 @@
 						},
 						{
 							"condition": "[type='url' i]",
-							"type": "URL"
+							"type": "AbsoluteURLOrEmpty"
 						},
 						{
 							"condition": "[type='email' i]",
@@ -54463,7 +54463,7 @@
 				},
 				"src": {
 					"description": "This attribute specifies the URI of an external script; this can be used as an alternative to embedding a script directly within a document.",
-					"type": "URL",
+					"type": "NonEmptyURL",
 					"condition": ":not([type='importmap' i]):not([type='speculationrules' i])"
 				},
 				"type": {
@@ -54757,7 +54757,7 @@
 				},
 				"src": {
 					"description": "Specifies the URL of the media resource. Required if the parent of <source> is <audio> or <video>. Not allowed if the parent is <picture>.",
-					"type": "URL",
+					"type": "NonEmptyURL",
 					"required": ":is(video, audio) > source",
 					"condition": ":is(video, audio) > source"
 				},
@@ -55744,7 +55744,7 @@
 				},
 				"src": {
 					"description": "Address of the track (.vtt file). Must be a valid URL. This attribute must be specified and its URL value must have the same origin as the document — unless the <audio> or <video> parent element of the track element has a crossorigin attribute.",
-					"type": "URL",
+					"type": "NonEmptyURL",
 					"required": true
 				},
 				"srclang": {
