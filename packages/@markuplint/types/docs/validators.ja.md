@@ -376,6 +376,21 @@ URL: {
 6. ベンチを refresh: `yarn bench:update:ml` 実行後、`tests/external/snapshots/diff/summary.md` を確認する。`match-error` が増え、`ml-only` が **増えない** ことが必須 (false positive 0)。
 7. `website/docs/migration/v4-to-v5/rules/invalid-attr.md` (および `i18n/ja/...` ミラー) の「URL 系属性で新たに違反となるパターン」セクションに、before/after 例とともに行を追加する。
 
+##### 属性ごとの新しい URL バリアント型を追加する手順
+
+新カテゴリではなく、属性レベルの制約 (「非空必須」「絶対 URL 限定」「特定スキーム禁止」等) を表現する新 `XxxURL` エイリアスを `checkURL` の上に被せて追加したい場合:
+
+1. `defs.ts` の既存 URL ファミリー (`URL` / `NonEmptyURL` / `BaseURL` / `AbsoluteURL` / `AbsoluteURLOrEmpty`) の隣にエントリを追加する。URL LS 検証は hoisted な `checkURLOnce` を再利用し、属性ごとの追加制約はその外側に被せる。
+2. JSON schema を再生成して新しい型識別子が spec data 上で有効になるようにする:
+   ```bash
+   cd packages/@markuplint/types && npx run-s schema:types schema:schema
+   ```
+3. 該当する属性に新型を割り当てる。`packages/@markuplint/html-spec/src/spec.<element>.jsonc` の attributes (もしくは共有グループ `spec-common.attributes.jsonc`) を更新。要素が `src` / `href` を local で `type: "URL"` 定義している場合、local 側が共有グループを shadow するので local 側も書き換える。
+4. html-spec の index を再生成: `yarn up:gen`。
+5. `packages/@markuplint/types/src/check.spec.ts` に defs レベルのユニットテストを追加する。empty 処理・scheme 禁止・absolute 要件など wrapper 層の挙動を、URL LS の上で検証する。URL LS のカバレッジ自体はここでは再テストせず、`check-url.spec.ts` に任せる。
+6. `packages/@markuplint/rules/src/invalid-attr/index.spec.ts` の URL LS テストブロックに rule 層 integration テストを追加し、schema → resolver → type → checker の pipeline が動くことを確認する。
+7. 本ファイル前方の「`checkURL` を内部利用する関連 URL 型」テーブルに新識別子・役割・対象属性を追記する。
+
 ---
 
 ## RFCバリデータ

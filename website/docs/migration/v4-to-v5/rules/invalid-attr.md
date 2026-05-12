@@ -187,6 +187,10 @@ Beyond the generic URL LS pipeline above, three specialised URL types tighten fu
 - **`<base href>`** now runs the full URL LS validator (in addition to the existing `data:` / `javascript:` scheme prohibition). Previously the type accepted any non-`data:`/`javascript:` value without further checks.
 - **`<input type="url" value>`** now uses an absolute-URL variant that accepts empty values (per HTML LS §4.10.5.1.7 "if specified and not empty") but rejects relative URLs. Use a full `https://…` form or leave the attribute empty.
 
+:::note Known stricter-than-nu case
+Routing `<base href>` through the full URL Living Standard pipeline also enrols `<base href>` in Node's `URL.canParse` strictness. One side effect: hosts with an IPv4-shaped value whose final octet exceeds 255 (e.g., `<base href="http://192.168.0.257/">`) are now flagged as invalid by markuplint. URL LS technically allows the parser to fall back to treating the value as a regular hostname, and nu-validator accepts it, but `URL.canParse` does not implement that fallback. If this materially affects your project, [file an issue](https://github.com/markuplint/markuplint/issues/new/choose) — we are tracking it as a stricter-than-spec corner case rather than a hard requirement.
+:::
+
 ### Patterns now flagged on `media=`
 
 The `media` attribute on `link`, `style`, `source`, and `svg|style` is now validated by a dedicated `MediaQueryList` checker. Any of the following — silently accepted under v4's generic `<media-query-list>` route — now raises an `invalid-attr` violation:

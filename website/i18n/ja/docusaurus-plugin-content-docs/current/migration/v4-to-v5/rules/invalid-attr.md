@@ -187,6 +187,10 @@ v5 では、これまで `Any` として素通りしていた領域について 
 - **`<base href>`** は既存の `data:`/`javascript:` スキーム禁止に加え、URL LS の完全な検証も実行するようになりました。以前は `data:`/`javascript:` 以外なら無検査で受理していました。
 - **`<input type="url" value>`** は絶対 URL 限定の variant を使うようになりました。空の値は受理 (HTML LS §4.10.5.1.7 「指定されかつ非空なら」) ですが、相対 URL は拒否します。完全な `https://…` 形式を使うか、属性を空にしてください。
 
+:::note 仕様より厳しい既知ケース
+`<base href>` を完全な URL Living Standard パイプラインに通したことで、Node の `URL.canParse` の厳格さも `<base href>` に適用されるようになりました。副作用として、IPv4 形式で最終オクテットが 255 を超えるホスト値 (例: `<base href="http://192.168.0.257/">`) が markuplint で違反扱いになります。URL LS の host parser は IPv4 parse 失敗時に通常のホスト名としてフォールバックする規定があり nu-validator はこれを許容しますが、`URL.canParse` はこのフォールバックを実装していません。実利用に影響が出る場合は [Issue を起票](https://github.com/markuplint/markuplint/issues/new/choose) してください — 厳格な仕様要件ではなく「仕様より厳しいコーナーケース」として追跡しています。
+:::
+
 ### `media=` で新たに違反となるパターン
 
 `link` / `style` / `source` / `svg|style` の `media` 属性は専用の `MediaQueryList` チェッカーで検証されるようになりました。v4 では汎用の `<media-query-list>` 経由で素通りしていた以下が、v5 では `invalid-attr` 違反となります。

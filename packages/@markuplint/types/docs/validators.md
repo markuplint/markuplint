@@ -376,6 +376,21 @@ Earlier residual `nu-only` URL fixtures were tracked in [#3848](https://github.c
 6. Refresh the bench: `yarn bench:update:ml` then inspect `tests/external/snapshots/diff/summary.md` — `match-error` should grow, `ml-only` must NOT (no false positives).
 7. Add a row to `website/docs/migration/v4-to-v5/rules/invalid-attr.md` (and the `i18n/ja/...` mirror) under "Patterns now flagged on URL-typed attributes" with a before/after example.
 
+##### Adding a new per-attribute URL variant type
+
+If you need a new `XxxURL` alias on top of `checkURL` (e.g., to encode a per-attribute restriction such as "must be non-empty", "must be absolute", or "must reject a specific scheme") instead of a new generic URL LS error category:
+
+1. Add the entry to `defs.ts` next to the existing URL family (`URL`, `NonEmptyURL`, `BaseURL`, `AbsoluteURL`, `AbsoluteURLOrEmpty`). Reuse the hoisted `checkURLOnce` for the URL LS validation step; layer the extra per-attribute constraints around it.
+2. Regenerate the JSON schema so the new type identifier becomes valid in spec data:
+   ```bash
+   cd packages/@markuplint/types && npx run-s schema:types schema:schema
+   ```
+3. Wire the new type into the relevant attributes in `packages/@markuplint/html-spec/src/spec.<element>.jsonc` (or the shared `spec-common.attributes.jsonc` group). If an element specifies the `src` / `href` locally with `type: "URL"`, the local entry shadows the shared group — update it too.
+4. Regenerate the html-spec index: `yarn up:gen`.
+5. Add `defs`-level unit tests in `packages/@markuplint/types/src/check.spec.ts` that exercise the new wrapper layer (empty handling, scheme prohibition, absolute requirement) on top of the URL LS surface. Do **not** re-test URL LS coverage there — that belongs in `check-url.spec.ts`.
+6. Add rule-level integration tests in `packages/@markuplint/rules/src/invalid-attr/index.spec.ts` under the URL LS test block so the schema → resolver → type → checker pipeline is exercised.
+7. Update the "Sibling URL types that compose `checkURL`" table earlier in this file with the new identifier, purpose, and consuming attributes.
+
 ---
 
 ## RFC Validators
