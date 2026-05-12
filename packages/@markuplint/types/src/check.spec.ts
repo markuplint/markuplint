@@ -185,6 +185,69 @@ test('JSON', () => {
 	expect(check('{"a": 1, "b": 2,}', 'JSON').matched).toBeFalsy();
 });
 
+// URL Living Standard family — verifies the `defs.ts` wrapper logic on top of
+// the shared `checkURLOnce` closure. The full URL LS validation surface is
+// covered in `whatwg/check-url.spec.ts`; these tests pin the per-attribute
+// composition layer (empty-rejection / scheme prohibition / absolute check).
+
+test('URL', () => {
+	expect(check('', 'URL').matched).toBe(true);
+	expect(check('https://example.com', 'URL').matched).toBe(true);
+	expect(check('/relative/path', 'URL').matched).toBe(true);
+	// URL LS validation errors must propagate (covered exhaustively in
+	// check-url.spec.ts; one representative each).
+	expect(check('http://user:pass@example.com', 'URL').matched).toBe(false);
+	expect(check('http:foo', 'URL').matched).toBe(false);
+});
+
+test('NonEmptyURL', () => {
+	// Empty / whitespace-only is rejected (HTML LS "valid non-empty URL").
+	expect(check('', 'NonEmptyURL').matched).toBe(false);
+	expect(check('   ', 'NonEmptyURL').matched).toBe(false);
+	expect(check('\t\n', 'NonEmptyURL').matched).toBe(false);
+	// Non-empty values delegate to `checkURL`.
+	expect(check('https://example.com', 'NonEmptyURL').matched).toBe(true);
+	expect(check('/relative/path', 'NonEmptyURL').matched).toBe(true);
+	// URL LS errors still fire through the delegation.
+	expect(check('http://user:pass@host', 'NonEmptyURL').matched).toBe(false);
+});
+
+test('BaseURL', () => {
+	// `<base href>`-specific scheme prohibition.
+	expect(check('data:text/plain,foo', 'BaseURL').matched).toBe(false);
+	expect(check('javascript:alert(1)', 'BaseURL').matched).toBe(false);
+	// Otherwise delegates to `checkURL` — URL LS errors are now reported
+	// (regression guard for the Phase 2 fix; previously BaseURL only
+	// filtered data:/javascript: and silently accepted everything else).
+	expect(check('http://user:pass@example.com/', 'BaseURL').matched).toBe(false);
+	expect(check('http:foo', 'BaseURL').matched).toBe(false);
+	// Valid URLs pass.
+	expect(check('https://example.com/', 'BaseURL').matched).toBe(true);
+	expect(check('/relative/path', 'BaseURL').matched).toBe(true);
+});
+
+test('AbsoluteURL', () => {
+	// Must be absolute.
+	expect(check('/relative', 'AbsoluteURL').matched).toBe(false);
+	expect(check('', 'AbsoluteURL').matched).toBe(false);
+	// Absolute URLs delegate to `checkURL` — URL LS errors are now reported.
+	expect(check('https://example.com/', 'AbsoluteURL').matched).toBe(true);
+	expect(check('http://example.com/#a#b', 'AbsoluteURL').matched).toBe(false);
+	expect(check('http://user@example.com/', 'AbsoluteURL').matched).toBe(false);
+});
+
+test('AbsoluteURLOrEmpty', () => {
+	// HTML LS §4.10.5.1.7 — empty is accepted (no default URL).
+	expect(check('', 'AbsoluteURLOrEmpty').matched).toBe(true);
+	expect(check('   ', 'AbsoluteURLOrEmpty').matched).toBe(true);
+	// Relative URLs are rejected (must be absolute).
+	expect(check('/relative', 'AbsoluteURLOrEmpty').matched).toBe(false);
+	expect(check('foo/bar', 'AbsoluteURLOrEmpty').matched).toBe(false);
+	// Absolute URLs pass; URL LS errors propagate.
+	expect(check('https://example.com/', 'AbsoluteURLOrEmpty').matched).toBe(true);
+	expect(check('http://user@example.com/', 'AbsoluteURLOrEmpty').matched).toBe(false);
+});
+
 test('HashName', () => {
 	// Valid: `#` followed by a non-empty name (existence is not the type's concern).
 	expect(check('#my-map', 'HashName').matched).toBe(true);

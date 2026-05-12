@@ -76,6 +76,12 @@ const SPECIAL_SCHEME_AUTHORITY_HAS_AT_SIGN = /^(?:(?:ftp|file|https?|wss?):)?\/\
  *
  * Example caught: `http://example.com/path#f#g`.
  *
+ * The regex has no `s` flag, so `.` does not match a newline. This is
+ * deliberate and depends on `ILLEGAL_WHITESPACE` (TAB/LF/CR) running
+ * earlier in `checkURL` — a `#…\n…#` input is already rejected before
+ * this regex is consulted. If you reorder the checks in `checkURL`, add
+ * the `s` flag here.
+ *
  * @see https://url.spec.whatwg.org/#invalid-url-unit
  */
 const MULTIPLE_HASH = /#.*#/;
