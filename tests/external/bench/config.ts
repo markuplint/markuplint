@@ -30,6 +30,17 @@ export const benchmarkConfig: Config = {
 	severity: {
 		parseError: 'error',
 	},
+	// nu-validator's test corpus contains a handful of fixtures that start
+	// with `<head>` or `<meta>` without a doctype but are nevertheless full
+	// HTML pages (e.g., `html/parsing/...`). The default `'auto'` document
+	// detection treats those as fragments, which silences `missing-doctype`
+	// and related document-level parse errors. Forcing `'document'` mode in
+	// the bench mirrors what nu-validator does (it always treats the input
+	// as a full document) and captures the extra coverage. End-user
+	// projects keep the `'auto'` default unless they opt in.
+	parserOptions: {
+		documentMode: 'document',
+	},
 	rules: {
 		'permitted-contents': true,
 		'required-attr': true,

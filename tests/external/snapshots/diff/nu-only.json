@@ -1348,20 +1348,6 @@
 			]
 		},
 		{
-			"path": "html/parser/eof-without-doctype-novalid.html",
-			"category": "uncategorized",
-			"nuMessageIds": [
-				"nv-d17ecf186456"
-			]
-		},
-		{
-			"path": "html/parser/no-doctype-novalid.html",
-			"category": "uncategorized",
-			"nuMessageIds": [
-				"nv-6c68ae64dad9"
-			]
-		},
-		{
 			"path": "html/parser/select-in-table-start-novalid.html",
 			"category": "uncategorized",
 			"nuMessageIds": [
