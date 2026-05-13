@@ -202,6 +202,29 @@ parse5 code を mirror している ml ルールが ruleset で **有効** な�
 
 検出範囲が parse5 と **異なる方向** のルール (例: `character-reference` は `<`、`>`、`&`、`"` のエスケープ漏れを検出 — parse5 の `unknown-named-character-reference` 等は逆方向の「書式エラー」検出) は `mirrorsParseErrorCodes` を **宣言しないでください**。両者は独立した補完関係です。
 
+### dedupe は ruleset レベルで判定
+
+dedupe チェックは **トップレベルの `rules` 設定** だけを見て、ノード単位の設定は見ません。`nodeRules` で局所的に mirror ルールを無効化した場合:
+
+```jsonc
+{
+  "rules": { "attr-duplication": true },
+  "nodeRules": [{ "selector": "span", "rules": { "attr-duplication": false } }],
+  "severity": { "parseError": "error" },
+}
+```
+
+…parse-error チャネルは依然として `attr-duplication` を global に有効と見なし、`<span>` 上の `duplicate-attribute` も **再 surface しません**。`<div><span attr attr></span></div>` に対して `<span>` の violation は 0 件 — 「ここではこのチェックを opt-out した」という意図と整合した挙動です。「parse-error チャネルが補完してくれる」という挙動ではありません。
+
+mirror ルールを局所無効化した要素で parse-error チャネルを発火させたい場合は、ルールを **global に無効化** して、parse5 code だけ enable してください:
+
+```jsonc
+{
+  "rules": { "attr-duplication": false },
+  "severity": { "parseError": { "duplicate-attribute": "error" } },
+}
+```
+
 ## 関連
 
 - 組み込みチャネル API: `@markuplint/ml-ast` の [`MLASTDocument.parseErrors`](https://github.com/markuplint/markuplint/blob/main/packages/%40markuplint/ml-ast/src/types.ts) と `MLASTParseErrorCode`

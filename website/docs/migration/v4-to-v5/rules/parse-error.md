@@ -202,6 +202,29 @@ Rules whose detection is **wider** than parse5 (e.g. `attr-duplication` also cov
 
 Rules whose detection is **narrower or different** from a parse5 code (e.g. `character-reference` detects unescaped `<`, `>`, `&`, `"` — the opposite direction of parse5's `unknown-named-character-reference` etc.) **must not** declare `mirrorsParseErrorCodes`. The two layers stay independent and complementary.
 
+### Dedupe is decided at the ruleset level
+
+The dedupe check looks at the **top-level `rules` config** — not at per-node configuration. If you disable a mirroring rule locally via `nodeRules`:
+
+```jsonc
+{
+  "rules": { "attr-duplication": true },
+  "nodeRules": [{ "selector": "span", "rules": { "attr-duplication": false } }],
+  "severity": { "parseError": "error" },
+}
+```
+
+…the parse-error channel still treats `attr-duplication` as active globally and **does not re-surface** `duplicate-attribute` on `<span>`. For `<div><span attr attr></span></div>` you get zero violations on `<span>` — consistent with the intent of "I opted out of this check here", rather than "I expected the parse-error channel to fill the gap".
+
+If you want the parse-error channel to fire on elements where a mirroring rule is locally disabled, disable the rule globally instead and enable just the parse5 code:
+
+```jsonc
+{
+  "rules": { "attr-duplication": false },
+  "severity": { "parseError": { "duplicate-attribute": "error" } },
+}
+```
+
 ## See also
 
 - Built-in channel API: [`MLASTDocument.parseErrors`](https://github.com/markuplint/markuplint/blob/main/packages/%40markuplint/ml-ast/src/types.ts) and `MLASTParseErrorCode` in `@markuplint/ml-ast`
