@@ -126,6 +126,35 @@ tail -->
 
 非致命的 code はすべて `'off'` 相当。致命的 `ParserError` (パーサーがスローしてドキュメントが処理不能) は引き続き `error` severity で emit されます。
 
+## ドキュメント vs フラグメントパース (`parserOptions.documentMode`)
+
+HTML パーサーは入力の先頭を見て document/fragment を自動判定します:
+
+- `<!doctype html>` または `<html>` で始まる → document としてパース
+- それ以外 → fragment としてパース
+
+`missing-doctype`、`misplaced-doctype`、`non-conforming-doctype` などの parse5 エラーは **document レベル** でしか発火しません。次の 2 つの現実的なケースでは自動判定をオーバーライドしたくなります:
+
+| ユースケース                                                                    | 設定                                          |
+| ------------------------------------------------------------------------------- | --------------------------------------------- |
+| `<head>`、`<meta>` 等で始まる SSR / テンプレート partial (完全なページではない) | `'fragment'` (`missing-doctype` 等を silence) |
+| `<!doctype html>` を意図的に省略している完全な HTML page で、欠如を警告したい   | `'document'` (`missing-doctype` を surface)   |
+
+```jsonc
+{
+  "parserOptions": {
+    "documentMode": "fragment", // または "document"、"auto" (デフォルト)
+  },
+  "severity": {
+    "parseError": {
+      "missing-doctype": "warning",
+    },
+  },
+}
+```
+
+**テンプレートエンジン系 parser**: Markdown のインライン HTML ブロックや Pug の raw HTML 行は常に partial です。`@markuplint/markdown-parser` と `@markuplint/pug-parser` はこれらの内部呼び出しで `'fragment'` を強制するので、ユーザー側で doctype エラーが Markdown / Pug のソースに漏れる心配はありません。
+
 ## 適用範囲
 
 非致命的チャネルは `MLASTDocument.parseErrors` を populate するパーサーでのみ発火します。現状は `@markuplint/html-parser` (および `.html` テンプレート向けにこれをラップする `SvelteKitTemplateParser` / `HtmlInPugParser`) のみです。

@@ -126,6 +126,35 @@ Each key is a `MLASTParseErrorCode`; the value is `'error' | 'warning' | 'info' 
 
 Equivalent to `"off"` for every non-fatal code. Fatal `ParserError` (the parser threw and the document is unprocessable) still emits at `error` severity.
 
+## Document vs fragment parsing (`parserOptions.documentMode`)
+
+The HTML parser auto-detects whether the input is a full document or a fragment by looking at the start of the source:
+
+- Starts with `<!doctype html>` or `<html>` → parsed as a document
+- Anything else → parsed as a fragment
+
+Some parse5 errors (`missing-doctype`, `misplaced-doctype`, `non-conforming-doctype`, …) are document-level only — they cannot fire on fragments. Two real-world situations need to override the auto-detection:
+
+| Use case                                                                                         | Setting                                               |
+| ------------------------------------------------------------------------------------------------ | ----------------------------------------------------- |
+| SSR / template partial that starts with `<head>`, `<meta>`, etc., and is _not_ a complete page   | `'fragment'` (silences `missing-doctype` and friends) |
+| Complete HTML page that intentionally omits `<!doctype html>` and you want to be warned about it | `'document'` (surfaces the missing doctype error)     |
+
+```jsonc
+{
+  "parserOptions": {
+    "documentMode": "fragment", // or "document" or "auto" (default)
+  },
+  "severity": {
+    "parseError": {
+      "missing-doctype": "warning",
+    },
+  },
+}
+```
+
+**Template-engine parsers**: Markdown's inline HTML blocks and Pug's raw HTML lines are always partials. `@markuplint/markdown-parser` and `@markuplint/pug-parser` force `'fragment'` for those internal calls regardless of user configuration, so you do not have to think about doctype errors leaking into Markdown / Pug source.
+
 ## Scope
 
 The non-fatal channel only fires for parsers that populate `MLASTDocument.parseErrors`. Currently that's `@markuplint/html-parser` (and the `SvelteKitTemplateParser` / `HtmlInPugParser` derivatives that wrap it for `.html` templates).
