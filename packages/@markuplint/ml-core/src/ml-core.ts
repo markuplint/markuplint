@@ -2,7 +2,7 @@ import type { AnyMLRule, MLRule } from './ml-rule/index.js';
 import type { Ruleset } from './ruleset/index.js';
 import type { MLFabric, MLSchema } from './types.js';
 import type { LocaleSet } from '@markuplint/i18n';
-import type { MLASTDocument, MLParser, ParserOptions } from '@markuplint/ml-ast';
+import type { MLASTDocument, MLASTParseErrorCode, MLParser, ParserOptions } from '@markuplint/ml-ast';
 import type {
 	ChildNodeRule,
 	FixData,
@@ -289,6 +289,8 @@ export class MLCore {
 			return { violations, fixedCode: fix ? this.#sourceCode : undefined };
 		}
 
+		this.#pushNonFatalParseErrors(violations);
+
 		const definedRuleName = new Set(this.#rules.map(rule => rule.name));
 
 		const setRuleNames = new Set([
@@ -404,16 +406,97 @@ export class MLCore {
 		}
 	}
 
-	#createParseError(message: string, line: number, col: number, raw: string): Violation | null {
-		if (this.#severity.parseError === false || this.#severity.parseError === 'off') {
+	/**
+	 * Surfaces non-fatal parser conformance errors collected by the underlying
+	 * parser (e.g., parse5's `onParseError` events on `MLASTDocument.parseErrors`)
+	 * via the same `parse-error` violation channel as fatal `ParserError`s.
+	 *
+	 * Order contract (relied on by every rule spec under
+	 * `@markuplint/rules/src/**`): each `parseErrors` entry is pushed in the
+	 * order the parser emitted it, *before* any rule iteration runs. Tests
+	 * that match on `toStrictEqual([...])` depend on this position.
+	 *
+	 * Severity resolution:
+	 *
+	 * - `severity.parseError` is a `Partial<Record<MLASTParseErrorCode, …>>` →
+	 *   each entry's `code` looks up its own severity; codes absent from the
+	 *   record default to `'off'` (suppressed).
+	 * - `severity.parseError` is a single severity string/boolean → applied
+	 *   uniformly to every entry.
+	 * - `severity.parseError` is unset → **all non-fatal codes are off**.
+	 *   Users must opt in explicitly.
+	 *
+	 * @param violations The verify-time violations array to mutate.
+	 */
+	#pushNonFatalParseErrors(violations: Violation[]): void {
+		const parseErrors = this.#ast?.parseErrors;
+		if (!parseErrors) {
+			return;
+		}
+		for (const parserError of parseErrors) {
+			const violation = this.#createParseError(
+				`Parser conformance error: ${parserError.code}`,
+				parserError.startLine,
+				parserError.startCol,
+				parserError.raw,
+				parserError.code,
+			);
+			if (violation) {
+				violations.push(violation);
+			}
+		}
+	}
+
+	/**
+	 * Builds a `ruleId: 'parse-error'` violation, honouring
+	 * `severity.parseError`.
+	 *
+	 * If `code` is supplied (non-fatal `parseErrors` entry) and the option is
+	 * a `Partial<Record<code, severity>>`, the per-code value is used (absent
+	 * codes default to `'off'`). If the option is unset, non-fatal entries
+	 * are suppressed (opt-in only) while fatal errors (no `code`) still
+	 * default to `'error'`.
+	 *
+	 * @returns the violation, or `null` if suppressed.
+	 */
+	#createParseError(
+		message: string,
+		line: number,
+		col: number,
+		raw: string,
+		code?: MLASTParseErrorCode,
+	): Violation | null {
+		const cfg = this.#severity.parseError;
+
+		if (cfg === false || cfg === 'off') {
 			return null;
 		}
 
-		// Default severity is 'error'
-		const severity =
-			this.#severity.parseError === true || this.#severity.parseError == null
-				? 'error'
-				: this.#severity.parseError;
+		let severity: Violation['severity'];
+
+		if (typeof cfg === 'object') {
+			if (code == null) {
+				// Fatal ParserError without a code; the Record form cannot target
+				// it, so fall back to `'error'` (the channel is otherwise enabled).
+				severity = 'error';
+			} else {
+				const perCode = cfg[code];
+				if (perCode == null || perCode === false || perCode === 'off') {
+					return null;
+				}
+				severity = perCode === true ? 'error' : perCode;
+			}
+		} else if (cfg == null) {
+			// New default: non-fatal `parseErrors` entries are off; fatal
+			// `ParserError`s (no code) still emit at `'error'`.
+			if (code != null) {
+				return null;
+			}
+			severity = 'error';
+		} else {
+			// Uniform string/boolean form (legacy).
+			severity = cfg === true ? 'error' : cfg;
+		}
 
 		return {
 			ruleId: 'parse-error',

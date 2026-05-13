@@ -145,7 +145,10 @@ flowchart LR
 
 1. **Parse**: `MLCore` invokes the configured parser (`MLParser`) to produce an `MLASTDocument`
 2. **Create Document**: The AST is wrapped in an `MLDocument`, which builds the full MLDOM tree via `createNode()` factory. `RuleMapper` resolves rule configuration for every node
-3. **Verify**: For each `MLRule`, the engine calls `document.setRule(rule)` then `rule.verify(document)`. The rule walks relevant nodes via `document.walkOn()` and reports violations through `MLRuleContext`. Rules may attach inline `fix` callbacks to reports that return `TextEdit` objects
+3. **Verify**: For each `MLRule`, the engine calls `document.setRule(rule)` then `rule.verify(document)`. The rule walks relevant nodes via `document.walkOn()` and reports violations through `MLRuleContext`. Rules may attach inline `fix` callbacks to reports that return `TextEdit` objects.
+
+   **Built-in `parse-error` channel**: before iterating rules, `verify()` consumes `MLASTDocument.parseErrors` (non-fatal parser conformance errors collected by the underlying parser — e.g., parse5's `onParseError` events) via `#pushNonFatalParseErrors()` and produces one `ruleId: 'parse-error'` violation per entry. The channel shares the same `severity.parseError` knob as its fatal sibling (`ParserError` raised in step 1). Order contract: parse-error violations always precede rule violations in the output; rule specs depend on this ordering.
+
 4. **Fix** (optional): When `fix=true`, fix callbacks on reports are executed via `RuleFixer` to produce `TextEdit[]`. `FixApplier.applyFixes(sourceCode, fixes)` applies all edits to the source text with overlap detection. When fixes require multiple passes, `_multiPassFix()` orchestrates re-parsing and re-verification, returning a `FixSummary` with pass count, applied/skipped totals, and first-pass edits for cursor offset computation
 
 ## MLDOM Class Hierarchy
