@@ -98,12 +98,11 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 	const skippedFiles: string[] = [];
 	const filesContent = new Map<string, { sourceCode: string; fixedCode: string }>();
 	const engines = new Map<string, MLEngine>();
-	const severityParseError = options.severityParseError.toLowerCase();
-	const severity: SeverityOptions = {
-		parseError: ['error', 'warning', 'off'].includes(severityParseError)
-			? (severityParseError as Severity | 'off')
-			: true,
-	};
+	const severityParseError = options.severityParseError?.toLowerCase();
+	const severity: SeverityOptions =
+		severityParseError != null && ['error', 'warning', 'off'].includes(severityParseError)
+			? { parseError: severityParseError as Severity | 'off' }
+			: {};
 
 	for (const file of fileList) {
 		// Check if collector is already locked (max-count reached)
