@@ -1,4 +1,4 @@
-import type { ParserOptions } from '@markuplint/ml-ast';
+import type { MLASTParseErrorCode, ParserOptions } from '@markuplint/ml-ast';
 import type { ARIAVersion } from '@markuplint/ml-spec';
 import type { RegexSelector } from '@markuplint/selector';
 import type { Nullable } from '@markuplint/shared';
@@ -111,8 +111,47 @@ export type SpecConfig = {
  * Options for controlling the severity of specific diagnostic categories.
  */
 export type SeverityOptions = {
-	readonly parseError?: Severity | 'off' | boolean;
+	/**
+	 * Severity for non-fatal parser conformance errors surfaced via the
+	 * built-in `parse-error` channel.
+	 *
+	 * Accepts either of:
+	 *
+	 * - A single severity (`'error' | 'warning' | 'info' | 'off' | boolean`)
+	 *   applied uniformly to **every** parser error code.
+	 * - A {@link Partial} record keyed by {@link MLASTParseErrorCode}; codes
+	 *   not present in the record fall through to `'off'`.
+	 *
+	 * **Default**: all codes off. The channel emits nothing until the user
+	 * either flips this option to a single severity or opts specific codes in
+	 * via the record form. This preserves backwards compatibility for users
+	 * upgrading from versions where the channel did not exist.
+	 *
+	 * @example single severity (legacy form)
+	 * ```jsonc
+	 * { "severity": { "parseError": "error" } }
+	 * ```
+	 *
+	 * @example per-code opt-in (recommended)
+	 * ```jsonc
+	 * {
+	 *   "severity": {
+	 *     "parseError": {
+	 *       "duplicate-attribute": "error",
+	 *       "unknown-named-character-reference": "warning"
+	 *     }
+	 *   }
+	 * }
+	 * ```
+	 */
+	readonly parseError?: ParseErrorSeverity | Partial<Record<MLASTParseErrorCode, ParseErrorSeverity>>;
 };
+
+/**
+ * Severity values accepted by {@link SeverityOptions.parseError}, in both
+ * the uniform-severity and per-code forms.
+ */
+export type ParseErrorSeverity = Severity | 'off' | boolean;
 
 /**
  * Normalized form of pretender configuration used after merging.
