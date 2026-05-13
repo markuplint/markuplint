@@ -526,6 +526,29 @@ export type ParserOptions = {
 	readonly ignoreFrontMatter?: boolean;
 	/** How to distinguish authored (component) element names from native HTML elements */
 	readonly authoredElementName?: ParserAuthoredElementNameDistinguishing;
+	/**
+	 * Override how the underlying HTML parser decides between full-document
+	 * and fragment parsing.
+	 *
+	 * - `'auto'` (default) — inspect the source: input starting with
+	 *   `<!doctype html>` or `<html>` is treated as a full document;
+	 *   anything else as a fragment. Backwards-compatible behaviour.
+	 * - `'document'` — force full-document parsing. Use for sources that
+	 *   are complete HTML pages without an explicit doctype, so that
+	 *   document-level parse5 errors (`missing-doctype`, `misplaced-doctype`,
+	 *   etc.) surface via the `parse-error` channel.
+	 * - `'fragment'` — force fragment parsing. Use for SSR / template
+	 *   partials whose source intentionally starts with `<head>`, `<meta>`,
+	 *   `<title>`, … as legitimate inserted chunks (parse5 should not emit
+	 *   `missing-doctype` for those).
+	 *
+	 * Template-engine parsers that internally re-invoke the HTML parser for
+	 * embedded HTML chunks (Markdown HTML blocks, Pug raw HTML output, …)
+	 * pass `'fragment'` to that internal call by default; users can still
+	 * override that via `parserOptions` when their template legitimately
+	 * carries a full document.
+	 */
+	readonly documentMode?: 'auto' | 'document' | 'fragment';
 };
 
 /**
