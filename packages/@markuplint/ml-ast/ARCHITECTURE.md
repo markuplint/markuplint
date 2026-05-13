@@ -246,6 +246,16 @@ This enables lint rules to validate whitespace around `=`, quoting style, and at
 
 `MLParser` requires a `parse(sourceCode, options?)` method that returns an `MLASTDocument`. Optional fields include `endTag` (end tag handling strategy), `booleanish` (boolean attribute detection), and `tagNameCaseSensitive` (for XHTML/JSX).
 
+### Non-fatal parser conformance errors
+
+`MLASTDocument` carries an optional `parseErrors: readonly MLASTParseError[]` field for **non-fatal** parser-level conformance errors collected during tokenisation (e.g., parse5's `onParseError` events for `nested-comment`, `eof-in-doctype`, `duplicate-attribute`, etc. — see HTML LS §13.2.5 "Tokenization").
+
+`@markuplint/ml-core` consumes this field in its verify pipeline and surfaces each entry as a `ruleId: 'parse-error'` violation, sharing the channel with **fatal** `ParserError`s. The configured `severity.parseError` controls both surfaces uniformly (`'off'` suppresses, default `'error'`).
+
+Order contract: entries appear in the order the parser emitted them, and `ml-core` pushes them **before** any rule iteration runs — so they always precede rule-level violations in the resulting list.
+
+Custom parsers may populate `parseErrors` from their own diagnostic channel. The field is optional; parsers without an equivalent surface (regex tokenizers, framework templating parsers like `@markuplint/jsx-parser` / `vue-parser` / `svelte-parser` / `astro-parser` / `pug-parser`) simply omit it and emit no parse-error violations.
+
 ## Configuration Types
 
 | Type                                      | Description                                                            |
