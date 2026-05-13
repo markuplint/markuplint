@@ -560,4 +560,42 @@ describe('Built-in parse-error channel (#3844)', () => {
 		});
 		expect(violations.filter(v => v.ruleId === 'parse-error')).toStrictEqual([]);
 	});
+
+	test('parserOptions.documentMode "fragment" silences document-level parse errors', async () => {
+		// `<head>...</head>` standalone defaults to fragment parsing anyway,
+		// but with `documentMode: 'document'` it produces `missing-doctype`.
+		// Verify that explicit `'fragment'` suppresses it (SSR partial use case).
+		const source = '<head><meta charset="utf-8"><title>partial</title></head>';
+		const { violations } = await mlTest(source, {
+			parserOptions: { documentMode: 'fragment' },
+			severity: { parseError: 'error' },
+		});
+		expect(violations.find(v => v.message === 'Parser conformance error: missing-doctype')).toBeUndefined();
+	});
+
+	test('parserOptions.documentMode "document" surfaces missing-doctype on bare-head sources', async () => {
+		// Same input — `<head>...` without `<!doctype html>` — forced to be
+		// parsed as a document so parse5 emits `missing-doctype`.
+		const source = '<head><meta charset="utf-8"><title>full-page-no-doctype</title></head><body>x</body>';
+		const { violations } = await mlTest(source, {
+			parserOptions: { documentMode: 'document' },
+			severity: { parseError: { 'missing-doctype': 'error' } },
+		});
+		expect(violations).toContainEqual(
+			expect.objectContaining({
+				ruleId: 'parse-error',
+				message: 'Parser conformance error: missing-doctype',
+			}),
+		);
+	});
+
+	test('parserOptions.documentMode "auto" (default) keeps current behaviour', async () => {
+		// Bare `<head>` without doctype: auto → fragment → no document-level
+		// errors. Same input as the previous test, no documentMode set.
+		const source = '<head><meta charset="utf-8"><title>partial</title></head>';
+		const { violations } = await mlTest(source, {
+			severity: { parseError: 'error' },
+		});
+		expect(violations.find(v => v.message === 'Parser conformance error: missing-doctype')).toBeUndefined();
+	});
 });
