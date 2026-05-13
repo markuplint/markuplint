@@ -1,7 +1,8 @@
 import type { Replacements } from './optimize-starts-head-or-body.js';
 import type { Node } from './types.js';
-import type { MLASTNodeTreeItem, MLASTParentNode } from '@markuplint/ml-ast';
+import type { MLASTNodeTreeItem, MLASTParentNode, MLASTParseError } from '@markuplint/ml-ast';
 import type { ChildToken, ParseOptions, ParserOptions } from '@markuplint/parser-utils';
+import type { ParserError as Parse5ParserError } from 'parse5';
 
 import { Parser } from '@markuplint/parser-utils';
 import { parse, parseFragment } from 'parse5';
@@ -43,18 +44,35 @@ export class HtmlParser extends Parser<Node, State> {
 		});
 	}
 
-	tokenize(): { ast: Node[]; isFragment: boolean } {
+	tokenize(): { ast: Node[]; isFragment: boolean; parseErrors: readonly MLASTParseError[] } {
 		const isFragment = isDocumentFragment(this.rawCode);
 		const parseFn = isFragment ? parseFragment : parse;
-		const doc = parseFn(this.rawCode, {
+		const collected: MLASTParseError[] = [];
+		const rawCode = this.rawCode;
+		const doc = parseFn(rawCode, {
 			scriptingEnabled: false,
 			sourceCodeLocationInfo: true,
+			onParseError(error: Parse5ParserError) {
+				const startOffset = error.startOffset;
+				const endOffset = error.endOffset;
+				collected.push({
+					code: error.code,
+					startOffset,
+					startLine: error.startLine,
+					startCol: error.startCol,
+					endOffset,
+					endLine: error.endLine,
+					endCol: error.endCol,
+					raw: extractRawForParseError(rawCode, startOffset, endOffset),
+				});
+			},
 		});
 		const childNodes = doc.childNodes;
 
 		return {
 			ast: childNodes,
 			isFragment,
+			parseErrors: collected,
 		};
 	}
 
@@ -224,3 +242,41 @@ export class HtmlParser extends Parser<Node, State> {
  * Default singleton instance of the HTML parser.
  */
 export const parser = new HtmlParser();
+
+/**
+ * Returns a non-empty `raw` slice for a parse5 parse error.
+ *
+ * parse5 frequently reports parse errors at zero-width positions
+ * (e.g., `duplicate-attribute` fires at the `=` between the attribute name
+ * and its value, not over the name itself). A bare `rawCode.slice(start, end)`
+ * on these positions yields the empty string, which leaves the reporter with
+ * no excerpt to show the user.
+ *
+ * If the span is empty, fall back to the **token-shaped** substring around
+ * `startOffset` — the run of non-whitespace, non-`<>"'/=` characters that
+ * sits at that position. This is a best-effort heuristic: it surfaces the
+ * attribute name, tag-name fragment, or character-reference body that
+ * triggered the error, without claiming any specific spec semantics.
+ *
+ * Capped at 32 chars so a runaway slice (e.g., on `unexpected-null-character`
+ * pointing into a long text node) does not bloat reporter output.
+ */
+function extractRawForParseError(rawCode: string, startOffset: number, endOffset: number): string {
+	if (endOffset > startOffset) {
+		return rawCode.slice(startOffset, endOffset);
+	}
+	// Walk backwards from startOffset over token-shaped characters to find the
+	// start of the surrounding token (attribute name, character reference,
+	// etc.). Stop at any whitespace or HTML structural punctuation.
+	let begin = startOffset;
+	while (begin > 0 && !/[\s<>"'/=&]/.test(rawCode[begin - 1] ?? '')) {
+		begin--;
+	}
+	// Walk forwards similarly to find the end.
+	let end = startOffset;
+	const max = Math.min(rawCode.length, startOffset + 32);
+	while (end < max && !/[\s<>"'/=&]/.test(rawCode[end] ?? '')) {
+		end++;
+	}
+	return rawCode.slice(begin, end);
+}

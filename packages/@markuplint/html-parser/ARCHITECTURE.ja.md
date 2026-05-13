@@ -73,15 +73,15 @@ Parser<Node, State>  (@markuplint/parser-utils)
 
 ### オーバーライドメソッド
 
-| メソッド            | 用途                                                                                              |
-| ------------------- | ------------------------------------------------------------------------------------------------- |
-| `tokenize()`        | フラグメント判定に基づき parse5 の `parse()` または `parseFragment()` を呼び出す                  |
-| `beforeParse()`     | head/body 最適化のセットアップとオフセット追跡                                                    |
-| `afterParse()`      | プレースホルダーから元の head/body タグ名を復元                                                   |
-| `nodeize()`         | parse5 ノードを markuplint AST ノードに変換。ゴースト要素、テンプレートコンテンツ、名前空間を処理 |
-| `afterNodeize()`    | ゴースト要素の位置計算用に `afterPosition` 状態を更新                                             |
-| `visitText()`       | `researchTags: true` と `invalidTagAsText: true` で親に委譲                                       |
-| `visitSpreadAttr()` | `null` を返す（HTML はスプレッド属性をサポートしない）                                            |
+| メソッド            | 用途                                                                                                                                                                                                                                                                                                                                                                                      |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `tokenize()`        | フラグメント判定に基づき parse5 の `parse()` または `parseFragment()` を呼び出す。**parse5 の `onParseError` を配線して非致命的な parser 適合エラーを `MLASTDocument.parseErrors` に収集** (`@markuplint/ml-core` が `ruleId: 'parse-error'` 違反として消費)。`extractRawForParseError()` で空 span の `raw` を周囲のトークン (属性名、文字参照等) で埋め、違反の抜粋として有用な値にする |
+| `beforeParse()`     | head/body 最適化のセットアップとオフセット追跡                                                                                                                                                                                                                                                                                                                                            |
+| `afterParse()`      | プレースホルダーから元の head/body タグ名を復元                                                                                                                                                                                                                                                                                                                                           |
+| `nodeize()`         | parse5 ノードを markuplint AST ノードに変換。ゴースト要素、テンプレートコンテンツ、名前空間を処理                                                                                                                                                                                                                                                                                         |
+| `afterNodeize()`    | ゴースト要素の位置計算用に `afterPosition` 状態を更新                                                                                                                                                                                                                                                                                                                                     |
+| `visitText()`       | `researchTags: true` と `invalidTagAsText: true` で親に委譲                                                                                                                                                                                                                                                                                                                               |
+| `visitSpreadAttr()` | `null` を返す（HTML はスプレッド属性をサポートしない）                                                                                                                                                                                                                                                                                                                                    |
 
 ## パースパイプライン
 
