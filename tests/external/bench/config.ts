@@ -20,6 +20,16 @@ export const BENCHMARK_CONFIG_ID = 'all-rules';
  * are mirrored here.
  */
 export const benchmarkConfig: Config = {
+	// The built-in `parse-error` channel ships default-off so end users opt in
+	// per parse5 ERR code (e.g. `{ "parseError": { "duplicate-attribute":
+	// "error" } }`). The bench enables every code uniformly to maximise
+	// conformance coverage — each HTML LS tokenizer / tree-construction
+	// parse error that parse5 emits becomes a markuplint error and counts
+	// toward `match-error` against nu-validator. parse5 adding new codes
+	// flows in automatically without touching this config.
+	severity: {
+		parseError: 'error',
+	},
 	rules: {
 		'permitted-contents': true,
 		'required-attr': true,
