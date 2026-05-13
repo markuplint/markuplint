@@ -81,6 +81,40 @@ tokenize(): Tokenized<MyNode, MyState> {
 
 Parsers that have no equivalent surface (e.g., framework template parsers like JSX / Vue / Svelte / Astro / Pug — none invoke parse5) simply omit `parseErrors`, and the channel stays silent for that source type.
 
+### (Optional) Forward parseErrors from an embedded delegated parser
+
+If your parser delegates to a **separate** `Parser` instance during `nodeize()` (for example, `@markuplint/markdown-parser` calls a private `HtmlParser` for every inline HTML block; `@markuplint/pug-parser` runs `HtmlInPugParser` for each raw HTML line), the embedded `MLASTDocument.parseErrors` are not automatically forwarded — `tokenize()` returned **before** the embedded parse happened.
+
+Use the base-class hook `this.accumulateParseErrors(embeddedDoc.parseErrors)` to buffer them; the top-level `parse()` merges the buffer with the top-level `tokenize()` parseErrors when constructing the final `MLASTDocument`.
+
+```ts
+nodeize(originNode: MyNode, parent: MLASTParentNode | null, depth: number) {
+  // …
+  const embeddedDoc = this.#htmlParser.parse(originNode.value, {
+    offsetOffset: originNode.offset,
+    offsetLine: originNode.line,
+    offsetColumn: originNode.col,
+    documentMode: 'fragment', // see below
+  });
+  // Forward embedded tokenizer-level errors. If `embeddedDoc.parseErrors` is
+  // undefined or empty, this is a no-op.
+  this.accumulateParseErrors(embeddedDoc.parseErrors);
+  return [...embeddedDoc.nodeList];
+}
+```
+
+The buffer is reset on every top-level `parse()` invocation, so singleton parser instances remain safe to reuse.
+
+### (Optional) Force the HTML parser's document/fragment mode
+
+`ParserOptions.documentMode` overrides the HTML parser's auto-detection:
+
+- `'auto'` (default): inspect the source — `<!doctype html>` / `<html>` ⇒ document; otherwise fragment.
+- `'document'`: force `parse5.parse()`. Use when you know the source is a complete HTML page (so `missing-doctype`, `misplaced-doctype`, etc. fire).
+- `'fragment'`: force `parse5.parseFragment()`. Use when the source is a template partial (SSR `<head>` chunks, Markdown / Pug inline HTML, JSX template literals) — silences document-level parse5 errors that would otherwise spam every partial.
+
+Template-engine parsers that re-invoke the HTML parser internally should hard-set `documentMode: 'fragment'` on the embedded `parse()` call because there is no template construct that legitimately wraps a complete HTML document at that level (`markdown-parser` and `pug-parser` follow this pattern). Parsers that extend `HtmlParser` directly (Group 1 — `EJSParser`, `PHPParser`, `LiquidParser`, …) should leave the option alone and let the user supply it via `parserOptions` in their markuplint config.
+
 ### Step 3: Export the parser module
 
 1. Export as `MLParserModule`: `export default { parser: new MyParser() }`

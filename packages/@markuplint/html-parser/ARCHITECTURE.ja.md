@@ -73,15 +73,15 @@ Parser<Node, State>  (@markuplint/parser-utils)
 
 ### オーバーライドメソッド
 
-| メソッド            | 用途                                                                                                                                                                                                                                                                                                                                                                                      |
-| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `tokenize()`        | フラグメント判定に基づき parse5 の `parse()` または `parseFragment()` を呼び出す。**parse5 の `onParseError` を配線して非致命的な parser 適合エラーを `MLASTDocument.parseErrors` に収集** (`@markuplint/ml-core` が `ruleId: 'parse-error'` 違反として消費)。`extractRawForParseError()` で空 span の `raw` を周囲のトークン (属性名、文字参照等) で埋め、違反の抜粋として有用な値にする |
-| `beforeParse()`     | head/body 最適化のセットアップとオフセット追跡                                                                                                                                                                                                                                                                                                                                            |
-| `afterParse()`      | プレースホルダーから元の head/body タグ名を復元                                                                                                                                                                                                                                                                                                                                           |
-| `nodeize()`         | parse5 ノードを markuplint AST ノードに変換。ゴースト要素、テンプレートコンテンツ、名前空間を処理                                                                                                                                                                                                                                                                                         |
-| `afterNodeize()`    | ゴースト要素の位置計算用に `afterPosition` 状態を更新                                                                                                                                                                                                                                                                                                                                     |
-| `visitText()`       | `researchTags: true` と `invalidTagAsText: true` で親に委譲                                                                                                                                                                                                                                                                                                                               |
-| `visitSpreadAttr()` | `null` を返す（HTML はスプレッド属性をサポートしない）                                                                                                                                                                                                                                                                                                                                    |
+| メソッド             | 用途                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `tokenize(options?)` | parse5 の `parse()` または `parseFragment()` を呼び出す。優先順位: (1) `options.documentMode === 'document'` → document として強制パース; (2) `options.documentMode === 'fragment'` → fragment として強制パース; (3) `'auto'` または未指定 (デフォルト) → `isDocumentFragment(rawCode)` を実行。parse5 の `onParseError` を配線して非致命的な parser 適合エラーを `MLASTDocument.parseErrors` に収集 (`@markuplint/ml-core` が `ruleId: 'parse-error'` 違反として消費)。空 span の `raw` フィールドは export された `extractRawForParseError()` ヘルパーで埋め、違反の抜粋として有用な値にする |
+| `beforeParse()`      | head/body 最適化のセットアップとオフセット追跡                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `afterParse()`       | プレースホルダーから元の head/body タグ名を復元                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `nodeize()`          | parse5 ノードを markuplint AST ノードに変換。ゴースト要素、テンプレートコンテンツ、名前空間を処理                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `afterNodeize()`     | ゴースト要素の位置計算用に `afterPosition` 状態を更新                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| `visitText()`        | `researchTags: true` と `invalidTagAsText: true` で親に委譲                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| `visitSpreadAttr()`  | `null` を返す（HTML はスプレッド属性をサポートしない）                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 
 ## パースパイプライン
 
@@ -147,6 +147,33 @@ HTML ソースが `<head>` または `<body>` で始まる場合（前に `<html
 - **フラグメント**: それ以外すべて
 
 この区別は重要です。parse5 の `parse()` はフルドキュメントパースアルゴリズムを適用し（暗黙の `<html>`、`<head>`、`<body>` を挿入）、`parseFragment()` はコンテンツをそのままパースするためです。
+
+### `parserOptions.documentMode` によるオーバーライド
+
+ユーザー (および下流パーサー) は `ParserOptions.documentMode` で自動判定をオーバーライドできます:
+
+| 値           | 挙動                                                                                                                                                                        |
+| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `'auto'`     | デフォルト。上述の `isDocumentFragment(rawCode)` を実行。                                                                                                                   |
+| `'document'` | `parse5.parse()` を強制。doctype を省略したページで document レベルの parse5 エラー (`missing-doctype`、`misplaced-doctype`、`non-conforming-doctype` 等) を surface する。 |
+| `'fragment'` | `parse5.parseFragment()` を強制。`<head>`、`<meta>`、`<title>` 等で始まる SSR / テンプレート partial で document レベルエラーを silence する。                              |
+
+このオプションは `tokenize(options)` を通って配線されます。Markdown / Pug などのテンプレートエンジン系 parser は内部 HtmlParser インスタンスへの呼び出しで `'fragment'` を強制します (host 構文が document boundary を所有しているため)。ユーザーはこれをオーバーライドできません。
+
+## 空 span パースエラーの抜粋 (`extractRawForParseError`)
+
+parse5 はパースエラーをしばしば zero-width の位置で報告します — 例えば `duplicate-attribute` は属性名上ではなく、属性名と値の間の `=` で発火します。そのような位置で素朴に `rawCode.slice(start, end)` を実行すると空文字列になり、違反の reporter に抜粋が無くなります。
+
+`extractRawForParseError(rawCode, startOffset, endOffset)` は export されたヘルパーで:
+
+1. span が non-empty なら `rawCode.slice(startOffset, endOffset)` を返す。
+2. そうでなければ **token 形状の文字** (whitespace、`<`、`>`、`"`、`'`、`/`、`=`、`&` 以外) を `startOffset` から外に向かって walk し、周囲のトークンを返す。前方 walk は 32 文字でキャップ。
+
+直接単体テスト可能なように export されています。`extract-raw-for-parse-error.spec.ts` で全分岐 (non-empty、後方 walk、前方 walk、両方向、EOS / SOS、32 文字 cap、stop-char) を網羅。
+
+## parse5 `ERR` ↔ `MLASTParseErrorCode` の同期
+
+`@markuplint/ml-ast` の `MLASTParseErrorCode` は parse5 の `ERR` enum (parse5 7.x 時点で 60 codes) をミラーする手動メンテナンスな string-literal union 型です。`parse-error-code-sync.spec.ts` に compile-time guard を置いて、双方向 (`(typeof ERR)[keyof typeof ERR]` ⊆ `MLASTParseErrorCode` および逆向き) でアサート。parse5 が code を追加・削除したら、ml-ast の型が追従するまで build がここで止まります。
 
 ## 外部依存
 

@@ -78,6 +78,12 @@ class HtmlInPugParser extends HtmlParser {
 
 The `ignoreTags` option masks `#[...]` tag interpolation sequences so that the HTML parser treats them as preprocessor-specific blocks (`#ps:tag-interpolation`) rather than attempting to parse them as HTML. These blocks are later recursively parsed by a new `PugParser` instance.
 
+### Embedded HTML mode and parse errors
+
+Every invocation of `new HtmlInPugParser().parse(...)` hard-sets `parserOptions.documentMode: 'fragment'`. Pug owns the document boundary (`doctype html`, `html(...)`), so any inline HTML emitted by a single Pug line is a partial by definition. Forcing fragment mode keeps parse5 from firing document-level errors (`missing-doctype`, `misplaced-doctype`, etc.) on every Pug source file.
+
+The embedded `HtmlInPugParser` may still emit **tokenizer-level** parse errors (e.g. `duplicate-attribute`, `nested-comment`). These are surfaced through `Parser.accumulateParseErrors()` (provided by `@markuplint/parser-utils`) into the outer `MLASTDocument.parseErrors`, so users who opt in via `severity.parseError` see them with offsets that point back into the Pug source.
+
 ## PugParser Class
 
 ### Inheritance
