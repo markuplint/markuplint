@@ -22,6 +22,8 @@ When adding or editing a rule whose detection covers a parse5 `onParseError` eve
 - `attr-duplication/meta.ts`, `doctype/meta.ts`, `no-orphaned-end-tag/meta.ts` — pattern 1 (self-detection covers)
 - `character-reference/meta.ts` + `character-reference/index.ts` — pattern 2 (rule reads `parseErrors` and reports)
 
+**ml-core lookup note:** ml-core checks **both** `ruleset.rules[rule.name]` (alias / direct entry) and `ruleset.rules[rule.baseRuleId]` (base rule name) when deciding whether the mirror is in force. Don't optimise the lookup to a single name — preset-aliased entries (`html-standard/attr-duplication`) live under the alias, while direct user configs (`attr-duplication`) live under the base. The dual lookup makes both styles "in force" via the same mirror declaration.
+
 ## Test ID Convention (MANDATORY)
 
 Every `test()` block in `src/**/*.spec.ts` MUST have a unique ID prefix:
