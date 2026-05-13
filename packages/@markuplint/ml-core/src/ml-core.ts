@@ -456,9 +456,19 @@ export class MLCore {
 			if (rule.mirrorsParseErrorCodes.length === 0) {
 				continue;
 			}
-			const ruleName = rule.baseRuleId ?? rule.name;
-			const ruleConfig = this.#ruleset.rules[ruleName];
-			if (ruleConfig === undefined) {
+			// The rule is "mentioned in the ruleset" if **either** the alias
+			// name OR the base rule name has an entry. Two entry styles exist:
+			//
+			// - Direct user configs use base rule names: `rules.attr-duplication`
+			// - Preset named nodeRules use alias names: `rules['html-standard/attr-duplication']`
+			//
+			// `MLRule` for a preset-aliased entry has `rule.name = 'html-standard/...'`
+			// and `rule.baseRuleId = 'attr-duplication'`; for a direct entry,
+			// `rule.name = 'attr-duplication'` and `baseRuleId` is undefined.
+			// Checking both names covers both styles.
+			const aliasConfig = this.#ruleset.rules[rule.name];
+			const baseConfig = rule.baseRuleId === undefined ? undefined : this.#ruleset.rules[rule.baseRuleId];
+			if (aliasConfig === undefined && baseConfig === undefined) {
 				continue;
 			}
 			for (const code of rule.mirrorsParseErrorCodes) {
