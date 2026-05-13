@@ -262,7 +262,7 @@ export const parser = new HtmlParser();
  * Capped at 32 chars so a runaway slice (e.g., on `unexpected-null-character`
  * pointing into a long text node) does not bloat reporter output.
  */
-function extractRawForParseError(rawCode: string, startOffset: number, endOffset: number): string {
+export function extractRawForParseError(rawCode: string, startOffset: number, endOffset: number): string {
 	if (endOffset > startOffset) {
 		return rawCode.slice(startOffset, endOffset);
 	}
