@@ -68,7 +68,18 @@ describe('Issues', () => {
 
 	test('[character-reference-issue-1074] #1074', async () => {
 		const { violations } = await mlRuleTest(rule, '<span>&#9660;</span><span>&#x25BC;</span><span>&x25BC;</span>');
+		// The rule now also surfaces parse5's `unknown-named-character-reference`
+		// for `&x25BC;` (the missed-`#` typo that parse5 reports as a malformed
+		// named reference). The original missed-escape detection at col 48
+		// continues to report the bare `&`.
 		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 54,
+				raw: 'x25BC;',
+				message: 'The character reference is unknown-named-character-reference',
+			},
 			{
 				severity: 'error',
 				message: 'Illegal characters must escape in character reference',
