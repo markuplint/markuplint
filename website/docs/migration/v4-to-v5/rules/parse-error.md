@@ -1,0 +1,144 @@
+---
+sidebar_position: 5
+title: parse-error
+---
+
+# `parse-error` (Built-in violation channel) — non-fatal parser errors
+
+The built-in `parse-error` violation channel now also surfaces **non-fatal** HTML LS parse errors (parse5 `onParseError` events). The channel is **off by default**; users opt in per parse5 code.
+
+## Summary
+
+| Change                                                                                          | Who is affected                                                          |
+| ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| `parse-error` can now surface non-fatal parser errors (in addition to fatal `ParserError`s)     | Anyone who opts in via `severity.parseError`. No-op for existing configs |
+| `severity.parseError` accepts a `Partial<Record<MLASTParseErrorCode, …>>` for per-code severity | Anyone who needs finer-grained control than a single severity            |
+
+This is **not a breaking change** — the new non-fatal codes stay silent until you opt in.
+
+## What changed
+
+In v4, the `parse-error` channel only fired when the parser threw a **fatal** `ParserError` (the document was unprocessable). Non-fatal HTML LS tokenizer / tree-construction parse errors — events that parse5 emits via [`onParseError`](https://parse5.js.org/interfaces/parse5.ParserOptions.html#onParseError) and that the parser silently recovers from per [HTML LS §13.2.5](https://html.spec.whatwg.org/multipage/parsing.html#tokenization) — were dropped.
+
+In v5, those same events flow through `MLASTDocument.parseErrors` and become `ruleId: 'parse-error'` violations **when** `severity.parseError` opts them in. Each event becomes one violation.
+
+## Example
+
+Source HTML with two HTML LS parse errors (`nested-comment` and `duplicate-attribute`):
+
+```html
+<!-- outer <!-- inner -->
+tail -->
+<div a a></div>
+```
+
+**Default config — no opt-in:**
+
+```jsonc
+// markuplint.config.jsonc
+{
+  "rules": {
+    /* … your rules … */
+  },
+}
+```
+
+→ 0 `parse-error` violations.
+
+**Uniform opt-in (every code enabled):**
+
+```jsonc
+{
+  "severity": {
+    "parseError": "error",
+  },
+}
+```
+
+→ 2 `parse-error` violations (1 `nested-comment` + 1 `duplicate-attribute`).
+
+**Per-code opt-in (Record form):**
+
+```jsonc
+{
+  "severity": {
+    "parseError": {
+      "duplicate-attribute": "error",
+      "nested-comment": "warning",
+    },
+  },
+}
+```
+
+→ 2 `parse-error` violations: `nested-comment` at `warning`, `duplicate-attribute` at `error`. Codes that are not listed remain off.
+
+## Common parse5 codes you might enable
+
+| Code                                                    | What it means                                                                                             |
+| ------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `duplicate-attribute`                                   | An attribute name appeared twice on the same element (e.g., `<img src=a src=b>`).                         |
+| `nested-comment`                                        | A `<!--` opener appeared inside an unclosed comment.                                                      |
+| `eof-in-doctype`                                        | End of file inside a `<!doctype …>` declaration.                                                          |
+| `unexpected-null-character`                             | A literal `U+0000` byte appeared in the source.                                                           |
+| `non-void-html-element-start-tag-with-trailing-solidus` | A non-void HTML element used the XHTML-style self-closing slash (e.g., `<div />`).                        |
+| `incorrectly-opened-comment`                            | The token `<!` was followed by something other than `--` (often a template engine block — `<?php …>`).    |
+| `unexpected-character-in-unquoted-attribute-value`      | An attribute value contained a character (e.g., `<`, `=`, backtick) that the spec forbids without quotes. |
+| `missing-doctype`                                       | A full document (`<html>` starting) lacked `<!doctype html>`.                                             |
+| `non-conforming-doctype`                                | The doctype declaration did not exactly match `<!doctype html>` (e.g., legacy HTML 4.01 doctype).         |
+
+The full enumeration of 60 codes is captured by the `MLASTParseErrorCode` union exported from `@markuplint/ml-ast`; it mirrors [parse5's `ERR` enum](https://parse5.js.org/enums/parse5.ErrorCodes.html), where the names are stable identifiers from HTML LS.
+
+## Three forms of `severity.parseError`
+
+### 1. Single severity (legacy form)
+
+Applies the same severity to **every** parser error code.
+
+```jsonc
+{ "severity": { "parseError": "error" } }
+```
+
+```jsonc
+{ "severity": { "parseError": "warning" } }
+```
+
+```jsonc
+{ "severity": { "parseError": "off" } } // also the default
+```
+
+### 2. Per-code record (recommended for targeted opt-in)
+
+Each key is a `MLASTParseErrorCode`; the value is `'error' | 'warning' | 'info' | 'off' | boolean`. Codes that are not listed default to `'off'`.
+
+```jsonc
+{
+  "severity": {
+    "parseError": {
+      "duplicate-attribute": "error",
+      "missing-doctype": "warning",
+      "nested-comment": "error",
+    },
+  },
+}
+```
+
+### 3. Unset (default)
+
+Equivalent to `"off"` for every non-fatal code. Fatal `ParserError` (the parser threw and the document is unprocessable) still emits at `error` severity.
+
+## Scope
+
+The non-fatal channel only fires for parsers that populate `MLASTDocument.parseErrors`. Currently that's `@markuplint/html-parser` (and the `SvelteKitTemplateParser` / `HtmlInPugParser` derivatives that wrap it for `.html` templates).
+
+Framework parsers — `@markuplint/jsx-parser`, `vue-parser`, `svelte-parser` (`.svelte` files), `astro-parser`, `pug-parser` (`.pug` files) — do **not** invoke parse5 and therefore do not emit non-fatal `parse-error` violations regardless of how `severity.parseError` is configured.
+
+## Relationship with rule-level checks
+
+Some existing rules overlap with parse5 codes (for example, `attr-duplication` overlaps with the `duplicate-attribute` parser error; `character-reference` overlaps with the eight character-reference-related codes). For now, both layers run independently — you may receive a `parse-error` violation **and** the corresponding rule violation when both are enabled. A follow-up PR is planned to consolidate or deprecate the duplicated rule-level checks once the per-code opt-in matures.
+
+## See also
+
+- Built-in channel API: [`MLASTDocument.parseErrors`](https://github.com/markuplint/markuplint/blob/main/packages/%40markuplint/ml-ast/src/types.ts) and `MLASTParseErrorCode` in `@markuplint/ml-ast`
+- HTML LS parse errors: [§13.2.5 Tokenization](https://html.spec.whatwg.org/multipage/parsing.html#tokenization)
+- parse5 callback: [`onParseError`](https://parse5.js.org/interfaces/parse5.ParserOptions.html#onParseError)
+- Implementation discussion: [#3844](https://github.com/markuplint/markuplint/issues/3844)
