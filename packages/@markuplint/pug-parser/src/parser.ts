@@ -121,6 +121,12 @@ class PugParser extends Parser<ASTNode> {
 					offsetLine: originNode.line,
 					offsetColumn: originNode.column ?? parentNode?.col,
 					depth,
+					// HTML emitted by a single Pug line is always a partial —
+					// Pug itself owns the document boundary (`doctype html`,
+					// `html(...)`, etc.). Force fragment parsing so parse5
+					// doesn't fire `missing-doctype` on every inline HTML
+					// chunk.
+					documentMode: 'fragment',
 				});
 
 				const newNodeList: MLASTNodeTreeItem[] = [];

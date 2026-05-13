@@ -101,6 +101,13 @@ class MarkdownParser extends MarkdownAwareParser {
 			offsetOffset: offset,
 			offsetLine: line,
 			offsetColumn: col,
+			// HTML embedded inside Markdown is always a partial — never a
+			// full document — so force fragment parsing to keep parse5 from
+			// emitting `missing-doctype` / `misplaced-doctype` on every
+			// inline HTML block. Users cannot meaningfully override this
+			// because there is no Markdown construct that wraps a complete
+			// HTML document.
+			documentMode: 'fragment',
 		});
 		return [...doc.nodeList];
 	}
