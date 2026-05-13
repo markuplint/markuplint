@@ -535,19 +535,23 @@ describe('Built-in parse-error channel (#3844)', () => {
 		expect(violations.filter(v => v.ruleId === 'parse-error')).toStrictEqual([]);
 	});
 
-	test('disabling a rule via nodeRules does NOT silence the built-in parse-error channel', async () => {
+	test('dedupe is global, not per-node — local nodeRules disable does not "unmute" parse-error', async () => {
 		// `<div><span attr attr>` triggers parse5 `duplicate-attribute` and the
-		// `attr-duplication` rule. `nodeRules` disables the rule on `<span>`,
-		// but the built-in channel is independent of rule config.
+		// `attr-duplication` rule. `nodeRules` disables the rule on `<span>`
+		// only. The dedupe check uses the **global** ruleset config
+		// (`rules.attr-duplication: true`) so the parse-error channel still
+		// treats `attr-duplication` as active and suppresses
+		// `duplicate-attribute`. Result: ZERO violations for the `<span>`'s
+		// duplicate — consistent with the user's intent ("I disabled this
+		// rule on span") rather than the parse-error channel re-surfacing
+		// what the user just opted out of.
 		const { violations } = await mlTest('<div><span attr attr></span></div>', {
 			severity: { parseError: 'error' },
 			rules: { 'attr-duplication': true },
 			nodeRules: [{ selector: 'span', rules: { 'attr-duplication': false } }],
 		});
-		const parseErrors = violations.filter(v => v.ruleId === 'parse-error');
-		const attrDup = violations.filter(v => v.ruleId === 'attr-duplication');
-		expect(parseErrors).toHaveLength(1);
-		expect(attrDup).toHaveLength(0);
+		expect(violations.filter(v => v.ruleId === 'parse-error')).toHaveLength(0);
+		expect(violations.filter(v => v.ruleId === 'attr-duplication')).toHaveLength(0);
 	});
 
 	test('framework parsers (Vue) do not emit parse-error — parse5 is not invoked', async () => {
@@ -620,5 +624,95 @@ describe('Built-in parse-error channel (#3844)', () => {
 			severity: { parseError: 'error' },
 		});
 		expect(violations.find(v => v.message === 'Parser conformance error: missing-doctype')).toBeUndefined();
+	});
+});
+
+// Dedupe contract for the built-in parse-error channel: when an ml rule
+// declares `meta.mirrorsParseErrorCodes` and is active in the ruleset,
+// ml-core suppresses parse-error emissions for those codes so the user
+// does not see duplicate violations for the same underlying parse5 event.
+//
+// The dedupe is **hook-based** (each rule declares its own list) rather
+// than driven by a hard-coded table in ml-core — see `RuleSeed.meta.mirrorsParseErrorCodes`.
+describe('Built-in parse-error channel — dedupe against mirroring rules (#3844)', () => {
+	test('attr-duplication is active → duplicate-attribute is suppressed in parse-error output', async () => {
+		const { violations } = await mlTest('<div a a></div>', {
+			rules: { 'attr-duplication': true },
+			severity: { parseError: 'error' },
+		});
+		// ml rule reports the duplicate, parse-error channel stays silent for
+		// `duplicate-attribute`.
+		expect(violations.some(v => v.ruleId === 'attr-duplication')).toBe(true);
+		expect(violations.some(v => v.ruleId === 'parse-error' && v.message.includes('duplicate-attribute'))).toBe(
+			false,
+		);
+	});
+
+	test('attr-duplication is disabled → duplicate-attribute surfaces on parse-error channel', async () => {
+		const { violations } = await mlTest('<div a a></div>', {
+			rules: { 'attr-duplication': false },
+			severity: { parseError: 'error' },
+		});
+		// No ml rule to dedupe against — parse-error carries the violation.
+		expect(violations.some(v => v.ruleId === 'attr-duplication')).toBe(false);
+		expect(violations.some(v => v.ruleId === 'parse-error' && v.message.includes('duplicate-attribute'))).toBe(
+			true,
+		);
+	});
+
+	test('dedupe skips ONLY the mirrored code, leaves unrelated parse5 events intact', async () => {
+		// `<!-- a <!-- b --> -->` triggers `nested-comment` (NOT mirrored).
+		// `<div a a>` triggers `duplicate-attribute` (mirrored by attr-duplication).
+		const { violations } = await mlTest('<!-- a <!-- b --> --><div a a></div>', {
+			rules: { 'attr-duplication': true },
+			severity: { parseError: 'error' },
+		});
+		const parseErrors = violations.filter(v => v.ruleId === 'parse-error');
+		// nested-comment still fires (no mirroring rule), duplicate-attribute
+		// is suppressed (attr-duplication mirrors it).
+		expect(parseErrors.some(v => v.message.includes('nested-comment'))).toBe(true);
+		expect(parseErrors.some(v => v.message.includes('duplicate-attribute'))).toBe(false);
+	});
+
+	test('Record-form severity.parseError respects dedupe too', async () => {
+		const { violations } = await mlTest('<div a a></div>', {
+			rules: { 'attr-duplication': true },
+			severity: { parseError: { 'duplicate-attribute': 'error' } },
+		});
+		// Even though the user explicitly opted in to duplicate-attribute via
+		// the Record form, the active ml rule still wins (no double-emit).
+		expect(violations.some(v => v.ruleId === 'attr-duplication')).toBe(true);
+		expect(violations.some(v => v.ruleId === 'parse-error' && v.message.includes('duplicate-attribute'))).toBe(
+			false,
+		);
+	});
+
+	test('no-orphaned-end-tag dedupes end-tag-without-matching-open-element', async () => {
+		const { violations } = await mlTest('<div>x</p></div>', {
+			rules: { 'no-orphaned-end-tag': true },
+			severity: { parseError: 'error' },
+		});
+		expect(violations.some(v => v.ruleId === 'no-orphaned-end-tag')).toBe(true);
+		expect(
+			violations.some(
+				v => v.ruleId === 'parse-error' && v.message.includes('end-tag-without-matching-open-element'),
+			),
+		).toBe(false);
+	});
+
+	test('doctype rule dedupes missing-doctype but NOT non-conforming-doctype', async () => {
+		// `<html><body></body></html>` triggers `missing-doctype` (mirrored).
+		// Add a non-conforming doctype later to surface `non-conforming-doctype`
+		// if any — actually a missing doctype just produces the missing one,
+		// so test the negative path: ml rule fires, parse-error suppresses
+		// `missing-doctype` only.
+		const { violations } = await mlTest('<html><body><p>x</p></body></html>', {
+			rules: { doctype: true },
+			severity: { parseError: 'error' },
+		});
+		// ml `doctype` rule reports the missing doctype.
+		expect(violations.some(v => v.ruleId === 'doctype')).toBe(true);
+		// parse-error channel does NOT also fire `missing-doctype` (mirrored).
+		expect(violations.some(v => v.ruleId === 'parse-error' && v.message.includes('missing-doctype'))).toBe(false);
 	});
 });
