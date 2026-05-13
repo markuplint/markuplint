@@ -10,7 +10,7 @@ import type { Ruleset } from '../../ruleset/index.js';
 import type { MLSchema } from '../../types.js';
 import type { Walker } from '../helper/walkers.js';
 import type { MLToken } from '../token/token.js';
-import type { EndTagType, MLASTDocument, MLASTNodeTreeItem } from '@markuplint/ml-ast';
+import type { EndTagType, MLASTDocument, MLASTNodeTreeItem, MLASTParseError } from '@markuplint/ml-ast';
 import type { PlainData, Pretender, RuleCommonSettings, RuleConfigValue } from '@markuplint/ml-config';
 import type { ARIAVersion, MLMLSpec } from '@markuplint/ml-spec';
 
@@ -448,6 +448,28 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 */
 	get dir(): string {
 		throw new UnexpectedCallError('Not supported "dir" property');
+	}
+
+	/**
+	 * Non-fatal parser conformance errors collected during tokenisation by
+	 * the underlying parser (currently `@markuplint/html-parser` and the
+	 * template-engine parsers that delegate to it). Empty array when the
+	 * parser does not produce events or the source had none.
+	 *
+	 * Rules that have claimed responsibility for parse5 events via
+	 * `meta.mirrorsParseErrorCodes` typically read this array to surface
+	 * the corresponding violations themselves. `character-reference` is the
+	 * canonical example: its self-detection covers unescaped `<`, `>`, `&`,
+	 * `"` (the "missed escape" direction), and reading `parseErrors` adds
+	 * coverage for parse5's malformed-reference codes (`&xyz;`, etc.) under
+	 * the same rule id.
+	 *
+	 * ml-core's built-in parse-error channel suppresses the mirrored codes
+	 * unconditionally — so the rule that reads them here is the only place
+	 * the user sees the violation.
+	 */
+	get parseErrors(): readonly MLASTParseError[] {
+		return (this._astToken as unknown as MLASTDocument).parseErrors ?? [];
 	}
 
 	/**

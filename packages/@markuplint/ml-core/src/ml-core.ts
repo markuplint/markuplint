@@ -434,15 +434,23 @@ export class MLCore {
 			return;
 		}
 
-		// Build a Set of parse5 codes that should be suppressed because an
-		// active ml rule already mirrors them (see `meta.mirrorsParseErrorCodes`
-		// on the rule definition). This is the dedupe contract: users who
-		// enable both an ml rule and the parse-error channel see only the ml
-		// rule's violation for the overlapping code, not both.
+		// Build the Set of parse5 codes that an active ml rule has claimed
+		// responsibility for via `meta.mirrorsParseErrorCodes`. The user's
+		// ruleset decides whether each rule's declaration is in scope:
 		//
-		// The check is hook-based — ml-core has no hard-coded code→rule map.
-		// Each rule declares its own `mirrorsParseErrorCodes`, and ml-core
-		// just unions them across active rules.
+		// - Rule **set** in the ruleset (config !== undefined) — whatever the
+		//   value (`true`, `false`, severity, object) — the user has expressed
+		//   intent about this check. Honour the mirror declaration:
+		//   - active: the rule itself will report violations for those codes
+		//   - disabled (`false`): the user explicitly opted out, so the channel
+		//     stays silent too — no surprise re-surfacing
+		// - Rule **not mentioned** (config === undefined) — pure default. The
+		//   parse-error channel remains the channel of record for those codes
+		//   and surfaces them when the user has opted in via `severity.parseError`.
+		//
+		// This keeps the responsibility clean: rule packages declare what they
+		// cover (static metadata); ml-core honours the user's ruleset choice;
+		// no per-node logic, no hard-coded code→rule map.
 		const mirroredCodes = new Set<string>();
 		for (const rule of this.#rules) {
 			if (rule.mirrorsParseErrorCodes.length === 0) {
@@ -450,13 +458,7 @@ export class MLCore {
 			}
 			const ruleName = rule.baseRuleId ?? rule.name;
 			const ruleConfig = this.#ruleset.rules[ruleName];
-			if (ruleConfig == null) {
-				continue;
-			}
-			// A rule is "active" if its config is not explicitly `false`.
-			// `Severity` itself only models `'error' | 'warning' | 'info'`; the
-			// off state is expressed via `ruleConfig === false`.
-			if (ruleConfig === false) {
+			if (ruleConfig === undefined) {
 				continue;
 			}
 			for (const code of rule.mirrorsParseErrorCodes) {
