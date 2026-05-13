@@ -16,10 +16,5 @@ void test('ts', async () => {
 	});
 	const result = await engine.exec();
 
-	// parse-error is filtered out so the assertion works regardless of which
-	// markuplint version the sandbox resolves to (pnpm currently bypasses
-	// `pnpm.overrides` and resolves the published version, which predates
-	// the parse-error channel).
-	const nonParseError = (result?.violations ?? []).filter(v => v.ruleId !== 'parse-error');
-	assert.equal(nonParseError.length, 6);
+	assert.equal(result?.violations.length, 6);
 });
