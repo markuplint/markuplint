@@ -32,6 +32,7 @@ import type {
 	Walker,
 	MLASTHTMLAttr,
 	MLASTBlockBehavior,
+	MLASTParseError,
 	NamespaceURI,
 } from '@markuplint/ml-ast';
 
@@ -71,6 +72,20 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	readonly #selfCloseType: SelfCloseType = 'html';
 	readonly #spaceChars: readonly string[] = defaultSpaces;
 	readonly #rawTextElements: readonly string[] = ['style', 'script'];
+
+	/**
+	 * Buffer for parse errors collected from **embedded** parse() calls
+	 * (e.g., Markdown's inline HTML blocks, Pug's raw HTML lines — these
+	 * invoke a separate HtmlParser instance from inside `nodeize()`).
+	 *
+	 * Subclasses that delegate to an internal parser should push the
+	 * resulting `parseErrors` onto this array via {@link Parser.accumulateParseErrors}.
+	 * The base `parse()` merges them with the top-level tokenize result so
+	 * the final `MLASTDocument.parseErrors` is complete.
+	 *
+	 * Reset on every `parse()` invocation.
+	 */
+	#embeddedParseErrors: MLASTParseError[] = [];
 	/**
 	 * Compiled close-tag patterns for `#rawTextElements`, populated lazily on first
 	 * use and reused across every starttag in the same parse. Keyed by the original
@@ -279,13 +294,20 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			timer.log();
 			domLog(nodeList);
 
+			// Merge top-level tokenizer parseErrors with any parseErrors
+			// pushed by embedded parser delegations (Markdown / Pug HTML
+			// regions). Snapshot before #reset() clears the buffer.
+			const embeddedErrors = this.embeddedParseErrors;
+			const mergedParseErrors: readonly MLASTParseError[] | undefined =
+				parseErrors || embeddedErrors.length > 0 ? [...(parseErrors ?? []), ...embeddedErrors] : undefined;
+
 			this.#reset();
 
 			return {
 				raw: rawCode,
 				nodeList,
 				isFragment,
-				...(parseErrors && parseErrors.length > 0 ? { parseErrors } : {}),
+				...(mergedParseErrors && mergedParseErrors.length > 0 ? { parseErrors: mergedParseErrors } : {}),
 			};
 		} catch (error) {
 			throw this.parseError(error);
@@ -1836,6 +1858,35 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		// Reset state
 		this.state = structuredClone(this.#defaultState);
 		this.#defaultDepth = 0;
+		this.#embeddedParseErrors = [];
+	}
+
+	/**
+	 * Subclass hook for parsers that delegate to an embedded parse() call —
+	 * e.g., `@markuplint/markdown-parser` parsing inline HTML blocks via a
+	 * private `HtmlParser` instance, or `@markuplint/pug-parser` re-running
+	 * each raw HTML line through `HtmlInPugParser`. Push the embedded
+	 * document's `parseErrors` here so the top-level `parse()` can merge
+	 * them into the outer `MLASTDocument.parseErrors`.
+	 *
+	 * If the embedded document has no `parseErrors`, this is a no-op.
+	 *
+	 * @param parseErrors - Parse errors collected by the embedded parser. May be `undefined`.
+	 */
+	protected accumulateParseErrors(parseErrors: readonly MLASTParseError[] | undefined): void {
+		if (parseErrors && parseErrors.length > 0) {
+			this.#embeddedParseErrors.push(...parseErrors);
+		}
+	}
+
+	/**
+	 * @internal Read-only snapshot of accumulated embedded parse errors.
+	 * Used by {@link Parser.parse} to merge them with the top-level tokenize
+	 * result. Subclasses should not call this directly — push via
+	 * {@link Parser.accumulateParseErrors} instead.
+	 */
+	get embeddedParseErrors(): readonly MLASTParseError[] {
+		return this.#embeddedParseErrors;
 	}
 
 	#setRawCode(rawCode: string, originalRawCode?: string) {
