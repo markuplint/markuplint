@@ -44,8 +44,9 @@ export class HtmlParser extends Parser<Node, State> {
 		});
 	}
 
-	tokenize(): { ast: Node[]; isFragment: boolean; parseErrors: readonly MLASTParseError[] } {
-		const isFragment = isDocumentFragment(this.rawCode);
+	tokenize(options?: ParseOptions): { ast: Node[]; isFragment: boolean; parseErrors: readonly MLASTParseError[] } {
+		const mode = options?.documentMode ?? 'auto';
+		const isFragment = mode === 'document' ? false : mode === 'fragment' ? true : isDocumentFragment(this.rawCode);
 		const parseFn = isFragment ? parseFragment : parse;
 		const collected: MLASTParseError[] = [];
 		const rawCode = this.rawCode;
