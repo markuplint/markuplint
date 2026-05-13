@@ -544,6 +544,31 @@ describe('MLRule.createAlias', () => {
 		const rule = createDummyRule('required-attr');
 		expect(rule.baseRuleId).toBeUndefined();
 	});
+
+	test('alias inherits mirrorsParseErrorCodes from the base rule', () => {
+		// When a preset declares a named nodeRule that aliases a rule with a
+		// `meta.mirrorsParseErrorCodes` (e.g. `attr-duplication`), the alias
+		// must participate in the parse-error dedupe too — otherwise the
+		// alias would silently lose the contract and the user would see
+		// duplicate violations through the preset's virtual rule.
+		const baseRule = createRule({
+			name: 'attr-duplication',
+			meta: { mirrorsParseErrorCodes: ['duplicate-attribute'] },
+			verify() {
+				// noop
+			},
+		});
+		const alias = baseRule.createAlias('html-standard/attr-duplication');
+
+		expect(alias.mirrorsParseErrorCodes).toStrictEqual(['duplicate-attribute']);
+	});
+
+	test('alias for a rule with no mirrors has an empty mirrorsParseErrorCodes', () => {
+		const baseRule = createDummyRule('required-attr');
+		const alias = baseRule.createAlias('a11y/html-lang');
+
+		expect(alias.mirrorsParseErrorCodes).toStrictEqual([]);
+	});
 });
 
 describe('expandNamedRules', () => {
