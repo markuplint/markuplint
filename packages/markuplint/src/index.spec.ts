@@ -760,4 +760,20 @@ describe('Built-in parse-error channel — dedupe against mirroring rules (#3844
 			violations.some(v => v.ruleId === 'parse-error' && v.message.includes('unknown-named-character-reference')),
 		).toBe(false);
 	});
+
+	test('preset-aliased mirroring rule still dedupes parse-error channel (#3871)', async () => {
+		// `markuplint:html-standard` exposes `attr-duplication` under the alias
+		// `html-standard/attr-duplication`. The dedupe lookup must consult both
+		// the alias name (where preset entries live in ruleset.rules) AND the
+		// base rule name (where direct user configs live). Without the dual
+		// lookup, preset users see the parse-error channel re-surface
+		// duplicate-attribute despite the rule being active under its alias.
+		const { violations } = await mlTest('<div a a></div>', {
+			extends: ['markuplint:html-standard'],
+			severity: { parseError: 'error' },
+		});
+		expect(violations.some(v => v.ruleId === 'parse-error' && v.message.includes('duplicate-attribute'))).toBe(
+			false,
+		);
+	});
 });

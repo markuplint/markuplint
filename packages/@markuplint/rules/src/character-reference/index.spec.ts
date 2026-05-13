@@ -90,3 +90,55 @@ describe('Issues', () => {
 		]);
 	});
 });
+
+// parse5 onParseError hook coverage — the rule reads `document.parseErrors`
+// and reports each of the 8 character-reference codes under its own ruleId.
+// Each test pins one code with a minimal input. If parse5 ever stops firing
+// one of these (rename, removal, behaviour change in the tokenizer), the
+// matching assertion fails immediately rather than the regression hiding
+// behind the rule's broader self-detection.
+describe('parse5 character-reference hook (#3844)', () => {
+	test('[character-reference-invalid-003] unknown-named-character-reference', async () => {
+		const { violations } = await mlRuleTest(rule, '<p>&xyz;</p>');
+		expect(violations.some(v => v.message.includes('unknown-named-character-reference'))).toBe(true);
+	});
+
+	test('[character-reference-invalid-004] missing-semicolon-after-character-reference', async () => {
+		const { violations } = await mlRuleTest(rule, '<p>&amp text</p>');
+		expect(violations.some(v => v.message.includes('missing-semicolon-after-character-reference'))).toBe(true);
+	});
+
+	test('[character-reference-invalid-005] absence-of-digits-in-numeric-character-reference', async () => {
+		const { violations } = await mlRuleTest(rule, '<p>&#;</p>');
+		expect(violations.some(v => v.message.includes('absence-of-digits-in-numeric-character-reference'))).toBe(true);
+	});
+
+	test('[character-reference-invalid-006] null-character-reference', async () => {
+		const { violations } = await mlRuleTest(rule, '<p>&#x0;</p>');
+		expect(violations.some(v => v.message.includes('null-character-reference'))).toBe(true);
+	});
+
+	test('[character-reference-invalid-007] surrogate-character-reference', async () => {
+		// U+D800 — surrogate range
+		const { violations } = await mlRuleTest(rule, '<p>&#xD800;</p>');
+		expect(violations.some(v => v.message.includes('surrogate-character-reference'))).toBe(true);
+	});
+
+	test('[character-reference-invalid-008] control-character-reference', async () => {
+		// U+0001 — C0 control (not the parse5-allowed list)
+		const { violations } = await mlRuleTest(rule, '<p>&#x1;</p>');
+		expect(violations.some(v => v.message.includes('control-character-reference'))).toBe(true);
+	});
+
+	test('[character-reference-invalid-009] noncharacter-character-reference', async () => {
+		// U+FFFE — noncharacter
+		const { violations } = await mlRuleTest(rule, '<p>&#xFFFE;</p>');
+		expect(violations.some(v => v.message.includes('noncharacter-character-reference'))).toBe(true);
+	});
+
+	test('[character-reference-invalid-010] character-reference-outside-unicode-range', async () => {
+		// Above U+10FFFF — out of Unicode range
+		const { violations } = await mlRuleTest(rule, '<p>&#x110000;</p>');
+		expect(violations.some(v => v.message.includes('character-reference-outside-unicode-range'))).toBe(true);
+	});
+});
