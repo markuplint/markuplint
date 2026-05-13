@@ -1,6 +1,7 @@
 import type { MLRuleContext } from './ml-rule-context.js';
 import type { Attr, Element } from '../ml-dom/index.js';
 import type { Translator } from '@markuplint/i18n';
+import type { MLASTParseErrorCode } from '@markuplint/ml-ast';
 import type { PlainData, Report, RuleConfigValue, Severity } from '@markuplint/ml-config';
 
 /**
@@ -13,6 +14,26 @@ import type { PlainData, Report, RuleConfigValue, Severity } from '@markuplint/m
 export type RuleSeed<T extends RuleConfigValue = boolean, O extends PlainData = undefined> = {
 	readonly meta?: {
 		readonly category?: 'validation' | 'style' | 'naming-convention' | 'a11y' | 'maintainability';
+
+		/**
+		 * parse5 `ERR` codes whose detection this rule covers. When the rule is
+		 * active in the ruleset, `@markuplint/ml-core`'s built-in `parse-error`
+		 * channel skips events whose `code` appears in this list — so the user
+		 * does not get duplicate violations for the same underlying parse5
+		 * event (one from this rule, one from the parse-error channel).
+		 *
+		 * Declare a code here only if the rule's detection scope is at least
+		 * as broad as the parse5 event (i.e. every situation where parse5
+		 * fires the code, the rule reports it too). For rules whose detection
+		 * is wider than parse5 (e.g. `attr-duplication` also covers JSX where
+		 * parse5 never runs) this still holds because the rule fires first.
+		 *
+		 * The dedupe is global (the rule is checked at the ruleset level, not
+		 * per node), so partial-scope rules like `attr-duplication` (HTML
+		 * elements only via parse5; JSX / SVG via the rule itself) are safe:
+		 * parse5 only fires on HTML anyway.
+		 */
+		readonly mirrorsParseErrorCodes?: readonly MLASTParseErrorCode[];
 	};
 
 	readonly defaultSeverity?: Severity;

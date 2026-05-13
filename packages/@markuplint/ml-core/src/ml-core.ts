@@ -433,7 +433,41 @@ export class MLCore {
 		if (!parseErrors) {
 			return;
 		}
+
+		// Build a Set of parse5 codes that should be suppressed because an
+		// active ml rule already mirrors them (see `meta.mirrorsParseErrorCodes`
+		// on the rule definition). This is the dedupe contract: users who
+		// enable both an ml rule and the parse-error channel see only the ml
+		// rule's violation for the overlapping code, not both.
+		//
+		// The check is hook-based — ml-core has no hard-coded code→rule map.
+		// Each rule declares its own `mirrorsParseErrorCodes`, and ml-core
+		// just unions them across active rules.
+		const mirroredCodes = new Set<string>();
+		for (const rule of this.#rules) {
+			if (rule.mirrorsParseErrorCodes.length === 0) {
+				continue;
+			}
+			const ruleName = rule.baseRuleId ?? rule.name;
+			const ruleConfig = this.#ruleset.rules[ruleName];
+			if (ruleConfig == null) {
+				continue;
+			}
+			// A rule is "active" if its config is not explicitly `false`.
+			// `Severity` itself only models `'error' | 'warning' | 'info'`; the
+			// off state is expressed via `ruleConfig === false`.
+			if (ruleConfig === false) {
+				continue;
+			}
+			for (const code of rule.mirrorsParseErrorCodes) {
+				mirroredCodes.add(code);
+			}
+		}
+
 		for (const parserError of parseErrors) {
+			if (mirroredCodes.has(parserError.code)) {
+				continue;
+			}
 			const violation = this.#createParseError(
 				`Parser conformance error: ${parserError.code}`,
 				parserError.startLine,

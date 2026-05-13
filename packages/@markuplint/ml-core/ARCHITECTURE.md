@@ -149,6 +149,8 @@ flowchart LR
 
    **Built-in `parse-error` channel**: before iterating rules, `verify()` consumes `MLASTDocument.parseErrors` (non-fatal parser conformance errors collected by the underlying parser — e.g., parse5's `onParseError` events) via `#pushNonFatalParseErrors()` and produces one `ruleId: 'parse-error'` violation per entry. The channel shares the same `severity.parseError` knob as its fatal sibling (`ParserError` raised in step 1). Order contract: parse-error violations always precede rule violations in the output; rule specs depend on this ordering.
 
+   **Dedupe against mirroring rules**: an ml rule whose `meta.mirrorsParseErrorCodes` lists a parse5 code participates in automatic deduplication. When such a rule is active in the ruleset (config value is not `false`), `#pushNonFatalParseErrors()` skips events whose `code` is in the union of all active rules' mirror lists — the ml rule's own violation already covers that event. The lookup is **hook-based**: ml-core does not maintain a hard-coded code→rule map; each rule declares its own list via `RuleSeed.meta.mirrorsParseErrorCodes`. Rules whose detection is _wider_ than parse5 (e.g. `attr-duplication` covers JSX / SVG / authored components where parse5 never runs) are safe to mirror because parse5 only fires inside HTML anyway.
+
 4. **Fix** (optional): When `fix=true`, fix callbacks on reports are executed via `RuleFixer` to produce `TextEdit[]`. `FixApplier.applyFixes(sourceCode, fixes)` applies all edits to the source text with overlap detection. When fixes require multiple passes, `_multiPassFix()` orchestrates re-parsing and re-verification, returning a `FixSummary` with pass count, applied/skipped totals, and first-pass edits for cursor offset computation
 
 ## MLDOM Class Hierarchy

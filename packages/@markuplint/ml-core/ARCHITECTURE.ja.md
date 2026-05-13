@@ -148,6 +148,8 @@ flowchart LR
 
    **組み込み `parse-error` チャネル**: rule 反復の **前** に、`verify()` は `MLASTDocument.parseErrors` (パーサが収集した非致命的な適合エラー — 例えば parse5 の `onParseError` イベント) を `#pushNonFatalParseErrors()` で消費し、各エントリに対して `ruleId: 'parse-error'` 違反を 1 件生成します。本チャネルは致命的兄弟である `ParserError` (ステップ 1 で発生) と同じ `severity.parseError` 設定キーを共有します。順序契約: parse-error 違反は出力上必ず rule 違反より前に並びます。rule spec はこの順序に依存しています。
 
+   **mirror ルールに対する dedupe**: `meta.mirrorsParseErrorCodes` で parse5 code を列挙している ml ルールは自動 dedupe に参加します。そのルールが ruleset で有効 (設定値が `false` でない) な場合、`#pushNonFatalParseErrors()` は有効ルール群の mirror list の和集合に含まれる code を skip します — ml ルール自身の violation が既にそのイベントをカバーしているためです。判定は **フック式**: ml-core は hardcode な code→rule 対応表を持たず、各ルールが自分の list を `RuleSeed.meta.mirrorsParseErrorCodes` で宣言するだけです。検出範囲が parse5 より広いルール (例えば `attr-duplication` は parse5 が動かない JSX / SVG / authored component もカバー) も mirror して安全です。parse5 はそもそも HTML 内でしか発火しないため、dedupe で抑制される対象は元々 ml ルールが拾うイベントだけになります。
+
 4. **修正**（オプション）: `fix=true` の場合、report の fix コールバックが `RuleFixer` を使って `TextEdit[]` を生成。`FixApplier.applyFixes(sourceCode, fixes)` が全編集をソーステキストに一括適用（重複検出付き）
 
 ## MLDOM クラス階層

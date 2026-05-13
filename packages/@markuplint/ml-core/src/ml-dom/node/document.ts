@@ -10,7 +10,7 @@ import type { Ruleset } from '../../ruleset/index.js';
 import type { MLSchema } from '../../types.js';
 import type { Walker } from '../helper/walkers.js';
 import type { MLToken } from '../token/token.js';
-import type { EndTagType, MLASTDocument, MLASTNodeTreeItem } from '@markuplint/ml-ast';
+import type { EndTagType, MLASTDocument, MLASTNodeTreeItem, MLASTParseError } from '@markuplint/ml-ast';
 import type { PlainData, Pretender, RuleCommonSettings, RuleConfigValue } from '@markuplint/ml-config';
 import type { ARIAVersion, MLMLSpec } from '@markuplint/ml-spec';
 
@@ -448,6 +448,23 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 */
 	get dir(): string {
 		throw new UnexpectedCallError('Not supported "dir" property');
+	}
+
+	/**
+	 * Non-fatal parser conformance errors collected during tokenisation.
+	 * Populated by parsers that surface parse5-style `onParseError` events
+	 * (currently `@markuplint/html-parser` and the template-engine parsers
+	 * that delegate to it). Empty array if the parser did not produce any
+	 * events or did not implement the channel.
+	 *
+	 * Rules that mirror specific parse5 ERR codes (e.g. `character-reference`
+	 * mirrors the eight character-reference codes; `attr-duplication` mirrors
+	 * `duplicate-attribute`) read this array instead of re-implementing the
+	 * detection themselves, so they stay in sync with parse5's HTML LS
+	 * conformance behaviour automatically.
+	 */
+	get parseErrors(): readonly MLASTParseError[] {
+		return (this._astToken as unknown as MLASTDocument).parseErrors ?? [];
 	}
 
 	/**
