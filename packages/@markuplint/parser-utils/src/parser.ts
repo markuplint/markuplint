@@ -220,6 +220,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			const tokenized = this.tokenize(options);
 			const ast = tokenized.ast;
 			const isFragment = tokenized.isFragment;
+			const parseErrors = tokenized.parseErrors;
 
 			this.#defaultDepth = options?.depth ?? this.#defaultDepth;
 
@@ -284,6 +285,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 				raw: rawCode,
 				nodeList,
 				isFragment,
+				...(parseErrors && parseErrors.length > 0 ? { parseErrors } : {}),
 			};
 		} catch (error) {
 			throw this.parseError(error);

@@ -48,6 +48,39 @@ Create a new parser extending the abstract Parser class. Follow recipe #1 in `do
 4. Set constructor options (`endTagType`, `tagNameCaseSensitive`, `ignoreTags`, etc.)
    - The default `rawTextElements` is `['style', 'script']` (HTML LS §13.2.5.1). If your language treats additional elements as raw text, override it; if your language does NOT (e.g., `<script>` body is parsed as language-specific syntax), pass an empty array.
 
+### (Optional) Surface non-fatal parser conformance errors
+
+If your tokenizer emits non-fatal diagnostic events (e.g., `parse5`'s `onParseError`, an HTML LS-equivalent tokenizer-error stream, or a language-specific lint channel), return them from `tokenize()` as `parseErrors: readonly MLASTParseError[]`:
+
+```ts
+tokenize(): Tokenized<MyNode, MyState> {
+  const collected: MLASTParseError[] = [];
+  const ast = myTokenizer.parse(this.rawCode, {
+    onDiagnostic: (event) => {
+      collected.push({
+        code: event.code,            // stable kebab-case identifier
+        startOffset: event.startOffset,
+        startLine: event.startLine,
+        startCol: event.startCol,
+        endOffset: event.endOffset,
+        endLine: event.endLine,
+        endCol: event.endCol,
+        raw: this.rawCode.slice(event.startOffset, event.endOffset),
+      });
+    },
+  });
+  return { ast, isFragment: false, parseErrors: collected };
+}
+```
+
+`@markuplint/parser-utils`' base `parse()` propagates the array unchanged onto `MLASTDocument.parseErrors`. `@markuplint/ml-core` then surfaces each entry as a `ruleId: 'parse-error'` violation, sharing the existing `severity.parseError` user knob.
+
+**Order contract**: emit entries in the order your tokenizer produces them. `ml-core` pushes them before any rule iteration, so this order determines their position in the final violation list — 80+ rule spec files in `@markuplint/rules` depend on this ordering.
+
+**Empty-span events**: parse5-style "fired between tokens" diagnostics have `startOffset === endOffset`. For these, `raw` from a naive `slice()` is `''`, which leaves the reporter without an excerpt. See `@markuplint/html-parser`'s `extractRawForParseError()` for a sample heuristic that walks back to the surrounding token (attribute name, character reference body, etc.).
+
+Parsers that have no equivalent surface (e.g., framework template parsers like JSX / Vue / Svelte / Astro / Pug — none invoke parse5) simply omit `parseErrors`, and the channel stays silent for that source type.
+
 ### Step 3: Export the parser module
 
 1. Export as `MLParserModule`: `export default { parser: new MyParser() }`
