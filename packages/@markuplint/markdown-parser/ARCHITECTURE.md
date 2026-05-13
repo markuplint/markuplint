@@ -107,6 +107,15 @@ Parser<MdastNode>               (from @markuplint/parser-utils)
       |                          - #htmlParser: cached HtmlParser for HTML regions
 ```
 
+### Embedded HTML regions and parse errors
+
+Every inline HTML block (mdast `html` node) is re-parsed by the cached `#htmlParser`. The embedded call hard-sets `parserOptions.documentMode: 'fragment'` for two reasons:
+
+1. Markdown's HTML blocks are partials by definition — the host Markdown file owns the document boundary, so the embedded HTML can never legitimately be a full document.
+2. Without forcing fragment mode, parse5 would emit `missing-doctype` / `misplaced-doctype` on every inline HTML block (bare `<head>`, `<meta charset>`, etc.), spamming users who opt in to `severity.parseError`.
+
+The embedded `HtmlParser` may still emit **tokenizer-level** parse errors (e.g. `duplicate-attribute`, `nested-comment`). These are surfaced through `Parser.accumulateParseErrors()` (provided by `@markuplint/parser-utils`) into the outer `MLASTDocument.parseErrors` array, so users see them with correct offsets relative to the Markdown source.
+
 ### GFM Table Header Detection
 
 GFM tables use the first row as the header row. The parser tracks this via:

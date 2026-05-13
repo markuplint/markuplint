@@ -175,6 +175,12 @@
 							"type": "string"
 						}
 					]
+				},
+				"documentMode": {
+					"type": "string",
+					"enum": ["auto", "document", "fragment"],
+					"default": "auto",
+					"description": "Override how the HTML parser decides between full-document and fragment parsing. 'auto' (default) inspects the source for `<!doctype html>` / `<html>`; 'document' forces full-document parsing (surfaces `missing-doctype` etc.); 'fragment' forces fragment parsing (silences document-level errors for SSR partials)."
 				}
 			}
 		},
@@ -304,6 +310,7 @@
 			"additionalProperties": false,
 			"properties": {
 				"parseError": {
+					"description": "Severity for the built-in `parse-error` channel. Off by default; supply a single severity to enable every parse5 ERR code uniformly, or supply a `Record<code, severity>` to opt in per code. See https://markuplint.dev/docs/migration/v4-to-v5/rules/parse-error",
 					"oneOf": [
 						{
 							"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/ml-config/schema.json#/definitions/severity"
@@ -314,9 +321,26 @@
 						},
 						{
 							"type": "boolean"
+						},
+						{
+							"type": "object",
+							"description": "Per-code severity. Keys are parse5 `ERR` enum values (kebab-case, e.g. `duplicate-attribute`, `nested-comment`, `missing-doctype`). Codes absent from the record default to `'off'`.",
+							"additionalProperties": {
+								"oneOf": [
+									{
+										"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/ml-config/schema.json#/definitions/severity"
+									},
+									{
+										"type": "string",
+										"enum": ["off"]
+									},
+									{
+										"type": "boolean"
+									}
+								]
+							}
 						}
-					],
-					"default": "error"
+					]
 				}
 			}
 		},

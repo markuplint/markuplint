@@ -246,6 +246,16 @@ flowchart TD
 
 `MLParser` は `MLASTDocument` を返す `parse(sourceCode, options?)` メソッドを必要とします。オプションフィールドには `endTag`（終了タグ処理戦略）、`booleanish`（ブール属性検出）、`tagNameCaseSensitive`（XHTML/JSX 用）があります。
 
+### 非致命的なパーサ適合エラー
+
+`MLASTDocument` には任意フィールド `parseErrors: readonly MLASTParseError[]` があり、トークナイゼーション中にパーサが収集する **非致命的** な適合エラー (parse5 の `onParseError` イベント — `nested-comment`、`eof-in-doctype`、`duplicate-attribute` 等。HTML LS §13.2.5 "Tokenization" 参照) を運びます。
+
+`@markuplint/ml-core` は verify パイプラインでこのフィールドを消費し、各エントリを `ruleId: 'parse-error'` 違反として出力します。**致命的** な `ParserError` と同じチャネルを共有し、設定の `severity.parseError` で両方を統一的に制御できます (`'off'` で抑制、デフォルト `'error'`)。
+
+順序契約: エントリはパーサが emit した順序で配列に格納され、`ml-core` は rule 反復より **前** に push します。結果として違反リストでは rule レベル違反より先に並びます。
+
+カスタムパーサは独自の診断チャネルから `parseErrors` を populate できます。フィールドは任意で、相当する surface を持たないパーサ (正規表現トークナイザ、`@markuplint/jsx-parser` / `vue-parser` / `svelte-parser` / `astro-parser` / `pug-parser` のようなフレームワークテンプレート系パーサ) は単に省略し、parse-error 違反は発生しません。
+
 ## 設定型
 
 | 型                                        | 説明                                                                   |

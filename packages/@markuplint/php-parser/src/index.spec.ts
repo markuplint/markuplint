@@ -121,3 +121,21 @@ describe('Tags', () => {
 		expect(parse('<? any;').nodeList[0]?.nodeName).toBe('#ps:php-short-tag');
 	});
 });
+
+describe('parserOptions.documentMode propagation (#3844)', () => {
+	test('documentMode "fragment" suppresses missing-doctype on bare <head> PHP templates', () => {
+		const doc = parser.parse('<head><meta charset="utf-8"><?php do_thing(); ?></head>', {
+			documentMode: 'fragment',
+		});
+		const codes = (doc.parseErrors ?? []).map(e => e.code);
+		expect(codes).not.toContain('missing-doctype');
+	});
+
+	test('documentMode "document" surfaces missing-doctype on the same PHP template', () => {
+		const doc = parser.parse('<head><meta charset="utf-8"><?php do_thing(); ?></head>', {
+			documentMode: 'document',
+		});
+		const codes = (doc.parseErrors ?? []).map(e => e.code);
+		expect(codes).toContain('missing-doctype');
+	});
+});

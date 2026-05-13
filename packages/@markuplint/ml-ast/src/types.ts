@@ -318,6 +318,124 @@ export interface MLASTSpreadAttr extends MLASTToken {
 }
 
 /**
+ * Stable identifier for a non-fatal parser conformance error. The full set
+ * mirrors parse5's `ERR` enum (HTML LS tokenizer / tree-construction parse
+ * errors) — each value is a kebab-case string that appears verbatim in the
+ * `code` field of `MLASTParseError` and as the key in
+ * `severity.parseError`'s `Record` form.
+ *
+ * Source of truth: `parse5/dist/common/error-codes.d.ts`. When parse5
+ * adds a new code, append it here and update the migration guide.
+ *
+ * @see https://html.spec.whatwg.org/multipage/parsing.html#parse-errors
+ */
+export type MLASTParseErrorCode =
+	// Input stream
+	| 'control-character-in-input-stream'
+	| 'noncharacter-in-input-stream'
+	| 'surrogate-in-input-stream'
+	// Tag syntax
+	| 'non-void-html-element-start-tag-with-trailing-solidus'
+	| 'end-tag-with-attributes'
+	| 'end-tag-with-trailing-solidus'
+	| 'unexpected-solidus-in-tag'
+	| 'unexpected-null-character'
+	| 'unexpected-question-mark-instead-of-tag-name'
+	| 'invalid-first-character-of-tag-name'
+	| 'unexpected-equals-sign-before-attribute-name'
+	| 'missing-end-tag-name'
+	| 'unexpected-character-in-attribute-name'
+	// Character reference
+	| 'unknown-named-character-reference'
+	| 'missing-semicolon-after-character-reference'
+	| 'absence-of-digits-in-numeric-character-reference'
+	| 'null-character-reference'
+	| 'surrogate-character-reference'
+	| 'character-reference-outside-unicode-range'
+	| 'control-character-reference'
+	| 'noncharacter-character-reference'
+	// Attribute
+	| 'unexpected-character-in-unquoted-attribute-value'
+	| 'missing-attribute-value'
+	| 'missing-whitespace-between-attributes'
+	| 'duplicate-attribute'
+	// DOCTYPE
+	| 'unexpected-character-after-doctype-system-identifier'
+	| 'missing-whitespace-after-doctype-public-keyword'
+	| 'missing-whitespace-between-doctype-public-and-system-identifiers'
+	| 'missing-whitespace-after-doctype-system-keyword'
+	| 'missing-quote-before-doctype-public-identifier'
+	| 'missing-quote-before-doctype-system-identifier'
+	| 'missing-doctype-public-identifier'
+	| 'missing-doctype-system-identifier'
+	| 'abrupt-doctype-public-identifier'
+	| 'abrupt-doctype-system-identifier'
+	| 'missing-whitespace-before-doctype-name'
+	| 'missing-doctype-name'
+	| 'invalid-character-sequence-after-doctype-name'
+	| 'non-conforming-doctype'
+	| 'missing-doctype'
+	| 'misplaced-doctype'
+	| 'eof-in-doctype'
+	// Comment
+	| 'incorrectly-opened-comment'
+	| 'incorrectly-closed-comment'
+	| 'nested-comment'
+	| 'abrupt-closing-of-empty-comment'
+	| 'eof-in-comment'
+	// CDATA / script-comment-like text
+	| 'cdata-in-html-content'
+	| 'eof-in-cdata'
+	| 'eof-in-script-html-comment-like-text'
+	// EOF
+	| 'eof-before-tag-name'
+	| 'eof-in-tag'
+	| 'eof-in-element-that-can-contain-only-text'
+	// Tree construction
+	| 'end-tag-without-matching-open-element'
+	| 'closing-of-element-with-open-child-elements'
+	| 'disallowed-content-in-noscript-in-head'
+	| 'open-elements-left-after-eof'
+	| 'abandoned-head-element-child'
+	| 'misplaced-start-tag-for-head-element'
+	| 'nested-noscript-in-head';
+
+/**
+ * Non-fatal parser-level conformance error emitted by the underlying parser
+ * during tokenisation (e.g., parse5's `onParseError` events). Unlike
+ * `unknownParseError` these do not abort the parse — the document is still
+ * usable — but they correspond to HTML LS tokenizer / tree-construction
+ * conformance errors that the `parse-error` rule surfaces as lint
+ * violations.
+ *
+ * @see https://html.spec.whatwg.org/multipage/parsing.html#parse-errors
+ */
+export interface MLASTParseError {
+	/**
+	 * Stable kebab-case identifier from the underlying parser. The current
+	 * full enumeration mirrors parse5's `ERR` enum and is captured by
+	 * {@link MLASTParseErrorCode}; framework parsers that surface a code
+	 * outside that set should still use a kebab-case identifier so user
+	 * configuration (`severity.parseError`) can target it.
+	 */
+	readonly code: MLASTParseErrorCode;
+	/** Zero-based offset into the source where the error starts. */
+	readonly startOffset: number;
+	/** 1-based line where the error starts. */
+	readonly startLine: number;
+	/** 1-based column where the error starts. */
+	readonly startCol: number;
+	/** Zero-based offset into the source where the error ends. */
+	readonly endOffset: number;
+	/** 1-based line where the error ends. */
+	readonly endLine: number;
+	/** 1-based column where the error ends. */
+	readonly endCol: number;
+	/** The slice of the source between `startOffset` and `endOffset`. */
+	readonly raw: string;
+}
+
+/**
  * The root document node returned by a parser.
  * Contains the full node list and metadata about the parse result.
  */
@@ -330,6 +448,22 @@ export interface MLASTDocument {
 	readonly isFragment: boolean;
 	/** A description of any unknown parse error that occurred, if any */
 	readonly unknownParseError?: string;
+	/**
+	 * Non-fatal parser-level conformance errors collected during tokenisation.
+	 * Populated by parsers that support it (e.g., `@markuplint/html-parser`
+	 * via parse5's `onParseError`); omitted otherwise. Consumed by
+	 * `@markuplint/ml-core`'s verify pipeline, which surfaces each entry as a
+	 * `ruleId: 'parse-error'` violation (sharing the channel with fatal
+	 * `ParserError`s; controlled by `severity.parseError`).
+	 *
+	 * **Order contract**: entries must appear in the order the parser emitted
+	 * them, and `ml-core` pushes them onto the violations list **before** any
+	 * rule iteration runs — so they always precede rule-level violations in
+	 * test fixtures and reporter output. Custom parsers populating this field
+	 * must preserve emit order; downstream consumers (including 80+ rule spec
+	 * files) rely on it.
+	 */
+	readonly parseErrors?: readonly MLASTParseError[];
 }
 
 /**
@@ -392,6 +526,29 @@ export type ParserOptions = {
 	readonly ignoreFrontMatter?: boolean;
 	/** How to distinguish authored (component) element names from native HTML elements */
 	readonly authoredElementName?: ParserAuthoredElementNameDistinguishing;
+	/**
+	 * Override how the underlying HTML parser decides between full-document
+	 * and fragment parsing.
+	 *
+	 * - `'auto'` (default) — inspect the source: input starting with
+	 *   `<!doctype html>` or `<html>` is treated as a full document;
+	 *   anything else as a fragment. Backwards-compatible behaviour.
+	 * - `'document'` — force full-document parsing. Use for sources that
+	 *   are complete HTML pages without an explicit doctype, so that
+	 *   document-level parse5 errors (`missing-doctype`, `misplaced-doctype`,
+	 *   etc.) surface via the `parse-error` channel.
+	 * - `'fragment'` — force fragment parsing. Use for SSR / template
+	 *   partials whose source intentionally starts with `<head>`, `<meta>`,
+	 *   `<title>`, … as legitimate inserted chunks (parse5 should not emit
+	 *   `missing-doctype` for those).
+	 *
+	 * Template-engine parsers that internally re-invoke the HTML parser for
+	 * embedded HTML chunks (Markdown HTML blocks, Pug raw HTML output, …)
+	 * pass `'fragment'` to that internal call by default; users can still
+	 * override that via `parserOptions` when their template legitimately
+	 * carries a full document.
+	 */
+	readonly documentMode?: 'auto' | 'document' | 'fragment';
 };
 
 /**

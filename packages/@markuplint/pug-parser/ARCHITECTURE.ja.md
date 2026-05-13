@@ -78,6 +78,12 @@ class HtmlInPugParser extends HtmlParser {
 
 `ignoreTags` オプションは `#[...]` タグ補間シーケンスをマスクし、HTML パーサーがこれらを HTML としてパースしようとする代わりにプリプロセッサ固有ブロック（`#ps:tag-interpolation`）として扱うようにします。これらのブロックは後で新しい `PugParser` インスタンスによって再帰的にパースされます。
 
+### 埋め込み HTML モードとパースエラー
+
+`new HtmlInPugParser().parse(...)` の呼び出しは毎回 `parserOptions.documentMode: 'fragment'` を強制します。Pug は document boundary（`doctype html`、`html(...)`）を所有しているため、Pug の 1 行で出力されるインライン HTML は定義上 partial です。fragment モードを強制することで、parse5 が document レベルのエラー（`missing-doctype`、`misplaced-doctype` 等）を Pug ソースファイルごとに発火させないようにします。
+
+埋め込み `HtmlInPugParser` は **tokenizer レベル** のパースエラー（`duplicate-attribute`、`nested-comment` 等）は引き続き emit します。これらは `@markuplint/parser-utils` が提供する `Parser.accumulateParseErrors()` を経由して外側の `MLASTDocument.parseErrors` に surface されます。`severity.parseError` でオプトインしたユーザーは、Pug ソースを指す正しいオフセットでこれらを確認できます。
+
 ## PugParser クラス
 
 ### 継承関係

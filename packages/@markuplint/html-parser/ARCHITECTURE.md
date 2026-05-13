@@ -68,15 +68,15 @@ The parser maintains internal state through the `State` type:
 
 ### Override Methods
 
-| Method              | Purpose                                                                                     |
-| ------------------- | ------------------------------------------------------------------------------------------- |
-| `tokenize()`        | Invokes parse5 `parse()` or `parseFragment()` based on fragment detection                   |
-| `beforeParse()`     | Sets up head/body optimization and offset tracking                                          |
-| `afterParse()`      | Restores original head/body tag names from placeholders                                     |
-| `nodeize()`         | Converts parse5 nodes to markuplint AST nodes, handling ghost elements and template content |
-| `afterNodeize()`    | Updates `afterPosition` state for ghost element positioning                                 |
-| `visitText()`       | Delegates to parent with `researchTags: true` and `invalidTagAsText: true`                  |
-| `visitSpreadAttr()` | Returns `null` (HTML does not support spread attributes)                                    |
+| Method               | Purpose                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `tokenize(options?)` | Invokes parse5 `parse()` or `parseFragment()`. Resolution order: (1) `options.documentMode === 'document'` → force document parsing; (2) `options.documentMode === 'fragment'` → force fragment parsing; (3) `'auto'` / unset (default) → run `isDocumentFragment(rawCode)`. Wires `onParseError` to collect non-fatal parser-conformance events into `MLASTDocument.parseErrors` (consumed by `@markuplint/ml-core` as `ruleId: 'parse-error'` violations). The empty-span `raw` field is filled via the exported `extractRawForParseError()` helper so the violation excerpt shows the surrounding token text. |
+| `beforeParse()`      | Sets up head/body optimization and offset tracking                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `afterParse()`       | Restores original head/body tag names from placeholders                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| `nodeize()`          | Converts parse5 nodes to markuplint AST nodes, handling ghost elements and template content                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `afterNodeize()`     | Updates `afterPosition` state for ghost element positioning                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `visitText()`        | Delegates to parent with `researchTags: true` and `invalidTagAsText: true`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| `visitSpreadAttr()`  | Returns `null` (HTML does not support spread attributes)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 
 ## Parse Pipeline
 
@@ -137,6 +137,33 @@ Namespace resolution is handled by `getNamespace()` in `@markuplint/parser-utils
 - **Fragment**: Everything else
 
 This distinction matters because parse5's `parse()` applies the full document parsing algorithm (inserting implicit `<html>`, `<head>`, `<body>`), while `parseFragment()` parses content as-is.
+
+### Overriding via `parserOptions.documentMode`
+
+Users (and downstream parsers) can override the auto-detection through `ParserOptions.documentMode`:
+
+| Value        | Behaviour                                                                                                                                                           |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `'auto'`     | Default. Run `isDocumentFragment(rawCode)` as described above.                                                                                                      |
+| `'document'` | Force `parse5.parse()`. Surfaces document-level parse5 errors (`missing-doctype`, `misplaced-doctype`, `non-conforming-doctype`, …) on pages that omit the doctype. |
+| `'fragment'` | Force `parse5.parseFragment()`. Silences document-level errors for SSR / template partials that legitimately start with `<head>`, `<meta>`, `<title>`, etc.         |
+
+The option flows through `tokenize(options)`. Template-engine parsers that delegate to a private `HtmlParser` instance for embedded HTML chunks (`@markuplint/markdown-parser`, `@markuplint/pug-parser`) hard-set `'fragment'` on the embedded call because the host syntax owns the document boundary; users cannot override that.
+
+## Empty-span parse error excerpts (`extractRawForParseError`)
+
+parse5 frequently reports parse errors at zero-width positions — e.g. `duplicate-attribute` fires at the `=` between the attribute name and its value, not over the name itself. A bare `rawCode.slice(start, end)` on such a position yields the empty string, which leaves the violation reporter with no excerpt.
+
+`extractRawForParseError(rawCode, startOffset, endOffset)` is an exported helper that:
+
+1. Returns `rawCode.slice(startOffset, endOffset)` if the span is non-empty.
+2. Otherwise walks outward from `startOffset` over **token-shaped characters** (anything except whitespace, `<`, `>`, `"`, `'`, `/`, `=`, `&`) and returns the surrounding token. Forward walk capped at 32 characters so a runaway slice on a long text node does not bloat reporter output.
+
+The helper is `export`ed for direct unit testing — every behavioural branch (non-empty, walk-back, walk-forward, both-direction, EOS / SOS edge, 32-char cap, stop-char fence) is exercised by `extract-raw-for-parse-error.spec.ts`.
+
+## parse5 `ERR` ↔ `MLASTParseErrorCode` sync
+
+`@markuplint/ml-ast`'s `MLASTParseErrorCode` is a hand-maintained string-literal union that mirrors parse5's `ERR` enum (60 codes as of parse5 7.x). The compile-time guard in `parse-error-code-sync.spec.ts` asserts both directions: every `(typeof ERR)[keyof typeof ERR]` is assignable to `MLASTParseErrorCode`, and vice versa. If parse5 adds or removes a code, that test breaks the build until ml-ast catches up.
 
 ## External Dependencies
 

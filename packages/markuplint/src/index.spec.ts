@@ -452,3 +452,173 @@ describe('Issue #3594 — unquoted "/" does not block the lint pipeline', () => 
 		expect(unrelated.some(v => v.ruleId === 'attr-value-quotes')).toBe(true);
 	});
 });
+
+// Dedicated end-to-end suite for the built-in `parse-error` violation channel.
+//
+// The non-fatal parse-error pipeline (parse5 `onParseError` →
+// `MLASTDocument.parseErrors` → `MLCore` verify → `ruleId: 'parse-error'`
+// violation) spans five packages: `ml-ast`, `parser-utils`, `html-parser`,
+// `ml-core`, and `markuplint`. These tests pin the contract end-to-end so a
+// future refactor that breaks the wiring is caught here rather than in 80+
+// collateral rule spec failures.
+//
+// The channel is **default off**: tests opt in via `severity.parseError`.
+describe('Built-in parse-error channel (#3844)', () => {
+	test('default off — malformed HTML produces no parse-error violation', async () => {
+		// `<div a a a>` triggers parse5 `duplicate-attribute` twice, but with
+		// the channel off (default) those events do not surface as violations.
+		const { violations } = await mlTest('<div a a a></div>');
+		expect(violations.filter(v => v.ruleId === 'parse-error')).toStrictEqual([]);
+	});
+
+	test('uniform severity (legacy string form) enables every code', async () => {
+		const { violations } = await mlTest('<!-- outer <!-- inner --> tail -->', {
+			severity: { parseError: 'error' },
+		});
+		expect(violations).toContainEqual(
+			expect.objectContaining({
+				ruleId: 'parse-error',
+				severity: 'error',
+				message: 'Parser conformance error: nested-comment',
+			}),
+		);
+	});
+
+	test('uniform severity emits one violation per parse5 event', async () => {
+		// `<div a a a>` triggers parse5 `duplicate-attribute` twice (2nd and 3rd `a`).
+		const { violations } = await mlTest('<div a a a></div>', {
+			severity: { parseError: 'error' },
+		});
+		const parseErrors = violations.filter(v => v.ruleId === 'parse-error');
+		expect(parseErrors).toHaveLength(2);
+		expect(parseErrors.every(v => v.message === 'Parser conformance error: duplicate-attribute')).toBe(true);
+	});
+
+	test('well-formed HTML produces no parse-error violation even when channel is enabled', async () => {
+		const { violations } = await mlTest(
+			'<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>ok</title></head><body><p>ok</p></body></html>',
+			{ severity: { parseError: 'error' } },
+		);
+		expect(violations.filter(v => v.ruleId === 'parse-error')).toStrictEqual([]);
+	});
+
+	test('Record form — only opted-in codes emit violations', async () => {
+		// `<!-- a <!-- b -->` triggers `nested-comment`. Opt in only to
+		// `duplicate-attribute`; the nested-comment event must remain silent.
+		const { violations } = await mlTest('<!-- a <!-- b --> --><div a a></div>', {
+			severity: { parseError: { 'duplicate-attribute': 'error' } },
+		});
+		const parseErrors = violations.filter(v => v.ruleId === 'parse-error');
+		expect(parseErrors).toHaveLength(1);
+		expect(parseErrors[0]?.message).toBe('Parser conformance error: duplicate-attribute');
+	});
+
+	test('Record form — per-code severity is honoured (warning vs error)', async () => {
+		const { violations } = await mlTest('<!-- a <!-- b --><div a a></div>', {
+			severity: {
+				parseError: {
+					'nested-comment': 'warning',
+					'duplicate-attribute': 'error',
+				},
+			},
+		});
+		const nested = violations.find(v => v.message === 'Parser conformance error: nested-comment');
+		const dup = violations.find(v => v.message === 'Parser conformance error: duplicate-attribute');
+		expect(nested?.severity).toBe('warning');
+		expect(dup?.severity).toBe('error');
+	});
+
+	test('severity.parseError: "off" suppresses every code even after opt-in', async () => {
+		const { violations } = await mlTest('<!-- a <!-- b --> -->', {
+			severity: { parseError: 'off' },
+		});
+		expect(violations.filter(v => v.ruleId === 'parse-error')).toStrictEqual([]);
+	});
+
+	test('disabling a rule via nodeRules does NOT silence the built-in parse-error channel', async () => {
+		// `<div><span attr attr>` triggers parse5 `duplicate-attribute` and the
+		// `attr-duplication` rule. `nodeRules` disables the rule on `<span>`,
+		// but the built-in channel is independent of rule config.
+		const { violations } = await mlTest('<div><span attr attr></span></div>', {
+			severity: { parseError: 'error' },
+			rules: { 'attr-duplication': true },
+			nodeRules: [{ selector: 'span', rules: { 'attr-duplication': false } }],
+		});
+		const parseErrors = violations.filter(v => v.ruleId === 'parse-error');
+		const attrDup = violations.filter(v => v.ruleId === 'attr-duplication');
+		expect(parseErrors).toHaveLength(1);
+		expect(attrDup).toHaveLength(0);
+	});
+
+	test('framework parsers (Vue) do not emit parse-error — parse5 is not invoked', async () => {
+		// Vue parser extends `Parser` base, not `HtmlParser`, so it never invokes
+		// parse5 and never populates `parseErrors`. The channel stays empty
+		// even when fully opted in.
+		const { violations } = await mlTest('<template><div v-bind:attr v-bind:attr /></template>', {
+			parser: { '.*': '@markuplint/vue-parser' },
+			severity: { parseError: 'error' },
+		});
+		expect(violations.filter(v => v.ruleId === 'parse-error')).toStrictEqual([]);
+	});
+
+	test('parserOptions.documentMode "fragment" silences document-level parse errors', async () => {
+		// `<head>...</head>` standalone defaults to fragment parsing anyway,
+		// but with `documentMode: 'document'` it produces `missing-doctype`.
+		// Verify that explicit `'fragment'` suppresses it (SSR partial use case).
+		const source = '<head><meta charset="utf-8"><title>partial</title></head>';
+		const { violations } = await mlTest(source, {
+			parserOptions: { documentMode: 'fragment' },
+			severity: { parseError: 'error' },
+		});
+		expect(violations.find(v => v.message === 'Parser conformance error: missing-doctype')).toBeUndefined();
+	});
+
+	test('parserOptions.documentMode "document" surfaces missing-doctype on bare-head sources', async () => {
+		// Same input — `<head>...` without `<!doctype html>` — forced to be
+		// parsed as a document so parse5 emits `missing-doctype`.
+		const source = '<head><meta charset="utf-8"><title>full-page-no-doctype</title></head><body>x</body>';
+		const { violations } = await mlTest(source, {
+			parserOptions: { documentMode: 'document' },
+			severity: { parseError: { 'missing-doctype': 'error' } },
+		});
+		expect(violations).toContainEqual(
+			expect.objectContaining({
+				ruleId: 'parse-error',
+				message: 'Parser conformance error: missing-doctype',
+			}),
+		);
+	});
+
+	test('Record form does NOT suppress fatal ParserError (no code → falls back to "error" severity)', async () => {
+		// Fatal ParserError has no `code` so the Record-form lookup cannot
+		// target it. The contract: when the channel is otherwise enabled
+		// (Record form is non-null), fatal ParserError still emits at
+		// 'error'. Pug 004.pug is the existing fixture used to trigger a
+		// fatal ParserError.
+		const fs = await import('node:fs/promises');
+		const path = await import('node:path');
+		const fixturePath = path.resolve(import.meta.dirname, '../../../test/fixture/pug/004.pug');
+		const source = await fs.readFile(fixturePath, 'utf8');
+		const { violations } = await mlTest(source, {
+			parser: { '.*': '@markuplint/pug-parser' },
+			// Record form that only opts in to `duplicate-attribute`. The
+			// fatal ParserError thrown by pug parsing has no `code`, so it
+			// must NOT be suppressed by the Record lookup — it should emit
+			// at default 'error' severity through the fatal fallback branch
+			// in `#createParseError`.
+			severity: { parseError: { 'duplicate-attribute': 'error' } },
+		});
+		const fatal = violations.filter(v => v.ruleId === 'parse-error' && v.severity === 'error');
+		expect(fatal.length).toBeGreaterThanOrEqual(1);
+	});
+
+	test('parserOptions.documentMode "auto" (default) keeps current behaviour', async () => {
+		// Bare `<head>` without doctype: auto → fragment → no document-level
+		// errors. Same input as the previous test, no documentMode set.
+		const source = '<head><meta charset="utf-8"><title>partial</title></head>';
+		const { violations } = await mlTest(source, {
+			severity: { parseError: 'error' },
+		});
+		expect(violations.find(v => v.message === 'Parser conformance error: missing-doctype')).toBeUndefined();
+	});
+});

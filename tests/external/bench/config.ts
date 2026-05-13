@@ -20,6 +20,27 @@ export const BENCHMARK_CONFIG_ID = 'all-rules';
  * are mirrored here.
  */
 export const benchmarkConfig: Config = {
+	// The built-in `parse-error` channel ships default-off so end users opt in
+	// per parse5 ERR code (e.g. `{ "parseError": { "duplicate-attribute":
+	// "error" } }`). The bench enables every code uniformly to maximise
+	// conformance coverage — each HTML LS tokenizer / tree-construction
+	// parse error that parse5 emits becomes a markuplint error and counts
+	// toward `match-error` against nu-validator. parse5 adding new codes
+	// flows in automatically without touching this config.
+	severity: {
+		parseError: 'error',
+	},
+	// nu-validator's test corpus contains a handful of fixtures that start
+	// with `<head>` or `<meta>` without a doctype but are nevertheless full
+	// HTML pages (e.g., `html/parsing/...`). The default `'auto'` document
+	// detection treats those as fragments, which silences `missing-doctype`
+	// and related document-level parse errors. Forcing `'document'` mode in
+	// the bench mirrors what nu-validator does (it always treats the input
+	// as a full document) and captures the extra coverage. End-user
+	// projects keep the `'auto'` default unless they opt in.
+	parserOptions: {
+		documentMode: 'document',
+	},
 	rules: {
 		'permitted-contents': true,
 		'required-attr': true,

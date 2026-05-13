@@ -144,7 +144,10 @@ flowchart LR
 
 1. **パース**: `MLCore` は設定されたパーサー（`MLParser`）を呼び出し、`MLASTDocument` を生成
 2. **ドキュメント作成**: AST を `MLDocument` でラップし、`createNode()` ファクトリで MLDOM ツリー全体を構築。`RuleMapper` が各ノードのルール設定を解決
-3. **検証**: 各 `MLRule` に対して、`document.setRule(rule)` を呼び出した後 `rule.verify(document)` を実行。ルールは `document.walkOn()` で対象ノードを走査し、`MLRuleContext` を通じて違反を報告。ルールは report にインライン `fix` コールバックを付与して `TextEdit` オブジェクトを返す
+3. **検証**: 各 `MLRule` に対して、`document.setRule(rule)` を呼び出した後 `rule.verify(document)` を実行。ルールは `document.walkOn()` で対象ノードを走査し、`MLRuleContext` を通じて違反を報告。ルールは report にインライン `fix` コールバックを付与して `TextEdit` オブジェクトを返す。
+
+   **組み込み `parse-error` チャネル**: rule 反復の **前** に、`verify()` は `MLASTDocument.parseErrors` (パーサが収集した非致命的な適合エラー — 例えば parse5 の `onParseError` イベント) を `#pushNonFatalParseErrors()` で消費し、各エントリに対して `ruleId: 'parse-error'` 違反を 1 件生成します。本チャネルは致命的兄弟である `ParserError` (ステップ 1 で発生) と同じ `severity.parseError` 設定キーを共有します。順序契約: parse-error 違反は出力上必ず rule 違反より前に並びます。rule spec はこの順序に依存しています。
+
 4. **修正**（オプション）: `fix=true` の場合、report の fix コールバックが `RuleFixer` を使って `TextEdit[]` を生成。`FixApplier.applyFixes(sourceCode, fixes)` が全編集をソーステキストに一括適用（重複検出付き）
 
 ## MLDOM クラス階層
