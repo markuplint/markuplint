@@ -109,6 +109,12 @@ class MarkdownParser extends MarkdownAwareParser {
 			// HTML document.
 			documentMode: 'fragment',
 		});
+		// Surface tokenizer-level parse errors (e.g. `duplicate-attribute`)
+		// collected by the embedded HtmlParser. Without this, every parse
+		// error inside an inline HTML block would be silently dropped on
+		// the way back from `#htmlParser.parse()` even though the user has
+		// opted in via `severity.parseError`.
+		this.accumulateParseErrors(doc.parseErrors);
 		return [...doc.nodeList];
 	}
 }

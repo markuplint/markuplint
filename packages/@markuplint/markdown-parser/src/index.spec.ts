@@ -751,6 +751,31 @@ describe('MarkdownParser', () => {
 	});
 });
 
+describe('Embedded HTML — parseErrors propagation (#3844)', () => {
+	test('emits tokenizer-level parse5 events for malformed embedded HTML', () => {
+		// `<div a a>` triggers parse5 `duplicate-attribute`. Even though the
+		// HTML lives inside Markdown, the tokenizer-level error must surface
+		// on `MLASTDocument.parseErrors`.
+		const doc = parse('# heading\n\n<div a a></div>\n');
+		const codes = (doc.parseErrors ?? []).map(e => e.code);
+		expect(codes).toContain('duplicate-attribute');
+	});
+
+	test('forces fragment parsing so document-level parse5 events do NOT leak from embedded HTML', () => {
+		// Without `documentMode: 'fragment'` forcing, a bare `<head>` in an
+		// inline HTML block would trip parse5's `missing-doctype` (since the
+		// internal HtmlParser would auto-detect document mode and complain
+		// about the missing `<!doctype html>`). Forcing fragment mode in
+		// `markdown-parser` is what prevents that leak — this test pins that
+		// contract.
+		const doc = parse('# heading\n\n<head><meta charset="utf-8"></head>\n');
+		const codes = (doc.parseErrors ?? []).map(e => e.code);
+		expect(codes).not.toContain('missing-doctype');
+		expect(codes).not.toContain('misplaced-doctype');
+		expect(codes).not.toContain('non-conforming-doctype');
+	});
+});
+
 describe('getLineAndColumn', () => {
 	test('returns line 1, col 1 for offset 0', () => {
 		expect(getLineAndColumn('hello', 0)).toStrictEqual({ line: 1, col: 1 });

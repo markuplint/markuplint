@@ -128,6 +128,10 @@ class PugParser extends Parser<ASTNode> {
 					// chunk.
 					documentMode: 'fragment',
 				});
+				// Surface tokenizer-level parse errors from the embedded
+				// HtmlInPugParser so users who opt in via
+				// `severity.parseError` see them on the outer Pug document.
+				this.accumulateParseErrors(htmlDoc.parseErrors);
 
 				const newNodeList: MLASTNodeTreeItem[] = [];
 				for (const node of htmlDoc.nodeList) {
