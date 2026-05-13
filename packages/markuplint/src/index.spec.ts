@@ -648,15 +648,18 @@ describe('Built-in parse-error channel — dedupe against mirroring rules (#3844
 		);
 	});
 
-	test('attr-duplication is disabled → duplicate-attribute surfaces on parse-error channel', async () => {
+	test('attr-duplication is disabled → duplicate-attribute is STILL suppressed (rule owns the code unconditionally)', async () => {
 		const { violations } = await mlTest('<div a a></div>', {
 			rules: { 'attr-duplication': false },
 			severity: { parseError: 'error' },
 		});
-		// No ml rule to dedupe against — parse-error carries the violation.
+		// Mirror declarations are static metadata; ml-core suppresses
+		// duplicate-attribute regardless of whether the rule is currently
+		// enabled. Disabling the rule means the user opted out of that
+		// detection entirely — the parse-error channel does NOT fill in.
 		expect(violations.some(v => v.ruleId === 'attr-duplication')).toBe(false);
 		expect(violations.some(v => v.ruleId === 'parse-error' && v.message.includes('duplicate-attribute'))).toBe(
-			true,
+			false,
 		);
 	});
 
@@ -714,5 +717,47 @@ describe('Built-in parse-error channel — dedupe against mirroring rules (#3844
 		expect(violations.some(v => v.ruleId === 'doctype')).toBe(true);
 		// parse-error channel does NOT also fire `missing-doctype` (mirrored).
 		expect(violations.some(v => v.ruleId === 'parse-error' && v.message.includes('missing-doctype'))).toBe(false);
+	});
+
+	test('character-reference consumes parse5 malformed-reference codes as its own violations', async () => {
+		// `&xyz;` triggers parse5 `unknown-named-character-reference`. The
+		// rule reads parseErrors and reports the malformed reference under
+		// its own ruleId; the parse-error channel does not double-emit.
+		const { violations } = await mlTest('<p>Hello &xyz; world</p>', {
+			rules: { 'character-reference': true },
+		});
+		const charRef = violations.filter(v => v.ruleId === 'character-reference');
+		expect(charRef.length).toBeGreaterThan(0);
+		expect(charRef.some(v => v.message.includes('unknown-named-character-reference'))).toBe(true);
+		// Mirrored — parse-error never surfaces this code.
+		expect(
+			violations.some(v => v.ruleId === 'parse-error' && v.message.includes('unknown-named-character-reference')),
+		).toBe(false);
+	});
+
+	test('character-reference reports both missed-escape (self) and malformed-reference (hook) under one ruleId', async () => {
+		// `A & B` is a missed escape (self-detection), `&foo` is a malformed
+		// reference (parse5 hook). Both arrive as `character-reference`.
+		const { violations } = await mlTest('<p>A & B &foo bar</p>', {
+			rules: { 'character-reference': true },
+		});
+		const charRef = violations.filter(v => v.ruleId === 'character-reference');
+		// At least 2 violations: one missed escape, one parse5-hooked
+		// malformed reference.
+		expect(charRef.length).toBeGreaterThanOrEqual(2);
+	});
+
+	test('character-reference disabled → both directions silent', async () => {
+		// With the rule off, neither the missed-escape detection nor the
+		// parse5 hook surfaces. parse-error channel respects the mirror
+		// declaration even when the rule is disabled.
+		const { violations } = await mlTest('<p>A & B &xyz; tail</p>', {
+			rules: { 'character-reference': false },
+			severity: { parseError: 'error' },
+		});
+		expect(violations.some(v => v.ruleId === 'character-reference')).toBe(false);
+		expect(
+			violations.some(v => v.ruleId === 'parse-error' && v.message.includes('unknown-named-character-reference')),
+		).toBe(false);
 	});
 });
