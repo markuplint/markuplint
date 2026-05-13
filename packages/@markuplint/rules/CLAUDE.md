@@ -1,22 +1,26 @@
 # @markuplint/rules
 
-## parse5 dedupe declaration (`meta.mirrorsParseErrorCodes`)
+## parse5 mirror declaration (`meta.mirrorsParseErrorCodes`)
 
-When adding or editing a rule whose detection overlaps with a parse5 `onParseError` event, decide whether to declare `meta.mirrorsParseErrorCodes` so the built-in `parse-error` channel can dedupe.
+When adding or editing a rule whose detection covers a parse5 `onParseError` event, declare the codes you take responsibility for via `meta.mirrorsParseErrorCodes`. ml-core then suppresses the `parse-error` channel for those codes (when the rule is mentioned in the user's ruleset), so the user sees the violation through your rule alone.
 
-**Declare it when:** the rule's detection scope is **at least as broad as** the parse5 event. Same direction, same condition. Example: `attr-duplication` reports every case parse5 reports as `duplicate-attribute` (and more — JSX / SVG / authored components), so it declares `['duplicate-attribute']`.
+**Two patterns for "covering" a parse5 code:**
 
-**Do NOT declare it when:** the rule's detection runs in a different direction. Example: `character-reference` reports unescaped `<`, `>`, `&`, `"` — the opposite of parse5's character-reference codes which flag _malformed_ `&...;` references. Mirroring would suppress events the rule was never going to report.
+1. **Wider-or-equal self-detection** — the rule's existing detection logic already reports the case parse5 would, often plus more. Just declaring the code is enough; ml-core's suppression keeps things tidy. Examples: `attr-duplication` (covers HTML + JSX + SVG; parse5 only does HTML), `doctype` (covers missing + obsolete; declares `missing-doctype`), `no-orphaned-end-tag` (reads `text.isBogus` set by the parser).
+2. **Active consumption via `parseErrors` hook** — the rule's own detection runs in a different direction from parse5, but it still wants to report parse5's events under its own ruleId for end-user simplicity. The rule reads `document.parseErrors` in `verify()` and converts matching codes into its own violations. Example: `character-reference` reports missed-escape (its native direction) **and** parse5's malformed-reference codes (the opposite direction) under one ruleId.
 
 **Steps:**
 
 1. Read `parse5/dist/common/error-codes.d.ts` to identify candidate ERR codes.
-2. Add `mirrorsParseErrorCodes: [...] as const` to the rule's `meta.ts`.
-3. Add a brief comment explaining the rationale (especially edge cases where the rule's scope is wider).
+2. Decide which pattern applies. If pattern 2, your `verify()` must iterate `document.parseErrors` and `report()` the relevant ones.
+3. Add `mirrorsParseErrorCodes: [...] as const` to the rule's `meta.ts` and a comment explaining the rationale (especially edge cases where the rule's scope differs from parse5).
 4. The meta-test `src/mirrors-parse-error-codes.spec.ts` enforces no duplicate declarations across rules — it runs as part of `yarn test`.
 5. Compile-time alignment with parse5 is enforced by `@markuplint/html-parser`'s `parse-error-code-sync.spec.ts`.
 
-See `attr-duplication/meta.ts`, `doctype/meta.ts`, `no-orphaned-end-tag/meta.ts` for examples, and `character-reference/meta.ts` for an explicit non-mirror example.
+**Examples:**
+
+- `attr-duplication/meta.ts`, `doctype/meta.ts`, `no-orphaned-end-tag/meta.ts` — pattern 1 (self-detection covers)
+- `character-reference/meta.ts` + `character-reference/index.ts` — pattern 2 (rule reads `parseErrors` and reports)
 
 ## Test ID Convention (MANDATORY)
 

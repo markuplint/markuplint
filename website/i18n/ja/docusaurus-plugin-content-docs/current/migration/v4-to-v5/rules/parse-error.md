@@ -161,17 +161,21 @@ HTML パーサーは入力の先頭を見て document/fragment を自動判定�
 
 フレームワークパーサー — `@markuplint/jsx-parser`、`vue-parser`、`svelte-parser` (`.svelte` ファイル)、`astro-parser`、`pug-parser` (`.pug` ファイル) — は parse5 を呼ばないため、`severity.parseError` をどう設定しても非致命的 `parse-error` violation は発生しません。
 
-## ルールレベルのチェックとの関係 (自動 dedupe)
+## ルールレベルのチェックとの関係 (mirror 宣言)
 
-既存ルールの一部は parse5 code とスコープが重なります。例:
+一部の ml ルールは検出スコープの一部として parse5 codes をカバーします。これらは `meta.mirrorsParseErrorCodes` で宣言:
 
-| ml ルール             | 重なる parse5 code                      |
-| --------------------- | --------------------------------------- |
-| `attr-duplication`    | `duplicate-attribute`                   |
-| `doctype`             | `missing-doctype`                       |
-| `no-orphaned-end-tag` | `end-tag-without-matching-open-element` |
+| ml ルール             | カバーする parse5 codes                                                                                    |
+| --------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `attr-duplication`    | `duplicate-attribute`                                                                                      |
+| `doctype`             | `missing-doctype`                                                                                          |
+| `no-orphaned-end-tag` | `end-tag-without-matching-open-element`                                                                    |
+| `character-reference` | 文字参照系 8 codes (`unknown-named-character-reference`、`missing-semicolon-after-character-reference` 等) |
 
-parse5 code を mirror している ml ルールが ruleset で **有効** な場合、`@markuplint/ml-core` は parse-error チャネル側で該当 code を自動的に抑制します。同じ parse5 event に対して 2 つの violation が出ることはありません。ml ルール側の violation が優先されます。
+該当ルールが ruleset で **mention されている** (任意の値: `true`、`false`、severity、object — つまりユーザーがそのチェックについて意図を表明している) 場合、`@markuplint/ml-core` は mirror 宣言を尊重し、parse-error チャネル側で該当 codes を抑制します:
+
+- **ルール有効** → ルール自身が violation を出す。parse-error は silent
+- **ルール無効** (`false`) → ルールも parse-error も silent — ユーザーが opt-out した
 
 ```jsonc
 {
@@ -183,9 +187,9 @@ parse5 code を mirror している ml ルールが ruleset で **有効** な�
 `<div a a></div>` に対して:
 
 - ✅ `attr-duplication` violation (ルールから)
-- ❌ `parse-error` violation の `duplicate-attribute` (dedupe で抑制)
+- ❌ `parse-error` violation の `duplicate-attribute` (mirror 宣言で抑制)
 
-ルールを無効にすれば parse5 チャネルが拾います:
+ルールを無効にすると **両チャネルとも silent** — ユーザーが明示的に opt-out したから:
 
 ```jsonc
 {
@@ -194,7 +198,18 @@ parse5 code を mirror している ml ルールが ruleset で **有効** な�
 }
 ```
 
-- ✅ `parse-error` violation の `duplicate-attribute`
+- ❌ どちらの violation も出ない (ユーザーが opt-out)
+
+ml ルールを介さずに parse-error チャネルから直接 code を surface したい場合、ルールを **完全に省略** (`rules` に entry を書かない) して `severity.parseError` で opt-in:
+
+```jsonc
+{
+  // `rules.attr-duplication` の entry なし → ml-core は抑制しない
+  "severity": { "parseError": "error" },
+}
+```
+
+- ✅ `parse-error` violation の `duplicate-attribute` (チャネルが直接担当)
 
 この dedupe は **フック式** です。各ルールが自分の `meta.mirrorsParseErrorCodes` 配列を宣言し、ml-core は有効ルール群から集約するだけです。ml-core 内にハードコードな対応表はありません。parse5 event とスコープが重なる新ルールの作者は、`meta` に対応 code を宣言するだけで dedupe に参加できます。
 

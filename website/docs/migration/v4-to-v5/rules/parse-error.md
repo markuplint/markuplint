@@ -161,17 +161,21 @@ The non-fatal channel only fires for parsers that populate `MLASTDocument.parseE
 
 Framework parsers — `@markuplint/jsx-parser`, `vue-parser`, `svelte-parser` (`.svelte` files), `astro-parser`, `pug-parser` (`.pug` files) — do **not** invoke parse5 and therefore do not emit non-fatal `parse-error` violations regardless of how `severity.parseError` is configured.
 
-## Relationship with rule-level checks (automatic dedupe)
+## Relationship with rule-level checks (mirror declarations)
 
-Some existing rules overlap in scope with parse5 codes. Examples:
+Some ml rules cover parse5 codes directly as part of their detection scope. They declare this in `meta.mirrorsParseErrorCodes`:
 
-| ml rule               | parse5 code that overlaps               |
-| --------------------- | --------------------------------------- |
-| `attr-duplication`    | `duplicate-attribute`                   |
-| `doctype`             | `missing-doctype`                       |
-| `no-orphaned-end-tag` | `end-tag-without-matching-open-element` |
+| ml rule               | parse5 codes covered                                                                                                   |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `attr-duplication`    | `duplicate-attribute`                                                                                                  |
+| `doctype`             | `missing-doctype`                                                                                                      |
+| `no-orphaned-end-tag` | `end-tag-without-matching-open-element`                                                                                |
+| `character-reference` | 8 character-reference codes (`unknown-named-character-reference`, `missing-semicolon-after-character-reference`, etc.) |
 
-When an ml rule that mirrors a parse5 code is **active in the ruleset**, `@markuplint/ml-core` automatically suppresses the corresponding code on the `parse-error` channel. You will not see two violations for the same underlying parse5 event — the ml rule's violation wins.
+When such a rule is **mentioned in your ruleset** (any of `true`, `false`, severity, or an object — meaning you've expressed intent about this check), `@markuplint/ml-core` honours the mirror declaration and suppresses the matching codes on the `parse-error` channel:
+
+- **Rule enabled** → the rule reports its own violation; parse-error stays silent
+- **Rule disabled** (`false`) → both the rule and parse-error stay silent — you opted out of the detection
 
 ```jsonc
 {
@@ -183,9 +187,9 @@ When an ml rule that mirrors a parse5 code is **active in the ruleset**, `@marku
 For `<div a a></div>`:
 
 - ✅ `attr-duplication` violation (from the rule)
-- ❌ `parse-error` violation with `duplicate-attribute` (suppressed by dedupe)
+- ❌ `parse-error` violation with `duplicate-attribute` (suppressed by mirror declaration)
 
-Disable the ml rule and the parse5 channel takes over:
+Disable the rule and **both channels stay silent** — your config explicitly opts out of this detection:
 
 ```jsonc
 {
@@ -194,7 +198,18 @@ Disable the ml rule and the parse5 channel takes over:
 }
 ```
 
-- ✅ `parse-error` violation with `duplicate-attribute`
+- ❌ no violation (you opted out)
+
+If you want the parse-error channel to surface a code without involving the ml rule, **omit the rule entirely** (don't mention it in `rules`) and opt in via `severity.parseError`:
+
+```jsonc
+{
+  // No `rules.attr-duplication` entry → ml-core does not suppress the code
+  "severity": { "parseError": "error" },
+}
+```
+
+- ✅ `parse-error` violation with `duplicate-attribute` (channel of record)
 
 The dedupe is **hook-based**: each rule declares its own `meta.mirrorsParseErrorCodes` array (in `RuleSeed`). ml-core simply unions the lists across active rules — there is no hard-coded mapping in ml-core. Authors of new rules that overlap with parse5 events should declare them in `meta` to participate in the dedupe.
 
