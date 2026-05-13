@@ -161,9 +161,46 @@ The non-fatal channel only fires for parsers that populate `MLASTDocument.parseE
 
 Framework parsers — `@markuplint/jsx-parser`, `vue-parser`, `svelte-parser` (`.svelte` files), `astro-parser`, `pug-parser` (`.pug` files) — do **not** invoke parse5 and therefore do not emit non-fatal `parse-error` violations regardless of how `severity.parseError` is configured.
 
-## Relationship with rule-level checks
+## Relationship with rule-level checks (automatic dedupe)
 
-Some existing rules overlap with parse5 codes (for example, `attr-duplication` overlaps with the `duplicate-attribute` parser error; `character-reference` overlaps with the eight character-reference-related codes). For now, both layers run independently — you may receive a `parse-error` violation **and** the corresponding rule violation when both are enabled. A follow-up PR is planned to consolidate or deprecate the duplicated rule-level checks once the per-code opt-in matures.
+Some existing rules overlap in scope with parse5 codes. Examples:
+
+| ml rule               | parse5 code that overlaps               |
+| --------------------- | --------------------------------------- |
+| `attr-duplication`    | `duplicate-attribute`                   |
+| `doctype`             | `missing-doctype`                       |
+| `no-orphaned-end-tag` | `end-tag-without-matching-open-element` |
+
+When an ml rule that mirrors a parse5 code is **active in the ruleset**, `@markuplint/ml-core` automatically suppresses the corresponding code on the `parse-error` channel. You will not see two violations for the same underlying parse5 event — the ml rule's violation wins.
+
+```jsonc
+{
+  "rules": { "attr-duplication": true },
+  "severity": { "parseError": "error" },
+}
+```
+
+For `<div a a></div>`:
+
+- ✅ `attr-duplication` violation (from the rule)
+- ❌ `parse-error` violation with `duplicate-attribute` (suppressed by dedupe)
+
+Disable the ml rule and the parse5 channel takes over:
+
+```jsonc
+{
+  "rules": { "attr-duplication": false },
+  "severity": { "parseError": "error" },
+}
+```
+
+- ✅ `parse-error` violation with `duplicate-attribute`
+
+The dedupe is **hook-based**: each rule declares its own `meta.mirrorsParseErrorCodes` array (in `RuleSeed`). ml-core simply unions the lists across active rules — there is no hard-coded mapping in ml-core. Authors of new rules that overlap with parse5 events should declare them in `meta` to participate in the dedupe.
+
+Rules whose detection is **wider** than parse5 (e.g. `attr-duplication` also covers JSX / SVG / authored components where parse5 never runs) are safe to mirror: parse5 only fires on HTML anyway, so the dedupe only ever skips events that the ml rule already reports.
+
+Rules whose detection is **narrower or different** from a parse5 code (e.g. `character-reference` detects unescaped `<`, `>`, `&`, `"` — the opposite direction of parse5's `unknown-named-character-reference` etc.) **must not** declare `mirrorsParseErrorCodes`. The two layers stay independent and complementary.
 
 ## See also
 

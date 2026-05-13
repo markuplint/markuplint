@@ -161,9 +161,46 @@ HTML パーサーは入力の先頭を見て document/fragment を自動判定�
 
 フレームワークパーサー — `@markuplint/jsx-parser`、`vue-parser`、`svelte-parser` (`.svelte` ファイル)、`astro-parser`、`pug-parser` (`.pug` ファイル) — は parse5 を呼ばないため、`severity.parseError` をどう設定しても非致命的 `parse-error` violation は発生しません。
 
-## ルールレベルのチェックとの関係
+## ルールレベルのチェックとの関係 (自動 dedupe)
 
-既存ルールの一部は parse5 code と重複しています (例: `attr-duplication` ↔ `duplicate-attribute`、`character-reference` ↔ 文字参照系 8 code)。現状は両方が独立に走るので、両方有効化していると `parse-error` violation と対応するルール violation の **両方** が出ます。code 単位 opt-in が定着したのち、重複しているルールレベルのチェックを統合または非推奨化する follow-up PR を計画しています。
+既存ルールの一部は parse5 code とスコープが重なります。例:
+
+| ml ルール             | 重なる parse5 code                      |
+| --------------------- | --------------------------------------- |
+| `attr-duplication`    | `duplicate-attribute`                   |
+| `doctype`             | `missing-doctype`                       |
+| `no-orphaned-end-tag` | `end-tag-without-matching-open-element` |
+
+parse5 code を mirror している ml ルールが ruleset で **有効** な場合、`@markuplint/ml-core` は parse-error チャネル側で該当 code を自動的に抑制します。同じ parse5 event に対して 2 つの violation が出ることはありません。ml ルール側の violation が優先されます。
+
+```jsonc
+{
+  "rules": { "attr-duplication": true },
+  "severity": { "parseError": "error" },
+}
+```
+
+`<div a a></div>` に対して:
+
+- ✅ `attr-duplication` violation (ルールから)
+- ❌ `parse-error` violation の `duplicate-attribute` (dedupe で抑制)
+
+ルールを無効にすれば parse5 チャネルが拾います:
+
+```jsonc
+{
+  "rules": { "attr-duplication": false },
+  "severity": { "parseError": "error" },
+}
+```
+
+- ✅ `parse-error` violation の `duplicate-attribute`
+
+この dedupe は **フック式** です。各ルールが自分の `meta.mirrorsParseErrorCodes` 配列を宣言し、ml-core は有効ルール群から集約するだけです。ml-core 内にハードコードな対応表はありません。parse5 event とスコープが重なる新ルールの作者は、`meta` に対応 code を宣言するだけで dedupe に参加できます。
+
+検出範囲が parse5 より **広い** ルール (例: `attr-duplication` は JSX / SVG / authored component でも動く — parse5 はそこには反応しない) は mirror しても問題ありません。parse5 はそもそも HTML でしか発火しないので、dedupe で抑制される対象は元々 ml ルールが拾うイベントだけになります。
+
+検出範囲が parse5 と **異なる方向** のルール (例: `character-reference` は `<`、`>`、`&`、`"` のエスケープ漏れを検出 — parse5 の `unknown-named-character-reference` 等は逆方向の「書式エラー」検出) は `mirrorsParseErrorCodes` を **宣言しないでください**。両者は独立した補完関係です。
 
 ## 関連
 
