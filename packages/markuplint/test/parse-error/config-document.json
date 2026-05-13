@@ -1,0 +1,8 @@
+{
+	"severity": {
+		"parseError": "error"
+	},
+	"parserOptions": {
+		"documentMode": "document"
+	}
+}

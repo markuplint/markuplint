@@ -589,6 +589,29 @@ describe('Built-in parse-error channel (#3844)', () => {
 		);
 	});
 
+	test('Record form does NOT suppress fatal ParserError (no code → falls back to "error" severity)', async () => {
+		// Fatal ParserError has no `code` so the Record-form lookup cannot
+		// target it. The contract: when the channel is otherwise enabled
+		// (Record form is non-null), fatal ParserError still emits at
+		// 'error'. Pug 004.pug is the existing fixture used to trigger a
+		// fatal ParserError.
+		const fs = await import('node:fs/promises');
+		const path = await import('node:path');
+		const fixturePath = path.resolve(import.meta.dirname, '../../../test/fixture/pug/004.pug');
+		const source = await fs.readFile(fixturePath, 'utf8');
+		const { violations } = await mlTest(source, {
+			parser: { '.*': '@markuplint/pug-parser' },
+			// Record form that only opts in to `duplicate-attribute`. The
+			// fatal ParserError thrown by pug parsing has no `code`, so it
+			// must NOT be suppressed by the Record lookup — it should emit
+			// at default 'error' severity through the fatal fallback branch
+			// in `#createParseError`.
+			severity: { parseError: { 'duplicate-attribute': 'error' } },
+		});
+		const fatal = violations.filter(v => v.ruleId === 'parse-error' && v.severity === 'error');
+		expect(fatal.length).toBeGreaterThanOrEqual(1);
+	});
+
 	test('parserOptions.documentMode "auto" (default) keeps current behaviour', async () => {
 		// Bare `<head>` without doctype: auto → fragment → no document-level
 		// errors. Same input as the previous test, no documentMode set.

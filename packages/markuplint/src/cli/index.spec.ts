@@ -186,6 +186,62 @@ describe('STDOUT Test', () => {
 		expect(exitCode).toBe(0);
 	});
 
+	test('without --severity-parse-error, non-fatal parse5 events are NOT emitted (#3844 opt-in default)', async () => {
+		// 002.html contains a malformed `content=ie=edge` attribute that parse5
+		// reports as `unexpected-character-in-unquoted-attribute-value`. After
+		// the opt-in default, the CLI must NOT emit that as a violation unless
+		// the user explicitly enables it via `--severity-parse-error` or
+		// `severity.parseError` in config.
+		const targetFilePath = path.resolve(import.meta.dirname, '../../../../test/fixture/002.html');
+		const { stderr } = await execa(entryFilePath, ['--no-color', escape(targetFilePath)], {
+			reject: false,
+		});
+		expect(stderr).not.toContain('parse-error');
+		expect(stderr).not.toContain('Parser conformance error');
+	});
+
+	test('with --severity-parse-error error, non-fatal parse5 events ARE emitted (uniform opt-in)', async () => {
+		// Same fixture, but explicitly opted in — the parse5 event must now
+		// appear on stderr.
+		const targetFilePath = path.resolve(import.meta.dirname, '../../../../test/fixture/002.html');
+		const { stderr } = await execa(
+			entryFilePath,
+			['--no-color', '--severity-parse-error', 'error', escape(targetFilePath)],
+			{ reject: false },
+		);
+		expect(stderr).toContain('Parser conformance error: unexpected-character-in-unquoted-attribute-value');
+		expect(stderr).toContain('(parse-error)');
+	});
+
+	test('parserOptions.documentMode "document" in .markuplintrc surfaces missing-doctype on bare <head> input', async () => {
+		// `bare-head.html` starts with `<head>` and has no `<!doctype html>`.
+		// With `documentMode: 'document'` the HTML parser is forced to treat
+		// it as a full document, so parse5 fires `missing-doctype`. This
+		// pins the Config → engine propagation path for `parserOptions`.
+		const targetFilePath = path.resolve(import.meta.dirname, '../../test/parse-error/bare-head.html');
+		const configFilePath = path.resolve(import.meta.dirname, '../../test/parse-error/config-document.json');
+		const { stderr } = await execa(
+			entryFilePath,
+			['--no-color', '--config', escape(configFilePath), '--no-search-config', escape(targetFilePath)],
+			{ reject: false },
+		);
+		expect(stderr).toContain('Parser conformance error: missing-doctype');
+	});
+
+	test('parserOptions.documentMode "fragment" in .markuplintrc silences missing-doctype on bare <head> input', async () => {
+		// Same fixture, but `documentMode: 'fragment'` keeps parse5 in
+		// fragment mode and `missing-doctype` is not emitted. Confirms the
+		// override flows from JSON config → engine → tokenize() correctly.
+		const targetFilePath = path.resolve(import.meta.dirname, '../../test/parse-error/bare-head.html');
+		const configFilePath = path.resolve(import.meta.dirname, '../../test/parse-error/config-fragment.json');
+		const { stderr } = await execa(
+			entryFilePath,
+			['--no-color', '--config', escape(configFilePath), '--no-search-config', escape(targetFilePath)],
+			{ reject: false },
+		);
+		expect(stderr).not.toContain('Parser conformance error: missing-doctype');
+	});
+
 	test('--max-count with 002.html', async () => {
 		const targetFilePath = path.resolve(import.meta.dirname, '../../../../test/fixture/002.html');
 
