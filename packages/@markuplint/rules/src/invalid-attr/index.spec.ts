@@ -3135,6 +3135,34 @@ describe('del/ins[datetime] is "valid date string with optional time" (HTML LS �
 // strings. Each test reproduces one of the nu-only fixtures so the regression
 // fires immediately if the type is widened back.
 describe('URL-typed attributes that must be non-empty (HTML LS)', () => {
+	// Positive cases pin the narrowed types' lower bound: a regular URL stays
+	// valid. If a future change accidentally over-tightens the validator the
+	// matching assertion fires immediately.
+	test('[invalid-attr-valid-036] form[action] accepts a regular URL', async () => {
+		const { violations } = await mlRuleTest(rule, '<form action="/submit"></form>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-valid-037] button[formaction] accepts a regular URL', async () => {
+		const { violations } = await mlRuleTest(rule, '<button formaction="/submit"></button>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-valid-038] object[data] accepts a regular URL', async () => {
+		const { violations } = await mlRuleTest(rule, '<object data="resource.swf"></object>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-valid-039] link[href] accepts a regular URL', async () => {
+		const { violations } = await mlRuleTest(rule, '<link href="/style.css" rel="stylesheet">');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-valid-040] video[poster] accepts a regular URL', async () => {
+		const { violations } = await mlRuleTest(rule, '<video poster="/poster.jpg" src="movie.mp4"></video>');
+		expect(violations).toStrictEqual([]);
+	});
+
 	test('[invalid-attr-invalid-057] form[action] rejects empty string', async () => {
 		// Mirrors html/elements/form/action-empty-novalid.html.
 		const { violations } = await mlRuleTest(rule, '<form action=""></form>');
@@ -3168,6 +3196,14 @@ describe('URL-typed attributes that must be non-empty (HTML LS)', () => {
 	test('[invalid-attr-invalid-062] link[href] rejects empty string', async () => {
 		// Mirrors html/elements/link/href-empty-novalid.html.
 		const { violations } = await mlRuleTest(rule, '<link href="" rel>');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-invalid-063] video[poster] rejects empty string', async () => {
+		// HTML LS §4.8.9 video: poster must be a "valid non-empty URL".
+		// Same bug class as the other URL→NonEmptyURL reclassifications;
+		// no nu fixture covers it directly but the spec wording is identical.
+		const { violations } = await mlRuleTest(rule, '<video poster="" src="movie.mp4"></video>');
 		expect(violations.length).toBeGreaterThan(0);
 	});
 });
