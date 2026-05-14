@@ -833,8 +833,9 @@
 			"type": "DOMID"
 		},
 		// https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fs-formaction
+		// Spec: "a valid non-empty URL potentially surrounded by spaces"
 		"formaction": {
-			"type": "URL"
+			"type": "NonEmptyURL"
 		},
 		// https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fs-formenctype
 		"formenctype": {

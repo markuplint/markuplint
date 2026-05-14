@@ -44,8 +44,11 @@
 			"condition": "[type='color' i]"
 		},
 		// https://html.spec.whatwg.org/multipage/input.html#attr-input-alt
+		// Spec: "The alt attribute provides the textual label for the button [...]
+		// The alt attribute must be present, and must contain a non-empty string."
 		"alt": {
 			"type": "Any",
+			"required": true,
 			"condition": "[type='image' i]"
 		},
 		// https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete

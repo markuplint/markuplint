@@ -23,10 +23,12 @@
 	"attributes": {
 		// https://html.spec.whatwg.org/multipage/semantics.html#the-link-element
 		// > One or both of the href or imagesrcset attributes must be present.
+		// Spec: "a valid non-empty URL potentially surrounded by spaces"
 		// Note: requiredEither is NOT added to imagesrcset because it already has
 		// condition/required for imagesizes interaction, and requiredEither would
 		// take precedence (index.ts:88), bypassing that logic.
 		"href": {
+			"type": "NonEmptyURL",
 			"requiredEither": ["imagesrcset"]
 		},
 		// https://html.spec.whatwg.org/multipage/semantics.html#attr-link-rel
