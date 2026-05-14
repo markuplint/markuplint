@@ -908,3 +908,31 @@ test('[required-attr-invalid-014] link rel preload match is case-insensitive', a
 	expect((await mlRuleTest(rule, '<link rel="PRELOAD" href="x.css">')).violations.length).toBeGreaterThan(0);
 	expect((await mlRuleTest(rule, '<link rel="Preload" href="x.css">')).violations.length).toBeGreaterThan(0);
 });
+
+test('[required-attr-invalid-015] base must have href, target, or both (HTML LS §4.2.3)', async () => {
+	// Mirrors html/elements/base/href-and-target-missing-novalid.html.
+	// A bare `<base>` with neither href nor target violates the spec.
+	const { violations } = await mlRuleTest(rule, '<base>');
+	expect(violations.length).toBeGreaterThan(0);
+});
+
+test('[required-attr-valid-006] base with only href is accepted', async () => {
+	const { violations } = await mlRuleTest(rule, '<base href="/">');
+	expect(violations).toStrictEqual([]);
+});
+
+test('[required-attr-valid-007] base with only target is accepted', async () => {
+	const { violations } = await mlRuleTest(rule, '<base target="_blank">');
+	expect(violations).toStrictEqual([]);
+});
+
+test('[required-attr-invalid-016] input[type=image] requires alt (HTML LS §4.10.5.1.18)', async () => {
+	// Mirrors html/elements/input/image-without-alt-novalid.html.
+	const { violations } = await mlRuleTest(rule, '<input type="image" src="button.png">');
+	expect(violations.length).toBeGreaterThan(0);
+});
+
+test('[required-attr-valid-008] input[type=image] with alt is accepted', async () => {
+	const { violations } = await mlRuleTest(rule, '<input type="image" src="button.png" alt="submit">');
+	expect(violations).toStrictEqual([]);
+});

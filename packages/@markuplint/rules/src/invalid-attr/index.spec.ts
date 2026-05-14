@@ -3129,3 +3129,45 @@ describe('del/ins[datetime] is "valid date string with optional time" (HTML LS Â
 		expect(violations.length).toBeGreaterThan(0);
 	});
 });
+
+// HTML LS pins these attributes to "valid non-empty URL" â€” previously typed
+// as the empty-allowing `URL`, which silently accepted "" and whitespace-only
+// strings. Each test reproduces one of the nu-only fixtures so the regression
+// fires immediately if the type is widened back.
+describe('URL-typed attributes that must be non-empty (HTML LS)', () => {
+	test('[invalid-attr-invalid-057] form[action] rejects empty string', async () => {
+		// Mirrors html/elements/form/action-empty-novalid.html.
+		const { violations } = await mlRuleTest(rule, '<form action=""></form>');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-invalid-058] form[action] rejects whitespace-only', async () => {
+		// Mirrors html/elements/form/action-whitespace-only-novalid.html.
+		const { violations } = await mlRuleTest(rule, '<form action="\t \n"></form>');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-invalid-059] button[formaction] rejects empty string', async () => {
+		// Mirrors html/elements/button/formaction-empty-novalid.html.
+		const { violations } = await mlRuleTest(rule, '<button formaction=""></button>');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-invalid-060] input[formaction] rejects empty string', async () => {
+		// Mirrors html/elements/input/type-image-formaction-empty-novalid.html.
+		const { violations } = await mlRuleTest(rule, '<input type="image" alt="foo" formaction="">');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-invalid-061] object[data] rejects empty string', async () => {
+		// Mirrors html/elements/object/data-empty-novalid.html.
+		const { violations } = await mlRuleTest(rule, '<object data=""></object>');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-invalid-062] link[href] rejects empty string', async () => {
+		// Mirrors html/elements/link/href-empty-novalid.html.
+		const { violations } = await mlRuleTest(rule, '<link href="" rel>');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+});
