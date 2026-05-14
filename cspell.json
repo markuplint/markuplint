@@ -166,6 +166,8 @@
 		"isvalid",
 		"novalid",
 		"haswarn",
+		"iso8601",
+		"YYYYMMDD",
 
 		// Specs
 		"closedby",
