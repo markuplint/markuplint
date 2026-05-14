@@ -161,9 +161,84 @@ HTML パーサーは入力の先頭を見て document/fragment を自動判定�
 
 フレームワークパーサー — `@markuplint/jsx-parser`、`vue-parser`、`svelte-parser` (`.svelte` ファイル)、`astro-parser`、`pug-parser` (`.pug` ファイル) — は parse5 を呼ばないため、`severity.parseError` をどう設定しても非致命的 `parse-error` violation は発生しません。
 
-## ルールレベルのチェックとの関係
+## ルールレベルのチェックとの関係 (mirror 宣言)
 
-既存ルールの一部は parse5 code と重複しています (例: `attr-duplication` ↔ `duplicate-attribute`、`character-reference` ↔ 文字参照系 8 code)。現状は両方が独立に走るので、両方有効化していると `parse-error` violation と対応するルール violation の **両方** が出ます。code 単位 opt-in が定着したのち、重複しているルールレベルのチェックを統合または非推奨化する follow-up PR を計画しています。
+一部の ml ルールは検出スコープの一部として parse5 codes をカバーします。これらは `meta.mirrorsParseErrorCodes` で宣言:
+
+| ml ルール             | カバーする parse5 codes                                                                                    |
+| --------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `attr-duplication`    | `duplicate-attribute`                                                                                      |
+| `doctype`             | `missing-doctype`                                                                                          |
+| `no-orphaned-end-tag` | `end-tag-without-matching-open-element`                                                                    |
+| `character-reference` | 文字参照系 8 codes (`unknown-named-character-reference`、`missing-semicolon-after-character-reference` 等) |
+
+該当ルールが ruleset で **mention されている** (任意の値: `true`、`false`、severity、object — つまりユーザーがそのチェックについて意図を表明している) 場合、`@markuplint/ml-core` は mirror 宣言を尊重し、parse-error チャネル側で該当 codes を抑制します:
+
+- **ルール有効** → ルール自身が violation を出す。parse-error は silent
+- **ルール無効** (`false`) → ルールも parse-error も silent — ユーザーが opt-out した
+
+```jsonc
+{
+  "rules": { "attr-duplication": true },
+  "severity": { "parseError": "error" },
+}
+```
+
+`<div a a></div>` に対して:
+
+- ✅ `attr-duplication` violation (ルールから)
+- ❌ `parse-error` violation の `duplicate-attribute` (mirror 宣言で抑制)
+
+ルールを無効にすると **両チャネルとも silent** — ユーザーが明示的に opt-out したから:
+
+```jsonc
+{
+  "rules": { "attr-duplication": false },
+  "severity": { "parseError": "error" },
+}
+```
+
+- ❌ どちらの violation も出ない (ユーザーが opt-out)
+
+ml ルールを介さずに parse-error チャネルから直接 code を surface したい場合、ルールを **完全に省略** (`rules` に entry を書かない) して `severity.parseError` で opt-in:
+
+```jsonc
+{
+  // `rules.attr-duplication` の entry なし → ml-core は抑制しない
+  "severity": { "parseError": "error" },
+}
+```
+
+- ✅ `parse-error` violation の `duplicate-attribute` (チャネルが直接担当)
+
+この dedupe は **フック式** です。各ルールが自分の `meta.mirrorsParseErrorCodes` 配列を宣言し、ml-core は有効ルール群から集約するだけです。ml-core 内にハードコードな対応表はありません。parse5 event とスコープが重なる新ルールの作者は、`meta` に対応 code を宣言するだけで dedupe に参加できます。
+
+検出範囲が parse5 より **広い** ルール (例: `attr-duplication` は JSX / SVG / authored component でも動く — parse5 はそこには反応しない) は mirror しても問題ありません。parse5 はそもそも HTML でしか発火しないので、dedupe で抑制される対象は元々 ml ルールが拾うイベントだけになります。
+
+検出範囲が parse5 と **異なる方向** のルール (例: `character-reference` は `<`、`>`、`&`、`"` のエスケープ漏れを検出 — parse5 の `unknown-named-character-reference` 等は逆方向の「書式エラー」検出) は `mirrorsParseErrorCodes` を **宣言しないでください**。両者は独立した補完関係です。
+
+### dedupe は ruleset レベルで判定
+
+dedupe チェックは **トップレベルの `rules` 設定** だけを見て、ノード単位の設定は見ません。`nodeRules` で局所的に mirror ルールを無効化した場合:
+
+```jsonc
+{
+  "rules": { "attr-duplication": true },
+  "nodeRules": [{ "selector": "span", "rules": { "attr-duplication": false } }],
+  "severity": { "parseError": "error" },
+}
+```
+
+…parse-error チャネルは依然として `attr-duplication` を global に有効と見なし、`<span>` 上の `duplicate-attribute` も **再 surface しません**。`<div><span attr attr></span></div>` に対して `<span>` の violation は 0 件 — 「ここではこのチェックを opt-out した」という意図と整合した挙動です。「parse-error チャネルが補完してくれる」という挙動ではありません。
+
+mirror ルールを局所無効化した要素で parse-error チャネルを発火させたい場合は、ルールを **global に無効化** して、parse5 code だけ enable してください:
+
+```jsonc
+{
+  "rules": { "attr-duplication": false },
+  "severity": { "parseError": { "duplicate-attribute": "error" } },
+}
+```
 
 ## 関連
 

@@ -148,6 +148,12 @@ flowchart LR
 
    **組み込み `parse-error` チャネル**: rule 反復の **前** に、`verify()` は `MLASTDocument.parseErrors` (パーサが収集した非致命的な適合エラー — 例えば parse5 の `onParseError` イベント) を `#pushNonFatalParseErrors()` で消費し、各エントリに対して `ruleId: 'parse-error'` 違反を 1 件生成します。本チャネルは致命的兄弟である `ParserError` (ステップ 1 で発生) と同じ `severity.parseError` 設定キーを共有します。順序契約: parse-error 違反は出力上必ず rule 違反より前に並びます。rule spec はこの順序に依存しています。
 
+   **mirror ルールは parse5 codes を所有する**: `meta.mirrorsParseErrorCodes` を持つ ml ルールは、該当 code の検出に対する static な責任を持ちます。「責任が effective か」はユーザー ruleset で判定されます:
+   - ルールが ruleset に **mention されている** (`rules.<name>` が任意の値 — `true`, `false`, severity, object — に設定されている) → ユーザーがそのチェックについて意図を表明している。ml-core は mirror を尊重し、parse-error チャネル側で該当 parse5 events を抑制する。ルールが enable なら自身で violation 出す (典型的には `document.parseErrors` を読む — `character-reference` が代表的なフック例)。ルールが `false` なら両方とも silent — ユーザーが opt-out したから。
+   - ルールが **mention されていない** → 純粋なデフォルト。ml-core は抑制しない。`severity.parseError` (opt-in 時) が該当 code のチャネルとして機能。
+
+   判定は **フック式**: ml-core は hardcode な code→rule 対応表を持たず、各ルールが自分の list を `RuleSeed.meta.mirrorsParseErrorCodes` で宣言します。検出範囲が parse5 より広いルール (例えば `attr-duplication` は parse5 が動かない JSX / SVG / authored component もカバー) も mirror して安全です。parse5 はそもそも HTML 内でしか発火しないため、dedupe で抑制される対象は元々 ml ルールが拾うイベントだけになります。**判定は ruleset レベル (トップレベル `rules`) で行われ、ノード単位ではありません** — `nodeRules` で局所的に mirror ルールを無効化しても、 dedupe の判定は変わりません (ルールは ruleset レベルでは引き続き "mentioned")。
+
 4. **修正**（オプション）: `fix=true` の場合、report の fix コールバックが `RuleFixer` を使って `TextEdit[]` を生成。`FixApplier.applyFixes(sourceCode, fixes)` が全編集をソーステキストに一括適用（重複検出付き）
 
 ## MLDOM クラス階層

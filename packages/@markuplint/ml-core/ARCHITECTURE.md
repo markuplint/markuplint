@@ -149,6 +149,12 @@ flowchart LR
 
    **Built-in `parse-error` channel**: before iterating rules, `verify()` consumes `MLASTDocument.parseErrors` (non-fatal parser conformance errors collected by the underlying parser — e.g., parse5's `onParseError` events) via `#pushNonFatalParseErrors()` and produces one `ruleId: 'parse-error'` violation per entry. The channel shares the same `severity.parseError` knob as its fatal sibling (`ParserError` raised in step 1). Order contract: parse-error violations always precede rule violations in the output; rule specs depend on this ordering.
 
+   **Mirroring rules own their parse5 codes**: an ml rule whose `meta.mirrorsParseErrorCodes` lists a parse5 code claims static responsibility for that detection. The user's ruleset decides whether the claim is in force:
+   - Rule **mentioned** in the ruleset (`rules.<name>` is set to anything: `true`, `false`, severity, object) — the user has expressed intent about this check. ml-core honours the mirror, suppressing the matching parse5 events on the `parse-error` channel. If the rule is enabled, it produces the violation itself (often by reading `document.parseErrors` — see `character-reference` for the canonical hook example). If the rule is `false`, both layers stay silent — the user opted out.
+   - Rule **not mentioned** — pure default. ml-core does not suppress; `severity.parseError` (if opted in) is the channel of record for those codes.
+
+   The lookup is **hook-based**: ml-core has no hard-coded code→rule map. Each rule declares its own list via `RuleSeed.meta.mirrorsParseErrorCodes`. Rules whose detection is _wider_ than parse5 (e.g. `attr-duplication` covers JSX / SVG / authored components where parse5 never runs) are safe to mirror — parse5 only fires inside HTML anyway. **The active check is performed at the ruleset (top-level `rules`) level, not per node** — `nodeRules` that locally disable a mirroring rule do not change the dedupe decision (the rule is still "mentioned" at the ruleset level).
+
 4. **Fix** (optional): When `fix=true`, fix callbacks on reports are executed via `RuleFixer` to produce `TextEdit[]`. `FixApplier.applyFixes(sourceCode, fixes)` applies all edits to the source text with overlap detection. When fixes require multiple passes, `_multiPassFix()` orchestrates re-parsing and re-verification, returning a `FixSummary` with pass count, applied/skipped totals, and first-pass edits for cursor offset computation
 
 ## MLDOM Class Hierarchy

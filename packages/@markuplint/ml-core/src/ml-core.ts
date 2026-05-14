@@ -433,7 +433,53 @@ export class MLCore {
 		if (!parseErrors) {
 			return;
 		}
+
+		// Build the Set of parse5 codes that an active ml rule has claimed
+		// responsibility for via `meta.mirrorsParseErrorCodes`. The user's
+		// ruleset decides whether each rule's declaration is in scope:
+		//
+		// - Rule **set** in the ruleset (config !== undefined) — whatever the
+		//   value (`true`, `false`, severity, object) — the user has expressed
+		//   intent about this check. Honour the mirror declaration:
+		//   - active: the rule itself will report violations for those codes
+		//   - disabled (`false`): the user explicitly opted out, so the channel
+		//     stays silent too — no surprise re-surfacing
+		// - Rule **not mentioned** (config === undefined) — pure default. The
+		//   parse-error channel remains the channel of record for those codes
+		//   and surfaces them when the user has opted in via `severity.parseError`.
+		//
+		// This keeps the responsibility clean: rule packages declare what they
+		// cover (static metadata); ml-core honours the user's ruleset choice;
+		// no per-node logic, no hard-coded code→rule map.
+		const mirroredCodes = new Set<string>();
+		for (const rule of this.#rules) {
+			if (rule.mirrorsParseErrorCodes.length === 0) {
+				continue;
+			}
+			// The rule is "mentioned in the ruleset" if **either** the alias
+			// name OR the base rule name has an entry. Two entry styles exist:
+			//
+			// - Direct user configs use base rule names: `rules.attr-duplication`
+			// - Preset named nodeRules use alias names: `rules['html-standard/attr-duplication']`
+			//
+			// `MLRule` for a preset-aliased entry has `rule.name = 'html-standard/...'`
+			// and `rule.baseRuleId = 'attr-duplication'`; for a direct entry,
+			// `rule.name = 'attr-duplication'` and `baseRuleId` is undefined.
+			// Checking both names covers both styles.
+			const aliasConfig = this.#ruleset.rules[rule.name];
+			const baseConfig = rule.baseRuleId === undefined ? undefined : this.#ruleset.rules[rule.baseRuleId];
+			if (aliasConfig === undefined && baseConfig === undefined) {
+				continue;
+			}
+			for (const code of rule.mirrorsParseErrorCodes) {
+				mirroredCodes.add(code);
+			}
+		}
+
 		for (const parserError of parseErrors) {
+			if (mirroredCodes.has(parserError.code)) {
+				continue;
+			}
 			const violation = this.#createParseError(
 				`Parser conformance error: ${parserError.code}`,
 				parserError.startLine,
