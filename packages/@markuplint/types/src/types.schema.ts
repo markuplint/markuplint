@@ -1255,6 +1255,7 @@ export type ExtendedType =
   | "CustomElementName"
   | "DOMID"
   | "DateString"
+  | "DateStringWithOptionalTime"
   | "DateTime"
   | "Email"
   | "FunctionBody"

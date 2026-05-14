@@ -10,6 +10,7 @@ import { checkSerializedPermissionsPolicy } from './w3c/check-serialized-permiss
 import { checkAutoComplete } from './whatwg/check-autocomplete.js';
 import { checkDateTime } from './whatwg/check-datetime/index.js';
 import { checkDateString } from './whatwg/check-datetime/date-string.js';
+import { checkDateStringWithOptionalTime } from './whatwg/check-datetime/date-string-with-optional-time.js';
 import { checkLocalDateAndTimeString } from './whatwg/check-datetime/local-date-and-time-string.js';
 import { checkMonthString } from './whatwg/check-datetime/month-string.js';
 import { checkTimeString } from './whatwg/check-datetime/time-string.js';
@@ -248,6 +249,17 @@ export const defs: Defs = {
 			},
 		],
 		is: checkDateString(),
+	},
+
+	DateStringWithOptionalTime: {
+		ref: 'https://html.spec.whatwg.org/multipage/edits.html#attr-mod-datetime',
+		expects: [
+			{
+				type: 'format',
+				value: 'date string with optional time',
+			},
+		],
+		is: checkDateStringWithOptionalTime(),
 	},
 
 	TimeString: {

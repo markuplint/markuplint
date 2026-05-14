@@ -95,3 +95,25 @@ describe('LocalDateTimeString', () => {
 		expect(check('', 'LocalDateTimeString').matched).toBe(false);
 	});
 });
+
+describe('DateStringWithOptionalTime', () => {
+	test('valid: full date', () => {
+		expect(check('2024-01-15', 'DateStringWithOptionalTime').matched).toBe(true);
+	});
+
+	test('valid: global date and time', () => {
+		expect(check('2024-01-15T12:30:00Z', 'DateStringWithOptionalTime').matched).toBe(true);
+	});
+
+	test('invalid: month only', () => {
+		expect(check('2024-01', 'DateStringWithOptionalTime').matched).toBe(false);
+	});
+
+	test('invalid: local date and time (no timezone)', () => {
+		expect(check('2024-01-15T12:30', 'DateStringWithOptionalTime').matched).toBe(false);
+	});
+
+	test('invalid: empty', () => {
+		expect(check('', 'DateStringWithOptionalTime').matched).toBe(false);
+	});
+});

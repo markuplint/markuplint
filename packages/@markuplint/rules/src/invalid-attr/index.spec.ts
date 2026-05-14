@@ -3036,3 +3036,96 @@ describe('img[usemap] requires a non-empty hash-name (HashName type)', () => {
 		).toBe(true);
 	});
 });
+
+// Pin the narrowed `<del>` / `<ins>` `datetime` contract: HTML LS §4.7
+// (edits) defines the value as "a valid date string with optional time",
+// not the catch-all `DateTime` union. Each test mirrors one of the 10
+// fixture-derived shapes that nu-validator flags as nu-only for these
+// elements; if the `DateStringWithOptionalTime` type ever widens by accident
+// the matching assertion fails immediately.
+describe('del/ins[datetime] is "valid date string with optional time" (HTML LS §4.7)', () => {
+	test('[invalid-attr-valid-034] del[datetime] accepts a valid date string', async () => {
+		const { violations } = await mlRuleTest(rule, '<del datetime="2011-11-12">x</del>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-valid-035] del[datetime] accepts a valid global date and time string', async () => {
+		const { violations } = await mlRuleTest(rule, '<del datetime="2011-11-12T14:54:39.929+0000">x</del>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	// Each reject test asserts at least one error violation fires. The
+	// rule's surfaced `raw` and message wording differ per shape (some
+	// emit a sub-token, some emit an empty raw with a "missing"-style
+	// message), so we keep the assertion at the existence level and
+	// rely on the named test description to pin the failure shape.
+
+	test('[invalid-attr-invalid-046] del[datetime] rejects a date string without hyphens', async () => {
+		// Mirrors html/elements/del/date-iso8601-YYYYMMDD-no-hyphen-novalid.html.
+		const { violations } = await mlRuleTest(rule, '<del datetime="20020929">x</del>');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-invalid-047] del[datetime] rejects a duration P-form string', async () => {
+		// Mirrors html/elements/del/duration-P-form-novalid.html.
+		const { violations } = await mlRuleTest(rule, '<del datetime="PT4H18M3S">x</del>');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-invalid-048] del[datetime] rejects a duration component-list string', async () => {
+		// Mirrors html/elements/del/duration-time-component-novalid.html.
+		const { violations } = await mlRuleTest(rule, '<del datetime="4h 18m 3s">x</del>');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-invalid-049] del[datetime] rejects a comma fraction separator', async () => {
+		// Mirrors html/elements/del/global-date-and-time-bad-fraction-separator-novalid.html.
+		// Also locks down the parallel fix in `checkGlobalDateAndTimeString` so the
+		// catch-all `DateTime` type no longer accepts comma as a fraction separator.
+		const { violations } = await mlRuleTest(rule, '<del datetime="2011-11-12T14:54:39,929+0000">x</del>');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-invalid-050] del[datetime] rejects a local date and time string', async () => {
+		// Mirrors html/elements/del/local-date-and-time-novalid.html.
+		const { violations } = await mlRuleTest(rule, '<del datetime="2011-11-12T14:54">x</del>');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-invalid-051] del[datetime] rejects a month-only string', async () => {
+		// Mirrors html/elements/del/month-novalid.html.
+		const { violations } = await mlRuleTest(rule, '<del datetime="2011-11">x</del>');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-invalid-052] del[datetime] rejects a time-only string', async () => {
+		// Mirrors html/elements/del/time-novalid.html.
+		const { violations } = await mlRuleTest(rule, '<del datetime="14:54:39">x</del>');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-invalid-053] del[datetime] rejects a week string', async () => {
+		// Mirrors html/elements/del/week-novalid.html.
+		const { violations } = await mlRuleTest(rule, '<del datetime="2011-W46">x</del>');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-invalid-054] del[datetime] rejects a year-only string', async () => {
+		// Mirrors html/elements/del/year-novalid.html.
+		const { violations } = await mlRuleTest(rule, '<del datetime="2006">x</del>');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-invalid-055] del[datetime] rejects a yearless date string', async () => {
+		// Mirrors html/elements/del/yearless-date-novalid.html.
+		const { violations } = await mlRuleTest(rule, '<del datetime="07-15">x</del>');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-invalid-056] ins[datetime] applies the same narrowed type', async () => {
+		// Spec-level mirror of `<del>`; one ins sample keeps the parallel coverage
+		// honest without duplicating all 9 reject cases.
+		const { violations } = await mlRuleTest(rule, '<ins datetime="2011-11">x</ins>');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+});

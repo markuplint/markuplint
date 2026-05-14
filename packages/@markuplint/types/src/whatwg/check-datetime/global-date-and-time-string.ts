@@ -35,8 +35,10 @@ export const checkGlobalDateAndTimeString: CustomSyntaxChecker = () =>
 			/\D?/,
 			// mm
 			/[^+:Z-]*/,
-			// :ss.sss
-			/(:[^+Z-]*)?/,
+			// :ss.sss — restricted to digits and the decimal point so that an
+			// invalid fraction separator (e.g. `,`) is left in the timezone
+			// segment, where `parseTimeZone` rejects it.
+			/(:[\d.]*)?/,
 			// time-zone
 			/.*/,
 		]);

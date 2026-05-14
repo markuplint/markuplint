@@ -387,30 +387,31 @@ SourceSizeList: {
 
 `src/defs.ts` の `defs` オブジェクトには 30 以上の組み込み型が登録されています。代表的なものを以下に示します。
 
-| 型識別子               | 検証方式                          | 仕様                   |
-| ---------------------- | --------------------------------- | ---------------------- |
-| `Any`                  | 常にマッチ                        | --                     |
-| `NoEmptyAny`           | 空文字列を拒否                    | --                     |
-| `Number`               | 浮動小数点チェック                | --                     |
-| `Int`                  | 整数チェック                      | --                     |
-| `Uint`                 | 非負整数チェック                  | --                     |
-| `URL`                  | 常にマッチ（後述の注意参照）      | WHATWG URL             |
-| `DOMID`                | 空白なし・空でない                | HTML #id               |
-| `DateTime`             | 完全な日時パース                  | WHATWG datetime        |
-| `DateString`           | 日付のみ (`YYYY-MM-DD`)           | WHATWG dates           |
-| `TimeString`           | 時刻のみ (`hh:mm[:ss]`)           | WHATWG times           |
-| `MonthString`          | 月のみ (`YYYY-MM`)                | WHATWG months          |
-| `WeekString`           | 週のみ (`YYYY-Www`)               | WHATWG weeks           |
-| `LocalDateTimeString`  | ローカル日時 (`YYYY-MM-DDThh:mm`) | WHATWG local dates     |
-| `SimpleColor`          | 単純色 (`#rrggbb`)                | WHATWG simple colour   |
-| `Email`                | メールアドレス (ASCII のみ)       | HTML valid email       |
-| `BCP47`                | RFC BCP 47 言語タグ               | IETF BCP 47            |
-| `CustomElementName`    | 有効なカスタム要素名              | WHATWG Custom Elements |
-| `MIMEType`             | MIME タイプ解析                   | MIME Sniffing          |
-| `HTTPEquivRefresh`     | meta refresh ディレクティブ文法   | HTML meta http-equiv   |
-| `HTTPEquivContentType` | meta エンコーディング宣言文法     | HTML meta http-equiv   |
-| `SourceSizeList`       | CSS 構文ベース                    | HTML `<img sizes>`     |
-| `AutoComplete`         | 複雑なマルチトークン              | HTML autocomplete      |
+| 型識別子                     | 検証方式                          | 仕様                        |
+| ---------------------------- | --------------------------------- | --------------------------- |
+| `Any`                        | 常にマッチ                        | --                          |
+| `NoEmptyAny`                 | 空文字列を拒否                    | --                          |
+| `Number`                     | 浮動小数点チェック                | --                          |
+| `Int`                        | 整数チェック                      | --                          |
+| `Uint`                       | 非負整数チェック                  | --                          |
+| `URL`                        | 常にマッチ（後述の注意参照）      | WHATWG URL                  |
+| `DOMID`                      | 空白なし・空でない                | HTML #id                    |
+| `DateTime`                   | 完全な日時パース                  | WHATWG datetime             |
+| `DateString`                 | 日付のみ (`YYYY-MM-DD`)           | WHATWG dates                |
+| `DateStringWithOptionalTime` | 日付またはグローバル日時のみ      | HTML `del`/`ins` `datetime` |
+| `TimeString`                 | 時刻のみ (`hh:mm[:ss]`)           | WHATWG times                |
+| `MonthString`                | 月のみ (`YYYY-MM`)                | WHATWG months               |
+| `WeekString`                 | 週のみ (`YYYY-Www`)               | WHATWG weeks                |
+| `LocalDateTimeString`        | ローカル日時 (`YYYY-MM-DDThh:mm`) | WHATWG local dates          |
+| `SimpleColor`                | 単純色 (`#rrggbb`)                | WHATWG simple colour        |
+| `Email`                      | メールアドレス (ASCII のみ)       | HTML valid email            |
+| `BCP47`                      | RFC BCP 47 言語タグ               | IETF BCP 47                 |
+| `CustomElementName`          | 有効なカスタム要素名              | WHATWG Custom Elements      |
+| `MIMEType`                   | MIME タイプ解析                   | MIME Sniffing               |
+| `HTTPEquivRefresh`           | meta refresh ディレクティブ文法   | HTML meta http-equiv        |
+| `HTTPEquivContentType`       | meta エンコーディング宣言文法     | HTML meta http-equiv        |
+| `SourceSizeList`             | CSS 構文ベース                    | HTML `<img sizes>`          |
+| `AutoComplete`               | 複雑なマルチトークン              | HTML autocomplete           |
 
 > **注意:** `URL` 型は常にマッチします。これは相対 URL がほぼあらゆる文字列を受け入れるためです。URL 形式を厳密に検証したい場合は、`AbsoluteURL` や `HTTPSchemaURL` を使用してください。
 
