@@ -21,7 +21,7 @@
 		},
 		"datetime": {
 			// https://html.spec.whatwg.org/multipage/edits.html#attr-mod-datetime
-			"type": "DateTime"
+			"type": "DateStringWithOptionalTime"
 		}
 	},
 	"aria": {
