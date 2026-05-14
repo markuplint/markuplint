@@ -1257,6 +1257,7 @@
 				"CustomElementName",
 				"DOMID",
 				"DateString",
+				"DateStringWithOptionalTime",
 				"DateTime",
 				"Email",
 				"FunctionBody",
