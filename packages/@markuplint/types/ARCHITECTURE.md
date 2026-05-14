@@ -58,6 +58,7 @@ src/
 │   │   ├── duration-string.ts      # Duration format
 │   │   ├── global-date-and-time-string.ts
 │   │   ├── local-date-and-time-string.ts
+│   │   ├── date-string-with-optional-time.ts # `del`/`ins` `datetime`
 │   │   ├── time-zone-offset-string.ts
 │   │   ├── datetime-tokens.ts      # Shared token patterns
 │   │   └── index.spec.ts           # Tests
