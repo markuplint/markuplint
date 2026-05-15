@@ -1,6 +1,6 @@
 # nu-validator Benchmark Summary
 
-- generated: 2026-05-14T12:02:22.151Z
+- generated: 2026-05-15T03:19:36.200Z
 - submodule: `142931395412c00434ffb40a14d65992efd17aa8`
 - nu-validator: `ghcr.io/validator/validator@sha256:d16a53211ea8617b13a0c7f87e9d0cf4058e4ab729482dd3dfebade9bb4b6671`
 - markuplint: `5.0.0-rc.4`
@@ -9,11 +9,11 @@
 ## Totals
 
 - files: **5442**
-- match-error: **3340** (both tools flagged)
+- match-error: **3357** (both tools flagged)
 - match-clean: **919** (neither flagged)
-- nu-only: **174** (only nu-validator flagged; markuplint coverage candidates — open a markuplint issue after a spec read)
+- nu-only: **157** (only nu-validator flagged; markuplint coverage candidates — open a markuplint issue after a spec read)
 - nu-over: **28** (nu-validator errors fully covered by spec-backed excluded-ids — confirmed over-detection)
-- overall match rate: **78.3%**
+- overall match rate: **78.6%**
 - excluded-ids: 3 entries, 1 pattern(s)
 
 ## Per-Category
@@ -23,11 +23,11 @@
 | aria | 780 | 80.4% | 175 | 452 | 145 | 8 | 0 |
 | assertions | 40 | 100.0% | 39 | 1 | 0 | 0 | 0 |
 | content-model | 98 | 98.0% | 48 | 48 | 0 | 2 | 0 |
-| data-types | 56 | 92.9% | 47 | 5 | 1 | 3 | 0 |
+| data-types | 56 | 94.6% | 48 | 5 | 1 | 2 | 0 |
 | deprecated | 12 | 91.7% | 11 | 0 | 1 | 0 | 0 |
 | global-attr | 57 | 80.7% | 26 | 20 | 8 | 3 | 0 |
 | id-duplication | 1 | 100.0% | 1 | 0 | 0 | 0 | 0 |
-| invalid-attr | 3086 | 92.3% | 2617 | 230 | 61 | 152 | 26 |
+| invalid-attr | 3086 | 92.8% | 2633 | 230 | 61 | 136 | 26 |
 | required-attr | 5 | 100.0% | 5 | 0 | 0 | 0 | 0 |
 | uncategorized | 1307 | 40.9% | 371 | 163 | 765 | 6 | 2 |
 
