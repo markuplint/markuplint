@@ -3207,3 +3207,49 @@ describe('URL-typed attributes that must be non-empty (HTML LS)', () => {
 		expect(violations.length).toBeGreaterThan(0);
 	});
 });
+
+describe('progress[value] must be >= 0 (HTML LS §4.10.13)', () => {
+	test('[invalid-attr-valid-041] progress value="0.5" max="1" is accepted', async () => {
+		const { violations } = await mlRuleTest(rule, '<progress value="0.5" max="1">50%</progress>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-invalid-064] progress value="-10" is rejected', async () => {
+		// Mirrors html/elements/progress/value-negative-novalid.html.
+		const { violations } = await mlRuleTest(rule, '<progress value="-10" max="100">-10%</progress>');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+});
+
+describe('img[sizes] must be paired with srcset (HTML LS §4.8.4.4.4)', () => {
+	test('[invalid-attr-valid-042] img with srcset+sizes is accepted', async () => {
+		const { violations } = await mlRuleTest(rule, '<img src="x.jpg" srcset="x.jpg 1x" sizes="100vw" alt="x">');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-invalid-065] img[sizes] without srcset is rejected', async () => {
+		// Mirrors html/elements/img/sizes-without-srcset-novalid.html.
+		const { violations } = await mlRuleTest(rule, '<img src="image.jpg" sizes="100vw" alt="Image">');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-valid-043] picture > source with srcset+sizes is accepted', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<picture><source srcset="x.jpg 100w" sizes="100vw"><img src="x.jpg" alt="x"></picture>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-invalid-066] picture > source[sizes] without srcset is rejected', async () => {
+		// Same spec wording as img[sizes]; no nu fixture covers this directly
+		// but the constraint is symmetric. `srcset` being required on
+		// `picture > source` keeps required-attr firing in parallel for the
+		// missing-srcset case.
+		const { violations } = await mlRuleTest(
+			rule,
+			'<picture><source sizes="100vw"><img src="x.jpg" alt="x"></picture>',
+		);
+		expect(violations.some(v => typeof v.message === 'string' && v.message.includes('sizes'))).toBe(true);
+	});
+});

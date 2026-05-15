@@ -27,6 +27,15 @@
 			"specUrl": "https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-http-equiv-refresh",
 			"addedAt": "2026-04-23",
 			"addedBy": "hirao"
+		},
+		{
+			"id": "nv-785400222871",
+			"path": "html/elements/object/type-only-novalid.html",
+			"nuMessage": "Element “object” is missing required attribute “data”.",
+			"reason": "HTML LS §4.8.7: 'Either the data attribute or the type attribute must be specified.' The fixture has `<object type=…>` (type-only) which the spec accepts. nu-validator reports `data` as unconditionally required, which is stricter than HTML LS — markuplint's existing requiredEither on data/type already implements the spec contract.",
+			"specUrl": "https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-object-element",
+			"addedAt": "2026-05-15",
+			"addedBy": "hirao"
 		}
 	],
 	"patterns": [
