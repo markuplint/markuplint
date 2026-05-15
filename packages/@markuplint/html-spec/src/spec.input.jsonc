@@ -204,11 +204,13 @@
 		// as used in form submission and in the form element's elements
 		// object. If the attribute is specified, its value must not be the
 		// empty string or `isindex`."
-		// Pattern overrides the inherited NoEmptyAny so the `isindex` exclusion
-		// is captured in one regex; case-insensitive per the spec.
+		// The spec wording uses the literal value `isindex` without an
+		// ASCII case-insensitive qualifier, so the Pattern is case-sensitive.
+		// Pattern overrides the inherited NoEmptyAny so the non-empty constraint
+		// and the `isindex` exclusion are captured in one regex.
 		"name": {
 			"type": {
-				"pattern": "/^(?!isindex$).+/i"
+				"pattern": "/^(?!isindex$).+/"
 			}
 		},
 		// https://html.spec.whatwg.org/multipage/input.html#attr-input-pattern
