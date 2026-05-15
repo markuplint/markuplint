@@ -199,6 +199,18 @@
 			"type": "Boolean",
 			"condition": ["[type='email' i]", "[type='file' i]"]
 		},
+		// https://html.spec.whatwg.org/multipage/forms.html#attr-fe-name
+		// Spec: "The name content attribute gives the name of the form control,
+		// as used in form submission and in the form element's elements
+		// object. If the attribute is specified, its value must not be the
+		// empty string or `isindex`."
+		// Pattern overrides the inherited NoEmptyAny so the `isindex` exclusion
+		// is captured in one regex; case-insensitive per the spec.
+		"name": {
+			"type": {
+				"pattern": "/^(?!isindex$).+/i"
+			}
+		},
 		// https://html.spec.whatwg.org/multipage/input.html#attr-input-pattern
 		"pattern": {
 			"type": "Pattern",
