@@ -3232,4 +3232,24 @@ describe('img[sizes] must be paired with srcset (HTML LS §4.8.4.4.4)', () => {
 		const { violations } = await mlRuleTest(rule, '<img src="image.jpg" sizes="100vw" alt="Image">');
 		expect(violations.length).toBeGreaterThan(0);
 	});
+
+	test('[invalid-attr-valid-043] picture > source with srcset+sizes is accepted', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<picture><source srcset="x.jpg 100w" sizes="100vw"><img src="x.jpg" alt="x"></picture>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-invalid-066] picture > source[sizes] without srcset is rejected', async () => {
+		// Same spec wording as img[sizes]; no nu fixture covers this directly
+		// but the constraint is symmetric. `srcset` being required on
+		// `picture > source` keeps required-attr firing in parallel for the
+		// missing-srcset case.
+		const { violations } = await mlRuleTest(
+			rule,
+			'<picture><source sizes="100vw"><img src="x.jpg" alt="x"></picture>',
+		);
+		expect(violations.some(v => typeof v.message === 'string' && v.message.includes('sizes'))).toBe(true);
+	});
 });
