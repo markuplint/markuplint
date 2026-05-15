@@ -51,8 +51,10 @@ test('prefix-only invalid', () => {
 });
 
 test('webauthn category re-determination', () => {
-	// Standalone webauthn is valid
-	expect(check('webauthn').matched).toBe(true);
+	// Spec: "the webauthn token must appear along with at least one other token;
+	// an autocomplete attribute whose value consists solely of the webauthn token
+	// is non-conforming."
+	expect(check('webauthn').matched).toBe(false);
 
 	// Field name + webauthn
 	expect(check('name webauthn').matched).toBe(true);
@@ -421,7 +423,9 @@ test('case insensitivity', () => {
 	expect(check('GIVEN-NAME').matched).toBe(true);
 	expect(check('TEL').matched).toBe(true);
 	expect(check('EMAIL').matched).toBe(true);
-	expect(check('WEBAUTHN').matched).toBe(true);
+	// `WEBAUTHN` as the only token is non-conforming regardless of case
+	// (see "webauthn category re-determination" test above for the spec citation).
+	expect(check('NAME WEBAUTHN').matched).toBe(true);
 
 	// Prefix tokens are case-insensitive
 	expect(check('SHIPPING name').matched).toBe(true);

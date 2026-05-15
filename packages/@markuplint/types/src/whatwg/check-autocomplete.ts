@@ -282,8 +282,15 @@ export const checkAutoComplete: CustomSyntaxChecker = () => value => {
 				});
 			}
 		} else {
-			// Standalone "webauthn" is valid
-			return matched();
+			// Spec: "The webauthn token must not be the only token in the
+			// autocomplete attribute's value."
+			// https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete-webauthn
+			acLog('[Unmatched ("%s")] Standalone webauthn rejected', value);
+			return lastToken.unmatched({
+				reason: 'unexpected-token',
+				expects: [{ type: 'common', value: 'autofill field name' }],
+				ref: URL_AUTOFILL_FIELD,
+			});
 		}
 	}
 
