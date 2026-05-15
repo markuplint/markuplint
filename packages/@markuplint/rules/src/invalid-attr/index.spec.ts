@@ -3253,3 +3253,33 @@ describe('img[sizes] must be paired with srcset (HTML LS §4.8.4.4.4)', () => {
 		expect(violations.some(v => typeof v.message === 'string' && v.message.includes('sizes'))).toBe(true);
 	});
 });
+
+describe('autocomplete standalone "webauthn" is non-conforming (HTML LS §4.10.18.7)', () => {
+	test('[invalid-attr-valid-044] autocomplete="name webauthn" is accepted', async () => {
+		const { violations } = await mlRuleTest(rule, '<input autocomplete="name webauthn">');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-invalid-067] autocomplete="webauthn" alone is rejected', async () => {
+		// Mirrors html/elements/input/autocomplete-webauthn-only-novalid.html.
+		// Spec: "the webauthn token must appear along with at least one other
+		// token; an autocomplete attribute whose value consists solely of the
+		// webauthn token is non-conforming."
+		const { violations } = await mlRuleTest(rule, '<input autocomplete="webauthn">');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+});
+
+describe('input[name] must not be "isindex" (HTML LS §4.10.18.2)', () => {
+	test('[invalid-attr-valid-045] input[name="username"] is accepted', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="text" name="username">');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-invalid-068] input[name="isindex"] is rejected', async () => {
+		// Mirrors html/elements/input/name-isindex-novalid.html.
+		// Spec: input element's name attribute "must not be the value isindex".
+		const { violations } = await mlRuleTest(rule, '<input type="text" name="isindex">');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+});
