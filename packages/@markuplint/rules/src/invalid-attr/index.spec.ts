@@ -3207,3 +3207,29 @@ describe('URL-typed attributes that must be non-empty (HTML LS)', () => {
 		expect(violations.length).toBeGreaterThan(0);
 	});
 });
+
+describe('progress[value] must be >= 0 (HTML LS §4.10.13)', () => {
+	test('[invalid-attr-valid-041] progress value="0.5" max="1" is accepted', async () => {
+		const { violations } = await mlRuleTest(rule, '<progress value="0.5" max="1">50%</progress>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-invalid-064] progress value="-10" is rejected', async () => {
+		// Mirrors html/elements/progress/value-negative-novalid.html.
+		const { violations } = await mlRuleTest(rule, '<progress value="-10" max="100">-10%</progress>');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+});
+
+describe('img[sizes] must be paired with srcset (HTML LS §4.8.4.4.4)', () => {
+	test('[invalid-attr-valid-042] img with srcset+sizes is accepted', async () => {
+		const { violations } = await mlRuleTest(rule, '<img src="x.jpg" srcset="x.jpg 1x" sizes="100vw" alt="x">');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-invalid-065] img[sizes] without srcset is rejected', async () => {
+		// Mirrors html/elements/img/sizes-without-srcset-novalid.html.
+		const { violations } = await mlRuleTest(rule, '<img src="image.jpg" sizes="100vw" alt="Image">');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+});
