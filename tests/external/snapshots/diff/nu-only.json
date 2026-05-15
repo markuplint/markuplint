@@ -103,13 +103,6 @@
 			]
 		},
 		{
-			"path": "html/datatypes/url-empty-novalid.html",
-			"category": "data-types",
-			"nuMessageIds": [
-				"nv-9b9e85d36b74"
-			]
-		},
-		{
 			"path": "html/elements/a/with-href-button-descendant-novalid.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [
@@ -121,13 +114,6 @@
 			"category": "invalid-attr",
 			"nuMessageIds": [
 				"nv-f3f919789208"
-			]
-		},
-		{
-			"path": "html/elements/base/href-and-target-missing-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-920b4fb50a87"
 			]
 		},
 		{
@@ -145,20 +131,6 @@
 			]
 		},
 		{
-			"path": "html/elements/button/formaction-empty-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-acb1eb6a08be"
-			]
-		},
-		{
-			"path": "html/elements/button/formaction-whitespace-only-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-4c60cd9da2dd"
-			]
-		},
-		{
 			"path": "html/elements/dl/div-multiple-groups-novalid.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [
@@ -166,20 +138,6 @@
 				"nv-8488d87fd201",
 				"nv-c85c578225cf",
 				"nv-4f10aadba99f"
-			]
-		},
-		{
-			"path": "html/elements/form/action-empty-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-70b66927decd"
-			]
-		},
-		{
-			"path": "html/elements/form/action-whitespace-only-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-ea6dd43cac43"
 			]
 		},
 		{
@@ -225,13 +183,6 @@
 			]
 		},
 		{
-			"path": "html/elements/input/image-without-alt-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-83e76d8a6f6a"
-			]
-		},
-		{
 			"path": "html/elements/input/list-not-datalist-novalid.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [
@@ -264,34 +215,6 @@
 			"category": "invalid-attr",
 			"nuMessageIds": [
 				"nv-9d1d24e3ba6b"
-			]
-		},
-		{
-			"path": "html/elements/input/type-image-formaction-empty-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-d18149ab1fa5"
-			]
-		},
-		{
-			"path": "html/elements/input/type-image-formaction-whitespace-only-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-ed23c549bb56"
-			]
-		},
-		{
-			"path": "html/elements/input/type-submit-formaction-empty-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-881990d6aa38"
-			]
-		},
-		{
-			"path": "html/elements/input/type-submit-formaction-whitespace-only-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-47e40872fbb5"
 			]
 		},
 		{
@@ -337,20 +260,6 @@
 			]
 		},
 		{
-			"path": "html/elements/link/href-empty-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-cf93c616422f"
-			]
-		},
-		{
-			"path": "html/elements/link/href-whitespace-only-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-a37edadf3318"
-			]
-		},
-		{
 			"path": "html/elements/meta/content-security-policy/csp-invalid-directive-haswarn.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [
@@ -376,20 +285,6 @@
 			"category": "invalid-attr",
 			"nuMessageIds": [
 				"nv-006f6fbfb136"
-			]
-		},
-		{
-			"path": "html/elements/object/data-empty-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-e834128eb2ef"
-			]
-		},
-		{
-			"path": "html/elements/object/data-whitespace-only-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-7f4c749291c0"
 			]
 		},
 		{
@@ -1184,20 +1079,6 @@
 			"nuMessageIds": [
 				"nv-826f9d9b348e",
 				"nv-10d5998bc50c"
-			]
-		},
-		{
-			"path": "html/elements/video/poster-empty-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-b0077457c547"
-			]
-		},
-		{
-			"path": "html/elements/video/poster-whitespace-only-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-528c1af6ff8f"
 			]
 		},
 		{

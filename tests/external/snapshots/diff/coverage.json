@@ -14908,8 +14908,8 @@
 			"path": "html/datatypes/url-empty-novalid.html",
 			"category": "data-types",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -17210,8 +17210,8 @@
 			"path": "html/elements/base/href-and-target-missing-novalid.html",
 			"category": "invalid-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -19254,8 +19254,8 @@
 			"path": "html/elements/button/formaction-empty-novalid.html",
 			"category": "invalid-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -19270,8 +19270,8 @@
 			"path": "html/elements/button/formaction-whitespace-only-novalid.html",
 			"category": "invalid-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -22716,8 +22716,8 @@
 			"path": "html/elements/form/action-empty-novalid.html",
 			"category": "invalid-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -22732,8 +22732,8 @@
 			"path": "html/elements/form/action-whitespace-only-novalid.html",
 			"category": "invalid-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -25514,8 +25514,8 @@
 			"path": "html/elements/input/image-without-alt-novalid.html",
 			"category": "invalid-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -25770,8 +25770,8 @@
 			"path": "html/elements/input/type-image-formaction-empty-novalid.html",
 			"category": "invalid-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -25786,8 +25786,8 @@
 			"path": "html/elements/input/type-image-formaction-whitespace-only-novalid.html",
 			"category": "invalid-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -27102,8 +27102,8 @@
 			"path": "html/elements/input/type-submit-formaction-empty-novalid.html",
 			"category": "invalid-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -27118,8 +27118,8 @@
 			"path": "html/elements/input/type-submit-formaction-whitespace-only-novalid.html",
 			"category": "invalid-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -30204,8 +30204,8 @@
 			"path": "html/elements/link/href-empty-novalid.html",
 			"category": "invalid-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -30228,8 +30228,8 @@
 			"path": "html/elements/link/href-whitespace-only-novalid.html",
 			"category": "invalid-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -31716,8 +31716,8 @@
 			"path": "html/elements/object/data-empty-novalid.html",
 			"category": "invalid-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -31740,8 +31740,8 @@
 			"path": "html/elements/object/data-whitespace-only-novalid.html",
 			"category": "invalid-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -39134,8 +39134,8 @@
 			"path": "html/elements/video/poster-empty-novalid.html",
 			"category": "invalid-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -39150,8 +39150,8 @@
 			"path": "html/elements/video/poster-whitespace-only-novalid.html",
 			"category": "invalid-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
