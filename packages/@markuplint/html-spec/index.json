@@ -54762,7 +54762,7 @@
 				},
 				"sizes": {
 					"description": "Specifies a list of source sizes that describe the final rendered width of the image. Allowed if the parent of <source> is <picture>. Not allowed if the parent is <audio> or <video>. The list consists of source sizes separated by commas. Each source size is media condition-length pair. Before laying the page out, the browser uses this information to determine which image defined in srcset to display. Note that sizes will take effect only if width descriptors are provided with srcset, not pixel density descriptors (i.e., 200w should be used instead of 2x).",
-					"condition": "picture > source"
+					"condition": "picture > source[srcset]"
 				},
 				"src": {
 					"description": "Specifies the URL of the media resource. Required if the parent of <source> is <audio> or <video>. Not allowed if the parent is <picture>.",
