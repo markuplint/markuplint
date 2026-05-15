@@ -165,6 +165,10 @@ Each row cites the issue where the validation was introduced and the HTML / URL 
 | Media `src` non-empty             | `<img src="">`                                  | [#3868](https://github.com/markuplint/markuplint/issues/3868) | [HTML LS — valid non-empty URL](https://html.spec.whatwg.org/multipage/urls-and-fetching.html#valid-non-empty-url-potentially-surrounded-by-spaces) |
 | `<base href>` URL LS strict       | `<base href="http://user@example.com/">`        | [#3868](https://github.com/markuplint/markuplint/issues/3868) | [HTML LS — set the frozen base URL](https://html.spec.whatwg.org/multipage/semantics.html#set-the-frozen-base-url)                                  |
 | `<input type=url value>` absolute | `<input type="url" value="/relative">`          | [#3868](https://github.com/markuplint/markuplint/issues/3868) | [HTML LS — URL state](<https://html.spec.whatwg.org/multipage/input.html#url-state-(type=url)>)                                                     |
+| Form-submission URLs non-empty    | `<form action="">`                              | —                                                             | [HTML LS — valid non-empty URL](https://html.spec.whatwg.org/multipage/urls-and-fetching.html#valid-non-empty-url-potentially-surrounded-by-spaces) |
+| `<video poster>` non-empty        | `<video poster="" src="movie.mp4">`             | —                                                             | [HTML LS — `video` `poster`](https://html.spec.whatwg.org/multipage/media.html#attr-video-poster)                                                   |
+| `<base>` needs href or target     | `<base>`                                        | —                                                             | [HTML LS — the `base` element](https://html.spec.whatwg.org/multipage/semantics.html#the-base-element)                                              |
+| `<input type=image>` requires alt | `<input type="image" src="b.png">`              | —                                                             | [HTML LS — input image button](<https://html.spec.whatwg.org/multipage/input.html#image-button-state-(type=image)>)                                 |
 
 ### Patterns now flagged on URL-typed attributes (`href`, `src`, `action`, `cite`, `itemid`, `itemtype`, ...)
 
@@ -184,6 +188,9 @@ The `URL` type checker now surfaces URL Living Standard validation errors that `
 Beyond the generic URL LS pipeline above, three specialised URL types tighten further:
 
 - **`<audio src>`, `<embed src>`, `<iframe src>`, `<img src>`, `<input type=image src>`, `<script src>`, `<source src>`, `<track src>`, `<video src>`** now use a `NonEmptyURL` type that rejects values which are empty (or whitespace-only) after stripping ASCII whitespace. HTML LS §4.8 spells these as "valid non-empty URL potentially surrounded by spaces".
+- **`<form action>`, `<button formaction>`, `<input formaction>`, `<object data>`, `<link href>`, `<video poster>`** now use the same `NonEmptyURL` type. Each is spec-defined as "valid non-empty URL potentially surrounded by spaces" but was previously typed as the empty-allowing `URL`. Empty strings (and whitespace-only values) now raise an `invalid-attr` violation.
+- **`<base>` must have `href`, `target`, or both** (HTML LS §4.2.3). The bare `<base>` element used to pass silently; the `required-attr` rule now flags it. Adding either attribute satisfies the requirement.
+- **`<input type="image">` must have an `alt` attribute** (HTML LS §4.10.5.1.18). The `required-attr` rule now fires when `type="image"` is present without `alt`.
 - **`<base href>`** now runs the full URL LS validator (in addition to the existing `data:` / `javascript:` scheme prohibition). Previously the type accepted any non-`data:`/`javascript:` value without further checks.
 - **`<input type="url" value>`** now uses an absolute-URL variant that accepts empty values (per HTML LS §4.10.5.1.7 "if specified and not empty") but rejects relative URLs. Use a full `https://…` form or leave the attribute empty.
 

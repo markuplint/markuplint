@@ -51,8 +51,9 @@
 			"experimental": false
 		},
 		// https://html.spec.whatwg.org/multipage/media.html#attr-video-poster
+		// Spec: "a valid non-empty URL potentially surrounded by spaces"
 		"poster": {
-			"type": "URL"
+			"type": "NonEmptyURL"
 		},
 		// https://html.spec.whatwg.org/multipage/media.html#attr-video-playsinline
 		"playsinline": {
