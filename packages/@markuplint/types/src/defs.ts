@@ -710,6 +710,12 @@ export const defs: Defs = {
 			const images = value.split(',');
 			let hasWidth = false;
 			let hasDensity = false;
+			// Spec: "Let candidates be an initially empty source set. ... If candidates already has an
+			// entry whose descriptor's width is equal to width [or pixel density], then a parse error
+			// must be reported." Track normalised numeric values so 1x / 1.0x / omitted-descriptor
+			// (implicit 1x) all collide.
+			const usedWidths = new Set<number>();
+			const usedDensities = new Set<number>();
 
 			for (const image of images) {
 				// image candidate string
@@ -744,6 +750,13 @@ export const defs: Defs = {
 									],
 								});
 							}
+							const w = Number(num);
+							if (usedWidths.has(w)) {
+								return unmatched(value, 'duplicated', {
+									expects: [{ type: 'format', value: 'unique width descriptor' }],
+								});
+							}
+							usedWidths.add(w);
 							hasWidth = true;
 							break;
 						}
@@ -759,6 +772,13 @@ export const defs: Defs = {
 									],
 								});
 							}
+							const d = Number(num);
+							if (usedDensities.has(d)) {
+								return unmatched(value, 'duplicated', {
+									expects: [{ type: 'format', value: 'unique pixel density descriptor' }],
+								});
+							}
+							usedDensities.add(d);
 							hasDensity = true;
 							break;
 						}
@@ -778,7 +798,14 @@ export const defs: Defs = {
 						}
 					}
 				} else {
-					// No descriptor implies 1x (density descriptor)
+					// Spec: "If image candidate's descriptor is the empty string, [...] add an
+					// image source with a pixel density of 1.0."
+					if (usedDensities.has(1)) {
+						return unmatched(value, 'duplicated', {
+							expects: [{ type: 'format', value: 'unique pixel density descriptor' }],
+						});
+					}
+					usedDensities.add(1);
 					hasDensity = true;
 				}
 
