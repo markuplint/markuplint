@@ -3330,4 +3330,27 @@ describe('srcset descriptors must be unique (HTML LS §4.8.4.4.1)', () => {
 		const { violations } = await mlRuleTest(rule, '<img srcset="x 1w, y 1w" sizes="100vw" src="x" alt="">');
 		expect(violations.length).toBeGreaterThan(0);
 	});
+
+	test('[invalid-attr-invalid-074] srcset with explicit "1x, 1x" duplicate is rejected', async () => {
+		// The simplest duplicate-density case — most common shape that real
+		// projects accidentally hit. No nu fixture pins this directly (only
+		// `1x, y` / `2x, 2x` / `1x, 1.0x` are in the corpus), but the rule
+		// guarantee should fire on the canonical shape too.
+		const { violations } = await mlRuleTest(rule, '<img srcset="a.jpg 1x, b.jpg 1x" src="a.jpg" alt="">');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-invalid-075] srcset with decimal-only duplicate density is rejected', async () => {
+		// Pins the decimal-equality branch independently from the
+		// integer-vs-decimal normalisation case (invalid-072).
+		const { violations } = await mlRuleTest(rule, '<img srcset="a.jpg 0.5x, b.jpg 0.5x" src="a.jpg" alt="">');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-invalid-076] srcset with duplicate density at end of 3-entry list is rejected', async () => {
+		// Duplicate detection must trip on the third entry, not only on the
+		// adjacent pair. Pins that the Set is checked for every entry.
+		const { violations } = await mlRuleTest(rule, '<img srcset="a.jpg 1x, b.jpg 2x, c.jpg 1x" src="a.jpg" alt="">');
+		expect(violations.length).toBeGreaterThan(0);
+	});
 });
