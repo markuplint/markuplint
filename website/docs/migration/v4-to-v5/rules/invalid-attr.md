@@ -171,6 +171,7 @@ Each row cites the issue where the validation was introduced and the HTML / URL 
 | `<input type=image>` requires alt  | `<input type="image" src="b.png">`              | —                                                             | [HTML LS — input image button](<https://html.spec.whatwg.org/multipage/input.html#image-button-state-(type=image)>)                                 |
 | Standalone `autocomplete=webauthn` | `<input autocomplete="webauthn">`               | —                                                             | [HTML LS — `webauthn` token](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete-webauthn)                 |
 | `input[name="isindex"]` forbidden  | `<input type="text" name="isindex">`            | —                                                             | [HTML LS — the `name` attribute](https://html.spec.whatwg.org/multipage/forms.html#attr-fe-name)                                                    |
+| `srcset` duplicate descriptors     | `<img srcset="a 1x, b 1x">`                     | —                                                             | [HTML LS — `srcset` attributes](https://html.spec.whatwg.org/multipage/images.html#srcset-attributes)                                               |
 
 ### Patterns now flagged on URL-typed attributes (`href`, `src`, `action`, `cite`, `itemid`, `itemtype`, ...)
 
@@ -195,6 +196,7 @@ Beyond the generic URL LS pipeline above, three specialised URL types tighten fu
 - **`<input type="image">` must have an `alt` attribute** (HTML LS §4.10.5.1.18). The `required-attr` rule now fires when `type="image"` is present without `alt`.
 - **`autocomplete="webauthn"` alone is non-conforming** (HTML LS §4.10.18.7). The `webauthn` token "must appear along with at least one other token". `<input autocomplete="webauthn">` now raises a violation; combinations like `autocomplete="name webauthn"` remain valid.
 - **`<input name="isindex">` is reserved** (HTML LS §4.10.18.2). The literal value `isindex` was kept reserved when the obsolete `<isindex>` element was removed; the `name` attribute on `<input>` now flags it. The check is case-sensitive (matches the spec literal).
+- **`srcset` duplicate descriptors are non-conforming** (HTML LS §4.8.4.4.1). "An invalid image candidate string is one with [...] a duplicate descriptor." The `Srcset` type checker now rejects repeats in either the density slot (`1x, 1x`, `1x, 1.0x`, or an omitted descriptor — implicit 1x — combined with `1x`) or the width slot (`480w, 480w`). Numeric equality is used so different lexical forms of the same value still collide.
 - **`<base href>`** now runs the full URL LS validator (in addition to the existing `data:` / `javascript:` scheme prohibition). Previously the type accepted any non-`data:`/`javascript:` value without further checks.
 - **`<input type="url" value>`** now uses an absolute-URL variant that accepts empty values (per HTML LS §4.10.5.1.7 "if specified and not empty") but rejects relative URLs. Use a full `https://…` form or leave the attribute empty.
 
