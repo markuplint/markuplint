@@ -89,7 +89,6 @@ test('Srcset', () => {
 	// Descriptor consistency
 	expect(check('a.jpg 480w, b.jpg 1024w', 'Srcset').matched).toBe(true);
 	expect(check('a.jpg 1x, b.jpg 2x', 'Srcset').matched).toBe(true);
-	expect(check('a.jpg, b.jpg', 'Srcset').matched).toBe(true);
 	expect(check('a.jpg, b.jpg 2x', 'Srcset').matched).toBe(true);
 	expect(check('a.jpg 480w, b.jpg', 'Srcset').matched).toBe(false);
 	expect(check('a.jpg 480w, b.jpg 2x', 'Srcset').matched).toBe(false);
@@ -102,6 +101,23 @@ test('Srcset', () => {
 	expect(check('a.jpg 0x', 'Srcset').matched).toBe(false);
 	expect(check('a.jpg 0.0x', 'Srcset').matched).toBe(false);
 	expect(check('a.jpg -1x', 'Srcset').matched).toBe(false);
+
+	// Spec: "An invalid image candidate string is one with [...] a duplicate
+	// descriptor." Track normalised numeric values so 1x / 1.0x / omitted
+	// descriptor (implicit 1x) all collide on the same density slot.
+	expect(check('a.jpg 1x, b.jpg 1x', 'Srcset').matched).toBe(false);
+	expect(check('a.jpg 1x, b.jpg 1.0x', 'Srcset').matched).toBe(false);
+	expect(check('a.jpg, b.jpg', 'Srcset').matched).toBe(false);
+	expect(check('a.jpg 1x, b.jpg', 'Srcset').matched).toBe(false);
+	expect(check('a.jpg 480w, b.jpg 480w', 'Srcset').matched).toBe(false);
+	// Sanity: distinct densities / widths still accepted.
+	expect(check('a.jpg 1x, b.jpg 1.5x, c.jpg 2x', 'Srcset').matched).toBe(true);
+	expect(check('a.jpg 320w, b.jpg 640w, c.jpg 1280w', 'Srcset').matched).toBe(true);
+
+	// Numeric normalisation: `1e0` and `1` resolve to the same Number(); the
+	// duplicate detection key uses Number() so different lexical forms of the
+	// same density still collide.
+	expect(check('a.jpg 1e0x, b.jpg 1x', 'Srcset').matched).toBe(false);
 });
 
 test('IconSize', () => {

@@ -3298,3 +3298,59 @@ describe('input[name] must not be "isindex" (HTML LS §4.10.18.2)', () => {
 		expect(violations.length).toBeGreaterThan(0);
 	});
 });
+
+describe('srcset descriptors must be unique (HTML LS §4.8.4.4.1)', () => {
+	test('[invalid-attr-valid-047] srcset with distinct densities is accepted', async () => {
+		const { violations } = await mlRuleTest(rule, '<img src="x.jpg" srcset="a.jpg 1x, b.jpg 2x" alt="">');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-invalid-070] srcset with duplicate density (omitted + 1x) is rejected', async () => {
+		// Mirrors html/elements/picture/srcset-microsyntax-unique-descriptors-1x-and-omitted-novalid.html.
+		// Omitted descriptor implies density 1x; pairing with explicit 1x is a duplicate.
+		const { violations } = await mlRuleTest(rule, '<img srcset="x 1x, y" src="x" alt="">');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-invalid-071] srcset with duplicate explicit density is rejected', async () => {
+		// Mirrors html/elements/picture/srcset-microsyntax-unique-descriptors-2x-novalid.html.
+		const { violations } = await mlRuleTest(rule, '<img srcset="x 2x, y 2x" src="x" alt="">');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-invalid-072] srcset with integer and decimal density equal in value is rejected', async () => {
+		// Mirrors html/elements/picture/srcset-microsyntax-unique-descriptors-integer-and-decimals-x-novalid.html.
+		// 1x and 1.0x normalise to the same numeric pixel density.
+		const { violations } = await mlRuleTest(rule, '<img srcset="x 1x, y 1.0x" src="x" alt="">');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-invalid-073] srcset with duplicate width descriptor is rejected', async () => {
+		// Mirrors html/elements/picture/srcset-microsyntax-unique-descriptors-w-novalid.html.
+		const { violations } = await mlRuleTest(rule, '<img srcset="x 1w, y 1w" sizes="100vw" src="x" alt="">');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-invalid-074] srcset with explicit "1x, 1x" duplicate is rejected', async () => {
+		// The simplest duplicate-density case — most common shape that real
+		// projects accidentally hit. No nu fixture pins this directly (only
+		// `1x, y` / `2x, 2x` / `1x, 1.0x` are in the corpus), but the rule
+		// guarantee should fire on the canonical shape too.
+		const { violations } = await mlRuleTest(rule, '<img srcset="a.jpg 1x, b.jpg 1x" src="a.jpg" alt="">');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-invalid-075] srcset with decimal-only duplicate density is rejected', async () => {
+		// Pins the decimal-equality branch independently from the
+		// integer-vs-decimal normalisation case (invalid-072).
+		const { violations } = await mlRuleTest(rule, '<img srcset="a.jpg 0.5x, b.jpg 0.5x" src="a.jpg" alt="">');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-invalid-076] srcset with duplicate density at end of 3-entry list is rejected', async () => {
+		// Duplicate detection must trip on the third entry, not only on the
+		// adjacent pair. Pins that the Set is checked for every entry.
+		const { violations } = await mlRuleTest(rule, '<img srcset="a.jpg 1x, b.jpg 2x, c.jpg 1x" src="a.jpg" alt="">');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+});

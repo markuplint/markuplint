@@ -171,6 +171,7 @@ v5 では、これまで `Any` として素通りしていた領域について 
 | `<input type=image>` の alt 必須      | `<input type="image" src="b.png">`              | —                                                             | [HTML LS — input image button](<https://html.spec.whatwg.org/multipage/input.html#image-button-state-(type=image)>)                                 |
 | 単独の `autocomplete=webauthn` 禁止   | `<input autocomplete="webauthn">`               | —                                                             | [HTML LS — `webauthn` token](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete-webauthn)                 |
 | `input[name="isindex"]` 禁止          | `<input type="text" name="isindex">`            | —                                                             | [HTML LS — the `name` attribute](https://html.spec.whatwg.org/multipage/forms.html#attr-fe-name)                                                    |
+| `srcset` の descriptor 重複禁止       | `<img srcset="a 1x, b 1x">`                     | —                                                             | [HTML LS — `srcset` attributes](https://html.spec.whatwg.org/multipage/images.html#srcset-attributes)                                               |
 
 ### URL 系属性 (`href` / `src` / `action` / `cite` / `itemid` / `itemtype` 等) で新たに違反となるパターン
 
@@ -195,6 +196,7 @@ v5 では、これまで `Any` として素通りしていた領域について 
 - **`<input type="image">` は `alt` 属性を必須化** (HTML LS §4.10.5.1.18)。`type="image"` で `alt` が無い場合に `required-attr` ルールが発火します。
 - **単独の `autocomplete="webauthn"` は非適合** (HTML LS §4.10.18.7)。`webauthn` トークンは「他のトークンと組み合わせて使われなければならない」とされており、`<input autocomplete="webauthn">` のような単独使用は v5 で違反となります。`autocomplete="name webauthn"` のような組み合わせは引き続き有効です。
 - **`<input name="isindex">` は予約値** (HTML LS §4.10.18.2)。廃止された `<isindex>` 要素の名残として、リテラル値 `isindex` は予約されています。v5 では `name` 属性が `isindex` (大文字小文字区別) のときに違反となります。
+- **`srcset` の descriptor 重複は非適合** (HTML LS §4.8.4.4.1)。仕様は「重複した descriptor を持つ image candidate string は invalid」と定義しています。`Srcset` 型チェッカーは密度スロット (`1x, 1x`、`1x, 1.0x`、または省略 = 暗黙 1x と `1x` の組み合わせ) と幅スロット (`480w, 480w`) いずれの重複も拒否します。判定は数値比較なので、同じ値の異なる表記 (`1` vs `1.0` 等) も衝突します。
 - **`<base href>`** は既存の `data:`/`javascript:` スキーム禁止に加え、URL LS の完全な検証も実行するようになりました。以前は `data:`/`javascript:` 以外なら無検査で受理していました。
 - **`<input type="url" value>`** は絶対 URL 限定の variant を使うようになりました。空の値は受理 (HTML LS §4.10.5.1.7 「指定されかつ非空なら」) ですが、相対 URL は拒否します。完全な `https://…` 形式を使うか、属性を空にしてください。
 
