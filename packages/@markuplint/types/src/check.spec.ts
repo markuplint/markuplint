@@ -113,6 +113,11 @@ test('Srcset', () => {
 	// Sanity: distinct densities / widths still accepted.
 	expect(check('a.jpg 1x, b.jpg 1.5x, c.jpg 2x', 'Srcset').matched).toBe(true);
 	expect(check('a.jpg 320w, b.jpg 640w, c.jpg 1280w', 'Srcset').matched).toBe(true);
+
+	// Numeric normalisation: `1e0` and `1` resolve to the same Number(); the
+	// duplicate detection key uses Number() so different lexical forms of the
+	// same density still collide.
+	expect(check('a.jpg 1e0x, b.jpg 1x', 'Srcset').matched).toBe(false);
 });
 
 test('IconSize', () => {
