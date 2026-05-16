@@ -200,7 +200,7 @@ v5 では、これまで `Any` として素通りしていた領域について 
 - **`<input name="isindex">` は予約値** (HTML LS §4.10.18.2)。廃止された `<isindex>` 要素の名残として、リテラル値 `isindex` は予約されています。v5 では `name` 属性が `isindex` (大文字小文字区別) のときに違反となります。
 - **`srcset` の descriptor 重複は非適合** (HTML LS §4.8.4.4.1)。仕様は「重複した descriptor を持つ image candidate string は invalid」と定義しています。`Srcset` 型チェッカーは密度スロット (`1x, 1x`、`1x, 1.0x`、または省略 = 暗黙 1x と `1x` の組み合わせ) と幅スロット (`480w, 480w`) いずれの重複も拒否します。判定は数値比較なので、同じ値の異なる表記 (`1` vs `1.0` 等) も衝突します。
 - **`<link disabled>` は `rel="stylesheet"` 限定** (HTML LS §4.6.7.18)。`disabled` 属性は「rel に stylesheet キーワードを含む link 要素にのみ指定可能」と仕様で限定されています。`<link rel="icon" disabled>` 等は `invalid-attr` 違反となります。
-- **`<link rel="alternate stylesheet">` は `title` 必須** (HTML LS §4.6.7.4)。rel に `alternate` と `stylesheet` の両方を含む場合、仕様により非空の `title` 属性が必要です。`required-attr` ルールが発火します。
+- **`<link rel="alternate stylesheet">` は非空の `title` 必須** (HTML LS §4.6.7.4)。rel に `alternate` と `stylesheet` の両方を含む場合、仕様により「非空の」`title` 属性が必要です。title が無いケースは `required-attr` ルール、明示的な空 (`title=""`) は `invalid-attr` ルール (`NoEmptyAny` 条件付き型 override) が発火します。
 - **`<base href>`** は既存の `data:`/`javascript:` スキーム禁止に加え、URL LS の完全な検証も実行するようになりました。以前は `data:`/`javascript:` 以外なら無検査で受理していました。
 - **`<input type="url" value>`** は絶対 URL 限定の variant を使うようになりました。空の値は受理 (HTML LS §4.10.5.1.7 「指定されかつ非空なら」) ですが、相対 URL は拒否します。完全な `https://…` 形式を使うか、属性を空にしてください。
 
