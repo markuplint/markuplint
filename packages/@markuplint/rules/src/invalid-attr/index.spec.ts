@@ -3354,3 +3354,19 @@ describe('srcset descriptors must be unique (HTML LS §4.8.4.4.1)', () => {
 		expect(violations.length).toBeGreaterThan(0);
 	});
 });
+
+describe('link[disabled] is only valid on rel="stylesheet" (HTML LS §4.6.7.18)', () => {
+	test('[invalid-attr-valid-048] link rel="stylesheet" with disabled is accepted', async () => {
+		const { violations } = await mlRuleTest(rule, '<link rel="stylesheet" href="style.css" disabled>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-invalid-077] link[disabled] without rel="stylesheet" is rejected', async () => {
+		// Mirrors html/elements/link/disabled-without-stylesheet-novalid.html.
+		// Spec: "The content attribute, if present, must only be specified on
+		// link elements that have a rel attribute that contains the stylesheet
+		// keyword."
+		const { violations } = await mlRuleTest(rule, '<link rel="icon" href="favicon.ico" disabled>');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+});
