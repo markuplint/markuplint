@@ -53061,6 +53061,12 @@
 				},
 				"title": {
 					"description": "The title attribute has special semantics on the <link> element. When used on a <link rel=\"stylesheet\"> it defines a default or an alternate stylesheet.",
+					"type": [
+						{
+							"condition": "[rel~='alternate' i][rel~='stylesheet' i]",
+							"type": "NoEmptyAny"
+						}
+					],
 					"required": "[rel~='alternate' i][rel~='stylesheet' i]"
 				},
 				"type": {

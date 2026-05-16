@@ -127,7 +127,13 @@
 		// "If the alternate keyword is used with the stylesheet keyword on a
 		// link element, the title attribute must be specified on the link
 		// element, with a non-empty value."
+		// `required` covers the "must be specified" half; the conditional
+		// `NoEmptyAny` type covers the "non-empty" half so an explicit empty
+		// `title=""` also fires.
 		"title": {
+			"type": [
+				{ "condition": "[rel~='alternate' i][rel~='stylesheet' i]", "type": "NoEmptyAny" }
+			],
 			"required": "[rel~='alternate' i][rel~='stylesheet' i]"
 		}
 	},
