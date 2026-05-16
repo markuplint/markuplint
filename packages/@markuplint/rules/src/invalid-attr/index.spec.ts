@@ -3354,3 +3354,51 @@ describe('srcset descriptors must be unique (HTML LS §4.8.4.4.1)', () => {
 		expect(violations.length).toBeGreaterThan(0);
 	});
 });
+
+describe('link[disabled] is only valid on rel="stylesheet" (HTML LS §4.6.7.18)', () => {
+	test('[invalid-attr-valid-048] link rel="stylesheet" with disabled is accepted', async () => {
+		const { violations } = await mlRuleTest(rule, '<link rel="stylesheet" href="style.css" disabled>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-invalid-077] link[disabled] without rel="stylesheet" is rejected', async () => {
+		// Mirrors html/elements/link/disabled-without-stylesheet-novalid.html.
+		// Spec: "The content attribute, if present, must only be specified on
+		// link elements that have a rel attribute that contains the stylesheet
+		// keyword."
+		const { violations } = await mlRuleTest(rule, '<link rel="icon" href="favicon.ico" disabled>');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-valid-049] case-insensitive rel still accepts disabled', async () => {
+		// `~=` selector uses ASCII case-insensitive matching with the ` i` flag,
+		// so `StyleSheet` is treated the same as `stylesheet`.
+		const { violations } = await mlRuleTest(rule, '<link rel="StyleSheet" href="style.css" disabled>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-valid-050] reversed rel token order still accepts disabled', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<link rel="alternate stylesheet" href="style.css" title="Print" disabled>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-invalid-078] link[disabled] with no rel attribute is rejected', async () => {
+		// rel is itself required (or itemprop fallback), but the relevant rule
+		// pin here is the disabled-on-non-stylesheet branch — `disabled` itself
+		// should not be accepted when no stylesheet rel is asserted.
+		const { violations } = await mlRuleTest(rule, '<link href="style.css" disabled>');
+		expect(violations.some(v => typeof v.message === 'string' && v.message.includes('disabled'))).toBe(true);
+	});
+
+	test('[invalid-attr-invalid-079] link rel="alternate stylesheet" with empty title is rejected', async () => {
+		// HTML LS §4.6.7.4 mandates a **non-empty** title. Pins the
+		// conditional NoEmptyAny type override on link[title].
+		const { violations } = await mlRuleTest(rule, '<link rel="alternate stylesheet" href="x.css" title="">');
+		expect(violations.some(v => typeof v.message === 'string' && v.message.toLowerCase().includes('title'))).toBe(
+			true,
+		);
+	});
+});

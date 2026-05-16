@@ -115,8 +115,26 @@
 			"condition": "[rel~='mask-icon' i]"
 		},
 		// https://html.spec.whatwg.org/multipage/semantics.html#attr-link-disabled
+		// Spec: "The content attribute, if present, must only be specified on
+		// link elements that have a rel attribute that contains the stylesheet
+		// keyword."
 		"disabled": {
-			"type": "Boolean"
+			"type": "Boolean",
+			"condition": "[rel~='stylesheet' i]"
+		},
+		// `title` is a global attribute, but when `rel` contains both `alternate`
+		// and `stylesheet` it must be specified and non-empty (HTML LS §4.6.7.4):
+		// "If the alternate keyword is used with the stylesheet keyword on a
+		// link element, the title attribute must be specified on the link
+		// element, with a non-empty value."
+		// `required` covers the "must be specified" half; the conditional
+		// `NoEmptyAny` type covers the "non-empty" half so an explicit empty
+		// `title=""` also fires.
+		"title": {
+			"type": [
+				{ "condition": "[rel~='alternate' i][rel~='stylesheet' i]", "type": "NoEmptyAny" }
+			],
+			"required": "[rel~='alternate' i][rel~='stylesheet' i]"
 		}
 	},
 	"aria": {

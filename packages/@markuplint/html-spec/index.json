@@ -52995,7 +52995,8 @@
 				},
 				"disabled": {
 					"description": "For rel=\"stylesheet\" only, the disabled Boolean attribute indicates whether the described stylesheet should be loaded and applied to the document. If disabled is specified in the HTML when it is loaded, the stylesheet will not be loaded during page load. Instead, the stylesheet will be loaded on-demand, if and when the disabled attribute is changed to false or removed. Setting the disabled property in the DOM causes the stylesheet to be removed from the document's Document.styleSheets list.",
-					"type": "Boolean"
+					"type": "Boolean",
+					"condition": "[rel~='stylesheet' i]"
 				},
 				"fetchpriority": {
 					"description": "Provides a hint of the relative priority to use when fetching a resource of a particular type. Allowed values: high Fetch the resource at a high priority relative to other resources of the same type. low Fetch the resource at a low priority relative to other resources of the same type. auto Don't set a preference for the fetch priority. This is the default. It is used if no value or an invalid value is set."
@@ -53059,7 +53060,14 @@
 					"deprecated": true
 				},
 				"title": {
-					"description": "The title attribute has special semantics on the <link> element. When used on a <link rel=\"stylesheet\"> it defines a default or an alternate stylesheet."
+					"description": "The title attribute has special semantics on the <link> element. When used on a <link rel=\"stylesheet\"> it defines a default or an alternate stylesheet.",
+					"type": [
+						{
+							"condition": "[rel~='alternate' i][rel~='stylesheet' i]",
+							"type": "NoEmptyAny"
+						}
+					],
+					"required": "[rel~='alternate' i][rel~='stylesheet' i]"
 				},
 				"type": {
 					"description": "This attribute is used to define the type of the content linked to. The value of the attribute should be a MIME type such as text/html, text/css, and so on. The common use of this attribute is to define the type of stylesheet being referenced (such as text/css), but given that CSS is the only stylesheet language used on the web, not only is it possible to omit the type attribute, but is actually now recommended practice. It is also used on rel=\"preload\" link types, to make sure the browser only downloads file types that it supports."

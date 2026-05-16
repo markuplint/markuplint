@@ -936,3 +936,22 @@ test('[required-attr-valid-008] input[type=image] with alt is accepted', async (
 	const { violations } = await mlRuleTest(rule, '<input type="image" src="button.png" alt="submit">');
 	expect(violations).toStrictEqual([]);
 });
+
+test('[required-attr-invalid-017] link rel="alternate stylesheet" requires title (HTML LS §4.6.7.4)', async () => {
+	// Mirrors html/elements/link/alternate-stylesheet-without-title-novalid.html.
+	// Spec: "If the alternate keyword is used with the stylesheet keyword on a
+	// link element, the title attribute must be specified on the link element,
+	// with a non-empty value."
+	const { violations } = await mlRuleTest(rule, '<link rel="alternate stylesheet" href="style.css">');
+	expect(violations.length).toBeGreaterThan(0);
+});
+
+test('[required-attr-valid-009] link rel="alternate stylesheet" with title is accepted', async () => {
+	const { violations } = await mlRuleTest(rule, '<link rel="alternate stylesheet" href="style.css" title="Print">');
+	expect(violations).toStrictEqual([]);
+});
+
+test('[required-attr-valid-010] link rel="stylesheet" alone does not require title', async () => {
+	const { violations } = await mlRuleTest(rule, '<link rel="stylesheet" href="style.css">');
+	expect(violations).toStrictEqual([]);
+});
