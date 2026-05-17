@@ -116,9 +116,16 @@ For a `nu-only` fixture, the spec verdict gives a binary action:
 
 | Spec on the markup | Conclusion | Action |
 | --- | --- | --- |
-| **Forbidden** | nu correct, markuplint has a coverage gap. | Add or extend a markuplint rule. Open an Issue if the work is non-trivial. After fix, `yarn bench:update:ml` — fixture should flip to `match-error`. |
-| **Permitted** | nu over-detecting. | Record in `excluded-ids.json` (per-ID or pattern; see below). After edit, `yarn bench:compare` — fixture should flip to `nu-over`. |
+| **Forbidden (HTML LS / ARIA / URL LS)** | nu correct, markuplint has a coverage gap. | Add or extend a markuplint rule. Open an Issue if the work is non-trivial. After fix, `yarn bench:update:ml` — fixture should flip to `match-error`. |
+| **Forbidden, but spec is outside markuplint's reference scope** (e.g. WICG draft, vendor extension) | nu is enforcing a spec that markuplint deliberately does not track. Open an Issue for future coverage AND record the messages in `excluded-ids.json` so the bench can focus on actionable HTML LS gaps. | Issue + `excluded-ids.json` pattern. Reason field must explicitly note `deferred-WICG / deferred-<spec>` so future readers can distinguish from regular nu-over. Tracking Issue # MUST be in the reason. |
+| **Permitted by HTML LS** | nu over-detecting. | Record in `excluded-ids.json` (per-ID or pattern; see below). After edit, `yarn bench:compare` — fixture should flip to `nu-over`. |
 | **Ambiguous / under discussion** | Spec issue or PR ongoing. | Note the spec-tracker URL in `snapshots/diff/summary.md` follow-up. Do not silently close. |
+
+markuplint's reference scope is HTML Living Standard + WAI-ARIA +
+URL Living Standard. Anything nu enforces from a WICG draft, a
+vendor extension, or any other spec outside that set is treated
+as deferred coverage — eligible for `excluded-ids.json` only if
+an Issue tracks the future implementation.
 
 When the spec disagrees with **both** tools (recent normative
 revision neither has adopted), open one Issue per tool but pursue
@@ -164,6 +171,15 @@ When the same diagnostic hits many fixtures, use `patterns[]`
 
 `specUrl` is required on patterns — they are the most load-bearing
 exclusion. If you cannot cite a paragraph, use a per-`id` entry.
+
+Patterns trade compactness for stability: per-`id` entries pin the
+nu message-ID hash, so a wording shift in nu surfaces as a stale
+entry on the next bench refresh (the entry stops matching and the
+fixture reappears in `nu-only`). Patterns key on message text, so
+a wording shift silently drops them out of effect. For deferred-spec
+batches (10+ fixtures driven by an Issue), prefer patterns but record
+the expected `nu-over` headcount in the reason field so pre-release
+bench refreshes can spot drift.
 
 After editing `excluded-ids.json`:
 
