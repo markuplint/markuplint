@@ -48,7 +48,7 @@
 		},
 		{
 			"messageContains": "speculation rule",
-			"reason": "Speculation Rules is a WICG draft (https://wicg.github.io/nav-speculation/speculation-rules.html), not part of HTML Living Standard. markuplint's reference scope is HTML LS + ARIA + URL LS, so nu-validator enforcing the WICG schema counts as over-detection from markuplint's perspective. Coverage is tracked at https://github.com/markuplint/markuplint/issues/3882 — once implemented, this pattern should be removed.",
+			"reason": "Speculation Rules is a WICG draft (https://wicg.github.io/nav-speculation/speculation-rules.html), not part of HTML Living Standard. markuplint's reference scope is HTML LS + ARIA + URL LS, so nu-validator enforcing the WICG schema counts as over-detection from markuplint's perspective. This adds a deferred-WICG subclass of `nu-over` (distinct from the existing `nu-over` cases where nu over-interprets HTML LS itself). Coverage tracked at https://github.com/markuplint/markuplint/issues/3882 — when implementation lands, **remove all 7 SR-related patterns** (`speculation rule`, `document rule`, `“speculationrules” must have valid JSON`, `“speculationrules” must contain a JSON`, `“prefetch” array`, `“prefetch” property within`, `in the “urls” array`) and the 41 fixtures will flip to `match-error`. Stale-detection note: patterns match message text, so if nu changes wording the patterns silently fall out of effect — confirm `nu-over` SR count stays ~41 in pre-release bench refreshes.",
 			"specUrl": "https://wicg.github.io/nav-speculation/speculation-rules.html",
 			"addedAt": "2026-05-17",
 			"addedBy": "hirao"
