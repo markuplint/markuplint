@@ -1019,6 +1019,13 @@
 			]
 		},
 		{
+			"path": "html-aria/setsize-posinset-level/testcase-769.html",
+			"category": "aria",
+			"ruleIds": [
+				"wai-aria-required-parent-role"
+			]
+		},
+		{
 			"path": "html-its/allowedcharacters/html/allowedcharacters1html.html",
 			"category": "uncategorized",
 			"ruleIds": [
@@ -7124,13 +7131,6 @@
 			"category": "invalid-attr",
 			"ruleIds": [
 				"deprecated-attr"
-			]
-		},
-		{
-			"path": "html/elements/area/download-isvalid.html",
-			"category": "invalid-attr",
-			"ruleIds": [
-				"invalid-attr"
 			]
 		},
 		{

@@ -6187,9 +6187,9 @@
 		{
 			"path": "html-aria/setsize-posinset-level/testcase-769.html",
 			"category": "aria",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "error",
-			"verdict": "match-error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -15701,9 +15701,9 @@
 		{
 			"path": "html/elements/area/download-isvalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
+			"nu": "error",
 			"ml": "error",
-			"verdict": "ml-only",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -24496,8 +24496,8 @@
 			"path": "html/elements/img/sizes-without-srcset-novalid.html",
 			"category": "invalid-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -25322,8 +25322,8 @@
 			"path": "html/elements/input/autocomplete-webauthn-only-novalid.html",
 			"category": "invalid-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -25554,8 +25554,8 @@
 			"path": "html/elements/input/name-isindex-novalid.html",
 			"category": "invalid-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -30156,8 +30156,8 @@
 			"path": "html/elements/link/alternate-stylesheet-without-title-novalid.html",
 			"category": "invalid-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -30188,8 +30188,8 @@
 			"path": "html/elements/link/disabled-without-stylesheet-novalid.html",
 			"category": "invalid-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -32405,10 +32405,12 @@
 		{
 			"path": "html/elements/object/type-only-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-785400222871"
+			]
 		},
 		{
 			"path": "html/elements/ol/model-isvalid.html",
@@ -32782,8 +32784,8 @@
 			"path": "html/elements/picture/img-with-sizes-no-srcset-novalid.html",
 			"category": "invalid-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -34062,32 +34064,32 @@
 			"path": "html/elements/picture/srcset-microsyntax-unique-descriptors-1x-and-omitted-novalid.html",
 			"category": "invalid-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
 			"path": "html/elements/picture/srcset-microsyntax-unique-descriptors-2x-novalid.html",
 			"category": "invalid-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
 			"path": "html/elements/picture/srcset-microsyntax-unique-descriptors-integer-and-decimals-x-novalid.html",
 			"category": "invalid-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
 			"path": "html/elements/picture/srcset-microsyntax-unique-descriptors-w-novalid.html",
 			"category": "invalid-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -34254,8 +34256,8 @@
 			"path": "html/elements/progress/value-negative-novalid.html",
 			"category": "invalid-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -35511,18 +35513,22 @@
 		{
 			"path": "html/elements/script/speculationrules-and-empty-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-2d05eb740ea1"
+			]
 		},
 		{
 			"path": "html/elements/script/speculationrules-and-not-array-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-ffb7b0802b96"
+			]
 		},
 		{
 			"path": "html/elements/script/speculationrules-complex-with-arrays-isvalid.html",
@@ -35535,26 +35541,32 @@
 		{
 			"path": "html/elements/script/speculationrules-document-missing-where-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-eba9b39992b3"
+			]
 		},
 		{
 			"path": "html/elements/script/speculationrules-document-with-urls-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-e4f280547930"
+			]
 		},
 		{
 			"path": "html/elements/script/speculationrules-eagerness-not-string-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-1aa1a7651199"
+			]
 		},
 		{
 			"path": "html/elements/script/speculationrules-href-matches-array-isvalid.html",
@@ -35567,26 +35579,32 @@
 		{
 			"path": "html/elements/script/speculationrules-href-matches-empty-array-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-91eedf90678b"
+			]
 		},
 		{
 			"path": "html/elements/script/speculationrules-href-matches-empty-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-3726177f55dd"
+			]
 		},
 		{
 			"path": "html/elements/script/speculationrules-href-matches-not-string-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-7b3a72419899"
+			]
 		},
 		{
 			"path": "html/elements/script/speculationrules-inferred-source-document-isvalid.html",
@@ -35615,98 +35633,122 @@
 		{
 			"path": "html/elements/script/speculationrules-invalid-eagerness-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-56a4bd14c073"
+			]
 		},
 		{
 			"path": "html/elements/script/speculationrules-invalid-json-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-67ce6bae6dfa"
+			]
 		},
 		{
 			"path": "html/elements/script/speculationrules-invalid-property-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-db1dd7e71b6d"
+			]
 		},
 		{
 			"path": "html/elements/script/speculationrules-invalid-source-value-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-9272f3df3931"
+			]
 		},
 		{
 			"path": "html/elements/script/speculationrules-list-missing-urls-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-6e918dafe95a"
+			]
 		},
 		{
 			"path": "html/elements/script/speculationrules-list-with-where-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-2bed56dc7103"
+			]
 		},
 		{
 			"path": "html/elements/script/speculationrules-missing-prefetch-prerender-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-ed4428d7c7b8"
+			]
 		},
 		{
 			"path": "html/elements/script/speculationrules-missing-source-urls-where-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-897112884fef"
+			]
 		},
 		{
 			"path": "html/elements/script/speculationrules-not-object-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-c4dbbb29b496"
+			]
 		},
 		{
 			"path": "html/elements/script/speculationrules-prefetch-not-array-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-a0733157f4a6"
+			]
 		},
 		{
 			"path": "html/elements/script/speculationrules-rule-invalid-property-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-5aceb9ca670f"
+			]
 		},
 		{
 			"path": "html/elements/script/speculationrules-rule-not-object-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-f06c2faed408"
+			]
 		},
 		{
 			"path": "html/elements/script/speculationrules-selector-matches-array-isvalid.html",
@@ -35719,58 +35761,72 @@
 		{
 			"path": "html/elements/script/speculationrules-selector-matches-empty-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-69d0c3ff01f7"
+			]
 		},
 		{
 			"path": "html/elements/script/speculationrules-selector-matches-not-string-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-9a27f02ee3f4"
+			]
 		},
 		{
 			"path": "html/elements/script/speculationrules-source-not-string-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-11f6ff44ec77"
+			]
 		},
 		{
 			"path": "html/elements/script/speculationrules-urls-empty-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-ab2ce085d332"
+			]
 		},
 		{
 			"path": "html/elements/script/speculationrules-urls-empty-string-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-49dc77882497"
+			]
 		},
 		{
 			"path": "html/elements/script/speculationrules-urls-item-not-string-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-12de65ecfe17"
+			]
 		},
 		{
 			"path": "html/elements/script/speculationrules-urls-not-array-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-f5ad73f01a88"
+			]
 		},
 		{
 			"path": "html/elements/script/speculationrules-valid-document-isvalid.html",
@@ -35791,26 +35847,32 @@
 		{
 			"path": "html/elements/script/speculationrules-where-empty-predicate-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-b389111680c0"
+			]
 		},
 		{
 			"path": "html/elements/script/speculationrules-where-multiple-predicates-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-064d4ab3a71a"
+			]
 		},
 		{
 			"path": "html/elements/script/speculationrules-where-not-object-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-1f5bbec4e8d6"
+			]
 		},
 		{
 			"path": "html/elements/script/speculationrules-with-async-novalid.html",
@@ -35882,7 +35944,9 @@
 			"nu": "error",
 			"ml": "error",
 			"verdict": "match-error",
-			"excludedIds": []
+			"excludedIds": [
+				"nv-ff2842bef763"
+			]
 		},
 		{
 			"path": "html/elements/script/speculationrules/async-novalid.html",
@@ -35935,34 +35999,42 @@
 		{
 			"path": "html/elements/script/speculationrules/document-without-where-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-8d601bd4f3eb"
+			]
 		},
 		{
 			"path": "html/elements/script/speculationrules/empty-and-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-14bc386f66c5"
+			]
 		},
 		{
 			"path": "html/elements/script/speculationrules/empty-object-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-e61699ad5ac8"
+			]
 		},
 		{
 			"path": "html/elements/script/speculationrules/empty-urls-array-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-3a085f550de4"
+			]
 		},
 		{
 			"path": "html/elements/script/speculationrules/fetchpriority-novalid.html",
@@ -35999,50 +36071,62 @@
 		{
 			"path": "html/elements/script/speculationrules/invalid-eagerness-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-e0ae7e3c0f58"
+			]
 		},
 		{
 			"path": "html/elements/script/speculationrules/invalid-property-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-ad54379a20df"
+			]
 		},
 		{
 			"path": "html/elements/script/speculationrules/invalid-source-value-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-9200aa197c81"
+			]
 		},
 		{
 			"path": "html/elements/script/speculationrules/list-with-where-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-ac8241a880ba"
+			]
 		},
 		{
 			"path": "html/elements/script/speculationrules/list-without-urls-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-615f9e6076b5"
+			]
 		},
 		{
 			"path": "html/elements/script/speculationrules/multiple-predicates-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-356357ce7aa5"
+			]
 		},
 		{
 			"path": "html/elements/script/speculationrules/nomodule-novalid.html",
@@ -36055,10 +36139,12 @@
 		{
 			"path": "html/elements/script/speculationrules/not-json-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-4e1c6d820ff7"
+			]
 		},
 		{
 			"path": "html/elements/script/speculationrules/prefetch-list-valid.html",
@@ -36130,7 +36216,9 @@
 			"nu": "error",
 			"ml": "error",
 			"verdict": "match-error",
-			"excludedIds": []
+			"excludedIds": [
+				"nv-be060635eed1"
+			]
 		},
 		{
 			"path": "html/elements/script/src-empty-novalid.html",

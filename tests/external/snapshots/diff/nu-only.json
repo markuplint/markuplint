@@ -4,7 +4,7 @@
 			"path": "html-aria/author-requirements/574.html",
 			"category": "aria",
 			"nuMessageIds": [
-				"nv-374285ecf319"
+				"nv-73b3fce3b363"
 			]
 		},
 		{
@@ -155,13 +155,6 @@
 			]
 		},
 		{
-			"path": "html/elements/img/sizes-without-srcset-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-a671e8696e31"
-			]
-		},
-		{
 			"path": "html/elements/img/usemap-invalid-reference-novalid.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [
@@ -176,13 +169,6 @@
 			]
 		},
 		{
-			"path": "html/elements/input/autocomplete-webauthn-only-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-462837b137bf"
-			]
-		},
-		{
 			"path": "html/elements/input/list-not-datalist-novalid.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [
@@ -194,13 +180,6 @@
 			"category": "invalid-attr",
 			"nuMessageIds": [
 				"nv-5b40a940f6c9"
-			]
-		},
-		{
-			"path": "html/elements/input/name-isindex-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-7ddc0016467c"
 			]
 		},
 		{
@@ -246,20 +225,6 @@
 			]
 		},
 		{
-			"path": "html/elements/link/alternate-stylesheet-without-title-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-ae73b462598b"
-			]
-		},
-		{
-			"path": "html/elements/link/disabled-without-stylesheet-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-26b90eaa8207"
-			]
-		},
-		{
 			"path": "html/elements/meta/content-security-policy/csp-invalid-directive-haswarn.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [
@@ -285,13 +250,6 @@
 			"category": "invalid-attr",
 			"nuMessageIds": [
 				"nv-006f6fbfb136"
-			]
-		},
-		{
-			"path": "html/elements/object/type-only-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-785400222871"
 			]
 		},
 		{
@@ -349,13 +307,6 @@
 			"nuMessageIds": [
 				"nv-3ade6b2bf3d6",
 				"nv-aca994a28b46"
-			]
-		},
-		{
-			"path": "html/elements/picture/img-with-sizes-no-srcset-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-f12d9461757f"
 			]
 		},
 		{
@@ -423,34 +374,6 @@
 			]
 		},
 		{
-			"path": "html/elements/picture/srcset-microsyntax-unique-descriptors-1x-and-omitted-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-8f1eb639ef74"
-			]
-		},
-		{
-			"path": "html/elements/picture/srcset-microsyntax-unique-descriptors-2x-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-f16ee35b7cae"
-			]
-		},
-		{
-			"path": "html/elements/picture/srcset-microsyntax-unique-descriptors-integer-and-decimals-x-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-5b3ec352d449"
-			]
-		},
-		{
-			"path": "html/elements/picture/srcset-microsyntax-unique-descriptors-w-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-902400df810a"
-			]
-		},
-		{
 			"path": "html/elements/progress/value-exceeds-max-novalid.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [
@@ -462,13 +385,6 @@
 			"category": "invalid-attr",
 			"nuMessageIds": [
 				"nv-077fa3dae0ce"
-			]
-		},
-		{
-			"path": "html/elements/progress/value-negative-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-077a46fbc254"
 			]
 		},
 		{
@@ -647,216 +563,6 @@
 			]
 		},
 		{
-			"path": "html/elements/script/speculationrules-and-empty-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-2d05eb740ea1"
-			]
-		},
-		{
-			"path": "html/elements/script/speculationrules-and-not-array-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-ffb7b0802b96"
-			]
-		},
-		{
-			"path": "html/elements/script/speculationrules-document-missing-where-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-eba9b39992b3"
-			]
-		},
-		{
-			"path": "html/elements/script/speculationrules-document-with-urls-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-e4f280547930"
-			]
-		},
-		{
-			"path": "html/elements/script/speculationrules-eagerness-not-string-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-1aa1a7651199"
-			]
-		},
-		{
-			"path": "html/elements/script/speculationrules-href-matches-empty-array-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-91eedf90678b"
-			]
-		},
-		{
-			"path": "html/elements/script/speculationrules-href-matches-empty-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-3726177f55dd"
-			]
-		},
-		{
-			"path": "html/elements/script/speculationrules-href-matches-not-string-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-7b3a72419899"
-			]
-		},
-		{
-			"path": "html/elements/script/speculationrules-invalid-eagerness-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-56a4bd14c073"
-			]
-		},
-		{
-			"path": "html/elements/script/speculationrules-invalid-json-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-67ce6bae6dfa"
-			]
-		},
-		{
-			"path": "html/elements/script/speculationrules-invalid-property-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-db1dd7e71b6d"
-			]
-		},
-		{
-			"path": "html/elements/script/speculationrules-invalid-source-value-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-9272f3df3931"
-			]
-		},
-		{
-			"path": "html/elements/script/speculationrules-list-missing-urls-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-6e918dafe95a"
-			]
-		},
-		{
-			"path": "html/elements/script/speculationrules-list-with-where-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-2bed56dc7103"
-			]
-		},
-		{
-			"path": "html/elements/script/speculationrules-missing-prefetch-prerender-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-ed4428d7c7b8"
-			]
-		},
-		{
-			"path": "html/elements/script/speculationrules-missing-source-urls-where-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-897112884fef"
-			]
-		},
-		{
-			"path": "html/elements/script/speculationrules-not-object-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-c4dbbb29b496"
-			]
-		},
-		{
-			"path": "html/elements/script/speculationrules-prefetch-not-array-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-a0733157f4a6"
-			]
-		},
-		{
-			"path": "html/elements/script/speculationrules-rule-invalid-property-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-5aceb9ca670f"
-			]
-		},
-		{
-			"path": "html/elements/script/speculationrules-rule-not-object-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-f06c2faed408"
-			]
-		},
-		{
-			"path": "html/elements/script/speculationrules-selector-matches-empty-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-69d0c3ff01f7"
-			]
-		},
-		{
-			"path": "html/elements/script/speculationrules-selector-matches-not-string-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-9a27f02ee3f4"
-			]
-		},
-		{
-			"path": "html/elements/script/speculationrules-source-not-string-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-11f6ff44ec77"
-			]
-		},
-		{
-			"path": "html/elements/script/speculationrules-urls-empty-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-ab2ce085d332"
-			]
-		},
-		{
-			"path": "html/elements/script/speculationrules-urls-empty-string-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-49dc77882497"
-			]
-		},
-		{
-			"path": "html/elements/script/speculationrules-urls-item-not-string-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-12de65ecfe17"
-			]
-		},
-		{
-			"path": "html/elements/script/speculationrules-urls-not-array-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-f5ad73f01a88"
-			]
-		},
-		{
-			"path": "html/elements/script/speculationrules-where-empty-predicate-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-b389111680c0"
-			]
-		},
-		{
-			"path": "html/elements/script/speculationrules-where-multiple-predicates-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-064d4ab3a71a"
-			]
-		},
-		{
-			"path": "html/elements/script/speculationrules-where-not-object-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-1f5bbec4e8d6"
-			]
-		},
-		{
 			"path": "html/elements/script/speculationrules-with-crossorigin-novalid.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [
@@ -878,87 +584,10 @@
 			]
 		},
 		{
-			"path": "html/elements/script/speculationrules/document-without-where-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-8d601bd4f3eb"
-			]
-		},
-		{
-			"path": "html/elements/script/speculationrules/empty-and-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-14bc386f66c5"
-			]
-		},
-		{
-			"path": "html/elements/script/speculationrules/empty-object-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-e61699ad5ac8"
-			]
-		},
-		{
-			"path": "html/elements/script/speculationrules/empty-urls-array-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-3a085f550de4"
-			]
-		},
-		{
 			"path": "html/elements/script/speculationrules/fetchpriority-novalid.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [
 				"nv-81b907c64826"
-			]
-		},
-		{
-			"path": "html/elements/script/speculationrules/invalid-eagerness-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-e0ae7e3c0f58"
-			]
-		},
-		{
-			"path": "html/elements/script/speculationrules/invalid-property-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-ad54379a20df"
-			]
-		},
-		{
-			"path": "html/elements/script/speculationrules/invalid-source-value-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-9200aa197c81"
-			]
-		},
-		{
-			"path": "html/elements/script/speculationrules/list-with-where-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-ac8241a880ba"
-			]
-		},
-		{
-			"path": "html/elements/script/speculationrules/list-without-urls-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-615f9e6076b5"
-			]
-		},
-		{
-			"path": "html/elements/script/speculationrules/multiple-predicates-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-356357ce7aa5"
-			]
-		},
-		{
-			"path": "html/elements/script/speculationrules/not-json-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-4e1c6d820ff7"
 			]
 		},
 		{
