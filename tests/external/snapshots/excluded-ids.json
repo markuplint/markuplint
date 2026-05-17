@@ -45,6 +45,55 @@
 			"specUrl": "https://url.spec.whatwg.org/#url-writing",
 			"addedAt": "2026-04-23",
 			"addedBy": "hirao"
+		},
+		{
+			"messageContains": "speculation rule",
+			"reason": "Speculation Rules is a WICG draft (https://wicg.github.io/nav-speculation/speculation-rules.html), not part of HTML Living Standard. markuplint's reference scope is HTML LS + ARIA + URL LS, so nu-validator enforcing the WICG schema counts as over-detection from markuplint's perspective. This adds a deferred-WICG subclass of `nu-over` (distinct from the existing `nu-over` cases where nu over-interprets HTML LS itself). Coverage tracked at https://github.com/markuplint/markuplint/issues/3882 — when implementation lands, **remove all 7 SR-related patterns** (`speculation rule`, `document rule`, `“speculationrules” must have valid JSON`, `“speculationrules” must contain a JSON`, `“prefetch” array`, `“prefetch” property within`, `in the “urls” array`) and the 41 fixtures will flip to `match-error`. Stale-detection note: patterns match message text, so if nu changes wording the patterns silently fall out of effect — confirm `nu-over` SR count stays ~41 in pre-release bench refreshes.",
+			"specUrl": "https://wicg.github.io/nav-speculation/speculation-rules.html",
+			"addedAt": "2026-05-17",
+			"addedBy": "hirao"
+		},
+		{
+			"messageContains": "document rule",
+			"reason": "Speculation Rules `where` predicate terminology — see the Speculation Rules pattern above for the full rationale and tracking issue.",
+			"specUrl": "https://wicg.github.io/nav-speculation/speculation-rules.html",
+			"addedAt": "2026-05-17",
+			"addedBy": "hirao"
+		},
+		{
+			"messageContains": "“speculationrules” must have valid JSON",
+			"reason": "Catches `<script type=speculationrules>` JSON syntax errors (`must have valid JSON content`). Distinct from `must not have a ... attribute` which is HTML LS scope. See the Speculation Rules pattern above for rationale and tracking issue.",
+			"specUrl": "https://wicg.github.io/nav-speculation/speculation-rules.html",
+			"addedAt": "2026-05-17",
+			"addedBy": "hirao"
+		},
+		{
+			"messageContains": "“speculationrules” must contain a JSON",
+			"reason": "Catches `<script type=speculationrules>` JSON shape errors (`must contain a JSON object with...`). See the Speculation Rules pattern above for rationale and tracking issue.",
+			"specUrl": "https://wicg.github.io/nav-speculation/speculation-rules.html",
+			"addedAt": "2026-05-17",
+			"addedBy": "hirao"
+		},
+		{
+			"messageContains": "“prefetch” array",
+			"reason": "Speculation Rules top-level `prefetch` array shape validation — see the Speculation Rules pattern above for rationale and tracking issue.",
+			"specUrl": "https://wicg.github.io/nav-speculation/speculation-rules.html",
+			"addedAt": "2026-05-17",
+			"addedBy": "hirao"
+		},
+		{
+			"messageContains": "“prefetch” property within",
+			"reason": "Speculation Rules `prefetch` property type validation (must be a JSON array) — see the Speculation Rules pattern above for rationale and tracking issue.",
+			"specUrl": "https://wicg.github.io/nav-speculation/speculation-rules.html",
+			"addedAt": "2026-05-17",
+			"addedBy": "hirao"
+		},
+		{
+			"messageContains": "in the “urls” array",
+			"reason": "Speculation Rules `urls` array item-type validation (non-empty string) — see the Speculation Rules pattern above for rationale and tracking issue.",
+			"specUrl": "https://wicg.github.io/nav-speculation/speculation-rules.html",
+			"addedAt": "2026-05-17",
+			"addedBy": "hirao"
 		}
 	]
 }
