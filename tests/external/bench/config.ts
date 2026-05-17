@@ -53,6 +53,8 @@ export const benchmarkConfig: Config = {
 		'deprecated-element': true,
 		'deprecated-attr': true,
 		'id-duplication': true,
+		// Validates `<script>` body against the spec for its `type` (currently importmap, per HTML LS § Parse an import map string).
+		'script-content': true,
 		'no-duplicate-autofocus': true,
 		'no-duplicate-visible-main': true,
 		'placeholder-label-option': true,

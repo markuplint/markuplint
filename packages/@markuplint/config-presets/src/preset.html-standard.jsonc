@@ -205,6 +205,19 @@
 		},
 
 		/**
+		 * Validate `<script>` body against the spec selected by the `type` attribute
+		 * (currently: `importmap`).
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/webappapis.html#parse-an-import-map-string
+		 */
+		"html-standard/script-content": {
+			"specConformance": "normative",
+			"rules": {
+				"script-content": true
+			}
+		},
+
+		/**
 		 * Enforce WHATWG constraints between `srcset`, `sizes`, and `loading` attributes
 		 *
 		 * @see https://html.spec.whatwg.org/multipage/images.html#srcset-attributes

@@ -213,6 +213,10 @@ test('default-rules', () => {
 			category: 'a11y',
 			defaultValue: true,
 		},
+		'script-content': {
+			category: 'validation',
+			defaultValue: true,
+		},
 		'srcset-sizes-constraint': {
 			category: 'validation',
 			defaultValue: true,
