@@ -46,8 +46,13 @@
 			"ineffective": ":not([src]):not([type='module' i])"
 		},
 		// https://html.spec.whatwg.org/multipage/scripting.html#attr-script-defer
-		// Must not be used with importmap, speculationrules, or type=module; requires src
-		// HTML LS: "Module scripts may specify the async attribute, but must not specify the defer attribute."
+		// HTML LS §4.12.1 attribute applicability table: `defer` is "Yes" only for
+		// external classic scripts; all other script kinds (inline classic, any
+		// module, import map, speculation rules, data block) are "·" (not applicable).
+		// Known gap: this condition lets `<script type="application/json" src=x defer>`
+		// pass (data block is implicitly not module / not importmap / not speculationrules
+		// and the type-set has no closed enum). Acceptable for now — no fixture
+		// exercises that combination.
 		"defer": {
 			"type": "Boolean",
 			"condition": ":not([type='importmap' i]):not([type='speculationrules' i]):not([type='module' i])[src]",
@@ -64,9 +69,11 @@
 			"condition": "[src]"
 		},
 		// https://html.spec.whatwg.org/multipage/urls-and-fetching.html#blocking-attributes
-		// Must not be used with importmap or speculationrules; requires src
-		// HTML LS § 6.7.3: "[the blocking attribute] must be omitted unless the script is an
-		// external classic script or external module script" (= src is required).
+		// HTML LS §4.12.1 attribute applicability table: `blocking` is "Yes" for
+		// external classic scripts and external module scripts; all inline scripts,
+		// import map, speculation rules, and data block are "·" (not applicable).
+		// Known gap: same as `defer` — `<script type="application/json" src=x blocking=render>`
+		// passes this condition. Acceptable for now — no fixture exercises it.
 		"blocking": {
 			"type": {
 				"token": {
