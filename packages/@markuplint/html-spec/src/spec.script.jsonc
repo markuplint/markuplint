@@ -46,12 +46,12 @@
 			"ineffective": ":not([src]):not([type='module' i])"
 		},
 		// https://html.spec.whatwg.org/multipage/scripting.html#attr-script-defer
-		// Must not be used with importmap or speculationrules; requires src
-		// For type=module, defer is ineffective (not disallowed)
+		// Must not be used with importmap, speculationrules, or type=module; requires src
+		// HTML LS: "Module scripts may specify the async attribute, but must not specify the defer attribute."
 		"defer": {
 			"type": "Boolean",
-			"condition": ":not([type='importmap' i]):not([type='speculationrules' i])[src]",
-			"ineffective": ["[type='module' i]", ":not([src])", "[async]"]
+			"condition": ":not([type='importmap' i]):not([type='speculationrules' i]):not([type='module' i])[src]",
+			"ineffective": [":not([src])", "[async]"]
 		},
 		// https://html.spec.whatwg.org/multipage/scripting.html#attr-script-integrity
 		// Must not be used with importmap or speculationrules; requires src
@@ -64,7 +64,9 @@
 			"condition": "[src]"
 		},
 		// https://html.spec.whatwg.org/multipage/urls-and-fetching.html#blocking-attributes
-		// Must not be used with importmap or speculationrules
+		// Must not be used with importmap or speculationrules; requires src
+		// HTML LS § 6.7.3: "[the blocking attribute] must be omitted unless the script is an
+		// external classic script or external module script" (= src is required).
 		"blocking": {
 			"type": {
 				"token": {
@@ -73,7 +75,7 @@
 				"separator": "space",
 				"unique": true
 			},
-			"condition": ":not([type='importmap' i]):not([type='speculationrules' i])"
+			"condition": ":not([type='importmap' i]):not([type='speculationrules' i])[src]"
 		},
 		// NOTE: crossorigin, referrerpolicy, and fetchpriority should be
 		// disallowed on importmap/speculationrules per spec, but overriding
