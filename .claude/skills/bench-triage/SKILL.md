@@ -248,6 +248,7 @@ directly. Do not add a row without a verbatim spec quote and source URL.
 | `Illegal character in …` (path / fragment / domain / port) | **nu correct** — NOT excluded | URL LS `invalid-URL-unit` covers non-URL code points and malformed percent-encoding. |
 | `Windows drive letter uses …` | **nu correct** — NOT excluded | URL LS `file-invalid-Windows-drive-letter` / `file-invalid-Windows-drive-letter-host`. |
 | `Expected a space character` / `Expected an unquoted URL` (`<meta http-equiv="refresh">` content) | **nu over-detection** — excluded per-ID in `entries[]` | HTML LS §4.2.5.3 Refresh grammar: clause 3.2 makes whitespace after `;`/`,` optional; clause 3.3 alt 2 accepts any valid URL. nu's wording overlaps with legitimate refresh errors, so substring-match is unsafe — per-ID. |
+| `<script type=importmap>` scope key that fails a "looks-like-URL" check (e.g. `scope1_not_url`) | **nu over-detection** — excluded per-ID in `entries[]` | HTML LS § Sorting and normalizing scopes step 2: scopePrefix is URL-parsed *with* baseURL. Relative strings parse successfully against any base, so step 3's "URL parse failure" warning never fires. nu requires the key to *look* URL-like (scheme or `/`/`./`/`../`); spec doesn't. |
 
 The remaining `nu-only` bulk (URL parsing) is **not** for exclusion;
 it represents real markuplint gaps for future coverage work. Any
