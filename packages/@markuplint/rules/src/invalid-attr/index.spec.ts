@@ -2181,11 +2181,18 @@ describe('script conditional attributes (#3631)', () => {
 		]);
 	});
 
-	test('[invalid-attr-issue-3631-006] module with defer is not disallowed (handled by ineffective-attr)', async () => {
-		// defer on module scripts is ineffective, not disallowed
-		expect((await mlRuleTest(rule, '<script type="module" src="m.js" defer></script>')).violations).toStrictEqual(
-			[],
-		);
+	test('[invalid-attr-issue-3631-006] module with defer is disallowed', async () => {
+		// HTML LS §4.12.1: "Module scripts may specify the async attribute, but must not
+		// specify the defer attribute." Applies whether or not src is present.
+		expect((await mlRuleTest(rule, '<script type="module" src="m.js" defer></script>')).violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 34,
+				message: 'The "defer" attribute is disallowed',
+				raw: 'defer',
+			},
+		]);
 	});
 
 	test('[invalid-attr-issue-3631-007] charset requires src', async () => {
@@ -2211,6 +2218,75 @@ describe('script conditional attributes (#3631)', () => {
 
 	test('[invalid-attr-issue-3631-010] valid: classic with src and async', async () => {
 		expect((await mlRuleTest(rule, '<script src="app.js" async></script>')).violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-issue-3631-011] module without src + defer is disallowed', async () => {
+		// HTML LS §4.12.1: module + defer is disallowed regardless of src
+		const { violations } = await mlRuleTest(rule, '<script type="module" defer>x</script>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 23,
+				message: 'The "defer" attribute is disallowed',
+				raw: 'defer',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3631-012] classic without src + blocking is disallowed', async () => {
+		// HTML LS §6.7.3: blocking must be omitted unless src is present
+		const { violations } = await mlRuleTest(rule, '<script blocking="render">x</script>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 9,
+				message: 'The "blocking" attribute is disallowed',
+				raw: 'blocking',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3631-013] module without src + blocking is disallowed', async () => {
+		const { violations } = await mlRuleTest(rule, '<script type="module" blocking="render">x</script>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 23,
+				message: 'The "blocking" attribute is disallowed',
+				raw: 'blocking',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3631-014] data block (application/json) without src + blocking is disallowed', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<script type="application/json" blocking="render">{"k":1}</script>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 33,
+				message: 'The "blocking" attribute is disallowed',
+				raw: 'blocking',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3631-015] valid: classic with src + blocking', async () => {
+		expect((await mlRuleTest(rule, '<script src="app.js" blocking="render"></script>')).violations).toStrictEqual(
+			[],
+		);
+	});
+
+	test('[invalid-attr-issue-3631-016] valid: module with src + blocking', async () => {
+		expect(
+			(await mlRuleTest(rule, '<script type="module" src="m.js" blocking="render"></script>')).violations,
+		).toStrictEqual([]);
 	});
 });
 
