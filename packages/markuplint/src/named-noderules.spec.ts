@@ -43,6 +43,20 @@ describe('Named nodeRules integration', () => {
 			expect(smallViolation).toBeDefined();
 			expect(smallViolation!.specConformance).toBe('normative');
 		});
+
+		it('reports html-standard/script-content for malformed importmap', async () => {
+			const { violations } = await mlTest(
+				'<!doctype html><html><head><meta charset="UTF-8"><title>t</title>' +
+					'<script type="importmap">not json</script></head><body></body></html>',
+				{
+					extends: ['markuplint:html-standard'],
+				},
+			);
+			const scriptContentViolation = violations.find(v => v.name === 'html-standard/script-content');
+			expect(scriptContentViolation).toBeDefined();
+			expect(scriptContentViolation!.ruleId).toBe('script-content');
+			expect(scriptContentViolation!.specConformance).toBe('normative');
+		});
 	});
 
 	describe('a11y preset', () => {
