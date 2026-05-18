@@ -141,9 +141,55 @@ export default createRule<boolean, null>({
 					);
 				}
 			}
+
+			const integrity = parsed.integrity;
+			if (integrity !== undefined) {
+				if (isPlainObject(integrity)) {
+					validateIntegrityMap(integrity, reportAt, t);
+				} else {
+					reportAt(
+						t(
+							'{0} must be {1}',
+							t('the "{0*}" top-level key of an import map', 'integrity'),
+							'a JSON object',
+						),
+					);
+				}
+			}
 		});
 	},
 });
+
+/**
+ * Per HTML LS § normalizing a module integrity map, each entry's key is
+ * resolved as a URL-like module specifier (warning if null) and the value
+ * must be a string (warning if not). Unlike specifier maps, there is no
+ * slash-suffix invariant — values are SRI hashes, not URLs.
+ *
+ * @see https://html.spec.whatwg.org/multipage/webappapis.html#normalizing-a-module-integrity-map
+ */
+function validateIntegrityMap(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	map: Record<string, unknown>,
+	reportAt: (message: string) => void,
+	t: (...args: readonly any[]) => string,
+): void {
+	for (const [key, value] of Object.entries(map)) {
+		if (!resolvesAsURLLikeSpecifier(key)) {
+			reportAt(
+				t(
+					'{0} must be {1}',
+					t('the integrity key "{0*}"', key),
+					'a URL-like specifier (starts with "/", "./", "../", or is an absolute URL)',
+				),
+			);
+			continue;
+		}
+		if (typeof value !== 'string') {
+			reportAt(t('{0} must be {1}', t('the value of "{0*}" in "integrity"', key), 'a string'));
+		}
+	}
+}
 
 function validateSpecifierMap(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types

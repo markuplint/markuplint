@@ -28,6 +28,9 @@ The rule reports the following issues for inline import maps:
 - A specifier map address (the value side) is not a string
 - A specifier map address is not a URL-like specifier (does not start with `/`, `./`, `../`, and is not an absolute URL)
 - A specifier key ends with `/` but its address does not
+- `integrity` is not a JSON object
+- An `integrity` key is not a URL-like specifier
+- An `integrity` value is not a string
 
 ❌ Examples of **incorrect** code for this rule
 

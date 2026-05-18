@@ -166,6 +166,43 @@ test('[script-content-invalid-014] scopes inner specifier address is not URL-lik
 	);
 });
 
+test('[script-content-invalid-019] integrity is not an object', async () => {
+	const { violations } = await mlRuleTest(rule, wrap('<script type="importmap">{"integrity":"not object"}</script>'));
+	expect(violations.length).toBe(1);
+	expect(violations[0]?.message).toBe('The "integrity" top-level key of an import map must be a JSON object');
+});
+
+test('[script-content-invalid-020] integrity key is a bare specifier (not URL-like)', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		wrap('<script type="importmap">{"integrity":{"bare":"sha384-abc"}}</script>'),
+	);
+	expect(violations.length).toBe(1);
+	expect(violations[0]?.message).toBe(
+		'The integrity key "bare" must be a URL-like specifier (starts with "/", "./", "../", or is an absolute URL)',
+	);
+});
+
+test('[script-content-invalid-021] integrity value is not a string', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		wrap('<script type="importmap">{"integrity":{"/a.mjs":123}}</script>'),
+	);
+	expect(violations.length).toBe(1);
+	expect(violations[0]?.message).toBe('The value of "/a.mjs" in "integrity" must be a string');
+});
+
+test('[script-content-invalid-022] integrity key is empty string', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		wrap('<script type="importmap">{"integrity":{"":"sha384-abc"}}</script>'),
+	);
+	expect(violations.length).toBe(1);
+	expect(violations[0]?.message).toBe(
+		'The integrity key "" must be a URL-like specifier (starts with "/", "./", "../", or is an absolute URL)',
+	);
+});
+
 test('[script-content-invalid-016] scopes inner specifier with empty key', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
