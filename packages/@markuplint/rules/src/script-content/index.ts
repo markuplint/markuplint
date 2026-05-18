@@ -7,6 +7,9 @@ import meta from './meta.js';
  * `integrity` are recognised top-level keys. Other keys trigger a warning;
  * we report them as violations so authors can drop dead configuration.
  *
+ * When HTML LS adds a new top-level key, update three places: this set,
+ * the "not allowed" message string below, and the rule README table.
+ *
  * @see https://html.spec.whatwg.org/multipage/webappapis.html#parse-an-import-map-string
  */
 const ALLOWED_TOP_LEVEL_KEYS = new Set(['imports', 'scopes', 'integrity']);
@@ -50,6 +53,10 @@ export default createRule<boolean, null>({
 
 		await document.walkOn('Element', el => {
 			if (el.localName !== 'script') return;
+			// Dispatch by `type` value. Add a sibling branch for each new content
+			// format (e.g. application/json, speculationrules) and a matching
+			// `verifyXxx()` helper. Keep the README "Currently supported content
+			// formats" table in sync.
 			const typeAttr = el.getAttribute('type');
 			if (typeAttr?.toLowerCase() !== 'importmap') return;
 			if (el.pretenderContext?.type === 'pretender' && !el.hasAttribute('as')) return;
