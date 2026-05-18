@@ -58,6 +58,7 @@ import RedundantAccessibleName from './redundant-accessible-name/index.js';
 import RequireAccessibleName from './require-accessible-name/index.js';
 import RequireDatetime from './require-datetime/index.js';
 import RequireDialogAutofocus from './require-dialog-autofocus/index.js';
+import ScriptContent from './script-content/index.js';
 import SrcsetSizesConstraint from './srcset-sizes-constraint/index.js';
 import RequiredAttr from './required-attr/index.js';
 import RequiredElement from './required-element/index.js';
@@ -139,6 +140,7 @@ const rules = {
 	'required-attr': RequiredAttr,
 	'required-element': RequiredElement,
 	'required-h1': RequiredH1,
+	'script-content': ScriptContent,
 	'srcset-sizes-constraint': SrcsetSizesConstraint,
 	'table-row-column-alignment': TableRowColumnAlignment,
 	'use-list': UseList,

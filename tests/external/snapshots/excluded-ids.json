@@ -36,6 +36,15 @@
 			"specUrl": "https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-object-element",
 			"addedAt": "2026-05-15",
 			"addedBy": "hirao"
+		},
+		{
+			"id": "nv-00d2f9879fd4",
+			"path": "html/elements/script/importmap/scopes-key-not-url-novalid.html",
+			"nuMessage": "`<script type=importmap>` scope key fails nu's looks-like-URL check (`scope1_not_url`).",
+			"reason": "HTML LS § Sorting and normalizing scopes step 2 URL-parses scopePrefix *with* baseURL. Relative strings like `scope1_not_url` parse successfully against any base, so step 3's URL-parse-failure warning never fires; the resulting scope simply applies to `<base>/scope1_not_url`. nu-validator additionally requires the key to look URL-like (scheme or `/`/`./`/`../`), which is stricter than the spec. The `script-content` rule deliberately follows the spec letter and does not flag this case.",
+			"specUrl": "https://html.spec.whatwg.org/multipage/webappapis.html#sorting-and-normalizing-scopes",
+			"addedAt": "2026-05-18",
+			"addedBy": "hirao"
 		}
 	],
 	"patterns": [
