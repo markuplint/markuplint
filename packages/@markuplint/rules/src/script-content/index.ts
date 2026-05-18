@@ -29,8 +29,11 @@ function resolvesAsURLLikeSpecifier(specifier: string): boolean {
 	try {
 		new URL(specifier);
 		return true;
-	} catch {
-		return false;
+	} catch (error: unknown) {
+		if (error instanceof TypeError) {
+			return false;
+		}
+		throw error;
 	}
 }
 
@@ -73,7 +76,10 @@ export default createRule<boolean, null>({
 			let parsed: unknown;
 			try {
 				parsed = JSON.parse(trimmed);
-			} catch {
+			} catch (error: unknown) {
+				if (!(error instanceof SyntaxError)) {
+					throw error;
+				}
 				reportAt(t('{0} must be valid JSON', 'Import map'));
 				return;
 			}

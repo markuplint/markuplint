@@ -166,6 +166,32 @@ test('[script-content-invalid-014] scopes inner specifier address is not URL-lik
 	);
 });
 
+test('[script-content-invalid-016] scopes inner specifier with empty key', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		wrap('<script type="importmap">{"scopes":{"/p/":{"":"/a.js"}}}</script>'),
+	);
+	expect(violations.length).toBe(1);
+	expect(violations[0]?.message).toBe('The specifier key in "scopes["/p/"]" must not be empty');
+});
+
+test('[script-content-invalid-017] scopes inner specifier value not a string', async () => {
+	const { violations } = await mlRuleTest(rule, wrap('<script type="importmap">{"scopes":{"/p/":{"k":1}}}</script>'));
+	expect(violations.length).toBe(1);
+	expect(violations[0]?.message).toBe('The value of "k" in "scopes["/p/"]" must be a string');
+});
+
+test('[script-content-invalid-018] scopes inner specifier slash mismatch', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		wrap('<script type="importmap">{"scopes":{"/p/":{"dir/":"/x"}}}</script>'),
+	);
+	expect(violations.length).toBe(1);
+	expect(violations[0]?.message).toBe(
+		'The specifier key "dir/" in "scopes["/p/"]" ends with "/" so the address "/x" must end with "/" as well',
+	);
+});
+
 test('[script-content-invalid-015] multiple violations are all reported', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
