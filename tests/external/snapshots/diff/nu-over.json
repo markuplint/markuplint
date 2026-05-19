@@ -155,6 +155,13 @@
 			]
 		},
 		{
+			"path": "html/elements/script/importmap/scopes-key-not-url-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-00d2f9879fd4"
+			]
+		},
+		{
 			"path": "html/elements/script/speculationrules-and-empty-novalid.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [

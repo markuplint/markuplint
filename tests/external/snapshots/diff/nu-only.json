@@ -402,83 +402,6 @@
 			]
 		},
 		{
-			"path": "html/elements/script/importmap/empty-json-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-3d88df40bd63"
-			]
-		},
-		{
-			"path": "html/elements/script/importmap/forbidden-property-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-27d642b29f27"
-			]
-		},
-		{
-			"path": "html/elements/script/importmap/imports-empty-key-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-094a369c87c7"
-			]
-		},
-		{
-			"path": "html/elements/script/importmap/imports-not-object-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-13433ba11752"
-			]
-		},
-		{
-			"path": "html/elements/script/importmap/imports-slash-mismatch-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-3d8f52947fdf"
-			]
-		},
-		{
-			"path": "html/elements/script/importmap/imports-value-not-string-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-551eb03ecc68"
-			]
-		},
-		{
-			"path": "html/elements/script/importmap/not-json-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-193924d9f993"
-			]
-		},
-		{
-			"path": "html/elements/script/importmap/scopes-key-not-url-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-00d2f9879fd4"
-			]
-		},
-		{
-			"path": "html/elements/script/importmap/scopes-value-not-object-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-6e5d74657e57"
-			]
-		},
-		{
-			"path": "html/elements/script/importmap/scopes-value-not-url-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-abfc674e5205"
-			]
-		},
-		{
-			"path": "html/elements/script/inline-attributes/datablock-blocking-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-b12bfa1a6c96"
-			]
-		},
-		{
 			"path": "html/elements/script/inline-attributes/datablock-crossorigin-novalid.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [
@@ -514,13 +437,6 @@
 			]
 		},
 		{
-			"path": "html/elements/script/inline-attributes/external-module-defer-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-d7a19c96ed7e"
-			]
-		},
-		{
 			"path": "html/elements/script/inline-attributes/importmap-crossorigin-novalid.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [
@@ -535,24 +451,10 @@
 			]
 		},
 		{
-			"path": "html/elements/script/inline-attributes/inline-classic-blocking-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-7c936c26afe2"
-			]
-		},
-		{
 			"path": "html/elements/script/inline-attributes/inline-classic-fetchpriority-novalid.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [
 				"nv-e1de25c9c9d2"
-			]
-		},
-		{
-			"path": "html/elements/script/inline-attributes/inline-module-blocking-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-7e889ac836c9"
 			]
 		},
 		{
