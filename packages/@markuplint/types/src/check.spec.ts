@@ -118,6 +118,45 @@ test('Srcset', () => {
 	// duplicate detection key uses Number() so different lexical forms of the
 	// same density still collide.
 	expect(check('a.jpg 1e0x, b.jpg 1x', 'Srcset').matched).toBe(false);
+
+	// URL LS rejects bare special-scheme fragments (missing `//`) when the
+	// dummy base scheme differs. The Srcset checker parses each candidate's
+	// url via WHATWG URL with `https://example.com/` as the dummy base.
+	// `http:` is a different special scheme → parse fails.
+	expect(check('http: 1x', 'Srcset').matched).toBe(false);
+	// (`https:` alone against the same-scheme base resolves to the base URL
+	// per URL LS — technically a valid URL string, so we don't flag it.)
+
+	// Valid URL forms: absolute, root-relative, dot-relative.
+	// (data: URIs are NOT tested here — the Srcset checker tokenises by `,`
+	// first, so a data URI containing commas would be split incorrectly. That
+	// is a pre-existing limitation of the candidate splitter; see #1171 for the
+	// general parser fix tracking.)
+	expect(check('http://example.com/a 1x', 'Srcset').matched).toBe(true);
+	expect(check('/foo 1x', 'Srcset').matched).toBe(true);
+	expect(check('./foo 1x', 'Srcset').matched).toBe(true);
+});
+
+test('SourceSizeList', () => {
+	// Basic <source-size-value> forms.
+	expect(check('100vw', 'SourceSizeList').matched).toBe(true);
+	expect(check('auto', 'SourceSizeList').matched).toBe(true);
+	expect(check('500px', 'SourceSizeList').matched).toBe(true);
+	// <media-condition> + <source-size-value>, optionally followed by a fallback.
+	expect(check('(min-width: 600px) 200px, 100vw', 'SourceSizeList').matched).toBe(true);
+
+	// HTML LS imposes a non-negative additional constraint on <source-size-value>;
+	// css-tree's <length> grammar accepts negatives, so post-syntax checks catch them.
+	expect(check('-1px', 'SourceSizeList').matched).toBe(false);
+	expect(check('-1e+0px', 'SourceSizeList').matched).toBe(false);
+	expect(check('(min-width: 600px) -200px, 100vw', 'SourceSizeList').matched).toBe(false);
+	expect(check('100vw, -100px', 'SourceSizeList').matched).toBe(false);
+
+	// Positive scientific notation is fine — only the leading minus is rejected.
+	expect(check('1e-5px', 'SourceSizeList').matched).toBe(true);
+
+	// Empty / pure-syntax failures fall through cssSyntaxMatch.
+	expect(check('', 'SourceSizeList').matched).toBe(false);
 });
 
 test('IconSize', () => {

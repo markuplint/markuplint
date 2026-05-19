@@ -892,6 +892,12 @@ export const defs: Defs = {
 			// list, immediately after the `,` separator, or immediately after
 			// the `)` that closes a <media-condition>; a `-` followed by a
 			// digit at any of those boundaries is a negative length token.
+			//
+			// Regex breakdown: boundary (start-of-string | `,` | `)`)
+			// → optional whitespace → literal `-` → optional whitespace
+			// → digit. Note this only catches negative numbers that *start*
+			// a <source-size-value>; positive scientific notation like
+			// `1e-5px` is unaffected because the `-` is preceded by `e`.
 			const negativeAtSourceSizeBoundary = /(?:^|[,)])\s*-\s*\d/u;
 			if (negativeAtSourceSizeBoundary.test(value)) {
 				return unmatched(value, 'out-of-range', {
