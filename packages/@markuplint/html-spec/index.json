@@ -54442,7 +54442,7 @@
 						"separator": "space",
 						"unique": true
 					},
-					"condition": ":not([type='importmap' i]):not([type='speculationrules' i])"
+					"condition": ":not([type='importmap' i]):not([type='speculationrules' i])[src]"
 				},
 				"charset": {
 					"description": "If present, its value must be an ASCII case-insensitive match for utf-8. It's unnecessary to specify the charset attribute, because documents must use UTF-8, and the script element inherits its character encoding from the document.",
@@ -54455,8 +54455,8 @@
 				"defer": {
 					"description": "This Boolean attribute is set to indicate to a browser that the script is meant to be executed after the document has been parsed, but before firing DOMContentLoaded event. Scripts with the defer attribute will prevent the DOMContentLoaded event from firing until the script has loaded and finished evaluating. Warning: This attribute must not be used if the src attribute is absent (i.e., for inline scripts), in this case it would have no effect. The defer attribute has no effect on module scripts — they defer by default. Scripts with the defer attribute will execute in the order in which they appear in the document. This attribute allows the elimination of parser-blocking JavaScript where the browser would have to load and evaluate scripts before continuing to parse. async has a similar effect in this case. If the attribute is specified with the async attribute, the element will act as if only the async attribute is specified.",
 					"type": "Boolean",
-					"condition": ":not([type='importmap' i]):not([type='speculationrules' i])[src]",
-					"ineffective": ["[type='module' i]", ":not([src])", "[async]"]
+					"condition": ":not([type='importmap' i]):not([type='speculationrules' i]):not([type='module' i])[src]",
+					"ineffective": [":not([src])", "[async]"]
 				},
 				"fetchpriority": {
 					"description": "Provides a hint of the relative priority to use when fetching an external script. Allowed values: high Fetch the external script at a high priority relative to other external scripts. low Fetch the external script at a low priority relative to other external scripts. auto Don't set a preference for the fetch priority. This is the default. It is used if no value or an invalid value is set."
