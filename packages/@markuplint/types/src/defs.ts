@@ -1,6 +1,7 @@
 import type { Defs } from './types.js';
 
 import { checkMultiTypes } from './check-multi-types.js';
+import { cssSyntaxMatch } from './css-syntax.js';
 import { getCandidate } from './get-candidate.js';
 import { matched, matches, unmatched } from './match-result.js';
 import { splitUnit, isFloat, isUint, isInt } from './primitive/index.js';
@@ -735,6 +736,22 @@ export const defs: Defs = {
 					});
 				}
 
+				// HTML LS srcset: each image candidate's URL must be a valid
+				// non-empty URL. css-tree's <url> token allows things like bare
+				// `http:` (URL LS `special-scheme-missing-following-solidus`),
+				// so we parse it explicitly via WHATWG URL with a dummy base.
+				try {
+					new URL(url.value, 'https://example.com/');
+				} catch (error: unknown) {
+					if (error instanceof TypeError) {
+						return url.unmatched({
+							reason: 'unexpected-token',
+							expects: [{ type: 'format', value: 'valid non-empty URL' }],
+						});
+					}
+					throw error;
+				}
+
 				if (descriptor) {
 					const { num, unit } = splitUnit(descriptor.value);
 					switch (unit) {
@@ -844,21 +861,44 @@ export const defs: Defs = {
 				value: '<source-size-list>',
 			},
 		],
-		syntax: {
-			apply: '<source-size-list>',
-			def: {
-				'source-size-list': '[ <source-size># , ]? <source-size-value>',
-				'source-size': '<media-condition> <source-size-value> | auto',
-				/**
-				 * > Percentages are not allowed in a `<source-size-value>`,
-				 * > to avoid confusion about what it would be relative to.
-				 * > The 'vw' unit can be used for sizes relative to the viewport width.
-				 *
-				 * `<length>` doesn't allow percentages.
-				 * @see https://csstree.github.io/docs/syntax/#Type:length
-				 */
-				'source-size-value': '<length> | auto',
-			},
+		is(value) {
+			const result = cssSyntaxMatch(value, {
+				ref: 'https://html.spec.whatwg.org/multipage/images.html#sizes-attributes',
+				syntax: {
+					apply: '<source-size-list>',
+					def: {
+						'source-size-list': '[ <source-size># , ]? <source-size-value>',
+						'source-size': '<media-condition> <source-size-value> | auto',
+						/**
+						 * > Percentages are not allowed in a `<source-size-value>`,
+						 * > to avoid confusion about what it would be relative to.
+						 * > The 'vw' unit can be used for sizes relative to the viewport width.
+						 *
+						 * `<length>` doesn't allow percentages.
+						 * @see https://csstree.github.io/docs/syntax/#Type:length
+						 */
+						'source-size-value': '<length> | auto',
+					},
+				},
+			});
+			if (!result.matched) {
+				return result;
+			}
+			// HTML LS imposes a non-negative additional constraint on
+			// <source-size-value> ("a <length> that does not contain
+			// percentages [...] and that is greater than or equal to zero")
+			// beyond what css-tree's <length> grammar checks. A
+			// <source-size-value> always appears either at the start of the
+			// list, immediately after the `,` separator, or immediately after
+			// the `)` that closes a <media-condition>; a `-` followed by a
+			// digit at any of those boundaries is a negative length token.
+			const negativeAtSourceSizeBoundary = /(?:^|[,)])\s*-\s*\d/u;
+			if (negativeAtSourceSizeBoundary.test(value)) {
+				return unmatched(value, 'out-of-range', {
+					expects: [{ type: 'format', value: 'non-negative <length>' }],
+				});
+			}
+			return matched();
 		},
 	},
 
