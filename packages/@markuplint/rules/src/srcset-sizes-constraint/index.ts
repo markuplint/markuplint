@@ -95,12 +95,25 @@ export default createRule<boolean>({
 				}
 			}
 
-			// Check 5: img with w descriptors → sizes required
-			if (localName === 'img' && parsed && parsed.hasWidth && !sizesAttr) {
-				report({
-					scope: el,
-					message: 'The "sizes" attribute is required when the "srcset" attribute uses width descriptors',
-				});
+			// Check 5: img / source-in-picture with w descriptors → sizes required.
+			//
+			// HTML LS § img srcset: unconditional — "the sizes attribute must
+			// also be present" when any candidate uses a width descriptor.
+			//
+			// HTML LS § source: conditional — sizes "may" be present with w
+			// descriptors, but the following sibling img must support
+			// auto-sizes for it to be omittable. img supports auto-sizes when
+			// loading=lazy (the dimensionsAttribute condition is also part of
+			// the spec but the lazy attribute is the user-facing trigger).
+			if (parsed && parsed.hasWidth && !sizesAttr) {
+				const siblingImgLazy =
+					localName === 'source' && findFollowingImg(el)?.getAttribute('loading') === 'lazy';
+				if (!siblingImgLazy) {
+					report({
+						scope: el,
+						message: 'The "sizes" attribute is required when the "srcset" attribute uses width descriptors',
+					});
+				}
 			}
 		});
 	},

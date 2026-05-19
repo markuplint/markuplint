@@ -297,15 +297,28 @@ describe('Check 5: w descriptors on img require sizes attribute', () => {
 		);
 	});
 
-	test('[srcset-sizes-constraint-invalid-035] source with w descriptors without sizes → no Check 5 violation (spec says "may")', async () => {
-		expect(
-			(
-				await mlRuleTest(
-					rule,
-					'<picture><source srcset="s.webp 480w, l.webp 1024w"><img src="l.jpg" alt="p"></picture>',
-				)
-			).violations,
-		).toStrictEqual([]);
+	test('[srcset-sizes-constraint-invalid-035] source with w descriptors without sizes (sibling img not lazy) → fires', async () => {
+		// HTML LS § source: when srcset has width descriptors, sizes must be
+		// present unless the following sibling img supports auto-sizes
+		// (loading="lazy"). Here img has no loading attr so sizes is required.
+		const { violations } = await mlRuleTest(
+			rule,
+			'<picture><source srcset="s.webp 480w, l.webp 1024w"><img src="l.jpg" alt="p"></picture>',
+		);
+		expect(violations.length).toBe(1);
+		expect(violations[0]?.message).toBe(
+			'The "sizes" attribute is required when the "srcset" attribute uses width descriptors',
+		);
+	});
+
+	test('[srcset-sizes-constraint-invalid-036] source with w descriptors without sizes (sibling img lazy) → no violation', async () => {
+		// HTML LS § source: img with loading="lazy" supports auto-sizes, so
+		// the source's sizes attribute may be omitted even with w descriptors.
+		const { violations } = await mlRuleTest(
+			rule,
+			'<picture><source srcset="s.webp 480w, l.webp 1024w"><img src="l.jpg" alt="p" loading="lazy"></picture>',
+		);
+		expect(violations).toStrictEqual([]);
 	});
 });
 
