@@ -305,10 +305,15 @@ describe('Check 5: w descriptors on img require sizes attribute', () => {
 			rule,
 			'<picture><source srcset="s.webp 480w, l.webp 1024w"><img src="l.jpg" alt="p"></picture>',
 		);
-		expect(violations.length).toBe(1);
-		expect(violations[0]?.message).toBe(
-			'The "sizes" attribute is required when the "srcset" attribute uses width descriptors',
-		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 10,
+				message: 'The "sizes" attribute is required when the "srcset" attribute uses width descriptors',
+				raw: '<source srcset="s.webp 480w, l.webp 1024w">',
+			},
+		]);
 	});
 
 	test('[srcset-sizes-constraint-invalid-036] source with w descriptors without sizes (sibling img lazy) → no violation', async () => {

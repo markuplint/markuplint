@@ -106,6 +106,11 @@ export default createRule<boolean>({
 			// loading=lazy (the dimensionsAttribute condition is also part of
 			// the spec but the lazy attribute is the user-facing trigger).
 			if (parsed && parsed.hasWidth && !sizesAttr) {
+				// For `<source>`, `findFollowingImg` may return null (malformed
+				// <picture> with no img). Optional chaining short-circuits to
+				// undefined, and `undefined === 'lazy'` is false → sizes is
+				// required. That's the correct fail-closed behaviour: an absent
+				// img cannot supply auto-sizes for the source.
 				const siblingImgLazy =
 					localName === 'source' && findFollowingImg(el)?.getAttribute('loading') === 'lazy';
 				if (!siblingImgLazy) {
