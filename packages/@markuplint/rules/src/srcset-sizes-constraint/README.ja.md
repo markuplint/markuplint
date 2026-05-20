@@ -15,7 +15,8 @@ description: srcset、sizes、loading属性間のWHATWG仕様制約をチェッ�
 | 2   | `srcset` で **幅**（`w`）と **ピクセル密度**（`x`）のディスクリプタを混在させてはならない | `img`, `source`            |
 | 3   | `<img>` の `sizes="auto"` には `loading="lazy"` が必須                                    | `img`                      |
 | 4   | `<source>` の `sizes="auto"` には後続兄弟の `<img>` に `loading="lazy"` が必須            | `source`（`<picture>` 内） |
-| 5   | `srcset` に幅ディスクリプタがある場合、`sizes` が必須                                     | `img`                      |
+| 5a  | `srcset` に幅ディスクリプタがある場合、`sizes` が必須                                     | `img`                      |
+| 5b  | 5a と同じ、ただし後続兄弟 `<img>` に `loading="lazy"`（auto-sizes 対応）があれば除外      | `source`（`<picture>` 内） |
 
 <!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
 
@@ -46,8 +47,14 @@ description: srcset、sizes、loading属性間のWHATWG仕様制約をチェッ�
   <img src="a.jpg" alt="写真" />
 </picture>
 
-<!-- チェック5: 幅ディスクリプタがあるのにsizesがない -->
+<!-- チェック5a: imgで幅ディスクリプタがあるのにsizesがない -->
 <img srcset="a.png 480w, b.png 1024w" src="b.png" alt="写真" />
+
+<!-- チェック5b: sourceで幅ディスクリプタがあるのにsizesがなく、兄弟imgがlazyでもない -->
+<picture>
+  <source srcset="a.webp 480w, b.webp 1024w" />
+  <img src="a.jpg" alt="写真" />
+</picture>
 ```
 
 ✅ 正しいコード例
@@ -65,6 +72,12 @@ description: srcset、sizes、loading属性間のWHATWG仕様制約をチェッ�
 <!-- sourceのsizes=autoと遅延読み込みimg -->
 <picture>
   <source srcset="a.webp 480w" sizes="auto" />
+  <img src="a.jpg" loading="lazy" alt="写真" />
+</picture>
+
+<!-- チェック5bの除外: sourceで幅ディスクリプタとsizesなし、ただし兄弟imgがlazy -->
+<picture>
+  <source srcset="a.webp 480w, b.webp 1024w" />
   <img src="a.jpg" loading="lazy" alt="写真" />
 </picture>
 ```
