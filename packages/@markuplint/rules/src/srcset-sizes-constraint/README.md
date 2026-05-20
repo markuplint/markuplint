@@ -15,7 +15,8 @@ This rule checks the following constraints based on the [HTML Living Standard](h
 | 2   | `srcset` must not mix **width** (`w`) and **pixel density** (`x`) descriptors                | `img`, `source`           |
 | 3   | `sizes="auto"` on `<img>` requires `loading="lazy"`                                          | `img`                     |
 | 4   | `sizes="auto"` on `<source>` requires the following sibling `<img>` to have `loading="lazy"` | `source` (in `<picture>`) |
-| 5   | When `srcset` uses width descriptors, `sizes` is required                                    | `img`                     |
+| 5a  | When `srcset` uses width descriptors, `sizes` is required                                    | `img`                     |
+| 5b  | Same as 5a, unless the following sibling `<img>` has `loading="lazy"` (auto-sizes support)   | `source` (in `<picture>`) |
 
 ## How It Works
 
@@ -44,8 +45,14 @@ This rule checks the following constraints based on the [HTML Living Standard](h
   <img src="a.jpg" alt="photo" />
 </picture>
 
-<!-- Check 5: width descriptors without sizes -->
+<!-- Check 5a: img width descriptors without sizes -->
 <img srcset="a.png 480w, b.png 1024w" src="b.png" alt="photo" />
+
+<!-- Check 5b: source width descriptors, no sizes, sibling img NOT lazy -->
+<picture>
+  <source srcset="a.webp 480w, b.webp 1024w" />
+  <img src="a.jpg" alt="photo" />
+</picture>
 ```
 
 ✅ Examples of **correct** code for this rule
@@ -63,6 +70,12 @@ This rule checks the following constraints based on the [HTML Living Standard](h
 <!-- source sizes=auto with lazy img -->
 <picture>
   <source srcset="a.webp 480w" sizes="auto" />
+  <img src="a.jpg" loading="lazy" alt="photo" />
+</picture>
+
+<!-- Check 5b escape: source width descriptors, no sizes, sibling img IS lazy -->
+<picture>
+  <source srcset="a.webp 480w, b.webp 1024w" />
   <img src="a.jpg" loading="lazy" alt="photo" />
 </picture>
 ```
