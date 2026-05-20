@@ -54687,7 +54687,7 @@
 		{
 			"name": "slot",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/slot",
-			"description": "The <slot> HTML element—part of the Web Components technology suite—is a placeholder inside a web component that you can fill with your own markup, which lets you create separate DOM trees and present them together.",
+			"description": "The <slot> HTML element is a placeholder inside a Web Component that you can fill with your own markup when the component is used. This lets you create separate DOM trees and present them together. Slots can contain plain text, other HTML elements, or other web components. A slot can also contain default content, which is displayed if the slot is not assigned other content when the web component is used.",
 			"categories": ["#flow", "#phrasing"],
 			"contentModel": {
 				"contents": [
@@ -54709,7 +54709,7 @@
 			},
 			"attributes": {
 				"name": {
-					"description": "The slot's name. When the slot's containing component gets rendered, the slot is rendered with the custom element's child that has a matching slot attribute. A named slot is a <slot> element with a name attribute. Unnamed slots have the name default to the empty string. Names should be unique per shadow root: if you have two slots with the same name, all of the elements with a matching slot attribute will be assigned to the first slot with that name.",
+					"description": "The slot's name. A named slot is a <slot> element with a name attribute, while an unnamed slot has no name attribute, and the name defaults to the empty string. When a shadow root uses named slot assignment, top-level child elements of its host are are rendered in slots that have a matching name in their slot attribute. Slot names should be unique per shadow root: if you have two slots with the same name, all of the elements with a matching slot attribute are rendered in the first slot. All top-level child elements that don't have a slot attribute are rendered in the first unnamed <slot> element, which is referred to as the default slot. The name has no effect if the shadow root uses manual slot assignment. For more information see shadowrootslotassignment on the <template> element and Element.attachShadow().",
 					"type": "NoEmptyAny"
 				}
 			}
