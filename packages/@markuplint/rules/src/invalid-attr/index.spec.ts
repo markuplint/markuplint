@@ -3477,4 +3477,29 @@ describe('link[disabled] is only valid on rel="stylesheet" (HTML LS §4.6.7.18)'
 			true,
 		);
 	});
+
+	test('[invalid-attr-valid-051] template[shadowrootslotassignment="named"] is accepted', async () => {
+		const { violations } = await mlRuleTest(rule, '<template shadowrootslotassignment="named"></template>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-valid-052] template[shadowrootslotassignment="manual"] is accepted', async () => {
+		const { violations } = await mlRuleTest(rule, '<template shadowrootslotassignment="manual"></template>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-invalid-080] template[shadowrootslotassignment="auto"] is rejected (not in enum)', async () => {
+		const { violations } = await mlRuleTest(rule, '<template shadowrootslotassignment="auto"></template>');
+		expect(violations).toHaveLength(1);
+		expect(violations[0]).toMatchObject({
+			severity: 'error',
+			message: 'The "shadowrootslotassignment" attribute expects either "named", "manual"',
+			raw: 'auto',
+		});
+	});
+
+	test('[invalid-attr-valid-053] template[shadowrootcustomelementregistry] Boolean attribute is accepted', async () => {
+		const { violations } = await mlRuleTest(rule, '<template shadowrootcustomelementregistry></template>');
+		expect(violations).toStrictEqual([]);
+	});
 });
