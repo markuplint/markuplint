@@ -55290,7 +55290,8 @@
 					"type": "Boolean"
 				},
 				"shadowrootcustomelementregistry": {
-					"description": "Sets the customElementRegistry property of a ShadowRoot created using this element to null, rather than the document's custom element registry. This allows a scoped CustomElementRegistry to be attached later using CustomElementRegistry.initialize()."
+					"description": "Sets the customElementRegistry property of a ShadowRoot created using this element to null, rather than the document's custom element registry. This allows a scoped CustomElementRegistry to be attached later using CustomElementRegistry.initialize().",
+					"type": "Boolean"
 				},
 				"shadowrootdelegatesfocus": {
 					"description": "Sets the value of the delegatesFocus property of a ShadowRoot created using this element to true. If this is set and a non-focusable element in the shadow tree is selected, then focus is delegated to the first focusable element in the tree. The value defaults to false.",
@@ -55313,6 +55314,14 @@
 				"shadowrootserializable": {
 					"description": "Sets the value of the serializable property of a ShadowRoot created using this element to true. If set, the shadow root may be serialized by calling the Element.getHTML() or ShadowRoot.getHTML() methods with the options.serializableShadowRoots parameter set true. The value defaults to false.",
 					"type": "Boolean"
+				},
+				"shadowrootslotassignment": {
+					"description": "Sets the slotAssignment property of a ShadowRoot created using this element. This is the declarative equivalent of the slotAssignment option of the Element.attachShadow() method. named Elements are automatically assigned to <slot> elements within this shadow root. This is the default value. Elements with the slot attribute are assigned to the first <slot> in the template that has the corresponding name attribute. If multiple elements specify the same slot name, they are all added to the first slot in the template that has that name, and rendered in the order they are declared. All unnamed elements — elements that don't specify a slot attribute — are assigned to the default slot in the order they are declared. This is the first unnamed <slot> in the template. manual Elements are manually assigned to particular slot elements using HTMLSlotElement.assign(). No automatic assignment takes place.",
+					"type": {
+						"enum": ["named", "manual"],
+						"missingValueDefault": "named",
+						"invalidValueDefault": "named"
+					}
 				}
 			}
 		},
