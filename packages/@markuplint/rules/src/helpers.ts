@@ -35,6 +35,38 @@ export function attrMatches<T extends RuleConfigValue, O extends PlainData>(
 }
 
 /**
+ * Tests whether any attribute referenced by a condition selector has a dynamic
+ * (template-interpolated) value on the element. Conditions are evaluated
+ * against literal attribute values, so when a referenced attribute's value is
+ * dynamic the condition result is indeterminate and must not be used to
+ * report a violation.
+ *
+ * @template T - The rule configuration value type
+ * @template O - The rule options type
+ * @param node - The element to inspect
+ * @param condition - The condition selector(s) from the attribute specification
+ * @returns `true` if the condition references at least one attribute whose value is dynamic
+ */
+function conditionDependsOnDynamicAttr<T extends RuleConfigValue, O extends PlainData>(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	node: Element<T, O>,
+	condition: NonNullable<Attribute['condition']>,
+) {
+	const selectors = typeof condition === 'string' ? [condition] : condition;
+	const referencedNames = new Set<string>();
+	for (const selector of selectors) {
+		// Collect attribute names from attribute selectors (e.g. `[type='module' i]` -> `type`)
+		for (const matched of selector.matchAll(/\[\s*([^\s\]=~|^$*]+)/g)) {
+			const name = matched[1];
+			if (name) {
+				referencedNames.add(name.toLowerCase());
+			}
+		}
+	}
+	return node.attributes.some(attr => attr.isDynamicValue && referencedNames.has(attr.localName.toLowerCase()));
+}
+
+/**
  * Tests whether a string matches a given pattern. The pattern can be either
  * a plain string (tested for exact equality) or a regular expression literal
  * in the form `/pattern/flags`.
@@ -139,6 +171,7 @@ export function isValidAttr(
 		spec &&
 		spec.condition != null &&
 		!node.hasSpreadAttr &&
+		!conditionDependsOnDynamicAttr(node, spec.condition) &&
 		!attrMatches(node, spec.condition)
 	) {
 		invalid = {

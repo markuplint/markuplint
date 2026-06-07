@@ -2573,6 +2573,43 @@ describe('script conditional attributes (#3631)', () => {
 			},
 		]);
 	});
+
+	test('[invalid-attr-parser-018] JSX: dynamic type leaves the script kind indeterminate, defer is not flagged', async () => {
+		// The applicability conditions are positive lists keyed on the type
+		// attribute. A dynamic type value cannot be resolved statically, so the
+		// condition check must be skipped instead of reporting "disallowed".
+		const { violations } = await mlRuleTest(rule, '<script type={scriptType} src="app.js" defer />', {
+			parser: {
+				'.*': '@markuplint/jsx-parser',
+			},
+			specs: {
+				'.*': '@markuplint/react-spec',
+			},
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-parser-019] JSX: static importmap type still flags src', async () => {
+		// The dynamic-value skip must not suppress detection when every
+		// attribute the condition references has a static value.
+		const { violations } = await mlRuleTest(rule, '<script type="importmap" src="map.json" />', {
+			parser: {
+				'.*': '@markuplint/jsx-parser',
+			},
+			specs: {
+				'.*': '@markuplint/react-spec',
+			},
+		});
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 26,
+				message: 'The "src" attribute is disallowed',
+				raw: 'src',
+			},
+		]);
+	});
 });
 
 describe('srcset validation (#3599)', () => {
