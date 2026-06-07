@@ -2288,6 +2288,291 @@ describe('script conditional attributes (#3631)', () => {
 			(await mlRuleTest(rule, '<script type="module" src="m.js" blocking="render"></script>')).violations,
 		).toStrictEqual([]);
 	});
+
+	// HTML LS §4.12.1: "Which other attributes may be specified on a given script
+	// element is determined by the following table" — import maps, speculation
+	// rules, and data blocks permit none of nomodule/async/defer/blocking/
+	// crossorigin/referrerpolicy/integrity/fetchpriority.
+	test('[invalid-attr-issue-3631-017] importmap must not have crossorigin', async () => {
+		const { violations } = await mlRuleTest(rule, '<script type="importmap" crossorigin="anonymous">{}</script>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 26,
+				message: 'The "crossorigin" attribute is disallowed',
+				raw: 'crossorigin',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3631-018] speculationrules must not have crossorigin', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<script type="speculationrules" crossorigin="anonymous">{}</script>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 33,
+				message: 'The "crossorigin" attribute is disallowed',
+				raw: 'crossorigin',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3631-019] data block must not have crossorigin', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<script type="application/json" crossorigin="anonymous">{"k":1}</script>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 33,
+				message: 'The "crossorigin" attribute is disallowed',
+				raw: 'crossorigin',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3631-020] importmap must not have fetchpriority', async () => {
+		const { violations } = await mlRuleTest(rule, '<script type="importmap" fetchpriority="high">{}</script>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 26,
+				message: 'The "fetchpriority" attribute is disallowed',
+				raw: 'fetchpriority',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3631-021] speculationrules must not have fetchpriority', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<script type="speculationrules" fetchpriority="high">{}</script>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 33,
+				message: 'The "fetchpriority" attribute is disallowed',
+				raw: 'fetchpriority',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3631-022] data block must not have fetchpriority', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<script type="application/json" fetchpriority="high">{"k":1}</script>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 33,
+				message: 'The "fetchpriority" attribute is disallowed',
+				raw: 'fetchpriority',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3631-023] inline classic script must not have fetchpriority', async () => {
+		// HTML LS §4.12.1 table: fetchpriority is "Yes" only for external classic
+		// and external module scripts; inline scripts are "·" (not applicable).
+		const { violations } = await mlRuleTest(rule, '<script fetchpriority="high">x</script>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 9,
+				message: 'The "fetchpriority" attribute is disallowed',
+				raw: 'fetchpriority',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3631-024] inline module script must not have fetchpriority', async () => {
+		const { violations } = await mlRuleTest(rule, '<script type="module" fetchpriority="high">x</script>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 23,
+				message: 'The "fetchpriority" attribute is disallowed',
+				raw: 'fetchpriority',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3631-025] data block must not have src', async () => {
+		// HTML LS: "It must only be specified for classic scripts and JavaScript
+		// module scripts."
+		const { violations } = await mlRuleTest(
+			rule,
+			'<script type="application/json" src="data.json">{"k":1}</script>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 33,
+				message: 'The "src" attribute is disallowed',
+				raw: 'src',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3631-026] data block must not have nomodule', async () => {
+		const { violations } = await mlRuleTest(rule, '<script type="application/json" nomodule>{"k":1}</script>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 33,
+				message: 'The "nomodule" attribute is disallowed',
+				raw: 'nomodule',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3631-027] importmap must not have referrerpolicy', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<script type="importmap" referrerpolicy="no-referrer">{}</script>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 26,
+				message: 'The "referrerpolicy" attribute is disallowed',
+				raw: 'referrerpolicy',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3631-028] valid: inline classic script with crossorigin', async () => {
+		// HTML LS §4.12.1 table footnote: "Although inline scripts have no initial
+		// fetches, the crossorigin and referrerpolicy attribute on inline scripts
+		// affects the credentials mode and referrer policy used by module imports,
+		// including dynamic import()."
+		expect((await mlRuleTest(rule, '<script crossorigin="anonymous">x</script>')).violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-issue-3631-029] valid: inline module script with crossorigin and referrerpolicy', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					'<script type="module" crossorigin="use-credentials" referrerpolicy="no-referrer">x</script>',
+				)
+			).violations,
+		).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-issue-3631-030] valid: external classic script with crossorigin, referrerpolicy, and fetchpriority', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					'<script src="app.js" crossorigin="anonymous" referrerpolicy="no-referrer" fetchpriority="high"></script>',
+				)
+			).violations,
+		).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-issue-3631-031] valid: external module script with fetchpriority', async () => {
+		expect(
+			(await mlRuleTest(rule, '<script type="module" src="m.js" fetchpriority="low"></script>')).violations,
+		).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-issue-3631-032] crossorigin enum value is still validated (regression pin for #3648)', async () => {
+		// Overriding a global category attribute with a condition must not drop
+		// the enum type definition.
+		const { violations } = await mlRuleTest(rule, '<script src="app.js" crossorigin="unknown"></script>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 35,
+				message: 'The "crossorigin" attribute expects either "", "anonymous", "use-credentials"',
+				raw: 'unknown',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3631-033] fetchpriority enum value is still validated (regression pin for #3648)', async () => {
+		const { violations } = await mlRuleTest(rule, '<script src="app.js" fetchpriority="urgent"></script>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 37,
+				message: 'The "fetchpriority" attribute expects either "high", "low", "auto"',
+				raw: 'urgent',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3631-034] valid: explicit JavaScript MIME type is a classic script', async () => {
+		// mimesniff: "A string is a JavaScript MIME type essence match if it is an
+		// ASCII case-insensitive match for one of the JavaScript MIME type essence
+		// strings."
+		expect(
+			(await mlRuleTest(rule, '<script type="text/javascript" src="app.js" defer></script>')).violations,
+		).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-issue-3631-035] empty type is a classic script: defer is allowed', async () => {
+		// HTML LS: "Omitting the attribute, setting it to the empty string, or
+		// setting it to a JavaScript MIME type essence match means that the script
+		// is a classic script" — so defer must NOT be flagged here. The single
+		// violation below is the pre-existing value validation of the type
+		// attribute itself (MIMEType | enum does not model the empty string),
+		// which is a separate concern from the applicability conditions.
+		const { violations } = await mlRuleTest(rule, '<script type="" src="app.js" defer></script>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 15,
+				message:
+					'The "type" attribute must not be empty. It expects the MIME Type format (https://mimesniff.spec.whatwg.org/#valid-mime-type). Or, the "type" attribute expects either "module", "importmap", "speculationrules"',
+				raw: '',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3631-036] data block with src and async reports both', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<script type="application/json" src="data.json" async></script>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 33,
+				message: 'The "src" attribute is disallowed',
+				raw: 'src',
+			},
+			{
+				severity: 'error',
+				line: 1,
+				col: 49,
+				message: 'The "async" attribute is disallowed',
+				raw: 'async',
+			},
+		]);
+	});
 });
 
 describe('srcset validation (#3599)', () => {
