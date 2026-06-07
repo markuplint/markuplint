@@ -75,13 +75,23 @@ if (result?.fixSummary) {
 }
 ```
 
-| フィールド         | 型                    | 説明                                         |
-| ------------------ | --------------------- | -------------------------------------------- |
-| `passCount`        | `number`              | 実行された fix パスの回数                    |
-| `totalApplied`     | `number`              | 全パスで適用された fix の合計数              |
-| `totalSkipped`     | `number`              | 編集の重複によりスキップされた fix の数      |
-| `reachedMaxPasses` | `boolean`             | 10パスの安全上限に達したかどうか             |
-| `firstPassEdits`   | `readonly TextEdit[]` | 最初のパスで適用された編集（元のオフセット） |
+| フィールド            | 型                                  | 説明                                                                        |
+| --------------------- | ----------------------------------- | --------------------------------------------------------------------------- |
+| `passCount`           | `number`                            | 実行された fix パスの回数                                                   |
+| `totalApplied`        | `number`                            | 全パスで適用された fix の合計数                                             |
+| `totalSkipped`        | `number`                            | 編集の重複によりスキップされた fix の数                                     |
+| `reachedMaxPasses`    | `boolean`                           | 10パスの安全上限に達したかどうか                                            |
+| `firstPassEdits`      | `readonly TextEdit[]`               | 最初のパスで適用された編集（元のオフセット）                                |
+| `finalPassViolations` | `readonly Violation[] \| undefined` | `fixedCode` に残っている違反。fix が1件も適用されていない場合は `undefined` |
+
+トップレベルの `violations` 配列は**初回**パスのみを反映します。fix 後に何が残っているかを確認するには `fixSummary.finalPassViolations ?? violations` を使ってください。
+
+```ts
+const remaining = result.fixSummary?.finalPassViolations ?? result.violations;
+if (remaining.length === 0) {
+  // fix 後のコードはクリーン
+}
+```
 
 :::info
 これは新しい追加機能であり、破壊的変更ではありません。既存のコードへの影響はありません。

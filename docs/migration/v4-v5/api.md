@@ -7,16 +7,16 @@
 
 ## Summary of Changes
 
-| Change | Impact |
-|--------|--------|
-| `exec` function removed (v1 API) | Users calling `exec()` |
-| `autoLoad` option removed | Users setting `autoLoad` in API options |
-| `MLResultInfo_v1` interface removed | Users referencing the v1 result type |
-| `getIndent()` removed from `@markuplint/ml-core` | Custom rule authors using `getIndent()` |
-| `Token.getLine()` / `Token.getCol()` removed from `@markuplint/types` | Users calling these static methods |
-| `getLine()` / `getCol()` removed from `@markuplint/parser-utils` | Parser plugin developers |
-| New: `FixSummary` on `MLResultInfo` | API users accessing fix diagnostics |
-| New: `computeCursorOffset()` exported from `@markuplint/ml-core` | Editor integration developers |
+| Change                                                                | Impact                                  |
+| --------------------------------------------------------------------- | --------------------------------------- |
+| `exec` function removed (v1 API)                                      | Users calling `exec()`                  |
+| `autoLoad` option removed                                             | Users setting `autoLoad` in API options |
+| `MLResultInfo_v1` interface removed                                   | Users referencing the v1 result type    |
+| `getIndent()` removed from `@markuplint/ml-core`                      | Custom rule authors using `getIndent()` |
+| `Token.getLine()` / `Token.getCol()` removed from `@markuplint/types` | Users calling these static methods      |
+| `getLine()` / `getCol()` removed from `@markuplint/parser-utils`      | Parser plugin developers                |
+| New: `FixSummary` on `MLResultInfo`                                   | API users accessing fix diagnostics     |
+| New: `computeCursorOffset()` exported from `@markuplint/ml-core`      | Editor integration developers           |
 
 ## `exec` Function Removed
 
@@ -49,17 +49,17 @@ const result = await engine.exec();
 
 ### Migration
 
-| v1 (`exec`) option | v5 equivalent |
-|---------------------|---------------|
-| `files` | First argument to `MLEngine.toMLFile()` |
+| v1 (`exec`) option                    | v5 equivalent                                        |
+| ------------------------------------- | ---------------------------------------------------- |
+| `files`                               | First argument to `MLEngine.toMLFile()`              |
 | `sourceCodes` / `names` / `workspace` | `MLEngine.toMLFile({ sourceCode, name, workspace })` |
-| `config` (string) | `configFile` option |
-| `config` (object) | `config` option |
-| `defaultConfig` | `defaultConfig` option |
-| `rules` | `rules` option |
-| `rulesAutoResolve` | Removed — rules are now always auto-loaded |
-| `fix` | `fix` option |
-| `locale` | `locale` option |
+| `config` (string)                     | `configFile` option                                  |
+| `config` (object)                     | `config` option                                      |
+| `defaultConfig`                       | `defaultConfig` option                               |
+| `rules`                               | `rules` option                                       |
+| `rulesAutoResolve`                    | Removed — rules are now always auto-loaded           |
+| `fix`                                 | `fix` option                                         |
+| `locale`                              | `locale` option                                      |
 
 ## `autoLoad` Option Removed
 
@@ -128,13 +128,23 @@ if (result?.fixSummary) {
 
 `FixSummary` fields:
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `passCount` | `number` | Number of fix passes executed |
-| `totalApplied` | `number` | Total fixes applied across all passes |
-| `totalSkipped` | `number` | Total fixes skipped due to overlap |
-| `reachedMaxPasses` | `boolean` | Whether the 10-pass safety cap was reached |
-| `firstPassEdits` | `readonly TextEdit[]` | Applied edits from the first pass (original offsets) |
+| Field                 | Type                                | Description                                                                                                                                                          |
+| --------------------- | ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `passCount`           | `number`                            | Number of fix passes executed                                                                                                                                        |
+| `totalApplied`        | `number`                            | Total fixes applied across all passes                                                                                                                                |
+| `totalSkipped`        | `number`                            | Total fixes skipped due to overlap                                                                                                                                   |
+| `reachedMaxPasses`    | `boolean`                           | Whether the 10-pass safety cap was reached                                                                                                                           |
+| `firstPassEdits`      | `readonly TextEdit[]`               | Applied edits from the first pass (original offsets)                                                                                                                 |
+| `finalPassViolations` | `readonly Violation[] \| undefined` | Violations remaining in `fixedCode`, re-verified after the last pass. `undefined` when no fixes remain applied (the first-pass `violations` are then accurate as-is) |
+
+Note that the top-level `violations` array reflects the **first** pass only. To check what remains after fixing, use `fixSummary.finalPassViolations ?? violations`:
+
+```typescript
+const remaining = result.fixSummary?.finalPassViolations ?? result.violations;
+if (remaining.length === 0) {
+  // The fixed code is clean
+}
+```
 
 ## New: `computeCursorOffset()`
 
@@ -144,10 +154,7 @@ For editor integrations, `@markuplint/ml-core` exports `computeCursorOffset()` t
 import { computeCursorOffset } from '@markuplint/ml-core';
 
 // After fixing, remap the cursor
-const newOffset = computeCursorOffset(
-  result.fixSummary.firstPassEdits,
-  originalCursorOffset,
-);
+const newOffset = computeCursorOffset(result.fixSummary.firstPassEdits, originalCursorOffset);
 ```
 
 This uses the first-pass edits (which reference original source offsets) to compute where the cursor should be placed in the fixed code.
