@@ -2574,11 +2574,20 @@ describe('script conditional attributes (#3631)', () => {
 		]);
 	});
 
+	test('[invalid-attr-issue-3631-037] valid: type value is matched ASCII case-insensitively', async () => {
+		// HTML LS: 'Setting the attribute to an ASCII case-insensitive match for
+		// "module"...' — the conditions rely on the attribute selector i flag.
+		expect(
+			(await mlRuleTest(rule, '<script type="MODULE" src="m.js" fetchpriority="high"></script>')).violations,
+		).toStrictEqual([]);
+	});
+
 	test('[invalid-attr-parser-018] JSX: dynamic type leaves the script kind indeterminate, defer is not flagged', async () => {
 		// The applicability conditions are positive lists keyed on the type
 		// attribute. A dynamic type value cannot be resolved statically, so the
 		// condition check must be skipped instead of reporting "disallowed".
-		const { violations } = await mlRuleTest(rule, '<script type={scriptType} src="app.js" defer />', {
+		// async exercises the array-form condition path of the guard.
+		const { violations } = await mlRuleTest(rule, '<script type={scriptType} src="app.js" defer async />', {
 			parser: {
 				'.*': '@markuplint/jsx-parser',
 			},
