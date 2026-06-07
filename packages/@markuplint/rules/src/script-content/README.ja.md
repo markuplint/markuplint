@@ -1,6 +1,6 @@
 ---
 id: script-content
-description: `<script>` 要素の本文を、`type` 属性で示されたコンテンツ仕様に基づき検証します。
+description: '`<script>` 要素の本文を、`type` 属性で示されたコンテンツ仕様に基づき検証します。'
 ---
 
 # `script-content`
