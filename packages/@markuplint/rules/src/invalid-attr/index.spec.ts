@@ -2582,6 +2582,30 @@ describe('script conditional attributes (#3631)', () => {
 		).toStrictEqual([]);
 	});
 
+	test('[invalid-attr-issue-3631-038] data block must not have referrerpolicy', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<script type="application/json" referrerpolicy="no-referrer">{"k":1}</script>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 33,
+				message: 'The "referrerpolicy" attribute is disallowed',
+				raw: 'referrerpolicy',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3631-039] valid: every JavaScript MIME type essence denotes a classic script', async () => {
+		// Spot-check a second essence string besides text/javascript so a typo in
+		// the enumerated alternatives cannot survive unnoticed.
+		expect(
+			(await mlRuleTest(rule, '<script type="application/javascript" src="app.js" defer></script>')).violations,
+		).toStrictEqual([]);
+	});
+
 	test('[invalid-attr-parser-018] JSX: dynamic type leaves the script kind indeterminate, defer is not flagged', async () => {
 		// The applicability conditions are positive lists keyed on the type
 		// attribute. A dynamic type value cannot be resolved statically, so the
@@ -2618,6 +2642,22 @@ describe('script conditional attributes (#3631)', () => {
 				raw: 'src',
 			},
 		]);
+	});
+
+	test('[invalid-attr-parser-020] Vue: dynamic :type leaves the script kind indeterminate, defer is not flagged', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<template><script :type="scriptType" src="app.js" defer></script></template>',
+			{
+				parser: {
+					'.*': '@markuplint/vue-parser',
+				},
+				specs: {
+					'.*': '@markuplint/vue-spec',
+				},
+			},
+		);
+		expect(violations).toStrictEqual([]);
 	});
 });
 
