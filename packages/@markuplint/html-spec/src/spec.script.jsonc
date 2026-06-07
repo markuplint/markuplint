@@ -34,22 +34,18 @@
 	// "module" / "importmap" / "speculationrules" (ASCII case-insensitively)
 	// select those kinds; any other value is a data block.
 	//
-	// The JavaScript MIME type essence strings (https://mimesniff.spec.whatwg.org/#javascript-mime-type):
-	// application/ecmascript, application/javascript, application/x-ecmascript,
-	// application/x-javascript, text/ecmascript, text/javascript,
-	// text/javascript1.0 … text/javascript1.5, text/jscript, text/livescript,
-	// text/x-ecmascript, text/x-javascript.
-	//
-	// The selectors below enumerate the classic-script type values because the
-	// "data block" kind (any other type value) is not expressible as a finite
-	// negative selector list.
+	// #ClassicScript and #ClassicOrModuleScript are named selector aliases
+	// defined in selector-aliases.jsonc and expanded at build time. They
+	// enumerate the classic-script type values (omitted/empty type plus the 16
+	// JavaScript MIME type essence strings) because the "data block" kind (any
+	// other type value) is not expressible as a finite negative selector list.
 	"attributes": {
 		// https://html.spec.whatwg.org/multipage/scripting.html#attr-script-src
 		// "It must only be specified for classic scripts and JavaScript module
 		// scripts." — not for import maps, speculation rules, or data blocks.
 		"src": {
 			"type": "NonEmptyURL",
-			"condition": ":is(:not([type]), [type=''], [type='module' i], [type='application/ecmascript' i], [type='application/javascript' i], [type='application/x-ecmascript' i], [type='application/x-javascript' i], [type='text/ecmascript' i], [type='text/javascript' i], [type='text/javascript1.0' i], [type='text/javascript1.1' i], [type='text/javascript1.2' i], [type='text/javascript1.3' i], [type='text/javascript1.4' i], [type='text/javascript1.5' i], [type='text/jscript' i], [type='text/livescript' i], [type='text/x-ecmascript' i], [type='text/x-javascript' i])"
+			"condition": "#ClassicOrModuleScript"
 		},
 		// https://html.spec.whatwg.org/multipage/scripting.html#attr-script-type
 		"type": {
@@ -65,29 +61,26 @@
 		// §4.12.1 table: "Yes" only for external and inline classic scripts.
 		"nomodule": {
 			"type": "Boolean",
-			"condition": ":is(:not([type]), [type=''], [type='application/ecmascript' i], [type='application/javascript' i], [type='application/x-ecmascript' i], [type='application/x-javascript' i], [type='text/ecmascript' i], [type='text/javascript' i], [type='text/javascript1.0' i], [type='text/javascript1.1' i], [type='text/javascript1.2' i], [type='text/javascript1.3' i], [type='text/javascript1.4' i], [type='text/javascript1.5' i], [type='text/jscript' i], [type='text/livescript' i], [type='text/x-ecmascript' i], [type='text/x-javascript' i])"
+			"condition": "#ClassicScript"
 		},
 		// https://html.spec.whatwg.org/multipage/scripting.html#attr-script-async
 		// §4.12.1 table: "Yes" for external classic scripts and any module script.
 		"async": {
 			"type": "Boolean",
-			"condition": [
-				":is(:not([type]), [type=''], [type='application/ecmascript' i], [type='application/javascript' i], [type='application/x-ecmascript' i], [type='application/x-javascript' i], [type='text/ecmascript' i], [type='text/javascript' i], [type='text/javascript1.0' i], [type='text/javascript1.1' i], [type='text/javascript1.2' i], [type='text/javascript1.3' i], [type='text/javascript1.4' i], [type='text/javascript1.5' i], [type='text/jscript' i], [type='text/livescript' i], [type='text/x-ecmascript' i], [type='text/x-javascript' i])[src]",
-				"[type='module' i]"
-			],
+			"condition": ["#ClassicScript[src]", "[type='module' i]"],
 			"ineffective": ":not([src]):not([type='module' i])"
 		},
 		// https://html.spec.whatwg.org/multipage/scripting.html#attr-script-defer
 		// §4.12.1 table: "Yes" only for external classic scripts.
 		"defer": {
 			"type": "Boolean",
-			"condition": ":is(:not([type]), [type=''], [type='application/ecmascript' i], [type='application/javascript' i], [type='application/x-ecmascript' i], [type='application/x-javascript' i], [type='text/ecmascript' i], [type='text/javascript' i], [type='text/javascript1.0' i], [type='text/javascript1.1' i], [type='text/javascript1.2' i], [type='text/javascript1.3' i], [type='text/javascript1.4' i], [type='text/javascript1.5' i], [type='text/jscript' i], [type='text/livescript' i], [type='text/x-ecmascript' i], [type='text/x-javascript' i])[src]",
+			"condition": "#ClassicScript[src]",
 			"ineffective": [":not([src])", "[async]"]
 		},
 		// https://html.spec.whatwg.org/multipage/scripting.html#attr-script-integrity
 		// §4.12.1 table: "Yes" only for external classic and external module scripts.
 		"integrity": {
-			"condition": ":is(:not([type]), [type=''], [type='module' i], [type='application/ecmascript' i], [type='application/javascript' i], [type='application/x-ecmascript' i], [type='application/x-javascript' i], [type='text/ecmascript' i], [type='text/javascript' i], [type='text/javascript1.0' i], [type='text/javascript1.1' i], [type='text/javascript1.2' i], [type='text/javascript1.3' i], [type='text/javascript1.4' i], [type='text/javascript1.5' i], [type='text/jscript' i], [type='text/livescript' i], [type='text/x-ecmascript' i], [type='text/x-javascript' i])[src]"
+			"condition": "#ClassicOrModuleScript[src]"
 		},
 		// https://html.spec.whatwg.org/multipage/scripting.html#attr-script-charset
 		// Must not be used without src
@@ -104,7 +97,7 @@
 				"separator": "space",
 				"unique": true
 			},
-			"condition": ":is(:not([type]), [type=''], [type='module' i], [type='application/ecmascript' i], [type='application/javascript' i], [type='application/x-ecmascript' i], [type='application/x-javascript' i], [type='text/ecmascript' i], [type='text/javascript' i], [type='text/javascript1.0' i], [type='text/javascript1.1' i], [type='text/javascript1.2' i], [type='text/javascript1.3' i], [type='text/javascript1.4' i], [type='text/javascript1.5' i], [type='text/jscript' i], [type='text/livescript' i], [type='text/x-ecmascript' i], [type='text/x-javascript' i])[src]"
+			"condition": "#ClassicOrModuleScript[src]"
 		},
 		// https://html.spec.whatwg.org/multipage/scripting.html#attr-script-crossorigin
 		// §4.12.1 table: "Yes" for classic and module scripts, external or inline.
@@ -116,19 +109,19 @@
 		// the per-element merge in ml-spec getAttrSpecs preserves fields that
 		// this entry does not specify.
 		"crossorigin": {
-			"condition": ":is(:not([type]), [type=''], [type='module' i], [type='application/ecmascript' i], [type='application/javascript' i], [type='application/x-ecmascript' i], [type='application/x-javascript' i], [type='text/ecmascript' i], [type='text/javascript' i], [type='text/javascript1.0' i], [type='text/javascript1.1' i], [type='text/javascript1.2' i], [type='text/javascript1.3' i], [type='text/javascript1.4' i], [type='text/javascript1.5' i], [type='text/jscript' i], [type='text/livescript' i], [type='text/x-ecmascript' i], [type='text/x-javascript' i])"
+			"condition": "#ClassicOrModuleScript"
 		},
 		// https://html.spec.whatwg.org/multipage/scripting.html#attr-script-referrerpolicy
 		// §4.12.1 table: same applicability as crossorigin.
 		"referrerpolicy": {
-			"condition": ":is(:not([type]), [type=''], [type='module' i], [type='application/ecmascript' i], [type='application/javascript' i], [type='application/x-ecmascript' i], [type='application/x-javascript' i], [type='text/ecmascript' i], [type='text/javascript' i], [type='text/javascript1.0' i], [type='text/javascript1.1' i], [type='text/javascript1.2' i], [type='text/javascript1.3' i], [type='text/javascript1.4' i], [type='text/javascript1.5' i], [type='text/jscript' i], [type='text/livescript' i], [type='text/x-ecmascript' i], [type='text/x-javascript' i])"
+			"condition": "#ClassicOrModuleScript"
 		},
 		// https://html.spec.whatwg.org/multipage/scripting.html#attr-script-fetchpriority
 		// §4.12.1 table: "Yes" only for external classic and external module
 		// scripts. Table footnote: "Unlike crossorigin and referrerpolicy,
 		// fetchpriority does not affect module imports."
 		"fetchpriority": {
-			"condition": ":is(:not([type]), [type=''], [type='module' i], [type='application/ecmascript' i], [type='application/javascript' i], [type='application/x-ecmascript' i], [type='application/x-javascript' i], [type='text/ecmascript' i], [type='text/javascript' i], [type='text/javascript1.0' i], [type='text/javascript1.1' i], [type='text/javascript1.2' i], [type='text/javascript1.3' i], [type='text/javascript1.4' i], [type='text/javascript1.5' i], [type='text/jscript' i], [type='text/livescript' i], [type='text/x-ecmascript' i], [type='text/x-javascript' i])[src]"
+			"condition": "#ClassicOrModuleScript[src]"
 		}
 	},
 	"aria": {

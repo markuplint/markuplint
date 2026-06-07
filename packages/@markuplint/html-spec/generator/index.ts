@@ -15,6 +15,7 @@ import { getFailedUrls, getReferences } from './fetch.ts';
 import { getGlobalAttrs } from './global-attrs.ts';
 import { getElements } from './html-elements.ts';
 import { readJson } from './read-json.ts';
+import { expandConditionAliases, resolveAliases } from './selector-aliases.ts';
 
 /**
  * Configuration options for the spec generator.
@@ -28,6 +29,8 @@ export type Options = {
 	readonly commonAttrsFilePath: string;
 	/** The absolute file path to the common content models JSON definition. */
 	readonly commonContentsFilePath: string;
+	/** The absolute file path to the named selector alias definitions. */
+	readonly selectorAliasesFilePath: string;
 };
 
 /**
@@ -38,12 +41,28 @@ export type Options = {
  * @param options - The configuration options controlling input sources and output destination
  * @returns A promise that resolves when the output file has been written
  */
-export async function main({ outputFilePath, htmlFilePattern, commonAttrsFilePath, commonContentsFilePath }: Options) {
+export async function main({
+	outputFilePath,
+	htmlFilePattern,
+	commonAttrsFilePath,
+	commonContentsFilePath,
+	selectorAliasesFilePath,
+}: Options) {
 	const [specs, globalAttrs, aria] = await Promise.all([
 		getElements(htmlFilePattern),
 		getGlobalAttrs(commonAttrsFilePath),
 		getAria(),
 	]);
+
+	// Expand named selector aliases (e.g. #ClassicScript) in attribute
+	// conditions so that index.json contains only plain CSS selectors.
+	const selectorAliases = resolveAliases(readJson(selectorAliasesFilePath));
+	for (const spec of specs) {
+		if (spec.attributes) {
+			// @ts-ignore
+			spec.attributes = expandConditionAliases(spec.attributes, selectorAliases);
+		}
+	}
 
 	const cites = getReferences();
 	const failedUrls = getFailedUrls();
