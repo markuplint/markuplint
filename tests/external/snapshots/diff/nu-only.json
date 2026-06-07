@@ -339,41 +339,6 @@
 			]
 		},
 		{
-			"path": "html/elements/picture/sizes-microsyntax-negative-source-size-value-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-0c26e90d94dd"
-			]
-		},
-		{
-			"path": "html/elements/picture/sizes-microsyntax-scientific-notation-negative-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-207e4db8f0a9"
-			]
-		},
-		{
-			"path": "html/elements/picture/source-srcset-w-no-sizes-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-d3a282f3cf39"
-			]
-		},
-		{
-			"path": "html/elements/picture/source-type-srcset-w-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-aea105741d2d"
-			]
-		},
-		{
-			"path": "html/elements/picture/srcset-microsyntax-broken-url-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-3cb6ab615d95"
-			]
-		},
-		{
 			"path": "html/elements/progress/value-exceeds-max-novalid.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [
@@ -385,111 +350,6 @@
 			"category": "invalid-attr",
 			"nuMessageIds": [
 				"nv-077fa3dae0ce"
-			]
-		},
-		{
-			"path": "html/elements/script/datablock-with-src-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-8494cced1adb"
-			]
-		},
-		{
-			"path": "html/elements/script/importmap-with-crossorigin-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-b5dba63e239a"
-			]
-		},
-		{
-			"path": "html/elements/script/inline-attributes/datablock-crossorigin-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-51fa2a6c273e"
-			]
-		},
-		{
-			"path": "html/elements/script/inline-attributes/datablock-fetchpriority-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-ccfbd3c0361b"
-			]
-		},
-		{
-			"path": "html/elements/script/inline-attributes/datablock-json-src-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-78aad14ab9c5"
-			]
-		},
-		{
-			"path": "html/elements/script/inline-attributes/datablock-nomodule-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-7f7f55ef433b"
-			]
-		},
-		{
-			"path": "html/elements/script/inline-attributes/datablock-src-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-f9549c1f6ab3"
-			]
-		},
-		{
-			"path": "html/elements/script/inline-attributes/importmap-crossorigin-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-9b095f1d3044"
-			]
-		},
-		{
-			"path": "html/elements/script/inline-attributes/importmap-fetchpriority-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-5f0018546053"
-			]
-		},
-		{
-			"path": "html/elements/script/inline-attributes/inline-classic-fetchpriority-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-e1de25c9c9d2"
-			]
-		},
-		{
-			"path": "html/elements/script/inline-attributes/inline-module-fetchpriority-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-9a47071c0e07"
-			]
-		},
-		{
-			"path": "html/elements/script/speculationrules-with-crossorigin-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-cbd95f44b4cf"
-			]
-		},
-		{
-			"path": "html/elements/script/speculationrules-with-fetchpriority-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-66495cec1eb3"
-			]
-		},
-		{
-			"path": "html/elements/script/speculationrules/crossorigin-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-b502b305a016"
-			]
-		},
-		{
-			"path": "html/elements/script/speculationrules/fetchpriority-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-81b907c64826"
 			]
 		},
 		{
@@ -511,13 +371,6 @@
 			"category": "invalid-attr",
 			"nuMessageIds": [
 				"nv-a5bc92ff7cc9"
-			]
-		},
-		{
-			"path": "html/elements/source/width-srcset-without-sizes-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-5b0194cd780e"
 			]
 		},
 		{
