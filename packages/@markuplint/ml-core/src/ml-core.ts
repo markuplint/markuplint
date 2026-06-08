@@ -45,6 +45,20 @@ export type FixSummary = {
 	 * multiple passes are executed.
 	 */
 	readonly firstPassEdits: readonly TextEdit[];
+	/**
+	 * Violations remaining in the final fixed code, re-verified after the
+	 * last fix pass.
+	 *
+	 * Unlike {@link VerifyResult.violations} (which reflects the first pass
+	 * only), this list is accurate for `fixedCode`. Callers that report
+	 * post-fix results should prefer `fixSummary.finalPassViolations ?? violations`.
+	 * Entries may carry `fix` data whose offsets refer to `fixedCode`.
+	 *
+	 * `undefined` when no fixes remain applied (none were applied, or the
+	 * applied pass was rolled back); the first-pass violations are then
+	 * accurate as-is.
+	 */
+	readonly finalPassViolations?: readonly Violation[];
 };
 
 /**
@@ -259,7 +273,9 @@ export class MLCore {
 	 * may be the result of multiple fix passes. This means some violations in the
 	 * array may already be resolved in `fixedCode`, and new violations introduced
 	 * during later passes are not included in the array. Callers needing an accurate
-	 * violation list for the fixed code should re-verify the output.
+	 * violation list for the fixed code should use `fixSummary.finalPassViolations`,
+	 * which is re-verified against the final code whenever at least one fix was
+	 * applied.
 	 *
 	 * @param fixOrOptions - Whether to attempt auto-fixing violations, or an options object
 	 * @returns Violations from the initial analysis and the (possibly fixed) source code
@@ -299,13 +315,17 @@ export class MLCore {
 			...this.#ruleset.childNodeRules.flatMap(childNodeRule => Object.keys(childNodeRule.rules ?? {})),
 		]);
 
+		// Config-level violations are independent of the source code, so they are
+		// collected separately to also be included in `finalPassViolations`.
+		const configViolations: Violation[] = [];
+
 		for (const setRuleName of setRuleNames) {
 			// Skip wildcard patterns (e.g., "a11y/*") — they are namespace disable entries, not rule references
 			if (setRuleName.endsWith('/*')) {
 				continue;
 			}
 			if (!definedRuleName.has(setRuleName)) {
-				violations.push({
+				configViolations.push({
 					ruleId: 'config-error',
 					severity: 'warning',
 					message: `Rule not found: ${setRuleName}`,
@@ -317,7 +337,7 @@ export class MLCore {
 		}
 
 		for (const error of this.#configErrors) {
-			violations.push({
+			configViolations.push({
 				ruleId: 'config-error',
 				severity: 'warning',
 				message: error.message,
@@ -326,6 +346,8 @@ export class MLCore {
 				raw: '',
 			});
 		}
+
+		violations.push(...configViolations);
 
 		const ruleViolations = await this.#runAllRules(fix);
 		violations.push(...ruleViolations);
@@ -355,16 +377,29 @@ export class MLCore {
 				const originalSourceCode = this.#sourceCode;
 				const originalAst = this.#ast;
 				const originalDocument = this.#document;
+				const originalConfigErrorCount = this.#configErrors.length;
 
 				try {
 					const fixResult = await this.#multiPassFix(violations);
 					fixedCode = fixResult.code;
 					fixSummary = fixResult.summary;
+					if (configViolations.length > 0 && fixSummary.finalPassViolations) {
+						// Config-level violations persist regardless of fixing;
+						// keep them visible in the post-fix violation list.
+						fixSummary = {
+							...fixSummary,
+							finalPassViolations: [...configViolations, ...fixSummary.finalPassViolations],
+						};
+					}
 				} finally {
 					// Restore original state - verify() must be non-mutating
 					this.#sourceCode = originalSourceCode;
 					this.#ast = originalAst;
 					this.#document = originalDocument;
+					// Re-parses during the fix loop re-run rule mapping, which
+					// appends duplicate mapping errors via #createDocument;
+					// truncate back to the pre-fix state.
+					this.#configErrors.length = originalConfigErrorCount;
 				}
 			} else {
 				fixedCode = this.#sourceCode;
@@ -558,6 +593,14 @@ export class MLCore {
 	 * Iteratively applies fixes, re-parses, and re-verifies until no overlapping
 	 * fixes remain or the maximum pass count is reached (ESLint-style multi-pass loop).
 	 *
+	 * Oscillating fix sequences of any cycle length (A → B → A, A → B → C → A, ...)
+	 * are detected by comparing each pass output against all earlier pass inputs.
+	 * If a pass produces unparsable code, that pass is rolled back to the previous
+	 * parsable code.
+	 *
+	 * After the loop, the final code is re-verified once (unless the loop already
+	 * did) so that `summary.finalPassViolations` accurately reflects `code`.
+	 *
 	 * **Callers must save/restore `#sourceCode`, `#ast`, and `#document`** because
 	 * this method mutates them during intermediate re-parse steps.
 	 *
@@ -567,12 +610,24 @@ export class MLCore {
 	async #multiPassFix(initialViolations: readonly Violation[]): Promise<{ code: string; summary: FixSummary }> {
 		const MAX_FIX_PASSES = 10;
 		let currentCode = this.#sourceCode;
-		let previousCode: string | undefined;
 		let fixes = extractFixes(initialViolations);
 
 		let totalApplied = 0;
 		let totalSkipped = 0;
 		let firstPassEdits: readonly TextEdit[] = [];
+
+		// The input code of each pass, keyed by code string, for N-pass cycle
+		// detection (A → B → A as well as longer cycles such as A → B → C → A).
+		const codeHistory = new Map<string, number>([[currentCode, 0]]);
+
+		// Violations from the latest #runAllRules call, valid for `currentCode`.
+		// Reused by the final verification below to avoid a redundant re-run
+		// when the loop already re-verified the final code.
+		let latestViolations: readonly Violation[] | undefined;
+
+		// The most recent code that is known to parse successfully. Used to roll
+		// back a pass whose output fails to parse.
+		let lastParsableCode = currentCode;
 
 		let pass = 0;
 		for (; pass < MAX_FIX_PASSES; pass++) {
@@ -595,16 +650,42 @@ export class MLCore {
 				break;
 			}
 
-			// Cycle detection: if the output matches the code from two passes ago,
-			// fixes are oscillating (A → B → A) and will never converge.
-			if (previousCode !== undefined && result.output === previousCode) {
-				log('fix pass %d: cycle detected (output matches pass %d), stopping', pass, pass - 2);
+			// Cycle detection: if the output matches the input of any earlier pass,
+			// fixes are oscillating (A → B → A, A → B → C → A, ...) and will never converge.
+			const cycleStart = codeHistory.get(result.output);
+			if (cycleStart !== undefined) {
+				log(
+					'fix pass %d: cycle detected (output matches the input of pass %d, cycle length %d), stopping',
+					pass,
+					cycleStart,
+					pass + 1 - cycleStart,
+				);
 				currentCode = result.output;
+				latestViolations = undefined;
 				break;
 			}
 
-			previousCode = currentCode;
 			currentCode = result.output;
+			codeHistory.set(currentCode, pass + 1);
+			latestViolations = undefined;
+
+			// Parse the output immediately — for the next pass or for the final
+			// verification — so an unparsable output is always rolled back
+			// instead of being returned (and written to disk) broken.
+			this.#sourceCode = currentCode;
+			this.#parse();
+			this.#createDocument();
+
+			if (this.#document instanceof ParserError) {
+				log('fix pass %d: produced unparsable code, reverting to the previous parsable code', pass);
+				currentCode = lastParsableCode;
+				totalApplied -= result.applied.length;
+				if (pass === 0) {
+					firstPassEdits = [];
+				}
+				break;
+			}
+			lastParsableCode = currentCode;
 
 			if (result.skipped.length === 0) {
 				log('fix pass %d: all fixes applied, stopping', pass);
@@ -612,20 +693,10 @@ export class MLCore {
 			}
 
 			// --- Multi-pass path (only when overlapping fixes exist) ---
-			log('fix pass %d: %d skipped, re-parsing for next pass', pass, result.skipped.length);
-			const previousGoodCode = currentCode;
-
-			this.#sourceCode = currentCode;
-			this.#parse();
-			this.#createDocument();
-
-			if (this.#document instanceof ParserError) {
-				log('fix pass %d: produced unparsable code, reverting to previous state', pass);
-				currentCode = previousGoodCode;
-				break;
-			}
+			log('fix pass %d: %d skipped, re-running rules for next pass', pass, result.skipped.length);
 
 			const newViolations = await this.#runAllRules(true);
+			latestViolations = newViolations;
 			fixes = extractFixes(newViolations);
 			if (fixes.length === 0) {
 				log('fix pass %d: no more fixable violations, stopping', pass);
@@ -638,6 +709,30 @@ export class MLCore {
 			log('fix: reached maximum number of passes (%d), some fixes may not have been applied', MAX_FIX_PASSES);
 		}
 
+		// Final verification (#3890): compute the violations that remain in the
+		// final code. When the loop already re-verified `currentCode`, reuse that
+		// result; otherwise re-run rules once (re-parsing first unless the parsed
+		// state already corresponds to `currentCode`).
+		let finalPassViolations: readonly Violation[] | undefined;
+		if (totalApplied > 0) {
+			if (latestViolations === undefined) {
+				if (this.#sourceCode !== currentCode) {
+					this.#sourceCode = currentCode;
+					this.#parse();
+					this.#createDocument();
+				}
+				if (!(this.#document instanceof ParserError)) {
+					latestViolations = await this.#runAllRules(true);
+				}
+			}
+			if (latestViolations !== undefined) {
+				const collected: Violation[] = [];
+				this.#pushNonFatalParseErrors(collected);
+				collected.push(...latestViolations);
+				finalPassViolations = collected;
+			}
+		}
+
 		return {
 			code: currentCode,
 			summary: {
@@ -646,6 +741,7 @@ export class MLCore {
 				totalSkipped,
 				reachedMaxPasses,
 				firstPassEdits,
+				finalPassViolations,
 			},
 		};
 	}

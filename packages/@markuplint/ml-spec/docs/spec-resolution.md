@@ -5,6 +5,7 @@ This document describes how `@markuplint/ml-spec` merges a base HTML specificati
 ## Table of Contents
 
 - [Overview](#overview)
+- [Override Semantics (Design Contract)](#override-semantics-design-contract)
 - [Schema Merging (`schemaToSpec`)](#schema-merging-schematospec)
 - [Element Spec Lookup](#element-spec-lookup)
 - [Namespace Resolution](#namespace-resolution)
@@ -50,6 +51,36 @@ whether a particular definition came from the base spec or an extension.
 | `ExtendedSpec` | A partial overlay that may contribute to any section of `MLMLSpec`                                   |
 | `ElementSpec`  | Per-element definition: name, categories, attributes, globalAttrs, aria, contentModel                |
 | `Attribute`    | Single attribute definition: name, type, description, and other metadata                             |
+
+---
+
+## Override Semantics (Design Contract)
+
+The merge described in this document is an **additive overlay with silent,
+unconditional override**. This is a deliberate design decision
+(see [#3893](https://github.com/markuplint/markuplint/issues/3893)):
+
+- **Later specs win.** Every section of an `ExtendedSpec` is folded onto the
+  accumulating result by spread or name-based merge; whatever the extension
+  declares replaces the base definition for the same key or name.
+- **There is no conflict detection.** No validation pass checks whether an
+  extension contradicts the base HTML spec, and nothing is logged when an
+  override takes effect. A definition that the HTML Living Standard forbids
+  can be permitted by a framework spec — silently.
+- **That is the feature, not a bug.** Framework specs exist precisely to relax
+  or extend HTML constraints for syntax the framework makes valid. For
+  example, `@markuplint/react-spec` adds JSX-only attributes such as
+  `dangerouslySetInnerHTML` and adds `'inherit'` to the `contenteditable`
+  enum, and `@markuplint/vue-spec` adds `v-if` / `v-for` and other directives
+  as global attributes.
+- **Responsibility sits with the `ExtendedSpec` author.** Because overrides
+  are silent, an extension that unintentionally weakens a base constraint is
+  not flagged anywhere. When authoring or reviewing an `ExtendedSpec`, treat
+  every key collision with the base spec as a deliberate decision.
+- **No provenance at runtime.** The merged `MLMLSpec` does not record which
+  spec contributed a definition. If a violation unexpectedly disappears after
+  enabling a framework spec, diff the extension's source against the base
+  spec to find the override.
 
 ---
 

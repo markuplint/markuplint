@@ -15,12 +15,37 @@
 		"#ARIAAttrs": true,
 		"#HTMLLinkAndFetchingAttrs": ["crossorigin", "referrerpolicy", "integrity", "fetchpriority"]
 	},
+	// HTML LS §4.12.1: "Which other attributes may be specified on a given
+	// script element is determined by the following table:" — the applicability
+	// table is normative and permits each attribute only for specific script kinds:
+	//
+	//                   | nomodule | async | defer | blocking | crossorigin | referrerpolicy | integrity | fetchpriority
+	// External classic  |   Yes    |  Yes  |  Yes  |   Yes    |     Yes     |      Yes       |    Yes    |     Yes
+	// Inline classic    |   Yes    |   ·   |   ·   |    ·     |     Yes     |      Yes       |     ·     |      ·
+	// External module   |    ·     |  Yes  |   ·   |   Yes    |     Yes     |      Yes       |    Yes    |     Yes
+	// Inline module     |    ·     |  Yes  |   ·   |    ·     |     Yes     |      Yes       |     ·     |      ·
+	// Import maps       |    ·     |   ·   |   ·   |    ·     |      ·      |       ·        |     ·     |      ·
+	// Speculation rules |    ·     |   ·   |   ·   |    ·     |      ·      |       ·        |     ·     |      ·
+	// Data blocks       |    ·     |   ·   |   ·   |    ·     |      ·      |       ·        |     ·     |      ·
+	//
+	// The script kind is determined by the type attribute: "Omitting the
+	// attribute, setting it to the empty string, or setting it to a JavaScript
+	// MIME type essence match means that the script is a classic script";
+	// "module" / "importmap" / "speculationrules" (ASCII case-insensitively)
+	// select those kinds; any other value is a data block.
+	//
+	// #ClassicScript and #ClassicOrModuleScript are named selector aliases
+	// defined in selector-aliases.jsonc and expanded at build time. They
+	// enumerate the classic-script type values (omitted/empty type plus the 16
+	// JavaScript MIME type essence strings) because the "data block" kind (any
+	// other type value) is not expressible as a finite negative selector list.
 	"attributes": {
 		// https://html.spec.whatwg.org/multipage/scripting.html#attr-script-src
-		// importmap and speculationrules must not have src
+		// "It must only be specified for classic scripts and JavaScript module
+		// scripts." — not for import maps, speculation rules, or data blocks.
 		"src": {
 			"type": "NonEmptyURL",
-			"condition": ":not([type='importmap' i]):not([type='speculationrules' i])"
+			"condition": "#ClassicOrModuleScript"
 		},
 		// https://html.spec.whatwg.org/multipage/scripting.html#attr-script-type
 		"type": {
@@ -33,35 +58,29 @@
 			]
 		},
 		// https://html.spec.whatwg.org/multipage/scripting.html#attr-script-nomodule
-		// Must not be used with type=module, importmap, or speculationrules
+		// §4.12.1 table: "Yes" only for external and inline classic scripts.
 		"nomodule": {
 			"type": "Boolean",
-			"condition": ":not([type='module' i]):not([type='importmap' i]):not([type='speculationrules' i])"
+			"condition": "#ClassicScript"
 		},
 		// https://html.spec.whatwg.org/multipage/scripting.html#attr-script-async
-		// Must not be used with importmap or speculationrules
+		// §4.12.1 table: "Yes" for external classic scripts and any module script.
 		"async": {
 			"type": "Boolean",
-			"condition": [":not([type='importmap' i]):not([type='speculationrules' i])[src]", "[type='module' i]"],
+			"condition": ["#ClassicScript[src]", "[type='module' i]"],
 			"ineffective": ":not([src]):not([type='module' i])"
 		},
 		// https://html.spec.whatwg.org/multipage/scripting.html#attr-script-defer
-		// HTML LS §4.12.1 attribute applicability table: `defer` is "Yes" only for
-		// external classic scripts; all other script kinds (inline classic, any
-		// module, import map, speculation rules, data block) are "·" (not applicable).
-		// Known gap: this condition lets `<script type="application/json" src=x defer>`
-		// pass (data block is implicitly not module / not importmap / not speculationrules
-		// and the type-set has no closed enum). Acceptable for now — no fixture
-		// exercises that combination.
+		// §4.12.1 table: "Yes" only for external classic scripts.
 		"defer": {
 			"type": "Boolean",
-			"condition": ":not([type='importmap' i]):not([type='speculationrules' i]):not([type='module' i])[src]",
+			"condition": "#ClassicScript[src]",
 			"ineffective": [":not([src])", "[async]"]
 		},
 		// https://html.spec.whatwg.org/multipage/scripting.html#attr-script-integrity
-		// Must not be used with importmap or speculationrules; requires src
+		// §4.12.1 table: "Yes" only for external classic and external module scripts.
 		"integrity": {
-			"condition": ":not([type='importmap' i]):not([type='speculationrules' i])[src]"
+			"condition": "#ClassicOrModuleScript[src]"
 		},
 		// https://html.spec.whatwg.org/multipage/scripting.html#attr-script-charset
 		// Must not be used without src
@@ -69,11 +88,7 @@
 			"condition": "[src]"
 		},
 		// https://html.spec.whatwg.org/multipage/urls-and-fetching.html#blocking-attributes
-		// HTML LS §4.12.1 attribute applicability table: `blocking` is "Yes" for
-		// external classic scripts and external module scripts; all inline scripts,
-		// import map, speculation rules, and data block are "·" (not applicable).
-		// Known gap: same as `defer` — `<script type="application/json" src=x blocking=render>`
-		// passes this condition. Acceptable for now — no fixture exercises it.
+		// §4.12.1 table: "Yes" only for external classic and external module scripts.
 		"blocking": {
 			"type": {
 				"token": {
@@ -82,13 +97,32 @@
 				"separator": "space",
 				"unique": true
 			},
-			"condition": ":not([type='importmap' i]):not([type='speculationrules' i])[src]"
+			"condition": "#ClassicOrModuleScript[src]"
 		},
-		// NOTE: crossorigin, referrerpolicy, and fetchpriority should be
-		// disallowed on importmap/speculationrules per spec, but overriding
-		// global category attrs here drops the type definition (enum values).
-		// This needs architecture support for per-element conditions on
-		// global attributes. See #3631.
+		// https://html.spec.whatwg.org/multipage/scripting.html#attr-script-crossorigin
+		// §4.12.1 table: "Yes" for classic and module scripts, external or inline.
+		// Table footnote: "Although inline scripts have no initial fetches, the
+		// crossorigin and referrerpolicy attribute on inline scripts affects the
+		// credentials mode and referrer policy used by module imports, including
+		// dynamic import()."
+		// The type (enum) definition is inherited from #HTMLLinkAndFetchingAttrs;
+		// the per-element merge in ml-spec getAttrSpecs preserves fields that
+		// this entry does not specify.
+		"crossorigin": {
+			"condition": "#ClassicOrModuleScript"
+		},
+		// https://html.spec.whatwg.org/multipage/scripting.html#attr-script-referrerpolicy
+		// §4.12.1 table: same applicability as crossorigin.
+		"referrerpolicy": {
+			"condition": "#ClassicOrModuleScript"
+		},
+		// https://html.spec.whatwg.org/multipage/scripting.html#attr-script-fetchpriority
+		// §4.12.1 table: "Yes" only for external classic and external module
+		// scripts. Table footnote: "Unlike crossorigin and referrerpolicy,
+		// fetchpriority does not affect module imports."
+		"fetchpriority": {
+			"condition": "#ClassicOrModuleScript[src]"
+		}
 	},
 	"aria": {
 		"implicitRole": false,

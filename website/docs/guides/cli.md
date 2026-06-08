@@ -12,6 +12,8 @@ The CLI takes target HTML files as arguments. Glob patterns are also accepted.
 
 It returns exit code `0` on success, and `1` if one or more violations are found.
 
+With `--fix`, the exit code reflects the violations **remaining in the fixed output**: it returns `0` when every violation has been fixed. With `--fix-dry-run`, files are not modified, so the exit code reflects the file on disk.
+
 ## Options
 
 | Long Option                | Short Option | Argument                                 | Default                        | Description                                                                  |

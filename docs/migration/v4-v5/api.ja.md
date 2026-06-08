@@ -7,16 +7,16 @@
 
 ## 変更一覧
 
-| 変更内容 | 影響範囲 |
-|---------|---------|
-| `exec` 関数の削除（v1 API） | `exec()` を呼び出しているユーザー |
-| `autoLoad` オプションの削除 | API オプションで `autoLoad` を設定しているユーザー |
-| `MLResultInfo_v1` インターフェースの削除 | v1 のリザルト型を参照しているユーザー |
-| `getIndent()` を `@markuplint/ml-core` から削除 | `getIndent()` を使用しているカスタムルール作成者 |
-| `Token.getLine()` / `Token.getCol()` を `@markuplint/types` から削除 | これらの静的メソッドを呼び出しているユーザー |
-| `getLine()` / `getCol()` を `@markuplint/parser-utils` から削除 | パーサープラグイン開発者 |
-| 新機能: `MLResultInfo` に `FixSummary` | Fix 診断情報にアクセスする API ユーザー |
-| 新機能: `@markuplint/ml-core` から `computeCursorOffset()` をエクスポート | エディタ連携開発者 |
+| 変更内容                                                                  | 影響範囲                                           |
+| ------------------------------------------------------------------------- | -------------------------------------------------- |
+| `exec` 関数の削除（v1 API）                                               | `exec()` を呼び出しているユーザー                  |
+| `autoLoad` オプションの削除                                               | API オプションで `autoLoad` を設定しているユーザー |
+| `MLResultInfo_v1` インターフェースの削除                                  | v1 のリザルト型を参照しているユーザー              |
+| `getIndent()` を `@markuplint/ml-core` から削除                           | `getIndent()` を使用しているカスタムルール作成者   |
+| `Token.getLine()` / `Token.getCol()` を `@markuplint/types` から削除      | これらの静的メソッドを呼び出しているユーザー       |
+| `getLine()` / `getCol()` を `@markuplint/parser-utils` から削除           | パーサープラグイン開発者                           |
+| 新機能: `MLResultInfo` に `FixSummary`                                    | Fix 診断情報にアクセスする API ユーザー            |
+| 新機能: `@markuplint/ml-core` から `computeCursorOffset()` をエクスポート | エディタ連携開発者                                 |
 
 ## `exec` 関数の削除
 
@@ -49,17 +49,17 @@ const result = await engine.exec();
 
 ### 移行方法
 
-| v1（`exec`）のオプション | v5 での対応 |
-|------------------------|------------|
-| `files` | `MLEngine.toMLFile()` の第一引数 |
+| v1（`exec`）のオプション              | v5 での対応                                          |
+| ------------------------------------- | ---------------------------------------------------- |
+| `files`                               | `MLEngine.toMLFile()` の第一引数                     |
 | `sourceCodes` / `names` / `workspace` | `MLEngine.toMLFile({ sourceCode, name, workspace })` |
-| `config`（文字列） | `configFile` オプション |
-| `config`（オブジェクト） | `config` オプション |
-| `defaultConfig` | `defaultConfig` オプション |
-| `rules` | `rules` オプション |
-| `rulesAutoResolve` | 削除 — ルールは常に自動ロードされます |
-| `fix` | `fix` オプション |
-| `locale` | `locale` オプション |
+| `config`（文字列）                    | `configFile` オプション                              |
+| `config`（オブジェクト）              | `config` オプション                                  |
+| `defaultConfig`                       | `defaultConfig` オプション                           |
+| `rules`                               | `rules` オプション                                   |
+| `rulesAutoResolve`                    | 削除 — ルールは常に自動ロードされます                |
+| `fix`                                 | `fix` オプション                                     |
+| `locale`                              | `locale` オプション                                  |
 
 ## `autoLoad` オプションの削除
 
@@ -128,13 +128,23 @@ if (result?.fixSummary) {
 
 `FixSummary` のフィールド:
 
-| フィールド | 型 | 説明 |
-|-----------|-----|------|
-| `passCount` | `number` | 実行された fix パスの回数 |
-| `totalApplied` | `number` | 全パスで適用された fix の合計数 |
-| `totalSkipped` | `number` | 重複によりスキップされた fix の合計数 |
-| `reachedMaxPasses` | `boolean` | 10パスの安全上限に達したかどうか |
-| `firstPassEdits` | `readonly TextEdit[]` | 最初のパスで適用された編集（元のオフセット） |
+| フィールド            | 型                                  | 説明                                                                                                                                                      |
+| --------------------- | ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `passCount`           | `number`                            | 実行された fix パスの回数                                                                                                                                 |
+| `totalApplied`        | `number`                            | 全パスで適用された fix の合計数                                                                                                                           |
+| `totalSkipped`        | `number`                            | 重複によりスキップされた fix の合計数                                                                                                                     |
+| `reachedMaxPasses`    | `boolean`                           | 10パスの安全上限に達したかどうか                                                                                                                          |
+| `firstPassEdits`      | `readonly TextEdit[]`               | 最初のパスで適用された編集（元のオフセット）                                                                                                              |
+| `finalPassViolations` | `readonly Violation[] \| undefined` | `fixedCode` に残っている違反（最終パス後に再検証済み）。fix が1件も適用されていない場合は `undefined`（その場合は初回パスの `violations` がそのまま正確） |
+
+トップレベルの `violations` 配列は**初回**パスのみを反映します。fix 後に何が残っているかを確認するには `fixSummary.finalPassViolations ?? violations` を使ってください:
+
+```typescript
+const remaining = result.fixSummary?.finalPassViolations ?? result.violations;
+if (remaining.length === 0) {
+  // fix 後のコードはクリーン
+}
+```
 
 ## 新機能: `computeCursorOffset()`
 
@@ -144,10 +154,7 @@ if (result?.fixSummary) {
 import { computeCursorOffset } from '@markuplint/ml-core';
 
 // 修正後、カーソルをリマップ
-const newOffset = computeCursorOffset(
-  result.fixSummary.firstPassEdits,
-  originalCursorOffset,
-);
+const newOffset = computeCursorOffset(result.fixSummary.firstPassEdits, originalCursorOffset);
 ```
 
 最初のパスの編集情報（元のソースコードのオフセットを参照）を使用して、修正後のコードでカーソルを配置すべき位置を計算します。
