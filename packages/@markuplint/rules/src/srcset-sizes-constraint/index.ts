@@ -33,6 +33,12 @@ export default createRule<boolean>({
 
 			const srcsetAttr = el.getAttributeNode('srcset');
 			if (!srcsetAttr) {
+				// Check 6 still applies to a srcset-less `<source>`: it can shadow the
+				// following candidates regardless of whether it has its own srcset.
+				// (A missing srcset itself is reported by other rules.)
+				if (localName === 'source' && isAlwaysMatchingSource(el)) {
+					report({ scope: el, message: ALWAYS_MATCHING_SOURCE_MESSAGE });
+				}
 				return;
 			}
 
@@ -122,34 +128,21 @@ export default createRule<boolean>({
 				}
 			}
 
-			// Check 6: HTML LS § source — when a `<source>` has a following
-			// sibling `<source>` or `<img>` element with a `srcset` attribute
-			// specified, it must have a `media` attribute (non-empty and not an
-			// ASCII case-insensitive match for "all", after stripping leading and
-			// trailing ASCII whitespace) and/or a `type` attribute. Otherwise the
-			// source "always matches" and shadows the following candidates, which
-			// is a conformance error.
-			if (localName === 'source') {
-				const typeAttr = el.getAttributeNode('type');
-				const mediaAttr = el.getAttributeNode('media');
-				// A `type` attribute (any value, including dynamic) satisfies the
-				// requirement. A `media` attribute satisfies it only when its value
-				// is a non-always-matching media query; a dynamic value is unknown
-				// at lint time, so assume it qualifies to avoid false positives.
-				const hasUsableType = typeAttr != null;
-				const hasUsableMedia =
-					mediaAttr != null && (mediaAttr.isDynamicValue || !isAlwaysMatchingMedia(mediaAttr.value));
-				if (!hasUsableType && !hasUsableMedia && hasFollowingSrcsetSibling(el)) {
-					report({
-						scope: el,
-						message:
-							'The "source" element must have a "media" or "type" attribute when it has a following sibling "source" or "img" element with a "srcset" attribute',
-					});
-				}
+			// Check 6: HTML LS § source — when a `<source>` has a following sibling
+			// `<source>` or `<img>` element with a `srcset` attribute specified, it
+			// must have a usable `media` and/or `type` attribute, otherwise it
+			// "always matches" and shadows the following candidates. (Srcset-less
+			// sources are handled above at the early return.)
+			if (localName === 'source' && isAlwaysMatchingSource(el)) {
+				report({ scope: el, message: ALWAYS_MATCHING_SOURCE_MESSAGE });
 			}
 		});
 	},
 });
+
+/** Violation message for Check 6 (an always-matching `<source>`). */
+const ALWAYS_MATCHING_SOURCE_MESSAGE =
+	'The "source" element must have a "media" or "type" attribute when it has a following sibling "source" or "img" element with a "srcset" attribute';
 
 /**
  * Whether a `media` attribute value is "always matching" per HTML LS, i.e. it
@@ -173,6 +166,29 @@ function isAlwaysMatchingMedia(value: string): boolean {
 }
 
 /**
+ * Whether a `<source>` "always matches" and so shadows the following
+ * candidates: it lacks a usable `media`/`type` attribute yet has a following
+ * sibling `<source>`/`<img>` with a `srcset` attribute. See HTML LS § the
+ * source element.
+ *
+ * A `type` attribute (any value, including dynamic) satisfies the requirement.
+ * A `media` attribute satisfies it only when its value is a non-always-matching
+ * media query; a dynamic value is unknown at lint time, so assume it qualifies
+ * to avoid false positives.
+ *
+ * @param el - The `<source>` element to test
+ * @returns `true` if the source must be reported as always-matching
+ */
+// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+function isAlwaysMatchingSource(el: Element<boolean>): boolean {
+	const typeAttr = el.getAttributeNode('type');
+	const mediaAttr = el.getAttributeNode('media');
+	const hasUsableType = typeAttr != null;
+	const hasUsableMedia = mediaAttr != null && (mediaAttr.isDynamicValue || !isAlwaysMatchingMedia(mediaAttr.value));
+	return !hasUsableType && !hasUsableMedia && hasFollowingSrcsetSibling(el);
+}
+
+/**
  * Whether the element has a following sibling `<source>` or `<img>` element
  * with a `srcset` attribute specified.
  *
@@ -183,15 +199,13 @@ function isAlwaysMatchingMedia(value: string): boolean {
  */
 // eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 function hasFollowingSrcsetSibling(el: Element<boolean>): boolean {
-	let sibling = el.nextElementSibling;
-	while (sibling != null) {
+	for (const sibling of followingElementSiblings(el)) {
 		if (
 			(sibling.localName === 'source' || sibling.localName === 'img') &&
 			sibling.getAttributeNode('srcset') != null
 		) {
 			return true;
 		}
-		sibling = sibling.nextElementSibling;
 	}
 	return false;
 }
@@ -205,12 +219,25 @@ function hasFollowingSrcsetSibling(el: Element<boolean>): boolean {
  */
 // eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 function findFollowingImg(el: Element<boolean>): Element<boolean> | null {
-	let sibling = el.nextElementSibling;
-	while (sibling != null) {
+	for (const sibling of followingElementSiblings(el)) {
 		if (sibling.localName === 'img') {
 			return sibling;
 		}
-		sibling = sibling.nextElementSibling;
 	}
 	return null;
+}
+
+/**
+ * Iterate the element's following element siblings in document order.
+ *
+ * @param el - The element whose following siblings to iterate
+ * @yields Each following element sibling, nearest first
+ */
+// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+function* followingElementSiblings(el: Element<boolean>): Generator<Element<boolean>> {
+	let sibling = el.nextElementSibling;
+	while (sibling != null) {
+		yield sibling;
+		sibling = sibling.nextElementSibling;
+	}
 }

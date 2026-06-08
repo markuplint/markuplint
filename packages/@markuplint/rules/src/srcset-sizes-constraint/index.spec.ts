@@ -582,6 +582,25 @@ describe('Check 6: always-matching source requires media or type', () => {
 		);
 		expect(violations).toStrictEqual([]);
 	});
+
+	test('[srcset-sizes-constraint-invalid-052] srcset-less source without media/type before a srcset sibling \u2192 violation', async () => {
+		// HTML LS applies the media/type requirement to any <source> with a
+		// following srcset-bearing sibling, even one that has no srcset itself.
+		const { violations } = await mlRuleTest(
+			rule,
+			'<picture><source><source srcset="y"><img src="z" alt=""></picture>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 10,
+				message:
+					'The "source" element must have a "media" or "type" attribute when it has a following sibling "source" or "img" element with a "srcset" attribute',
+				raw: '<source>',
+			},
+		]);
+	});
 });
 
 describe('Edge cases', () => {
