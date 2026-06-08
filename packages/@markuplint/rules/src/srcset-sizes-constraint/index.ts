@@ -159,11 +159,16 @@ export default createRule<boolean>({
  * whitespace, it is the empty string or an ASCII case-insensitive match for the
  * string `"all"`.
  *
+ * ASCII whitespace (TAB, LF, FF, CR, SPACE) is stripped explicitly rather than
+ * via `String.prototype.trim`, which would also strip non-ASCII whitespace such
+ * as NBSP. A media value padded with NBSP around "all" is NOT
+ * always-matching per the spec and must keep its distinguishing media query.
+ *
  * @param value - The raw `media` attribute value
  * @returns `true` if the value is empty or `"all"` (case-insensitive)
  */
 function isAlwaysMatchingMedia(value: string): boolean {
-	const normalized = value.trim().toLowerCase();
+	const normalized = value.replaceAll(/^[\t\n\f\r ]+|[\t\n\f\r ]+$/g, '').toLowerCase();
 	return normalized === '' || normalized === 'all';
 }
 

@@ -524,6 +524,64 @@ describe('Check 6: always-matching source requires media or type', () => {
 		);
 		expect(violations).toStrictEqual([]);
 	});
+
+	test('[srcset-sizes-constraint-invalid-050] media with tab-only whitespace counts as no media → violation', async () => {
+		// HTML LS strips ASCII whitespace (incl. TAB) before the "all" check.
+		const { violations } = await mlRuleTest(
+			rule,
+			'<picture><source srcset="x" media="\tall\t"><source srcset="y"><img src="z" alt=""></picture>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 10,
+				message:
+					'The "source" element must have a "media" or "type" attribute when it has a following sibling "source" or "img" element with a "srcset" attribute',
+				raw: '<source srcset="x" media="\tall\t">',
+			},
+		]);
+	});
+
+	test('[srcset-sizes-constraint-invalid-051] two consecutive always-matching sources → two violations', async () => {
+		// Both leading sources lack media/type and each has a following
+		// srcset-bearing sibling, so each is reported independently.
+		const { violations } = await mlRuleTest(
+			rule,
+			'<picture><source srcset="x"><source srcset="y"><img src="z" srcset="w" alt=""></picture>',
+		);
+		expect(violations.length).toBe(2);
+		expect(violations.map(v => v.raw)).toStrictEqual(['<source srcset="x">', '<source srcset="y">']);
+	});
+
+	test('[srcset-sizes-constraint-valid-008] media="all" rescued by a type attribute → no violation', async () => {
+		// A type attribute alone satisfies the requirement even when media="all".
+		const { violations } = await mlRuleTest(
+			rule,
+			'<picture><source srcset="x" media="all" type="image/webp"><source srcset="y"><img src="z" alt=""></picture>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[srcset-sizes-constraint-valid-009] following source without srcset → no trigger → no violation', async () => {
+		// The trigger requires the following sibling to specify srcset; a
+		// srcset-less following source does not make the first source ambiguous.
+		const { violations } = await mlRuleTest(
+			rule,
+			'<picture><source srcset="x"><source media="screen"><img src="z" alt=""></picture>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[srcset-sizes-constraint-valid-010] NBSP-padded "all" keeps a distinguishing media query → no violation', async () => {
+		// Only ASCII whitespace is stripped; NBSP (U+00A0) is not, so an NBSP-padded
+		// "all" is neither empty nor an ASCII match for "all" and remains distinguishing.
+		const { violations } = await mlRuleTest(
+			rule,
+			'<picture><source srcset="x" media="\u00A0all\u00A0"><source srcset="y"><img src="z" alt=""></picture>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
 });
 
 describe('Edge cases', () => {
@@ -535,7 +593,7 @@ describe('Edge cases', () => {
 		expect((await mlRuleTest(rule, '<img srcset="   " src="image.png" alt="p">')).violations).toStrictEqual([]);
 	});
 
-	test('[srcset-sizes-constraint-invalid-036] extra whitespace in srcset value → valid', async () => {
+	test('[srcset-sizes-constraint-invalid-049] extra whitespace in srcset value → valid', async () => {
 		expect(
 			(
 				await mlRuleTest(
