@@ -3,8 +3,8 @@
 	"definitions": {
 		"value": {
 			"type": "boolean",
-			"description": "Validate the body of `<script>` elements when the `type` attribute selects a content format that has a spec (currently: `importmap`).",
-			"description:ja": "`<script>` 要素の本文を、`type` 属性で示されたコンテンツ仕様 (現状は `importmap`) に基づき検証します。"
+			"description": "Validate the body of `<script>` elements when the `type` attribute selects a content format that has a spec (currently: `importmap`, `speculationrules`).",
+			"description:ja": "`<script>` 要素の本文を、`type` 属性で示されたコンテンツ仕様 (現状は `importmap`, `speculationrules`) に基づき検証します。"
 		}
 	},
 	"oneOf": [
