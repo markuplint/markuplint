@@ -220,3 +220,15 @@ html
 	body
 		p lorem...
 ```
+
+### Detection limit for conditional transparent elements
+
+When many transparent elements (e.g. `<a>`, `<ins>`, `<del>`) with conditional branches such as `v-if`/`v-else` or `{#if}` are siblings, the rule evaluates the cross-product of their branches. To keep this from growing exponentially, the cross-product is capped (currently `2^10 = 1024` patterns). Beyond the cap — roughly **11 or more conditional transparent siblings** — the rule falls back to a conservative over-approximation that merges all branches together. This never produces false positives, but it may **under-report** real violations (false negatives) in that one structure.
+
+This limit is intentional and rarely reached in real markup. To check whether a document hit it, run with the debug logger enabled:
+
+```shell
+DEBUG=ml-rules:content-model npx markuplint target.html
+```
+
+A `Transparent pattern cap exceeded` line is logged for each element that triggered the fallback.
