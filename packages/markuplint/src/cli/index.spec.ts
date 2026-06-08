@@ -571,3 +571,39 @@ describe('--fix-dry-run', () => {
 		expect(stderr).toContain('--fix-dry-run takes precedence');
 	});
 });
+
+describe('#3890: exit code reflects post-fix violations', () => {
+	// no-boolean-attr-value at severity error: the pre-fix code MUST exit 1
+	// (proven by the --fix-dry-run test below), the fixed code exits 0
+	const configFilePath = path.resolve(import.meta.dirname, '../../test/fix/exit-code-config.json');
+
+	test('--fix: exits 0 when every violation is fixed', async () => {
+		// Self-resetting fixture: restore the violating content before running
+		const targetFilePath = path.resolve(import.meta.dirname, '../../test/fix/exit-code-fixed.html');
+		await writeFile(targetFilePath, '<input required="required" />\n', { encoding: 'utf8' });
+
+		const { exitCode } = await execa(
+			entryFilePath,
+			['--fix', '--config', escape(configFilePath), '--no-search-config', escape(targetFilePath)],
+			{ reject: false },
+		);
+
+		// The fixed file has no remaining violations, so the exit code is 0
+		// (previously it was 1 because the first-pass violations were counted)
+		const afterContent = await readFile(targetFilePath, { encoding: 'utf8' });
+		expect(afterContent).toBe('<input required />\n');
+		expect(exitCode).toBe(0);
+	});
+
+	test('--fix-dry-run: exits 1 because the file on disk is not modified', async () => {
+		const targetFilePath = path.resolve(import.meta.dirname, '../../test/fix/dry-run-target.html');
+
+		const { exitCode } = await execa(
+			entryFilePath,
+			['--fix-dry-run', '--config', escape(configFilePath), '--no-search-config', escape(targetFilePath)],
+			{ reject: false },
+		);
+
+		expect(exitCode).toBe(1);
+	});
+});

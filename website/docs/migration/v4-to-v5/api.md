@@ -136,13 +136,23 @@ if (result?.fixSummary) {
 }
 ```
 
-| Field              | Type                  | Description                                  |
-| ------------------ | --------------------- | -------------------------------------------- |
-| `passCount`        | `number`              | Number of fix passes executed                |
-| `totalApplied`     | `number`              | Total fixes applied across all passes        |
-| `totalSkipped`     | `number`              | Fixes skipped due to overlapping edits       |
-| `reachedMaxPasses` | `boolean`             | Whether the 10-pass safety cap was hit       |
-| `firstPassEdits`   | `readonly TextEdit[]` | Edits from the first pass (original offsets) |
+| Field                 | Type                                | Description                                                                   |
+| --------------------- | ----------------------------------- | ----------------------------------------------------------------------------- |
+| `passCount`           | `number`                            | Number of fix passes executed                                                 |
+| `totalApplied`        | `number`                            | Total fixes applied across all passes                                         |
+| `totalSkipped`        | `number`                            | Fixes skipped due to overlapping edits                                        |
+| `reachedMaxPasses`    | `boolean`                           | Whether the 10-pass safety cap was hit                                        |
+| `firstPassEdits`      | `readonly TextEdit[]`               | Edits from the first pass (original offsets)                                  |
+| `finalPassViolations` | `readonly Violation[] \| undefined` | Violations remaining in `fixedCode`. `undefined` when no fixes remain applied |
+
+The top-level `violations` array reflects the **first** pass only. To check what remains after fixing, prefer `fixSummary.finalPassViolations ?? violations`:
+
+```ts
+const remaining = result.fixSummary?.finalPassViolations ?? result.violations;
+if (remaining.length === 0) {
+  // The fixed code is clean
+}
+```
 
 :::info
 This is a new addition, not a breaking change. Existing code is unaffected.

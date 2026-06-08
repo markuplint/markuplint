@@ -50,12 +50,6 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 	const isSuppressMode = options.suppress || options.suppressRule != null;
 	const isPruneMode = options.pruneSuppressions;
 
-	if (isSuppressMode && fix) {
-		process.stderr.write(
-			'Warning: --suppress counts violations from the original code, not from the fixed result. Consider running --fix first, then --suppress.\n',
-		);
-	}
-
 	if (isSuppressMode && isPruneMode) {
 		process.stderr.write('Error: --suppress/--suppress-rule and --prune-suppressions cannot be used together.\n');
 		return true;
@@ -161,12 +155,21 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 		// Store engine for scope computation in suppressions
 		engines.set(result.filePath, engine);
 
+		// In fix mode, report the violations remaining in the FIXED code
+		// (re-verified by ml-core) instead of the pre-fix violations, so that
+		// the exit code and suppressions reflect the written output.
+		// With --fix-dry-run the file is NOT modified, so keep the first-pass
+		// violations, which match the file on disk.
+		const reportedViolations = fixDryRun
+			? result.violations
+			: (result.fixSummary?.finalPassViolations ?? result.violations);
+
 		// Progressive出力が有効でJSON形式でない場合
 		if (options.progressiveOutput && format !== 'json') {
 			// 即座に出力
 			output(
 				{
-					violations: result.violations,
+					violations: reportedViolations,
 					filePath: result.filePath,
 					sourceCode: result.sourceCode,
 					fixedCode: result.fixedCode,
@@ -177,10 +180,10 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 		}
 
 		// Add violations to collector
-		collector.pushWithFile(result.filePath, ...result.violations);
+		collector.pushWithFile(result.filePath, ...reportedViolations);
 
-		const errorCount = result.violations.filter(v => v.severity === 'error').length;
-		const warningCount = result.violations.filter(v => v.severity === 'warning').length;
+		const errorCount = reportedViolations.filter(v => v.severity === 'error').length;
+		const warningCount = reportedViolations.filter(v => v.severity === 'warning').length;
 
 		// Track total warning count across all files
 		totalWarningCount += warningCount;
