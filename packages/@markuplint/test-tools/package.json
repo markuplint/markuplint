@@ -34,7 +34,7 @@
 		"strip-json-comments": "5.0.3",
 		"textlint-rule-prh": "6.1.0",
 		"type-fest": "5.6.0",
-		"vitest": "3.2.4"
+		"vitest": "3.2.6"
 	},
 	"optionalDependencies": {
 		"@esbuild/linux-x64": "0.28.0",
