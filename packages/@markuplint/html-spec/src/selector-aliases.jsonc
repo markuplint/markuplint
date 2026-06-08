@@ -1,0 +1,21 @@
+// Named selector aliases expanded at build time (see generator/selector-aliases.ts).
+// Aliases are `#` + UpperCamelCase; the generated index.json contains only the
+// expanded plain-CSS selectors, so consumers need no markuplint-specific
+// selector extensions.
+{
+	// The JavaScript MIME type essence strings.
+	// https://mimesniff.spec.whatwg.org/#javascript-mime-type
+	// "A string is a JavaScript MIME type essence match if it is an ASCII
+	// case-insensitive match for one of the JavaScript MIME type essence strings."
+	"#JSMIMETypes": "[type='application/ecmascript' i], [type='application/javascript' i], [type='application/x-ecmascript' i], [type='application/x-javascript' i], [type='text/ecmascript' i], [type='text/javascript' i], [type='text/javascript1.0' i], [type='text/javascript1.1' i], [type='text/javascript1.2' i], [type='text/javascript1.3' i], [type='text/javascript1.4' i], [type='text/javascript1.5' i], [type='text/jscript' i], [type='text/livescript' i], [type='text/x-ecmascript' i], [type='text/x-javascript' i]",
+
+	// https://html.spec.whatwg.org/multipage/scripting.html#attr-script-type
+	// "Omitting the attribute, setting it to the empty string, or setting it to
+	// a JavaScript MIME type essence match means that the script is a classic
+	// script"
+	"#ClassicScript": ":is(:not([type]), [type=''], #JSMIMETypes)",
+
+	// A classic script or a module script ("module" is matched ASCII
+	// case-insensitively per the spec).
+	"#ClassicOrModuleScript": ":is(:not([type]), [type=''], [type='module' i], #JSMIMETypes)"
+}
