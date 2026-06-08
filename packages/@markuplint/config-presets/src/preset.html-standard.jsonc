@@ -206,9 +206,10 @@
 
 		/**
 		 * Validate `<script>` body against the spec selected by the `type` attribute
-		 * (currently: `importmap`).
+		 * (currently: `importmap`, `speculationrules`).
 		 *
 		 * @see https://html.spec.whatwg.org/multipage/webappapis.html#parse-an-import-map-string
+		 * @see https://html.spec.whatwg.org/multipage/speculative-loading.html
 		 */
 		"html-standard/script-content": {
 			"specConformance": "normative",

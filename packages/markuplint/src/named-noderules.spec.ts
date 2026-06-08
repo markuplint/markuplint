@@ -57,6 +57,21 @@ describe('Named nodeRules integration', () => {
 			expect(scriptContentViolation!.ruleId).toBe('script-content');
 			expect(scriptContentViolation!.specConformance).toBe('normative');
 		});
+
+		it('reports html-standard/script-content for invalid speculationrules', async () => {
+			const { violations } = await mlTest(
+				'<!doctype html><html><head><meta charset="UTF-8"><title>t</title>' +
+					'<script type="speculationrules">{"prefetch":[{"source":"list"}]}</script></head><body></body></html>',
+				{
+					extends: ['markuplint:html-standard'],
+				},
+			);
+			const scriptContentViolation = violations.find(v => v.name === 'html-standard/script-content');
+			expect(scriptContentViolation).toBeDefined();
+			expect(scriptContentViolation!.ruleId).toBe('script-content');
+			expect(scriptContentViolation!.severity).toBe('error');
+			expect(scriptContentViolation!.specConformance).toBe('normative');
+		});
 	});
 
 	describe('a11y preset', () => {
