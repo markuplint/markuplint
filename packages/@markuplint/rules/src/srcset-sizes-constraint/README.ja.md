@@ -1,22 +1,23 @@
 ---
 id: srcset-sizes-constraint
-description: srcset、sizes、loading属性間のWHATWG仕様制約をチェックします。
+description: srcset、sizes、loading、media、type属性間のWHATWG仕様制約をチェックします。
 ---
 
 # `srcset-sizes-constraint`
 
-`<img>` および `<source>` 要素の `srcset`、`sizes`、`loading` 属性間の WHATWG 仕様制約をチェックします。
+`<img>` および `<source>` 要素の `srcset`、`sizes`、`loading`、`media`、`type` 属性間の WHATWG 仕様制約をチェックします。
 
 [HTML Living Standard](https://html.spec.whatwg.org/multipage/images.html#srcset-attributes) に基づき、以下の制約をチェックします:
 
-| #   | 制約                                                                                      | 対象                       |
-| --- | ----------------------------------------------------------------------------------------- | -------------------------- |
-| 1   | `sizes` がある場合、`srcset` は **幅ディスクリプタ**（`w`）のみ使用する                   | `img`, `source`            |
-| 2   | `srcset` で **幅**（`w`）と **ピクセル密度**（`x`）のディスクリプタを混在させてはならない | `img`, `source`            |
-| 3   | `<img>` の `sizes="auto"` には `loading="lazy"` が必須                                    | `img`                      |
-| 4   | `<source>` の `sizes="auto"` には後続兄弟の `<img>` に `loading="lazy"` が必須            | `source`（`<picture>` 内） |
-| 5a  | `srcset` に幅ディスクリプタがある場合、`sizes` が必須                                     | `img`                      |
-| 5b  | 5a と同じ、ただし後続兄弟 `<img>` に `loading="lazy"`（auto-sizes 対応）があれば除外      | `source`（`<picture>` 内） |
+| #   | 制約                                                                                                                   | 対象                       |
+| --- | ---------------------------------------------------------------------------------------------------------------------- | -------------------------- |
+| 1   | `sizes` がある場合、`srcset` は **幅ディスクリプタ**（`w`）のみ使用する                                                | `img`, `source`            |
+| 2   | `srcset` で **幅**（`w`）と **ピクセル密度**（`x`）のディスクリプタを混在させてはならない                              | `img`, `source`            |
+| 3   | `<img>` の `sizes="auto"` には `loading="lazy"` が必須                                                                 | `img`                      |
+| 4   | `<source>` の `sizes="auto"` には後続兄弟の `<img>` に `loading="lazy"` が必須                                         | `source`（`<picture>` 内） |
+| 5a  | `srcset` に幅ディスクリプタがある場合、`sizes` が必須                                                                  | `img`                      |
+| 5b  | 5a と同じ、ただし後続兄弟 `<img>` に `loading="lazy"`（auto-sizes 対応）があれば除外                                   | `source`（`<picture>` 内） |
+| 6   | `srcset` を持つ後続兄弟 `<source>` / `<img>` がある `<source>` には `media`（`all` 不可）かつ/または `type` 属性が必須 | `source`（`<picture>` 内） |
 
 <!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
 
@@ -26,6 +27,7 @@ description: srcset、sizes、loading属性間のWHATWG仕様制約をチェッ�
 - 動的な属性値（Vue の `:srcset`、JSX の `srcset={...}` など）やスプレッド属性を持つ要素はスキップされます。
 - ディスクリプタなしの画像候補（例: `480w` や `2x` のない `image.png`）は暗黙の `1x` 密度ディスクリプタとして扱われます。
 - `sizes="auto"` は、属性値の先頭に `auto` がある場合に認識されます（大文字小文字不区別）。例えば `sizes="auto, 100vw"` は auto として扱われますが、`sizes="100vw, auto"` は auto として認識されません。
+- チェック6では、`media` 属性は、前後の ASCII 空白を除去した値が空文字でも `all`（大文字小文字不区別）でもない場合にのみ、source を区別するものとして扱われます。`type` 属性は値を問わず常に有効とみなされます。動的な `media` / `type` 値は有効とみなしてスキップされます。
 
 ## コード例
 
@@ -55,6 +57,19 @@ description: srcset、sizes、loading属性間のWHATWG仕様制約をチェッ�
   <source srcset="a.webp 480w, b.webp 1024w" />
   <img src="a.jpg" alt="写真" />
 </picture>
+
+<!-- チェック6: media/typeのないsourceがsrcset付き兄弟より前にある（常にマッチして後続を隠す） -->
+<picture>
+  <source srcset="a.webp" />
+  <source srcset="b.jpg" />
+  <img src="b.jpg" alt="写真" />
+</picture>
+
+<!-- チェック6: media="all"はsourceを区別しない -->
+<picture>
+  <source srcset="a.webp" media="all" />
+  <img src="b.jpg" srcset="b.jpg" alt="写真" />
+</picture>
 ```
 
 ✅ 正しいコード例
@@ -79,6 +94,19 @@ description: srcset、sizes、loading属性間のWHATWG仕様制約をチェッ�
 <picture>
   <source srcset="a.webp 480w, b.webp 1024w" />
   <img src="a.jpg" loading="lazy" alt="写真" />
+</picture>
+
+<!-- チェック6: mediaクエリでsourceを区別 -->
+<picture>
+  <source srcset="a.webp" media="(min-width: 600px)" />
+  <source srcset="b.jpg" />
+  <img src="b.jpg" alt="写真" />
+</picture>
+
+<!-- チェック6: typeでsourceを区別 -->
+<picture>
+  <source srcset="a.webp" type="image/webp" />
+  <img src="b.jpg" srcset="b.jpg" alt="写真" />
 </picture>
 ```
 

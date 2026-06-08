@@ -120,9 +120,75 @@ export default createRule<boolean>({
 					});
 				}
 			}
+
+			// Check 6: HTML LS § source — when a `<source>` has a following
+			// sibling `<source>` or `<img>` element with a `srcset` attribute
+			// specified, it must have a `media` attribute (non-empty and not an
+			// ASCII case-insensitive match for "all", after stripping leading and
+			// trailing ASCII whitespace) and/or a `type` attribute. Otherwise the
+			// source "always matches" and shadows the following candidates, which
+			// is a conformance error.
+			if (localName === 'source') {
+				const typeAttr = el.getAttributeNode('type');
+				const mediaAttr = el.getAttributeNode('media');
+				// A `type` attribute (any value, including dynamic) satisfies the
+				// requirement. A `media` attribute satisfies it only when its value
+				// is a non-always-matching media query; a dynamic value is unknown
+				// at lint time, so assume it qualifies to avoid false positives.
+				const hasUsableType = typeAttr != null;
+				const hasUsableMedia =
+					mediaAttr != null && (mediaAttr.isDynamicValue || !isAlwaysMatchingMedia(mediaAttr.value));
+				if (!hasUsableType && !hasUsableMedia && hasFollowingSrcsetSibling(el)) {
+					report({
+						scope: el,
+						message:
+							'The "source" element must have a "media" or "type" attribute when it has a following sibling "source" or "img" element with a "srcset" attribute',
+					});
+				}
+			}
 		});
 	},
 });
+
+/**
+ * Whether a `media` attribute value is "always matching" per HTML LS, i.e. it
+ * does not distinguish the `<source>` from its siblings.
+ *
+ * A value is always-matching when, after stripping leading and trailing ASCII
+ * whitespace, it is the empty string or an ASCII case-insensitive match for the
+ * string `"all"`.
+ *
+ * @param value - The raw `media` attribute value
+ * @returns `true` if the value is empty or `"all"` (case-insensitive)
+ */
+function isAlwaysMatchingMedia(value: string): boolean {
+	const normalized = value.trim().toLowerCase();
+	return normalized === '' || normalized === 'all';
+}
+
+/**
+ * Whether the element has a following sibling `<source>` or `<img>` element
+ * with a `srcset` attribute specified.
+ *
+ * Per the spec the sibling does not have to be the immediately next sibling.
+ *
+ * @param el - The starting element to search from
+ * @returns `true` if such a following sibling exists
+ */
+// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+function hasFollowingSrcsetSibling(el: Element<boolean>): boolean {
+	let sibling = el.nextElementSibling;
+	while (sibling != null) {
+		if (
+			(sibling.localName === 'source' || sibling.localName === 'img') &&
+			sibling.getAttributeNode('srcset') != null
+		) {
+			return true;
+		}
+		sibling = sibling.nextElementSibling;
+	}
+	return false;
+}
 
 /**
  * Find the first following sibling `<img>` element.
