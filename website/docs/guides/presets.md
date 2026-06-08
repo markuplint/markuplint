@@ -129,7 +129,7 @@ Also enables the base rule [`invalid-attr`](/docs/rules/invalid-attr) for spec-b
 | `html-standard/no-duplicate-dt`             | Within a single `<dl>` element, there should not be more than one `<dt>` element for each name.                                                 |
 | `html-standard/placeholder-label-option`    | Checks whether the `<select>` element needs the placeholder label option (first `<option>` with an empty value).                                |
 | `html-standard/require-datetime`            | Warns that the `datetime` attribute is needed if the `<time>` element has content that is not a valid date/time string.                         |
-| `html-standard/srcset-sizes-constraint`     | Enforces WHATWG constraints between `srcset`, `sizes`, and `loading` attributes on `<img>` and `<source>` elements.                             |
+| `html-standard/srcset-sizes-constraint`     | Enforces WHATWG constraints between `srcset`, `sizes`, `loading`, `media`, and `type` attributes on `<img>` and `<source>` elements.            |
 | `html-standard/head-charset-utf8`           | Requires a `<meta charset="UTF-8">` element in the document head.                                                                               |
 | `html-standard/no-small-in-heading`         | Should not use `<small>` in `<h1>`, `<h2>`, `<h3>`, `<h4>`, `<h5>`, and `<h6>`.                                                                 |
 | `html-standard/figure-no-caption`           | When `<table>` is the only content in `<figure>` other than `<figcaption>`, `<caption>` should be omitted in favor of `<figcaption>`.           |

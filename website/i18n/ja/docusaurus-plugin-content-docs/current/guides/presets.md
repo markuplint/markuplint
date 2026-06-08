@@ -129,7 +129,7 @@
 | `html-standard/no-duplicate-dt`             | ひとつの`<dl>`要素内に、同じ名前の`<dt>`要素が複数あるべきではありません。                                                     |
 | `html-standard/placeholder-label-option`    | `<select>`要素がプレースホルダーラベルオプション（空の値を持つ最初の`<option>`）を必要とするかどうかを確認します。             |
 | `html-standard/require-datetime`            | `<time>`要素の内容が有効な日時文字列でない場合、`datetime`属性が必要です。                                                     |
-| `html-standard/srcset-sizes-constraint`     | `<img>`および`<source>`要素の`srcset`、`sizes`、`loading`属性間のWHATWG制約を検証します。                                      |
+| `html-standard/srcset-sizes-constraint`     | `<img>`および`<source>`要素の`srcset`、`sizes`、`loading`、`media`、`type`属性間のWHATWG制約を検証します。                     |
 | `html-standard/head-charset-utf8`           | ドキュメントheadに`<meta charset="UTF-8">`要素を必須とします。                                                                 |
 | `html-standard/no-small-in-heading`         | `<h1>`〜`<h6>`内で`<small>`を使用すべきではありません。                                                                        |
 | `html-standard/figure-no-caption`           | `<figure>`内で`<table>`が`<figcaption>`以外の唯一のコンテンツである場合、`<caption>`を省略して`<figcaption>`を使用すべきです。 |

@@ -7,7 +7,8 @@ import { hasSizesAuto, parseSrcset } from './parse-srcset.js';
 
 /**
  * Rule that enforces WHATWG constraints between the `srcset`, `sizes`,
- * and `loading` attributes on `<img>` and `<source>` elements.
+ * `loading`, `media`, and `type` attributes on `<img>` and `<source>`
+ * elements.
  */
 export default createRule<boolean>({
 	meta: meta,
