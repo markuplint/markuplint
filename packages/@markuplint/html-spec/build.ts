@@ -8,4 +8,5 @@ await main({
 	commonAttrsFilePath: path.resolve(import.meta.dirname, 'src', 'spec-common.attributes.jsonc'),
 	commonContentsFilePath: path.resolve(import.meta.dirname, 'src', 'spec-common.contents.jsonc'),
 	selectorAliasesFilePath: path.resolve(import.meta.dirname, 'src', 'selector-aliases.jsonc'),
+	summaryFilePath: path.resolve(import.meta.dirname, 'generator-summary.md'),
 });

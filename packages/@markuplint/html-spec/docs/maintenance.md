@@ -26,6 +26,35 @@ The build is network-dependent because `generator/` fetches live data
 from MDN for each element (descriptions, compatibility flags, attribute metadata).
 Expect the build to take several minutes on a clean run.
 
+## Validation and Generated Summary
+
+Before writing `index.json`, `main()` validates the generated spec
+(`generator/validate.ts`) to catch data loss from failed scraping. If any check
+fails, generation aborts with all issues listed and `index.json` is left
+untouched.
+
+| Check                    | Requirement                                  | A failure usually means                         |
+| ------------------------ | -------------------------------------------- | ----------------------------------------------- |
+| Empty descriptions       | ≤50% of HTML elements                        | MDN fetches failed or a scraping selector broke |
+| Core elements present    | `html`, `body`, `div`, `a`, … (see the list) | The element list itself failed to load          |
+| Reference URLs (`cites`) | at least one                                 | A total fetch failure / no network              |
+| ARIA roles per version   | non-empty, includes `button` and `link`      | An ARIA spec scrape returned empty data         |
+| Element-count stability  | ≥85% of the previously committed count       | A scraping/parsing regression dropped elements  |
+
+The element-count check compares against the previously committed `index.json`,
+read before it is overwritten; it is skipped on the very first generation. The
+thresholds and required-name lists are constants at the top of
+`generator/validate.ts` (`ELEMENT_COUNT_STABILITY_THRESHOLD`,
+`REQUIRED_ELEMENTS`, `REQUIRED_ARIA_ROLES`) — adjust them there if a legitimate
+spec change trips a check.
+
+After a successful generation, `main()` also writes `generator-summary.md` (a
+gitignored, per-run artifact) containing a Markdown diff of element
+additions/removals, per-version ARIA role/property changes, and the
+reference-URL count. The **Update HTML Spec** workflow puts this in the
+auto-update PR body so reviewers can see what changed without diffing the
+generated `index.json`.
+
 ## Element Name Resolution
 
 The build script derives element names from file names using a regex replacement:

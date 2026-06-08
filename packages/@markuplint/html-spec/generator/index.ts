@@ -6,9 +6,9 @@
  * and content model definitions into a single output file consumed by the markuplint linter.
  */
 
-import type { ExtendedElementSpec, ExtendedSpec } from '@markuplint/ml-spec';
+import type { ExtendedSpec } from '@markuplint/ml-spec';
 
-import { writeFile } from 'node:fs/promises';
+import { readFile, writeFile } from 'node:fs/promises';
 
 import { getAria } from './aria.ts';
 import { getFailedUrls, getReferences } from './fetch.ts';
@@ -16,6 +16,8 @@ import { getGlobalAttrs } from './global-attrs.ts';
 import { getElements } from './html-elements.ts';
 import { readJson } from './read-json.ts';
 import { expandConditionAliases, resolveAliases } from './selector-aliases.ts';
+import { summarizeChanges } from './summarize.ts';
+import { validateSpecs } from './validate.ts';
 
 /**
  * Configuration options for the spec generator.
@@ -31,6 +33,12 @@ export type Options = {
 	readonly commonContentsFilePath: string;
 	/** The absolute file path to the named selector alias definitions. */
 	readonly selectorAliasesFilePath: string;
+	/**
+	 * Optional absolute file path to write a Markdown summary of the changes
+	 * relative to the previously generated spec. Consumed by the auto-update
+	 * workflow for the PR body. When omitted, no summary file is written.
+	 */
+	readonly summaryFilePath?: string;
 };
 
 /**
@@ -47,6 +55,7 @@ export async function main({
 	commonAttrsFilePath,
 	commonContentsFilePath,
 	selectorAliasesFilePath,
+	summaryFilePath,
 }: Options) {
 	const [specs, globalAttrs, aria] = await Promise.all([
 		getElements(htmlFilePattern),
@@ -76,8 +85,6 @@ export async function main({
 		}
 	}
 
-	validateSpecs(specs);
-
 	const json: ExtendedSpec = {
 		cites,
 		def: {
@@ -88,30 +95,50 @@ export async function main({
 		specs: [...specs],
 	};
 
+	// Read the previously committed spec (if any) before overwriting it, so it
+	// can drive the element-count stability check and the change summary.
+	const previous = await readPreviousSpec(outputFilePath);
+
+	validateSpecs(json, previous);
+
 	const jsonString = JSON.stringify(json, null, 2);
 
 	await writeFile(outputFilePath, jsonString);
 
 	// eslint-disable-next-line no-console
 	console.log(`🎁 Output: ${outputFilePath}`);
+
+	if (summaryFilePath) {
+		const summary = summarizeChanges(previous, json);
+		await writeFile(summaryFilePath, summary + '\n');
+		// eslint-disable-next-line no-console
+		console.log(`📝 Summary: ${summaryFilePath}`);
+	}
 }
 
 /**
- * Validates the generated specs to detect data loss from failed scraping.
- * Throws an error if the ratio of empty descriptions exceeds the threshold,
- * preventing broken data from being written.
+ * Reads and parses the previously generated spec file, returning `null` when it
+ * does not exist or cannot be parsed (e.g. the very first generation).
  */
-function validateSpecs(specs: readonly ExtendedElementSpec[]) {
-	const threshold = 0.5;
-	const htmlSpecs = specs.filter(s => !s.name.includes(':'));
-	const emptyDescriptions = htmlSpecs.filter(s => !s.description);
-	const emptyRatio = emptyDescriptions.length / htmlSpecs.length;
-
-	if (emptyRatio > threshold) {
-		throw new Error(
-			`Spec validation failed: ${emptyDescriptions.length}/${htmlSpecs.length} HTML elements ` +
-				`(${Math.round(emptyRatio * 100)}%) have empty descriptions. ` +
-				'This likely indicates MDN fetch failures. Aborting to prevent data loss.',
-		);
+export async function readPreviousSpec(filePath: string): Promise<ExtendedSpec | null> {
+	let raw: string;
+	try {
+		raw = await readFile(filePath, 'utf8');
+	} catch (error) {
+		if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+			// No previous file (first generation): treated as no baseline.
+			return null;
+		}
+		// Permission denied, I/O error, etc. — unexpected; do not mask it.
+		throw error;
+	}
+	try {
+		return JSON.parse(raw) as ExtendedSpec;
+	} catch (error) {
+		// The file exists but is unparsable. Don't block regeneration, but
+		// surface it so the corruption isn't silently treated as a first run.
+		// eslint-disable-next-line no-console
+		console.warn(`⚠️ Could not parse the previous spec at ${filePath}; skipping baseline checks. ${String(error)}`);
+		return null;
 	}
 }
