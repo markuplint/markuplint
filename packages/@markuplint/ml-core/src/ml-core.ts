@@ -113,7 +113,17 @@ export class MLCore {
 	#schemas: MLSchema;
 	#ruleCommonSettings: RuleCommonSettings;
 	#sourceCode: string;
+	/**
+	 * Config-time errors (named-rule expansion, the `configErrors` fabric input).
+	 * Set once per construction/`update()` and never mutated by re-parsing.
+	 */
 	#configErrors: Error[];
+	/**
+	 * Rule-mapping errors for the CURRENT document. Reset (not accumulated) on
+	 * every `#createDocument()` so repeated `setCode()` calls don't duplicate
+	 * them. See https://github.com/markuplint/markuplint/issues/3900.
+	 */
+	#mappingErrors: Error[] = [];
 	/**
 	 * Pre-expansion nodeRules preserved for hot-reload.
 	 * When `update()` is called without a new ruleset, these are used as the
@@ -336,7 +346,7 @@ export class MLCore {
 			}
 		}
 
-		for (const error of this.#configErrors) {
+		for (const error of [...this.#configErrors, ...this.#mappingErrors]) {
 			configViolations.push({
 				ruleId: 'config-error',
 				severity: 'warning',
@@ -377,7 +387,7 @@ export class MLCore {
 				const originalSourceCode = this.#sourceCode;
 				const originalAst = this.#ast;
 				const originalDocument = this.#document;
-				const originalConfigErrorCount = this.#configErrors.length;
+				const originalMappingErrors = this.#mappingErrors;
 
 				try {
 					const fixResult = await this.#multiPassFix(violations);
@@ -392,14 +402,13 @@ export class MLCore {
 						};
 					}
 				} finally {
-					// Restore original state - verify() must be non-mutating
+					// Restore original state - verify() must be non-mutating.
+					// The fix loop re-parses, and each #createDocument resets
+					// #mappingErrors; restore it to the pre-fix document's.
 					this.#sourceCode = originalSourceCode;
 					this.#ast = originalAst;
 					this.#document = originalDocument;
-					// Re-parses during the fix loop re-run rule mapping, which
-					// appends duplicate mapping errors via #createDocument;
-					// truncate back to the pre-fix state.
-					this.#configErrors.length = originalConfigErrorCount;
+					this.#mappingErrors = originalMappingErrors;
 				}
 			} else {
 				fixedCode = this.#sourceCode;
@@ -418,6 +427,10 @@ export class MLCore {
 	}
 
 	#createDocument() {
+		// Reset up front: mapping errors belong to the document being (re)built,
+		// so a failed parse or build must not leave a previous document's errors
+		// behind. Repopulated below only on a successful build. See #3900.
+		this.#mappingErrors = [];
 		if (!this.#ast) {
 			return;
 		}
@@ -429,8 +442,11 @@ export class MLCore {
 				tagNameCaseSensitive: this.#parser.tagNameCaseSensitive,
 				pretenders: this.#pretenders,
 			});
-			// Collect errors from rule mapping (e.g., invalid wildcard usage)
-			this.#configErrors.push(...this.#ruleset.mappingErrors);
+			// Collect errors from rule mapping (e.g., invalid wildcard usage).
+			// Reset rather than append: the Document constructor regenerates
+			// `mappingErrors` on every call, so accumulating them would duplicate
+			// the same errors on each re-parse (e.g. via setCode). See #3900.
+			this.#mappingErrors = [...this.#ruleset.mappingErrors];
 			this.#ruleset.mappingErrors.length = 0;
 		} catch (error) {
 			if (error instanceof ParserError) {

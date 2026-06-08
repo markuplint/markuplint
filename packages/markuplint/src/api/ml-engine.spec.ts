@@ -261,6 +261,65 @@ describe('#1862 configFile skips default config search', () => {
 	});
 });
 
+describe('#3900 config-error does not accumulate across setCode', () => {
+	it('reports the same config-error count on every re-evaluation of one engine', async () => {
+		const file = await MLEngine.toMLFile({ sourceCode: '<div id="a"></div>', name: 'a.html' });
+		// `a11y/*: true` is an invalid namespace-wildcard usage → one mapping error.
+		const engine = new MLEngine(file!, {
+			noSearchConfig: true,
+			config: {
+				extends: ['markuplint:a11y'],
+				nodeRules: [{ selector: 'div', rules: { 'a11y/*': true } }],
+			},
+		});
+
+		const countWildcardErrors = (violations?: ReadonlyArray<Violation>) =>
+			(violations ?? []).filter(v => v.ruleId === 'config-error' && v.message.includes('a11y/*')).length;
+
+		// Each code has exactly one matching <div>, so the wildcard config-error
+		// is reported once per evaluation. Before #3900 it was appended to the
+		// instance-lifetime error list on every setCode, growing 1 → 2 → 3.
+		const first = await engine.exec();
+		expect(countWildcardErrors(first?.violations)).toBe(1);
+
+		await engine.setCode('<div id="b"></div>');
+		const second = await engine.exec();
+		expect(countWildcardErrors(second?.violations)).toBe(1);
+
+		await engine.setCode('<div id="c"></div>');
+		const third = await engine.exec();
+		expect(countWildcardErrors(third?.violations)).toBe(1);
+	});
+
+	it('keeps the count stable across fixing runs of one engine', async () => {
+		// Fix mode runs the multi-pass loop, which re-creates the document
+		// several times per evaluation. This guards that that path does not
+		// reintroduce the accumulation: the config-error count must stay at 1
+		// across repeated fix-enabled evaluations of the same engine.
+		const file = await MLEngine.toMLFile({ sourceCode: "<div id='a'></div>", name: 'a.html' });
+		const engine = new MLEngine(file!, {
+			fix: true,
+			noSearchConfig: true,
+			config: {
+				extends: ['markuplint:a11y'],
+				// attr-value-quotes gives the fixer something to apply each run.
+				rules: { 'attr-value-quotes': true },
+				nodeRules: [{ selector: 'div', rules: { 'a11y/*': true } }],
+			},
+		});
+
+		const countWildcardErrors = (violations?: ReadonlyArray<Violation>) =>
+			(violations ?? []).filter(v => v.ruleId === 'config-error' && v.message.includes('a11y/*')).length;
+
+		const first = await engine.exec();
+		expect(countWildcardErrors(first?.violations)).toBe(1);
+
+		await engine.setCode("<div id='b'></div>");
+		const second = await engine.exec();
+		expect(countWildcardErrors(second?.violations)).toBe(1);
+	});
+});
+
 describe('Parse Error Severity', () => {
 	it('from config', async () => {
 		const file = await MLEngine.toMLFile({
