@@ -253,55 +253,6 @@
 			]
 		},
 		{
-			"path": "html/elements/picture/always-matching-source-media-all-with-following-source-srcset-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-37046544cffa"
-			]
-		},
-		{
-			"path": "html/elements/picture/always-matching-source-media-uppercase-with-following-source-srcset-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-fb7717107cc3"
-			]
-		},
-		{
-			"path": "html/elements/picture/always-matching-source-sizes-with-following-source-srcset-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-723a65760c56"
-			]
-		},
-		{
-			"path": "html/elements/picture/always-matching-source-with-following-img-srcset-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-34f9cf1ddfb7"
-			]
-		},
-		{
-			"path": "html/elements/picture/always-matching-source-with-following-source-media-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-ca467e493770"
-			]
-		},
-		{
-			"path": "html/elements/picture/always-matching-source-with-following-source-srcset-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-2da1643aae9d"
-			]
-		},
-		{
-			"path": "html/elements/picture/always-matching-source-with-following-source-type-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-41d1a1d9dd7f"
-			]
-		},
-		{
 			"path": "html/elements/picture/html-syntax-picture-no-end-tag-novalid.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [
