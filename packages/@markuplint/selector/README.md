@@ -125,12 +125,6 @@ For example, `:role(interactive)` matches `<a>`(with `href` attr), `<button>`, a
 }
 ```
 
-## Documentation
-
-- [Architecture](ARCHITECTURE.md) ([日本語](ARCHITECTURE.ja.md)) -- Package overview, module map, and class hierarchy
-- [Selector Matching](docs/matching.md) ([日本語](docs/matching.ja.md)) -- CSS and regex selector matching algorithm details
-- [Maintenance Guide](docs/maintenance.md) ([日本語](docs/maintenance.ja.md)) -- Commands, testing, recipes, and troubleshooting
-
 ## Install
 
 [`markuplint`](https://www.npmjs.com/package/markuplint) package includes this package.

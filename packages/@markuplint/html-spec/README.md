@@ -75,13 +75,6 @@ $ yarn add @markuplint/html-spec
 
 ## Contributing
 
-For detailed documentation, see:
-
-- [Architecture](ARCHITECTURE.md) -- Package structure, data flow, and integration points
-- [Element Specification Format](docs/element-spec-format.md) -- JSON spec file reference, content models, ARIA integration
-- [Build Pipeline](docs/build-pipeline.md) -- Build process, external data sources, generator modules
-- [Maintenance Guide](docs/maintenance.md) -- Common recipes, testing, troubleshooting
-
 ## License
 
 MIT
