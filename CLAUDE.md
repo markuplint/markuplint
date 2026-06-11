@@ -1,19 +1,28 @@
+# Documentation Policy (JSDoc-first)
+
+Repository markdown must not contain WHAT or HOW that is derivable by reading code. WHY and non-derivable constraints (spec citations, invariants, intended contracts, known limitations) live in JSDoc at the closest code; architecture-level WHY lives in module-level JSDoc at the owning package's entry point. Do NOT create new `ARCHITECTURE.md` or `docs/*.md` files. See [/doc](.claude/commands/doc.md) for the full policy, including the exemptions (rule READMEs are website source; package READMEs are npm-facing; JSDoc on public API symbols may contain WHAT for IDE users).
+
+Intentional decisions that look like mistakes (full WHY at the JSDoc cited):
+
+- Every `catch` must guard with `isFatalError()` first; some catches are deliberately guard-less — see module JSDoc in `packages/@markuplint/shared/src/errors/index.ts`
+- Error classes are defined in `@markuplint/shared` but re-exported from domain packages — same JSDoc
+
 # Skills & Commands
 
 Use the following skills and commands for common tasks. **Always invoke the appropriate skill rather than performing the task manually.**
 
 ## Commands (slash commands)
 
-| Command           | Description                                                  | File                                                    |
-| ----------------- | ------------------------------------------------------------ | ------------------------------------------------------- |
-| `/git`            | Commit rules, message format, and package commit order       | [git.md](.claude/commands/git.md)                       |
-| `/pr`             | Create and push a pull request via `gh pr create`            | [pr.md](.claude/commands/pr.md)                         |
-| `/doc`            | Update documentation (README, ARCHITECTURE, JSDoc)           | [doc.md](.claude/commands/doc.md)                       |
-| `/release`        | Create GitHub Release notes                                  | [release.md](.claude/commands/release.md)               |
-| `/issue`          | Analyze or create a GitHub Issue and build a resolution plan | [issue.md](.claude/commands/issue.md)                   |
-| `/sponsors`       | Check and update GitHub Sponsors listings                    | [sponsors.md](.claude/commands/sponsors.md)             |
-| `/nu-validator`   | Run nu-html-checker compatibility benchmark                  | [nu-validator.md](.claude/commands/nu-validator.md)     |
-| `/list-rule-test` | List rule test IDs with filtering and stats                  | [list-rule-test.md](.claude/commands/list-rule-test.md) |
+| Command           | Description                                                    | File                                                    |
+| ----------------- | -------------------------------------------------------------- | ------------------------------------------------------- |
+| `/git`            | Commit rules, message format, and package commit order         | [git.md](.claude/commands/git.md)                       |
+| `/pr`             | Create and push a pull request via `gh pr create`              | [pr.md](.claude/commands/pr.md)                         |
+| `/doc`            | Documentation policy — JSDoc-first; no code-derivable markdown | [doc.md](.claude/commands/doc.md)                       |
+| `/release`        | Create GitHub Release notes                                    | [release.md](.claude/commands/release.md)               |
+| `/issue`          | Analyze or create a GitHub Issue and build a resolution plan   | [issue.md](.claude/commands/issue.md)                   |
+| `/sponsors`       | Check and update GitHub Sponsors listings                      | [sponsors.md](.claude/commands/sponsors.md)             |
+| `/nu-validator`   | Run nu-html-checker compatibility benchmark                    | [nu-validator.md](.claude/commands/nu-validator.md)     |
+| `/list-rule-test` | List rule test IDs with filtering and stats                    | [list-rule-test.md](.claude/commands/list-rule-test.md) |
 
 ## Skills
 
@@ -28,40 +37,19 @@ Use the following skills and commands for common tasks. **Always invoke the appr
 
 ### Package Skills
 
-Each package has a `SKILL.md` with package-specific maintenance guidance.
+Only packages with constraints that cannot be derived from code have a `SKILL.md`. Everything else: read the code and its JSDoc.
 
-| Package                       | Description                                                           | File                                                      |
-| ----------------------------- | --------------------------------------------------------------------- | --------------------------------------------------------- |
-| `markuplint`                  | Maintenance tasks for markuplint                                      | [SKILL.md](packages/markuplint/SKILL.md)                  |
-| `@markuplint/ml-core`         | Maintenance tasks for the core linting engine (MLDOM, MLRule, MLCore) | [SKILL.md](packages/@markuplint/ml-core/SKILL.md)         |
-| `@markuplint/ml-ast`          | Maintenance tasks for ml-ast                                          | [SKILL.md](packages/@markuplint/ml-ast/SKILL.md)          |
-| `@markuplint/ml-config`       | Maintenance tasks for ml-config                                       | [SKILL.md](packages/@markuplint/ml-config/SKILL.md)       |
-| `@markuplint/ml-spec`         | Verify documentation claims against web standards and source code     | [SKILL.md](packages/@markuplint/ml-spec/SKILL.md)         |
-| `@markuplint/rules`           | Maintenance tasks for rules (testing spec changes)                    | [SKILL.md](packages/@markuplint/rules/SKILL.md)           |
-| `@markuplint/types`           | Verify documentation claims against web standards and source code     | [SKILL.md](packages/@markuplint/types/SKILL.md)           |
-| `@markuplint/selector`        | Maintenance tasks for selector                                        | [SKILL.md](packages/@markuplint/selector/SKILL.md)        |
-| `@markuplint/parser-utils`    | Maintenance tasks for parser-utils                                    | [SKILL.md](packages/@markuplint/parser-utils/SKILL.md)    |
-| `@markuplint/html-parser`     | Maintenance tasks for html-parser                                     | [SKILL.md](packages/@markuplint/html-parser/SKILL.md)     |
-| `@markuplint/html-spec`       | Maintenance tasks for html-spec                                       | [SKILL.md](packages/@markuplint/html-spec/SKILL.md)       |
-| `@markuplint/i18n`            | Maintenance tasks for i18n (internationalization)                     | [SKILL.md](packages/@markuplint/i18n/SKILL.md)            |
-| `@markuplint/create-rule`     | Maintenance tasks for create-rule (CLI scaffolding tool)              | [SKILL.md](packages/@markuplint/create-rule/SKILL.md)     |
-| `@markuplint/react-spec`      | Maintenance tasks for react-spec                                      | [SKILL.md](packages/@markuplint/react-spec/SKILL.md)      |
-| `@markuplint/vue-parser`      | Maintenance tasks for vue-parser                                      | [SKILL.md](packages/@markuplint/vue-parser/SKILL.md)      |
-| `@markuplint/vue-spec`        | Maintenance tasks for vue-spec                                        | [SKILL.md](packages/@markuplint/vue-spec/SKILL.md)        |
-| `@markuplint/svelte-parser`   | Maintenance tasks for svelte-parser                                   | [SKILL.md](packages/@markuplint/svelte-parser/SKILL.md)   |
-| `@markuplint/svelte-spec`     | Maintenance tasks for svelte-spec                                     | [SKILL.md](packages/@markuplint/svelte-spec/SKILL.md)     |
-| `@markuplint/jsx-parser`      | Maintenance tasks for jsx-parser                                      | [SKILL.md](packages/@markuplint/jsx-parser/SKILL.md)      |
-| `@markuplint/astro-parser`    | Maintenance tasks for astro-parser                                    | [SKILL.md](packages/@markuplint/astro-parser/SKILL.md)    |
-| `@markuplint/pug-parser`      | Maintenance tasks for pug-parser                                      | [SKILL.md](packages/@markuplint/pug-parser/SKILL.md)      |
-| `@markuplint/ejs-parser`      | Maintenance tasks for ejs-parser                                      | [SKILL.md](packages/@markuplint/ejs-parser/SKILL.md)      |
-| `@markuplint/erb-parser`      | Maintenance tasks for erb-parser                                      | [SKILL.md](packages/@markuplint/erb-parser/SKILL.md)      |
-| `@markuplint/liquid-parser`   | Maintenance tasks for liquid-parser                                   | [SKILL.md](packages/@markuplint/liquid-parser/SKILL.md)   |
-| `@markuplint/mustache-parser` | Maintenance tasks for mustache-parser                                 | [SKILL.md](packages/@markuplint/mustache-parser/SKILL.md) |
-| `@markuplint/nunjucks-parser` | Maintenance tasks for nunjucks-parser                                 | [SKILL.md](packages/@markuplint/nunjucks-parser/SKILL.md) |
-| `@markuplint/php-parser`      | Maintenance tasks for php-parser                                      | [SKILL.md](packages/@markuplint/php-parser/SKILL.md)      |
-| `@markuplint/smarty-parser`   | Maintenance tasks for smarty-parser                                   | [SKILL.md](packages/@markuplint/smarty-parser/SKILL.md)   |
+| Package                     | Description                                                                  | File                                                    |
+| --------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------- |
+| `@markuplint/html-spec`     | Spec data editing constraints (`yarn up:gen`, ARIA versions, MDN precedence) | [SKILL.md](packages/@markuplint/html-spec/SKILL.md)     |
+| `@markuplint/ml-spec`       | Verify documentation claims against web standards and source code            | [SKILL.md](packages/@markuplint/ml-spec/SKILL.md)       |
+| `@markuplint/types`         | Verify documentation claims against web standards and source code            | [SKILL.md](packages/@markuplint/types/SKILL.md)         |
+| `@markuplint/i18n`          | Locale dictionary sync constraints                                           | [SKILL.md](packages/@markuplint/i18n/SKILL.md)          |
+| `@markuplint/vue-parser`    | Cross-package constraints (component-scanner duplication)                    | [SKILL.md](packages/@markuplint/vue-parser/SKILL.md)    |
+| `@markuplint/svelte-parser` | Cross-package constraints (component-scanner duplication)                    | [SKILL.md](packages/@markuplint/svelte-parser/SKILL.md) |
+| `@markuplint/astro-parser`  | Cross-package constraints (component-scanner duplication)                    | [SKILL.md](packages/@markuplint/astro-parser/SKILL.md)  |
 
-## Verification Commands
+# Verification Commands
 
 ### Test
 
@@ -82,11 +70,11 @@ Each package has a `SKILL.md` with package-specific maintenance guidance.
 - **Full build**: `yarn build` (no arguments)
 - **Single package**: `yarn build --scope @markuplint/<package>`
 
-## Rule Test ID Convention
+# Rule Test ID Convention
 
 Every `test()` in rule spec files MUST have a unique `[rule-name-category-NNN]` prefix. See [`packages/@markuplint/rules/CLAUDE.md`](packages/@markuplint/rules/CLAUDE.md) for the full convention.
 
-## Worktree Usage (MANDATORY)
+# Worktree Usage (MANDATORY)
 
 **CRITICAL: Direct commits to `dev` are BLOCKED. All work requires a feature branch.**
 **CRITICAL: NEVER create a feature branch in the main working directory. ALWAYS use `git wt`.**

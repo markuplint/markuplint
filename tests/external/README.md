@@ -5,8 +5,8 @@ Snapshot-based compatibility benchmark between markuplint and
 of CI — maintainers run it locally when they want fresh coverage
 numbers.
 
-See [`CLAUDE.md`](./CLAUDE.md) for commands, architecture, and the
-`excluded-ids.json` workflow.
+See [`CLAUDE.md`](./CLAUDE.md) for the operating policy and
+task-to-skill routing.
 
 ## TL;DR
 
@@ -17,8 +17,5 @@ yarn bench:update                                       # ~2 min, needs Docker
 
 Raw snapshot trees (`snapshots/nu-validator/`, `snapshots/markuplint/`)
 are git-ignored and regenerate locally. Git tracks only the diff
-summary, exclusion list, metadata, and generated spec.
-
-Artefacts to review: `snapshots/diff/summary.md`,
-`snapshots/diff/coverage.json`, and the `markuplint-only.json` /
-`nu-only.json` / `nu-over.json` splits alongside them.
+summary, exclusion list, metadata, and generated spec. Start reviewing
+at `snapshots/diff/summary.md`.

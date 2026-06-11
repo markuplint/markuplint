@@ -41,9 +41,8 @@ yarn bench:update
 ```
 
 This pulls the nu-validator Docker image
-(`ghcr.io/validator/validator`), runs both tools across the 5442
-fixtures, and writes `snapshots/{nu-validator,markuplint}/**`,
-`snapshots/diff/*`, `snapshots/meta.json`, and the generated spec.
+(`ghcr.io/validator/validator`), runs both tools across all
+fixtures, and writes the snapshot trees, diffs, and generated spec.
 Takes ~2 minutes at default concurrency.
 
 ## Routine refresh after dev sync
@@ -66,25 +65,11 @@ Only re-runs the markuplint side; reuses existing nu snapshots.
 
 ## Commands reference
 
-| Command | What it does |
-| --- | --- |
-| `yarn bench:update` | Full sweep: Docker → nu + ml snapshots → compare → generate-spec → report. |
-| `yarn bench:update:ml` | Same chain, skips Docker / nu. Use after markuplint rule edits. |
-| `yarn bench:compare` | Re-run compare against existing snapshots. |
-| `yarn bench:generate-spec` | Rewrite `spec/nu-validator.spec.ts` from `coverage.json`. |
-| `yarn bench:report` | Rewrite `snapshots/diff/summary.md`. |
-| `yarn bench:verify` | `vitest run --config vitest.nu-validator.config.ts`. |
-
-`yarn bench:update` flags:
-
-| Flag | Effect |
-| --- | --- |
-| `--target nu\|markuplint\|all` | Restrict which snapshot tree is rewritten. |
-| `--filter '<glob>'` | Subset of validator/tests paths to visit. |
-| `--concurrency <n>` | Default `os.availableParallelism() - 1` (capped at 8 for nu). Use `1` for deterministic nu output. |
-| `--image-tag <tag\|digest>` | Override the nu-validator image. |
-| `--dry-run` | List files and exit. |
-| `--skip-refresh` | Stop after the snapshot phase. |
+The `yarn bench:*` scripts are defined in the root `package.json`;
+their flags (`--target`, `--filter`, `--concurrency`, etc.) are
+parsed in the corresponding `tests/external/bench/*.ts` entry —
+read those when unsure. The non-derivable bit: nu output is only
+deterministic at `--concurrency 1`.
 
 ## Troubleshooting
 
