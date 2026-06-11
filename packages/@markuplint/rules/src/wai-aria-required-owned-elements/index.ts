@@ -7,7 +7,6 @@ import { checkingRequiredOwnedElements } from '../wai-aria/checkings/required-ow
 import { defaultOptions } from '../wai-aria/default-options.js';
 import meta from './meta.js';
 
-/** Warns when a role does not contain its required child roles. */
 export default createRule<boolean, Options>({
 	meta,
 	defaultSeverity: 'warning',

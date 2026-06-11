@@ -4,10 +4,6 @@ import type { ARIAVersion, MLMLSpec } from '@markuplint/ml-spec';
 import { validateAriaVersion, ARIA_RECOMMENDED_VERSION, getAccname } from '@markuplint/ml-spec';
 
 /**
- * Creates the `:aria()` extended pseudo-class handler.
- *
- * Matches elements by accessible name presence.
- * Supports `has name` and `has no name` syntax.
  * Version syntax is parsed but not yet used for filtering.
  *
  * ## Accessible name resolution strategy
@@ -24,9 +20,6 @@ import { validateAriaVersion, ARIA_RECOMMENDED_VERSION, getAccname } from '@mark
  * For elements that do **not** have the method (e.g. plain DOM `Element`
  * instances in unit tests), the function falls back to the stateless
  * `getAccname()` from `@markuplint/ml-spec`.
- *
- * @param specs - The ML specification data for role resolution
- * @returns An extended pseudo-class handler function
  */
 export function ariaPseudoClass(specs: MLMLSpec) {
 	return (content: string) =>

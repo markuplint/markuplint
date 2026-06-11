@@ -20,6 +20,14 @@ import type { ExtendedSpec } from '@markuplint/ml-spec';
  * `defaultValue`, `value`).
  */
 const spec: ExtendedSpec = {
+	/**
+	 * Set to `'idl'` because React JSX accepts only IDL property names
+	 * (e.g. `className`, `htmlFor`), unlike Svelte which accepts both
+	 * forms (`'both'`). The resolution of IDL names to HTML content
+	 * attribute names — and the IDL-name candidate suggestion (e.g.
+	 * `tabindex` -> "Did you mean `tabIndex`?") — is performed by
+	 * `MLAttr` in `@markuplint/ml-core`, not by `@markuplint/jsx-parser`.
+	 */
 	acceptedAttrNames: 'idl',
 	def: {
 		'#globalAttrs': {

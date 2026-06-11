@@ -21,6 +21,18 @@ import { nodeStore } from './node-store.js';
  * Extends `MLToken` with DOM `Node` interface compliance, tree traversal,
  * rule configuration access, and child node management.
  *
+ * The `implements Node` declaration is a maintenance strategy: conforming to
+ * the built-in DOM interfaces makes the compiler report errors whenever the
+ * TypeScript DOM type definitions gain new members, so the MLDOM API surface
+ * never drifts from the DOM Standard unnoticed. Members that are meaningless
+ * in static analysis (mutation, events, layout) are stubbed to throw
+ * `UnexpectedCallError` instead of being implemented.
+ *
+ * The `T`/`O` generics exist solely for rule authors using `createRule`:
+ * they propagate through the node tree so that `node.rule` is typed as
+ * `RuleInfo<T, O>` inside `verify()`/`fix()` callbacks. They are a
+ * compile-time-only mechanism — see the `rules` field for the runtime side.
+ *
  * @template T - The rule configuration value type
  * @template O - The rule options type
  * @template A - The underlying AST node type
@@ -149,9 +161,6 @@ export abstract class MLNode<
 	 */
 	readonly TEXT_NODE = 3;
 
-	/**
-	 * Cached `childNodes` property
-	 */
 	#pureChildNodesCache: NodeListOf<MLChildNode<T, O>> | undefined;
 
 	/**
@@ -159,26 +168,16 @@ export abstract class MLNode<
 	 */
 	readonly isFragment: boolean;
 
-	/**
-	 * Owner `Document`
-	 *
-	 * @implements DOM API: `Node`
-	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-ownerdocument
-	 */
 	readonly #ownerDocument: MLDocument<T, O>;
 
-	/**
-	 * Cached `prevToken` property
-	 */
 	#prevToken: MLNode<T, O> | null | undefined;
 
-	/**
-	 * Cached `conditionalChildNodes` method
-	 */
 	#conditionalChildNodes: NodeListOf<MLChildNode<T, O>>[] | undefined;
 
 	/**
-	 *
+	 * Rules mapped to this node by `RuleMapper`. Deliberately untyped
+	 * (`AnyRule`) storage: the `T`/`O` generics are not enforced at runtime —
+	 * the `rule` getter recovers the typed `RuleInfo<T, O>` via a cast.
 	 */
 	readonly rules: Record<string, AnyRule> = {};
 
@@ -269,6 +268,9 @@ export abstract class MLNode<
 	}
 
 	/**
+	 * The next node in the syntactical sibling list which, unlike
+	 * `nextSibling`, includes `MLBlock` nodes (AST-level traversal).
+	 *
 	 * @implements `@markuplint/ml-core` API: `MLNode`
 	 */
 	get nextNode(): MLNode<T, O> | null {
@@ -439,6 +441,9 @@ export abstract class MLNode<
 	}
 
 	/**
+	 * The previous node in the syntactical sibling list which, unlike
+	 * `previousSibling`, includes `MLBlock` nodes (AST-level traversal).
+	 *
 	 * @implements `@markuplint/ml-core` API: `MLNode`
 	 */
 	get prevNode(): MLNode<T, O> | null {
@@ -448,6 +453,11 @@ export abstract class MLNode<
 	}
 
 	/**
+	 * The previous node in the document-order `nodeList`.
+	 * Omitted (ghost) elements are skipped because they have no source tokens;
+	 * including them would break offset chains used for indentation analysis
+	 * and source reconstruction.
+	 *
 	 * @implements `@markuplint/ml-core` API: `MLNode`
 	 */
 	get prevToken(): MLNode<T, O> | null {
@@ -653,6 +663,14 @@ export abstract class MLNode<
 	 * Each NodeList represents a branch of conditional child nodes.
 	 *
 	 * Note: NodeList doesn't include whitespace nodes.
+	 *
+	 * For `if`/`switch` groups, a `null` sentinel is appended to each branch
+	 * group to represent the case where no branch renders at all, so that
+	 * content-model rules also validate the "empty branch" pattern
+	 * (`branchesToPatterns` filters the `null` out of the generated patterns).
+	 * `each` blocks intentionally do not start a conditional mode: their content
+	 * is flattened as always-present rather than treated as an alternative
+	 * branch, even though a loop may render zero times.
 	 *
 	 * @returns An array of NodeLists representing the conditional child nodes.
 	 *

@@ -44,6 +44,23 @@ export class HtmlParser extends Parser<Node, State> {
 		});
 	}
 
+	/**
+	 * `documentMode: 'auto'` (default) decides document vs. fragment via
+	 * `isDocumentFragment()`. Forcing `'document'` exists to surface parse5's
+	 * document-level conformance errors (`missing-doctype`, `misplaced-doctype`,
+	 * `non-conforming-doctype`, ...) on pages that omit the doctype, which
+	 * auto-detection would otherwise parse as a fragment and silence. Forcing
+	 * `'fragment'` exists for SSR / template partials that legitimately start
+	 * with `<head>`, `<meta>`, `<title>`, etc. Template-engine parsers that
+	 * delegate embedded HTML chunks to a private `HtmlParser` instance
+	 * (e.g. `@markuplint/markdown-parser`, `@markuplint/pug-parser`)
+	 * hard-set `'fragment'` on the embedded
+	 * call because the host syntax owns the document boundary; users cannot
+	 * override that.
+	 *
+	 * The collected `parseErrors` are consumed by `@markuplint/ml-core`,
+	 * which reports them as violations with `ruleId: 'parse-error'`.
+	 */
 	tokenize(options?: ParseOptions): { ast: Node[]; isFragment: boolean; parseErrors: readonly MLASTParseError[] } {
 		const mode = options?.documentMode ?? 'auto';
 		const isFragment = mode === 'document' ? false : mode === 'fragment' ? true : isDocumentFragment(this.rawCode);
@@ -110,7 +127,12 @@ export class HtmlParser extends Parser<Node, State> {
 		const location = originNode.sourceCodeLocation;
 
 		if (!location) {
-			// Ghost element
+			// Ghost element: parse5 follows the HTML standard's tree construction
+			// and implicitly inserts elements (e.g. `<html>`, `<head>`, `<body>`)
+			// that have no counterpart in the source, so they carry no
+			// `sourceCodeLocation`. The empty `raw` and the position borrowed from
+			// `afterPosition` (or the parent's end position) keep the source
+			// mapping of real elements intact.
 			const afterNode =
 				this.state.afterPosition.depth === depth
 					? this.state.afterPosition
@@ -245,8 +267,6 @@ export class HtmlParser extends Parser<Node, State> {
 export const parser = new HtmlParser();
 
 /**
- * Returns a non-empty `raw` slice for a parse5 parse error.
- *
  * parse5 frequently reports parse errors at zero-width positions
  * (e.g., `duplicate-attribute` fires at the `=` between the attribute name
  * and its value, not over the name itself). A bare `rawCode.slice(start, end)`
@@ -266,14 +286,10 @@ export function extractRawForParseError(rawCode: string, startOffset: number, en
 	if (endOffset > startOffset) {
 		return rawCode.slice(startOffset, endOffset);
 	}
-	// Walk backwards from startOffset over token-shaped characters to find the
-	// start of the surrounding token (attribute name, character reference,
-	// etc.). Stop at any whitespace or HTML structural punctuation.
 	let begin = startOffset;
 	while (begin > 0 && !/[\s<>"'/=&]/.test(rawCode[begin - 1] ?? '')) {
 		begin--;
 	}
-	// Walk forwards similarly to find the end.
 	let end = startOffset;
 	const max = Math.min(rawCode.length, startOffset + 32);
 	while (end < max && !/[\s<>"'/=&]/.test(rawCode[end] ?? '')) {

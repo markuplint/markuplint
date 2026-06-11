@@ -15,10 +15,6 @@ import type { ExtendedSpec } from '@markuplint/ml-spec';
 
 const ARIA_VERSIONS = ['1.1', '1.2', '1.3'] as const;
 
-/**
- * Computes the sorted names that were added to and removed from `next`
- * relative to `prev`.
- */
 function diffNames(prev: readonly string[], next: readonly string[]): { added: string[]; removed: string[] } {
 	const prevSet = new Set(prev);
 	const nextSet = new Set(next);
@@ -27,10 +23,6 @@ function diffNames(prev: readonly string[], next: readonly string[]): { added: s
 	return { added, removed };
 }
 
-/**
- * Renders an added/removed name list as Markdown bullet lines, or `null` when
- * there is nothing to show.
- */
 function renderNameDiff(label: string, prev: readonly string[], next: readonly string[]): string | null {
 	const { added, removed } = diffNames(prev, next);
 	if (added.length === 0 && removed.length === 0) {
@@ -47,16 +39,13 @@ function renderNameDiff(label: string, prev: readonly string[], next: readonly s
 }
 
 /**
- * Extracts the `name` of each definition, tolerating both the plain-string and
- * the `{ name }` object forms used across the ARIA arrays.
+ * Tolerates both the plain-string and the `{ name }` object forms used across
+ * the ARIA arrays.
  */
 function names(defs: readonly (string | { readonly name: string })[] | undefined): string[] {
 	return (defs ?? []).map(d => (typeof d === 'string' ? d : d.name));
 }
 
-/**
- * Formats a count delta like `120 → 123 (+3)`, or `120 (unchanged)`.
- */
 function countDelta(prev: number, next: number): string {
 	if (prev === next) {
 		return `${next} (unchanged)`;
@@ -66,14 +55,8 @@ function countDelta(prev: number, next: number): string {
 }
 
 /**
- * Builds a Markdown summary of the changes from `previous` to `next`.
- *
  * On first generation (`previous` is null/undefined), returns a short
  * initial-generation note instead of a diff.
- *
- * @param previous - The previously committed spec, if any.
- * @param next - The freshly generated spec.
- * @returns A Markdown string suitable for a PR body.
  */
 export function summarizeChanges(previous: ExtendedSpec | null | undefined, next: ExtendedSpec): string {
 	if (!previous) {

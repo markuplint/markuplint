@@ -18,17 +18,6 @@ export interface SummaryInfo {
 	readonly noticeCount: number;
 }
 
-/**
- * Writes lint results to stdout or stderr using the reporter selected by `--format`.
- *
- * Violations are written to stderr (and set `process.exitCode` to 1),
- * while clean results are written to stdout. When `--no-color` is set,
- * ANSI escape codes are stripped before output. JSON format is handled
- * separately by the caller, so this function returns early for JSON.
- *
- * @param results - The lint result information for a single file.
- * @param options - CLI options that control the output format and color.
- */
 export function output(results: MLResultInfo, options: CLIOptions) {
 	const format = options.format ?? 'Standard';
 	let out: string[];
@@ -65,16 +54,6 @@ export function output(results: MLResultInfo, options: CLIOptions) {
 	process.stdout.write(msg);
 }
 
-/**
- * Writes an aggregated lint summary after all file outputs have been emitted.
- *
- * Summary output is enabled for the standard and simple formats only.
- * JSON and GitHub formats are left unchanged because they are intended for
- * machine-readable output.
- *
- * @param summary - Aggregated counts across all linted files.
- * @param options - CLI options that control the output format and color.
- */
 export function outputSummary(summary: SummaryInfo, options: CLIOptions) {
 	const format = options.format?.toLowerCase() ?? 'standard';
 	if (format === 'json' || format === 'github') {

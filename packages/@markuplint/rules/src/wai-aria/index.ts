@@ -24,16 +24,6 @@ import { checkingRequiredProp } from './checkings/required-prop.js';
 import { checkingValue } from './checkings/value.js';
 import meta from './meta.js';
 
-/**
- * WAI-ARIA rule for markuplint.
- *
- * Validates the correct usage of WAI-ARIA roles, states, and properties
- * on HTML elements. This rule performs a comprehensive set of checks including
- * role validity, property values, required owned elements, and conformance
- * with the ARIA in HTML specification.
- *
- * Individual checks can be toggled on or off via the rule's options.
- */
 export default createRule<boolean, Options>({
 	meta: meta,
 	defaultOptions,

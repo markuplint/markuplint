@@ -8,6 +8,8 @@ export type { RegexSelector } from '@markuplint/selector';
 /**
  * The root configuration object for markuplint.
  * Defines rules, parsers, specs, plugins, and overrides for linting markup.
+ *
+ * @see https://markuplint.dev/configuration
  */
 export type Config = {
 	readonly $schema?: string;

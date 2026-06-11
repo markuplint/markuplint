@@ -25,31 +25,20 @@ import { Parser, getNamespace } from '@markuplint/parser-utils';
 type MdastNode = RootContent;
 
 /**
- * Abstract base class for parsers that handle Markdown content.
- *
- * Provides shared logic for converting mdast nodes (headings, links, images,
- * lists, code, tables, etc.) into markuplint's AST. Both MarkdownParser and
- * MDXParser extend this class to avoid code duplication.
+ * Extends `Parser<MdastNode>` rather than `HtmlParser`: an earlier design
+ * extended `HtmlParser` and treated Markdown as opaque psblock nodes, which
+ * left Markdown constructs invisible to rules. Converting them to their HTML
+ * equivalents (with synthesized attributes such as `src`/`alt` from
+ * `![alt](src)`) is what makes Markdown content lintable.
  */
 
 export abstract class MarkdownAwareParser extends Parser<MdastNode> {
-	/**
-	 * Stores link/image reference definitions (`[id]: url "title"`)
-	 * extracted during tokenization for resolving linkReference/imageReference nodes.
-	 */
 	protected definitions = new Map<string, Definition>();
 
-	/**
-	 * Offsets of table rows that are header rows (first row of each table).
-	 * Set by visitTableElement, read by nodeizeMarkdownNode for tableRow dispatch.
-	 */
+	/** Set by visitTableElement, read by nodeizeMarkdownNode for tableRow dispatch. */
 	readonly #headerRowOffsets = new Set<number>();
 
-	/**
-	 * Current cell element name ('th' or 'td').
-	 * Set by tableRow processing, read by tableCell processing.
-	 * Reset to 'td' after each row.
-	 */
+	/** Set by tableRow processing, read by tableCell processing; reset to 'td' after each row. */
 	#currentCellName: 'th' | 'td' = 'td';
 
 	constructor(options?: ParserOptions) {
@@ -57,8 +46,6 @@ export abstract class MarkdownAwareParser extends Parser<MdastNode> {
 	}
 
 	/**
-	 * Resets mutable state accumulated during a previous `parse()` call.
-	 *
 	 * Must be called at the beginning of every `tokenize()` invocation to
 	 * prevent definitions, header-row offsets, and cell-name state from
 	 * leaking across successive `parse()` calls on the same parser instance.
@@ -70,13 +57,8 @@ export abstract class MarkdownAwareParser extends Parser<MdastNode> {
 	}
 
 	/**
-	 * Adjusts the flattened node list for Markdown output.
-	 *
 	 * Disables whitespace and invalid-node exposure because Markdown
 	 * generates only synthetic elements with no real HTML whitespace tokens.
-	 *
-	 * @param nodeList - The flattened node tree produced by the base class.
-	 * @returns The adjusted node list.
 	 */
 	afterFlattenNodes(nodeList: readonly MLASTNodeTreeItem[]) {
 		return super.afterFlattenNodes(nodeList, {
@@ -86,15 +68,8 @@ export abstract class MarkdownAwareParser extends Parser<MdastNode> {
 	}
 
 	/**
-	 * Creates a synthetic HTML attribute token for Markdown-derived elements.
-	 *
 	 * The attribute positions point to the element's own token range because
 	 * Markdown syntax does not have discrete attribute source positions.
-	 *
-	 * @param name - The attribute name (e.g., `"href"`, `"alt"`).
-	 * @param value - The attribute value extracted from Markdown syntax.
-	 * @param token - The source token whose position is reused for the attribute.
-	 * @returns A fully-formed HTML attribute node.
 	 */
 	protected createSyntheticAttr(name: string, value: string, token: Token): MLASTHTMLAttr {
 		const emptyToken = this.createToken('', token.offset, token.line, token.col);
@@ -118,17 +93,6 @@ export abstract class MarkdownAwareParser extends Parser<MdastNode> {
 		};
 	}
 
-	/**
-	 * Builds a generic HTML element node from a Markdown construct.
-	 *
-	 * @param token - The source token covering the entire construct.
-	 * @param nodeName - The HTML element name (e.g., `"p"`, `"h1"`, `"li"`).
-	 * @param childNodes - The mdast children to recurse into.
-	 * @param depth - Current nesting depth in the AST.
-	 * @param parentNode - Parent AST node, or `null` for top-level nodes.
-	 * @param attributes - Optional pre-built attributes to attach.
-	 * @returns The element node followed by its descendants.
-	 */
 	protected visitMarkdownElement(
 		token: Token,
 		nodeName: string,
@@ -165,15 +129,6 @@ export abstract class MarkdownAwareParser extends Parser<MdastNode> {
 		return [startTag, ...siblings];
 	}
 
-	/**
-	 * Builds an `<a>` element with `href` (and optionally `title`) attributes.
-	 *
-	 * @param originNode - The mdast `link` node.
-	 * @param token - The source token covering the link.
-	 * @param depth - Current nesting depth.
-	 * @param parentNode - Parent AST node, or `null` for top-level.
-	 * @returns The `<a>` element node and its descendants.
-	 */
 	protected visitLinkElement(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		originNode: Link,
@@ -190,15 +145,6 @@ export abstract class MarkdownAwareParser extends Parser<MdastNode> {
 		return this.visitMarkdownElement(token, 'a', originNode.children, depth, parentNode, attrs);
 	}
 
-	/**
-	 * Builds an `<img>` element with `src`, `alt`, and optionally `title` attributes.
-	 *
-	 * @param originNode - The mdast `image` node.
-	 * @param token - The source token covering the image.
-	 * @param depth - Current nesting depth.
-	 * @param parentNode - Parent AST node, or `null` for top-level.
-	 * @returns The `<img>` element node.
-	 */
 	protected visitImageElement(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		originNode: Image,
@@ -218,16 +164,6 @@ export abstract class MarkdownAwareParser extends Parser<MdastNode> {
 		return this.visitMarkdownElement(token, 'img', [], depth, parentNode, attrs);
 	}
 
-	/**
-	 * Builds a `<ul>` or `<ol>` element. Adds a `start` attribute when the
-	 * ordered list begins at a number other than 1.
-	 *
-	 * @param originNode - The mdast `list` node.
-	 * @param token - The source token covering the list.
-	 * @param depth - Current nesting depth.
-	 * @param parentNode - Parent AST node, or `null` for top-level.
-	 * @returns The list element node and its descendants.
-	 */
 	protected visitListElement(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		originNode: List,
@@ -245,17 +181,6 @@ export abstract class MarkdownAwareParser extends Parser<MdastNode> {
 		return this.visitMarkdownElement(token, nodeName, originNode.children, depth, parentNode, attrs);
 	}
 
-	/**
-	 * Builds a `<code>` element for inline code spans (backtick-delimited).
-	 *
-	 * @param originNode - The mdast `inlineCode` node.
-	 * @param token - The source token covering the code span.
-	 * @param offset - Start offset in the original source.
-	 * @param endOffset - End offset in the original source.
-	 * @param depth - Current nesting depth.
-	 * @param parentNode - Parent AST node, or `null` for top-level.
-	 * @returns The `<code>` element node (with a text child when content is found).
-	 */
 	protected visitInlineCode(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		originNode: InlineCode,
@@ -312,16 +237,6 @@ export abstract class MarkdownAwareParser extends Parser<MdastNode> {
 		return [startTag];
 	}
 
-	/**
-	 * Builds a `<pre><code>` structure for fenced code blocks.
-	 * When a language is specified, adds `class="language-{lang}"` to the `<code>` element.
-	 *
-	 * @param originNode - The mdast `code` node.
-	 * @param token - The source token covering the fenced block.
-	 * @param depth - Current nesting depth.
-	 * @param parentNode - Parent AST node, or `null` for top-level.
-	 * @returns The `<pre>` and `<code>` element nodes.
-	 */
 	protected visitCodeBlock(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		originNode: Code,
@@ -329,7 +244,6 @@ export abstract class MarkdownAwareParser extends Parser<MdastNode> {
 		depth: number,
 		parentNode: MLASTParentNode | null,
 	): readonly MLASTNodeTreeItem[] {
-		// Build <pre> element
 		const preTag: MLASTElement = {
 			...token,
 			...this.createToken(token),
@@ -351,7 +265,6 @@ export abstract class MarkdownAwareParser extends Parser<MdastNode> {
 			nodeName: 'pre',
 		};
 
-		// Build <code> element as child of <pre>
 		const codeAttrs: MLASTHTMLAttr[] = [];
 		if (originNode.lang) {
 			codeAttrs.push(this.createSyntheticAttr('class', `language-${originNode.lang}`, token));
@@ -378,7 +291,6 @@ export abstract class MarkdownAwareParser extends Parser<MdastNode> {
 			nodeName: 'code',
 		};
 
-		// Add code content as text node if present
 		if (originNode.value.length > 0) {
 			const position = originNode.position;
 			if (position) {
@@ -409,16 +321,6 @@ export abstract class MarkdownAwareParser extends Parser<MdastNode> {
 		return [preTag, codeTag];
 	}
 
-	/**
-	 * Builds a `<table>` element from a GFM table node.
-	 * Marks the first row's offset as a header row so that its cells become `<th>`.
-	 *
-	 * @param originNode - The mdast `table` node (GFM extension).
-	 * @param token - The source token covering the table.
-	 * @param depth - Current nesting depth.
-	 * @param parentNode - Parent AST node, or `null` for top-level.
-	 * @returns The `<table>` element node and its descendants.
-	 */
 	protected visitTableElement(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		originNode: Table,
@@ -435,18 +337,9 @@ export abstract class MarkdownAwareParser extends Parser<MdastNode> {
 	}
 
 	/**
-	 * Dispatches a single mdast node to the appropriate visit method.
-	 *
-	 * @param originNode - The mdast node to convert.
-	 * @param token - The source token covering the node's range.
-	 * @param offset - Start offset in the original source.
-	 * @param endOffset - End offset in the original source.
-	 * @param depth - Current nesting depth.
-	 * @param parentNode - Parent AST node, or `null` for top-level nodes.
-	 * @returns An array of AST nodes for recognized Markdown constructs,
-	 *   or `null` when the node type is not handled here (the caller is
-	 *   responsible for handling it — typically `text`, `html`, or
-	 *   parser-specific node types).
+	 * Returns `null` when the node type is not handled here, signalling that
+	 * the caller must handle it (typically `text`, `html`, or parser-specific
+	 * node types).
 	 */
 	protected nodeizeMarkdownNode(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -484,6 +377,8 @@ export abstract class MarkdownAwareParser extends Parser<MdastNode> {
 				return this.visitMarkdownElement(token, 'li', originNode.children, depth, parentNode);
 			}
 			case 'blockquote': {
+				// Markdown's `> quote` syntax has no equivalent of the HTML
+				// `cite` attribute, so no `cite` attribute is synthesized.
 				return this.visitMarkdownElement(token, 'blockquote', originNode.children, depth, parentNode);
 			}
 			case 'thematicBreak': {
@@ -559,8 +454,9 @@ export abstract class MarkdownAwareParser extends Parser<MdastNode> {
 	}
 
 	/**
-	 * Resolves a linkReference using collected definitions, producing an `<a>` element.
-	 * Falls back to a psblock when the definition is not found.
+	 * Note: remark-parse resolves references at parse time when definitions
+	 * exist, so unresolved references typically appear as plain text rather
+	 * than `linkReference` nodes; the psblock fallback is a defensive path.
 	 */
 	#visitLinkReference(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -589,8 +485,8 @@ export abstract class MarkdownAwareParser extends Parser<MdastNode> {
 	}
 
 	/**
-	 * Resolves an imageReference using collected definitions, producing an `<img>` element.
-	 * Falls back to a psblock when the definition is not found.
+	 * Note: as with linkReference, unresolved references typically appear as
+	 * plain text in the mdast, so the psblock fallback is a defensive path.
 	 */
 	#visitImageReference(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -622,13 +518,9 @@ export abstract class MarkdownAwareParser extends Parser<MdastNode> {
 	}
 
 	/**
-	 * Extracts definition nodes from mdast children and populates `this.definitions`.
-	 *
 	 * Per CommonMark spec, the first definition for a given identifier takes
 	 * precedence. remark-parse emits all definition nodes in source order, so
 	 * we skip duplicates via `Map.has` to honour the first-wins rule.
-	 *
-	 * @param children - The root-level mdast children to scan for `definition` nodes.
 	 */
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	protected collectDefinitions(children: readonly RootContent[]) {
@@ -641,15 +533,9 @@ export abstract class MarkdownAwareParser extends Parser<MdastNode> {
 }
 
 /**
- * Computes the 1-based line number and 1-based column for a given offset.
- *
  * Equivalent to `getPosition()` in `@markuplint/parser-utils`, but that
  * function is not exported from the package. Kept as a standalone utility
  * to avoid coupling to parser-utils internals.
- *
- * @param source - The full source string.
- * @param offset - The 0-based character offset to resolve.
- * @returns An object with 1-based `line` and `col` values.
  */
 export function getLineAndColumn(source: string, offset: number): { line: number; col: number } {
 	let line = 1;

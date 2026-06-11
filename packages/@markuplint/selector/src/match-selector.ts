@@ -212,6 +212,8 @@ function uncombinedRegexSelect(el: SelectorNode, selector: RegexSelectorWithoutC
 	if (selector.nodeName) {
 		const matchedNodeName = regexSelectorMatches(selector.nodeName, el.localName, isPureHTMLElement(el));
 		if (matchedNodeName) {
+			// `$0` is the whole-match capture — redundant with the element name
+			// itself, so it is dropped from the exposed data.
 			delete matchedNodeName.$0;
 		} else {
 			matched = false;
@@ -243,6 +245,8 @@ function uncombinedRegexSelect(el: SelectorNode, selector: RegexSelectorWithoutC
 					return null;
 				}
 
+				// Likewise, `$0` repeats the attribute name/value verbatim,
+				// so only the sub-captures are exposed.
 				if (matchedAttrName) {
 					delete matchedAttrName.$0;
 				}

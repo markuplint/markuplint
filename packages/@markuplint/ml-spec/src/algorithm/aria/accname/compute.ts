@@ -45,19 +45,9 @@ export function computeAccessibleName(el: AccnameElement, resolver: AccnameResol
 }
 
 /**
- * Internal recursive entry point for accessible name computation.
- *
- * This function is the recursive core called by `resolveAriaLabelledby` (Step 2B),
- * `resolveLabelText` (Step 2E), and `resolveNameFromContent` (Step 2F) when they
- * need to compute a child or referenced element's name.
- *
- * @param el - The element to compute the accessible name for
- * @param resolver - Environment-dependent resolver for DOM traversal and role queries
  * @param inLabelledbyTraversal - When true, Step 2B is skipped to prevent re-entry
  *   into `resolveAriaLabelledby`, and Step 2F name-from-content is enabled regardless
  *   of role. This is set by Step 2B when processing each IDREF.
- * @param visited - Set of element IDs already visited (cycle prevention for aria-labelledby)
- * @returns The computed name and its source
  * @see https://www.w3.org/TR/accname-1.2/#computation-steps — AccName 1.2 §4.3.2
  */
 export function computeAccessibleNameInternal(

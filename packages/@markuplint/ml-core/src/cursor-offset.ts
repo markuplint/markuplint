@@ -19,16 +19,13 @@ export function computeCursorOffset(appliedEdits: readonly TextEdit[], cursorOff
 		const delta = edit.text.length - (end - start);
 
 		if (start > cursorOffset) {
-			// Edit is after cursor — no effect
 			break;
 		}
 
 		if (end <= cursorOffset) {
-			// Edit is entirely before cursor — shift by delta.
 			// Range is half-open [start, end), so cursor at `end` is outside the edit.
 			newOffset += delta;
 		} else {
-			// Cursor falls inside the replaced range [start, end)
 			newOffset = start + edit.text.length;
 			break;
 		}

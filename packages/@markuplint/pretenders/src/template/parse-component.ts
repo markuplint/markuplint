@@ -11,12 +11,6 @@ const EXTENSION_MAP: Record<string, FrameworkType> = {
 	'.astro': 'astro',
 };
 
-/**
- * Determines the framework type from the file extension.
- *
- * @param filePath - The file path to check
- * @returns The framework type, or `null` if the extension is not recognized
- */
 export function getFrameworkType(filePath: string): FrameworkType | null {
 	const ext = path.extname(filePath).toLowerCase();
 	return EXTENSION_MAP[ext] ?? null;
@@ -28,20 +22,12 @@ const PARSER_PACKAGES: Record<FrameworkType, string> = {
 	astro: '@markuplint/astro-parser',
 };
 
-/**
- * Checks if an error is a Node.js ERR_MODULE_NOT_FOUND error.
- */
 export function isModuleNotFoundError(error: unknown): boolean {
 	return (
 		error instanceof Error && 'code' in error && (error as NodeJS.ErrnoException).code === 'ERR_MODULE_NOT_FOUND'
 	);
 }
 
-/**
- * Dynamically imports the appropriate parser for the given framework.
- *
- * @returns The parser, or `null` if the parser package is not installed.
- */
 async function getParser(framework: FrameworkType): Promise<MLParser | null> {
 	const pkg = PARSER_PACKAGES[framework];
 	try {
@@ -57,13 +43,6 @@ async function getParser(framework: FrameworkType): Promise<MLParser | null> {
 	}
 }
 
-/**
- * Parses a component file into an MLASTDocument using the appropriate framework parser.
- *
- * @param filePath - The absolute path to the component file
- * @returns The parsed document, or `null` if the file extension is not supported
- *          or the required parser package is not installed.
- */
 export async function parseComponent(filePath: string): Promise<MLASTDocument | null> {
 	const framework = getFrameworkType(filePath);
 	if (!framework) {

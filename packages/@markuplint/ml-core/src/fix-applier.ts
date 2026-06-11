@@ -36,7 +36,6 @@ export function applyFixes(sourceCode: string, fixes: readonly FixData[]): FixRe
 		return { output: sourceCode, applied: [], skipped: [], appliedEdits: [] };
 	}
 
-	// Tag each edit with its parent FixData index
 	const taggedEdits: { readonly edit: TextEdit; readonly fixIndex: number }[] = [];
 	for (const [i, fix] of fixes.entries()) {
 		for (const edit of fix.edits) {
@@ -44,14 +43,13 @@ export function applyFixes(sourceCode: string, fixes: readonly FixData[]): FixRe
 		}
 	}
 
-	// Sort: range[0] ascending, then range[1] descending (so larger ranges come first at the same start)
+	// Ties broken by range[1] descending so larger ranges come first at the same start.
 	taggedEdits.sort((a, b) => {
 		const startDiff = a.edit.range[0] - b.edit.range[0];
 		// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
 		return startDiff || b.edit.range[1] - a.edit.range[1];
 	});
 
-	// Track which FixData indices had at least one skipped edit
 	const skippedFixIndices = new Set<number>();
 	const appliedEdits: TextEdit[] = [];
 	let lastAppliedEnd = -1;
@@ -61,15 +59,13 @@ export function applyFixes(sourceCode: string, fixes: readonly FixData[]): FixRe
 	for (const { edit, fixIndex } of taggedEdits) {
 		const [start, end] = edit.range;
 
-		// Overlap check: if this edit starts before the end of the last applied edit, skip it.
-		// Also skip if a sibling edit from the same FixData was already skipped —
-		// edits within a single FixData are atomic (all-or-nothing).
+		// Edits within a single FixData are atomic (all-or-nothing): if any sibling
+		// was skipped, skip the rest.
 		if (start < lastAppliedEnd || skippedFixIndices.has(fixIndex)) {
 			skippedFixIndices.add(fixIndex);
 			continue;
 		}
 
-		// Append the source text between the last edit and this one
 		parts.push(sourceCode.slice(cursor, start), edit.text);
 		appliedEdits.push(edit);
 
@@ -77,10 +73,8 @@ export function applyFixes(sourceCode: string, fixes: readonly FixData[]): FixRe
 		lastAppliedEnd = end;
 	}
 
-	// Append remaining source text
 	parts.push(sourceCode.slice(cursor));
 
-	// Classify FixData as applied or skipped
 	const applied: FixData[] = [];
 	const skipped: FixData[] = [];
 	for (const [i, fix] of fixes.entries()) {

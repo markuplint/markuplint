@@ -3,16 +3,11 @@ import type { Identifier, Identity } from './types.js';
 import type { Pretender } from '@markuplint/ml-config';
 
 /**
- * Resolves a map of component-to-identity mappings into a flat array of Pretender objects.
  * Follows chains where one component wraps another (e.g., MyButton -> Button -> button)
  * until a native element is reached or a cycle is detected.
  *
  * Uses import-path-based resolution when a name index is provided, falling back to
  * name-based lookup for backward compatibility.
- *
- * @param map - The map of component keys to their [identifier, identity, filePath] tuples
- * @param nameIndex - Optional mapping from component names to map keys for resolving references
- * @returns A sorted array of fully resolved Pretender objects
  */
 export function dependencyMapper(
 	map: Readonly<PretenderDirectorMap>,
@@ -63,7 +58,7 @@ export function dependencyMapper(
 }
 
 /**
- * Builds a name-to-key index from the map for backward-compatible name-based lookup.
+ * For backward-compatible name-based lookup.
  * First definition wins when multiple entries share the same identifier.
  */
 function buildNameIndex(map: Readonly<PretenderDirectorMap>): Map<Identifier, string> {
@@ -84,12 +79,7 @@ function getElName(identity: Identity) {
 }
 
 /**
- * Creates a comparator function that sorts objects by a specified property.
- *
- * @template T - The object type
- * @template P - The property key type
- * @param propName - The property to sort by (case-insensitive for strings)
- * @returns A comparator function for use with `Array.prototype.sort()`
+ * Comparator that sorts by `propName`, case-insensitive for string values.
  */
 export function propSort<T, P extends keyof T>(propName: P) {
 	return (a: T, b: T) => {

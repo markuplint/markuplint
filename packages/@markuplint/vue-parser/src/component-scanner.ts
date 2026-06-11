@@ -31,9 +31,6 @@ export interface ComponentScanScriptSource {
 	readonly offset: number;
 }
 
-/**
- * Extracts root element information from a parsed MLAST document.
- */
 function extractComponentInfo(doc: MLASTDocument): Omit<ComponentScanResult, 'hasSlots' | 'scriptSource'> | null {
 	const root = doc.nodeList.find((n): n is MLASTElement => n.type === 'starttag' && n.depth === 0 && !n.isFragment);
 	if (!root) {
@@ -62,16 +59,10 @@ function extractComponentInfo(doc: MLASTDocument): Omit<ComponentScanResult, 'ha
 	};
 }
 
-/**
- * Detects whether the parsed Vue template contains `<slot>` elements.
- */
 function detectSlots(doc: MLASTDocument): boolean {
 	return doc.nodeList.some(n => n.type === 'starttag' && n.nodeName === 'slot');
 }
 
-/**
- * Extracts the `<script setup>` block from a Vue SFC source.
- */
 function extractVueScriptSetup(source: string): ComponentScanScriptSource | null {
 	const re = /<script\s[^>]*?\bsetup\b[^>]*>/i;
 	const match = re.exec(source);

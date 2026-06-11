@@ -7,7 +7,6 @@ import { checkingDeprecatedProps } from '../wai-aria/checkings/deprecated-props.
 import { defaultOptions } from '../wai-aria/default-options.js';
 import meta from './meta.js';
 
-/** Warns when a deprecated ARIA property or state is used on a role. */
 export default createRule<boolean, Options>({
 	meta,
 	defaultSeverity: 'warning',

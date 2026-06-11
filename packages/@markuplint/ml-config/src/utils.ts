@@ -206,14 +206,9 @@ function exchangeOption(optionValue: PlainData, data: Readonly<Record<string, st
 }
 
 /**
- * Array.isArray for ReadonlyArray
- *
- * > Array.isArray type narrows to any[] for ReadonlyArray<T>
+ * `Array.isArray` narrows to `any[]` for `ReadonlyArray<T>`.
  *
  * @see https://github.com/microsoft/TypeScript/issues/17002
- *
- * @param value
- * @returns
  */
 function isArray<T>(value: any): value is T[] | readonly T[] {
 	return Array.isArray(value);

@@ -6,6 +6,15 @@ import { MASK_CHAR } from './const.js';
 import { getPosition } from './get-location.js';
 import { ParserError } from './parser-error.js';
 
+/**
+ * Masks the source regions that match the given tag patterns so that
+ * template expressions do not interfere with HTML tokenization.
+ *
+ * Invariant: the masked output must keep exactly the same character count
+ * and line breaks as the original source — `restoreNode` and all position
+ * reporting depend on offsets and line numbers in the masked code matching
+ * the original.
+ */
 export function ignoreBlock(source: string, tags: readonly IgnoreTag[], maskChar = MASK_CHAR): IgnoreBlock {
 	let replaced = source;
 	const stack: Code[] = [];
@@ -15,6 +24,11 @@ export function ignoreBlock(source: string, tags: readonly IgnoreTag[], maskChar
 				maskChar.repeat(startTag.length) +
 				taggedCode.replaceAll(/[^\n]/g, maskChar) +
 				maskChar.repeat((endTag ?? '').length);
+			// Wrap in `<!` ... `>` (bogus comment syntax) so the HTML tokenizer
+			// consumes the masked region as a single bogus comment node instead of
+			// interpreting it as text or markup. The slices drop three mask
+			// characters to compensate for the three wrapper characters,
+			// preserving the total length.
 			const taggedMask = `<!${mask.slice(2).slice(0, -1)}>`;
 			return taggedMask;
 		});
@@ -213,7 +227,6 @@ export function restoreNode(
 					);
 				}
 
-				// Update node raw
 				const length = attr.raw.length;
 				const offset = attr.offset - node.offset;
 				const above = node.raw.slice(0, offset);

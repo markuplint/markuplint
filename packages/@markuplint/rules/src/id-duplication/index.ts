@@ -2,13 +2,6 @@ import { createRule } from '@markuplint/ml-core';
 
 import meta from './meta.js';
 
-/**
- * Rule that checks for duplicate `id` attribute values within a document.
- *
- * Walks all elements and collects `id` values, reporting any that have
- * already been seen. Dynamic values and directive attributes are excluded
- * from the check.
- */
 export default createRule({
 	meta: meta,
 	async verify({ document, report, t }) {

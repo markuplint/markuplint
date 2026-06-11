@@ -31,8 +31,7 @@ const RE_DEFAULT_AND_NAMESPACE = /import\s+(\w+)\s*,\s*\*\s*as\s+(\w+)\s+from/;
 let initPromise: Promise<void> | null = null;
 
 /**
- * Ensures the es-module-lexer WASM module is initialized.
- * Safe to call multiple times; initialization only happens once.
+ * Safe to call multiple times; the WASM module initializes only once.
  */
 async function ensureInit() {
 	initPromise ??= init;
@@ -40,11 +39,7 @@ async function ensureInit() {
 }
 
 /**
- * Parses named import entries from a comma-separated string inside `{ ... }`.
  * Handles `as` aliases (e.g., `Foo as Bar`) and whitespace/trailing commas.
- *
- * @param raw - The raw string between braces, e.g., `"Foo, Bar as Baz"`
- * @returns An array of import bindings with type `'named'`
  */
 function parseNamedEntries(raw: string, source: string): ImportBinding[] {
 	const bindings: ImportBinding[] = [];
@@ -81,15 +76,6 @@ function parseNamedEntries(raw: string, source: string): ImportBinding[] {
 	return bindings;
 }
 
-/**
- * Extracts import bindings from a single import statement slice.
- * Applies regex patterns to determine the import shape (default, named, namespace,
- * or combinations thereof).
- *
- * @param statementText - The full import statement text (from `ss` to `se`)
- * @param source - The resolved module specifier from es-module-lexer
- * @returns An array of import bindings found in this statement
- */
 function extractBindingsFromStatement(statementText: string, source: string): ImportBinding[] {
 	// TypeScript `import type { ... }` — no runtime binding, skip entirely
 	if (RE_TYPE_ONLY_IMPORT.test(statementText)) {
@@ -166,14 +152,9 @@ function extractBindingsFromStatement(statementText: string, source: string): Im
 }
 
 /**
- * Analyzes source text and extracts import bindings using es-module-lexer.
- *
  * Processes static imports and dynamic imports with string literal specifiers.
  * `import.meta` references and dynamic imports with non-literal specifiers
  * (template literals, variables) are excluded.
- *
- * @param source - The source text to analyze (e.g., content of a `<script setup>` block)
- * @returns An array of all import bindings found in the source
  */
 export async function parseImports(source: string): Promise<readonly ImportBinding[]> {
 	await ensureInit();

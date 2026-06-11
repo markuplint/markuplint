@@ -2,10 +2,6 @@ import type { ReadonlyDeep } from 'type-fest';
 
 import meow from 'meow';
 
-/**
- * Help text displayed when the CLI is invoked with `--help` or without arguments.
- * Documents all available options, flags, and usage examples.
- */
 export const help = `
 Usage
 	$ markuplint <HTML file paths (glob format)>
@@ -48,10 +44,6 @@ Examples
 	$ cat verifyee.html | markuplint
 `;
 
-/**
- * The parsed CLI instance created by `meow`, providing access to
- * positional arguments (`cli.input`) and parsed flags (`cli.flags`).
- */
 export const cli = meow(help, {
 	importMeta: import.meta,
 	flags: {
@@ -158,8 +150,4 @@ export const cli = meow(help, {
 	},
 });
 
-/**
- * Deeply read-only type representing the parsed CLI flags.
- * Derived from the `meow` flag definitions in {@link cli}.
- */
 export type CLIOptions = ReadonlyDeep<typeof cli.flags>;

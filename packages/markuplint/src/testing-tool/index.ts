@@ -121,6 +121,9 @@ export async function mlRuleTest<T extends RuleConfigValue, O extends PlainData>
 		fix,
 	);
 
+	// The rule under test runs under the temporary name `<current-rule>`,
+	// so `ruleId` is removed to keep test assertions independent of the
+	// rule's actual registered name.
 	res.violations.map(v => {
 		// @ts-ignore
 		delete v.ruleId;

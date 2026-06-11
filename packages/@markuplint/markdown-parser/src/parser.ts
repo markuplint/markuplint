@@ -17,6 +17,12 @@ type MdastNode = RootContent;
  * Uses remark-parse to produce an mdast, then maps Markdown constructs
  * (headings, paragraphs, lists, links, etc.) to their corresponding HTML
  * element AST nodes. Raw HTML regions are parsed via HtmlParser.
+ *
+ * remark-parse (the unified ecosystem's de facto standard) was chosen over
+ * `@mdx-js/mdx`, which wraps remark-parse internally and adds about 24
+ * unnecessary dependencies for JS compilation that linting does not need,
+ * and over driving the lower-level tokenizer directly, which would require
+ * hand-building the mdast conversion with no practical benefit.
  */
 class MarkdownParser extends MarkdownAwareParser {
 	readonly #htmlParser = new HtmlParser();

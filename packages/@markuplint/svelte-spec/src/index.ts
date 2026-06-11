@@ -5,6 +5,11 @@
  * Defines element-level attribute overrides for Svelte's two-way
  * binding behavior on form elements and IDL property attributes
  * such as `defaultValue`, `defaultChecked`, and `indeterminate`.
+ *
+ * This package intentionally has no test files: it exports only a
+ * static data object whose shape is verified by the TypeScript build
+ * against the `ExtendedSpec` type, and its behavior is covered by the
+ * `@markuplint/svelte-parser` integration tests.
  */
 
 import type { ExtendedSpec } from '@markuplint/ml-spec';
@@ -17,6 +22,13 @@ import type { ExtendedSpec } from '@markuplint/ml-spec';
  * attributes on form elements.
  */
 const spec: ExtendedSpec = {
+	/**
+	 * `'both'` rather than `'idl'` (React) because Svelte templates use
+	 * standard HTML content attribute names, so IDL spellings must not be
+	 * suggested as renames; IDL names such as `defaultValue` are still
+	 * resolved to their content attribute equivalents by `MLAttr` in
+	 * `@markuplint/ml-core`, not by the parser.
+	 */
 	acceptedAttrNames: 'both',
 	def: {
 		'#globalAttrs': {
@@ -37,6 +49,12 @@ const spec: ExtendedSpec = {
 			},
 		},
 	},
+	/**
+	 * The core engine evaluates these in order and the first match wins,
+	 * so `^bind:(?:group|this)$` must precede the generic `^bind:(.+)$`;
+	 * otherwise `bind:group` / `bind:this` would resolve to nonexistent
+	 * `group` / `this` attributes instead of staying directives.
+	 */
 	directivePatterns: [
 		// bind:group, bind:this → true directives
 		{
@@ -99,6 +117,11 @@ const spec: ExtendedSpec = {
 		{
 			name: 'select',
 			attributes: {
+				/**
+				 * Standard HTML has no `value` content attribute on `select`;
+				 * Svelte accepts it, and `bind:value` allows any type, not
+				 * just strings.
+				 */
 				value: {
 					type: 'Any',
 				},
@@ -111,6 +134,11 @@ const spec: ExtendedSpec = {
 		{
 			name: 'textarea',
 			attributes: {
+				/**
+				 * Standard HTML has no `value` content attribute on `textarea`;
+				 * Svelte accepts it, and `bind:value` allows any type, not
+				 * just strings.
+				 */
 				value: {
 					type: 'Any',
 				},

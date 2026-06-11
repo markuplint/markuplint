@@ -1,37 +1,19 @@
 import type { ComponentScanner } from './component-scanner.js';
 
-/**
- * Maps file extensions to their corresponding parser package's component-scanner subpath.
- */
 const SCANNER_PACKAGES: Record<string, string> = {
 	'.vue': '@markuplint/vue-parser/component-scanner',
 	'.svelte': '@markuplint/svelte-parser/component-scanner',
 	'.astro': '@markuplint/astro-parser/component-scanner',
 };
 
-/**
- * Cache of loaded component scanners.
- */
 const scannerCache = new Map<string, ComponentScanner | null>();
 
-/**
- * Checks if an error is a Node.js ERR_MODULE_NOT_FOUND error.
- *
- * @param error - The caught error value
- * @returns `true` if the error has code `ERR_MODULE_NOT_FOUND`
- */
 function isModuleNotFoundError(error: unknown): boolean {
 	return (
 		error instanceof Error && 'code' in error && (error as NodeJS.ErrnoException).code === 'ERR_MODULE_NOT_FOUND'
 	);
 }
 
-/**
- * Dynamically imports the appropriate component scanner for the given file extension.
- *
- * @param ext - The file extension (e.g., `.vue`, `.svelte`, `.astro`)
- * @returns The component scanner, or `null` if unavailable
- */
 export async function getScanner(ext: string): Promise<ComponentScanner | null> {
 	const cached = scannerCache.get(ext);
 	if (cached !== undefined) {

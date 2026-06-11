@@ -42,7 +42,7 @@ export type NuValidationResult =
 
 /**
  * POST `html` to nu-validator and return its parsed messages. Fatal errors
- * (Tier 1 per `docs/architectures/ERROR-HANDLING.md`) propagate without
+ * (Tier 1 per `isFatalError()` in `@markuplint/shared`) propagate without
  * being retried. Timeouts and ordinary request failures are retried up to
  * `retries` times.
  *

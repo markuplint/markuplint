@@ -12,8 +12,6 @@ import { findChildByLocalName, getInputType, isSvgElement, makeResult, resolveNa
 import { resolveLabelText } from './label-steps.js';
 
 /**
- * Computes element-specific accessible name per HTML-AAM §4.1.
- *
  * Implements AccName 1.2 §4.3.2 Step 2E: for elements that have a native
  * host language text alternative, use that alternative. The specific rules
  * for each HTML element are defined in HTML-AAM §4.1.
@@ -21,27 +19,6 @@ import { resolveLabelText } from './label-steps.js';
  * Returns null if no element-specific rule applies, letting the caller
  * fall through to name-from-content (Step 2F) or title fallback (Step 2I).
  *
- * Control flow (dispatches by `localName`):
- * - SVG elements → `handleSvgElement` (SVG-AAM: `<title>` child)
- * - `<input>` → `handleInput` (branches by type: text-like, button, image, hidden)
- * - `<textarea>`, `<select>`, `<meter>`, `<progress>`, `<output>` → `handleLabelableWithTitle`
- * - `<button>` → `handleButton` (label → content → title)
- * - `<fieldset>` → `handleFieldset` (legend → title)
- * - `<table>` → `handleTable` (caption → title)
- * - `<img>` → `handleImg` (alt → title)
- * - `<area>` → `handleArea` (alt → title)
- * - `<figure>` → `handleFigure` (title only)
- * - `<summary>` → `handleSummary` (content → title)
- * - `<a href>` → `handleAnchor` (content → title)
- * - `<iframe>` → `handleTitleOnly` (title only)
- * - All others → null (rely on caller's generic Steps 2F/2I)
- *
- * @param el - The element to compute the name for
- * @param resolver - Environment-dependent resolver for DOM traversal and role queries
- * @param visited - Set of element IDs already visited (cycle prevention)
- * @param computeFn - The recursive accessible name computation function
- * @param inLabelledbyTraversal - Whether this computation is part of an aria-labelledby traversal
- * @returns The computed name result, or null if no element-specific rule applies
  * @see https://www.w3.org/TR/accname-1.2/#computation-steps — AccName 1.2 §4.3.2 Step 2E
  * @see https://www.w3.org/TR/html-aam-1.0/#accessible-name-and-description-computation — HTML-AAM §4.1
  */

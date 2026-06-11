@@ -5,8 +5,15 @@
  * during subsequent lint runs, so new code is strictly enforced while
  * existing violations are addressed incrementally.
  *
- * @see https://github.com/markuplint/markuplint/issues/3503
+ * The design combines ESLint's count-based suppression matching with the
+ * scope-aware precision of `@rushstack/eslint-bulk`, but expresses scope as
+ * CSS selectors rather than AST scope identifiers because selectors are the
+ * natural addressing scheme for an HTML linter.
+ *
+ * @see https://github.com/markuplint/markuplint/issues/3503 — Phase 1 (count-only)
+ * @see https://github.com/markuplint/markuplint/issues/3509 — Phase 2 (scope selectors)
  * @see https://eslint.org/docs/latest/use/suppressions — Reference design
+ * @see https://www.npmjs.com/package/@rushstack/eslint-bulk — Scope-aware prior art
  */
 
 export type { SuppressionsData, SuppressionEntry } from './types.js';

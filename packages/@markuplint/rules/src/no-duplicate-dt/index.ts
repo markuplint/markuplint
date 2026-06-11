@@ -2,12 +2,6 @@ import { createRule } from '@markuplint/ml-core';
 
 import meta from './meta.js';
 
-/**
- * Rule that validates there are no duplicate `<dt>` elements within a `<dl>`.
- *
- * Iterates through each definition list and checks that no two `<dt>` elements
- * (direct children or wrapped in `<div>`) share the same text content.
- */
 export default createRule({
 	meta: meta,
 	verify({ document, report, t }) {

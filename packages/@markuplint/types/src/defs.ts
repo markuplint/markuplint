@@ -33,16 +33,25 @@ import { isSimpleColor } from './whatwg/check-simple-color.js';
 // Hoist the URL Living Standard checker once so type entries that wrap it
 // (e.g. `BaseURL`, which adds the `<base>`-specific data:/javascript: filter
 // on top) do not pay closure-construction cost per attribute value.
+//
+// URL-family selection guide — when wiring an attribute in spec data, map
+// the HTML Living Standard's exact production wording to the type name:
+//
+// - "valid URL potentially surrounded by spaces" → `URL`
+//   (empty is valid; it resolves to the document's own URL)
+// - "valid non-empty URL potentially surrounded by spaces" → `NonEmptyURL`
+//   (the `src`-attribute production)
+// - `<base href>` ("set the frozen base URL") → `BaseURL`
+// - "valid absolute URL" as a per-token constraint in a list (e.g.
+//   `itemtype`) → `AbsoluteURL`
+// - "if specified and not empty, must be a valid absolute URL potentially
+//   surrounded by ASCII whitespace" (HTML LS §4.10.5.1.7,
+//   `<input type=url value>`) → `AbsoluteURLOrEmpty`
+//
+// All of these layer their per-attribute constraint on top of the shared
+// `checkURLOnce` so URL LS validation-error coverage stays uniform.
 const checkURLOnce = checkURL();
 
-/**
- * Built-in type definitions registry for HTML attribute value validation.
- *
- * Maps type identifiers to their validation logic, reference URLs,
- * and expected value descriptions. Includes definitions for common types
- * (Any, Number, URL, etc.), WHATWG-specified types (DateTime, MIMEType,
- * CustomElementName, etc.), and format-specific validators (BCP47, Pattern, etc.).
- */
 export const defs: Defs = {
 	Any: {
 		ref: '',
@@ -345,11 +354,6 @@ export const defs: Defs = {
 	},
 
 	/**
-	 * Validates a URL (potentially surrounded by spaces) per WHATWG URL Standard.
-	 * Uses `new URL()` for structural parsing plus strict checks for illegal
-	 * whitespace, malformed percent-encoding, and C0 control characters.
-	 * Relative URLs are resolved against a dummy base for syntax validation.
-	 *
 	 * Previously this was always-matched ("NO IMPLEMENT NEVER") because
 	 * relative URLs accept almost any character string. After investigating
 	 * nu-html-checker's galimatias parser, we found that resolving relative
@@ -370,9 +374,6 @@ export const defs: Defs = {
 	 * `<audio>`/`<embed>`/`<iframe>`/`<img>`/`<input type=image>`/`<script>`/
 	 * `<source>`/`<track>`/`<video>` — the URL token MUST contain at least one
 	 * non-whitespace character.
-	 *
-	 * Delegates to `checkURL` for syntax validation; rejects values that are
-	 * empty after stripping ASCII whitespace.
 	 *
 	 * @see https://html.spec.whatwg.org/multipage/urls-and-fetching.html#valid-non-empty-url
 	 * @see https://html.spec.whatwg.org/multipage/urls-and-fetching.html#valid-non-empty-url-potentially-surrounded-by-spaces
@@ -453,9 +454,6 @@ export const defs: Defs = {
 	},
 
 	/**
-	 * Subresource Integrity metadata: one or more space-separated
-	 * `hash-algo-base64` tokens where algo is sha256, sha384, or sha512.
-	 *
 	 * Note: The SRI spec also allows `?options` suffix (e.g., `sha256-abc?ct=...`)
 	 * but this is not widely used and not tested by nu-validator.
 	 *
@@ -661,6 +659,11 @@ export const defs: Defs = {
 		is: checkMediaQueryList(),
 	},
 
+	// `HTTPEquivRefresh` / `HTTPEquivContentType` are selected at runtime by a
+	// `ConditionalAttributeType[]` entry on `meta.content` in
+	// `@markuplint/html-spec`, keyed by the `http-equiv` value
+	// (`refresh` / `content-type`). Other `http-equiv` values fall through to
+	// `Any` via the resolver in `@markuplint/rules`.
 	HTTPEquivRefresh: {
 		ref: 'https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-http-equiv-refresh',
 		expects: [

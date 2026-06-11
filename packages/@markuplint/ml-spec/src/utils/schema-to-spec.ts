@@ -9,6 +9,16 @@ import { mergeArray } from './merge-array.js';
  *
  * Ex: `@markuplint/html-spec` + `{ specs: { "\\.vue$": "@markuplint/vue-spec" } }` in configure files.
  *
+ * The merge is an additive overlay with silent, unconditional override: later
+ * specs win, and there is deliberately no conflict detection and no provenance
+ * tracking in the merged result. Framework specs exist precisely to relax or
+ * extend base HTML constraints (e.g. React's `dangerouslySetInnerHTML`, Vue's
+ * `v-if`), so every key collision with the base spec is treated as a
+ * deliberate decision by the `ExtendedSpec` author — an extension that
+ * unintentionally weakens a base constraint is not flagged anywhere.
+ *
+ * @see https://github.com/markuplint/markuplint/issues/3893
+ *
  * @param schemas - A tuple where the first element is the base `MLMLSpec` and subsequent elements are extended specs to merge
  * @returns The merged specification combining the base spec with all extensions
  */

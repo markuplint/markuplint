@@ -1,11 +1,3 @@
-/**
- * @module cli/init
- *
- * Interactive initialization wizard for markuplint.
- * Guides the user through selecting template engines, rule categories,
- * and dependency installation, then writes a `.markuplintrc` config file.
- */
-
 import type { Category, DefaultRules, Langs, RuleSettingMode } from './types.js';
 
 import fs from 'node:fs/promises';
@@ -40,13 +32,6 @@ const ruleCategories: Record<
 	},
 };
 
-/**
- * Runs the interactive initialization flow.
- *
- * Prompts the user to select template engines, choose rule categories or the
- * recommended preset, generates a `.markuplintrc` configuration file in the
- * current working directory, and optionally installs the required npm packages.
- */
 export async function initialize() {
 	process.stdout.write(header('Initialization'));
 	process.stdout.write('\n');

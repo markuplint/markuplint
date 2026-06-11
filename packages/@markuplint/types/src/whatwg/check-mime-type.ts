@@ -14,10 +14,6 @@ const expects = (withoutParameters: boolean) => [
 ];
 
 /**
- * Locates the start position of a parameter whose quoted-string value is
- * unterminated (no closing DQUOTE before end-of-string), or `null` when every
- * quoted-string is properly closed.
- *
  * [RFC 9110 §5.6.6](https://www.rfc-editor.org/rfc/rfc9110#name-parameters)
  * requires the closing DQUOTE in `quoted-string`; the
  * [WHATWG MIME Sniffing](https://mimesniff.spec.whatwg.org/#parse-a-mime-type)
@@ -30,9 +26,6 @@ const expects = (withoutParameters: boolean) => [
  * WHATWG MIME Sniffing's tokenizer (and every nu-validator-known input
  * today) closes that gap. If a future fixture exercises `; charset = "..."`
  * style spacing, extend this scan to skip OWS before checking for `"`.
- *
- * @param value Raw attribute value to scan.
- * @returns The offset of the opening DQUOTE of the unterminated parameter, or `null`.
  */
 function findUnterminatedQuotedString(value: string): { readonly offset: number } | null {
 	for (let i = 0; i < value.length; ) {
@@ -68,10 +61,6 @@ function findUnterminatedQuotedString(value: string): { readonly offset: number 
 }
 
 /**
- * Validates a MIME type string according to the WHATWG MIME Sniffing specification.
- *
- * Optionally restricts to MIME types with no parameters.
- *
  * @see https://mimesniff.spec.whatwg.org/#valid-mime-type
  */
 export const checkMIMEType: CustomSyntaxChecker<{

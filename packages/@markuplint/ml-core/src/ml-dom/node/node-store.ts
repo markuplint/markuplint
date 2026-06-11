@@ -72,7 +72,4 @@ class NodeStore {
 	}
 }
 
-/**
- * `NodeStore` Singleton
- */
 export const nodeStore = new NodeStore();

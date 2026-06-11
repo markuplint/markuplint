@@ -24,11 +24,6 @@ type Options = {
 	readonly checkNonStandard?: boolean;
 };
 
-/**
- * Rule that warns when using HTML elements or attributes that are not
- * supported by the project's target browsers (via browserslist),
- * or that are experimental/non-standard.
- */
 export default createRule<boolean, Options>({
 	meta: meta,
 	defaultSeverity: 'warning',

@@ -5,13 +5,6 @@ import { removeAttr } from '../helpers.js';
 
 import meta from './meta.js';
 
-/**
- * Rule that detects attributes that have no effect on their owner element.
- *
- * Checks each attribute's spec for ineffective conditions (CSS selectors)
- * and reports when the owner element matches any of those conditions,
- * meaning the attribute is present but has no practical effect.
- */
 export default createRule({
 	meta: meta,
 	defaultSeverity: 'warning',

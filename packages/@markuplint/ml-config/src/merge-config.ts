@@ -24,6 +24,13 @@ import { deleteUndefProp, cleanOptions, isRuleConfigValue, isNamedRuleGroup } fr
  * - Objects (parser, specs, etc.) are shallow-merged
  * - The `extends` property is removed from the result when `b` is provided
  *
+ * Top-level collections (plugins, excludeFiles, nodeRules, childNodeRules)
+ * accumulate across config layers because their items are independent
+ * entries forming a collection; rule values, by contrast, are overridden
+ * (see {@link mergeRule}) because they represent a single rule's configuration.
+ *
+ * @see https://markuplint.dev/configuration
+ *
  * @param a - The base configuration
  * @param b - The configuration to merge on top of `a`
  * @returns The merged and optimized configuration
@@ -76,6 +83,11 @@ export function mergeConfig(a: Config, b?: Config): OptimizedConfig {
  * If `b` is a direct value (including arrays), it overrides `a`.
  * If both are full config objects, their properties are merged
  * (severity/value/reason: right-side wins, options: shallow-merged).
+ *
+ * Array values intentionally override rather than concatenate: the more
+ * specific config replaces the rule's value entirely, matching ESLint and
+ * Biome behavior, because an array here is a single rule's configuration
+ * value rather than a collection of independent items.
  *
  * @param a - The base rule configuration (may be `null` or `undefined`)
  * @param b - The rule configuration to merge on top
@@ -190,6 +202,14 @@ function mergeOverrides(
 	return result;
 }
 
+/**
+ * Shallow merge (`{...a, ...b}`) is a deliberate middle ground between
+ * ESLint (complete replacement) and Biome (deep merge): top-level keys are
+ * merged, nested objects are replaced. A deep-merge library was removed in
+ * favor of plain object spread because every merged object in markuplint
+ * config (parser, specs, parserOptions, severity, plugin settings, rule
+ * options) is a flat key-value map.
+ */
 function mergeObject<T>(a: Nullable<T>, b: Nullable<T>): T | undefined {
 	if (a == null) {
 		return b ?? undefined;
@@ -264,15 +284,6 @@ function getName(item: any, comparePropName: string) {
 	return null;
 }
 
-/**
- * Merges two Rules dictionaries. Keys containing `/` use named rule group
- * merge semantics ({@link mergeNamedRuleGroupEntry}); other keys use standard
- * rule merge semantics ({@link mergeRule}).
- *
- * @param a - The base rules (lower priority)
- * @param b - The override rules (higher priority)
- * @returns The merged rules, or `undefined` if both inputs are nullish
- */
 function mergeRules(a?: Rules, b?: Rules): Rules | undefined {
 	if (a == null) {
 		return b && optimizeRules(b);
@@ -296,17 +307,6 @@ function mergeRules(a?: Rules, b?: Rules): Rules | undefined {
 	return Object.freeze(res);
 }
 
-/**
- * Merges a named rule group entry (key containing `/`).
- *
- * - `false` disables the group entirely
- * - A partial override object (e.g., `{ severity: "warning" }`) is merged into the existing NamedRuleGroup
- * - Otherwise, right side wins
- *
- * @param a - The existing entry from a lower-priority config (may be a NamedRuleGroup)
- * @param b - The overriding entry from a higher-priority config
- * @returns The merged entry
- */
 function mergeNamedRuleGroupEntry(
 	a: AnyRule | NamedRuleGroup | undefined,
 	b: AnyRule | NamedRuleGroup,
@@ -369,15 +369,7 @@ function toReadonlyArray<T>(value: NonNullable<T> | readonly NonNullable<T>[] | 
 }
 
 /**
- * Checks if a value is a readonly array.
- *
- * If the array is readonly, it passes the type check.
- * However, it saves the type because using ESLint warns `@typescript-eslint/prefer-readonly-parameter-types`.
- *
- * @param value - The value to check.
- * @returns `true` if the value is a readonly array, `false` otherwise.
- * @template T - The type of elements in the array.
- * @template X - The type of the value if it's not an array.
+ * Saves the type because using ESLint warns `@typescript-eslint/prefer-readonly-parameter-types`.
  */
 function isReadonlyArray<T, X = unknown>(value: readonly T[] | X): value is ReadonlyArray<T> {
 	return Array.isArray(value);

@@ -7,7 +7,6 @@ import { checkingValue } from '../wai-aria/checkings/value.js';
 import { defaultOptions } from '../wai-aria/default-options.js';
 import meta from './meta.js';
 
-/** Warns when an ARIA property or state value does not conform to its expected type. */
 export default createRule<boolean, Options>({
 	meta,
 	defaultOptions,

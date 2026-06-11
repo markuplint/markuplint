@@ -1,8 +1,3 @@
-/**
- * Counts consecutive backslashes immediately before position `i` in `raw`.
- * An odd count means the character at `i` is escaped; an even count means
- * the preceding backslashes are themselves paired escapes.
- */
 function countPrecedingBackslashes(raw: string, i: number): number {
 	let n = 0;
 	let j = i - 1;
@@ -14,12 +9,6 @@ function countPrecedingBackslashes(raw: string, i: number): number {
 }
 
 /**
- * Locates the matching closing brace for a JS-like expression that starts at
- * `raw[start]` (which must be `{`), respecting string literals (`'`, `"`),
- * template literals with `${}` interpolation, and line/block comments.
- *
- * Returns the index of the matching `}`, or -1 if no match is found.
- *
  * Why this exists: `safeScriptParser` (espree-based) does not understand
  * TypeScript syntax such as `{...x as any}` and may also extend a "valid JS
  * prefix" past the spread's closing brace into surrounding HTML
@@ -32,6 +21,15 @@ function countPrecedingBackslashes(raw: string, i: number): number {
  * (e.g. `{...x.match(/}/) ? a : b}`) are not recognised — `/` is always
  * treated as a division operator. Such patterns are vanishingly rare in
  * Astro spread attributes; rewrite via a variable indirection if needed.
+ *
+ * This is intentionally a minimal brace matcher, not a full JavaScript
+ * lexer: when a new edge case is reported, extend the string / comment /
+ * escape branches with the minimum change rather than introducing a lexer.
+ *
+ * Retraction condition: if parser-utils' `script-parser.ts` is upgraded to
+ * handle TypeScript syntax and to stop extending past the spread's closing
+ * `}`, this module and the `visitAttr()` pre-pass in `parser.ts` can be
+ * removed and the base parser path restored.
  */
 export function findMatchingBrace(raw: string, start: number): number {
 	if (raw[start] !== '{') return -1;
@@ -92,12 +90,6 @@ export function findMatchingBrace(raw: string, start: number): number {
 }
 
 /**
- * Detects whether the given attribute token starts with an Astro spread
- * attribute (`{...EXPR}`) and, if so, returns the spread's exact slice plus
- * the leading whitespace and any leftover trailing text after the spread.
- *
- * Returns null when the token is not a spread attribute.
- *
  * Exported so the brace-matching logic can be unit-tested independently of
  * the parser pipeline.
  */

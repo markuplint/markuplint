@@ -6,19 +6,8 @@ import type { ElementSpec, ExtendedElementSpec, Category, Attribute } from '@mar
 import { fetch } from './fetch.ts';
 import { sortObjectByKey } from './utils.ts';
 
-/**
- * CSS selector for the main content area on MDN pages.
- */
 const MAIN_ARTICLE_SELECTOR = 'main#content';
 
-/**
- * Generates minimal element specification stubs for obsolete/deprecated elements
- * that do not already exist in the provided specs array.
- *
- * @param obsoleteList - A list of element names considered obsolete or deprecated
- * @param specs - The existing element specifications to check against for duplicates
- * @returns An array of element spec stubs for elements not already present in `specs`
- */
 export function fetchObsoleteElements(
 	obsoleteList: readonly string[],
 	specs: readonly ExtendedElementSpec[],
@@ -49,13 +38,6 @@ export function fetchObsoleteElements(
 		.filter((e): e is ElementSpec => !!e);
 }
 
-/**
- * Scrapes an MDN element reference page to extract metadata about an HTML or SVG element.
- * Gathers description, compatibility status flags, content categories, and attributes.
- *
- * @param link - The MDN URL for the element (e.g., `https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/a`)
- * @returns An extended element specification object populated with scraped MDN data
- */
 export async function fetchHTMLElement(link: string) {
 	const $ = await fetch(link);
 	const name = link.replace(/.+\/([\w-]+)$/, '$1').toLowerCase();
@@ -143,13 +125,6 @@ export async function fetchHTMLElement(link: string) {
 	return spec;
 }
 
-/**
- * Extracts the text value of a specific property from the MDN technical summary table.
- *
- * @param $ - The Cheerio API instance for the page
- * @param prop - The property name to look for in the table header cells (matched case-insensitively)
- * @returns The trimmed text content of the corresponding table cell
- */
 function getProperty(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	$: cheerio.CheerioAPI,
@@ -165,15 +140,6 @@ function getProperty(
 	return $th.siblings('td').text().trim().replaceAll(/\s+/g, ' ');
 }
 
-/**
- * Extracts element attributes from an MDN page section identified by its `aria-labelledby` ID.
- * Parses each `<dt>` entry in the section's definition list to gather attribute name,
- * description, and status flags (experimental, obsolete, deprecated, non-standard).
- *
- * @param $ - The Cheerio API instance for the page
- * @param id - The `aria-labelledby` ID of the section containing the attributes
- * @returns An object containing a record of parsed attribute definitions keyed by attribute name
- */
 function getAttributes(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	$: cheerio.CheerioAPI,
@@ -243,12 +209,6 @@ function getAttributes(
 	return { attributes };
 }
 
-/**
- * Traverses the DOM upward from a starting element to find its nearest preceding heading element.
- *
- * @param $start - The Cheerio element from which to begin the upward search
- * @returns The heading element if found, or `null` if no heading is encountered
- */
 function getItsHeading(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	$start: cheerio.Cheerio<Element>,
@@ -263,12 +223,6 @@ function getItsHeading(
 	return null;
 }
 
-/**
- * Moves to the previous sibling of the given element, or to its parent if no previous sibling exists.
- *
- * @param $start - The Cheerio element from which to navigate
- * @returns The previous sibling or parent element
- */
 function upToPrevOrParent(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	$start: cheerio.Cheerio<Element>,
@@ -280,12 +234,6 @@ function upToPrevOrParent(
 	return $needle;
 }
 
-/**
- * Checks whether a Cheerio element is an HTML heading element (`<h1>` through `<h6>`).
- *
- * @param $el - The Cheerio element to test
- * @returns `true` if the element is a heading, `false` otherwise
- */
 function isHeading(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	$el: cheerio.Cheerio<Element>,

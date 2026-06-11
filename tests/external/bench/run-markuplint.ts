@@ -41,7 +41,7 @@ function sortViolations(violations: readonly MlViolation[]): MlViolation[] {
 /**
  * Run `mlTest` against every matching HTML fixture with `benchmarkConfig`
  * and write one JSON snapshot per file under `snapshots/markuplint/`.
- * Fatal errors (Tier 1 per `docs/architectures/ERROR-HANDLING.md`)
+ * Fatal errors (Tier 1 per `isFatalError()` in `@markuplint/shared`)
  * propagate; recoverable errors are recorded on the snapshot via
  * `parseError` / `parseErrorMessage` and also logged to stderr so
  * bench runs surface them immediately.

@@ -7,12 +7,24 @@ export type Replacements = {
 	readonly bodies: readonly string[];
 };
 
+// U+FFFD (Unicode Replacement Character) cannot appear in real-world tag
+// names, so the placeholder never collides with an author-written element.
 const UNDUPLICATED_CHAR = '\uFFFD';
 
 export function isStartsHeadTagOrBodyTag(rawCode: string) {
 	return /^\s*<(?:head|body)[\s>]/i.test(rawCode);
 }
 
+/**
+ * Why this optimization exists: when HTML source starts with `<head>` or
+ * `<body>` without a preceding `<html>` tag, parse5 — following the HTML
+ * standard's tree construction — treats those tags as implicit structural
+ * tags rather than parsing them literally, which yields an AST that no
+ * longer maps to the source. Replacing the tag names with unique placeholder
+ * names makes parse5 treat them as custom elements and parse them literally;
+ * `optimizeStartsHeadTagOrBodyTagResume` restores the original names on the
+ * resulting AST.
+ */
 export function optimizeStartsHeadTagOrBodyTagSetup(rawCode: string): Replacements {
 	if (!isStartsHeadTagOrBodyTag(rawCode)) {
 		return {

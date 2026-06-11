@@ -5,11 +5,6 @@ import { createRule } from '@markuplint/ml-core';
 import meta from './meta.js';
 import { hasSizesAuto, parseSrcset } from './parse-srcset.js';
 
-/**
- * Rule that enforces WHATWG constraints between the `srcset`, `sizes`,
- * `loading`, `media`, and `type` attributes on `<img>` and `<source>`
- * elements.
- */
 export default createRule<boolean>({
 	meta: meta,
 	async verify({ document, report }) {

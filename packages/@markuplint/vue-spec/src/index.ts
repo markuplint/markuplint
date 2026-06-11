@@ -5,6 +5,10 @@
  * Defines Vue's special global attributes (`key` for list rendering
  * and `ref` for template refs) and element-level overrides such as
  * allowing dynamic properties on the `<slot>` element.
+ *
+ * This package has no dedicated test files because it only exports
+ * a static data object; it is verified through the type check at
+ * build time and `@markuplint/vue-parser`'s integration tests.
  */
 
 import type { ExtendedSpec } from '@markuplint/ml-spec';
@@ -19,6 +23,9 @@ import type { ExtendedSpec } from '@markuplint/ml-spec';
  * element is marked as allowing additional dynamic properties.
  */
 const spec: ExtendedSpec = {
+	// Patterns are evaluated in order and resolution is first-match-wins
+	// (see `resolveDirective` in @markuplint/ml-spec), so any new pattern
+	// must be inserted before the generic `^v-` catch-all at the end.
 	directivePatterns: [
 		// .propName shorthand (Vue 3.2+, equivalent to v-bind:propName.prop)
 		{
@@ -43,6 +50,8 @@ const spec: ExtendedSpec = {
 			pattern: '^(?:v-bind:|:)([^.]+)$',
 			potentialName: '$1',
 			isDynamicValue: true,
+			// Vue merges static `class`/`style` with their bound equivalents,
+			// so these attributes may legitimately appear alongside `:class`/`:style`
 			isDuplicatable: ['class', 'style'],
 		},
 		// v-on:event or @event (with optional modifiers)
@@ -87,6 +96,8 @@ const spec: ExtendedSpec = {
 	},
 	specs: [
 		{
+			// Scoped slot APIs pass arbitrary props through `<slot>`,
+			// so any property must be allowed on it
 			name: 'slot',
 			possibleToAddProperties: true,
 		},
