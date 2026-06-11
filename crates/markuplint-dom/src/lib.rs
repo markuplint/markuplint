@@ -8,7 +8,8 @@
 //! (`NodeId = usize`) rather than by `Rc`/`&` pointers. A DOM is a graph with
 //! parent/child/sibling back-references, which a borrow-checked tree of owned
 //! references cannot express without pervasive `Rc<RefCell<…>>`. Indices sidestep
-//! the lifetime and aliasing complexity entirely and keep traversal allocation-free.
+//! the lifetime and aliasing complexity entirely and avoid per-node heap allocation
+//! (though depth-first traversal helpers still allocate a working `Vec`).
 //!
 //! ## Two construction paths feed this arena
 //!

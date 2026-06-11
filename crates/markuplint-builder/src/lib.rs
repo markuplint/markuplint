@@ -1,12 +1,12 @@
 //! N-API bridge for markuplint Rust modules (`markuplint-builder`).
 //!
 //! This crate compiles to the platform-specific `.node` binary loaded by the
-//! `@markuplint/core` TS package. That package is intentionally `private` and not
-//! yet consumed by other packages: it is the staging ground for replacing the TS
-//! MLDOM in `@markuplint/ml-core` and the CSS-validation half of `@markuplint/types`
-//! with these Rust implementations. The dual `new`/`from_html` and `lint`/`lint_html`
-//! entry points mirror the two DOM-construction paths (MLAST-JSON vs. full-Rust); see
-//! the `markuplint-dom` crate docs for why both exist.
+//! `@markuplint/core` TS package, which the `markuplint` package depends on. It is
+//! the staging ground for replacing the TS MLDOM in `@markuplint/ml-core` and the
+//! CSS-validation half of `@markuplint/types` with these Rust implementations. The
+//! dual `new`/`from_html` and `lint`/`lint_html` entry points mirror the two
+//! DOM-construction paths (MLAST-JSON vs. full-Rust); see the `markuplint-dom`
+//! crate docs for why both exist.
 
 #![allow(clippy::cast_possible_truncation)]
 

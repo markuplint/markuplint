@@ -9,11 +9,12 @@
 //! ```
 //!
 //! This crate is deliberately separate so it can depend on *both*
-//! `markuplint-types` (spec data) and `markuplint-selector` (CSS matching) at
-//! once: selector evaluation needs ARIA/spec data, but `markuplint-selector`
-//! cannot depend on the spec layer without a cycle. The rule engine sits on top
-//! of both and supplies the `AriaResolver` implementation back to the selector
-//! matcher (see `aria_resolver_impl`), keeping the lower crates acyclic.
+//! `markuplint-types` (spec data) and `markuplint-selector` (CSS matching) at once.
+//! Selector evaluation needs ARIA computation (computed role, accessible name),
+//! which lives here in the rule engine; `markuplint-selector` cannot depend on
+//! `markuplint-rules` without a cycle, so the selector defines the `AriaResolver`
+//! trait and this crate supplies the implementation back to it (see
+//! `aria_resolver_impl`), keeping the lower crates acyclic.
 
 pub mod aria;
 pub mod aria_resolver_impl;

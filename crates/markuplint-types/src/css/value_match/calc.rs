@@ -4,11 +4,12 @@
 //! by parsing internal expressions and checking type compatibility per
 //! [CSS Values Level 4 § Type Checking](https://drafts.csswg.org/css-values/#calc-type-checking).
 //!
-//! This goes beyond css-tree, which accepts math functions without validating
-//! internals. Type checking is worth the extra code because it catches real
-//! errors that css-tree lets through — e.g. `calc(10px + 5deg)` mixes a length
-//! and an angle, an invalid operation — and the checking algorithm is O(n), so
-//! there is no performance cost to running it.
+//! This goes beyond css-tree, which accepts math functions without parsing their
+//! internals. The O(n) algorithm computes the result type of each expression — e.g.
+//! that `calc(10px + 5deg)` mixes a length and an angle. During the
+//! css-tree-compatibility transition, `match_math_function` still ACCEPTS such type
+//! mismatches (returns a match) rather than rejecting them; the computed type is the
+//! foundation for future rejection but is not yet used to fail a match.
 
 use crate::css::value_match::token::Token;
 use crate::css::value_match::units::{self, DimensionType};
