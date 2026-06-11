@@ -1,5 +1,5 @@
 ---
-description: Verify documentation claims against web standards and source code
+description: Verify @markuplint/types documentation claims (attribute value types, WHATWG/W3C/RFC/CSS validators) against web standards and source code
 ---
 
 # verify-docs

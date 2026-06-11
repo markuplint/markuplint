@@ -1,5 +1,5 @@
 ---
-description: Verify documentation claims against web standards and source code
+description: Verify @markuplint/ml-spec documentation claims (HTML/WAI-ARIA algorithms, spec resolution) against web standards and source code
 ---
 
 # verify-docs

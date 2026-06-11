@@ -8,7 +8,7 @@ globs:
 alwaysApply: false
 ---
 
-# framework-parsers-maintenance
+# framework-parsers
 
 Create and maintain framework parser and spec packages for markuplint.
 
