@@ -12,11 +12,8 @@ use crate::aria::computed_role::get_computed_role;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
-/// The `landmark-roles` rule.
 pub struct LandmarkRoles;
 
-/// Landmark role names.
-///
 /// Matches the TS implementation which does NOT include "search".
 /// The TS rule identifies landmarks via CSS selectors for specific elements,
 /// and "search" is not in that list (even though ARIA defines it as a landmark role).
@@ -48,7 +45,6 @@ impl Rule for LandmarkRoles {
         let mut violations = Vec::new();
         let version = ARIAVersion::RECOMMENDED;
 
-        // Read options from global config
         let global = config.global();
         let ignore_roles: Vec<String> = global
             .options
@@ -62,7 +58,6 @@ impl Rule for LandmarkRoles {
             .and_then(serde_json::Value::as_bool)
             .unwrap_or(true);
 
-        // Collect all landmarks: (node_id, role_name, line, col, raw)
         let mut landmarks: Vec<(NodeId, String, u32, u32, String)> = Vec::new();
 
         for (node_id, el) in arena.elements() {
@@ -79,12 +74,10 @@ impl Rule for LandmarkRoles {
             if let Some(role) = &computed.role
                 && is_landmark_role(&role.name)
             {
-                // Skip roles in ignoreRoles list
                 if ignore_roles.iter().any(|r| r.eq_ignore_ascii_case(&role.name)) {
                     continue;
                 }
 
-                // Check if this is a top-level landmark (no ancestor with a landmark role)
                 if has_landmark_ancestor(arena, spec, node_id, version) {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
@@ -108,12 +101,10 @@ impl Rule for LandmarkRoles {
             }
         }
 
-        // Skip label uniqueness check if labelEachArea is false
         if !label_each_area {
             return violations;
         }
 
-        // Group landmarks by role name
         let mut role_groups: HashMap<String, Vec<(NodeId, u32, u32, String)>> = HashMap::new();
         for (node_id, role_name, line, col, raw) in &landmarks {
             role_groups
@@ -122,7 +113,6 @@ impl Rule for LandmarkRoles {
                 .push((*node_id, *line, *col, raw.clone()));
         }
 
-        // For roles with 2+ instances, check unique accessible names
         for group in role_groups.values() {
             if group.len() < 2 {
                 continue;
@@ -151,7 +141,6 @@ impl Rule for LandmarkRoles {
     }
 }
 
-/// Check if any ancestor of the given node has a landmark role.
 fn has_landmark_ancestor(arena: &DomArena, spec: &MLMLSpec, node_id: NodeId, version: ARIAVersion) -> bool {
     for ancestor in arena.ancestors(node_id) {
         if let Some(el) = ancestor.as_element() {

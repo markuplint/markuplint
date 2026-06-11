@@ -1,8 +1,6 @@
-//! Direct HTML parser Arena → `DomArena` builder.
-//!
-//! Bypasses MLAST JSON entirely: converts the internal parser tree
-//! into a `DomArena` in a single pass with minimal String allocation.
-//! Only available when the `html-parser` feature is enabled.
+//! Path B: builds the arena straight from the HTML parser's internal tree (see crate
+//! root). Bypasses MLAST JSON entirely to minimize String allocation. Gated on the
+//! `html-parser` feature.
 
 use markuplint_core::mlast::{ElementType, NamespaceURI};
 use markuplint_html_parser::tree::Arena as ParserArena;
@@ -11,16 +9,12 @@ use markuplint_html_parser::tree::node::{Namespace, NodeId as ParserNodeId, Node
 use crate::arena::{DomArena, NodeId};
 use crate::node::{CommentData, DoctypeData, DocumentData, DomNode, ElementData, NodeBase, TextData};
 
-/// Build a `DomArena` directly from the HTML parser's internal arena.
-///
-/// This is the zero-copy fast path for HTML: no JSON serialization,
-/// no MLAST intermediate, no String cloning for `raw` (source slicing).
 #[must_use]
 pub fn build_from_html_arena(source: &str, parser_arena: &ParserArena, is_fragment: bool) -> DomArena {
     let mut dom = DomArena::new();
     dom.source = Some(source.to_owned());
 
-    // Document root (always id=0).
+    // Document root is always id=0.
     // If the parser encountered tree construction parse errors (e.g., unclosed
     // formatting elements causing "Broke mapping nodes" in TS), propagate the
     // first one as unknown_parse_error so the lint pipeline can replicate TS
@@ -43,12 +37,10 @@ pub fn build_from_html_arena(source: &str, parser_arena: &ParserArena, is_fragme
         top_level_ids.push(converted);
     }
 
-    // Set document children.
     if let Some(DomNode::Document(doc_data)) = dom.get_mut(0) {
         doc_data.children.clone_from(&top_level_ids);
     }
 
-    // Resolve parent/sibling links.
     resolve_links(&mut dom, &top_level_ids, 0);
 
     // Add orphaned end tags as bogus Text nodes (matching TS behavior where
@@ -127,11 +119,9 @@ fn convert_parser_node(
                 ElementType::Html
             };
 
-            // Convert attributes: use source slicing, not MLAST tokens.
             let mlast_attrs = attributes
                 .iter()
                 .map(|attr| {
-                    // Build minimal MLAST attribute from parser attribute spans.
                     let attr_uuid = (dom.len() + 1).to_string(); // placeholder
                     markuplint_core::mlast::MLASTAttr::HTMLAttr(Box::new(markuplint_core::mlast::MLASTHTMLAttr {
                         uuid: attr_uuid,
@@ -324,7 +314,6 @@ fn strip_orphaned_end_tags(
     orphaned: &[(String, markuplint_html_parser::input::Span)],
 ) -> String {
     let text_end_offset = text_start_offset + raw.len();
-    // Collect orphaned spans that overlap this text node
     let mut to_remove: Vec<(usize, usize)> = Vec::new();
     for (_tag, span) in orphaned {
         let s = span.start.offset;

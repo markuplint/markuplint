@@ -11,7 +11,6 @@ use crate::violation::{Severity, Violation};
 #[cfg(test)]
 mod tests;
 
-/// The `case-sensitive-tag-name` rule.
 pub struct CaseSensitiveTagName;
 
 impl Rule for CaseSensitiveTagName {
@@ -28,7 +27,6 @@ impl Rule for CaseSensitiveTagName {
             if rule_config.disabled {
                 continue;
             }
-            // Only check HTML namespace
             if el.namespace != NamespaceURI::XHTML {
                 continue;
             }
@@ -41,7 +39,7 @@ impl Rule for CaseSensitiveTagName {
             };
             let message = format!("Tag names of HTML elements {verb} be {case}case");
 
-            // Use raw tag name from source to preserve original case
+            // Use the raw source name so original case is preserved for the comparison.
             let Some(raw_name) = get_raw_tag_name(el) else {
                 continue;
             };
@@ -67,7 +65,6 @@ impl Rule for CaseSensitiveTagName {
                 });
             }
 
-            // Check closing tag
             if let Some(ct) = &el.close_tag {
                 let Some(close_raw_name) = extract_tag_name_from_raw(&ct.raw) else {
                     continue;

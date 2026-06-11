@@ -39,10 +39,8 @@ impl Rule for LinkTypes {
                 continue;
             }
 
-            // Determine element context
             let context = match tag {
                 "link" => {
-                    // Check if inside <body>
                     if is_in_body(arena, node_id) {
                         ElementContext::BodyLink
                     } else {
@@ -54,7 +52,6 @@ impl Rule for LinkTypes {
                 _ => continue,
             };
 
-            // Parse options
             let allow_microformats = parse_allow_microformats(&rule_config.options);
 
             for keyword in trimmed.split_whitespace() {
@@ -117,17 +114,14 @@ fn validate_keyword(
     context: ElementContext,
     allow_microformats: &AllowMicroformats,
 ) -> Option<String> {
-    // Check WHATWG standard keywords
     if let Some(def) = WHATWG_KEYWORDS.iter().find(|d| d.keyword == kw_lower) {
         return validate_whatwg(def, context);
     }
 
-    // Check dropped keywords
     if DROPPED_KEYWORDS.iter().any(|k| k.eq_ignore_ascii_case(kw_lower)) {
         return Some(format!("\"{original}\" is dropped"));
     }
 
-    // Check dropped without prejudice
     if DROPPED_WITHOUT_PREJUDICE
         .iter()
         .any(|k| k.eq_ignore_ascii_case(kw_lower))
@@ -135,17 +129,14 @@ fn validate_keyword(
         return Some(format!("\"{original}\" is dropped"));
     }
 
-    // Check rejected
     if REJECTED_KEYWORDS.iter().any(|k| k.eq_ignore_ascii_case(kw_lower)) {
         return Some(format!("\"{original}\" is rejected"));
     }
 
-    // Check non-HTML rel values
     if NON_HTML_REL_VALUES.iter().any(|k| k.eq_ignore_ascii_case(kw_lower)) {
         return Some(format!("\"{original}\" is not allowed"));
     }
 
-    // Handle Microformats
     match allow_microformats {
         AllowMicroformats::Disabled => Some(format!("The \"{original}\" keyword is not allowed")),
         AllowMicroformats::All => validate_microformat_keyword(kw_lower, original, context),

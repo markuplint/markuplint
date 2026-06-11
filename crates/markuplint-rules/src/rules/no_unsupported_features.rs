@@ -30,7 +30,6 @@ impl Rule for NoUnsupportedFeatures {
                 continue;
             }
 
-            // Only check HTML namespace elements
             if el.namespace != markuplint_core::mlast::NamespaceURI::XHTML {
                 continue;
             }
@@ -61,15 +60,12 @@ impl Rule for NoUnsupportedFeatures {
                 })
                 .unwrap_or_default();
 
-            // Check if this element is ignored
             if ignore_features.iter().any(|f| f == tag) {
                 continue;
             }
 
-            // Look up element spec
             let el_spec = get_spec_by_tag_name(spec, tag, None);
 
-            // Check element-level experimental
             if check_experimental
                 && let Some(es) = el_spec
                 && es.experimental == Some(true)
@@ -86,7 +82,6 @@ impl Rule for NoUnsupportedFeatures {
                 });
             }
 
-            // Check element-level non-standard
             if check_non_standard
                 && let Some(es) = el_spec
                 && es.non_standard == Some(true)
@@ -103,7 +98,6 @@ impl Rule for NoUnsupportedFeatures {
                 });
             }
 
-            // Check attributes
             let attr_specs = get_attr_specs(spec, tag);
 
             for attr in &el.attributes {
@@ -112,7 +106,7 @@ impl Rule for NoUnsupportedFeatures {
                 };
                 let attr_name = html_attr.node_name.to_ascii_lowercase();
 
-                // Check if this attribute is ignored (format: "element[attr]")
+                // The ignore list accepts the `element[attr]` form as well as a bare attr name.
                 let ignore_pattern = format!("{tag}[{attr_name}]");
                 if ignore_features.iter().any(|f| f == &ignore_pattern || f == &attr_name) {
                     continue;

@@ -1,6 +1,3 @@
-//! CSS value token types.
-
-/// A token produced by the CSS value tokenizer.
 #[derive(Clone, Debug, PartialEq)]
 pub enum Token {
     /// An identifier (e.g., `red`, `auto`, `none`).
@@ -25,33 +22,28 @@ pub enum Token {
     Percentage(f64),
 
     /// A dimension token (e.g., `10px`, `2em`).
-    Dimension { value: f64, unit: String },
+    Dimension {
+        value: f64,
+        unit: String,
+    },
 
-    /// A comma `,`.
     Comma,
 
-    /// A colon `:`.
     Colon,
 
-    /// A semicolon `;`.
     Semicolon,
 
     /// Left parenthesis `(` (not preceded by a function name).
     LeftParen,
 
-    /// Right parenthesis `)`.
     RightParen,
 
-    /// Left square bracket `[`.
     LeftBracket,
 
-    /// Right square bracket `]`.
     RightBracket,
 
-    /// Left curly brace `{`.
     LeftBrace,
 
-    /// Right curly brace `}`.
     RightBrace,
 
     /// A delimiter character (any single code point not matched by another token type).
@@ -62,7 +54,6 @@ pub enum Token {
 }
 
 impl Token {
-    /// Returns `true` if this token is whitespace.
     pub fn is_whitespace(&self) -> bool {
         matches!(self, Token::Whitespace)
     }

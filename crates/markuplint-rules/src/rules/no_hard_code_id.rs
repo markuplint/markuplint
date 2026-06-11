@@ -8,7 +8,6 @@ use markuplint_types::spec::types::MLMLSpec;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
-/// The `no-hard-code-id` rule.
 pub struct NoHardCodeId;
 
 impl Rule for NoHardCodeId {
@@ -17,7 +16,6 @@ impl Rule for NoHardCodeId {
     }
 
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
-        // Only active for fragment documents
         let is_fragment = match arena.document() {
             Some(DomNode::Document(doc)) => doc.is_fragment,
             _ => return vec![],

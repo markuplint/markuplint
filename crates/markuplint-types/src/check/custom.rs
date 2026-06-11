@@ -1,7 +1,4 @@
-//! Custom keyword type validators.
-//!
-//! Validators for keyword types that require custom logic beyond
-//! simple boolean predicate checks.
+//! Keyword types that require custom logic beyond simple boolean predicate checks.
 
 use regex::Regex;
 
@@ -9,9 +6,6 @@ use super::types::{CheckResult, Reason, matched, unmatched};
 use crate::primitive::{is_float, is_uint, split_unit};
 use crate::whatwg::abs_url::is_abs_url;
 
-/// Validate a regex pattern syntax (the keyword type `Pattern`).
-///
-/// Wraps the value in `^(?:VALUE)$` and attempts to compile it as a regex.
 #[must_use]
 pub fn check_pattern_keyword(value: &str) -> CheckResult {
     let pattern = format!("^(?:{value})$");
@@ -21,7 +15,6 @@ pub fn check_pattern_keyword(value: &str) -> CheckResult {
     }
 }
 
-/// Validate a JSON string.
 #[must_use]
 pub fn check_json(value: &str) -> CheckResult {
     match serde_json::from_str::<serde_json::Value>(value) {
@@ -30,8 +23,6 @@ pub fn check_json(value: &str) -> CheckResult {
     }
 }
 
-/// Validate an itemprop value.
-///
 /// Must be either an absolute URL or a valid property name
 /// (non-empty, no ASCII whitespace).
 #[must_use]
@@ -39,19 +30,15 @@ pub fn check_item_prop(value: &str) -> CheckResult {
     if value.is_empty() {
         return unmatched(value, Reason::UnexpectedToken);
     }
-    // Absolute URL
     if is_abs_url(value) {
         return matched();
     }
-    // Property name: non-empty, no ASCII whitespace
     if !value.chars().any(|c| c.is_ascii_whitespace()) {
         return matched();
     }
     unmatched(value, Reason::UnexpectedToken)
 }
 
-/// Validate a srcset attribute value.
-///
 /// Comma-separated image candidate strings, each with an optional
 /// width (`w`) or density (`x`) descriptor. Cannot mix descriptor types.
 #[must_use]
@@ -71,10 +58,9 @@ pub fn check_srcset(value: &str) -> CheckResult {
             return unmatched(value, Reason::UnexpectedToken);
         }
 
-        // URL is parts[0], descriptor (optional) is parts[1]
         match parts.len() {
             1 => {
-                // No descriptor implies 1x (density)
+                // No descriptor implies 1x (density).
                 has_density = true;
             }
             2 => {
@@ -103,13 +89,11 @@ pub fn check_srcset(value: &str) -> CheckResult {
                 }
             }
             _ => {
-                // Too many parts
                 return unmatched(value, Reason::UnexpectedToken);
             }
         }
     }
 
-    // Cannot mix width and density descriptors
     if has_width && has_density {
         return unmatched(value, Reason::UnexpectedToken);
     }
@@ -117,8 +101,6 @@ pub fn check_srcset(value: &str) -> CheckResult {
     matched()
 }
 
-/// Validate an SRI (Subresource Integrity) hash value.
-///
 /// Space-separated `hash-algo-base64` tokens where algo is sha256, sha384, or sha512.
 /// @see <https://w3c.github.io/webappsec-subresource-integrity/#integrity-metadata-description>
 #[must_use]
@@ -140,8 +122,6 @@ pub fn check_sri_hash(value: &str) -> CheckResult {
     matched()
 }
 
-/// Validate an icon size value.
-///
 /// Must be `"any"` (case-insensitive) or `WIDTHxHEIGHT` where both are
 /// non-zero unsigned integers.
 #[must_use]
@@ -172,8 +152,6 @@ pub fn check_icon_size(value: &str) -> CheckResult {
     matched()
 }
 
-/// Validate an `accept` attribute value.
-///
 /// Accepts: `audio/*`, `video/*`, `image/*`, a valid MIME type
 /// (without parameters), or a file extension starting with `.`.
 #[must_use]
@@ -182,18 +160,16 @@ pub fn check_accept(value: &str) -> CheckResult {
     if wildcard_types.iter().any(|&w| value.eq_ignore_ascii_case(w)) {
         return matched();
     }
-    // MIME type without parameters
     if crate::whatwg::mime_type::is_valid_mime_type(value, true) {
         return matched();
     }
-    // File extension
     if value.starts_with('.') && value.len() >= 2 {
         return matched();
     }
     unmatched(value, Reason::UnexpectedToken)
 }
 
-/// Validate a `BaseURL` — rejects `data:` and `javascript:` schemes.
+/// Rejects `data:` and `javascript:` schemes.
 #[must_use]
 pub fn check_base_url(value: &str) -> CheckResult {
     let lower = value.trim().to_lowercase();
@@ -203,10 +179,9 @@ pub fn check_base_url(value: &str) -> CheckResult {
     matched()
 }
 
-/// Validate a `HTTPSchemaURL` — relative URL starting with http(s).
+/// Rejects absolute URLs; accepts a relative URL whose value starts with `http:`/`https:`.
 #[must_use]
 pub fn check_http_schema_url(value: &str) -> CheckResult {
-    // Rejects absolute URLs, accepts if starts with http(s)
     if is_abs_url(value) {
         return unmatched(value, Reason::UnexpectedToken);
     }
@@ -217,7 +192,6 @@ pub fn check_http_schema_url(value: &str) -> CheckResult {
     unmatched(value, Reason::UnexpectedToken)
 }
 
-/// Validate a `NavigableTargetNameOrKeyword`.
 #[must_use]
 pub fn check_navigable_target_name_or_keyword(value: &str) -> CheckResult {
     let lower = value.to_lowercase();

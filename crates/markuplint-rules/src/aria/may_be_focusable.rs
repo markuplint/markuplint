@@ -1,5 +1,3 @@
-//! Heuristic check for whether an element may potentially be focusable.
-//!
 //! Ports `packages/@markuplint/ml-spec/src/algorithm/html/may-be-focusable.ts`.
 //!
 //! This is a static heuristic — it does NOT account for runtime state such as
@@ -11,10 +9,6 @@ use markuplint_dom::helpers;
 use markuplint_types::spec::lookup;
 use markuplint_types::spec::types::MLMLSpec;
 
-/// Check if an element may potentially be focusable.
-///
-/// Returns `true` if the element is interactive content, has a `tabindex`
-/// attribute, or is contenteditable. Does NOT check `disabled`/`inert`.
 pub fn may_be_focusable(spec: &MLMLSpec, arena: &DomArena, node_id: NodeId) -> bool {
     let Some(node) = arena.get(node_id) else {
         return false;
@@ -25,7 +19,6 @@ pub fn may_be_focusable(spec: &MLMLSpec, arena: &DomArena, node_id: NodeId) -> b
 
     let tag_name = &el.base.node_name;
 
-    // Check interactive content category from spec
     if let Some(interactive_tags) = lookup::get_content_model_tags(spec, "#interactive") {
         for selector in interactive_tags {
             if matches_simple_selector(tag_name, selector, arena, node_id) {
@@ -34,12 +27,10 @@ pub fn may_be_focusable(spec: &MLMLSpec, arena: &DomArena, node_id: NodeId) -> b
         }
     }
 
-    // Check tabindex attribute
     if helpers::has_attr(arena, node_id, "tabindex") {
         return true;
     }
 
-    // Check contenteditable (not false)
     if let Some(val) = helpers::get_attr_value(arena, node_id, "contenteditable")
         && !val.eq_ignore_ascii_case("false")
     {
@@ -49,35 +40,24 @@ pub fn may_be_focusable(spec: &MLMLSpec, arena: &DomArena, node_id: NodeId) -> b
     false
 }
 
-/// Simple selector matching for interactive content selectors.
-///
-/// Handles patterns like `"a[href]"`, `"input:not([type='hidden' i])"`, `"button"`.
 /// For complex selectors, falls back to tag-name-only matching (conservative: may
 /// over-report focusability, which is safe for a heuristic check).
 fn matches_simple_selector(tag_name: &str, selector: &str, arena: &DomArena, node_id: NodeId) -> bool {
-    // Extract tag name (before `[` or `:`)
     let sel_tag = selector.find(['[', ':']).map_or(selector, |pos| &selector[..pos]);
 
     if !sel_tag.eq_ignore_ascii_case(tag_name) {
         return false;
     }
 
-    // Tag name matches. Check attribute requirements.
-    // Pattern: "tag[attr]" means attribute must be present.
     if let Some(bracket_pos) = selector.find('[') {
         let rest = &selector[bracket_pos..];
-        // Handle ":not([attr...])" — inverted attribute check
         if selector[..bracket_pos].contains(":not(") {
-            // :not([type='hidden' i]) — exclude if attribute matches the value
-            // For this heuristic, we check the positive case: if the element
-            // matches the :not condition, it's NOT focusable.
             if let Some(inner) = extract_not_attr_condition(rest) {
                 return !matches_attr_condition(arena, node_id, &inner);
             }
             // Complex :not() — conservatively return true (tag matches)
             return true;
         }
-        // Positive attribute check: "tag[attr]"
         if let Some(attr_name) = rest.strip_prefix('[').and_then(|s| s.strip_suffix(']')) {
             return helpers::has_attr(arena, node_id, attr_name);
         }
@@ -85,13 +65,11 @@ fn matches_simple_selector(tag_name: &str, selector: &str, arena: &DomArena, nod
         return true;
     }
 
-    // Simple tag name match with no attribute condition
     true
 }
 
-/// Extract attribute name and value from a `:not([attr='value' i])` pattern.
+/// Accepts the `[attr='value' i])` / `[attr])` tail of a `:not(...)` selector.
 fn extract_not_attr_condition(s: &str) -> Option<AttrCondition> {
-    // Expected pattern: "[type='hidden' i])" or "[type='hidden'])"
     let inner = s.strip_prefix("[")?.strip_suffix("])")?;
     if let Some(eq_pos) = inner.find('=') {
         let attr_name = &inner[..eq_pos];

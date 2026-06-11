@@ -1,5 +1,3 @@
-//! Utility functions for accessible name computation.
-
 #![allow(clippy::implicit_hasher)]
 
 use std::collections::HashSet;
@@ -11,7 +9,6 @@ use markuplint_dom::node::DomNode;
 
 use super::AccnameResolver;
 
-/// Collapse internal whitespace and trim.
 pub fn flatten_text(text: &str) -> String {
     text.split_whitespace().collect::<Vec<_>>().join(" ")
 }
@@ -60,7 +57,6 @@ pub fn resolve_name_from_content(
                     continue;
                 }
 
-                // Try full AccName computation
                 let child_result = super::compute::compute_accessible_name_internal(
                     arena,
                     child_id,
@@ -86,14 +82,12 @@ pub fn resolve_name_from_content(
     flatten_text(&parts.join(" "))
 }
 
-/// Get the value of an embedded control element.
 fn get_embedded_control_value(arena: &DomArena, node_id: NodeId, _resolver: &dyn AccnameResolver) -> String {
     let Some(el) = arena.get(node_id).and_then(|n| n.as_element()) else {
         return String::new();
     };
     let tag = &el.base.node_name;
 
-    // Determine control type from role attribute or native semantics
     let role_attr =
         dom::get_attr_value(arena, node_id, "role").and_then(|r| r.split_whitespace().next().map(String::from));
 
@@ -139,7 +133,6 @@ fn get_embedded_control_value(arena: &DomArena, node_id: NodeId, _resolver: &dyn
     }
 }
 
-/// Recursively collect text content from descendants.
 pub fn collect_text_content(arena: &DomArena, node_id: NodeId) -> String {
     let Some(children) = arena.children_of(node_id) else {
         return String::new();
@@ -167,7 +160,6 @@ pub fn collect_text_content(arena: &DomArena, node_id: NodeId) -> String {
 fn get_selected_option_text(arena: &DomArena, node_id: NodeId) -> String {
     let options = collect_options(arena, node_id);
 
-    // Check for explicitly selected options first
     let selected: Vec<_> = options
         .iter()
         .filter(|&&opt_id| dom::has_attr(arena, opt_id, "selected"))
@@ -187,7 +179,6 @@ fn get_selected_option_text(arena: &DomArena, node_id: NodeId) -> String {
         }
     }
 
-    // All disabled or no options: empty
     String::new()
 }
 
@@ -209,7 +200,6 @@ fn collect_options(arena: &DomArena, node_id: NodeId) -> Vec<NodeId> {
     options
 }
 
-/// Find first child element with matching tag name.
 pub fn find_child_by_local_name(arena: &DomArena, node_id: NodeId, tag: &str) -> Option<NodeId> {
     arena
         .children_of(node_id)?
@@ -223,7 +213,6 @@ pub fn find_child_by_local_name(arena: &DomArena, node_id: NodeId, tag: &str) ->
         .copied()
 }
 
-/// Check if element is in SVG namespace.
 pub fn is_svg_element(arena: &DomArena, node_id: NodeId) -> bool {
     arena
         .get(node_id)
@@ -231,7 +220,7 @@ pub fn is_svg_element(arena: &DomArena, node_id: NodeId) -> bool {
         .is_some_and(|el| el.namespace == NamespaceURI::SVG)
 }
 
-/// Get input type (defaults to "text").
+/// Defaults to `text` when the attribute is absent.
 pub fn get_input_type(arena: &DomArena, node_id: NodeId) -> String {
     dom::get_attr_value(arena, node_id, "type").map_or_else(|| "text".to_string(), str::to_ascii_lowercase)
 }

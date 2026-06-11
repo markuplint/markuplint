@@ -1,24 +1,16 @@
-//! Keyword type dispatch and registry.
-//!
-//! Maps keyword type names (e.g., `"Any"`, `"BCP47"`, `"<color>"`) to
-//! their validator functions.
-
 use super::custom;
 use super::types::{CheckResult, Expect, ExpectType, Reason, UnmatchedOpts, matched, unmatched, unmatched_with};
 
-/// Validate a value against a keyword type by looking it up in the registry.
-///
 /// Unknown types return `matched()` as a graceful fallback (same as TS behavior).
 /// CSS types (Phase 1B) also fall through to `matched()`.
 #[must_use]
 pub fn check_keyword_type(value: &str, keyword: &str) -> CheckResult {
-    // Look up in the built-in registry
     if let Some(validator) = get_validator(keyword) {
         return validator(value);
     }
 
-    // CSS syntax types (e.g., "<color>", "<'transform'>", "<length>")
-    // Delegate to the CSS value match engine.
+    // CSS syntax types (e.g., "<color>", "<'transform'>", "<length>") are
+    // delegated to the CSS value match engine.
     if keyword.starts_with('<') && keyword.ends_with('>') {
         let inner = &keyword[1..keyword.len() - 1];
         let syntax_name = if inner.starts_with('\'') && inner.ends_with('\'') {
@@ -27,7 +19,6 @@ pub fn check_keyword_type(value: &str, keyword: &str) -> CheckResult {
             inner
         };
 
-        // Try as CSS property syntax first
         if let Some(syntax) = crate::css::value_match::registry::lookup_property(syntax_name) {
             return match crate::css::value_match::match_property(syntax, value) {
                 Ok(()) => matched(),
@@ -67,7 +58,6 @@ pub fn check_keyword_type(value: &str, keyword: &str) -> CheckResult {
 
 type Validator = fn(&str) -> CheckResult;
 
-/// Get the validator function for a keyword type name.
 #[allow(clippy::too_many_lines)]
 fn get_validator(keyword: &str) -> Option<Validator> {
     // Case-sensitive match (keyword types are case-sensitive in TS)
@@ -217,7 +207,6 @@ fn get_validator(keyword: &str) -> Option<Validator> {
             if crate::simple_patterns::is_valid_custom_command(v) {
                 matched()
             } else {
-                // Suggest adding "--" prefix if the value doesn't start with it
                 let candidate = if !v.starts_with("--") && !v.is_empty() {
                     Some(format!("--{v}"))
                 } else {

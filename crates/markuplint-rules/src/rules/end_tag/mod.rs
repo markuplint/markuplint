@@ -11,7 +11,6 @@ use crate::violation::Violation;
 #[cfg(test)]
 mod tests;
 
-/// The `end-tag` rule.
 pub struct EndTag;
 
 impl Rule for EndTag {
@@ -33,23 +32,20 @@ impl Rule for EndTag {
                 continue;
             }
 
-            // Skip ghost (omitted) elements
             if el.is_ghost {
                 continue;
             }
 
-            // Skip void elements
             if is_void_element(spec, &el.base.node_name) {
                 continue;
             }
 
-            // Has a close tag → OK
             if el.close_tag.is_some() {
                 continue;
             }
 
-            // Foreign elements (SVG/MathML) with self-closing syntax are OK
-            // (matches TS: el.isForeignElement && el.tagCloseChar.startsWith('/'))
+            // Foreign elements (SVG/MathML) may self-close, so `<.../>` is valid.
+            // Matches TS: `el.isForeignElement && el.tagCloseChar.startsWith('/')`.
             if el.namespace != NamespaceURI::XHTML && el.tag_close_char.starts_with('/') {
                 continue;
             }

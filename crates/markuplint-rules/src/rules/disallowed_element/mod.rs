@@ -16,7 +16,6 @@ use crate::violation::Violation;
 #[cfg(test)]
 mod tests;
 
-/// The `disallowed-element` rule.
 pub struct DisallowedElement;
 
 impl Rule for DisallowedElement {
@@ -27,7 +26,6 @@ impl Rule for DisallowedElement {
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
 
-        // Phase 1: Global selectors — check all elements against global config
         let global_selectors = parse_selectors(&config.global().value);
         for (node_id, el) in arena.elements() {
             for (selector_str, sel) in &global_selectors {
@@ -46,16 +44,15 @@ impl Rule for DisallowedElement {
             }
         }
 
-        // Phase 2: Per-element overrides — for each element with a nodeRules
-        // override, check its DESCENDANTS against the override selectors
-        // (mirrors TS: el.querySelectorAll on nodeRule-matched elements)
+        // Per-element overrides apply to the matched element's DESCENDANTS,
+        // mirroring TS `el.querySelectorAll` on nodeRule-matched elements.
         for (node_id, _el) in arena.elements() {
             let rule_config = config.get(node_id);
             if rule_config.disabled {
                 continue;
             }
 
-            // Skip if same as global (no override)
+            // Same value as global means there is no override here.
             if rule_config.value == config.global().value {
                 continue;
             }
@@ -65,14 +62,13 @@ impl Rule for DisallowedElement {
                 continue;
             }
 
-            // Check descendants of this element
             for descendant in arena.descendants(node_id) {
                 let Some(desc_el) = descendant.as_element() else {
                     continue;
                 };
                 let desc_id = desc_el.base.id;
                 if desc_id == node_id {
-                    continue; // skip self
+                    continue; // The override applies to descendants, not the matched element itself.
                 }
                 for (selector_str, sel) in &override_selectors {
                     if matcher::matches(sel, arena, desc_id, Some(desc_id), Some(spec), None) {

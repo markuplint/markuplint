@@ -1,24 +1,17 @@
-//! Type definitions for the check dispatcher.
-
-/// Result of a type validation check.
 #[derive(Debug, Clone)]
 #[allow(clippy::large_enum_variant)]
 pub enum CheckResult {
-    /// The value matched the expected type.
     Matched,
-    /// The value did not match the expected type.
     Unmatched(UnmatchedResult),
 }
 
 impl CheckResult {
-    /// Returns `true` if the result is a match.
     #[must_use]
     pub fn is_matched(&self) -> bool {
         matches!(self, Self::Matched)
     }
 }
 
-/// Detailed information about an unmatched value.
 #[derive(Debug, Clone)]
 pub struct UnmatchedResult {
     pub ref_: Option<String>,
@@ -36,7 +29,6 @@ pub struct UnmatchedResult {
     pub fallback_to: Option<String>,
 }
 
-/// Reason why a value did not match.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Reason {
     SyntaxError,
@@ -72,14 +64,12 @@ pub enum Reason {
     },
 }
 
-/// Description of what was expected.
 #[derive(Debug, Clone)]
 pub struct Expect {
     pub type_: ExpectType,
     pub value: String,
 }
 
-/// Category of an expectation.
 #[derive(Debug, Clone, PartialEq)]
 pub enum ExpectType {
     Common,
@@ -89,26 +79,17 @@ pub enum ExpectType {
     Regexp,
 }
 
-/// Type definition for validation.
-///
 /// Corresponds to the TS `Type` union.
 #[derive(Debug, Clone)]
 pub enum Type {
-    /// A keyword type name like `"Any"`, `"BCP47"`, `"<color>"`, etc.
     Keyword(String),
-    /// A fixed set of allowed values.
     Enum(EnumType),
-    /// A separated list of tokens, each validated against a sub-type.
     List(ListType),
-    /// A numeric value with optional range constraints.
     Number(NumberType),
-    /// A prefix pattern followed by a token validated against a sub-type.
     Directive(DirectiveType),
-    /// A regex or literal pattern.
     Pattern(PatternType),
 }
 
-/// Fixed set of allowed values.
 #[derive(Debug, Clone)]
 pub struct EnumType {
     pub enum_values: Vec<String>,
@@ -126,7 +107,6 @@ impl Default for EnumType {
     }
 }
 
-/// Separated list type.
 #[derive(Debug, Clone)]
 #[allow(clippy::struct_excessive_bools)]
 pub struct ListType {
@@ -155,14 +135,12 @@ impl Default for ListType {
     }
 }
 
-/// Separator type for lists.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Separator {
     Space,
     Comma,
 }
 
-/// Constraint on the number of list tokens.
 #[derive(Debug, Clone)]
 pub enum ListNumber {
     ZeroOrMore,
@@ -170,7 +148,6 @@ pub enum ListNumber {
     Range { min: Option<usize>, max: Option<usize> },
 }
 
-/// Numeric type with optional range constraints.
 #[derive(Debug, Clone)]
 pub struct NumberType {
     pub number_type: NumericKind,
@@ -181,14 +158,12 @@ pub struct NumberType {
     pub clampable: bool,
 }
 
-/// Kind of numeric value.
 #[derive(Debug, Clone, PartialEq)]
 pub enum NumericKind {
     Integer,
     Float,
 }
 
-/// Directive type: prefix pattern + token validation.
 #[derive(Debug, Clone)]
 pub struct DirectiveType {
     pub directive: Vec<String>,
@@ -196,7 +171,6 @@ pub struct DirectiveType {
     pub ref_: Option<String>,
 }
 
-/// Pattern type: regex or literal.
 #[derive(Debug, Clone)]
 pub struct PatternType {
     pub pattern: String,
@@ -204,13 +178,11 @@ pub struct PatternType {
 
 // --- Helper constructors ---
 
-/// Create a matched result.
 #[must_use]
 pub fn matched() -> CheckResult {
     CheckResult::Matched
 }
 
-/// Create an unmatched result with a reason.
 #[must_use]
 pub fn unmatched(raw: &str, reason: Reason) -> CheckResult {
     CheckResult::Unmatched(UnmatchedResult {
@@ -230,7 +202,6 @@ pub fn unmatched(raw: &str, reason: Reason) -> CheckResult {
     })
 }
 
-/// Create an unmatched result with additional options.
 #[must_use]
 pub fn unmatched_with(raw: &str, reason: Reason, opts: UnmatchedOpts) -> CheckResult {
     CheckResult::Unmatched(UnmatchedResult {
@@ -250,7 +221,6 @@ pub fn unmatched_with(raw: &str, reason: Reason, opts: UnmatchedOpts) -> CheckRe
     })
 }
 
-/// Options for creating an unmatched result.
 #[derive(Debug, Clone, Default)]
 pub struct UnmatchedOpts {
     pub ref_: Option<String>,
@@ -269,8 +239,6 @@ pub struct UnmatchedOpts {
 // JSON → Type conversion
 // ============================================================
 
-/// Convert a `serde_json::Value` (from spec `attr_type`) into a `Type`.
-///
 /// Handles these JSON formats:
 /// - `"Boolean"`, `"Any"`, `"Number"`, etc. → `Type::Keyword`
 /// - `{ "enum": ["a", "b"] }` → `Type::Enum`
@@ -289,7 +257,6 @@ pub fn value_to_type(value: &serde_json::Value) -> Option<Type> {
     }
 }
 
-/// Parse a JSON object into a `Type`.
 fn parse_object_type(obj: &serde_json::Map<String, serde_json::Value>) -> Option<Type> {
     // Enum: { enum: [...] }
     if let Some(enum_arr) = obj.get("enum").and_then(serde_json::Value::as_array) {

@@ -11,7 +11,6 @@ use crate::violation::Violation;
 #[cfg(test)]
 mod tests;
 
-/// The `label-has-control` rule.
 pub struct LabelHasControl;
 
 /// Form control element names that can be associated with a label.
@@ -39,7 +38,6 @@ impl Rule for LabelHasControl {
                 continue;
             }
 
-            // Check for `for` attribute
             let for_value = el.attributes.iter().find_map(|attr| {
                 if let MLASTAttr::HTMLAttr(html_attr) = attr
                     && html_attr.node_name.eq_ignore_ascii_case("for")
@@ -54,13 +52,12 @@ impl Rule for LabelHasControl {
                     continue;
                 }
             } else {
-                // No `for` attribute — check contained form controls
+                // Without `for`, a label is associated through a contained control instead.
                 let controls = find_form_controls(arena, el.base.id);
                 if controls.len() == 1 {
-                    continue; // exactly one control → OK
+                    continue; // Exactly one contained control is the valid case.
                 }
                 if controls.is_empty() {
-                    // No control found
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
                         name: None,
@@ -73,7 +70,7 @@ impl Rule for LabelHasControl {
                     });
                     continue;
                 }
-                // Multiple controls — report all after the first
+                // A label associates only its first control; the rest are reported.
                 for &(line, col, ref raw) in &controls[1..] {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
@@ -106,7 +103,6 @@ impl Rule for LabelHasControl {
     }
 }
 
-/// Check if any element in the document has the given id.
 fn id_exists_in_document(arena: &DomArena, target_id: &str) -> bool {
     arena.elements().any(|(_node_id, el)| {
         el.attributes.iter().any(|attr| {
@@ -119,7 +115,6 @@ fn id_exists_in_document(arena: &DomArena, target_id: &str) -> bool {
     })
 }
 
-/// Find all form control descendants, returning (line, col, raw) for each.
 fn find_form_controls(arena: &DomArena, node_id: usize) -> Vec<(u32, u32, String)> {
     let mut result = Vec::new();
     find_form_controls_recursive(arena, node_id, &mut result);

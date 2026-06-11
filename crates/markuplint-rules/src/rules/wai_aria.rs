@@ -24,7 +24,6 @@ use crate::aria::may_be_focusable;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
-/// The `wai-aria` rule.
 pub struct WaiAria;
 
 impl Rule for WaiAria {
@@ -49,7 +48,6 @@ impl Rule for WaiAria {
             let el_name_lc = el.base.node_name.to_ascii_lowercase();
             let el_name = el_name_lc.as_str();
 
-            // Collect role attr and aria-* attrs
             let mut role_attr: Option<&markuplint_core::mlast::MLASTHTMLAttr> = None;
             let mut aria_attrs: Vec<&markuplint_core::mlast::MLASTHTMLAttr> = Vec::new();
 
@@ -65,7 +63,6 @@ impl Rule for WaiAria {
                 }
             }
 
-            // Check role attribute
             if let Some(role_attr_node) = role_attr {
                 check_role_attr(
                     spec,
@@ -81,12 +78,11 @@ impl Rule for WaiAria {
                 );
             }
 
-            // Compute the full role (matching TS getComputedRole)
+            // Matches TS `getComputedRole`: the full role includes the implicit role.
             let computed = get_computed_role(spec, arena, node_id, version, false);
             let computed_role = computed.role.as_ref();
             let computed_role_spec = computed_role.and_then(|cr| aria::get_role_spec(spec, &cr.name, version));
 
-            // checkingRequiredProp: check required ARIA properties for explicit roles
             if let Some(role_attr_node) = role_attr {
                 check_required_prop(
                     spec,
@@ -103,11 +99,9 @@ impl Rule for WaiAria {
                 );
             }
 
-            // Resolve the computed role for property checks
             let role_value = role_attr.map(|a| a.value.raw.as_str());
             let resolved_role = role_value.and_then(|rv| aria::resolve_explicit_role(spec, rv, version).ok());
 
-            // Check deprecated aria-* properties
             if !is_option_disabled(&rule_config.options, "checkingDeprecatedProps") {
                 for aria_attr in &aria_attrs {
                     check_deprecated_prop(
@@ -142,7 +136,6 @@ impl Rule for WaiAria {
                 }
             }
 
-            // Check disallowSetImplicitProps (default: true)
             if is_option_enabled(&rule_config.options, "disallowSetImplicitProps", true) {
                 let aria_spec = aria::get_aria_spec(spec, version);
                 for aria_attr in &aria_attrs {
@@ -160,8 +153,7 @@ impl Rule for WaiAria {
                 }
             }
 
-            // Check ARIA property values (checkingValue, default: true)
-            // TS uses computed.role (which includes implicit role) for conditional value resolution
+            // TS uses computed.role (which includes the implicit role) for conditional value resolution.
             if is_option_enabled(&rule_config.options, "checkingValue", true) {
                 let aria_spec = aria::get_aria_spec(spec, version);
                 for aria_attr in &aria_attrs {
@@ -176,7 +168,6 @@ impl Rule for WaiAria {
                 }
             }
 
-            // Check disallowDefaultValue (default: false)
             if is_option_enabled(&rule_config.options, "disallowDefaultValue", false) {
                 let aria_spec = aria::get_aria_spec(spec, version);
                 for aria_attr in &aria_attrs {
@@ -190,8 +181,8 @@ impl Rule for WaiAria {
                 }
             }
 
-            // checkingAllowedAccessibilityChildRoles (default: true)
-            // OR checkingRequiredOwnedElements (deprecated alias, default: true)
+            // `checkingRequiredOwnedElements` is a deprecated alias for
+            // `checkingAllowedAccessibilityChildRoles`; either enables the check.
             if is_option_enabled(&rule_config.options, "checkingAllowedAccessibilityChildRoles", true)
                 || is_option_enabled(&rule_config.options, "checkingRequiredOwnedElements", true)
             {
@@ -207,7 +198,6 @@ impl Rule for WaiAria {
                 );
             }
 
-            // checkingRequiredAccessibilityParentRole (default: true)
             if is_option_enabled(&rule_config.options, "checkingRequiredAccessibilityParentRole", true) {
                 check_required_parent_role(
                     spec,
@@ -221,7 +211,6 @@ impl Rule for WaiAria {
                 );
             }
 
-            // checkingPresentationalChildren (default: false)
             if is_option_enabled(&rule_config.options, "checkingPresentationalChildren", false) {
                 check_presentational_children(
                     spec,
@@ -235,7 +224,6 @@ impl Rule for WaiAria {
                 );
             }
 
-            // checkingInteractionInHidden (default: false)
             if is_option_enabled(&rule_config.options, "checkingInteractionInHidden", false) {
                 check_interaction_in_hidden(spec, arena, node_id, &mut violations, self.id(), rule_config.severity);
             }
@@ -245,7 +233,6 @@ impl Rule for WaiAria {
     }
 }
 
-/// Resolve the ARIA version from the options.
 fn resolve_version(options: &serde_json::Value) -> ARIAVersion {
     match options.get("version").and_then(serde_json::Value::as_str) {
         Some("1.1") => ARIAVersion::V1_1,
@@ -255,17 +242,14 @@ fn resolve_version(options: &serde_json::Value) -> ARIAVersion {
     }
 }
 
-/// Check if an option is explicitly disabled (value === false).
 fn is_option_disabled(options: &serde_json::Value, key: &str) -> bool {
     options.get(key).and_then(serde_json::Value::as_bool) == Some(false)
 }
 
-/// Check if an option is enabled (with a given default).
 fn is_option_enabled(options: &serde_json::Value, key: &str, default: bool) -> bool {
     options.get(key).and_then(serde_json::Value::as_bool).unwrap_or(default)
 }
 
-/// Check role attribute: unknown, abstract, deprecated, permitted, and implicit role checks.
 #[allow(clippy::too_many_arguments)]
 fn check_role_attr(
     spec: &MLMLSpec,
@@ -281,7 +265,6 @@ fn check_role_attr(
 ) {
     let role_value = &role_attr_node.value.raw;
 
-    // Check each token in space-separated role value
     for token in role_value.split_whitespace() {
         let role_name = token.to_ascii_lowercase();
 
@@ -314,7 +297,6 @@ fn check_role_attr(
         }
     }
 
-    // Check deprecated role (checkingDeprecatedRole, default: true)
     if is_option_enabled(options, "checkingDeprecatedRole", true) {
         for token in role_value.split_whitespace() {
             let role_name = token.to_ascii_lowercase();
@@ -339,7 +321,7 @@ fn check_role_attr(
     let implicit_role = get_effective_implicit_role(spec, arena, node_id, el_name, version);
     let disallow_implicit = is_option_enabled(options, "disallowSetImplicitRole", true);
 
-    // Check permitted roles (skip if role matches implicit and disallowSetImplicitRole is false)
+    // An explicit role equal to the implicit role is allowed unless `disallowSetImplicitRole`.
     if !is_option_disabled(options, "permittedAriaRoles") {
         let role_is_implicit = implicit_role.as_ref().is_some_and(|ir| {
             role_value
@@ -362,7 +344,6 @@ fn check_role_attr(
         }
     }
 
-    // Check disallowSetImplicitRole (default: true)
     if disallow_implicit && let Some(ref ir) = implicit_role {
         for token in role_value.split_whitespace() {
             if token.eq_ignore_ascii_case(ir) {
@@ -382,7 +363,6 @@ fn check_role_attr(
     }
 }
 
-/// Check if the role is permitted on the element.
 #[allow(clippy::too_many_arguments)]
 fn check_permitted_roles(
     spec: &MLMLSpec,
@@ -395,7 +375,6 @@ fn check_permitted_roles(
     rule_id: &str,
     severity: crate::violation::Severity,
 ) {
-    // Resolve permitted roles with condition evaluation
     let (permitted, any_permitted) =
         crate::aria::computed_role::resolve_permitted_roles(spec, arena, node_id, element_name);
 
@@ -437,12 +416,11 @@ fn check_permitted_roles(
             reason: None,
             });
         }
-        // permittedRoles is a specific list → check each token
         Some(ref roles) => {
             let role_value = &role_attr.value.raw;
             for token in role_value.split_whitespace() {
                 let role_name = token.to_ascii_lowercase();
-                // Only check if role exists (non-existent roles are caught by earlier check)
+                // Non-existent roles are already reported earlier, so only existing roles are checked here.
                 if aria::get_role_spec(spec, &role_name, version).is_some()
                     && !roles.iter().any(|r| r.eq_ignore_ascii_case(&role_name))
                 {
@@ -467,9 +445,7 @@ fn check_permitted_roles(
     }
 }
 
-/// Get the effective implicit role for an element, evaluating conditions.
-///
-/// This mirrors the condition evaluation in `computed_role.rs::get_implicit_role`
+/// Mirrors the condition evaluation in `computed_role.rs::get_implicit_role`,
 /// but returns just the role name string.
 fn get_effective_implicit_role(
     spec: &MLMLSpec,
@@ -480,7 +456,6 @@ fn get_effective_implicit_role(
 ) -> Option<String> {
     let base_role = aria::get_base_implicit_role(spec, element_name)?;
 
-    // Check conditions that may override the implicit role
     if let Some(el_spec) = markuplint_types::spec::lookup::get_spec(spec, element_name)
         && let Some(ref conditions) = el_spec.aria.conditions
     {
@@ -494,7 +469,7 @@ fn get_effective_implicit_role(
                     return None;
                 }
                 if let Some(newrole_name) = override_role.as_str() {
-                    // Verify the overridden role exists
+                    // An override naming a non-existent role is ignored.
                     if aria::get_role_spec(spec, newrole_name, version).is_some() {
                         return Some(newrole_name.to_string());
                     }
@@ -506,7 +481,6 @@ fn get_effective_implicit_role(
     Some(base_role.to_string())
 }
 
-/// Check if an ARIA property is deprecated on the element's computed role.
 fn check_deprecated_prop(
     spec: &MLMLSpec,
     attr: &markuplint_core::mlast::MLASTHTMLAttr,
@@ -522,12 +496,10 @@ fn check_deprecated_prop(
 
     let attr_name = attr.node_name.to_ascii_lowercase();
 
-    // Check if this property is deprecated on the role
     let owned_prop = role.owned_properties.iter().find(|p| p.name == attr_name);
     if let Some(prop) = owned_prop
         && prop.deprecated == Some(true)
     {
-        // Look up the property spec to get its type (property vs state)
         let aria_spec = aria::get_aria_spec(spec, version);
         let prop_type = aria_spec
             .props
@@ -554,11 +526,8 @@ fn check_deprecated_prop(
     }
 }
 
-/// Check required ARIA properties for explicit roles (matching TS checkingRequiredProp).
-///
-/// When an element has an explicit role, this checks that all required properties
-/// for that role are present. Implicit roles are skipped since the browser
-/// provides default semantics.
+/// Matches TS `checkingRequiredProp`. Implicit roles are skipped since the
+/// browser provides default semantics.
 #[allow(clippy::too_many_arguments)]
 fn check_required_prop(
     spec: &MLMLSpec,
@@ -590,7 +559,6 @@ fn check_required_prop(
         if owned.required != Some(true) {
             continue;
         }
-        // Check if element already has this attribute
         let has = el.attributes.iter().any(|attr| {
             let MLASTAttr::HTMLAttr(html_attr) = attr else {
                 return false;
@@ -679,7 +647,6 @@ fn check_disallowed_prop(
         markuplint_types::spec::types::ARIAPropertyType::State => "state",
     });
 
-    // Check element-specific restrictions (without entries)
     if is_option_enabled(options, "disallowSetImplicitProps", true) {
         let without = get_element_aria_without(spec, arena, node_id, &el.base.node_name, version);
         for w in &without {
@@ -776,8 +743,6 @@ struct WithoutEntry {
     alt_target: Option<String>,
 }
 
-/// Get element-specific ARIA property restrictions, evaluating conditions.
-///
 /// Mirrors TS `getARIA()` condition evaluation for the `properties.without` field.
 fn get_element_aria_without(
     spec: &MLMLSpec,
@@ -790,10 +755,8 @@ fn get_element_aria_without(
         return Vec::new();
     };
 
-    // Start with base properties
     let mut properties = el_spec.aria.properties.clone();
 
-    // Evaluate conditions to potentially override properties
     if let Some(ref conditions) = el_spec.aria.conditions {
         for (selector_str, override_value) in conditions {
             let Ok(selector) = markuplint_selector::parser::parse(selector_str) else {
@@ -810,11 +773,9 @@ fn get_element_aria_without(
         }
     }
 
-    // Parse the without entries from the resolved properties JSON
     parse_without_entries(properties.as_ref())
 }
 
-/// Parse `without` entries from ARIA properties JSON value.
 fn parse_without_entries(properties: Option<&serde_json::Value>) -> Vec<WithoutEntry> {
     let Some(props) = properties else {
         return Vec::new();
@@ -862,12 +823,10 @@ fn check_implicit_props(
 ) {
     let attr_name = attr.node_name.to_ascii_lowercase();
 
-    // Find the ARIA property spec
     let Some(prop_spec) = props.iter().find(|p| p.name == attr_name) else {
         return;
     };
 
-    // Check if there are equivalent HTML attributes
     let Some(ref equiv_attrs) = prop_spec.equivalent_html_attrs else {
         return;
     };
@@ -877,7 +836,6 @@ fn check_implicit_props(
         markuplint_types::spec::types::ARIAPropertyType::State => "state",
     };
 
-    // Get element's attribute specs to check if the equivalent HTML attr is valid on this element
     let el_spec = markuplint_types::spec::lookup::get_spec(spec, &el.base.node_name);
 
     for equiv in equiv_attrs {
@@ -903,7 +861,6 @@ fn check_implicit_props(
                     }
                 }
             } else {
-                // Check global attrs
                 spec.def
                     .global_attrs
                     .iter()
@@ -916,7 +873,6 @@ fn check_implicit_props(
 
         let aria_value = attr.value.raw.trim().to_ascii_lowercase();
 
-        // Check if the element has the equivalent HTML attribute set
         let html_attr_on_element = el.attributes.iter().find(|a| {
             if let MLASTAttr::HTMLAttr(ha) = a {
                 ha.node_name.eq_ignore_ascii_case(&equiv.html_attr_name)
@@ -927,7 +883,6 @@ fn check_implicit_props(
 
         if let Some(MLASTAttr::HTMLAttr(html_attr_node)) = html_attr_on_element {
             let html_value = html_attr_node.value.raw.trim().to_ascii_lowercase();
-            // Same semantics check
             let is_same = match &equiv.value {
                 None => html_value == aria_value,
                 Some(v) => v == &aria_value,
@@ -1001,7 +956,6 @@ fn check_implicit_props(
     }
 }
 
-/// Validate ARIA property values against the ARIA spec.
 fn check_value(
     attr: &markuplint_core::mlast::MLASTHTMLAttr,
     role: Option<&markuplint_types::spec::types::ARIARoleInSchema>,
@@ -1016,7 +970,7 @@ fn check_value(
         return; // Unknown property — skip (not our concern here)
     };
 
-    // Resolve the effective value type (may be overridden by role-specific conditional)
+    // A role-specific conditional may override the value type.
     let mut value_type = &prop_spec.value;
     if let Some(role) = role
         && let Some(ref conds) = prop_spec.conditional_value
@@ -1058,7 +1012,6 @@ fn check_value(
     }
 }
 
-/// Validate a raw ARIA value against the expected value type.
 fn check_aria_value(value_type: &ARIAAttributeValue, value: &str, enum_values: &[String]) -> bool {
     match value_type {
         ARIAAttributeValue::Token => enum_values.iter().any(|e| e == value),
@@ -1078,7 +1031,6 @@ fn check_aria_value(value_type: &ARIAAttributeValue, value: &str, enum_values: &
     }
 }
 
-/// Check if ARIA property value is set to its default value (disallowDefaultValue).
 fn check_default_value(
     attr: &markuplint_core::mlast::MLASTHTMLAttr,
     props: &[markuplint_types::spec::types::ARIAProperty],
@@ -1114,8 +1066,6 @@ fn check_default_value(
     }
 }
 
-/// Check allowed accessibility child roles (required owned elements).
-///
 /// For elements with a computed role that has `allowedAccessibilityChildRoles`,
 /// verifies that at least one child element has one of the required roles.
 /// Skips if `aria-busy="true"` is set or if no children exist.
@@ -1130,7 +1080,6 @@ fn check_allowed_child_roles(
     rule_id: &str,
     severity: crate::violation::Severity,
 ) {
-    // Skip if aria-busy="true"
     if markuplint_dom::helpers::get_attr_value(arena, node_id, "aria-busy")
         .is_some_and(|v| v.eq_ignore_ascii_case("true"))
     {
@@ -1148,14 +1097,14 @@ fn check_allowed_child_roles(
 
     let children = arena.children_of(node_id).unwrap_or_default();
 
-    // Check if any child has a required role (recursing through transparent roles)
+    // Transparent ownership roles are traversed when looking for the required role.
     if !children.is_empty()
         && has_required_child(spec, arena, node_id, &role.allowed_accessibility_child_roles, version)
     {
         return;
     }
 
-    // Check if any child has aria-busy="true"
+    // A child marked `aria-busy="true"` also exempts the parent.
     for &child_id in children {
         if markuplint_dom::helpers::get_attr_value(arena, child_id, "aria-busy")
             .is_some_and(|v| v.eq_ignore_ascii_case("true"))
@@ -1205,10 +1154,8 @@ fn check_allowed_child_roles(
     }
 }
 
-/// Recursively check if any child (traversing transparent ownership roles) has a required role.
-///
-/// Matches TS `isRequiredOwnedElement` which handles `"parent > child"` query syntax
-/// (e.g., `"rowgroup > row"` means a child with role `rowgroup` that itself contains `row`).
+/// Matches TS `isRequiredOwnedElement`, which handles the `"parent > child"` query syntax
+/// (e.g. `"rowgroup > row"` means a child with role `rowgroup` that itself contains `row`).
 fn has_required_child(
     spec: &MLMLSpec,
     arena: &DomArena,
@@ -1242,8 +1189,6 @@ fn has_required_child(
     false
 }
 
-/// Check if a child element matches a required owned element query.
-///
 /// Mirrors TS `isRequiredOwnedElement`: handles `"role"` (simple) and
 /// `"parent > child"` (nested) query syntax.
 fn is_required_owned_match(
@@ -1259,10 +1204,9 @@ fn is_required_owned_match(
         if !base_role.eq_ignore_ascii_case(child_role_name) {
             return false;
         }
-        // Check descendants for owning_role
         has_descendant_with_role(spec, arena, child_id, owning_role, version)
     } else {
-        // Simple: direct role match
+        // Simple query: direct role match.
         query.eq_ignore_ascii_case(child_role_name)
     }
 }
@@ -1309,8 +1253,6 @@ fn is_transparent_for_ownership_check(role_name: &str, version: ARIAVersion) -> 
     false
 }
 
-/// Check required accessibility parent role.
-///
 /// For elements with an EXPLICIT role that has `requiredContextRole`,
 /// verifies that an ancestor has one of the required context roles.
 #[allow(clippy::too_many_arguments)]
@@ -1332,11 +1274,9 @@ fn check_required_parent_role(
 
     let cr = get_computed_role(spec, arena, node_id, version, false);
 
-    // Check if computed role returned an error indicating invalid context
     if cr.error_type == Some(RoleComputationError::InvalidRequiredContextRole)
         || (cr.error_type == Some(RoleComputationError::NoOwner) && cr.role.is_none())
     {
-        // Find the role spec to get the required context role names
         for token in role_value.split_whitespace() {
             let role_name = token.to_ascii_lowercase();
             let Some(role_spec) = aria::get_role_spec(spec, &role_name, version) else {
@@ -1369,8 +1309,6 @@ fn check_required_parent_role(
     }
 }
 
-/// Check presentational children.
-///
 /// If an ancestor has a role with `childrenPresentational: true`,
 /// ARIA attributes on this element are ineffective.
 #[allow(clippy::too_many_arguments)]
@@ -1384,7 +1322,6 @@ fn check_presentational_children(
     rule_id: &str,
     severity: crate::violation::Severity,
 ) {
-    // Check if element has any role or aria-* attributes
     let has_aria_attr = el.attributes.iter().any(|attr| {
         if let MLASTAttr::HTMLAttr(html_attr) = attr {
             let name = html_attr.node_name.to_ascii_lowercase();
@@ -1397,7 +1334,6 @@ fn check_presentational_children(
         return;
     }
 
-    // Walk ancestors to find one with childrenPresentational
     for ancestor in arena.ancestors(node_id) {
         let Some(ancestor_el) = ancestor.as_element() else {
             continue;
@@ -1425,10 +1361,8 @@ fn check_presentational_children(
     }
 }
 
-/// Check interaction in hidden.
-///
-/// If an element is focusable and has `aria-hidden="true"` on itself or an ancestor,
-/// reports a violation.
+/// Reports a violation when a focusable element has `aria-hidden="true"` on
+/// itself or an ancestor.
 fn check_interaction_in_hidden(
     spec: &MLMLSpec,
     arena: &DomArena,
@@ -1441,7 +1375,6 @@ fn check_interaction_in_hidden(
         return;
     }
 
-    // Check self for aria-hidden="true"
     if markuplint_dom::helpers::get_attr_value(arena, node_id, "aria-hidden")
         .is_some_and(|v| v.eq_ignore_ascii_case("true"))
     {
@@ -1461,7 +1394,6 @@ fn check_interaction_in_hidden(
         return;
     }
 
-    // Check ancestors for aria-hidden="true"
     for ancestor in arena.ancestors(node_id) {
         let Some(ancestor_el) = ancestor.as_element() else {
             continue;

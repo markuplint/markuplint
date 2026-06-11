@@ -23,7 +23,6 @@ static SLASH_DATE_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^\d{4}/\d{
 /// Default locales to try (matches TS implementation).
 const DEFAULT_LANGS: &[&str] = &["en", "ja", "fr", "nl", "ru", "de", "pt", "zh"];
 
-/// The `require-datetime` rule.
 pub struct RequireDatetime;
 
 impl Rule for RequireDatetime {
@@ -55,25 +54,20 @@ impl Rule for RequireDatetime {
                 continue;
             }
 
-            // Get text content from child text nodes
             let text = get_text_content(arena, node_id);
 
-            // Skip empty/whitespace-only text
             if text.is_empty() {
                 continue;
             }
 
-            // If text is already a valid WHATWG datetime, no violation.
-            // WHATWG datetime values are always ASCII, so skip the check for non-ASCII text
-            // to avoid panics in the datetime parser on multibyte strings.
+            // WHATWG datetime values are always ASCII; guarding on `is_ascii` also avoids
+            // panics in the datetime parser on multibyte strings.
             if text.is_ascii() && is_datetime(&text) {
                 continue;
             }
 
-            // Read langs from per-node config options
             let langs = read_langs(&rule_config.options);
 
-            // Try to build a candidate datetime string
             let candidate = try_slash_date_fallback(&text).or_else(|| try_whichtime_parse(&text, &langs));
 
             let message = if let Some(ref dt) = candidate {
@@ -98,7 +92,6 @@ impl Rule for RequireDatetime {
     }
 }
 
-/// Extract text content from child text nodes of a given node.
 fn get_text_content(arena: &DomArena, node_id: NodeId) -> String {
     let Some(children) = arena.children_of(node_id) else {
         return String::new();
@@ -112,8 +105,7 @@ fn get_text_content(arena: &DomArena, node_id: NodeId) -> String {
     text.trim().to_string()
 }
 
-/// Read `langs` option from rule config as a string array.
-/// Falls back to `DEFAULT_LANGS` if not specified.
+/// Falls back to `DEFAULT_LANGS` when `langs` is unset or empty.
 fn read_langs(options: &serde_json::Value) -> Vec<Locale> {
     if let Some(arr) = options.get("langs").and_then(|v| v.as_array()) {
         let locales: Vec<Locale> = arr
@@ -128,7 +120,6 @@ fn read_langs(options: &serde_json::Value) -> Vec<Locale> {
     DEFAULT_LANGS.iter().filter_map(|s| str_to_locale(s)).collect()
 }
 
-/// Map a locale string to a `whichtime::Locale`.
 fn str_to_locale(s: &str) -> Option<Locale> {
     match s.to_ascii_lowercase().as_str() {
         "en" => Some(Locale::En),
@@ -154,7 +145,6 @@ fn try_slash_date_fallback(text: &str) -> Option<String> {
     None
 }
 
-/// Try parsing text with whichtime across multiple locales.
 /// Returns a candidate datetime string built from certain components.
 fn try_whichtime_parse(text: &str, langs: &[Locale]) -> Option<String> {
     let wt = WhichTime::new();
@@ -179,7 +169,6 @@ fn try_whichtime_parse(text: &str, langs: &[Locale]) -> Option<String> {
     None
 }
 
-/// Build a candidate datetime string from certain components.
 fn build_candidate(fc: &whichtime::FastComponents) -> Option<String> {
     let has_year = fc.is_certain(Component::Year);
     let has_month = fc.is_certain(Component::Month);
@@ -200,7 +189,6 @@ fn build_candidate(fc: &whichtime::FastComponents) -> Option<String> {
     let mut date_part: Option<String> = None;
     let mut time_part: Option<String> = None;
 
-    // Build date part
     if has_year && has_month && has_day {
         if let (Some(y), Some(m), Some(d)) = (year, month, day) {
             date_part = Some(format!("{y:04}-{m:02}-{d:02}"));
@@ -214,11 +202,10 @@ fn build_candidate(fc: &whichtime::FastComponents) -> Option<String> {
         && has_day
         && let (Some(m), Some(d)) = (month, day)
     {
-        // Yearless date: MM-DD
+        // Yearless date: MM-DD.
         date_part = Some(format!("{m:02}-{d:02}"));
     }
 
-    // Build time part
     if has_hour && has_minute && has_second {
         if let (Some(h), Some(mi), Some(s)) = (hour, minute, second) {
             time_part = Some(format!("{h:02}:{mi:02}:{s:02}"));
@@ -230,7 +217,6 @@ fn build_candidate(fc: &whichtime::FastComponents) -> Option<String> {
         time_part = Some(format!("{h:02}:{mi:02}"));
     }
 
-    // Build timezone suffix
     let tz_suffix = if has_offset {
         offset.map(|off| {
             if off == 0 {
@@ -247,7 +233,6 @@ fn build_candidate(fc: &whichtime::FastComponents) -> Option<String> {
         None
     };
 
-    // Combine parts
     let result = match (date_part, time_part) {
         (Some(d), Some(t)) => Some(format!("{d}T{t}")),
         (Some(d), None) => Some(d),
@@ -255,7 +240,6 @@ fn build_candidate(fc: &whichtime::FastComponents) -> Option<String> {
         (None, None) => None,
     };
 
-    // Append timezone if available
     result.map(|r| {
         if let Some(ref tz) = tz_suffix {
             format!("{r}{tz}")

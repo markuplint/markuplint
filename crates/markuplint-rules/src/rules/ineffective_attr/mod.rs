@@ -14,7 +14,6 @@ use crate::violation::Violation;
 #[cfg(test)]
 mod tests;
 
-/// The `ineffective-attr` rule.
 pub struct IneffectiveAttr;
 
 impl Rule for IneffectiveAttr {

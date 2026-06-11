@@ -1,9 +1,3 @@
-//! Input stream with UTF-8 position tracking.
-//!
-//! Tracks byte offset, line (1-based), and column (1-based) as characters
-//! are consumed. Supports `reconsume()` to back up one character.
-
-/// A position in the source code.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Position {
     /// 0-based byte offset.
@@ -14,7 +8,7 @@ pub struct Position {
     pub col: u32,
 }
 
-/// A span in the source code (start inclusive, end exclusive).
+/// Start inclusive, end exclusive.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Span {
     pub start: Position,
@@ -27,7 +21,6 @@ impl Span {
         Self { start, end }
     }
 
-    /// Create a zero-length span at the given position.
     #[must_use]
     pub fn empty(pos: Position) -> Self {
         Self { start: pos, end: pos }
@@ -45,7 +38,6 @@ impl Span {
     }
 }
 
-/// Input stream that tracks position as characters are consumed.
 pub struct Input<'a> {
     source: &'a str,
     bytes: &'a [u8],
@@ -73,7 +65,6 @@ impl<'a> Input<'a> {
         }
     }
 
-    /// Consume and return the next character, advancing position.
     pub fn next_char(&mut self) -> Option<char> {
         // Save previous position for reconsume BEFORE the EOF check.
         // This ensures prev_pos == pos at EOF, so reconsume() is a
@@ -99,7 +90,6 @@ impl<'a> Input<'a> {
             }
         }
 
-        // Update line/col tracking.
         if ch == '\n' {
             self.line += 1;
             self.col = 1;
@@ -110,7 +100,6 @@ impl<'a> Input<'a> {
         Some(ch)
     }
 
-    /// Peek at the next character without consuming it.
     #[must_use]
     pub fn peek(&self) -> Option<char> {
         if self.pos >= self.bytes.len() {
@@ -122,7 +111,7 @@ impl<'a> Input<'a> {
         }
     }
 
-    /// Peek at the character `n` positions ahead (0 = next char).
+    /// `n` positions ahead (0 = next char).
     #[must_use]
     pub fn peek_n(&self, n: usize) -> Option<char> {
         let mut offset = self.pos;
@@ -140,7 +129,7 @@ impl<'a> Input<'a> {
         }
     }
 
-    /// Check if the upcoming characters match the given string (case-insensitive).
+    /// Case-insensitive.
     #[must_use]
     pub fn starts_with_ci(&self, s: &str) -> bool {
         let remaining = &self.source[self.pos..];
@@ -150,13 +139,11 @@ impl<'a> Input<'a> {
         remaining[..s.len()].eq_ignore_ascii_case(s)
     }
 
-    /// Check if the upcoming characters match the given string (case-sensitive).
     #[must_use]
     pub fn starts_with(&self, s: &str) -> bool {
         self.source[self.pos..].starts_with(s)
     }
 
-    /// Back up one character (reconsume the last consumed character).
     pub fn reconsume(&mut self) {
         // Only reconsume if pos actually advanced (not at EOF).
         // Reconsuming at EOF would put pos back to the last real
@@ -169,7 +156,6 @@ impl<'a> Input<'a> {
         }
     }
 
-    /// Current position in the source.
     #[must_use]
     pub fn position(&self) -> Position {
         Position {
@@ -179,7 +165,7 @@ impl<'a> Input<'a> {
         }
     }
 
-    /// Previous position (before the last `next_char`).
+    /// Position before the last `next_char`.
     #[must_use]
     pub fn prev_position(&self) -> Position {
         Position {
@@ -189,25 +175,22 @@ impl<'a> Input<'a> {
         }
     }
 
-    /// Whether the input is exhausted.
     #[must_use]
     pub fn is_eof(&self) -> bool {
         self.pos >= self.bytes.len()
     }
 
-    /// Slice the source between two byte offsets.
+    /// Byte offsets.
     #[must_use]
     pub fn slice(&self, start: usize, end: usize) -> &'a str {
         &self.source[start..end]
     }
 
-    /// The full source string.
     #[must_use]
     pub fn source(&self) -> &'a str {
         self.source
     }
 
-    /// Skip `n` characters, advancing position tracking.
     pub fn advance(&mut self, n: usize) {
         for _ in 0..n {
             if self.next_char().is_none() {

@@ -23,6 +23,13 @@
 //! - **Per-element rule config**: TS supports `rule: [{ tag: 'x-container',
 //!   contents: [...] }]` for custom element content models. Rust `lint()`
 //!   does not yet accept per-element overrides.
+//! - **`<image>` element**: on the full-Rust path the WHATWG parser rewrites
+//!   `<image>` to `<img>`, whereas the MLAST/parse5 path preserves `image`, so
+//!   the matched tag name can differ between paths for the same source (see the
+//!   `image` arm in `markuplint-html-parser`'s tree construction).
+//! - **Framework parser inputs**: the TS suite exercises content-model matching
+//!   against JSX/Vue/Svelte/etc. parser output; the Rust suite skips those cases
+//!   because only the HTML/MLAST paths are wired up here.
 
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::node::DomNode;
@@ -37,7 +44,6 @@ use crate::content_model::result::ResultType;
 use crate::rule::{Rule, RuleConfig, RuleConfigSet};
 use crate::violation::Violation;
 
-/// The `permitted-contents` rule.
 pub struct PermittedContents;
 
 impl Rule for PermittedContents {
@@ -70,15 +76,12 @@ impl Rule for PermittedContents {
             }
             let tag_name = &el.base.node_name;
 
-            // Build namespace-prefixed spec lookup name
             let spec_name = spec_lookup_name(&el.namespace, tag_name);
 
-            // Get content model from spec
             let Some(cm) = content_model::get_content_model(spec, &spec_name) else {
                 continue; // Unknown element — skip
             };
 
-            // Evaluate conditional content model overrides
             let resolved_contents = resolve_content_model(&cm, arena, node_id);
 
             match &resolved_contents {
@@ -132,7 +135,6 @@ impl Rule for PermittedContents {
                     // 2. Resolve transparent child elements for parent content model.
                     let resolved_children = represent_transparent_nodes(arena, node_id, spec);
 
-                    // Filter whitespace from resolved children too
                     let resolved_filtered: Vec<_> = resolved_children
                         .into_iter()
                         .filter(|c| !matches!(c.kind, ChildNodeKind::Text { is_whitespace: true }))
@@ -147,10 +149,8 @@ impl Rule for PermittedContents {
 
                     match result.result_type {
                         ResultType::UnexpectedExtraNode => {
-                            // Find the first unmatched child
                             if let Some(&idx) = result.unmatched.first() {
                                 let child = &children_to_validate[idx];
-                                // Check if this child was resolved from a transparent element
                                 let is_transparent_resolved = child.transparent_ancestor.is_some();
                                 let message = if is_transparent_resolved {
                                     format!(
@@ -190,7 +190,7 @@ impl Rule for PermittedContents {
                             });
                         }
                         ResultType::MissingNodeOneOrMore => {
-                            // Scope: first unmatched child if available, else parent
+                            // Report on the first unmatched child when there is one, else the parent.
                             let (line, col, raw) = if let Some(&idx) = result.unmatched.first() {
                                 let child = &children_to_validate[idx];
                                 (
@@ -253,10 +253,8 @@ impl Rule for PermittedContents {
     }
 }
 
-/// Build the spec lookup name for an element, prefixing with namespace if needed.
-///
-/// - SVG: `svg:tagname` (e.g., `svg:a`, `svg:feBlend`)
-/// - `MathML`: `mml:tagname` (e.g., `mml:mfrac`)
+/// - SVG: `svg:tagname` (e.g. `svg:a`, `svg:feBlend`)
+/// - `MathML`: `mml:tagname` (e.g. `mml:mfrac`)
 /// - HTML: `tagname` (no prefix)
 fn spec_lookup_name(namespace: &markuplint_core::mlast::NamespaceURI, tag_name: &str) -> String {
     match namespace {
@@ -266,11 +264,7 @@ fn spec_lookup_name(namespace: &markuplint_core::mlast::NamespaceURI, tag_name: 
     }
 }
 
-/// Evaluate conditional content model overrides.
-///
-/// Checks each conditional's CSS selector condition against the element's
-/// attributes and structural position. Returns the first matching condition's
-/// contents, or falls back to the base content model.
+/// Returns the first matching conditional's contents, or the base content model.
 ///
 /// Condition types:
 /// - Attribute selectors: `[src]` — element has the attribute
@@ -308,17 +302,15 @@ fn resolve_content_model(cm: &ContentModel, arena: &DomArena, node_id: NodeId) -
 fn evaluate_condition(condition: &str, el: &markuplint_dom::node::ElementData, arena: &DomArena) -> bool {
     let condition = condition.trim();
 
-    // Pure attribute selector(s): starts with `[`
     if condition.starts_with('[') {
         return check_attr_condition(condition, el);
     }
 
-    // Structural selector: "parent > child"
+    // Structural selector of the form `parent > child`.
     if let Some(pos) = condition.find('>') {
         let ancestor_part = condition[..pos].trim();
         let descendant_part = condition[pos + 1..].trim();
 
-        // Get parent element
         let Some(parent_id) = el.base.parent else {
             return false;
         };
@@ -329,13 +321,12 @@ fn evaluate_condition(condition: &str, el: &markuplint_dom::node::ElementData, a
             return false;
         };
 
-        // Match parent name (strip namespace prefix: "svg|switch" → "switch")
+        // Strip any namespace prefix from the parent name (`svg|switch` → `switch`).
         let parent_name = ancestor_part.split('|').next_back().unwrap_or(ancestor_part);
         if !parent_el.base.node_name.eq_ignore_ascii_case(parent_name) {
             return false;
         }
 
-        // If descendant part has attribute condition, check it too
         if descendant_part.starts_with('[') {
             return check_attr_condition(descendant_part, el);
         }
@@ -343,7 +334,7 @@ fn evaluate_condition(condition: &str, el: &markuplint_dom::node::ElementData, a
         return true;
     }
 
-    // Bare string: treated as parent name check (e.g., "label" for option)
+    // A bare string is treated as a parent-name check (e.g. `label` for `option`).
     if !condition.is_empty() && !condition.contains('[') {
         if let Some(parent_id) = el.base.parent
             && let Some(parent_node) = arena.get(parent_id)
@@ -357,9 +348,9 @@ fn evaluate_condition(condition: &str, el: &markuplint_dom::node::ElementData, a
     false
 }
 
-/// Check attribute presence conditions like `[src]`, `[label][value]`.
+/// Checks attribute presence conditions like `[src]`, `[label][value]`.
 fn check_attr_condition(condition: &str, el: &markuplint_dom::node::ElementData) -> bool {
-    // Split multiple attribute selectors: "[label][value]" → ["label", "value"]
+    // Several selectors may be concatenated: `[label][value]` requires both.
     let mut remaining = condition;
     while let Some(start) = remaining.find('[') {
         let Some(end) = remaining[start..].find(']') else {
@@ -381,13 +372,11 @@ fn check_attr_condition(condition: &str, el: &markuplint_dom::node::ElementData)
     true
 }
 
-/// Convert `DomArena` children of an element to `ChildNodeInfo` vec.
-///
 /// Recursively populates `child_nodes` for element children so that
 /// `:has()` selectors in the content model can match descendants.
 fn collect_child_nodes(arena: &DomArena, parent_id: NodeId) -> Vec<ChildNodeInfo> {
-    // Use pure_children_of to filter out bogus nodes (EndTag, Invalid, bogus Text/Comment/PSBlock).
-    // Matches TS getPureChildNodes() which excludes invalid/bogus nodes from child iteration.
+    // Mirrors TS `getPureChildNodes()`, which excludes invalid/bogus nodes
+    // (EndTag, Invalid, bogus Text/Comment/PSBlock) from child iteration.
     let children: Vec<NodeId> = arena.pure_children_of(parent_id);
 
     let mut result = Vec::new();
@@ -437,7 +426,6 @@ fn collect_child_nodes(arena: &DomArena, parent_id: NodeId) -> Vec<ChildNodeInfo
     result
 }
 
-/// Check if all patterns are optional (zeroOrMore, optional, or choice with all-optional branches).
 fn all_optional(patterns: &[PermittedContentPattern]) -> bool {
     patterns.iter().all(|p| match p {
         PermittedContentPattern::ZeroOrMore(_)
@@ -448,8 +436,7 @@ fn all_optional(patterns: &[PermittedContentPattern]) -> bool {
     })
 }
 
-/// Get a display name for a child node.
-/// Format a child's name for violation messages, matching TS format.
+/// Formats a child's name for violation messages, matching the TS format.
 ///
 /// - Element: `The "div" element`
 /// - Text: `The text node`
@@ -500,7 +487,6 @@ fn check_own_transparent_constraint(
     let constraint = &transparent.transparent;
     let non_transparent = non_transparent_patterns(patterns);
 
-    // Find which children are not consumed by non-transparent patterns
     let unmatched_children = if non_transparent.is_empty() {
         children.to_vec()
     } else {
@@ -524,7 +510,6 @@ fn check_own_transparent_constraint(
             continue;
         }
         if !matches_transparent_constraint(child, constraint, spec) {
-            // If constraint contains :has(), find the actual violating descendant
             if constraint.contains(":has(")
                 && let Some(violator) = find_deep_violator(arena, node_id, &simple_constraint, spec)
             {
@@ -567,7 +552,6 @@ fn check_own_transparent_constraint(
 /// Example: `:not(:model(interactive), a, [tabindex], :has(:model(interactive), a, [tabindex]))`
 /// → `:not(:model(interactive), a, [tabindex])`
 fn strip_has_from_constraint(constraint: &str) -> String {
-    // Find :has( and remove it along with its balanced parentheses
     let mut result = constraint.to_string();
     while let Some(start) = result.find(":has(") {
         let mut depth = 0;
@@ -585,7 +569,7 @@ fn strip_has_from_constraint(constraint: &str) -> String {
                 _ => {}
             }
         }
-        // Remove ", :has(...)" or ":has(...), " or just ":has(...)"
+        // Also consume an adjacent separating `, ` so the remaining list stays valid.
         let before = if start > 0 && result[..start].ends_with(", ") {
             start - 2
         } else {
@@ -601,10 +585,8 @@ fn strip_has_from_constraint(constraint: &str) -> String {
     result
 }
 
-/// Find the deepest descendant that fails the simple constraint (without `:has()`).
-///
-/// Walks all descendants of the transparent element and returns the first
-/// element that directly violates the constraint.
+/// Returns the first descendant that directly violates the constraint, evaluated
+/// without `:has()`.
 fn find_deep_violator(
     arena: &DomArena,
     node_id: NodeId,
@@ -621,7 +603,6 @@ fn find_deep_violator(
             if !matches_transparent_constraint(&info, simple_constraint, spec) {
                 return Some(info);
             }
-            // Recurse into descendants
             if let Some(violator) = find_deep_violator(arena, child_id, simple_constraint, spec) {
                 return Some(violator);
             }
@@ -630,7 +611,6 @@ fn find_deep_violator(
     None
 }
 
-/// Check if a pattern is a `TransparentPattern`.
 fn find_transparent(patterns: &[PermittedContentPattern]) -> Option<&TransparentPattern> {
     patterns.iter().find_map(|p| match p {
         PermittedContentPattern::Transparent(t) => Some(t),
@@ -638,7 +618,6 @@ fn find_transparent(patterns: &[PermittedContentPattern]) -> Option<&Transparent
     })
 }
 
-/// Get the non-transparent patterns from a content model.
 fn non_transparent_patterns(patterns: &[PermittedContentPattern]) -> Vec<PermittedContentPattern> {
     patterns
         .iter()
@@ -654,12 +633,10 @@ fn non_transparent_patterns(patterns: &[PermittedContentPattern]) -> Vec<Permitt
 /// For complex selectors containing `:not()`, `:has()`, or `:model()`, uses the
 /// full CSS selector engine via `arena_bridge`.
 fn matches_transparent_constraint(child: &ChildNodeInfo, constraint: &str, spec: &MLMLSpec) -> bool {
-    // Wildcard — everything is allowed
     if constraint == "*" {
         return true;
     }
 
-    // For complex selectors, use the full selector engine
     if matching::needs_full_selector(constraint) || constraint.contains(":model(") {
         let expanded = matching::expand_model_refs(constraint, spec);
         let Ok(selector) = markuplint_selector::parser::parse(&expanded) else {
@@ -679,7 +656,6 @@ fn matches_transparent_constraint(child: &ChildNodeInfo, constraint: &str, spec:
         return markuplint_selector::matcher::matches(&selector, &bridge.arena, node_id, None, None, None);
     }
 
-    // Simple selector: exact tag name or category
     content_model::matches_model_ref(spec, &child.node_name, constraint)
 }
 
@@ -735,9 +711,7 @@ fn represent_transparent_nodes(arena: &DomArena, parent_id: NodeId, spec: &MLMLS
             continue;
         };
 
-        // Non-element nodes pass through
         let Some(child_el) = child_node.as_element() else {
-            // Convert non-element to ChildNodeInfo
             let info = node_to_child_info(child_node);
             if let Some(info) = info {
                 result_children.push(info);
@@ -745,7 +719,6 @@ fn represent_transparent_nodes(arena: &DomArena, parent_id: NodeId, spec: &MLMLS
             continue;
         };
 
-        // Get the child element's content model (with conditional evaluation)
         let child_lookup = spec_lookup_name(&child_el.namespace, &child_el.base.node_name);
         let child_cm = content_model::get_content_model(spec, &child_lookup);
         let child_resolved = child_cm.as_ref().map(|cm| resolve_content_model(cm, arena, child_id));
@@ -763,14 +736,13 @@ fn represent_transparent_nodes(arena: &DomArena, parent_id: NodeId, spec: &MLMLS
             continue;
         }
 
-        // This child is transparent — resolve it using the resolved content model
         let ContentModelContents::Patterns(child_patterns) = child_resolved.unwrap() else {
             result_children.push(element_to_child_info(child_el));
             continue;
         };
         let non_transparent = non_transparent_patterns(&child_patterns);
 
-        // Collect the transparent element's children (filter whitespace, like TS)
+        // Whitespace is filtered out before matching, as in TS.
         let grandchildren: Vec<_> = collect_child_nodes(arena, child_id)
             .into_iter()
             .filter(|c| !matches!(c.kind, ChildNodeKind::Text { is_whitespace: true }))
@@ -781,7 +753,6 @@ fn represent_transparent_nodes(arena: &DomArena, parent_id: NodeId, spec: &MLMLS
             continue;
         }
 
-        // Run non-transparent patterns against grandchildren to find what's consumed
         let unmatched = if non_transparent.is_empty() {
             grandchildren.clone()
         } else {
@@ -807,7 +778,6 @@ fn represent_transparent_nodes(arena: &DomArena, parent_id: NodeId, spec: &MLMLS
     result_children
 }
 
-/// Convert a `DomNode` (non-element) to a `ChildNodeInfo`, if applicable.
 fn node_to_child_info(node: &DomNode) -> Option<ChildNodeInfo> {
     match node {
         DomNode::Text(t) => {
@@ -828,7 +798,6 @@ fn node_to_child_info(node: &DomNode) -> Option<ChildNodeInfo> {
     }
 }
 
-/// Convert an `ElementData` to a `ChildNodeInfo`.
 fn element_to_child_info(el: &markuplint_dom::node::ElementData) -> ChildNodeInfo {
     let kind = match el.element_type {
         markuplint_core::mlast::ElementType::Html => ChildNodeKind::HtmlElement,
@@ -847,7 +816,6 @@ fn element_to_child_info(el: &markuplint_dom::node::ElementData) -> ChildNodeInf
     }
 }
 
-/// Extract lowercase attribute names from an element's attributes.
 fn extract_attribute_names(attrs: &[markuplint_core::mlast::MLASTAttr]) -> Vec<String> {
     attrs
         .iter()

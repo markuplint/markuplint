@@ -62,7 +62,6 @@ pub fn match_syntax(syntax: &str, value: &str) -> MatchResult {
 /// Returns [`MismatchInfo`](error::MismatchInfo) if the value does not match
 /// the syntax definition and is not a CSS-wide keyword.
 pub fn match_property(syntax: &str, value: &str) -> MatchResult {
-    // Check CSS-wide keywords first
     let trimmed = value.trim();
     if CSS_WIDE_KEYWORDS.iter().any(|kw| kw.eq_ignore_ascii_case(trimmed)) {
         return Ok(());

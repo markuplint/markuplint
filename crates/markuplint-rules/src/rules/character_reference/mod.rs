@@ -19,7 +19,6 @@ mod tests;
 // This correctly rejects &x25BC; (contains digits in name part)
 static ENTITY_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"(?i)&(?:[a-z]+|#[0-9]+|#x[0-9a-f]+);").unwrap());
 
-/// The `character-reference` rule.
 pub struct CharacterReference;
 
 /// Characters that must be escaped in HTML text and attribute values.
@@ -28,7 +27,6 @@ const DEFAULT_CHARS: &[char] = &['"', '&', '<', '>'];
 /// Parent elements whose text content is exempt (raw text elements).
 const IGNORE_PARENTS: &[&str] = &["script", "style"];
 
-/// Check a raw string for illegal characters and push violations.
 fn check_chars(
     raw: &str,
     start_line: u32,
@@ -64,40 +62,29 @@ fn check_chars(
     }
 }
 
-/// Get the source text for a node by slicing the original HTML source.
-///
-/// The WHATWG parser resolves character references (e.g., `&#9660;` → `▼`),
-/// so `text.base.raw` contains the resolved text, not the original source.
-/// This function slices the original source from the node's offset to the
-/// next sibling's offset (or the parent's close tag offset) to get the
+/// The WHATWG parser resolves character references (e.g. `&#9660;` → `▼`),
+/// so `text.base.raw` may not match the original source. Slicing the source
+/// from this node's offset to the next sibling's offset recovers the
 /// unresolved source text.
-/// Get the original source text for a text node.
-///
-/// The WHATWG parser resolves character references (e.g., `&#9660;` → `▼`),
-/// so `text.base.raw` may not match the original source. This function
-/// slices the source from the text node's offset to the next sibling's
-/// offset, giving the original unresolved source text.
 fn get_source_text_for_node<'a>(arena: &'a DomArena, base: &markuplint_dom::node::NodeBase) -> Option<&'a str> {
     let source = arena.source()?;
     let start = base.offset;
 
-    // End = next sibling's source offset, or parent element's close tag position
+    // End at the next sibling's offset, or the parent element's close-tag position.
     let end = base
         .next_sibling
         .and_then(|id| arena.get(id))
         .and_then(|n| n.base())
         .map(|b| b.offset)
         .or_else(|| {
-            // No next sibling: use parent's close tag position
+            // No next sibling: fall back to the parent's close-tag position.
             base.parent.and_then(|id| arena.get(id)).and_then(|n| {
                 if let markuplint_dom::node::DomNode::Element(el) = n {
-                    // Find close tag offset from source by searching from our end
-                    // The close tag raw is like "</div>", search for "</" after our text
-                    el.close_tag.as_ref().map(|ct| {
-                        // close_tag has line/col but no offset; find it in source
-                        // by searching for the raw text after our start
-                        source[start..].find(&ct.raw).map_or(source.len(), |pos| start + pos)
-                    })
+                    // `close_tag` carries line/col but no offset, so locate its raw
+                    // text in the source instead.
+                    el.close_tag
+                        .as_ref()
+                        .map(|ct| source[start..].find(&ct.raw).map_or(source.len(), |pos| start + pos))
                 } else {
                     None
                 }
@@ -117,18 +104,16 @@ impl Rule for CharacterReference {
         let config = config.global();
         let mut violations = Vec::new();
 
-        // Check text nodes
         for node in arena.descendants(0) {
             let DomNode::Text(text) = node else {
                 continue;
             };
 
-            // Skip bogus text nodes (e.g., orphaned end tags)
+            // Bogus text nodes (e.g. orphaned end tags) are not real text content.
             if text.is_bogus {
                 continue;
             }
 
-            // Skip text inside script/style
             if let Some(parent_id) = text.base.parent
                 && let Some(DomNode::Element(parent_el)) = arena.get(parent_id)
                 && IGNORE_PARENTS
@@ -161,11 +146,9 @@ impl Rule for CharacterReference {
                 let MLASTAttr::HTMLAttr(html_attr) = attr else {
                     continue;
                 };
-                // Skip dynamic values and directives
                 if html_attr.is_dynamic_value == Some(true) || html_attr.is_directive == Some(true) {
                     continue;
                 }
-                // Skip attributes without a value
                 if html_attr.value.raw.is_empty() {
                     continue;
                 }

@@ -11,7 +11,6 @@ use crate::violation::Violation;
 #[cfg(test)]
 mod tests;
 
-/// The `class-naming` rule.
 pub struct ClassNaming;
 
 impl Rule for ClassNaming {
@@ -33,7 +32,6 @@ impl Rule for ClassNaming {
                 continue;
             }
 
-            // Parse pattern(s) from config value
             let pattern_strs: Vec<String> = match &rule_config.value {
                 serde_json::Value::String(s) if !s.is_empty() => vec![s.clone()],
                 serde_json::Value::Array(arr) => arr.iter().filter_map(|v| v.as_str().map(String::from)).collect(),
@@ -44,7 +42,6 @@ impl Rule for ClassNaming {
                 continue;
             }
 
-            // Compile all patterns
             let regexes: Vec<(String, Regex)> = pattern_strs
                 .iter()
                 .filter_map(|ps| {
@@ -74,24 +71,22 @@ impl Rule for ClassNaming {
                 }
 
                 let value = &html_attr.value.raw;
-                // Track position within the value string to compute per-class col
+                // Track the offset within the value so each class gets its own column.
                 let value_start_line = html_attr.value.line;
                 let value_start_col = html_attr.value.col;
                 let mut search_from = 0;
 
                 for class_name in value.split_whitespace() {
-                    // Find position of this class name within the value string
                     let pos_in_value = value[search_from..].find(class_name).unwrap_or(0) + search_from;
                     search_from = pos_in_value + class_name.len();
 
-                    // Compute col (assumes single-line class attribute value)
+                    // Assumes a single-line class attribute value.
                     #[allow(clippy::cast_possible_truncation)]
                     let class_col = value_start_col + pos_in_value as u32;
 
-                    // Class must match at least one pattern
                     let matches_any = regexes.iter().any(|(_, re)| re.is_match(class_name));
                     if !matches_any {
-                        // TS reports at the class name position with raw = class name
+                        // TS reports at the class name position with raw = class name.
                         violations.push(Violation {
                             rule_id: self.id().to_string(),
                             name: None,
@@ -113,7 +108,6 @@ impl Rule for ClassNaming {
     }
 }
 
-/// Strip regex delimiters /pattern/flags and return the inner pattern.
 fn strip_regex_delimiters(pattern: &str) -> String {
     if let Some(rest) = pattern.strip_prefix('/') {
         if let Some(last_slash) = rest.rfind('/') {

@@ -5,7 +5,6 @@ use crate::input::Span;
 /// Index into the arena.
 pub type NodeId = usize;
 
-/// Namespace for elements.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Namespace {
     Html,
@@ -13,7 +12,7 @@ pub enum Namespace {
     MathML,
 }
 
-/// An attribute on an element, with sub-spans for MLAST decomposition.
+/// Sub-spans support MLAST decomposition.
 #[derive(Debug, Clone)]
 pub struct Attribute {
     pub name: String,
@@ -28,7 +27,6 @@ pub struct Attribute {
     pub quote_end_span: Option<Span>,
 }
 
-/// A node in the internal tree.
 #[derive(Debug)]
 pub struct TreeNode {
     pub kind: NodeKind,
@@ -36,13 +34,11 @@ pub struct TreeNode {
     pub children: Vec<NodeId>,
     /// Span of the start tag (or the entire node for text/comment/doctype).
     pub span: Span,
-    /// Span of the end tag, if any.
     pub end_tag_span: Option<Span>,
     /// Whether this node was implicitly created by the parser (ghost node).
     pub is_implicit: bool,
 }
 
-/// The kind of a tree node.
 #[derive(Debug, Clone)]
 pub enum NodeKind {
     Document,
@@ -66,7 +62,6 @@ pub enum NodeKind {
 }
 
 impl TreeNode {
-    /// Returns the tag name if this node is an element, or `None` otherwise.
     #[must_use]
     pub fn tag_name(&self) -> Option<&str> {
         match &self.kind {
@@ -75,7 +70,6 @@ impl TreeNode {
         }
     }
 
-    /// Returns the namespace if this node is an element, or `None` otherwise.
     #[must_use]
     pub fn namespace(&self) -> Option<Namespace> {
         match &self.kind {
@@ -84,19 +78,17 @@ impl TreeNode {
         }
     }
 
-    /// Check if this node is an element with the given tag name (any namespace).
+    /// Matches any namespace.
     #[must_use]
     pub fn is_element(&self, name: &str) -> bool {
         self.tag_name() == Some(name)
     }
 
-    /// Check if this node is an HTML-namespace element with the given tag name.
     #[must_use]
     pub fn is_html_element(&self, name: &str) -> bool {
         self.tag_name() == Some(name) && self.namespace() == Some(Namespace::Html)
     }
 
-    /// Get the value of an attribute by name.
     #[must_use]
     pub fn attribute_value(&self, attr_name: &str) -> Option<&str> {
         match &self.kind {
@@ -108,7 +100,6 @@ impl TreeNode {
         }
     }
 
-    /// Check if this is a `MathML` text integration point.
     #[must_use]
     pub fn is_mathml_text_integration_point(&self) -> bool {
         self.namespace() == Some(Namespace::MathML)

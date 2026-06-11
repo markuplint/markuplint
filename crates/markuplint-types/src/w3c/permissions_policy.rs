@@ -1,7 +1,3 @@
-//! W3C Serialized Permissions Policy validator.
-//!
-//! Validates the `allow` attribute value per the W3C Permissions Policy spec.
-//!
 //! <https://w3c.github.io/webappsec-permissions-policy/#serialized-permissions-policy>
 //!
 //! ```abnf
@@ -12,8 +8,6 @@
 //! allow-list-value = serialized-origin / "*" / "'self'" / "'src'" / "'none'"
 //! ```
 
-/// Validates a serialized permissions policy string.
-///
 /// # Examples
 ///
 /// ```
@@ -46,10 +40,8 @@ fn is_valid_directive(directive: &str) -> bool {
         return false;
     }
 
-    // Split into tokens by whitespace
     let mut tokens = trimmed.split_ascii_whitespace();
 
-    // First token must be a feature-identifier
     let Some(feature_id) = tokens.next() else {
         return false;
     };
@@ -58,7 +50,6 @@ fn is_valid_directive(directive: &str) -> bool {
         return false;
     }
 
-    // Remaining tokens form the allow-list (optional)
     for token in tokens {
         if !is_allow_list_value(token) {
             return false;
@@ -75,7 +66,6 @@ fn is_feature_identifier(value: &str) -> bool {
 
 /// `allow-list-value = serialized-origin / "*" / "'self'" / "'src'" / "'none'"`
 fn is_allow_list_value(value: &str) -> bool {
-    // Check special keywords first
     if value == "*"
         || value.eq_ignore_ascii_case("'self'")
         || value.eq_ignore_ascii_case("'src'")
@@ -84,12 +74,9 @@ fn is_allow_list_value(value: &str) -> bool {
         return true;
     }
 
-    // Must be a serialized origin (URL)
     is_serialized_origin(value)
 }
 
-/// Validates a serialized origin.
-///
 /// A serialized origin is a URL with restrictions:
 /// - Must be parseable as a URL
 /// - No path (or just `/`), no query, no hash
@@ -97,7 +84,6 @@ fn is_allow_list_value(value: &str) -> bool {
 /// - The host must appear literally in the value (no IDN normalization)
 /// - Must not contain raw `'`, `*`, `,`, or `;` (must be percent-encoded)
 fn is_serialized_origin(value: &str) -> bool {
-    // Must not contain forbidden raw characters
     if value.contains('\'') || value.contains('*') || value.contains(',') || value.contains(';') {
         return false;
     }
@@ -106,32 +92,27 @@ fn is_serialized_origin(value: &str) -> bool {
         return false;
     };
 
-    // No path (or just "/")
     if url.path() != "/" && !url.path().is_empty() {
         return false;
     }
 
-    // No query
     if url.query().is_some() {
         return false;
     }
 
-    // No fragment
     if url.fragment().is_some() {
         return false;
     }
 
-    // No username
     if !url.username().is_empty() {
         return false;
     }
 
-    // No password
     if url.password().is_some() {
         return false;
     }
 
-    // Host must appear literally in the value (reject IDN normalization)
+    // Reject IDN normalization: the host must appear literally in the value.
     if url.host_str().is_some_and(|host| !value.contains(host)) {
         return false;
     }

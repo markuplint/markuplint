@@ -5,13 +5,10 @@ pub mod node;
 use crate::input::{Position, Span};
 use node::{Attribute, Namespace, NodeId, NodeKind, TreeNode};
 
-/// Arena-based tree. All nodes are stored in a flat `Vec` and
-/// referenced by index (`NodeId`).
 #[derive(Debug)]
 pub struct Arena {
     nodes: Vec<TreeNode>,
-    /// Orphaned end tags (tag name, span) encountered during tree construction.
-    /// These have no matching start tag in the open elements stack.
+    /// End tags with no matching start tag in the open elements stack.
     pub orphaned_end_tags: Vec<(String, Span)>,
     /// WHATWG tree construction parse errors (tag name, message, span).
     /// These correspond to cases where the TS parser fails with "Broke mapping nodes"
@@ -20,7 +17,7 @@ pub struct Arena {
 }
 
 impl Arena {
-    /// Create a new arena with a document root node at index 0.
+    /// The document root node is at index 0.
     #[must_use]
     pub fn new() -> Self {
         let doc = TreeNode {
@@ -42,36 +39,32 @@ impl Arena {
         }
     }
 
-    /// The document root node ID (always 0).
+    /// Always 0.
     #[must_use]
     pub fn document_id(&self) -> NodeId {
         0
     }
 
-    /// Get a node by ID.
     #[must_use]
     pub fn get(&self, id: NodeId) -> &TreeNode {
         &self.nodes[id]
     }
 
-    /// Get a mutable reference to a node by ID.
     pub fn get_mut(&mut self, id: NodeId) -> &mut TreeNode {
         &mut self.nodes[id]
     }
 
-    /// Number of nodes in the arena.
     #[must_use]
     pub fn len(&self) -> usize {
         self.nodes.len()
     }
 
-    /// Whether the arena is empty (only document root).
+    /// Empty means only the document root remains.
     #[must_use]
     pub fn is_empty(&self) -> bool {
         self.nodes.len() <= 1
     }
 
-    /// Create a new element node and return its ID.
     pub fn create_element(
         &mut self,
         tag_name: String,
@@ -98,7 +91,6 @@ impl Arena {
         id
     }
 
-    /// Create a new text node and return its ID.
     pub fn create_text(&mut self, data: String, span: Span) -> NodeId {
         let id = self.nodes.len();
         self.nodes.push(TreeNode {
@@ -112,7 +104,6 @@ impl Arena {
         id
     }
 
-    /// Create a new comment node and return its ID.
     pub fn create_comment(&mut self, data: String, span: Span) -> NodeId {
         let id = self.nodes.len();
         self.nodes.push(TreeNode {
@@ -126,7 +117,6 @@ impl Arena {
         id
     }
 
-    /// Create a new doctype node and return its ID.
     pub fn create_doctype(&mut self, name: String, public_id: String, system_id: String, span: Span) -> NodeId {
         let id = self.nodes.len();
         self.nodes.push(TreeNode {
@@ -144,7 +134,6 @@ impl Arena {
         id
     }
 
-    /// Append a child to a parent node.
     pub fn append_child(&mut self, parent_id: NodeId, child_id: NodeId) {
         // Remove from old parent if any.
         if let Some(old_parent) = self.nodes[child_id].parent {
@@ -154,7 +143,6 @@ impl Arena {
         self.nodes[parent_id].children.push(child_id);
     }
 
-    /// Insert a child before a reference node.
     pub fn insert_before(&mut self, parent_id: NodeId, child_id: NodeId, ref_id: NodeId) {
         if let Some(old_parent) = self.nodes[child_id].parent {
             self.nodes[old_parent].children.retain(|&id| id != child_id);
@@ -168,7 +156,6 @@ impl Arena {
         }
     }
 
-    /// Remove a child from its parent.
     pub fn remove_from_parent(&mut self, child_id: NodeId) {
         if let Some(parent_id) = self.nodes[child_id].parent {
             self.nodes[parent_id].children.retain(|&id| id != child_id);
@@ -176,7 +163,6 @@ impl Arena {
         }
     }
 
-    /// Get the last child of a node, if any.
     #[must_use]
     pub fn last_child(&self, parent_id: NodeId) -> Option<NodeId> {
         self.nodes[parent_id].children.last().copied()
@@ -191,7 +177,6 @@ impl Arena {
         }
     }
 
-    /// Deep-clone a single node and all its descendants.
     fn clone_node_deep(&mut self, node_id: NodeId) -> NodeId {
         let node = &self.nodes[node_id];
         let kind = node.kind.clone();
@@ -218,7 +203,6 @@ impl Arena {
         new_id
     }
 
-    /// Iterator over all nodes in the arena.
     pub fn iter(&self) -> impl Iterator<Item = (NodeId, &TreeNode)> {
         self.nodes.iter().enumerate()
     }
@@ -273,12 +257,10 @@ impl Arena {
                 escaped_raw,
             ));
 
-            // Recurse into element/comment children.
             if !node.children.is_empty() {
                 self.collect_debug_maps(source, &node.children, result);
             }
 
-            // Emit end tag if present.
             if let Some(end_span) = node.end_tag_span
                 && let NodeKind::Element { tag_name, .. } = &node.kind
             {

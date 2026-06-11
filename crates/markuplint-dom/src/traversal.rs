@@ -1,24 +1,18 @@
-//! Tree traversal API for `DomArena`.
-
 use crate::arena::{DomArena, NodeId};
 use crate::node::{DomNode, ElementData};
 
 impl DomArena {
-    /// Get the parent node of a given node.
     #[must_use]
     pub fn parent(&self, id: NodeId) -> Option<&DomNode> {
         self.get(id).and_then(DomNode::parent_id).and_then(|pid| self.get(pid))
     }
 
-    /// Get the children IDs of a given node.
     #[must_use]
     pub fn children_of(&self, id: NodeId) -> Option<&[NodeId]> {
         self.get(id).map(DomNode::children)
     }
 
-    /// Get the "pure" children IDs of a given node, filtering out bogus nodes.
-    ///
-    /// Matches TS `getPureChildNodes()` which filters out `type === 'endtag'`
+    /// Mirrors TS `getPureChildNodes()` which filters out `type === 'endtag'`
     /// and `type === 'invalid'` nodes. In Rust, this also filters Text/Comment/PSBlock
     /// nodes with `is_bogus = true`.
     #[must_use]
@@ -33,7 +27,6 @@ impl DomArena {
             .collect()
     }
 
-    /// Get the next sibling of a given node.
     #[must_use]
     pub fn next_sibling(&self, id: NodeId) -> Option<&DomNode> {
         self.get(id)
@@ -42,7 +35,6 @@ impl DomArena {
             .and_then(|sid| self.get(sid))
     }
 
-    /// Get the previous sibling of a given node.
     #[must_use]
     pub fn prev_sibling(&self, id: NodeId) -> Option<&DomNode> {
         self.get(id)
@@ -69,7 +61,6 @@ impl DomArena {
         }
     }
 
-    /// Iterate over all element nodes in the arena.
     pub fn elements(&self) -> impl Iterator<Item = (NodeId, &ElementData)> {
         self.nodes.iter().filter_map(|n| {
             if let DomNode::Element(data) = n {
@@ -80,13 +71,13 @@ impl DomArena {
         })
     }
 
-    /// Get the document root node (always at index 0).
+    /// The document root is always at index 0.
     #[must_use]
     pub fn document(&self) -> Option<&DomNode> {
         self.get(0)
     }
 
-    /// Check if this DOM was parsed as a fragment (no doctype/full document structure).
+    /// A missing or non-`Document` root at index 0 is treated as a fragment.
     #[must_use]
     pub fn is_fragment(&self) -> bool {
         match self.get(0) {
@@ -96,7 +87,6 @@ impl DomArena {
     }
 }
 
-/// Iterator over ancestors of a node, bottom-up.
 pub struct AncestorIter<'a> {
     arena: &'a DomArena,
     current: Option<NodeId>,
@@ -113,7 +103,6 @@ impl<'a> Iterator for AncestorIter<'a> {
     }
 }
 
-/// Iterator over descendants in document order (depth-first pre-order).
 pub struct DescendantIter<'a> {
     arena: &'a DomArena,
     stack: Vec<NodeId>,

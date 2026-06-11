@@ -2,7 +2,6 @@
 
 use crate::tree::node::NodeId;
 
-/// The stack of open elements maintained by the tree builder.
 #[derive(Debug, Default)]
 pub struct OpenElementsStack {
     elements: Vec<NodeId>,
@@ -46,43 +45,38 @@ impl OpenElementsStack {
         self.elements.retain(|&x| x != id);
     }
 
-    /// Iterate from top (most recent) to bottom.
+    /// Top is most recent.
     pub fn iter_top_to_bottom(&self) -> impl Iterator<Item = &NodeId> {
         self.elements.iter().rev()
     }
 
-    /// Iterate from bottom to top.
     pub fn iter_bottom_to_top(&self) -> impl Iterator<Item = &NodeId> {
         self.elements.iter()
     }
 
-    /// Get element at index (0 = bottom).
+    /// Index 0 is the bottom of the stack.
     #[must_use]
     pub fn get(&self, index: usize) -> Option<NodeId> {
         self.elements.get(index).copied()
     }
 
-    /// Get the index of an element in the stack.
     #[must_use]
     pub fn position(&self, id: NodeId) -> Option<usize> {
         self.elements.iter().position(|&x| x == id)
     }
 
-    /// Replace the element at `index` with `new_id`.
     pub fn replace(&mut self, index: usize, new_id: NodeId) {
         if index < self.elements.len() {
             self.elements[index] = new_id;
         }
     }
 
-    /// Replace an element by its old ID with a new ID.
     pub fn replace_id(&mut self, old_id: NodeId, new_id: NodeId) {
         if let Some(pos) = self.position(old_id) {
             self.elements[pos] = new_id;
         }
     }
 
-    /// Insert an element at `index`.
     pub fn insert(&mut self, index: usize, id: NodeId) {
         self.elements.insert(index, id);
     }

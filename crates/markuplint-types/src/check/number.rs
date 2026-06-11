@@ -1,11 +1,8 @@
-//! Number type validation.
-
 use super::types::{
     CheckResult, Expect, ExpectType, NumberType, NumericKind, Reason, UnmatchedOpts, matched, unmatched, unmatched_with,
 };
 use crate::primitive::{is_float, is_int};
 
-/// Validate a numeric value with optional range constraints.
 #[must_use]
 pub fn check_number(value: &str, type_def: &NumberType, ref_: Option<&str>) -> CheckResult {
     if value.is_empty() {
@@ -19,7 +16,6 @@ pub fn check_number(value: &str, type_def: &NumberType, ref_: Option<&str>) -> C
         );
     }
 
-    // Syntax check
     let valid_syntax = match type_def.number_type {
         NumericKind::Integer => is_int(value),
         NumericKind::Float => is_float(value),
@@ -51,7 +47,6 @@ pub fn check_number(value: &str, type_def: &NumberType, ref_: Option<&str>) -> C
         return unmatched(value, Reason::SyntaxError);
     }
 
-    // Range checks
     if type_def.gt.is_some_and(|gt| num <= gt)
         || type_def.gte.is_some_and(|gte| num < gte)
         || type_def.lt.is_some_and(|lt| num >= lt)
@@ -104,7 +99,6 @@ fn clamp_candidate(value: &str, type_def: &NumberType) -> Option<String> {
     None
 }
 
-/// Generate a human-readable description of a number type with its range constraints.
 /// Matches TS behavior: "integer greater than or equal to 0 less than or equal to 8".
 fn format_number_description(base: &str, type_def: &NumberType) -> String {
     let mut parts = vec![base.to_owned()];

@@ -7,7 +7,6 @@ use markuplint_types::spec::types::MLMLSpec;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
-/// The `required-h1` rule.
 pub struct RequiredH1;
 
 impl Rule for RequiredH1 {
@@ -17,14 +16,12 @@ impl Rule for RequiredH1 {
 
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let config = config.global();
-        // Check options for in-document-fragment
         let in_document_fragment = config
             .options
             .get("in-document-fragment")
             .and_then(serde_json::Value::as_bool)
             .unwrap_or(false);
 
-        // Check if document is fragment
         let is_fragment = match arena.document() {
             Some(DomNode::Document(doc)) => doc.is_fragment,
             _ => return vec![],
@@ -34,14 +31,12 @@ impl Rule for RequiredH1 {
             return vec![];
         }
 
-        // Check expected-once option (default true)
         let expected_once = config
             .options
             .get("expected-once")
             .and_then(serde_json::Value::as_bool)
             .unwrap_or(true);
 
-        // Collect all h1 elements
         let h1_elements: Vec<_> = arena
             .elements()
             .filter(|(_id, el)| el.base.node_name.eq_ignore_ascii_case("h1"))
@@ -50,7 +45,7 @@ impl Rule for RequiredH1 {
         let mut violations = Vec::new();
 
         if h1_elements.is_empty() {
-            // Report on document root
+            // No h1 anywhere, so report against the document root.
             if let Some(DomNode::Document(doc)) = arena.document() {
                 violations.push(Violation {
                     rule_id: self.id().to_string(),
@@ -64,7 +59,7 @@ impl Rule for RequiredH1 {
                 });
             }
         } else if expected_once && h1_elements.len() > 1 {
-            // Report on each extra h1 (2nd onwards)
+            // The first h1 is allowed; every h1 from the second on is a duplicate.
             for (_id, el) in &h1_elements[1..] {
                 violations.push(Violation {
                     rule_id: self.id().to_string(),

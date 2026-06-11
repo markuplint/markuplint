@@ -1,11 +1,5 @@
 //! Lint rules and execution engine for markuplint.
 //!
-//! This crate contains:
-//! - **Rule trait and registry** (`rule.rs`, `rules/`)
-//! - **Lint function** (`lint.rs`) — MLAST + config + spec → violations
-//! - **ARIA algorithms** (`aria/`) — computed role, accname, isExposed
-//! - **Content model matching** (`content_model/`)
-//!
 //! ```text
 //! markuplint-types   (spec data)
 //!       ↑
@@ -13,6 +7,13 @@
 //!       ↑
 //! markuplint-rules   (rules + lint engine)
 //! ```
+//!
+//! This crate is deliberately separate so it can depend on *both*
+//! `markuplint-types` (spec data) and `markuplint-selector` (CSS matching) at
+//! once: selector evaluation needs ARIA/spec data, but `markuplint-selector`
+//! cannot depend on the spec layer without a cycle. The rule engine sits on top
+//! of both and supplies the `AriaResolver` implementation back to the selector
+//! matcher (see `aria_resolver_impl`), keeping the lower crates acyclic.
 
 pub mod aria;
 pub mod aria_resolver_impl;

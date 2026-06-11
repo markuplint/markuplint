@@ -8,7 +8,6 @@ use markuplint_types::spec::types::MLMLSpec;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
-/// The `no-boolean-attr-value` rule.
 pub struct NoBooleanAttrValue;
 
 impl Rule for NoBooleanAttrValue {
@@ -31,15 +30,13 @@ impl Rule for NoBooleanAttrValue {
                     continue;
                 };
 
-                // Skip dynamic values
                 if html_attr.is_dynamic_value == Some(true) {
                     continue;
                 }
 
                 let attr_name_lower = html_attr.node_name.to_ascii_lowercase();
 
-                // Check if the attribute type is "Boolean"
-                // Element-specific attrs may have the name but no type — fall back to global
+                // Element-specific attrs may have the name but no type — fall back to global.
                 let is_boolean = match attr_specs.get(attr_name_lower.as_str()) {
                     Some(attr_spec) if attr_spec.attr_type.as_str() == Some("Boolean") => true,
                     Some(attr_spec)
@@ -54,7 +51,7 @@ impl Rule for NoBooleanAttrValue {
                     continue;
                 }
 
-                // If the attribute has an equal sign, report (even with empty value like disabled="")
+                // An equal sign is reported even with an empty value like `disabled=""`.
                 if !html_attr.equal.raw.is_empty() {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
@@ -77,7 +74,6 @@ impl Rule for NoBooleanAttrValue {
     }
 }
 
-/// Check if an attribute is a Boolean type in the global attribute definitions.
 fn is_global_boolean_attr(spec: &MLMLSpec, element_name: &str, attr_name: &str) -> bool {
     let Some(el) = get_spec(spec, element_name) else {
         return false;

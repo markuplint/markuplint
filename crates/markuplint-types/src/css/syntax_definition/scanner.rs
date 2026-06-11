@@ -1,6 +1,3 @@
-//! Character-level scanner for CSS Value Definition Syntax.
-
-/// A position-based scanner that reads bytes from a source string.
 pub struct Scanner {
     source: String,
     pub pos: usize,
@@ -23,27 +20,22 @@ impl Scanner {
         code.is_ascii_alphanumeric() || code == b'-'
     }
 
-    /// Get the byte at a given position, or `None` if out of bounds.
     pub fn char_code_at(&self, pos: usize) -> Option<u8> {
         self.source.as_bytes().get(pos).copied()
     }
 
-    /// Get the byte at the current position.
     pub fn char_code(&self) -> Option<u8> {
         self.char_code_at(self.pos)
     }
 
-    /// Get the byte at the next position.
     pub fn next_char_code(&self) -> Option<u8> {
         self.char_code_at(self.pos + 1)
     }
 
-    /// Skip whitespace characters.
     pub fn skip_ws(&mut self) {
         self.pos = self.find_ws_end(self.pos);
     }
 
-    /// Find the end of whitespace starting from `pos`.
     pub fn find_ws_end(&self, mut pos: usize) -> usize {
         let bytes = self.source.as_bytes();
         while pos < bytes.len() {
@@ -55,7 +47,6 @@ impl Scanner {
         pos
     }
 
-    /// Consume the expected byte or return an error.
     pub fn eat(&mut self, expected: u8) -> Result<(), String> {
         if self.char_code() != Some(expected) {
             return Err(self.error(&format!("Expect `{}`", expected as char)));
@@ -64,7 +55,6 @@ impl Scanner {
         Ok(())
     }
 
-    /// Read and return a single character, advancing the position.
     pub fn peek_char(&mut self) -> Option<char> {
         let rest = &self.source[self.pos..];
         let ch = rest.chars().next()?;
@@ -72,7 +62,6 @@ impl Scanner {
         Some(ch)
     }
 
-    /// Create an error message with context.
     pub fn error(&self, message: &str) -> String {
         let context = if self.pos < self.source.len() {
             let end = (self.pos + 20).min(self.source.len());
@@ -83,7 +72,6 @@ impl Scanner {
         format!("{message}{context}")
     }
 
-    /// Scan whitespace and return the whitespace string.
     pub fn scan_spaces(&mut self) -> &str {
         let start = self.pos;
         self.pos = self.find_ws_end(self.pos);
@@ -126,7 +114,6 @@ impl Scanner {
     pub fn scan_string(&mut self) -> Result<String, String> {
         let start = self.pos;
 
-        // Skip opening quote
         if self.char_code() != Some(b'\'') {
             return Err(self.error("Expect an apostrophe"));
         }

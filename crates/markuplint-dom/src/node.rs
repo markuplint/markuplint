@@ -1,13 +1,7 @@
-//! DOM node type definitions.
-//!
-//! Each variant wraps a data struct that holds the node's properties
-//! plus structural links (parent, children, siblings) as `NodeId` indices.
-
 use markuplint_core::mlast::{ElementType, MLASTAttr, MLASTBlockBehavior, NamespaceURI};
 
 use crate::arena::NodeId;
 
-/// A node in the MLDOM tree.
 #[derive(Debug)]
 pub enum DomNode {
     Document(DocumentData),
@@ -21,7 +15,7 @@ pub enum DomNode {
 }
 
 impl DomNode {
-    /// Get the base data common to all node types (except Document which has its own).
+    /// `Document` has no `NodeBase` (its fields are inlined into `DocumentData`), so it returns `None`.
     #[must_use]
     pub fn base(&self) -> Option<&NodeBase> {
         match self {
@@ -36,7 +30,6 @@ impl DomNode {
         }
     }
 
-    /// Get the UUID of this node, if it has one.
     #[must_use]
     pub fn uuid(&self) -> Option<&str> {
         match self {
@@ -45,7 +38,6 @@ impl DomNode {
         }
     }
 
-    /// Get the `NodeId` of this node.
     #[must_use]
     pub fn id(&self) -> NodeId {
         match self {
@@ -60,7 +52,6 @@ impl DomNode {
         }
     }
 
-    /// Get the parent `NodeId`, if any.
     #[must_use]
     pub fn parent_id(&self) -> Option<NodeId> {
         match self {
@@ -75,7 +66,6 @@ impl DomNode {
         }
     }
 
-    /// Get the children `NodeId` slice.
     #[must_use]
     pub fn children(&self) -> &[NodeId] {
         match self {
@@ -86,7 +76,6 @@ impl DomNode {
         }
     }
 
-    /// Try to get this node as an `ElementData`.
     #[must_use]
     pub fn as_element(&self) -> Option<&ElementData> {
         match self {
@@ -95,9 +84,7 @@ impl DomNode {
         }
     }
 
-    /// Whether this node is bogus (invalid/orphaned/malformed).
-    ///
-    /// Matches TS `getPureChildNodes()` filtering: `EndTag`, `Invalid` (always bogus),
+    /// Mirrors TS `getPureChildNodes()` filtering: `EndTag`, `Invalid` (always bogus),
     /// and nodes with `is_bogus = true` (`Text`, `Comment`, `PSBlock`) are excluded
     /// from pure child iteration.
     #[must_use]
@@ -113,7 +100,6 @@ impl DomNode {
     }
 }
 
-/// Base data shared by all non-document nodes.
 #[derive(Debug)]
 pub struct NodeBase {
     pub id: NodeId,
@@ -130,7 +116,6 @@ pub struct NodeBase {
     pub depth: u32,
 }
 
-/// Document root node data.
 #[derive(Debug)]
 pub struct DocumentData {
     pub id: NodeId,
@@ -140,7 +125,6 @@ pub struct DocumentData {
     pub children: Vec<NodeId>,
 }
 
-/// Element node data.
 #[derive(Debug)]
 pub struct ElementData {
     pub base: NodeBase,
@@ -154,14 +138,11 @@ pub struct ElementData {
     pub tag_open_char: String,
     pub tag_close_char: String,
     pub is_ghost: bool,
-    /// Closing tag info, if present (e.g., for `<DIV>...</DIV>` stores `</DIV>`).
     pub close_tag: Option<CloseTagInfo>,
 }
 
-/// Info about a closing tag extracted from the source.
 #[derive(Debug, Clone)]
 pub struct CloseTagInfo {
-    /// Raw source text (e.g., `"</DIV>"`).
     pub raw: String,
     /// 1-based line number.
     pub line: u32,
@@ -169,22 +150,19 @@ pub struct CloseTagInfo {
     pub col: u32,
 }
 
-/// Text node data.
 #[derive(Debug)]
 pub struct TextData {
     pub base: NodeBase,
-    /// Whether this text node originates from a bogus/orphaned end tag.
+    /// `true` when this text node originates from a bogus/orphaned end tag.
     pub is_bogus: bool,
 }
 
-/// Comment node data.
 #[derive(Debug)]
 pub struct CommentData {
     pub base: NodeBase,
     pub is_bogus: bool,
 }
 
-/// DOCTYPE node data.
 #[derive(Debug)]
 pub struct DoctypeData {
     pub base: NodeBase,
@@ -193,7 +171,7 @@ pub struct DoctypeData {
     pub system_id: String,
 }
 
-/// Preprocessor-specific block node data.
+/// Preprocessor-specific block (`PSBlock`) node data.
 #[derive(Debug)]
 pub struct PSBlockData {
     pub base: NodeBase,
@@ -202,16 +180,12 @@ pub struct PSBlockData {
     pub is_bogus: bool,
 }
 
-/// End tag node data (e.g., `</li>`).
-///
-/// End tags appear in the MLAST as children of their parent element.
-/// They carry no semantic content but are preserved for position tracking.
+/// End tags carry no semantic content but are preserved for position tracking.
 #[derive(Debug)]
 pub struct EndTagData {
     pub base: NodeBase,
 }
 
-/// Invalid node data.
 #[derive(Debug)]
 pub struct InvalidData {
     pub base: NodeBase,

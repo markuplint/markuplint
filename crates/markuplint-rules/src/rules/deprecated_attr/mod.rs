@@ -12,7 +12,6 @@ use crate::violation::Violation;
 #[cfg(test)]
 mod tests;
 
-/// The `deprecated-attr` rule.
 pub struct DeprecatedAttr;
 
 impl Rule for DeprecatedAttr {
@@ -44,7 +43,7 @@ impl Rule for DeprecatedAttr {
 
                 let attr_name_lower = html_attr.node_name.to_ascii_lowercase();
 
-                // Check element-specific attrs first, then fall back to global attrs
+                // Element-specific attrs take precedence over global attrs.
                 let (is_deprecated, is_obsolete) = match attr_specs.get(attr_name_lower.as_str()) {
                     Some(attr_spec) if attr_spec.deprecated == Some(true) || attr_spec.obsolete == Some(true) => {
                         (attr_spec.deprecated == Some(true), attr_spec.obsolete == Some(true))
@@ -52,7 +51,7 @@ impl Rule for DeprecatedAttr {
                     _ => get_global_attr_deprecated_flags(spec, &qualified_name, &attr_name_lower),
                 };
 
-                // Use raw attr name from source for message (preserves original case)
+                // Use the raw source name so the message preserves original case.
                 let raw_name = get_raw_attr_name(html_attr);
 
                 if is_deprecated {
@@ -85,7 +84,6 @@ impl Rule for DeprecatedAttr {
     }
 }
 
-/// Check deprecated/obsolete flags for a global attribute from the raw JSON spec.
 fn get_global_attr_deprecated_flags(spec: &MLMLSpec, element_name: &str, attr_name: &str) -> (bool, bool) {
     let Some(el) = get_spec(spec, element_name) else {
         return (false, false);

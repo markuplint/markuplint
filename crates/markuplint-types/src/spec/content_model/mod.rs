@@ -1,8 +1,3 @@
-//! Content model types and validation.
-//!
-//! Defines the permitted content patterns for HTML elements and provides
-//! functions to check whether a child element name conforms to the content model.
-//!
 //! Corresponds to `@markuplint/ml-spec/src/types/permitted-structures.ts`
 //! and `@markuplint/rules/src/permitted-contents/`.
 
@@ -17,7 +12,6 @@ pub use serde_types::*;
 // Content model access
 // ============================================================
 
-/// Get the typed content model for an element.
 pub fn get_content_model(spec: &MLMLSpec, element_name: &str) -> Option<ContentModel> {
     // Use exact match only (no SVG/MathML prefix fallback).
     // The caller (permitted_contents) already provides namespace-prefixed
@@ -28,13 +22,10 @@ pub fn get_content_model(spec: &MLMLSpec, element_name: &str) -> Option<ContentM
     serde_json::from_value(el.content_model.clone()).ok()
 }
 
-/// Check if the content model is void (no content permitted).
 pub fn is_void(cm: &ContentModel) -> bool {
     matches!(cm.contents, ContentModelContents::Boolean(false))
 }
 
-/// Check if a tag name matches a model reference string.
-///
 /// Handles:
 /// - Exact tag name: `"li"`, `"div"`
 /// - Category: `:model(flow)` → look up in content models
@@ -42,7 +33,6 @@ pub fn is_void(cm: &ContentModel) -> bool {
 /// - Selector suffix: `":not(title)"` is stripped for category lookup
 ///   (full CSS pseudo-class selectors are not yet supported; see [#3515])
 pub fn matches_model_ref(spec: &MLMLSpec, child_name: &str, model_ref: &str) -> bool {
-    // Exact tag name match
     if model_ref.eq_ignore_ascii_case(child_name) {
         return true;
     }
@@ -69,7 +59,6 @@ pub fn matches_model_ref(spec: &MLMLSpec, child_name: &str, model_ref: &str) -> 
         && let Some(tags) = lookup::get_content_model_tags(spec, &cat)
     {
         return tags.iter().any(|t| {
-            // Direct match
             t.eq_ignore_ascii_case(child_name)
                 // Attribute selector prefix: "meta[itemprop]" matches "meta"
                 || t.split('[')
@@ -91,7 +80,6 @@ pub fn matches_model_ref(spec: &MLMLSpec, child_name: &str, model_ref: &str) -> 
     false
 }
 
-/// Check if a child name matches a `ModelOrPatterns`.
 pub fn matches_model(spec: &MLMLSpec, child_name: &str, model: &ModelOrPatterns) -> bool {
     match model {
         ModelOrPatterns::Single(s) => matches_model_ref(spec, child_name, s),

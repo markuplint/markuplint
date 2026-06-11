@@ -1,6 +1,5 @@
 //! CSS selector matcher.
 //!
-//! Matches parsed selector AST against DOM elements in a `DomArena`.
 //! Corresponds to the matching logic in `@markuplint/selector/src/selector.ts`.
 
 use markuplint_core::mlast::{MLASTAttr, NamespaceURI};
@@ -16,7 +15,6 @@ use crate::ast::{
 };
 use crate::extended;
 
-/// Result of matching a selector against an element.
 #[derive(Debug, Clone)]
 pub struct MatchResult {
     pub matched: bool,
@@ -39,12 +37,10 @@ impl MatchResult {
     }
 }
 
-/// Match a selector list against an element.
-///
-/// Returns `true` if any selector in the comma-separated list matches.
-/// `scope` is the element for `:scope` pseudo-class resolution.
-/// `spec` provides spec data for extended pseudo-classes like `:model()`.
-/// `aria` provides ARIA computation for `:role()` and `:aria()`.
+/// `scope` is the element for `:scope` resolution; when `None`, the queried
+/// element is its own scope. `spec` enables `:model()`; `aria` enables
+/// `:role()`/`:aria()`. When a required source is absent, the dependent
+/// pseudo-class never matches.
 pub fn matches(
     selector: &SelectorList,
     arena: &DomArena,
@@ -60,8 +56,7 @@ pub fn matches(
         .any(|sel| match_complex(sel, arena, node_id, scope, spec, aria).matched)
 }
 
-/// Match a selector list and return the highest specificity, or `None` if no match.
-/// See [`matches`] for parameter descriptions.
+/// See [`matches`] for parameter semantics.
 pub fn match_specificity(
     selector: &SelectorList,
     arena: &DomArena,
@@ -88,7 +83,6 @@ pub fn match_specificity(
     best
 }
 
-/// Match a complex selector (compound + combinator chain) against an element.
 fn match_complex(
     selector: &ComplexSelector,
     arena: &DomArena,
@@ -105,7 +99,6 @@ fn match_complex(
     let mut specificity = result.specificity;
     let mut current_id = node_id;
 
-    // Walk the combinator chain (stored reversed: parent is first)
     for (combinator, compound) in &selector.chain {
         match combinator {
             Combinator::Descendant => {
@@ -170,7 +163,6 @@ fn match_complex(
     MatchResult::matched(specificity)
 }
 
-/// Match a compound selector (all parts must match).
 fn match_compound(
     compound: &CompoundSelector,
     arena: &DomArena,
@@ -242,7 +234,6 @@ fn match_compound(
     MatchResult::matched(specificity)
 }
 
-/// Match a pseudo-class.
 fn match_pseudo_class(
     pseudo: &PseudoClassSelector,
     arena: &DomArena,
@@ -482,7 +473,6 @@ fn has_class(el: &ElementData, class_name: &str) -> bool {
 // Tree navigation helpers
 // ============================================================
 
-/// Find the parent element (skipping non-element nodes).
 fn element_parent(arena: &DomArena, node_id: NodeId) -> Option<NodeId> {
     let node = arena.get(node_id)?;
     let parent_id = node.parent_id()?;
@@ -494,7 +484,6 @@ fn element_parent(arena: &DomArena, node_id: NodeId) -> Option<NodeId> {
     }
 }
 
-/// Find the previous sibling that is an element.
 fn prev_element_sibling(arena: &DomArena, node_id: NodeId) -> Option<NodeId> {
     let node = arena.get(node_id)?;
     let parent_id = node.parent_id()?;
@@ -515,10 +504,8 @@ fn add_specificity(a: &mut Specificity, b: &Specificity) {
     a[2] += b[2];
 }
 
-/// Compute the max specificity of all selectors in a list (matched or not).
-///
-/// Matches TS `getSpecificity(resList)` which takes the highest specificity
-/// from all results regardless of match status. Used by `:not()`, `:is()`, `:has()`.
+/// Computes over every selector regardless of match status, mirroring TS
+/// `getSpecificity(resList)`. Used by `:not()`, `:is()`, `:has()`.
 fn max_specificity_of_list(list: &SelectorList) -> Specificity {
     let mut best: Specificity = [0, 0, 0];
     for sel in &list.selectors {
@@ -530,10 +517,8 @@ fn max_specificity_of_list(list: &SelectorList) -> Specificity {
     best
 }
 
-/// Compute the specificity of a complex selector without matching.
-///
-/// Matches TS behavior where `ruleset.match()` returns specificity for each
-/// selector even when not matched, and `getSpecificity()` picks the highest.
+/// Mirrors TS, where `ruleset.match()` yields a specificity for each selector
+/// even when unmatched and `getSpecificity()` picks the highest.
 fn compute_selector_specificity(sel: &ComplexSelector) -> Specificity {
     let mut specificity = compute_compound_specificity(&sel.subject);
     for (_combinator, compound) in &sel.chain {
@@ -542,7 +527,6 @@ fn compute_selector_specificity(sel: &ComplexSelector) -> Specificity {
     specificity
 }
 
-/// Compute the specificity of a compound selector without matching.
 fn compute_compound_specificity(compound: &CompoundSelector) -> Specificity {
     let mut specificity: Specificity = [0, 0, 0];
     for part in &compound.parts {
@@ -559,7 +543,6 @@ fn compute_compound_specificity(compound: &CompoundSelector) -> Specificity {
     specificity
 }
 
-/// Compute the specificity of a pseudo-class without matching.
 fn compute_pseudo_specificity(pseudo: &PseudoClassSelector) -> Specificity {
     match pseudo {
         PseudoClassSelector::Not(inner) | PseudoClassSelector::Is(inner) | PseudoClassSelector::Has(inner) => {

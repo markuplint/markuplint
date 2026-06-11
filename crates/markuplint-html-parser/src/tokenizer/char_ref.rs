@@ -7,14 +7,11 @@
 // Include the generated table.
 include!(concat!(env!("OUT_DIR"), "/entities_generated.rs"));
 
-/// Look up a named character reference by its full text (e.g. `"&amp;"`).
-///
-/// Returns the replacement character(s) if found.
+/// `name` is the full reference text, e.g. `"&amp;"`.
 /// Also handles references without a trailing semicolon (e.g. `"&amp"`)
 /// per WHATWG spec: the longest match wins.
 #[must_use]
 pub fn lookup_named(name: &str) -> Option<&'static [char]> {
-    // Exact match first.
     if let Ok(idx) = NAMED_ENTITIES.binary_search_by_key(&name, |(k, _)| k) {
         return Some(NAMED_ENTITIES[idx].1);
     }
@@ -30,7 +27,6 @@ pub fn lookup_named(name: &str) -> Option<&'static [char]> {
 /// Per WHATWG spec §13.2.5.73, the algorithm tries the longest match first.
 #[must_use]
 pub fn find_longest_match(text: &str) -> Option<(&'static [char], usize)> {
-    // Try progressively shorter prefixes to find the longest match.
     let max_len = text.len().min(33); // Longest entity is ~32 chars
     let mut best: Option<(&'static [char], usize)> = None;
 

@@ -1,11 +1,7 @@
-//! Levenshtein-based candidate suggestion.
-
 use strsim::levenshtein;
 
-/// Find the closest candidate to `value` from the given list.
-///
-/// Returns a candidate if the similarity ratio is >= 50% and the candidate
-/// is different from the input value.
+/// Returns a candidate only when the similarity ratio is >= 50% and the candidate
+/// differs from the input value.
 #[must_use]
 pub fn get_candidate(value: &str, candidates: &[&str]) -> Option<String> {
     let value_lower = value.trim().to_lowercase();

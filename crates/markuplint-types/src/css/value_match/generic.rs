@@ -7,7 +7,11 @@
 //! and [CSS Syntax Level 3 § Token Types](https://drafts.csswg.org/css-syntax/#tokenization).
 //!
 //! Built-in types take priority over mdn-data registry definitions to enforce
-//! stricter CSS spec semantics (see crate README for rationale).
+//! stricter CSS spec semantics: mdn-data sometimes defines a type more
+//! permissively (e.g. `<integer>` as `<number-token>`, which would accept
+//! `3.14`), whereas the built-in matcher applies the precise spec rule. Type
+//! names not handled here (e.g. `<color>`, `<position>`) fall through to the
+//! [registry](super::registry).
 
 use crate::css::syntax_definition::ast::TypeRange;
 use crate::css::value_match::matcher::Matcher;
@@ -20,7 +24,6 @@ const CSS_WIDE_KEYWORDS: &[&str] = &["inherit", "initial", "unset", "revert", "r
 /// Default keyword values excluded from `<custom-ident>`.
 const DEFAULT_KEYWORDS: &[&str] = &["default"];
 
-/// Check if a type name is handled by the built-in matcher.
 pub fn is_builtin_type(name: &str) -> bool {
     matches!(
         name,
@@ -56,9 +59,6 @@ pub fn is_builtin_type(name: &str) -> bool {
     )
 }
 
-/// Try to match a built-in data type by name.
-///
-/// Returns `true` if the type was matched and tokens consumed.
 pub fn match_type(matcher: &mut Matcher, name: &str, range: Option<&TypeRange>) -> bool {
     match name {
         // Numeric types
@@ -226,7 +226,6 @@ fn match_combined_percentage(matcher: &mut Matcher, dim_type: DimensionType, ran
 
 fn match_hex_color(matcher: &mut Matcher) -> bool {
     if let Some(Token::Hash(value)) = matcher.peek() {
-        // Strip the '#' prefix and check hex digits
         let hex = &value[1..];
         let len = hex.len();
         // Valid lengths: 3 (rgb), 4 (rgba), 6 (rrggbb), 8 (rrggbbaa)
@@ -258,8 +257,7 @@ fn match_url(matcher: &mut Matcher) -> bool {
         && name.eq_ignore_ascii_case("url")
     {
         let saved = matcher.save();
-        matcher.advance(); // consume url(
-        // Accept any content until )
+        matcher.advance();
         let mut depth = 1u32;
         while !matcher.is_at_end() && depth > 0 {
             match matcher.peek() {
@@ -468,7 +466,6 @@ fn match_bcp47(matcher: &mut Matcher) -> bool {
 // Range checking
 // ============================================================
 
-/// Check if a numeric value falls within a `TypeRange`.
 fn check_range(value: f64, range: Option<&TypeRange>) -> bool {
     let Some(range) = range else {
         return true;
@@ -493,13 +490,10 @@ fn check_range(value: f64, range: Option<&TypeRange>) -> bool {
     true
 }
 
-/// Try to parse a range bound as a number, stripping any unit suffix.
 fn parse_range_number(s: &str) -> Option<f64> {
-    // Try parsing as-is first
     if let Ok(v) = s.parse::<f64>() {
         return Some(v);
     }
-    // Strip alphabetic suffix and try again
     let num_end = s
         .bytes()
         .position(|b| b.is_ascii_alphabetic() || b == b'%')
@@ -512,19 +506,21 @@ fn parse_range_number(s: &str) -> Option<f64> {
 // ============================================================
 
 /// Known CSS math function names.
+///
+/// Exhaustively lists every math function defined in CSS Values Level 4
+/// (arithmetic, stepped-value, trigonometric, exponential, and sign-related).
+/// When CSS adds a new math function it must be added both here and to the
+/// match arms in [`calc`](super::calc); the two must stay in sync.
 pub const MATH_FUNCTIONS: &[&str] = &[
     "calc", "min", "max", "clamp", "round", "mod", "rem", "sin", "cos", "tan", "asin", "acos", "atan", "atan2", "pow",
     "sqrt", "hypot", "log", "exp", "abs", "sign",
 ];
 
-/// Check if a function name is a CSS math function.
 pub fn is_math_function(name: &str) -> bool {
     let lower = name.to_ascii_lowercase();
     MATH_FUNCTIONS.iter().any(|f| *f == lower)
 }
 
-/// Check if a function name accepts a specific dimension type.
-/// Returns the expected result type of the math function.
 pub fn math_function_result_type(name: &str) -> Option<&'static str> {
     let lower = name.to_ascii_lowercase();
     match lower.as_str() {
@@ -537,7 +533,6 @@ pub fn math_function_result_type(name: &str) -> Option<&'static str> {
     }
 }
 
-/// Check if a dimension type is a numeric type that supports math functions.
 pub fn supports_math_functions(type_name: &str) -> bool {
     matches!(
         type_name,
@@ -557,12 +552,10 @@ pub fn supports_math_functions(type_name: &str) -> bool {
     )
 }
 
-/// Check if a type is compatible with a function result type.
 pub fn is_type_compatible_with_result(expected_type: &str, result_type: &str) -> bool {
     if expected_type == result_type {
         return true;
     }
-    // number is compatible with integer
     if expected_type == "integer" && result_type == "number" {
         return true;
     }
@@ -576,7 +569,6 @@ pub fn is_type_compatible_with_result(expected_type: &str, result_type: &str) ->
     }
 }
 
-/// Get the dimension type name for a CSS unit.
 pub fn dimension_type_name(unit: &str) -> Option<&'static str> {
     unit_type(unit).map(|dt| match dt {
         DimensionType::Length => "length",

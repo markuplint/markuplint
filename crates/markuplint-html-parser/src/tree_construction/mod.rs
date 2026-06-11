@@ -1,9 +1,4 @@
 //! HTML tree construction algorithm per WHATWG §13.2.6.
-//!
-//! The `TreeBuilder` consumes tokens from the tokenizer and builds
-//! an arena-based tree. It implements the full insertion mode state
-//! machine including implicit element creation, foster parenting,
-//! and the adoption agency algorithm.
 
 pub mod active_formatting;
 pub mod adoption_agency;
@@ -37,7 +32,6 @@ fn is_scope_barrier(name: &str, ns: Option<Namespace>) -> bool {
 }
 use open_elements::OpenElementsStack;
 
-/// The tree builder: consumes tokens and builds a DOM tree.
 #[allow(clippy::struct_excessive_bools)]
 pub struct TreeBuilder<'a> {
     tokenizer: Tokenizer<'a>,
@@ -70,18 +64,13 @@ pub struct TreeBuilder<'a> {
 }
 
 impl<'a> TreeBuilder<'a> {
-    /// Create a tree builder for document mode.
     #[must_use]
     pub fn new(source: &'a str, is_fragment: bool) -> Self {
         Self::with_context(source, is_fragment, None, Namespace::Html)
     }
 
-    /// Create a tree builder with an optional context element for
-    /// fragment parsing per WHATWG §13.2.6.5.
-    ///
-    /// `context` is the tag name of the context element (e.g. "body",
-    /// "table", "select"). `context_ns` is the namespace.
-    /// If `None` and `is_fragment` is true, defaults to "body" in HTML.
+    /// Fragment parsing per WHATWG §13.2.6.5.
+    /// If `context` is `None` and `is_fragment` is true, defaults to "body" in HTML.
     #[must_use]
     pub fn with_context(source: &'a str, is_fragment: bool, context: Option<&str>, context_ns: Namespace) -> Self {
         let mut builder = Self {
@@ -113,12 +102,10 @@ impl<'a> TreeBuilder<'a> {
         builder
     }
 
-    /// Run the tree construction algorithm to completion.
     pub fn run(&mut self) {
         let mut token_count = 0;
         let max_tokens = 1_000_000; // safety limit
         loop {
-            // Update tokenizer's foreign context flag before each token.
             self.tokenizer.adjusted_current_node_is_foreign = self.should_process_as_foreign();
             let token = self.tokenizer.next_token();
             let is_eof = token == Token::Eof;
@@ -169,10 +156,8 @@ impl<'a> TreeBuilder<'a> {
             return;
         }
 
-        // Push the document root onto the open elements stack.
         self.open_elements.push(self.arena.document_id());
 
-        // Set the tokenizer state based on the context element.
         match context_tag {
             "title" | "textarea" => {
                 self.tokenizer.set_state(TokenizerState::RcData);
@@ -190,7 +175,6 @@ impl<'a> TreeBuilder<'a> {
             _ => {}
         }
 
-        // Reset the insertion mode based on the context element.
         self.mode = match context_tag {
             "select" => InsertionMode::InSelect,
             "td" | "th" => InsertionMode::InCell,
@@ -207,7 +191,6 @@ impl<'a> TreeBuilder<'a> {
             _ => InsertionMode::InBody,
         };
 
-        // For template, push template insertion mode.
         if context_tag == "template" {
             self.template_insertion_modes.push(InsertionMode::InTemplate);
         }
@@ -237,14 +220,11 @@ impl<'a> TreeBuilder<'a> {
         }
 
         // WHATWG §13.2.6: Determine whether to process as foreign content.
-        // Check the adjusted current node for foreign namespace, integration
-        // points, and token-specific exceptions.
         if self.should_process_as_foreign_for_token(&token) {
             self.process_foreign_content(token);
             return;
         }
 
-        // Dispatch to the current insertion mode.
         match self.mode {
             InsertionMode::Initial => self.process_initial(token),
             InsertionMode::BeforeHtml => self.process_before_html(token),
@@ -350,7 +330,7 @@ impl<'a> TreeBuilder<'a> {
         false
     }
 
-    /// Insert a node at the appropriate position (handles foster parenting).
+    /// Handles foster parenting.
     fn insert_at_appropriate_position(&mut self, child_id: NodeId) {
         let (parent, before) = self.appropriate_insert_position();
         if let Some(sibling) = before {
@@ -413,11 +393,8 @@ impl<'a> TreeBuilder<'a> {
     pub(super) fn insert_character_with_source(&mut self, ch: char, pos: Position, source_pos: Position) {
         let (target, before) = self.appropriate_insert_position();
 
-        // Merge with existing adjacent text node if possible.
-        // For foster parenting, check the node before the sibling.
-        // For normal insertion, check the last child.
+        // Merge with an existing adjacent text node where possible.
         let merge_target = if let Some(sibling) = before {
-            // Find the child just before the sibling in parent's children.
             let children = &self.arena.get(target).children;
             children
                 .iter()
@@ -556,7 +533,6 @@ impl<'a> TreeBuilder<'a> {
         }
     }
 
-    /// Clone a formatting element for reconstruction.
     fn clone_formatting_element(&mut self, node_id: NodeId) -> NodeId {
         let node = self.arena.get(node_id);
         let span = node.span;
@@ -756,8 +732,7 @@ impl<'a> TreeBuilder<'a> {
     }
 
     pub(super) fn set_end_tag_span(&mut self, tag_name: &str, span: Span) {
-        // Find the matching open element and set its end_tag_span.
-        // Check both HTML elements and foreign elements (SVG/MathML).
+        // Matches both HTML and foreign (SVG/MathML) elements.
         for id in self.open_elements.iter_top_to_bottom() {
             let node = self.arena.get(*id);
             let matches =
@@ -857,7 +832,6 @@ impl<'a> TreeBuilder<'a> {
                 self.arena.orphaned_end_tags.push((tag_name.clone(), *span));
             }
             _ => {
-                // Insert implicit <html>.
                 let pos = Self::token_position(&token);
                 self.insert_implicit_element("html", pos);
                 self.mode = InsertionMode::BeforeHead;
@@ -882,7 +856,6 @@ impl<'a> TreeBuilder<'a> {
                 span,
                 ..
             } if tag_name == "html" => {
-                // Process using InBody rules.
                 self.process_in_body_start_tag_html(attributes, *span);
             }
             Token::StartTag {
@@ -1160,7 +1133,7 @@ impl<'a> TreeBuilder<'a> {
                         | "title"
                 ) =>
             {
-                // Push head back, process in InHead, then remove head.
+                // Per WHATWG: process these in InHead with head temporarily on the stack.
                 if let Some(head) = self.head_element {
                     self.open_elements.push(head);
                 }
@@ -1278,7 +1251,6 @@ impl<'a> TreeBuilder<'a> {
             }
             "base" | "basefont" | "bgsound" | "link" | "meta" | "noframes" | "script" | "style" | "template"
             | "title" => {
-                // Process using InHead rules.
                 let token = Token::StartTag {
                     tag_name: tag_name.to_owned(),
                     self_closing: false,
@@ -1518,7 +1490,12 @@ impl<'a> TreeBuilder<'a> {
                 self.frameset_ok = false;
                 self.mode = InsertionMode::InTable;
             }
-            // WHATWG: <image> is a parse error — treat as <img>.
+            // WHATWG: <image> is a parse error — treat as <img>
+            // (https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inbody).
+            // Divergence from the TS path: parse5 preserves the literal `image`
+            // element, so MLAST-built DOMs keep `image` while Rust-built DOMs see `img`.
+            // Rules such as `permitted-contents` therefore key on different tag names
+            // for the same source between the two construction paths.
             "image" => {
                 self.reconstruct_active_formatting_elements();
                 self.insert_html_element("img", attributes, span);
@@ -2563,7 +2540,6 @@ fn is_quirks_mode_doctype(name: Option<&str>, public_id: Option<&str>, system_id
     false
 }
 
-/// Convert tokenizer `RawAttribute`s to tree `Attribute`s.
 fn convert_attributes(raw_attrs: &[RawAttribute], _tag_span: Span) -> Vec<Attribute> {
     raw_attrs
         .iter()

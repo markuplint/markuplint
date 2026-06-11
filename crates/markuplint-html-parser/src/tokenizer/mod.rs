@@ -1,7 +1,4 @@
 //! HTML tokenizer implementing WHATWG §13.2.5.
-//!
-//! The tokenizer consumes an input stream and emits tokens (start tags,
-//! end tags, characters, comments, doctypes, EOF).
 
 pub mod char_ref;
 pub mod state;
@@ -11,7 +8,6 @@ use crate::input::{Input, Position, Span};
 use state::State;
 use token::{RawAttribute, Token};
 
-/// The HTML tokenizer.
 #[allow(clippy::struct_excessive_bools)]
 pub struct Tokenizer<'a> {
     input: Input<'a>,
@@ -20,19 +16,12 @@ pub struct Tokenizer<'a> {
     /// Set by tree builder when adjusted current node is in a foreign namespace.
     /// Affects CDATA section handling in `MarkupDeclarationOpen` state.
     pub adjusted_current_node_is_foreign: bool,
-    /// Queue of tokens to emit.
     pending_tokens: Vec<Token>,
-    /// Whether the current tag is an end tag.
     is_end_tag: bool,
-    /// Current tag name being built.
     current_tag_name: String,
-    /// Current tag self-closing flag.
     current_self_closing: bool,
-    /// Current tag attributes.
     current_attributes: Vec<RawAttribute>,
-    /// Start position of the current tag.
     current_tag_start: Position,
-    /// Position where the current attribute name starts.
     current_attr_spaces_start: Position,
     current_attr_name_start: Position,
     /// Position just past the last character of the current attribute name.
@@ -45,10 +34,8 @@ pub struct Tokenizer<'a> {
     current_attr_value_start: Position,
     current_attr_value: String,
     current_attr_quote: Option<char>,
-    /// Comment data being built.
     current_comment: String,
     current_comment_start: Position,
-    /// DOCTYPE fields being built.
     current_doctype_name: Option<String>,
     current_doctype_public_id: Option<String>,
     current_doctype_system_id: Option<String>,
@@ -155,7 +142,6 @@ impl<'a> Tokenizer<'a> {
         self.last_start_tag_name = Some(name.to_owned());
     }
 
-    /// Get the next token from the tokenizer.
     pub fn next_token(&mut self) -> Token {
         loop {
             if let Some(token) = self.pending_tokens.pop() {
@@ -353,8 +339,6 @@ impl<'a> Tokenizer<'a> {
         });
     }
 
-    /// Emit all characters in `temp_buffer` starting from a base position,
-    /// then emit remaining chars for a failed end-tag-name match.
     fn emit_temp_buffer_as_chars(&mut self, base_offset: usize, base_line: u32, base_col: u32) {
         let buf: Vec<char> = self.temp_buffer.chars().collect();
         let mut off = base_offset;
@@ -381,7 +365,6 @@ impl<'a> Tokenizer<'a> {
                 .is_some_and(|name| *name == self.current_tag_name)
     }
 
-    /// Run one step of the state machine.
     #[allow(clippy::too_many_lines)]
     fn run_state(&mut self) {
         match self.state {

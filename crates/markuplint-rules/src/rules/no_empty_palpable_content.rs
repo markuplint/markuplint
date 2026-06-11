@@ -9,14 +9,11 @@ use markuplint_types::spec::types::MLMLSpec;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
-/// The `no-empty-palpable-content` rule.
 pub struct NoEmptyPalpableContent;
 
 /// Elements that are not palpable content but are exposed to the accessibility tree.
-/// These include list items, definition terms, table cells, etc.
 const EXPOSABLE_ELEMENTS: &[&str] = &["li", "dt", "dd", "th", "td", "tr", "thead", "tbody", "tfoot", "caption"];
 
-/// Check if an element is an "exposable" element (not palpable but exposed to a11y tree).
 fn is_exposable_element(name: &str) -> bool {
     EXPOSABLE_ELEMENTS.iter().any(|e| e.eq_ignore_ascii_case(name))
 }
@@ -53,7 +50,6 @@ impl Rule for NoEmptyPalpableContent {
                 continue;
             }
 
-            // Skip if aria-busy="true" and option is enabled
             if ignore_if_aria_busy {
                 let has_aria_busy = el.attributes.iter().any(|attr| {
                     if let MLASTAttr::HTMLAttr(html_attr) = attr {
@@ -67,7 +63,6 @@ impl Rule for NoEmptyPalpableContent {
                 }
             }
 
-            // Check if element is empty: no child elements and all text is whitespace-only
             let is_empty = arena.descendants(node_id).all(|child| match child {
                 DomNode::Text(t) => t.base.raw.trim().is_empty(),
                 DomNode::Element(_) => false,

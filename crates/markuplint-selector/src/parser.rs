@@ -1,15 +1,10 @@
 //! CSS selector parser.
-//!
-//! Parses a CSS selector string into the AST defined in `ast.rs`.
-//! Supports standard CSS selectors plus markuplint extensions.
 
 use crate::ast::{
     AttrOperator, AttributeSelector, Combinator, ComplexSelector, CompoundSelector, PseudoClassSelector, SelectorList,
     SimpleSelector,
 };
 
-/// Parse a CSS selector string into a `SelectorList`.
-///
 /// # Errors
 ///
 /// Returns an error string if the selector is malformed.
@@ -54,7 +49,7 @@ impl<'a> Parser<'a> {
         loop {
             self.skip_whitespace();
             if self.peek() == Some(',') {
-                self.advance(); // skip ','
+                self.advance();
                 self.skip_whitespace();
                 selectors.push(self.parse_complex_selector()?);
             } else {
@@ -92,7 +87,6 @@ impl<'a> Parser<'a> {
                     compounds.push(self.parse_compound_selector()?);
                 }
                 Some(c) if had_whitespace && is_selector_start(c) => {
-                    // Descendant combinator (whitespace)
                     combinators.push(Combinator::Descendant);
                     compounds.push(self.parse_compound_selector()?);
                 }
@@ -100,7 +94,6 @@ impl<'a> Parser<'a> {
             }
         }
 
-        // Build reversed chain: subject is last compound, chain goes right-to-left
         let subject = compounds.pop().unwrap();
         let mut chain = Vec::new();
         for (compound, combinator) in compounds.into_iter().zip(combinators.into_iter()) {
@@ -144,7 +137,6 @@ impl<'a> Parser<'a> {
                 }
                 Some(c) if is_ident_start(c) => {
                     let name = self.parse_ident()?;
-                    // Check for namespace prefix
                     if self.peek() == Some('|') {
                         self.advance();
                         let local = self.parse_ident()?;
@@ -282,9 +274,8 @@ impl<'a> Parser<'a> {
         }
     }
 
-    /// Parse an unquoted attribute value.
-    /// More permissive than `parse_ident` — allows dots, digits, etc.
-    /// Matches postcss-selector-parser behavior for values like `.svg`.
+    /// Permissive (allows dots, digits, etc.) to match postcss-selector-parser
+    /// behavior for values like `.svg`.
     fn parse_unquoted_attr_value(&mut self) -> Result<String, String> {
         let mut value = String::new();
         while let Some(c) = self.peek() {
@@ -319,17 +310,16 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_pseudo_class(&mut self) -> Result<PseudoClassSelector, String> {
-        self.advance(); // skip first ':'
-        // Skip second ':' for pseudo-elements (we'll treat them as errors)
+        self.advance();
+        // A second `:` denotes a pseudo-element, which is unsupported.
         if self.peek() == Some(':') {
             return Err(format!("Pseudo-elements not supported at position {}", self.pos));
         }
 
         let name = self.parse_ident()?;
 
-        // Functional pseudo-classes
         if self.peek() == Some('(') {
-            self.advance(); // skip '('
+            self.advance();
             let lower = name.to_ascii_lowercase();
             match lower.as_str() {
                 "not" => {
@@ -356,7 +346,6 @@ impl<'a> Parser<'a> {
                     self.expect(')')?;
                     Ok(PseudoClassSelector::Where(list))
                 }
-                // markuplint extensions
                 "closest" => {
                     let list = self.parse_selector_list()?;
                     self.skip_whitespace();
@@ -389,7 +378,6 @@ impl<'a> Parser<'a> {
         }
     }
 
-    /// Parse content inside parentheses until the matching `)`.
     fn parse_paren_content(&mut self) -> Result<String, String> {
         let mut content = String::new();
         let mut depth = 1u32;
@@ -433,20 +421,16 @@ fn is_selector_start(c: char) -> bool {
     is_ident_start(c) || matches!(c, '*' | '#' | '.' | '[' | ':')
 }
 
-/// Validate `:aria()` content at parse time.
-///
-/// Accepted syntax: `hasName`, `has name`, `hasNoName`, `has no name`
+/// Accepted syntax: `hasName`, `has name`, `hasNoName`, `has no name`,
 /// with optional version suffix `|1.1`, `|1.2`, `|1.3`.
 fn validate_aria_content(content: &str) -> Result<(), String> {
     let (query_str, version_str) = content.split_once('|').map_or((content, None), |(l, r)| (l, Some(r)));
 
-    // Validate query
     let normalized: String = query_str.split_whitespace().collect::<String>().to_lowercase();
     if normalized != "hasname" && normalized != "hasnoname" {
         return Err(format!("Unsupported :aria() syntax: \"{content}\""));
     }
 
-    // Validate version if present
     if let Some(v) = version_str {
         validate_aria_version(v.trim())?;
     }
@@ -454,9 +438,7 @@ fn validate_aria_content(content: &str) -> Result<(), String> {
     Ok(())
 }
 
-/// Validate `:role()` content at parse time.
-///
-/// Accepted syntax: `roleName` with optional version suffix `|1.1`, `|1.2`, `|1.3`.
+/// Accepted syntax: `roleName`, with optional version suffix `|1.1`, `|1.2`, `|1.3`.
 fn validate_role_content(content: &str) -> Result<(), String> {
     let (role_name, version_str) = content.split_once('|').map_or((content, None), |(l, r)| (l, Some(r)));
 
@@ -464,7 +446,6 @@ fn validate_role_content(content: &str) -> Result<(), String> {
         return Err("Empty :role() selector".to_string());
     }
 
-    // Validate version if present
     if let Some(v) = version_str {
         validate_aria_version(v.trim())?;
     }
@@ -472,7 +453,7 @@ fn validate_role_content(content: &str) -> Result<(), String> {
     Ok(())
 }
 
-/// Validate an ARIA version string. Accepts `1.1`, `1.2`, `1.3`.
+/// Accepts `1.1`, `1.2`, `1.3`.
 fn validate_aria_version(version: &str) -> Result<(), String> {
     match version {
         "1.1" | "1.2" | "1.3" => Ok(()),

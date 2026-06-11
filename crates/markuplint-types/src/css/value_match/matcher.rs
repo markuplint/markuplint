@@ -2,6 +2,13 @@
 //!
 //! Matches a token stream against a CSS Value Definition Syntax AST using
 //! recursive descent with backtracking.
+//!
+//! css-tree compiles syntax definitions into a DAG (match graph) and runs a
+//! stack-based state machine over it. We deliberately chose recursive descent
+//! with backtracking instead: Rust's performance makes the graph-compilation
+//! step unnecessary for our workload, the code stays significantly simpler and
+//! more maintainable, and the [`syntax_definition`](crate::css::syntax_definition)
+//! AST can be matched directly without an intermediate transformation.
 
 use std::collections::HashSet;
 
@@ -13,7 +20,6 @@ use crate::css::value_match::token::Token;
 pub struct Matcher<'a> {
     /// The token stream (whitespace tokens filtered out).
     tokens: &'a [Token],
-    /// Current position in the token stream.
     pos: usize,
     /// The furthest position reached during matching (for error reporting).
     longest_match: usize,
@@ -40,22 +46,18 @@ impl<'a> Matcher<'a> {
         }
     }
 
-    /// Save the current position for backtracking.
     pub fn save(&self) -> usize {
         self.pos
     }
 
-    /// Restore a previously saved position.
     pub fn restore(&mut self, pos: usize) {
         self.pos = pos;
     }
 
-    /// Peek at the current token without consuming it.
     pub fn peek(&self) -> Option<&Token> {
         self.tokens.get(self.pos)
     }
 
-    /// Advance to the next token and return the current one.
     pub fn advance(&mut self) -> Option<&Token> {
         let token = self.tokens.get(self.pos)?;
         self.pos += 1;
@@ -63,12 +65,10 @@ impl<'a> Matcher<'a> {
         Some(token)
     }
 
-    /// Check if all tokens have been consumed.
     pub fn is_at_end(&self) -> bool {
         self.pos >= self.tokens.len()
     }
 
-    /// Record an expected value at the current position (for error reporting).
     pub fn record_expected(&mut self, expected: &str) {
         if self.pos > self.longest_match {
             self.longest_match = self.pos;
@@ -89,7 +89,6 @@ impl<'a> Matcher<'a> {
         }
     }
 
-    /// Build a `MismatchInfo` from the current state.
     pub fn mismatch(&self) -> MismatchInfo {
         let offset = if self.longest_match < self.token_offsets.len() {
             self.token_offsets[self.longest_match]
@@ -97,7 +96,6 @@ impl<'a> Matcher<'a> {
             self.input.len()
         };
         let length = if self.longest_match < self.tokens.len() {
-            // Length of the token at the mismatch position
             let end = if self.longest_match + 1 < self.token_offsets.len() {
                 self.token_offsets[self.longest_match + 1]
             } else {
@@ -115,7 +113,6 @@ impl<'a> Matcher<'a> {
         }
     }
 
-    /// Match a syntax node against the token stream.
     pub fn match_node(&mut self, node: &SyntaxNode) -> bool {
         match node {
             SyntaxNode::Keyword { name } => self.match_keyword(name),
@@ -132,7 +129,6 @@ impl<'a> Matcher<'a> {
                 use crate::css::value_match::generic;
                 use crate::css::value_match::registry;
 
-                // Check for math functions (calc, min, max, etc.)
                 if generic::supports_math_functions(name)
                     && let Some(Token::Function(fn_name)) = self.peek()
                     && generic::is_math_function(fn_name)
@@ -140,7 +136,6 @@ impl<'a> Matcher<'a> {
                     return self.match_math_function(name);
                 }
 
-                // Check for var() / env()
                 if let Some(Token::Function(fn_name)) = self.peek() {
                     let lower = fn_name.to_ascii_lowercase();
                     if lower == "var" || lower == "env" {
@@ -194,10 +189,7 @@ impl<'a> Matcher<'a> {
                 self.record_expected(&format!("<'{name}'>"));
                 false
             }
-            SyntaxNode::Function { name } => {
-                // Match a function call: name( ... )
-                self.match_function(name)
-            }
+            SyntaxNode::Function { name } => self.match_function(name),
             SyntaxNode::StringNode { value } => self.match_string(value),
             SyntaxNode::AtKeyword { name } => self.match_at_keyword(name),
             SyntaxNode::Boolean { term } => self.match_node(term),
@@ -270,11 +262,8 @@ impl<'a> Matcher<'a> {
         false
     }
 
-    /// Consume a function call token and everything up to the matching `)`.
     /// Assumes the current token is a `Function(...)` token.
-    /// Returns `true` if the closing `)` was found.
     pub fn consume_function_call(&mut self) -> bool {
-        // The current token should be Function(_) — consume it
         self.advance();
         let mut depth = 1u32;
         while !self.is_at_end() && depth > 0 {
@@ -312,9 +301,8 @@ impl<'a> Matcher<'a> {
             _ => return false,
         };
 
-        // Collect the function's inner tokens
         let saved = self.save();
-        self.advance(); // consume Function token
+        self.advance();
         let mut inner_tokens = Vec::new();
         let mut depth = 1u32;
         while !self.is_at_end() && depth > 0 {
@@ -344,7 +332,6 @@ impl<'a> Matcher<'a> {
             return false;
         }
 
-        // Type-check the expression
         let result_type = calc::check_math_function(&fn_name, &inner_tokens);
         if result_type.is_compatible_with(expected_type) {
             true
@@ -365,9 +352,8 @@ impl<'a> Matcher<'a> {
     /// Unlike css-tree (which rejects `var()` entirely), this validates the
     /// function structure and accepts it as matching the expected type.
     fn match_var_or_env(&mut self) -> bool {
-        // Current token is Function("var") or Function("env")
         let is_var = matches!(self.peek(), Some(Token::Function(n)) if n.eq_ignore_ascii_case("var"));
-        self.advance(); // consume function token
+        self.advance();
 
         if is_var {
             // First arg must be a custom property name (starts with --, length > 2)
@@ -376,7 +362,6 @@ impl<'a> Matcher<'a> {
                     self.advance();
                 }
                 _ => {
-                    // Invalid var() — consume rest and fail
                     self.record_expected("<custom-property-name>");
                     self.skip_to_matching_paren(1);
                     return false;
@@ -393,25 +378,20 @@ impl<'a> Matcher<'a> {
             }
         }
 
-        // Optional: comma + fallback
-        // We don't type-check the fallback here because we don't know the
-        // expected type at this level. The fallback is <declaration-value>.
-        // For now, accept any remaining tokens until ).
+        // The fallback (<declaration-value>) is not type-checked here because the
+        // expected type is not known at this level.
         if matches!(self.peek(), Some(Token::Comma)) {
-            self.advance(); // consume comma
-            // Consume everything until matching )
+            self.advance();
             self.skip_to_matching_paren(1);
         } else if matches!(self.peek(), Some(Token::RightParen)) {
             self.advance();
         } else {
-            // Unexpected tokens
             self.skip_to_matching_paren(1);
         }
 
         true
     }
 
-    /// Skip tokens until the matching `)` is found, respecting nesting.
     fn skip_to_matching_paren(&mut self, initial_depth: u32) {
         let mut depth = initial_depth;
         while !self.is_at_end() && depth > 0 {
@@ -491,8 +471,8 @@ impl<'a> Matcher<'a> {
 
     /// `&&` combinator: all terms must match, in any order.
     ///
-    /// Uses a bitmask to track which terms have been matched. Supports up to 64
-    /// terms, which is more than sufficient for CSS properties (typically 3-5 terms).
+    /// Supports up to 64 terms, which is more than sufficient for CSS properties
+    /// (typically 3-5 terms).
     fn match_double_ampersand(&mut self, terms: &[SyntaxNode]) -> bool {
         let n = terms.len();
         if n == 0 {
@@ -504,7 +484,6 @@ impl<'a> Matcher<'a> {
         self.match_permutation(terms, 0u64, all_matched)
     }
 
-    /// Recursive bitmask permutation matcher for `&&`.
     fn match_permutation(&mut self, terms: &[SyntaxNode], matched: u64, all_matched: u64) -> bool {
         if matched == all_matched {
             return true;
@@ -513,7 +492,7 @@ impl<'a> Matcher<'a> {
         let saved = self.save();
         for i in 0..terms.len() {
             if matched & (1u64 << i) != 0 {
-                continue; // already matched
+                continue;
             }
             if self.match_node(&terms[i]) && self.match_permutation(terms, matched | (1u64 << i), all_matched) {
                 return true;
@@ -525,8 +504,7 @@ impl<'a> Matcher<'a> {
 
     /// `||` combinator: one or more terms must match, in any order.
     ///
-    /// Uses a bitmask to track which terms have been matched. Supports up to 64
-    /// terms (same as `&&`).
+    /// Supports up to 64 terms (same as `&&`).
     fn match_double_bar(&mut self, terms: &[SyntaxNode]) -> bool {
         let n = terms.len();
         if n == 0 {
@@ -538,7 +516,6 @@ impl<'a> Matcher<'a> {
     }
 
     fn match_double_bar_rec(&mut self, terms: &[SyntaxNode], matched: u64, any_matched: bool) -> bool {
-        // Try to match more terms
         let saved = self.save();
         for i in 0..terms.len() {
             if matched & (1u64 << i) != 0 {
@@ -550,11 +527,9 @@ impl<'a> Matcher<'a> {
             self.restore(saved);
         }
 
-        // No more terms can match — succeed if at least one did
         any_matched
     }
 
-    /// Match a multiplied term.
     fn match_multiplier(&mut self, term: &SyntaxNode, info: &MultiplierInfo) -> bool {
         let min = info.min as usize;
         let max = if info.max == 0 { usize::MAX } else { info.max as usize };
@@ -593,7 +568,6 @@ impl<'a> Matcher<'a> {
     }
 }
 
-/// Filter whitespace tokens and compute byte offsets for non-whitespace tokens.
 pub fn prepare_tokens(all_tokens: &[Token], input: &str) -> (Vec<Token>, Vec<usize>) {
     let mut tokens = Vec::new();
     let mut offsets = Vec::new();
@@ -621,7 +595,6 @@ fn token_byte_length(token: &Token, input: &str, offset: usize) -> usize {
             .count()
             .max(1),
         Token::Ident(_) | Token::AtKeyword(_) => {
-            // Scan forward to find how many bytes this ident/at-keyword consumes
             let prefix = usize::from(matches!(token, Token::AtKeyword(_)));
             // Approximate: find the name in the remaining input
             scan_name_length(remaining, prefix)
@@ -684,22 +657,18 @@ fn scan_numeric_length(input: &str) -> usize {
     let bytes = input.as_bytes();
     let mut pos = 0;
 
-    // Optional sign
     if pos < bytes.len() && matches!(bytes[pos], b'+' | b'-') {
         pos += 1;
     }
-    // Digits
     while pos < bytes.len() && bytes[pos].is_ascii_digit() {
         pos += 1;
     }
-    // Decimal
     if pos < bytes.len() && bytes[pos] == b'.' {
         pos += 1;
         while pos < bytes.len() && bytes[pos].is_ascii_digit() {
             pos += 1;
         }
     }
-    // Scientific
     if pos < bytes.len() && matches!(bytes[pos], b'e' | b'E') {
         let saved = pos;
         pos += 1;
@@ -714,7 +683,6 @@ fn scan_numeric_length(input: &str) -> usize {
             pos = saved;
         }
     }
-    // Unit or %
     if pos < bytes.len() && bytes[pos] == b'%' {
         pos += 1;
     } else {

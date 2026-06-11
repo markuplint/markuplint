@@ -1,8 +1,4 @@
-//! Full `getComputedRole` algorithm.
-//!
 //! Ports `packages/@markuplint/ml-spec/src/algorithm/aria/get-computed-role.ts`.
-//! Implements WAI-ARIA role computation with presentational conflict resolution,
-//! required context role validation, and SVG accessibility tree rules.
 
 use std::collections::HashSet;
 
@@ -18,36 +14,24 @@ use super::may_be_focusable;
 // Public types
 // ============================================================
 
-/// Result of computing an element's ARIA role.
 #[derive(Clone, Debug)]
 pub struct ComputedRole {
-    /// The resolved ARIA role, or `None` if no valid role.
     pub role: Option<ResolvedRole>,
-    /// Error encountered during computation.
     pub error_type: Option<RoleComputationError>,
 }
 
-/// A resolved ARIA role with metadata.
 #[derive(Clone, Debug)]
 #[allow(clippy::struct_excessive_bools)]
 pub struct ResolvedRole {
-    /// Role name.
     pub name: String,
-    /// Whether this is the element's implicit (native) role.
     pub is_implicit: bool,
-    /// Whether accessible name is required for this role.
     pub accessible_name_required: bool,
-    /// Whether name can come from author.
     pub accessible_name_from_author: bool,
-    /// Whether children are presentational.
     pub children_presentational: bool,
-    /// Required parent role chain.
     pub required_accessibility_parent_role: Vec<String>,
-    /// Allowed child roles.
     pub allowed_accessibility_child_roles: Vec<String>,
 }
 
-/// Errors that can occur during role computation.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum RoleComputationError {
     Abstract,
@@ -67,14 +51,6 @@ pub enum RoleComputationError {
 // Public API
 // ============================================================
 
-/// Compute the ARIA role for an element.
-///
-/// Implements the full algorithm including:
-/// - Explicit role parsing and validation
-/// - Implicit role lookup (with condition evaluation via CSS selectors)
-/// - Presentational Roles Conflict Resolution
-/// - Required context role validation
-///
 /// `assume_single_node`: if `true`, skip ancestor context validation (for fragment checks).
 pub fn get_computed_role(
     spec: &MLMLSpec,
@@ -160,7 +136,7 @@ fn compute_role(
                     error_type: Some(RoleComputationError::InvalidRequiredContextRole),
                 };
             }
-            let _ = ancestor_role; // Used for validation above
+            let _ = ancestor_role;
         } else {
             return ComputedRole {
                 role: None,
@@ -222,7 +198,6 @@ fn get_explicit_role(
     // TS getExplicitRole checks: exists → not abstract → permitted → valid landmark
     let mut last_error = RoleComputationError::NoExplicit;
 
-    // Resolve permitted roles for this element
     let (permitted, any_permitted) = resolve_permitted_roles(spec, arena, node_id, tag_name);
 
     for token in role_attr.split_whitespace() {
@@ -252,7 +227,6 @@ fn get_explicit_role(
             continue;
         }
 
-        // Check landmark validity
         if is_landmark_role(spec, &role_name, version)
             && !is_valid_landmark_role(arena, node_id, &role_name, spec, version)
         {
@@ -272,8 +246,6 @@ fn get_explicit_role(
     }
 }
 
-/// Resolve permitted roles for an element, evaluating conditions.
-///
 /// Mirrors TS `getARIA()` condition evaluation for `permittedRoles`.
 /// Returns (condition-resolved permitted roles, any-role-permitted flag).
 pub fn resolve_permitted_roles(
@@ -368,7 +340,6 @@ fn get_implicit_role(
         }
     }
 
-    // Fall back to base implicit role
     let Some(role_name) = aria::get_base_implicit_role(spec, tag_name) else {
         return ComputedRole {
             role: None,
@@ -449,10 +420,10 @@ fn matches_context_role(
 
                 if let Some(ref role) = cr.role {
                     if is_transparent_for_ownership(&role.name, version) {
-                        continue; // Skip transparent roles
+                        continue;
                     }
                     if role.name == expected_role {
-                        break; // Match found, move to next in chain
+                        break;
                     }
                 }
                 all_matched = false;
@@ -483,11 +454,9 @@ fn is_native_context_intact(
     let Some(parent_id) = arena.get(node_id).and_then(markuplint_dom::node::DomNode::parent_id) else {
         return false;
     };
-    // Parent has no explicit role override
     if helpers::get_attr_value(arena, parent_id, "role").is_some() {
         return false;
     }
-    // Parent's computed role is non-null
     let parent_cr = get_computed_role(spec, arena, parent_id, version, true);
     parent_cr.role.is_some()
 }
@@ -553,7 +522,6 @@ fn is_valid_landmark_role(
     if role_spec.accessible_name_required != Some(true) || role_spec.accessible_name_from_author != Some(true) {
         return true;
     }
-    // Check for aria-label or aria-labelledby
     helpers::has_attr(arena, node_id, "aria-label") || helpers::has_attr(arena, node_id, "aria-labelledby")
 }
 
@@ -592,7 +560,6 @@ fn has_global_aria_property(spec: &MLMLSpec, arena: &DomArena, node_id: NodeId, 
 }
 
 fn is_disabled_or_hidden(arena: &DomArena, node_id: NodeId) -> bool {
-    // Check disabled, inert, hidden on self or ancestors
     let mut current = Some(node_id);
     while let Some(id) = current {
         if helpers::has_attr(arena, id, "disabled")

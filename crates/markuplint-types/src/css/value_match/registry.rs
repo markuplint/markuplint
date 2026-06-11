@@ -25,17 +25,21 @@ static PROPERTIES: LazyLock<HashMap<String, String>> = LazyLock::new(|| {
     serde_json::from_str(json).expect("Failed to parse css-properties.json")
 });
 
-/// Look up a syntax definition by type name (e.g., `"color"`, `"absolute-size"`).
 pub fn lookup_syntax(name: &str) -> Option<&str> {
     SYNTAXES.get(name).map(std::string::String::as_str)
 }
 
-/// Look up a property syntax definition (e.g., `"margin-top"`).
 pub fn lookup_property(name: &str) -> Option<&str> {
     PROPERTIES.get(name).map(std::string::String::as_str)
 }
 
 /// Markuplint custom syntax definitions.
+///
+/// css-tree exposes a `fork()` API so third-party consumers can inject custom
+/// syntax definitions. markuplint owns this Rust implementation outright, so a
+/// generic extension point would be dead weight; the custom types are hardcoded
+/// here instead. To add a type, append an entry below and keep it in sync with
+/// the TS source files listed.
 ///
 /// Sources:
 /// - `packages/@markuplint/types/src/css-overrides.ts` — SVG transform overrides

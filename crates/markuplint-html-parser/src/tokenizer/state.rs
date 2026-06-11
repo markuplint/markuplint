@@ -1,6 +1,5 @@
 //! Tokenizer states per WHATWG HTML spec §13.2.5.
 
-/// All tokenizer states from the WHATWG spec.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum State {
     // §13.2.5.1

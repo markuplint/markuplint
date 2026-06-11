@@ -1,16 +1,15 @@
 //! HTML element category tables per WHATWG spec.
 
-/// Void elements that cannot have content.
 pub const VOID_ELEMENTS: &[&str] = &[
     "area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr",
 ];
 
-/// Formatting elements (used by the adoption agency algorithm).
+/// Used by the adoption agency algorithm.
 pub const FORMATTING_ELEMENTS: &[&str] = &[
     "a", "b", "big", "code", "em", "font", "i", "nobr", "s", "small", "strike", "strong", "tt", "u",
 ];
 
-/// Special elements per WHATWG spec (used for "in scope" checks).
+/// Per WHATWG spec; used for "in scope" checks.
 pub const SPECIAL_ELEMENTS_HTML: &[&str] = &[
     "address",
     "applet",
@@ -98,7 +97,6 @@ pub const SPECIAL_ELEMENTS_HTML: &[&str] = &[
     "xmp",
 ];
 
-/// Elements whose end tag can be omitted when followed by certain elements.
 pub const IMPLIED_END_TAG_ELEMENTS: &[&str] = &["dd", "dt", "li", "optgroup", "option", "p", "rb", "rp", "rt", "rtc"];
 
 /// Elements included in "generate implied end tags thoroughly".

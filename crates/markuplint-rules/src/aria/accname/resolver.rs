@@ -1,5 +1,3 @@
-//! Production `AccnameResolver` backed by `DomArena` + `MLMLSpec`.
-
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::helpers as dom;
 use markuplint_types::spec::aria::ARIAVersion;
@@ -7,7 +5,6 @@ use markuplint_types::spec::types::MLMLSpec;
 
 use super::AccnameResolver;
 
-/// Production resolver that uses real spec data and DOM arena.
 pub struct SpecAccnameResolver<'a> {
     spec: &'a MLMLSpec,
     arena: &'a DomArena,
@@ -15,7 +12,6 @@ pub struct SpecAccnameResolver<'a> {
 }
 
 impl<'a> SpecAccnameResolver<'a> {
-    /// Create a new resolver.
     pub fn new(spec: &'a MLMLSpec, arena: &'a DomArena, version: ARIAVersion) -> Self {
         Self { spec, arena, version }
     }

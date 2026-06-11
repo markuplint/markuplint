@@ -1,5 +1,3 @@
-//! Primitive type validators.
-//!
 //! Rust equivalents of `@markuplint/types/src/primitive/`.
 
 use regex::Regex;
@@ -11,7 +9,6 @@ static RE_ALL_ZEROS: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^0+$").unwr
 static RE_SPLIT_UNIT: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"(?i)(^-?\.\d+|^-?\d+(?:\.\d+(?:e[+-]\d+)?)?)([a-z]+$)").unwrap());
 
-/// Number type constraint for quantity validation.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum NumberType {
     Int,
@@ -19,23 +16,17 @@ pub enum NumberType {
     Float,
 }
 
-/// Result of splitting a value into numeric and unit parts.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SplitUnitResult {
     pub num: String,
     pub unit: String,
 }
 
-/// Checks whether a string is a valid signed integer.
-///
 /// Equivalent to the WHATWG "signed integer" microsyntax.
 pub fn is_int(value: &str) -> bool {
     RE_INT.is_match(value)
 }
 
-/// Checks whether a string is a valid non-negative integer.
-///
-/// Optionally requires the value to be greater than `gt`.
 pub fn is_uint(value: &str, gt: Option<i64>) -> bool {
     if !RE_UINT.is_match(value) {
         return false;
@@ -49,8 +40,6 @@ pub fn is_uint(value: &str, gt: Option<i64>) -> bool {
     true
 }
 
-/// Checks whether a string is a valid floating-point number.
-///
 /// Matches the behavior of JS `Number.isFinite(Number.parseFloat(value))`
 /// after trimming whitespace.
 pub fn is_float(value: &str) -> bool {
@@ -60,12 +49,10 @@ pub fn is_float(value: &str) -> bool {
     parse_float(value).is_some()
 }
 
-/// Checks whether a string is a valid non-zero unsigned integer.
 pub fn is_non_zero_uint(value: &str) -> bool {
     RE_UINT.is_match(value) && !RE_ALL_ZEROS.is_match(value)
 }
 
-/// Splits a value string into its numeric and unit parts.
 pub fn split_unit(value: &str) -> SplitUnitResult {
     let value = value.trim().to_lowercase();
     if let Some(caps) = RE_SPLIT_UNIT.captures(&value) {
@@ -81,7 +68,6 @@ pub fn split_unit(value: &str) -> SplitUnitResult {
     }
 }
 
-/// Checks whether a string is a valid number with one of the allowed unit suffixes.
 pub fn is_quantity(value: &str, units: &[&str], number_type: NumberType) -> bool {
     let result = split_unit(value);
     if !units.iter().any(|u| u.eq_ignore_ascii_case(&result.unit)) {
@@ -94,7 +80,6 @@ pub fn is_quantity(value: &str, units: &[&str], number_type: NumberType) -> bool
     }
 }
 
-/// Checks whether a numeric string value falls within an inclusive range.
 pub fn range(value: &str, from: f64, to: f64) -> bool {
     let Some(num) = parse_float(value) else {
         return false;
@@ -102,13 +87,10 @@ pub fn range(value: &str, from: f64, to: f64) -> bool {
     (from..=to).contains(&num)
 }
 
-/// Parse a float matching JS `parseFloat` behavior.
-///
 /// JS `parseFloat` parses the leading numeric portion of a string,
 /// but for our use case the entire string must be a valid number
 /// (after trim, which callers handle).
 fn parse_float(value: &str) -> Option<f64> {
-    // Handle leading dot like JS parseFloat: ".001" → 0.001
     let n: f64 = value.parse().ok()?;
     if n.is_finite() { Some(n) } else { None }
 }

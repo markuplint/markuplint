@@ -9,7 +9,6 @@ use crate::aria::may_be_focusable::may_be_focusable;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
-/// The `neighbor-popovers` rule.
 pub struct NeighborPopovers;
 
 impl Rule for NeighborPopovers {
@@ -29,7 +28,6 @@ impl Rule for NeighborPopovers {
                 continue;
             }
 
-            // Check if element is a popover trigger (popovertarget or commandfor with popover command)
             let target_id_str = helpers::get_attr_value(arena, node_id, "popovertarget").or_else(|| {
                 let cmd = helpers::get_attr_value(arena, node_id, "command")?;
                 let cmd_lower = cmd.to_ascii_lowercase();
@@ -48,15 +46,11 @@ impl Rule for NeighborPopovers {
                 continue;
             }
 
-            // Find the target element by id
             let target_node_id = find_element_by_id(arena, target_id_str);
             let Some(target_node_id) = target_node_id else {
                 continue;
             };
 
-            // Walk subsequent nodes in document order between trigger and target.
-            // Build flat document-order list by DFS from document root, then
-            // find nodes between trigger and target positions.
             let doc_order = build_document_order(arena);
             let trigger_idx = doc_order.iter().position(|&id| id == node_id);
             let target_idx = doc_order.iter().position(|&id| id == target_node_id);
@@ -90,7 +84,6 @@ impl Rule for NeighborPopovers {
     }
 }
 
-/// Build a flat list of node IDs in document order (DFS pre-order).
 fn build_document_order(arena: &DomArena) -> Vec<NodeId> {
     let mut order = Vec::new();
     if let Some(doc) = arena.document() {
@@ -112,7 +105,6 @@ fn dfs_collect(arena: &DomArena, node_id: NodeId, order: &mut Vec<NodeId>) {
     }
 }
 
-/// Find an element by its `id` attribute value.
 fn find_element_by_id(arena: &DomArena, id: &str) -> Option<NodeId> {
     arena.elements().find_map(|(node_id, el)| {
         if helpers::get_attr_value_from_el(el, "id").is_some_and(|v| v == id) {
@@ -123,24 +115,17 @@ fn find_element_by_id(arena: &DomArena, id: &str) -> Option<NodeId> {
     })
 }
 
-/// Check if a node (or its descendants) has perceptible content:
-/// focusable elements or non-whitespace text.
 fn has_perceptible_content(arena: &DomArena, spec: &MLMLSpec, node_id: NodeId) -> bool {
     let Some(node) = arena.get(node_id) else {
         return false;
     };
 
     match node {
-        DomNode::Text(text) => {
-            // Non-whitespace text is perceptible
-            !text.base.raw.trim().is_empty()
-        }
+        DomNode::Text(text) => !text.base.raw.trim().is_empty(),
         DomNode::Element(el) => {
-            // Focusable elements are perceptible
             if may_be_focusable(spec, arena, node_id) {
                 return true;
             }
-            // Check if element itself has non-empty text content in children
             if let Some(children) = arena.children_of(node_id) {
                 for &child_id in children {
                     if has_perceptible_content(arena, spec, child_id) {
@@ -148,7 +133,6 @@ fn has_perceptible_content(arena: &DomArena, spec: &MLMLSpec, node_id: NodeId) -
                     }
                 }
             }
-            // Element with visible content (e.g., <img>)
             let tag = el.base.node_name.to_ascii_lowercase();
             matches!(tag.as_str(), "img" | "svg" | "video" | "audio" | "canvas" | "iframe")
         }

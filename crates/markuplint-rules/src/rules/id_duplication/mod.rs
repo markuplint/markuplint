@@ -12,7 +12,6 @@ use crate::violation::Violation;
 #[cfg(test)]
 mod tests;
 
-/// The `id-duplication` rule.
 pub struct IdDuplication;
 
 impl Rule for IdDuplication {

@@ -15,7 +15,6 @@ use crate::violation::Violation;
 static WIDTH_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^[1-9]\d*w$").unwrap());
 static DENSITY_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^\d+(?:\.\d+)?x$").unwrap());
 
-/// The `srcset-sizes-constraint` rule.
 pub struct SrcsetSizesConstraint;
 
 impl Rule for SrcsetSizesConstraint {
@@ -199,7 +198,6 @@ fn has_sizes_auto(value: &str) -> bool {
     v == "auto" || v.starts_with("auto ") || v.starts_with("auto,")
 }
 
-/// Find the first following sibling `<img>` element and return its `loading` attribute value.
 fn find_following_img_loading(arena: &DomArena, node_id: NodeId) -> Option<&str> {
     let mut current_id = node_id;
     loop {

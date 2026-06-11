@@ -330,7 +330,6 @@ fn regroup_terms(terms: &mut Vec<FlatToken>, combinators_used: &mut Vec<Combinat
                     subgroup_start = Some(if i > 0 { i - 1 } else { 0 });
                 }
                 terms.remove(i);
-                // Don't increment i
             } else if is_other_combinator {
                 if let Some(start) = subgroup_start
                     && i - start > 1
@@ -363,7 +362,6 @@ fn regroup_terms(terms: &mut Vec<FlatToken>, combinators_used: &mut Vec<Combinat
             }
         }
 
-        // Handle trailing subgroup
         if let Some(start) = subgroup_start
             && !combinators_used.is_empty()
         {
@@ -424,7 +422,6 @@ fn read_implicit_group(scanner: &mut Scanner, stop_char: Option<u8>) -> Result<S
         if prev_is_function {
             prev_is_function = false;
 
-            // Handle function body
             if let FlatToken::Node(SyntaxNode::Group {
                 terms: ref fn_terms,
                 combinator: ref comb,
@@ -436,7 +433,6 @@ fn read_implicit_group(scanner: &mut Scanner, stop_char: Option<u8>) -> Result<S
                 }
 
                 if *comb == Combinator::Juxtaposition && fn_terms.len() > 1 {
-                    // Flatten juxtaposition terms from function body
                     let mut fn_terms_clone = fn_terms.clone();
                     while fn_terms_clone.len() > 1 {
                         combinators_used.push(Combinator::Juxtaposition);
@@ -452,7 +448,6 @@ fn read_implicit_group(scanner: &mut Scanner, stop_char: Option<u8>) -> Result<S
                 }
             }
 
-            // Unwrap single-term group from function body
             let node = if let FlatToken::Node(SyntaxNode::Group {
                 terms: mut fn_terms,
                 combinator: fn_comb,
@@ -510,7 +505,6 @@ fn read_implicit_group(scanner: &mut Scanner, stop_char: Option<u8>) -> Result<S
         first_token = false;
     }
 
-    // Check for trailing combinator
     if !first_token && prev_is_combinator {
         return Err(scanner.error("Unexpected combinator"));
     }

@@ -7,7 +7,6 @@ use markuplint_types::spec::types::MLMLSpec;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
-/// The `no-consecutive-br` rule.
 pub struct NoConsecutiveBr;
 
 impl Rule for NoConsecutiveBr {
@@ -27,7 +26,7 @@ impl Rule for NoConsecutiveBr {
                 continue;
             }
 
-            // Walk next siblings, skipping whitespace-only text
+            // Whitespace-only text between the two `<br>` does not break consecutiveness.
             let mut next_id = el.base.next_sibling;
             while let Some(sid) = next_id {
                 match arena.get(sid) {

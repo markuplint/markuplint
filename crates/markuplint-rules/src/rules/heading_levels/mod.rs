@@ -10,10 +10,8 @@ use crate::violation::Violation;
 #[cfg(test)]
 mod tests;
 
-/// The `heading-levels` rule.
 pub struct HeadingLevels;
 
-/// Extract heading level from a tag name (h1-h6). Returns None if not a heading.
 fn heading_level(name: &str) -> Option<u8> {
     let lower = name.to_ascii_lowercase();
     match lower.as_str() {

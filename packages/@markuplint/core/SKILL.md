@@ -27,7 +27,10 @@ This package is a Node.js native addon built with napi-rs v3. It wraps six Rust 
 - **markuplint-types** (`crates/markuplint-types/`) — Type validators, CSS value matching, spec data
 - **markuplint-builder** (`crates/markuplint-builder/`) — napi bridge exposing all of the above to JS
 
-See `crates/README.md` for the full architecture diagram.
+Architecture WHY (arena design, the two DOM-construction paths, TS↔Rust
+correspondence, known behavioral differences) lives in the crate-level `//!`
+docs — start with `crates/markuplint-dom/src/lib.rs` and
+`crates/markuplint-builder/src/lib.rs`.
 
 ## Tasks
 

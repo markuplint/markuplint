@@ -1,12 +1,4 @@
 //! Top-level lint function: MLAST JSON + config → violations.
-//!
-//! This is the main entry point for Rust-native linting. It:
-//! 1. Builds a DOM arena from MLAST JSON
-//! 2. Loads spec data
-//! 3. Parses rule config (including nodeRules/childNodeRules)
-//! 4. Builds per-node rule config overrides via `RuleMapper`
-//! 5. Runs enabled rules
-//! 6. Returns violations as JSON
 
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::builder;
@@ -63,7 +55,6 @@ use crate::rules::use_list::UseList;
 use crate::rules::wai_aria::WaiAria;
 use crate::violation::{Severity, Violation};
 
-/// Lint configuration for enabled rules.
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct LintConfig {
@@ -71,25 +62,20 @@ pub struct LintConfig {
     #[serde(default)]
     pub rules: std::collections::HashMap<String, Value>,
 
-    /// Per-node rule overrides that apply to elements matching a selector.
+    /// Overrides applied to elements matching a selector.
     #[serde(default, alias = "node_rules")]
     pub node_rules: Vec<NodeRuleEntry>,
 
-    /// Per-node rule overrides that apply to children of elements matching a selector.
+    /// Overrides applied to children of elements matching a selector.
     #[serde(default, alias = "child_node_rules")]
     pub child_node_rules: Vec<NodeRuleEntry>,
 }
 
-/// Lint result.
 #[derive(Debug, Serialize)]
 pub struct LintResult {
-    /// Violations found.
     pub violations: Vec<Violation>,
 }
 
-/// Run lint on MLAST JSON with the given config and spec.
-///
-/// Returns a `LintResult` with all violations found.
 #[allow(clippy::too_many_lines)]
 pub fn lint(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig) -> LintResult {
     // TS: if (this.#document instanceof ParserError) { return parse-error only }
@@ -107,15 +93,12 @@ pub fn lint(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig) -> LintResul
 
     let has_node_rules = !config.node_rules.is_empty() || !config.child_node_rules.is_empty();
 
-    // Pre-index: base_id → Vec<(config_key, config_value)>
-    // Supports plain keys ("attr-duplication"), namespaced keys
+    // The index must accept plain keys ("attr-duplication"), namespaced keys
     // ("html-standard/attr-duplication"), and NamedRuleGroup entries
     // ("a11y/no-accesskey": { rules: { "invalid-attr": { options: ... } } }).
-    //
     // NamedRuleGroups are expanded inline: the inner rules are indexed by their
     // base rule ID, with the alias name preserved for violation ruleIds.
 
-    // Storage for expanded NamedRuleGroup configs (owned values)
     let mut expanded_entries: Vec<(String, String, Value)> = Vec::new();
     let mut config_index: std::collections::HashMap<&str, Vec<(&str, &Value)>> = std::collections::HashMap::new();
 
@@ -134,8 +117,7 @@ pub fn lint(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig) -> LintResul
         }
     }
 
-    // Add expanded NamedRuleGroup entries to the index
-    // (must be separate loop because expanded_entries borrows are needed)
+    // Separate loop: the expanded_entries borrows must outlive the index inserts.
     for (alias_name, base_rule_name, config_value) in &expanded_entries {
         config_index
             .entry(base_rule_name.as_str())
@@ -148,7 +130,6 @@ pub fn lint(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig) -> LintResul
 
         let matching_entries = config_index.get(base_id);
 
-        // Check if this rule appears in any nodeRule/childNodeRule
         let in_node_rules = has_node_rules
             && (config
                 .node_rules
@@ -159,7 +140,6 @@ pub fn lint(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig) -> LintResul
                     .iter()
                     .any(|nr| nr.rules.as_ref().is_some_and(|r| r.contains_key(base_id))));
 
-        // Skip if not enabled anywhere
         if matching_entries.is_none() && !in_node_rules {
             continue;
         }
@@ -209,10 +189,8 @@ pub fn lint(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig) -> LintResul
             violations.extend(rule_violations);
         }
 
-        // Run the rule once per matching config entry
         for (config_key, config_value) in entries {
             let Some(mut global_config) = parse_rule_config(config_value) else {
-                // Disabled (e.g., `false`) — skip this entry
                 continue;
             };
             // Apply rule's default severity if config didn't specify one.
@@ -255,10 +233,9 @@ pub fn lint(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig) -> LintResul
         }
     }
 
-    // --- Named nodeRules: independent executions ---
     // Each named nodeRule runs its base rule independently, scoped to matching
-    // nodes only. This matches TS's virtual rule behavior where each named
-    // nodeRule is expanded into a separate rule execution.
+    // nodes only, to match TS's virtual rule behavior where each named nodeRule
+    // is expanded into a separate rule execution.
     let rule_lookup: std::collections::HashMap<&str, &dyn Rule> = rules.iter().map(|r| (r.id(), r.as_ref())).collect();
 
     run_named_entries(&config.node_rules, false, &rule_lookup, arena, spec, &mut violations);
@@ -275,13 +252,12 @@ pub fn lint(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig) -> LintResul
     LintResult { violations }
 }
 
-/// Check if the document has a parse error from tree construction.
-/// Returns a parse-error violation if found, matching TS behavior where
-/// documents that fail to parse return only a parse-error violation.
+/// Matches TS behavior where documents that fail to parse return only a
+/// parse-error violation.
 ///
 /// The error message format from `tree_construction/mod.rs` is:
-/// `"The {tag} is invalid element ({line}:{col}): Broke mapping nodes."`
-/// We parse the `({line}:{col})` to get the violation position.
+/// `"The {tag} is invalid element ({line}:{col}): Broke mapping nodes."`;
+/// the `({line}:{col})` is parsed out for the violation position.
 fn get_parse_error(arena: &DomArena) -> Option<Violation> {
     if let Some(DomNode::Document(doc)) = arena.get(0)
         && let Some(error_msg) = &doc.unknown_parse_error
@@ -302,11 +278,9 @@ fn get_parse_error(arena: &DomArena) -> Option<Violation> {
     None
 }
 
-/// Parse the position from a tree construction error message.
-///
-/// Expected format: `"The {tag} is invalid element ({line}:{col}): Broke mapping nodes."`
+/// Expected message format:
+/// `"The {tag} is invalid element ({line}:{col}): Broke mapping nodes."`
 fn parse_error_position(msg: &str, arena: &DomArena) -> (u32, u32, String) {
-    // Extract (line:col) from the message
     if let Some(start) = msg.find('(')
         && let Some(end) = msg[start..].find(')')
     {
@@ -315,7 +289,6 @@ fn parse_error_position(msg: &str, arena: &DomArena) -> (u32, u32, String) {
             && let Ok(line) = line_str.parse::<u32>()
             && let Ok(col) = col_str.parse::<u32>()
         {
-            // Find the element at this position for the raw text
             let raw = arena
                 .elements()
                 .find(|(_, el)| el.base.line == line && el.base.col == col)
@@ -326,8 +299,6 @@ fn parse_error_position(msg: &str, arena: &DomArena) -> (u32, u32, String) {
     (1, 1, String::new())
 }
 
-/// Sort violations and remove duplicates.
-///
 /// TS does not deduplicate violations at all — each `VirtualRule` (`NamedRuleGroup`)
 /// produces its own violations independently. Rust includes `name` in the dedup
 /// key so that violations from different `NamedRuleGroup`s sharing the same base
@@ -340,15 +311,14 @@ fn sort_and_dedup(violations: &mut Vec<Violation>) {
             .then(a.rule_id.cmp(&b.rule_id))
             .then(a.name.cmp(&b.name))
     });
-    // Deduplicate: same ruleId + name + line + col + message.
-    // Name is included because TS VirtualRules have distinct identities —
-    // each NamedRuleGroup runs independently and its violations are separate.
+    // Name is part of the dedup key because TS VirtualRules have distinct
+    // identities — each NamedRuleGroup runs independently and its violations
+    // are separate.
     violations.dedup_by(|a, b| {
         a.rule_id == b.rule_id && a.name == b.name && a.line == b.line && a.col == b.col && a.message == b.message
     });
 }
 
-/// Run named nodeRule entries as independent rule executions.
 fn run_named_entries(
     entries: &[NodeRuleEntry],
     is_child_rule: bool,
@@ -400,8 +370,6 @@ fn run_named_entries(
     }
 }
 
-/// Convenience: lint from raw JSON strings.
-///
 /// # Errors
 ///
 /// Returns an error string if MLAST, spec, or config JSON parsing fails.
@@ -414,8 +382,6 @@ pub fn lint_from_json(mlast_json: &str, config_json: &str, spec_json: &str) -> R
     serde_json::to_string(&result).map_err(|e| format!("Serialization error: {e}"))
 }
 
-/// Check if a JSON value is a `NamedRuleGroup`.
-///
 /// A `NamedRuleGroup` is an object with a `rules` key whose value is also an object.
 /// Example: `{ "specConformance": "normative", "severity": "warning", "rules": { "id-duplication": true } }`
 fn is_named_rule_group(value: &Value) -> bool {
@@ -425,8 +391,6 @@ fn is_named_rule_group(value: &Value) -> bool {
     }
 }
 
-/// Expand `NamedRuleGroup` entries and add them to the config index.
-///
 /// For a `NamedRuleGroup` entry like `"a11y/no-accesskey": { rules: { "invalid-attr": { options: ... } } }`:
 /// - Single non-false inner rule: alias = outer key (`a11y/no-accesskey`), base = inner key (`invalid-attr`)
 /// - Multiple non-false inner rules: alias = `outer_key/inner_key`, base = inner key
@@ -443,7 +407,6 @@ fn expand_named_rule_group<'a>(
 
     let group_severity = group.get("severity").and_then(|v| v.as_str());
 
-    // Count non-false entries to decide naming strategy
     let non_false_entries: Vec<(&String, &Value)> = inner_rules
         .iter()
         .filter(|(_, v)| !matches!(v, Value::Bool(false)))
@@ -462,7 +425,6 @@ fn expand_named_rule_group<'a>(
             outer_key.to_string()
         };
 
-        // Apply group severity if the inner rule doesn't specify its own
         let effective_config = if let Some(group_sev) = group_severity {
             apply_group_severity(rule_config, group_sev)
         } else {
@@ -473,27 +435,21 @@ fn expand_named_rule_group<'a>(
     }
 }
 
-/// Apply group-level severity to a rule config if the rule doesn't already specify one.
 fn apply_group_severity(config: &Value, group_severity: &str) -> Value {
     match config {
-        // true → { severity: group_severity, value: true }
-        // Note: parse_rule_config() defaults missing "value" to Bool(true),
-        // but we include it explicitly to avoid coupling to that default.
+        // `value: true` is emitted explicitly to avoid coupling to
+        // parse_rule_config()'s default of Bool(true) for a missing "value".
         Value::Bool(true) => serde_json::json!({ "severity": group_severity, "value": true }),
-        // Object without severity → add it
         Value::Object(obj) if !obj.contains_key("severity") => {
             let mut new_obj = obj.clone();
             new_obj.insert("severity".to_string(), Value::String(group_severity.to_string()));
             Value::Object(new_obj)
         }
-        // Already has severity or other forms → keep as-is
         _ => config.clone(),
     }
 }
 
-/// Parse a rule config value into `RuleConfig`.
-///
-/// Handles formats:
+/// Accepted config-value formats:
 /// - `true` → enabled with default severity (error)
 /// - `false` → disabled
 /// - `"error"` / `"warning"` / `"info"` → severity only
@@ -503,7 +459,6 @@ pub fn parse_rule_config(value: &Value) -> Option<RuleConfig> {
         Value::Bool(false) => None,
         Value::Bool(true) => Some(RuleConfig::default()),
         Value::String(s) => {
-            // Severity strings
             if let Some(severity) = match s.as_str() {
                 "error" => Some(Severity::Error),
                 "warning" => Some(Severity::Warning),
@@ -550,7 +505,6 @@ pub fn parse_rule_config(value: &Value) -> Option<RuleConfig> {
     }
 }
 
-/// Get all registered rules.
 fn get_all_rules() -> Vec<Box<dyn Rule>> {
     vec![
         Box::new(AttrDuplication),

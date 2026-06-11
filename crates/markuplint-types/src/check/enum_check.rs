@@ -1,9 +1,6 @@
-//! Enum type validation.
-
 use super::candidate::get_candidate;
 use super::types::{CheckResult, EnumType, Expect, ExpectType, Reason, UnmatchedOpts, matched, unmatched_with};
 
-/// Validate a value against a fixed set of allowed values.
 #[must_use]
 pub fn check_enum(value: &str, type_def: &EnumType, ref_: Option<&str>) -> CheckResult {
     let check_value = if type_def.disallow_to_surround_by_spaces {

@@ -1,8 +1,5 @@
-//! Accessibility tree exposure check.
-//!
 //! Ports `packages/@markuplint/ml-spec/src/algorithm/aria/is-exposed.ts`.
-//! Determines whether an element is included in the accessibility tree
-//! per WAI-ARIA 1.2 §6.4.
+//! Inclusion in the accessibility tree per WAI-ARIA 1.2 §6.4.
 
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::helpers;
@@ -10,12 +7,7 @@ use markuplint_types::spec::aria::{self, ARIAVersion};
 use markuplint_types::spec::lookup;
 use markuplint_types::spec::types::MLMLSpec;
 
-/// Check whether an element is exposed in the accessibility tree.
-///
-/// Applies WAI-ARIA exclusion/inclusion rules, SVG rendering rules,
-/// and HTML metadata element filtering.
 pub fn is_exposed(spec: &MLMLSpec, arena: &DomArena, node_id: NodeId, version: ARIAVersion) -> bool {
-    // WAI-ARIA exclusion rules
     if is_excluding(spec, arena, node_id, version) {
         return false;
     }
@@ -37,17 +29,14 @@ pub fn is_exposed(spec: &MLMLSpec, arena: &DomArena, node_id: NodeId, version: A
         return true;
     }
 
-    // HTML/SVG spec element check
     if !is_exposed_element(spec, arena, node_id, tag_name) {
         return false;
     }
 
-    // WAI-ARIA inclusion rules
     if is_including(spec, arena, node_id, version) {
         return true;
     }
 
-    // Default: exposed
     true
 }
 
@@ -111,12 +100,10 @@ fn is_excluding(spec: &MLMLSpec, arena: &DomArena, node_id: NodeId, version: ARI
 
 /// WAI-ARIA inclusion rules (§6.4.2).
 fn is_including(spec: &MLMLSpec, arena: &DomArena, node_id: NodeId, version: ARIAVersion) -> bool {
-    // Skip if aria-hidden="true"
     if helpers::get_attr_value(arena, node_id, "aria-hidden") == Some("true") {
         return false;
     }
 
-    // Has explicit (non-implicit) role → included
     if let Some(role_attr) = helpers::get_attr_value(arena, node_id, "role") {
         let first_role = role_attr.split_ascii_whitespace().next().unwrap_or("");
         if !first_role.is_empty()
@@ -127,7 +114,6 @@ fn is_including(spec: &MLMLSpec, arena: &DomArena, node_id: NodeId, version: ARI
         }
     }
 
-    // Has global WAI-ARIA attribute → included
     let aria_spec = aria::get_aria_spec(spec, version);
     if let Some(el) = arena.get(node_id).and_then(|n| n.as_element()) {
         for attr in &el.attributes {
@@ -147,23 +133,19 @@ fn is_including(spec: &MLMLSpec, arena: &DomArena, node_id: NodeId, version: ARI
     false
 }
 
-/// Check if element is exposed per HTML/SVG spec rules.
 fn is_exposed_element(spec: &MLMLSpec, arena: &DomArena, node_id: NodeId, tag_name: &str) -> bool {
-    // SVG renderable check
     if let Some(svg_tags) = spec.def.content_models.get("#SVGRenderable")
         && svg_tags.iter().any(|t| t.eq_ignore_ascii_case(tag_name))
     {
         return true;
     }
 
-    // Metadata elements are not exposed
     if let Some(metadata_tags) = spec.def.content_models.get("#metadata")
         && metadata_tags.iter().any(|t| t.eq_ignore_ascii_case(tag_name))
     {
         return false;
     }
 
-    // input[type=hidden] is not exposed
     if tag_name.eq_ignore_ascii_case("input")
         && let Some(type_val) = helpers::get_attr_value(arena, node_id, "type")
         && type_val.eq_ignore_ascii_case("hidden")
@@ -174,12 +156,10 @@ fn is_exposed_element(spec: &MLMLSpec, arena: &DomArena, node_id: NodeId, tag_na
     true
 }
 
-/// Check if role name is presentational (none/presentation).
 fn is_presentational(role: &str) -> bool {
     role.eq_ignore_ascii_case("presentation") || role.eq_ignore_ascii_case("none")
 }
 
-/// Check for inline style `display:none` or `visibility:hidden`.
 fn has_display_none_or_visibility_hidden(arena: &DomArena, node_id: NodeId) -> bool {
     let Some(style) = helpers::get_attr_value(arena, node_id, "style") else {
         return false;

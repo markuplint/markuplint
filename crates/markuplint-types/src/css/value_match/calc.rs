@@ -4,7 +4,11 @@
 //! by parsing internal expressions and checking type compatibility per
 //! [CSS Values Level 4 § Type Checking](https://drafts.csswg.org/css-values/#calc-type-checking).
 //!
-//! This goes beyond css-tree, which accepts math functions without validating internals.
+//! This goes beyond css-tree, which accepts math functions without validating
+//! internals. Type checking is worth the extra code because it catches real
+//! errors that css-tree lets through — e.g. `calc(10px + 5deg)` mixes a length
+//! and an angle, an invalid operation — and the checking algorithm is O(n), so
+//! there is no performance cost to running it.
 
 use crate::css::value_match::token::Token;
 use crate::css::value_match::units::{self, DimensionType};
@@ -19,13 +23,18 @@ pub enum CalcType {
     /// A dimensioned value (length, angle, time, frequency, resolution, flex).
     Dimension(DimensionType),
     /// A combined dimension-percentage type (e.g., length-percentage).
+    ///
+    /// CSS permits mixing a dimension with a percentage in a calc expression:
+    /// `calc(100% - 20px)` resolves to `<length-percentage>`, not `<length>`
+    /// or `<percentage>`, and is valid wherever any of the three is expected.
+    /// Without this dedicated variant the result type of such mixed
+    /// expressions cannot be represented faithfully.
     DimensionPercentage(DimensionType),
     /// Type could not be determined or is invalid.
     Invalid,
 }
 
 impl CalcType {
-    /// Check if this type is compatible with an expected CSS type name.
     pub fn is_compatible_with(&self, expected: &str) -> bool {
         match self {
             CalcType::Number => matches!(expected, "number" | "integer"),
@@ -67,7 +76,6 @@ fn is_combined_type(expected: &str, dim_name: &str) -> bool {
     }
 }
 
-/// Resolve the result type of addition/subtraction.
 fn add_types(a: &CalcType, b: &CalcType) -> CalcType {
     match (a, b) {
         // Same type
@@ -97,7 +105,6 @@ fn add_types(a: &CalcType, b: &CalcType) -> CalcType {
     }
 }
 
-/// Resolve the result type of multiplication.
 fn mul_types(a: &CalcType, b: &CalcType) -> CalcType {
     match (a, b) {
         (CalcType::Number, CalcType::Number) => CalcType::Number,
@@ -107,7 +114,6 @@ fn mul_types(a: &CalcType, b: &CalcType) -> CalcType {
     }
 }
 
-/// Resolve the result type of division.
 fn div_types(a: &CalcType, b: &CalcType) -> CalcType {
     match b {
         CalcType::Number => a.clone(),
@@ -335,9 +341,8 @@ impl<'a> CalcParser<'a> {
                 }
             }
             Some(Token::LeftParen) => {
-                self.advance(); // consume (
+                self.advance();
                 let result = self.parse_sum();
-                // consume )
                 if matches!(self.peek(), Some(Token::RightParen)) {
                     self.advance();
                 }
@@ -345,13 +350,11 @@ impl<'a> CalcParser<'a> {
             }
             Some(Token::Function(name)) => {
                 let fn_name = name.clone();
-                self.advance(); // consume function token
-                // Collect tokens until matching )
+                self.advance();
                 let inner = self.collect_until_close_paren();
                 check_math_function(&fn_name, &inner)
             }
             _ => {
-                // Skip unknown token
                 if self.peek().is_some() {
                     self.advance();
                 }
@@ -360,7 +363,6 @@ impl<'a> CalcParser<'a> {
         }
     }
 
-    /// Collect tokens until the matching `)`, respecting nesting.
     fn collect_until_close_paren(&mut self) -> Vec<Token> {
         let mut result = Vec::new();
         let mut depth = 1u32;
@@ -374,7 +376,7 @@ impl<'a> CalcParser<'a> {
                 Token::RightParen => {
                     depth -= 1;
                     if depth == 0 {
-                        self.advance(); // consume the closing )
+                        self.advance();
                         break;
                     }
                     result.push(token.clone());

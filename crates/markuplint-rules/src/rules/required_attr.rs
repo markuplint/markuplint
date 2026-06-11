@@ -10,7 +10,6 @@ use markuplint_types::spec::types::{AttributeCondition, AttributeRequired, MLMLS
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
-/// The `required-attr` rule.
 pub struct RequiredAttr;
 
 impl Rule for RequiredAttr {
@@ -27,13 +26,12 @@ impl Rule for RequiredAttr {
             if rule_config.disabled {
                 continue;
             }
-            // Skip ghost elements
             if el.is_ghost {
                 continue;
             }
 
-            // Check config-defined required attributes first (applies to any namespace)
-            // Supports both string format ("title") and object format ({ "name": "title" })
+            // Config-defined required attributes apply in any namespace and are checked first.
+            // Both the string form (`"title"`) and the object form (`{ "name": "title" }`) are accepted.
             let required_from_config = match &rule_config.value {
                 serde_json::Value::String(s) if !s.is_empty() => vec![s.clone()],
                 serde_json::Value::Array(arr) => arr
@@ -75,7 +73,6 @@ impl Rule for RequiredAttr {
                 }
             }
 
-            // Read ignoreAttrs option
             let ignore_attrs: Vec<String> = rule_config
                 .options
                 .get("ignoreAttrs")
@@ -95,7 +92,6 @@ impl Rule for RequiredAttr {
             let mut checked_either_groups: Vec<Vec<String>> = Vec::new();
 
             for (attr_name, attr_spec) in &attr_specs {
-                // Skip ignored attributes
                 if ignore_attrs.iter().any(|a| a.eq_ignore_ascii_case(attr_name)) {
                     continue;
                 }
@@ -149,7 +145,6 @@ impl Rule for RequiredAttr {
                     continue;
                 }
 
-                // Check required flag
                 let Some(ref required) = attr_spec.required else {
                     continue;
                 };
@@ -170,7 +165,6 @@ impl Rule for RequiredAttr {
                     continue;
                 }
 
-                // Check if the element actually has this attribute
                 let has_attr = el.attributes.iter().any(|attr| {
                     if let MLASTAttr::HTMLAttr(html_attr) = attr {
                         html_attr.node_name.eq_ignore_ascii_case(attr_name)
@@ -201,7 +195,6 @@ impl Rule for RequiredAttr {
     }
 }
 
-/// Check if the element matches a condition (CSS selector).
 fn condition_matches(condition: &AttributeCondition, arena: &DomArena, node_id: usize, spec: &MLMLSpec) -> bool {
     let selectors = match condition {
         AttributeCondition::Single(s) => vec![s.as_str()],

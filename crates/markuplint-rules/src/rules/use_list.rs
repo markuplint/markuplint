@@ -7,7 +7,6 @@ use markuplint_types::spec::types::MLMLSpec;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
-/// The `use-list` rule.
 pub struct UseList;
 
 /// Default bullet-like characters that suggest list semantics.
@@ -47,7 +46,6 @@ impl Rule for UseList {
 
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let global = config.global();
-        // Collect additional bullets from config value
         let mut bullets: Vec<&str> = DEFAULT_BULLETS.to_vec();
         let extra_owned: Vec<String>;
         if let serde_json::Value::Array(arr) = &global.value {
@@ -57,7 +55,6 @@ impl Rule for UseList {
             }
         }
 
-        // Read spaceNeededBullets from options (default: ["-", "*", "+"])
         let space_needed_owned: Vec<String> = global
             .options
             .get("spaceNeededBullets")
@@ -70,7 +67,6 @@ impl Rule for UseList {
             space_needed_owned.iter().map(String::as_str).collect()
         };
 
-        // Read sibling-filter options
         let no_prev = global
             .options
             .get("noPrev")
@@ -110,7 +106,6 @@ impl Rule for UseList {
                 continue;
             }
 
-            // Check previous sibling filters
             let text_node_id = text.base.id;
             let prev = arena.prev_sibling(text_node_id);
             if !no_prev && prev.is_none() {
@@ -148,8 +143,6 @@ impl Rule for UseList {
     }
 }
 
-/// Determines whether a text string appears to be a list item.
-///
 /// Matches TS `isMayListItem()`:
 /// - Consecutive identical chars (e.g., `--`) → not a list item
 /// - Space-needed bullets (e.g., `-`, `*`, `+`) require whitespace after → `- item` yes, `-item` no

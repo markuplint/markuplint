@@ -10,7 +10,6 @@ use markuplint_types::spec::types::MLMLSpec;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
-/// The `require-dialog-autofocus` rule.
 pub struct RequireDialogAutofocus;
 
 impl Rule for RequireDialogAutofocus {
@@ -22,7 +21,6 @@ impl Rule for RequireDialogAutofocus {
         let mut violations = Vec::new();
         let mut reported_dialog_ids: HashSet<String> = HashSet::new();
 
-        // Find all <button> elements with both command and commandfor attributes
         for (node_id, el) in arena.elements() {
             let rule_config = config.get(node_id);
             if rule_config.disabled {
@@ -56,7 +54,6 @@ impl Rule for RequireDialogAutofocus {
                 continue;
             }
 
-            // Find target element by id
             let Some(target_node_id) = find_element_by_id(arena, target_id) else {
                 continue;
             };
@@ -65,17 +62,14 @@ impl Rule for RequireDialogAutofocus {
                 continue;
             };
 
-            // Must be a <dialog>
             if target_el.base.node_name != "dialog" {
                 continue;
             }
 
-            // Check if dialog itself has autofocus
             if helpers::get_attr_value_from_el(target_el, "autofocus").is_some() {
                 continue;
             }
 
-            // Check if any descendant has autofocus
             if has_autofocus_descendant(arena, target_node_id) {
                 continue;
             }
@@ -99,7 +93,6 @@ impl Rule for RequireDialogAutofocus {
     }
 }
 
-/// Find an element by its `id` attribute value.
 fn find_element_by_id(arena: &DomArena, id: &str) -> Option<NodeId> {
     arena.elements().find_map(|(node_id, el)| {
         if helpers::get_attr_value_from_el(el, "id").is_some_and(|v| v == id) {
@@ -110,7 +103,6 @@ fn find_element_by_id(arena: &DomArena, id: &str) -> Option<NodeId> {
     })
 }
 
-/// Check if any descendant of the given node has the `autofocus` attribute.
 fn has_autofocus_descendant(arena: &DomArena, node_id: NodeId) -> bool {
     let Some(children) = arena.children_of(node_id) else {
         return false;

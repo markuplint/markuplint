@@ -1,11 +1,7 @@
-//! Shared helpers for lint rules.
-
 use std::sync::LazyLock;
 
 static REGEX_LITERAL_RE: LazyLock<regex::Regex> = LazyLock::new(|| regex::Regex::new(r"^/(.+)/([gim]*)$").unwrap());
 
-/// Match a string against a pattern.
-///
 /// If the pattern is wrapped in `/` (e.g. `/^[a-z]+$/i`), it is treated
 /// as a regular expression (with optional flags `g`, `i`, `m`).
 /// Otherwise, the pattern is compared as an exact string match.
@@ -22,7 +18,6 @@ pub fn pattern_match(needle: &str, pattern: &str) -> bool {
     }
 }
 
-/// Parse a `/pattern/flags` literal into a compiled `fancy_regex::Regex`.
 fn parse_regex_literal(pattern: &str) -> Option<fancy_regex::Regex> {
     let caps = REGEX_LITERAL_RE.captures(pattern)?;
     let body = caps.get(1)?.as_str();

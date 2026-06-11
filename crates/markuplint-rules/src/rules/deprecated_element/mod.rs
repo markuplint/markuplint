@@ -11,7 +11,6 @@ use crate::violation::Violation;
 #[cfg(test)]
 mod tests;
 
-/// The `deprecated-element` rule.
 pub struct DeprecatedElement;
 
 impl Rule for DeprecatedElement {
@@ -27,7 +26,6 @@ impl Rule for DeprecatedElement {
             if rule_config.disabled {
                 continue;
             }
-            // Only check HTML and SVG namespaces
             if el.namespace != NamespaceURI::XHTML && el.namespace != NamespaceURI::SVG {
                 continue;
             }
@@ -36,7 +34,6 @@ impl Rule for DeprecatedElement {
                 continue;
             };
 
-            // Check deprecated
             if el_spec.deprecated == Some(true) {
                 violations.push(Violation {
                     rule_id: self.id().to_string(),
@@ -51,7 +48,6 @@ impl Rule for DeprecatedElement {
                 continue;
             }
 
-            // Check obsolete
             if let Some(Obsolete::Flag(true) | Obsolete::Info { .. }) = &el_spec.obsolete {
                 violations.push(Violation {
                     rule_id: self.id().to_string(),

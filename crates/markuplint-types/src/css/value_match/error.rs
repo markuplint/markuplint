@@ -1,9 +1,5 @@
-//! Error types for CSS value matching.
-
-/// The result of a CSS value match attempt.
 pub type MatchResult = Result<(), MismatchInfo>;
 
-/// Information about a CSS value mismatch.
 #[derive(Clone, Debug, PartialEq)]
 pub struct MismatchInfo {
     /// Byte offset in the input where the mismatch occurred.

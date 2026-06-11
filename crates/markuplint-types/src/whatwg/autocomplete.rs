@@ -1,8 +1,3 @@
-//! WHATWG autocomplete attribute validator.
-//!
-//! Validates the `autocomplete` attribute value per the WHATWG HTML spec
-//! using backward parsing (right-to-left token processing).
-//!
 //! <https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete>
 
 /// Normal autofill field names (non-contactable).
@@ -71,8 +66,6 @@ const CONTACTABLE_FIELD_NAMES: &[&str] = &[
     "impp",
 ];
 
-/// Contacting tokens (home, work, mobile, fax, pager).
-///
 /// <https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete-home>
 const CONTACTING_TOKENS: &[&str] = &["home", "work", "mobile", "fax", "pager"];
 
@@ -100,7 +93,6 @@ fn determine_field_category(token: &str) -> Option<FieldCategory> {
 }
 
 fn is_section_prefix(token: &str) -> bool {
-    // Must start with "section-" (case-insensitive) and have content after it
     if token.len() <= 8 {
         return false;
     }
@@ -118,17 +110,14 @@ fn has_duplicates(tokens: &[&str]) -> bool {
     false
 }
 
-/// Result of autocomplete validation with position of the invalid token.
 pub struct AutoCompleteResult {
     pub valid: bool,
     /// Index of the first invalid token in the input (0-based byte offset).
     /// Only set when `valid` is false and a specific token caused the failure.
     pub invalid_token_offset: Option<usize>,
-    /// The raw text of the invalid token.
     pub invalid_token: Option<String>,
 }
 
-/// Validates an autocomplete attribute value and returns position info for errors.
 #[must_use]
 pub fn check_autocomplete_with_position(value: &str) -> AutoCompleteResult {
     let tokens: Vec<&str> = value.split_ascii_whitespace().collect();
@@ -232,11 +221,9 @@ pub fn check_autocomplete_with_position(value: &str) -> AutoCompleteResult {
                 invalid_token: None,
             };
         }
-        // Extra tokens before section
         return invalid_at(value, tokens[0]);
     }
 
-    // Extra tokens remain
     invalid_at(value, tokens[index])
 }
 
@@ -249,10 +236,6 @@ fn invalid_at(value: &str, token: &str) -> AutoCompleteResult {
     }
 }
 
-/// Validates an autocomplete attribute value.
-///
-/// Returns `true` if the value is a valid autocomplete string per the WHATWG spec.
-///
 /// # Examples
 ///
 /// ```
@@ -270,17 +253,14 @@ pub fn is_autocomplete(value: &str) -> bool {
         return false;
     }
 
-    // Check for duplicates
     if has_duplicates(&tokens) {
         return false;
     }
 
-    // "on" or "off" must be standalone
     if tokens[0].eq_ignore_ascii_case("on") || tokens[0].eq_ignore_ascii_case("off") {
         return tokens.len() == 1;
     }
 
-    // Check if last token is "on" or "off" (invalid in multi-token context)
     if tokens
         .last()
         .is_some_and(|last| last.eq_ignore_ascii_case("on") || last.eq_ignore_ascii_case("off"))
@@ -288,23 +268,18 @@ pub fn is_autocomplete(value: &str) -> bool {
         return false;
     }
 
-    // --- Backward parsing ---
     let mut index = tokens.len() - 1;
 
-    // Step 1: Determine field category from last token
     let Some(mut category) = determine_field_category(tokens[index]) else {
         return false;
     };
 
-    // Step 2: Handle webauthn (Credential category re-determination)
     if category == FieldCategory::Credential {
         if index == 0 {
-            // Standalone "webauthn" is valid
             return true;
         }
         index -= 1;
 
-        // Re-determine category from the token before webauthn
         match determine_field_category(tokens[index]) {
             Some(FieldCategory::Credential) | None => return false,
             Some(cat) => {
@@ -318,7 +293,6 @@ pub fn is_autocomplete(value: &str) -> bool {
     }
     index -= 1;
 
-    // Step 3: If Contact category, optionally consume contacting token
     if category == FieldCategory::Contact && matches_any(tokens[index], CONTACTING_TOKENS) {
         if index == 0 {
             return true;
@@ -326,12 +300,10 @@ pub fn is_autocomplete(value: &str) -> bool {
         index -= 1;
     }
 
-    // Step 4: If Normal category, current token must NOT be a contacting token
     if category == FieldCategory::Normal && matches_any(tokens[index], CONTACTING_TOKENS) {
         return false;
     }
 
-    // Step 5: Optionally consume shipping/billing
     if tokens[index].eq_ignore_ascii_case("shipping") || tokens[index].eq_ignore_ascii_case("billing") {
         if index == 0 {
             return true;
@@ -339,11 +311,9 @@ pub fn is_autocomplete(value: &str) -> bool {
         index -= 1;
     }
 
-    // Step 6: Optionally consume section-*
     if is_section_prefix(tokens[index]) {
         return index == 0;
     }
 
-    // Step 7: Any remaining tokens are extra → invalid
     false
 }

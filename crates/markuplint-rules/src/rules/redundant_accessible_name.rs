@@ -30,15 +30,13 @@ impl Rule for RedundantAccessibleName {
                 continue;
             }
 
-            // Skip hidden elements
             if !is_exposed(spec, arena, node_id, version) {
                 continue;
             }
 
-            // Get computed role
             let computed = get_computed_role(spec, arena, node_id, version, false);
 
-            // Skip nameFrom: "prohibited" roles
+            // A role whose name is prohibited cannot have a redundant name.
             if let Some(role) = &computed.role {
                 let aria_spec = &spec.def.aria.v1_2;
                 let role_spec = aria_spec
@@ -52,7 +50,6 @@ impl Rule for RedundantAccessibleName {
                 }
             }
 
-            // Parse options
             let check_title = rule_config
                 .options
                 .get("checkTitleFallback")
@@ -201,7 +198,6 @@ fn collect_naming_sources(
     sources
 }
 
-/// Check if element is a labelable element (form controls).
 fn is_labelable(tag: &str, el: &markuplint_dom::node::ElementData) -> bool {
     matches!(
         tag,
@@ -209,19 +205,17 @@ fn is_labelable(tag: &str, el: &markuplint_dom::node::ElementData) -> bool {
     ) && !is_input_type(el, "hidden")
 }
 
-/// Check if element is `<input type="X">`.
 fn is_input_type(el: &markuplint_dom::node::ElementData, type_val: &str) -> bool {
     el.base.node_name == "input"
         && helpers::get_attr_value_from_el(el, "type").is_some_and(|t| t.eq_ignore_ascii_case(type_val))
 }
 
-/// Check if element has an owned label (explicit via for/id or implicit via ancestor <label>).
 fn has_owned_label(arena: &DomArena, node_id: NodeId, _tag: &str) -> bool {
     let Some(el) = arena.get(node_id).and_then(|n| n.as_element()) else {
         return false;
     };
 
-    // Check explicit label via id
+    // Explicit association: a `<label for>` pointing at this element's id.
     if let Some(id) = helpers::get_attr_value_from_el(el, "id")
         && !id.is_empty()
     {
@@ -234,7 +228,7 @@ fn has_owned_label(arena: &DomArena, node_id: NodeId, _tag: &str) -> bool {
         }
     }
 
-    // Check implicit label (ancestor <label>)
+    // Implicit association: an ancestor `<label>` wrapping this element.
     let mut current = node_id;
     loop {
         let Some(node) = arena.get(current) else {

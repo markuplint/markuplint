@@ -1,6 +1,5 @@
-//! Foreign content processing per WHATWG §13.2.6.5.
-//!
-//! Handles SVG and `MathML` elements embedded in HTML.
+//! Foreign content processing per WHATWG §13.2.6.5 (SVG and `MathML`
+//! embedded in HTML).
 
 use crate::input::Span;
 use crate::tokenizer::token::{RawAttribute, Token};
@@ -166,8 +165,7 @@ const SVG_ATTR_ADJUSTMENTS: &[(&str, &str)] = &[
 ];
 
 impl TreeBuilder<'_> {
-    /// Check if we should process a token as foreign content.
-    /// Simple check: is the adjusted current node in a foreign namespace?
+    /// Checks only whether the adjusted current node is in a foreign namespace.
     pub(super) fn should_process_as_foreign(&self) -> bool {
         let Some(current) = self.current_node() else {
             return false;
@@ -178,7 +176,6 @@ impl TreeBuilder<'_> {
     }
 
     /// WHATWG §13.2.6: Full dispatch check including integration points.
-    /// Returns true if the token should be processed as foreign content.
     pub(super) fn should_process_as_foreign_for_token(&self, token: &Token) -> bool {
         let Some(current) = self.current_node() else {
             return false;
@@ -228,7 +225,6 @@ impl TreeBuilder<'_> {
         true
     }
 
-    /// Process a token in foreign content mode.
     #[allow(clippy::too_many_lines)]
     pub(super) fn process_foreign_content(&mut self, token: Token) {
         match &token {
@@ -271,7 +267,6 @@ impl TreeBuilder<'_> {
             } => {
                 let tag = tag_name.as_str();
 
-                // Check for breakout elements (and special end-tag-like start tags).
                 if BREAKOUT_ELEMENTS.contains(&tag) || (tag == "font" && has_font_attrs(attributes)) {
                     // Pop until MathML text integration point, HTML integration
                     // point, or HTML namespace element per WHATWG §13.2.6.5.
@@ -301,7 +296,6 @@ impl TreeBuilder<'_> {
                     return;
                 }
 
-                // Determine namespace from current node.
                 let current_ns = self
                     .current_node()
                     .and_then(|id| self.arena.get(id).namespace())
@@ -313,7 +307,6 @@ impl TreeBuilder<'_> {
                     tag.to_owned()
                 };
 
-                // Adjust attribute names: SVG/MathML-specific + foreign namespace attrs.
                 let adjusted_attrs = if current_ns == Namespace::Svg {
                     let svg_adjusted = adjust_svg_attributes(attributes);
                     adjust_foreign_attributes(&svg_adjusted)
@@ -414,14 +407,12 @@ impl TreeBuilder<'_> {
         }
     }
 
-    /// Handle `<svg>` start tag in `InBody`.
     pub(super) fn process_svg_start_tag(&mut self, attributes: &[RawAttribute], span: Span) {
         let adjusted = adjust_svg_attributes(attributes);
         let adjusted = adjust_foreign_attributes(&adjusted);
         self.insert_element_for_token("svg", &adjusted, span, Namespace::Svg);
     }
 
-    /// Handle `<math>` start tag in `InBody`.
     pub(super) fn process_math_start_tag(&mut self, attributes: &[RawAttribute], span: Span) {
         let adjusted = adjust_mathml_attributes(attributes);
         let adjusted = adjust_foreign_attributes(&adjusted);
@@ -508,7 +499,6 @@ fn has_font_attrs(attributes: &[RawAttribute]) -> bool {
         .any(|a| matches!(a.raw_name.as_str(), "color" | "face" | "size"))
 }
 
-/// Check if a node is a `MathML` text integration point.
 #[must_use]
 pub fn is_mathml_text_integration_point(tag_name: &str) -> bool {
     MATHML_TEXT_INTEGRATION.contains(&tag_name)

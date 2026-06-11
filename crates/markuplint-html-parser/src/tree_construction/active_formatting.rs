@@ -3,14 +3,12 @@
 use crate::tree::Arena;
 use crate::tree::node::{NodeId, NodeKind};
 
-/// An entry in the active formatting elements list.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum FormatEntry {
     Element(NodeId),
     Marker,
 }
 
-/// The list of active formatting elements.
 #[derive(Debug, Default)]
 pub struct ActiveFormattingElements {
     entries: Vec<FormatEntry>,
@@ -92,7 +90,6 @@ impl ActiveFormattingElements {
             .retain(|e| !matches!(e, FormatEntry::Element(eid) if *eid == id));
     }
 
-    /// Check if a node ID is in the list.
     #[must_use]
     pub fn contains(&self, id: NodeId) -> bool {
         self.entries
@@ -117,7 +114,6 @@ impl ActiveFormattingElements {
         None
     }
 
-    /// Get the position of a node in the list.
     #[must_use]
     pub fn position(&self, id: NodeId) -> Option<usize> {
         self.entries
@@ -125,7 +121,6 @@ impl ActiveFormattingElements {
             .position(|e| matches!(e, FormatEntry::Element(eid) if *eid == id))
     }
 
-    /// Replace an element entry (`old_id` → `new_id`).
     pub fn replace(&mut self, old_id: NodeId, new_id: NodeId) {
         for entry in &mut self.entries {
             if matches!(entry, FormatEntry::Element(eid) if *eid == old_id) {
@@ -135,13 +130,12 @@ impl ActiveFormattingElements {
         }
     }
 
-    /// Insert an entry at a specific position.
     pub fn insert_at(&mut self, index: usize, entry: FormatEntry) {
         let idx = index.min(self.entries.len());
         self.entries.insert(idx, entry);
     }
 
-    /// Iterate entries from newest to oldest.
+    /// Newest to oldest.
     pub fn iter_rev(&self) -> impl Iterator<Item = &FormatEntry> {
         self.entries.iter().rev()
     }

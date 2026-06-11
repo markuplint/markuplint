@@ -1,6 +1,3 @@
-//! ARIA role resolution functions.
-//!
-//! Provides role lookup, implicit/explicit role resolution, and permitted roles.
 //! Corresponds to `@markuplint/ml-spec/src/algorithm/aria/`.
 //!
 //! Note: Condition-based resolution (CSS selector matching on the DOM element)
@@ -10,7 +7,6 @@
 use super::lookup;
 use super::types::{ARIARoleInSchema, ARIASpec, ElementARIA, MLMLSpec};
 
-/// Supported ARIA specification versions.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum ARIAVersion {
     V1_1,
@@ -19,11 +15,9 @@ pub enum ARIAVersion {
 }
 
 impl ARIAVersion {
-    /// The recommended (latest) ARIA version.
     pub const RECOMMENDED: Self = Self::V1_3;
 }
 
-/// Get the ARIA spec for a specific version.
 pub fn get_aria_spec(spec: &MLMLSpec, version: ARIAVersion) -> &ARIASpec {
     match version {
         ARIAVersion::V1_1 => &spec.def.aria.v1_1,
@@ -32,37 +26,23 @@ pub fn get_aria_spec(spec: &MLMLSpec, version: ARIAVersion) -> &ARIASpec {
     }
 }
 
-/// Look up a role definition by name.
-///
-/// Searches standard roles first, then graphics roles, then dpub roles.
-/// Returns `None` if the role doesn't exist.
 pub fn get_role_spec<'a>(spec: &'a MLMLSpec, role_name: &str, version: ARIAVersion) -> Option<&'a ARIARoleInSchema> {
     let aria = get_aria_spec(spec, version);
 
-    // Standard roles
     if let Some(role) = aria.roles.iter().find(|r| r.name == role_name) {
         return Some(role);
     }
-    // Graphics roles
     if let Some(role) = aria.graphics_roles.iter().find(|r| r.name == role_name) {
         return Some(role);
     }
-    // Digital publishing roles
     aria.dpub_roles.iter().find(|r| r.name == role_name)
 }
 
-/// Check if a role is abstract (cannot be used as an explicit role).
+/// Abstract roles cannot be used as an explicit `role` value.
 pub fn is_abstract_role(spec: &MLMLSpec, role_name: &str, version: ARIAVersion) -> bool {
     get_role_spec(spec, role_name, version).is_some_and(|r| r.is_abstract.unwrap_or(false))
 }
 
-/// Get the base implicit role for an element (without condition evaluation).
-///
-/// Returns the role name string, or `None` if:
-/// - The element has no implicit role
-/// - The implicit role is explicitly `false` in the spec
-/// - The element is not found
-///
 /// Note: This does NOT evaluate conditions (CSS selectors). For example,
 /// `<a>` returns `"link"` regardless of whether `href` is present.
 /// Condition-based resolution requires DOM access (Phase 2-3b).
@@ -71,8 +51,6 @@ pub fn get_base_implicit_role<'a>(spec: &'a MLMLSpec, element_name: &str) -> Opt
     implicit_role_from_aria(&el.aria)
 }
 
-/// Get the base permitted roles for an element (without condition evaluation).
-///
 /// Returns:
 /// - `Some(vec)` with specific role names if permittedRoles is an array
 /// - `None` if permittedRoles is `true` (any role permitted) or not specified
@@ -83,7 +61,7 @@ pub fn get_base_permitted_roles(spec: &MLMLSpec, element_name: &str) -> Option<V
     permitted_roles_from_aria(&el.aria)
 }
 
-/// Check if any role is permitted on an element (permittedRoles === true).
+/// True only when `permittedRoles === true` in the spec data.
 pub fn is_any_role_permitted(spec: &MLMLSpec, element_name: &str) -> bool {
     let Some(el) = lookup::get_spec(spec, element_name) else {
         return false;
@@ -91,9 +69,7 @@ pub fn is_any_role_permitted(spec: &MLMLSpec, element_name: &str) -> bool {
     el.aria.permitted_roles.as_ref().and_then(serde_json::Value::as_bool) == Some(true)
 }
 
-/// Get the superclass role chain for a role.
-///
-/// Returns the generalization chain (parent roles) from the role spec.
+/// The chain is the role's `generalization` (parent roles) walked transitively.
 pub fn get_superclass_roles<'a>(
     spec: &'a MLMLSpec,
     role_name: &str,
@@ -125,12 +101,6 @@ fn collect_superclass_roles<'a>(
     }
 }
 
-/// Validate an explicit role value against permitted roles.
-///
-/// Parses a space-separated role attribute value and returns the first
-/// valid, non-abstract role. Returns `None` with an error string if
-/// no valid role is found.
-///
 /// Note: This performs basic validation only (role exists, not abstract).
 /// Full validation including permitted roles check requires DOM access
 /// for condition evaluation.
@@ -148,13 +118,11 @@ pub fn resolve_explicit_role<'a>(
     for token in role_attr.split_whitespace() {
         let role_name = token.to_ascii_lowercase();
 
-        // Check if role exists
         let Some(role) = get_role_spec(spec, &role_name, version) else {
             last_error = ExplicitRoleError::RoleNoExists(role_name);
             continue;
         };
 
-        // Check if abstract
         if role.is_abstract.unwrap_or(false) {
             last_error = ExplicitRoleError::Abstract(role_name);
             continue;
@@ -166,14 +134,11 @@ pub fn resolve_explicit_role<'a>(
     Err(last_error)
 }
 
-/// Error types for explicit role resolution.
 #[derive(Clone, Debug, PartialEq)]
 pub enum ExplicitRoleError {
-    /// No role attribute or empty value.
+    /// No role attribute, or an empty/whitespace-only value.
     NoExplicit,
-    /// Role doesn't exist in the ARIA spec.
     RoleNoExists(String),
-    /// Role is abstract and cannot be used.
     Abstract(String),
 }
 
@@ -189,17 +154,15 @@ fn implicit_role_from_aria(aria: &ElementARIA) -> Option<&str> {
 fn permitted_roles_from_aria(aria: &ElementARIA) -> Option<Vec<String>> {
     let value = aria.permitted_roles.as_ref()?;
 
-    // If true, any role is permitted (return None to distinguish from empty list)
+    // Return None for "any role permitted" to distinguish it from an empty list.
     if value.as_bool() == Some(true) {
         return None;
     }
 
-    // If false, no roles permitted
     if value.as_bool() == Some(false) {
         return Some(Vec::new());
     }
 
-    // If array, extract role names
     value
         .as_array()
         .map(|arr| arr.iter().filter_map(|v| v.as_str().map(String::from)).collect())

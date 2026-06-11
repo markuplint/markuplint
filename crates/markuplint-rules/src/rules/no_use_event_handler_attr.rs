@@ -8,7 +8,6 @@ use crate::helpers::pattern_match;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
-/// The `no-use-event-handler-attr` rule.
 pub struct NoUseEventHandlerAttr;
 
 impl Rule for NoUseEventHandlerAttr {
@@ -32,7 +31,6 @@ impl Rule for NoUseEventHandlerAttr {
             _ => None,
         };
 
-        // Read ignore list from options
         let ignore_list: Vec<String> = match global.options.get("ignore") {
             Some(serde_json::Value::Array(arr)) => arr.iter().filter_map(|v| v.as_str().map(String::from)).collect(),
             Some(serde_json::Value::String(s)) => vec![s.clone()],
@@ -55,7 +53,7 @@ impl Rule for NoUseEventHandlerAttr {
                     continue;
                 }
 
-                // Check ignore list (matches full attribute name)
+                // The ignore list matches the full attribute name, not the bare event name.
                 if ignore_list
                     .iter()
                     .any(|pattern| pattern_match(&html_attr.node_name, pattern))
@@ -63,13 +61,11 @@ impl Rule for NoUseEventHandlerAttr {
                     continue;
                 }
 
-                // Extract event name (strip "on" prefix)
                 let event_name = html_attr.node_name[2..].to_ascii_lowercase();
 
-                // If value is an array, only report if the event is in the list
                 if let Some(ref events) = target_events {
                     let matched = events.iter().any(|pattern| {
-                        // Support regex patterns for event names
+                        // Event names support regex patterns.
                         pattern_match(&event_name, pattern)
                     });
                     if !matched {

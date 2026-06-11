@@ -1,42 +1,32 @@
-//! Serde types for content model patterns.
-//!
 //! Corresponds to `@markuplint/ml-spec/src/types/permitted-structures.ts`.
 
 use serde::Deserialize;
 
-/// Content model for an element.
 #[derive(Debug, Clone, Deserialize)]
 pub struct ContentModel {
-    /// Permitted content patterns, or `false` for void elements.
     pub contents: ContentModelContents,
-    /// Required ancestor element.
     #[serde(default, rename = "descendantOf")]
     pub descendant_of: Option<String>,
-    /// Conditional content models (selector → alternative contents).
     #[serde(default)]
     pub conditional: Option<Vec<ConditionalContentModel>>,
 }
 
-/// The `contents` field: either `false` (void) or a list of patterns.
 #[derive(Debug, Clone, Deserialize)]
 #[serde(untagged)]
 pub enum ContentModelContents {
-    /// Void element — no content permitted (`false`), or any content (`true`).
+    /// `false` means void (no content); `true` means any content.
     Boolean(bool),
-    /// Permitted content patterns.
     Patterns(Vec<PermittedContentPattern>),
 }
 
-/// A conditional content model override.
 #[derive(Debug, Clone, Deserialize)]
 pub struct ConditionalContentModel {
-    /// CSS selector condition.
+    /// CSS selector.
     pub condition: String,
-    /// Content patterns when condition matches.
     pub contents: ContentModelContents,
 }
 
-/// A single permitted content pattern (discriminated by key).
+/// Untagged: each variant is discriminated by its distinguishing JSON key.
 #[derive(Debug, Clone, Deserialize)]
 #[serde(untagged)]
 pub enum PermittedContentPattern {
@@ -90,7 +80,6 @@ pub struct TransparentPattern {
     pub transparent: String,
 }
 
-/// Model reference: string, array of strings, or nested patterns.
 #[derive(Debug, Clone, Deserialize)]
 #[serde(untagged)]
 pub enum ModelOrPatterns {

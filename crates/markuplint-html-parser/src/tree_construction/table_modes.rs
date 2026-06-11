@@ -1,7 +1,4 @@
 //! Table-related insertion modes per WHATWG §13.2.6.4.9–16.
-//!
-//! Implements `InTable`, `InTableText`, `InCaption`, `InColumnGroup`,
-//! `InTableBody`, `InRow`, `InCell`.
 
 use crate::input::Position;
 use crate::tokenizer::token::Token;

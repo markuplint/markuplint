@@ -1,18 +1,12 @@
 //! Extended pseudo-class resolution.
 //!
-//! Expands markuplint-specific pseudo-classes (`:model()`, `:role()`, `:aria()`)
-//! into standard CSS selectors using spec data, then matches via the standard matcher.
-//! This follows the same pattern as the TS implementation:
+//! Follows the TS implementation, which expands a category via
 //! `contentModelCategoryToTagNames()` → `:is(tag1, tag2, ...)`.
 
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_types::spec::lookup;
 use markuplint_types::spec::types::MLMLSpec;
 
-/// Check if an element matches a `:model(category)` pseudo-class.
-///
-/// Resolves the content model category (e.g., "flow", "phrasing") to concrete
-/// tag names and checks if the element's tag name is in that list.
 pub fn matches_model(spec: &MLMLSpec, arena: &DomArena, node_id: NodeId, category: &str) -> bool {
     let category = category.trim().to_ascii_lowercase();
     let category_key = format!("#{category}");
@@ -24,20 +18,18 @@ pub fn matches_model(spec: &MLMLSpec, arena: &DomArena, node_id: NodeId, categor
         return false;
     };
 
-    // Special case: :model(custom) matches custom elements
+    // `:model(custom)` matches custom elements, identified by a hyphen in the name.
     if category == "custom" {
         return el.base.node_name.contains('-');
     }
 
-    // Look up tags in the content model category
     let Some(tags) = lookup::get_content_model_tags(spec, &category_key) else {
         return false;
     };
 
     let element_name = &el.base.node_name;
 
-    // Check if element name is in the category's tag list
-    // Tags may include selectors like "audio[controls]" — match by prefix
+    // Tags may carry a selector suffix like `audio[controls]`; match by prefix.
     tags.iter().any(|tag| {
         tag.eq_ignore_ascii_case(element_name)
             || tag

@@ -1,6 +1,8 @@
 //! Type validation for markuplint.
 //!
-//! Rust implementation of `@markuplint/types` validators.
+//! Rust implementation of `@markuplint/types` validators. Intended to be exposed
+//! through `markuplint-builder` to replace the CSS-validation portion of the TS
+//! `@markuplint/types` package (the css-tree-backed value matcher).
 
 pub mod check;
 pub mod css;

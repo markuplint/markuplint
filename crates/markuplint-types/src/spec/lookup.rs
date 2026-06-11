@@ -1,22 +1,15 @@
-//! Spec lookup functions.
-//!
-//! Query element and attribute specifications from the loaded spec data.
 //! Corresponds to `@markuplint/ml-spec/src/utils/`.
 
 use super::types::{Attribute, ElementSpec, MLMLSpec};
 use std::collections::HashMap;
 
-/// Find an element spec by tag name.
-///
 /// Handles namespace-prefixed names (e.g., `"svg:svg"` matches an element
 /// with `name == "svg:svg"`). Falls back to plain name match.
 pub fn get_spec<'a>(spec: &'a MLMLSpec, name: &str) -> Option<&'a ElementSpec> {
-    // Try exact match first
     if let Some(el) = spec.specs.iter().find(|s| s.name.eq_ignore_ascii_case(name)) {
         return Some(el);
     }
-    // Try with namespace prefixes (svg:, math:) for elements that may
-    // appear without prefix in the DOM but are stored with prefix in spec
+    // Such elements may appear without prefix in the DOM but are stored with the prefix in the spec.
     for prefix in &["svg", "math"] {
         let prefixed = format!("{prefix}:{name}");
         if let Some(el) = spec.specs.iter().find(|s| s.name.eq_ignore_ascii_case(&prefixed)) {
@@ -26,9 +19,6 @@ pub fn get_spec<'a>(spec: &'a MLMLSpec, name: &str) -> Option<&'a ElementSpec> {
     None
 }
 
-/// Find an element spec by tag name and namespace.
-///
-/// If namespace is provided and non-empty, tries `"{namespace_prefix}:{name}"` first.
 pub fn get_spec_by_tag_name<'a>(spec: &'a MLMLSpec, name: &str, namespace: Option<&str>) -> Option<&'a ElementSpec> {
     if let Some(ns) = namespace {
         let prefix = namespace_to_prefix(ns);
@@ -42,8 +32,6 @@ pub fn get_spec_by_tag_name<'a>(spec: &'a MLMLSpec, name: &str, namespace: Optio
     get_spec(spec, name)
 }
 
-/// Check if an element is a void element (no permitted content).
-///
 /// Void elements have `contentModel.contents === false` in the spec data.
 pub fn is_void_element(spec: &MLMLSpec, name: &str) -> bool {
     get_spec(spec, name).is_some_and(|el| {
@@ -53,9 +41,7 @@ pub fn is_void_element(spec: &MLMLSpec, name: &str) -> bool {
     })
 }
 
-/// Check if an element is palpable (appears in the `#palpable` content model category).
-///
-/// Note: Some entries include selectors (e.g., `"audio[controls]"`), so this
+/// Some `#palpable` entries include selectors (e.g., `"audio[controls]"`), so this
 /// checks by prefix match on the tag name.
 pub fn is_palpable_element(spec: &MLMLSpec, name: &str) -> bool {
     spec.def
@@ -64,18 +50,11 @@ pub fn is_palpable_element(spec: &MLMLSpec, name: &str) -> bool {
         .is_some_and(|tags| tags.iter().any(|t| t == name || t.starts_with(&format!("{name}["))))
 }
 
-/// Get the tag names belonging to a content model category.
-///
 /// Categories are prefixed with `#` (e.g., `"#flow"`, `"#phrasing"`, `"#metadata"`).
 pub fn get_content_model_tags<'a>(spec: &'a MLMLSpec, category: &str) -> Option<&'a [String]> {
     spec.def.content_models.get(category).map(std::vec::Vec::as_slice)
 }
 
-/// Resolve all attribute specs for an element, including global attributes.
-///
-/// Returns element-specific attributes merged with applicable global attribute
-/// categories. Global attributes are resolved from the element's `globalAttrs`
-/// configuration.
 pub fn get_attr_specs<'a>(spec: &'a MLMLSpec, element_name: &str) -> HashMap<&'a str, &'a Attribute> {
     let mut result: HashMap<&str, &Attribute> = HashMap::new();
 
@@ -83,7 +62,6 @@ pub fn get_attr_specs<'a>(spec: &'a MLMLSpec, element_name: &str) -> HashMap<&'a
         return result;
     };
 
-    // Add element-specific attributes
     for (name, attr) in &el.attributes {
         result.insert(name.as_str(), attr);
     }
@@ -97,7 +75,6 @@ pub fn get_attr_specs<'a>(spec: &'a MLMLSpec, element_name: &str) -> HashMap<&'a
     result
 }
 
-/// Convert a namespace URI to its conventional prefix.
 fn namespace_to_prefix(namespace: &str) -> &str {
     match namespace {
         "http://www.w3.org/2000/svg" => "svg",

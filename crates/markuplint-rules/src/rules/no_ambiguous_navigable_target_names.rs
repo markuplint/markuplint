@@ -14,7 +14,6 @@ use markuplint_types::spec::types::MLMLSpec;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
-/// The `no-ambiguous-navigable-target-names` rule.
 pub struct NoAmbiguousNavigableTargetNames;
 
 impl Rule for NoAmbiguousNavigableTargetNames {
@@ -40,20 +39,16 @@ impl Rule for NoAmbiguousNavigableTargetNames {
 
                 let attr_name = html_attr.node_name.to_ascii_lowercase();
 
-                // Check if the attribute has NavigableTargetNameOrKeyword or
-                // NavigableTargetName type (from element-specific or global spec)
                 if !is_navigable_target_type(&attr_specs, &attr_name, spec, &el.base.node_name) {
                     continue;
                 }
 
                 let value = html_attr.value.raw.trim();
 
-                // Skip if already has underscore prefix
                 if value.starts_with('_') || value.is_empty() {
                     continue;
                 }
 
-                // Check if adding underscore makes it a valid keyword
                 let with_underscore = format!("_{}", value.to_ascii_lowercase());
                 if is_navigable_keyword(&with_underscore) {
                     violations.push(Violation {
@@ -76,20 +71,17 @@ impl Rule for NoAmbiguousNavigableTargetNames {
     }
 }
 
-/// Check if an attribute has `NavigableTargetNameOrKeyword` or `NavigableTargetName` type.
 fn is_navigable_target_type(
     attr_specs: &std::collections::HashMap<&str, &markuplint_types::spec::types::Attribute>,
     attr_name: &str,
     spec: &MLMLSpec,
     el_name: &str,
 ) -> bool {
-    // Check element-specific attribute
     if let Some(attr_spec) = attr_specs.get(attr_name)
         && is_navigable_type_value(&attr_spec.attr_type)
     {
         return true;
     }
-    // Check global attribute
     if let Some(el) = get_spec(spec, el_name) {
         for category in el.global_attrs.keys() {
             if let Some(attrs_map) = spec.def.global_attrs.get(category)
@@ -104,7 +96,6 @@ fn is_navigable_target_type(
     false
 }
 
-/// Check if a type value is `NavigableTargetNameOrKeyword` or `NavigableTargetName`.
 fn is_navigable_type_value(type_val: &serde_json::Value) -> bool {
     match type_val {
         serde_json::Value::String(s) => s == "NavigableTargetNameOrKeyword" || s == "NavigableTargetName",
@@ -113,7 +104,6 @@ fn is_navigable_type_value(type_val: &serde_json::Value) -> bool {
     }
 }
 
-/// Check if a value with underscore prefix is a valid navigable keyword.
 fn is_navigable_keyword(value: &str) -> bool {
     matches!(value, "_self" | "_blank" | "_parent" | "_top")
 }

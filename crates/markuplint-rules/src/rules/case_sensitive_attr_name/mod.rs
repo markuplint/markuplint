@@ -12,7 +12,6 @@ use crate::violation::{Severity, Violation};
 #[cfg(test)]
 mod tests;
 
-/// The `case-sensitive-attr-name` rule.
 pub struct CaseSensitiveAttrName;
 
 impl Rule for CaseSensitiveAttrName {
@@ -29,7 +28,6 @@ impl Rule for CaseSensitiveAttrName {
             if rule_config.disabled {
                 continue;
             }
-            // Only check HTML namespace elements
             if el.namespace != NamespaceURI::XHTML {
                 continue;
             }
@@ -41,10 +39,10 @@ impl Rule for CaseSensitiveAttrName {
                     continue;
                 };
 
-                // Use raw attr name from source to preserve original case
+                // Use the raw source name so original case is preserved for the comparison.
                 let raw_name = get_raw_attr_name(html_attr);
 
-                // If the spec says this attribute is case-sensitive, skip enforcement
+                // Attributes the spec marks case-sensitive are exempt.
                 let attr_name_lower = raw_name.to_ascii_lowercase();
                 if let Some(attr_spec) = attr_specs.get(attr_name_lower.as_str())
                     && attr_spec.case_sensitive == Some(true)

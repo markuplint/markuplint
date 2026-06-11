@@ -10,7 +10,6 @@ use crate::violation::Violation;
 #[cfg(test)]
 mod tests;
 
-/// The `attr-value-quotes` rule.
 pub struct AttrValueQuotes;
 
 impl Rule for AttrValueQuotes {
@@ -38,7 +37,7 @@ impl Rule for AttrValueQuotes {
                     continue;
                 };
 
-                // Skip boolean attributes (no value, no quotes)
+                // Boolean attributes have neither value nor quotes, so there is nothing to check.
                 if html_attr.value.raw.is_empty() && html_attr.start_quote.raw.is_empty() {
                     continue;
                 }

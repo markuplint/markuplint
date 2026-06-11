@@ -1,8 +1,4 @@
-//! Regex-based selector matching.
-//!
-//! A separate matching system from CSS selectors that matches elements
-//! by node name and/or attribute patterns using regular expressions.
-//! Supports combinators for chained matching.
+//! Regex-based selector matching: a system separate from CSS selectors.
 //!
 //! Corresponds to `@markuplint/selector/src/match-selector.ts` (regex path).
 
@@ -14,7 +10,6 @@ use markuplint_dom::arena::{DomArena, NodeId};
 use regex::Regex;
 use serde::Deserialize;
 
-/// Pre-compiled regex for detecting `/pattern/flags` literals.
 static REGEX_LITERAL_PATTERN: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"^/(.+)/([gi]*)$").expect("regex literal pattern must compile"));
 
@@ -24,52 +19,40 @@ use crate::ast::Specificity;
 // Types (mirrors TS RegexSelector)
 // ============================================================
 
-/// A regex-based selector with optional combinator chaining.
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct RegexSelector {
-    /// Regex pattern to match against the element's local name.
     #[serde(default)]
     pub node_name: Option<String>,
-    /// Regex pattern to match against attribute names.
     #[serde(default)]
     pub attr_name: Option<String>,
-    /// Regex pattern to match against attribute values.
     #[serde(default)]
     pub attr_value: Option<String>,
-    /// Optional chained selector with a combinator.
     #[serde(default)]
     pub combination: Option<Box<RegexSelectorCombination>>,
 }
 
-/// A combinator + next regex selector in the chain.
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct RegexSelectorCombination {
-    /// The combinator type.
     pub combinator: String,
-    /// Regex patterns for this level.
     #[serde(default)]
     pub node_name: Option<String>,
     #[serde(default)]
     pub attr_name: Option<String>,
     #[serde(default)]
     pub attr_value: Option<String>,
-    /// Further chaining.
     #[serde(default)]
     pub combination: Option<Box<RegexSelectorCombination>>,
 }
 
-/// Result of a regex selector match.
 #[derive(Debug, Clone)]
 pub struct RegexMatchResult {
-    /// Whether the selector matched.
     pub matched: bool,
-    /// Reconstructed CSS-like selector string (e.g., `div[type="email"]`).
+    /// Reconstructed CSS-like selector string, e.g. `div[type="email"]`.
     pub selector: String,
-    /// Computed specificity `[id, class, type]`.
     pub specificity: Specificity,
-    /// Captured groups from regex matches (`$0`, `$1`, named groups).
+    /// Keyed `$0`, `$1`, … for numbered groups plus any named groups.
     pub data: HashMap<String, String>,
 }
 
@@ -88,9 +71,7 @@ impl RegexMatchResult {
 // Public API
 // ============================================================
 
-/// Match a regex selector against an element in the DOM arena.
 pub fn regex_select(arena: &DomArena, node_id: NodeId, selector: &RegexSelector) -> RegexMatchResult {
-    // Build the combinator chain
     let mut targets: Vec<RegexTarget> = Vec::new();
     targets.push(RegexTarget {
         node_name: selector.node_name.as_deref(),
@@ -111,7 +92,6 @@ pub fn regex_select(arena: &DomArena, node_id: NodeId, selector: &RegexSelector)
         current_combination = combo.combination.as_deref();
     }
 
-    // Match from the last target (the subject)
     let last_idx = targets.len() - 1;
     match_target(arena, node_id, &targets, last_idx)
 }
@@ -231,10 +211,9 @@ fn uncombined_match(arena: &DomArena, node_id: NodeId, target: &RegexTarget<'_>)
     let mut specificity: Specificity = [0, 0, 0];
     let mut specified_attrs: Vec<(String, String)> = Vec::new();
 
-    // Match nodeName
     if let Some(pattern) = target.node_name {
         if let Some(captures) = regex_match(pattern, &el.base.node_name, is_html) {
-            // $0 is deleted for nodeName (matches TS behavior)
+            // $0 is dropped for nodeName, matching TS behavior.
             for (key, value) in &captures {
                 if key != "$0" {
                     data.insert(key.clone(), value.clone());
@@ -247,14 +226,12 @@ fn uncombined_match(arena: &DomArena, node_id: NodeId, target: &RegexTarget<'_>)
         }
     }
 
-    // Match attrName and/or attrValue
     if target.attr_name.is_some() || target.attr_value.is_some() {
         let mut any_attr_matched = false;
 
         for attr in &el.attributes {
             let (attr_name, attr_value) = get_attr_name_value(attr);
 
-            // Match attrName if specified
             if let Some(pattern) = target.attr_name {
                 let Some(captures) = regex_match(pattern, &attr_name, is_html) else {
                     continue;
@@ -266,7 +243,6 @@ fn uncombined_match(arena: &DomArena, node_id: NodeId, target: &RegexTarget<'_>)
                 }
             }
 
-            // Match attrValue if specified
             if let Some(pattern) = target.attr_value {
                 let Some(captures) = regex_match(pattern, &attr_value, is_html) else {
                     continue;
@@ -321,22 +297,16 @@ fn uncombined_match(arena: &DomArena, node_id: NodeId, target: &RegexTarget<'_>)
 // Pattern matching helper
 // ============================================================
 
-/// Match a pattern against a raw string, returning captured groups.
-///
-/// Plain strings are treated as exact-match (`^pattern$`).
-/// Regex literals (`/pattern/flags`) are used as-is.
 fn regex_match(pattern: &str, raw: &str, ignore_case: bool) -> Option<HashMap<String, String>> {
     let regex = to_regex(pattern, ignore_case)?;
     let caps = regex.captures(raw)?;
 
     let mut result = HashMap::new();
-    // Numbered groups
     for (i, m) in caps.iter().enumerate() {
         if let Some(m) = m {
             result.insert(format!("${i}"), m.as_str().to_string());
         }
     }
-    // Named groups
     for name in regex.capture_names().flatten() {
         if let Some(m) = caps.name(name) {
             result.insert(name.to_string(), m.as_str().to_string());
@@ -345,10 +315,6 @@ fn regex_match(pattern: &str, raw: &str, ignore_case: bool) -> Option<HashMap<St
     Some(result)
 }
 
-/// Convert a pattern string to a compiled Regex.
-///
-/// If pattern is `/regex/flags`, extract and compile.
-/// Otherwise treat as exact-match: `^pattern$`.
 fn to_regex(pattern: &str, ignore_case: bool) -> Option<Regex> {
     if let Some(caps) = REGEX_LITERAL_PATTERN.captures(pattern) {
         let inner = caps.get(1)?.as_str();

@@ -1,9 +1,3 @@
-//! `check()` dispatcher — routes type validation to specialized validators.
-//!
-//! This module implements the central `check(value, type)` function that
-//! dispatches to `check_enum`, `check_list`, `check_number`, `check_pattern`,
-//! `check_directive`, or `check_keyword_type` based on the type definition.
-
 pub mod candidate;
 pub mod custom;
 pub mod directive;
@@ -16,9 +10,7 @@ pub mod types;
 
 use types::{CheckResult, Type};
 
-/// Validate a value against a type definition.
-///
-/// This is the main entry point corresponding to TS `check(value, type)`.
+/// The main entry point, corresponding to TS `check(value, type)`.
 ///
 /// # Examples
 ///
@@ -43,7 +35,6 @@ pub fn check(value: &str, type_def: &Type, ref_: Option<&str>) -> CheckResult {
     check_base(value, type_def, ref_)
 }
 
-/// Internal dispatcher that routes to specialized validators.
 fn check_base(value: &str, type_def: &Type, ref_: Option<&str>) -> CheckResult {
     match type_def {
         Type::Keyword(keyword) => keyword_type::check_keyword_type(value, keyword),

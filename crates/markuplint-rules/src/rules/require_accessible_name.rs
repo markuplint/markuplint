@@ -10,7 +10,6 @@ use crate::aria::is_exposed::is_exposed;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
-/// The `require-accessible-name` rule.
 pub struct RequireAccessibleName;
 
 impl Rule for RequireAccessibleName {
@@ -32,23 +31,20 @@ impl Rule for RequireAccessibleName {
                 continue;
             }
 
-            // Skip elements not exposed in the accessibility tree
             if !is_exposed(spec, arena, node_id, version) {
                 continue;
             }
 
-            // Skip if aria-label has a dynamic value (framework bindings)
+            // A framework binding may resolve to a name at runtime, so skip it.
             if has_dynamic_aria_label(el) {
                 continue;
             }
 
-            // Get computed role
             let computed = get_computed_role(spec, arena, node_id, version, false);
 
             if let Some(role) = &computed.role
                 && role.accessible_name_required
             {
-                // Check accessible name
                 let accname = get_accname(spec, arena, node_id, version);
                 if accname.name.is_empty() {
                     violations.push(Violation {
@@ -69,7 +65,6 @@ impl Rule for RequireAccessibleName {
     }
 }
 
-/// Parse ariaVersion from rule config options.
 fn parse_aria_version(config: &crate::rule::RuleConfig) -> ARIAVersion {
     config
         .options
@@ -83,7 +78,6 @@ fn parse_aria_version(config: &crate::rule::RuleConfig) -> ARIAVersion {
         })
 }
 
-/// Check if the element has aria-label with a dynamic value (framework binding).
 fn has_dynamic_aria_label(el: &markuplint_dom::node::ElementData) -> bool {
     use markuplint_core::mlast::MLASTAttr;
     el.attributes.iter().any(|attr| {

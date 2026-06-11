@@ -11,7 +11,6 @@ use markuplint_dom::node::DomNode;
 use super::helpers::{collect_text_content, flatten_text};
 use super::{AccnameResolver, AccnameResult, AccnameSource};
 
-/// Resolve label text for a labelable element.
 pub fn resolve_label_text(
     arena: &DomArena,
     node_id: NodeId,
@@ -48,7 +47,7 @@ pub fn resolve_label_text(
     Some(AccnameResult::new(flatten_text(&parts.join(" ")), AccnameSource::Label))
 }
 
-/// Collect text from a label element, excluding the labeled element itself.
+/// Excludes the labeled element itself (`exclude_id`) to avoid self-reference.
 fn collect_label_text(
     arena: &DomArena,
     label_id: NodeId,
@@ -97,7 +96,6 @@ fn collect_label_text(
     flatten_text(&parts.join(" "))
 }
 
-/// Find all labels associated with an element.
 fn resolve_labels(arena: &DomArena, node_id: NodeId, resolver: &dyn AccnameResolver) -> Vec<NodeId> {
     // Explicit: <label for="id">
     if let Some(el_id) = dom::get_attr_value(arena, node_id, "id")

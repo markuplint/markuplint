@@ -7,7 +7,6 @@ use markuplint_types::spec::types::MLMLSpec;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
-/// The `no-orphaned-end-tag` rule.
 pub struct NoOrphanedEndTag;
 
 impl Rule for NoOrphanedEndTag {

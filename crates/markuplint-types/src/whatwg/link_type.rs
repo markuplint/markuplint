@@ -1,12 +1,7 @@
-//! WHATWG link type validator.
-//!
-//! Validates `rel` attribute values against the WHATWG and Microformats registries.
 //! This boolean validator accepts keywords valid in any element context.
 //!
 //! <https://html.spec.whatwg.org/multipage/links.html#linkTypes>
 
-/// WHATWG-defined link type keywords.
-///
 /// <https://html.spec.whatwg.org/multipage/links.html#linkTypes>
 const WHATWG_KEYWORDS: &[&str] = &[
     "alternate",
@@ -290,11 +285,6 @@ fn matches_keyword(token: &str, list: &[&str]) -> bool {
     list.iter().any(|keyword| token.eq_ignore_ascii_case(keyword))
 }
 
-/// Validates a link type (`rel`) attribute value.
-///
-/// Returns `true` if all space-separated tokens are valid link type keywords
-/// (WHATWG or Microformats), none are excluded, and there are no duplicates.
-///
 /// This is an element-agnostic boolean check. Element-specific context
 /// filtering (link vs a/area vs form) is deferred to error-reporting validators.
 ///
@@ -315,7 +305,6 @@ pub fn is_link_type(value: &str) -> bool {
         return false;
     }
 
-    // Check for case-insensitive duplicates
     for i in 0..tokens.len() {
         for j in (i + 1)..tokens.len() {
             if tokens[i].eq_ignore_ascii_case(tokens[j]) {
@@ -325,12 +314,10 @@ pub fn is_link_type(value: &str) -> bool {
     }
 
     for token in &tokens {
-        // Reject excluded keywords
         if matches_keyword(token, EXCLUDED_KEYWORDS) {
             return false;
         }
 
-        // Must be a valid WHATWG or Microformats keyword
         if !matches_keyword(token, WHATWG_KEYWORDS) && !matches_keyword(token, MICROFORMATS_KEYWORDS) {
             return false;
         }

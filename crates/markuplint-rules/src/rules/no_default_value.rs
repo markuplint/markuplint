@@ -8,7 +8,6 @@ use markuplint_types::spec::types::MLMLSpec;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
-/// The `no-default-value` rule.
 pub struct NoDefaultValue;
 
 impl Rule for NoDefaultValue {
@@ -33,8 +32,7 @@ impl Rule for NoDefaultValue {
 
                 let attr_name_lower = html_attr.node_name.to_ascii_lowercase();
 
-                // Get default value from element-specific or global attribute spec
-                // Element-specific attrs may have the name but no defaultValue — fall back
+                // Element-specific attrs may have the name but no defaultValue — fall back to global.
                 let default_value = match attr_specs.get(attr_name_lower.as_str()) {
                     Some(attr_spec) if attr_spec.default_value.is_some() => attr_spec.default_value.as_deref(),
                     _ => get_global_attr_default(spec, &el.base.node_name, &attr_name_lower),
@@ -43,7 +41,6 @@ impl Rule for NoDefaultValue {
                     continue;
                 };
 
-                // Case-insensitive comparison of attribute value against default
                 if html_attr.value.raw.eq_ignore_ascii_case(default_value) {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
@@ -63,7 +60,6 @@ impl Rule for NoDefaultValue {
     }
 }
 
-/// Get the default value of a global attribute from the raw JSON spec.
 fn get_global_attr_default<'a>(spec: &'a MLMLSpec, element_name: &str, attr_name: &str) -> Option<&'a str> {
     let el = get_spec(spec, element_name)?;
     for category in el.global_attrs.keys() {

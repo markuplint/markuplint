@@ -14,7 +14,6 @@ use crate::violation::Violation;
 #[cfg(test)]
 pub(crate) mod tests;
 
-/// The `attr-duplication` rule.
 pub struct AttrDuplication;
 
 impl Rule for AttrDuplication {

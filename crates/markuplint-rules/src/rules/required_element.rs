@@ -9,7 +9,6 @@ use markuplint_types::spec::types::MLMLSpec;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
-/// The `required-element` rule.
 pub struct RequiredElement;
 
 impl Rule for RequiredElement {
@@ -33,7 +32,7 @@ impl Rule for RequiredElement {
                 if node_config.disabled {
                     continue;
                 }
-                // Skip if same as global config (already checked above)
+                // Same config object as the global check above; skip to avoid double-reporting.
                 if std::ptr::eq(node_config, global) {
                     continue;
                 }
@@ -56,7 +55,6 @@ use crate::rule::RuleConfig;
 use markuplint_dom::arena::NodeId;
 use markuplint_dom::node::ElementData;
 
-/// Check required elements either at document level or within a specific parent element.
 fn check_required_elements(
     rule_id: &str,
     arena: &DomArena,
@@ -87,7 +85,7 @@ fn check_required_elements(
         };
 
         let found = if let Some((parent_id, _)) = scope {
-            // Per-node: check children of the parent element
+            // Scoped check: only the parent element's children qualify.
             arena.children_of(parent_id).is_some_and(|children| {
                 children.iter().any(|&child_id| {
                     let Some(child_el) = arena.get(child_id).and_then(|n| n.as_element()) else {
@@ -100,7 +98,7 @@ fn check_required_elements(
                 })
             })
         } else {
-            // Document-level: check all elements in document
+            // Document-level check: any element in the document qualifies.
             arena.elements().any(|(node_id, el)| {
                 if ignore_omitted && el.is_ghost {
                     return false;

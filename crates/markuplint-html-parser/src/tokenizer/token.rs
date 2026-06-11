@@ -2,8 +2,7 @@
 
 use crate::input::Span;
 
-/// A raw attribute as parsed by the tokenizer, with span information
-/// for each sub-part (spaces, name, equal sign, quotes, value).
+/// Carries a span for each sub-part to support MLAST decomposition.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct RawAttribute {
     /// Whitespace before the attribute name.
@@ -28,7 +27,6 @@ pub struct RawAttribute {
     pub quote_end: Option<Span>,
 }
 
-/// A token emitted by the tokenizer.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Token {
     Doctype {

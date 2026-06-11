@@ -1,10 +1,7 @@
-//! List type validation.
-
 use super::types::{
     CheckResult, ListNumber, ListType, Reason, Separator, UnmatchedOpts, matched, unmatched, unmatched_with,
 };
 
-/// Validate a separated list of tokens.
 #[must_use]
 pub fn check_list<F>(value: &str, type_def: &ListType, check_token: F) -> CheckResult
 where
@@ -12,7 +9,6 @@ where
 {
     let tokens = split_tokens(value, &type_def.separator);
 
-    // Check for empty input
     if tokens.is_empty() {
         return if type_def.allow_empty {
             matched()
@@ -21,7 +17,6 @@ where
         };
     }
 
-    // Check token count
     if let Some(ref number) = type_def.number {
         let count = tokens.len();
         match number {
@@ -40,7 +35,6 @@ where
         }
     }
 
-    // Check uniqueness
     if type_def.unique {
         for i in 0..tokens.len() {
             for j in (i + 1)..tokens.len() {
@@ -63,7 +57,6 @@ where
         }
     }
 
-    // Check each token
     for token in &tokens {
         if token.is_empty() {
             if type_def.allow_empty {
@@ -81,7 +74,6 @@ where
     matched()
 }
 
-/// Split a value into tokens based on the separator.
 fn split_tokens<'a>(value: &'a str, separator: &Separator) -> Vec<&'a str> {
     match separator {
         Separator::Space => value.split_ascii_whitespace().filter(|t| !t.is_empty()).collect(),

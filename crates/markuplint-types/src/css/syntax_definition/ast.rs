@@ -1,5 +1,3 @@
-//! AST types for CSS Value Definition Syntax.
-
 use std::fmt;
 
 /// A node in the CSS Value Definition Syntax AST.

@@ -10,26 +10,17 @@ use markuplint_dom::node::{DocumentData, DomNode, ElementData, NodeBase, PSBlock
 
 use super::child_node::{ChildNodeInfo, ChildNodeKind};
 
-/// Result of building a minimal arena from child nodes.
 pub struct ArenaBridge {
-    /// The constructed arena.
     pub arena: markuplint_dom::arena::DomArena,
-    /// `NodeId` of the parent element.
     pub parent_id: NodeId,
-    /// `NodeId`s corresponding to each child in the input slice (same order).
+    /// `NodeId`s corresponding to each child in the input slice, in the same order.
     pub child_ids: Vec<NodeId>,
 }
 
-/// Build a minimal `DomArena` from a list of child nodes.
-///
-/// Creates a document root, a parent element (for context), and child
-/// element/text nodes with proper parent/child/sibling links.
-/// Recursively builds `ChildNodeInfo.children` for `:has()` support.
 pub fn build_arena(parent_tag: &str, children: &[ChildNodeInfo]) -> ArenaBridge {
     let mut builder = DomArenaBuilder::new();
     let mut next_id: usize = 0;
 
-    // Document root (id=0)
     let doc_id = builder.push(DomNode::Document(DocumentData {
         id: 0,
         raw: String::new(),
@@ -39,7 +30,6 @@ pub fn build_arena(parent_tag: &str, children: &[ChildNodeInfo]) -> ArenaBridge 
     }));
     next_id += 1;
 
-    // Parent element (id=1)
     let parent_id = builder.push(DomNode::Element(ElementData {
         base: make_base(next_id, parent_tag, Some(doc_id), 0),
         namespace: NamespaceURI::XHTML,
@@ -56,19 +46,15 @@ pub fn build_arena(parent_tag: &str, children: &[ChildNodeInfo]) -> ArenaBridge 
     }));
     next_id += 1;
 
-    // Build child nodes recursively
     let child_ids = build_children(&mut builder, &mut next_id, children, parent_id, 1);
 
-    // Wire parent's children list
     if let Some(DomNode::Element(data)) = builder.get_mut(parent_id) {
         data.base.children.clone_from(&child_ids);
     }
-    // Wire document → parent
     if let Some(DomNode::Document(data)) = builder.get_mut(doc_id) {
         data.children = vec![parent_id];
     }
 
-    // Wire sibling links for children
     wire_siblings(&mut builder, &child_ids);
 
     ArenaBridge {
@@ -146,7 +132,7 @@ fn build_children(
             }));
             *next_id += 1;
 
-            // Recurse for :has() descendants
+            // Descendants are needed so `:has()` can match against them.
             if !child.child_nodes.is_empty() {
                 let grandchild_ids = build_children(builder, next_id, &child.child_nodes, eid, depth + 1);
                 wire_siblings(builder, &grandchild_ids);
@@ -163,7 +149,6 @@ fn build_children(
             *next_id += 1;
             tid
         } else {
-            // PreprocessorBlock
             let pid = builder.push(DomNode::PSBlock(PSBlockData {
                 base: make_base(*next_id, "#ps:block", Some(parent_id), depth),
                 is_fragment: false,

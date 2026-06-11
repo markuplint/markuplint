@@ -12,7 +12,6 @@ use markuplint_types::spec::types::MLMLSpec;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
-/// The `table-row-column-alignment` rule.
 pub struct TableRowColumnAlignment;
 
 /// Cell type in the grid model.
@@ -30,7 +29,6 @@ enum CellType {
     Overlap,
 }
 
-/// Find child element `NodeId`s matching any of the given tag names (case-insensitive).
 fn find_child_elements_by_tags(arena: &DomArena, parent_id: NodeId, tags: &[&str]) -> Vec<NodeId> {
     let Some(node) = arena.get(parent_id) else {
         return vec![];
@@ -48,7 +46,6 @@ fn find_child_elements_by_tags(arena: &DomArena, parent_id: NodeId, tags: &[&str
         .collect()
 }
 
-/// Get an attribute value from an element's attributes by name (case-insensitive).
 fn get_attr_value(arena: &DomArena, el_id: NodeId, attr_name: &str) -> Option<String> {
     let el = arena.get(el_id)?.as_element()?;
     for attr in &el.attributes {
@@ -61,7 +58,6 @@ fn get_attr_value(arena: &DomArena, el_id: NodeId, attr_name: &str) -> Option<St
     None
 }
 
-/// Parse an attribute as a positive integer, defaulting to `default_val`.
 fn parse_span_attr(arena: &DomArena, el_id: NodeId, attr_name: &str, default_val: usize) -> usize {
     get_attr_value(arena, el_id, attr_name)
         .and_then(|v| v.parse::<usize>().ok())
@@ -69,7 +65,6 @@ fn parse_span_attr(arena: &DomArena, el_id: NodeId, attr_name: &str, default_val
         .unwrap_or(default_val)
 }
 
-/// Section-separated table rows.
 struct TableSections {
     thead: Vec<NodeId>,
     tbody: Vec<NodeId>,
@@ -86,8 +81,7 @@ impl TableSections {
     }
 }
 
-/// Collect `<tr>` rows within a table, separated by section (thead/tbody/tfoot).
-/// Direct `<tr>` children are treated as tbody rows (matching TS behavior).
+/// Direct `<tr>` children are treated as `tbody` rows, matching TS behavior.
 fn collect_sections(arena: &DomArena, table_id: NodeId) -> TableSections {
     let mut sections = TableSections {
         thead: Vec::new(),
@@ -128,16 +122,11 @@ fn collect_sections(arena: &DomArena, table_id: NodeId) -> TableSections {
     sections
 }
 
-/// Build a 2D grid from table rows, returning `(grid, row_node_ids)`.
-///
-/// The grid accounts for `colspan` and `rowspan` attributes.
-///
 /// Follows WHATWG §4.9.12.1 "Forming a table": rowspan extends `y_height`
 /// beyond the number of actual `<tr>` elements when the span overflows.
 fn build_grid(arena: &DomArena, rows: &[NodeId]) -> Vec<Vec<CellType>> {
     let mut grid: Vec<Vec<CellType>> = Vec::with_capacity(rows.len());
 
-    // Initialize rows for actual <tr> elements
     for _ in 0..rows.len() {
         grid.push(Vec::new());
     }
@@ -150,7 +139,7 @@ fn build_grid(arena: &DomArena, rows: &[NodeId]) -> Vec<Vec<CellType>> {
             let colspan = parse_span_attr(arena, cell_id, "colspan", 1);
             let rowspan = parse_span_attr(arena, cell_id, "rowspan", 1);
 
-            // Find next available column (skip over rowspan-occupied cells)
+            // Columns already occupied by a rowspan from an earlier row are skipped.
             while col_idx < grid[row_idx].len() && grid[row_idx][col_idx] == CellType::RowSpan {
                 col_idx += 1;
             }
@@ -159,7 +148,6 @@ fn build_grid(arena: &DomArena, rows: &[NodeId]) -> Vec<Vec<CellType>> {
                 let actual_col = col_idx + c;
                 let current_row_len = grid[row_idx].len();
 
-                // Place cell in current row
                 let cell_type = if c == 0 { CellType::Cell } else { CellType::ColSpan };
                 if actual_col < current_row_len {
                     match grid[row_idx][actual_col] {
@@ -185,7 +173,6 @@ fn build_grid(arena: &DomArena, rows: &[NodeId]) -> Vec<Vec<CellType>> {
                     grid.push(Vec::new());
                 }
 
-                // Place rowspan continuations in subsequent rows
                 for r in 1..rowspan {
                     let target_row = row_idx + r;
                     while grid[target_row].len() <= actual_col {
@@ -202,10 +189,8 @@ fn build_grid(arena: &DomArena, rows: &[NodeId]) -> Vec<Vec<CellType>> {
     grid
 }
 
-/// Determine the base (expected) column count from a grid slice.
-///
-/// For grids with 3+ rows, picks the row length closest to the average.
-/// Otherwise uses the first row's length.
+/// For grids with 3+ rows, picks the row length closest to the average;
+/// otherwise uses the first row's length.
 fn get_base_col_length_from_grid(grid: &[Vec<CellType>]) -> usize {
     if grid.is_empty() {
         return 0;
@@ -223,7 +208,6 @@ fn get_base_col_length_from_grid(grid: &[Vec<CellType>]) -> usize {
     }
 }
 
-/// Find the position of a specific attribute on an element.
 fn find_attr_position(el: &markuplint_dom::node::ElementData, attr_name: &str) -> Option<(u32, u32, String)> {
     for attr in &el.attributes {
         if let markuplint_core::mlast::MLASTAttr::HTMLAttr(html_attr) = attr
@@ -235,17 +219,15 @@ fn find_attr_position(el: &markuplint_dom::node::ElementData, attr_name: &str) -
     None
 }
 
-/// Find the first cell that extends past `base_col_length` in a grid row.
-/// Returns `(line, col, raw)` of the unexpected cell element.
+/// Returns `(line, col, raw)` of the first cell extending past `base_col_length`.
 fn find_unexpected_cell(
     arena: &DomArena,
     cells: &[NodeId],
     grid_row: &[CellType],
     base_col_length: usize,
 ) -> Option<(u32, u32, String)> {
-    // Walk through grid columns, tracking which cell we're in.
-    // When we cross base_col_length with a Cell (not RowSpan/ColSpan),
-    // that's the unexpected cell.
+    // Only a real `Cell` (not a `RowSpan`/`ColSpan` continuation) past
+    // `base_col_length` counts as the unexpected cell.
     let mut cell_idx = 0;
     for (col, ct) in grid_row.iter().enumerate() {
         match ct {
@@ -264,10 +246,8 @@ fn find_unexpected_cell(
     None
 }
 
-/// Determine the base column count, using section priority: thead > tfoot > tbody.
-/// Matches TS `Grid.getBaseColLength()`.
+/// Section priority `thead > tfoot > tbody`, matching TS `Grid.getBaseColLength()`.
 fn get_section_base_col_length(arena: &DomArena, sections: &TableSections) -> usize {
-    // Priority: thead > tfoot > tbody (matching TS)
     if !sections.thead.is_empty() {
         let grid = build_grid(arena, &sections.thead);
         return get_base_col_length_from_grid(&grid);
@@ -290,7 +270,6 @@ impl Rule for TableRowColumnAlignment {
         let config = config.global();
         let mut violations = Vec::new();
 
-        // Find all <table> elements
         for i in 0..arena.len() {
             let Some(DomNode::Element(el)) = arena.get(i) else {
                 continue;
@@ -319,7 +298,7 @@ impl Rule for TableRowColumnAlignment {
                     for &cell_id in &cells {
                         let rowspan = parse_span_attr(arena, cell_id, "rowspan", 1);
                         if rowspan > 1 && row_idx + rowspan > num_section_rows {
-                            // Find the rowspan attribute node for precise reporting
+                            // Point at the `rowspan` attribute itself for a precise location.
                             if let Some(cell_el) = arena.get(cell_id).and_then(|n| n.as_element()) {
                                 let (line, col, raw) = find_attr_position(cell_el, "rowspan").unwrap_or((
                                     cell_el.base.line,
@@ -342,9 +321,8 @@ impl Rule for TableRowColumnAlignment {
                 }
             }
 
-            // Build grids per section (TS builds separate grids per thead/tbody/tfoot
-            // so rowspan doesn't cross section boundaries).
-            // Check overlaps and column misalignment per section.
+            // Grids are built per section (as in TS) so a rowspan cannot cross a
+            // thead/tbody/tfoot boundary.
             let base_col_length = get_section_base_col_length(arena, &sections);
             if base_col_length == 0 {
                 continue;
@@ -357,14 +335,12 @@ impl Rule for TableRowColumnAlignment {
                 }
                 let grid = build_grid(arena, section_rows);
 
-                // Check for overlaps
                 if grid.iter().any(|row| row.contains(&CellType::Overlap)) {
                     has_table_overlap = true;
                     break;
                 }
 
-                // Check each row for column count mismatch
-                // Only check actual rows (skip virtual rows from rowspan overflow)
+                // Virtual rows added for rowspan overflow are not real `<tr>` and are skipped.
                 for (row_idx, row) in grid.iter().enumerate() {
                     if row_idx >= section_rows.len() {
                         break; // Virtual row from rowspan overflow

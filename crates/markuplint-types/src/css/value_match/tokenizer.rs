@@ -56,16 +56,13 @@ impl<'a> Tokenizer<'a> {
         let b = self.peek()?;
 
         match b {
-            // Whitespace
             b' ' | b'\t' | b'\n' | b'\r' | 0x0C => {
                 self.consume_whitespace();
                 Some(Token::Whitespace)
             }
 
-            // String
             b'"' | b'\'' => Some(self.consume_string(b)),
 
-            // Hash
             b'#' => {
                 self.advance();
                 if self.peek().is_some_and(|b| is_name_code_point(b) || b == b'\\') {
@@ -76,7 +73,6 @@ impl<'a> Tokenizer<'a> {
                 }
             }
 
-            // Parentheses and brackets
             b'(' => {
                 self.advance();
                 Some(Token::LeftParen)
@@ -102,7 +98,6 @@ impl<'a> Tokenizer<'a> {
                 Some(Token::RightBrace)
             }
 
-            // Comma, colon, semicolon
             b',' => {
                 self.advance();
                 Some(Token::Comma)
@@ -120,7 +115,6 @@ impl<'a> Tokenizer<'a> {
             #[allow(clippy::match_same_arms)] // Cannot merge: intermediate arms for +/- as delimiters
             b'+' | b'-' if self.starts_number() => Some(self.consume_numeric()),
 
-            // Plus/minus as delimiters
             b'+' => {
                 self.advance();
                 Some(Token::Delim('+'))
@@ -139,7 +133,6 @@ impl<'a> Tokenizer<'a> {
                 Some(Token::Delim('.'))
             }
 
-            // At-keyword
             b'@' => {
                 self.advance();
                 if self.starts_identifier_at_current() {
@@ -150,16 +143,13 @@ impl<'a> Tokenizer<'a> {
                 }
             }
 
-            // Backslash (escape)
             b'\\' if self.is_valid_escape() => Some(self.consume_ident_like()),
 
-            // Digit
             b'0'..=b'9' => Some(self.consume_numeric()),
 
             // Ident-start (ASCII letters, underscore, or non-ASCII/UTF-8 multibyte)
             b'a'..=b'z' | b'A'..=b'Z' | b'_' | 0x80.. => Some(self.consume_ident_like()),
 
-            // Anything else is a delimiter
             _ => {
                 self.advance();
                 Some(Token::Delim(b as char))
@@ -196,7 +186,7 @@ impl<'a> Tokenizer<'a> {
     }
 
     fn consume_string(&mut self, quote: u8) -> Token {
-        self.advance(); // skip opening quote
+        self.advance();
         let mut value = std::string::String::new();
         loop {
             match self.advance() {
@@ -215,11 +205,9 @@ impl<'a> Tokenizer<'a> {
                     }
                 }
                 Some(b) => {
-                    // Handle UTF-8 multibyte
                     if b < 0x80 {
                         value.push(b as char);
                     } else {
-                        // Re-read as UTF-8 char
                         self.pos -= 1;
                         let ch = self.consume_utf8_char();
                         value.push(ch);
@@ -295,7 +283,7 @@ impl<'a> Tokenizer<'a> {
                     }
                 }
                 Some(b'\\') if self.is_valid_escape() => {
-                    self.advance(); // skip backslash
+                    self.advance();
                     let ch = self.consume_escape();
                     name.push(ch);
                 }
@@ -325,31 +313,27 @@ impl<'a> Tokenizer<'a> {
     fn consume_number(&mut self) -> f64 {
         let start = self.pos;
 
-        // Optional sign
         if matches!(self.peek(), Some(b'+' | b'-')) {
             self.advance();
         }
 
-        // Digits before decimal point
         while matches!(self.peek(), Some(b'0'..=b'9')) {
             self.advance();
         }
 
-        // Decimal point + digits
         if self.peek() == Some(b'.') && matches!(self.peek_at(1), Some(b'0'..=b'9')) {
-            self.advance(); // skip '.'
+            self.advance();
             while matches!(self.peek(), Some(b'0'..=b'9')) {
                 self.advance();
             }
         }
 
-        // Scientific notation
         if matches!(self.peek(), Some(b'e' | b'E')) {
             let next = self.peek_at(1);
             if matches!(next, Some(b'0'..=b'9'))
                 || (matches!(next, Some(b'+' | b'-')) && matches!(self.peek_at(2), Some(b'0'..=b'9')))
             {
-                self.advance(); // skip 'e'/'E'
+                self.advance();
                 if matches!(self.peek(), Some(b'+' | b'-')) {
                     self.advance();
                 }
@@ -367,7 +351,7 @@ impl<'a> Tokenizer<'a> {
         let name = self.consume_name();
 
         if self.peek() == Some(b'(') {
-            self.advance(); // skip '('
+            self.advance();
             Token::Function(name)
         } else {
             Token::Ident(name)
@@ -402,12 +386,10 @@ impl<'a> Tokenizer<'a> {
         }
     }
 
-    /// Check if the next characters form the start of an identifier.
     fn starts_identifier_at_current(&self) -> bool {
         self.starts_identifier()
     }
 
-    /// Check if current + next form a valid escape sequence.
     fn is_valid_escape(&self) -> bool {
         self.peek() == Some(b'\\') && self.peek_at(1).is_some_and(|b| b != b'\n' && b != b'\r')
     }

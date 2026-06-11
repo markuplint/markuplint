@@ -199,8 +199,6 @@ impl TreeBuilder<'_> {
         }
     }
 
-    /// Find the furthest block: the first special element in the stack
-    /// above the given position.
     fn find_furthest_block(&self, format_pos: usize) -> Option<NodeId> {
         let stack_len = self.open_elements.len();
         for i in (format_pos + 1)..stack_len {
@@ -217,7 +215,6 @@ impl TreeBuilder<'_> {
         None
     }
 
-    /// Clone an element node in the arena (same tag, namespace, attributes).
     fn clone_element(&mut self, node_id: NodeId) -> NodeId {
         let node = self.arena.get(node_id);
         let span = node.span;

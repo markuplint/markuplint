@@ -1,7 +1,5 @@
-//! Implementation of `AriaResolver` for the selector matcher.
-//!
-//! Bridges `markuplint-selector`'s `AriaResolver` trait to
-//! the ARIA computation functions in this crate.
+//! Implements `markuplint-selector`'s `AriaResolver` trait here (rather than in
+//! the selector crate) so the selector crate need not depend on this one.
 
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_selector::aria_resolver::AriaResolver;
@@ -11,10 +9,6 @@ use markuplint_types::spec::types::MLMLSpec;
 use crate::aria::accname;
 use crate::aria::computed_role;
 
-/// ARIA resolver backed by spec data.
-///
-/// Holds a reference to the spec and delegates to
-/// `get_computed_role` and `get_accname`.
 pub struct SpecAriaResolver<'a> {
     pub spec: &'a MLMLSpec,
 }

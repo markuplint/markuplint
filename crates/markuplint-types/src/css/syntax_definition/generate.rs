@@ -1,8 +1,5 @@
-//! AST-to-string generator for CSS Value Definition Syntax.
-
 use super::ast::{Combinator, MultiplierInfo, SyntaxNode, TypeRange};
 
-/// Generate a CSS Value Definition Syntax string from an AST node.
 #[must_use]
 pub fn generate(node: &SyntaxNode) -> String {
     generate_node(node)

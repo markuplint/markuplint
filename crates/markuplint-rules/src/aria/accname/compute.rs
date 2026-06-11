@@ -10,7 +10,6 @@ use super::element_names;
 use super::helpers;
 use super::{AccnameResolver, AccnameResult, AccnameSource};
 
-/// Compute accessible name (public entry).
 pub fn compute_accessible_name(
     arena: &DomArena,
     node_id: NodeId,
@@ -21,8 +20,6 @@ pub fn compute_accessible_name(
     compute_accessible_name_internal(arena, node_id, resolver, false, &visited, computing)
 }
 
-/// Internal computation with recursion state.
-///
 /// Implements `AccName` 1.2 §4.3.2 Steps 2A through 2I.
 pub fn compute_accessible_name_internal(
     arena: &DomArena,

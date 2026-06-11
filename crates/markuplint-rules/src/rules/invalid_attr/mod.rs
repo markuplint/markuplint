@@ -25,10 +25,8 @@ use crate::violation::Violation;
 #[cfg(test)]
 mod tests;
 
-/// The `invalid-attr` rule.
 pub struct InvalidAttr;
 
-/// Maximum Levenshtein distance for typo suggestions.
 const MAX_TYPO_DISTANCE: usize = 2;
 
 impl Rule for InvalidAttr {
@@ -124,19 +122,16 @@ enum EntryCheckResult {
     Violated(Violation),
 }
 
-/// A disallowed attribute entry with value constraint.
 struct DisallowEntry {
     name: String,
     constraint: ValueConstraint,
 }
 
-/// An allowed attribute entry with value constraint.
 struct AllowEntry {
     name: String,
     constraint: ValueConstraint,
 }
 
-/// Parsed rule options.
 struct ParsedOptions {
     allow_attrs: Vec<String>,
     allow_entries: Vec<AllowEntry>,
@@ -165,7 +160,6 @@ impl ParsedOptions {
     }
 }
 
-/// Context for checking a single attribute.
 struct AttrCheckContext<'a> {
     spec: &'a MLMLSpec,
     arena: &'a DomArena,
@@ -178,7 +172,7 @@ struct AttrCheckContext<'a> {
     severity: &'a crate::violation::Severity,
 }
 
-/// Create a violation for an attribute (raw = attribute name only).
+/// Reports with `raw` set to the attribute name only.
 fn attr_violation(
     ctx: &AttrCheckContext<'_>,
     html_attr: &markuplint_core::mlast::MLASTHTMLAttr,
@@ -196,8 +190,8 @@ fn attr_violation(
     }
 }
 
-/// Create a violation for an attribute (raw = full attribute text).
-/// Used for noUse flags where TS reports the entire attribute.
+/// Reports with `raw` set to the full attribute text, used for noUse flags
+/// where TS reports the entire attribute.
 fn attr_full_violation(
     ctx: &AttrCheckContext<'_>,
     html_attr: &markuplint_core::mlast::MLASTHTMLAttr,
@@ -294,18 +288,15 @@ fn check_attr(html_attr: &markuplint_core::mlast::MLASTHTMLAttr, ctx: &AttrCheck
     check_spec_validation(name, &name_lower, html_attr, ctx)
 }
 
-/// Check if attribute is in allow list and validate its value constraint.
 fn check_allow(
     name: &str,
     html_attr: &markuplint_core::mlast::MLASTHTMLAttr,
     ctx: &AttrCheckContext<'_>,
 ) -> EntryCheckResult {
-    // Check simple allow attrs (no constraint)
     if ctx.opts.allow_attrs.iter().any(|a| a.eq_ignore_ascii_case(name)) {
         return EntryCheckResult::Allowed;
     }
 
-    // Check allow entries with constraints
     for entry in &ctx.opts.allow_entries {
         if !entry.name.eq_ignore_ascii_case(name) {
             continue;
@@ -359,13 +350,12 @@ fn check_allow(
     EntryCheckResult::NotInList
 }
 
-/// Check if attribute is in disallow list.
 fn check_disallow(
     name: &str,
     html_attr: &markuplint_core::mlast::MLASTHTMLAttr,
     ctx: &AttrCheckContext<'_>,
 ) -> EntryCheckResult {
-    // Check simple disallow attrs (always disallowed, equivalent to constraint=Any)
+    // A bare disallow attr is always disallowed (equivalent to `constraint = Any`).
     if ctx.opts.disallow_attrs.iter().any(|a| a.eq_ignore_ascii_case(name)) {
         return EntryCheckResult::Violated(attr_violation(
             ctx,
@@ -374,7 +364,6 @@ fn check_disallow(
         ));
     }
 
-    // Check disallow entries with constraints
     for entry in &ctx.opts.disallow_entries {
         if !entry.name.eq_ignore_ascii_case(name) {
             continue;
@@ -427,14 +416,13 @@ fn check_disallow(
     EntryCheckResult::NotInList
 }
 
-/// Run spec-based validation: existence, case-sensitive name, noUse, condition.
 fn check_spec_validation(
     name: &str,
     name_lower: &str,
     html_attr: &markuplint_core::mlast::MLASTHTMLAttr,
     ctx: &AttrCheckContext<'_>,
 ) -> Option<Violation> {
-    // Look up attribute in spec (case-insensitive for SVG mixed-case attrs like viewBox)
+    // Case-insensitive lookup so SVG mixed-case attrs like `viewBox` are found.
     let attr_spec = ctx.attr_specs.get(name_lower).copied().or_else(|| {
         ctx.attr_specs
             .iter()
@@ -443,7 +431,6 @@ fn check_spec_validation(
     });
 
     if let Some(spec) = attr_spec {
-        // Attribute exists in spec — check case-sensitive name
         if let Some(spec_name) = &spec.name {
             let has_uppercase = spec_name.chars().any(|c| c.is_ascii_uppercase());
             if has_uppercase && name != spec_name {
@@ -455,7 +442,6 @@ fn check_spec_validation(
             }
         }
 
-        // Check noUse flag (deprecated/disallowed in spec)
         if spec.no_use == Some(true) {
             return Some(attr_full_violation(
                 ctx,
@@ -464,7 +450,6 @@ fn check_spec_validation(
             ));
         }
 
-        // Check condition (attribute only valid under certain CSS selector conditions)
         if spec
             .condition
             .as_ref()
@@ -477,9 +462,8 @@ fn check_spec_validation(
             ));
         }
 
-        // Validate attribute value against spec type.
-        // If element-specific attr has no type defined, fall back to global attr type
-        // (e.g., referrerpolicy on <a> has type in #HTMLLinkAndFetchingAttrs category).
+        // An element-specific attr with no type falls back to the global attr type
+        // (e.g. `referrerpolicy` on `<a>` is typed in the `#HTMLLinkAndFetchingAttrs` category).
         let effective_type = if spec.attr_type.is_null()
             || (spec.attr_type.is_object() && spec.attr_type.as_object().unwrap().is_empty())
         {
@@ -494,9 +478,7 @@ fn check_spec_validation(
         return None;
     }
 
-    // Check if it's a global attribute
     if ctx.global_attr_names.iter().any(|a| a == name_lower) {
-        // Check noUse/condition for global attrs
         let (no_use, condition) = check_global_attr_flags(ctx.spec, ctx.el_name, name_lower);
         if no_use {
             return Some(attr_full_violation(
@@ -515,7 +497,6 @@ fn check_spec_validation(
                 format!("The \"{name}\" attribute is disallowed"),
             ));
         }
-        // Validate value against global attr type
         if let Some(type_val) = get_global_attr_type(ctx.spec, ctx.el_name, name_lower)
             && let Some(violation) = check_attr_value_type(name, html_attr, &type_val, ctx)
         {
@@ -524,7 +505,6 @@ fn check_spec_validation(
         return None;
     }
 
-    // Check allowToAddPropertiesForPretender option (default: true)
     if ctx.opts.allow_to_add_properties_for_pretender
         && get_spec(ctx.spec, ctx.el_name).is_some_and(|s| s.possible_to_add_properties == Some(true))
     {
@@ -539,7 +519,6 @@ fn check_spec_validation(
         return None;
     }
 
-    // Attribute not found — report as unknown with typo suggestion
     let mut known: Vec<&str> = ctx.attr_specs.keys().copied().collect();
     for ga in ctx.global_attr_names {
         known.push(ga.as_str());
@@ -552,7 +531,6 @@ fn check_spec_validation(
     Some(attr_violation(ctx, html_attr, message))
 }
 
-/// Check if an element matches an `AttributeCondition` (CSS selector).
 fn matches_condition(condition: &AttributeCondition, arena: &DomArena, node_id: NodeId, spec: &MLMLSpec) -> bool {
     let selector_str = match condition {
         AttributeCondition::Single(s) => s.clone(),
@@ -566,7 +544,6 @@ fn matches_condition(condition: &AttributeCondition, arena: &DomArena, node_id: 
     markuplint_selector::matcher::matches(&sel, arena, node_id, Some(node_id), Some(spec), None)
 }
 
-/// Check noUse and condition for a global attribute by looking up the raw JSON value.
 fn check_global_attr_flags(spec: &MLMLSpec, element_name: &str, attr_name: &str) -> (bool, Option<AttributeCondition>) {
     let Some(el) = get_spec(spec, element_name) else {
         return (false, None);
@@ -595,11 +572,10 @@ fn check_global_attr_flags(spec: &MLMLSpec, element_name: &str, attr_name: &str)
 /// that the parser may include in unquoted attribute values.
 fn get_clean_value(html_attr: &markuplint_core::mlast::MLASTHTMLAttr) -> &str {
     let raw = &html_attr.value.raw;
-    // If the attribute has quotes, the value is already clean
+    // A quoted value is already clean; only unquoted values pick up trailing `>`/whitespace.
     if !html_attr.start_quote.raw.is_empty() {
         return raw;
     }
-    // Unquoted: strip trailing `>` and whitespace
     raw.trim_end_matches('>').trim_end()
 }
 
@@ -762,11 +738,9 @@ fn generate_type_error_message(
             } else {
                 format!("the \"{attr_name}\" attribute expects {desc}")
             };
-            // Append candidate suggestion if present
             if let Some(candidate) = &info.candidate {
                 msg = format!("{msg}. Did you mean \"{candidate}\"?");
             }
-            // Append reference URL if present
             if let Some(extra) = &info.extra {
                 msg = format!("{msg} ({extra})", extra = extra.value);
             }
@@ -967,7 +941,6 @@ fn parse_regex_pattern(pattern: &str) -> Option<Regex> {
     }
 }
 
-/// Check if a value matches a simple type constraint.
 fn check_type_constraint(value: &str, type_name: &str) -> bool {
     match type_name {
         "Int" | "Integer" => value.parse::<i64>().is_ok(),
@@ -978,7 +951,6 @@ fn check_type_constraint(value: &str, type_name: &str) -> bool {
     }
 }
 
-/// Parse the `ignoreAttrNamePrefix` option (string or string[]).
 fn parse_ignore_prefixes(options: &serde_json::Value) -> Vec<String> {
     match options.get("ignoreAttrNamePrefix") {
         Some(serde_json::Value::String(s)) => vec![s.to_ascii_lowercase()],
@@ -1019,7 +991,6 @@ fn get_global_attr_names(spec: &MLMLSpec, element_name: &str) -> Vec<String> {
     names
 }
 
-/// Find the closest matching attribute name by Levenshtein distance.
 fn find_closest_match<'a>(name: &str, candidates: &[&'a str]) -> Option<&'a str> {
     let mut best: Option<(&str, usize)> = None;
 
@@ -1040,8 +1011,7 @@ fn find_closest_match<'a>(name: &str, candidates: &[&'a str]) -> Option<&'a str>
     best.map(|(name, _)| name)
 }
 
-/// Convert a byte offset within a string to (`extra_lines`, `col_within_line`).
-/// Used for multi-line attribute values where the type checker returns an offset.
+/// Used for multi-line attribute values where the type checker returns a byte offset.
 fn offset_to_line_col(value: &str, offset: usize) -> (u32, u32) {
     let mut lines = 0u32;
     let mut last_newline_offset = 0;

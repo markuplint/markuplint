@@ -1,5 +1,3 @@
-//! Rule mapper: resolves per-node rule configurations from nodeRules/childNodeRules.
-//!
 //! Mirrors the TS `RuleMapper` + `Document#ruleMapping()` logic:
 //! 1. Global rules apply to all nodes with specificity `[0,0,0]`
 //! 2. `nodeRules` match elements by CSS/regex selector and override with higher specificity
@@ -19,21 +17,17 @@ use crate::aria_resolver_impl::SpecAriaResolver;
 use crate::rule::{RuleConfig, RuleConfigSet};
 use crate::violation::Severity;
 
-/// A `nodeRule` or `childNodeRule` entry from the user config.
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct NodeRuleEntry {
-    /// Alias name for violations (e.g., `"a11y/no-autofocus-outside-dialog"`).
-    /// When present, violations from this entry use this name instead of the base rule ID.
+    /// When present (e.g., `"a11y/no-autofocus-outside-dialog"`), violations from
+    /// this entry use this name instead of the base rule ID.
     #[serde(default)]
     pub name: Option<String>,
-    /// CSS selector string.
     #[serde(default)]
     pub selector: Option<String>,
-    /// Regex-based selector.
     #[serde(default)]
     pub regex_selector: Option<RegexSelector>,
-    /// Rule overrides for matched nodes.
     #[serde(default)]
     pub rules: Option<HashMap<String, Value>>,
     /// (`childNodeRules` only) Whether to apply to all descendants, not just direct children.
@@ -41,7 +35,6 @@ pub struct NodeRuleEntry {
     pub inheritance: Option<bool>,
 }
 
-/// A mapping layer: tracks where a rule config came from and its specificity.
 #[derive(Debug, Clone)]
 struct MappingLayer {
     specificity: Specificity,
@@ -53,10 +46,7 @@ fn compare_specificity(a: &Specificity, b: &Specificity) -> std::cmp::Ordering {
     a[0].cmp(&b[0]).then(a[1].cmp(&b[1])).then(a[2].cmp(&b[2]))
 }
 
-/// Build a `RuleConfigSet` for a given rule by processing global config,
-/// `nodeRules`, and `childNodeRules`.
-///
-/// This is called once per rule in the lint loop. The resulting `RuleConfigSet`
+/// Called once per rule in the lint loop. The resulting `RuleConfigSet`
 /// contains per-node overrides that the rule can query by `NodeId`.
 pub fn build_rule_config_set(
     rule_id: &str,
@@ -70,7 +60,7 @@ pub fn build_rule_config_set(
     let mut node_map: HashMap<NodeId, MappingLayer> = HashMap::new();
     let aria_resolver = SpecAriaResolver { spec };
 
-    // Process nodeRules (skip named entries — they run independently via lint::run_named_entries)
+    // Named entries are skipped here; they run independently via lint::run_named_entries.
     for entry in node_rules {
         if entry.name.is_some() {
             continue;
@@ -90,7 +80,7 @@ pub fn build_rule_config_set(
         }
     }
 
-    // Process childNodeRules (skip named entries — they run independently)
+    // Named entries are skipped here; they run independently.
     for entry in child_node_rules {
         if entry.name.is_some() {
             continue;
@@ -127,8 +117,6 @@ pub fn build_rule_config_set(
     )
 }
 
-/// Build a `RuleConfigSet` for a single named nodeRule executed independently.
-///
 /// Matching nodes get the nodeRule's config; all other nodes are disabled.
 /// This enables named nodeRules to run as independent rule executions
 /// (matching TS virtual rule behavior).
@@ -176,7 +164,6 @@ pub fn build_named_rule_config_set(
         return None;
     }
 
-    // Global = disabled; only matching nodes are enabled via overrides
     let disabled_global = RuleConfig {
         disabled: true,
         ..Default::default()
@@ -184,7 +171,6 @@ pub fn build_named_rule_config_set(
     Some(RuleConfigSet::new(disabled_global, node_map))
 }
 
-/// Match an entry (CSS selector or regex selector) against an element.
 /// Returns `Some((specificity, captured_data))` on match.
 pub fn match_entry(
     entry: &NodeRuleEntry,
@@ -202,7 +188,6 @@ pub fn match_entry(
     }
 }
 
-/// Match a CSS selector string.
 fn match_css_selector(
     selector_str: &str,
     arena: &DomArena,
@@ -216,7 +201,6 @@ fn match_css_selector(
     specificity.map(|s| (s, HashMap::new()))
 }
 
-/// Match a regex selector.
 fn match_regex_selector(
     regex_sel: &RegexSelector,
     arena: &DomArena,
@@ -230,8 +214,6 @@ fn match_regex_selector(
     }
 }
 
-/// Build a per-node `RuleConfig` from the nodeRule value, merging with global.
-///
 /// Mirrors TS `mergeRule(globalRule, convertedRule)`.
 /// `captured` is used for regex capture replacement (`exchangeValueOnRule`).
 fn build_node_config(
@@ -245,7 +227,6 @@ fn build_node_config(
     merge_rule(global_config, &node_config)
 }
 
-/// Parse a rule value from a nodeRule entry.
 /// Same format as global rules: `true`, `false`, `"error"`, `{ severity, value, options }`.
 fn parse_node_rule_value(value: &Value, default_severity: Severity) -> RuleConfig {
     match value {
@@ -309,7 +290,6 @@ fn parse_node_rule_value(value: &Value, default_severity: Severity) -> RuleConfi
     }
 }
 
-/// Replace `{{captured_name}}` placeholders in rule config values.
 /// Mirrors TS `exchangeValueOnRule`.
 fn exchange_value_on_rule(config: RuleConfig, captured: &HashMap<String, String>) -> RuleConfig {
     if captured.is_empty() {
@@ -326,7 +306,6 @@ fn exchange_value_on_rule(config: RuleConfig, captured: &HashMap<String, String>
     }
 }
 
-/// Recursively replace `{{ key }}` / `{{key}}` in JSON values.
 fn exchange_json_value(value: &Value, captured: &HashMap<String, String>) -> Value {
     match value {
         Value::String(s) => {
@@ -350,7 +329,6 @@ fn exchange_json_value(value: &Value, captured: &HashMap<String, String>) -> Val
     }
 }
 
-/// Merge rule configs: node config overrides global config.
 /// Mirrors TS `mergeRule(a, b)`.
 fn merge_rule(global: &RuleConfig, node: &RuleConfig) -> RuleConfig {
     if node.disabled {
@@ -395,12 +373,10 @@ fn set_if_higher(
     map.insert(node_id, MappingLayer { specificity, config });
 }
 
-/// Collect direct child node IDs.
 fn collect_children(arena: &DomArena, parent_id: NodeId) -> Vec<NodeId> {
     arena.children_of(parent_id).map(<[NodeId]>::to_vec).unwrap_or_default()
 }
 
-/// Collect all descendant node IDs (recursive).
 fn collect_descendants(arena: &DomArena, parent_id: NodeId) -> Vec<NodeId> {
     arena
         .descendants(parent_id)

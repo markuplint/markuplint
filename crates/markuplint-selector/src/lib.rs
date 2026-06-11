@@ -1,10 +1,7 @@
-//! CSS selector engine for markuplint.
-//!
-//! Provides CSS selector parsing and matching with markuplint-specific
-//! extensions (`:role()`, `:aria()`, `:model()`).
+//! CSS selector engine for markuplint, with markuplint-specific extensions
+//! (`:role()`, `:aria()`, `:model()`).
 //!
 //! Self-contained implementation — no external selector crate dependency.
-//! Same approach as the css-tree replacement in Phase 1B.
 
 pub mod aria_resolver;
 pub mod ast;

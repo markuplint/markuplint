@@ -18,7 +18,6 @@ use markuplint_types::spec::types::MLMLSpec;
 // Public API
 // ============================================================
 
-/// Validate a sequence of child nodes against content model patterns.
 pub fn validate_content_model(
     spec: &MLMLSpec,
     patterns: &[PermittedContentPattern],
@@ -229,7 +228,6 @@ pub(crate) fn choice(
     }
 }
 
-/// Quantified pattern matching (require/optional/oneOrMore/zeroOrMore).
 #[allow(clippy::too_many_lines)]
 pub(crate) fn count_pattern(
     pattern: &PermittedContentPattern,
@@ -424,7 +422,6 @@ pub(crate) fn count_pattern(
     }
 }
 
-/// Compare two results and return the best diagnostic outcome.
 fn compare_result(a: MatchResult, b: Option<MatchResult>) -> MatchResult {
     let Some(b) = b else { return a };
 
@@ -450,7 +447,6 @@ fn compare_result(a: MatchResult, b: Option<MatchResult>) -> MatchResult {
     if b_barely > a_barely { b } else { a }
 }
 
-/// Leaf-level pattern matching.
 pub(crate) fn recursive_branch(
     model: &ModelOrPatterns,
     child_nodes: &[ChildNodeInfo],
@@ -474,7 +470,6 @@ pub(crate) fn recursive_branch(
     }
 }
 
-/// Dispatch a pattern to the appropriate handler.
 fn complex_branch(
     pattern: &PermittedContentPattern,
     child_nodes: &[ChildNodeInfo],
@@ -696,12 +691,10 @@ pub(crate) fn needs_full_selector(query: &str) -> bool {
 /// Expands `:model(category)` to `:is(tag1, tag2, ...)` so the standard
 /// CSS selector engine can process it, then matches against a temporary DOM.
 fn full_selector_match(node: &ChildNodeInfo, query: &str, spec: &MLMLSpec, cond: &Condition) -> bool {
-    // 1. Expand :model(category) references to :is(tag1, tag2, ...)
     let expanded = expand_model_refs(query, spec);
 
-    // 2. Parse the expanded selector
     let Ok(selector) = markuplint_selector::parser::parse(&expanded) else {
-        // Parse failure: fall back to simple tag matching
+        // Parse failure falls back to simple tag matching.
         return markuplint_types::spec::content_model::matches_model_ref(
             spec,
             &node.node_name,
@@ -709,17 +702,14 @@ fn full_selector_match(node: &ChildNodeInfo, query: &str, spec: &MLMLSpec, cond:
         );
     };
 
-    // 3. Build a minimal arena with just the node and its children
     let bridge = super::arena_bridge::build_arena("div", std::slice::from_ref(node));
 
-    // 4. The node is the first (and only) child.
-    // This should always succeed since we pass exactly one node to build_arena.
-    // The else branch is a defensive guard against internal errors.
+    // The else branch is a defensive guard against internal errors; passing
+    // exactly one node to build_arena should always yield a first child.
     let Some(&node_id) = bridge.child_ids.first() else {
         return false;
     };
 
-    // 5. Match using the full selector engine
     markuplint_selector::matcher::matches(&selector, &bridge.arena, node_id, None, None, None)
 }
 
@@ -780,7 +770,6 @@ pub(crate) fn expand_model_refs(query: &str, spec: &MLMLSpec) -> String {
 // Helpers
 // ============================================================
 
-/// Collect unmatched nodes from a Collection into an owned Vec.
 fn collect_unmatched(collection: &Collection<'_>) -> Vec<ChildNodeInfo> {
     collection.unmatched_nodes().into_iter().cloned().collect()
 }

@@ -10,7 +10,6 @@ use crate::violation::Violation;
 #[cfg(test)]
 mod tests;
 
-/// The `doctype` rule.
 pub struct Doctype;
 
 impl Rule for Doctype {
@@ -20,7 +19,6 @@ impl Rule for Doctype {
 
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let config = config.global();
-        // Skip fragments
         let is_fragment = match arena.document() {
             Some(DomNode::Document(doc)) => doc.is_fragment,
             _ => return vec![],

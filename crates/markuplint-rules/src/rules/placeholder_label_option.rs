@@ -8,7 +8,6 @@ use markuplint_types::spec::types::MLMLSpec;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
-/// The `placeholder-label-option` rule.
 pub struct PlaceholderLabelOption;
 
 impl Rule for PlaceholderLabelOption {
@@ -28,7 +27,6 @@ impl Rule for PlaceholderLabelOption {
                 continue;
             }
 
-            // Check if select has required attribute
             let has_required = el.attributes.iter().any(|attr| {
                 if let MLASTAttr::HTMLAttr(html_attr) = attr {
                     html_attr.node_name.eq_ignore_ascii_case("required")
@@ -41,9 +39,7 @@ impl Rule for PlaceholderLabelOption {
                 continue;
             }
 
-            // Check first <option> child has value=""
             let has_placeholder = if let Some(children) = arena.children_of(el.base.id) {
-                // Find the first <option> child
                 children
                     .iter()
                     .find_map(|&child_id| {
@@ -55,7 +51,6 @@ impl Rule for PlaceholderLabelOption {
                         None
                     })
                     .is_some_and(|first_option| {
-                        // Check if it has value=""
                         first_option.attributes.iter().any(|attr| {
                             if let MLASTAttr::HTMLAttr(html_attr) = attr {
                                 html_attr.node_name.eq_ignore_ascii_case("value") && html_attr.value.raw.is_empty()

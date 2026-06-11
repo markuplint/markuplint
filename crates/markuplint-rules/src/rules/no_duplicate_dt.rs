@@ -9,7 +9,6 @@ use markuplint_types::spec::types::MLMLSpec;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
-/// The `no-duplicate-dt` rule.
 pub struct NoDuplicateDt;
 
 impl Rule for NoDuplicateDt {
@@ -29,7 +28,6 @@ impl Rule for NoDuplicateDt {
                 continue;
             }
 
-            // Collect direct child <dt> elements with their text
             let mut dt_texts: HashMap<String, Vec<(u32, u32, String)>> = HashMap::new();
 
             if let Some(children) = arena.children_of(el.base.id) {
@@ -72,7 +70,6 @@ impl Rule for NoDuplicateDt {
     }
 }
 
-/// Recursively collect text content from all Text node descendants.
 fn collect_text_content(arena: &DomArena, node_id: usize) -> String {
     let mut result = String::new();
     if let Some(children) = arena.children_of(node_id) {
