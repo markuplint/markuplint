@@ -10,15 +10,32 @@ type State = {
 };
 
 /**
- * Parser implementation for Vue SFC templates.
- * Extends the base Parser to handle Vue elements, text nodes, expression containers,
- * directives (`v-bind`, `v-on`, `v-model`, `v-slot`), and template comments.
- * Recognizes Vue built-in components and PascalCase user components.
+ * Directive resolution is intentionally not performed by this parser:
+ * `directivePatterns` declared in `@markuplint/vue-spec` are applied later by
+ * `ml-core`'s `MLAttr` constructor. Consequently, parser-level output (and
+ * `index.spec.ts`) shows unresolved attribute metadata, while the final
+ * `potentialName`/`isDirective`/`isDynamicValue` values only appear at the
+ * core level.
+ *
+ * Known limitation: `v-if`/`v-for`/`v-else`/`v-else-if` do not set
+ * `blockBehavior`, so content-model rules such as `permitted-contents` cannot
+ * enumerate conditional branches via `conditionalChildNodes()` as they can for
+ * Svelte, Pug, Alpine, JSX, and Astro. Unlike Alpine's fixed
+ * `<template x-if="...">` wrapper, which converts cleanly into a PSBlock, Vue
+ * directives attach to arbitrary elements that must remain valid HTML elements
+ * for attribute validation while also acting as blocks for content-model
+ * analysis, and `v-else`/`v-else-if` branch across sibling elements — both
+ * beyond the per-node `nodeize()` model. These directives are handled at the
+ * attribute level only (`isDirective: true`), which suppresses attribute
+ * validation errors but provides no structural block information to the core
+ * engine.
  */
 class VueParser extends Parser<ASTNode, State> {
 	constructor() {
 		super(
 			{
+				// Vue SFC is a compiled format that uses explicit XML-style
+				// closing tags (including `/>`), not HTML void-element rules.
 				endTagType: 'xml',
 			},
 			{
@@ -39,6 +56,8 @@ class VueParser extends Parser<ASTNode, State> {
 	}
 
 	parseError(error: any) {
+		// vue-eslint-parser syntax errors carry `lineNumber` (1-based) and
+		// `column` (0-based); non-SyntaxError cases fall back to the base handler.
 		if (error instanceof SyntaxError && 'lineNumber' in error && 'column' in error) {
 			throw new ParserError(error.message, {
 				line: error.lineNumber as number,
@@ -49,16 +68,6 @@ class VueParser extends Parser<ASTNode, State> {
 		return super.parseError(error);
 	}
 
-	/**
-	 * Converts a Vue AST node into markuplint node tree items.
-	 * Handles VText (text nodes), VExpressionContainer (template expressions),
-	 * and VElement (elements with start/end tags and children).
-	 *
-	 * @param originNode - The Vue AST node to convert
-	 * @param parentNode - The parent node in the markuplint tree, or null for root nodes
-	 * @param depth - The nesting depth of the node
-	 * @returns An array of markuplint node tree items
-	 */
 	nodeize(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		originNode: ASTNode,
@@ -76,6 +85,8 @@ class VueParser extends Parser<ASTNode, State> {
 				});
 			}
 			case 'VExpressionContainer': {
+				// Template expressions (`{{ ... }}`) are treated as opaque
+				// pseudo-blocks; their JavaScript content is intentionally not parsed.
 				return this.visitPsBlock({
 					...token,
 					depth,
@@ -114,12 +125,9 @@ class VueParser extends Parser<ASTNode, State> {
 	}
 
 	/**
-	 * Extends the base flattening to inject Vue template comments between sibling nodes.
-	 * Comments from the vue-eslint-parser are inserted at the correct positions
-	 * based on their source offsets relative to adjacent nodes.
-	 *
-	 * @param nodeTree - The hierarchical node tree to flatten
-	 * @returns A flat list of nodes including interleaved comments
+	 * This second pass that interleaves comments is required because
+	 * vue-eslint-parser provides comments separately (`templateBody.comments`)
+	 * from the main node tree, so they cannot be emitted during `nodeize()`.
 	 */
 	flattenNodes(nodeTree: readonly MLASTNodeTreeItem[]) {
 		const nodeList = super.flattenNodes(nodeTree);
@@ -169,6 +177,8 @@ class VueParser extends Parser<ASTNode, State> {
 	}
 
 	afterFlattenNodes(nodeList: readonly MLASTNodeTreeItem[]) {
+		// All base post-processing is disabled because Vue's template parser
+		// handles whitespace and node validity differently from raw HTML parsing.
 		return super.afterFlattenNodes(nodeList, {
 			exposeInvalidNode: false,
 			exposeWhiteSpace: false,
@@ -186,8 +196,6 @@ class VueParser extends Parser<ASTNode, State> {
 	 * @see https://vuejs.org/guide/essentials/component-basics#using-a-component
 	 * @see https://vuejs.org/api/built-in-components.html
 	 * @see https://vuejs.org/api/built-in-special-elements.html#built-in-special-elements
-	 * @param nodeName
-	 * @returns
 	 */
 	detectElementType(nodeName: string) {
 		return super.detectElementType(nodeName, [

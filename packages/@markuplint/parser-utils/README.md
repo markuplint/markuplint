@@ -16,9 +16,3 @@ $ yarn add @markuplint/parser-utils
 ```
 
 </details>
-
-## Documentation
-
-- [Architecture](ARCHITECTURE.md) ([日本語](ARCHITECTURE.ja.md)) — Package overview, module relationships, and integration points
-- [Parser Class Reference](docs/parser-class.md) ([日本語](docs/parser-class.ja.md)) — Complete reference for the abstract `Parser` class
-- [Maintenance Guide](docs/maintenance.md) ([日本語](docs/maintenance.ja.md)) — Commands, recipes, and troubleshooting

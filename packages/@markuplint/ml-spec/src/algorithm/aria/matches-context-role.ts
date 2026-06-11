@@ -5,10 +5,9 @@ import { isTransparentForOwnership } from './is-presentational.js';
 import { getComputedRole } from './get-computed-role.js';
 
 /**
- * Checks whether an element's parent hierarchy satisfies the
- * "Required Accessibility Parent Role" (called "Required Context Role" in ARIA 1.2).
- * Each condition string may describe a chain of ancestor roles separated by
- * ` > ` (e.g., `"list > group"`).
+ * Implements the ARIA "Required Accessibility Parent Role" (called "Required
+ * Context Role" in ARIA 1.2). Each condition string describes a chain of
+ * ancestor roles separated by ` > ` (e.g., `"list > group"`).
  *
  * TODO: This function only walks the DOM `parentElement` chain and does not
  * consider `aria-owns` relationships. An element referenced by `aria-owns` on
@@ -16,12 +15,6 @@ import { getComputedRole } from './get-computed-role.js';
  * that ancestor. Implementing this requires a document-wide reverse lookup of
  * `aria-owns` attributes, which is a separate architectural concern.
  * See also: `has-required-owned-elements.ts` has a similar limitation.
- *
- * @param conditions - An array of required accessibility parent role condition strings to match against
- * @param ownedEl - The owned DOM element whose parent context is being validated
- * @param specs - The full markup language specification
- * @param version - The ARIA specification version to use
- * @returns `true` if any of the context role conditions are satisfied by the element's ancestors
  */
 export function matchesContextRole(
 	conditions: readonly string[],

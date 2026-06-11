@@ -31,11 +31,6 @@ export type ApplySuppressionsOptions = {
 	readonly nodeLists?: ReadonlyMap<string, readonly PositionedNode[]>;
 };
 
-/**
- * Checks whether a violation at (line, col) is within the subtree of a node
- * that matches the scope selector. Walks the violation node's ancestors
- * to find a match.
- */
 function isViolationInScope(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	nodeList: readonly PositionedNode[],
@@ -63,12 +58,6 @@ function isViolationInScope(
 	return false;
 }
 
-/**
- * Simple scope selector matching. Checks if a node matches a scope selector
- * by matching segments right-to-left against the node and its ancestors.
- *
- * Supports: `#id`, `tag.class`, `tag`, and ancestor paths like `#id > tag`.
- */
 // eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 function matchesScopeSelector(node: ScopedNode, scope: string): boolean {
 	const segments = scope.split(' > ');
@@ -88,11 +77,6 @@ function matchesScopeSelector(node: ScopedNode, scope: string): boolean {
 	return true;
 }
 
-/**
- * Matches a single selector segment against a node.
- * Supports: `#id`, `tag[attr="value"]`, `tag.classA.classB`,
- * `tag:nth-of-type(n)`, `tag`
- */
 // eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 function matchesSegment(node: ScopedNode, segment: string): boolean {
 	if (segment.length === 0) {
@@ -175,6 +159,15 @@ function matchesSegment(node: ScopedNode, segment: string): boolean {
  * Warning and info violations always pass through unmodified.
  * When `options.nodeLists` is not provided, scope is ignored (Phase 1 compatible).
  *
+ * Rationale:
+ * - Matching is count-based per (file, rule) rather than per individual
+ *   violation because line numbers shift on every edit and message hashes
+ *   are fragile; count matching survives formatting, reordering, and minor
+ *   refactoring (same trade-off as ESLint's bulk suppressions).
+ * - When the count is exceeded, ALL violations are reported — not just the
+ *   delta — because the user needs the full picture to investigate the
+ *   regression; an isolated "2 new violations" lacks context.
+ *
  * @param violationsByFile - Map of absolute file paths to violations.
  * @param suppressions - The loaded suppressions data.
  * @param suppressionsFilePath - Absolute path to the suppressions file.
@@ -252,13 +245,6 @@ export function applySuppressions(
 	return { filtered, unusedEntries };
 }
 
-/**
- * Gets the scoped error count and indices for a rule.
- * When scope is present and nodeList is available, only counts/tracks violations
- * within the scope subtree. Otherwise counts all error violations for the rule.
- *
- * @returns The count and array indices of matching violations.
- */
 function getScopedErrorInfo(
 	violations: readonly Violation[],
 	ruleId: string,

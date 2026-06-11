@@ -1,4 +1,3 @@
-/** Rule metadata for `doctype`: categorized as a validation rule. */
 export default {
 	category: 'validation',
 	// This rule covers parse5's `missing-doctype` event (the "no DOCTYPE at

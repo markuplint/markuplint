@@ -14,13 +14,6 @@ export interface Options {
 	'in-document-fragment': boolean;
 }
 
-/**
- * Rule that requires exactly one `<h1>` element in the document.
- *
- * Reports a violation when no `<h1>` is present. Optionally reports when
- * multiple `<h1>` elements exist (controlled by `expected-once`). Can be
- * configured to skip document fragments via the `in-document-fragment` option.
- */
 export default createRule<boolean, Options>({
 	meta: meta,
 	defaultOptions: {

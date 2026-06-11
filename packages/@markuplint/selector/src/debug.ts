@@ -2,13 +2,8 @@ import debug from 'debug';
 
 const CLI_NS = 'markuplint-cli';
 
-/** Debug logger instance for the `selector` namespace. */
 export const log = debug('selector');
 
-/**
- * Enables debug logging for the selector and markuplint-cli namespaces.
- * Once enabled, logs are output via the `debug` package.
- */
 export function enableDebug() {
 	if (!log.enabled) {
 		debug.enable(`${log.namespace}*`);

@@ -13,6 +13,16 @@ export interface MLMLSpec {
 	readonly def: SpecDefs;
 	readonly specs: readonly ElementSpec[];
 	readonly directivePatterns?: readonly DirectivePattern[];
+	/**
+	 * Controls how `@markuplint/ml-core`'s `MLAttr` resolves attribute names.
+	 *
+	 * - `'idl'`: enables IDL-to-content attribute name resolution (e.g.
+	 *   `className` → `class`) and suggests the IDL name as a candidate when the
+	 *   content attribute name is used (e.g. `tabindex` → "Did you mean
+	 *   `tabIndex`?"). Used by React, which accepts only IDL property names.
+	 * - `'both'`: enables the same resolution but accepts both content attribute
+	 *   names and IDL property names without suggesting either. Used by Svelte.
+	 */
 	readonly acceptedAttrNames?: 'idl' | 'both';
 }
 
@@ -35,6 +45,10 @@ export type ExtendedSpec = {
 	readonly def?: Partial<SpecDefs>;
 	readonly specs?: readonly ExtendedElementSpec[];
 	readonly directivePatterns?: readonly DirectivePattern[];
+	/**
+	 * See {@link MLMLSpec.acceptedAttrNames}. Last-write-wins across merged
+	 * specs; omitting the property does not reset a previously set value.
+	 */
 	readonly acceptedAttrNames?: 'idl' | 'both';
 };
 
@@ -45,6 +59,10 @@ export type ExtendedSpec = {
  *
  * The `pattern` is a regex string matched against the raw attribute name.
  * Capture groups can be referenced in `potentialName` using `$1`, `$2`, etc.
+ *
+ * Patterns are evaluated in order and the first match wins. Merging specs
+ * (`schemaToSpec`) concatenates pattern arrays, so spec authors should define
+ * patterns from most specific to most general.
  */
 export type DirectivePattern = {
 	/**
@@ -149,12 +167,15 @@ export type ElementSpec = {
 	readonly description?: string;
 
 	/**
-	 * Experimental technology
+	 * Experimental technology: not yet standardized (proposed or draft;
+	 * subject to change or removal).
 	 */
 	readonly experimental?: true;
 
 	/**
-	 * Obsolete or alternative elements
+	 * Obsolete or alternative elements: removed from the spec entirely
+	 * (browsers may no longer recognize it). Optionally points to an
+	 * alternative element via `alt`.
 	 */
 	readonly obsolete?:
 		| true
@@ -163,12 +184,14 @@ export type ElementSpec = {
 		  };
 
 	/**
-	 * Deprecated
+	 * Deprecated: still defined by the spec but its use is discouraged
+	 * (usually still works in browsers).
 	 */
 	readonly deprecated?: true;
 
 	/**
-	 * Non-standard
+	 * Non-standard: never part of any standard (vendor-specific or
+	 * proprietary).
 	 */
 	readonly nonStandard?: true;
 
@@ -235,6 +258,9 @@ export type Attribute = {
 		| readonly ReadonlyDeep<ConditionalAttributeType>[];
 	readonly description?: string;
 	readonly caseSensitive?: true;
+	// Status flags share the semantics documented on `ElementSpec` above:
+	// experimental = not yet standardized; obsolete = removed from the spec;
+	// deprecated = discouraged but still defined; nonStandard = never standard.
 	readonly experimental?: boolean;
 	readonly obsolete?: true;
 	readonly deprecated?: boolean;

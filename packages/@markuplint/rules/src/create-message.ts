@@ -5,19 +5,6 @@ import type { ReadonlyDeep } from 'type-fest';
 
 import { isList, isKeyword, isEnum, isNumber, isDirective, isPattern } from '@markuplint/types';
 
-/**
- * Builds a human-readable error message explaining why an attribute value
- * does not match its expected type. Handles both plain types and list types
- * (space-separated or comma-separated).
- *
- * @param t - The i18n translator for generating localized messages
- * @param baseTarget - A human-readable description of the attribute being validated
- *   (e.g. `'the "href" attribute'`)
- * @param type - The attribute type definition that the value was validated against
- * @param matches - The result object from a failed type check, containing
- *   details about the mismatch (reason, candidate, part name, etc.)
- * @returns A localized error message describing the expected value
- */
 export function createMessageValueExpected(
 	t: Translator,
 	baseTarget: string,
@@ -52,18 +39,8 @@ export function createMessageValueExpected(
 }
 
 /**
- * Assembles the detailed portion of a value-expected error message by
- * inspecting the mismatch reason and composing reason, expectation,
- * candidate suggestion, and fallback parts into a single string.
- *
- * This is an internal helper exposed for testing and advanced use.
- * The double-underscore prefix indicates it is not part of the stable public API.
- *
- * @param t - The i18n translator for generating localized messages
- * @param baseTarget - A human-readable description of the validation target
- * @param expected - A description of the expected value(s), or `null` if unknown
- * @param matches - Partial match result containing reason, candidate, and other details
- * @returns A localized error message string
+ * The double-underscore prefix marks this as exposed only for testing — not
+ * part of the stable public API.
  */
 export function __createMessageValueExpected(
 	t: Translator,
@@ -250,17 +227,6 @@ export function __createMessageValueExpected(
 	return message;
 }
 
-/**
- * Derives a human-readable description of the expected value from an attribute
- * type definition and the unmatched result. Inspects keywords, enums, numbers,
- * directives, and explicit `expects` entries from the match result.
- *
- * @param type - The attribute type (excluding list wrappers)
- * @param matches - The unmatched result containing optional `expects` hints
- * @param t - The i18n translator
- * @returns A localized string describing the expected value(s), or `null` if
- *   no expectation can be determined
- */
 function createExpectedObject(
 	type: ReadonlyDeep<Exclude<AttributeType | Type, List>>,
 	matches: UnmatchedResult,
@@ -298,14 +264,6 @@ function createExpectedObject(
 	return expects;
 }
 
-/**
- * Converts a single `Expect` descriptor into a human-readable word or phrase.
- *
- * @param t - The i18n translator
- * @param expect - The expectation descriptor from a type-check result
- * @param type - The attribute type context for determining phrasing (e.g. CSS syntax)
- * @returns A localized word or phrase describing the expected value
- */
 function expectValueToWord(t: Translator, expect: Expect, type: ReadonlyDeep<Exclude<AttributeType | Type, List>>) {
 	switch (expect.type) {
 		case 'common': {
@@ -329,15 +287,6 @@ function expectValueToWord(t: Translator, expect: Expect, type: ReadonlyDeep<Exc
 	}
 }
 
-/**
- * Builds a human-readable description of an expected numeric range
- * from a `Number` type definition (e.g. "integer greater than or equal to 0").
- *
- * @param t - The i18n translator
- * @param type - The number type definition containing range constraints
- *   (`gt`, `gte`, `lt`, `lte`) and the numeric type label
- * @returns A localized description of the expected numeric range
- */
 function createExpectedNumber(t: Translator, type: Readonly<Number>) {
 	if (type.gt != null) {
 		if (type.lt != null) {

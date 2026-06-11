@@ -48,16 +48,6 @@ type Attr = {
 	value: AttributeType | Pattern;
 };
 
-/**
- * Rule that validates attributes against the HTML spec, allowed lists,
- * and disallowed lists.
- *
- * Checks each attribute for: existence in the spec, correct value type,
- * allowed/disallowed overrides from configuration, and typo suggestions
- * via candidate matching. Supports `allowAttrs` and `disallowAttrs`.
- * Non-existent attributes on elements that allow additional properties
- * (pretenders) can be optionally permitted.
- */
 export default createRule<boolean, Option>({
 	meta: meta,
 	defaultOptions: {},

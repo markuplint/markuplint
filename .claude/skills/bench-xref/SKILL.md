@@ -28,16 +28,10 @@ Mappings live in `tests/external/bench/issue-xref.config.ts`.
 
 ## Commands
 
-| Command | What it does |
-| --- | --- |
-| `yarn bench:xref --issue <N>` | Print issue N's block to stdout (no network). |
-| `yarn bench:xref --issue <N> --filter '<regex>'` | Ad-hoc scope, bypassing the config. |
-| `yarn bench:xref --all` | Print every configured issue's block. |
-| `yarn bench:xref --issue <N> --write` | Fetch issue N, replace its `<!-- bench-xref:* -->` range, push via `gh issue edit --body-file -`. |
-| `yarn bench:xref --all --write` | Same, across every configured issue. |
-| `yarn bench:xref --all --dry-run --write` | Show what `--write` would push, without pushing. |
-| `yarn bench:xref --audit` | List CLOSED-but-mapped issues. Exit non-zero if any. |
-| `yarn bench:xref --audit --json` | Same audit, emits `{ "total": N, "closed": [...] }` for CI. |
+Flags (`--issue`, `--filter`, `--all`, `--write`, `--dry-run`,
+`--audit`, `--json`) are parsed in
+`tests/external/bench/xref-issue.ts` — read it when unsure. Without
+`--write`, output goes to stdout and no network call is made.
 
 Prerequisite: `gh` installed and authenticated.
 
@@ -81,16 +75,9 @@ releases.
 
 ## CI: `Bench xref audit` workflow
 
-`.github/workflows/bench-xref-audit.yml` runs `yarn bench:xref
---audit --json` on:
-
-- PRs touching `tests/external/bench/issue-xref.config.ts` or
-  `tests/external/bench/xref-issue.ts`.
-- Weekly cron (Mon 02:00 UTC).
-- `workflow_dispatch`.
-
-The JSON result lands in the run's Step Summary. Job exits
-non-zero on any CLOSED entry, blocking PR merge until removed.
+`.github/workflows/bench-xref-audit.yml` runs the audit on relevant
+PRs and a weekly cron; it exits non-zero on any CLOSED entry,
+blocking PR merge until the mapping is removed.
 
 ## Marker version
 

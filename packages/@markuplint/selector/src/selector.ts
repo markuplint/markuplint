@@ -18,6 +18,9 @@ const resLog = coreLog.extend('result');
  * Each handler is a curried function: given the pseudo-class content string,
  * it returns a matcher that tests a {@link SelectorElement} and produces
  * a {@link SelectorResult}.
+ *
+ * By convention, every handler reports a specificity of `[0, 1, 0]` so that
+ * extended pseudo-classes always weigh the same as a standard pseudo-class.
  */
 export type ExtendedPseudoClass = Readonly<
 	Record<
@@ -620,6 +623,9 @@ function attrMatch(
 		if (attr.value != null) {
 			let value = attr.value;
 			let valueOfEl = attrOfEl.value;
+			// Unlike name matching, Selectors L4 puts attribute-value casing under
+			// author control: values are folded only when the `i` flag is set,
+			// regardless of the element's namespace.
 			if (attr.insensitive) {
 				value = value.toLowerCase();
 				valueOfEl = valueOfEl.toLowerCase();
@@ -681,6 +687,9 @@ function pseudoMatch(
 		/**
 		 * Below, markuplint Specific Selector
 		 */
+		// `:closest()` is a markuplint extension that is not in the W3C Selectors
+		// specification. Deprecated in v5 and will be removed in v6 — use
+		// `:is(selector *)` instead (e.g. `:closest(nav)` → `:is(nav *)`).
 		case ':closest': {
 			const ruleset = new Ruleset(pseudo.nodes, extended, depth + 1);
 			const specificity = getSpecificity(ruleset.match(el, scope));

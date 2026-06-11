@@ -19,6 +19,14 @@ type MappingLayer = {
 	readonly rule: AnyRule;
 };
 
+/**
+ * Accumulates rule-to-node mappings and applies them to each node's `rules`
+ * record. Conflicts for the same rule on the same node are resolved by CSS
+ * selector specificity: higher specificity wins regardless of order, and on
+ * equal specificity the later `set()` call wins — so declaration order in
+ * the config arrays decides. Entries from `childNodeRules` carry the
+ * specificity of the parent's selector, not the child's.
+ */
 export class RuleMapper {
 	#nodeList: ReadonlyArray<MLNode<any, any>>;
 	#ruleMap = new Map<string, Record<string, MappingLayer>>();

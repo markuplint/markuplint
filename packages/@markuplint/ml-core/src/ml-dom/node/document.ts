@@ -82,9 +82,6 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 */
 	readonly endTag: EndTagType;
 
-	/**
-	 * The file path of the source document, if available.
-	 */
 	readonly #astNodeMap: ReadonlyMap<string, MLASTNodeTreeItem>;
 
 	readonly #filename?: string;
@@ -3419,9 +3416,9 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	}
 
 	/**
-	 * Initializes pretender contexts for all element nodes in the document.
-	 *
-	 * @param pretenders - Optional pretender configurations from the document options
+	 * Must run before `#ruleMapping`: rule selectors (e.g. a `nodeRules`
+	 * entry targeting `button`) are matched against the pretender identity,
+	 * so the pretender link has to exist when rules are mapped.
 	 */
 	#pretending(pretenders?: readonly Pretender[]) {
 		if (docLog.enabled) {
@@ -3434,13 +3431,6 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		}
 	}
 
-	/**
-	 * Maps the ruleset configuration to each node in the document.
-	 * Applies global rules, node-specific rules (by selector), and
-	 * child-node rules to build the per-node rule configuration.
-	 *
-	 * @param ruleset - The ruleset containing rules, nodeRules, and childNodeRules
-	 */
 	#ruleMapping(ruleset: Ruleset) {
 		if (docLog.enabled) {
 			docLog('Rule Mapping: %O', Object.keys(ruleset.rules));

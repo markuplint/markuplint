@@ -31,9 +31,6 @@ export interface ComponentScanScriptSource {
 	readonly offset: number;
 }
 
-/**
- * Extracts root element information from a parsed MLAST document.
- */
 function extractComponentInfo(doc: MLASTDocument): Omit<ComponentScanResult, 'hasSlots' | 'scriptSource'> | null {
 	const root = doc.nodeList.find((n): n is MLASTElement => n.type === 'starttag' && n.depth === 0 && !n.isFragment);
 	if (!root) {
@@ -63,9 +60,8 @@ function extractComponentInfo(doc: MLASTDocument): Omit<ComponentScanResult, 'ha
 }
 
 /**
- * Detects whether the parsed Svelte template contains slot usage.
- *
- * Supports:
+ * Slot usage can take several forms whose mapping to psblock node names is
+ * not derivable from this code:
  * - Svelte 4: `<slot>` element (parsed as psblock `#ps:SlotElement`)
  * - Svelte 5: `{@render children()}` (parsed as psblock `#ps:RenderTag`)
  * - Standard `<slot>` elements
@@ -79,7 +75,6 @@ function detectSlots(doc: MLASTDocument): boolean {
 }
 
 /**
- * Extracts the instance `<script>` block from a Svelte component source.
  * Prefers the instance script over `<script context="module">`.
  */
 function extractSvelteScript(source: string): ComponentScanScriptSource | null {
@@ -105,10 +100,9 @@ function extractSvelteScript(source: string): ComponentScanScriptSource | null {
 		};
 
 		if (!isModule) {
-			return block; // Prefer instance script
+			return block;
 		}
 
-		// Remember module script as fallback
 		moduleBlock ??= block;
 	}
 

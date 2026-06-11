@@ -12,10 +12,11 @@ type State = {
 };
 
 /**
- * Parser implementation for JSX/TSX syntax.
- * Extends the base Parser to handle JSX elements, fragments, expression containers,
- * and spread attributes. Uses TypeScript ESTree for initial tokenization and maps
- * the resulting JSX AST nodes to markuplint's internal node tree.
+ * Unlike most framework parsers, this extends the base `Parser` class directly
+ * rather than `HtmlParser`: tokenization is done by
+ * `@typescript-eslint/typescript-estree` instead of parse5, so the HTML-specific
+ * behaviors of `HtmlParser` (ghost elements, head/body optimization, fragment
+ * detection) are not needed.
  */
 class JSXParser extends Parser<JSXNode, State> {
 	#parentIdMap = new WeakMap<MLASTNodeTreeItem, number | null>();
@@ -60,6 +61,17 @@ class JSXParser extends Parser<JSXNode, State> {
 		return super.parseError(error);
 	}
 
+	/**
+	 * Rebuilds parent-child relationships for psblock nodes
+	 * (e.g. `JSXExpressionContainer`). This is necessary because `jsxParser()`
+	 * returns a flat list: JSX elements found inside expression containers are
+	 * collected separately from their containers, so the containment recorded
+	 * via `__parentId` in `#parentIdMap` must be re-applied here by adopting
+	 * orphan nodes as children of the corresponding psblock.
+	 *
+	 * @param nodeTree - The traversed node tree
+	 * @returns The node tree with psblock children re-attached
+	 */
 	afterTraverse(nodeTree: readonly MLASTNodeTreeItem[]) {
 		nodeTree = super.afterTraverse(nodeTree);
 
@@ -100,16 +112,6 @@ class JSXParser extends Parser<JSXNode, State> {
 		return nodeTree;
 	}
 
-	/**
-	 * Converts a JSX AST node into markuplint node tree items.
-	 * Handles JSX text, elements, fragments, comments, and expression containers
-	 * (mapped to preprocessor-specific blocks).
-	 *
-	 * @param originNode - The JSX AST node to convert
-	 * @param parentNode - The parent node in the markuplint tree, or null for root nodes
-	 * @param depth - The nesting depth of the node
-	 * @returns An array of markuplint node tree items
-	 */
 	nodeize(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		originNode: JSXNode,
@@ -154,6 +156,11 @@ class JSXParser extends Parser<JSXNode, State> {
 
 				let token = this.sliceFragment(openTag.range[0], openTag.range[1]);
 
+				// Masks comments that fall within the opening tag with spaces
+				// so that comment syntax does not confuse the tag attribute
+				// parser. The replacement must keep the same string length
+				// (offset positions depend on it) and must preserve newlines
+				// (line numbers depend on them).
 				for (const comment of this.state.comments) {
 					if (comment.range[0] < openTag.range[0]) {
 						continue;
@@ -169,12 +176,7 @@ class JSXParser extends Parser<JSXNode, State> {
 					const endOffset = startOffset + commentToken.raw.length;
 
 					const maskedCode =
-						// aboves
-						raw.slice(0, startOffset) +
-						// masked comment
-						commentToken.raw.replaceAll(/[^\n]/g, ' ') +
-						// bellows
-						raw.slice(endOffset);
+						raw.slice(0, startOffset) + commentToken.raw.replaceAll(/[^\n]/g, ' ') + raw.slice(endOffset);
 
 					token = {
 						...token,
@@ -261,11 +263,8 @@ class JSXParser extends Parser<JSXNode, State> {
 	}
 
 	/**
-	 * Visits a comment token and marks all resulting comment nodes as non-bogus,
-	 * since JSX comments use JavaScript syntax rather than HTML bogus comments.
-	 *
-	 * @param token - The child token representing the comment
-	 * @returns An array of markuplint node tree items for the comment
+	 * JSX comments use JavaScript syntax rather than HTML bogus comments,
+	 * so the resulting comment nodes must not be flagged as bogus.
 	 */
 	visitComment(token: ChildToken) {
 		return super.visitComment(token).map(node => {
@@ -280,12 +279,9 @@ class JSXParser extends Parser<JSXNode, State> {
 	}
 
 	/**
-	 * Visits an attribute token, handling JSX-specific quoting (curly braces for expressions)
-	 * and dynamic value detection. IDL attribute name mapping is now handled declaratively
-	 * by react-spec's acceptedAttrNames and ml-core's attr resolution.
-	 *
-	 * @param token - The token representing the attribute
-	 * @returns The parsed attribute node
+	 * IDL attribute name mapping is not performed here; it is handled
+	 * declaratively by react-spec's acceptedAttrNames and ml-core's attr
+	 * resolution.
 	 */
 	visitAttr(token: Token) {
 		const attr = super.visitAttr(token, {
@@ -321,8 +317,6 @@ class JSXParser extends Parser<JSXNode, State> {
 	 * > assign it to a capitalized variable before using it in JSX.
 	 *
 	 * @see https://reactjs.org/docs/jsx-in-depth.html#user-defined-components-must-be-capitalized
-	 * @param nodeName
-	 * @returns
 	 */
 	detectElementType(nodeName: string) {
 		return super.detectElementType(nodeName, /^[A-Z]|\./);

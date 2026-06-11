@@ -30,11 +30,8 @@ Run `yarn build` if not already built in this session.
 yarn bench:update
 ```
 
-This starts the nu-validator Docker container, runs the full test
-suite through both tools, writes the raw snapshots (git-ignored) under
-`tests/external/snapshots/`, regenerates
-`tests/external/spec/nu-validator.spec.ts`, and produces
-`tests/external/snapshots/diff/summary.md`.
+Requires Docker. Raw snapshots under `tests/external/snapshots/` are
+git-ignored.
 
 To skip the Docker leg (markuplint-only refresh):
 

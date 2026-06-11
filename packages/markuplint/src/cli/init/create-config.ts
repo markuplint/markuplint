@@ -2,10 +2,6 @@ import type { DefaultRules, Langs, RuleSettingMode } from './types.js';
 import type { Config } from '@markuplint/ml-config';
 import type { Writable } from 'type-fest';
 
-/**
- * Maps each supported language/framework to a file-extension regular expression
- * used in the generated configuration's `parser` field.
- */
 const extRExp: Record<Langs, `\\.${string}$`> = {
 	jsx: '\\.[jt]sx?$',
 	vue: '\\.vue$',
@@ -23,10 +19,6 @@ const extRExp: Record<Langs, `\\.${string}$`> = {
 	liquid: '\\.liquid$',
 };
 
-/**
- * Human-readable display names for each supported template language/framework,
- * shown in the interactive init wizard prompts.
- */
 export const langs: Record<Langs, string> = {
 	jsx: 'React (JSX)',
 	vue: 'Vue',
@@ -44,18 +36,6 @@ export const langs: Record<Langs, string> = {
 	liquid: 'liquid (Shopify)',
 };
 
-/**
- * Builds a markuplint configuration object based on the user's init wizard selections.
- *
- * Configures parsers and spec modules for the selected template languages,
- * and populates rules based on the chosen rule-setting mode (custom categories,
- * recommended preset, or all defaults).
- *
- * @param langs - The template languages/frameworks selected by the user.
- * @param mode - The rule selection mode: an array of categories, `'recommended'`, or `'none'`.
- * @param defaultRules - The full set of available default rules with their categories and values.
- * @returns A complete markuplint `Config` object ready to be serialized to a file.
- */
 export function createConfig(langs: readonly Langs[], mode: RuleSettingMode, defaultRules: DefaultRules): Config {
 	let config: Writable<Config> = {};
 

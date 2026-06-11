@@ -12,14 +12,6 @@ type Options = {
 	ignoreOmittedElements: boolean;
 };
 
-/**
- * Rule that validates required child elements are present.
- *
- * Accepts an array of CSS selectors as the rule value. For the document level,
- * reports if any matching element is missing from the entire document. For
- * element-level overrides, checks that the specified child elements exist
- * among the element's direct children.
- */
 export default createRule<string[], Options>({
 	meta: meta,
 	defaultValue: [],

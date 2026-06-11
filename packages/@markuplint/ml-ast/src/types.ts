@@ -11,6 +11,10 @@
  * - `'invalid'`   – A node that could not be parsed correctly
  * - `'attr'`      – A regular HTML attribute
  * - `'spread'`    – A spread attribute (e.g. `{...props}` in JSX)
+ *
+ * Adding a value here requires a corresponding `case` in `ml-core`'s
+ * `createNode()` (`packages/@markuplint/ml-core/src/ml-dom/helper/create-node.ts`);
+ * an unhandled value throws `TypeError: Invalid AST node types` at runtime.
  */
 export type MLASTNodeType =
 	| 'doctype'
@@ -79,7 +83,14 @@ export type MLASTAttr = MLASTHTMLAttr | MLASTSpreadAttr;
  * in `@markuplint/parser-utils`.
  */
 export interface MLASTToken {
-	/** Unique identifier for this token instance */
+	/**
+	 * Unique identifier for this token instance.
+	 *
+	 * Cross-references between nodes (`parentNodeUuid`, `pairNodeUuid`) use
+	 * UUID strings rather than object references so the AST stays free of
+	 * circular references and can be serialized as JSON; consumers resolve a
+	 * UUID against `MLASTDocument.nodeList`.
+	 */
 	readonly uuid: string;
 	/** The original raw source text of this token */
 	readonly raw: string;
@@ -137,7 +148,7 @@ export interface MLASTElement extends MLASTAbstractNode {
 	readonly namespace: NamespaceURI;
 	/** Whether the element is native HTML, a Web Component, or an authored component */
 	readonly elementType: ElementType;
-	/** Whether this element acts as a fragment (no actual DOM node) */
+	/** Whether this element acts as a fragment (no actual DOM node, e.g. a JSX fragment `<>` or a Vue `<template>` wrapper) */
 	readonly isFragment: boolean;
 	/** Attributes on this element */
 	readonly attributes: readonly MLASTAttr[];
@@ -158,13 +169,18 @@ export interface MLASTElement extends MLASTAbstractNode {
 	readonly tagOpenChar: string;
 	/** The characters that close this tag (usually `">"`) */
 	readonly tagCloseChar: string;
-	/** Whether this element is a ghost node (omitted tag inferred by the parser) */
+	/** Whether this element is a ghost node (omitted tag inferred by the parser, e.g. an implicit `<tbody>`); ghost nodes have an empty `raw` */
 	readonly isGhost: boolean;
 }
 
 /**
  * A closing element tag (e.g. `</div>`).
  * Always paired with an {@link MLASTElement} via `pairNodeUuid`.
+ *
+ * Close tags are not part of DOM tree traversal in `ml-core`: `createNode()`
+ * skips `'endtag'` entries in the node list, and the paired `MLElement`
+ * instead resolves `pairNodeUuid` to create its `MLElementCloseTag`, which
+ * exists only as a satellite of that element.
  */
 export interface MLASTElementCloseTag extends MLASTAbstractNode {
 	readonly type: 'endtag';
@@ -187,6 +203,11 @@ export interface MLASTElementCloseTag extends MLASTAbstractNode {
  * A preprocessor-specific block node, representing control-flow constructs
  * from template engines and frameworks (e.g. `{#if}`, `{#each}` in Svelte,
  * `v-if` blocks in Vue, `<% if %>` in EJS/ERB).
+ *
+ * In `ml-core` this maps to `MLBlock` — a markuplint-specific extension with
+ * the custom `nodeType` `101` (no DOM Standard equivalent) — which acts as a
+ * transparent container: its children are treated as belonging to the parent
+ * node for tree traversal purposes.
  */
 export interface MLASTPreprocessorSpecificBlock extends MLASTAbstractNode {
 	readonly type: 'psblock';
@@ -198,7 +219,7 @@ export interface MLASTPreprocessorSpecificBlock extends MLASTAbstractNode {
 	readonly isFragment: boolean;
 	/** Direct child nodes within this block */
 	readonly childNodes: readonly MLASTChildNode[];
-	/** Block behavior associated with this block, if any */
+	/** Block behavior associated with this block, or `null` when the block has no control-flow semantic (e.g. a pure expression output like `<%= expr %>` in EJS) */
 	readonly blockBehavior: MLASTBlockBehavior | null;
 	/** Whether this block is bogus (unparsable or malformed) */
 	readonly isBogus: boolean;
@@ -208,6 +229,10 @@ export interface MLASTPreprocessorSpecificBlock extends MLASTAbstractNode {
  * Describes the behavior of a preprocessor block or element,
  * capturing both the kind of control-flow construct and the
  * source expression that drives it.
+ *
+ * `ml-core` uses the `type` to enumerate conditional branches
+ * (`conditionalChildNodes()`) so content-model rules such as
+ * `permitted-contents` can analyze each branch separately.
  */
 export interface MLASTBlockBehavior {
 	/** The kind of block behavior (e.g. `'if'`, `'each'`, `'await'`) */
@@ -240,7 +265,12 @@ export interface MLASTComment extends MLASTAbstractNode {
 	readonly nodeName: '#comment';
 	/** Nesting depth in the document tree */
 	readonly depth: number;
-	/** Whether the comment is bogus (e.g. a malformed comment) */
+	/**
+	 * Whether the comment is bogus (malformed per the HTML parsing spec,
+	 * e.g. `<!...>` or a processing instruction such as `<?xml ... ?>`).
+	 * The parser still captures these as comment nodes but flags them so
+	 * lint rules can report them.
+	 */
 	readonly isBogus: boolean;
 }
 
@@ -257,6 +287,12 @@ export interface MLASTText extends MLASTAbstractNode {
 /**
  * A node representing markup that could not be parsed correctly.
  * Always marked as bogus.
+ *
+ * This is a recovery node: the parser captures unparsable content instead of
+ * failing the whole parse. It is never preserved as-is in the DOM —
+ * `ml-core` converts it to an `MLElement` named `x-invalid` (when `kind` is
+ * `'starttag'`) or to an `MLText` (otherwise), so lint rules can still
+ * operate on the content based on the parser's best guess.
  */
 export interface MLASTInvalid extends MLASTAbstractNode {
 	readonly type: 'invalid';
@@ -272,6 +308,12 @@ export interface MLASTInvalid extends MLASTAbstractNode {
 /**
  * A regular HTML attribute node, decomposed into its constituent tokens
  * (name, equal sign, quotes, value, and surrounding whitespace).
+ *
+ * The decomposition exists so lint rules can validate whitespace around the
+ * equal sign, quoting style, and attribute naming conventions with precise
+ * source locations. For boolean attributes without a value (e.g.
+ * `disabled`), the `equal`, `startQuote`, `value`, and `endQuote` tokens
+ * still exist but have empty `raw` strings.
  */
 export interface MLASTHTMLAttr extends MLASTToken {
 	readonly type: 'attr';
@@ -297,7 +339,7 @@ export interface MLASTHTMLAttr extends MLASTToken {
 	readonly isDynamicValue?: true;
 	/** Whether the attribute is a framework directive (e.g. `v-if`, `@click`) */
 	readonly isDirective?: true;
-	/** The resolved attribute name when the actual name is a framework-specific directive */
+	/** The resolved attribute name when the actual name is a framework-specific directive (e.g. Vue's `:class` resolves to `class`, `@click` to `onclick`) */
 	readonly potentialName?: string;
 	/** The resolved attribute value when the actual value is dynamic */
 	readonly potentialValue?: string;
@@ -305,12 +347,15 @@ export interface MLASTHTMLAttr extends MLASTToken {
 	readonly valueType?: 'string' | 'number' | 'boolean' | 'code';
 	/** A candidate attribute name for auto-correction */
 	readonly candidate?: string;
-	/** Whether this attribute is allowed to appear multiple times on the same element */
+	/** Whether this attribute is allowed to appear multiple times on the same element (e.g. `class` in template engines that merge values) */
 	readonly isDuplicatable: boolean;
 }
 
 /**
  * A spread attribute node (e.g. `{...props}` in JSX).
+ *
+ * Minimal by design: a spread cannot be statically decomposed into
+ * name/value tokens, so only the positional token information is kept.
  */
 export interface MLASTSpreadAttr extends MLASTToken {
 	readonly type: 'spread';
@@ -442,7 +487,13 @@ export interface MLASTParseError {
 export interface MLASTDocument {
 	/** The full original source code */
 	readonly raw: string;
-	/** Flat list of top-level AST nodes in document order */
+	/**
+	 * Depth-first flattened list of all AST nodes in document order (the
+	 * order they appear in the source) — nodes also appear in their parent's
+	 * `childNodes`. UUID cross-references (`parentNodeUuid`, `pairNodeUuid`)
+	 * are resolved against this list, so every node referenced by UUID must
+	 * be present in it.
+	 */
 	readonly nodeList: readonly MLASTNodeTreeItem[];
 	/** Whether the document is a fragment (no root element required) */
 	readonly isFragment: boolean;

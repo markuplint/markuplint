@@ -6,8 +6,6 @@ import { matched, unmatched } from '../match-result.js';
 import { TokenCollection } from '../token/index.js';
 
 /**
- * Validates a serialized permissions policy string according to the W3C specification.
- *
  * @see https://w3c.github.io/webappsec-permissions-policy/#serialized-permissions-policy
  *
  * > Policy Directives in HTML attributes are represented as their

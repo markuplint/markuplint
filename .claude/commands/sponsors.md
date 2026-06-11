@@ -1,3 +1,7 @@
+---
+description: Check and update GitHub Sponsors listings across README and website
+---
+
 Check and update GitHub Sponsors listings.
 
 ## Steps

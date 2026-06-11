@@ -6,8 +6,6 @@ import { TokenCollection } from '../../token/index.js';
 import { datetimeTokenCheck } from './datetime-tokens.js';
 
 /**
- * Validates a yearless date string in the format `MM-DD`.
- *
  * @see https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#yearless-dates
  */
 export const checkYearlessDateString: CustomSyntaxChecker = () =>

@@ -53,9 +53,9 @@ export async function generalImport<T>(name: string): Promise<T | null> {
 		// code, so any Tier-1-shaped error (TypeError / SyntaxError / etc.)
 		// at this point may originate from inside the imported module and
 		// not from markuplint's own code — we cannot distinguish the two.
-		// The Tier 1 doctrine in `docs/architectures/ERROR-HANDLING.md`
-		// explicitly qualifies SyntaxError as "from markuplint code", which
-		// excludes third-party import failures (e.g. Node 22+ removing
+		// The Tier 1 classification (see `isFatalError()` in
+		// `@markuplint/shared`) only covers errors raised by markuplint's
+		// own code, which excludes third-party import failures (e.g. Node 22+ removing
 		// import assertion syntax, or bun's stricter ESM parser). Treating
 		// every error as a recoverable null-return is the correct policy
 		// here; callers (config / parser / plugin loaders) decide how to
@@ -118,13 +118,10 @@ export async function generalImport<T>(name: string): Promise<T | null> {
 }
 
 /**
- * Detects a bare package subpath specifier (e.g., `@scope/pkg/file.json`)
- * and resolves it to an absolute file path when the package's exports map
- * does not include the subpath.
- *
- * Returns the absolute path if resolution succeeds, or `null` if:
+ * Returns `null` (rather than throwing) in three distinct cases that callers
+ * treat identically — no bypass is needed:
  * - The specifier is not a package subpath (absolute path, relative path, no subpath)
- * - The package's exports map already includes the subpath (no bypass needed)
+ * - The package's exports map already includes the subpath
  * - The package cannot be found at all
  */
 function resolvePackageSubpath(name: string): string | null {
@@ -166,9 +163,6 @@ function resolvePackageSubpath(name: string): string | null {
 	}
 }
 
-/**
- * Resolves the root directory of a package by name.
- */
 function resolvePackageDir(packageName: string): string | null {
 	// Try CJS require.resolve first — it can often resolve package.json
 	// even when the ESM exports map doesn't include it

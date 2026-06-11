@@ -8,13 +8,6 @@ import meta from './meta.js';
  */
 const controlSelector = ["input:not([type='hidden' i])", 'select', 'textarea'].join(',');
 
-/**
- * Rule that validates `<label>` elements are properly associated with form controls.
- *
- * Checks that each label either wraps a control or has a `for` attribute,
- * and warns when a label contains more than one form control (only the first
- * is associated per the HTML spec).
- */
 export default createRule({
 	meta: meta,
 	defaultSeverity: 'warning',

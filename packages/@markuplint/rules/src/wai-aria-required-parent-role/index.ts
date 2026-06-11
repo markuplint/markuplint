@@ -7,7 +7,6 @@ import { checkingRequiredAccessibilityParentRole } from '../wai-aria/checkings/r
 import { defaultOptions } from '../wai-aria/default-options.js';
 import meta from './meta.js';
 
-/** Warns when an element with an explicit role is placed outside its required parent context. */
 export default createRule<boolean, Options>({
 	meta,
 	defaultOptions,

@@ -3,15 +3,6 @@ import type { Severity } from '@markuplint/ml-config';
 
 import { messageToString } from '@markuplint/cli-utils';
 
-/**
- * Formats lint results as GitHub Actions workflow commands.
- *
- * Each violation is emitted as a `::error`, `::warning`, or `::notice` command
- * that GitHub Actions interprets as an inline annotation on the affected file and line.
- *
- * @param results - The lint result information for a single file.
- * @returns An array of GitHub Actions workflow command strings.
- */
 export function githubReporter(results: MLResultInfo) {
 	const out: string[] = [];
 

@@ -131,9 +131,6 @@ export function applyDowngrade(
 	return result;
 }
 
-/**
- * Filters a group of violations by scope selector if present.
- */
 function filterByScope(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	group: readonly { index: number; violation: Violation }[],

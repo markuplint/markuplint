@@ -57,9 +57,6 @@ export function resolveBarrelExport(specifier: string, importedName: string, imp
 	return matchExportedName(indexSource, importedName);
 }
 
-/**
- * Finds the first matching index file in the given directory.
- */
 function findIndexFile(dirPath: string): string | null {
 	if (!isDirectory(dirPath)) {
 		return null;
@@ -75,10 +72,6 @@ function findIndexFile(dirPath: string): string | null {
 	return null;
 }
 
-/**
- * Parses export statements in a barrel file and returns the source path
- * for the given exported name.
- */
 function matchExportedName(indexSource: string, targetName: string): string | null {
 	// Parse named re-exports: `export { X } from '...'` and `export { default as X } from '...'`
 	let match: RegExpExecArray | null;

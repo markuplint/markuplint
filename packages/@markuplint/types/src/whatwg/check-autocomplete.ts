@@ -105,9 +105,6 @@ const URL_AUTOFILL_FIELD = 'https://html.spec.whatwg.org/multipage/form-control-
 type FieldCategory = 'Normal' | 'Contact' | 'Credential';
 
 /**
- * Determines the field category and maximum allowed token count
- * based on the last meaningful token (the field name).
- *
  * @see https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill-field
  */
 function determineFieldCategory(value: string): { category: FieldCategory } | null {
@@ -125,15 +122,8 @@ function determineFieldCategory(value: string): { category: FieldCategory } | nu
 }
 
 /**
- * Validates the `autocomplete` attribute value according to the WHATWG specification.
- *
- * Uses backward parsing (right-to-left) to match the spec algorithm:
- * 1. Determine field name from the last token
- * 2. Handle `webauthn` credential token and category re-determination
- * 3. Validate optional contacting token (home/work/mobile/fax/pager)
- * 4. Validate optional shipping/billing token
- * 5. Validate optional section-* named group
- * 6. Check maximum token count per category
+ * Parses backward (right-to-left) to match the spec algorithm, which is
+ * anchored on the trailing field name.
  *
  * @see https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete
  */

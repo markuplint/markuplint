@@ -1,14 +1,3 @@
-/**
- * CLI entry point for the pretenders scanner.
- * Accepts file glob patterns as input arguments and writes discovered
- * pretender mappings to a JSON output file.
- *
- * Usage: pretenders [options] <glob patterns...>
- * Flags:
- *   -O, --out <path>   Output file path (required)
- *   --ignore <names>   Comma-separated list of component names to ignore
- */
-
 import path from 'node:path';
 
 import meow from 'meow';

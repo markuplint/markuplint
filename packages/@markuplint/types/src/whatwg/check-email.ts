@@ -1,8 +1,6 @@
 import type { FormattedPrimitiveTypeCreator } from '../types.js';
 
 /**
- * Checks whether a string is a valid email address per the HTML spec.
- *
  * The regex below is the **verbatim** pattern from the HTML Living Standard.
  * It intentionally uses explicit ASCII ranges (`[a-zA-Z0-9]`) instead of `\w`
  * because the spec restricts valid characters to ASCII only. `\w` is equivalent

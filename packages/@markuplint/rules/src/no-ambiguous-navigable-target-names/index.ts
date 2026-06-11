@@ -4,14 +4,6 @@ import { valueCheck } from '../attr-check.js';
 
 import meta from './meta.js';
 
-/**
- * Rule that warns against ambiguous navigable target names.
- *
- * Detects attribute values (e.g., `target`) that look like browsing context
- * keywords (such as `_blank`, `_self`) but are missing the leading underscore,
- * which would make them navigable target names instead of keywords. Suggests
- * adding the underscore prefix when applicable.
- */
 export default createRule<boolean>({
 	meta: meta,
 	defaultSeverity: 'warning',

@@ -51,6 +51,15 @@ export class MLRule<T extends RuleConfigValue, O extends PlainData = undefined> 
 	/**
 	 * The spec conformance classification of this rule, based on RFC 2119 keyword strength.
 	 * Set on virtual rules derived from named nodeRules in presets.
+	 *
+	 * Intentionally restricted to named (preset-authored) entries: built-in
+	 * rules already bake normative strength into `defaultSeverity`, and
+	 * user-defined nodeRules express project conventions rather than spec
+	 * requirements — allowing it on arbitrary config would blur "the HTML spec
+	 * requires this" with "our team prefers this". The `/`-containing `name`
+	 * requirement acts as the gatekeeper. It is reporting metadata only and
+	 * never influences severity; severity changes require an explicit
+	 * `defaultSeverity` override on the alias.
 	 */
 	readonly specConformance?: SpecConformance;
 	/**
@@ -213,7 +222,6 @@ export class MLRule<T extends RuleConfigValue, O extends PlainData = undefined> 
 		const aliasName = this.baseRuleId ? this.name : undefined;
 
 		const violations = context.reports.map<Violation>(report => {
-			// Execute fix callback if fix mode is enabled
 			let fixData: FixData | undefined;
 			if (fix && report.fix) {
 				const edits = report.fix(sharedFixer);

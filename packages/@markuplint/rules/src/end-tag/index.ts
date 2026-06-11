@@ -3,13 +3,6 @@ import { isVoidElement } from '@markuplint/ml-spec';
 
 import meta from './meta.js';
 
-/**
- * Rule that checks for missing end tags on non-void HTML elements.
- *
- * Reports elements that are neither void nor self-closing and have no
- * closing tag. Omitted elements and elements in documents configured
- * with `endTag: 'never'` are excluded.
- */
 export default createRule<boolean>({
 	meta: meta,
 	defaultSeverity: 'warning',

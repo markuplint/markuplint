@@ -31,7 +31,12 @@ export type RuleSeed<T extends RuleConfigValue = boolean, O extends PlainData = 
 		 * The dedupe is global (the rule is checked at the ruleset level, not
 		 * per node), so partial-scope rules like `attr-duplication` (HTML
 		 * elements only via parse5; JSX / SVG via the rule itself) are safe:
-		 * parse5 only fires on HTML anyway.
+		 * parse5 only fires on HTML anyway. Note that `nodeRules` entries that
+		 * locally disable a mirroring rule do not change this decision.
+		 *
+		 * A mirroring rule typically produces its own violation by reading
+		 * `document.parseErrors`; see the `character-reference` rule in
+		 * `@markuplint/rules` for the canonical hook example.
 		 */
 		readonly mirrorsParseErrorCodes?: readonly MLASTParseErrorCode[];
 	};

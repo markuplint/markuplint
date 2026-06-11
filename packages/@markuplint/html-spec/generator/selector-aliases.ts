@@ -21,13 +21,7 @@
 const TOKEN_PATTERN = /#[A-Z][\dA-Za-z]*/g;
 
 /**
- * Replaces every alias token in a selector string using the given resolved
- * definitions.
- *
- * @param selector - The selector string that may contain alias tokens
- * @param aliases - Fully resolved alias definitions
- * @returns The selector with every token replaced
- * @throws If the selector references an alias that is not defined
+ * @throws If the selector references an alias that is not defined.
  */
 function expandTokens(selector: string, aliases: Readonly<Record<string, string>>): string {
 	return selector.replaceAll(TOKEN_PATTERN, token => {
@@ -40,12 +34,10 @@ function expandTokens(selector: string, aliases: Readonly<Record<string, string>
 }
 
 /**
- * Resolves nested references between alias definitions so that every
- * definition becomes a plain selector string.
+ * Resolves nested references between aliases so that every definition becomes a
+ * plain selector string with no remaining alias tokens.
  *
- * @param definitions - Raw alias definitions; values may reference other aliases
- * @returns Definitions with every nested reference expanded
- * @throws If a definition references an unknown alias or forms a cycle
+ * @throws If a definition references an unknown alias or forms a cycle.
  */
 export function resolveAliases(definitions: Readonly<Record<string, string>>): Record<string, string> {
 	const resolved: Record<string, string> = {};
@@ -78,15 +70,7 @@ export function resolveAliases(definitions: Readonly<Record<string, string>>): R
 }
 
 /**
- * Expands alias tokens in every selector-bearing `condition` field of an
- * element's attribute definitions: plain string conditions, array
- * conditions, and conditions inside `ConditionalAttributeType` entries.
- * Attributes without aliases are returned unchanged.
- *
- * @param attributes - The element's attribute definitions from the spec source
- * @param aliases - Fully resolved alias definitions (see {@link resolveAliases})
- * @returns The attribute definitions with every condition expanded
- * @throws If a condition references an alias that is not defined
+ * @throws If a condition references an alias that is not defined.
  */
 export function expandConditionAliases<T extends Record<string, any>>(
 	attributes: Readonly<T>,

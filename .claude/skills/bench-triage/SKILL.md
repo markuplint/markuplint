@@ -41,55 +41,25 @@ not this skill's target — but if you need to understand it, see
 
 ## Step 1: Pick a fixture
 
-Slice `coverage.json` by path or category, or pull from
-`nu-only.json` directly:
-
-```sh
-node -e '
-const j = require("./tests/external/snapshots/diff/nu-only.json");
-j.entries.slice(0, 20).forEach(e => console.log(e.category.padEnd(15), e.path));
-'
-```
-
-When auditing a coverage claim instead, slice by the claim's pattern:
-
-```sh
-node -e '
-const j = require("./tests/external/snapshots/diff/coverage.json");
-j.entries
-  .filter(e => /popover/i.test(e.path))
-  .forEach(e => console.log(e.verdict.padEnd(13), e.path));
-'
-```
+Slice `tests/external/snapshots/diff/nu-only.json` (`entries[]` with
+`category` and `path`) by path or category. When auditing a coverage
+claim instead, slice `coverage.json` by the claim's pattern and read
+each entry's `verdict`.
 
 ## Step 2: Read nu-validator messages for the fixture
 
-Raw `snapshots/nu-validator/**` is gitignored — regenerate with
-`yarn bench:update --target nu` if missing. Each message has a
+Read `tests/external/snapshots/nu-validator/<path>.json`
+(`nuValidator.messages[]`). The raw tree is gitignored — regenerate
+with `yarn bench:update --target nu` if missing. Each message has a
 stable `id` (`nv-<hex12>`, optionally `-N` on collisions); that's
 the key for `excluded-ids.json`.
 
-```sh
-node -e '
-const p = "tests/external/snapshots/nu-validator/<path>.json";
-require(p).nuValidator.messages.forEach(m =>
-  console.log(m.id, m.type, m.message.slice(0, 80))
-);'
-```
-
 ## Step 3: Read markuplint output for the fixture
 
-```sh
-node -e '
-const p = "tests/external/snapshots/markuplint/<path>.json";
-require(p).markuplint.violations.forEach(v =>
-  console.log(v.severity, v.ruleId, v.line + ":" + v.col, v.message.slice(0, 80))
-);'
-```
-
-For a `nu-only` fixture, expect zero violations here. If
-markuplint already detected something, the verdict computation may
-be stale — re-run `yarn bench:compare`.
+Read `tests/external/snapshots/markuplint/<path>.json`
+(`markuplint.violations[]`). For a `nu-only` fixture, expect zero
+violations here. If markuplint already detected something, the
+verdict computation may be stale — re-run `yarn bench:compare`.
 
 ## Step 4: Read the spec
 
@@ -134,43 +104,19 @@ not part of this project's workflow.
 
 ### How to record nu over-detection
 
-```jsonc
-{
-  "entries": [
-    {
-      "id": "nv-7f3c9a2b0e5d",
-      "path": "html-aria/.../example-novalid.html",
-      "nuMessage": "Attribute aria-expanded not allowed on element ...",
-      "reason": "ARIA 1.2 permits aria-expanded on this role; nu-validator's schema is stale.",
-      "addedAt": "<YYYY-MM-DD>",
-      "addedBy": "<github-handle>"
-    }
-  ]
-}
-```
+Follow the existing entry shapes in `excluded-ids.json` (per-`id`
+`entries[]` keyed by the nu message id; message-substring
+`patterns[]` keyed by `messageContains`). Every entry needs a
+`reason` containing the verbatim spec quote, plus `addedAt` /
+`addedBy`.
 
 The verdict flips to `nu-over` only when *every* active nu message
 on the fixture is covered. Partial coverage stays `nu-only`.
 
 When the same diagnostic hits many fixtures, use `patterns[]`
-(message-substring) instead of dozens of per-`id` entries:
-
-```jsonc
-{
-  "patterns": [
-    {
-      "messageContains": "Fragment is not allowed for data: URIs",
-      "reason": "WHATWG URL LS supersedes RFC 2397; fragments ARE part of a data: URL record.",
-      "specUrl": "https://url.spec.whatwg.org/#url-parsing",
-      "addedAt": "<YYYY-MM-DD>",
-      "addedBy": "<github-handle>"
-    }
-  ]
-}
-```
-
-`specUrl` is required on patterns — they are the most load-bearing
-exclusion. If you cannot cite a paragraph, use a per-`id` entry.
+instead of dozens of per-`id` entries. `specUrl` is required on
+patterns — they are the most load-bearing exclusion. If you cannot
+cite a paragraph, use a per-`id` entry.
 
 Patterns trade compactness for stability: per-`id` entries pin the
 nu message-ID hash, so a wording shift in nu surfaces as a stale

@@ -6,19 +6,6 @@ import { checkBase } from './check-base.js';
 import { matched } from './match-result.js';
 import { Token, TokenCollection } from './token/index.js';
 
-/**
- * Checks a value as a separated list of tokens against a type definition.
- *
- * Parses the value into tokens based on the list separator configuration,
- * then validates each individual token against the list's token type.
- *
- * @param value - The string value to check as a list
- * @param type - The list type definition containing separator and token type
- * @param defs - The type definitions registry for resolving nested types
- * @param ref - Optional reference URL for the unmatched result
- * @param cache - Whether to use cached results (defaults to `true`)
- * @returns The validation result
- */
 export function checkList(value: string, type: ReadonlyDeep<List>, defs: Defs, ref?: string, cache = true): Result {
 	const tokens = new TokenCollection(value, type);
 

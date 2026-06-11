@@ -6,7 +6,6 @@ import { checkingNonExistentRole } from '../wai-aria/checkings/non-existent-role
 import { defaultOptions } from '../wai-aria/default-options.js';
 import meta from './meta.js';
 
-/** Warns when a role attribute value does not exist in the WAI-ARIA specification. */
 export default createRule<boolean, Options>({
 	meta,
 	defaultOptions,

@@ -1,5 +1,3 @@
-/** Rule metadata for `character-reference`: categorized as a style rule. */
-//
 // This rule claims responsibility for both directions of HTML LS's character
 // reference conformance:
 //

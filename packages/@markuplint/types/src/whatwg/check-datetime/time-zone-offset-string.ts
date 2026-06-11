@@ -8,8 +8,6 @@ import { TokenCollection } from '../../token/index.js';
 import { datetimeTokenCheck } from './datetime-tokens.js';
 
 /**
- * Validates a time-zone offset string (`Z`, `+HH:MM`, or `-HH:MM`).
- *
  * @see https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#time-zones
  */
 export const checkTimeZoneOffsetString: CustomSyntaxChecker = () =>
@@ -19,12 +17,6 @@ export const checkTimeZoneOffsetString: CustomSyntaxChecker = () =>
 		return parseTimeZone(value);
 	};
 
-/**
- * Parses and validates a time-zone offset string (e.g., `Z`, `+09:00`, `-05:30`).
- *
- * @param zone - The time-zone string or token to validate
- * @returns The validation result
- */
 export function parseTimeZone(zone: string | Readonly<Token>) {
 	const value = typeof zone === 'string' ? zone : zone.value;
 

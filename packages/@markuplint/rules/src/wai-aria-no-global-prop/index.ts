@@ -7,7 +7,6 @@ import { checkingNoGlobalProp } from '../wai-aria/checkings/no-global-prop.js';
 import { defaultOptions } from '../wai-aria/default-options.js';
 import meta from './meta.js';
 
-/** Warns when a non-global ARIA property is used on an element without an explicit role. */
 export default createRule<boolean, Options>({
 	meta,
 	defaultOptions,

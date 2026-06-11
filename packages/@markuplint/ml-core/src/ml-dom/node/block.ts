@@ -13,6 +13,12 @@ import { MLNode } from './node.js';
  * These nodes correspond to template engine constructs such as conditionals (`if`/`else`),
  * loops (`each`), and other preprocessor directives that are not part of standard HTML.
  *
+ * Serves as the bridge between template syntax and HTML content model
+ * validation: transparency keeps the wrapper invisible to DOM traversal so
+ * rules such as `permitted-contents` see the effective HTML children, while
+ * `blockBehavior` lets `conditionalChildNodes()` enumerate every possible
+ * rendering branch.
+ *
  * @template T - The rule configuration value type
  * @template O - The rule options type
  */

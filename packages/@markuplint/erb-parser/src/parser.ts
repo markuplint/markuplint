@@ -9,10 +9,20 @@ import { HtmlParser } from '@markuplint/html-parser';
  * - `<% ... %>` (Ruby code execution)
  *
  * Note: trim_mode (`%`-prefixed lines) is not currently supported.
+ *
+ * Known limitation: ERB expressions inside unquoted attribute values
+ * (e.g. `<div attr=<%= value %>>`) are not supported; quoted attribute
+ * values work. This limitation is shared by all template engine parsers.
+ *
+ * @see https://github.com/markuplint/markuplint/issues/240
+ * @see https://markuplint.dev/docs/guides/besides-html
  */
 class ERubyParser extends HtmlParser {
 	constructor() {
 		super({
+			// Patterns are matched in order, so the more specific patterns
+			// (`<%=`, `<%#`) must precede the general `<%` pattern; otherwise
+			// `<%` would match expression and comment tags first.
 			ignoreTags: [
 				{
 					type: 'erb-ruby-expression',
@@ -26,6 +36,8 @@ class ERubyParser extends HtmlParser {
 				},
 				{
 					type: 'erb-ruby-code',
+					// The negative lookahead `(?!%)` excludes `<%%`, ERB's escaped
+					// delimiter syntax, which must remain a literal text node.
 					start: /<%(?!%)/,
 					end: '%>',
 				},

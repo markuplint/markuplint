@@ -2,13 +2,6 @@ import { createRule } from '@markuplint/ml-core';
 
 import meta from './meta.js';
 
-/**
- * Rule that disallows elements matching the configured CSS selectors.
- *
- * Accepts an array of selector strings as its value. Queries the document
- * (and per-element overrides) for matching elements and reports each one
- * as disallowed.
- */
 export default createRule<string[]>({
 	meta: meta,
 	defaultValue: [],

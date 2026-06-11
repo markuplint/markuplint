@@ -39,13 +39,6 @@ const selectors: { readonly [role in Roles]: string[] } = {
 /** Roles that are required to be top-level landmarks per WAI-ARIA practices. */
 const topLevelRoles: TopLevelRoles[] = ['banner', 'main', 'contentinfo'];
 
-/**
- * Rule that validates proper usage of ARIA landmark roles.
- *
- * Checks that `banner`, `main`, and `contentinfo` landmarks are
- * top-level (not nested inside other landmarks), and that when duplicate landmarks
- * of the same role exist, each has a unique accessible name.
- */
 export default createRule<boolean, Options>({
 	meta: meta,
 	defaultSeverity: 'warning',

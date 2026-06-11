@@ -4,6 +4,19 @@
  * Generates the markuplint extended specification JSON file by scraping W3C and MDN web standards
  * documentation. Aggregates HTML/SVG element specs, global attributes, ARIA roles and properties,
  * and content model definitions into a single output file consumed by the markuplint linter.
+ *
+ * Architectural decisions (do not revisit without strong reasons):
+ *
+ * - All HTML spec data is consolidated into a single `index.json` on purpose:
+ *   a single import reduces module resolution overhead for the many downstream
+ *   packages, and it guarantees consistency because every element passes
+ *   through the same enrichment process. Splitting the data package was
+ *   considered and rejected.
+ * - This generator's responsibility is external data fetching and enrichment
+ *   ONLY (MDN scraping, W3C ARIA downloading). Schema structure generation
+ *   belongs to `@markuplint/ml-spec`'s `gen/`; moving schema operations into
+ *   this generator was explicitly rejected to keep the architectural
+ *   boundaries between the data package and the spec foundation package.
  */
 
 import type { ExtendedSpec } from '@markuplint/ml-spec';
@@ -19,35 +32,25 @@ import { expandConditionAliases, resolveAliases } from './selector-aliases.ts';
 import { summarizeChanges } from './summarize.ts';
 import { validateSpecs } from './validate.ts';
 
-/**
- * Configuration options for the spec generator.
- */
 export type Options = {
-	/** The absolute file path where the generated JSON spec will be written. */
 	readonly outputFilePath: string;
-	/** An absolute glob pattern matching per-element HTML spec JSON files. */
 	readonly htmlFilePattern: string;
-	/** The absolute file path to the common (global) attributes JSON definition. */
 	readonly commonAttrsFilePath: string;
-	/** The absolute file path to the common content models JSON definition. */
 	readonly commonContentsFilePath: string;
-	/** The absolute file path to the named selector alias definitions. */
 	readonly selectorAliasesFilePath: string;
 	/**
-	 * Optional absolute file path to write a Markdown summary of the changes
-	 * relative to the previously generated spec. Consumed by the auto-update
-	 * workflow for the PR body. When omitted, no summary file is written.
+	 * Consumed by the auto-update workflow for the PR body. When omitted, no
+	 * summary file is written.
 	 */
 	readonly summaryFilePath?: string;
 };
 
 /**
- * Main entry point for the spec generator. Fetches and aggregates all specification data
- * (HTML/SVG elements, global attributes, ARIA definitions, content models, and reference URLs)
- * then writes the combined result as a JSON file to the specified output path.
- *
- * @param options - The configuration options controlling input sources and output destination
- * @returns A promise that resolves when the output file has been written
+ * Invariant: generation must be idempotent with respect to the source files.
+ * After editing a `src/spec.*.jsonc` file and regenerating, a second
+ * regeneration must not change the edited entries again — if it does, the
+ * manual spec data and the generator's merge logic disagree, and that
+ * disagreement must be investigated before committing.
  */
 export async function main({
 	outputFilePath,

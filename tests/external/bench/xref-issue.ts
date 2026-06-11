@@ -273,7 +273,7 @@ function ghJson<T>(args: readonly string[], action: string, issue: number): T {
 		// response, or a caller bug can surface as `TypeError`. These are
 		// programmer errors that `explainGhError` would otherwise flatten
 		// into a generic "gh view failed: …" message, making root-cause
-		// analysis harder. See `docs/architectures/ERROR-HANDLING.md`.
+		// analysis harder. See `isFatalError()` in `@markuplint/shared`.
 		if (isFatalError(error)) throw error;
 		throw explainGhError(action, issue, error);
 	}

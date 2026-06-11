@@ -8,13 +8,8 @@ import { finder } from './finder.js';
 const { isJsxAttribute, isJsxExpression, isJsxSpreadAttribute, isStringLiteral } = ts;
 
 /**
- * Extracts all attributes from a JSX opening or self-closing element.
- * Classifies each attribute by its node type: static (string literal value),
- * boolean (no value), dynamic (expression value), or spread ({...props}).
- *
- * @param el - The JSX opening or self-closing element to extract attributes from
- * @param sourceFile - The TypeScript source file containing the element
- * @returns An array of Attr objects representing all discovered attributes
+ * Classifies each attribute by node type: static (string literal value),
+ * boolean (no value), dynamic (expression value), or spread (`{...props}`).
  */
 export function getAttributes(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types

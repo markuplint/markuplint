@@ -54,21 +54,9 @@ spec-aligned signal.
 
 ## Pattern 1: flat enable
 
-Most new conformance rules ship as flat enable.
-
-```ts
-// tests/external/bench/config.ts
-export const benchmarkConfig: Config = {
-  rules: {
-    // ...existing entries kept alphabetical...
-    'meter-value-bounds': true,
-    // ...
-  },
-  // ...
-};
-```
-
-After editing:
+Most new conformance rules ship as flat enable: add
+`'<rule-name>': true` to `rules` in `tests/external/bench/config.ts`
+(entries kept alphabetical). After editing:
 
 ```sh
 yarn build --scope @markuplint/rules
@@ -83,22 +71,10 @@ matching that specific HTML (re-read the rule and the fixture).
 
 A rule whose default `meta.defaultSeverity` is `'warning'` does not
 contribute to bench verdicts (see `compare.ts#judgeMlState` — only
-errors flip ml state). Override for the bench-only run:
+errors flip ml state). Override for the bench-only run by adding
+`'<rule-name>': { severity: 'error' }` to `bench/config.ts`.
 
-```ts
-// tests/external/bench/config.ts
-export const benchmarkConfig: Config = {
-  rules: {
-    // The user-facing default is 'warning' for ergonomic reasons; the
-    // bench treats it as a hard error to align with the spec text the
-    // rule mirrors. Document the spec citation inline so the
-    // override survives audit.
-    'wai-aria-implicit-props': { severity: 'error' },
-  },
-};
-```
-
-Inline comment must include:
+The inline comment on the override must include:
 
 - The spec citation that justifies treating the rule as error
 - A reason why the user-facing default stays at `'warning'` (so the
@@ -115,14 +91,9 @@ lax). This is **not a regression** when:
 - The fixture's filename includes `-haswarn` (nu fires only a
   warning, not an error)
 
-Confirm by inspecting `markuplint-only.json` after the bench run:
-```sh
-node -e '
-const j = require("./tests/external/snapshots/diff/markuplint-only.json");
-const newish = j.entries.filter(e => e.ruleIds?.includes("<rule-name>"));
-for (const e of newish) console.log(e.path);
-'
-```
+Confirm by inspecting
+`tests/external/snapshots/diff/markuplint-only.json` after the bench
+run: filter `entries[]` to those whose `ruleIds` include the rule.
 
 Each affected fixture should be a legitimate "ml strict, nu lax"
 case per the bench-triage SKILL ml-only readings. Anything else is a

@@ -7,24 +7,6 @@ import { contentModel } from './content-model.js';
 import meta from './meta.js';
 import { transparentMode } from './represent-transparent-nodes.js';
 
-/**
- * The `permitted-contents` rule validates that each element's child nodes conform
- * to the HTML content model specification. It is the most complex rule in markuplint,
- * implementing a full content model validation engine that handles ordered sequences,
- * quantified patterns (require, optional, oneOrMore, zeroOrMore), choice alternations,
- * transparent content models, and conditional child node branches.
- *
- * For each element, it resolves the applicable content model (from the HTML spec or
- * user-defined tag rules), evaluates the element's children against that model, and
- * reports violations such as unexpected elements, missing required elements, or
- * disallowed content through transparent models. It also checks forbidden ancestor
- * constraints — elements like `<header>`, `<footer>`, `<main>`, and `<address>` must
- * not appear as descendants of certain other elements as defined by the HTML spec.
- * Additionally, it enforces required ancestor constraints (`descendantOf`) — certain
- * elements must appear as descendants of specific other elements. It also validates
- * sibling-unique attribute constraints (`uniqueAttrs`) — certain attributes must not
- * appear on more than one element of the same type within the same parent.
- */
 export default createRule<TagRule[], Options>({
 	meta: meta,
 	defaultValue: [],

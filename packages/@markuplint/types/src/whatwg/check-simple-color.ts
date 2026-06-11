@@ -1,10 +1,8 @@
 import type { FormattedPrimitiveTypeCreator } from '../types.js';
 
 /**
- * Checks whether a string is a valid simple color.
- *
- * A valid simple color is exactly seven characters long:
- * a U+0023 NUMBER SIGN (#) followed by six ASCII hex digits.
+ * Not the same as the CSS `<color>` type — named colors, `rgb()`, `hsl()`,
+ * etc. are all invalid here. Used for `input[type=color]` value validation.
  *
  * @see https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#valid-simple-colour
  */

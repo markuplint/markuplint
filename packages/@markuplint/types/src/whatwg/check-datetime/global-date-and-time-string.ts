@@ -8,8 +8,6 @@ import { datetimeTokenCheck } from './datetime-tokens.js';
 import { parseTimeZone } from './time-zone-offset-string.js';
 
 /**
- * Validates a global date and time string (date + time + time-zone offset).
- *
  * @see https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#global-dates-and-times
  */
 export const checkGlobalDateAndTimeString: CustomSyntaxChecker = () =>

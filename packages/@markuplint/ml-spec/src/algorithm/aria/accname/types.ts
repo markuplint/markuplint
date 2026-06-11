@@ -80,9 +80,6 @@ export interface AccnameResult {
 	readonly source: AccnameSource | null;
 }
 
-/**
- * Internal options passed through recursive calls.
- */
 export interface AccnameOptions {
 	readonly inLabelledbyTraversal?: boolean;
 	readonly visited?: ReadonlySet<string>;

@@ -3,15 +3,6 @@ import type { ARIAVersion, MLMLSpec } from '@markuplint/ml-spec';
 
 import { validateAriaVersion, ARIA_RECOMMENDED_VERSION, getComputedRole } from '@markuplint/ml-spec';
 
-/**
- * Creates the `:role()` extended pseudo-class handler.
- *
- * Matches elements whose computed ARIA role equals the specified role name.
- * Supports version syntax: `:role(roleName|version)`.
- *
- * @param specs - The HTML/ARIA specification data used for role computation
- * @returns An extended pseudo-class handler function
- */
 export function ariaRolePseudoClass(specs: MLMLSpec) {
 	return (content: string) =>
 		(

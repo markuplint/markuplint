@@ -10,6 +10,12 @@
  * Alpine.js is a lightweight JavaScript framework that provides
  * reactive and declarative features directly in HTML markup.
  *
+ * This package is merged into the base HTML spec by `schemaToSpec`
+ * in `@markuplint/ml-spec`. It intentionally has no test suite:
+ * conformance is enforced at build time by the `ExtendedSpec` type,
+ * and the merged spec is exercised by the downstream
+ * `@markuplint/ml-spec` and `@markuplint/ml-core` tests.
+ *
  * @see https://alpinejs.dev/
  */
 

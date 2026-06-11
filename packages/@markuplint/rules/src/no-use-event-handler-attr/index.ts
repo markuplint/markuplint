@@ -31,17 +31,6 @@ function matchEventName(eventName: string, pattern: string): boolean {
 	return eventName === pattern.toLowerCase();
 }
 
-/**
- * Rule that disallows inline event handler attributes (e.g., `onclick`,
- * `onchange`).
- *
- * Reports any attribute on an HTML element whose name starts with `on`,
- * indicating an inline event handler. An `ignore` option allows specific
- * attribute names or patterns to be excluded from the check.
- *
- * The value can be `true` (disallow all event handlers) or a `string[]`
- * of event names (without the `on` prefix) to selectively disallow.
- */
 export default createRule<boolean | readonly string[], Options>({
 	meta: meta,
 	defaultSeverity: 'warning',

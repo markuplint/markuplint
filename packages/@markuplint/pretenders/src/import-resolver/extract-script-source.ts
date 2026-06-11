@@ -14,22 +14,14 @@
  * | `extractMdxEsm`                  | MDX top-level ESM (no parser package for MDX)        |
  */
 
-/**
- * The result of extracting a script source block from a component file.
- */
 export interface ScriptSourceBlock {
-	/** The raw script/ESM content without delimiters */
 	readonly content: string;
 	/** The offset (in characters) of the content start within the original source */
 	readonly offset: number;
 }
 
 /**
- * Extracts the content of a regular `<script>` block (NOT `<script setup>`) from a Vue SFC source.
- * Only matches `<script>` without the `setup` attribute.
- *
- * @param source - The full Vue SFC source text
- * @returns The extracted script block, or `null` if no regular `<script>` is found
+ * Matches only a regular `<script>` block, never `<script setup>`.
  */
 export function extractVueScript(source: string): ScriptSourceBlock | null {
 	const re = /<script(?:\s[^>]*)?>/gi;
@@ -60,12 +52,8 @@ export function extractVueScript(source: string): ScriptSourceBlock | null {
 }
 
 /**
- * Extracts component names registered in the Vue Options API `components` property.
- * Handles both shorthand (`{ Button }`) and aliased (`{ Btn: MyButton }`) forms.
- * For aliased forms, returns the value (the import name), not the key (the template name).
- *
- * @param scriptContent - The content of the `<script>` block (without tags)
- * @returns An array of component local names referenced in the `components` registration
+ * For aliased forms (`{ Btn: MyButton }`), returns the value (the import name),
+ * not the key (the template name).
  */
 export function extractVueOptionsApiComponents(scriptContent: string): string[] {
 	if (!scriptContent) {
@@ -104,21 +92,9 @@ export function extractVueOptionsApiComponents(scriptContent: string): string[] 
 }
 
 /**
- * Extracts the top-level ESM block from an MDX file.
- * MDX files have standard ESM import/export statements at the top of the file,
- * followed by markdown/JSX content. This function extracts only the contiguous
- * block of import/export lines (including blank lines within the block),
- * stopping at the first line that is clearly non-ESM content.
- *
- * Tracks brace depth to skip intermediate lines inside multi-line
- * import/export blocks (e.g., `import { A, B } from '...'`).
- * Note: the closing line of a multi-line block (e.g., `} from '...'`)
- * is not recognized as ESM, so standalone multi-line imports are
- * not captured. Single-line imports preceding a multi-line block
- * are still returned correctly.
- *
- * @param source - The full MDX source text
- * @returns The ESM block, or `null` if no import/export statements are found at the top
+ * Known limitation: the closing line of a multi-line block (e.g., `} from '...'`)
+ * is not recognized as ESM, so standalone multi-line imports are not captured.
+ * Single-line imports preceding a multi-line block are still returned correctly.
  */
 export function extractMdxEsm(source: string): ScriptSourceBlock | null {
 	const lines = source.split('\n');

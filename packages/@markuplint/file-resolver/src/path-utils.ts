@@ -1,18 +1,11 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-/**
- * Convert OS-native separators to forward slashes.
- * Identity function on POSIX.
- */
+/** Identity function on POSIX. */
 export function toSlash(filePath: string): string {
 	return filePath.replaceAll('\\', '/');
 }
 
-/**
- * Convert a `file://` URL to a native file path using Node.js built-in.
- * Correctly handles URL encoding, UNC paths, and all drive letters.
- */
 export function fromFileURL(fileUrl: string): string {
 	return fileURLToPath(fileUrl);
 }
@@ -35,15 +28,9 @@ export function fromFileURL(fileUrl: string): string {
  * Mirrors `vscode/src/server/get-module.ts`'s `toImportSpecifier()` —
  * keep the two in sync when adjusting Windows-path handling.
  *
- * @param filePath - A module specifier — typically the result of
- *   `Files.resolve` or `require.resolve`, which may be a bare module name
- *   (`markuplint`), a relative path (`./foo`), or an absolute path
- *   (Windows or POSIX).
- * @returns A specifier safe to pass to `import()`. Absolute paths are
- *   converted to `file://` URLs with each segment percent-encoded; bare
- *   and relative specifiers are returned unchanged. UNC paths
- *   (`\\server\share\...`) are passed through unchanged as a known
- *   limitation.
+ * Known limitation: UNC paths (`\\server\share\...`) are passed through
+ * unchanged.
+ *
  * @see https://github.com/markuplint/markuplint/issues/3840
  * @see https://github.com/markuplint/markuplint/issues/3836
  * @see https://nodejs.org/api/esm.html#urls
@@ -68,10 +55,7 @@ export function toFileURL(filePath: string): string {
 	return `file://${segments.join('/')}`;
 }
 
-/**
- * Normalize a path for the `ignore` library (gitignore-style matching).
- * Removes drive letters, converts to forward slashes, and optionally makes relative.
- */
+/** Normalizes for the `ignore` library, whose matching is gitignore-style. */
 export function normalizeForIgnore(filePath: string, relative = false): string {
 	const hasBang = filePath.startsWith('!');
 	if (hasBang) {
@@ -98,9 +82,7 @@ export function normalizeForIgnore(filePath: string, relative = false): string {
 	return filePath;
 }
 
-/**
- * Normalize a path for glob libraries (forward slashes required).
- */
+/** Glob libraries require forward slashes. */
 export function normalizeForGlob(filePath: string): string {
 	return toSlash(filePath);
 }

@@ -132,10 +132,6 @@ export class MLCore {
 	 */
 	#originalNodeRules: readonly NodeRule[];
 	#originalChildNodeRules: readonly ChildNodeRule[];
-	/**
-	 * Pre-computed namespace prefixes from wildcard disable entries.
-	 * e.g., `rules["a11y/*"]: false` yields `"a11y/"`.
-	 */
 	#disabledNamespaces: readonly string[];
 
 	constructor({
@@ -172,10 +168,8 @@ export class MLCore {
 		this.#originalNodeRules = ruleset.nodeRules ?? [];
 		this.#originalChildNodeRules = ruleset.childNodeRules ?? [];
 
-		// Expand named rule groups in the rules section
 		const namedRulesResult = expandNamedRules(ruleset.rules ?? {}, rules);
 
-		// Expand named nodeRules into virtual rules (using expanded rules as base)
 		const allRulesForExpansion = [...rules, ...namedRulesResult.virtualRules];
 		const nodeRuleResult = expandNamedNodeRules(this.#originalNodeRules, allRulesForExpansion);
 		const childNodeRuleResult = expandNamedNodeRules(this.#originalChildNodeRules, allRulesForExpansion);
@@ -228,11 +222,9 @@ export class MLCore {
 
 		const baseRules = rules ? [...rules] : this.#rules.filter(r => !r.baseRuleId);
 
-		// Use pre-expansion originals as fallback when ruleset is not provided
 		const incomingNodeRules = ruleset?.nodeRules ?? this.#originalNodeRules;
 		const incomingChildNodeRules = ruleset?.childNodeRules ?? this.#originalChildNodeRules;
 
-		// Expand named rule groups in the rules section
 		const incomingRules = ruleset?.rules ?? this.#ruleset.rules;
 		const namedRulesResult = expandNamedRules(incomingRules, baseRules);
 
@@ -240,7 +232,6 @@ export class MLCore {
 		const nodeRuleResult = expandNamedNodeRules(incomingNodeRules, allRulesForExpansion);
 		const childNodeRuleResult = expandNamedNodeRules(incomingChildNodeRules, allRulesForExpansion);
 
-		// Update originals if new data was provided
 		if (ruleset?.nodeRules) {
 			this.#originalNodeRules = ruleset.nodeRules;
 		}
@@ -378,7 +369,6 @@ export class MLCore {
 			resultLog('Info: %d', i);
 		}
 
-		// Apply fixes if enabled
 		let fixedCode: string | undefined;
 		let fixSummary: FixSummary | undefined;
 		if (fix) {
@@ -606,24 +596,13 @@ export class MLCore {
 	}
 
 	/**
-	 * Iteratively applies fixes, re-parses, and re-verifies until no overlapping
-	 * fixes remain or the maximum pass count is reached (ESLint-style multi-pass loop).
-	 *
-	 * Oscillating fix sequences of any cycle length (A → B → A, A → B → C → A, ...)
-	 * are detected by comparing each pass output against all earlier pass inputs.
-	 * If a pass produces unparsable code, that pass is rolled back to the previous
-	 * parsable code.
-	 *
-	 * After the loop, the final code is re-verified once (unless the loop already
-	 * did) so that `summary.finalPassViolations` accurately reflects `code`.
+	 * ESLint-style multi-pass fix loop (modeled after SourceCodeFixer).
 	 *
 	 * **Callers must save/restore `#sourceCode`, `#ast`, and `#document`** because
 	 * this method mutates them during intermediate re-parse steps.
-	 *
-	 * @param initialViolations - Violations from the first verification pass
-	 * @returns The final fixed source code and a summary of the fix process
 	 */
 	async #multiPassFix(initialViolations: readonly Violation[]): Promise<{ code: string; summary: FixSummary }> {
+		// Same safety cap as ESLint's SourceCodeFixer (10 passes).
 		const MAX_FIX_PASSES = 10;
 		let currentCode = this.#sourceCode;
 		let fixes = extractFixes(initialViolations);
@@ -762,13 +741,6 @@ export class MLCore {
 		};
 	}
 
-	/**
-	 * Executes all configured rules against the current document and collects violations.
-	 * Skips disabled rules and handles virtual rule disable conditions.
-	 *
-	 * @param fix - Whether to execute fix callbacks on violations
-	 * @returns All violations produced by the rule set
-	 */
 	async #runAllRules(fix: boolean): Promise<Violation[]> {
 		const violations: Violation[] = [];
 		if (this.#document instanceof ParserError) {
@@ -832,10 +804,6 @@ export class MLCore {
 	}
 }
 
-/**
- * Extracts namespace prefixes from wildcard disable entries in rules.
- * e.g., `{ "a11y/*": false }` yields `["a11y/"]`.
- */
 function extractDisabledNamespaces(rules: { readonly [key: string]: unknown }): readonly string[] {
 	return Object.entries(rules)
 		.filter(([key, value]) => key.endsWith('/*') && value === false)
@@ -843,7 +811,6 @@ function extractDisabledNamespaces(rules: { readonly [key: string]: unknown }): 
 }
 
 /**
- * Builds a mapping from base rule names to virtual rule names.
  * Used by nodeRules/childNodeRules to propagate settings (especially `false`)
  * to virtual rules created by NamedRuleGroups.
  */
@@ -866,12 +833,6 @@ function buildBaseRuleToVirtualNames(
 	return map;
 }
 
-/**
- * Collects all `FixData` from violations that have a fix callback result.
- *
- * @param violations - The violations to extract fixes from
- * @returns An array of `FixData` objects ready for `applyFixes()`
- */
 function extractFixes(violations: readonly Violation[]): FixData[] {
 	const fixes: FixData[] = [];
 	for (const v of violations) {

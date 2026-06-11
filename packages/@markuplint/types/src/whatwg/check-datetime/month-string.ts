@@ -6,8 +6,6 @@ import { TokenCollection } from '../../token/index.js';
 import { datetimeTokenCheck } from './datetime-tokens.js';
 
 /**
- * Validates a month string in the format `YYYY-MM`.
- *
  * @see https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#valid-month-string
  */
 export const checkMonthString: CustomSyntaxChecker = () =>

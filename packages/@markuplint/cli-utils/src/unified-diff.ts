@@ -69,7 +69,7 @@ function computeLineEdits(a: readonly string[], b: readonly string[]): LineEdit[
 	const n = a.length;
 	const m = b.length;
 
-	// Build LCS table — dp[i][j] = LCS length of a[0..i-1] and b[0..j-1]
+	// Invariant: dp[i][j] = LCS length of a[0..i-1] and b[0..j-1]
 	const dp: number[][] = [];
 	for (let i = 0; i <= n; i++) {
 		const row: number[] = [];
@@ -89,7 +89,6 @@ function computeLineEdits(a: readonly string[], b: readonly string[]): LineEdit[
 		}
 	}
 
-	// Backtrack to produce edit script
 	const edits: LineEdit[] = [];
 	let i = n;
 	let j = m;

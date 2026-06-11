@@ -1,8 +1,6 @@
 import type { FormattedPrimitiveTypeCreator } from '../types.js';
 
 /**
- * Checks whether a string is a valid absolute URL.
- *
  * @see https://url.spec.whatwg.org/#syntax-url-absolute
  *
  * > An absolute-URL string must be one of the following:

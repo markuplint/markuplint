@@ -1,8 +1,6 @@
 export const MASK_CHAR = '\uE000';
 
 /**
- * SVG Element list
- *
  * @see https://developer.mozilla.org/en-US/docs/Web/SVG/Element
  */
 export const svgElementList = [
@@ -101,11 +99,4 @@ export const reTagName = /^[a-z][^\0\t\n\f />]*/i;
 
 export const reSplitterTag = /<[^>]+>/g;
 
-/**
- * - U+0009 CHARACTER TABULATION (tab) => `\t`
- * - U+000A LINE FEED (LF) => `\n`
- * - U+000C FORM FEED (FF) => `\f`
- * - U+000D CARRIAGE RETURN (CR) => `\r`
- * - U+0020 SPACE => ` `
- */
 export const defaultSpaces = ['\t', '\n', '\f', '\r', ' '] as const;

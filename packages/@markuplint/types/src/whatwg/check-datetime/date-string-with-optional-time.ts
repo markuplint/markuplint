@@ -8,9 +8,6 @@ import { checkGlobalDateAndTimeString } from './global-date-and-time-string.js';
 const checks = [checkDateString(), checkGlobalDateAndTimeString()];
 
 /**
- * Validates a string as either a valid date string or a valid global date and
- * time string.
- *
  * Used by attributes whose spec defines the value as "a valid date string with
  * optional time" (for example `<del>`/`<ins>` `datetime`). The accepted
  * production is strictly the union of those two formats — month-only, year-only,

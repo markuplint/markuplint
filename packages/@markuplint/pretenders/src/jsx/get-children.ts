@@ -12,19 +12,12 @@ const {
 } = ts;
 
 /**
- * Detects whether a JSX element accepts children by searching for
- * `{children}` or `{props.children}` expressions in its content subtree.
- *
  * Only searches content children (text, expressions, nested elements),
  * NOT attribute values on the element or nested elements.
  *
  * - Self-closing elements (`<Foo />`) cannot have children → returns `null`
  * - Opening elements with `{children}` or `{props.children}` in content → returns `true`
  * - Opening elements without children expressions → returns `null`
- *
- * @param el - The JSX opening or self-closing element to inspect
- * @param sourceFile - The TypeScript source file containing the element
- * @returns `true` if children are accepted, `null` otherwise
  */
 export function getChildren(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -52,9 +45,6 @@ export function getChildren(
 }
 
 /**
- * Recursively checks whether a node or its descendants contain a
- * `children` identifier or `props.children` property access.
- *
  * Skips JsxAttributes nodes to avoid false positives from
  * `{children}` used as attribute values on nested elements.
  */

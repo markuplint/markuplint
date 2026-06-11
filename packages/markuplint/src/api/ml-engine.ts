@@ -377,6 +377,22 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		};
 	}
 
+	/**
+	 * Resolves the configuration set for the target file.
+	 *
+	 * Public — unlike the other resolution steps, which are private —
+	 * because the CLI's `--show-config` needs the computed configuration
+	 * without running a lint.
+	 *
+	 * Precedence contract (highest first): the inline `config` option,
+	 * then the explicit `configFile` path, then auto-discovered config files
+	 * (search is skipped when `noSearchConfig` or `configFile` is set),
+	 * then `defaultConfig`. `markuplint:recommended` applies only when none
+	 * of these are provided.
+	 *
+	 * @param cache - Whether to reuse previously loaded config files
+	 * @returns The resolved configuration set
+	 */
 	async resolveConfig(cache: boolean) {
 		this.emit('log', 'resolveConfig', JSON.stringify(this.#configProvider, null, 2));
 		configLog('configProvider: %s', this.#configProvider);

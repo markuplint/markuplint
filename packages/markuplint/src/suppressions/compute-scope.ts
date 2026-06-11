@@ -4,6 +4,20 @@
  * Computes the Lowest Common Ancestor (LCA) of violation nodes and generates
  * a minimal CSS selector to identify the subtree containing all violations.
  *
+ * Selector precision is deliberately preferred over refactoring stability:
+ * id/class/attribute selectors may stop matching after a DOM refactoring,
+ * but a broken scope fails safe — it matches zero nodes, the scoped count
+ * (0) stays within the suppressed count, and the entry merely lingers as
+ * "unused" until `--prune-suppressions` cleans it up. New violations are
+ * never hidden. Loose tag-only selectors (e.g. `div > div > div`) were
+ * rejected because an unrelated matching subtree elsewhere in the file
+ * could absorb new violations into the suppressed count and hide
+ * regressions — the genuinely dangerous failure mode.
+ *
+ * Caveat for template languages (Vue, Svelte, etc.): the generated selector
+ * reflects the parsed DOM structure, which may differ from the authored
+ * source template.
+ *
  * @see https://github.com/markuplint/markuplint/issues/3509
  */
 
@@ -38,14 +52,6 @@ export interface PositionedNode extends ScopedNode {
 
 const BODY_HTML_TAGS = new Set(['body', 'html']);
 
-/**
- * @experimental
- * Returns the ancestor chain from the node's parent up to (but not including) the root.
- * Only includes element nodes.
- *
- * @param node - The starting node.
- * @returns Array of ancestor elements, closest first.
- */
 // eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 export function getAncestorChain(node: ScopedNode): ScopedNode[] {
 	const chain: ScopedNode[] = [];
@@ -182,10 +188,6 @@ const DISTINGUISHING_ATTRS: ReadonlyMap<string | null, readonly string[]> = new 
 	['input', ['type']], // only for <input>
 ]);
 
-/**
- * Returns a `tag[attr="value"]` selector if the node has a distinguishing
- * attribute (e.g., `role` or `type` for input). Returns `undefined` otherwise.
- */
 // eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 function getDistinguishingAttrSelector(node: ScopedNode): string | undefined {
 	const universalAttrs = DISTINGUISHING_ATTRS.get(null) ?? [];
@@ -203,10 +205,6 @@ function getDistinguishingAttrSelector(node: ScopedNode): string | undefined {
 	return undefined;
 }
 
-/**
- * Builds a selector segment for a node, adding `:nth-of-type(n)` when the
- * node has same-tag siblings to ensure uniqueness.
- */
 // eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 function buildSegmentWithNth(node: ScopedNode): string {
 	const parent = node.parentElement;
@@ -235,14 +233,9 @@ function buildSegmentWithNth(node: ScopedNode): string {
 
 /**
  * @experimental
- * Finds the element node at the given line/col position in the node list.
- * If the position matches a non-element node (e.g., attribute), walks up
- * to the nearest parent element.
- *
- * @param nodeList - Flat list of all nodes in the document.
- * @param line - 1-based line number.
- * @param col - 1-based column number.
- * @returns The element node at the position, or null if not found.
+ * The O(n) linear search per violation is deliberate — acceptable for
+ * typical document sizes; build a position index only if very large
+ * documents make this a measured bottleneck.
  */
 export function findNodeAtPosition(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types

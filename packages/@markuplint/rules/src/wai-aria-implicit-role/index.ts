@@ -6,7 +6,6 @@ import { checkingImplicitRole } from '../wai-aria/checkings/implicit-role.js';
 import { defaultOptions } from '../wai-aria/default-options.js';
 import meta from './meta.js';
 
-/** Warns when the explicit role attribute duplicates the element's implicit role. */
 export default createRule<boolean, Options>({
 	meta,
 	defaultSeverity: 'warning',

@@ -6,13 +6,6 @@ import { ELEMENT_NODE, SVG_NAMESPACE, TEXT_NODE, TEXT_LIKE_INPUT_TYPES } from '.
 
 export { EMBEDDED_CONTROL_ROLES } from '../../../const/index.js';
 
-/**
- * Creates an AccnameResult with a trimmed, whitespace-collapsed name.
- *
- * @param name - The raw name string to normalize
- * @param source - The source that provided the name, or null if the name is empty
- * @returns A result with the collapsed name and its source (source is null when name is empty)
- */
 export function makeResult(name: string, source: AccnameSource | null): AccnameResult {
 	const trimmed = flattenText(name);
 	return {
@@ -21,36 +14,19 @@ export function makeResult(name: string, source: AccnameSource | null): AccnameR
 	};
 }
 
-/**
- * Collapses internal whitespace and trims a string.
- *
- * @param text - The string to normalize
- * @returns The string with collapsed whitespace and trimmed
- */
 export function flattenText(text: string): string {
 	return text.replaceAll(/\s+/g, ' ').trim();
 }
 
 /**
- * Collects text content from child nodes recursively for name-from-content computation.
- *
  * Implements AccName 1.2 §4.3.2 Steps 2F and 2C:
  *
  * - **Step 2F**: "If the current node's role allows name from content [...],
  *   return the accumulated text of the current node's descendant nodes."
  * - **Step 2C (Embedded Controls)**: "If the current node is a descendant of
  *   an `aria-labelledby` or `aria-label` reference AND the current node is
- *   an embedded control, return the embedded control's value."
- *
- * Control flow for each child node:
- * 1. **Text node** → contribute text directly.
- * 2. **Embedded control** (textbox, combobox, listbox, slider, spinbutton, searchbox)
- *    → use value via `getEmbeddedControlValue`. Per spec, `aria-label` is ignored
- *    for embedded controls during name-from-content traversal.
- * 3. **Other element** → first try its full accessible name (Steps 2B–2I via `computeFn`).
- *    If no name, fall through to `collectTextContent` for transparent traversal.
- *
- * Parts are joined with a space separator per AccName 1.2 §4.3.2 Step 2C.
+ *   an embedded control, return the embedded control's value." Per spec,
+ *   `aria-label` is ignored for embedded controls during this traversal.
  *
  * **Limitation:** CSS-generated content (`::before`/`::after` with the `content`
  * property) is not included. AccName 1.2 §4.3.2 Step 2G specifies that CSS
@@ -58,12 +34,6 @@ export function flattenText(text: string): string {
  * performs static HTML analysis without CSS processing, so this content is
  * unavailable at lint time.
  *
- * @param el - The element whose child nodes to collect text from
- * @param resolver - Environment-dependent resolver for DOM traversal and role queries
- * @param visited - Set of element IDs already visited (cycle prevention)
- * @param computeFn - The recursive accessible name computation function
- * @param inLabelledbyTraversal - Whether this computation is part of an aria-labelledby traversal
- * @returns The concatenated text content from child nodes
  * @see https://www.w3.org/TR/accname-1.2/#computation-steps — AccName 1.2 §4.3.2 Step 2F
  * @see https://www.w3.org/TR/accname-1.2/#comp_embedded_control — AccName 1.2 §4.3.2 Step 2C
  */
@@ -156,8 +126,6 @@ function collectTextContent(
 }
 
 /**
- * Gets the value of an embedded control for name-from-content computation.
- *
  * Implements AccName 1.2 §4.3.2 Step 2C embedded control value resolution:
  * - **Range controls** (slider/spinbutton/input[range]):
  *   aria-valuetext → aria-valuenow → value attr → textContent
@@ -248,9 +216,6 @@ function getSelectedOptionText(el: AccnameElement): string {
 }
 
 /**
- * Collects all `<option>` descendant elements from a `<select>`,
- * traversing through `<optgroup>` containers.
- *
  * **Note (#2069):** Customizable `<select>` allows non-option children
  * (e.g., `<button>`, `<datalist>`, `<div>`). This function currently only
  * recognizes `<option>` and `<optgroup>` — it will need updating when the
@@ -274,20 +239,10 @@ function collectOptions(el: AccnameElement): AccnameElement[] {
 	return result;
 }
 
-/**
- * Checks if an input element is a text-like type (text, search, tel, url, email, etc.).
- */
 function isTextLikeInput(el: AccnameElement): boolean {
 	return TEXT_LIKE_INPUT_TYPES.has(getInputType(el));
 }
 
-/**
- * Finds the first child element with a matching localName.
- *
- * @param el - The parent element to search within
- * @param localName - The local tag name to match
- * @returns The first matching child element, or null if none found
- */
 export function findChildByLocalName(el: AccnameElement, localName: string): AccnameElement | null {
 	for (const child of el.children) {
 		if (child.localName === localName) {
@@ -297,12 +252,6 @@ export function findChildByLocalName(el: AccnameElement, localName: string): Acc
 	return null;
 }
 
-/**
- * Finds the nearest ancestor label element (implicit label association).
- *
- * @param el - The element to search from
- * @returns The nearest ancestor label element, or null if none found
- */
 export function findAncestorLabel(el: AccnameElement): AccnameElement | null {
 	let current = el.parentElement;
 	while (current) {
@@ -314,13 +263,6 @@ export function findAncestorLabel(el: AccnameElement): AccnameElement | null {
 	return null;
 }
 
-/**
- * Resolves a label for an element via explicit (for=id) or implicit (ancestor) association.
- *
- * @param el - The element to find labels for
- * @param resolver - Environment-dependent resolver for label lookups
- * @returns An array of label elements associated with the element
- */
 export function resolveLabel(el: AccnameElement, resolver: AccnameResolver): readonly AccnameElement[] {
 	const id = el.id;
 	if (id) {
@@ -336,12 +278,6 @@ export function resolveLabel(el: AccnameElement, resolver: AccnameResolver): rea
 	return [];
 }
 
-/**
- * Gets the input type, defaulting to 'text' for inputs without a type attribute.
- *
- * @param el - The element to get the input type for
- * @returns The lowercase input type, or an empty string if not an input element
- */
 export function getInputType(el: AccnameElement): string {
 	if (el.localName !== 'input') {
 		return '';
@@ -349,12 +285,6 @@ export function getInputType(el: AccnameElement): string {
 	return (el.getAttribute('type') ?? 'text').toLowerCase();
 }
 
-/**
- * Checks if an element is in the SVG namespace.
- *
- * @param el - The element to check
- * @returns True if the element is in the SVG namespace
- */
 export function isSvgElement(el: AccnameElement): boolean {
 	return el.namespaceURI === SVG_NAMESPACE;
 }

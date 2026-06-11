@@ -27,13 +27,6 @@ type Options = {
 	readonly ignoreAttrs?: readonly string[];
 };
 
-/**
- * Rule that validates elements have all required attributes.
- *
- * Checks both HTML-spec-defined required attributes and custom required attributes
- * specified in the rule configuration. Also validates that required attribute values
- * match expected patterns when value constraints are provided.
- */
 export default createRule<RequiredAttributes, Options>({
 	meta: meta,
 	defaultValue: [],

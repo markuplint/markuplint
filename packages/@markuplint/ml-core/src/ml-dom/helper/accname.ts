@@ -13,14 +13,6 @@ import { log } from '../../debug.js';
 
 const accnameLog = log.extend('accname');
 
-/**
- * Computes the accessible name for an MLElement using the HTML-AAM algorithm.
- * Creates an MLCore-specific resolver that bridges MLElement to the AccnameResolver interface.
- *
- * @param el - The MLElement to compute the accessible name for
- * @param version - The ARIA specification version to use for role resolution
- * @returns The computed accessible name string, or an empty string on error
- */
 export function getAccname(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: MLElement<any, any>,
@@ -32,8 +24,13 @@ export function getAccname(
 	// environment differences (e.g., Deno lacking certain DOM APIs).
 	// A single element's failure must not abort the entire linting process,
 	// so we catch all errors and return an empty name (= "unnamed").
-	// This is an intentional exception to the Tier 1 re-throw policy — see
-	// docs/architectures/ERROR-HANDLING.md § "accname computation errors".
+	// This is an intentional exception to the Tier 1 re-throw policy (see
+	// `isFatalError()` in `@markuplint/shared`): Tier-1-shaped errors here
+	// can be caused by the runtime environment, not only implementation bugs.
+	// The empty-string result is not converted to a violation either — a
+	// single element's accname failure must not create noise across
+	// unrelated rules, and "unnamed" still drives meaningful a11y rule
+	// violations downstream.
 	try {
 		const resolver = createMLCoreResolver(el, version);
 		const result = computeAccessibleName(el, resolver);

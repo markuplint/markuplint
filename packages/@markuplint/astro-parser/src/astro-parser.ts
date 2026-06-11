@@ -13,6 +13,13 @@ import { parseTemplate } from 'astro-eslint-parser';
  */
 const ASTRO_DIAGNOSTIC_SEVERITY_ERROR = 1;
 
+/**
+ * `@astrojs/compiler` is a dev dependency used only for these type
+ * definitions; the runtime AST actually comes from `astro-eslint-parser`.
+ * When upgrading `astro-eslint-parser`, also update `@astrojs/compiler` to
+ * the version it uses internally, otherwise the types drift from the
+ * runtime AST shape.
+ */
 export type {
 	RootNode,
 	ElementNode,
@@ -34,8 +41,8 @@ export type {
  * (implementation bug, must propagate). The Astro upstream chose to
  * subclass `SyntaxError` for ergonomic reasons, but the value it raises is
  * semantically a per-file parse failure that markuplint must convert to
- * `ParserError` (Tier 3). See `docs/architectures/ERROR-HANDLING.md` —
- * the Tier 1 row explicitly limits to "SyntaxError (from markuplint code)".
+ * `ParserError` (Tier 3). See `isFatalError()` in `@markuplint/shared` —
+ * Tier 1 covers only errors raised by markuplint's own code.
  */
 function isAstroEslintParseError(error: unknown): error is SyntaxError & {
 	readonly lineNumber?: number;
@@ -45,8 +52,6 @@ function isAstroEslintParseError(error: unknown): error is SyntaxError & {
 }
 
 /**
- * Parses an Astro component source string into the Astro compiler's root AST node.
- *
  * ## Diagnostic handling policy
  *
  * Only **severity=Error** Astro diagnostics surface as a `ParserError`.
@@ -79,8 +84,6 @@ function isAstroEslintParseError(error: unknown): error is SyntaxError & {
  * @see https://docs.astro.build/en/reference/directives-reference/#isinline
  * @see https://docs.astro.build/en/guides/client-side-scripts/#script-processing
  *
- * @param code - The raw Astro component source code
- * @returns The root AST node produced by the Astro compiler
  * @throws {ParserError} on severity=Error Astro diagnostics or on raw upstream syntax errors
  */
 export function astroParse(code: string): RootNode {

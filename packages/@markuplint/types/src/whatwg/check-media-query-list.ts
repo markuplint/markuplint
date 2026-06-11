@@ -380,8 +380,7 @@ function validateFeatureValue(
 }
 
 /**
- * Suggests the closest active media type when the value is a typo (e.g.,
- * `alla` -> `all`). Only used for the "candidate" hint shown to the user.
+ * Only used for the "candidate" typo hint shown to the user, not for validation.
  */
 function nearestMediaType(input: string): string | undefined {
 	for (const candidate of ACTIVE_MEDIA_TYPES) {

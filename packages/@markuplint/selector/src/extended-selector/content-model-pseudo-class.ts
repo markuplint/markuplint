@@ -5,15 +5,6 @@ import { contentModelCategoryToTagNames } from '@markuplint/ml-spec';
 
 import { createSelector } from '../create-selector.js';
 
-/**
- * Creates the `:model()` extended pseudo-class handler.
- *
- * Matches elements that belong to the specified HTML content model category
- * (e.g., `interactive`, `phrasing`, `flow`).
- *
- * @param specs - The HTML/ARIA specification data containing content model definitions
- * @returns An extended pseudo-class handler function
- */
 export function contentModelPseudoClass(specs: MLMLSpec) {
 	return (category: string) =>
 		(
@@ -44,6 +35,8 @@ export function contentModelPseudoClass(specs: MLMLSpec) {
 							},
 						];
 					}
+					// `#text` can never match: the selector engine only
+					// evaluates elements, never text nodes.
 					if (selector === '#text') {
 						return [
 							{

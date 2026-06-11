@@ -52,12 +52,15 @@ const namespaceSortOrder: Record<string, number> = {
 };
 
 /**
- * Builds the complete list of HTML, SVG, and MathML element specifications by reading local JSON spec files,
- * enriching them with data scraped from MDN, and appending obsolete/deprecated elements.
- * Elements are sorted alphabetically with MathML elements after HTML and SVG elements after MathML.
+ * Element names are derived from file names (`spec.<name>.jsonc`; `svg_` /
+ * `mml_` prefixes become the `svg:` / `mml:` namespaces). A source file that
+ * deviates from that pattern does not match the glob and is silently excluded
+ * from the output — there is no warning for it.
  *
- * @param filePattern - An absolute glob pattern matching the per-element JSON spec files
- * @returns A sorted array of extended element specification objects
+ * Merge precedence: manual spec data always wins over MDN-scraped data.
+ * `contentModel`, `aria`, and `globalAttrs` are never scraped (manual only);
+ * MDN only fills gaps — descriptions, categories, status flags, and attributes
+ * that the manual spec does not define.
  */
 export async function getElements(filePattern: string) {
 	let specs = await readJsons<ExtendedElementSpec>(filePattern, (file, body) => {

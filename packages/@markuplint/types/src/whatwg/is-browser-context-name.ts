@@ -1,8 +1,6 @@
 import type { FormattedPrimitiveTypeCreator } from '../types.js';
 
 /**
- * Checks whether a string is a valid browsing context name.
- *
  * @see https://html.spec.whatwg.org/multipage/browsers.html#valid-browsing-context-name
  *
  * > A valid browsing context name is any string with at least one character

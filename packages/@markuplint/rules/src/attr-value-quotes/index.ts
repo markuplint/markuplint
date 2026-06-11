@@ -21,13 +21,6 @@ const quoteList: QuoteMap = {
 	single: "'",
 };
 
-/**
- * Rule that enforces consistent quotation marks around attribute values.
- *
- * Verifies that all attribute values use the configured quote style (double
- * or single). Attributes without values, dynamic values, and directives are
- * skipped. Includes an auto-fix that replaces mismatched quotes.
- */
 export default createRule<Type>({
 	meta: meta,
 	defaultSeverity: 'warning',

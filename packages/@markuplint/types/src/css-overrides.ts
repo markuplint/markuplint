@@ -1,9 +1,6 @@
 /**
- * CSS syntax overrides for css-tree's built-in definitions.
- *
- * Provides alternative syntax definitions for CSS transform functions
- * and legacy value types to support SVG attribute validation where
- * the standard CSS syntax is too strict.
+ * Overrides css-tree's built-in transform/legacy-value definitions because the
+ * standard CSS syntax is too strict for the variants SVG attributes accept.
  */
 export const cssOverrides: Record<string, string> = {
 	// Alias

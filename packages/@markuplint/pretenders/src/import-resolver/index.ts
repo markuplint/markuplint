@@ -58,18 +58,11 @@ const EXTENSION_MAP: Record<string, ImportFrameworkType> = {
 	'.mdx': 'mdx',
 };
 
-/**
- * Determines the framework type from the file extension.
- */
 function getImportFrameworkType(filePath: string): ImportFrameworkType | null {
 	const ext = path.extname(filePath).toLowerCase();
 	return EXTENSION_MAP[ext] ?? null;
 }
 
-/**
- * Extracts the script source from a component file using the component scanner
- * if available, or falls back to built-in extraction for MDX.
- */
 async function extractScriptSource(
 	filePath: string,
 	source: string,
@@ -124,14 +117,6 @@ export async function analyzeImports(filePath: string, source: string): Promise<
 	return { bindings };
 }
 
-/**
- * Analyzes a Vue SFC's regular `<script>` block for Options API component registration.
- * Parses all imports from the script block, then filters to only those whose
- * local name appears in the `components: { ... }` property.
- *
- * @param source - The full Vue SFC source text
- * @returns The analysis result with filtered bindings, or empty bindings if not applicable
- */
 async function analyzeVueOptionsApi(source: string): Promise<ImportAnalysisResult> {
 	const scriptBlock = extractVueScript(source);
 	if (!scriptBlock) {
@@ -178,9 +163,6 @@ export function resolveComponentImport(
 	return undefined;
 }
 
-/**
- * Converts a kebab-case string to PascalCase.
- */
 function kebabToPascalCase(str: string): string {
 	if (!str.includes('-')) {
 		return str;

@@ -18,6 +18,19 @@ type MdastNode = RootContent;
  * Uses remark-parse + remark-mdx to produce an MDX-extended mdast,
  * then converts JSX elements to MLASTElement nodes and delegates
  * Markdown content to the shared MarkdownAwareParser base class.
+ *
+ * remark-parse + remark-mdx was chosen over `@mdx-js/mdx`, which wraps the
+ * same two packages and adds about 24 unnecessary dependencies for JS
+ * compilation that linting does not need; the parse-stage mdast is identical
+ * either way.
+ *
+ * Targets MDX v2/v3 only: MDX v1 uses a fundamentally different parser
+ * architecture with no shared code, is deprecated, and the ecosystem has
+ * migrated to v2/v3.
+ *
+ * No dedicated `@markuplint/mdx-spec` package exists because MDX uses React
+ * JSX syntax; pair this parser with `@markuplint/react-spec`, which provides
+ * the JSX attribute mappings (e.g. `className` -> `class`).
  */
 class MDXParser extends MarkdownAwareParser {
 	constructor() {
@@ -180,10 +193,6 @@ class MDXParser extends MarkdownAwareParser {
 		return super.detectElementType(nodeName, /^[A-Z]|\./);
 	}
 
-	/**
-	 * Visits a JSX element from the mdast, computing start tag and end tag
-	 * positions from the element's children and delegating to visitElement.
-	 */
 	#visitJsxElement(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		originNode: MdxJsxFlowElement | MdxJsxTextElement,
@@ -195,7 +204,6 @@ class MDXParser extends MarkdownAwareParser {
 		const isSelfClosing = token.raw.trimEnd().endsWith('/>');
 
 		if (isSelfClosing || children.length === 0) {
-			// Self-closing or empty element: the whole token is the start tag
 			const parsedNodes = this.parseCodeFragment(
 				{
 					...token,
@@ -222,7 +230,6 @@ class MDXParser extends MarkdownAwareParser {
 			});
 		}
 
-		// Element with children: split into start tag + children + end tag
 		const firstChild = children[0];
 		const lastChild = children.at(-1);
 		const firstChildOffset = firstChild?.position?.start.offset ?? token.offset + token.raw.length;
@@ -276,14 +283,11 @@ class MDXParser extends MarkdownAwareParser {
 }
 
 /**
- * Flattens top-level mdast children by extracting JSX elements
- * from paragraph wrappers so they appear at the top level.
+ * remark-mdx wraps inline JSX elements that appear in flowing text in
+ * `paragraph` nodes; unwrapping them keeps the JSX elements directly
+ * accessible to lint rules, while pure-Markdown paragraphs are kept as-is.
  *
  * Only inspects direct children of root; does not recurse into nested nodes.
- * Position information of unwrapped children is preserved from the original mdast.
- *
- * @param children - The root-level mdast children to process.
- * @returns A new array with JSX-containing paragraphs unwrapped.
  */
 // eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 function flattenMdastChildren(children: MdastNode[]): MdastNode[] {
@@ -295,10 +299,8 @@ function flattenMdastChildren(children: MdastNode[]): MdastNode[] {
 			const hasJsx = pgChildren.some(c => c.type === 'mdxJsxTextElement' || c.type === 'mdxTextExpression');
 
 			if (hasJsx) {
-				// JSX in paragraph: unwrap all children to top level
 				result.push(...pgChildren);
 			} else {
-				// Pure markdown paragraph: keep as-is
 				result.push(child);
 			}
 		} else {
