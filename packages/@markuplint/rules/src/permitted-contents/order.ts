@@ -1,4 +1,4 @@
-import type { ChildNode, Options, Result, Specs } from './types.js';
+import type { ChildNode, Mode, Options, Result, Specs, TagRule } from './types.js';
 import type { PermittedContentPattern } from '@markuplint/ml-spec';
 import type { ReadonlyDeep } from 'type-fest';
 
@@ -20,18 +20,27 @@ import { Collection, mergeHints, modelLog } from './utils.js';
  *
  * @param contents - An ordered array of content model patterns to match sequentially.
  * @param childNodes - The child nodes to validate against the patterns.
+ * @param rules - User-defined tag rules. `order` does not consult them directly; they are
+ *                threaded through so nested helpers (especially `representTransparentNodes`)
+ *                can resolve content models via `resolveContentModel`. Do not remove even if
+ *                it looks unused here.
  * @param specs - The resolved spec data for content model lookups.
  * @param options - Validation behavior options.
  * @param depth - The current recursion depth, used for debug logging and nested pattern matching.
+ * @param mode - Whether we are evaluating the element's `'origin'` or `'pretended'` identity.
+ *               Propagated unchanged into `complexBranch` so downstream selector matching
+ *               honors the same view.
  * @returns A result indicating overall match status and the matched/unmatched node partitioning.
  */
 export function order(
 	contents: ReadonlyDeep<PermittedContentPattern[]>,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	childNodes: readonly ChildNode[],
+	rules: readonly TagRule[],
 	specs: Specs,
 	options: Options,
 	depth: number,
+	mode: Mode,
 ): Result {
 	const orderLog = cmLog.extend(`order#${depth}`);
 	const btLog = cmLog.extend(`backtrack#${depth}`);
@@ -49,7 +58,7 @@ export function order(
 	const unmatchedResults: Result[] = [];
 
 	while (patterns.length > 0 && patterns[0]) {
-		result = complexBranch(patterns[0], collection.unmatched, specs, options, depth);
+		result = complexBranch(patterns[0], collection.unmatched, rules, specs, options, depth, mode);
 		collection.addMatched(result.matched);
 
 		if (result.type !== 'UNEXPECTED_EXTRA_NODE' && result.type !== 'MATCHED' && result.type !== 'MATCHED_ZERO') {

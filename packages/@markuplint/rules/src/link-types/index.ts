@@ -21,11 +21,6 @@ type ElementContext = 'link' | 'body-link' | 'a-area' | 'form';
 
 const TARGET_ELEMENTS = new Set(['link', 'a', 'area', 'form']);
 
-/**
- * Rule that validates link type keywords in the `rel` attribute on
- * `<link>`, `<a>`, `<area>`, and `<form>` elements against the WHATWG
- * standard and optionally the Microformats registry.
- */
 export default createRule<boolean, Options>({
 	meta: meta,
 	defaultOptions: {

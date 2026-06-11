@@ -60,7 +60,7 @@ export const checkingRequiredAccessibilityParentRole: ElementChecker<
 			// `ariaSpecs().roles` returns raw spec data where the field is always
 			// `requiredContextRole` for all versions. The fallback to
 			// `requiredAccessibilityParentRole` is a defensive guard in case
-			// the spec-generator changes the field name in the future.
+			// the generator changes the field name in the future.
 			const parentRoles = roleSpec.requiredContextRole ?? roleSpec.requiredAccessibilityParentRole;
 			if (parentRoles && parentRoles.length > 0) {
 				return {

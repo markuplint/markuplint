@@ -23,12 +23,24 @@
 		"shadowrootdelegatesfocus": {
 			"type": "Boolean"
 		},
+		// https://html.spec.whatwg.org/multipage/scripting.html#attr-template-shadowrootslotassignment
+		"shadowrootslotassignment": {
+			"type": {
+				"enum": ["named", "manual"],
+				"missingValueDefault": "named",
+				"invalidValueDefault": "named"
+			}
+		},
 		// https://html.spec.whatwg.org/multipage/scripting.html#attr-template-shadowrootclonable
 		"shadowrootclonable": {
 			"type": "Boolean"
 		},
 		// https://html.spec.whatwg.org/multipage/scripting.html#attr-template-shadowrootserializable
 		"shadowrootserializable": {
+			"type": "Boolean"
+		},
+		// https://html.spec.whatwg.org/multipage/scripting.html#attr-template-shadowrootcustomelementregistry
+		"shadowrootcustomelementregistry": {
 			"type": "Boolean"
 		},
 		// https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/template#shadowrootreferencetarget

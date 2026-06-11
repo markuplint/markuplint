@@ -9,16 +9,17 @@ v5 improves configuration with global settings, named rules, and cleaner merge b
 
 ## What changed
 
-| Change                                            | Who is affected                              |
-| ------------------------------------------------- | -------------------------------------------- |
-| New `ruleCommonSettings` property                 | All config authors                           |
-| Named nodeRules                                   | Preset users and authors                     |
-| `specConformance` metadata                        | Preset authors                               |
-| nodeRules/childNodeRules deduplicate by name      | Configs using `extends` with named nodeRules |
-| Rule array values override instead of concatenate | Configs using `extends` with array values    |
-| Rule options shallow merge instead of deep merge  | Configs using `extends` with nested options  |
-| Pretender `data` appends instead of overrides     | Configs using `extends` with pretenders      |
-| `--config` flag loads only the specified file     | CLI users with `--config`                    |
+| Change                                            | Who is affected                                  |
+| ------------------------------------------------- | ------------------------------------------------ |
+| New `ruleCommonSettings` property                 | All config authors                               |
+| Named nodeRules                                   | Preset users and authors                         |
+| `specConformance` metadata                        | Preset authors                                   |
+| nodeRules/childNodeRules deduplicate by name      | Configs using `extends` with named nodeRules     |
+| Rule array values override instead of concatenate | Configs using `extends` with array values        |
+| Rule options shallow merge instead of deep merge  | Configs using `extends` with nested options      |
+| Pretender `data` appends instead of overrides     | Configs using `extends` with pretenders          |
+| Pretenders no longer apply to standard HTML tags  | Configs targeting HTML elements via `pretenders` |
+| `--config` flag loads only the specified file     | CLI users with `--config`                        |
 
 ## `ruleCommonSettings`
 
@@ -311,6 +312,37 @@ This change makes pretender configs more composable.
 | `data`    | Override    | **Append**  |
 
 **How to migrate:** This is generally non-breaking. If you need to replace pretender data entirely, define all pretenders in a single config instead of using `extends`.
+
+## Pretenders no longer apply to standard HTML tags
+
+:::caution Breaking Change
+If you used `pretenders` (or the inline `as=` attribute) to make a standard HTML element behave like another, those entries are now ignored.
+:::
+
+**Why:** A pretender entry whose selector resolves to a recognised HTML / SVG element silently masked spec-driven rules — deprecation warnings, ARIA role restrictions, and browser-support checks — keyed on the original tag. The pretender system was always intended for custom components only; v5 enforces that. See [issue #3740](https://github.com/markuplint/markuplint/issues/3740).
+
+**Before (v4):** `<marquee as="div">` or a config-driven `pretenders: [{ selector: 'marquee', as: 'div' }]` masqueraded the original tag, suppressing the marquee deprecation warning.
+
+```json
+{
+  "pretenders": [{ "selector": "marquee", "as": "div" }]
+}
+```
+
+**After (v5):** Pretenders apply only when the source element is a custom component — that is, anything **except** an element listed in `@markuplint/html-spec` (or any user-supplied spec). Practically, that means:
+
+| Source element                                                                     | Pretender applies?                                         |
+| ---------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| Standard HTML / SVG tag (`<button>`, `<marquee>`, …)                               | No                                                         |
+| Web component / autonomous custom element (`<x-foo>`)                              | Yes                                                        |
+| Authored component (JSX/Vue/Svelte `<MyButton>`)                                   | Yes                                                        |
+| Unknown HTML-parsed name without a hyphen (`<simplebutton>` from `<SimpleButton>`) | Yes — kept eligible so `pretenders.scan` continues to work |
+
+**How to migrate:**
+
+1. Search your config(s) for `pretenders` entries whose `selector` matches an HTML or SVG element name. Drop them — the original element is now linted on its own merits.
+2. Inline `<HTMLElement as="…">` in templates was already a no-op in v4; that behaviour is preserved.
+3. If you intentionally wanted to silence violations on the standard tag (for example, to keep using `<marquee>` without warnings), use the per-rule `disabled` setting or an `ignore`/`severity` override instead. Pretenders are not the right tool for that.
 
 ## `--config` flag behavior
 

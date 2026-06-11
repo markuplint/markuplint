@@ -1,0 +1,458 @@
+{
+	"entries": [
+		{
+			"path": "html-aria/author-requirements/574.html",
+			"category": "aria",
+			"nuMessageIds": [
+				"nv-73b3fce3b363"
+			]
+		},
+		{
+			"path": "html-aria/author-requirements/575.html",
+			"category": "aria",
+			"nuMessageIds": [
+				"nv-00a3cfaf103b"
+			]
+		},
+		{
+			"path": "html-aria/author-requirements/576.html",
+			"category": "aria",
+			"nuMessageIds": [
+				"nv-b1c9dc6d3f45"
+			]
+		},
+		{
+			"path": "html-aria/author-requirements/577.html",
+			"category": "aria",
+			"nuMessageIds": [
+				"nv-b0be41d0320e"
+			]
+		},
+		{
+			"path": "html-aria/misc/aria-expanded-with-command-novalid.html",
+			"category": "aria",
+			"nuMessageIds": [
+				"nv-5c22b7821665"
+			]
+		},
+		{
+			"path": "html-aria/misc/role-tab-with-no-role-tabpanel-novalid.html",
+			"category": "aria",
+			"nuMessageIds": [
+				"nv-1e3c9ebc2ee7"
+			]
+		},
+		{
+			"path": "html-aria/misc/summary-for-its-details-with-aria-expanded-novalid.html",
+			"category": "aria",
+			"nuMessageIds": [
+				"nv-e2dbcbc96ae0",
+				"nv-71d55bb7d1b2"
+			]
+		},
+		{
+			"path": "html-aria/misc/summary-for-its-details-with-aria-pressed-novalid.html",
+			"category": "aria",
+			"nuMessageIds": [
+				"nv-a354a70fa4fe",
+				"nv-7e99c1fe9674"
+			]
+		},
+		{
+			"path": "html-math/math-in-head-novalid.html",
+			"category": "uncategorized",
+			"nuMessageIds": [
+				"nv-0c86320f6630",
+				"nv-8aff5b8981a2"
+			]
+		},
+		{
+			"path": "html/attributes/command-with-aria-expanded-novalid.html",
+			"category": "global-attr",
+			"nuMessageIds": [
+				"nv-65bdcb988594"
+			]
+		},
+		{
+			"path": "html/attributes/lang/extlang-bad-novalid.html",
+			"category": "global-attr",
+			"nuMessageIds": [
+				"nv-b9765660c678"
+			]
+		},
+		{
+			"path": "html/attributes/lang/invalid-primary-novalid.html",
+			"category": "global-attr",
+			"nuMessageIds": [
+				"nv-ae0b2057a762"
+			]
+		},
+		{
+			"path": "html/datatypes/charset-invalid-novalid.html",
+			"category": "data-types",
+			"nuMessageIds": [
+				"nv-acede5e8fcb0",
+				"nv-b7b2459d8f36"
+			]
+		},
+		{
+			"path": "html/datatypes/sandbox-scripts-same-origin-haswarn.html",
+			"category": "data-types",
+			"nuMessageIds": [
+				"nv-cd593c007a34"
+			]
+		},
+		{
+			"path": "html/elements/a/with-href-button-descendant-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-81c2e7bf5413"
+			]
+		},
+		{
+			"path": "html/elements/audio/controls-in-button-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-f3f919789208"
+			]
+		},
+		{
+			"path": "html/elements/base/preceded-by-link-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-06f44cb68fc6"
+			]
+		},
+		{
+			"path": "html/elements/base/preceded-by-script-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-397f312420d3"
+			]
+		},
+		{
+			"path": "html/elements/dl/div-multiple-groups-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-323a5f6407e4",
+				"nv-8488d87fd201",
+				"nv-c85c578225cf",
+				"nv-4f10aadba99f"
+			]
+		},
+		{
+			"path": "html/elements/img/missing-alt-in-figure-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-224e80c23676"
+			]
+		},
+		{
+			"path": "html/elements/img/sizes-invalid-media-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-4377c73ab587"
+			]
+		},
+		{
+			"path": "html/elements/img/usemap-invalid-reference-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-f3a0d6efeee1"
+			]
+		},
+		{
+			"path": "html/elements/input/autocomplete-on-hidden-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-5db4edb9a603"
+			]
+		},
+		{
+			"path": "html/elements/input/list-not-datalist-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-7a8a988fcc60"
+			]
+		},
+		{
+			"path": "html/elements/input/list-references-nondatalist-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-5b40a940f6c9"
+			]
+		},
+		{
+			"path": "html/elements/input/type-button-empty-value-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-54c78eff3c7d"
+			]
+		},
+		{
+			"path": "html/elements/input/type-hidden-autocomplete-on-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-9d1d24e3ba6b"
+			]
+		},
+		{
+			"path": "html/elements/label/aria-with-labelable-descendant-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-91a6b49ad56f"
+			]
+		},
+		{
+			"path": "html/elements/label/for-descendant-no-id-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-89ff039ff03e"
+			]
+		},
+		{
+			"path": "html/elements/label/for-non-form-control-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-345f3b690724"
+			]
+		},
+		{
+			"path": "html/elements/label/for-references-non-labelable-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-515e9e79e1c7"
+			]
+		},
+		{
+			"path": "html/elements/meta/content-security-policy/csp-invalid-directive-haswarn.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-6ec2a5c8c04c"
+			]
+		},
+		{
+			"path": "html/elements/meta/content-security-policy/csp-invalid-source-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-ccff05d53b7c"
+			]
+		},
+		{
+			"path": "html/elements/meta/content-security-policy/csp-non-ascii-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-f76bf04a85bb"
+			]
+		},
+		{
+			"path": "html/elements/meta/x-ua-compatible-not-ie-edge-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-006f6fbfb136"
+			]
+		},
+		{
+			"path": "html/elements/picture/html-syntax-picture-no-end-tag-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-3ade6b2bf3d6",
+				"nv-aca994a28b46"
+			]
+		},
+		{
+			"path": "html/elements/picture/junk-noscript-after-source-no-img-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-fab7ebe451a5",
+				"nv-6cc718a96d01"
+			]
+		},
+		{
+			"path": "html/elements/picture/junk-noscript-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-2f51978ea35d"
+			]
+		},
+		{
+			"path": "html/elements/picture/junk-video-before-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-6c316a041c38"
+			]
+		},
+		{
+			"path": "html/elements/picture/sizes-microsyntax-media-general-enclosed-junk-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-3aede802ce86"
+			]
+		},
+		{
+			"path": "html/elements/progress/value-exceeds-max-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-ebd8f3d61422"
+			]
+		},
+		{
+			"path": "html/elements/progress/value-exceeds-one-no-max-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-077fa3dae0ce"
+			]
+		},
+		{
+			"path": "html/elements/select/autocomplete-with-webauthn-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-cf9799a27fc6"
+			]
+		},
+		{
+			"path": "html/elements/select/required-no-option-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-bfbf166bef9d"
+			]
+		},
+		{
+			"path": "html/elements/source/media-invalid-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-a5bc92ff7cc9"
+			]
+		},
+		{
+			"path": "html/elements/style/css-property-error-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-c5efac320bbb"
+			]
+		},
+		{
+			"path": "html/elements/table/cell-overlaps-earlier-cell-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-c4f8fa6b70b8"
+			]
+		},
+		{
+			"path": "html/elements/table/cell-overlaps-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-08f5fbfeb948"
+			]
+		},
+		{
+			"path": "html/elements/table/cell-spans-past-end-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-86b3e5ec0c91"
+			]
+		},
+		{
+			"path": "html/elements/table/cell-spans-past-row-group-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-7c845e09546b"
+			]
+		},
+		{
+			"path": "html/elements/table/col-no-cells-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-4a38780cd43d",
+				"nv-a2675d33cead"
+			]
+		},
+		{
+			"path": "html/elements/table/integrity/vertical-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-4b27c9d7144c",
+				"nv-7ad7b35e592c",
+				"nv-5228f89f32b3",
+				"nv-6aab5dcb29be",
+				"nv-09957c9504d0"
+			]
+		},
+		{
+			"path": "html/elements/table/model-input-child-novalid.html",
+			"category": "content-model",
+			"nuMessageIds": [
+				"nv-d6d3104a6447",
+				"nv-efcdd4dbed19"
+			]
+		},
+		{
+			"path": "html/elements/table/model-input-type-child-novalid.html",
+			"category": "content-model",
+			"nuMessageIds": [
+				"nv-7117cdf5c608",
+				"nv-740abbdab084"
+			]
+		},
+		{
+			"path": "html/elements/table/row-no-cells-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-8c9bf1f0d223"
+			]
+		},
+		{
+			"path": "html/elements/table/row-width-exceeds-col-markup-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-d7b3d14cfb44"
+			]
+		},
+		{
+			"path": "html/elements/table/row-width-less-than-col-markup-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-826f9d9b348e",
+				"nv-10d5998bc50c"
+			]
+		},
+		{
+			"path": "html/parser/charset-after-1024-novalid.html",
+			"category": "uncategorized",
+			"nuMessageIds": [
+				"nv-b31d83a9ed4b"
+			]
+		},
+		{
+			"path": "html/parser/select-in-table-start-novalid.html",
+			"category": "uncategorized",
+			"nuMessageIds": [
+				"nv-145a3204b0a5",
+				"nv-c10727793fb8"
+			]
+		},
+		{
+			"path": "html/parser/stray-start-tag-novalid.html",
+			"category": "uncategorized",
+			"nuMessageIds": [
+				"nv-3c0b2b71db12"
+			]
+		},
+		{
+			"path": "html/parser/text-after-body-novalid.html",
+			"category": "uncategorized",
+			"nuMessageIds": [
+				"nv-94d4d4cf4600",
+				"nv-c35f07b7ee36"
+			]
+		},
+		{
+			"path": "html/parser/text-in-table-novalid.html",
+			"category": "uncategorized",
+			"nuMessageIds": [
+				"nv-308d337407b8",
+				"nv-8677c72ea217"
+			]
+		}
+	]
+}

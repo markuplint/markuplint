@@ -44,8 +44,11 @@
 			"condition": "[type='color' i]"
 		},
 		// https://html.spec.whatwg.org/multipage/input.html#attr-input-alt
+		// Spec: "The alt attribute provides the textual label for the button [...]
+		// The alt attribute must be present, and must contain a non-empty string."
 		"alt": {
 			"type": "Any",
+			"required": true,
 			"condition": "[type='image' i]"
 		},
 		// https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete
@@ -122,8 +125,20 @@
 			]
 		},
 		// https://html.spec.whatwg.org/multipage/input.html#attr-input-max
+		// The valid shape of `max` depends on the input type. The previous
+		// generic ["DateTime", "Number"] tuple accepted out-of-range dates
+		// (e.g. 2024-13-01) because DateTime's loose match passed without
+		// per-component validation. Reuse the per-type checkers that already
+		// power `value` so min/max go through the same strict rules.
 		"max": {
-			"type": ["DateTime", "Number"],
+			"type": [
+				{ "condition": "[type='date' i]", "type": "DateString" },
+				{ "condition": "[type='month' i]", "type": "MonthString" },
+				{ "condition": "[type='week' i]", "type": "WeekString" },
+				{ "condition": "[type='time' i]", "type": "TimeString" },
+				{ "condition": "[type='datetime-local' i]", "type": "LocalDateTimeString" },
+				{ "condition": ["[type='number' i]", "[type='range' i]"], "type": { "type": "float" } }
+			],
 			"condition": [
 				"[type='date' i]",
 				"[type='month' i]",
@@ -147,8 +162,16 @@
 			]
 		},
 		// https://html.spec.whatwg.org/multipage/input.html#attr-input-min
+		// See `max` above for the rationale on per-type conditional types.
 		"min": {
-			"type": ["DateTime", "Number"],
+			"type": [
+				{ "condition": "[type='date' i]", "type": "DateString" },
+				{ "condition": "[type='month' i]", "type": "MonthString" },
+				{ "condition": "[type='week' i]", "type": "WeekString" },
+				{ "condition": "[type='time' i]", "type": "TimeString" },
+				{ "condition": "[type='datetime-local' i]", "type": "LocalDateTimeString" },
+				{ "condition": ["[type='number' i]", "[type='range' i]"], "type": { "type": "float" } }
+			],
 			"condition": [
 				"[type='date' i]",
 				"[type='month' i]",
@@ -175,6 +198,20 @@
 		"multiple": {
 			"type": "Boolean",
 			"condition": ["[type='email' i]", "[type='file' i]"]
+		},
+		// https://html.spec.whatwg.org/multipage/forms.html#attr-fe-name
+		// Spec: "The name content attribute gives the name of the form control,
+		// as used in form submission and in the form element's elements
+		// object. If the attribute is specified, its value must not be the
+		// empty string or `isindex`."
+		// The spec wording uses the literal value `isindex` without an
+		// ASCII case-insensitive qualifier, so the Pattern is case-sensitive.
+		// Pattern overrides the inherited NoEmptyAny so the non-empty constraint
+		// and the `isindex` exclusion are captured in one regex.
+		"name": {
+			"type": {
+				"pattern": "/^(?!isindex$).+/"
+			}
 		},
 		// https://html.spec.whatwg.org/multipage/input.html#attr-input-pattern
 		"pattern": {
@@ -336,9 +373,21 @@
 			"defaultValue": "text"
 		},
 		// https://html.spec.whatwg.org/multipage/input.html#attr-input-value
+		// The value type depends on the `type` attribute.
+		// Types not listed here (text, search, tel, password, hidden, checkbox, radio,
+		// file, submit, image, reset, button) have no value constraints and fall back to Any.
 		"value": {
-			// The `type` attribute determines the type
-			"type": "Any"
+			"type": [
+				{ "condition": "[type='color' i]", "type": "SimpleColor" },
+				{ "condition": "[type='url' i]", "type": "AbsoluteURLOrEmpty" },
+				{ "condition": "[type='email' i]", "type": "Email" },
+				{ "condition": ["[type='number' i]", "[type='range' i]"], "type": { "type": "float" } },
+				{ "condition": "[type='date' i]", "type": "DateString" },
+				{ "condition": "[type='month' i]", "type": "MonthString" },
+				{ "condition": "[type='week' i]", "type": "WeekString" },
+				{ "condition": "[type='time' i]", "type": "TimeString" },
+				{ "condition": "[type='datetime-local' i]", "type": "LocalDateTimeString" }
+			]
 		},
 		// https://html.spec.whatwg.org/multipage/embedded-content-other.html#attr-dim-width
 		"width": {
@@ -354,17 +403,22 @@
 		"conditions": {
 			"[type='button' i]": {
 				"implicitRole": "button",
+				// @see https://w3c.github.io/html-aria/#el-input-button
 				"permittedRoles": [
 					"checkbox",
 					"combobox",
+					"gridcell",
 					"link",
 					"menuitem",
 					"menuitemcheckbox",
 					"menuitemradio",
 					"option",
 					"radio",
+					"separator",
+					"slider",
 					"switch",
-					"tab"
+					"tab",
+					"treeitem"
 				]
 			},
 			"[type='checkbox' i]": {
@@ -455,7 +509,23 @@
 			},
 			"[type='image' i]": {
 				"implicitRole": "button",
-				"permittedRoles": ["link", "menuitem", "menuitemcheckbox", "menuitemradio", "radio", "switch"]
+				// @see https://w3c.github.io/html-aria/#el-input-image
+				// Same as button element but WITHOUT combobox
+				"permittedRoles": [
+					"checkbox",
+					"gridcell",
+					"link",
+					"menuitem",
+					"menuitemcheckbox",
+					"menuitemradio",
+					"option",
+					"radio",
+					"separator",
+					"slider",
+					"switch",
+					"tab",
+					"treeitem"
+				]
 			},
 			"[type='month' i]": {
 				"implicitRole": false,
@@ -565,11 +635,24 @@
 			},
 			"[type='reset' i]": {
 				"implicitRole": "button",
-				"permittedRoles": false,
-				"properties": {
-					"global": true,
-					"role": "button"
-				}
+				// @see https://w3c.github.io/html-aria/#el-input-reset
+				// Same permitted roles as button element
+				"permittedRoles": [
+					"checkbox",
+					"combobox",
+					"gridcell",
+					"link",
+					"menuitem",
+					"menuitemcheckbox",
+					"menuitemradio",
+					"option",
+					"radio",
+					"separator",
+					"slider",
+					"switch",
+					"tab",
+					"treeitem"
+				]
 			},
 			"[type='search' i]:not([list])": {
 				"implicitRole": "searchbox",
@@ -581,11 +664,24 @@
 			},
 			"[type='submit' i]": {
 				"implicitRole": "button",
-				"permittedRoles": false,
-				"properties": {
-					"global": true,
-					"role": "button"
-				}
+				// @see https://w3c.github.io/html-aria/#el-input-submit
+				// Same permitted roles as button element
+				"permittedRoles": [
+					"checkbox",
+					"combobox",
+					"gridcell",
+					"link",
+					"menuitem",
+					"menuitemcheckbox",
+					"menuitemradio",
+					"option",
+					"radio",
+					"separator",
+					"slider",
+					"switch",
+					"tab",
+					"treeitem"
+				]
 			},
 			"[type='tel' i]:not([list])": {
 				"implicitRole": "textbox",
@@ -636,6 +732,8 @@
 			}
 		},
 		"1.1": {
+			// Frozen snapshot — ARIA 1.1 is a finalized W3C Recommendation.
+			// Do NOT add roles that were introduced in ARIA 1.2 or later.
 			// No condition:
 			// > input type=text or with a missing or invalid type, with no list attribute
 			// https://www.w3.org/TR/html-aria/#el-input-text
@@ -645,6 +743,7 @@
 				"[type='button' i]": {
 					"implicitRole": "button",
 					"permittedRoles": [
+						"checkbox",
 						"link",
 						"menuitem",
 						"menuitemcheckbox",
@@ -737,7 +836,17 @@
 				},
 				"[type='image' i]": {
 					"implicitRole": "button",
-					"permittedRoles": ["link", "menuitem", "menuitemcheckbox", "menuitemradio", "radio", "switch"]
+					"permittedRoles": [
+						"checkbox",
+						"link",
+						"menuitem",
+						"menuitemcheckbox",
+						"menuitemradio",
+						"option",
+						"radio",
+						"switch",
+						"tab"
+					]
 				},
 				"[type='month' i]": {
 					"implicitRole": false,
@@ -847,11 +956,17 @@
 				},
 				"[type='reset' i]": {
 					"implicitRole": "button",
-					"permittedRoles": false,
-					"properties": {
-						"global": true,
-						"role": "button"
-					}
+					"permittedRoles": [
+						"checkbox",
+						"link",
+						"menuitem",
+						"menuitemcheckbox",
+						"menuitemradio",
+						"option",
+						"radio",
+						"switch",
+						"tab"
+					]
 				},
 				"[type='search' i]:not([list])": {
 					"implicitRole": "searchbox",
@@ -863,11 +978,17 @@
 				},
 				"[type='submit' i]": {
 					"implicitRole": "button",
-					"permittedRoles": false,
-					"properties": {
-						"global": true,
-						"role": "button"
-					}
+					"permittedRoles": [
+						"checkbox",
+						"link",
+						"menuitem",
+						"menuitemcheckbox",
+						"menuitemradio",
+						"option",
+						"radio",
+						"switch",
+						"tab"
+					]
 				},
 				"[type='tel' i]:not([list])": {
 					"implicitRole": "textbox",

@@ -45,6 +45,12 @@ const Component = (props) => {
 
 ## Details
 
+:::caution
+Named nodeRules that wrap `invalid-attr` (e.g., `a11y/no-accesskey` in the a11y preset) operate as **narrow checks**: they only flag attributes listed in their `allowAttrs`/`disallowAttrs` options and do not fall back to HTML-spec validation. General spec-based validation is performed by the base `invalid-attr` rule. To get spec validation, extend `markuplint:html-standard` or set `"invalid-attr": true` in your config.
+
+To extend what the base rule allows on specific elements, use an **unnamed** nodeRule so the options reach the base rule directly.
+:::
+
 ### Setting `allowAttrs` option {#setting-allow-attrs-option}
 
 :::caution

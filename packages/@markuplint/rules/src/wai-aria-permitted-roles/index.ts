@@ -6,7 +6,6 @@ import { checkingPermittedRoles } from '../wai-aria/checkings/permitted-roles.js
 import { defaultOptions } from '../wai-aria/default-options.js';
 import meta from './meta.js';
 
-/** Warns when a role is not permitted on the element according to ARIA in HTML. */
 export default createRule<boolean, Options>({
 	meta,
 	defaultOptions,

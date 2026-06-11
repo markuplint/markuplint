@@ -2,10 +2,6 @@ import type { ReadonlyDeep } from 'type-fest';
 
 import meow from 'meow';
 
-/**
- * Help text displayed when the CLI is invoked with `--help` or without arguments.
- * Documents all available options, flags, and usage examples.
- */
 export const help = `
 Usage
 	$ markuplint <HTML file paths (glob format)>
@@ -27,7 +23,7 @@ Options
 	--show-config                          Output computed configuration of the target file. Supports "details" and empty. Default: empty.
 	--verbose                              Output with detailed information.
 	--include-node-modules                 Include files in node_modules directory. Default: false.
-	--severity-parse-error                 Specifies the severity level of parse errors. Supports "error", "warning", and "off". Default: "error".
+	--severity-parse-error                 Severity for the built-in parse-error channel. Supports "error", "warning", and "off". Unset by default: fatal ParserErrors emit at "error" and non-fatal parse5 events are off (opt-in per code via config).
 	--max-count                            Limit the number of violations shown. Default: 0 (no limit).
 	--max-warnings                         Number of warnings to trigger nonzero exit code. Default: -1 (no limit).
 	--progressive-output                   Output results immediately after processing each file. Default: false.
@@ -50,10 +46,6 @@ Examples
 	$ cat verifyee.html | markuplint
 `;
 
-/**
- * The parsed CLI instance created by `meow`, providing access to
- * positional arguments (`cli.input`) and parsed flags (`cli.flags`).
- */
 export const cli = meow(help, {
 	importMeta: import.meta,
 	flags: {
@@ -129,7 +121,6 @@ export const cli = meow(help, {
 		},
 		severityParseError: {
 			type: 'string',
-			default: 'error',
 		},
 		maxCount: {
 			type: 'number',
@@ -165,8 +156,4 @@ export const cli = meow(help, {
 	},
 });
 
-/**
- * Deeply read-only type representing the parsed CLI flags.
- * Derived from the `meow` flag definitions in {@link cli}.
- */
 export type CLIOptions = ReadonlyDeep<typeof cli.flags>;

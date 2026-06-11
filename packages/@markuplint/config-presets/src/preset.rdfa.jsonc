@@ -6,8 +6,6 @@
 			 *
 			 * Be able to use **Open-Graph** etc.
 			 */
-			"name": "rdfa/meta-property",
-			"specConformance": "non-normative",
 			"selector": ":where(meta[property])",
 			"rules": {
 				"invalid-attr": {

@@ -20,6 +20,10 @@
 		"**/esm/*",
 		"**/cjs/*",
 		"packages/@markuplint/core/index.cjs",
+		"packages/@markuplint/ml-spec/src/types/aria.ts",
+		"packages/@markuplint/ml-spec/src/types/attributes.ts",
+		"packages/@markuplint/ml-spec/src/types/permitted-structures.ts",
+		"packages/@markuplint/types/src/types.schema.ts",
 		"vscode/test/suite/*.js",
 		"website/build/**/*",
 		"website/.docusaurus/**/*"

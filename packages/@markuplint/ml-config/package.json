@@ -1,8 +1,12 @@
 {
 	"name": "@markuplint/ml-config",
-	"version": "5.0.0-rc.1",
+	"version": "5.0.0-rc.4",
 	"description": "JSON Schema and TypeScript types of markuplint configure JSON",
-	"repository": "git@github.com:markuplint/markuplint.git",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/markuplint/markuplint.git",
+		"directory": "packages/@markuplint/ml-config"
+	},
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
 	"engines": {
@@ -27,13 +31,13 @@
 		"clean": "npx tsc --build --clean  tsconfig.build.json"
 	},
 	"dependencies": {
-		"@markuplint/ml-ast": "5.0.0-rc.1",
-		"@markuplint/ml-spec": "5.0.0-rc.1",
-		"@markuplint/selector": "5.0.0-rc.1",
-		"@markuplint/shared": "5.0.0-rc.1",
+		"@markuplint/ml-ast": "5.0.0-rc.4",
+		"@markuplint/ml-spec": "5.0.0-rc.4",
+		"@markuplint/selector": "5.0.0-rc.4",
+		"@markuplint/shared": "5.0.0-rc.4",
 		"@types/mustache": "4.2.6",
 		"is-plain-object": "5.0.0",
 		"mustache": "4.2.0",
-		"type-fest": "5.5.0"
+		"type-fest": "5.6.0"
 	}
 }

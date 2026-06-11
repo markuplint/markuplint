@@ -11,7 +11,7 @@ metadata:
 
 Manage GitHub Sponsors listings across the project.
 
-## Listing Files (4 locations)
+## Listing Files (4 locations — always update ALL in sync)
 
 | # | File | Format |
 |---|---|---|
@@ -19,6 +19,8 @@ Manage GitHub Sponsors listings across the project.
 | 2 | `packages/markuplint/README.md` | `<img>` tag |
 | 3 | `website/community/index.mdx` | `<Profile>` component |
 | 4 | `website/i18n/ja/docusaurus-plugin-content-docs-community/current/index.mdx` | `<Profile>` component |
+
+Match the markup of the existing entries in each file. Corporate entries are rendered larger than personal ones (README: `width="140"` vs `width="36"`; website: full `<Profile>` with `website`/`twitter` vs `<Profile mini>`).
 
 ## Tiers and Incentives
 
@@ -57,43 +59,6 @@ gh api graphql -f query='
   }
 }
 '
-```
-
-## Listing Formats
-
-### README (root & packages/markuplint)
-
-**Corporate (`<img width="140">`):**
-```markdown
-[<img width="140" src="https://avatars.githubusercontent.com/u/{USER_ID}" alt="{NAME}" />]({URL})
-```
-
-**Personal (`<img width="36">`):**
-```markdown
-[<img width="36" src="https://avatars.githubusercontent.com/u/{USER_ID}" alt="{NAME}" />](https://github.com/{LOGIN})
-```
-
-### Website (MDX)
-
-**Corporate:**
-```mdx
-<Profile
-  avatar="https://avatars.githubusercontent.com/u/{USER_ID}"
-  name="{NAME}"
-  website="{URL}"
-  github="https://github.com/{LOGIN}"
-  twitter="{TWITTER}"
-/>
-```
-
-**Personal:**
-```mdx
-<Profile
-  mini
-  avatar="https://avatars.githubusercontent.com/u/{USER_ID}"
-  name="{NAME}"
-  github="https://github.com/{LOGIN}"
-/>
 ```
 
 ## Update Procedure

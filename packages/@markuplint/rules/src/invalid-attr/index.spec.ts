@@ -479,8 +479,15 @@ test('[invalid-attr-valid-007] URL attribute', async () => {
 	const { violations: violations2 } = await mlRuleTest(rule, '<img src="//sample.com/path/to">');
 	expect(violations2.length).toBe(0);
 
+	// BREAKING CHANGE (URL LS invalid-credentials, #3848 / PR #3867):
+	// `//user:pass@sample.com/path/to` now produces a violation. The original
+	// 0-violations assertion is preserved as a comment so this breaking change
+	// is visible in the test source itself, not only in git history.
+	// Positive coverage of the new behaviour lives in [invalid-attr-invalid-044].
+	// https://url.spec.whatwg.org/#invalid-credentials
 	const { violations: violations3 } = await mlRuleTest(rule, '<img src="//user:pass@sample.com/path/to">');
-	expect(violations3.length).toBe(0);
+	// expect(violations3.length).toBe(0); // pre-URL-LS-strict baseline
+	expect(violations3.length).toBe(1);
 
 	const { violations: violations4 } = await mlRuleTest(rule, '<img src="/path/to">');
 	expect(violations4.length).toBe(0);
@@ -508,6 +515,89 @@ test('[invalid-attr-valid-007] URL attribute', async () => {
 
 	const { violations: violations12 } = await mlRuleTest(rule, '<img src="#hash">');
 	expect(violations12.length).toBe(0);
+});
+
+test('[invalid-attr-invalid-044] URL Living Standard validation errors', async () => {
+	// invalid-credentials with non-empty userinfo (`http://user:pass@host`) is
+	// already asserted in [invalid-attr-valid-007] violations3 — we do not
+	// duplicate it here. The empty-userinfo variant below exercises a separate
+	// regex branch (`SPECIAL_SCHEME_AUTHORITY_HAS_AT_SIGN` matching `@` without
+	// any chars before it), so it is covered here.
+	// https://url.spec.whatwg.org/#invalid-credentials
+	const { violations: emptyUserinfo } = await mlRuleTest(rule, '<a href="http://@example.com"></a>');
+	expect(emptyUserinfo.length).toBe(1);
+
+	// special-scheme-missing-following-solidus — `http:foo` (no `//`).
+	// https://url.spec.whatwg.org/#special-scheme-missing-following-solidus
+	const { violations: missingSolidus } = await mlRuleTest(rule, '<a href="http:foo"></a>');
+	expect(missingSolidus.length).toBe(1);
+
+	// special-scheme single-slash variant — `http:/foo` (only one `/`).
+	const { violations: singleSlash } = await mlRuleTest(rule, '<a href="http:/foo"></a>');
+	expect(singleSlash.length).toBe(1);
+
+	// file-scheme-missing-following-solidus — `file:foo`.
+	// https://url.spec.whatwg.org/#file-scheme-missing-following-solidus
+	const { violations: fileNoSolidus } = await mlRuleTest(rule, '<a href="file:foo"></a>');
+	expect(fileNoSolidus.length).toBe(1);
+
+	// invalid-reverse-solidus — `\` in special-scheme URL.
+	// https://url.spec.whatwg.org/#invalid-reverse-solidus
+	const { violations: reverseSolidus } = await mlRuleTest(rule, '<a href="http://example.com\\foo"></a>');
+	expect(reverseSolidus.length).toBe(1);
+
+	// file-invalid-Windows-drive-letter — `C|` instead of `C:`.
+	// https://url.spec.whatwg.org/#file-invalid-windows-drive-letter
+	const { violations: windowsDrive } = await mlRuleTest(rule, '<a href="file:///C|/foo"></a>');
+	expect(windowsDrive.length).toBe(1);
+
+	// multiple `#` — second `#` is invalid-URL-unit in fragment grammar.
+	// https://url.spec.whatwg.org/#invalid-url-unit
+	const { violations: multipleHash } = await mlRuleTest(rule, '<a href="http://example.com/#a#b"></a>');
+	expect(multipleHash.length).toBe(1);
+});
+
+test('[invalid-attr-invalid-045] URL Living Standard Phase 2 categories', async () => {
+	// `BaseURL` now delegates to `checkURL` after the existing data:/javascript:
+	// scheme filter; previously it accepted everything else without further
+	// validation. Regression guard for #3868.
+	// https://html.spec.whatwg.org/multipage/semantics.html#set-the-frozen-base-url
+	const { violations: baseHrefCredentials } = await mlRuleTest(rule, '<base href="http://user:pass@example.com/">');
+	expect(baseHrefCredentials.length).toBe(1);
+
+	// `NonEmptyURL` rejects empty / whitespace-only `src` on media elements.
+	// https://html.spec.whatwg.org/multipage/urls-and-fetching.html#valid-non-empty-url-potentially-surrounded-by-spaces
+	const { violations: imgSrcEmpty } = await mlRuleTest(rule, '<img src="" alt>');
+	expect(imgSrcEmpty.length).toBe(1);
+	const { violations: imgSrcWhitespace } = await mlRuleTest(rule, '<img src="   " alt>');
+	expect(imgSrcWhitespace.length).toBe(1);
+	const { violations: scriptSrcEmpty } = await mlRuleTest(rule, '<script src=""></script>');
+	expect(scriptSrcEmpty.length).toBe(1);
+
+	// `AbsoluteURLOrEmpty` — `<input type=url value>` accepts empty but
+	// rejects relative URLs (HTML LS §4.10.5.1.7).
+	const { violations: inputUrlEmpty } = await mlRuleTest(rule, '<input type="url" value="">');
+	expect(inputUrlEmpty.length).toBe(0);
+	const { violations: inputUrlRelative } = await mlRuleTest(rule, '<input type="url" value="/relative">');
+	expect(inputUrlRelative.length).toBe(1);
+
+	// `[` / `]` outside the IPv6 host position — invalid-URL-unit.
+	// https://url.spec.whatwg.org/#invalid-url-unit
+	const { violations: brackets } = await mlRuleTest(rule, '<a href="[61:24:74]:98"></a>');
+	expect(brackets.length).toBe(1);
+
+	// `data:` URL without `,` — RFC 2397 grammar violation.
+	// https://datatracker.ietf.org/doc/html/rfc2397
+	const { violations: dataNoComma } = await mlRuleTest(rule, '<a href="data:/example.com/"></a>');
+	expect(dataNoComma.length).toBe(1);
+
+	// `AbsoluteURL` now delegates to `checkURL` — itemtype tokens get the
+	// URL LS validation surface (multi-hash etc.).
+	const { violations: itemtypeMultiHash } = await mlRuleTest(
+		rule,
+		'<div itemscope itemtype="http://example.com/#a#b"></div>',
+	);
+	expect(itemtypeMultiHash.length).toBe(1);
 });
 
 test('[invalid-attr-invalid-016] Overwrite type', async () => {
@@ -1545,7 +1635,7 @@ describe('Issues', () => {
 			(await mlRuleTest(rule, '<link rel="modulepreload" as="audioworklet" href="/audio.js" />')).violations,
 		).toStrictEqual([]);
 
-		// Invalid: values removed from the spec (no longer valid for either preload or modulepreload)
+		// Invalid: values not valid for preload (condition-specific enum after #3189)
 		expect(
 			(await mlRuleTest(rule, '<link rel="preload" as="audio" href="/audio.mp3" />')).violations,
 		).toStrictEqual([
@@ -1553,8 +1643,7 @@ describe('Issues', () => {
 				severity: 'error',
 				line: 1,
 				col: 25,
-				message:
-					'The "as" attribute expects either "audioworklet", "fetch", "font", "image", "json", "paintworklet", "script", "serviceworker", "sharedworker", "style", "track", "worker"',
+				message: 'The "as" attribute expects either "fetch", "font", "image", "script", "style", "track"',
 				raw: 'audio',
 			},
 		]);
@@ -1565,8 +1654,7 @@ describe('Issues', () => {
 				severity: 'error',
 				line: 1,
 				col: 25,
-				message:
-					'The "as" attribute expects either "audioworklet", "fetch", "font", "image", "json", "paintworklet", "script", "serviceworker", "sharedworker", "style", "track", "worker"',
+				message: 'The "as" attribute expects either "fetch", "font", "image", "script", "style", "track"',
 				raw: 'video',
 			},
 		]);
@@ -1575,8 +1663,7 @@ describe('Issues', () => {
 				severity: 'error',
 				line: 1,
 				col: 25,
-				message:
-					'The "as" attribute expects either "audioworklet", "fetch", "font", "image", "json", "paintworklet", "script", "serviceworker", "sharedworker", "style", "track", "worker"',
+				message: 'The "as" attribute expects either "fetch", "font", "image", "script", "style", "track"',
 				raw: 'document',
 			},
 		]);
@@ -2094,11 +2181,18 @@ describe('script conditional attributes (#3631)', () => {
 		]);
 	});
 
-	test('[invalid-attr-issue-3631-006] module with defer is not disallowed (handled by ineffective-attr)', async () => {
-		// defer on module scripts is ineffective, not disallowed
-		expect((await mlRuleTest(rule, '<script type="module" src="m.js" defer></script>')).violations).toStrictEqual(
-			[],
-		);
+	test('[invalid-attr-issue-3631-006] module with defer is disallowed', async () => {
+		// HTML LS §4.12.1: "Module scripts may specify the async attribute, but must not
+		// specify the defer attribute." Applies whether or not src is present.
+		expect((await mlRuleTest(rule, '<script type="module" src="m.js" defer></script>')).violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 34,
+				message: 'The "defer" attribute is disallowed',
+				raw: 'defer',
+			},
+		]);
 	});
 
 	test('[invalid-attr-issue-3631-007] charset requires src', async () => {
@@ -2124,6 +2218,446 @@ describe('script conditional attributes (#3631)', () => {
 
 	test('[invalid-attr-issue-3631-010] valid: classic with src and async', async () => {
 		expect((await mlRuleTest(rule, '<script src="app.js" async></script>')).violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-issue-3631-011] module without src + defer is disallowed', async () => {
+		// HTML LS §4.12.1: module + defer is disallowed regardless of src
+		const { violations } = await mlRuleTest(rule, '<script type="module" defer>x</script>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 23,
+				message: 'The "defer" attribute is disallowed',
+				raw: 'defer',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3631-012] classic without src + blocking is disallowed', async () => {
+		// HTML LS §6.7.3: blocking must be omitted unless src is present
+		const { violations } = await mlRuleTest(rule, '<script blocking="render">x</script>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 9,
+				message: 'The "blocking" attribute is disallowed',
+				raw: 'blocking',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3631-013] module without src + blocking is disallowed', async () => {
+		const { violations } = await mlRuleTest(rule, '<script type="module" blocking="render">x</script>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 23,
+				message: 'The "blocking" attribute is disallowed',
+				raw: 'blocking',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3631-014] data block (application/json) without src + blocking is disallowed', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<script type="application/json" blocking="render">{"k":1}</script>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 33,
+				message: 'The "blocking" attribute is disallowed',
+				raw: 'blocking',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3631-015] valid: classic with src + blocking', async () => {
+		expect((await mlRuleTest(rule, '<script src="app.js" blocking="render"></script>')).violations).toStrictEqual(
+			[],
+		);
+	});
+
+	test('[invalid-attr-issue-3631-016] valid: module with src + blocking', async () => {
+		expect(
+			(await mlRuleTest(rule, '<script type="module" src="m.js" blocking="render"></script>')).violations,
+		).toStrictEqual([]);
+	});
+
+	// HTML LS §4.12.1: "Which other attributes may be specified on a given script
+	// element is determined by the following table" — import maps, speculation
+	// rules, and data blocks permit none of nomodule/async/defer/blocking/
+	// crossorigin/referrerpolicy/integrity/fetchpriority.
+	test('[invalid-attr-issue-3631-017] importmap must not have crossorigin', async () => {
+		const { violations } = await mlRuleTest(rule, '<script type="importmap" crossorigin="anonymous">{}</script>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 26,
+				message: 'The "crossorigin" attribute is disallowed',
+				raw: 'crossorigin',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3631-018] speculationrules must not have crossorigin', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<script type="speculationrules" crossorigin="anonymous">{}</script>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 33,
+				message: 'The "crossorigin" attribute is disallowed',
+				raw: 'crossorigin',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3631-019] data block must not have crossorigin', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<script type="application/json" crossorigin="anonymous">{"k":1}</script>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 33,
+				message: 'The "crossorigin" attribute is disallowed',
+				raw: 'crossorigin',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3631-020] importmap must not have fetchpriority', async () => {
+		const { violations } = await mlRuleTest(rule, '<script type="importmap" fetchpriority="high">{}</script>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 26,
+				message: 'The "fetchpriority" attribute is disallowed',
+				raw: 'fetchpriority',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3631-021] speculationrules must not have fetchpriority', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<script type="speculationrules" fetchpriority="high">{}</script>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 33,
+				message: 'The "fetchpriority" attribute is disallowed',
+				raw: 'fetchpriority',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3631-022] data block must not have fetchpriority', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<script type="application/json" fetchpriority="high">{"k":1}</script>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 33,
+				message: 'The "fetchpriority" attribute is disallowed',
+				raw: 'fetchpriority',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3631-023] inline classic script must not have fetchpriority', async () => {
+		// HTML LS §4.12.1 table: fetchpriority is "Yes" only for external classic
+		// and external module scripts; inline scripts are "·" (not applicable).
+		const { violations } = await mlRuleTest(rule, '<script fetchpriority="high">x</script>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 9,
+				message: 'The "fetchpriority" attribute is disallowed',
+				raw: 'fetchpriority',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3631-024] inline module script must not have fetchpriority', async () => {
+		const { violations } = await mlRuleTest(rule, '<script type="module" fetchpriority="high">x</script>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 23,
+				message: 'The "fetchpriority" attribute is disallowed',
+				raw: 'fetchpriority',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3631-025] data block must not have src', async () => {
+		// HTML LS: "It must only be specified for classic scripts and JavaScript
+		// module scripts."
+		const { violations } = await mlRuleTest(
+			rule,
+			'<script type="application/json" src="data.json">{"k":1}</script>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 33,
+				message: 'The "src" attribute is disallowed',
+				raw: 'src',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3631-026] data block must not have nomodule', async () => {
+		const { violations } = await mlRuleTest(rule, '<script type="application/json" nomodule>{"k":1}</script>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 33,
+				message: 'The "nomodule" attribute is disallowed',
+				raw: 'nomodule',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3631-027] importmap must not have referrerpolicy', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<script type="importmap" referrerpolicy="no-referrer">{}</script>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 26,
+				message: 'The "referrerpolicy" attribute is disallowed',
+				raw: 'referrerpolicy',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3631-028] valid: inline classic script with crossorigin', async () => {
+		// HTML LS §4.12.1 table footnote: "Although inline scripts have no initial
+		// fetches, the crossorigin and referrerpolicy attribute on inline scripts
+		// affects the credentials mode and referrer policy used by module imports,
+		// including dynamic import()."
+		expect((await mlRuleTest(rule, '<script crossorigin="anonymous">x</script>')).violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-issue-3631-029] valid: inline module script with crossorigin and referrerpolicy', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					'<script type="module" crossorigin="use-credentials" referrerpolicy="no-referrer">x</script>',
+				)
+			).violations,
+		).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-issue-3631-030] valid: external classic script with crossorigin, referrerpolicy, and fetchpriority', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					'<script src="app.js" crossorigin="anonymous" referrerpolicy="no-referrer" fetchpriority="high"></script>',
+				)
+			).violations,
+		).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-issue-3631-031] valid: external module script with fetchpriority', async () => {
+		expect(
+			(await mlRuleTest(rule, '<script type="module" src="m.js" fetchpriority="low"></script>')).violations,
+		).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-issue-3631-032] crossorigin enum value is still validated (regression pin for #3648)', async () => {
+		// Overriding a global category attribute with a condition must not drop
+		// the enum type definition.
+		const { violations } = await mlRuleTest(rule, '<script src="app.js" crossorigin="unknown"></script>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 35,
+				message: 'The "crossorigin" attribute expects either "", "anonymous", "use-credentials"',
+				raw: 'unknown',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3631-033] fetchpriority enum value is still validated (regression pin for #3648)', async () => {
+		const { violations } = await mlRuleTest(rule, '<script src="app.js" fetchpriority="urgent"></script>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 37,
+				message: 'The "fetchpriority" attribute expects either "high", "low", "auto"',
+				raw: 'urgent',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3631-034] valid: explicit JavaScript MIME type is a classic script', async () => {
+		// mimesniff: "A string is a JavaScript MIME type essence match if it is an
+		// ASCII case-insensitive match for one of the JavaScript MIME type essence
+		// strings."
+		expect(
+			(await mlRuleTest(rule, '<script type="text/javascript" src="app.js" defer></script>')).violations,
+		).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-issue-3631-035] empty type is a classic script: defer is allowed', async () => {
+		// HTML LS: "Omitting the attribute, setting it to the empty string, or
+		// setting it to a JavaScript MIME type essence match means that the script
+		// is a classic script" — so defer must NOT be flagged here. The single
+		// violation below is the pre-existing value validation of the type
+		// attribute itself (MIMEType | enum does not model the empty string),
+		// which is a separate concern from the applicability conditions.
+		const { violations } = await mlRuleTest(rule, '<script type="" src="app.js" defer></script>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 15,
+				message:
+					'The "type" attribute must not be empty. It expects the MIME Type format (https://mimesniff.spec.whatwg.org/#valid-mime-type). Or, the "type" attribute expects either "module", "importmap", "speculationrules"',
+				raw: '',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3631-036] data block with src and async reports both', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<script type="application/json" src="data.json" async></script>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 33,
+				message: 'The "src" attribute is disallowed',
+				raw: 'src',
+			},
+			{
+				severity: 'error',
+				line: 1,
+				col: 49,
+				message: 'The "async" attribute is disallowed',
+				raw: 'async',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3631-037] valid: type value is matched ASCII case-insensitively', async () => {
+		// HTML LS: 'Setting the attribute to an ASCII case-insensitive match for
+		// "module"...' — the conditions rely on the attribute selector i flag.
+		expect(
+			(await mlRuleTest(rule, '<script type="MODULE" src="m.js" fetchpriority="high"></script>')).violations,
+		).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-issue-3631-038] data block must not have referrerpolicy', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<script type="application/json" referrerpolicy="no-referrer">{"k":1}</script>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 33,
+				message: 'The "referrerpolicy" attribute is disallowed',
+				raw: 'referrerpolicy',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3631-039] valid: every JavaScript MIME type essence denotes a classic script', async () => {
+		// Spot-check a second essence string besides text/javascript so a typo in
+		// the enumerated alternatives cannot survive unnoticed.
+		expect(
+			(await mlRuleTest(rule, '<script type="application/javascript" src="app.js" defer></script>')).violations,
+		).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-parser-018] JSX: dynamic type leaves the script kind indeterminate, defer is not flagged', async () => {
+		// The applicability conditions are positive lists keyed on the type
+		// attribute. A dynamic type value cannot be resolved statically, so the
+		// condition check must be skipped instead of reporting "disallowed".
+		// async exercises the array-form condition path of the guard.
+		const { violations } = await mlRuleTest(rule, '<script type={scriptType} src="app.js" defer async />', {
+			parser: {
+				'.*': '@markuplint/jsx-parser',
+			},
+			specs: {
+				'.*': '@markuplint/react-spec',
+			},
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-parser-019] JSX: static importmap type still flags src', async () => {
+		// The dynamic-value skip must not suppress detection when every
+		// attribute the condition references has a static value.
+		const { violations } = await mlRuleTest(rule, '<script type="importmap" src="map.json" />', {
+			parser: {
+				'.*': '@markuplint/jsx-parser',
+			},
+			specs: {
+				'.*': '@markuplint/react-spec',
+			},
+		});
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 26,
+				message: 'The "src" attribute is disallowed',
+				raw: 'src',
+			},
+		]);
+	});
+
+	test('[invalid-attr-parser-020] Vue: dynamic :type leaves the script kind indeterminate, defer is not flagged', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<template><script :type="scriptType" src="app.js" defer></script></template>',
+			{
+				parser: {
+					'.*': '@markuplint/vue-parser',
+				},
+				specs: {
+					'.*': '@markuplint/vue-spec',
+				},
+			},
+		);
+		expect(violations).toStrictEqual([]);
 	});
 });
 
@@ -2178,5 +2712,1165 @@ describe('integrity SRI hash validation (#3626)', () => {
 		const { violations } = await mlRuleTest(rule, '<my-element data-foo="bar"></my-element>');
 		const isViolations = violations.filter(v => v.message?.includes('"is"'));
 		expect(isViolations).toStrictEqual([]);
+	});
+});
+
+/*
+ * #3598 — input value validation based on type attribute.
+ * ConditionalAttributeType[] in spec.input.jsonc activates type-dependent
+ * value checking via the resolution logic in isValidAttr().
+ */
+describe('#3598 input value validation', () => {
+	test('[invalid-attr-issue-3598-001] input[type=color] with invalid value', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="color" value="red">');
+		const valueViolation = violations.find(v => v.raw === 'red');
+		expect(valueViolation).toBeDefined();
+		expect(valueViolation!.message).toContain('simple color');
+	});
+
+	test('[invalid-attr-issue-3598-002] input[type=color] with valid value', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="color" value="#ff0000">');
+		expect(violations.some(v => v.raw === '#ff0000')).toBe(false);
+	});
+
+	test('[invalid-attr-issue-3598-003] input[type=url] with invalid value', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="url" value="http://example.com/path with space">');
+		expect(violations.some(v => v.raw === 'http://example.com/path with space')).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3598-004] input[type=url] with valid value', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="url" value="https://example.com">');
+		expect(violations.some(v => v.raw === 'https://example.com')).toBe(false);
+	});
+
+	test('[invalid-attr-issue-3598-005] input[type=number] with invalid value', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="number" value="abc">');
+		expect(violations.some(v => v.raw === 'abc')).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3598-006] input[type=number] with valid value', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="number" value="42">');
+		expect(violations.some(v => v.raw === '42')).toBe(false);
+	});
+
+	test('[invalid-attr-issue-3598-007] input[type=text] value is not validated (Any fallback)', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="text" value="anything goes">');
+		expect(violations.some(v => v.raw === 'anything goes')).toBe(false);
+	});
+
+	test('[invalid-attr-issue-3598-008] input without type: value is not validated (Any fallback)', async () => {
+		const { violations } = await mlRuleTest(rule, '<input value="anything">');
+		expect(violations.some(v => v.raw === 'anything')).toBe(false);
+	});
+
+	test('[invalid-attr-issue-3598-009] input[type=email] with invalid value', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="email" value="not-an-email">');
+		expect(violations.some(v => v.raw === 'not-an-email')).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3598-010] input[type=email] with valid value', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="email" value="user@example.com">');
+		expect(violations.some(v => v.raw === 'user@example.com')).toBe(false);
+	});
+
+	test('[invalid-attr-issue-3598-011] input[type=date] with invalid value', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="date" value="2024/01/15">');
+		expect(violations.some(v => v.raw === '2024/01/15')).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3598-012] input[type=date] with valid value', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="date" value="2024-01-15">');
+		expect(violations.some(v => v.raw === '2024-01-15')).toBe(false);
+	});
+
+	test('[invalid-attr-issue-3598-013] input[type=range] with valid value', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="range" value="50">');
+		expect(violations.some(v => v.raw === '50')).toBe(false);
+	});
+
+	test('[invalid-attr-issue-3598-014] input[type=range] with invalid value', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="range" value="abc">');
+		expect(violations.some(v => v.raw === 'abc')).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3598-015] input[type=time] with valid value', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="time" value="12:30">');
+		expect(violations.some(v => v.raw === '12:30')).toBe(false);
+	});
+
+	test('[invalid-attr-issue-3598-016] input[type=time] with invalid value', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="time" value="25:99">');
+		// Token-based checker reports the first invalid part ("25"), not the whole value.
+		expect(violations.some(v => v.message.includes('"value"'))).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3598-017] input[type=month] with valid value', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="month" value="2024-01">');
+		expect(violations.some(v => v.raw === '2024-01')).toBe(false);
+	});
+
+	test('[invalid-attr-issue-3598-018] input[type=month] with invalid value', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="month" value="2024-13">');
+		expect(violations.some(v => v.message.includes('"value"'))).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3598-019] input[type=week] with valid value', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="week" value="2024-W03">');
+		expect(violations.some(v => v.raw === '2024-W03')).toBe(false);
+	});
+
+	test('[invalid-attr-issue-3598-020] input[type=week] with invalid value', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="week" value="2024-03">');
+		expect(violations.some(v => v.message.includes('"value"'))).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3598-021] input[type=datetime-local] with valid value', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="datetime-local" value="2024-01-15T12:30">');
+		expect(violations.some(v => v.raw === '2024-01-15T12:30')).toBe(false);
+	});
+
+	test('[invalid-attr-issue-3598-022] input[type=datetime-local] with invalid value', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="datetime-local" value="2024-01-15">');
+		expect(violations.some(v => v.message.includes('"value"'))).toBe(true);
+	});
+});
+
+/*
+ * #3189 — link[as] condition-specific enum values.
+ * The `as` attribute has different valid values depending on `rel`:
+ * - rel=preload → fetch, font, image, script, style, track
+ * - rel=modulepreload → json, style, audioworklet, paintworklet, script,
+ *   serviceworker, sharedworker, worker
+ */
+describe('#3189 link[as] conditional enum', () => {
+	test('[invalid-attr-issue-3189-001] rel=preload with valid as value', async () => {
+		const { violations } = await mlRuleTest(rule, '<link rel="preload" href="/a.js" as="script">');
+		expect(violations.some(v => v.raw === 'script')).toBe(false);
+	});
+
+	test('[invalid-attr-issue-3189-002] rel=preload with invalid as value (json is modulepreload-only)', async () => {
+		const { violations } = await mlRuleTest(rule, '<link rel="preload" href="/a.json" as="json">');
+		expect(violations.some(v => v.raw === 'json')).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3189-003] rel=modulepreload with valid as value', async () => {
+		const { violations } = await mlRuleTest(rule, '<link rel="modulepreload" href="/a.js" as="script">');
+		expect(violations.some(v => v.raw === 'script')).toBe(false);
+	});
+
+	test('[invalid-attr-issue-3189-004] rel=modulepreload with valid as=json', async () => {
+		const { violations } = await mlRuleTest(rule, '<link rel="modulepreload" href="/a.json" as="json">');
+		expect(violations.some(v => v.raw === 'json')).toBe(false);
+	});
+
+	test('[invalid-attr-issue-3189-005] rel=modulepreload with invalid as value (track is preload-only)', async () => {
+		const { violations } = await mlRuleTest(rule, '<link rel="modulepreload" href="/a.vtt" as="track">');
+		expect(violations.some(v => v.raw === 'track')).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3189-006] rel=preload with all valid preload destinations', async () => {
+		for (const dest of ['fetch', 'font', 'image', 'script', 'style', 'track']) {
+			const { violations } = await mlRuleTest(rule, `<link rel="preload" href="/a" as="${dest}">`);
+			expect(violations.some(v => v.raw === dest)).toBe(false);
+		}
+	});
+
+	test('[invalid-attr-issue-3189-007] rel=modulepreload with all valid module destinations', async () => {
+		for (const dest of [
+			'json',
+			'style',
+			'audioworklet',
+			'paintworklet',
+			'script',
+			'serviceworker',
+			'sharedworker',
+			'worker',
+		]) {
+			const { violations } = await mlRuleTest(rule, `<link rel="modulepreload" href="/a" as="${dest}">`);
+			expect(violations.some(v => v.raw === dest)).toBe(false);
+		}
+	});
+
+	test('[invalid-attr-issue-3189-008] rel=preload with completely bogus as value', async () => {
+		const { violations } = await mlRuleTest(rule, '<link rel="preload" href="/a" as="bogus">');
+		expect(violations.some(v => v.raw === 'bogus')).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3189-009] no rel: as attribute is disallowed (condition check)', async () => {
+		const { violations } = await mlRuleTest(rule, '<link href="/a.css" as="style">');
+		// `as` has condition=["[rel~='preload' i]","[rel~='modulepreload' i]"],
+		// so without rel=preload/modulepreload, the attribute itself is disallowed.
+		expect(violations.some(v => v.message.includes('"as"'))).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3189-010] rel with multiple tokens: preload + stylesheet', async () => {
+		// condition uses ~= (space-separated token match), so "preload stylesheet" must match
+		const { violations } = await mlRuleTest(rule, '<link rel="preload stylesheet" href="/a.css" as="style">');
+		expect(violations.some(v => v.raw === 'style')).toBe(false);
+	});
+
+	test('[invalid-attr-issue-3189-011] rel=modulepreload as=fetch is invalid (fetch is preload-only)', async () => {
+		const { violations } = await mlRuleTest(rule, '<link rel="modulepreload" href="/a" as="fetch">');
+		expect(violations.some(v => v.raw === 'fetch')).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3189-012] case-insensitive rel matching: rel=PRELOAD', async () => {
+		const { violations } = await mlRuleTest(rule, '<link rel="PRELOAD" href="/a.js" as="script">');
+		expect(violations.some(v => v.raw === 'script')).toBe(false);
+	});
+});
+
+describe('#3629 URL forbidden code points', () => {
+	test('[invalid-attr-issue-3629-001] C1 control U+0080 in href', async () => {
+		const { violations } = await mlRuleTest(rule, '<a href="http://example.com/\u0080">x</a>');
+		expect(violations.some(v => v.message.includes('unexpected characters'))).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3629-002] C1 control U+009F in href', async () => {
+		const { violations } = await mlRuleTest(rule, '<a href="http://example.com/\u009F">x</a>');
+		expect(violations.some(v => v.message.includes('unexpected characters'))).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3629-003] BMP noncharacter U+FDD0 in href', async () => {
+		const { violations } = await mlRuleTest(rule, '<a href="http://example.com/\uFDD0">x</a>');
+		expect(violations.some(v => v.message.includes('unexpected characters'))).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3629-004] BMP noncharacter U+FFFE in href', async () => {
+		const { violations } = await mlRuleTest(rule, '<a href="http://example.com/\uFFFE">x</a>');
+		expect(violations.some(v => v.message.includes('unexpected characters'))).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3629-005] supplementary plane noncharacter U+1FFFE in href', async () => {
+		const { violations } = await mlRuleTest(rule, '<a href="http://example.com/\u{1FFFE}">x</a>');
+		expect(violations.some(v => v.message.includes('unexpected characters'))).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3629-006] trailing vertical tab U+000B in href is not silently stripped', async () => {
+		// Regression for JavaScript String.prototype.trim() stripping U+000B
+		// before the forbidden-code-point check.
+		const { violations } = await mlRuleTest(rule, '<a href="http://example.com/\u000B">x</a>');
+		expect(violations.some(v => v.message.includes('unexpected characters'))).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3629-007] PUA code point in href is accepted', async () => {
+		// Guard against over-broad regex: U+E000 (BMP PUA) is not forbidden.
+		const { violations } = await mlRuleTest(rule, '<a href="http://example.com/\uE000">x</a>');
+		expect(violations.some(v => v.message.includes('unexpected characters'))).toBe(false);
+	});
+
+	test('[invalid-attr-issue-3629-008] emoji (U+1F4A9) in href is accepted', async () => {
+		const { violations } = await mlRuleTest(rule, '<a href="http://example.com/\u{1F4A9}">x</a>');
+		expect(violations.some(v => v.message.includes('unexpected characters'))).toBe(false);
+	});
+});
+
+/*
+ * #3734 — meta[content] validation split by http-equiv value.
+ * spec.meta.jsonc uses ConditionalAttributeType[] to select HTTPEquivRefresh
+ * or HTTPEquivContentType for the matching http-equiv directive; other
+ * http-equiv values (and `name` / `itemprop` variants of <meta>) fall
+ * through to `Any` in rules/helpers.ts.
+ */
+describe('#3734 meta[content] by http-equiv', () => {
+	// ----- http-equiv="refresh" ------------------------------------------
+	test('[invalid-attr-issue-3734-001] refresh: bare integer is valid', async () => {
+		const { violations } = await mlRuleTest(rule, '<meta http-equiv="refresh" content="30">');
+		expect(violations.some(v => v.raw === '30')).toBe(false);
+	});
+
+	test('[invalid-attr-issue-3734-002] refresh: integer + "; URL=<url>" is valid', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<meta http-equiv="refresh" content="0; URL=https://example.com/">',
+		);
+		expect(violations.some(v => v.raw === '0; URL=https://example.com/')).toBe(false);
+	});
+
+	test('[invalid-attr-issue-3734-003] refresh: empty content is invalid', async () => {
+		// Fixture: html/elements/meta/refresh-empty-novalid.html.
+		// Assert on `raw` rather than on a substring of the message — the
+		// human wording comes from the type registration and is subject to
+		// wording changes, whereas `raw` is the concrete value the rule
+		// flagged.
+		const { violations } = await mlRuleTest(rule, '<meta http-equiv="refresh" content="">');
+		expect(violations.some(v => v.raw === '')).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3734-004] refresh: missing separator is invalid', async () => {
+		// Fixture: html/elements/meta/refresh-missing-semicolon-novalid.html
+		const { violations } = await mlRuleTest(rule, '<meta http-equiv="refresh" content="5 url=http://example.com">');
+		expect(violations.some(v => v.raw === '5 url=http://example.com')).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3734-005] refresh: whitespace after ";" is optional (nu over-detects)', async () => {
+		// Fixture: html/elements/meta/refresh-missing-space-novalid.html.
+		// HTML LS §4.2.5.3 clause 3.2 marks the whitespace optional — this
+		// fixture is a nu over-detection recorded in excluded-ids.json.
+		const { violations } = await mlRuleTest(rule, '<meta http-equiv="refresh" content="5;url=http://example.com">');
+		expect(violations.some(v => v.raw === '5;url=http://example.com')).toBe(false);
+	});
+
+	// ----- http-equiv="content-type" -------------------------------------
+	test('[invalid-attr-issue-3734-006] content-type: canonical form is valid', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<meta http-equiv="content-type" content="text/html; charset=utf-8">',
+		);
+		expect(violations.some(v => v.raw === 'text/html; charset=utf-8')).toBe(false);
+	});
+
+	test('[invalid-attr-issue-3734-007] content-type: malformed MIME is invalid', async () => {
+		const { violations } = await mlRuleTest(rule, '<meta http-equiv="content-type" content="not a mime">');
+		expect(violations.some(v => v.raw === 'not a mime')).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3734-008] content-type: wrong MIME type is invalid', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<meta http-equiv="content-type" content="text/plain; charset=utf-8">',
+		);
+		expect(violations.some(v => v.raw === 'text/plain; charset=utf-8')).toBe(true);
+	});
+
+	// ----- unconditional fallback ----------------------------------------
+	// These three http-equiv values have no ConditionalAttributeType entry,
+	// so rules/helpers.ts substitutes "Any" at runtime and any non-empty
+	// content passes. Kept as separate tests (not a loop / test.each) so a
+	// failure immediately names the offending http-equiv value.
+
+	test('[invalid-attr-issue-3734-009] http-equiv="x-ua-compatible" content falls through to Any', async () => {
+		const { violations } = await mlRuleTest(rule, '<meta http-equiv="x-ua-compatible" content="IE=edge">');
+		expect(violations.length).toBe(0);
+	});
+
+	test('[invalid-attr-issue-3734-010] http-equiv="default-style" content falls through to Any', async () => {
+		const { violations } = await mlRuleTest(rule, '<meta http-equiv="default-style" content="preferred">');
+		expect(violations.length).toBe(0);
+	});
+
+	test('[invalid-attr-issue-3734-011] http-equiv="content-security-policy" content falls through to Any', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<meta http-equiv="content-security-policy" content="default-src \'self\'">',
+		);
+		expect(violations.length).toBe(0);
+	});
+
+	test('[invalid-attr-issue-3734-012] name= variants fall through to Any', async () => {
+		// name=viewport / description / keywords — ConditionalAttributeType
+		// array does not match, Any applies, anything passes.
+		const { violations } = await mlRuleTest(rule, '<meta name="description" content="arbitrary description text">');
+		expect(violations.length).toBe(0);
+	});
+
+	test('[invalid-attr-issue-3734-013] itemprop= variants fall through to Any', async () => {
+		// itemprop is the third <meta> identifier besides name / http-equiv
+		// / charset. ConditionalAttributeType[] array does not match, Any
+		// applies, anything passes.
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div itemscope><meta itemprop="version" content="anything goes"></div>',
+		);
+		expect(violations.length).toBe(0);
+	});
+
+	// ----- case-insensitive selector matching ----------------------------
+	test('[invalid-attr-issue-3734-014] http-equiv value match is ASCII case-insensitive', async () => {
+		// spec.meta.jsonc condition uses `[http-equiv='refresh' i]`. Legacy
+		// HTML commonly writes `<META HTTP-EQUIV="REFRESH">`; the `i` flag
+		// must flow through the selector engine so the refresh validator
+		// still fires and we do not silently miss these elements.
+		const { violations } = await mlRuleTest(rule, '<meta http-equiv="REFRESH" content="garbage">');
+		expect(violations.some(v => v.raw === 'garbage')).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3734-015] content-type value match is ASCII case-insensitive', async () => {
+		// Same guarantee on the content-type branch.
+		const { violations } = await mlRuleTest(rule, '<meta http-equiv="Content-Type" content="not a mime">');
+		expect(violations.some(v => v.raw === 'not a mime')).toBe(true);
+	});
+});
+
+describe('#3803 meta[property] with rdfa-style allowAttrs', () => {
+	test('[invalid-attr-issue-3803-001] nodeRule allowAttrs permits property/content on meta[property]', async () => {
+		// Reproduces the structure of preset.rdfa.jsonc: an unnamed nodeRule
+		// whose options reach the base `invalid-attr` rule so spec validation
+		// treats `property` and `content` as allowed on meta[property].
+		const { violations } = await mlRuleTest(rule, '<meta property="og:title" content="Hello">', {
+			nodeRule: [
+				{
+					selector: ':where(meta[property])',
+					rule: {
+						options: {
+							allowAttrs: [
+								{ name: 'property', value: 'NoEmptyAny' },
+								{ name: 'content', value: 'NoEmptyAny' },
+							],
+						},
+					},
+				},
+			],
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-issue-3803-002] empty property value is still flagged as NoEmptyAny violation', async () => {
+		// The allowAttrs override uses `NoEmptyAny`, not `Any`: empty values
+		// must still be flagged so we do not silently allow `<meta property="">`.
+		const { violations } = await mlRuleTest(rule, '<meta property="" content="Hello">', {
+			nodeRule: [
+				{
+					selector: ':where(meta[property])',
+					rule: {
+						options: {
+							allowAttrs: [
+								{ name: 'property', value: 'NoEmptyAny' },
+								{ name: 'content', value: 'NoEmptyAny' },
+							],
+						},
+					},
+				},
+			],
+		});
+		// Still reports on the empty property value via attrCheck
+		expect(violations.length).toBeGreaterThan(0);
+		expect(violations.some(v => v.raw === '')).toBe(true);
+	});
+
+	test('[invalid-attr-issue-3803-003] base rule still flags unknown attributes on meta[property]', async () => {
+		// The nodeRule extends what is allowed but does not silence
+		// spec-fallback for other attributes. `bogus` is not a valid meta
+		// attribute and must still be reported by the base rule.
+		const { violations } = await mlRuleTest(rule, '<meta property="og:title" content="Hello" bogus="x">', {
+			nodeRule: [
+				{
+					selector: ':where(meta[property])',
+					rule: {
+						options: {
+							allowAttrs: [
+								{ name: 'property', value: 'NoEmptyAny' },
+								{ name: 'content', value: 'NoEmptyAny' },
+							],
+						},
+					},
+				},
+			],
+		});
+		expect(violations.some(v => v.raw === 'bogus')).toBe(true);
+	});
+});
+
+describe('#3733 Microdata cross-attribute constraints', () => {
+	test('[invalid-attr-issue-3733-001] itemscope alone is valid', async () => {
+		const { violations } = await mlRuleTest(rule, '<div itemscope></div>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-issue-3733-002] itemscope + itemtype is valid', async () => {
+		const { violations } = await mlRuleTest(rule, '<div itemscope itemtype="https://schema.org/Thing"></div>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-issue-3733-003] itemscope + itemtype + itemid is valid', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div itemscope itemtype="https://schema.org/Thing" itemid="https://example.com/r"></div>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-issue-3733-004] itemid without itemscope/itemtype is disallowed', async () => {
+		const { violations } = await mlRuleTest(rule, '<div itemid="https://example.com/r"></div>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 6,
+				message: 'The "itemid" attribute is disallowed',
+				raw: 'itemid',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3733-005] itemid with itemscope but without itemtype is disallowed', async () => {
+		const { violations } = await mlRuleTest(rule, '<div itemscope itemid="https://example.com/r"></div>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 16,
+				message: 'The "itemid" attribute is disallowed',
+				raw: 'itemid',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3733-006] itemid with itemtype but without itemscope is disallowed (both itemid and itemtype reported)', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div itemtype="https://schema.org/Thing" itemid="https://example.com/r"></div>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 6,
+				message: 'The "itemtype" attribute is disallowed',
+				raw: 'itemtype',
+			},
+			{
+				severity: 'error',
+				line: 1,
+				col: 42,
+				message: 'The "itemid" attribute is disallowed',
+				raw: 'itemid',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3733-007] itemtype without itemscope is disallowed', async () => {
+		const { violations } = await mlRuleTest(rule, '<div itemtype="https://schema.org/Thing"></div>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 6,
+				message: 'The "itemtype" attribute is disallowed',
+				raw: 'itemtype',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3733-008] invalid-value precedes condition: non-AbsoluteURL itemtype reports value error, not disallowed', async () => {
+		// helpers.ts isValidAttr: when attrCheck reports invalid-value, the
+		// condition-based 'disallowed' branch is skipped (the `if` requires
+		// `invalid === false`). Pin this order so future helpers refactors
+		// surface as a test failure here.
+		// Note: empty `itemtype=""` does NOT exercise this — empty token lists
+		// pass attrCheck and fall through to condition. A non-AbsoluteURL value
+		// is what triggers the value error first.
+		const { violations } = await mlRuleTest(rule, '<div itemtype="not-absolute"></div>');
+		expect(violations.some(v => v.message.includes('disallowed'))).toBe(false);
+		expect(violations.length).toBe(1);
+		expect(violations[0]?.raw).toBe('not-absolute');
+	});
+});
+
+describe('bdo[dir] enum override (HTML LS §4.5.5)', () => {
+	// HTML LS forbids `dir="auto"` on `<bdo>`:
+	// "The dir global content attribute is required on this element. The attribute's value must not be the keyword auto."
+	// https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-bdo-element
+
+	test('[invalid-attr-invalid-030] bdo dir="auto" is forbidden', async () => {
+		const { violations } = await mlRuleTest(rule, '<bdo dir="auto">x</bdo>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 11,
+				message: 'The "dir" attribute expects either "ltr", "rtl"',
+				raw: 'auto',
+			},
+		]);
+	});
+
+	test('[invalid-attr-valid-022] bdo dir="ltr" and dir="rtl" are accepted', async () => {
+		expect((await mlRuleTest(rule, '<bdo dir="ltr">x</bdo>')).violations.length).toBe(0);
+		expect((await mlRuleTest(rule, '<bdo dir="rtl">x</bdo>')).violations.length).toBe(0);
+	});
+});
+
+describe('input min/max per-type checking (data-types slice)', () => {
+	// Mirrors tests/external/validator/tests/html/datatypes/* fixtures.
+	// The previous generic ["DateTime", "Number"] tuple accepted out-of-range
+	// dates because DateTime's loose match passed without per-component
+	// validation. Per-type DateString/MonthString/WeekString/TimeString/
+	// LocalDateTimeString conditions reuse the strict checkers that already
+	// cover `value`. Each test pins the message substring naming the
+	// offending component so a future refactor that swaps the validator path
+	// surfaces here rather than silently passing the length-only check.
+
+	test('[invalid-attr-invalid-031] input[type=date][min] rejects out-of-range month', async () => {
+		// Mirrors html/datatypes/date-month-out-of-range-novalid.html
+		const { violations } = await mlRuleTest(rule, '<input type="date" min="2024-13-01">');
+		expect(violations.length).toBe(1);
+		expect(violations[0]?.message).toContain('month part');
+	});
+
+	test('[invalid-attr-invalid-032] input[type=date][min] rejects out-of-range day', async () => {
+		// Mirrors html/datatypes/date-day-out-of-range-novalid.html
+		const { violations } = await mlRuleTest(rule, '<input type="date" min="2024-02-30">');
+		expect(violations.length).toBe(1);
+		expect(violations[0]?.message).toContain('date part');
+	});
+
+	test('[invalid-attr-invalid-033] input[type=date][min] rejects wrong format', async () => {
+		// Mirrors html/datatypes/date-invalid-format-novalid.html
+		const { violations } = await mlRuleTest(rule, '<input type="date" min="12-31-2024">');
+		expect(violations.length).toBe(1);
+		expect(violations[0]?.message).toContain('year part');
+	});
+
+	test('[invalid-attr-invalid-034] input[type=time][min] rejects out-of-range hour', async () => {
+		// Mirrors html/datatypes/time-hour-out-of-range-novalid.html
+		const { violations } = await mlRuleTest(rule, '<input type="time" min="25:00">');
+		expect(violations.length).toBe(1);
+		expect(violations[0]?.message).toContain('hour part');
+	});
+
+	test('[invalid-attr-invalid-035] input[type=month][min] rejects month 0', async () => {
+		// Mirrors html/datatypes/month-out-of-range-novalid.html
+		const { violations } = await mlRuleTest(rule, '<input type="month" min="2024-00">');
+		expect(violations.length).toBe(1);
+		expect(violations[0]?.message).toContain('month part');
+	});
+
+	test('[invalid-attr-invalid-036] input[type=week][min] rejects week 54', async () => {
+		// Mirrors html/datatypes/week-invalid-format-novalid.html
+		const { violations } = await mlRuleTest(rule, '<input type="week" min="2024-W54">');
+		expect(violations.length).toBe(1);
+		// week-string week-number is internally validated under the "date" component.
+		expect(violations[0]?.message).toContain('date part');
+	});
+
+	test('[invalid-attr-invalid-040] input[type=date][min] rejects Feb 29 in non-leap year', async () => {
+		// markuplint-only edge: no dedicated bench fixture, pin the leap-year branch.
+		const { violations } = await mlRuleTest(rule, '<input type="date" min="2023-02-29">');
+		expect(violations.length).toBe(1);
+		expect(violations[0]?.message).toContain('date part');
+	});
+
+	test('[invalid-attr-invalid-041] input[type=datetime-local][min] rejects out-of-range month', async () => {
+		// Mirrors html/datatypes/datetime-local-invalid-novalid.html
+		const { violations } = await mlRuleTest(rule, '<input type="datetime-local" min="2024-13-01T12:00">');
+		expect(violations.length).toBe(1);
+		expect(violations[0]?.message).toContain('month part');
+	});
+
+	test('[invalid-attr-invalid-042] input[type=time][min] rejects out-of-range minute', async () => {
+		// Mirrors html/datatypes/time-minute-out-of-range-novalid.html
+		const { violations } = await mlRuleTest(rule, '<input type="time" min="12:60">');
+		expect(violations.length).toBe(1);
+		expect(violations[0]?.message).toContain('minute part');
+	});
+
+	test('[invalid-attr-invalid-043] input[type=time][min] rejects out-of-range second', async () => {
+		// Mirrors html/datatypes/time-second-out-of-range-novalid.html
+		const { violations } = await mlRuleTest(rule, '<input type="time" min="12:30:60">');
+		expect(violations.length).toBe(1);
+		expect(violations[0]?.message).toContain('second part');
+	});
+
+	// Each well-formed case is its own test so a failure does not mask later
+	// cases (per QA guidance on for-loop assertions).
+	test('[invalid-attr-valid-023] input[type=date] min/max accepts well-formed values', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="date" min="2024-01-01" max="2024-12-31">');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-valid-024] input[type=month] min/max accepts well-formed values', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="month" min="2024-01" max="2024-12">');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-valid-025] input[type=week] min/max accepts well-formed values', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="week" min="2024-W01" max="2024-W52">');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-valid-026] input[type=time] min/max accepts well-formed values', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="time" min="00:00" max="23:59">');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-valid-027] input[type=datetime-local] min/max accepts well-formed values', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<input type="datetime-local" min="2024-01-01T00:00" max="2024-12-31T23:59">',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-valid-028] input[type=number] min/max accepts integer floats', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="number" min="0" max="100">');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-valid-029] input[type=range] min/max accepts negative floats', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="range" min="-5" max="5">');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-valid-030] input[type=date][min] accepts Feb 29 in leap year', async () => {
+		// Pin the leap-year branch of datetimeTokenCheck.date so a future refactor
+		// that drops the year-aware day-of-month calculation is caught here.
+		const { violations } = await mlRuleTest(rule, '<input type="date" min="2024-02-29">');
+		expect(violations).toStrictEqual([]);
+	});
+});
+
+describe('progress[max] must be greater than zero (HTML LS §4.10.13)', () => {
+	test('[invalid-attr-invalid-037] progress max="0" is rejected', async () => {
+		// Mirrors html/datatypes/float-positive-zero-novalid.html
+		const { violations } = await mlRuleTest(rule, '<progress max="0"></progress>');
+		expect(violations.length).toBe(1);
+		expect(violations[0]?.message).toContain('greater than 0');
+	});
+
+	test('[invalid-attr-invalid-038] progress max="-5" is rejected', async () => {
+		// Mirrors html/datatypes/float-positive-negative-novalid.html
+		const { violations } = await mlRuleTest(rule, '<progress max="-5"></progress>');
+		expect(violations.length).toBe(1);
+		expect(violations[0]?.message).toContain('greater than 0');
+	});
+
+	test('[invalid-attr-valid-031] progress max="1" is accepted', async () => {
+		const { violations } = await mlRuleTest(rule, '<progress max="1"></progress>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-valid-032] progress max="100" is accepted', async () => {
+		const { violations } = await mlRuleTest(rule, '<progress max="100"></progress>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-valid-033] progress max="0.5" is accepted', async () => {
+		const { violations } = await mlRuleTest(rule, '<progress max="0.5"></progress>');
+		expect(violations).toStrictEqual([]);
+	});
+});
+
+describe('img[usemap] requires a non-empty hash-name (HashName type)', () => {
+	test('[invalid-attr-invalid-039] usemap="#" alone is rejected by the HashName type', async () => {
+		// Mirrors html/datatypes/hashname-only-hash-novalid.html
+		// usemap on img is conditional on the presence of a `<map>` reference, so
+		// invalid-attr's value-type check is the relevant assertion here. The
+		// HashName type rejects `#` because the spec requires a non-empty name part.
+		// We assert the raw token rather than the surrounding "disallowed/missing"
+		// branches so this test remains stable across the rule's other validations.
+		const { violations } = await mlRuleTest(rule, '<img src="x.png" usemap="#" alt="">');
+		expect(violations.some(v => v.raw === '#')).toBe(true);
+	});
+
+	test('[invalid-attr-invalid-040] itemref token list rejects duplicate ids (HTML LS §5.2.2 Items)', async () => {
+		// Mirrors html/microdata/itemref-redundant-novalid.html. Locks down the
+		// `unique: true` flag added to the itemref token spec.
+		// Uses substring-only `.some(...)` (matches the invalid-039 pattern)
+		// so the test stays stable when invalid-attr's surrounding wording is
+		// tuned elsewhere.
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div itemscope itemref="ref1 ref1"></div><div id="ref1" itemprop="name">x</div>',
+		);
+		expect(
+			violations.some(v => v.raw === 'ref1' && typeof v.message === 'string' && v.message.includes('duplicated')),
+		).toBe(true);
+	});
+
+	test('[invalid-attr-invalid-041] itemtype="" rejects empty token set (HTML LS §5.2.2 Items)', async () => {
+		// Mirrors html/microdata/itemtype-empty-novalid.html. Locks down the
+		// `allowEmpty: false` flag added to the itemtype token spec.
+		// Uses substring-only match (see invalid-040 for rationale).
+		const { violations } = await mlRuleTest(rule, '<div itemtype="" itemscope></div>');
+		expect(
+			violations.some(
+				v =>
+					typeof v.message === 'string' &&
+					v.message.includes('itemtype') &&
+					v.message.includes('must not be empty'),
+			),
+		).toBe(true);
+	});
+});
+
+// Pin the narrowed `<del>` / `<ins>` `datetime` contract: HTML LS §4.7
+// (edits) defines the value as "a valid date string with optional time",
+// not the catch-all `DateTime` union. Each test mirrors one of the 10
+// fixture-derived shapes that nu-validator flags as nu-only for these
+// elements; if the `DateStringWithOptionalTime` type ever widens by accident
+// the matching assertion fails immediately.
+describe('del/ins[datetime] is "valid date string with optional time" (HTML LS §4.7)', () => {
+	test('[invalid-attr-valid-034] del[datetime] accepts a valid date string', async () => {
+		const { violations } = await mlRuleTest(rule, '<del datetime="2011-11-12">x</del>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-valid-035] del[datetime] accepts a valid global date and time string', async () => {
+		const { violations } = await mlRuleTest(rule, '<del datetime="2011-11-12T14:54:39.929+0000">x</del>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	// Each reject test asserts at least one error violation fires. The
+	// rule's surfaced `raw` and message wording differ per shape (some
+	// emit a sub-token, some emit an empty raw with a "missing"-style
+	// message), so we keep the assertion at the existence level and
+	// rely on the named test description to pin the failure shape.
+
+	test('[invalid-attr-invalid-046] del[datetime] rejects a date string without hyphens', async () => {
+		// Mirrors html/elements/del/date-iso8601-YYYYMMDD-no-hyphen-novalid.html.
+		const { violations } = await mlRuleTest(rule, '<del datetime="20020929">x</del>');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-invalid-047] del[datetime] rejects a duration P-form string', async () => {
+		// Mirrors html/elements/del/duration-P-form-novalid.html.
+		const { violations } = await mlRuleTest(rule, '<del datetime="PT4H18M3S">x</del>');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-invalid-048] del[datetime] rejects a duration component-list string', async () => {
+		// Mirrors html/elements/del/duration-time-component-novalid.html.
+		const { violations } = await mlRuleTest(rule, '<del datetime="4h 18m 3s">x</del>');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-invalid-049] del[datetime] rejects a comma fraction separator', async () => {
+		// Mirrors html/elements/del/global-date-and-time-bad-fraction-separator-novalid.html.
+		// Also locks down the parallel fix in `checkGlobalDateAndTimeString` so the
+		// catch-all `DateTime` type no longer accepts comma as a fraction separator.
+		const { violations } = await mlRuleTest(rule, '<del datetime="2011-11-12T14:54:39,929+0000">x</del>');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-invalid-050] del[datetime] rejects a local date and time string', async () => {
+		// Mirrors html/elements/del/local-date-and-time-novalid.html.
+		const { violations } = await mlRuleTest(rule, '<del datetime="2011-11-12T14:54">x</del>');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-invalid-051] del[datetime] rejects a month-only string', async () => {
+		// Mirrors html/elements/del/month-novalid.html.
+		const { violations } = await mlRuleTest(rule, '<del datetime="2011-11">x</del>');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-invalid-052] del[datetime] rejects a time-only string', async () => {
+		// Mirrors html/elements/del/time-novalid.html.
+		const { violations } = await mlRuleTest(rule, '<del datetime="14:54:39">x</del>');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-invalid-053] del[datetime] rejects a week string', async () => {
+		// Mirrors html/elements/del/week-novalid.html.
+		const { violations } = await mlRuleTest(rule, '<del datetime="2011-W46">x</del>');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-invalid-054] del[datetime] rejects a year-only string', async () => {
+		// Mirrors html/elements/del/year-novalid.html.
+		const { violations } = await mlRuleTest(rule, '<del datetime="2006">x</del>');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-invalid-055] del[datetime] rejects a yearless date string', async () => {
+		// Mirrors html/elements/del/yearless-date-novalid.html.
+		const { violations } = await mlRuleTest(rule, '<del datetime="07-15">x</del>');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-invalid-056] ins[datetime] applies the same narrowed type', async () => {
+		// Spec-level mirror of `<del>`; one ins sample keeps the parallel coverage
+		// honest without duplicating all 9 reject cases.
+		const { violations } = await mlRuleTest(rule, '<ins datetime="2011-11">x</ins>');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+});
+
+// HTML LS pins these attributes to "valid non-empty URL" — previously typed
+// as the empty-allowing `URL`, which silently accepted "" and whitespace-only
+// strings. Each test reproduces one of the nu-only fixtures so the regression
+// fires immediately if the type is widened back.
+describe('URL-typed attributes that must be non-empty (HTML LS)', () => {
+	// Positive cases pin the narrowed types' lower bound: a regular URL stays
+	// valid. If a future change accidentally over-tightens the validator the
+	// matching assertion fires immediately.
+	test('[invalid-attr-valid-036] form[action] accepts a regular URL', async () => {
+		const { violations } = await mlRuleTest(rule, '<form action="/submit"></form>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-valid-037] button[formaction] accepts a regular URL', async () => {
+		const { violations } = await mlRuleTest(rule, '<button formaction="/submit"></button>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-valid-038] object[data] accepts a regular URL', async () => {
+		const { violations } = await mlRuleTest(rule, '<object data="resource.swf"></object>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-valid-039] link[href] accepts a regular URL', async () => {
+		const { violations } = await mlRuleTest(rule, '<link href="/style.css" rel="stylesheet">');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-valid-040] video[poster] accepts a regular URL', async () => {
+		const { violations } = await mlRuleTest(rule, '<video poster="/poster.jpg" src="movie.mp4"></video>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-invalid-057] form[action] rejects empty string', async () => {
+		// Mirrors html/elements/form/action-empty-novalid.html.
+		const { violations } = await mlRuleTest(rule, '<form action=""></form>');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-invalid-058] form[action] rejects whitespace-only', async () => {
+		// Mirrors html/elements/form/action-whitespace-only-novalid.html.
+		const { violations } = await mlRuleTest(rule, '<form action="\t \n"></form>');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-invalid-059] button[formaction] rejects empty string', async () => {
+		// Mirrors html/elements/button/formaction-empty-novalid.html.
+		const { violations } = await mlRuleTest(rule, '<button formaction=""></button>');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-invalid-060] input[formaction] rejects empty string', async () => {
+		// Mirrors html/elements/input/type-image-formaction-empty-novalid.html.
+		const { violations } = await mlRuleTest(rule, '<input type="image" alt="foo" formaction="">');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-invalid-061] object[data] rejects empty string', async () => {
+		// Mirrors html/elements/object/data-empty-novalid.html.
+		const { violations } = await mlRuleTest(rule, '<object data=""></object>');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-invalid-062] link[href] rejects empty string', async () => {
+		// Mirrors html/elements/link/href-empty-novalid.html.
+		const { violations } = await mlRuleTest(rule, '<link href="" rel>');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-invalid-063] video[poster] rejects empty string', async () => {
+		// HTML LS §4.8.9 video: poster must be a "valid non-empty URL".
+		// Same bug class as the other URL→NonEmptyURL reclassifications;
+		// no nu fixture covers it directly but the spec wording is identical.
+		const { violations } = await mlRuleTest(rule, '<video poster="" src="movie.mp4"></video>');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+});
+
+describe('progress[value] must be >= 0 (HTML LS §4.10.13)', () => {
+	test('[invalid-attr-valid-041] progress value="0.5" max="1" is accepted', async () => {
+		const { violations } = await mlRuleTest(rule, '<progress value="0.5" max="1">50%</progress>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-invalid-064] progress value="-10" is rejected', async () => {
+		// Mirrors html/elements/progress/value-negative-novalid.html.
+		const { violations } = await mlRuleTest(rule, '<progress value="-10" max="100">-10%</progress>');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+});
+
+describe('img[sizes] must be paired with srcset (HTML LS §4.8.4.4.4)', () => {
+	test('[invalid-attr-valid-042] img with srcset+sizes is accepted', async () => {
+		const { violations } = await mlRuleTest(rule, '<img src="x.jpg" srcset="x.jpg 1x" sizes="100vw" alt="x">');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-invalid-065] img[sizes] without srcset is rejected', async () => {
+		// Mirrors html/elements/img/sizes-without-srcset-novalid.html.
+		const { violations } = await mlRuleTest(rule, '<img src="image.jpg" sizes="100vw" alt="Image">');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-valid-043] picture > source with srcset+sizes is accepted', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<picture><source srcset="x.jpg 100w" sizes="100vw"><img src="x.jpg" alt="x"></picture>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-invalid-066] picture > source[sizes] without srcset is rejected', async () => {
+		// Same spec wording as img[sizes]; no nu fixture covers this directly
+		// but the constraint is symmetric. `srcset` being required on
+		// `picture > source` keeps required-attr firing in parallel for the
+		// missing-srcset case.
+		const { violations } = await mlRuleTest(
+			rule,
+			'<picture><source sizes="100vw"><img src="x.jpg" alt="x"></picture>',
+		);
+		expect(violations.some(v => typeof v.message === 'string' && v.message.includes('sizes'))).toBe(true);
+	});
+});
+
+describe('autocomplete standalone "webauthn" is non-conforming (HTML LS §4.10.18.7)', () => {
+	test('[invalid-attr-valid-044] autocomplete="name webauthn" is accepted', async () => {
+		const { violations } = await mlRuleTest(rule, '<input autocomplete="name webauthn">');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-invalid-067] autocomplete="webauthn" alone is rejected', async () => {
+		// Mirrors html/elements/input/autocomplete-webauthn-only-novalid.html.
+		// Spec: "the webauthn token must appear along with at least one other
+		// token; an autocomplete attribute whose value consists solely of the
+		// webauthn token is non-conforming."
+		const { violations } = await mlRuleTest(rule, '<input autocomplete="webauthn">');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+});
+
+describe('input[name] must not be "isindex" (HTML LS §4.10.18.2)', () => {
+	test('[invalid-attr-valid-045] input[name="username"] is accepted', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="text" name="username">');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-valid-046] input[name="Isindex"] is accepted (case-sensitive per spec literal)', async () => {
+		// Spec uses the literal value `isindex` without an ASCII
+		// case-insensitive qualifier, so capitalised variants are allowed.
+		const { violations } = await mlRuleTest(rule, '<input type="text" name="Isindex">');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-invalid-068] input[name="isindex"] is rejected', async () => {
+		// Mirrors html/elements/input/name-isindex-novalid.html.
+		// Spec: input element's name attribute "must not be the value isindex".
+		const { violations } = await mlRuleTest(rule, '<input type="text" name="isindex">');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-invalid-069] input[name=""] is rejected (empty preserved by Pattern override)', async () => {
+		// The Pattern override drops the inherited NoEmptyAny; the `.+` arm of
+		// the regex must keep the empty case rejected. Pin this so a future
+		// rewrite of the Pattern does not silently widen the contract.
+		const { violations } = await mlRuleTest(rule, '<input type="text" name="">');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+});
+
+describe('srcset descriptors must be unique (HTML LS §4.8.4.4.1)', () => {
+	test('[invalid-attr-valid-047] srcset with distinct densities is accepted', async () => {
+		const { violations } = await mlRuleTest(rule, '<img src="x.jpg" srcset="a.jpg 1x, b.jpg 2x" alt="">');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-invalid-070] srcset with duplicate density (omitted + 1x) is rejected', async () => {
+		// Mirrors html/elements/picture/srcset-microsyntax-unique-descriptors-1x-and-omitted-novalid.html.
+		// Omitted descriptor implies density 1x; pairing with explicit 1x is a duplicate.
+		const { violations } = await mlRuleTest(rule, '<img srcset="x 1x, y" src="x" alt="">');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-invalid-071] srcset with duplicate explicit density is rejected', async () => {
+		// Mirrors html/elements/picture/srcset-microsyntax-unique-descriptors-2x-novalid.html.
+		const { violations } = await mlRuleTest(rule, '<img srcset="x 2x, y 2x" src="x" alt="">');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-invalid-072] srcset with integer and decimal density equal in value is rejected', async () => {
+		// Mirrors html/elements/picture/srcset-microsyntax-unique-descriptors-integer-and-decimals-x-novalid.html.
+		// 1x and 1.0x normalise to the same numeric pixel density.
+		const { violations } = await mlRuleTest(rule, '<img srcset="x 1x, y 1.0x" src="x" alt="">');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-invalid-073] srcset with duplicate width descriptor is rejected', async () => {
+		// Mirrors html/elements/picture/srcset-microsyntax-unique-descriptors-w-novalid.html.
+		const { violations } = await mlRuleTest(rule, '<img srcset="x 1w, y 1w" sizes="100vw" src="x" alt="">');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-invalid-074] srcset with explicit "1x, 1x" duplicate is rejected', async () => {
+		// The simplest duplicate-density case — most common shape that real
+		// projects accidentally hit. No nu fixture pins this directly (only
+		// `1x, y` / `2x, 2x` / `1x, 1.0x` are in the corpus), but the rule
+		// guarantee should fire on the canonical shape too.
+		const { violations } = await mlRuleTest(rule, '<img srcset="a.jpg 1x, b.jpg 1x" src="a.jpg" alt="">');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-invalid-075] srcset with decimal-only duplicate density is rejected', async () => {
+		// Pins the decimal-equality branch independently from the
+		// integer-vs-decimal normalisation case (invalid-072).
+		const { violations } = await mlRuleTest(rule, '<img srcset="a.jpg 0.5x, b.jpg 0.5x" src="a.jpg" alt="">');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-invalid-076] srcset with duplicate density at end of 3-entry list is rejected', async () => {
+		// Duplicate detection must trip on the third entry, not only on the
+		// adjacent pair. Pins that the Set is checked for every entry.
+		const { violations } = await mlRuleTest(rule, '<img srcset="a.jpg 1x, b.jpg 2x, c.jpg 1x" src="a.jpg" alt="">');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+});
+
+describe('link[disabled] is only valid on rel="stylesheet" (HTML LS §4.6.7.18)', () => {
+	test('[invalid-attr-valid-048] link rel="stylesheet" with disabled is accepted', async () => {
+		const { violations } = await mlRuleTest(rule, '<link rel="stylesheet" href="style.css" disabled>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-invalid-077] link[disabled] without rel="stylesheet" is rejected', async () => {
+		// Mirrors html/elements/link/disabled-without-stylesheet-novalid.html.
+		// Spec: "The content attribute, if present, must only be specified on
+		// link elements that have a rel attribute that contains the stylesheet
+		// keyword."
+		const { violations } = await mlRuleTest(rule, '<link rel="icon" href="favicon.ico" disabled>');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('[invalid-attr-valid-049] case-insensitive rel still accepts disabled', async () => {
+		// `~=` selector uses ASCII case-insensitive matching with the ` i` flag,
+		// so `StyleSheet` is treated the same as `stylesheet`.
+		const { violations } = await mlRuleTest(rule, '<link rel="StyleSheet" href="style.css" disabled>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-valid-050] reversed rel token order still accepts disabled', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<link rel="alternate stylesheet" href="style.css" title="Print" disabled>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-invalid-078] link[disabled] with no rel attribute is rejected', async () => {
+		// rel is itself required (or itemprop fallback), but the relevant rule
+		// pin here is the disabled-on-non-stylesheet branch — `disabled` itself
+		// should not be accepted when no stylesheet rel is asserted.
+		const { violations } = await mlRuleTest(rule, '<link href="style.css" disabled>');
+		expect(violations.some(v => typeof v.message === 'string' && v.message.includes('disabled'))).toBe(true);
+	});
+
+	test('[invalid-attr-invalid-079] link rel="alternate stylesheet" with empty title is rejected', async () => {
+		// HTML LS §4.6.7.4 mandates a **non-empty** title. Pins the
+		// conditional NoEmptyAny type override on link[title].
+		const { violations } = await mlRuleTest(rule, '<link rel="alternate stylesheet" href="x.css" title="">');
+		expect(violations.some(v => typeof v.message === 'string' && v.message.toLowerCase().includes('title'))).toBe(
+			true,
+		);
+	});
+
+	test('[invalid-attr-valid-051] template[shadowrootslotassignment="named"] is accepted', async () => {
+		const { violations } = await mlRuleTest(rule, '<template shadowrootslotassignment="named"></template>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-valid-052] template[shadowrootslotassignment="manual"] is accepted', async () => {
+		const { violations } = await mlRuleTest(rule, '<template shadowrootslotassignment="manual"></template>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-invalid-080] template[shadowrootslotassignment="auto"] is rejected (not in enum)', async () => {
+		const { violations } = await mlRuleTest(rule, '<template shadowrootslotassignment="auto"></template>');
+		expect(violations).toHaveLength(1);
+		expect(violations[0]).toMatchObject({
+			severity: 'error',
+			message: 'The "shadowrootslotassignment" attribute expects either "named", "manual"',
+			raw: 'auto',
+		});
+	});
+
+	test('[invalid-attr-valid-053] template[shadowrootcustomelementregistry] Boolean attribute is accepted', async () => {
+		const { violations } = await mlRuleTest(rule, '<template shadowrootcustomelementregistry></template>');
+		expect(violations).toStrictEqual([]);
 	});
 });

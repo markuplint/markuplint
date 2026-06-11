@@ -57,6 +57,10 @@ test('default-rules', () => {
 			category: 'style',
 			defaultValue: false,
 		},
+		'form-attr-references-form': {
+			category: 'validation',
+			defaultValue: true,
+		},
 		'head-element-order': {
 			category: 'style',
 			defaultValue: false,
@@ -73,7 +77,19 @@ test('default-rules', () => {
 			category: 'style',
 			defaultValue: false,
 		},
+		'input-button-non-empty-value': {
+			category: 'validation',
+			defaultValue: true,
+		},
+		'input-file-empty-value': {
+			category: 'validation',
+			defaultValue: true,
+		},
 		'invalid-attr': {
+			category: 'validation',
+			defaultValue: true,
+		},
+		'itemprop-requires-itemscope': {
 			category: 'validation',
 			defaultValue: true,
 		},
@@ -81,11 +97,23 @@ test('default-rules', () => {
 			category: 'a11y',
 			defaultValue: false,
 		},
+		'label-no-multiple-controls': {
+			category: 'validation',
+			defaultValue: true,
+		},
 		'landmark-roles': {
 			category: 'a11y',
 			defaultValue: false,
 		},
 		'link-types': {
+			category: 'validation',
+			defaultValue: true,
+		},
+		'map-id-name-match': {
+			category: 'validation',
+			defaultValue: true,
+		},
+		'meter-value-bounds': {
 			category: 'validation',
 			defaultValue: true,
 		},
@@ -124,6 +152,10 @@ test('default-rules', () => {
 		'no-empty-palpable-content': {
 			category: 'validation',
 			defaultValue: false,
+		},
+		'no-extra-selected-options': {
+			category: 'validation',
+			defaultValue: true,
 		},
 		'no-hard-code-id': {
 			category: 'maintainability',
@@ -179,6 +211,10 @@ test('default-rules', () => {
 		},
 		'required-h1': {
 			category: 'a11y',
+			defaultValue: true,
+		},
+		'script-content': {
+			category: 'validation',
 			defaultValue: true,
 		},
 		'srcset-sizes-constraint': {

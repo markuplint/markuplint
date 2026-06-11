@@ -1,3 +1,13 @@
+/**
+ * Terminology policy: "virtual rule" is an internal implementation term for
+ * contributors only. User-facing documentation (website, migration guides,
+ * README) must say "named rule" instead — from a config user's perspective
+ * there are only two concepts, a base rule (e.g. `required-attr`) and a named
+ * rule (e.g. `a11y/html-lang`); the `MLRule` aliasing mechanics implemented
+ * here are intentionally not exposed.
+ *
+ * @module
+ */
 import type { AnyMLRule } from './ml-rule/index.js';
 import type { AnyRule, BaseRules, NamedRuleGroup, Rules, Severity, SpecConformance } from '@markuplint/ml-config';
 
@@ -63,14 +73,12 @@ export function expandNamedNodeRules<T extends NameableNodeRule>(
 
 	for (const nodeRule of nodeRules) {
 		if (!nodeRule.name) {
-			// Unnamed nodeRule: pass through unchanged
 			transformedNodeRules.push(nodeRule);
 			continue;
 		}
 
 		const namedRuleName = nodeRule.name;
 
-		// Validate name format (must contain /)
 		if (!NAMED_NODE_RULE_PATTERN.test(namedRuleName)) {
 			errors.push(
 				new Error(`Named nodeRule name must contain "/" (e.g., "scope/rule-name"): "${namedRuleName}"`),
@@ -78,7 +86,6 @@ export function expandNamedNodeRules<T extends NameableNodeRule>(
 			continue;
 		}
 
-		// Separate false entries from non-false entries
 		const allEntries = Object.entries(nodeRule.rules ?? {});
 		const nonFalseEntries = allEntries.filter(([, config]) => config !== false);
 		const falseEntries = allEntries.filter(([, config]) => config === false);
@@ -88,14 +95,12 @@ export function expandNamedNodeRules<T extends NameableNodeRule>(
 			continue;
 		}
 
-		// Check for duplicate alias names
 		if (usedAliasNames.has(namedRuleName)) {
 			errors.push(new Error(`Duplicate named nodeRule: "${namedRuleName}"`));
 			continue;
 		}
 		usedAliasNames.add(namedRuleName);
 
-		// Check for name collision with existing rules
 		if (existingRuleMap.has(namedRuleName)) {
 			errors.push(
 				new Error(`Named nodeRule "${namedRuleName}" conflicts with an existing rule of the same name`),
@@ -114,7 +119,6 @@ export function expandNamedNodeRules<T extends NameableNodeRule>(
 			transformedNodeRules.push(stripNamedProperties(nodeRule, falseRules) as unknown as T);
 		}
 
-		// Determine whether we need derived names (multi-entry)
 		const useGroupName = nonFalseEntries.length > 1;
 		const groupName = useGroupName ? namedRuleName : undefined;
 
@@ -126,11 +130,8 @@ export function expandNamedNodeRules<T extends NameableNodeRule>(
 				continue;
 			}
 
-			// For multi-entry: derived name = "groupName/baseRuleName"
-			// For single-entry: use the name directly
 			const aliasName: string = useGroupName ? `${namedRuleName}/${baseRuleName}` : namedRuleName;
 
-			// Check derived name collision
 			if (existingRuleMap.has(aliasName)) {
 				errors.push(
 					new Error(`Named nodeRule "${aliasName}" conflicts with an existing rule of the same name`),
@@ -145,7 +146,6 @@ export function expandNamedNodeRules<T extends NameableNodeRule>(
 				usedAliasNames.add(aliasName);
 			}
 
-			// Create virtual rule by aliasing the base rule
 			const virtualRule = baseRule.createAlias(aliasName, {
 				specConformance: nodeRule.specConformance,
 				groupName,
@@ -153,8 +153,6 @@ export function expandNamedNodeRules<T extends NameableNodeRule>(
 
 			virtualRules.push(virtualRule);
 
-			// Transform the nodeRule: change the rules key from base rule name to alias name,
-			// and strip the name/specConformance properties (consumed by the virtual rule)
 			// Safety: same as above — T's structural properties are preserved by stripNamedProperties.
 			transformedNodeRules.push(stripNamedProperties(nodeRule, { [aliasName]: ruleConfig }) as unknown as T);
 		}
@@ -164,9 +162,7 @@ export function expandNamedNodeRules<T extends NameableNodeRule>(
 }
 
 /**
- * Creates a copy of the nodeRule with `name`, `specConformance`, and `rules` removed,
- * then adds the given replacement rules. Used to transform named nodeRules into
- * their expanded form.
+ * Used to transform named nodeRules into their expanded form.
  */
 function stripNamedProperties(
 	nodeRule: NameableNodeRule,
@@ -214,25 +210,21 @@ export function expandNamedRules(rules: Rules, existingRules: readonly Readonly<
 	const usedAliasNames = new Set<string>();
 
 	for (const [key, value] of Object.entries(rules)) {
-		// Non-namespaced keys: pass through as regular rules
 		if (!key.includes('/')) {
 			resolvedRules[key] = value;
 			continue;
 		}
 
-		// Wildcard patterns (e.g., "a11y/*"): pass through
 		if (key.endsWith('/*')) {
 			resolvedRules[key] = value;
 			continue;
 		}
 
-		// `false`: disable signal — pass through
 		if (value === false) {
 			resolvedRules[key] = false;
 			continue;
 		}
 
-		// NamedRuleGroup: expand into virtual rules
 		if (isNamedRuleGroup(value)) {
 			const groupKey = key;
 			const { specConformance, severity: groupSeverity } = value;
@@ -246,14 +238,12 @@ export function expandNamedRules(rules: Rules, existingRules: readonly Readonly<
 				continue;
 			}
 
-			// Check for duplicate
 			if (usedAliasNames.has(groupKey)) {
 				errors.push(new Error(`Duplicate named rule group: "${groupKey}"`));
 				continue;
 			}
 			usedAliasNames.add(groupKey);
 
-			// Check for name collision with existing rules
 			if (existingRuleMap.has(groupKey)) {
 				errors.push(
 					new Error(`Named rule group "${groupKey}" conflicts with an existing rule of the same name`),
@@ -279,7 +269,6 @@ export function expandNamedRules(rules: Rules, existingRules: readonly Readonly<
 
 				const aliasName: string = useGroupName ? `${groupKey}/${baseRuleName}` : groupKey;
 
-				// Check collisions
 				if (existingRuleMap.has(aliasName)) {
 					errors.push(
 						new Error(`Named rule group "${aliasName}" conflicts with an existing rule of the same name`),
@@ -294,7 +283,6 @@ export function expandNamedRules(rules: Rules, existingRules: readonly Readonly<
 					usedAliasNames.add(aliasName);
 				}
 
-				// Create virtual rule
 				const virtualRule = baseRule.createAlias(aliasName, {
 					specConformance,
 					groupName: gName,
@@ -303,7 +291,6 @@ export function expandNamedRules(rules: Rules, existingRules: readonly Readonly<
 
 				virtualRules.push(virtualRule);
 
-				// Add the rule config under the alias name
 				resolvedRules[aliasName] = ruleConfig;
 			}
 		} else {

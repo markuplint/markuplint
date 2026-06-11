@@ -1,8 +1,12 @@
 {
 	"name": "@markuplint/selector",
-	"version": "5.0.0-rc.1",
+	"version": "5.0.0-rc.4",
 	"description": "Extended W3C Selectors matcher",
-	"repository": "git@github.com:markuplint/markuplint.git",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/markuplint/markuplint.git",
+		"directory": "packages/@markuplint/selector"
+	},
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
 	"engines": {
@@ -27,15 +31,15 @@
 		"clean": "npx tsc --build --clean tsconfig.build.json"
 	},
 	"dependencies": {
-		"@markuplint/ml-spec": "5.0.0-rc.1",
-		"@markuplint/shared": "5.0.0-rc.1",
+		"@markuplint/ml-spec": "5.0.0-rc.4",
+		"@markuplint/shared": "5.0.0-rc.4",
 		"@types/debug": "4.1.13",
 		"debug": "4.4.3",
 		"postcss-selector-parser": "7.1.1",
-		"type-fest": "5.5.0"
+		"type-fest": "5.6.0"
 	},
 	"devDependencies": {
 		"@types/jsdom": "28.0.1",
-		"jsdom": "29.0.1"
+		"jsdom": "29.0.2"
 	}
 }

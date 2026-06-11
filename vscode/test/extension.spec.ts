@@ -3,7 +3,7 @@ import assert from 'node:assert';
 import { suite, suiteSetup, test } from 'mocha';
 import * as vscode from 'vscode';
 
-const EXTENSION_ID = 'yusukehirao.vscode-markuplint';
+const EXTENSION_ID = 'markuplint.vscode-markuplint';
 
 async function waitForExtension(timeout = 5000): Promise<vscode.Extension<unknown>> {
 	const start = Date.now();

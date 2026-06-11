@@ -1,8 +1,12 @@
 {
 	"name": "@markuplint/alpine-parser",
-	"version": "5.0.0-rc.1",
+	"version": "5.0.0-rc.4",
 	"description": "Alpine.js parser for markuplint",
-	"repository": "git@github.com:markuplint/markuplint.git",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/markuplint/markuplint.git",
+		"directory": "packages/@markuplint/alpine-parser"
+	},
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
 	"engines": {
@@ -24,9 +28,9 @@
 		"clean": "npx tsc --build --clean tsconfig.build.json"
 	},
 	"dependencies": {
-		"@markuplint/html-parser": "5.0.0-rc.1"
+		"@markuplint/html-parser": "5.0.0-rc.4"
 	},
 	"devDependencies": {
-		"@markuplint/parser-utils": "5.0.0-rc.1"
+		"@markuplint/parser-utils": "5.0.0-rc.4"
 	}
 }

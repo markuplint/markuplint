@@ -6,7 +6,6 @@ import { checkingInteractionInHidden } from '../wai-aria/checkings/interaction-i
 import { defaultOptions } from '../wai-aria/default-options.js';
 import meta from './meta.js';
 
-/** Warns when focusable interactive elements are placed inside an aria-hidden subtree. */
 export default createRule<boolean, Options>({
 	meta,
 	defaultSeverity: 'warning',

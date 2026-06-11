@@ -32,6 +32,7 @@ import type {
 	Walker,
 	MLASTHTMLAttr,
 	MLASTBlockBehavior,
+	MLASTParseError,
 	NamespaceURI,
 } from '@markuplint/ml-ast';
 
@@ -58,6 +59,24 @@ const timer = new PerformanceTimer();
  * Subclasses must implement `nodeize` to convert language-specific AST nodes
  * into the markuplint AST format.
  *
+ * When adding framework support, choose the lightest extension that fits:
+ *
+ * - **Spec-only package** (`ExtendedSpec`, no parser) when the framework is
+ *   valid HTML plus extra attributes.
+ * - **`HtmlParser` subclass** (from `@markuplint/html-parser`) configuring
+ *   only `ignoreTags` when the syntax is HTML with embedded template
+ *   expressions (EJS, ERB, Liquid, Mustache, Nunjucks, PHP, Smarty) — the
+ *   expressions are masked before HTML parsing and restored as `psblock`
+ *   nodes, so no external parsing library is needed.
+ * - **Direct `Parser` subclass** only when the document structure itself
+ *   diverges from HTML (JSX, Vue SFC, Svelte, Pug, Astro).
+ *
+ * Direct subclasses should delegate tokenization to the framework's
+ * established parser library rather than hand-rolling one, and those
+ * libraries are chosen to span multiple major framework versions (e.g.
+ * `vue-eslint-parser` covers both Vue 2 and Vue 3 template syntax) so the
+ * parsers keep working across version ranges without frequent updates.
+ *
  * @template Node - The language-specific AST node type produced by the tokenizer
  * @template State - An optional parser state type that persists across tokenization
  */
@@ -71,6 +90,26 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	readonly #selfCloseType: SelfCloseType = 'html';
 	readonly #spaceChars: readonly string[] = defaultSpaces;
 	readonly #rawTextElements: readonly string[] = ['style', 'script'];
+
+	/**
+	 * Buffer for parse errors collected from **embedded** parse() calls
+	 * (e.g., Markdown's inline HTML blocks, Pug's raw HTML lines — these
+	 * invoke a separate HtmlParser instance from inside `nodeize()`).
+	 *
+	 * Subclasses that delegate to an internal parser should push the
+	 * resulting `parseErrors` onto this array via {@link Parser.accumulateParseErrors}.
+	 * The base `parse()` merges them with the top-level tokenize result so
+	 * the final `MLASTDocument.parseErrors` is complete.
+	 *
+	 * Reset on every `parse()` invocation.
+	 */
+	#embeddedParseErrors: MLASTParseError[] = [];
+	/**
+	 * Keyed by the original tag name (as authored in source) so a
+	 * `tagNameCaseSensitive` parser that preserves casing reuses the same
+	 * `RegExp` for every occurrence.
+	 */
+	readonly #rawTextCloseTagPatternCache = new Map<string, RegExp>();
 	#authoredElementName?: ParserAuthoredElementNameDistinguishing;
 	#originalRawCode = '';
 	#rawCode = '';
@@ -166,6 +205,11 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	 * the raw source code. The default implementation prepends offset spaces
 	 * based on the parse options.
 	 *
+	 * Overrides must call `super.beforeParse()` first: the offset spaces
+	 * prepended here are removed again by {@link Parser.afterParse}, and the
+	 * two hooks must stay symmetric or position reporting for embedded code
+	 * fragments (e.g., a `<template>` block inside a `.vue` file) breaks.
+	 *
 	 * @param rawCode - The raw source code about to be parsed
 	 * @param options - Parse options that may specify offset positioning
 	 * @returns The preprocessed source code to be used for tokenization
@@ -213,6 +257,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			const tokenized = this.tokenize(options);
 			const ast = tokenized.ast;
 			const isFragment = tokenized.isFragment;
+			const parseErrors = tokenized.parseErrors;
 
 			this.#defaultDepth = options?.depth ?? this.#defaultDepth;
 
@@ -271,12 +316,20 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			timer.log();
 			domLog(nodeList);
 
+			// Merge top-level tokenizer parseErrors with any parseErrors
+			// pushed by embedded parser delegations (Markdown / Pug HTML
+			// regions). Snapshot before #reset() clears the buffer.
+			const embeddedErrors = this.embeddedParseErrors;
+			const mergedParseErrors: readonly MLASTParseError[] | undefined =
+				parseErrors || embeddedErrors.length > 0 ? [...(parseErrors ?? []), ...embeddedErrors] : undefined;
+
 			this.#reset();
 
 			return {
 				raw: rawCode,
 				nodeList,
 				isFragment,
+				...(mergedParseErrors && mergedParseErrors.length > 0 ? { parseErrors: mergedParseErrors } : {}),
 			};
 		} catch (error) {
 			throw this.parseError(error);
@@ -287,6 +340,9 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	 * Hook called after the main parse pipeline completes, allowing subclasses
 	 * to perform final transformations on the node list. The default implementation
 	 * removes any offset spaces that were prepended during preprocessing.
+	 *
+	 * Overrides must call `super.afterParse()` first: it is the counterpart of
+	 * {@link Parser.beforeParse} and removes the offset spaces prepended there.
 	 *
 	 * @param nodeList - The fully parsed and flattened node list
 	 * @param options - The parse options used for this parse invocation
@@ -752,6 +808,10 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	 * Also detects spread attributes. If there is leftover text after the attribute,
 	 * it is returned in the `__rightText` property for further processing.
 	 *
+	 * Subclass contract: overrides must call `super.visitAttr()` first — the base
+	 * implementation owns the token decomposition; subclasses only post-process
+	 * the returned node (e.g. directive detection).
+	 *
 	 * @param token - The token containing the raw attribute text and position
 	 * @param options - Controls quoting behavior, value types, and the initial parser state
 	 * @returns The parsed attribute AST node with an optional `__rightText` for remaining unparsed content
@@ -853,11 +913,27 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	/**
 	 * Re-parses a text token to discover embedded HTML/XML tags within it,
 	 * splitting the content into a sequence of tag and text AST nodes.
-	 * Handles self-closing detection, depth tracking, and void element recognition.
+	 * Handles self-closing detection, depth tracking, void element recognition,
+	 * and the raw-text element body short-circuit (HTML LS §13.2.5.1).
+	 *
+	 * Raw-text element handling only covers the elements listed in
+	 * `rawTextElements` (default `['style', 'script']`). HTML LS *escapable* raw
+	 * text elements — `<title>` and `<textarea>` — are intentionally NOT in the
+	 * default. They allow character references (`&amp;` etc.) in their body, and
+	 * decoding is not implemented in this short-circuit. A subclass that adds
+	 * them via the `rawTextElements` option will see character references passed
+	 * through verbatim.
+	 *
+	 * `@markuplint/astro-parser` is the only downstream caller that hands a full
+	 * element raw (start tag + body + end tag) to this method, so it is the only
+	 * package that exercises the raw-text branch — when changing that branch,
+	 * its tests are the most sensitive regression signal.
 	 *
 	 * @param token - The child token containing the code fragment to re-parse
 	 * @param options - Controls whether nameless fragments (JSX `<>`) are recognized
 	 * @returns An array of tag and text AST nodes discovered in the code fragment
+	 * @see https://html.spec.whatwg.org/multipage/syntax.html#cdata-rcdata-restrictions
+	 * @see https://github.com/markuplint/markuplint/issues/3825
 	 */
 	parseCodeFragment(
 		token: ChildToken,
@@ -965,6 +1041,52 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 				}
 
 				nodes.push(tag);
+			}
+
+			/**
+			 * Raw-text element body short-circuit (HTML Living Standard §13.2.5.1
+			 * — "Restrictions on the contents of raw text and escapable raw text
+			 * elements". The spec section anchor is `cdata-rcdata-restrictions`,
+			 * where RCDATA stands for "Raw text + Character REF data" — the broader
+			 * class that covers escapable raw text such as `<title>` / `<textarea>`).
+			 *
+			 * Per spec, the contents of `<script>` / `<style>` (and any caller-supplied
+			 * raw-text element) are NOT re-tokenized as HTML — the only thing that
+			 * terminates the body is `</tagName` followed by a tab/LF/FF/CR/space/`>`
+			 * /`/`. Without this guard, fragments like `<script>const t = s.replace(
+			 * /<br\s*\/?>/gi, " ");</script>` would feed the regex to `#parseTag`,
+			 * which would try to parse `<br\s*\/?>` as a tag and throw on the
+			 * backslash (#3825).
+			 *
+			 * This is dormant for `jsx-parser` and `mdx-parser` because their upstream
+			 * tokenizers reject bare `<` in element body before reaching here, but the
+			 * fix keeps `parseCodeFragment` honest for any future caller.
+			 *
+			 * @see https://html.spec.whatwg.org/multipage/syntax.html#cdata-rcdata-restrictions
+			 * @see https://github.com/markuplint/markuplint/issues/3825
+			 */
+			if (tag.type === 'starttag' && !isSelfClose && this.#rawTextElements.includes(tag.nodeName.toLowerCase())) {
+				const closeTagPattern = this.#getRawTextCloseTagPattern(tag.nodeName);
+				const match = closeTagPattern.exec(raw);
+				if (match) {
+					const bodyRaw = raw.slice(0, match.index);
+					if (bodyRaw) {
+						const bodyToken = this.createToken(bodyRaw, curOffset, curLine, curCol);
+						const bodyNode: MLASTText = {
+							...bodyToken,
+							type: 'text',
+							depth,
+							nodeName: '#text',
+							parentNode: null,
+							parentNodeUuid: null,
+						};
+						nodes.push(bodyNode);
+						({ offset: curOffset, line: curLine, col: curCol } = this.#getEndLocation(bodyToken));
+					}
+					raw = raw.slice(match.index);
+				}
+				// If no matching close tag is found, fall through to the generic loop
+				// so the existing "unclosed tag" handling remains in effect.
 			}
 		}
 		return nodes;
@@ -1381,13 +1503,25 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	}
 
 	/**
-	 * Checks whether a node is a descendant of another node by walking up
-	 * the parent chain.
-	 *
-	 * @param node - The node to test.
-	 * @param potentialAncestor - The node that may be an ancestor.
-	 * @returns `true` if `node` is a descendant of `potentialAncestor`.
+	 * The pattern matches `</tagName` followed by a tab/LF/FF/CR/space/`>`/`/`
+	 * (HTML LS §13.2.5.1) ASCII-case-insensitively. Caching avoids recompiling the
+	 * `RegExp` for every `<script>` / `<style>` start tag in large documents.
 	 */
+	#getRawTextCloseTagPattern(tagName: string): RegExp {
+		const cached = this.#rawTextCloseTagPatternCache.get(tagName);
+		if (cached) {
+			return cached;
+		}
+		const escapedName = tagName.replaceAll(/[$()*+.?[\\\]^{|}]/g, '\\$&');
+		// `regexp/strict` cannot statically verify a pattern built from the
+		// dynamic `escapedName` interpolation; the escape above is the contract
+		// that makes this safe for any caller-supplied `rawTextElements` value.
+		// eslint-disable-next-line regexp/strict
+		const pattern = new RegExp(`</${escapedName}(?=[\\t\\n\\f\\r >/])`, 'i');
+		this.#rawTextCloseTagPatternCache.set(tagName, pattern);
+		return pattern;
+	}
+
 	#isDescendantOf(node: MLASTNodeTreeItem, potentialAncestor: MLASTNodeTreeItem): boolean {
 		let current: MLASTParentNode | null = 'parentNode' in node ? (node.parentNode ?? null) : null;
 		while (current) {
@@ -1687,14 +1821,8 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	 * @param nodeOrders [Disruptive change]
 	 */
 	#removeDeprecatedNode(nodeOrders: readonly MLASTNodeTreeItem[]) {
-		/**
-		 * sorting
-		 */
 		const sorted = nodeOrders.toSorted(sortNodes);
 
-		/**
-		 * remove duplicated node
-		 */
 		const stack: { [pos: string]: number } = {};
 		const removeIndexes: number[] = [];
 		for (const [i, node] of sorted.entries()) {
@@ -1746,9 +1874,37 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	}
 
 	#reset() {
-		// Reset state
 		this.state = structuredClone(this.#defaultState);
 		this.#defaultDepth = 0;
+		this.#embeddedParseErrors = [];
+	}
+
+	/**
+	 * Subclass hook for parsers that delegate to an embedded parse() call —
+	 * e.g., `@markuplint/markdown-parser` parsing inline HTML blocks via a
+	 * private `HtmlParser` instance, or `@markuplint/pug-parser` re-running
+	 * each raw HTML line through `HtmlInPugParser`. Push the embedded
+	 * document's `parseErrors` here so the top-level `parse()` can merge
+	 * them into the outer `MLASTDocument.parseErrors`.
+	 *
+	 * If the embedded document has no `parseErrors`, this is a no-op.
+	 *
+	 * @param parseErrors - Parse errors collected by the embedded parser. May be `undefined`.
+	 */
+	protected accumulateParseErrors(parseErrors: readonly MLASTParseError[] | undefined): void {
+		if (parseErrors && parseErrors.length > 0) {
+			this.#embeddedParseErrors.push(...parseErrors);
+		}
+	}
+
+	/**
+	 * @internal Read-only snapshot of accumulated embedded parse errors.
+	 * Used by {@link Parser.parse} to merge them with the top-level tokenize
+	 * result. Subclasses should not call this directly — push via
+	 * {@link Parser.accumulateParseErrors} instead.
+	 */
+	get embeddedParseErrors(): readonly MLASTParseError[] {
+		return this.#embeddedParseErrors;
 	}
 
 	#setRawCode(rawCode: string, originalRawCode?: string) {
@@ -1757,27 +1913,19 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	}
 
 	/**
-	 * Trims text nodes whose source range overlaps with the next node in
-	 * the flat list. This prevents text content from bleeding into adjacent
-	 * elements that occupy a later (or overlapping) source range.
+	 * Prevents text content from bleeding into adjacent elements that
+	 * occupy a later (or overlapping) source range.
 	 *
 	 * Skips trimming when the text node is a descendant of the next node
 	 * in the tree hierarchy, because synthetic parsers (e.g., Markdown)
 	 * can produce child elements that share the same source range as their
 	 * parent and therefore appear before the parent in offset-sorted order.
-	 *
-	 * @param nodeList - The flat, offset-sorted node list to process.
-	 * @returns A new node list with overlapping text nodes trimmed.
 	 */
 	#trimText(nodeList: readonly MLASTNodeTreeItem[]) {
 		const newNodeList: MLASTNodeTreeItem[] = [];
 		let prevNode: MLASTNodeTreeItem | null = null;
 		for (const node of nodeList) {
-			if (
-				prevNode?.type === 'text' &&
-				// Empty node
-				node.raw.length > 0
-			) {
+			if (prevNode?.type === 'text' && node.raw.length > 0) {
 				const prevNodeEndOffset = prevNode.offset + prevNode.raw.length;
 				const nodeStartOffset = node.offset;
 				if (prevNodeEndOffset > nodeStartOffset && !this.#isDescendantOf(prevNode, node)) {

@@ -7,13 +7,6 @@ import { accnameMayBeMutable } from '../helpers.js';
 
 import meta from './meta.js';
 
-/**
- * Rule that requires elements with roles that need accessible names to have one.
- *
- * For each element exposed to the accessibility tree whose computed ARIA role
- * has `accessibleNameRequired` set to `true`, this rule verifies that the element
- * provides a non-empty accessible name.
- */
 export default createRule({
 	meta: meta,
 	defaultOptions: {

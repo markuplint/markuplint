@@ -845,6 +845,10 @@ interface Config {
 
 対象コンポーネントにマッチさせるための[**セレクタ**](/docs/guides/selectors)を受け取ります。必須です。
 
+:::caution 標準 HTML 要素は対象外
+セレクタが標準 HTML / SVG 要素にマッチする pretender エントリは暗黙的に無視されます。pretender は custom component（Web Components、JSX/Vue/Svelte 等の authored component、または HTML パースで spec エントリがない不明な名前）のみが対象です。`<button>` や `<marquee>` を指定しても何も起きません（[移行ガイド](/docs/migration/v4-to-v5/config#pretender-が標準-html-要素には適用されなくなった)を参照）。
+:::
+
 #### `as`
 
 **要素名**もしくは**要素のプロパティ**を受け取ります。必須です。

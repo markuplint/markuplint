@@ -363,7 +363,8 @@
 					"type": "CustomElementName"
 				},
 				"itemid": {
-					"type": "URL"
+					"type": "URL",
+					"condition": "[itemscope][itemtype]"
 				},
 				"itemprop": {
 					"type": {
@@ -376,6 +377,7 @@
 				"itemref": {
 					"type": {
 						"token": "DOMID",
+						"unique": true,
 						"separator": "space"
 					},
 					"condition": "[itemscope]"
@@ -388,8 +390,10 @@
 						"token": "AbsoluteURL",
 						"ordered": false,
 						"unique": true,
+						"allowEmpty": false,
 						"separator": "space"
-					}
+					},
+					"condition": "[itemscope]"
 				},
 				"lang": {
 					"type": "BCP47"
@@ -826,7 +830,7 @@
 					"type": "SRIHash"
 				},
 				"media": {
-					"type": "<media-query-list>"
+					"type": "MediaQueryList"
 				},
 				"crossorigin": {
 					"type": {
@@ -848,7 +852,7 @@
 			},
 			"#HTMLEmbededAndMediaContentAttrs": {
 				"src": {
-					"type": "URL"
+					"type": "NonEmptyURL"
 				},
 				"preload": {
 					"type": {
@@ -896,7 +900,7 @@
 					"type": "DOMID"
 				},
 				"formaction": {
-					"type": "URL"
+					"type": "NonEmptyURL"
 				},
 				"formenctype": {
 					"type": {
@@ -4969,7 +4973,7 @@
 					},
 					{
 						"name": "grid",
-						"description": "A composite widget containing a collection of one or more rows with one or more cells where some or all cells in the grid are focusable by using methods of two-dimensional navigation, such as directional arrow keys.\n\nThe grid role does not imply a specific visual, e.g., tabular, presentation. It describes relationships among elements. It can be used for purposes as simple as grouping a collection of checkboxes or navigation links or as complex as creating a full-featured spreadsheet application.\n\nThe cell elements of a grid have role gridcell. Authors MAY designate a cell as a row or column header by using either the rowheader or columnheader role in lieu of the gridcell role. Authors MUST ensure elements with role gridcell, columnheader, or rowheader are accessibility children of elements with role row, which are in turn are accessibility children of an element with role rowgroup, or grid.\n\nTo be keyboard accessible, authors SHOULD manage focus of descendants of a grid as described in Managing Focus. When a user is navigating the grid content with a keyboard, authors SHOULD set focus as follows:\n\nAuthors SHOULD provide a mechanism for changing to an interaction or edit mode that allows users to navigate and interact with content contained inside a focusable cell if that focusable cell contains any of the following:\n\nFor example, if a cell in a spreadsheet contains a combobox or editable text, the Enter key might be used to activate a cell interaction or editing mode when that cell has focus so the directional arrow keys can be used to operate the contained combobox or textbox. Depending on the implementation, pressing Enter again, Tab, Escape, or another key might switch the application back to the grid navigation mode.\n\nAuthors MAY use a gridcell to display the result of a formula, which could be editable by the user. In a spreadsheet application, for example, a gridcell might show a value calculated from a formula until the user activates the gridcell for editing when a textbox appears in the gridcell containing the formula in an editable state.\n\nIf aria-readonly is set on an element with role grid, user agents MUST propagate the value to all gridcell elements that are accessibility descendants of that grid and expose the value in the accessibility API. An author MAY override the propagated value of aria-readonly for an individual gridcell element.\n\nIn a grid that provides cell content editing functions, if the content of a focusable gridcell element is not editable, authors MAY set aria-readonly to true on the gridcell element. However, the value of aria-readonly, whether specified for a grid or individual cells, only indicates whether the content contained in cells is editable. It does not represent availability of functions for navigating or manipulating the grid itself.\n\nAn unspecified value for aria-readonly does not imply that a grid or a gridcell contains editable content. For example, if a grid presents a collection of elements that are not editable, such as a collection of link elements representing dates in a datepicker, it is not necessary for the author to specify a value for aria-readonly.\n\nAuthors MAY indicate that a focusable gridcell is selectable as the object of an action with the aria-selected attribute. If the grid allows multiple gridcells to be selected, the author SHOULD set aria-multiselectable to true on the element with role grid.\n\nSince WAI-ARIA can augment an element of the host language, a grid can reuse the elements and attributes of a native table, such as an HTML table element. For example, if an author applies the grid role to an HTML table element, the author does not need to apply the row and gridcell roles to the descendant HTML tr and td elements because the user agent will automatically make the appropriate translations. When the author is reusing a native host language table element and needs a gridcell element to span multiple rows or columns, the author SHOULD apply the appropriate host language attributes instead of WAI-ARIA aria-rowspan or aria-colspan properties.\n\nAuthors SHOULD provide an accessible name for a grid, which can be done with the aria-label or aria-labelledby attribute. Authors SHOULD reference a visible label with aria-labelledby if a visible label is present for the grid.\n\nSee the ARIA Authoring Practices Guide for additional details on implementing grid design patterns.",
+						"description": "A composite widget containing a collection of one or more rows with one or more cells where some or all cells in the grid are focusable by using methods of two-dimensional navigation, such as directional arrow keys.\n\nThe grid role does not imply a specific visual, e.g., tabular, presentation. It describes relationships among elements. It can be used for purposes as simple as grouping a collection of checkboxes or navigation links or as complex as creating a full-featured spreadsheet application.\n\nThe cell elements of a grid have role gridcell. Authors MAY designate a cell as a row or column header by using either the rowheader or columnheader role in lieu of the gridcell role. Authors MUST ensure elements with role gridcell, columnheader, or rowheader are accessibility children of elements with role row, which are in turn are accessibility children of an element with role rowgroup, or grid.\n\nTo be keyboard accessible, authors MUST manage focus of descendants of a grid as described in Managing Focus. When a user is navigating the grid content with a keyboard, authors SHOULD set focus as follows:\n\nAuthors SHOULD provide a mechanism for changing to an interaction or edit mode that allows users to navigate and interact with content contained inside a focusable cell if that focusable cell contains any of the following:\n\nFor example, if a cell in a spreadsheet contains a combobox or editable text, the Enter key might be used to activate a cell interaction or editing mode when that cell has focus so the directional arrow keys can be used to operate the contained combobox or textbox. Depending on the implementation, pressing Enter again, Tab, Escape, or another key might switch the application back to the grid navigation mode.\n\nAuthors MAY use a gridcell to display the result of a formula, which could be editable by the user. In a spreadsheet application, for example, a gridcell might show a value calculated from a formula until the user activates the gridcell for editing when a textbox appears in the gridcell containing the formula in an editable state.\n\nIf aria-readonly is set on an element with role grid, user agents MUST propagate the value to all gridcell elements that are accessibility descendants of that grid and expose the value in the accessibility API. An author MAY override the propagated value of aria-readonly for an individual gridcell element.\n\nIn a grid that provides cell content editing functions, if the content of a focusable gridcell element is not editable, authors MAY set aria-readonly to true on the gridcell element. However, the value of aria-readonly, whether specified for a grid or individual cells, only indicates whether the content contained in cells is editable. It does not represent availability of functions for navigating or manipulating the grid itself.\n\nAn unspecified value for aria-readonly does not imply that a grid or a gridcell contains editable content. For example, if a grid presents a collection of elements that are not editable, such as a collection of link elements representing dates in a datepicker, it is not necessary for the author to specify a value for aria-readonly.\n\nAuthors MAY indicate that a focusable gridcell is selectable as the object of an action with the aria-selected attribute. If the grid allows multiple gridcells to be selected, the author SHOULD set aria-multiselectable to true on the element with role grid.\n\nSince WAI-ARIA can augment an element of the host language, a grid can reuse the elements and attributes of a native table, such as an HTML table element. For example, if an author applies the grid role to an HTML table element, the author does not need to apply the row and gridcell roles to the descendant HTML tr and td elements because the user agent will automatically make the appropriate translations. When the author is reusing a native host language table element and needs a gridcell element to span multiple rows or columns, the author SHOULD apply the appropriate host language attributes instead of WAI-ARIA aria-rowspan or aria-colspan properties.\n\nAuthors SHOULD provide an accessible name for a grid, which can be done with the aria-label or aria-labelledby attribute. Authors SHOULD reference a visible label with aria-labelledby if a visible label is present for the grid.\n\nSee the ARIA Authoring Practices Guide for additional details on implementing grid design patterns.",
 						"generalization": ["composite", "table"],
 						"requiredContextRole": [],
 						"requiredOwnedElements": ["caption", "row", "rowgroup > row"],
@@ -6262,7 +6266,7 @@
 					},
 					{
 						"name": "listbox",
-						"description": "A widget that allows the user to select one or more items from a list of choices. See related combobox and list.\n\nItems within the list are static and, unlike standard HTML select elements, can contain images. List boxes contain children whose role is option or elements whose role is group which in turn contain children whose role is option.\n\nTo be keyboard accessible, authors SHOULD manage focus of option descendants for all instances of this role, as described in Managing Focus.\n\nElements with the role listbox have an implicit aria-orientation value of vertical.",
+						"description": "A widget that allows the user to select one or more items from a list of choices. See related combobox and list.\n\nItems within the list are static and, unlike standard HTML select elements, can contain images. List boxes contain children whose role is option or elements whose role is group which in turn contain children whose role is option.\n\nTo be keyboard accessible, authors MUST manage focus of option descendants for all instances of this role, as described in Managing Focus.\n\nElements with the role listbox have an implicit aria-orientation value of vertical.",
 						"generalization": ["select"],
 						"requiredContextRole": [],
 						"requiredOwnedElements": ["group > option", "option"],
@@ -7066,7 +7070,7 @@
 					},
 					{
 						"name": "menu",
-						"description": "A type of widget that offers a list of choices to the user.\n\nA menu is a container, generally rendered as a popup or overlay, for a set of menu items that can be invoked to perform an action or function. The function is almost always closely related or directly related to the element that the user activated to invoke the menu. Activating a menu item both performs the associated function of the menu item, and results in the automatic dismissal of the menu.\n\nThe menu role is appropriate when a set of menu items is presented in a manner similar to a popup menu. For instance, a menu could be used to represent a context menu for its invoking element, or it would be used to render sub-menus for items of a menubar or another menu popup.\n\nTo be keyboard accessible, authors SHOULD manage focus of descendants for all instances of this role, as described in Managing Focus.\n\nElements with the role menu have an implicit aria-orientation value of vertical.",
+						"description": "A type of widget that offers a list of choices to the user.\n\nA menu is a container, generally rendered as a popup or overlay, for a set of menu items that can be invoked to perform an action or function. The function is almost always closely related or directly related to the element that the user activated to invoke the menu. Activating a menu item both performs the associated function of the menu item, and results in the automatic dismissal of the menu.\n\nThe menu role is appropriate when a set of menu items is presented in a manner similar to a popup menu. For instance, a menu could be used to represent a context menu for its invoking element, or it would be used to render sub-menus for items of a menubar or another menu popup.\n\nTo be keyboard accessible, authors MUST manage focus of descendants for all instances of this role, as described in Managing Focus.\n\nElements with the role menu have an implicit aria-orientation value of vertical.",
 						"generalization": ["select"],
 						"requiredContextRole": [],
 						"requiredOwnedElements": [
@@ -7195,7 +7199,7 @@
 					},
 					{
 						"name": "menubar",
-						"description": "A presentation of menu that usually remains visible and is usually presented horizontally.\n\nThe menubar role is used to create a menu bar similar to those found in Windows, Mac, and Gnome desktop applications. A menu bar is used to create a consistent set of frequently used commands. Authors SHOULD ensure that menubar interaction is similar to the typical menu bar interaction in a desktop graphical user interface.\n\nTo be keyboard accessible, authors SHOULD manage focus of descendants for all instances of this role, as described in Managing Focus.\n\nElements with the role menubar have an implicit aria-orientation value of horizontal.",
+						"description": "A presentation of menu that usually remains visible and is usually presented horizontally.\n\nThe menubar role is used to create a menu bar similar to those found in Windows, Mac, and Gnome desktop applications. A menu bar is used to create a consistent set of frequently used commands. Authors SHOULD ensure that menubar interaction is similar to the typical menu bar interaction in a desktop graphical user interface.\n\nTo be keyboard accessible, authors MUST manage focus of descendants for all instances of this role, as described in Managing Focus.\n\nElements with the role menubar have an implicit aria-orientation value of horizontal.",
 						"generalization": ["menu"],
 						"requiredContextRole": [],
 						"requiredOwnedElements": [
@@ -10685,7 +10689,8 @@
 							},
 							{
 								"name": "aria-valuenow",
-								"required": true
+								"required": true,
+								"requiredCondition": "focusable"
 							},
 							{
 								"name": "aria-valuetext"
@@ -11962,7 +11967,7 @@
 					},
 					{
 						"name": "tablist",
-						"description": "A list of tab elements, which are references to tabpanel elements.\n\nTo be keyboard accessible, authors SHOULD manage focus of descendants for all instances of this role, as described in Managing Focus.\n\nFor a single-selectable tablist, authors SHOULD hide from all users other tabpanel elements until the user selects the tab associated with that tabpanel. For a multi-selectable tablist, authors SHOULD ensure that the tab for each visible tabpanel has the aria-expanded attribute set to true, and that the tabs associated with the remaining hidden from all users tabpanel elements have their aria-expanded attributes set to false.\n\ntablist elements are typically placed near, and usually preceding, a series of tabpanel elements. See the ARIA Authoring Practices Guide for details on implementing a tab set design pattern.\n\nElements with the role tablist have an implicit aria-orientation value of horizontal.",
+						"description": "A list of tab elements, which are references to tabpanel elements.\n\nTo be keyboard accessible, authors MUST manage focus of descendants for all instances of this role, as described in Managing Focus.\n\nFor a single-selectable tablist, authors SHOULD hide from all users other tabpanel elements until the user selects the tab associated with that tabpanel. For a multi-selectable tablist, authors SHOULD ensure that the tab for each visible tabpanel has the aria-expanded attribute set to true, and that the tabs associated with the remaining hidden from all users tabpanel elements have their aria-expanded attributes set to false.\n\ntablist elements are typically placed near, and usually preceding, a series of tabpanel elements. See the ARIA Authoring Practices Guide for details on implementing a tab set design pattern.\n\nElements with the role tablist have an implicit aria-orientation value of horizontal.",
 						"generalization": ["composite"],
 						"requiredContextRole": [],
 						"requiredOwnedElements": ["tab"],
@@ -12767,16 +12772,12 @@
 						"requiredContextRole": [],
 						"requiredOwnedElements": [],
 						"accessibleNameRequired": false,
-						"accessibleNameFromAuthor": true,
-						"accessibleNameFromContent": true,
-						"accessibleNameProhibited": false,
+						"accessibleNameFromAuthor": false,
+						"accessibleNameFromContent": false,
+						"accessibleNameProhibited": true,
 						"ownedProperties": [
 							{
 								"name": "aria-atomic",
-								"inherited": true
-							},
-							{
-								"name": "aria-braillelabel",
 								"inherited": true
 							},
 							{
@@ -12848,14 +12849,6 @@
 								"inherited": true
 							},
 							{
-								"name": "aria-label",
-								"inherited": true
-							},
-							{
-								"name": "aria-labelledby",
-								"inherited": true
-							},
-							{
 								"name": "aria-live",
 								"inherited": true
 							},
@@ -12872,11 +12865,11 @@
 								"inherited": true
 							}
 						],
-						"prohibitedProperties": []
+						"prohibitedProperties": ["aria-braillelabel", "aria-label", "aria-labelledby"]
 					},
 					{
 						"name": "tree",
-						"description": "A widget that allows the user to select one or more items from a hierarchically organized collection.\n\nTo be keyboard accessible, authors SHOULD manage focus of descendants for all instances of this role, as described in Managing Focus.\n\nElements with the role tree have an implicit aria-orientation value of vertical.",
+						"description": "A widget that allows the user to select one or more items from a hierarchically organized collection.\n\nTo be keyboard accessible, authors MUST manage focus of descendants for all instances of this role, as described in Managing Focus.\n\nElements with the role tree have an implicit aria-orientation value of vertical.",
 						"generalization": ["select"],
 						"requiredContextRole": [],
 						"requiredOwnedElements": ["treeitem"],
@@ -12999,7 +12992,7 @@
 					},
 					{
 						"name": "treegrid",
-						"description": "A grid whose rows can be expanded and collapsed in the same manner as for a tree.\n\nIf aria-readonly is set on an element with role treegrid, user agents MUST propagate the value to all gridcell elements that are accessibility descendants of the treegrid and expose the value in the accessibility API. An author MAY override the propagated value of aria-readonly for an individual gridcell element.\n\nWhen the aria-readonly attribute is applied to a focusable gridcell, it indicates whether the content contained in the gridcell is editable. The aria-readonly attribute does not represent availability of functions for navigating or manipulating the treegrid itself.\n\nIn a treegrid that provides content editing functions, if the content of a focusable gridcell element is not editable, authors MAY set aria-readonly to true on the gridcell element. However, if a treegrid presents a collection of elements that do not support aria-readonly, such as a collection of link elements, it is not necessary for the author to specify a value for aria-readonly.\n\nTo be keyboard accessible, authors SHOULD manage focus of descendants for all instances of this role, as described in Managing Focus.",
+						"description": "A grid whose rows can be expanded and collapsed in the same manner as for a tree.\n\nIf aria-readonly is set on an element with role treegrid, user agents MUST propagate the value to all gridcell elements that are accessibility descendants of the treegrid and expose the value in the accessibility API. An author MAY override the propagated value of aria-readonly for an individual gridcell element.\n\nWhen the aria-readonly attribute is applied to a focusable gridcell, it indicates whether the content contained in the gridcell is editable. The aria-readonly attribute does not represent availability of functions for navigating or manipulating the treegrid itself.\n\nIn a treegrid that provides content editing functions, if the content of a focusable gridcell element is not editable, authors MAY set aria-readonly to true on the gridcell element. However, if a treegrid presents a collection of elements that do not support aria-readonly, such as a collection of link elements, it is not necessary for the author to specify a value for aria-readonly.\n\nTo be keyboard accessible, authors MUST manage focus of descendants for all instances of this role, as described in Managing Focus.",
 						"generalization": ["grid", "tree"],
 						"requiredContextRole": [],
 						"requiredOwnedElements": ["caption", "row", "rowgroup > row"],
@@ -26434,7 +26427,8 @@
 							},
 							{
 								"name": "aria-valuenow",
-								"required": true
+								"required": true,
+								"requiredCondition": "focusable"
 							},
 							{
 								"name": "aria-valuetext"
@@ -40921,7 +40915,8 @@
 							},
 							{
 								"name": "aria-valuenow",
-								"required": true
+								"required": true,
+								"requiredCondition": "focusable"
 							},
 							{
 								"name": "aria-valuetext"
@@ -48860,7 +48855,8 @@
 			"attributes": {
 				"attributionsrc": {
 					"description": "Specifies that you want the browser to send an Attribution-Reporting-Eligible header. On the server-side this is used to trigger sending an Attribution-Reporting-Register-Source header in the response, to register a navigation-based attribution source. The browser stores the source data associated with the navigation-based attribution source (as provided in the Attribution-Reporting-Register-Source response header) when the user clicks the link. See the Attribution Reporting API for more details. There are two versions of this attribute that you can set: Boolean, i.e., just the attributionsrc name. This specifies that you want the Attribution-Reporting-Eligible header sent to the same server as the href attribute points to. This is fine when you are handling the attribution source registration on the same server. Value containing one or more URLs, for example: htmlattributionsrc=\"https://a.example/register-source https://b.example/register-source\" This is useful in cases where the requested resource is not on a server you control, or you just want to handle registering the attribution source on a different server. In this case, you can specify one or more URLs as the value of attributionsrc. When the resource request occurs, the Attribution-Reporting-Eligible header will be sent to the URL(s) specified in attributionsrc in addition to the resource origin. These URLs can then respond with the Attribution-Reporting-Register-Source to complete registration. Note: Specifying multiple URLs means that multiple attribution sources can be registered on the same feature. You might for example have different campaigns that you are trying to measure the success of, which involve generating different reports on different data. <a> elements cannot be used as attribution triggers, only sources.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"charset": {
 					"description": "Hinted at the character encoding of the linked URL. Note: This attribute is deprecated and should not be used by authors. Use the HTTP Content-Type header on the linked URL.",
@@ -49211,7 +49207,7 @@
 			},
 			"attributes": {
 				"autoplay": {
-					"description": "A Boolean attribute: if specified, the audio will automatically begin playback as soon as it can do so, without waiting for the entire audio file to finish downloading. Note: Sites that automatically play audio (or videos with an audio track) can be an unpleasant experience for users, so should be avoided when possible. If you must offer autoplay functionality, you should make it opt-in (requiring a user to specifically enable it). However, this can be useful when creating media elements whose source will be set at a later time, under user control. See our autoplay guide for additional information about how to properly use autoplay. Note: Audio with the loading=\"lazy\" attribute set will not start downloading and autoplaying until the element is near or within the viewport."
+					"description": "A Boolean attribute: if specified, the audio will automatically begin playback as soon as it can do so, without waiting for the entire audio file to finish downloading. Note: Sites that automatically play audio (or videos with an audio track) can be an unpleasant experience for users, so should be avoided when possible. If you must offer autoplay functionality, you should make it opt-in (requiring a user to specifically enable it). However, this can be useful when creating media elements whose source will be set at a later time, under user control. See our autoplay guide for additional information about how to properly use autoplay. Note: Audio with the loading=\"lazy\" attribute set will not start downloading and autoplaying until the controls for the media are near or within the viewport. Lazy-loaded audio without the controls attribute will not autoplay."
 				},
 				"controls": {
 					"description": "If this attribute is present, the browser will offer controls to allow the user to control audio playback, including volume, seeking, and pause/resume playback."
@@ -49226,7 +49222,7 @@
 					"description": "A Boolean attribute used to disable the capability of remote playback in devices that are attached using wired (HDMI, DVI, etc.) and wireless technologies (Miracast, Chromecast, DLNA, AirPlay, etc.). See the proposed Remote Playback API specification for more information. In Safari, you can use x-webkit-airplay=\"deny\" as a fallback."
 				},
 				"loading": {
-					"description": "Indicates how the browser should load the audio: eager Loads the audio immediately, regardless of whether or not the audio is currently within the visible viewport (this is the default value). lazy Defers loading the audio until it reaches a calculated distance from the viewport, as defined by the browser. Lazy loading avoids the network and storage bandwidth required to handle the audio until it's reasonably certain that it will be needed. This improves the performance in most typical use cases. Lazy-loaded audio located in the visual viewport may not yet be downloaded when the Window load event is fired. This is because the event is fired based on eager-loaded audio only — lazy-loaded audio is not considered even if it is located within the visual viewport upon initial page load. Loading is only deferred when JavaScript is enabled. This is an anti-tracking measure, because if a user agent supported lazy loading when scripting is disabled, it would still be possible for a site to track a user's approximate scroll position throughout a session, by strategically placing audio in a page's markup such that a server can track how many audio are requested and when. Note: The loading=\"lazy\" attribute also impacts the autoplay attribute as described in that section of this page.",
+					"description": "Indicates how the browser should load the audio: eager Loads the audio immediately, regardless of whether or not the audio is currently within the visible viewport (this is the default value). lazy Defers loading the audio until the controls reach a calculated distance from the viewport, as defined by the browser. Note: In order for audio elements to intersect visibly with the viewport, they need to be visible. Browsers use the controls attribute to make audio elements visible, so it's needed for lazy loading. Lazy-loaded audio without the controls attribute will not load. Lazy loading avoids the network and storage bandwidth required to handle the audio until it's reasonably certain that it will be needed. This improves the performance in most typical use cases. Lazy-loaded audio located in the visual viewport may not yet be downloaded when the Window load event is fired. This is because the event is fired based on eager-loaded audio only — lazy-loaded audio is not considered even if it is located within the visual viewport upon initial page load. Loading is only deferred when JavaScript is enabled. This is an anti-tracking measure, because if a user agent supported lazy loading when scripting is disabled, it would still be possible for a site to track a user's approximate scroll position throughout a session, by strategically placing audio in a page's markup such that a server can track how many audio requests are made and when. Note: The loading=\"lazy\" attribute also impacts the autoplay attribute as described in that section of this page.",
 					"experimental": false
 				},
 				"loop": {
@@ -49236,7 +49232,7 @@
 					"description": "A Boolean attribute that indicates whether the audio will be initially silenced. Its default value is false."
 				},
 				"preload": {
-					"description": "This enumerated attribute is intended to provide a hint to the browser about what the author thinks will lead to the best user experience. It may have one of the following values: none: Indicates that the audio should not be preloaded. metadata: Indicates that only audio metadata (e.g., length) is fetched. auto: Indicates that the whole audio file can be downloaded, even if the user is not expected to use it. empty string: A synonym of the auto value. The default value is different for each browser. The spec advises it to be set to metadata. Note: The autoplay attribute has precedence over preload. If autoplay is specified, the browser would obviously need to start downloading the audio for playback. The browser is not forced by the specification to follow the value of this attribute; it is a mere hint."
+					"description": "This enumerated attribute is intended to provide a hint to the browser about what the author thinks will lead to the best user experience. It may have one of the following values: none: Indicates that the audio should not be preloaded. metadata: Indicates that only audio metadata (e.g., length) is fetched. auto: Indicates that the whole audio file can be downloaded, even if the user is not expected to use it. empty string: A synonym of the auto value. The default value is different for each browser. The spec advises it to be set to metadata. Note: Audio with the loading=\"lazy\" attribute set will only apply the preload behavior once the audio controls are near or within the viewport. The autoplay attribute has precedence over preload. If autoplay is specified, the browser would obviously need to start downloading the audio for playback. The browser is not forced by the specification to follow the value of this attribute; it is a mere hint."
 				},
 				"src": {
 					"description": "The URL of the audio to embed. This is subject to HTTP access controls. This is optional; you may instead use the <source> element within the audio block to specify the audio to embed."
@@ -49294,10 +49290,12 @@
 			"attributes": {
 				"href": {
 					"description": "The base URL to be used throughout the document for relative URLs. Absolute and relative URLs are allowed. data: and javascript: URLs are not allowed.",
-					"type": "BaseURL"
+					"type": "BaseURL",
+					"requiredEither": ["target"]
 				},
 				"target": {
-					"description": "A keyword or author-defined name of the default browsing context to show the results of navigation from <a>, <area>, or <form> elements without explicit target attributes. The following keywords have special meanings: _self (default): Show the result in the current browsing context. _blank: Show the result in a new, unnamed browsing context. _parent: Show the result in the parent browsing context of the current one, if the current page is inside a frame. If there is no parent, acts the same as _self. _top: Show the result in the topmost browsing context (the browsing context that is an ancestor of the current one and has no parent). If there is no parent, acts the same as _self."
+					"description": "A keyword or author-defined name of the default browsing context to show the results of navigation from <a>, <area>, or <form> elements without explicit target attributes. The following keywords have special meanings: _self (default): Show the result in the current browsing context. _blank: Show the result in a new, unnamed browsing context. _parent: Show the result in the parent browsing context of the current one, if the current page is inside a frame. If there is no parent, acts the same as _self. _top: Show the result in the topmost browsing context (the browsing context that is an ancestor of the current one and has no parent). If there is no parent, acts the same as _self.",
+					"requiredEither": ["href"]
 				}
 			}
 		},
@@ -49375,7 +49373,10 @@
 			"attributes": {
 				"dir": {
 					"description": "The direction in which text should be rendered in this element's contents. Possible values are: ltr: Indicates that the text should go in a left-to-right direction. rtl: Indicates that the text should go in a right-to-left direction.",
-					"required": true
+					"required": true,
+					"type": {
+						"enum": ["ltr", "rtl"]
+					}
 				}
 			}
 		},
@@ -49663,6 +49664,24 @@
 					"tab",
 					"treeitem"
 				],
+				"conditions": {
+					"[popovertarget]": {
+						"properties": {
+							"global": true,
+							"role": true,
+							"without": [
+								{
+									"type": "must-not",
+									"name": "aria-expanded",
+									"alt": {
+										"method": "set-attr",
+										"target": "popovertarget"
+									}
+								}
+							]
+						}
+					}
+				},
 				"1.1": {
 					"permittedRoles": [
 						"checkbox",
@@ -50177,7 +50196,7 @@
 				},
 				"datetime": {
 					"description": "This attribute indicates the time and date of the change and must be a valid date string with an optional time. If the value cannot be parsed as a date with an optional time string, the element does not have an associated timestamp. For the format of the string without a time, see Date strings. The format of the string if it includes both date and time is covered in Local date and time strings.",
-					"type": "DateTime"
+					"type": "DateStringWithOptionalTime"
 				}
 			}
 		},
@@ -50307,7 +50326,8 @@
 			"attributes": {
 				"compact": {
 					"description": "This Boolean attribute hints that the list should be rendered in a compact style. The interpretation of this attribute depends on the user agent and it doesn't work in all browsers.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				}
 			}
 		},
@@ -50382,7 +50402,7 @@
 						"choice": [
 							[
 								{
-									"oneOrMore": [
+									"zeroOrMore": [
 										{
 											"zeroOrMore": ":model(script-supporting)"
 										},
@@ -50513,7 +50533,7 @@
 				},
 				"src": {
 					"description": "The URL of the resource being embedded.",
-					"type": "URL",
+					"type": "NonEmptyURL",
 					"required": "[itemprop]"
 				},
 				"type": {
@@ -50657,15 +50677,18 @@
 			"attributes": {
 				"color": {
 					"description": "This attribute sets the text color using either a named color or a color specified in the hexadecimal #RRGGBB format.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"face": {
 					"description": "This attribute contains a comma-separated list of one or more font names. The document text in the default style is rendered in the first font face that the client's browser supports. If no font listed is installed on the local system, the browser typically defaults to the proportional or fixed-width font for that system.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"size": {
 					"description": "This attribute specifies the font size as either a numeric or relative value. Numeric values range from 1 to 7 with 1 being the smallest and 3 the default. It can be defined using a relative value, like +2 or -3, which sets it relative to 3, the default value.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				}
 			}
 		},
@@ -50748,7 +50771,7 @@
 					}
 				},
 				"action": {
-					"type": "URL"
+					"type": "NonEmptyURL"
 				},
 				"autocapitalize": {
 					"description": "Controls whether inputted text is automatically capitalized and, if so, in what manner. See the autocapitalize global attribute page for more information."
@@ -50809,31 +50832,38 @@
 			"attributes": {
 				"frameborder": {
 					"description": "This attribute allows you to specify a frame's border.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"marginheight": {
 					"description": "This attribute defines the height of the margin between frames.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"marginwidth": {
 					"description": "This attribute defines the width of the margin between frames.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"name": {
 					"description": "This attribute is used for labeling frames. Without labeling, every link will open in the frame that it's in – the closest parent frame. See the target attribute for more information.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"noresize": {
 					"description": "This attribute prevents resizing of frames by users.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"scrolling": {
 					"description": "This attribute defines the existence of a scrollbar. If this attribute is not used, the browser adds a scrollbar when necessary. There are two choices: \"yes\" for forcing a scrollbar even when it is not necessary and \"no\" for forcing no scrollbar even when it is necessary.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"src": {
 					"description": "This attribute specifies the document that will be displayed by the frame.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				}
 			}
 		},
@@ -50855,11 +50885,13 @@
 			"attributes": {
 				"cols": {
 					"description": "This attribute specifies the number and size of horizontal spaces in a frameset.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"rows": {
 					"description": "This attribute specifies the number and size of vertical spaces in a frameset.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				}
 			}
 		},
@@ -51233,7 +51265,8 @@
 					"deprecated": true
 				},
 				"xmlns": {
-					"description": "Specifies the XML Namespace of the document. Default value is \"http://www.w3.org/1999/xhtml\". This is required in documents parsed with XML parsers, and optional in text/html documents."
+					"description": "Specifies the XML Namespace of the document. Default value is \"http://www.w3.org/1999/xhtml\". This is required in documents parsed with XML parsers, and optional in text/html documents.",
+					"nonStandard": true
 				}
 			}
 		},
@@ -51324,7 +51357,7 @@
 					"description": "The height of the frame in CSS pixels. Default is 150."
 				},
 				"loading": {
-					"description": "Indicates when the browser should load the iframe: eager Load the iframe immediately on page load (this is the default value). lazy Defer loading of the iframe until it reaches a calculated distance from the visual viewport, as defined by the browser. The intent is to avoid using the network and storage bandwidth required to fetch the frame until the browser is reasonably certain that it will be needed. This improves the performance and cost in most typical use cases, in particular by reducing initial page load times. Note: Loading is only deferred when JavaScript is enabled. This is an anti-tracking measure."
+					"description": "Indicates when the browser should load the iframe: eager Load the iframe immediately on page load (this is the default value). lazy Defer loading of the iframe until it reaches a calculated distance from the visual viewport, as defined by the browser. The intent is to avoid using the network and storage bandwidth required to fetch the frame until the browser is reasonably certain that it will be needed. This improves the performance and cost in most typical use cases, in particular by reducing initial page load times. Loading is only deferred when JavaScript is enabled. This is an anti-tracking measure, because if a user agent supported lazy loading when scripting is disabled, it would still be possible for a site to track a user's approximate scroll position throughout a session, by strategically placing iframes in a page's markup such that a server can track how many iframes are requested and when."
 				},
 				"longdesc": {
 					"description": "A URL of a long description of the frame's content. Due to widespread misuse, this is not helpful for non-visual browsers.",
@@ -51351,7 +51384,7 @@
 					"description": "Indicates which referrer to send when fetching the frame's resource: no-referrer The Referer header will not be sent. no-referrer-when-downgrade The Referer header will not be sent to origins without TLS (HTTPS). origin The sent referrer will be limited to the origin of the referring page: its scheme, host, and port. origin-when-cross-origin The referrer sent to other origins will be limited to the scheme, the host, and the port. Navigations on the same origin will still include the path. same-origin A referrer will be sent for same origin, but cross-origin requests will contain no referrer information. strict-origin Only send the origin of the document as the referrer when the protocol security level stays the same (HTTPS→HTTPS), but don't send it to a less secure destination (HTTPS→HTTP). strict-origin-when-cross-origin (default) Send a full URL when performing a same-origin request, only send the origin when the protocol security level stays the same (HTTPS→HTTPS), and send no header to a less secure destination (HTTPS→HTTP). unsafe-url The referrer will include the origin and the path (but not the fragment, password, or username). This value is unsafe, because it leaks origins and paths from TLS-protected resources to insecure origins."
 				},
 				"sandbox": {
-					"description": "Controls the restrictions applied to the content embedded in the <iframe>. The value of the attribute can either be empty to apply all restrictions, or space-separated tokens to lift particular restrictions: allow-downloads Allows downloading files through an <a> or <area> element with the download attribute, as well as through the navigation that leads to a download of a file. This works regardless of whether the user clicked on the link, or JS code initiated it without user interaction. allow-forms Allows the page to submit forms. If this keyword is not used, a form will be displayed as normal, but submitting it will not trigger input validation, send data to a web server, or close a dialog. allow-modals Allows the page to open modal windows by Window.alert(), Window.confirm(), Window.print() and Window.prompt(), while opening a <dialog> is allowed regardless of this keyword. It also allows the page to receive BeforeUnloadEvent event. allow-orientation-lock Lets the resource lock the screen orientation. allow-pointer-lock Allows the page to use the Pointer Lock API. allow-popups Allows popups (created, for example, by Window.open() or target=\"_blank\"). If this keyword is not used, such functionality will silently fail. allow-popups-to-escape-sandbox Allows a sandboxed document to open a new browsing context without forcing the sandboxing flags upon it. This will allow, for example, a third-party advertisement to be safely sandboxed without forcing the same restrictions upon the page the ad links to. If this flag is not included, a redirected page, popup window, or new tab will be subject to the same sandbox restrictions as the originating <iframe>. allow-presentation Allows embedders to have control over whether an iframe can start a presentation session. allow-same-origin If this token is not used, the resource is treated as being from a special origin that always fails the same-origin policy (potentially preventing access to data storage/cookies and some JavaScript APIs). Note: When allow-same-origin is present, a same-origin parent document can still access and interact with the iframe's DOM even if allow-scripts is not set. The allow-scripts token only controls script execution within the embedded browsing context and does not affect DOM access from the parent. allow-scripts Allows the page to run scripts (but not create pop-up windows). If this keyword is not used, this operation is not allowed. allow-storage-access-by-user-activation Experimental Allows a document loaded in the <iframe> to use the Storage Access API to request access to unpartitioned cookies. allow-top-navigation Lets the resource navigate the top-level browsing context (the one named _top). allow-top-navigation-by-user-activation Lets the resource navigate the top-level browsing context, but only if initiated by a user gesture. allow-top-navigation-to-custom-protocols Allows navigations to non-http protocols built into browser or registered by a website. This feature is also activated by allow-popups or allow-top-navigation keyword. Note: When the embedded document has the same origin as the embedding page, it is strongly discouraged to use both allow-scripts and allow-same-origin, as that lets the embedded document remove the sandbox attribute — making it no more secure than not using the sandbox attribute at all. Sandboxing is useless if the attacker can display content outside a sandboxed iframe — such as if the viewer opens the frame in a new tab. Such content should be also served from a separate origin to limit potential damage. Note: When redirecting the user, opening a popup window, or opening a new tab from an embedded page within an <iframe> with the sandbox attribute, the new browsing context is subject to the same sandbox restrictions. This can create issues — for example, if a page embedded within an <iframe> without a sandbox=\"allow-forms\" or sandbox=\"allow-popups-to-escape-sandbox\" attribute set on it opens a new site in a separate tab, form submission in that new browsing context will silently fail.",
+					"description": "Controls the restrictions applied to the content embedded in the <iframe>. The value of the attribute can either be empty to apply all restrictions, or space-separated tokens to lift particular restrictions: allow-downloads Allows downloading files through an <a> or <area> element with the download attribute, as well as through the navigation that leads to a download of a file. This works regardless of whether the user clicked on the link, or JS code initiated it without user interaction. allow-forms Allows the page to submit forms. If this keyword is not used, a form will be displayed as normal, but submitting it will not trigger input validation, send data to a web server, or close a dialog. allow-modals Allows the page to open modal windows by Window.alert(), Window.confirm(), Window.print() and Window.prompt(), while opening a <dialog> is allowed regardless of this keyword. It also allows the page to receive BeforeUnloadEvent event. allow-orientation-lock Lets the resource lock the screen orientation. allow-pointer-lock Allows the page to use the Pointer Lock API. allow-popups Allows popups (created, for example, by Window.open() or target=\"_blank\"). If this keyword is not used, such functionality will silently fail. allow-popups-to-escape-sandbox Allows a sandboxed document to open a new browsing context without forcing the sandboxing flags upon it. This will allow, for example, a third-party advertisement to be safely sandboxed without forcing the same restrictions upon the page the ad links to. If this flag is not included, a redirected page, popup window, or new tab will be subject to the same sandbox restrictions as the originating <iframe>. allow-presentation Allows embedders to have control over whether an iframe can start a presentation session. allow-same-origin If this token is not used, the resource is treated as being from a special origin that always fails the same-origin policy (potentially preventing access to data storage/cookies and some JavaScript APIs). Note: When allow-same-origin is present, a same-origin parent document can still access and interact with the iframe's DOM even if allow-scripts is not set. The allow-scripts token only controls script execution within the embedded browsing context and does not affect DOM access from the parent. allow-scripts Allows the page to run scripts (but not create pop-up windows). If this keyword is not used, this operation is not allowed. allow-storage-access-by-user-activation Allows a document loaded in the <iframe> to use the Storage Access API to request access to unpartitioned cookies. allow-top-navigation Lets the resource navigate the top-level browsing context (the one named _top). allow-top-navigation-by-user-activation Lets the resource navigate the top-level browsing context, but only if initiated by a user gesture. allow-top-navigation-to-custom-protocols Allows navigations to non-http protocols built into browser or registered by a website. This feature is also activated by allow-popups or allow-top-navigation keyword. Note: When the embedded document has the same origin as the embedding page, it is strongly discouraged to use both allow-scripts and allow-same-origin, as that lets the embedded document remove the sandbox attribute — making it no more secure than not using the sandbox attribute at all. Sandboxing is useless if the attacker can display content outside a sandboxed iframe — such as if the viewer opens the frame in a new tab. Such content should be also served from a separate origin to limit potential damage. Note: When redirecting the user, opening a popup window, or opening a new tab from an embedded page within an <iframe> with the sandbox attribute, the new browsing context is subject to the same sandbox restrictions. This can create issues — for example, if a page embedded within an <iframe> without a sandbox=\"allow-forms\" or sandbox=\"allow-popups-to-escape-sandbox\" attribute set on it opens a new site in a separate tab, form submission in that new browsing context will silently fail.",
 					"type": {
 						"token": {
 							"enum": [
@@ -51487,7 +51520,8 @@
 				},
 				"attributionsrc": {
 					"description": "Specifies that you want the browser to send an Attribution-Reporting-Eligible header along with the image request. On the server-side this is used to trigger sending an Attribution-Reporting-Register-Source or Attribution-Reporting-Register-Trigger header in the response, to register an image-based attribution source or attribution trigger, respectively. Which response header should be sent back depends on the value of the Attribution-Reporting-Eligible header that triggered the registration. The corresponding source or trigger event is set off once the browser receives the response containing the image file. Note: See the Attribution Reporting API for more details. There are two versions of this attribute that you can set: Boolean, i.e., just the attributionsrc name. This specifies that you want the Attribution-Reporting-Eligible header sent to the same server as the src attribute points to. This is fine when you are handling the attribution source or trigger registration on the same server. When registering an attribution trigger this property is optional, and a boolean value will be used if it is omitted. Value containing one or more URLs, for example: html<img src=\"image-file.png\" alt=\"My image file description\" attributionsrc=\"https://a.example/register-source https://b.example/register-source\" /> This is useful in cases where the requested resource is not on a server you control, or you just want to handle registering the attribution source on a different server. In this case, you can specify one or more URLs as the value of attributionsrc. When the resource request occurs the Attribution-Reporting-Eligible header will be sent to the URL(s) specified in attributionSrc in addition to the resource origin. These URLs can then respond with an Attribution-Reporting-Register-Source or Attribution-Reporting-Register-Trigger header as appropriate to complete registration. Note: Specifying multiple URLs means that multiple attribution sources can be registered on the same feature. You might for example have different campaigns that you are trying to measure the success of, which involve generating different reports on different data.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"border": {
 					"description": "The width of a border around the image. Use the border CSS property instead.",
@@ -51523,7 +51557,7 @@
 					"condition": "a[href] img"
 				},
 				"loading": {
-					"description": "Indicates how the browser should load the image: eager Loads the image immediately, regardless of whether or not the image is currently within the visible viewport (this is the default value). lazy Defers loading the image until it reaches a calculated distance from the viewport, as defined by the browser. Lazy loading avoids the network and storage bandwidth required to handle the image until it's reasonably certain that it will be needed. This improves the performance in most typical use cases. While explicit width and height attributes are recommended for all images to avoid layout shift, they are especially important for lazy-loaded ones. Lazy-loaded images will never be loaded if they do not intersect a visible part of an element, even if loading them would change that, because unloaded images have a width and height of 0. It creates an even more disruptive user experience when the content visible in the viewport reflows in the middle of reading it. Lazy-loaded images located in the visual viewport may not yet be visible when the Window load event is fired. This is because the event is fired based on eager-loaded images — lazy-loaded images are not considered even if they are located within the visual viewport upon initial page load. Loading is only deferred when JavaScript is enabled. This is an anti-tracking measure, because if a user agent supported lazy loading when scripting is disabled, it would still be possible for a site to track a user's approximate scroll position throughout a session, by strategically placing images in a page's markup such that a server can track how many images are requested and when."
+					"description": "Indicates how the browser should load the image: eager Loads the image immediately, regardless of whether or not the image is currently within the visual viewport (this is the default value). lazy Defers loading the image until it reaches a calculated distance from the viewport, as defined by the browser. Lazy loading avoids the network and storage bandwidth required to handle the image until it's reasonably certain that it will be needed. This improves the performance in most typical use cases. While explicit width and height attributes are recommended for all images to avoid layout shift, they are especially important for lazy-loaded ones. Lazy-loaded images will never be loaded if they do not intersect a visible part of an element, even if loading them would change that, because unloaded images have a width and height of 0. It creates an even more disruptive user experience when the content visible in the viewport reflows in the middle of reading it. Lazy-loaded images located in the visual viewport may not yet be visible when the Window load event is fired. This is because the event is fired based on eager-loaded images — lazy-loaded images are not considered even if they are located within the visual viewport upon initial page load. Loading is only deferred when JavaScript is enabled. This is an anti-tracking measure, because if a user agent supported lazy loading when scripting is disabled, it would still be possible for a site to track a user's approximate scroll position throughout a session, by strategically placing images in a page's markup such that a server can track how many images are requested and when."
 				},
 				"longdesc": {
 					"description": "A link to a more detailed description of the image. Possible values are a URL or an element id. Note: This attribute is considered obsolete in the HTML spec. It has an uncertain future; authors should use a WAI-ARIA alternative such as aria-describedby or aria-details.",
@@ -51537,11 +51571,13 @@
 					"description": "A string indicating which referrer to use when fetching the resource: no-referrer: The Referer header will not be sent. no-referrer-when-downgrade: The Referer header will not be sent to origins without TLS (HTTPS). origin: The sent referrer will be limited to the origin of the referring page: its scheme, host, and port. origin-when-cross-origin: The referrer sent to other origins will be limited to the scheme, the host, and the port. Navigations on the same origin will still include the path. same-origin: A referrer will be sent for same origin, but cross-origin requests will contain no referrer information. strict-origin: Only send the origin of the document as the referrer when the protocol security level stays the same (HTTPS→HTTPS), but don't send it to a less secure destination (HTTPS→HTTP). strict-origin-when-cross-origin (default): Send a full URL when performing a same-origin request, only send the origin when the protocol security level stays the same (HTTPS→HTTPS), and send no header to a less secure destination (HTTPS→HTTP). unsafe-url: The referrer will include the origin and the path (but not the fragment, password, or username). This value is unsafe, because it leaks origins and paths from TLS-protected resources to insecure origins."
 				},
 				"sizes": {
-					"description": "One or more values separated by commas, which can be source sizes or the auto keyword. The spec requires that the sizes attribute to only be present when srcset uses width descriptors. A source size consists of: A media condition, omitted for the last item in the list. A source size value. Media conditions describe properties of the viewport, not the image. For example, (height <= 500px) 1000px proposes using an image source of 1000px width if the viewport height is 500px or less. Because a source size descriptor specifies the width to use for the image during layout, the media condition is typically (but not necessarily) based on the width. Source size values specify the intended display size of the image. User agents use the current source size to select one of the sources supplied by the srcset attribute, when those sources are described using width (w) descriptors. The selected source size affects the intrinsic size of the image (the image's display size if no CSS styling is applied). A source size value can be any non-negative length. It must not use CSS functions other than the math functions. Units are interpreted in the same way as media queries, meaning that all relative length units are relative to the document root rather than the <img> element. For example, an em value is relative to the root font size, not the font size of the image. Percentage values are not allowed. If the sizes attribute is not provided, it has a default value of 100vw (the viewport width). The auto keyword can replace the whole list of sizes or the first entry in the list. It is only valid when combined with loading=\"lazy\", and resolves to the concrete size of the image. Since the intrinsic size of the image is not yet known, width and height attributes (or CSS equivalents) should also be specified to prevent the browser from assuming the default image width of 300px. For better backward compatibility with browsers that do not support auto, you can include fallback sizes after auto in the sizes attribute: html<img loading=\"lazy\" width=\"200\" height=\"200\" sizes=\"auto, (max-width: 30em) 100vw, (max-width: 50em) 50vw, calc(33vw - 100px)\" srcset=\" swing-200.jpg 200w, swing-400.jpg 400w, swing-800.jpg 800w, swing-1600.jpg 1600w \" src=\"swing-400.jpg\" alt=\"Kettlebell Swing\" />"
+					"description": "One or more values separated by commas, which can be source sizes or the auto keyword. The spec requires that the sizes attribute only be present when srcset uses width descriptors. source size A source size consists of: A media condition, omitted for the last item in the list. A source size value. For example, the following source size proposes using a 1000px-wide image source if the viewport width is 500px or less. css(width <= 500px) 1000px Media conditions describe properties of the viewport, not the image. Because a source size descriptor specifies the width to use for the image during layout, the media condition is typically (but not necessarily) based on the width. Source size values specify the intended display size of the image. User agents use the current source size to select one of the sources supplied by the srcset attribute, when those sources are described using width (w) descriptors. The w value defined in sizes determines the image's default layout width. In the absence of CSS, the browser will render the image at this size, regardless of the physical pixel dimensions of the downloaded file. A source size value can be any non-negative length. It must not use CSS functions other than the math functions. Units are interpreted in the same way as media queries, meaning that all relative length units are relative to the document root rather than the <img> element. For example, an em value is relative to the root font size, not the font size of the image. Percentage values are not allowed. If the sizes attribute is not provided, it has a default value of 100vw (the viewport width). auto The auto keyword indicates that the browser should use the expected layout width of the element to select the image to display. That is, it should use the concrete size of the image, calculated after layout from HTML and CSS has been applied. This is only valid when combined with loading=\"lazy\", as the page is expected to already have CSS and other layout information by the time the image loads. Using auto saves you having to specify your layout media conditions twice: once for layout, and once for selection of an appropriate image to fetch and display. If auto cannot resolve — either because the browser does not support it, or because the image has no layout size yet — the browser falls back to the source sizes in the list to determine the width, then to width/height attributes defined on the element, and finally to the default intrinsic size for <img> elements defined in the user agent stylesheet (300px by 150px). For better backward compatibility with browsers that do not support auto, you can include fallback sizes after auto in the sizes attribute. You should also set the element's width and height attributes to the intrinsic dimensions of the largest image in your srcset, so the browser can reserve space using the correct aspect ratio: html<img loading=\"lazy\" width=\"200\" height=\"200\" sizes=\"auto, (max-width: 30em) 100vw, (max-width: 50em) 50vw, calc(33vw - 100px)\" srcset=\" swing-200.jpg 200w, swing-400.jpg 400w, swing-800.jpg 800w, swing-1600.jpg 1600w \" src=\"swing-400.jpg\" alt=\"Kettlebell Swing\" />",
+					"type": "SourceSizeList",
+					"condition": "[srcset]"
 				},
 				"src": {
 					"description": "The image URL. At least one of src and srcset is required for an <img> element. If srcset is specified, src is used in one of two ways: as a fallback for browsers that don't support srcset. if srcset uses the \"x\" descriptor, then src is equivalent to a source with the density descriptor 1x; that is, the image specified by src is used on low-density screens (such as typical 72 DPI or 96 DPI displays).",
-					"type": "URL",
+					"type": "NonEmptyURL",
 					"requiredEither": ["srcset"]
 				},
 				"srcset": {
@@ -51580,14 +51616,18 @@
 						"permittedRoles": [
 							"checkbox",
 							"combobox",
+							"gridcell",
 							"link",
 							"menuitem",
 							"menuitemcheckbox",
 							"menuitemradio",
 							"option",
 							"radio",
+							"separator",
+							"slider",
 							"switch",
-							"tab"
+							"tab",
+							"treeitem"
 						]
 					},
 					"[type='checkbox' i]": {
@@ -51670,7 +51710,21 @@
 					},
 					"[type='image' i]": {
 						"implicitRole": "button",
-						"permittedRoles": ["link", "menuitem", "menuitemcheckbox", "menuitemradio", "radio", "switch"]
+						"permittedRoles": [
+							"checkbox",
+							"gridcell",
+							"link",
+							"menuitem",
+							"menuitemcheckbox",
+							"menuitemradio",
+							"option",
+							"radio",
+							"separator",
+							"slider",
+							"switch",
+							"tab",
+							"treeitem"
+						]
 					},
 					"[type='month' i]": {
 						"implicitRole": false,
@@ -51776,11 +51830,22 @@
 					},
 					"[type='reset' i]": {
 						"implicitRole": "button",
-						"permittedRoles": false,
-						"properties": {
-							"global": true,
-							"role": "button"
-						}
+						"permittedRoles": [
+							"checkbox",
+							"combobox",
+							"gridcell",
+							"link",
+							"menuitem",
+							"menuitemcheckbox",
+							"menuitemradio",
+							"option",
+							"radio",
+							"separator",
+							"slider",
+							"switch",
+							"tab",
+							"treeitem"
+						]
 					},
 					"[type='search' i]:not([list])": {
 						"implicitRole": "searchbox",
@@ -51792,11 +51857,22 @@
 					},
 					"[type='submit' i]": {
 						"implicitRole": "button",
-						"permittedRoles": false,
-						"properties": {
-							"global": true,
-							"role": "button"
-						}
+						"permittedRoles": [
+							"checkbox",
+							"combobox",
+							"gridcell",
+							"link",
+							"menuitem",
+							"menuitemcheckbox",
+							"menuitemradio",
+							"option",
+							"radio",
+							"separator",
+							"slider",
+							"switch",
+							"tab",
+							"treeitem"
+						]
 					},
 					"[type='tel' i]:not([list])": {
 						"implicitRole": "textbox",
@@ -51852,6 +51928,7 @@
 						"[type='button' i]": {
 							"implicitRole": "button",
 							"permittedRoles": [
+								"checkbox",
 								"link",
 								"menuitem",
 								"menuitemcheckbox",
@@ -51939,12 +52016,15 @@
 						"[type='image' i]": {
 							"implicitRole": "button",
 							"permittedRoles": [
+								"checkbox",
 								"link",
 								"menuitem",
 								"menuitemcheckbox",
 								"menuitemradio",
+								"option",
 								"radio",
-								"switch"
+								"switch",
+								"tab"
 							]
 						},
 						"[type='month' i]": {
@@ -52051,11 +52131,17 @@
 						},
 						"[type='reset' i]": {
 							"implicitRole": "button",
-							"permittedRoles": false,
-							"properties": {
-								"global": true,
-								"role": "button"
-							}
+							"permittedRoles": [
+								"checkbox",
+								"link",
+								"menuitem",
+								"menuitemcheckbox",
+								"menuitemradio",
+								"option",
+								"radio",
+								"switch",
+								"tab"
+							]
 						},
 						"[type='search' i]:not([list])": {
 							"implicitRole": "searchbox",
@@ -52067,11 +52153,17 @@
 						},
 						"[type='submit' i]": {
 							"implicitRole": "button",
-							"permittedRoles": false,
-							"properties": {
-								"global": true,
-								"role": "button"
-							}
+							"permittedRoles": [
+								"checkbox",
+								"link",
+								"menuitem",
+								"menuitemcheckbox",
+								"menuitemradio",
+								"option",
+								"radio",
+								"switch",
+								"tab"
+							]
 						},
 						"[type='tel' i]:not([list])": {
 							"implicitRole": "textbox",
@@ -52165,6 +52257,7 @@
 				"alt": {
 					"description": "Valid for the image button only, the alt attribute provides alternative text for the image, displaying the value of the attribute if the image src is missing or otherwise fails to load. See the image input type.",
 					"type": "Any",
+					"required": true,
 					"condition": "[type='image' i]"
 				},
 				"autocapitalize": {
@@ -52283,7 +52376,34 @@
 				},
 				"max": {
 					"description": "Valid for date, month, week, time, datetime-local, number, and range, it defines the greatest value in the range of permitted values. If the value entered into the element exceeds this, the element fails constraint validation. If the value of the max attribute isn't a number, then the element has no maximum value. There is a special case: if the data type is periodic (such as for dates or times), the value of max may be lower than the value of min, which indicates that the range may wrap around; for example, this allows you to specify a time range from 10 PM to 4 AM.",
-					"type": ["DateTime", "Number"],
+					"type": [
+						{
+							"condition": "[type='date' i]",
+							"type": "DateString"
+						},
+						{
+							"condition": "[type='month' i]",
+							"type": "MonthString"
+						},
+						{
+							"condition": "[type='week' i]",
+							"type": "WeekString"
+						},
+						{
+							"condition": "[type='time' i]",
+							"type": "TimeString"
+						},
+						{
+							"condition": "[type='datetime-local' i]",
+							"type": "LocalDateTimeString"
+						},
+						{
+							"condition": ["[type='number' i]", "[type='range' i]"],
+							"type": {
+								"type": "float"
+							}
+						}
+					],
 					"condition": [
 						"[type='date' i]",
 						"[type='month' i]",
@@ -52308,7 +52428,34 @@
 				},
 				"min": {
 					"description": "Valid for date, month, week, time, datetime-local, number, and range, it defines the most negative value in the range of permitted values. If the value entered into the element is less than this, the element fails constraint validation. If the value of the min attribute isn't a number, then the element has no minimum value. This value must be less than or equal to the value of the max attribute. If the min attribute is present but is not specified or is invalid, no min value is applied. If the min attribute is valid and a non-empty value is less than the minimum allowed by the min attribute, constraint validation will prevent form submission. See Client-side validation for more information. There is a special case: if the data type is periodic (such as for dates or times), the value of max may be lower than the value of min, which indicates that the range may wrap around; for example, this allows you to specify a time range from 10 PM to 4 AM.",
-					"type": ["DateTime", "Number"],
+					"type": [
+						{
+							"condition": "[type='date' i]",
+							"type": "DateString"
+						},
+						{
+							"condition": "[type='month' i]",
+							"type": "MonthString"
+						},
+						{
+							"condition": "[type='week' i]",
+							"type": "WeekString"
+						},
+						{
+							"condition": "[type='time' i]",
+							"type": "TimeString"
+						},
+						{
+							"condition": "[type='datetime-local' i]",
+							"type": "LocalDateTimeString"
+						},
+						{
+							"condition": ["[type='number' i]", "[type='range' i]"],
+							"type": {
+								"type": "float"
+							}
+						}
+					],
 					"condition": [
 						"[type='date' i]",
 						"[type='month' i]",
@@ -52337,7 +52484,10 @@
 					"condition": ["[type='email' i]", "[type='file' i]"]
 				},
 				"name": {
-					"description": "A string specifying a name for the input control. This name is submitted along with the control's value when the form data is submitted. Consider the name a required attribute (even though it's not). If an input has no name specified, or name is empty, the input's value is not submitted with the form! (Disabled controls, unchecked radio buttons, unchecked checkboxes, and reset buttons are also not sent.) There are two special cases: _charset_ : If used as the name of an <input> element of type hidden, the input's value is automatically set by the user agent to the character encoding being used to submit the form. isindex: For historical reasons, the name isindex is not allowed. The name attribute creates a unique behavior for radio buttons. Only one radio button in a same-named group of radio buttons can be checked at a time. Selecting any radio button in that group automatically deselects any currently-selected radio button in the same group. The value of that one checked radio button is sent along with the name if the form is submitted, When tabbing into a series of same-named group of radio buttons, if one is checked, that one will receive focus. If they aren't grouped together in source order, if one of the group is checked, tabbing into the group starts when the first one in the group is encountered, skipping all those that aren't checked. In other words, if one is checked, tabbing skips the unchecked radio buttons in the group. If none are checked, the radio button group receives focus when the first button in the same name group is reached. Once one of the radio buttons in a group has focus, using the arrow keys will navigate through all the radio buttons of the same name, even if the radio buttons are not grouped together in the source order. When an input element is given a name, that name becomes a property of the owning form element's HTMLFormElement.elements property. If you have an input whose name is set to guest and another whose name is hat-size, the following code can be used: jslet form = document.querySelector(\"form\"); let guestName = form.elements.guest; let hatSize = form.elements[\"hat-size\"]; When this code has run, guestName will be the HTMLInputElement for the guest field, and hatSize the object for the hat-size field. Warning: Avoid giving form elements a name that corresponds to a built-in property of the form, since you would then override the predefined property or method with this reference to the corresponding input."
+					"description": "A string specifying a name for the input control. This name is submitted along with the control's value when the form data is submitted. Consider the name a required attribute (even though it's not). If an input has no name specified, or name is empty, the input's value is not submitted with the form! (Disabled controls, unchecked radio buttons, unchecked checkboxes, and reset buttons are also not sent.) There are two special cases: _charset_ : If used as the name of an <input> element of type hidden, the input's value is automatically set by the user agent to the character encoding being used to submit the form. isindex: For historical reasons, the name isindex is not allowed. The name attribute creates a unique behavior for radio buttons. Only one radio button in a same-named group of radio buttons can be checked at a time. Selecting any radio button in that group automatically deselects any currently-selected radio button in the same group. The value of that one checked radio button is sent along with the name if the form is submitted, When tabbing into a series of same-named group of radio buttons, if one is checked, that one will receive focus. If they aren't grouped together in source order, if one of the group is checked, tabbing into the group starts when the first one in the group is encountered, skipping all those that aren't checked. In other words, if one is checked, tabbing skips the unchecked radio buttons in the group. If none are checked, the radio button group receives focus when the first button in the same name group is reached. Once one of the radio buttons in a group has focus, using the arrow keys will navigate through all the radio buttons of the same name, even if the radio buttons are not grouped together in the source order. When an input element is given a name, that name becomes a property of the owning form element's HTMLFormElement.elements property. If you have an input whose name is set to guest and another whose name is hat-size, the following code can be used: jslet form = document.querySelector(\"form\"); let guestName = form.elements.guest; let hatSize = form.elements[\"hat-size\"]; When this code has run, guestName will be the HTMLInputElement for the guest field, and hatSize the object for the hat-size field. Warning: Avoid giving form elements a name that corresponds to a built-in property of the form, since you would then override the predefined property or method with this reference to the corresponding input.",
+					"type": {
+						"pattern": "/^(?!isindex$).+/"
+					}
 				},
 				"orient": {
 					"description": "Similar to the -moz-orient non-standard CSS property impacting the <progress> and <meter> elements, the orient attribute defines the orientation of the range slider. Values include horizontal, meaning the range is rendered horizontally, and vertical, where the range is rendered vertically. See Creating vertical form controls for a modern approach to creating vertical form controls.",
@@ -52515,7 +52665,46 @@
 				},
 				"value": {
 					"description": "The input control's value. When specified in the HTML, this is the initial value, and from then on it can be altered or retrieved at any time using JavaScript to access the respective HTMLInputElement object's value property. The value attribute is always optional, though should be considered mandatory for checkbox, radio, and hidden.",
-					"type": "Any"
+					"type": [
+						{
+							"condition": "[type='color' i]",
+							"type": "SimpleColor"
+						},
+						{
+							"condition": "[type='url' i]",
+							"type": "AbsoluteURLOrEmpty"
+						},
+						{
+							"condition": "[type='email' i]",
+							"type": "Email"
+						},
+						{
+							"condition": ["[type='number' i]", "[type='range' i]"],
+							"type": {
+								"type": "float"
+							}
+						},
+						{
+							"condition": "[type='date' i]",
+							"type": "DateString"
+						},
+						{
+							"condition": "[type='month' i]",
+							"type": "MonthString"
+						},
+						{
+							"condition": "[type='week' i]",
+							"type": "WeekString"
+						},
+						{
+							"condition": "[type='time' i]",
+							"type": "TimeString"
+						},
+						{
+							"condition": "[type='datetime-local' i]",
+							"type": "LocalDateTimeString"
+						}
+					]
 				},
 				"webkitdirectory": {
 					"description": "The Boolean webkitdirectory attribute, if present, indicates that only directories should be available to be selected by the user in the file picker interface. See HTMLInputElement.webkitdirectory for additional details and examples. Though originally implemented only for WebKit-based browsers, webkitdirectory is also usable in Microsoft Edge as well as Firefox 50 and later. However, even though it has relatively broad support, it is still not standard and should not be used unless you have no alternative.",
@@ -52560,7 +52749,7 @@
 				},
 				"datetime": {
 					"description": "This attribute indicates the time and date of the change and must be a valid date with an optional time string. If the value cannot be parsed as a date with an optional time string, the element does not have an associated timestamp. For the format of the string without a time, see Format of a valid date string. The format of the string if it includes both date and time is covered in Format of a valid local date and time string.",
-					"type": "DateTime"
+					"type": "DateStringWithOptionalTime"
 				}
 			}
 		},
@@ -52755,23 +52944,31 @@
 			"attributes": {
 				"as": {
 					"description": "This attribute is required when rel=\"preload\" has been set on the <link> element, optional when rel=\"modulepreload\" has been set, and otherwise should not be used. It specifies the type of content being loaded by the <link>, which is necessary for request matching, application of correct content security policy, and setting of correct Accept request header. Furthermore, rel=\"preload\" uses this as a signal for request prioritization. The table below lists the valid values for this attribute and the elements or resources they apply to. Value Applies To audio <audio> elements document <iframe> and <frame> elements embed <embed> elements fetch fetch, XHR Note: This value also requires <link> to contain the crossorigin attribute, see CORS-enabled fetches. font CSS @font-face Note: This value also requires <link> to contain the crossorigin attribute, see CORS-enabled fetches. image <img> and <picture> elements with srcset or imageset attributes, SVG <image> elements, CSS *-image rules json modulepreload destinations. object <object> elements script <script> elements, Worker importScripts, and modulepreload destinations. style <link rel=stylesheet> elements, CSS @import and modulepreload destinations. track <track> elements video <video> elements worker Worker, SharedWorker",
-					"type": {
-						"enum": [
-							"audioworklet",
-							"fetch",
-							"font",
-							"image",
-							"json",
-							"paintworklet",
-							"script",
-							"serviceworker",
-							"sharedworker",
-							"style",
-							"track",
-							"worker"
-						]
-					},
-					"condition": ["[rel='preload' i]", "[rel='modulepreload' i]"]
+					"type": [
+						{
+							"condition": "[rel~='preload' i]",
+							"type": {
+								"enum": ["fetch", "font", "image", "script", "style", "track"]
+							}
+						},
+						{
+							"condition": "[rel~='modulepreload' i]",
+							"type": {
+								"enum": [
+									"audioworklet",
+									"json",
+									"paintworklet",
+									"script",
+									"serviceworker",
+									"sharedworker",
+									"style",
+									"worker"
+								]
+							}
+						}
+					],
+					"condition": ["[rel~='preload' i]", "[rel~='modulepreload' i]"],
+					"required": "[rel~='preload' i]"
 				},
 				"blocking": {
 					"description": "This attribute explicitly indicates that certain operations should be blocked until specific conditions are met. It must only be used when the rel attribute contains the expect or stylesheet keywords. With rel=\"expect\", it indicates that operations should be blocked until a specific DOM node has been parsed. With rel=\"stylesheet\", it indicates that operations should be blocked until an external stylesheet and its critical subresources have been fetched and applied to the document. The operations that are to be blocked must be a space-separated list of blocking tokens listed below. Currently there is only one token: render: The rendering of content on the screen is blocked. Note: Only link elements in the document's <head> can possibly block rendering. By default, a link element with rel=\"stylesheet\" in the <head> blocks rendering when the browser discovers it during parsing. If such a link element is added dynamically via script, you must additionally set blocking = \"render\" for it to block rendering.",
@@ -52798,13 +52995,15 @@
 				},
 				"disabled": {
 					"description": "For rel=\"stylesheet\" only, the disabled Boolean attribute indicates whether the described stylesheet should be loaded and applied to the document. If disabled is specified in the HTML when it is loaded, the stylesheet will not be loaded during page load. Instead, the stylesheet will be loaded on-demand, if and when the disabled attribute is changed to false or removed. Setting the disabled property in the DOM causes the stylesheet to be removed from the document's Document.styleSheets list.",
-					"type": "Boolean"
+					"type": "Boolean",
+					"condition": "[rel~='stylesheet' i]"
 				},
 				"fetchpriority": {
 					"description": "Provides a hint of the relative priority to use when fetching a resource of a particular type. Allowed values: high Fetch the resource at a high priority relative to other resources of the same type. low Fetch the resource at a low priority relative to other resources of the same type. auto Don't set a preference for the fetch priority. This is the default. It is used if no value or an invalid value is set."
 				},
 				"href": {
 					"description": "This attribute specifies the URL of the linked resource. A URL can be absolute or relative.",
+					"type": "NonEmptyURL",
 					"requiredEither": ["imagesrcset"]
 				},
 				"hreflang": {
@@ -52823,7 +53022,7 @@
 					"required": "[imagesizes]"
 				},
 				"integrity": {
-					"description": "Contains inline metadata — a base64-encoded cryptographic hash of the resource (file) you're telling the browser to fetch. The browser can use this to verify that the fetched resource has been delivered without unexpected manipulation. The attribute must only be specified when the rel attribute is specified to stylesheet, preload, or modulepreload. See Subresource Integrity.",
+					"description": "This attribute contains one or more hashes of the resource. It is used to ensure that the content of the resource is what the developer expects it to be, and has not been replaced with a malicious copy in a supply chain attack. The attribute must only be specified when the rel attribute is set to stylesheet, preload, or modulepreload. See Subresource Integrity.",
 					"condition": ["[rel~='stylesheet' i]", "[rel~='preload' i]", "[rel~='modulepreload' i]"]
 				},
 				"itemprop": {
@@ -52861,7 +53060,14 @@
 					"deprecated": true
 				},
 				"title": {
-					"description": "The title attribute has special semantics on the <link> element. When used on a <link rel=\"stylesheet\"> it defines a default or an alternate stylesheet."
+					"description": "The title attribute has special semantics on the <link> element. When used on a <link rel=\"stylesheet\"> it defines a default or an alternate stylesheet.",
+					"type": [
+						{
+							"condition": "[rel~='alternate' i][rel~='stylesheet' i]",
+							"type": "NoEmptyAny"
+						}
+					],
+					"required": "[rel~='alternate' i][rel~='stylesheet' i]"
 				},
 				"type": {
 					"description": "This attribute is used to define the type of the content linked to. The value of the attribute should be a MIME type such as text/html, text/css, and so on. The common use of this attribute is to define the type of stylesheet being referenced (such as text/css), but given that CSS is the only stylesheet language used on the web, not only is it possible to omit the type attribute, but is actually now recommended practice. It is also used on rel=\"preload\" link types, to make sure the browser only downloads file types that it supports."
@@ -52999,11 +53205,13 @@
 				},
 				"height": {
 					"description": "Sets the height in pixels or percentage value.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"hspace": {
 					"description": "Sets the horizontal margin",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"loop": {
 					"description": "Sets the number of times the marquee will scroll. If no value is specified, the default value is −1, which means the marquee will scroll continuously.",
@@ -53011,11 +53219,13 @@
 				},
 				"scrollamount": {
 					"description": "Sets the amount of scrolling at each interval in pixels. The default value is 6.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"scrolldelay": {
 					"description": "Sets the interval between each scroll movement in milliseconds. The default value is 85. Note that any value smaller than 60 is ignored and the value 60 is used instead unless truespeed is specified.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"truespeed": {
 					"description": "By default, scrolldelay values lower than 60 are ignored. If truespeed is present, those values are not ignored.",
@@ -53023,11 +53233,13 @@
 				},
 				"vspace": {
 					"description": "Sets the vertical margin in pixels or percentage value.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"width": {
 					"description": "Sets the width in pixels or percentage value.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				}
 			}
 		},
@@ -53138,7 +53350,16 @@
 				},
 				"content": {
 					"description": "This attribute contains the value for the http-equiv or name attribute, depending on which is used.",
-					"type": "Any",
+					"type": [
+						{
+							"condition": "[http-equiv='refresh' i]",
+							"type": "HTTPEquivRefresh"
+						},
+						{
+							"condition": "[http-equiv='content-type' i]",
+							"type": "HTTPEquivContentType"
+						}
+					],
 					"required": ["[name]", "[http-equiv]", "[itemprop]"],
 					"condition": ["[name]", "[http-equiv]", "[itemprop]"]
 				},
@@ -53437,7 +53658,7 @@
 				},
 				"data": {
 					"description": "The address of the resource as a valid URL. At least one of data and type must be defined.",
-					"type": "URL",
+					"type": "NonEmptyURL",
 					"requiredEither": ["type"]
 				},
 				"declare": {
@@ -53765,19 +53986,23 @@
 			"attributes": {
 				"name": {
 					"description": "Name of the parameter.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"type": {
 					"description": "Only used if the valuetype is set to ref. Specifies the MIME type of values found at the URI specified by value.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"value": {
 					"description": "Specifies the value of the parameter.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"valuetype": {
 					"description": "Specifies the type of the value attribute. Possible values are: data: Default value. The value is passed to the object's implementation as a string. ref: The value is a URI to a resource where run-time values are stored. object: An ID of another <object> in the same document.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				}
 			}
 		},
@@ -53931,11 +54156,17 @@
 			"attributes": {
 				"max": {
 					"description": "This attribute describes how much work the task indicated by the progress element requires. The max attribute, if present, must have a value greater than 0 and be a valid floating point number. The default value is 1.",
-					"type": "Number"
+					"type": {
+						"type": "float",
+						"gt": 0
+					}
 				},
 				"value": {
 					"description": "This attribute specifies how much of the task that has been completed. It must be a valid floating point number between 0 and max, or between 0 and 1 if max is omitted. If there is no value attribute, the progress bar is indeterminate; this indicates that an activity is ongoing with no indication of how long it is expected to take.",
-					"type": "Number"
+					"type": {
+						"type": "float",
+						"gte": 0
+					}
 				}
 			}
 		},
@@ -54192,14 +54423,15 @@
 					"description": "For classic scripts, if the async attribute is present, then the classic script will be fetched in parallel to parsing and evaluated as soon as it is available. For module scripts, if the async attribute is present then the scripts and all their dependencies will be fetched in parallel to parsing and evaluated as soon as they are available. Warning: This attribute must not be used if the src attribute is absent (i.e., for inline scripts) for classic scripts, in this case it would have no effect. This attribute allows the elimination of parser-blocking JavaScript where the browser would have to load and evaluate scripts before continuing to parse. defer has a similar effect in this case. If the attribute is specified with the defer attribute, the element will act as if only the async attribute is specified. This is a boolean attribute: the presence of a boolean attribute on an element represents the true value, and the absence of the attribute represents the false value. See Browser compatibility for notes on browser support. See also Async scripts for asm.js.",
 					"type": "Boolean",
 					"condition": [
-						":not([type='importmap' i]):not([type='speculationrules' i])[src]",
+						":is(:not([type]), [type=''], [type='application/ecmascript' i], [type='application/javascript' i], [type='application/x-ecmascript' i], [type='application/x-javascript' i], [type='text/ecmascript' i], [type='text/javascript' i], [type='text/javascript1.0' i], [type='text/javascript1.1' i], [type='text/javascript1.2' i], [type='text/javascript1.3' i], [type='text/javascript1.4' i], [type='text/javascript1.5' i], [type='text/jscript' i], [type='text/livescript' i], [type='text/x-ecmascript' i], [type='text/x-javascript' i])[src]",
 						"[type='module' i]"
 					],
 					"ineffective": ":not([src]):not([type='module' i])"
 				},
 				"attributionsrc": {
 					"description": "Specifies that you want the browser to send an Attribution-Reporting-Eligible header along with the script resource request. On the server-side this is used to trigger sending an Attribution-Reporting-Register-Source or Attribution-Reporting-Register-Trigger header in the response, to register a JavaScript-based attribution source or attribution trigger, respectively. Which response header should be sent back depends on the value of the Attribution-Reporting-Eligible header that triggered the registration. Note: Alternatively, JavaScript-based attribution sources or triggers can be registered by sending a fetch() request containing the attributionReporting option (either set directly on the fetch() call or on a Request object passed into the fetch() call), or by sending an XMLHttpRequest with setAttributionReporting() invoked on the request object. There are two versions of this attribute that you can set: Boolean, i.e., just the attributionsrc name. This specifies that you want the Attribution-Reporting-Eligible header sent to the same server as the src attribute points to. This is fine when you are handling the attribution source or trigger registration on the same server. When registering an attribution trigger this property is optional, and an empty string value will be used if it is omitted. Value containing one or more URLs, for example: html<script src=\"myscript.js\" attributionsrc=\"https://a.example/register-source https://b.example/register-source\"></script> This is useful in cases where the requested resource is not on a server you control, or you just want to handle registering the attribution source on a different server. In this case, you can specify one or more URLs as the value of attributionsrc. When the resource request occurs the Attribution-Reporting-Eligible header will be sent to the URL(s) specified in attributionSrc in addition to the resource origin. These URLs can then respond with an Attribution-Reporting-Register-Source or Attribution-Reporting-Register-Trigger header as appropriate to complete registration. Note: Specifying multiple URLs means that multiple attribution sources can be registered on the same feature. You might for example have different campaigns that you are trying to measure the success of, which involve generating different reports on different data. See the Attribution Reporting API for more details.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"blocking": {
 					"description": "This attribute explicitly indicates that certain operations should be blocked until the script has executed. The operations that are to be blocked must be a space-separated list of blocking tokens. Currently there is only one token: render: The rendering of content on the screen is blocked. Note: Only script elements in the document's <head> can possibly block rendering. Scripts are not render-blocking by default; if a script element does not include type=\"module\", async, or defer, then it blocks parsing, not rendering. If such a script element is added dynamically via script, you must set blocking = \"render\" for it to block rendering.",
@@ -54210,7 +54442,7 @@
 						"separator": "space",
 						"unique": true
 					},
-					"condition": ":not([type='importmap' i]):not([type='speculationrules' i])"
+					"condition": ":is(:not([type]), [type=''], [type='module' i], [type='application/ecmascript' i], [type='application/javascript' i], [type='application/x-ecmascript' i], [type='application/x-javascript' i], [type='text/ecmascript' i], [type='text/javascript' i], [type='text/javascript1.0' i], [type='text/javascript1.1' i], [type='text/javascript1.2' i], [type='text/javascript1.3' i], [type='text/javascript1.4' i], [type='text/javascript1.5' i], [type='text/jscript' i], [type='text/livescript' i], [type='text/x-ecmascript' i], [type='text/x-javascript' i])[src]"
 				},
 				"charset": {
 					"description": "If present, its value must be an ASCII case-insensitive match for utf-8. It's unnecessary to specify the charset attribute, because documents must use UTF-8, and the script element inherits its character encoding from the document.",
@@ -54218,20 +54450,22 @@
 					"condition": "[src]"
 				},
 				"crossorigin": {
-					"description": "Normal script elements pass minimal information to the window.onerror for scripts which do not pass the standard CORS checks. To allow error logging for sites which use a separate domain for static media, use this attribute. See CORS settings attributes for a more descriptive explanation of its valid arguments."
+					"description": "Normal script elements pass minimal information to the window.onerror for scripts which do not pass the standard CORS checks. To allow error logging for sites which use a separate domain for static media, use this attribute. See CORS settings attributes for a more descriptive explanation of its valid arguments.",
+					"condition": ":is(:not([type]), [type=''], [type='module' i], [type='application/ecmascript' i], [type='application/javascript' i], [type='application/x-ecmascript' i], [type='application/x-javascript' i], [type='text/ecmascript' i], [type='text/javascript' i], [type='text/javascript1.0' i], [type='text/javascript1.1' i], [type='text/javascript1.2' i], [type='text/javascript1.3' i], [type='text/javascript1.4' i], [type='text/javascript1.5' i], [type='text/jscript' i], [type='text/livescript' i], [type='text/x-ecmascript' i], [type='text/x-javascript' i])"
 				},
 				"defer": {
 					"description": "This Boolean attribute is set to indicate to a browser that the script is meant to be executed after the document has been parsed, but before firing DOMContentLoaded event. Scripts with the defer attribute will prevent the DOMContentLoaded event from firing until the script has loaded and finished evaluating. Warning: This attribute must not be used if the src attribute is absent (i.e., for inline scripts), in this case it would have no effect. The defer attribute has no effect on module scripts — they defer by default. Scripts with the defer attribute will execute in the order in which they appear in the document. This attribute allows the elimination of parser-blocking JavaScript where the browser would have to load and evaluate scripts before continuing to parse. async has a similar effect in this case. If the attribute is specified with the async attribute, the element will act as if only the async attribute is specified.",
 					"type": "Boolean",
-					"condition": ":not([type='importmap' i]):not([type='speculationrules' i])[src]",
-					"ineffective": ["[type='module' i]", ":not([src])", "[async]"]
+					"condition": ":is(:not([type]), [type=''], [type='application/ecmascript' i], [type='application/javascript' i], [type='application/x-ecmascript' i], [type='application/x-javascript' i], [type='text/ecmascript' i], [type='text/javascript' i], [type='text/javascript1.0' i], [type='text/javascript1.1' i], [type='text/javascript1.2' i], [type='text/javascript1.3' i], [type='text/javascript1.4' i], [type='text/javascript1.5' i], [type='text/jscript' i], [type='text/livescript' i], [type='text/x-ecmascript' i], [type='text/x-javascript' i])[src]",
+					"ineffective": [":not([src])", "[async]"]
 				},
 				"fetchpriority": {
-					"description": "Provides a hint of the relative priority to use when fetching an external script. Allowed values: high Fetch the external script at a high priority relative to other external scripts. low Fetch the external script at a low priority relative to other external scripts. auto Don't set a preference for the fetch priority. This is the default. It is used if no value or an invalid value is set."
+					"description": "Provides a hint of the relative priority to use when fetching an external script. Allowed values: high Fetch the external script at a high priority relative to other external scripts. low Fetch the external script at a low priority relative to other external scripts. auto Don't set a preference for the fetch priority. This is the default. It is used if no value or an invalid value is set.",
+					"condition": ":is(:not([type]), [type=''], [type='module' i], [type='application/ecmascript' i], [type='application/javascript' i], [type='application/x-ecmascript' i], [type='application/x-javascript' i], [type='text/ecmascript' i], [type='text/javascript' i], [type='text/javascript1.0' i], [type='text/javascript1.1' i], [type='text/javascript1.2' i], [type='text/javascript1.3' i], [type='text/javascript1.4' i], [type='text/javascript1.5' i], [type='text/jscript' i], [type='text/livescript' i], [type='text/x-ecmascript' i], [type='text/x-javascript' i])[src]"
 				},
 				"integrity": {
-					"description": "This attribute contains inline metadata that a user agent can use to verify that a fetched resource has been delivered without unexpected manipulation. The attribute must not be specified when the src attribute is absent. See Subresource Integrity.",
-					"condition": ":not([type='importmap' i]):not([type='speculationrules' i])[src]"
+					"description": "This attribute contains one or more hashes of the script. It is used to ensure that the content of the script is what the developer expects it to be, and has not been replaced with a malicious script in a supply chain attack. The attribute must not be specified when the src attribute is absent. See also Subresource Integrity.",
+					"condition": ":is(:not([type]), [type=''], [type='module' i], [type='application/ecmascript' i], [type='application/javascript' i], [type='application/x-ecmascript' i], [type='application/x-javascript' i], [type='text/ecmascript' i], [type='text/javascript' i], [type='text/javascript1.0' i], [type='text/javascript1.1' i], [type='text/javascript1.2' i], [type='text/javascript1.3' i], [type='text/javascript1.4' i], [type='text/javascript1.5' i], [type='text/jscript' i], [type='text/livescript' i], [type='text/x-ecmascript' i], [type='text/x-javascript' i])[src]"
 				},
 				"language": {
 					"description": "Like the type attribute, this attribute identifies the scripting language in use. Unlike the type attribute, however, this attribute's possible values were never standardized. The type attribute should be used instead.",
@@ -54241,21 +54475,22 @@
 				"nomodule": {
 					"description": "This Boolean attribute is set to indicate that the script should not be executed in browsers that support ES modules — in effect, this can be used to serve fallback scripts to older browsers that do not support modular JavaScript code.",
 					"type": "Boolean",
-					"condition": ":not([type='module' i]):not([type='importmap' i]):not([type='speculationrules' i])"
+					"condition": ":is(:not([type]), [type=''], [type='application/ecmascript' i], [type='application/javascript' i], [type='application/x-ecmascript' i], [type='application/x-javascript' i], [type='text/ecmascript' i], [type='text/javascript' i], [type='text/javascript1.0' i], [type='text/javascript1.1' i], [type='text/javascript1.2' i], [type='text/javascript1.3' i], [type='text/javascript1.4' i], [type='text/javascript1.5' i], [type='text/jscript' i], [type='text/livescript' i], [type='text/x-ecmascript' i], [type='text/x-javascript' i])"
 				},
 				"nonce": {
 					"description": "A cryptographic nonce (number used once) to allow scripts in a script-src Content-Security-Policy. The server must generate a unique nonce value each time it transmits a policy. It is critical to provide a nonce that cannot be guessed as bypassing a resource's policy is otherwise trivial."
 				},
 				"referrerpolicy": {
-					"description": "Indicates which referrer to send when fetching the script, or resources fetched by the script: no-referrer: The Referer header will not be sent. no-referrer-when-downgrade: The Referer header will not be sent to origins without TLS (HTTPS). origin: The sent referrer will be limited to the origin of the referring page: its scheme, host, and port. origin-when-cross-origin: The referrer sent to other origins will be limited to the scheme, the host, and the port. Navigations on the same origin will still include the path. same-origin: A referrer will be sent for same origin, but cross-origin requests will contain no referrer information. strict-origin: Only send the origin of the document as the referrer when the protocol security level stays the same (HTTPS→HTTPS), but don't send it to a less secure destination (HTTPS→HTTP). strict-origin-when-cross-origin (default): Send a full URL when performing a same-origin request, only send the origin when the protocol security level stays the same (HTTPS→HTTPS), and send no header to a less secure destination (HTTPS→HTTP). unsafe-url: The referrer will include the origin and the path (but not the fragment, password, or username). This value is unsafe, because it leaks origins and paths from TLS-protected resources to insecure origins. Note: An empty string value (\"\") is both the default value, and a fallback value if referrerpolicy is not supported. If referrerpolicy is not explicitly specified on the <script> element, it will adopt a higher-level referrer policy, i.e., one set on the whole document or domain. If a higher-level policy is not available, the empty string is treated as being equivalent to strict-origin-when-cross-origin."
+					"description": "Indicates which referrer to send when fetching the script, or resources fetched by the script: no-referrer: The Referer header will not be sent. no-referrer-when-downgrade: The Referer header will not be sent to origins without TLS (HTTPS). origin: The sent referrer will be limited to the origin of the referring page: its scheme, host, and port. origin-when-cross-origin: The referrer sent to other origins will be limited to the scheme, the host, and the port. Navigations on the same origin will still include the path. same-origin: A referrer will be sent for same origin, but cross-origin requests will contain no referrer information. strict-origin: Only send the origin of the document as the referrer when the protocol security level stays the same (HTTPS→HTTPS), but don't send it to a less secure destination (HTTPS→HTTP). strict-origin-when-cross-origin (default): Send a full URL when performing a same-origin request, only send the origin when the protocol security level stays the same (HTTPS→HTTPS), and send no header to a less secure destination (HTTPS→HTTP). unsafe-url: The referrer will include the origin and the path (but not the fragment, password, or username). This value is unsafe, because it leaks origins and paths from TLS-protected resources to insecure origins. Note: An empty string value (\"\") is both the default value, and a fallback value if referrerpolicy is not supported. If referrerpolicy is not explicitly specified on the <script> element, it will adopt a higher-level referrer policy, i.e., one set on the whole document or domain. If a higher-level policy is not available, the empty string is treated as being equivalent to strict-origin-when-cross-origin.",
+					"condition": ":is(:not([type]), [type=''], [type='module' i], [type='application/ecmascript' i], [type='application/javascript' i], [type='application/x-ecmascript' i], [type='application/x-javascript' i], [type='text/ecmascript' i], [type='text/javascript' i], [type='text/javascript1.0' i], [type='text/javascript1.1' i], [type='text/javascript1.2' i], [type='text/javascript1.3' i], [type='text/javascript1.4' i], [type='text/javascript1.5' i], [type='text/jscript' i], [type='text/livescript' i], [type='text/x-ecmascript' i], [type='text/x-javascript' i])"
 				},
 				"src": {
 					"description": "This attribute specifies the URI of an external script; this can be used as an alternative to embedding a script directly within a document.",
-					"type": "URL",
-					"condition": ":not([type='importmap' i]):not([type='speculationrules' i])"
+					"type": "NonEmptyURL",
+					"condition": ":is(:not([type]), [type=''], [type='module' i], [type='application/ecmascript' i], [type='application/javascript' i], [type='application/x-ecmascript' i], [type='application/x-javascript' i], [type='text/ecmascript' i], [type='text/javascript' i], [type='text/javascript1.0' i], [type='text/javascript1.1' i], [type='text/javascript1.2' i], [type='text/javascript1.3' i], [type='text/javascript1.4' i], [type='text/javascript1.5' i], [type='text/jscript' i], [type='text/livescript' i], [type='text/x-ecmascript' i], [type='text/x-javascript' i])"
 				},
 				"type": {
-					"description": "This attribute indicates the type of script represented. The value of this attribute will be one of the following: Attribute is not set (default), an empty string, or a JavaScript MIME type Indicates that the script is a \"classic script\", containing JavaScript code. Authors are encouraged to omit the attribute if the script refers to JavaScript code rather than specify a MIME type. JavaScript MIME types are listed in the IANA media types specification. importmap This value indicates that the body of the element contains an import map. The import map is a JSON object that developers can use to control how the browser resolves module specifiers when importing JavaScript modules. module This value causes the code to be treated as a JavaScript module. The processing of the script contents is deferred. The charset and defer attributes have no effect. For information on using module, see our JavaScript modules guide. Unlike classic scripts, module scripts require the use of the CORS protocol for cross-origin fetching. speculationrules Experimental This value indicates that the body of the element contains speculation rules. Speculation rules take the form of a JSON object that determine what resources should be prefetched or prerendered by the browser. This is part of the Speculation Rules API. Any other value The embedded content is treated as a data block, and won't be processed by the browser. Developers must use a valid MIME type that is not a JavaScript MIME type to denote data blocks. All of the other attributes will be ignored, including the src attribute.",
+					"description": "This attribute indicates the type of script represented. The value of this attribute will be one of the following: Attribute is not set (default), an empty string, or a JavaScript MIME type Indicates that the script is a \"classic script\", containing JavaScript code. Authors are encouraged to omit the attribute if the script refers to JavaScript code rather than specify a MIME type. JavaScript MIME types are listed in the IANA media types specification. importmap This value indicates that the body of the element contains an import map. The import map is a JSON object that developers can use to control how the browser resolves module specifiers when importing JavaScript modules. module This value causes the code to be treated as a JavaScript module. The processing of the script contents is deferred. The charset and defer attributes have no effect. For information on using module, see our JavaScript modules guide. Unlike classic scripts, module scripts require the use of the CORS protocol for cross-origin fetching. speculationrules This value indicates that the body of the element contains speculation rules. Speculation rules take the form of a JSON object that determine what resources should be prefetched or prerendered by the browser. This is part of the Speculation Rules API. Any other value The embedded content is treated as a data block, and won't be processed by the browser. Developers must use a valid MIME type that is not a JavaScript MIME type to denote data blocks. All of the other attributes will be ignored, including the src attribute.",
 					"type": [
 						"MIMEType",
 						{
@@ -54455,7 +54690,7 @@
 		{
 			"name": "slot",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/slot",
-			"description": "The <slot> HTML element—part of the Web Components technology suite—is a placeholder inside a web component that you can fill with your own markup, which lets you create separate DOM trees and present them together.",
+			"description": "The <slot> HTML element is a placeholder inside a Web Component that you can fill with your own markup when the component is used. This lets you create separate DOM trees and present them together. Slots can contain plain text, other HTML elements, or other web components. A slot can also contain default content, which is displayed if the slot is not assigned other content when the web component is used.",
 			"categories": ["#flow", "#phrasing"],
 			"contentModel": {
 				"contents": [
@@ -54477,7 +54712,7 @@
 			},
 			"attributes": {
 				"name": {
-					"description": "The slot's name. When the slot's containing component gets rendered, the slot is rendered with the custom element's child that has a matching slot attribute. A named slot is a <slot> element with a name attribute. Unnamed slots have the name default to the empty string. Names should be unique per shadow root: if you have two slots with the same name, all of the elements with a matching slot attribute will be assigned to the first slot with that name.",
+					"description": "The slot's name. A named slot is a <slot> element with a name attribute, while an unnamed slot has no name attribute, and the name defaults to the empty string. When a shadow root uses named slot assignment, top-level child elements of its host are are rendered in slots that have a matching name in their slot attribute. Slot names should be unique per shadow root: if you have two slots with the same name, all of the elements with a matching slot attribute are rendered in the first slot. All top-level child elements that don't have a slot attribute are rendered in the first unnamed <slot> element, which is referred to as the default slot. The name has no effect if the shadow root uses manual slot assignment. For more information see shadowrootslotassignment on the <template> element and Element.attachShadow().",
 					"type": "NoEmptyAny"
 				}
 			}
@@ -54537,15 +54772,15 @@
 				},
 				"media": {
 					"description": "Specifies the media query for the resource's intended media.",
-					"type": "<media-query-list>"
+					"type": "MediaQueryList"
 				},
 				"sizes": {
 					"description": "Specifies a list of source sizes that describe the final rendered width of the image. Allowed if the parent of <source> is <picture>. Not allowed if the parent is <audio> or <video>. The list consists of source sizes separated by commas. Each source size is media condition-length pair. Before laying the page out, the browser uses this information to determine which image defined in srcset to display. Note that sizes will take effect only if width descriptors are provided with srcset, not pixel density descriptors (i.e., 200w should be used instead of 2x).",
-					"condition": "picture > source"
+					"condition": "picture > source[srcset]"
 				},
 				"src": {
 					"description": "Specifies the URL of the media resource. Required if the parent of <source> is <audio> or <video>. Not allowed if the parent is <picture>.",
-					"type": "URL",
+					"type": "NonEmptyURL",
 					"required": ":is(video, audio) > source",
 					"condition": ":is(video, audio) > source"
 				},
@@ -54690,7 +54925,7 @@
 				},
 				"media": {
 					"description": "This attribute defines which media the style should be applied to. Its value is a media query, which defaults to all if the attribute is missing.",
-					"type": "<media-query-list>"
+					"type": "MediaQueryList"
 				},
 				"nonce": {
 					"description": "A cryptographic nonce (number used once) used to allow inline styles in a style-src Content-Security-Policy. The server must generate a unique nonce value each time it transmits a policy. It is critical to provide a nonce that cannot be guessed as bypassing a resource's policy is otherwise trivial."
@@ -54930,7 +55165,8 @@
 				},
 				"bgcolor": {
 					"description": "Defines the background color of each body cell. The value is an HTML color; either a 6-digit hexadecimal RGB code, prefixed by a #, or a color keyword. Other CSS <color> values are not supported. Use the background-color CSS property instead, as this attribute is deprecated.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"char": {
 					"description": "Specifies the alignment of the content to a character of each body cell. Typical values for this include a period (.) when attempting to align numbers or monetary values. If align is not set to char, this attribute is ignored.",
@@ -55057,7 +55293,8 @@
 					"type": "Boolean"
 				},
 				"shadowrootcustomelementregistry": {
-					"description": "Sets the customElementRegistry property of a ShadowRoot created using this element to null, rather than the document's custom element registry. This allows a scoped CustomElementRegistry to be attached later using CustomElementRegistry.initialize()."
+					"description": "Sets the customElementRegistry property of a ShadowRoot created using this element to null, rather than the document's custom element registry. This allows a scoped CustomElementRegistry to be attached later using CustomElementRegistry.initialize().",
+					"type": "Boolean"
 				},
 				"shadowrootdelegatesfocus": {
 					"description": "Sets the value of the delegatesFocus property of a ShadowRoot created using this element to true. If this is set and a non-focusable element in the shadow tree is selected, then focus is delegated to the first focusable element in the tree. The value defaults to false.",
@@ -55080,6 +55317,14 @@
 				"shadowrootserializable": {
 					"description": "Sets the value of the serializable property of a ShadowRoot created using this element to true. If set, the shadow root may be serialized by calling the Element.getHTML() or ShadowRoot.getHTML() methods with the options.serializableShadowRoots parameter set true. The value defaults to false.",
 					"type": "Boolean"
+				},
+				"shadowrootslotassignment": {
+					"description": "Sets the slotAssignment property of a ShadowRoot created using this element. This is the declarative equivalent of the slotAssignment option of the Element.attachShadow() method. named Elements are automatically assigned to <slot> elements within this shadow root. This is the default value. Elements with the slot attribute are assigned to the first <slot> in the template that has the corresponding name attribute. If multiple elements specify the same slot name, they are all added to the first slot in the template that has that name, and rendered in the order they are declared. All unnamed elements — elements that don't specify a slot attribute — are assigned to the default slot in the order they are declared. This is the first unnamed <slot> in the template. manual Elements are manually assigned to particular slot elements using HTMLSlotElement.assign(). No automatic assignment takes place.",
+					"type": {
+						"enum": ["named", "manual"],
+						"missingValueDefault": "named",
+						"invalidValueDefault": "named"
+					}
 				}
 			}
 		},
@@ -55181,7 +55426,7 @@
 					"description": "Specifies whether the <textarea> is subject to spell-checking by the underlying browser/OS. The value can be: true: Indicates that the element needs to have its spelling and grammar checked. default : Indicates that the element is to act according to a default behavior, possibly based on the parent element's own spellcheck value. false : Indicates that the element should not be spell-checked."
 				},
 				"wrap": {
-					"description": "Indicates how the control should wrap the value for form submission. Possible values are: hard: The browser automatically inserts line breaks (CR+LF) so that each line is no longer than the width of the control; the cols attribute must be specified for this to take effect soft: The browser ensures that all line breaks in the entered value are a CR+LF pair, but no additional line breaks are added to the value. off Non-standard : Like soft but changes appearance to white-space: pre so line segments exceeding cols are not wrapped and the <textarea> becomes horizontally scrollable. If this attribute is not specified, soft is its default value.",
+					"description": "Indicates how the control should wrap the value for form submission. Possible values are: hard: The browser automatically inserts line breaks (CR+LF) so that each line is no longer than the width of the control; the cols attribute must be specified for this to take effect soft: The browser ensures that all line breaks in the entered value are a CR+LF pair, but no additional line breaks are added to the value. off : Like soft but changes appearance to white-space: pre so line segments exceeding cols are not wrapped and the <textarea> becomes horizontally scrollable. If this attribute is not specified, soft is its default value.",
 					"type": {
 						"enum": ["soft", "hard"],
 						"missingValueDefault": "soft",
@@ -55219,7 +55464,8 @@
 				},
 				"bgcolor": {
 					"description": "Defines the background color of each foot cell. The value is an HTML color; either a 6-digit hexadecimal RGB code, prefixed by a #, or a color keyword. Other CSS <color> values are not supported. Use the background-color CSS property instead, as this attribute is deprecated.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"char": {
 					"description": "Does nothing. It was originally intended to specify the alignment of the content to a character of each foot cell. Typical values for this include a period (.) when attempting to align numbers or monetary values. If align is not set to char, this attribute is ignored.",
@@ -55366,7 +55612,8 @@
 				},
 				"bgcolor": {
 					"description": "Defines the background color of each head cell. The value is an HTML color; either a 6-digit hexadecimal RGB code, prefixed by a #, or a color keyword. Other CSS <color> values are not supported. Use the background-color CSS property instead, as this attribute is deprecated.",
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"char": {
 					"description": "Does nothing. It was originally intended to specify the alignment of the content to a character of each head cell. If align is not set to char, this attribute is ignored.",
@@ -55529,7 +55776,7 @@
 				},
 				"src": {
 					"description": "Address of the track (.vtt file). Must be a valid URL. This attribute must be specified and its URL value must have the same origin as the document — unless the <audio> or <video> parent element of the track element has a crossorigin attribute.",
-					"type": "URL",
+					"type": "NonEmptyURL",
 					"required": true
 				},
 				"srclang": {
@@ -55759,7 +56006,8 @@
 					"description": "The height of the video's display area, in CSS pixels (absolute values only; no percentages)."
 				},
 				"loading": {
-					"description": "Indicates how the browser should load the video (including any poster image): eager Loads the video immediately, regardless of whether or not the video is currently within the visible viewport (this is the default value). lazy Defers loading the video until it reaches a calculated distance from the viewport, as defined by the browser. Lazy loading avoids the network and storage bandwidth required to handle the video until it's reasonably certain that it will be needed. This improves the performance in most typical use cases. While explicit width and height attributes are recommended for all videos to avoid layout shift, they are especially important for lazy-loaded ones. Lazy-loaded videos will never be loaded if they do not intersect a visible part of an element, even if loading them would change that, because unloaded videos have a width and height of 0. It creates an even more disruptive user experience when the content visible in the viewport reflows in the middle of reading it. Lazy-loaded videos located in the visual viewport may not yet be visible when the Window load event is fired. This is because the event is fired based on eager-loaded videos — lazy-loaded videos are not considered even if they are located within the visual viewport upon initial page load. Loading is only deferred when JavaScript is enabled. This is an anti-tracking measure, because if a user agent supported lazy loading when scripting is disabled, it would still be possible for a site to track a user's approximate scroll position throughout a session, by strategically placing videos in a page's markup such that a server can track how many videos are requested and when. Note: The loading=\"lazy\" attribute also impacts the autoplay, poster, and preload attributes, as described in each of those sections of the page."
+					"description": "Indicates how the browser should load the video (including any poster image): eager Loads the video immediately, regardless of whether or not the video is currently within the visible viewport (this is the default value). lazy Defers loading the video until it reaches a calculated distance from the viewport, as defined by the browser. Lazy loading avoids the network and storage bandwidth required to handle the video until it's reasonably certain that it will be needed. This improves the performance in most typical use cases. While explicit width and height attributes are recommended for all videos to avoid layout shift, they are especially important for lazy-loaded ones. Lazy-loaded videos will never be loaded if they do not intersect a visible part of an element, even if loading them would change that, because unloaded videos have a width and height of 0. It creates an even more disruptive user experience when the content visible in the viewport reflows in the middle of reading it. Lazy-loaded videos located in the visual viewport may not yet be visible when the Window load event is fired. This is because the event is fired based on eager-loaded videos — lazy-loaded videos are not considered even if they are located within the visual viewport upon initial page load. Loading is only deferred when JavaScript is enabled. This is an anti-tracking measure, because if a user agent supported lazy loading when scripting is disabled, it would still be possible for a site to track a user's approximate scroll position throughout a session, by strategically placing videos in a page's markup such that a server can track how many videos are requested and when. Note: The loading=\"lazy\" attribute also impacts the autoplay, poster, and preload attributes, as described in each of those sections of the page.",
+					"experimental": false
 				},
 				"loop": {
 					"description": "A Boolean attribute; if specified, the browser will automatically seek back to the start upon reaching the end of the video."
@@ -55773,10 +56021,10 @@
 				},
 				"poster": {
 					"description": "A URL for an image to be shown while the video is downloading. If this attribute isn't specified, nothing is displayed until the first frame is available, then the first frame is shown as the poster frame. Note: Videos with the loading=\"lazy\" attribute set will only download the poster resource once the video is near or within the viewport.",
-					"type": "URL"
+					"type": "NonEmptyURL"
 				},
 				"preload": {
-					"description": "This enumerated attribute is intended to provide a hint to the browser about what the author thinks will lead to the best user experience regarding what content is loaded before the video is played. It may have one of the following values: none: Indicates that the video should not be preloaded. metadata: Indicates that only video metadata (e.g., length) is fetched. auto: Indicates that the whole video file can be downloaded, even if the user is not expected to use it. empty string: A synonym of the auto value. The default value is different for each browser. The spec advises it to be set to metadata. Note: The autoplay attribute has precedence over preload. If autoplay is specified, the browser would obviously need to start downloading the video for playback. The specification does not force the browser to follow the value of this attribute; it is a mere hint. Note: Videos with the loading=\"lazy\" attribute set will only apply the preload behavior once the video is near or within the viewport."
+					"description": "This enumerated attribute is intended to provide a hint to the browser about what the author thinks will lead to the best user experience regarding what content is loaded before the video is played. It may have one of the following values: none: Indicates that the video should not be preloaded. metadata: Indicates that only video metadata (e.g., length) is fetched. auto: Indicates that the whole video file can be downloaded, even if the user is not expected to use it. empty string: A synonym of the auto value. The default value is different for each browser. The spec advises it to be set to metadata. Note: Videos with the loading=\"lazy\" attribute set will only apply the preload behavior once the video is near or within the viewport. The autoplay attribute has precedence over preload. If autoplay is specified, the browser would obviously need to start downloading the video for playback. The specification does not force the browser to follow the value of this attribute; it is a mere hint."
 				},
 				"src": {
 					"description": "The URL of the video to embed. This is optional; you may instead use the <source> element within the video block to specify the video to embed."
@@ -55959,16 +56207,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": [
-							":model(MathMLPresentation)",
-							"mml|semantics",
-							"mml|annotation",
-							"mml|annotation-xml",
-							"mml|mtr",
-							"mml|mtd",
-							"mml|mprescripts",
-							"#text"
-						]
+						"zeroOrMore": [":model(MathMLPresentation)", "mml|semantics", "#text"]
 					}
 				]
 			},
@@ -56130,7 +56369,8 @@
 			"contentModel": {
 				"contents": [
 					{
-						"oneOrMore": [":model(MathMLPresentation)", "mml|semantics", "#text"],
+						"require": [":model(MathMLPresentation)", "mml|semantics", "#text"],
+						"min": 2,
 						"max": 2
 					}
 				]
@@ -56193,7 +56433,7 @@
 			},
 			"attributes": {
 				"mathvariant": {
-					"description": "The only value allowed in the current specification is normal (case insensitive): normal Use default/normal rendering, removing automatic styling of single characters to italic. Deprecated legacy values are: bold Deprecated Try and use bold characters e.g., \"𝐀\". italic Deprecated Try and use italic characters e.g., \"𝐴\". bold-italic Deprecated Try and use bold-italic characters e.g., \"𝑨\". double-struck Deprecated Try and use double-struck characters e.g., \"𝔸\". bold-fraktur Deprecated Try and use bold-fraktur characters e.g., \"𝕬\". script Deprecated Try and use script characters e.g., \"𝒜\". bold-script Deprecated Try and use bold-script characters e.g., \"𝓐\". fraktur Deprecated Try and use fraktur characters e.g., \"𝔄\". sans-serif Deprecated Try and use sans-serif characters e.g., \"𝖠\". bold-sans-serif Deprecated Try and use bold-sans-serif characters e.g., \"𝗔\". sans-serif-italic Deprecated Try and use sans-serif-italic characters e.g., \"𝘈\". sans-serif-bold-italic Deprecated Try and use sans-serif-bold-italic characters e.g., \"𝘼\". monospace Deprecated Try and use monospace characters e.g., \"𝙰\". initial Deprecated Try and use initial characters e.g., \"𞸢\". tailed Deprecated Try and use tailed characters e.g., \"𞹂\". looped Deprecated Try and use looped characters e.g., \"𞺂\". stretched Deprecated Try and use stretched characters e.g., \"𞹢\".",
+					"description": "The only value allowed in the current specification is normal (case insensitive): normal Use default/normal rendering, removing automatic styling of single characters to italic. Deprecated legacy values are: bold Try and use bold characters e.g., \"𝐀\". italic Try and use italic characters e.g., \"𝐴\". bold-italic Try and use bold-italic characters e.g., \"𝑨\". double-struck Try and use double-struck characters e.g., \"𝔸\". bold-fraktur Try and use bold-fraktur characters e.g., \"𝕬\". script Try and use script characters e.g., \"𝒜\". bold-script Try and use bold-script characters e.g., \"𝓐\". fraktur Try and use fraktur characters e.g., \"𝔄\". sans-serif Try and use sans-serif characters e.g., \"𝖠\". bold-sans-serif Try and use bold-sans-serif characters e.g., \"𝗔\". sans-serif-italic Try and use sans-serif-italic characters e.g., \"𝘈\". sans-serif-bold-italic Try and use sans-serif-bold-italic characters e.g., \"𝘼\". monospace Try and use monospace characters e.g., \"𝙰\". initial Try and use initial characters e.g., \"𞸢\". tailed Try and use tailed characters e.g., \"𞹂\". looped Try and use looped characters e.g., \"𞺂\". stretched Try and use stretched characters e.g., \"𞹢\".",
 					"type": {
 						"enum": ["normal"],
 						"disallowToSurroundBySpaces": false
@@ -56382,13 +56622,14 @@
 			"contentModel": {
 				"contents": [
 					{
-						"oneOrMore": [
+						"require": [
 							":model(MathMLPresentation)",
 							"mml|semantics",
 							"mml|annotation",
 							"mml|annotation-xml",
 							"#text"
 						],
+						"min": 2,
 						"max": 2
 					}
 				]
@@ -56526,7 +56767,8 @@
 			"contentModel": {
 				"contents": [
 					{
-						"oneOrMore": [":model(MathMLPresentation)", "mml|semantics", "#text"],
+						"require": [":model(MathMLPresentation)", "mml|semantics", "#text"],
+						"min": 2,
 						"max": 2
 					}
 				]
@@ -56733,13 +56975,14 @@
 			"contentModel": {
 				"contents": [
 					{
-						"oneOrMore": [
+						"require": [
 							":model(MathMLPresentation)",
 							"mml|semantics",
 							"mml|annotation",
 							"mml|annotation-xml",
 							"#text"
 						],
+						"min": 2,
 						"max": 2
 					}
 				]
@@ -56771,13 +57014,14 @@
 			"contentModel": {
 				"contents": [
 					{
-						"oneOrMore": [
+						"require": [
 							":model(MathMLPresentation)",
 							"mml|semantics",
 							"mml|annotation",
 							"mml|annotation-xml",
 							"#text"
 						],
+						"min": 3,
 						"max": 3
 					}
 				]
@@ -56814,13 +57058,14 @@
 			"contentModel": {
 				"contents": [
 					{
-						"oneOrMore": [
+						"require": [
 							":model(MathMLPresentation)",
 							"mml|semantics",
 							"mml|annotation",
 							"mml|annotation-xml",
 							"#text"
 						],
+						"min": 2,
 						"max": 2
 					}
 				]
@@ -57037,13 +57282,14 @@
 			"contentModel": {
 				"contents": [
 					{
-						"oneOrMore": [
+						"require": [
 							":model(MathMLPresentation)",
 							"mml|semantics",
 							"mml|annotation",
 							"mml|annotation-xml",
 							"#text"
 						],
+						"min": 2,
 						"max": 2
 					}
 				]
@@ -57077,13 +57323,14 @@
 			"contentModel": {
 				"contents": [
 					{
-						"oneOrMore": [
+						"require": [
 							":model(MathMLPresentation)",
 							"mml|semantics",
 							"mml|annotation",
 							"mml|annotation-xml",
 							"#text"
 						],
+						"min": 3,
 						"max": 3
 					}
 				]
@@ -57158,14 +57405,14 @@
 						"condition": "svg|switch > svg|a",
 						"contents": [
 							{
-								"transparent": "*"
+								"transparent": ":not(svg|a, :has(svg|a))"
 							}
 						]
 					}
 				],
 				"contents": [
 					{
-						"transparent": "*, :model(SVGDescriptive):not(svg|a, :has(svg|a))"
+						"transparent": ":not(svg|a, :has(svg|a))"
 					}
 				]
 			},
@@ -57478,7 +57725,7 @@
 			},
 			"attributes": {
 				"keyPoints": {
-					"description": "This attribute indicate, in the range [0,1], how far is the object along the path for each keyTimes associated values. Value type: <number>*; Default value: none; Animatable: no",
+					"description": "This attribute indicates, in the range [0,1], how far the object is along the path for each associated value in keyTimes. Value type: <number>*; Default value: none; Animatable: no",
 					"type": "<key-points>"
 				},
 				"origin": {
@@ -62622,7 +62869,7 @@
 			"attributes": {
 				"media": {
 					"description": "This attribute defines to which media the style applies. Value type: <media-query-list>; Default value: all; Animatable: no",
-					"type": "<media-query-list>",
+					"type": "MediaQueryList",
 					"defaultValue": "all"
 				},
 				"title": {

@@ -5,25 +5,10 @@ import type { AccnameElement, AccnameResolver, AccnameResult } from './types.js'
 import { flattenText, makeResult } from './helpers.js';
 
 /**
- * Resolves accessible name via `aria-labelledby` attribute.
- *
  * Implements AccName 1.2 §4.3.2 Step 2B:
  * "If the current node has an `aria-labelledby` attribute that contains
  * at least one valid IDREF, and the current node is not already part of
  * an ongoing `aria-labelledby` traversal, process its IDREFs [...]"
- *
- * Control flow:
- * 1. Read `aria-labelledby` attribute; return null if absent or empty.
- * 2. Split the attribute value by whitespace into IDREF tokens.
- * 3. Mark the current element's ID as visited (cycle prevention for A→B→A).
- * 4. For each IDREF:
- *    a. Skip if already visited — **except** self-references (see below).
- *    b. Resolve the referenced element via `resolver.getElementById`.
- *    c. Recursively compute the referenced element's name with
- *       `inLabelledbyTraversal=true` (prevents Step 2B re-entry in `compute.ts`).
- *    d. Each IDREF branch gets its own copy of the visited set so that
- *       one branch's traversal does not block later branches.
- * 5. Join all resolved parts with a space separator and flatten whitespace.
  *
  * **Self-reference handling** (spec-defined, not a custom extension):
  * An element may reference its own ID in `aria-labelledby` to include its
@@ -34,11 +19,6 @@ import { flattenText, makeResult } from './helpers.js';
  * visited set — `computeFn` is called with `inLabelledbyTraversal=true`,
  * which causes `compute.ts` to skip Step 2B on the referenced element.
  *
- * @param el - The element with a potential aria-labelledby attribute
- * @param resolver - Environment-dependent resolver for element lookups
- * @param visited - Set of element IDs already visited (cycle prevention)
- * @param computeFn - The recursive accessible name computation function
- * @returns The resolved name result, or null if aria-labelledby is not present or yields no name
  * @see https://www.w3.org/TR/accname-1.2/#comp_labelledby_traversal — AccName 1.2 §4.3.2 Step 2B
  */
 export function resolveAriaLabelledby(
@@ -106,14 +86,10 @@ export function resolveAriaLabelledby(
 }
 
 /**
- * Resolves accessible name via `aria-label` attribute.
- *
  * Implements AccName 1.2 §4.3.2 Step 2D:
  * "If the current node has an `aria-label` attribute whose value is
  * not undefined, not the empty string, and not a string of whitespace [...]"
  *
- * @param el - The element with a potential aria-label attribute
- * @returns The resolved name result, or null if aria-label is not present or empty
  * @see https://www.w3.org/TR/accname-1.2/#computation-steps — AccName 1.2 §4.3.2 Step 2D
  */
 export function resolveAriaLabel(el: AccnameElement): AccnameResult | null {

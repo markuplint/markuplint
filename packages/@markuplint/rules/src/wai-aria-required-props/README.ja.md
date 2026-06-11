@@ -23,3 +23,24 @@ description: ロールに必須のARIAプロパティが指定されていない
 ```
 
 <!-- textlint-enable ja-technical-writing/ja-no-mixed-period -->
+
+:::note 条件付き必須: `separator`
+
+`separator`ロールにおいて、`aria-valuenow`は要素がフォーカス可能な場合（`tabindex`を持つ、`<button>`や`<a href>`などのインタラクティブコンテンツである等）にのみ必須となります。フォーカス不能な`<div role="separator">`は[WAI-ARIA](https://www.w3.org/TR/wai-aria/#separator)に従い静的な構造的セパレーターとして扱われ、`aria-valuenow`は不要です。
+
+<!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
+
+```html
+<!-- ✅ 静的な構造的セパレーター -->
+<div role="separator"></div>
+
+<!-- ❌ フォーカス可能だが aria-valuenow が欠落 -->
+<div role="separator" tabindex="0"></div>
+
+<!-- ✅ フォーカス可能で aria-valuenow あり -->
+<div role="separator" tabindex="0" aria-valuenow="50"></div>
+```
+
+<!-- textlint-enable ja-technical-writing/ja-no-mixed-period -->
+
+:::

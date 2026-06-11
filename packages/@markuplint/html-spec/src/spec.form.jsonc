@@ -23,8 +23,9 @@
 			}
 		},
 		// https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fs-action
+		// Spec: "a valid non-empty URL potentially surrounded by spaces"
 		"action": {
-			"type": "URL"
+			"type": "NonEmptyURL"
 		},
 		// https://html.spec.whatwg.org/multipage/forms.html#attr-form-autocomplete
 		"autocomplete": {

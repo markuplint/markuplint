@@ -10,32 +10,18 @@ import tsc from 'typescript';
 import { fsExists } from './fs-exists.js';
 import { glob } from './glob.js';
 
-/**
- * Options controlling how scaffold files are transferred to their destination.
- */
 type TransferOptions = {
-	/** Whether to transpile TypeScript files to JavaScript. */
 	readonly transpile?: boolean;
-	/** Whether to include test files in the transfer. */
 	readonly test?: boolean;
-	/** A mapping of placeholder names to replacement values for template substitution. */
 	readonly replacer?: Readonly<Record<string, string | void>>;
 };
 
 const { transpile, ScriptTarget } = tsc;
 
 /**
- * Transfers scaffold template files from a source directory to a destination directory.
- *
- * Scans all files in `baseDir`, processes each file through template substitution,
- * optional TypeScript-to-JavaScript transpilation, and Prettier formatting, then
- * writes the results to `destDir`.
- *
- * @param scaffoldType - The type of scaffold being transferred ("core", "project", or "package").
- * @param baseDir - The source directory containing scaffold template files.
- * @param destDir - The destination directory where processed files will be written.
- * @param options - Optional settings for transpilation, test inclusion, and placeholder replacement.
- * @returns An array of file metadata for each successfully transferred file.
+ * Template authoring constraint: because users may choose JavaScript output, every
+ * `.ts` template under `scaffold/` must remain a correct example after `tsc.transpile()`
+ * strips its type syntax.
  */
 export async function transfer(
 	scaffoldType: 'core' | 'project' | 'package',
@@ -81,7 +67,10 @@ async function transferFile(scaffoldType: 'core' | 'project' | 'package', file: 
 		}
 	}
 
-	// Remove prettier ignore comment
+	// Remove prettier ignore comment.
+	// The markers exist only so that formatters do not rewrite placeholder expressions
+	// (e.g. `__ruleName__c`) inside the scaffold templates; the output is fully
+	// reformatted by Prettier below, and generated files must not inherit the markers.
 	contents = contents.replace(/\n\s*\/\/ prettier-ignore/, '');
 	contents = contents.replace(/\n\s*<!-- prettier-ignore(?:-(?:start|end))? -->/, '');
 
@@ -99,6 +88,7 @@ async function transferFile(scaffoldType: 'core' | 'project' | 'package', file: 
 		);
 
 		// Insert new line before comments and the export keyword
+		// to restore readability, since transpiling drops the blank lines.
 		contents = contents.replaceAll(/(\n)(\s+\/\*\*|export)/g, '$1\n$2');
 	}
 

@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/test-tools",
-	"version": "5.0.0-rc.1",
+	"version": "5.0.0-rc.4",
 	"description": "A private package for testing in this repository",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -25,19 +25,19 @@
 		"clean": "npx tsc --build --clean tsconfig.build.json"
 	},
 	"dependencies": {
-		"@vitest/coverage-v8": "4.1.2",
+		"@vitest/coverage-v8": "4.1.5",
 		"browser-resolve": "2.0.0",
 		"coveralls": "3.1.1",
 		"execa": "9.6.1",
 		"glob": "13.0.6",
-		"jsdom": "29.0.1",
+		"jsdom": "29.0.2",
 		"textlint-rule-prh": "6.1.0",
-		"type-fest": "5.5.0",
-		"vitest": "4.1.2"
+		"type-fest": "5.6.0",
+		"vitest": "4.1.5"
 	},
 	"optionalDependencies": {
 		"@esbuild/linux-x64": "0.28.0",
 		"@esbuild/win32-x64": "0.28.0",
-		"@rollup/rollup-linux-x64-gnu": "4.60.1"
+		"@rollup/rollup-linux-x64-gnu": "4.60.2"
 	}
 }

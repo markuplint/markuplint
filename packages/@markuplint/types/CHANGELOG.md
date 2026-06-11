@@ -3,6 +3,37 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-rc.4](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.3...v5.0.0-rc.4) (2026-04-19)
+
+**Note:** Version bump only for package @markuplint/types
+
+# [5.0.0-rc.3](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.2...v5.0.0-rc.3) (2026-04-19)
+
+**Note:** Version bump only for package @markuplint/types
+
+# [5.0.0-rc.2](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.1...v5.0.0-rc.2) (2026-04-15)
+
+### Bug Fixes
+
+- **types:** allow empty string for BCP47 type (lang="" is valid per HTML LS) ([ceba672](https://github.com/markuplint/markuplint/commit/ceba6726be6f34200bf54a2808c3eb893f31a032))
+- **types:** back-port Pattern type variant to specific-schema source ([6f7466f](https://github.com/markuplint/markuplint/commit/6f7466fc320fa69842f1f7e201a7b637baa58d1a))
+- **types:** reject zero and negative srcset descriptors ([5584d20](https://github.com/markuplint/markuplint/commit/5584d2089fe1dfe508d43601fa14aeff4e08b265))
+- **types:** use spec-verbatim regex for Email validator ([b517a49](https://github.com/markuplint/markuplint/commit/b517a4926ff213bbbc1eea27583c463b1917b760))
+
+- feat(types)!: remove deprecated Token.getLine and Token.getCol static methods ([fad012c](https://github.com/markuplint/markuplint/commit/fad012c9f1f7e5bb48b79ef639d4cefa61123c1c))
+
+### Features
+
+- **types:** add SimpleColor, Email, and DateTime subtype validators ([1687931](https://github.com/markuplint/markuplint/commit/1687931df058d334797135a925fdf738970ac25a)), closes [#3598](https://github.com/markuplint/markuplint/issues/3598)
+- **types:** add SRIHash type for integrity attribute validation ([7672999](https://github.com/markuplint/markuplint/commit/7672999a17f7d96dc286aabfcea5cc0861b73be5))
+- **types:** add SRIHash type for integrity attribute validation ([ea30c84](https://github.com/markuplint/markuplint/commit/ea30c84a87025ca5d7284ce5eaad89cc3c802d92))
+- **types:** add URL validation with strict checks ([3e64e86](https://github.com/markuplint/markuplint/commit/3e64e86331f92b5914a4107407f9b25233188083))
+
+### BREAKING CHANGES
+
+- Token.getLine() and Token.getCol() have been removed.
+  Use Token.getPosition() instead.
+
 # [5.0.0-rc.1](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.0...v5.0.0-rc.1) (2026-03-27)
 
 **Note:** Version bump only for package @markuplint/types

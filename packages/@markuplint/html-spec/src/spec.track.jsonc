@@ -25,7 +25,7 @@
 		},
 		// https://html.spec.whatwg.org/multipage/media.html#attr-track-src
 		"src": {
-			"type": "URL",
+			"type": "NonEmptyURL",
 			"required": true
 		},
 		// https://html.spec.whatwg.org/multipage/media.html#attr-track-srclang

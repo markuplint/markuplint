@@ -2,19 +2,27 @@
 // https://www.w3.org/TR/svg-aam-1.0/#details-id-0
 {
 	"contentModel": {
+		// The `svg|switch > svg|a` branch is functionally equivalent to the
+		// default branch today, but is preserved so future svg|switch-specific
+		// constraints can be expressed without restructuring spec consumers
+		// that walk this `conditional` shape (e.g., the rules engine and the
+		// generated `index.json`).
 		"conditional": [
 			{
 				"condition": "svg|switch > svg|a",
 				"contents": [
 					{
-						"transparent": "*"
+						// SVG2 §17.6 — "may contain any element that its parent
+						// may contain, except itself".
+						"transparent": ":not(svg|a, :has(svg|a))"
 					}
 				]
 			}
 		],
 		"contents": [
 			{
-				"transparent": "*, :model(SVGDescriptive):not(svg|a, :has(svg|a))"
+				// SVG2 §17.6 — same self-exclusion applies outside <svg|switch>.
+				"transparent": ":not(svg|a, :has(svg|a))"
 			}
 		]
 	},

@@ -96,7 +96,7 @@ Generated TypeScript types (do not edit directly):
 
 - **Built output**: `index.json` (48K+ lines, consolidated specification data)
 - **Sources**: `src/spec-*.json` (individual element specifications)
-- **Build process**: `build.mjs` → `@markuplint/spec-generator` → enriched with MDN/W3C data
+- **Build process**: `build.ts` → `generator/` scripts → enriched with MDN/W3C data
 
 **@markuplint/ml-spec** (this package) provides:
 
@@ -125,14 +125,6 @@ yarn add @markuplint/ml-spec
 
 - "HTML Schema" and "Specs" are used interchangeably in markuplint to mean the JSON Schema that
   describes HTML element specs (attributes, ARIA, content models, etc) and their TypeScript types.
-
-### Contributing
-
-For schema editing workflows, generation commands, common recipes, dependency management, and troubleshooting, see the [Maintenance Guide](docs/maintenance.md).
-
-For schema merging and spec extension details, see [Spec Resolution](docs/spec-resolution.md).
-
-For content model categories and pattern format, see [HTML Algorithms](docs/html-algorithms.md).
 
 ### License
 

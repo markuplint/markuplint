@@ -18,8 +18,9 @@
 	},
 	"attributes": {
 		// https://html.spec.whatwg.org/multipage/iframe-embed-object.html#attr-object-data
+		// Spec: "a valid non-empty URL potentially surrounded by spaces"
 		"data": {
-			"type": "URL",
+			"type": "NonEmptyURL",
 			"requiredEither": ["type"]
 		},
 		// https://html.spec.whatwg.org/multipage/iframe-embed-object.html#attr-object-type

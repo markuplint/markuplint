@@ -10,7 +10,7 @@ import type { Ruleset } from '../../ruleset/index.js';
 import type { MLSchema } from '../../types.js';
 import type { Walker } from '../helper/walkers.js';
 import type { MLToken } from '../token/token.js';
-import type { EndTagType, MLASTDocument, MLASTNodeTreeItem } from '@markuplint/ml-ast';
+import type { EndTagType, MLASTDocument, MLASTNodeTreeItem, MLASTParseError } from '@markuplint/ml-ast';
 import type { PlainData, Pretender, RuleCommonSettings, RuleConfigValue } from '@markuplint/ml-config';
 import type { ARIAVersion, MLMLSpec } from '@markuplint/ml-spec';
 
@@ -82,9 +82,6 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 */
 	readonly endTag: EndTagType;
 
-	/**
-	 * The file path of the source document, if available.
-	 */
 	readonly #astNodeMap: ReadonlyMap<string, MLASTNodeTreeItem>;
 
 	readonly #filename?: string;
@@ -448,6 +445,28 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 */
 	get dir(): string {
 		throw new UnexpectedCallError('Not supported "dir" property');
+	}
+
+	/**
+	 * Non-fatal parser conformance errors collected during tokenisation by
+	 * the underlying parser (currently `@markuplint/html-parser` and the
+	 * template-engine parsers that delegate to it). Empty array when the
+	 * parser does not produce events or the source had none.
+	 *
+	 * Rules that have claimed responsibility for parse5 events via
+	 * `meta.mirrorsParseErrorCodes` typically read this array to surface
+	 * the corresponding violations themselves. `character-reference` is the
+	 * canonical example: its self-detection covers unescaped `<`, `>`, `&`,
+	 * `"` (the "missed escape" direction), and reading `parseErrors` adds
+	 * coverage for parse5's malformed-reference codes (`&xyz;`, etc.) under
+	 * the same rule id.
+	 *
+	 * ml-core's built-in parse-error channel suppresses the mirrored codes
+	 * unconditionally — so the rule that reads them here is the only place
+	 * the user sees the violation.
+	 */
+	get parseErrors(): readonly MLASTParseError[] {
+		return (this._astToken as unknown as MLASTDocument).parseErrors ?? [];
 	}
 
 	/**
@@ -3397,9 +3416,9 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	}
 
 	/**
-	 * Initializes pretender contexts for all element nodes in the document.
-	 *
-	 * @param pretenders - Optional pretender configurations from the document options
+	 * Must run before `#ruleMapping`: rule selectors (e.g. a `nodeRules`
+	 * entry targeting `button`) are matched against the pretender identity,
+	 * so the pretender link has to exist when rules are mapped.
 	 */
 	#pretending(pretenders?: readonly Pretender[]) {
 		if (docLog.enabled) {
@@ -3412,13 +3431,6 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		}
 	}
 
-	/**
-	 * Maps the ruleset configuration to each node in the document.
-	 * Applies global rules, node-specific rules (by selector), and
-	 * child-node rules to build the per-node rule configuration.
-	 *
-	 * @param ruleset - The ruleset containing rules, nodeRules, and childNodeRules
-	 */
 	#ruleMapping(ruleset: Ruleset) {
 		if (docLog.enabled) {
 			docLog('Rule Mapping: %O', Object.keys(ruleset.rules));

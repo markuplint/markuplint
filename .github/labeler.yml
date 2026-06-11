@@ -1,7 +1,12 @@
-# Current Version
-v4.x:
-    - changed-files:
-          - any-glob-to-any-file: '*'
+# Version labels (applied by base branch)
+v4:
+    - base-branch: ['v4']
+
+v5:
+    - base-branch: ['dev']
+
+v6:
+    - base-branch: ['v6']
 
 Command Line Interface:
     - changed-files:
@@ -85,7 +90,7 @@ Specs:
     - changed-files:
           - any-glob-to-any-file:
                 - packages/@markuplint/*-spec/src/**/*
-                - packages/@markuplint/spec-generator/src/**/*
+                - packages/@markuplint/html-spec/generator/**/*
 
 VS Code Extension:
     - changed-files:

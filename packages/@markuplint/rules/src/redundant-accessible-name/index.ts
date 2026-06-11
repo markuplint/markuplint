@@ -13,10 +13,6 @@ type NamingSource = {
 	readonly label: string;
 };
 
-/**
- * Rule that detects elements with multiple accessible name sources
- * where a higher-priority source overrides a lower-priority one.
- */
 export default createRule({
 	meta,
 	defaultSeverity: 'warning',

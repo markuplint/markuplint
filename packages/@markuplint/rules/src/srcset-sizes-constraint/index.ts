@@ -5,10 +5,6 @@ import { createRule } from '@markuplint/ml-core';
 import meta from './meta.js';
 import { hasSizesAuto, parseSrcset } from './parse-srcset.js';
 
-/**
- * Rule that enforces WHATWG constraints between the `srcset`, `sizes`,
- * and `loading` attributes on `<img>` and `<source>` elements.
- */
 export default createRule<boolean>({
 	meta: meta,
 	async verify({ document, report }) {
@@ -32,6 +28,12 @@ export default createRule<boolean>({
 
 			const srcsetAttr = el.getAttributeNode('srcset');
 			if (!srcsetAttr) {
+				// Check 6 still applies to a srcset-less `<source>`: it can shadow the
+				// following candidates regardless of whether it has its own srcset.
+				// (A missing srcset itself is reported by other rules.)
+				if (localName === 'source' && isAlwaysMatchingSource(el)) {
+					report({ scope: el, message: ALWAYS_MATCHING_SOURCE_MESSAGE });
+				}
 				return;
 			}
 
@@ -95,16 +97,113 @@ export default createRule<boolean>({
 				}
 			}
 
-			// Check 5: img with w descriptors → sizes required
-			if (localName === 'img' && parsed && parsed.hasWidth && !sizesAttr) {
-				report({
-					scope: el,
-					message: 'The "sizes" attribute is required when the "srcset" attribute uses width descriptors',
-				});
+			// Check 5: img / source-in-picture with w descriptors → sizes required.
+			//
+			// HTML LS § img srcset: unconditional — "the sizes attribute must
+			// also be present" when any candidate uses a width descriptor.
+			//
+			// HTML LS § source: conditional — sizes "may" be present with w
+			// descriptors, but the following sibling img must support
+			// auto-sizes for it to be omittable. img supports auto-sizes when
+			// loading=lazy (the dimensionsAttribute condition is also part of
+			// the spec but the lazy attribute is the user-facing trigger).
+			if (parsed && parsed.hasWidth && !sizesAttr) {
+				// For `<source>`, `findFollowingImg` may return null (malformed
+				// <picture> with no img). Optional chaining short-circuits to
+				// undefined, and `undefined === 'lazy'` is false → sizes is
+				// required. That's the correct fail-closed behaviour: an absent
+				// img cannot supply auto-sizes for the source.
+				const siblingImgLazy =
+					localName === 'source' && findFollowingImg(el)?.getAttribute('loading') === 'lazy';
+				if (!siblingImgLazy) {
+					report({
+						scope: el,
+						message: 'The "sizes" attribute is required when the "srcset" attribute uses width descriptors',
+					});
+				}
+			}
+
+			// Check 6: HTML LS § source — when a `<source>` has a following sibling
+			// `<source>` or `<img>` element with a `srcset` attribute specified, it
+			// must have a usable `media` and/or `type` attribute, otherwise it
+			// "always matches" and shadows the following candidates. (Srcset-less
+			// sources are handled above at the early return.)
+			if (localName === 'source' && isAlwaysMatchingSource(el)) {
+				report({ scope: el, message: ALWAYS_MATCHING_SOURCE_MESSAGE });
 			}
 		});
 	},
 });
+
+/** Violation message for Check 6 (an always-matching `<source>`). */
+const ALWAYS_MATCHING_SOURCE_MESSAGE =
+	'The "source" element must have a "media" or "type" attribute when it has a following sibling "source" or "img" element with a "srcset" attribute';
+
+/**
+ * Whether a `media` attribute value is "always matching" per HTML LS, i.e. it
+ * does not distinguish the `<source>` from its siblings.
+ *
+ * A value is always-matching when, after stripping leading and trailing ASCII
+ * whitespace, it is the empty string or an ASCII case-insensitive match for the
+ * string `"all"`.
+ *
+ * ASCII whitespace (TAB, LF, FF, CR, SPACE) is stripped explicitly rather than
+ * via `String.prototype.trim`, which would also strip non-ASCII whitespace such
+ * as NBSP. A media value padded with NBSP around "all" is NOT
+ * always-matching per the spec and must keep its distinguishing media query.
+ *
+ * @param value - The raw `media` attribute value
+ * @returns `true` if the value is empty or `"all"` (case-insensitive)
+ */
+function isAlwaysMatchingMedia(value: string): boolean {
+	const normalized = value.replaceAll(/^[\t\n\f\r ]+|[\t\n\f\r ]+$/g, '').toLowerCase();
+	return normalized === '' || normalized === 'all';
+}
+
+/**
+ * Whether a `<source>` "always matches" and so shadows the following
+ * candidates: it lacks a usable `media`/`type` attribute yet has a following
+ * sibling `<source>`/`<img>` with a `srcset` attribute. See HTML LS § the
+ * source element.
+ *
+ * A `type` attribute (any value, including dynamic) satisfies the requirement.
+ * A `media` attribute satisfies it only when its value is a non-always-matching
+ * media query; a dynamic value is unknown at lint time, so assume it qualifies
+ * to avoid false positives.
+ *
+ * @param el - The `<source>` element to test
+ * @returns `true` if the source must be reported as always-matching
+ */
+// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+function isAlwaysMatchingSource(el: Element<boolean>): boolean {
+	const typeAttr = el.getAttributeNode('type');
+	const mediaAttr = el.getAttributeNode('media');
+	const hasUsableType = typeAttr != null;
+	const hasUsableMedia = mediaAttr != null && (mediaAttr.isDynamicValue || !isAlwaysMatchingMedia(mediaAttr.value));
+	return !hasUsableType && !hasUsableMedia && hasFollowingSrcsetSibling(el);
+}
+
+/**
+ * Whether the element has a following sibling `<source>` or `<img>` element
+ * with a `srcset` attribute specified.
+ *
+ * Per the spec the sibling does not have to be the immediately next sibling.
+ *
+ * @param el - The starting element to search from
+ * @returns `true` if such a following sibling exists
+ */
+// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+function hasFollowingSrcsetSibling(el: Element<boolean>): boolean {
+	for (const sibling of followingElementSiblings(el)) {
+		if (
+			(sibling.localName === 'source' || sibling.localName === 'img') &&
+			sibling.getAttributeNode('srcset') != null
+		) {
+			return true;
+		}
+	}
+	return false;
+}
 
 /**
  * Find the first following sibling `<img>` element.
@@ -115,12 +214,25 @@ export default createRule<boolean>({
  */
 // eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 function findFollowingImg(el: Element<boolean>): Element<boolean> | null {
-	let sibling = el.nextElementSibling;
-	while (sibling != null) {
+	for (const sibling of followingElementSiblings(el)) {
 		if (sibling.localName === 'img') {
 			return sibling;
 		}
-		sibling = sibling.nextElementSibling;
 	}
 	return null;
+}
+
+/**
+ * Iterate the element's following element siblings in document order.
+ *
+ * @param el - The element whose following siblings to iterate
+ * @yields Each following element sibling, nearest first
+ */
+// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+function* followingElementSiblings(el: Element<boolean>): Generator<Element<boolean>> {
+	let sibling = el.nextElementSibling;
+	while (sibling != null) {
+		yield sibling;
+		sibling = sibling.nextElementSibling;
+	}
 }

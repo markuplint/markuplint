@@ -1,3 +1,17 @@
+// Content model category macros referenced via `:model(...)` in element specs.
+//
+// Downstream coupling — keep these constraints in mind when editing:
+// - When a new element is added to the package, it must also be added to every
+//   category it belongs to (flow, phrasing, ...). Otherwise the
+//   `permitted-contents` rule will not recognize it as valid content in parent
+//   elements that permit those categories.
+// - Category names are resolved to element lists at runtime by
+//   `@markuplint/ml-spec`'s `contentModelCategoryToTagNames()`.
+// - The `#palpable` category additionally drives the
+//   `no-empty-palpable-content` rule.
+// - A new category name must also be added to the `Category` enum in
+//   `@markuplint/ml-spec/schemas/content-models.schema.json`.
+// - Use the `svg|` / `mml|` prefixes for SVG / MathML elements in the lists.
 {
 	"models": {
 		"#metadata": ["base", "link", "meta", "noscript", "script", "style", "template", "title"],

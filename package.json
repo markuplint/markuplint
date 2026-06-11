@@ -24,9 +24,10 @@
 		"up:deps": "npx npm-check-updates --interactive --workspaces --format group",
 		"up:gen": "cd packages/\\@markuplint/html-spec/ && yarn run gen",
 		"up:schema": "lerna run schema",
-		"release": "lerna publish --exact --conventional-commits --conventional-graduate",
-		"release:next": "lerna publish --dist-tag next --exact --force-publish --conventional-commits --conventional-prerelease --preid alpha",
-		"release:canary": "lerna publish --preid dev --canary --exact --force-publish",
+		"release": "lerna version --exact --conventional-commits --conventional-graduate --no-push",
+		"release:alpha": "lerna version --exact --force-publish --conventional-commits --conventional-prerelease --preid alpha --no-push",
+		"release:beta": "lerna version --exact --force-publish --conventional-commits --conventional-prerelease --preid beta --no-push",
+		"release:rc": "lerna version --exact --force-publish --conventional-commits --conventional-prerelease --preid rc --no-push",
 		"prerelease": "run-s build test",
 		"check:build": "find . -type f -name \"*.d.ts\" -print | xargs grep \"packages/@markuplint\"",
 		"vscode:build": "cd vscode && npx run-p vscode:build:extension vscode:build:server",
@@ -43,7 +44,14 @@
 		"cli": "npx markuplint",
 		"create-rule": "npx @markuplint/create-rule",
 		"commit": "cz",
-		"co": "cz"
+		"co": "cz",
+		"bench:update": "node --experimental-strip-types tests/external/bench/update-snapshots.ts",
+		"bench:update:ml": "node --experimental-strip-types tests/external/bench/update-snapshots.ts --target markuplint",
+		"bench:compare": "node --experimental-strip-types tests/external/bench/compare.ts",
+		"bench:generate-spec": "node --experimental-strip-types tests/external/bench/generate-spec.ts",
+		"bench:report": "node --experimental-strip-types tests/external/bench/report.ts",
+		"bench:verify": "vitest run --config vitest.nu-validator.config.ts",
+		"bench:xref": "node --experimental-strip-types tests/external/bench/xref-issue.ts"
 	},
 	"lint-staged": {
 		"./{{packages,website,vscode}/**/*,*}.{ts,tsx,js,cjs,mjs,json,md}": [
@@ -74,16 +82,16 @@
 		"@commitlint/config-conventional": "20.5.0",
 		"@commitlint/config-lerna-scopes": "20.4.3",
 		"commitizen": "4.3.1",
-		"cspell": "9.8.0",
+		"cspell": "10.0.0",
 		"cz-conventional-changelog": "3.3.0",
 		"eslint-plugin-regexp": "3.1.0",
 		"husky": "9.1.7",
 		"lerna": "9.0.7",
 		"lint-staged": "16.4.0",
 		"npm-run-all2": "8.0.4",
-		"oxfmt": "0.43.0",
-		"oxlint": "1.58.0",
-		"textlint": "15.5.2",
+		"oxfmt": "0.46.0",
+		"oxlint": "1.59.0",
+		"textlint": "15.5.4",
 		"textlint-filter-rule-comments": "1.3.0",
 		"textlint-rule-preset-ja-spacing": "2.4.3",
 		"textlint-rule-preset-ja-technical-writing": "12.0.2",
@@ -91,18 +99,18 @@
 		"textlint-rule-preset-jtf-style": "3.0.3",
 		"ts-node": "10.9.2",
 		"tsx": "4.21.0",
-		"typedoc": "0.28.18",
+		"typedoc": "0.28.19",
 		"typedoc-plugin-mdn-links": "5.1.1",
 		"typedoc-plugin-resolve-crossmodule-references": "0.3.3",
-		"typescript": "6.0.2",
-		"vitest": "4.1.2"
+		"typescript": "6.0.3",
+		"vitest": "4.1.5"
 	},
 	"config": {
 		"commitizen": {
 			"path": "./node_modules/cz-conventional-changelog"
 		}
 	},
-	"packageManager": "yarn@4.13.0",
+	"packageManager": "yarn@4.14.1",
 	"resolutions": {
 		"markuplint": "workspace:*"
 	}

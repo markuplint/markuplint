@@ -6,6 +6,65 @@ import path from 'node:path';
 import { Files } from 'vscode-languageserver/node.js';
 
 /**
+ * Convert a module path into a specifier that Node's ESM `import()` accepts.
+ *
+ * On Windows, raw drive-letter paths like `c:\foo` are rejected by the ESM
+ * loader (`ERR_UNSUPPORTED_ESM_URL_SCHEME: Received protocol 'c:'`) because
+ * the drive letter is parsed as a URL scheme. They must be converted to
+ * `file://` URLs first.
+ *
+ * Detection is OS-independent so that POSIX CI can exercise the Windows
+ * code path.
+ *
+ * Mirrors `packages/@markuplint/file-resolver/src/general-import.ts` —
+ * keep the two in sync when adjusting Windows-path handling. Note:
+ * file-resolver currently still relies on `pathToFileURL()` and carries
+ * the same Windows / POSIX-absolute mismatch; tracked separately as
+ * #3840 (dev / v5).
+ *
+ * @param modPath - A module specifier — typically the result of `Files.resolve`
+ *   or `require.resolve`, which may be a bare module name (`markuplint`), a
+ *   relative path (`./foo`), or an absolute path (Windows or POSIX).
+ * @returns A specifier safe to pass to `import()`. Absolute paths are converted
+ *   to `file://` URLs with each segment percent-encoded; bare and relative
+ *   specifiers are returned unchanged. UNC paths (`\\server\share\...`) are
+ *   passed through unchanged as a known limitation.
+ * @see https://github.com/markuplint/markuplint/issues/3795
+ * @see https://github.com/markuplint/markuplint/issues/3836
+ * @see https://github.com/markuplint/markuplint/issues/3842
+ * @see https://nodejs.org/api/esm.html#urls
+ */
+export function toImportSpecifier(modPath: string): string {
+	const isWindowsAbsolute = /^[a-z]:[/\\]/i.test(modPath);
+	const isPosixAbsolute = modPath.startsWith('/');
+	if (!isWindowsAbsolute && !isPosixAbsolute) {
+		return modPath;
+	}
+	// Build the `file://` URL explicitly for both branches. Node's
+	// `pathToFileURL()` is intentionally avoided: on Windows it resolves a
+	// POSIX-style absolute path against the *current drive* and emits
+	// `file:///D:/tmp/foo` instead of `file:///tmp/foo` (#3836); on POSIX
+	// it likewise mishandles Windows-style drive paths. Constructing the
+	// URL ourselves keeps the function OS-independent so POSIX CI exercises
+	// the Windows code path. Each segment is percent-encoded so that
+	// spaces (`Program Files`), non-ASCII characters (e.g. Japanese
+	// usernames), and URL-reserved characters like `#` / `?` do not get
+	// reinterpreted as fragment/query delimiters by Node's URL parser.
+	if (isWindowsAbsolute) {
+		// The drive-letter segment (`c:`) is kept as-is to match the
+		// `pathToFileURL` output shape on Windows (`file:///c:/...`).
+		const [drive, ...rest] = modPath.replaceAll('\\', '/').split('/');
+		const encoded = [drive, ...rest.map(segment => encodeURIComponent(segment))].join('/');
+		return `file:///${encoded}`;
+	}
+	// POSIX absolute path. Splitting `/tmp/foo` by `/` yields `['', 'tmp',
+	// 'foo']`; the leading empty element produces the `file:///` prefix
+	// after `join('/')`, so the round-trip is exactly `file:///tmp/foo`.
+	const segments = modPath.split('/').map(segment => encodeURIComponent(segment));
+	return `file://${segments.join('/')}`;
+}
+
+/**
  * Resolve and load the markuplint module.
  *
  * Attempts to load a locally installed markuplint from the workspace first.
@@ -24,7 +83,10 @@ export async function getModule(log: Log): Promise<Module> {
 		log('Getting module', 'debug');
 		const modPath = await fileResolve(message => log(message));
 		log(`import("${modPath}")`, 'debug');
-		markuplint = await import(modPath);
+		// IMPORTANT: modPath may be a Windows absolute path (c:\...).
+		// Always convert via toImportSpecifier() before passing to import() —
+		// raw drive-letter paths trigger ERR_UNSUPPORTED_ESM_URL_SCHEME.
+		markuplint = await import(toImportSpecifier(modPath));
 		log(`Found package: ${modPath}`, 'debug');
 		const packageJsonPath = path.resolve(path.dirname(modPath), '..', 'package.json');
 		// eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires

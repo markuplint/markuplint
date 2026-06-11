@@ -41,7 +41,7 @@ Core packages (Application Layer)
 
 ### Build System
 
-- **`build.mjs`** - Generation script that invokes `@markuplint/spec-generator`
+- **`build.ts`** - Generation script that invokes `generator/` modules
 - Fetches live data from MDN, W3C ARIA specs, Graphics ARIA, DPub ARIA, HTML-ARIA mappings, HTML Living Standard, SVG specs, and MathML specs
 
 ## Relationship to @markuplint/ml-spec
@@ -74,13 +74,6 @@ $ yarn add @markuplint/html-spec
 </details>
 
 ## Contributing
-
-For detailed documentation, see:
-
-- [Architecture](ARCHITECTURE.md) -- Package structure, data flow, and integration points
-- [Element Specification Format](docs/element-spec-format.md) -- JSON spec file reference, content models, ARIA integration
-- [Build Pipeline](docs/build-pipeline.md) -- Build process, external data sources, spec-generator modules
-- [Maintenance Guide](docs/maintenance.md) -- Common recipes, testing, troubleshooting
 
 ## License
 

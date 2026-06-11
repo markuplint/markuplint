@@ -7,7 +7,6 @@ import { checkingImplicitProps } from '../wai-aria/checkings/implicit-props.js';
 import { defaultOptions } from '../wai-aria/default-options.js';
 import meta from './meta.js';
 
-/** Warns when an ARIA property duplicates or contradicts semantics provided by a native HTML attribute. */
 export default createRule<boolean, Options>({
 	meta,
 	defaultSeverity: 'warning',

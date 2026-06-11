@@ -1,0 +1,501 @@
+{
+	"entries": [
+		{
+			"path": "html/elements/a/href/scheme-data-contains-fragment-haswarn.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-3a1dc1374ed4"
+			]
+		},
+		{
+			"path": "html/elements/area/href/scheme-data-contains-fragment-haswarn.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-cdb4535e049d"
+			]
+		},
+		{
+			"path": "html/elements/audio/src/scheme-data-contains-fragment-haswarn.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-60706ef20301"
+			]
+		},
+		{
+			"path": "html/elements/blockquote/cite/scheme-data-contains-fragment-haswarn.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-ed1dbf9dfa0f"
+			]
+		},
+		{
+			"path": "html/elements/button/formaction/scheme-data-contains-fragment-haswarn.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-82f38369e99e"
+			]
+		},
+		{
+			"path": "html/elements/del/cite/scheme-data-contains-fragment-haswarn.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-6d168c2d3178"
+			]
+		},
+		{
+			"path": "html/elements/embed/src/scheme-data-contains-fragment-haswarn.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-27ddcd34ac6d"
+			]
+		},
+		{
+			"path": "html/elements/form/action/scheme-data-contains-fragment-haswarn.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-0a21d5f3b754"
+			]
+		},
+		{
+			"path": "html/elements/iframe/src/scheme-data-contains-fragment-haswarn.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-344c8ec6a993"
+			]
+		},
+		{
+			"path": "html/elements/img/src/scheme-data-contains-fragment-haswarn.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-8c9d69a03039"
+			]
+		},
+		{
+			"path": "html/elements/input/type-image-formaction/scheme-data-contains-fragment-haswarn.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-ad82b8a8c1e5"
+			]
+		},
+		{
+			"path": "html/elements/input/type-image-src/scheme-data-contains-fragment-haswarn.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-e683359e52e5"
+			]
+		},
+		{
+			"path": "html/elements/input/type-submit-formaction/scheme-data-contains-fragment-haswarn.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-8c1d1d42e012"
+			]
+		},
+		{
+			"path": "html/elements/input/type-url-value/scheme-data-contains-fragment-haswarn.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-6872c643a823"
+			]
+		},
+		{
+			"path": "html/elements/ins/cite/scheme-data-contains-fragment-haswarn.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-27b353000357"
+			]
+		},
+		{
+			"path": "html/elements/link/href/scheme-data-contains-fragment-haswarn.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-5b612865391d"
+			]
+		},
+		{
+			"path": "html/elements/meta/refresh-invalid-keyword-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-c57d9ac83548"
+			]
+		},
+		{
+			"path": "html/elements/meta/refresh-missing-space-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-f26bf6cca5a8"
+			]
+		},
+		{
+			"path": "html/elements/meta/refresh-quoted-url-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-59fd76f96902"
+			]
+		},
+		{
+			"path": "html/elements/object/data/scheme-data-contains-fragment-haswarn.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-372749d0395d"
+			]
+		},
+		{
+			"path": "html/elements/object/type-only-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-785400222871"
+			]
+		},
+		{
+			"path": "html/elements/q/cite/scheme-data-contains-fragment-haswarn.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-3cd607b1d358"
+			]
+		},
+		{
+			"path": "html/elements/script/importmap/scopes-key-not-url-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-00d2f9879fd4"
+			]
+		},
+		{
+			"path": "html/elements/script/speculationrules-and-empty-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-2d05eb740ea1"
+			]
+		},
+		{
+			"path": "html/elements/script/speculationrules-and-not-array-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-ffb7b0802b96"
+			]
+		},
+		{
+			"path": "html/elements/script/speculationrules-document-missing-where-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-eba9b39992b3"
+			]
+		},
+		{
+			"path": "html/elements/script/speculationrules-document-with-urls-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-e4f280547930"
+			]
+		},
+		{
+			"path": "html/elements/script/speculationrules-eagerness-not-string-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-1aa1a7651199"
+			]
+		},
+		{
+			"path": "html/elements/script/speculationrules-href-matches-empty-array-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-91eedf90678b"
+			]
+		},
+		{
+			"path": "html/elements/script/speculationrules-href-matches-empty-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-3726177f55dd"
+			]
+		},
+		{
+			"path": "html/elements/script/speculationrules-href-matches-not-string-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-7b3a72419899"
+			]
+		},
+		{
+			"path": "html/elements/script/speculationrules-invalid-eagerness-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-56a4bd14c073"
+			]
+		},
+		{
+			"path": "html/elements/script/speculationrules-invalid-json-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-67ce6bae6dfa"
+			]
+		},
+		{
+			"path": "html/elements/script/speculationrules-invalid-property-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-db1dd7e71b6d"
+			]
+		},
+		{
+			"path": "html/elements/script/speculationrules-invalid-source-value-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-9272f3df3931"
+			]
+		},
+		{
+			"path": "html/elements/script/speculationrules-list-missing-urls-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-6e918dafe95a"
+			]
+		},
+		{
+			"path": "html/elements/script/speculationrules-list-with-where-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-2bed56dc7103"
+			]
+		},
+		{
+			"path": "html/elements/script/speculationrules-missing-prefetch-prerender-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-ed4428d7c7b8"
+			]
+		},
+		{
+			"path": "html/elements/script/speculationrules-missing-source-urls-where-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-897112884fef"
+			]
+		},
+		{
+			"path": "html/elements/script/speculationrules-not-object-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-c4dbbb29b496"
+			]
+		},
+		{
+			"path": "html/elements/script/speculationrules-prefetch-not-array-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-a0733157f4a6"
+			]
+		},
+		{
+			"path": "html/elements/script/speculationrules-rule-invalid-property-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-5aceb9ca670f"
+			]
+		},
+		{
+			"path": "html/elements/script/speculationrules-rule-not-object-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-f06c2faed408"
+			]
+		},
+		{
+			"path": "html/elements/script/speculationrules-selector-matches-empty-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-69d0c3ff01f7"
+			]
+		},
+		{
+			"path": "html/elements/script/speculationrules-selector-matches-not-string-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-9a27f02ee3f4"
+			]
+		},
+		{
+			"path": "html/elements/script/speculationrules-source-not-string-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-11f6ff44ec77"
+			]
+		},
+		{
+			"path": "html/elements/script/speculationrules-urls-empty-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-ab2ce085d332"
+			]
+		},
+		{
+			"path": "html/elements/script/speculationrules-urls-empty-string-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-49dc77882497"
+			]
+		},
+		{
+			"path": "html/elements/script/speculationrules-urls-item-not-string-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-12de65ecfe17"
+			]
+		},
+		{
+			"path": "html/elements/script/speculationrules-urls-not-array-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-f5ad73f01a88"
+			]
+		},
+		{
+			"path": "html/elements/script/speculationrules-where-empty-predicate-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-b389111680c0"
+			]
+		},
+		{
+			"path": "html/elements/script/speculationrules-where-multiple-predicates-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-064d4ab3a71a"
+			]
+		},
+		{
+			"path": "html/elements/script/speculationrules-where-not-object-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-1f5bbec4e8d6"
+			]
+		},
+		{
+			"path": "html/elements/script/speculationrules/document-without-where-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-8d601bd4f3eb"
+			]
+		},
+		{
+			"path": "html/elements/script/speculationrules/empty-and-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-14bc386f66c5"
+			]
+		},
+		{
+			"path": "html/elements/script/speculationrules/empty-object-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-e61699ad5ac8"
+			]
+		},
+		{
+			"path": "html/elements/script/speculationrules/empty-urls-array-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-3a085f550de4"
+			]
+		},
+		{
+			"path": "html/elements/script/speculationrules/invalid-eagerness-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-e0ae7e3c0f58"
+			]
+		},
+		{
+			"path": "html/elements/script/speculationrules/invalid-property-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-ad54379a20df"
+			]
+		},
+		{
+			"path": "html/elements/script/speculationrules/invalid-source-value-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-9200aa197c81"
+			]
+		},
+		{
+			"path": "html/elements/script/speculationrules/list-with-where-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-ac8241a880ba"
+			]
+		},
+		{
+			"path": "html/elements/script/speculationrules/list-without-urls-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-615f9e6076b5"
+			]
+		},
+		{
+			"path": "html/elements/script/speculationrules/multiple-predicates-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-356357ce7aa5"
+			]
+		},
+		{
+			"path": "html/elements/script/speculationrules/not-json-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-4e1c6d820ff7"
+			]
+		},
+		{
+			"path": "html/elements/script/src/scheme-data-contains-fragment-haswarn.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-d2a73eb7f342"
+			]
+		},
+		{
+			"path": "html/elements/source/src/scheme-data-contains-fragment-haswarn.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-c98e0d290a6d"
+			]
+		},
+		{
+			"path": "html/elements/track/src/scheme-data-contains-fragment-haswarn.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-22da233e51c1"
+			]
+		},
+		{
+			"path": "html/elements/video/poster/scheme-data-contains-fragment-haswarn.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-f66fce25c1d0"
+			]
+		},
+		{
+			"path": "html/elements/video/src/scheme-data-contains-fragment-haswarn.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-1f2c65f495dc"
+			]
+		},
+		{
+			"path": "html/microdata/itemid-scheme-data-contains-fragment-haswarn.html",
+			"category": "uncategorized",
+			"nuMessageIds": [
+				"nv-72908421456b"
+			]
+		},
+		{
+			"path": "html/microdata/itemtype-scheme-data-contains-fragment-haswarn.html",
+			"category": "uncategorized",
+			"nuMessageIds": [
+				"nv-5e72124bb955"
+			]
+		}
+	]
+}

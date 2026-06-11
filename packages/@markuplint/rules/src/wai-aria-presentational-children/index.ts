@@ -6,7 +6,6 @@ import { checkingPresentationalChildren } from '../wai-aria/checkings/presentati
 import { defaultOptions } from '../wai-aria/default-options.js';
 import meta from './meta.js';
 
-/** Warns when ARIA attributes are set on descendants of roles with presentational children. */
 export default createRule<boolean, Options>({
 	meta,
 	defaultSeverity: 'warning',

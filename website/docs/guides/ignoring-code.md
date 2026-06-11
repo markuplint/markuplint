@@ -162,8 +162,6 @@ If the scope cannot be narrowed (e.g., violations span the entire document), the
 
 When a scope selector no longer matches any element (e.g., after refactoring), the suppression remains active and `--prune-suppressions` will recommend cleanup. **Broken scopes never cause new violations to be hidden.**
 
-For the full design rationale, see the [Bulk Suppressions design document](https://github.com/markuplint/markuplint/blob/dev/docs/architectures/BULK-SUPPRESSIONS.md).
-
 ## Next steps
 
 - **[CLI](/docs/guides/cli)** — Full list of CLI options including `--suppress` and `--prune-suppressions`

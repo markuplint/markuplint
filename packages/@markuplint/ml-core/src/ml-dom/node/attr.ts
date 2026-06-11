@@ -162,7 +162,9 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 				this.isDuplicatable = this._astToken.isDuplicatable;
 			}
 
-			// IDL attribute resolution (after directivePatterns)
+			// IDL attribute resolution (after directivePatterns).
+			// Performed in the core, not in each parser: any spec opting in via
+			// `acceptedAttrNames` shares the same IDL-to-content-attribute mapping.
 			if (ownElement.ownerMLDocument.specs.acceptedAttrNames && !this.isDirective) {
 				const { contentAttrName, idlPropName } = searchIDLAttribute(this.#potentialName);
 				if (contentAttrName && contentAttrName !== this.#potentialName) {

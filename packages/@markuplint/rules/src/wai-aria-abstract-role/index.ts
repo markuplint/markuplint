@@ -6,7 +6,6 @@ import { checkingAbstractRole } from '../wai-aria/checkings/abstract-role.js';
 import { defaultOptions } from '../wai-aria/default-options.js';
 import meta from './meta.js';
 
-/** Warns when an abstract WAI-ARIA role is used directly in content. */
 export default createRule<boolean, Options>({
 	meta,
 	defaultOptions,

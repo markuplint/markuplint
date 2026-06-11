@@ -175,6 +175,45 @@ description: HTML要素のコンテンツモデルと構造的な制約を検証
 }
 ```
 
+### [`pretenders`](/docs/guides/beyond-html#pretenders)オプションと併用したタグルール
+
+[`pretenders`](/docs/guides/beyond-html#pretenders)設定によって要素がHTML要素にマッピングされている場合（たとえばJSXコンポーネント`<Breadcrumbs>`を`<nav>`として扱う場合）、このルールは要素を**2つの独立したパス**で検証します。
+
+1. **Pretendedパス** — pretender先のHTMLコンテンツモデル（例: `<nav>`）に基づいて検証します。他のルールが要素を見るのと同じ方法で、従来の動作に一致します。
+2. **Originパス** — コンポーネントの元の名前（ソースコードに現れる識別子）をキーにしたタグルールを宣言している場合、pretenderコンテキストを一時的に抑制した状態でそのルールを追加評価します。これにより子要素セレクターはコンポーネント名（例: `BreadcrumbList`）で一致し、pretender先の`<ol>`ではなく`<BreadcrumbList>`にマッチします。
+
+Originパスは以下の**両方**の条件を満たすときのみ実行されます。
+
+- 要素がpretenderマッピングを持つ（`pretenders`設定または`as`属性経由）**かつ**
+- `permitted-contents`設定に`tag`がコンポーネントのソースレベル名と一致するエントリが存在する
+
+ユーザーがコンポーネント名向けのタグルールを宣言していない場合、Originパスはスキップされ、ルールはこれまでと完全に同じ挙動を示します。既存の設定が影響を受けることはありません。
+
+```json class=config
+{
+  "pretenders": [
+    { "selector": "Breadcrumbs", "as": "nav" },
+    { "selector": "BreadcrumbsLabel", "as": "span" },
+    { "selector": "BreadcrumbList", "as": "ol" },
+    { "selector": "BreadcrumbItem", "as": "li" },
+    { "selector": "BreadcrumbLink", "as": "a" }
+  ],
+  "rules": {
+    "permitted-contents": [
+      {
+        "tag": "Breadcrumbs",
+        "contents": [{ "optional": "BreadcrumbsLabel" }, { "require": "BreadcrumbList" }]
+      },
+      { "tag": "BreadcrumbList", "contents": [{ "oneOrMore": "BreadcrumbItem" }] },
+      { "tag": "BreadcrumbItem", "contents": [{ "require": "BreadcrumbLink" }] },
+      { "tag": "BreadcrumbLink", "contents": [{ "require": "#text" }] }
+    ]
+  }
+}
+```
+
+この設定により、ルールはコンポーネントレベルの構造（Originパス）**と**pretend先のHTMLコンテンツモデル（`<nav>`/`<ol>`/…）を同時に強制します。2つのパスは独立に違反を報告するため、両方のビューに違反する子ノードには複数の診断が付く場合があります。これは各視点からのエラーを作者が確認できるよう意図されたものです。
+
 ### `ignoreHasMutableChildren`オプションの設定
 
 - 型: `boolean`
@@ -190,3 +229,15 @@ html
 	body
 		p lorem...
 ```
+
+### 条件分岐つき透過的要素の検出上限
+
+`v-if`/`v-else` や `{#if}` のような条件分岐を持つ透過的要素（`<a>`、`<ins>`、`<del>` など）が多数兄弟として並ぶ場合、このルールはそれらの分岐の直積を評価します。これが指数的に増えるのを防ぐため、直積にはキャップ（現在は `2^10 = 1024` パターン）が設けられています。このキャップを超えると—おおよそ**条件分岐つき透過的兄弟が11個以上**—すべての分岐をまとめる保守的な過剰近似にフォールバックします。これは誤検出（false positive）を生むことはありませんが、その構造に限り実際の違反を**見落とす**（false negative）可能性があります。
+
+この上限は意図的なもので、実際のマークアップで到達することはまれです。ドキュメントが到達したかどうかを確認するには、デバッグロガーを有効にして実行してください。
+
+```shell
+DEBUG=ml-rules:content-model npx markuplint target.html
+```
+
+フォールバックが発動した要素ごとに `Transparent pattern cap exceeded` の行が出力されます。

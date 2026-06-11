@@ -13,11 +13,6 @@ import { ParserError, Parser, AttrState, scriptParser, getNamespace } from '@mar
 
 import { pugParse } from './pug-parser/index.js';
 
-/**
- * Internal HTML parser used for inline HTML content within Pug templates.
- * Extends the standard HTML parser to handle Pug tag interpolation syntax (`#[...]`),
- * treating interpolated tags as preprocessor-specific blocks.
- */
 class HtmlInPugParser extends HtmlParser {
 	constructor() {
 		super({
@@ -48,6 +43,7 @@ class HtmlInPugParser extends HtmlParser {
 class PugParser extends Parser<ASTNode> {
 	constructor() {
 		super({
+			// Pug expresses nesting through indentation and never emits explicit closing tags.
 			endTagType: 'never',
 		});
 	}
@@ -72,18 +68,6 @@ class PugParser extends Parser<ASTNode> {
 		return super.parseError(error);
 	}
 
-	/**
-	 * Converts a Pug AST node into markuplint node tree items.
-	 * Handles Doctype, Text (including inline HTML and tag interpolation),
-	 * Comment, BlockComment, Tag (with attributes and child blocks),
-	 * and other Pug-specific constructs (mixins, conditionals, etc.)
-	 * which are mapped to preprocessor-specific blocks.
-	 *
-	 * @param originNode - The Pug AST node to convert
-	 * @param parentNode - The parent node in the markuplint tree, or null for root nodes
-	 * @param depth - The nesting depth of the node
-	 * @returns An array of markuplint node tree items
-	 */
 	nodeize(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		originNode: ASTNode,
@@ -99,6 +83,8 @@ class PugParser extends Parser<ASTNode> {
 					depth,
 					parentNode,
 					name: originNode.raw ?? '',
+					// Pug doctypes use shorthand keywords (e.g. `doctype html`),
+					// so no public/system IDs exist in the source.
 					publicId: '',
 					systemId: '',
 				});
@@ -121,7 +107,17 @@ class PugParser extends Parser<ASTNode> {
 					offsetLine: originNode.line,
 					offsetColumn: originNode.column ?? parentNode?.col,
 					depth,
+					// HTML emitted by a single Pug line is always a partial —
+					// Pug itself owns the document boundary (`doctype html`,
+					// `html(...)`, etc.). Force fragment parsing so parse5
+					// doesn't fire `missing-doctype` on every inline HTML
+					// chunk.
+					documentMode: 'fragment',
 				});
+				// Surface tokenizer-level parse errors from the embedded
+				// HtmlInPugParser so users who opt in via
+				// `severity.parseError` see them on the outer Pug document.
+				this.accumulateParseErrors(htmlDoc.parseErrors);
 
 				const newNodeList: MLASTNodeTreeItem[] = [];
 				for (const node of htmlDoc.nodeList) {
@@ -186,6 +182,10 @@ class PugParser extends Parser<ASTNode> {
 						typeof attr.val === 'string'
 					) {
 						/**
+						 * pug-parser reports shorthand `#id`/`.class` attributes with a
+						 * zero-width location span (offset === endOffset), so the end
+						 * offset must be recalculated from the value length.
+						 *
 						 * #value =>
 						 * {
 						 *   name: 'id',
@@ -282,16 +282,6 @@ class PugParser extends Parser<ASTNode> {
 		});
 	}
 
-	/**
-	 * Visits an element token for Pug, constructing a start tag node with
-	 * pre-parsed attributes (including `&attributes` spread syntax) and
-	 * visiting child nodes within the Pug block.
-	 *
-	 * @param token - The child token with tag metadata
-	 * @param childNodes - The child Pug AST nodes within the tag's block
-	 * @param options - Options containing pre-parsed attribute overrides
-	 * @returns An array of markuplint node tree items for the element and its children
-	 */
 	visitElement(
 		token: ChildToken & {
 			readonly nodeName: string;
@@ -327,18 +317,15 @@ class PugParser extends Parser<ASTNode> {
 		return [startTag, ...siblings];
 	}
 
+	/**
+	 * Intentionally a no-op: `&attributes` spread syntax is converted inline
+	 * in the `Tag` case of `nodeize()`, so the base-class spread attribute
+	 * visitor must not produce a node.
+	 */
 	visitSpreadAttr(): null {
 		return null;
 	}
 
-	/**
-	 * Visits an attribute token, handling Pug-specific syntax including
-	 * shorthand `#id` and `.class` notation, quoted attribute names,
-	 * unescaped attribute names (trailing `!`), and JavaScript expression values.
-	 *
-	 * @param token - The token representing the attribute
-	 * @returns The parsed attribute node with Pug-specific metadata
-	 */
 	visitAttr(token: Token): MLASTAttr {
 		if (token.raw[0] === '#' || token.raw[0] === '.') {
 			const attr = super.visitAttr(token, {
@@ -376,12 +363,22 @@ class PugParser extends Parser<ASTNode> {
 			this.updateAttr(attr, { isDuplicatable: true });
 		}
 
+		/**
+		 * Pug allows attribute names to be wrapped in quotes (e.g. `'data-value'="foo"`).
+		 *
+		 * @see https://pugjs.org/language/attributes.html#quoted-attributes
+		 */
 		if (attr.name.raw.startsWith("'") && attr.name.raw.endsWith("'")) {
 			this.updateAttr(attr, {
 				potentialName: attr.name.raw.slice(1, -1),
 			});
 		}
 
+		/**
+		 * A trailing `!` on the attribute name marks the value as unescaped.
+		 *
+		 * @see https://pugjs.org/language/attributes.html#unescaped-attributes
+		 */
 		if (attr.name.raw.endsWith('!')) {
 			this.updateAttr(attr, {
 				potentialName: attr.name.raw.slice(0, -1),

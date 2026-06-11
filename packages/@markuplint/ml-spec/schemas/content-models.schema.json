@@ -15,6 +15,16 @@
 					]
 				},
 				"descendantOf": { "type": "string" },
+				"forbiddenAncestors": {
+					"description": "Elements that this element must NOT appear as a descendant of. Each entry is a CSS selector matching forbidden ancestor elements.",
+					"type": "array",
+					"items": { "type": "string" }
+				},
+				"uniqueAttrs": {
+					"description": "Attributes that must be unique among sibling elements of the same type. If this element has one of these attributes, no other sibling element of the same type may also have it. Example: `[\"default\"]` for `<track>` — only one `<track>` per parent may have `default`.",
+					"type": "array",
+					"items": { "type": "string" }
+				},
 				"conditional": {
 					"type": "array",
 					"items": {
@@ -53,6 +63,7 @@
 			"type": "string",
 			"enum": [
 				"#text",
+				"#nonEmptyText",
 				"#phrasing",
 				"#flow",
 				"#interactive",

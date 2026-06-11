@@ -7,16 +7,9 @@ import { resolveNamespace } from '../../utils/resolve-namespace.js';
 import { getPermittedRoles } from './get-permitted-roles.js';
 
 /**
- * Resolves the ARIA role from the `role` attribute value, implementing the
- * WAI-ARIA "Handling Author Errors" algorithm. Iterates through whitespace-separated
- * role tokens and returns the first one that passes all validation checks
- * (exists, non-abstract, permitted, valid landmark).
+ * Implements the WAI-ARIA "Handling Author Errors" algorithm.
  *
  * @see https://w3c.github.io/aria/#document-handling_author-errors
- * @param specs - The full markup language specification
- * @param el - The DOM element to resolve the explicit role for
- * @param version - The ARIA specification version to use
- * @returns The first valid role found as a `ComputedRole`, or `role: null` with the last encountered error type
  */
 export function getExplicitRole(
 	specs: MLMLSpec,

@@ -48,10 +48,6 @@ const {
 	JsxEmit,
 } = ts;
 
-/**
- * Default options for the JSX scanner, including built-in patterns
- * for styled-components and provider components.
- */
 const defaultOptions: Required<PretenderScanJSXOptions> = {
 	cwd: process.cwd(),
 	asFragment: [/(?:^|\.)provider$/i],

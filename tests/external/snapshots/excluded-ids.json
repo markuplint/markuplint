@@ -1,0 +1,59 @@
+{
+	"$schema": "../bench/schema/excluded-ids.schema.json",
+	"entries": [
+		{
+			"id": "nv-c57d9ac83548",
+			"path": "html/elements/meta/refresh-invalid-keyword-novalid.html",
+			"nuMessage": "Bad value “5; href=http://example.com” for attribute “content” on element “meta”: Expected a space character, but saw “h” instead.",
+			"reason": "HTML LS §4.2.5.3 clause 3.3 accepts the URL part as either 'URL=<url>' or a bare 'valid URL potentially surrounded by spaces'. `href=http://example.com` is itself a parseable relative-URL string (the '=' is a valid path code point per URL LS), so it matches the bare-URL alternative and the content value is spec-conformant. nu-validator treats only the literal 'URL=' keyword path as valid; that is stricter than HTML LS.",
+			"specUrl": "https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-http-equiv-refresh",
+			"addedAt": "2026-04-23",
+			"addedBy": "hirao"
+		},
+		{
+			"id": "nv-f26bf6cca5a8",
+			"path": "html/elements/meta/refresh-missing-space-novalid.html",
+			"nuMessage": "Bad value “5;url=http://example.com” for attribute “content” on element “meta”: Expected a space character, but saw “u” instead.",
+			"reason": "HTML LS §4.2.5.3 clause 3.2 — 'Optionally, ASCII whitespace.' — makes the whitespace after the ';' or ',' separator optional. `5;url=http://example.com` matches the grammar and is spec-conformant. nu-validator requires a space after the separator; that is stricter than HTML LS.",
+			"specUrl": "https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-http-equiv-refresh",
+			"addedAt": "2026-04-23",
+			"addedBy": "hirao"
+		},
+		{
+			"id": "nv-59fd76f96902",
+			"path": "html/elements/meta/refresh-quoted-url-novalid.html",
+			"nuMessage": "Bad value “5; url='http://example.com'” for attribute “content” on element “meta”: Expected an unquoted URL.",
+			"reason": "HTML LS §4.2.5.3 clause 3.3 requires a 'valid URL potentially surrounded by spaces'. U+0027 (') is a URL code point (URL LS §3.5), so `'http://example.com'` is a parseable relative-URL string — it serialises to a path segment containing the quotes. The content value is spec-conformant. nu-validator rejects single-quoted URLs by convention; that is stricter than HTML LS.",
+			"specUrl": "https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-http-equiv-refresh",
+			"addedAt": "2026-04-23",
+			"addedBy": "hirao"
+		},
+		{
+			"id": "nv-785400222871",
+			"path": "html/elements/object/type-only-novalid.html",
+			"nuMessage": "Element “object” is missing required attribute “data”.",
+			"reason": "HTML LS §4.8.7: 'Either the data attribute or the type attribute must be specified.' The fixture has `<object type=…>` (type-only) which the spec accepts. nu-validator reports `data` as unconditionally required, which is stricter than HTML LS — markuplint's existing requiredEither on data/type already implements the spec contract.",
+			"specUrl": "https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-object-element",
+			"addedAt": "2026-05-15",
+			"addedBy": "hirao"
+		},
+		{
+			"id": "nv-00d2f9879fd4",
+			"path": "html/elements/script/importmap/scopes-key-not-url-novalid.html",
+			"nuMessage": "`<script type=importmap>` scope key fails nu's looks-like-URL check (`scope1_not_url`).",
+			"reason": "HTML LS § Sorting and normalizing scopes step 2 URL-parses scopePrefix *with* baseURL. Relative strings like `scope1_not_url` parse successfully against any base, so step 3's URL-parse-failure warning never fires; the resulting scope simply applies to `<base>/scope1_not_url`. nu-validator additionally requires the key to look URL-like (scheme or `/`/`./`/`../`), which is stricter than the spec. The `script-content` rule deliberately follows the spec letter and does not flag this case.",
+			"specUrl": "https://html.spec.whatwg.org/multipage/webappapis.html#sorting-and-normalizing-scopes",
+			"addedAt": "2026-05-18",
+			"addedBy": "hirao"
+		}
+	],
+	"patterns": [
+		{
+			"messageContains": "Fragment is not allowed for data: URIs according to RFC 2397",
+			"reason": "WHATWG URL Living Standard supersedes RFC 2397. Per URL LS §4.3, 'A valid URL string must be either a relative-URL-with-fragment string or an absolute-URL-with-fragment string.' An absolute-URL-with-fragment string is 'an absolute-URL string, optionally followed by U+0023 (#) and a URL-fragment string.' Since 'data' is a non-special scheme, 'data:<body>#<fragment>' matches this grammar and is a valid URL string. HTML conformance (which requires a valid URL string) is therefore satisfied.",
+			"specUrl": "https://url.spec.whatwg.org/#url-writing",
+			"addedAt": "2026-04-23",
+			"addedBy": "hirao"
+		}
+	]
+}

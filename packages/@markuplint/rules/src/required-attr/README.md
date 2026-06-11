@@ -9,6 +9,8 @@ Warns if specified attributes or required attribute on specs are not appeared on
 
 This rule refer [HTML Living Standard](https://html.spec.whatwg.org/) based [MDN Web docs](https://developer.mozilla.org/en/docs/Web/HTML). It has settings in [`@markuplint/html-spec`](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/html-spec/src).
 
+Some attributes are required only under certain conditions (for example, `<link rel="preload">` must carry an `as` attribute, but `<link rel="modulepreload">` may omit it). Those conditional rules live in the per-element spec files under [`@markuplint/html-spec/src/spec.<element>.jsonc`](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/html-spec/src) — search for `"required":` to see which attributes carry a conditional selector and on which other attribute values they depend.
+
 👎 Example of **incorrect** code for this rule
 
 ```html

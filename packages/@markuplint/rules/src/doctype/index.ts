@@ -11,14 +11,6 @@ type Option = {
 	denyObsoleteType: boolean;
 };
 
-/**
- * Rule that validates the presence and correctness of the document's DOCTYPE
- * declaration.
- *
- * Reports an error when no DOCTYPE is found (skipped for document fragments)
- * and when an obsolete DOCTYPE (one with a public or system identifier) is
- * declared.
- */
 export default createRule<Value, Option>({
 	meta: meta,
 	defaultValue: 'always',

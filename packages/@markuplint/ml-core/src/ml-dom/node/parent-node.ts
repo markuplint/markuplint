@@ -21,14 +21,8 @@ export abstract class MLParentNode<
 	extends MLNode<T, O, A>
 	implements ParentNode
 {
-	/**
-	 * Cached `children`
-	 */
 	#children: HTMLCollectionOf<MLElement<T, O>> | null = null;
 
-	/**
-	 * Cached elements that created from `querySelectorAll`
-	 */
 	#selectedElements = new Map<string, NodeListOf<MLElement<T, O>>>();
 
 	/**

@@ -1,0 +1,58 @@
+name: Publish
+
+on:
+    push:
+        tags:
+            - 'v*'
+
+concurrency:
+    group: publish
+    cancel-in-progress: false
+
+permissions:
+    contents: read
+    id-token: write
+
+jobs:
+    publish:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+              with:
+                  fetch-depth: 0
+
+            - name: Enable Corepack
+              run: corepack enable
+
+            - name: Setup Node.js
+              uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+              with:
+                  node-version: 24
+                  registry-url: 'https://registry.npmjs.org'
+
+            - name: Install dependencies
+              run: yarn install --immutable
+
+            - name: Build
+              run: yarn build
+
+            - name: Determine dist-tag
+              id: dist-tag
+              run: |
+                  VERSION="${GITHUB_REF#refs/tags/v}"
+                  if [[ "$VERSION" == *"-alpha"* ]]; then
+                    echo "tag=alpha" >> "$GITHUB_OUTPUT"
+                  elif [[ "$VERSION" == *"-beta"* ]]; then
+                    echo "tag=beta" >> "$GITHUB_OUTPUT"
+                  elif [[ "$VERSION" == *"-rc"* ]]; then
+                    echo "tag=rc" >> "$GITHUB_OUTPUT"
+                  elif [[ "$VERSION" == *"-"* ]]; then
+                    echo "::error::Unknown prerelease tag in version: $VERSION"
+                    exit 1
+                  else
+                    echo "tag=latest" >> "$GITHUB_OUTPUT"
+                  fi
+
+            - name: Publish
+              run: npx lerna publish from-git --dist-tag ${{ steps.dist-tag.outputs.tag }} --yes

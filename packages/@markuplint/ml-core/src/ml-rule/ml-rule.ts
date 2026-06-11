@@ -2,6 +2,7 @@ import type { RuleSeed } from './types.js';
 import type { MLDocument } from '../ml-dom/node/document.js';
 import type { Ruleset } from '../ruleset/index.js';
 import type { LocaleSet } from '@markuplint/i18n';
+import type { MLASTParseErrorCode } from '@markuplint/ml-ast';
 import type {
 	FixData,
 	GlobalRuleInfo,
@@ -50,8 +51,26 @@ export class MLRule<T extends RuleConfigValue, O extends PlainData = undefined> 
 	/**
 	 * The spec conformance classification of this rule, based on RFC 2119 keyword strength.
 	 * Set on virtual rules derived from named nodeRules in presets.
+	 *
+	 * Intentionally restricted to named (preset-authored) entries: built-in
+	 * rules already bake normative strength into `defaultSeverity`, and
+	 * user-defined nodeRules express project conventions rather than spec
+	 * requirements — allowing it on arbitrary config would blur "the HTML spec
+	 * requires this" with "our team prefers this". The `/`-containing `name`
+	 * requirement acts as the gatekeeper. It is reporting metadata only and
+	 * never influences severity; severity changes require an explicit
+	 * `defaultSeverity` override on the alias.
 	 */
 	readonly specConformance?: SpecConformance;
+	/**
+	 * parse5 `ERR` codes this rule's detection covers. When the rule is active
+	 * in the ruleset, ml-core's built-in `parse-error` channel skips events
+	 * whose code is in this list, so users do not see duplicate violations.
+	 *
+	 * Declared per-rule in `meta.mirrorsParseErrorCodes`; defaults to an empty
+	 * array when the rule does not mirror any parse5 event.
+	 */
+	readonly mirrorsParseErrorCodes: readonly MLASTParseErrorCode[];
 	#v: RuleSeed<T, O>['verify'];
 
 	constructor(
@@ -72,6 +91,7 @@ export class MLRule<T extends RuleConfigValue, O extends PlainData = undefined> 
 		// See: https://github.com/markuplint/markuplint/issues/808
 		this.defaultValue = (o.defaultValue === undefined ? true : o.defaultValue) as T;
 		this.defaultOptions = o.defaultOptions as O;
+		this.mirrorsParseErrorCodes = o.meta?.mirrorsParseErrorCodes ?? [];
 		this.#v = o.verify;
 	}
 
@@ -100,6 +120,10 @@ export class MLRule<T extends RuleConfigValue, O extends PlainData = undefined> 
 			defaultSeverity: options?.defaultSeverity ?? this.defaultSeverity,
 			defaultValue: this.defaultValue,
 			defaultOptions: this.defaultOptions,
+			// Inherit `mirrorsParseErrorCodes` so virtual rules (alias-named
+			// nodeRules) participate in the parse-error dedupe under their
+			// base rule's mirror list.
+			meta: { mirrorsParseErrorCodes: this.mirrorsParseErrorCodes },
 			verify: this.#v,
 		});
 	}
@@ -198,7 +222,6 @@ export class MLRule<T extends RuleConfigValue, O extends PlainData = undefined> 
 		const aliasName = this.baseRuleId ? this.name : undefined;
 
 		const violations = context.reports.map<Violation>(report => {
-			// Execute fix callback if fix mode is enabled
 			let fixData: FixData | undefined;
 			if (fix && report.fix) {
 				const edits = report.fix(sharedFixer);

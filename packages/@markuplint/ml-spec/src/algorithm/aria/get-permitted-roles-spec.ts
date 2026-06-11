@@ -94,6 +94,15 @@ export function getPermittedRoles(
 		);
 	}
 
+	// When `permittedRoles` is explicitly `false`, no explicit role attribute is
+	// allowed at all per ARIA in HTML — even a value matching the implicit role.
+	// e.g. `<img alt="">`: implicit role is `presentation`, but "No role permitted"
+	// means `role="presentation"` and `role="none"` are both disallowed.
+	// See https://github.com/markuplint/markuplint/issues/3641 for background.
+	if (permittedRoles === false) {
+		return permittedRoleList;
+	}
+
 	if (implicitRole === false) {
 		return permittedRoleList;
 	}

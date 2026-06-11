@@ -2,12 +2,6 @@ import { createRule, getSpec } from '@markuplint/ml-core';
 
 import meta from './meta.js';
 
-/**
- * Rule that reports the use of deprecated or obsolete HTML elements.
- *
- * Walks HTML and SVG elements and checks their spec status. Reports any
- * element that is marked as deprecated or obsolete in the HTML specification.
- */
 export default createRule({
 	meta: meta,
 	async verify({ document, report, t }) {
@@ -17,7 +11,10 @@ export default createRule({
 					el.namespaceURI === 'http://www.w3.org/1999/xhtml' ||
 					el.namespaceURI === 'http://www.w3.org/2000/svg'
 				) ||
-				el.elementType !== 'html'
+				// Web components and authored elements (JSX/Vue/Svelte) reach this rule
+				// through `pretenders`: they masquerade as a known HTML element via
+				// `el.localName`, so the spec lookup below resolves correctly. See #3740.
+				(el.elementType !== 'html' && el.pretenderContext?.type !== 'pretender')
 			) {
 				return;
 			}

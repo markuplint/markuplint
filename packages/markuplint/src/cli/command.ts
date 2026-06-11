@@ -26,18 +26,6 @@ import {
 import { outputDryRunDiff } from './dry-run-output.js';
 import { output, outputSummary } from './output.js';
 
-/**
- * Executes the markuplint linting command against the given files.
- *
- * Resolves file targets, creates an {@link MLEngine} for each file, collects
- * violations, and outputs results in the requested format. When the `--fix`
- * flag is set, overwrites files with their auto-fixed content.
- *
- * @param files - The list of file targets (paths or inline source code) to lint.
- * @param options - CLI options controlling output format, fix mode, locale, and other behaviors.
- * @param apiOptions - Optional overrides for the underlying API (e.g., custom rules or config).
- * @returns `true` if any errors were found (or warnings exceeded the limit), `false` otherwise.
- */
 export async function command(files: readonly Readonly<Target>[], options: CLIOptions, apiOptions?: APIOptions) {
 	const fixDryRun = options.fixDryRun;
 	if (options.fix && fixDryRun) {
@@ -49,12 +37,6 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 	// Mutual exclusion checks for suppressions flags
 	const isSuppressMode = options.suppress || options.suppressRule != null;
 	const isPruneMode = options.pruneSuppressions;
-
-	if (isSuppressMode && fix) {
-		process.stderr.write(
-			'Warning: --suppress counts violations from the original code, not from the fixed result. Consider running --fix first, then --suppress.\n',
-		);
-	}
 
 	if (isSuppressMode && isPruneMode) {
 		process.stderr.write('Error: --suppress/--suppress-rule and --prune-suppressions cannot be used together.\n');
@@ -98,12 +80,11 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 	const skippedFiles: string[] = [];
 	const filesContent = new Map<string, { sourceCode: string; fixedCode: string }>();
 	const engines = new Map<string, MLEngine>();
-	const severityParseError = options.severityParseError.toLowerCase();
-	const severity: SeverityOptions = {
-		parseError: ['error', 'warning', 'off'].includes(severityParseError)
-			? (severityParseError as Severity | 'off')
-			: true,
-	};
+	const severityParseError = options.severityParseError?.toLowerCase();
+	const severity: SeverityOptions =
+		severityParseError != null && ['error', 'warning', 'off'].includes(severityParseError)
+			? { parseError: severityParseError as Severity | 'off' }
+			: {};
 
 	for (const file of fileList) {
 		// Check if collector is already locked (max-count reached)
@@ -163,12 +144,21 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 		// Store engine for scope computation in suppressions
 		engines.set(result.filePath, engine);
 
+		// In fix mode, report the violations remaining in the FIXED code
+		// (re-verified by ml-core) instead of the pre-fix violations, so that
+		// the exit code and suppressions reflect the written output.
+		// With --fix-dry-run the file is NOT modified, so keep the first-pass
+		// violations, which match the file on disk.
+		const reportedViolations = fixDryRun
+			? result.violations
+			: (result.fixSummary?.finalPassViolations ?? result.violations);
+
 		// Progressive出力が有効でJSON形式でない場合
 		if (options.progressiveOutput && format !== 'json') {
 			// 即座に出力
 			output(
 				{
-					violations: result.violations,
+					violations: reportedViolations,
 					filePath: result.filePath,
 					sourceCode: result.sourceCode,
 					fixedCode: result.fixedCode,
@@ -179,10 +169,10 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 		}
 
 		// Add violations to collector
-		collector.pushWithFile(result.filePath, ...result.violations);
+		collector.pushWithFile(result.filePath, ...reportedViolations);
 
-		const errorCount = result.violations.filter(v => v.severity === 'error').length;
-		const warningCount = result.violations.filter(v => v.severity === 'warning').length;
+		const errorCount = reportedViolations.filter(v => v.severity === 'error').length;
+		const warningCount = reportedViolations.filter(v => v.severity === 'warning').length;
 
 		// Track total warning count across all files
 		totalWarningCount += warningCount;

@@ -14,7 +14,7 @@
 	"attributes": {
 		// https://html.spec.whatwg.org/multipage/iframe-embed-object.html#attr-embed-src
 		"src": {
-			"type": "URL",
+			"type": "NonEmptyURL",
 			"required": "[itemprop]"
 		},
 		// https://html.spec.whatwg.org/multipage/iframe-embed-object.html#attr-embed-type

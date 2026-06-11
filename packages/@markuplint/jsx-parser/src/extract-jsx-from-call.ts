@@ -3,15 +3,6 @@ import type { JSXNode } from './jsx.js';
 
 import { AST_NODE_TYPES } from '@typescript-eslint/typescript-estree';
 
-/**
- * Extracts the JSX return value from an array method call expression
- * (e.g., `items.map(item => <li>{item}</li>)`). Used to detect loop blocks
- * within JSX expression containers.
- *
- * @param astNode - The JSX AST node to inspect (typically a JSXExpressionContainer)
- * @param methodName - The array method name to look for (`'map'` or `'filter'`)
- * @returns The JSX element or fragment returned by the arrow function callback, or `null` if the node does not match the expected pattern
- */
 export function extractJSXFromCall(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	astNode: JSXNode,

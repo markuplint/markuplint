@@ -8,9 +8,19 @@
 		":pinDevDependencies",
 		":semanticCommitTypeAll(chore)"
 	],
+	"baseBranchPatterns": [
+		"dev",
+		"v4"
+	],
 	"lockFileMaintenance": {
 		"enabled": true,
 		"automerge": true
+	},
+	"minimumReleaseAge": "7 days",
+	"internalChecksFilter": "strict",
+	"osvVulnerabilityAlerts": true,
+	"vulnerabilityAlerts": {
+		"minimumReleaseAge": null
 	},
 	"autoApprove": true,
 	"labels": ["Dependencies", "Renovate"],
@@ -48,6 +58,18 @@
 		{
 			"matchPackageNames": ["node"],
 			"matchManagers": ["dockerfile"],
+			"enabled": false
+		},
+		{
+			"description": "Separate mise node updates from GitHub Actions node-version",
+			"matchPackageNames": ["node"],
+			"matchManagers": ["mise"],
+			"groupName": "node (mise)"
+		},
+		{
+			"description": "Pin VSCode CI workflows to Node 22 — do not update",
+			"matchPackageNames": ["node"],
+			"matchFileNames": [".github/workflows/*vscode*"],
 			"enabled": false
 		},
 		{

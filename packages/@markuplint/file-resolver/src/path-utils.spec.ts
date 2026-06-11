@@ -1,6 +1,6 @@
 import { test, expect } from 'vitest';
 
-import { toSlash, fromFileURL, normalizeForIgnore, normalizeForGlob } from './path-utils.js';
+import { toSlash, fromFileURL, toFileURL, normalizeForIgnore, normalizeForGlob } from './path-utils.js';
 
 test('toSlash: converts backslashes to forward slashes', () => {
 	expect(toSlash('C:\\Users\\foo\\file.html')).toBe('C:/Users/foo/file.html');
@@ -130,4 +130,84 @@ test('fromFileURL: throws on non-file protocol', () => {
 
 test('fromFileURL: throws on invalid URL', () => {
 	expect(() => fromFileURL('not-a-url')).toThrow();
+});
+
+test('toFileURL: converts a Windows drive-letter absolute path to a file:// URL', () => {
+	expect(toFileURL('C:\\Users\\a\\markuplint\\lib\\index.mjs')).toBe('file:///C:/Users/a/markuplint/lib/index.mjs');
+});
+
+test('toFileURL: converts a lowercase-drive Windows path to a file:// URL', () => {
+	expect(toFileURL('c:\\Users\\name\\node_modules\\markuplint\\lib\\index.mjs')).toBe(
+		'file:///c:/Users/name/node_modules/markuplint/lib/index.mjs',
+	);
+});
+
+test('toFileURL: never leaves a bare drive-letter prefix as the import specifier', () => {
+	const result = toFileURL('c:\\foo\\bar.mjs');
+	expect(result.startsWith('file://')).toBe(true);
+	expect(result).not.toMatch(/^c:/);
+});
+
+test('toFileURL: URL-encodes spaces in Windows paths (Program Files)', () => {
+	expect(toFileURL('c:\\Program Files\\node_modules\\markuplint\\lib\\index.mjs')).toBe(
+		'file:///c:/Program%20Files/node_modules/markuplint/lib/index.mjs',
+	);
+});
+
+test('toFileURL: URL-encodes non-ASCII characters in Windows paths', () => {
+	expect(toFileURL('c:\\Users\\太郎\\lib.mjs')).toBe('file:///c:/Users/%E5%A4%AA%E9%83%8E/lib.mjs');
+});
+
+test('toFileURL: URL-encodes reserved characters like # in Windows paths', () => {
+	expect(toFileURL('c:\\Users\\foo#bar\\lib.mjs')).toBe('file:///c:/Users/foo%23bar/lib.mjs');
+});
+
+test('toFileURL: URL-encodes reserved characters like ? in Windows paths', () => {
+	expect(toFileURL('c:\\Users\\foo?\\lib.mjs')).toBe('file:///c:/Users/foo%3F/lib.mjs');
+});
+
+test('toFileURL: converts a POSIX absolute path to a file:// URL', () => {
+	expect(toFileURL('/tmp/markuplint/lib/index.mjs')).toBe('file:///tmp/markuplint/lib/index.mjs');
+});
+
+test('toFileURL: URL-encodes spaces in POSIX paths', () => {
+	expect(toFileURL('/tmp/my project/lib.mjs')).toBe('file:///tmp/my%20project/lib.mjs');
+});
+
+test('toFileURL: URL-encodes non-ASCII characters in POSIX paths', () => {
+	expect(toFileURL('/home/太郎/lib.mjs')).toBe('file:///home/%E5%A4%AA%E9%83%8E/lib.mjs');
+});
+
+test('toFileURL: URL-encodes reserved characters like # in POSIX paths', () => {
+	expect(toFileURL('/home/foo#bar/lib.mjs')).toBe('file:///home/foo%23bar/lib.mjs');
+});
+
+test('toFileURL: URL-encodes reserved characters like ? in POSIX paths', () => {
+	expect(toFileURL('/home/foo?/lib.mjs')).toBe('file:///home/foo%3F/lib.mjs');
+});
+
+test('toFileURL: does not convert bare module specifiers like "markuplint"', () => {
+	expect(toFileURL('markuplint')).toBe('markuplint');
+});
+
+test('toFileURL: does not convert scoped bare specifiers like "@markuplint/pug-parser"', () => {
+	expect(toFileURL('@markuplint/pug-parser')).toBe('@markuplint/pug-parser');
+});
+
+test('toFileURL: does not accidentally prefix ./ specifiers with file:///', () => {
+	expect(toFileURL('./local.js')).toBe('./local.js');
+});
+
+test('toFileURL: does not convert ../ relative specifiers', () => {
+	expect(toFileURL('../lib/index.js')).toBe('../lib/index.js');
+});
+
+test('toFileURL: does not convert empty strings', () => {
+	expect(toFileURL('')).toBe('');
+});
+
+test('toFileURL: leaves UNC paths as-is for the caller to handle (known limitation)', () => {
+	// UNC path handling is tracked as a follow-up (see PR description for #3795).
+	// Assert the current behavior so any future change is explicit.
+	expect(toFileURL('\\\\server\\share\\foo.mjs')).toBe('\\\\server\\share\\foo.mjs');
 });

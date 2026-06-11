@@ -3,6 +3,137 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-rc.4](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.3...v5.0.0-rc.4) (2026-04-19)
+
+**Note:** Version bump only for package markuplint-packages
+
+# [5.0.0-rc.3](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.2...v5.0.0-rc.3) (2026-04-19)
+
+- feat(vscode)!: migrate publisher to markuplint namespace ([f46e4b1](https://github.com/markuplint/markuplint/commit/f46e4b159598f36cdcdb7a98025ff93147f04eb7))
+
+### Features
+
+- **vscode:** support prerelease extension packaging and publishing ([b7399c9](https://github.com/markuplint/markuplint/commit/b7399c90c5c407d9d859a96087d2dab53a9c8459)), closes [#3754](https://github.com/markuplint/markuplint/issues/3754)
+
+### BREAKING CHANGES
+
+- The VS Code extension is now published under the `markuplint`
+  publisher (Marketplace ID: `markuplint.vscode-markuplint`). The legacy
+  `yusukehirao.vscode-markuplint` ID is deprecated from `v5.0.0-rc.3` onwards
+  and no longer receives updates; users must install the new extension.
+
+# [5.0.0-rc.2](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.1...v5.0.0-rc.2) (2026-04-15)
+
+### Bug Fixes
+
+- add "alpinejs" to cspell dictionary ([96982f8](https://github.com/markuplint/markuplint/commit/96982f862b0951b55f37b4e48d3751e07fe1fc0f))
+- **deps:** add eslint-plugin-regexp as devDependency for oxlint JS Plugins ([af14db6](https://github.com/markuplint/markuplint/commit/af14db68b98594172e29978a0d3a6f15f2c525f6))
+- **deps:** pin oxlint and oxfmt versions without caret ([c37308a](https://github.com/markuplint/markuplint/commit/c37308ada661c859bc6bd04385cf43a7860a19a3))
+- **deps:** update yarn.lock for pinned oxlint/oxfmt versions ([d95b57d](https://github.com/markuplint/markuplint/commit/d95b57d14c237c931f19a4f47b444b8f232268dc))
+- **html-spec:** add dir as required attribute for bdo element ([81a6c1f](https://github.com/markuplint/markuplint/commit/81a6c1f40630b3b9a904d380aed47042dfb90972))
+- **html-spec:** change dl content model from oneOrMore to zeroOrMore groups ([e29f6e4](https://github.com/markuplint/markuplint/commit/e29f6e4beb6cee1143d2aa4f53b770d97624dd0a)), closes [#3592](https://github.com/markuplint/markuplint/issues/3592)
+- **html-spec:** change optgroup label type from Any to NoEmptyAny ([c6b0e88](https://github.com/markuplint/markuplint/commit/c6b0e887cbb7576e9139a269c98b8718bcaffb18))
+- **html-spec:** correct permittedRoles for input[type=button/image/reset/submit] ([054e8e2](https://github.com/markuplint/markuplint/commit/054e8e2b1ca9c1b85fa5a0bcd18f72a22669f4a5)), closes [#3588](https://github.com/markuplint/markuplint/issues/3588)
+- **html-spec:** override MDN incorrect experimental flag on audio loading attribute ([09d5898](https://github.com/markuplint/markuplint/commit/09d5898256ef0880bcdce9d8a514fbcae6b4d226))
+- **html-spec:** override MDN incorrect experimental flag on video loading attribute ([52def75](https://github.com/markuplint/markuplint/commit/52def759157d046cacc0660422db188e4d8da753)), closes [#3697](https://github.com/markuplint/markuplint/issues/3697)
+- **html-spec:** remove global attr overrides that drop type definitions ([6ff2f0d](https://github.com/markuplint/markuplint/commit/6ff2f0d2ac8c0410b90af5e9ccb6be126ec96c39))
+- **html-spec:** restore ARIA 1.3 role name extraction ([01b9ce3](https://github.com/markuplint/markuplint/commit/01b9ce350b472e9f37f04238be446c3898e317a8))
+- **lint:** add oxlint/oxfmt terms to cspell dictionary ([66d1702](https://github.com/markuplint/markuplint/commit/66d1702a55ac6906b6688cdb50170d1eb7fe9d30))
+- **markuplint:** add default export condition and re-export isFatalError ([55a990a](https://github.com/markuplint/markuplint/commit/55a990affeec62c23a96cf15b42327fcb867e809))
+- **markuplint:** add missing status property to github-reporter test data ([bb7ba62](https://github.com/markuplint/markuplint/commit/bb7ba62e9350c173987f76de2741aaeb3ba0997b))
+- **ml-core:** propagate base rule disable to virtual rules in nodeRules/childNodeRules ([06fa269](https://github.com/markuplint/markuplint/commit/06fa2695d43671adc1ebcadf1304aca44fd10919)), closes [#3578](https://github.com/markuplint/markuplint/issues/3578)
+- **ml-spec:** apply optimizePermittedRoles to condition-specific overrides ([f6ad782](https://github.com/markuplint/markuplint/commit/f6ad7823c298011fb690cd3360392bc2893c05f2)), closes [#3724](https://github.com/markuplint/markuplint/issues/3724)
+- **ml-spec:** back-port content-model fields to schema source ([835d4d8](https://github.com/markuplint/markuplint/commit/835d4d8e4aa6bc2329b087194748159a8c1f86f6))
+- **ml-spec:** treat permittedRoles:false as forbidding all explicit roles ([098cc41](https://github.com/markuplint/markuplint/commit/098cc4167297599e7721bf88119af7d8f3c2df08)), closes [#3641](https://github.com/markuplint/markuplint/issues/3641)
+- restore "unexist" and "unsetuped" to cspell dictionary ([5f90e65](https://github.com/markuplint/markuplint/commit/5f90e65edfc56fb778e8f91dcb677dfa9edb18b8))
+- **rules:** allow zeroOrMore to match zero times in countPattern ([f5da340](https://github.com/markuplint/markuplint/commit/f5da340ac264c831ba0c74adfd039a1d0b6ff3fb)), closes [#3592](https://github.com/markuplint/markuplint/issues/3592)
+- **rules:** apply permitted-contents user rule on pretended elements ([04c42d1](https://github.com/markuplint/markuplint/commit/04c42d165aabde754d6544486ca5d39ef4a868bc)), closes [#3739](https://github.com/markuplint/markuplint/issues/3739)
+- **rules:** enforce descendantOf constraint in permitted-contents rule ([5375207](https://github.com/markuplint/markuplint/commit/5375207f169d26c65be6510f28c904d39454d08e))
+- **rules:** preserve role name in permitted-roles message, dedupe with implicit-role ([3123cd6](https://github.com/markuplint/markuplint/commit/3123cd690e140e142a94c09d6948bb9cf0dfd23e)), closes [#3641](https://github.com/markuplint/markuplint/issues/3641) [#3641](https://github.com/markuplint/markuplint/issues/3641) [#3641](https://github.com/markuplint/markuplint/issues/3641)
+- **rules:** update nu-validator config and exclude spec leniency cases ([c9cb5f7](https://github.com/markuplint/markuplint/commit/c9cb5f768fb2d95c13674dc408b325fb2ee3c874))
+- skip hasinfo files in nu-validator benchmark (same as haswarn) ([b7d7e0a](https://github.com/markuplint/markuplint/commit/b7d7e0a85cb32b468ef84c0e3997073098178cb3))
+- **types:** allow empty string for BCP47 type (lang="" is valid per HTML LS) ([ceba672](https://github.com/markuplint/markuplint/commit/ceba6726be6f34200bf54a2808c3eb893f31a032))
+- **types:** back-port Pattern type variant to specific-schema source ([6f7466f](https://github.com/markuplint/markuplint/commit/6f7466fc320fa69842f1f7e201a7b637baa58d1a))
+- **types:** reject zero and negative srcset descriptors ([5584d20](https://github.com/markuplint/markuplint/commit/5584d2089fe1dfe508d43601fa14aeff4e08b265))
+- **types:** use spec-verbatim regex for Email validator ([b517a49](https://github.com/markuplint/markuplint/commit/b517a4926ff213bbbc1eea27583c463b1917b760))
+- **vscode:** fix git blame porcelain parsing for repeated commits ([b5bb18d](https://github.com/markuplint/markuplint/commit/b5bb18d68b64f35228c7e352fd944afb284a6fe5))
+- **vscode:** import isFatalError via markuplint/suppressions ([17226e4](https://github.com/markuplint/markuplint/commit/17226e4bd01adf8b7df7f7682d33cd28564ea5cd))
+- **website:** add explicit anchor IDs to JA guide headings ([c3f8421](https://github.com/markuplint/markuplint/commit/c3f8421ded35956bcc415dd93e0417e19a03e632))
+- **website:** fix remaining broken anchor in JA properties page ([28367bf](https://github.com/markuplint/markuplint/commit/28367bfa095669d86450b6cfd7f7bdafcfef8798))
+
+- fix(parser-utils)!: align unquoted attribute value tokenizer with HTML spec ([5168c04](https://github.com/markuplint/markuplint/commit/5168c041a1d37a7080f12e3c7569b5bbacd5a2f1))
+- refactor(html-spec)!: migrate spec-generator into html-spec and run via native TypeScript ([8f928cc](https://github.com/markuplint/markuplint/commit/8f928ccf17a959447f477eb4c3d0db13ab2ba730))
+- build!: remove Prettier and replace with oxfmt ([2d1cf2b](https://github.com/markuplint/markuplint/commit/2d1cf2b06aa8f517769ddd58704cddf54537a2f4))
+- build!: remove ESLint and replace with oxlint ([1e0a337](https://github.com/markuplint/markuplint/commit/1e0a337707f76b903b16beeeb8c4d4fc0d8fc9e4))
+- feat(markuplint)!: remove deprecated autoLoad option and MLResultInfo_v1 interface ([4eb1d05](https://github.com/markuplint/markuplint/commit/4eb1d05eb2829019cd4073afa153a512b1c4c8fa))
+- feat(file-resolver)!: remove deprecated autoLoad parameter from resolveRules ([71cab2d](https://github.com/markuplint/markuplint/commit/71cab2d5fe5bedb3e28b162666cbad3d0a2773ff))
+- feat(ml-core)!: remove deprecated getIndent function ([7ab1a2d](https://github.com/markuplint/markuplint/commit/7ab1a2dae8f36002f4e5f3108a400bb9095db319))
+- feat(parser-utils)!: remove deprecated getLine and getCol functions ([51cd7a2](https://github.com/markuplint/markuplint/commit/51cd7a28b7fcdd4a9d52d57f35c55b97b3b196fe))
+- feat(types)!: remove deprecated Token.getLine and Token.getCol static methods ([fad012c](https://github.com/markuplint/markuplint/commit/fad012c9f1f7e5bb48b79ef639d4cefa61123c1c))
+
+### Features
+
+- add /list-rule-test slash command for rule test ID listing ([206979c](https://github.com/markuplint/markuplint/commit/206979c88c600edd6d8343b942831a7d7a20ffe9))
+- **config-presets:** add document uniqueness rules to html-standard preset ([6ed848b](https://github.com/markuplint/markuplint/commit/6ed848bd800416d1220b9de95ece7a3d752d881f))
+- **config-presets:** split a11y/wai-aria into 16 namedRuleGroup entries ([7ab707b](https://github.com/markuplint/markuplint/commit/7ab707b4ae1c1843a0576d31bf3fb20f0f5f7686))
+- enable TypeScript type-checking during test execution ([f956179](https://github.com/markuplint/markuplint/commit/f956179628e6313e6486821792a53fb9127d72fb))
+- **html-spec:** add conditional attribute constraints for script element ([9abbf95](https://github.com/markuplint/markuplint/commit/9abbf95c43d8bcedbfa19d0c09223a322967bc3b))
+- **html-spec:** add conditional value types for input element ([#3598](https://github.com/markuplint/markuplint/issues/3598)) ([290be1c](https://github.com/markuplint/markuplint/commit/290be1cde53165f1f6165731bf2ec184b0c46b54))
+- **html-spec:** add forbiddenAncestors for main, header, footer, address ([e51b745](https://github.com/markuplint/markuplint/commit/e51b745c0fd7662946b267b67f94b1bfbf95b89c))
+- **html-spec:** add loading attribute type for audio and video elements ([12a03f7](https://github.com/markuplint/markuplint/commit/12a03f7252bfb8bae2bd427dbb9a553e2038ecb3)), closes [#3542](https://github.com/markuplint/markuplint/issues/3542)
+- **html-spec:** add speculationrules to script type attribute enum ([3568ee6](https://github.com/markuplint/markuplint/commit/3568ee6012b3f30e3f913f346e000519939c1448))
+- **html-spec:** add touch event handler attributes (ontouchstart, etc.) ([9be2b57](https://github.com/markuplint/markuplint/commit/9be2b57ea39ec33c7d3f24bca530a40b6e4d7708))
+- **html-spec:** add uniqueAttrs for track default attribute ([ccafb65](https://github.com/markuplint/markuplint/commit/ccafb65fbda86e42f509566eb95798cfac271c11))
+- **html-spec:** split link[as] enum by rel condition ([#3189](https://github.com/markuplint/markuplint/issues/3189)) ([6aa1fe8](https://github.com/markuplint/markuplint/commit/6aa1fe896223a3b7437e38a3c2b5092edefcd240))
+- **html-spec:** use #nonEmptyText for title and option elements ([ede5d4c](https://github.com/markuplint/markuplint/commit/ede5d4c87c72b7e2e95f17799f3632eb9108feef))
+- **i18n:** add "prohibited" keyword for naming prohibition messages ([87b4fca](https://github.com/markuplint/markuplint/commit/87b4fcaa17552e08d1c8eeeeab015f64bf953232))
+- **markuplint:** add CLI summary output ([4743ba0](https://github.com/markuplint/markuplint/commit/4743ba0be7311288ea2b28fb9345567cf97c1a23))
+- **markuplint:** add suppressions subpath export and editor severity downgrade ([362adef](https://github.com/markuplint/markuplint/commit/362adef1a040c66fec36c01bd8d8fcbe9a66c453))
+- **ml-core:** propagate option overrides to virtual rules in nodeRules/childNodeRules ([9cb9521](https://github.com/markuplint/markuplint/commit/9cb9521fc1303c132f547ffd1e8c82b3b9099bef))
+- **ml-spec:** add #nonEmptyText to Category type ([d60be3f](https://github.com/markuplint/markuplint/commit/d60be3f43bff6cc5d9c1cfa9dcdbe5d69f8697b8))
+- **ml-spec:** add ConditionalAttributeType to Attribute.type union ([#3685](https://github.com/markuplint/markuplint/issues/3685)) ([a619a07](https://github.com/markuplint/markuplint/commit/a619a071d93566dd8aa7ab8dee2ed751c2e8756c)), closes [#3598](https://github.com/markuplint/markuplint/issues/3598) [#3189](https://github.com/markuplint/markuplint/issues/3189)
+- **ml-spec:** add forbiddenAncestors field to ContentModel type ([5b32af5](https://github.com/markuplint/markuplint/commit/5b32af5ee7041843b63ca1542cb811d3192e8527))
+- **ml-spec:** add uniqueAttrs field to ContentModel type ([d9e6f16](https://github.com/markuplint/markuplint/commit/d9e6f169888e92c9e8c85de884775cf026c2d1bf))
+- **rules:** add #nonEmptyText matching to permitted-contents engine ([4b91cf3](https://github.com/markuplint/markuplint/commit/4b91cf37cb8d54b86e8bfe125276251f2d8cb97b))
+- **rules:** add document uniqueness rules (autofocus, visible-main, charset) ([1befb20](https://github.com/markuplint/markuplint/commit/1befb2051015df7669fbd07da3fea3a0b6542a90))
+- **rules:** check forbiddenAncestors in permitted-contents rule ([0633c05](https://github.com/markuplint/markuplint/commit/0633c05df91a2f51361a72efe8ebb2e604a53918))
+- **rules:** check uniqueAttrs constraint in permitted-contents rule ([6b2cf6b](https://github.com/markuplint/markuplint/commit/6b2cf6b9fc7d5320543acdc9271de12e46677b9f))
+- **rules:** disallow is attribute on autonomous custom elements ([ed7ec78](https://github.com/markuplint/markuplint/commit/ed7ec78c058030caacc8bd23c90c489c77c40b27))
+- **rules:** enforce ARIA naming prohibition on elements without role ([f67bd5d](https://github.com/markuplint/markuplint/commit/f67bd5dcb33f28ef3daf3ecd3b5d30ad4ced7814)), closes [#3630](https://github.com/markuplint/markuplint/issues/3630)
+- **rules:** implement conditional type resolution for input value ([#3598](https://github.com/markuplint/markuplint/issues/3598)) ([d478ce6](https://github.com/markuplint/markuplint/commit/d478ce669387c868dd2e4b81cad32bcccddef7f2))
+- **rules:** split wai-aria into 16 granular sub-rules ([1aded91](https://github.com/markuplint/markuplint/commit/1aded912ca839a75b89d14f3ae6ba30c2701a61b)), closes [#3645](https://github.com/markuplint/markuplint/issues/3645)
+- **types:** add SimpleColor, Email, and DateTime subtype validators ([1687931](https://github.com/markuplint/markuplint/commit/1687931df058d334797135a925fdf738970ac25a)), closes [#3598](https://github.com/markuplint/markuplint/issues/3598)
+- **types:** add SRIHash type for integrity attribute validation ([7672999](https://github.com/markuplint/markuplint/commit/7672999a17f7d96dc286aabfcea5cc0861b73be5))
+- **types:** add SRIHash type for integrity attribute validation ([ea30c84](https://github.com/markuplint/markuplint/commit/ea30c84a87025ca5d7284ce5eaad89cc3c802d92))
+- **types:** add URL validation with strict checks ([3e64e86](https://github.com/markuplint/markuplint/commit/3e64e86331f92b5914a4107407f9b25233188083))
+- **vscode:** add suppressed message prefix and blame parser tests ([cd80a80](https://github.com/markuplint/markuplint/commit/cd80a802c3bad29a8a1d510d2160a21a6f0a2682))
+- **vscode:** add v5 handler with bulk suppression severity downgrade ([f31c0c9](https://github.com/markuplint/markuplint/commit/f31c0c93810a312aba948906f7f80e8814fc4078)), closes [#3536](https://github.com/markuplint/markuplint/issues/3536)
+
+### BREAKING CHANGES
+
+- The default `endOfUnquotedValueChars` no longer includes `/`.
+  Unquoted attribute values preserve `/` as part of the value, matching the
+  WHATWG HTML "attribute value (unquoted) state". Consumers that relied on `/`
+  as a terminator must pass `endOfUnquotedValueChars: ['\t', '\n', '\f', '\r',
+' ', '/', '>']` explicitly to `visitAttr()` / `attrTokenizer()`.
+
+Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com>
+
+- @markuplint/spec-generator package is removed.
+  Its functionality is now internal to @markuplint/html-spec.
+- Prettier is no longer used. Use oxfmt instead.
+- ESLint is no longer used. Use oxlint instead.
+- The autoLoad option has been removed from APIOptions.
+  Rules are now always auto-loaded unconditionally.
+  The MLResultInfo_v1 interface has also been removed.
+- The autoLoad parameter has been removed from resolveRules().
+  Rules are now always auto-loaded unconditionally.
+- getIndent() has been removed from the public API.
+- getLine() and getCol() have been removed.
+  Use getPosition() instead.
+- Token.getLine() and Token.getCol() have been removed.
+  Use Token.getPosition() instead.
+
 # [5.0.0-rc.1](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.0...v5.0.0-rc.1) (2026-03-27)
 
 ### Bug Fixes

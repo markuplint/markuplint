@@ -7,7 +7,6 @@ import { checkingDeprecatedRole } from '../wai-aria/checkings/deprecated-role.js
 import { defaultOptions } from '../wai-aria/default-options.js';
 import meta from './meta.js';
 
-/** Warns when a deprecated WAI-ARIA role is used. */
 export default createRule<boolean, Options>({
 	meta,
 	defaultSeverity: 'warning',

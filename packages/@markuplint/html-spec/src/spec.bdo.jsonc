@@ -16,9 +16,12 @@
 	},
 	"attributes": {
 		// https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-bdo-element
-		// "The dir global content attribute is required on this element."
+		// "The dir global content attribute is required on this element. The attribute's value must not be the keyword auto."
 		"dir": {
-			"required": true
+			"required": true,
+			"type": {
+				"enum": ["ltr", "rtl"]
+			}
 		}
 	},
 	"aria": {

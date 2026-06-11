@@ -11,6 +11,10 @@ import { findTemplateLiterals } from './find-template-literals.js';
  * Extracts HTML content from tagged template expressions (e.g., `html\`<div>...</div>\``)
  * and delegates HTML parsing to the standard HtmlParser with `${...}` expressions
  * masked as preprocessor-specific blocks.
+ *
+ * JSX syntax is intentionally not supported: the underlying TypeScript parser
+ * runs with `jsx: false`, so files containing JSX (`.tsx`) fail to parse.
+ * Use `@markuplint/jsx-parser` for JSX/TSX files.
  */
 export class TaggedTemplateLiteralParser extends HtmlParser {
 	readonly #tagNames: readonly string[];
@@ -25,6 +29,11 @@ export class TaggedTemplateLiteralParser extends HtmlParser {
 	 */
 	constructor(tagNames: readonly string[] = ['html']) {
 		super({
+			// Known limitation: this masking uses simple start/end delimiter matching,
+			// so expressions containing nested `}` characters (e.g. `${{ key: value }}`)
+			// may be incorrectly split. findTemplateLiterals extracts precise expression
+			// positions via the AST, but that information is not yet used to replace
+			// this delimiter-based mechanism.
 			ignoreTags: [
 				{
 					type: 'ttl-expression',
@@ -95,13 +104,6 @@ export class TaggedTemplateLiteralParser extends HtmlParser {
 	}
 }
 
-/**
- * Computes the 1-based line number and 1-based column for a given offset in a string.
- *
- * @param source - The source string
- * @param offset - The character offset (0-based)
- * @returns An object with 1-based `line` and `col` values
- */
 function getLineAndColumn(source: string, offset: number): { line: number; col: number } {
 	let line = 1;
 	let col = 1;

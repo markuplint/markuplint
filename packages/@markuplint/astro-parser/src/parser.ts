@@ -6,18 +6,27 @@ import { AttrState, Parser, ParserError } from '@markuplint/parser-utils';
 
 import { astroParse } from './astro-parser.js';
 import { detectBlockBehavior } from './detect-block-behavior.js';
+import { extractSpreadAttribute } from './spread-attr.js';
 
 /**
  * Parser implementation for Astro component templates.
  * Extends the base Parser to handle Astro-specific syntax including frontmatter blocks,
  * expression containers (`{}`), component/element/fragment types, Astro directives
  * (e.g., `class:list`, `set:html`), and shorthand attributes.
+ *
+ * When forward-porting a fix from the `v4` branch, beware the `Token` field
+ * rename: v4 uses `startOffset` / `startLine` / `startCol` where this branch
+ * uses `offset` / `line` / `col` (also in AST properties asserted in spec
+ * files). The build surfaces mismatches as `TS2339`.
  */
 class AstroParser extends Parser<Node> {
 	constructor() {
 		super({
+			// Astro requires explicit closing tags like XML.
 			endTagType: 'xml',
+			// Accepts both HTML void elements and XML-style self-closing (`<Component />`).
 			selfCloseType: 'html+xml',
+			// Distinguishes components (`<MyComp>`) from HTML elements (`<div>`).
 			tagNameCaseSensitive: true,
 		});
 	}
@@ -183,6 +192,17 @@ class AstroParser extends Parser<Node> {
 	 * the start tag, then delegating to the base visitElement with Astro-specific
 	 * options including nameless fragment support.
 	 *
+	 * This hands the entire element source (including body and end tag) to
+	 * `parseCodeFragment()`. Raw-text safety for `<script>` and `<style>`
+	 * bodies is owned by parser-utils' `parseCodeFragment()` (its
+	 * `rawTextElements` handling per HTML LS 13.2.5.1); without it, HTML-like
+	 * substrings in a script body (e.g. a regex matching a `<br>` tag) would
+	 * be re-tokenized as tags and throw `Invalid tag syntax` (#3825). If that
+	 * regression reappears, the fix belongs in parser-utils, not here.
+	 *
+	 * @see https://github.com/markuplint/markuplint/issues/3825
+	 * @see https://html.spec.whatwg.org/multipage/syntax.html#cdata-rcdata-restrictions
+	 *
 	 * @param token - The child token representing the element
 	 * @param childNodes - The child Astro AST nodes within the element
 	 * @returns An array of markuplint node tree items
@@ -246,12 +266,45 @@ class AstroParser extends Parser<Node> {
 	/**
 	 * Visits an attribute token, handling Astro-specific syntax including
 	 * curly-brace expression values, shorthand attributes (`{name}`),
+	 * spread attributes (`{...expr}`, including TypeScript and nested
+	 * expressions, see #3856; root cause originally reported as #3824),
 	 * and template directives (e.g., `class:list`, `set:html`).
 	 *
 	 * @param token - The token representing the attribute
 	 * @returns The parsed attribute node with Astro-specific metadata
 	 */
 	visitAttr(token: Token) {
+		// The spread pre-pass MUST run before `super.visitAttr()`: falling
+		// through to the base path routes the token through the espree-based
+		// `safeScriptParser`, which reproduces the truncation and
+		// `Invalid tag syntax` failures of #3824 / #3856.
+		const spreadHit = extractSpreadAttribute(token.raw);
+		if (spreadHit) {
+			let spreadLine = token.line;
+			let spreadCol = token.col;
+			for (const c of spreadHit.leadingSpace) {
+				if (c === '\n') {
+					spreadLine++;
+					spreadCol = 1;
+				} else {
+					spreadCol++;
+				}
+			}
+			const spread = super.visitSpreadAttr({
+				raw: spreadHit.spreadRaw,
+				offset: token.offset + spreadHit.leadingSpace.length,
+				line: spreadLine,
+				col: spreadCol,
+			});
+			// `extractSpreadAttribute` already validates the `{...EXPR}` shape
+			// so `super.visitSpreadAttr` is expected to return a node here.
+			// Falling through to the generic attr path is a defensive safeguard
+			// against future shape changes in the parent class.
+			if (spread) {
+				return spreadHit.leftover ? { ...spread, __rightText: spreadHit.leftover } : spread;
+			}
+		}
+
 		const attr = super.visitAttr(token, {
 			quoteSet: [
 				{ start: '"', end: '"', type: 'string' },
@@ -278,6 +331,12 @@ class AstroParser extends Parser<Node> {
 
 		/**
 		 * Detects Template Directive
+		 *
+		 * `class:` is special-cased with `potentialName: 'class'` so markuplint
+		 * rules for the standard `class` attribute still apply to `class:list`.
+		 * Every other `prefix:name` pattern gets `isDirective: true`, which
+		 * tells markuplint it is framework-specific and must not be validated
+		 * as a standard HTML attribute.
 		 *
 		 * @see https://docs.astro.build/en/reference/directives-reference/
 		 */

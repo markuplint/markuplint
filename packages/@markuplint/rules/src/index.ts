@@ -22,14 +22,21 @@ import DeprecatedElement from './deprecated-element/index.js';
 import DisallowedElement from './disallowed-element/index.js';
 import Doctype from './doctype/index.js';
 import EndTag from './end-tag/index.js';
+import FormAttrReferencesForm from './form-attr-references-form/index.js';
 import HeadElementOrder from './head-element-order/index.js';
 import HeadingLevels from './heading-levels/index.js';
 import IdDuplication from './id-duplication/index.js';
 import IneffectiveAttr from './ineffective-attr/index.js';
+import InputButtonNonEmptyValue from './input-button-non-empty-value/index.js';
+import InputFileEmptyValue from './input-file-empty-value/index.js';
 import InvalidAttr from './invalid-attr/index.js';
+import ItempropRequiresItemscope from './itemprop-requires-itemscope/index.js';
 import LabelHasControl from './label-has-control/index.js';
+import LabelNoMultipleControls from './label-no-multiple-controls/index.js';
 import LandmarkRoles from './landmark-roles/index.js';
 import LinkTypes from './link-types/index.js';
+import MapIdNameMatch from './map-id-name-match/index.js';
+import MeterValueBounds from './meter-value-bounds/index.js';
 import NeighborPopovers from './neighbor-popovers/index.js';
 import NoAmbiguousNavigableTargetNames from './no-ambiguous-navigable-target-names/index.js';
 import NoBooleanAttrValue from './no-boolean-attr-value/index.js';
@@ -39,6 +46,7 @@ import NoDuplicateAutofocus from './no-duplicate-autofocus/index.js';
 import NoDuplicateDt from './no-duplicate-dt/index.js';
 import NoDuplicateVisibleMain from './no-duplicate-visible-main/index.js';
 import NoEmptyPalpableContent from './no-empty-palpable-content/index.js';
+import NoExtraSelectedOptions from './no-extra-selected-options/index.js';
 import NoHardCodeId from './no-hard-code-id/index.js';
 import NoOrphanedEndTag from './no-orphaned-end-tag/index.js';
 import NoReferToNonExistentId from './no-refer-to-non-existent-id/index.js';
@@ -50,6 +58,7 @@ import RedundantAccessibleName from './redundant-accessible-name/index.js';
 import RequireAccessibleName from './require-accessible-name/index.js';
 import RequireDatetime from './require-datetime/index.js';
 import RequireDialogAutofocus from './require-dialog-autofocus/index.js';
+import ScriptContent from './script-content/index.js';
 import SrcsetSizesConstraint from './srcset-sizes-constraint/index.js';
 import RequiredAttr from './required-attr/index.js';
 import RequiredElement from './required-element/index.js';
@@ -92,14 +101,21 @@ const rules = {
 	'disallowed-element': DisallowedElement,
 	doctype: Doctype,
 	'end-tag': EndTag,
+	'form-attr-references-form': FormAttrReferencesForm,
 	'head-element-order': HeadElementOrder,
 	'heading-levels': HeadingLevels,
 	'id-duplication': IdDuplication,
 	'ineffective-attr': IneffectiveAttr,
+	'input-button-non-empty-value': InputButtonNonEmptyValue,
+	'input-file-empty-value': InputFileEmptyValue,
 	'invalid-attr': InvalidAttr,
+	'itemprop-requires-itemscope': ItempropRequiresItemscope,
 	'label-has-control': LabelHasControl,
+	'label-no-multiple-controls': LabelNoMultipleControls,
 	'landmark-roles': LandmarkRoles,
 	'link-types': LinkTypes,
+	'map-id-name-match': MapIdNameMatch,
+	'meter-value-bounds': MeterValueBounds,
 	'neighbor-popovers': NeighborPopovers,
 	'no-ambiguous-navigable-target-names': NoAmbiguousNavigableTargetNames,
 	'no-boolean-attr-value': NoBooleanAttrValue,
@@ -109,6 +125,7 @@ const rules = {
 	'no-duplicate-dt': NoDuplicateDt,
 	'no-duplicate-visible-main': NoDuplicateVisibleMain,
 	'no-empty-palpable-content': NoEmptyPalpableContent,
+	'no-extra-selected-options': NoExtraSelectedOptions,
 	'no-hard-code-id': NoHardCodeId,
 	'no-orphaned-end-tag': NoOrphanedEndTag,
 	'no-refer-to-non-existent-id': NoReferToNonExistentId,
@@ -123,6 +140,7 @@ const rules = {
 	'required-attr': RequiredAttr,
 	'required-element': RequiredElement,
 	'required-h1': RequiredH1,
+	'script-content': ScriptContent,
 	'srcset-sizes-constraint': SrcsetSizesConstraint,
 	'table-row-column-alignment': TableRowColumnAlignment,
 	'use-list': UseList,

@@ -24,16 +24,6 @@ import { checkingRequiredProp } from './checkings/required-prop.js';
 import { checkingValue } from './checkings/value.js';
 import meta from './meta.js';
 
-/**
- * WAI-ARIA rule for markuplint.
- *
- * Validates the correct usage of WAI-ARIA roles, states, and properties
- * on HTML elements. This rule performs a comprehensive set of checks including
- * role validity, property values, required owned elements, and conformance
- * with the ARIA in HTML specification.
- *
- * Individual checks can be toggled on or off via the rule's options.
- */
 export default createRule<boolean, Options>({
 	meta: meta,
 	defaultOptions,
@@ -84,11 +74,14 @@ export default createRule<boolean, Options>({
 					report(checkingDeprecatedRole({ attr: roleAttr, role: computed.role }));
 				}
 
-				if (el.rule.options.disallowSetImplicitRole) {
-					report(checkingImplicitRole({ attr: roleAttr }));
-				}
+				// If the explicit role duplicates the implicit role, surface only that
+				// (more specific) message. Otherwise fall through to the general
+				// permitted-roles check to avoid emitting two violations for the same
+				// offending token.
+				const implicitRoleViolated =
+					el.rule.options.disallowSetImplicitRole && report(checkingImplicitRole({ attr: roleAttr }));
 
-				if (el.rule.options.permittedAriaRoles) {
+				if (el.rule.options.permittedAriaRoles && !implicitRoleViolated) {
 					report(checkingPermittedRoles({ attr: roleAttr }));
 				}
 			}

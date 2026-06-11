@@ -181,6 +181,10 @@ In addition, **spec plugins** include definitions for framework-specific attribu
 
 In **React**, **Vue**, and more, custom components cannot be evaluated as HTML elements. This means Markuplint's content model rules — such as [`permitted-contents`](/docs/rules/permitted-contents) — have no way of knowing what a component actually renders. Without this information, a `<Button>` component that renders a `<button>` element is treated as an unknown element, and invalid nesting like `<a><Button /></a>` (interactive content inside interactive content) goes undetected.
 
+:::note Scope
+Pretenders apply to **custom components only** — web components, JSX/Vue/Svelte authored components, and HTML-parsed names that have no spec entry. Targeting a standard HTML element (`<marquee>`, `<button>`, etc.) is a no-op so that deprecation, ARIA, and browser-support rules keyed on the original tag are not silently masked.
+:::
+
 <!-- prettier-ignore-start -->
 ```jsx
 <List>{/* No evaluate as native HTML Element */}
@@ -225,6 +229,8 @@ You can manually specify a [selector](./selectors) for each component and the HT
 This works well for small projects, but manually maintaining the list becomes tedious as your component library grows. That's where **dynamic scanning** comes in.
 
 See the details of [`pretenders`](/docs/configuration/properties#pretenders) property on the configuration if you want.
+
+To enforce structural relationships between components (e.g., a `<Breadcrumbs>` must contain a `<BreadcrumbList>`), combine pretenders with the [`permitted-contents`](/docs/rules/permitted-contents) rule. Its tag-rule entries are evaluated against the component's source-level name in addition to the pretended HTML content model, so component-level structure can be validated alongside the underlying HTML.
 
 ### Dynamic scanning {#pretenders-scan}
 

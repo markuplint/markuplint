@@ -7,7 +7,6 @@ import { checkingDefaultValue } from '../wai-aria/checkings/default-value.js';
 import { defaultOptions } from '../wai-aria/default-options.js';
 import meta from './meta.js';
 
-/** Warns when an ARIA property is explicitly set to its spec-defined default value. */
 export default createRule<boolean, Options>({
 	meta,
 	defaultSeverity: 'warning',

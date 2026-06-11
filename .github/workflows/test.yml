@@ -11,10 +11,12 @@ on:
             - '.github/workflows/test.yml'
             - 'vitest.config.ts'
             - 'vitest.cross-os.config.ts'
+            - 'package.json'
             - 'packages/**'
             - '!**/*.md'
             - 'packages/@markuplint/config-presets/src/README.md'
             - 'test/**'
+            - 'tests/external/bench/**'
             - 'yarn.lock'
             - '.yarnrc.yml'
             - '.oxfmtrc.json'
@@ -41,7 +43,7 @@ jobs:
                   fetch-depth: '0'
 
             - name: Use Node.js ${{ matrix.node }}
-              uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6
+              uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
               with:
                   node-version: ${{ matrix.node }}
 
@@ -56,7 +58,7 @@ jobs:
 
             - name: Cache Restore devDependencies
               id: cache-restore-dev-depends
-              uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
+              uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
               with:
                   path: |
                       '**/node_modules'
@@ -70,7 +72,7 @@ jobs:
             - name: Cache Save devDependencies
               if: steps.cache-restore-dev-depends.outputs.cache-hit != 'true'
               id: cache-save-dev-depends
-              uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
+              uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
               with:
                   path: |
                       '**/node_modules'
@@ -91,7 +93,7 @@ jobs:
                   fetch-depth: '0'
 
             - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
-              uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6
+              uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
               with:
                   node-version: ${{ env.NODE_BUILD_VERSION }}
 
@@ -106,7 +108,7 @@ jobs:
 
             - name: Cache Restore devDependencies
               id: cache-restore-dev-depends
-              uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
+              uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
               with:
                   path: |
                       '**/node_modules'
@@ -115,7 +117,7 @@ jobs:
 
             - name: Cache Restore Production
               id: cache-restore-prod
-              uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
+              uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
               with:
                   path: |
                       packages/**/lib
@@ -160,7 +162,7 @@ jobs:
 
             - name: Cache Save Production
               if: steps.cache-restore-prod.outputs.cache-hit != 'true'
-              uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
+              uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
               with:
                   enableCrossOsArchive: true
                   path: |
@@ -181,7 +183,7 @@ jobs:
             - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
             - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
-              uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6
+              uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
               with:
                   node-version: ${{ env.NODE_BUILD_VERSION }}
 
@@ -195,7 +197,7 @@ jobs:
               run: echo "dir=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
 
             - name: Cache Restore devDependencies
-              uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
+              uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
               with:
                   path: |
                       '**/node_modules'
@@ -238,7 +240,7 @@ jobs:
                   fetch-depth: '0'
 
             - name: Use Node.js ${{ matrix.node }}
-              uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6
+              uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
               with:
                   node-version: ${{ matrix.node }}
 
@@ -253,7 +255,7 @@ jobs:
 
             - name: Cache Restore devDependencies
               id: cache-restore-dev-depends
-              uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
+              uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
               with:
                   path: |
                       '**/node_modules'
@@ -266,7 +268,7 @@ jobs:
 
             - name: Cache Save devDependencies
               if: steps.cache-restore-dev-depends.outputs.cache-hit != 'true'
-              uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
+              uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
               with:
                   path: |
                       '**/node_modules'
@@ -287,7 +289,7 @@ jobs:
                   fetch-depth: '0'
 
             - name: Use Node.js ${{ matrix.node }}
-              uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6
+              uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
               with:
                   node-version: ${{ matrix.node }}
 
@@ -301,7 +303,7 @@ jobs:
               run: echo "dir=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
 
             - name: Cache Restore devDependencies
-              uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
+              uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
               with:
                   path: |
                       '**/node_modules'
@@ -309,7 +311,7 @@ jobs:
                   key: dev-depends-ubuntu-latest-node${{ matrix.node }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
 
             - name: Cache Restore Production
-              uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
+              uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
               with:
                   enableCrossOsArchive: true
                   path: |
@@ -353,7 +355,7 @@ jobs:
                   fetch-depth: '0'
 
             - name: Use Node.js ${{ matrix.node }}
-              uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6
+              uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
               with:
                   node-version: ${{ matrix.node }}
 
@@ -367,7 +369,7 @@ jobs:
               run: echo "dir=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
 
             - name: Cache Restore devDependencies
-              uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
+              uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
               with:
                   path: |
                       '**/node_modules'
@@ -375,7 +377,7 @@ jobs:
                   key: dev-depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
 
             - name: Cache Restore Production
-              uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
+              uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
               with:
                   enableCrossOsArchive: true
                   path: |
@@ -417,7 +419,7 @@ jobs:
                   fetch-depth: '0'
 
             - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
-              uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6
+              uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
               with:
                   node-version: ${{ env.NODE_BUILD_VERSION }}
 
@@ -441,7 +443,7 @@ jobs:
               shell: bash
 
             - name: Cache Restore devDependencies
-              uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
+              uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
               with:
                   path: |
                       '**/node_modules'
@@ -449,7 +451,7 @@ jobs:
                   key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
 
             - name: Cache Restore Production
-              uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
+              uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
               with:
                   enableCrossOsArchive: true
                   path: |
@@ -473,12 +475,20 @@ jobs:
                   cp -r ${{ github.workspace }}/test ${{ github.workspace }}/../sandbox
                   find ${{ github.workspace }}/../sandbox/test -maxdepth 1 2>/dev/null || true
 
+            # Capture the root packageManager BEFORE the deletion step below,
+            # so the sandbox Setup step can reuse the same Yarn version
+            # without drifting from the repository's pin.
+            - name: Capture root packageManager
+              if: matrix.pm == 'yarn'
+              id: capture-package-manager
+              run: echo "value=$(jq -er '.packageManager' package.json)" >> "$GITHUB_OUTPUT"
+
             - name: Delete package manager settings
               run: jq 'del(.packageManager)' package.json > tmp.json && mv tmp.json package.json
 
             - name: Install pnpm
               if: matrix.pm == 'pnpm'
-              uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v5
+              uses: pnpm/action-setup@71c92474e7e4f5bca283fb17ef80fba9cdb2b4b1 # v6
               with:
                   version: latest # Use latest pnpm version
                   run_install: false
@@ -486,12 +496,18 @@ jobs:
             - name: Setup Yarn v4 for sandbox
               if: matrix.pm == 'yarn'
               working-directory: ../sandbox/test/isolated-env/${{ matrix.env }}
+              env:
+                  PACKAGE_MANAGER: ${{ steps.capture-package-manager.outputs.value }}
               run: |
                   cp ${{ github.workspace }}/.yarnrc.yml .yarnrc.yml
                   echo 'enableHardenedMode: false' >> .yarnrc.yml
                   # Build resolutions from dependencies to force yarn to use file: versions
-                  # for transitive dependencies (prevents npm registry fallback)
-                  jq '. + {"packageManager": "yarn@4.12.0"} + {"resolutions": .dependencies}' package.json > tmp.json && mv tmp.json package.json
+                  # for transitive dependencies (prevents npm registry fallback).
+                  # PACKAGE_MANAGER is captured from the root package.json before the
+                  # "Delete package manager settings" step, so the sandbox stays in sync
+                  # with the repository's Yarn version on every bump.
+                  echo "Using packageManager from root: $PACKAGE_MANAGER"
+                  jq --arg pm "$PACKAGE_MANAGER" '. + {"packageManager": $pm} + {"resolutions": .dependencies}' package.json > tmp.json && mv tmp.json package.json
 
             - name: Install dependencies
               working-directory: ../sandbox/test/isolated-env/${{ matrix.env }}
@@ -515,7 +531,7 @@ jobs:
                   fetch-depth: '0'
 
             - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
-              uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6
+              uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
               with:
                   node-version: ${{ env.NODE_BUILD_VERSION }}
 
@@ -534,7 +550,7 @@ jobs:
               run: echo "dir=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
 
             - name: Cache Restore devDependencies
-              uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
+              uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
               with:
                   path: |
                       '**/node_modules'
@@ -542,7 +558,7 @@ jobs:
                   key: dev-depends-ubuntu-latest-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
 
             - name: Cache Restore Production
-              uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
+              uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
               with:
                   enableCrossOsArchive: true
                   path: |
@@ -573,7 +589,7 @@ jobs:
                   fetch-depth: '0'
 
             - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
-              uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6
+              uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
               with:
                   node-version: ${{ env.NODE_BUILD_VERSION }}
 
@@ -592,7 +608,7 @@ jobs:
               run: echo "dir=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
 
             - name: Cache Restore devDependencies
-              uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
+              uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
               with:
                   path: |
                       '**/node_modules'
@@ -600,7 +616,7 @@ jobs:
                   key: dev-depends-ubuntu-latest-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
 
             - name: Cache Restore Production
-              uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
+              uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
               with:
                   enableCrossOsArchive: true
                   path: |

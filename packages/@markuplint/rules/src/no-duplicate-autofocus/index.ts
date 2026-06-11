@@ -4,11 +4,7 @@ import { createRule } from '@markuplint/ml-core';
 
 import meta from './meta.js';
 
-/**
- * Ensures no more than one element in a document has the `autofocus` attribute.
- *
- * @see https://html.spec.whatwg.org/multipage/interaction.html#the-autofocus-attribute
- */
+/** @see https://html.spec.whatwg.org/multipage/interaction.html#the-autofocus-attribute */
 export default createRule<boolean, null>({
 	meta: meta,
 	defaultValue: true,

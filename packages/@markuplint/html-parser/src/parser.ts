@@ -1,7 +1,8 @@
 import type { Replacements } from './optimize-starts-head-or-body.js';
 import type { Node } from './types.js';
-import type { MLASTNodeTreeItem, MLASTParentNode } from '@markuplint/ml-ast';
+import type { MLASTNodeTreeItem, MLASTParentNode, MLASTParseError } from '@markuplint/ml-ast';
 import type { ChildToken, ParseOptions, ParserOptions } from '@markuplint/parser-utils';
+import type { ParserError as Parse5ParserError } from 'parse5';
 
 import { Parser } from '@markuplint/parser-utils';
 import { parse, parseFragment } from 'parse5';
@@ -43,18 +44,53 @@ export class HtmlParser extends Parser<Node, State> {
 		});
 	}
 
-	tokenize(): { ast: Node[]; isFragment: boolean } {
-		const isFragment = isDocumentFragment(this.rawCode);
+	/**
+	 * `documentMode: 'auto'` (default) decides document vs. fragment via
+	 * `isDocumentFragment()`. Forcing `'document'` exists to surface parse5's
+	 * document-level conformance errors (`missing-doctype`, `misplaced-doctype`,
+	 * `non-conforming-doctype`, ...) on pages that omit the doctype, which
+	 * auto-detection would otherwise parse as a fragment and silence. Forcing
+	 * `'fragment'` exists for SSR / template partials that legitimately start
+	 * with `<head>`, `<meta>`, `<title>`, etc. Template-engine parsers that
+	 * delegate embedded HTML chunks to a private `HtmlParser` instance
+	 * (e.g. `@markuplint/markdown-parser`, `@markuplint/pug-parser`)
+	 * hard-set `'fragment'` on the embedded
+	 * call because the host syntax owns the document boundary; users cannot
+	 * override that.
+	 *
+	 * The collected `parseErrors` are consumed by `@markuplint/ml-core`,
+	 * which reports them as violations with `ruleId: 'parse-error'`.
+	 */
+	tokenize(options?: ParseOptions): { ast: Node[]; isFragment: boolean; parseErrors: readonly MLASTParseError[] } {
+		const mode = options?.documentMode ?? 'auto';
+		const isFragment = mode === 'document' ? false : mode === 'fragment' ? true : isDocumentFragment(this.rawCode);
 		const parseFn = isFragment ? parseFragment : parse;
-		const doc = parseFn(this.rawCode, {
+		const collected: MLASTParseError[] = [];
+		const rawCode = this.rawCode;
+		const doc = parseFn(rawCode, {
 			scriptingEnabled: false,
 			sourceCodeLocationInfo: true,
+			onParseError(error: Parse5ParserError) {
+				const startOffset = error.startOffset;
+				const endOffset = error.endOffset;
+				collected.push({
+					code: error.code,
+					startOffset,
+					startLine: error.startLine,
+					startCol: error.startCol,
+					endOffset,
+					endLine: error.endLine,
+					endCol: error.endCol,
+					raw: extractRawForParseError(rawCode, startOffset, endOffset),
+				});
+			},
 		});
 		const childNodes = doc.childNodes;
 
 		return {
 			ast: childNodes,
 			isFragment,
+			parseErrors: collected,
 		};
 	}
 
@@ -91,7 +127,12 @@ export class HtmlParser extends Parser<Node, State> {
 		const location = originNode.sourceCodeLocation;
 
 		if (!location) {
-			// Ghost element
+			// Ghost element: parse5 follows the HTML standard's tree construction
+			// and implicitly inserts elements (e.g. `<html>`, `<head>`, `<body>`)
+			// that have no counterpart in the source, so they carry no
+			// `sourceCodeLocation`. The empty `raw` and the position borrowed from
+			// `afterPosition` (or the parent's end position) keep the source
+			// mapping of real elements intact.
 			const afterNode =
 				this.state.afterPosition.depth === depth
 					? this.state.afterPosition
@@ -224,3 +265,35 @@ export class HtmlParser extends Parser<Node, State> {
  * Default singleton instance of the HTML parser.
  */
 export const parser = new HtmlParser();
+
+/**
+ * parse5 frequently reports parse errors at zero-width positions
+ * (e.g., `duplicate-attribute` fires at the `=` between the attribute name
+ * and its value, not over the name itself). A bare `rawCode.slice(start, end)`
+ * on these positions yields the empty string, which leaves the reporter with
+ * no excerpt to show the user.
+ *
+ * If the span is empty, fall back to the **token-shaped** substring around
+ * `startOffset` — the run of non-whitespace, non-`<>"'/=` characters that
+ * sits at that position. This is a best-effort heuristic: it surfaces the
+ * attribute name, tag-name fragment, or character-reference body that
+ * triggered the error, without claiming any specific spec semantics.
+ *
+ * Capped at 32 chars so a runaway slice (e.g., on `unexpected-null-character`
+ * pointing into a long text node) does not bloat reporter output.
+ */
+export function extractRawForParseError(rawCode: string, startOffset: number, endOffset: number): string {
+	if (endOffset > startOffset) {
+		return rawCode.slice(startOffset, endOffset);
+	}
+	let begin = startOffset;
+	while (begin > 0 && !/[\s<>"'/=&]/.test(rawCode[begin - 1] ?? '')) {
+		begin--;
+	}
+	let end = startOffset;
+	const max = Math.min(rawCode.length, startOffset + 32);
+	while (end < max && !/[\s<>"'/=&]/.test(rawCode[end] ?? '')) {
+		end++;
+	}
+	return rawCode.slice(begin, end);
+}

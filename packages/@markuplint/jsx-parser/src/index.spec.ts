@@ -644,6 +644,19 @@ const C = () => {
 		expect(nodeListToDebugMaps(doc.nodeList, true)).toStrictEqual(['[9:10]>[9:17](148,155)div: <div␣/>']);
 	});
 
+	// Pins the cross-package impact of Issue #3594's default change.
+	// JSX does not allow unquoted string attribute values at the language level
+	// (typescript-estree rejects them), so the default change is behaviorally
+	// inert for JSX. This test pins that fact: `/` in curly-brace expressions
+	// stays untouched because the tokenizer switches to `script` quote type
+	// before `endOfUnquotedValueChars` is consulted.
+	test('#3594 JSX curly-brace expressions still parse paths containing "/"', () => {
+		const doc = parse('const C = () => <img src={"/foo/bar.png"} alt="x" />;');
+		const img = doc.nodeList.find(n => n.nodeName === 'img');
+		const srcAttr = img.attributes.find(a => a.name?.raw === 'src');
+		expect(srcAttr.value.raw).toBe('"/foo/bar.png"');
+	});
+
 	test('#1451', () => {
 		expect(parse('<div></div>').nodeList[0].elementType).toBe('html');
 		expect(parse('<x-div></x-div>').nodeList[0].elementType).toBe('web-component');
@@ -784,5 +797,36 @@ const C = () => {
 			'[7:15]>[8:1](154,155)#text: ⏎',
 			'[8:1]>[8:8](155,162)html: </html>',
 		]);
+	});
+
+	describe('#3825 raw-text element body via JSX expression child', () => {
+		// Note: JSX's <script>{`...`}</script> path does NOT exercise parser-utils'
+		// raw-text branch in `parseCodeFragment` — the body is a JSXExpressionContainer
+		// child and never re-tokenized. The primary value of these tests is to lock in
+		// the upstream invariant "TypeScript ESTree rejects bare `<` in element body
+		// before markuplint sees it", so a future upstream relaxation can't silently
+		// change observed JSX tag emissions.
+
+		test('script body wrapped in template literal expression child', () => {
+			const doc = parse('<div><script>{`const t = s.replace(/<br\\s*\\/?>/gi, " ");`}</script></div>');
+			const tags = doc.nodeList.filter((n: any) => n.type === 'starttag' || n.type === 'endtag');
+			expect(tags.map((t: any) => `${t.type}:${t.nodeName}`)).toEqual([
+				'starttag:div',
+				'starttag:script',
+				'endtag:script',
+				'endtag:div',
+			]);
+		});
+
+		test('style body wrapped in template literal expression child', () => {
+			const doc = parse('<div><style>{`/* <br = */ a{color:red}`}</style></div>');
+			const tags = doc.nodeList.filter((n: any) => n.type === 'starttag' || n.type === 'endtag');
+			expect(tags.map((t: any) => `${t.type}:${t.nodeName}`)).toEqual([
+				'starttag:div',
+				'starttag:style',
+				'endtag:style',
+				'endtag:div',
+			]);
+		});
 	});
 });

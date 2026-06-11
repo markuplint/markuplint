@@ -111,6 +111,8 @@
 
 ### `markuplint:html-standard` {#preset-html-standard}
 
+仕様ベースの属性検証のため、基本ルール [`invalid-attr`](/docs/rules/invalid-attr) も有効にします。`invalid-attr` をラップする名前付きルール（例: `a11y/no-accesskey`）はそれぞれの狭い allow/disallow チェックのみを行い、HTML仕様に基づく全般的な検証は基本ルールが担当します。
+
 | 名前付きルール                              | 解説                                                                                                                           |
 | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
 | `html-standard/id-duplication`              | `id`属性値がドキュメント内で重複している場合に警告します。                                                                     |
@@ -127,7 +129,7 @@
 | `html-standard/no-duplicate-dt`             | ひとつの`<dl>`要素内に、同じ名前の`<dt>`要素が複数あるべきではありません。                                                     |
 | `html-standard/placeholder-label-option`    | `<select>`要素がプレースホルダーラベルオプション（空の値を持つ最初の`<option>`）を必要とするかどうかを確認します。             |
 | `html-standard/require-datetime`            | `<time>`要素の内容が有効な日時文字列でない場合、`datetime`属性が必要です。                                                     |
-| `html-standard/srcset-sizes-constraint`     | `<img>`および`<source>`要素の`srcset`、`sizes`、`loading`属性間のWHATWG制約を検証します。                                      |
+| `html-standard/srcset-sizes-constraint`     | `<img>`および`<source>`要素の`srcset`、`sizes`、`loading`、`media`、`type`属性間のWHATWG制約を検証します。                     |
 | `html-standard/head-charset-utf8`           | ドキュメントheadに`<meta charset="UTF-8">`要素を必須とします。                                                                 |
 | `html-standard/no-small-in-heading`         | `<h1>`〜`<h6>`内で`<small>`を使用すべきではありません。                                                                        |
 | `html-standard/figure-no-caption`           | `<figure>`内で`<table>`が`<figcaption>`以外の唯一のコンテンツである場合、`<caption>`を省略して`<figcaption>`を使用すべきです。 |
@@ -146,9 +148,9 @@
 
 ### `markuplint:rdfa` {#preset-rdfa}
 
-| 名前付きルール       | 解説                                                                                   |
-| -------------------- | -------------------------------------------------------------------------------------- |
-| `rdfa/meta-property` | **Open Graph**等のRDFaベースのメタデータのため、`<meta>`の`property`属性を許容します。 |
+`<meta property>` 要素に対し、`invalid-attr` を拡張して `property` と `content` 属性を許可します。これにより、**Open Graph** 等のRDFaベースのメタデータが仕様検証の違反として報告されなくなります。また、同要素に対し `required-attr` を無効化します。
+
+このプリセットは名前付きルールを公開しません。
 
 ### `markuplint:recommended-static-html` {#preset-static-html}
 

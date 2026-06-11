@@ -1,8 +1,12 @@
 {
 	"name": "@markuplint/types",
-	"version": "5.0.0-rc.1",
+	"version": "5.0.0-rc.4",
 	"description": "Type declaration and value checker",
-	"repository": "git@github.com:markuplint/markuplint.git",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/markuplint/markuplint.git",
+		"directory": "packages/@markuplint/types"
+	},
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
 	"engines": {
@@ -22,24 +26,22 @@
 		"entryPoint": "./src/index.ts"
 	},
 	"scripts": {
-		"build": "npx tsc --project tsconfig.build.json",
-		"dev": "npx tsc --watch --project tsconfig.build.json",
-		"clean": "npx tsc --build --clean tsconfig.build.json",
-		"schema": "run-s schema:types schema:schema build schema:prettier schema:eslint schema:prettier",
-		"schema:types": "tsx \"./gen/types.ts\"",
-		"schema:schema": "npx json2ts \"./types.schema.json\" > \"./src/types.schema.ts\"",
-		"schema:eslint": "npx eslint --fix \"./src/types.schema.ts\"",
-		"schema:prettier": "npx prettier --write \"./src/types.schema.ts\" \"./types.schema.json\" --log-level warn"
+		"build": "tsc --project tsconfig.build.json",
+		"dev": "tsc --watch --project tsconfig.build.json",
+		"clean": "tsc --build --clean tsconfig.build.json",
+		"schema": "run-s schema:types schema:schema",
+		"schema:types": "npx tsx \"./gen/types.ts\"",
+		"schema:schema": "npx json2ts \"./types.schema.json\" > \"./src/types.schema.ts\""
 	},
 	"dependencies": {
-		"@markuplint/shared": "5.0.0-rc.1",
+		"@markuplint/shared": "5.0.0-rc.4",
 		"@types/css-tree": "2.3.11",
 		"@types/debug": "4.1.13",
 		"bcp-47": "2.1.0",
 		"css-tree": "3.2.1",
 		"debug": "4.4.3",
 		"leven": "4.1.0",
-		"type-fest": "5.5.0",
+		"type-fest": "5.6.0",
 		"whatwg-mimetype": "5.0.0"
 	}
 }

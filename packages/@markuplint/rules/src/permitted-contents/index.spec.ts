@@ -702,6 +702,79 @@ describe('verify', () => {
 				raw: '<feBlend />',
 			},
 		]);
+
+		// SVG2 §17.6 — "may contain any element that its parent may contain,
+		// except itself". Direct nested <svg|a> must be rejected.
+		const { violations: violations3 } = await mlRuleTest(rule, '<svg><a href="#"><a href="#">nested</a></a></svg>');
+		expect(violations3).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 18,
+				message: 'The "a" element is a transparent model but also disallows the "a" element in this context',
+				raw: '<a href="#">',
+			},
+		]);
+
+		// Transitive nesting (via <g>) must also be rejected. The primary
+		// violation is the inner <a>: the spec change (`:has(svg|a)` in the
+		// transparent expression) is what catches it. The follow-up text
+		// violation is INCIDENTAL — it falls out of how the engine surfaces
+		// children of a transparent-rejected node, and may shift if that
+		// propagation logic changes. Treat only the first entry as the
+		// load-bearing assertion for this PR.
+		const { violations: violations4 } = await mlRuleTest(
+			rule,
+			'<svg><a href="#"><g><a href="#">nested</a></g></a></svg>',
+		);
+		expect(violations4[0]).toStrictEqual({
+			severity: 'error',
+			line: 1,
+			col: 21,
+			message: 'The "a" element is a transparent model but also disallows the "a" element in this context',
+			raw: '<a href="#">',
+		});
+	});
+
+	test('[permitted-contents-valid-002] svg:a wrapping <g> without nested <a>', async () => {
+		// Regression guard: the `:has(svg|a)` constraint added for
+		// invalid-017 must not over-fire on wrappers that legitimately do
+		// not contain another <a>.
+		const { violations } = await mlRuleTest(
+			rule,
+			'<svg><a href="#"><g><rect width="10" height="10"/></g></a></svg>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-invalid-030] svg:a self-nesting inside svg:switch', async () => {
+		// Covers the conditional `svg|switch > svg|a` branch of spec.svg_a.jsonc.
+		// SVG2 §17.6's self-exclusion applies in this context too; without this
+		// test, deleting the conditional-branch fix would not break any test.
+		const { violations } = await mlRuleTest(
+			rule,
+			'<svg><switch><a href="#"><a href="#">nested</a></a></switch></svg>',
+		);
+		expect(violations[0]).toStrictEqual({
+			severity: 'error',
+			line: 1,
+			col: 26,
+			message: 'The "a" element is a transparent model but also disallows the "a" element in this context',
+			raw: '<a href="#">',
+		});
+	});
+
+	test('[permitted-contents-invalid-031] svg:a self-nesting via svg:defs wrapper', async () => {
+		// Wrapper-agnostic check: `:has(svg|a)` should reject any element that
+		// contains an <a>, regardless of which container is used.
+		const { violations } = await mlRuleTest(rule, '<svg><a href="#"><defs><a href="#">nested</a></defs></a></svg>');
+		expect(violations[0]).toStrictEqual({
+			severity: 'error',
+			line: 1,
+			col: 24,
+			message: 'The "a" element is a transparent model but also disallows the "a" element in this context',
+			raw: '<a href="#">',
+		});
 	});
 
 	test('[permitted-contents-invalid-018] svg:foreignObject', async () => {
@@ -750,15 +823,170 @@ describe('verify', () => {
 		const { violations: v1 } = await mlRuleTest(rule, '<math><mfrac><mi>a</mi><mi>b</mi></mfrac></math>');
 		expect(v1).toStrictEqual([]);
 
-		// NG: 3 children (too many)
+		// NG: 3 children (too many) — third child triggers the max overflow.
 		const { violations: v2 } = await mlRuleTest(rule, '<math><mfrac><mi>a</mi><mi>b</mi><mi>c</mi></mfrac></math>');
-		expect(v2.length).toBeGreaterThan(0);
+		expect(v2).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 34,
+				message: 'There is more content than it needs. the max number of elements required is two',
+				raw: '<mi>',
+			},
+		]);
+
+		// NG: 1 child (MathML Core §3.3.2 — mfrac requires exactly two children).
+		// The previous spec used `oneOrMore` with `max: 2`, which silently
+		// allowed a single child. Locks down the require/min:2 fix.
+		const { violations: v3 } = await mlRuleTest(rule, '<math><mfrac><mi>a</mi></mfrac></math>');
+		expect(v3).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 7,
+				message: 'Require an element. (Need ":model(MathMLPresentation)")',
+				raw: '<mfrac>',
+			},
+		]);
 	});
 
 	test('[permitted-contents-invalid-021] mml:math', async () => {
 		// OK: MathML presentation elements
 		const { violations: v1 } = await mlRuleTest(rule, '<math><mi>x</mi><mo>+</mo><mn>1</mn></math>');
 		expect(v1).toStrictEqual([]);
+
+		// NG: <mtr> is parent-restricted to <mtable> (MathML Core §3.5.2)
+		// and must not appear directly under <math>.
+		const { violations: v2 } = await mlRuleTest(rule, '<math><mtr><mtd><mn>1</mn></mtd></mtr></math>');
+		expect(v2).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 7,
+				message: 'The "mtr" element is not allowed in the "math" element in this context',
+				raw: '<mtr>',
+			},
+		]);
+
+		// NG: <annotation> is parent-restricted to <semantics> (MathML Core §3.7)
+		// and must not appear directly under <math>.
+		const { violations: v3 } = await mlRuleTest(rule, '<math><annotation>note</annotation></math>');
+		expect(v3).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 7,
+				message: 'The "annotation" element is not allowed in the "math" element in this context',
+				raw: '<annotation>',
+			},
+		]);
+
+		// NG: <mprescripts> is parent-restricted to <mmultiscripts> (MathML Core §3.4.3).
+		const { violations: v4 } = await mlRuleTest(rule, '<math><mprescripts/></math>');
+		expect(v4).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 7,
+				message: 'The "mprescripts" element is not allowed in the "math" element in this context',
+				raw: '<mprescripts/>',
+			},
+		]);
+
+		// OK regression: properly wrapped <annotation> inside <semantics>.
+		const { violations: v5 } = await mlRuleTest(
+			rule,
+			'<math><semantics><mrow><mi>x</mi></mrow><annotation>x</annotation></semantics></math>',
+		);
+		expect(v5).toStrictEqual([]);
+
+		// OK regression: properly wrapped <mtr> inside <mtable>.
+		const { violations: v6 } = await mlRuleTest(
+			rule,
+			'<math><mtable><mtr><mtd><mn>1</mn></mtd></mtr></mtable></math>',
+		);
+		expect(v6).toStrictEqual([]);
+
+		// Note: `<math>` directly inside `<head>` (the html-math/math-in-head
+		// fixture) is NOT covered here. The HTML5 parser auto-corrects the
+		// `<math>` element out of `<head>` into `<body>` before rule
+		// evaluation, so a content-model fix at the `<head>` spec data level
+		// cannot reach it. Tracked under #3844 (parser-level error gap).
+	});
+
+	test('[permitted-contents-invalid-032] mml:msubsup arity (exactly 3 children)', async () => {
+		// MathML Core §3.4.1 — msubsup requires exactly three children
+		// (base, subscript, superscript). Representative spec test for the
+		// arity-3 group (covers munderover by analogy).
+
+		// OK: exactly 3 children
+		const { violations: v1 } = await mlRuleTest(
+			rule,
+			'<math><msubsup><mi>x</mi><mn>0</mn><mn>1</mn></msubsup></math>',
+		);
+		expect(v1).toStrictEqual([]);
+
+		// NG: 2 children (one short)
+		const { violations: v2 } = await mlRuleTest(rule, '<math><msubsup><mi>x</mi><mn>0</mn></msubsup></math>');
+		expect(v2).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 7,
+				message: 'Require an element. (Need ":model(MathMLPresentation)")',
+				raw: '<msubsup>',
+			},
+		]);
+
+		// NG: 4 children (one over)
+		const { violations: v3 } = await mlRuleTest(
+			rule,
+			'<math><msubsup><mi>x</mi><mn>0</mn><mn>1</mn><mn>2</mn></msubsup></math>',
+		);
+		expect(v3).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 46,
+				message: 'There is more content than it needs. the max number of elements required is three',
+				raw: '<mn>',
+			},
+		]);
+	});
+
+	test('[permitted-contents-invalid-033] mml:mover arity (broader selector with annotation)', async () => {
+		// MathML Core §3.4.2 — mover requires exactly two children. Distinct
+		// from mfrac in that the permitted-content selector also accepts
+		// `mml|annotation` and `mml|annotation-xml`. Guards against a future
+		// edit that removes either selector by mistake.
+
+		// OK: exactly 2 children
+		const { violations: v1 } = await mlRuleTest(rule, '<math><mover><mi>x</mi><mo>~</mo></mover></math>');
+		expect(v1).toStrictEqual([]);
+
+		// NG: 1 child
+		const { violations: v2 } = await mlRuleTest(rule, '<math><mover><mi>x</mi></mover></math>');
+		expect(v2).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 7,
+				message: 'Require an element. (Need ":model(MathMLPresentation)")',
+				raw: '<mover>',
+			},
+		]);
+
+		// NG: 3 children
+		const { violations: v3 } = await mlRuleTest(rule, '<math><mover><mi>x</mi><mo>~</mo><mi>y</mi></mover></math>');
+		expect(v3).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 34,
+				message: 'There is more content than it needs. the max number of elements required is two',
+				raw: '<mi>',
+			},
+		]);
 	});
 
 	test('[permitted-contents-valid-001] The SVG <image> element and the HTML obsolete <image> element', async () => {
@@ -2119,5 +2347,275 @@ describe('Issues', () => {
 				message: 'The "footer" element must not appear as a descendant of the "header" element',
 			}),
 		);
+	});
+
+	// #3592: empty dl is valid (zero or more groups)
+	test('[permitted-contents-issue-3592-001] empty dl is valid', async () => {
+		expect((await mlRuleTest(rule, '<dl></dl>')).violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-3592-002] dl with dt+dd is still valid', async () => {
+		expect((await mlRuleTest(rule, '<dl><dt>term</dt><dd>def</dd></dl>')).violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-3592-003] dl with div is still valid', async () => {
+		expect((await mlRuleTest(rule, '<dl><div><dt>term</dt><dd>def</dd></div></dl>')).violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-3592-004] dl with only dt is still invalid', async () => {
+		const { violations } = await mlRuleTest(rule, '<dl><dt>term</dt></dl>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'Require one or more elements. (Need "dd")',
+				raw: '<dl>',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-3592-005] dl with only dd is still invalid', async () => {
+		const { violations } = await mlRuleTest(rule, '<dl><dd>def</dd></dl>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'Require one or more elements. (Need "dt")',
+				raw: '<dl>',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-3592-006] dl with multiple dt+dd groups is valid', async () => {
+		expect((await mlRuleTest(rule, '<dl><dt>a</dt><dd>b</dd><dt>c</dt><dd>d</dd></dl>')).violations).toStrictEqual(
+			[],
+		);
+	});
+});
+
+describe('#3739 (pretender + user tag rule)', () => {
+	const breadcrumbsConfig = {
+		parser: {
+			'.*': '@markuplint/jsx-parser',
+		},
+		pretenders: [
+			{ selector: 'Breadcrumbs', as: 'nav' },
+			{ selector: 'BreadcrumbsLabel', as: 'span' },
+			{ selector: 'BreadcrumbList', as: 'ol' },
+			{ selector: 'BreadcrumbItem', as: 'li' },
+			{ selector: 'BreadcrumbLink', as: 'a' },
+		],
+		rule: [
+			{
+				tag: 'Breadcrumbs',
+				contents: [{ optional: 'BreadcrumbsLabel' }, { require: 'BreadcrumbList' }],
+			},
+			{
+				tag: 'BreadcrumbList',
+				contents: [{ oneOrMore: 'BreadcrumbItem' }],
+			},
+			{
+				tag: 'BreadcrumbItem',
+				contents: [{ require: 'BreadcrumbLink' }],
+			},
+			{
+				tag: 'BreadcrumbLink',
+				contents: [{ require: '#text' }],
+			},
+		],
+	};
+
+	test('[permitted-contents-issue-3739-001] origin-mode reports a violation for disallowed child between optional and require', async () => {
+		// The sequential content-model matcher consumes `<BreadcrumbsLabel>` for the
+		// `optional` slot and then expects `<BreadcrumbList>` next. `<div>` breaks
+		// the sequence so the violation is reported as a missing required element
+		// on `<Breadcrumbs>` — the same wording produced for the non-pretendered
+		// path. The critical regression guard is that *some* violation is now
+		// reported (previously the rule was silently bypassed).
+		const source =
+			'<Breadcrumbs>' +
+			'<BreadcrumbsLabel>Label</BreadcrumbsLabel>' +
+			'<div>UNEXPECTED</div>' +
+			'<BreadcrumbList>' +
+			'<BreadcrumbItem><BreadcrumbLink>Home</BreadcrumbLink></BreadcrumbItem>' +
+			'</BreadcrumbList>' +
+			'</Breadcrumbs>';
+		const { violations } = await mlRuleTest(rule, source, breadcrumbsConfig);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				raw: '<Breadcrumbs>',
+				message: 'Require an element. (Need "BreadcrumbList")',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-3739-002] user-model satisfied produces no origin-mode violation', async () => {
+		const source =
+			'<Breadcrumbs>' +
+			'<BreadcrumbsLabel>Label</BreadcrumbsLabel>' +
+			'<BreadcrumbList>' +
+			'<BreadcrumbItem><BreadcrumbLink>Home</BreadcrumbLink></BreadcrumbItem>' +
+			'</BreadcrumbList>' +
+			'</Breadcrumbs>';
+		const { violations } = await mlRuleTest(rule, source, breadcrumbsConfig);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-3739-003] origin-mode reports missing required child when the user model is stricter than the pretended spec', async () => {
+		// `<Section>` pretends to `<section>` (flow content, permissive); the
+		// pretended pass alone would happily accept `<Nope>/<div>`. The user
+		// tag rule is only consulted in origin mode, where it requires a
+		// `<BreadcrumbList>` child — which is absent — so origin mode reports
+		// the violation. This pins the fact that origin mode can report
+		// violations that pretended mode silently allows.
+		const source = '<Section><Nope/></Section>';
+		const { violations } = await mlRuleTest(rule, source, {
+			parser: { '.*': '@markuplint/jsx-parser' },
+			pretenders: [
+				{ selector: 'Section', as: 'section' },
+				{ selector: 'Nope', as: 'div' },
+			],
+			rule: [
+				{
+					tag: 'Section',
+					contents: [{ require: 'BreadcrumbList' }],
+				},
+			],
+		});
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				raw: '<Section>',
+				message: 'Require an element. (Need "BreadcrumbList")',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-3739-004] pretended-mode detects HTML-spec violation independently of origin user rule', async () => {
+		// `<Opt>` pretends to `<option>` whose content model is text-only.
+		// The user tag rule on `<Opt>` permits any combination of text and
+		// `<Span>`, so origin mode has no objection. Embedding `<Span>`
+		// (pretends to `<span>`) as a child must still be rejected by the
+		// pretended pass because HTML's `<option>` forbids element children.
+		// Ensures the historical pretended-mode path is not weakened by the
+		// new origin-mode plumbing.
+		const source = '<Opt>Label<Span>nope</Span></Opt>';
+		const { violations } = await mlRuleTest(rule, source, {
+			parser: { '.*': '@markuplint/jsx-parser' },
+			pretenders: [
+				{ selector: 'Opt', as: 'option' },
+				{ selector: 'Span', as: 'span' },
+			],
+			rule: [{ tag: 'Opt', contents: [{ zeroOrMore: ['#text', 'Span'] }] }],
+		});
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 11,
+				raw: '<Span>',
+				message: 'The "span" element is not allowed in the "option" element in this context',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-3739-005] origin-mode handles transparent-model pretender children', async () => {
+		// `<MyLink>` pretends to `<a>`, whose content model is transparent.
+		// The surrounding `<p>`-pretending `<Para>` declares a user rule that
+		// allows an `<a>`. Origin mode must recurse into the transparent
+		// child's content model via `resolveContentModel` without losing the
+		// mode, and the user model on the ancestor must not be disrupted by
+		// the transparent recursion.
+		const source = '<Para><MyLink>text</MyLink></Para>';
+		const { violations } = await mlRuleTest(rule, source, {
+			parser: { '.*': '@markuplint/jsx-parser' },
+			pretenders: [
+				{ selector: 'Para', as: 'p' },
+				{ selector: 'MyLink', as: 'a' },
+			],
+			rule: [{ tag: 'Para', contents: [{ oneOrMore: 'MyLink' }] }],
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-3739-006] origin-mode evaluates choice patterns under pretender', async () => {
+		// The user rule on `<Switcher>` uses a `choice` pattern so mode
+		// propagation through `choice.ts` is exercised. Branch A requires a
+		// `<CaseA>`; Branch B requires a `<CaseB>`. Supplying `<CaseB>` must
+		// satisfy the second branch. This guarantees the mode argument flows
+		// through choice → order → recursiveBranch correctly.
+		const source = '<Switcher><CaseB/></Switcher>';
+		const { violations } = await mlRuleTest(rule, source, {
+			parser: { '.*': '@markuplint/jsx-parser' },
+			pretenders: [
+				{ selector: 'Switcher', as: 'div' },
+				{ selector: 'CaseA', as: 'span' },
+				{ selector: 'CaseB', as: 'em' },
+			],
+			rule: [
+				{
+					tag: 'Switcher',
+					contents: [{ choice: [[{ require: 'CaseA' }], [{ require: 'CaseB' }]] }],
+				},
+			],
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-3739-007] origin-mode does not fire when the user has no rule for rawName', async () => {
+		// Pretender is active but the user defined no tag rule keyed on the
+		// component name. The walkOn guard in index.ts should therefore NOT
+		// enqueue origin mode, so the only pass that runs is pretended mode
+		// and there should be no spurious origin-mode noise. Functions as a
+		// regression test for the mode enablement guard.
+		const source = '<Widget><div>ok</div></Widget>';
+		const { violations } = await mlRuleTest(rule, source, {
+			parser: { '.*': '@markuplint/jsx-parser' },
+			pretenders: [{ selector: 'Widget', as: 'section' }],
+			// No `rule:` entry for Widget — origin mode must stay dormant.
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-3739-010] origin-mode rejects a native child that coincides with the pretender target name', async () => {
+		// The full Breadcrumbs family of pretenders AND user tag rules is
+		// wired up, matching the production-style config. Inside a
+		// `<BreadcrumbList>` (which pretends to `<ol>` and has a user rule
+		// requiring `<BreadcrumbItem>`) we drop a raw `<li>`. In the
+		// pretended pass `<ol>` happily accepts `<li>`; in the origin pass
+		// the user selector `BreadcrumbItem` must NOT match the native
+		// `<li>`. This pins that the `<li>`/`BreadcrumbItem` name collision
+		// does not leak across modes.
+		const source = '<BreadcrumbList><li>native</li></BreadcrumbList>';
+		const { violations } = await mlRuleTest(rule, source, breadcrumbsConfig);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				raw: '<BreadcrumbList>',
+				message: 'Require one or more elements. (Need "BreadcrumbItem")',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-3739-011] native parent without a user rule passes even when pretendered children are present', async () => {
+		// Again the full Breadcrumbs family is configured, but the parent
+		// here is a raw `<ul>` for which no user tag rule exists. The
+		// `rules.some(r => r.tag === el.rawName)` guard must keep origin
+		// mode dormant on `<ul>`, so only the pretended pass runs: `<ul>`
+		// accepts the pretendered `<li>` (originally `<BreadcrumbItem>`)
+		// and the tree is valid. Pins that mode enablement is per-parent —
+		// a pretendered child does not drag origin mode onto its parent.
+		const source = '<ul><BreadcrumbItem><BreadcrumbLink>Home</BreadcrumbLink></BreadcrumbItem></ul>';
+		const { violations } = await mlRuleTest(rule, source, breadcrumbsConfig);
+		expect(violations).toStrictEqual([]);
 	});
 });

@@ -2,7 +2,7 @@ import type { AnyMLRule, MLRule } from './ml-rule/index.js';
 import type { Ruleset } from './ruleset/index.js';
 import type { MLFabric, MLSchema } from './types.js';
 import type { LocaleSet } from '@markuplint/i18n';
-import type { MLASTDocument, MLParser, ParserOptions } from '@markuplint/ml-ast';
+import type { MLASTDocument, MLASTParseErrorCode, MLParser, ParserOptions } from '@markuplint/ml-ast';
 import type {
 	ChildNodeRule,
 	FixData,
@@ -45,6 +45,20 @@ export type FixSummary = {
 	 * multiple passes are executed.
 	 */
 	readonly firstPassEdits: readonly TextEdit[];
+	/**
+	 * Violations remaining in the final fixed code, re-verified after the
+	 * last fix pass.
+	 *
+	 * Unlike {@link VerifyResult.violations} (which reflects the first pass
+	 * only), this list is accurate for `fixedCode`. Callers that report
+	 * post-fix results should prefer `fixSummary.finalPassViolations ?? violations`.
+	 * Entries may carry `fix` data whose offsets refer to `fixedCode`.
+	 *
+	 * `undefined` when no fixes remain applied (none were applied, or the
+	 * applied pass was rolled back); the first-pass violations are then
+	 * accurate as-is.
+	 */
+	readonly finalPassViolations?: readonly Violation[];
 };
 
 /**
@@ -99,7 +113,17 @@ export class MLCore {
 	#schemas: MLSchema;
 	#ruleCommonSettings: RuleCommonSettings;
 	#sourceCode: string;
+	/**
+	 * Config-time errors (named-rule expansion, the `configErrors` fabric input).
+	 * Set once per construction/`update()` and never mutated by re-parsing.
+	 */
 	#configErrors: Error[];
+	/**
+	 * Rule-mapping errors for the CURRENT document. Reset (not accumulated) on
+	 * every `#createDocument()` so repeated `setCode()` calls don't duplicate
+	 * them. See https://github.com/markuplint/markuplint/issues/3900.
+	 */
+	#mappingErrors: Error[] = [];
 	/**
 	 * Pre-expansion nodeRules preserved for hot-reload.
 	 * When `update()` is called without a new ruleset, these are used as the
@@ -108,10 +132,6 @@ export class MLCore {
 	 */
 	#originalNodeRules: readonly NodeRule[];
 	#originalChildNodeRules: readonly ChildNodeRule[];
-	/**
-	 * Pre-computed namespace prefixes from wildcard disable entries.
-	 * e.g., `rules["a11y/*"]: false` yields `"a11y/"`.
-	 */
 	#disabledNamespaces: readonly string[];
 
 	constructor({
@@ -148,10 +168,8 @@ export class MLCore {
 		this.#originalNodeRules = ruleset.nodeRules ?? [];
 		this.#originalChildNodeRules = ruleset.childNodeRules ?? [];
 
-		// Expand named rule groups in the rules section
 		const namedRulesResult = expandNamedRules(ruleset.rules ?? {}, rules);
 
-		// Expand named nodeRules into virtual rules (using expanded rules as base)
 		const allRulesForExpansion = [...rules, ...namedRulesResult.virtualRules];
 		const nodeRuleResult = expandNamedNodeRules(this.#originalNodeRules, allRulesForExpansion);
 		const childNodeRuleResult = expandNamedNodeRules(this.#originalChildNodeRules, allRulesForExpansion);
@@ -204,11 +222,9 @@ export class MLCore {
 
 		const baseRules = rules ? [...rules] : this.#rules.filter(r => !r.baseRuleId);
 
-		// Use pre-expansion originals as fallback when ruleset is not provided
 		const incomingNodeRules = ruleset?.nodeRules ?? this.#originalNodeRules;
 		const incomingChildNodeRules = ruleset?.childNodeRules ?? this.#originalChildNodeRules;
 
-		// Expand named rule groups in the rules section
 		const incomingRules = ruleset?.rules ?? this.#ruleset.rules;
 		const namedRulesResult = expandNamedRules(incomingRules, baseRules);
 
@@ -216,7 +232,6 @@ export class MLCore {
 		const nodeRuleResult = expandNamedNodeRules(incomingNodeRules, allRulesForExpansion);
 		const childNodeRuleResult = expandNamedNodeRules(incomingChildNodeRules, allRulesForExpansion);
 
-		// Update originals if new data was provided
 		if (ruleset?.nodeRules) {
 			this.#originalNodeRules = ruleset.nodeRules;
 		}
@@ -259,7 +274,9 @@ export class MLCore {
 	 * may be the result of multiple fix passes. This means some violations in the
 	 * array may already be resolved in `fixedCode`, and new violations introduced
 	 * during later passes are not included in the array. Callers needing an accurate
-	 * violation list for the fixed code should re-verify the output.
+	 * violation list for the fixed code should use `fixSummary.finalPassViolations`,
+	 * which is re-verified against the final code whenever at least one fix was
+	 * applied.
 	 *
 	 * @param fixOrOptions - Whether to attempt auto-fixing violations, or an options object
 	 * @returns Violations from the initial analysis and the (possibly fixed) source code
@@ -289,6 +306,8 @@ export class MLCore {
 			return { violations, fixedCode: fix ? this.#sourceCode : undefined };
 		}
 
+		this.#pushNonFatalParseErrors(violations);
+
 		const definedRuleName = new Set(this.#rules.map(rule => rule.name));
 
 		const setRuleNames = new Set([
@@ -297,13 +316,17 @@ export class MLCore {
 			...this.#ruleset.childNodeRules.flatMap(childNodeRule => Object.keys(childNodeRule.rules ?? {})),
 		]);
 
+		// Config-level violations are independent of the source code, so they are
+		// collected separately to also be included in `finalPassViolations`.
+		const configViolations: Violation[] = [];
+
 		for (const setRuleName of setRuleNames) {
 			// Skip wildcard patterns (e.g., "a11y/*") — they are namespace disable entries, not rule references
 			if (setRuleName.endsWith('/*')) {
 				continue;
 			}
 			if (!definedRuleName.has(setRuleName)) {
-				violations.push({
+				configViolations.push({
 					ruleId: 'config-error',
 					severity: 'warning',
 					message: `Rule not found: ${setRuleName}`,
@@ -314,8 +337,8 @@ export class MLCore {
 			}
 		}
 
-		for (const error of this.#configErrors) {
-			violations.push({
+		for (const error of [...this.#configErrors, ...this.#mappingErrors]) {
+			configViolations.push({
 				ruleId: 'config-error',
 				severity: 'warning',
 				message: error.message,
@@ -324,6 +347,8 @@ export class MLCore {
 				raw: '',
 			});
 		}
+
+		violations.push(...configViolations);
 
 		const ruleViolations = await this.#runAllRules(fix);
 		violations.push(...ruleViolations);
@@ -344,7 +369,6 @@ export class MLCore {
 			resultLog('Info: %d', i);
 		}
 
-		// Apply fixes if enabled
 		let fixedCode: string | undefined;
 		let fixSummary: FixSummary | undefined;
 		if (fix) {
@@ -353,16 +377,28 @@ export class MLCore {
 				const originalSourceCode = this.#sourceCode;
 				const originalAst = this.#ast;
 				const originalDocument = this.#document;
+				const originalMappingErrors = this.#mappingErrors;
 
 				try {
 					const fixResult = await this.#multiPassFix(violations);
 					fixedCode = fixResult.code;
 					fixSummary = fixResult.summary;
+					if (configViolations.length > 0 && fixSummary.finalPassViolations) {
+						// Config-level violations persist regardless of fixing;
+						// keep them visible in the post-fix violation list.
+						fixSummary = {
+							...fixSummary,
+							finalPassViolations: [...configViolations, ...fixSummary.finalPassViolations],
+						};
+					}
 				} finally {
-					// Restore original state - verify() must be non-mutating
+					// Restore original state - verify() must be non-mutating.
+					// The fix loop re-parses, and each #createDocument resets
+					// #mappingErrors; restore it to the pre-fix document's.
 					this.#sourceCode = originalSourceCode;
 					this.#ast = originalAst;
 					this.#document = originalDocument;
+					this.#mappingErrors = originalMappingErrors;
 				}
 			} else {
 				fixedCode = this.#sourceCode;
@@ -381,6 +417,10 @@ export class MLCore {
 	}
 
 	#createDocument() {
+		// Reset up front: mapping errors belong to the document being (re)built,
+		// so a failed parse or build must not leave a previous document's errors
+		// behind. Repopulated below only on a successful build. See #3900.
+		this.#mappingErrors = [];
 		if (!this.#ast) {
 			return;
 		}
@@ -392,8 +432,11 @@ export class MLCore {
 				tagNameCaseSensitive: this.#parser.tagNameCaseSensitive,
 				pretenders: this.#pretenders,
 			});
-			// Collect errors from rule mapping (e.g., invalid wildcard usage)
-			this.#configErrors.push(...this.#ruleset.mappingErrors);
+			// Collect errors from rule mapping (e.g., invalid wildcard usage).
+			// Reset rather than append: the Document constructor regenerates
+			// `mappingErrors` on every call, so accumulating them would duplicate
+			// the same errors on each re-parse (e.g. via setCode). See #3900.
+			this.#mappingErrors = [...this.#ruleset.mappingErrors];
 			this.#ruleset.mappingErrors.length = 0;
 		} catch (error) {
 			if (error instanceof ParserError) {
@@ -404,16 +447,143 @@ export class MLCore {
 		}
 	}
 
-	#createParseError(message: string, line: number, col: number, raw: string): Violation | null {
-		if (this.#severity.parseError === false || this.#severity.parseError === 'off') {
+	/**
+	 * Surfaces non-fatal parser conformance errors collected by the underlying
+	 * parser (e.g., parse5's `onParseError` events on `MLASTDocument.parseErrors`)
+	 * via the same `parse-error` violation channel as fatal `ParserError`s.
+	 *
+	 * Order contract (relied on by every rule spec under
+	 * `@markuplint/rules/src/**`): each `parseErrors` entry is pushed in the
+	 * order the parser emitted it, *before* any rule iteration runs. Tests
+	 * that match on `toStrictEqual([...])` depend on this position.
+	 *
+	 * Severity resolution:
+	 *
+	 * - `severity.parseError` is a `Partial<Record<MLASTParseErrorCode, …>>` →
+	 *   each entry's `code` looks up its own severity; codes absent from the
+	 *   record default to `'off'` (suppressed).
+	 * - `severity.parseError` is a single severity string/boolean → applied
+	 *   uniformly to every entry.
+	 * - `severity.parseError` is unset → **all non-fatal codes are off**.
+	 *   Users must opt in explicitly.
+	 *
+	 * @param violations The verify-time violations array to mutate.
+	 */
+	#pushNonFatalParseErrors(violations: Violation[]): void {
+		const parseErrors = this.#ast?.parseErrors;
+		if (!parseErrors) {
+			return;
+		}
+
+		// Build the Set of parse5 codes that an active ml rule has claimed
+		// responsibility for via `meta.mirrorsParseErrorCodes`. The user's
+		// ruleset decides whether each rule's declaration is in scope:
+		//
+		// - Rule **set** in the ruleset (config !== undefined) — whatever the
+		//   value (`true`, `false`, severity, object) — the user has expressed
+		//   intent about this check. Honour the mirror declaration:
+		//   - active: the rule itself will report violations for those codes
+		//   - disabled (`false`): the user explicitly opted out, so the channel
+		//     stays silent too — no surprise re-surfacing
+		// - Rule **not mentioned** (config === undefined) — pure default. The
+		//   parse-error channel remains the channel of record for those codes
+		//   and surfaces them when the user has opted in via `severity.parseError`.
+		//
+		// This keeps the responsibility clean: rule packages declare what they
+		// cover (static metadata); ml-core honours the user's ruleset choice;
+		// no per-node logic, no hard-coded code→rule map.
+		const mirroredCodes = new Set<string>();
+		for (const rule of this.#rules) {
+			if (rule.mirrorsParseErrorCodes.length === 0) {
+				continue;
+			}
+			// The rule is "mentioned in the ruleset" if **either** the alias
+			// name OR the base rule name has an entry. Two entry styles exist:
+			//
+			// - Direct user configs use base rule names: `rules.attr-duplication`
+			// - Preset named nodeRules use alias names: `rules['html-standard/attr-duplication']`
+			//
+			// `MLRule` for a preset-aliased entry has `rule.name = 'html-standard/...'`
+			// and `rule.baseRuleId = 'attr-duplication'`; for a direct entry,
+			// `rule.name = 'attr-duplication'` and `baseRuleId` is undefined.
+			// Checking both names covers both styles.
+			const aliasConfig = this.#ruleset.rules[rule.name];
+			const baseConfig = rule.baseRuleId === undefined ? undefined : this.#ruleset.rules[rule.baseRuleId];
+			if (aliasConfig === undefined && baseConfig === undefined) {
+				continue;
+			}
+			for (const code of rule.mirrorsParseErrorCodes) {
+				mirroredCodes.add(code);
+			}
+		}
+
+		for (const parserError of parseErrors) {
+			if (mirroredCodes.has(parserError.code)) {
+				continue;
+			}
+			const violation = this.#createParseError(
+				`Parser conformance error: ${parserError.code}`,
+				parserError.startLine,
+				parserError.startCol,
+				parserError.raw,
+				parserError.code,
+			);
+			if (violation) {
+				violations.push(violation);
+			}
+		}
+	}
+
+	/**
+	 * Builds a `ruleId: 'parse-error'` violation, honouring
+	 * `severity.parseError`.
+	 *
+	 * If `code` is supplied (non-fatal `parseErrors` entry) and the option is
+	 * a `Partial<Record<code, severity>>`, the per-code value is used (absent
+	 * codes default to `'off'`). If the option is unset, non-fatal entries
+	 * are suppressed (opt-in only) while fatal errors (no `code`) still
+	 * default to `'error'`.
+	 *
+	 * @returns the violation, or `null` if suppressed.
+	 */
+	#createParseError(
+		message: string,
+		line: number,
+		col: number,
+		raw: string,
+		code?: MLASTParseErrorCode,
+	): Violation | null {
+		const cfg = this.#severity.parseError;
+
+		if (cfg === false || cfg === 'off') {
 			return null;
 		}
 
-		// Default severity is 'error'
-		const severity =
-			this.#severity.parseError === true || this.#severity.parseError == null
-				? 'error'
-				: this.#severity.parseError;
+		let severity: Violation['severity'];
+
+		if (typeof cfg === 'object') {
+			if (code == null) {
+				// Fatal ParserError without a code; the Record form cannot target
+				// it, so fall back to `'error'` (the channel is otherwise enabled).
+				severity = 'error';
+			} else {
+				const perCode = cfg[code];
+				if (perCode == null || perCode === false || perCode === 'off') {
+					return null;
+				}
+				severity = perCode === true ? 'error' : perCode;
+			}
+		} else if (cfg == null) {
+			// New default: non-fatal `parseErrors` entries are off; fatal
+			// `ParserError`s (no code) still emit at `'error'`.
+			if (code != null) {
+				return null;
+			}
+			severity = 'error';
+		} else {
+			// Uniform string/boolean form (legacy).
+			severity = cfg === true ? 'error' : cfg;
+		}
 
 		return {
 			ruleId: 'parse-error',
@@ -426,24 +596,33 @@ export class MLCore {
 	}
 
 	/**
-	 * Iteratively applies fixes, re-parses, and re-verifies until no overlapping
-	 * fixes remain or the maximum pass count is reached (ESLint-style multi-pass loop).
+	 * ESLint-style multi-pass fix loop (modeled after SourceCodeFixer).
 	 *
 	 * **Callers must save/restore `#sourceCode`, `#ast`, and `#document`** because
 	 * this method mutates them during intermediate re-parse steps.
-	 *
-	 * @param initialViolations - Violations from the first verification pass
-	 * @returns The final fixed source code and a summary of the fix process
 	 */
 	async #multiPassFix(initialViolations: readonly Violation[]): Promise<{ code: string; summary: FixSummary }> {
+		// Same safety cap as ESLint's SourceCodeFixer (10 passes).
 		const MAX_FIX_PASSES = 10;
 		let currentCode = this.#sourceCode;
-		let previousCode: string | undefined;
 		let fixes = extractFixes(initialViolations);
 
 		let totalApplied = 0;
 		let totalSkipped = 0;
 		let firstPassEdits: readonly TextEdit[] = [];
+
+		// The input code of each pass, keyed by code string, for N-pass cycle
+		// detection (A → B → A as well as longer cycles such as A → B → C → A).
+		const codeHistory = new Map<string, number>([[currentCode, 0]]);
+
+		// Violations from the latest #runAllRules call, valid for `currentCode`.
+		// Reused by the final verification below to avoid a redundant re-run
+		// when the loop already re-verified the final code.
+		let latestViolations: readonly Violation[] | undefined;
+
+		// The most recent code that is known to parse successfully. Used to roll
+		// back a pass whose output fails to parse.
+		let lastParsableCode = currentCode;
 
 		let pass = 0;
 		for (; pass < MAX_FIX_PASSES; pass++) {
@@ -466,16 +645,42 @@ export class MLCore {
 				break;
 			}
 
-			// Cycle detection: if the output matches the code from two passes ago,
-			// fixes are oscillating (A → B → A) and will never converge.
-			if (previousCode !== undefined && result.output === previousCode) {
-				log('fix pass %d: cycle detected (output matches pass %d), stopping', pass, pass - 2);
+			// Cycle detection: if the output matches the input of any earlier pass,
+			// fixes are oscillating (A → B → A, A → B → C → A, ...) and will never converge.
+			const cycleStart = codeHistory.get(result.output);
+			if (cycleStart !== undefined) {
+				log(
+					'fix pass %d: cycle detected (output matches the input of pass %d, cycle length %d), stopping',
+					pass,
+					cycleStart,
+					pass + 1 - cycleStart,
+				);
 				currentCode = result.output;
+				latestViolations = undefined;
 				break;
 			}
 
-			previousCode = currentCode;
 			currentCode = result.output;
+			codeHistory.set(currentCode, pass + 1);
+			latestViolations = undefined;
+
+			// Parse the output immediately — for the next pass or for the final
+			// verification — so an unparsable output is always rolled back
+			// instead of being returned (and written to disk) broken.
+			this.#sourceCode = currentCode;
+			this.#parse();
+			this.#createDocument();
+
+			if (this.#document instanceof ParserError) {
+				log('fix pass %d: produced unparsable code, reverting to the previous parsable code', pass);
+				currentCode = lastParsableCode;
+				totalApplied -= result.applied.length;
+				if (pass === 0) {
+					firstPassEdits = [];
+				}
+				break;
+			}
+			lastParsableCode = currentCode;
 
 			if (result.skipped.length === 0) {
 				log('fix pass %d: all fixes applied, stopping', pass);
@@ -483,20 +688,10 @@ export class MLCore {
 			}
 
 			// --- Multi-pass path (only when overlapping fixes exist) ---
-			log('fix pass %d: %d skipped, re-parsing for next pass', pass, result.skipped.length);
-			const previousGoodCode = currentCode;
-
-			this.#sourceCode = currentCode;
-			this.#parse();
-			this.#createDocument();
-
-			if (this.#document instanceof ParserError) {
-				log('fix pass %d: produced unparsable code, reverting to previous state', pass);
-				currentCode = previousGoodCode;
-				break;
-			}
+			log('fix pass %d: %d skipped, re-running rules for next pass', pass, result.skipped.length);
 
 			const newViolations = await this.#runAllRules(true);
+			latestViolations = newViolations;
 			fixes = extractFixes(newViolations);
 			if (fixes.length === 0) {
 				log('fix pass %d: no more fixable violations, stopping', pass);
@@ -509,6 +704,30 @@ export class MLCore {
 			log('fix: reached maximum number of passes (%d), some fixes may not have been applied', MAX_FIX_PASSES);
 		}
 
+		// Final verification (#3890): compute the violations that remain in the
+		// final code. When the loop already re-verified `currentCode`, reuse that
+		// result; otherwise re-run rules once (re-parsing first unless the parsed
+		// state already corresponds to `currentCode`).
+		let finalPassViolations: readonly Violation[] | undefined;
+		if (totalApplied > 0) {
+			if (latestViolations === undefined) {
+				if (this.#sourceCode !== currentCode) {
+					this.#sourceCode = currentCode;
+					this.#parse();
+					this.#createDocument();
+				}
+				if (!(this.#document instanceof ParserError)) {
+					latestViolations = await this.#runAllRules(true);
+				}
+			}
+			if (latestViolations !== undefined) {
+				const collected: Violation[] = [];
+				this.#pushNonFatalParseErrors(collected);
+				collected.push(...latestViolations);
+				finalPassViolations = collected;
+			}
+		}
+
 		return {
 			code: currentCode,
 			summary: {
@@ -517,17 +736,11 @@ export class MLCore {
 				totalSkipped,
 				reachedMaxPasses,
 				firstPassEdits,
+				finalPassViolations,
 			},
 		};
 	}
 
-	/**
-	 * Executes all configured rules against the current document and collects violations.
-	 * Skips disabled rules and handles virtual rule disable conditions.
-	 *
-	 * @param fix - Whether to execute fix callbacks on violations
-	 * @returns All violations produced by the rule set
-	 */
 	async #runAllRules(fix: boolean): Promise<Violation[]> {
 		const violations: Violation[] = [];
 		if (this.#document instanceof ParserError) {
@@ -591,10 +804,6 @@ export class MLCore {
 	}
 }
 
-/**
- * Extracts namespace prefixes from wildcard disable entries in rules.
- * e.g., `{ "a11y/*": false }` yields `["a11y/"]`.
- */
 function extractDisabledNamespaces(rules: { readonly [key: string]: unknown }): readonly string[] {
 	return Object.entries(rules)
 		.filter(([key, value]) => key.endsWith('/*') && value === false)
@@ -602,7 +811,6 @@ function extractDisabledNamespaces(rules: { readonly [key: string]: unknown }): 
 }
 
 /**
- * Builds a mapping from base rule names to virtual rule names.
  * Used by nodeRules/childNodeRules to propagate settings (especially `false`)
  * to virtual rules created by NamedRuleGroups.
  */
@@ -625,12 +833,6 @@ function buildBaseRuleToVirtualNames(
 	return map;
 }
 
-/**
- * Collects all `FixData` from violations that have a fix callback result.
- *
- * @param violations - The violations to extract fixes from
- * @returns An array of `FixData` objects ready for `applyFixes()`
- */
 function extractFixes(violations: readonly Violation[]): FixData[] {
 	const fixes: FixData[] = [];
 	for (const v of violations) {

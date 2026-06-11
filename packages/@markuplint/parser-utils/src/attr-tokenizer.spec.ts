@@ -366,9 +366,9 @@ test('a=/>', () => {
 		equal: '=',
 		spacesAfterEqual: '',
 		quoteStart: '',
-		attrValue: '',
+		attrValue: '/',
 		quoteEnd: '',
-		leftover: '/>',
+		leftover: '>',
 	});
 });
 
@@ -380,9 +380,9 @@ test('a=a/>', () => {
 		equal: '=',
 		spacesAfterEqual: '',
 		quoteStart: '',
-		attrValue: 'a',
+		attrValue: 'a/',
 		quoteEnd: '',
-		leftover: '/>',
+		leftover: '>',
 	});
 });
 
@@ -485,6 +485,59 @@ describe('Issues', () => {
 			attrValue: "...register('x', options)",
 			quoteEnd: '}',
 			leftover: '',
+		});
+	});
+
+	// https://html.spec.whatwg.org/multipage/parsing.html#attribute-value-(unquoted)-state
+	// Per WHATWG HTML, `<`, `"`, `'`, `=`, `` ` `` in an unquoted attribute value
+	// are parse errors but the character itself is STILL appended to the attribute value.
+	// The tokenizer must not terminate the value on these characters.
+	test('#3594 spec: parse-error characters are included in the unquoted value', () => {
+		expect(attrTokenizer('a=x"y')).toMatchObject({ attrName: 'a', attrValue: 'x"y', leftover: '' });
+		expect(attrTokenizer("a=x'y")).toMatchObject({ attrName: 'a', attrValue: "x'y", leftover: '' });
+		expect(attrTokenizer('a=x=y')).toMatchObject({ attrName: 'a', attrValue: 'x=y', leftover: '' });
+		expect(attrTokenizer('a=x`y')).toMatchObject({ attrName: 'a', attrValue: 'x`y', leftover: '' });
+		expect(attrTokenizer('a=x<y')).toMatchObject({ attrName: 'a', attrValue: 'x<y', leftover: '' });
+	});
+
+	// https://html.spec.whatwg.org/multipage/syntax.html#attributes-2
+	// Unquoted attribute values may contain any character except whitespace, `"`, `'`, `=`, `<`, `>`, and `` ` ``.
+	// The solidus `/` is explicitly permitted.
+	test('#3594 unquoted value containing "/"', () => {
+		expect(attrTokenizer('type=image/gif')).toStrictEqual({
+			spacesBeforeAttrName: '',
+			attrName: 'type',
+			spacesBeforeEqual: '',
+			equal: '=',
+			spacesAfterEqual: '',
+			quoteStart: '',
+			attrValue: 'image/gif',
+			quoteEnd: '',
+			leftover: '',
+		});
+
+		expect(attrTokenizer('src=/foo.js>')).toStrictEqual({
+			spacesBeforeAttrName: '',
+			attrName: 'src',
+			spacesBeforeEqual: '',
+			equal: '=',
+			spacesAfterEqual: '',
+			quoteStart: '',
+			attrValue: '/foo.js',
+			quoteEnd: '',
+			leftover: '>',
+		});
+
+		expect(attrTokenizer('src=/a/b alt=x')).toStrictEqual({
+			spacesBeforeAttrName: '',
+			attrName: 'src',
+			spacesBeforeEqual: '',
+			equal: '=',
+			spacesAfterEqual: '',
+			quoteStart: '',
+			attrValue: '/a/b',
+			quoteEnd: '',
+			leftover: ' alt=x',
 		});
 	});
 });

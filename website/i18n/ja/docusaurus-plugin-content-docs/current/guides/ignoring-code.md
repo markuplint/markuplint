@@ -162,8 +162,6 @@ $ markuplint --prune-suppressions "src/**/*.html"
 
 スコープセレクタが要素にマッチしなくなった場合（例: リファクタリング後）、抑制は維持され`--prune-suppressions`がクリーンアップを推奨します。**壊れたスコープが新しい違反を隠すことはありません。**
 
-詳しい設計理念については、[Bulk Suppressions設計ドキュメント](https://github.com/markuplint/markuplint/blob/dev/docs/architectures/BULK-SUPPRESSIONS.md)を参照してください。
-
 ## 次のステップ
 
 - **[CLI](/docs/guides/cli)** — `--suppress` や `--prune-suppressions` を含むCLIオプション一覧

@@ -244,3 +244,60 @@ describe('SVG elements are skipped', () => {
 		expect(circleViolation).toBeUndefined();
 	});
 });
+
+describe('pretender gap (issue #3740)', () => {
+	test('[no-unsupported-features-issue-3740-001] JSX component pretendered to old HTML reports against browserslist', async () => {
+		const { violations } = await mlRuleTest(rule, '<Dialog>x</Dialog>', {
+			parser: { '.*': '@markuplint/jsx-parser' },
+			pretenders: [{ selector: 'Dialog', as: 'dialog' }],
+			rule: { options: { browserslist: 'ie 11' } },
+		});
+		expect(violations.length).toBe(1);
+		expect(violations[0]?.severity).toBe('warning');
+		expect(violations[0]?.message).toContain('"dialog"');
+		expect(violations[0]?.message).toContain('element');
+		expect(violations[0]?.message).toContain('Internet Explorer');
+		expect(violations[0]?.line).toBe(1);
+		expect(violations[0]?.col).toBe(1);
+		expect(violations[0]?.raw).toBe('<Dialog>');
+	});
+
+	test('[no-unsupported-features-issue-3740-002] JSX with object inheritAttrs pretender reports', async () => {
+		const { violations } = await mlRuleTest(rule, '<Dialog>x</Dialog>', {
+			parser: { '.*': '@markuplint/jsx-parser' },
+			pretenders: [{ selector: 'Dialog', as: { element: 'dialog', inheritAttrs: true } }],
+			rule: { options: { browserslist: 'ie 11' } },
+		});
+		expect(violations.length).toBe(1);
+		expect(violations[0]?.severity).toBe('warning');
+		expect(violations[0]?.message).toContain('"dialog"');
+		expect(violations[0]?.message).toContain('Internet Explorer');
+		expect(violations[0]?.raw).toBe('<Dialog>');
+	});
+
+	test('[no-unsupported-features-issue-3740-003] HTML→HTML pretender ignored: original element checked', async () => {
+		// `pretenders` config is now no-op for HTML element selectors, so the
+		// original `<dialog>` is still evaluated against the browserslist target.
+		const { violations } = await mlRuleTest(rule, '<dialog>x</dialog>', {
+			pretenders: [{ selector: 'dialog', as: 'div' }],
+			rule: { options: { browserslist: 'ie 11' } },
+		});
+		expect(violations.length).toBe(1);
+		expect(violations[0]?.severity).toBe('warning');
+		expect(violations[0]?.message).toContain('"dialog"');
+		expect(violations[0]?.message).toContain('Internet Explorer');
+		expect(violations[0]?.raw).toBe('<dialog>');
+	});
+
+	test('[no-unsupported-features-issue-3740-004] web-component pretendered to experimental HTML reports', async () => {
+		const { violations } = await mlRuleTest(rule, '<x-iframe credentialless></x-iframe>', {
+			pretenders: [{ selector: 'x-iframe', as: { element: 'iframe', inheritAttrs: true } }],
+			rule: { options: { checkExperimental: true } },
+		});
+		expect(violations.length).toBe(1);
+		expect(violations[0]?.severity).toBe('warning');
+		expect(violations[0]?.message).toContain('"credentialless"');
+		expect(violations[0]?.message).toContain('experimental');
+		expect(violations[0]?.raw).toBe('credentialless');
+	});
+});

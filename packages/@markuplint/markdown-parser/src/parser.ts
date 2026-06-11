@@ -17,6 +17,12 @@ type MdastNode = RootContent;
  * Uses remark-parse to produce an mdast, then maps Markdown constructs
  * (headings, paragraphs, lists, links, etc.) to their corresponding HTML
  * element AST nodes. Raw HTML regions are parsed via HtmlParser.
+ *
+ * remark-parse (the unified ecosystem's de facto standard) was chosen over
+ * `@mdx-js/mdx`, which wraps remark-parse internally and adds about 24
+ * unnecessary dependencies for JS compilation that linting does not need,
+ * and over driving the lower-level tokenizer directly, which would require
+ * hand-building the mdast conversion with no practical benefit.
  */
 class MarkdownParser extends MarkdownAwareParser {
 	readonly #htmlParser = new HtmlParser();
@@ -101,7 +107,20 @@ class MarkdownParser extends MarkdownAwareParser {
 			offsetOffset: offset,
 			offsetLine: line,
 			offsetColumn: col,
+			// HTML embedded inside Markdown is always a partial — never a
+			// full document — so force fragment parsing to keep parse5 from
+			// emitting `missing-doctype` / `misplaced-doctype` on every
+			// inline HTML block. Users cannot meaningfully override this
+			// because there is no Markdown construct that wraps a complete
+			// HTML document.
+			documentMode: 'fragment',
 		});
+		// Surface tokenizer-level parse errors (e.g. `duplicate-attribute`)
+		// collected by the embedded HtmlParser. Without this, every parse
+		// error inside an inline HTML block would be silently dropped on
+		// the way back from `#htmlParser.parse()` even though the user has
+		// opted in via `severity.parseError`.
+		this.accumulateParseErrors(doc.parseErrors);
 		return [...doc.nodeList];
 	}
 }

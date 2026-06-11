@@ -24,11 +24,6 @@ type Options = {
 	readonly checkNonStandard?: boolean;
 };
 
-/**
- * Rule that warns when using HTML elements or attributes that are not
- * supported by the project's target browsers (via browserslist),
- * or that are experimental/non-standard.
- */
 export default createRule<boolean, Options>({
 	meta: meta,
 	defaultSeverity: 'warning',
@@ -56,8 +51,13 @@ export default createRule<boolean, Options>({
 		const ignoreFeatures = new Set(options.ignoreFeatures);
 
 		await document.walkOn('Element', async el => {
-			// Only check HTML elements
-			if (el.namespaceURI !== 'http://www.w3.org/1999/xhtml' || el.elementType !== 'html') {
+			// Web components and authored elements (JSX/Vue/Svelte) reach this rule
+			// via `pretenders`: they masquerade as a known HTML element on `el.localName`,
+			// so spec / BCD lookups below resolve correctly. See #3740.
+			if (
+				el.namespaceURI !== 'http://www.w3.org/1999/xhtml' ||
+				(el.elementType !== 'html' && el.pretenderContext?.type !== 'pretender')
+			) {
 				return;
 			}
 

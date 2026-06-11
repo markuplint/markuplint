@@ -22,13 +22,6 @@ type Options = {
 	prevCodeBlock?: boolean;
 };
 
-/**
- * Rule that suggests using `<li>` elements instead of text with bullet characters.
- *
- * Detects text nodes that start with bullet-like characters (Unicode bullets,
- * markdown-style dashes/asterisks, etc.) and recommends converting them into
- * proper list markup using `<li>` elements.
- */
 export default createRule<Bullets, Options>({
 	meta: meta,
 	defaultValue: [

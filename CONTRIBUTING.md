@@ -21,7 +21,7 @@ Its purpose is all developers are able to better markup and fit each of diverse 
 You need:
 
 - Node.js v24 or later (the exact version is pinned in `.mise.toml`; install [mise](https://mise.jdx.dev/) and run `mise install` to match it)
-- Yarn
+- Yarn 4.x (pinned in both `.mise.toml` and `package.json#packageManager` — bump them together; CI derives the sandbox Yarn version from the latter)
 
 After cloning this repository, you can also install them through [Docker](https://github.com/markuplint/markuplint/blob/main/Dockerfile).
 
@@ -35,3 +35,53 @@ When you wrote code then:
   - For the improved code: @yusukehirao
   - For plugins: @yusukehirao
   - For documents/website: @yusukehirao, @kagankan
+
+### nu-validator compatibility benchmark
+
+`tests/external/` houses a local-only benchmark that compares markuplint
+with [Nu Html Checker](https://validator.github.io/validator/). It is not
+wired into CI. See [`tests/external/CLAUDE.md`](https://github.com/markuplint/markuplint/blob/dev/tests/external/CLAUDE.md)
+for the setup, command list, and the Docker / `excluded-ids.json` workflow.
+
+## Publishing the VS Code Extension
+
+The npm packages are published automatically from CI (npm trusted publisher).
+The VS Code extension, in contrast, is published **manually** after the core
+packages land.
+
+### Publisher
+
+The extension is published under the `markuplint` publisher
+(Marketplace ID: `markuplint.vscode-markuplint`).
+
+The legacy `yusukehirao.vscode-markuplint` ID is deprecated from
+`v5.0.0-rc.3` onwards and no longer receives updates.
+
+`yarn vscode:login` runs `vsce login markuplint`, so the Azure DevOps
+Personal Access Token you authenticate with must have rights on the
+`markuplint` publisher.
+
+### Versioning
+
+All packages — including the VS Code extension — share a single version
+because Lerna is configured in non-independent mode. The extension version
+always matches the core version (e.g. `5.0.0`, `5.0.0-rc.2`).
+
+### Workflow
+
+Only stable versions (`X.Y.Z` without a prerelease suffix) are published
+to the Marketplace.
+
+1. Wait for the core packages to be published to npm by CI
+2. Pull the release tag locally (`git pull --tags`)
+3. (First time only) `yarn vscode:login` to authenticate with Marketplace
+4. Run `yarn vscode:release`
+
+`yarn vscode:package` produces a local `.vsix` without publishing — use
+it for smoke-testing before running the publish command.
+
+Valid modes accepted by `vscode/scripts/install.mjs`: `package`, `release`.
+
+### Reference
+
+- [@vscode/vsce](https://github.com/microsoft/vscode-vsce)

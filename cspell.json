@@ -6,9 +6,15 @@
 		"cspell.json",
 		".github/ISSUE_TEMPLATE/*",
 		"test/fixture/**",
+		"tests/external/**",
 		"packages/@markuplint/html-spec/src/*.jsonc",
 		"packages/@markuplint/html-spec/index.json",
-		"crates/**"
+		"crates/**",
+		"packages/@markuplint/ml-spec/src/types/aria.ts",
+		"packages/@markuplint/ml-spec/src/types/attributes.ts",
+		"packages/@markuplint/ml-spec/src/types/permitted-structures.ts",
+		"packages/@markuplint/types/src/types.schema.ts",
+		"packages/@markuplint/types/types.schema.json"
 	],
 	"dictionaries": [
 		"css",
@@ -63,6 +69,7 @@
 		"execa",
 		"FDCF",
 		"FFFD",
+		"FFFE",
 		"FOAF",
 		"fuga",
 		"Fukuda",
@@ -131,6 +138,7 @@
 		"rehype",
 		"Renderable",
 		"rubocop",
+		"rushstack",
 		"Saito",
 		"shamokit",
 		"SMIL",
@@ -162,13 +170,29 @@
 		"isvalid",
 		"novalid",
 		"haswarn",
+		"iso8601",
+		"YYYYMMDD",
 
 		// Specs
 		"closedby",
+		"DQUOTE",
+		"itemprop",
+		"itemref",
+		"itemscope",
+		"itemtype",
 		"khern",
+		"langtag",
 		"mathml",
+		"mfrac",
+		"mover",
+		"mprescripts",
+		"msubsup",
+		"munder",
+		"munderover",
+		"rcdata",
 		"tref",
 		"vkern",
+		"wicg",
 
 		// Rust
 		"cdylib",
@@ -189,6 +213,16 @@
 		{
 			"filename": "packages/@markuplint/types/src/whatwg/check-autocomplete.spec.ts",
 			"words": ["neme", "emall"]
+		},
+		{
+			"filename": "packages/@markuplint/types/src/whatwg/check-media-query-list.{ts,spec.ts}",
+			"comment": "`alla` is the literal media-query value from html/media-queries/002-novalid fixture (typo of `all`); cited verbatim as a test input.",
+			"words": ["alla"]
+		},
+		{
+			"filename": "packages/@markuplint/types/src/whatwg/check-url.{ts,spec.ts}",
+			"comment": "URL Living Standard validation error names: `solidus`, `noncharacters`, `userinfo`, plus galimatias (nu-validator's URL parser library).",
+			"words": ["galimatias", "noncharacters", "solidus", "userinfo"]
 		}
 	]
 }

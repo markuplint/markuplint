@@ -1,4 +1,4 @@
-import type { ChildNode, MatchedReason, Options, Result, Specs } from './types.js';
+import type { ChildNode, MatchedReason, Mode, Options, Result, Specs, TagRule } from './types.js';
 import type { PermittedContentChoice } from '@markuplint/ml-spec';
 import type { ReadonlyDeep } from 'type-fest';
 
@@ -24,18 +24,23 @@ const indexes = new WeakMap<Result<MatchedReason>, number>();
  *
  * @param pattern - The choice pattern containing multiple alternative content model branches.
  * @param childNodes - The child nodes to validate against the choice branches.
+ * @param rules - User-defined tag rules. Threaded through for transparent-model recursion;
+ *                not consulted here directly. See `order` for the rationale.
  * @param specs - The resolved spec data for content model lookups.
  * @param options - Validation behavior options.
  * @param depth - The current recursion depth, used for debug logging and nested evaluation.
+ * @param mode - Whether we are evaluating the element's `'origin'` or `'pretended'` identity.
  * @returns A result from the best-matching branch, or the branch that came closest to matching.
  */
 export function choice(
 	pattern: ReadonlyDeep<PermittedContentChoice>,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	childNodes: readonly ChildNode[],
+	rules: readonly TagRule[],
 	specs: Specs,
 	options: Options,
 	depth: number,
+	mode: Mode,
 ): Result {
 	const choiceLog = cmLog.extend(`choice#${depth}`);
 	const collection = new Collection(childNodes);
@@ -45,7 +50,7 @@ export function choice(
 	for (const some of pattern.choice) {
 		choiceLog('Patterns[%s]: %s', i, modelLog(some, ''));
 
-		const result = order(some, collection.unmatched, specs, options, depth + 1);
+		const result = order(some, collection.unmatched, rules, specs, options, depth + 1, mode);
 
 		if (
 			result.type === 'MATCHED' ||

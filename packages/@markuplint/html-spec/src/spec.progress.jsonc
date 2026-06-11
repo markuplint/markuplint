@@ -16,13 +16,24 @@
 	},
 	"attributes": {
 		// https://html.spec.whatwg.org/multipage/form-elements.html#attr-progress-value
+		// HTML LS: "If specified, the value attribute must have a value equal to
+		// or greater than zero, and less than or equal to the value of the max
+		// attribute, if defined, or 1.0, otherwise."
+		// The cross-attribute `<= max` constraint is not expressible in the type
+		// system; we only pin the lower bound here.
 		"value": {
-			// The range is 0 to 1 but, the maximum will be the value when setting the `max` attribute from 1
-			"type": "Number"
+			"type": {
+				"type": "float",
+				"gte": 0
+			}
 		},
 		// https://html.spec.whatwg.org/multipage/form-elements.html#attr-progress-max
+		// HTML LS: "The max attribute, if present, must have a value greater than zero."
 		"max": {
-			"type": "Number"
+			"type": {
+				"type": "float",
+				"gt": 0
+			}
 		}
 	},
 	"aria": {

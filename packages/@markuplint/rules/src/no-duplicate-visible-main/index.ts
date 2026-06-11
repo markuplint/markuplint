@@ -5,7 +5,6 @@ import { createRule } from '@markuplint/ml-core';
 import meta from './meta.js';
 
 /**
- * Ensures no more than one visible `<main>` element exists in a document.
  * A `<main>` element with the `hidden` attribute is not considered visible.
  *
  * @see https://html.spec.whatwg.org/multipage/grouping-content.html#the-main-element

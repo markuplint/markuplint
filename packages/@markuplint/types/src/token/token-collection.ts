@@ -12,9 +12,7 @@ type TokenCollectionOptions = Partial<
 >;
 
 /**
- * Callback function for sequential token checking in {@link TokenCollection.eachCheck}.
- * Receives the current head token and remaining tail tokens.
- * Returns a result to stop iteration, or `void` to continue.
+ * Returning a result stops iteration; returning `void` continues to the next token.
  */
 export type TokenEachCheck = (
 	head: Readonly<Token> | null,
@@ -22,22 +20,7 @@ export type TokenEachCheck = (
 	tail: TokenCollection,
 ) => Result | void;
 
-/**
- * An ordered collection of tokens parsed from a string value.
- *
- * Extends `Array<Token>` with parsing, validation, and query capabilities.
- * Supports configurable separators (space, comma, or custom), uniqueness
- * constraints, ordering checks, and case sensitivity options.
- */
 export class TokenCollection extends Array<Token> {
-	/**
-	 * Creates a TokenCollection by matching a value against a sequence of regex patterns.
-	 *
-	 * @param value - The source token or string to parse
-	 * @param patterns - The regex patterns to match sequentially
-	 * @param typeOptions - Optional collection configuration
-	 * @returns A new TokenCollection containing the matched tokens
-	 */
 	static fromPatterns(
 		value: Readonly<Token> | string,
 		patterns: readonly Readonly<RegExp>[],
@@ -191,24 +174,11 @@ export class TokenCollection extends Array<Token> {
 		}
 	}
 
-	/**
-	 * The concatenated string value of all tokens in this collection.
-	 */
 	get value() {
 		const value = this.map(t => t.value).join('');
 		return value;
 	}
 
-	/**
-	 * Validates the token collection structure against its configuration.
-	 *
-	 * Checks for unexpected spaces, consecutive commas, empty tokens,
-	 * and duplicate values based on the collection's separator, allowEmpty,
-	 * and unique settings.
-	 *
-	 * @param options - Optional validation settings including expected values and reference URL
-	 * @returns The validation result
-	 */
 	check(options: { expects?: Expect[]; ref?: string; cache?: boolean } = {}) {
 		const { expects, ref } = options;
 
@@ -293,12 +263,6 @@ export class TokenCollection extends Array<Token> {
 		return matched();
 	}
 
-	/**
-	 * Splits this collection into chunks of the specified size.
-	 *
-	 * @param split - The number of tokens per chunk
-	 * @returns An array of TokenCollection chunks
-	 */
 	chunk(split: number) {
 		const chunks: TokenCollection[] = [];
 		const tokens = this.slice();
@@ -310,12 +274,6 @@ export class TokenCollection extends Array<Token> {
 		return chunks;
 	}
 
-	/**
-	 * Iterates over consecutive token pairs, calling the callback for each pair.
-	 *
-	 * @param callback - A function receiving the previous and current token; return a token to stop iteration
-	 * @returns The token returned by the callback, or `null` if iteration completes
-	 */
 	compareTokens(callback: (prev: Readonly<Token>, current: Readonly<Token>) => Readonly<Token> | null | void) {
 		const _tokens = this.slice();
 		let prev = _tokens.shift();
@@ -333,12 +291,6 @@ export class TokenCollection extends Array<Token> {
 		return null;
 	}
 
-	/**
-	 * Splits this collection into two at the given position.
-	 *
-	 * @param position - The index at which to split
-	 * @returns A tuple of two TokenCollections: before and after the position
-	 */
 	divide(position: number) {
 		const _a = this.slice(0, position);
 		const _b = this.slice(position);
@@ -347,15 +299,6 @@ export class TokenCollection extends Array<Token> {
 		return [a, b] as const;
 	}
 
-	/**
-	 * Applies a sequence of check callbacks to consecutive tokens.
-	 *
-	 * Each callback receives the current head token and remaining tail.
-	 * Tracks pass count and cumulative offset for error reporting.
-	 *
-	 * @param callbacks - The check functions to apply sequentially
-	 * @returns The validation result
-	 */
 	eachCheck(...callbacks: readonly TokenEachCheck[]): Result {
 		let headAndTail = this.headAndTail();
 		let head = headAndTail.head;
@@ -423,22 +366,10 @@ export class TokenCollection extends Array<Token> {
 		return matched();
 	}
 
-	/**
-	 * Creates a new TokenCollection containing only tokens that pass the test.
-	 *
-	 * @param callback - The filter predicate function
-	 * @returns A new TokenCollection with the filtered tokens
-	 */
 	filter(callback: Parameters<Array<Token>['filter']>[0]): TokenCollection {
 		return TokenCollection.#new(super.filter(callback), this);
 	}
 
-	/**
-	 * Finds the first occurrence of two consecutive tokens of the same type.
-	 *
-	 * @param tokenType - The token type number to check for consecutive occurrences
-	 * @returns The second consecutive token, or `null` if none found
-	 */
 	getConsecutiveToken(tokenType: number) {
 		const resultToken = this.compareTokens((prev, current) => {
 			if (prev.type === tokenType && current.type === tokenType) {
@@ -448,13 +379,6 @@ export class TokenCollection extends Array<Token> {
 		return resultToken ?? null;
 	}
 
-	/**
-	 * Finds the first duplicated token in this collection.
-	 *
-	 * Comparison respects the `caseInsensitive` setting of this collection.
-	 *
-	 * @returns The duplicated token, or `null` if all tokens are unique
-	 */
 	getDuplicated() {
 		const aList = this.slice();
 		const bList = this.slice();
@@ -477,30 +401,14 @@ export class TokenCollection extends Array<Token> {
 		return null;
 	}
 
-	/**
-	 * Returns only the identifier tokens, excluding whitespace and separators.
-	 *
-	 * @returns A new TokenCollection containing only Ident-type tokens
-	 */
 	getIdentTokens() {
 		return this.filter(token => token.type === Token.Ident);
 	}
 
-	/**
-	 * Checks whether any token in this collection matches the given value.
-	 *
-	 * @param value - The token value, type number, regex, or array to check against
-	 * @returns Whether any token matches
-	 */
 	has(value: TokenValue) {
 		return this.some(t => t.matches(value));
 	}
 
-	/**
-	 * Splits this collection into a head token and a tail collection.
-	 *
-	 * @returns An object with `head` (first token or null) and `tail` (remaining tokens)
-	 */
 	headAndTail(): { head: Token | null; tail: TokenCollection } {
 		const copy = this.slice();
 		const head = copy.shift();
@@ -511,12 +419,6 @@ export class TokenCollection extends Array<Token> {
 		return { head, tail };
 	}
 
-	/**
-	 * Searches for the first token that includes the given value.
-	 *
-	 * @param value - The token value, type number, regex, or array to search for
-	 * @returns The first matching token, or `null` if not found
-	 */
 	search(value: TokenValue) {
 		for (const token of this) {
 			if (token.includes(value)) {
@@ -526,13 +428,6 @@ export class TokenCollection extends Array<Token> {
 		return null;
 	}
 
-	/**
-	 * Verifies that tokens alternate between the specified types in order.
-	 *
-	 * @param tokenNumbers - The expected repeating pattern of token types
-	 * @param lastTokenNumber - Optional expected type for the last token
-	 * @returns An error object if the pattern is violated, or `null` if valid
-	 */
 	takeTurns(tokenNumbers: ReadonlyArray<number>, lastTokenNumber?: number) {
 		const tokens = this.slice();
 		for (let i = 0; i < tokens.length; i++) {
@@ -559,11 +454,6 @@ export class TokenCollection extends Array<Token> {
 		return null;
 	}
 
-	/**
-	 * Converts all tokens in this collection to plain JSON-serializable objects.
-	 *
-	 * @returns An array of plain token objects
-	 */
 	toJSON() {
 		return this.map(t => t.toJSON());
 	}

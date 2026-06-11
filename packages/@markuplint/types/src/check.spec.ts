@@ -1,3 +1,5 @@
+import type { Pattern } from './types.js';
+
 import { test, expect } from 'vitest';
 
 import { check } from './check.js';
@@ -40,6 +42,20 @@ test('Pattern (object)', () => {
 	expect(check('Hello', { pattern: '/hello/i' }).matched).toBe(true);
 });
 
+/**
+ * Regression sentinel for schema drift.
+ *
+ * If `gen/specific-schema.json` ever loses its `pattern` definition, the next
+ * `yarn workspace @markuplint/types run schema` drops the `Pattern` interface
+ * from `src/types.schema.ts`, and this test fails at compile time because the
+ * `Pattern` import and the annotated variable can no longer be resolved.
+ */
+test('Pattern type is exported from types.schema.ts (drift sentinel)', () => {
+	const type: Pattern = { pattern: '/^foo$/' };
+	expect(check('foo', type).matched).toBe(true);
+	expect(check('bar', type).matched).toBe(false);
+});
+
 test('BCP47', () => {
 	expect(check('en', 'BCP47').matched).toBe(true);
 	expect(check('en-US', 'BCP47').matched).toBe(true);
@@ -73,7 +89,6 @@ test('Srcset', () => {
 	// Descriptor consistency
 	expect(check('a.jpg 480w, b.jpg 1024w', 'Srcset').matched).toBe(true);
 	expect(check('a.jpg 1x, b.jpg 2x', 'Srcset').matched).toBe(true);
-	expect(check('a.jpg, b.jpg', 'Srcset').matched).toBe(true);
 	expect(check('a.jpg, b.jpg 2x', 'Srcset').matched).toBe(true);
 	expect(check('a.jpg 480w, b.jpg', 'Srcset').matched).toBe(false);
 	expect(check('a.jpg 480w, b.jpg 2x', 'Srcset').matched).toBe(false);
@@ -86,6 +101,62 @@ test('Srcset', () => {
 	expect(check('a.jpg 0x', 'Srcset').matched).toBe(false);
 	expect(check('a.jpg 0.0x', 'Srcset').matched).toBe(false);
 	expect(check('a.jpg -1x', 'Srcset').matched).toBe(false);
+
+	// Spec: "An invalid image candidate string is one with [...] a duplicate
+	// descriptor." Track normalised numeric values so 1x / 1.0x / omitted
+	// descriptor (implicit 1x) all collide on the same density slot.
+	expect(check('a.jpg 1x, b.jpg 1x', 'Srcset').matched).toBe(false);
+	expect(check('a.jpg 1x, b.jpg 1.0x', 'Srcset').matched).toBe(false);
+	expect(check('a.jpg, b.jpg', 'Srcset').matched).toBe(false);
+	expect(check('a.jpg 1x, b.jpg', 'Srcset').matched).toBe(false);
+	expect(check('a.jpg 480w, b.jpg 480w', 'Srcset').matched).toBe(false);
+	// Sanity: distinct densities / widths still accepted.
+	expect(check('a.jpg 1x, b.jpg 1.5x, c.jpg 2x', 'Srcset').matched).toBe(true);
+	expect(check('a.jpg 320w, b.jpg 640w, c.jpg 1280w', 'Srcset').matched).toBe(true);
+
+	// Numeric normalisation: `1e0` and `1` resolve to the same Number(); the
+	// duplicate detection key uses Number() so different lexical forms of the
+	// same density still collide.
+	expect(check('a.jpg 1e0x, b.jpg 1x', 'Srcset').matched).toBe(false);
+
+	// URL LS rejects bare special-scheme fragments (missing `//`) when the
+	// dummy base scheme differs. The Srcset checker parses each candidate's
+	// url via WHATWG URL with `https://example.com/` as the dummy base.
+	// `http:` is a different special scheme → parse fails.
+	expect(check('http: 1x', 'Srcset').matched).toBe(false);
+	// (`https:` alone against the same-scheme base resolves to the base URL
+	// per URL LS — technically a valid URL string, so we don't flag it.)
+
+	// Valid URL forms: absolute, root-relative, dot-relative.
+	// (data: URIs are NOT tested here — the Srcset checker tokenises by `,`
+	// first, so a data URI containing commas would be split incorrectly. That
+	// is a pre-existing limitation of the candidate splitter; see #1171 for the
+	// general parser fix tracking.)
+	expect(check('http://example.com/a 1x', 'Srcset').matched).toBe(true);
+	expect(check('/foo 1x', 'Srcset').matched).toBe(true);
+	expect(check('./foo 1x', 'Srcset').matched).toBe(true);
+});
+
+test('SourceSizeList', () => {
+	// Basic <source-size-value> forms.
+	expect(check('100vw', 'SourceSizeList').matched).toBe(true);
+	expect(check('auto', 'SourceSizeList').matched).toBe(true);
+	expect(check('500px', 'SourceSizeList').matched).toBe(true);
+	// <media-condition> + <source-size-value>, optionally followed by a fallback.
+	expect(check('(min-width: 600px) 200px, 100vw', 'SourceSizeList').matched).toBe(true);
+
+	// HTML LS imposes a non-negative additional constraint on <source-size-value>;
+	// css-tree's <length> grammar accepts negatives, so post-syntax checks catch them.
+	expect(check('-1px', 'SourceSizeList').matched).toBe(false);
+	expect(check('-1e+0px', 'SourceSizeList').matched).toBe(false);
+	expect(check('(min-width: 600px) -200px, 100vw', 'SourceSizeList').matched).toBe(false);
+	expect(check('100vw, -100px', 'SourceSizeList').matched).toBe(false);
+
+	// Positive scientific notation is fine — only the leading minus is rejected.
+	expect(check('1e-5px', 'SourceSizeList').matched).toBe(true);
+
+	// Empty / pure-syntax failures fall through cssSyntaxMatch.
+	expect(check('', 'SourceSizeList').matched).toBe(false);
 });
 
 test('IconSize', () => {
@@ -167,4 +238,86 @@ test('JSON', () => {
 	expect(check('{"a": 1, "b": 2}', 'JSON').matched).toBeTruthy();
 	expect(check('{"a": 1, "b": 2', 'JSON').matched).toBeFalsy();
 	expect(check('{"a": 1, "b": 2,}', 'JSON').matched).toBeFalsy();
+});
+
+// URL Living Standard family — verifies the `defs.ts` wrapper logic on top of
+// the shared `checkURLOnce` closure. The full URL LS validation surface is
+// covered in `whatwg/check-url.spec.ts`; these tests pin the per-attribute
+// composition layer (empty-rejection / scheme prohibition / absolute check).
+
+test('URL', () => {
+	expect(check('', 'URL').matched).toBe(true);
+	expect(check('https://example.com', 'URL').matched).toBe(true);
+	expect(check('/relative/path', 'URL').matched).toBe(true);
+	// URL LS validation errors must propagate (covered exhaustively in
+	// check-url.spec.ts; one representative each).
+	expect(check('http://user:pass@example.com', 'URL').matched).toBe(false);
+	expect(check('http:foo', 'URL').matched).toBe(false);
+});
+
+test('NonEmptyURL', () => {
+	// Empty / whitespace-only is rejected (HTML LS "valid non-empty URL").
+	expect(check('', 'NonEmptyURL').matched).toBe(false);
+	expect(check('   ', 'NonEmptyURL').matched).toBe(false);
+	expect(check('\t\n', 'NonEmptyURL').matched).toBe(false);
+	// Non-empty values delegate to `checkURL`.
+	expect(check('https://example.com', 'NonEmptyURL').matched).toBe(true);
+	expect(check('/relative/path', 'NonEmptyURL').matched).toBe(true);
+	// URL LS errors still fire through the delegation.
+	expect(check('http://user:pass@host', 'NonEmptyURL').matched).toBe(false);
+});
+
+test('BaseURL', () => {
+	// `<base href>`-specific scheme prohibition.
+	expect(check('data:text/plain,foo', 'BaseURL').matched).toBe(false);
+	expect(check('javascript:alert(1)', 'BaseURL').matched).toBe(false);
+	// Otherwise delegates to `checkURL` — URL LS errors are now reported
+	// (regression guard for the Phase 2 fix; previously BaseURL only
+	// filtered data:/javascript: and silently accepted everything else).
+	expect(check('http://user:pass@example.com/', 'BaseURL').matched).toBe(false);
+	expect(check('http:foo', 'BaseURL').matched).toBe(false);
+	// Valid URLs pass.
+	expect(check('https://example.com/', 'BaseURL').matched).toBe(true);
+	expect(check('/relative/path', 'BaseURL').matched).toBe(true);
+});
+
+test('AbsoluteURL', () => {
+	// Must be absolute.
+	expect(check('/relative', 'AbsoluteURL').matched).toBe(false);
+	expect(check('', 'AbsoluteURL').matched).toBe(false);
+	// Absolute URLs delegate to `checkURL` — URL LS errors are now reported.
+	expect(check('https://example.com/', 'AbsoluteURL').matched).toBe(true);
+	expect(check('http://example.com/#a#b', 'AbsoluteURL').matched).toBe(false);
+	expect(check('http://user@example.com/', 'AbsoluteURL').matched).toBe(false);
+});
+
+test('AbsoluteURLOrEmpty', () => {
+	// HTML LS §4.10.5.1.7 — empty is accepted (no default URL).
+	expect(check('', 'AbsoluteURLOrEmpty').matched).toBe(true);
+	expect(check('   ', 'AbsoluteURLOrEmpty').matched).toBe(true);
+	// Relative URLs are rejected (must be absolute).
+	expect(check('/relative', 'AbsoluteURLOrEmpty').matched).toBe(false);
+	expect(check('foo/bar', 'AbsoluteURLOrEmpty').matched).toBe(false);
+	// Absolute URLs pass; URL LS errors propagate.
+	expect(check('https://example.com/', 'AbsoluteURLOrEmpty').matched).toBe(true);
+	expect(check('http://user@example.com/', 'AbsoluteURLOrEmpty').matched).toBe(false);
+});
+
+test('HashName', () => {
+	// Valid: `#` followed by a non-empty name (existence is not the type's concern).
+	expect(check('#my-map', 'HashName').matched).toBe(true);
+	expect(check('#a', 'HashName').matched).toBe(true);
+	// Invalid per HTML LS valid-hash-name-reference: must have a non-empty name part.
+	expect(check('#', 'HashName').matched).toBe(false);
+	expect(check('', 'HashName').matched).toBe(false);
+	// Invalid: missing the leading hash sign.
+	expect(check('my-map', 'HashName').matched).toBe(false);
+	// The type only enforces "# + at least one char". Per HTML LS, the name part
+	// must match an actual `name` attribute value somewhere in the document; the
+	// content syntax (whitespace, unicode, etc.) is delegated to the matching
+	// step. Pin the permissive behaviour explicitly so a future tightening of
+	// the syntax surfaces here rather than silently rejecting valid uses.
+	expect(check('#日本語', 'HashName').matched).toBe(true);
+	expect(check('#with space', 'HashName').matched).toBe(true);
+	expect(check('#name#extra', 'HashName').matched).toBe(true);
 });

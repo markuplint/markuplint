@@ -1,10 +1,28 @@
 #!/usr/bin/env node
 /* eslint-disable no-console */
 
+/**
+ * VS Code extension build driver.
+ *
+ * Usage: `node vscode/scripts/install.mjs [mode]`
+ *
+ * Accepted modes (see `./resolve-mode.mjs` for the authoritative list):
+ *
+ * | Mode      | Effect                                              |
+ * | --------- | --------------------------------------------------- |
+ * | `package` | Build a stable .vsix (default when no arg is given) |
+ * | `release` | Publish a stable version to Marketplace             |
+ *
+ * Any other argument exits with code 1. Prereleases are distributed only as
+ * `.vsix` attached to GitHub Releases (see `vscode/CLAUDE.md`).
+ */
+
 import fs from 'node:fs';
 import path from 'node:path';
 import { execSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+
+import { resolveMode } from './resolve-mode.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -14,9 +32,13 @@ const packageJsonPath = path.join(rootDir, 'package.json');
 const backupPath = path.join(rootDir, 'package.json.bak');
 const vscodeDir = path.join(rootDir, 'vscode');
 
-// Check if this is release mode
-const isRelease = process.argv.includes('release');
-const mode = isRelease ? 'release' : 'package';
+let mode;
+try {
+	mode = resolveMode(process.argv);
+} catch (error) {
+	console.error(error.message);
+	process.exit(1);
+}
 
 console.log(`Starting VS Code extension ${mode} process...`);
 

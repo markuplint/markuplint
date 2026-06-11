@@ -1,4 +1,4 @@
-import type { ChildNode, Options, Result, Specs } from './types.js';
+import type { ChildNode, Mode, Options, Result, Specs, TagRule } from './types.js';
 import type {
 	PermittedContentOneOrMore,
 	PermittedContentOptional,
@@ -24,9 +24,12 @@ const cLog = cmLog.extend('countCompereResult');
  *
  * @param pattern - A quantified content model pattern (require, optional, oneOrMore, or zeroOrMore).
  * @param childNodes - The child nodes to validate against the repeated pattern.
+ * @param rules - User-defined tag rules. Threaded through for transparent-model recursion;
+ *                not consulted here directly. See `order` for the rationale.
  * @param specs - The resolved spec data for content model lookups.
  * @param options - Validation behavior options.
  * @param depth - The current recursion depth, used for debug logging and nested evaluation.
+ * @param mode - Whether we are evaluating the element's `'origin'` or `'pretended'` identity.
  * @returns A result indicating whether the required count of matches was achieved.
  */
 export function countPattern(
@@ -37,9 +40,11 @@ export function countPattern(
 		| ReadonlyDeep<PermittedContentZeroOrMore>,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	childNodes: readonly ChildNode[],
+	rules: readonly TagRule[],
 	specs: Specs,
 	options: Options,
 	depth: number,
+	mode: Mode,
 ): Result {
 	const ptLog = cmLog.extend(`countPattern#${depth}`);
 	const collection = new Collection(childNodes);
@@ -55,7 +60,7 @@ export function countPattern(
 	while (true) {
 		loopCount++;
 		ptLog('Check#%s: %s', loopCount, collection);
-		const result = recursiveBranch(model, collection.unmatched, specs, options, depth);
+		const result = recursiveBranch(model, collection.unmatched, rules, specs, options, depth, mode);
 		const added = collection.addMatched(result.matched);
 		const { matchedCount } = collection;
 
@@ -202,10 +207,15 @@ export function countPattern(
 			matchedCount,
 		);
 
+		// When min=0 and no elements were consumed, the pattern legitimately
+		// matched zero times — don't propagate the inner sequence's failure.
+		// This enables zeroOrMore([oneOrMore dt, oneOrMore dd]) to accept
+		// empty content (e.g., <dl></dl>). See #3592.
 		if (
-			result.type === 'MISSING_NODE_REQUIRED' ||
-			result.type === 'MISSING_NODE_ONE_OR_MORE' ||
-			result.type === 'TRANSPARENT_MODEL_DISALLOWS'
+			(collection.matchedCount > 0 || min > 0) &&
+			(result.type === 'MISSING_NODE_REQUIRED' ||
+				result.type === 'MISSING_NODE_ONE_OR_MORE' ||
+				result.type === 'TRANSPARENT_MODEL_DISALLOWS')
 		) {
 			return compereResult(
 				{

@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-rc.4](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.3...v5.0.0-rc.4) (2026-04-19)
+
+**Note:** Version bump only for package @markuplint/parser-utils
+
+# [5.0.0-rc.3](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.2...v5.0.0-rc.3) (2026-04-19)
+
+**Note:** Version bump only for package @markuplint/parser-utils
+
+# [5.0.0-rc.2](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.1...v5.0.0-rc.2) (2026-04-15)
+
+- fix(parser-utils)!: align unquoted attribute value tokenizer with HTML spec ([5168c04](https://github.com/markuplint/markuplint/commit/5168c041a1d37a7080f12e3c7569b5bbacd5a2f1))
+- build!: remove ESLint and replace with oxlint ([1e0a337](https://github.com/markuplint/markuplint/commit/1e0a337707f76b903b16beeeb8c4d4fc0d8fc9e4))
+- feat(parser-utils)!: remove deprecated getLine and getCol functions ([51cd7a2](https://github.com/markuplint/markuplint/commit/51cd7a28b7fcdd4a9d52d57f35c55b97b3b196fe))
+
+### BREAKING CHANGES
+
+- The default `endOfUnquotedValueChars` no longer includes `/`.
+  Unquoted attribute values preserve `/` as part of the value, matching the
+  WHATWG HTML "attribute value (unquoted) state". Consumers that relied on `/`
+  as a terminator must pass `endOfUnquotedValueChars: ['\t', '\n', '\f', '\r',
+' ', '/', '>']` explicitly to `visitAttr()` / `attrTokenizer()`.
+
+Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com>
+
+- ESLint is no longer used. Use oxlint instead.
+- getLine() and getCol() have been removed.
+  Use getPosition() instead.
+
 # [5.0.0-rc.1](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.0...v5.0.0-rc.1) (2026-03-27)
 
 **Note:** Version bump only for package @markuplint/parser-utils

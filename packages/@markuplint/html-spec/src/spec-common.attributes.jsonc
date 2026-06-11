@@ -135,7 +135,10 @@
 		},
 		// https://html.spec.whatwg.org/multipage/microdata.html#attr-itemid
 		"itemid": {
-			"type": "URL"
+			"type": "URL",
+			// HTML LS §5.7.4: itemid must not be specified on elements that do
+			// not have both an itemscope attribute and an itemtype attribute.
+			"condition": "[itemscope][itemtype]"
 		},
 		// https://html.spec.whatwg.org/multipage/microdata.html#names:-the-itemprop-attribute
 		"itemprop": {
@@ -150,6 +153,10 @@
 		"itemref": {
 			"type": {
 				"token": "DOMID",
+				// HTML LS §5.2.2 (Items) — itemref value is "an unordered set
+				// of unique space-separated tokens that are case-sensitive".
+				// Without `unique`, `itemref="ref1 ref1"` silently passed.
+				"unique": true,
 				"separator": "space"
 			},
 			"condition": "[itemscope]"
@@ -164,8 +171,16 @@
 				"token": "AbsoluteURL",
 				"ordered": false,
 				"unique": true,
+				// HTML LS §5.2.2 (Items) — when itemtype is specified its
+				// value must be "an unordered set of unique tokens that are
+				// case-sensitive, each of which is a valid absolute URL".
+				// An empty value has no tokens at all and is non-conforming.
+				"allowEmpty": false,
 				"separator": "space"
-			}
+			},
+			// HTML LS §5.7.4: itemtype must not be specified on elements that
+			// do not have an itemscope attribute specified.
+			"condition": "[itemscope]"
 		},
 		// https://html.spec.whatwg.org/multipage/dom.html#attr-lang
 		"lang": {
@@ -725,8 +740,11 @@
 			"type": "SRIHash"
 		},
 		// https://html.spec.whatwg.org/multipage/semantics.html#attr-link-media
+		// Media Queries Level 5 — validates syntax (via css-tree), rejects
+		// deprecated media types (tv/projection/etc.), unknown identifiers
+		// (alla/notscreen), and deprecated features (device-aspect-ratio etc.).
 		"media": {
-			"type": "<media-query-list>"
+			"type": "MediaQueryList"
 		},
 		// https://html.spec.whatwg.org/multipage/urls-and-fetching.html#cors-settings-attribute
 		"crossorigin": {
@@ -750,8 +768,11 @@
 	},
 	"#HTMLEmbededAndMediaContentAttrs": {
 		// https://html.spec.whatwg.org/multipage/media.html#attr-media-src
+		// "valid non-empty URL potentially surrounded by spaces" — non-empty
+		// is mandated by the per-element src attribute definitions in
+		// HTML LS §4.8 (audio/embed/iframe/img/input[type=image]/source/track/video).
 		"src": {
-			"type": "URL"
+			"type": "NonEmptyURL"
 		},
 		// https://html.spec.whatwg.org/multipage/media.html#attr-media-preload
 		"preload": {
@@ -812,8 +833,9 @@
 			"type": "DOMID"
 		},
 		// https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fs-formaction
+		// Spec: "a valid non-empty URL potentially surrounded by spaces"
 		"formaction": {
-			"type": "URL"
+			"type": "NonEmptyURL"
 		},
 		// https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fs-formenctype
 		"formenctype": {

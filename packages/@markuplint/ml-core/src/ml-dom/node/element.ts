@@ -23,7 +23,7 @@ import type {
 } from '@markuplint/ml-config';
 import type { ARIAVersion } from '@markuplint/ml-spec';
 
-import { resolveNamespace } from '@markuplint/ml-spec';
+import { getSpecByTagName, resolveNamespace } from '@markuplint/ml-spec';
 import type { SelectorMatches } from '@markuplint/selector';
 import { matchSelector } from '@markuplint/selector';
 
@@ -92,8 +92,6 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	readonly namespaceURI: NamespaceURI;
 
 	/**
-	 * Memoization cache for the accessible name computation, keyed by ARIA version.
-	 *
 	 * ## Why this cache exists
 	 *
 	 * Multiple rules and the `:aria(has name)` selector evaluate the accessible name
@@ -110,14 +108,6 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * version is deterministic and will never become stale. No invalidation
 	 * logic is needed. The cache is garbage-collected together with the
 	 * MLElement instance when the document is released.
-	 *
-	 * ## Consumers that benefit
-	 *
-	 * - `require-accessible-name` rule (direct call)
-	 * - `wai-aria` rule via `:aria(has name)` selector
-	 * - `neighbor-popovers` rule
-	 * - `landmark-roles` rule
-	 * - `MLDocument.getAccessibilityProp()` (accessibility tree builder)
 	 *
 	 * Introduced to resolve {@link https://github.com/markuplint/markuplint/issues/2179 | #2179}
 	 * (AccName performance bottleneck).
@@ -171,6 +161,10 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	/**
 	 * The pretender context if this element is participating in pretender behavior,
 	 * or null if it is not a pretender or pretended element.
+	 *
+	 * The virtual element created by `pretending()` is not registered in the
+	 * document's `nodeList`; walkers visit only the original element, which
+	 * delegates its name and attribute getters to the virtual element.
 	 */
 	pretenderContext: PretenderContext<MLElement<T, O>, T, O> | null = null;
 
@@ -3105,6 +3099,9 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	/**
 	 * Returns the rule configuration for this element, respecting the pretender context.
 	 * If the element is a pretended origin, returns the rule from the pretending element.
+	 * Rules are mapped only to nodes in the document's `nodeList`; the virtual
+	 * pretender element never appears there, so it must read the resolved
+	 * rules from the original element.
 	 *
 	 * @implements `@markuplint/ml-core` API: `MLNode`
 	 */
@@ -3526,6 +3523,10 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * Gets the attribute value from the original (non-pretended) attributes list,
 	 * bypassing any pretender context that might be active.
 	 *
+	 * Exists for the pretender ARIA `{ fromAttr }` accessible-name resolution:
+	 * the source attribute (e.g. `label` on `<MyButton label="...">`) lives on
+	 * the original component element, not on the virtual pretender element.
+	 *
 	 * @implements `@markuplint/ml-core` API: `MLElement`
 	 * @param attrName - The attribute name to look up (case-insensitive)
 	 * @returns The attribute value, or null if the attribute is not found
@@ -3737,6 +3738,12 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * such as preprocessor-specific blocks, slot elements, or (optionally) elements
 	 * with dynamic attributes.
 	 *
+	 * Blocks that carry a `blockBehavior` are not treated as mutable because
+	 * their branches are deterministically enumerable via
+	 * `conditionalChildNodes()`; blocks without one (e.g. expression output
+	 * like `{value}`) can produce arbitrary content, so the children are
+	 * considered mutable.
+	 *
 	 * @implements `@markuplint/ml-core` API: `MLElement`
 	 * @param attr - When true, also considers children with mutable attributes as mutable
 	 * @returns True if this element has potentially mutable children
@@ -3885,6 +3892,11 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * returning detailed match results. When the element is a pretender,
 	 * it attempts to match both as the pretender and as the original element.
 	 *
+	 * The two-phase strategy lets both targeting styles work: selectors for
+	 * the semantic element (e.g. `button`) match via the pretender identity,
+	 * while selectors for the component name (e.g. `MyButton`) still match
+	 * the original.
+	 *
 	 * @param selector - The CSS selector string or regex selector to match against
 	 * @param scope - An optional scope node for scoped selector matching
 	 * @returns The detailed match result including captured groups from regex selectors
@@ -3926,6 +3938,22 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @param pretenders - Optional array of pretender configurations to match against
 	 */
 	pretending(pretenders?: readonly Pretender[]) {
+		// Pretender must not apply to a recognised standard HTML element (e.g. <marquee>,
+		// <h1>, <button>). Allowing such elements to masquerade as another would silently
+		// mask spec-driven rules — deprecation, ARIA role restrictions, browser support —
+		// keyed on the original tag. See issue #3740.
+		//
+		// Names that the HTML parser cannot distinguish from typos (PascalCase JSX-like
+		// usage in plain HTML such as `<SimpleButton>`) get `elementType === 'html'`
+		// from the parser but have no spec entry; those remain pretender-eligible
+		// (this is what `pretenders.scan` relies on). The legacy "no inline `as=` on
+		// HTML elements" guard is preserved further down for that case.
+		if (
+			this.elementType === 'html' &&
+			getSpecByTagName(this.ownerMLDocument.specs.specs, this.localName, this.namespaceURI) != null
+		) {
+			return;
+		}
 		const pretenderConfig = pretenders?.find(option => this.matches(option.selector));
 		const asAttrValue = this.getAttribute('as');
 		const pretenderElement: Pretender['as'] | null =

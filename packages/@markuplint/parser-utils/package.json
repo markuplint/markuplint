@@ -1,8 +1,12 @@
 {
 	"name": "@markuplint/parser-utils",
-	"version": "5.0.0-rc.1",
+	"version": "5.0.0-rc.4",
 	"description": "Utility module for markuplint parser plugin",
-	"repository": "git@github.com:markuplint/markuplint.git",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/markuplint/markuplint.git",
+		"directory": "packages/@markuplint/parser-utils"
+	},
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
 	"engines": {
@@ -31,15 +35,15 @@
 		"clean": "npx tsc --build --clean tsconfig.build.json"
 	},
 	"dependencies": {
-		"@markuplint/ml-ast": "5.0.0-rc.1",
-		"@markuplint/ml-spec": "5.0.0-rc.1",
-		"@markuplint/shared": "5.0.0-rc.1",
-		"@markuplint/types": "5.0.0-rc.1",
+		"@markuplint/ml-ast": "5.0.0-rc.4",
+		"@markuplint/ml-spec": "5.0.0-rc.4",
+		"@markuplint/shared": "5.0.0-rc.4",
+		"@markuplint/types": "5.0.0-rc.4",
 		"debug": "4.4.3",
 		"espree": "11.2.0",
-		"type-fest": "5.5.0"
+		"type-fest": "5.6.0"
 	},
 	"devDependencies": {
-		"@typescript-eslint/typescript-estree": "8.58.0"
+		"@typescript-eslint/typescript-estree": "8.59.0"
 	}
 }

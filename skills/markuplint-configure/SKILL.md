@@ -22,6 +22,17 @@ Add, remove, or adjust Markuplint rules.
 
 ### 1. Understand the Context
 
+**Determine the documentation site based on the installed markuplint version:**
+
+```shell
+npx markuplint --version
+```
+
+- If the version contains `alpha`, `beta`, or `rc` (e.g., `5.0.0-alpha.1`) → use `https://next.markuplint.dev` as the doc base
+- Otherwise (stable release) → use `https://markuplint.dev` as the doc base
+
+Use the determined doc base for all documentation URLs in subsequent steps.
+
 If `$ARGUMENTS` contains a file path or line reference, read that file first.
 
 Run Markuplint on the target to see current violations:
@@ -68,7 +79,7 @@ If the scope is element-level, choose between:
 The AI agent should propose a CSS selector based on the code context. Use the element's class, ID, tag name, or attributes to build the selector.
 
 For rule details, fetch the rule's documentation:
-`https://markuplint.dev/docs/rules/{rule-id}`
+`{doc-base}/docs/rules/{rule-id}` (where `{doc-base}` is determined in Step 1)
 
 ### 5. Propose the Change
 
@@ -195,5 +206,5 @@ These are frequently requested. Propose them directly when relevant:
 ### Selector tips
 
 - Ancestor matching: use `:is(nav *)` (NOT `:closest()` — it is deprecated)
-- For selector syntax details: https://markuplint.dev/docs/guides/selectors
-- For all config properties: https://markuplint.dev/docs/configuration/properties
+- For selector syntax details: `{doc-base}/docs/guides/selectors`
+- For all config properties: `{doc-base}/docs/configuration/properties`

@@ -24,7 +24,7 @@ jobs:
                   ref: dev
 
             - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
-              uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6
+              uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
               with:
                   node-version: ${{ env.NODE_BUILD_VERSION }}
 
@@ -38,7 +38,7 @@ jobs:
               run: echo "dir=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
 
             - name: Cache Restore devDependencies
-              uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
+              uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
               with:
                   path: |
                       '**/node_modules'
@@ -84,6 +84,29 @@ jobs:
                   git commit -m "chore: update html-spec generated data"
                   git push --force origin "$BRANCH_NAME"
 
+            # Composed after the commit so the (gitignored) summary file is not
+            # committed and pr-body.md is never staged by `git add -A`.
+            - name: Compose PR body
+              if: steps.changes.outputs.has_changes == 'true'
+              run: |
+                  SUMMARY_FILE="packages/@markuplint/html-spec/generator-summary.md"
+                  {
+                    echo "Automated update of \`@markuplint/html-spec\` generated data."
+                    echo ""
+                    echo "This PR was created automatically by the **Update HTML Spec** workflow."
+                    echo "It runs \`yarn up:gen\` to regenerate the HTML spec data from the latest HTML Living Standard."
+                    echo ""
+                    echo "## Changes"
+                    echo ""
+                    if [ -f "$SUMMARY_FILE" ]; then
+                      cat "$SUMMARY_FILE"
+                    else
+                      echo "_No summary was generated._"
+                    fi
+                    echo ""
+                    echo "If this PR is outdated, it will be updated automatically on the next scheduled run."
+                  } > pr-body.md
+
             - name: Create PR
               if: steps.changes.outputs.has_changes == 'true' && steps.existing-pr.outputs.pr_exists == 'false'
               env:
@@ -93,10 +116,11 @@ jobs:
                     --base dev \
                     --head "$BRANCH_NAME" \
                     --title "chore: update html-spec generated data" \
-                    --body "Automated update of \`@markuplint/html-spec\` generated data.
-
-                  This PR was created automatically by the **Update HTML Spec** workflow.
-                  It runs \`yarn up:gen\` to regenerate the HTML spec data from the latest HTML Living Standard.
-
-                  If this PR is outdated, it will be updated automatically on the next scheduled run." \
+                    --body-file pr-body.md \
                     --label "Specs"
+
+            - name: Update existing PR body
+              if: steps.changes.outputs.has_changes == 'true' && steps.existing-pr.outputs.pr_exists == 'true'
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: gh pr edit "${{ steps.existing-pr.outputs.pr_number }}" --body-file pr-body.md

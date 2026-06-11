@@ -19,13 +19,20 @@
 		},
 		// https://html.spec.whatwg.org/multipage/embedded-content.html#attr-img-src
 		"src": {
-			"type": "URL",
+			"type": "NonEmptyURL",
 			"requiredEither": ["srcset"]
 		},
 		// https://html.spec.whatwg.org/multipage/embedded-content.html#attr-img-srcset
 		"srcset": {
 			"type": "Srcset",
 			"requiredEither": ["src"]
+		},
+		// https://html.spec.whatwg.org/multipage/embedded-content.html#attr-img-sizes
+		// Spec: "The sizes attribute must only be specified if the srcset
+		// attribute is also specified."
+		"sizes": {
+			"type": "SourceSizeList",
+			"condition": "[srcset]"
 		},
 		// https://html.spec.whatwg.org/multipage/image-maps.html#attr-hyperlink-usemap
 		"usemap": {

@@ -186,6 +186,62 @@ describe('STDOUT Test', () => {
 		expect(exitCode).toBe(0);
 	});
 
+	test('without --severity-parse-error, non-fatal parse5 events are NOT emitted (#3844 opt-in default)', async () => {
+		// 002.html contains a malformed `content=ie=edge` attribute that parse5
+		// reports as `unexpected-character-in-unquoted-attribute-value`. After
+		// the opt-in default, the CLI must NOT emit that as a violation unless
+		// the user explicitly enables it via `--severity-parse-error` or
+		// `severity.parseError` in config.
+		const targetFilePath = path.resolve(import.meta.dirname, '../../../../test/fixture/002.html');
+		const { stderr } = await execa(entryFilePath, ['--no-color', escape(targetFilePath)], {
+			reject: false,
+		});
+		expect(stderr).not.toContain('parse-error');
+		expect(stderr).not.toContain('Parser conformance error');
+	});
+
+	test('with --severity-parse-error error, non-fatal parse5 events ARE emitted (uniform opt-in)', async () => {
+		// Same fixture, but explicitly opted in — the parse5 event must now
+		// appear on stderr.
+		const targetFilePath = path.resolve(import.meta.dirname, '../../../../test/fixture/002.html');
+		const { stderr } = await execa(
+			entryFilePath,
+			['--no-color', '--severity-parse-error', 'error', escape(targetFilePath)],
+			{ reject: false },
+		);
+		expect(stderr).toContain('Parser conformance error: unexpected-character-in-unquoted-attribute-value');
+		expect(stderr).toContain('(parse-error)');
+	});
+
+	test('parserOptions.documentMode "document" in .markuplintrc surfaces missing-doctype on bare <head> input', async () => {
+		// `bare-head.html` starts with `<head>` and has no `<!doctype html>`.
+		// With `documentMode: 'document'` the HTML parser is forced to treat
+		// it as a full document, so parse5 fires `missing-doctype`. This
+		// pins the Config → engine propagation path for `parserOptions`.
+		const targetFilePath = path.resolve(import.meta.dirname, '../../test/parse-error/bare-head.html');
+		const configFilePath = path.resolve(import.meta.dirname, '../../test/parse-error/config-document.json');
+		const { stderr } = await execa(
+			entryFilePath,
+			['--no-color', '--config', escape(configFilePath), '--no-search-config', escape(targetFilePath)],
+			{ reject: false },
+		);
+		expect(stderr).toContain('Parser conformance error: missing-doctype');
+	});
+
+	test('parserOptions.documentMode "fragment" in .markuplintrc silences missing-doctype on bare <head> input', async () => {
+		// Same fixture, but `documentMode: 'fragment'` keeps parse5 in
+		// fragment mode and `missing-doctype` is not emitted. Confirms the
+		// override flows from JSON config → engine → tokenize() correctly.
+		const targetFilePath = path.resolve(import.meta.dirname, '../../test/parse-error/bare-head.html');
+		const configFilePath = path.resolve(import.meta.dirname, '../../test/parse-error/config-fragment.json');
+		const { stderr } = await execa(
+			entryFilePath,
+			['--no-color', '--config', escape(configFilePath), '--no-search-config', escape(targetFilePath)],
+			{ reject: false },
+		);
+		expect(stderr).not.toContain('Parser conformance error: missing-doctype');
+	});
+
 	test('--max-count with 002.html', async () => {
 		const targetFilePath = path.resolve(import.meta.dirname, '../../../../test/fixture/002.html');
 
@@ -513,5 +569,41 @@ describe('--fix-dry-run', () => {
 
 		// Warning should be emitted
 		expect(stderr).toContain('--fix-dry-run takes precedence');
+	});
+});
+
+describe('#3890: exit code reflects post-fix violations', () => {
+	// no-boolean-attr-value at severity error: the pre-fix code MUST exit 1
+	// (proven by the --fix-dry-run test below), the fixed code exits 0
+	const configFilePath = path.resolve(import.meta.dirname, '../../test/fix/exit-code-config.json');
+
+	test('--fix: exits 0 when every violation is fixed', async () => {
+		// Self-resetting fixture: restore the violating content before running
+		const targetFilePath = path.resolve(import.meta.dirname, '../../test/fix/exit-code-fixed.html');
+		await writeFile(targetFilePath, '<input required="required" />\n', { encoding: 'utf8' });
+
+		const { exitCode } = await execa(
+			entryFilePath,
+			['--fix', '--config', escape(configFilePath), '--no-search-config', escape(targetFilePath)],
+			{ reject: false },
+		);
+
+		// The fixed file has no remaining violations, so the exit code is 0
+		// (previously it was 1 because the first-pass violations were counted)
+		const afterContent = await readFile(targetFilePath, { encoding: 'utf8' });
+		expect(afterContent).toBe('<input required />\n');
+		expect(exitCode).toBe(0);
+	});
+
+	test('--fix-dry-run: exits 1 because the file on disk is not modified', async () => {
+		const targetFilePath = path.resolve(import.meta.dirname, '../../test/fix/dry-run-target.html');
+
+		const { exitCode } = await execa(
+			entryFilePath,
+			['--fix-dry-run', '--config', escape(configFilePath), '--no-search-config', escape(targetFilePath)],
+			{ reject: false },
+		);
+
+		expect(exitCode).toBe(1);
 	});
 });

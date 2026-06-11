@@ -93,6 +93,78 @@ describe('selector matching', () => {
 		expect(createSelector('[f="f"]').match(el)).toBe(false);
 	});
 
+	test('attribute names are matched ASCII case-insensitively on HTML elements', () => {
+		// HTML LS / Selectors L4: attribute names are ASCII case-insensitive
+		// when the element is in the HTML namespace. The parser preserves the
+		// original raw casing on the AST, so the selector engine must fold case.
+		const el = createTestElement('<meta CHARSET="utf-8">');
+		expect(createSelector('[charset]').match(el)).toBeTruthy();
+		expect(createSelector('[CHARSET]').match(el)).toBeTruthy();
+		expect(createSelector('[Charset]').match(el)).toBeTruthy();
+		expect(createSelector('meta[charset="utf-8" i]').match(el)).toBeTruthy();
+	});
+
+	test('attribute names with uppercase preserved on element match against lowercase selectors', () => {
+		// JSDOM normalises HTML attribute names to lowercase, but markuplint's
+		// own parser preserves the raw source casing. Build a plain SelectorElement
+		// (the structural type used internally) to reproduce that scenario.
+		const mockHtmlElement = {
+			nodeType: 1,
+			nodeName: 'META',
+			localName: 'meta',
+			id: '',
+			namespaceURI: 'http://www.w3.org/1999/xhtml',
+			classList: { contains: () => false },
+			attributes: [
+				{
+					name: 'CHARSET',
+					localName: 'CHARSET',
+					value: 'utf-8',
+					namespaceURI: null,
+				},
+			],
+			parentNode: null,
+			parentElement: null,
+			previousElementSibling: null,
+			nextElementSibling: null,
+			children: [],
+		};
+		expect(createSelector('[charset]').match(mockHtmlElement)).toBeTruthy();
+		expect(createSelector('[Charset]').match(mockHtmlElement)).toBeTruthy();
+		expect(createSelector('meta[charset]').match(mockHtmlElement)).toBeTruthy();
+	});
+
+	test('attribute names are matched case-sensitively on non-HTML elements', () => {
+		// Per SVG spec, attribute names like `viewBox` are case-sensitive.
+		// `isPureHTMLElement(el)` returns false when localName === nodeName
+		// (the SVG / MathML / custom element convention), so case-folding
+		// must not apply.
+		const mockSvgElement = {
+			nodeType: 1,
+			nodeName: 'svg',
+			localName: 'svg',
+			id: '',
+			namespaceURI: 'http://www.w3.org/2000/svg',
+			classList: { contains: () => false },
+			attributes: [
+				{
+					name: 'viewBox',
+					localName: 'viewBox',
+					value: '0 0 10 10',
+					namespaceURI: null,
+				},
+			],
+			parentNode: null,
+			parentElement: null,
+			previousElementSibling: null,
+			nextElementSibling: null,
+			children: [],
+		};
+		expect(createSelector('[viewBox]').match(mockSvgElement)).toBeTruthy();
+		expect(createSelector('[viewbox]').match(mockSvgElement)).toBe(false);
+		expect(createSelector('[VIEWBOX]').match(mockSvgElement)).toBe(false);
+	});
+
 	test(':not', () => {
 		const el = createTestElement('<div id="hoge" class="foo bar"></div>');
 		expect(createSelector('*:not(a)').match(el)).toBeTruthy();

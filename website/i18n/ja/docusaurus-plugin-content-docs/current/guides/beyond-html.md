@@ -182,6 +182,10 @@ const Component = ({ list }) => {
 
 **React**や**Vue**などでは、カスタムコンポーネントをHTML要素として評価ができません。つまり、markuplintのコンテンツモデルルール — [`permitted-contents`](/docs/rules/permitted-contents)など — は、コンポーネントが実際に何をレンダリングするか知る手段がありません。この情報がないと、`<button>`要素をレンダリングする`<Button>`コンポーネントは未知の要素として扱われ、`<a><Button /></a>`（インタラクティブコンテンツの中にインタラクティブコンテンツ）のような不正なネストが検出されません。
 
+:::note 適用範囲
+プリテンダーは**カスタムコンポーネントのみ**を対象とします — Web Components、JSX/Vue/Svelte 等の authored component、および HTML パースで spec エントリが存在しない名前です。標準 HTML 要素（`<marquee>`、`<button>` など）を指定しても何も起きません。これにより、元タグに紐づく deprecation・ARIA・ブラウザサポートルールが暗黙に隠されることを防いでいます。
+:::
+
 <!-- prettier-ignore-start -->
 ```jsx
 <List>{/* ネイティブのHTML要素として評価できない */}
@@ -226,6 +230,8 @@ const Component = ({ list }) => {
 小規模プロジェクトではこの方法で十分ですが、コンポーネントライブラリが大きくなるにつれて手動でリストを管理するのは面倒になります。そこで**動的スキャン**が活躍します。
 
 必要であれば、設定の[`pretenders`](/docs/configuration/properties#pretenders)プロパティの詳細を参照してください。
+
+コンポーネント間の構造上の関係（たとえば`<Breadcrumbs>`の中に必ず`<BreadcrumbList>`を置くなど）を検証したい場合は、`pretenders`を[`permitted-contents`](/docs/rules/permitted-contents)ルールと組み合わせてください。タグルールのエントリーはコンポーネントのソースレベル名に対して、pretend後のHTMLコンテンツモデルとは別に評価されるため、元のHTMLと併せてコンポーネントレベルの構造を検証できます。
 
 ### 動的スキャン {#pretenders-scan}
 

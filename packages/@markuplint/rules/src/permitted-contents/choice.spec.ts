@@ -6,7 +6,7 @@ import { choice } from './choice.js';
 
 function c(models: any, innerHtml: string) {
 	const el = createTestElement(`<div>${innerHtml}</div>`);
-	return choice(models, [...el.childNodes], specs, { ignoreHasMutableChildren: true }, 0);
+	return choice(models, [...el.childNodes], [], specs, { ignoreHasMutableChildren: true }, 0, 'pretended');
 }
 
 test('[permitted-contents-invalid-001] ordered requires', () => {
@@ -131,6 +131,34 @@ test('[permitted-contents-invalid-004] the dl element', () => {
 	expect(c(models, '<div></div>').type).toBe('MATCHED');
 	expect(c(models, '<div></div><div></div>').type).toBe('MATCHED');
 	expect(c(models, '<dt></dt><dd></dd><dt></dt>').type).toBe('MISSING_NODE_ONE_OR_MORE');
+});
+
+test('[permitted-contents-issue-3592-001] dl with zeroOrMore groups — empty is valid', () => {
+	const models = {
+		choice: [
+			[
+				{
+					zeroOrMore: [
+						{ zeroOrMore: ':model(script-supporting)' },
+						{ oneOrMore: 'dt' },
+						{ zeroOrMore: ':model(script-supporting)' },
+						{ oneOrMore: 'dd' },
+						{ zeroOrMore: ':model(script-supporting)' },
+					],
+				},
+			],
+			[
+				{ zeroOrMore: ':model(script-supporting)' },
+				{ oneOrMore: 'div' },
+				{ zeroOrMore: ':model(script-supporting)' },
+			],
+		],
+	};
+
+	expect(c(models, '').type).toBe('MATCHED_ZERO');
+	expect(c(models, '<dt></dt><dd></dd>').type).toBe('MATCHED');
+	expect(c(models, '<div></div>').type).toBe('MATCHED');
+	expect(c(models, '<dt></dt>').type).toBe('MISSING_NODE_ONE_OR_MORE');
 });
 
 test('[permitted-contents-invalid-005] part of the ruby element', () => {

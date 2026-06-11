@@ -1,13 +1,17 @@
 {
 	"name": "markuplint",
-	"version": "5.0.0-rc.1",
+	"version": "5.0.0-rc.4",
 	"description": "An HTML linter for all markup developers",
 	"author": "Yusuke Hirao",
 	"license": "MIT",
 	"engines": {
 		"node": ">=22"
 	},
-	"repository": "git@github.com:markuplint/markuplint.git",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/markuplint/markuplint.git",
+		"directory": "packages/markuplint"
+	},
 	"type": "module",
 	"exports": {
 		".": {
@@ -31,18 +35,18 @@
 		"clean": "npx tsc --build --clean tsconfig.build.json"
 	},
 	"dependencies": {
-		"@markuplint/cli-utils": "5.0.0-rc.1",
-		"@markuplint/core": "5.0.0-rc.1",
-		"@markuplint/file-resolver": "5.0.0-rc.1",
-		"@markuplint/html-parser": "5.0.0-rc.1",
-		"@markuplint/html-spec": "5.0.0-rc.1",
-		"@markuplint/i18n": "5.0.0-rc.1",
-		"@markuplint/ml-ast": "5.0.0-rc.1",
-		"@markuplint/ml-config": "5.0.0-rc.1",
-		"@markuplint/ml-core": "5.0.0-rc.1",
-		"@markuplint/ml-spec": "5.0.0-rc.1",
-		"@markuplint/rules": "5.0.0-rc.1",
-		"@markuplint/shared": "5.0.0-rc.1",
+		"@markuplint/cli-utils": "5.0.0-rc.4",
+		"@markuplint/core": "5.0.0-rc.4",
+		"@markuplint/file-resolver": "5.0.0-rc.4",
+		"@markuplint/html-parser": "5.0.0-rc.4",
+		"@markuplint/html-spec": "5.0.0-rc.4",
+		"@markuplint/i18n": "5.0.0-rc.4",
+		"@markuplint/ml-ast": "5.0.0-rc.4",
+		"@markuplint/ml-config": "5.0.0-rc.4",
+		"@markuplint/ml-core": "5.0.0-rc.4",
+		"@markuplint/ml-spec": "5.0.0-rc.4",
+		"@markuplint/rules": "5.0.0-rc.4",
+		"@markuplint/shared": "5.0.0-rc.4",
 		"@types/debug": "4.1.13",
 		"chokidar": "5.0.0",
 		"debug": "4.4.3",
@@ -50,6 +54,6 @@
 		"os-locale": "8.0.0",
 		"strict-event-emitter": "0.5.1",
 		"strip-ansi": "7.2.0",
-		"type-fest": "5.5.0"
+		"type-fest": "5.6.0"
 	}
 }

@@ -24,9 +24,6 @@ const PURPOSE_MAP: Record<string, CreateRulePurpose> = {
 	core: 'CONTRIBUTE_TO_CORE',
 };
 
-/**
- * Icon mapping for scaffold output display, keyed by base file name.
- */
 const icons: Record<string, string> = {
 	README: '📝',
 	index: '📜',
@@ -35,9 +32,6 @@ const icons: Record<string, string> = {
 	tsconfig: '💎',
 };
 
-/**
- * Prints the CLI usage information, options, and examples to stdout.
- */
 function printHelp() {
 	process.stdout.write(`
 Usage: create-rule [options]
@@ -73,17 +67,12 @@ Examples:
 }
 
 /**
- * Sentinel class thrown when `--help` is requested to signal a
- * successful early exit without using `process.exit`.
+ * Sentinel for a successful early exit on `--help`, avoiding `process.exit`.
  */
 class HelpRequested {
 	readonly code = 0;
 }
 
-/**
- * Error thrown when CLI arguments are invalid or missing.
- * Includes a usage hint directing users to `--help`.
- */
 class UsageHintError extends Error {
 	constructor(message: string) {
 		super(`${message}\nRun 'create-rule --help' for usage.`);
@@ -92,10 +81,8 @@ class UsageHintError extends Error {
 }
 
 /**
- * Parses `process.argv` into validated {@link CreateRuleHelperParams}.
- *
- * @returns The parsed parameters and output format flag, or `null` when
- *          no arguments are provided (indicating interactive mode).
+ * @returns The parsed parameters, or `null` when no arguments are provided
+ *          (indicating interactive mode).
  * @throws {HelpRequested} When `--help` is passed.
  * @throws {UsageHintError} When required options are missing or values are invalid.
  */
@@ -242,14 +229,6 @@ export async function createRule() {
 	}
 }
 
-/**
- * Creates a rule non-interactively from pre-validated CLI options.
- * Runs the scaffold, prints results (or JSON), and installs dependencies.
- *
- * @param params - The validated rule creation parameters.
- * @param json - When `true`, outputs the result as JSON instead of
- *               the human-readable file list.
- */
 async function createRuleNonInteractive(params: CreateRuleHelperParams, json: boolean) {
 	const result = await createRuleHelper(params);
 
@@ -289,13 +268,6 @@ async function createRuleNonInteractive(params: CreateRuleHelperParams, json: bo
 	}
 }
 
-/**
- * Interactive CLI wizard for creating a new markuplint rule.
- *
- * Guides the user through selecting a purpose, naming the plugin and rule,
- * choosing a language, and optionally generating tests. After scaffolding,
- * it prints the generated files and installs any required dependencies.
- */
 async function createRuleInteractive() {
 	process.stdout.write(header('Create a rule'));
 	process.stdout.write('\n');
@@ -380,14 +352,6 @@ async function createRuleInteractive() {
 	}
 }
 
-/**
- * Prints a single scaffolded file entry to stdout with a check mark, icon, and file path.
- *
- * @param name - The plugin or module name used as a prefix.
- * @param icon - The icon character to display next to the file name.
- * @param title - The display title (typically the file name).
- * @param filePath - The absolute path to the generated file.
- */
 function printFile(name: string, icon: string, title: string, filePath: string) {
 	const _marker = xterm(39)('✔') + ' ';
 	const _title = (icon: string, title: string) => `${icon} ` + font.bold(`${name}/${title}`);

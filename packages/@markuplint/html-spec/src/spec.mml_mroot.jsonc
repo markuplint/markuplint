@@ -3,11 +3,14 @@
 	"contentModel": {
 		"contents": [
 			{
-				"oneOrMore": [
+				// MathML Core §3.3.3 — mroot requires exactly two children
+				// (base and index).
+				"require": [
 					":model(MathMLPresentation)",
 					"mml|semantics",
 					"#text"
 				],
+				"min": 2,
 				"max": 2
 			}
 		]

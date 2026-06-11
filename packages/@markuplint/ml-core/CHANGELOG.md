@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-rc.4](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.3...v5.0.0-rc.4) (2026-04-19)
+
+**Note:** Version bump only for package @markuplint/ml-core
+
+# [5.0.0-rc.3](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.2...v5.0.0-rc.3) (2026-04-19)
+
+**Note:** Version bump only for package @markuplint/ml-core
+
+# [5.0.0-rc.2](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.1...v5.0.0-rc.2) (2026-04-15)
+
+### Bug Fixes
+
+- **ml-core:** propagate base rule disable to virtual rules in nodeRules/childNodeRules ([06fa269](https://github.com/markuplint/markuplint/commit/06fa2695d43671adc1ebcadf1304aca44fd10919)), closes [#3578](https://github.com/markuplint/markuplint/issues/3578)
+
+- build!: remove ESLint and replace with oxlint ([1e0a337](https://github.com/markuplint/markuplint/commit/1e0a337707f76b903b16beeeb8c4d4fc0d8fc9e4))
+- feat(ml-core)!: remove deprecated getIndent function ([7ab1a2d](https://github.com/markuplint/markuplint/commit/7ab1a2dae8f36002f4e5f3108a400bb9095db319))
+
+### Features
+
+- **ml-core:** propagate option overrides to virtual rules in nodeRules/childNodeRules ([9cb9521](https://github.com/markuplint/markuplint/commit/9cb9521fc1303c132f547ffd1e8c82b3b9099bef))
+
+### BREAKING CHANGES
+
+- ESLint is no longer used. Use oxlint instead.
+- getIndent() has been removed from the public API.
+
 # [5.0.0-rc.1](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.0...v5.0.0-rc.1) (2026-03-27)
 
 ### Bug Fixes

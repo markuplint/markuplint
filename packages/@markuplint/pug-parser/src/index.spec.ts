@@ -1708,3 +1708,26 @@ html
 		]);
 	});
 });
+
+describe('Embedded HTML — parseErrors propagation (#3844)', () => {
+	test('emits tokenizer-level parse5 events for malformed embedded HTML', () => {
+		// Pug's `<div>` literal (a single line beginning with `<`) is handed
+		// to the internal `HtmlInPugParser`. A `duplicate-attribute` in the
+		// raw HTML must still surface on `MLASTDocument.parseErrors`.
+		const doc = parse('<div a a></div>');
+		const codes = (doc.parseErrors ?? []).map(e => e.code);
+		expect(codes).toContain('duplicate-attribute');
+	});
+
+	test('forces fragment parsing so document-level parse5 events do NOT leak from embedded HTML', () => {
+		// Pug owns the document boundary (`doctype html`, `html(...)`), so
+		// any raw HTML line is by definition a fragment. `HtmlInPugParser`'s
+		// `documentMode: 'fragment'` enforcement is what prevents parse5
+		// from firing `missing-doctype` here — this test pins that contract.
+		const doc = parse('<head><meta charset="utf-8"></head>');
+		const codes = (doc.parseErrors ?? []).map(e => e.code);
+		expect(codes).not.toContain('missing-doctype');
+		expect(codes).not.toContain('misplaced-doctype');
+		expect(codes).not.toContain('non-conforming-doctype');
+	});
+});

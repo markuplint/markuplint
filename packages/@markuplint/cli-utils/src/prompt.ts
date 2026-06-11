@@ -1,11 +1,6 @@
 import c from 'picocolors';
 import Enquirer from 'enquirer';
 
-/**
- * Defines a question for single or multi-select prompts.
- *
- * @template T - The type of the value associated with each choice
- */
 type SelectQuestion<T> = {
 	readonly message: string;
 	readonly choices: readonly {

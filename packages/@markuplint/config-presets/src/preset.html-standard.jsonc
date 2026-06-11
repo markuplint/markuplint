@@ -115,6 +115,16 @@
 		},
 
 		/**
+		 * No invalid attr
+		 *
+		 * Each element's attribute names and values must conform to the HTML
+		 * specification.
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/dom.html#attributes
+		 */
+		"invalid-attr": true,
+
+		/**
 		 * No duplicate names in `<dl>`
 		 *
 		 * Within a single dl element, there should not be more than one dt element for each name.
@@ -195,6 +205,20 @@
 		},
 
 		/**
+		 * Validate `<script>` body against the spec selected by the `type` attribute
+		 * (currently: `importmap`, `speculationrules`).
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/webappapis.html#parse-an-import-map-string
+		 * @see https://html.spec.whatwg.org/multipage/speculative-loading.html
+		 */
+		"html-standard/script-content": {
+			"specConformance": "normative",
+			"rules": {
+				"script-content": true
+			}
+		},
+
+		/**
 		 * Enforce WHATWG constraints between `srcset`, `sizes`, and `loading` attributes
 		 *
 		 * @see https://html.spec.whatwg.org/multipage/images.html#srcset-attributes
@@ -220,6 +244,93 @@
 				"link-types": {
 					"options": { "allowMicroformats": true }
 				}
+			}
+		},
+
+		/**
+		 * Form-associated `form` attribute must reference a form element
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fae-form
+		 */
+		"html-standard/form-attr-references-form": {
+			"specConformance": "normative",
+			"rules": {
+				"form-attr-references-form": true
+			}
+		},
+
+		/**
+		 * `<input type="button">` with empty `value`
+		 *
+		 * Mirrors nu-validator's hardcoded assertion. HTML LS itself does not
+		 * state this verbatim; see the rule's README for the precise sourcing.
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/input.html#button-state-(type=button)
+		 */
+		"html-standard/input-button-non-empty-value": {
+			"specConformance": "non-normative",
+			"rules": {
+				"input-button-non-empty-value": true
+			}
+		},
+
+		/**
+		 * `<input type="file">` value must be empty when specified
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/input.html#file-upload-state-(type=file)
+		 */
+		"html-standard/input-file-empty-value": {
+			"specConformance": "normative",
+			"rules": {
+				"input-file-empty-value": true
+			}
+		},
+
+		/**
+		 * `<label>` may contain at most one form-control descendant
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/forms.html#the-label-element
+		 */
+		"html-standard/label-no-multiple-controls": {
+			"specConformance": "normative",
+			"rules": {
+				"label-no-multiple-controls": true
+			}
+		},
+
+		/**
+		 * `<map>` `id` must equal `name` when both are specified
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/image-maps.html#the-map-element
+		 */
+		"html-standard/map-id-name-match": {
+			"specConformance": "normative",
+			"rules": {
+				"map-id-name-match": true
+			}
+		},
+
+		/**
+		 * `<meter>` attribute inequalities (min ≤ value ≤ max etc.)
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/form-elements.html#the-meter-element
+		 */
+		"html-standard/meter-value-bounds": {
+			"specConformance": "normative",
+			"rules": {
+				"meter-value-bounds": true
+			}
+		},
+
+		/**
+		 * Single `<select>` allows at most one selected `<option>`
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/form-elements.html#the-select-element
+		 */
+		"html-standard/no-extra-selected-options": {
+			"specConformance": "normative",
+			"rules": {
+				"no-extra-selected-options": true
 			}
 		}
 	},

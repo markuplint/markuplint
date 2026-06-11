@@ -13,9 +13,16 @@
 	},
 	"attributes": {
 		// https://html.spec.whatwg.org/multipage/semantics.html#attr-base-href
+		// Spec: "There must be no more than one base element per document.
+		// A base element must have either an href attribute, a target attribute, or both."
 		"href": {
 			// https://html.spec.whatwg.org/multipage/semantics.html#set-the-frozen-base-url
-			"type": "BaseURL"
+			"type": "BaseURL",
+			"requiredEither": ["target"]
+		},
+		// https://html.spec.whatwg.org/multipage/semantics.html#attr-base-target
+		"target": {
+			"requiredEither": ["href"]
 		}
 	},
 	"aria": {

@@ -1,6 +1,7 @@
 import type { Defs } from './types.js';
 
 import { checkMultiTypes } from './check-multi-types.js';
+import { cssSyntaxMatch } from './css-syntax.js';
 import { getCandidate } from './get-candidate.js';
 import { matched, matches, unmatched } from './match-result.js';
 import { splitUnit, isFloat, isUint, isInt } from './primitive/index.js';
@@ -9,6 +10,15 @@ import { Token, TokenCollection } from './token/index.js';
 import { checkSerializedPermissionsPolicy } from './w3c/check-serialized-permissions-policy.js';
 import { checkAutoComplete } from './whatwg/check-autocomplete.js';
 import { checkDateTime } from './whatwg/check-datetime/index.js';
+import { checkDateString } from './whatwg/check-datetime/date-string.js';
+import { checkDateStringWithOptionalTime } from './whatwg/check-datetime/date-string-with-optional-time.js';
+import { checkLocalDateAndTimeString } from './whatwg/check-datetime/local-date-and-time-string.js';
+import { checkMonthString } from './whatwg/check-datetime/month-string.js';
+import { checkTimeString } from './whatwg/check-datetime/time-string.js';
+import { checkWeekString } from './whatwg/check-datetime/week-string.js';
+import { checkHTTPEquivContentType } from './whatwg/check-http-equiv-content-type.js';
+import { checkHTTPEquivRefresh } from './whatwg/check-http-equiv-refresh.js';
+import { checkMediaQueryList } from './whatwg/check-media-query-list.js';
 import { checkMIMEType } from './whatwg/check-mime-type.js';
 import { checkURL } from './whatwg/check-url.js';
 import { isAbsURL } from './whatwg/is-abs-url.js';
@@ -17,15 +27,31 @@ import { isCustomElementName } from './whatwg/is-custom-element-name.js';
 import { isItempropName } from './whatwg/is-itemprop-name.js';
 import { isNavigableTargetName } from './whatwg/is-navigable-target-name.js';
 import { checkLinkType } from './whatwg/check-link-type.js';
+import { isEmail } from './whatwg/check-email.js';
+import { isSimpleColor } from './whatwg/check-simple-color.js';
 
-/**
- * Built-in type definitions registry for HTML attribute value validation.
- *
- * Maps type identifiers to their validation logic, reference URLs,
- * and expected value descriptions. Includes definitions for common types
- * (Any, Number, URL, etc.), WHATWG-specified types (DateTime, MIMEType,
- * CustomElementName, etc.), and format-specific validators (BCP47, Pattern, etc.).
- */
+// Hoist the URL Living Standard checker once so type entries that wrap it
+// (e.g. `BaseURL`, which adds the `<base>`-specific data:/javascript: filter
+// on top) do not pay closure-construction cost per attribute value.
+//
+// URL-family selection guide — when wiring an attribute in spec data, map
+// the HTML Living Standard's exact production wording to the type name:
+//
+// - "valid URL potentially surrounded by spaces" → `URL`
+//   (empty is valid; it resolves to the document's own URL)
+// - "valid non-empty URL potentially surrounded by spaces" → `NonEmptyURL`
+//   (the `src`-attribute production)
+// - `<base href>` ("set the frozen base URL") → `BaseURL`
+// - "valid absolute URL" as a per-token constraint in a list (e.g.
+//   `itemtype`) → `AbsoluteURL`
+// - "if specified and not empty, must be a valid absolute URL potentially
+//   surrounded by ASCII whitespace" (HTML LS §4.10.5.1.7,
+//   `<input type=url value>`) → `AbsoluteURLOrEmpty`
+//
+// All of these layer their per-attribute constraint on top of the shared
+// `checkURLOnce` so URL LS validation-error coverage stays uniform.
+const checkURLOnce = checkURL();
+
 export const defs: Defs = {
 	Any: {
 		ref: '',
@@ -202,6 +228,94 @@ export const defs: Defs = {
 		is: checkDateTime(),
 	},
 
+	SimpleColor: {
+		ref: 'https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#valid-simple-colour',
+		expects: [
+			{
+				type: 'format',
+				value: 'simple color',
+			},
+		],
+		is: matches(isSimpleColor()),
+	},
+
+	Email: {
+		ref: 'https://html.spec.whatwg.org/multipage/input.html#valid-e-mail-address',
+		expects: [
+			{
+				type: 'format',
+				value: 'email address',
+			},
+		],
+		is: matches(isEmail()),
+	},
+
+	DateString: {
+		ref: 'https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#dates',
+		expects: [
+			{
+				type: 'format',
+				value: 'date string',
+			},
+		],
+		is: checkDateString(),
+	},
+
+	DateStringWithOptionalTime: {
+		ref: 'https://html.spec.whatwg.org/multipage/edits.html#attr-mod-datetime',
+		expects: [
+			{
+				type: 'format',
+				value: 'date string with optional time',
+			},
+		],
+		is: checkDateStringWithOptionalTime(),
+	},
+
+	TimeString: {
+		ref: 'https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#times',
+		expects: [
+			{
+				type: 'format',
+				value: 'time string',
+			},
+		],
+		is: checkTimeString(),
+	},
+
+	MonthString: {
+		ref: 'https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#months',
+		expects: [
+			{
+				type: 'format',
+				value: 'month string',
+			},
+		],
+		is: checkMonthString(),
+	},
+
+	WeekString: {
+		ref: 'https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#weeks',
+		expects: [
+			{
+				type: 'format',
+				value: 'week string',
+			},
+		],
+		is: checkWeekString(),
+	},
+
+	LocalDateTimeString: {
+		ref: 'https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#local-dates-and-times',
+		expects: [
+			{
+				type: 'format',
+				value: 'local date and time string',
+			},
+		],
+		is: checkLocalDateAndTimeString(),
+	},
+
 	/**
 	 * It doesn't check the meaningless number less than -1
 	 * that is the same as -1.
@@ -240,11 +354,6 @@ export const defs: Defs = {
 	},
 
 	/**
-	 * Validates a URL (potentially surrounded by spaces) per WHATWG URL Standard.
-	 * Uses `new URL()` for structural parsing plus strict checks for illegal
-	 * whitespace, malformed percent-encoding, and C0 control characters.
-	 * Relative URLs are resolved against a dummy base for syntax validation.
-	 *
 	 * Previously this was always-matched ("NO IMPLEMENT NEVER") because
 	 * relative URLs accept almost any character string. After investigating
 	 * nu-html-checker's galimatias parser, we found that resolving relative
@@ -256,7 +365,27 @@ export const defs: Defs = {
 	 */
 	URL: {
 		ref: 'https://html.spec.whatwg.org/multipage/urls-and-fetching.html#valid-url-potentially-surrounded-by-spaces',
-		is: checkURL(),
+		is: checkURLOnce,
+	},
+
+	/**
+	 * Validates a "valid non-empty URL potentially surrounded by spaces". HTML
+	 * LS uses this stricter production for `src` attributes on
+	 * `<audio>`/`<embed>`/`<iframe>`/`<img>`/`<input type=image>`/`<script>`/
+	 * `<source>`/`<track>`/`<video>` — the URL token MUST contain at least one
+	 * non-whitespace character.
+	 *
+	 * @see https://html.spec.whatwg.org/multipage/urls-and-fetching.html#valid-non-empty-url
+	 * @see https://html.spec.whatwg.org/multipage/urls-and-fetching.html#valid-non-empty-url-potentially-surrounded-by-spaces
+	 */
+	NonEmptyURL: {
+		ref: 'https://html.spec.whatwg.org/multipage/urls-and-fetching.html#valid-non-empty-url-potentially-surrounded-by-spaces',
+		is(value) {
+			if (value.replaceAll(/^[\t\n\f\r ]+|[\t\n\f\r ]+$/g, '') === '') {
+				return unmatched(value, 'unexpected-token');
+			}
+			return checkURLOnce(value);
+		},
 	},
 
 	/**
@@ -271,23 +400,60 @@ export const defs: Defs = {
 	BaseURL: {
 		ref: 'https://html.spec.whatwg.org/multipage/semantics.html#set-the-frozen-base-url',
 		is(value) {
-			value = value.toLowerCase().trim();
-			if (value.startsWith('data:') || value.startsWith('javascript:')) {
+			// `<base href>` is forbidden from declaring `data:` / `javascript:`
+			// schemes (HTML LS — "set the frozen base URL"). Surface that
+			// constraint first because it is `<base>`-specific, then delegate
+			// to the shared URL Living Standard validator so all URL LS
+			// validation errors (invalid-credentials, scheme-missing-solidus,
+			// invalid-reverse-solidus, etc.) are reported uniformly with
+			// `URL` / `HTTPSchemaURL` / etc.
+			const normalised = value.toLowerCase().trim();
+			if (normalised.startsWith('data:') || normalised.startsWith('javascript:')) {
 				return unmatched(value, 'unexpected-token');
 			}
-			return matched();
+			return checkURLOnce(value);
 		},
 	},
 
 	AbsoluteURL: {
 		ref: 'https://url.spec.whatwg.org/#syntax-url-absolute',
-		is: matches(isAbsURL()),
+		is(value) {
+			// `AbsoluteURL` is used by per-token list types (e.g. `itemtype`),
+			// where each token must be a valid absolute URL. Reject
+			// non-absolute / unparsable values first, then run the full URL
+			// Living Standard validator so callers get the same
+			// auto-correction error coverage as `URL` (invalid-credentials,
+			// invalid-reverse-solidus, multiple `#`, etc.).
+			if (!isAbsURL()(value)) {
+				return unmatched(value, 'unexpected-token');
+			}
+			return checkURLOnce(value);
+		},
 	},
 
 	/**
-	 * Subresource Integrity metadata: one or more space-separated
-	 * `hash-algo-base64` tokens where algo is sha256, sha384, or sha512.
+	 * Validates `<input type="url" value="...">` per HTML LS §4.10.5.1.7:
+	 * "if specified and not empty, must have a value that is a valid absolute
+	 * URL potentially surrounded by ASCII whitespace." Accepts empty values
+	 * (no default URL) and absolute URLs that pass URL Living Standard
+	 * validation; rejects relative URLs and URL LS validation errors.
 	 *
+	 * @see https://html.spec.whatwg.org/multipage/input.html#url-state-(type=url)
+	 */
+	AbsoluteURLOrEmpty: {
+		ref: 'https://html.spec.whatwg.org/multipage/input.html#url-state-(type=url)',
+		is(value) {
+			if (value.replaceAll(/^[\t\n\f\r ]+|[\t\n\f\r ]+$/g, '') === '') {
+				return matched();
+			}
+			if (!isAbsURL()(value)) {
+				return unmatched(value, 'unexpected-token');
+			}
+			return checkURLOnce(value);
+		},
+	},
+
+	/**
 	 * Note: The SRI spec also allows `?options` suffix (e.g., `sha256-abc?ct=...`)
 	 * but this is not widely used and not tested by nu-validator.
 	 *
@@ -323,7 +489,16 @@ export const defs: Defs = {
 				value: 'hash name',
 			},
 		],
-		is: value => (value[0] === '#' ? matched() : unmatched(value, 'unexpected-token')),
+		// HTML LS: "A string is a valid hash-name reference [...] if the string
+		// consists of a U+0023 NUMBER SIGN (#) followed by a string which
+		// exactly matches the value of the name attribute [...]". The spec
+		// requires the name part to be non-empty: `#` alone is not a valid
+		// hash-name reference.
+		is: value => {
+			if (value.length < 2) return unmatched(value, 'unexpected-token');
+			if (value[0] !== '#') return unmatched(value, 'unexpected-token');
+			return matched();
+		},
 	},
 
 	OneCodePointChar: {
@@ -473,6 +648,44 @@ export const defs: Defs = {
 		is: checkMIMEType(),
 	},
 
+	MediaQueryList: {
+		ref: 'https://www.w3.org/TR/mediaqueries-5/',
+		expects: [
+			{
+				type: 'format',
+				value: 'media query list',
+			},
+		],
+		is: checkMediaQueryList(),
+	},
+
+	// `HTTPEquivRefresh` / `HTTPEquivContentType` are selected at runtime by a
+	// `ConditionalAttributeType[]` entry on `meta.content` in
+	// `@markuplint/html-spec`, keyed by the `http-equiv` value
+	// (`refresh` / `content-type`). Other `http-equiv` values fall through to
+	// `Any` via the resolver in `@markuplint/rules`.
+	HTTPEquivRefresh: {
+		ref: 'https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-http-equiv-refresh',
+		expects: [
+			{
+				type: 'format',
+				value: 'refresh directive (a non-negative integer, optionally followed by a URL)',
+			},
+		],
+		is: checkHTTPEquivRefresh(),
+	},
+
+	HTTPEquivContentType: {
+		ref: 'https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-http-equiv-content-type',
+		expects: [
+			{
+				type: 'format',
+				value: 'content-type directive (text/html; charset=<encoding>)',
+			},
+		],
+		is: checkHTTPEquivContentType(),
+	},
+
 	ItemProp: {
 		ref: 'https://html.spec.whatwg.org/multipage/microdata.html#names:-the-itemprop-attribute',
 		expects: [
@@ -501,6 +714,12 @@ export const defs: Defs = {
 			const images = value.split(',');
 			let hasWidth = false;
 			let hasDensity = false;
+			// Spec: "Let candidates be an initially empty source set. ... If candidates already has an
+			// entry whose descriptor's width is equal to width [or pixel density], then a parse error
+			// must be reported." Track normalised numeric values so 1x / 1.0x / omitted-descriptor
+			// (implicit 1x) all collide.
+			const usedWidths = new Set<number>();
+			const usedDensities = new Set<number>();
 
 			for (const image of images) {
 				// image candidate string
@@ -520,6 +739,22 @@ export const defs: Defs = {
 					});
 				}
 
+				// HTML LS srcset: each image candidate's URL must be a valid
+				// non-empty URL. css-tree's <url> token allows things like bare
+				// `http:` (URL LS `special-scheme-missing-following-solidus`),
+				// so we parse it explicitly via WHATWG URL with a dummy base.
+				try {
+					new URL(url.value, 'https://example.com/');
+				} catch (error: unknown) {
+					if (error instanceof TypeError) {
+						return url.unmatched({
+							reason: 'unexpected-token',
+							expects: [{ type: 'format', value: 'valid non-empty URL' }],
+						});
+					}
+					throw error;
+				}
+
 				if (descriptor) {
 					const { num, unit } = splitUnit(descriptor.value);
 					switch (unit) {
@@ -535,6 +770,13 @@ export const defs: Defs = {
 									],
 								});
 							}
+							const w = Number(num);
+							if (usedWidths.has(w)) {
+								return unmatched(value, 'duplicated', {
+									expects: [{ type: 'format', value: 'unique width descriptor' }],
+								});
+							}
+							usedWidths.add(w);
 							hasWidth = true;
 							break;
 						}
@@ -550,6 +792,13 @@ export const defs: Defs = {
 									],
 								});
 							}
+							const d = Number(num);
+							if (usedDensities.has(d)) {
+								return unmatched(value, 'duplicated', {
+									expects: [{ type: 'format', value: 'unique pixel density descriptor' }],
+								});
+							}
+							usedDensities.add(d);
 							hasDensity = true;
 							break;
 						}
@@ -569,7 +818,14 @@ export const defs: Defs = {
 						}
 					}
 				} else {
-					// No descriptor implies 1x (density descriptor)
+					// Spec: "If image candidate's descriptor is the empty string, [...] add an
+					// image source with a pixel density of 1.0."
+					if (usedDensities.has(1)) {
+						return unmatched(value, 'duplicated', {
+							expects: [{ type: 'format', value: 'unique pixel density descriptor' }],
+						});
+					}
+					usedDensities.add(1);
 					hasDensity = true;
 				}
 
@@ -608,21 +864,50 @@ export const defs: Defs = {
 				value: '<source-size-list>',
 			},
 		],
-		syntax: {
-			apply: '<source-size-list>',
-			def: {
-				'source-size-list': '[ <source-size># , ]? <source-size-value>',
-				'source-size': '<media-condition> <source-size-value> | auto',
-				/**
-				 * > Percentages are not allowed in a `<source-size-value>`,
-				 * > to avoid confusion about what it would be relative to.
-				 * > The 'vw' unit can be used for sizes relative to the viewport width.
-				 *
-				 * `<length>` doesn't allow percentages.
-				 * @see https://csstree.github.io/docs/syntax/#Type:length
-				 */
-				'source-size-value': '<length> | auto',
-			},
+		is(value) {
+			const result = cssSyntaxMatch(value, {
+				ref: 'https://html.spec.whatwg.org/multipage/images.html#sizes-attributes',
+				syntax: {
+					apply: '<source-size-list>',
+					def: {
+						'source-size-list': '[ <source-size># , ]? <source-size-value>',
+						'source-size': '<media-condition> <source-size-value> | auto',
+						/**
+						 * > Percentages are not allowed in a `<source-size-value>`,
+						 * > to avoid confusion about what it would be relative to.
+						 * > The 'vw' unit can be used for sizes relative to the viewport width.
+						 *
+						 * `<length>` doesn't allow percentages.
+						 * @see https://csstree.github.io/docs/syntax/#Type:length
+						 */
+						'source-size-value': '<length> | auto',
+					},
+				},
+			});
+			if (!result.matched) {
+				return result;
+			}
+			// HTML LS imposes a non-negative additional constraint on
+			// <source-size-value> ("a <length> that does not contain
+			// percentages [...] and that is greater than or equal to zero")
+			// beyond what css-tree's <length> grammar checks. A
+			// <source-size-value> always appears either at the start of the
+			// list, immediately after the `,` separator, or immediately after
+			// the `)` that closes a <media-condition>; a `-` followed by a
+			// digit at any of those boundaries is a negative length token.
+			//
+			// Regex breakdown: boundary (start-of-string | `,` | `)`)
+			// → optional whitespace → literal `-` → optional whitespace
+			// → digit. Note this only catches negative numbers that *start*
+			// a <source-size-value>; positive scientific notation like
+			// `1e-5px` is unaffected because the `-` is preceded by `e`.
+			const negativeAtSourceSizeBoundary = /(?:^|[,)])\s*-\s*\d/u;
+			if (negativeAtSourceSizeBoundary.test(value)) {
+				return unmatched(value, 'out-of-range', {
+					expects: [{ type: 'format', value: 'non-negative <length>' }],
+				});
+			}
+			return matched();
 		},
 	},
 

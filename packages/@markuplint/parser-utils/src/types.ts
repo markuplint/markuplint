@@ -1,4 +1,9 @@
-import type { EndTagType, MLASTParentNode, ParserOptions as ConfigParserOptions } from '@markuplint/ml-ast';
+import type {
+	EndTagType,
+	MLASTParentNode,
+	MLASTParseError,
+	ParserOptions as ConfigParserOptions,
+} from '@markuplint/ml-ast';
 
 /**
  * Configuration options for initializing a Parser instance,
@@ -37,6 +42,13 @@ export type Tokenized<N extends {} = {}, State extends unknown = null> = {
 	readonly ast: N[];
 	readonly isFragment: boolean;
 	readonly state?: State;
+	/**
+	 * Non-fatal parser conformance errors collected during tokenisation.
+	 * Optional — parsers that have no equivalent surface (e.g., raw regex
+	 * tokenizers) simply omit it. Propagated unchanged onto
+	 * `MLASTDocument.parseErrors` by {@link Parser.parse}.
+	 */
+	readonly parseErrors?: readonly MLASTParseError[];
 };
 
 /**
