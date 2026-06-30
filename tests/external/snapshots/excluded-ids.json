@@ -45,6 +45,15 @@
 			"specUrl": "https://html.spec.whatwg.org/multipage/webappapis.html#sorting-and-normalizing-scopes",
 			"addedAt": "2026-05-18",
 			"addedBy": "hirao"
+		},
+		{
+			"id": "nv-d7b3d14cfb44",
+			"path": "html/elements/table/row-width-exceeds-col-markup-novalid.html",
+			"nuMessage": "A table row was 3 columns wide and exceeded the column count established using column markup (2).",
+			"reason": "HTML LS §4.9.12.1 *Algorithm for processing rows* Step 7: 'If xcurrent is equal to xwidth, then increase xwidth by 1.' xwidth grows automatically when a row has more cells than the current column count established by column markup. There is no spec rule that row width must not exceed column markup width — extra columns are silently created. After xwidth growth every column in this row has an anchor cell, so Step 20 (no-anchor) is also not violated. nu-validator's 'exceeded the column count established using column markup' is heuristic over-detection.",
+			"specUrl": "https://html.spec.whatwg.org/multipage/tables.html#forming-a-table",
+			"addedAt": "2026-07-01",
+			"addedBy": "hirao"
 		}
 	],
 	"patterns": [
@@ -53,13 +62,6 @@
 			"reason": "WHATWG URL Living Standard supersedes RFC 2397. Per URL LS §4.3, 'A valid URL string must be either a relative-URL-with-fragment string or an absolute-URL-with-fragment string.' An absolute-URL-with-fragment string is 'an absolute-URL string, optionally followed by U+0023 (#) and a URL-fragment string.' Since 'data' is a non-special scheme, 'data:<body>#<fragment>' matches this grammar and is a valid URL string. HTML conformance (which requires a valid URL string) is therefore satisfied.",
 			"specUrl": "https://url.spec.whatwg.org/#url-writing",
 			"addedAt": "2026-04-23",
-			"addedBy": "hirao"
-		},
-		{
-			"messageContains": "exceeded the column count established using column markup",
-			"reason": "HTML LS §4.9.12.1 *Algorithm for processing rows* Step 7: 'If xcurrent is equal to xwidth, then increase xwidth by 1.' xwidth grows automatically when a row has more cells than the current column count established by column markup. There is no spec rule that row width must not exceed column markup width — extra columns are silently created. After xwidth growth every column in the row has an anchor cell, so Step 20 (no-anchor) is also not violated. nu-validator's 'exceeded column count established using column markup' is heuristic over-detection.",
-			"specUrl": "https://html.spec.whatwg.org/multipage/tables.html#forming-a-table",
-			"addedAt": "2026-07-01",
 			"addedBy": "hirao"
 		}
 	]
