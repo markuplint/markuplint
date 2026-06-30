@@ -113,10 +113,12 @@ Follow the existing entry shapes in `excluded-ids.json` (per-`id`
 The verdict flips to `nu-over` only when *every* active nu message
 on the fixture is covered. Partial coverage stays `nu-only`.
 
-When the same diagnostic hits many fixtures, use `patterns[]`
-instead of dozens of per-`id` entries. `specUrl` is required on
-patterns — they are the most load-bearing exclusion. If you cannot
-cite a paragraph, use a per-`id` entry.
+`specUrl` is required on both `entries[]` and `patterns[]`. Every
+exclusion must cite a spec paragraph (HTML LS / WAI-ARIA / URL LS /
+similar). If no spec paragraph can be cited, do not exclude — file an
+Issue to track the future markuplint coverage instead. When the same
+diagnostic hits many fixtures, use `patterns[]` instead of dozens of
+per-`id` entries.
 
 Patterns trade compactness for stability: per-`id` entries pin the
 nu message-ID hash, so a wording shift in nu surfaces as a stale
@@ -201,6 +203,7 @@ directly. Do not add a row without a verbatim spec quote and source URL.
 | `<img srcset="http: 1x">` and similar URL-LS-invalid candidate URLs | **nu correct** — markuplint coverage extended in `@markuplint/types` Srcset | URL LS rejects bare special-scheme fragments missing `//` (`special-scheme-missing-following-solidus`). The Srcset checker now parses each candidate's URL via WHATWG URL with a dummy `https://example.com/` base. |
 | `sizes="-1px"` / `sizes="(min-width: 600px) -100px"` and similar negative `<source-size-value>` | **nu correct** — markuplint coverage extended in `@markuplint/types` SourceSizeList | HTML LS § sizes: `<source-size-value>` must be a non-negative `<length>`. css-tree's `<length>` grammar accepts negatives, so a post-syntax regex catches them at boundaries (start-of-list, after `,`, after the `)` closing a `<media-condition>`). |
 | `A "source" element that has a following sibling "source" element or "img" element with a "srcset" attribute must have a "media" attribute and/or "type" attribute` / `Value of "media" attribute here must not be "all"` | **nu correct** — markuplint coverage extended in `srcset-sizes-constraint` Check 6 | [HTML LS § the source element](https://html.spec.whatwg.org/multipage/embedded-content.html#the-source-element): "When a source element has a following sibling source element or img element with a srcset attribute specified, it must have at least one of the following: A media attribute specified with a value that, after stripping leading and trailing ASCII whitespace, is not the empty string and is not an ASCII case-insensitive match for the string 'all'. A type attribute specified." An always-matching first source shadows the following candidates. Applies even to a srcset-less source. Flipped 7 `picture/always-matching-*-novalid` fixtures nu-only → match-error. |
+| `exceeded the column count established using column markup` (`<col>` + wider row) | **nu over-detection** — excluded per-ID in `entries[]` | [HTML LS §4.9.12.1 *Algorithm for processing rows* Step 7](https://html.spec.whatwg.org/multipage/tables.html#forming-a-table): "If xcurrent is equal to xwidth, then increase xwidth by 1." xwidth grows automatically when a row has more cells than the current column count established by column markup — extra columns are silently created and every column in this row still has an anchor cell, so neither Step 14 (overlap) nor Step 20 (no-anchor) is violated. The real `<col>`-related table model errors (rows narrower than column markup, dangling colspan, empty rows, etc.) are tracked at #3915. |
 
 The remaining `nu-only` bulk (URL parsing) is **not** for exclusion;
 it represents real markuplint gaps for future coverage work. Any
