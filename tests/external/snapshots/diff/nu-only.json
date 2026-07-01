@@ -1,34 +1,6 @@
 {
 	"entries": [
 		{
-			"path": "html-aria/author-requirements/574.html",
-			"category": "aria",
-			"nuMessageIds": [
-				"nv-73b3fce3b363"
-			]
-		},
-		{
-			"path": "html-aria/author-requirements/575.html",
-			"category": "aria",
-			"nuMessageIds": [
-				"nv-00a3cfaf103b"
-			]
-		},
-		{
-			"path": "html-aria/author-requirements/576.html",
-			"category": "aria",
-			"nuMessageIds": [
-				"nv-b1c9dc6d3f45"
-			]
-		},
-		{
-			"path": "html-aria/author-requirements/577.html",
-			"category": "aria",
-			"nuMessageIds": [
-				"nv-b0be41d0320e"
-			]
-		},
-		{
 			"path": "html-aria/misc/aria-expanded-with-command-novalid.html",
 			"category": "aria",
 			"nuMessageIds": [
@@ -379,36 +351,6 @@
 			]
 		},
 		{
-			"path": "html/elements/table/model-input-child-novalid.html",
-			"category": "content-model",
-			"nuMessageIds": [
-				"nv-d6d3104a6447",
-				"nv-efcdd4dbed19"
-			]
-		},
-		{
-			"path": "html/elements/table/model-input-type-child-novalid.html",
-			"category": "content-model",
-			"nuMessageIds": [
-				"nv-7117cdf5c608",
-				"nv-740abbdab084"
-			]
-		},
-		{
-			"path": "html/elements/table/row-no-cells-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-8c9bf1f0d223"
-			]
-		},
-		{
-			"path": "html/elements/table/row-width-exceeds-col-markup-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-d7b3d14cfb44"
-			]
-		},
-		{
 			"path": "html/elements/table/row-width-less-than-col-markup-novalid.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [
@@ -424,14 +366,6 @@
 			]
 		},
 		{
-			"path": "html/parser/select-in-table-start-novalid.html",
-			"category": "uncategorized",
-			"nuMessageIds": [
-				"nv-145a3204b0a5",
-				"nv-c10727793fb8"
-			]
-		},
-		{
 			"path": "html/parser/stray-start-tag-novalid.html",
 			"category": "uncategorized",
 			"nuMessageIds": [
@@ -444,14 +378,6 @@
 			"nuMessageIds": [
 				"nv-94d4d4cf4600",
 				"nv-c35f07b7ee36"
-			]
-		},
-		{
-			"path": "html/parser/text-in-table-novalid.html",
-			"category": "uncategorized",
-			"nuMessageIds": [
-				"nv-308d337407b8",
-				"nv-8677c72ea217"
 			]
 		}
 	]
