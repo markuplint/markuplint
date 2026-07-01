@@ -59,49 +59,6 @@ export const xrefMappings: readonly XrefMapping[] = [
 	},
 	{
 		kind: 'primary',
-		issue: 3844,
-		filter: /^html\/parser\//,
-		note:
-			'Two distinct gaps surface here: (A) `parse5` onParseError signals (HTML LS §13.2.5 tokenizer errors — bogus comment/doctype, EOF inside comment/doctype/system-id, character-reference malformations, U+0000/U+000B forbidden code points, unquoted-attr edge cases) are not surfaced as violations by `@markuplint/html-parser`; (B) `isDocumentFragment` heuristic treats any source not starting with `<!doctype html>` or `<html>` as a fragment, so the `doctype` rule skips full documents that begin with `<meta>`/`<title>` (`no-doctype`, `eof-without-doctype`, `bogus-doctype`, `nameless-doctype`, etc.). Closing both is a prerequisite for completing nu-validator parser-error coverage.',
-	},
-	{
-		kind: 'primary',
-		issue: 3848,
-		filter: /^html\/(invalid-attr|microdata\/(itemid|itemtype))\//,
-		note:
-			'URL Living Standard validator implementation. Largest single residual: 1246 nu-only fixtures (invalid-attr 1177 + microdata/itemid 39 + microdata/itemtype 30). Single implementation project in `packages/@markuplint/types/src/whatwg/check-url.ts` unlocks all of them at once. Confirmed nu-correct error categories (per bench-triage SKILL audit log): invalid-credentials, special-scheme-missing-following-solidus, invalid-reverse-solidus, invalid-URL-unit, file-invalid-Windows-drive-letter.',
-	},
-	{
-		kind: 'primary',
-		issue: 3849,
-		filter: /^html-math\//,
-		note:
-			'MathML Core content model constraints. 12 fixtures (mfrac/mover/mroot/msub/msup/msubsup/munder/munderover arity, mprescripts/mtr/annotation parent restrictions, math-in-head). Per-element spec data files already exist as `spec.mml_*.jsonc` (32 files); the gap is expressing arity / parent constraints inside them. `spec.svg_a.jsonc` is the conditional-branch precedent.',
-	},
-	{
-		kind: 'primary',
-		issue: 3850,
-		filter: /^html\/media-queries\//,
-		note:
-			'CSS Media Queries Level 4/5 syntax validation in `media=` attribute. 13 fixtures (unrecognized media, missing units, deprecated features). Add a new typed checker under `packages/@markuplint/types/src/whatwg/` following the `check-mime-type` / `check-link-type` pattern.',
-	},
-	{
-		kind: 'primary',
-		issue: 3851,
-		filter: /^html\/mime-types\//,
-		note:
-			'MIME type quoted-string parameter parsing. 2 fixtures (unfinished quoted string in `text/html;charset="..."`). Extend the existing `packages/@markuplint/types/src/whatwg/check-mime-type.ts` to validate parameter quoted-string termination per RFC 9110 §5.6.6.',
-	},
-	{
-		kind: 'primary',
-		issue: 3852,
-		filter:
-			/^(html\/microdata\/(itemprop-not-in-item|itemref-redundant|itemtype-empty)|html\/elements\/(link|meta)\/itemprop-with-)/,
-		note:
-			'Microdata semantic constraints. 5 fixtures: itemprop without itemscope ancestor (HTML LS §5.2.3 attribute def + §5.2.5 conformance constraint) — covers `html/microdata/itemprop-not-in-item` plus the bonus `html/elements/link/itemprop-with-rel` and `html/elements/meta/itemprop-with-name` orphan cases — duplicate ids in itemref (§5.2.2 Items), empty itemtype value (§5.2.2 Items). Distinct from the URL-syntax work in #3848.',
-	},
-	{
-		kind: 'primary',
 		issue: 3918,
 		filter: /^html\/elements\/label\/(for-non-form-control|for-references-non-labelable)-novalid/,
 		note:
