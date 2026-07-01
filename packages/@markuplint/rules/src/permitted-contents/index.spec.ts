@@ -2393,6 +2393,27 @@ describe('Issues', () => {
 			[],
 		);
 	});
+
+	// HTML LS §4.4.9: div inside dl allows exactly one group (dt+ dd+),
+	// not repeated groups. Group repetition is expressed at the dl level.
+	test('[permitted-contents-invalid-034] div in dl with multiple dt+dd groups is invalid', async () => {
+		const { violations } = await mlRuleTest(rule, '<dl><div><dt>a</dt><dd>b</dd><dt>c</dt><dd>d</dd></div></dl>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 30,
+				message: 'The "dt" element is not allowed in the "div" element in this context',
+				raw: '<dt>',
+			},
+		]);
+	});
+
+	test('[permitted-contents-valid-003] div in dl with single dt+dd group is valid', async () => {
+		expect(
+			(await mlRuleTest(rule, '<dl><div><dt>a</dt><dt>b</dt><dd>c</dd><dd>d</dd></div></dl>')).violations,
+		).toStrictEqual([]);
+	});
 });
 
 describe('#3739 (pretender + user tag rule)', () => {
