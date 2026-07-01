@@ -55,6 +55,7 @@
 			"category": "aria",
 			"ruleIds": [
 				"no-refer-to-non-existent-id",
+				"wai-aria-required-owned-elements",
 				"wai-aria-required-parent-role"
 			]
 		},
@@ -144,6 +145,13 @@
 			]
 		},
 		{
+			"path": "html-aria/misc/table-role-presentation-nested-with-td-with-role-isvalid.html",
+			"category": "aria",
+			"ruleIds": [
+				"wai-aria-required-owned-elements"
+			]
+		},
+		{
 			"path": "html-aria/misc/unnecessary-listbox-role-on-select-haswarn.html",
 			"category": "aria",
 			"ruleIds": [
@@ -197,6 +205,146 @@
 			"category": "aria",
 			"ruleIds": [
 				"wai-aria-disallowed-props"
+			]
+		},
+		{
+			"path": "html-aria/presentation-role/510.html",
+			"category": "aria",
+			"ruleIds": [
+				"wai-aria-required-owned-elements"
+			]
+		},
+		{
+			"path": "html-aria/presentation-role/511.html",
+			"category": "aria",
+			"ruleIds": [
+				"wai-aria-required-owned-elements"
+			]
+		},
+		{
+			"path": "html-aria/presentation-role/512.html",
+			"category": "aria",
+			"ruleIds": [
+				"wai-aria-required-owned-elements"
+			]
+		},
+		{
+			"path": "html-aria/presentation-role/514.html",
+			"category": "aria",
+			"ruleIds": [
+				"wai-aria-required-owned-elements"
+			]
+		},
+		{
+			"path": "html-aria/presentation-role/515.html",
+			"category": "aria",
+			"ruleIds": [
+				"wai-aria-required-owned-elements"
+			]
+		},
+		{
+			"path": "html-aria/presentation-role/516.html",
+			"category": "aria",
+			"ruleIds": [
+				"wai-aria-required-owned-elements"
+			]
+		},
+		{
+			"path": "html-aria/presentation-role/518.html",
+			"category": "aria",
+			"ruleIds": [
+				"wai-aria-required-owned-elements"
+			]
+		},
+		{
+			"path": "html-aria/presentation-role/520.html",
+			"category": "aria",
+			"ruleIds": [
+				"wai-aria-required-owned-elements"
+			]
+		},
+		{
+			"path": "html-aria/presentation-role/521.html",
+			"category": "aria",
+			"ruleIds": [
+				"wai-aria-required-owned-elements"
+			]
+		},
+		{
+			"path": "html-aria/presentation-role/522.html",
+			"category": "aria",
+			"ruleIds": [
+				"wai-aria-required-owned-elements"
+			]
+		},
+		{
+			"path": "html-aria/presentation-role/524.html",
+			"category": "aria",
+			"ruleIds": [
+				"wai-aria-required-owned-elements"
+			]
+		},
+		{
+			"path": "html-aria/presentation-role/525.html",
+			"category": "aria",
+			"ruleIds": [
+				"wai-aria-required-owned-elements"
+			]
+		},
+		{
+			"path": "html-aria/presentation-role/527.html",
+			"category": "aria",
+			"ruleIds": [
+				"wai-aria-required-owned-elements"
+			]
+		},
+		{
+			"path": "html-aria/roles-plain-concrete/roles-plain-concrete-grid.html",
+			"category": "aria",
+			"ruleIds": [
+				"wai-aria-required-owned-elements"
+			]
+		},
+		{
+			"path": "html-aria/roles-plain-concrete/roles-plain-concrete-list.html",
+			"category": "aria",
+			"ruleIds": [
+				"wai-aria-required-owned-elements"
+			]
+		},
+		{
+			"path": "html-aria/roles-plain-concrete/roles-plain-concrete-menu.html",
+			"category": "aria",
+			"ruleIds": [
+				"wai-aria-required-owned-elements"
+			]
+		},
+		{
+			"path": "html-aria/roles-plain-concrete/roles-plain-concrete-menubar.html",
+			"category": "aria",
+			"ruleIds": [
+				"wai-aria-required-owned-elements"
+			]
+		},
+		{
+			"path": "html-aria/roles-plain-concrete/roles-plain-concrete-tablist.html",
+			"category": "aria",
+			"ruleIds": [
+				"wai-aria-required-owned-elements"
+			]
+		},
+		{
+			"path": "html-aria/roles-plain-concrete/roles-plain-concrete-tree.html",
+			"category": "aria",
+			"ruleIds": [
+				"wai-aria-required-owned-elements"
+			]
+		},
+		{
+			"path": "html-aria/roles-plain-concrete/roles-plain-concrete-treegrid.html",
+			"category": "aria",
+			"ruleIds": [
+				"wai-aria-required-owned-elements"
 			]
 		},
 		{
@@ -406,21 +554,24 @@
 			"path": "html-aria/roles-properties-supported-inherited/grid-aria-expanded-false.html",
 			"category": "aria",
 			"ruleIds": [
-				"wai-aria-disallowed-props"
+				"wai-aria-disallowed-props",
+				"wai-aria-required-owned-elements"
 			]
 		},
 		{
 			"path": "html-aria/roles-properties-supported-inherited/grid-aria-expanded-true.html",
 			"category": "aria",
 			"ruleIds": [
-				"wai-aria-disallowed-props"
+				"wai-aria-disallowed-props",
+				"wai-aria-required-owned-elements"
 			]
 		},
 		{
 			"path": "html-aria/roles-properties-supported-inherited/grid-aria-expanded-undefined.html",
 			"category": "aria",
 			"ruleIds": [
-				"wai-aria-disallowed-props"
+				"wai-aria-disallowed-props",
+				"wai-aria-required-owned-elements"
 			]
 		},
 		{
@@ -595,42 +746,48 @@
 			"path": "html-aria/roles-properties-supported-inherited/menu-aria-expanded-false.html",
 			"category": "aria",
 			"ruleIds": [
-				"wai-aria-disallowed-props"
+				"wai-aria-disallowed-props",
+				"wai-aria-required-owned-elements"
 			]
 		},
 		{
 			"path": "html-aria/roles-properties-supported-inherited/menu-aria-expanded-true.html",
 			"category": "aria",
 			"ruleIds": [
-				"wai-aria-disallowed-props"
+				"wai-aria-disallowed-props",
+				"wai-aria-required-owned-elements"
 			]
 		},
 		{
 			"path": "html-aria/roles-properties-supported-inherited/menu-aria-expanded-undefined.html",
 			"category": "aria",
 			"ruleIds": [
-				"wai-aria-disallowed-props"
+				"wai-aria-disallowed-props",
+				"wai-aria-required-owned-elements"
 			]
 		},
 		{
 			"path": "html-aria/roles-properties-supported-inherited/menubar-aria-expanded-false.html",
 			"category": "aria",
 			"ruleIds": [
-				"wai-aria-disallowed-props"
+				"wai-aria-disallowed-props",
+				"wai-aria-required-owned-elements"
 			]
 		},
 		{
 			"path": "html-aria/roles-properties-supported-inherited/menubar-aria-expanded-true.html",
 			"category": "aria",
 			"ruleIds": [
-				"wai-aria-disallowed-props"
+				"wai-aria-disallowed-props",
+				"wai-aria-required-owned-elements"
 			]
 		},
 		{
 			"path": "html-aria/roles-properties-supported-inherited/menubar-aria-expanded-undefined.html",
 			"category": "aria",
 			"ruleIds": [
-				"wai-aria-disallowed-props"
+				"wai-aria-disallowed-props",
+				"wai-aria-required-owned-elements"
 			]
 		},
 		{
@@ -977,6 +1134,62 @@
 			]
 		},
 		{
+			"path": "html-aria/roles-properties-supported/roles-properties-supported-grid-aria-multiselectable-false.html",
+			"category": "aria",
+			"ruleIds": [
+				"wai-aria-required-owned-elements"
+			]
+		},
+		{
+			"path": "html-aria/roles-properties-supported/roles-properties-supported-grid-aria-multiselectable-true.html",
+			"category": "aria",
+			"ruleIds": [
+				"wai-aria-required-owned-elements"
+			]
+		},
+		{
+			"path": "html-aria/roles-properties-supported/roles-properties-supported-grid-aria-readonly-false.html",
+			"category": "aria",
+			"ruleIds": [
+				"wai-aria-required-owned-elements"
+			]
+		},
+		{
+			"path": "html-aria/roles-properties-supported/roles-properties-supported-grid-aria-readonly-true.html",
+			"category": "aria",
+			"ruleIds": [
+				"wai-aria-required-owned-elements"
+			]
+		},
+		{
+			"path": "html-aria/roles-properties-supported/roles-properties-supported-listbox-aria-multiselectable-false.html",
+			"category": "aria",
+			"ruleIds": [
+				"wai-aria-required-owned-elements"
+			]
+		},
+		{
+			"path": "html-aria/roles-properties-supported/roles-properties-supported-listbox-aria-multiselectable-true.html",
+			"category": "aria",
+			"ruleIds": [
+				"wai-aria-required-owned-elements"
+			]
+		},
+		{
+			"path": "html-aria/roles-properties-supported/roles-properties-supported-listbox-aria-required-false.html",
+			"category": "aria",
+			"ruleIds": [
+				"wai-aria-required-owned-elements"
+			]
+		},
+		{
+			"path": "html-aria/roles-properties-supported/roles-properties-supported-listbox-aria-required-true.html",
+			"category": "aria",
+			"ruleIds": [
+				"wai-aria-required-owned-elements"
+			]
+		},
+		{
 			"path": "html-aria/roles-properties-supported/roles-properties-supported-option-aria-checked-mixed.html",
 			"category": "aria",
 			"ruleIds": [
@@ -988,6 +1201,27 @@
 			"category": "aria",
 			"ruleIds": [
 				"wai-aria-value"
+			]
+		},
+		{
+			"path": "html-aria/roles-properties-supported/roles-properties-supported-row-aria-level-1.html",
+			"category": "aria",
+			"ruleIds": [
+				"wai-aria-required-owned-elements"
+			]
+		},
+		{
+			"path": "html-aria/roles-properties-supported/roles-properties-supported-row-aria-selected-false.html",
+			"category": "aria",
+			"ruleIds": [
+				"wai-aria-required-owned-elements"
+			]
+		},
+		{
+			"path": "html-aria/roles-properties-supported/roles-properties-supported-row-aria-selected-true.html",
+			"category": "aria",
+			"ruleIds": [
+				"wai-aria-required-owned-elements"
 			]
 		},
 		{
@@ -7215,7 +7449,8 @@
 			"path": "html/elements/custom/colon-name-isvalid.html",
 			"category": "invalid-attr",
 			"ruleIds": [
-				"permitted-contents"
+				"permitted-contents",
+				"wai-aria-required-owned-elements"
 			]
 		},
 		{
@@ -7223,6 +7458,13 @@
 			"category": "invalid-attr",
 			"ruleIds": [
 				"invalid-attr"
+			]
+		},
+		{
+			"path": "html/elements/div/model-isvalid.html",
+			"category": "content-model",
+			"ruleIds": [
+				"wai-aria-required-owned-elements"
 			]
 		},
 		{
@@ -7357,6 +7599,13 @@
 			"category": "invalid-attr",
 			"ruleIds": [
 				"invalid-attr"
+			]
+		},
+		{
+			"path": "html/elements/ol/model-isvalid.html",
+			"category": "content-model",
+			"ruleIds": [
+				"wai-aria-required-owned-elements"
 			]
 		},
 		{
@@ -7520,10 +7769,24 @@
 			]
 		},
 		{
+			"path": "html/elements/table/role-presentation-with-aria-label-haswarn.html",
+			"category": "invalid-attr",
+			"ruleIds": [
+				"wai-aria-required-owned-elements"
+			]
+		},
+		{
 			"path": "html/elements/track/src-isvalid.html",
 			"category": "invalid-attr",
 			"ruleIds": [
 				"invalid-attr"
+			]
+		},
+		{
+			"path": "html/elements/ul/model-isvalid.html",
+			"category": "content-model",
+			"ruleIds": [
+				"wai-aria-required-owned-elements"
 			]
 		},
 		{

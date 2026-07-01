@@ -524,32 +524,32 @@
 			"path": "html-aria/author-requirements/574.html",
 			"category": "aria",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/author-requirements/575.html",
 			"category": "aria",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/author-requirements/576.html",
 			"category": "aria",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/author-requirements/577.html",
 			"category": "aria",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -2220,8 +2220,8 @@
 			"path": "html-aria/misc/table-role-presentation-nested-with-td-with-role-isvalid.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -2924,24 +2924,24 @@
 			"path": "html-aria/presentation-role/510.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/presentation-role/511.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/presentation-role/512.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -2956,80 +2956,80 @@
 			"path": "html-aria/presentation-role/514.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/presentation-role/515.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/presentation-role/516.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/presentation-role/518.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/presentation-role/520.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/presentation-role/521.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/presentation-role/522.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/presentation-role/524.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/presentation-role/525.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/presentation-role/527.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -3452,8 +3452,8 @@
 			"path": "html-aria/roles-plain-concrete/roles-plain-concrete-grid.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -3500,8 +3500,8 @@
 			"path": "html-aria/roles-plain-concrete/roles-plain-concrete-list.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -3556,16 +3556,16 @@
 			"path": "html-aria/roles-plain-concrete/roles-plain-concrete-menu.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-plain-concrete/roles-plain-concrete-menubar.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -3660,8 +3660,8 @@
 			"path": "html-aria/roles-plain-concrete/roles-plain-concrete-tablist.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -3708,16 +3708,16 @@
 			"path": "html-aria/roles-plain-concrete/roles-plain-concrete-tree.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-plain-concrete/roles-plain-concrete-treegrid.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -5636,32 +5636,32 @@
 			"path": "html-aria/roles-properties-supported/roles-properties-supported-grid-aria-multiselectable-false.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-supported/roles-properties-supported-grid-aria-multiselectable-true.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-supported/roles-properties-supported-grid-aria-readonly-false.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-supported/roles-properties-supported-grid-aria-readonly-true.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -5756,32 +5756,32 @@
 			"path": "html-aria/roles-properties-supported/roles-properties-supported-listbox-aria-multiselectable-false.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-supported/roles-properties-supported-listbox-aria-multiselectable-true.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-supported/roles-properties-supported-listbox-aria-required-false.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-supported/roles-properties-supported-listbox-aria-required-true.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -5892,24 +5892,24 @@
 			"path": "html-aria/roles-properties-supported/roles-properties-supported-row-aria-level-1.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-supported/roles-properties-supported-row-aria-selected-false.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-supported/roles-properties-supported-row-aria-selected-true.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -21546,8 +21546,8 @@
 			"path": "html/elements/div/model-isvalid.html",
 			"category": "content-model",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -32416,8 +32416,8 @@
 			"path": "html/elements/ol/model-isvalid.html",
 			"category": "content-model",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -35515,22 +35515,18 @@
 		{
 			"path": "html/elements/script/speculationrules-and-empty-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
-			"ml": "clean",
-			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-2d05eb740ea1"
-			]
+			"nu": "error",
+			"ml": "error",
+			"verdict": "match-error",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/script/speculationrules-and-not-array-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
-			"ml": "clean",
-			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-ffb7b0802b96"
-			]
+			"nu": "error",
+			"ml": "error",
+			"verdict": "match-error",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/script/speculationrules-complex-with-arrays-isvalid.html",
@@ -35543,32 +35539,26 @@
 		{
 			"path": "html/elements/script/speculationrules-document-missing-where-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
-			"ml": "clean",
-			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-eba9b39992b3"
-			]
+			"nu": "error",
+			"ml": "error",
+			"verdict": "match-error",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/script/speculationrules-document-with-urls-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
-			"ml": "clean",
-			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-e4f280547930"
-			]
+			"nu": "error",
+			"ml": "error",
+			"verdict": "match-error",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/script/speculationrules-eagerness-not-string-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
-			"ml": "clean",
-			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-1aa1a7651199"
-			]
+			"nu": "error",
+			"ml": "error",
+			"verdict": "match-error",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/script/speculationrules-href-matches-array-isvalid.html",
@@ -35581,32 +35571,26 @@
 		{
 			"path": "html/elements/script/speculationrules-href-matches-empty-array-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
-			"ml": "clean",
-			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-91eedf90678b"
-			]
+			"nu": "error",
+			"ml": "error",
+			"verdict": "match-error",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/script/speculationrules-href-matches-empty-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
-			"ml": "clean",
-			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-3726177f55dd"
-			]
+			"nu": "error",
+			"ml": "error",
+			"verdict": "match-error",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/script/speculationrules-href-matches-not-string-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
-			"ml": "clean",
-			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-7b3a72419899"
-			]
+			"nu": "error",
+			"ml": "error",
+			"verdict": "match-error",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/script/speculationrules-inferred-source-document-isvalid.html",
@@ -35635,122 +35619,98 @@
 		{
 			"path": "html/elements/script/speculationrules-invalid-eagerness-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
-			"ml": "clean",
-			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-56a4bd14c073"
-			]
+			"nu": "error",
+			"ml": "error",
+			"verdict": "match-error",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/script/speculationrules-invalid-json-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
-			"ml": "clean",
-			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-67ce6bae6dfa"
-			]
+			"nu": "error",
+			"ml": "error",
+			"verdict": "match-error",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/script/speculationrules-invalid-property-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
-			"ml": "clean",
-			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-db1dd7e71b6d"
-			]
+			"nu": "error",
+			"ml": "error",
+			"verdict": "match-error",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/script/speculationrules-invalid-source-value-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
-			"ml": "clean",
-			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-9272f3df3931"
-			]
+			"nu": "error",
+			"ml": "error",
+			"verdict": "match-error",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/script/speculationrules-list-missing-urls-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
-			"ml": "clean",
-			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-6e918dafe95a"
-			]
+			"nu": "error",
+			"ml": "error",
+			"verdict": "match-error",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/script/speculationrules-list-with-where-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
-			"ml": "clean",
-			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-2bed56dc7103"
-			]
+			"nu": "error",
+			"ml": "error",
+			"verdict": "match-error",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/script/speculationrules-missing-prefetch-prerender-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
-			"ml": "clean",
-			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-ed4428d7c7b8"
-			]
+			"nu": "error",
+			"ml": "error",
+			"verdict": "match-error",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/script/speculationrules-missing-source-urls-where-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
-			"ml": "clean",
-			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-897112884fef"
-			]
+			"nu": "error",
+			"ml": "error",
+			"verdict": "match-error",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/script/speculationrules-not-object-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
-			"ml": "clean",
-			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-c4dbbb29b496"
-			]
+			"nu": "error",
+			"ml": "error",
+			"verdict": "match-error",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/script/speculationrules-prefetch-not-array-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
-			"ml": "clean",
-			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-a0733157f4a6"
-			]
+			"nu": "error",
+			"ml": "error",
+			"verdict": "match-error",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/script/speculationrules-rule-invalid-property-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
-			"ml": "clean",
-			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-5aceb9ca670f"
-			]
+			"nu": "error",
+			"ml": "error",
+			"verdict": "match-error",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/script/speculationrules-rule-not-object-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
-			"ml": "clean",
-			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-f06c2faed408"
-			]
+			"nu": "error",
+			"ml": "error",
+			"verdict": "match-error",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/script/speculationrules-selector-matches-array-isvalid.html",
@@ -35763,72 +35723,58 @@
 		{
 			"path": "html/elements/script/speculationrules-selector-matches-empty-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
-			"ml": "clean",
-			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-69d0c3ff01f7"
-			]
+			"nu": "error",
+			"ml": "error",
+			"verdict": "match-error",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/script/speculationrules-selector-matches-not-string-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
-			"ml": "clean",
-			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-9a27f02ee3f4"
-			]
+			"nu": "error",
+			"ml": "error",
+			"verdict": "match-error",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/script/speculationrules-source-not-string-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
-			"ml": "clean",
-			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-11f6ff44ec77"
-			]
+			"nu": "error",
+			"ml": "error",
+			"verdict": "match-error",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/script/speculationrules-urls-empty-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
-			"ml": "clean",
-			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-ab2ce085d332"
-			]
+			"nu": "error",
+			"ml": "error",
+			"verdict": "match-error",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/script/speculationrules-urls-empty-string-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
-			"ml": "clean",
-			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-49dc77882497"
-			]
+			"nu": "error",
+			"ml": "error",
+			"verdict": "match-error",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/script/speculationrules-urls-item-not-string-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
-			"ml": "clean",
-			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-12de65ecfe17"
-			]
+			"nu": "error",
+			"ml": "error",
+			"verdict": "match-error",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/script/speculationrules-urls-not-array-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
-			"ml": "clean",
-			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-f5ad73f01a88"
-			]
+			"nu": "error",
+			"ml": "error",
+			"verdict": "match-error",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/script/speculationrules-valid-document-isvalid.html",
@@ -35849,32 +35795,26 @@
 		{
 			"path": "html/elements/script/speculationrules-where-empty-predicate-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
-			"ml": "clean",
-			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-b389111680c0"
-			]
+			"nu": "error",
+			"ml": "error",
+			"verdict": "match-error",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/script/speculationrules-where-multiple-predicates-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
-			"ml": "clean",
-			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-064d4ab3a71a"
-			]
+			"nu": "error",
+			"ml": "error",
+			"verdict": "match-error",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/script/speculationrules-where-not-object-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
-			"ml": "clean",
-			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-1f5bbec4e8d6"
-			]
+			"nu": "error",
+			"ml": "error",
+			"verdict": "match-error",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/script/speculationrules-with-async-novalid.html",
@@ -35946,9 +35886,7 @@
 			"nu": "error",
 			"ml": "error",
 			"verdict": "match-error",
-			"excludedIds": [
-				"nv-ff2842bef763"
-			]
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/script/speculationrules/async-novalid.html",
@@ -36001,42 +35939,34 @@
 		{
 			"path": "html/elements/script/speculationrules/document-without-where-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
-			"ml": "clean",
-			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-8d601bd4f3eb"
-			]
+			"nu": "error",
+			"ml": "error",
+			"verdict": "match-error",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/script/speculationrules/empty-and-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
-			"ml": "clean",
-			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-14bc386f66c5"
-			]
+			"nu": "error",
+			"ml": "error",
+			"verdict": "match-error",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/script/speculationrules/empty-object-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
-			"ml": "clean",
-			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-e61699ad5ac8"
-			]
+			"nu": "error",
+			"ml": "error",
+			"verdict": "match-error",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/script/speculationrules/empty-urls-array-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
-			"ml": "clean",
-			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-3a085f550de4"
-			]
+			"nu": "error",
+			"ml": "error",
+			"verdict": "match-error",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/script/speculationrules/fetchpriority-novalid.html",
@@ -36073,62 +36003,50 @@
 		{
 			"path": "html/elements/script/speculationrules/invalid-eagerness-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
-			"ml": "clean",
-			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-e0ae7e3c0f58"
-			]
+			"nu": "error",
+			"ml": "error",
+			"verdict": "match-error",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/script/speculationrules/invalid-property-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
-			"ml": "clean",
-			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-ad54379a20df"
-			]
+			"nu": "error",
+			"ml": "error",
+			"verdict": "match-error",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/script/speculationrules/invalid-source-value-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
-			"ml": "clean",
-			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-9200aa197c81"
-			]
+			"nu": "error",
+			"ml": "error",
+			"verdict": "match-error",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/script/speculationrules/list-with-where-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
-			"ml": "clean",
-			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-ac8241a880ba"
-			]
+			"nu": "error",
+			"ml": "error",
+			"verdict": "match-error",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/script/speculationrules/list-without-urls-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
-			"ml": "clean",
-			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-615f9e6076b5"
-			]
+			"nu": "error",
+			"ml": "error",
+			"verdict": "match-error",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/script/speculationrules/multiple-predicates-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
-			"ml": "clean",
-			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-356357ce7aa5"
-			]
+			"nu": "error",
+			"ml": "error",
+			"verdict": "match-error",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/script/speculationrules/nomodule-novalid.html",
@@ -36141,12 +36059,10 @@
 		{
 			"path": "html/elements/script/speculationrules/not-json-novalid.html",
 			"category": "invalid-attr",
-			"nu": "clean",
-			"ml": "clean",
-			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-4e1c6d820ff7"
-			]
+			"nu": "error",
+			"ml": "error",
+			"verdict": "match-error",
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/script/speculationrules/prefetch-list-valid.html",
@@ -36218,9 +36134,7 @@
 			"nu": "error",
 			"ml": "error",
 			"verdict": "match-error",
-			"excludedIds": [
-				"nv-be060635eed1"
-			]
+			"excludedIds": []
 		},
 		{
 			"path": "html/elements/script/src-empty-novalid.html",
@@ -38182,41 +38096,43 @@
 			"path": "html/elements/table/model-input-child-novalid.html",
 			"category": "content-model",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
 			"path": "html/elements/table/model-input-type-child-novalid.html",
 			"category": "content-model",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
 			"path": "html/elements/table/role-presentation-with-aria-label-haswarn.html",
 			"category": "invalid-attr",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html/elements/table/row-no-cells-novalid.html",
 			"category": "invalid-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
 			"path": "html/elements/table/row-width-exceeds-col-markup-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-d7b3d14cfb44"
+			]
 		},
 		{
 			"path": "html/elements/table/row-width-exceeds-cols-haswarn.html",
@@ -39128,8 +39044,8 @@
 			"path": "html/elements/ul/model-isvalid.html",
 			"category": "content-model",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -43224,8 +43140,8 @@
 			"path": "html/parser/select-in-table-start-novalid.html",
 			"category": "uncategorized",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -43288,8 +43204,8 @@
 			"path": "html/parser/text-in-table-novalid.html",
 			"category": "uncategorized",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{

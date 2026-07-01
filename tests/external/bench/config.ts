@@ -83,7 +83,15 @@ export const benchmarkConfig: Config = {
 		// the bench treats it as a hard error to align with ARIA-in-HTML §6.
 		'wai-aria-implicit-props': { severity: 'error' },
 		'wai-aria-value': true,
-		'wai-aria-required-owned-elements': true,
+		// WAI-ARIA 1.2 §5.2.6 Required Owned Elements: "When multiple roles are specified
+		// as required owned elements for a role, at least one instance of one required
+		// owned element is expected." and "When a widget is missing required owned
+		// elements due to script execution or loading, authors MUST mark a containing
+		// element with aria-busy equal to true." The rule fires when neither an owned
+		// element nor aria-busy is present — precisely the MUST violation. The
+		// user-facing default stays 'warning' for author ergonomics; the bench escalates
+		// to align with the spec MUST.
+		'wai-aria-required-owned-elements': { severity: 'error' },
 		'wai-aria-required-parent-role': true,
 		'wai-aria-no-global-prop': true,
 	},
