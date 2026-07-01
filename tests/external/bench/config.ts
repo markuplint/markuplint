@@ -82,6 +82,15 @@ export const benchmarkConfig: Config = {
 		// to their ARIA equivalents. The rule defaults to severity 'warning' for ergonomic reasons;
 		// the bench treats it as a hard error to align with ARIA-in-HTML §6.
 		'wai-aria-implicit-props': { severity: 'error' },
+		// ARIA in HTML §3: "Authors MAY use the aria-hidden attribute on any HTML element that
+		// allows global aria-* attributes, with the exception of focusable elements and the body
+		// element." The rule enforces this transitively via WAI-ARIA §Including Elements in the
+		// Accessibility Tree: a focusable descendant of an aria-hidden ancestor remains in the
+		// accessibility tree, so aria-hidden is ineffective and effectively conflicts with the
+		// focusable-element exception. The user-facing default stays 'warning' because the
+		// remediation is a UX-shape choice (remove aria-hidden vs. remove focus), not a purely
+		// mechanical fix; the bench escalates to align with the ARIA-in-HTML MUST NOT.
+		'wai-aria-interaction-in-hidden': { severity: 'error' },
 		'wai-aria-value': true,
 		// WAI-ARIA 1.2 §5.2.6 Required Owned Elements: "When multiple roles are specified
 		// as required owned elements for a role, at least one instance of one required
