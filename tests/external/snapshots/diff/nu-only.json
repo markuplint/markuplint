@@ -169,13 +169,6 @@
 			]
 		},
 		{
-			"path": "html/elements/label/aria-with-labelable-descendant-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-91a6b49ad56f"
-			]
-		},
-		{
 			"path": "html/elements/label/for-descendant-no-id-novalid.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [
