@@ -121,6 +121,8 @@ export const benchmarkConfig: Config = {
 					// Mirrors html-standard/no-charset-http-equiv-coexist
 					'meta[charset] ~ meta[http-equiv="content-type" i]',
 					'meta[http-equiv="content-type" i] ~ meta[charset]',
+					// Mirrors html-standard/no-base-after-link-or-script
+					':is(link, script) ~ base',
 				],
 			},
 		},

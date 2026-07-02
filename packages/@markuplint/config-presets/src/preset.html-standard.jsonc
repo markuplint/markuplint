@@ -408,6 +408,26 @@
 		},
 		{
 			/**
+			 * `<base>` must precede `<link>` and `<script>`
+			 *
+			 * A base element must come before any other elements in the tree that have
+			 * attributes defined as taking URLs, except the html element. In `<head>`,
+			 * the URL-taking elements are `<link>` (href, imagesrcset) and `<script>` (src);
+			 * a `<base>` that follows either shadows its own effect on those references.
+			 *
+			 * @see https://html.spec.whatwg.org/multipage/semantics.html#the-base-element
+			 */
+			"name": "html-standard/no-base-after-link-or-script",
+			"specConformance": "normative",
+			"selector": ":where(head)",
+			"rules": {
+				"disallowed-element": {
+					"value": [":is(link, script) ~ base"]
+				}
+			}
+		},
+		{
+			/**
 			 * No use `<small>` as **subheadings**
 			 *
 			 * The small element must not be used for subheadings.

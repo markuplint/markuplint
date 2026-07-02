@@ -75,20 +75,6 @@
 			]
 		},
 		{
-			"path": "html/elements/base/preceded-by-link-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-06f44cb68fc6"
-			]
-		},
-		{
-			"path": "html/elements/base/preceded-by-script-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-397f312420d3"
-			]
-		},
-		{
 			"path": "html/elements/img/missing-alt-in-figure-novalid.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [
