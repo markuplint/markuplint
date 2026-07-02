@@ -55008,6 +55008,24 @@
 				"properties": {
 					"global": true,
 					"role": "button"
+				},
+				"conditions": {
+					"details > summary:not(summary ~ summary)": {
+						"properties": {
+							"global": true,
+							"role": "button",
+							"without": [
+								{
+									"type": "must-not",
+									"name": "aria-expanded"
+								},
+								{
+									"type": "must-not",
+									"name": "aria-pressed"
+								}
+							]
+						}
+					}
 				}
 			},
 			"omission": false,

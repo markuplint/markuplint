@@ -2172,8 +2172,8 @@
 			"path": "html-aria/misc/summary-for-its-details-with-aria-expanded-novalid.html",
 			"category": "aria",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -2188,8 +2188,8 @@
 			"path": "html-aria/misc/summary-for-its-details-with-aria-pressed-novalid.html",
 			"category": "aria",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{

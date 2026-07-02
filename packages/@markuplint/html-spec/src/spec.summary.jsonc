@@ -35,6 +35,33 @@
 		"properties": {
 			"global": true,
 			"role": "button"
+		},
+		"conditions": {
+			// ARIA in HTML restricts a summary that is a summary for its parent details element
+			// to "Global aria-* attributes, aria-disabled, and aria-haspopup attributes".
+			// Per HTML LS §4.11.2 the "summary for its parent details" is the first summary
+			// child of details in tree order. `details > summary:not(summary ~ summary)`
+			// matches that (markuplint's selector engine does not support :first-of-type
+			// / :nth-of-type — see @markuplint/selector). Since summary's implicit ARIA
+			// state maps to details.open, aria-expanded and aria-pressed conflict with the
+			// native semantics and must not be used in that context.
+			// https://w3c.github.io/html-aria/#el-summary
+			"details > summary:not(summary ~ summary)": {
+				"properties": {
+					"global": true,
+					"role": "button",
+					"without": [
+						{
+							"type": "must-not",
+							"name": "aria-expanded"
+						},
+						{
+							"type": "must-not",
+							"name": "aria-pressed"
+						}
+					]
+				}
+			}
 		}
 	}
 }

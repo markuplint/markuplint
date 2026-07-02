@@ -326,3 +326,76 @@ test('[wai-aria-disallowed-props-issue-3735-005] input[type=text] aria-hidden is
 	// implicitRole=textbox and supports global aria-* attrs including aria-hidden.
 	expect((await mlRuleTest(rule, '<input type="text" aria-hidden="true">')).violations).toStrictEqual([]);
 });
+
+// ARIA in HTML restricts a summary that is a summary for its parent details
+// element to "Global aria-* attributes, aria-disabled, and aria-haspopup
+// attributes". aria-expanded and aria-pressed conflict with the details.open
+// state exposed by the native semantics and must not be used, even though
+// markuplint presets summary's implicit role as button.
+// https://w3c.github.io/html-aria/#el-summary
+test('[wai-aria-disallowed-props-invalid-002] aria-expanded on summary in details is must-not', async () => {
+	const { violations } = await mlRuleTest(rule, '<details><summary aria-expanded="false">s</summary></details>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 19,
+			message: 'The "aria-expanded" ARIA state must not use on the "summary" element',
+			raw: 'aria-expanded="false"',
+		},
+	]);
+});
+
+test('[wai-aria-disallowed-props-invalid-003] aria-pressed on summary in details is must-not', async () => {
+	const { violations } = await mlRuleTest(rule, '<details><summary aria-pressed="true">s</summary></details>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 19,
+			message: 'The "aria-pressed" ARIA state must not use on the "summary" element',
+			raw: 'aria-pressed="true"',
+		},
+	]);
+});
+
+test('[wai-aria-disallowed-props-valid-002] aria-disabled on summary in details is allowed', async () => {
+	expect(
+		(await mlRuleTest(rule, '<details><summary aria-disabled="true">s</summary></details>')).violations,
+	).toStrictEqual([]);
+});
+
+test('[wai-aria-disallowed-props-valid-003] aria-haspopup on summary in details is allowed', async () => {
+	expect(
+		(await mlRuleTest(rule, '<details><summary aria-haspopup="true">s</summary></details>')).violations,
+	).toStrictEqual([]);
+});
+
+// ARIA in HTML: "otherwise, if the summary element is not a summary for its
+// parent details element, authors MAY specify any role, and any global aria-*
+// attributes and any aria-* attributes applicable to the allowed roles."
+// The must-not is scoped via spec.summary.jsonc conditions to the first
+// summary child of details, so a summary outside details keeps button role's
+// supported aria-* including aria-expanded and aria-pressed.
+test('[wai-aria-disallowed-props-valid-004] aria-expanded on summary outside details is allowed', async () => {
+	expect((await mlRuleTest(rule, '<summary aria-expanded="false">s</summary>')).violations).toStrictEqual([]);
+});
+
+test('[wai-aria-disallowed-props-valid-005] aria-pressed on summary outside details is allowed', async () => {
+	expect((await mlRuleTest(rule, '<summary aria-pressed="true">s</summary>')).violations).toStrictEqual([]);
+});
+
+// A non-first summary in details is not "the summary" per HTML LS §4.11.2; the
+// content-model rule already reports the extra summary, so wai-aria-* here
+// treats it as the "otherwise" ARIA-in-HTML case (button role's supported
+// aria-* remain allowed).
+test('[wai-aria-disallowed-props-valid-006] aria-expanded on non-first summary in details is allowed', async () => {
+	expect(
+		(
+			await mlRuleTest(
+				rule,
+				'<details><summary>first</summary><summary aria-expanded="false">s</summary></details>',
+			)
+		).violations,
+	).toStrictEqual([]);
+});

@@ -8,22 +8,6 @@
 			]
 		},
 		{
-			"path": "html-aria/misc/summary-for-its-details-with-aria-expanded-novalid.html",
-			"category": "aria",
-			"nuMessageIds": [
-				"nv-e2dbcbc96ae0",
-				"nv-71d55bb7d1b2"
-			]
-		},
-		{
-			"path": "html-aria/misc/summary-for-its-details-with-aria-pressed-novalid.html",
-			"category": "aria",
-			"nuMessageIds": [
-				"nv-a354a70fa4fe",
-				"nv-7e99c1fe9674"
-			]
-		},
-		{
 			"path": "html-math/math-in-head-novalid.html",
 			"category": "uncategorized",
 			"nuMessageIds": [
