@@ -9,7 +9,7 @@ Warns when an ARIA property or state is disallowed in any of the following ways 
 
 1. **Not allowed on the computed role** — e.g. `aria-pressed` on `role="heading"`.
 2. **Naming prohibition** — elements without an implicit role (`<cite>`, `<abbr>`, `<figcaption>`, etc.) and autonomous custom elements (`<my-widget>`, etc.) must not use `aria-label`, `aria-labelledby`, or `aria-braillelabel` unless an explicit naming-supported role is set. Customised-built-in elements (`<button is="x-y">`) inherit the host element's spec data and follow the regular path.
-3. **Element-specific prohibitions** — every `aria-*` attribute is forbidden on certain element states (e.g. `<input type="hidden">`), and individual attributes may be forbidden when another attribute is present (e.g. `aria-expanded` on `<button popovertarget>` because the popover API manages the state automatically).
+3. **Element-specific prohibitions** — every `aria-*` attribute is forbidden on certain element states (e.g. `<input type="hidden">`), and individual attributes may be forbidden when another attribute is present (e.g. `aria-expanded` on `<button popovertarget>` or `<button commandfor>` because the popover / Invoker Commands API manages the state automatically).
 4. **Element-specific whitelist** — some elements accept only a small set of `aria-*` attributes (e.g. `<br>` and `<wbr>` accept only `aria-hidden`); any attribute outside the whitelist is rejected.
 
 This rule is part of the [`wai-aria`](../wai-aria/) rule family, split for granular severity control.
@@ -23,6 +23,7 @@ This rule is part of the [`wai-aria`](../wai-aria/) rule family, split for granu
 <br aria-atomic="true" />
 <input type="hidden" aria-hidden="true" />
 <button popovertarget="p" aria-expanded="false">Toggle</button>
+<button command="toggle-popover" commandfor="p" aria-expanded="false">Toggle</button>
 ```
 
 ✅ Examples of **correct** code for this rule
@@ -34,4 +35,5 @@ This rule is part of the [`wai-aria`](../wai-aria/) rule family, split for granu
 <br aria-hidden="true" />
 <input type="hidden" />
 <button popovertarget="p">Toggle</button>
+<button command="toggle-popover" commandfor="p">Toggle</button>
 ```

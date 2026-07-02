@@ -109,6 +109,27 @@
 						}
 					]
 				}
+			},
+			// HTML LS Invoker Commands API: a button that invokes a popover or
+			// dialog via commandfor manages the expanded state automatically
+			// (same reasoning as popovertarget), so a manual aria-expanded would
+			// drift from the actual UI state.
+			// @see https://html.spec.whatwg.org/multipage/form-elements.html#attr-button-commandfor
+			"[commandfor]": {
+				"properties": {
+					"global": true,
+					"role": true,
+					"without": [
+						{
+							"type": "must-not",
+							"name": "aria-expanded",
+							"alt": {
+								"method": "set-attr",
+								"target": "commandfor"
+							}
+						}
+					]
+				}
 			}
 		},
 		"1.1": {
