@@ -90,6 +90,49 @@ test('[disallowed-element-invalid-003] Recommend', async () => {
 	]);
 });
 
+test('[disallowed-element-invalid-004] base after link via sibling selector', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<head><meta charset="UTF-8"><link rel="stylesheet" href="a.css"><base href="/"></head>',
+		{ rule: [':is(link, script) ~ base'] },
+	);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 65,
+			raw: '<base href="/">',
+			message: 'The ":is(link, script) ~ base" element is disallowed',
+		},
+	]);
+});
+
+test('[disallowed-element-invalid-005] base after script via sibling selector', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<head><meta charset="UTF-8"><script src="a.js"></script><base href="/"></head>',
+		{ rule: [':is(link, script) ~ base'] },
+	);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 57,
+			raw: '<base href="/">',
+			message: 'The ":is(link, script) ~ base" element is disallowed',
+		},
+	]);
+});
+
+test('[disallowed-element-valid-001] base before link and script is valid', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<head><meta charset="UTF-8"><base href="/"><link rel="stylesheet" href="a.css"><script src="a.js"></script></head>',
+		{ rule: [':is(link, script) ~ base'] },
+	);
+	expect(violations).toStrictEqual([]);
+});
+
 test('[disallowed-element-issue-3634-001] duplicate meta charset via sibling selector', async () => {
 	const { violations } = await mlRuleTest(rule, '<head><meta charset="UTF-8"><meta charset="UTF-8"></head>', {
 		rule: ['meta[charset] ~ meta[charset]'],
