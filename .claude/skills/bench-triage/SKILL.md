@@ -189,7 +189,7 @@ directly. Do not add a row without a verbatim spec quote and source URL.
 | Message substring | Verdict | Source |
 | --- | --- | --- |
 | `Fragment is not allowed for data: URIs according to RFC 2397` | **nu over-detection** — excluded in `patterns[]` | URL LS §4.3: a `valid URL string` may end in a fragment for any scheme. |
-| `must be less than or equal to` (meter / progress / input min/max) | **nu correct** — NOT excluded | HTML LS §4.10.14: "minimum ≤ value ≤ maximum; minimum ≤ low ≤ maximum (if low is specified); …" — explicit `must`. |
+| `must be less than or equal to` (meter / progress / input min/max) | **nu correct** — markuplint coverage in `meter-value-bounds` (meter) and `progress-value-bounds` (progress: `value ≤ max`, or `value ≤ 1` when `max` is absent). Input min/max still uncovered. | HTML LS §4.10.14 (meter): "minimum ≤ value ≤ maximum; minimum ≤ low ≤ maximum (if low is specified); …" — explicit `must`. HTML LS §4.10.14 (progress): "If both attributes are present, the value of the value attribute must be less than or equal to the value of the max attribute. If only the value attribute is present, its value must be less than or equal to one." |
 | `URL includes credentials` | **nu correct** — NOT excluded | URL LS §1.1 `invalid-credentials`. HTML LS requires a valid URL string, so a URL validation error is a conformance error. |
 | `Expected a slash` (special-scheme URLs missing `//`) | **nu correct** — NOT excluded | URL LS `special-scheme-missing-following-solidus`. |
 | `Backslash used as path segment delimiter` | **nu correct** — NOT excluded | URL LS `invalid-reverse-solidus`. |

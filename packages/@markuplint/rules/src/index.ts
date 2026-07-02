@@ -54,6 +54,7 @@ import NoUnsupportedFeatures from './no-unsupported-features/index.js';
 import NoUseEventHandlerAttr from './no-use-event-handler-attr/index.js';
 import PermittedContents from './permitted-contents/index.js';
 import PlaceholderLabelOption from './placeholder-label-option/index.js';
+import ProgressValueBounds from './progress-value-bounds/index.js';
 import RedundantAccessibleName from './redundant-accessible-name/index.js';
 import RequireAccessibleName from './require-accessible-name/index.js';
 import RequireDatetime from './require-datetime/index.js';
@@ -133,6 +134,7 @@ const rules = {
 	'no-use-event-handler-attr': NoUseEventHandlerAttr,
 	'permitted-contents': PermittedContents,
 	'placeholder-label-option': PlaceholderLabelOption,
+	'progress-value-bounds': ProgressValueBounds,
 	'redundant-accessible-name': RedundantAccessibleName,
 	'require-accessible-name': RequireAccessibleName,
 	'require-datetime': RequireDatetime,

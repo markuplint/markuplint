@@ -217,20 +217,6 @@
 			]
 		},
 		{
-			"path": "html/elements/progress/value-exceeds-max-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-ebd8f3d61422"
-			]
-		},
-		{
-			"path": "html/elements/progress/value-exceeds-one-no-max-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-077fa3dae0ce"
-			]
-		},
-		{
 			"path": "html/elements/select/autocomplete-with-webauthn-novalid.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [

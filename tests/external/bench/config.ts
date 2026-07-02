@@ -61,6 +61,7 @@ export const benchmarkConfig: Config = {
 		'link-types': { options: { allowMicroformats: true } },
 		'map-id-name-match': true,
 		'meter-value-bounds': true,
+		'progress-value-bounds': true,
 		// Catches skipped heading levels (HTML LS §4.3.11).
 		'heading-levels': true,
 		// Catches `<div id="a" id="b">`-style duplicate attribute names (HTML LS tokenizer).
