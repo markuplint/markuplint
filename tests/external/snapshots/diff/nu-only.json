@@ -1,13 +1,6 @@
 {
 	"entries": [
 		{
-			"path": "html-aria/misc/aria-expanded-with-command-novalid.html",
-			"category": "aria",
-			"nuMessageIds": [
-				"nv-5c22b7821665"
-			]
-		},
-		{
 			"path": "html-aria/misc/role-tab-with-no-role-tabpanel-novalid.html",
 			"category": "aria",
 			"nuMessageIds": [
@@ -36,13 +29,6 @@
 			"nuMessageIds": [
 				"nv-0c86320f6630",
 				"nv-8aff5b8981a2"
-			]
-		},
-		{
-			"path": "html/attributes/command-with-aria-expanded-novalid.html",
-			"category": "global-attr",
-			"nuMessageIds": [
-				"nv-65bdcb988594"
 			]
 		},
 		{
@@ -100,16 +86,6 @@
 			"category": "invalid-attr",
 			"nuMessageIds": [
 				"nv-397f312420d3"
-			]
-		},
-		{
-			"path": "html/elements/dl/div-multiple-groups-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-323a5f6407e4",
-				"nv-8488d87fd201",
-				"nv-c85c578225cf",
-				"nv-4f10aadba99f"
 			]
 		},
 		{

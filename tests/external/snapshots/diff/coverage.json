@@ -1052,8 +1052,8 @@
 			"path": "html-aria/misc/aria-expanded-with-command-novalid.html",
 			"category": "aria",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -14092,8 +14092,8 @@
 			"path": "html/attributes/command-with-aria-expanded-novalid.html",
 			"category": "global-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -21602,8 +21602,8 @@
 			"path": "html/elements/dl/div-multiple-groups-novalid.html",
 			"category": "invalid-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
