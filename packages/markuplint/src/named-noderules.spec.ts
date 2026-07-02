@@ -44,6 +44,46 @@ describe('Named nodeRules integration', () => {
 			expect(smallViolation!.specConformance).toBe('normative');
 		});
 
+		it('reports html-standard/no-base-after-link-or-script when <base> follows <link>', async () => {
+			const { violations } = await mlTest(
+				'<!doctype html><html><head><meta charset="UTF-8"><title>t</title>' +
+					'<link rel="stylesheet" href="a.css"><base href="/"></head><body></body></html>',
+				{
+					extends: ['markuplint:html-standard'],
+				},
+			);
+			const baseViolation = violations.find(v => v.name === 'html-standard/no-base-after-link-or-script');
+			expect(baseViolation).toBeDefined();
+			expect(baseViolation!.ruleId).toBe('disallowed-element');
+			expect(baseViolation!.specConformance).toBe('normative');
+		});
+
+		it('reports html-standard/no-base-after-link-or-script when <base> follows <script>', async () => {
+			const { violations } = await mlTest(
+				'<!doctype html><html><head><meta charset="UTF-8"><title>t</title>' +
+					'<script src="a.js"></script><base href="/"></head><body></body></html>',
+				{
+					extends: ['markuplint:html-standard'],
+				},
+			);
+			const baseViolation = violations.find(v => v.name === 'html-standard/no-base-after-link-or-script');
+			expect(baseViolation).toBeDefined();
+			expect(baseViolation!.ruleId).toBe('disallowed-element');
+			expect(baseViolation!.specConformance).toBe('normative');
+		});
+
+		it('does not report html-standard/no-base-after-link-or-script when <base> precedes <link> and <script>', async () => {
+			const { violations } = await mlTest(
+				'<!doctype html><html><head><meta charset="UTF-8"><title>t</title><base href="/">' +
+					'<link rel="stylesheet" href="a.css"><script src="a.js"></script></head><body></body></html>',
+				{
+					extends: ['markuplint:html-standard'],
+				},
+			);
+			const baseViolation = violations.find(v => v.name === 'html-standard/no-base-after-link-or-script');
+			expect(baseViolation).toBeUndefined();
+		});
+
 		it('reports html-standard/script-content for malformed importmap', async () => {
 			const { violations } = await mlTest(
 				'<!doctype html><html><head><meta charset="UTF-8"><title>t</title>' +
