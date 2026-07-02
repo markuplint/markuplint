@@ -72,6 +72,7 @@ Specify required attr| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [`<label>` may contain at most one form-control descendant](https://html.spec.whatwg.org/multipage/forms.html#the-label-element)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [`<map>` `id` must equal `name` when both are specified](https://html.spec.whatwg.org/multipage/image-maps.html#the-map-element)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [`<meter>` attribute inequalities (min ≤ value ≤ max etc.)](https://html.spec.whatwg.org/multipage/form-elements.html#the-meter-element)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
+[`<progress>` attribute inequalities (value ≤ max; value ≤ 1 when max is absent)](https://html.spec.whatwg.org/multipage/form-elements.html#the-progress-element)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [Single `<select>` allows at most one selected `<option>`](https://html.spec.whatwg.org/multipage/form-elements.html#the-select-element)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [Specify `charset=UTF-8`](https://html.spec.whatwg.org/multipage/semantics.html#charset)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [No duplicate meta charset](https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-charset)|There must not be more than one meta element with a charset attribute per document.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|

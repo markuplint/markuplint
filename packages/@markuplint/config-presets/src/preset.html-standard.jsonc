@@ -323,6 +323,18 @@
 		},
 
 		/**
+		 * `<progress>` attribute inequalities (value ≤ max; value ≤ 1 when max is absent)
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/form-elements.html#the-progress-element
+		 */
+		"html-standard/progress-value-bounds": {
+			"specConformance": "normative",
+			"rules": {
+				"progress-value-bounds": true
+			}
+		},
+
+		/**
 		 * Single `<select>` allows at most one selected `<option>`
 		 *
 		 * @see https://html.spec.whatwg.org/multipage/form-elements.html#the-select-element

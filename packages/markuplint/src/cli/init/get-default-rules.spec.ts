@@ -185,6 +185,10 @@ test('default-rules', () => {
 			category: 'validation',
 			defaultValue: true,
 		},
+		'progress-value-bounds': {
+			category: 'validation',
+			defaultValue: true,
+		},
 		'redundant-accessible-name': {
 			category: 'a11y',
 			defaultValue: false,
