@@ -263,6 +263,33 @@ test('[wai-aria-disallowed-props-issue-3735-002] button without popovertarget al
 	expect((await mlRuleTest(rule, '<button aria-expanded="false">x</button>')).violations).toStrictEqual([]);
 });
 
+// #3830: button[commandfor] must not have aria-expanded. The Invoker Commands
+// API manages the expanded state automatically (same reasoning as popovertarget),
+// so a manual aria-expanded is redundant and may drift from the actual state.
+test('[wai-aria-disallowed-props-issue-3830-001] button[commandfor] aria-expanded is must-not', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<button command="toggle-popover" commandfor="p" aria-expanded="false">x</button>',
+	);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 49,
+			message:
+				'The "aria-expanded" ARIA state must not use on the "button" element. As its state is already provided by the "commandfor" attribute',
+			raw: 'aria-expanded="false"',
+		},
+	]);
+});
+
+test('[wai-aria-disallowed-props-issue-3830-002] button without commandfor allows aria-expanded', async () => {
+	// Sanity check: without commandfor the conditional must not fire.
+	expect(
+		(await mlRuleTest(rule, '<button command="toggle-popover" aria-expanded="false">x</button>')).violations,
+	).toStrictEqual([]);
+});
+
 // #3735 P2: input[type=hidden] sets `properties: false` in spec data, meaning
 // any aria-* attribute is disallowed. The check must fire even though the
 // element has no implicit role and no explicit role (same root cause as #3630

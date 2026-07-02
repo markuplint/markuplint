@@ -49680,6 +49680,22 @@
 								}
 							]
 						}
+					},
+					"[commandfor]": {
+						"properties": {
+							"global": true,
+							"role": true,
+							"without": [
+								{
+									"type": "must-not",
+									"name": "aria-expanded",
+									"alt": {
+										"method": "set-attr",
+										"target": "commandfor"
+									}
+								}
+							]
+						}
 					}
 				},
 				"1.1": {
