@@ -53370,6 +53370,13 @@
 						{
 							"condition": "[http-equiv='content-type' i]",
 							"type": "HTTPEquivContentType"
+						},
+						{
+							"condition": "[http-equiv='x-ua-compatible' i]",
+							"type": {
+								"enum": ["IE=edge"],
+								"caseInsensitive": true
+							}
 						}
 					],
 					"required": ["[name]", "[http-equiv]", "[itemprop]"],

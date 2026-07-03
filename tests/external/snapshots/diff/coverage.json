@@ -31516,8 +31516,8 @@
 			"path": "html/elements/meta/x-ua-compatible-not-ie-edge-novalid.html",
 			"category": "invalid-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{

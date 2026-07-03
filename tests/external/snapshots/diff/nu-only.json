@@ -157,13 +157,6 @@
 			]
 		},
 		{
-			"path": "html/elements/meta/x-ua-compatible-not-ie-edge-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-006f6fbfb136"
-			]
-		},
-		{
 			"path": "html/elements/picture/html-syntax-picture-no-end-tag-novalid.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [

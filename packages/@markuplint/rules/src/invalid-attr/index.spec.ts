@@ -3033,16 +3033,34 @@ describe('#3734 meta[content] by http-equiv', () => {
 		expect(violations.some(v => v.raw === 'text/plain; charset=utf-8')).toBe(true);
 	});
 
-	// ----- unconditional fallback ----------------------------------------
-	// These three http-equiv values have no ConditionalAttributeType entry,
-	// so rules/helpers.ts substitutes "Any" at runtime and any non-empty
-	// content passes. Kept as separate tests (not a loop / test.each) so a
-	// failure immediately names the offending http-equiv value.
+	// ----- http-equiv="x-ua-compatible" ----------------------------------
+	// HTML LS §4.2.5.4 X-UA-Compatible state: "the content attribute must
+	// have a value that is an ASCII case-insensitive match for the string
+	// 'IE=edge'."
 
-	test('[invalid-attr-issue-3734-009] http-equiv="x-ua-compatible" content falls through to Any', async () => {
+	test('[invalid-attr-issue-3734-009] x-ua-compatible: "IE=edge" is valid', async () => {
 		const { violations } = await mlRuleTest(rule, '<meta http-equiv="x-ua-compatible" content="IE=edge">');
 		expect(violations.length).toBe(0);
 	});
+
+	test('[invalid-attr-issue-3734-014] x-ua-compatible: ASCII case-insensitive match is valid', async () => {
+		const { violations } = await mlRuleTest(rule, '<meta http-equiv="x-ua-compatible" content="ie=EDGE">');
+		expect(violations.length).toBe(0);
+	});
+
+	test('[invalid-attr-issue-3734-015] x-ua-compatible: "IE=10" is invalid', async () => {
+		// Fixture: html/elements/meta/x-ua-compatible-not-ie-edge-novalid.html.
+		// Raw comes back lowercased under the enum matcher's case-insensitive
+		// path — file the assertion against the observed value, not the source.
+		const { violations } = await mlRuleTest(rule, '<meta http-equiv="x-ua-compatible" content="IE=10">');
+		expect(violations.some(v => v.raw === 'ie=10')).toBe(true);
+	});
+
+	// ----- unconditional fallback ----------------------------------------
+	// These two http-equiv values have no ConditionalAttributeType entry,
+	// so rules/helpers.ts substitutes "Any" at runtime and any non-empty
+	// content passes. Kept as separate tests (not a loop / test.each) so a
+	// failure immediately names the offending http-equiv value.
 
 	test('[invalid-attr-issue-3734-010] http-equiv="default-style" content falls through to Any', async () => {
 		const { violations } = await mlRuleTest(rule, '<meta http-equiv="default-style" content="preferred">');
