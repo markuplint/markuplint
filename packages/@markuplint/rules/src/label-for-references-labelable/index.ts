@@ -5,7 +5,14 @@ import meta from './meta.js';
 /**
  * Labelable elements per HTML LS §4.10.2 *Categories: Labelable elements*.
  * `<input>` is labelable except when its `type` is in the Hidden state; the
- * `:not([type="hidden" i])` clause matches the spec exclusion literally.
+ * `:not([type="hidden" i])` clause matches the spec exclusion ASCII
+ * case-insensitively.
+ *
+ * Known limitation: form-associated custom elements (HTML LS §4.13.5.9) are
+ * also labelable, but detecting this requires runtime `ElementInternals`
+ * inspection which is unavailable at parse time. This selector treats
+ * custom elements as non-labelable — same as `form-attr-references-form`
+ * and `input-list-references-datalist`.
  *
  * @see https://html.spec.whatwg.org/multipage/forms.html#category-label
  */
