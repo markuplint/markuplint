@@ -52280,7 +52280,7 @@
 					"type": [
 						{
 							"condition": "[type='hidden' i]",
-							"type": "AutoCompleteAnchor"
+							"type": "AutoCompleteAnchorMantle"
 						},
 						{
 							"condition": ":not([type='hidden' i])",

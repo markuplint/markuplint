@@ -1248,7 +1248,7 @@ export type ExtendedType =
   | "Accept"
   | "Any"
   | "AutoComplete"
-  | "AutoCompleteAnchor"
+  | "AutoCompleteAnchorMantle"
   | "AutoCompleteNoWebauthn"
   | "BCP47"
   | "BaseURL"

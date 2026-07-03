@@ -58,9 +58,15 @@
 		// autofill *expectation* mantle where they are allowed. The
 		// ConditionalAttributeType[] switches the value type on `type`
 		// so the anchor variant only applies when `type='hidden'`.
+		//
+		// The second entry uses `:not([type='hidden' i])` explicitly
+		// instead of an unconditional fallback because helpers.ts
+		// (`resolveAttrTypeSpec`) resolves ConditionalAttributeType[]
+		// to `'Any'` when no condition matches — which would silently
+		// drop the AutoComplete grammar for every non-hidden type.
 		"autocomplete": {
 			"type": [
-				{ "condition": "[type='hidden' i]", "type": "AutoCompleteAnchor" },
+				{ "condition": "[type='hidden' i]", "type": "AutoCompleteAnchorMantle" },
 				{ "condition": ":not([type='hidden' i])", "type": "AutoComplete" }
 			],
 			"condition": [

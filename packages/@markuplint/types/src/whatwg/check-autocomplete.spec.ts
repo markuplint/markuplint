@@ -462,6 +462,40 @@ test('anchorMantle option (input type=hidden)', () => {
 	expect(anchor('off').matched).toBe(false);
 	expect(anchor('ON').matched).toBe(false);
 	expect(anchor('Off').matched).toBe(false);
+
+	// on/off in non-leading positions are also caught by the anchor-mantle
+	// guard (not the trailing on/off "extra-token" path), so the
+	// diagnostic keeps citing the anchor-mantle spec.
+	expect(anchor('name on').matched).toBe(false);
+	expect(anchor('off name').matched).toBe(false);
+	expect(anchor('section-foo on').matched).toBe(false);
+	expect(anchor('on off').matched).toBe(false);
+
+	// Standalone webauthn is still rejected via the "webauthn must not be
+	// the only token" guard even in anchor mantle — pin so a future refactor
+	// of the anchor guard doesn't accidentally shadow that check.
+	expect(anchor('webauthn').matched).toBe(false);
+
+	// Anchor-mantle rejection cites the spec URL so users can jump straight
+	// to the constraint. Pin this ref so refactors that drop it fail loudly.
+	const rejected = anchor('on');
+	expect(rejected.matched).toBe(false);
+	if (!rejected.matched) {
+		expect(rejected.ref).toBe(
+			'https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill-anchor-mantle',
+		);
+	}
+});
+
+test('anchorMantle + noWebauthn combined', () => {
+	// No production wiring uses both flags today, but the checker is
+	// composable so pin the combined behaviour: on/off rejected first
+	// (anchor mantle gate runs before the backward parse), webauthn
+	// rejected via the noWebauthn branch when it survives the anchor gate.
+	const strict = checkAutoComplete({ anchorMantle: true, noWebauthn: true });
+	expect(strict('name').matched).toBe(true);
+	expect(strict('on').matched).toBe(false);
+	expect(strict('name webauthn').matched).toBe(false);
 });
 
 test('noWebauthn option', () => {

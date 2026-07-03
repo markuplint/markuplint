@@ -986,7 +986,7 @@ export const defs: Defs = {
 	 *
 	 * @see https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill-anchor-mantle
 	 */
-	AutoCompleteAnchor: {
+	AutoCompleteAnchorMantle: {
 		ref: 'https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill-anchor-mantle',
 		is: checkAutoComplete({ anchorMantle: true }),
 	},

@@ -122,12 +122,6 @@ function determineFieldCategory(value: string): { category: FieldCategory } | nu
 }
 
 /**
- * Parses backward (right-to-left) to match the spec algorithm, which is
- * anchored on the trailing field name.
- *
- * @see https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete
- */
-/**
  * Element/state-specific tightening applied on top of the shared
  * autocomplete grammar.
  *
@@ -136,7 +130,7 @@ function determineFieldCategory(value: string): { category: FieldCategory } | nu
  *   §attr-fe-autocomplete-webauthn ("webauthn is only valid for input
  *   and textarea elements"). Wired for `<select>`.
  * - `anchorMantle`: reject the `on` / `off` keywords per HTML LS
- *   §the-autocomplete-attribute: "When wearing the autofill anchor
+ *   §autofill-anchor-mantle: "When wearing the autofill anchor
  *   mantle, the autocomplete attribute [...] must have a value that is
  *   an ordered set of space-separated tokens consisting of just
  *   autofill detail tokens (i.e. the 'on' and 'off' keywords are not
@@ -152,6 +146,12 @@ export type CheckAutoCompleteOptions = {
 	readonly anchorMantle?: boolean;
 };
 
+/**
+ * Parses backward (right-to-left) to match the spec algorithm, which is
+ * anchored on the trailing field name.
+ *
+ * @see https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete
+ */
 export const checkAutoComplete: CustomSyntaxChecker<CheckAutoCompleteOptions> =
 	(options = {}) =>
 	value => {
@@ -183,18 +183,28 @@ export const checkAutoComplete: CustomSyntaxChecker<CheckAutoCompleteOptions> =
 			throw new Error('TokenCollection is empty');
 		}
 
-		const firstToken = identTokens[0]!;
-
-		// Check for "on" / "off"
-		if (firstToken.matches(['on', 'off'], true)) {
-			if (options.anchorMantle) {
+		// Anchor-mantle gate: HTML LS §autofill-anchor-mantle forbids the
+		// on/off keywords anywhere in the value ("consisting of just
+		// autofill detail tokens"). Scan every token so the diagnostic
+		// cites the anchor-mantle spec even when on/off is not the first
+		// token (e.g. `name on`, `off name`); the "unknown field name"
+		// fallback further down would otherwise mask the true reason.
+		if (options.anchorMantle) {
+			const onOffToken = identTokens.find(t => t.matches(['on', 'off'], true));
+			if (onOffToken) {
 				acLog('[Unmatched ("%s")] on/off keyword rejected in autofill anchor mantle', value);
-				return firstToken.unmatched({
+				return onOffToken.unmatched({
 					reason: 'unexpected-token',
 					expects: [{ type: 'common', value: 'autofill field name' }],
 					ref: 'https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill-anchor-mantle',
 				});
 			}
+		}
+
+		const firstToken = identTokens[0]!;
+
+		// Check for "on" / "off"
+		if (firstToken.matches(['on', 'off'], true)) {
 			if (identTokens[1]) {
 				acLog('[Unmatched ("%s")] Unexpected pair with "on" or "off": "%s"', value, identTokens[1].value);
 				return identTokens[1].unmatched({
