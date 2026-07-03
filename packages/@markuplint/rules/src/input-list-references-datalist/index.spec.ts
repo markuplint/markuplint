@@ -66,5 +66,72 @@ test('[input-list-references-datalist-invalid-003] list attribute references spa
 		rule,
 		'<input type="text" list="target"><span id="target">not datalist</span>',
 	);
-	expect(violations.length).toBeGreaterThan(0);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 26,
+			message: 'The "list" attribute of the "input" element must reference a "datalist" element',
+			raw: 'target',
+		},
+	]);
+});
+
+test('[input-list-references-datalist-invalid-004] fires independently for each input sharing a non-datalist target', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<div id="notdatalist"></div><input type="text" list="notdatalist"><input type="text" list="notdatalist">',
+	);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 54,
+			message: 'The "list" attribute of the "input" element must reference a "datalist" element',
+			raw: 'notdatalist',
+		},
+		{
+			severity: 'error',
+			line: 1,
+			col: 92,
+			message: 'The "list" attribute of the "input" element must reference a "datalist" element',
+			raw: 'notdatalist',
+		},
+	]);
+});
+
+test('[input-list-references-datalist-invalid-005] list on input[type=hidden] still requires a datalist target', async () => {
+	// HTML LS §4.10.5.2 states the value MUST be a datalist ID whenever the attribute is present.
+	// The "list attribute does not apply if type is Hidden, Password, ..." note removes the runtime
+	// effect but does not override the value-shape MUST.
+	const { violations } = await mlRuleTest(
+		rule,
+		'<input type="hidden" list="notdatalist"><div id="notdatalist"></div>',
+	);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 28,
+			message: 'The "list" attribute of the "input" element must reference a "datalist" element',
+			raw: 'notdatalist',
+		},
+	]);
+});
+
+test('[input-list-references-datalist-valid-005] list on input[type=hidden] pointing at a datalist is accepted', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<input type="hidden" list="colors"><datalist id="colors"><option value="Red"></option></datalist>',
+	);
+	expect(violations).toStrictEqual([]);
+});
+
+test('[input-list-references-datalist-parser-001] Vue dynamic :list binding is skipped', async () => {
+	// The `isDynamicValue` guard prevents false positives on framework-parsed attributes whose
+	// value is a template expression rather than a static ID reference.
+	const { violations } = await mlRuleTest(rule, '<input type="text" :list="listId"><div id="listId">x</div>', {
+		parser: { '.*': '@markuplint/vue-parser' },
+	});
+	expect(violations).toStrictEqual([]);
 });
