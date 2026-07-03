@@ -51,6 +51,12 @@ const LABELABLE_SELECTOR = [
  * `for` referencing a non-labelable element is delegated to
  * `label-for-references-labelable`. This rule only inspects the label
  * subtree once the target's category has been classified.
+ *
+ * The `for` target lookup uses `document.querySelectorAll('[id]')` per
+ * matching label, not a cached id map. Kept in sync with
+ * `label-for-references-labelable` on purpose — the number of `<label>`
+ * elements per document is typically small, so a shared id-index would
+ * amortize poorly and split rule ownership across a helper module.
  */
 export default createRule<boolean, null>({
 	meta: meta,
