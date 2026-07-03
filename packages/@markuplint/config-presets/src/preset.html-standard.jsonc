@@ -299,6 +299,18 @@
 		},
 
 		/**
+		 * `<label for>` must reference a labelable element by ID
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/forms.html#attr-label-for
+		 */
+		"html-standard/label-for-references-labelable": {
+			"specConformance": "normative",
+			"rules": {
+				"label-for-references-labelable": true
+			}
+		},
+
+		/**
 		 * `<label>` may contain at most one form-control descendant
 		 *
 		 * @see https://html.spec.whatwg.org/multipage/forms.html#the-label-element
