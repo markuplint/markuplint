@@ -128,17 +128,28 @@ function determineFieldCategory(value: string): { category: FieldCategory } | nu
  * @see https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete
  */
 /**
- * HTML LS §attr-fe-autocomplete-webauthn: "webauthn is only valid for
- * input and textarea elements." Elements that accept the autocomplete
- * attribute but not webauthn (button, fieldset, object, output, select)
- * instantiate this checker with `noWebauthn: true` so the token is
- * rejected before the backward-parse consumes it as the field-name
- * anchor.
+ * Element/state-specific tightening applied on top of the shared
+ * autocomplete grammar.
+ *
+ * - `noWebauthn`: reject the `webauthn` token. Applies to elements
+ *   where webauthn is not valid per HTML LS
+ *   §attr-fe-autocomplete-webauthn ("webauthn is only valid for input
+ *   and textarea elements"). Wired for `<select>`.
+ * - `anchorMantle`: reject the `on` / `off` keywords per HTML LS
+ *   §the-autocomplete-attribute: "When wearing the autofill anchor
+ *   mantle, the autocomplete attribute [...] must have a value that is
+ *   an ordered set of space-separated tokens consisting of just
+ *   autofill detail tokens (i.e. the 'on' and 'off' keywords are not
+ *   allowed)." The anchor mantle applies to `<input type=hidden>`
+ *   only; every other autocomplete-carrying control wears the
+ *   expectation mantle where on/off are valid.
  *
  * @see https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete-webauthn
+ * @see https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill-anchor-mantle
  */
 export type CheckAutoCompleteOptions = {
 	readonly noWebauthn?: boolean;
+	readonly anchorMantle?: boolean;
 };
 
 export const checkAutoComplete: CustomSyntaxChecker<CheckAutoCompleteOptions> =
@@ -176,6 +187,14 @@ export const checkAutoComplete: CustomSyntaxChecker<CheckAutoCompleteOptions> =
 
 		// Check for "on" / "off"
 		if (firstToken.matches(['on', 'off'], true)) {
+			if (options.anchorMantle) {
+				acLog('[Unmatched ("%s")] on/off keyword rejected in autofill anchor mantle', value);
+				return firstToken.unmatched({
+					reason: 'unexpected-token',
+					expects: [{ type: 'common', value: 'autofill field name' }],
+					ref: 'https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill-anchor-mantle',
+				});
+			}
 			if (identTokens[1]) {
 				acLog('[Unmatched ("%s")] Unexpected pair with "on" or "off": "%s"', value, identTokens[1].value);
 				return identTokens[1].unmatched({

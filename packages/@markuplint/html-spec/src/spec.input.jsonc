@@ -52,7 +52,17 @@
 			"condition": "[type='image' i]"
 		},
 		// https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete
+		// HTML LS §the-autocomplete-attribute: on `<input type=hidden>`
+		// the attribute wears the autofill *anchor* mantle where `on` /
+		// `off` are not allowed; on every other input type it wears the
+		// autofill *expectation* mantle where they are allowed. The
+		// ConditionalAttributeType[] switches the value type on `type`
+		// so the anchor variant only applies when `type='hidden'`.
 		"autocomplete": {
+			"type": [
+				{ "condition": "[type='hidden' i]", "type": "AutoCompleteAnchor" },
+				{ "condition": ":not([type='hidden' i])", "type": "AutoComplete" }
+			],
 			"condition": [
 				":not([type])",
 				"[type='hidden' i]",
