@@ -85,6 +85,10 @@ test('default-rules', () => {
 			category: 'validation',
 			defaultValue: true,
 		},
+		'input-list-references-datalist': {
+			category: 'validation',
+			defaultValue: true,
+		},
 		'invalid-attr': {
 			category: 'validation',
 			defaultValue: true,
