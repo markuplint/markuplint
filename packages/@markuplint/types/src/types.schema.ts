@@ -1248,6 +1248,8 @@ export type ExtendedType =
   | "Accept"
   | "Any"
   | "AutoComplete"
+  | "AutoCompleteAnchorMantle"
+  | "AutoCompleteNoWebauthn"
   | "BCP47"
   | "BaseURL"
   | "BrowsingContextName"

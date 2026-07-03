@@ -3942,3 +3942,117 @@ describe('link[disabled] is only valid on rel="stylesheet" (HTML LS §4.6.7.18)'
 		expect(violations).toStrictEqual([]);
 	});
 });
+
+describe('autocomplete element/state-context constraints (HTML LS §4.10.18.7)', () => {
+	// Regression pin for the ConditionalAttributeType[] wiring in
+	// spec.select.jsonc + spec.input.jsonc. The unit tests in
+	// `packages/@markuplint/types/src/whatwg/check-autocomplete.spec.ts`
+	// cover the checker in isolation; these end-to-end tests cover the
+	// html-spec → helpers.ts (`resolveAttrTypeSpec`) → invalid-attr pipeline
+	// so a future edit to the fallback path or the outer condition list
+	// cannot silently drop coverage.
+	test('[invalid-attr-invalid-081] select autocomplete containing webauthn is rejected', async () => {
+		// HTML LS §attr-fe-autocomplete-webauthn: "webauthn is only valid
+		// for input and textarea elements." Mirrors bench fixture
+		// html/elements/select/autocomplete-with-webauthn-novalid.html.
+		const { violations } = await mlRuleTest(
+			rule,
+			'<select autocomplete="section-blue billing work tel-country-code webauthn"><option>1</option></select>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 66,
+				message:
+					'It includes unexpected characters. the "autocomplete" attribute expects autofill field name (https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete-webauthn)',
+				raw: 'webauthn',
+			},
+		]);
+	});
+
+	test('[invalid-attr-invalid-082] input[type=hidden] autocomplete="on" is rejected', async () => {
+		// HTML LS §autofill-anchor-mantle: "the 'on' and 'off' keywords are
+		// not allowed." Mirrors bench fixture
+		// html/elements/input/type-hidden-autocomplete-on-novalid.html.
+		const { violations } = await mlRuleTest(rule, '<input type="hidden" autocomplete="on">');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 36,
+				message:
+					'It includes unexpected characters. the "autocomplete" attribute expects autofill field name (https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill-anchor-mantle)',
+				raw: 'on',
+			},
+		]);
+	});
+
+	test('[invalid-attr-invalid-083] input[type=hidden] autocomplete="off" is rejected', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="hidden" autocomplete="off">');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 36,
+				message:
+					'It includes unexpected characters. the "autocomplete" attribute expects autofill field name (https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill-anchor-mantle)',
+				raw: 'off',
+			},
+		]);
+	});
+
+	test('[invalid-attr-invalid-084] input[TYPE=HIDDEN] autocomplete="on" is rejected (case-insensitive)', async () => {
+		// The `[type='hidden' i]` selector must match uppercase HTML too;
+		// pin so a refactor that drops the `i` flag doesn't slip past.
+		const { violations } = await mlRuleTest(rule, '<input TYPE="HIDDEN" autocomplete="on">');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 36,
+				message:
+					'It includes unexpected characters. the "autocomplete" attribute expects autofill field name (https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill-anchor-mantle)',
+				raw: 'on',
+			},
+		]);
+	});
+
+	test('[invalid-attr-valid-054] input[type=text] autocomplete="on" stays valid', async () => {
+		// Non-hidden inputs wear the expectation mantle; on/off remain
+		// legal. Regression guard for the `:not([type='hidden' i])`
+		// branch of the ConditionalAttributeType[].
+		const { violations } = await mlRuleTest(rule, '<input type="text" autocomplete="on">');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-valid-055] input (no type) autocomplete="on" stays valid', async () => {
+		// Missing `type` defaults to Text state per HTML LS, i.e.
+		// expectation mantle. The `:not([type='hidden' i])` selector
+		// must match an element that has no `type` attribute at all.
+		const { violations } = await mlRuleTest(rule, '<input autocomplete="on">');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-valid-056] input[type=hidden] autocomplete="name" stays valid', async () => {
+		// Detail tokens are still allowed under the anchor mantle.
+		const { violations } = await mlRuleTest(rule, '<input type="hidden" autocomplete="name">');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-valid-057] textarea autocomplete="name webauthn" stays valid', async () => {
+		// Regression guard: webauthn remains legal on <textarea> because
+		// its autocomplete continues to use the permissive AutoComplete
+		// type (unchanged by this branch).
+		const { violations } = await mlRuleTest(rule, '<textarea autocomplete="name webauthn"></textarea>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-valid-058] select autocomplete="name" stays valid', async () => {
+		// The AutoCompleteNoWebauthn override on <select> must not
+		// regress the base grammar; only webauthn-bearing values are
+		// rejected.
+		const { violations } = await mlRuleTest(rule, '<select autocomplete="name"><option>1</option></select>');
+		expect(violations).toStrictEqual([]);
+	});
+});

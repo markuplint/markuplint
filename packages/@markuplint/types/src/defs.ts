@@ -966,6 +966,31 @@ export const defs: Defs = {
 		is: checkAutoComplete(),
 	},
 
+	/**
+	 * `autocomplete` variant for elements where the `webauthn` token is not
+	 * valid. Per HTML LS §attr-fe-autocomplete-webauthn: "webauthn is only
+	 * valid for input and textarea elements." Applied to `button`,
+	 * `fieldset`, `object`, `output`, and `select`.
+	 *
+	 * @see https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete-webauthn
+	 */
+	AutoCompleteNoWebauthn: {
+		ref: 'https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete-webauthn',
+		is: checkAutoComplete({ noWebauthn: true }),
+	},
+
+	/**
+	 * `autocomplete` variant for the autofill anchor mantle: on `<input
+	 * type=hidden>`, the `on` / `off` keywords are not allowed and the
+	 * value must consist of just autofill detail tokens.
+	 *
+	 * @see https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill-anchor-mantle
+	 */
+	AutoCompleteAnchorMantle: {
+		ref: 'https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill-anchor-mantle',
+		is: checkAutoComplete({ anchorMantle: true }),
+	},
+
 	Accept: {
 		ref: 'https://html.spec.whatwg.org/multipage/input.html#attr-input-accept',
 		expects: [
