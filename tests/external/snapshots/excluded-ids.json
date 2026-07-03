@@ -54,6 +54,15 @@
 			"specUrl": "https://html.spec.whatwg.org/multipage/tables.html#forming-a-table",
 			"addedAt": "2026-07-01",
 			"addedBy": "hirao"
+		},
+		{
+			"id": "nv-cd593c007a34",
+			"path": "html/datatypes/sandbox-scripts-same-origin-haswarn.html",
+			"nuMessage": "Bad value “allow-scripts allow-same-origin” for attribute “sandbox” on element “iframe”: Setting both “allow-scripts” and “allow-same-origin” is not recommended, because it effectively enables an embedded page to break out of all sandboxing.",
+			"reason": "HTML LS § the iframe element renders this advisory as `<p class=warning>`: 'Setting both the allow-scripts and allow-same-origin keywords together when the embedded page has the same origin as the page containing the iframe allows the embedded page to simply remove the sandbox attribute and then reload itself, effectively breaking out of the sandbox altogether.' The `<p class=warning>` container marks the paragraph as a non-normative advisory (contrast with `must` / `must not` prose in the same section). The two-keyword pair is spec-conformant; nu-validator escalates the advisory to an error. markuplint follows the letter of the spec here and does not flag it.",
+			"specUrl": "https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-iframe-element",
+			"addedAt": "2026-07-03",
+			"addedBy": "hirao"
 		}
 	],
 	"patterns": [

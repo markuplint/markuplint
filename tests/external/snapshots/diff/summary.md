@@ -11,10 +11,10 @@
 - files: **5442**
 - match-error: **3470** (both tools flagged)
 - match-clean: **883** (neither flagged)
-- nu-only: **41** (only nu-validator flagged; markuplint coverage candidates — open a markuplint issue after a spec read)
-- nu-over: **31** (nu-validator errors fully covered by spec-backed excluded-ids — confirmed over-detection)
+- nu-only: **40** (only nu-validator flagged; markuplint coverage candidates — open a markuplint issue after a spec read)
+- nu-over: **32** (nu-validator errors fully covered by spec-backed excluded-ids — confirmed over-detection)
 - overall match rate: **80.0%**
-- excluded-ids: 6 entries, 1 pattern(s)
+- excluded-ids: 7 entries, 1 pattern(s)
 
 ## Per-Category
 
@@ -23,7 +23,7 @@
 | aria | 780 | 77.1% | 181 | 420 | 178 | 1 | 0 |
 | assertions | 40 | 100.0% | 39 | 1 | 0 | 0 | 0 |
 | content-model | 98 | 96.9% | 50 | 45 | 3 | 0 | 0 |
-| data-types | 56 | 94.6% | 48 | 5 | 1 | 2 | 0 |
+| data-types | 56 | 94.6% | 48 | 5 | 1 | 1 | 1 |
 | deprecated | 12 | 91.7% | 11 | 0 | 1 | 0 | 0 |
 | global-attr | 57 | 82.5% | 27 | 20 | 8 | 2 | 0 |
 | id-duplication | 1 | 100.0% | 1 | 0 | 0 | 0 | 0 |

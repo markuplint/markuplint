@@ -14851,10 +14851,12 @@
 		{
 			"path": "html/datatypes/sandbox-scripts-same-origin-haswarn.html",
 			"category": "data-types",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-cd593c007a34"
+			]
 		},
 		{
 			"path": "html/datatypes/source-size-list-empty-novalid.html",
