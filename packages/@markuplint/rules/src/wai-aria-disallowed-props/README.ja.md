@@ -8,7 +8,7 @@ description: 要素のロールで許可されていないARIAプロパティ/�
 
 1. **計算されたロールで許可されていない** — 例: `role="heading"` 上の `aria-pressed`
 2. **命名禁止（naming prohibition）** — `<cite>`、`<abbr>`、`<figcaption>` のような暗黙ロールを持たない要素や autonomous custom element (`<my-widget>` 等) では、命名をサポートするロールを明示的に設定しない限り、`aria-label`、`aria-labelledby`、`aria-braillelabel` を使用できません。Customised-built-in (`<button is="x-y">`) はホスト要素の spec data を継承するため通常経路で評価されます。
-3. **要素固有の禁止** — 特定の要素状態ではすべての `aria-*` 属性が禁止されます（例: `<input type="hidden">`）。また、ある属性が指定されているときに別の `aria-*` が禁止される場合もあります（例: `<button popovertarget>` や `<button commandfor>` では popover API / Invoker Commands API が状態を自動管理するため `aria-expanded` 禁止）。
+3. **要素固有の禁止** — 特定の要素状態ではすべての `aria-*` 属性が禁止されます（例: `<input type="hidden">`）。また、ある属性が指定されているとき、あるいは特定の親要素の中にあるときに別の `aria-*` が禁止される場合もあります（例: `<button popovertarget>` や `<button commandfor>` では popover API / Invoker Commands API が状態を自動管理するため `aria-expanded` 禁止。`<details>` 直下の最初の `<summary>` では expanded 状態が `open` 属性にマップされるため `aria-expanded` と `aria-pressed` が禁止）。
 4. **要素固有のホワイトリスト** — 一部の要素はごく限られた `aria-*` 属性のみ受け付けます（例: `<br>`/`<wbr>` は `aria-hidden` のみ）。ホワイトリスト外の属性は拒否されます。
 
 このルールは[`wai-aria`](../wai-aria/)ルールファミリーの一部で、きめ細かなseverity制御のために分割されたものです。
@@ -25,6 +25,9 @@ description: 要素のロールで許可されていないARIAプロパティ/�
 <input type="hidden" aria-hidden="true" />
 <button popovertarget="p" aria-expanded="false">Toggle</button>
 <button command="toggle-popover" commandfor="p" aria-expanded="false">Toggle</button>
+<details>
+  <summary aria-expanded="false">Summary</summary>
+</details>
 ```
 
 ✅ 正しいコード例
@@ -37,6 +40,9 @@ description: 要素のロールで許可されていないARIAプロパティ/�
 <input type="hidden" />
 <button popovertarget="p">Toggle</button>
 <button command="toggle-popover" commandfor="p">Toggle</button>
+<details>
+  <summary>Summary</summary>
+</details>
 ```
 
 <!-- textlint-enable ja-technical-writing/ja-no-mixed-period -->
