@@ -311,7 +311,7 @@
 		},
 
 		/**
-		 * `<label>` may contain at most one form-control descendant
+		 * `<label>` descendant-control constraints (at most one form-control descendant; none when `for` targets an external labelable element)
 		 *
 		 * @see https://html.spec.whatwg.org/multipage/forms.html#the-label-element
 		 */
