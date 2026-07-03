@@ -80,13 +80,6 @@
 			]
 		},
 		{
-			"path": "html/elements/label/for-descendant-no-id-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-89ff039ff03e"
-			]
-		},
-		{
 			"path": "html/elements/meta/content-security-policy/csp-invalid-directive-haswarn.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [
