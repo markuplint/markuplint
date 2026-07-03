@@ -38,13 +38,6 @@
 			]
 		},
 		{
-			"path": "html/datatypes/sandbox-scripts-same-origin-haswarn.html",
-			"category": "data-types",
-			"nuMessageIds": [
-				"nv-cd593c007a34"
-			]
-		},
-		{
 			"path": "html/elements/a/with-href-button-descendant-novalid.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [
@@ -154,13 +147,6 @@
 			"category": "invalid-attr",
 			"nuMessageIds": [
 				"nv-f76bf04a85bb"
-			]
-		},
-		{
-			"path": "html/elements/meta/x-ua-compatible-not-ie-edge-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-006f6fbfb136"
 			]
 		},
 		{

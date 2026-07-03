@@ -78,6 +78,14 @@ export const xrefMappings: readonly XrefMapping[] = [
 		note:
 			'HTML LS §4.2.3 The base element: "A `base` element, if it has an `href` attribute, must come before any other elements in the tree that have attributes defined as taking URLs." `<link>`/`<script>` are metadata content, so `<base>` remains in `<head>` alongside them and `permitted-contents` does not fire. `head-element-order` treats `<base>` as an unlisted (highest-priority) entry in its default source-order list, so `<link>` (group 5) preceding `<base>` (group 8) also matches. A dedicated rule (`base-element-position`) is proposed.',
 	},
+	{
+		kind: 'primary',
+		issue: 3928,
+		filter:
+			/^html\/elements\/(a\/with-href-button-descendant|audio\/controls-in-button|picture\/(junk-noscript|junk-noscript-after-source-no-img|junk-video-before))-novalid/,
+		note:
+			'`permitted-contents` flattens transparent-model children out of the parent\'s content-model check entirely. `<a href>` inside `<button>` (both transparent-carrying interactive descendants) and `<video>` / `<noscript>` inside `<picture>` all slip past because the transparent element itself is dropped from the parent\'s selector evaluation. HTML LS §3.2.5.3 transparency defers only the *children* to the parent\'s model; the transparent element itself must still satisfy the parent\'s constraints. Fix requires reworking `represent-transparent-nodes.ts` to keep the transparent element in the flattened list.',
+	},
 
 	// === 2 次群: bench では裏取れない Issue（ステルブロック） ===
 	{

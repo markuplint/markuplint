@@ -3033,16 +3033,84 @@ describe('#3734 meta[content] by http-equiv', () => {
 		expect(violations.some(v => v.raw === 'text/plain; charset=utf-8')).toBe(true);
 	});
 
+	// ----- http-equiv="x-ua-compatible" ----------------------------------
+	// HTML LS §4.2.5.4 X-UA-Compatible state: "the content attribute must
+	// have a value that is an ASCII case-insensitive match for the string
+	// 'IE=edge'."
+	//
+	// These tests use `toStrictEqual` (per CLAUDE.md's Assertion Convention)
+	// to pin severity/line/col/message/raw so any regression on the
+	// case-insensitive enum matcher — including a change to whether `raw` is
+	// returned lower-cased — surfaces immediately.
+
+	test('[invalid-attr-issue-3734-009] x-ua-compatible: "IE=edge" is valid', async () => {
+		const { violations } = await mlRuleTest(rule, '<meta http-equiv="x-ua-compatible" content="IE=edge">');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-issue-3734-016] x-ua-compatible: ASCII case-insensitive match is valid', async () => {
+		const { violations } = await mlRuleTest(rule, '<meta http-equiv="x-ua-compatible" content="ie=EDGE">');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-issue-3734-017] x-ua-compatible: "IE=10" is invalid', async () => {
+		// Fixture: html/elements/meta/x-ua-compatible-not-ie-edge-novalid.html.
+		// `raw` is returned lower-cased because the enum matcher normalises the
+		// input for its case-insensitive comparison and reports the normalised
+		// token; this is the same behaviour observed in the sibling `-014` and
+		// `-015` case-insensitive tests. The full-object `toStrictEqual` pin
+		// documents that behaviour and catches any future normalisation drift.
+		const { violations } = await mlRuleTest(rule, '<meta http-equiv="x-ua-compatible" content="IE=10">');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				message: 'The "content" attribute expects IE=edge',
+				line: 1,
+				col: 45,
+				raw: 'ie=10',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3734-018] x-ua-compatible: http-equiv attribute value match is ASCII case-insensitive', async () => {
+		// Reflects the shape of the bench fixture, which uses the mixed-case
+		// `X-UA-Compatible`. spec.meta.jsonc's condition is
+		// `[http-equiv='x-ua-compatible' i]`; the `i` flag must flow through so
+		// the enum still fires on mixed-case http-equiv values.
+		const { violations } = await mlRuleTest(rule, '<meta http-equiv="X-UA-Compatible" content="IE=10">');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				message: 'The "content" attribute expects IE=edge',
+				line: 1,
+				col: 45,
+				raw: 'ie=10',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3734-019] x-ua-compatible: empty content is invalid', async () => {
+		// Boundary case: the enum requires exactly `IE=edge`; the empty string
+		// is not that. `disallowToSurroundBySpaces` (default true on the enum
+		// checker) does not apply here because the value has no content to
+		// surround — the empty string fails the enum equality on its own.
+		const { violations } = await mlRuleTest(rule, '<meta http-equiv="x-ua-compatible" content="">');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				message: 'The "content" attribute expects IE=edge',
+				line: 1,
+				col: 45,
+				raw: '',
+			},
+		]);
+	});
+
 	// ----- unconditional fallback ----------------------------------------
-	// These three http-equiv values have no ConditionalAttributeType entry,
+	// These two http-equiv values have no ConditionalAttributeType entry,
 	// so rules/helpers.ts substitutes "Any" at runtime and any non-empty
 	// content passes. Kept as separate tests (not a loop / test.each) so a
 	// failure immediately names the offending http-equiv value.
-
-	test('[invalid-attr-issue-3734-009] http-equiv="x-ua-compatible" content falls through to Any', async () => {
-		const { violations } = await mlRuleTest(rule, '<meta http-equiv="x-ua-compatible" content="IE=edge">');
-		expect(violations.length).toBe(0);
-	});
 
 	test('[invalid-attr-issue-3734-010] http-equiv="default-style" content falls through to Any', async () => {
 		const { violations } = await mlRuleTest(rule, '<meta http-equiv="default-style" content="preferred">');
