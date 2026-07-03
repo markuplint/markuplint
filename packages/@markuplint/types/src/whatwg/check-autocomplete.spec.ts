@@ -441,3 +441,26 @@ test('case insensitivity', () => {
 	expect(check('ON').matched).toBe(true);
 	expect(check('OFF').matched).toBe(true);
 });
+
+test('noWebauthn option', () => {
+	// HTML LS §attr-fe-autocomplete-webauthn: "webauthn is only valid for
+	// input and textarea elements." The `noWebauthn` variant is applied to
+	// `<select>` (and would apply to any other element that accepts the
+	// autocomplete attribute but not the webauthn token).
+	const noWebauthn = checkAutoComplete({ noWebauthn: true });
+
+	// Plain autofill grammar still works.
+	expect(noWebauthn('on').matched).toBe(true);
+	expect(noWebauthn('off').matched).toBe(true);
+	expect(noWebauthn('name').matched).toBe(true);
+	expect(noWebauthn('given-name').matched).toBe(true);
+	expect(noWebauthn('section-foo billing work email').matched).toBe(true);
+	expect(noWebauthn('home tel').matched).toBe(true);
+
+	// Every webauthn combination becomes invalid.
+	expect(noWebauthn('webauthn').matched).toBe(false);
+	expect(noWebauthn('name webauthn').matched).toBe(false);
+	expect(noWebauthn('tel webauthn').matched).toBe(false);
+	expect(noWebauthn('section-foo billing work tel-country-code webauthn').matched).toBe(false);
+	expect(noWebauthn('WebAuthn').matched).toBe(false);
+});

@@ -54676,7 +54676,8 @@
 			},
 			"attributes": {
 				"autocomplete": {
-					"description": "A string providing a hint for a user agent's autocomplete feature. See The HTML autocomplete attribute for a complete list of values and details on how to use autocomplete."
+					"description": "A string providing a hint for a user agent's autocomplete feature. See The HTML autocomplete attribute for a complete list of values and details on how to use autocomplete.",
+					"type": "AutoCompleteNoWebauthn"
 				},
 				"autofocus": {
 					"description": "This Boolean attribute lets you specify that a form control should have input focus when the page loads. Only one form element in a document can have the autofocus attribute."

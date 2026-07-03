@@ -966,6 +966,19 @@ export const defs: Defs = {
 		is: checkAutoComplete(),
 	},
 
+	/**
+	 * `autocomplete` variant for elements where the `webauthn` token is not
+	 * valid. Per HTML LS §attr-fe-autocomplete-webauthn: "webauthn is only
+	 * valid for input and textarea elements." Applied to `button`,
+	 * `fieldset`, `object`, `output`, and `select`.
+	 *
+	 * @see https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete-webauthn
+	 */
+	AutoCompleteNoWebauthn: {
+		ref: 'https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete-webauthn',
+		is: checkAutoComplete({ noWebauthn: true }),
+	},
+
 	Accept: {
 		ref: 'https://html.spec.whatwg.org/multipage/input.html#attr-input-accept',
 		expects: [
