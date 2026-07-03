@@ -66,6 +66,9 @@
 				"input-file-empty-value": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/input-file-empty-value/schema.json"
 				},
+				"input-list-references-datalist": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/input-list-references-datalist/schema.json"
+				},
 				"invalid-attr": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/invalid-attr/schema.json"
 				},

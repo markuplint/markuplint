@@ -29,6 +29,7 @@ import IdDuplication from './id-duplication/index.js';
 import IneffectiveAttr from './ineffective-attr/index.js';
 import InputButtonNonEmptyValue from './input-button-non-empty-value/index.js';
 import InputFileEmptyValue from './input-file-empty-value/index.js';
+import InputListReferencesDatalist from './input-list-references-datalist/index.js';
 import InvalidAttr from './invalid-attr/index.js';
 import ItempropRequiresItemscope from './itemprop-requires-itemscope/index.js';
 import LabelHasControl from './label-has-control/index.js';
@@ -109,6 +110,7 @@ const rules = {
 	'ineffective-attr': IneffectiveAttr,
 	'input-button-non-empty-value': InputButtonNonEmptyValue,
 	'input-file-empty-value': InputFileEmptyValue,
+	'input-list-references-datalist': InputListReferencesDatalist,
 	'invalid-attr': InvalidAttr,
 	'itemprop-requires-itemscope': ItempropRequiresItemscope,
 	'label-has-control': LabelHasControl,

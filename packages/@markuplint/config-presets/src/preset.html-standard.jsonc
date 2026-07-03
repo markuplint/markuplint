@@ -287,6 +287,18 @@
 		},
 
 		/**
+		 * `<input list>` must reference a `<datalist>` element by ID
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/input.html#the-list-attribute
+		 */
+		"html-standard/input-list-references-datalist": {
+			"specConformance": "normative",
+			"rules": {
+				"input-list-references-datalist": true
+			}
+		},
+
+		/**
 		 * `<label>` may contain at most one form-control descendant
 		 *
 		 * @see https://html.spec.whatwg.org/multipage/forms.html#the-label-element

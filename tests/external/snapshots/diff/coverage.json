@@ -25276,8 +25276,8 @@
 			"path": "html/elements/input/autocomplete-on-hidden-novalid.html",
 			"category": "invalid-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -25532,8 +25532,8 @@
 			"path": "html/elements/input/list-not-datalist-novalid.html",
 			"category": "invalid-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -25548,8 +25548,8 @@
 			"path": "html/elements/input/list-references-nondatalist-novalid.html",
 			"category": "invalid-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -25724,8 +25724,8 @@
 			"path": "html/elements/input/type-hidden-autocomplete-on-novalid.html",
 			"category": "invalid-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -36896,8 +36896,8 @@
 			"path": "html/elements/select/autocomplete-with-webauthn-novalid.html",
 			"category": "invalid-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
