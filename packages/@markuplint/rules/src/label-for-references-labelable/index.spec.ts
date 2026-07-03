@@ -89,7 +89,7 @@ test('[label-for-references-labelable-invalid-002] for attribute references non-
 	// Mirrors tests/external/validator/tests/html/elements/label/for-references-non-labelable-novalid.html
 	const { violations } = await mlRuleTest(
 		rule,
-		'<label for="mydiv">Label</label><div id="mydiv">Not a labelable element</div>',
+		'<label for="target-1">Label</label><div id="target-1">Not a labelable element</div>',
 	);
 	expect(violations).toStrictEqual([
 		{
@@ -97,7 +97,7 @@ test('[label-for-references-labelable-invalid-002] for attribute references non-
 			line: 1,
 			col: 13,
 			message: 'The "for" attribute of the "label" element must reference a labelable element',
-			raw: 'mydiv',
+			raw: 'target-1',
 		},
 	]);
 });
