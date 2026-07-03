@@ -97,6 +97,10 @@ test('default-rules', () => {
 			category: 'validation',
 			defaultValue: true,
 		},
+		'label-for-references-labelable': {
+			category: 'validation',
+			defaultValue: true,
+		},
 		'label-has-control': {
 			category: 'a11y',
 			defaultValue: false,

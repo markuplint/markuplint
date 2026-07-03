@@ -70,6 +70,7 @@ Specify required attr| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [`<input type="button">` with empty `value`](https://html.spec.whatwg.org/multipage/input.html#button-state-(type=button))|Mirrors nu-validator's hardcoded assertion. HTML LS itself does not state this verbatim; see the rule's README for the precise sourcing.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [`<input type="file">` value must be empty when specified](https://html.spec.whatwg.org/multipage/input.html#file-upload-state-(type=file))| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [`<input list>` must reference a `<datalist>` element by ID](https://html.spec.whatwg.org/multipage/input.html#the-list-attribute)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
+[`<label for>` must reference a labelable element by ID](https://html.spec.whatwg.org/multipage/forms.html#attr-label-for)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [`<label>` may contain at most one form-control descendant](https://html.spec.whatwg.org/multipage/forms.html#the-label-element)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [`<map>` `id` must equal `name` when both are specified](https://html.spec.whatwg.org/multipage/image-maps.html#the-map-element)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [`<meter>` attribute inequalities (min ≤ value ≤ max etc.)](https://html.spec.whatwg.org/multipage/form-elements.html#the-meter-element)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|

@@ -32,6 +32,7 @@ import InputFileEmptyValue from './input-file-empty-value/index.js';
 import InputListReferencesDatalist from './input-list-references-datalist/index.js';
 import InvalidAttr from './invalid-attr/index.js';
 import ItempropRequiresItemscope from './itemprop-requires-itemscope/index.js';
+import LabelForReferencesLabelable from './label-for-references-labelable/index.js';
 import LabelHasControl from './label-has-control/index.js';
 import LabelNoMultipleControls from './label-no-multiple-controls/index.js';
 import LandmarkRoles from './landmark-roles/index.js';
@@ -113,6 +114,7 @@ const rules = {
 	'input-list-references-datalist': InputListReferencesDatalist,
 	'invalid-attr': InvalidAttr,
 	'itemprop-requires-itemscope': ItempropRequiresItemscope,
+	'label-for-references-labelable': LabelForReferencesLabelable,
 	'label-has-control': LabelHasControl,
 	'label-no-multiple-controls': LabelNoMultipleControls,
 	'landmark-roles': LandmarkRoles,

@@ -49,6 +49,7 @@ export const benchmarkConfig: Config = {
 		'invalid-attr': true,
 		'form-attr-references-form': true,
 		'input-list-references-datalist': true,
+		'label-for-references-labelable': true,
 		'label-no-multiple-controls': true,
 		'no-refer-to-non-existent-id': true,
 		'deprecated-element': true,

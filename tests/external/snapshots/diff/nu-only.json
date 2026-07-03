@@ -87,20 +87,6 @@
 			]
 		},
 		{
-			"path": "html/elements/label/for-non-form-control-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-345f3b690724"
-			]
-		},
-		{
-			"path": "html/elements/label/for-references-non-labelable-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-515e9e79e1c7"
-			]
-		},
-		{
 			"path": "html/elements/meta/content-security-policy/csp-invalid-directive-haswarn.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [
