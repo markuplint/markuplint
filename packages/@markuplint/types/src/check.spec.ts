@@ -157,6 +157,50 @@ test('SourceSizeList', () => {
 
 	// Empty / pure-syntax failures fall through cssSyntaxMatch.
 	expect(check('', 'SourceSizeList').matched).toBe(false);
+
+	// Media Queries Level 5 §3 forbids <general-enclosed> in author
+	// stylesheets (see check-media-query-list.ts). Malformed media
+	// conditions that css-tree only matches via <general-enclosed>
+	// must therefore be rejected inside a source-size-list too.
+	{
+		const r = check('(min-width:) 800px, 320px', 'SourceSizeList');
+		expect(r.matched).toBe(false);
+		if (!r.matched) {
+			expect(r.reason).toBe('syntax-error');
+			// Highlight lands on the offending group, not the entire sizes value.
+			expect(r.raw).toBe('(min-width:)');
+			expect(r.partName).toMatch(/Media Queries Level 5 §3/);
+			expect(r.partName).toMatch(/general-enclosed/);
+		}
+	}
+	expect(check('(123) 500px, 100vw', 'SourceSizeList').matched).toBe(false);
+	expect(check('(min-width: 600px), (min-width:) 800px, 320px', 'SourceSizeList').matched).toBe(false);
+	// Well-formed media conditions with unknown feature names still
+	// pass — css-tree parses them as Feature, not GeneralEnclosed —
+	// so forward-compat for future feature names is preserved.
+	expect(check('(unknown-feat: 5px) 200px, 100vw', 'SourceSizeList').matched).toBe(true);
+
+	// CSS function calls inside <source-size-value> (`clamp(...)`, `min(...)`,
+	// `max(...)`, `calc(...)`) are argument lists, not media conditions —
+	// their parenthesised contents must not be routed through the media-query
+	// walker, or they would surface as `<general-enclosed>` false positives.
+	expect(check('clamp(200px, 50vw, 800px)', 'SourceSizeList').matched).toBe(true);
+	expect(check('min(100vw, 800px)', 'SourceSizeList').matched).toBe(true);
+	expect(check('min(100vw, calc(50vw + 200px))', 'SourceSizeList').matched).toBe(true);
+	expect(check('(min-width: 600px) clamp(200px, 50vw, 800px), 100vw', 'SourceSizeList').matched).toBe(true);
+
+	// Nested `(...)` — outer wrapping a GE is itself a GE. The walk on the
+	// outer parse still surfaces the inner match. Pinning this so a future
+	// refactor that switches to a shallow-only scan does not silently pass
+	// values with a nested empty feature.
+	expect(check('((min-width:)) 800px, 100vw', 'SourceSizeList').matched).toBe(false);
+
+	// GE nested inside a CSS function's argument list slips past both layers:
+	// css-tree's `<length>` grammar is lenient about function-arg contents, and
+	// the outer paren scan intentionally skips function-call groups (depth > 0),
+	// so the inner `(min-width:)` is not surfaced. Pinning current behavior so
+	// a future stricter `<length>` grammar or deeper walk gets a clean signal.
+	expect(check('clamp(200px, (min-width:), 800px)', 'SourceSizeList').matched).toBe(true);
 });
 
 test('IconSize', () => {

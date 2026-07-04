@@ -59,13 +59,6 @@
 			]
 		},
 		{
-			"path": "html/elements/img/sizes-invalid-media-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-4377c73ab587"
-			]
-		},
-		{
 			"path": "html/elements/img/usemap-invalid-reference-novalid.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [
@@ -131,24 +124,10 @@
 			]
 		},
 		{
-			"path": "html/elements/picture/sizes-microsyntax-media-general-enclosed-junk-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-3aede802ce86"
-			]
-		},
-		{
 			"path": "html/elements/select/required-no-option-novalid.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [
 				"nv-bfbf166bef9d"
-			]
-		},
-		{
-			"path": "html/elements/source/media-invalid-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-a5bc92ff7cc9"
 			]
 		},
 		{

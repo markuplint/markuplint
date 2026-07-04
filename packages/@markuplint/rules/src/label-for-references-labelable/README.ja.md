@@ -1,6 +1,6 @@
 ---
 id: label-for-references-labelable
-description: `label` 要素の `for` 属性は、実在するラベル付け可能要素の ID を参照しなければならないことを強制します。
+description: '`label` 要素の `for` 属性は、実在するラベル付け可能要素の ID を参照しなければならないことを強制します。'
 ---
 
 # `label-for-references-labelable`

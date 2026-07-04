@@ -222,4 +222,18 @@ The `media` attribute on `link`, `style`, `source`, and `svg|style` is now valid
 - **Negative integers on `<integer>` features** (MQL5 §4.4): `(color: -1)`, `(monochrome: -2)`, `(min-color-index: -1)`. The spec mandates non-negative.
 - **Non-positive ratios on `<ratio>` features** (MQL5 §4.5): `(aspect-ratio: 0)`, `(aspect-ratio: 0/1)`, `(aspect-ratio: -1/1)`. The spec mandates strictly positive.
 
+### Malformed media conditions on `media=` and `sizes=` (`<general-enclosed>` rejection)
+
+[Media Queries Level 5 §3](https://www.w3.org/TR/mediaqueries-5/#general-enclosed) explicitly forbids `<general-enclosed>` in author stylesheets — it exists only so future syntax additions parse in older user agents. v4 accepted a `<media-condition>` that fell through to `<general-enclosed>` because css-tree's grammar tolerates it; v5 rejects it as an `invalid-attr` violation.
+
+Now flagged in `media=` on `link` / `style` / `source` / `svg|style`, and in `sizes=` on `img` / `source`:
+
+- `(min-width:)` — empty value after the colon.
+- `(123)` — number token where an `<ident>` is expected.
+- Any other `(...)` shape that fails `<media-feature>` grammar and only matches the `<general-enclosed>` fallback.
+
+Well-formed `(<ident>: <value>)` shapes with unknown feature names (e.g. `(-webkit-min-device-pixel-ratio: 2)`, `(future-feature: 42)`) still pass — css-tree parses them as `Feature`, not `GeneralEnclosed`, so forward-compatibility with future MQ additions is preserved.
+
+Inside `sizes=`, CSS function calls in a `<source-size-value>` (`clamp(...)`, `min(...)`, `max(...)`, `calc(...)`, `env(...)`) are explicitly skipped — their parenthesised argument lists are not media conditions.
+
 No config change is needed to opt in; conversely, these stricter checks cannot be rolled back individually. If a specific case breaks your workflow, [file an issue](https://github.com/markuplint/markuplint/issues/new/choose) with the failing markup and cite the governing spec paragraph — fixes for real spec misreads will be reverted or narrowed.

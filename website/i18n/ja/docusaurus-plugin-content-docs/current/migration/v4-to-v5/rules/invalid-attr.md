@@ -222,4 +222,18 @@ v5 では、これまで `Any` として素通りしていた領域について 
 - **`<integer>` 特性に負値** (MQL5 §4.4): `(color: -1)`, `(monochrome: -2)`, `(min-color-index: -1)` 等。仕様は非負を要求しています。
 - **`<ratio>` 特性に非正値** (MQL5 §4.5): `(aspect-ratio: 0)`, `(aspect-ratio: 0/1)`, `(aspect-ratio: -1/1)` 等。仕様は厳密に正を要求しています。
 
+### `media=` / `sizes=` に不正なメディア条件 (`<general-enclosed>` 拒否)
+
+[Media Queries Level 5 §3](https://www.w3.org/TR/mediaqueries-5/#general-enclosed) は `<general-enclosed>` を著者スタイルシートで用いることを明示的に禁止しています (旧 UA が将来の構文追加をパースできるようにするための後方互換用途にのみ存在)。v4 では css-tree の文法が寛容なため `<general-enclosed>` フォールバックに落ちる `<media-condition>` が素通りしていましたが、v5 では `invalid-attr` 違反として拒否します。
+
+`link` / `style` / `source` / `svg|style` の `media=` と、`img` / `source` の `sizes=` で以下が新たに検出されます。
+
+- `(min-width:)` — コロン後の値が空。
+- `(123)` — `<ident>` が期待される位置に数値トークン。
+- その他 `<media-feature>` 文法に合致せず `<general-enclosed>` フォールバックにのみマッチする `(...)` 形。
+
+未知の特性名を用いた well-formed な `(<ident>: <value>)` 形 (例: `(-webkit-min-device-pixel-ratio: 2)`, `(future-feature: 42)`) はそのまま通過します。css-tree はこれらを `Feature` として解釈するため、将来の MQ 追加への前方互換性は保たれます。
+
+`sizes=` 内の `<source-size-value>` に含まれる CSS 関数呼び出し (`clamp(...)`, `min(...)`, `max(...)`, `calc(...)`, `env(...)`) は明示的にスキップされます — 関数の引数リストは media condition ではありません。
+
 これらの厳格化を個別に無効化する設定はありません。特定のケースで問題がある場合は、失敗するマークアップと仕様の該当段落を添えて [Issue を起票](https://github.com/markuplint/markuplint/issues/new/choose) してください — 仕様の誤読が判明したものは修正または範囲を狭めます。
