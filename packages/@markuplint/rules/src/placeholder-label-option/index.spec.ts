@@ -113,7 +113,19 @@ test("[placeholder-label-option-invalid-003] Invalid: Invalid: first option elem
 	]);
 });
 
-test('[placeholder-label-option-invalid-004] The `as` attribute', async () => {
+test('[placeholder-label-option-invalid-004] Invalid: empty select without any option', async () => {
+	expect((await mlRuleTest(rule, '<select required></select>')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			raw: '<select required>',
+			message: 'Need the placeholder label option',
+		},
+	]);
+});
+
+test('[placeholder-label-option-invalid-005] The `as` attribute', async () => {
 	expect(
 		(
 			await mlRuleTest(

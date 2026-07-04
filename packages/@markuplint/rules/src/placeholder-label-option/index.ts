@@ -89,11 +89,11 @@ function hasPlaceholderLabelOption(
 		return false;
 	}
 
-	// > in the select element's list of options (if any) is the empty string
+	// > the value of the first option element in the select element's list of options … is the empty string
+	// No first option → no placeholder label option exists.
 	const firstOption = select.querySelector('option');
 	if (!firstOption) {
-		// if any
-		return true;
+		return false;
 	}
 
 	// > that option element's parent node is the select element (and not an optgroup element)
