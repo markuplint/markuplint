@@ -18,7 +18,7 @@ import { checkTimeString } from './whatwg/check-datetime/time-string.js';
 import { checkWeekString } from './whatwg/check-datetime/week-string.js';
 import { checkHTTPEquivContentType } from './whatwg/check-http-equiv-content-type.js';
 import { checkHTTPEquivRefresh } from './whatwg/check-http-equiv-refresh.js';
-import { checkMediaQueryList } from './whatwg/check-media-query-list.js';
+import { checkMediaQueryList, findGeneralEnclosed } from './whatwg/check-media-query-list.js';
 import { checkMIMEType } from './whatwg/check-mime-type.js';
 import { checkURL } from './whatwg/check-url.js';
 import { isAbsURL } from './whatwg/is-abs-url.js';
@@ -906,6 +906,45 @@ export const defs: Defs = {
 				return unmatched(value, 'out-of-range', {
 					expects: [{ type: 'format', value: 'non-negative <length>' }],
 				});
+			}
+			// Each top-level `(<any-value>?)` group inside the sizes list is a
+			// `<media-condition>` per HTML LS. Media Queries Level 5 §3 forbids
+			// `<general-enclosed>` in author stylesheets, but css-tree accepts
+			// it grammatically (that's the point of the fallback — future syntax
+			// must parse in older UAs). Extract each balanced-parens group and
+			// route it through the media-query walker so malformed feature forms
+			// like `(min-width:)` (empty value) and `(123)` (non-ident content)
+			// surface as syntax errors rather than silently accepted GE matches.
+			let depth = 0;
+			let groupStart = -1;
+			for (let i = 0; i < value.length; i++) {
+				const c = value[i];
+				if (c === '(') {
+					if (depth === 0) {
+						// A `(` preceded by an identifier / digit character is a CSS
+						// function call (`clamp(...)`, `min(...)`, `calc(...)`, `env(...)`)
+						// inside a `<source-size-value>`, not a `<media-condition>`.
+						// Skip: its contents are function arguments, not a media query.
+						const prev = i > 0 ? (value[i - 1] ?? '') : '';
+						const isFunctionCall = /[\w-]/u.test(prev);
+						groupStart = isFunctionCall ? -1 : i;
+					}
+					depth++;
+				} else if (c === ')') {
+					depth--;
+					if (depth === 0 && groupStart >= 0) {
+						const groupText = value.slice(groupStart, i + 1);
+						const hit = findGeneralEnclosed(groupText);
+						if (hit) {
+							return new Token(hit.raw, groupStart + hit.offset, value).unmatched({
+								reason: 'syntax-error',
+								expects: [{ type: 'format', value: 'media condition' }],
+								partName: `unknown or malformed media condition ${JSON.stringify(hit.raw)} (Media Queries Level 5 §3 forbids <general-enclosed> in author stylesheets)`,
+							});
+						}
+						groupStart = -1;
+					}
+				}
 			}
 			return matched();
 		},

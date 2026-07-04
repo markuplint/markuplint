@@ -1,6 +1,6 @@
 ---
 id: input-list-references-datalist
-description: `input` 要素の `list` 属性は、実在する `datalist` 要素の ID を参照しなければならないことを強制します。
+description: '`input` 要素の `list` 属性は、実在する `datalist` 要素の ID を参照しなければならないことを強制します。'
 ---
 
 # `input-list-references-datalist`

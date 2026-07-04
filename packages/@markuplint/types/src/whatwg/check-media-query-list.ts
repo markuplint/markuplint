@@ -262,6 +262,28 @@ function walkCondition(node: csstree.CssNode, source: string): ReturnType<typeof
 		// css-tree's mediaQueryList parser but not exposed by
 		// `@types/css-tree`. Compare via cast to keep the narrow typing.
 		const childType = (child as { type: string }).type;
+		// Reject <general-enclosed> fallback matches. Media Queries Level 5 §3
+		// (the <general-enclosed> Production) states: "Authors must not use
+		// <general-enclosed> in their stylesheets. It exists only for
+		// future-compatibility, so that new syntax additions do not invalidate
+		// too much of a <media-condition> in older user agents." css-tree only
+		// emits GeneralEnclosed when the enclosed tokens genuinely fail
+		// <media-feature> grammar (e.g., `(min-width:)` — empty value after
+		// the colon; `(123)` — number token where <ident> is expected).
+		// Well-formed `(<ident>: <value>)` shapes with unknown feature names
+		// still parse as `Feature`, so forward-compatibility for new feature
+		// names is preserved.
+		if (childType === 'GeneralEnclosed') {
+			const offset = child.loc?.start.offset ?? 0;
+			const endOffset = child.loc?.end.offset ?? offset;
+			const raw = source.slice(offset, endOffset);
+			result = new Token(raw, offset, source).unmatched({
+				reason: 'syntax-error',
+				expects,
+				partName: `unknown or malformed media condition ${JSON.stringify(raw)} (Media Queries Level 5 §3 forbids <general-enclosed> in author stylesheets)`,
+			});
+			return;
+		}
 		if (childType !== 'Feature' && childType !== 'MediaFeature') return;
 		const feat = child as { name?: string; value?: csstree.CssNode | null; loc?: typeof child.loc };
 		const name = feat.name;
@@ -426,4 +448,55 @@ function findSemicolonInsideParens(input: string): number | null {
 		else if (ch === ';' && depth > 0) return i;
 	}
 	return null;
+}
+
+/**
+ * Exists so callers that embed a `<media-condition>` inside a larger grammar
+ * (`<source-size-list>` in `<sizes>`) can enforce the same forbidden-in-authoring
+ * rule that {@link checkMediaQueryList} applies to `<media-query-list>` values.
+ *
+ * @see https://www.w3.org/TR/mediaqueries-5/#general-enclosed — "Authors must
+ * not use `<general-enclosed>` in their stylesheets. It exists only for
+ * future-compatibility, so that new syntax additions do not invalidate too
+ * much of a `<media-condition>` in older user agents."
+ *
+ * Contract:
+ *
+ * - css-tree emits `GeneralEnclosed` only when the enclosed tokens fail
+ *   `<media-feature>` grammar (`(min-width:)` empty value, `(123)` non-ident);
+ *   well-formed `(<ident>: <value>)` shapes parse as `Feature`, so unknown
+ *   feature names keep passing (forward-compatibility).
+ * - Returns `null` on any css-tree parse failure — the enclosing checker owns
+ *   grammar-error reporting. Only a *successful* parse reaching the fallback
+ *   surfaces here.
+ * - Programmer-error throws (`TypeError` etc.) bubble up; only Tier-3 css-tree
+ *   `SyntaxError` shapes are swallowed via `isCssTreeParseError`.
+ *
+ * @param snippet raw parenthesised group extracted from the outer value
+ * @returns first match's `{ raw, offset }` (offset is 0-based within `snippet`
+ *   — callers add their own outer offset when reporting), or `null` if none
+ */
+export function findGeneralEnclosed(snippet: string): { readonly raw: string; readonly offset: number } | null {
+	let ast: CSSTreeNode;
+	try {
+		ast = csstree.parse(snippet, { context: 'mediaQueryList', positions: true });
+	} catch (error) {
+		// css-tree's user-input parse failures (Tier-3) may surface when the
+		// caller hands a snippet that fails media-query grammar even though the
+		// outer grammar accepted it — return null so the outer diagnostic path
+		// owns the reporting. Rethrow anything else (Tier-1 programmer errors
+		// like `TypeError`) rather than silently hiding the bug.
+		if (!isCssTreeParseError(error)) throw error;
+		return null;
+	}
+	// `csstree.find` stops on the first match; walking the whole tree is wasted
+	// work once we have a hit. oxlint's `no-array-method-this-argument` mis-
+	// identifies this as an Array-method call because the API happens to be
+	// named `find` — suppress inline.
+	// eslint-disable-next-line unicorn/no-array-method-this-argument
+	const node = csstree.find(ast, child => (child as { type: string }).type === 'GeneralEnclosed');
+	if (!node) return null;
+	const offset = node.loc?.start.offset ?? 0;
+	const endOffset = node.loc?.end.offset ?? offset;
+	return { raw: snippet.slice(offset, endOffset), offset };
 }
