@@ -39,6 +39,9 @@ Cite: [HTML Living Standard 4.10.7 The select element](https://html.spec.whatwg.
   <option value="option1">Option 1</option>
   <option value="option2">Option 2</option>
 </select>
+
+<!-- Invalid: no option element -->
+<select required></select>
 ```
 
 ✅ Examples of **correct** code for this rule
