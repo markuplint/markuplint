@@ -5,9 +5,17 @@ import { createRule } from '@markuplint/ml-core';
 import meta from './meta.js';
 
 /**
- * Per the HTML spec, a `<select>` with `required`, without `multiple`, and with a
- * display size of 1 must have a placeholder label option (first `<option>` with
- * an empty value directly under `<select>`).
+ * HTML LS §4.10.7 The select element:
+ *
+ * > If a select element has a required attribute specified, does not have a
+ * > multiple attribute specified, and has a display size of 1, then the
+ * > select element must have a placeholder label option.
+ *
+ * `hasPlaceholderLabelOption` decides whether an existing option already
+ * satisfies the requirement; `needPlaceholderLabelOption` gates whether the
+ * requirement applies to this `<select>`.
+ *
+ * @see https://html.spec.whatwg.org/multipage/form-elements.html#the-select-element
  */
 export default createRule<boolean>({
 	meta: meta,
