@@ -124,13 +124,6 @@
 			]
 		},
 		{
-			"path": "html/elements/select/required-no-option-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-bfbf166bef9d"
-			]
-		},
-		{
 			"path": "html/elements/style/css-property-error-novalid.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [

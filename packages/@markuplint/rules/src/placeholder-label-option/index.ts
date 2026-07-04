@@ -5,9 +5,17 @@ import { createRule } from '@markuplint/ml-core';
 import meta from './meta.js';
 
 /**
- * Per the HTML spec, a `<select>` with `required`, without `multiple`, and with a
- * display size of 1 must have a placeholder label option (first `<option>` with
- * an empty value directly under `<select>`).
+ * HTML LS §4.10.7 The select element:
+ *
+ * > If a select element has a required attribute specified, does not have a
+ * > multiple attribute specified, and has a display size of 1, then the
+ * > select element must have a placeholder label option.
+ *
+ * `hasPlaceholderLabelOption` decides whether an existing option already
+ * satisfies the requirement; `needPlaceholderLabelOption` gates whether the
+ * requirement applies to this `<select>`.
+ *
+ * @see https://html.spec.whatwg.org/multipage/form-elements.html#the-select-element
  */
 export default createRule<boolean>({
 	meta: meta,
@@ -30,13 +38,13 @@ export default createRule<boolean>({
 });
 
 /**
- * Determines whether a `<select>` element requires a placeholder label option.
+ * HTML LS §4.10.7 The select element:
  *
- * Per the HTML spec, a select element needs a placeholder label option when it
- * has `required`, does not have `multiple`, and has a display size of 1.
+ * > If a select element has a required attribute specified, does not have a
+ * > multiple attribute specified, and has a display size of 1, then the
+ * > select element must have a placeholder label option.
  *
- * @param select - The `<select>` element to evaluate.
- * @returns `true` if the select element requires a placeholder label option.
+ * @see https://html.spec.whatwg.org/multipage/form-elements.html#the-select-element
  */
 function needPlaceholderLabelOption(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -61,13 +69,20 @@ function needPlaceholderLabelOption(
 }
 
 /**
- * Checks whether a `<select>` element already has a valid placeholder label option.
+ * HTML LS §4.10.7 The select element — placeholder label option definition:
  *
- * A placeholder label option is the first `<option>` whose value is the empty string
- * and whose parent is the `<select>` element itself (not an `<optgroup>`).
+ * > If a select element has a required attribute specified, and has a
+ * > display size of 1; and if the value of the first option element in the
+ * > select element's list of options (if any) is the empty string, and that
+ * > option element's parent node is the select element (and not an optgroup
+ * > element), then that option is the select element's placeholder label
+ * > option.
  *
- * @param select - The `<select>` element to check.
- * @returns `true` if the element has a valid placeholder label option.
+ * The "(if any)" clause requires a first option to exist for the placeholder
+ * label option to exist at all; an empty `<select>` therefore has no
+ * placeholder label option and must be reported by `verify`.
+ *
+ * @see https://html.spec.whatwg.org/multipage/form-elements.html#placeholder-label-option
  */
 function hasPlaceholderLabelOption(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -89,11 +104,11 @@ function hasPlaceholderLabelOption(
 		return false;
 	}
 
-	// > in the select element's list of options (if any) is the empty string
+	// > the value of the first option element in the select element's list of options … is the empty string
+	// No first option → no placeholder label option exists.
 	const firstOption = select.querySelector('option');
 	if (!firstOption) {
-		// if any
-		return true;
+		return false;
 	}
 
 	// > that option element's parent node is the select element (and not an optgroup element)
