@@ -66,20 +66,6 @@ export const xrefMappings: readonly XrefMapping[] = [
 	},
 	{
 		kind: 'primary',
-		issue: 3918,
-		filter: /^html\/elements\/label\/(for-non-form-control|for-references-non-labelable)-novalid/,
-		note:
-			"HTML LS §4.10.4 The label element: `for` attribute value \"must be the ID of a labelable element in the same tree as the label element\". Existing `no-refer-to-non-existent-id` verifies existence only; no rule checks that the target is labelable. Proposed new rule mirrors the shape of the existing `form-attr-references-form` (which enforces the same constraint for the `[form]` attribute of form-associated elements).",
-	},
-	{
-		kind: 'primary',
-		issue: 3919,
-		filter: /^html\/elements\/label\/for-descendant-no-id-novalid/,
-		note:
-			"HTML LS §4.10.4 label content model: \"Phrasing content, but with no descendant labelable elements unless it is the element's labeled control\". A `<label for=\"x\">` whose target is outside the label may not also contain a labelable descendant. `label-no-multiple-controls` fires only from the second labelable descendant onward, so this single-descendant case slips through.",
-	},
-	{
-		kind: 'primary',
 		issue: 3921,
 		filter: /^html\/elements\/base\/preceded-by-(link|script)-novalid/,
 		note:
