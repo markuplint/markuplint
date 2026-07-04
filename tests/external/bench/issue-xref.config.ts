@@ -59,6 +59,13 @@ export const xrefMappings: readonly XrefMapping[] = [
 	},
 	{
 		kind: 'primary',
+		issue: 3829,
+		filter: /^html\/attributes\/lang\/(extlang-bad|invalid-primary)-novalid/,
+		note:
+			"HTML LS §3.2.6.2 The lang and xml:lang attributes: \"the value must be a valid BCP 47 language tag\". RFC 5646 §2.2.9 defines validity: \"all of its primary language, extended language, script, region, variant, and extension subtags appear in the IANA Language Subtag Registry\". markuplint's `BCP47` type checker (`@markuplint/types/src/rfc/is-bcp-47.ts`) wraps the `bcp-47` npm package, which only enforces the well-formed grammar and never consults the IANA subtag registry — so an unregistered primary subtag (`zzz`) and an unregistered extlang subtag (`smg` in `bat-smg`) both slip through. Fix requires vendoring the IANA registry snapshot (or a wrapper package that does) into `@markuplint/types`.",
+	},
+	{
+		kind: 'primary',
 		issue: 3918,
 		filter: /^html\/elements\/label\/(for-non-form-control|for-references-non-labelable)-novalid/,
 		note:
