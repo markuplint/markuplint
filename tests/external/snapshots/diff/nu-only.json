@@ -66,13 +66,6 @@
 			]
 		},
 		{
-			"path": "html/elements/input/type-button-empty-value-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-54c78eff3c7d"
-			]
-		},
-		{
 			"path": "html/elements/meta/content-security-policy/csp-invalid-directive-haswarn.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [

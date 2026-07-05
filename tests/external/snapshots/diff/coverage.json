@@ -25707,10 +25707,12 @@
 		{
 			"path": "html/elements/input/type-button-empty-value-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-54c78eff3c7d"
+			]
 		},
 		{
 			"path": "html/elements/input/type-color-isvalid.html",

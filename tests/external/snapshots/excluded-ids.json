@@ -63,6 +63,15 @@
 			"specUrl": "https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-iframe-element",
 			"addedAt": "2026-07-03",
 			"addedBy": "hirao"
+		},
+		{
+			"id": "nv-54c78eff3c7d",
+			"path": "html/elements/input/type-button-empty-value-novalid.html",
+			"nuMessage": "Element “input” with attribute “type” whose value is “button” must have non-empty attribute “value”.",
+			"reason": "HTML LS §4.10.5.1.21 Button state (type=button) has two adjacent sentences: (i) 'A label for the button must be provided in the value attribute, though it may be the empty string.' — a locus rule constraining *where* the label goes when the author does provide one, not a hard requirement that the value attribute be present; (ii) 'If the element has a value attribute, the button's label must be the value of that attribute; otherwise, it must be the empty string.' — a UA-side fallback that defines a spec-conformant behaviour for the missing-attribute case. The existence of the UA fallback in (ii) means the spec treats a missing value attribute as a supported state, not as a `must`-violation of (i). The `input-button-non-empty-value` rule reads the two sentences the same way and deliberately fires only on the explicit `value=\"\"` case (spec-cited rationale in the rule's JSDoc and README; design decision recorded in commit 3096626bc `fix(rules): tighten new conformance rules from QA review`, section 3). nu-validator's Assertions.java enforces both the missing and the empty-string case; markuplint follows the spec letter on missing.",
+			"specUrl": "https://html.spec.whatwg.org/multipage/input.html#button-state-(type=button)",
+			"addedAt": "2026-07-05",
+			"addedBy": "hirao"
 		}
 	],
 	"patterns": [
