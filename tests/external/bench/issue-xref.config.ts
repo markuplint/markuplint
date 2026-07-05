@@ -79,6 +79,14 @@ export const xrefMappings: readonly XrefMapping[] = [
 		note:
 			'`permitted-contents` flattens transparent-model children out of the parent\'s content-model check entirely. `<a href>` inside `<button>` (both transparent-carrying interactive descendants) and `<video>` / `<noscript>` inside `<picture>` all slip past because the transparent element itself is dropped from the parent\'s selector evaluation. HTML LS §3.2.5.3 transparency defers only the *children* to the parent\'s model; the transparent element itself must still satisfy the parent\'s constraints. Fix requires reworking `represent-transparent-nodes.ts` to keep the transparent element in the flattened list.',
 	},
+	{
+		kind: 'primary',
+		issue: 3838,
+		filter:
+			/^html-aria\/(author-requirements\/(574|575|576|577)|misc\/(role-tab-with-no-role-tabpanel-novalid|summary-for-its-details-with-aria-(expanded|pressed)-novalid))/,
+		note:
+			'Umbrella of 7 aria fixtures deferred from the aria-slice PR. Six flipped to `match-error` after Group 1 (author-requirements role chain: `wai-aria-required-owned-elements`) and Group 3 (summary heuristics: `spec.summary.jsonc#aria.properties.without`) landed. The one remaining `nu-only` — `role-tab-with-no-role-tabpanel-novalid` — is a Group 2 role-pair authoring requirement: WAI-ARIA 1.3 §tab role: "Authors MUST ensure that if a `tab` is active, a corresponding `tabpanel` that represents the active `tab` is rendered." Cross-element constraint that no existing rule covers; needs the proposed `wai-aria-required-companion-role` (or equivalent).',
+	},
 
 	// === 2 次群: bench では裏取れない Issue（ステルブロック） ===
 	{
