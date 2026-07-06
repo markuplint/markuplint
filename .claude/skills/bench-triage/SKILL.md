@@ -186,6 +186,14 @@ gate, not a polish step.
 Each row is a conclusion reached by reading the cited paragraph
 directly. Do not add a row without a verbatim spec quote and source URL.
 
+Rows persist even after markuplint gains coverage — the third column
+becomes an evidence trail, and the "Verdict" cell is edited in place
+(e.g. **nu over-detection** → **nu correct** — markuplint coverage
+extended in ...) rather than the row being deleted. The only removal
+case is a factually wrong row on a spec re-read; leave a
+`~~strikethrough~~` retraction line rather than a silent delete so the
+audit trail stays complete.
+
 | Message substring | Verdict | Source |
 | --- | --- | --- |
 | `Fragment is not allowed for data: URIs according to RFC 2397` | **nu over-detection** — excluded in `patterns[]` | URL LS §4.3: a `valid URL string` may end in a fragment for any scheme. |
@@ -216,6 +224,23 @@ The remaining `nu-only` bulk (URL parsing) is **not** for exclusion;
 it represents real markuplint gaps for future coverage work. Any
 substring not in the table is **unclassified** — do not exclude
 without first adding a row with a spec quote.
+
+## Deferred specs
+
+Markers of the form `deferred-<spec>` in
+`excluded-ids.json#entries[].reason` (or `patterns[].reason`) mean:
+nu-validator is enforcing a spec that markuplint's tracked scope
+(HTML LS / WAI-ARIA / URL LS) does not currently cover. Every marker
+carries a tracking Issue, so future implementation work can locate
+the entries via `grep -r 'deferred-<spec>'`.
+
+| Marker | Spec | Tracking Issue | Fixture count | Rationale |
+| --- | --- | --- | --- | --- |
+| `deferred-CSP` | [CSP3](https://www.w3.org/TR/CSP3/) | #3942 | 3 | Directive / source-expression / ASCII grammar. `packages/@markuplint/html-spec/src/spec.meta.jsonc` documents an explicit fall-through of `content` to `Any` for `[http-equiv='content-security-policy' i]`. |
+
+Add a row when opening a new `deferred-<spec>` Issue. The fixture
+count comes from `yarn bench:xref --issue <N>` (verdict tally line
+in the composed block).
 
 ## Note: ml-only readings (informational)
 
