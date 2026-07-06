@@ -66,27 +66,6 @@
 			]
 		},
 		{
-			"path": "html/elements/meta/content-security-policy/csp-invalid-directive-haswarn.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-6ec2a5c8c04c"
-			]
-		},
-		{
-			"path": "html/elements/meta/content-security-policy/csp-invalid-source-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-ccff05d53b7c"
-			]
-		},
-		{
-			"path": "html/elements/meta/content-security-policy/csp-non-ascii-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-f76bf04a85bb"
-			]
-		},
-		{
 			"path": "html/elements/picture/html-syntax-picture-no-end-tag-novalid.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [

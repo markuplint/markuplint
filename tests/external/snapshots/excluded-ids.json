@@ -72,6 +72,33 @@
 			"specUrl": "https://html.spec.whatwg.org/multipage/input.html#button-state-(type=button)",
 			"addedAt": "2026-07-05",
 			"addedBy": "hirao"
+		},
+		{
+			"id": "nv-6ec2a5c8c04c",
+			"path": "html/elements/meta/content-security-policy/csp-invalid-directive-haswarn.html",
+			"nuMessage": "Bad value “default-src 'self'; invalid-directive 'none'” for attribute “content” on element “meta”: Unrecognized directive invalid-directive",
+			"reason": "deferred-CSP. markuplint's tracked spec scope per `.claude/skills/bench-triage/SKILL.md` is HTML Living Standard + WAI-ARIA + URL Living Standard. The Content Security Policy Level 3 grammar (directive names, source expressions, ASCII-only body) is a separate W3C specification and is not currently validated. `packages/@markuplint/html-spec/src/spec.meta.jsonc` documents this explicitly: `Other http-equiv values (default-style, content-security-policy) and 'name' / 'itemprop' fall through to \"Any\" at runtime`. CSP3 §Directives (https://www.w3.org/TR/CSP3/#framework-directives) defines the closed set of recognized directive names; `invalid-directive` is not one of them, so nu-validator is spec-correct — markuplint simply does not track that spec.",
+			"specUrl": "https://www.w3.org/TR/CSP3/#framework-directives",
+			"addedAt": "2026-07-06",
+			"addedBy": "hirao"
+		},
+		{
+			"id": "nv-ccff05d53b7c",
+			"path": "html/elements/meta/content-security-policy/csp-invalid-source-novalid.html",
+			"nuMessage": "Bad value “default-src 'invalid-keyword'” for attribute “content” on element “meta”: Unrecognized source-expression 'invalid-keyword' ",
+			"reason": "deferred-CSP. markuplint's tracked spec scope per `.claude/skills/bench-triage/SKILL.md` is HTML Living Standard + WAI-ARIA + URL Living Standard. CSP source-expression grammar (`'self'`, `'none'`, `'unsafe-inline'`, host-source, scheme-source, keyword-source) is defined in CSP3 §6.7.2 Source List Directives / §6.7.2.4 keyword-source (https://www.w3.org/TR/CSP3/#framework-directive-source-list). `'invalid-keyword'` is not a listed keyword-source, so nu-validator is spec-correct — markuplint does not currently track that spec. See the `spec.meta.jsonc` fall-through comment for why `content` under `[http-equiv='content-security-policy' i]` is `Any`.",
+			"specUrl": "https://www.w3.org/TR/CSP3/#framework-directive-source-list",
+			"addedAt": "2026-07-06",
+			"addedBy": "hirao"
+		},
+		{
+			"id": "nv-f76bf04a85bb",
+			"path": "html/elements/meta/content-security-policy/csp-non-ascii-novalid.html",
+			"nuMessage": "Bad value “default-src 'self'; img-src https://例え.com” for attribute “content” on element “meta”: Content Security Policy must contain only ASCII characters.",
+			"reason": "deferred-CSP. markuplint's tracked spec scope per `.claude/skills/bench-triage/SKILL.md` is HTML Living Standard + WAI-ARIA + URL Living Standard. CSP3 §Policy (https://www.w3.org/TR/CSP3/#framework-policy) constrains the serialized policy to ASCII code points via the `serialized-policy` ABNF grammar rooted in `directive-name` and `directive-value` productions (both restricted to VCHAR / SP / HTAB per HTTP semantics). Non-ASCII host authorities like `例え.com` violate this constraint, so nu-validator is spec-correct — markuplint does not currently track that spec. See the `spec.meta.jsonc` fall-through comment for why `content` under `[http-equiv='content-security-policy' i]` is `Any`.",
+			"specUrl": "https://www.w3.org/TR/CSP3/#framework-policy",
+			"addedAt": "2026-07-06",
+			"addedBy": "hirao"
 		}
 	],
 	"patterns": [

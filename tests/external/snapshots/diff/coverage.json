@@ -31321,26 +31321,32 @@
 		{
 			"path": "html/elements/meta/content-security-policy/csp-invalid-directive-haswarn.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-6ec2a5c8c04c"
+			]
 		},
 		{
 			"path": "html/elements/meta/content-security-policy/csp-invalid-source-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-ccff05d53b7c"
+			]
 		},
 		{
 			"path": "html/elements/meta/content-security-policy/csp-non-ascii-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-f76bf04a85bb"
+			]
 		},
 		{
 			"path": "html/elements/meta/content-security-policy/csp-policy-list-isvalid.html",
