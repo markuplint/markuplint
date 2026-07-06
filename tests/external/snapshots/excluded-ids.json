@@ -72,6 +72,33 @@
 			"specUrl": "https://html.spec.whatwg.org/multipage/input.html#button-state-(type=button)",
 			"addedAt": "2026-07-05",
 			"addedBy": "hirao"
+		},
+		{
+			"id": "nv-6ec2a5c8c04c",
+			"path": "html/elements/meta/content-security-policy/csp-invalid-directive-haswarn.html",
+			"nuMessage": "Bad value “default-src 'self'; invalid-directive 'none'” for attribute “content” on element “meta”: Unrecognized directive invalid-directive ",
+			"reason": "deferred-CSP (#3942). markuplint's tracked spec scope per `.claude/skills/bench-triage/SKILL.md` is HTML Living Standard + WAI-ARIA + URL Living Standard. The Content Security Policy Level 3 grammar (directive names, source expressions, ASCII-only body) is a separate W3C specification and is not currently validated. `packages/@markuplint/html-spec/src/spec.meta.jsonc` documents this explicitly: `Other http-equiv values (default-style, content-security-policy) and 'name' / 'itemprop' fall through to \"Any\" at runtime`. CSP3 §Directives (https://www.w3.org/TR/CSP3/#framework-directives): \"A directive is a name / value pair which declares a policy for a particular type of behavior.\" The set of recognized directive names is enumerated in the CSP3 directive registry (§6 Content Security Policy Directives); `invalid-directive` is not registered, so nu-validator is spec-correct — markuplint simply does not track that spec. Filename suffix `-haswarn` notwithstanding, the actual nu message carries `type: error`, so the fixture participates in bench verdict computation.",
+			"specUrl": "https://www.w3.org/TR/CSP3/#framework-directives",
+			"addedAt": "2026-07-06",
+			"addedBy": "hirao"
+		},
+		{
+			"id": "nv-ccff05d53b7c",
+			"path": "html/elements/meta/content-security-policy/csp-invalid-source-novalid.html",
+			"nuMessage": "Bad value “default-src 'invalid-keyword'” for attribute “content” on element “meta”: Unrecognized source-expression 'invalid-keyword' ",
+			"reason": "deferred-CSP (#3942). markuplint's tracked spec scope per `.claude/skills/bench-triage/SKILL.md` is HTML Living Standard + WAI-ARIA + URL Living Standard. CSP3 §6.7.2 Serialized Source List (https://www.w3.org/TR/CSP3/#framework-directive-source-list) ABNF: `source-expression = scheme-source / host-source / keyword-source / 'self' / 'unsafe-inline' / 'unsafe-eval' / 'strict-dynamic' / 'unsafe-hashes' / 'report-sample' / 'unsafe-allow-redirects' / nonce-source / hash-source`. `'invalid-keyword'` is a quoted string that matches none of the listed alternatives, so nu-validator is spec-correct — markuplint does not currently track that spec. See the `spec.meta.jsonc` fall-through comment for why `content` under `[http-equiv='content-security-policy' i]` is `Any`.",
+			"specUrl": "https://www.w3.org/TR/CSP3/#framework-directive-source-list",
+			"addedAt": "2026-07-06",
+			"addedBy": "hirao"
+		},
+		{
+			"id": "nv-f76bf04a85bb",
+			"path": "html/elements/meta/content-security-policy/csp-non-ascii-novalid.html",
+			"nuMessage": "Bad value “default-src 'self'; img-src https://例え.com” for attribute “content” on element “meta”: Content Security Policy must contain only ASCII characters.",
+			"reason": "deferred-CSP (#3942). markuplint's tracked spec scope per `.claude/skills/bench-triage/SKILL.md` is HTML Living Standard + WAI-ARIA + URL Living Standard. CSP3 §4.1 Policies (https://www.w3.org/TR/CSP3/#framework-policy) ABNF: `serialized-policy = serialized-directive *( OWS ';' [ OWS serialized-directive ] )` and `serialized-directive = directive-name [ RWS directive-value ]`. Both `directive-name` and `directive-value` are defined via HTTP header-field grammar productions restricted to VCHAR / SP / HTAB, so the serialized policy is ASCII by construction. Non-ASCII host authorities like `例え.com` violate this constraint, so nu-validator is spec-correct — markuplint does not currently track that spec. See the `spec.meta.jsonc` fall-through comment for why `content` under `[http-equiv='content-security-policy' i]` is `Any`.",
+			"specUrl": "https://www.w3.org/TR/CSP3/#framework-policy",
+			"addedAt": "2026-07-06",
+			"addedBy": "hirao"
 		}
 	],
 	"patterns": [

@@ -102,6 +102,13 @@ export const xrefMappings: readonly XrefMapping[] = [
 		note:
 			'Issue body Case A — `<meta http-equiv="content-type" content="text/html; charset=not-a-charset">`. HTML LS [§4.2.5.3 Pragma directives — Encoding declaration state](https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-http-equiv-content-type): "For meta elements with an http-equiv attribute in the Encoding declaration state, the content attribute must have a value that is an ASCII case-insensitive match for a string that consists of: \\"text/html;\\", optionally followed by any number of ASCII whitespace, followed by \\"charset=utf-8\\"." markuplint\'s `HTTPEquivContentType` checker (`packages/@markuplint/types/src/whatwg/check-http-equiv-content-type.ts`) validates the label shape only (`/^text\\/html;[\\t\\n\\f\\r ]*charset=[\\w.-]+$/i`), so unknown labels like `not-a-charset` slip through. Cases B (`url-empty-novalid`) and C (`sandbox-scripts-same-origin-haswarn`) from the same Issue are already resolved (`match-error` and `nu-over` respectively); this is the sole remaining fixture backing the Issue.',
 	},
+	{
+		kind: 'primary',
+		issue: 3942,
+		filter: /^html\/elements\/meta\/content-security-policy\//,
+		note:
+			'CSP3 grammar (directive names, source-expression tokens, ASCII-only body) is a separate W3C specification. `packages/@markuplint/html-spec/src/spec.meta.jsonc` documents an explicit fall-through: "Other http-equiv values (default-style, content-security-policy) and `name` / `itemprop` fall through to `Any` at runtime." Three fixtures are recorded as `deferred-CSP` in `excluded-ids.json` and flip `nu-only` → `nu-over`; they will flip to `match-error` if/when a `ContentSecurityPolicy` type lands in `@markuplint/types` and is wired into `spec.meta.jsonc` under a new `[http-equiv=\'content-security-policy\' i]` condition.',
+	},
 
 	// === 2 次群: bench では裏取れない Issue（ステルブロック） ===
 	{

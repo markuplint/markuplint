@@ -48,7 +48,9 @@
 			// Other http-equiv values (default-style, content-security-policy)
 			// and `name` / `itemprop` fall through to "Any" at runtime (see
 			// `rules/helpers.ts` fallback for ConditionalAttributeType[] with
-			// no matching condition).
+			// no matching condition). CSP grammar tracked at #3942 — implementing
+			// a `ContentSecurityPolicy` type here flips 3 nu-over fixtures to
+			// match-error (see `deferred-CSP` in `tests/external/snapshots/excluded-ids.json`).
 			"type": [
 				{
 					"condition": "[http-equiv='refresh' i]",

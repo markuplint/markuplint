@@ -186,6 +186,14 @@ gate, not a polish step.
 Each row is a conclusion reached by reading the cited paragraph
 directly. Do not add a row without a verbatim spec quote and source URL.
 
+Rows persist even after markuplint gains coverage — the third column
+becomes an evidence trail, and the "Verdict" cell is edited in place
+(e.g. **nu over-detection** → **nu correct** — markuplint coverage
+extended in ...) rather than the row being deleted. The only removal
+case is a factually wrong row on a spec re-read; leave a
+`~~strikethrough~~` retraction line rather than a silent delete so the
+audit trail stays complete.
+
 | Message substring | Verdict | Source |
 | --- | --- | --- |
 | `Fragment is not allowed for data: URIs according to RFC 2397` | **nu over-detection** — excluded in `patterns[]` | URL LS §4.3: a `valid URL string` may end in a fragment for any scheme. |
@@ -210,11 +218,29 @@ directly. Do not add a row without a verbatim spec quote and source URL.
 | `The "list" attribute of the "input" element must refer to a "datalist" element.` | **nu correct** — markuplint coverage in `input-list-references-datalist` | [HTML LS §4.10.5.2 The list attribute](https://html.spec.whatwg.org/multipage/input.html#the-list-attribute): "If present, its value must be the ID of a `datalist` element in the same tree." Analog shape to `form-attr-references-form` (same tree ID + labelable-element-type constraint). ID existence itself is delegated to `no-refer-to-non-existent-id`; the new rule only fires when the referenced ID resolves to a non-`<datalist>`. Flipped `input/list-not-datalist-novalid` and `input/list-references-nondatalist-novalid` nu-only → match-error. |
 | `Any "input" descendant of a "label" element with a "for" attribute must have an ID value that matches that "for" attribute.` | **nu correct** — markuplint coverage extended in `label-no-multiple-controls` | [HTML LS §4.10.4 The label element](https://html.spec.whatwg.org/multipage/forms.html#the-label-element) content model: "Phrasing content, but with no descendant labelable elements unless it is the element's labeled control, and no descendant label elements." When `for` resolves to an external labelable element, that external element is the labeled control, so any form-control descendant inside the label is excess. The rule now reports every descendant control in that case, in addition to the pre-existing "more than one" branch. Flipped `label/for-descendant-no-id-novalid` nu-only → match-error. |
 | `Bad value "…" for attribute "sizes"/"media": Bad media condition: Parse Error at "(…)"` | **nu correct** — markuplint coverage extended in `MediaQueryList` + `SourceSizeList` (`<general-enclosed>` reject) | [Media Queries Level 5 §3 the `<general-enclosed>` production](https://www.w3.org/TR/mediaqueries-5/#general-enclosed): "Authors must not use `<general-enclosed>` in their stylesheets. It exists only for future-compatibility, so that new syntax additions do not invalidate too much of a `<media-condition>` in older user agents." css-tree emits `GeneralEnclosed` only when the enclosed tokens genuinely fail `<media-feature>` grammar (e.g. `(min-width:)` empty value, `(123)` non-ident content); well-formed `(<ident>: <value>)` shapes with unknown feature names still parse as `Feature`, so forward-compatibility for future features is preserved. `SourceSizeList` skips `(` preceded by an identifier/digit so CSS function calls (`clamp(...)`, `min(...)`, `calc(...)`) are not confused with media conditions. Flipped `img/sizes-invalid-media-novalid`, `source/media-invalid-novalid`, and `picture/sizes-microsyntax-media-general-enclosed-junk-novalid` nu-only → match-error. |
+| `Bad value "…" for attribute "content" on element "meta": Unrecognized directive` / `Unrecognized source-expression` / `Content Security Policy must contain only ASCII characters.` | **deferred-CSP** — excluded per-ID in `entries[]` (tracked in #3942) | [CSP3 §Directives](https://www.w3.org/TR/CSP3/#framework-directives), [§6.7.2 Source List Directives](https://www.w3.org/TR/CSP3/#framework-directive-source-list), and [§4.1 Policies](https://www.w3.org/TR/CSP3/#framework-policy). CSP3 is a separate W3C specification outside markuplint's tracked scope (HTML LS / WAI-ARIA / URL LS). `packages/@markuplint/html-spec/src/spec.meta.jsonc` documents an explicit fall-through comment: "Other http-equiv values (default-style, content-security-policy) and 'name' / 'itemprop' fall through to 'Any' at runtime." Note: the `csp-invalid-directive-haswarn.html` filename suffix implies a warning-severity fixture, but the actual nu message carries `type: error` and participates in verdict computation via `compare.ts` (which counts only `type === 'error'`). Three fixtures flipped `nu-only` → `nu-over`. |
 
 The remaining `nu-only` bulk (URL parsing) is **not** for exclusion;
 it represents real markuplint gaps for future coverage work. Any
 substring not in the table is **unclassified** — do not exclude
 without first adding a row with a spec quote.
+
+## Deferred specs
+
+Markers of the form `deferred-<spec>` in
+`excluded-ids.json#entries[].reason` (or `patterns[].reason`) mean:
+nu-validator is enforcing a spec that markuplint's tracked scope
+(HTML LS / WAI-ARIA / URL LS) does not currently cover. Every marker
+carries a tracking Issue, so future implementation work can locate
+the entries via `grep -r 'deferred-<spec>'`.
+
+| Marker | Spec | Tracking Issue | Fixture count | Rationale |
+| --- | --- | --- | --- | --- |
+| `deferred-CSP` | [CSP3](https://www.w3.org/TR/CSP3/) | #3942 | 3 | Directive / source-expression / ASCII grammar. `packages/@markuplint/html-spec/src/spec.meta.jsonc` documents an explicit fall-through of `content` to `Any` for `[http-equiv='content-security-policy' i]`. |
+
+Add a row when opening a new `deferred-<spec>` Issue. The fixture
+count comes from `yarn bench:xref --issue <N>` (verdict tally line
+in the composed block).
 
 ## Note: ml-only readings (informational)
 
