@@ -95,6 +95,13 @@ export const xrefMappings: readonly XrefMapping[] = [
 		note:
 			'Umbrella of 7 aria fixtures deferred from the aria-slice PR. Six flipped to `match-error` after Group 1 (author-requirements role chain: `wai-aria-required-owned-elements`) and Group 3 (summary heuristics: `spec.summary.jsonc#aria.properties.without`) landed. The one remaining `nu-only` — `role-tab-with-no-role-tabpanel-novalid` — is a Group 2 role-pair authoring requirement: WAI-ARIA 1.3 §tab role: "Authors MUST ensure that if a `tab` is active, a corresponding `tabpanel` that represents the active `tab` is rendered." Cross-element constraint that no existing rule covers; needs the proposed `wai-aria-required-companion-role` (or equivalent).',
 	},
+	{
+		kind: 'primary',
+		issue: 3832,
+		filter: /^html\/datatypes\/charset-invalid-novalid/,
+		note:
+			'Issue body Case A — `<meta http-equiv="content-type" content="text/html; charset=not-a-charset">`. HTML LS [§4.2.5.3 Pragma directives — Encoding declaration state](https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-http-equiv-content-type): "For meta elements with an http-equiv attribute in the Encoding declaration state, the content attribute must have a value that is an ASCII case-insensitive match for a string that consists of: \\"text/html;\\", optionally followed by any number of ASCII whitespace, followed by \\"charset=utf-8\\"." markuplint\'s `HTTPEquivContentType` checker (`packages/@markuplint/types/src/whatwg/check-http-equiv-content-type.ts`) validates the label shape only (`/^text\\/html;[\\t\\n\\f\\r ]*charset=[\\w.-]+$/i`), so unknown labels like `not-a-charset` slip through. Cases B (`url-empty-novalid`) and C (`sandbox-scripts-same-origin-haswarn`) from the same Issue are already resolved (`match-error` and `nu-over` respectively); this is the sole remaining fixture backing the Issue.',
+	},
 
 	// === 2 次群: bench では裏取れない Issue（ステルブロック） ===
 	{
