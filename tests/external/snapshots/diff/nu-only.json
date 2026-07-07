@@ -96,13 +96,6 @@
 			]
 		},
 		{
-			"path": "html/elements/style/css-property-error-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-c5efac320bbb"
-			]
-		},
-		{
 			"path": "html/elements/table/cell-overlaps-earlier-cell-novalid.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [

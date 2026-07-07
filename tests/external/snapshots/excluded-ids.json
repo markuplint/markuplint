@@ -99,6 +99,15 @@
 			"specUrl": "https://www.w3.org/TR/CSP3/#framework-policy",
 			"addedAt": "2026-07-06",
 			"addedBy": "hirao"
+		},
+		{
+			"id": "nv-c5efac320bbb",
+			"path": "html/elements/style/css-property-error-novalid.html",
+			"nuMessage": "CSS: “colr”: Property “colr” doesn't exist.",
+			"reason": "deferred-CSS (#3946). markuplint's tracked spec scope per `.claude/skills/bench-triage/SKILL.md` is HTML Living Standard + WAI-ARIA + URL Living Standard. CSS syntax and the property registry are governed by CSS specifications (CSS Syntax Level 3, CSS Values and Units, and the individual property specifications hosted by W3C CSSWG), not by HTML LS. `colr` is not a registered CSS property (see the CSS property registry at https://www.w3.org/Style/CSS/all-properties.en.html — the closest tokens are `color` and the color-adjacent family, none of which spell `colr`), so nu-validator is spec-correct. markuplint currently does not validate CSS content inside `<style>` or `[style]`. Parallel deferred spec: #3942 (deferred-CSP).",
+			"specUrl": "https://www.w3.org/TR/css-syntax-3/",
+			"addedAt": "2026-07-06",
+			"addedBy": "hirao"
 		}
 	],
 	"patterns": [

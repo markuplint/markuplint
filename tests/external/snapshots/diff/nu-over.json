@@ -211,6 +211,13 @@
 			]
 		},
 		{
+			"path": "html/elements/style/css-property-error-novalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-c5efac320bbb"
+			]
+		},
+		{
 			"path": "html/elements/table/row-width-exceeds-col-markup-novalid.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [

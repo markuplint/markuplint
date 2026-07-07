@@ -109,6 +109,35 @@ export const xrefMappings: readonly XrefMapping[] = [
 		note:
 			'CSP3 grammar (directive names, source-expression tokens, ASCII-only body) is a separate W3C specification. `packages/@markuplint/html-spec/src/spec.meta.jsonc` documents an explicit fall-through: "Other http-equiv values (default-style, content-security-policy) and `name` / `itemprop` fall through to `Any` at runtime." Three fixtures are recorded as `deferred-CSP` in `excluded-ids.json` and flip `nu-only` → `nu-over`; they will flip to `match-error` if/when a `ContentSecurityPolicy` type lands in `@markuplint/types` and is wired into `spec.meta.jsonc` under a new `[http-equiv=\'content-security-policy\' i]` condition.',
 	},
+	{
+		kind: 'primary',
+		issue: 3943,
+		filter:
+			/^(html-math\/math-in-head|html\/elements\/picture\/html-syntax-picture-no-end-tag|html\/parser\/(charset-after-1024|stray-start-tag|text-after-body))-novalid/,
+		note:
+			'Umbrella for 5 fixtures that report legitimate HTML LS parse errors which `parse5` (`packages/@markuplint/html-parser/src/parser.ts` `tokenize()`) silently recovers from: `<math>` inside `<head>` triggering implicit body promotion; open `<picture>` at EOF; `<meta charset>` after the first 1024 bytes ([HTML LS "Specifying the document\'s character encoding"](https://html.spec.whatwg.org/multipage/semantics.html#charset)); a start tag or non-whitespace character after `</body>` ([HTML LS "The \'after body\' insertion mode"](https://html.spec.whatwg.org/multipage/parsing.html#the-after-body-insertion-mode)). A direct probe on the pinned parse5 version confirmed no `onParseError` fires for any of these fixtures. Extending `MLASTParseErrorCode` alone will not close the gap; a post-parse rule pass (per-case) is the pragmatic path.',
+	},
+	{
+		kind: 'primary',
+		issue: 3944,
+		filter: /^html\/elements\/img\/missing-alt-in-figure-novalid/,
+		note:
+			'[HTML LS "Requirements for providing text to act as an alternative for images"](https://html.spec.whatwg.org/multipage/images.html#alt) and its "Guidance for conformance checkers" subsection ([`images.html#guidance-for-conformance-checkers`](https://html.spec.whatwg.org/multipage/images.html#guidance-for-conformance-checkers)) enumerate the narrow exceptions under which `alt` may be omitted. The fixture has no `<figcaption>` inside the enclosing `<figure>`, so none of the omission conditions apply. `packages/@markuplint/rules/src/required-attr/index.spec.ts` `[required-attr-invalid-001]` demonstrates that markuplint\'s `required-attr` fires on `img` only via explicit `nodeRule` config; `packages/@markuplint/html-spec/src/spec.img.jsonc` defines `alt` as `{ "type": "Any" }` without a `required` flag or `requiredEither`. The current `requiredEither` grammar cannot express the exception-list shape from the spec — a new rule (working name `img-alt-required`) or a richer condition grammar is required.',
+	},
+	{
+		kind: 'primary',
+		issue: 3945,
+		filter: /^html\/elements\/img\/usemap-invalid-reference-novalid/,
+		note:
+			'[HTML LS "Image maps — Authoring"](https://html.spec.whatwg.org/multipage/image-maps.html#authoring): "The `usemap` attribute, if specified, must be a valid hash-name reference to a `map` element." [HTML LS "Valid hash-name reference"](https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#valid-hash-name-reference): the reference is a `#`-prefixed string that "exactly matches" a `name` attribute in the same tree (string-equal, case-sensitive). `packages/@markuplint/rules/src/map-id-name-match` covers the internal id/name consistency of `<map>` itself but does not validate `img[usemap]` → `<map name>` lookups. `no-refer-to-non-existent-id` targets `id`-typed attributes only, so `usemap` (declared as `HashName` in `spec.img.jsonc`) is out of its scope. Needs a new rule (working name `usemap-references-map`) shaped like `form-attr-references-form` / `input-list-references-datalist`. Follow-up: reconcile the `[map-id-name-match-invalid-002]` spec comment which claims `<map name>` is matched case-insensitively against `<img usemap>` — this contradicts the "exactly matches" wording verified above.',
+	},
+	{
+		kind: 'primary',
+		issue: 3946,
+		filter: /^html\/elements\/style\/css-property-error-novalid/,
+		note:
+			'CSS syntax and property registry are governed by CSS specifications (CSS Syntax Level 3, CSS Values and Units, individual property specs), not by HTML LS. markuplint\'s tracked spec scope is HTML LS + WAI-ARIA + URL LS per `.claude/skills/bench-triage/SKILL.md`, so CSS is `deferred-CSS`. One fixture is recorded per-id in `excluded-ids.json#entries[]` and flips `nu-only` → `nu-over`; it will flip to `match-error` if/when a CSS grammar-validation rule lands (css-tree, already a dependency of `packages/@markuplint/types`, is a plausible candidate for syntax-only validation). Parallel deferred spec: #3942 (deferred-CSP).',
+	},
 
 	// === 2 次群: bench では裏取れない Issue（ステルブロック） ===
 	{

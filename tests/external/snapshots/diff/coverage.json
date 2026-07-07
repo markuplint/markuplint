@@ -37817,10 +37817,12 @@
 		{
 			"path": "html/elements/style/css-property-error-novalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-c5efac320bbb"
+			]
 		},
 		{
 			"path": "html/elements/style/html-spec-comms-isvalid.html",
