@@ -30,7 +30,7 @@
 		"coveralls": "3.1.1",
 		"execa": "9.6.1",
 		"glob": "13.0.6",
-		"jsdom": "26.1.0",
+		"jsdom": "29.1.1",
 		"strip-json-comments": "5.0.3",
 		"textlint-rule-prh": "6.1.0",
 		"type-fest": "5.6.0",
