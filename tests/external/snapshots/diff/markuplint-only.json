@@ -7776,6 +7776,20 @@
 			]
 		},
 		{
+			"path": "html/elements/table/row-width-exceeds-cols-haswarn.html",
+			"category": "invalid-attr",
+			"ruleIds": [
+				"table-row-column-alignment"
+			]
+		},
+		{
+			"path": "html/elements/table/row-width-less-than-cols-haswarn.html",
+			"category": "invalid-attr",
+			"ruleIds": [
+				"table-row-column-alignment"
+			]
+		},
+		{
 			"path": "html/elements/track/src-isvalid.html",
 			"category": "invalid-attr",
 			"ruleIds": [
