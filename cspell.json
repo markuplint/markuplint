@@ -191,6 +191,11 @@
 		"tref",
 		"vkern",
 		"wicg",
+		// HTML LS §4.9.12.1 "Forming a table" algorithm variables
+		"xcurrent",
+		"ycurrent",
+		"xwidth",
+		"yheight",
 
 		// Typo
 		"verifing"

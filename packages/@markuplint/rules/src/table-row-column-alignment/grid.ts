@@ -318,11 +318,11 @@ function getBaseColLength(rows: readonly Row[]) {
 
 /**
  * Parses a `colspan` / `rowspan` / `span` attribute value the way HTML LS does:
- * a missing or unparseable value falls back to the default, and a parsed value is
- * clamped to the range the spec allows.
+ * a value that is missing or fails to parse falls back to the default, and a parsed
+ * value is clamped to the range the spec allows.
  *
  * @param value - The raw attribute value.
- * @param fallback - The value to use when the attribute is absent or unparseable.
+ * @param fallback - The value to use when the attribute is absent or fails to parse.
  * @param min - The lower bound of the clamp range.
  * @param max - The upper bound of the clamp range.
  * @returns The effective span.
