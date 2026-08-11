@@ -497,6 +497,10 @@
 					"items": {
 						"$ref": "#/definitions/pretenderScanConfig"
 					}
+				},
+				"auto": {
+					"description": "@experimental Resolve pretenders on demand by scanning the lint target's own import graph.",
+					"type": "boolean"
 				}
 			}
 		}

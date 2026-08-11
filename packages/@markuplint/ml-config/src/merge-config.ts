@@ -159,6 +159,7 @@ function mergePretenders(
 		imports: bDetails.imports ?? aDetails.imports,
 		data: concatArray(aDetails.data, bDetails.data),
 		scan: concatArray(aDetails.scan, bDetails.scan),
+		auto: bDetails.auto ?? aDetails.auto,
 	};
 	deleteUndefProp(details);
 	return details;
