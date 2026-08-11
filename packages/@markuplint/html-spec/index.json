@@ -3878,7 +3878,7 @@
 					},
 					{
 						"name": "definition",
-						"description": "A definition of a term or concept. See related term.\n\nAuthors MUST identify the element being defined and assign that element a role of term.\n\nAuthors SHOULD NOT use the definition role on interactive elements such as form controls because doing so could prevent users of assistive technologies from interacting with those elements.",
+						"description": "A definition of a term or concept. See related term.\n\nAuthors MUST identify the element being defined and assign that element a role of term.\n\nThe relationship between a term and its definition is conveyed on the term element; see the term role for more information.",
 						"generalization": ["section"],
 						"requiredContextRole": [],
 						"requiredOwnedElements": [],
@@ -9725,10 +9725,12 @@
 								"inherited": true
 							},
 							{
-								"name": "aria-valuemax"
+								"name": "aria-valuemax",
+								"inherited": true
 							},
 							{
-								"name": "aria-valuemin"
+								"name": "aria-valuemin",
+								"inherited": true
 							},
 							{
 								"name": "aria-valuenow",
@@ -10810,10 +10812,12 @@
 								"inherited": true
 							},
 							{
-								"name": "aria-valuemax"
+								"name": "aria-valuemax",
+								"inherited": true
 							},
 							{
-								"name": "aria-valuemin"
+								"name": "aria-valuemin",
+								"inherited": true
 							},
 							{
 								"name": "aria-valuenow",
@@ -11392,7 +11396,7 @@
 					},
 					{
 						"name": "suggestion",
-						"description": "A single proposed change to content.\n\nFor example, in an editing system that supports multiple users, one user can suggest a change, and another user would be responsible for accepting or rejecting the suggestion.\n\nAuthors MUST ensure that a suggestion contains either one insertion child or one deletion child or ensure that it contains two children where one is an insertion and the other is a deletion. Authors MUST ensure a suggestion does not contain any other children.\n\nAuthors MAY use aria-details or aria-description to associate the suggestion with related information such as comments, authoring info, and time stamps.\n\nWhen a suggestion is accepted, authors SHOULD remove the suggestion role, indicating that the proposed revision has been made. After the suggestion role is removed, child insertion and deletion elements can either be retained to document the revision or replaced with the revised content.",
+						"description": "A single proposed change to content.\n\nFor example, in an editing system that supports multiple users, one user can suggest a change, and another user would be responsible for accepting or rejecting the suggestion.\n\nAuthors MUST ensure that a suggestion has either exactly one insertion accessibility child or exactly one deletion accessibility child, or exactly two accessibility children where one is an insertion and the other is a deletion. Authors MUST NOT include any additional accessibility children in a suggestion.\n\nAuthors MAY use aria-details or aria-description to associate the suggestion with related information such as comments, authoring info, and time stamps.\n\nWhen a suggestion is accepted, authors SHOULD remove the suggestion role, indicating that the proposed revision has been made. After the suggestion role is removed, child insertion and deletion elements can either be retained to document the revision or replaced with the revised content.",
 						"generalization": ["section"],
 						"requiredContextRole": [],
 						"requiredOwnedElements": ["insertion", "deletion"],
@@ -13131,7 +13135,7 @@
 					},
 					{
 						"name": "treeitem",
-						"description": "An item in a tree.\n\nA treeitem element can contain a sub-level group of elements that can be expanded or collapsed. An expandable collection of treeitem elements are enclosed in an element with the group role.\n\nAuthors MUST ensure elements with role treeitem are accessibility children of an element with role tree or an element with role group that is the accessibility child of an element with role treeitem.\n\nIn certain conditions, a user agent MAY provide an implicit value for aria-selected for each treeitem in a tree, and if it does, the user agent MUST ensure the following conditions are met before providing an implicit value:\n\nIf a user agent provides an implicit aria-selected value for a treeitem, the value SHOULD be true if the treeitem has DOM focus or the tree has DOM focus and the treeitem is referenced by aria-activedescendant. Otherwise, if a user agent provides an implicit aria-selected value for a treeitem, the value SHOULD be false.\n\nAuthors MAY indicate selection for treeitem elements using either aria-selected or aria-checked. Some user interfaces indicate selection with aria-selected in single-select trees and with aria-checked in multi-select trees. Authors SHOULD NOT specify both aria-selected and aria-checked on treeitem elements contained by the same tree except in the extremely rare circumstances where all the following conditions are met:",
+						"description": "An item in a tree.\n\nA treeitem element can contain a sub-level group of elements that can be expanded or collapsed. An expandable collection of treeitem elements are usually enclosed in an element with the group role.\n\nAuthors MUST ensure elements with role treeitem are accessibility children of an element with role tree or an element with role group that is the accessibility child of an element with role treeitem.\n\nAuthors MAY use nested group elements to implicitly indicate level hierarchy. Otherwise, authors MUST ensure all treeitem elements in the tree have explicit values for aria-level, aria-posinset, and aria-setsize.\n\nUser agents MUST calculate an implicit value for aria-level from the document structure if the author does not explicitly specify a value.\n\nIn certain conditions, a user agent MAY provide an implicit value for aria-selected for each treeitem in a tree, and if it does, the user agent MUST ensure the following conditions are met before providing an implicit value:\n\nIf a user agent provides an implicit aria-selected value for a treeitem, the value SHOULD be true if the treeitem has DOM focus or the tree has DOM focus and the treeitem is referenced by aria-activedescendant. Otherwise, if a user agent provides an implicit aria-selected value for a treeitem, the value SHOULD be false.\n\nAuthors MAY indicate selection for treeitem elements using either aria-selected or aria-checked. Some user interfaces indicate selection with aria-selected in single-select trees and with aria-checked in multi-select trees. Authors SHOULD NOT specify both aria-selected and aria-checked on treeitem elements contained by the same tree except in the extremely rare circumstances where all the following conditions are met:",
 						"generalization": ["listitem", "option"],
 						"requiredContextRole": ["tree", "treeitem > group"],
 						"requiredOwnedElements": [],
@@ -49229,7 +49233,7 @@
 					"description": "A Boolean attribute: if specified, the audio player will automatically seek back to the start upon reaching the end of the audio."
 				},
 				"muted": {
-					"description": "A Boolean attribute that indicates whether the audio will be initially silenced. Its default value is false."
+					"description": "A Boolean attribute that indicates the default audio mute setting contained in the audio. If set, the audio will be initially silenced. Its default value is false, meaning the audio will be heard when the audio is played. Note: To unmute, setting muted=\"false\" will not work; the audio will be muted if the attribute is present at all. To unmute, the attribute must be removed entirely."
 				},
 				"preload": {
 					"description": "This enumerated attribute is intended to provide a hint to the browser about what the author thinks will lead to the best user experience. It may have one of the following values: none: Indicates that the audio should not be preloaded. metadata: Indicates that only audio metadata (e.g., length) is fetched. auto: Indicates that the whole audio file can be downloaded, even if the user is not expected to use it. empty string: A synonym of the auto value. The default value is different for each browser. The spec advises it to be set to metadata. Note: Audio with the loading=\"lazy\" attribute set will only apply the preload behavior once the audio controls are near or within the viewport. The autoplay attribute has precedence over preload. If autoplay is specified, the browser would obviously need to start downloading the audio for playback. The browser is not forced by the specification to follow the value of this attribute; it is a mere hint."
@@ -51349,7 +51353,7 @@
 					"nonStandard": true
 				},
 				"browsingtopics": {
-					"description": "A boolean attribute that, if present, specifies that the selected topics for the current user should be sent with the request for the <iframe>'s source. See Using the Topics API for more details.",
+					"description": "A boolean attribute that, if present, specifies that the selected topics for the current user should be sent with the request for the <iframe>'s source.",
 					"deprecated": true,
 					"nonStandard": true
 				},
@@ -52965,7 +52969,7 @@
 			},
 			"attributes": {
 				"as": {
-					"description": "This attribute is required when rel=\"preload\" has been set on the <link> element, optional when rel=\"modulepreload\" has been set, and otherwise should not be used. It specifies the type of content being loaded by the <link>, which is necessary for request matching, application of correct content security policy, and setting of correct Accept request header. Furthermore, rel=\"preload\" uses this as a signal for request prioritization. The table below lists the valid values for this attribute and the elements or resources they apply to. Value Applies To audio <audio> elements document <iframe> and <frame> elements embed <embed> elements fetch fetch, XHR Note: This value also requires <link> to contain the crossorigin attribute, see CORS-enabled fetches. font CSS @font-face Note: This value also requires <link> to contain the crossorigin attribute, see CORS-enabled fetches. image <img> and <picture> elements with srcset or imageset attributes, SVG <image> elements, CSS *-image rules json modulepreload destinations. object <object> elements script <script> elements, Worker importScripts, and modulepreload destinations. style <link rel=stylesheet> elements, CSS @import and modulepreload destinations. track <track> elements video <video> elements worker Worker, SharedWorker",
+					"description": "This attribute is required when rel=\"preload\" has been set on the <link> element, optional when rel=\"modulepreload\" has been set, and otherwise should not be used. It specifies the type of content being loaded by the <link>, which is necessary for request matching, application of correct content security policy, and setting of correct Accept request header. Furthermore, rel=\"preload\" uses this as a signal for request prioritization. The table below lists the valid values for this attribute and the elements or resources they apply to. As value Rel value Applies To audioworklet modulepreload AudioWorklet modules fetch preload fetch, XHR Note: This value also requires <link> to contain the crossorigin attribute, see CORS-enabled fetches. font preload CSS @font-face Note: This value also requires <link> to contain the crossorigin attribute, see CORS-enabled fetches. image preload <img> and <picture> elements with srcset or imageset attributes, SVG <image> elements, CSS *-image rules json modulepreload Supplementary JSON file paintworklet modulepreload PaintWorklet modules script preload or modulepreload <script> elements, Worker importScripts, and modulepreload destinations. serviceworker modulepreload ServiceWorker modules sharedworker modulepreload SharedWorker style preload or modulepreload <link rel=stylesheet> elements, CSS @import and modulepreload destinations. text modulepreload Supplementary plain text file track preload <track> elements (WebVTT, MIME type text/vtt) worker modulepreload Worker modules",
 					"type": [
 						{
 							"condition": "[rel~='preload' i]",
@@ -54742,7 +54746,7 @@
 			},
 			"attributes": {
 				"name": {
-					"description": "The slot's name. A named slot is a <slot> element with a name attribute, while an unnamed slot has no name attribute, and the name defaults to the empty string. When a shadow root uses named slot assignment, top-level child elements of its host are are rendered in slots that have a matching name in their slot attribute. Slot names should be unique per shadow root: if you have two slots with the same name, all of the elements with a matching slot attribute are rendered in the first slot. All top-level child elements that don't have a slot attribute are rendered in the first unnamed <slot> element, which is referred to as the default slot. The name has no effect if the shadow root uses manual slot assignment. For more information see shadowrootslotassignment on the <template> element and Element.attachShadow().",
+					"description": "The slot's name. A named slot is a <slot> element with a name attribute, while an unnamed slot has no name attribute, and the name defaults to the empty string. When a shadow root uses named slot assignment, top-level child elements of its host are rendered in slots that have a matching name in their slot attribute. Slot names should be unique per shadow root: if you have two slots with the same name, all of the elements with a matching slot attribute are rendered in the first slot. All top-level child elements that don't have a slot attribute are rendered in the first unnamed <slot> element, which is referred to as the default slot. The name has no effect if the shadow root uses manual slot assignment. For more information see shadowrootslotassignment on the <template> element and Element.attachShadow().",
 					"type": "NoEmptyAny"
 				}
 			}
@@ -55290,7 +55294,7 @@
 					"deprecated": true
 				},
 				"colspan": {
-					"description": "Contains a non-negative integer value that indicates how many columns the data cell spans or extends. The default value is 1. User agents dismiss values higher than 1000 as incorrect, setting to the default value (1)."
+					"description": "Contains a non-negative integer value that indicates how many columns the data cell spans or extends. The default value is 1. Values higher than 1000 are clipped to 1000."
 				},
 				"headers": {
 					"description": "Contains a list of space-separated strings, each corresponding to the id attribute of the <th> elements that provide headings for this table cell."
@@ -55368,6 +55372,7 @@
 				},
 				"shadowrootslotassignment": {
 					"description": "Sets the slotAssignment property of a ShadowRoot created using this element. This is the declarative equivalent of the slotAssignment option of the Element.attachShadow() method. named Elements are automatically assigned to <slot> elements within this shadow root. This is the default value. Elements with the slot attribute are assigned to the first <slot> in the template that has the corresponding name attribute. If multiple elements specify the same slot name, they are all added to the first slot in the template that has that name, and rendered in the order they are declared. All unnamed elements — elements that don't specify a slot attribute — are assigned to the default slot in the order they are declared. This is the first unnamed <slot> in the template. manual Elements are manually assigned to particular slot elements using HTMLSlotElement.assign(). No automatic assignment takes place.",
+					"experimental": true,
 					"type": {
 						"enum": ["named", "manual"],
 						"missingValueDefault": "named",
@@ -55601,7 +55606,7 @@
 					"deprecated": true
 				},
 				"colspan": {
-					"description": "A non-negative integer value indicating how many columns the header cell spans or extends. The default value is 1. User agents dismiss values higher than 1000 as incorrect, defaulting such values to 1."
+					"description": "A non-negative integer value indicating how many columns the header cell spans or extends. The default value is 1. Values higher than 1000 are clipped to 1000."
 				},
 				"headers": {
 					"description": "A list of space-separated strings corresponding to the id attributes of the <th> elements that provide the headers for this header cell."
@@ -56061,7 +56066,7 @@
 					"description": "A Boolean attribute; if specified, the browser will automatically seek back to the start upon reaching the end of the video."
 				},
 				"muted": {
-					"description": "A Boolean attribute that indicates the default audio mute setting contained in the video. If set, the audio will be initially silenced. Its default value is false, meaning the audio will be played when the video is played."
+					"description": "A Boolean attribute that indicates the default audio mute setting contained in the video. If set, the audio will be initially silenced. Its default value is false, meaning the audio will be heard when the video is played. Note: To unmute, setting muted=\"false\" will not work; the audio will be muted if the attribute is present at all. To unmute, the attribute must be removed entirely."
 				},
 				"playsinline": {
 					"description": "A Boolean attribute indicating that the video is to be played \"inline\", that is, within the element's playback area. Note that the absence of this attribute does not imply that the video will always be played in fullscreen.",
@@ -59624,7 +59629,7 @@
 			"name": "svg:feGaussianBlur",
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feGaussianBlur",
-			"description": "The <feGaussianBlur> SVG filter primitive blurs the input image by the amount specified in stdDeviation, which defines the bell-curve. Like other filter primitives, it handles color components in the linearRGB color space by default. You can use color-interpolation-filters to use sRGB instead.",
+			"description": "The <feGaussianBlur> SVG filter primitive blurs the input image by the amount specified in stdDeviation, which defines the bell-curve. Like other filter primitives, it handles color components in the linearRGB color space by default. You can use color-interpolation-filters to use sRGB instead. A Gaussian blur can extend beyond the bounds of the input image. The <filter> element's x, y, width, and height attributes define the filter region within which the blurred output is rendered; pixels outside this region are clipped. By default, x and y are -10% and width and height are 120%, providing a margin for the blur to spread. For larger stdDeviation values, expand the filter region further. For example: svg<filter x=\"-30%\" y=\"-30%\" width=\"160%\" height=\"160%\">",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -60894,7 +60899,7 @@
 			"name": "svg:g",
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/g",
-			"description": "The <g> SVG element is a container used to group other SVG elements. Transformations applied to the <g> element are performed on its child elements, and its attributes are inherited by its children. It can also group multiple elements to be referenced later with the <use> element.",
+			"description": "The <g> SVG element is a container used to group other SVG elements. Transformations applied to the <g> element are performed on its child elements, and most of its presentation attributes are inherited by its children. It can also group multiple elements to be referenced later with the <use> element.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -62707,6 +62712,10 @@
 				"#XLinkAttrs": ["xlink:href", "xlink:title"]
 			},
 			"attributes": {
+				"async": {
+					"description": "If the async attribute is present, then the external script will be fetched in parallel to parsing and evaluated as soon as it is available. Equivalent to the async attribute on the HTML <script> element. Value type: boolean; Default value: none; Animatable: no",
+					"experimental": true
+				},
 				"crossorigin": {
 					"description": "This attribute defines CORS settings as define for the HTML <script> element. Value type: [ anonymous | use-credentials ]?; Default value: ?; Animatable: yes",
 					"type": {
@@ -62714,6 +62723,10 @@
 						"disallowToSurroundBySpaces": false
 					},
 					"animatable": true
+				},
+				"defer": {
+					"description": "If the defer attribute is present, then the external script will be executed after the document has been parsed, but before firing DOMContentLoaded. Equivalent to the defer attribute on the HTML <script> element. Value type: boolean; Default value: none; Animatable: no",
+					"experimental": true
 				},
 				"fetchpriority": {
 					"description": "Provides a hint of the relative priority to use when fetching an external script. Allowed values: high Fetches the external script at a high priority relative to other external scripts. low Fetches the external script at a low priority relative to other external scripts. auto Doesn't set a preference for the fetch priority. It is used if no value or an invalid value is set. This is the default.",
@@ -63106,7 +63119,7 @@
 			"name": "svg:switch",
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/switch",
-			"description": "The <switch> SVG element evaluates any requiredFeatures, requiredExtensions and systemLanguage attributes on its direct child elements in order, and then renders the first child where these attributes evaluate to true. Other direct children will be bypassed and therefore not rendered. If a child element is a container element, like <g>, then its subtree is also processed/rendered or bypassed/not rendered. Note: The display and visibility properties have no effect on <switch> element processing. In particular, setting display:none on a child has no effect on the true/false testing for <switch> processing.",
+			"description": "The <switch> SVG element evaluates any requiredExtensions and systemLanguage attributes on its direct child elements in order, and then renders the first child where these attributes evaluate to true. Other direct children will be bypassed and therefore not rendered. If a child element is a container element, like <g>, then its subtree is also processed/rendered or bypassed/not rendered. Note: The display and visibility properties have no effect on <switch> element processing. In particular, setting display:none on a child has no effect on the true/false testing for <switch> processing.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
