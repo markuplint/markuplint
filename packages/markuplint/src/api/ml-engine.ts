@@ -464,8 +464,11 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 			// resolving as it did before the change for the rest of the process's lifetime.
 			await invalidatePretenderResolutionCaches();
 		}
-		const pretenders = await resolvePretenders(configSet.config.pretenders);
 		const sourceCode = await this.#file.getCode();
+		const pretenders = await resolvePretenders(configSet.config.pretenders, {
+			filePath: this.#file.path,
+			sourceCode,
+		});
 		const disambiguated = await disambiguatePretendersForFile(this.#file.path, sourceCode, pretenders);
 		fileLog('Resolved pretenders: %O', disambiguated);
 		return disambiguated;
