@@ -30,6 +30,7 @@ import { collectImportBindings } from '../import-resolver/analyze-jsx-imports.js
 import { normalizePath } from '../import-resolver/resolve-module-file.js';
 import { PretenderDirector } from '../pretender-director.js';
 
+import { createCachingCompilerHost } from './compiler-host.js';
 import { createIdentity } from './create-identify.js';
 import { finder } from './finder.js';
 import { getAttributes } from './get-attributes.js';
@@ -49,6 +50,15 @@ const {
 	isVariableDeclaration,
 	JsxEmit,
 } = ts;
+
+// `noLib`/`types: []` skip loading lib.d.ts and @types packages, which this
+// scanner never needs (it only walks JSX syntax, never type-checks).
+const COMPILER_OPTIONS: ts.CompilerOptions = {
+	jsx: JsxEmit.ReactJSX,
+	allowJs: true,
+	noLib: true,
+	types: [],
+};
 
 const defaultOptions: Required<PretenderScanJSXOptions> = {
 	cwd: process.cwd(),
@@ -91,15 +101,8 @@ export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 
 		const director = new PretenderDirector();
 
-		const program = createProgram(files, {
-			jsx: JsxEmit.ReactJSX,
-			allowJs: true,
-		});
-
-		// Trigger the binder so that parent pointers are set on AST nodes.
-		// getChildren() relies on node.parent to navigate from JsxOpeningElement
-		// to its containing JsxElement for children slot detection.
-		program.getTypeChecker();
+		const host = createCachingCompilerHost(COMPILER_OPTIONS);
+		const program = createProgram(files, COMPILER_OPTIONS, host);
 
 		for (const sourceFile of program.getSourceFiles()) {
 			if (!sourceFile.isDeclarationFile) {

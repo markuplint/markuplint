@@ -35,14 +35,16 @@
  * ## Caching
  *
  * - {@link clearPretenderCaches} — Clears the module-level caches that back import/export
- *   resolution (module resolution, export tables). Neither cache expires on its own, so a
- *   long-running host (watch mode, an editor extension) that re-resolves pretenders across
- *   file edits must call this after each edit, or renamed exports and newly valid tsconfig
- *   `paths` aliases keep resolving as they did before the change for the rest of the process.
+ *   resolution (module resolution, export tables, parsed JSX `SourceFile`s). None of these
+ *   caches expire on their own, so a long-running host (watch mode, an editor extension)
+ *   that re-resolves pretenders across file edits must call this after each edit, or renamed
+ *   exports, newly valid tsconfig `paths` aliases, and stale parsed component files keep
+ *   resolving as they did before the change for the rest of the process.
  */
 
 import { clearExportTableCache } from './dependency-mapper.js';
 import { clearModuleResolutionCaches } from './import-resolver/resolve-module-file.js';
+import { clearSourceFileCache } from './jsx/compiler-host.js';
 
 export type { DisambiguateOptions } from './disambiguate.js';
 export { disambiguatePretenders } from './disambiguate.js';
@@ -61,6 +63,7 @@ export type * from './types.js';
 export function clearPretenderCaches() {
 	clearExportTableCache();
 	clearModuleResolutionCaches();
+	clearSourceFileCache();
 }
 
 // Companion Module pattern types
