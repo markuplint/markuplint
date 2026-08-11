@@ -60,7 +60,9 @@ const COMPILER_OPTIONS: ts.CompilerOptions = {
 	types: [],
 };
 
-const defaultOptions: Required<PretenderScanJSXOptions> = {
+// `sources` has no meaningful default (it's a per-call override), so it's
+// excluded from the Required<> defaults and read straight off `options`.
+const defaultOptions: Required<Omit<PretenderScanJSXOptions, 'sources'>> = {
 	cwd: process.cwd(),
 	asFragment: [/(?:^|\.)provider$/i],
 	ignoreComponentNames: [],
@@ -97,11 +99,12 @@ export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 			asFragment = defaultOptions.asFragment,
 			taggedStylingComponent = defaultOptions.taggedStylingComponent,
 			extendingWrapper = defaultOptions.extendingWrapper,
+			sources,
 		} = options;
 
 		const director = new PretenderDirector();
 
-		const host = createCachingCompilerHost(COMPILER_OPTIONS);
+		const host = createCachingCompilerHost(COMPILER_OPTIONS, sources);
 		const program = createProgram(files, COMPILER_OPTIONS, host);
 
 		for (const sourceFile of program.getSourceFiles()) {

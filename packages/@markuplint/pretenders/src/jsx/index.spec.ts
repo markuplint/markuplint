@@ -2,6 +2,8 @@ import path from 'node:path';
 
 import { describe, test, expect } from 'vitest';
 
+import { normalizePath } from '../import-resolver/resolve-module-file.js';
+
 import { jsxScanner } from './index.js';
 
 // Scanners always emit `/`-delimited filePath now (for stable, cross-platform
@@ -292,6 +294,28 @@ describe('jsxScanner', () => {
 				as: { element: 'span', slots: true, inheritAttrs: true },
 				_via: ['Item'],
 			});
+		});
+	});
+
+	describe('sources (in-memory content override)', () => {
+		test('an in-memory override is scanned instead of the file on disk', async () => {
+			const filePath = path.resolve(testDir, '001.tsx');
+			const sources = new Map([[normalizePath(filePath), 'export const InMemoryOnly = () => <span />;']]);
+
+			const result = await jsxScanner([filePath], { sources });
+
+			expect(result).toStrictEqual([expect.objectContaining({ selector: 'InMemoryOnly', as: 'span' })]);
+		});
+
+		test('files without an override fall back to reading from disk', async () => {
+			const overriddenPath = path.resolve(testDir, '002.tsx');
+			const diskPath = path.resolve(testDir, '001.tsx');
+			const sources = new Map([[normalizePath(overriddenPath), 'export const Overridden = () => <span />;']]);
+
+			const result = await jsxScanner([overriddenPath, diskPath], { sources });
+
+			expect(result.find(p => p.selector === 'Overridden')).toMatchObject({ as: 'span' });
+			expect(result.find(p => p.selector === 'NodeA')).toBeDefined();
 		});
 	});
 });

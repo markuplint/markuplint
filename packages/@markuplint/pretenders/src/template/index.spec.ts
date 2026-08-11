@@ -2,6 +2,8 @@ import path from 'node:path';
 
 import { describe, test, expect } from 'vitest';
 
+import { normalizePath } from '../import-resolver/resolve-module-file.js';
+
 import { templateScanner } from './index.js';
 
 // Scanners always emit `/`-delimited filePath now (for stable, cross-platform
@@ -211,6 +213,39 @@ describe('templateScanner', () => {
 		test('unsupported file extension returns empty result', async () => {
 			const result = await templateScanner([resolve('SimpleButton.vue').replace('.vue', '.html')]);
 			expect(result).toStrictEqual([]);
+		});
+	});
+
+	describe('sources (in-memory content override)', () => {
+		test('an in-memory override is scanned instead of the file on disk', async () => {
+			const filePath = resolve('SimpleButton.vue');
+			const sources = new Map([[normalizePath(filePath), '<template><span class="override" /></template>']]);
+
+			const result = await templateScanner([filePath], { sources });
+
+			expect(result).toStrictEqual([
+				expect.objectContaining({
+					selector: 'SimpleButton',
+					as: expect.objectContaining({ element: 'span' }),
+				}),
+			]);
+		});
+
+		test('files without an override fall back to reading from disk', async () => {
+			const overriddenPath = resolve('WithSlot.vue');
+			const diskPath = resolve('SimpleButton.vue');
+			const sources = new Map([
+				[normalizePath(overriddenPath), '<template><span class="override" /></template>'],
+			]);
+
+			const result = await templateScanner([overriddenPath, diskPath], { sources });
+
+			expect(result.find(p => p.selector === 'WithSlot')).toMatchObject({
+				as: expect.objectContaining({ element: 'span' }),
+			});
+			expect(result.find(p => p.selector === 'SimpleButton')).toMatchObject({
+				as: expect.objectContaining({ element: 'button' }),
+			});
 		});
 	});
 });
