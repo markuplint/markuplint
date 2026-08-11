@@ -1,10 +1,6 @@
----
-description: Perform maintenance tasks for @markuplint/html-spec
----
+# @markuplint/html-spec
 
-# html-spec-maintenance
-
-Constraints and judgment rules for editing `@markuplint/html-spec` spec data.
+Constraints and judgment rules for editing spec data. None of this is derivable from code.
 
 ## Mandatory procedure
 

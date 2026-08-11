@@ -25,7 +25,7 @@ Use this skill when the user requests any of the following:
 
 ### 2. Review the Migration Guide
 
-- Use WebFetch to retrieve https://markuplint.dev/docs/migration/ or https://next.markuplint.dev/docs/migration/ and review breaking changes between the versions
+- Use WebFetch to retrieve the migration guide and review breaking changes between the versions — use https://next.markuplint.dev/docs/migration/ while the target v5 version is a prerelease (`alpha` / `beta` / `rc`), https://markuplint.dev/docs/migration/ once it is stable
 - Check the version-specific migration guide (e.g., v4-to-v5) if available
 - Pay special attention to Named Rule Group changes
 - Identify newly added rules and list those not included in the recommended preset

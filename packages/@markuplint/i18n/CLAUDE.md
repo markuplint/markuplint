@@ -1,13 +1,4 @@
----
-description: Maintenance tasks for @markuplint/i18n — internationalization for markuplint
-globs:
-  - packages/@markuplint/i18n/src/**/*.ts
-  - packages/@markuplint/i18n/locales/*.json
-  - packages/@markuplint/i18n/$schema.json
-alwaysApply: false
----
-
-# @markuplint/i18n Maintenance
+# @markuplint/i18n
 
 Constraints not derivable from code:
 

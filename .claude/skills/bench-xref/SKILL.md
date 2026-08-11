@@ -56,7 +56,7 @@ nu — that is a spec read per `bench-triage`.
 | New Issue with no matching fixture | Add a `secondary` mapping with a `reason`. Internal-bug Issues go here too. |
 | Existing Issue closes | Remove the entry. The umbrella block auto-derives from remaining primary mappings. |
 | Issue scope shifts | Adjust `filter`. Rerun `yarn bench:xref --issue <N>`. |
-| Body claim becomes inaccurate after bench reruns | Add or edit a `bodyOverride` (factory reading an `.md` under `tests/external/bench/issue-xref/`). |
+| Body claim becomes inaccurate after bench reruns | Add or edit a `bodyOverride` factory. The recommended pattern (see its JSDoc in `issue-xref.config.ts`) is reading a co-located `.md` under `tests/external/bench/issue-xref/` — create that directory if it does not exist. |
 
 ## Pre-release checklist
 

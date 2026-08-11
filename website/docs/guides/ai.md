@@ -45,6 +45,7 @@ Markuplint provides installable [skills](https://github.com/markuplint/markuplin
 npx skills add markuplint/markuplint@markuplint
 npx skills add markuplint/markuplint@markuplint-setup
 npx skills add markuplint/markuplint@markuplint-configure
+npx skills add markuplint/markuplint@migrate4-5
 ```
 
 ### Available skills
@@ -54,6 +55,7 @@ npx skills add markuplint/markuplint@markuplint-configure
 | `markuplint`           | Auto-loaded   | Reference knowledge — violation interpretation, CLI usage, config patterns. Claude automatically references this when working with HTML files. |
 | `markuplint-setup`     | Slash command | Set up Markuplint from scratch — framework detection, preset selection, initial lint, rule-by-rule adoption with Bulk Suppressions.            |
 | `markuplint-configure` | Slash command | Add, remove, or adjust rules — determines the right scope (project / file / element) and proposes configuration changes.                       |
+| `migrate4-5`           | Auto-loaded   | Migrate a project from Markuplint v4 to v5 — reviews breaking changes, updates packages and configuration step by step.                        |
 
 ### How to use
 

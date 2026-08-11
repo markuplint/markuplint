@@ -1,26 +1,24 @@
 ---
-description: Git manipulation rules
+name: git
+metadata:
+  internal: true
+description: >
+  Git operation rules for this repository — branch guard, commit granularity,
+  package commit order, Conventional Commits message format, and pre-commit
+  checks. Use whenever creating commits or asked to "commit". Trigger keywords:
+  commit, git commit, stage, staging, commit message, conventional commits.
 ---
 
-# Git command execution rules
+# Branch guard (MUST RUN FIRST)
 
-- **ALWAYS `cd` to the worktree root first, then run git commands from there** — do NOT run git commands from the main working directory when operating on a worktree
-- **NEVER chain commands with `&&`** — each command must be executed separately so the AI agent can request user permission per command without blocking the workflow
-- **NEVER use `git -C <path>`** — same reason; permission prompts become disruptive when bundled with path options
-
-# Worktree Guard (MUST RUN FIRST)
-
-**Before doing ANYTHING else, check that you are in a worktree (NOT the main working directory):**
+Before any commit, check the current branch:
 
 ```bash
-git rev-parse --show-toplevel
+git branch --show-current
 ```
 
-- Compare the result against the **main repository root** (the directory containing `CLAUDE.md`, `.claude/`, etc.)
-- If they match, you are in the main working directory — **STOP immediately**
-- Warn the user: "You are in the main working directory. Commits must be made in a worktree."
-- Do NOT proceed with any git operations — use `git wt <branch-name> dev` to create a worktree first
-- If the result is a different path (e.g., inside `.worktree/`), you are in a worktree — proceed
+- If on `dev` or `main`: **STOP immediately.** Direct commits to `dev` are blocked by husky. Branch work happens in a Claude Code–managed worktree (see the Branch & Worktree Policy in the root `CLAUDE.md`) — never create a branch in the main working directory.
+- On a topic branch: proceed.
 
 # Commit creation
 
@@ -47,24 +45,31 @@ git rev-parse --show-toplevel
   - Wait for user confirmation or new instructions before proceeding
 - If the OS, application settings, or context suggest a language other than English is being used, provide a translation and explanation of the commit message in that language immediately before executing the commit command.
 
+# Pre-commit content check
+
+Before `git commit`, scan `git diff --staged` for:
+
+1. **Secrets and project-external identifiers** — API keys, tokens, passwords, unrelated company or client names
+2. **Sample-value conventions** — sample domains/IPs/emails must use reserved values (RFC 2606/6761 domains like `example.com` / `*.example` / `*.test`, TEST-NET IPs, `user@example.com`). Real unrelated domains and plausible made-up domains are not acceptable; rewrite to reserved values rather than unstaging.
+
 # Package commit order (dependency-first)
 
 When committing changes that span multiple packages, always commit **from leaves to root** (dependencies before dependents). Use `npx lerna list --graph` for the full dependency tree.
 
-| Tier | Packages                                                                                                          |
-| ---- | ----------------------------------------------------------------------------------------------------------------- |
-| 0    | `shared`, `ml-ast`, `i18n`, `cli-utils`, `config-presets`                                                         |
-| 1    | `types`                                                                                                           |
-| 2    | `ml-spec`                                                                                                         |
-| 3    | `html-spec`, `react-spec`, `vue-spec`, `svelte-spec`                                                              |
-| 4    | `parser-utils`, `selector`                                                                                        |
-| 5    | `ml-config`                                                                                                       |
-| 6    | `html-parser`                                                                                                     |
-| 7    | Framework parsers (jsx, vue, svelte, pug, astro, alpine, ejs, erb, htmx, liquid, mustache, nunjucks, php, smarty) |
-| 8    | `ml-core`                                                                                                         |
-| 9    | `rules`, `file-resolver`                                                                                          |
-| 10   | `pretenders`, `create-rule`                                                                                       |
-| 11   | `markuplint`                                                                                                      |
+| Tier | Packages                                                                                                                                                    |
+| ---- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0    | `shared`, `ml-ast`, `i18n`, `cli-utils`, `config-presets`, `test-tools`                                                                                      |
+| 1    | `types`                                                                                                                                                       |
+| 2    | `ml-spec`                                                                                                                                                     |
+| 3    | `html-spec`, `react-spec`, `vue-spec`, `svelte-spec`, `htmx-spec`, `alpine-spec`                                                                              |
+| 4    | `parser-utils`, `selector`                                                                                                                                    |
+| 5    | `ml-config`                                                                                                                                                   |
+| 6    | `html-parser`                                                                                                                                                 |
+| 7    | Framework parsers (jsx, vue, svelte, pug, astro, alpine, ejs, erb, htmx, liquid, markdown, mdx, mustache, nunjucks, php, smarty, tagged-template-literal) — `mdx-parser` depends on `markdown-parser`, so commit markdown first |
+| 8    | `ml-core`                                                                                                                                                     |
+| 9    | `rules`, `file-resolver`                                                                                                                                      |
+| 10   | `pretenders`, `create-rule`                                                                                                                                   |
+| 11   | `markuplint`                                                                                                                                                  |
 
 - Within the same tier, order does not matter
 - Root config changes (`.oxlintrc.json`, `.oxfmtrc.json`, `tsconfig.base.json`, CI) should be committed before any package changes

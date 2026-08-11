@@ -1,11 +1,14 @@
 ---
-description: Create and maintain framework parser and spec packages for markuplint
+name: framework-parsers
 metadata:
   internal: true
-globs:
-  - packages/@markuplint/*-parser/src/**
-  - packages/@markuplint/*-spec/src/**
-alwaysApply: false
+description: >
+  Create and maintain framework parser and spec packages for markuplint —
+  package types, naming, and the architectural constraints that break the
+  build or runtime contracts when violated. Use when adding or modifying any
+  @markuplint/*-parser or @markuplint/*-spec package. Trigger keywords: new
+  parser, template engine parser, framework parser, spec package,
+  ExtendedSpec, ignoreTags, component-scanner.
 ---
 
 # framework-parsers
