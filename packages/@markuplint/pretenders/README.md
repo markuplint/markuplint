@@ -348,7 +348,7 @@ const pretenders = await autoScan('/absolute/path/to/Page.tsx', sourceCode);
 
 `Promise<Pretender[]>` — Discovered pretender mappings for the entry file and its import graph.
 
-Results are cached per entry path, keyed on `sourceCode` equality (not mtime, which doesn't exist for unsaved editor content); traversal is capped at 8 import hops, `node_modules` is never traversed into, and import cycles are handled via a visited set.
+Results are cached per entry path, keyed on `sourceCode` equality (not mtime, which doesn't exist for unsaved editor content); `node_modules` is never traversed into, and import cycles are handled via a visited set. Traversal is capped at 8 import hops for template-language (`.vue`/`.svelte`/`.astro`) chains, but this cap does not hold for JSX/TSX-only chains: `jsxScanner` builds a `ts.Program` from the collected files, and TypeScript's own module resolution transitively pulls in whatever those files import regardless of the cap.
 
 ### `clearPretenderCaches()`
 

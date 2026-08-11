@@ -123,6 +123,9 @@ export async function autoScan(entryAbsPath: string, sourceCode: string): Promis
 				if (childSource == null) {
 					continue;
 				}
+				// Feed this read into `sources` so the `scan()` call below reuses it
+				// instead of re-reading the same file from disk a second time.
+				sources.set(key, childSource);
 
 				nextFrontier.push({ absPath: resolved, source: childSource });
 			}
@@ -140,8 +143,11 @@ function isScannable(filePath: string): boolean {
 	return SCANNABLE_EXTENSIONS.has(path.extname(filePath).toLowerCase());
 }
 
+const DECLARATION_SUFFIXES = ['.d.ts', '.d.mts', '.d.cts'];
+
 function isDeclarationFile(filePath: string): boolean {
-	return filePath.toLowerCase().endsWith('.d.ts');
+	const lower = filePath.toLowerCase();
+	return DECLARATION_SUFFIXES.some(suffix => lower.endsWith(suffix));
 }
 
 function readFileSafe(filePath: string): string | null {
