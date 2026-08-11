@@ -214,10 +214,11 @@ export class MLCore {
 	 *
 	 * @param fabric - Partial fabric with the properties to update
 	 */
-	update({ parser, ruleset, rules, locale, schemas, parserOptions, configErrors }: Partial<MLFabric>) {
+	update({ parser, ruleset, rules, locale, schemas, parserOptions, pretenders, configErrors }: Partial<MLFabric>) {
 		this.#parser = parser ?? this.#parser;
 		this.#locale = locale ?? this.#locale;
 		this.#schemas = schemas ?? this.#schemas;
+		this.#pretenders = pretenders ? [...pretenders] : this.#pretenders;
 		this.#configErrors = [...(configErrors ?? [])];
 
 		const baseRules = rules ? [...rules] : this.#rules.filter(r => !r.baseRuleId);
