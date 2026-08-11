@@ -228,6 +228,13 @@ export function clearExportTableCache() {
 	exportTableCache.clear();
 }
 
+// Always reads from disk, unlike jsxScanner's own file reads (compiler-host.ts),
+// which consult a `sources` in-memory override first. A caller relying on
+// `sources` (e.g. `autoScan`, which seeds it with already-read file content to
+// avoid a second disk read) still gets a disk-backed export table here, so a
+// collected file's content can differ between the two if `sources` diverges
+// from disk — and, in the common case where they agree, the file is still
+// read from disk once more than necessary.
 function getExportTableForFile(fileAbs: string) {
 	const cached = exportTableCache.get(fileAbs);
 	if (cached !== undefined) {

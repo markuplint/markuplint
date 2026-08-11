@@ -1,8 +1,9 @@
+import fs from 'node:fs';
 import { writeFile, mkdir, mkdtemp, rm } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
-import { describe, test, expect, beforeEach, afterEach } from 'vitest';
+import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
 
 import { autoScan, clearAutoScanCache } from './auto-scan.js';
 
@@ -67,6 +68,16 @@ describe('autoScan', () => {
 		await expect(autoScan(entryPath, entrySource)).resolves.toBeInstanceOf(Array);
 	});
 
+	test('does not scan a .d.mts ambient declaration file reached during BFS', async () => {
+		const entryPath = path.join(tmpDir, 'entry.tsx');
+		await writeFile(path.join(tmpDir, 'types.d.mts'), 'export const Ambient = () => <button>x</button>;');
+		const entrySource = "import { Ambient } from './types.d.mts';\nexport const Entry = () => <Ambient />;";
+
+		const result = await autoScan(entryPath, entrySource);
+
+		expect(result.find(p => p.selector === 'Ambient')).toBeUndefined();
+	});
+
 	test('does not traverse into node_modules', async () => {
 		const entryPath = path.join(tmpDir, 'entry.tsx');
 		const libDir = path.join(tmpDir, 'node_modules', 'some-lib');
@@ -128,6 +139,31 @@ describe('autoScan', () => {
 
 		expect(second).toStrictEqual(first);
 		expect(second.find(p => p.selector === 'Child')).toMatchObject({ as: 'button' });
+	});
+
+	test('reuses the BFS-read content for jsxScanner instead of re-reading from disk for that step', async () => {
+		const entryPath = path.join(tmpDir, 'entry.tsx');
+		const childPath = path.join(tmpDir, 'Child.tsx');
+		await writeFile(childPath, 'export const Child = () => <button>x</button>;');
+		const entrySource = "import { Child } from './Child';\nexport const Entry = () => <Child />;";
+
+		const readFileSyncSpy = vi.spyOn(fs, 'readFileSync');
+		try {
+			await autoScan(entryPath, entrySource);
+			// BFS reads the file once to keep walking its imports (1), and
+			// jsxScanner's own file read (via the caching CompilerHost) reuses
+			// that via `sources` rather than hitting disk again — but
+			// jsxScanner's dependency-mapper module independently re-reads
+			// collected files from disk to build its export table for
+			// same-selector disambiguation, bypassing `sources` (2). So the
+			// count this asserts is 2, not 1: `sources` avoids one of the two
+			// re-reads, not all of them (see the comment on `sources.set()` in
+			// auto-scan.ts and on `getExportTableForFile` in dependency-mapper.ts).
+			const childReadCount = readFileSyncSpy.mock.calls.filter(call => call[0] === childPath).length;
+			expect(childReadCount).toBe(2);
+		} finally {
+			readFileSyncSpy.mockRestore();
+		}
 	});
 
 	test('a changed entry source is a cache miss', async () => {

@@ -123,8 +123,13 @@ export async function autoScan(entryAbsPath: string, sourceCode: string): Promis
 				if (childSource == null) {
 					continue;
 				}
-				// Feed this read into `sources` so the `scan()` call below reuses it
-				// instead of re-reading the same file from disk a second time.
+				// Feed this read into `sources` so jsxScanner/templateScanner's own
+				// file read inside the `scan()` call below reuses it instead of
+				// hitting disk again. This doesn't eliminate every re-read for a
+				// JSX/TSX file, though: jsxScanner's dependency-mapper module
+				// independently re-reads collected files from disk (bypassing
+				// `sources`) to build its own export table for same-selector
+				// disambiguation (see dependency-mapper.ts's `getExportTableForFile`).
 				sources.set(key, childSource);
 
 				nextFrontier.push({ absPath: resolved, source: childSource });
