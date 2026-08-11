@@ -76,6 +76,15 @@ export const benchmarkConfig: Config = {
 		'no-extra-selected-options': true,
 		'no-orphaned-end-tag': true,
 		'srcset-sizes-constraint': true,
+		// HTML LS §4.9.12.1 *Forming a table* closes with "Authors must not produce a table with
+		// table model errors", covering cell overlap (Step 14), a row or column that no cell is
+		// anchored to (Step 20), and a cell clipped at a row group boundary (§4.9.12 "A cell
+		// cannot cover slots that are from two or more row groups."). The rule additionally
+		// reports rows that merely disagree in width, which the spec permits and nu-validator
+		// reports as a warning; the user-facing default stays 'warning' so that beyond-spec
+		// check does not become a hard error for authors, and the bench escalates to align with
+		// the MUST NOT above.
+		'table-row-column-alignment': { severity: 'error' },
 		'wai-aria-non-existent-role': true,
 		'wai-aria-abstract-role': true,
 		'wai-aria-permitted-roles': true,

@@ -140,7 +140,17 @@ describe('Basic', () => {
 </table>
 `,
 		);
+		// BREAKING CHANGE (#3915): HTML LS §4.9.12.1 Step 20 — no cell is ever anchored to the
+		// two columns the `colspan` stretches the table over, which is a table model error.
+		// https://html.spec.whatwg.org/multipage/tables.html#forming-a-table
 		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 5,
+				col: 9,
+				message: 'Two columns have no cells beginning in them',
+				raw: 'colspan="3"',
+			},
 			{
 				severity: 'warning',
 				line: 8,
@@ -266,6 +276,9 @@ describe('Complex', () => {
 </table>
 `,
 		);
+		// BREAKING CHANGE (#3915): HTML LS §4.9.12.1 Step 20 — the last four columns the
+		// `colspan="8"` cell stretches the table over have no cell anchored to them.
+		// https://html.spec.whatwg.org/multipage/tables.html#forming-a-table
 		expect(violations).toStrictEqual([
 			{
 				severity: 'warning',
@@ -273,6 +286,13 @@ describe('Complex', () => {
 				col: 11,
 				message: 'Exceeds the number of available rows',
 				raw: 'rowspan="3"',
+			},
+			{
+				severity: 'warning',
+				line: 12,
+				col: 9,
+				message: 'Four columns have no cells beginning in them',
+				raw: 'colspan="8"',
 			},
 			{
 				severity: 'warning',
@@ -524,15 +544,22 @@ describe('Edge Cases', () => {
 </table>
 `,
 		);
-		expect(violations).toStrictEqual([
-			{
-				severity: 'warning',
-				line: 6,
-				col: 5,
-				message: 'One extra column in a row',
-				raw: '<td>',
-			},
-		]);
+		// BREAKING CHANGE (#3915): the table is conforming. HTML LS §4.9.12.1 Step 6 anchors each
+		// cell of the second and third rows past the slot the `rowspan` still occupies, so every
+		// row is three slots wide and every column has a cell anchored to it. The former report
+		// was a false positive of the pre-#3915 grid model, which counted cells instead of slots.
+		// The test ID keeps its `invalid-011` prefix; renaming it would hide this change.
+		// https://html.spec.whatwg.org/multipage/tables.html#forming-a-table
+		// expect(violations).toStrictEqual([
+		// 	{
+		// 		severity: 'warning',
+		// 		line: 6,
+		// 		col: 5,
+		// 		message: 'One extra column in a row',
+		// 		raw: '<td>',
+		// 	},
+		// ]); // pre-#3915 baseline
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('[table-row-column-alignment-valid-007] Explicit default values (rowspan=1, colspan=1)', async () => {
@@ -686,6 +713,198 @@ describe('Edge Cases', () => {
 </table>
 `,
 		);
+		// BREAKING CHANGE (#3915): the table has a table model error. HTML LS §4.9.12.1 Step 20
+		// forbids a column that only holds slots without a cell anchored to them, and the four
+		// columns to the right of the anchor never get one. nu-validator reports the same table.
+		// The test ID keeps its `valid-011` prefix; renaming it would hide this change.
+		// https://html.spec.whatwg.org/multipage/tables.html#forming-a-table
+		// expect(violations).toStrictEqual([]); // pre-#3915 baseline
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 4,
+				col: 9,
+				message: 'Four columns have no cells beginning in them',
+				raw: 'colspan="5"',
+			},
+		]);
+	});
+});
+
+describe('Table model errors', () => {
+	test('[table-row-column-alignment-invalid-013] Colspan anchored past a rowspan continuation', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			`
+<table>
+  <tr>
+    <td rowspan="2">Cell 1</td>
+    <td>Cell 2</td>
+  </tr>
+  <tr>
+    <td colspan="2">Overlapping cell</td>
+  </tr>
+</table>
+`,
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 8,
+				col: 9,
+				message: 'One column has no cells beginning in it',
+				raw: 'colspan="2"',
+			},
+			{
+				severity: 'warning',
+				line: 8,
+				col: 9,
+				message: 'Exceeds the number of available columns',
+				raw: 'colspan="2"',
+			},
+		]);
+	});
+
+	test('[table-row-column-alignment-invalid-014] Colspan reaching past the last anchored column', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			`
+<table>
+  <tr>
+    <td>A</td>
+    <td colspan="5">B</td>
+  </tr>
+</table>
+`,
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 5,
+				col: 9,
+				message: 'Four columns have no cells beginning in them',
+				raw: 'colspan="5"',
+			},
+		]);
+	});
+
+	test('[table-row-column-alignment-invalid-015] Column markup declaring a column no cell starts in', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			`
+<table>
+  <colgroup>
+    <col><col><col>
+  </colgroup>
+  <tr><td>Cell 1</td><td>Cell 2</td></tr>
+</table>
+`,
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 4,
+				col: 15,
+				message: 'One column has no cells beginning in it',
+				raw: '<col>',
+			},
+		]);
+	});
+
+	test('[table-row-column-alignment-invalid-016] Row without cells', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			`
+<table>
+  <tr><td>Cell</td></tr>
+  <tr></tr>
+</table>
+`,
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 4,
+				col: 3,
+				message: 'One row has no cells beginning in it',
+				raw: '<tr>',
+			},
+		]);
+	});
+
+	test('[table-row-column-alignment-invalid-017] Rowspan reaching past the end of its row group', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			`
+<table>
+  <tbody>
+    <tr><td rowspan="3">Spanning cell</td></tr>
+    <tr><td>Cell</td></tr>
+  </tbody>
+</table>
+`,
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 4,
+				col: 13,
+				message: 'Exceeds the number of available rows',
+				raw: 'rowspan="3"',
+			},
+			{
+				severity: 'warning',
+				line: 5,
+				col: 9,
+				message: 'One extra column in a row',
+				raw: '<td>',
+			},
+		]);
+	});
+
+	test('[table-row-column-alignment-invalid-018] Overlap suppresses the other checks of the same table', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			`
+<table>
+<tr>
+  <td></td>
+  <td rowspan="3"></td>
+  <td rowspan="3">cell1</td>
+</tr>
+<tr>
+  <td colspan="2"></td>
+  <td rowspan="2">cell0</td>
+</tr>
+</table>
+`,
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 2,
+				col: 1,
+				message: '"rowspan" and "colspan" are causing cell overlap',
+				raw: '<table>',
+			},
+		]);
+	});
+
+	test('[table-row-column-alignment-valid-012] Row wider than the column markup', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			`
+<table>
+  <colgroup>
+    <col><col>
+  </colgroup>
+  <tr><td>Cell 1</td><td>Cell 2</td><td>Cell 3</td></tr>
+</table>
+`,
+		);
+		// HTML LS §4.9.12.1 Step 7 grows xwidth to fit the row, so exceeding the column markup is
+		// not a table model error. nu-validator disagrees; that report is recorded as an
+		// over-detection in `tests/external/snapshots/excluded-ids.json` (Issue #3916).
 		expect(violations).toStrictEqual([]);
 	});
 });

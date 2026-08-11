@@ -96,61 +96,6 @@
 			]
 		},
 		{
-			"path": "html/elements/table/cell-overlaps-earlier-cell-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-c4f8fa6b70b8"
-			]
-		},
-		{
-			"path": "html/elements/table/cell-overlaps-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-08f5fbfeb948"
-			]
-		},
-		{
-			"path": "html/elements/table/cell-spans-past-end-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-86b3e5ec0c91"
-			]
-		},
-		{
-			"path": "html/elements/table/cell-spans-past-row-group-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-7c845e09546b"
-			]
-		},
-		{
-			"path": "html/elements/table/col-no-cells-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-4a38780cd43d",
-				"nv-a2675d33cead"
-			]
-		},
-		{
-			"path": "html/elements/table/integrity/vertical-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-4b27c9d7144c",
-				"nv-7ad7b35e592c",
-				"nv-5228f89f32b3",
-				"nv-6aab5dcb29be",
-				"nv-09957c9504d0"
-			]
-		},
-		{
-			"path": "html/elements/table/row-width-less-than-col-markup-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-826f9d9b348e",
-				"nv-10d5998bc50c"
-			]
-		},
-		{
 			"path": "html/parser/charset-after-1024-novalid.html",
 			"category": "uncategorized",
 			"nuMessageIds": [

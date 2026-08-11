@@ -186,6 +186,8 @@
 			"additionalProperties": false,
 			"properties": {
 				"{0} {1}": { "type": "string" },
+				"{0} {1} has no cells beginning in it": { "type": "string" },
+				"{0} {1} have no cells beginning in them": { "type": "string" },
 				"{0:c} and {1:c}": { "type": "string" },
 				"{0:c} on {1}": { "type": "string" },
 				"{0} ({1})": { "type": "string" },
