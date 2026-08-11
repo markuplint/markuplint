@@ -32,20 +32,28 @@
  *   refers to (via its own declarations or imports), so linting doesn't fall back to
  *   whichever same-named component happened to be scanned first (see issue #3951).
  *
+ * ## On-demand resolution
+ *
+ * - {@link autoScan} — Resolves pretenders for a single lint target by walking its own
+ *   import graph (breadth-first, extension-agnostic) instead of requiring pre-configured
+ *   `files`/`scan` glob patterns. Backs the `pretenders: { auto: true }` config option.
+ *
  * ## Caching
  *
  * - {@link clearPretenderCaches} — Clears the module-level caches that back import/export
- *   resolution (module resolution, export tables, parsed JSX `SourceFile`s). None of these
- *   caches expire on their own, so a long-running host (watch mode, an editor extension)
- *   that re-resolves pretenders across file edits must call this after each edit, or renamed
- *   exports, newly valid tsconfig `paths` aliases, and stale parsed component files keep
- *   resolving as they did before the change for the rest of the process.
+ *   resolution (module resolution, export tables, parsed JSX `SourceFile`s, auto-scan
+ *   results). None of these caches expire on their own, so a long-running host (watch mode,
+ *   an editor extension) that re-resolves pretenders across file edits must call this after
+ *   each edit, or renamed exports, newly valid tsconfig `paths` aliases, and stale parsed/
+ *   scanned files keep resolving as they did before the change for the rest of the process.
  */
 
+import { clearAutoScanCache } from './auto-scan.js';
 import { clearExportTableCache } from './dependency-mapper.js';
 import { clearModuleResolutionCaches } from './import-resolver/resolve-module-file.js';
 import { clearSourceFileCache } from './jsx/compiler-host.js';
 
+export { autoScan } from './auto-scan.js';
 export type { DisambiguateOptions } from './disambiguate.js';
 export { disambiguatePretenders } from './disambiguate.js';
 export { jsxScanner } from './jsx/index.js';
@@ -64,6 +72,7 @@ export function clearPretenderCaches() {
 	clearExportTableCache();
 	clearModuleResolutionCaches();
 	clearSourceFileCache();
+	clearAutoScanCache();
 }
 
 // Companion Module pattern types
