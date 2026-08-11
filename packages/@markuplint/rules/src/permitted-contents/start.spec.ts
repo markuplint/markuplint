@@ -65,7 +65,10 @@ test('[permitted-contents-invalid-006] conditional transparent: <audio>', () => 
 });
 
 test('[permitted-contents-invalid-007] transparent: <audio> with <audio>', () => {
-	expect(c('<audio><audio></audio></audio>')[0]?.type).toBe('MATCHED_ZERO');
+	// The inner <audio> itself is now kept in the flattened list (#3928), so the
+	// outer model's own `transparent` pattern slot absorbs it as a plain match;
+	// the disallow is still reported separately via TRANSPARENT_MODEL_DISALLOWS.
+	expect(c('<audio><audio></audio></audio>')[0]?.type).toBe('MATCHED');
 	expect(c('<audio><audio></audio></audio>')[1]?.type).toBe('TRANSPARENT_MODEL_DISALLOWS');
 });
 

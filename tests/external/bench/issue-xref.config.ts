@@ -72,13 +72,7 @@ export const xrefMappings: readonly XrefMapping[] = [
 		kind: 'primary',
 		issue: 3928,
 		filter: /^html\/elements\/(a\/with-href-button-descendant|audio\/controls-in-button|picture\/(junk-noscript|junk-noscript-after-source-no-img|junk-video-before))-novalid/,
-		note: "`permitted-contents` flattens transparent-model children out of the parent's content-model check entirely. `<a href>` inside `<button>` (both transparent-carrying interactive descendants) and `<video>` / `<noscript>` inside `<picture>` all slip past because the transparent element itself is dropped from the parent's selector evaluation. HTML LS §3.2.5.3 transparency defers only the *children* to the parent's model; the transparent element itself must still satisfy the parent's constraints. Fix requires reworking `represent-transparent-nodes.ts` to keep the transparent element in the flattened list.",
-	},
-	{
-		kind: 'primary',
-		issue: 3838,
-		filter: /^html-aria\/(author-requirements\/(574|575|576|577)|misc\/(role-tab-with-no-role-tabpanel-novalid|summary-for-its-details-with-aria-(expanded|pressed)-novalid))/,
-		note: 'Umbrella of 7 aria fixtures deferred from the aria-slice PR. All 7 are now `match-error`. Six flipped after Group 1 (author-requirements role chain: `wai-aria-required-owned-elements`) and Group 3 (summary heuristics: `spec.summary.jsonc#aria.properties.without`) landed. The last one, `role-tab-with-no-role-tabpanel-novalid` (Group 2, a role-pair authoring requirement — WAI-ARIA 1.3 §tab role: "Authors MUST ensure that if a `tab` is active, a corresponding `tabpanel` that represents the active `tab` is rendered."), flipped after the new `wai-aria-tab-requires-tabpanel` rule landed (resolves via `aria-controls`/`aria-labelledby` correspondence). All acceptance criteria met; safe to close.',
+		note: "Fixed. `representTransparentNodes` now keeps the transparent element itself in the flattened list alongside its pass-through children, so the parent's own content-model check still evaluates the wrapper's placement (HTML LS §3.2.5.3: transparency defers only the *children* to the parent's model; the transparent element itself must still satisfy the parent's constraints). All 5 fixtures now `match-error`; verified against the full 5442-fixture corpus with zero ml-only/nu-over regressions (path sets identical before/after). Safe to close.",
 	},
 	{
 		kind: 'primary',

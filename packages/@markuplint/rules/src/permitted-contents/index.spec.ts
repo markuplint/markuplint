@@ -2414,6 +2414,113 @@ describe('Issues', () => {
 			(await mlRuleTest(rule, '<dl><div><dt>a</dt><dt>b</dt><dd>c</dd><dd>d</dd></div></dl>')).violations,
 		).toStrictEqual([]);
 	});
+
+	// #3928: a transparent-content-model element (e.g. <a>, <audio>, <ins>) must
+	// still be evaluated against the parent's own content model at its own
+	// position — the transparent flattening that lets its children pass through
+	// must not make the element itself disappear from that check.
+	test('[permitted-contents-issue-3928-001] a[href] (interactive) directly inside button is invalid', async () => {
+		const { violations } = await mlRuleTest(rule, '<button><a href="/x"><span>text</span></a></button>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 9,
+				raw: '<a href="/x">',
+				message: 'The "a" element is not allowed in the "button" element in this context',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-3928-002] audio[controls] (interactive) directly inside button is invalid', async () => {
+		const { violations } = await mlRuleTest(rule, '<button><audio controls></audio></button>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 9,
+				raw: '<audio controls>',
+				message: 'The "audio" element is not allowed in the "button" element in this context',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-3928-003] video directly inside picture is invalid', async () => {
+		const { violations } = await mlRuleTest(rule, '<picture><video></video><img src="x" alt=""></picture>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				raw: '<picture>',
+				message: 'Require an element. (Need "img")',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-3928-004] audio directly inside picture is invalid', async () => {
+		const { violations } = await mlRuleTest(rule, '<picture><audio></audio><img src="x" alt=""></picture>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				raw: '<picture>',
+				message: 'Require an element. (Need "img")',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-3928-005] canvas directly inside picture is invalid', async () => {
+		const { violations } = await mlRuleTest(rule, '<picture><canvas></canvas><img src="x" alt=""></picture>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				raw: '<picture>',
+				message: 'Require an element. (Need "img")',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-3928-006] a wrapping img directly inside picture is invalid', async () => {
+		const { violations } = await mlRuleTest(rule, '<picture><a><img src="x" alt=""></a></picture>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				raw: '<picture>',
+				message: 'Require an element. (Need "img")',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-3928-007] ins directly inside picture is invalid', async () => {
+		const { violations } = await mlRuleTest(rule, '<picture><ins></ins><img src="x" alt=""></picture>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				raw: '<picture>',
+				message: 'Require an element. (Need "img")',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-3928-008] non-interactive a inside button stays valid', async () => {
+		// <a> without href is not interactive content, so it remains permitted
+		// phrasing content — the fix must not flag benign transparent usage.
+		const { violations } = await mlRuleTest(rule, '<button><a>text</a></button>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-3928-009] a[href] wrapping phrasing content inside p stays valid', async () => {
+		const { violations } = await mlRuleTest(rule, '<p><a href="#">text</a></p>');
+		expect(violations).toStrictEqual([]);
+	});
 });
 
 describe('#3739 (pretender + user tag rule)', () => {

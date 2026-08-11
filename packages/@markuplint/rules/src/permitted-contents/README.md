@@ -38,6 +38,12 @@ It is possible to make the structure robust by setting element relationships on 
 		<header>Not allowed nested header</header>
 	</div>
 </header>
+
+<!-- button disallows interactive content descendants; a[href] is interactive
+     content even though <a> itself has a transparent content model -->
+<button>
+	<a href="/path"><span>Not allowed interactive content</span></a>
+</button>
 ```
 <!-- prettier-ignore-end -->
 
@@ -59,6 +65,10 @@ It is possible to make the structure robust by setting element relationships on 
 <header>
 	<nav>Navigation</nav>
 </header>
+
+<button>
+	<a>Non-interactive because it has no href attribute</a>
+</button>
 ```
 <!-- prettier-ignore-end -->
 
