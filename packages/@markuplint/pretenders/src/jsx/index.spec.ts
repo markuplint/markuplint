@@ -4,7 +4,9 @@ import { describe, test, expect } from 'vitest';
 
 import { jsxScanner } from './index.js';
 
-const _ = (filePath: string) => filePath.split('/').join(path.sep);
+// Scanners always emit `/`-delimited filePath now (for stable, cross-platform
+// JSON output), so this is a no-op — kept so call sites don't need touching.
+const _ = (filePath: string) => filePath;
 const testDir = path.resolve(import.meta.dirname, '..', '..', 'test', 'fixtures');
 
 describe('jsxScanner', () => {

@@ -4,7 +4,9 @@ import { describe, test, expect } from 'vitest';
 
 import { templateScanner } from './index.js';
 
-const _ = (filePath: string) => filePath.split('/').join(path.sep);
+// Scanners always emit `/`-delimited filePath now (for stable, cross-platform
+// JSON output), so this is a no-op — kept so call sites don't need touching.
+const _ = (filePath: string) => filePath;
 const fixtureDir = path.resolve(import.meta.dirname, '..', '..', 'test', 'fixtures', 'template');
 const resolve = (name: string) => path.resolve(fixtureDir, name);
 
