@@ -1,12 +1,21 @@
 # @markuplint/rules
 
+## Adding a New Rule (checklist — steps 2–4 have NO enforcing test; forgetting them fails silently)
+
+1. `src/<rule-name>/`: `index.ts`, `meta.ts`, `schema.json`, spec file(s), `README.md` **and** `README.ja.md` — both languages are website source and MUST stay in sync; updating only one is a recurring mistake
+2. Register the rule in `src/index.ts` (import + registry entry)
+3. Add a `$ref` entry to `packages/@markuplint/rules/schema.json` — this file is a **manually maintained registry** (no generator produces it, despite looking generated)
+4. If the rule belongs in a preset, update `packages/@markuplint/config-presets/src/`
+
 ## Test ID Convention (MANDATORY)
 
-Every `test()` block in `src/**/*.spec.ts` MUST have a unique ID prefix:
+Every `test()` block in rule spec files — `src/<rule-name>/**/*.spec.ts` — MUST have a unique ID prefix:
 
 ```
 [rule-name-category-NNN] description
 ```
+
+Repo-wide meta specs directly under `src/` (e.g. `mirrors-parse-error-codes.spec.ts`) are NOT rule specs and are exempt.
 
 ### Categories
 
@@ -24,12 +33,11 @@ Every `test()` block in `src/**/*.spec.ts` MUST have a unique ID prefix:
 - Numbers are sequential per category per file, starting at `001`
 - Multiple tests for the same issue: `[rule-name-issue-NNNN-001]`, `[rule-name-issue-NNNN-002]`
 - When adding a new test, assign the next available number in the appropriate category
-- Run `/list-rule-test` (or `node .claude/commands/scripts/list-rule-test.mjs --no-id`) to check for missing IDs
+- Run `/list-rule-test` (or `node .claude/skills/list-rule-test/scripts/list-rule-test.mjs --no-id`) to check for missing IDs — the only expected hits are the exempt meta specs noted above
 
 ## Assertion Convention (MANDATORY)
 
-Rule spec assertions use `toStrictEqual` with the exact violation object
-`{ severity, line, col, message, raw }`. Never loose or partial matchers.
+When asserting reported violations in rule specs, use `toStrictEqual` with the exact violation object `{ severity, line, col, message, raw }`. Never loose or partial matchers for violation objects. (Assertions on other values — counts, fixed code strings, registry invariants — use whatever matcher fits.)
 
 ## parse5 mirror declaration (`meta.mirrorsParseErrorCodes`)
 
