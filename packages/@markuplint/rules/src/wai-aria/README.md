@@ -18,6 +18,7 @@ Warn if:
   - Don't set the required property/state.
   - The role doesn't have the required child roles (e.g., `table` requires `row`).
   - The role is placed outside its required parent context (e.g., `tab` without a `tablist` ancestor).
+  - An active `tab` role has no corresponding `tabpanel` role.
 - Unrecommended.
   - Set the deprecated role.
   - Set the deprecated property/state.
@@ -85,6 +86,28 @@ When set to `false`, this check is disabled.
 
 > [!NOTE]
 > Only explicit roles (set via the `role` attribute) are checked. Implicit roles are skipped because native HTML parent-child semantics are already guaranteed by the HTML specification.
+
+### `checkingTabRequiresTabpanel`
+
+Type: `boolean` (default: `true`)
+
+Verifies that an active `tab` role element (`aria-selected="true"`) has a corresponding `tabpanel` role element, per the ARIA specification's `tab` role requirement.
+
+The correspondence is resolved via `aria-controls` on the tab (pointing to a `tabpanel`) or `aria-labelledby` on a `tabpanel` (pointing back at the tab's `id`).
+
+When set to `false`, this check is disabled.
+
+```json class=config
+{
+  "rules": {
+    "wai-aria": {
+      "options": {
+        "checkingTabRequiresTabpanel": false
+      }
+    }
+  }
+}
+```
 
 ## Known Limitations
 

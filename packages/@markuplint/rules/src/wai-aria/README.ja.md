@@ -17,6 +17,7 @@ description: WAI-ARIAおよびARIA in HTMLの仕様のとおりrole属性また�
   - 必須のプロパティ/ステートを指定していない場合
   - ロールが必要とする子ロールを持たない場合（例: `table`は`row`を必要とする）
   - ロールが必要とする親コンテキストの外に配置された場合（例: `tablist`の祖先を持たない`tab`）
+  - アクティブな`tab`ロールに対応する`tabpanel`ロールがない場合
 - 推奨されない使い方
   - 非推奨（廃止予定）のロールを指定した場合
   - 非推奨（廃止予定）のプロパティ/ステートを指定した場合
@@ -86,6 +87,28 @@ description: WAI-ARIAおよびARIA in HTMLの仕様のとおりrole属性また�
 
 > [!NOTE]
 > 明示的なロール（`role`属性で設定されたもの）のみがチェックされます。暗黙のロールは、ネイティブHTMLの親子関係がHTML仕様によって保証されているためスキップされます。
+
+### `checkingTabRequiresTabpanel`
+
+型: `boolean`（デフォルト: `true`）
+
+ARIA仕様の`tab`ロールの要件に従い、アクティブな`tab`ロールの要素（`aria-selected="true"`）が対応する`tabpanel`ロールの要素を持っているかを検証します。
+
+対応関係は、タブ側の`aria-controls`（`tabpanel`を指す）、または`tabpanel`側の`aria-labelledby`（タブの`id`を指す）のいずれかで解決されます。
+
+`false`に設定すると、このチェックは無効になります。
+
+```json class=config
+{
+  "rules": {
+    "wai-aria": {
+      "options": {
+        "checkingTabRequiresTabpanel": false
+      }
+    }
+  }
+}
+```
 
 ## 既知の制限事項
 

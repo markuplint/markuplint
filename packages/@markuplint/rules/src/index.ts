@@ -84,6 +84,7 @@ import WaiAriaPresentationalChildren from './wai-aria-presentational-children/in
 import WaiAriaRequiredOwnedElements from './wai-aria-required-owned-elements/index.js';
 import WaiAriaRequiredParentRole from './wai-aria-required-parent-role/index.js';
 import WaiAriaRequiredProps from './wai-aria-required-props/index.js';
+import WaiAriaTabRequiresTabpanel from './wai-aria-tab-requires-tabpanel/index.js';
 import WaiAriaValue from './wai-aria-value/index.js';
 
 /**
@@ -166,6 +167,7 @@ const rules = {
 	'wai-aria-required-owned-elements': WaiAriaRequiredOwnedElements,
 	'wai-aria-required-parent-role': WaiAriaRequiredParentRole,
 	'wai-aria-required-props': WaiAriaRequiredProps,
+	'wai-aria-tab-requires-tabpanel': WaiAriaTabRequiresTabpanel,
 	'wai-aria-value': WaiAriaValue,
 } as const satisfies Record<string, AnyRuleSeed<any, any>>;
 

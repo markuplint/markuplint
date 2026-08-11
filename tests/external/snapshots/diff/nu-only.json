@@ -1,121 +1,79 @@
 {
 	"entries": [
 		{
-			"path": "html-aria/misc/role-tab-with-no-role-tabpanel-novalid.html",
-			"category": "aria",
-			"nuMessageIds": [
-				"nv-1e3c9ebc2ee7"
-			]
-		},
-		{
 			"path": "html-math/math-in-head-novalid.html",
 			"category": "uncategorized",
-			"nuMessageIds": [
-				"nv-0c86320f6630",
-				"nv-8aff5b8981a2"
-			]
+			"nuMessageIds": ["nv-0c86320f6630", "nv-8aff5b8981a2"]
 		},
 		{
 			"path": "html/attributes/lang/extlang-bad-novalid.html",
 			"category": "global-attr",
-			"nuMessageIds": [
-				"nv-b9765660c678"
-			]
+			"nuMessageIds": ["nv-b9765660c678"]
 		},
 		{
 			"path": "html/attributes/lang/invalid-primary-novalid.html",
 			"category": "global-attr",
-			"nuMessageIds": [
-				"nv-ae0b2057a762"
-			]
+			"nuMessageIds": ["nv-ae0b2057a762"]
 		},
 		{
 			"path": "html/datatypes/charset-invalid-novalid.html",
 			"category": "data-types",
-			"nuMessageIds": [
-				"nv-acede5e8fcb0",
-				"nv-b7b2459d8f36"
-			]
+			"nuMessageIds": ["nv-acede5e8fcb0", "nv-b7b2459d8f36"]
 		},
 		{
 			"path": "html/elements/a/with-href-button-descendant-novalid.html",
 			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-81c2e7bf5413"
-			]
+			"nuMessageIds": ["nv-81c2e7bf5413"]
 		},
 		{
 			"path": "html/elements/audio/controls-in-button-novalid.html",
 			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-f3f919789208"
-			]
+			"nuMessageIds": ["nv-f3f919789208"]
 		},
 		{
 			"path": "html/elements/img/missing-alt-in-figure-novalid.html",
 			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-224e80c23676"
-			]
+			"nuMessageIds": ["nv-224e80c23676"]
 		},
 		{
 			"path": "html/elements/img/usemap-invalid-reference-novalid.html",
 			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-f3a0d6efeee1"
-			]
+			"nuMessageIds": ["nv-f3a0d6efeee1"]
 		},
 		{
 			"path": "html/elements/picture/html-syntax-picture-no-end-tag-novalid.html",
 			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-3ade6b2bf3d6",
-				"nv-aca994a28b46"
-			]
+			"nuMessageIds": ["nv-3ade6b2bf3d6", "nv-aca994a28b46"]
 		},
 		{
 			"path": "html/elements/picture/junk-noscript-after-source-no-img-novalid.html",
 			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-fab7ebe451a5",
-				"nv-6cc718a96d01"
-			]
+			"nuMessageIds": ["nv-fab7ebe451a5", "nv-6cc718a96d01"]
 		},
 		{
 			"path": "html/elements/picture/junk-noscript-novalid.html",
 			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-2f51978ea35d"
-			]
+			"nuMessageIds": ["nv-2f51978ea35d"]
 		},
 		{
 			"path": "html/elements/picture/junk-video-before-novalid.html",
 			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-6c316a041c38"
-			]
+			"nuMessageIds": ["nv-6c316a041c38"]
 		},
 		{
 			"path": "html/parser/charset-after-1024-novalid.html",
 			"category": "uncategorized",
-			"nuMessageIds": [
-				"nv-b31d83a9ed4b"
-			]
+			"nuMessageIds": ["nv-b31d83a9ed4b"]
 		},
 		{
 			"path": "html/parser/stray-start-tag-novalid.html",
 			"category": "uncategorized",
-			"nuMessageIds": [
-				"nv-3c0b2b71db12"
-			]
+			"nuMessageIds": ["nv-3c0b2b71db12"]
 		},
 		{
 			"path": "html/parser/text-after-body-novalid.html",
 			"category": "uncategorized",
-			"nuMessageIds": [
-				"nv-94d4d4cf4600",
-				"nv-c35f07b7ee36"
-			]
+			"nuMessageIds": ["nv-94d4d4cf4600", "nv-c35f07b7ee36"]
 		}
 	]
 }
