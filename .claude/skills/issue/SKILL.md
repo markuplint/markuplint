@@ -1,5 +1,13 @@
 ---
-description: Analyze or create a GitHub Issue and build a resolution plan
+name: issue
+metadata:
+  internal: true
+description: >
+  Analyze or create a GitHub Issue and build a TDD resolution plan. Use when
+  given an Issue URL to work on, or when a problem report needs to be filed as
+  an Issue first. Trigger keywords: issue, GitHub issue, file an issue, fix
+  issue, resolve issue, issue triage.
+disable-model-invocation: true
 ---
 
 Input: $ARGUMENTS
@@ -25,7 +33,7 @@ Follow these steps in order:
 3. Do NOT skip this step — do NOT guess or assume the problem
 4. Proceed to **Step 1b**
 
-## Step 1b: Register as a GitHub Issue (URL なしの場合のみ)
+## Step 1b: Register as a GitHub Issue (only when no URL was provided)
 
 > This step runs ONLY when no Issue URL was provided in Step 1.
 
@@ -40,31 +48,21 @@ Use the repository's existing Issue templates (`.github/ISSUE_TEMPLATE/`) as the
    ```bash
    gh label list --limit 50
    ```
-3. **Draft the Issue content** following the matched template's structure — read the template file itself for the section layout
-4. **Show the draft to the user** and ask for confirmation before creating
-5. **Create the Issue**:
+3. **Verify referenced paths and libraries exist** (check paths with `ls`, packages with `npm view`) before putting them in the Issue body
+4. **Draft the Issue content** following the matched template's structure — read the template file itself for the section layout
+5. **Show the draft to the user** and ask for confirmation before creating
+6. **Create the Issue**:
    ```bash
    gh issue create --title "<title>" --body "<body>" --label "<label>"
    ```
-6. **Capture the Issue number and URL** from the output for use in subsequent steps
-7. From this point forward, treat the newly created Issue the same as if it had been provided via URL
+7. **Capture the Issue number and URL** from the output for use in subsequent steps
+8. From this point forward, treat the newly created Issue the same as if it had been provided via URL
 
-## Step 2: Create a Worktree
+## Step 2: Ensure You Are in a Worktree
 
-**CRITICAL: ALWAYS create a worktree. NEVER work in the main directory.**
+**CRITICAL: NEVER work in the main working directory.**
 
-1. Generate a branch name: `issue/<number>-<slug>` (slug from title, lowercase, hyphens, max 50 chars)
-   - The Issue number is always available at this point (either from the URL or from Step 1b)
-2. Check for existing worktrees: `git wt`
-   - If a worktree for this branch already exists, use it
-3. Worktree path: `.worktree/<branch-name>` (automatically determined by `wt.basedir`)
-4. Execute:
-   ```bash
-   git wt <branch-name> dev
-   cd .worktree/<branch-name>
-   ```
-   `wt.hook` により `yarn install` → `yarn build` が自動実行される
-5. **All subsequent work (analysis, edits, commits) MUST happen in the worktree**
+Branch work happens in a Claude Code–managed worktree (see the Branch & Worktree Policy in the root `CLAUDE.md`). If this session is not already in one, set one up via the harness worktree feature before touching any file. Branch name: `issue/<number>-<slug>` (slug from title, lowercase, hyphens, max 50 chars — the Issue number is always available at this point). Remember the fresh-worktree setup: `yarn install`, then `NX_WORKSPACE_ROOT_PATH=<worktree-absolute-path> yarn build`.
 
 ## Step 3: Analyze the Problem
 
@@ -82,8 +80,12 @@ Based on the analysis, present a resolution plan following **TDD (Test-Driven De
 1. **Approach**: The chosen solution and rationale
 2. **Files to Change**: List of files to modify or add
 3. **Implementation Steps**: Follow the **Red-Green** cycle for each behavior unit:
-   1. **Red**: Write failing tests first that define the expected behavior
+   1. **Red**: Write failing tests first that define the expected behavior — as spec-file tests, never as throwaway reproduction scripts
    2. **Green**: Implement the minimal code to make the tests pass
 4. **Risks**: Side effects and caveats
 
-Present the plan to the user and wait for approval before proceeding with implementation.
+Present the plan to the user and wait for approval.
+
+## Step 5: Hand Off to /impl
+
+Once the plan is approved, continue with the `impl` skill — it owns the implementation pipeline (implement → review → QA → lint/test → commit → PR). Do not re-negotiate the agreed scope there.

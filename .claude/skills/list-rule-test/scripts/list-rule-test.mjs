@@ -4,7 +4,7 @@
  * List all test IDs from rule spec files.
  *
  * Usage:
- *   node .claude/commands/scripts/list-test-ids.mjs [options]
+ *   node .claude/skills/list-rule-test/scripts/list-rule-test.mjs [options]
  *
  * Options:
  *   --rule <name>       Filter by rule name (e.g., --rule wai-aria)
