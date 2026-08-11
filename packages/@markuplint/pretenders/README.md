@@ -49,6 +49,21 @@ Instead of the CLI, you can configure dynamic scanning directly in your markupli
 }
 ```
 
+### On-demand Scanning
+
+`scan` pre-scans a configured set of files once. Alternatively, the `auto` field resolves pretenders per lint target by walking the linted file's own import graph — no `files`/`scan` configuration needed, and same-named components in unrelated files can't collide since only files the linted file actually imports (transitively) are ever considered:
+
+```jsonc
+// .markuplintrc
+{
+  "pretenders": {
+    "auto": true,
+  },
+}
+```
+
+Only the config file is filesystem-watched, so in watch mode or an editor session, results can go stale if an imported component file changes without the config changing too.
+
 ## How It Works
 
 ### JSX Scanner
@@ -312,9 +327,32 @@ const resolved = await disambiguatePretenders(pretenders, {
 
 `Promise<readonly Pretender[]>` — The disambiguated pretender list, or `pretenders` itself when there was nothing to resolve or nothing could be confirmed.
 
+### `autoScan(entryAbsPath, sourceCode)`
+
+Resolves pretenders on demand by walking a single lint target's own import graph (breadth-first, extension-agnostic — a `.tsx` entry can import a `.vue` file and vice versa) and scanning the collected files in one batch. This is the resolution logic behind the `pretenders.auto` config option; it's normally invoked automatically as part of `markuplint`'s config resolution, not called directly.
+
+```ts
+import { autoScan } from '@markuplint/pretenders';
+
+const pretenders = await autoScan('/absolute/path/to/Page.tsx', sourceCode);
+```
+
+#### Parameters
+
+| Parameter      | Type     | Description                                                   |
+| -------------- | -------- | ------------------------------------------------------------- |
+| `entryAbsPath` | `string` | Absolute path of the file being linted                        |
+| `sourceCode`   | `string` | The entry file's current text (may be unsaved editor content) |
+
+#### Returns
+
+`Promise<Pretender[]>` — Discovered pretender mappings for the entry file and its import graph.
+
+Results are cached per entry path, keyed on `sourceCode` equality (not mtime, which doesn't exist for unsaved editor content); traversal is capped at 8 import hops, `node_modules` is never traversed into, and import cycles are handled via a visited set.
+
 ### `clearPretenderCaches()`
 
-Clears the module-level caches that back import/export resolution (module resolution, export tables). Neither cache expires on its own, so a long-running host (watch mode, an editor extension) that keeps resolving pretenders across file edits must call this after each edit — otherwise a renamed export or a newly valid tsconfig `paths` alias keeps resolving as it did before the change for the rest of the process's lifetime.
+Clears the module-level caches that back import/export resolution (module resolution, export tables, parsed JSX source files, `autoScan` results). None of these caches expire on their own, so a long-running host (watch mode, an editor extension) that keeps resolving pretenders across file edits must call this after each edit — otherwise a renamed export or a newly valid tsconfig `paths` alias keeps resolving as it did before the change for the rest of the process's lifetime.
 
 ```ts
 import { clearPretenderCaches } from '@markuplint/pretenders';

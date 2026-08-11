@@ -1109,6 +1109,29 @@ const Icon = props => <img src={props.src} />;
 }
 ```
 
+#### `auto`（オブジェクト形式） {#pretenders/auto}
+
+:::caution[実験的機能]
+このプロパティは**実験的機能**であり、将来のリリースで変更される可能性があります。
+:::
+
+オブジェクト形式を使用する場合、`auto: true`を指定すると、`data`/`scan`をあらかじめ設定しなくても、リント対象ファイル自身のimportグラフをスキャンしてプリテンダーを解決します:
+
+```json class=config
+{
+  "pretenders": {
+    "auto": true
+  }
+}
+```
+
+設定済みのファイル集合を一度だけ事前スキャンする`scan`とは異なり、`auto`はリント対象ごとに実行され、リント対象ファイルが実際に（推移的に）importしているコンポーネントのみを対象とします。そのため、無関係なファイルにある同名コンポーネントが衝突することは構造的にありません。ただし、次のトレードオフがあります:
+
+- ファイルシステムの監視対象は設定ファイルのみのため、watchモードやエディタセッション中に、設定を変更せずにimport先のコンポーネントファイルを変更すると、結果が古いままになることがあります。
+- `auto`を指定できるのは`pretenders`の**オブジェクト形式**のみです。配列形式の省略記法では指定できません。
+
+同じセレクターに対しては、`files`・`imports`・`data`・`scan`など他のプリテンダー解決元が先に解決されるため、`auto`よりも優先されます。
+
 #### インターフェイス {#pretenders/interface}
 
 ```ts
@@ -1118,6 +1141,7 @@ interface Config {
     | {
         data?: Pretender[];
         scan?: PretenderScanConfig[]; // @experimental
+        auto?: boolean; // @experimental
       };
 }
 
