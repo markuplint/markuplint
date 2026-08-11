@@ -339,7 +339,7 @@ describe('invalidatePretenderResolutionCaches (long-running processes)', () => {
 		await rm(tmpDir, { recursive: true, force: true });
 	});
 
-	test('picks up a renamed default export across a re-resolve of config.scan', async () => {
+	test('picks up a renamed default export across a re-resolve of config.scan, without needing invalidation', async () => {
 		const targetFile = path.join(tmpDir, 'target.tsx');
 		const importerFile = path.join(tmpDir, 'importer.tsx');
 		await writeFile(targetFile, 'export default function Item() { return <button>x</button>; }');
@@ -348,13 +348,16 @@ describe('invalidatePretenderResolutionCaches (long-running processes)', () => {
 		const before = await resolvePretenders({ scan: [{ files: [targetFile, importerFile] }] });
 		expect(before.find(p => p.selector === 'E')?.as).toBe('button');
 
-		// Rename the default-exported declaration without invalidating caches: the
-		// stale export table still says the default export's local name is "Item",
-		// which no longer exists after the rename, leaving `E` unresolved.
+		// @markuplint/pretenders' parsed-SourceFile and export-table caches are
+		// both keyed on file content, not mtime, so a renamed export is picked
+		// up on the very next resolve — no explicit
+		// invalidatePretenderResolutionCaches() call needed for this kind of
+		// change.
 		await writeFile(targetFile, 'export default function Widget() { return <span>x</span>; }');
-		const stale = await resolvePretenders({ scan: [{ files: [targetFile, importerFile] }] });
-		expect(stale.find(p => p.selector === 'E')?.as).toBe('Item');
+		const afterRename = await resolvePretenders({ scan: [{ files: [targetFile, importerFile] }] });
+		expect(afterRename.find(p => p.selector === 'E')?.as).toBe('span');
 
+		// invalidatePretenderResolutionCaches() remains safe to call regardless.
 		await invalidatePretenderResolutionCaches();
 
 		const fresh = await resolvePretenders({ scan: [{ files: [targetFile, importerFile] }] });
