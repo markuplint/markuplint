@@ -45,17 +45,26 @@ git describe --tags --abbrev=0
 git log --oneline <last-tag>..HEAD
 ```
 
-Show the current version (`lerna.json`) and ask the user which release type applies (graduate / rc / beta / alpha).
+Show the current version (`lerna.json`). `yarn release` derives the next version from conventional commits automatically, so do **NOT** ask the user to choose a release type — present the diff only as a "what's going in" check.
 
 ## 5. Version bump (user-executed)
 
-`lerna version` prompts interactively, so Claude cannot run it. Present the matching command and **wait for the completion report**:
+`lerna version` is an interactive command (selection/confirmation prompts) that cannot be driven through the `!` prefix — the prompt renders but accepts no input. Ask the user to:
+
+1. Exit the Claude Code session (`exit`)
+2. Run the release command directly in the terminal and answer the prompts
+3. Return to this conversation with `claude --continue`
 
 ```
-! yarn release          # graduate (stable)
-! yarn release:rc       # RC prerelease
-! yarn release:beta     # beta prerelease
-! yarn release:alpha    # alpha prerelease
+yarn release          # graduate (stable) — the standard path
+```
+
+Guide to a prerelease variant only when the user has explicitly asked for one:
+
+```
+yarn release:rc       # RC prerelease
+yarn release:beta     # beta prerelease
+yarn release:alpha    # alpha prerelease
 ```
 
 Notes:

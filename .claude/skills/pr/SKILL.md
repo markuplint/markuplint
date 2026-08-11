@@ -26,4 +26,4 @@ description: >
      3. Run the relevant local verification (`yarn lint-check`, `yarn build`, `yarn test`) to confirm the fix.
      4. Commit, push, and run `gh pr checks <PR_NUMBER> --watch` again.
      5. Repeat until all checks pass.
-   - **If all checks pass:** Report the result to the user with the PR URL.
+   - **If all checks pass:** re-run `gh pr view <PR_NUMBER> --json mergeable,mergeStateStatus` — the base may have advanced during the CI run and introduced a new conflict. If `CONFLICTING` / `DIRTY`, return to step 6's resolution path. Otherwise open the PR in the browser with `gh pr view <PR_NUMBER> --web` and report to the user that it is ready to merge.
