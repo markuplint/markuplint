@@ -2424,6 +2424,7 @@ __metadata:
     "@markuplint/ml-ast": "npm:5.0.0-rc.4"
     "@markuplint/ml-config": "npm:5.0.0-rc.4"
     "@markuplint/parser-utils": "npm:5.0.0-rc.4"
+    "@markuplint/shared": "npm:5.0.0-rc.4"
     "@markuplint/svelte-parser": "npm:5.0.0-rc.4"
     "@markuplint/vue-parser": "npm:5.0.0-rc.4"
     es-module-lexer: "npm:2.0.0"
