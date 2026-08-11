@@ -72,7 +72,7 @@ export const xrefMappings: readonly XrefMapping[] = [
 		kind: 'primary',
 		issue: 3928,
 		filter: /^html\/elements\/(a\/with-href-button-descendant|audio\/controls-in-button|picture\/(junk-noscript|junk-noscript-after-source-no-img|junk-video-before))-novalid/,
-		note: "`permitted-contents` flattens transparent-model children out of the parent's content-model check entirely. `<a href>` inside `<button>` (both transparent-carrying interactive descendants) and `<video>` / `<noscript>` inside `<picture>` all slip past because the transparent element itself is dropped from the parent's selector evaluation. HTML LS §3.2.5.3 transparency defers only the *children* to the parent's model; the transparent element itself must still satisfy the parent's constraints. Fix requires reworking `represent-transparent-nodes.ts` to keep the transparent element in the flattened list.",
+		note: "Fixed. `representTransparentNodes` now keeps the transparent element itself in the flattened list alongside its pass-through children, so the parent's own content-model check still evaluates the wrapper's placement (HTML LS §3.2.5.3: transparency defers only the *children* to the parent's model; the transparent element itself must still satisfy the parent's constraints). All 5 fixtures now `match-error`; verified against the full 5442-fixture corpus with zero ml-only/nu-over regressions (path sets identical before/after). Safe to close.",
 	},
 	{
 		kind: 'primary',
