@@ -33,7 +33,7 @@ async function main() {
 
 	const outFilePath = path.resolve(process.cwd(), commands.flags.out);
 
-	await out(outFilePath, pretenders);
+	await out(outFilePath, pretenders, process.cwd());
 }
 
 await main();

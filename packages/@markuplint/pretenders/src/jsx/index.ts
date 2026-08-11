@@ -26,6 +26,8 @@ import { getPosition } from '@markuplint/parser-utils/location';
 import ts from 'typescript';
 
 import { createScanner } from '../create-scanner.js';
+import { collectImportBindings } from '../import-resolver/analyze-jsx-imports.js';
+import { normalizePath } from '../import-resolver/resolve-module-file.js';
 import { PretenderDirector } from '../pretender-director.js';
 
 import { createIdentity } from './create-identify.js';
@@ -101,6 +103,8 @@ export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 
 		for (const sourceFile of program.getSourceFiles()) {
 			if (!sourceFile.isDeclarationFile) {
+				const relFilePath = normalizePath(path.relative(cwd, sourceFile.fileName));
+				director.addImports(relFilePath, collectImportBindings(sourceFile));
 				forEachChild(sourceFile, node => visit(node, sourceFile));
 			}
 		}
@@ -178,7 +182,7 @@ export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 			line: number,
 			col: number,
 		) {
-			const filePath = path.relative(cwd, sourceFile.fileName);
+			const filePath = normalizePath(path.relative(cwd, sourceFile.fileName));
 			const find = finder(sourceFile);
 
 			find(root, isReturnStatement, node => {
@@ -379,7 +383,7 @@ export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 			}
 		}
 
-		return Promise.resolve(director.getPretenders());
+		return Promise.resolve(director.getPretenders(cwd));
 	},
 );
 

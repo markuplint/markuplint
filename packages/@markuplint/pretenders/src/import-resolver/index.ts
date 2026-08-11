@@ -35,11 +35,15 @@ import type { ImportBinding, ImportAnalysisResult } from './types.js';
 
 import path from 'node:path';
 
+import ts from 'typescript';
+
 import { getScanner } from '../scanner-loader.js';
 
+import { collectImportBindings, scriptKindForPath } from './analyze-jsx-imports.js';
 import { extractVueScript, extractVueOptionsApiComponents, extractMdxEsm } from './extract-script-source.js';
 import { parseImports } from './parse-imports.js';
 export { resolveBarrelExport } from './resolve-barrel.js';
+export { collectImportBindings, scriptKindForPath } from './analyze-jsx-imports.js';
 
 export type { ImportBinding, ImportAnalysisResult } from './types.js';
 
@@ -47,15 +51,25 @@ export type { ImportBinding, ImportAnalysisResult } from './types.js';
  * Supported framework types for import analysis.
  * Superset of template scanner's framework types — includes MDX which
  * is a component usage site (not definition), making it relevant
- * for import analysis but not for template scanning.
+ * for import analysis but not for template scanning. `jsx` covers plain
+ * TS/JS source (including TSX/JSX), analyzed via the TypeScript AST instead
+ * of es-module-lexer, which fails to parse JSX syntax.
  */
-type ImportFrameworkType = 'vue' | 'svelte' | 'astro' | 'mdx';
+type ImportFrameworkType = 'vue' | 'svelte' | 'astro' | 'mdx' | 'jsx';
 
 const EXTENSION_MAP: Record<string, ImportFrameworkType> = {
 	'.vue': 'vue',
 	'.svelte': 'svelte',
 	'.astro': 'astro',
 	'.mdx': 'mdx',
+	'.js': 'jsx',
+	'.jsx': 'jsx',
+	'.ts': 'jsx',
+	'.tsx': 'jsx',
+	'.mjs': 'jsx',
+	'.cjs': 'jsx',
+	'.mts': 'jsx',
+	'.cts': 'jsx',
 };
 
 function getImportFrameworkType(filePath: string): ImportFrameworkType | null {
@@ -95,6 +109,17 @@ export async function analyzeImports(filePath: string, source: string): Promise<
 	const framework = getImportFrameworkType(filePath);
 	if (!framework) {
 		return null;
+	}
+
+	if (framework === 'jsx') {
+		const sourceFile = ts.createSourceFile(
+			filePath,
+			source,
+			ts.ScriptTarget.Latest,
+			true,
+			scriptKindForPath(filePath),
+		);
+		return { bindings: collectImportBindings(sourceFile) };
 	}
 
 	// Vue Options API requires special handling: extract regular <script>,

@@ -1,8 +1,15 @@
 import type { PretenderDirectorMap } from './pretender-director.js';
 
-import { describe, test, expect } from 'vitest';
+import fs from 'node:fs';
+import { writeFile, mkdtemp, rm } from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
 
-import { dependencyMapper } from './dependency-mapper.js';
+import { describe, test, expect, afterEach, beforeEach, vi } from 'vitest';
+
+import { clearExportTableCache, dependencyMapper } from './dependency-mapper.js';
+
+const fixtureDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures', 'dependency-mapper');
 
 describe('dependencyMapper', () => {
 	test('B -> A', () => {
@@ -291,5 +298,167 @@ describe('dependencyMapper', () => {
 				as: 'button',
 			},
 		]);
+	});
+
+	describe('file-context resolution (issue #3951)', () => {
+		test('same-file local declaration takes priority over the name index', () => {
+			const map: PretenderDirectorMap = new Map([
+				['a.tsx#Item', ['Item', 'button', undefined, 'a.tsx']],
+				['b.tsx#Item', ['Item', 'li', undefined, 'b.tsx']],
+				['b.tsx#B', ['B', 'Item', undefined, 'b.tsx']],
+			]);
+			// Name-index-only resolution (no file context) would map 'Item' to whichever
+			// file registered it first — here that's a.tsx, which is the wrong answer for B.
+			const nameIndex = new Map([['Item', 'a.tsx#Item']]);
+
+			const result = dependencyMapper(map, nameIndex);
+			const b = result.find(p => p.selector === 'B');
+			expect(b).toStrictEqual({ selector: 'B', as: 'li', _via: ['Item'] });
+		});
+
+		test('resolves a named import to the actual declaration file, even when a same-named collision exists', () => {
+			const map: PretenderDirectorMap = new Map([
+				['a.tsx#Item', ['Item', 'button', undefined, 'a.tsx']],
+				// Colliding name registered elsewhere; the name index (used without file context)
+				// would point here, which is the wrong file for what c.tsx actually imports.
+				['other.tsx#Item', ['Item', 'li', undefined, 'other.tsx']],
+				['c.tsx#C', ['C', 'Item', undefined, 'c.tsx']],
+			]);
+			const nameIndex = new Map([['Item', 'other.tsx#Item']]);
+			const importsByFile = new Map([
+				['c.tsx', [{ localName: 'Item', importedName: 'Item', source: './a', type: 'named' as const }]],
+			]);
+
+			const result = dependencyMapper(map, nameIndex, { importsByFile, cwd: fixtureDir });
+			const c = result.find(p => p.selector === 'C');
+			expect(c).toStrictEqual({ selector: 'C', as: 'button', _via: ['Item'] });
+		});
+
+		test('resolves a default import via the target file export table, even when a same-named collision exists', () => {
+			const map: PretenderDirectorMap = new Map([
+				['d.tsx#Item', ['Item', 'button', undefined, 'd.tsx']],
+				['other.tsx#Item', ['Item', 'li', undefined, 'other.tsx']],
+				['e.tsx#E', ['E', 'Item', undefined, 'e.tsx']],
+			]);
+			const nameIndex = new Map([['Item', 'other.tsx#Item']]);
+			const importsByFile = new Map([
+				['e.tsx', [{ localName: 'Item', importedName: 'default', source: './d', type: 'default' as const }]],
+			]);
+
+			const result = dependencyMapper(map, nameIndex, { importsByFile, cwd: fixtureDir });
+			const e = result.find(p => p.selector === 'E');
+			expect(e).toStrictEqual({ selector: 'E', as: 'button', _via: ['Item'] });
+		});
+
+		test('carries the resolved file forward across multiple hops, even when a same-named collision exists', () => {
+			const map: PretenderDirectorMap = new Map([
+				['wrapper-a.tsx#Base', ['Base', 'div', undefined, 'wrapper-a.tsx']],
+				['wrapper-a.tsx#Wrapper', ['Wrapper', 'Base', undefined, 'wrapper-a.tsx']],
+				// Colliding name registered elsewhere with a different target.
+				['other.tsx#Base', ['Base', 'span', undefined, 'other.tsx']],
+				['wrapper-b.tsx#Outer', ['Outer', 'Wrapper', undefined, 'wrapper-b.tsx']],
+			]);
+			const nameIndex = new Map([
+				['Base', 'other.tsx#Base'],
+				['Wrapper', 'wrapper-a.tsx#Wrapper'],
+			]);
+			const importsByFile = new Map([
+				[
+					'wrapper-b.tsx',
+					[{ localName: 'Wrapper', importedName: 'Wrapper', source: './wrapper-a', type: 'named' as const }],
+				],
+			]);
+
+			const result = dependencyMapper(map, nameIndex, { importsByFile, cwd: fixtureDir });
+			const outer = result.find(p => p.selector === 'Outer');
+			// Outer -> Wrapper (resolved via import into wrapper-a.tsx) -> Base
+			// (must resolve within wrapper-a.tsx, not fall through to other.tsx's Base)
+			expect(outer).toStrictEqual({ selector: 'Outer', as: 'div', _via: ['Wrapper', 'Base'] });
+		});
+
+		test('falls back to name-index resolution when no context is provided (full backward compat)', () => {
+			const map: PretenderDirectorMap = new Map([
+				['a.tsx#Item', ['Item', 'button', undefined, 'a.tsx']],
+				['c.tsx#C', ['C', 'Item', undefined, 'c.tsx']],
+			]);
+			const nameIndex = new Map([['Item', 'a.tsx#Item']]);
+
+			// No importsByFile/cwd context at all — must behave exactly like the pre-existing algorithm
+			const result = dependencyMapper(map, nameIndex);
+			const c = result.find(p => p.selector === 'C');
+			expect(c).toStrictEqual({ selector: 'C', as: 'button', _via: ['Item'] });
+		});
+	});
+
+	describe('exportTableCache invalidation (long-running processes)', () => {
+		let tmpDir: string;
+
+		beforeEach(async () => {
+			tmpDir = await mkdtemp(path.join(os.tmpdir(), 'dependency-mapper-cache-'));
+		});
+
+		afterEach(async () => {
+			await rm(tmpDir, { recursive: true, force: true });
+		});
+
+		test('clearExportTableCache() picks up a renamed export after re-resolving', async () => {
+			const targetFile = path.join(tmpDir, 'target.tsx');
+			await writeFile(targetFile, 'export default function Item() { return null; }');
+
+			const importsByFile = new Map([
+				[
+					'importer.tsx',
+					[{ localName: 'Item', importedName: 'default', source: './target', type: 'default' as const }],
+				],
+			]);
+
+			const mapBefore: PretenderDirectorMap = new Map([
+				['target.tsx#Item', ['Item', 'button', undefined, 'target.tsx']],
+				['importer.tsx#E', ['E', 'Item', undefined, 'importer.tsx']],
+			]);
+			const resultBefore = dependencyMapper(mapBefore, undefined, { importsByFile, cwd: tmpDir });
+			expect(resultBefore.find(p => p.selector === 'E')?.as).toBe('button');
+
+			// Rename the exported declaration. Without cache invalidation, the resolver
+			// keeps using the pre-rename export table and looks up a map key that no
+			// longer exists, leaving `E` unresolved instead of picking up the new one.
+			await writeFile(targetFile, 'export default function Widget() { return null; }');
+			const mapAfter: PretenderDirectorMap = new Map([
+				['target.tsx#Widget', ['Widget', 'span', undefined, 'target.tsx']],
+				['importer.tsx#E', ['E', 'Item', undefined, 'importer.tsx']],
+			]);
+
+			const resultStale = dependencyMapper(mapAfter, undefined, { importsByFile, cwd: tmpDir });
+			expect(resultStale.find(p => p.selector === 'E')?.as).toBe('Item');
+
+			clearExportTableCache();
+
+			const resultFresh = dependencyMapper(mapAfter, undefined, { importsByFile, cwd: tmpDir });
+			expect(resultFresh.find(p => p.selector === 'E')?.as).toBe('span');
+		});
+	});
+
+	describe('Tier 1 (fatal) errors during export table resolution', () => {
+		test('rethrows instead of swallowing a fatal error into a null export table', () => {
+			clearExportTableCache();
+
+			const map: PretenderDirectorMap = new Map([
+				['a.tsx#Item', ['Item', 'button', undefined, 'a.tsx']],
+				['c.tsx#C', ['C', 'Item', undefined, 'c.tsx']],
+			]);
+			const importsByFile = new Map([
+				['c.tsx', [{ localName: 'Item', importedName: 'Item', source: './a', type: 'named' as const }]],
+			]);
+
+			const spy = vi.spyOn(fs, 'readFileSync').mockImplementation(() => {
+				throw new TypeError('boom: implementation bug, not a missing file');
+			});
+			try {
+				expect(() => dependencyMapper(map, undefined, { importsByFile, cwd: fixtureDir })).toThrow(TypeError);
+			} finally {
+				spy.mockRestore();
+				clearExportTableCache();
+			}
+		});
 	});
 });
