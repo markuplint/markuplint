@@ -223,10 +223,11 @@ export type Pretender = {
 	readonly as: string | OriginalNode;
 
 	/**
-	 * If it is a string, it is resolved as an element name.
-	 * An element regards as having the same attributes
-	 * as the pretended custom element because these are inherited.
-	 * If it is an Object, It can specify in detail the element's attributes.
+	 * Where the component was found, as `<path>:<line>:<column>`. Metadata only —
+	 * nothing in linting reads it to influence pretender matching (matching is by
+	 * `selector` alone). `@markuplint/pretenders` scanners emit `<path>` relative
+	 * to the JSON file this entry will be written into, not the scan-time cwd, so
+	 * it stays resolvable regardless of where the file is later loaded from.
 	 *
 	 * @experimental
 	 */
