@@ -389,7 +389,7 @@ export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 			}
 		}
 
-		return Promise.resolve(director.getPretenders(cwd));
+		return Promise.resolve(director.getPretenders(cwd, sources));
 	},
 );
 

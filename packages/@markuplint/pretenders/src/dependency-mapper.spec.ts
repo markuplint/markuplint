@@ -401,7 +401,7 @@ describe('dependencyMapper', () => {
 			await rm(tmpDir, { recursive: true, force: true });
 		});
 
-		test('clearExportTableCache() picks up a renamed export after re-resolving', async () => {
+		test('picks up a renamed export on the very next resolve, without needing clearExportTableCache()', async () => {
 			const targetFile = path.join(tmpDir, 'target.tsx');
 			await writeFile(targetFile, 'export default function Item() { return null; }');
 
@@ -419,18 +419,20 @@ describe('dependencyMapper', () => {
 			const resultBefore = dependencyMapper(mapBefore, undefined, { importsByFile, cwd: tmpDir });
 			expect(resultBefore.find(p => p.selector === 'E')?.as).toBe('button');
 
-			// Rename the exported declaration. Without cache invalidation, the resolver
-			// keeps using the pre-rename export table and looks up a map key that no
-			// longer exists, leaving `E` unresolved instead of picking up the new one.
+			// getExportTableForFile()'s cache is keyed on file content, not mtime,
+			// so a renamed export is picked up on the very next resolve — no
+			// explicit clearExportTableCache() call needed for this kind of
+			// change.
 			await writeFile(targetFile, 'export default function Widget() { return null; }');
 			const mapAfter: PretenderDirectorMap = new Map([
 				['target.tsx#Widget', ['Widget', 'span', undefined, 'target.tsx']],
 				['importer.tsx#E', ['E', 'Item', undefined, 'importer.tsx']],
 			]);
 
-			const resultStale = dependencyMapper(mapAfter, undefined, { importsByFile, cwd: tmpDir });
-			expect(resultStale.find(p => p.selector === 'E')?.as).toBe('Item');
+			const resultAfterRename = dependencyMapper(mapAfter, undefined, { importsByFile, cwd: tmpDir });
+			expect(resultAfterRename.find(p => p.selector === 'E')?.as).toBe('span');
 
+			// clearExportTableCache() remains safe to call regardless.
 			clearExportTableCache();
 
 			const resultFresh = dependencyMapper(mapAfter, undefined, { importsByFile, cwd: tmpDir });

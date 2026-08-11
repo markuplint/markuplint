@@ -55,8 +55,12 @@ export class PretenderDirector {
 	 * @param cwd - Base directory that the recorded `sourceFile` paths (and any
 	 *   module resolution triggered while chasing an import) are relative to.
 	 *   Must match the `cwd` the scanner itself used to build those paths.
+	 * @param sources - The same in-memory content overrides (keyed by normalized
+	 *   absolute path) passed to the scanner, so cross-file import resolution
+	 *   reads a file's current (possibly unsaved) content instead of always
+	 *   falling back to disk.
 	 */
-	getPretenders(cwd?: string) {
-		return dependencyMapper(this.#map, this.#nameIndex, { importsByFile: this.#importsByFile, cwd });
+	getPretenders(cwd?: string, sources?: ReadonlyMap<string, string>) {
+		return dependencyMapper(this.#map, this.#nameIndex, { importsByFile: this.#importsByFile, cwd, sources });
 	}
 }

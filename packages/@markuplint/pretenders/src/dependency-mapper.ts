@@ -21,6 +21,15 @@ export interface DependencyMapperContext {
 	readonly importsByFile?: ReadonlyMap<string, readonly ImportBinding[]>;
 	/** Base directory that relative `sourceFile` paths (and resolved module paths) are relative to. */
 	readonly cwd?: string;
+	/**
+	 * In-memory content overrides (keyed by normalized absolute path), consulted
+	 * before falling back to disk when resolving a chased import's export table.
+	 * Without this, a file with unsaved content (e.g. the lint target itself,
+	 * when reached via a circular import) resolves against its stale on-disk
+	 * version instead — which can silently pick a wrong same-named component
+	 * (see the module JSDoc on `getExportTableForFile`).
+	 */
+	readonly sources?: ReadonlyMap<string, string>;
 }
 
 /**
@@ -46,6 +55,7 @@ export function dependencyMapper(
 	const resolvedNameIndex = nameIndex ?? buildNameIndex(map);
 	const importsByFile = context?.importsByFile;
 	const cwd = context?.cwd ?? process.cwd();
+	const sources = context?.sources;
 	const linkedPretenders: Pretender[] = [];
 
 	for (const [key, [identifier, _identity, _filePath, _sourceFile]] of map) {
@@ -57,7 +67,7 @@ export function dependencyMapper(
 		const visited = new Set<string>([key]);
 
 		while (true) {
-			const lookupKey = resolveHop(elName, currentFile, key, map, importsByFile, resolvedNameIndex, cwd);
+			const lookupKey = resolveHop(elName, currentFile, key, map, importsByFile, resolvedNameIndex, cwd, sources);
 			const mappedPretender = map.get(lookupKey);
 			if (!mappedPretender) {
 				break;
@@ -104,6 +114,7 @@ function resolveHop(
 	importsByFile: ReadonlyMap<string, readonly ImportBinding[]> | undefined,
 	resolvedNameIndex: Readonly<Map<Identifier, string>>,
 	cwd: string,
+	sources: ReadonlyMap<string, string> | undefined,
 ): string {
 	if (currentFile) {
 		const sameFileKey = `${currentFile}#${elName}`;
@@ -111,7 +122,7 @@ function resolveHop(
 			return sameFileKey;
 		}
 
-		const viaImport = resolveThroughImport(elName, currentFile, importsByFile, cwd);
+		const viaImport = resolveThroughImport(elName, currentFile, importsByFile, cwd, sources);
 		if (viaImport && map.has(viaImport)) {
 			return viaImport;
 		}
@@ -133,6 +144,7 @@ function resolveThroughImport(
 	currentFile: string,
 	importsByFile: ReadonlyMap<string, readonly ImportBinding[]> | undefined,
 	cwd: string,
+	sources: ReadonlyMap<string, string> | undefined,
 ): string | null {
 	const bindings = importsByFile?.get(currentFile);
 	if (!bindings) {
@@ -157,7 +169,7 @@ function resolveThroughImport(
 		return normalizePath(path.relative(cwd, resolvedAbs));
 	}
 
-	return resolveExportedName(resolvedAbs, binding.importedName, cwd, new Set());
+	return resolveExportedName(resolvedAbs, binding.importedName, cwd, new Set(), sources);
 }
 
 const TEMPLATE_COMPONENT_EXTENSIONS = new Set(['.vue', '.svelte', '.astro']);
@@ -170,7 +182,13 @@ function isTemplateComponentFile(filePath: string): boolean {
  * Resolves `exportedName` in the file at `fileAbs` down to a local declaration,
  * following `export { X } from '...'` re-export chains up to a depth limit.
  */
-function resolveExportedName(fileAbs: string, exportedName: string, cwd: string, visited: Set<string>): string | null {
+function resolveExportedName(
+	fileAbs: string,
+	exportedName: string,
+	cwd: string,
+	visited: Set<string>,
+	sources: ReadonlyMap<string, string> | undefined,
+): string | null {
 	if (visited.size >= MAX_RE_EXPORT_DEPTH) {
 		return null;
 	}
@@ -180,7 +198,7 @@ function resolveExportedName(fileAbs: string, exportedName: string, cwd: string,
 	}
 	visited.add(visitKey);
 
-	const table = getExportTableForFile(fileAbs);
+	const table = getExportTableForFile(fileAbs, sources);
 	const entry = table?.byName.get(exportedName);
 	if (!entry) {
 		return null;
@@ -192,7 +210,7 @@ function resolveExportedName(fileAbs: string, exportedName: string, cwd: string,
 		return `${fileRel}#${entry.localName}`;
 	}
 
-	return resolveReExport(fileAbs, entry, cwd, visited);
+	return resolveReExport(fileAbs, entry, cwd, visited, sources);
 }
 
 function resolveReExport(
@@ -200,6 +218,7 @@ function resolveReExport(
 	entry: Extract<ExportEntry, { kind: 're-export' }>,
 	cwd: string,
 	visited: Set<string>,
+	sources: ReadonlyMap<string, string> | undefined,
 ): string | null {
 	if (entry.importedName === '*') {
 		// Namespace re-export target — no single member to pin to.
@@ -211,55 +230,58 @@ function resolveReExport(
 		return null;
 	}
 
-	return resolveExportedName(nextAbs, entry.importedName, cwd, visited);
+	return resolveExportedName(nextAbs, entry.importedName, cwd, visited, sources);
 }
 
-const exportTableCache = new Map<string, ReturnType<typeof getExportTable> | null>();
+const exportTableCache = new Map<string, { text: string; table: ReturnType<typeof getExportTable> | null }>();
 
 /**
- * Clears the module-level export-table cache. `getExportTableForFile()` never
- * expires an entry on its own, so a long-running host (a watch-mode lint run,
- * an editor extension) that keeps resolving pretenders across file edits must
- * call this whenever it re-resolves without cache (e.g. after a file change)
- * — otherwise a renamed or restructured export keeps resolving to what it
- * used to be for the rest of the process's lifetime.
+ * Clears the module-level export-table cache. Content-based invalidation
+ * already reparses any file whose text changed (see `getExportTableForFile`),
+ * so this exists only for callers that want to fully release memory between
+ * long-running resolution batches.
  */
 export function clearExportTableCache() {
 	exportTableCache.clear();
 }
 
-// Always reads from disk, unlike jsxScanner's own file reads (compiler-host.ts),
-// which consult a `sources` in-memory override first. A caller relying on
-// `sources` (e.g. `autoScan`, which seeds it with already-read file content to
-// avoid a second disk read) still gets a disk-backed export table here, so a
-// collected file's content can differ between the two if `sources` diverges
-// from disk — and, in the common case where they agree, the file is still
-// read from disk once more than necessary.
-function getExportTableForFile(fileAbs: string) {
-	const cached = exportTableCache.get(fileAbs);
-	if (cached !== undefined) {
-		return cached;
-	}
+/**
+ * Consults `sources` (an in-memory content override, keyed by normalized
+ * absolute path — the same map threaded through from the scanner) before
+ * falling back to disk. This matters when a chased import leads back to a
+ * file with unsaved content, most commonly the lint target itself reached
+ * via a circular import: without `sources`, the export table would be built
+ * from the stale on-disk version, and a same-named export it doesn't yet
+ * have (or no longer has) can silently resolve through the name-index
+ * fallback in `resolveHop` to an unrelated component instead (see issue
+ * #3951; this is that same class of bug, reachable via `sources` divergence
+ * rather than scan-order).
+ *
+ * Cached per file, keyed on content (not mtime, which doesn't exist for
+ * unsaved content) so a changed file is rebuilt automatically.
+ */
+function getExportTableForFile(fileAbs: string, sources: ReadonlyMap<string, string> | undefined) {
+	const key = normalizePath(fileAbs);
+	const overrideText = sources?.get(key);
 
-	let table: ReturnType<typeof getExportTable> | null;
+	let text: string;
 	try {
-		const content = fs.readFileSync(fileAbs, 'utf8');
-		const sourceFile = ts.createSourceFile(
-			fileAbs,
-			content,
-			ts.ScriptTarget.Latest,
-			true,
-			scriptKindForPath(fileAbs),
-		);
-		table = getExportTable(sourceFile);
+		text = overrideText ?? fs.readFileSync(fileAbs, 'utf8');
 	} catch (error) {
 		if (isFatalError(error)) {
 			throw error;
 		}
-		table = null;
+		return null;
 	}
 
-	exportTableCache.set(fileAbs, table);
+	const cached = exportTableCache.get(key);
+	if (cached && cached.text === text) {
+		return cached.table;
+	}
+
+	const sourceFile = ts.createSourceFile(fileAbs, text, ts.ScriptTarget.Latest, true, scriptKindForPath(fileAbs));
+	const table = getExportTable(sourceFile);
+	exportTableCache.set(key, { text, table });
 	return table;
 }
 

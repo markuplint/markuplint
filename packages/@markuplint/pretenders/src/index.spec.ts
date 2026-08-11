@@ -17,7 +17,7 @@ describe('clearPretenderCaches (long-running processes)', () => {
 		await rm(tmpDir, { recursive: true, force: true });
 	});
 
-	test('picks up a renamed default export across a re-scan', async () => {
+	test('picks up a renamed default export across a re-scan without needing clearPretenderCaches()', async () => {
 		const targetFile = path.join(tmpDir, 'target.tsx');
 		const importerFile = path.join(tmpDir, 'importer.tsx');
 		await writeFile(targetFile, 'export default function Item() { return <button>x</button>; }');
@@ -26,14 +26,21 @@ describe('clearPretenderCaches (long-running processes)', () => {
 		const before = await jsxScanner([targetFile, importerFile], { cwd: tmpDir });
 		expect(before.find(p => p.selector === 'E')?.as).toBe('button');
 
-		// Rename the default-exported declaration. Without cache invalidation,
-		// resolution keeps looking up the map key for the old local name
-		// ("Item"), which no longer exists after the rename, leaving `E`
-		// unresolved instead of picking up the new declaration.
+		// Both jsxScanner's parsed-SourceFile cache and dependency-mapper's
+		// export-table cache are keyed on file content, not mtime — so a
+		// renamed export is picked up on the very next scan, with no explicit
+		// invalidation call needed for this kind of change. (Other caches —
+		// module resolution, tsconfig parsing — are content-independent and
+		// still require clearPretenderCaches(); see
+		// resolve-module-file.spec.ts's "picks up a newly added tsconfig
+		// `paths` alias" test for that contract.)
 		await writeFile(targetFile, 'export default function Widget() { return <span>x</span>; }');
-		const stale = await jsxScanner([targetFile, importerFile], { cwd: tmpDir });
-		expect(stale.find(p => p.selector === 'E')?.as).toBe('Item');
+		const afterRename = await jsxScanner([targetFile, importerFile], { cwd: tmpDir });
+		expect(afterRename.find(p => p.selector === 'E')?.as).toBe('span');
 
+		// clearPretenderCaches() remains safe to call regardless — it must not
+		// be required, but calling it anyway (e.g. from generic watch-mode
+		// invalidation logic) must not break anything either.
 		clearPretenderCaches();
 
 		const fresh = await jsxScanner([targetFile, importerFile], { cwd: tmpDir });

@@ -68,6 +68,52 @@ describe('autoScan', () => {
 		await expect(autoScan(entryPath, entrySource)).resolves.toBeInstanceOf(Array);
 	});
 
+	test('resolves an entry-file export via its unsaved content, not a stale disk-backed export table or an unrelated same-named fallback', async () => {
+		// Reproduces a real bug found in review: entry.tsx is reached back via a
+		// circular import (helper.tsx imports from it), so dependency-mapper's
+		// disambiguation needs entry.tsx's own export table to resolve `Item`.
+		// entry.tsx's on-disk content doesn't have `Item` yet (only in the
+		// unsaved `entrySource`), and an unrelated file also happens to define
+		// an `Item`. Without `sources` wired into dependency-mapper, the
+		// disk-backed export table can't confirm `Item` in entry.tsx, so
+		// resolution falls back to the name index and silently grabs the
+		// unrelated `Item` (button) instead of the correct one (span) — the
+		// same class of bug as issue #3951, reachable via `sources` divergence.
+		const entryPath = path.join(tmpDir, 'entry.tsx');
+		const helperPath = path.join(tmpDir, 'helper.tsx');
+		const otherPath = path.join(tmpDir, 'other.tsx');
+
+		// On-disk (stale/"saved") entry.tsx: no `Item` export yet.
+		await writeFile(entryPath, 'export const SomethingElse = () => <div>x</div>;');
+		await writeFile(
+			helperPath,
+			[
+				"import { Item } from './entry';",
+				"import { Other } from './other';",
+				'export const Helper = () => <Item />;',
+				'export const HelperUsesOther = () => <Other />;',
+			].join('\n'),
+		);
+		// Unrelated file with its own, unrelated `Item` — this is what a
+		// disk-blind fallback would wrongly grab.
+		await writeFile(
+			otherPath,
+			'export const Item = () => <button>wrong</button>;\nexport const Other = () => <Item />;',
+		);
+
+		// Unsaved entry.tsx content: adds the real `Item` export.
+		const entrySource = [
+			"import { Helper } from './helper';",
+			'export const Widget = () => <Helper />;',
+			'export const Item = () => <span>right</span>;',
+		].join('\n');
+
+		const result = await autoScan(entryPath, entrySource);
+
+		expect(result.find(p => p.selector === 'Helper')).toMatchObject({ as: 'span' });
+		expect(result.find(p => p.selector === 'Widget')).toMatchObject({ as: 'span' });
+	});
+
 	test('does not scan a .d.mts ambient declaration file reached during BFS', async () => {
 		const entryPath = path.join(tmpDir, 'entry.tsx');
 		await writeFile(path.join(tmpDir, 'types.d.mts'), 'export const Ambient = () => <button>x</button>;');
@@ -141,7 +187,7 @@ describe('autoScan', () => {
 		expect(second.find(p => p.selector === 'Child')).toMatchObject({ as: 'button' });
 	});
 
-	test('reuses the BFS-read content for jsxScanner instead of re-reading from disk for that step', async () => {
+	test('does not read a transitively-imported file from disk twice', async () => {
 		const entryPath = path.join(tmpDir, 'entry.tsx');
 		const childPath = path.join(tmpDir, 'Child.tsx');
 		await writeFile(childPath, 'export const Child = () => <button>x</button>;');
@@ -150,17 +196,13 @@ describe('autoScan', () => {
 		const readFileSyncSpy = vi.spyOn(fs, 'readFileSync');
 		try {
 			await autoScan(entryPath, entrySource);
-			// BFS reads the file once to keep walking its imports (1), and
-			// jsxScanner's own file read (via the caching CompilerHost) reuses
-			// that via `sources` rather than hitting disk again — but
-			// jsxScanner's dependency-mapper module independently re-reads
-			// collected files from disk to build its export table for
-			// same-selector disambiguation, bypassing `sources` (2). So the
-			// count this asserts is 2, not 1: `sources` avoids one of the two
-			// re-reads, not all of them (see the comment on `sources.set()` in
-			// auto-scan.ts and on `getExportTableForFile` in dependency-mapper.ts).
+			// BFS reads the file once to keep walking its imports; both
+			// jsxScanner's own file read (via the caching CompilerHost) and its
+			// dependency-mapper module (export-table construction for
+			// same-selector disambiguation) now consult `sources` first, so
+			// neither re-reads the same file from disk.
 			const childReadCount = readFileSyncSpy.mock.calls.filter(call => call[0] === childPath).length;
-			expect(childReadCount).toBe(2);
+			expect(childReadCount).toBe(1);
 		} finally {
 			readFileSyncSpy.mockRestore();
 		}
