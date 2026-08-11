@@ -15,6 +15,8 @@ An HTML linter that checks conformance with HTML Standard, WAI-ARIA, and project
 - GitHub: https://github.com/markuplint/markuplint
 - Playground: https://playground.markuplint.dev
 
+**Documentation base URL**: check the installed version with `npx markuplint --version`. If it contains `alpha`, `beta`, or `rc`, replace `https://markuplint.dev` with `https://next.markuplint.dev` in every documentation URL below — the stable site does not document prerelease behavior.
+
 ## Reading Violation Messages
 
 Format: `message (ruleId) [named-rule]`
