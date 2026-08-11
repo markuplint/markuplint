@@ -115,6 +115,9 @@ export const benchmarkConfig: Config = {
 		'wai-aria-required-owned-elements': { severity: 'error' },
 		'wai-aria-required-parent-role': true,
 		'wai-aria-no-global-prop': true,
+		// WAI-ARIA 1.3 §tab role: "Authors MUST ensure that if a tab is active, a
+		// corresponding tabpanel that represents the active tab is rendered."
+		'wai-aria-tab-requires-tabpanel': true,
 	},
 	nodeRules: [
 		{

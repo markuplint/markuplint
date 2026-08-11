@@ -2116,8 +2116,8 @@
 			"path": "html-aria/misc/role-tab-with-no-role-tabpanel-novalid.html",
 			"category": "aria",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -14854,9 +14854,7 @@
 			"nu": "clean",
 			"ml": "clean",
 			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-cd593c007a34"
-			]
+			"excludedIds": ["nv-cd593c007a34"]
 		},
 		{
 			"path": "html/datatypes/source-size-list-empty-novalid.html",
@@ -15288,9 +15286,7 @@
 			"nu": "clean",
 			"ml": "clean",
 			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-3a1dc1374ed4"
-			]
+			"excludedIds": ["nv-3a1dc1374ed4"]
 		},
 		{
 			"path": "html/elements/a/href/scheme-data-single-slash-novalid.html",
@@ -16074,9 +16070,7 @@
 			"nu": "clean",
 			"ml": "clean",
 			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-cdb4535e049d"
-			]
+			"excludedIds": ["nv-cdb4535e049d"]
 		},
 		{
 			"path": "html/elements/area/href/scheme-data-single-slash-novalid.html",
@@ -16836,9 +16830,7 @@
 			"nu": "clean",
 			"ml": "clean",
 			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-60706ef20301"
-			]
+			"excludedIds": ["nv-60706ef20301"]
 		},
 		{
 			"path": "html/elements/audio/src/scheme-data-single-slash-novalid.html",
@@ -17958,9 +17950,7 @@
 			"nu": "clean",
 			"ml": "error",
 			"verdict": "ml-only",
-			"excludedIds": [
-				"nv-7607d3f108ff"
-			]
+			"excludedIds": ["nv-7607d3f108ff"]
 		},
 		{
 			"path": "html/elements/base/href/scheme-data-no-slash-isvalid.html",
@@ -18896,9 +18886,7 @@
 			"nu": "clean",
 			"ml": "clean",
 			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-ed1dbf9dfa0f"
-			]
+			"excludedIds": ["nv-ed1dbf9dfa0f"]
 		},
 		{
 			"path": "html/elements/blockquote/cite/scheme-data-single-slash-novalid.html",
@@ -19610,9 +19598,7 @@
 			"nu": "clean",
 			"ml": "clean",
 			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-82f38369e99e"
-			]
+			"excludedIds": ["nv-82f38369e99e"]
 		},
 		{
 			"path": "html/elements/button/formaction/scheme-data-single-slash-novalid.html",
@@ -20412,9 +20398,7 @@
 			"nu": "clean",
 			"ml": "clean",
 			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-6d168c2d3178"
-			]
+			"excludedIds": ["nv-6d168c2d3178"]
 		},
 		{
 			"path": "html/elements/del/cite/scheme-data-single-slash-novalid.html",
@@ -22318,9 +22302,7 @@
 			"nu": "clean",
 			"ml": "clean",
 			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-27ddcd34ac6d"
-			]
+			"excludedIds": ["nv-27ddcd34ac6d"]
 		},
 		{
 			"path": "html/elements/embed/src/scheme-data-single-slash-novalid.html",
@@ -23072,9 +23054,7 @@
 			"nu": "clean",
 			"ml": "clean",
 			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-0a21d5f3b754"
-			]
+			"excludedIds": ["nv-0a21d5f3b754"]
 		},
 		{
 			"path": "html/elements/form/action/scheme-data-single-slash-novalid.html",
@@ -24018,9 +23998,7 @@
 			"nu": "clean",
 			"ml": "clean",
 			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-344c8ec6a993"
-			]
+			"excludedIds": ["nv-344c8ec6a993"]
 		},
 		{
 			"path": "html/elements/iframe/src/scheme-data-single-slash-novalid.html",
@@ -24860,9 +24838,7 @@
 			"nu": "clean",
 			"ml": "clean",
 			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-8c9d69a03039"
-			]
+			"excludedIds": ["nv-8c9d69a03039"]
 		},
 		{
 			"path": "html/elements/img/src/scheme-data-single-slash-novalid.html",
@@ -25710,9 +25686,7 @@
 			"nu": "clean",
 			"ml": "clean",
 			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-54c78eff3c7d"
-			]
+			"excludedIds": ["nv-54c78eff3c7d"]
 		},
 		{
 			"path": "html/elements/input/type-color-isvalid.html",
@@ -26128,9 +26102,7 @@
 			"nu": "clean",
 			"ml": "clean",
 			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-ad82b8a8c1e5"
-			]
+			"excludedIds": ["nv-ad82b8a8c1e5"]
 		},
 		{
 			"path": "html/elements/input/type-image-formaction/scheme-data-single-slash-novalid.html",
@@ -26794,9 +26766,7 @@
 			"nu": "clean",
 			"ml": "clean",
 			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-e683359e52e5"
-			]
+			"excludedIds": ["nv-e683359e52e5"]
 		},
 		{
 			"path": "html/elements/input/type-image-src/scheme-data-single-slash-novalid.html",
@@ -27460,9 +27430,7 @@
 			"nu": "clean",
 			"ml": "clean",
 			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-8c1d1d42e012"
-			]
+			"excludedIds": ["nv-8c1d1d42e012"]
 		},
 		{
 			"path": "html/elements/input/type-submit-formaction/scheme-data-single-slash-novalid.html",
@@ -28190,9 +28158,7 @@
 			"nu": "clean",
 			"ml": "clean",
 			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-6872c643a823"
-			]
+			"excludedIds": ["nv-6872c643a823"]
 		},
 		{
 			"path": "html/elements/input/type-url-value/scheme-data-single-slash-novalid.html",
@@ -28856,9 +28822,7 @@
 			"nu": "clean",
 			"ml": "clean",
 			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-27b353000357"
-			]
+			"excludedIds": ["nv-27b353000357"]
 		},
 		{
 			"path": "html/elements/ins/cite/scheme-data-single-slash-novalid.html",
@@ -30570,9 +30534,7 @@
 			"nu": "clean",
 			"ml": "clean",
 			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-5b612865391d"
-			]
+			"excludedIds": ["nv-5b612865391d"]
 		},
 		{
 			"path": "html/elements/link/href/scheme-data-single-slash-novalid.html",
@@ -31324,9 +31286,7 @@
 			"nu": "clean",
 			"ml": "clean",
 			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-6ec2a5c8c04c"
-			]
+			"excludedIds": ["nv-6ec2a5c8c04c"]
 		},
 		{
 			"path": "html/elements/meta/content-security-policy/csp-invalid-source-novalid.html",
@@ -31334,9 +31294,7 @@
 			"nu": "clean",
 			"ml": "clean",
 			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-ccff05d53b7c"
-			]
+			"excludedIds": ["nv-ccff05d53b7c"]
 		},
 		{
 			"path": "html/elements/meta/content-security-policy/csp-non-ascii-novalid.html",
@@ -31344,9 +31302,7 @@
 			"nu": "clean",
 			"ml": "clean",
 			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-f76bf04a85bb"
-			]
+			"excludedIds": ["nv-f76bf04a85bb"]
 		},
 		{
 			"path": "html/elements/meta/content-security-policy/csp-policy-list-isvalid.html",
@@ -31474,9 +31430,7 @@
 			"nu": "clean",
 			"ml": "clean",
 			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-c57d9ac83548"
-			]
+			"excludedIds": ["nv-c57d9ac83548"]
 		},
 		{
 			"path": "html/elements/meta/refresh-isvalid.html",
@@ -31500,9 +31454,7 @@
 			"nu": "clean",
 			"ml": "clean",
 			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-f26bf6cca5a8"
-			]
+			"excludedIds": ["nv-f26bf6cca5a8"]
 		},
 		{
 			"path": "html/elements/meta/refresh-quoted-url-novalid.html",
@@ -31510,9 +31462,7 @@
 			"nu": "clean",
 			"ml": "clean",
 			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-59fd76f96902"
-			]
+			"excludedIds": ["nv-59fd76f96902"]
 		},
 		{
 			"path": "html/elements/meta/viewport-user-scalable-no-haswarn.html",
@@ -32088,9 +32038,7 @@
 			"nu": "clean",
 			"ml": "clean",
 			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-372749d0395d"
-			]
+			"excludedIds": ["nv-372749d0395d"]
 		},
 		{
 			"path": "html/elements/object/data/scheme-data-single-slash-novalid.html",
@@ -32418,9 +32366,7 @@
 			"nu": "clean",
 			"ml": "clean",
 			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-785400222871"
-			]
+			"excludedIds": ["nv-785400222871"]
 		},
 		{
 			"path": "html/elements/ol/model-isvalid.html",
@@ -34620,9 +34566,7 @@
 			"nu": "clean",
 			"ml": "clean",
 			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-3cd607b1d358"
-			]
+			"excludedIds": ["nv-3cd607b1d358"]
 		},
 		{
 			"path": "html/elements/q/cite/scheme-data-single-slash-novalid.html",
@@ -35150,9 +35094,7 @@
 			"nu": "clean",
 			"ml": "clean",
 			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-00d2f9879fd4"
-			]
+			"excludedIds": ["nv-00d2f9879fd4"]
 		},
 		{
 			"path": "html/elements/script/importmap/scopes-value-not-object-novalid.html",
@@ -36504,9 +36446,7 @@
 			"nu": "clean",
 			"ml": "clean",
 			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-d2a73eb7f342"
-			]
+			"excludedIds": ["nv-d2a73eb7f342"]
 		},
 		{
 			"path": "html/elements/script/src/scheme-data-single-slash-novalid.html",
@@ -37450,9 +37390,7 @@
 			"nu": "clean",
 			"ml": "clean",
 			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-c98e0d290a6d"
-			]
+			"excludedIds": ["nv-c98e0d290a6d"]
 		},
 		{
 			"path": "html/elements/source/src/scheme-data-single-slash-novalid.html",
@@ -37820,9 +37758,7 @@
 			"nu": "clean",
 			"ml": "clean",
 			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-c5efac320bbb"
-			]
+			"excludedIds": ["nv-c5efac320bbb"]
 		},
 		{
 			"path": "html/elements/style/html-spec-comms-isvalid.html",
@@ -38142,9 +38078,7 @@
 			"nu": "clean",
 			"ml": "clean",
 			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-d7b3d14cfb44"
-			]
+			"excludedIds": ["nv-d7b3d14cfb44"]
 		},
 		{
 			"path": "html/elements/table/row-width-exceeds-cols-haswarn.html",
@@ -38728,9 +38662,7 @@
 			"nu": "clean",
 			"ml": "clean",
 			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-22da233e51c1"
-			]
+			"excludedIds": ["nv-22da233e51c1"]
 		},
 		{
 			"path": "html/elements/track/src/scheme-data-single-slash-novalid.html",
@@ -39506,9 +39438,7 @@
 			"nu": "clean",
 			"ml": "clean",
 			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-f66fce25c1d0"
-			]
+			"excludedIds": ["nv-f66fce25c1d0"]
 		},
 		{
 			"path": "html/elements/video/poster/scheme-data-single-slash-novalid.html",
@@ -40156,9 +40086,7 @@
 			"nu": "clean",
 			"ml": "clean",
 			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-1f2c65f495dc"
-			]
+			"excludedIds": ["nv-1f2c65f495dc"]
 		},
 		{
 			"path": "html/elements/video/src/scheme-data-single-slash-novalid.html",
@@ -40910,9 +40838,7 @@
 			"nu": "clean",
 			"ml": "clean",
 			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-72908421456b"
-			]
+			"excludedIds": ["nv-72908421456b"]
 		},
 		{
 			"path": "html/microdata/itemid-without-itemscope-novalid.html",
@@ -41616,9 +41542,7 @@
 			"nu": "clean",
 			"ml": "clean",
 			"verdict": "nu-over",
-			"excludedIds": [
-				"nv-5e72124bb955"
-			]
+			"excludedIds": ["nv-5e72124bb955"]
 		},
 		{
 			"path": "html/microdata/itemtype-without-itemscope-novalid.html",

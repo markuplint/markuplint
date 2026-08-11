@@ -33,6 +33,12 @@
 					"description": "Verify that roles with \"Required Accessibility Parent Role\" (called \"Required Context Role\" in ARIA 1.2) are placed in a valid parent context.",
 					"description:ja": "\"Required Accessibility Parent Role\"（ARIA 1.2では\"Required Context Role\"）を持つロールが正しい親コンテキスト内に配置されているかチェックします。"
 				},
+				"checkingTabRequiresTabpanel": {
+					"type": "boolean",
+					"default": "true",
+					"description": "Verify that an active \"tab\" role element has a corresponding \"tabpanel\" role element (via aria-controls or aria-labelledby).",
+					"description:ja": "アクティブな\"tab\"ロールの要素が、対応する\"tabpanel\"ロールの要素を持っているか（aria-controlsまたはaria-labelledby経由で）チェックします。"
+				},
 				"checkingDeprecatedRole": {
 					"type": "boolean",
 					"default": "true",

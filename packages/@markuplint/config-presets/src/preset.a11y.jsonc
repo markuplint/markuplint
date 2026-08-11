@@ -215,6 +215,10 @@
 			"specConformance": "normative",
 			"rules": { "wai-aria-required-parent-role": true }
 		},
+		"a11y/wai-aria/tab-requires-tabpanel": {
+			"specConformance": "normative",
+			"rules": { "wai-aria-tab-requires-tabpanel": true }
+		},
 		"a11y/wai-aria/presentational-children": {
 			"specConformance": "non-normative",
 			"severity": "warning",

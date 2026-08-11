@@ -21,6 +21,7 @@ import { checkingPresentationalChildren } from './checkings/presentational-child
 import { checkingRequiredAccessibilityParentRole } from './checkings/required-accessibility-parent-role.js';
 import { checkingRequiredOwnedElements } from './checkings/required-owned-elements.js';
 import { checkingRequiredProp } from './checkings/required-prop.js';
+import { checkingTabRequiresTabpanel } from './checkings/tab-requires-tabpanel.js';
 import { checkingValue } from './checkings/value.js';
 import meta from './meta.js';
 
@@ -131,6 +132,10 @@ export default createRule<boolean, Options>({
 
 			if (el.rule.options.checkingInteractionInHidden) {
 				report(checkingInteractionInHidden({ el }));
+			}
+
+			if (el.rule.options.checkingTabRequiresTabpanel) {
+				report(checkingTabRequiresTabpanel({ el, role: computed.role }));
 			}
 		});
 	},

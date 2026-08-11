@@ -2709,3 +2709,42 @@ describe('Issue #3682 — separator focusable conditional aria-valuenow', () => 
 		expect(violations).toStrictEqual([]);
 	});
 });
+
+// #3838 (Group 2): active "tab" role requires a corresponding "tabpanel" role
+describe('Issue #3838 — active tab requires a corresponding tabpanel', () => {
+	test('[wai-aria-issue-3838-001] active tab with no tabpanel anywhere is a violation', async () => {
+		// Mirrors tests/external/validator/tests/html-aria/misc/role-tab-with-no-role-tabpanel-novalid.html
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div role="tablist"><button role="tab" aria-selected="false">foo</button><button role="tab" aria-selected="true">bar</button></div>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 74,
+				message: 'An active "tab" role requires a corresponding "tabpanel" role',
+				raw: '<button role="tab" aria-selected="true">',
+			},
+		]);
+	});
+
+	test('[wai-aria-issue-3838-002] active tab with aria-controls pointing to a tabpanel is valid', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div role="tablist"><button role="tab" aria-selected="true" aria-controls="panel">Tab</button></div><div id="panel" role="tabpanel">Content</div>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[wai-aria-issue-3838-003] checkingTabRequiresTabpanel:false disables the check', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div role="tablist"><button role="tab" aria-selected="true">Tab</button></div>',
+			{
+				rule: { options: { checkingTabRequiresTabpanel: false } },
+			},
+		);
+		expect(violations).toStrictEqual([]);
+	});
+});

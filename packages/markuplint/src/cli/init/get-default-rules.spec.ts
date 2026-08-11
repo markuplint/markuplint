@@ -305,6 +305,10 @@ test('default-rules', () => {
 			category: 'a11y',
 			defaultValue: true,
 		},
+		'wai-aria-tab-requires-tabpanel': {
+			category: 'a11y',
+			defaultValue: true,
+		},
 		'wai-aria-value': {
 			category: 'a11y',
 			defaultValue: true,

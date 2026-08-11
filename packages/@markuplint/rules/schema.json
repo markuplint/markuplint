@@ -231,6 +231,9 @@
 				"wai-aria-required-props": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/wai-aria-required-props/schema.json"
 				},
+				"wai-aria-tab-requires-tabpanel": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/wai-aria-tab-requires-tabpanel/schema.json"
+				},
 				"wai-aria-value": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/wai-aria-value/schema.json"
 				}
