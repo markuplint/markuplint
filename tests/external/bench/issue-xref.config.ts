@@ -81,14 +81,6 @@ export const xrefMappings: readonly XrefMapping[] = [
 	},
 	{
 		kind: 'primary',
-		issue: 3915,
-		filter:
-			/^html\/elements\/table\/(cell-overlaps|cell-overlaps-earlier-cell|cell-spans-past-end|cell-spans-past-row-group|col-no-cells|integrity\/vertical|row-width-less-than-col-markup)-novalid/,
-		note:
-			'HTML LS [§4.9.12.1 *Forming a table*](https://html.spec.whatwg.org/multipage/tables.html#forming-a-table) — Step 14 ("If any of the slots involved already had a cell covering them, then this is a table model error.") is partially covered by `table-row-column-alignment`; Step 20 ("If there exists a row or column in the table containing only slots that do not have a cell anchored to them, then this is a table model error.") and the cross-row-group constraint ("A cell cannot cover slots that are from two or more row groups.") are not. The seven `nu-only` fixtures split as: Step 20 column via `colspan` blocked by a `rowspan` continuation (`cell-overlaps-novalid`, `cell-overlaps-earlier-cell-novalid`), Step 20 column past the last row (`cell-spans-past-end-novalid`), Step 20 column from `<col>` markup (`col-no-cells-novalid`, `row-width-less-than-col-markup-novalid`), Step 14 + cross-row-group + Step 20 mix (`integrity/vertical-novalid`), and cross-row-group only (`cell-spans-past-row-group-novalid`). The rule is not yet enabled in `tests/external/bench/config.ts`; Issue step 6 enables it with `severity: error` after items 1–5 land.',
-	},
-	{
-		kind: 'primary',
 		issue: 3838,
 		filter:
 			/^html-aria\/(author-requirements\/(574|575|576|577)|misc\/(role-tab-with-no-role-tabpanel-novalid|summary-for-its-details-with-aria-(expanded|pressed)-novalid))/,
