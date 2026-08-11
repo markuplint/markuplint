@@ -14,7 +14,7 @@ disable-model-invocation: true
 - **Fixed versioning**: all packages share one version (`lerna.json` `version`).
 - Releases are cut from `dev`. Pushing a `v*` tag triggers `.github/workflows/publish.yml`, which runs `lerna publish from-git` with a dist-tag derived from the version string (`-alpha.*` → `alpha`, `-beta.*` → `beta`, `-rc.*` → `rc`, no prerelease suffix → `latest`) via npm OIDC Trusted Publishing.
 - **Publishing cannot be undone.** Confirm with the user at each gate.
-- The VS Code extension ships separately (`yarn vscode:pre-package` to verify, then `yarn vscode:release`) and is out of scope here.
+- The VS Code extension ships separately (`yarn vscode:package` to verify the VSIX build locally, then `yarn vscode:release`) and is out of scope here.
 
 # Steps
 
