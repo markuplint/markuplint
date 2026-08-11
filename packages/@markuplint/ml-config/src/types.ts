@@ -402,6 +402,14 @@ export interface PretenderScanOptions {
 	 * Component names to exclude from scanning results.
 	 */
 	readonly ignoreComponentNames?: readonly string[];
+
+	/**
+	 * In-memory content overrides, keyed by normalized (`/`-delimited)
+	 * absolute file path, consulted before falling back to a disk read.
+	 * For content with no on-disk source of truth yet, such as an editor's
+	 * unsaved buffer for the file currently being linted.
+	 */
+	readonly sources?: ReadonlyMap<string, string>;
 }
 
 /**
