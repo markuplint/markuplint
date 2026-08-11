@@ -121,19 +121,24 @@ Slot detection covers:
 
 ### Import Resolver
 
-The import resolver analyzes `<script>` / frontmatter / ESM blocks in component files and extracts import bindings. This links template component usage to source file locations, enabling cross-file dependency resolution.
-
-Script source extraction is delegated to each parser's component-scanner (Vue, Svelte, Astro), while MDX extraction is built-in. Supported script block types:
+The import resolver analyzes a component file and extracts import bindings, linking component usage to source file locations for cross-file dependency resolution.
 
 - Vue `<script setup>` (via `@markuplint/vue-parser/component-scanner`)
 - Vue Options API `<script>` (fallback when no `<script setup>`; only imports registered in `components: { ... }` are returned)
 - Svelte `<script>` (via `@markuplint/svelte-parser/component-scanner`; prefers instance script over module script)
 - Astro frontmatter (via `@markuplint/astro-parser/component-scanner`)
 - MDX top-level ESM (built-in)
+- JS/TS/JSX/TSX (`.js`, `.jsx`, `.ts`, `.tsx`, `.mjs`, `.cjs`, `.mts`, `.cts`): analyzed directly via the TypeScript AST, so JSX syntax and non-standard TS constructs (which `es-module-lexer` cannot parse) are handled correctly
 
 Dynamic imports with string literal specifiers (`import('./path')`) are included in bindings with `type: 'dynamic'`. Template literal and variable specifiers are excluded.
 
 Barrel file re-exports can be resolved with `resolveBarrelExport`, which maps a named import from a directory with an index file back to its original source module (single-level only).
+
+### Lint-time Disambiguation
+
+When the same component name is declared in more than one scanned file (e.g., two unrelated `Item` components rendering different elements), the generated pretenders keep independent entries for each — but `markuplint`'s lint pipeline still needs to know, for the specific file being linted, which one it actually refers to. `disambiguatePretenders` resolves this from the lint target's own declarations and imports; it's normally invoked automatically by `markuplint`'s config resolution, not called directly.
+
+In long-running hosts (watch mode, editor extensions) that keep re-resolving pretenders across file edits, call `clearPretenderCaches()` after each edit — otherwise a renamed export or a newly valid tsconfig `paths` alias keeps resolving as it did before the change for the rest of the process's lifetime.
 
 ## API
 
@@ -210,9 +215,9 @@ const pretenders = await templateScanner(
 
 ### `analyzeImports(filePath, source)`
 
-Extracts import bindings from a component file's script block. Detects the framework from the file extension and extracts the appropriate source block automatically.
+Extracts import bindings from a component file. Detects the framework from the file extension and extracts the appropriate source automatically — `.vue`, `.svelte`, `.astro`, and `.mdx` extract a script/frontmatter/ESM block first, while `.js`, `.jsx`, `.ts`, `.tsx`, `.mjs`, `.cjs`, `.mts`, and `.cts` are analyzed directly via the TypeScript AST (which, unlike `es-module-lexer`, can parse JSX syntax).
 
-Returns `null` if the file extension is not a supported framework (`.vue`, `.svelte`, `.astro`, `.mdx`).
+Returns `null` if the file extension is not one of the above.
 
 ```ts
 import { analyzeImports } from '@markuplint/pretenders';
@@ -281,3 +286,38 @@ if (binding) {
 #### Returns
 
 `string | null` — The relative source path from the barrel file, or `null` if not a barrel or name not found.
+
+### `disambiguatePretenders(pretenders, options)`
+
+Given a flat pretender list and the file currently being linted, resolves which of several same-selector candidates that file actually refers to. Entries without a `filePath`, or whose `selector` isn't a plain identifier, are never touched. Normally invoked automatically as part of `markuplint`'s config resolution.
+
+```ts
+import { disambiguatePretenders } from '@markuplint/pretenders';
+
+const resolved = await disambiguatePretenders(pretenders, {
+  filePath: '/absolute/path/to/Page.tsx',
+  sourceCode: source,
+});
+```
+
+#### Parameters
+
+| Parameter            | Type                   | Description                                 |
+| -------------------- | ---------------------- | ------------------------------------------- |
+| `pretenders`         | `readonly Pretender[]` | The resolved pretender list to disambiguate |
+| `options.filePath`   | `string`               | Absolute path of the file being linted      |
+| `options.sourceCode` | `string`               | Full source text of the file being linted   |
+
+#### Returns
+
+`Promise<readonly Pretender[]>` — The disambiguated pretender list, or `pretenders` itself when there was nothing to resolve or nothing could be confirmed.
+
+### `clearPretenderCaches()`
+
+Clears the module-level caches that back import/export resolution (module resolution, export tables). Neither cache expires on its own, so a long-running host (watch mode, an editor extension) that keeps resolving pretenders across file edits must call this after each edit — otherwise a renamed export or a newly valid tsconfig `paths` alias keeps resolving as it did before the change for the rest of the process's lifetime.
+
+```ts
+import { clearPretenderCaches } from '@markuplint/pretenders';
+
+clearPretenderCaches();
+```

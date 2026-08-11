@@ -4,7 +4,9 @@ import { describe, test, expect } from 'vitest';
 
 import { templateScanner } from './index.js';
 
-const _ = (filePath: string) => filePath.split('/').join(path.sep);
+// Scanners always emit `/`-delimited filePath now (for stable, cross-platform
+// JSON output), so this is a no-op — kept so call sites don't need touching.
+const _ = (filePath: string) => filePath;
 const fixtureDir = path.resolve(import.meta.dirname, '..', '..', 'test', 'fixtures', 'template');
 const resolve = (name: string) => path.resolve(fixtureDir, name);
 
@@ -179,6 +181,25 @@ describe('templateScanner', () => {
 					as: expect.objectContaining({ element: 'div' }),
 				}),
 			]);
+		});
+	});
+
+	describe('Name collision resolved via import (issue #3951)', () => {
+		test('a wrapper component resolves its imported child to the file it actually imports, not a same-named sibling', async () => {
+			// subB/Button.vue is scanned first (and subA/Button.vue only appears after
+			// the wrapper) so that, absent import-based resolution, the plain name index
+			// would register subB's `Button` (div) first and resolve the wrapper's
+			// reference to it instead of the file it actually imports.
+			const result = await templateScanner([
+				resolve('subB/Button.vue'),
+				resolve('collision/wrapper-uses-a.vue'),
+				resolve('subA/Button.vue'),
+			]);
+
+			const wrapper = result.find(p => p.selector === 'WrapperUsesA');
+			expect(wrapper).toMatchObject({
+				as: expect.objectContaining({ element: 'button' }),
+			});
 		});
 	});
 

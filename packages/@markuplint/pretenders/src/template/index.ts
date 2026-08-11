@@ -5,6 +5,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { createScanner } from '../create-scanner.js';
+import { analyzeImports } from '../import-resolver/index.js';
+import { normalizePath } from '../import-resolver/resolve-module-file.js';
 import { PretenderDirector } from '../pretender-director.js';
 import { getScanner } from '../scanner-loader.js';
 
@@ -53,7 +55,7 @@ export const templateScanner = createScanner<PretenderScanTemplateOptions>(async
 			continue;
 		}
 
-		const relFilePath = path.relative(cwd, filePath);
+		const relFilePath = normalizePath(path.relative(cwd, filePath));
 
 		const attrs: readonly PretenderAttr[] = scan.attrs.map(a =>
 			a.value === undefined ? { name: a.name } : { name: a.name, value: a.value },
@@ -69,7 +71,12 @@ export const templateScanner = createScanner<PretenderScanTemplateOptions>(async
 				: scan.rootElement;
 
 		director.add(componentName, identity, relFilePath, scan.line ?? 1, scan.col ?? 1, relFilePath);
+
+		const importAnalysis = await analyzeImports(filePath, sourceCode);
+		if (importAnalysis) {
+			director.addImports(relFilePath, importAnalysis.bindings);
+		}
 	}
 
-	return director.getPretenders();
+	return director.getPretenders(cwd);
 });

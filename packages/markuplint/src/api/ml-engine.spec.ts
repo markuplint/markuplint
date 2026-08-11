@@ -2,6 +2,7 @@ import type { ConfigSet } from '@markuplint/file-resolver';
 import type { Violation } from '@markuplint/ml-config';
 
 import fs from 'node:fs/promises';
+import os from 'node:os';
 import path from 'node:path';
 
 import { describe, it, expect } from 'vitest';
@@ -71,6 +72,73 @@ describe('Watcher', () => {
 		expect(result1st?.violations.length).toBe(6);
 		expect(result2nd.length).toBe(5);
 		return;
+	});
+
+	it('re-resolving config also invalidates pretenders resolution caches (issue #3951 follow-up)', async () => {
+		// Without invalidating @markuplint/pretenders' own module-level caches on
+		// every cache-busting re-resolve, a renamed export a wrapper component
+		// depends on would keep resolving as it did before the rename for the
+		// rest of the process's lifetime — this exercises that wiring end to end.
+		const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'ml-engine-pretenders-cache-'));
+		try {
+			const targetFile = path.join(tmpDir, 'target.tsx');
+			const importerFile = path.join(tmpDir, 'importer.tsx');
+			const pageFile = path.join(tmpDir, 'page.tsx');
+			const configFile = path.join(tmpDir, '.markuplintrc');
+
+			await fs.writeFile(targetFile, 'export default function Item() { return <button>x</button>; }');
+			await fs.writeFile(
+				importerFile,
+				"import Item from './target';\nexport const Wrapper = () => <Item>x</Item>;",
+			);
+			await fs.writeFile(
+				pageFile,
+				"import { Wrapper } from './importer';\nexport const Page = () => <ul><Wrapper>content</Wrapper></ul>;",
+			);
+			const config = {
+				parser: { '\\.tsx$': '@markuplint/jsx-parser' },
+				pretenders: { scan: [{ files: ['target.tsx', 'importer.tsx'] }] },
+				rules: { 'permitted-contents': true },
+			};
+			await fs.writeFile(configFile, JSON.stringify(config));
+
+			const file = await MLEngine.toMLFile(pageFile);
+			const engine = new MLEngine(file!, { watch: true });
+
+			// `Wrapper` resolves through `Item` to <button>, which isn't allowed
+			// directly inside <ul> — this must report a permitted-contents violation
+			// naming "button" as the disallowed element.
+			const result1st = await engine.exec();
+			expect(
+				result1st?.violations.some(v => v.ruleId === 'permitted-contents' && v.message.includes('button')),
+			).toBe(true);
+
+			// Rename the default export the wrapper depends on (element unchanged).
+			await fs.writeFile(targetFile, 'export default function Widget() { return <button>x</button>; }');
+
+			const lintPromise = new Promise<readonly Violation[]>(resolve => {
+				engine.on('lint', (_, __, violations) => resolve(violations));
+			});
+			// Touch the config file (no semantic change) to trigger the watcher's
+			// cache-busting re-resolve, which must also invalidate the pretenders caches.
+			await fs.writeFile(configFile, JSON.stringify(config));
+			const violations2nd = await lintPromise;
+
+			await engine.close();
+
+			// If the pretenders caches were NOT invalidated, `Wrapper` would still
+			// resolve `Item`'s stale export-table entry, fail to find the renamed
+			// declaration, and stay unresolved — reported as a disallowed "Item"
+			// element instead of "button". Asserting on the element name (not just
+			// the rule ID) is what actually distinguishes the fixed behavior from
+			// the regression.
+			expect(violations2nd.some(v => v.ruleId === 'permitted-contents' && v.message.includes('button'))).toBe(
+				true,
+			);
+			expect(violations2nd.some(v => v.message.includes('Item'))).toBe(false);
+		} finally {
+			await fs.rm(tmpDir, { recursive: true, force: true });
+		}
 	});
 });
 

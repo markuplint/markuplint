@@ -6,6 +6,8 @@ import type { Ruleset, Plugin, Document, RuleConfigValue, MLFabric } from '@mark
 
 import {
 	ConfigProvider,
+	disambiguatePretendersForFile,
+	invalidatePretenderResolutionCaches,
 	resolveFiles,
 	resolveParser,
 	resolvePretenders,
@@ -329,7 +331,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 			...this.#options?.severity,
 		};
 
-		const pretenders = await this.#resolvePretenders(configSet);
+		const pretenders = await this.#resolvePretenders(configSet, cache);
 		fileLog('Resolved pretenders: %O', pretenders);
 
 		const ruleset = this.#resolveRuleset(configSet);
@@ -453,10 +455,20 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 	async #resolvePretenders(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		configSet: ConfigSet,
+		cache: boolean,
 	) {
+		if (!cache) {
+			// A cache-busting re-resolve (e.g. watch mode after a file change) must also
+			// invalidate `@markuplint/pretenders`' own module-level resolution caches —
+			// otherwise a renamed export or a newly valid tsconfig `paths` alias keeps
+			// resolving as it did before the change for the rest of the process's lifetime.
+			await invalidatePretenderResolutionCaches();
+		}
 		const pretenders = await resolvePretenders(configSet.config.pretenders);
-		fileLog('Resolved pretenders: %O', pretenders);
-		return pretenders;
+		const sourceCode = await this.#file.getCode();
+		const disambiguated = await disambiguatePretendersForFile(this.#file.path, sourceCode, pretenders);
+		fileLog('Resolved pretenders: %O', disambiguated);
+		return disambiguated;
 	}
 
 	async #resolveRules(plugins: readonly Plugin[], ruleset: Ruleset) {

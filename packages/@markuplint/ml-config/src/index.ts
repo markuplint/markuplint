@@ -14,5 +14,6 @@
  * @module
  */
 export * from './merge-config.js';
+export * from './pretender-file-path.js';
 export * from './utils.js';
 export type * from './types.js';

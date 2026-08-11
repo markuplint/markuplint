@@ -24,8 +24,28 @@
  * Dynamic imports (`import('./path')`) are included in bindings with `type: 'dynamic'`
  * and `localName: '*'` as a sentinel. Check `type === 'dynamic'` to distinguish from
  * namespace imports.
+ *
+ * ## Lint-time disambiguation
+ *
+ * - {@link disambiguatePretenders} — Given a flat pretender list and the file currently
+ *   being linted, resolves which of several same-selector candidates that file actually
+ *   refers to (via its own declarations or imports), so linting doesn't fall back to
+ *   whichever same-named component happened to be scanned first (see issue #3951).
+ *
+ * ## Caching
+ *
+ * - {@link clearPretenderCaches} — Clears the module-level caches that back import/export
+ *   resolution (module resolution, export tables). Neither cache expires on its own, so a
+ *   long-running host (watch mode, an editor extension) that re-resolves pretenders across
+ *   file edits must call this after each edit, or renamed exports and newly valid tsconfig
+ *   `paths` aliases keep resolving as they did before the change for the rest of the process.
  */
 
+import { clearExportTableCache } from './dependency-mapper.js';
+import { clearModuleResolutionCaches } from './import-resolver/resolve-module-file.js';
+
+export type { DisambiguateOptions } from './disambiguate.js';
+export { disambiguatePretenders } from './disambiguate.js';
 export { jsxScanner } from './jsx/index.js';
 export { templateScanner } from './template/index.js';
 export { scan } from './scan.js';
@@ -33,6 +53,15 @@ export type { ScanOptions } from './scan.js';
 export { analyzeImports, resolveComponentImport, resolveBarrelExport } from './import-resolver/index.js';
 export type { ImportBinding, ImportAnalysisResult } from './import-resolver/types.js';
 export type * from './types.js';
+
+/**
+ * Clears the module-level caches that back import/export resolution (see the
+ * module-level "Caching" section above for why a long-running host must call this).
+ */
+export function clearPretenderCaches() {
+	clearExportTableCache();
+	clearModuleResolutionCaches();
+}
 
 // Companion Module pattern types
 export type {

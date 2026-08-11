@@ -35,6 +35,7 @@
 		"@markuplint/ml-ast": "5.0.0-rc.4",
 		"@markuplint/ml-config": "5.0.0-rc.4",
 		"@markuplint/parser-utils": "5.0.0-rc.4",
+		"@markuplint/shared": "5.0.0-rc.4",
 		"es-module-lexer": "2.0.0",
 		"glob": "13.0.6",
 		"meow": "14.1.0",
