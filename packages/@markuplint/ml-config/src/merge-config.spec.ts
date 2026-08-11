@@ -827,7 +827,7 @@ describe('Pretenders', () => {
 		});
 	});
 
-	test('auto: false on the right disables it even though the left enabled it', () => {
+	test("auto: an omitted right side leaves the left side's value untouched", () => {
 		expect(
 			mergeConfig(
 				{
