@@ -55,3 +55,12 @@ test('file exists', async () => {
 	const file = new MLFile({ sourceCode: '<html></html>' });
 	expect(await file.isExist()).toBeTruthy();
 });
+
+test('code-base file with a subdirectory-relative name resolves against workspace', () => {
+	// A relative `name` that includes subdirectories (e.g. from a VS Code document
+	// opened below the workspace root) must resolve to the file's actual location,
+	// not collapse to the workspace root + basename.
+	const file = new MLFile({ sourceCode: '<div></div>', name: 'src/components/Button.tsx', workspace: '/project' });
+	expect(file.path).toBe('/project/src/components/Button.tsx');
+	expect(file.dirname).toBe('/project');
+});
