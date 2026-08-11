@@ -282,6 +282,37 @@ describe('auto (on-demand import-graph resolution)', () => {
 		expect(childEntries).toHaveLength(2);
 	});
 
+	test('dedupe does not collide across a differently-split (selector, filePath) pair that joins to the same string', async () => {
+		// A filename containing a space gives the auto-resolved entry's joined
+		// "selector filePath" string a second space to split on, besides the
+		// one dedupe itself inserts. A plain-string-delimited key (the bug this
+		// pins down: `${selector} ${filePath}`) would treat a `data` entry
+		// split at that other space as the SAME key as the real Child entry
+		// and silently drop Child — even though the two pairs are genuinely
+		// different. `JSON.stringify([selector, filePath])` can't collide this
+		// way because the delimiter is never a literal character either side
+		// could contain.
+		const entryPath = path.join(tmpDir, 'entry.tsx');
+		const childPath = path.join(tmpDir, 'My Child.tsx');
+		await writeFile(childPath, 'export const Child = () => <button>x</button>;');
+		const sourceCode = "import { Child } from './My Child';\nexport const Entry = () => <Child />;";
+
+		const autoOnly = await resolvePretenders({ auto: true }, { filePath: entryPath, sourceCode });
+		const childEntry = autoOnly.find(p => p.selector === 'Child')!;
+		const joined = `Child ${childEntry.filePath}`; // 'Child <tmpDir>/My Child.tsx:1:13'
+		const secondSpaceIndex = joined.indexOf(' ', joined.indexOf(' ') + 1);
+		const altSelector = joined.slice(0, secondSpaceIndex); // 'Child <tmpDir>/My'
+		const altFilePath = joined.slice(secondSpaceIndex + 1); // 'Child.tsx:1:13'
+
+		const pretenders = await resolvePretenders(
+			{ auto: true, data: [{ selector: altSelector, as: 'span', filePath: altFilePath }] },
+			{ filePath: entryPath, sourceCode },
+		);
+
+		expect(pretenders.filter(p => p.selector === 'Child')).toHaveLength(1);
+		expect(pretenders.filter(p => p.selector === altSelector)).toHaveLength(1);
+	});
+
 	test('does not duplicate an entry that scan and auto both discover for the same file', async () => {
 		const entryPath = path.join(tmpDir, 'entry.tsx');
 		const childPath = path.join(tmpDir, 'Child.tsx');
