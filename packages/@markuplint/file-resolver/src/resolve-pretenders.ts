@@ -22,8 +22,21 @@ function rebasePretenderFilePaths(pretenders: readonly Pretender[], baseDir: str
 }
 
 /**
+ * The lint target's own identity, needed only to resolve `config.auto`.
+ * Omitting this (or omitting `config.auto`) skips auto-resolution entirely,
+ * so every other resolution source works exactly as before without it.
+ */
+export type ResolvePretendersContext = {
+	/** Absolute path of the file being linted */
+	readonly filePath: string;
+	/** Full source text of the file being linted (may be unsaved editor content) */
+	readonly sourceCode: string;
+};
+
+/**
  * Resolves pretender definitions from files, imported modules, inline data,
- * and dynamic component scanning in the configuration.
+ * dynamic component scanning, and (when `context` is given) the lint
+ * target's own import graph.
  *
  * Resolution order:
  * 1. `config.files` — direct import of pretender data files
@@ -33,11 +46,17 @@ function rebasePretenderFilePaths(pretenders: readonly Pretender[], baseDir: str
  * 3. `config.data` — inline pretender definitions
  * 4. `config.scan` — dynamic component scanning via glob patterns
  *    (`files` accepts `string | string[]`)
+ * 5. `config.auto` — on-demand scan of `context`'s own import graph (requires
+ *    `context`; a no-op without it, e.g. when the caller has no lint target yet)
  *
  * @param config - The pretenders configuration section from the optimized config
+ * @param context - The lint target's path/source, required only for `config.auto`
  * @returns An array of all resolved pretender definitions
  */
-export async function resolvePretenders(config: PretendersConfig): Promise<Pretender[]> {
+export async function resolvePretenders(
+	config: PretendersConfig,
+	context?: ResolvePretendersContext,
+): Promise<Pretender[]> {
 	if (!config) {
 		return [];
 	}
@@ -90,6 +109,35 @@ export async function resolvePretenders(config: PretendersConfig): Promise<Prete
 				// `scan()` (with no `cwd` option) reports filePath relative to `process.cwd()`.
 				data.push(...rebasePretenderFilePaths(scanned, process.cwd()));
 			}
+		}
+	}
+
+	if (config.auto && context) {
+		const { autoScan } = await import('@markuplint/pretenders');
+		const scanned = await autoScan(context.filePath, context.sourceCode);
+		// `autoScan()` reports filePath relative to `process.cwd()`, same as `scan()`.
+		const rebased = rebasePretenderFilePaths(scanned, process.cwd());
+		// `scan` and `auto` can both walk into the same file (e.g. a component
+		// `scan`'s glob already covers that `auto`'s import-graph walk also
+		// reaches); de-duping on (selector, filePath) keeps that file's entry
+		// from appearing twice while still letting a same-selector entry from a
+		// genuinely different file through for `disambiguatePretendersForFile`
+		// to resolve. `selector` is a markuplint CSS-like selector and can
+		// legitimately contain spaces (a descendant combinator), so the pair is
+		// joined via `JSON.stringify` rather than a plain-string delimiter —
+		// otherwise two distinct (selector, filePath) pairs could concatenate to
+		// the same string and be mistaken for a duplicate.
+		const dedupeKey = (p: Pretender) => JSON.stringify([p.selector, p.filePath]);
+		const seen = new Set(data.filter(p => p.filePath).map(p => dedupeKey(p)));
+		for (const pretender of rebased) {
+			if (pretender.filePath) {
+				const key = dedupeKey(pretender);
+				if (seen.has(key)) {
+					continue;
+				}
+				seen.add(key);
+			}
+			data.push(pretender);
 		}
 	}
 

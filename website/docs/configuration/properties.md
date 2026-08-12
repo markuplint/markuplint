@@ -1149,6 +1149,29 @@ When using the object form, inline pretender definitions go in the `data` field:
 }
 ```
 
+#### `auto` (object form) {#pretenders/auto}
+
+:::caution[Experimental]
+This property is **experimental** and may change in future releases.
+:::
+
+When using the object form, `auto: true` resolves pretenders by scanning the file being linted's own import graph, instead of requiring `data`/`scan` to be configured up front:
+
+```json class=config
+{
+  "pretenders": {
+    "auto": true
+  }
+}
+```
+
+Unlike `scan`, which pre-scans a configured set of files once, `auto` runs per lint target and only ever considers components the linted file actually imports (transitively) — so same-named components in unrelated files can never collide. This comes with two trade-offs:
+
+- Only the config file is filesystem-watched, so in watch mode or an editor session, results can go stale if an imported component file changes without the config changing too.
+- Only the **object form** of `pretenders` can express `auto`; the array shorthand cannot.
+
+Other pretender sources (`files`, `imports`, `data`, `scan`) take precedence over `auto` for the same selector, since they're resolved first.
+
 #### Interface {#pretenders/interface}
 
 ```ts
@@ -1158,6 +1181,7 @@ interface Config {
     | {
         data?: Pretender[];
         scan?: PretenderScanConfig[]; // @experimental
+        auto?: boolean; // @experimental
       };
 }
 

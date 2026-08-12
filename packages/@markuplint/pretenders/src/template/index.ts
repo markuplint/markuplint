@@ -41,13 +41,21 @@ export const templateScanner = createScanner<PretenderScanTemplateOptions>(async
 			continue;
 		}
 
+		const overrideSource = options?.sources?.get(normalizePath(filePath));
 		let sourceCode: string;
-		try {
-			sourceCode = fs.readFileSync(filePath, 'utf8');
-		} catch (error: unknown) {
-			// eslint-disable-next-line no-console
-			console.warn(`Failed to read component file: ${filePath}`, error instanceof Error ? error.message : error);
-			continue;
+		if (overrideSource === undefined) {
+			try {
+				sourceCode = fs.readFileSync(filePath, 'utf8');
+			} catch (error: unknown) {
+				// eslint-disable-next-line no-console
+				console.warn(
+					`Failed to read component file: ${filePath}`,
+					error instanceof Error ? error.message : error,
+				);
+				continue;
+			}
+		} else {
+			sourceCode = overrideSource;
 		}
 
 		const scan = scanner.scanComponent(sourceCode);
@@ -78,5 +86,5 @@ export const templateScanner = createScanner<PretenderScanTemplateOptions>(async
 		}
 	}
 
-	return director.getPretenders(cwd);
+	return director.getPretenders(cwd, options?.sources);
 });

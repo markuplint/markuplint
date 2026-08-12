@@ -55,3 +55,18 @@ test('file exists', async () => {
 	const file = new MLFile({ sourceCode: '<html></html>' });
 	expect(await file.isExist()).toBeTruthy();
 });
+
+test('code-base file with a subdirectory-relative name resolves against workspace', () => {
+	// A relative `name` that includes subdirectories (e.g. from a VS Code document
+	// opened below the workspace root) must resolve to the file's actual location,
+	// not collapse to the workspace root + basename.
+	//
+	// Asserted via the normalized accessors, as the other path tests here do:
+	// `path` runs through `path.resolve`, which on Windows prepends the cwd's drive
+	// letter and uses backslashes, so a POSIX-shaped literal would only hold on
+	// POSIX. Normalizing strips the drive and unifies separators, leaving the part
+	// this test is actually about — that `src/components/` survives.
+	const file = new MLFile({ sourceCode: '<div></div>', name: 'src/components/Button.tsx', workspace: '/project' });
+	expect(file.nPath).toBe('/project/src/components/Button.tsx');
+	expect(file.nDirname).toBe('/project');
+});

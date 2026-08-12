@@ -228,6 +228,106 @@ test('disambiguatePretendersForFile resolves a collision via the target file imp
 	expect(result[0]!.as).toStrictEqual({ element: 'button', slots: true, inheritAttrs: true });
 });
 
+describe('auto (on-demand import-graph resolution)', () => {
+	let tmpDir: string;
+
+	beforeEach(async () => {
+		tmpDir = await mkdtemp(path.join(os.tmpdir(), 'file-resolver-pretenders-auto-'));
+	});
+
+	afterEach(async () => {
+		await rm(tmpDir, { recursive: true, force: true });
+	});
+
+	test('resolves via the entry file import graph when auto is on and context is given', async () => {
+		const entryPath = path.join(tmpDir, 'entry.tsx');
+		const childPath = path.join(tmpDir, 'Child.tsx');
+		await writeFile(childPath, 'export const Child = () => <button>x</button>;');
+		const sourceCode = "import { Child } from './Child';\nexport const Entry = () => <Child />;";
+
+		const pretenders = await resolvePretenders({ auto: true }, { filePath: entryPath, sourceCode });
+
+		expect(pretenders.find(p => p.selector === 'Child')).toMatchObject({ as: 'button' });
+	});
+
+	test('is a no-op when context is not given, even if auto is on', async () => {
+		const pretenders = await resolvePretenders({ auto: true });
+		expect(pretenders).toStrictEqual([]);
+	});
+
+	test('is a no-op when auto is off, even if context is given', async () => {
+		const entryPath = path.join(tmpDir, 'entry.tsx');
+		const childPath = path.join(tmpDir, 'Child.tsx');
+		await writeFile(childPath, 'export const Child = () => <button>x</button>;');
+		const sourceCode = "import { Child } from './Child';\nexport const Entry = () => <Child />;";
+
+		const pretenders = await resolvePretenders({ auto: false }, { filePath: entryPath, sourceCode });
+
+		expect(pretenders).toStrictEqual([]);
+	});
+
+	test('inline data for the same selector is kept, not replaced by the auto-scanned entry', async () => {
+		const entryPath = path.join(tmpDir, 'entry.tsx');
+		const childPath = path.join(tmpDir, 'Child.tsx');
+		await writeFile(childPath, 'export const Child = () => <button>x</button>;');
+		const sourceCode = "import { Child } from './Child';\nexport const Entry = () => <Child />;";
+
+		const pretenders = await resolvePretenders(
+			{ auto: true, data: [{ selector: 'Child', as: 'span' }] },
+			{ filePath: entryPath, sourceCode },
+		);
+
+		const childEntries = pretenders.filter(p => p.selector === 'Child');
+		expect(childEntries[0]).toStrictEqual({ selector: 'Child', as: 'span' });
+		expect(childEntries).toHaveLength(2);
+	});
+
+	test('dedupe does not collide across a differently-split (selector, filePath) pair that joins to the same string', async () => {
+		// A filename containing a space gives the auto-resolved entry's joined
+		// "selector filePath" string a second space to split on, besides the
+		// one dedupe itself inserts. A plain-string-delimited key (the bug this
+		// pins down: `${selector} ${filePath}`) would treat a `data` entry
+		// split at that other space as the SAME key as the real Child entry
+		// and silently drop Child — even though the two pairs are genuinely
+		// different. `JSON.stringify([selector, filePath])` can't collide this
+		// way because the delimiter is never a literal character either side
+		// could contain.
+		const entryPath = path.join(tmpDir, 'entry.tsx');
+		const childPath = path.join(tmpDir, 'My Child.tsx');
+		await writeFile(childPath, 'export const Child = () => <button>x</button>;');
+		const sourceCode = "import { Child } from './My Child';\nexport const Entry = () => <Child />;";
+
+		const autoOnly = await resolvePretenders({ auto: true }, { filePath: entryPath, sourceCode });
+		const childEntry = autoOnly.find(p => p.selector === 'Child')!;
+		const joined = `Child ${childEntry.filePath}`; // 'Child <tmpDir>/My Child.tsx:1:13'
+		const secondSpaceIndex = joined.indexOf(' ', joined.indexOf(' ') + 1);
+		const altSelector = joined.slice(0, secondSpaceIndex); // 'Child <tmpDir>/My'
+		const altFilePath = joined.slice(secondSpaceIndex + 1); // 'Child.tsx:1:13'
+
+		const pretenders = await resolvePretenders(
+			{ auto: true, data: [{ selector: altSelector, as: 'span', filePath: altFilePath }] },
+			{ filePath: entryPath, sourceCode },
+		);
+
+		expect(pretenders.filter(p => p.selector === 'Child')).toHaveLength(1);
+		expect(pretenders.filter(p => p.selector === altSelector)).toHaveLength(1);
+	});
+
+	test('does not duplicate an entry that scan and auto both discover for the same file', async () => {
+		const entryPath = path.join(tmpDir, 'entry.tsx');
+		const childPath = path.join(tmpDir, 'Child.tsx');
+		await writeFile(childPath, 'export const Child = () => <button>x</button>;');
+		const sourceCode = "import { Child } from './Child';\nexport const Entry = () => <Child />;";
+
+		const pretenders = await resolvePretenders(
+			{ auto: true, scan: [{ files: childPath }] },
+			{ filePath: entryPath, sourceCode },
+		);
+
+		expect(pretenders.filter(p => p.selector === 'Child')).toHaveLength(1);
+	});
+});
+
 describe('invalidatePretenderResolutionCaches (long-running processes)', () => {
 	let tmpDir: string;
 

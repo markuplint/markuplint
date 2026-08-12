@@ -805,6 +805,69 @@ describe('Pretenders', () => {
 			},
 		});
 	});
+
+	test('auto: right side wins', () => {
+		expect(
+			mergeConfig(
+				{
+					pretenders: {
+						auto: true,
+					},
+				},
+				{
+					pretenders: {
+						auto: false,
+					},
+				},
+			),
+		).toStrictEqual({
+			pretenders: {
+				auto: false,
+			},
+		});
+	});
+
+	test("auto: an omitted right side leaves the left side's value untouched", () => {
+		expect(
+			mergeConfig(
+				{
+					pretenders: {
+						auto: true,
+					},
+				},
+				{
+					pretenders: {
+						data: [{ selector: 'Comp', as: 'div' }],
+					},
+				},
+			),
+		).toStrictEqual({
+			pretenders: {
+				auto: true,
+				data: [{ selector: 'Comp', as: 'div' }],
+			},
+		});
+	});
+
+	test('auto is preserved when merging with array-form pretenders', () => {
+		expect(
+			mergeConfig(
+				{
+					pretenders: [{ selector: 'Comp', as: 'div' }],
+				},
+				{
+					pretenders: {
+						auto: true,
+					},
+				},
+			),
+		).toStrictEqual({
+			pretenders: {
+				data: [{ selector: 'Comp', as: 'div' }],
+				auto: true,
+			},
+		});
+	});
 });
 
 describe('Named rule group merging', () => {

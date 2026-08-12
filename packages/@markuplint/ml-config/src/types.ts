@@ -185,6 +185,17 @@ export type PretenderDetails = {
 	 * @experimental
 	 */
 	readonly scan?: readonly PretenderScanConfig[];
+
+	/**
+	 * When `true`, resolves pretenders on demand by scanning the lint
+	 * target's own import graph instead of requiring `files`/`scan`
+	 * pre-configuration. Because only the config file is filesystem-watched,
+	 * results can go stale in watch mode / editor sessions if an imported
+	 * component file changes without the config changing too.
+	 *
+	 * @experimental
+	 */
+	readonly auto?: boolean;
 };
 
 /**
@@ -391,6 +402,14 @@ export interface PretenderScanOptions {
 	 * Component names to exclude from scanning results.
 	 */
 	readonly ignoreComponentNames?: readonly string[];
+
+	/**
+	 * In-memory content overrides, keyed by normalized (`/`-delimited)
+	 * absolute file path, consulted before falling back to a disk read.
+	 * For content with no on-disk source of truth yet, such as an editor's
+	 * unsaved buffer for the file currently being linted.
+	 */
+	readonly sources?: ReadonlyMap<string, string>;
 }
 
 /**

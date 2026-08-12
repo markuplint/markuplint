@@ -10,6 +10,12 @@ import { templateScanner } from './template/index.js';
 export interface ScanOptions {
 	/** Component names to exclude from scanning results */
 	readonly ignoreComponentNames?: readonly string[];
+
+	/**
+	 * In-memory content overrides, keyed by normalized (`/`-delimited)
+	 * absolute file path, consulted before falling back to a disk read.
+	 */
+	readonly sources?: ReadonlyMap<string, string>;
 }
 
 /**
@@ -28,10 +34,13 @@ export async function scan(files: readonly string[], options?: ScanOptions): Pro
 	const templateFiles = files.filter(filePath => /\.(?:vue|svelte|astro)$/.test(filePath));
 
 	const ignoreComponentNames = options?.ignoreComponentNames ? [...options.ignoreComponentNames] : undefined;
+	const sources = options?.sources;
 
 	const [jsxPretenders, templatePretenders] = await Promise.all([
-		jsxFiles.length > 0 ? jsxScanner(jsxFiles, { ignoreComponentNames }) : Promise.resolve([]),
-		templateFiles.length > 0 ? templateScanner(templateFiles, { ignoreComponentNames }) : Promise.resolve([]),
+		jsxFiles.length > 0 ? jsxScanner(jsxFiles, { ignoreComponentNames, sources }) : Promise.resolve([]),
+		templateFiles.length > 0
+			? templateScanner(templateFiles, { ignoreComponentNames, sources })
+			: Promise.resolve([]),
 	]);
 
 	return [...jsxPretenders, ...templatePretenders].toSorted(propSort('selector'));
