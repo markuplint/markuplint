@@ -335,6 +335,18 @@
 		},
 
 		/**
+		 * `<img usemap>` must be a valid hash-name reference to a `<map>` element
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/image-maps.html#attr-hyperlink-usemap
+		 */
+		"html-standard/usemap-references-map": {
+			"specConformance": "normative",
+			"rules": {
+				"usemap-references-map": true
+			}
+		},
+
+		/**
 		 * `<meter>` attribute inequalities (min ≤ value ≤ max etc.)
 		 *
 		 * @see https://html.spec.whatwg.org/multipage/form-elements.html#the-meter-element

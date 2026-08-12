@@ -62,6 +62,7 @@ export const benchmarkConfig: Config = {
 		'placeholder-label-option': true,
 		'link-types': { options: { allowMicroformats: true } },
 		'map-id-name-match': true,
+		'usemap-references-map': true,
 		'meter-value-bounds': true,
 		'progress-value-bounds': true,
 		// Catches skipped heading levels (HTML LS §4.3.11).
