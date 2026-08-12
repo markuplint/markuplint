@@ -241,6 +241,10 @@ test('default-rules', () => {
 			category: 'a11y',
 			defaultValue: false,
 		},
+		'usemap-references-map': {
+			category: 'validation',
+			defaultValue: true,
+		},
 		'wai-aria': {
 			category: 'a11y',
 			defaultValue: true,

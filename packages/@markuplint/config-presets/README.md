@@ -73,6 +73,7 @@ Specify required attr| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [`<label for>` must reference a labelable element by ID](https://html.spec.whatwg.org/multipage/forms.html#attr-label-for)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [`<label>` descendant-control constraints (at most one form-control descendant; none when `for` targets an external labelable element)](https://html.spec.whatwg.org/multipage/forms.html#the-label-element)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [`<map>` `id` must equal `name` when both are specified](https://html.spec.whatwg.org/multipage/image-maps.html#the-map-element)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
+[`<img usemap>` must be a valid hash-name reference to a `<map>` element](https://html.spec.whatwg.org/multipage/image-maps.html#attr-hyperlink-usemap)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [`<meter>` attribute inequalities (min ≤ value ≤ max etc.)](https://html.spec.whatwg.org/multipage/form-elements.html#the-meter-element)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [`<progress>` attribute inequalities (value ≤ max; value ≤ 1 when max is absent)](https://html.spec.whatwg.org/multipage/form-elements.html#the-progress-element)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [Single `<select>` allows at most one selected `<option>`](https://html.spec.whatwg.org/multipage/form-elements.html#the-select-element)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|

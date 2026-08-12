@@ -68,6 +68,7 @@ import RequiredElement from './required-element/index.js';
 import RequiredH1 from './required-h1/index.js';
 import TableRowColumnAlignment from './table-row-column-alignment/index.js';
 import UseList from './use-list/index.js';
+import UsemapReferencesMap from './usemap-references-map/index.js';
 import WaiAria from './wai-aria/index.js';
 import WaiAriaAbstractRole from './wai-aria-abstract-role/index.js';
 import WaiAriaDefaultValue from './wai-aria-default-value/index.js';
@@ -151,6 +152,7 @@ const rules = {
 	'srcset-sizes-constraint': SrcsetSizesConstraint,
 	'table-row-column-alignment': TableRowColumnAlignment,
 	'use-list': UseList,
+	'usemap-references-map': UsemapReferencesMap,
 	'wai-aria': WaiAria,
 	'wai-aria-abstract-role': WaiAriaAbstractRole,
 	'wai-aria-default-value': WaiAriaDefaultValue,
