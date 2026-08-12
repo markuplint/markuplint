@@ -77,6 +77,14 @@ export const benchmarkConfig: Config = {
 		'no-extra-selected-options': true,
 		'no-orphaned-end-tag': true,
 		'srcset-sizes-constraint': true,
+		// WAI-ARIA role definitions declare `accessibleNameRequired` per role (e.g. the
+		// `img` role: "In order for elements with a role of img to be perceivable,
+		// authors MUST provide a label using the aria-label or aria-labelledby
+		// attribute."), which HTML LS attribute mappings project onto native HTML (e.g.
+		// `alt` supplies the accessible name for `img`). Missing `alt` on an `<img>` is
+		// therefore a spec MUST violation regardless of ancestor context (e.g. inside
+		// `<figure>`).
+		'require-accessible-name': true,
 		// HTML LS §4.9.12.1 *Forming a table* closes with "Authors must not produce a table with
 		// table model errors", covering cell overlap (Step 14), a row or column that no cell is
 		// anchored to (Step 20), and a cell clipped at a row group boundary (§4.9.12 "A cell

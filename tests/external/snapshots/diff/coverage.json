@@ -4,16 +4,16 @@
 			"path": "html-aria/_functional/tree/ariatree.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/_functional/tree/ariatree2.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -492,32 +492,32 @@
 			"path": "html-aria/author-requirements/569.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/author-requirements/571-haswarn.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/author-requirements/572-haswarn.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/author-requirements/573-haswarn.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -620,16 +620,16 @@
 			"path": "html-aria/combobox-autocomplete-list/div-haswarn.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/combobox-autocomplete-list/input.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -1884,8 +1884,8 @@
 			"path": "html-aria/misc/input-checkbox-role-button-aria-pressed-isvalid.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -1900,8 +1900,8 @@
 			"path": "html-aria/misc/input-checkbox-with-aria-expanded-isvalid.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -2364,8 +2364,8 @@
 			"path": "html-aria/misc/unnecessary-role-textbox-haswarn.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -2388,8 +2388,8 @@
 			"path": "html-aria/misc/unnecessary-textbox-role-on-input-haswarn.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -2508,8 +2508,8 @@
 			"path": "html-aria/name-computation-general/837.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -2524,8 +2524,8 @@
 			"path": "html-aria/name-computation-img/565-isvalid.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -3348,8 +3348,8 @@
 			"path": "html-aria/roles-plain-concrete/button-input-button-gridcell-slider-treeitem.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -3372,8 +3372,8 @@
 			"path": "html-aria/roles-plain-concrete/roles-plain-concrete-application.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -3476,16 +3476,16 @@
 			"path": "html-aria/roles-plain-concrete/roles-plain-concrete-image.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-plain-concrete/roles-plain-concrete-img.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -3508,16 +3508,16 @@
 			"path": "html-aria/roles-plain-concrete/roles-plain-concrete-listbox-parent-combobox.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-plain-concrete/roles-plain-concrete-listbox.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -3588,8 +3588,8 @@
 			"path": "html-aria/roles-plain-concrete/roles-plain-concrete-option.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -3604,8 +3604,8 @@
 			"path": "html-aria/roles-plain-concrete/roles-plain-concrete-progressbar.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -3668,16 +3668,16 @@
 			"path": "html-aria/roles-plain-concrete/roles-plain-concrete-tabpanel.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-plain-concrete/roles-plain-concrete-textbox.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -4092,24 +4092,24 @@
 			"path": "html-aria/roles-properties-required/roles-properties-required-combobox-aria-expanded-false.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-required/roles-properties-required-combobox-aria-expanded-true.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-required/roles-properties-required-combobox-aria-expanded-undefined.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -4164,24 +4164,24 @@
 			"path": "html-aria/roles-properties-supported-inherited/application-aria-expanded-false.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-supported-inherited/application-aria-expanded-true.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-supported-inherited/application-aria-expanded-undefined.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -4316,32 +4316,32 @@
 			"path": "html-aria/roles-properties-supported-inherited/combobox-aria-activedescendant-obj1.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-supported-inherited/combobox-aria-expanded-false.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-supported-inherited/combobox-aria-expanded-true.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-supported-inherited/combobox-aria-expanded-undefined.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -4612,8 +4612,8 @@
 			"path": "html-aria/roles-properties-supported-inherited/listbox-aria-activedescendant-obj1.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -4884,32 +4884,32 @@
 			"path": "html-aria/roles-properties-supported-inherited/progressbar-aria-valuemax-1.1.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-supported-inherited/progressbar-aria-valuemin-1.1.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-supported-inherited/progressbar-aria-valuenow-1.1.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-supported-inherited/progressbar-aria-valuetext-Test-string-value.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -5292,8 +5292,8 @@
 			"path": "html-aria/roles-properties-supported-inherited/tree-aria-activedescendant-obj1.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -5324,8 +5324,8 @@
 			"path": "html-aria/roles-properties-supported-inherited/treegrid-aria-activedescendant-obj1.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -5364,56 +5364,56 @@
 			"path": "html-aria/roles-properties-supported-inherited/treegrid-aria-multiselectable-false.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-supported-inherited/treegrid-aria-multiselectable-true.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-supported-inherited/treegrid-aria-readonly-false.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-supported-inherited/treegrid-aria-readonly-true.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-supported-inherited/treegrid-aria-required-false.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-supported-inherited/treegrid-aria-required-true.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-supported-inherited/treeitem-aria-checked-false.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -5428,8 +5428,8 @@
 			"path": "html-aria/roles-properties-supported-inherited/treeitem-aria-checked-true.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -5444,48 +5444,48 @@
 			"path": "html-aria/roles-properties-supported-inherited/treeitem-aria-level-1.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-supported-inherited/treeitem-aria-posinset-1.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-supported-inherited/treeitem-aria-selected-false.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-supported-inherited/treeitem-aria-selected-true.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-supported-inherited/treeitem-aria-selected-undefined.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-supported-inherited/treeitem-aria-setsize-1.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -5580,32 +5580,32 @@
 			"path": "html-aria/roles-properties-supported/roles-properties-supported-combobox-aria-autocomplete-both.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-supported/roles-properties-supported-combobox-aria-autocomplete-inline.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-supported/roles-properties-supported-combobox-aria-autocomplete-list.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-supported/roles-properties-supported-combobox-aria-autocomplete-none.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -5804,8 +5804,8 @@
 			"path": "html-aria/roles-properties-supported/roles-properties-supported-option-aria-checked-false.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -5820,8 +5820,8 @@
 			"path": "html-aria/roles-properties-supported/roles-properties-supported-option-aria-checked-true.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -5836,40 +5836,40 @@
 			"path": "html-aria/roles-properties-supported/roles-properties-supported-option-aria-posinset-1.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-supported/roles-properties-supported-option-aria-selected-false.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-supported/roles-properties-supported-option-aria-selected-true.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-supported/roles-properties-supported-option-aria-selected-undefined.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-supported/roles-properties-supported-option-aria-setsize-1.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -6028,152 +6028,152 @@
 			"path": "html-aria/roles-properties-supported/roles-properties-supported-textbox-aria-activedescendant-obj1.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-supported/roles-properties-supported-textbox-aria-autocomplete-both.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-supported/roles-properties-supported-textbox-aria-autocomplete-inline.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-supported/roles-properties-supported-textbox-aria-autocomplete-list.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-supported/roles-properties-supported-textbox-aria-autocomplete-none.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-supported/roles-properties-supported-textbox-aria-multiline-false.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-supported/roles-properties-supported-textbox-aria-multiline-true.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-supported/roles-properties-supported-textbox-aria-readonly-false.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-supported/roles-properties-supported-textbox-aria-readonly-true.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-supported/roles-properties-supported-textbox-aria-required-false.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-supported/roles-properties-supported-textbox-aria-required-true.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-supported/roles-properties-supported-tree-aria-multiselectable-false.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-supported/roles-properties-supported-tree-aria-multiselectable-true.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-supported/roles-properties-supported-tree-aria-required-false.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/roles-properties-supported/roles-properties-supported-tree-aria-required-true.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/selected-state/670.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/selected-state/671.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/selected-state/672.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/setsize-posinset-level/setsize-posinset-level-1.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -6196,32 +6196,32 @@
 			"path": "html-aria/stability-of-dom/669.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/testcases-multiselectable/testcase-listbox-multiselectable-A.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/testcases-multiselectable/testcase-listbox-multiselectable-B.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/testcases-multiselectable/testcase-listbox-multiselectable-C.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -6236,8 +6236,8 @@
 			"path": "html-aria/testcases-multiselectable/testcase-tree-multiselectable-C.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -6692,16 +6692,16 @@
 			"path": "html-its/provenance/html/provenance1html.html",
 			"category": "uncategorized",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html-its/provenance/html/provenance2html.html",
 			"category": "uncategorized",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -6724,8 +6724,8 @@
 			"path": "html-its/provenance/html/provenance5html.html",
 			"category": "uncategorized",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -6756,8 +6756,8 @@
 			"path": "html-its/provenance/html/provenance8html.html",
 			"category": "uncategorized",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -13916,8 +13916,8 @@
 			"path": "html/assertions/meter-valid-isvalid.html",
 			"category": "assertions",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -14084,8 +14084,8 @@
 			"path": "html/attributes/command-and-commandfor-isvalid.html",
 			"category": "global-attr",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -14156,8 +14156,8 @@
 			"path": "html/attributes/enterkeyhint/value-isvalid.html",
 			"category": "global-attr",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -15286,8 +15286,8 @@
 			"path": "html/elements/a/href/scheme-data-contains-fragment-haswarn.html",
 			"category": "invalid-attr",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "nu-over",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": [
 				"nv-3a1dc1374ed4"
 			]
@@ -15720,8 +15720,8 @@
 			"path": "html/elements/area/href-empty-isvalid.html",
 			"category": "invalid-attr",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -16072,8 +16072,8 @@
 			"path": "html/elements/area/href/scheme-data-contains-fragment-haswarn.html",
 			"category": "invalid-attr",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "nu-over",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": [
 				"nv-cdb4535e049d"
 			]
@@ -19608,8 +19608,8 @@
 			"path": "html/elements/button/formaction/scheme-data-contains-fragment-haswarn.html",
 			"category": "invalid-attr",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "nu-over",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": [
 				"nv-82f38369e99e"
 			]
@@ -23400,16 +23400,16 @@
 			"path": "html/elements/h1/empty-haswarn.html",
 			"category": "invalid-attr",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html/elements/h1/empty-heading-haswarn.html",
 			"category": "invalid-attr",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -23592,8 +23592,8 @@
 			"path": "html/elements/html/lang-detection/code-heavy-page-isvalid.html",
 			"category": "invalid-attr",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -24394,8 +24394,8 @@
 			"path": "html/elements/img/missing-alt-in-figure-novalid.html",
 			"category": "invalid-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -25292,8 +25292,8 @@
 			"path": "html/elements/input/autocomplete-text-isvalid.html",
 			"category": "invalid-attr",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -25308,8 +25308,8 @@
 			"path": "html/elements/input/autocomplete-types-isvalid.html",
 			"category": "invalid-attr",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -25444,8 +25444,8 @@
 			"path": "html/elements/input/datetime-local-with-min-max-isvalid.html",
 			"category": "invalid-attr",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -25676,8 +25676,8 @@
 			"path": "html/elements/input/text-with-dirname-isvalid.html",
 			"category": "invalid-attr",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -25708,8 +25708,8 @@
 			"path": "html/elements/input/type-button-empty-value-novalid.html",
 			"category": "invalid-attr",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "nu-over",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": [
 				"nv-54c78eff3c7d"
 			]
@@ -27772,8 +27772,8 @@
 			"path": "html/elements/input/type-url-value-empty-isvalid.html",
 			"category": "invalid-attr",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -28188,8 +28188,8 @@
 			"path": "html/elements/input/type-url-value/scheme-data-contains-fragment-haswarn.html",
 			"category": "invalid-attr",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "nu-over",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": [
 				"nv-6872c643a823"
 			]
@@ -30048,8 +30048,8 @@
 			"path": "html/elements/label/for-isvalid.html",
 			"category": "invalid-attr",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -32458,8 +32458,8 @@
 			"path": "html/elements/optgroup/label-attr-isvalid.html",
 			"category": "invalid-attr",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -32530,8 +32530,8 @@
 			"path": "html/elements/option/model-isvalid.html",
 			"category": "content-model",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -36880,8 +36880,8 @@
 			"path": "html/elements/select/autocomplete-isvalid.html",
 			"category": "invalid-attr",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -36984,8 +36984,8 @@
 			"path": "html/elements/select/hr-child-isvalid.html",
 			"category": "invalid-attr",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -37828,8 +37828,8 @@
 			"path": "html/elements/style/html-spec-comms-isvalid.html",
 			"category": "invalid-attr",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -38230,8 +38230,8 @@
 			"path": "html/elements/textarea/autocomplete-isvalid.html",
 			"category": "invalid-attr",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -43336,40 +43336,40 @@
 			"path": "html/warnings/h2-empty-haswarn.html",
 			"category": "uncategorized",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html/warnings/h3-empty-haswarn.html",
 			"category": "uncategorized",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html/warnings/h4-empty-haswarn.html",
 			"category": "uncategorized",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html/warnings/h5-empty-haswarn.html",
 			"category": "uncategorized",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html/warnings/h6-empty-haswarn.html",
 			"category": "uncategorized",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -43424,8 +43424,8 @@
 			"path": "html/warnings/unnecessary-role-form-haswarn.html",
 			"category": "uncategorized",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{

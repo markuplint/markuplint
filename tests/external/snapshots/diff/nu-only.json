@@ -44,13 +44,6 @@
 			]
 		},
 		{
-			"path": "html/elements/img/missing-alt-in-figure-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-224e80c23676"
-			]
-		},
-		{
 			"path": "html/elements/picture/html-syntax-picture-no-end-tag-novalid.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [
