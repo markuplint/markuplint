@@ -3035,41 +3035,41 @@
 		{
 			"path": "html-aria/presentational-children/testcase-839.html",
 			"category": "aria",
-			"nu": "clean",
+			"nu": "error",
 			"ml": "error",
-			"verdict": "ml-only",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/presentational-children/testcase-840.html",
 			"category": "aria",
-			"nu": "clean",
+			"nu": "error",
 			"ml": "error",
-			"verdict": "ml-only",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/presentational-children/testcase-842.html",
 			"category": "aria",
-			"nu": "clean",
+			"nu": "error",
 			"ml": "error",
-			"verdict": "ml-only",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/presentational-children/testcase-843.html",
 			"category": "aria",
-			"nu": "clean",
+			"nu": "error",
 			"ml": "error",
-			"verdict": "ml-only",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
 			"path": "html-aria/presentational-children/testcase-844.html",
 			"category": "aria",
-			"nu": "clean",
+			"nu": "error",
 			"ml": "error",
-			"verdict": "ml-only",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -14949,9 +14949,9 @@
 		{
 			"path": "html/elements/a/href-isvalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "error",
-			"verdict": "match-error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -15735,9 +15735,9 @@
 		{
 			"path": "html/elements/area/href-isvalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "error",
-			"verdict": "match-error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -16489,9 +16489,9 @@
 		{
 			"path": "html/elements/audio/src-isvalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "error",
-			"verdict": "match-error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -17299,33 +17299,33 @@
 		{
 			"path": "html/elements/base/href/host-192.0x00A80001-isvalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"nu": "clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html/elements/base/href/host-IP-address-broken-isvalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "error",
-			"verdict": "match-error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html/elements/base/href/host-IP-address-fullwidth-isvalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"nu": "clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
 			"path": "html/elements/base/href/host-IP-address-percent-encoded-isvalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"nu": "clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -18557,9 +18557,9 @@
 		{
 			"path": "html/elements/blockquote/cite-isvalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "error",
-			"verdict": "match-error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -19263,9 +19263,9 @@
 		{
 			"path": "html/elements/button/formaction-isvalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "error",
-			"verdict": "match-error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -20073,9 +20073,9 @@
 		{
 			"path": "html/elements/del/cite-isvalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "error",
-			"verdict": "match-error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -21971,9 +21971,9 @@
 		{
 			"path": "html/elements/embed/src-isvalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "error",
-			"verdict": "match-error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -22725,9 +22725,9 @@
 		{
 			"path": "html/elements/form/action-isvalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "error",
-			"verdict": "match-error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -23671,9 +23671,9 @@
 		{
 			"path": "html/elements/iframe/src-isvalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "error",
-			"verdict": "match-error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -24513,9 +24513,9 @@
 		{
 			"path": "html/elements/img/src-isvalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "error",
-			"verdict": "match-error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -25781,9 +25781,9 @@
 		{
 			"path": "html/elements/input/type-image-formaction-isvalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "error",
-			"verdict": "match-error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -26447,9 +26447,9 @@
 		{
 			"path": "html/elements/input/type-image-src-isvalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "error",
-			"verdict": "match-error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -27113,9 +27113,9 @@
 		{
 			"path": "html/elements/input/type-submit-formaction-isvalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "error",
-			"verdict": "match-error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -27779,9 +27779,9 @@
 		{
 			"path": "html/elements/input/type-url-value-isvalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "error",
-			"verdict": "match-error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -28517,9 +28517,9 @@
 		{
 			"path": "html/elements/ins/cite-isvalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "error",
-			"verdict": "match-error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -30215,9 +30215,9 @@
 		{
 			"path": "html/elements/link/href-isvalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "error",
-			"verdict": "match-error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -31481,9 +31481,9 @@
 		{
 			"path": "html/elements/meta/refresh-isvalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "error",
-			"verdict": "match-error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -31733,9 +31733,9 @@
 		{
 			"path": "html/elements/object/data-isvalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "error",
-			"verdict": "match-error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -34281,9 +34281,9 @@
 		{
 			"path": "html/elements/q/cite-isvalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "error",
-			"verdict": "match-error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -36157,9 +36157,9 @@
 		{
 			"path": "html/elements/script/src-isvalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "error",
-			"verdict": "match-error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -37103,9 +37103,9 @@
 		{
 			"path": "html/elements/source/src-isvalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "error",
-			"verdict": "match-error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -38381,9 +38381,9 @@
 		{
 			"path": "html/elements/track/src-isvalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "error",
-			"verdict": "match-error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -39159,9 +39159,9 @@
 		{
 			"path": "html/elements/video/poster-isvalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "error",
-			"verdict": "match-error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -39817,9 +39817,9 @@
 		{
 			"path": "html/elements/video/src-isvalid.html",
 			"category": "invalid-attr",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "error",
-			"verdict": "match-error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -40899,9 +40899,9 @@
 		{
 			"path": "html/microdata/itemid-isvalid.html",
 			"category": "uncategorized",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "error",
-			"verdict": "match-error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -41605,9 +41605,9 @@
 		{
 			"path": "html/microdata/itemtype-isvalid.html",
 			"category": "uncategorized",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "error",
-			"verdict": "match-error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{

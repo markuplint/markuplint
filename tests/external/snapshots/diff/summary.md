@@ -1,6 +1,6 @@
 # nu-validator Benchmark Summary
 
-- generated: 2026-08-12T06:53:36.214Z
+- generated: 2026-08-12T08:02:22.536Z
 - submodule: `142931395412c00434ffb40a14d65992efd17aa8`
 - nu-validator: `ghcr.io/validator/validator@sha256:210bbc353b23ba1b1ae65247c156a006afb4ba84703ba1bbf7c41d2080559445`
 - markuplint: `5.0.0-rc.4`
@@ -9,40 +9,40 @@
 ## Totals
 
 - files: **5442**
-- match-error: **3520** (both tools flagged)
+- match-error: **3498** (both tools flagged)
 - match-clean: **759** (neither flagged)
-- nu-only: **10** (only nu-validator flagged; markuplint coverage candidates — open a markuplint issue after a spec read)
+- nu-only: **7** (only nu-validator flagged; markuplint coverage candidates — open a markuplint issue after a spec read)
 - nu-over: **32** (nu-validator errors fully covered by spec-backed excluded-ids — confirmed over-detection)
-- overall match rate: **78.6%**
+- overall match rate: **78.2%**
 - excluded-ids: 12 entries, 1 pattern(s)
 
 ## Per-Category
 
 | Category | Files | Match rate | match-error | match-clean | ml-only | nu-only | nu-over |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| aria | 780 | 65.0% | 177 | 330 | 273 | 0 | 0 |
+| aria | 780 | 65.6% | 182 | 330 | 268 | 0 | 0 |
 | assertions | 40 | 97.5% | 39 | 0 | 1 | 0 | 0 |
 | content-model | 98 | 95.9% | 50 | 44 | 4 | 0 | 0 |
 | data-types | 56 | 96.4% | 49 | 5 | 1 | 0 | 1 |
 | deprecated | 12 | 91.7% | 11 | 0 | 1 | 0 | 0 |
 | global-attr | 57 | 78.9% | 27 | 18 | 10 | 2 | 0 |
 | id-duplication | 1 | 100.0% | 1 | 0 | 0 | 0 | 0 |
-| invalid-attr | 3086 | 97.1% | 2786 | 209 | 58 | 4 | 29 |
+| invalid-attr | 3086 | 96.2% | 2761 | 209 | 86 | 1 | 29 |
 | required-attr | 5 | 100.0% | 5 | 0 | 0 | 0 | 0 |
-| uncategorized | 1307 | 40.4% | 375 | 153 | 773 | 4 | 2 |
+| uncategorized | 1307 | 40.2% | 373 | 153 | 775 | 4 | 2 |
 
 ## Informational: ml-only
 
-**1121** fixtures are flagged only by markuplint. This project does not pursue upstream nu-validator reports, so those fixtures feed a narrower audit: confirm with the spec, and if markuplint is the wrong one, fix the rule. The full list lives in `snapshots/diff/markuplint-only.json`.
+**1146** fixtures are flagged only by markuplint. This project does not pursue upstream nu-validator reports, so those fixtures feed a narrower audit: confirm with the spec, and if markuplint is the wrong one, fix the rule. The full list lives in `snapshots/diff/markuplint-only.json`.
 
 ### Top ml-only rules
 
 | Rule | Count |
 | --- | ---: |
-| invalid-attr | 680 |
+| invalid-attr | 710 |
 | permitted-contents | 444 |
 | deprecated-attr | 354 |
-| require-accessible-name | 186 |
+| require-accessible-name | 188 |
 | wai-aria-disallowed-props | 121 |
 | @markuplint/ml-core | 75 |
 | wai-aria-required-owned-elements | 47 |
