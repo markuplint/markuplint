@@ -67,12 +67,6 @@
 			"groupName": "node (mise)"
 		},
 		{
-			"description": "Pin VSCode CI workflows to Node 22 — do not update",
-			"matchPackageNames": ["node"],
-			"matchFileNames": [".github/workflows/*vscode*"],
-			"enabled": false
-		},
-		{
 			"description": "Do not update engines.vscode — must stay pinned for Cursor and other forks",
 			"matchPackageNames": ["vscode"],
 			"matchDepTypes": ["engines"],
