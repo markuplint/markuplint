@@ -6,29 +6,29 @@ title: Node.js
 # Node.js
 
 :::caution Required for all users
-Markuplint v5 requires **Node.js v22.0.0 or later**. Check your version before upgrading.
+Markuplint v5 requires **Node.js v24.0.0 or later**. Check your version before upgrading.
 :::
 
-## Minimum Version: v22.0.0
+## Minimum Version: v24.0.0
 
-The minimum Node.js version has been raised from v18.18.0 to **v22.0.0**. All packages now enforce this through the `engines` field.
+The minimum Node.js version has been raised from v18.18.0 to **v24.0.0**. All packages now enforce this through the `engines` field.
 
 Check your current version:
 
 ```bash
 node -v
-# Must be v22.0.0 or later
+# Must be v24.0.0 or later
 ```
 
 ### Using a version manager
 
 ```bash
 # nvm
-nvm install 22
-nvm use 22
+nvm install 24
+nvm use 24
 
 # volta
-volta install node@22
+volta install node@24
 ```
 
 ### Updating CI configuration
@@ -38,7 +38,7 @@ volta install node@22
 node-version: [18, 20]
 
 # After (v5)
-node-version: [22, 24]
+node-version: [24, 26]
 ```
 
 ## Removed Polyfills

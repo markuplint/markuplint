@@ -6,29 +6,29 @@ title: Node.js
 # Node.js
 
 :::caution 全ユーザー必須
-Markuplint v5 は **Node.js v22.0.0 以降**が必要です。アップグレード前にバージョンを確認してください。
+Markuplint v5 は **Node.js v24.0.0 以降**が必要です。アップグレード前にバージョンを確認してください。
 :::
 
-## 最小バージョン: v22.0.0
+## 最小バージョン: v24.0.0
 
-最小 Node.js バージョンが v18.18.0 から **v22.0.0** に引き上げられました。すべてのパッケージの `engines` フィールドで強制されます。
+最小 Node.js バージョンが v18.18.0 から **v24.0.0** に引き上げられました。すべてのパッケージの `engines` フィールドで強制されます。
 
 現在のバージョンを確認してください:
 
 ```bash
 node -v
-# v22.0.0 以降である必要があります
+# v24.0.0 以降である必要があります
 ```
 
 ### バージョンマネージャーを使用している場合
 
 ```bash
 # nvm
-nvm install 22
-nvm use 22
+nvm install 24
+nvm use 24
 
 # volta
-volta install node@22
+volta install node@24
 ```
 
 ### CI 設定の更新
@@ -38,7 +38,7 @@ volta install node@22
 node-version: [18, 20]
 
 # 変更後（v5）
-node-version: [22, 24]
+node-version: [24, 26]
 ```
 
 ## ポリフィルの削除

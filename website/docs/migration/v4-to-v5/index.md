@@ -8,7 +8,7 @@ title: 'v4 to v5'
 This guide covers all breaking changes in Markuplint v5. Read through the areas that apply to your setup.
 
 :::caution Before you start
-Update your Node.js to **v22.0.0 or later**. This is required for all Markuplint v5 packages.
+Update your Node.js to **v24.0.0 or later**. This is required for all Markuplint v5 packages.
 :::
 
 :::tip AI-Assisted Migration
@@ -26,7 +26,7 @@ Changes that affect CLI users, config authors, and CI/CD pipelines.
 
 | Area                                            | Summary                                                                                                                                                                                                                           | Who's Affected                               |
 | ----------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
-| [Node.js](/docs/migration/v4-to-v5/nodejs)      | Minimum version raised to v22.0.0 (was v18.18.0). Polyfills removed. TypeScript target changed to ES2022.                                                                                                                         | All users                                    |
+| [Node.js](/docs/migration/v4-to-v5/nodejs)      | Minimum version raised to v24.0.0 (was v18.18.0). Polyfills removed. TypeScript target changed to ES2022.                                                                                                                         | All users                                    |
 | [CLI](/docs/migration/v4-to-v5/cli)             | New `--fix-dry-run` flag. `--allow-warnings` default flipped to `true`. `--config` no longer merges with auto-discovered config.                                                                                                  | CLI users, CI/CD pipelines                   |
 | [Config](/docs/migration/v4-to-v5/config)       | New `ruleCommonSettings` for shared ARIA version. Named nodeRules for independently configurable checks. Array values now override instead of concatenate. Options use shallow merge. `:closest()` selector deprecated.           | Config authors, preset authors               |
 | [ARIA](/docs/migration/v4-to-v5/aria)           | ARIA 1.3 is now the default (was 1.2). `generic` role becomes transparent. `<aside>` conditional role mapping. `image`/`img` role synonyms. `wai-aria` option renamed.                                                            | All users                                    |
