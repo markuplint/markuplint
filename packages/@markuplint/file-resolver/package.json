@@ -31,7 +31,7 @@
 		"clean": "tsc --build --clean"
 	},
 	"devDependencies": {
-		"@types/node": "24.5.1"
+		"@types/node": "24.13.3"
 	},
 	"dependencies": {
 		"@markuplint/html-parser": "5.0.0-rc.4",
