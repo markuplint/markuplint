@@ -208,7 +208,7 @@ const UNENCODED_SPACE = / /;
  *
  * @see https://url.spec.whatwg.org/#ipv4-number-parser
  */
-const IPV4_NON_DECIMAL_PART = /^0(?:[x][0-9a-f]*|\d+)$/i;
+const IPV4_NON_DECIMAL_PART = /^0(?:x[0-9a-f]*|\d+)$/i;
 
 /**
  * Pattern: a host label that "ends in a number" per the URL Standard —
@@ -222,7 +222,7 @@ const IPV4_NON_DECIMAL_PART = /^0(?:[x][0-9a-f]*|\d+)$/i;
  *
  * @see https://url.spec.whatwg.org/#ends-in-a-number-checker
  */
-const IPV4_LAST_PART_NUMERIC = /^(?:\d+|0[x][0-9a-f]*)$/i;
+const IPV4_LAST_PART_NUMERIC = /^(?:\d+|0x[0-9a-f]*)$/i;
 
 /**
  * Extracts the raw (pre-percent-decode, pre-IDNA) host component from a
