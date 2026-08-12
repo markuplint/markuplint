@@ -82,12 +82,6 @@ export const xrefMappings: readonly XrefMapping[] = [
 	},
 	{
 		kind: 'primary',
-		issue: 3944,
-		filter: /^html\/elements\/img\/missing-alt-in-figure-novalid/,
-		note: '[HTML LS "Requirements for providing text to act as an alternative for images"](https://html.spec.whatwg.org/multipage/images.html#alt) and its "Guidance for conformance checkers" subsection ([`images.html#guidance-for-conformance-checkers`](https://html.spec.whatwg.org/multipage/images.html#guidance-for-conformance-checkers)) enumerate the narrow exceptions under which `alt` may be omitted. The fixture has no `<figcaption>` inside the enclosing `<figure>`, so none of the omission conditions apply. `packages/@markuplint/rules/src/required-attr/index.spec.ts` `[required-attr-invalid-001]` demonstrates that markuplint\'s `required-attr` fires on `img` only via explicit `nodeRule` config; `packages/@markuplint/html-spec/src/spec.img.jsonc` defines `alt` as `{ "type": "Any" }` without a `required` flag or `requiredEither`. The current `requiredEither` grammar cannot express the exception-list shape from the spec — a new rule (working name `img-alt-required`) or a richer condition grammar is required.',
-	},
-	{
-		kind: 'primary',
 		issue: 3946,
 		filter: /^html\/elements\/style\/css-property-error-novalid/,
 		note: "CSS syntax and property registry are governed by CSS specifications (CSS Syntax Level 3, CSS Values and Units, individual property specs), not by HTML LS. markuplint's tracked spec scope is HTML LS + WAI-ARIA + URL LS per `.claude/skills/bench-triage/SKILL.md`, so CSS is `deferred-CSS`. One fixture is recorded per-id in `excluded-ids.json#entries[]` and flips `nu-only` → `nu-over`; it will flip to `match-error` if/when a CSS grammar-validation rule lands (css-tree, already a dependency of `packages/@markuplint/types`, is a plausible candidate for syntax-only validation). Parallel deferred spec: #3942 (deferred-CSP).",
