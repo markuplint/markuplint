@@ -76,7 +76,7 @@ The [recommended preset](/docs/guides/presets) is applied automatically when no 
 
 #### The required spec
 
-- **Node.js** v22.0.0 or later
+- **Node.js** v24.0.0 or later
 
 ## Next steps
 

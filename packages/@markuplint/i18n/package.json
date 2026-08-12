@@ -10,7 +10,7 @@
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
 	"engines": {
-		"node": ">=22"
+		"node": ">=24"
 	},
 	"main": "./cjs/index.js",
 	"types": "./cjs/index.d.ts",

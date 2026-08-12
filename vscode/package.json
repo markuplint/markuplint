@@ -182,15 +182,15 @@
 	"scripts": {
 		"vscode:prepublish": "npm run vscode:build",
 		"vscode:build": "run-p vscode:build:*",
-		"vscode:build:extension": "esbuild src/extension.ts --bundle --external:vscode --external:vscode-* --external:node:* --platform=node --target=node20.9 --format=cjs --outfile=out/extension.js",
-		"vscode:build:server": "esbuild src/server/index.ts --bundle --external:vscode --external:vscode-* --external:node:* --external:markuplint --external:markuplint/* --external:debug --external:glob --external:semver --external:mocha --platform=node --target=node20.9 --format=cjs --outfile=out/server.js",
+		"vscode:build:extension": "esbuild src/extension.ts --bundle --external:vscode --external:vscode-* --external:node:* --platform=node --target=node24 --format=cjs --outfile=out/extension.js",
+		"vscode:build:server": "esbuild src/server/index.ts --bundle --external:vscode --external:vscode-* --external:node:* --external:markuplint --external:markuplint/* --external:debug --external:glob --external:semver --external:mocha --platform=node --target=node24 --format=cjs --outfile=out/server.js",
 		"vscode:dev": "run-p vscode:dev:extension vscode:dev:server",
 		"vscode:dev:extension": "yarn vscode:build:extension --watch",
 		"vscode:dev:server": "yarn vscode:build:server --watch",
 		"vscode:typecheck": "tsc",
 		"vscode:test": "run-s vscode:test:pre vscode:test:suite",
 		"vscode:test:suite": "node ./test/suite/run-tests.js",
-		"vscode:test:pre": "esbuild \"test/*.ts\" --platform=node --target=node20.9 --format=cjs --outdir=\"test/suite\"",
+		"vscode:test:pre": "esbuild \"test/*.ts\" --platform=node --target=node24 --format=cjs --outdir=\"test/suite\"",
 		"vscode:login": "vsce login markuplint",
 		"vscode:package": "npx @vscode/vsce package --no-yarn",
 		"vscode:release": "npx @vscode/vsce publish --no-yarn"

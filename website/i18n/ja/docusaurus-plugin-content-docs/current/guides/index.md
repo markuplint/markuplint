@@ -76,7 +76,7 @@ npm run lint:html
 
 #### 必須スペック
 
-- **Node.js** v22.0.0以上
+- **Node.js** v24.0.0以上
 
 ## 次のステップ
 
