@@ -176,6 +176,7 @@ v5 では、これまで `Any` として素通りしていた領域について 
 | `srcset` の descriptor 重複禁止                                                        | `<img srcset="a 1x, b 1x">`                                                                                | —                                                             | [HTML LS — `srcset` attributes](https://html.spec.whatwg.org/multipage/images.html#srcset-attributes)                                               |
 | `link[disabled]` は stylesheet 限定                                                    | `<link rel="icon" href="x" disabled>`                                                                      | —                                                             | [HTML LS — `link[disabled]`](https://html.spec.whatwg.org/multipage/semantics.html#attr-link-disabled)                                              |
 | `rel="alternate stylesheet"` 要 title                                                  | `<link rel="alternate stylesheet" href="x">`                                                               | —                                                             | [HTML LS — alternate stylesheet](https://html.spec.whatwg.org/multipage/links.html#rel-alternate-stylesheet)                                        |
+| `lang` / `hreflang` の IANA レジストリ検証                                             | `<html lang="zzz">`                                                                                        | [#3829](https://github.com/markuplint/markuplint/issues/3829) | [RFC 5646 §2.2.9](https://www.rfc-editor.org/rfc/rfc5646.html#section-2.2.9)                                                                        |
 
 ### URL 系属性 (`href` / `src` / `action` / `cite` / `itemid` / `itemtype` 等) で新たに違反となるパターン
 
@@ -211,6 +212,26 @@ v5 では、これまで `Any` として素通りしていた領域について 
 :::note 仕様より厳しい既知ケース
 `<base href>` を完全な URL Living Standard パイプラインに通したことで、Node の `URL.canParse` の厳格さも `<base href>` に適用されるようになりました。副作用として、IPv4 形式で最終オクテットが 255 を超えるホスト値 (例: `<base href="http://192.168.0.257/">`) が markuplint で違反扱いになります。URL LS の host parser は IPv4 parse 失敗時に通常のホスト名としてフォールバックする規定があり nu-validator はこれを許容しますが、`URL.canParse` はこのフォールバックを実装していません。実利用に影響が出る場合は [Issue を起票](https://github.com/markuplint/markuplint/issues/new/choose) してください — 厳格な仕様要件ではなく「仕様より厳しいコーナーケース」として追跡しています。
 :::
+
+### 言語タグの IANA レジストリ検証 (`lang` / `hreflang` / `srclang` 等)
+
+HTML LS は `lang` 属性の値を[「valid BCP 47 language tag」](https://html.spec.whatwg.org/multipage/dom.html#the-lang-and-xml:lang-attributes)と規定しており、[RFC 5646 §2.2.9](https://www.rfc-editor.org/rfc/rfc5646.html#section-2.2.9) は _valid_ を「Either the tag is in the list of grandfathered tags or all of its primary language, extended language, script, region, and variant subtags appear in the IANA Language Subtag Registry as of the particular registry date」と定義しています。v4 は構文形状 (well-formedness) のみを検査していましたが、v5 は各 subtag を [IANA Language Subtag Registry](https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry) と照合します。レジストリデータは [`language-subtag-registry`](https://www.npmjs.com/package/language-subtag-registry) パッケージとして同梱され、依存の更新でデータも更新されます。
+
+`BCP47` 型を持つすべての属性 — `lang` / `xml:lang` (HTML と SVG)、`hreflang`、`<track srclang>`、SVG の `systemLanguage` — が対象です。
+
+新たに違反となるもの:
+
+- **未登録の primary language subtag**: `lang="zzz"` — `zzz` は ISO 639 / IANA レジストリに存在しません。
+- **未登録の extended language subtag**: `lang="bat-smg"` — `smg` (サモギティア語) は primary language subtag であり、登録された extlang ではありません。`lang="sgs"` を使ってください。
+- **未登録の script / region / variant subtag**: `en-Qzzz`、`en-Zzzz-ZY` など。
+- **variant subtag の重複** (`de-DE-1901-1901`) と **singleton (extension) subtag の重複** (`en-a-bbb-a-ccc`) — RFC 5646 §2.2.9 の残りの validity 条件です。
+
+引き続き有効なもの:
+
+- **Grandfathered タグ** — 現代の置き換えがあるもの (`i-klingon`) も、無いもの (`i-default`) も両方。
+- **非推奨 (deprecated) subtag** (`lang="mo"`) — 非推奨化は登録の取り消しではなく、RFC 5646 の validity は区別しません。nu-validator も warning のみで、markuplint も違反にしません。
+- **プライベート利用のタグ・subtag** — `x-default`、`qaa`、`en-Qaaa`、`en-XA` (レジストリの `qaa..qtz` / `qaaa..qabx` / `qm..qz` / `xa..xz` レンジ)。
+- **Extension シーケンス** (`en-u-ca-gregory`) — extension subtag は各拡張の RFC が管轄し、RFC 5646 §2.2.9 はこれを plain validity より厳しい別の適合クラスと定義しています。
 
 ### `media=` で新たに違反となるパターン
 
