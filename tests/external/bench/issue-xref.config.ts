@@ -86,13 +86,6 @@ export const xrefMappings: readonly XrefMapping[] = [
 		filter: /^html\/elements\/style\/css-property-error-novalid/,
 		note: "CSS syntax and property registry are governed by CSS specifications (CSS Syntax Level 3, CSS Values and Units, individual property specs), not by HTML LS. markuplint's tracked spec scope is HTML LS + WAI-ARIA + URL LS per `.claude/skills/bench-triage/SKILL.md`, so CSS is `deferred-CSS`. One fixture is recorded per-id in `excluded-ids.json#entries[]` and flips `nu-only` → `nu-over`; it will flip to `match-error` if/when a CSS grammar-validation rule lands (css-tree, already a dependency of `packages/@markuplint/types`, is a plausible candidate for syntax-only validation). Parallel deferred spec: #3942 (deferred-CSP).",
 	},
-	{
-		kind: 'primary',
-		issue: 3966,
-		filter: /^html\/elements\/base\/href\/host-(192\.0x00A80001|IP-address-fullwidth|IP-address-percent-encoded)-isvalid/,
-		note: '[URL Standard §3.5 "Host parsing", IPv4 number parser](https://url.spec.whatwg.org/#ipv4-number-parser): a dot-separated host label starting with "0x"/"0X" (hex) or a leading "0" (octal) sets `validationError` to true — `IPv4-non-decimal-part` — even though the number still parses successfully. `checkURL` (`packages/@markuplint/types/src/whatwg/check-url.ts`) delegates structural parsing to `URL.canParse()`/`new URL()`, which silently normalizes hex/octal notation (verified: `new URL(\'http://192.0x00A80001\').host` → `\'192.168.0.1\'`) without surfacing the validation error, matching the pattern already handled for `invalid-credentials`/`special-scheme-missing-following-solidus`/etc. in the same file. Surfaced by a nu-validator Docker image update (unrelated to the original nu-only backlog these fixtures\' `-isvalid` naming predates the URL LS wording landing/nu implementing it). Needs host-component isolation plus percent-decode/NFKC-normalize preprocessing before the hex/octal check, to handle the fullwidth-Unicode and percent-encoded obfuscation variants.',
-	},
-
 	// === 2 次群: bench では裏取れない Issue（ステルブロック） ===
 	{
 		kind: 'secondary',

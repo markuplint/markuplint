@@ -23,27 +23,6 @@
 			]
 		},
 		{
-			"path": "html/elements/base/href/host-192.0x00A80001-isvalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-408800eea8f3"
-			]
-		},
-		{
-			"path": "html/elements/base/href/host-IP-address-fullwidth-isvalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-6f8e202afcff"
-			]
-		},
-		{
-			"path": "html/elements/base/href/host-IP-address-percent-encoded-isvalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-51ed8390068d"
-			]
-		},
-		{
 			"path": "html/elements/picture/html-syntax-picture-no-end-tag-novalid.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [

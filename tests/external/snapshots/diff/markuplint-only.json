@@ -412,43 +412,6 @@
 			]
 		},
 		{
-			"path": "html-aria/presentational-children/testcase-839.html",
-			"category": "aria",
-			"ruleIds": [
-				"no-refer-to-non-existent-id"
-			]
-		},
-		{
-			"path": "html-aria/presentational-children/testcase-840.html",
-			"category": "aria",
-			"ruleIds": [
-				"no-refer-to-non-existent-id",
-				"require-accessible-name"
-			]
-		},
-		{
-			"path": "html-aria/presentational-children/testcase-842.html",
-			"category": "aria",
-			"ruleIds": [
-				"no-refer-to-non-existent-id"
-			]
-		},
-		{
-			"path": "html-aria/presentational-children/testcase-843.html",
-			"category": "aria",
-			"ruleIds": [
-				"no-refer-to-non-existent-id",
-				"require-accessible-name"
-			]
-		},
-		{
-			"path": "html-aria/presentational-children/testcase-844.html",
-			"category": "aria",
-			"ruleIds": [
-				"no-refer-to-non-existent-id"
-			]
-		},
-		{
 			"path": "html-aria/roles-plain-concrete/button-input-button-gridcell-slider-treeitem.html",
 			"category": "aria",
 			"ruleIds": [
@@ -8101,6 +8064,15 @@
 			]
 		},
 		{
+			"path": "html/elements/a/href-isvalid.html",
+			"category": "invalid-attr",
+			"ruleIds": [
+				"invalid-attr",
+				"no-refer-to-non-existent-id",
+				"require-accessible-name"
+			]
+		},
+		{
 			"path": "html/elements/a/href/scheme-data-contains-fragment-haswarn.html",
 			"category": "invalid-attr",
 			"ruleIds": [
@@ -8130,10 +8102,26 @@
 			]
 		},
 		{
+			"path": "html/elements/area/href-isvalid.html",
+			"category": "invalid-attr",
+			"ruleIds": [
+				"invalid-attr",
+				"no-refer-to-non-existent-id",
+				"require-accessible-name"
+			]
+		},
+		{
 			"path": "html/elements/area/href/scheme-data-contains-fragment-haswarn.html",
 			"category": "invalid-attr",
 			"ruleIds": [
 				"require-accessible-name"
+			]
+		},
+		{
+			"path": "html/elements/audio/src-isvalid.html",
+			"category": "invalid-attr",
+			"ruleIds": [
+				"invalid-attr"
 			]
 		},
 		{
@@ -8161,6 +8149,34 @@
 			]
 		},
 		{
+			"path": "html/elements/base/href/host-192.0x00A80001-isvalid.html",
+			"category": "invalid-attr",
+			"ruleIds": [
+				"invalid-attr"
+			]
+		},
+		{
+			"path": "html/elements/base/href/host-IP-address-broken-isvalid.html",
+			"category": "invalid-attr",
+			"ruleIds": [
+				"invalid-attr"
+			]
+		},
+		{
+			"path": "html/elements/base/href/host-IP-address-fullwidth-isvalid.html",
+			"category": "invalid-attr",
+			"ruleIds": [
+				"invalid-attr"
+			]
+		},
+		{
+			"path": "html/elements/base/href/host-IP-address-percent-encoded-isvalid.html",
+			"category": "invalid-attr",
+			"ruleIds": [
+				"invalid-attr"
+			]
+		},
+		{
 			"path": "html/elements/base/href/scheme-data-contains-fragment-haswarn.html",
 			"category": "invalid-attr",
 			"ruleIds": [
@@ -8182,6 +8198,21 @@
 			]
 		},
 		{
+			"path": "html/elements/blockquote/cite-isvalid.html",
+			"category": "invalid-attr",
+			"ruleIds": [
+				"invalid-attr"
+			]
+		},
+		{
+			"path": "html/elements/button/formaction-isvalid.html",
+			"category": "invalid-attr",
+			"ruleIds": [
+				"invalid-attr",
+				"require-accessible-name"
+			]
+		},
+		{
 			"path": "html/elements/button/formaction/scheme-data-contains-fragment-haswarn.html",
 			"category": "invalid-attr",
 			"ruleIds": [
@@ -8197,6 +8228,13 @@
 			]
 		},
 		{
+			"path": "html/elements/del/cite-isvalid.html",
+			"category": "invalid-attr",
+			"ruleIds": [
+				"invalid-attr"
+			]
+		},
+		{
 			"path": "html/elements/div/model-isvalid.html",
 			"category": "content-model",
 			"ruleIds": [
@@ -8208,6 +8246,20 @@
 			"category": "invalid-attr",
 			"ruleIds": [
 				"permitted-contents"
+			]
+		},
+		{
+			"path": "html/elements/embed/src-isvalid.html",
+			"category": "invalid-attr",
+			"ruleIds": [
+				"invalid-attr"
+			]
+		},
+		{
+			"path": "html/elements/form/action-isvalid.html",
+			"category": "invalid-attr",
+			"ruleIds": [
+				"invalid-attr"
 			]
 		},
 		{
@@ -8232,10 +8284,24 @@
 			]
 		},
 		{
+			"path": "html/elements/iframe/src-isvalid.html",
+			"category": "invalid-attr",
+			"ruleIds": [
+				"invalid-attr"
+			]
+		},
+		{
 			"path": "html/elements/img/border-attribute-haswarn.html",
 			"category": "invalid-attr",
 			"ruleIds": [
 				"deprecated-attr"
+			]
+		},
+		{
+			"path": "html/elements/img/src-isvalid.html",
+			"category": "invalid-attr",
+			"ruleIds": [
+				"invalid-attr"
 			]
 		},
 		{
@@ -8281,9 +8347,38 @@
 			]
 		},
 		{
+			"path": "html/elements/input/type-image-formaction-isvalid.html",
+			"category": "invalid-attr",
+			"ruleIds": [
+				"invalid-attr"
+			]
+		},
+		{
+			"path": "html/elements/input/type-image-src-isvalid.html",
+			"category": "invalid-attr",
+			"ruleIds": [
+				"invalid-attr"
+			]
+		},
+		{
+			"path": "html/elements/input/type-submit-formaction-isvalid.html",
+			"category": "invalid-attr",
+			"ruleIds": [
+				"invalid-attr"
+			]
+		},
+		{
 			"path": "html/elements/input/type-url-value-empty-isvalid.html",
 			"category": "invalid-attr",
 			"ruleIds": [
+				"require-accessible-name"
+			]
+		},
+		{
+			"path": "html/elements/input/type-url-value-isvalid.html",
+			"category": "invalid-attr",
+			"ruleIds": [
+				"invalid-attr",
 				"require-accessible-name"
 			]
 		},
@@ -8295,10 +8390,24 @@
 			]
 		},
 		{
+			"path": "html/elements/ins/cite-isvalid.html",
+			"category": "invalid-attr",
+			"ruleIds": [
+				"invalid-attr"
+			]
+		},
+		{
 			"path": "html/elements/label/for-isvalid.html",
 			"category": "invalid-attr",
 			"ruleIds": [
 				"require-accessible-name"
+			]
+		},
+		{
+			"path": "html/elements/link/href-isvalid.html",
+			"category": "invalid-attr",
+			"ruleIds": [
+				"invalid-attr"
 			]
 		},
 		{
@@ -8324,11 +8433,25 @@
 			]
 		},
 		{
+			"path": "html/elements/meta/refresh-isvalid.html",
+			"category": "invalid-attr",
+			"ruleIds": [
+				"invalid-attr"
+			]
+		},
+		{
 			"path": "html/elements/meter/aria-valuemax-haswarn.html",
 			"category": "invalid-attr",
 			"ruleIds": [
 				"require-accessible-name",
 				"wai-aria-disallowed-props"
+			]
+		},
+		{
+			"path": "html/elements/object/data-isvalid.html",
+			"category": "invalid-attr",
+			"ruleIds": [
+				"invalid-attr"
 			]
 		},
 		{
@@ -8427,6 +8550,13 @@
 			]
 		},
 		{
+			"path": "html/elements/q/cite-isvalid.html",
+			"category": "invalid-attr",
+			"ruleIds": [
+				"invalid-attr"
+			]
+		},
+		{
 			"path": "html/elements/rb/rb-interleaved-isvalid.html",
 			"category": "invalid-attr",
 			"ruleIds": [
@@ -8462,6 +8592,13 @@
 			"category": "invalid-attr",
 			"ruleIds": [
 				"deprecated-attr"
+			]
+		},
+		{
+			"path": "html/elements/script/src-isvalid.html",
+			"category": "invalid-attr",
+			"ruleIds": [
+				"invalid-attr"
 			]
 		},
 		{
@@ -8512,6 +8649,13 @@
 			]
 		},
 		{
+			"path": "html/elements/source/src-isvalid.html",
+			"category": "invalid-attr",
+			"ruleIds": [
+				"invalid-attr"
+			]
+		},
+		{
 			"path": "html/elements/style/html-spec-comms-isvalid.html",
 			"category": "invalid-attr",
 			"ruleIds": [
@@ -8554,10 +8698,45 @@
 			]
 		},
 		{
+			"path": "html/elements/track/src-isvalid.html",
+			"category": "invalid-attr",
+			"ruleIds": [
+				"invalid-attr"
+			]
+		},
+		{
 			"path": "html/elements/ul/model-isvalid.html",
 			"category": "content-model",
 			"ruleIds": [
 				"wai-aria-required-owned-elements"
+			]
+		},
+		{
+			"path": "html/elements/video/poster-isvalid.html",
+			"category": "invalid-attr",
+			"ruleIds": [
+				"invalid-attr"
+			]
+		},
+		{
+			"path": "html/elements/video/src-isvalid.html",
+			"category": "invalid-attr",
+			"ruleIds": [
+				"invalid-attr"
+			]
+		},
+		{
+			"path": "html/microdata/itemid-isvalid.html",
+			"category": "uncategorized",
+			"ruleIds": [
+				"invalid-attr"
+			]
+		},
+		{
+			"path": "html/microdata/itemtype-isvalid.html",
+			"category": "uncategorized",
+			"ruleIds": [
+				"invalid-attr"
 			]
 		},
 		{
