@@ -198,6 +198,94 @@ function stripAsciiWhitespace(value: string): string {
 const UNENCODED_SPACE = / /;
 
 /**
+ * Pattern: a dot-separated host label written in hex (`0x…`/`0X…`) or
+ * leading-zero octal notation (a `0` immediately followed by another digit).
+ *
+ * The URL Standard's IPv4 number parser sets `validationError` to true for
+ * either form even though the number still parses successfully — `new URL()`
+ * silently normalizes such labels to plain decimal (e.g. `192.0x00A80001` →
+ * `192.168.0.1`), so this must be tested against the pre-normalization host.
+ *
+ * @see https://url.spec.whatwg.org/#ipv4-number-parser
+ */
+const IPV4_NON_DECIMAL_PART = /^0(?:[x][0-9a-f]*|\d+)$/i;
+
+/**
+ * Pattern: a host label that "ends in a number" per the URL Standard —
+ * either plain ASCII digits, or a `0x`/`0X`-prefixed hex run (which is
+ * still a number, just written non-decimally).
+ *
+ * Gates {@link hasIPv4NonDecimalPart} so it never fires on an ordinary
+ * domain (`example.com`) merely because an earlier label happens to
+ * contain digits — the IPv4 parser only runs when the domain's last
+ * label looks numeric in the first place.
+ *
+ * @see https://url.spec.whatwg.org/#ends-in-a-number-checker
+ */
+const IPV4_LAST_PART_NUMERIC = /^(?:\d+|0[x][0-9a-f]*)$/i;
+
+/**
+ * Extracts the raw (pre-percent-decode, pre-IDNA) host component from a
+ * special-scheme or scheme-relative URL's authority, or `null` when there
+ * is no authority to extract (non-special scheme, or a relative URL with
+ * no `//`) or the host is an IPv6 literal (`[::1]`, never IPv4-parsed).
+ */
+function extractRawHost(trimmed: string): string | null {
+	const authorityMatch = /^(?:[a-z][a-z0-9+.-]*:)?\/\/([^/?#]*)/i.exec(trimmed);
+	if (!authorityMatch) {
+		return null;
+	}
+	const authority = authorityMatch[1] ?? '';
+	const host = authority.includes('@') ? authority.slice(authority.lastIndexOf('@') + 1) : authority;
+	if (host === '' || host.startsWith('[')) {
+		return null;
+	}
+	const portIndex = host.indexOf(':');
+	return portIndex === -1 ? host : host.slice(0, portIndex);
+}
+
+/**
+ * Detects an `IPv4-non-decimal-part` validation error on a special-scheme
+ * URL's host, before `new URL()` normalizes it away.
+ *
+ * Mirrors the URL Standard's host parser preprocessing (percent-decode,
+ * then the Unicode mapping IDNA's "domain to ASCII" step performs — here
+ * approximated with `String.prototype.normalize('NFKC')`, which folds
+ * fullwidth digits/letters to their ASCII equivalents) before splitting on
+ * `.` and testing each label. `IPV4_LAST_PART_NUMERIC` gates the whole
+ * check on the domain "ending in a number", matching the spec's own gate
+ * for whether the IPv4 parser runs at all.
+ *
+ * @see https://url.spec.whatwg.org/#concept-host-parser
+ * @see https://url.spec.whatwg.org/#concept-ipv4-parser
+ */
+function hasIPv4NonDecimalPart(trimmed: string): boolean {
+	const rawHost = extractRawHost(trimmed);
+	if (rawHost == null) {
+		return false;
+	}
+
+	let host: string;
+	try {
+		host = decodeURIComponent(rawHost).normalize('NFKC');
+	} catch {
+		return false;
+	}
+
+	let labels = host.split('.');
+	if (labels.length > 1 && labels.at(-1) === '') {
+		labels = labels.slice(0, -1);
+	}
+
+	const lastLabel = labels.at(-1) ?? '';
+	if (!IPV4_LAST_PART_NUMERIC.test(lastLabel)) {
+		return false;
+	}
+
+	return labels.some(label => IPV4_NON_DECIMAL_PART.test(label));
+}
+
+/**
  * Returns `true` when `value` should be treated as a special-scheme URL —
  * either it has an explicit special scheme prefix, or it is scheme-relative
  * (no scheme, so it inherits the document's base URL, which in HTML attribute
@@ -235,6 +323,7 @@ function isSpecialOrSchemeless(value: string): boolean {
  *   and `file-scheme-missing-following-solidus` / single-slash variants
  * - **file-invalid-Windows-drive-letter** (`file:///C|/foo`)
  * - **invalid-credentials** (`http://user:pass@example.com`)
+ * - **IPv4-non-decimal-part** (`http://192.0x00A80001`, hex/octal host labels)
  * - any URL that fails `new URL()` parsing (even with a dummy base)
  *
  * @see https://html.spec.whatwg.org/multipage/urls-and-fetching.html#valid-url-potentially-surrounded-by-spaces
@@ -321,6 +410,13 @@ export const checkURL: CustomSyntaxChecker = () =>
 
 		// data: URL without a comma — RFC 2397 violation.
 		if (DATA_URL_MISSING_COMMA.test(trimmed)) {
+			return unmatched(trimmed, 'unexpected-token');
+		}
+
+		// IPv4-non-decimal-part: a host label written in hex/octal notation.
+		// Only special-scheme (or scheme-relative) URLs have their host run
+		// through the IPv4 parser; non-special schemes have an opaque host.
+		if (isSpecialOrSchemeless(trimmed) && hasIPv4NonDecimalPart(trimmed)) {
 			return unmatched(trimmed, 'unexpected-token');
 		}
 
