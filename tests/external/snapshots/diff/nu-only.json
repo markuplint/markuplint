@@ -23,11 +23,24 @@
 			]
 		},
 		{
-			"path": "html/datatypes/charset-invalid-novalid.html",
-			"category": "data-types",
+			"path": "html/elements/base/href/host-192.0x00A80001-isvalid.html",
+			"category": "invalid-attr",
 			"nuMessageIds": [
-				"nv-acede5e8fcb0",
-				"nv-b7b2459d8f36"
+				"nv-408800eea8f3"
+			]
+		},
+		{
+			"path": "html/elements/base/href/host-IP-address-fullwidth-isvalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-6f8e202afcff"
+			]
+		},
+		{
+			"path": "html/elements/base/href/host-IP-address-percent-encoded-isvalid.html",
+			"category": "invalid-attr",
+			"nuMessageIds": [
+				"nv-51ed8390068d"
 			]
 		},
 		{
@@ -35,13 +48,6 @@
 			"category": "invalid-attr",
 			"nuMessageIds": [
 				"nv-224e80c23676"
-			]
-		},
-		{
-			"path": "html/elements/img/usemap-invalid-reference-novalid.html",
-			"category": "invalid-attr",
-			"nuMessageIds": [
-				"nv-f3a0d6efeee1"
 			]
 		},
 		{
