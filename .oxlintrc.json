@@ -584,7 +584,7 @@
 				"unicorn/filename-case": [
 					"off",
 					{
-						"pascalCase": true
+						"case": "pascalCase"
 					}
 				],
 				"typescript/prefer-readonly-parameter-types": "off"
