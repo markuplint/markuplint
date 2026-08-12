@@ -41,11 +41,20 @@
  * ## Caching
  *
  * - {@link clearPretenderCaches} — Clears the module-level caches that back import/export
- *   resolution (module resolution, export tables, parsed JSX `SourceFile`s, auto-scan
- *   results). None of these caches expire on their own, so a long-running host (watch mode,
- *   an editor extension) that re-resolves pretenders across file edits must call this after
- *   each edit, or renamed exports, newly valid tsconfig `paths` aliases, and stale parsed/
- *   scanned files keep resolving as they did before the change for the rest of the process.
+ *   resolution (module resolution, tsconfig parsing, export tables, parsed JSX
+ *   `SourceFile`s, auto-scan results). A long-running host (watch mode, an editor
+ *   extension) that re-resolves pretenders across file edits must call this after each
+ *   edit. Some of these caches do notice a file's content changing on their own, but the
+ *   ones keyed by path alone — module resolution, tsconfig parsing, disk-backed export
+ *   tables, and auto-scan results (keyed on the ENTRY file only, so an edit to a
+ *   dependency is invisible to them) — do not, and keep resolving as they did before the
+ *   change for the rest of the process's lifetime. Which cache covers which case is an
+ *   implementation detail that has shifted before: treat "call it after every edit" as
+ *   the contract rather than reasoning about the exceptions.
+ *
+ *   Content that has no on-disk representation yet (an editor's unsaved buffer) is handled
+ *   separately, by passing it as `sources` to {@link scan} / {@link autoScan} rather than
+ *   by invalidating caches.
  */
 
 import { clearAutoScanCache } from './auto-scan.js';

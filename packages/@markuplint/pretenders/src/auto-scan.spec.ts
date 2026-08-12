@@ -5,6 +5,8 @@ import path from 'node:path';
 
 import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
 
+import { normalizePath } from './import-resolver/resolve-module-file.js';
+
 import { autoScan, clearAutoScanCache } from './auto-scan.js';
 
 describe('autoScan', () => {
@@ -201,7 +203,15 @@ describe('autoScan', () => {
 			// dependency-mapper module (export-table construction for
 			// same-selector disambiguation) now consult `sources` first, so
 			// neither re-reads the same file from disk.
-			const childReadCount = readFileSyncSpy.mock.calls.filter(call => call[0] === childPath).length;
+			//
+			// Both sides go through normalizePath: the recorded call arguments come
+			// from `resolveModuleFile`, which always returns `/`-delimited paths, so
+			// comparing against a raw `path.join` result would match nothing on
+			// Windows and silently assert 0.
+			const childKey = normalizePath(childPath);
+			const childReadCount = readFileSyncSpy.mock.calls.filter(
+				call => typeof call[0] === 'string' && normalizePath(call[0]) === childKey,
+			).length;
 			expect(childReadCount).toBe(1);
 		} finally {
 			readFileSyncSpy.mockRestore();

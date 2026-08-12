@@ -53,11 +53,11 @@ const MAX_DEPTH = 8;
 const resultCache = new Map<string, { sourceCode: string; pretenders: Pretender[] }>();
 
 /**
- * Clears the module-level auto-scan result cache. Neither this cache nor the
- * caches it builds on (module resolution, parsed `SourceFile`s, export
- * tables) expire on their own; a long-running host must call
- * `clearPretenderCaches()` (which includes this one) after an edit to any
- * file `autoScan` may have walked.
+ * Clears the module-level auto-scan result cache. This cache is keyed on the
+ * ENTRY file's path and content only, so an edit to any other file in the
+ * entry's import graph does not invalidate it — a long-running host must call
+ * `clearPretenderCaches()` (which includes this one) after an edit to any file
+ * `autoScan` may have walked, not just after an edit to the entry itself.
  */
 export function clearAutoScanCache() {
 	resultCache.clear();
@@ -123,13 +123,10 @@ export async function autoScan(entryAbsPath: string, sourceCode: string): Promis
 				if (childSource == null) {
 					continue;
 				}
-				// Feed this read into `sources` so jsxScanner/templateScanner's own
-				// file read inside the `scan()` call below reuses it instead of
-				// hitting disk again. This doesn't eliminate every re-read for a
-				// JSX/TSX file, though: jsxScanner's dependency-mapper module
-				// independently re-reads collected files from disk (bypassing
-				// `sources`) to build its own export table for same-selector
-				// disambiguation (see dependency-mapper.ts's `getExportTableForFile`).
+				// Feed this read into `sources` so the `scan()` call below reuses it
+				// instead of hitting disk again — both the scanners' own file reads
+				// and the export-table construction behind same-selector
+				// disambiguation consult `sources` first.
 				sources.set(key, childSource);
 
 				nextFrontier.push({ absPath: resolved, source: childSource });

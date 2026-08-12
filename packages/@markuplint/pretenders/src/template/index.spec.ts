@@ -203,6 +203,25 @@ describe('templateScanner', () => {
 				as: expect.objectContaining({ element: 'button' }),
 			});
 		});
+
+		test('a wrapper importing through a barrel resolves to the re-exported SFC, not a same-named sibling', async () => {
+			// Same decoy ordering as above, but the wrapper reaches subA/Button.vue
+			// indirectly: `barrel/index.ts` re-exports it. Re-export chains have to
+			// recognize a template-component target the same way a direct import
+			// does — otherwise the SFC gets parsed as TypeScript in search of an
+			// export table it can never have, and resolution falls back to the flat
+			// name index, picking subB's `Button` (div).
+			const result = await templateScanner([
+				resolve('subB/Button.vue'),
+				resolve('barrel/wrapper-uses-barrel.vue'),
+				resolve('subA/Button.vue'),
+			]);
+
+			const wrapper = result.find(p => p.selector === 'WrapperUsesBarrel');
+			expect(wrapper).toMatchObject({
+				as: expect.objectContaining({ element: 'button' }),
+			});
+		});
 	});
 
 	describe('Edge cases', () => {
