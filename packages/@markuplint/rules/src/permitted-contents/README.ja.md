@@ -41,6 +41,12 @@ description: HTML要素のコンテンツモデルと構造的な制約を検証
 		<header>許可されていないネストされたheader</header>
 	</div>
 </header>
+
+<!-- button要素はインタラクティブコンテンツの子孫を許可しない。a[href]は、
+     a要素自体がtransparentなコンテンツモデルであってもインタラクティブコンテンツになる -->
+<button>
+	<a href="/path"><span>許可されていないインタラクティブコンテンツ</span></a>
+</button>
 ```
 <!-- prettier-ignore-end -->
 
@@ -62,6 +68,10 @@ description: HTML要素のコンテンツモデルと構造的な制約を検証
 <header>
 	<nav>ナビゲーション</nav>
 </header>
+
+<button>
+	<a>href属性がないため、インタラクティブコンテンツにならない</a>
+</button>
 ```
 <!-- prettier-ignore-end -->
 
