@@ -58,12 +58,6 @@ export const xrefMappings: readonly XrefMapping[] = [
 	},
 	{
 		kind: 'primary',
-		issue: 3829,
-		filter: /^html\/attributes\/lang\/(extlang-bad|invalid-primary)-novalid/,
-		note: 'HTML LS §3.2.6.2 The lang and xml:lang attributes: "the value must be a valid BCP 47 language tag". RFC 5646 §2.2.9 item 2: "Either the tag is in the list of grandfathered tags or all of its primary language, extended language, script, region, variant, and extension subtags appear in the IANA Language Subtag Registry as of the particular registry date". markuplint\'s `BCP47` type checker (`@markuplint/types/src/rfc/is-bcp-47.ts`) wraps the `bcp-47` npm package, which only enforces the well-formed grammar and never consults the IANA subtag registry — so an unregistered primary subtag (`zzz`) and an unregistered extlang subtag (`smg` in `bat-smg`) both slip through. `bat-smg` is registered as a `redundant` (not `grandfathered`) tag, so the §2.2.9 grandfathered exception does not apply. Fix requires vendoring the IANA registry snapshot (or a wrapper package that does) into `@markuplint/types`.',
-	},
-	{
-		kind: 'primary',
 		issue: 3921,
 		filter: /^html\/elements\/base\/preceded-by-(link|script)-novalid/,
 		note: 'HTML LS §4.2.3 The base element: "A `base` element, if it has an `href` attribute, must come before any other elements in the tree that have attributes defined as taking URLs." `<link>`/`<script>` are metadata content, so `<base>` remains in `<head>` alongside them and `permitted-contents` does not fire. `head-element-order` treats `<base>` as an unlisted (highest-priority) entry in its default source-order list, so `<link>` (group 5) preceding `<base>` (group 8) also matches. A dedicated rule (`base-element-position`) is proposed.',

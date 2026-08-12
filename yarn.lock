@@ -2583,6 +2583,7 @@ __metadata:
     bcp-47: "npm:2.1.0"
     css-tree: "npm:3.2.1"
     debug: "npm:4.4.3"
+    language-subtag-registry: "npm:0.4.2"
     leven: "npm:4.1.0"
     type-fest: "npm:5.6.0"
     whatwg-mimetype: "npm:5.0.0"
@@ -10792,6 +10793,13 @@ __metadata:
     kuromoji: "npm:0.1.2"
     lru_map: "npm:^0.4.1"
   checksum: 10c0/9ea7e99cafd2e64fb58a7c620228735db8efeb68c76d189122a07c509d777bc96a15a3ef98ae0f0137becb0bc14cfd0ac012088a7db46feb80b0827f5699451a
+  languageName: node
+  linkType: hard
+
+"language-subtag-registry@npm:0.4.2":
+  version: 0.4.2
+  resolution: "language-subtag-registry@npm:0.4.2"
+  checksum: 10c0/c86ad5e27c94a9f200a7f06e70b2308d5a5fc1397fcd70aa47224a96d0fe8adbfb6ecab052e4ab7913f47aaa076fc981b912246fb00b875a23f4f839e6eb35c2
   languageName: node
   linkType: hard
 

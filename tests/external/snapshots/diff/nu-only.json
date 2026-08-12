@@ -9,20 +9,6 @@
 			]
 		},
 		{
-			"path": "html/attributes/lang/extlang-bad-novalid.html",
-			"category": "global-attr",
-			"nuMessageIds": [
-				"nv-b9765660c678"
-			]
-		},
-		{
-			"path": "html/attributes/lang/invalid-primary-novalid.html",
-			"category": "global-attr",
-			"nuMessageIds": [
-				"nv-ae0b2057a762"
-			]
-		},
-		{
 			"path": "html/elements/picture/html-syntax-picture-no-end-tag-novalid.html",
 			"category": "invalid-attr",
 			"nuMessageIds": [

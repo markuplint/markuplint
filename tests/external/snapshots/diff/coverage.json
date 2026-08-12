@@ -14284,16 +14284,16 @@
 			"path": "html/attributes/lang/extlang-bad-novalid.html",
 			"category": "global-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
 			"path": "html/attributes/lang/invalid-primary-novalid.html",
 			"category": "global-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{

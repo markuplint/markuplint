@@ -176,6 +176,7 @@ Each row cites the issue where the validation was introduced and the HTML / URL 
 | `srcset` duplicate descriptors                                                   | `<img srcset="a 1x, b 1x">`                                                                                | —                                                             | [HTML LS — `srcset` attributes](https://html.spec.whatwg.org/multipage/images.html#srcset-attributes)                                               |
 | `link[disabled]` needs stylesheet                                                | `<link rel="icon" href="x" disabled>`                                                                      | —                                                             | [HTML LS — `link[disabled]`](https://html.spec.whatwg.org/multipage/semantics.html#attr-link-disabled)                                              |
 | `rel="alternate stylesheet"` title                                               | `<link rel="alternate stylesheet" href="x">`                                                               | —                                                             | [HTML LS — alternate stylesheet](https://html.spec.whatwg.org/multipage/links.html#rel-alternate-stylesheet)                                        |
+| `lang` / `hreflang` IANA registry validation                                     | `<html lang="zzz">`                                                                                        | [#3829](https://github.com/markuplint/markuplint/issues/3829) | [RFC 5646 §2.2.9](https://www.rfc-editor.org/rfc/rfc5646.html#section-2.2.9)                                                                        |
 
 ### Patterns now flagged on URL-typed attributes (`href`, `src`, `action`, `cite`, `itemid`, `itemtype`, ...)
 
@@ -211,6 +212,26 @@ Beyond the generic URL LS pipeline above, three specialised URL types tighten fu
 :::note Known stricter-than-nu case
 Routing `<base href>` through the full URL Living Standard pipeline also enrols `<base href>` in Node's `URL.canParse` strictness. One side effect: hosts with an IPv4-shaped value whose final octet exceeds 255 (e.g., `<base href="http://192.168.0.257/">`) are now flagged as invalid by markuplint. URL LS technically allows the parser to fall back to treating the value as a regular hostname, and nu-validator accepts it, but `URL.canParse` does not implement that fallback. If this materially affects your project, [file an issue](https://github.com/markuplint/markuplint/issues/new/choose) — we are tracking it as a stricter-than-spec corner case rather than a hard requirement.
 :::
+
+### Language tags validated against the IANA registry (`lang`, `hreflang`, `srclang`, ...)
+
+HTML LS requires the `lang` attribute to be ["a valid BCP 47 language tag"](https://html.spec.whatwg.org/multipage/dom.html#the-lang-and-xml:lang-attributes), and [RFC 5646 §2.2.9](https://www.rfc-editor.org/rfc/rfc5646.html#section-2.2.9) defines _valid_ as: "Either the tag is in the list of grandfathered tags or all of its primary language, extended language, script, region, and variant subtags appear in the IANA Language Subtag Registry as of the particular registry date." v4 only checked the syntactic shape (well-formedness); v5 additionally checks each subtag against the [IANA Language Subtag Registry](https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry), vendored via the [`language-subtag-registry`](https://www.npmjs.com/package/language-subtag-registry) package (updating that dependency refreshes the data).
+
+Applies to every `BCP47`-typed attribute: `lang` / `xml:lang` (HTML and SVG), `hreflang`, `<track srclang>`, and SVG `systemLanguage`.
+
+Now flagged:
+
+- **Unregistered primary language subtag**: `lang="zzz"` — `zzz` is not assigned in ISO 639 / the IANA registry.
+- **Unregistered extended language subtag**: `lang="bat-smg"` — `smg` (Samogitian) is a primary language subtag, not a registered extlang; write `lang="sgs"` instead.
+- **Unregistered script / region / variant subtags**: `en-Qzzz`, `en-Zzzz-ZY`, and similar.
+- **Duplicate variant subtags** (`de-DE-1901-1901`) and **duplicate singleton (extension) subtags** (`en-a-bbb-a-ccc`), per the remaining RFC 5646 §2.2.9 validity conditions.
+
+Still valid:
+
+- **Grandfathered tags** — both those with a modern replacement (`i-klingon`) and those without (`i-default`).
+- **Deprecated subtags** (`lang="mo"`) — deprecation does not revoke registration; RFC 5646 validity draws no distinction. nu-validator reports these as warnings only, and markuplint follows suit by not flagging them.
+- **Private-use tags and subtags** — `x-default`, `qaa`, `en-Qaaa`, `en-XA` (the registry's `qaa..qtz` / `qaaa..qabx` / `qm..qz` / `xa..xz` ranges).
+- **Extension sequences** (`en-u-ca-gregory`) — extension subtags are governed by their own RFCs, which RFC 5646 §2.2.9 defines as a stricter conformance class than plain validity.
 
 ### Patterns now flagged on `media=`
 
