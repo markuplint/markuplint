@@ -7036,8 +7036,8 @@
 			"path": "html-math/math-in-head-novalid.html",
 			"category": "uncategorized",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -32682,8 +32682,8 @@
 			"path": "html/elements/picture/html-syntax-picture-no-end-tag-novalid.html",
 			"category": "invalid-attr",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -42664,8 +42664,8 @@
 			"path": "html/parser/charset-after-1024-novalid.html",
 			"category": "uncategorized",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -43200,16 +43200,16 @@
 			"path": "html/parser/stray-start-tag-novalid.html",
 			"category": "uncategorized",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
 			"path": "html/parser/text-after-body-novalid.html",
 			"category": "uncategorized",
 			"nu": "error",
-			"ml": "clean",
-			"verdict": "nu-only",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{

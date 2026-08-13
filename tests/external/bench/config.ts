@@ -76,6 +76,23 @@ export const benchmarkConfig: Config = {
 		'itemprop-requires-itemscope': true,
 		'no-extra-selected-options': true,
 		'no-orphaned-end-tag': true,
+		// HTML LS §13.2.6.4.7 ("in body" insertion mode, "An end-of-file token"): an
+		// element other than the small optional-tag-omission exception list left open
+		// at EOF is a parse error (e.g. `<picture>`, which has no such omission rule).
+		'no-unclosed-element-at-eof': true,
+		// HTML LS §13.2.6.4.17 ("after body" insertion mode, "Anything else"): a start
+		// tag or non-whitespace text once the parser has seen `</body>` is a parse
+		// error and gets reprocessed back into `<body>`.
+		'no-content-after-body': true,
+		// Content disallowed in `<head>` (e.g. `<math>`) implicitly closes `head`
+		// without itself being a parse error, but a literal `</head>` or a second
+		// `<body>` start tag still left in the source afterward is (HTML LS
+		// §13.2.6.4.7, "in body" insertion mode: "Any other end tag" / "A start tag
+		// whose tag name is 'body'").
+		'no-stray-head-or-body-tag': true,
+		// HTML LS §4.2.5.4: the element containing the character encoding declaration
+		// must be serialized completely within the first 1024 bytes of the document.
+		'meta-charset-position': true,
 		'srcset-sizes-constraint': true,
 		// WAI-ARIA role definitions declare `accessibleNameRequired` per role (e.g. the
 		// `img` role: "In order for elements with a role of img to be perceivable,

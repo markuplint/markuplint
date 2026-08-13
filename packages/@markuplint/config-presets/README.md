@@ -59,6 +59,10 @@ No use ineffective attr| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [No invalid attr](https://html.spec.whatwg.org/multipage/dom.html#attributes)|Each element's attribute names and values must conform to the HTML specification.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [No duplicate names in `<dl>`](https://html.spec.whatwg.org/multipage/grouping-content.html#the-dl-element:~:text=Within%20a%20single%20dl%20element%2C%20there%20should%20not%20be%20more%20than%20one%20dt%20element%20for%20each%20name)|Within a single dl element, there should not be more than one dt element for each name.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 No use **orphaned end tag**| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
+No **stray head or body tag**| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
+No **content after body**| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
+No **unclosed element at EOF**| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
+**Meta charset** position within the first 1024 bytes| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 Allow only **permitted contents**| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 Need **placeholder label option**| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 Require the `datetime` attribute if the content of the `time` element is invalid| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|

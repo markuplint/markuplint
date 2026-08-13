@@ -38,11 +38,13 @@ import LabelNoMultipleControls from './label-no-multiple-controls/index.js';
 import LandmarkRoles from './landmark-roles/index.js';
 import LinkTypes from './link-types/index.js';
 import MapIdNameMatch from './map-id-name-match/index.js';
+import MetaCharsetPosition from './meta-charset-position/index.js';
 import MeterValueBounds from './meter-value-bounds/index.js';
 import NeighborPopovers from './neighbor-popovers/index.js';
 import NoAmbiguousNavigableTargetNames from './no-ambiguous-navigable-target-names/index.js';
 import NoBooleanAttrValue from './no-boolean-attr-value/index.js';
 import NoConsecutiveBr from './no-consecutive-br/index.js';
+import NoContentAfterBody from './no-content-after-body/index.js';
 import NoDefaultValue from './no-default-value/index.js';
 import NoDuplicateAutofocus from './no-duplicate-autofocus/index.js';
 import NoDuplicateDt from './no-duplicate-dt/index.js';
@@ -52,6 +54,8 @@ import NoExtraSelectedOptions from './no-extra-selected-options/index.js';
 import NoHardCodeId from './no-hard-code-id/index.js';
 import NoOrphanedEndTag from './no-orphaned-end-tag/index.js';
 import NoReferToNonExistentId from './no-refer-to-non-existent-id/index.js';
+import NoStrayHeadOrBodyTag from './no-stray-head-or-body-tag/index.js';
+import NoUnclosedElementAtEof from './no-unclosed-element-at-eof/index.js';
 import NoUnsupportedFeatures from './no-unsupported-features/index.js';
 import NoUseEventHandlerAttr from './no-use-event-handler-attr/index.js';
 import PermittedContents from './permitted-contents/index.js';
@@ -122,11 +126,13 @@ const rules = {
 	'landmark-roles': LandmarkRoles,
 	'link-types': LinkTypes,
 	'map-id-name-match': MapIdNameMatch,
+	'meta-charset-position': MetaCharsetPosition,
 	'meter-value-bounds': MeterValueBounds,
 	'neighbor-popovers': NeighborPopovers,
 	'no-ambiguous-navigable-target-names': NoAmbiguousNavigableTargetNames,
 	'no-boolean-attr-value': NoBooleanAttrValue,
 	'no-consecutive-br': NoConsecutiveBr,
+	'no-content-after-body': NoContentAfterBody,
 	'no-default-value': NoDefaultValue,
 	'no-duplicate-autofocus': NoDuplicateAutofocus,
 	'no-duplicate-dt': NoDuplicateDt,
@@ -136,6 +142,8 @@ const rules = {
 	'no-hard-code-id': NoHardCodeId,
 	'no-orphaned-end-tag': NoOrphanedEndTag,
 	'no-refer-to-non-existent-id': NoReferToNonExistentId,
+	'no-stray-head-or-body-tag': NoStrayHeadOrBodyTag,
+	'no-unclosed-element-at-eof': NoUnclosedElementAtEof,
 	'no-unsupported-features': NoUnsupportedFeatures,
 	'no-use-event-handler-attr': NoUseEventHandlerAttr,
 	'permitted-contents': PermittedContents,

@@ -70,12 +70,6 @@ export const xrefMappings: readonly XrefMapping[] = [
 	},
 	{
 		kind: 'primary',
-		issue: 3943,
-		filter: /^(html-math\/math-in-head|html\/elements\/picture\/html-syntax-picture-no-end-tag|html\/parser\/(charset-after-1024|stray-start-tag|text-after-body))-novalid/,
-		note: 'Umbrella for 5 fixtures that report legitimate HTML LS parse errors which `parse5` (`packages/@markuplint/html-parser/src/parser.ts` `tokenize()`) silently recovers from: `<math>` inside `<head>` triggering implicit body promotion; open `<picture>` at EOF; `<meta charset>` after the first 1024 bytes ([HTML LS "Specifying the document\'s character encoding"](https://html.spec.whatwg.org/multipage/semantics.html#charset)); a start tag or non-whitespace character after `</body>` ([HTML LS "The \'after body\' insertion mode"](https://html.spec.whatwg.org/multipage/parsing.html#the-after-body-insertion-mode)). A direct probe on the pinned parse5 version confirmed no `onParseError` fires for any of these fixtures. Extending `MLASTParseErrorCode` alone will not close the gap; a post-parse rule pass (per-case) is the pragmatic path.',
-	},
-	{
-		kind: 'primary',
 		issue: 3946,
 		filter: /^html\/elements\/style\/css-property-error-novalid/,
 		note: "CSS syntax and property registry are governed by CSS specifications (CSS Syntax Level 3, CSS Values and Units, individual property specs), not by HTML LS. markuplint's tracked spec scope is HTML LS + WAI-ARIA + URL LS per `.claude/skills/bench-triage/SKILL.md`, so CSS is `deferred-CSS`. One fixture is recorded per-id in `excluded-ids.json#entries[]` and flips `nu-only` → `nu-over`; it will flip to `match-error` if/when a CSS grammar-validation rule lands (css-tree, already a dependency of `packages/@markuplint/types`, is a plausible candidate for syntax-only validation). Parallel deferred spec: #3942 (deferred-CSP).",
