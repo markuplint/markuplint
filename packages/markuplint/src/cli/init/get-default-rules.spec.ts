@@ -121,6 +121,10 @@ test('default-rules', () => {
 			category: 'validation',
 			defaultValue: true,
 		},
+		'meta-charset-position': {
+			category: 'validation',
+			defaultValue: true,
+		},
 		'meter-value-bounds': {
 			category: 'validation',
 			defaultValue: true,
@@ -140,6 +144,10 @@ test('default-rules', () => {
 		'no-consecutive-br': {
 			category: 'a11y',
 			defaultValue: false,
+		},
+		'no-content-after-body': {
+			category: 'validation',
+			defaultValue: true,
 		},
 		'no-default-value': {
 			category: 'style',
@@ -175,6 +183,14 @@ test('default-rules', () => {
 		},
 		'no-refer-to-non-existent-id': {
 			category: 'a11y',
+			defaultValue: true,
+		},
+		'no-stray-head-or-body-tag': {
+			category: 'validation',
+			defaultValue: true,
+		},
+		'no-unclosed-element-at-eof': {
+			category: 'validation',
 			defaultValue: true,
 		},
 		'no-unsupported-features': {

@@ -161,6 +161,50 @@
 		},
 
 		/**
+		 * No **stray head or body tag**
+		 *
+		 */
+		"html-standard/no-stray-head-or-body-tag": {
+			"specConformance": "normative",
+			"rules": {
+				"no-stray-head-or-body-tag": true
+			}
+		},
+
+		/**
+		 * No **content after body**
+		 *
+		 */
+		"html-standard/no-content-after-body": {
+			"specConformance": "normative",
+			"rules": {
+				"no-content-after-body": true
+			}
+		},
+
+		/**
+		 * No **unclosed element at EOF**
+		 *
+		 */
+		"html-standard/no-unclosed-element-at-eof": {
+			"specConformance": "normative",
+			"rules": {
+				"no-unclosed-element-at-eof": true
+			}
+		},
+
+		/**
+		 * **Meta charset** position within the first 1024 bytes
+		 *
+		 */
+		"html-standard/meta-charset-position": {
+			"specConformance": "normative",
+			"rules": {
+				"meta-charset-position": true
+			}
+		},
+
+		/**
 		 * Allow only **permitted contents**
 		 *
 		 */
