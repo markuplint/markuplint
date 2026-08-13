@@ -93,6 +93,9 @@
 				"map-id-name-match": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/map-id-name-match/schema.json"
 				},
+				"meta-charset-position": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/meta-charset-position/schema.json"
+				},
 				"meter-value-bounds": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/meter-value-bounds/schema.json"
 				},
@@ -107,6 +110,9 @@
 				},
 				"no-consecutive-br": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-consecutive-br/schema.json"
+				},
+				"no-content-after-body": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-content-after-body/schema.json"
 				},
 				"no-default-value": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-default-value/schema.json"
@@ -134,6 +140,12 @@
 				},
 				"no-refer-to-non-existent-id": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-refer-to-non-existent-id/schema.json"
+				},
+				"no-stray-head-or-body-tag": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-stray-head-or-body-tag/schema.json"
+				},
+				"no-unclosed-element-at-eof": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-unclosed-element-at-eof/schema.json"
 				},
 				"no-unsupported-features": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-unsupported-features/schema.json"
