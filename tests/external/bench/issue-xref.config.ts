@@ -76,11 +76,6 @@ export const xrefMappings: readonly XrefMapping[] = [
 	},
 	{
 		kind: 'secondary',
-		issue: 263,
-		reason: 'No fixture in the nu-validator suite probes dynamic `input[type]` attribute evaluation.',
-	},
-	{
-		kind: 'secondary',
 		issue: 509,
 		reason: 'Parser-level concern (ignore preprocessor blocks inside attribute tokens). The nu-validator suite contains no preprocessor fixtures.',
 	},
@@ -98,10 +93,5 @@ export const xrefMappings: readonly XrefMapping[] = [
 		kind: 'secondary',
 		issue: 358,
 		reason: 'Proposed new rule; no fixture in the nu-validator suite probes whitespace inside attribute values.',
-	},
-	{
-		kind: 'secondary',
-		issue: 460,
-		reason: '`permitted-content` on elements containing mutable (preprocessor) children is a markuplint-internal concern; the nu-validator suite has no fixtures with mutable placeholders.',
 	},
 ];
