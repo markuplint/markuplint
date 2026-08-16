@@ -1254,6 +1254,7 @@ export type ExtendedType =
   | "BaseURL"
   | "BrowsingContextName"
   | "BrowsingContextNameOrKeyword"
+  | "ContentSecurityPolicy"
   | "CustomElementName"
   | "DOMID"
   | "DateString"
