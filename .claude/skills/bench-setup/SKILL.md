@@ -53,7 +53,9 @@ yarn bench:update
 ```
 
 Review `snapshots/diff/summary.md` and `snapshots/diff/*.json` in
-the PR. The raw snapshot trees stay local-only.
+the PR. The raw snapshot trees stay local-only. What to do with the
+resulting diff — classifying new `nu-only` entries, re-pinning stale
+exclusions, syncing issue bodies — is the `bench-maintain` skill.
 
 ## Markuplint rule change (skip the Docker leg)
 

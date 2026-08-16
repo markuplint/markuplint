@@ -30,20 +30,30 @@ Operating policy (not derivable from code):
   first (submodule SHA, nu image digest, markuplint version, Node
   version).
 
-Central operation: pick one entry from
-`tests/external/snapshots/diff/nu-only.json`, read the spec, and drive
-its verdict to `match-error`, `match-clean`, or `nu-over` by either
-fixing markuplint or recording an `excluded-ids.json` entry.
+Operating phase: the `nu-only` backlog reached **zero on 2026-08-13**;
+the bench is in steady-state operation. The standing invariant is that
+`snapshots/diff/nu-only.json` stays empty after every refresh — a new
+entry is a regression, a stale exclusion, or new upstream coverage,
+never a backlog item to sit on (`bench-maintain` has the decision
+tree). "nu-only = 0" is a verdict-classification statement, not a
+feature-completeness claim: `deferred-<spec>` markers in
+`excluded-ids.json` park out-of-scope specs behind OPEN tracking
+Issues.
+
+The per-fixture operation is unchanged: read the spec and drive the
+verdict to `match-error`, `match-clean`, or `nu-over` by either fixing
+markuplint or recording an `excluded-ids.json` entry (`bench-triage`).
 
 First-time environment setup (Docker, submodule, snapshots) is covered
 by `README.md` here and the `bench-setup` skill.
 
 ## Tasks → skills
 
-| Task                                                                              | Skill               |
-| --------------------------------------------------------------------------------- | ------------------- |
-| Triage a `nu-only` fixture; audit a coverage claim                                | `bench-triage`      |
-| First-time setup, Docker / submodule trouble, repopulating raw snapshots          | `bench-setup`       |
-| New preset virtual rule (`nodeRules`) not firing on the bench                     | `bench-virtual-rule` |
-| Enable a flat rule on the bench, or override its severity                         | `bench-rule-enable` |
-| Sync `<!-- bench-xref -->` blocks onto GitHub Issue bodies; pre-release checklist | `bench-xref`        |
+| Task                                                                                            | Skill                |
+| ------------------------------------------------------------------------------------------------ | -------------------- |
+| Follow up a nu-validator update (submodule / engine); regression-check after markuplint changes | `bench-maintain`     |
+| Triage a `nu-only` fixture; audit a coverage claim                                              | `bench-triage`       |
+| First-time setup, Docker / submodule trouble, repopulating raw snapshots                        | `bench-setup`        |
+| New preset virtual rule (`nodeRules`) not firing on the bench                                   | `bench-virtual-rule` |
+| Enable a flat rule on the bench, or override its severity                                       | `bench-rule-enable`  |
+| Sync `<!-- bench-xref -->` blocks onto GitHub Issue bodies; pre-release checklist               | `bench-xref`         |
