@@ -6,20 +6,29 @@ description: >
   Triage one nu-only fixture from tests/external/snapshots/diff/nu-only.json
   by reading the spec, then drive its verdict to match-error, match-clean,
   or nu-over by either fixing markuplint or recording an excluded-ids.json
-  entry. The core operation of the nu-validator coverage benchmark.
-  Use when reducing the nu-only backlog, when checking a coverage-claim
-  ("markuplint misses X" / "over-detects Y") against the bench, or when
-  classifying a specific fixture.
+  entry. The core per-fixture operation of the nu-validator coverage
+  benchmark. Use when a bench refresh surfaces new nu-only entries
+  (steady state — the backlog is zero, so any entry is fresh intake),
+  when checking a coverage-claim ("markuplint misses X" /
+  "over-detects Y") against the bench, or when classifying a specific
+  fixture.
   Trigger keywords: nu-only, ml-only, coverage gap, bench triage,
   verdict, match-error, match-clean, nu-over, excluded-ids,
   declare nu over-detection, claim audit, audit fixture,
-  reduce nu-only, mark-up valid per spec, spec-cited exclusion.
+  mark-up valid per spec, spec-cited exclusion.
 ---
 
 # nu-validator Bench Triage Skill
 
 Take one nu-only fixture and drive its verdict to a confirmed state.
-Repeat to reduce the nu-only backlog.
+
+The nu-only backlog reached zero on 2026-08-13, so in steady state
+every entry this skill sees is fresh intake — surfaced by a bench
+refresh after an upstream nu update or a markuplint change. Deciding
+*why* the entry appeared (new upstream coverage vs. stale exclusion
+vs. markuplint regression) is `bench-maintain`'s decision tree; this
+skill is the spec-read that settles the verdict once the entry is
+confirmed as new coverage to classify.
 
 Prerequisite: the bench must be runnable on this machine. If commands
 in this skill fail with "no snapshots found" / Docker errors, run
