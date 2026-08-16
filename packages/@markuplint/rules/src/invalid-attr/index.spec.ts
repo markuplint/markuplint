@@ -3107,21 +3107,14 @@ describe('#3734 meta[content] by http-equiv', () => {
 	});
 
 	// ----- unconditional fallback ----------------------------------------
-	// These two http-equiv values have no ConditionalAttributeType entry,
-	// so rules/helpers.ts substitutes "Any" at runtime and any non-empty
-	// content passes. Kept as separate tests (not a loop / test.each) so a
-	// failure immediately names the offending http-equiv value.
+	// `default-style` has no ConditionalAttributeType entry, so
+	// rules/helpers.ts substitutes "Any" at runtime and any non-empty
+	// content passes. (`content-security-policy` used to fall through here
+	// too; it now has its own conditional type — see the "#3942" describe
+	// block below.)
 
 	test('[invalid-attr-issue-3734-010] http-equiv="default-style" content falls through to Any', async () => {
 		const { violations } = await mlRuleTest(rule, '<meta http-equiv="default-style" content="preferred">');
-		expect(violations.length).toBe(0);
-	});
-
-	test('[invalid-attr-issue-3734-011] http-equiv="content-security-policy" content falls through to Any', async () => {
-		const { violations } = await mlRuleTest(
-			rule,
-			'<meta http-equiv="content-security-policy" content="default-src \'self\'">',
-		);
 		expect(violations.length).toBe(0);
 	});
 
@@ -3157,6 +3150,150 @@ describe('#3734 meta[content] by http-equiv', () => {
 		// Same guarantee on the content-type branch.
 		const { violations } = await mlRuleTest(rule, '<meta http-equiv="Content-Type" content="not a mime">');
 		expect(violations.some(v => v.raw === 'not a mime')).toBe(true);
+	});
+});
+
+/*
+ * #3942 — meta[content] http-equiv="content-security-policy" validates the
+ * CSP3 §4 Framework serialized-policy grammar via the `ContentSecurityPolicy`
+ * type, instead of falling through to `Any` as it used to (see #3734 above).
+ */
+describe('#3942 meta[content] http-equiv="content-security-policy"', () => {
+	test('[invalid-attr-issue-3942-001] a single keyword-source directive is valid', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<meta http-equiv="content-security-policy" content="default-src \'self\'">',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-issue-3942-002] an unrecognized directive name is invalid', async () => {
+		// Fixture: html/elements/meta/content-security-policy/csp-invalid-directive-haswarn.html
+		const { violations } = await mlRuleTest(
+			rule,
+			'<meta http-equiv="content-security-policy" content="default-src \'self\'; invalid-directive \'none\'">',
+		);
+		// `raw`/`col` point at the specific offending token
+		// (`invalid-directive`), not the whole content value — the checker
+		// tracks real offsets via `Token`, the same as its sibling
+		// `check-serialized-permissions-policy.ts`.
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				message:
+					'The directive-name part of the "content" attribute expects registered CSP directive name (https://www.w3.org/TR/CSP3/#framework-policy)',
+				line: 1,
+				col: 73,
+				raw: 'invalid-directive',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3942-003] an unrecognized source-expression is invalid', async () => {
+		// Fixture: html/elements/meta/content-security-policy/csp-invalid-source-novalid.html
+		const { violations } = await mlRuleTest(
+			rule,
+			'<meta http-equiv="content-security-policy" content="default-src \'invalid-keyword\'">',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				message:
+					'The source-expression part includes unexpected characters. It expects the source-expression format (https://www.w3.org/TR/CSP3/#framework-policy)',
+				line: 1,
+				col: 65,
+				raw: "'invalid-keyword'",
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3942-004] a non-ASCII host authority is invalid', async () => {
+		// Fixture: html/elements/meta/content-security-policy/csp-non-ascii-novalid.html
+		const { violations } = await mlRuleTest(
+			rule,
+			'<meta http-equiv="content-security-policy" content="default-src \'self\'; img-src https://例え.com">',
+		);
+		// `raw` is the single offending non-ASCII character (`例`) — the ASCII
+		// guard reports the first code point that fails, not the whole
+		// multi-byte host label.
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				message:
+					'The "content" attribute expects the ASCII-only Content Security Policy format (https://www.w3.org/TR/CSP3/#framework-policy)',
+				line: 1,
+				col: 89,
+				raw: '例',
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3942-005] the http-equiv attribute value match is ASCII case-insensitive', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<meta http-equiv="Content-Security-Policy" content="default-src \'invalid-keyword\'">',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				message:
+					'The source-expression part includes unexpected characters. It expects the source-expression format (https://www.w3.org/TR/CSP3/#framework-policy)',
+				line: 1,
+				col: 65,
+				raw: "'invalid-keyword'",
+			},
+		]);
+	});
+
+	test('[invalid-attr-issue-3942-006] an empty policy is valid', async () => {
+		// Fixture: html/elements/meta/content-security-policy/csp-empty-isvalid.html
+		const { violations } = await mlRuleTest(rule, '<meta http-equiv="content-security-policy" content="">');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-issue-3942-007] a comma-separated policy list is valid', async () => {
+		// Fixture: html/elements/meta/content-security-policy/csp-policy-list-isvalid.html
+		const { violations } = await mlRuleTest(
+			rule,
+			'<meta http-equiv="content-security-policy" content="default-src \'self\', script-src \'unsafe-inline\'">',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-issue-3942-008] the sandbox directive with recognized tokens is valid', async () => {
+		// Fixture: html/elements/meta/content-security-policy/csp-sandbox-isvalid.html
+		const { violations } = await mlRuleTest(
+			rule,
+			'<meta http-equiv="content-security-policy" content="sandbox allow-forms allow-popups allow-scripts">',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-issue-3942-009] trusted-types with allow-duplicates is valid', async () => {
+		// Fixture: html/elements/meta/content-security-policy/csp-trusted-types-isvalid.html
+		const { violations } = await mlRuleTest(
+			rule,
+			'<meta http-equiv="content-security-policy" content="trusted-types myPolicy \'allow-duplicates\'">',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-issue-3942-010] a hash-source directive is valid', async () => {
+		// Fixture: html/elements/meta/content-security-policy/csp-with-hash-isvalid.html
+		const { violations } = await mlRuleTest(
+			rule,
+			'<meta http-equiv="content-security-policy" content="script-src \'sha256-47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=\'">',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[invalid-attr-issue-3942-011] a nonce-source directive is valid', async () => {
+		// Fixture: html/elements/meta/content-security-policy/csp-with-nonce-isvalid.html
+		const { violations } = await mlRuleTest(
+			rule,
+			'<meta http-equiv="content-security-policy" content="script-src \'nonce-rAnd0m123\'">',
+		);
+		expect(violations).toStrictEqual([]);
 	});
 });
 
