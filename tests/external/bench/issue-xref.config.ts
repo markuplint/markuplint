@@ -66,13 +66,13 @@ export const xrefMappings: readonly XrefMapping[] = [
 		kind: 'primary',
 		issue: 3942,
 		filter: /^html\/elements\/meta\/content-security-policy\//,
-		note: 'CSP3 grammar (directive names, source-expression tokens, ASCII-only body) is a separate W3C specification. `packages/@markuplint/html-spec/src/spec.meta.jsonc` documents an explicit fall-through: "Other http-equiv values (default-style, content-security-policy) and `name` / `itemprop` fall through to `Any` at runtime." Three fixtures are recorded as `deferred-CSP` in `excluded-ids.json` and flip `nu-only` → `nu-over`; they will flip to `match-error` if/when a `ContentSecurityPolicy` type lands in `@markuplint/types` and is wired into `spec.meta.jsonc` under a new `[http-equiv=\'content-security-policy\' i]` condition.',
+		note: "CSP3 §4 Framework serialized-policy grammar (directive-name registry, source-expression tokens, ASCII-only body) is now validated via the `ContentSecurityPolicy` type in `@markuplint/types`, wired into `spec.meta.jsonc` under `[http-equiv='content-security-policy' i]`. The 3 fixtures previously recorded as `deferred-CSP` in `excluded-ids.json` had those entries removed and now flip `nu-only` → `match-error`.",
 	},
 	{
 		kind: 'primary',
 		issue: 3946,
 		filter: /^html\/elements\/style\/css-property-error-novalid/,
-		note: "CSS syntax and property registry are governed by CSS specifications (CSS Syntax Level 3, CSS Values and Units, individual property specs), not by HTML LS. markuplint's tracked spec scope is HTML LS + WAI-ARIA + URL LS per `.claude/skills/bench-triage/SKILL.md`, so CSS is `deferred-CSS`. One fixture is recorded per-id in `excluded-ids.json#entries[]` and flips `nu-only` → `nu-over`; it will flip to `match-error` if/when a CSS grammar-validation rule lands (css-tree, already a dependency of `packages/@markuplint/types`, is a plausible candidate for syntax-only validation). Parallel deferred spec: #3942 (deferred-CSP).",
+		note: "CSS syntax and property registry are governed by CSS specifications (CSS Syntax Level 3, CSS Values and Units, individual property specs), not by HTML LS. markuplint's tracked spec scope is HTML LS + WAI-ARIA + URL LS per `.claude/skills/bench-triage/SKILL.md`, so CSS is `deferred-CSS`. One fixture is recorded per-id in `excluded-ids.json#entries[]` and flips `nu-only` → `nu-over`; it will flip to `match-error` if/when a CSS grammar-validation rule lands (css-tree, already a dependency of `packages/@markuplint/types`, is a plausible candidate for syntax-only validation).",
 	},
 	// === 2 次群: bench では裏取れない Issue（ステルブロック） ===
 	{
