@@ -7,6 +7,7 @@ import { matched, matches, unmatched } from './match-result.js';
 import { splitUnit, isFloat, isUint, isInt } from './primitive/index.js';
 import { isBCP47 } from './rfc/is-bcp-47.js';
 import { Token, TokenCollection } from './token/index.js';
+import { checkContentSecurityPolicy } from './w3c/check-content-security-policy.js';
 import { checkSerializedPermissionsPolicy } from './w3c/check-serialized-permissions-policy.js';
 import { checkAutoComplete } from './whatwg/check-autocomplete.js';
 import { checkDateTime } from './whatwg/check-datetime/index.js';
@@ -659,11 +660,12 @@ export const defs: Defs = {
 		is: checkMediaQueryList(),
 	},
 
-	// `HTTPEquivRefresh` / `HTTPEquivContentType` are selected at runtime by a
-	// `ConditionalAttributeType[]` entry on `meta.content` in
-	// `@markuplint/html-spec`, keyed by the `http-equiv` value
-	// (`refresh` / `content-type`). Other `http-equiv` values fall through to
-	// `Any` via the resolver in `@markuplint/rules`.
+	// `HTTPEquivRefresh` / `HTTPEquivContentType` / `ContentSecurityPolicy` are
+	// selected at runtime by a `ConditionalAttributeType[]` entry on
+	// `meta.content` in `@markuplint/html-spec`, keyed by the `http-equiv`
+	// value (`refresh` / `content-type` / `content-security-policy`). Other
+	// `http-equiv` values fall through to `Any` via the resolver in
+	// `@markuplint/rules`.
 	HTTPEquivRefresh: {
 		ref: 'https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-http-equiv-refresh',
 		expects: [
@@ -684,6 +686,17 @@ export const defs: Defs = {
 			},
 		],
 		is: checkHTTPEquivContentType(),
+	},
+
+	ContentSecurityPolicy: {
+		ref: 'https://www.w3.org/TR/CSP3/#framework-policy',
+		expects: [
+			{
+				type: 'format',
+				value: 'Content Security Policy (a semicolon-separated list of directives)',
+			},
+		],
+		is: checkContentSecurityPolicy(),
 	},
 
 	ItemProp: {

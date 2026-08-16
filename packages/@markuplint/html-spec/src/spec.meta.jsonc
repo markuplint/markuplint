@@ -45,12 +45,14 @@
 			//                        is an ASCII case-insensitive match for
 			//                        the string 'IE=edge'"
 			//                        https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-http-equiv-x-ua-compatible
-			// Other http-equiv values (default-style, content-security-policy)
-			// and `name` / `itemprop` fall through to "Any" at runtime (see
-			// `rules/helpers.ts` fallback for ConditionalAttributeType[] with
-			// no matching condition). CSP grammar tracked at #3942 — implementing
-			// a `ContentSecurityPolicy` type here flips 3 nu-over fixtures to
-			// match-error (see `deferred-CSP` in `tests/external/snapshots/excluded-ids.json`).
+			//   - content-security-policy → CSP3 §4 Framework serialized-policy
+			//                        grammar (fixed in #3942; the `deferred-CSP`
+			//                        entries in `excluded-ids.json` were removed
+			//                        accordingly)
+			//                        https://www.w3.org/TR/CSP3/#framework-policy
+			// Other http-equiv values (default-style) and `name` / `itemprop`
+			// fall through to "Any" at runtime (see `rules/helpers.ts` fallback
+			// for ConditionalAttributeType[] with no matching condition).
 			"type": [
 				{
 					"condition": "[http-equiv='refresh' i]",
@@ -66,6 +68,10 @@
 						"enum": ["IE=edge"],
 						"caseInsensitive": true
 					}
+				},
+				{
+					"condition": "[http-equiv='content-security-policy' i]",
+					"type": "ContentSecurityPolicy"
 				}
 			],
 			"required": ["[name]", "[http-equiv]", "[itemprop]"],

@@ -1256,6 +1256,7 @@
 				"BaseURL",
 				"BrowsingContextName",
 				"BrowsingContextNameOrKeyword",
+				"ContentSecurityPolicy",
 				"CustomElementName",
 				"DOMID",
 				"DateString",

@@ -55,6 +55,7 @@
 | `MIMEType`                         | `embed[type]`ほか                                      | [WHATWG](https://mimesniff.spec.whatwg.org/#valid-mime-type)                                                       | ✅       |
 | `HTTPEquivRefresh`                 | `http-equiv=refresh`の`meta[content]`                  | [WHATWG](https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-http-equiv-refresh)                       | ✅       |
 | `HTTPEquivContentType`             | `http-equiv=content-type`の`meta[content]`             | [WHATWG](https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-http-equiv-content-type)                  | ✅       |
+| `ContentSecurityPolicy`            | `http-equiv=content-security-policy`の`meta[content]`  | [W3C](https://www.w3.org/TR/CSP3/#framework-policy)                                                                | ✅       |
 | `ItemProp`                         | `itemprop`属性（リストとして）                         | [WHATWG](https://html.spec.whatwg.org/multipage/microdata.html#names:-the-itemprop-attribute)                      | ✅       |
 | `Srcset`                           | `img[srcset]`ほか                                      | [WHATWG](https://html.spec.whatwg.org/multipage/images.html#srcset-attributes)                                     | ✅       |
 | `SourceSizeList`                   | `img[sizes]`ほか                                       | [WHATWG](https://html.spec.whatwg.org/multipage/images.html#sizes-attributes)                                      | ✅       |

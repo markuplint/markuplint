@@ -58,32 +58,21 @@ export const xrefMappings: readonly XrefMapping[] = [
 	},
 	{
 		kind: 'primary',
-		issue: 3921,
-		filter: /^html\/elements\/base\/preceded-by-(link|script)-novalid/,
-		note: 'HTML LS §4.2.3 The base element: "A `base` element, if it has an `href` attribute, must come before any other elements in the tree that have attributes defined as taking URLs." `<link>`/`<script>` are metadata content, so `<base>` remains in `<head>` alongside them and `permitted-contents` does not fire. `head-element-order` treats `<base>` as an unlisted (highest-priority) entry in its default source-order list, so `<link>` (group 5) preceding `<base>` (group 8) also matches. A dedicated rule (`base-element-position`) is proposed.',
-	},
-	{
-		kind: 'primary',
 		issue: 3942,
 		filter: /^html\/elements\/meta\/content-security-policy\//,
-		note: 'CSP3 grammar (directive names, source-expression tokens, ASCII-only body) is a separate W3C specification. `packages/@markuplint/html-spec/src/spec.meta.jsonc` documents an explicit fall-through: "Other http-equiv values (default-style, content-security-policy) and `name` / `itemprop` fall through to `Any` at runtime." Three fixtures are recorded as `deferred-CSP` in `excluded-ids.json` and flip `nu-only` → `nu-over`; they will flip to `match-error` if/when a `ContentSecurityPolicy` type lands in `@markuplint/types` and is wired into `spec.meta.jsonc` under a new `[http-equiv=\'content-security-policy\' i]` condition.',
+		note: "CSP3 §4 Framework serialized-policy grammar (directive-name registry, source-expression tokens, ASCII-only body) is now validated via the `ContentSecurityPolicy` type in `@markuplint/types`, wired into `spec.meta.jsonc` under `[http-equiv='content-security-policy' i]`. The 3 fixtures previously recorded as `deferred-CSP` in `excluded-ids.json` had those entries removed and now flip `nu-only` → `match-error`.",
 	},
 	{
 		kind: 'primary',
 		issue: 3946,
 		filter: /^html\/elements\/style\/css-property-error-novalid/,
-		note: "CSS syntax and property registry are governed by CSS specifications (CSS Syntax Level 3, CSS Values and Units, individual property specs), not by HTML LS. markuplint's tracked spec scope is HTML LS + WAI-ARIA + URL LS per `.claude/skills/bench-triage/SKILL.md`, so CSS is `deferred-CSS`. One fixture is recorded per-id in `excluded-ids.json#entries[]` and flips `nu-only` → `nu-over`; it will flip to `match-error` if/when a CSS grammar-validation rule lands (css-tree, already a dependency of `packages/@markuplint/types`, is a plausible candidate for syntax-only validation). Parallel deferred spec: #3942 (deferred-CSP).",
+		note: "CSS syntax and property registry are governed by CSS specifications (CSS Syntax Level 3, CSS Values and Units, individual property specs), not by HTML LS. markuplint's tracked spec scope is HTML LS + WAI-ARIA + URL LS per `.claude/skills/bench-triage/SKILL.md`, so CSS is `deferred-CSS`. One fixture is recorded per-id in `excluded-ids.json#entries[]` and flips `nu-only` → `nu-over`; it will flip to `match-error` if/when a CSS grammar-validation rule lands (css-tree, already a dependency of `packages/@markuplint/types`, is a plausible candidate for syntax-only validation).",
 	},
 	// === 2 次群: bench では裏取れない Issue（ステルブロック） ===
 	{
 		kind: 'secondary',
 		issue: 3675,
 		reason: 'Internal merge-order blocker; not a benchmark claim. Resolves once dev merges into the branch and the SRIHash type comes along.',
-	},
-	{
-		kind: 'secondary',
-		issue: 263,
-		reason: 'No fixture in the nu-validator suite probes dynamic `input[type]` attribute evaluation.',
 	},
 	{
 		kind: 'secondary',
@@ -104,10 +93,5 @@ export const xrefMappings: readonly XrefMapping[] = [
 		kind: 'secondary',
 		issue: 358,
 		reason: 'Proposed new rule; no fixture in the nu-validator suite probes whitespace inside attribute values.',
-	},
-	{
-		kind: 'secondary',
-		issue: 460,
-		reason: '`permitted-content` on elements containing mutable (preprocessor) children is a markuplint-internal concern; the nu-validator suite has no fixtures with mutable placeholders.',
 	},
 ];
