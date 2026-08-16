@@ -53391,6 +53391,10 @@
 								"enum": ["IE=edge"],
 								"caseInsensitive": true
 							}
+						},
+						{
+							"condition": "[http-equiv='content-security-policy' i]",
+							"type": "ContentSecurityPolicy"
 						}
 					],
 					"required": ["[name]", "[http-equiv]", "[itemprop]"],
