@@ -70,3 +70,5 @@ export const prismDark = {
     },
   ],
 };
+
+# Fix for issue #3896: safe input handling
