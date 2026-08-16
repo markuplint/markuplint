@@ -58,12 +58,6 @@ export const xrefMappings: readonly XrefMapping[] = [
 	},
 	{
 		kind: 'primary',
-		issue: 3921,
-		filter: /^html\/elements\/base\/preceded-by-(link|script)-novalid/,
-		note: 'HTML LS §4.2.3 The base element: "A `base` element, if it has an `href` attribute, must come before any other elements in the tree that have attributes defined as taking URLs." `<link>`/`<script>` are metadata content, so `<base>` remains in `<head>` alongside them and `permitted-contents` does not fire. `head-element-order` treats `<base>` as an unlisted (highest-priority) entry in its default source-order list, so `<link>` (group 5) preceding `<base>` (group 8) also matches. A dedicated rule (`base-element-position`) is proposed.',
-	},
-	{
-		kind: 'primary',
 		issue: 3942,
 		filter: /^html\/elements\/meta\/content-security-policy\//,
 		note: "CSP3 §4 Framework serialized-policy grammar (directive-name registry, source-expression tokens, ASCII-only body) is now validated via the `ContentSecurityPolicy` type in `@markuplint/types`, wired into `spec.meta.jsonc` under `[http-equiv='content-security-policy' i]`. The 3 fixtures previously recorded as `deferred-CSP` in `excluded-ids.json` had those entries removed and now flip `nu-only` → `match-error`.",
@@ -79,11 +73,6 @@ export const xrefMappings: readonly XrefMapping[] = [
 		kind: 'secondary',
 		issue: 3675,
 		reason: 'Internal merge-order blocker; not a benchmark claim. Resolves once dev merges into the branch and the SRIHash type comes along.',
-	},
-	{
-		kind: 'secondary',
-		issue: 263,
-		reason: 'No fixture in the nu-validator suite probes dynamic `input[type]` attribute evaluation.',
 	},
 	{
 		kind: 'secondary',
@@ -104,10 +93,5 @@ export const xrefMappings: readonly XrefMapping[] = [
 		kind: 'secondary',
 		issue: 358,
 		reason: 'Proposed new rule; no fixture in the nu-validator suite probes whitespace inside attribute values.',
-	},
-	{
-		kind: 'secondary',
-		issue: 460,
-		reason: '`permitted-content` on elements containing mutable (preprocessor) children is a markuplint-internal concern; the nu-validator suite has no fixtures with mutable placeholders.',
 	},
 ];
