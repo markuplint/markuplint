@@ -454,7 +454,9 @@
 			"selector": ":where(head)",
 			"rules": {
 				"disallowed-element": {
-					"value": ["meta[charset] ~ meta[charset]"]
+					"value": ["meta[charset] ~ meta[charset]"],
+					"reason": "There must not be more than one meta element with a charset attribute per document. https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-charset",
+					"reasonOnly": true
 				}
 			}
 		},
@@ -472,7 +474,9 @@
 			"selector": ":where(head)",
 			"rules": {
 				"disallowed-element": {
-					"value": ["meta[name=\"description\" i] ~ meta[name=\"description\" i]"]
+					"value": ["meta[name=\"description\" i] ~ meta[name=\"description\" i]"],
+					"reason": "There must not be more than one meta element where the name attribute value is an ASCII case-insensitive match for \"description\" per document. https://html.spec.whatwg.org/multipage/semantics.html#standard-metadata-names",
+					"reasonOnly": true
 				}
 			}
 		},
@@ -494,7 +498,9 @@
 					"value": [
 						"meta[charset] ~ meta[http-equiv=\"content-type\" i]",
 						"meta[http-equiv=\"content-type\" i] ~ meta[charset]"
-					]
+					],
+					"reason": "A document must not contain both a meta element with an http-equiv attribute in the Encoding declaration state and a meta element with the charset attribute. https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-charset",
+					"reasonOnly": true
 				}
 			}
 		},
@@ -514,7 +520,9 @@
 			"selector": ":where(head)",
 			"rules": {
 				"disallowed-element": {
-					"value": [":is(link, script) ~ base"]
+					"value": [":is(link, script) ~ base"],
+					"reason": "A base element must come before any other elements in the tree that have attributes defined as taking URLs, except the html element. https://html.spec.whatwg.org/multipage/semantics.html#the-base-element",
+					"reasonOnly": true
 				}
 			}
 		},
