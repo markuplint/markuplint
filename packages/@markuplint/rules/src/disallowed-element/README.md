@@ -57,3 +57,22 @@ If specified to `nodeRules` or `childNodeRules`, It searches the element from ch
   ]
 }
 ```
+
+The reported message embeds the raw selector by default (e.g. `The "small" element is disallowed`). Set [`reason`](/docs/configuration/properties#rules) to append a human-readable explanation, or add `reasonOnly: true` to replace the message with `reason` entirely instead of appending it:
+
+```json class=config
+{
+  "nodeRules": [
+    {
+      "selector": "h1, h2, h3, h4, h5, h6",
+      "rules": {
+        "disallowed-element": {
+          "value": ["small"],
+          "reason": "The small element must not be used for subheadings.",
+          "reasonOnly": true
+        }
+      }
+    }
+  ]
+}
+```

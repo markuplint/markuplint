@@ -405,6 +405,41 @@ describe('mergeRule', () => {
 		});
 	});
 
+	test('reasonOnly is overridden by b', () => {
+		expect(
+			mergeRule(
+				{ value: true, reason: 'old', reasonOnly: false },
+				{ value: true, reason: 'new', reasonOnly: true },
+			),
+		).toStrictEqual({
+			value: true,
+			reason: 'new',
+			reasonOnly: true,
+		});
+	});
+
+	test('reasonOnly is preserved from a when b has no reasonOnly', () => {
+		expect(mergeRule({ value: true, reason: 'base', reasonOnly: true }, { severity: 'warning' })).toStrictEqual({
+			value: true,
+			severity: 'warning',
+			reason: 'base',
+			reasonOnly: true,
+		});
+	});
+
+	test('reasonOnly: false in b overrides reasonOnly: true in a', () => {
+		expect(
+			mergeRule(
+				{ value: true, reason: 'old', reasonOnly: true },
+				{ value: true, reason: 'new', reasonOnly: false },
+			),
+		).toStrictEqual({
+			value: true,
+			reason: 'new',
+			reasonOnly: false,
+		});
+	});
+
 	test('{value} + shorthand', () => {
 		expect(
 			mergeRule(

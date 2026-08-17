@@ -44,6 +44,20 @@ describe('Named nodeRules integration', () => {
 			expect(smallViolation!.specConformance).toBe('normative');
 		});
 
+		it('reports no-small-in-heading with its configured reason', async () => {
+			const { violations } = await mlTest(
+				'<!doctype html><html><head><meta charset="UTF-8"></head><body><h1><small>sub</small></h1></body></html>',
+				{
+					extends: ['markuplint:html-standard'],
+				},
+			);
+			const smallViolation = violations.find(v => v.name === 'html-standard/no-small-in-heading');
+			expect(smallViolation).toBeDefined();
+			expect(smallViolation!.reason).toBe(
+				'The small element must not be used for subheadings. https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-small-element',
+			);
+		});
+
 		it('reports html-standard/no-base-after-link-or-script when <base> follows <link>', async () => {
 			const { violations } = await mlTest(
 				'<!doctype html><html><head><meta charset="UTF-8"><title>t</title>' +
@@ -82,6 +96,73 @@ describe('Named nodeRules integration', () => {
 			);
 			const baseViolation = violations.find(v => v.name === 'html-standard/no-base-after-link-or-script');
 			expect(baseViolation).toBeUndefined();
+		});
+
+		it('reports html-standard/no-duplicate-charset with a reasonOnly message instead of the raw selector', async () => {
+			const { violations } = await mlTest(
+				'<!doctype html><html><head><meta charset="UTF-8"><meta charset="UTF-8"><title>t</title></head><body></body></html>',
+				{
+					extends: ['markuplint:html-standard'],
+				},
+			);
+			const charsetViolation = violations.find(v => v.name === 'html-standard/no-duplicate-charset');
+			expect(charsetViolation).toBeDefined();
+			expect(charsetViolation!.ruleId).toBe('disallowed-element');
+			expect(charsetViolation!.message).toBe(
+				'There must not be more than one meta element with a charset attribute per document. https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-charset',
+			);
+			expect(charsetViolation).not.toHaveProperty('reason');
+		});
+
+		it('reports html-standard/no-duplicate-description with a reasonOnly message instead of the raw selector', async () => {
+			const { violations } = await mlTest(
+				'<!doctype html><html><head><meta charset="UTF-8"><title>t</title>' +
+					'<meta name="description" content="a"><meta name="description" content="b"></head><body></body></html>',
+				{
+					extends: ['markuplint:html-standard'],
+				},
+			);
+			const descriptionViolation = violations.find(v => v.name === 'html-standard/no-duplicate-description');
+			expect(descriptionViolation).toBeDefined();
+			expect(descriptionViolation!.ruleId).toBe('disallowed-element');
+			expect(descriptionViolation!.message).toBe(
+				'There must not be more than one meta element where the name attribute value is an ASCII case-insensitive match for "description" per document. https://html.spec.whatwg.org/multipage/semantics.html#standard-metadata-names',
+			);
+			expect(descriptionViolation).not.toHaveProperty('reason');
+		});
+
+		it('reports html-standard/no-charset-http-equiv-coexist with a reasonOnly message instead of the raw selector', async () => {
+			const { violations } = await mlTest(
+				'<!doctype html><html><head><meta charset="UTF-8">' +
+					'<meta http-equiv="content-type" content="text/html; charset=UTF-8"><title>t</title></head><body></body></html>',
+				{
+					extends: ['markuplint:html-standard'],
+				},
+			);
+			const coexistViolation = violations.find(v => v.name === 'html-standard/no-charset-http-equiv-coexist');
+			expect(coexistViolation).toBeDefined();
+			expect(coexistViolation!.ruleId).toBe('disallowed-element');
+			expect(coexistViolation!.message).toBe(
+				'A document must not contain both a meta element with an http-equiv attribute in the Encoding declaration state and a meta element with the charset attribute. https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-charset',
+			);
+			expect(coexistViolation).not.toHaveProperty('reason');
+		});
+
+		it('reports html-standard/no-base-after-link-or-script with a reasonOnly message instead of the raw selector', async () => {
+			const { violations } = await mlTest(
+				'<!doctype html><html><head><meta charset="UTF-8"><title>t</title>' +
+					'<link rel="stylesheet" href="a.css"><base href="/"></head><body></body></html>',
+				{
+					extends: ['markuplint:html-standard'],
+				},
+			);
+			const baseViolation = violations.find(v => v.name === 'html-standard/no-base-after-link-or-script');
+			expect(baseViolation).toBeDefined();
+			expect(baseViolation!.ruleId).toBe('disallowed-element');
+			expect(baseViolation!.message).toBe(
+				'A base element must come before any other elements in the tree that have attributes defined as taking URLs, except the html element. https://html.spec.whatwg.org/multipage/semantics.html#the-base-element',
+			);
+			expect(baseViolation).not.toHaveProperty('reason');
 		});
 
 		it('reports html-standard/script-content for malformed importmap', async () => {
