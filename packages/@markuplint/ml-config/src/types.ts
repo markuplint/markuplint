@@ -482,6 +482,8 @@ export type RuleConfig<T extends RuleConfigValue, O extends PlainData = undefine
 	readonly options?: Readonly<O>;
 	/** A human-readable reason for this rule configuration, included in violation messages */
 	readonly reason?: string;
+	/** When `true`, replaces the violation message with `reason` entirely instead of appending it. Requires `reason` to be set. */
+	readonly reasonOnly?: boolean;
 };
 
 /**
@@ -732,6 +734,7 @@ export type RuleInfo<T extends RuleConfigValue, O extends PlainData = undefined>
 	readonly value: Readonly<T>;
 	readonly options: Readonly<O>;
 	readonly reason?: string;
+	readonly reasonOnly?: boolean;
 };
 
 /**

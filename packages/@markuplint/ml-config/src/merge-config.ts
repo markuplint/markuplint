@@ -82,7 +82,7 @@ export function mergeConfig(a: Config, b?: Config): OptimizedConfig {
  * If `b` is `false`, the rule is unconditionally disabled.
  * If `b` is a direct value (including arrays), it overrides `a`.
  * If both are full config objects, their properties are merged
- * (severity/value/reason: right-side wins, options: shallow-merged).
+ * (severity/value/reason/reasonOnly: right-side wins, options: shallow-merged).
  *
  * Array values intentionally override rather than concatenate: the more
  * specific config replaces the rule's value entirely, matching ESLint and
@@ -125,11 +125,13 @@ export function mergeRule(a: Nullable<AnyRule>, b: AnyRule): AnyRule {
 	const value = oB.value ?? (isRuleConfigValue(oA) ? oA : oA.value);
 	const options = mergeObject(isRuleConfigValue(oA) ? undefined : oA.options, oB.options);
 	const reason = oB.reason ?? (isRuleConfigValue(oA) ? undefined : oA.reason);
+	const reasonOnly = oB.reasonOnly ?? (isRuleConfigValue(oA) ? undefined : oA.reasonOnly);
 	const res = {
 		severity,
 		value,
 		options,
 		reason,
+		reasonOnly,
 	};
 	deleteUndefProp(res);
 	return res;
