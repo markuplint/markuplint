@@ -569,6 +569,7 @@ type Rule<T, O> =
       value?: T;
       option?: O;
       reason?: string;
+      reasonOnly?: boolean;
     };
 
 type NamedRuleGroup = {
