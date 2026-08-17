@@ -62,3 +62,22 @@ HTML標準に準拠しているかどうかは[`permitted-contents`](../permitte
   ]
 }
 ```
+
+報告されるメッセージには、既定でセレクターがそのまま埋め込まれます(例: `The "small" element is disallowed`)。[`reason`](/docs/configuration/properties#rules)を設定すると人間が読みやすい説明文を追記でき、`reasonOnly: true`を加えるとメッセージを追記ではなく`reason`の内容で完全に置き換えられます。
+
+```json class=config
+{
+  "nodeRules": [
+    {
+      "selector": "h1, h2, h3, h4, h5, h6",
+      "rules": {
+        "disallowed-element": {
+          "value": ["small"],
+          "reason": "small要素を見出しの補足として使用してはいけません。",
+          "reasonOnly": true
+        }
+      }
+    }
+  ]
+}
+```

@@ -298,3 +298,82 @@ test('[disallowed-element-issue-3634-007] meta description case insensitive matc
 		}),
 	]);
 });
+
+test('[disallowed-element-issue-3815-001] reasonOnly replaces the selector-based message with reason', async () => {
+	const { violations } = await mlRuleTest(rule, '<head><meta charset="UTF-8"><meta charset="UTF-8"></head>', {
+		rule: {
+			value: ['meta[charset] ~ meta[charset]'],
+			reason: 'More than one meta charset is disallowed',
+			reasonOnly: true,
+		},
+	});
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 29,
+			raw: '<meta charset="UTF-8">',
+			message: 'More than one meta charset is disallowed',
+		},
+	]);
+});
+
+test('[disallowed-element-issue-3815-002] reason without reasonOnly still appends to the selector-based message', async () => {
+	const { violations } = await mlRuleTest(rule, '<head><meta charset="UTF-8"><meta charset="UTF-8"></head>', {
+		rule: {
+			value: ['meta[charset] ~ meta[charset]'],
+			reason: 'More than one meta charset is disallowed',
+		},
+	});
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 29,
+			raw: '<meta charset="UTF-8">',
+			message: 'The "meta[charset] ~ meta[charset]" element is disallowed',
+			reason: 'More than one meta charset is disallowed',
+		},
+	]);
+});
+
+test('[disallowed-element-issue-3815-003] node-level severity override on a globally-matched element is respected', async () => {
+	const { violations } = await mlRuleTest(rule, '<div><h1><small>Sub-title</small></h1></div>', {
+		rule: ['small'],
+		nodeRule: [
+			{
+				selector: 'small',
+				rule: {
+					severity: 'warning',
+				},
+			},
+		],
+	});
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 10,
+			raw: '<small>',
+			message: 'The "small" element is disallowed',
+		},
+	]);
+});
+
+test('[disallowed-element-issue-3815-004] reasonOnly without reason falls back to the selector-based message', async () => {
+	const { violations } = await mlRuleTest(rule, '<head><meta charset="UTF-8"><meta charset="UTF-8"></head>', {
+		rule: {
+			value: ['meta[charset] ~ meta[charset]'],
+			reasonOnly: true,
+		},
+	});
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 29,
+			raw: '<meta charset="UTF-8">',
+			message: 'The "meta[charset] ~ meta[charset]" element is disallowed',
+		},
+	]);
+});
