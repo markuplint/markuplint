@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
 
-import { applyRuleAliases } from './rule-aliases.js';
+import { applyRuleAliases, applyRuleAliasesToConfig } from './rule-aliases.js';
 
 import type { RuleAliasTable } from './rule-aliases.js';
 
@@ -92,5 +92,61 @@ test('[rule-aliases-valid-003] `undefined` rules passes through as `undefined` w
 		'old-name': { expand: () => ({ 'new-name': true }), targets: ['new-name'] },
 	});
 	expect(rules).toBeUndefined();
+	expect(warnings).toStrictEqual([]);
+});
+
+test('[rule-aliases-invalid-006] applyRuleAliasesToConfig rewrites a deprecated name inside a nodeRules entry', () => {
+	const table: RuleAliasTable = {
+		'old-name': { expand: rule => ({ 'new-name': rule }), targets: ['new-name'] },
+	};
+	const { config, warnings } = applyRuleAliasesToConfig(
+		{
+			nodeRules: [{ selector: 'img', rules: { 'old-name': 'role' } }],
+		},
+		table,
+	);
+	expect(config.nodeRules).toStrictEqual([{ selector: 'img', rules: { 'new-name': 'role' } }]);
+	expect(warnings).toStrictEqual([{ deprecatedName: 'old-name', replacedBy: ['new-name'] }]);
+});
+
+test('[rule-aliases-invalid-007] applyRuleAliasesToConfig rewrites a deprecated name inside a childNodeRules entry', () => {
+	const table: RuleAliasTable = {
+		'old-name': { expand: rule => ({ 'new-name': rule }), targets: ['new-name'] },
+	};
+	const { config, warnings } = applyRuleAliasesToConfig(
+		{
+			childNodeRules: [{ selector: '.ignore', rules: { 'old-name': false } }],
+		},
+		table,
+	);
+	expect(config.childNodeRules).toStrictEqual([{ selector: '.ignore', rules: { 'new-name': false } }]);
+	expect(warnings).toStrictEqual([{ deprecatedName: 'old-name', replacedBy: ['new-name'] }]);
+});
+
+test('[rule-aliases-invalid-008] applyRuleAliasesToConfig combines warnings from all three locations', () => {
+	const table: RuleAliasTable = {
+		'old-name': { expand: rule => ({ 'new-name': rule }), targets: ['new-name'] },
+	};
+	const { warnings } = applyRuleAliasesToConfig(
+		{
+			rules: { 'old-name': true },
+			nodeRules: [{ selector: 'img', rules: { 'old-name': 'role' } }],
+		},
+		table,
+	);
+	expect(warnings).toStrictEqual([
+		{ deprecatedName: 'old-name', replacedBy: ['new-name'] },
+		{ deprecatedName: 'old-name', replacedBy: ['new-name'] },
+	]);
+});
+
+test('[rule-aliases-valid-004] applyRuleAliasesToConfig leaves nodeRules without a deprecated name untouched', () => {
+	const { config, warnings } = applyRuleAliasesToConfig(
+		{
+			nodeRules: [{ selector: 'img', rules: { 'no-duplicate-attr': true } }],
+		},
+		{},
+	);
+	expect(config.nodeRules).toStrictEqual([{ selector: 'img', rules: { 'no-duplicate-attr': true } }]);
 	expect(warnings).toStrictEqual([]);
 });

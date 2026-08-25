@@ -1,4 +1,4 @@
-import type { AnyRule, Rules } from './types.js';
+import type { AnyRule, ChildNodeRule, Config, NodeRule, Rules } from './types.js';
 
 /**
  * Expands a deprecated rule name's resolved configuration into the
@@ -63,6 +63,11 @@ export type RuleAliasWarning = {
  * for that replacement are combined with the same right-side-wins semantics
  * `mergeRule` uses elsewhere, ordered by the deprecated names' order in
  * `rules`.
+ *
+ * Only rewrites the top-level `rules` map. A `nodeRules`/`childNodeRules`
+ * entry's own `rules` (always base-rule-only, never a named group) needs the
+ * same treatment — see {@link applyRuleAliasesToConfig}, which applies this
+ * function to all three locations a rule name can appear in a `Config`.
  */
 export function applyRuleAliases(
 	rules: Rules | undefined,
@@ -73,31 +78,104 @@ export function applyRuleAliases(
 	}
 
 	const warnings: RuleAliasWarning[] = [];
-	const result: Record<string, AnyRule> = {};
 	const named: Record<string, unknown> = {};
+	const baseRules: Record<string, AnyRule> = {};
 
 	for (const [key, value] of Object.entries(rules)) {
 		if (key.includes('/')) {
 			named[key] = value;
-			continue;
+		} else {
+			baseRules[key] = value as AnyRule;
 		}
+	}
+
+	const expandedBaseRules = expandBaseRules(baseRules, table, warnings);
+
+	return { rules: { ...expandedBaseRules, ...named } as Rules, warnings };
+}
+
+/**
+ * Rewrites deprecated rule names throughout an entire {@link Config}: its
+ * top-level `rules`, and the `rules` of every `nodeRules` and
+ * `childNodeRules` entry. Each location is rewritten independently — a
+ * `nodeRules` entry's `rules` has no named-group concern (that type doesn't
+ * accept them), so it goes straight through {@link expandBaseRules}.
+ *
+ * Call this once, on the fully `extends`-merged `Config`, before it reaches
+ * `convertRuleset`/`resolveRules` — same placement rationale as
+ * {@link applyRuleAliases}.
+ */
+export function applyRuleAliasesToConfig<C extends Config>(
+	config: C,
+	table: RuleAliasTable,
+): { readonly config: C; readonly warnings: readonly RuleAliasWarning[] } {
+	const warnings: RuleAliasWarning[] = [];
+
+	const { rules, warnings: topLevelWarnings } = applyRuleAliases(config.rules, table);
+	warnings.push(...topLevelWarnings);
+
+	const nodeRules = config.nodeRules?.map(nodeRule => rewriteNodeRuleLike(nodeRule, table, warnings));
+	const childNodeRules = config.childNodeRules?.map(childNodeRule =>
+		rewriteNodeRuleLike(childNodeRule, table, warnings),
+	);
+
+	return {
+		config: {
+			...config,
+			...(rules !== undefined && { rules }),
+			...(nodeRules !== undefined && { nodeRules }),
+			...(childNodeRules !== undefined && { childNodeRules }),
+		} as C,
+		warnings,
+	};
+}
+
+function rewriteNodeRuleLike<T extends NodeRule | ChildNodeRule>(
+	nodeRuleLike: T,
+	table: RuleAliasTable,
+	warnings: RuleAliasWarning[],
+): T {
+	if (!nodeRuleLike.rules) {
+		return nodeRuleLike;
+	}
+	const localWarnings: RuleAliasWarning[] = [];
+	const rules = expandBaseRules(nodeRuleLike.rules, table, localWarnings);
+	warnings.push(...localWarnings);
+	return { ...nodeRuleLike, rules };
+}
+
+/**
+ * Core expansion shared by every call site: rewrites a flat base-rules map
+ * (no named-group entries) through `table`, appending one
+ * {@link RuleAliasWarning} per deprecated key actually used to `warnings`.
+ *
+ * If the caller also configured a replacement directly, that explicit
+ * setting wins over anything inferred from the alias (checked against the
+ * *original* map, so this is independent of key iteration order). Two
+ * different deprecated keys that expand into the same replacement are
+ * combined with the same right-side-wins semantics `mergeRule` uses
+ * elsewhere.
+ */
+function expandBaseRules(
+	baseRules: Readonly<Record<string, AnyRule>>,
+	table: RuleAliasTable,
+	warnings: RuleAliasWarning[],
+): Record<string, AnyRule> {
+	const result: Record<string, AnyRule> = {};
+
+	for (const [key, value] of Object.entries(baseRules)) {
 		const entry = table[key];
 		if (!entry) {
-			// A plain (non-deprecated) key can never have been written to
-			// `result` already: `Object.entries` yields each key once, and
-			// the alias branch below only ever writes to *other* keys
-			// (`newName`), skipping any that coincide with a literal key in
-			// the original `rules` — see the `newName in rules` check.
-			result[key] = value as AnyRule;
+			result[key] = value;
 			continue;
 		}
 
-		const expanded = entry.expand(value as AnyRule);
+		const expanded = entry.expand(value);
 		const replacedBy = Object.keys(expanded);
 		warnings.push({ deprecatedName: key, replacedBy });
 
 		for (const [newName, newValue] of Object.entries(expanded)) {
-			if (newName in rules) {
+			if (newName in baseRules) {
 				// The user also configured the replacement directly — that
 				// explicit setting wins over anything inferred from the alias.
 				continue;
@@ -106,17 +184,17 @@ export function applyRuleAliases(
 		}
 	}
 
-	return { rules: { ...result, ...named } as Rules, warnings };
+	return result;
 }
 
 /**
  * Combines two `AnyRule` values for the same target key using the simplest
- * rule that keeps `applyRuleAliases` a pure function of its input without
- * importing `mergeRule` (which would pull in `merge-config.ts`'s full
- * shallow-merge machinery for what is, in practice, almost always a single
- * writer per key): the later one replaces the earlier one when both are
- * `RuleConfigValue`s; when both are objects, they are shallow-merged with
- * the later one's keys winning.
+ * rule that keeps this module's expansion a pure function of its input
+ * without importing `mergeRule` (which would pull in `merge-config.ts`'s
+ * full shallow-merge machinery for what is, in practice, almost always a
+ * single writer per key): the later one replaces the earlier one when both
+ * are `RuleConfigValue`s; when both are objects, they are shallow-merged
+ * with the later one's keys winning.
  */
 function mergeExpanded(existing: AnyRule | undefined, incoming: AnyRule): AnyRule {
 	if (existing === undefined) {
