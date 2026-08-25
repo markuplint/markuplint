@@ -10,12 +10,11 @@ Validate the content model and structural constraints of HTML elements according
 This rule warns when:
 
 - A child element or text node is not allowed by the parent's content model
-- An element appears as a descendant of a forbidden ancestor (e.g., `<header>` inside `<header>`)
-- A required ancestor is missing (e.g., `<area>` outside `<map>`)
-- A sibling-unique attribute appears on multiple elements of the same type (e.g., multiple `<track default>`)
 - An element that requires non-empty text content is empty or contains only whitespace (e.g., `<title>`, `<option>` without `label`)
 
 It is possible to make the structure robust by setting element relationships on template engines such as custom elements and Vue.
+
+A few related structural constraints are separate rules: an element appearing as a descendant of a forbidden ancestor is [`no-disallowed-ancestor`](/docs/rules/no-disallowed-ancestor)'s concern (e.g., `<address>` inside `<address>`), a missing required ancestor is [`require-ancestor`](/docs/rules/require-ancestor)'s (e.g., `<area>` outside `<map>`), and a sibling-unique attribute repeated on multiple elements of the same type is [`no-duplicate-sibling-attr`](/docs/rules/no-duplicate-sibling-attr)'s (e.g., multiple `<track default>`).
 
 ❌ Examples of **incorrect** code for this rule
 
@@ -32,7 +31,7 @@ It is possible to make the structure robust by setting element relationships on 
 	<tbody><tr><td>Body cell<td></tr></tbody>
 </table>
 
-<!-- Forbidden ancestor: header must not appear inside header or footer -->
+<!-- header's content model disallows a nested header regardless of ancestry -->
 <header>
 	<div>
 		<header>Not allowed nested header</header>

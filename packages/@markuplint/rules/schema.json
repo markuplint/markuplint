@@ -126,6 +126,9 @@
 				"no-deprecated-role": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-deprecated-role/schema.json"
 				},
+				"no-disallowed-ancestor": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-disallowed-ancestor/schema.json"
+				},
 				"no-disallowed-attr": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-disallowed-attr/schema.json"
 				},
@@ -140,6 +143,9 @@
 				},
 				"no-duplicate-id": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-duplicate-id/schema.json"
+				},
+				"no-duplicate-sibling-attr": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-duplicate-sibling-attr/schema.json"
 				},
 				"no-duplicate-visible-main": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-duplicate-visible-main/schema.json"
@@ -254,6 +260,9 @@
 				},
 				"require-adjacent-popover": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/require-adjacent-popover/schema.json"
+				},
+				"require-ancestor": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/require-ancestor/schema.json"
 				},
 				"require-aria-prop": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/require-aria-prop/schema.json"

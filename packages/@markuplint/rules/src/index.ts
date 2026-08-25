@@ -42,11 +42,13 @@ import NoDeprecatedAriaProp from './no-deprecated-aria-prop/index.js';
 import NoDeprecatedAttr from './no-deprecated-attr/index.js';
 import NoDeprecatedElement from './no-deprecated-element/index.js';
 import NoDeprecatedRole from './no-deprecated-role/index.js';
+import NoDisallowedAncestor from './no-disallowed-ancestor/index.js';
 import NoDisallowedAttr from './no-disallowed-attr/index.js';
 import NoDuplicateAttr from './no-duplicate-attr/index.js';
 import NoDuplicateAutofocus from './no-duplicate-autofocus/index.js';
 import NoDuplicateDt from './no-duplicate-dt/index.js';
 import NoDuplicateId from './no-duplicate-id/index.js';
+import NoDuplicateSiblingAttr from './no-duplicate-sibling-attr/index.js';
 import NoDuplicateVisibleMain from './no-duplicate-visible-main/index.js';
 import NoEmptyPalpableContent from './no-empty-palpable-content/index.js';
 import NoEventHandlerAttr from './no-event-handler-attr/index.js';
@@ -82,6 +84,7 @@ import PlaceholderLabelOption from './placeholder-label-option/index.js';
 import ProgressValueBounds from './progress-value-bounds/index.js';
 import RequireAccessibleName from './require-accessible-name/index.js';
 import RequireAdjacentPopover from './require-adjacent-popover/index.js';
+import RequireAncestor from './require-ancestor/index.js';
 import RequireAriaProp from './require-aria-prop/index.js';
 import RequireAttr from './require-attr/index.js';
 import RequireDatetime from './require-datetime/index.js';
@@ -137,11 +140,13 @@ const rules = {
 	'no-deprecated-attr': NoDeprecatedAttr,
 	'no-deprecated-element': NoDeprecatedElement,
 	'no-deprecated-role': NoDeprecatedRole,
+	'no-disallowed-ancestor': NoDisallowedAncestor,
 	'no-disallowed-attr': NoDisallowedAttr,
 	'no-duplicate-attr': NoDuplicateAttr,
 	'no-duplicate-autofocus': NoDuplicateAutofocus,
 	'no-duplicate-dt': NoDuplicateDt,
 	'no-duplicate-id': NoDuplicateId,
+	'no-duplicate-sibling-attr': NoDuplicateSiblingAttr,
 	'no-duplicate-visible-main': NoDuplicateVisibleMain,
 	'no-empty-palpable-content': NoEmptyPalpableContent,
 	'no-event-handler-attr': NoEventHandlerAttr,
@@ -177,6 +182,7 @@ const rules = {
 	'progress-value-bounds': ProgressValueBounds,
 	'require-accessible-name': RequireAccessibleName,
 	'require-adjacent-popover': RequireAdjacentPopover,
+	'require-ancestor': RequireAncestor,
 	'require-aria-prop': RequireAriaProp,
 	'require-attr': RequireAttr,
 	'require-datetime': RequireDatetime,
