@@ -5,6 +5,111 @@ import type { MLASTParseErrorCode } from '@markuplint/ml-ast';
 import type { PlainData, Report, RuleConfigValue, Severity } from '@markuplint/ml-config';
 
 /**
+ * The specification, standard, or guidance document a rule's check derives from.
+ * A rule may cite more than one (e.g. a check spanning HTML LS and WAI-ARIA).
+ *
+ * - `'html'` — WHATWG HTML Living Standard
+ * - `'wai-aria'` — W3C WAI-ARIA
+ * - `'aria-in-html'` — W3C ARIA in HTML
+ * - `'dpub-aria'` — W3C Digital Publishing WAI-ARIA Module
+ * - `'graphics-aria'` — W3C Graphics ARIA
+ * - `'accname'` — W3C Accessible Name and Description Computation
+ * - `'apg'` — W3C ARIA Authoring Practices Guide (non-normative)
+ * - `'wcag'` — W3C Web Content Accessibility Guidelines (success criteria or
+ *   non-normative techniques — see {@link RuleConformanceLevel})
+ * - `'bcd'` — MDN `browser-compat-data` (a factual dataset, not a specification)
+ * - `'none'` — no spec basis; a tool-defined or user-configurable check
+ */
+export type RuleConformanceSource =
+	| 'html'
+	| 'wai-aria'
+	| 'aria-in-html'
+	| 'dpub-aria'
+	| 'graphics-aria'
+	| 'accname'
+	| 'apg'
+	| 'wcag'
+	| 'bcd'
+	| 'none';
+
+/**
+ * How strongly a rule's check is backed by its {@link RuleConformanceSource}s.
+ * This is the basis {@link deriveDefaultSeverityFromConformanceLevel} uses to
+ * derive the policy default severity — see that function for the mapping.
+ *
+ * - `'must'` — a normative MUST/MUST NOT (including HTML parse errors, and a
+ *   WCAG success criterion violation)
+ * - `'should'` — a normative SHOULD/SHOULD NOT
+ * - `'non-normative'` — a spec Note, an APG practice, or a WCAG technique
+ * - `'factual'` — checked against factual data (e.g. `bcd`) rather than a
+ *   conformance requirement
+ * - `'opinion'` — the spec permits the pattern; the rule enforces a tool or
+ *   team preference
+ * - `'configurable'` — a user-defined constraint with no spec basis; the rule
+ *   is a mechanism the user configures, not a fixed check
+ */
+export type RuleConformanceLevel = 'must' | 'should' | 'non-normative' | 'factual' | 'opinion' | 'configurable';
+
+/**
+ * A citation for a rule's {@link RuleConformance}: either a bare spec URL, or
+ * a WCAG success criterion reference (`sc`/`level`) alongside its URL.
+ */
+export type RuleConformanceCite =
+	| string
+	| {
+			readonly url: string;
+			readonly sc?: string;
+			readonly level?: 'A' | 'AA' | 'AAA';
+	  };
+
+/**
+ * A rule's specification-conformance classification: what it's checking
+ * against, how strongly that source requires it, and where to read the
+ * requirement. Distinct from `@markuplint/ml-config`'s `SpecConformance`
+ * (`'normative' | 'non-normative'`), which is a coarse, optional tag a
+ * *user* attaches to their own named nodeRule groups for reporting and never
+ * affects severity. This classification is authored by the *rule*, is (in
+ * the medium term) mandatory on every built-in rule, and is the basis for
+ * the rule's default severity and its eligibility for spec-conformance
+ * presets such as `markuplint:html-standard`.
+ */
+export type RuleConformance = {
+	readonly sources: readonly RuleConformanceSource[];
+	readonly level: RuleConformanceLevel;
+	readonly cites: readonly RuleConformanceCite[];
+};
+
+/**
+ * The policy-derived default `Severity` for each {@link RuleConformanceLevel}.
+ * `'configurable'` has no policy value — a rule at that level either omits
+ * `defaultSeverity` (falling back to the engine's own `'error'` default,
+ * matching `no-restricted-*`-style rules that are inert until configured) or
+ * sets one deliberately to fit how it's typically used.
+ *
+ * @see deriveDefaultSeverityFromConformanceLevel
+ */
+const CONFORMANCE_LEVEL_DEFAULT_SEVERITY: Readonly<Partial<Record<RuleConformanceLevel, Severity>>> = {
+	must: 'error',
+	should: 'warning',
+	'non-normative': 'warning',
+	factual: 'warning',
+	opinion: 'warning',
+};
+
+/**
+ * Derives the policy default `Severity` for a {@link RuleConformanceLevel},
+ * or `undefined` for `'configurable'` (no policy applies — see
+ * {@link CONFORMANCE_LEVEL_DEFAULT_SEVERITY}).
+ *
+ * Used by `@markuplint/rules`'s registry test to flag rules whose
+ * `defaultSeverity` disagrees with their declared `specConformance.level`
+ * without an accompanying `severityRationale`.
+ */
+export function deriveDefaultSeverityFromConformanceLevel(level: RuleConformanceLevel): Severity | undefined {
+	return CONFORMANCE_LEVEL_DEFAULT_SEVERITY[level];
+}
+
+/**
  * The definition of a markuplint rule, including verification logic
  * and default configuration values.
  *
@@ -14,6 +119,23 @@ import type { PlainData, Report, RuleConfigValue, Severity } from '@markuplint/m
 export type RuleSeed<T extends RuleConfigValue = boolean, O extends PlainData = undefined> = {
 	readonly meta?: {
 		readonly category?: 'validation' | 'style' | 'naming-convention' | 'a11y' | 'maintainability';
+
+		/**
+		 * This rule's specification-conformance classification. See
+		 * {@link RuleConformance}. Intended to become mandatory on every
+		 * built-in rule; until the v5 rule-system redesign finishes rolling
+		 * it out across `@markuplint/rules`, it remains optional so partially
+		 * migrated rules do not fail the build.
+		 */
+		readonly specConformance?: RuleConformance;
+
+		/**
+		 * Explains why this rule's `defaultSeverity` deliberately departs
+		 * from the policy value {@link deriveDefaultSeverityFromConformanceLevel}
+		 * derives from `meta.specConformance.level`. Required whenever the
+		 * two disagree; the `@markuplint/rules` registry test enforces this.
+		 */
+		readonly severityRationale?: string;
 
 		/**
 		 * parse5 `ERR` codes whose detection this rule covers. When the rule is
