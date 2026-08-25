@@ -7,8 +7,8 @@ describe('categories catalogue', () => {
 		expect(categories.map(c => c.id)).toEqual([
 			'content-model',
 			'deprecated',
-			'required-attr',
-			'id-duplication',
+			'require-attr',
+			'no-duplicate-id',
 			'assertions',
 			'global-attr',
 			'data-types',
@@ -23,8 +23,8 @@ describe('inferCategory', () => {
 		['html/elements/a/model-isvalid.html', 'content-model'],
 		['html/elements/h4/model-novalid.html', 'content-model'],
 		['html/obsolete/center-novalid.html', 'deprecated'],
-		['html/assertions/img-missing-alt-novalid.html', 'required-attr'],
-		['html/assertions/duplicate-id-novalid.html', 'id-duplication'],
+		['html/assertions/img-missing-alt-novalid.html', 'require-attr'],
+		['html/assertions/duplicate-id-novalid.html', 'no-duplicate-id'],
 		['html/assertions/section-lacks-heading-haswarn.html', 'assertions'],
 		['html/attributes/lang-isvalid.html', 'global-attr'],
 		['html/datatypes/url-novalid.html', 'data-types'],
@@ -46,14 +46,14 @@ describe('inferCategory', () => {
 		expect(inferCategory('html/elements/a/model-novalid.html')).toBe('content-model');
 	});
 
-	test('id-duplication wins over the broader assertions category', () => {
+	test('no-duplicate-id wins over the broader assertions category', () => {
 		// html/assertions/*duplicate-id* would otherwise hit the generic assertions bucket.
-		expect(inferCategory('html/assertions/foo-duplicate-id-novalid.html')).toBe('id-duplication');
+		expect(inferCategory('html/assertions/foo-duplicate-id-novalid.html')).toBe('no-duplicate-id');
 	});
 
-	test('required-attr wins over the broader assertions category', () => {
-		// html/assertions/*missing* must route to required-attr, not assertions.
-		expect(inferCategory('html/assertions/img-missing-alt-novalid.html')).toBe('required-attr');
+	test('require-attr wins over the broader assertions category', () => {
+		// html/assertions/*missing* must route to require-attr, not assertions.
+		expect(inferCategory('html/assertions/img-missing-alt-novalid.html')).toBe('require-attr');
 	});
 });
 

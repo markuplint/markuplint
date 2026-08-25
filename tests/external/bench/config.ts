@@ -43,9 +43,9 @@ export const benchmarkConfig: Config = {
 	},
 	rules: {
 		'permitted-contents': true,
-		'required-attr': true,
+		'require-attr': true,
 		'input-button-non-empty-value': true,
-		'input-file-empty-value': true,
+		'no-input-file-value': true,
 		'invalid-attr': true,
 		'form-attr-references-form': true,
 		'input-list-references-datalist': true,
@@ -54,7 +54,7 @@ export const benchmarkConfig: Config = {
 		'no-refer-to-non-existent-id': true,
 		'deprecated-element': true,
 		'deprecated-attr': true,
-		'id-duplication': true,
+		'no-duplicate-id': true,
 		// Validates `<script>` body against the spec for its `type` (currently importmap, per HTML LS § Parse an import map string).
 		'script-content': true,
 		'no-duplicate-autofocus': true,
@@ -66,9 +66,9 @@ export const benchmarkConfig: Config = {
 		'meter-value-bounds': true,
 		'progress-value-bounds': true,
 		// Catches skipped heading levels (HTML LS §4.3.11).
-		'heading-levels': true,
+		'no-skipped-heading-level': true,
 		// Catches `<div id="a" id="b">`-style duplicate attribute names (HTML LS tokenizer).
-		'attr-duplication': true,
+		'no-duplicate-attr': true,
 		// Catches missing/legacy/quirky DOCTYPE (HTML LS §13.2 — non-`<!DOCTYPE html>` declarations).
 		doctype: true,
 		// Catches an `[itemprop]` element that is not part of any item
@@ -111,10 +111,10 @@ export const benchmarkConfig: Config = {
 		// check does not become a hard error for authors, and the bench escalates to align with
 		// the MUST NOT above.
 		'table-row-column-alignment': { severity: 'error' },
-		'wai-aria-non-existent-role': true,
-		'wai-aria-abstract-role': true,
-		'wai-aria-permitted-roles': true,
-		'wai-aria-required-props': true,
+		'no-unknown-role': true,
+		'no-abstract-role': true,
+		'permitted-roles': true,
+		'require-aria-prop': true,
 		'wai-aria-disallowed-props': true,
 		// HTML LS / ARIA in HTML conformance: native HTML attributes MUST be used in preference
 		// to their ARIA equivalents. The rule defaults to severity 'warning' for ergonomic reasons;
@@ -128,8 +128,8 @@ export const benchmarkConfig: Config = {
 		// focusable-element exception. The user-facing default stays 'warning' because the
 		// remediation is a UX-shape choice (remove aria-hidden vs. remove focus), not a purely
 		// mechanical fix; the bench escalates to align with the ARIA-in-HTML MUST NOT.
-		'wai-aria-interaction-in-hidden': { severity: 'error' },
-		'wai-aria-value': true,
+		'no-focusable-in-aria-hidden': { severity: 'error' },
+		'no-invalid-aria-prop-value': true,
 		// WAI-ARIA 1.2 §5.2.6 Required Owned Elements: "When multiple roles are specified
 		// as required owned elements for a role, at least one instance of one required
 		// owned element is expected." and "When a widget is missing required owned
@@ -138,12 +138,12 @@ export const benchmarkConfig: Config = {
 		// element nor aria-busy is present — precisely the MUST violation. The
 		// user-facing default stays 'warning' for author ergonomics; the bench escalates
 		// to align with the spec MUST.
-		'wai-aria-required-owned-elements': { severity: 'error' },
-		'wai-aria-required-parent-role': true,
-		'wai-aria-no-global-prop': true,
+		'require-owned-elements': { severity: 'error' },
+		'require-parent-role': true,
+		'aria-prop-requires-role': true,
 		// WAI-ARIA 1.3 §tab role: "Authors MUST ensure that if a tab is active, a
 		// corresponding tabpanel that represents the active tab is rendered."
-		'wai-aria-tab-requires-tabpanel': true,
+		'tab-requires-tabpanel': true,
 	},
 	nodeRules: [
 		{
@@ -154,7 +154,7 @@ export const benchmarkConfig: Config = {
 				// ASCII case-insensitive matching (handled by the selector
 				// engine), and the `i` flag is applied to value comparisons
 				// where the spec calls for it.
-				'disallowed-element': [
+				'no-restricted-element': [
 					// Mirrors html-standard/no-duplicate-charset
 					'meta[charset] ~ meta[charset]',
 					// Mirrors html-standard/no-duplicate-description

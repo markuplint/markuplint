@@ -9,10 +9,10 @@ import { minimatch } from 'minimatch';
 export type CategoryId =
 	| 'content-model'
 	| 'deprecated'
-	| 'required-attr'
+	| 'require-attr'
 	| 'invalid-attr'
 	| 'global-attr'
-	| 'id-duplication'
+	| 'no-duplicate-id'
 	| 'aria'
 	| 'assertions'
 	| 'data-types'
@@ -47,12 +47,12 @@ export const categories: readonly Category[] = [
 		include: ['html/obsolete/**/*.html'],
 	},
 	{
-		id: 'required-attr',
+		id: 'require-attr',
 		label: 'Required Attributes',
 		include: ['html/assertions/**/*missing*.html'],
 	},
 	{
-		id: 'id-duplication',
+		id: 'no-duplicate-id',
 		label: 'ID Duplication',
 		include: ['html/assertions/**/*duplicate-id*.html'],
 	},
