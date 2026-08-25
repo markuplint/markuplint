@@ -113,31 +113,32 @@
 
 仕様ベースの属性検証のため、基本ルール [`no-unknown-attr`](/docs/rules/no-unknown-attr)・[`no-disallowed-attr`](/docs/rules/no-disallowed-attr)・[`no-invalid-attr-value`](/docs/rules/no-invalid-attr-value) も有効にします。特定の属性を制限する名前付きルール（例: `a11y/no-accesskey`）は代わりに [`no-restricted-attr`](/docs/rules/no-restricted-attr) をラップします — このルールは設定された拒否リストのみを検査し、仕様検証は一切行わないため、どこで使っても狭いままです。
 
-| 名前付きルール                              | 解説                                                                                                                           |
-| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| `html-standard/id-duplication`              | `id`属性値がドキュメント内で重複している場合に警告します。                                                                     |
-| `html-standard/no-refer-to-non-existent-id` | `for`、`form`、`aria-*`、フラグメントリンクに指定されたIDが同じドキュメント内に存在することを確認します。                      |
-| `html-standard/attr-duplication`            | パーサーは重複した属性をすべて無視します。                                                                                     |
-| `html-standard/deprecated-attr`             | 仕様から完全に削除された(廃止された、非準拠の)属性を使用してはなりません。                                                     |
-| `html-standard/no-deprecated-attr`          | MDN/BCDが非推奨(仕様上はまだ定義されているが使用が推奨されない)とする属性に警告します。                                        |
-| `html-standard/deprecated-element`          | 仕様から完全に削除された(廃止された、非準拠の)要素を使用してはなりません。                                                     |
-| `html-standard/no-deprecated-element`       | MDN/BCDが非推奨(仕様上はまだ定義されているが使用が推奨されない)とする要素に警告します。                                        |
-| `html-standard/doctype`                     | 後方互換モードを回避する効果があります。                                                                                       |
-| `html-standard/permitted-contents`          | HTML仕様で親要素に許可されていない子要素がある場合に警告します。                                                               |
-| `html-standard/required-attr`               | HTML仕様で定義された必須属性が要素に存在しない場合に警告します。                                                               |
-| `html-standard/ineffective-attr`            | 要素に対して効果のない属性が指定されている場合に警告します（例: `<div>`に`disabled`）。                                        |
-| `html-standard/no-orphaned-end-tag`         | 対応する開始タグのない終了タグが現れた場合に警告します。内部解析エラーに該当します。                                           |
-| `html-standard/heading-levels`              | 各見出しは前の見出しと同じか1レベル大きい必要があります。                                                                      |
-| `html-standard/no-duplicate-dt`             | ひとつの`<dl>`要素内に、同じ名前の`<dt>`要素が複数あるべきではありません。                                                     |
-| `html-standard/placeholder-label-option`    | `<select>`要素がプレースホルダーラベルオプション（空の値を持つ最初の`<option>`）を必要とするかどうかを確認します。             |
-| `html-standard/require-datetime`            | `<time>`要素の内容が有効な日時文字列でない場合、`datetime`属性が必要です。                                                     |
-| `html-standard/srcset-sizes-constraint`     | `<img>`および`<source>`要素の`srcset`、`sizes`、`loading`、`media`、`type`属性間のWHATWG制約を検証します。                     |
-| `html-standard/head-charset-utf8`           | ドキュメントheadに`<meta charset="UTF-8">`要素を必須とします。                                                                 |
-| `html-standard/no-small-in-heading`         | `<h1>`〜`<h6>`内で`<small>`を使用すべきではありません。                                                                        |
-| `html-standard/figure-no-caption`           | `<figure>`内で`<table>`が`<figcaption>`以外の唯一のコンテンツである場合、`<caption>`を省略して`<figcaption>`を使用すべきです。 |
-| `html-standard/input-pattern-title`         | `<input>`要素に`pattern`属性が指定されている場合、パターンの説明として`title`属性を含めるべきです。                            |
-| `html-standard/no-nested-details-name`      | 同じ名前グループ内の別の`<details>`要素の子孫である`<details>`要素をドキュメント内に含めることはできません。                   |
-| `html-standard/no-shortcut-icon`            | `<link rel>`の`shortcut`キーワードは不要です。代わりに`rel="icon"`を使用してください。                                         |
+| 名前付きルール                              | 解説                                                                                                                                          |
+| ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `html-standard/id-duplication`              | `id`属性値がドキュメント内で重複している場合に警告します。                                                                                    |
+| `html-standard/no-refer-to-non-existent-id` | `for`、`form`、`aria-*`、フラグメントリンクに指定されたIDが同じドキュメント内に存在することを確認します。                                     |
+| `html-standard/attr-duplication`            | パーサーは重複した属性をすべて無視します。                                                                                                    |
+| `html-standard/deprecated-attr`             | 仕様から完全に削除された(廃止された、非準拠の)属性を使用してはなりません。                                                                    |
+| `html-standard/no-deprecated-attr`          | MDN/BCDが非推奨(仕様上はまだ定義されているが使用が推奨されない)とする属性に警告します。                                                       |
+| `html-standard/deprecated-element`          | 仕様から完全に削除された(廃止された、非準拠の)要素を使用してはなりません。                                                                    |
+| `html-standard/no-deprecated-element`       | MDN/BCDが非推奨(仕様上はまだ定義されているが使用が推奨されない)とする要素に警告します。                                                       |
+| `html-standard/doctype`                     | 後方互換モードを回避する効果があります。                                                                                                      |
+| `html-standard/no-obsolete-doctype`         | 廃止されたDOCTYPE(public識別子を持つもの、あるいは仕様が許容する唯一のlegacy文字列の例外以外のsystem識別子を持つもの)を使用してはなりません。 |
+| `html-standard/permitted-contents`          | HTML仕様で親要素に許可されていない子要素がある場合に警告します。                                                                              |
+| `html-standard/required-attr`               | HTML仕様で定義された必須属性が要素に存在しない場合に警告します。                                                                              |
+| `html-standard/ineffective-attr`            | 要素に対して効果のない属性が指定されている場合に警告します（例: `<div>`に`disabled`）。                                                       |
+| `html-standard/no-orphaned-end-tag`         | 対応する開始タグのない終了タグが現れた場合に警告します。内部解析エラーに該当します。                                                          |
+| `html-standard/heading-levels`              | 各見出しは前の見出しと同じか1レベル大きい必要があります。                                                                                     |
+| `html-standard/no-duplicate-dt`             | ひとつの`<dl>`要素内に、同じ名前の`<dt>`要素が複数あるべきではありません。                                                                    |
+| `html-standard/placeholder-label-option`    | `<select>`要素がプレースホルダーラベルオプション（空の値を持つ最初の`<option>`）を必要とするかどうかを確認します。                            |
+| `html-standard/require-datetime`            | `<time>`要素の内容が有効な日時文字列でない場合、`datetime`属性が必要です。                                                                    |
+| `html-standard/srcset-sizes-constraint`     | `<img>`および`<source>`要素の`srcset`、`sizes`、`loading`、`media`、`type`属性間のWHATWG制約を検証します。                                    |
+| `html-standard/head-charset-utf8`           | ドキュメントheadに`<meta charset="UTF-8">`要素を必須とします。                                                                                |
+| `html-standard/no-small-in-heading`         | `<h1>`〜`<h6>`内で`<small>`を使用すべきではありません。                                                                                       |
+| `html-standard/figure-no-caption`           | `<figure>`内で`<table>`が`<figcaption>`以外の唯一のコンテンツである場合、`<caption>`を省略して`<figcaption>`を使用すべきです。                |
+| `html-standard/input-pattern-title`         | `<input>`要素に`pattern`属性が指定されている場合、パターンの説明として`title`属性を含めるべきです。                                           |
+| `html-standard/no-nested-details-name`      | 同じ名前グループ内の別の`<details>`要素の子孫である`<details>`要素をドキュメント内に含めることはできません。                                  |
+| `html-standard/no-shortcut-icon`            | `<link rel>`の`shortcut`キーワードは不要です。代わりに`rel="icon"`を使用してください。                                                        |
 
 ### `markuplint:performance` {#preset-performance}
 

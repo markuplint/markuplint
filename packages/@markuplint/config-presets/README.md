@@ -53,7 +53,8 @@ No obsolete attr|Authors must not use attributes the spec has removed entirely. 
 No deprecated attr|MDN/BCD-sourced (factual, not a spec MUST) — kept enabled here (severity downgraded to warning, not removed from the preset) so existing markuplint:html-standard users keep this coverage.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 No obsolete element|Authors must not use elements the spec has removed entirely. The group name is kept as `deprecated-element` for backward compatibility.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 No deprecated element|MDN/BCD-sourced (factual, not a spec MUST) — kept enabled here (severity downgraded to warning, not removed from the preset) so existing markuplint:html-standard users keep this coverage.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
-[Require `doctype`](https://html.spec.whatwg.org/multipage/syntax.html#syntax-doctype)|It has the effect of avoiding quirks mode.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
+[Require `doctype`](https://html.spec.whatwg.org/multipage/syntax.html#syntax-doctype)|It has the effect of avoiding quirks mode. The group name is kept as `doctype` for backward compatibility.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
+[No obsolete doctype](https://html.spec.whatwg.org/multipage/syntax.html#the-doctype)|Authors must not use an obsolete DOCTYPE (a public identifier, or a system identifier other than the one legacy-string exception the spec still permits).|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 Must not skip heading levels| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [No duplicate autofocus](https://html.spec.whatwg.org/multipage/interaction.html#the-autofocus-attribute)|There must not be two elements with the autofocus attribute specified in the same document.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [No duplicate visible main](https://html.spec.whatwg.org/multipage/grouping-content.html#the-main-element)|There must not be more than one visible main element in a document.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|

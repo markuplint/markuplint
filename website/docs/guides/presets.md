@@ -113,31 +113,32 @@ See the [rulesets tables](#rulesets-of-base-presets) below for the full list of 
 
 Also enables the base rules [`no-unknown-attr`](/docs/rules/no-unknown-attr), [`no-disallowed-attr`](/docs/rules/no-disallowed-attr), and [`no-invalid-attr-value`](/docs/rules/no-invalid-attr-value) for spec-based attribute validation. Named rules that restrict specific attributes (such as `a11y/no-accesskey`) wrap [`no-restricted-attr`](/docs/rules/no-restricted-attr) instead — that rule only enforces its own configured denylist and never performs spec validation, so it stays narrow no matter where it's used.
 
-| Named Rule                                  | Description                                                                                                                                     |
-| ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| `html-standard/id-duplication`              | Warns when `id` attribute values are duplicated in one document.                                                                                |
-| `html-standard/no-refer-to-non-existent-id` | Checks whether IDs specified in `for`, `form`, `aria-*`, and fragment links reference an ID that exists in the same document.                   |
-| `html-standard/attr-duplication`            | The parser ignores all such duplicate occurrences of the attribute.                                                                             |
-| `html-standard/deprecated-attr`             | Authors must not use attributes the HTML spec has removed entirely (obsolete, non-conforming features).                                         |
-| `html-standard/no-deprecated-attr`          | Warns on attributes MDN/BCD marks as deprecated (still defined by the spec, but discouraged).                                                   |
-| `html-standard/deprecated-element`          | Authors must not use elements the HTML spec has removed entirely (obsolete, non-conforming features).                                           |
-| `html-standard/no-deprecated-element`       | Warns on elements MDN/BCD marks as deprecated (still defined by the spec, but discouraged).                                                     |
-| `html-standard/doctype`                     | It has the effect of avoiding quirks mode.                                                                                                      |
-| `html-standard/permitted-contents`          | Warns if a child element is not allowed by the HTML specification for its parent element.                                                       |
-| `html-standard/required-attr`               | Warns if required attributes defined by the HTML specification are not present on an element.                                                   |
-| `html-standard/ineffective-attr`            | Warns when a specified attribute has no effect on the element (e.g., `disabled` on a `<div>`).                                                  |
-| `html-standard/no-orphaned-end-tag`         | Warns when an end tag appears without a corresponding start tag, which constitutes an inner parse error.                                        |
-| `html-standard/heading-levels`              | Each heading must be equal to or one level greater than the previous heading.                                                                   |
-| `html-standard/no-duplicate-dt`             | Within a single `<dl>` element, there should not be more than one `<dt>` element for each name.                                                 |
-| `html-standard/placeholder-label-option`    | Checks whether the `<select>` element needs the placeholder label option (first `<option>` with an empty value).                                |
-| `html-standard/require-datetime`            | Warns that the `datetime` attribute is needed if the `<time>` element has content that is not a valid date/time string.                         |
-| `html-standard/srcset-sizes-constraint`     | Enforces WHATWG constraints between `srcset`, `sizes`, `loading`, `media`, and `type` attributes on `<img>` and `<source>` elements.            |
-| `html-standard/head-charset-utf8`           | Requires a `<meta charset="UTF-8">` element in the document head.                                                                               |
-| `html-standard/no-small-in-heading`         | Should not use `<small>` in `<h1>`, `<h2>`, `<h3>`, `<h4>`, `<h5>`, and `<h6>`.                                                                 |
-| `html-standard/figure-no-caption`           | When `<table>` is the only content in `<figure>` other than `<figcaption>`, `<caption>` should be omitted in favor of `<figcaption>`.           |
-| `html-standard/input-pattern-title`         | When an `<input>` element has a `pattern` attribute specified, authors should include a `title` attribute to give a description of the pattern. |
-| `html-standard/no-nested-details-name`      | A document must not contain a `<details>` element that is a descendant of another `<details>` element in the same name group.                   |
-| `html-standard/no-shortcut-icon`            | The `shortcut` keyword in `<link rel>` is unnecessary. Use `rel="icon"` instead.                                                                |
+| Named Rule                                  | Description                                                                                                                                         |
+| ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `html-standard/id-duplication`              | Warns when `id` attribute values are duplicated in one document.                                                                                    |
+| `html-standard/no-refer-to-non-existent-id` | Checks whether IDs specified in `for`, `form`, `aria-*`, and fragment links reference an ID that exists in the same document.                       |
+| `html-standard/attr-duplication`            | The parser ignores all such duplicate occurrences of the attribute.                                                                                 |
+| `html-standard/deprecated-attr`             | Authors must not use attributes the HTML spec has removed entirely (obsolete, non-conforming features).                                             |
+| `html-standard/no-deprecated-attr`          | Warns on attributes MDN/BCD marks as deprecated (still defined by the spec, but discouraged).                                                       |
+| `html-standard/deprecated-element`          | Authors must not use elements the HTML spec has removed entirely (obsolete, non-conforming features).                                               |
+| `html-standard/no-deprecated-element`       | Warns on elements MDN/BCD marks as deprecated (still defined by the spec, but discouraged).                                                         |
+| `html-standard/doctype`                     | It has the effect of avoiding quirks mode.                                                                                                          |
+| `html-standard/no-obsolete-doctype`         | Authors must not use an obsolete DOCTYPE (a public identifier, or a system identifier other than the one legacy-string exception the spec permits). |
+| `html-standard/permitted-contents`          | Warns if a child element is not allowed by the HTML specification for its parent element.                                                           |
+| `html-standard/required-attr`               | Warns if required attributes defined by the HTML specification are not present on an element.                                                       |
+| `html-standard/ineffective-attr`            | Warns when a specified attribute has no effect on the element (e.g., `disabled` on a `<div>`).                                                      |
+| `html-standard/no-orphaned-end-tag`         | Warns when an end tag appears without a corresponding start tag, which constitutes an inner parse error.                                            |
+| `html-standard/heading-levels`              | Each heading must be equal to or one level greater than the previous heading.                                                                       |
+| `html-standard/no-duplicate-dt`             | Within a single `<dl>` element, there should not be more than one `<dt>` element for each name.                                                     |
+| `html-standard/placeholder-label-option`    | Checks whether the `<select>` element needs the placeholder label option (first `<option>` with an empty value).                                    |
+| `html-standard/require-datetime`            | Warns that the `datetime` attribute is needed if the `<time>` element has content that is not a valid date/time string.                             |
+| `html-standard/srcset-sizes-constraint`     | Enforces WHATWG constraints between `srcset`, `sizes`, `loading`, `media`, and `type` attributes on `<img>` and `<source>` elements.                |
+| `html-standard/head-charset-utf8`           | Requires a `<meta charset="UTF-8">` element in the document head.                                                                                   |
+| `html-standard/no-small-in-heading`         | Should not use `<small>` in `<h1>`, `<h2>`, `<h3>`, `<h4>`, `<h5>`, and `<h6>`.                                                                     |
+| `html-standard/figure-no-caption`           | When `<table>` is the only content in `<figure>` other than `<figcaption>`, `<caption>` should be omitted in favor of `<figcaption>`.               |
+| `html-standard/input-pattern-title`         | When an `<input>` element has a `pattern` attribute specified, authors should include a `title` attribute to give a description of the pattern.     |
+| `html-standard/no-nested-details-name`      | A document must not contain a `<details>` element that is a descendant of another `<details>` element in the same name group.                       |
+| `html-standard/no-shortcut-icon`            | The `shortcut` keyword in `<link rel>` is unnecessary. Use `rel="icon"` instead.                                                                    |
 
 ### `markuplint:performance` {#preset-performance}
 
