@@ -266,6 +266,52 @@
 		},
 
 		/**
+		 * No disallowed ancestor
+		 *
+		 * An element must not appear as a descendant of an ancestor its
+		 * content model forbids (e.g. `<address>` inside `<address>`).
+		 * Split off from `permitted-contents` — kept as its own named group
+		 * here so preset users keep this coverage.
+		 */
+		"html-standard/no-disallowed-ancestor": {
+			"specConformance": "normative",
+			"rules": {
+				"no-disallowed-ancestor": true
+			}
+		},
+
+		/**
+		 * Require ancestor
+		 *
+		 * An element must appear as a descendant of a required ancestor
+		 * (e.g. `<area>` outside `<map>`). Split off from
+		 * `permitted-contents` — kept as its own named group here so preset
+		 * users keep this coverage.
+		 */
+		"html-standard/require-ancestor": {
+			"specConformance": "normative",
+			"rules": {
+				"require-ancestor": true
+			}
+		},
+
+		/**
+		 * No duplicate sibling attr
+		 *
+		 * An attribute the content model marks as sibling-unique must not
+		 * appear on more than one element of the same type within the same
+		 * parent (e.g. multiple `<track default>`). Split off from
+		 * `permitted-contents` — kept as its own named group here so preset
+		 * users keep this coverage.
+		 */
+		"html-standard/no-duplicate-sibling-attr": {
+			"specConformance": "normative",
+			"rules": {
+				"no-duplicate-sibling-attr": true
+			}
+		},
+
+		/**
 		 * Need **placeholder label option**
 		 *
 		 */
