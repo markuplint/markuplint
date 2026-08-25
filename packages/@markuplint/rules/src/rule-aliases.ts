@@ -57,7 +57,7 @@ function normalize(rule: AnyRule): NormalizedRule {
 	return { severity, options, reason, reasonOnly };
 }
 
-function withOptions(rule: AnyRule, options: Record<string, unknown> | undefined): AnyRule {
+function withOptions(rule: AnyRule, options?: Record<string, unknown>): AnyRule {
 	const { severity, reason, reasonOnly } = normalize(rule);
 	return {
 		value: true,
