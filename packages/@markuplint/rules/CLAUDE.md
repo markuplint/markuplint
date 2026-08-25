@@ -47,7 +47,7 @@ channel violation. The declaration criterion (rule scope must be at least as bro
 parse5 event) and the ruleset dual-lookup semantics are documented in JSDoc:
 `@markuplint/ml-core` `src/ml-rule/types.ts` (the meta field) and
 `src/ml-core.ts` `#pushNonFatalParseErrors`. Canonical example of a rule that actively
-consumes `document.parseErrors` and reports them under its own ruleId: `character-reference`.
+consumes `document.parseErrors` and reports them under its own ruleId: `no-malformed-character-reference`.
 
 Enforced by tests: `src/mirrors-parse-error-codes.spec.ts` (no duplicate declarations across
 rules) and `@markuplint/html-parser`'s `parse-error-code-sync.spec.ts` (compile-time alignment

@@ -16,7 +16,6 @@ import AttrOrder from './attr-order/index.js';
 import AttrValueQuotes from './attr-value-quotes/index.js';
 import CaseSensitiveAttrName from './case-sensitive-attr-name/index.js';
 import CaseSensitiveTagName from './case-sensitive-tag-name/index.js';
-import CharacterReference from './character-reference/index.js';
 import ClassNaming from './class-naming/index.js';
 import FormAttrReferencesForm from './form-attr-references-form/index.js';
 import HeadElementOrder from './head-element-order/index.js';
@@ -58,6 +57,7 @@ import NoIneffectiveAttr from './no-ineffective-attr/index.js';
 import NoInputFileValue from './no-input-file-value/index.js';
 import NoInvalidAriaPropValue from './no-invalid-aria-prop-value/index.js';
 import NoInvalidAttrValue from './no-invalid-attr-value/index.js';
+import NoMalformedCharacterReference from './no-malformed-character-reference/index.js';
 import NoMismatchedAspectRatio from './no-mismatched-aspect-ratio/index.js';
 import NoObsoleteAttr from './no-obsolete-attr/index.js';
 import NoObsoleteDoctype from './no-obsolete-doctype/index.js';
@@ -72,6 +72,7 @@ import NoRestrictedElement from './no-restricted-element/index.js';
 import NoSkippedHeadingLevel from './no-skipped-heading-level/index.js';
 import NoStrayHeadOrBodyTag from './no-stray-head-or-body-tag/index.js';
 import NoUnclosedElementAtEof from './no-unclosed-element-at-eof/index.js';
+import NoUnescapedChar from './no-unescaped-char/index.js';
 import NoUnknownAttr from './no-unknown-attr/index.js';
 import NoUnknownRole from './no-unknown-role/index.js';
 import NoUnsupportedFeatures from './no-unsupported-features/index.js';
@@ -110,7 +111,6 @@ const rules = {
 	'attr-value-quotes': AttrValueQuotes,
 	'case-sensitive-attr-name': CaseSensitiveAttrName,
 	'case-sensitive-tag-name': CaseSensitiveTagName,
-	'character-reference': CharacterReference,
 	'class-naming': ClassNaming,
 	'form-attr-references-form': FormAttrReferencesForm,
 	'head-element-order': HeadElementOrder,
@@ -152,6 +152,7 @@ const rules = {
 	'no-input-file-value': NoInputFileValue,
 	'no-invalid-aria-prop-value': NoInvalidAriaPropValue,
 	'no-invalid-attr-value': NoInvalidAttrValue,
+	'no-malformed-character-reference': NoMalformedCharacterReference,
 	'no-mismatched-aspect-ratio': NoMismatchedAspectRatio,
 	'no-obsolete-attr': NoObsoleteAttr,
 	'no-obsolete-doctype': NoObsoleteDoctype,
@@ -166,6 +167,7 @@ const rules = {
 	'no-skipped-heading-level': NoSkippedHeadingLevel,
 	'no-stray-head-or-body-tag': NoStrayHeadOrBodyTag,
 	'no-unclosed-element-at-eof': NoUnclosedElementAtEof,
+	'no-unescaped-char': NoUnescapedChar,
 	'no-unknown-attr': NoUnknownAttr,
 	'no-unknown-role': NoUnknownRole,
 	'no-unsupported-features': NoUnsupportedFeatures,

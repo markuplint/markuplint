@@ -24,9 +24,6 @@
 				"case-sensitive-tag-name": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/case-sensitive-tag-name/schema.json"
 				},
-				"character-reference": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/character-reference/schema.json"
-				},
 				"class-naming": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/class-naming/schema.json"
 				},
@@ -177,6 +174,9 @@
 				"no-invalid-attr-value": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-invalid-attr-value/schema.json"
 				},
+				"no-malformed-character-reference": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-malformed-character-reference/schema.json"
+				},
 				"no-mismatched-aspect-ratio": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-mismatched-aspect-ratio/schema.json"
 				},
@@ -218,6 +218,9 @@
 				},
 				"no-unclosed-element-at-eof": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-unclosed-element-at-eof/schema.json"
+				},
+				"no-unescaped-char": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-unescaped-char/schema.json"
 				},
 				"no-unknown-attr": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-unknown-attr/schema.json"
