@@ -27,6 +27,9 @@
 				"class-naming": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/class-naming/schema.json"
 				},
+				"consistent-table-row-length": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/consistent-table-row-length/schema.json"
+				},
 				"correct-aspect-ratio": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-mismatched-aspect-ratio/schema.json"
 				},
@@ -153,6 +156,9 @@
 				"no-empty-palpable-content": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-empty-palpable-content/schema.json"
 				},
+				"no-empty-table-track": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-empty-table-track/schema.json"
+				},
 				"no-event-handler-attr": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-event-handler-attr/schema.json"
 				},
@@ -221,6 +227,12 @@
 				},
 				"no-stray-head-or-body-tag": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-stray-head-or-body-tag/schema.json"
+				},
+				"no-table-cell-overlap": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-table-cell-overlap/schema.json"
+				},
+				"no-table-span-overflow": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-table-span-overflow/schema.json"
 				},
 				"no-unclosed-element-at-eof": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-unclosed-element-at-eof/schema.json"
@@ -308,9 +320,6 @@
 				},
 				"tab-requires-tabpanel": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/tab-requires-tabpanel/schema.json"
-				},
-				"table-row-column-alignment": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/table-row-column-alignment/schema.json"
 				},
 				"use-list": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-pseudo-list/schema.json"

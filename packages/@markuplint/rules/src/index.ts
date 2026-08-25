@@ -17,6 +17,7 @@ import AttrValueQuotes from './attr-value-quotes/index.js';
 import CaseSensitiveAttrName from './case-sensitive-attr-name/index.js';
 import CaseSensitiveTagName from './case-sensitive-tag-name/index.js';
 import ClassNaming from './class-naming/index.js';
+import ConsistentTableRowLength from './consistent-table-row-length/index.js';
 import FormAttrReferencesForm from './form-attr-references-form/index.js';
 import HeadElementOrder from './head-element-order/index.js';
 import InputButtonNonEmptyValue from './input-button-non-empty-value/index.js';
@@ -51,6 +52,7 @@ import NoDuplicateId from './no-duplicate-id/index.js';
 import NoDuplicateSiblingAttr from './no-duplicate-sibling-attr/index.js';
 import NoDuplicateVisibleMain from './no-duplicate-visible-main/index.js';
 import NoEmptyPalpableContent from './no-empty-palpable-content/index.js';
+import NoEmptyTableTrack from './no-empty-table-track/index.js';
 import NoEventHandlerAttr from './no-event-handler-attr/index.js';
 import NoExtraSelectedOptions from './no-extra-selected-options/index.js';
 import NoFocusableInAriaHidden from './no-focusable-in-aria-hidden/index.js';
@@ -73,6 +75,8 @@ import NoRestrictedAttr from './no-restricted-attr/index.js';
 import NoRestrictedElement from './no-restricted-element/index.js';
 import NoSkippedHeadingLevel from './no-skipped-heading-level/index.js';
 import NoStrayHeadOrBodyTag from './no-stray-head-or-body-tag/index.js';
+import NoTableCellOverlap from './no-table-cell-overlap/index.js';
+import NoTableSpanOverflow from './no-table-span-overflow/index.js';
 import NoUnclosedElementAtEof from './no-unclosed-element-at-eof/index.js';
 import NoUnescapedChar from './no-unescaped-char/index.js';
 import NoUnknownAttr from './no-unknown-attr/index.js';
@@ -98,7 +102,6 @@ import RequiredH1 from './required-h1/index.js';
 import ScriptContent from './script-content/index.js';
 import SrcsetSizesConstraint from './srcset-sizes-constraint/index.js';
 import TabRequiresTabpanel from './tab-requires-tabpanel/index.js';
-import TableRowColumnAlignment from './table-row-column-alignment/index.js';
 import UsemapReferencesMap from './usemap-references-map/index.js';
 import WaiAria from './wai-aria/index.js';
 import WaiAriaDisallowedProps from './wai-aria-disallowed-props/index.js';
@@ -115,6 +118,7 @@ const rules = {
 	'case-sensitive-attr-name': CaseSensitiveAttrName,
 	'case-sensitive-tag-name': CaseSensitiveTagName,
 	'class-naming': ClassNaming,
+	'consistent-table-row-length': ConsistentTableRowLength,
 	'form-attr-references-form': FormAttrReferencesForm,
 	'head-element-order': HeadElementOrder,
 	'input-button-non-empty-value': InputButtonNonEmptyValue,
@@ -149,6 +153,7 @@ const rules = {
 	'no-duplicate-sibling-attr': NoDuplicateSiblingAttr,
 	'no-duplicate-visible-main': NoDuplicateVisibleMain,
 	'no-empty-palpable-content': NoEmptyPalpableContent,
+	'no-empty-table-track': NoEmptyTableTrack,
 	'no-event-handler-attr': NoEventHandlerAttr,
 	'no-extra-selected-options': NoExtraSelectedOptions,
 	'no-focusable-in-aria-hidden': NoFocusableInAriaHidden,
@@ -171,6 +176,8 @@ const rules = {
 	'no-restricted-element': NoRestrictedElement,
 	'no-skipped-heading-level': NoSkippedHeadingLevel,
 	'no-stray-head-or-body-tag': NoStrayHeadOrBodyTag,
+	'no-table-cell-overlap': NoTableCellOverlap,
+	'no-table-span-overflow': NoTableSpanOverflow,
 	'no-unclosed-element-at-eof': NoUnclosedElementAtEof,
 	'no-unescaped-char': NoUnescapedChar,
 	'no-unknown-attr': NoUnknownAttr,
@@ -196,7 +203,6 @@ const rules = {
 	'script-content': ScriptContent,
 	'srcset-sizes-constraint': SrcsetSizesConstraint,
 	'tab-requires-tabpanel': TabRequiresTabpanel,
-	'table-row-column-alignment': TableRowColumnAlignment,
 	'usemap-references-map': UsemapReferencesMap,
 	'wai-aria': WaiAria,
 	'wai-aria-disallowed-props': WaiAriaDisallowedProps,

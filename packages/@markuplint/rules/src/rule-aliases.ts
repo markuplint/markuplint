@@ -147,6 +147,12 @@ export const ruleAliasTable: RuleAliasTable = {
 	'deprecated-attr': split('no-obsolete-attr', 'no-deprecated-attr'),
 	'deprecated-element': split('no-obsolete-element', 'no-deprecated-element'),
 	'character-reference': split('no-malformed-character-reference', 'no-unescaped-char'),
+	'table-row-column-alignment': split(
+		'no-table-cell-overlap',
+		'no-table-span-overflow',
+		'no-empty-table-track',
+		'consistent-table-row-length',
+	),
 	'attr-duplication': renamed('no-duplicate-attr'),
 	'id-duplication': renamed('no-duplicate-id'),
 	'required-element': renamed('require-element'),

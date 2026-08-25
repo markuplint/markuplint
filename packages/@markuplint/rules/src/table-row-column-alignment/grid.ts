@@ -80,21 +80,25 @@ export type RowGroup = {
  * Models a `<table>` as the slot grid of HTML LS
  * [§4.9.12.1 *Forming a table*](https://html.spec.whatwg.org/multipage/tables.html#forming-a-table).
  *
- * The algorithm is followed rather than approximated because every table model error the
- * `table-row-column-alignment` rule reports is defined in terms of it: Step 6 decides which
- * slot a cell is anchored to (a `colspan` after a `rowspan` continuation does *not* start at
- * the cell's ordinal position), Steps 7 and 11 decide how wide the table becomes, Step 14
- * defines cell overlap, and Step 20 defines rows and columns that no cell is anchored to.
+ * Shared by `no-table-cell-overlap`, `no-table-span-overflow`, `no-empty-table-track`, and
+ * `consistent-table-row-length` — the four rules split out of the former
+ * `table-row-column-alignment` rule, one per table model error / diagnostic this class models.
+ *
+ * The algorithm is followed rather than approximated because every table model error those rules
+ * report is defined in terms of it: Step 6 decides which slot a cell is anchored to (a `colspan`
+ * after a `rowspan` continuation does *not* start at the cell's ordinal position), Steps 7 and 11
+ * decide how wide the table becomes, Step 14 defines cell overlap, and Step 20 defines rows and
+ * columns that no cell is anchored to.
  *
  * Two things the spec has no name for are tracked alongside:
  *
  * - **Row width** ({@link Row.slots} length). Rows narrower or wider than the rest of the
  *   table are not a table model error — nu-validator reports them as warnings unless column
- *   markup fixes the width — but they are the rule's original diagnostic and predate the
- *   spec-level checks.
+ *   markup fixes the width — but they are `consistent-table-row-length`'s diagnostic and predate
+ *   the spec-level checks.
  * - **Row group boundaries**. The spec's *ending a row group* algorithm clips a cell to its
  *   row group, so slots are covered per group; {@link RowGroup.overflows} keeps the cells that
- *   were clipped so the rule can report them.
+ *   were clipped so `no-table-span-overflow` can report them.
  */
 export class Grid {
 	/** Column ranges established by `<col>` / `<colgroup>`, in document order. */
