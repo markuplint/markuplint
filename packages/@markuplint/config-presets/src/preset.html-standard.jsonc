@@ -72,14 +72,31 @@
 		/**
 		 * Require `doctype`
 		 *
-		 * It has the effect of avoiding quirks mode.
+		 * It has the effect of avoiding quirks mode. The group name is kept
+		 * as `doctype` for backward compatibility.
 		 *
 		 * @see https://html.spec.whatwg.org/multipage/syntax.html#syntax-doctype
 		 */
 		"html-standard/doctype": {
 			"specConformance": "normative",
 			"rules": {
-				"doctype": true
+				"require-doctype": true
+			}
+		},
+
+		/**
+		 * No obsolete doctype
+		 *
+		 * Authors must not use an obsolete DOCTYPE (a public identifier, or a
+		 * system identifier other than the one legacy-string exception the
+		 * spec still permits).
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/syntax.html#the-doctype
+		 */
+		"html-standard/no-obsolete-doctype": {
+			"specConformance": "normative",
+			"rules": {
+				"no-obsolete-doctype": true
 			}
 		},
 
