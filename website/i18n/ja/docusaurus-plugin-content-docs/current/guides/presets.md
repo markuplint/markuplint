@@ -125,6 +125,9 @@
 | `html-standard/doctype`                     | 後方互換モードを回避する効果があります。                                                                                                      |
 | `html-standard/no-obsolete-doctype`         | 廃止されたDOCTYPE(public識別子を持つもの、あるいは仕様が許容する唯一のlegacy文字列の例外以外のsystem識別子を持つもの)を使用してはなりません。 |
 | `html-standard/permitted-contents`          | HTML仕様で親要素に許可されていない子要素がある場合に警告します。                                                                              |
+| `html-standard/no-disallowed-ancestor`      | コンテンツモデルが禁止する祖先要素の子孫として要素が出現した場合に警告します(例: `<address>`の中の`<address>`)。                              |
+| `html-standard/require-ancestor`            | 要素が必須の祖先要素の外に出現した場合に警告します(例: `<map>`の外の`<area>`)。                                                               |
+| `html-standard/no-duplicate-sibling-attr`   | コンテンツモデルが兄弟間で一意とする属性が、同じ親内の同種の要素に複数出現した場合に警告します。                                              |
 | `html-standard/required-attr`               | HTML仕様で定義された必須属性が要素に存在しない場合に警告します。                                                                              |
 | `html-standard/ineffective-attr`            | 要素に対して効果のない属性が指定されている場合に警告します（例: `<div>`に`disabled`）。                                                       |
 | `html-standard/no-orphaned-end-tag`         | 対応する開始タグのない終了タグが現れた場合に警告します。内部解析エラーに該当します。                                                          |

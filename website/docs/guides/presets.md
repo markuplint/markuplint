@@ -125,6 +125,9 @@ Also enables the base rules [`no-unknown-attr`](/docs/rules/no-unknown-attr), [`
 | `html-standard/doctype`                     | It has the effect of avoiding quirks mode.                                                                                                          |
 | `html-standard/no-obsolete-doctype`         | Authors must not use an obsolete DOCTYPE (a public identifier, or a system identifier other than the one legacy-string exception the spec permits). |
 | `html-standard/permitted-contents`          | Warns if a child element is not allowed by the HTML specification for its parent element.                                                           |
+| `html-standard/no-disallowed-ancestor`      | Warns if an element appears as a descendant of an ancestor its content model forbids (e.g. `<address>` inside `<address>`).                         |
+| `html-standard/require-ancestor`            | Warns if an element appears outside a required ancestor (e.g. `<area>` outside `<map>`).                                                            |
+| `html-standard/no-duplicate-sibling-attr`   | Warns if an attribute the content model marks as sibling-unique appears on more than one element of the same type within the same parent.           |
 | `html-standard/required-attr`               | Warns if required attributes defined by the HTML specification are not present on an element.                                                       |
 | `html-standard/ineffective-attr`            | Warns when a specified attribute has no effect on the element (e.g., `disabled` on a `<div>`).                                                      |
 | `html-standard/no-orphaned-end-tag`         | Warns when an end tag appears without a corresponding start tag, which constitutes an inner parse error.                                            |
