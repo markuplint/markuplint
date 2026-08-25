@@ -9,6 +9,8 @@
 
 import type { AnyRuleSeed } from '@markuplint/ml-core';
 
+export { ruleAliasTable } from './rule-aliases.js';
+
 import AttrDuplication from './attr-duplication/index.js';
 import AttrOrder from './attr-order/index.js';
 import AttrValueQuotes from './attr-value-quotes/index.js';
