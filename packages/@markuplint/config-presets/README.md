@@ -49,8 +49,10 @@ No merge cells| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
 [`tabindex` attr only `-1` or `0`](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex#accessibility_concerns)|Scoped to non-dialog elements because the HTML spec disallows `tabindex` on `<dialog>` (`noUse`).|✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
 [Disallow `user-scalable=no` in viewport meta](https://developer.mozilla.org/en-US/docs/Web/HTML/Viewport_meta_tag)|Usage of `user-scalable=no` can cause accessibility issues to users with visual impairments such as low vision. WCAG requires a minimum of 2× scaling.|✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
 [No duplicate attr](https://html.spec.whatwg.org/multipage/parsing.html#parse-error-duplicate-attribute)|The parser ignores all such duplicate occurrences of the attribute.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
-No use deprecated attr|Authors must not use deprecated attributes from the viewpoint of compatibility.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
-No use deprecated element|Authors must not use deprecated elements from the viewpoint of compatibility.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
+No obsolete attr|Authors must not use attributes the spec has removed entirely. The group name is kept as `deprecated-attr` for backward compatibility.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
+No deprecated attr|MDN/BCD-sourced (factual, not a spec MUST) — kept enabled here (severity downgraded to warning, not removed from the preset) so existing markuplint:html-standard users keep this coverage.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
+No obsolete element|Authors must not use elements the spec has removed entirely. The group name is kept as `deprecated-element` for backward compatibility.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
+No deprecated element|MDN/BCD-sourced (factual, not a spec MUST) — kept enabled here (severity downgraded to warning, not removed from the preset) so existing markuplint:html-standard users keep this coverage.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [Require `doctype`](https://html.spec.whatwg.org/multipage/syntax.html#syntax-doctype)|It has the effect of avoiding quirks mode.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 Must not skip heading levels| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [No duplicate autofocus](https://html.spec.whatwg.org/multipage/interaction.html#the-autofocus-attribute)|There must not be two elements with the autofocus attribute specified in the same document.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|

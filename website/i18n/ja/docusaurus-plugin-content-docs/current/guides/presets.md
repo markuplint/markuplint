@@ -118,8 +118,10 @@
 | `html-standard/id-duplication`              | `id`属性値がドキュメント内で重複している場合に警告します。                                                                     |
 | `html-standard/no-refer-to-non-existent-id` | `for`、`form`、`aria-*`、フラグメントリンクに指定されたIDが同じドキュメント内に存在することを確認します。                      |
 | `html-standard/attr-duplication`            | パーサーは重複した属性をすべて無視します。                                                                                     |
-| `html-standard/deprecated-attr`             | 互換性の観点から、非推奨属性を使用してはなりません。                                                                           |
-| `html-standard/deprecated-element`          | 互換性の観点から、非推奨要素を使用してはなりません。                                                                           |
+| `html-standard/deprecated-attr`             | 仕様から完全に削除された(廃止された、非準拠の)属性を使用してはなりません。                                                     |
+| `html-standard/no-deprecated-attr`          | MDN/BCDが非推奨(仕様上はまだ定義されているが使用が推奨されない)とする属性に警告します。                                        |
+| `html-standard/deprecated-element`          | 仕様から完全に削除された(廃止された、非準拠の)要素を使用してはなりません。                                                     |
+| `html-standard/no-deprecated-element`       | MDN/BCDが非推奨(仕様上はまだ定義されているが使用が推奨されない)とする要素に警告します。                                        |
 | `html-standard/doctype`                     | 後方互換モードを回避する効果があります。                                                                                       |
 | `html-standard/permitted-contents`          | HTML仕様で親要素に許可されていない子要素がある場合に警告します。                                                               |
 | `html-standard/required-attr`               | HTML仕様で定義された必須属性が要素に存在しない場合に警告します。                                                               |

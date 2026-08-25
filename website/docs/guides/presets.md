@@ -118,8 +118,10 @@ Also enables the base rules [`no-unknown-attr`](/docs/rules/no-unknown-attr), [`
 | `html-standard/id-duplication`              | Warns when `id` attribute values are duplicated in one document.                                                                                |
 | `html-standard/no-refer-to-non-existent-id` | Checks whether IDs specified in `for`, `form`, `aria-*`, and fragment links reference an ID that exists in the same document.                   |
 | `html-standard/attr-duplication`            | The parser ignores all such duplicate occurrences of the attribute.                                                                             |
-| `html-standard/deprecated-attr`             | Authors must not use deprecated attributes from the viewpoint of compatibility.                                                                 |
-| `html-standard/deprecated-element`          | Authors must not use deprecated elements from the viewpoint of compatibility.                                                                   |
+| `html-standard/deprecated-attr`             | Authors must not use attributes the HTML spec has removed entirely (obsolete, non-conforming features).                                         |
+| `html-standard/no-deprecated-attr`          | Warns on attributes MDN/BCD marks as deprecated (still defined by the spec, but discouraged).                                                   |
+| `html-standard/deprecated-element`          | Authors must not use elements the HTML spec has removed entirely (obsolete, non-conforming features).                                           |
+| `html-standard/no-deprecated-element`       | Warns on elements MDN/BCD marks as deprecated (still defined by the spec, but discouraged).                                                     |
 | `html-standard/doctype`                     | It has the effect of avoiding quirks mode.                                                                                                      |
 | `html-standard/permitted-contents`          | Warns if a child element is not allowed by the HTML specification for its parent element.                                                       |
 | `html-standard/required-attr`               | Warns if required attributes defined by the HTML specification are not present on an element.                                                   |
