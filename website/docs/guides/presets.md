@@ -159,10 +159,11 @@ No named rules are exposed by this preset.
 
 Includes all [base presets](#base-presets) plus the following rules:
 
-| Named Rule                        | Description                                                                                                                     |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `static-html/character-reference` | Warns when illegal characters in text nodes or attribute values are not escaped with character references.                      |
-| `static-html/end-tag`             | Recommends always writing end tags because it is too difficult for a human to decide whether an element's end tag is omittable. |
+| Named Rule                                     | Description                                                                                                                     |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `static-html/character-reference`              | Warns when a literal `<` in a text node or attribute value isn't escaped with a character reference.                            |
+| `static-html/no-malformed-character-reference` | Warns when a `&...;`-shaped character reference is malformed (unknown name, missing semicolon, invalid numeric reference).      |
+| `static-html/end-tag`                          | Recommends always writing end tags because it is too difficult for a human to decide whether an element's end tag is omittable. |
 
 ### `markuplint:recommended-react` {#preset-react}
 

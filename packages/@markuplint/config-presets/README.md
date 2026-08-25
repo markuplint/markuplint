@@ -100,7 +100,8 @@ Require **aspect-ratio**|Require `width` and `height` attr with `<img>` to avoid
 Require loading `<iframe>` lazily|Require `loading=lazy` with `<iframe>` to avoid render-blocking that causes loading if its element is out of the viewport.|✅|✅|✅|✅|✅|❌|❌|❌|❌|✅|❌|❌|
 Allow `property` attr with `<meta>`|Be able to use **Open-Graph** etc.|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|✅|❌|
 No hard coding **ID**|The component that hard-coded ID cannot mount to an app duplicated because the IDs must be unique in a document. Recommend to specify dynamic IDs to avoid doing that.|❌|✅|✅|❌|✅|❌|❌|❌|❌|❌|❌|❌|
-Use [**character reference**](https://markuplint.dev/docs/rules/character-reference)|Warns when illegal characters in text nodes or attribute values are not escaped with character references.|❌|❌|❌|✅|❌|❌|❌|❌|❌|❌|❌|❌|
+Use [**no-unescaped-char**](https://markuplint.dev/docs/rules/no-unescaped-char)|Warns when a literal `<` (the one character HTML LS always prohibits unescaped) appears in a text node or attribute value. The group name is kept as `character-reference` for backward compatibility.|❌|❌|❌|✅|❌|❌|❌|❌|❌|❌|❌|❌|
+Use [**no-malformed-character-reference**](https://markuplint.dev/docs/rules/no-malformed-character-reference)|Warns when a `&...;`-shaped character reference is malformed (unknown name, missing semicolon, or a NULL/surrogate/control/ noncharacter/out-of-range numeric reference).|❌|❌|❌|✅|❌|❌|❌|❌|❌|❌|❌|❌|
 No omit **end-tag**|Recommend to write an end-tag always because it is too difficult for a human decide an element is end-tag omittable.|❌|❌|❌|✅|❌|❌|❌|❌|❌|❌|❌|❌|
 
 ## Install

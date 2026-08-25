@@ -149,7 +149,8 @@ Example proposals:
   "overrides": {
     "./src/legacy/**/*": {
       "rules": {
-        "character-reference": false
+        "no-unescaped-char": false,
+        "no-malformed-character-reference": false
       }
     }
   }

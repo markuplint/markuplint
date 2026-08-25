@@ -103,9 +103,9 @@ The `property` attribute is not in the HTML spec. See: https://markuplint.dev/do
 
 Install the framework's spec plugin (e.g., `@markuplint/react-spec`). See: https://markuplint.dev/docs/guides/beyond-html#why-need-the-spec-plugins
 
-### `character-reference` false positives with template engines
+### `no-unescaped-char` false positives with template engines
 
-Some template syntaxes trigger false positives. Disable partially or report: https://markuplint.dev/docs/rules/character-reference
+Default mode only flags a literal `<`. The `strict` option (also flagging `>`, `"`, a bare `&`) can trigger false positives with some template syntaxes. Disable partially, turn off `strict`, or report: https://markuplint.dev/docs/rules/no-unescaped-char
 
 ### `--init` is interactive only
 

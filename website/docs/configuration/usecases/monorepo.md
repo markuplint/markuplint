@@ -31,7 +31,8 @@ A package that needs different rules can have its own `.markuplintrc`. Markuplin
   "extends": ["markuplint:recommended"],
   "rules": {
     "class-naming": false,
-    "character-reference": false
+    "no-unescaped-char": false,
+    "no-malformed-character-reference": false
   }
 }
 ```

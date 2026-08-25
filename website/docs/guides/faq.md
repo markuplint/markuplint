@@ -30,9 +30,9 @@ The Open Graph protocol is a different specification from HTML and is not suppor
 
 For React and Vue, spec plugins prevent warnings on framework-specific attributes. (See: [Why need the spec plugins?](/docs/guides/beyond-html#why-need-the-spec-plugins))
 
-### Warned by `character-reference` rule
+### Warned by `no-unescaped-char` rule
 
-[`character-reference`](/docs/rules/character-reference) prompts you to escape characters even when they are technically valid. This may cause false positives with some template engines. You can [disable the rule](/docs/guides/ignoring-code) for affected areas, or [report the situation as an Issue](https://github.com/markuplint/markuplint/issues/new?assignees=%40YusukeHirao&labels=Bug&template=bug_repot.md&title=Fix).
+By default, [`no-unescaped-char`](/docs/rules/no-unescaped-char) only flags a literal `<` — the one character HTML always requires escaped. With the [`strict`](/docs/rules/no-unescaped-char#setting-strict-option) option enabled, it also prompts you to escape `>`, `"`, and a bare `&`, which are technically valid unescaped and may cause false positives with some template engines. You can [disable the rule](/docs/guides/ignoring-code) for affected areas, or [report the situation as an Issue](https://github.com/markuplint/markuplint/issues/new?assignees=%40YusukeHirao&labels=Bug&template=bug_repot.md&title=Fix).
 
 ### Warned by `require-accessible-name` rule
 

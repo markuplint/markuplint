@@ -32,11 +32,11 @@ Open GraphプロトコルはHTMLとは異なる仕様のため、標準で対応
 
 ReactとVueに関してはスペックプラグインにより、各構文固有の属性には警告がでないように定義されています。（参考: [なぜスペックプラグインが必要なのですか](/docs/guides/beyond-html#why-need-the-spec-plugins)）
 
-### `character-reference`ルールで怒られます
+### `no-unescaped-char`ルールで怒られます
 
 <!-- textlint-disable ja-technical-writing/ja-no-weak-phrase -->
 
-[`character-reference`](/docs/rules/character-reference)は文字を厳密に評価しません。エスケープ不要な場所でも変更を促されることがあります。テンプレートエンジンで不都合が起きる場合は、ルールを[無効化](/docs/guides/ignoring-code)するか、[Issueで報告](https://github.com/markuplint/markuplint/issues/new?assignees=%40YusukeHirao&labels=Bug&template=bug_repot.md&title=Fix)してください。
+[`no-unescaped-char`](/docs/rules/no-unescaped-char)は、デフォルトではリテラルの`<`(HTMLが常にエスケープを要求する唯一の文字)のみを検出します。[`strict`](/docs/rules/no-unescaped-char#setting-strict-option)オプションを有効にすると、`>`、`"`、素の`&`も検出対象になりますが、これらは技術的には未エスケープでも仕様に準拠しており、テンプレートエンジンによっては不都合が起きることがあります。その場合は、ルールを[無効化](/docs/guides/ignoring-code)するか、[Issueで報告](https://github.com/markuplint/markuplint/issues/new?assignees=%40YusukeHirao&labels=Bug&template=bug_repot.md&title=Fix)してください。
 
 <!-- textlint-enable ja-technical-writing/ja-no-weak-phrase -->
 
