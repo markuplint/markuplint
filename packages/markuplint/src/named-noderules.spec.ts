@@ -15,7 +15,7 @@ describe('Named nodeRules integration', () => {
 			});
 			const charsetViolation = violations.find(v => v.name === 'html-standard/head-charset-utf8');
 			expect(charsetViolation).toBeDefined();
-			expect(charsetViolation!.ruleId).toBe('required-element');
+			expect(charsetViolation!.ruleId).toBe('require-element');
 			expect(charsetViolation!.specConformance).toBe('normative');
 		});
 
@@ -28,7 +28,7 @@ describe('Named nodeRules integration', () => {
 			);
 			const patternViolation = violations.find(v => v.name === 'html-standard/input-pattern-title');
 			expect(patternViolation).toBeDefined();
-			expect(patternViolation!.ruleId).toBe('required-attr');
+			expect(patternViolation!.ruleId).toBe('require-attr');
 			expect(patternViolation!.specConformance).toBe('non-normative');
 		});
 
@@ -68,7 +68,7 @@ describe('Named nodeRules integration', () => {
 			);
 			const baseViolation = violations.find(v => v.name === 'html-standard/no-base-after-link-or-script');
 			expect(baseViolation).toBeDefined();
-			expect(baseViolation!.ruleId).toBe('disallowed-element');
+			expect(baseViolation!.ruleId).toBe('no-restricted-element');
 			expect(baseViolation!.specConformance).toBe('normative');
 		});
 
@@ -82,7 +82,7 @@ describe('Named nodeRules integration', () => {
 			);
 			const baseViolation = violations.find(v => v.name === 'html-standard/no-base-after-link-or-script');
 			expect(baseViolation).toBeDefined();
-			expect(baseViolation!.ruleId).toBe('disallowed-element');
+			expect(baseViolation!.ruleId).toBe('no-restricted-element');
 			expect(baseViolation!.specConformance).toBe('normative');
 		});
 
@@ -107,7 +107,7 @@ describe('Named nodeRules integration', () => {
 			);
 			const charsetViolation = violations.find(v => v.name === 'html-standard/no-duplicate-charset');
 			expect(charsetViolation).toBeDefined();
-			expect(charsetViolation!.ruleId).toBe('disallowed-element');
+			expect(charsetViolation!.ruleId).toBe('no-restricted-element');
 			expect(charsetViolation!.message).toBe(
 				'There must not be more than one meta element with a charset attribute per document. https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-charset',
 			);
@@ -124,7 +124,7 @@ describe('Named nodeRules integration', () => {
 			);
 			const descriptionViolation = violations.find(v => v.name === 'html-standard/no-duplicate-description');
 			expect(descriptionViolation).toBeDefined();
-			expect(descriptionViolation!.ruleId).toBe('disallowed-element');
+			expect(descriptionViolation!.ruleId).toBe('no-restricted-element');
 			expect(descriptionViolation!.message).toBe(
 				'There must not be more than one meta element where the name attribute value is an ASCII case-insensitive match for "description" per document. https://html.spec.whatwg.org/multipage/semantics.html#standard-metadata-names',
 			);
@@ -141,7 +141,7 @@ describe('Named nodeRules integration', () => {
 			);
 			const coexistViolation = violations.find(v => v.name === 'html-standard/no-charset-http-equiv-coexist');
 			expect(coexistViolation).toBeDefined();
-			expect(coexistViolation!.ruleId).toBe('disallowed-element');
+			expect(coexistViolation!.ruleId).toBe('no-restricted-element');
 			expect(coexistViolation!.message).toBe(
 				'A document must not contain both a meta element with an http-equiv attribute in the Encoding declaration state and a meta element with the charset attribute. https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-charset',
 			);
@@ -158,7 +158,7 @@ describe('Named nodeRules integration', () => {
 			);
 			const baseViolation = violations.find(v => v.name === 'html-standard/no-base-after-link-or-script');
 			expect(baseViolation).toBeDefined();
-			expect(baseViolation!.ruleId).toBe('disallowed-element');
+			expect(baseViolation!.ruleId).toBe('no-restricted-element');
 			expect(baseViolation!.message).toBe(
 				'A base element must come before any other elements in the tree that have attributes defined as taking URLs, except the html element. https://html.spec.whatwg.org/multipage/semantics.html#the-base-element',
 			);
@@ -202,7 +202,7 @@ describe('Named nodeRules integration', () => {
 			});
 			const langViolation = violations.find(v => v.name === 'a11y/html-lang');
 			expect(langViolation).toBeDefined();
-			expect(langViolation!.ruleId).toBe('required-attr');
+			expect(langViolation!.ruleId).toBe('require-attr');
 		});
 
 		it('reports a11y/abbr-title virtual rule', async () => {
@@ -214,7 +214,7 @@ describe('Named nodeRules integration', () => {
 			);
 			const abbrViolation = violations.find(v => v.name === 'a11y/abbr-title');
 			expect(abbrViolation).toBeDefined();
-			expect(abbrViolation!.ruleId).toBe('required-attr');
+			expect(abbrViolation!.ruleId).toBe('require-attr');
 		});
 	});
 
@@ -325,7 +325,7 @@ describe('Named nodeRules integration', () => {
 			);
 			const idViolation = violations.find(v => v.name === 'a11y/id-duplication');
 			expect(idViolation).toBeDefined();
-			expect(idViolation!.ruleId).toBe('id-duplication');
+			expect(idViolation!.ruleId).toBe('no-duplicate-id');
 			expect(idViolation!.specConformance).toBe('normative');
 		});
 	});
@@ -353,14 +353,14 @@ describe('Named nodeRules integration', () => {
 						{
 							name: 'custom/html-lang',
 							selector: ':where(html)',
-							rules: { 'required-attr': ['lang'] },
+							rules: { 'require-attr': ['lang'] },
 						},
 					],
 				},
 			);
 			const langViolation = violations.find(v => v.name === 'custom/html-lang');
 			expect(langViolation).toBeDefined();
-			expect(langViolation!.ruleId).toBe('required-attr');
+			expect(langViolation!.ruleId).toBe('require-attr');
 			// No specConformance set — property should be absent
 			expect(langViolation).not.toHaveProperty('specConformance');
 		});
@@ -374,7 +374,7 @@ describe('Named nodeRules integration', () => {
 							name: 'custom/html-lang',
 							specConformance: 'normative' as const,
 							selector: ':where(html)',
-							rules: { 'required-attr': ['lang'] },
+							rules: { 'require-attr': ['lang'] },
 						},
 					],
 				},
@@ -392,7 +392,7 @@ describe('Named nodeRules integration', () => {
 						{
 							name: 'custom/html-lang',
 							selector: ':where(html)',
-							rules: { 'required-attr': ['lang'] },
+							rules: { 'require-attr': ['lang'] },
 						},
 					],
 					rules: {
@@ -413,7 +413,7 @@ describe('Named nodeRules integration', () => {
 						{
 							name: 'invalid-no-slash',
 							selector: ':where(html)',
-							rules: { 'required-attr': ['lang'] },
+							rules: { 'require-attr': ['lang'] },
 						},
 					],
 				},
@@ -455,19 +455,19 @@ describe('Named nodeRules integration', () => {
 							name: 'custom/div-check',
 							selector: ':where(div)',
 							rules: {
-								'required-attr': ['id'],
-								'required-element': ['button'],
+								'require-attr': ['id'],
+								'require-element': ['button'],
 							},
 						},
 					],
 				},
 			);
-			const attrViolation = violations.find(v => v.name === 'custom/div-check/required-attr');
-			const elemViolation = violations.find(v => v.name === 'custom/div-check/required-element');
+			const attrViolation = violations.find(v => v.name === 'custom/div-check/require-attr');
+			const elemViolation = violations.find(v => v.name === 'custom/div-check/require-element');
 			expect(attrViolation).toBeDefined();
-			expect(attrViolation!.ruleId).toBe('required-attr');
+			expect(attrViolation!.ruleId).toBe('require-attr');
 			expect(elemViolation).toBeDefined();
-			expect(elemViolation!.ruleId).toBe('required-element');
+			expect(elemViolation!.ruleId).toBe('require-element');
 		});
 
 		it('group disable prevents all multi-entry virtual rules', async () => {
@@ -479,8 +479,8 @@ describe('Named nodeRules integration', () => {
 							name: 'custom/div-check',
 							selector: ':where(div)',
 							rules: {
-								'required-attr': ['id'],
-								'required-element': ['button'],
+								'require-attr': ['id'],
+								'require-element': ['button'],
 							},
 						},
 					],
@@ -503,18 +503,18 @@ describe('Named nodeRules integration', () => {
 						{
 							name: 'custom/html-lang',
 							selector: ':where(html)',
-							rules: { 'required-attr': ['lang'] },
+							rules: { 'require-attr': ['lang'] },
 						},
 					],
 					rules: {
-						'required-attr': false,
+						'require-attr': false,
 					},
 				},
 			);
 			// Virtual rule is a separate MLRule instance — base rule disable does not affect it
 			const langViolation = violations.find(v => v.name === 'custom/html-lang');
 			expect(langViolation).toBeDefined();
-			expect(langViolation!.ruleId).toBe('required-attr');
+			expect(langViolation!.ruleId).toBe('require-attr');
 		});
 
 		it('disabling virtual rule does not suppress base rule on other nodes', async () => {
@@ -525,11 +525,11 @@ describe('Named nodeRules integration', () => {
 						{
 							name: 'custom/html-lang',
 							selector: ':where(html)',
-							rules: { 'required-attr': ['lang'] },
+							rules: { 'require-attr': ['lang'] },
 						},
 						{
 							selector: ':where(img)',
-							rules: { 'required-attr': ['alt'] },
+							rules: { 'require-attr': ['alt'] },
 						},
 					],
 					rules: {
@@ -540,7 +540,7 @@ describe('Named nodeRules integration', () => {
 			// Virtual rule disabled
 			expect(violations.find(v => v.name === 'custom/html-lang')).toBeUndefined();
 			// Base rule on <img> still fires via unnamed nodeRule
-			const imgViolation = violations.find(v => v.ruleId === 'required-attr' && !v.name);
+			const imgViolation = violations.find(v => v.ruleId === 'require-attr' && !v.name);
 			expect(imgViolation).toBeDefined();
 		});
 	});
@@ -554,7 +554,7 @@ describe('Named nodeRules integration', () => {
 						{
 							name: 'custom/html-lang',
 							selector: ':where(html)',
-							rules: { 'required-attr': ['lang'] },
+							rules: { 'require-attr': ['lang'] },
 						},
 					],
 					rules: {
@@ -575,11 +575,11 @@ describe('Named nodeRules integration', () => {
 						{
 							name: 'custom/html-lang',
 							selector: ':where(html)',
-							rules: { 'required-attr': ['lang'] },
+							rules: { 'require-attr': ['lang'] },
 						},
 						{
 							selector: ':where(img)',
-							rules: { 'required-attr': ['alt'] },
+							rules: { 'require-attr': ['alt'] },
 						},
 					],
 					rules: {
@@ -588,7 +588,7 @@ describe('Named nodeRules integration', () => {
 				},
 			);
 			const virtualViolation = violations.find(v => v.name === 'custom/html-lang');
-			const baseViolation = violations.find(v => v.ruleId === 'required-attr' && !v.name);
+			const baseViolation = violations.find(v => v.ruleId === 'require-attr' && !v.name);
 			expect(virtualViolation).toBeDefined();
 			expect(baseViolation).toBeDefined();
 			expect(virtualViolation!.severity).toBe('warning');
@@ -605,7 +605,7 @@ describe('Named nodeRules integration', () => {
 						{
 							name: 'custom/html-lang',
 							selector: ':where(html)',
-							rules: { 'required-attr': ['lang'] },
+							rules: { 'require-attr': ['lang'] },
 						},
 						{
 							selector: 'html',
@@ -626,7 +626,7 @@ describe('Named nodeRules integration', () => {
 						{
 							name: 'custom/html-lang',
 							selector: 'html',
-							rules: { 'required-attr': ['lang'] },
+							rules: { 'require-attr': ['lang'] },
 						},
 						{
 							selector: ':where(html)',
@@ -650,7 +650,7 @@ describe('Named nodeRules integration', () => {
 						{
 							name: 'custom/html-lang',
 							selector: ':where(html)',
-							rules: { 'required-attr': ['lang'] },
+							rules: { 'require-attr': ['lang'] },
 						},
 						{
 							selector: ':where(html)',
@@ -678,7 +678,7 @@ describe('Named nodeRules integration', () => {
 						{
 							name: 'custom/html-lang',
 							selector: ':where(html)',
-							rules: { 'required-attr': ['lang'] },
+							rules: { 'require-attr': ['lang'] },
 						},
 					],
 				},
@@ -697,7 +697,7 @@ describe('Named nodeRules integration', () => {
 					{
 						name: 'custom/html-data',
 						selector: ':where(html)',
-						rules: { 'required-attr': ['data-app'] },
+						rules: { 'require-attr': ['data-app'] },
 					},
 				],
 			});
@@ -759,17 +759,17 @@ describe('Named nodeRules integration', () => {
 							name: 'custom/div-id',
 							selector: ':where(div)',
 							rules: {
-								'required-attr': ['id'],
+								'require-attr': ['id'],
 								'permitted-contents': false,
 							},
 						},
 					],
 				},
 			);
-			// Virtual rule fires for required-attr
+			// Virtual rule fires for require-attr
 			const idViolation = violations.find(v => v.name === 'custom/div-id');
 			expect(idViolation).toBeDefined();
-			expect(idViolation!.ruleId).toBe('required-attr');
+			expect(idViolation!.ruleId).toBe('require-attr');
 			// The false entry becomes an unnamed nodeRule — no virtual rule is created for it
 			const permVirtualViolation = violations.find(
 				v => v.ruleId === 'permitted-contents' && v.name === 'custom/div-id',
@@ -787,14 +787,14 @@ describe('Named nodeRules integration', () => {
 						{
 							name: 'custom/li-data',
 							selector: ':where(ul)',
-							rules: { 'required-attr': ['data-index'] },
+							rules: { 'require-attr': ['data-index'] },
 						},
 					],
 				},
 			);
 			const liViolation = violations.find(v => v.name === 'custom/li-data');
 			expect(liViolation).toBeDefined();
-			expect(liViolation!.ruleId).toBe('required-attr');
+			expect(liViolation!.ruleId).toBe('require-attr');
 		});
 
 		it('disables named childNodeRule by exact name', async () => {
@@ -805,7 +805,7 @@ describe('Named nodeRules integration', () => {
 						{
 							name: 'custom/li-data',
 							selector: ':where(ul)',
-							rules: { 'required-attr': ['data-index'] },
+							rules: { 'require-attr': ['data-index'] },
 						},
 					],
 					rules: {
@@ -864,8 +864,8 @@ describe('Named nodeRules integration', () => {
 			expect(a11yId).toBeDefined();
 			expect(htmlStdId).toBeDefined();
 			// Different names, same base rule
-			expect(a11yId!.ruleId).toBe('id-duplication');
-			expect(htmlStdId!.ruleId).toBe('id-duplication');
+			expect(a11yId!.ruleId).toBe('no-duplicate-id');
+			expect(htmlStdId!.ruleId).toBe('no-duplicate-id');
 		});
 
 		it('disabling a11y/id-duplication still reports html-standard/id-duplication', async () => {
@@ -907,7 +907,7 @@ describe('Named nodeRules integration', () => {
 					},
 				},
 			);
-			const idViolations = violations.filter(v => v.ruleId === 'id-duplication');
+			const idViolations = violations.filter(v => v.ruleId === 'no-duplicate-id');
 			expect(idViolations).toStrictEqual([]);
 		});
 	});
@@ -919,12 +919,12 @@ describe('Named nodeRules integration', () => {
 				{
 					extends: ['markuplint:html-standard', 'markuplint:a11y'],
 					rules: {
-						'id-duplication': false,
+						'no-duplicate-id': false,
 					},
 				},
 			);
 			// base rule false → both a11y/ and html-standard/ named rule groups disabled
-			const idViolations = violations.filter(v => v.ruleId === 'id-duplication');
+			const idViolations = violations.filter(v => v.ruleId === 'no-duplicate-id');
 			expect(idViolations).toStrictEqual([]);
 		});
 	});
@@ -1037,11 +1037,11 @@ describe('Named nodeRules integration', () => {
 				'<!doctype html><html lang="en"><head><meta charset="UTF-8"></head><body><div id="a"></div><div id="a"></div></body></html>',
 				{
 					rules: {
-						'id-duplication': true,
+						'no-duplicate-id': true,
 					},
 				},
 			);
-			const idViolation = violations.find(v => v.ruleId === 'id-duplication');
+			const idViolation = violations.find(v => v.ruleId === 'no-duplicate-id');
 			expect(idViolation).toBeDefined();
 			// No virtual rule metadata
 			expect(idViolation).not.toHaveProperty('name');
@@ -1089,13 +1089,13 @@ describe('Named nodeRules integration', () => {
 							selector: '.ignore',
 							inheritance: true,
 							rules: {
-								'wai-aria-non-existent-role': false,
+								'no-unknown-role': false,
 							},
 						},
 					],
 				},
 			);
-			const waiAriaViolations = violations.filter(v => v.ruleId === 'wai-aria-non-existent-role');
+			const waiAriaViolations = violations.filter(v => v.ruleId === 'no-unknown-role');
 			expect(waiAriaViolations).toHaveLength(0);
 		});
 
@@ -1109,13 +1109,13 @@ describe('Named nodeRules integration', () => {
 							selector: '.ignore',
 							inheritance: true,
 							rules: {
-								'wai-aria-non-existent-role': false,
+								'no-unknown-role': false,
 							},
 						},
 					],
 				},
 			);
-			const waiAriaViolations = violations.filter(v => v.ruleId === 'wai-aria-non-existent-role');
+			const waiAriaViolations = violations.filter(v => v.ruleId === 'no-unknown-role');
 			// role="foo" outside .ignore is still reported; role="bar" inside .ignore is suppressed
 			expect(waiAriaViolations).toHaveLength(1);
 			expect(waiAriaViolations[0]!.message).toContain('foo');
@@ -1130,13 +1130,13 @@ describe('Named nodeRules integration', () => {
 						{
 							selector: 'div',
 							rules: {
-								'wai-aria-non-existent-role': false,
+								'no-unknown-role': false,
 							},
 						},
 					],
 				},
 			);
-			const waiAriaViolations = violations.filter(v => v.ruleId === 'wai-aria-non-existent-role');
+			const waiAriaViolations = violations.filter(v => v.ruleId === 'no-unknown-role');
 			expect(waiAriaViolations).toHaveLength(0);
 		});
 
@@ -1192,7 +1192,7 @@ describe('Named nodeRules integration', () => {
 						{
 							selector: 'img[src$=".svg"]',
 							rules: {
-								'wai-aria-implicit-role': false,
+								'no-redundant-role': false,
 							},
 						},
 					],
@@ -1200,7 +1200,7 @@ describe('Named nodeRules integration', () => {
 			);
 			// Base rule name disable propagates to a11y/wai-aria/implicit-role virtual rule
 			const implicitRoleViolations = violations.filter(
-				v => v.ruleId === 'wai-aria-implicit-role' && v.message.includes('img'),
+				v => v.ruleId === 'no-redundant-role' && v.message.includes('img'),
 			);
 			expect(implicitRoleViolations).toHaveLength(0);
 		});
@@ -1215,14 +1215,14 @@ describe('Named nodeRules integration', () => {
 							selector: '.svg-section',
 							inheritance: true,
 							rules: {
-								'wai-aria-implicit-role': false,
+								'no-redundant-role': false,
 							},
 						},
 					],
 				},
 			);
 			const implicitRoleViolations = violations.filter(
-				v => v.ruleId === 'wai-aria-implicit-role' && v.message.includes('img'),
+				v => v.ruleId === 'no-redundant-role' && v.message.includes('img'),
 			);
 			expect(implicitRoleViolations).toHaveLength(0);
 		});
@@ -1275,14 +1275,14 @@ describe('Named nodeRules integration', () => {
 						{
 							selector: 'div',
 							rules: {
-								'id-duplication': false,
+								'no-duplicate-id': false,
 							},
 						},
 					],
 				},
 			);
 			// Both a11y/id-duplication and html-standard/id-duplication should be disabled on div
-			const idViolations = violations.filter(v => v.ruleId === 'id-duplication');
+			const idViolations = violations.filter(v => v.ruleId === 'no-duplicate-id');
 			expect(idViolations).toHaveLength(0);
 		});
 	});

@@ -14,7 +14,7 @@ import {
 	resolveRules,
 	resolveSpecs,
 } from '@markuplint/file-resolver';
-import { applyRuleAliases, mergeConfig } from '@markuplint/ml-config';
+import { applyRuleAliasesToConfig, mergeConfig } from '@markuplint/ml-config';
 import { MLCore, convertRuleset } from '@markuplint/ml-core';
 import { ruleAliasTable } from '@markuplint/rules';
 import { isFatalError } from '@markuplint/shared';
@@ -438,9 +438,11 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		// their current replacement(s) so old configurations keep working.
 		// Applied once, here, after `extends` is fully merged — everything
 		// downstream (Ruleset, rule resolution, `--show-config`) sees only
-		// current rule names.
-		const { rules: aliasedRules, warnings: ruleAliasWarnings } = applyRuleAliases(
-			resolvedConfigSet.config.rules,
+		// current rule names. Covers all three places a rule name can appear:
+		// the top-level `rules` map, and each `nodeRules`/`childNodeRules`
+		// entry's own `rules`.
+		const { config: aliasedConfig, warnings: ruleAliasWarnings } = applyRuleAliasesToConfig(
+			resolvedConfigSet.config,
 			ruleAliasTable,
 		);
 		const configSet: ConfigSet =
@@ -448,7 +450,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 				? resolvedConfigSet
 				: {
 						...resolvedConfigSet,
-						config: { ...resolvedConfigSet.config, rules: aliasedRules },
+						config: aliasedConfig,
 						errs: [
 							...resolvedConfigSet.errs,
 							...ruleAliasWarnings.map(

@@ -140,11 +140,11 @@ describe('basic test', () => {
 			'invalid-attr',
 			'invalid-attr',
 			'no-default-value',
-			'required-attr',
-			'required-attr',
+			'require-attr',
+			'require-attr',
 			'placeholder-label-option',
-			'required-attr',
-			'required-attr',
+			'require-attr',
+			'require-attr',
 			'invalid-attr',
 			'invalid-attr',
 			'require-accessible-name',
@@ -175,32 +175,32 @@ describe('basic test', () => {
 			'require-accessible-name',
 			'require-accessible-name',
 			'require-accessible-name',
-			'wai-aria-non-existent-role',
-			'wai-aria-non-existent-role',
-			'wai-aria-abstract-role',
-			'wai-aria-abstract-role',
-			'wai-aria-permitted-roles',
-			'wai-aria-permitted-roles',
-			'wai-aria-permitted-roles',
-			'wai-aria-permitted-roles',
-			'wai-aria-permitted-roles',
-			'wai-aria-permitted-roles',
-			'wai-aria-permitted-roles',
-			'wai-aria-implicit-role',
-			'wai-aria-implicit-role',
-			'wai-aria-implicit-role',
-			'wai-aria-implicit-role',
-			'wai-aria-implicit-role',
-			'wai-aria-implicit-role',
-			'wai-aria-implicit-role',
+			'no-unknown-role',
+			'no-unknown-role',
+			'no-abstract-role',
+			'no-abstract-role',
+			'permitted-roles',
+			'permitted-roles',
+			'permitted-roles',
+			'permitted-roles',
+			'permitted-roles',
+			'permitted-roles',
+			'permitted-roles',
+			'no-redundant-role',
+			'no-redundant-role',
+			'no-redundant-role',
+			'no-redundant-role',
+			'no-redundant-role',
+			'no-redundant-role',
+			'no-redundant-role',
 			'wai-aria-implicit-props',
 			'wai-aria-implicit-props',
 			'wai-aria-implicit-props',
 			'wai-aria-implicit-props',
 			'wai-aria-implicit-props',
 			'wai-aria-implicit-props',
-			'wai-aria-required-props',
-			'wai-aria-required-props',
+			'require-aria-prop',
+			'require-aria-prop',
 			'wai-aria-disallowed-props',
 			'wai-aria-disallowed-props',
 			'wai-aria-disallowed-props',
@@ -214,32 +214,32 @@ describe('basic test', () => {
 			'wai-aria-disallowed-props',
 			'wai-aria-disallowed-props',
 			'wai-aria-disallowed-props',
-			'wai-aria-value',
-			'wai-aria-value',
-			'wai-aria-value',
-			'wai-aria-value',
-			'wai-aria-value',
-			'wai-aria-value',
-			'required-element',
-			'required-attr',
-			'required-attr',
-			'required-element',
-			'required-attr',
-			'required-attr',
-			'required-attr',
-			'required-attr',
-			'required-attr',
-			'required-attr',
-			'required-attr',
-			'required-attr',
-			'required-attr',
-			'required-attr',
-			'required-attr',
-			'required-attr',
-			'required-attr',
-			'required-attr',
-			'required-attr',
-			'required-attr',
+			'no-invalid-aria-prop-value',
+			'no-invalid-aria-prop-value',
+			'no-invalid-aria-prop-value',
+			'no-invalid-aria-prop-value',
+			'no-invalid-aria-prop-value',
+			'no-invalid-aria-prop-value',
+			'require-element',
+			'require-attr',
+			'require-attr',
+			'require-element',
+			'require-attr',
+			'require-attr',
+			'require-attr',
+			'require-attr',
+			'require-attr',
+			'require-attr',
+			'require-attr',
+			'require-attr',
+			'require-attr',
+			'require-attr',
+			'require-attr',
+			'require-attr',
+			'require-attr',
+			'require-attr',
+			'require-attr',
+			'require-attr',
 		]);
 	});
 
@@ -254,7 +254,7 @@ describe('wai-aria sub-rule severity via preset', () => {
 		const { violations } = await mlTest('<div role="hoge"></div>', {
 			extends: ['markuplint:a11y'],
 		});
-		const nonExistentRole = violations.find(v => v.ruleId === 'wai-aria-non-existent-role');
+		const nonExistentRole = violations.find(v => v.ruleId === 'no-unknown-role');
 		expect(nonExistentRole).toBeDefined();
 		expect(nonExistentRole!.severity).toBe('error');
 	});
@@ -263,7 +263,7 @@ describe('wai-aria sub-rule severity via preset', () => {
 		const { violations } = await mlTest('<nav role="navigation"></nav>', {
 			extends: ['markuplint:a11y'],
 		});
-		const implicitRole = violations.find(v => v.ruleId === 'wai-aria-implicit-role');
+		const implicitRole = violations.find(v => v.ruleId === 'no-redundant-role');
 		expect(implicitRole).toBeDefined();
 		expect(implicitRole!.severity).toBe('warning');
 	});
@@ -537,21 +537,21 @@ describe('Built-in parse-error channel (#3844)', () => {
 
 	test('dedupe is global, not per-node — local nodeRules disable does not "unmute" parse-error', async () => {
 		// `<div><span attr attr>` triggers parse5 `duplicate-attribute` and the
-		// `attr-duplication` rule. `nodeRules` disables the rule on `<span>`
+		// `no-duplicate-attr` rule. `nodeRules` disables the rule on `<span>`
 		// only. The dedupe check uses the **global** ruleset config
-		// (`rules.attr-duplication: true`) so the parse-error channel still
-		// treats `attr-duplication` as active and suppresses
+		// (`rules.no-duplicate-attr: true`) so the parse-error channel still
+		// treats `no-duplicate-attr` as active and suppresses
 		// `duplicate-attribute`. Result: ZERO violations for the `<span>`'s
 		// duplicate — consistent with the user's intent ("I disabled this
 		// rule on span") rather than the parse-error channel re-surfacing
 		// what the user just opted out of.
 		const { violations } = await mlTest('<div><span attr attr></span></div>', {
 			severity: { parseError: 'error' },
-			rules: { 'attr-duplication': true },
-			nodeRules: [{ selector: 'span', rules: { 'attr-duplication': false } }],
+			rules: { 'no-duplicate-attr': true },
+			nodeRules: [{ selector: 'span', rules: { 'no-duplicate-attr': false } }],
 		});
 		expect(violations.filter(v => v.ruleId === 'parse-error')).toHaveLength(0);
-		expect(violations.filter(v => v.ruleId === 'attr-duplication')).toHaveLength(0);
+		expect(violations.filter(v => v.ruleId === 'no-duplicate-attr')).toHaveLength(0);
 	});
 
 	test('framework parsers (Vue) do not emit parse-error — parse5 is not invoked', async () => {
@@ -635,29 +635,29 @@ describe('Built-in parse-error channel (#3844)', () => {
 // The dedupe is **hook-based** (each rule declares its own list) rather
 // than driven by a hard-coded table in ml-core — see `RuleSeed.meta.mirrorsParseErrorCodes`.
 describe('Built-in parse-error channel — dedupe against mirroring rules (#3844)', () => {
-	test('attr-duplication is active → duplicate-attribute is suppressed in parse-error output', async () => {
+	test('no-duplicate-attr is active → duplicate-attribute is suppressed in parse-error output', async () => {
 		const { violations } = await mlTest('<div a a></div>', {
-			rules: { 'attr-duplication': true },
+			rules: { 'no-duplicate-attr': true },
 			severity: { parseError: 'error' },
 		});
 		// ml rule reports the duplicate, parse-error channel stays silent for
 		// `duplicate-attribute`.
-		expect(violations.some(v => v.ruleId === 'attr-duplication')).toBe(true);
+		expect(violations.some(v => v.ruleId === 'no-duplicate-attr')).toBe(true);
 		expect(violations.some(v => v.ruleId === 'parse-error' && v.message.includes('duplicate-attribute'))).toBe(
 			false,
 		);
 	});
 
-	test('attr-duplication is disabled → duplicate-attribute is STILL suppressed (rule owns the code unconditionally)', async () => {
+	test('no-duplicate-attr is disabled → duplicate-attribute is STILL suppressed (rule owns the code unconditionally)', async () => {
 		const { violations } = await mlTest('<div a a></div>', {
-			rules: { 'attr-duplication': false },
+			rules: { 'no-duplicate-attr': false },
 			severity: { parseError: 'error' },
 		});
 		// Mirror declarations are static metadata; ml-core suppresses
 		// duplicate-attribute regardless of whether the rule is currently
 		// enabled. Disabling the rule means the user opted out of that
 		// detection entirely — the parse-error channel does NOT fill in.
-		expect(violations.some(v => v.ruleId === 'attr-duplication')).toBe(false);
+		expect(violations.some(v => v.ruleId === 'no-duplicate-attr')).toBe(false);
 		expect(violations.some(v => v.ruleId === 'parse-error' && v.message.includes('duplicate-attribute'))).toBe(
 			false,
 		);
@@ -665,26 +665,26 @@ describe('Built-in parse-error channel — dedupe against mirroring rules (#3844
 
 	test('dedupe skips ONLY the mirrored code, leaves unrelated parse5 events intact', async () => {
 		// `<!-- a <!-- b --> -->` triggers `nested-comment` (NOT mirrored).
-		// `<div a a>` triggers `duplicate-attribute` (mirrored by attr-duplication).
+		// `<div a a>` triggers `duplicate-attribute` (mirrored by no-duplicate-attr).
 		const { violations } = await mlTest('<!-- a <!-- b --> --><div a a></div>', {
-			rules: { 'attr-duplication': true },
+			rules: { 'no-duplicate-attr': true },
 			severity: { parseError: 'error' },
 		});
 		const parseErrors = violations.filter(v => v.ruleId === 'parse-error');
 		// nested-comment still fires (no mirroring rule), duplicate-attribute
-		// is suppressed (attr-duplication mirrors it).
+		// is suppressed (no-duplicate-attr mirrors it).
 		expect(parseErrors.some(v => v.message.includes('nested-comment'))).toBe(true);
 		expect(parseErrors.some(v => v.message.includes('duplicate-attribute'))).toBe(false);
 	});
 
 	test('Record-form severity.parseError respects dedupe too', async () => {
 		const { violations } = await mlTest('<div a a></div>', {
-			rules: { 'attr-duplication': true },
+			rules: { 'no-duplicate-attr': true },
 			severity: { parseError: { 'duplicate-attribute': 'error' } },
 		});
 		// Even though the user explicitly opted in to duplicate-attribute via
 		// the Record form, the active ml rule still wins (no double-emit).
-		expect(violations.some(v => v.ruleId === 'attr-duplication')).toBe(true);
+		expect(violations.some(v => v.ruleId === 'no-duplicate-attr')).toBe(true);
 		expect(violations.some(v => v.ruleId === 'parse-error' && v.message.includes('duplicate-attribute'))).toBe(
 			false,
 		);

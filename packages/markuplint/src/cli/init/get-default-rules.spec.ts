@@ -5,7 +5,7 @@ import { getDefaultRules } from './get-default-rules.js';
 test('default-rules', () => {
 	const defaultRules = getDefaultRules();
 	expect(defaultRules).toStrictEqual({
-		'attr-duplication': {
+		'no-duplicate-attr': {
 			category: 'validation',
 			defaultValue: true,
 		},
@@ -33,7 +33,7 @@ test('default-rules', () => {
 			category: 'naming-convention',
 			defaultValue: false,
 		},
-		'correct-aspect-ratio': {
+		'no-mismatched-aspect-ratio': {
 			category: 'validation',
 			defaultValue: false,
 		},
@@ -45,7 +45,7 @@ test('default-rules', () => {
 			category: 'validation',
 			defaultValue: true,
 		},
-		'disallowed-element': {
+		'no-restricted-element': {
 			category: 'validation',
 			defaultValue: [],
 		},
@@ -53,7 +53,7 @@ test('default-rules', () => {
 			category: 'validation',
 			defaultValue: 'always',
 		},
-		'end-tag': {
+		'require-end-tag': {
 			category: 'style',
 			defaultValue: false,
 		},
@@ -65,15 +65,15 @@ test('default-rules', () => {
 			category: 'style',
 			defaultValue: false,
 		},
-		'heading-levels': {
+		'no-skipped-heading-level': {
 			category: 'validation',
 			defaultValue: true,
 		},
-		'id-duplication': {
+		'no-duplicate-id': {
 			category: 'validation',
 			defaultValue: true,
 		},
-		'ineffective-attr': {
+		'no-ineffective-attr': {
 			category: 'style',
 			defaultValue: false,
 		},
@@ -81,7 +81,7 @@ test('default-rules', () => {
 			category: 'validation',
 			defaultValue: true,
 		},
-		'input-file-empty-value': {
+		'no-input-file-value': {
 			category: 'validation',
 			defaultValue: true,
 		},
@@ -129,7 +129,7 @@ test('default-rules', () => {
 			category: 'validation',
 			defaultValue: true,
 		},
-		'neighbor-popovers': {
+		'require-adjacent-popover': {
 			category: 'a11y',
 			defaultValue: true,
 		},
@@ -173,7 +173,7 @@ test('default-rules', () => {
 			category: 'validation',
 			defaultValue: true,
 		},
-		'no-hard-code-id': {
+		'no-hardcoded-id': {
 			category: 'maintainability',
 			defaultValue: false,
 		},
@@ -197,7 +197,7 @@ test('default-rules', () => {
 			category: 'validation',
 			defaultValue: false,
 		},
-		'no-use-event-handler-attr': {
+		'no-event-handler-attr': {
 			category: 'maintainability',
 			defaultValue: false,
 		},
@@ -213,7 +213,7 @@ test('default-rules', () => {
 			category: 'validation',
 			defaultValue: true,
 		},
-		'redundant-accessible-name': {
+		'no-redundant-accessible-name': {
 			category: 'a11y',
 			defaultValue: false,
 		},
@@ -229,11 +229,11 @@ test('default-rules', () => {
 			category: 'a11y',
 			defaultValue: false,
 		},
-		'required-attr': {
+		'require-attr': {
 			category: 'validation',
 			defaultValue: [],
 		},
-		'required-element': {
+		'require-element': {
 			category: 'validation',
 			defaultValue: [],
 		},
@@ -253,7 +253,7 @@ test('default-rules', () => {
 			category: 'a11y',
 			defaultValue: false,
 		},
-		'use-list': {
+		'no-pseudo-list': {
 			category: 'a11y',
 			defaultValue: false,
 		},
@@ -265,19 +265,19 @@ test('default-rules', () => {
 			category: 'a11y',
 			defaultValue: true,
 		},
-		'wai-aria-abstract-role': {
+		'no-abstract-role': {
 			category: 'a11y',
 			defaultValue: true,
 		},
-		'wai-aria-default-value': {
+		'no-default-aria-value': {
 			category: 'a11y',
 			defaultValue: false,
 		},
-		'wai-aria-deprecated-props': {
+		'no-deprecated-aria-prop': {
 			category: 'a11y',
 			defaultValue: false,
 		},
-		'wai-aria-deprecated-role': {
+		'no-deprecated-role': {
 			category: 'a11y',
 			defaultValue: false,
 		},
@@ -289,47 +289,47 @@ test('default-rules', () => {
 			category: 'a11y',
 			defaultValue: false,
 		},
-		'wai-aria-implicit-role': {
+		'no-redundant-role': {
 			category: 'a11y',
 			defaultValue: false,
 		},
-		'wai-aria-interaction-in-hidden': {
+		'no-focusable-in-aria-hidden': {
 			category: 'a11y',
 			defaultValue: false,
 		},
-		'wai-aria-no-global-prop': {
+		'aria-prop-requires-role': {
 			category: 'a11y',
 			defaultValue: true,
 		},
-		'wai-aria-non-existent-role': {
+		'no-unknown-role': {
 			category: 'a11y',
 			defaultValue: true,
 		},
-		'wai-aria-permitted-roles': {
+		'permitted-roles': {
 			category: 'a11y',
 			defaultValue: true,
 		},
-		'wai-aria-presentational-children': {
+		'no-aria-on-presentational-children': {
 			category: 'a11y',
 			defaultValue: false,
 		},
-		'wai-aria-required-owned-elements': {
+		'require-owned-elements': {
 			category: 'a11y',
 			defaultValue: false,
 		},
-		'wai-aria-required-parent-role': {
+		'require-parent-role': {
 			category: 'a11y',
 			defaultValue: true,
 		},
-		'wai-aria-required-props': {
+		'require-aria-prop': {
 			category: 'a11y',
 			defaultValue: true,
 		},
-		'wai-aria-tab-requires-tabpanel': {
+		'tab-requires-tabpanel': {
 			category: 'a11y',
 			defaultValue: true,
 		},
-		'wai-aria-value': {
+		'no-invalid-aria-prop-value': {
 			category: 'a11y',
 			defaultValue: true,
 		},
