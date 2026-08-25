@@ -10,7 +10,7 @@
 		"html-standard/attr-duplication": {
 			"specConformance": "normative",
 			"rules": {
-				"attr-duplication": true
+				"no-duplicate-attr": true
 			}
 		},
 
@@ -59,7 +59,7 @@
 		"html-standard/heading-levels": {
 			"specConformance": "non-normative",
 			"rules": {
-				"heading-levels": true
+				"no-skipped-heading-level": true
 			}
 		},
 
@@ -70,7 +70,7 @@
 		"html-standard/id-duplication": {
 			"specConformance": "normative",
 			"rules": {
-				"id-duplication": true
+				"no-duplicate-id": true
 			}
 		},
 
@@ -110,7 +110,7 @@
 		"html-standard/ineffective-attr": {
 			"specConformance": "non-normative",
 			"rules": {
-				"ineffective-attr": true
+				"no-ineffective-attr": true
 			}
 		},
 
@@ -244,7 +244,7 @@
 		"html-standard/required-attr": {
 			"specConformance": "normative",
 			"rules": {
-				"required-attr": true
+				"require-attr": true
 			}
 		},
 
@@ -326,7 +326,7 @@
 		"html-standard/input-file-empty-value": {
 			"specConformance": "normative",
 			"rules": {
-				"input-file-empty-value": true
+				"no-input-file-value": true
 			}
 		},
 
@@ -437,7 +437,7 @@
 			"specConformance": "normative",
 			"selector": ":where(head)",
 			"rules": {
-				"required-element": ["meta[charset=\"UTF-8\" i]"]
+				"require-element": ["meta[charset=\"UTF-8\" i]"]
 			}
 		},
 		{
@@ -453,7 +453,7 @@
 			"specConformance": "normative",
 			"selector": ":where(head)",
 			"rules": {
-				"disallowed-element": {
+				"no-restricted-element": {
 					"value": ["meta[charset] ~ meta[charset]"],
 					"reason": "There must not be more than one meta element with a charset attribute per document. https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-charset",
 					"reasonOnly": true
@@ -473,7 +473,7 @@
 			"specConformance": "normative",
 			"selector": ":where(head)",
 			"rules": {
-				"disallowed-element": {
+				"no-restricted-element": {
 					"value": ["meta[name=\"description\" i] ~ meta[name=\"description\" i]"],
 					"reason": "There must not be more than one meta element where the name attribute value is an ASCII case-insensitive match for \"description\" per document. https://html.spec.whatwg.org/multipage/semantics.html#standard-metadata-names",
 					"reasonOnly": true
@@ -494,7 +494,7 @@
 			"specConformance": "normative",
 			"selector": ":where(head)",
 			"rules": {
-				"disallowed-element": {
+				"no-restricted-element": {
 					"value": [
 						"meta[charset] ~ meta[http-equiv=\"content-type\" i]",
 						"meta[http-equiv=\"content-type\" i] ~ meta[charset]"
@@ -519,7 +519,7 @@
 			"specConformance": "normative",
 			"selector": ":where(head)",
 			"rules": {
-				"disallowed-element": {
+				"no-restricted-element": {
 					"value": [":is(link, script) ~ base"],
 					"reason": "A base element must come before any other elements in the tree that have attributes defined as taking URLs, except the html element. https://html.spec.whatwg.org/multipage/semantics.html#the-base-element",
 					"reasonOnly": true
@@ -538,7 +538,7 @@
 			"specConformance": "normative",
 			"selector": "h1, h2, h3, h4, h5, h6",
 			"rules": {
-				"disallowed-element": {
+				"no-restricted-element": {
 					"value": ["small"],
 					"reason": "The small element must not be used for subheadings. https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-small-element"
 				}
@@ -556,7 +556,7 @@
 			"specConformance": "non-normative",
 			"selector": ":where(figcaption ~ table, table:has(~ figcaption))",
 			"rules": {
-				"disallowed-element": {
+				"no-restricted-element": {
 					"value": ["caption"],
 					"reason": "When a table element is the only content in a figure element other than the figcaption, the caption element should be omitted in favor of the figcaption. (https://html.spec.whatwg.org/multipage/tables.html#the-caption-element)"
 				},
@@ -575,7 +575,7 @@
 			"specConformance": "non-normative",
 			"selector": ":where(input[pattern])",
 			"rules": {
-				"required-attr": {
+				"require-attr": {
 					"value": [{ "name": "title" }]
 				}
 			}

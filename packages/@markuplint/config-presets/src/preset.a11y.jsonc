@@ -10,7 +10,7 @@
 		"a11y/id-duplication": {
 			"specConformance": "normative",
 			"rules": {
-				"id-duplication": true
+				"no-duplicate-id": true
 			}
 		},
 
@@ -60,7 +60,7 @@
 		"a11y/neighbor-popovers": {
 			"specConformance": "non-normative",
 			"rules": {
-				"neighbor-popovers": true
+				"require-adjacent-popover": true
 			}
 		},
 
@@ -102,7 +102,7 @@
 		"a11y/redundant-accessible-name": {
 			"specConformance": "non-normative",
 			"rules": {
-				"redundant-accessible-name": true
+				"no-redundant-accessible-name": true
 			}
 		},
 
@@ -155,7 +155,7 @@
 		"a11y/use-list": {
 			"specConformance": "non-normative",
 			"rules": {
-				"use-list": true
+				"no-pseudo-list": true
 			}
 		},
 
@@ -164,20 +164,20 @@
 		 */
 		"a11y/wai-aria/non-existent-role": {
 			"specConformance": "normative",
-			"rules": { "wai-aria-non-existent-role": true }
+			"rules": { "no-unknown-role": true }
 		},
 		"a11y/wai-aria/abstract-role": {
 			"specConformance": "normative",
-			"rules": { "wai-aria-abstract-role": true }
+			"rules": { "no-abstract-role": true }
 		},
 		"a11y/wai-aria/permitted-roles": {
 			"specConformance": "normative",
-			"rules": { "wai-aria-permitted-roles": true }
+			"rules": { "permitted-roles": true }
 		},
 		"a11y/wai-aria/implicit-role": {
 			"specConformance": "non-normative",
 			"severity": "warning",
-			"rules": { "wai-aria-implicit-role": true }
+			"rules": { "no-redundant-role": true }
 		},
 		"a11y/wai-aria/implicit-props": {
 			"specConformance": "non-normative",
@@ -186,7 +186,7 @@
 		},
 		"a11y/wai-aria/required-props": {
 			"specConformance": "normative",
-			"rules": { "wai-aria-required-props": true }
+			"rules": { "require-aria-prop": true }
 		},
 		"a11y/wai-aria/disallowed-props": {
 			"specConformance": "normative",
@@ -195,48 +195,48 @@
 		"a11y/wai-aria/deprecated-role": {
 			"specConformance": "non-normative",
 			"severity": "warning",
-			"rules": { "wai-aria-deprecated-role": true }
+			"rules": { "no-deprecated-role": true }
 		},
 		"a11y/wai-aria/deprecated-props": {
 			"specConformance": "non-normative",
 			"severity": "warning",
-			"rules": { "wai-aria-deprecated-props": true }
+			"rules": { "no-deprecated-aria-prop": true }
 		},
 		"a11y/wai-aria/value": {
 			"specConformance": "normative",
-			"rules": { "wai-aria-value": true }
+			"rules": { "no-invalid-aria-prop-value": true }
 		},
 		"a11y/wai-aria/required-owned-elements": {
 			"specConformance": "normative",
 			"severity": "warning",
-			"rules": { "wai-aria-required-owned-elements": true }
+			"rules": { "require-owned-elements": true }
 		},
 		"a11y/wai-aria/required-parent-role": {
 			"specConformance": "normative",
-			"rules": { "wai-aria-required-parent-role": true }
+			"rules": { "require-parent-role": true }
 		},
 		"a11y/wai-aria/tab-requires-tabpanel": {
 			"specConformance": "normative",
-			"rules": { "wai-aria-tab-requires-tabpanel": true }
+			"rules": { "tab-requires-tabpanel": true }
 		},
 		"a11y/wai-aria/presentational-children": {
 			"specConformance": "non-normative",
 			"severity": "warning",
-			"rules": { "wai-aria-presentational-children": true }
+			"rules": { "no-aria-on-presentational-children": true }
 		},
 		"a11y/wai-aria/no-global-prop": {
 			"specConformance": "normative",
-			"rules": { "wai-aria-no-global-prop": true }
+			"rules": { "aria-prop-requires-role": true }
 		},
 		"a11y/wai-aria/default-value": {
 			"specConformance": "non-normative",
 			"severity": "warning",
-			"rules": { "wai-aria-default-value": true }
+			"rules": { "no-default-aria-value": true }
 		},
 		"a11y/wai-aria/interaction-in-hidden": {
 			"specConformance": "non-normative",
 			"severity": "warning",
-			"rules": { "wai-aria-interaction-in-hidden": true }
+			"rules": { "no-focusable-in-aria-hidden": true }
 		}
 	},
 	"nodeRules": [
@@ -248,7 +248,7 @@
 			"specConformance": "non-normative",
 			"selector": ":where(html)",
 			"rules": {
-				"required-attr": ["lang"]
+				"require-attr": ["lang"]
 			}
 		},
 		{
@@ -259,7 +259,7 @@
 			"specConformance": "non-normative",
 			"selector": ":where(abbr)",
 			"rules": {
-				"required-attr": ["title"]
+				"require-attr": ["title"]
 			}
 		},
 		{
@@ -270,7 +270,7 @@
 			"specConformance": "non-normative",
 			"selector": ":where(video, audio)",
 			"rules": {
-				"required-element": ["track"]
+				"require-element": ["track"]
 			}
 		},
 		{
@@ -281,7 +281,7 @@
 			"specConformance": "non-normative",
 			"selector": ":where(video[autoplay])",
 			"rules": {
-				"required-attr": ["muted"]
+				"require-attr": ["muted"]
 			}
 		},
 		{
@@ -312,7 +312,7 @@
 			"specConformance": "non-normative",
 			"selector": ":where(summary)",
 			"rules": {
-				"disallowed-element": [":model(interactive)"]
+				"no-restricted-element": [":model(interactive)"]
 			}
 		},
 		{

@@ -22,7 +22,7 @@
 						]
 					}
 				},
-				"required-attr": false
+				"require-attr": false
 			}
 		}
 	]

@@ -30,7 +30,7 @@
 		"static-html/end-tag": {
 			"specConformance": "non-normative",
 			"rules": {
-				"end-tag": true
+				"require-end-tag": true
 			}
 		}
 	}
