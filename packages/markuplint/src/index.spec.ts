@@ -717,14 +717,16 @@ describe('Built-in parse-error channel — dedupe against mirroring rules (#3844
 		expect(violations.some(v => v.ruleId === 'parse-error' && v.message.includes('missing-doctype'))).toBe(false);
 	});
 
-	test('character-reference consumes parse5 malformed-reference codes as its own violations', async () => {
+	test('no-malformed-character-reference consumes parse5 malformed-reference codes as its own violations', async () => {
 		// `&xyz;` triggers parse5 `unknown-named-character-reference`. The
 		// rule reads parseErrors and reports the malformed reference under
-		// its own ruleId; the parse-error channel does not double-emit.
+		// its own ruleId; the parse-error channel does not double-emit. The
+		// deprecated `character-reference` name (alias) is used to also pin
+		// that it still expands to this rule.
 		const { violations } = await mlTest('<p>Hello &xyz; world</p>', {
 			rules: { 'character-reference': true },
 		});
-		const charRef = violations.filter(v => v.ruleId === 'character-reference');
+		const charRef = violations.filter(v => v.ruleId === 'no-malformed-character-reference');
 		expect(charRef.length).toBeGreaterThan(0);
 		expect(charRef.some(v => v.message.includes('unknown-named-character-reference'))).toBe(true);
 		// Mirrored — parse-error never surfaces this code.
@@ -733,27 +735,28 @@ describe('Built-in parse-error channel — dedupe against mirroring rules (#3844
 		).toBe(false);
 	});
 
-	test('character-reference reports both missed-escape (self) and malformed-reference (hook) under one ruleId', async () => {
-		// `A & B` is a missed escape (self-detection), `&foo` is a malformed
-		// reference (parse5 hook). Both arrive as `character-reference`.
-		const { violations } = await mlTest('<p>A & B &foo bar</p>', {
+	test('deprecated character-reference name expands to both no-unescaped-char and no-malformed-character-reference', async () => {
+		// `<` is a missed escape (no-unescaped-char's self-detection), `&xyz;`
+		// is a malformed reference (no-malformed-character-reference's parse5
+		// hook). The deprecated `character-reference` name expands to both.
+		const { violations } = await mlTest('<p>A < B &xyz; tail</p>', {
 			rules: { 'character-reference': true },
 		});
-		const charRef = violations.filter(v => v.ruleId === 'character-reference');
-		// At least 2 violations: one missed escape, one parse5-hooked
-		// malformed reference.
-		expect(charRef.length).toBeGreaterThanOrEqual(2);
+		expect(violations.some(v => v.ruleId === 'no-unescaped-char')).toBe(true);
+		expect(violations.some(v => v.ruleId === 'no-malformed-character-reference')).toBe(true);
 	});
 
 	test('character-reference disabled → both directions silent', async () => {
-		// With the rule off, neither the missed-escape detection nor the
+		// With the deprecated name disabled, it expands to `false` for both
+		// replacement rules, so neither the missed-escape detection nor the
 		// parse5 hook surfaces. parse-error channel respects the mirror
 		// declaration even when the rule is disabled.
-		const { violations } = await mlTest('<p>A & B &xyz; tail</p>', {
+		const { violations } = await mlTest('<p>A < B &xyz; tail</p>', {
 			rules: { 'character-reference': false },
 			severity: { parseError: 'error' },
 		});
-		expect(violations.some(v => v.ruleId === 'character-reference')).toBe(false);
+		expect(violations.some(v => v.ruleId === 'no-unescaped-char')).toBe(false);
+		expect(violations.some(v => v.ruleId === 'no-malformed-character-reference')).toBe(false);
 		expect(
 			violations.some(v => v.ruleId === 'parse-error' && v.message.includes('unknown-named-character-reference')),
 		).toBe(false);

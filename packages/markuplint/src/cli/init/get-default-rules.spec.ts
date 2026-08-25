@@ -25,7 +25,11 @@ test('default-rules', () => {
 			category: 'style',
 			defaultValue: false,
 		},
-		'character-reference': {
+		'no-malformed-character-reference': {
+			category: 'style',
+			defaultValue: true,
+		},
+		'no-unescaped-char': {
 			category: 'style',
 			defaultValue: true,
 		},
