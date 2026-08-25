@@ -13,7 +13,7 @@ describe('categories catalogue', () => {
 			'global-attr',
 			'data-types',
 			'aria',
-			'invalid-attr',
+			'attribute-errors',
 		]);
 	});
 });
@@ -29,7 +29,7 @@ describe('inferCategory', () => {
 		['html/attributes/lang-isvalid.html', 'global-attr'],
 		['html/datatypes/url-novalid.html', 'data-types'],
 		['html-aria/role-button-novalid.html', 'aria'],
-		['html/elements/a-novalid.html', 'invalid-attr'],
+		['html/elements/a-novalid.html', 'attribute-errors'],
 	])('maps %s to %s', (path, expected) => {
 		expect(inferCategory(path)).toBe(expected);
 	});
@@ -40,8 +40,8 @@ describe('inferCategory', () => {
 		expect(inferCategory('langdetect/lang-en.html')).toBe('uncategorized');
 	});
 
-	test('exclude list wins over include list (model-* not treated as invalid-attr)', () => {
-		// invalid-attr includes html/elements/**/*.html but excludes model-*.html
+	test('exclude list wins over include list (model-* not treated as attribute-errors)', () => {
+		// attribute-errors includes html/elements/**/*.html but excludes model-*.html
 		expect(inferCategory('html/elements/a/model-isvalid.html')).toBe('content-model');
 		expect(inferCategory('html/elements/a/model-novalid.html')).toBe('content-model');
 	});
@@ -64,7 +64,7 @@ describe('filterByCategory', () => {
 			'html/elements/a/model-isvalid.html',
 			'html-aria/role-button.html',
 		];
-		expect(filterByCategory(paths, 'invalid-attr')).toEqual(['html/elements/a-novalid.html']);
+		expect(filterByCategory(paths, 'attribute-errors')).toEqual(['html/elements/a-novalid.html']);
 		expect(filterByCategory(paths, 'content-model')).toEqual(['html/elements/a/model-isvalid.html']);
 		expect(filterByCategory(paths, 'aria')).toEqual(['html-aria/role-button.html']);
 	});

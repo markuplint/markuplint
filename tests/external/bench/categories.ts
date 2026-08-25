@@ -10,7 +10,7 @@ export type CategoryId =
 	| 'content-model'
 	| 'deprecated'
 	| 'require-attr'
-	| 'invalid-attr'
+	| 'attribute-errors'
 	| 'global-attr'
 	| 'no-duplicate-id'
 	| 'aria'
@@ -32,7 +32,7 @@ export type Category = {
 /**
  * Ordered list of category rules. The first match wins, so more specific
  * categories (e.g. `content-model` with explicit `model-*` globs) must come
- * before broader ones (e.g. `invalid-attr` that otherwise swallows the whole
+ * before broader ones (e.g. `attribute-errors` that otherwise swallows the whole
  * `html/elements/**` subtree).
  */
 export const categories: readonly Category[] = [
@@ -78,8 +78,8 @@ export const categories: readonly Category[] = [
 		include: ['html-aria/**/*.html'],
 	},
 	{
-		id: 'invalid-attr',
-		label: 'Invalid Attributes',
+		id: 'attribute-errors',
+		label: 'Attribute Errors',
 		include: ['html/elements/**/*.html'],
 		exclude: ['html/elements/model-*.html', 'html/elements/**/model-*.html'],
 	},
