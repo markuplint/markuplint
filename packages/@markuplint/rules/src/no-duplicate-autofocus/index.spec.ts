@@ -44,3 +44,46 @@ test('[no-duplicate-autofocus-invalid-002] three autofocus', async () => {
 		}),
 	]);
 });
+
+test('[no-duplicate-autofocus-valid-003] each dialog has its own autofocus scoping root', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<dialog><input autofocus></dialog><dialog><button autofocus>x</button></dialog>',
+	);
+	expect(violations).toStrictEqual([]);
+});
+
+test('[no-duplicate-autofocus-valid-004] each popover has its own autofocus scoping root', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<div popover><input autofocus></div><div popover><button autofocus>x</button></div>',
+	);
+	expect(violations).toStrictEqual([]);
+});
+
+test('[no-duplicate-autofocus-valid-005] a dialog-scoped autofocus does not conflict with a document-level autofocus', async () => {
+	const { violations } = await mlRuleTest(rule, '<input autofocus><dialog><button autofocus>x</button></dialog>');
+	expect(violations).toStrictEqual([]);
+});
+
+test('[no-duplicate-autofocus-invalid-003] two autofocus elements sharing the same dialog scoping root', async () => {
+	const { violations } = await mlRuleTest(rule, '<dialog><input autofocus><button autofocus>x</button></dialog>');
+	expect(violations).toStrictEqual([
+		expect.objectContaining({
+			severity: 'error',
+			raw: '<button autofocus>',
+			message: 'The "autofocus" attribute must be unique in the document',
+		}),
+	]);
+});
+
+test('[no-duplicate-autofocus-invalid-004] a dialog with autofocus and an inner autofocus target share the dialog as their scoping root', async () => {
+	const { violations } = await mlRuleTest(rule, '<dialog autofocus><input autofocus></dialog>');
+	expect(violations).toStrictEqual([
+		expect.objectContaining({
+			severity: 'error',
+			raw: '<input autofocus>',
+			message: 'The "autofocus" attribute must be unique in the document',
+		}),
+	]);
+});
