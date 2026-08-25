@@ -63,8 +63,10 @@ export const benchmarkConfig: Config = {
 		'no-obsolete-element': true,
 		'no-obsolete-attr': true,
 		'no-duplicate-id': true,
-		// Validates `<script>` body against the spec for its `type` (currently importmap, per HTML LS § Parse an import map string).
-		'script-content': true,
+		// Validates `<script>` body against the spec selected by its `type` (importmap per HTML LS
+		// § Parse an import map string; speculationrules per HTML LS §7.6 Speculation rules).
+		'valid-importmap': true,
+		'valid-speculation-rules': true,
 		'no-duplicate-autofocus': true,
 		'no-duplicate-visible-main': true,
 		'placeholder-label-option': true,

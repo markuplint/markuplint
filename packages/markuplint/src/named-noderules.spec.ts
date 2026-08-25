@@ -175,11 +175,11 @@ describe('Named nodeRules integration', () => {
 			);
 			const scriptContentViolation = violations.find(v => v.name === 'html-standard/script-content');
 			expect(scriptContentViolation).toBeDefined();
-			expect(scriptContentViolation!.ruleId).toBe('script-content');
+			expect(scriptContentViolation!.ruleId).toBe('valid-importmap');
 			expect(scriptContentViolation!.specConformance).toBe('normative');
 		});
 
-		it('reports html-standard/script-content for invalid speculationrules', async () => {
+		it('reports html-standard/valid-speculation-rules for invalid speculationrules', async () => {
 			const { violations } = await mlTest(
 				'<!doctype html><html><head><meta charset="UTF-8"><title>t</title>' +
 					'<script type="speculationrules">{"prefetch":[{"source":"list"}]}</script></head><body></body></html>',
@@ -187,9 +187,9 @@ describe('Named nodeRules integration', () => {
 					extends: ['markuplint:html-standard'],
 				},
 			);
-			const scriptContentViolation = violations.find(v => v.name === 'html-standard/script-content');
+			const scriptContentViolation = violations.find(v => v.name === 'html-standard/valid-speculation-rules');
 			expect(scriptContentViolation).toBeDefined();
-			expect(scriptContentViolation!.ruleId).toBe('script-content');
+			expect(scriptContentViolation!.ruleId).toBe('valid-speculation-rules');
 			expect(scriptContentViolation!.severity).toBe('error');
 			expect(scriptContentViolation!.specConformance).toBe('normative');
 		});

@@ -265,7 +265,11 @@ test('default-rules', () => {
 			category: 'a11y',
 			defaultValue: true,
 		},
-		'script-content': {
+		'valid-importmap': {
+			category: 'validation',
+			defaultValue: true,
+		},
+		'valid-speculation-rules': {
 			category: 'validation',
 			defaultValue: true,
 		},

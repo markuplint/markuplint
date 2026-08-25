@@ -76,7 +76,8 @@ No duplicate sibling attr|An attribute the content model marks as sibling-unique
 Need **placeholder label option**| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 Require the `datetime` attribute if the content of the `time` element is invalid| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 Specify required attr| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
-[Validate `<script>` body against the spec selected by the `type` attribute (currently: `importmap`, `speculationrules`).](https://html.spec.whatwg.org/multipage/webappapis.html#parse-an-import-map-string)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
+[Validate `<script type="importmap">` body against the import map spec](https://html.spec.whatwg.org/multipage/webappapis.html#parse-an-import-map-string)|Split from the former `script-content` rule (#3989). This group keeps its name — and wraps only this one rule, so a group with 2+ rules doesn't get its virtual rule name suffixed with the base rule name — for anyone overriding it directly. `valid-speculation-rules` lives in its own sibling group below for the same reason.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
+[Validate `<script type="speculationrules">` body against the Speculation Rules spec](https://html.spec.whatwg.org/multipage/speculative-loading.html)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [Enforce WHATWG constraints between `srcset`, `sizes`, and `loading` attributes](https://html.spec.whatwg.org/multipage/images.html#srcset-attributes)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [Validate link type keywords](https://html.spec.whatwg.org/multipage/links.html#linkTypes)|Validates that `rel` attribute keywords are allowed on the given element and context (e.g., body-ok for `<link>` inside `<body>`).|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [Form-associated `form` attribute must reference a form element](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fae-form)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
