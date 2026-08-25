@@ -89,7 +89,7 @@
 | `a11y/wai-aria`                            | `role`属性と`aria-*`属性がWAI-ARIA、DPub-ARIA、およびARIA in HTML仕様に準拠していない場合に警告します。                                          |
 | `a11y/require-accessible-name`             | ARIAロールに従ってアクセシブル名がない場合に警告します。                                                                                         |
 | `a11y/redundant-accessible-name`           | 複数のアクセシブル名ソースが存在し、高優先度のソースが低優先度のソースを上書きする要素を検出します。                                             |
-| `a11y/label-has-control`                   | `<label>`要素が関連するコントロール要素を持たない、もしくは複数持つ場合に警告します。                                                            |
+| `a11y/label-has-control`                   | `<label>`要素が関連するコントロール要素を持たない場合に警告します。                                                                              |
 | `a11y/landmark-roles`                      | `banner`、`main`、`complementary`、`contentinfo`がトップレベルのランドマークであること、複数のランドマークが一意のラベルを持つことを確認します。 |
 | `a11y/required-h1`                         | ドキュメント内に`<h1>`要素がない場合に警告します。                                                                                               |
 | `a11y/html-lang`                           | 支援技術がドキュメントの言語を識別できるよう、`<html>`要素に`lang`属性を必須とします。                                                           |
