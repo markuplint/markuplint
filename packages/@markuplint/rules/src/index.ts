@@ -18,8 +18,6 @@ import CaseSensitiveAttrName from './case-sensitive-attr-name/index.js';
 import CaseSensitiveTagName from './case-sensitive-tag-name/index.js';
 import CharacterReference from './character-reference/index.js';
 import ClassNaming from './class-naming/index.js';
-import DeprecatedAttr from './deprecated-attr/index.js';
-import DeprecatedElement from './deprecated-element/index.js';
 import Doctype from './doctype/index.js';
 import FormAttrReferencesForm from './form-attr-references-form/index.js';
 import HeadElementOrder from './head-element-order/index.js';
@@ -43,6 +41,8 @@ import NoContentAfterBody from './no-content-after-body/index.js';
 import NoDefaultAriaValue from './no-default-aria-value/index.js';
 import NoDefaultValue from './no-default-value/index.js';
 import NoDeprecatedAriaProp from './no-deprecated-aria-prop/index.js';
+import NoDeprecatedAttr from './no-deprecated-attr/index.js';
+import NoDeprecatedElement from './no-deprecated-element/index.js';
 import NoDeprecatedRole from './no-deprecated-role/index.js';
 import NoDisallowedAttr from './no-disallowed-attr/index.js';
 import NoDuplicateAttr from './no-duplicate-attr/index.js';
@@ -60,6 +60,8 @@ import NoInputFileValue from './no-input-file-value/index.js';
 import NoInvalidAriaPropValue from './no-invalid-aria-prop-value/index.js';
 import NoInvalidAttrValue from './no-invalid-attr-value/index.js';
 import NoMismatchedAspectRatio from './no-mismatched-aspect-ratio/index.js';
+import NoObsoleteAttr from './no-obsolete-attr/index.js';
+import NoObsoleteElement from './no-obsolete-element/index.js';
 import NoOrphanedEndTag from './no-orphaned-end-tag/index.js';
 import NoPseudoList from './no-pseudo-list/index.js';
 import NoRedundantAccessibleName from './no-redundant-accessible-name/index.js';
@@ -109,8 +111,6 @@ const rules = {
 	'case-sensitive-tag-name': CaseSensitiveTagName,
 	'character-reference': CharacterReference,
 	'class-naming': ClassNaming,
-	'deprecated-attr': DeprecatedAttr,
-	'deprecated-element': DeprecatedElement,
 	doctype: Doctype,
 	'form-attr-references-form': FormAttrReferencesForm,
 	'head-element-order': HeadElementOrder,
@@ -134,6 +134,8 @@ const rules = {
 	'no-default-aria-value': NoDefaultAriaValue,
 	'no-default-value': NoDefaultValue,
 	'no-deprecated-aria-prop': NoDeprecatedAriaProp,
+	'no-deprecated-attr': NoDeprecatedAttr,
+	'no-deprecated-element': NoDeprecatedElement,
 	'no-deprecated-role': NoDeprecatedRole,
 	'no-disallowed-attr': NoDisallowedAttr,
 	'no-duplicate-attr': NoDuplicateAttr,
@@ -151,6 +153,8 @@ const rules = {
 	'no-invalid-aria-prop-value': NoInvalidAriaPropValue,
 	'no-invalid-attr-value': NoInvalidAttrValue,
 	'no-mismatched-aspect-ratio': NoMismatchedAspectRatio,
+	'no-obsolete-attr': NoObsoleteAttr,
+	'no-obsolete-element': NoObsoleteElement,
 	'no-orphaned-end-tag': NoOrphanedEndTag,
 	'no-pseudo-list': NoPseudoList,
 	'no-redundant-accessible-name': NoRedundantAccessibleName,

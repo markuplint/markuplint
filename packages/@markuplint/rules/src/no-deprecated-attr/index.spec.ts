@@ -3,11 +3,11 @@ import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('[deprecated-attr-invalid-001] deprecated attribute', async () => {
+test('[no-deprecated-attr-invalid-001] deprecated attribute', async () => {
 	const { violations } = await mlRuleTest(rule, '<img align="top">');
 	expect(violations).toStrictEqual([
 		{
-			severity: 'error',
+			severity: 'warning',
 			line: 1,
 			col: 6,
 			raw: 'align',
@@ -16,11 +16,11 @@ test('[deprecated-attr-invalid-001] deprecated attribute', async () => {
 	]);
 });
 
-test('[deprecated-attr-invalid-002] deprecated global attribute', async () => {
+test('[no-deprecated-attr-invalid-002] deprecated global attribute', async () => {
 	const { violations } = await mlRuleTest(rule, '<img xml:lang="en-US">');
 	expect(violations).toStrictEqual([
 		{
-			severity: 'error',
+			severity: 'warning',
 			line: 1,
 			col: 6,
 			raw: 'xml:lang',
@@ -29,7 +29,7 @@ test('[deprecated-attr-invalid-002] deprecated global attribute', async () => {
 	]);
 });
 
-test('[deprecated-attr-invalid-003] svg', async () => {
+test('[no-deprecated-attr-invalid-003] svg', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`<svg viewBox="0 0 160 40" xmlns="http://www.w3.org/2000/svg">
@@ -39,11 +39,16 @@ test('[deprecated-attr-invalid-003] svg', async () => {
 	);
 	expect(violations).toStrictEqual([
 		{
-			severity: 'error',
+			severity: 'warning',
 			line: 2,
 			col: 14,
 			message: 'The "xlink:href" attribute is deprecated',
 			raw: 'xlink:href',
 		},
 	]);
+});
+
+test('[no-deprecated-attr-valid-001] no deprecated attribute', async () => {
+	const { violations } = await mlRuleTest(rule, '<img src="path/to" alt="any picture">');
+	expect(violations).toStrictEqual([]);
 });

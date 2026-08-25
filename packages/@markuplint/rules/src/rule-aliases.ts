@@ -23,6 +23,19 @@ function renamed(newName: string): RuleAliasTable[string] {
 	};
 }
 
+/**
+ * A 1:N split where every replacement takes the exact same configuration
+ * (severity/reason/options passed through unchanged to each) — for rules
+ * with no options whose single check split by *what it checks* rather than
+ * by *option*, e.g. `deprecated-attr`'s `obsolete`/`deprecated` split.
+ */
+function split(...newNames: string[]): RuleAliasTable[string] {
+	return {
+		expand: rule => Object.fromEntries(newNames.map(name => [name, rule])),
+		targets: newNames,
+	};
+}
+
 type NormalizedRule = {
 	readonly severity?: 'error' | 'warning' | 'info';
 	readonly options?: Record<string, unknown>;
@@ -106,6 +119,8 @@ function expandInvalidAttr(rule: AnyRule): Record<string, AnyRule> {
 }
 
 export const ruleAliasTable: RuleAliasTable = {
+	'deprecated-attr': split('no-obsolete-attr', 'no-deprecated-attr'),
+	'deprecated-element': split('no-obsolete-element', 'no-deprecated-element'),
 	'attr-duplication': renamed('no-duplicate-attr'),
 	'id-duplication': renamed('no-duplicate-id'),
 	'required-element': renamed('require-element'),

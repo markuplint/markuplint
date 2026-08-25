@@ -33,12 +33,6 @@
 				"correct-aspect-ratio": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-mismatched-aspect-ratio/schema.json"
 				},
-				"deprecated-attr": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/deprecated-attr/schema.json"
-				},
-				"deprecated-element": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/deprecated-element/schema.json"
-				},
 				"disallowed-element": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-restricted-element/schema.json"
 				},
@@ -129,6 +123,12 @@
 				"no-deprecated-aria-prop": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-deprecated-aria-prop/schema.json"
 				},
+				"no-deprecated-attr": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-deprecated-attr/schema.json"
+				},
+				"no-deprecated-element": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-deprecated-element/schema.json"
+				},
 				"no-deprecated-role": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-deprecated-role/schema.json"
 				},
@@ -182,6 +182,12 @@
 				},
 				"no-mismatched-aspect-ratio": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-mismatched-aspect-ratio/schema.json"
+				},
+				"no-obsolete-attr": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-obsolete-attr/schema.json"
+				},
+				"no-obsolete-element": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-obsolete-element/schema.json"
 				},
 				"no-orphaned-end-tag": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-orphaned-end-tag/schema.json"

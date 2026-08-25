@@ -19,15 +19,10 @@ export default createRule({
 				return;
 			}
 			const spec = getSpec(el, document.specs.specs);
-			if (spec && (spec.obsolete != null || spec.deprecated)) {
-				const message = t(
-					'{0} is {1:c}',
-					t('the "{0*}" {1}', el.localName, 'element'),
-					spec.deprecated ? 'deprecated' : 'obsolete',
-				);
+			if (spec && spec.obsolete != null) {
 				report({
 					scope: el,
-					message,
+					message: t('{0} is {1:c}', t('the "{0*}" {1}', el.localName, 'element'), 'obsolete'),
 				});
 			}
 		});
