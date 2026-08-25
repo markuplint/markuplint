@@ -22,10 +22,10 @@ An HTML linter that checks conformance with HTML Standard, WAI-ARIA, and project
 Format: `message (ruleId) [named-rule]`
 
 ```
-The attribute name is duplicated (attr-duplication) [html-standard/attr-duplication]
+The attribute name is duplicated (no-duplicate-attr) [html-standard/attr-duplication]
 ```
 
-- **`ruleId`** (`attr-duplication`) — the base rule. Always present.
+- **`ruleId`** (`no-duplicate-attr`) — the base rule. Always present.
 - **`named-rule`** (`html-standard/attr-duplication`) — preset-defined alias. Present only for named rules. The `namespace/` prefix indicates which preset defined it (e.g., `a11y/`, `html-standard/`, `performance/`).
 - **`severity`** — `error` (exit code 1), `warning` (exit code 0 by default), or `info`.
 
