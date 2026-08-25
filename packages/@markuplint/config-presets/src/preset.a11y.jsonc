@@ -140,11 +140,52 @@
 		/**
 		 * Align row and column
 		 *
+		 * Split from the former `table-row-column-alignment` rule (#3989). This group keeps its
+		 * name for anyone overriding it directly; the three table-model-error checks that split
+		 * out alongside it (`no-table-cell-overlap`, `no-table-span-overflow`,
+		 * `no-empty-table-track`) live in their own sibling groups below since their default
+		 * severity, `error`, differs from this group's `warning`.
 		 */
 		"a11y/table-row-column-alignment": {
 			"specConformance": "non-normative",
 			"rules": {
-				"table-row-column-alignment": true
+				"consistent-table-row-length": true
+			}
+		},
+
+		/**
+		 * No overlapping table cells
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/tables.html#forming-a-table
+		 */
+		"a11y/no-table-cell-overlap": {
+			"specConformance": "normative",
+			"rules": {
+				"no-table-cell-overlap": true
+			}
+		},
+
+		/**
+		 * No table cell span reaching past its row group
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/tables.html#forming-a-table
+		 */
+		"a11y/no-table-span-overflow": {
+			"specConformance": "normative",
+			"rules": {
+				"no-table-span-overflow": true
+			}
+		},
+
+		/**
+		 * No table row or column with no cell anchored to it
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/tables.html#forming-a-table
+		 */
+		"a11y/no-empty-table-track": {
+			"specConformance": "normative",
+			"rules": {
+				"no-empty-table-track": true
 			}
 		},
 

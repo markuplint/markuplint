@@ -36,7 +36,10 @@ No redundant **accessible name** sources| |✅|✅|✅|✅|✅|✅|❌|❌|❌|�
 Require **accessible name**| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
 Require **autofocus** in modal dialogs| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
 Require `<h1>`| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
-Align row and column| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
+Align row and column|Split from the former `table-row-column-alignment` rule (#3989). This group keeps its name for anyone overriding it directly; the three table-model-error checks that split out alongside it (`no-table-cell-overlap`, `no-table-span-overflow`, `no-empty-table-track`) live in their own sibling groups below since their default severity, `error`, differs from this group's `warning`.|✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
+[No overlapping table cells](https://html.spec.whatwg.org/multipage/tables.html#forming-a-table)| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
+[No table cell span reaching past its row group](https://html.spec.whatwg.org/multipage/tables.html#forming-a-table)| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
+[No table row or column with no cell anchored to it](https://html.spec.whatwg.org/multipage/tables.html#forming-a-table)| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
 Use `<ul>`| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
 Conform to **WAI-ARIA**| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
 Require `<html lang>`| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|

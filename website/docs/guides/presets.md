@@ -104,6 +104,9 @@ See the [rulesets tables](#rulesets-of-base-presets) below for the full list of 
 | `a11y/no-ambiguous-navigable-target-names` | Prevents typographical errors in links that could replace special navigational keywords like `_blank` with invalid target names.                      |
 | `a11y/use-list`                            | Prompts to use a list element when a bullet character appears at the start of a text node.                                                            |
 | `a11y/table-row-column-alignment`          | Ensures consistency in the defined number of rows and columns, accounting for `colspan` and `rowspan`.                                                |
+| `a11y/no-table-cell-overlap`               | Disallows `rowspan` / `colspan` values that cause two cells to cover the same slot.                                                                   |
+| `a11y/no-table-span-overflow`              | Disallows a `rowspan` that reaches past the end of its `<thead>`, `<tbody>`, or `<tfoot>`.                                                            |
+| `a11y/no-empty-table-track`                | Disallows a table row or column that no cell is anchored to.                                                                                          |
 | `a11y/no-merge-cells`                      | Disallows `colspan` and `rowspan` attributes on table cells to prevent merged cells that are difficult for assistive technologies.                    |
 | `a11y/neighbor-popovers`                   | Warns when popover triggers and their corresponding targets are not adjacent in the DOM.                                                              |
 | `a11y/summary-no-interactive`              | There is a case where an assistive technology can't access contents, or contents don't propagate a mouse event to `<summary>`.                        |

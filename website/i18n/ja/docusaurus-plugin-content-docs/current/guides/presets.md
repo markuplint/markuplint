@@ -104,6 +104,9 @@
 | `a11y/no-ambiguous-navigable-target-names` | `_blank`などの特殊なナビゲーションキーワードを無効なターゲット名に置き換える可能性のあるタイポを防ぎます。                                       |
 | `a11y/use-list`                            | テキストノードの先頭に箇条書き文字がある場合、リスト要素の使用を促します。                                                                       |
 | `a11y/table-row-column-alignment`          | `colspan`と`rowspan`を考慮して、テーブルの行と列の数の一貫性を確認します。                                                                       |
+| `a11y/no-table-cell-overlap`               | 2つのセルが同じスロットを覆うことになる`rowspan`/`colspan`の値を禁止します。                                                                     |
+| `a11y/no-table-span-overflow`              | `<thead>`、`<tbody>`、`<tfoot>`の末尾を越えて伸びる`rowspan`を禁止します。                                                                       |
+| `a11y/no-empty-table-track`                | セルがひとつも開始しないテーブルの行または列を禁止します。                                                                                       |
 | `a11y/no-merge-cells`                      | 支援技術にとって困難なセル結合を防ぐため、テーブルセルの`colspan`と`rowspan`属性を禁止します。                                                   |
 | `a11y/neighbor-popovers`                   | ポップオーバートリガーと対応するターゲットがDOM上で隣接していない場合に警告します。                                                              |
 | `a11y/summary-no-interactive`              | 支援技術がコンテンツにアクセスできない場合や、コンテンツが`<summary>`にマウスイベントを伝播しない場合があります。                                |
