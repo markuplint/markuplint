@@ -273,7 +273,19 @@ test('default-rules', () => {
 			category: 'validation',
 			defaultValue: true,
 		},
-		'table-row-column-alignment': {
+		'no-table-cell-overlap': {
+			category: 'a11y',
+			defaultValue: true,
+		},
+		'no-table-span-overflow': {
+			category: 'a11y',
+			defaultValue: true,
+		},
+		'no-empty-table-track': {
+			category: 'a11y',
+			defaultValue: true,
+		},
+		'consistent-table-row-length': {
 			category: 'a11y',
 			defaultValue: false,
 		},

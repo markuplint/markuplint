@@ -113,14 +113,17 @@ export const benchmarkConfig: Config = {
 		// `<figure>`).
 		'require-accessible-name': true,
 		// HTML LS §4.9.12.1 *Forming a table* closes with "Authors must not produce a table with
-		// table model errors", covering cell overlap (Step 14), a row or column that no cell is
-		// anchored to (Step 20), and a cell clipped at a row group boundary (§4.9.12 "A cell
-		// cannot cover slots that are from two or more row groups."). The rule additionally
-		// reports rows that merely disagree in width, which the spec permits and nu-validator
-		// reports as a warning; the user-facing default stays 'warning' so that beyond-spec
-		// check does not become a hard error for authors, and the bench escalates to align with
-		// the MUST NOT above.
-		'table-row-column-alignment': { severity: 'error' },
+		// table model errors": cell overlap (Step 14, `no-table-cell-overlap`), a row or column
+		// that no cell is anchored to (Step 20, `no-empty-table-track`), and a cell clipped at a
+		// row group boundary (§4.9.12 "A cell cannot cover slots that are from two or more row
+		// groups.", `no-table-span-overflow`) — all three default to `error`, matching the MUST
+		// NOT above, so no override is needed. `consistent-table-row-length` reports rows that
+		// merely disagree in width, which the spec permits and nu-validator reports as a
+		// warning; its default severity stays `warning` to match.
+		'no-table-cell-overlap': true,
+		'no-table-span-overflow': true,
+		'no-empty-table-track': true,
+		'consistent-table-row-length': true,
 		'no-unknown-role': true,
 		'no-abstract-role': true,
 		'permitted-roles': true,
