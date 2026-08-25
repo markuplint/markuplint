@@ -194,7 +194,6 @@
 				"{0} according to {1}": { "type": "string" },
 				"{0} are causing {1}": { "type": "string" },
 				"{0} as {1}": { "type": "string" },
-				"{0} associates only {1}": { "type": "string" },
 				"{0} behaves the same as {1} if {2}": { "type": "string" },
 				"{0} chars": { "type": "string" },
 				"{0} contradicts {1}": { "type": "string" },
