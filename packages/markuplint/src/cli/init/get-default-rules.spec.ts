@@ -89,7 +89,19 @@ test('default-rules', () => {
 			category: 'validation',
 			defaultValue: true,
 		},
-		'invalid-attr': {
+		'no-unknown-attr': {
+			category: 'validation',
+			defaultValue: true,
+		},
+		'no-disallowed-attr': {
+			category: 'validation',
+			defaultValue: true,
+		},
+		'no-invalid-attr-value': {
+			category: 'validation',
+			defaultValue: true,
+		},
+		'no-restricted-attr': {
 			category: 'validation',
 			defaultValue: true,
 		},

@@ -26,7 +26,25 @@
 					}
 				},
 				"require-attr": "role",
-				"invalid-attr": {
+				"no-unknown-attr": {
+					"options": {
+						"allowAttrs": {
+							"role": {
+								"enum": ["img"]
+							}
+						}
+					}
+				},
+				"no-disallowed-attr": {
+					"options": {
+						"allowAttrs": {
+							"role": {
+								"enum": ["img"]
+							}
+						}
+					}
+				},
+				"no-invalid-attr-value": {
 					"options": {
 						"allowAttrs": {
 							"role": {
@@ -40,9 +58,23 @@
 		{
 			"selector": ".invalid-attr",
 			"rules": {
-				"invalid-attr": {
+				"no-unknown-attr": {
 					"options": {
-						"allowAttrs": ["hoge"],
+						"allowAttrs": ["hoge"]
+					}
+				},
+				"no-disallowed-attr": {
+					"options": {
+						"allowAttrs": ["hoge"]
+					}
+				},
+				"no-invalid-attr-value": {
+					"options": {
+						"allowAttrs": ["hoge"]
+					}
+				},
+				"no-restricted-attr": {
+					"options": {
 						"disallowAttrs": [
 							{
 								"name": "hoge2",
