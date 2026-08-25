@@ -147,11 +147,11 @@ export type RuleSeed<T extends RuleConfigValue = boolean, O extends PlainData = 
 		 * Declare a code here only if the rule's detection scope is at least
 		 * as broad as the parse5 event (i.e. every situation where parse5
 		 * fires the code, the rule reports it too). For rules whose detection
-		 * is wider than parse5 (e.g. `attr-duplication` also covers JSX where
+		 * is wider than parse5 (e.g. `no-duplicate-attr` also covers JSX where
 		 * parse5 never runs) this still holds because the rule fires first.
 		 *
 		 * The dedupe is global (the rule is checked at the ruleset level, not
-		 * per node), so partial-scope rules like `attr-duplication` (HTML
+		 * per node), so partial-scope rules like `no-duplicate-attr` (HTML
 		 * elements only via parse5; JSX / SVG via the rule itself) are safe:
 		 * parse5 only fires on HTML anyway. Note that `nodeRules` entries that
 		 * locally disable a mirroring rule do not change this decision.
