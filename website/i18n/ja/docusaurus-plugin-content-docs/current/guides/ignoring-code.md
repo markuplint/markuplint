@@ -64,7 +64,7 @@
     "a11y/*": false,
 
     // ベースルール名で無効化（詳細はプロパティリファレンス参照）
-    "id-duplication": false
+    "no-duplicate-id": false
   }
 }
 ```
@@ -128,7 +128,7 @@ $ markuplint --prune-suppressions "src/**/*.html"
 ```json title="markuplint-suppressions.json"
 {
   "src/index.html": {
-    "attr-duplication": { "count": 3, "scope": "#main-nav > ul" }
+    "no-duplicate-attr": { "count": 3, "scope": "#main-nav > ul" }
   }
 }
 ```

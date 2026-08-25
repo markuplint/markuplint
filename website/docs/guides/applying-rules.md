@@ -20,7 +20,7 @@ If you're using a [preset](/docs/guides/presets), you can override individual ru
     "a11y/*": false,
 
     // Disable by base rule name (affects every preset containing it)
-    "id-duplication": false
+    "no-duplicate-id": false
   }
 }
 ```
@@ -36,9 +36,9 @@ Add rules to the `rules` property in your configuration file. Any value other th
 ```json class=config
 {
   "rules": {
-    "attr-duplication": true,
+    "no-duplicate-attr": true,
     "class-naming": "/[a-z]+/",
-    "required-attr": {
+    "require-attr": {
       "value": "true"
     }
   }

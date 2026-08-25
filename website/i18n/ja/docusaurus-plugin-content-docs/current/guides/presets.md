@@ -148,7 +148,7 @@
 
 ### `markuplint:rdfa` {#preset-rdfa}
 
-`<meta property>` 要素に対し、`invalid-attr` を拡張して `property` と `content` 属性を許可します。これにより、**Open Graph** 等のRDFaベースのメタデータが仕様検証の違反として報告されなくなります。また、同要素に対し `required-attr` を無効化します。
+`<meta property>` 要素に対し、`invalid-attr` を拡張して `property` と `content` 属性を許可します。これにより、**Open Graph** 等のRDFaベースのメタデータが仕様検証の違反として報告されなくなります。また、同要素に対し `require-attr` を無効化します。
 
 このプリセットは名前付きルールを公開しません。
 

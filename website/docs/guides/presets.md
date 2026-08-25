@@ -148,7 +148,7 @@ Also enables the base rule [`invalid-attr`](/docs/rules/invalid-attr) for spec-b
 
 ### `markuplint:rdfa` {#preset-rdfa}
 
-Extends `invalid-attr` to allow the `property` and `content` attributes on `<meta property>` so that RDFa-based metadata (e.g., **Open Graph**) does not trigger spec-validation violations. Also disables `required-attr` on the same elements.
+Extends `invalid-attr` to allow the `property` and `content` attributes on `<meta property>` so that RDFa-based metadata (e.g., **Open Graph**) does not trigger spec-validation violations. Also disables `require-attr` on the same elements.
 
 No named rules are exposed by this preset.
 

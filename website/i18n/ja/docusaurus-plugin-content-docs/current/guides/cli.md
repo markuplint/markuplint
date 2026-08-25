@@ -165,7 +165,7 @@ $ markuplint "**/*.html"
 $ markuplint "**/*.html" --suppress
 
 # 特定のルールのみ抑制
-$ markuplint "**/*.html" --suppress-rule attr-duplication
+$ markuplint "**/*.html" --suppress-rule no-duplicate-attr
 
 # カスタムパスでsuppressionsファイルを指定
 $ markuplint "**/*.html" --suppress --suppressions-location .config/suppressions.json

@@ -64,7 +64,7 @@ Named rules defined by presets can be individually disabled by setting `false` i
     "a11y/*": false,
 
     // Disable by base rule name (see properties reference for details)
-    "id-duplication": false
+    "no-duplicate-id": false
   }
 }
 ```
@@ -128,7 +128,7 @@ Each entry includes an optional **scope selector** that narrows the suppression 
 ```json title="markuplint-suppressions.json"
 {
   "src/index.html": {
-    "attr-duplication": { "count": 3, "scope": "#main-nav > ul" }
+    "no-duplicate-attr": { "count": 3, "scope": "#main-nav > ul" }
   }
 }
 ```

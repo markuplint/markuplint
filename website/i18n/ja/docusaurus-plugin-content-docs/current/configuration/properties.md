@@ -394,7 +394,7 @@ interface Config {
     "a11y/*": false,
 
     // ベースルール名で無効化（詳細は下記参照）
-    "id-duplication": false
+    "no-duplicate-id": false
   }
 }
 ```
@@ -408,7 +408,7 @@ interface Config {
   "rules": {
     "my-checks/validation": {
       "rules": {
-        "id-duplication": true,
+        "no-duplicate-id": true,
         "invalid-attr": true
       }
     }
@@ -416,14 +416,14 @@ interface Config {
 }
 ```
 
-設定に`"id-duplication": false`を追加すると、グループ内の該当ベースルールだけが無効化されます：
+設定に`"no-duplicate-id": false`を追加すると、グループ内の該当ベースルールだけが無効化されます：
 
 ```json class=config
 {
   "rules": {
     "my-checks/validation": {
       "rules": {
-        "id-duplication": false,
+        "no-duplicate-id": false,
         "invalid-attr": true
       }
     }
@@ -431,7 +431,7 @@ interface Config {
 }
 ```
 
-同グループ内の`invalid-attr`は影響を受けずに有効のままです。これは全グループに適用されます — `a11y/id-duplication`と`html-standard/id-duplication`の両方が`id-duplication`ベースルールをラップしている場合、両方とも無効化されます。この機能は後方互換性のために提供されています。
+同グループ内の`invalid-attr`は影響を受けずに有効のままです。これは全グループに適用されます — `a11y/id-duplication`と`html-standard/id-duplication`の両方が`no-duplicate-id`ベースルールをラップしている場合、両方とも無効化されます。この機能は後方互換性のために提供されています。
 
 一覧は[プリセット内の名前付きルール](/docs/guides/presets#named-rules)を参照してください。
 
@@ -486,11 +486,11 @@ MarkuplintのHTML仕様に基づく組み込みプリセットルールにはこ
     "my-project/no-accesskey": {
       "rules": { "invalid-attr": { "options": { "disallowAttrs": ["accesskey"] } } }
     },
-    // 複数エントリ: ルール名は "my-project/checks/attr-duplication"
+    // 複数エントリ: ルール名は "my-project/checks/no-duplicate-attr"
     // と "my-project/checks/class-naming"
     "my-project/checks": {
       "rules": {
-        "attr-duplication": true,
+        "no-duplicate-attr": true,
         "class-naming": "/[a-z]+/"
       }
     }

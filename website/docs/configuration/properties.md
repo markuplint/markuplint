@@ -424,7 +424,7 @@ Presets define named rules using the `namespace/rule-name` format. These named r
     "a11y/*": false,
 
     // Disable by base rule name (see explanation below)
-    "id-duplication": false
+    "no-duplicate-id": false
   }
 }
 ```
@@ -438,7 +438,7 @@ Setting a base rule name to `false` disables it inside every named rule group th
   "rules": {
     "my-checks/validation": {
       "rules": {
-        "id-duplication": true,
+        "no-duplicate-id": true,
         "invalid-attr": true
       }
     }
@@ -446,14 +446,14 @@ Setting a base rule name to `false` disables it inside every named rule group th
 }
 ```
 
-Adding `"id-duplication": false` to your config is equivalent to reaching into the group and disabling that specific base rule:
+Adding `"no-duplicate-id": false` to your config is equivalent to reaching into the group and disabling that specific base rule:
 
 ```json class=config
 {
   "rules": {
     "my-checks/validation": {
       "rules": {
-        "id-duplication": false,
+        "no-duplicate-id": false,
         "invalid-attr": true
       }
     }
@@ -461,7 +461,7 @@ Adding `"id-duplication": false` to your config is equivalent to reaching into t
 }
 ```
 
-The `invalid-attr` rule in the same group remains active. This applies across all groups — if both `a11y/id-duplication` and `html-standard/id-duplication` wrap the `id-duplication` base rule, both are disabled. This is provided for backward compatibility.
+The `invalid-attr` rule in the same group remains active. This applies across all groups — if both `a11y/id-duplication` and `html-standard/id-duplication` wrap the `no-duplicate-id` base rule, both are disabled. This is provided for backward compatibility.
 
 See [Named rules in presets](/docs/guides/presets#named-rules) for the full list.
 
@@ -516,11 +516,11 @@ When a named rule group contains a single entry, the group key is used directly 
     "my-project/no-accesskey": {
       "rules": { "invalid-attr": { "options": { "disallowAttrs": ["accesskey"] } } }
     },
-    // Multi entry: rule names are "my-project/checks/attr-duplication"
+    // Multi entry: rule names are "my-project/checks/no-duplicate-attr"
     // and "my-project/checks/class-naming"
     "my-project/checks": {
       "rules": {
-        "attr-duplication": true,
+        "no-duplicate-attr": true,
         "class-naming": "/[a-z]+/"
       }
     }

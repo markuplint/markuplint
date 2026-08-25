@@ -20,7 +20,7 @@ Markuplintは[設定ファイル](/docs/configuration)が見つからない場�
     "a11y/*": false,
 
     // ベースルール名で無効化（それを含むすべてのプリセットに影響）
-    "id-duplication": false
+    "no-duplicate-id": false
   }
 }
 ```
@@ -36,9 +36,9 @@ Markuplintは[設定ファイル](/docs/configuration)が見つからない場�
 ```json class=config
 {
   "rules": {
-    "attr-duplication": true,
+    "no-duplicate-attr": true,
     "class-naming": "/[a-z]+/",
-    "required-attr": {
+    "require-attr": {
       "value": "true"
     }
   }

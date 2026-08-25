@@ -4,10 +4,10 @@ AI coding assistants can help you get the most out of Markuplint — from unders
 
 ## Understanding warnings
 
-When Markuplint reports a violation, you can paste the error message into an AI assistant to get an explanation and suggested fix. Each violation includes a rule name (e.g., `attr-duplication`) that the AI can look up.
+When Markuplint reports a violation, you can paste the error message into an AI assistant to get an explanation and suggested fix. Each violation includes a rule name (e.g., `no-duplicate-attr`) that the AI can look up.
 
 ```
-The attribute name is duplicated Markuplint(attr-duplication) [Ln 11, Col 45]
+The attribute name is duplicated Markuplint(no-duplicate-attr) [Ln 11, Col 45]
 ```
 
 Ask your AI assistant:

@@ -165,7 +165,7 @@ Record existing violations in a suppressions file so that rules are enforced onl
 $ markuplint "**/*.html" --suppress
 
 # Suppress only a specific rule
-$ markuplint "**/*.html" --suppress-rule attr-duplication
+$ markuplint "**/*.html" --suppress-rule no-duplicate-attr
 
 # Use a custom suppressions file path
 $ markuplint "**/*.html" --suppress --suppressions-location .config/suppressions.json
