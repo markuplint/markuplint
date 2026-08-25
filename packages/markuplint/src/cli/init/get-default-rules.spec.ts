@@ -217,6 +217,18 @@ test('default-rules', () => {
 			category: 'validation',
 			defaultValue: [],
 		},
+		'no-disallowed-ancestor': {
+			category: 'validation',
+			defaultValue: true,
+		},
+		'require-ancestor': {
+			category: 'validation',
+			defaultValue: true,
+		},
+		'no-duplicate-sibling-attr': {
+			category: 'validation',
+			defaultValue: true,
+		},
 		'placeholder-label-option': {
 			category: 'validation',
 			defaultValue: true,

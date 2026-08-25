@@ -43,6 +43,9 @@ export const benchmarkConfig: Config = {
 	},
 	rules: {
 		'permitted-contents': true,
+		'no-disallowed-ancestor': true,
+		'require-ancestor': true,
+		'no-duplicate-sibling-attr': true,
 		'require-attr': true,
 		'input-button-non-empty-value': true,
 		'no-input-file-value': true,
