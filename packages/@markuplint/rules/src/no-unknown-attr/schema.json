@@ -43,44 +43,8 @@
 							}
 						}
 					],
-					"description": "Specify the attributes **to allow**. This is useful when you want to intentionally specify attributes not present in the HTML Standard or when you want to avoid warnings for attributes required by frameworks. You can specify the attribute name only or provide patterns and data types for attribute values.",
-					"description:ja": "**許可する**属性を指定します。これは、HTML標準に存在しない属性をあえて指定したい場合や、フレームワークなどで必要な属性を警告されないようにするものです。属性名だけの指定もできますし、属性値に対してのパターンやデータ型の指定が可能です。"
-				},
-				"disallowAttrs": {
-					"oneOf": [
-						{
-							"type": "array",
-							"items": {
-								"oneOf": [
-									{
-										"type": "string"
-									},
-									{
-										"type": "object",
-										"_type": "Attr",
-										"additionalProperties": false,
-										"required": ["name", "value"],
-										"properties": {
-											"name": { "type": "string" },
-											"value": {
-												"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/types/types.schema.json#/definitions/type"
-											}
-										}
-									}
-								]
-							}
-						},
-						{
-							"deprecated": true,
-							"type": "object",
-							"_type": "Record<string, AttributeType | Pattern>",
-							"additionalProperties": {
-								"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/types/types.schema.json#/definitions/type"
-							}
-						}
-					],
-					"description": "Specify the attributes **to disallow**. Even if they are allowed in the HTML Standard, you can use this option to intentionally prohibit them based on your project's rules. The format for specifying disallowed attributes is the same as for `allowAttrs`, **but the meanings are reversed**.",
-					"description:ja": "**許可しない**属性を指定します。HTML標準で許可されていたとしても、あえてプロジェクトのルールで禁止するような場合に利用します。指定内容は`allowAttrs`と同じ形式を受け取りますが、**その意味はすべて逆になります**。"
+					"description": "Specify the attribute names to treat as known, beyond what the spec defines. This is useful when you want to intentionally specify attributes not present in the HTML Standard or when you want to avoid warnings for attributes required by frameworks. The value type, if given, is used by the `no-invalid-attr-value` rule to validate the attribute's value.",
+					"description:ja": "仕様に定義されていない属性名を、既知の属性として扱うために指定します。これは、HTML標準に存在しない属性をあえて指定したい場合や、フレームワークなどで必要な属性を警告されないようにするものです。指定した値の型は、`no-invalid-attr-value`ルールが属性値の検証に使用します。"
 				},
 				"ignoreAttrNamePrefix": {
 					"oneOf": [

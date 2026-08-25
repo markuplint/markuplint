@@ -10,7 +10,7 @@ description: progress要素の属性値について HTML LS 仕様で定めら�
 - `value ≤ max`（両方指定されているとき）
 - `value ≤ 1`（`max` が省略されているとき）
 
-属性値そのものがパースできない場合、`max` が範囲外（`≤ 0`）の場合、および `value` が負値の場合は [`invalid-attr`](../invalid-attr/) ルールが扱うため、本ルールは検査をスキップします。
+属性値そのものがパースできない場合、`max` が範囲外（`≤ 0`）の場合、および `value` が負値の場合は [`no-invalid-attr-value`](../no-invalid-attr-value/) ルールが扱うため、本ルールは検査をスキップします。
 
 ❌ このルールに適合しない**誤った**コードの例
 

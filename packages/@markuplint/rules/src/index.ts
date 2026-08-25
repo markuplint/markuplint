@@ -25,7 +25,6 @@ import FormAttrReferencesForm from './form-attr-references-form/index.js';
 import HeadElementOrder from './head-element-order/index.js';
 import InputButtonNonEmptyValue from './input-button-non-empty-value/index.js';
 import InputListReferencesDatalist from './input-list-references-datalist/index.js';
-import InvalidAttr from './invalid-attr/index.js';
 import ItempropRequiresItemscope from './itemprop-requires-itemscope/index.js';
 import LabelForReferencesLabelable from './label-for-references-labelable/index.js';
 import LabelHasControl from './label-has-control/index.js';
@@ -45,6 +44,7 @@ import NoDefaultAriaValue from './no-default-aria-value/index.js';
 import NoDefaultValue from './no-default-value/index.js';
 import NoDeprecatedAriaProp from './no-deprecated-aria-prop/index.js';
 import NoDeprecatedRole from './no-deprecated-role/index.js';
+import NoDisallowedAttr from './no-disallowed-attr/index.js';
 import NoDuplicateAttr from './no-duplicate-attr/index.js';
 import NoDuplicateAutofocus from './no-duplicate-autofocus/index.js';
 import NoDuplicateDt from './no-duplicate-dt/index.js';
@@ -58,16 +58,19 @@ import NoHardcodedId from './no-hardcoded-id/index.js';
 import NoIneffectiveAttr from './no-ineffective-attr/index.js';
 import NoInputFileValue from './no-input-file-value/index.js';
 import NoInvalidAriaPropValue from './no-invalid-aria-prop-value/index.js';
+import NoInvalidAttrValue from './no-invalid-attr-value/index.js';
 import NoMismatchedAspectRatio from './no-mismatched-aspect-ratio/index.js';
 import NoOrphanedEndTag from './no-orphaned-end-tag/index.js';
 import NoPseudoList from './no-pseudo-list/index.js';
 import NoRedundantAccessibleName from './no-redundant-accessible-name/index.js';
 import NoRedundantRole from './no-redundant-role/index.js';
 import NoReferToNonExistentId from './no-refer-to-non-existent-id/index.js';
+import NoRestrictedAttr from './no-restricted-attr/index.js';
 import NoRestrictedElement from './no-restricted-element/index.js';
 import NoSkippedHeadingLevel from './no-skipped-heading-level/index.js';
 import NoStrayHeadOrBodyTag from './no-stray-head-or-body-tag/index.js';
 import NoUnclosedElementAtEof from './no-unclosed-element-at-eof/index.js';
+import NoUnknownAttr from './no-unknown-attr/index.js';
 import NoUnknownRole from './no-unknown-role/index.js';
 import NoUnsupportedFeatures from './no-unsupported-features/index.js';
 import PermittedContents from './permitted-contents/index.js';
@@ -113,7 +116,6 @@ const rules = {
 	'head-element-order': HeadElementOrder,
 	'input-button-non-empty-value': InputButtonNonEmptyValue,
 	'input-list-references-datalist': InputListReferencesDatalist,
-	'invalid-attr': InvalidAttr,
 	'itemprop-requires-itemscope': ItempropRequiresItemscope,
 	'label-for-references-labelable': LabelForReferencesLabelable,
 	'label-has-control': LabelHasControl,
@@ -133,6 +135,7 @@ const rules = {
 	'no-default-value': NoDefaultValue,
 	'no-deprecated-aria-prop': NoDeprecatedAriaProp,
 	'no-deprecated-role': NoDeprecatedRole,
+	'no-disallowed-attr': NoDisallowedAttr,
 	'no-duplicate-attr': NoDuplicateAttr,
 	'no-duplicate-autofocus': NoDuplicateAutofocus,
 	'no-duplicate-dt': NoDuplicateDt,
@@ -146,16 +149,19 @@ const rules = {
 	'no-ineffective-attr': NoIneffectiveAttr,
 	'no-input-file-value': NoInputFileValue,
 	'no-invalid-aria-prop-value': NoInvalidAriaPropValue,
+	'no-invalid-attr-value': NoInvalidAttrValue,
 	'no-mismatched-aspect-ratio': NoMismatchedAspectRatio,
 	'no-orphaned-end-tag': NoOrphanedEndTag,
 	'no-pseudo-list': NoPseudoList,
 	'no-redundant-accessible-name': NoRedundantAccessibleName,
 	'no-redundant-role': NoRedundantRole,
 	'no-refer-to-non-existent-id': NoReferToNonExistentId,
+	'no-restricted-attr': NoRestrictedAttr,
 	'no-restricted-element': NoRestrictedElement,
 	'no-skipped-heading-level': NoSkippedHeadingLevel,
 	'no-stray-head-or-body-tag': NoStrayHeadOrBodyTag,
 	'no-unclosed-element-at-eof': NoUnclosedElementAtEof,
+	'no-unknown-attr': NoUnknownAttr,
 	'no-unknown-role': NoUnknownRole,
 	'no-unsupported-features': NoUnsupportedFeatures,
 	'permitted-contents': PermittedContents,

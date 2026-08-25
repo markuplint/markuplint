@@ -112,9 +112,9 @@ description: srcset、sizes、loading、media、type属性間のWHATWG仕様制�
 
 <!-- textlint-enable ja-technical-writing/ja-no-mixed-period -->
 
-## `invalid-attr` との重複について
+## `no-invalid-attr-value` との重複について
 
-チェック2（ディスクリプタの混在）は、[`invalid-attr`](../invalid-attr/README.ja.md) ルールが使用する `Srcset` 型バリデータと重複します。両方のルールが有効な場合、幅ディスクリプタと密度ディスクリプタの混在が両方のルールから報告される可能性があります。これは意図的な動作です — `invalid-attr` は `srcset` 属性値の構文を検証し、このルールは属性間の制約をチェックします。ディスクリプタ混在の重複報告を避けたい場合は、そのチェックについては `invalid-attr` のみに頼ることができます。
+チェック2（ディスクリプタの混在）は、[`no-invalid-attr-value`](../no-invalid-attr-value/README.ja.md) ルールが使用する `Srcset` 型バリデータと重複します。両方のルールが有効な場合、幅ディスクリプタと密度ディスクリプタの混在が両方のルールから報告される可能性があります。これは意図的な動作です — `no-invalid-attr-value` は `srcset` 属性値の構文を検証し、このルールは属性間の制約をチェックします。ディスクリプタ混在の重複報告を避けたい場合は、そのチェックについては `no-invalid-attr-value` のみに頼ることができます。
 
 ## 参照
 

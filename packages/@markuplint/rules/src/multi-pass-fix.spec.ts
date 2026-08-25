@@ -268,7 +268,7 @@ describe('finalPassViolations', () => {
 			{
 				rules: {
 					'attr-value-quotes': true,
-					'invalid-attr': true,
+					'no-unknown-attr': true,
 				},
 			},
 			undefined,
@@ -278,10 +278,10 @@ describe('finalPassViolations', () => {
 		expect(fixedCode).toBe('<img src="x" foo="bar">');
 		// First-pass violations contain both the fixed and the unfixable ones
 		expect(violations.filter(v => v.ruleId === 'attr-value-quotes')).toHaveLength(2);
-		expect(violations.filter(v => v.ruleId === 'invalid-attr')).toHaveLength(1);
+		expect(violations.filter(v => v.ruleId === 'no-unknown-attr')).toHaveLength(1);
 		// finalPassViolations reflect the FIXED code: quotes are resolved,
 		// the invalid attribute remains
-		expect(fixSummary?.finalPassViolations?.map(v => v.ruleId)).toStrictEqual(['invalid-attr']);
+		expect(fixSummary?.finalPassViolations?.map(v => v.ruleId)).toStrictEqual(['no-unknown-attr']);
 	});
 
 	test('[multi-pass-fix-issue-3890-002] empty when every violation is fixed', async () => {

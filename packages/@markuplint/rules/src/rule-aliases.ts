@@ -1,4 +1,4 @@
-import type { RuleAliasTable } from '@markuplint/ml-config';
+import type { AnyRule, RuleAliasTable } from '@markuplint/ml-config';
 
 /**
  * Maps every rule name removed or renamed by the v5 rule-system redesign
@@ -21,6 +21,88 @@ function renamed(newName: string): RuleAliasTable[string] {
 		expand: rule => ({ [newName]: rule }),
 		targets: [newName],
 	};
+}
+
+type NormalizedRule = {
+	readonly severity?: 'error' | 'warning' | 'info';
+	readonly options?: Record<string, unknown>;
+	readonly reason?: string;
+	readonly reasonOnly?: boolean;
+};
+
+/** `AnyRule` is either a bare boolean/value shorthand or a full `RuleConfig` object. */
+function normalize(rule: AnyRule): NormalizedRule {
+	if (typeof rule !== 'object' || rule === null) {
+		return {};
+	}
+	const { severity, options, reason, reasonOnly } = rule as {
+		severity?: 'error' | 'warning' | 'info';
+		options?: Record<string, unknown>;
+		reason?: string;
+		reasonOnly?: boolean;
+	};
+	return { severity, options, reason, reasonOnly };
+}
+
+function withOptions(rule: AnyRule, options: Record<string, unknown> | undefined): AnyRule {
+	const { severity, reason, reasonOnly } = normalize(rule);
+	return {
+		value: true,
+		...(severity && { severity }),
+		...(options && Object.keys(options).length > 0 && { options }),
+		...(reason && { reason }),
+		...(reasonOnly && { reasonOnly }),
+	};
+}
+
+/**
+ * `invalid-attr`'s single check split four ways (v5 rule-system redesign):
+ * `no-unknown-attr` (name not in spec at all), `no-disallowed-attr` (name
+ * known but disallowed here — `noUse` / unmet `condition` / `is` on an
+ * autonomous custom element), `no-invalid-attr-value` (value/type
+ * violation), and `no-restricted-attr` (purely user-defined `disallowAttrs`
+ * denylisting, replacing the old rule's narrow named-rule mode).
+ *
+ * `allowAttrs` extends what a spec-validating rule considers valid, so it
+ * is copied to all three of them: it can suppress `no-unknown-attr` and
+ * `no-disallowed-attr`'s reports for a name, and supplies the value type
+ * `no-invalid-attr-value` checks against for names the spec doesn't define.
+ * `ignoreAttrNamePrefix` is copied to the two name-eligibility rules only —
+ * `no-invalid-attr-value` never reports for a name neither rule recognizes,
+ * so it needs no exclusion list of its own. `allowToAddPropertiesForPretender`
+ * moves to `no-unknown-attr` alone: it is specifically the pretender escape
+ * hatch for the "this name doesn't exist" report. `disallowAttrs` moves to
+ * `no-restricted-attr` alone — only included when actually configured, so a
+ * plain `invalid-attr: true` (no options) never turns on a rule with
+ * nothing to restrict.
+ */
+function expandInvalidAttr(rule: AnyRule): Record<string, AnyRule> {
+	const { options } = normalize(rule);
+	const allowAttrs = options?.allowAttrs;
+	const disallowAttrs = options?.disallowAttrs;
+	const ignoreAttrNamePrefix = options?.ignoreAttrNamePrefix;
+	const allowToAddPropertiesForPretender = options?.allowToAddPropertiesForPretender;
+
+	const expanded: Record<string, AnyRule> = {
+		'no-unknown-attr': withOptions(rule, {
+			...(allowAttrs !== undefined && { allowAttrs }),
+			...(ignoreAttrNamePrefix !== undefined && { ignoreAttrNamePrefix }),
+			...(allowToAddPropertiesForPretender !== undefined && { allowToAddPropertiesForPretender }),
+		}),
+		'no-disallowed-attr': withOptions(rule, {
+			...(allowAttrs !== undefined && { allowAttrs }),
+			...(ignoreAttrNamePrefix !== undefined && { ignoreAttrNamePrefix }),
+		}),
+		'no-invalid-attr-value': withOptions(rule, {
+			...(allowAttrs !== undefined && { allowAttrs }),
+		}),
+	};
+
+	if (disallowAttrs !== undefined) {
+		expanded['no-restricted-attr'] = withOptions(rule, { disallowAttrs });
+	}
+
+	return expanded;
 }
 
 export const ruleAliasTable: RuleAliasTable = {
@@ -58,4 +140,9 @@ export const ruleAliasTable: RuleAliasTable = {
 	// responsibility to `no-restricted-attr` once that rule exists (part of
 	// the invalid-attr split) — until then, this is a straight rename.
 	'required-attr': renamed('require-attr'),
+
+	'invalid-attr': {
+		expand: expandInvalidAttr,
+		targets: ['no-unknown-attr', 'no-disallowed-attr', 'no-invalid-attr-value', 'no-restricted-attr'],
+	},
 };

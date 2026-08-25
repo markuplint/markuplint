@@ -2,7 +2,7 @@ import type { Options } from '../types.js';
 import type { AttrChecker } from '@markuplint/ml-core';
 import type { ARIAProperty, Attribute } from '@markuplint/ml-spec';
 
-import { isValidAttr } from '../../helpers.js';
+import { resolveAttrEligibility } from '../../attr-eligibility.js';
 
 /**
  * Checks whether an ARIA property duplicates or contradicts semantics already
@@ -36,15 +36,17 @@ export const checkingImplicitProps: AttrChecker<
 		}
 		for (const equivalentHtmlAttr of propSpec.equivalentHtmlAttrs) {
 			const htmlAttrSpec = attrSpecs.find(a => a.name === equivalentHtmlAttr.htmlAttrName);
-			const isValid = isValidAttr(
-				t,
-				equivalentHtmlAttr.htmlAttrName,
-				equivalentHtmlAttr.value ?? '',
-				false,
-				attr.ownerElement,
-				attrSpecs,
-			);
-			if (isValid !== false && !Array.isArray(isValid) && isValid.invalidType === 'non-existent') {
+			const eligibility = resolveAttrEligibility(equivalentHtmlAttr.htmlAttrName, attr.ownerElement, attrSpecs);
+			// Skip only when the native attribute doesn't apply to this element at all
+			// (unknown name, case mismatch, or an unmet condition) — mirrors the old
+			// `invalidType === 'non-existent'` check. `noUse` still proceeds: an
+			// explicitly-forbidden native attribute can still be "implicit" for
+			// equivalence purposes (the pre-split code never special-cased it here).
+			if (
+				eligibility.status === 'unknown' ||
+				eligibility.status === 'case-mismatch' ||
+				eligibility.status === 'condition-not-met'
+			) {
 				continue;
 			}
 

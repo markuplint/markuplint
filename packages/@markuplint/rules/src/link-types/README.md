@@ -15,7 +15,7 @@ This rule checks:
 
 :::note
 
-The `invalid-attr` rule also validates `rel` attribute values via the type system, but it does not check body-ok context and always permits Microformats keywords. The `link-types` rule provides body-ok checking and Microformats control with more detailed error messages. Both rules can be used together; their checks are complementary.
+The `no-invalid-attr-value` rule also validates `rel` attribute values via the type system, but it does not check body-ok context and always permits Microformats keywords. The `link-types` rule provides body-ok checking and Microformats control with more detailed error messages. Both rules can be used together; their checks are complementary.
 
 :::
 

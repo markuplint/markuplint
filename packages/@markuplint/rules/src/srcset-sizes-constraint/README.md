@@ -108,9 +108,9 @@ This rule checks the following constraints based on the [HTML Living Standard](h
 </picture>
 ```
 
-## Note on overlap with `invalid-attr`
+## Note on overlap with `no-invalid-attr-value`
 
-Check 2 (descriptor mixing) overlaps with the `Srcset` type validator used by the [`invalid-attr`](../invalid-attr/README.md) rule. When both rules are enabled, mixing width and density descriptors may be reported by both rules. This is intentional — `invalid-attr` validates the `srcset` attribute value syntax, while this rule checks inter-attribute constraints. If you want to avoid duplicate reports for descriptor mixing, you can rely on `invalid-attr` alone for that check.
+Check 2 (descriptor mixing) overlaps with the `Srcset` type validator used by the [`no-invalid-attr-value`](../no-invalid-attr-value/README.md) rule. When both rules are enabled, mixing width and density descriptors may be reported by both rules. This is intentional — `no-invalid-attr-value` validates the `srcset` attribute value syntax, while this rule checks inter-attribute constraints. If you want to avoid duplicate reports for descriptor mixing, you can rely on `no-invalid-attr-value` alone for that check.
 
 ## References
 

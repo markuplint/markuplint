@@ -13,7 +13,7 @@ description: meter要素の属性 (min, max, value, low, high, optimum) 間の H
 - `min ≤ optimum ≤ max`（`optimum` 指定時）
 - `low ≤ high`（両方が指定されたとき）
 
-`min` 省略時は `0`、`max` 省略時は `1`、`value` 省略時は `min` を既定値として用います。属性値そのものがパースできない場合は [`invalid-attr`](../invalid-attr/) ルールが扱うため、本ルールは検査をスキップします。
+`min` 省略時は `0`、`max` 省略時は `1`、`value` 省略時は `min` を既定値として用います。属性値そのものがパースできない場合は [`no-invalid-attr-value`](../no-invalid-attr-value/) ルールが扱うため、本ルールは検査をスキップします。
 
 ❌ このルールに適合しない**誤った**コードの例
 

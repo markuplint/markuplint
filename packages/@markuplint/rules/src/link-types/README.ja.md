@@ -17,7 +17,7 @@ description: WHATWG標準に対して`rel`属性のリンクタイプキーワ�
 
 :::note
 
-`invalid-attr`ルールも型システム経由で`rel`属性値を検証しますが、body-okコンテキストはチェックせず、Microformatsキーワードを常に許可します。`link-types`ルールはbody-okチェックとMicroformats制御をより詳細なエラーメッセージとともに提供します。両方のルールを併用でき、チェック内容は補完的です。
+`no-invalid-attr-value`ルールも型システム経由で`rel`属性値を検証しますが、body-okコンテキストはチェックせず、Microformatsキーワードを常に許可します。`link-types`ルールはbody-okチェックとMicroformats制御をより詳細なエラーメッセージとともに提供します。両方のルールを併用でき、チェック内容は補完的です。
 
 :::
 

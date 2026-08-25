@@ -17,7 +17,7 @@ test('[input-list-references-datalist-valid-002] no list attribute on input', as
 });
 
 test('[input-list-references-datalist-valid-003] list attribute on non-input element ignored', async () => {
-	// `<div list="x">` is not a valid target for this rule; `invalid-attr` handles it.
+	// `<div list="x">` is not a valid target for this rule; `no-unknown-attr` handles it.
 	const { violations } = await mlRuleTest(rule, '<div list="anything">x</div>');
 	expect(violations).toStrictEqual([]);
 });

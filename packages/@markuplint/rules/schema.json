@@ -72,9 +72,6 @@
 				"input-list-references-datalist": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/input-list-references-datalist/schema.json"
 				},
-				"invalid-attr": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/invalid-attr/schema.json"
-				},
 				"itemprop-requires-itemscope": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/itemprop-requires-itemscope/schema.json"
 				},
@@ -135,6 +132,9 @@
 				"no-deprecated-role": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-deprecated-role/schema.json"
 				},
+				"no-disallowed-attr": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-disallowed-attr/schema.json"
+				},
 				"no-duplicate-attr": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-duplicate-attr/schema.json"
 				},
@@ -177,6 +177,9 @@
 				"no-invalid-aria-prop-value": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-invalid-aria-prop-value/schema.json"
 				},
+				"no-invalid-attr-value": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-invalid-attr-value/schema.json"
+				},
 				"no-mismatched-aspect-ratio": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-mismatched-aspect-ratio/schema.json"
 				},
@@ -195,6 +198,9 @@
 				"no-refer-to-non-existent-id": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-refer-to-non-existent-id/schema.json"
 				},
+				"no-restricted-attr": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-restricted-attr/schema.json"
+				},
 				"no-restricted-element": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-restricted-element/schema.json"
 				},
@@ -206,6 +212,9 @@
 				},
 				"no-unclosed-element-at-eof": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-unclosed-element-at-eof/schema.json"
+				},
+				"no-unknown-attr": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-unknown-attr/schema.json"
 				},
 				"no-unknown-role": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-unknown-role/schema.json"

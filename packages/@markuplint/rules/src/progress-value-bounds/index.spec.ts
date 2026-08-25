@@ -56,19 +56,19 @@ test('[progress-value-bounds-invalid-002] value exceeds default max (1)', async 
 	]);
 });
 
-test('[progress-value-bounds-valid-006] non-numeric literal value is left to invalid-attr', async () => {
+test('[progress-value-bounds-valid-006] non-numeric literal value is left to no-invalid-attr-value', async () => {
 	// `{{ v }}` fails Number() (returns NaN); with the default HTML parser it is not dynamic —
 	// this exercises the `valueNum === null` early return, not `isDynamicValue`.
 	const { violations } = await mlRuleTest(rule, '<progress value="{{ v }}" max="10">{{ v }}</progress>');
 	expect(violations.length).toBe(0);
 });
 
-test('[progress-value-bounds-valid-007] unparsable value is left to invalid-attr', async () => {
+test('[progress-value-bounds-valid-007] unparsable value is left to no-invalid-attr-value', async () => {
 	const { violations } = await mlRuleTest(rule, '<progress value="abc" max="10">abc</progress>');
 	expect(violations.length).toBe(0);
 });
 
-test('[progress-value-bounds-valid-008] unparsable max is left to invalid-attr', async () => {
+test('[progress-value-bounds-valid-008] unparsable max is left to no-invalid-attr-value', async () => {
 	const { violations } = await mlRuleTest(rule, '<progress value="0.5" max="abc">50%</progress>');
 	expect(violations.length).toBe(0);
 });
