@@ -122,7 +122,9 @@
 		 *
 		 * @see https://html.spec.whatwg.org/multipage/dom.html#attributes
 		 */
-		"invalid-attr": true,
+		"no-unknown-attr": true,
+		"no-disallowed-attr": true,
+		"no-invalid-attr-value": true,
 
 		/**
 		 * No duplicate names in `<dl>`
@@ -599,7 +601,7 @@
 				}
 			},
 			"rules": {
-				"invalid-attr": {
+				"no-restricted-attr": {
 					"options": {
 						"disallowAttrs": [
 							{
@@ -627,7 +629,7 @@
 			"specConformance": "non-normative",
 			"selector": "link",
 			"rules": {
-				"invalid-attr": {
+				"no-restricted-attr": {
 					"options": {
 						"disallowAttrs": [
 							{

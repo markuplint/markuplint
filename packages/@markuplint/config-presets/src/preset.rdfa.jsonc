@@ -8,7 +8,35 @@
 			 */
 			"selector": ":where(meta[property])",
 			"rules": {
-				"invalid-attr": {
+				"no-unknown-attr": {
+					"options": {
+						"allowAttrs": [
+							{
+								"name": "property",
+								"value": "NoEmptyAny"
+							},
+							{
+								"name": "content",
+								"value": "NoEmptyAny"
+							}
+						]
+					}
+				},
+				"no-disallowed-attr": {
+					"options": {
+						"allowAttrs": [
+							{
+								"name": "property",
+								"value": "NoEmptyAny"
+							},
+							{
+								"name": "content",
+								"value": "NoEmptyAny"
+							}
+						]
+					}
+				},
+				"no-invalid-attr-value": {
 					"options": {
 						"allowAttrs": [
 							{

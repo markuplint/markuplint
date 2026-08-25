@@ -22,7 +22,7 @@
 		"a11y/no-accesskey": {
 			"specConformance": "non-normative",
 			"rules": {
-				"invalid-attr": {
+				"no-restricted-attr": {
 					"options": {
 						"disallowAttrs": ["accesskey"]
 					}
@@ -292,7 +292,7 @@
 			"specConformance": "non-normative",
 			"selector": ":where(th, td)",
 			"rules": {
-				"invalid-attr": {
+				"no-restricted-attr": {
 					"options": {
 						"disallowAttrs": ["colspan", "rowspan"]
 					}
@@ -328,7 +328,7 @@
 			"specConformance": "non-normative",
 			"selector": ":where(:not(dialog, dialog *))",
 			"rules": {
-				"invalid-attr": {
+				"no-restricted-attr": {
 					"options": {
 						"disallowAttrs": ["autofocus"]
 					}
@@ -348,13 +348,13 @@
 			"specConformance": "non-normative",
 			"selector": ":where(:not(dialog))",
 			"rules": {
-				"invalid-attr": {
+				"no-restricted-attr": {
 					"options": {
-						"allowAttrs": [
+						"disallowAttrs": [
 							{
 								"name": "tabindex",
 								"value": {
-									"enum": ["-1", "0"]
+									"pattern": "/^(?!-1$|0$).*$/"
 								}
 							}
 						]
@@ -377,7 +377,7 @@
 			"specConformance": "non-normative",
 			"selector": ":where(meta[name='viewport' i])",
 			"rules": {
-				"invalid-attr": {
+				"no-restricted-attr": {
 					"options": {
 						"disallowAttrs": [
 							{
