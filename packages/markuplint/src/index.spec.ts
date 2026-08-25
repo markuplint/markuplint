@@ -81,8 +81,6 @@ describe('basic test', () => {
 		const warns = violations.filter(v => v.severity === 'warning');
 
 		expect(errors.map(_ => _.message)).toStrictEqual([
-			'The "color" attribute is deprecated',
-			'The "align" attribute is deprecated',
 			'The "font" element is obsolete',
 			'Never declare obsolete doctype',
 			'The value of the "id" attribute is duplicated',
@@ -114,6 +112,8 @@ describe('basic test', () => {
 			'Tag names of HTML elements should be lowercase',
 			'It is the default value',
 			'The "color" attribute is non-standard',
+			'The "color" attribute is deprecated',
+			'The "align" attribute is deprecated',
 		]);
 	});
 

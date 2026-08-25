@@ -37,14 +37,6 @@ test('default-rules', () => {
 			category: 'validation',
 			defaultValue: false,
 		},
-		'deprecated-attr': {
-			category: 'validation',
-			defaultValue: true,
-		},
-		'deprecated-element': {
-			category: 'validation',
-			defaultValue: true,
-		},
 		'no-restricted-element': {
 			category: 'validation',
 			defaultValue: [],
@@ -288,6 +280,22 @@ test('default-rules', () => {
 		'no-deprecated-aria-prop': {
 			category: 'a11y',
 			defaultValue: false,
+		},
+		'no-deprecated-attr': {
+			category: 'validation',
+			defaultValue: false,
+		},
+		'no-deprecated-element': {
+			category: 'validation',
+			defaultValue: false,
+		},
+		'no-obsolete-attr': {
+			category: 'validation',
+			defaultValue: true,
+		},
+		'no-obsolete-element': {
+			category: 'validation',
+			defaultValue: true,
 		},
 		'no-deprecated-role': {
 			category: 'a11y',

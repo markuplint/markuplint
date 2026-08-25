@@ -54,8 +54,11 @@ export const benchmarkConfig: Config = {
 		'label-for-references-labelable': true,
 		'label-no-multiple-controls': true,
 		'no-refer-to-non-existent-id': true,
-		'deprecated-element': true,
-		'deprecated-attr': true,
+		// no-deprecated-element/no-deprecated-attr (factual, MDN/BCD-sourced)
+		// are intentionally not enabled here — they are not HTML LS conformance
+		// violations, so nu-validator never flags them either.
+		'no-obsolete-element': true,
+		'no-obsolete-attr': true,
 		'no-duplicate-id': true,
 		// Validates `<script>` body against the spec for its `type` (currently importmap, per HTML LS § Parse an import map string).
 		'script-content': true,
