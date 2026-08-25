@@ -153,6 +153,7 @@ export const ruleAliasTable: RuleAliasTable = {
 		'no-empty-table-track',
 		'consistent-table-row-length',
 	),
+	'script-content': split('valid-importmap', 'valid-speculation-rules'),
 	'attr-duplication': renamed('no-duplicate-attr'),
 	'id-duplication': renamed('no-duplicate-id'),
 	'required-element': renamed('require-element'),

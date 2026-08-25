@@ -99,10 +99,11 @@ import RequireEndTag from './require-end-tag/index.js';
 import RequireOwnedElements from './require-owned-elements/index.js';
 import RequireParentRole from './require-parent-role/index.js';
 import RequiredH1 from './required-h1/index.js';
-import ScriptContent from './script-content/index.js';
 import SrcsetSizesConstraint from './srcset-sizes-constraint/index.js';
 import TabRequiresTabpanel from './tab-requires-tabpanel/index.js';
 import UsemapReferencesMap from './usemap-references-map/index.js';
+import ValidImportmap from './valid-importmap/index.js';
+import ValidSpeculationRules from './valid-speculation-rules/index.js';
 import WaiAria from './wai-aria/index.js';
 import WaiAriaDisallowedProps from './wai-aria-disallowed-props/index.js';
 import WaiAriaImplicitProps from './wai-aria-implicit-props/index.js';
@@ -200,10 +201,11 @@ const rules = {
 	'require-owned-elements': RequireOwnedElements,
 	'require-parent-role': RequireParentRole,
 	'required-h1': RequiredH1,
-	'script-content': ScriptContent,
 	'srcset-sizes-constraint': SrcsetSizesConstraint,
 	'tab-requires-tabpanel': TabRequiresTabpanel,
 	'usemap-references-map': UsemapReferencesMap,
+	'valid-importmap': ValidImportmap,
+	'valid-speculation-rules': ValidSpeculationRules,
 	'wai-aria': WaiAria,
 	'wai-aria-disallowed-props': WaiAriaDisallowedProps,
 	'wai-aria-implicit-props': WaiAriaImplicitProps,
