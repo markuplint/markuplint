@@ -111,7 +111,7 @@
 
 ### `markuplint:html-standard` {#preset-html-standard}
 
-仕様ベースの属性検証のため、基本ルール [`invalid-attr`](/docs/rules/invalid-attr) も有効にします。`invalid-attr` をラップする名前付きルール（例: `a11y/no-accesskey`）はそれぞれの狭い allow/disallow チェックのみを行い、HTML仕様に基づく全般的な検証は基本ルールが担当します。
+仕様ベースの属性検証のため、基本ルール [`no-unknown-attr`](/docs/rules/no-unknown-attr)・[`no-disallowed-attr`](/docs/rules/no-disallowed-attr)・[`no-invalid-attr-value`](/docs/rules/no-invalid-attr-value) も有効にします。特定の属性を制限する名前付きルール（例: `a11y/no-accesskey`）は代わりに [`no-restricted-attr`](/docs/rules/no-restricted-attr) をラップします — このルールは設定された拒否リストのみを検査し、仕様検証は一切行わないため、どこで使っても狭いままです。
 
 | 名前付きルール                              | 解説                                                                                                                           |
 | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
@@ -148,7 +148,7 @@
 
 ### `markuplint:rdfa` {#preset-rdfa}
 
-`<meta property>` 要素に対し、`invalid-attr` を拡張して `property` と `content` 属性を許可します。これにより、**Open Graph** 等のRDFaベースのメタデータが仕様検証の違反として報告されなくなります。また、同要素に対し `require-attr` を無効化します。
+`<meta property>` 要素に対し、`no-unknown-attr`・`no-disallowed-attr`・`no-invalid-attr-value` を拡張して `property` と `content` 属性を許可します。これにより、**Open Graph** 等のRDFaベースのメタデータが仕様検証の違反として報告されなくなります。また、同要素に対し `require-attr` を無効化します。
 
 このプリセットは名前付きルールを公開しません。
 

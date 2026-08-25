@@ -439,7 +439,7 @@ Setting a base rule name to `false` disables it inside every named rule group th
     "my-checks/validation": {
       "rules": {
         "no-duplicate-id": true,
-        "invalid-attr": true
+        "no-invalid-attr-value": true
       }
     }
   }
@@ -454,14 +454,14 @@ Adding `"no-duplicate-id": false` to your config is equivalent to reaching into 
     "my-checks/validation": {
       "rules": {
         "no-duplicate-id": false,
-        "invalid-attr": true
+        "no-invalid-attr-value": true
       }
     }
   }
 }
 ```
 
-The `invalid-attr` rule in the same group remains active. This applies across all groups — if both `a11y/id-duplication` and `html-standard/id-duplication` wrap the `no-duplicate-id` base rule, both are disabled. This is provided for backward compatibility.
+The `no-invalid-attr-value` rule in the same group remains active. This applies across all groups — if both `a11y/id-duplication` and `html-standard/id-duplication` wrap the `no-duplicate-id` base rule, both are disabled. This is provided for backward compatibility.
 
 See [Named rules in presets](/docs/guides/presets#named-rules) for the full list.
 
@@ -475,7 +475,7 @@ You can define your own named rule groups by using a key that contains `/` and a
     "my-project/no-accesskey": {
       "specConformance": "non-normative",
       "rules": {
-        "invalid-attr": {
+        "no-restricted-attr": {
           "options": { "disallowAttrs": ["accesskey"] }
         }
       }
@@ -514,7 +514,7 @@ When a named rule group contains a single entry, the group key is used directly 
   "rules": {
     // Single entry: rule name is "my-project/no-accesskey"
     "my-project/no-accesskey": {
-      "rules": { "invalid-attr": { "options": { "disallowAttrs": ["accesskey"] } } }
+      "rules": { "no-restricted-attr": { "options": { "disallowAttrs": ["accesskey"] } } }
     },
     // Multi entry: rule names are "my-project/checks/no-duplicate-attr"
     // and "my-project/checks/class-naming"

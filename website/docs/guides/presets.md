@@ -111,7 +111,7 @@ See the [rulesets tables](#rulesets-of-base-presets) below for the full list of 
 
 ### `markuplint:html-standard` {#preset-html-standard}
 
-Also enables the base rule [`invalid-attr`](/docs/rules/invalid-attr) for spec-based attribute validation. Named rules wrapping `invalid-attr` (such as `a11y/no-accesskey`) perform only their narrow allow/disallow checks — general HTML-spec validation is handled by the base rule.
+Also enables the base rules [`no-unknown-attr`](/docs/rules/no-unknown-attr), [`no-disallowed-attr`](/docs/rules/no-disallowed-attr), and [`no-invalid-attr-value`](/docs/rules/no-invalid-attr-value) for spec-based attribute validation. Named rules that restrict specific attributes (such as `a11y/no-accesskey`) wrap [`no-restricted-attr`](/docs/rules/no-restricted-attr) instead — that rule only enforces its own configured denylist and never performs spec validation, so it stays narrow no matter where it's used.
 
 | Named Rule                                  | Description                                                                                                                                     |
 | ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -148,7 +148,7 @@ Also enables the base rule [`invalid-attr`](/docs/rules/invalid-attr) for spec-b
 
 ### `markuplint:rdfa` {#preset-rdfa}
 
-Extends `invalid-attr` to allow the `property` and `content` attributes on `<meta property>` so that RDFa-based metadata (e.g., **Open Graph**) does not trigger spec-validation violations. Also disables `require-attr` on the same elements.
+Extends `no-unknown-attr`, `no-disallowed-attr`, and `no-invalid-attr-value` to allow the `property` and `content` attributes on `<meta property>` so that RDFa-based metadata (e.g., **Open Graph**) does not trigger spec-validation violations. Also disables `require-attr` on the same elements.
 
 No named rules are exposed by this preset.
 

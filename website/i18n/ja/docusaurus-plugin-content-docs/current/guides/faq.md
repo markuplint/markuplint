@@ -24,11 +24,11 @@
 
 ### OGPで怒られます
 
-Open GraphプロトコルはHTMLとは異なる仕様のため、標準で対応していません。[対応できる設定例](/docs/rules/invalid-attr#the-open-graph-protocol)がありますので参考にしてください。
+Open GraphプロトコルはHTMLとは異なる仕様のため、標準で対応していません。[対応できる設定例](/docs/rules/no-unknown-attr#the-open-graph-protocol)がありますので参考にしてください。
 
-### `invalid-attr`ルールで怒られます
+### `no-unknown-attr`ルールで怒られます
 
-[`invalid-attr`](/docs/rules/invalid-attr)はHTMLの仕様に存在しない属性が要素に指定されていると警告します。フレームワークを利用していると頻繁に遭遇するかもしれません。[`allowAttrs`](/docs/rules/invalid-attr#setting-allow-attrs-option)オプションで許可したい属性を追加できます。
+[`no-unknown-attr`](/docs/rules/no-unknown-attr)はHTMLの仕様に存在しない属性が要素に指定されていると警告します。フレームワークを利用していると頻繁に遭遇するかもしれません。[`allowAttrs`](/docs/rules/no-unknown-attr#setting-allow-attrs-option)オプションで許可したい属性を追加できます。
 
 ReactとVueに関してはスペックプラグインにより、各構文固有の属性には警告がでないように定義されています。（参考: [なぜスペックプラグインが必要なのですか](/docs/guides/beyond-html#why-need-the-spec-plugins)）
 

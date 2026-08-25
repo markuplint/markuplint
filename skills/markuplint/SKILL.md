@@ -97,9 +97,9 @@ Use `:is(selector *)`. Do NOT use `:closest()` — it is deprecated.
 
 ### OGP / Open Graph `property` attribute
 
-The `property` attribute is not in the HTML spec. See: https://markuplint.dev/docs/rules/invalid-attr#the-open-graph-protocol
+The `property` attribute is not in the HTML spec. See: https://markuplint.dev/docs/rules/no-unknown-attr#the-open-graph-protocol
 
-### `invalid-attr` with frameworks
+### `no-unknown-attr` with frameworks
 
 Install the framework's spec plugin (e.g., `@markuplint/react-spec`). See: https://markuplint.dev/docs/guides/beyond-html#why-need-the-spec-plugins
 

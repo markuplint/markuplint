@@ -409,7 +409,7 @@ interface Config {
     "my-checks/validation": {
       "rules": {
         "no-duplicate-id": true,
-        "invalid-attr": true
+        "no-invalid-attr-value": true
       }
     }
   }
@@ -424,14 +424,14 @@ interface Config {
     "my-checks/validation": {
       "rules": {
         "no-duplicate-id": false,
-        "invalid-attr": true
+        "no-invalid-attr-value": true
       }
     }
   }
 }
 ```
 
-同グループ内の`invalid-attr`は影響を受けずに有効のままです。これは全グループに適用されます — `a11y/id-duplication`と`html-standard/id-duplication`の両方が`no-duplicate-id`ベースルールをラップしている場合、両方とも無効化されます。この機能は後方互換性のために提供されています。
+同グループ内の`no-invalid-attr-value`は影響を受けずに有効のままです。これは全グループに適用されます — `a11y/id-duplication`と`html-standard/id-duplication`の両方が`no-duplicate-id`ベースルールをラップしている場合、両方とも無効化されます。この機能は後方互換性のために提供されています。
 
 一覧は[プリセット内の名前付きルール](/docs/guides/presets#named-rules)を参照してください。
 
@@ -445,7 +445,7 @@ interface Config {
     "my-project/no-accesskey": {
       "specConformance": "non-normative",
       "rules": {
-        "invalid-attr": {
+        "no-restricted-attr": {
           "options": { "disallowAttrs": ["accesskey"] }
         }
       }
@@ -484,7 +484,7 @@ MarkuplintのHTML仕様に基づく組み込みプリセットルールにはこ
   "rules": {
     // 単一エントリ: ルール名は "my-project/no-accesskey"
     "my-project/no-accesskey": {
-      "rules": { "invalid-attr": { "options": { "disallowAttrs": ["accesskey"] } } }
+      "rules": { "no-restricted-attr": { "options": { "disallowAttrs": ["accesskey"] } } }
     },
     // 複数エントリ: ルール名は "my-project/checks/no-duplicate-attr"
     // と "my-project/checks/class-naming"

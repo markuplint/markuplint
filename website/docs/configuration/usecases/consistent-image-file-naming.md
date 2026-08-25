@@ -30,12 +30,12 @@ Suppose defining the following rule:
 
 ## Configuration
 
-Use [`invalid-attr`](/docs/rules/invalid-attr) rule with [`regexSelector`](/docs/configuration/properties#regexselector).
+Use [`no-invalid-attr-value`](/docs/rules/no-invalid-attr-value) rule with [`regexSelector`](/docs/configuration/properties#regexselector).
 
 ```json class=config
 {
   "rules": {
-    "invalid-attr": true
+    "no-invalid-attr-value": true
   },
   "nodeRules": [
     {
@@ -52,7 +52,7 @@ Use [`invalid-attr`](/docs/rules/invalid-attr) rule with [`regexSelector`](/docs
         }
       },
       "rules": {
-        "invalid-attr": {
+        "no-invalid-attr-value": {
           "options": {
             "allowAttrs": [
               {

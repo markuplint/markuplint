@@ -178,7 +178,17 @@ These are frequently requested. Propose them directly when relevant:
     {
       "selector": "meta[property]",
       "rules": {
-        "invalid-attr": {
+        "no-unknown-attr": {
+          "options": {
+            "allowAttrs": ["property"]
+          }
+        },
+        "no-disallowed-attr": {
+          "options": {
+            "allowAttrs": ["property"]
+          }
+        },
+        "no-invalid-attr-value": {
           "options": {
             "allowAttrs": ["property"]
           }
@@ -194,7 +204,7 @@ These are frequently requested. Propose them directly when relevant:
 ```json
 {
   "rules": {
-    "invalid-attr": {
+    "no-unknown-attr": {
       "options": {
         "allowAttrs": ["data-testid"]
       }

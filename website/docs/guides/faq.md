@@ -22,11 +22,11 @@ The officially supported editor is **VS Code**, but VS Code-based editors such a
 
 ### Warned at OGP
 
-The Open Graph protocol is a different specification from HTML and is not supported by the standard. Please refer to [a possible configuration to support the protocol](/docs/rules/invalid-attr#the-open-graph-protocol).
+The Open Graph protocol is a different specification from HTML and is not supported by the standard. Please refer to [a possible configuration to support the protocol](/docs/rules/no-unknown-attr#the-open-graph-protocol).
 
-### Warned by `invalid-attr` rule
+### Warned by `no-unknown-attr` rule
 
-[`invalid-attr`](/docs/rules/invalid-attr) warns when an attribute does not exist in the HTML specification. This is common when using frameworks. You can allow specific attributes using the [`allowAttrs`](/docs/rules/invalid-attr#setting-allow-attrs-option) option.
+[`no-unknown-attr`](/docs/rules/no-unknown-attr) warns when an attribute does not exist in the HTML specification. This is common when using frameworks. You can allow specific attributes using the [`allowAttrs`](/docs/rules/no-unknown-attr#setting-allow-attrs-option) option.
 
 For React and Vue, spec plugins prevent warnings on framework-specific attributes. (See: [Why need the spec plugins?](/docs/guides/beyond-html#why-need-the-spec-plugins))
 
