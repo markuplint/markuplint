@@ -118,7 +118,32 @@ function expandInvalidAttr(rule: AnyRule): Record<string, AnyRule> {
 	return expanded;
 }
 
+/**
+ * `doctype` split two ways: `require-doctype` (missing-DOCTYPE-entirely, the
+ * `value: 'always'` half — always present regardless of the old options) and
+ * `no-obsolete-doctype` (the `denyObsoleteType` half, included unless the
+ * user explicitly set `denyObsoleteType: false` to opt out of it).
+ */
+function expandDoctype(rule: AnyRule): Record<string, AnyRule> {
+	const { options } = normalize(rule);
+	const denyObsoleteType = options?.denyObsoleteType;
+
+	const expanded: Record<string, AnyRule> = {
+		'require-doctype': withOptions(rule),
+	};
+
+	if (denyObsoleteType !== false) {
+		expanded['no-obsolete-doctype'] = withOptions(rule);
+	}
+
+	return expanded;
+}
+
 export const ruleAliasTable: RuleAliasTable = {
+	doctype: {
+		expand: expandDoctype,
+		targets: ['require-doctype', 'no-obsolete-doctype'],
+	},
 	'deprecated-attr': split('no-obsolete-attr', 'no-deprecated-attr'),
 	'deprecated-element': split('no-obsolete-element', 'no-deprecated-element'),
 	'attr-duplication': renamed('no-duplicate-attr'),

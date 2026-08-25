@@ -1,11 +1,13 @@
 ---
-description: Warns when doesn't including DOCTYPE.
-id: doctype
+description: Warns when a document doesn't include a DOCTYPE.
+id: require-doctype
 ---
 
-# `doctype`
+# `require-doctype`
 
-Warns when doesn't including DOCTYPE. Also warns when included obsolete type.
+Warns when a document doesn't include a DOCTYPE. Ignored for document fragments.
+
+An included DOCTYPE that uses an obsolete public/system identifier form is [`no-obsolete-doctype`](/docs/rules/no-obsolete-doctype)'s concern, not this rule's — any DOCTYPE, obsolete or not, satisfies this rule.
 
 ❌ Examples of **incorrect** code for this rule
 

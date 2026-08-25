@@ -36,9 +36,6 @@
 				"disallowed-element": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-restricted-element/schema.json"
 				},
-				"doctype": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/doctype/schema.json"
-				},
 				"end-tag": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/require-end-tag/schema.json"
 				},
@@ -186,6 +183,9 @@
 				"no-obsolete-attr": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-obsolete-attr/schema.json"
 				},
+				"no-obsolete-doctype": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-obsolete-doctype/schema.json"
+				},
 				"no-obsolete-element": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-obsolete-element/schema.json"
 				},
@@ -263,6 +263,9 @@
 				},
 				"require-dialog-autofocus": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/require-dialog-autofocus/schema.json"
+				},
+				"require-doctype": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/require-doctype/schema.json"
 				},
 				"require-element": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/require-element/schema.json"

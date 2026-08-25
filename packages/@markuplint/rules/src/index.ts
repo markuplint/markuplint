@@ -18,7 +18,6 @@ import CaseSensitiveAttrName from './case-sensitive-attr-name/index.js';
 import CaseSensitiveTagName from './case-sensitive-tag-name/index.js';
 import CharacterReference from './character-reference/index.js';
 import ClassNaming from './class-naming/index.js';
-import Doctype from './doctype/index.js';
 import FormAttrReferencesForm from './form-attr-references-form/index.js';
 import HeadElementOrder from './head-element-order/index.js';
 import InputButtonNonEmptyValue from './input-button-non-empty-value/index.js';
@@ -61,6 +60,7 @@ import NoInvalidAriaPropValue from './no-invalid-aria-prop-value/index.js';
 import NoInvalidAttrValue from './no-invalid-attr-value/index.js';
 import NoMismatchedAspectRatio from './no-mismatched-aspect-ratio/index.js';
 import NoObsoleteAttr from './no-obsolete-attr/index.js';
+import NoObsoleteDoctype from './no-obsolete-doctype/index.js';
 import NoObsoleteElement from './no-obsolete-element/index.js';
 import NoOrphanedEndTag from './no-orphaned-end-tag/index.js';
 import NoPseudoList from './no-pseudo-list/index.js';
@@ -85,6 +85,7 @@ import RequireAriaProp from './require-aria-prop/index.js';
 import RequireAttr from './require-attr/index.js';
 import RequireDatetime from './require-datetime/index.js';
 import RequireDialogAutofocus from './require-dialog-autofocus/index.js';
+import RequireDoctype from './require-doctype/index.js';
 import RequireElement from './require-element/index.js';
 import RequireEndTag from './require-end-tag/index.js';
 import RequireOwnedElements from './require-owned-elements/index.js';
@@ -111,7 +112,6 @@ const rules = {
 	'case-sensitive-tag-name': CaseSensitiveTagName,
 	'character-reference': CharacterReference,
 	'class-naming': ClassNaming,
-	doctype: Doctype,
 	'form-attr-references-form': FormAttrReferencesForm,
 	'head-element-order': HeadElementOrder,
 	'input-button-non-empty-value': InputButtonNonEmptyValue,
@@ -154,6 +154,7 @@ const rules = {
 	'no-invalid-attr-value': NoInvalidAttrValue,
 	'no-mismatched-aspect-ratio': NoMismatchedAspectRatio,
 	'no-obsolete-attr': NoObsoleteAttr,
+	'no-obsolete-doctype': NoObsoleteDoctype,
 	'no-obsolete-element': NoObsoleteElement,
 	'no-orphaned-end-tag': NoOrphanedEndTag,
 	'no-pseudo-list': NoPseudoList,
@@ -178,6 +179,7 @@ const rules = {
 	'require-attr': RequireAttr,
 	'require-datetime': RequireDatetime,
 	'require-dialog-autofocus': RequireDialogAutofocus,
+	'require-doctype': RequireDoctype,
 	'require-element': RequireElement,
 	'require-end-tag': RequireEndTag,
 	'require-owned-elements': RequireOwnedElements,

@@ -3,7 +3,7 @@ import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('[doctype-valid-001] valid', async () => {
+test('[require-doctype-valid-001] valid', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`
@@ -14,7 +14,7 @@ test('[doctype-valid-001] valid', async () => {
 	expect(violations.length).toBe(0);
 });
 
-test('[doctype-invalid-001] missing doctype', async () => {
+test('[require-doctype-invalid-001] missing doctype', async () => {
 	const { violations } = await mlRuleTest(rule, '<html></html>');
 	expect(violations).toStrictEqual([
 		{
@@ -27,25 +27,18 @@ test('[doctype-invalid-001] missing doctype', async () => {
 	]);
 });
 
-test('[doctype-valid-002] document fragment', async () => {
+test('[require-doctype-valid-002] document fragment', async () => {
 	const { violations } = await mlRuleTest(rule, '<div></div>');
 	expect(violations.length).toBe(0);
 });
 
-test('[doctype-invalid-002] obsolete doctypes', async () => {
+test('[require-doctype-valid-003] an obsolete doctype still counts as present', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`
 		<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 		<div></div>
 		`,
-		{ rule: 'always' },
 	);
-	expect(violations[0]).toStrictEqual({
-		severity: 'error',
-		raw: '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">',
-		line: 2,
-		col: 3,
-		message: 'Never declare obsolete doctype',
-	});
+	expect(violations.length).toBe(0);
 });
