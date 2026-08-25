@@ -41,9 +41,13 @@ test('default-rules', () => {
 			category: 'validation',
 			defaultValue: [],
 		},
-		doctype: {
+		'require-doctype': {
 			category: 'validation',
 			defaultValue: 'always',
+		},
+		'no-obsolete-doctype': {
+			category: 'validation',
+			defaultValue: true,
 		},
 		'require-end-tag': {
 			category: 'style',

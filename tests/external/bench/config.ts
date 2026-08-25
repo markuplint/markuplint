@@ -74,8 +74,10 @@ export const benchmarkConfig: Config = {
 		'no-skipped-heading-level': true,
 		// Catches `<div id="a" id="b">`-style duplicate attribute names (HTML LS tokenizer).
 		'no-duplicate-attr': true,
-		// Catches missing/legacy/quirky DOCTYPE (HTML LS §13.2 — non-`<!DOCTYPE html>` declarations).
-		doctype: true,
+		// Catches a missing DOCTYPE (HTML LS §13.2 — quirky-mode parsing).
+		'require-doctype': true,
+		// Catches a legacy/obsolete DOCTYPE declaration (HTML LS §13.1.1).
+		'no-obsolete-doctype': true,
 		// Catches an `[itemprop]` element that is not part of any item
 		// (HTML LS §5.2.3 attribute def + §5.2.5 conformance constraint).
 		'itemprop-requires-itemscope': true,

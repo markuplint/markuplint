@@ -701,18 +701,18 @@ describe('Built-in parse-error channel — dedupe against mirroring rules (#3844
 		).toBe(false);
 	});
 
-	test('doctype rule dedupes missing-doctype but NOT non-conforming-doctype', async () => {
+	test('require-doctype rule dedupes missing-doctype but NOT non-conforming-doctype', async () => {
 		// `<html><body></body></html>` triggers `missing-doctype` (mirrored).
 		// Add a non-conforming doctype later to surface `non-conforming-doctype`
 		// if any — actually a missing doctype just produces the missing one,
 		// so test the negative path: ml rule fires, parse-error suppresses
 		// `missing-doctype` only.
 		const { violations } = await mlTest('<html><body><p>x</p></body></html>', {
-			rules: { doctype: true },
+			rules: { 'require-doctype': true },
 			severity: { parseError: 'error' },
 		});
-		// ml `doctype` rule reports the missing doctype.
-		expect(violations.some(v => v.ruleId === 'doctype')).toBe(true);
+		// ml `require-doctype` rule reports the missing doctype.
+		expect(violations.some(v => v.ruleId === 'require-doctype')).toBe(true);
 		// parse-error channel does NOT also fire `missing-doctype` (mirrored).
 		expect(violations.some(v => v.ruleId === 'parse-error' && v.message.includes('missing-doctype'))).toBe(false);
 	});
