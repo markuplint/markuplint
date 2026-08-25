@@ -136,9 +136,14 @@ export const ruleAliasTable: RuleAliasTable = {
 	'wai-aria-tab-requires-tabpanel': renamed('tab-requires-tabpanel'),
 	'wai-aria-value': renamed('no-invalid-aria-prop-value'),
 
-	// `required-attr` also loses its `{ name, value }` pattern-matching
-	// responsibility to `no-restricted-attr` once that rule exists (part of
-	// the invalid-attr split) — until then, this is a straight rename.
+	// A straight rename. The original plan (#4.4) proposed also moving this
+	// rule's `{ name, value }` pattern-matching responsibility to
+	// `no-restricted-attr` once that rule existed — reconsidered once
+	// `no-restricted-attr` actually landed: "require this attribute's value
+	// to match a pattern" is a positive REQUIRE constraint, not a denylist,
+	// and only fits `no-restricted-attr`'s deny-only shape via an awkward
+	// negated pattern that changes the violation message's wording for no
+	// real benefit. `require-attr` keeps its full pre-rename scope.
 	'required-attr': renamed('require-attr'),
 
 	'invalid-attr': {
