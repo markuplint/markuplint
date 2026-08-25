@@ -3896,7 +3896,7 @@ describe('img[sizes] must be paired with srcset (HTML LS §4.8.4.4.4)', () => {
 	test('[invalid-attr-invalid-066] picture > source[sizes] without srcset is rejected', async () => {
 		// Same spec wording as img[sizes]; no nu fixture covers this directly
 		// but the constraint is symmetric. `srcset` being required on
-		// `picture > source` keeps required-attr firing in parallel for the
+		// `picture > source` keeps require-attr firing in parallel for the
 		// missing-srcset case.
 		const { violations } = await mlRuleTest(
 			rule,

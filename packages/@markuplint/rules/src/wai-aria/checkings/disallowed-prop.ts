@@ -103,7 +103,7 @@ export const checkingDisallowedProp: AttrChecker<
 		// (e.g. `input[type=hidden]`). The role-based check below would skip such
 		// elements because `role` is null, so handle that case here.
 		// Note: when an explicit `role=` is present, `role` is non-null and this
-		// branch is skipped — but `wai-aria-permitted-roles` already rejects the
+		// branch is skipped — but `permitted-roles` already rejects the
 		// explicit role for elements whose spec says `permittedRoles: false`,
 		// so the user sees a violation either way.
 		//

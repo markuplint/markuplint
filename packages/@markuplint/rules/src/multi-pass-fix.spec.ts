@@ -142,7 +142,7 @@ describe('multi-pass fix', () => {
 					'case-sensitive-tag-name': true,
 					'case-sensitive-attr-name': true,
 					'attr-value-quotes': true,
-					'attr-duplication': true,
+					'no-duplicate-attr': true,
 				},
 			},
 			undefined,
@@ -209,14 +209,14 @@ describe('multi-pass fix with parsers', () => {
 		expect(fixedCode).toBe('<template><input disabled data-foo="bar" /></template>');
 	});
 
-	test('[multi-pass-fix-fix-008] Vue: attr-value-quotes + attr-duplication', async () => {
+	test('[multi-pass-fix-fix-008] Vue: attr-value-quotes + no-duplicate-attr', async () => {
 		const { fixedCode } = await mlTest(
 			"<template><div class='a' class='b'></div></template>",
 			{
 				parser: { '.*': '@markuplint/vue-parser' },
 				rules: {
 					'attr-value-quotes': { severity: 'error', value: 'double' },
-					'attr-duplication': true,
+					'no-duplicate-attr': true,
 				},
 			},
 			undefined,

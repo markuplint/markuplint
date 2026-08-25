@@ -225,17 +225,17 @@ test('[wai-aria-disallowed-props-issue-3630-018] img with no alt and aria-releva
 	]);
 });
 
-test('[wai-aria-disallowed-props-issue-3630-019] custom element + non-naming aria does NOT double-fire with wai-aria-no-global-prop', async () => {
+test('[wai-aria-disallowed-props-issue-3630-019] custom element + non-naming aria does NOT double-fire with aria-prop-requires-role', async () => {
 	// Boundary check: wai-aria-disallowed-props handles autonomous custom elements
 	// only for naming attrs. Non-naming aria-* on a custom element without role
-	// goes to neither rule (wai-aria-no-global-prop early-returns when no
+	// goes to neither rule (aria-prop-requires-role early-returns when no
 	// spec.<el>.jsonc entry exists). Pin this so a future expansion of either
 	// rule's web-component coverage surfaces the responsibility split.
 	const { mlTest } = await import('markuplint');
 	const r = await mlTest('<my-widget aria-controls="x">y</my-widget>', {
 		rules: {
 			'wai-aria-disallowed-props': true,
-			'wai-aria-no-global-prop': true,
+			'aria-prop-requires-role': true,
 		},
 	});
 	expect(r.violations).toStrictEqual([]);
