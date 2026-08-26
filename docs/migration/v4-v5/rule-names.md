@@ -68,9 +68,9 @@ Each split's checks correspond to independent spec requirements, so they can be 
 | Old name (rc.4) | Split into | What each checks |
 |------------------|------------|-------------------|
 | `invalid-attr` | `no-unknown-attr` | Attribute name not defined by the spec at all (typo candidates, case mismatches) |
-| | `no-disallowed-attr` | Attribute defined but disallowed here (`noUse`, unmet conditional-allow condition, `is` on an autonomous custom element, `aria-*` on an element that disallows ARIA) |
+| | `no-disallowed-attr` | Attribute defined but disallowed here (`noUse`, unmet conditional-allow condition, `is` on an autonomous custom element). `aria-*`/`role` are exempt from all three spec-checking rules — the ARIA rules own them, `no-aria-on-unsupported-element` in particular |
 | | `no-invalid-attr-value` | Attribute value type/grammar violation |
-| | `no-restricted-attr` | User-defined `allowAttrs`/`disallowAttrs` denylisting |
+| | `no-restricted-attr` | User-defined `disallowAttrs` denylisting (its only option — `allowAttrs` goes to the three spec-checking rules instead) |
 | `doctype` | `require-doctype` | Missing DOCTYPE declaration entirely |
 | | `no-obsolete-doctype` | Legacy DOCTYPE with a public/system identifier (`about:legacy-compat` is still permitted per spec) |
 | `character-reference` | `no-malformed-character-reference` | parse5's malformed-character-reference parse errors |
@@ -108,11 +108,30 @@ Each split's checks correspond to independent spec requirements, so they can be 
 | `wai-aria-implicit-props` | `no-redundant-aria-prop` | `aria-*` redundant with an equivalent HTML attribute |
 | | `no-contradictory-aria-prop` | `aria-*` contradicting an equivalent HTML attribute |
 
-See [ARIA Changes](./aria.md) for the `wai-aria` umbrella rule's removal (a 21-way "split," if you count it that way — every one of its checks already had an independent successor before v5.0.0 shipped).
+See [ARIA Changes](./aria.md) for the `wai-aria` umbrella rule's removal (a 21-way "split," if you count it that way — 20 of its 21 checks already had an independent successor before v5.0.0 shipped; the 21st is the new `no-aria-on-unsupported-element`).
 
 ### Option-Routed Splits: Before / After
 
-Most splits above are unconditional — every old check gets its own new rule regardless of options. Three are not: `landmark-roles`, `required-h1`, and `no-unsupported-features` route to a subset of their new siblings depending on what the old options said. The alias table expands these automatically (with a deprecation warning) — this is only relevant if you're rewriting your config by hand instead of relying on that.
+Most splits above are unconditional — every old check gets its own new rule regardless of options. Five are not: `doctype`, `landmark-roles`, `required-h1`, `no-unsupported-features`, and `invalid-attr` route to a subset of their new siblings depending on what the old options said. The alias table expands these automatically (with a deprecation warning) — this is only relevant if you're rewriting your config by hand instead of relying on that.
+
+`doctype` with both checks on:
+
+```json
+{ "rules": { "doctype": "always" } }
+```
+
+becomes
+
+```json
+{
+  "rules": {
+    "require-doctype": true,
+    "no-obsolete-doctype": true
+  }
+}
+```
+
+— `no-obsolete-doctype` is omitted entirely if the old config set `denyObsoleteType: false`.
 
 `landmark-roles` with both checks on:
 
@@ -178,11 +197,13 @@ becomes
 
 — `no-experimental-features`/`no-nonstandard-features` are each omitted entirely unless the old config explicitly set the matching `check*` option to `true` (v4's default for both was `false`, i.e. that check didn't run at all).
 
+`invalid-attr` always expands to `no-unknown-attr`, `no-disallowed-attr`, and `no-invalid-attr-value`; `no-restricted-attr` joins them only when the old config actually set `disallowAttrs`, so a bare `invalid-attr: true` never enables a rule with nothing to restrict. The old options are routed rather than copied wholesale — see [`invalid-attr` Breaking Changes](./rules/invalid-attr.md) for which option lands on which new rule.
+
 ## Deletions
 
 | Removed rule | Replaced by |
 |--------------|-------------|
-| `wai-aria` (umbrella) | Its 21 already-independent successor rules — see [ARIA Changes](./aria.md#umbrella-rule-removed) |
+| `wai-aria` (umbrella) | Its 21 successor rules — 20 already independent, plus the new `no-aria-on-unsupported-element`; see [ARIA Changes](./aria.md#umbrella-rule-removed) |
 | `input-button-non-empty-value` | `require-accessible-name` — see [ARIA Changes](./aria.md#removed-input-button-non-empty-value) |
 
 ## Scope Narrowed
@@ -234,7 +255,7 @@ to keep the same coverage in v5.
 
 `no-consecutive-br` is a deliberate, documented exception: it stays `warning` even though it's a proxy for an HTML LS MUST, because the detection can false-positive on legitimate uses (e.g. poem line breaks).
 
-The four `warning`→`error` rows above can turn a previously-green CI pipeline red on unrelated code for teams using a strict, zero-warnings gate (e.g. `--max-warnings 0`) — check your current warning counts against these specific rules before upgrading.
+The four `warning`→`error` rows above cover six rules (the first row alone holds three), any of which can turn a previously-green CI pipeline red on unrelated code for teams using a strict, zero-warnings gate (e.g. `--max-warnings 0`) — check your current warning counts against these specific rules before upgrading.
 
 ## Preset Changes
 
@@ -242,4 +263,4 @@ The four `warning`→`error` rows above can turn a previously-green CI pipeline 
 - **`performance`** gains `head-element-order` and `no-mismatched-aspect-ratio` as plain rules (its existing `nodeRules`-scoped entries are unchanged).
 - **`html-standard`** gains `itemprop-requires-itemscope` and drops `no-duplicate-dt` (a SHOULD) and `no-ineffective-attr` (non-normative) — the preset only admits rules whose spec conformance is `sources: ['html']` + `level: 'must'`. `input-button-non-empty-value` is also gone from it (the rule is removed).
 - **`no-refer-to-non-existent-id`** and **`no-duplicate-id`** stay in both `a11y` and `html-standard`, deliberately — this is unchanged from rc.4.
-- Eight rules are deliberately in **no preset at all** (opinionated formatting rules that need explicit configuration, or checks with a high false-positive rate): `attr-order`, `attr-value-quotes`, `class-naming`, `no-boolean-attr-value`, `no-default-value`, `no-empty-palpable-content`, `no-duplicate-dt`, `no-ineffective-attr`. Each rule's README documents why.
+- Nine rules are deliberately in **no preset at all** (opinionated formatting rules that need explicit configuration, or checks with a high false-positive rate): `attr-order`, `attr-value-quotes`, `class-naming`, `no-boolean-attr-value`, `no-default-value`, `no-empty-palpable-content`, `no-duplicate-dt`, `no-ineffective-attr`, `no-experimental-features`. Each rule's README documents why. `no-experimental-features` is the one that isn't opinion-driven: it succeeds v4's `checkExperimental` option, whose default was `false`, so enabling the rule stays an explicit opt-in. `compat` carries only its two siblings, `no-unsupported-browser-features` and `no-nonstandard-features`.

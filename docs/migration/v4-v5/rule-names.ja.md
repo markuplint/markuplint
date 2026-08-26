@@ -68,9 +68,9 @@ rc.4 の5分類（`validation`、`a11y`、`naming-convention`、`maintainability
 | 旧名（rc.4） | 分割後 | 検査内容 |
 |------------|-------|---------|
 | `invalid-attr` | `no-unknown-attr` | 仕様に定義のない属性名（typo 候補・大文字小文字不一致） |
-| | `no-disallowed-attr` | 定義はあるがこの文脈では許可されない属性（`noUse`、条件付き許可の条件外、autonomous custom element 上の `is`、ARIA属性を許可しない要素上の `aria-*`） |
+| | `no-disallowed-attr` | 定義はあるがこの文脈では許可されない属性（`noUse`、条件付き許可の条件外、autonomous custom element 上の `is`）。`aria-*`/`role` は仕様検査3ルールすべてで対象外 — ARIA 系ルール（特に `no-aria-on-unsupported-element`）の担当 |
 | | `no-invalid-attr-value` | 属性値の型・文法違反 |
-| | `no-restricted-attr` | ユーザー定義の `allowAttrs`/`disallowAttrs` 拒否リスト |
+| | `no-restricted-attr` | ユーザー定義の `disallowAttrs` 拒否リスト（このルールの唯一のオプション — `allowAttrs` は仕様検査側の3ルールへ渡る） |
 | `doctype` | `require-doctype` | DOCTYPE 宣言の完全な欠落 |
 | | `no-obsolete-doctype` | public/system 識別子付きの旧型 DOCTYPE（`about:legacy-compat` は仕様通り許容） |
 | `character-reference` | `no-malformed-character-reference` | parse5 の不正文字参照 parse error |
@@ -108,11 +108,30 @@ rc.4 の5分類（`validation`、`a11y`、`naming-convention`、`maintainability
 | `wai-aria-implicit-props` | `no-redundant-aria-prop` | 等価な HTML 属性と同義の冗長な `aria-*` |
 | | `no-contradictory-aria-prop` | 等価な HTML 属性と矛盾する `aria-*` |
 
-`wai-aria` 傘ルールの削除（見方によっては「21分割」— v5.0.0 リリース前に、その全検査は既に独立した後継ルールを持っていました）については [ARIA の変更](./aria.ja.md) を参照してください。
+`wai-aria` 傘ルールの削除（見方によっては「21分割」— 21検査のうち20件は v5.0.0 リリース前に既に独立した後継ルールを持っており、21件目が新設の `no-aria-on-unsupported-element` です）については [ARIA の変更](./aria.ja.md) を参照してください。
 
 ### オプションで振り分けられる分割: Before / After
 
-上記の分割の多くは無条件 — 旧オプションの値にかかわらず、旧検査ごとに新ルールが必ず割り当てられます。例外は3件: `landmark-roles`、`required-h1`、`no-unsupported-features` は、旧オプションの内容に応じて新しい姉妹ルールの一部だけを有効化します。エイリアス機構がこの展開を（非推奨警告付きで）自動的に行うため、以下は手動で設定を書き換える場合にのみ関係します。
+上記の分割の多くは無条件 — 旧オプションの値にかかわらず、旧検査ごとに新ルールが必ず割り当てられます。例外は5件: `doctype`、`landmark-roles`、`required-h1`、`no-unsupported-features`、`invalid-attr` は、旧オプションの内容に応じて新しい姉妹ルールの一部だけを有効化します。エイリアス機構がこの展開を（非推奨警告付きで）自動的に行うため、以下は手動で設定を書き換える場合にのみ関係します。
+
+両方の検査を有効にした `doctype`:
+
+```json
+{ "rules": { "doctype": "always" } }
+```
+
+は次になります:
+
+```json
+{
+  "rules": {
+    "require-doctype": true,
+    "no-obsolete-doctype": true
+  }
+}
+```
+
+— 旧設定で `denyObsoleteType: false` を指定していた場合、`no-obsolete-doctype` は展開から完全に除外されます。
 
 両方の検査を有効にした `landmark-roles`:
 
@@ -178,11 +197,13 @@ rc.4 の5分類（`validation`、`a11y`、`naming-convention`、`maintainability
 
 — `no-experimental-features` / `no-nonstandard-features` は、旧設定が対応する `check*` オプションを明示的に `true` にしていない限り、それぞれ展開から完全に除外されます（v4 ではどちらもデフォルト `false` — つまり検査自体が動いていませんでした）。
 
+`invalid-attr` は常に `no-unknown-attr`、`no-disallowed-attr`、`no-invalid-attr-value` へ展開され、`no-restricted-attr` は旧設定が実際に `disallowAttrs` を指定していた場合にのみ加わります — 素の `invalid-attr: true` が「制限対象が何もないルール」を有効化することはありません。旧オプションは一括コピーではなく振り分けられます — どのオプションがどの新ルールに移るかは [`invalid-attr` の破壊的変更](./rules/invalid-attr.ja.md)を参照してください。
+
 ## 削除
 
 | 削除されたルール | 代替 |
 |-----------------|------|
-| `wai-aria`（傘ルール） | その21個の既に独立していた後継ルール群 — [ARIA の変更](./aria.ja.md#傘ルールの削除) 参照 |
+| `wai-aria`（傘ルール） | その21個の後継ルール群 — 20件は既に独立しており、加えて新設の `no-aria-on-unsupported-element` — [ARIA の変更](./aria.ja.md#傘ルールの削除) 参照 |
 | `input-button-non-empty-value` | `require-accessible-name` — [ARIA の変更](./aria.ja.md#削除-input-button-non-empty-value) 参照 |
 
 ## 責務の縮小
@@ -232,7 +253,7 @@ rc.4 の5分類（`validation`、`a11y`、`naming-convention`、`maintainability
 
 `no-consecutive-br` は意図的な、明記された例外です: HTML LS の MUST の代理検出ですが、詩の連区切りなど正当な使用法で誤検知する可能性があるため `warning` を維持しています。
 
-上表の `warning`→`error` に変わった4行は、`--max-warnings 0` のような厳格な zero-warnings ゲートを使っているチームでは、無関係なコードでも CI が突然赤くなる可能性があります — アップグレード前に、これらのルールに対する現在の warning 件数を確認してください。
+上表の `warning`→`error` に変わった4行は合計6ルールを含みます（1行目だけで3ルール）。`--max-warnings 0` のような厳格な zero-warnings ゲートを使っているチームでは、無関係なコードでも CI が突然赤くなる可能性があります — アップグレード前に、これらのルールに対する現在の warning 件数を確認してください。
 
 ## プリセットの変更
 
@@ -240,4 +261,4 @@ rc.4 の5分類（`validation`、`a11y`、`naming-convention`、`maintainability
 - **`performance`** に `head-element-order` と `no-mismatched-aspect-ratio` を平のルールとして追加（既存の `nodeRules` スコープのエントリは変更なし）。
 - **`html-standard`** に `itemprop-requires-itemscope` を追加、`no-duplicate-dt`（SHOULD）と `no-ineffective-attr`（non-normative）を除外 — このプリセットは仕様準拠性が `sources: ['html']` かつ `level: 'must'` のルールのみを収容します。`input-button-non-empty-value` もルール自体の削除に伴いこのプリセットから消えています。
 - **`no-refer-to-non-existent-id`** と **`no-duplicate-id`** は `a11y` と `html-standard` の両方に属したままです — これは rc.4 から変更ありません（意図的）。
-- 8つのルールは意図的に**どのプリセットにも含まれません**（好みが分かれる書式ルール、または誤検知率が高い検査のため、明示的な設定が必要）: `attr-order`、`attr-value-quotes`、`class-naming`、`no-boolean-attr-value`、`no-default-value`、`no-empty-palpable-content`、`no-duplicate-dt`、`no-ineffective-attr`。各ルールの README に理由が明記されています。
+- 9つのルールは意図的に**どのプリセットにも含まれません**（好みが分かれる書式ルール、または誤検知率が高い検査のため、明示的な設定が必要）: `attr-order`、`attr-value-quotes`、`class-naming`、`no-boolean-attr-value`、`no-default-value`、`no-empty-palpable-content`、`no-duplicate-dt`、`no-ineffective-attr`、`no-experimental-features`。各ルールの README に理由が明記されています。このうち `no-experimental-features` だけは好みの問題ではありません: v4 の `checkExperimental` オプション（デフォルト `false`）の後継であるため、有効化は明示的なオプトインのままです。`compat` プリセットには姉妹ルールの `no-unsupported-browser-features` と `no-nonstandard-features` の2件だけが入っています。
