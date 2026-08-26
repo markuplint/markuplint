@@ -3,8 +3,6 @@
 	"excludeFiles": ["./008.html"],
 	"rules": {
 		"attr-value-quotes": { "reason": "For consistency" },
-		"case-sensitive-tag-name": true,
-		"case-sensitive-attr-name": true,
 		"no-boolean-attr-value": true,
 		"no-default-value": true
 	},

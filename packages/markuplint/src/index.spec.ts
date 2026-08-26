@@ -41,7 +41,7 @@ describe('basic test', () => {
 				reason: 'Another reason',
 				line: 5,
 				col: 8,
-				raw: 'name=viewport',
+				raw: 'http-equiv=X-UA-Compatible',
 				ruleId: 'attr-value-quotes',
 			},
 			{
@@ -49,8 +49,8 @@ describe('basic test', () => {
 				message: 'Attribute value is must quote on double quotation mark',
 				reason: 'Another reason',
 				line: 5,
-				col: 22,
-				raw: "content='width=device-width, initial-scale=1.0'",
+				col: 35,
+				raw: 'content=ie=edge',
 				ruleId: 'attr-value-quotes',
 			},
 			{
@@ -59,7 +59,7 @@ describe('basic test', () => {
 				reason: 'Another reason',
 				line: 6,
 				col: 8,
-				raw: 'http-equiv=X-UA-Compatible',
+				raw: 'name=viewport',
 				ruleId: 'attr-value-quotes',
 			},
 			{
@@ -67,8 +67,8 @@ describe('basic test', () => {
 				message: 'Attribute value is must quote on double quotation mark',
 				reason: 'Another reason',
 				line: 6,
-				col: 35,
-				raw: 'content=ie=edge',
+				col: 22,
+				raw: "content='width=device-width, initial-scale=1.0'",
 				ruleId: 'attr-value-quotes',
 			},
 		]);
@@ -107,13 +107,15 @@ describe('basic test', () => {
 			'Attribute value is must quote on double quotation mark',
 			'Attribute value is must quote on double quotation mark',
 			'Attribute value is must quote on double quotation mark',
+			'It is the default value',
+			'The "color" attribute is non-standard',
 			'Attribute names of HTML elements should be lowercase',
 			'Tag names of HTML elements should be lowercase',
 			'Tag names of HTML elements should be lowercase',
-			'It is the default value',
-			'The "color" attribute is non-standard',
 			'The "color" attribute is deprecated',
 			'The "align" attribute is deprecated',
+			'The "meta" element should be before the "meta" element',
+			'The "meta" element should be before the "meta" element',
 		]);
 	});
 
