@@ -7,9 +7,17 @@ type Options = {
 	readonly documentRoot?: string;
 };
 
+/**
+ * HTML LS §4.8.17 Dimension attributes: "the specified height and width must
+ * match the dimensions of the intrinsic aspect ratio". `width`/`height`
+ * attributes are integers, so an image whose intrinsic ratio doesn't divide
+ * evenly can never have an exact integer match — a half-pixel tolerance
+ * absorbs that unavoidable rounding without accepting a genuinely wrong ratio.
+ */
+const TOLERANCE_PX = 0.5;
+
 export default createRule<boolean, Options>({
 	meta: meta,
-	defaultSeverity: 'warning',
 	defaultOptions: {},
 	async verify({ document, report }) {
 		await document.walkOn('Element', async el => {
@@ -77,8 +85,11 @@ export default createRule<boolean, Options>({
 
 			const { width: actualWidth, height: actualHeight } = dimensions;
 
-			// Cross-multiplication comparison to avoid floating-point errors
-			if (attrWidth * actualHeight !== attrHeight * actualWidth) {
+			// Cross-multiplication keeps the comparison in integer space; dividing by
+			// actualWidth expresses the mismatch in height-pixel-equivalent units so it
+			// can be checked against the pixel tolerance.
+			const mismatchPx = Math.abs(attrWidth * actualHeight - attrHeight * actualWidth) / actualWidth;
+			if (mismatchPx > TOLERANCE_PX) {
 				report({
 					scope: el,
 					message: `The aspect ratio of the image (${actualWidth}:${actualHeight}) does not match the width/height attributes (${widthStr}:${heightStr})`,

@@ -291,6 +291,26 @@ describe('picture/source element', () => {
 	});
 });
 
+describe('Aspect ratio tolerance', () => {
+	test('[no-mismatched-aspect-ratio-valid-021] mismatch of exactly 0.5px (rounding from an indivisible ratio) is within tolerance', async () => {
+		// 100x50.png is a 2:1 ratio; width=301 divides to an exact height of 150.5,
+		// so height=150 is off by exactly 0.5px — the boundary of the tolerance.
+		const { violations } = await mlRuleTest(rule, '<img src="/100x50.png" width="301" height="150">', {
+			rule: { value: true, options: { documentRoot: fixturesDir } },
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[no-mismatched-aspect-ratio-invalid-012] mismatch of more than 0.5px is still reported', async () => {
+		// Same 301-wide image, but height=149 is off by 1.5px — genuinely wrong, not
+		// just integer rounding.
+		const { violations } = await mlRuleTest(rule, '<img src="/100x50.png" width="301" height="149">', {
+			rule: { value: true, options: { documentRoot: fixturesDir } },
+		});
+		expect(violations.length).toBe(1);
+	});
+});
+
 describe('Rule disabled', () => {
 	test('[no-mismatched-aspect-ratio-valid-020] no violations when rule is disabled', async () => {
 		const { violations } = await mlRuleTest(rule, '<img src="/100x50.png" width="100" height="100">', {

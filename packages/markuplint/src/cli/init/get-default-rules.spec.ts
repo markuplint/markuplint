@@ -39,7 +39,7 @@ test('default-rules', () => {
 		},
 		'no-mismatched-aspect-ratio': {
 			category: 'validation',
-			defaultValue: false,
+			defaultValue: true,
 		},
 		'no-restricted-element': {
 			category: 'validation',

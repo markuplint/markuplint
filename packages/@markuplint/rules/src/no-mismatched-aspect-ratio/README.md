@@ -17,7 +17,7 @@ Incorrect `width`/`height` attributes can cause layout shifts (CLS) because the 
 - If the image file cannot be found or read, no violation is reported (silent skip).
 - Dynamic attribute values (e.g., Vue `:src`, JSX `src={...}`) and elements with spread attributes are skipped.
 - Query strings (`?v=123`) and fragments (`#section`) in `src` are stripped when resolving the file path, but preserved in the cache key. This mirrors browser cache-busting behavior: the same file with different query strings is treated as a separate cache entry.
-- The comparison uses cross-multiplication (`attrWidth * actualHeight !== attrHeight * actualWidth`) to avoid floating-point errors.
+- The comparison allows a ±0.5 pixel tolerance: `width`/`height` attributes are integers, so an image whose intrinsic ratio doesn't divide evenly can never have an exact integer match. The tolerance is computed via cross-multiplication (`|attrWidth * actualHeight - attrHeight * actualWidth| / actualWidth`) to avoid floating-point errors while still expressing the mismatch in pixel-equivalent units.
 - Image dimensions are cached in a temporary directory to avoid redundant file reads.
 
 ## Options
