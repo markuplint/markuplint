@@ -58,40 +58,81 @@ test('[valid-importmap-valid-007] type attribute matching is case-insensitive', 
 
 test('[valid-importmap-invalid-001] empty content', async () => {
 	const { violations } = await mlRuleTest(rule, wrap('<script type="importmap"></script>'));
-	expect(violations.length).toBe(1);
-	expect(violations[0]?.message).toBe('Import map must contain a JSON object');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 44,
+			message: 'Import map must contain a JSON object',
+			raw: '<script type="importmap">',
+		},
+	]);
 });
 
 test('[valid-importmap-invalid-002] whitespace-only content', async () => {
 	const { violations } = await mlRuleTest(rule, wrap('<script type="importmap">   \n   </script>'));
-	expect(violations.length).toBe(1);
-	expect(violations[0]?.message).toBe('Import map must contain a JSON object');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 44,
+			message: 'Import map must contain a JSON object',
+			raw: '<script type="importmap">',
+		},
+	]);
 });
 
 test('[valid-importmap-invalid-003] content is not JSON', async () => {
 	const { violations } = await mlRuleTest(rule, wrap('<script type="importmap">alert("not json")</script>'));
-	expect(violations.length).toBe(1);
-	expect(violations[0]?.message).toBe('Import map must be valid JSON');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 44,
+			message: 'Import map must be valid JSON',
+			raw: '<script type="importmap">',
+		},
+	]);
 });
 
 test('[valid-importmap-invalid-004] top-level value is an array', async () => {
 	const { violations } = await mlRuleTest(rule, wrap('<script type="importmap">["imports"]</script>'));
-	expect(violations.length).toBe(1);
-	expect(violations[0]?.message).toBe('Import map must be a JSON object');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 44,
+			message: 'Import map must be a JSON object',
+			raw: '<script type="importmap">',
+		},
+	]);
 });
 
 test('[valid-importmap-invalid-005] top-level value is a string', async () => {
 	const { violations } = await mlRuleTest(rule, wrap('<script type="importmap">"hello"</script>'));
-	expect(violations.length).toBe(1);
-	expect(violations[0]?.message).toBe('Import map must be a JSON object');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 44,
+			message: 'Import map must be a JSON object',
+			raw: '<script type="importmap">',
+		},
+	]);
 });
 
 test('[valid-importmap-invalid-006] forbidden top-level property', async () => {
 	const { violations } = await mlRuleTest(rule, wrap('<script type="importmap">{"forbidden":{}}</script>'));
-	expect(violations.length).toBe(1);
-	expect(violations[0]?.message).toBe(
-		'The import map top-level key "forbidden" is not allowed (use "imports", "scopes", or "integrity")',
-	);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 44,
+			message:
+				'The import map top-level key "forbidden" is not allowed (use "imports", "scopes", or "integrity")',
+			raw: '<script type="importmap">',
+		},
+	]);
 });
 
 test('[valid-importmap-invalid-007] imports value is not an object', async () => {
@@ -99,8 +140,15 @@ test('[valid-importmap-invalid-007] imports value is not an object', async () =>
 		rule,
 		wrap('<script type="importmap">{"imports":"not an object"}</script>'),
 	);
-	expect(violations.length).toBe(1);
-	expect(violations[0]?.message).toBe('The "imports" top-level key of an import map must be a JSON object');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 44,
+			message: 'The "imports" top-level key of an import map must be a JSON object',
+			raw: '<script type="importmap">',
+		},
+	]);
 });
 
 test('[valid-importmap-invalid-008] imports has an empty specifier key', async () => {
@@ -108,14 +156,28 @@ test('[valid-importmap-invalid-008] imports has an empty specifier key', async (
 		rule,
 		wrap('<script type="importmap">{"imports":{"":"/path/app.js"}}</script>'),
 	);
-	expect(violations.length).toBe(1);
-	expect(violations[0]?.message).toBe('The specifier key in "imports" must not be empty');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 44,
+			message: 'The specifier key in "imports" must not be empty',
+			raw: '<script type="importmap">',
+		},
+	]);
 });
 
 test('[valid-importmap-invalid-009] imports value is not a string', async () => {
 	const { violations } = await mlRuleTest(rule, wrap('<script type="importmap">{"imports":{"app":123}}</script>'));
-	expect(violations.length).toBe(1);
-	expect(violations[0]?.message).toBe('The value of "app" in "imports" must be a string');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 44,
+			message: 'The value of "app" in "imports" must be a string',
+			raw: '<script type="importmap">',
+		},
+	]);
 });
 
 test('[valid-importmap-invalid-010] imports slash-mismatch', async () => {
@@ -123,10 +185,16 @@ test('[valid-importmap-invalid-010] imports slash-mismatch', async () => {
 		rule,
 		wrap('<script type="importmap">{"imports":{"dir/":"/path/to/dir"}}</script>'),
 	);
-	expect(violations.length).toBe(1);
-	expect(violations[0]?.message).toBe(
-		'The specifier key "dir/" in "imports" ends with "/" so the address "/path/to/dir" must end with "/" as well',
-	);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 44,
+			message:
+				'The specifier key "dir/" in "imports" ends with "/" so the address "/path/to/dir" must end with "/" as well',
+			raw: '<script type="importmap">',
+		},
+	]);
 });
 
 test('[valid-importmap-invalid-011] imports address is not a URL-like specifier', async () => {
@@ -134,16 +202,29 @@ test('[valid-importmap-invalid-011] imports address is not a URL-like specifier'
 		rule,
 		wrap('<script type="importmap">{"imports":{"lib":"bare-specifier"}}</script>'),
 	);
-	expect(violations.length).toBe(1);
-	expect(violations[0]?.message).toBe(
-		'The address "bare-specifier" of "lib" in "imports" must be a URL-like specifier (starts with "/", "./", "../", or is an absolute URL)',
-	);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 44,
+			message:
+				'The address "bare-specifier" of "lib" in "imports" must be a URL-like specifier (starts with "/", "./", "../", or is an absolute URL)',
+			raw: '<script type="importmap">',
+		},
+	]);
 });
 
 test('[valid-importmap-invalid-012] scopes value is not an object', async () => {
 	const { violations } = await mlRuleTest(rule, wrap('<script type="importmap">{"scopes":"not an object"}</script>'));
-	expect(violations.length).toBe(1);
-	expect(violations[0]?.message).toBe('The "scopes" top-level key of an import map must be a JSON object');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 44,
+			message: 'The "scopes" top-level key of an import map must be a JSON object',
+			raw: '<script type="importmap">',
+		},
+	]);
 });
 
 test('[valid-importmap-invalid-013] scopes inner value is not an object', async () => {
@@ -151,8 +232,15 @@ test('[valid-importmap-invalid-013] scopes inner value is not an object', async 
 		rule,
 		wrap('<script type="importmap">{"scopes":{"/path/":"not an object"}}</script>'),
 	);
-	expect(violations.length).toBe(1);
-	expect(violations[0]?.message).toBe('The value of the scope "/path/" must be a JSON object');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 44,
+			message: 'The value of the scope "/path/" must be a JSON object',
+			raw: '<script type="importmap">',
+		},
+	]);
 });
 
 test('[valid-importmap-invalid-014] scopes inner specifier address is not URL-like', async () => {
@@ -160,16 +248,29 @@ test('[valid-importmap-invalid-014] scopes inner specifier address is not URL-li
 		rule,
 		wrap('<script type="importmap">{"scopes":{"/path/":{"x":"..."}}}</script>'),
 	);
-	expect(violations.length).toBe(1);
-	expect(violations[0]?.message).toBe(
-		'The address "..." of "x" in "scopes["/path/"]" must be a URL-like specifier (starts with "/", "./", "../", or is an absolute URL)',
-	);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 44,
+			message:
+				'The address "..." of "x" in "scopes["/path/"]" must be a URL-like specifier (starts with "/", "./", "../", or is an absolute URL)',
+			raw: '<script type="importmap">',
+		},
+	]);
 });
 
 test('[valid-importmap-invalid-015] integrity is not an object', async () => {
 	const { violations } = await mlRuleTest(rule, wrap('<script type="importmap">{"integrity":"not object"}</script>'));
-	expect(violations.length).toBe(1);
-	expect(violations[0]?.message).toBe('The "integrity" top-level key of an import map must be a JSON object');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 44,
+			message: 'The "integrity" top-level key of an import map must be a JSON object',
+			raw: '<script type="importmap">',
+		},
+	]);
 });
 
 test('[valid-importmap-invalid-016] integrity key is a bare specifier (not URL-like)', async () => {
@@ -177,10 +278,16 @@ test('[valid-importmap-invalid-016] integrity key is a bare specifier (not URL-l
 		rule,
 		wrap('<script type="importmap">{"integrity":{"bare":"sha384-abc"}}</script>'),
 	);
-	expect(violations.length).toBe(1);
-	expect(violations[0]?.message).toBe(
-		'The integrity key "bare" must be a URL-like specifier (starts with "/", "./", "../", or is an absolute URL)',
-	);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 44,
+			message:
+				'The integrity key "bare" must be a URL-like specifier (starts with "/", "./", "../", or is an absolute URL)',
+			raw: '<script type="importmap">',
+		},
+	]);
 });
 
 test('[valid-importmap-invalid-017] integrity value is not a string', async () => {
@@ -188,8 +295,15 @@ test('[valid-importmap-invalid-017] integrity value is not a string', async () =
 		rule,
 		wrap('<script type="importmap">{"integrity":{"/a.mjs":123}}</script>'),
 	);
-	expect(violations.length).toBe(1);
-	expect(violations[0]?.message).toBe('The value of "/a.mjs" in "integrity" must be a string');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 44,
+			message: 'The value of "/a.mjs" in "integrity" must be a string',
+			raw: '<script type="importmap">',
+		},
+	]);
 });
 
 test('[valid-importmap-invalid-018] integrity key is empty string', async () => {
@@ -197,10 +311,16 @@ test('[valid-importmap-invalid-018] integrity key is empty string', async () => 
 		rule,
 		wrap('<script type="importmap">{"integrity":{"":"sha384-abc"}}</script>'),
 	);
-	expect(violations.length).toBe(1);
-	expect(violations[0]?.message).toBe(
-		'The integrity key "" must be a URL-like specifier (starts with "/", "./", "../", or is an absolute URL)',
-	);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 44,
+			message:
+				'The integrity key "" must be a URL-like specifier (starts with "/", "./", "../", or is an absolute URL)',
+			raw: '<script type="importmap">',
+		},
+	]);
 });
 
 test('[valid-importmap-invalid-019] scopes inner specifier with empty key', async () => {
@@ -208,14 +328,28 @@ test('[valid-importmap-invalid-019] scopes inner specifier with empty key', asyn
 		rule,
 		wrap('<script type="importmap">{"scopes":{"/p/":{"":"/a.js"}}}</script>'),
 	);
-	expect(violations.length).toBe(1);
-	expect(violations[0]?.message).toBe('The specifier key in "scopes["/p/"]" must not be empty');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 44,
+			message: 'The specifier key in "scopes["/p/"]" must not be empty',
+			raw: '<script type="importmap">',
+		},
+	]);
 });
 
 test('[valid-importmap-invalid-020] scopes inner specifier value not a string', async () => {
 	const { violations } = await mlRuleTest(rule, wrap('<script type="importmap">{"scopes":{"/p/":{"k":1}}}</script>'));
-	expect(violations.length).toBe(1);
-	expect(violations[0]?.message).toBe('The value of "k" in "scopes["/p/"]" must be a string');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 44,
+			message: 'The value of "k" in "scopes["/p/"]" must be a string',
+			raw: '<script type="importmap">',
+		},
+	]);
 });
 
 test('[valid-importmap-invalid-021] scopes inner specifier slash mismatch', async () => {
@@ -223,10 +357,16 @@ test('[valid-importmap-invalid-021] scopes inner specifier slash mismatch', asyn
 		rule,
 		wrap('<script type="importmap">{"scopes":{"/p/":{"dir/":"/x"}}}</script>'),
 	);
-	expect(violations.length).toBe(1);
-	expect(violations[0]?.message).toBe(
-		'The specifier key "dir/" in "scopes["/p/"]" ends with "/" so the address "/x" must end with "/" as well',
-	);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 44,
+			message:
+				'The specifier key "dir/" in "scopes["/p/"]" ends with "/" so the address "/x" must end with "/" as well',
+			raw: '<script type="importmap">',
+		},
+	]);
 });
 
 test('[valid-importmap-invalid-022] multiple violations are all reported', async () => {
@@ -234,5 +374,28 @@ test('[valid-importmap-invalid-022] multiple violations are all reported', async
 		rule,
 		wrap('<script type="importmap">{"forbidden":1,"imports":{"":"/a.js","b":42}}</script>'),
 	);
-	expect(violations.length).toBe(3);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 44,
+			message:
+				'The import map top-level key "forbidden" is not allowed (use "imports", "scopes", or "integrity")',
+			raw: '<script type="importmap">',
+		},
+		{
+			severity: 'error',
+			line: 1,
+			col: 44,
+			message: 'The specifier key in "imports" must not be empty',
+			raw: '<script type="importmap">',
+		},
+		{
+			severity: 'error',
+			line: 1,
+			col: 44,
+			message: 'The value of "b" in "imports" must be a string',
+			raw: '<script type="importmap">',
+		},
+	]);
 });

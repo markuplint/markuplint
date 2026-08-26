@@ -9,6 +9,13 @@ test('[role-supports-aria-prop-valid-001] allowed prop on role', async () => {
 
 test('[role-supports-aria-prop-invalid-001] disallowed prop on role', async () => {
 	const { violations } = await mlRuleTest(rule, '<div role="heading" aria-pressed="true"></div>');
-	expect(violations.length).toBe(1);
-	expect(violations[0]!.severity).toBe('error');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 21,
+			message: 'The "aria-pressed" ARIA state is disallowed on the "heading" role',
+			raw: 'aria-pressed="true"',
+		},
+	]);
 });

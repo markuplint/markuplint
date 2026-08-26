@@ -126,7 +126,15 @@ test('[no-nested-top-level-landmark-invalid-001] nested main is flagged', async 
 `,
 	);
 
-	expect(violations.length).toBeGreaterThanOrEqual(1);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 9,
+			col: 3,
+			message: 'The "main" role should be top level',
+			raw: '<main>',
+		},
+	]);
 });
 
 test('[no-nested-top-level-landmark-valid-005] The `as` attribute', async () => {

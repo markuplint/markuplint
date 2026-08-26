@@ -17,8 +17,15 @@ describe('Aspect ratio mismatch', () => {
 		const { violations } = await mlRuleTest(rule, '<img src="/100x50.png" width="100" height="100">', {
 			rule: { value: true, options: { documentRoot: fixturesDir } },
 		});
-		expect(violations.length).toBe(1);
-		expect(violations[0]?.message).toContain('100:50');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'The aspect ratio of the image (100:50) does not match the width/height attributes (100:100)',
+				raw: '<img src="/100x50.png" width="100" height="100">',
+			},
+		]);
 	});
 
 	test('[no-mismatched-aspect-ratio-valid-001] width/height match image aspect ratio (same dimensions)', async () => {
@@ -46,10 +53,15 @@ describe('Aspect ratio mismatch', () => {
 		const { violations } = await mlRuleTest(rule, '<img src="/50x50.png" width="100" height="50">', {
 			rule: { value: true, options: { documentRoot: fixturesDir } },
 		});
-		expect(violations.length).toBe(1);
-		expect(violations[0]?.message).toBe(
-			'The aspect ratio of the image (50:50) does not match the width/height attributes (100:50)',
-		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'The aspect ratio of the image (50:50) does not match the width/height attributes (100:50)',
+				raw: '<img src="/50x50.png" width="100" height="50">',
+			},
+		]);
 	});
 });
 
@@ -124,7 +136,15 @@ describe('documentRoot option', () => {
 		const { violations } = await mlRuleTest(rule, '<img src="/100x50.png" width="100" height="100">', {
 			rule: { value: true, options: { documentRoot: fixturesDir } },
 		});
-		expect(violations.length).toBe(1);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'The aspect ratio of the image (100:50) does not match the width/height attributes (100:100)',
+				raw: '<img src="/100x50.png" width="100" height="100">',
+			},
+		]);
 	});
 
 	test('[no-mismatched-aspect-ratio-valid-012] without documentRoot, uses cwd (likely no fixture found)', async () => {
@@ -186,7 +206,15 @@ describe('Multiple elements', () => {
 			'<img src="/100x50.png" width="100" height="50"><img src="/100x50.png" width="100" height="100">',
 			{ rule: { value: true, options: { documentRoot: fixturesDir } } },
 		);
-		expect(violations.length).toBe(1);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 48,
+				message: 'The aspect ratio of the image (100:50) does not match the width/height attributes (100:100)',
+				raw: '<img src="/100x50.png" width="100" height="100">',
+			},
+		]);
 	});
 
 	test('[no-mismatched-aspect-ratio-invalid-005] same image referenced twice, both checked', async () => {
@@ -196,7 +224,15 @@ describe('Multiple elements', () => {
 			{ rule: { value: true, options: { documentRoot: fixturesDir } } },
 		);
 		// First img: mismatch, Second img: correct ratio
-		expect(violations.length).toBe(1);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'The aspect ratio of the image (100:50) does not match the width/height attributes (100:100)',
+				raw: '<img src="/100x50.png" width="100" height="100">',
+			},
+		]);
 	});
 });
 
@@ -205,14 +241,30 @@ describe('Query strings and fragments', () => {
 		const { violations } = await mlRuleTest(rule, '<img src="/100x50.png?v=123" width="100" height="100">', {
 			rule: { value: true, options: { documentRoot: fixturesDir } },
 		});
-		expect(violations.length).toBe(1);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'The aspect ratio of the image (100:50) does not match the width/height attributes (100:100)',
+				raw: '<img src="/100x50.png?v=123" width="100" height="100">',
+			},
+		]);
 	});
 
 	test('[no-mismatched-aspect-ratio-invalid-007] src with fragment still resolves the image file', async () => {
 		const { violations } = await mlRuleTest(rule, '<img src="/50x50.png#section" width="100" height="50">', {
 			rule: { value: true, options: { documentRoot: fixturesDir } },
 		});
-		expect(violations.length).toBe(1);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'The aspect ratio of the image (50:50) does not match the width/height attributes (100:50)',
+				raw: '<img src="/50x50.png#section" width="100" height="50">',
+			},
+		]);
 	});
 
 	test('[no-mismatched-aspect-ratio-invalid-008] same file with different query strings are both checked', async () => {
@@ -222,7 +274,15 @@ describe('Query strings and fragments', () => {
 			{ rule: { value: true, options: { documentRoot: fixturesDir } } },
 		);
 		// ?v=1: mismatch, ?v=2: correct ratio
-		expect(violations.length).toBe(1);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'The aspect ratio of the image (100:50) does not match the width/height attributes (100:100)',
+				raw: '<img src="/100x50.png?v=1" width="100" height="100">',
+			},
+		]);
 	});
 });
 
@@ -242,7 +302,15 @@ describe('picture/source element', () => {
 			'<picture><source srcset="/100x50.png" width="100" height="100"></picture>',
 			{ rule: { value: true, options: { documentRoot: fixturesDir } } },
 		);
-		expect(violations.length).toBe(1);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 10,
+				message: 'The aspect ratio of the image (100:50) does not match the width/height attributes (100:100)',
+				raw: '<source srcset="/100x50.png" width="100" height="100">',
+			},
+		]);
 	});
 
 	test('[no-mismatched-aspect-ratio-valid-017] source with srcset match', async () => {
@@ -270,7 +338,15 @@ describe('picture/source element', () => {
 			{ rule: { value: true, options: { documentRoot: fixturesDir } } },
 		);
 		// First image (100x50) is used for the check
-		expect(violations.length).toBe(1);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 10,
+				message: 'The aspect ratio of the image (100:50) does not match the width/height attributes (100:100)',
+				raw: '<source srcset="/100x50.png 1x, /50x50.png 2x" width="100" height="100">',
+			},
+		]);
 	});
 
 	test('[no-mismatched-aspect-ratio-valid-019] source without width/height', async () => {
@@ -287,7 +363,22 @@ describe('picture/source element', () => {
 			{ rule: { value: true, options: { documentRoot: fixturesDir } } },
 		);
 		// source: 100x50 vs 100:100 → mismatch; img: 50x50 vs 100:50 → mismatch
-		expect(violations.length).toBe(2);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 10,
+				message: 'The aspect ratio of the image (100:50) does not match the width/height attributes (100:100)',
+				raw: '<source srcset="/100x50.png" width="100" height="100">',
+			},
+			{
+				severity: 'error',
+				line: 1,
+				col: 64,
+				message: 'The aspect ratio of the image (50:50) does not match the width/height attributes (100:50)',
+				raw: '<img src="/50x50.png" width="100" height="50">',
+			},
+		]);
 	});
 });
 
@@ -307,7 +398,15 @@ describe('Aspect ratio tolerance', () => {
 		const { violations } = await mlRuleTest(rule, '<img src="/100x50.png" width="301" height="149">', {
 			rule: { value: true, options: { documentRoot: fixturesDir } },
 		});
-		expect(violations.length).toBe(1);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'The aspect ratio of the image (100:50) does not match the width/height attributes (301:149)',
+				raw: '<img src="/100x50.png" width="301" height="149">',
+			},
+		]);
 	});
 });
 

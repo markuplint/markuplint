@@ -15,6 +15,13 @@ test('[no-contradictory-aria-prop-valid-002] redundant (same value) is not contr
 
 test('[no-contradictory-aria-prop-invalid-001] aria-checked contradicts native checked attribute', async () => {
 	const { violations } = await mlRuleTest(rule, '<input type="checkbox" checked aria-checked="false" />');
-	expect(violations.length).toBeGreaterThanOrEqual(1);
-	expect(violations[0]!.severity).toBe('error');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 32,
+			message: 'The "aria-checked" ARIA state contradicts the current "checked" attribute',
+			raw: 'aria-checked="false"',
+		},
+	]);
 });

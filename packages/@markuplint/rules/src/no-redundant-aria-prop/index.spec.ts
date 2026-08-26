@@ -9,6 +9,14 @@ test('[no-redundant-aria-prop-valid-001] no redundant prop conflict', async () =
 
 test('[no-redundant-aria-prop-invalid-001] implicit prop same as native attr', async () => {
 	const { violations } = await mlRuleTest(rule, '<input type="checkbox" aria-checked="true" checked />');
-	expect(violations.length).toBeGreaterThanOrEqual(1);
-	expect(violations[0]!.severity).toBe('warning');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 24,
+			message:
+				'The "aria-checked" ARIA state has the same semantics as the current "checked" attribute or the implicit "checked" attribute',
+			raw: 'aria-checked="true"',
+		},
+	]);
 });
