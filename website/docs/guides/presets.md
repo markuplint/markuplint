@@ -85,7 +85,8 @@ See the [rulesets tables](#rulesets-of-base-presets) below for the full list of 
 | Named Rule                                 | Description                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `a11y/id-duplication`                      | Warns when `id` attribute values are duplicated in one document. Avoids problems in assistive technologies from the viewpoint of machine readability. |
-| `a11y/no-refer-to-non-existent-id`         | Checks whether IDs specified in `for`, `form`, `aria-*`, and fragment links reference an ID that exists in the same document.                         |
+| `a11y/no-refer-to-non-existent-id`         | Checks whether IDs specified in `for`, `form`, `aria-*`, and more reference an ID that exists in the same document.                                   |
+| `a11y/no-broken-fragment-link`             | Checks whether a fragment in a hyperlink references an ID that exists in the same document.                                                           |
 | `a11y/wai-aria`                            | Warns if `role` and `aria-*` attributes don't conform to WAI-ARIA, DPub-ARIA, and ARIA in HTML specifications.                                        |
 | `a11y/require-accessible-name`             | Warns if the element has no accessible name according to its ARIA role.                                                                               |
 | `a11y/redundant-accessible-name`           | Detects elements with multiple accessible name sources where a higher-priority source overrides a lower-priority one.                                 |
@@ -119,7 +120,7 @@ Also enables the base rules [`no-unknown-attr`](/docs/rules/no-unknown-attr), [`
 | Named Rule                                  | Description                                                                                                                                         |
 | ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `html-standard/id-duplication`              | Warns when `id` attribute values are duplicated in one document.                                                                                    |
-| `html-standard/no-refer-to-non-existent-id` | Checks whether IDs specified in `for`, `form`, `aria-*`, and fragment links reference an ID that exists in the same document.                       |
+| `html-standard/no-refer-to-non-existent-id` | Checks whether IDs specified in `for`, `form`, `aria-*`, and more reference an ID that exists in the same document.                                 |
 | `html-standard/attr-duplication`            | The parser ignores all such duplicate occurrences of the attribute.                                                                                 |
 | `html-standard/deprecated-attr`             | Authors must not use attributes the HTML spec has removed entirely (obsolete, non-conforming features).                                             |
 | `html-standard/no-deprecated-attr`          | Warns on attributes MDN/BCD marks as deprecated (still defined by the spec, but discouraged).                                                       |

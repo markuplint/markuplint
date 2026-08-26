@@ -197,6 +197,10 @@ test('default-rules', () => {
 			category: 'a11y',
 			defaultValue: true,
 		},
+		'no-broken-fragment-link': {
+			category: 'a11y',
+			defaultValue: false,
+		},
 		'no-stray-head-or-body-tag': {
 			category: 'validation',
 			defaultValue: true,

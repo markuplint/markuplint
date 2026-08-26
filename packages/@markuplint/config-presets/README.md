@@ -32,6 +32,7 @@ Ruleset|Description|`recommended`|`recommended-vue`|`recommended-svelte`|`recomm
 [No ambiguous **Navigable Target Names**](https://html.spec.whatwg.org/multipage/document-sequences.html#navigable-target-names)| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
 No consecutive `<br>`| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
 No refer to no existent **ID**| |✅|✅|✅|✅|✅|✅|❌|❌|✅|❌|❌|❌|
+No broken fragment link|Split from the former `no-refer-to-non-existent-id` rule (#3989). Because `no-refer-to-non-existent-id` itself isn't renamed or deprecated, it gets no `rule-aliases.ts` entry — a hand-written config that enables only `no-refer-to-non-existent-id` keeps working unchanged but silently loses fragment link coverage. This group is how a11y-preset users keep it.|✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
 No redundant **accessible name** sources| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
 Require **accessible name**| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
 Require **autofocus** in modal dialogs| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|

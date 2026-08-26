@@ -57,6 +57,9 @@ export const benchmarkConfig: Config = {
 		'label-for-references-labelable': true,
 		'label-no-multiple-controls': true,
 		'no-refer-to-non-existent-id': true,
+		// no-broken-fragment-link (split from no-refer-to-non-existent-id, opinion-level: HTML LS
+		// does not treat a broken fragment link as a conformance violation) is intentionally not
+		// enabled here for the same reason as no-deprecated-element/no-deprecated-attr below.
 		// no-deprecated-element/no-deprecated-attr (factual, MDN/BCD-sourced)
 		// are intentionally not enabled here — they are not HTML LS conformance
 		// violations, so nu-validator never flags them either.

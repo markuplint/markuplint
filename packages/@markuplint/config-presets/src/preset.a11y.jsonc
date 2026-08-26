@@ -97,6 +97,22 @@
 		},
 
 		/**
+		 * No broken fragment link
+		 *
+		 * Split from the former `no-refer-to-non-existent-id` rule (#3989). Because
+		 * `no-refer-to-non-existent-id` itself isn't renamed or deprecated, it gets no
+		 * `rule-aliases.ts` entry — a hand-written config that enables only
+		 * `no-refer-to-non-existent-id` keeps working unchanged but silently loses fragment link
+		 * coverage. This group is how a11y-preset users keep it.
+		 */
+		"a11y/no-broken-fragment-link": {
+			"specConformance": "non-normative",
+			"rules": {
+				"no-broken-fragment-link": true
+			}
+		},
+
+		/**
 		 * No redundant **accessible name** sources
 		 */
 		"a11y/redundant-accessible-name": {
