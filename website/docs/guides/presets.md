@@ -91,7 +91,7 @@ See the [rulesets tables](#rulesets-of-base-presets) below for the full list of 
 | `a11y/require-accessible-name`             | Warns if the element has no accessible name according to its ARIA role.                                                                               |
 | `a11y/redundant-accessible-name`           | Detects elements with multiple accessible name sources where a higher-priority source overrides a lower-priority one.                                 |
 | `a11y/label-has-control`                   | Warns if the `<label>` element has no associated control.                                                                                             |
-| `a11y/landmark-roles`                      | Checks that `banner`, `main`, `complementary`, and `contentinfo` are top-level landmarks.                                                             |
+| `a11y/landmark-roles`                      | Checks that `banner`, `main`, and `contentinfo` are top-level landmarks.                                                                              |
 | `a11y/require-landmark-label`              | Checks that landmarks with a duplicated role have unique accessible names.                                                                            |
 | `a11y/required-h1`                         | Warns if there is no `<h1>` element in the document.                                                                                                  |
 | `a11y/html-lang`                           | Requires the `lang` attribute on the `<html>` element for assistive technologies to identify the document language.                                   |

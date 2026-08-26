@@ -91,7 +91,7 @@
 | `a11y/require-accessible-name`             | ARIAロールに従ってアクセシブル名がない場合に警告します。                                                             |
 | `a11y/redundant-accessible-name`           | 複数のアクセシブル名ソースが存在し、高優先度のソースが低優先度のソースを上書きする要素を検出します。                 |
 | `a11y/label-has-control`                   | `<label>`要素が関連するコントロール要素を持たない場合に警告します。                                                  |
-| `a11y/landmark-roles`                      | `banner`、`main`、`complementary`、`contentinfo`がトップレベルのランドマークであることを確認します。                 |
+| `a11y/landmark-roles`                      | `banner`、`main`、`contentinfo`がトップレベルのランドマークであることを確認します。                                  |
 | `a11y/require-landmark-label`              | ロールが重複するランドマークが一意のアクセシブルネームを持つことを確認します。                                       |
 | `a11y/required-h1`                         | ドキュメント内に`<h1>`要素がない場合に警告します。                                                                   |
 | `a11y/html-lang`                           | 支援技術がドキュメントの言語を識別できるよう、`<html>`要素に`lang`属性を必須とします。                               |
