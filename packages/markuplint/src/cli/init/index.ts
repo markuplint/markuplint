@@ -15,20 +15,32 @@ const ruleCategories: Record<
 		message: string;
 	}
 > = {
-	validation: {
-		message: 'Are you going to conformance check according to HTML standard?',
+	syntax: {
+		message: 'Are you going to conformance check according to HTML syntax?',
+	},
+	structure: {
+		message: 'Are you going to conformance check the document structure?',
+	},
+	attributes: {
+		message: 'Are you going to conformance check attribute names and values?',
+	},
+	references: {
+		message: 'Are you going to check that ID/attribute references resolve?',
+	},
+	forms: {
+		message: 'Are you going to check form-related best practices?',
 	},
 	a11y: {
 		message: 'Do you want high accessibility?',
 	},
-	'naming-convention': {
-		message: 'Are you going to set the convention about naming?',
+	style: {
+		message: 'Are you going to check for the code styles?',
 	},
 	maintainability: {
 		message: 'Do you want high maintainability?',
 	},
-	style: {
-		message: 'Are you going to check for the code styles?',
+	compat: {
+		message: 'Are you going to check browser compatibility?',
 	},
 };
 

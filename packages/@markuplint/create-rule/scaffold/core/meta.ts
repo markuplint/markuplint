@@ -1,3 +1,3 @@
 export default {
-	category: 'validation',
+	category: '__category__',
 } as const;

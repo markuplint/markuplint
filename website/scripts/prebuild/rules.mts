@@ -8,7 +8,18 @@ import { rewriteRuleContent } from './rule-content.mjs';
 import { dropFiles, getEditUrlBase, glob, importFileData, output, projectRoot } from './utils.mjs';
 
 type RuleIndexContents = Readonly<
-  Record<'validation' | 'a11y' | 'naming-convention' | 'maintainability' | 'style', readonly string[]>
+  Record<
+    | 'syntax'
+    | 'structure'
+    | 'attributes'
+    | 'references'
+    | 'forms'
+    | 'a11y'
+    | 'style'
+    | 'maintainability'
+    | 'compat',
+    readonly string[]
+  >
 >;
 type RuleIndex = Readonly<{ lang: string; contents: RuleIndexContents }>;
 type DocData = {
@@ -105,11 +116,15 @@ async function createRuleDoc(path: string) {
  */
 function createIndexContents(): RuleIndexContents {
   return {
-    validation: [],
+    syntax: [],
+    structure: [],
+    attributes: [],
+    references: [],
+    forms: [],
     a11y: [],
-    'naming-convention': [],
-    maintainability: [],
     style: [],
+    maintainability: [],
+    compat: [],
   };
 }
 
@@ -185,16 +200,24 @@ async function crateRuleIndexDoc(index: RuleIndexContents, ruleDocsDistDir: stri
     //
     'The complete list of built-in rules. Most users don\'t need to configure these individually — [presets](/docs/guides/presets) enable them for you. See [Applying Rules](/docs/guides/applying-rules) to customize.',
     '',
-    '## Conformance checking',
-    ...table(index.validation),
+    '## Syntax',
+    ...table(index.syntax),
+    '## Structure',
+    ...table(index.structure),
+    '## Attributes',
+    ...table(index.attributes),
+    '## References',
+    ...table(index.references),
+    '## Forms',
+    ...table(index.forms),
     '## Accessibility',
     ...table(index.a11y),
-    '## Naming Convention',
-    ...table(index['naming-convention']),
-    '## Maintainability',
-    ...table(index.maintainability),
     '## Style',
     ...table(index.style),
+    '## Maintainability',
+    ...table(index.maintainability),
+    '## Browser Compatibility',
+    ...table(index.compat),
     '---',
     '## Removed rules',
     ...removedTable(

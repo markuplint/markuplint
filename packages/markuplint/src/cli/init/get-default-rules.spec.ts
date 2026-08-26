@@ -6,7 +6,7 @@ test('default-rules', () => {
 	const defaultRules = getDefaultRules();
 	expect(defaultRules).toStrictEqual({
 		'no-duplicate-attr': {
-			category: 'validation',
+			category: 'syntax',
 			defaultValue: true,
 		},
 		'attr-order': {
@@ -26,31 +26,31 @@ test('default-rules', () => {
 			defaultValue: false,
 		},
 		'no-malformed-character-reference': {
-			category: 'style',
+			category: 'syntax',
 			defaultValue: true,
 		},
 		'no-unescaped-char': {
-			category: 'style',
+			category: 'syntax',
 			defaultValue: true,
 		},
 		'class-naming': {
-			category: 'naming-convention',
+			category: 'style',
 			defaultValue: false,
 		},
 		'no-mismatched-aspect-ratio': {
-			category: 'validation',
+			category: 'attributes',
 			defaultValue: true,
 		},
 		'no-restricted-element': {
-			category: 'validation',
+			category: 'structure',
 			defaultValue: [],
 		},
 		'require-doctype': {
-			category: 'validation',
+			category: 'structure',
 			defaultValue: 'always',
 		},
 		'no-obsolete-doctype': {
-			category: 'validation',
+			category: 'structure',
 			defaultValue: true,
 		},
 		'require-end-tag': {
@@ -58,55 +58,55 @@ test('default-rules', () => {
 			defaultValue: false,
 		},
 		'form-attr-references-form': {
-			category: 'validation',
+			category: 'references',
 			defaultValue: true,
 		},
 		'head-element-order': {
-			category: 'style',
+			category: 'structure',
 			defaultValue: false,
 		},
 		'no-skipped-heading-level': {
-			category: 'validation',
+			category: 'a11y',
 			defaultValue: true,
 		},
 		'no-duplicate-id': {
-			category: 'validation',
+			category: 'references',
 			defaultValue: true,
 		},
 		'no-ineffective-attr': {
-			category: 'style',
+			category: 'attributes',
 			defaultValue: false,
 		},
 		'no-input-file-value': {
-			category: 'validation',
+			category: 'forms',
 			defaultValue: true,
 		},
 		'input-list-references-datalist': {
-			category: 'validation',
+			category: 'references',
 			defaultValue: true,
 		},
 		'no-unknown-attr': {
-			category: 'validation',
+			category: 'attributes',
 			defaultValue: true,
 		},
 		'no-disallowed-attr': {
-			category: 'validation',
+			category: 'attributes',
 			defaultValue: true,
 		},
 		'no-invalid-attr-value': {
-			category: 'validation',
+			category: 'attributes',
 			defaultValue: true,
 		},
 		'no-restricted-attr': {
-			category: 'validation',
+			category: 'attributes',
 			defaultValue: true,
 		},
 		'itemprop-requires-itemscope': {
-			category: 'validation',
+			category: 'attributes',
 			defaultValue: true,
 		},
 		'label-for-references-labelable': {
-			category: 'validation',
+			category: 'references',
 			defaultValue: true,
 		},
 		'label-has-control': {
@@ -114,7 +114,7 @@ test('default-rules', () => {
 			defaultValue: false,
 		},
 		'label-no-multiple-controls': {
-			category: 'validation',
+			category: 'forms',
 			defaultValue: true,
 		},
 		'no-nested-top-level-landmark': {
@@ -126,19 +126,19 @@ test('default-rules', () => {
 			defaultValue: false,
 		},
 		'link-types': {
-			category: 'validation',
+			category: 'attributes',
 			defaultValue: true,
 		},
 		'map-id-name-match': {
-			category: 'validation',
+			category: 'attributes',
 			defaultValue: true,
 		},
 		'meta-charset-position': {
-			category: 'validation',
+			category: 'structure',
 			defaultValue: true,
 		},
 		'meter-value-bounds': {
-			category: 'validation',
+			category: 'attributes',
 			defaultValue: true,
 		},
 		'require-adjacent-popover': {
@@ -146,7 +146,7 @@ test('default-rules', () => {
 			defaultValue: false,
 		},
 		'no-ambiguous-navigable-target-names': {
-			category: 'a11y',
+			category: 'attributes',
 			defaultValue: false,
 		},
 		'no-boolean-attr-value': {
@@ -158,7 +158,7 @@ test('default-rules', () => {
 			defaultValue: false,
 		},
 		'no-content-after-body': {
-			category: 'validation',
+			category: 'syntax',
 			defaultValue: true,
 		},
 		'no-default-value': {
@@ -166,23 +166,23 @@ test('default-rules', () => {
 			defaultValue: false,
 		},
 		'no-duplicate-autofocus': {
-			category: 'validation',
+			category: 'attributes',
 			defaultValue: true,
 		},
 		'no-duplicate-dt': {
-			category: 'validation',
+			category: 'structure',
 			defaultValue: false,
 		},
 		'no-duplicate-visible-main': {
-			category: 'validation',
+			category: 'structure',
 			defaultValue: true,
 		},
 		'no-empty-palpable-content': {
-			category: 'validation',
+			category: 'structure',
 			defaultValue: false,
 		},
 		'no-extra-selected-options': {
-			category: 'validation',
+			category: 'forms',
 			defaultValue: true,
 		},
 		'no-hardcoded-id': {
@@ -190,35 +190,35 @@ test('default-rules', () => {
 			defaultValue: false,
 		},
 		'no-orphaned-end-tag': {
-			category: 'validation',
+			category: 'syntax',
 			defaultValue: true,
 		},
 		'no-refer-to-non-existent-id': {
-			category: 'a11y',
+			category: 'references',
 			defaultValue: true,
 		},
 		'no-broken-fragment-link': {
-			category: 'a11y',
+			category: 'references',
 			defaultValue: false,
 		},
 		'no-stray-head-or-body-tag': {
-			category: 'validation',
+			category: 'syntax',
 			defaultValue: true,
 		},
 		'no-unclosed-element-at-eof': {
-			category: 'validation',
+			category: 'syntax',
 			defaultValue: true,
 		},
 		'no-unsupported-browser-features': {
-			category: 'validation',
+			category: 'compat',
 			defaultValue: false,
 		},
 		'no-experimental-features': {
-			category: 'validation',
+			category: 'compat',
 			defaultValue: false,
 		},
 		'no-nonstandard-features': {
-			category: 'validation',
+			category: 'compat',
 			defaultValue: false,
 		},
 		'no-event-handler-attr': {
@@ -226,27 +226,27 @@ test('default-rules', () => {
 			defaultValue: false,
 		},
 		'permitted-contents': {
-			category: 'validation',
+			category: 'structure',
 			defaultValue: [],
 		},
 		'no-disallowed-ancestor': {
-			category: 'validation',
+			category: 'structure',
 			defaultValue: true,
 		},
 		'require-ancestor': {
-			category: 'validation',
+			category: 'structure',
 			defaultValue: true,
 		},
 		'no-duplicate-sibling-attr': {
-			category: 'validation',
+			category: 'structure',
 			defaultValue: true,
 		},
 		'placeholder-label-option': {
-			category: 'validation',
+			category: 'forms',
 			defaultValue: true,
 		},
 		'progress-value-bounds': {
-			category: 'validation',
+			category: 'attributes',
 			defaultValue: true,
 		},
 		'no-redundant-accessible-name': {
@@ -258,7 +258,7 @@ test('default-rules', () => {
 			defaultValue: true,
 		},
 		'require-datetime': {
-			category: 'validation',
+			category: 'attributes',
 			defaultValue: true,
 		},
 		'require-dialog-autofocus': {
@@ -266,11 +266,11 @@ test('default-rules', () => {
 			defaultValue: false,
 		},
 		'require-attr': {
-			category: 'validation',
+			category: 'attributes',
 			defaultValue: [],
 		},
 		'require-element': {
-			category: 'validation',
+			category: 'structure',
 			defaultValue: [],
 		},
 		'require-h1': {
@@ -282,43 +282,43 @@ test('default-rules', () => {
 			defaultValue: false,
 		},
 		'valid-importmap': {
-			category: 'validation',
+			category: 'syntax',
 			defaultValue: true,
 		},
 		'valid-speculation-rules': {
-			category: 'validation',
+			category: 'syntax',
 			defaultValue: true,
 		},
 		'no-unpaired-srcset-sizes': {
-			category: 'validation',
+			category: 'attributes',
 			defaultValue: true,
 		},
 		'no-mixed-srcset-descriptors': {
-			category: 'validation',
+			category: 'attributes',
 			defaultValue: true,
 		},
 		'sizes-auto-requires-lazy-loading': {
-			category: 'validation',
+			category: 'attributes',
 			defaultValue: true,
 		},
 		'no-always-matching-source': {
-			category: 'validation',
+			category: 'attributes',
 			defaultValue: true,
 		},
 		'no-table-cell-overlap': {
-			category: 'a11y',
+			category: 'structure',
 			defaultValue: true,
 		},
 		'no-table-span-overflow': {
-			category: 'a11y',
+			category: 'structure',
 			defaultValue: true,
 		},
 		'no-empty-table-track': {
-			category: 'a11y',
+			category: 'structure',
 			defaultValue: true,
 		},
 		'consistent-table-row-length': {
-			category: 'a11y',
+			category: 'structure',
 			defaultValue: false,
 		},
 		'no-pseudo-list': {
@@ -326,7 +326,7 @@ test('default-rules', () => {
 			defaultValue: false,
 		},
 		'usemap-references-map': {
-			category: 'validation',
+			category: 'references',
 			defaultValue: true,
 		},
 		'no-abstract-role': {
@@ -342,19 +342,19 @@ test('default-rules', () => {
 			defaultValue: false,
 		},
 		'no-deprecated-attr': {
-			category: 'validation',
+			category: 'attributes',
 			defaultValue: false,
 		},
 		'no-deprecated-element': {
-			category: 'validation',
+			category: 'structure',
 			defaultValue: false,
 		},
 		'no-obsolete-attr': {
-			category: 'validation',
+			category: 'attributes',
 			defaultValue: true,
 		},
 		'no-obsolete-element': {
-			category: 'validation',
+			category: 'structure',
 			defaultValue: true,
 		},
 		'no-deprecated-role': {

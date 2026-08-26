@@ -8,7 +8,7 @@ test('none', () => {
 		'none',
 		{
 			'attr-duplication': {
-				category: 'validation',
+				category: 'structure',
 				defaultValue: true,
 			},
 			'attr-value-quotes': {
@@ -28,23 +28,23 @@ test('none', () => {
 				defaultValue: true,
 			},
 			'class-naming': {
-				category: 'naming-convention',
+				category: 'style',
 				defaultValue: false,
 			},
 			'deprecated-attr': {
-				category: 'validation',
+				category: 'structure',
 				defaultValue: true,
 			},
 			'deprecated-element': {
-				category: 'validation',
+				category: 'structure',
 				defaultValue: true,
 			},
 			'disallowed-element': {
-				category: 'validation',
+				category: 'structure',
 				defaultValue: true,
 			},
 			doctype: {
-				category: 'validation',
+				category: 'structure',
 				defaultValue: 'always',
 			},
 			'end-tag': {
@@ -52,7 +52,7 @@ test('none', () => {
 				defaultValue: false,
 			},
 			'id-duplication': {
-				category: 'validation',
+				category: 'structure',
 				defaultValue: true,
 			},
 			'ineffective-attr': {
@@ -80,7 +80,7 @@ test('none', () => {
 				defaultValue: false,
 			},
 			'no-empty-palpable-content': {
-				category: 'validation',
+				category: 'structure',
 				defaultValue: false,
 			},
 			'no-hard-code-id': {
@@ -96,7 +96,7 @@ test('none', () => {
 				defaultValue: false,
 			},
 			'permitted-contents': {
-				category: 'validation',
+				category: 'structure',
 				defaultValue: true,
 			},
 			'require-accessible-name': {
@@ -104,11 +104,11 @@ test('none', () => {
 				defaultValue: true,
 			},
 			'required-attr': {
-				category: 'validation',
+				category: 'structure',
 				defaultValue: true,
 			},
 			'required-element': {
-				category: 'validation',
+				category: 'structure',
 				defaultValue: true,
 			},
 			'required-h1': {
@@ -188,7 +188,7 @@ test('none', () => {
 test('custom:a11y', () => {
 	const result = createConfig(['jsx'], ['a11y'], {
 		'attr-duplication': {
-			category: 'validation',
+			category: 'structure',
 			defaultValue: true,
 		},
 		'attr-value-quotes': {
@@ -208,23 +208,23 @@ test('custom:a11y', () => {
 			defaultValue: true,
 		},
 		'class-naming': {
-			category: 'naming-convention',
+			category: 'style',
 			defaultValue: false,
 		},
 		'deprecated-attr': {
-			category: 'validation',
+			category: 'structure',
 			defaultValue: true,
 		},
 		'deprecated-element': {
-			category: 'validation',
+			category: 'structure',
 			defaultValue: true,
 		},
 		'disallowed-element': {
-			category: 'validation',
+			category: 'structure',
 			defaultValue: true,
 		},
 		doctype: {
-			category: 'validation',
+			category: 'structure',
 			defaultValue: 'always',
 		},
 		'end-tag': {
@@ -232,7 +232,7 @@ test('custom:a11y', () => {
 			defaultValue: false,
 		},
 		'id-duplication': {
-			category: 'validation',
+			category: 'structure',
 			defaultValue: true,
 		},
 		'ineffective-attr': {
@@ -260,7 +260,7 @@ test('custom:a11y', () => {
 			defaultValue: false,
 		},
 		'no-empty-palpable-content': {
-			category: 'validation',
+			category: 'structure',
 			defaultValue: false,
 		},
 		'no-hard-code-id': {
@@ -276,7 +276,7 @@ test('custom:a11y', () => {
 			defaultValue: false,
 		},
 		'permitted-contents': {
-			category: 'validation',
+			category: 'structure',
 			defaultValue: true,
 		},
 		'require-accessible-name': {
@@ -284,11 +284,11 @@ test('custom:a11y', () => {
 			defaultValue: true,
 		},
 		'required-attr': {
-			category: 'validation',
+			category: 'structure',
 			defaultValue: true,
 		},
 		'required-element': {
-			category: 'validation',
+			category: 'structure',
 			defaultValue: true,
 		},
 		'required-h1': {
@@ -332,7 +332,7 @@ test('custom:a11y', () => {
 test('recommended', () => {
 	const result = createConfig(['svelte', 'astro'], 'recommended', {
 		'attr-duplication': {
-			category: 'validation',
+			category: 'structure',
 			defaultValue: true,
 		},
 		'attr-value-quotes': {
@@ -352,23 +352,23 @@ test('recommended', () => {
 			defaultValue: true,
 		},
 		'class-naming': {
-			category: 'naming-convention',
+			category: 'style',
 			defaultValue: false,
 		},
 		'deprecated-attr': {
-			category: 'validation',
+			category: 'structure',
 			defaultValue: true,
 		},
 		'deprecated-element': {
-			category: 'validation',
+			category: 'structure',
 			defaultValue: true,
 		},
 		'disallowed-element': {
-			category: 'validation',
+			category: 'structure',
 			defaultValue: true,
 		},
 		doctype: {
-			category: 'validation',
+			category: 'structure',
 			defaultValue: 'always',
 		},
 		'end-tag': {
@@ -376,7 +376,7 @@ test('recommended', () => {
 			defaultValue: false,
 		},
 		'id-duplication': {
-			category: 'validation',
+			category: 'structure',
 			defaultValue: true,
 		},
 		'ineffective-attr': {
@@ -404,7 +404,7 @@ test('recommended', () => {
 			defaultValue: false,
 		},
 		'no-empty-palpable-content': {
-			category: 'validation',
+			category: 'structure',
 			defaultValue: false,
 		},
 		'no-hard-code-id': {
@@ -420,7 +420,7 @@ test('recommended', () => {
 			defaultValue: false,
 		},
 		'permitted-contents': {
-			category: 'validation',
+			category: 'structure',
 			defaultValue: true,
 		},
 		'require-accessible-name': {
@@ -428,11 +428,11 @@ test('recommended', () => {
 			defaultValue: true,
 		},
 		'required-attr': {
-			category: 'validation',
+			category: 'structure',
 			defaultValue: true,
 		},
 		'required-element': {
-			category: 'validation',
+			category: 'structure',
 			defaultValue: true,
 		},
 		'required-h1': {
