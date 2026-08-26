@@ -20,6 +20,7 @@
 	},
 	"devDependencies": {
 		"@isaacs/brace-expansion": "5.0.1",
+		"@markuplint/rules": "5.0.0-rc.4",
 		"glob": "13.0.6",
 		"jsonc-parser": "3.3.1",
 		"mustache": "4.2.0"
