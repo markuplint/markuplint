@@ -78,9 +78,6 @@
 				"label-no-multiple-controls": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/label-no-multiple-controls/schema.json"
 				},
-				"landmark-roles": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/landmark-roles/schema.json"
-				},
 				"link-types": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/link-types/schema.json"
 				},
@@ -207,6 +204,9 @@
 				"no-mixed-srcset-descriptors": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-mixed-srcset-descriptors/schema.json"
 				},
+				"no-nested-top-level-landmark": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-nested-top-level-landmark/schema.json"
+				},
 				"no-obsolete-attr": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-obsolete-attr/schema.json"
 				},
@@ -320,6 +320,9 @@
 				},
 				"require-end-tag": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/require-end-tag/schema.json"
+				},
+				"require-landmark-label": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/require-landmark-label/schema.json"
 				},
 				"require-owned-elements": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/require-owned-elements/schema.json"

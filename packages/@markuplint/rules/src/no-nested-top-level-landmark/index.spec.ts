@@ -3,7 +3,7 @@ import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('[landmark-roles-valid-001] No warning', async () => {
+test('[no-nested-top-level-landmark-valid-001] No warning', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`
@@ -25,7 +25,9 @@ test('[landmark-roles-valid-001] No warning', async () => {
 	expect(violations).toStrictEqual([]);
 });
 
-test('[landmark-roles-valid-002] Top level landmarks', async () => {
+test('[no-nested-top-level-landmark-valid-002] Top level landmarks', async () => {
+	// `complementary` is deliberately not one of this rule's checked top-level roles (see the
+	// module JSDoc), so a nested `<aside>` here is not reported.
 	const { violations } = await mlRuleTest(
 		rule,
 		`
@@ -47,7 +49,7 @@ test('[landmark-roles-valid-002] Top level landmarks', async () => {
 	expect(violations).toStrictEqual([]);
 });
 
-test('[landmark-roles-valid-003] Top level landmarks: disabled', async () => {
+test('[no-nested-top-level-landmark-valid-003] Top level landmarks: disabled', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`
@@ -77,7 +79,7 @@ test('[landmark-roles-valid-003] Top level landmarks: disabled', async () => {
 	expect(violations).toStrictEqual([]);
 });
 
-test('[landmark-roles-valid-004] Top level landmarks: ignoreRoles option', async () => {
+test('[no-nested-top-level-landmark-valid-004] Top level landmarks: ignoreRoles option', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`
@@ -106,36 +108,7 @@ test('[landmark-roles-valid-004] Top level landmarks: ignoreRoles option', async
 	expect(violations).toStrictEqual([]);
 });
 
-test('[landmark-roles-valid-005] Duplicated area: has-label', async () => {
-	const { violations } = await mlRuleTest(
-		rule,
-		`
-<html>
-<body>
-	<header></header>
-	<nav aria-label="main"></nav>
-	<main>
-		<header></header>
-		<nav aria-label="sub"></nav>
-		<footer></footer>
-	</main>
-	<footer></footer>
-</body>
-</html>
-`,
-		{
-			rule: {
-				options: {
-					ignoreRoles: ['complementary'],
-				},
-			},
-		},
-	);
-
-	expect(violations).toStrictEqual([]);
-});
-
-test('[landmark-roles-invalid-001] Duplicated area: no-label', async () => {
+test('[no-nested-top-level-landmark-invalid-001] nested main is flagged', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`
@@ -145,41 +118,18 @@ test('[landmark-roles-invalid-001] Duplicated area: no-label', async () => {
 	<nav></nav>
 	<main>
 		<header></header>
-		<nav></nav>
 		<footer></footer>
+		<main></main>
 	</main>
-	<footer></footer>
 </body>
 </html>
 `,
-		{
-			rule: {
-				options: {
-					ignoreRoles: ['complementary'],
-				},
-			},
-		},
 	);
 
-	expect(violations).toStrictEqual([
-		{
-			severity: 'warning',
-			line: 5,
-			col: 2,
-			raw: '<nav>',
-			message: 'Require unique accessible name',
-		},
-		{
-			severity: 'warning',
-			line: 8,
-			col: 3,
-			raw: '<nav>',
-			message: 'Require unique accessible name',
-		},
-	]);
+	expect(violations.length).toBeGreaterThanOrEqual(1);
 });
 
-test('[landmark-roles-invalid-002] The `as` attribute', async () => {
+test('[no-nested-top-level-landmark-valid-005] The `as` attribute', async () => {
 	expect(
 		(
 			await mlRuleTest(

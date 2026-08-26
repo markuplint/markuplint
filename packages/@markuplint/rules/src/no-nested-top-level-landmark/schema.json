@@ -17,14 +17,8 @@
 						"enum": ["banner", "main", "complementary", "contentinfo", "form", "navigation", "region"]
 					},
 					"default": "[]",
-					"description": "Excludes the specified landmark roll from the warning.",
+					"description": "Excludes the specified landmark role from the warning.",
 					"description:ja": "指定したランドマークロールを警告の対象から除外します。"
-				},
-				"labelEachArea": {
-					"type": "boolean",
-					"default": "true",
-					"description": "Warn if there is a unique label if a particular landmark role is used multiple times on the page.",
-					"description:ja": "特定のランドマークロールがページで複数回使用される場合、一意のラベルがあるか警告します。"
 				}
 			}
 		}
@@ -39,7 +33,6 @@
 			"properties": {
 				"value": { "$ref": "#/definitions/value" },
 				"options": { "$ref": "#/definitions/options" },
-				"option": { "$ref": "#/definitions/options", "deprecated": true },
 				"severity": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/ml-config/schema.json#/definitions/severity",
 					"default": "warning"

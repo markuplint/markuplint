@@ -27,7 +27,6 @@ import ItempropRequiresItemscope from './itemprop-requires-itemscope/index.js';
 import LabelForReferencesLabelable from './label-for-references-labelable/index.js';
 import LabelHasControl from './label-has-control/index.js';
 import LabelNoMultipleControls from './label-no-multiple-controls/index.js';
-import LandmarkRoles from './landmark-roles/index.js';
 import LinkTypes from './link-types/index.js';
 import MapIdNameMatch from './map-id-name-match/index.js';
 import MetaCharsetPosition from './meta-charset-position/index.js';
@@ -68,6 +67,7 @@ import NoInvalidAttrValue from './no-invalid-attr-value/index.js';
 import NoMalformedCharacterReference from './no-malformed-character-reference/index.js';
 import NoMismatchedAspectRatio from './no-mismatched-aspect-ratio/index.js';
 import NoMixedSrcsetDescriptors from './no-mixed-srcset-descriptors/index.js';
+import NoNestedTopLevelLandmark from './no-nested-top-level-landmark/index.js';
 import NoObsoleteAttr from './no-obsolete-attr/index.js';
 import NoObsoleteDoctype from './no-obsolete-doctype/index.js';
 import NoObsoleteElement from './no-obsolete-element/index.js';
@@ -104,6 +104,7 @@ import RequireDialogAutofocus from './require-dialog-autofocus/index.js';
 import RequireDoctype from './require-doctype/index.js';
 import RequireElement from './require-element/index.js';
 import RequireEndTag from './require-end-tag/index.js';
+import RequireLandmarkLabel from './require-landmark-label/index.js';
 import RequireOwnedElements from './require-owned-elements/index.js';
 import RequireParentRole from './require-parent-role/index.js';
 import RequiredH1 from './required-h1/index.js';
@@ -136,7 +137,6 @@ const rules = {
 	'label-for-references-labelable': LabelForReferencesLabelable,
 	'label-has-control': LabelHasControl,
 	'label-no-multiple-controls': LabelNoMultipleControls,
-	'landmark-roles': LandmarkRoles,
 	'link-types': LinkTypes,
 	'map-id-name-match': MapIdNameMatch,
 	'meta-charset-position': MetaCharsetPosition,
@@ -177,6 +177,7 @@ const rules = {
 	'no-malformed-character-reference': NoMalformedCharacterReference,
 	'no-mismatched-aspect-ratio': NoMismatchedAspectRatio,
 	'no-mixed-srcset-descriptors': NoMixedSrcsetDescriptors,
+	'no-nested-top-level-landmark': NoNestedTopLevelLandmark,
 	'no-obsolete-attr': NoObsoleteAttr,
 	'no-obsolete-doctype': NoObsoleteDoctype,
 	'no-obsolete-element': NoObsoleteElement,
@@ -213,6 +214,7 @@ const rules = {
 	'require-doctype': RequireDoctype,
 	'require-element': RequireElement,
 	'require-end-tag': RequireEndTag,
+	'require-landmark-label': RequireLandmarkLabel,
 	'require-owned-elements': RequireOwnedElements,
 	'require-parent-role': RequireParentRole,
 	'required-h1': RequiredH1,

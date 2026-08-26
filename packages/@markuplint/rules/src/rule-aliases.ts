@@ -119,6 +119,32 @@ function expandInvalidAttr(rule: AnyRule): Record<string, AnyRule> {
 }
 
 /**
+ * `landmark-roles` split two ways: `no-nested-top-level-landmark` (the
+ * `ignoreRoles` half — always present, `ignoreRoles` carried over unchanged)
+ * and `require-landmark-label` (the `labelEachArea` half, included unless
+ * the user explicitly set `labelEachArea: false` to opt out of it; the split
+ * rule has no such option itself, so there is nothing to carry over beyond
+ * whether it runs at all).
+ */
+function expandLandmarkRoles(rule: AnyRule): Record<string, AnyRule> {
+	const { options } = normalize(rule);
+	const ignoreRoles = options?.ignoreRoles;
+	const labelEachArea = options?.labelEachArea;
+
+	const expanded: Record<string, AnyRule> = {
+		'no-nested-top-level-landmark': withOptions(rule, {
+			...(ignoreRoles !== undefined && { ignoreRoles }),
+		}),
+	};
+
+	if (labelEachArea !== false) {
+		expanded['require-landmark-label'] = withOptions(rule);
+	}
+
+	return expanded;
+}
+
+/**
  * `doctype` split two ways: `require-doctype` (missing-DOCTYPE-entirely, the
  * `value: 'always'` half — always present regardless of the old options) and
  * `no-obsolete-doctype` (the `denyObsoleteType` half, included unless the
@@ -162,6 +188,10 @@ export const ruleAliasTable: RuleAliasTable = {
 	),
 	'wai-aria-disallowed-props': split('no-prohibited-naming', 'element-supports-aria-prop', 'role-supports-aria-prop'),
 	'wai-aria-implicit-props': split('no-redundant-aria-prop', 'no-contradictory-aria-prop'),
+	'landmark-roles': {
+		expand: expandLandmarkRoles,
+		targets: ['no-nested-top-level-landmark', 'require-landmark-label'],
+	},
 	'attr-duplication': renamed('no-duplicate-attr'),
 	'id-duplication': renamed('no-duplicate-id'),
 	'required-element': renamed('require-element'),
