@@ -592,9 +592,9 @@ It requires either [`selector`](#selector) or [`regexSelector`](#regexselector).
 
 However, you can reference named rules by their base rule name or use namespace wildcards to control virtual rules created by presets:
 
-- **Base rule name**: `"wai-aria": false` disables the virtual rule `a11y/wai-aria` (and any other virtual rule wrapping `wai-aria`)
+- **Base rule name**: `"no-unknown-role": false` disables the virtual rule `a11y/wai-aria/non-existent-role` (and any other virtual rule wrapping `no-unknown-role`)
 - **Namespace wildcard**: `"a11y/*": false` disables all virtual rules in the `a11y/` namespace
-- **Option override**: `"wai-aria": { "options": { ... } }` propagates options to virtual rules wrapping `wai-aria`
+- **Option override**: `"no-unknown-role": { "options": { ... } }` propagates options to virtual rules wrapping `no-unknown-role`
 
 :::note
 Namespace wildcards only accept `false`. To set options, use a specific rule name (base or virtual).

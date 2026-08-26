@@ -38,8 +38,8 @@
     {
       "selector": ".legacy",
       "rules": {
-        // ベースルール名で無効化 — a11y/wai-aria も無効化されます
-        "wai-aria": false,
+        // ベースルール名で無効化 — a11y/wai-aria/non-existent-role も無効化されます
+        "no-unknown-role": false,
 
         // この要素のすべての a11y/* 名前付きルールを無効化
         "a11y/*": false

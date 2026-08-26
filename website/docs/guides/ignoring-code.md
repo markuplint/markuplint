@@ -38,8 +38,8 @@ The same approach works for named rules — you can use base rule names or names
     {
       "selector": ".legacy",
       "rules": {
-        // Disable by base rule name — also disables a11y/wai-aria
-        "wai-aria": false,
+        // Disable by base rule name — also disables a11y/wai-aria/non-existent-role
+        "no-unknown-role": false,
 
         // Disable all a11y/* named rules on this element
         "a11y/*": false

@@ -251,6 +251,10 @@
 		/**
 		 * Conform to **WAI-ARIA**
 		 */
+		"a11y/wai-aria/unsupported-element": {
+			"specConformance": "normative",
+			"rules": { "no-aria-on-unsupported-element": true }
+		},
 		"a11y/wai-aria/non-existent-role": {
 			"specConformance": "normative",
 			"rules": { "no-unknown-role": true }

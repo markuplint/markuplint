@@ -455,21 +455,6 @@
 		},
 
 		/**
-		 * `<input type="button">` with empty `value`
-		 *
-		 * Mirrors nu-validator's hardcoded assertion. HTML LS itself does not
-		 * state this verbatim; see the rule's README for the precise sourcing.
-		 *
-		 * @see https://html.spec.whatwg.org/multipage/input.html#button-state-(type=button)
-		 */
-		"html-standard/input-button-non-empty-value": {
-			"specConformance": "non-normative",
-			"rules": {
-				"input-button-non-empty-value": true
-			}
-		},
-
-		/**
 		 * `<input type="file">` value must be empty when specified
 		 *
 		 * @see https://html.spec.whatwg.org/multipage/input.html#file-upload-state-(type=file)

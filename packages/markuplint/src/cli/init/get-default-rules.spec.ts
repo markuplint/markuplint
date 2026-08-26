@@ -77,10 +77,6 @@ test('default-rules', () => {
 			category: 'style',
 			defaultValue: false,
 		},
-		'input-button-non-empty-value': {
-			category: 'validation',
-			defaultValue: true,
-		},
 		'no-input-file-value': {
 			category: 'validation',
 			defaultValue: true,
@@ -333,10 +329,6 @@ test('default-rules', () => {
 			category: 'validation',
 			defaultValue: true,
 		},
-		'wai-aria': {
-			category: 'a11y',
-			defaultValue: true,
-		},
 		'no-abstract-role': {
 			category: 'a11y',
 			defaultValue: true,
@@ -406,6 +398,10 @@ test('default-rules', () => {
 			defaultValue: true,
 		},
 		'permitted-roles': {
+			category: 'a11y',
+			defaultValue: true,
+		},
+		'no-aria-on-unsupported-element': {
 			category: 'a11y',
 			defaultValue: true,
 		},

@@ -47,7 +47,6 @@ export const benchmarkConfig: Config = {
 		'require-ancestor': true,
 		'no-duplicate-sibling-attr': true,
 		'require-attr': true,
-		'input-button-non-empty-value': true,
 		'no-input-file-value': true,
 		'no-unknown-attr': true,
 		'no-disallowed-attr': true,

@@ -126,7 +126,7 @@ Example proposals:
       "selector": ".legacy-section",
       "inheritance": true,
       "rules": {
-        "wai-aria": false
+        "no-unknown-role": false
       }
     }
   ]

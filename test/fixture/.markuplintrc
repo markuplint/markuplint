@@ -20,11 +20,7 @@
 		{
 			"selector": "img[src$=.svg]",
 			"rules": {
-				"wai-aria": {
-					"options": {
-						"disallowSetImplicitRole": false
-					}
-				},
+				"no-redundant-role": false,
 				"require-attr": "role",
 				"no-unknown-attr": {
 					"options": {
@@ -99,7 +95,7 @@
 			"selector": ".ignore",
 			"inheritance": true,
 			"rules": {
-				"wai-aria": false
+				"a11y/wai-aria/*": false
 			}
 		}
 	]
