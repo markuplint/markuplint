@@ -27,6 +27,7 @@ Use this skill when the user requests any of the following:
 
 - Use WebFetch to retrieve the migration guide and review breaking changes between the versions — use https://next.markuplint.dev/docs/migration/ while the target v5 version is a prerelease (`alpha` / `beta` / `rc`), https://markuplint.dev/docs/migration/ once it is stable
 - Check the version-specific migration guide (e.g., v4-to-v5) if available
+- **Fetch the "Renames and Splits" page** (`/docs/migration/v4-to-v5/rules/rule-names`) — it is the master reference for every v5 rule-name change and is required to map the user's existing config; see the reference section below
 - Pay special attention to Named Rule Group changes
 - Identify newly added rules and list those not included in the recommended preset
 - Inspect source code and preset definitions in `node_modules/markuplint` for accurate information
@@ -91,6 +92,20 @@ Split commits by package and change type:
 3. `feat(markuplint): convert rules to new format` — configuration file changes
 4. `test(markuplint): add tests for new rules` — tests for new rules
 
+## Reference: Rule Renames and Splits
+
+v5 renames or splits most of the rule catalog. Read `/docs/migration/v4-to-v5/rules/rule-names` on the docs site for the authoritative tables — do not migrate rule names from memory.
+
+- **Old names keep working.** Markuplint reports a deprecation warning and expands the old config to the new rule(s) automatically. Old names are removed in v6, so rewrite them during this migration rather than relying on the alias.
+- **Some splits are option-routed.** `doctype`, `landmark-roles`, `required-h1`, `no-unsupported-features`, and `invalid-attr` expand to only a subset of their new siblings depending on what the old options said. When rewriting by hand, check the guide instead of enabling every sibling.
+
+**Two must-check items** — these are the only changes that give the user no warning at all:
+
+1. If the config enables **`permitted-contents`** or **`no-refer-to-non-existent-id`** directly (not via a preset), the checks split off from them are silently lost. Neither rule was renamed, so no deprecation warning fires. Confirm with the user whether to add the split-off siblings:
+   - `permitted-contents` → also add `no-disallowed-ancestor`, `require-ancestor`, `no-duplicate-sibling-attr`
+   - `no-refer-to-non-existent-id` → also add `no-broken-fragment-link`
+2. **Six rules escalate from `warning` to `error`** (four rows of the guide's severity table — the first row alone covers three table-model rules), which can fail a build using a strict zero-warnings gate on code the user did not touch. Before upgrading, run the v4 build and record the current warning counts for these rules, then confirm the approach with the user.
+
 ## Reference: Named Rule Groups
 
 In versions that support Named Rule Groups, adding a `name` property to `nodeRules` entries creates a Named Rule Group. The `name` serves as a reference key from the `rules` section and is displayed as `[name]` in violation messages.
@@ -103,7 +118,7 @@ nodeRules: [
   {
     selector: 'img',
     rules: {
-      'required-attr': { value: 'alt', reason: '...' },
+      'require-attr': { value: 'alt', reason: '...' },
     },
   },
 ]
@@ -114,7 +129,7 @@ nodeRules: [
     name: 'my-project/img-require-alt',  // added
     selector: 'img',
     rules: {
-      'required-attr': { value: 'alt', reason: '...' },
+      'require-attr': { value: 'alt', reason: '...' },
     },
   },
 ]
@@ -125,7 +140,7 @@ nodeRules: [
 ```js
 // Before — defined directly in rules section
 rules: {
-  'disallowed-element': {
+  'no-restricted-element': {
     value: ['br'],
     reason: '...',
   },
@@ -135,7 +150,7 @@ rules: {
 rules: {
   'my-project/no-br': {
     rules: {
-      'disallowed-element': {
+      'no-restricted-element': {
         value: ['br'],
         reason: '...',
       },
@@ -176,7 +191,7 @@ const formatted = violations.map(
 Example output:
 
 - `file.html:9:9 ... (permitted-contents) [html-standard/permitted-contents]`
-- `file.html:26:3 ... (disallowed-element) [my-project/no-br]`
+- `file.html:26:3 ... (no-restricted-element) [my-project/no-br]`
 
 ## Reference: `-c` Flag Behavior
 
