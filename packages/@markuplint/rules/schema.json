@@ -105,6 +105,9 @@
 				"no-boolean-attr-value": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-boolean-attr-value/schema.json"
 				},
+				"no-broken-fragment-link": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-broken-fragment-link/schema.json"
+				},
 				"no-consecutive-br": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-consecutive-br/schema.json"
 				},

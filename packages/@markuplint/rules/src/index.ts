@@ -35,6 +35,7 @@ import NoAbstractRole from './no-abstract-role/index.js';
 import NoAmbiguousNavigableTargetNames from './no-ambiguous-navigable-target-names/index.js';
 import NoAriaOnPresentationalChildren from './no-aria-on-presentational-children/index.js';
 import NoBooleanAttrValue from './no-boolean-attr-value/index.js';
+import NoBrokenFragmentLink from './no-broken-fragment-link/index.js';
 import NoConsecutiveBr from './no-consecutive-br/index.js';
 import NoContentAfterBody from './no-content-after-body/index.js';
 import NoDefaultAriaValue from './no-default-aria-value/index.js';
@@ -137,6 +138,7 @@ const rules = {
 	'no-ambiguous-navigable-target-names': NoAmbiguousNavigableTargetNames,
 	'no-aria-on-presentational-children': NoAriaOnPresentationalChildren,
 	'no-boolean-attr-value': NoBooleanAttrValue,
+	'no-broken-fragment-link': NoBrokenFragmentLink,
 	'no-consecutive-br': NoConsecutiveBr,
 	'no-content-after-body': NoContentAfterBody,
 	'no-default-aria-value': NoDefaultAriaValue,

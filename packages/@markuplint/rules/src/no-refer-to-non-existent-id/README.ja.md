@@ -1,10 +1,12 @@
 ---
-description: for、form、aria-*などに指定されたIDまたはIDのリストが、もしくはハイパーリンクに指定されたフラグメントが、同じドキュメント内に存在するIDを参照しているかどうかを確認します。
+description: for、form、aria-*などに指定されたIDまたはIDのリストが、同じドキュメント内に存在するIDを参照しているかどうかを確認します。
 ---
 
 # `no-refer-to-non-existent-id`
 
-`for`、`form`、`aria-*` などに指定された**ID**または**IDのリスト**が、もしくはハイパーリンクに指定されたフラグメントが、同じドキュメント内に存在するIDを参照しているかどうかを確認します。
+`for`、`form`、`aria-*` などに指定された**ID**または**IDのリスト**が、同じドキュメント内に存在するIDを参照しているかどうかを確認します。
+
+ハイパーリンクの**フラグメント**(`<a href="#…">` / `<area href="#…">`)は[`no-broken-fragment-link`](/docs/rules/no-broken-fragment-link)の担当であり、このルールの対象ではありません — このルールが対象とする `DOMID` 型属性や ARIA の ID 参照とは異なり、HTML LS はフラグメントリンクの参照先不在を適合性違反として扱わないため、分割されています。
 
 <!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
 
@@ -14,18 +16,12 @@ description: for、form、aria-*などに指定されたIDまたはIDのリス�
 
 ```html
 <label for="foo">Text Field</label><input id="bar" type="text" />
-
-<a href="#baz">Fragment link</label>
-<section id="qux">...</section>
 ```
 
 ✅ 正しいコード例
 
 ```html
 <label for="foo">Text Field</label><input id="foo" type="text" />
-
-<a href="#baz">Fragment link</label>
-<section id="baz">...</section>
 ```
 
 <!-- textlint-enable ja-technical-writing/ja-no-mixed-period -->
