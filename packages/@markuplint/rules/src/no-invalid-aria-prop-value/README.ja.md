@@ -6,8 +6,6 @@ description: ARIAプロパティ/ステートの値が期待される型に適�
 
 ARIAプロパティ/ステートの値が期待される型に適合しない場合に警告します。
 
-このルールは[`wai-aria`](../wai-aria/)ルールファミリーの一部で、きめ細かなseverity制御のために分割されたものです。
-
 <!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
 
 ❌ 間違ったコード例

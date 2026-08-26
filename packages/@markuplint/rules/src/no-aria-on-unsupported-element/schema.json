@@ -2,9 +2,7 @@
 	"$schema": "http://json-schema.org/draft-07/schema#",
 	"definitions": {
 		"value": {
-			"type": "boolean",
-			"description": "Forbid an empty value attribute on `<input type=\"button\">` elements; if specified the value must be non-empty.",
-			"description:ja": "`<input type=\"button\">` に value 属性を指定する場合、空文字列にしてはならないことを強制します。"
+			"type": "boolean"
 		}
 	},
 	"oneOf": [

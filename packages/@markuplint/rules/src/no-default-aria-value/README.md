@@ -7,8 +7,6 @@ description: Warns when an ARIA property is explicitly set to its spec-defined d
 
 Warns when an ARIA property is explicitly set to its spec-defined default value.
 
-This rule is part of the [`wai-aria`](../wai-aria/) rule family, split for granular severity control.
-
 ❌ Examples of **incorrect** code for this rule
 
 ```html

@@ -6,8 +6,6 @@ description: 明示的なロールを持つ要素が必須の親コンテキス�
 
 明示的なロールを持つ要素が必須の親コンテキストの外に配置された場合に警告します。
 
-このルールは[`wai-aria`](../wai-aria/)ルールファミリーの一部で、きめ細かなseverity制御のために分割されたものです。
-
 <!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
 
 ❌ 間違ったコード例

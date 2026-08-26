@@ -7,8 +7,6 @@ description: Warns when focusable interactive elements are placed inside an aria
 
 Warns when focusable interactive elements are placed inside an aria-hidden subtree.
 
-This rule is part of the [`wai-aria`](../wai-aria/) rule family, split for granular severity control.
-
 ❌ Examples of **incorrect** code for this rule
 
 ```html

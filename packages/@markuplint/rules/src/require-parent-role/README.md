@@ -7,8 +7,6 @@ description: Warns when an element with an explicit role is placed outside its r
 
 Warns when an element with an explicit role is placed outside its required parent context.
 
-This rule is part of the [`wai-aria`](../wai-aria/) rule family, split for granular severity control.
-
 ❌ Examples of **incorrect** code for this rule
 
 ```html

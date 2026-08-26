@@ -7,8 +7,6 @@ description: Warns when an active "tab" role element has no corresponding "tabpa
 
 Warns when an active `tab` role element (`aria-selected="true"`) has no corresponding `tabpanel` role element.
 
-This rule is part of the [`wai-aria`](../wai-aria/) rule family, split for granular severity control.
-
 The correspondence is resolved via `aria-controls` on the tab (pointing to a `tabpanel`) or `aria-labelledby` on a `tabpanel` (pointing back at the tab's `id`).
 
 ❌ Examples of **incorrect** code for this rule

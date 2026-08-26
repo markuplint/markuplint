@@ -21,7 +21,6 @@ import ConsistentTableRowLength from './consistent-table-row-length/index.js';
 import ElementSupportsAriaProp from './element-supports-aria-prop/index.js';
 import FormAttrReferencesForm from './form-attr-references-form/index.js';
 import HeadElementOrder from './head-element-order/index.js';
-import InputButtonNonEmptyValue from './input-button-non-empty-value/index.js';
 import InputListReferencesDatalist from './input-list-references-datalist/index.js';
 import ItempropRequiresItemscope from './itemprop-requires-itemscope/index.js';
 import LabelForReferencesLabelable from './label-for-references-labelable/index.js';
@@ -35,6 +34,7 @@ import NoAbstractRole from './no-abstract-role/index.js';
 import NoAlwaysMatchingSource from './no-always-matching-source/index.js';
 import NoAmbiguousNavigableTargetNames from './no-ambiguous-navigable-target-names/index.js';
 import NoAriaOnPresentationalChildren from './no-aria-on-presentational-children/index.js';
+import NoAriaOnUnsupportedElement from './no-aria-on-unsupported-element/index.js';
 import NoBooleanAttrValue from './no-boolean-attr-value/index.js';
 import NoBrokenFragmentLink from './no-broken-fragment-link/index.js';
 import NoConsecutiveBr from './no-consecutive-br/index.js';
@@ -117,7 +117,6 @@ import TabRequiresTabpanel from './tab-requires-tabpanel/index.js';
 import UsemapReferencesMap from './usemap-references-map/index.js';
 import ValidImportmap from './valid-importmap/index.js';
 import ValidSpeculationRules from './valid-speculation-rules/index.js';
-import WaiAria from './wai-aria/index.js';
 
 /**
  * Registry of all built-in markuplint rules, mapping rule names to their seed definitions.
@@ -134,7 +133,6 @@ const rules = {
 	'element-supports-aria-prop': ElementSupportsAriaProp,
 	'form-attr-references-form': FormAttrReferencesForm,
 	'head-element-order': HeadElementOrder,
-	'input-button-non-empty-value': InputButtonNonEmptyValue,
 	'input-list-references-datalist': InputListReferencesDatalist,
 	'itemprop-requires-itemscope': ItempropRequiresItemscope,
 	'label-for-references-labelable': LabelForReferencesLabelable,
@@ -148,6 +146,7 @@ const rules = {
 	'no-always-matching-source': NoAlwaysMatchingSource,
 	'no-ambiguous-navigable-target-names': NoAmbiguousNavigableTargetNames,
 	'no-aria-on-presentational-children': NoAriaOnPresentationalChildren,
+	'no-aria-on-unsupported-element': NoAriaOnUnsupportedElement,
 	'no-boolean-attr-value': NoBooleanAttrValue,
 	'no-broken-fragment-link': NoBrokenFragmentLink,
 	'no-consecutive-br': NoConsecutiveBr,
@@ -230,7 +229,6 @@ const rules = {
 	'usemap-references-map': UsemapReferencesMap,
 	'valid-importmap': ValidImportmap,
 	'valid-speculation-rules': ValidSpeculationRules,
-	'wai-aria': WaiAria,
 } as const satisfies Record<string, AnyRuleSeed<any, any>>;
 
 export default rules;

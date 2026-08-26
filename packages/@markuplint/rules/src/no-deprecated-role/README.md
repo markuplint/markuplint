@@ -7,8 +7,6 @@ description: Warns when a deprecated WAI-ARIA role is used.
 
 Warns when a deprecated WAI-ARIA role is used.
 
-This rule is part of the [`wai-aria`](../wai-aria/) rule family, split for granular severity control.
-
 ❌ Examples of **incorrect** code for this rule
 
 ```html

@@ -57,9 +57,6 @@
 				"ineffective-attr": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-ineffective-attr/schema.json"
 				},
-				"input-button-non-empty-value": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/input-button-non-empty-value/schema.json"
-				},
 				"input-file-empty-value": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-input-file-value/schema.json"
 				},
@@ -104,6 +101,9 @@
 				},
 				"no-aria-on-presentational-children": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-aria-on-presentational-children/schema.json"
+				},
+				"no-aria-on-unsupported-element": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-aria-on-unsupported-element/schema.json"
 				},
 				"no-boolean-attr-value": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-boolean-attr-value/schema.json"
@@ -368,9 +368,6 @@
 				},
 				"valid-speculation-rules": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/valid-speculation-rules/schema.json"
-				},
-				"wai-aria": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/wai-aria/schema.json"
 				},
 				"wai-aria-abstract-role": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-abstract-role/schema.json"

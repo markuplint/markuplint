@@ -163,6 +163,5 @@ This rule reports this as a violation because `aria-labelledby` overrides `label
 
 - [Issue #1478](https://github.com/markuplint/markuplint/issues/1478)
 - [`require-accessible-name`](../require-accessible-name/README.md)
-- [`wai-aria`](../wai-aria/README.md)
 - [Accessible Name and Description Computation 1.2](https://www.w3.org/TR/accname-1.2/)
 - [WCAG 2.5.3: Label in Name](https://www.w3.org/WAI/WCAG21/Understanding/label-in-name.html)

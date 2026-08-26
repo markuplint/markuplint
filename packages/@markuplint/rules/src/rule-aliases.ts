@@ -57,7 +57,23 @@ function normalize(rule: AnyRule): NormalizedRule {
 	return { severity, options, reason, reasonOnly };
 }
 
+/**
+ * Whether `rule` disables the rule outright — either the bare `false`
+ * shorthand, or the long form `{ value: false, ... }` (meaningful for the
+ * boolean-`value`-typed rules every custom `expand` function in this file
+ * operates on, where `value` doubles as the enable flag).
+ */
+function isDisabled(rule: AnyRule): boolean {
+	if (rule === false) {
+		return true;
+	}
+	return typeof rule === 'object' && rule !== null && (rule as { value?: unknown }).value === false;
+}
+
 function withOptions(rule: AnyRule, options?: Record<string, unknown>): AnyRule {
+	if (isDisabled(rule)) {
+		return false;
+	}
 	const { severity, reason, reasonOnly } = normalize(rule);
 	return {
 		value: true,
@@ -212,6 +228,51 @@ function expandNoUnsupportedFeatures(rule: AnyRule): Record<string, AnyRule> {
 }
 
 /**
+ * Every rule the `wai-aria` umbrella rule used to run a check for — the
+ * pre-existing 1:1-renamed/split successors, plus `no-aria-on-unsupported-element`
+ * (the `#ARIAAttrs: false` check the umbrella alone used to perform, before
+ * any of its per-check option toggles were even consulted).
+ */
+const WAI_ARIA_TARGETS = [
+	'no-aria-on-unsupported-element',
+	'no-unknown-role',
+	'no-abstract-role',
+	'require-parent-role',
+	'require-aria-prop',
+	'no-deprecated-role',
+	'no-redundant-role',
+	'permitted-roles',
+	'no-prohibited-naming',
+	'element-supports-aria-prop',
+	'role-supports-aria-prop',
+	'no-deprecated-aria-prop',
+	'no-redundant-aria-prop',
+	'no-contradictory-aria-prop',
+	'no-invalid-aria-prop-value',
+	'no-default-aria-value',
+	'aria-prop-requires-role',
+	'require-owned-elements',
+	'no-aria-on-presentational-children',
+	'no-focusable-in-aria-hidden',
+	'tab-requires-tabpanel',
+];
+
+/**
+ * `wai-aria: v` expands to every rule in `WAI_ARIA_TARGETS`, all receiving
+ * the same severity/reason (bare `withOptions(rule)`, no `options`). The
+ * umbrella's own per-check option toggles (`checkingDeprecatedRole`,
+ * `disallowSetImplicitProps`, `version`, etc.) have no successor to route
+ * to: each of these rules already ran its single check unconditionally
+ * once split off from the umbrella in an earlier step, and none of their
+ * schemas accept an `options` object at all — passing the toggles through
+ * would fail every target's schema validation, not silently no-op.
+ */
+function expandWaiAria(rule: AnyRule): Record<string, AnyRule> {
+	const bare = withOptions(rule);
+	return Object.fromEntries(WAI_ARIA_TARGETS.map(name => [name, bare]));
+}
+
+/**
  * `doctype` split two ways: `require-doctype` (missing-DOCTYPE-entirely, the
  * `value: 'always'` half — always present regardless of the old options) and
  * `no-obsolete-doctype` (the `denyObsoleteType` half, included unless the
@@ -266,6 +327,10 @@ export const ruleAliasTable: RuleAliasTable = {
 	'no-unsupported-features': {
 		expand: expandNoUnsupportedFeatures,
 		targets: ['no-unsupported-browser-features', 'no-experimental-features', 'no-nonstandard-features'],
+	},
+	'wai-aria': {
+		expand: expandWaiAria,
+		targets: WAI_ARIA_TARGETS,
 	},
 	'attr-duplication': renamed('no-duplicate-attr'),
 	'id-duplication': renamed('no-duplicate-id'),
