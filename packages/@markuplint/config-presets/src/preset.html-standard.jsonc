@@ -152,17 +152,6 @@
 		},
 
 		/**
-		 * No use ineffective attr
-		 *
-		 */
-		"html-standard/ineffective-attr": {
-			"specConformance": "non-normative",
-			"rules": {
-				"no-ineffective-attr": true
-			}
-		},
-
-		/**
 		 * No invalid attr
 		 *
 		 * Each element's attribute names and values must conform to the HTML
@@ -173,21 +162,6 @@
 		"no-unknown-attr": true,
 		"no-disallowed-attr": true,
 		"no-invalid-attr-value": true,
-
-		/**
-		 * No duplicate names in `<dl>`
-		 *
-		 * Within a single dl element, there should not be more than one dt element for each name.
-		 *
-		 * @see https://html.spec.whatwg.org/multipage/grouping-content.html#the-dl-element:~:text=Within%20a%20single%20dl%20element%2C%20there%20should%20not%20be%20more%20than%20one%20dt%20element%20for%20each%20name
-		 *
-		 */
-		"html-standard/no-duplicate-dt": {
-			"specConformance": "non-normative",
-			"rules": {
-				"no-duplicate-dt": true
-			}
-		},
 
 		/**
 		 * No refer to no existent **ID**
@@ -559,6 +533,18 @@
 			"specConformance": "normative",
 			"rules": {
 				"no-extra-selected-options": true
+			}
+		},
+
+		/**
+		 * Every `itemprop` belongs to an `itemscope`d item
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/microdata.html#associating-names-with-items
+		 */
+		"html-standard/itemprop-requires-itemscope": {
+			"specConformance": "normative",
+			"rules": {
+				"itemprop-requires-itemscope": true
 			}
 		}
 	},

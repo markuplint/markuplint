@@ -54,6 +54,8 @@ No merge cells| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
 [Disallow `autofocus` attr outside dialog scope](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/autofocus#accessibility_considerations)|Don't take away focus by force. The `dialog` element and its descendants are excepted.|✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
 [`tabindex` attr only `-1` or `0`](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex#accessibility_concerns)|Scoped to non-dialog elements because the HTML spec disallows `tabindex` on `<dialog>` (`noUse`).|✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
 [Disallow `user-scalable=no` in viewport meta](https://developer.mozilla.org/en-US/docs/Web/HTML/Viewport_meta_tag)|Usage of `user-scalable=no` can cause accessibility issues to users with visual impairments such as low vision. WCAG requires a minimum of 2× scaling.|✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
+[Consistent **attribute name** casing](https://html.spec.whatwg.org/multipage/syntax.html#attributes-2)|HTML permits any mix of ASCII upper/lower case in attribute names; this is a style preference, not a spec requirement.|✅|✅|✅|✅|✅|❌|✅|❌|❌|❌|❌|❌|
+[Consistent **tag name** casing](https://html.spec.whatwg.org/multipage/syntax.html#syntax-tag-name)|HTML permits any mix of ASCII upper/lower case in tag names; this is a style preference, not a spec requirement.|✅|✅|✅|✅|✅|❌|✅|❌|❌|❌|❌|❌|
 [No duplicate attr](https://html.spec.whatwg.org/multipage/parsing.html#parse-error-duplicate-attribute)|The parser ignores all such duplicate occurrences of the attribute.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 No obsolete attr|Authors must not use attributes the spec has removed entirely. The group name is kept as `deprecated-attr` for backward compatibility.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 No deprecated attr|MDN/BCD-sourced (factual, not a spec MUST) — kept enabled here (severity downgraded to warning, not removed from the preset) so existing markuplint:html-standard users keep this coverage.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
@@ -64,9 +66,7 @@ No deprecated element|MDN/BCD-sourced (factual, not a spec MUST) — kept enable
 Must not skip heading levels| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [No duplicate autofocus](https://html.spec.whatwg.org/multipage/interaction.html#the-autofocus-attribute)|There must not be two elements with the autofocus attribute specified in the same document.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [No duplicate visible main](https://html.spec.whatwg.org/multipage/grouping-content.html#the-main-element)|There must not be more than one visible main element in a document.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
-No use ineffective attr| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [No invalid attr](https://html.spec.whatwg.org/multipage/dom.html#attributes)|Each element's attribute names and values must conform to the HTML specification.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
-[No duplicate names in `<dl>`](https://html.spec.whatwg.org/multipage/grouping-content.html#the-dl-element:~:text=Within%20a%20single%20dl%20element%2C%20there%20should%20not%20be%20more%20than%20one%20dt%20element%20for%20each%20name)|Within a single dl element, there should not be more than one dt element for each name.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 No use **orphaned end tag**| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 No **stray head or body tag**| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 No **content after body**| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
@@ -96,6 +96,7 @@ Specify required attr| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [`<meter>` attribute inequalities (min ≤ value ≤ max etc.)](https://html.spec.whatwg.org/multipage/form-elements.html#the-meter-element)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [`<progress>` attribute inequalities (value ≤ max; value ≤ 1 when max is absent)](https://html.spec.whatwg.org/multipage/form-elements.html#the-progress-element)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [Single `<select>` allows at most one selected `<option>`](https://html.spec.whatwg.org/multipage/form-elements.html#the-select-element)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
+[Every `itemprop` belongs to an `itemscope`d item](https://html.spec.whatwg.org/multipage/microdata.html#associating-names-with-items)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [Specify `charset=UTF-8`](https://html.spec.whatwg.org/multipage/semantics.html#charset)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [No duplicate meta charset](https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-charset)|There must not be more than one meta element with a charset attribute per document.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [No duplicate meta description](https://html.spec.whatwg.org/multipage/semantics.html#standard-metadata-names)|There must not be more than one meta element where the name attribute value is an ASCII case-insensitive match for "description" per document.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
@@ -106,6 +107,8 @@ Specify required attr| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [Require `title` attr in `<input pattern>`](https://html.spec.whatwg.org/multipage/input.html#attr-input-pattern)|When an `<input>` element has a `pattern` attribute specified, authors should include a `title` attribute to give a description of the pattern.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 No nested same `<details>` name group|A document must not contain a details element that is a descendant of another details element in the same details name group.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [No use `shortcut` keyword in `<link rel>`](https://html.spec.whatwg.org/multipage/links.html#rel-shortcut-icon)|For historical reasons, the icon keyword may be preceded by the keyword "shortcut". However, pages should not use the keyword "shortcut" as it is unnecessary.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
+Require conventional **`<head>` element order**|A consistent order (charset, viewport, title, then the rest) lets the browser start rendering sooner instead of re-parsing metadata.|✅|✅|✅|✅|✅|❌|❌|❌|❌|✅|❌|❌|
+[Require **matching aspect-ratio** attributes](https://html.spec.whatwg.org/multipage/embedded-content-other.html#dimension-attributes)|`width`/`height` that mismatch the image's actual aspect ratio still cause a layout shift once the image loads, defeating the point of setting them.|✅|✅|✅|✅|✅|❌|❌|❌|❌|✅|❌|❌|
 [Require `charset=UTF-8`](https://html.spec.whatwg.org/multipage/semantics.html#charset)| |✅|✅|✅|✅|✅|❌|❌|❌|❌|✅|❌|❌|
 Require `defer` attr|Should load and parse scripts lazily to avoid render-blocking.|✅|✅|✅|✅|✅|❌|❌|❌|❌|✅|❌|❌|
 Require **aspect-ratio**|Require `width` and `height` attr with `<img>` to avoid **Cumulative Layout Shift**|✅|✅|✅|✅|✅|❌|❌|❌|❌|✅|❌|❌|
@@ -115,6 +118,7 @@ No hard coding **ID**|The component that hard-coded ID cannot mount to an app du
 Use [**no-unescaped-char**](https://markuplint.dev/docs/rules/no-unescaped-char)|Warns when a literal `<` (the one character HTML LS always prohibits unescaped) appears in a text node or attribute value. The group name is kept as `character-reference` for backward compatibility.|❌|❌|❌|✅|❌|❌|❌|❌|❌|❌|❌|❌|
 Use [**no-malformed-character-reference**](https://markuplint.dev/docs/rules/no-malformed-character-reference)|Warns when a `&...;`-shaped character reference is malformed (unknown name, missing semicolon, or a NULL/surrogate/control/ noncharacter/out-of-range numeric reference).|❌|❌|❌|✅|❌|❌|❌|❌|❌|❌|❌|❌|
 No omit **end-tag**|Recommend to write an end-tag always because it is too difficult for a human decide an element is end-tag omittable.|❌|❌|❌|✅|❌|❌|❌|❌|❌|❌|❌|❌|
+Disallow inline **event handler attributes**|Inline event handlers (`onclick`, `onerror`, etc.) execute arbitrary script from markup, which is a common XSS injection vector.|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|✅|
 
 ## Install
 

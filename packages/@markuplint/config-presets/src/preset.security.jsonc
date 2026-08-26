@@ -1,1 +1,16 @@
-{}
+{
+	"rules": {
+		/**
+		 * Disallow inline **event handler attributes**
+		 *
+		 * Inline event handlers (`onclick`, `onerror`, etc.) execute arbitrary
+		 * script from markup, which is a common XSS injection vector.
+		 */
+		"security/no-event-handler-attr": {
+			"specConformance": "non-normative",
+			"rules": {
+				"no-event-handler-attr": true
+			}
+		}
+	}
+}

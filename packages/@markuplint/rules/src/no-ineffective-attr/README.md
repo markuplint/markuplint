@@ -7,6 +7,12 @@ description: Warn that if the attribute specified cannot affect (in other words,
 
 Warn that if the attribute specified cannot affect (in other words, mean-less) the element.
 
+:::info
+
+Not included in any preset: `markuplint:html-standard` only admits rules for a HTML LS MUST; an ineffective (but not disallowed) attribute is non-normative.
+
+:::
+
 ❌ Examples of **incorrect** code for this rule
 
 ```html

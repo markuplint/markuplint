@@ -6,6 +6,12 @@ description: 指定された属性が要素に影響を与えることができ�
 
 指定された属性が要素に影響を与えることができない（つまり無意味である）場合は警告します。
 
+:::info
+
+いずれのプリセットにも含まれません。`markuplint:html-standard` は HTML LS の MUST に対応するルールのみを収容する方針で、無効ではあるが禁止されていない属性は non-normative です。
+
+:::
+
 <!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
 
 ❌ 間違ったコード例
