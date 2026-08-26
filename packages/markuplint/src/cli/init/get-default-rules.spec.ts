@@ -213,7 +213,15 @@ test('default-rules', () => {
 			category: 'validation',
 			defaultValue: true,
 		},
-		'no-unsupported-features': {
+		'no-unsupported-browser-features': {
+			category: 'validation',
+			defaultValue: false,
+		},
+		'no-experimental-features': {
+			category: 'validation',
+			defaultValue: false,
+		},
+		'no-nonstandard-features': {
 			category: 'validation',
 			defaultValue: false,
 		},
