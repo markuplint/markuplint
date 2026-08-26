@@ -18,6 +18,7 @@ import CaseSensitiveAttrName from './case-sensitive-attr-name/index.js';
 import CaseSensitiveTagName from './case-sensitive-tag-name/index.js';
 import ClassNaming from './class-naming/index.js';
 import ConsistentTableRowLength from './consistent-table-row-length/index.js';
+import ElementSupportsAriaProp from './element-supports-aria-prop/index.js';
 import FormAttrReferencesForm from './form-attr-references-form/index.js';
 import HeadElementOrder from './head-element-order/index.js';
 import InputButtonNonEmptyValue from './input-button-non-empty-value/index.js';
@@ -70,6 +71,7 @@ import NoObsoleteAttr from './no-obsolete-attr/index.js';
 import NoObsoleteDoctype from './no-obsolete-doctype/index.js';
 import NoObsoleteElement from './no-obsolete-element/index.js';
 import NoOrphanedEndTag from './no-orphaned-end-tag/index.js';
+import NoProhibitedNaming from './no-prohibited-naming/index.js';
 import NoPseudoList from './no-pseudo-list/index.js';
 import NoRedundantAccessibleName from './no-redundant-accessible-name/index.js';
 import NoRedundantRole from './no-redundant-role/index.js';
@@ -103,13 +105,13 @@ import RequireEndTag from './require-end-tag/index.js';
 import RequireOwnedElements from './require-owned-elements/index.js';
 import RequireParentRole from './require-parent-role/index.js';
 import RequiredH1 from './required-h1/index.js';
+import RoleSupportsAriaProp from './role-supports-aria-prop/index.js';
 import SizesAutoRequiresLazyLoading from './sizes-auto-requires-lazy-loading/index.js';
 import TabRequiresTabpanel from './tab-requires-tabpanel/index.js';
 import UsemapReferencesMap from './usemap-references-map/index.js';
 import ValidImportmap from './valid-importmap/index.js';
 import ValidSpeculationRules from './valid-speculation-rules/index.js';
 import WaiAria from './wai-aria/index.js';
-import WaiAriaDisallowedProps from './wai-aria-disallowed-props/index.js';
 import WaiAriaImplicitProps from './wai-aria-implicit-props/index.js';
 
 /**
@@ -124,6 +126,7 @@ const rules = {
 	'case-sensitive-tag-name': CaseSensitiveTagName,
 	'class-naming': ClassNaming,
 	'consistent-table-row-length': ConsistentTableRowLength,
+	'element-supports-aria-prop': ElementSupportsAriaProp,
 	'form-attr-references-form': FormAttrReferencesForm,
 	'head-element-order': HeadElementOrder,
 	'input-button-non-empty-value': InputButtonNonEmptyValue,
@@ -176,6 +179,7 @@ const rules = {
 	'no-obsolete-doctype': NoObsoleteDoctype,
 	'no-obsolete-element': NoObsoleteElement,
 	'no-orphaned-end-tag': NoOrphanedEndTag,
+	'no-prohibited-naming': NoProhibitedNaming,
 	'no-pseudo-list': NoPseudoList,
 	'no-redundant-accessible-name': NoRedundantAccessibleName,
 	'no-redundant-role': NoRedundantRole,
@@ -209,13 +213,13 @@ const rules = {
 	'require-owned-elements': RequireOwnedElements,
 	'require-parent-role': RequireParentRole,
 	'required-h1': RequiredH1,
+	'role-supports-aria-prop': RoleSupportsAriaProp,
 	'sizes-auto-requires-lazy-loading': SizesAutoRequiresLazyLoading,
 	'tab-requires-tabpanel': TabRequiresTabpanel,
 	'usemap-references-map': UsemapReferencesMap,
 	'valid-importmap': ValidImportmap,
 	'valid-speculation-rules': ValidSpeculationRules,
 	'wai-aria': WaiAria,
-	'wai-aria-disallowed-props': WaiAriaDisallowedProps,
 	'wai-aria-implicit-props': WaiAriaImplicitProps,
 } as const satisfies Record<string, AnyRuleSeed<any, any>>;
 

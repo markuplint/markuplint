@@ -160,6 +160,7 @@ export const ruleAliasTable: RuleAliasTable = {
 		'sizes-auto-requires-lazy-loading',
 		'no-always-matching-source',
 	),
+	'wai-aria-disallowed-props': split('no-prohibited-naming', 'element-supports-aria-prop', 'role-supports-aria-prop'),
 	'attr-duplication': renamed('no-duplicate-attr'),
 	'id-duplication': renamed('no-duplicate-id'),
 	'required-element': renamed('require-element'),

@@ -36,6 +36,9 @@
 				"disallowed-element": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-restricted-element/schema.json"
 				},
+				"element-supports-aria-prop": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/element-supports-aria-prop/schema.json"
+				},
 				"end-tag": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/require-end-tag/schema.json"
 				},
@@ -213,6 +216,9 @@
 				"no-orphaned-end-tag": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-orphaned-end-tag/schema.json"
 				},
+				"no-prohibited-naming": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-prohibited-naming/schema.json"
+				},
 				"no-pseudo-list": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-pseudo-list/schema.json"
 				},
@@ -324,6 +330,9 @@
 				"required-h1": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/required-h1/schema.json"
 				},
+				"role-supports-aria-prop": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/role-supports-aria-prop/schema.json"
+				},
 				"sizes-auto-requires-lazy-loading": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/sizes-auto-requires-lazy-loading/schema.json"
 				},
@@ -356,9 +365,6 @@
 				},
 				"wai-aria-deprecated-role": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-deprecated-role/schema.json"
-				},
-				"wai-aria-disallowed-props": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/wai-aria-disallowed-props/schema.json"
 				},
 				"wai-aria-implicit-props": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/wai-aria-implicit-props/schema.json"
