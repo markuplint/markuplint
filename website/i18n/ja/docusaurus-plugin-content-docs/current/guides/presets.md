@@ -87,7 +87,27 @@
 | `a11y/id-duplication`                      | `id`属性値がドキュメント内で重複している場合に警告します。機械可読性の観点から、支援技術における問題を回避できます。 |
 | `a11y/no-refer-to-non-existent-id`         | `for`、`form`、`aria-*`などに指定されたIDが同じドキュメント内に存在することを確認します。                            |
 | `a11y/no-broken-fragment-link`             | ハイパーリンクに指定されたフラグメントが同じドキュメント内に存在するIDを参照していることを確認します。               |
-| `a11y/wai-aria`                            | `role`属性と`aria-*`属性がWAI-ARIA、DPub-ARIA、およびARIA in HTML仕様に準拠していない場合に警告します。              |
+| `a11y/wai-aria/unsupported-element`        | ARIA属性を全くサポートしない要素へのARIA属性指定を禁止します。                                                       |
+| `a11y/wai-aria/non-existent-role`          | WAI-ARIA仕様に存在しないロールが指定された場合に警告します。                                                         |
+| `a11y/wai-aria/abstract-role`              | 抽象ロールが使用された場合に警告します。                                                                             |
+| `a11y/wai-aria/permitted-roles`            | ARIA in HTMLの仕様において要素に許可されていないロールが指定された場合に警告します。                                 |
+| `a11y/wai-aria/implicit-role`              | 要素の暗黙のロールと同じロールが明示的に指定された場合に警告します。                                                 |
+| `a11y/wai-aria/implicit-props`             | ARIAプロパティが等価なネイティブHTML属性と同じ意味を冗長に繰り返している場合に警告します。                           |
+| `a11y/wai-aria/contradictory-props`        | ARIAプロパティの値が等価なネイティブHTML属性と矛盾している場合に警告します。                                         |
+| `a11y/wai-aria/required-props`             | ロールに必須のARIAプロパティが指定されていない場合に警告します。                                                     |
+| `a11y/wai-aria/disallowed-props`           | 要素の計算されたロールでARIAプロパティ・状態が許可されていない場合に警告します。                                     |
+| `a11y/wai-aria/prohibited-naming`          | 命名禁止(naming-prohibited)要素に`aria-label`/`aria-labelledby`/`aria-braillelabel`が使われている場合に警告します。  |
+| `a11y/wai-aria/element-supports-aria-prop` | ARIA in HTMLの要素固有の制約によりARIAプロパティ・状態が禁止されている場合に警告します。                             |
+| `a11y/wai-aria/deprecated-role`            | 非推奨（廃止予定）のロールが使用された場合に警告します。                                                             |
+| `a11y/wai-aria/deprecated-props`           | ロールにおいて非推奨のARIAプロパティ/ステートが使用された場合に警告します。                                          |
+| `a11y/wai-aria/value`                      | ARIAプロパティ/ステートの値が期待される型に適合しない場合に警告します。                                              |
+| `a11y/wai-aria/required-owned-elements`    | ロールが必要とする子ロールを含んでいない場合に警告します。                                                           |
+| `a11y/wai-aria/required-parent-role`       | 明示的なロールを持つ要素が必須の親コンテキストの外に配置された場合に警告します。                                     |
+| `a11y/wai-aria/tab-requires-tabpanel`      | アクティブな"tab"ロールの要素に対応する"tabpanel"ロールの要素がない場合に警告します。                                |
+| `a11y/wai-aria/presentational-children`    | childrenPresentationalを持つロールの子孫要素にARIA属性が指定された場合に警告します。                                 |
+| `a11y/wai-aria/no-global-prop`             | 明示的なロールを持たない要素にグローバルでないARIAプロパティが指定された場合に警告します。                           |
+| `a11y/wai-aria/default-value`              | ARIAプロパティにスペックで定義されたデフォルト値が明示的に指定された場合に警告します。                               |
+| `a11y/wai-aria/interaction-in-hidden`      | `aria-hidden`で非表示にされたサブツリー内にフォーカス可能なインタラクティブ要素がある場合に警告します。              |
 | `a11y/require-accessible-name`             | ARIAロールに従ってアクセシブル名がない場合に警告します。                                                             |
 | `a11y/redundant-accessible-name`           | 複数のアクセシブル名ソースが存在し、高優先度のソースが低優先度のソースを上書きする要素を検出します。                 |
 | `a11y/label-has-control`                   | `<label>`要素が関連するコントロール要素を持たない場合に警告します。                                                  |

@@ -17,8 +17,6 @@ description: HTML要素のコンテンツモデルと構造的な制約を検証
 
 <!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
 
-## ルールの詳細
-
 ❌ 間違ったコード例
 
 <!-- prettier-ignore-start -->

@@ -87,7 +87,27 @@ See the [rulesets tables](#rulesets-of-base-presets) below for the full list of 
 | `a11y/id-duplication`                      | Warns when `id` attribute values are duplicated in one document. Avoids problems in assistive technologies from the viewpoint of machine readability. |
 | `a11y/no-refer-to-non-existent-id`         | Checks whether IDs specified in `for`, `form`, `aria-*`, and more reference an ID that exists in the same document.                                   |
 | `a11y/no-broken-fragment-link`             | Checks whether a fragment in a hyperlink references an ID that exists in the same document.                                                           |
-| `a11y/wai-aria`                            | Warns if `role` and `aria-*` attributes don't conform to WAI-ARIA, DPub-ARIA, and ARIA in HTML specifications.                                        |
+| `a11y/wai-aria/unsupported-element`        | Disallows ARIA attributes on elements that don't support ARIA at all.                                                                                 |
+| `a11y/wai-aria/non-existent-role`          | Warns when a role attribute value does not exist in the WAI-ARIA specification.                                                                       |
+| `a11y/wai-aria/abstract-role`              | Warns when an abstract WAI-ARIA role is used.                                                                                                         |
+| `a11y/wai-aria/permitted-roles`            | Warns when a role is not permitted on the element according to ARIA in HTML.                                                                          |
+| `a11y/wai-aria/implicit-role`              | Warns when the explicit role attribute duplicates the element's implicit role.                                                                        |
+| `a11y/wai-aria/implicit-props`             | Warns when an ARIA property redundantly restates the same semantics as an equivalent native HTML attribute.                                           |
+| `a11y/wai-aria/contradictory-props`        | Warns when an ARIA property's value contradicts an equivalent native HTML attribute.                                                                  |
+| `a11y/wai-aria/required-props`             | Warns when required ARIA properties for a role are missing.                                                                                           |
+| `a11y/wai-aria/disallowed-props`           | Warns when an ARIA property or state is disallowed on the element's computed role.                                                                    |
+| `a11y/wai-aria/prohibited-naming`          | Warns when `aria-label`, `aria-labelledby`, or `aria-braillelabel` is used on a naming-prohibited element.                                            |
+| `a11y/wai-aria/element-supports-aria-prop` | Warns when an ARIA property or state is disallowed by an element-specific ARIA in HTML restriction.                                                   |
+| `a11y/wai-aria/deprecated-role`            | Warns when a deprecated WAI-ARIA role is used.                                                                                                        |
+| `a11y/wai-aria/deprecated-props`           | Warns when a deprecated ARIA property or state is used on a role.                                                                                     |
+| `a11y/wai-aria/value`                      | Warns when an ARIA property or state value does not conform to its expected type.                                                                     |
+| `a11y/wai-aria/required-owned-elements`    | Warns when a role does not contain its required child roles.                                                                                          |
+| `a11y/wai-aria/required-parent-role`       | Warns when an element with an explicit role is placed outside its required parent context.                                                            |
+| `a11y/wai-aria/tab-requires-tabpanel`      | Warns when an active "tab" role element has no corresponding "tabpanel" role element.                                                                 |
+| `a11y/wai-aria/presentational-children`    | Warns when ARIA attributes are set on descendants of roles with presentational children.                                                              |
+| `a11y/wai-aria/no-global-prop`             | Warns when a non-global ARIA property is used on an element without an explicit role.                                                                 |
+| `a11y/wai-aria/default-value`              | Warns when an ARIA property is explicitly set to its spec-defined default value.                                                                      |
+| `a11y/wai-aria/interaction-in-hidden`      | Warns when focusable interactive elements are placed inside an `aria-hidden` subtree.                                                                 |
 | `a11y/require-accessible-name`             | Warns if the element has no accessible name according to its ARIA role.                                                                               |
 | `a11y/redundant-accessible-name`           | Detects elements with multiple accessible name sources where a higher-priority source overrides a lower-priority one.                                 |
 | `a11y/label-has-control`                   | Warns if the `<label>` element has no associated control.                                                                                             |

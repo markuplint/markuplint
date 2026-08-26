@@ -5,7 +5,7 @@ description: Disallows ARIA attributes on elements that don't support ARIA at al
 
 # `no-aria-on-unsupported-element`
 
-Disallows the `role` attribute and any `aria-*` attribute on an element whose HTML specification data marks it as not supporting ARIA attributes at all.
+Disallows the `role` attribute and any `aria-*` attribute on an element whose HTML specification data marks it as not supporting ARIA attributes at all, per [ARIA in HTML's document conformance requirements](https://w3c.github.io/html-aria/#docconformance).
 
 :::info
 

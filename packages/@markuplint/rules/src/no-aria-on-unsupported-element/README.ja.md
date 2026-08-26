@@ -4,7 +4,7 @@ description: ARIA属性を全くサポートしない要素へのARIA属性指�
 
 # `no-aria-on-unsupported-element`
 
-HTML仕様データがARIA属性を全くサポートしないとマークしている要素上の `role` 属性や `aria-*` 属性を禁止します。
+HTML仕様データがARIA属性を全くサポートしないとマークしている要素上の `role` 属性や `aria-*` 属性を、[ARIA in HTMLの文書適合性要件](https://w3c.github.io/html-aria/#docconformance)に基づき禁止します。
 
 :::info
 

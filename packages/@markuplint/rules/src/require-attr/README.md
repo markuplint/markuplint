@@ -11,6 +11,8 @@ This rule refer [HTML Living Standard](https://html.spec.whatwg.org/) based [MDN
 
 Some attributes are required only under certain conditions (for example, `<link rel="preload">` must carry an `as` attribute, but `<link rel="modulepreload">` may omit it). Those conditional rules live in the per-element spec files under [`@markuplint/html-spec/src/spec.<element>.jsonc`](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/html-spec/src) — search for `"required":` to see which attributes carry a conditional selector and on which other attribute values they depend.
 
+The `<img>` element's `src` attribute is required by the [HTML Living Standard](https://html.spec.whatwg.org/).
+
 👎 Example of **incorrect** code for this rule
 
 ```html

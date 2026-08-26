@@ -10,8 +10,6 @@ description: for、form、aria-*などに指定されたIDまたはIDのリス�
 
 <!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
 
-## ルールの詳細
-
 ❌ 間違ったコード例
 
 ```html
