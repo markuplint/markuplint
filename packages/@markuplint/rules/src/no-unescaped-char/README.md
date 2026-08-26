@@ -1,6 +1,6 @@
 ---
 id: no-unescaped-char
-description: Warns when a literal "<" (or, in strict mode, ">", """, or a bare "&") isn't escaped with a character reference in text content or an attribute value.
+description: "Warns when a literal less-than sign (or, in strict mode, a greater-than sign, a double quote, or a bare ampersand) isn't escaped with a character reference in text content or an attribute value."
 ---
 
 # `no-unescaped-char`
