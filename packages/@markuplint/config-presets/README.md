@@ -37,7 +37,8 @@ No broken fragment link|Split from the former `no-refer-to-non-existent-id` rule
 No redundant **accessible name** sources| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
 Require **accessible name**| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
 Require **autofocus** in modal dialogs| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
-Require `<h1>`| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
+Require `<h1>`|Split from the former `required-h1` rule (#3989); this group keeps its name and wraps only this one rule. The duplicate-`<h1>` half lives in the new `a11y/no-duplicate-h1` sibling group below.|✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
+No duplicate `<h1>`| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
 Align row and column|Split from the former `table-row-column-alignment` rule (#3989). This group keeps its name for anyone overriding it directly; the three table-model-error checks that split out alongside it (`no-table-cell-overlap`, `no-table-span-overflow`, `no-empty-table-track`) live in their own sibling groups below since their default severity, `error`, differs from this group's `warning`.|✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
 [No overlapping table cells](https://html.spec.whatwg.org/multipage/tables.html#forming-a-table)| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
 [No table cell span reaching past its row group](https://html.spec.whatwg.org/multipage/tables.html#forming-a-table)| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|

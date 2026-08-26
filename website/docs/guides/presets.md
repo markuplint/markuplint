@@ -94,6 +94,7 @@ See the [rulesets tables](#rulesets-of-base-presets) below for the full list of 
 | `a11y/landmark-roles`                      | Checks that `banner`, `main`, and `contentinfo` are top-level landmarks.                                                                              |
 | `a11y/require-landmark-label`              | Checks that landmarks with a duplicated role have unique accessible names.                                                                            |
 | `a11y/required-h1`                         | Warns if there is no `<h1>` element in the document.                                                                                                  |
+| `a11y/no-duplicate-h1`                     | Warns if there is more than one `<h1>` element in the document.                                                                                       |
 | `a11y/html-lang`                           | Requires the `lang` attribute on the `<html>` element for assistive technologies to identify the document language.                                   |
 | `a11y/abbr-title`                          | Requires the `title` attribute on `<abbr>` elements to provide the full expansion of abbreviations.                                                   |
 | `a11y/media-track`                         | Requires `<track>` elements in `<audio>` and `<video>` for captions and descriptions.                                                                 |

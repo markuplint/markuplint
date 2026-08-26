@@ -10,7 +10,7 @@ description: 指定された要素がドキュメントまたは要素に表示�
 
 :::info
 
-h1要素が必要な場合は[`required-h1`](../required-h1/)ルールを使用してください。ランドマーク要素の構造をチェックする場合は[`no-nested-top-level-landmark`](../no-nested-top-level-landmark/)ルールを使用してください。HTML標準に準拠しているかどうかは[`permitted-contents`](../permitted-contents)ルールを使用してください。
+h1要素が必要な場合は[`require-h1`](../require-h1/)ルールを使用してください。ランドマーク要素の構造をチェックする場合は[`no-nested-top-level-landmark`](../no-nested-top-level-landmark/)ルールを使用してください。HTML標準に準拠しているかどうかは[`permitted-contents`](../permitted-contents)ルールを使用してください。
 
 :::
 

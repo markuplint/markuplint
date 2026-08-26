@@ -11,7 +11,7 @@ This is a generic rule for searching the required element.
 
 :::info
 
-Use the [`required-h1`](../required-h1/) rule if you expect to require the h1 element. Use the [`no-nested-top-level-landmark`](../no-nested-top-level-landmark/) rule if you expect to check landmark element structure. Use the [`permitted-contents`](../permitted-contents) rule if you expect to check conformance according to HTML Standard.
+Use the [`require-h1`](../require-h1/) rule if you expect to require the h1 element. Use the [`no-nested-top-level-landmark`](../no-nested-top-level-landmark/) rule if you expect to check landmark element structure. Use the [`permitted-contents`](../permitted-contents) rule if you expect to check conformance according to HTML Standard.
 
 :::
 

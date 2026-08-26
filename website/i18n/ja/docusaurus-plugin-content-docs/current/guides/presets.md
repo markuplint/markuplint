@@ -94,6 +94,7 @@
 | `a11y/landmark-roles`                      | `banner`、`main`、`contentinfo`がトップレベルのランドマークであることを確認します。                                  |
 | `a11y/require-landmark-label`              | ロールが重複するランドマークが一意のアクセシブルネームを持つことを確認します。                                       |
 | `a11y/required-h1`                         | ドキュメント内に`<h1>`要素がない場合に警告します。                                                                   |
+| `a11y/no-duplicate-h1`                     | ドキュメント内に`<h1>`要素が複数ある場合に警告します。                                                               |
 | `a11y/html-lang`                           | 支援技術がドキュメントの言語を識別できるよう、`<html>`要素に`lang`属性を必須とします。                               |
 | `a11y/abbr-title`                          | 略語の完全な展開を提供するため、`<abbr>`要素に`title`属性を必須とします。                                            |
 | `a11y/media-track`                         | キャプションと説明のため、`<audio>`や`<video>`に`<track>`要素を必須とします。                                        |

@@ -269,9 +269,13 @@ test('default-rules', () => {
 			category: 'validation',
 			defaultValue: [],
 		},
-		'required-h1': {
+		'require-h1': {
 			category: 'a11y',
-			defaultValue: true,
+			defaultValue: false,
+		},
+		'no-duplicate-h1': {
+			category: 'a11y',
+			defaultValue: false,
 		},
 		'valid-importmap': {
 			category: 'validation',
