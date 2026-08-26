@@ -110,6 +110,74 @@ rc.4 の5分類（`validation`、`a11y`、`naming-convention`、`maintainability
 
 `wai-aria` 傘ルールの削除（見方によっては「21分割」— v5.0.0 リリース前に、その全検査は既に独立した後継ルールを持っていました）については [ARIA の変更](./aria.ja.md) を参照してください。
 
+### オプションで振り分けられる分割: Before / After
+
+上記の分割の多くは無条件 — 旧オプションの値にかかわらず、旧検査ごとに新ルールが必ず割り当てられます。例外は3件: `landmark-roles`、`required-h1`、`no-unsupported-features` は、旧オプションの内容に応じて新しい姉妹ルールの一部だけを有効化します。エイリアス機構がこの展開を（非推奨警告付きで）自動的に行うため、以下は手動で設定を書き換える場合にのみ関係します。
+
+両方の検査を有効にした `landmark-roles`:
+
+```json
+{ "rules": { "landmark-roles": { "options": { "ignoreRoles": ["region"] } } } }
+```
+
+は次になります:
+
+```json
+{
+  "rules": {
+    "no-nested-top-level-landmark": { "options": { "ignoreRoles": ["region"] } },
+    "require-landmark-label": true
+  }
+}
+```
+
+— 旧設定で `labelEachArea: false` を指定していた場合、`require-landmark-label` は展開から完全に除外されます。
+
+両方の検査を有効にした `required-h1`:
+
+```json
+{ "rules": { "required-h1": { "options": { "in-document-fragment": true } } } }
+```
+
+は次になります:
+
+```json
+{
+  "rules": {
+    "require-h1": { "options": { "in-document-fragment": true } },
+    "no-duplicate-h1": { "options": { "in-document-fragment": true } }
+  }
+}
+```
+
+— 旧設定で `expected-once: false` を指定していた場合、`no-duplicate-h1` は展開から完全に除外されます。
+
+全ての検査を有効にした `no-unsupported-features`:
+
+```json
+{
+  "rules": {
+    "no-unsupported-features": {
+      "options": { "checkExperimental": true, "checkNonStandard": true, "ignoreFeatures": ["css-grid"] }
+    }
+  }
+}
+```
+
+は次になります:
+
+```json
+{
+  "rules": {
+    "no-unsupported-browser-features": { "options": { "ignoreFeatures": ["css-grid"] } },
+    "no-experimental-features": { "options": { "ignoreFeatures": ["css-grid"] } },
+    "no-nonstandard-features": { "options": { "ignoreFeatures": ["css-grid"] } }
+  }
+}
+```
+
+— `no-experimental-features` / `no-nonstandard-features` は、旧設定が対応する `check*` オプションを明示的に `true` にしていない限り、それぞれ展開から完全に除外されます（v4 ではどちらもデフォルト `false` — つまり検査自体が動いていませんでした）。
+
 ## 削除
 
 | 削除されたルール | 代替 |

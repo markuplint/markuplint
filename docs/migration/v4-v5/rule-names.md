@@ -110,6 +110,74 @@ Each split's checks correspond to independent spec requirements, so they can be 
 
 See [ARIA Changes](./aria.md) for the `wai-aria` umbrella rule's removal (a 21-way "split," if you count it that way — every one of its checks already had an independent successor before v5.0.0 shipped).
 
+### Option-Routed Splits: Before / After
+
+Most splits above are unconditional — every old check gets its own new rule regardless of options. Three are not: `landmark-roles`, `required-h1`, and `no-unsupported-features` route to a subset of their new siblings depending on what the old options said. The alias table expands these automatically (with a deprecation warning) — this is only relevant if you're rewriting your config by hand instead of relying on that.
+
+`landmark-roles` with both checks on:
+
+```json
+{ "rules": { "landmark-roles": { "options": { "ignoreRoles": ["region"] } } } }
+```
+
+becomes
+
+```json
+{
+  "rules": {
+    "no-nested-top-level-landmark": { "options": { "ignoreRoles": ["region"] } },
+    "require-landmark-label": true
+  }
+}
+```
+
+— `require-landmark-label` is omitted entirely if the old config set `labelEachArea: false`.
+
+`required-h1` with both checks on:
+
+```json
+{ "rules": { "required-h1": { "options": { "in-document-fragment": true } } } }
+```
+
+becomes
+
+```json
+{
+  "rules": {
+    "require-h1": { "options": { "in-document-fragment": true } },
+    "no-duplicate-h1": { "options": { "in-document-fragment": true } }
+  }
+}
+```
+
+— `no-duplicate-h1` is omitted entirely if the old config set `expected-once: false`.
+
+`no-unsupported-features` with every check on:
+
+```json
+{
+  "rules": {
+    "no-unsupported-features": {
+      "options": { "checkExperimental": true, "checkNonStandard": true, "ignoreFeatures": ["css-grid"] }
+    }
+  }
+}
+```
+
+becomes
+
+```json
+{
+  "rules": {
+    "no-unsupported-browser-features": { "options": { "ignoreFeatures": ["css-grid"] } },
+    "no-experimental-features": { "options": { "ignoreFeatures": ["css-grid"] } },
+    "no-nonstandard-features": { "options": { "ignoreFeatures": ["css-grid"] } }
+  }
+}
+```
+
+— `no-experimental-features`/`no-nonstandard-features` are each omitted entirely unless the old config explicitly set the matching `check*` option to `true` (v4's default for both was `false`, i.e. that check didn't run at all).
+
 ## Deletions
 
 | Removed rule | Replaced by |
