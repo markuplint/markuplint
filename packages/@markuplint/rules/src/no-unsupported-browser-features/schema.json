@@ -37,16 +37,6 @@
 						"type": "string"
 					},
 					"description": "Features to ignore. Element name (\"dialog\") or attribute pattern (\"input[list]\")."
-				},
-				"checkExperimental": {
-					"type": "boolean",
-					"default": false,
-					"description": "Whether to warn about experimental elements and attributes."
-				},
-				"checkNonStandard": {
-					"type": "boolean",
-					"default": false,
-					"description": "Whether to warn about non-standard elements and attributes."
 				}
 			}
 		}

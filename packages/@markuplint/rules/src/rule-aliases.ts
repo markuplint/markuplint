@@ -169,6 +169,49 @@ function expandRequiredH1(rule: AnyRule): Record<string, AnyRule> {
 }
 
 /**
+ * `no-unsupported-features` split three ways: `no-unsupported-browser-features`
+ * (the browserslist-based check — always present, `browserslist` /
+ * `browserslistConfig` / `browserslistEnv` carried over unchanged),
+ * `no-experimental-features` (the `checkExperimental` half, included only
+ * when that option was `true` — the split rule has no toggle of its own,
+ * enabling it IS the toggle), and `no-nonstandard-features` (the
+ * `checkNonStandard` half, same reasoning). `ignoreFeatures` is shared by
+ * all three, so it is copied to each.
+ */
+function expandNoUnsupportedFeatures(rule: AnyRule): Record<string, AnyRule> {
+	const { options } = normalize(rule);
+	const browserslist = options?.browserslist;
+	const browserslistConfig = options?.browserslistConfig;
+	const browserslistEnv = options?.browserslistEnv;
+	const ignoreFeatures = options?.ignoreFeatures;
+	const checkExperimental = options?.checkExperimental;
+	const checkNonStandard = options?.checkNonStandard;
+
+	const expanded: Record<string, AnyRule> = {
+		'no-unsupported-browser-features': withOptions(rule, {
+			...(browserslist !== undefined && { browserslist }),
+			...(browserslistConfig !== undefined && { browserslistConfig }),
+			...(browserslistEnv !== undefined && { browserslistEnv }),
+			...(ignoreFeatures !== undefined && { ignoreFeatures }),
+		}),
+	};
+
+	if (checkExperimental) {
+		expanded['no-experimental-features'] = withOptions(rule, {
+			...(ignoreFeatures !== undefined && { ignoreFeatures }),
+		});
+	}
+
+	if (checkNonStandard) {
+		expanded['no-nonstandard-features'] = withOptions(rule, {
+			...(ignoreFeatures !== undefined && { ignoreFeatures }),
+		});
+	}
+
+	return expanded;
+}
+
+/**
  * `doctype` split two ways: `require-doctype` (missing-DOCTYPE-entirely, the
  * `value: 'always'` half — always present regardless of the old options) and
  * `no-obsolete-doctype` (the `denyObsoleteType` half, included unless the
@@ -219,6 +262,10 @@ export const ruleAliasTable: RuleAliasTable = {
 	'required-h1': {
 		expand: expandRequiredH1,
 		targets: ['require-h1', 'no-duplicate-h1'],
+	},
+	'no-unsupported-features': {
+		expand: expandNoUnsupportedFeatures,
+		targets: ['no-unsupported-browser-features', 'no-experimental-features', 'no-nonstandard-features'],
 	},
 	'attr-duplication': renamed('no-duplicate-attr'),
 	'id-duplication': renamed('no-duplicate-id'),

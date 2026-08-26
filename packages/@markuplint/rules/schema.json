@@ -174,6 +174,9 @@
 				"no-event-handler-attr": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-event-handler-attr/schema.json"
 				},
+				"no-experimental-features": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-experimental-features/schema.json"
+				},
 				"no-extra-selected-options": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-extra-selected-options/schema.json"
 				},
@@ -209,6 +212,9 @@
 				},
 				"no-nested-top-level-landmark": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-nested-top-level-landmark/schema.json"
+				},
+				"no-nonstandard-features": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-nonstandard-features/schema.json"
 				},
 				"no-obsolete-attr": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-obsolete-attr/schema.json"
@@ -273,8 +279,8 @@
 				"no-unpaired-srcset-sizes": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-unpaired-srcset-sizes/schema.json"
 				},
-				"no-unsupported-features": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-unsupported-features/schema.json"
+				"no-unsupported-browser-features": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-unsupported-browser-features/schema.json"
 				},
 				"no-use-event-handler-attr": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-event-handler-attr/schema.json"

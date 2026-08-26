@@ -58,6 +58,7 @@ import NoDuplicateVisibleMain from './no-duplicate-visible-main/index.js';
 import NoEmptyPalpableContent from './no-empty-palpable-content/index.js';
 import NoEmptyTableTrack from './no-empty-table-track/index.js';
 import NoEventHandlerAttr from './no-event-handler-attr/index.js';
+import NoExperimentalFeatures from './no-experimental-features/index.js';
 import NoExtraSelectedOptions from './no-extra-selected-options/index.js';
 import NoFocusableInAriaHidden from './no-focusable-in-aria-hidden/index.js';
 import NoHardcodedId from './no-hardcoded-id/index.js';
@@ -69,6 +70,7 @@ import NoMalformedCharacterReference from './no-malformed-character-reference/in
 import NoMismatchedAspectRatio from './no-mismatched-aspect-ratio/index.js';
 import NoMixedSrcsetDescriptors from './no-mixed-srcset-descriptors/index.js';
 import NoNestedTopLevelLandmark from './no-nested-top-level-landmark/index.js';
+import NoNonstandardFeatures from './no-nonstandard-features/index.js';
 import NoObsoleteAttr from './no-obsolete-attr/index.js';
 import NoObsoleteDoctype from './no-obsolete-doctype/index.js';
 import NoObsoleteElement from './no-obsolete-element/index.js';
@@ -90,7 +92,7 @@ import NoUnescapedChar from './no-unescaped-char/index.js';
 import NoUnknownAttr from './no-unknown-attr/index.js';
 import NoUnknownRole from './no-unknown-role/index.js';
 import NoUnpairedSrcsetSizes from './no-unpaired-srcset-sizes/index.js';
-import NoUnsupportedFeatures from './no-unsupported-features/index.js';
+import NoUnsupportedBrowserFeatures from './no-unsupported-browser-features/index.js';
 import PermittedContents from './permitted-contents/index.js';
 import PermittedRoles from './permitted-roles/index.js';
 import PlaceholderLabelOption from './placeholder-label-option/index.js';
@@ -169,6 +171,7 @@ const rules = {
 	'no-empty-palpable-content': NoEmptyPalpableContent,
 	'no-empty-table-track': NoEmptyTableTrack,
 	'no-event-handler-attr': NoEventHandlerAttr,
+	'no-experimental-features': NoExperimentalFeatures,
 	'no-extra-selected-options': NoExtraSelectedOptions,
 	'no-focusable-in-aria-hidden': NoFocusableInAriaHidden,
 	'no-hardcoded-id': NoHardcodedId,
@@ -180,6 +183,7 @@ const rules = {
 	'no-mismatched-aspect-ratio': NoMismatchedAspectRatio,
 	'no-mixed-srcset-descriptors': NoMixedSrcsetDescriptors,
 	'no-nested-top-level-landmark': NoNestedTopLevelLandmark,
+	'no-nonstandard-features': NoNonstandardFeatures,
 	'no-obsolete-attr': NoObsoleteAttr,
 	'no-obsolete-doctype': NoObsoleteDoctype,
 	'no-obsolete-element': NoObsoleteElement,
@@ -201,7 +205,7 @@ const rules = {
 	'no-unknown-attr': NoUnknownAttr,
 	'no-unknown-role': NoUnknownRole,
 	'no-unpaired-srcset-sizes': NoUnpairedSrcsetSizes,
-	'no-unsupported-features': NoUnsupportedFeatures,
+	'no-unsupported-browser-features': NoUnsupportedBrowserFeatures,
 	'permitted-contents': PermittedContents,
 	'permitted-roles': PermittedRoles,
 	'placeholder-label-option': PlaceholderLabelOption,
