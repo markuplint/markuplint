@@ -73,7 +73,10 @@ export const benchmarkConfig: Config = {
 		'no-duplicate-autofocus': true,
 		'no-duplicate-visible-main': true,
 		'placeholder-label-option': true,
-		'link-types': { options: { allowMicroformats: true } },
+		// allowMicroformats now defaults to true (HTML LS §4.6.6 the rel attribute
+		// requires accepting microformats-wiki-registered keywords), so no override
+		// is needed here anymore.
+		'link-types': true,
 		'map-id-name-match': true,
 		'usemap-references-map': true,
 		'meter-value-bounds': true,

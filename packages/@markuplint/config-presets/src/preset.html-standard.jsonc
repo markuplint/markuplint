@@ -438,9 +438,7 @@
 		"html-standard/link-types": {
 			"specConformance": "normative",
 			"rules": {
-				"link-types": {
-					"options": { "allowMicroformats": true }
-				}
+				"link-types": true
 			}
 		},
 
