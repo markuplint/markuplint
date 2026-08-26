@@ -82,36 +82,37 @@
 
 ### `markuplint:a11y` {#preset-a11y}
 
-| 名前付きルール                             | 解説                                                                                                                                             |
-| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `a11y/id-duplication`                      | `id`属性値がドキュメント内で重複している場合に警告します。機械可読性の観点から、支援技術における問題を回避できます。                             |
-| `a11y/no-refer-to-non-existent-id`         | `for`、`form`、`aria-*`などに指定されたIDが同じドキュメント内に存在することを確認します。                                                        |
-| `a11y/no-broken-fragment-link`             | ハイパーリンクに指定されたフラグメントが同じドキュメント内に存在するIDを参照していることを確認します。                                           |
-| `a11y/wai-aria`                            | `role`属性と`aria-*`属性がWAI-ARIA、DPub-ARIA、およびARIA in HTML仕様に準拠していない場合に警告します。                                          |
-| `a11y/require-accessible-name`             | ARIAロールに従ってアクセシブル名がない場合に警告します。                                                                                         |
-| `a11y/redundant-accessible-name`           | 複数のアクセシブル名ソースが存在し、高優先度のソースが低優先度のソースを上書きする要素を検出します。                                             |
-| `a11y/label-has-control`                   | `<label>`要素が関連するコントロール要素を持たない場合に警告します。                                                                              |
-| `a11y/landmark-roles`                      | `banner`、`main`、`complementary`、`contentinfo`がトップレベルのランドマークであること、複数のランドマークが一意のラベルを持つことを確認します。 |
-| `a11y/required-h1`                         | ドキュメント内に`<h1>`要素がない場合に警告します。                                                                                               |
-| `a11y/html-lang`                           | 支援技術がドキュメントの言語を識別できるよう、`<html>`要素に`lang`属性を必須とします。                                                           |
-| `a11y/abbr-title`                          | 略語の完全な展開を提供するため、`<abbr>`要素に`title`属性を必須とします。                                                                        |
-| `a11y/media-track`                         | キャプションと説明のため、`<audio>`や`<video>`に`<track>`要素を必須とします。                                                                    |
-| `a11y/video-autoplay-muted`                | 予期しない音声を防ぐため、`autoplay`属性を持つ`<video>`要素に`muted`属性を必須とします。                                                         |
-| `a11y/no-accesskey`                        | 支援技術のショートカットと競合する可能性があるため、`accesskey`属性を禁止します。                                                                |
-| `a11y/tabindex-restrict`                   | 自然なタブ順序を壊さないよう、`tabindex`属性を`-1`または`0`のみに制限します。                                                                    |
-| `a11y/no-autofocus-outside-dialog`         | フォーカスを強制的に奪うべきではありません。ただし`dialog`要素とその子孫では許可されます。                                                       |
-| `a11y/viewport-no-user-scalable`           | 低視力ユーザーのズーム操作を妨げるため、viewportメタタグの`user-scalable=no`を禁止します。                                                       |
-| `a11y/no-consecutive-br`                   | 連続した`<br>`タグの使用に対して警告します。代わりにCSSマージンや適切なブロック要素を使用してください。                                          |
-| `a11y/no-ambiguous-navigable-target-names` | `_blank`などの特殊なナビゲーションキーワードを無効なターゲット名に置き換える可能性のあるタイポを防ぎます。                                       |
-| `a11y/use-list`                            | テキストノードの先頭に箇条書き文字がある場合、リスト要素の使用を促します。                                                                       |
-| `a11y/table-row-column-alignment`          | `colspan`と`rowspan`を考慮して、テーブルの行と列の数の一貫性を確認します。                                                                       |
-| `a11y/no-table-cell-overlap`               | 2つのセルが同じスロットを覆うことになる`rowspan`/`colspan`の値を禁止します。                                                                     |
-| `a11y/no-table-span-overflow`              | `<thead>`、`<tbody>`、`<tfoot>`の末尾を越えて伸びる`rowspan`を禁止します。                                                                       |
-| `a11y/no-empty-table-track`                | セルがひとつも開始しないテーブルの行または列を禁止します。                                                                                       |
-| `a11y/no-merge-cells`                      | 支援技術にとって困難なセル結合を防ぐため、テーブルセルの`colspan`と`rowspan`属性を禁止します。                                                   |
-| `a11y/neighbor-popovers`                   | ポップオーバートリガーと対応するターゲットがDOM上で隣接していない場合に警告します。                                                              |
-| `a11y/summary-no-interactive`              | 支援技術がコンテンツにアクセスできない場合や、コンテンツが`<summary>`にマウスイベントを伝播しない場合があります。                                |
-| `a11y/require-dialog-autofocus`            | `showModal()`メソッドで表示されるダイアログに`autofocus`属性を持つ要素が必要です。                                                               |
+| 名前付きルール                             | 解説                                                                                                                 |
+| ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
+| `a11y/id-duplication`                      | `id`属性値がドキュメント内で重複している場合に警告します。機械可読性の観点から、支援技術における問題を回避できます。 |
+| `a11y/no-refer-to-non-existent-id`         | `for`、`form`、`aria-*`などに指定されたIDが同じドキュメント内に存在することを確認します。                            |
+| `a11y/no-broken-fragment-link`             | ハイパーリンクに指定されたフラグメントが同じドキュメント内に存在するIDを参照していることを確認します。               |
+| `a11y/wai-aria`                            | `role`属性と`aria-*`属性がWAI-ARIA、DPub-ARIA、およびARIA in HTML仕様に準拠していない場合に警告します。              |
+| `a11y/require-accessible-name`             | ARIAロールに従ってアクセシブル名がない場合に警告します。                                                             |
+| `a11y/redundant-accessible-name`           | 複数のアクセシブル名ソースが存在し、高優先度のソースが低優先度のソースを上書きする要素を検出します。                 |
+| `a11y/label-has-control`                   | `<label>`要素が関連するコントロール要素を持たない場合に警告します。                                                  |
+| `a11y/landmark-roles`                      | `banner`、`main`、`complementary`、`contentinfo`がトップレベルのランドマークであることを確認します。                 |
+| `a11y/require-landmark-label`              | ロールが重複するランドマークが一意のアクセシブルネームを持つことを確認します。                                       |
+| `a11y/required-h1`                         | ドキュメント内に`<h1>`要素がない場合に警告します。                                                                   |
+| `a11y/html-lang`                           | 支援技術がドキュメントの言語を識別できるよう、`<html>`要素に`lang`属性を必須とします。                               |
+| `a11y/abbr-title`                          | 略語の完全な展開を提供するため、`<abbr>`要素に`title`属性を必須とします。                                            |
+| `a11y/media-track`                         | キャプションと説明のため、`<audio>`や`<video>`に`<track>`要素を必須とします。                                        |
+| `a11y/video-autoplay-muted`                | 予期しない音声を防ぐため、`autoplay`属性を持つ`<video>`要素に`muted`属性を必須とします。                             |
+| `a11y/no-accesskey`                        | 支援技術のショートカットと競合する可能性があるため、`accesskey`属性を禁止します。                                    |
+| `a11y/tabindex-restrict`                   | 自然なタブ順序を壊さないよう、`tabindex`属性を`-1`または`0`のみに制限します。                                        |
+| `a11y/no-autofocus-outside-dialog`         | フォーカスを強制的に奪うべきではありません。ただし`dialog`要素とその子孫では許可されます。                           |
+| `a11y/viewport-no-user-scalable`           | 低視力ユーザーのズーム操作を妨げるため、viewportメタタグの`user-scalable=no`を禁止します。                           |
+| `a11y/no-consecutive-br`                   | 連続した`<br>`タグの使用に対して警告します。代わりにCSSマージンや適切なブロック要素を使用してください。              |
+| `a11y/no-ambiguous-navigable-target-names` | `_blank`などの特殊なナビゲーションキーワードを無効なターゲット名に置き換える可能性のあるタイポを防ぎます。           |
+| `a11y/use-list`                            | テキストノードの先頭に箇条書き文字がある場合、リスト要素の使用を促します。                                           |
+| `a11y/table-row-column-alignment`          | `colspan`と`rowspan`を考慮して、テーブルの行と列の数の一貫性を確認します。                                           |
+| `a11y/no-table-cell-overlap`               | 2つのセルが同じスロットを覆うことになる`rowspan`/`colspan`の値を禁止します。                                         |
+| `a11y/no-table-span-overflow`              | `<thead>`、`<tbody>`、`<tfoot>`の末尾を越えて伸びる`rowspan`を禁止します。                                           |
+| `a11y/no-empty-table-track`                | セルがひとつも開始しないテーブルの行または列を禁止します。                                                           |
+| `a11y/no-merge-cells`                      | 支援技術にとって困難なセル結合を防ぐため、テーブルセルの`colspan`と`rowspan`属性を禁止します。                       |
+| `a11y/neighbor-popovers`                   | ポップオーバートリガーと対応するターゲットがDOM上で隣接していない場合に警告します。                                  |
+| `a11y/summary-no-interactive`              | 支援技術がコンテンツにアクセスできない場合や、コンテンツが`<summary>`にマウスイベントを伝播しない場合があります。    |
+| `a11y/require-dialog-autofocus`            | `showModal()`メソッドで表示されるダイアログに`autofocus`属性を持つ要素が必要です。                                   |
 
 ### `markuplint:html-standard` {#preset-html-standard}
 

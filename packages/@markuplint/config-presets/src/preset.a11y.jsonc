@@ -44,12 +44,30 @@
 		/**
 		 * Use **landmark**
 		 *
-		 * @see https://www.w3.org/TR/wai-aria-practices/examples/landmarks/
+		 * Split from the former `landmark-roles` rule (#3989); this group keeps its name and
+		 * wraps only this one rule. The duplicated-landmark-labeling half lives in the new
+		 * `a11y/require-landmark-label` sibling group below.
+		 *
+		 * @see https://www.w3.org/WAI/ARIA/apg/practices/landmark-regions/
 		 */
 		"a11y/landmark-roles": {
 			"specConformance": "non-normative",
 			"rules": {
-				"landmark-roles": true
+				"no-nested-top-level-landmark": true
+			}
+		},
+
+		/**
+		 * Require a unique label for duplicated landmarks
+		 *
+		 * Split from the former `landmark-roles` rule (#3989).
+		 *
+		 * @see https://www.w3.org/WAI/ARIA/apg/practices/landmark-regions/
+		 */
+		"a11y/require-landmark-label": {
+			"specConformance": "non-normative",
+			"rules": {
+				"require-landmark-label": true
 			}
 		},
 

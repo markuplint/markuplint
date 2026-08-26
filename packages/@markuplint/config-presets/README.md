@@ -27,7 +27,8 @@ Ruleset|Description|`recommended`|`recommended-vue`|`recommended-svelte`|`recomm
 [Must not duplicate **ID**](https://www.w3.org/WAI/WCAG21/Techniques/html/H93.html)|Be able to avoid problems in assistive technologies from the viewpoint of machine readability.|✅|✅|✅|✅|✅|✅|❌|❌|✅|❌|❌|❌|
 [Disallow `accesskey` attr](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/accesskey#accessibility_concerns)| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
 `<label>` should have control| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
-[Use **landmark**](https://www.w3.org/TR/wai-aria-practices/examples/landmarks/)| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
+[Use **landmark**](https://www.w3.org/WAI/ARIA/apg/practices/landmark-regions/)|Split from the former `landmark-roles` rule (#3989); this group keeps its name and wraps only this one rule. The duplicated-landmark-labeling half lives in the new `a11y/require-landmark-label` sibling group below.|✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
+[Require a unique label for duplicated landmarks](https://www.w3.org/WAI/ARIA/apg/practices/landmark-regions/)|Split from the former `landmark-roles` rule (#3989).|✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
 **Popover** trigger and target must be adjacent| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
 [No ambiguous **Navigable Target Names**](https://html.spec.whatwg.org/multipage/document-sequences.html#navigable-target-names)| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
 No consecutive `<br>`| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|

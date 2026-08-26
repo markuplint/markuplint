@@ -121,7 +121,11 @@ test('default-rules', () => {
 			category: 'validation',
 			defaultValue: true,
 		},
-		'landmark-roles': {
+		'no-nested-top-level-landmark': {
+			category: 'a11y',
+			defaultValue: false,
+		},
+		'require-landmark-label': {
 			category: 'a11y',
 			defaultValue: false,
 		},
