@@ -13,8 +13,8 @@
 | ARIA version resolution priority changed | Rules using `ariaVersion` / `version` option |
 | ARIA 1.3 support added | Rules using `ariaVersion` / `version` option |
 | Named nodeRules (named rules) | Config files, preset authors |
-| Named rules wrapping `invalid-attr` now operate as narrow checks | Config authors who disabled spec validation via `a11y/*` or the rdfa preset |
-| `markuplint:html-standard` now enables the base `invalid-attr` rule | Users of `markuplint:html-standard` alone |
+| `invalid-attr` split into four rules; named rules wrapping `no-restricted-attr` now operate as narrow checks | Config authors who disabled spec validation via `a11y/*` or the rdfa preset |
+| `markuplint:html-standard` now enables `no-unknown-attr`/`no-disallowed-attr`/`no-invalid-attr-value` as base rules | Users of `markuplint:html-standard` alone |
 | SpecConformance metadata | Config files, preset authors |
 | Namespace disable for named rules | Config files using presets with named nodeRules |
 | `nodeRules`/`childNodeRules` now deduplicate by name | Config files using `extends` with named nodeRules |
@@ -63,18 +63,20 @@ Set it once in `ruleCommonSettings` and all ARIA-related rules will use it as a 
     "ariaVersion": "1.2"
   },
   "rules": {
-    "wai-aria": true,
+    "no-unknown-role": true,
     "require-accessible-name": true,
     "no-refer-to-non-existent-id": true
   }
 }
 ```
 
+> **Note:** The `wai-aria` umbrella rule shown in the v4 example above is removed in v5 (its 21 checks are now independent rules — `no-unknown-role`, `no-abstract-role`, etc.). None of them accept a per-rule `version` option any more; `ruleCommonSettings.ariaVersion` is the only way to set the ARIA version for them now.
+
 ### Resolution Priority
 
 Rules resolve the ARIA version in the following order (highest priority first):
 
-1. **Rule-level option** — `options.version` (wai-aria) or `options.ariaVersion` (other rules)
+1. **Rule-level option** — `options.ariaVersion`, only on the rules that still declare it (`require-accessible-name`, `no-refer-to-non-existent-id`)
 2. **`ruleCommonSettings.ariaVersion`** — Global fallback from config
 3. **Default** — The recommended ARIA version built into markuplint
 
@@ -86,9 +88,9 @@ Per-rule options still take precedence, so you can override `ruleCommonSettings`
     "ariaVersion": "1.2"
   },
   "rules": {
-    "wai-aria": {
+    "require-accessible-name": {
       "options": {
-        "version": "1.3"
+        "ariaVersion": "1.3"
       }
     }
   }
@@ -130,14 +132,14 @@ When a `nodeRules` or `childNodeRules` entry has a `name` property (which must c
       "specConformance": "normative",
       "selector": "img",
       "rules": {
-        "required-attr": { "value": "alt" }
+        "require-attr": { "value": "alt" }
       }
     }
   ]
 }
 ```
 
-This creates a named rule `"a11y/img-alt"` based on `required-attr`. It reports violations under the name `"a11y/img-alt"` while reusing `required-attr`'s verification logic.
+This creates a named rule `"a11y/img-alt"` based on `require-attr` (renamed from `require-attr` in v5). It reports violations under the name `"a11y/img-alt"` while reusing `require-attr`'s verification logic.
 
 ### Expansion Example
 
@@ -147,7 +149,7 @@ When `ml-core` processes a named nodeRule, it registers a named rule and rewrite
 // What you write
 {
   "rules": {
-    "required-attr": true
+    "require-attr": true
   },
   "nodeRules": [
     {
@@ -155,7 +157,7 @@ When `ml-core` processes a named nodeRule, it registers a named rule and rewrite
       "specConformance": "normative",
       "selector": "img",
       "rules": {
-        "required-attr": { "value": "alt" }
+        "require-attr": { "value": "alt" }
       }
     }
   ]
@@ -168,8 +170,8 @@ is internally equivalent to:
 // What ml-core sees after expansion
 {
   "rules": {
-    "required-attr": true    // Base rule — still active for all elements
-    // + named rule "a11y/img-alt" is registered (based on required-attr)
+    "require-attr": true    // Base rule — still active for all elements
+    // + named rule "a11y/img-alt" is registered (based on require-attr)
   },
   "nodeRules": [
     {
@@ -183,7 +185,7 @@ is internally equivalent to:
 }
 ```
 
-Now `required-attr` and `a11y/img-alt` are **independent** rules. `required-attr` runs its own global check, and `a11y/img-alt` runs the same verification logic but only on `img` elements with `value: "alt"`.
+Now `require-attr` and `a11y/img-alt` are **independent** rules. `require-attr` runs its own global check, and `a11y/img-alt` runs the same verification logic but only on `img` elements with `value: "alt"`.
 
 ### Disabling Named Rules
 
@@ -216,7 +218,7 @@ When a named nodeRule contains multiple non-`false` entries in `rules`, each ent
       "name": "html-standard/figure-caption",
       "selector": ":where(figcaption ~ table, table:has(~ figcaption))",
       "rules": {
-        "disallowed-element": { "value": ["caption"] },
+        "no-restricted-element": { "value": ["caption"] },
         "require-accessible-name": false
       }
     }
@@ -224,7 +226,7 @@ When a named nodeRule contains multiple non-`false` entries in `rules`, each ent
 }
 ```
 
-Here, `disallowed-element` becomes a named rule `"html-standard/figure-caption"` (single non-false entry, so the name is used as-is). The `require-accessible-name: false` is separated into an unnamed nodeRule to preserve base-rule specificity override semantics.
+Here, `no-restricted-element` (renamed from `disallowed-element` in v5) becomes a named rule `"html-standard/figure-caption"` (single non-false entry, so the name is used as-is). The `require-accessible-name: false` is separated into an unnamed nodeRule to preserve base-rule specificity override semantics.
 
 ### For Preset Authors
 
@@ -239,26 +241,24 @@ Built-in presets (`preset.html-standard.jsonc`, `preset.a11y.jsonc`) use named n
 }
 ```
 
-This disables only the `a11y/img-alt` check while keeping the `required-attr` base rule active for other contexts.
+This disables only the `a11y/img-alt` check while keeping the `require-attr` base rule active for other contexts.
 
-#### Narrow-Check Semantics for `invalid-attr` Named Rules
+#### Narrow-Check Semantics for `no-restricted-attr` Named Rules
 
-Named nodeRules and named rule groups that wrap `invalid-attr` (e.g., `a11y/no-accesskey`, `a11y/tabindex-restrict`) operate as **narrow checks**: they report only the attributes listed in their `allowAttrs`/`disallowAttrs` options and do **not** fall back to HTML-spec validation for other attributes.
+`invalid-attr` (v4) bundled a general HTML-spec attribute validator together with a user-defined denylist mechanism. v5 splits these into four independent rules — `no-unknown-attr`, `no-disallowed-attr`, and `no-invalid-attr-value` all still perform full HTML-spec validation on every element regardless of how they're wrapped, but `no-restricted-attr` is different: it's purely a **narrow check**. Named nodeRules and named rule groups that wrap `no-restricted-attr` (e.g., `a11y/no-accesskey`, `a11y/tabindex-restrict`) report only the attributes listed in their `disallowAttrs` option and have no spec-validation fallback — there is none to fall back to, since `no-restricted-attr` never validates against the spec.
 
-General HTML-spec attribute validation is the responsibility of the base `invalid-attr` rule. To get spec-based validation, either extend `markuplint:html-standard` (which enables `invalid-attr` as a base rule) or add `"invalid-attr": true` to your config.
+General HTML-spec attribute validation is the responsibility of the base `no-unknown-attr`/`no-disallowed-attr`/`no-invalid-attr-value` rules. To get spec-based validation, either extend `markuplint:html-standard` (which enables all three as base rules) or add them to your config directly.
 
-If a named rule wrapping `invalid-attr` appears to under-report on attributes outside its configured scope, that is intentional — enable the base rule to catch spec-level violations.
-
-When you need to extend what the base `invalid-attr` allows on specific elements (e.g., to permit RDFa attributes), use an **unnamed** nodeRule so the options reach the base rule directly:
+When you need to extend what `no-unknown-attr` allows on specific elements (e.g., to permit RDFa attributes), use an **unnamed** nodeRule so the options reach the base rule directly:
 
 ```jsonc
 {
   "nodeRules": [
     {
-      // Unnamed: options flow to the base `invalid-attr` rule
+      // Unnamed: options flow to the base `no-unknown-attr` rule
       "selector": ":where(meta[property])",
       "rules": {
-        "invalid-attr": {
+        "no-unknown-attr": {
           "options": {
             "allowAttrs": [
               { "name": "property", "value": "NoEmptyAny" },
@@ -282,7 +282,7 @@ A **named** nodeRule in this position creates an independent virtual rule whose 
 // Preset
 {
   "nodeRules": [
-    { "name": "a11y/img-alt", "selector": "img", "rules": { "required-attr": { "value": "alt" } } }
+    { "name": "a11y/img-alt", "selector": "img", "rules": { "require-attr": { "value": "alt" } } }
   ]
 }
 
@@ -292,7 +292,7 @@ A **named** nodeRule in this position creates an independent virtual rule whose 
   "rules": { "a11y/img-alt": false }
 }
 
-// Result: a11y/img-alt is disabled, base rule required-attr still active
+// Result: a11y/img-alt is disabled, base rule require-attr still active
 ```
 
 **Preset defines a named rule → User overrides severity:**
@@ -301,7 +301,7 @@ A **named** nodeRule in this position creates an independent virtual rule whose 
 // Preset
 {
   "nodeRules": [
-    { "name": "a11y/img-alt", "selector": "img", "rules": { "required-attr": { "value": "alt" } } }
+    { "name": "a11y/img-alt", "selector": "img", "rules": { "require-attr": { "value": "alt" } } }
   ]
 }
 
@@ -320,14 +320,14 @@ A **named** nodeRule in this position creates an independent virtual rule whose 
 // Preset
 {
   "nodeRules": [
-    { "name": "a11y/img-alt", "specConformance": "normative", "selector": "img", "rules": { "required-attr": { "value": "alt" } } }
+    { "name": "a11y/img-alt", "specConformance": "normative", "selector": "img", "rules": { "require-attr": { "value": "alt" } } }
   ]
 }
 
 // User (overrides the same named nodeRule)
 {
   "nodeRules": [
-    { "name": "a11y/img-alt", "selector": "img", "rules": { "required-attr": { "value": ["alt", "aria-label"] } } }
+    { "name": "a11y/img-alt", "selector": "img", "rules": { "require-attr": { "value": ["alt", "aria-label"] } } }
   ]
 }
 
@@ -343,10 +343,10 @@ A **named** nodeRule in this position creates an independent virtual rule whose 
 ```jsonc
 // Preset (base)
 {
-  "rules": { "required-attr": true },
+  "rules": { "require-attr": true },
   "nodeRules": [
-    { "name": "a11y/img-alt", "selector": "img", "rules": { "required-attr": { "value": "alt" } } },
-    { "name": "a11y/form-label", "selector": "input", "rules": { "required-attr": { "value": "aria-label" } } }
+    { "name": "a11y/img-alt", "selector": "img", "rules": { "require-attr": { "value": "alt" } } },
+    { "name": "a11y/form-label", "selector": "input", "rules": { "require-attr": { "value": "aria-label" } } }
   ]
 }
 
@@ -359,7 +359,7 @@ A **named** nodeRule in this position creates an independent virtual rule whose 
 }
 
 // Effective result
-// - required-attr: active (base rule runs on all elements)
+// - require-attr: active (base rule runs on all elements)
 // - a11y/img-alt: DISABLED (no violation for missing alt on img)
 // - a11y/form-label: active (still reports missing aria-label on input)
 ```
@@ -376,7 +376,7 @@ A **named** nodeRule in this position creates an independent virtual rule whose 
 }
 
 // Effective result
-// - required-attr: active (base rule unaffected)
+// - require-attr: active (base rule unaffected)
 // - a11y/img-alt: DISABLED
 // - a11y/form-label: DISABLED
 // - html-standard/figure-caption: active (different namespace)
@@ -401,7 +401,7 @@ A **named** nodeRule in this position creates an independent virtual rule whose 
       "name": "html-standard/figure-caption",
       "specConformance": "normative",
       "selector": "...",
-      "rules": { "disallowed-element": { "value": ["caption"] } }
+      "rules": { "no-restricted-element": { "value": ["caption"] } }
     }
   ]
 }
@@ -421,7 +421,7 @@ When a named nodeRule triggers a violation, two rule identifiers are available:
 
 | Field    | Value                  | Purpose                                                    |
 |----------|------------------------|------------------------------------------------------------|
-| `ruleId` | Base rule name         | Always present. Identifies the underlying rule (e.g., `required-attr`). Use for programmatic filtering. |
+| `ruleId` | Base rule name         | Always present. Identifies the underlying rule (e.g., `require-attr`). Use for programmatic filtering. |
 | `name`   | Named rule alias       | Present only for named nodeRules (e.g., `a11y/html-lang`). Use as the display name when available. |
 
 **Display guideline**: Use `violation.name ?? violation.ruleId` as the display name.
@@ -453,7 +453,7 @@ v5 changes how `nodeRules` and `childNodeRules` are merged when using `extends`.
       "name": "a11y/img-alt",
       "specConformance": "normative",
       "selector": "img",
-      "rules": { "required-attr": { "value": "alt" } }
+      "rules": { "require-attr": { "value": "alt" } }
     },
     {
       "selector": "div.legacy",
@@ -469,11 +469,11 @@ v5 changes how `nodeRules` and `childNodeRules` are merged when using `extends`.
       "name": "a11y/img-alt",
       "specConformance": "non-normative",
       "selector": "img",
-      "rules": { "required-attr": { "value": "alt" } }
+      "rules": { "require-attr": { "value": "alt" } }
     },
     {
       "selector": "span.icon",
-      "rules": { "wai-aria": true }
+      "rules": { "no-unknown-role": true }
     }
   ]
 }
@@ -486,7 +486,7 @@ v5 changes how `nodeRules` and `childNodeRules` are merged when using `extends`.
       "name": "a11y/img-alt",
       "specConformance": "non-normative",
       "selector": "img",
-      "rules": { "required-attr": { "value": "alt" } }
+      "rules": { "require-attr": { "value": "alt" } }
     },
     // Unnamed from preset: kept as-is
     {
@@ -496,7 +496,7 @@ v5 changes how `nodeRules` and `childNodeRules` are merged when using `extends`.
     // Unnamed from user: appended
     {
       "selector": "span.icon",
-      "rules": { "wai-aria": true }
+      "rules": { "no-unknown-role": true }
     }
   ]
 }

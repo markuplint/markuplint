@@ -142,8 +142,8 @@ The following built-in rules support auto-fix in v5:
 | `attr-value-quotes` | Converts attribute quotes to configured style |
 | `no-boolean-attr-value` | Removes value from boolean attributes |
 | `no-default-value` | Removes attribute with default value |
-| `attr-duplication` | Removes duplicate attribute |
-| `ineffective-attr` | Removes ineffective attribute |
+| `no-duplicate-attr` | Removes duplicate attribute |
+| `no-ineffective-attr` | Removes ineffective attribute |
 | `no-orphaned-end-tag` | Removes orphaned end tag |
 | `no-consecutive-br` | Removes consecutive `<br>` elements |
 

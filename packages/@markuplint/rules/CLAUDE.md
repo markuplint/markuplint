@@ -3,6 +3,8 @@
 ## Adding a New Rule (checklist — steps 2–4 have NO enforcing test; forgetting them fails silently)
 
 1. `src/<rule-name>/`: `index.ts`, `meta.ts`, `schema.json`, spec file(s), `README.md` **and** `README.ja.md` — both languages are website source and MUST stay in sync; updating only one is a recurring mistake
+   - `meta.ts`'s `category` must be one of the v5 9-category scheme: `syntax`, `structure`, `attributes`, `references`, `forms`, `a11y`, `style`, `maintainability`, `compat` (see `docs/migration/v4-v5/rule-names.md` for what each covers)
+   - `meta.ts` should also declare `specConformance` (`sources`/`level`/`cites`) once you know the rule's governing spec and requirement strength — `level: 'must'` or `'should'` requires a non-empty `cites`. The rollout across pre-existing rules is incremental and partial by design (enforced only for rules that declare it — see `spec-conformance.spec.ts` and `@markuplint/config-presets`'s `html-standard-entries.spec.ts`), but a **new** rule should declare it from the start
 2. Register the rule in `src/index.ts` (import + registry entry)
 3. Add a `$ref` entry to `packages/@markuplint/rules/schema.json` — this file is a **manually maintained registry** (no generator produces it, despite looking generated)
 4. If the rule belongs in a preset, update `packages/@markuplint/config-presets/src/`

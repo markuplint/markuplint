@@ -1,14 +1,27 @@
-# `required-element` Breaking Changes: v4 to v5 Migration Guide
+# `require-element` Breaking Changes: v4 to v5 Migration Guide
 
 ## Who This Guide Is For
 
-- **Config authors** who use the `required-element` rule
+- **Config authors** who use the `required-element` rule (renamed to `require-element`)
 
 ## Summary of Changes
 
 | Change | Impact |
 |--------|--------|
+| Renamed from `required-element` to `require-element` | All config authors using this rule — the old name still works via a deprecation-warning alias, removed in v6 |
 | `ignoreOmittedElements` default changed from `false` to `true` | Configs relying on ghost elements to satisfy requirements |
+
+## Rule Renamed
+
+`required-element` is renamed to `require-element` as part of the v5 rule-naming convention (`require-*` for missing-thing checks, singular, not `required-*`). The old name keeps working — markuplint reports a deprecation warning when it's used — until it's removed in v6.
+
+```json
+{
+  "rules": {
+    "require-element": ["meta[charset=\"UTF-8\"]"]
+  }
+}
+```
 
 ## `ignoreOmittedElements` Default Value
 
@@ -60,7 +73,7 @@ Or restore the v4 behavior by explicitly setting the option to `false`:
     {
       "selector": "table",
       "rules": {
-        "required-element": {
+        "require-element": {
           "value": ["tbody"],
           "options": {
             "ignoreOmittedElements": false
