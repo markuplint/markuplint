@@ -5,16 +5,47 @@ title: invalid-attr
 
 # `invalid-attr` ルールの変更
 
-このページでは `invalid-attr` ルールオプションの破壊的変更に加えて、**デフォルト設定のままで新たに検出対象となった値**について説明します。v4 では黙って受理されていたマークアップが、設定変更なしで v5 ではエラーとして現れる可能性があります。
+このページでは `invalid-attr` ルールの分割とオプションの破壊的変更に加えて、**デフォルト設定のままで新たに検出対象となった値**について説明します。v4 では黙って受理されていたマークアップが、設定変更なしで v5 ではエラーとして現れる可能性があります。
 
 ## 変更一覧
 
 | 変更内容                     | 影響範囲                                                            |
 | ---------------------------- | ------------------------------------------------------------------- |
+| ルールの4分割                | `invalid-attr` を使っている設定すべて                               |
 | `{ type: X }` ラッパーの廃止 | `{ "value": { "type": "Int" } }` を使用している設定                 |
 | `attrs` オプションの削除     | 非推奨の `attrs` オプションを使用している設定                       |
 | オブジェクト形式の非推奨化   | `allowAttrs` / `disallowAttrs` でオブジェクト形式を使用している設定 |
 | v5 で新たに検出される値      | 全プロジェクト — 既存マークアップに対して新しい検証が発火           |
+
+## ルールの4分割
+
+`invalid-attr` は独立した4つのチェックを束ねていました。v5 ではそれぞれが別のルールになり、個別に有効化・無効化・severity 設定ができます。
+
+| 新ルール                | 検査内容                                                                                                     |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `no-unknown-attr`       | 仕様に定義のない属性名（typo 候補・大文字小文字不一致）                                                      |
+| `no-disallowed-attr`    | 定義はあるがこの文脈では許可されない属性: `noUse`、条件付き許可の条件外、autonomous custom element 上の `is` |
+| `no-invalid-attr-value` | 属性値の型・文法違反                                                                                         |
+| `no-restricted-attr`    | ユーザー定義の `disallowAttrs` 拒否リスト — このルールの唯一のオプション                                     |
+
+`aria-*` と `role` は、仕様検査3ルールすべてで対象外です（`no-unknown-attr`、`no-disallowed-attr`、`no-invalid-attr-value` のいずれもスキップします）。代わりに ARIA 系ルール（特に `no-aria-on-unsupported-element`）の担当です。
+
+旧オプションは一括コピーではなく、新ルールへ振り分けられます:
+
+| 旧オプション                       | 移行先                                                                       |
+| ---------------------------------- | ---------------------------------------------------------------------------- |
+| `allowAttrs`                       | `no-unknown-attr`、`no-disallowed-attr`、`no-invalid-attr-value` の3つすべて |
+| `ignoreAttrNamePrefix`             | `no-unknown-attr` と `no-disallowed-attr`                                    |
+| `allowToAddPropertiesForPretender` | `no-unknown-attr` のみ                                                       |
+| `disallowAttrs`                    | `no-restricted-attr` のみ                                                    |
+
+`no-restricted-attr` は、旧設定が実際に `disallowAttrs` を指定していた場合にのみ展開に加わります。素の `invalid-attr: true` が「制限対象が何もないルール」を有効化することはありません。
+
+:::tip
+`invalid-attr` はそのまま動作します。markuplint が非推奨警告を報告し、この展開を自動的に行います。旧名は v6 で削除されます。分割の全一覧は[改名と分割](/docs/migration/v4-to-v5/rules/rule-names)にあります。
+:::
+
+このページの以降の説明は、旧名のもとで書く場合のオプション形式を扱います。手動で書き換える場合は、上表が示す新ルールに各オプションを適用してください。
 
 ## `{ type: X }` ラッパーの廃止
 
@@ -148,7 +179,9 @@ title: invalid-attr
 ## v5 で新たに検出される値
 
 :::info 挙動変更（設定の対応は不要）
-v5 では、これまで `Any` として素通りしていた領域について `invalid-attr` のデフォルト検証範囲が拡張されました。設定を変更せずに v5 へアップグレードすると、以下のようなマークアップで v4 では発火しなかった違反が出る可能性があります。
+v5 では、これまで `Any` として素通りしていた領域について属性値のデフォルト検証範囲が拡張されました。設定を変更せずに v5 へアップグレードすると、以下のようなマークアップで v4 では発火しなかった違反が出る可能性があります。
+
+分割に伴い CI 出力の `ruleId` も変わります。以下の各項目には報告元の v5 ルール名を記載しています。多くは `no-invalid-attr-value` で、条件付き許可の条件外は `no-disallowed-attr`、属性の欠落は `require-attr` です。
 :::
 
 各行は検証追加を導入した Issue と、その根拠となる HTML / URL / Encoding Living Standard のセクションを示します。新しい違反に納得できない場合は、まずリンク先の Issue を確認してください — いくつかは、nu-validator が仕様より厳しく解釈していたケースについて仕様引用つきで `excluded-ids.json` に記録しながら導入されています。
@@ -180,7 +213,7 @@ v5 では、これまで `Any` として素通りしていた領域について 
 
 ### URL 系属性 (`href` / `src` / `action` / `cite` / `itemid` / `itemtype` 等) で新たに違反となるパターン
 
-`URL` 型チェッカーが、`new URL()` が暗黙的に自動補正してしまう URL Living Standard の validation error を捕捉するようになりました。v4 で受理されていた以下のパターンが、v5 では `invalid-attr` 違反となります。
+`URL` 型チェッカーが、`new URL()` が暗黙的に自動補正してしまう URL Living Standard の validation error を捕捉するようになりました。v4 で受理されていた以下のパターンが、v5 では `no-invalid-attr-value` 違反となります。
 
 - **invalid-credentials** ([URL LS §1.1](https://url.spec.whatwg.org/#invalid-credentials)): `<a href="http://user:pass@example.com">`, `<a href="//user@example.com">`, さらに `<a href="http://@example.com">` (空の userinfo も authority に `@` を含む点で違反)。URL から userinfo を除いてください。
 - **special-scheme-missing-following-solidus** ([URL LS](https://url.spec.whatwg.org/#special-scheme-missing-following-solidus)): `<a href="http:foo">`, `<a href="https:/foo">`, `<a href="ftp:bar">`。スペシャルスキーム URL は `scheme://` を要求します。
@@ -196,16 +229,16 @@ v5 では、これまで `Any` として素通りしていた領域について 
 上記の URL LS パイプラインに加え、3 つの専用型でさらに厳格化されています。
 
 - **`<audio src>` / `<embed src>` / `<iframe src>` / `<img src>` / `<input type=image src>` / `<script src>` / `<source src>` / `<track src>` / `<video src>`** は `NonEmptyURL` 型を使うようになり、ASCII 空白を剥がした結果が空 (空白のみ含む場合も) の値を拒否します。HTML LS §4.8 はこれらを「valid non-empty URL potentially surrounded by spaces」と定義しています。
-- **`<form action>` / `<button formaction>` / `<input formaction>` / `<object data>` / `<link href>` / `<video poster>`** も同じ `NonEmptyURL` 型を使うようになりました。いずれも仕様上「valid non-empty URL potentially surrounded by spaces」と定義されていますが、以前は空文字も許容する `URL` 型でした。空文字 (および空白のみの値) は `invalid-attr` 違反となります。
-- **`<base>` は `href`、`target`、またはその両方を必要とします** (HTML LS §4.2.3)。属性のない `<base>` は v4 では黙認されていましたが、v5 では `required-attr` ルールが違反として報告します。いずれかを指定すれば要件を満たします。
-- **`<input type="image">` は `alt` 属性を必須化** (HTML LS §4.10.5.1.18)。`type="image"` で `alt` が無い場合に `required-attr` ルールが発火します。
+- **`<form action>` / `<button formaction>` / `<input formaction>` / `<object data>` / `<link href>` / `<video poster>`** も同じ `NonEmptyURL` 型を使うようになりました。いずれも仕様上「valid non-empty URL potentially surrounded by spaces」と定義されていますが、以前は空文字も許容する `URL` 型でした。空文字 (および空白のみの値) は `no-invalid-attr-value` 違反となります。
+- **`<base>` は `href`、`target`、またはその両方を必要とします** (HTML LS §4.2.3)。属性のない `<base>` は v4 では黙認されていましたが、v5 では `require-attr` ルールが違反として報告します。いずれかを指定すれば要件を満たします。
+- **`<input type="image">` は `alt` 属性を必須化** (HTML LS §4.10.5.1.18)。`type="image"` で `alt` が無い場合に `require-attr` ルールが発火します。
 - **単独の `autocomplete="webauthn"` は非適合** (HTML LS §4.10.18.7)。`webauthn` トークンは「他のトークンと組み合わせて使われなければならない」とされており、`<input autocomplete="webauthn">` のような単独使用は v5 で違反となります。`autocomplete="name webauthn"` のような組み合わせは引き続き有効です。
-- **`<select autocomplete>` に `webauthn` トークンは使えません** (HTML LS §attr-fe-autocomplete-webauthn)。仕様は `webauthn` を `<input>` と `<textarea>` に限定しています (「webauthn is only valid for input and textarea elements」)。末尾に `webauthn` を含む `<select>` (例: `autocomplete="section-a billing work tel-country-code webauthn"`) は `webauthn` トークンを指す `invalid-attr` 違反になります。`webauthn` を除いた同じ autofill 文法は `<select>` でも引き続き有効です。`<textarea>` と非 hidden の `<input>` には影響しません。
+- **`<select autocomplete>` に `webauthn` トークンは使えません** (HTML LS §attr-fe-autocomplete-webauthn)。仕様は `webauthn` を `<input>` と `<textarea>` に限定しています (「webauthn is only valid for input and textarea elements」)。末尾に `webauthn` を含む `<select>` (例: `autocomplete="section-a billing work tel-country-code webauthn"`) は `webauthn` トークンを指す `no-invalid-attr-value` 違反になります。`webauthn` を除いた同じ autofill 文法は `<select>` でも引き続き有効です。`<textarea>` と非 hidden の `<input>` には影響しません。
 - **`<input type="hidden">` の `autocomplete` は `on` / `off` を含められません** (HTML LS §autofill-anchor-mantle)。hidden input は _autofill anchor mantle_ を着用し、その値は「autofill detail token だけを含む space-separated tokens に限定される (`on` / `off` は禁止)」と規定されています。具体的なフィールド名 (`autocomplete="transaction-currency"` 等) に置き換えるか属性を削除してください。非 hidden の `<input>` は引き続き `on` / `off` を受理します。
 - **`<input name="isindex">` は予約値** (HTML LS §4.10.18.2)。廃止された `<isindex>` 要素の名残として、リテラル値 `isindex` は予約されています。v5 では `name` 属性が `isindex` (大文字小文字区別) のときに違反となります。
 - **`srcset` の descriptor 重複は非適合** (HTML LS §4.8.4.4.1)。仕様は「重複した descriptor を持つ image candidate string は invalid」と定義しています。`Srcset` 型チェッカーは密度スロット (`1x, 1x`、`1x, 1.0x`、または省略 = 暗黙 1x と `1x` の組み合わせ) と幅スロット (`480w, 480w`) いずれの重複も拒否します。判定は数値比較なので、同じ値の異なる表記 (`1` vs `1.0` 等) も衝突します。
-- **`<link disabled>` は `rel="stylesheet"` 限定** (HTML LS §4.6.7.18)。`disabled` 属性は「rel に stylesheet キーワードを含む link 要素にのみ指定可能」と仕様で限定されています。`<link rel="icon" disabled>` 等は `invalid-attr` 違反となります。
-- **`<link rel="alternate stylesheet">` は非空の `title` 必須** (HTML LS §4.6.7.4)。rel に `alternate` と `stylesheet` の両方を含む場合、仕様により「非空の」`title` 属性が必要です。title が無いケースは `required-attr` ルール、明示的な空 (`title=""`) は `invalid-attr` ルール (`NoEmptyAny` 条件付き型 override) が発火します。
+- **`<link disabled>` は `rel="stylesheet"` 限定** (HTML LS §4.6.7.18)。`disabled` 属性は「rel に stylesheet キーワードを含む link 要素にのみ指定可能」と仕様で限定されています。`<link rel="icon" disabled>` 等は `no-disallowed-attr` 違反となります。属性自体は仕様に定義されていますが、この文脈では条件付き許可の条件を満たさないためです。
+- **`<link rel="alternate stylesheet">` は非空の `title` 必須** (HTML LS §4.6.7.4)。rel に `alternate` と `stylesheet` の両方を含む場合、仕様により「非空の」`title` 属性が必要です。title が無いケースは `require-attr` ルール、明示的な空 (`title=""`) は `no-invalid-attr-value` ルール (`NoEmptyAny` 条件付き型 override) が発火します。
 - **`<base href>`** は既存の `data:`/`javascript:` スキーム禁止に加え、URL LS の完全な検証も実行するようになりました。以前は `data:`/`javascript:` 以外なら無検査で受理していました。
 - **`<input type="url" value>`** は絶対 URL 限定の variant を使うようになりました。空の値は受理 (HTML LS §4.10.5.1.7 「指定されかつ非空なら」) ですが、相対 URL は拒否します。完全な `https://…` 形式を使うか、属性を空にしてください。
 
@@ -235,7 +268,7 @@ HTML LS は `lang` 属性の値を[「valid BCP 47 language tag」](https://html
 
 ### `media=` で新たに違反となるパターン
 
-`link` / `style` / `source` / `svg|style` の `media` 属性は専用の `MediaQueryList` チェッカーで検証されるようになりました。v4 では汎用の `<media-query-list>` 経由で素通りしていた以下が、v5 では `invalid-attr` 違反となります。
+`link` / `style` / `source` / `svg|style` の `media` 属性は専用の `MediaQueryList` チェッカーで検証されるようになりました。v4 では汎用の `<media-query-list>` 経由で素通りしていた以下が、v5 では `no-invalid-attr-value` 違反となります。
 
 - **非推奨メディアタイプ** (MQL5 §2.3): `<link media="aural">`, `<link media="tv">`, `<link media="projection">`, `<link media="handheld">`, `<link media="braille">`, `<link media="embossed">`, `<link media="speech">`, `<link media="tty">` 等。`screen` / `print` / `all` への置き換え、もしくは feature query を利用してください。
 - **非推奨メディア特性** (MQL4): `(device-width: ...)`, `(device-height: ...)`, `(device-aspect-ratio: ...)` および `min-` / `max-` バリアント。`(width: ...)` / `(height: ...)` / `(aspect-ratio: ...)` を利用してください。
@@ -245,7 +278,7 @@ HTML LS は `lang` 属性の値を[「valid BCP 47 language tag」](https://html
 
 ### `media=` / `sizes=` に不正なメディア条件 (`<general-enclosed>` 拒否)
 
-[Media Queries Level 5 §3](https://www.w3.org/TR/mediaqueries-5/#general-enclosed) は `<general-enclosed>` を著者スタイルシートで用いることを明示的に禁止しています (旧 UA が将来の構文追加をパースできるようにするための後方互換用途にのみ存在)。v4 では css-tree の文法が寛容なため `<general-enclosed>` フォールバックに落ちる `<media-condition>` が素通りしていましたが、v5 では `invalid-attr` 違反として拒否します。
+[Media Queries Level 5 §3](https://www.w3.org/TR/mediaqueries-5/#general-enclosed) は `<general-enclosed>` を著者スタイルシートで用いることを明示的に禁止しています (旧 UA が将来の構文追加をパースできるようにするための後方互換用途にのみ存在)。v4 では css-tree の文法が寛容なため `<general-enclosed>` フォールバックに落ちる `<media-condition>` が素通りしていましたが、v5 では `no-invalid-attr-value` 違反として拒否します。
 
 `link` / `style` / `source` / `svg|style` の `media=` と、`img` / `source` の `sizes=` で以下が新たに検出されます。
 

@@ -61,22 +61,25 @@ No more repeating `ariaVersion` across every ARIA-related rule.
     "ariaVersion": "1.2"
   },
   "rules": {
-    "wai-aria": true,
     "require-accessible-name": true,
     "no-refer-to-non-existent-id": true
   }
 }
 ```
 
+:::note
+`wai-aria` itself is gone in v5 — its 21 checks are now independent rules, and they read `ruleCommonSettings.ariaVersion` only. See [ARIA Changes](/docs/migration/v4-to-v5/aria#umbrella-rule-removed).
+:::
+
 ### Resolution priority
 
 Rules resolve the ARIA version in this order (highest priority first):
 
-1. **Rule-level option** -- `options.version` or `options.ariaVersion` on the specific rule
+1. **Rule-level option** -- `options.ariaVersion`, accepted by `require-accessible-name` and `no-refer-to-non-existent-id` only
 2. **`ruleCommonSettings.ariaVersion`** -- Global fallback
 3. **Built-in default** -- The recommended ARIA version shipped with Markuplint
 
-You can still override for a specific rule:
+For those two rules you can still override the global setting:
 
 ```json
 {
@@ -84,14 +87,16 @@ You can still override for a specific rule:
     "ariaVersion": "1.2"
   },
   "rules": {
-    "wai-aria": {
+    "require-accessible-name": {
       "options": {
-        "version": "1.3"
+        "ariaVersion": "1.3"
       }
     }
   }
 }
 ```
+
+v4's `wai-aria` `options.version` has no successor: the rules split off from the umbrella accept no `options` object at all.
 
 :::info
 v5 also adds `"1.3"` as a valid ARIA version and makes it the default. See the [ARIA migration guide](/docs/migration/v4-to-v5/aria) for details.
@@ -143,7 +148,7 @@ Disable one check while keeping the base rule active:
 }
 ```
 
-This disables only the `a11y/img-alt` check. The `required-attr` base rule still runs for other contexts.
+This disables only the `a11y/img-alt` check. The `require-attr` base rule still runs for other contexts.
 
 ### Disabling an entire namespace
 
@@ -203,7 +208,7 @@ When a named rule triggers a violation, you see two identifiers:
 
 | Field    | Value                                   | Purpose                                         |
 | -------- | --------------------------------------- | ----------------------------------------------- |
-| `ruleId` | Base rule name (e.g., `required-attr`)  | Always present. For programmatic filtering.     |
+| `ruleId` | Base rule name (e.g., `require-attr`)   | Always present. For programmatic filtering.     |
 | `name`   | Named rule alias (e.g., `a11y/img-alt`) | Present for named rules only. The display name. |
 
 The CLI uses the named rule alias as the display name when available.
@@ -220,14 +225,14 @@ v5 changes how `nodeRules` and `childNodeRules` merge when using `extends`.
 // Parent preset defines a11y/img-alt
 {
   "nodeRules": [
-    { "name": "a11y/img-alt", "selector": "img", "rules": { "required-attr": { "value": "alt" } } }
+    { "name": "a11y/img-alt", "selector": "img", "rules": { "require-attr": { "value": "alt" } } }
   ]
 }
 
 // Your config redefines a11y/img-alt
 {
   "nodeRules": [
-    { "name": "a11y/img-alt", "selector": "img", "rules": { "required-attr": { "value": ["alt", "aria-label"] } } }
+    { "name": "a11y/img-alt", "selector": "img", "rules": { "require-attr": { "value": ["alt", "aria-label"] } } }
   ]
 }
 
@@ -260,10 +265,10 @@ If you rely on array concatenation through `extends`, you need to update your co
 // v5 result: ["section", "article"]
 ```
 
-**How to migrate:** Combine the values manually in one config:
+**How to migrate:** Combine the values manually in one config. Note that `disallowed-element` is renamed to `no-restricted-element` in v5 — see [Renames and Splits](/docs/migration/v4-to-v5/rules/rule-names).
 
 ```json
-{ "rules": { "disallowed-element": ["div", "span", "section", "article"] } }
+{ "rules": { "no-restricted-element": ["div", "span", "section", "article"] } }
 ```
 
 ## Rule options: shallow merge instead of deep merge

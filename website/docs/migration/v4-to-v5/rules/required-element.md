@@ -5,13 +5,30 @@ title: required-element
 
 # `required-element` Rule Changes
 
-This page covers a default value change in the `required-element` rule. If you use this rule to check for required child elements, read on.
+This page covers a rename and a default value change in the `required-element` rule. If you use this rule to check for required child elements, read on.
 
 ## Summary
 
 | Change                                            | Who is affected                                           |
 | ------------------------------------------------- | --------------------------------------------------------- |
+| Renamed to `require-element`                      | Every config using this rule                              |
 | `ignoreOmittedElements` default: `false` → `true` | Configs relying on ghost elements to satisfy requirements |
+
+## Rule renamed
+
+`required-element` is now `require-element`, following the v5 naming convention: `require-*`, singular, for missing-thing checks.
+
+```json
+{
+  "rules": {
+    "require-element": ["meta[charset=\"UTF-8\"]"]
+  }
+}
+```
+
+:::tip
+The old name keeps working. Markuplint reports a deprecation warning and applies your config to `require-element` automatically, until the old name is removed in v6. The full rename list is in [Renames and Splits](/docs/migration/v4-to-v5/rules/rule-names).
+:::
 
 ## What changed
 
@@ -75,7 +92,7 @@ You have two options.
     {
       "selector": "table",
       "rules": {
-        "required-element": {
+        "require-element": {
           "value": ["tbody"],
           "options": {
             "ignoreOmittedElements": false

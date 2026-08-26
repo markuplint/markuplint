@@ -148,8 +148,8 @@ v5 で自動修正をサポートする組み込みルール:
 | `attr-value-quotes`        | 設定されたスタイルに引用符を変換 |
 | `no-boolean-attr-value`    | 真偽値属性から値を削除           |
 | `no-default-value`         | デフォルト値を持つ属性を削除     |
-| `attr-duplication`         | 重複属性を削除                   |
-| `ineffective-attr`         | 無効な属性を削除                 |
+| `no-duplicate-attr`        | 重複属性を削除                   |
+| `no-ineffective-attr`      | 無効な属性を削除                 |
 | `no-orphaned-end-tag`      | 孤立した終了タグを削除           |
 | `no-consecutive-br`        | 連続する `<br>` 要素を削除       |
 | `attr-order`               | 設定された順序に属性を並べ替え   |

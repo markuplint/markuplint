@@ -5,18 +5,24 @@ title: ARIA
 
 # ARIA Changes
 
-v5 adds ARIA 1.3 support and changes the default ARIA version to 1.3. The `wai-aria` rule option is also renamed.
+v5 adds ARIA 1.3 support and changes the default ARIA version to 1.3. The `wai-aria` umbrella rule is also removed in favour of its 21 independent successor rules.
 
 ## What changed
 
-| Change                                          | Who is affected                                      |
-| ----------------------------------------------- | ---------------------------------------------------- |
-| ARIA 1.3 support added (now default)            | All users                                            |
-| `generic` role becomes transparent in 1.3       | All users                                            |
-| `<aside>` conditional role mapping in 1.3       | All users                                            |
-| `image` / `img` role synonym in 1.3             | All users                                            |
-| "No role permitted" now strictly forbids `role` | Users writing `role="presentation"` etc. on `<img>`  |
-| `wai-aria` option renamed                       | Users with `checkingRequiredOwnedElements` in config |
+| Change                                          | Who is affected                                     |
+| ----------------------------------------------- | --------------------------------------------------- |
+| ARIA 1.3 support added (now default)            | All users                                           |
+| `generic` role becomes transparent in 1.3       | All users                                           |
+| `<aside>` conditional role mapping in 1.3       | All users                                           |
+| `image` / `img` role synonym in 1.3             | All users                                           |
+| "No role permitted" now strictly forbids `role` | Users writing `role="presentation"` etc. on `<img>` |
+| `wai-aria` umbrella rule removed                | Config files using `wai-aria` at all                |
+| `input-button-non-empty-value` removed          | Config files using that rule                        |
+| Every `wai-aria-*` rule renamed                 | Config files naming those rules directly            |
+
+:::tip
+Rule renames and splits across the whole catalog — ARIA and otherwise — are listed in [Renames and Splits](/docs/migration/v4-to-v5/rules/rule-names).
+:::
 
 ## ARIA version configuration
 
@@ -30,19 +36,21 @@ The default ARIA version is now `"1.3"`. If you need the previous behavior, set 
 }
 ```
 
-You can also set it per rule:
+Only two rules also accept a per-rule `options.ariaVersion` override: `require-accessible-name` and `no-refer-to-non-existent-id`.
 
 ```json
 {
   "rules": {
-    "wai-aria": {
+    "require-accessible-name": {
       "options": {
-        "version": "1.2"
+        "ariaVersion": "1.2"
       }
     }
   }
 }
 ```
+
+Every other ARIA rule — the 21 successors of the former `wai-aria` umbrella — reads `ruleCommonSettings.ariaVersion` only. They have no per-rule version option of their own, so v4's `wai-aria` `options.version` has nowhere to move to.
 
 :::note
 The default is `"1.3"`. You only need to change your config if you want ARIA 1.2 behavior.
@@ -94,7 +102,7 @@ The `<aside>` element now uses **conditional role mapping** per the ARIA 1.3 spe
 - When `<aside>` is **not** a descendant of `<article>`, `<aside>`, `<main>`, `<nav>`, or `<section>` → role is `complementary`
 - When `<aside>` **is** a descendant of one of those sectioning elements → role is `generic`
 
-The `landmark-roles` rule has been updated accordingly: `complementary` is no longer checked as a top-level landmark.
+`no-nested-top-level-landmark` — the rule split off from `landmark-roles` — deliberately does not check `complementary` as a top-level landmark for this reason. Its selector-based detection cannot tell a demoted `<aside>` apart from a true one, so checking it would produce a false positive on any `<aside>` nested in a sectioning ancestor.
 
 :::caution
 Since ARIA 1.3 is now the default, this change affects all users immediately. If your markup uses `<aside>` inside sectioning elements, you may see new or different lint results.
@@ -138,29 +146,53 @@ Other elements newly affected by the same rule (when they were previously writte
 
 See Issue [#3641](https://github.com/markuplint/markuplint/issues/3641) for background.
 
-## Rule option renamed
+## Umbrella rule removed {#umbrella-rule-removed}
 
-The `wai-aria` rule option `checkingRequiredOwnedElements` has been renamed:
+In v4, `wai-aria` was an umbrella rule running 21 checks together, each independently toggleable via a boolean option (`checkingDeprecatedRole`, `disallowSetImplicitProps`, `checkingRequiredOwnedElements`, and so on). Twenty of those checks had already been split into their own independent rules before v5.0.0 shipped — `no-abstract-role`, `no-unknown-role`, `require-owned-elements`, `no-focusable-in-aria-hidden`, and so on — and `wai-aria` only duplicated their work when both were enabled together. The 21st is the new rule below.
 
-| v5 (new)                                 | v4 (deprecated)                 |
-| ---------------------------------------- | ------------------------------- |
-| `checkingAllowedAccessibilityChildRoles` | `checkingRequiredOwnedElements` |
+v5 removes `wai-aria` entirely, along with the option-toggle mechanism it alone consumed.
 
-:::tip
-The old name still works. Update it when convenient -- there is no rush.
-:::
+`wai-aria: v` still works: markuplint reports a deprecation warning and expands the config to all 21 successor rules — the 20 above, plus the new `no-aria-on-unsupported-element` — with the same severity and reason.
+
+:::caution The per-check option toggles are dropped
+They have no successor to route to. Every one of these rules already ran its single check unconditionally once split off, and none of their schemas accept an `options` object at all.
+
+To keep a check disabled that you previously turned off via an option, disable that specific rule instead:
 
 ```json
 {
   "rules": {
-    "wai-aria": {
-      "options": {
-        "checkingAllowedAccessibilityChildRoles": false
-      }
-    }
+    "no-redundant-role": false
   }
 }
 ```
+
+That replaces the v4 pattern of disabling it via the umbrella's `disallowSetImplicitRole: false`.
+:::
+
+### New rule: `no-aria-on-unsupported-element`
+
+The umbrella's very first check — disallowing `role` and `aria-*` on an element whose spec data marks it as not supporting ARIA attributes at all — had no independent successor rule until v5. It is now `no-aria-on-unsupported-element`.
+
+### Removed: `input-button-non-empty-value` {#removed-input-button-non-empty-value}
+
+This rule detected `<input type="button" value="">` as a proxy for "no accessible name," but it both over-reported (it flagged buttons with an `aria-label`, which do have an accessible name) and under-reported (it missed a missing `value` attribute entirely, which computes to the same empty accessible name). `require-accessible-name` already covers this case correctly, so v5 removes the rule in favour of it.
+
+### `wai-aria-*` rules renamed
+
+Every rule previously prefixed `wai-aria-` drops the prefix and is renamed to match the v5 naming convention — `wai-aria-non-existent-role` becomes `no-unknown-role`, `wai-aria-required-owned-elements` becomes `require-owned-elements`, and so on. Two are additionally split:
+
+| Former rule                 | Split into                                                                      |
+| --------------------------- | ------------------------------------------------------------------------------- |
+| `wai-aria-disallowed-props` | `no-prohibited-naming`, `element-supports-aria-prop`, `role-supports-aria-prop` |
+| `wai-aria-implicit-props`   | `no-redundant-aria-prop` (`warning`), `no-contradictory-aria-prop` (`error`)    |
+
+Two ARIA-adjacent rules are also split:
+
+- `landmark-roles` → `no-nested-top-level-landmark` (the `ignoreRoles` half) and `require-landmark-label` (the `labelEachArea` half)
+- `required-h1` → `require-h1` (the missing-`<h1>` half) and `no-duplicate-h1` (the `expected-once` half). Both now default to `warning`: WCAG Technique H42, the closest cited basis for either check, is non-normative.
+
+All old names keep working via a deprecation-warning alias until they are removed in v6. The full mapping is in [Renames and Splits](/docs/migration/v4-to-v5/rules/rule-names).
 
 ## Terminology changes (for custom rule authors)
 

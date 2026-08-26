@@ -61,22 +61,25 @@ ARIA 関連ルールごとに `ariaVersion` を繰り返し設定する必要が
     "ariaVersion": "1.2"
   },
   "rules": {
-    "wai-aria": true,
     "require-accessible-name": true,
     "no-refer-to-non-existent-id": true
   }
 }
 ```
 
+:::note
+`wai-aria` 自体は v5 で削除されました。21個のチェックはそれぞれ独立したルールになり、いずれも `ruleCommonSettings.ariaVersion` のみを読みます。[ARIA の変更](/docs/migration/v4-to-v5/aria#umbrella-rule-removed)を参照してください。
+:::
+
 ### 解決優先度
 
 ルールは以下の順序で ARIA バージョンを解決します（優先度の高い順）:
 
-1. **ルールレベルのオプション** -- 個別ルールの `options.version` または `options.ariaVersion`
+1. **ルールレベルのオプション** -- `options.ariaVersion`。受け付けるのは `require-accessible-name` と `no-refer-to-non-existent-id` の2ルールのみ
 2. **`ruleCommonSettings.ariaVersion`** -- グローバルフォールバック
 3. **ビルトインデフォルト** -- Markuplint に組み込まれた推奨 ARIA バージョン
 
-特定のルールでオーバーライドすることも可能です:
+この2ルールについては、グローバル設定をオーバーライドできます:
 
 ```json
 {
@@ -84,14 +87,16 @@ ARIA 関連ルールごとに `ariaVersion` を繰り返し設定する必要が
     "ariaVersion": "1.2"
   },
   "rules": {
-    "wai-aria": {
+    "require-accessible-name": {
       "options": {
-        "version": "1.3"
+        "ariaVersion": "1.3"
       }
     }
   }
 }
 ```
+
+v4 の `wai-aria` の `options.version` には後継がありません。傘ルールから分割されたルールは `options` オブジェクトを一切受け付けません。
 
 :::info
 v5 では ARIA バージョンとして `"1.3"` も指定可能になり、デフォルトになりました。詳細は [ARIA 移行ガイド](/docs/migration/v4-to-v5/aria)を参照してください。
@@ -143,7 +148,7 @@ const ariaVersion =
 }
 ```
 
-これは `a11y/img-alt` チェックのみを無効化します。`required-attr` ベースルールは他のコンテキストで引き続き動作します。
+これは `a11y/img-alt` チェックのみを無効化します。`require-attr` ベースルールは他のコンテキストで引き続き動作します。
 
 ### 名前空間全体を無効化
 
@@ -203,7 +208,7 @@ const ariaVersion =
 
 | フィールド | 値                                               | 用途                                       |
 | ---------- | ------------------------------------------------ | ------------------------------------------ |
-| `ruleId`   | ベースルール名（例: `required-attr`）            | 常に存在。プログラム的なフィルタリング用。 |
+| `ruleId`   | ベースルール名（例: `require-attr`）             | 常に存在。プログラム的なフィルタリング用。 |
 | `name`     | 名前付きルールのエイリアス（例: `a11y/img-alt`） | 名前付きルールの場合のみ存在。表示名。     |
 
 CLI は名前付きルールのエイリアスを表示名として使用します。
@@ -220,14 +225,14 @@ v5 では `extends` 使用時の `nodeRules` と `childNodeRules` のマージ�
 // 親プリセットが a11y/img-alt を定義
 {
   "nodeRules": [
-    { "name": "a11y/img-alt", "selector": "img", "rules": { "required-attr": { "value": "alt" } } }
+    { "name": "a11y/img-alt", "selector": "img", "rules": { "require-attr": { "value": "alt" } } }
   ]
 }
 
 // あなたの設定が a11y/img-alt を再定義
 {
   "nodeRules": [
-    { "name": "a11y/img-alt", "selector": "img", "rules": { "required-attr": { "value": ["alt", "aria-label"] } } }
+    { "name": "a11y/img-alt", "selector": "img", "rules": { "require-attr": { "value": ["alt", "aria-label"] } } }
   ]
 }
 
@@ -260,10 +265,10 @@ v5 では `extends` 使用時の `nodeRules` と `childNodeRules` のマージ�
 // v5 の結果: ["section", "article"]
 ```
 
-**移行方法:** 値を1つの設定内で手動で統合してください:
+**移行方法:** 値を1つの設定内で手動で統合してください。なお `disallowed-element` は v5 で `no-restricted-element` にリネームされています（[改名と分割](/docs/migration/v4-to-v5/rules/rule-names)参照）:
 
 ```json
-{ "rules": { "disallowed-element": ["div", "span", "section", "article"] } }
+{ "rules": { "no-restricted-element": ["div", "span", "section", "article"] } }
 ```
 
 ## ルール options: deep merge から shallow merge に変更
