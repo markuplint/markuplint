@@ -277,7 +277,19 @@ test('default-rules', () => {
 			category: 'validation',
 			defaultValue: true,
 		},
-		'srcset-sizes-constraint': {
+		'no-unpaired-srcset-sizes': {
+			category: 'validation',
+			defaultValue: true,
+		},
+		'no-mixed-srcset-descriptors': {
+			category: 'validation',
+			defaultValue: true,
+		},
+		'sizes-auto-requires-lazy-loading': {
+			category: 'validation',
+			defaultValue: true,
+		},
+		'no-always-matching-source': {
 			category: 'validation',
 			defaultValue: true,
 		},

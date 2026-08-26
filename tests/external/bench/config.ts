@@ -108,7 +108,10 @@ export const benchmarkConfig: Config = {
 		// HTML LS §4.2.5.4: the element containing the character encoding declaration
 		// must be serialized completely within the first 1024 bytes of the document.
 		'meta-charset-position': true,
-		'srcset-sizes-constraint': true,
+		'no-unpaired-srcset-sizes': true,
+		'no-mixed-srcset-descriptors': true,
+		'sizes-auto-requires-lazy-loading': true,
+		'no-always-matching-source': true,
 		// WAI-ARIA role definitions declare `accessibleNameRequired` per role (e.g. the
 		// `img` role: "In order for elements with a role of img to be perceivable,
 		// authors MUST provide a label using the aria-label or aria-labelledby

@@ -374,14 +374,56 @@
 		},
 
 		/**
-		 * Enforce WHATWG constraints between `srcset`, `sizes`, and `loading` attributes
+		 * Require `sizes` wherever `srcset` uses width descriptors, and vice versa
+		 *
+		 * Split from the former `srcset-sizes-constraint` rule (#3989). This group keeps its
+		 * name — and wraps only this one rule, so a group with 2+ rules doesn't get its virtual
+		 * rule name suffixed with the base rule name — for anyone overriding it directly. The
+		 * other three checks live in their own sibling groups below for the same reason.
 		 *
 		 * @see https://html.spec.whatwg.org/multipage/images.html#srcset-attributes
 		 */
 		"html-standard/srcset-sizes-constraint": {
 			"specConformance": "normative",
 			"rules": {
-				"srcset-sizes-constraint": true
+				"no-unpaired-srcset-sizes": true
+			}
+		},
+
+		/**
+		 * Disallow mixing width and pixel density descriptors in `srcset`
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/images.html#srcset-attributes
+		 */
+		"html-standard/no-mixed-srcset-descriptors": {
+			"specConformance": "normative",
+			"rules": {
+				"no-mixed-srcset-descriptors": true
+			}
+		},
+
+		/**
+		 * Require `loading="lazy"` wherever `sizes="auto"` is used
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/embedded-content.html#the-img-element
+		 */
+		"html-standard/sizes-auto-requires-lazy-loading": {
+			"specConformance": "normative",
+			"rules": {
+				"sizes-auto-requires-lazy-loading": true
+			}
+		},
+
+		/**
+		 * Require a distinguishing `media` or `type` on a `<source>` with a following
+		 * srcset-bearing sibling
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/embedded-content.html#the-source-element
+		 */
+		"html-standard/no-always-matching-source": {
+			"specConformance": "normative",
+			"rules": {
+				"no-always-matching-source": true
 			}
 		},
 
