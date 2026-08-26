@@ -247,7 +247,15 @@
 		},
 		"a11y/wai-aria/disallowed-props": {
 			"specConformance": "normative",
-			"rules": { "wai-aria-disallowed-props": true }
+			"rules": { "role-supports-aria-prop": true }
+		},
+		"a11y/wai-aria/prohibited-naming": {
+			"specConformance": "normative",
+			"rules": { "no-prohibited-naming": true }
+		},
+		"a11y/wai-aria/element-supports-aria-prop": {
+			"specConformance": "normative",
+			"rules": { "element-supports-aria-prop": true }
 		},
 		"a11y/wai-aria/deprecated-role": {
 			"specConformance": "non-normative",

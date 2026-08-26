@@ -353,7 +353,15 @@ test('default-rules', () => {
 			category: 'a11y',
 			defaultValue: false,
 		},
-		'wai-aria-disallowed-props': {
+		'no-prohibited-naming': {
+			category: 'a11y',
+			defaultValue: true,
+		},
+		'element-supports-aria-prop': {
+			category: 'a11y',
+			defaultValue: true,
+		},
+		'role-supports-aria-prop': {
 			category: 'a11y',
 			defaultValue: true,
 		},
