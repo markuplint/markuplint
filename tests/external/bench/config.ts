@@ -58,12 +58,19 @@ export const benchmarkConfig: Config = {
 		'no-refer-to-non-existent-id': true,
 		// no-broken-fragment-link (split from no-refer-to-non-existent-id, opinion-level: HTML LS
 		// does not treat a broken fragment link as a conformance violation) is intentionally not
-		// enabled here for the same reason as no-deprecated-element/no-deprecated-attr below.
-		// no-deprecated-element/no-deprecated-attr (factual, MDN/BCD-sourced)
-		// are intentionally not enabled here — they are not HTML LS conformance
-		// violations, so nu-validator never flags them either.
+		// enabled here — unlike no-deprecated-element/no-deprecated-attr below, nu-validator
+		// genuinely never flags this one.
 		'no-obsolete-element': true,
 		'no-obsolete-attr': true,
+		// no-deprecated-element/no-deprecated-attr (factual, MDN/BCD-sourced) were assumed to be
+		// pure non-conformance opinion, on the theory that nu-validator never flags them — false:
+		// nu-validator treats several MDN-flagged-deprecated attributes (e.g. `<script language>`,
+		// `<script charset>`, `<style type>`, `<iframe allowpaymentrequest>`) as outright parse
+		// errors, predating what the current HTML LS text still documents. Escalated to `error`
+		// here (their user-facing default stays `warning`, matching the plan's factual/BCD
+		// classification) purely to align the bench's match-error/nu-only split with nu's verdict.
+		'no-deprecated-element': { severity: 'error' },
+		'no-deprecated-attr': { severity: 'error' },
 		'no-duplicate-id': true,
 		// Validates `<script>` body against the spec selected by its `type` (importmap per HTML LS
 		// § Parse an import map string; speculationrules per HTML LS §7.6 Speculation rules).
@@ -147,6 +154,12 @@ export const benchmarkConfig: Config = {
 		// style preference, not something nu-validator flags, so no-redundant-aria-prop
 		// (warning by default) is intentionally not enabled here.
 		'no-contradictory-aria-prop': true,
+		// ARIA §childrenArePresentational: nu-validator treats a descendant with an explicit
+		// non-presentational role/semantics inside a role with presentational children as an
+		// outright parse error (e.g. `role="button"` nested under `role="separator"`), even
+		// though this rule's user-facing default stays 'warning' (non-normative — the ARIA
+		// section itself is a MAY/SHOULD, not a MUST). Escalated here purely for bench alignment.
+		'no-aria-on-presentational-children': { severity: 'error' },
 		// ARIA in HTML §3: "Authors MAY use the aria-hidden attribute on any HTML element that
 		// allows global aria-* attributes, with the exception of focusable elements and the body
 		// element." The rule enforces this transitively via WAI-ARIA §Including Elements in the
