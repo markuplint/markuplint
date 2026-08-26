@@ -160,7 +160,12 @@ export async function getImageDimensions(
 
 	await loadCacheFromDisk();
 
-	// Get file size for cache key
+	// Get file size for cache key. Deliberately treats every failure class the
+	// same (missing file, permission denied, I/O error, etc.) as "can't check
+	// this image" rather than a lint-worthy violation — a filesystem problem
+	// unrelated to markup correctness shouldn't fail the lint run, and this
+	// rule has no way to distinguish "the author has a typo in src" (already
+	// the common, expected case) from a transient/environmental read failure.
 	let fileSize: number;
 	try {
 		const fileStat = await stat(absolutePath);
@@ -175,7 +180,8 @@ export async function getImageDimensions(
 		return cached;
 	}
 
-	// Read and measure the image
+	// Read and measure the image. Same rationale as the `stat` catch above:
+	// any read failure means this rule can't check the image, not a violation.
 	let buffer: Buffer;
 	try {
 		buffer = await readFile(absolutePath);

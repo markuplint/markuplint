@@ -8,7 +8,7 @@
 
 v5.0.0 redoes the rule catalog end to end: consistent ESLint-style verb-prefix naming, one rule per independent spec requirement, and machine-readable spec-conformance metadata. rc.4's 82 rules become 106 (25 splits, 1 new rule, 2 removed).
 
-**Nothing breaks silently.** Every renamed or split rule keeps working under its old name — markuplint reports a deprecation warning and expands the old config to the new rule(s) automatically. Old names are removed in v6.
+**Nothing breaks silently** — with one documented exception. Every renamed or split rule keeps working under its old name — markuplint reports a deprecation warning and expands the old config to the new rule(s) automatically. Old names are removed in v6. The exception: two rules keep their pre-v5 name and gain a split-off sibling with no alias/warning mechanism to announce it — see [Known Migration Gap](#known-migration-gap) if you use `permitted-contents` or `no-refer-to-non-existent-id` directly in a raw (non-preset) config.
 
 ## Categories
 
@@ -165,6 +165,8 @@ to keep the same coverage in v5.
 | `require-adjacent-popover` | `error` (as `neighbor-popovers`) | `warning` | HTML LS states this in a non-normative Note |
 
 `no-consecutive-br` is a deliberate, documented exception: it stays `warning` even though it's a proxy for an HTML LS MUST, because the detection can false-positive on legitimate uses (e.g. poem line breaks).
+
+The four `warning`→`error` rows above can turn a previously-green CI pipeline red on unrelated code for teams using a strict, zero-warnings gate (e.g. `--max-warnings 0`) — check your current warning counts against these specific rules before upgrading.
 
 ## Preset Changes
 
