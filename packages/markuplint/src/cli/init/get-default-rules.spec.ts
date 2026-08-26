@@ -365,9 +365,13 @@ test('default-rules', () => {
 			category: 'a11y',
 			defaultValue: true,
 		},
-		'wai-aria-implicit-props': {
+		'no-redundant-aria-prop': {
 			category: 'a11y',
 			defaultValue: false,
+		},
+		'no-contradictory-aria-prop': {
+			category: 'a11y',
+			defaultValue: true,
 		},
 		'no-redundant-role': {
 			category: 'a11y',

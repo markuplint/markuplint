@@ -13,7 +13,7 @@ description: >
   warning but the spec text it mirrors is a MUST / MUST NOT.
   Trigger keywords: enable bench rule, bench config flat rule,
   severity override bench, rule not flagging on bench, warning vs
-  error in bench, escalate severity bench, wai-aria-implicit-props
+  error in bench, escalate severity bench, no-contradictory-aria-prop
   bench, bench coverage missing rule.
 ---
 

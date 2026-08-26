@@ -239,7 +239,11 @@
 		"a11y/wai-aria/implicit-props": {
 			"specConformance": "non-normative",
 			"severity": "warning",
-			"rules": { "wai-aria-implicit-props": true }
+			"rules": { "no-redundant-aria-prop": true }
+		},
+		"a11y/wai-aria/contradictory-props": {
+			"specConformance": "normative",
+			"rules": { "no-contradictory-aria-prop": true }
 		},
 		"a11y/wai-aria/required-props": {
 			"specConformance": "normative",

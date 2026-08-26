@@ -142,10 +142,12 @@ export const benchmarkConfig: Config = {
 		'no-prohibited-naming': true,
 		'element-supports-aria-prop': true,
 		'role-supports-aria-prop': true,
-		// HTML LS / ARIA in HTML conformance: native HTML attributes MUST be used in preference
-		// to their ARIA equivalents. The rule defaults to severity 'warning' for ergonomic reasons;
-		// the bench treats it as a hard error to align with ARIA-in-HTML §6.
-		'wai-aria-implicit-props': { severity: 'error' },
+		// ARIA in HTML §6: native HTML attributes MUST take precedence over a contradicting ARIA
+		// equivalent — a real conformance violation, and no-contradictory-aria-prop already
+		// defaults to 'error' for it. Merely redundant (same-value) aria-* is a should-level
+		// style preference, not something nu-validator flags, so no-redundant-aria-prop
+		// (warning by default) is intentionally not enabled here.
+		'no-contradictory-aria-prop': true,
 		// ARIA in HTML §3: "Authors MAY use the aria-hidden attribute on any HTML element that
 		// allows global aria-* attributes, with the exception of focusable elements and the body
 		// element." The rule enforces this transitively via WAI-ARIA §Including Elements in the
