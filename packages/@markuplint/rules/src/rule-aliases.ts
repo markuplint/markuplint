@@ -145,6 +145,30 @@ function expandLandmarkRoles(rule: AnyRule): Record<string, AnyRule> {
 }
 
 /**
+ * `required-h1` split two ways: `require-h1` (the missing-`<h1>` half —
+ * always present regardless of the old options) and `no-duplicate-h1` (the
+ * `expected-once` half, included unless the user explicitly set
+ * `expected-once: false` to opt out of it). `in-document-fragment` is
+ * shared by both halves, so it is copied to each.
+ */
+function expandRequiredH1(rule: AnyRule): Record<string, AnyRule> {
+	const { options } = normalize(rule);
+	const inDocumentFragment = options?.['in-document-fragment'];
+	const expectedOnce = options?.['expected-once'];
+	const sharedOptions = inDocumentFragment === undefined ? undefined : { 'in-document-fragment': inDocumentFragment };
+
+	const expanded: Record<string, AnyRule> = {
+		'require-h1': withOptions(rule, sharedOptions),
+	};
+
+	if (expectedOnce !== false) {
+		expanded['no-duplicate-h1'] = withOptions(rule, sharedOptions);
+	}
+
+	return expanded;
+}
+
+/**
  * `doctype` split two ways: `require-doctype` (missing-DOCTYPE-entirely, the
  * `value: 'always'` half — always present regardless of the old options) and
  * `no-obsolete-doctype` (the `denyObsoleteType` half, included unless the
@@ -191,6 +215,10 @@ export const ruleAliasTable: RuleAliasTable = {
 	'landmark-roles': {
 		expand: expandLandmarkRoles,
 		targets: ['no-nested-top-level-landmark', 'require-landmark-label'],
+	},
+	'required-h1': {
+		expand: expandRequiredH1,
+		targets: ['require-h1', 'no-duplicate-h1'],
 	},
 	'attr-duplication': renamed('no-duplicate-attr'),
 	'id-duplication': renamed('no-duplicate-id'),

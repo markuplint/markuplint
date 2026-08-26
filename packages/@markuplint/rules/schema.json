@@ -153,6 +153,9 @@
 				"no-duplicate-dt": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-duplicate-dt/schema.json"
 				},
+				"no-duplicate-h1": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-duplicate-h1/schema.json"
+				},
 				"no-duplicate-id": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-duplicate-id/schema.json"
 				},
@@ -321,6 +324,9 @@
 				"require-end-tag": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/require-end-tag/schema.json"
 				},
+				"require-h1": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/require-h1/schema.json"
+				},
 				"require-landmark-label": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/require-landmark-label/schema.json"
 				},
@@ -335,9 +341,6 @@
 				},
 				"required-element": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/require-element/schema.json"
-				},
-				"required-h1": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/required-h1/schema.json"
 				},
 				"role-supports-aria-prop": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/role-supports-aria-prop/schema.json"

@@ -8,12 +8,6 @@
 			"type": "object",
 			"additionalProperties": false,
 			"properties": {
-				"expected-once": {
-					"type": "boolean",
-					"default": "true",
-					"description": "Warn if there is a duplicate `h1` tag in the document.",
-					"description:ja": "ドキュメント内で `h1`タグに重複があると警告します。"
-				},
 				"in-document-fragment": {
 					"type": "boolean",
 					"default": "false",
@@ -33,10 +27,9 @@
 			"properties": {
 				"value": { "$ref": "#/definitions/value" },
 				"options": { "$ref": "#/definitions/options" },
-				"option": { "$ref": "#/definitions/options", "deprecated": true },
 				"severity": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/ml-config/schema.json#/definitions/severity",
-					"default": "error"
+					"default": "warning"
 				},
 				"reason": {
 					"type": "string"

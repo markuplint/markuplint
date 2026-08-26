@@ -51,6 +51,7 @@ import NoDisallowedAttr from './no-disallowed-attr/index.js';
 import NoDuplicateAttr from './no-duplicate-attr/index.js';
 import NoDuplicateAutofocus from './no-duplicate-autofocus/index.js';
 import NoDuplicateDt from './no-duplicate-dt/index.js';
+import NoDuplicateH1 from './no-duplicate-h1/index.js';
 import NoDuplicateId from './no-duplicate-id/index.js';
 import NoDuplicateSiblingAttr from './no-duplicate-sibling-attr/index.js';
 import NoDuplicateVisibleMain from './no-duplicate-visible-main/index.js';
@@ -104,10 +105,10 @@ import RequireDialogAutofocus from './require-dialog-autofocus/index.js';
 import RequireDoctype from './require-doctype/index.js';
 import RequireElement from './require-element/index.js';
 import RequireEndTag from './require-end-tag/index.js';
+import RequireH1 from './require-h1/index.js';
 import RequireLandmarkLabel from './require-landmark-label/index.js';
 import RequireOwnedElements from './require-owned-elements/index.js';
 import RequireParentRole from './require-parent-role/index.js';
-import RequiredH1 from './required-h1/index.js';
 import RoleSupportsAriaProp from './role-supports-aria-prop/index.js';
 import SizesAutoRequiresLazyLoading from './sizes-auto-requires-lazy-loading/index.js';
 import TabRequiresTabpanel from './tab-requires-tabpanel/index.js';
@@ -161,6 +162,7 @@ const rules = {
 	'no-duplicate-attr': NoDuplicateAttr,
 	'no-duplicate-autofocus': NoDuplicateAutofocus,
 	'no-duplicate-dt': NoDuplicateDt,
+	'no-duplicate-h1': NoDuplicateH1,
 	'no-duplicate-id': NoDuplicateId,
 	'no-duplicate-sibling-attr': NoDuplicateSiblingAttr,
 	'no-duplicate-visible-main': NoDuplicateVisibleMain,
@@ -214,10 +216,10 @@ const rules = {
 	'require-doctype': RequireDoctype,
 	'require-element': RequireElement,
 	'require-end-tag': RequireEndTag,
+	'require-h1': RequireH1,
 	'require-landmark-label': RequireLandmarkLabel,
 	'require-owned-elements': RequireOwnedElements,
 	'require-parent-role': RequireParentRole,
-	'required-h1': RequiredH1,
 	'role-supports-aria-prop': RoleSupportsAriaProp,
 	'sizes-auto-requires-lazy-loading': SizesAutoRequiresLazyLoading,
 	'tab-requires-tabpanel': TabRequiresTabpanel,
