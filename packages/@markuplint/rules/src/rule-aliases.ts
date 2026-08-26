@@ -154,6 +154,12 @@ export const ruleAliasTable: RuleAliasTable = {
 		'consistent-table-row-length',
 	),
 	'script-content': split('valid-importmap', 'valid-speculation-rules'),
+	'srcset-sizes-constraint': split(
+		'no-unpaired-srcset-sizes',
+		'no-mixed-srcset-descriptors',
+		'sizes-auto-requires-lazy-loading',
+		'no-always-matching-source',
+	),
 	'attr-duplication': renamed('no-duplicate-attr'),
 	'id-duplication': renamed('no-duplicate-id'),
 	'required-element': renamed('require-element'),

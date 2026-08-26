@@ -96,6 +96,9 @@
 				"no-abstract-role": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-abstract-role/schema.json"
 				},
+				"no-always-matching-source": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-always-matching-source/schema.json"
+				},
 				"no-ambiguous-navigable-target-names": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-ambiguous-navigable-target-names/schema.json"
 				},
@@ -195,6 +198,9 @@
 				"no-mismatched-aspect-ratio": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-mismatched-aspect-ratio/schema.json"
 				},
+				"no-mixed-srcset-descriptors": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-mixed-srcset-descriptors/schema.json"
+				},
 				"no-obsolete-attr": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-obsolete-attr/schema.json"
 				},
@@ -248,6 +254,9 @@
 				},
 				"no-unknown-role": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-unknown-role/schema.json"
+				},
+				"no-unpaired-srcset-sizes": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-unpaired-srcset-sizes/schema.json"
 				},
 				"no-unsupported-features": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-unsupported-features/schema.json"
@@ -315,8 +324,8 @@
 				"required-h1": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/required-h1/schema.json"
 				},
-				"srcset-sizes-constraint": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/srcset-sizes-constraint/schema.json"
+				"sizes-auto-requires-lazy-loading": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/sizes-auto-requires-lazy-loading/schema.json"
 				},
 				"tab-requires-tabpanel": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/tab-requires-tabpanel/schema.json"

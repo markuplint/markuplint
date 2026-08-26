@@ -32,6 +32,7 @@ import MapIdNameMatch from './map-id-name-match/index.js';
 import MetaCharsetPosition from './meta-charset-position/index.js';
 import MeterValueBounds from './meter-value-bounds/index.js';
 import NoAbstractRole from './no-abstract-role/index.js';
+import NoAlwaysMatchingSource from './no-always-matching-source/index.js';
 import NoAmbiguousNavigableTargetNames from './no-ambiguous-navigable-target-names/index.js';
 import NoAriaOnPresentationalChildren from './no-aria-on-presentational-children/index.js';
 import NoBooleanAttrValue from './no-boolean-attr-value/index.js';
@@ -64,6 +65,7 @@ import NoInvalidAriaPropValue from './no-invalid-aria-prop-value/index.js';
 import NoInvalidAttrValue from './no-invalid-attr-value/index.js';
 import NoMalformedCharacterReference from './no-malformed-character-reference/index.js';
 import NoMismatchedAspectRatio from './no-mismatched-aspect-ratio/index.js';
+import NoMixedSrcsetDescriptors from './no-mixed-srcset-descriptors/index.js';
 import NoObsoleteAttr from './no-obsolete-attr/index.js';
 import NoObsoleteDoctype from './no-obsolete-doctype/index.js';
 import NoObsoleteElement from './no-obsolete-element/index.js';
@@ -82,6 +84,7 @@ import NoUnclosedElementAtEof from './no-unclosed-element-at-eof/index.js';
 import NoUnescapedChar from './no-unescaped-char/index.js';
 import NoUnknownAttr from './no-unknown-attr/index.js';
 import NoUnknownRole from './no-unknown-role/index.js';
+import NoUnpairedSrcsetSizes from './no-unpaired-srcset-sizes/index.js';
 import NoUnsupportedFeatures from './no-unsupported-features/index.js';
 import PermittedContents from './permitted-contents/index.js';
 import PermittedRoles from './permitted-roles/index.js';
@@ -100,7 +103,7 @@ import RequireEndTag from './require-end-tag/index.js';
 import RequireOwnedElements from './require-owned-elements/index.js';
 import RequireParentRole from './require-parent-role/index.js';
 import RequiredH1 from './required-h1/index.js';
-import SrcsetSizesConstraint from './srcset-sizes-constraint/index.js';
+import SizesAutoRequiresLazyLoading from './sizes-auto-requires-lazy-loading/index.js';
 import TabRequiresTabpanel from './tab-requires-tabpanel/index.js';
 import UsemapReferencesMap from './usemap-references-map/index.js';
 import ValidImportmap from './valid-importmap/index.js';
@@ -135,6 +138,7 @@ const rules = {
 	'meta-charset-position': MetaCharsetPosition,
 	'meter-value-bounds': MeterValueBounds,
 	'no-abstract-role': NoAbstractRole,
+	'no-always-matching-source': NoAlwaysMatchingSource,
 	'no-ambiguous-navigable-target-names': NoAmbiguousNavigableTargetNames,
 	'no-aria-on-presentational-children': NoAriaOnPresentationalChildren,
 	'no-boolean-attr-value': NoBooleanAttrValue,
@@ -167,6 +171,7 @@ const rules = {
 	'no-invalid-attr-value': NoInvalidAttrValue,
 	'no-malformed-character-reference': NoMalformedCharacterReference,
 	'no-mismatched-aspect-ratio': NoMismatchedAspectRatio,
+	'no-mixed-srcset-descriptors': NoMixedSrcsetDescriptors,
 	'no-obsolete-attr': NoObsoleteAttr,
 	'no-obsolete-doctype': NoObsoleteDoctype,
 	'no-obsolete-element': NoObsoleteElement,
@@ -185,6 +190,7 @@ const rules = {
 	'no-unescaped-char': NoUnescapedChar,
 	'no-unknown-attr': NoUnknownAttr,
 	'no-unknown-role': NoUnknownRole,
+	'no-unpaired-srcset-sizes': NoUnpairedSrcsetSizes,
 	'no-unsupported-features': NoUnsupportedFeatures,
 	'permitted-contents': PermittedContents,
 	'permitted-roles': PermittedRoles,
@@ -203,7 +209,7 @@ const rules = {
 	'require-owned-elements': RequireOwnedElements,
 	'require-parent-role': RequireParentRole,
 	'required-h1': RequiredH1,
-	'srcset-sizes-constraint': SrcsetSizesConstraint,
+	'sizes-auto-requires-lazy-loading': SizesAutoRequiresLazyLoading,
 	'tab-requires-tabpanel': TabRequiresTabpanel,
 	'usemap-references-map': UsemapReferencesMap,
 	'valid-importmap': ValidImportmap,
