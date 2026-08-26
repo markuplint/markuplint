@@ -118,7 +118,16 @@ export function deriveDefaultSeverityFromConformanceLevel(level: RuleConformance
  */
 export type RuleSeed<T extends RuleConfigValue = boolean, O extends PlainData = undefined> = {
 	readonly meta?: {
-		readonly category?: 'validation' | 'style' | 'naming-convention' | 'a11y' | 'maintainability';
+		readonly category?:
+			| 'syntax'
+			| 'structure'
+			| 'attributes'
+			| 'references'
+			| 'forms'
+			| 'a11y'
+			| 'style'
+			| 'maintainability'
+			| 'compat';
 
 		/**
 		 * This rule's specification-conformance classification. See

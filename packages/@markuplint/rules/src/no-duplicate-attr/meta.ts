@@ -1,5 +1,5 @@
 export default {
-	category: 'validation',
+	category: 'syntax',
 	fixable: true,
 	// This rule's detection is a superset of parse5's `duplicate-attribute`
 	// event: parse5 only fires on HTML elements (case-insensitive), while

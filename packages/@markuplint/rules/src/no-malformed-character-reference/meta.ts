@@ -6,7 +6,7 @@
 // of the built-in `parse-error` channel. ml-core suppresses the mirrored
 // codes unconditionally — they only ever surface through this rule.
 export default {
-	category: 'style',
+	category: 'syntax',
 	mirrorsParseErrorCodes: [
 		'unknown-named-character-reference',
 		'missing-semicolon-after-character-reference',

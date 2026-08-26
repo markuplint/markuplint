@@ -1,3 +1,3 @@
 export default {
-	category: 'a11y',
+	category: 'references',
 } as const;

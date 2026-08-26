@@ -1,5 +1,5 @@
 export default {
-	category: 'validation',
+	category: 'structure',
 	// This rule covers parse5's `missing-doctype` event (the "no DOCTYPE at
 	// all" case). parse5's `non-conforming-doctype` and `misplaced-doctype`
 	// are NOT mirrored by either doctype rule — they have judgement criteria

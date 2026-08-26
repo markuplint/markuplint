@@ -1,4 +1,4 @@
 export default {
-	category: 'style',
+	category: 'attributes',
 	fixable: true,
 } as const;
