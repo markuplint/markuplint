@@ -24,19 +24,19 @@
 
 ### OGPで怒られます
 
-Open GraphプロトコルはHTMLとは異なる仕様のため、標準で対応していません。[対応できる設定例](/docs/rules/invalid-attr#the-open-graph-protocol)がありますので参考にしてください。
+Open GraphプロトコルはHTMLとは異なる仕様のため、標準で対応していません。[対応できる設定例](/docs/rules/no-unknown-attr#the-open-graph-protocol)がありますので参考にしてください。
 
-### `invalid-attr`ルールで怒られます
+### `no-unknown-attr`ルールで怒られます
 
-[`invalid-attr`](/docs/rules/invalid-attr)はHTMLの仕様に存在しない属性が要素に指定されていると警告します。フレームワークを利用していると頻繁に遭遇するかもしれません。[`allowAttrs`](/docs/rules/invalid-attr#setting-allow-attrs-option)オプションで許可したい属性を追加できます。
+[`no-unknown-attr`](/docs/rules/no-unknown-attr)はHTMLの仕様に存在しない属性が要素に指定されていると警告します。フレームワークを利用していると頻繁に遭遇するかもしれません。[`allowAttrs`](/docs/rules/no-unknown-attr#setting-allow-attrs-option)オプションで許可したい属性を追加できます。
 
 ReactとVueに関してはスペックプラグインにより、各構文固有の属性には警告がでないように定義されています。（参考: [なぜスペックプラグインが必要なのですか](/docs/guides/beyond-html#why-need-the-spec-plugins)）
 
-### `character-reference`ルールで怒られます
+### `no-unescaped-char`ルールで怒られます
 
 <!-- textlint-disable ja-technical-writing/ja-no-weak-phrase -->
 
-[`character-reference`](/docs/rules/character-reference)は文字を厳密に評価しません。エスケープ不要な場所でも変更を促されることがあります。テンプレートエンジンで不都合が起きる場合は、ルールを[無効化](/docs/guides/ignoring-code)するか、[Issueで報告](https://github.com/markuplint/markuplint/issues/new?assignees=%40YusukeHirao&labels=Bug&template=bug_repot.md&title=Fix)してください。
+[`no-unescaped-char`](/docs/rules/no-unescaped-char)は、デフォルトではリテラルの`<`(HTMLが常にエスケープを要求する唯一の文字)のみを検出します。[`strict`](/docs/rules/no-unescaped-char#setting-strict-option)オプションを有効にすると、`>`、`"`、素の`&`も検出対象になりますが、これらは技術的には未エスケープでも仕様に準拠しており、テンプレートエンジンによっては不都合が起きることがあります。その場合は、ルールを[無効化](/docs/guides/ignoring-code)するか、[Issueで報告](https://github.com/markuplint/markuplint/issues/new?assignees=%40YusukeHirao&labels=Bug&template=bug_repot.md&title=Fix)してください。
 
 <!-- textlint-enable ja-technical-writing/ja-no-weak-phrase -->
 

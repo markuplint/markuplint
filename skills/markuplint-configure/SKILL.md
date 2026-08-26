@@ -126,7 +126,7 @@ Example proposals:
       "selector": ".legacy-section",
       "inheritance": true,
       "rules": {
-        "wai-aria": false
+        "no-unknown-role": false
       }
     }
   ]
@@ -149,7 +149,8 @@ Example proposals:
   "overrides": {
     "./src/legacy/**/*": {
       "rules": {
-        "character-reference": false
+        "no-unescaped-char": false,
+        "no-malformed-character-reference": false
       }
     }
   }
@@ -178,7 +179,17 @@ These are frequently requested. Propose them directly when relevant:
     {
       "selector": "meta[property]",
       "rules": {
-        "invalid-attr": {
+        "no-unknown-attr": {
+          "options": {
+            "allowAttrs": ["property"]
+          }
+        },
+        "no-disallowed-attr": {
+          "options": {
+            "allowAttrs": ["property"]
+          }
+        },
+        "no-invalid-attr-value": {
           "options": {
             "allowAttrs": ["property"]
           }
@@ -194,7 +205,7 @@ These are frequently requested. Propose them directly when relevant:
 ```json
 {
   "rules": {
-    "invalid-attr": {
+    "no-unknown-attr": {
       "options": {
         "allowAttrs": ["data-testid"]
       }

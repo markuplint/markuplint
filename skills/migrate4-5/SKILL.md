@@ -182,7 +182,8 @@ Example output:
 
 In some versions, the `-c` flag completely replaces the project's configuration file with the specified configuration. When using `-c` in tests, be aware that only the specified configuration may be applied.
 
-## Reference: no-unsupported-features
+## Reference: no-unsupported-browser-features
 
 - A rule that detects browser-unsupported elements and attributes based on browserslist configuration
 - Becomes a no-op in projects without browserslist configuration
+- Split from the former `no-unsupported-features` rule; experimental and non-standard feature detection now live in the separate `no-experimental-features` and `no-nonstandard-features` rules

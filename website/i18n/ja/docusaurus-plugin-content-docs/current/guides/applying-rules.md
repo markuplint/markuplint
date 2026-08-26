@@ -20,7 +20,7 @@ Markuplintは[設定ファイル](/docs/configuration)が見つからない場�
     "a11y/*": false,
 
     // ベースルール名で無効化（それを含むすべてのプリセットに影響）
-    "id-duplication": false
+    "no-duplicate-id": false
   }
 }
 ```
@@ -36,9 +36,9 @@ Markuplintは[設定ファイル](/docs/configuration)が見つからない場�
 ```json class=config
 {
   "rules": {
-    "attr-duplication": true,
+    "no-duplicate-attr": true,
     "class-naming": "/[a-z]+/",
-    "required-attr": {
+    "require-attr": {
       "value": "true"
     }
   }
@@ -77,15 +77,15 @@ Markuplintは[設定ファイル](/docs/configuration)が見つからない場�
       "selector": ".legacy-section",
       "inheritance": true,
       "rules": {
-        // a11y/wai-aria などの仮想ルールも無効化されます
-        "wai-aria": false
+        // a11y/wai-aria/non-existent-role などの仮想ルールも無効化されます
+        "no-unknown-role": false
       }
     }
   ]
 }
 ```
 
-`nodeRules` と `childNodeRules` ではベースルール名（例: `"wai-aria"`）や名前空間ワイルドカード（例: `"a11y/*": false`）も使用できます。これらはプリセットが作成した仮想ルールに自動的に適用されます — 詳細は [nodeRules リファレンス](/docs/configuration/properties#noderules) を参照してください。
+`nodeRules` と `childNodeRules` ではベースルール名（例: `"no-unknown-role"`）や名前空間ワイルドカード（例: `"a11y/*": false`）も使用できます。これらはプリセットが作成した仮想ルールに自動的に適用されます — 詳細は [nodeRules リファレンス](/docs/configuration/properties#noderules) を参照してください。
 
 ## カスタムルールを使う {#using-custom-rules}
 

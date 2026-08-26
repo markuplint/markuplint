@@ -3,6 +3,8 @@
 ## Adding a New Rule (checklist — steps 2–4 have NO enforcing test; forgetting them fails silently)
 
 1. `src/<rule-name>/`: `index.ts`, `meta.ts`, `schema.json`, spec file(s), `README.md` **and** `README.ja.md` — both languages are website source and MUST stay in sync; updating only one is a recurring mistake
+   - `meta.ts`'s `category` must be one of the v5 9-category scheme: `syntax`, `structure`, `attributes`, `references`, `forms`, `a11y`, `style`, `maintainability`, `compat` (see `docs/migration/v4-v5/rule-names.md` for what each covers)
+   - `meta.ts` should also declare `specConformance` (`sources`/`level`/`cites`) once you know the rule's governing spec and requirement strength — `level: 'must'` or `'should'` requires a non-empty `cites`. The rollout across pre-existing rules is incremental and partial by design (enforced only for rules that declare it — see `spec-conformance.spec.ts` and `@markuplint/config-presets`'s `html-standard-entries.spec.ts`), but a **new** rule should declare it from the start
 2. Register the rule in `src/index.ts` (import + registry entry)
 3. Add a `$ref` entry to `packages/@markuplint/rules/schema.json` — this file is a **manually maintained registry** (no generator produces it, despite looking generated)
 4. If the rule belongs in a preset, update `packages/@markuplint/config-presets/src/`
@@ -47,7 +49,7 @@ channel violation. The declaration criterion (rule scope must be at least as bro
 parse5 event) and the ruleset dual-lookup semantics are documented in JSDoc:
 `@markuplint/ml-core` `src/ml-rule/types.ts` (the meta field) and
 `src/ml-core.ts` `#pushNonFatalParseErrors`. Canonical example of a rule that actively
-consumes `document.parseErrors` and reports them under its own ruleId: `character-reference`.
+consumes `document.parseErrors` and reports them under its own ruleId: `no-malformed-character-reference`.
 
 Enforced by tests: `src/mirrors-parse-error-codes.spec.ts` (no duplicate declarations across
 rules) and `@markuplint/html-parser`'s `parse-error-code-sync.spec.ts` (compile-time alignment

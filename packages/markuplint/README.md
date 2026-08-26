@@ -138,7 +138,7 @@ $ markuplint --prune-suppressions "src/**/*.html"
 ```json
 {
   "src/index.html": {
-    "attr-duplication": { "count": 3, "scope": "#main-nav > ul" }
+    "no-duplicate-attr": { "count": 3, "scope": "#main-nav > ul" }
   }
 }
 ```

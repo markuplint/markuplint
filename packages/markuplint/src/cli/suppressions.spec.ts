@@ -38,7 +38,7 @@ describe('Bulk Suppressions CLI', { timeout: 30_000 }, () => {
 		expect(keys).toHaveLength(1);
 
 		const fileEntry = content[keys[0]!]!;
-		expect(fileEntry['attr-duplication']).toStrictEqual({ count: 2 });
+		expect(fileEntry['no-duplicate-attr']).toStrictEqual({ count: 2 });
 	});
 
 	test('normal lint suppresses errors when suppressions file exists', async () => {
@@ -70,7 +70,7 @@ describe('Bulk Suppressions CLI', { timeout: 30_000 }, () => {
 		// Write a suppressions file with count=1 (less than actual 2 violations)
 		const relPath = path.relative(tmpDir, targetFile).split(path.sep).join('/');
 		const suppressionsData = {
-			[relPath]: { 'attr-duplication': { count: 1 } },
+			[relPath]: { 'no-duplicate-attr': { count: 1 } },
 		};
 		await fs.writeFile(suppressionsFile, JSON.stringify(suppressionsData), 'utf8');
 
@@ -91,7 +91,7 @@ describe('Bulk Suppressions CLI', { timeout: 30_000 }, () => {
 
 		const { exitCode } = await execa(
 			entryFilePath,
-			['--suppress-rule', 'attr-duplication', '--suppressions-location', suppressionsFile, targetFile],
+			['--suppress-rule', 'no-duplicate-attr', '--suppressions-location', suppressionsFile, targetFile],
 			{ reject: false },
 		);
 
@@ -100,7 +100,7 @@ describe('Bulk Suppressions CLI', { timeout: 30_000 }, () => {
 		const content = JSON.parse(await fs.readFile(suppressionsFile, 'utf8'));
 		const keys = Object.keys(content);
 		const fileEntry = content[keys[0]!]!;
-		expect(fileEntry['attr-duplication']).toBeDefined();
+		expect(fileEntry['no-duplicate-attr']).toBeDefined();
 		// case-sensitive-attr-name is a warning, not suppressed
 		expect(fileEntry['case-sensitive-attr-name']).toBeUndefined();
 	});
@@ -112,7 +112,7 @@ describe('Bulk Suppressions CLI', { timeout: 30_000 }, () => {
 		const relPath = path.relative(tmpDir, targetFile).split(path.sep).join('/');
 		const suppressionsData = {
 			[relPath]: {
-				'attr-duplication': { count: 2 },
+				'no-duplicate-attr': { count: 2 },
 				'nonexistent-rule': { count: 5 },
 			},
 		};
@@ -129,7 +129,7 @@ describe('Bulk Suppressions CLI', { timeout: 30_000 }, () => {
 
 		const content = JSON.parse(await fs.readFile(suppressionsFile, 'utf8'));
 		const fileEntry = content[Object.keys(content)[0]!]!;
-		expect(fileEntry['attr-duplication']).toBeDefined();
+		expect(fileEntry['no-duplicate-attr']).toBeDefined();
 		expect(fileEntry['nonexistent-rule']).toBeUndefined();
 	});
 

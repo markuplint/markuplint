@@ -7,7 +7,8 @@ import type { ChildNodeRule, Config, NodeRule, Rules } from '@markuplint/ml-conf
 export class Ruleset {
 	/**
 	 * Maps base rule names to their virtual rule names created by NamedRuleGroups.
-	 * For example, if `a11y/wai-aria` wraps `wai-aria`, this maps `"wai-aria"` → `["a11y/wai-aria"]`.
+	 * For example, if `a11y/landmark-roles` wraps `no-nested-top-level-landmark`, this maps
+	 * `"no-nested-top-level-landmark"` → `["a11y/landmark-roles"]`.
 	 * Used by nodeRules/childNodeRules to propagate settings to virtual rules.
 	 */
 	readonly baseRuleToVirtualNames: ReadonlyMap<string, readonly string[]>;

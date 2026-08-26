@@ -15,7 +15,17 @@ import { isMarkuplintRepo } from './is-markuplint-repo.js';
 
 const KEBAB_CASE = /^[a-z][\da-z]*(?:-[a-z][\da-z]*)*$/i;
 
-const CATEGORIES = ['validation', 'a11y', 'naming-convention', 'maintainability', 'style'] as const;
+const CATEGORIES = [
+	'syntax',
+	'structure',
+	'attributes',
+	'references',
+	'forms',
+	'a11y',
+	'style',
+	'maintainability',
+	'compat',
+] as const;
 const SEVERITIES = ['error', 'warning'] as const;
 
 const PURPOSE_MAP: Record<string, CreateRulePurpose> = {
@@ -48,8 +58,8 @@ Options:
       --no-test              Skip test file generation
   -d, --description <text>   Rule description (required for core)
   -c, --category <cat>       Category (required for core):
-                               validation, a11y, naming-convention,
-                               maintainability, style
+                               syntax, structure, attributes, references,
+                               forms, a11y, style, maintainability, compat
   -s, --severity <level>     Severity: error or warning (required for core)
       --json                 Output result as JSON
   -h, --help                 Show this help message
@@ -301,11 +311,15 @@ async function createRuleInteractive() {
 					category: await select({
 						message: 'Category:',
 						choices: [
-							{ name: 'Conformance checking', value: 'validation' },
+							{ name: 'Syntax', value: 'syntax' },
+							{ name: 'Structure', value: 'structure' },
+							{ name: 'Attributes', value: 'attributes' },
+							{ name: 'References', value: 'references' },
+							{ name: 'Forms', value: 'forms' },
 							{ name: 'Accessibility', value: 'a11y' },
-							{ name: 'Naming Convention', value: 'naming-convention' },
-							{ name: 'Maintainability', value: 'maintainability' },
 							{ name: 'Style', value: 'style' },
+							{ name: 'Maintainability', value: 'maintainability' },
+							{ name: 'Browser Compatibility', value: 'compat' },
 						],
 					}),
 					severity: await select({

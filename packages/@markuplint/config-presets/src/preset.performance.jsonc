@@ -1,4 +1,34 @@
 {
+	"rules": {
+		/**
+		 * Require conventional **`<head>` element order**
+		 *
+		 * A consistent order (charset, viewport, title, then the rest) lets the
+		 * browser start rendering sooner instead of re-parsing metadata.
+		 */
+		"performance/head-element-order": {
+			"specConformance": "non-normative",
+			"rules": {
+				"head-element-order": true
+			}
+		},
+
+		/**
+		 * Require **matching aspect-ratio** attributes
+		 *
+		 * `width`/`height` that mismatch the image's actual aspect ratio still
+		 * cause a layout shift once the image loads, defeating the point of
+		 * setting them.
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/embedded-content-other.html#dimension-attributes
+		 */
+		"performance/no-mismatched-aspect-ratio": {
+			"specConformance": "normative",
+			"rules": {
+				"no-mismatched-aspect-ratio": true
+			}
+		}
+	},
 	"nodeRules": [
 		{
 			/**
@@ -10,7 +40,7 @@
 			"specConformance": "normative",
 			"selector": ":where(head)",
 			"rules": {
-				"required-element": ["meta[charset=\"UTF-8\" i]"]
+				"require-element": ["meta[charset=\"UTF-8\" i]"]
 			}
 		},
 		{
@@ -23,7 +53,7 @@
 			"specConformance": "non-normative",
 			"selector": ":where(script[src]:not([type=module]))",
 			"rules": {
-				"required-attr": ["defer"]
+				"require-attr": ["defer"]
 			}
 		},
 		{
@@ -36,7 +66,7 @@
 			"specConformance": "non-normative",
 			"selector": ":where(img[src])",
 			"rules": {
-				"required-attr": ["width", "height"]
+				"require-attr": ["width", "height"]
 			}
 		},
 		{
@@ -49,7 +79,7 @@
 			"specConformance": "non-normative",
 			"selector": ":where(iframe)",
 			"rules": {
-				"required-attr": [
+				"require-attr": [
 					"title",
 					{
 						"name": "loading",

@@ -1,3 +1,3 @@
 export default {
-	category: 'naming-convention',
+	category: 'style',
 } as const;

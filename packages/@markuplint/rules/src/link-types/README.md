@@ -15,7 +15,7 @@ This rule checks:
 
 :::note
 
-The `invalid-attr` rule also validates `rel` attribute values via the type system, but it does not check body-ok context and always permits Microformats keywords. The `link-types` rule provides body-ok checking and Microformats control with more detailed error messages. Both rules can be used together; their checks are complementary.
+The `no-invalid-attr-value` rule also validates `rel` attribute values via the type system, but it does not check body-ok context and always permits Microformats keywords. The `link-types` rule provides body-ok checking and Microformats control with more detailed error messages. Both rules can be used together; their checks are complementary.
 
 :::
 
@@ -50,32 +50,25 @@ The `invalid-attr` rule also validates `rel` attribute values via the type syste
 
 ## Configuration Example
 
-### Default (WHATWG standard only)
-
-```json class=config
-{
-  "rules": {
-    "link-types": true
-  }
-}
-```
-
 ### `allowMicroformats`
 
 type: `boolean | string[]`
+default: `true`
 
-Controls whether [Microformats](https://microformats.org/wiki/existing-rel-values) link type keywords are allowed. The Microformats keyword list is based on the [microformats.org wiki](https://microformats.org/wiki/existing-rel-values) registered keywords.
+Controls whether [Microformats](https://microformats.org/wiki/existing-rel-values) link type keywords are allowed, in addition to the WHATWG standard keywords. The Microformats keyword list is based on the [microformats.org wiki](https://microformats.org/wiki/existing-rel-values) registered keywords.
+
+The default is `true`: [HTML Living Standard §4.6.6 the rel attribute](https://html.spec.whatwg.org/multipage/links.html#linkTypes) requires conformance checkers to accept keywords registered on the microformats wiki (proposed or ratified) as extensions to the spec, so rejecting them would itself be non-conformant.
 
 Even when Microformats keywords are allowed, element context is still enforced. For example, keywords defined only for `<a>` are rejected on `<link>`. Microformats keywords are always rejected on `<form>` because the Microformats registry does not define form context.
 
-#### `true` — Allow all registered Microformats keywords
+#### `false` — WHATWG standard keywords only
 
 ```json class=config
 {
   "rules": {
     "link-types": {
       "options": {
-        "allowMicroformats": true
+        "allowMicroformats": false
       }
     }
   }

@@ -1,3 +1,22 @@
 {
-	"entries": []
+	"entries": [
+		{
+			"path": "html-aria/misc/aria-hidden-true-with-hidden-until-found-novalid.html",
+			"category": "aria",
+			"nuMessageIds": [
+				"nv-3356debcf7dc"
+			]
+		},
+		{
+			"path": "html-aria/presentational-children/testcase-844.html",
+			"category": "aria",
+			"nuMessageIds": [
+				"nv-69d60981968f",
+				"nv-b67f48607a78",
+				"nv-e94e07105cb4",
+				"nv-9364f4d2a3d9",
+				"nv-72f27ad4c9e6"
+			]
+		}
+	]
 }

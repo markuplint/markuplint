@@ -6,8 +6,11 @@
 			"type": "object",
 			"additionalProperties": false,
 			"properties": {
+				"aria-prop-requires-role": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/aria-prop-requires-role/schema.json"
+				},
 				"attr-duplication": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/attr-duplication/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-duplicate-attr/schema.json"
 				},
 				"attr-order": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/attr-order/schema.json"
@@ -21,29 +24,23 @@
 				"case-sensitive-tag-name": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/case-sensitive-tag-name/schema.json"
 				},
-				"character-reference": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/character-reference/schema.json"
-				},
 				"class-naming": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/class-naming/schema.json"
 				},
+				"consistent-table-row-length": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/consistent-table-row-length/schema.json"
+				},
 				"correct-aspect-ratio": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/correct-aspect-ratio/schema.json"
-				},
-				"deprecated-attr": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/deprecated-attr/schema.json"
-				},
-				"deprecated-element": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/deprecated-element/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-mismatched-aspect-ratio/schema.json"
 				},
 				"disallowed-element": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/disallowed-element/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-restricted-element/schema.json"
 				},
-				"doctype": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/doctype/schema.json"
+				"element-supports-aria-prop": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/element-supports-aria-prop/schema.json"
 				},
 				"end-tag": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/end-tag/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/require-end-tag/schema.json"
 				},
 				"form-attr-references-form": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/form-attr-references-form/schema.json"
@@ -52,25 +49,19 @@
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/head-element-order/schema.json"
 				},
 				"heading-levels": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/heading-levels/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-skipped-heading-level/schema.json"
 				},
 				"id-duplication": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/id-duplication/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-duplicate-id/schema.json"
 				},
 				"ineffective-attr": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/ineffective-attr/schema.json"
-				},
-				"input-button-non-empty-value": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/input-button-non-empty-value/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-ineffective-attr/schema.json"
 				},
 				"input-file-empty-value": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/input-file-empty-value/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-input-file-value/schema.json"
 				},
 				"input-list-references-datalist": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/input-list-references-datalist/schema.json"
-				},
-				"invalid-attr": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/invalid-attr/schema.json"
 				},
 				"itemprop-requires-itemscope": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/itemprop-requires-itemscope/schema.json"
@@ -83,9 +74,6 @@
 				},
 				"label-no-multiple-controls": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/label-no-multiple-controls/schema.json"
-				},
-				"landmark-roles": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/landmark-roles/schema.json"
 				},
 				"link-types": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/link-types/schema.json"
@@ -100,13 +88,28 @@
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/meter-value-bounds/schema.json"
 				},
 				"neighbor-popovers": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/neighbor-popovers/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/require-adjacent-popover/schema.json"
+				},
+				"no-abstract-role": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-abstract-role/schema.json"
+				},
+				"no-always-matching-source": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-always-matching-source/schema.json"
 				},
 				"no-ambiguous-navigable-target-names": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-ambiguous-navigable-target-names/schema.json"
 				},
+				"no-aria-on-presentational-children": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-aria-on-presentational-children/schema.json"
+				},
+				"no-aria-on-unsupported-element": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-aria-on-unsupported-element/schema.json"
+				},
 				"no-boolean-attr-value": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-boolean-attr-value/schema.json"
+				},
+				"no-broken-fragment-link": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-broken-fragment-link/schema.json"
 				},
 				"no-consecutive-br": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-consecutive-br/schema.json"
@@ -114,8 +117,35 @@
 				"no-content-after-body": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-content-after-body/schema.json"
 				},
+				"no-contradictory-aria-prop": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-contradictory-aria-prop/schema.json"
+				},
+				"no-default-aria-value": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-default-aria-value/schema.json"
+				},
 				"no-default-value": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-default-value/schema.json"
+				},
+				"no-deprecated-aria-prop": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-deprecated-aria-prop/schema.json"
+				},
+				"no-deprecated-attr": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-deprecated-attr/schema.json"
+				},
+				"no-deprecated-element": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-deprecated-element/schema.json"
+				},
+				"no-deprecated-role": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-deprecated-role/schema.json"
+				},
+				"no-disallowed-ancestor": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-disallowed-ancestor/schema.json"
+				},
+				"no-disallowed-attr": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-disallowed-attr/schema.json"
+				},
+				"no-duplicate-attr": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-duplicate-attr/schema.json"
 				},
 				"no-duplicate-autofocus": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-duplicate-autofocus/schema.json"
@@ -123,38 +153,143 @@
 				"no-duplicate-dt": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-duplicate-dt/schema.json"
 				},
+				"no-duplicate-h1": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-duplicate-h1/schema.json"
+				},
+				"no-duplicate-id": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-duplicate-id/schema.json"
+				},
+				"no-duplicate-sibling-attr": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-duplicate-sibling-attr/schema.json"
+				},
 				"no-duplicate-visible-main": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-duplicate-visible-main/schema.json"
 				},
 				"no-empty-palpable-content": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-empty-palpable-content/schema.json"
 				},
+				"no-empty-table-track": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-empty-table-track/schema.json"
+				},
+				"no-event-handler-attr": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-event-handler-attr/schema.json"
+				},
+				"no-experimental-features": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-experimental-features/schema.json"
+				},
 				"no-extra-selected-options": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-extra-selected-options/schema.json"
 				},
+				"no-focusable-in-aria-hidden": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-focusable-in-aria-hidden/schema.json"
+				},
 				"no-hard-code-id": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-hard-code-id/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-hardcoded-id/schema.json"
+				},
+				"no-hardcoded-id": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-hardcoded-id/schema.json"
+				},
+				"no-ineffective-attr": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-ineffective-attr/schema.json"
+				},
+				"no-input-file-value": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-input-file-value/schema.json"
+				},
+				"no-invalid-aria-prop-value": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-invalid-aria-prop-value/schema.json"
+				},
+				"no-invalid-attr-value": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-invalid-attr-value/schema.json"
+				},
+				"no-malformed-character-reference": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-malformed-character-reference/schema.json"
+				},
+				"no-mismatched-aspect-ratio": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-mismatched-aspect-ratio/schema.json"
+				},
+				"no-mixed-srcset-descriptors": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-mixed-srcset-descriptors/schema.json"
+				},
+				"no-nested-top-level-landmark": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-nested-top-level-landmark/schema.json"
+				},
+				"no-nonstandard-features": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-nonstandard-features/schema.json"
+				},
+				"no-obsolete-attr": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-obsolete-attr/schema.json"
+				},
+				"no-obsolete-doctype": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-obsolete-doctype/schema.json"
+				},
+				"no-obsolete-element": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-obsolete-element/schema.json"
 				},
 				"no-orphaned-end-tag": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-orphaned-end-tag/schema.json"
 				},
+				"no-prohibited-naming": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-prohibited-naming/schema.json"
+				},
+				"no-pseudo-list": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-pseudo-list/schema.json"
+				},
+				"no-redundant-accessible-name": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-redundant-accessible-name/schema.json"
+				},
+				"no-redundant-aria-prop": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-redundant-aria-prop/schema.json"
+				},
+				"no-redundant-role": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-redundant-role/schema.json"
+				},
 				"no-refer-to-non-existent-id": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-refer-to-non-existent-id/schema.json"
+				},
+				"no-restricted-attr": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-restricted-attr/schema.json"
+				},
+				"no-restricted-element": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-restricted-element/schema.json"
+				},
+				"no-skipped-heading-level": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-skipped-heading-level/schema.json"
 				},
 				"no-stray-head-or-body-tag": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-stray-head-or-body-tag/schema.json"
 				},
+				"no-table-cell-overlap": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-table-cell-overlap/schema.json"
+				},
+				"no-table-span-overflow": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-table-span-overflow/schema.json"
+				},
 				"no-unclosed-element-at-eof": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-unclosed-element-at-eof/schema.json"
 				},
-				"no-unsupported-features": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-unsupported-features/schema.json"
+				"no-unescaped-char": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-unescaped-char/schema.json"
+				},
+				"no-unknown-attr": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-unknown-attr/schema.json"
+				},
+				"no-unknown-role": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-unknown-role/schema.json"
+				},
+				"no-unpaired-srcset-sizes": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-unpaired-srcset-sizes/schema.json"
+				},
+				"no-unsupported-browser-features": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-unsupported-browser-features/schema.json"
 				},
 				"no-use-event-handler-attr": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-use-event-handler-attr/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-event-handler-attr/schema.json"
 				},
 				"permitted-contents": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/permitted-contents/schema.json"
+				},
+				"permitted-roles": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/permitted-roles/schema.json"
 				},
 				"placeholder-label-option": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/placeholder-label-option/schema.json"
@@ -163,10 +298,22 @@
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/progress-value-bounds/schema.json"
 				},
 				"redundant-accessible-name": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/redundant-accessible-name/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-redundant-accessible-name/schema.json"
 				},
 				"require-accessible-name": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/require-accessible-name/schema.json"
+				},
+				"require-adjacent-popover": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/require-adjacent-popover/schema.json"
+				},
+				"require-ancestor": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/require-ancestor/schema.json"
+				},
+				"require-aria-prop": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/require-aria-prop/schema.json"
+				},
+				"require-attr": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/require-attr/schema.json"
 				},
 				"require-datetime": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/require-datetime/schema.json"
@@ -174,83 +321,98 @@
 				"require-dialog-autofocus": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/require-dialog-autofocus/schema.json"
 				},
+				"require-doctype": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/require-doctype/schema.json"
+				},
+				"require-element": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/require-element/schema.json"
+				},
+				"require-end-tag": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/require-end-tag/schema.json"
+				},
+				"require-h1": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/require-h1/schema.json"
+				},
+				"require-landmark-label": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/require-landmark-label/schema.json"
+				},
+				"require-owned-elements": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/require-owned-elements/schema.json"
+				},
+				"require-parent-role": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/require-parent-role/schema.json"
+				},
 				"required-attr": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/required-attr/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/require-attr/schema.json"
 				},
 				"required-element": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/required-element/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/require-element/schema.json"
 				},
-				"required-h1": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/required-h1/schema.json"
+				"role-supports-aria-prop": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/role-supports-aria-prop/schema.json"
 				},
-				"script-content": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/script-content/schema.json"
+				"sizes-auto-requires-lazy-loading": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/sizes-auto-requires-lazy-loading/schema.json"
 				},
-				"srcset-sizes-constraint": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/srcset-sizes-constraint/schema.json"
-				},
-				"table-row-column-alignment": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/table-row-column-alignment/schema.json"
+				"tab-requires-tabpanel": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/tab-requires-tabpanel/schema.json"
 				},
 				"use-list": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/use-list/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-pseudo-list/schema.json"
 				},
 				"usemap-references-map": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/usemap-references-map/schema.json"
 				},
-				"wai-aria": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/wai-aria/schema.json"
+				"valid-importmap": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/valid-importmap/schema.json"
+				},
+				"valid-speculation-rules": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/valid-speculation-rules/schema.json"
 				},
 				"wai-aria-abstract-role": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/wai-aria-abstract-role/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-abstract-role/schema.json"
 				},
 				"wai-aria-default-value": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/wai-aria-default-value/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-default-aria-value/schema.json"
 				},
 				"wai-aria-deprecated-props": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/wai-aria-deprecated-props/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-deprecated-aria-prop/schema.json"
 				},
 				"wai-aria-deprecated-role": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/wai-aria-deprecated-role/schema.json"
-				},
-				"wai-aria-disallowed-props": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/wai-aria-disallowed-props/schema.json"
-				},
-				"wai-aria-implicit-props": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/wai-aria-implicit-props/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-deprecated-role/schema.json"
 				},
 				"wai-aria-implicit-role": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/wai-aria-implicit-role/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-redundant-role/schema.json"
 				},
 				"wai-aria-interaction-in-hidden": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/wai-aria-interaction-in-hidden/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-focusable-in-aria-hidden/schema.json"
 				},
 				"wai-aria-no-global-prop": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/wai-aria-no-global-prop/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/aria-prop-requires-role/schema.json"
 				},
 				"wai-aria-non-existent-role": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/wai-aria-non-existent-role/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-unknown-role/schema.json"
 				},
 				"wai-aria-permitted-roles": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/wai-aria-permitted-roles/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/permitted-roles/schema.json"
 				},
 				"wai-aria-presentational-children": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/wai-aria-presentational-children/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-aria-on-presentational-children/schema.json"
 				},
 				"wai-aria-required-owned-elements": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/wai-aria-required-owned-elements/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/require-owned-elements/schema.json"
 				},
 				"wai-aria-required-parent-role": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/wai-aria-required-parent-role/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/require-parent-role/schema.json"
 				},
 				"wai-aria-required-props": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/wai-aria-required-props/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/require-aria-prop/schema.json"
 				},
 				"wai-aria-tab-requires-tabpanel": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/wai-aria-tab-requires-tabpanel/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/tab-requires-tabpanel/schema.json"
 				},
 				"wai-aria-value": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/wai-aria-value/schema.json"
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-invalid-aria-prop-value/schema.json"
 				}
 			}
 		}

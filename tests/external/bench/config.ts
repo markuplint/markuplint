@@ -43,34 +43,58 @@ export const benchmarkConfig: Config = {
 	},
 	rules: {
 		'permitted-contents': true,
-		'required-attr': true,
-		'input-button-non-empty-value': true,
-		'input-file-empty-value': true,
-		'invalid-attr': true,
+		'no-disallowed-ancestor': true,
+		'require-ancestor': true,
+		'no-duplicate-sibling-attr': true,
+		'require-attr': true,
+		'no-input-file-value': true,
+		'no-unknown-attr': true,
+		'no-disallowed-attr': true,
+		'no-invalid-attr-value': true,
 		'form-attr-references-form': true,
 		'input-list-references-datalist': true,
 		'label-for-references-labelable': true,
 		'label-no-multiple-controls': true,
 		'no-refer-to-non-existent-id': true,
-		'deprecated-element': true,
-		'deprecated-attr': true,
-		'id-duplication': true,
-		// Validates `<script>` body against the spec for its `type` (currently importmap, per HTML LS § Parse an import map string).
-		'script-content': true,
+		// no-broken-fragment-link (split from no-refer-to-non-existent-id, opinion-level: HTML LS
+		// does not treat a broken fragment link as a conformance violation) is intentionally not
+		// enabled here — unlike no-deprecated-element/no-deprecated-attr below, nu-validator
+		// genuinely never flags this one.
+		'no-obsolete-element': true,
+		'no-obsolete-attr': true,
+		// no-deprecated-element/no-deprecated-attr (factual, MDN/BCD-sourced) were assumed to be
+		// pure non-conformance opinion, on the theory that nu-validator never flags them — false:
+		// nu-validator treats several MDN-flagged-deprecated attributes (e.g. `<script language>`,
+		// `<script charset>`, `<style type>`, `<iframe allowpaymentrequest>`) as outright parse
+		// errors, predating what the current HTML LS text still documents. Escalated to `error`
+		// here (their user-facing default stays `warning`, matching the plan's factual/BCD
+		// classification) purely to align the bench's match-error/nu-only split with nu's verdict.
+		'no-deprecated-element': { severity: 'error' },
+		'no-deprecated-attr': { severity: 'error' },
+		'no-duplicate-id': true,
+		// Validates `<script>` body against the spec selected by its `type` (importmap per HTML LS
+		// § Parse an import map string; speculationrules per HTML LS §7.6 Speculation rules).
+		'valid-importmap': true,
+		'valid-speculation-rules': true,
 		'no-duplicate-autofocus': true,
 		'no-duplicate-visible-main': true,
 		'placeholder-label-option': true,
-		'link-types': { options: { allowMicroformats: true } },
+		// allowMicroformats now defaults to true (HTML LS §4.6.6 the rel attribute
+		// requires accepting microformats-wiki-registered keywords), so no override
+		// is needed here anymore.
+		'link-types': true,
 		'map-id-name-match': true,
 		'usemap-references-map': true,
 		'meter-value-bounds': true,
 		'progress-value-bounds': true,
 		// Catches skipped heading levels (HTML LS §4.3.11).
-		'heading-levels': true,
+		'no-skipped-heading-level': true,
 		// Catches `<div id="a" id="b">`-style duplicate attribute names (HTML LS tokenizer).
-		'attr-duplication': true,
-		// Catches missing/legacy/quirky DOCTYPE (HTML LS §13.2 — non-`<!DOCTYPE html>` declarations).
-		doctype: true,
+		'no-duplicate-attr': true,
+		// Catches a missing DOCTYPE (HTML LS §13.2 — quirky-mode parsing).
+		'require-doctype': true,
+		// Catches a legacy/obsolete DOCTYPE declaration (HTML LS §13.1.1).
+		'no-obsolete-doctype': true,
 		// Catches an `[itemprop]` element that is not part of any item
 		// (HTML LS §5.2.3 attribute def + §5.2.5 conformance constraint).
 		'itemprop-requires-itemscope': true,
@@ -93,7 +117,10 @@ export const benchmarkConfig: Config = {
 		// HTML LS §4.2.5.4: the element containing the character encoding declaration
 		// must be serialized completely within the first 1024 bytes of the document.
 		'meta-charset-position': true,
-		'srcset-sizes-constraint': true,
+		'no-unpaired-srcset-sizes': true,
+		'no-mixed-srcset-descriptors': true,
+		'sizes-auto-requires-lazy-loading': true,
+		'no-always-matching-source': true,
 		// WAI-ARIA role definitions declare `accessibleNameRequired` per role (e.g. the
 		// `img` role: "In order for elements with a role of img to be perceivable,
 		// authors MUST provide a label using the aria-label or aria-labelledby
@@ -103,23 +130,36 @@ export const benchmarkConfig: Config = {
 		// `<figure>`).
 		'require-accessible-name': true,
 		// HTML LS §4.9.12.1 *Forming a table* closes with "Authors must not produce a table with
-		// table model errors", covering cell overlap (Step 14), a row or column that no cell is
-		// anchored to (Step 20), and a cell clipped at a row group boundary (§4.9.12 "A cell
-		// cannot cover slots that are from two or more row groups."). The rule additionally
-		// reports rows that merely disagree in width, which the spec permits and nu-validator
-		// reports as a warning; the user-facing default stays 'warning' so that beyond-spec
-		// check does not become a hard error for authors, and the bench escalates to align with
-		// the MUST NOT above.
-		'table-row-column-alignment': { severity: 'error' },
-		'wai-aria-non-existent-role': true,
-		'wai-aria-abstract-role': true,
-		'wai-aria-permitted-roles': true,
-		'wai-aria-required-props': true,
-		'wai-aria-disallowed-props': true,
-		// HTML LS / ARIA in HTML conformance: native HTML attributes MUST be used in preference
-		// to their ARIA equivalents. The rule defaults to severity 'warning' for ergonomic reasons;
-		// the bench treats it as a hard error to align with ARIA-in-HTML §6.
-		'wai-aria-implicit-props': { severity: 'error' },
+		// table model errors": cell overlap (Step 14, `no-table-cell-overlap`), a row or column
+		// that no cell is anchored to (Step 20, `no-empty-table-track`), and a cell clipped at a
+		// row group boundary (§4.9.12 "A cell cannot cover slots that are from two or more row
+		// groups.", `no-table-span-overflow`) — all three default to `error`, matching the MUST
+		// NOT above, so no override is needed. `consistent-table-row-length` reports rows that
+		// merely disagree in width, which the spec permits and nu-validator reports as a
+		// warning; its default severity stays `warning` to match.
+		'no-table-cell-overlap': true,
+		'no-table-span-overflow': true,
+		'no-empty-table-track': true,
+		'consistent-table-row-length': true,
+		'no-unknown-role': true,
+		'no-abstract-role': true,
+		'permitted-roles': true,
+		'require-aria-prop': true,
+		'no-prohibited-naming': true,
+		'element-supports-aria-prop': true,
+		'role-supports-aria-prop': true,
+		// ARIA in HTML §6: native HTML attributes MUST take precedence over a contradicting ARIA
+		// equivalent — a real conformance violation, and no-contradictory-aria-prop already
+		// defaults to 'error' for it. Merely redundant (same-value) aria-* is a should-level
+		// style preference, not something nu-validator flags, so no-redundant-aria-prop
+		// (warning by default) is intentionally not enabled here.
+		'no-contradictory-aria-prop': true,
+		// ARIA §childrenArePresentational: nu-validator treats a descendant with an explicit
+		// non-presentational role/semantics inside a role with presentational children as an
+		// outright parse error (e.g. `role="button"` nested under `role="separator"`), even
+		// though this rule's user-facing default stays 'warning' (non-normative — the ARIA
+		// section itself is a MAY/SHOULD, not a MUST). Escalated here purely for bench alignment.
+		'no-aria-on-presentational-children': { severity: 'error' },
 		// ARIA in HTML §3: "Authors MAY use the aria-hidden attribute on any HTML element that
 		// allows global aria-* attributes, with the exception of focusable elements and the body
 		// element." The rule enforces this transitively via WAI-ARIA §Including Elements in the
@@ -128,22 +168,14 @@ export const benchmarkConfig: Config = {
 		// focusable-element exception. The user-facing default stays 'warning' because the
 		// remediation is a UX-shape choice (remove aria-hidden vs. remove focus), not a purely
 		// mechanical fix; the bench escalates to align with the ARIA-in-HTML MUST NOT.
-		'wai-aria-interaction-in-hidden': { severity: 'error' },
-		'wai-aria-value': true,
-		// WAI-ARIA 1.2 §5.2.6 Required Owned Elements: "When multiple roles are specified
-		// as required owned elements for a role, at least one instance of one required
-		// owned element is expected." and "When a widget is missing required owned
-		// elements due to script execution or loading, authors MUST mark a containing
-		// element with aria-busy equal to true." The rule fires when neither an owned
-		// element nor aria-busy is present — precisely the MUST violation. The
-		// user-facing default stays 'warning' for author ergonomics; the bench escalates
-		// to align with the spec MUST.
-		'wai-aria-required-owned-elements': { severity: 'error' },
-		'wai-aria-required-parent-role': true,
-		'wai-aria-no-global-prop': true,
+		'no-focusable-in-aria-hidden': { severity: 'error' },
+		'no-invalid-aria-prop-value': true,
+		'require-owned-elements': true,
+		'require-parent-role': true,
+		'aria-prop-requires-role': true,
 		// WAI-ARIA 1.3 §tab role: "Authors MUST ensure that if a tab is active, a
 		// corresponding tabpanel that represents the active tab is rendered."
-		'wai-aria-tab-requires-tabpanel': true,
+		'tab-requires-tabpanel': true,
 	},
 	nodeRules: [
 		{
@@ -154,7 +186,7 @@ export const benchmarkConfig: Config = {
 				// ASCII case-insensitive matching (handled by the selector
 				// engine), and the `i` flag is applied to value comparisons
 				// where the spec calls for it.
-				'disallowed-element': [
+				'no-restricted-element': [
 					// Mirrors html-standard/no-duplicate-charset
 					'meta[charset] ~ meta[charset]',
 					// Mirrors html-standard/no-duplicate-description

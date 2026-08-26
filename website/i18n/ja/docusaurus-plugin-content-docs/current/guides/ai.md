@@ -4,10 +4,10 @@ AIコーディングアシスタントを活用すると、Markuplintをより�
 
 ## 警告を理解する
 
-Markuplintが違反を報告したら、エラーメッセージをAIアシスタントに貼り付けて、説明と修正方法を聞くことができます。各違反にはルール名（例: `attr-duplication`）が含まれており、AIが内容を調べてくれます。
+Markuplintが違反を報告したら、エラーメッセージをAIアシスタントに貼り付けて、説明と修正方法を聞くことができます。各違反にはルール名（例: `no-duplicate-attr`）が含まれており、AIが内容を調べてくれます。
 
 ```
-The attribute name is duplicated Markuplint(attr-duplication) [Ln 11, Col 45]
+The attribute name is duplicated Markuplint(no-duplicate-attr) [Ln 11, Col 45]
 ```
 
 AIアシスタントに聞いてみましょう:

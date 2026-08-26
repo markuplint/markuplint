@@ -82,60 +82,95 @@
 
 ### `markuplint:a11y` {#preset-a11y}
 
-| 名前付きルール                             | 解説                                                                                                                                             |
-| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `a11y/id-duplication`                      | `id`属性値がドキュメント内で重複している場合に警告します。機械可読性の観点から、支援技術における問題を回避できます。                             |
-| `a11y/no-refer-to-non-existent-id`         | `for`、`form`、`aria-*`、フラグメントリンクに指定されたIDが同じドキュメント内に存在することを確認します。                                        |
-| `a11y/wai-aria`                            | `role`属性と`aria-*`属性がWAI-ARIA、DPub-ARIA、およびARIA in HTML仕様に準拠していない場合に警告します。                                          |
-| `a11y/require-accessible-name`             | ARIAロールに従ってアクセシブル名がない場合に警告します。                                                                                         |
-| `a11y/redundant-accessible-name`           | 複数のアクセシブル名ソースが存在し、高優先度のソースが低優先度のソースを上書きする要素を検出します。                                             |
-| `a11y/label-has-control`                   | `<label>`要素が関連するコントロール要素を持たない、もしくは複数持つ場合に警告します。                                                            |
-| `a11y/landmark-roles`                      | `banner`、`main`、`complementary`、`contentinfo`がトップレベルのランドマークであること、複数のランドマークが一意のラベルを持つことを確認します。 |
-| `a11y/required-h1`                         | ドキュメント内に`<h1>`要素がない場合に警告します。                                                                                               |
-| `a11y/html-lang`                           | 支援技術がドキュメントの言語を識別できるよう、`<html>`要素に`lang`属性を必須とします。                                                           |
-| `a11y/abbr-title`                          | 略語の完全な展開を提供するため、`<abbr>`要素に`title`属性を必須とします。                                                                        |
-| `a11y/media-track`                         | キャプションと説明のため、`<audio>`や`<video>`に`<track>`要素を必須とします。                                                                    |
-| `a11y/video-autoplay-muted`                | 予期しない音声を防ぐため、`autoplay`属性を持つ`<video>`要素に`muted`属性を必須とします。                                                         |
-| `a11y/no-accesskey`                        | 支援技術のショートカットと競合する可能性があるため、`accesskey`属性を禁止します。                                                                |
-| `a11y/tabindex-restrict`                   | 自然なタブ順序を壊さないよう、`tabindex`属性を`-1`または`0`のみに制限します。                                                                    |
-| `a11y/no-autofocus-outside-dialog`         | フォーカスを強制的に奪うべきではありません。ただし`dialog`要素とその子孫では許可されます。                                                       |
-| `a11y/viewport-no-user-scalable`           | 低視力ユーザーのズーム操作を妨げるため、viewportメタタグの`user-scalable=no`を禁止します。                                                       |
-| `a11y/no-consecutive-br`                   | 連続した`<br>`タグの使用に対して警告します。代わりにCSSマージンや適切なブロック要素を使用してください。                                          |
-| `a11y/no-ambiguous-navigable-target-names` | `_blank`などの特殊なナビゲーションキーワードを無効なターゲット名に置き換える可能性のあるタイポを防ぎます。                                       |
-| `a11y/use-list`                            | テキストノードの先頭に箇条書き文字がある場合、リスト要素の使用を促します。                                                                       |
-| `a11y/table-row-column-alignment`          | `colspan`と`rowspan`を考慮して、テーブルの行と列の数の一貫性を確認します。                                                                       |
-| `a11y/no-merge-cells`                      | 支援技術にとって困難なセル結合を防ぐため、テーブルセルの`colspan`と`rowspan`属性を禁止します。                                                   |
-| `a11y/neighbor-popovers`                   | ポップオーバートリガーと対応するターゲットがDOM上で隣接していない場合に警告します。                                                              |
-| `a11y/summary-no-interactive`              | 支援技術がコンテンツにアクセスできない場合や、コンテンツが`<summary>`にマウスイベントを伝播しない場合があります。                                |
-| `a11y/require-dialog-autofocus`            | `showModal()`メソッドで表示されるダイアログに`autofocus`属性を持つ要素が必要です。                                                               |
+| 名前付きルール                             | 解説                                                                                                                 |
+| ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
+| `a11y/id-duplication`                      | `id`属性値がドキュメント内で重複している場合に警告します。機械可読性の観点から、支援技術における問題を回避できます。 |
+| `a11y/no-refer-to-non-existent-id`         | `for`、`form`、`aria-*`などに指定されたIDが同じドキュメント内に存在することを確認します。                            |
+| `a11y/no-broken-fragment-link`             | ハイパーリンクに指定されたフラグメントが同じドキュメント内に存在するIDを参照していることを確認します。               |
+| `a11y/wai-aria/unsupported-element`        | ARIA属性を全くサポートしない要素へのARIA属性指定を禁止します。                                                       |
+| `a11y/wai-aria/non-existent-role`          | WAI-ARIA仕様に存在しないロールが指定された場合に警告します。                                                         |
+| `a11y/wai-aria/abstract-role`              | 抽象ロールが使用された場合に警告します。                                                                             |
+| `a11y/wai-aria/permitted-roles`            | ARIA in HTMLの仕様において要素に許可されていないロールが指定された場合に警告します。                                 |
+| `a11y/wai-aria/implicit-role`              | 要素の暗黙のロールと同じロールが明示的に指定された場合に警告します。                                                 |
+| `a11y/wai-aria/implicit-props`             | ARIAプロパティが等価なネイティブHTML属性と同じ意味を冗長に繰り返している場合に警告します。                           |
+| `a11y/wai-aria/contradictory-props`        | ARIAプロパティの値が等価なネイティブHTML属性と矛盾している場合に警告します。                                         |
+| `a11y/wai-aria/required-props`             | ロールに必須のARIAプロパティが指定されていない場合に警告します。                                                     |
+| `a11y/wai-aria/disallowed-props`           | 要素の計算されたロールでARIAプロパティ・状態が許可されていない場合に警告します。                                     |
+| `a11y/wai-aria/prohibited-naming`          | 命名禁止(naming-prohibited)要素に`aria-label`/`aria-labelledby`/`aria-braillelabel`が使われている場合に警告します。  |
+| `a11y/wai-aria/element-supports-aria-prop` | ARIA in HTMLの要素固有の制約によりARIAプロパティ・状態が禁止されている場合に警告します。                             |
+| `a11y/wai-aria/deprecated-role`            | 非推奨（廃止予定）のロールが使用された場合に警告します。                                                             |
+| `a11y/wai-aria/deprecated-props`           | ロールにおいて非推奨のARIAプロパティ/ステートが使用された場合に警告します。                                          |
+| `a11y/wai-aria/value`                      | ARIAプロパティ/ステートの値が期待される型に適合しない場合に警告します。                                              |
+| `a11y/wai-aria/required-owned-elements`    | ロールが必要とする子ロールを含んでいない場合に警告します。                                                           |
+| `a11y/wai-aria/required-parent-role`       | 明示的なロールを持つ要素が必須の親コンテキストの外に配置された場合に警告します。                                     |
+| `a11y/wai-aria/tab-requires-tabpanel`      | アクティブな"tab"ロールの要素に対応する"tabpanel"ロールの要素がない場合に警告します。                                |
+| `a11y/wai-aria/presentational-children`    | childrenPresentationalを持つロールの子孫要素にARIA属性が指定された場合に警告します。                                 |
+| `a11y/wai-aria/no-global-prop`             | 明示的なロールを持たない要素にグローバルでないARIAプロパティが指定された場合に警告します。                           |
+| `a11y/wai-aria/default-value`              | ARIAプロパティにスペックで定義されたデフォルト値が明示的に指定された場合に警告します。                               |
+| `a11y/wai-aria/interaction-in-hidden`      | `aria-hidden`で非表示にされたサブツリー内にフォーカス可能なインタラクティブ要素がある場合に警告します。              |
+| `a11y/require-accessible-name`             | ARIAロールに従ってアクセシブル名がない場合に警告します。                                                             |
+| `a11y/redundant-accessible-name`           | 複数のアクセシブル名ソースが存在し、高優先度のソースが低優先度のソースを上書きする要素を検出します。                 |
+| `a11y/label-has-control`                   | `<label>`要素が関連するコントロール要素を持たない場合に警告します。                                                  |
+| `a11y/landmark-roles`                      | `banner`、`main`、`contentinfo`がトップレベルのランドマークであることを確認します。                                  |
+| `a11y/require-landmark-label`              | ロールが重複するランドマークが一意のアクセシブルネームを持つことを確認します。                                       |
+| `a11y/required-h1`                         | ドキュメント内に`<h1>`要素がない場合に警告します。                                                                   |
+| `a11y/no-duplicate-h1`                     | ドキュメント内に`<h1>`要素が複数ある場合に警告します。                                                               |
+| `a11y/html-lang`                           | 支援技術がドキュメントの言語を識別できるよう、`<html>`要素に`lang`属性を必須とします。                               |
+| `a11y/abbr-title`                          | 略語の完全な展開を提供するため、`<abbr>`要素に`title`属性を必須とします。                                            |
+| `a11y/media-track`                         | キャプションと説明のため、`<audio>`や`<video>`に`<track>`要素を必須とします。                                        |
+| `a11y/video-autoplay-muted`                | 予期しない音声を防ぐため、`autoplay`属性を持つ`<video>`要素に`muted`属性を必須とします。                             |
+| `a11y/no-accesskey`                        | 支援技術のショートカットと競合する可能性があるため、`accesskey`属性を禁止します。                                    |
+| `a11y/tabindex-restrict`                   | 自然なタブ順序を壊さないよう、`tabindex`属性を`-1`または`0`のみに制限します。                                        |
+| `a11y/no-autofocus-outside-dialog`         | フォーカスを強制的に奪うべきではありません。ただし`dialog`要素とその子孫では許可されます。                           |
+| `a11y/viewport-no-user-scalable`           | 低視力ユーザーのズーム操作を妨げるため、viewportメタタグの`user-scalable=no`を禁止します。                           |
+| `a11y/no-consecutive-br`                   | 連続した`<br>`タグの使用に対して警告します。代わりにCSSマージンや適切なブロック要素を使用してください。              |
+| `a11y/no-ambiguous-navigable-target-names` | `_blank`などの特殊なナビゲーションキーワードを無効なターゲット名に置き換える可能性のあるタイポを防ぎます。           |
+| `a11y/use-list`                            | テキストノードの先頭に箇条書き文字がある場合、リスト要素の使用を促します。                                           |
+| `a11y/table-row-column-alignment`          | `colspan`と`rowspan`を考慮して、テーブルの行と列の数の一貫性を確認します。                                           |
+| `a11y/no-table-cell-overlap`               | 2つのセルが同じスロットを覆うことになる`rowspan`/`colspan`の値を禁止します。                                         |
+| `a11y/no-table-span-overflow`              | `<thead>`、`<tbody>`、`<tfoot>`の末尾を越えて伸びる`rowspan`を禁止します。                                           |
+| `a11y/no-empty-table-track`                | セルがひとつも開始しないテーブルの行または列を禁止します。                                                           |
+| `a11y/no-merge-cells`                      | 支援技術にとって困難なセル結合を防ぐため、テーブルセルの`colspan`と`rowspan`属性を禁止します。                       |
+| `a11y/neighbor-popovers`                   | ポップオーバートリガーと対応するターゲットがDOM上で隣接していない場合に警告します。                                  |
+| `a11y/summary-no-interactive`              | 支援技術がコンテンツにアクセスできない場合や、コンテンツが`<summary>`にマウスイベントを伝播しない場合があります。    |
+| `a11y/require-dialog-autofocus`            | `showModal()`メソッドで表示されるダイアログに`autofocus`属性を持つ要素が必要です。                                   |
 
 ### `markuplint:html-standard` {#preset-html-standard}
 
-仕様ベースの属性検証のため、基本ルール [`invalid-attr`](/docs/rules/invalid-attr) も有効にします。`invalid-attr` をラップする名前付きルール（例: `a11y/no-accesskey`）はそれぞれの狭い allow/disallow チェックのみを行い、HTML仕様に基づく全般的な検証は基本ルールが担当します。
+仕様ベースの属性検証のため、基本ルール [`no-unknown-attr`](/docs/rules/no-unknown-attr)・[`no-disallowed-attr`](/docs/rules/no-disallowed-attr)・[`no-invalid-attr-value`](/docs/rules/no-invalid-attr-value) も有効にします。特定の属性を制限する名前付きルール（例: `a11y/no-accesskey`）は代わりに [`no-restricted-attr`](/docs/rules/no-restricted-attr) をラップします — このルールは設定された拒否リストのみを検査し、仕様検証は一切行わないため、どこで使っても狭いままです。
 
-| 名前付きルール                              | 解説                                                                                                                           |
-| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| `html-standard/id-duplication`              | `id`属性値がドキュメント内で重複している場合に警告します。                                                                     |
-| `html-standard/no-refer-to-non-existent-id` | `for`、`form`、`aria-*`、フラグメントリンクに指定されたIDが同じドキュメント内に存在することを確認します。                      |
-| `html-standard/attr-duplication`            | パーサーは重複した属性をすべて無視します。                                                                                     |
-| `html-standard/deprecated-attr`             | 互換性の観点から、非推奨属性を使用してはなりません。                                                                           |
-| `html-standard/deprecated-element`          | 互換性の観点から、非推奨要素を使用してはなりません。                                                                           |
-| `html-standard/doctype`                     | 後方互換モードを回避する効果があります。                                                                                       |
-| `html-standard/permitted-contents`          | HTML仕様で親要素に許可されていない子要素がある場合に警告します。                                                               |
-| `html-standard/required-attr`               | HTML仕様で定義された必須属性が要素に存在しない場合に警告します。                                                               |
-| `html-standard/ineffective-attr`            | 要素に対して効果のない属性が指定されている場合に警告します（例: `<div>`に`disabled`）。                                        |
-| `html-standard/no-orphaned-end-tag`         | 対応する開始タグのない終了タグが現れた場合に警告します。内部解析エラーに該当します。                                           |
-| `html-standard/heading-levels`              | 各見出しは前の見出しと同じか1レベル大きい必要があります。                                                                      |
-| `html-standard/no-duplicate-dt`             | ひとつの`<dl>`要素内に、同じ名前の`<dt>`要素が複数あるべきではありません。                                                     |
-| `html-standard/placeholder-label-option`    | `<select>`要素がプレースホルダーラベルオプション（空の値を持つ最初の`<option>`）を必要とするかどうかを確認します。             |
-| `html-standard/require-datetime`            | `<time>`要素の内容が有効な日時文字列でない場合、`datetime`属性が必要です。                                                     |
-| `html-standard/srcset-sizes-constraint`     | `<img>`および`<source>`要素の`srcset`、`sizes`、`loading`、`media`、`type`属性間のWHATWG制約を検証します。                     |
-| `html-standard/head-charset-utf8`           | ドキュメントheadに`<meta charset="UTF-8">`要素を必須とします。                                                                 |
-| `html-standard/no-small-in-heading`         | `<h1>`〜`<h6>`内で`<small>`を使用すべきではありません。                                                                        |
-| `html-standard/figure-no-caption`           | `<figure>`内で`<table>`が`<figcaption>`以外の唯一のコンテンツである場合、`<caption>`を省略して`<figcaption>`を使用すべきです。 |
-| `html-standard/input-pattern-title`         | `<input>`要素に`pattern`属性が指定されている場合、パターンの説明として`title`属性を含めるべきです。                            |
-| `html-standard/no-nested-details-name`      | 同じ名前グループ内の別の`<details>`要素の子孫である`<details>`要素をドキュメント内に含めることはできません。                   |
-| `html-standard/no-shortcut-icon`            | `<link rel>`の`shortcut`キーワードは不要です。代わりに`rel="icon"`を使用してください。                                         |
+| 名前付きルール                                   | 解説                                                                                                                                          |
+| ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `html-standard/id-duplication`                   | `id`属性値がドキュメント内で重複している場合に警告します。                                                                                    |
+| `html-standard/no-refer-to-non-existent-id`      | `for`、`form`、`aria-*`などに指定されたIDが同じドキュメント内に存在することを確認します。                                                     |
+| `html-standard/attr-duplication`                 | パーサーは重複した属性をすべて無視します。                                                                                                    |
+| `html-standard/deprecated-attr`                  | 仕様から完全に削除された(廃止された、非準拠の)属性を使用してはなりません。                                                                    |
+| `html-standard/no-deprecated-attr`               | MDN/BCDが非推奨(仕様上はまだ定義されているが使用が推奨されない)とする属性に警告します。                                                       |
+| `html-standard/deprecated-element`               | 仕様から完全に削除された(廃止された、非準拠の)要素を使用してはなりません。                                                                    |
+| `html-standard/no-deprecated-element`            | MDN/BCDが非推奨(仕様上はまだ定義されているが使用が推奨されない)とする要素に警告します。                                                       |
+| `html-standard/doctype`                          | 後方互換モードを回避する効果があります。                                                                                                      |
+| `html-standard/no-obsolete-doctype`              | 廃止されたDOCTYPE(public識別子を持つもの、あるいは仕様が許容する唯一のlegacy文字列の例外以外のsystem識別子を持つもの)を使用してはなりません。 |
+| `html-standard/permitted-contents`               | HTML仕様で親要素に許可されていない子要素がある場合に警告します。                                                                              |
+| `html-standard/no-disallowed-ancestor`           | コンテンツモデルが禁止する祖先要素の子孫として要素が出現した場合に警告します(例: `<address>`の中の`<address>`)。                              |
+| `html-standard/require-ancestor`                 | 要素が必須の祖先要素の外に出現した場合に警告します(例: `<map>`の外の`<area>`)。                                                               |
+| `html-standard/no-duplicate-sibling-attr`        | コンテンツモデルが兄弟間で一意とする属性が、同じ親内の同種の要素に複数出現した場合に警告します。                                              |
+| `html-standard/required-attr`                    | HTML仕様で定義された必須属性が要素に存在しない場合に警告します。                                                                              |
+| `html-standard/ineffective-attr`                 | 要素に対して効果のない属性が指定されている場合に警告します（例: `<div>`に`disabled`）。                                                       |
+| `html-standard/no-orphaned-end-tag`              | 対応する開始タグのない終了タグが現れた場合に警告します。内部解析エラーに該当します。                                                          |
+| `html-standard/heading-levels`                   | 各見出しは前の見出しと同じか1レベル大きい必要があります。                                                                                     |
+| `html-standard/no-duplicate-dt`                  | ひとつの`<dl>`要素内に、同じ名前の`<dt>`要素が複数あるべきではありません。                                                                    |
+| `html-standard/placeholder-label-option`         | `<select>`要素がプレースホルダーラベルオプション（空の値を持つ最初の`<option>`）を必要とするかどうかを確認します。                            |
+| `html-standard/require-datetime`                 | `<time>`要素の内容が有効な日時文字列でない場合、`datetime`属性が必要です。                                                                    |
+| `html-standard/srcset-sizes-constraint`          | `srcset`が幅ディスクリプタを使用する場合は`sizes`を、またその逆も必須とします。                                                               |
+| `html-standard/no-mixed-srcset-descriptors`      | `srcset`属性内で幅ディスクリプタとピクセル密度ディスクリプタを混在させることを禁止します。                                                    |
+| `html-standard/sizes-auto-requires-lazy-loading` | `sizes="auto"`を使用する箇所では`loading="lazy"`を必須とします。                                                                              |
+| `html-standard/no-always-matching-source`        | `srcset`付きの後続兄弟を持つ`<source>`にmediaまたはtype属性を必須とします。                                                                   |
+| `html-standard/head-charset-utf8`                | ドキュメントheadに`<meta charset="UTF-8">`要素を必須とします。                                                                                |
+| `html-standard/no-small-in-heading`              | `<h1>`〜`<h6>`内で`<small>`を使用すべきではありません。                                                                                       |
+| `html-standard/figure-no-caption`                | `<figure>`内で`<table>`が`<figcaption>`以外の唯一のコンテンツである場合、`<caption>`を省略して`<figcaption>`を使用すべきです。                |
+| `html-standard/input-pattern-title`              | `<input>`要素に`pattern`属性が指定されている場合、パターンの説明として`title`属性を含めるべきです。                                           |
+| `html-standard/no-nested-details-name`           | 同じ名前グループ内の別の`<details>`要素の子孫である`<details>`要素をドキュメント内に含めることはできません。                                  |
+| `html-standard/no-shortcut-icon`                 | `<link rel>`の`shortcut`キーワードは不要です。代わりに`rel="icon"`を使用してください。                                                        |
 
 ### `markuplint:performance` {#preset-performance}
 
@@ -148,7 +183,7 @@
 
 ### `markuplint:rdfa` {#preset-rdfa}
 
-`<meta property>` 要素に対し、`invalid-attr` を拡張して `property` と `content` 属性を許可します。これにより、**Open Graph** 等のRDFaベースのメタデータが仕様検証の違反として報告されなくなります。また、同要素に対し `required-attr` を無効化します。
+`<meta property>` 要素に対し、`no-unknown-attr`・`no-disallowed-attr`・`no-invalid-attr-value` を拡張して `property` と `content` 属性を許可します。これにより、**Open Graph** 等のRDFaベースのメタデータが仕様検証の違反として報告されなくなります。また、同要素に対し `require-attr` を無効化します。
 
 このプリセットは名前付きルールを公開しません。
 
@@ -156,10 +191,11 @@
 
 すべての[基本プリセット](#base-presets)に加えて、以下のルールが含まれます:
 
-| 名前付きルール                    | 解説                                                                                                           |
-| --------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `static-html/character-reference` | テキストノードまたは属性値で、不正な文字が文字参照でエスケープされていない場合に警告します。                   |
-| `static-html/end-tag`             | 要素の終了タグが省略可能かどうかを人間が判断するのは非常に困難なため、常に終了タグを記述することを推奨します。 |
+| 名前付きルール                                 | 解説                                                                                                           |
+| ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `static-html/character-reference`              | テキストノードまたは属性値でリテラルの`<`が文字参照でエスケープされていない場合に警告します。                  |
+| `static-html/no-malformed-character-reference` | `&...;`の形をした文字参照が不正な形式(未知の名前、セミコロンの欠落、不正な数値参照)である場合に警告します。    |
+| `static-html/end-tag`                          | 要素の終了タグが省略可能かどうかを人間が判断するのは非常に困難なため、常に終了タグを記述することを推奨します。 |
 
 ### `markuplint:recommended-react` {#preset-react}
 

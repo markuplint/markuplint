@@ -20,7 +20,7 @@ test('[no-duplicate-dt-invalid-001] Duplicate in content', async () => {
 		).violations,
 	).toStrictEqual([
 		{
-			severity: 'error',
+			severity: 'warning',
 			line: 5,
 			col: 3,
 			raw: '<dt>',
@@ -50,7 +50,7 @@ test('[no-duplicate-dt-invalid-002] Duplicate with <div>', async () => {
 		).violations,
 	).toStrictEqual([
 		{
-			severity: 'error',
+			severity: 'warning',
 			line: 8,
 			col: 5,
 			raw: '<dt>',

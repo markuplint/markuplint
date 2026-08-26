@@ -7,6 +7,12 @@ description: Enforces a consistent order of attributes on elements.
 
 Enforces a consistent order of **attributes** on elements. By default, attributes are sorted alphabetically. You can configure priority lists, predefined groups (`global`, `event`, `aria`, `data`, `spread`), and custom patterns to define the desired order.
 
+:::info
+
+Not included in any preset: the HTML specification doesn't require any particular attribute order, so this is purely a project style preference that needs configuring to be useful.
+
+:::
+
 ❌ Examples of **incorrect** code for this rule
 
 ```html

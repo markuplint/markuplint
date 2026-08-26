@@ -54,7 +54,7 @@ export const xrefMappings: readonly XrefMapping[] = [
 		kind: 'primary',
 		issue: 293,
 		filter: /html-svg\/filters-/,
-		note: '`ml-only` fixtures here are all W3C SVG 1.1 test-suite files; their violations are `deprecated-attr` / `invalid-attr` / `permitted-contents` on SVG 1.1 remnants (`version`, `baseProfile`, `xmlns:xlink`, `<font-face>` inside `<defs>`, `font-family` with a custom family), not on filter references. markuplint is spec-correct under SVG 2; nu-validator is lax on these SVG 1.1 features. The proposed `svg-filter-reference-relationship` rule is unrelated and not blocked by this noise.',
+		note: '`ml-only` fixtures here are all W3C SVG 1.1 test-suite files; their violations are `no-obsolete-attr` / `no-unknown-attr` / `no-disallowed-attr` / `permitted-contents` on SVG 1.1 remnants (`version`, `baseProfile`, `xmlns:xlink`, `<font-face>` inside `<defs>`, `font-family` with a custom family), not on filter references. markuplint is spec-correct under SVG 2; nu-validator is lax on these SVG 1.1 features. The proposed `svg-filter-reference-relationship` rule is unrelated and not blocked by this noise.',
 	},
 	{
 		kind: 'primary',

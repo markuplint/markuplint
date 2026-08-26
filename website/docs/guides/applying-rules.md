@@ -20,7 +20,7 @@ If you're using a [preset](/docs/guides/presets), you can override individual ru
     "a11y/*": false,
 
     // Disable by base rule name (affects every preset containing it)
-    "id-duplication": false
+    "no-duplicate-id": false
   }
 }
 ```
@@ -36,9 +36,9 @@ Add rules to the `rules` property in your configuration file. Any value other th
 ```json class=config
 {
   "rules": {
-    "attr-duplication": true,
+    "no-duplicate-attr": true,
     "class-naming": "/[a-z]+/",
-    "required-attr": {
+    "require-attr": {
       "value": "true"
     }
   }
@@ -77,15 +77,15 @@ To apply rules only to certain elements, use [**selectors**](./selectors) with t
       "selector": ".legacy-section",
       "inheritance": true,
       "rules": {
-        // Also disables virtual rules like a11y/wai-aria
-        "wai-aria": false
+        // Also disables virtual rules like a11y/wai-aria/non-existent-role
+        "no-unknown-role": false
       }
     }
   ]
 }
 ```
 
-You can use base rule names (e.g., `"wai-aria"`) and namespace wildcards (e.g., `"a11y/*": false`) in both `nodeRules` and `childNodeRules`. These automatically apply to virtual rules created by presets — see the [nodeRules reference](/docs/configuration/properties#noderules) for details.
+You can use base rule names (e.g., `"no-unknown-role"`) and namespace wildcards (e.g., `"a11y/*": false`) in both `nodeRules` and `childNodeRules`. These automatically apply to virtual rules created by presets — see the [nodeRules reference](/docs/configuration/properties#noderules) for details.
 
 ## Using custom rules
 

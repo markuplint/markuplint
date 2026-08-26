@@ -1,4 +1,11 @@
 /**
+ * Shared by the four rules split out of the former `srcset-sizes-constraint` rule:
+ * `no-unpaired-srcset-sizes`, `no-mixed-srcset-descriptors`, and
+ * `sizes-auto-requires-lazy-loading` (`no-always-matching-source` does not parse
+ * `srcset` at all).
+ */
+
+/**
  * Descriptor type for an image candidate in a srcset attribute.
  * - `width`: ends with `w` (e.g., `480w`)
  * - `density`: ends with `x` (e.g., `2x`)

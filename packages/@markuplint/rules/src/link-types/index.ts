@@ -23,8 +23,12 @@ const TARGET_ELEMENTS = new Set(['link', 'a', 'area', 'form']);
 
 export default createRule<boolean, Options>({
 	meta: meta,
+	// HTML LS §4.6.6 the rel attribute requires conformance checkers to accept
+	// keywords registered on the microformats wiki (proposed or ratified) as
+	// extensions to this specification, so accepting them is the spec-conformant
+	// default rather than an opt-in.
 	defaultOptions: {
-		allowMicroformats: false,
+		allowMicroformats: true,
 	},
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {

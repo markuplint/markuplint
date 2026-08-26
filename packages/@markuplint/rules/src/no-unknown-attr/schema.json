@@ -1,0 +1,96 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"definitions": {
+		"value": {
+			"type": "boolean"
+		},
+		"options": {
+			"type": "object",
+			"additionalProperties": false,
+			"description": "```ts\ntype Attr = {\n  name: string;\n  value: AttributeType | Pattern;\n}\n\ntype Pattern = { pattern: string; };\n```\n\n`AttributeType` is [The type API](/docs/api/types). `Pattern` is also part of the type API.",
+			"description:ja": "```ts\ntype Attr = {\n  name: string;\n  value: AttributeType | Pattern;\n}\n\ntype Pattern = { pattern: string; };\n```\n\n`AttributeType`は[タイプAPI](/docs/api/types)を参照してください。`Pattern`もタイプAPIの一部です。",
+			"properties": {
+				"allowAttrs": {
+					"oneOf": [
+						{
+							"type": "array",
+							"items": {
+								"oneOf": [
+									{
+										"type": "string"
+									},
+									{
+										"type": "object",
+										"_type": "Attr",
+										"additionalProperties": false,
+										"required": ["name", "value"],
+										"properties": {
+											"name": { "type": "string" },
+											"value": {
+												"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/types/types.schema.json#/definitions/type"
+											}
+										}
+									}
+								]
+							}
+						},
+						{
+							"deprecated": true,
+							"type": "object",
+							"_type": "Record<string, AttributeType | Pattern>",
+							"additionalProperties": {
+								"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/types/types.schema.json#/definitions/type"
+							}
+						}
+					],
+					"description": "Specify the attribute names to treat as known, beyond what the spec defines. This is useful when you want to intentionally specify attributes not present in the HTML Standard or when you want to avoid warnings for attributes required by frameworks. The value type, if given, is used by the `no-invalid-attr-value` rule to validate the attribute's value.",
+					"description:ja": "仕様に定義されていない属性名を、既知の属性として扱うために指定します。これは、HTML標準に存在しない属性をあえて指定したい場合や、フレームワークなどで必要な属性を警告されないようにするものです。指定した値の型は、`no-invalid-attr-value`ルールが属性値の検証に使用します。"
+				},
+				"ignoreAttrNamePrefix": {
+					"oneOf": [
+						{
+							"type": "string"
+						},
+						{
+							"type": "array",
+							"uniqueItems": true,
+							"minItems": 1,
+							"items": {
+								"type": "string"
+							}
+						}
+					],
+					"description": "Set prefixes to exclude special attributes or directives for the library and template engine that do not exist in the HTML specifications.",
+					"description:ja": "HTMLの仕様には存在しない、Viewライブラリやテンプレートエンジン固有の属性およびディレクティブを除外するために、プレフィックスを設定します。"
+				},
+				"allowToAddPropertiesForPretender": {
+					"type": "boolean",
+					"default": "true",
+					"description": "Allow adding properties for a component that pretends to be an HTML native element. The default is `true`. It warns of finding a non-existence attribute if it is set `false` and you use the `pretenders` option.",
+					"description:ja": "HTML要素に偽装しているコンポーネントのプロパティを追加できるようにします。デフォルトは`true`です。`pretenders`オプションを使用している場合に`false`に設定されていると、存在しない属性が見つかると警告します。"
+				}
+			}
+		}
+	},
+	"oneOf": [
+		{
+			"$ref": "#/definitions/value"
+		},
+		{
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"value": { "$ref": "#/definitions/value" },
+				"options": { "$ref": "#/definitions/options" },
+				"option": { "$ref": "#/definitions/options", "deprecated": true },
+				"severity": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/ml-config/schema.json#/definitions/severity",
+					"default": "error"
+				},
+				"reason": {
+					"type": "string"
+				}
+			}
+		}
+	]
+}

@@ -3,11 +3,12 @@ import { createRule } from '@markuplint/ml-core';
 import meta from './meta.js';
 
 /**
- * CSS selector that matches form control elements eligible for label association.
- * Excludes hidden inputs since they do not need labels.
+ * Detects a `<label>` that is not associated with any control: it has no
+ * descendant elements at all and no `for` attribute. This is the only check
+ * this rule performs — a `<label>` with an excess of descendant controls is
+ * `label-no-multiple-controls`'s responsibility, which also accounts for the
+ * `for`-references-an-external-control case that this rule does not see.
  */
-const controlSelector = ["input:not([type='hidden' i])", 'select', 'textarea'].join(',');
-
 export default createRule({
 	meta: meta,
 	defaultSeverity: 'warning',
@@ -31,19 +32,6 @@ export default createRule({
 						'{0} should associate with {1}',
 						t('The "{0*}" {1}', 'label', 'element'),
 						t('a {0}', 'control'),
-					),
-				});
-			}
-
-			const controls = el.querySelectorAll(controlSelector);
-			const secondControl = controls[1];
-			if (secondControl) {
-				report({
-					scope: secondControl,
-					message: t(
-						'{0} associates only {1}',
-						t('The "{0*}" {1}', 'label', 'element'),
-						t('first {0}', 'control'),
 					),
 				});
 			}

@@ -87,7 +87,7 @@ ARIA 1.3 で最も重要な変更です。`generic` ロールを持つ要素（�
 | `presentation` / `none` が子ロールで透過的 | はい              | はい    |
 | `presentation` / `none` が親ロールで透過的 | いいえ            | はい    |
 
-## `<aside>` の条件付きロールマッピング（ARIA 1.3）
+## `<aside>` の条件付きロールマッピング（ARIA 1.3） {#aside-conditional-role-mapping-aria-13}
 
 `<aside>` 要素が ARIA 1.3 仕様に基づく**条件付きロールマッピング**を使用するようになりました:
 

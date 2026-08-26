@@ -3,8 +3,6 @@
 	"excludeFiles": ["./008.html"],
 	"rules": {
 		"attr-value-quotes": { "reason": "For consistency" },
-		"case-sensitive-tag-name": true,
-		"case-sensitive-attr-name": true,
 		"no-boolean-attr-value": true,
 		"no-default-value": true
 	},
@@ -20,13 +18,27 @@
 		{
 			"selector": "img[src$=.svg]",
 			"rules": {
-				"wai-aria": {
+				"no-redundant-role": false,
+				"require-attr": "role",
+				"no-unknown-attr": {
 					"options": {
-						"disallowSetImplicitRole": false
+						"allowAttrs": {
+							"role": {
+								"enum": ["img"]
+							}
+						}
 					}
 				},
-				"required-attr": "role",
-				"invalid-attr": {
+				"no-disallowed-attr": {
+					"options": {
+						"allowAttrs": {
+							"role": {
+								"enum": ["img"]
+							}
+						}
+					}
+				},
+				"no-invalid-attr-value": {
 					"options": {
 						"allowAttrs": {
 							"role": {
@@ -40,9 +52,23 @@
 		{
 			"selector": ".invalid-attr",
 			"rules": {
-				"invalid-attr": {
+				"no-unknown-attr": {
 					"options": {
-						"allowAttrs": ["hoge"],
+						"allowAttrs": ["hoge"]
+					}
+				},
+				"no-disallowed-attr": {
+					"options": {
+						"allowAttrs": ["hoge"]
+					}
+				},
+				"no-invalid-attr-value": {
+					"options": {
+						"allowAttrs": ["hoge"]
+					}
+				},
+				"no-restricted-attr": {
+					"options": {
 						"disallowAttrs": [
 							{
 								"name": "hoge2",
@@ -67,7 +93,7 @@
 			"selector": ".ignore",
 			"inheritance": true,
 			"rules": {
-				"wai-aria": false
+				"a11y/wai-aria/*": false
 			}
 		}
 	]

@@ -8,6 +8,12 @@ description: '`<dl>`内の名前の重複禁止'
 
 `<dl>`内の名前の重複禁止
 
+:::info
+
+いずれのプリセットにも含まれません。`markuplint:html-standard` は HTML LS の MUST に対応するルールのみを収容する方針で、このルールは SHOULD です。
+
+:::
+
 ❌ 間違ったコード例
 
 ```html

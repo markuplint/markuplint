@@ -10,7 +10,7 @@
 		"a11y/id-duplication": {
 			"specConformance": "normative",
 			"rules": {
-				"id-duplication": true
+				"no-duplicate-id": true
 			}
 		},
 
@@ -22,7 +22,7 @@
 		"a11y/no-accesskey": {
 			"specConformance": "non-normative",
 			"rules": {
-				"invalid-attr": {
+				"no-restricted-attr": {
 					"options": {
 						"disallowAttrs": ["accesskey"]
 					}
@@ -44,12 +44,30 @@
 		/**
 		 * Use **landmark**
 		 *
-		 * @see https://www.w3.org/TR/wai-aria-practices/examples/landmarks/
+		 * Split from the former `landmark-roles` rule (#3989); this group keeps its name and
+		 * wraps only this one rule. The duplicated-landmark-labeling half lives in the new
+		 * `a11y/require-landmark-label` sibling group below.
+		 *
+		 * @see https://www.w3.org/WAI/ARIA/apg/practices/landmark-regions/
 		 */
 		"a11y/landmark-roles": {
 			"specConformance": "non-normative",
 			"rules": {
-				"landmark-roles": true
+				"no-nested-top-level-landmark": true
+			}
+		},
+
+		/**
+		 * Require a unique label for duplicated landmarks
+		 *
+		 * Split from the former `landmark-roles` rule (#3989).
+		 *
+		 * @see https://www.w3.org/WAI/ARIA/apg/practices/landmark-regions/
+		 */
+		"a11y/require-landmark-label": {
+			"specConformance": "non-normative",
+			"rules": {
+				"require-landmark-label": true
 			}
 		},
 
@@ -60,7 +78,7 @@
 		"a11y/neighbor-popovers": {
 			"specConformance": "non-normative",
 			"rules": {
-				"neighbor-popovers": true
+				"require-adjacent-popover": true
 			}
 		},
 
@@ -97,12 +115,28 @@
 		},
 
 		/**
+		 * No broken fragment link
+		 *
+		 * Split from the former `no-refer-to-non-existent-id` rule (#3989). Because
+		 * `no-refer-to-non-existent-id` itself isn't renamed or deprecated, it gets no
+		 * `rule-aliases.ts` entry — a hand-written config that enables only
+		 * `no-refer-to-non-existent-id` keeps working unchanged but silently loses fragment link
+		 * coverage. This group is how a11y-preset users keep it.
+		 */
+		"a11y/no-broken-fragment-link": {
+			"specConformance": "non-normative",
+			"rules": {
+				"no-broken-fragment-link": true
+			}
+		},
+
+		/**
 		 * No redundant **accessible name** sources
 		 */
 		"a11y/redundant-accessible-name": {
 			"specConformance": "non-normative",
 			"rules": {
-				"redundant-accessible-name": true
+				"no-redundant-accessible-name": true
 			}
 		},
 
@@ -129,22 +163,77 @@
 		/**
 		 * Require `<h1>`
 		 *
+		 * Split from the former `required-h1` rule (#3989); this group keeps its name and wraps
+		 * only this one rule. The duplicate-`<h1>` half lives in the new `a11y/no-duplicate-h1`
+		 * sibling group below.
 		 */
 		"a11y/required-h1": {
 			"specConformance": "non-normative",
 			"rules": {
-				"required-h1": true
+				"require-h1": true
+			}
+		},
+
+		/**
+		 * No duplicate `<h1>`
+		 *
+		 */
+		"a11y/no-duplicate-h1": {
+			"specConformance": "non-normative",
+			"rules": {
+				"no-duplicate-h1": true
 			}
 		},
 
 		/**
 		 * Align row and column
 		 *
+		 * Split from the former `table-row-column-alignment` rule (#3989). This group keeps its
+		 * name for anyone overriding it directly; the three table-model-error checks that split
+		 * out alongside it (`no-table-cell-overlap`, `no-table-span-overflow`,
+		 * `no-empty-table-track`) live in their own sibling groups below since their default
+		 * severity, `error`, differs from this group's `warning`.
 		 */
 		"a11y/table-row-column-alignment": {
 			"specConformance": "non-normative",
 			"rules": {
-				"table-row-column-alignment": true
+				"consistent-table-row-length": true
+			}
+		},
+
+		/**
+		 * No overlapping table cells
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/tables.html#forming-a-table
+		 */
+		"a11y/no-table-cell-overlap": {
+			"specConformance": "normative",
+			"rules": {
+				"no-table-cell-overlap": true
+			}
+		},
+
+		/**
+		 * No table cell span reaching past its row group
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/tables.html#forming-a-table
+		 */
+		"a11y/no-table-span-overflow": {
+			"specConformance": "normative",
+			"rules": {
+				"no-table-span-overflow": true
+			}
+		},
+
+		/**
+		 * No table row or column with no cell anchored to it
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/tables.html#forming-a-table
+		 */
+		"a11y/no-empty-table-track": {
+			"specConformance": "normative",
+			"rules": {
+				"no-empty-table-track": true
 			}
 		},
 
@@ -155,88 +244,104 @@
 		"a11y/use-list": {
 			"specConformance": "non-normative",
 			"rules": {
-				"use-list": true
+				"no-pseudo-list": true
 			}
 		},
 
 		/**
 		 * Conform to **WAI-ARIA**
 		 */
+		"a11y/wai-aria/unsupported-element": {
+			"specConformance": "normative",
+			"rules": { "no-aria-on-unsupported-element": true }
+		},
 		"a11y/wai-aria/non-existent-role": {
 			"specConformance": "normative",
-			"rules": { "wai-aria-non-existent-role": true }
+			"rules": { "no-unknown-role": true }
 		},
 		"a11y/wai-aria/abstract-role": {
 			"specConformance": "normative",
-			"rules": { "wai-aria-abstract-role": true }
+			"rules": { "no-abstract-role": true }
 		},
 		"a11y/wai-aria/permitted-roles": {
 			"specConformance": "normative",
-			"rules": { "wai-aria-permitted-roles": true }
+			"rules": { "permitted-roles": true }
 		},
 		"a11y/wai-aria/implicit-role": {
 			"specConformance": "non-normative",
 			"severity": "warning",
-			"rules": { "wai-aria-implicit-role": true }
+			"rules": { "no-redundant-role": true }
 		},
 		"a11y/wai-aria/implicit-props": {
 			"specConformance": "non-normative",
 			"severity": "warning",
-			"rules": { "wai-aria-implicit-props": true }
+			"rules": { "no-redundant-aria-prop": true }
+		},
+		"a11y/wai-aria/contradictory-props": {
+			"specConformance": "normative",
+			"rules": { "no-contradictory-aria-prop": true }
 		},
 		"a11y/wai-aria/required-props": {
 			"specConformance": "normative",
-			"rules": { "wai-aria-required-props": true }
+			"rules": { "require-aria-prop": true }
 		},
 		"a11y/wai-aria/disallowed-props": {
 			"specConformance": "normative",
-			"rules": { "wai-aria-disallowed-props": true }
+			"rules": { "role-supports-aria-prop": true }
+		},
+		"a11y/wai-aria/prohibited-naming": {
+			"specConformance": "normative",
+			"rules": { "no-prohibited-naming": true }
+		},
+		"a11y/wai-aria/element-supports-aria-prop": {
+			"specConformance": "normative",
+			"rules": { "element-supports-aria-prop": true }
 		},
 		"a11y/wai-aria/deprecated-role": {
 			"specConformance": "non-normative",
 			"severity": "warning",
-			"rules": { "wai-aria-deprecated-role": true }
+			"rules": { "no-deprecated-role": true }
 		},
 		"a11y/wai-aria/deprecated-props": {
 			"specConformance": "non-normative",
 			"severity": "warning",
-			"rules": { "wai-aria-deprecated-props": true }
+			"rules": { "no-deprecated-aria-prop": true }
 		},
 		"a11y/wai-aria/value": {
 			"specConformance": "normative",
-			"rules": { "wai-aria-value": true }
+			"rules": { "no-invalid-aria-prop-value": true }
 		},
 		"a11y/wai-aria/required-owned-elements": {
 			"specConformance": "normative",
 			"severity": "warning",
-			"rules": { "wai-aria-required-owned-elements": true }
+			"rules": { "require-owned-elements": true }
 		},
 		"a11y/wai-aria/required-parent-role": {
 			"specConformance": "normative",
-			"rules": { "wai-aria-required-parent-role": true }
+			"rules": { "require-parent-role": true }
 		},
 		"a11y/wai-aria/tab-requires-tabpanel": {
 			"specConformance": "normative",
-			"rules": { "wai-aria-tab-requires-tabpanel": true }
+			"rules": { "tab-requires-tabpanel": true }
 		},
 		"a11y/wai-aria/presentational-children": {
 			"specConformance": "non-normative",
 			"severity": "warning",
-			"rules": { "wai-aria-presentational-children": true }
+			"rules": { "no-aria-on-presentational-children": true }
 		},
 		"a11y/wai-aria/no-global-prop": {
 			"specConformance": "normative",
-			"rules": { "wai-aria-no-global-prop": true }
+			"rules": { "aria-prop-requires-role": true }
 		},
 		"a11y/wai-aria/default-value": {
 			"specConformance": "non-normative",
 			"severity": "warning",
-			"rules": { "wai-aria-default-value": true }
+			"rules": { "no-default-aria-value": true }
 		},
 		"a11y/wai-aria/interaction-in-hidden": {
 			"specConformance": "non-normative",
 			"severity": "warning",
-			"rules": { "wai-aria-interaction-in-hidden": true }
+			"rules": { "no-focusable-in-aria-hidden": true }
 		}
 	},
 	"nodeRules": [
@@ -248,7 +353,7 @@
 			"specConformance": "non-normative",
 			"selector": ":where(html)",
 			"rules": {
-				"required-attr": ["lang"]
+				"require-attr": ["lang"]
 			}
 		},
 		{
@@ -259,7 +364,7 @@
 			"specConformance": "non-normative",
 			"selector": ":where(abbr)",
 			"rules": {
-				"required-attr": ["title"]
+				"require-attr": ["title"]
 			}
 		},
 		{
@@ -270,7 +375,7 @@
 			"specConformance": "non-normative",
 			"selector": ":where(video, audio)",
 			"rules": {
-				"required-element": ["track"]
+				"require-element": ["track"]
 			}
 		},
 		{
@@ -281,7 +386,7 @@
 			"specConformance": "non-normative",
 			"selector": ":where(video[autoplay])",
 			"rules": {
-				"required-attr": ["muted"]
+				"require-attr": ["muted"]
 			}
 		},
 		{
@@ -292,7 +397,7 @@
 			"specConformance": "non-normative",
 			"selector": ":where(th, td)",
 			"rules": {
-				"invalid-attr": {
+				"no-restricted-attr": {
 					"options": {
 						"disallowAttrs": ["colspan", "rowspan"]
 					}
@@ -312,7 +417,7 @@
 			"specConformance": "non-normative",
 			"selector": ":where(summary)",
 			"rules": {
-				"disallowed-element": [":model(interactive)"]
+				"no-restricted-element": [":model(interactive)"]
 			}
 		},
 		{
@@ -328,7 +433,7 @@
 			"specConformance": "non-normative",
 			"selector": ":where(:not(dialog, dialog *))",
 			"rules": {
-				"invalid-attr": {
+				"no-restricted-attr": {
 					"options": {
 						"disallowAttrs": ["autofocus"]
 					}
@@ -348,13 +453,13 @@
 			"specConformance": "non-normative",
 			"selector": ":where(:not(dialog))",
 			"rules": {
-				"invalid-attr": {
+				"no-restricted-attr": {
 					"options": {
-						"allowAttrs": [
+						"disallowAttrs": [
 							{
 								"name": "tabindex",
 								"value": {
-									"enum": ["-1", "0"]
+									"pattern": "/^(?!-1$|0$).*$/"
 								}
 							}
 						]
@@ -377,7 +482,7 @@
 			"specConformance": "non-normative",
 			"selector": ":where(meta[name='viewport' i])",
 			"rules": {
-				"invalid-attr": {
+				"no-restricted-attr": {
 					"options": {
 						"disallowAttrs": [
 							{

@@ -1,11 +1,11 @@
 # タイプAPI
 
 **タイプAPI**は、属性などのルールに指定できる型情報を定義していたり、評価するAPIを提供しています。
-例えば、[`invalid-attr`](/docs/rules/invalid-attr)ルールの[`allowAttrs`](/docs/rules/invalid-attr#setting-allow-attrs-option)や[`disallowAttrs`](/docs/rules/invalid-attr#setting-disallow-attrs-option)オプションで使用されています。
+例えば、[`no-unknown-attr`](/docs/rules/no-unknown-attr)ルールの[`allowAttrs`](/docs/rules/no-unknown-attr#setting-allow-attrs-option)オプションや、[`no-restricted-attr`](/docs/rules/no-restricted-attr)ルールの[`disallowAttrs`](/docs/rules/no-restricted-attr#setting-disallow-attrs-option)オプションで使用されています。
 
 ```json
 {
-  "invalid-attr": {
+  "no-unknown-attr": {
     "options": {
       "allowAttrs": [
         {

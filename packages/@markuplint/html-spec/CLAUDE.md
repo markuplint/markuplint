@@ -29,7 +29,7 @@ Constraints and judgment rules for editing spec data. None of this is derivable 
 
 - An element missing from its content categories in `src/spec-common.contents.jsonc` causes `permitted-contents` false positives downstream. Adding an element REQUIRES adding it to its categories there. Category names must match the `Category` enum in `ml-spec/schemas/content-models.schema.json`.
 - `ml-spec/src/algorithm/aria/get-permitted-roles-spec.spec.ts` hardcodes version-specific `permittedRoles` expectations (img, button, input, form, …). When changing `permittedRoles`, update those arrays — only the matching version's expectations (e.g., `'1.2'` tests, not `'1.1'`, for newly added roles).
-- Adding a value to an attribute enum changes error-message strings asserted in `rules/src/invalid-attr/index.spec.ts`.
+- Adding a value to an attribute enum changes error-message strings asserted in `rules/src/no-invalid-attr-value/index.spec.ts`.
 
 ## Workflow
 

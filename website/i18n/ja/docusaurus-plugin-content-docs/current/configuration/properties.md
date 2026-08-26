@@ -394,7 +394,7 @@ interface Config {
     "a11y/*": false,
 
     // ベースルール名で無効化（詳細は下記参照）
-    "id-duplication": false
+    "no-duplicate-id": false
   }
 }
 ```
@@ -408,30 +408,30 @@ interface Config {
   "rules": {
     "my-checks/validation": {
       "rules": {
-        "id-duplication": true,
-        "invalid-attr": true
+        "no-duplicate-id": true,
+        "no-invalid-attr-value": true
       }
     }
   }
 }
 ```
 
-設定に`"id-duplication": false`を追加すると、グループ内の該当ベースルールだけが無効化されます：
+設定に`"no-duplicate-id": false`を追加すると、グループ内の該当ベースルールだけが無効化されます：
 
 ```json class=config
 {
   "rules": {
     "my-checks/validation": {
       "rules": {
-        "id-duplication": false,
-        "invalid-attr": true
+        "no-duplicate-id": false,
+        "no-invalid-attr-value": true
       }
     }
   }
 }
 ```
 
-同グループ内の`invalid-attr`は影響を受けずに有効のままです。これは全グループに適用されます — `a11y/id-duplication`と`html-standard/id-duplication`の両方が`id-duplication`ベースルールをラップしている場合、両方とも無効化されます。この機能は後方互換性のために提供されています。
+同グループ内の`no-invalid-attr-value`は影響を受けずに有効のままです。これは全グループに適用されます — `a11y/id-duplication`と`html-standard/id-duplication`の両方が`no-duplicate-id`ベースルールをラップしている場合、両方とも無効化されます。この機能は後方互換性のために提供されています。
 
 一覧は[プリセット内の名前付きルール](/docs/guides/presets#named-rules)を参照してください。
 
@@ -445,7 +445,7 @@ interface Config {
     "my-project/no-accesskey": {
       "specConformance": "non-normative",
       "rules": {
-        "invalid-attr": {
+        "no-restricted-attr": {
           "options": { "disallowAttrs": ["accesskey"] }
         }
       }
@@ -484,13 +484,13 @@ MarkuplintのHTML仕様に基づく組み込みプリセットルールにはこ
   "rules": {
     // 単一エントリ: ルール名は "my-project/no-accesskey"
     "my-project/no-accesskey": {
-      "rules": { "invalid-attr": { "options": { "disallowAttrs": ["accesskey"] } } }
+      "rules": { "no-restricted-attr": { "options": { "disallowAttrs": ["accesskey"] } } }
     },
-    // 複数エントリ: ルール名は "my-project/checks/attr-duplication"
+    // 複数エントリ: ルール名は "my-project/checks/no-duplicate-attr"
     // と "my-project/checks/class-naming"
     "my-project/checks": {
       "rules": {
-        "attr-duplication": true,
+        "no-duplicate-attr": true,
         "class-naming": "/[a-z]+/"
       }
     }
@@ -558,9 +558,9 @@ type NamedRuleGroup = {
 
 ただし、プリセットが作成した仮想ルールをベースルール名や名前空間ワイルドカードで制御できます:
 
-- **ベースルール名**: `"wai-aria": false` は仮想ルール `a11y/wai-aria`（および `wai-aria` をラップする他のすべての仮想ルール）を無効化します
+- **ベースルール名**: `"no-unknown-role": false` は仮想ルール `a11y/wai-aria/non-existent-role`（および `no-unknown-role` をラップする他のすべての仮想ルール）を無効化します
 - **名前空間ワイルドカード**: `"a11y/*": false` は `a11y/` 名前空間内のすべての仮想ルールを無効化します
-- **オプション上書き**: `"wai-aria": { "options": { ... } }` は `wai-aria` をラップする仮想ルールにオプションを伝播します
+- **オプション上書き**: `"no-unknown-role": { "options": { ... } }` は `no-unknown-role` をラップする仮想ルールにオプションを伝播します
 
 :::note
 名前空間ワイルドカードは `false` のみ受け付けます。オプションを指定するには、具体的なルール名（ベースまたは仮想）を使用してください。

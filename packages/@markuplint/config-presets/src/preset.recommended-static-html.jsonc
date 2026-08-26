@@ -9,15 +9,31 @@
 	],
 	"rules": {
 		/**
-		 * Use [**character reference**](https://markuplint.dev/docs/rules/character-reference)
+		 * Use [**no-unescaped-char**](https://markuplint.dev/docs/rules/no-unescaped-char)
 		 *
-		 * Warns when illegal characters in text nodes or attribute values
-		 * are not escaped with character references.
+		 * Warns when a literal `<` (the one character HTML LS always
+		 * prohibits unescaped) appears in a text node or attribute value.
+		 * The group name is kept as `character-reference` for backward
+		 * compatibility.
 		 */
 		"static-html/character-reference": {
 			"specConformance": "normative",
 			"rules": {
-				"character-reference": true
+				"no-unescaped-char": true
+			}
+		},
+
+		/**
+		 * Use [**no-malformed-character-reference**](https://markuplint.dev/docs/rules/no-malformed-character-reference)
+		 *
+		 * Warns when a `&...;`-shaped character reference is malformed
+		 * (unknown name, missing semicolon, or a NULL/surrogate/control/
+		 * noncharacter/out-of-range numeric reference).
+		 */
+		"static-html/no-malformed-character-reference": {
+			"specConformance": "normative",
+			"rules": {
+				"no-malformed-character-reference": true
 			}
 		},
 
@@ -30,7 +46,7 @@
 		"static-html/end-tag": {
 			"specConformance": "non-normative",
 			"rules": {
-				"end-tag": true
+				"require-end-tag": true
 			}
 		}
 	}

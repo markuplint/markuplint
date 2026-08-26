@@ -232,7 +232,7 @@ test('Config Presets', async () => {
 	const configSet = await configProvider.resolve(file, [key]);
 	expect(configSet.config.rules?.['a11y/wai-aria/non-existent-role']).toStrictEqual({
 		specConformance: 'normative',
-		rules: { 'wai-aria-non-existent-role': true },
+		rules: { 'no-unknown-role': true },
 	});
 });
 

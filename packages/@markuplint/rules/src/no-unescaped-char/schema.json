@@ -1,0 +1,40 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"definitions": {
+		"value": {
+			"type": "boolean"
+		},
+		"options": {
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"strict": {
+					"type": "boolean",
+					"default": "false",
+					"description": "Also flag `>`, `\"`, and every bare `&` (entity-shaped sequences like `&amp;` are still exempt). Off by default because HTML LS only prohibits a literal `<` and an ambiguous ampersand unescaped — `>` and `\"` are conforming as-is.",
+					"description:ja": "`>`、`\"`、および素の`&`（`&amp;`のような実体参照の形をしたものは除く）もすべて検出対象にします。デフォルトでは無効です。HTML Living Standardが未エスケープを禁止しているのはリテラルの`<`とあいまいなアンパサンドのみで、`>`と`\"`はそのままでも仕様に準拠しているためです。"
+				}
+			}
+		}
+	},
+	"oneOf": [
+		{
+			"$ref": "#/definitions/value"
+		},
+		{
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"value": { "$ref": "#/definitions/value" },
+				"options": { "$ref": "#/definitions/options" },
+				"severity": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/ml-config/schema.json#/definitions/severity",
+					"default": "error"
+				},
+				"reason": {
+					"type": "string"
+				}
+			}
+		}
+	]
+}

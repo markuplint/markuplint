@@ -10,7 +10,7 @@ Enforce the inequalities required by [HTML Living Standard §4.10.14 (the progre
 - `value ≤ max` when both attributes are present.
 - `value ≤ 1` when only `value` is specified (the implicit maximum).
 
-Authored-but-unparsable attribute values, an out-of-range `max` (`≤ 0`), and a negative `value` are deferred to [`invalid-attr`](../invalid-attr/) and skipped here to avoid compounding diagnostics.
+Authored-but-unparsable attribute values, an out-of-range `max` (`≤ 0`), and a negative `value` are deferred to [`no-invalid-attr-value`](../no-invalid-attr-value/) and skipped here to avoid compounding diagnostics.
 
 ❌ Examples of **incorrect** code for this rule
 

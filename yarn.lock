@@ -2162,6 +2162,7 @@ __metadata:
   resolution: "@markuplint/config-presets@workspace:packages/@markuplint/config-presets"
   dependencies:
     "@isaacs/brace-expansion": "npm:5.0.1"
+    "@markuplint/rules": "npm:5.0.0-rc.4"
     glob: "npm:13.0.6"
     jsonc-parser: "npm:3.3.1"
     mustache: "npm:4.2.0"
@@ -2468,6 +2469,7 @@ __metadata:
   resolution: "@markuplint/rules@workspace:packages/@markuplint/rules"
   dependencies:
     "@markuplint/html-spec": "npm:5.0.0-rc.4"
+    "@markuplint/ml-config": "npm:5.0.0-rc.4"
     "@markuplint/ml-core": "npm:5.0.0-rc.4"
     "@markuplint/ml-spec": "npm:5.0.0-rc.4"
     "@markuplint/selector": "npm:5.0.0-rc.4"

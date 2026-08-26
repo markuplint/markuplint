@@ -22,10 +22,10 @@ An HTML linter that checks conformance with HTML Standard, WAI-ARIA, and project
 Format: `message (ruleId) [named-rule]`
 
 ```
-The attribute name is duplicated (attr-duplication) [html-standard/attr-duplication]
+The attribute name is duplicated (no-duplicate-attr) [html-standard/attr-duplication]
 ```
 
-- **`ruleId`** (`attr-duplication`) — the base rule. Always present.
+- **`ruleId`** (`no-duplicate-attr`) — the base rule. Always present.
 - **`named-rule`** (`html-standard/attr-duplication`) — preset-defined alias. Present only for named rules. The `namespace/` prefix indicates which preset defined it (e.g., `a11y/`, `html-standard/`, `performance/`).
 - **`severity`** — `error` (exit code 1), `warning` (exit code 0 by default), or `info`.
 
@@ -97,15 +97,15 @@ Use `:is(selector *)`. Do NOT use `:closest()` — it is deprecated.
 
 ### OGP / Open Graph `property` attribute
 
-The `property` attribute is not in the HTML spec. See: https://markuplint.dev/docs/rules/invalid-attr#the-open-graph-protocol
+The `property` attribute is not in the HTML spec. See: https://markuplint.dev/docs/rules/no-unknown-attr#the-open-graph-protocol
 
-### `invalid-attr` with frameworks
+### `no-unknown-attr` with frameworks
 
 Install the framework's spec plugin (e.g., `@markuplint/react-spec`). See: https://markuplint.dev/docs/guides/beyond-html#why-need-the-spec-plugins
 
-### `character-reference` false positives with template engines
+### `no-unescaped-char` false positives with template engines
 
-Some template syntaxes trigger false positives. Disable partially or report: https://markuplint.dev/docs/rules/character-reference
+Default mode only flags a literal `<`. The `strict` option (also flagging `>`, `"`, a bare `&`) can trigger false positives with some template syntaxes. Disable partially, turn off `strict`, or report: https://markuplint.dev/docs/rules/no-unescaped-char
 
 ### `--init` is interactive only
 

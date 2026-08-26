@@ -17,7 +17,7 @@ description: WHATWG標準に対して`rel`属性のリンクタイプキーワ�
 
 :::note
 
-`invalid-attr`ルールも型システム経由で`rel`属性値を検証しますが、body-okコンテキストはチェックせず、Microformatsキーワードを常に許可します。`link-types`ルールはbody-okチェックとMicroformats制御をより詳細なエラーメッセージとともに提供します。両方のルールを併用でき、チェック内容は補完的です。
+`no-invalid-attr-value`ルールも型システム経由で`rel`属性値を検証しますが、body-okコンテキストはチェックせず、Microformatsキーワードを常に許可します。`link-types`ルールはbody-okチェックとMicroformats制御をより詳細なエラーメッセージとともに提供します。両方のルールを併用でき、チェック内容は補完的です。
 
 :::
 
@@ -52,32 +52,25 @@ description: WHATWG標準に対して`rel`属性のリンクタイプキーワ�
 
 ## 設定例
 
-### デフォルト（WHATWG標準のみ）
-
-```json class=config
-{
-  "rules": {
-    "link-types": true
-  }
-}
-```
-
 ### `allowMicroformats`
 
 型: `boolean | string[]`
+デフォルト: `true`
 
-[Microformats](https://microformats.org/wiki/existing-rel-values)リンクタイプキーワードを許可するかどうかを制御します。Microformatsキーワードリストは[microformats.org wiki](https://microformats.org/wiki/existing-rel-values)の登録済みキーワードに基づいています。
+WHATWG標準キーワードに加えて、[Microformats](https://microformats.org/wiki/existing-rel-values)リンクタイプキーワードを許可するかどうかを制御します。Microformatsキーワードリストは[microformats.org wiki](https://microformats.org/wiki/existing-rel-values)の登録済みキーワードに基づいています。
+
+デフォルトは`true`です。[HTML Living Standard §4.6.6 the rel attribute](https://html.spec.whatwg.org/multipage/links.html#linkTypes)は、適合性チェッカーに対し microformats wiki に登録された(proposed または ratified の)キーワードを仕様への拡張として受理することを要求しており、これらを拒否すること自体が非適合となるためです。
 
 Microformatsキーワードが許可されている場合でも、要素コンテキストの検証は適用されます。例えば、`<a>`専用のキーワードは`<link>`では拒否されます。Microformatsレジストリはフォームコンテキストを定義していないため、`<form>`ではMicroformatsキーワードは常に拒否されます。
 
-#### `true` — 登録済みのすべてのMicroformatsキーワードを許可
+#### `false` — WHATWG標準キーワードのみ
 
 ```json class=config
 {
   "rules": {
     "link-types": {
       "options": {
-        "allowMicroformats": true
+        "allowMicroformats": false
       }
     }
   }

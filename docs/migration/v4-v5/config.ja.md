@@ -13,8 +13,8 @@
 | ARIA バージョンの解決優先度の変更 | `ariaVersion` / `version` オプションを使用するルール |
 | ARIA 1.3 サポートの追加 | `ariaVersion` / `version` オプションを使用するルール |
 | Named nodeRules（named rule） | 設定ファイル、プリセット作成者 |
-| `invalid-attr` をラップする named rule が narrow check として動作 | `a11y/*` や rdfa プリセットで仕様検証を無効化していた設定作成者 |
-| `markuplint:html-standard` がベースの `invalid-attr` ルールを有効化 | `markuplint:html-standard` を単独で利用するユーザー |
+| `invalid-attr` が4つのルールに分割、`no-restricted-attr` をラップする named rule が narrow check として動作 | `a11y/*` や rdfa プリセットで仕様検証を無効化していた設定作成者 |
+| `markuplint:html-standard` が `no-unknown-attr`/`no-disallowed-attr`/`no-invalid-attr-value` をベースルールとして有効化 | `markuplint:html-standard` を単独で利用するユーザー |
 | SpecConformance メタデータ | 設定ファイル、プリセット作成者 |
 | Named rule の名前空間一括無効化 | named nodeRules を持つプリセットを使用する設定ファイル |
 | `nodeRules`/`childNodeRules` の名前による重複排除 | `extends` で named nodeRules を使用する設定ファイル |
@@ -63,18 +63,20 @@
     "ariaVersion": "1.2"
   },
   "rules": {
-    "wai-aria": true,
+    "no-unknown-role": true,
     "require-accessible-name": true,
     "no-refer-to-non-existent-id": true
   }
 }
 ```
 
+> **注意:** 上の v4 の例にある `wai-aria` 傘ルールは v5 で削除されました（その21件の検査は `no-unknown-role`、`no-abstract-role` 等の独立したルールになっています）。いずれもルール単位の `version` オプションを受け付けなくなったため、これらの ARIA バージョンを設定する方法は `ruleCommonSettings.ariaVersion` のみになりました。
+
 ### 解決優先度
 
 ルールは以下の順序で ARIA バージョンを解決します（優先度の高い順）:
 
-1. **ルールレベルのオプション** — `options.version`（wai-aria）または `options.ariaVersion`（その他のルール）
+1. **ルールレベルのオプション** — `options.ariaVersion`（このオプションを今も持つ `require-accessible-name`・`no-refer-to-non-existent-id` のみ）
 2. **`ruleCommonSettings.ariaVersion`** — 設定ファイルからのグローバルフォールバック
 3. **デフォルト** — markuplint に組み込まれた推奨 ARIA バージョン
 
@@ -86,9 +88,9 @@
     "ariaVersion": "1.2"
   },
   "rules": {
-    "wai-aria": {
+    "require-accessible-name": {
       "options": {
-        "version": "1.3"
+        "ariaVersion": "1.3"
       }
     }
   }
@@ -130,14 +132,14 @@ v5 では **named nodeRules** が導入されました。`name` プロパティ�
       "specConformance": "normative",
       "selector": "img",
       "rules": {
-        "required-attr": { "value": "alt" }
+        "require-attr": { "value": "alt" }
       }
     }
   ]
 }
 ```
 
-これにより `required-attr` をベースにした named rule `"a11y/img-alt"` が作成されます。`required-attr` の検証ロジックを再利用しながら、`"a11y/img-alt"` という名前で違反を報告します。
+これにより `require-attr` をベースにした named rule `"a11y/img-alt"` が作成されます。`require-attr` の検証ロジックを再利用しながら、`"a11y/img-alt"` という名前で違反を報告します。
 
 ### 展開の例
 
@@ -147,7 +149,7 @@ v5 では **named nodeRules** が導入されました。`name` プロパティ�
 // ユーザーが書く設定
 {
   "rules": {
-    "required-attr": true
+    "require-attr": true
   },
   "nodeRules": [
     {
@@ -155,7 +157,7 @@ v5 では **named nodeRules** が導入されました。`name` プロパティ�
       "specConformance": "normative",
       "selector": "img",
       "rules": {
-        "required-attr": { "value": "alt" }
+        "require-attr": { "value": "alt" }
       }
     }
   ]
@@ -168,8 +170,8 @@ v5 では **named nodeRules** が導入されました。`name` プロパティ�
 // ml-core が展開後に認識する設定
 {
   "rules": {
-    "required-attr": true    // ベースルール — すべての要素で引き続き有効
-    // + named rule "a11y/img-alt" が登録される（required-attr ベース）
+    "require-attr": true    // ベースルール — すべての要素で引き続き有効
+    // + named rule "a11y/img-alt" が登録される（require-attr ベース）
   },
   "nodeRules": [
     {
@@ -183,7 +185,7 @@ v5 では **named nodeRules** が導入されました。`name` プロパティ�
 }
 ```
 
-これにより `required-attr` と `a11y/img-alt` は**独立した**ルールになります。`required-attr` は独自のグローバルチェックを実行し、`a11y/img-alt` は同じ検証ロジックを `img` 要素に対して `value: "alt"` で実行します。
+これにより `require-attr` と `a11y/img-alt` は**独立した**ルールになります。`require-attr` は独自のグローバルチェックを実行し、`a11y/img-alt` は同じ検証ロジックを `img` 要素に対して `value: "alt"` で実行します。
 
 ### Named Rule の無効化
 
@@ -216,7 +218,7 @@ named nodeRule の `rules` に複数の非 `false` エントリがある場合�
       "name": "html-standard/figure-caption",
       "selector": ":where(figcaption ~ table, table:has(~ figcaption))",
       "rules": {
-        "disallowed-element": { "value": ["caption"] },
+        "no-restricted-element": { "value": ["caption"] },
         "require-accessible-name": false
       }
     }
@@ -224,7 +226,7 @@ named nodeRule の `rules` に複数の非 `false` エントリがある場合�
 }
 ```
 
-ここでは `disallowed-element` が named rule `"html-standard/figure-caption"` になります（非 false エントリが1つなのでそのまま名前を使用）。`require-accessible-name: false` はベースルールの specificity override セマンティクスを保持するため、無名 nodeRule に分離されます。
+ここでは `no-restricted-element`（v5で `disallowed-element` から改名）が named rule `"html-standard/figure-caption"` になります（非 false エントリが1つなのでそのまま名前を使用）。`require-accessible-name: false` はベースルールの specificity override セマンティクスを保持するため、無名 nodeRule に分離されます。
 
 ### プリセット作成者向け
 
@@ -239,26 +241,24 @@ named nodeRule の `rules` に複数の非 `false` エントリがある場合�
 }
 ```
 
-これは `a11y/img-alt` チェックのみを無効化し、他のコンテキストでの `required-attr` ベースルールは引き続き動作します。
+これは `a11y/img-alt` チェックのみを無効化し、他のコンテキストでの `require-attr` ベースルールは引き続き動作します。
 
-#### `invalid-attr` の Named Rule における Narrow-Check セマンティクス
+#### `no-restricted-attr` の Named Rule における Narrow-Check セマンティクス
 
-`invalid-attr` をラップする named nodeRule および named rule group（例: `a11y/no-accesskey`、`a11y/tabindex-restrict`）は **narrow check** として動作します。これらは `allowAttrs`/`disallowAttrs` に列挙された属性のみを報告し、それ以外の属性に対して HTML 仕様に基づく検証にフォールバックしません。
+`invalid-attr`（v4）は一般的な HTML 仕様検証とユーザー定義の拒否リスト機構を1つのルールに束ねていました。v5 ではこれを4つの独立したルールに分割しています — `no-unknown-attr`・`no-disallowed-attr`・`no-invalid-attr-value` はどのようにラップされても常に全要素で完全な HTML 仕様検証を行いますが、`no-restricted-attr` は違います: これは純粋な **narrow check** です。`no-restricted-attr` をラップする named nodeRule および named rule group（例: `a11y/no-accesskey`、`a11y/tabindex-restrict`）は、`disallowAttrs` オプションに列挙された属性のみを報告し、仕様検証へのフォールバックはありません — `no-restricted-attr` は元々仕様と照合しないため、フォールバック先自体が存在しません。
 
-HTML 仕様に基づく一般的な属性検証は、ベースの `invalid-attr` ルールが担当します。仕様ベースの検証が必要な場合は `markuplint:html-standard`（ベースの `invalid-attr` を有効化します）を extends するか、設定に `"invalid-attr": true` を追加してください。
+HTML 仕様に基づく一般的な属性検証は、ベースの `no-unknown-attr`/`no-disallowed-attr`/`no-invalid-attr-value` ルールが担当します。仕様ベースの検証が必要な場合は `markuplint:html-standard`（この3つをベースルールとして有効化します）を extends するか、設定に直接追加してください。
 
-`invalid-attr` をラップする named rule が設定スコープ外の属性を報告していないように見える場合、それは意図した動作です。仕様違反を検出したい場合はベースルールを有効にしてください。
-
-特定の要素でベースの `invalid-attr` が許可する属性を拡張したい場合（例: RDFa 属性を許可する）は、**名前無し**の nodeRule を使用してください。こうすることでオプションがベースルールに直接届きます：
+特定の要素で `no-unknown-attr` が許可する属性を拡張したい場合（例: RDFa 属性を許可する）は、**名前無し**の nodeRule を使用してください。こうすることでオプションがベースルールに直接届きます：
 
 ```jsonc
 {
   "nodeRules": [
     {
-      // Unnamed: オプションがベースの `invalid-attr` ルールに流れる
+      // Unnamed: オプションがベースの `no-unknown-attr` ルールに流れる
       "selector": ":where(meta[property])",
       "rules": {
-        "invalid-attr": {
+        "no-unknown-attr": {
           "options": {
             "allowAttrs": [
               { "name": "property", "value": "NoEmptyAny" },
@@ -282,7 +282,7 @@ HTML 仕様に基づく一般的な属性検証は、ベースの `invalid-attr`
 // プリセット
 {
   "nodeRules": [
-    { "name": "a11y/img-alt", "selector": "img", "rules": { "required-attr": { "value": "alt" } } }
+    { "name": "a11y/img-alt", "selector": "img", "rules": { "require-attr": { "value": "alt" } } }
   ]
 }
 
@@ -292,7 +292,7 @@ HTML 仕様に基づく一般的な属性検証は、ベースの `invalid-attr`
   "rules": { "a11y/img-alt": false }
 }
 
-// 結果: a11y/img-alt は無効化、ベースルール required-attr は引き続き有効
+// 結果: a11y/img-alt は無効化、ベースルール require-attr は引き続き有効
 ```
 
 **プリセットが named rule を定義 → ユーザーが重大度を変更：**
@@ -301,7 +301,7 @@ HTML 仕様に基づく一般的な属性検証は、ベースの `invalid-attr`
 // プリセット
 {
   "nodeRules": [
-    { "name": "a11y/img-alt", "selector": "img", "rules": { "required-attr": { "value": "alt" } } }
+    { "name": "a11y/img-alt", "selector": "img", "rules": { "require-attr": { "value": "alt" } } }
   ]
 }
 
@@ -320,14 +320,14 @@ HTML 仕様に基づく一般的な属性検証は、ベースの `invalid-attr`
 // プリセット
 {
   "nodeRules": [
-    { "name": "a11y/img-alt", "specConformance": "normative", "selector": "img", "rules": { "required-attr": { "value": "alt" } } }
+    { "name": "a11y/img-alt", "specConformance": "normative", "selector": "img", "rules": { "require-attr": { "value": "alt" } } }
   ]
 }
 
 // ユーザー設定（同名の named nodeRule をオーバーライド）
 {
   "nodeRules": [
-    { "name": "a11y/img-alt", "selector": "img", "rules": { "required-attr": { "value": ["alt", "aria-label"] } } }
+    { "name": "a11y/img-alt", "selector": "img", "rules": { "require-attr": { "value": ["alt", "aria-label"] } } }
   ]
 }
 
@@ -343,10 +343,10 @@ HTML 仕様に基づく一般的な属性検証は、ベースの `invalid-attr`
 ```jsonc
 // プリセット（ベース）
 {
-  "rules": { "required-attr": true },
+  "rules": { "require-attr": true },
   "nodeRules": [
-    { "name": "a11y/img-alt", "selector": "img", "rules": { "required-attr": { "value": "alt" } } },
-    { "name": "a11y/form-label", "selector": "input", "rules": { "required-attr": { "value": "aria-label" } } }
+    { "name": "a11y/img-alt", "selector": "img", "rules": { "require-attr": { "value": "alt" } } },
+    { "name": "a11y/form-label", "selector": "input", "rules": { "require-attr": { "value": "aria-label" } } }
   ]
 }
 
@@ -359,7 +359,7 @@ HTML 仕様に基づく一般的な属性検証は、ベースの `invalid-attr`
 }
 
 // 最終的な効果
-// - required-attr: 有効（ベースルールはすべての要素で動作）
+// - require-attr: 有効（ベースルールはすべての要素で動作）
 // - a11y/img-alt: 無効化（img の alt 欠落は違反にならない）
 // - a11y/form-label: 有効（input の aria-label 欠落は引き続き報告）
 ```
@@ -376,7 +376,7 @@ HTML 仕様に基づく一般的な属性検証は、ベースの `invalid-attr`
 }
 
 // 最終的な効果
-// - required-attr: 有効（ベースルールは影響を受けない）
+// - require-attr: 有効（ベースルールは影響を受けない）
 // - a11y/img-alt: 無効化
 // - a11y/form-label: 無効化
 // - html-standard/figure-caption: 有効（異なる名前空間）
@@ -401,7 +401,7 @@ HTML 仕様に基づく一般的な属性検証は、ベースの `invalid-attr`
       "name": "html-standard/figure-caption",
       "specConformance": "normative",
       "selector": "...",
-      "rules": { "disallowed-element": { "value": ["caption"] } }
+      "rules": { "no-restricted-element": { "value": ["caption"] } }
     }
   ]
 }
@@ -420,7 +420,7 @@ Named nodeRule が違反を検出した場合、2つのルール識別子が利�
 
 | フィールド | 値 | 用途 |
 |-----------|------|------|
-| `ruleId` | ベースルール名 | 常に存在。基になるルールを識別します（例: `required-attr`）。プログラム的なフィルタリングに使用。 |
+| `ruleId` | ベースルール名 | 常に存在。基になるルールを識別します（例: `require-attr`）。プログラム的なフィルタリングに使用。 |
 | `name` | Named rule のエイリアス | Named nodeRules の場合のみ存在（例: `a11y/html-lang`）。表示名として利用可能な場合はこちらを使用。 |
 
 **表示ガイドライン**: 表示名には `violation.name ?? violation.ruleId` を使用してください。
@@ -452,7 +452,7 @@ v5 では `extends` 使用時の `nodeRules` と `childNodeRules` のマージ�
       "name": "a11y/img-alt",
       "specConformance": "normative",
       "selector": "img",
-      "rules": { "required-attr": { "value": "alt" } }
+      "rules": { "require-attr": { "value": "alt" } }
     },
     {
       "selector": "div.legacy",
@@ -468,11 +468,11 @@ v5 では `extends` 使用時の `nodeRules` と `childNodeRules` のマージ�
       "name": "a11y/img-alt",
       "specConformance": "non-normative",
       "selector": "img",
-      "rules": { "required-attr": { "value": "alt" } }
+      "rules": { "require-attr": { "value": "alt" } }
     },
     {
       "selector": "span.icon",
-      "rules": { "wai-aria": true }
+      "rules": { "no-unknown-role": true }
     }
   ]
 }
@@ -485,7 +485,7 @@ v5 では `extends` 使用時の `nodeRules` と `childNodeRules` のマージ�
       "name": "a11y/img-alt",
       "specConformance": "non-normative",
       "selector": "img",
-      "rules": { "required-attr": { "value": "alt" } }
+      "rules": { "require-attr": { "value": "alt" } }
     },
     // プリセットの無名エントリ: そのまま保持
     {
@@ -495,7 +495,7 @@ v5 では `extends` 使用時の `nodeRules` と `childNodeRules` のマージ�
     // ユーザーの無名エントリ: 追加
     {
       "selector": "span.icon",
-      "rules": { "wai-aria": true }
+      "rules": { "no-unknown-role": true }
     }
   ]
 }

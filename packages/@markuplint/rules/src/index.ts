@@ -9,176 +9,226 @@
 
 import type { AnyRuleSeed } from '@markuplint/ml-core';
 
-import AttrDuplication from './attr-duplication/index.js';
+export { ruleAliasTable } from './rule-aliases.js';
+
+import AriaPropRequiresRole from './aria-prop-requires-role/index.js';
 import AttrOrder from './attr-order/index.js';
 import AttrValueQuotes from './attr-value-quotes/index.js';
 import CaseSensitiveAttrName from './case-sensitive-attr-name/index.js';
 import CaseSensitiveTagName from './case-sensitive-tag-name/index.js';
-import CharacterReference from './character-reference/index.js';
-import CorrectAspectRatio from './correct-aspect-ratio/index.js';
 import ClassNaming from './class-naming/index.js';
-import DeprecatedAttr from './deprecated-attr/index.js';
-import DeprecatedElement from './deprecated-element/index.js';
-import DisallowedElement from './disallowed-element/index.js';
-import Doctype from './doctype/index.js';
-import EndTag from './end-tag/index.js';
+import ConsistentTableRowLength from './consistent-table-row-length/index.js';
+import ElementSupportsAriaProp from './element-supports-aria-prop/index.js';
 import FormAttrReferencesForm from './form-attr-references-form/index.js';
 import HeadElementOrder from './head-element-order/index.js';
-import HeadingLevels from './heading-levels/index.js';
-import IdDuplication from './id-duplication/index.js';
-import IneffectiveAttr from './ineffective-attr/index.js';
-import InputButtonNonEmptyValue from './input-button-non-empty-value/index.js';
-import InputFileEmptyValue from './input-file-empty-value/index.js';
 import InputListReferencesDatalist from './input-list-references-datalist/index.js';
-import InvalidAttr from './invalid-attr/index.js';
 import ItempropRequiresItemscope from './itemprop-requires-itemscope/index.js';
 import LabelForReferencesLabelable from './label-for-references-labelable/index.js';
 import LabelHasControl from './label-has-control/index.js';
 import LabelNoMultipleControls from './label-no-multiple-controls/index.js';
-import LandmarkRoles from './landmark-roles/index.js';
 import LinkTypes from './link-types/index.js';
 import MapIdNameMatch from './map-id-name-match/index.js';
 import MetaCharsetPosition from './meta-charset-position/index.js';
 import MeterValueBounds from './meter-value-bounds/index.js';
-import NeighborPopovers from './neighbor-popovers/index.js';
+import NoAbstractRole from './no-abstract-role/index.js';
+import NoAlwaysMatchingSource from './no-always-matching-source/index.js';
 import NoAmbiguousNavigableTargetNames from './no-ambiguous-navigable-target-names/index.js';
+import NoAriaOnPresentationalChildren from './no-aria-on-presentational-children/index.js';
+import NoAriaOnUnsupportedElement from './no-aria-on-unsupported-element/index.js';
 import NoBooleanAttrValue from './no-boolean-attr-value/index.js';
+import NoBrokenFragmentLink from './no-broken-fragment-link/index.js';
 import NoConsecutiveBr from './no-consecutive-br/index.js';
 import NoContentAfterBody from './no-content-after-body/index.js';
+import NoContradictoryAriaProp from './no-contradictory-aria-prop/index.js';
+import NoDefaultAriaValue from './no-default-aria-value/index.js';
 import NoDefaultValue from './no-default-value/index.js';
+import NoDeprecatedAriaProp from './no-deprecated-aria-prop/index.js';
+import NoDeprecatedAttr from './no-deprecated-attr/index.js';
+import NoDeprecatedElement from './no-deprecated-element/index.js';
+import NoDeprecatedRole from './no-deprecated-role/index.js';
+import NoDisallowedAncestor from './no-disallowed-ancestor/index.js';
+import NoDisallowedAttr from './no-disallowed-attr/index.js';
+import NoDuplicateAttr from './no-duplicate-attr/index.js';
 import NoDuplicateAutofocus from './no-duplicate-autofocus/index.js';
 import NoDuplicateDt from './no-duplicate-dt/index.js';
+import NoDuplicateH1 from './no-duplicate-h1/index.js';
+import NoDuplicateId from './no-duplicate-id/index.js';
+import NoDuplicateSiblingAttr from './no-duplicate-sibling-attr/index.js';
 import NoDuplicateVisibleMain from './no-duplicate-visible-main/index.js';
 import NoEmptyPalpableContent from './no-empty-palpable-content/index.js';
+import NoEmptyTableTrack from './no-empty-table-track/index.js';
+import NoEventHandlerAttr from './no-event-handler-attr/index.js';
+import NoExperimentalFeatures from './no-experimental-features/index.js';
 import NoExtraSelectedOptions from './no-extra-selected-options/index.js';
-import NoHardCodeId from './no-hard-code-id/index.js';
+import NoFocusableInAriaHidden from './no-focusable-in-aria-hidden/index.js';
+import NoHardcodedId from './no-hardcoded-id/index.js';
+import NoIneffectiveAttr from './no-ineffective-attr/index.js';
+import NoInputFileValue from './no-input-file-value/index.js';
+import NoInvalidAriaPropValue from './no-invalid-aria-prop-value/index.js';
+import NoInvalidAttrValue from './no-invalid-attr-value/index.js';
+import NoMalformedCharacterReference from './no-malformed-character-reference/index.js';
+import NoMismatchedAspectRatio from './no-mismatched-aspect-ratio/index.js';
+import NoMixedSrcsetDescriptors from './no-mixed-srcset-descriptors/index.js';
+import NoNestedTopLevelLandmark from './no-nested-top-level-landmark/index.js';
+import NoNonstandardFeatures from './no-nonstandard-features/index.js';
+import NoObsoleteAttr from './no-obsolete-attr/index.js';
+import NoObsoleteDoctype from './no-obsolete-doctype/index.js';
+import NoObsoleteElement from './no-obsolete-element/index.js';
 import NoOrphanedEndTag from './no-orphaned-end-tag/index.js';
+import NoProhibitedNaming from './no-prohibited-naming/index.js';
+import NoPseudoList from './no-pseudo-list/index.js';
+import NoRedundantAccessibleName from './no-redundant-accessible-name/index.js';
+import NoRedundantAriaProp from './no-redundant-aria-prop/index.js';
+import NoRedundantRole from './no-redundant-role/index.js';
 import NoReferToNonExistentId from './no-refer-to-non-existent-id/index.js';
+import NoRestrictedAttr from './no-restricted-attr/index.js';
+import NoRestrictedElement from './no-restricted-element/index.js';
+import NoSkippedHeadingLevel from './no-skipped-heading-level/index.js';
 import NoStrayHeadOrBodyTag from './no-stray-head-or-body-tag/index.js';
+import NoTableCellOverlap from './no-table-cell-overlap/index.js';
+import NoTableSpanOverflow from './no-table-span-overflow/index.js';
 import NoUnclosedElementAtEof from './no-unclosed-element-at-eof/index.js';
-import NoUnsupportedFeatures from './no-unsupported-features/index.js';
-import NoUseEventHandlerAttr from './no-use-event-handler-attr/index.js';
+import NoUnescapedChar from './no-unescaped-char/index.js';
+import NoUnknownAttr from './no-unknown-attr/index.js';
+import NoUnknownRole from './no-unknown-role/index.js';
+import NoUnpairedSrcsetSizes from './no-unpaired-srcset-sizes/index.js';
+import NoUnsupportedBrowserFeatures from './no-unsupported-browser-features/index.js';
 import PermittedContents from './permitted-contents/index.js';
+import PermittedRoles from './permitted-roles/index.js';
 import PlaceholderLabelOption from './placeholder-label-option/index.js';
 import ProgressValueBounds from './progress-value-bounds/index.js';
-import RedundantAccessibleName from './redundant-accessible-name/index.js';
 import RequireAccessibleName from './require-accessible-name/index.js';
+import RequireAdjacentPopover from './require-adjacent-popover/index.js';
+import RequireAncestor from './require-ancestor/index.js';
+import RequireAriaProp from './require-aria-prop/index.js';
+import RequireAttr from './require-attr/index.js';
 import RequireDatetime from './require-datetime/index.js';
 import RequireDialogAutofocus from './require-dialog-autofocus/index.js';
-import ScriptContent from './script-content/index.js';
-import SrcsetSizesConstraint from './srcset-sizes-constraint/index.js';
-import RequiredAttr from './required-attr/index.js';
-import RequiredElement from './required-element/index.js';
-import RequiredH1 from './required-h1/index.js';
-import TableRowColumnAlignment from './table-row-column-alignment/index.js';
-import UseList from './use-list/index.js';
+import RequireDoctype from './require-doctype/index.js';
+import RequireElement from './require-element/index.js';
+import RequireEndTag from './require-end-tag/index.js';
+import RequireH1 from './require-h1/index.js';
+import RequireLandmarkLabel from './require-landmark-label/index.js';
+import RequireOwnedElements from './require-owned-elements/index.js';
+import RequireParentRole from './require-parent-role/index.js';
+import RoleSupportsAriaProp from './role-supports-aria-prop/index.js';
+import SizesAutoRequiresLazyLoading from './sizes-auto-requires-lazy-loading/index.js';
+import TabRequiresTabpanel from './tab-requires-tabpanel/index.js';
 import UsemapReferencesMap from './usemap-references-map/index.js';
-import WaiAria from './wai-aria/index.js';
-import WaiAriaAbstractRole from './wai-aria-abstract-role/index.js';
-import WaiAriaDefaultValue from './wai-aria-default-value/index.js';
-import WaiAriaDeprecatedProps from './wai-aria-deprecated-props/index.js';
-import WaiAriaDeprecatedRole from './wai-aria-deprecated-role/index.js';
-import WaiAriaDisallowedProps from './wai-aria-disallowed-props/index.js';
-import WaiAriaImplicitProps from './wai-aria-implicit-props/index.js';
-import WaiAriaImplicitRole from './wai-aria-implicit-role/index.js';
-import WaiAriaInteractionInHidden from './wai-aria-interaction-in-hidden/index.js';
-import WaiAriaNoGlobalProp from './wai-aria-no-global-prop/index.js';
-import WaiAriaNonExistentRole from './wai-aria-non-existent-role/index.js';
-import WaiAriaPermittedRoles from './wai-aria-permitted-roles/index.js';
-import WaiAriaPresentationalChildren from './wai-aria-presentational-children/index.js';
-import WaiAriaRequiredOwnedElements from './wai-aria-required-owned-elements/index.js';
-import WaiAriaRequiredParentRole from './wai-aria-required-parent-role/index.js';
-import WaiAriaRequiredProps from './wai-aria-required-props/index.js';
-import WaiAriaTabRequiresTabpanel from './wai-aria-tab-requires-tabpanel/index.js';
-import WaiAriaValue from './wai-aria-value/index.js';
+import ValidImportmap from './valid-importmap/index.js';
+import ValidSpeculationRules from './valid-speculation-rules/index.js';
 
 /**
  * Registry of all built-in markuplint rules, mapping rule names to their seed definitions.
  * Used by the markuplint core to initialize rule instances during linting.
  */
 const rules = {
-	'attr-duplication': AttrDuplication,
+	'aria-prop-requires-role': AriaPropRequiresRole,
 	'attr-order': AttrOrder,
 	'attr-value-quotes': AttrValueQuotes,
 	'case-sensitive-attr-name': CaseSensitiveAttrName,
 	'case-sensitive-tag-name': CaseSensitiveTagName,
-	'character-reference': CharacterReference,
 	'class-naming': ClassNaming,
-	'correct-aspect-ratio': CorrectAspectRatio,
-	'deprecated-attr': DeprecatedAttr,
-	'deprecated-element': DeprecatedElement,
-	'disallowed-element': DisallowedElement,
-	doctype: Doctype,
-	'end-tag': EndTag,
+	'consistent-table-row-length': ConsistentTableRowLength,
+	'element-supports-aria-prop': ElementSupportsAriaProp,
 	'form-attr-references-form': FormAttrReferencesForm,
 	'head-element-order': HeadElementOrder,
-	'heading-levels': HeadingLevels,
-	'id-duplication': IdDuplication,
-	'ineffective-attr': IneffectiveAttr,
-	'input-button-non-empty-value': InputButtonNonEmptyValue,
-	'input-file-empty-value': InputFileEmptyValue,
 	'input-list-references-datalist': InputListReferencesDatalist,
-	'invalid-attr': InvalidAttr,
 	'itemprop-requires-itemscope': ItempropRequiresItemscope,
 	'label-for-references-labelable': LabelForReferencesLabelable,
 	'label-has-control': LabelHasControl,
 	'label-no-multiple-controls': LabelNoMultipleControls,
-	'landmark-roles': LandmarkRoles,
 	'link-types': LinkTypes,
 	'map-id-name-match': MapIdNameMatch,
 	'meta-charset-position': MetaCharsetPosition,
 	'meter-value-bounds': MeterValueBounds,
-	'neighbor-popovers': NeighborPopovers,
+	'no-abstract-role': NoAbstractRole,
+	'no-always-matching-source': NoAlwaysMatchingSource,
 	'no-ambiguous-navigable-target-names': NoAmbiguousNavigableTargetNames,
+	'no-aria-on-presentational-children': NoAriaOnPresentationalChildren,
+	'no-aria-on-unsupported-element': NoAriaOnUnsupportedElement,
 	'no-boolean-attr-value': NoBooleanAttrValue,
+	'no-broken-fragment-link': NoBrokenFragmentLink,
 	'no-consecutive-br': NoConsecutiveBr,
 	'no-content-after-body': NoContentAfterBody,
+	'no-contradictory-aria-prop': NoContradictoryAriaProp,
+	'no-default-aria-value': NoDefaultAriaValue,
 	'no-default-value': NoDefaultValue,
+	'no-deprecated-aria-prop': NoDeprecatedAriaProp,
+	'no-deprecated-attr': NoDeprecatedAttr,
+	'no-deprecated-element': NoDeprecatedElement,
+	'no-deprecated-role': NoDeprecatedRole,
+	'no-disallowed-ancestor': NoDisallowedAncestor,
+	'no-disallowed-attr': NoDisallowedAttr,
+	'no-duplicate-attr': NoDuplicateAttr,
 	'no-duplicate-autofocus': NoDuplicateAutofocus,
 	'no-duplicate-dt': NoDuplicateDt,
+	'no-duplicate-h1': NoDuplicateH1,
+	'no-duplicate-id': NoDuplicateId,
+	'no-duplicate-sibling-attr': NoDuplicateSiblingAttr,
 	'no-duplicate-visible-main': NoDuplicateVisibleMain,
 	'no-empty-palpable-content': NoEmptyPalpableContent,
+	'no-empty-table-track': NoEmptyTableTrack,
+	'no-event-handler-attr': NoEventHandlerAttr,
+	'no-experimental-features': NoExperimentalFeatures,
 	'no-extra-selected-options': NoExtraSelectedOptions,
-	'no-hard-code-id': NoHardCodeId,
+	'no-focusable-in-aria-hidden': NoFocusableInAriaHidden,
+	'no-hardcoded-id': NoHardcodedId,
+	'no-ineffective-attr': NoIneffectiveAttr,
+	'no-input-file-value': NoInputFileValue,
+	'no-invalid-aria-prop-value': NoInvalidAriaPropValue,
+	'no-invalid-attr-value': NoInvalidAttrValue,
+	'no-malformed-character-reference': NoMalformedCharacterReference,
+	'no-mismatched-aspect-ratio': NoMismatchedAspectRatio,
+	'no-mixed-srcset-descriptors': NoMixedSrcsetDescriptors,
+	'no-nested-top-level-landmark': NoNestedTopLevelLandmark,
+	'no-nonstandard-features': NoNonstandardFeatures,
+	'no-obsolete-attr': NoObsoleteAttr,
+	'no-obsolete-doctype': NoObsoleteDoctype,
+	'no-obsolete-element': NoObsoleteElement,
 	'no-orphaned-end-tag': NoOrphanedEndTag,
+	'no-prohibited-naming': NoProhibitedNaming,
+	'no-pseudo-list': NoPseudoList,
+	'no-redundant-accessible-name': NoRedundantAccessibleName,
+	'no-redundant-aria-prop': NoRedundantAriaProp,
+	'no-redundant-role': NoRedundantRole,
 	'no-refer-to-non-existent-id': NoReferToNonExistentId,
+	'no-restricted-attr': NoRestrictedAttr,
+	'no-restricted-element': NoRestrictedElement,
+	'no-skipped-heading-level': NoSkippedHeadingLevel,
 	'no-stray-head-or-body-tag': NoStrayHeadOrBodyTag,
+	'no-table-cell-overlap': NoTableCellOverlap,
+	'no-table-span-overflow': NoTableSpanOverflow,
 	'no-unclosed-element-at-eof': NoUnclosedElementAtEof,
-	'no-unsupported-features': NoUnsupportedFeatures,
-	'no-use-event-handler-attr': NoUseEventHandlerAttr,
+	'no-unescaped-char': NoUnescapedChar,
+	'no-unknown-attr': NoUnknownAttr,
+	'no-unknown-role': NoUnknownRole,
+	'no-unpaired-srcset-sizes': NoUnpairedSrcsetSizes,
+	'no-unsupported-browser-features': NoUnsupportedBrowserFeatures,
 	'permitted-contents': PermittedContents,
+	'permitted-roles': PermittedRoles,
 	'placeholder-label-option': PlaceholderLabelOption,
 	'progress-value-bounds': ProgressValueBounds,
-	'redundant-accessible-name': RedundantAccessibleName,
 	'require-accessible-name': RequireAccessibleName,
+	'require-adjacent-popover': RequireAdjacentPopover,
+	'require-ancestor': RequireAncestor,
+	'require-aria-prop': RequireAriaProp,
+	'require-attr': RequireAttr,
 	'require-datetime': RequireDatetime,
 	'require-dialog-autofocus': RequireDialogAutofocus,
-	'required-attr': RequiredAttr,
-	'required-element': RequiredElement,
-	'required-h1': RequiredH1,
-	'script-content': ScriptContent,
-	'srcset-sizes-constraint': SrcsetSizesConstraint,
-	'table-row-column-alignment': TableRowColumnAlignment,
-	'use-list': UseList,
+	'require-doctype': RequireDoctype,
+	'require-element': RequireElement,
+	'require-end-tag': RequireEndTag,
+	'require-h1': RequireH1,
+	'require-landmark-label': RequireLandmarkLabel,
+	'require-owned-elements': RequireOwnedElements,
+	'require-parent-role': RequireParentRole,
+	'role-supports-aria-prop': RoleSupportsAriaProp,
+	'sizes-auto-requires-lazy-loading': SizesAutoRequiresLazyLoading,
+	'tab-requires-tabpanel': TabRequiresTabpanel,
 	'usemap-references-map': UsemapReferencesMap,
-	'wai-aria': WaiAria,
-	'wai-aria-abstract-role': WaiAriaAbstractRole,
-	'wai-aria-default-value': WaiAriaDefaultValue,
-	'wai-aria-deprecated-props': WaiAriaDeprecatedProps,
-	'wai-aria-deprecated-role': WaiAriaDeprecatedRole,
-	'wai-aria-disallowed-props': WaiAriaDisallowedProps,
-	'wai-aria-implicit-props': WaiAriaImplicitProps,
-	'wai-aria-implicit-role': WaiAriaImplicitRole,
-	'wai-aria-interaction-in-hidden': WaiAriaInteractionInHidden,
-	'wai-aria-no-global-prop': WaiAriaNoGlobalProp,
-	'wai-aria-non-existent-role': WaiAriaNonExistentRole,
-	'wai-aria-permitted-roles': WaiAriaPermittedRoles,
-	'wai-aria-presentational-children': WaiAriaPresentationalChildren,
-	'wai-aria-required-owned-elements': WaiAriaRequiredOwnedElements,
-	'wai-aria-required-parent-role': WaiAriaRequiredParentRole,
-	'wai-aria-required-props': WaiAriaRequiredProps,
-	'wai-aria-tab-requires-tabpanel': WaiAriaTabRequiresTabpanel,
-	'wai-aria-value': WaiAriaValue,
+	'valid-importmap': ValidImportmap,
+	'valid-speculation-rules': ValidSpeculationRules,
 } as const satisfies Record<string, AnyRuleSeed<any, any>>;
 
 export default rules;

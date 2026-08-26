@@ -14,8 +14,9 @@ import {
 	resolveRules,
 	resolveSpecs,
 } from '@markuplint/file-resolver';
-import { mergeConfig } from '@markuplint/ml-config';
+import { applyRuleAliasesToConfig, mergeConfig } from '@markuplint/ml-config';
 import { MLCore, convertRuleset } from '@markuplint/ml-core';
+import { ruleAliasTable } from '@markuplint/rules';
 import { isFatalError } from '@markuplint/shared';
 import { FSWatcher } from 'chokidar';
 import { Emitter } from 'strict-event-emitter';
@@ -427,11 +428,40 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		configLog('defaultRecommended: %s', defaultRecommended ?? 'N/A');
 		this.emit('log', 'defaultRecommended', defaultRecommended ?? 'N/A');
 
-		const configSet = await this.#configProvider.resolve(
+		const resolvedConfigSet = await this.#configProvider.resolve(
 			this.#file,
 			[configFilePathsFromTarget, this.#options?.configFile, configKey, defaultRecommended],
 			cache,
 		);
+
+		// Rewrite deprecated rule names (v5 rule-system redesign, #3989) to
+		// their current replacement(s) so old configurations keep working.
+		// Applied once, here, after `extends` is fully merged — everything
+		// downstream (Ruleset, rule resolution, `--show-config`) sees only
+		// current rule names. Covers all three places a rule name can appear:
+		// the top-level `rules` map, and each `nodeRules`/`childNodeRules`
+		// entry's own `rules`.
+		const { config: aliasedConfig, warnings: ruleAliasWarnings } = applyRuleAliasesToConfig(
+			resolvedConfigSet.config,
+			ruleAliasTable,
+		);
+		const configSet: ConfigSet =
+			ruleAliasWarnings.length === 0
+				? resolvedConfigSet
+				: {
+						...resolvedConfigSet,
+						config: aliasedConfig,
+						errs: [
+							...resolvedConfigSet.errs,
+							...ruleAliasWarnings.map(
+								({ deprecatedName, replacedBy }) =>
+									new Error(
+										`Rule "${deprecatedName}" is deprecated and will be removed in v6. Use ${replacedBy.join(', ')} instead.`,
+									),
+							),
+						],
+					};
+
 		this.emit('config', this.#file.path, configSet);
 
 		if (this.#options?.watch) {
