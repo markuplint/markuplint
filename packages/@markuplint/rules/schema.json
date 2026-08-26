@@ -120,6 +120,9 @@
 				"no-content-after-body": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-content-after-body/schema.json"
 				},
+				"no-contradictory-aria-prop": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-contradictory-aria-prop/schema.json"
+				},
 				"no-default-aria-value": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-default-aria-value/schema.json"
 				},
@@ -224,6 +227,9 @@
 				},
 				"no-redundant-accessible-name": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-redundant-accessible-name/schema.json"
+				},
+				"no-redundant-aria-prop": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-redundant-aria-prop/schema.json"
 				},
 				"no-redundant-role": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-redundant-role/schema.json"
@@ -365,9 +371,6 @@
 				},
 				"wai-aria-deprecated-role": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-deprecated-role/schema.json"
-				},
-				"wai-aria-implicit-props": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/wai-aria-implicit-props/schema.json"
 				},
 				"wai-aria-implicit-role": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-redundant-role/schema.json"

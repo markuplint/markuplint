@@ -161,6 +161,7 @@ export const ruleAliasTable: RuleAliasTable = {
 		'no-always-matching-source',
 	),
 	'wai-aria-disallowed-props': split('no-prohibited-naming', 'element-supports-aria-prop', 'role-supports-aria-prop'),
+	'wai-aria-implicit-props': split('no-redundant-aria-prop', 'no-contradictory-aria-prop'),
 	'attr-duplication': renamed('no-duplicate-attr'),
 	'id-duplication': renamed('no-duplicate-id'),
 	'required-element': renamed('require-element'),

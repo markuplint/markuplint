@@ -40,6 +40,7 @@ import NoBooleanAttrValue from './no-boolean-attr-value/index.js';
 import NoBrokenFragmentLink from './no-broken-fragment-link/index.js';
 import NoConsecutiveBr from './no-consecutive-br/index.js';
 import NoContentAfterBody from './no-content-after-body/index.js';
+import NoContradictoryAriaProp from './no-contradictory-aria-prop/index.js';
 import NoDefaultAriaValue from './no-default-aria-value/index.js';
 import NoDefaultValue from './no-default-value/index.js';
 import NoDeprecatedAriaProp from './no-deprecated-aria-prop/index.js';
@@ -74,6 +75,7 @@ import NoOrphanedEndTag from './no-orphaned-end-tag/index.js';
 import NoProhibitedNaming from './no-prohibited-naming/index.js';
 import NoPseudoList from './no-pseudo-list/index.js';
 import NoRedundantAccessibleName from './no-redundant-accessible-name/index.js';
+import NoRedundantAriaProp from './no-redundant-aria-prop/index.js';
 import NoRedundantRole from './no-redundant-role/index.js';
 import NoReferToNonExistentId from './no-refer-to-non-existent-id/index.js';
 import NoRestrictedAttr from './no-restricted-attr/index.js';
@@ -112,7 +114,6 @@ import UsemapReferencesMap from './usemap-references-map/index.js';
 import ValidImportmap from './valid-importmap/index.js';
 import ValidSpeculationRules from './valid-speculation-rules/index.js';
 import WaiAria from './wai-aria/index.js';
-import WaiAriaImplicitProps from './wai-aria-implicit-props/index.js';
 
 /**
  * Registry of all built-in markuplint rules, mapping rule names to their seed definitions.
@@ -148,6 +149,7 @@ const rules = {
 	'no-broken-fragment-link': NoBrokenFragmentLink,
 	'no-consecutive-br': NoConsecutiveBr,
 	'no-content-after-body': NoContentAfterBody,
+	'no-contradictory-aria-prop': NoContradictoryAriaProp,
 	'no-default-aria-value': NoDefaultAriaValue,
 	'no-default-value': NoDefaultValue,
 	'no-deprecated-aria-prop': NoDeprecatedAriaProp,
@@ -182,6 +184,7 @@ const rules = {
 	'no-prohibited-naming': NoProhibitedNaming,
 	'no-pseudo-list': NoPseudoList,
 	'no-redundant-accessible-name': NoRedundantAccessibleName,
+	'no-redundant-aria-prop': NoRedundantAriaProp,
 	'no-redundant-role': NoRedundantRole,
 	'no-refer-to-non-existent-id': NoReferToNonExistentId,
 	'no-restricted-attr': NoRestrictedAttr,
@@ -220,7 +223,6 @@ const rules = {
 	'valid-importmap': ValidImportmap,
 	'valid-speculation-rules': ValidSpeculationRules,
 	'wai-aria': WaiAria,
-	'wai-aria-implicit-props': WaiAriaImplicitProps,
 } as const satisfies Record<string, AnyRuleSeed<any, any>>;
 
 export default rules;
