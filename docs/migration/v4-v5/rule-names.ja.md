@@ -10,13 +10,29 @@ v5.0.0 ではルールカタログを全面的に見直しました: ESLint 準�
 
 **何も静かに壊れません。** 改名・分割された全てのルールは旧名でも引き続き動作します — markuplint が非推奨警告を報告し、旧設定を新しいルールに自動的に展開します。旧名は v6 で削除されます。
 
+## カテゴリ
+
+rc.4 の5分類（`validation`、`a11y`、`naming-convention`、`maintainability`、`style`）は、各ルールの `meta.ts` の `category` フィールドが持つ9分類に置き換えられました。`validation`（一覧性が悪いほど粗い分類だった — rc.4 の82ルールのうち53件がここに属していた）はルールが実際に検査する内容で細分化され、`naming-convention`（1ルール、`class-naming`）は `style` に統合されました。
+
+| カテゴリ | カバーする内容 |
+|---------|---------------|
+| `syntax` | パースレベルの適合性 — 不正なマークアップ、文字参照、トークンレベルのタグ・要素構造 |
+| `structure` | 文書・コンテンツモデルの構造 — 許可されるコンテンツ、祖先・子孫制約、doctype、テーブルモデル |
+| `attributes` | 属性名・値の適合性 — 未知/不許可の属性、値の型検査、srcset、寸法 |
+| `references` | 相互参照の整合性 — ID参照、`for`/`form`/`list`/`usemap` 属性の参照先 |
+| `forms` | フォームコントロール固有のベストプラクティス |
+| `a11y` | ARIA およびその他のアクセシビリティ固有の検査 |
+| `style` | 唯一の正解が無い、好みが分かれる書式・命名の選好 |
+| `maintainability` | 仕様準拠性やアクセシビリティに無関係な、プロジェクトの健全性に関する検査 |
+| `compat` | ブラウザ・エンジンの互換性 — browserslist × BCD、実験的/非標準機能フラグ |
+
 ## 1:1 リネーム
 
 | 旧名（rc.4） | 新名 |
 |------------|------|
 | `attr-duplication` | `no-duplicate-attr` |
 | `id-duplication` | `no-duplicate-id` |
-| `required-attr` | `require-attr`（存在検査のみに縮小 — 下記[責務の縮小](#責務の縮小)参照） |
+| `required-attr` | `require-attr`（単純なリネーム、スコープは維持 — 理由は下記[責務の縮小](#責務の縮小)参照） |
 | `required-element` | `require-element` |
 | `ineffective-attr` | `no-ineffective-attr` |
 | `end-tag` | `require-end-tag` |
@@ -103,7 +119,7 @@ v5.0.0 ではルールカタログを全面的に見直しました: ESLint 準�
 
 ## 責務の縮小
 
-- **`require-attr`**（旧 `required-attr`）: 現在は存在検査のみです。旧来の `{ name, value }` パターンマッチング形式は `no-restricted-attr` に移動しました — エイリアスが設定を自動的に振り分けます。
+- **`require-attr`**（旧 `required-attr`）: 単純なリネームであり、スコープの変更はありません。設計当初は存在検査のみに縮小し `{ name, value }` パターンマッチングを `no-restricted-attr` に移す案でしたが、実際に `no-restricted-attr` が実装された時点で再考されました — 「この属性値がパターンに一致することを要求する」は肯定的な REQUIRE 制約であり拒否リストではないため、`no-restricted-attr` の拒否専用の形には否定パターンという不自然な形でしか収まりません。`require-attr` は改名前の全スコープ（`{ name, value }` マッチングを含む）を維持しています。
 - **`label-has-control`**: 現在は関連付けられたコントロールを持たない `<label>` のみを検出します。同一 `<label>` 内の*2つ目以降*のコントロール検出は元々 `label-no-multiple-controls` の担当であり、`label-has-control` がそれも報告するのは重複でした。
 
 ## 既知の移行ギャップ

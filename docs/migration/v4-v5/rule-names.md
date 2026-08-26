@@ -10,13 +10,29 @@ v5.0.0 redoes the rule catalog end to end: consistent ESLint-style verb-prefix n
 
 **Nothing breaks silently.** Every renamed or split rule keeps working under its old name — markuplint reports a deprecation warning and expands the old config to the new rule(s) automatically. Old names are removed in v6.
 
+## Categories
+
+rc.4's 5-category scheme (`validation`, `a11y`, `naming-convention`, `maintainability`, `style`) is replaced by 9 categories, each `meta.ts`'s `category` field. `validation` (too coarse to browse — it held 53 of rc.4's 82 rules) is split by what the rule actually checks; `naming-convention` (1 rule, `class-naming`) folds into `style`.
+
+| Category | What it covers |
+|----------|-----------------|
+| `syntax` | Parse-level conformance — malformed markup, character references, tag/element structure at the token level |
+| `structure` | Document/content-model structure — permitted contents, ancestor/descendant constraints, doctype, table model |
+| `attributes` | Attribute name/value conformance — unknown/disallowed attributes, value type checks, srcset, dimensions |
+| `references` | Cross-reference integrity — ID references, `for`/`form`/`list`/`usemap` attribute targets |
+| `forms` | Form-control-specific best practices |
+| `a11y` | ARIA and other accessibility-specific checks |
+| `style` | Opinionated formatting/naming preferences with no single correct answer |
+| `maintainability` | Project-hygiene checks unrelated to spec conformance or accessibility |
+| `compat` | Browser/engine compatibility — browserslist × BCD, experimental/non-standard feature flags |
+
 ## 1:1 Renames
 
 | Old name (rc.4) | New name |
 |------------------|----------|
 | `attr-duplication` | `no-duplicate-attr` |
 | `id-duplication` | `no-duplicate-id` |
-| `required-attr` | `require-attr` (existence check only — see [Scope Narrowed](#scope-narrowed-2) below) |
+| `required-attr` | `require-attr` (plain rename, full scope kept — see [Scope Narrowed](#scope-narrowed) below for why) |
 | `required-element` | `require-element` |
 | `ineffective-attr` | `no-ineffective-attr` |
 | `end-tag` | `require-end-tag` |
@@ -103,7 +119,7 @@ See [ARIA Changes](./aria.md) for the `wai-aria` umbrella rule's removal (a 21-w
 
 ## Scope Narrowed
 
-- **`require-attr`** (renamed from `required-attr`): existence checking only now. The old `{ name, value }` pattern-matching form moves to `no-restricted-attr` — the alias distributes your config automatically.
+- **`require-attr`** (renamed from `required-attr`): a plain rename, not a scope change. The design originally proposed narrowing it to existence-checking only and moving its `{ name, value }` pattern-matching to `no-restricted-attr`, but that was reconsidered once `no-restricted-attr` actually landed — "require this attribute's value to match a pattern" is a positive REQUIRE constraint, not a denylist, and only fits `no-restricted-attr`'s deny-only shape via an awkward negated pattern. `require-attr` keeps its full pre-rename scope, including `{ name, value }` matching.
 - **`label-has-control`**: detects only a `<label>` with no associated control now. Detecting a *second* control inside the same `<label>` was already `label-no-multiple-controls`'s job; `label-has-control` reporting it too was a duplicate.
 
 ## Known Migration Gap
