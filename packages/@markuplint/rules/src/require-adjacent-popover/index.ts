@@ -11,6 +11,7 @@ const POPOVER_COMMANDS = new Set(['toggle-popover', 'show-popover', 'hide-popove
 
 export default createRule({
 	meta: meta,
+	defaultSeverity: 'warning',
 	verify({ document, report, t }) {
 		const ariaVersion = document.ruleCommonSettings?.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
 

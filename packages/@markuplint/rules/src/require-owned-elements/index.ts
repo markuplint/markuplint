@@ -9,7 +9,6 @@ import meta from './meta.js';
 
 export default createRule<boolean, Options>({
 	meta,
-	defaultSeverity: 'warning',
 	defaultOptions,
 	async verify({ document, report }) {
 		await document.walkOn('Element', el => {

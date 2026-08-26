@@ -158,15 +158,7 @@ export const benchmarkConfig: Config = {
 		// mechanical fix; the bench escalates to align with the ARIA-in-HTML MUST NOT.
 		'no-focusable-in-aria-hidden': { severity: 'error' },
 		'no-invalid-aria-prop-value': true,
-		// WAI-ARIA 1.2 §5.2.6 Required Owned Elements: "When multiple roles are specified
-		// as required owned elements for a role, at least one instance of one required
-		// owned element is expected." and "When a widget is missing required owned
-		// elements due to script execution or loading, authors MUST mark a containing
-		// element with aria-busy equal to true." The rule fires when neither an owned
-		// element nor aria-busy is present — precisely the MUST violation. The
-		// user-facing default stays 'warning' for author ergonomics; the bench escalates
-		// to align with the spec MUST.
-		'require-owned-elements': { severity: 'error' },
+		'require-owned-elements': true,
 		'require-parent-role': true,
 		'aria-prop-requires-role': true,
 		// WAI-ARIA 1.3 §tab role: "Authors MUST ensure that if a tab is active, a

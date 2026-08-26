@@ -16,7 +16,7 @@
 				"value": { "$ref": "#/definitions/value" },
 				"severity": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/ml-config/schema.json#/definitions/severity",
-					"default": "error"
+					"default": "warning"
 				},
 				"reason": {
 					"type": "string"

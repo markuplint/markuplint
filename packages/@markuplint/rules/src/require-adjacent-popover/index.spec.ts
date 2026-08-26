@@ -32,7 +32,7 @@ describe('Basic', () => {
 			).violations,
 		).toStrictEqual([
 			{
-				severity: 'error',
+				severity: 'warning',
 				line: 3,
 				col: 4,
 				message: 'Detected perceptible nodes between the trigger and corresponding target',
@@ -231,7 +231,7 @@ describe('Invoker Commands API (commandfor + command)', () => {
 			).violations,
 		).toStrictEqual([
 			{
-				severity: 'error',
+				severity: 'warning',
 				line: 3,
 				col: 4,
 				message: 'Detected perceptible nodes between the trigger and corresponding target',

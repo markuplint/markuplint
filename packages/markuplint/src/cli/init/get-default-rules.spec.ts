@@ -147,7 +147,7 @@ test('default-rules', () => {
 		},
 		'require-adjacent-popover': {
 			category: 'a11y',
-			defaultValue: true,
+			defaultValue: false,
 		},
 		'no-ambiguous-navigable-target-names': {
 			category: 'a11y',
@@ -175,7 +175,7 @@ test('default-rules', () => {
 		},
 		'no-duplicate-dt': {
 			category: 'validation',
-			defaultValue: true,
+			defaultValue: false,
 		},
 		'no-duplicate-visible-main': {
 			category: 'validation',
@@ -415,7 +415,7 @@ test('default-rules', () => {
 		},
 		'require-owned-elements': {
 			category: 'a11y',
-			defaultValue: false,
+			defaultValue: true,
 		},
 		'require-parent-role': {
 			category: 'a11y',

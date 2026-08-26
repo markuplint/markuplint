@@ -16,7 +16,7 @@ test('[require-owned-elements-valid-002] no role', async () => {
 test('[require-owned-elements-invalid-001] list without listitem', async () => {
 	const { violations } = await mlRuleTest(rule, '<div role="list"><div>not a listitem</div></div>');
 	expect(violations.length).toBe(1);
-	expect(violations[0]!.severity).toBe('warning');
+	expect(violations[0]!.severity).toBe('error');
 });
 
 // #3589: empty containers warn with busy suggestion (not error)
@@ -24,7 +24,7 @@ test('[require-owned-elements-issue-3589-001] empty ul warns with busy suggestio
 	const { violations } = await mlRuleTest(rule, '<ul></ul>');
 	expect(violations).toStrictEqual([
 		{
-			severity: 'warning',
+			severity: 'error',
 			line: 1,
 			col: 1,
 			message: 'The child element requires the "listitem" role. Or, require aria-busy="true"',
@@ -37,7 +37,7 @@ test('[require-owned-elements-issue-3589-002] empty div[role=list] warns with bu
 	const { violations } = await mlRuleTest(rule, '<div role="list"></div>');
 	expect(violations).toStrictEqual([
 		{
-			severity: 'warning',
+			severity: 'error',
 			line: 1,
 			col: 1,
 			message: 'The child element requires the "listitem" role. Or, require aria-busy="true"',
@@ -50,7 +50,7 @@ test('[require-owned-elements-issue-3589-003] empty menu warns with busy suggest
 	const { violations } = await mlRuleTest(rule, '<menu></menu>');
 	expect(violations).toStrictEqual([
 		{
-			severity: 'warning',
+			severity: 'error',
 			line: 1,
 			col: 1,
 			message: 'The child element requires the "listitem" role. Or, require aria-busy="true"',

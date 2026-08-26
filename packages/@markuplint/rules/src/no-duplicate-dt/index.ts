@@ -4,6 +4,7 @@ import meta from './meta.js';
 
 export default createRule({
 	meta: meta,
+	defaultSeverity: 'warning',
 	verify({ document, report, t }) {
 		const dlList = [...document.querySelectorAll('dl')];
 		for (const dl of dlList) {
