@@ -248,7 +248,7 @@ v5 では、これまで `Any` として素通りしていた領域について�
 
 ### 言語タグの IANA レジストリ検証 (`lang` / `hreflang` / `srclang` 等)
 
-HTML LS は `lang` 属性の値を[「valid BCP 47 language tag」](https://html.spec.whatwg.org/multipage/dom.html#the-lang-and-xml:lang-attributes)と規定しており、[RFC 5646 §2.2.9](https://www.rfc-editor.org/rfc/rfc5646.html#section-2.2.9) は _valid_ を「Either the tag is in the list of grandfathered tags or all of its primary language, extended language, script, region, and variant subtags appear in the IANA Language Subtag Registry as of the particular registry date」と定義しています。v4 は構文形状 (well-formedness) のみを検査していましたが、v5 は各 subtag を [IANA Language Subtag Registry](https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry) と照合します。レジストリデータは [`language-subtag-registry`](https://www.npmjs.com/package/language-subtag-registry) パッケージとして同梱され、依存の更新でデータも更新されます。
+HTML LS は `lang` 属性の値を[「valid BCP 47 language tag」](https://html.spec.whatwg.org/multipage/dom.html#the-lang-and-xml:lang-attributes)と規定しており、[RFC 5646 §2.2.9](https://www.rfc-editor.org/rfc/rfc5646.html#section-2.2.9) は _valid_ を「Either the tag is in the list of grandfathered tags or all of its primary language, extended language, script, region, and variant subtags appear in the IANA Language Subtag Registry as of the particular registry date」と定義しています。v4 は構文形状 (well-formedness) のみを検査していましたが、v5 は各 subtag を [IANA Language Subtag Registry](https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry) と照合します。レジストリデータは npm パッケージ [`language-subtag-registry`](https://www.npmjs.com/package/language-subtag-registry) が提供しており、依存の更新でデータも更新されます。
 
 `BCP47` 型を持つすべての属性 — `lang` / `xml:lang` (HTML と SVG)、`hreflang`、`<track srclang>`、SVG の `systemLanguage` — が対象です。
 

@@ -3,7 +3,7 @@ sidebar_position: 5
 title: parse-error
 ---
 
-# `parse-error` (組み込み violation チャネル) — 非致命的なパーサーエラー
+# `parse-error` (組み込み violation チャネル) — 非致命的なパーサーエラーにも対応
 
 組み込みの `parse-error` violation チャネルが、HTML LS の **非致命的** なパースエラー (parse5 の `onParseError` イベント) も拾うようになりました。**デフォルトはオフ**で、parse5 の code 単位でオプトインします。
 
@@ -157,9 +157,9 @@ HTML パーサーは入力の先頭を見て document/fragment を自動判定�
 
 ## 適用範囲
 
-非致命的チャネルは `MLASTDocument.parseErrors` を populate するパーサーでのみ発火します。現状は `@markuplint/html-parser` (および `.html` テンプレート向けにこれをラップする `SvelteKitTemplateParser` / `HtmlInPugParser`) のみです。
+非致命的チャネルは `MLASTDocument.parseErrors` を populate するパーサーでのみ発火します。現状は `@markuplint/html-parser` 自身に加えて、その `HtmlParser` サブクラス2つです。`SvelteKitTemplateParser`（SvelteKit の `app.html` テンプレート向けにラップ）と `HtmlInPugParser`（`@markuplint/pug-parser` が Pug の各行に埋め込まれた raw HTML —`.html` ファイルではなく、Pug ソースが含みうる HTML 断片 — を解析するために内部で使用し、見つかった parse error を外側の Pug ドキュメントへ転送します）。
 
-フレームワークパーサー — `@markuplint/jsx-parser`、`vue-parser`、`svelte-parser` (`.svelte` ファイル)、`astro-parser`、`pug-parser` (`.pug` ファイル) — は parse5 を呼ばないため、`severity.parseError` をどう設定しても非致命的 `parse-error` violation は発生しません。
+その他のフレームワークパーサー — `@markuplint/jsx-parser`、`vue-parser`、`svelte-parser` (`.svelte` ファイル)、`astro-parser` — は parse5 を一切呼ばないため、`severity.parseError` をどう設定しても非致命的 `parse-error` violation は発生しません。
 
 ## ルールレベルのチェックとの関係 (mirror 宣言)
 

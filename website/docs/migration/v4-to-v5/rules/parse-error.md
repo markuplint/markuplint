@@ -3,7 +3,7 @@ sidebar_position: 5
 title: parse-error
 ---
 
-# `parse-error` (Built-in violation channel) — non-fatal parser errors
+# `parse-error` (Built-in violation channel) — now covers non-fatal parser errors too
 
 The built-in `parse-error` violation channel now also surfaces **non-fatal** HTML LS parse errors (parse5 `onParseError` events). The channel is **off by default**; users opt in per parse5 code.
 
@@ -157,9 +157,9 @@ Some parse5 errors (`missing-doctype`, `misplaced-doctype`, `non-conforming-doct
 
 ## Scope
 
-The non-fatal channel only fires for parsers that populate `MLASTDocument.parseErrors`. Currently that's `@markuplint/html-parser` (and the `SvelteKitTemplateParser` / `HtmlInPugParser` derivatives that wrap it for `.html` templates).
+The non-fatal channel only fires for parsers that populate `MLASTDocument.parseErrors`. Currently that's `@markuplint/html-parser` itself, plus two `HtmlParser` subclasses: `SvelteKitTemplateParser` (which wraps it for SvelteKit's `app.html` templates) and `HtmlInPugParser` (which `@markuplint/pug-parser` uses internally to parse each Pug line's embedded raw HTML — not `.html` files, but the HTML fragments Pug source can contain — forwarding whatever parse errors it finds to the outer Pug document).
 
-Framework parsers — `@markuplint/jsx-parser`, `vue-parser`, `svelte-parser` (`.svelte` files), `astro-parser`, `pug-parser` (`.pug` files) — do **not** invoke parse5 and therefore do not emit non-fatal `parse-error` violations regardless of how `severity.parseError` is configured.
+Other framework parsers — `@markuplint/jsx-parser`, `vue-parser`, `svelte-parser` (`.svelte` files), `astro-parser` — do **not** invoke parse5 at all and therefore never emit non-fatal `parse-error` violations, regardless of how `severity.parseError` is configured.
 
 ## Relationship with rule-level checks (mirror declarations)
 

@@ -93,14 +93,14 @@ The same HTML passes. ARIA 1.3 says user agents must ignore elements with the `g
 | `generic` transparent for child roles               | No                | Yes     |
 | `generic` transparent for parent role               | No                | Yes     |
 | `presentation` / `none` transparent for child roles | Yes               | Yes     |
-| `presentation` / `none` transparent for parent role | No                | Yes     |
+| `presentation` / `none` transparent for parent role | Yes               | Yes     |
 
 ## `<aside>` conditional role mapping (ARIA 1.3)
 
 The `<aside>` element now uses **conditional role mapping** per the ARIA 1.3 spec:
 
-- When `<aside>` is **not** a descendant of `<article>`, `<aside>`, `<main>`, `<nav>`, or `<section>` → role is `complementary`
-- When `<aside>` **is** a descendant of one of those sectioning elements → role is `generic`
+- When `<aside>` is **not** a descendant of `<article>`, `<aside>`, `<blockquote>`, `<details>`, `<dialog>`, `<fieldset>`, `<figure>`, `<nav>`, `<section>`, or `<td>` → role is `complementary`
+- When `<aside>` **is** a descendant of one of those elements → role is `generic`, unless the `<aside>` itself has an accessible name (e.g. `aria-label`), in which case it keeps `complementary`
 
 `no-nested-top-level-landmark` — the rule split off from `landmark-roles` — deliberately does not check `complementary` as a top-level landmark for this reason. Its selector-based detection cannot tell a demoted `<aside>` apart from a true one, so checking it would produce a false positive on any `<aside>` nested in a sectioning ancestor.
 
@@ -110,12 +110,12 @@ Since ARIA 1.3 is now the default, this change affects all users immediately. If
 
 ## `image` / `img` role synonym (ARIA 1.3)
 
-In ARIA 1.3, `image` is the primary role name and `img` is a synonym. When either appears in an element's permitted roles, both are accepted:
+In ARIA 1.3, `image` is the primary role name and `img` is a synonym. When either appears in an element's permitted roles, both are accepted. This affects elements whose permitted-roles list includes `img` — `<img>` itself isn't one of them, since its own implicit role is already `img`; `<embed>` and `<iframe>` are:
 
 ```html
-<!-- ARIA 1.2: permitted roles include only "img" -->
-<!-- ARIA 1.3: permitted roles include both "image" and "img" -->
-<img alt="photo" />
+<!-- ARIA 1.2: role="image" is not a permitted role for <embed> -->
+<!-- ARIA 1.3: role="image" is accepted as a synonym of the permitted "img" -->
+<embed src="chart.svg" role="image" />
 ```
 
 ## "No role permitted" is now strict

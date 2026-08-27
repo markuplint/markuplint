@@ -235,7 +235,7 @@ Two rules keep their name — not renamed, not deprecated — but gain a sibling
 
 Because the _old_ name is unchanged, there is no alias entry to expand it. If you enabled either rule directly in a raw config — not through a preset — you silently lose the split-off check with **no deprecation warning**.
 
-Preset users are unaffected: the new sibling checks are already added as their own preset entries.
+Preset users are mostly unaffected: the new sibling checks are already added as their own preset entries — with one gap. `no-broken-fragment-link` is in the `a11y` preset (alongside `no-refer-to-non-existent-id`) but missing from `html-standard`, even though `html-standard` carries `no-refer-to-non-existent-id` itself. `markuplint:recommended` extends both, so it's unaffected; extending `html-standard` alone is not.
 :::
 
 ```json
@@ -276,7 +276,7 @@ to keep the same coverage in v5. Likewise, `no-refer-to-non-existent-id` needs `
 | `require-h1` / `no-duplicate-h1`                                            | `error` (as `required-h1`)                            | `warning`           | WCAG Technique H42 is non-normative                                                                                                                        |
 | `require-adjacent-popover`                                                  | `error` (as `neighbor-popovers`)                      | `warning`           | HTML LS states this in a non-normative Note                                                                                                                |
 
-`no-consecutive-br` is a deliberate, documented exception: it stays `warning` even though it is a proxy for an HTML LS MUST, because the detection can false-positive on legitimate uses such as poem line breaks.
+`no-consecutive-br` is a deliberate exception, explained here rather than in the rule's own files: it stays `warning` even though it is a proxy for an HTML LS MUST, because the detection can false-positive on legitimate uses such as poem line breaks.
 
 :::caution This can turn a green pipeline red
 The four `warning` → `error` rows above cover six rules — the first row alone holds three. Any of them can fail CI on code you did not touch, if your team uses a strict zero-warnings gate such as `--max-warnings 0`. Check your current warning counts against these specific rules before upgrading.

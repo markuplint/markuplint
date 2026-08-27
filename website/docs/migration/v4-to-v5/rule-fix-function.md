@@ -5,8 +5,8 @@ title: Rule Fix Function
 
 # Rule Fix Function
 
-:::tip New Feature
-This is a **new feature** in v5. There is no v4 equivalent. Existing rules work without changes. This page explains how to add auto-fix to your custom rules.
+:::tip Redesigned in v5
+v4 had a `RuleSeed.fix()` hook and a working `--fix` CLI flag, but no built-in rule ever implemented it — running `--fix` in v4 was a no-op for every bundled rule. v5 replaces that whole-document hook with an inline, per-violation `fix` callback on `context.report()`, and now ships eleven built-in rules that use it. Existing rules that don't add a `fix` callback work without changes. This page explains how to add auto-fix to your custom rules.
 :::
 
 ## Who is this for?
@@ -16,7 +16,7 @@ This is a **new feature** in v5. There is no v4 equivalent. Existing rules work 
 
 ## Overview
 
-v5 introduces an auto-fix system inspired by ESLint's fixer. Add a `fix` callback to `context.report()`. When the user runs Markuplint with `fix=true`, the callback produces edits that are applied to the source.
+v5 redesigns auto-fix around a system inspired by ESLint's fixer. Add a `fix` callback to `context.report()`. When the user runs Markuplint with `fix=true`, the callback produces edits that are applied to the source.
 
 ## Adding a fix callback
 
@@ -72,12 +72,15 @@ fix: fixer => fixer.replaceText(
 Return an array of `TextEdit` objects for atomic multi-edit fixes. If any edit in the group overlaps with another rule's fix, all edits in the group are skipped:
 
 ```typescript
-fix: fixer => [
-  fixer.remove(attr.spacesBeforeEqual),
-  fixer.remove(attr.equal),
-  fixer.remove(attr.valueNode),
-],
+fix: fixer =>
+  [attr.spacesBeforeEqual, attr.equal, attr.valueNode]
+    .filter((token): token is NonNullable<typeof token> => token != null)
+    .map(token => fixer.remove(token)),
 ```
+
+:::note
+`spacesBeforeEqual`, `equal`, and `valueNode` are typed `MLToken | null` — `null` when the attribute has no value (e.g. a boolean attribute written bare). Filter them out before calling `fixer.remove()`, which requires a non-null token.
+:::
 
 ## Examples
 

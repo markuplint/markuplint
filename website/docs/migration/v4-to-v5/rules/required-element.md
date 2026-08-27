@@ -35,7 +35,7 @@ The old name keeps working. Markuplint reports a deprecation warning and applies
 HTML allows certain tags to be omitted. For example, `<tbody>` is optional inside `<table>`. When omitted, the HTML parser still creates a "ghost" node for it internally.
 
 :::caution Breaking Change
-In v5, ghost elements are **ignored** by default. Only elements explicitly written in the source code satisfy the `required-element` check.
+In v5, ghost elements are **ignored** by default. Only elements explicitly written in the source code satisfy the `require-element` check.
 :::
 
 ### Before (v4)

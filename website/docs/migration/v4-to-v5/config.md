@@ -117,23 +117,26 @@ const ariaVersion = el.rule.options.ariaVersion;
 // v5
 import { ARIA_RECOMMENDED_VERSION } from '@markuplint/ml-spec';
 
-const ariaVersion =
-  el.rule.options?.ariaVersion ?? document.ruleCommonSettings?.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
+const ariaVersion = el.rule.options?.version ?? document.ruleCommonSettings?.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
 ```
 
 `document.ruleCommonSettings` is available on the `MLDocument` instance in rule `verify()` callbacks.
+
+:::note
+The per-rule option's field name is yours to choose — 19 of markuplint's own 21 ARIA rules name it `version`, so that's the convention shown here. Two built-in rules (`require-accessible-name`, `no-refer-to-non-existent-id`) instead call it `ariaVersion`; either works as long as your rule's own `verify()` reads whatever field name its schema declares. `ruleCommonSettings.ariaVersion` is fixed by the framework and always spelled that way.
+:::
 
 ## Named nodeRules
 
 Presets can now define **named nodeRules**. A named nodeRule creates an independently controllable rule. You can enable, disable, or reconfigure it without touching the base rule.
 
 :::tip New Feature
-Named rules let you disable specific preset checks (like `a11y/img-alt`) without disabling the entire base rule.
+Named rules let you disable specific preset checks (like `a11y/abbr-title`) without disabling the entire base rule.
 :::
 
 ### How presets use named rules
 
-Built-in presets like `markuplint:recommended` define named nodeRules such as `a11y/img-alt` and `a11y/form-label`. Each named rule has a namespace (`a11y/`) and a descriptive name.
+Built-in presets like `markuplint:recommended` define named nodeRules such as `a11y/abbr-title` and `a11y/html-lang`. Each named rule has a namespace (`a11y/`) and a descriptive name.
 
 ### Disabling a specific named rule
 
@@ -143,12 +146,12 @@ Disable one check while keeping the base rule active:
 {
   "extends": ["markuplint:recommended"],
   "rules": {
-    "a11y/img-alt": false
+    "a11y/abbr-title": false
   }
 }
 ```
 
-This disables only the `a11y/img-alt` check. The `require-attr` base rule still runs for other contexts.
+This disables only the `a11y/abbr-title` check. The `require-attr` base rule still runs for other contexts.
 
 ### Disabling an entire namespace
 
@@ -163,7 +166,7 @@ Disable all named rules in a namespace with a wildcard:
 }
 ```
 
-This disables `a11y/img-alt`, `a11y/form-label`, and every other `a11y/` named rule. Rules in other namespaces like `html-standard/` are unaffected.
+This disables `a11y/abbr-title`, `a11y/html-lang`, and every other `a11y/` named rule. Rules in other namespaces like `html-standard/` are unaffected.
 
 ### Changing severity of a named rule
 
@@ -173,7 +176,7 @@ Downgrade a named rule from error to warning:
 {
   "extends": ["markuplint:recommended"],
   "rules": {
-    "a11y/img-alt": {
+    "a11y/abbr-title": {
       "severity": "warning"
     }
   }
@@ -182,11 +185,11 @@ Downgrade a named rule from error to warning:
 
 ### Disable patterns summary
 
-| Pattern                 | Effect                                            |
-| ----------------------- | ------------------------------------------------- |
-| `"a11y/img-alt": false` | Disables one specific named rule                  |
-| `"a11y/*": false`       | Disables all named rules in the `a11y/` namespace |
-| `"groupName": false`    | Disables all named rules in a multi-entry group   |
+| Pattern                    | Effect                                            |
+| -------------------------- | ------------------------------------------------- |
+| `"a11y/abbr-title": false` | Disables one specific named rule                  |
+| `"a11y/*": false`          | Disables all named rules in the `a11y/` namespace |
+| `"groupName": false`       | Disables all named rules in a multi-entry group   |
 
 ## `specConformance` metadata
 
@@ -206,10 +209,10 @@ Named nodeRules can carry a `specConformance` annotation. This classifies the ch
 
 When a named rule triggers a violation, you see two identifiers:
 
-| Field    | Value                                   | Purpose                                         |
-| -------- | --------------------------------------- | ----------------------------------------------- |
-| `ruleId` | Base rule name (e.g., `require-attr`)   | Always present. For programmatic filtering.     |
-| `name`   | Named rule alias (e.g., `a11y/img-alt`) | Present for named rules only. The display name. |
+| Field    | Value                                      | Purpose                                         |
+| -------- | ------------------------------------------ | ----------------------------------------------- |
+| `ruleId` | Base rule name (e.g., `require-attr`)      | Always present. For programmatic filtering.     |
+| `name`   | Named rule alias (e.g., `a11y/abbr-title`) | Present for named rules only. The display name. |
 
 The CLI uses the named rule alias as the display name when available.
 
@@ -222,17 +225,17 @@ v5 changes how `nodeRules` and `childNodeRules` merge when using `extends`.
 **After (v5):** Named entries (those with a `name` property) are deduplicated by name. The child config's entry replaces the parent's entry with the same name. Unnamed entries are still appended.
 
 ```jsonc
-// Parent preset defines a11y/img-alt
+// Parent preset defines a11y/abbr-title
 {
   "nodeRules": [
-    { "name": "a11y/img-alt", "selector": "img", "rules": { "require-attr": { "value": "alt" } } }
+    { "name": "a11y/abbr-title", "selector": "abbr", "rules": { "require-attr": { "value": "title" } } }
   ]
 }
 
-// Your config redefines a11y/img-alt
+// Your config redefines a11y/abbr-title
 {
   "nodeRules": [
-    { "name": "a11y/img-alt", "selector": "img", "rules": { "require-attr": { "value": ["alt", "aria-label"] } } }
+    { "name": "a11y/abbr-title", "selector": "abbr", "rules": { "require-attr": { "value": ["title", "aria-label"] } } }
   ]
 }
 

@@ -235,7 +235,7 @@ rc.4 の5分類（`validation`、`a11y`、`naming-convention`、`maintainability
 
 *旧*名が変わらないため、それを展開するエイリアスのエントリが存在しません。プリセットを経由せず生設定でこれらのルールを直接有効化していた場合、分割された検査を**非推奨警告なしに**静かに失います。
 
-プリセット経由のユーザーは影響を受けません。新しい姉妹チェックは既にそれぞれのプリセットエントリとして追加されています。
+プリセット経由のユーザーはおおむね影響を受けませんが、1件だけ抜けがあります。新しい姉妹チェックは既にそれぞれのプリセットエントリとして追加されていますが、`no-broken-fragment-link` は `a11y` プリセット（`no-refer-to-non-existent-id` と同居）には入っている一方、`html-standard` プリセットには入っていません。`html-standard` 自体は `no-refer-to-non-existent-id` を持っているにもかかわらずです。`markuplint:recommended` は両方を extends するため影響を受けませんが、`html-standard` 単体で extends している場合は影響を受けます。
 :::
 
 ```json
@@ -276,7 +276,7 @@ rc.4 の5分類（`validation`、`a11y`、`naming-convention`、`maintainability
 | `require-h1`/`no-duplicate-h1`                                          | `error`（`required-h1` として）                                | `warning`           | WCAG 達成技法 H42 は非規範的                                                                                                                 |
 | `require-adjacent-popover`                                              | `error`（`neighbor-popovers` として）                          | `warning`           | HTML LS の非規範的な Note で言及されている                                                                                                   |
 
-`no-consecutive-br` は意図的な、明記された例外です。HTML LS の MUST の代理検出ですが、詩の連区切りなど正当な使用法で誤検知する可能性があるため `warning` を維持しています。
+`no-consecutive-br` は意図的な例外です（ルール自体のファイルではなく、ここで説明しています）。HTML LS の MUST の代理検出ですが、詩の連区切りなど正当な使用法で誤検知する可能性があるため `warning` を維持しています。
 
 :::caution 緑だった CI が赤くなることがあります
 上表の `warning` → `error` に変わった4行は合計6ルールを含みます（1行目だけで3ルール）。`--max-warnings 0` のような厳格な zero-warnings ゲートを使っているチームでは、触っていないコードでも CI を失敗させます。アップグレード前に、これらのルールに対する現在の warning 件数を確認してください。

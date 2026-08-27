@@ -93,14 +93,14 @@ ARIA 1.3 で最も重要な変更です。`generic` ロールを持つ要素（�
 | `generic` が子ロールで透過的               | いいえ            | はい    |
 | `generic` が親ロールで透過的               | いいえ            | はい    |
 | `presentation` / `none` が子ロールで透過的 | はい              | はい    |
-| `presentation` / `none` が親ロールで透過的 | いいえ            | はい    |
+| `presentation` / `none` が親ロールで透過的 | はい              | はい    |
 
 ## `<aside>` の条件付きロールマッピング（ARIA 1.3） {#aside-conditional-role-mapping-aria-13}
 
 `<aside>` 要素が ARIA 1.3 仕様に基づく**条件付きロールマッピング**を使用するようになりました:
 
-- `<aside>` が `<article>`、`<aside>`、`<main>`、`<nav>`、`<section>` の**子孫でない**場合 → ロールは `complementary`
-- `<aside>` がこれらのセクショニング要素の**子孫である**場合 → ロールは `generic`
+- `<aside>` が `<article>`、`<aside>`、`<blockquote>`、`<details>`、`<dialog>`、`<fieldset>`、`<figure>`、`<nav>`、`<section>`、`<td>` の**子孫でない**場合 → ロールは `complementary`
+- `<aside>` がこれらの要素の**子孫である**場合 → ロールは `generic`。ただし `<aside>` 自体にアクセシブルネーム（`aria-label` など）がある場合は `complementary` を維持
 
 `landmark-roles` から分割された `no-nested-top-level-landmark` ルールは、この理由により `complementary` をトップレベルのランドマークとしてチェックしません。セレクターベースの検出では、降格した `<aside>` と本来の `<aside>` を区別できないため、チェックするとセクショニング要素配下の `<aside>` すべてで誤検知が出てしまいます。
 
@@ -110,12 +110,12 @@ ARIA 1.3 がデフォルトになったため、この変更は全ユーザー�
 
 ## `image` / `img` ロールの同義語（ARIA 1.3）
 
-ARIA 1.3 では `image` がプライマリロール名、`img` がシノニムになりました。いずれかが許可されるロールに含まれる場合、両方が受け入れられます:
+ARIA 1.3 では `image` がプライマリロール名、`img` がシノニムになりました。いずれかが許可されるロールに含まれる場合、両方が受け入れられます。これは許可ロールの一覧に `img` を含む要素に影響します — `<img>` 自体は対象外です（暗黙ロールが既に `img` のため）。対象となるのは `<embed>` や `<iframe>` です:
 
 ```html
-<!-- ARIA 1.2: 許可されるロールは "img" のみ -->
-<!-- ARIA 1.3: "image" と "img" の両方が許可 -->
-<img alt="photo" />
+<!-- ARIA 1.2: <embed> に role="image" は許可されるロールに含まれない -->
+<!-- ARIA 1.3: 許可されている "img" の同義語として role="image" が受理される -->
+<embed src="chart.svg" role="image" />
 ```
 
 ## 「No role permitted」の厳密適用

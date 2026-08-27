@@ -117,23 +117,26 @@ const ariaVersion = el.rule.options.ariaVersion;
 // v5
 import { ARIA_RECOMMENDED_VERSION } from '@markuplint/ml-spec';
 
-const ariaVersion =
-  el.rule.options?.ariaVersion ?? document.ruleCommonSettings?.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
+const ariaVersion = el.rule.options?.version ?? document.ruleCommonSettings?.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
 ```
 
 `document.ruleCommonSettings` はルールの `verify()` コールバックに渡される `MLDocument` インスタンスで利用可能です。
+
+:::note
+ルールごとのオプションのフィールド名は自由に決められます — markuplint 自身の21個の ARIA ルールのうち19個は `version` と名付けており、ここではその慣例に従っています。2つの組み込みルール（`require-accessible-name`、`no-refer-to-non-existent-id`）は `ariaVersion` という名前を使っています。どちらでも構いませんが、自作ルールの `verify()` がそのルールのスキーマで宣言したフィールド名を読むようにしてください。`ruleCommonSettings.ariaVersion` はフレームワーク側で固定されており、常にこの綴りです。
+:::
 
 ## Named nodeRules
 
 プリセットが**名前付き nodeRules** を定義できるようになりました。名前付き nodeRule は独立して制御できるルールを作成します。ベースルールに影響を与えずに、有効化・無効化・再設定が可能です。
 
 :::tip 新機能
-名前付きルールを使えば、ベースルール全体を無効化せずに特定のプリセットチェック（`a11y/img-alt` など）を無効化できます。
+名前付きルールを使えば、ベースルール全体を無効化せずに特定のプリセットチェック（`a11y/abbr-title` など）を無効化できます。
 :::
 
 ### プリセットでの名前付きルールの使い方
 
-`markuplint:recommended` などのビルトインプリセットは、`a11y/img-alt` や `a11y/form-label` といった名前付き nodeRules を定義しています。各名前付きルールには名前空間（`a11y/`）と説明的な名前があります。
+`markuplint:recommended` などのビルトインプリセットは、`a11y/abbr-title` や `a11y/html-lang` といった名前付き nodeRules を定義しています。各名前付きルールには名前空間（`a11y/`）と説明的な名前があります。
 
 ### 特定の名前付きルールを無効化
 
@@ -143,12 +146,12 @@ const ariaVersion =
 {
   "extends": ["markuplint:recommended"],
   "rules": {
-    "a11y/img-alt": false
+    "a11y/abbr-title": false
   }
 }
 ```
 
-これは `a11y/img-alt` チェックのみを無効化します。`require-attr` ベースルールは他のコンテキストで引き続き動作します。
+これは `a11y/abbr-title` チェックのみを無効化します。`require-attr` ベースルールは他のコンテキストで引き続き動作します。
 
 ### 名前空間全体を無効化
 
@@ -163,7 +166,7 @@ const ariaVersion =
 }
 ```
 
-これは `a11y/img-alt`、`a11y/form-label` など、すべての `a11y/` 名前付きルールを無効化します。`html-standard/` など他の名前空間のルールには影響しません。
+これは `a11y/abbr-title`、`a11y/html-lang` など、すべての `a11y/` 名前付きルールを無効化します。`html-standard/` など他の名前空間のルールには影響しません。
 
 ### 名前付きルールの重大度を変更
 
@@ -173,7 +176,7 @@ const ariaVersion =
 {
   "extends": ["markuplint:recommended"],
   "rules": {
-    "a11y/img-alt": {
+    "a11y/abbr-title": {
       "severity": "warning"
     }
   }
@@ -182,11 +185,11 @@ const ariaVersion =
 
 ### 無効化パターンのまとめ
 
-| パターン                | 効果                                                     |
-| ----------------------- | -------------------------------------------------------- |
-| `"a11y/img-alt": false` | 特定の名前付きルールを1つ無効化                          |
-| `"a11y/*": false`       | `a11y/` 名前空間のすべての名前付きルールを無効化         |
-| `"groupName": false`    | マルチエントリグループ内のすべての名前付きルールを無効化 |
+| パターン                   | 効果                                                     |
+| -------------------------- | -------------------------------------------------------- |
+| `"a11y/abbr-title": false` | 特定の名前付きルールを1つ無効化                          |
+| `"a11y/*": false`          | `a11y/` 名前空間のすべての名前付きルールを無効化         |
+| `"groupName": false`       | マルチエントリグループ内のすべての名前付きルールを無効化 |
 
 ## `specConformance` メタデータ
 
@@ -206,10 +209,10 @@ const ariaVersion =
 
 名前付きルールが違反を検出すると、2つの識別子が表示されます:
 
-| フィールド | 値                                               | 用途                                       |
-| ---------- | ------------------------------------------------ | ------------------------------------------ |
-| `ruleId`   | ベースルール名（例: `require-attr`）             | 常に存在。プログラム的なフィルタリング用。 |
-| `name`     | 名前付きルールのエイリアス（例: `a11y/img-alt`） | 名前付きルールの場合のみ存在。表示名。     |
+| フィールド | 値                                                  | 用途                                       |
+| ---------- | --------------------------------------------------- | ------------------------------------------ |
+| `ruleId`   | ベースルール名（例: `require-attr`）                | 常に存在。プログラム的なフィルタリング用。 |
+| `name`     | 名前付きルールのエイリアス（例: `a11y/abbr-title`） | 名前付きルールの場合のみ存在。表示名。     |
 
 CLI は名前付きルールのエイリアスを表示名として使用します。
 
@@ -222,17 +225,17 @@ v5 では `extends` 使用時の `nodeRules` と `childNodeRules` のマージ�
 **変更後 (v5):** 名前付きエントリ（`name` プロパティを持つもの）は名前で重複排除されます。子設定のエントリが、同名の親設定のエントリを置き換えます。無名エントリは従来通り追加されます。
 
 ```jsonc
-// 親プリセットが a11y/img-alt を定義
+// 親プリセットが a11y/abbr-title を定義
 {
   "nodeRules": [
-    { "name": "a11y/img-alt", "selector": "img", "rules": { "require-attr": { "value": "alt" } } }
+    { "name": "a11y/abbr-title", "selector": "abbr", "rules": { "require-attr": { "value": "title" } } }
   ]
 }
 
-// あなたの設定が a11y/img-alt を再定義
+// あなたの設定が a11y/abbr-title を再定義
 {
   "nodeRules": [
-    { "name": "a11y/img-alt", "selector": "img", "rules": { "require-attr": { "value": ["alt", "aria-label"] } } }
+    { "name": "a11y/abbr-title", "selector": "abbr", "rules": { "require-attr": { "value": ["title", "aria-label"] } } }
   ]
 }
 
