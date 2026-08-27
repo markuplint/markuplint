@@ -135,6 +135,10 @@
 				{ "condition": "[rel~='alternate' i][rel~='stylesheet' i]", "type": "NoEmptyAny" }
 			],
 			"required": "[rel~='alternate' i][rel~='stylesheet' i]"
+		},
+		// https://html.spec.whatwg.org/multipage/semantics.html#attr-link-target
+		"target": {
+			"deprecated": true
 		}
 	},
 	"aria": {
