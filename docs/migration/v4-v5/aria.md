@@ -77,25 +77,25 @@ This affects:
 | `generic` transparent for child roles | No | Yes |
 | `generic` transparent for parent role | No | Yes |
 | `presentation` / `none` transparent for child roles | Yes | Yes |
-| `presentation` / `none` transparent for parent role | No | Yes |
+| `presentation` / `none` transparent for parent role | Yes | Yes |
 
 ## Image / IMG Role Synonym
 
-In ARIA 1.3, `image` is the primary role name and `img` is a synonym. When either appears in an element's permitted roles, both are accepted:
+In ARIA 1.3, `image` is the primary role name and `img` is a synonym. When either appears in an element's permitted roles, both are accepted. This affects elements whose permitted-roles list includes `img` — `<img>` itself isn't one of them, since its own implicit role is already `img`; `<embed>` and `<iframe>` are:
 
 ```html
-<!-- ARIA 1.2: permitted roles include only "img" -->
-<!-- ARIA 1.3: permitted roles include both "image" and "img" -->
-<img alt="photo" />
+<!-- ARIA 1.2: role="image" is not a permitted role for <embed> -->
+<!-- ARIA 1.3: role="image" is accepted as a synonym of the permitted "img" -->
+<embed src="chart.svg" role="image" />
 ```
 
 ## `<aside>` Conditional Role Mapping (ARIA 1.3)
 
-`<aside>`'s implicit role is now conditional per ARIA 1.3: `complementary` when it's not a descendant of `<article>`/`<aside>`/`<main>`/`<nav>`/`<section>`, `generic` when it is. `no-nested-top-level-landmark` (the rule split off from `landmark-roles`, see below) deliberately does not check `complementary` as a top-level landmark for this reason — its selector-based detection cannot tell a demoted `<aside>` apart from a true one, so checking it would produce false positives on any `<aside>` nested in a sectioning ancestor.
+`<aside>`'s implicit role is now conditional per ARIA 1.3: `complementary` when it's not a descendant of `<article>`/`<aside>`/`<blockquote>`/`<details>`/`<dialog>`/`<fieldset>`/`<figure>`/`<nav>`/`<section>`/`<td>`, `generic` when it is — unless the `<aside>` itself has an accessible name (e.g. `aria-label`), in which case it keeps `complementary`. `no-nested-top-level-landmark` (the rule split off from `landmark-roles`, see below) deliberately does not check `complementary` as a top-level landmark for this reason — its selector-based detection cannot tell a demoted `<aside>` apart from a true one, so checking it would produce false positives on any `<aside>` nested in one of those ancestors.
 
 ## Umbrella Rule Removed
 
-In v4/rc.4, `wai-aria` was an umbrella rule running 21 checks together, each independently toggleable via a boolean option (`checkingDeprecatedRole`, `disallowSetImplicitProps`, `checkingRequiredOwnedElements`/`checkingAllowedAccessibilityChildRoles`, etc.). Every one of those checks had already been split into its own independent rule before v5.0.0 shipped (`no-abstract-role`, `no-unknown-role`, `require-owned-elements`, `no-focusable-in-aria-hidden`, and so on — 20 in total), and `wai-aria` itself only duplicated their work when both were enabled together. It's removed entirely in v5, along with the option-toggle mechanism it alone consumed.
+In stable v4, `wai-aria` was a single rule that internally implemented around a dozen ARIA checks, each toggleable via a boolean option (`checkingDeprecatedRole`, `disallowSetImplicitProps`, `checkingRequiredOwnedElements`, etc.). During v5's alpha/rc development, those checks — and a few genuinely new ones — were carved out one at a time into independent rules (`no-abstract-role`, `no-unknown-role`, `require-owned-elements`, `no-focusable-in-aria-hidden`, and so on); by the time this final redesign started, 20 such rules already existed on their own, and `wai-aria` itself had shrunk to a thin option-toggle shim re-triggering them (its option names had also drifted by then — e.g. `checkingRequiredOwnedElements` had gained an alias `checkingAllowedAccessibilityChildRoles`). v5 removes that shim entirely, along with the option-toggle mechanism it alone consumed.
 
 `wai-aria: v` still works — a deprecation warning is reported, and the config is expanded to all 21 successor rules (the 20 above, plus the new `no-aria-on-unsupported-element`) with the same severity/reason. The umbrella's per-check option toggles have no successor to route to: every one of these rules already ran its single check unconditionally once split off, and none of their schemas accept an `options` object — the toggles are simply dropped. To keep a check disabled that you previously turned off via an option, disable that specific rule instead:
 

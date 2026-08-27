@@ -3,7 +3,7 @@ sidebar_position: 5
 title: parse-error
 ---
 
-# `parse-error` (Built-in violation channel) — non-fatal parser errors
+# `parse-error` (Built-in violation channel) — now covers non-fatal parser errors too
 
 The built-in `parse-error` violation channel now also surfaces **non-fatal** HTML LS parse errors (parse5 `onParseError` events). The channel is **off by default**; users opt in per parse5 code.
 
@@ -157,20 +157,24 @@ Some parse5 errors (`missing-doctype`, `misplaced-doctype`, `non-conforming-doct
 
 ## Scope
 
-The non-fatal channel only fires for parsers that populate `MLASTDocument.parseErrors`. Currently that's `@markuplint/html-parser` (and the `SvelteKitTemplateParser` / `HtmlInPugParser` derivatives that wrap it for `.html` templates).
+The non-fatal channel only fires for parsers that populate `MLASTDocument.parseErrors`. Currently that's `@markuplint/html-parser` itself, plus two `HtmlParser` subclasses: `SvelteKitTemplateParser` (which wraps it for SvelteKit's `app.html` templates) and `HtmlInPugParser` (which `@markuplint/pug-parser` uses internally to parse each Pug line's embedded raw HTML — not `.html` files, but the HTML fragments Pug source can contain — forwarding whatever parse errors it finds to the outer Pug document).
 
-Framework parsers — `@markuplint/jsx-parser`, `vue-parser`, `svelte-parser` (`.svelte` files), `astro-parser`, `pug-parser` (`.pug` files) — do **not** invoke parse5 and therefore do not emit non-fatal `parse-error` violations regardless of how `severity.parseError` is configured.
+Other framework parsers — `@markuplint/jsx-parser`, `vue-parser`, `svelte-parser` (`.svelte` files), `astro-parser` — do **not** invoke parse5 at all and therefore never emit non-fatal `parse-error` violations, regardless of how `severity.parseError` is configured.
 
 ## Relationship with rule-level checks (mirror declarations)
 
 Some ml rules cover parse5 codes directly as part of their detection scope. They declare this in `meta.mirrorsParseErrorCodes`:
 
-| ml rule               | parse5 codes covered                                                                                                   |
-| --------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `attr-duplication`    | `duplicate-attribute`                                                                                                  |
-| `doctype`             | `missing-doctype`                                                                                                      |
-| `no-orphaned-end-tag` | `end-tag-without-matching-open-element`                                                                                |
-| `character-reference` | 8 character-reference codes (`unknown-named-character-reference`, `missing-semicolon-after-character-reference`, etc.) |
+| ml rule                            | parse5 codes covered                                                                                                   |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `no-duplicate-attr`                | `duplicate-attribute`                                                                                                  |
+| `require-doctype`                  | `missing-doctype`                                                                                                      |
+| `no-orphaned-end-tag`              | `end-tag-without-matching-open-element`                                                                                |
+| `no-malformed-character-reference` | 8 character-reference codes (`unknown-named-character-reference`, `missing-semicolon-after-character-reference`, etc.) |
+
+:::note
+`no-duplicate-attr`, `require-doctype`, and `no-malformed-character-reference` are the v5 names of what v4 called `attr-duplication`, `doctype`, and `character-reference`. See [Renames and Splits](/docs/migration/v4-to-v5/rules/rule-names).
+:::
 
 When such a rule is **mentioned in your ruleset** (any of `true`, `false`, severity, or an object — meaning you've expressed intent about this check), `@markuplint/ml-core` honours the mirror declaration and suppresses the matching codes on the `parse-error` channel:
 
@@ -179,21 +183,21 @@ When such a rule is **mentioned in your ruleset** (any of `true`, `false`, sever
 
 ```jsonc
 {
-  "rules": { "attr-duplication": true },
+  "rules": { "no-duplicate-attr": true },
   "severity": { "parseError": "error" },
 }
 ```
 
 For `<div a a></div>`:
 
-- ✅ `attr-duplication` violation (from the rule)
+- ✅ `no-duplicate-attr` violation (from the rule)
 - ❌ `parse-error` violation with `duplicate-attribute` (suppressed by mirror declaration)
 
 Disable the rule and **both channels stay silent** — your config explicitly opts out of this detection:
 
 ```jsonc
 {
-  "rules": { "attr-duplication": false },
+  "rules": { "no-duplicate-attr": false },
   "severity": { "parseError": "error" },
 }
 ```
@@ -204,7 +208,7 @@ If you want the parse-error channel to surface a code without involving the ml r
 
 ```jsonc
 {
-  // No `rules.attr-duplication` entry → ml-core does not suppress the code
+  // No `rules.no-duplicate-attr` entry → ml-core does not suppress the code
   "severity": { "parseError": "error" },
 }
 ```
@@ -213,9 +217,9 @@ If you want the parse-error channel to surface a code without involving the ml r
 
 The dedupe is **hook-based**: each rule declares its own `meta.mirrorsParseErrorCodes` array (in `RuleSeed`). ml-core simply unions the lists across active rules — there is no hard-coded mapping in ml-core. Authors of new rules that overlap with parse5 events should declare them in `meta` to participate in the dedupe.
 
-Rules whose detection is **wider** than parse5 (e.g. `attr-duplication` also covers JSX / SVG / authored components where parse5 never runs) are safe to mirror: parse5 only fires on HTML anyway, so the dedupe only ever skips events that the ml rule already reports.
+Rules whose detection is **wider** than parse5 (e.g. `no-duplicate-attr` also covers JSX / SVG / authored components where parse5 never runs) are safe to mirror: parse5 only fires on HTML anyway, so the dedupe only ever skips events that the ml rule already reports.
 
-Rules whose detection is **narrower or different** from a parse5 code (e.g. `character-reference` detects unescaped `<`, `>`, `&`, `"` — the opposite direction of parse5's `unknown-named-character-reference` etc.) **must not** declare `mirrorsParseErrorCodes`. The two layers stay independent and complementary.
+Rules whose detection is **narrower or different** from a parse5 code **must not** declare `mirrorsParseErrorCodes`. The two layers stay independent and complementary. v4's `character-reference` bundled both directions in one rule, which made this undecidable; the v5 split settles it — `no-malformed-character-reference` reads `document.parseErrors` and mirrors the eight malformed-reference codes, while its sibling `no-unescaped-char` detects unescaped `<`, `>`, `&`, and `"` (the opposite direction) and declares nothing.
 
 ### Dedupe is decided at the ruleset level
 
@@ -223,19 +227,19 @@ The dedupe check looks at the **top-level `rules` config** — not at per-node c
 
 ```jsonc
 {
-  "rules": { "attr-duplication": true },
-  "nodeRules": [{ "selector": "span", "rules": { "attr-duplication": false } }],
+  "rules": { "no-duplicate-attr": true },
+  "nodeRules": [{ "selector": "span", "rules": { "no-duplicate-attr": false } }],
   "severity": { "parseError": "error" },
 }
 ```
 
-…the parse-error channel still treats `attr-duplication` as active globally and **does not re-surface** `duplicate-attribute` on `<span>`. For `<div><span attr attr></span></div>` you get zero violations on `<span>` — consistent with the intent of "I opted out of this check here", rather than "I expected the parse-error channel to fill the gap".
+…the parse-error channel still treats `no-duplicate-attr` as active globally and **does not re-surface** `duplicate-attribute` on `<span>`. For `<div><span attr attr></span></div>` you get zero violations on `<span>` — consistent with the intent of "I opted out of this check here", rather than "I expected the parse-error channel to fill the gap".
 
 If you want the parse-error channel to fire on elements where a mirroring rule is locally disabled, disable the rule globally instead and enable just the parse5 code:
 
 ```jsonc
 {
-  "rules": { "attr-duplication": false },
+  "rules": { "no-duplicate-attr": false },
   "severity": { "parseError": { "duplicate-attribute": "error" } },
 }
 ```

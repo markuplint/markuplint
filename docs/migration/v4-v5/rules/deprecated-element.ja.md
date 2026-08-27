@@ -2,14 +2,13 @@
 
 ## 対象読者
 
-- `deprecated-element` を使用している、または非標準要素の検出のために利用していた**設定ファイル作成者**
+- `deprecated-element` を使用している**設定ファイル作成者**
 
 ## 変更一覧
 
 | 変更内容 | 影響範囲 |
 |---------|---------|
 | `no-obsolete-element` と `no-deprecated-element` に分割 | `deprecated-element` を何らかの形で使用している全設定 — 旧名は非推奨警告を出しつつ引き続き動作し、v6 で削除されます |
-| 非標準要素の検出が `no-nonstandard-features` に移管 | `deprecated-element` 単体で非標準要素を検出していた設定 |
 
 ## 2つのルールへの分割
 
@@ -31,31 +30,6 @@
 }
 ```
 
-## 非標準要素の検出が移管
+## このルールとは無関係: 非標準要素の検出
 
-v4 では、`deprecated-element` は**非推奨（deprecated）**、**廃止（obsolete）**、**非標準（non-standard）**の3種類を検出していました。
-
-v5 では、非標準の検出は独立した `no-nonstandard-features` ルール（旧 `no-unsupported-features` ルールから分割）に移管されました。`no-obsolete-element`/`no-deprecated-element` はいずれも非標準要素を検出しません。
-
-### v4
-
-`deprecated-element` が非標準要素（例: `<bgsound>`）を自動で検出:
-
-```html
-<!-- v4 では deprecated-element が報告 -->
-<bgsound src="music.mid">
-```
-
-### v5
-
-`no-obsolete-element`・`no-deprecated-element` のいずれも非標準要素を報告しません。検出を復元するには、`no-nonstandard-features` を有効にしてください:
-
-```json
-{
-  "rules": {
-    "no-nonstandard-features": true
-  }
-}
-```
-
-`recommended` プリセットを使用している場合は、`compat` プリセット経由で自動的に有効になっているため、変更は不要です。
+`deprecated-element` は v4 でも非標準要素を検出したことは一度もありません — この再設計直前のルール実装を確認済みで、検査していたのは `spec.obsolete`/`spec.deprecated` のみで `spec.nonStandard` は見ていませんでした。非標準要素の検出（`<bgsound>` など）は別の v4 ルール `no-unsupported-features` の `checkNonStandard` オプション（既定 `false`）が担っていました。このオプションが v5 で独立した `no-nonstandard-features` ルールになっています。詳細は[ルールの改名・分割](./rule-names.ja.md)の `no-unsupported-features` の行を参照してください。

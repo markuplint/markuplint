@@ -77,25 +77,25 @@ ARIA 1.3 では、ユーザーエージェントは `generic` または `none` �
 | `generic` が子ロールで透過的 | いいえ | はい |
 | `generic` が親ロールで透過的 | いいえ | はい |
 | `presentation` / `none` が子ロールで透過的 | はい | はい |
-| `presentation` / `none` が親ロールで透過的 | いいえ | はい |
+| `presentation` / `none` が親ロールで透過的 | はい | はい |
 
 ## Image / IMG ロールの同義語
 
-ARIA 1.3 では `image` がプライマリロール名、`img` がシノニムとなりました。いずれかが要素の許可されるロールに含まれる場合、両方が受け入れられます:
+ARIA 1.3 では `image` がプライマリロール名、`img` がシノニムとなりました。いずれかが要素の許可されるロールに含まれる場合、両方が受け入れられます。これは許可ロール一覧に `img` を含む要素に影響します — `<img>` 自体は対象外です（暗黙ロールが既に `img` のため）。対象となるのは `<embed>` や `<iframe>` です:
 
 ```html
-<!-- ARIA 1.2: 許可されるロールは "img" のみ -->
-<!-- ARIA 1.3: 許可されるロールは "image" と "img" の両方 -->
-<img alt="photo" />
+<!-- ARIA 1.2: <embed> に role="image" は許可されるロールに含まれない -->
+<!-- ARIA 1.3: 許可されている "img" の同義語として role="image" が受理される -->
+<embed src="chart.svg" role="image" />
 ```
 
 ## `<aside>` の条件付きロールマッピング（ARIA 1.3）
 
-`<aside>` の暗黙のロールは ARIA 1.3 に基づき条件付きになりました: `<article>`/`<aside>`/`<main>`/`<nav>`/`<section>` の子孫でない場合は `complementary`、子孫である場合は `generic` です。`landmark-roles` から分割された `no-nested-top-level-landmark`（下記参照）は、この理由により意図的に `complementary` をトップレベルランドマークとしてチェックしません — セレクタベースの検出では降格した `<aside>` と真の `complementary` を区別できないため、チェックするとセクショニング祖先内にネストされたあらゆる `<aside>` で誤検知が発生します。
+`<aside>` の暗黙のロールは ARIA 1.3 に基づき条件付きになりました: `<article>`/`<aside>`/`<blockquote>`/`<details>`/`<dialog>`/`<fieldset>`/`<figure>`/`<nav>`/`<section>`/`<td>` の子孫でない場合は `complementary`、子孫である場合は `generic` です。ただし `<aside>` 自体にアクセシブルネーム（`aria-label` など）がある場合は `complementary` を維持します。`landmark-roles` から分割された `no-nested-top-level-landmark`（下記参照）は、この理由により意図的に `complementary` をトップレベルランドマークとしてチェックしません — セレクタベースの検出では降格した `<aside>` と真の `complementary` を区別できないため、チェックするとそれらの祖先内にネストされたあらゆる `<aside>` で誤検知が発生します。
 
 ## 傘ルールの削除
 
-v4/rc.4 では、`wai-aria` は21個の検査を1つに束ねた傘ルールで、各検査は独立したブールオプション（`checkingDeprecatedRole`、`disallowSetImplicitProps`、`checkingRequiredOwnedElements`/`checkingAllowedAccessibilityChildRoles` 等）で個別にトグルできました。v5.0.0 がリリースされる前に、これらの検査は全て既に独立したルールに分割されており（`no-abstract-role`、`no-unknown-role`、`require-owned-elements`、`no-focusable-in-aria-hidden` 等、合計20件）、`wai-aria` 自体は両方が有効な場合にその作業を重複させるだけになっていました。v5 ではこれが完全に削除され、傘ルールだけが消費していたオプショントグル機構も一緒に削除されます。
+安定版 v4 では、`wai-aria` は約12個の ARIA 検査を1つのルールに内部実装したもので、各検査は独立したブールオプション（`checkingDeprecatedRole`、`disallowSetImplicitProps`、`checkingRequiredOwnedElements` 等）でトグルできました。v5 の alpha/rc 開発の過程で、これらの検査 — と一部の純粋に新しい検査 — が1つずつ独立したルールに切り出されていき（`no-abstract-role`、`no-unknown-role`、`require-owned-elements`、`no-focusable-in-aria-hidden` 等）、今回の最終再設計が始まった時点では既に20個が独立ルールとして存在し、`wai-aria` 自体はそれらを再トグルするだけの薄いオプショントグル用シムに縮小していました（オプション名もその間に変化しており、例えば `checkingRequiredOwnedElements` には `checkingAllowedAccessibilityChildRoles` という別名が加わっていました）。v5 ではこのシムが完全に削除され、それだけが消費していたオプショントグル機構も一緒に削除されます。
 
 `wai-aria: v` は引き続き動作します — 非推奨警告が報告され、設定は21個の後継ルール（上記20件に加え新設の `no-aria-on-unsupported-element`）全てに同じ severity/reason で展開されます。傘ルールの各チェック用オプショントグルには展開先がありません: これらのルールは分割された時点で既に自身の検査を無条件に実行しており、いずれのスキーマも `options` オブジェクトを受け付けないため、トグルは単純に破棄されます。以前オプションで無効化していたチェックを無効のままにしたい場合は、そのルール自体を無効化してください:
 

@@ -5,11 +5,11 @@
 - カスタムルールに自動修正機能を追加したい**カスタムルール作者**
 - サードパーティの markuplint ルールを開発する**プラグイン開発者**
 
-> これは v5 の**新機能**であり、v4 に対応する機能はありません。既存のルールは変更なしで動作し続けます。このガイドは新しい fix API の使い方を説明します。
+> v4 には `RuleSeed.fix()` フックと動作する `--fix` CLI フラグがありましたが、それを実装した組み込みルールは一つもありませんでした — v4 で `--fix` を実行しても、同梱ルールに関しては何も起きませんでした。v5 ではこの文書全体を対象とするフックを、`report()` に付与する違反単位の `fix` コールバックに置き換え、現在は11個の組み込みルールがこれを使っています。`fix` コールバックを追加しない既存のルールは変更なしで動作し続けます。このガイドは新しい fix API の使い方を説明します。
 
 ## 概要
 
-v5 では ESLint の `SourceCodeFixer` に着想を得た自動修正システムが導入されました。ルールは `report()` 呼び出しに `fix` コールバックを付与できるようになりました。ユーザーが `fix=true` で markuplint を実行すると、これらのコールバックが `TextEdit` オブジェクトを生成し、ソースコードに適用されます。
+v5 では ESLint の `SourceCodeFixer` に着想を得たシステムに自動修正が再設計されました。ルールは `report()` 呼び出しに `fix` コールバックを付与できるようになりました。ユーザーが `fix=true` で markuplint を実行すると、これらのコールバックが `TextEdit` オブジェクトを生成し、ソースコードに適用されます。
 
 ## Fix コールバックの追加
 
@@ -68,12 +68,13 @@ fix: fixer => fixer.replaceText(
 fix コールバックは単一の `TextEdit` または `TextEdit` の配列を返すことができます。単一コールバック内の複数の編集はアトミックに適用されます — いずれかの編集が他のルールの fix と重複すると、グループ内のすべての編集がスキップされます:
 
 ```typescript
-fix: fixer => [
-  fixer.remove(attr.spacesBeforeEqual),
-  fixer.remove(attr.equal),
-  fixer.remove(attr.valueNode),
-],
+fix: fixer =>
+  [attr.spacesBeforeEqual, attr.equal, attr.valueNode]
+    .filter((token): token is NonNullable<typeof token> => token != null)
+    .map(token => fixer.remove(token)),
 ```
+
+`spacesBeforeEqual`、`equal`、`valueNode` はいずれも `MLToken | null` 型です（属性が値を持たない場合は `null`）。`fixer.remove()` は非 null のトークンを要求するため、呼び出す前にフィルタしてください。
 
 ## 実装例
 

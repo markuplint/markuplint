@@ -2,14 +2,13 @@
 
 ## Who This Guide Is For
 
-- **Config authors** who use `deprecated-element`, or relied on it to detect non-standard elements
+- **Config authors** who use `deprecated-element`
 
 ## Summary of Changes
 
 | Change | Impact |
 |--------|--------|
 | Split into `no-obsolete-element` and `no-deprecated-element` | Configs using `deprecated-element` for anything — the old name still works via a deprecation-warning alias, removed in v6 |
-| Non-standard element detection moved to `no-nonstandard-features` | Configs using `deprecated-element` alone to catch non-standard elements |
 
 ## Rule Split into Two
 
@@ -31,31 +30,6 @@
 }
 ```
 
-## Non-Standard Detection Moved
+## Not Related to This Rule: Non-Standard Detection
 
-In v4, `deprecated-element` detected three categories: **deprecated**, **obsolete**, and **non-standard** elements.
-
-In v5, non-standard detection has moved to the independent `no-nonstandard-features` rule (itself split off from the former `no-unsupported-features` rule). `no-obsolete-element`/`no-deprecated-element` never detect non-standard elements.
-
-### v4
-
-`deprecated-element` automatically detected non-standard elements (e.g., `<bgsound>`):
-
-```html
-<!-- Reported by deprecated-element in v4 -->
-<bgsound src="music.mid">
-```
-
-### v5
-
-Neither `no-obsolete-element` nor `no-deprecated-element` reports non-standard elements. To restore this detection, enable `no-nonstandard-features`:
-
-```json
-{
-  "rules": {
-    "no-nonstandard-features": true
-  }
-}
-```
-
-If you use the `recommended` preset, this is already enabled automatically via the `compat` preset — no action is required.
+`deprecated-element` never detected non-standard elements in v4 — verified against the rule as it stood immediately before this redesign (`spec.obsolete`/`spec.deprecated` only, no `spec.nonStandard` check). Non-standard detection (e.g., `<bgsound>`) lived in a separate v4 rule, `no-unsupported-features`, behind its `checkNonStandard` option (`false` by default). That option is now the independent `no-nonstandard-features` rule — see the `no-unsupported-features` row in [Rule Renames and Splits](./rule-names.md).

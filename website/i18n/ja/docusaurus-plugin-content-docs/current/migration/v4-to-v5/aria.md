@@ -5,7 +5,7 @@ title: ARIA
 
 # ARIA の変更
 
-v5 では ARIA 1.3 のサポートが追加され、デフォルトの ARIA バージョンが 1.3 に変更されました。`wai-aria` ルールのオプション名も変更されています。
+v5 では ARIA 1.3 のサポートが追加され、デフォルトの ARIA バージョンが 1.3 に変更されました。また `wai-aria` 傘ルールが削除され、21個の独立した後継ルールに置き換わりました。
 
 ## 変更点
 
@@ -16,7 +16,13 @@ v5 では ARIA 1.3 のサポートが追加され、デフォルトの ARIA バ�
 | 1.3 で `<aside>` の条件付きロールマッピング     | すべてのユーザー                                            |
 | 1.3 で `image` / `img` ロールが同義に           | すべてのユーザー                                            |
 | 「No role permitted」が明示 `role` を厳密に禁止 | `<img>` などに `role="presentation"` 等を書いていたユーザー |
-| `wai-aria` オプションのリネーム                 | 設定に `checkingRequiredOwnedElements` があるユーザー       |
+| `wai-aria` 傘ルールの削除                       | `wai-aria` を使っている設定すべて                           |
+| `input-button-non-empty-value` の削除           | このルールを使っている設定                                  |
+| すべての `wai-aria-*` ルールのリネーム          | これらのルールを直接指定している設定                        |
+
+:::tip
+ARIA に限らないカタログ全体のルール改名・分割は[改名と分割](/docs/migration/v4-to-v5/rules/rule-names)にまとまっています。
+:::
 
 ## ARIA バージョンの設定
 
@@ -30,19 +36,21 @@ v5 では ARIA 1.3 のサポートが追加され、デフォルトの ARIA バ�
 }
 ```
 
-ルールごとに設定することもできます:
+ルールごとの `options.ariaVersion` による上書きを受け付けるのは `require-accessible-name` と `no-refer-to-non-existent-id` の2ルールだけです。
 
 ```json
 {
   "rules": {
-    "wai-aria": {
+    "require-accessible-name": {
       "options": {
-        "version": "1.2"
+        "ariaVersion": "1.2"
       }
     }
   }
 }
 ```
+
+それ以外の ARIA ルール（旧 `wai-aria` 傘ルールの21個の後継）は `ruleCommonSettings.ariaVersion` のみを読みます。ルールごとのバージョンオプションを持たないため、v4 の `wai-aria` の `options.version` には移行先がありません。
 
 :::note
 デフォルトは `"1.3"` です。ARIA 1.2 の動作が必要な場合のみ設定を変更してください。
@@ -85,16 +93,16 @@ ARIA 1.3 で最も重要な変更です。`generic` ロールを持つ要素（�
 | `generic` が子ロールで透過的               | いいえ            | はい    |
 | `generic` が親ロールで透過的               | いいえ            | はい    |
 | `presentation` / `none` が子ロールで透過的 | はい              | はい    |
-| `presentation` / `none` が親ロールで透過的 | いいえ            | はい    |
+| `presentation` / `none` が親ロールで透過的 | はい              | はい    |
 
 ## `<aside>` の条件付きロールマッピング（ARIA 1.3） {#aside-conditional-role-mapping-aria-13}
 
 `<aside>` 要素が ARIA 1.3 仕様に基づく**条件付きロールマッピング**を使用するようになりました:
 
-- `<aside>` が `<article>`、`<aside>`、`<main>`、`<nav>`、`<section>` の**子孫でない**場合 → ロールは `complementary`
-- `<aside>` がこれらのセクショニング要素の**子孫である**場合 → ロールは `generic`
+- `<aside>` が `<article>`、`<aside>`、`<blockquote>`、`<details>`、`<dialog>`、`<fieldset>`、`<figure>`、`<nav>`、`<section>`、`<td>` の**子孫でない**場合 → ロールは `complementary`
+- `<aside>` がこれらの要素の**子孫である**場合 → ロールは `generic`。ただし `<aside>` 自体にアクセシブルネーム（`aria-label` など）がある場合は `complementary` を維持
 
-`landmark-roles` ルールもこれに合わせて更新されました。`complementary` はトップレベルのランドマークとしてチェックされなくなりました。
+`landmark-roles` から分割された `no-nested-top-level-landmark` ルールは、この理由により `complementary` をトップレベルのランドマークとしてチェックしません。セレクターベースの検出では、降格した `<aside>` と本来の `<aside>` を区別できないため、チェックするとセクショニング要素配下の `<aside>` すべてで誤検知が出てしまいます。
 
 :::caution
 ARIA 1.3 がデフォルトになったため、この変更は全ユーザーに即座に影響します。セクショニング要素内で `<aside>` を使用している場合、リント結果が変わる可能性があります。
@@ -102,12 +110,12 @@ ARIA 1.3 がデフォルトになったため、この変更は全ユーザー�
 
 ## `image` / `img` ロールの同義語（ARIA 1.3）
 
-ARIA 1.3 では `image` がプライマリロール名、`img` がシノニムになりました。いずれかが許可されるロールに含まれる場合、両方が受け入れられます:
+ARIA 1.3 では `image` がプライマリロール名、`img` がシノニムになりました。いずれかが許可されるロールに含まれる場合、両方が受け入れられます。これは許可ロールの一覧に `img` を含む要素に影響します — `<img>` 自体は対象外です（暗黙ロールが既に `img` のため）。対象となるのは `<embed>` や `<iframe>` です:
 
 ```html
-<!-- ARIA 1.2: 許可されるロールは "img" のみ -->
-<!-- ARIA 1.3: "image" と "img" の両方が許可 -->
-<img alt="photo" />
+<!-- ARIA 1.2: <embed> に role="image" は許可されるロールに含まれない -->
+<!-- ARIA 1.3: 許可されている "img" の同義語として role="image" が受理される -->
+<embed src="chart.svg" role="image" />
 ```
 
 ## 「No role permitted」の厳密適用
@@ -138,29 +146,53 @@ ARIA 1.3 では `image` がプライマリロール名、`img` がシノニム�
 
 背景は Issue [#3641](https://github.com/markuplint/markuplint/issues/3641) を参照してください。
 
-## ルールオプションのリネーム
+## 傘ルールの削除 {#umbrella-rule-removed}
 
-`wai-aria` ルールのオプション `checkingRequiredOwnedElements` がリネームされました:
+安定版 v4 の `wai-aria` は約12個の ARIA 検査を1つのルールに内部実装したもので、各検査は真偽値オプション（`checkingDeprecatedRole`、`disallowSetImplicitProps`、`checkingRequiredOwnedElements` など）で個別に切り替えられました。v5 の alpha/rc 開発の過程で、これらの検査 — と一部の純粋に新しい検査 — が1つずつ独立したルールに切り出されていきました（`no-abstract-role`、`no-unknown-role`、`require-owned-elements`、`no-focusable-in-aria-hidden` など）。今回の最終再設計が始まった時点では既に20個が独立ルールとして存在し、`wai-aria` 自体はそれらを再トグルするだけの薄いシムに縮小していました。21件目 — `wai-aria` に対応するトグルが元々存在しなかったルール — は後述の新ルールです。
 
-| v5（新）                                 | v4（非推奨）                    |
-| ---------------------------------------- | ------------------------------- |
-| `checkingAllowedAccessibilityChildRoles` | `checkingRequiredOwnedElements` |
+v5 では `wai-aria` を完全に削除し、それだけが消費していたオプショントグルの仕組みも削除しました。
 
-:::tip
-旧名もそのまま動作します。都合の良いタイミングで更新してください。
-:::
+`wai-aria: v` はそのまま動作します。markuplint が非推奨警告を報告し、設定を21個の後継ルール（上記の20個 + 新設の `no-aria-on-unsupported-element`）へ同じ severity・reason で展開します。
+
+:::caution チェックごとのオプショントグルは失われます
+移行先がありません。これらのルールは傘ルールから分割された時点でそれぞれ単一のチェックを無条件に実行するようになっており、どのルールのスキーマも `options` オブジェクトを受け付けません。
+
+以前オプションで無効化していたチェックを無効のままにするには、該当するルール自体を無効化してください:
 
 ```json
 {
   "rules": {
-    "wai-aria": {
-      "options": {
-        "checkingAllowedAccessibilityChildRoles": false
-      }
-    }
+    "no-redundant-role": false
   }
 }
 ```
+
+これが、傘ルールの `disallowSetImplicitRole: false` で無効化していた v4 のパターンの置き換えです。
+:::
+
+### 新ルール: `no-aria-on-unsupported-element`
+
+傘ルールの最初のチェック（仕様データが「ARIA 属性を一切サポートしない」とマークする要素に対する `role` / `aria-*` の禁止）は、v5 まで独立した後継ルールを持っていませんでした。これが `no-aria-on-unsupported-element` になりました。
+
+### 削除: `input-button-non-empty-value` {#removed-input-button-non-empty-value}
+
+このルールは「アクセシブルネームがない」ことの代理検出として `<input type="button" value="">` を検出していましたが、過剰検出（アクセシブルネームを持つ `aria-label` 付きのボタンも報告していた）と検出漏れ（同じく空のアクセシブルネームになる `value` 属性そのものの欠落を見逃していた）の両方を抱えていました。`require-accessible-name` がこのケースを正しくカバーしているため、v5 ではそちらに任せてルールを削除しました。
+
+### `wai-aria-*` ルールのリネーム
+
+`wai-aria-` プレフィックスを持つルールはすべてプレフィックスを外し、v5 の命名規則に合わせてリネームされました（`wai-aria-non-existent-role` → `no-unknown-role`、`wai-aria-required-owned-elements` → `require-owned-elements` など）。うち2つはさらに分割されています:
+
+| 旧ルール                    | 分割後                                                                          |
+| --------------------------- | ------------------------------------------------------------------------------- |
+| `wai-aria-disallowed-props` | `no-prohibited-naming`、`element-supports-aria-prop`、`role-supports-aria-prop` |
+| `wai-aria-implicit-props`   | `no-redundant-aria-prop`（`warning`）、`no-contradictory-aria-prop`（`error`）  |
+
+ARIA に隣接する2ルールも分割されています:
+
+- `landmark-roles` → `no-nested-top-level-landmark`（`ignoreRoles` 側）と `require-landmark-label`（`labelEachArea` 側）
+- `required-h1` → `require-h1`（`<h1>` 欠落側）と `no-duplicate-h1`（`expected-once` 側）。どちらも既定が `warning` になりました。いずれのチェックも根拠として挙げられる WCAG 達成技法 H42 が非規範的であるためです。
+
+旧名はすべて非推奨警告付きのエイリアス経由で v6 の削除まで動作します。対応表の全体は[改名と分割](/docs/migration/v4-to-v5/rules/rule-names)にあります。
 
 ## 用語の変更（カスタムルール作成者向け）
 

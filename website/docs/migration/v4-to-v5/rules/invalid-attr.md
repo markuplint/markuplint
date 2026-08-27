@@ -5,16 +5,47 @@ title: invalid-attr
 
 # `invalid-attr` Rule Changes
 
-This page covers breaking changes to the `invalid-attr` rule options and a set of **new values that the default rule now flags** — markup that was silently accepted in v4 may surface as errors after upgrading, even with no config changes.
+This page covers the split of the `invalid-attr` rule, breaking changes to its options, and a set of **new values that the default rule now flags** — markup that was silently accepted in v4 may surface as errors after upgrading, even with no config changes.
 
 ## Summary
 
 | Change                        | Who is affected                                                |
 | ----------------------------- | -------------------------------------------------------------- |
+| Rule split into four          | Every config using `invalid-attr`                              |
 | `{ type: X }` wrapper removed | Configs using `{ "value": { "type": "Int" } }`                 |
 | `attrs` option deleted        | Configs using the deprecated `attrs` option                    |
 | Object format deprecated      | Configs using object format for `allowAttrs` / `disallowAttrs` |
 | Newly flagged values in v5    | Any project — new validations fire on existing markup          |
+
+## Rule split into four
+
+`invalid-attr` bundled four independent checks. Each is now its own rule, so you can enable, disable, or re-severity them independently:
+
+| New rule                | What it checks                                                                                                             |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `no-unknown-attr`       | Attribute name not defined by the spec at all — typo candidates, case mismatches                                           |
+| `no-disallowed-attr`    | Attribute defined but disallowed here: `noUse`, an unmet conditional-allow condition, `is` on an autonomous custom element |
+| `no-invalid-attr-value` | Attribute value type/grammar violation                                                                                     |
+| `no-restricted-attr`    | User-defined `disallowAttrs` denylisting — its only option                                                                 |
+
+`aria-*` and `role` are exempt from all three spec-checking rules — `no-unknown-attr`, `no-disallowed-attr`, and `no-invalid-attr-value` all skip them. The ARIA rules own them instead, `no-aria-on-unsupported-element` in particular.
+
+The old options are routed to the new rules rather than copied wholesale:
+
+| Old option                         | Lands on                                                                         |
+| ---------------------------------- | -------------------------------------------------------------------------------- |
+| `allowAttrs`                       | `no-unknown-attr`, `no-disallowed-attr`, and `no-invalid-attr-value` (all three) |
+| `ignoreAttrNamePrefix`             | `no-unknown-attr` and `no-disallowed-attr`                                       |
+| `allowToAddPropertiesForPretender` | `no-unknown-attr` only                                                           |
+| `disallowAttrs`                    | `no-restricted-attr` only                                                        |
+
+`no-restricted-attr` is added to the expansion only when your old config actually set `disallowAttrs`. A bare `invalid-attr: true` never enables a rule with nothing to restrict.
+
+:::tip
+`invalid-attr` keeps working. Markuplint reports a deprecation warning and performs this expansion automatically, until the old name is removed in v6. The full split list is in [Renames and Splits](/docs/migration/v4-to-v5/rules/rule-names).
+:::
+
+The rest of this page describes the option formats as you would write them under the old name. When rewriting by hand, apply each option to the new rule the table above names.
 
 ## `{ type: X }` wrapper removed
 
@@ -148,7 +179,9 @@ The object format for `allowAttrs` and `disallowAttrs` still works in v5, but it
 ## Newly flagged values in v5
 
 :::info Behavioral change (no config action required)
-v5 tightens the default `invalid-attr` coverage in several areas that were previously accepted as `Any`. If you upgrade without touching your config, the markup below may raise violations it did not in v4.
+v5 tightens the default attribute-value coverage in several areas that were previously accepted as `Any`. If you upgrade without touching your config, the markup below may raise violations it did not in v4.
+
+Because of the split, `ruleId` in your CI output changes too. Each item below names the v5 rule that reports it — mostly `no-invalid-attr-value`, with `no-disallowed-attr` for unmet conditional-allow conditions and `require-attr` for missing attributes.
 :::
 
 Each row cites the issue where the validation was introduced and the HTML / URL / Encoding Living Standard section that justifies it. If you hit a new violation you believe is incorrect, read the linked issue first — several of these land with spec-cited `excluded-ids.json` entries for cases where nu-validator was stricter than the spec.
@@ -180,7 +213,7 @@ Each row cites the issue where the validation was introduced and the HTML / URL 
 
 ### Patterns now flagged on URL-typed attributes (`href`, `src`, `action`, `cite`, `itemid`, `itemtype`, ...)
 
-The `URL` type checker now surfaces URL Living Standard validation errors that `new URL()` silently auto-corrects. Any of the following — accepted under v4 — now raises an `invalid-attr` violation:
+The `URL` type checker now surfaces URL Living Standard validation errors that `new URL()` silently auto-corrects. Any of the following — accepted under v4 — now raises a `no-invalid-attr-value` violation:
 
 - **invalid-credentials** ([URL LS §1.1](https://url.spec.whatwg.org/#invalid-credentials)): `<a href="http://user:pass@example.com">`, `<a href="//user@example.com">`, even `<a href="http://@example.com">` (empty userinfo is still an `@` in the authority). Strip the userinfo from the URL.
 - **special-scheme-missing-following-solidus** ([URL LS](https://url.spec.whatwg.org/#special-scheme-missing-following-solidus)): `<a href="http:foo">`, `<a href="https:/foo">`, `<a href="ftp:bar">`. Special-scheme URLs require `scheme://`.
@@ -196,16 +229,16 @@ The `URL` type checker now surfaces URL Living Standard validation errors that `
 Beyond the generic URL LS pipeline above, three specialised URL types tighten further:
 
 - **`<audio src>`, `<embed src>`, `<iframe src>`, `<img src>`, `<input type=image src>`, `<script src>`, `<source src>`, `<track src>`, `<video src>`** now use a `NonEmptyURL` type that rejects values which are empty (or whitespace-only) after stripping ASCII whitespace. HTML LS §4.8 spells these as "valid non-empty URL potentially surrounded by spaces".
-- **`<form action>`, `<button formaction>`, `<input formaction>`, `<object data>`, `<link href>`, `<video poster>`** now use the same `NonEmptyURL` type. Each is spec-defined as "valid non-empty URL potentially surrounded by spaces" but was previously typed as the empty-allowing `URL`. Empty strings (and whitespace-only values) now raise an `invalid-attr` violation.
-- **`<base>` must have `href`, `target`, or both** (HTML LS §4.2.3). The bare `<base>` element used to pass silently; the `required-attr` rule now flags it. Adding either attribute satisfies the requirement.
-- **`<input type="image">` must have an `alt` attribute** (HTML LS §4.10.5.1.18). The `required-attr` rule now fires when `type="image"` is present without `alt`.
+- **`<form action>`, `<button formaction>`, `<input formaction>`, `<object data>`, `<link href>`, `<video poster>`** now use the same `NonEmptyURL` type. Each is spec-defined as "valid non-empty URL potentially surrounded by spaces" but was previously typed as the empty-allowing `URL`. Empty strings (and whitespace-only values) now raise a `no-invalid-attr-value` violation.
+- **`<base>` must have `href`, `target`, or both** (HTML LS §4.2.3). The bare `<base>` element used to pass silently; the `require-attr` rule now flags it. Adding either attribute satisfies the requirement.
+- **`<input type="image">` must have an `alt` attribute** (HTML LS §4.10.5.1.18). The `require-attr` rule now fires when `type="image"` is present without `alt`.
 - **`autocomplete="webauthn"` alone is non-conforming** (HTML LS §4.10.18.7). The `webauthn` token "must appear along with at least one other token". `<input autocomplete="webauthn">` now raises a violation; combinations like `autocomplete="name webauthn"` remain valid.
-- **`<select autocomplete>` cannot include the `webauthn` token** (HTML LS §attr-fe-autocomplete-webauthn). The spec restricts `webauthn` to `<input>` and `<textarea>`: "webauthn is only valid for input and textarea elements." A `<select>` whose `autocomplete` ends in `webauthn` (e.g. `autocomplete="section-a billing work tel-country-code webauthn"`) now raises an `invalid-attr` violation targeting the `webauthn` token; the same autofill grammar without `webauthn` remains valid on `<select>`. `<textarea>` and non-hidden `<input>` are unaffected.
+- **`<select autocomplete>` cannot include the `webauthn` token** (HTML LS §attr-fe-autocomplete-webauthn). The spec restricts `webauthn` to `<input>` and `<textarea>`: "webauthn is only valid for input and textarea elements." A `<select>` whose `autocomplete` ends in `webauthn` (e.g. `autocomplete="section-a billing work tel-country-code webauthn"`) now raises a `no-invalid-attr-value` violation targeting the `webauthn` token; the same autofill grammar without `webauthn` remains valid on `<select>`. `<textarea>` and non-hidden `<input>` are unaffected.
 - **`<input type="hidden">` `autocomplete` cannot include `on` / `off`** (HTML LS §autofill-anchor-mantle). Hidden inputs wear the _autofill anchor mantle_ whose value "must have a value that is an ordered set of space-separated tokens consisting of just autofill detail tokens (i.e. the 'on' and 'off' keywords are not allowed)." Migrate to a concrete field name (`autocomplete="transaction-currency"` etc.) or drop the attribute. Non-hidden `<input>` continues to accept `on` / `off`.
 - **`<input name="isindex">` is reserved** (HTML LS §4.10.18.2). The literal value `isindex` was kept reserved when the obsolete `<isindex>` element was removed; the `name` attribute on `<input>` now flags it. The check is case-sensitive (matches the spec literal).
 - **`srcset` duplicate descriptors are non-conforming** (HTML LS §4.8.4.4.1). "An invalid image candidate string is one with [...] a duplicate descriptor." The `Srcset` type checker now rejects repeats in either the density slot (`1x, 1x`, `1x, 1.0x`, or an omitted descriptor — implicit 1x — combined with `1x`) or the width slot (`480w, 480w`). Numeric equality is used so different lexical forms of the same value still collide.
-- **`<link disabled>` is only valid on `rel="stylesheet"`** (HTML LS §4.6.7.18). The `disabled` content attribute "must only be specified on link elements that have a rel attribute that contains the stylesheet keyword." A bare `<link rel="icon" disabled>` now raises an `invalid-attr` violation.
-- **`<link rel="alternate stylesheet">` requires a non-empty `title`** (HTML LS §4.6.7.4). When `rel` contains both `alternate` and `stylesheet`, the spec mandates a `title` attribute "with a non-empty value". The `required-attr` rule fires when `title` is missing, and `invalid-attr` fires for an explicit empty `title=""` (the conditional `NoEmptyAny` type override).
+- **`<link disabled>` is only valid on `rel="stylesheet"`** (HTML LS §4.6.7.18). The `disabled` content attribute "must only be specified on link elements that have a rel attribute that contains the stylesheet keyword." A bare `<link rel="icon" disabled>` now raises a `no-disallowed-attr` violation — the attribute is spec-defined but its conditional-allow condition is unmet here.
+- **`<link rel="alternate stylesheet">` requires a non-empty `title`** (HTML LS §4.6.7.4). When `rel` contains both `alternate` and `stylesheet`, the spec mandates a `title` attribute "with a non-empty value". The `require-attr` rule fires when `title` is missing, and `no-invalid-attr-value` fires for an explicit empty `title=""` (the conditional `NoEmptyAny` type override).
 - **`<base href>`** now runs the full URL LS validator (in addition to the existing `data:` / `javascript:` scheme prohibition). Previously the type accepted any non-`data:`/`javascript:` value without further checks.
 - **`<input type="url" value>`** now uses an absolute-URL variant that accepts empty values (per HTML LS §4.10.5.1.7 "if specified and not empty") but rejects relative URLs. Use a full `https://…` form or leave the attribute empty.
 
@@ -215,7 +248,7 @@ Routing `<base href>` through the full URL Living Standard pipeline also enrols 
 
 ### Language tags validated against the IANA registry (`lang`, `hreflang`, `srclang`, ...)
 
-HTML LS requires the `lang` attribute to be ["a valid BCP 47 language tag"](https://html.spec.whatwg.org/multipage/dom.html#the-lang-and-xml:lang-attributes), and [RFC 5646 §2.2.9](https://www.rfc-editor.org/rfc/rfc5646.html#section-2.2.9) defines _valid_ as: "Either the tag is in the list of grandfathered tags or all of its primary language, extended language, script, region, and variant subtags appear in the IANA Language Subtag Registry as of the particular registry date." v4 only checked the syntactic shape (well-formedness); v5 additionally checks each subtag against the [IANA Language Subtag Registry](https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry), vendored via the [`language-subtag-registry`](https://www.npmjs.com/package/language-subtag-registry) package (updating that dependency refreshes the data).
+HTML LS requires the `lang` attribute to be ["a valid BCP 47 language tag"](https://html.spec.whatwg.org/multipage/dom.html#the-lang-and-xml:lang-attributes), and [RFC 5646 §2.2.9](https://www.rfc-editor.org/rfc/rfc5646.html#section-2.2.9) defines _valid_ as: "Either the tag is in the list of grandfathered tags or all of its primary language, extended language, script, region, and variant subtags appear in the IANA Language Subtag Registry as of the particular registry date." v4 only checked the syntactic shape (well-formedness); v5 additionally checks each subtag against the [IANA Language Subtag Registry](https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry), supplied by the [`language-subtag-registry`](https://www.npmjs.com/package/language-subtag-registry) npm package (updating that dependency refreshes the data).
 
 Applies to every `BCP47`-typed attribute: `lang` / `xml:lang` (HTML and SVG), `hreflang`, `<track srclang>`, and SVG `systemLanguage`.
 
@@ -235,7 +268,7 @@ Still valid:
 
 ### Patterns now flagged on `media=`
 
-The `media` attribute on `link`, `style`, `source`, and `svg|style` is now validated by a dedicated `MediaQueryList` checker. Any of the following — silently accepted under v4's generic `<media-query-list>` route — now raises an `invalid-attr` violation:
+The `media` attribute on `link`, `style`, `source`, and `svg|style` is now validated by a dedicated `MediaQueryList` checker. Any of the following — silently accepted under v4's generic `<media-query-list>` route — now raises a `no-invalid-attr-value` violation:
 
 - **Deprecated media types** (MQL5 §2.3): `<link media="aural">`, `<link media="tv">`, `<link media="projection">`, `<link media="handheld">`, `<link media="braille">`, `<link media="embossed">`, `<link media="speech">`, `<link media="tty">`. Replace with `screen` / `print` / `all`, or use a feature query.
 - **Deprecated media features** (MQL4): `(device-width: ...)`, `(device-height: ...)`, `(device-aspect-ratio: ...)` and their `min-` / `max-` variants. Use `(width: ...)` / `(height: ...)` / `(aspect-ratio: ...)` instead.
@@ -245,7 +278,7 @@ The `media` attribute on `link`, `style`, `source`, and `svg|style` is now valid
 
 ### Malformed media conditions on `media=` and `sizes=` (`<general-enclosed>` rejection)
 
-[Media Queries Level 5 §3](https://www.w3.org/TR/mediaqueries-5/#general-enclosed) explicitly forbids `<general-enclosed>` in author stylesheets — it exists only so future syntax additions parse in older user agents. v4 accepted a `<media-condition>` that fell through to `<general-enclosed>` because css-tree's grammar tolerates it; v5 rejects it as an `invalid-attr` violation.
+[Media Queries Level 5 §3](https://www.w3.org/TR/mediaqueries-5/#general-enclosed) explicitly forbids `<general-enclosed>` in author stylesheets — it exists only so future syntax additions parse in older user agents. v4 accepted a `<media-condition>` that fell through to `<general-enclosed>` because css-tree's grammar tolerates it; v5 rejects it as a `no-invalid-attr-value` violation.
 
 Now flagged in `media=` on `link` / `style` / `source` / `svg|style`, and in `sizes=` on `img` / `source`:
 

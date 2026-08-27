@@ -5,8 +5,8 @@ title: ルール修正関数
 
 # ルール修正関数
 
-:::tip 新機能
-v5 の**新機能**です。v4 に対応する機能はありません。既存のルールは変更なしで動作します。このページでは、カスタムルールに自動修正を追加する方法を説明します。
+:::tip v5 での再設計
+v4 には `RuleSeed.fix()` フックと動作する `--fix` CLI フラグがありましたが、それを実装した組み込みルールは一つもありませんでした — v4 で `--fix` を実行しても、同梱ルールに関しては何も起きませんでした。v5 ではこの文書全体を対象とするフックを、`context.report()` に付与する違反単位の `fix` コールバックに置き換え、現在は11個の組み込みルールがこれを使っています。`fix` コールバックを追加しない既存のルールは変更なしで動作します。このページでは、カスタムルールに自動修正を追加する方法を説明します。
 :::
 
 ## 対象読者
@@ -16,7 +16,7 @@ v5 の**新機能**です。v4 に対応する機能はありません。既存�
 
 ## 概要
 
-v5 では ESLint のフィクサーに着想を得た自動修正システムが導入されました。`context.report()` に `fix` コールバックを追加します。ユーザーが `fix=true` で Markuplint を実行すると、コールバックが編集を生成してソースに適用します。
+v5 では ESLint のフィクサーに着想を得たシステムに自動修正が再設計されました。`context.report()` に `fix` コールバックを追加します。ユーザーが `fix=true` で Markuplint を実行すると、コールバックが編集を生成してソースに適用します。
 
 ## fix コールバックの追加
 
@@ -72,12 +72,15 @@ fix: fixer => fixer.replaceText(
 `TextEdit` の配列を返すと、アトミックな複数編集になります。グループ内のいずれかの編集が他のルールの fix と重複すると、グループ全体がスキップされます:
 
 ```typescript
-fix: fixer => [
-  fixer.remove(attr.spacesBeforeEqual),
-  fixer.remove(attr.equal),
-  fixer.remove(attr.valueNode),
-],
+fix: fixer =>
+  [attr.spacesBeforeEqual, attr.equal, attr.valueNode]
+    .filter((token): token is NonNullable<typeof token> => token != null)
+    .map(token => fixer.remove(token)),
 ```
+
+:::note
+`spacesBeforeEqual`、`equal`、`valueNode` はいずれも `MLToken | null` 型です — 属性が値を持たない場合（値なしで書かれた真偽値属性など）は `null` になります。`fixer.remove()` は非 null のトークンを要求するため、呼び出す前にフィルタしてください。
+:::
 
 ## 実装例
 
@@ -148,8 +151,8 @@ v5 で自動修正をサポートする組み込みルール:
 | `attr-value-quotes`        | 設定されたスタイルに引用符を変換 |
 | `no-boolean-attr-value`    | 真偽値属性から値を削除           |
 | `no-default-value`         | デフォルト値を持つ属性を削除     |
-| `attr-duplication`         | 重複属性を削除                   |
-| `ineffective-attr`         | 無効な属性を削除                 |
+| `no-duplicate-attr`        | 重複属性を削除                   |
+| `no-ineffective-attr`      | 無効な属性を削除                 |
 | `no-orphaned-end-tag`      | 孤立した終了タグを削除           |
 | `no-consecutive-br`        | 連続する `<br>` 要素を削除       |
 | `attr-order`               | 設定された順序に属性を並べ替え   |

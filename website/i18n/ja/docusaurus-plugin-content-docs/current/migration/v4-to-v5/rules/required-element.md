@@ -5,20 +5,37 @@ title: required-element
 
 # `required-element` ルールの変更
 
-このページでは `required-element` ルールのデフォルト値の変更について説明します。このルールで必須の子要素をチェックしている場合は確認してください。
+このページでは `required-element` ルールのリネームとデフォルト値の変更について説明します。このルールで必須の子要素をチェックしている場合は確認してください。
 
 ## 変更一覧
 
 | 変更内容                                               | 影響範囲                             |
 | ------------------------------------------------------ | ------------------------------------ |
+| `require-element` にリネーム                           | このルールを使っている設定すべて     |
 | `ignoreOmittedElements` のデフォルト: `false` → `true` | ゴースト要素で要件を満たしていた設定 |
+
+## ルールのリネーム
+
+`required-element` は `require-element` になりました。「欠けているものを検査するルールは `require-*`（単数形）」という v5 の命名規則に従ったものです。
+
+```json
+{
+  "rules": {
+    "require-element": ["meta[charset=\"UTF-8\"]"]
+  }
+}
+```
+
+:::tip
+旧名もそのまま動作します。markuplint が非推奨警告を報告し、設定を `require-element` に自動的に適用します。旧名は v6 で削除されます。リネームの全一覧は[改名と分割](/docs/migration/v4-to-v5/rules/rule-names)にあります。
+:::
 
 ## 何が変わったか
 
 HTML では特定のタグを省略できます。たとえば `<tbody>` は `<table>` 内で省略可能です。省略された場合でも HTML パーサーは内部的に「ゴースト」ノードを生成します。
 
 :::caution 破壊的変更
-v5 ではゴースト要素がデフォルトで**無視**されます。ソースコードに明示的に記述された要素のみが `required-element` のチェックを満たします。
+v5 ではゴースト要素がデフォルトで**無視**されます。ソースコードに明示的に記述された要素のみが `require-element` のチェックを満たします。
 :::
 
 ### 変更前（v4）
@@ -75,7 +92,7 @@ v5 ではゴースト要素がデフォルトで**無視**されます。ソー�
     {
       "selector": "table",
       "rules": {
-        "required-element": {
+        "require-element": {
           "value": ["tbody"],
           "options": {
             "ignoreOmittedElements": false

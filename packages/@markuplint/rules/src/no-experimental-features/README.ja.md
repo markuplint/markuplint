@@ -10,6 +10,8 @@ markuplint にバンドルされたHTML仕様データで**実験的（experimen
 
 旧 `no-unsupported-features` ルールの `checkExperimental` オプション(#3989)から分割されました。このルールを有効にすることは旧来の `checkExperimental: true` と等価です。browserslist によるブラウザサポートチェックには[`no-unsupported-browser-features`](../no-unsupported-browser-features/)ルールを、非標準な機能には[`no-nonstandard-features`](../no-nonstandard-features/)ルールを使用してください。
 
+どのプリセットにも含まれません: `checkExperimental` のデフォルトは `false` で、設定が明示的に要求しない限りこの検査は動きませんでした。ルールの有効化も同じく明示的なオプトインのままです。姉妹ルールの2件はどちらも `markuplint:compat` に入っています。
+
 :::
 
 > **注意:** 要素や属性が実験的かどうかは、markuplint にバンドルされたHTML仕様データに依存します。機能が実験的でなくなった場合、このルールは報告しません。

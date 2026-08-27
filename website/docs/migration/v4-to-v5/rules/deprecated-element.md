@@ -5,53 +5,40 @@ title: deprecated-element
 
 # `deprecated-element` Rule Changes
 
-This page covers a scope change in the `deprecated-element` rule. If you relied on this rule to detect non-standard elements, read on.
+This page covers a split and a scope change in the `deprecated-element` rule. If you use this rule at all, read on.
 
 ## Summary
 
-| Change                                                            | Who is affected                                                   |
-| ----------------------------------------------------------------- | ----------------------------------------------------------------- |
-| Non-standard element detection moved to `no-unsupported-features` | Configs using `deprecated-element` to catch non-standard elements |
+| Change                                                       | Who is affected                         |
+| ------------------------------------------------------------ | --------------------------------------- |
+| Split into `no-obsolete-element` and `no-deprecated-element` | Every config using `deprecated-element` |
 
-## What changed
+## Rule split into two
 
-In v4, `deprecated-element` detected three categories:
+`deprecated-element` bundled two independent checks: elements the spec has removed entirely (**obsolete** — a MUST-level conformance violation) and elements the spec still defines but marks discouraged (**deprecated** — factual data sourced from MDN/BCD). In v5 each is its own rule, with its own severity:
 
-- **Deprecated** elements
-- **Obsolete** elements
-- **Non-standard** elements
-
-In v5, non-standard element detection has been moved to the new `no-unsupported-features` rule. `deprecated-element` now only detects deprecated and obsolete elements.
-
-### Before (v4)
-
-`deprecated-element` automatically flagged non-standard elements like `<bgsound>`:
-
-```html
-<!-- Reported by deprecated-element in v4 -->
-<bgsound src="music.mid"></bgsound>
-```
-
-### After (v5)
-
-`deprecated-element` no longer reports non-standard elements.
-
-## How to fix
-
-Enable `no-unsupported-features` with the `checkNonStandard` option:
+| New rule                | What it checks                                               | Default severity |
+| ----------------------- | ------------------------------------------------------------ | ---------------- |
+| `no-obsolete-element`   | Elements HTML LS §16.2 removed entirely (e.g. `<marquee>`)   | `error`          |
+| `no-deprecated-element` | Elements the spec still defines but MDN/BCD marks deprecated | `warning`        |
 
 ```json
 {
   "rules": {
-    "no-unsupported-features": {
-      "options": {
-        "checkNonStandard": true
-      }
-    }
+    "no-obsolete-element": true,
+    "no-deprecated-element": true
   }
 }
 ```
 
 :::tip
-If you use the `recommended` preset, `no-unsupported-features` is already enabled via the `compat` preset. No action is needed.
+`deprecated-element` keeps working. Markuplint reports a deprecation warning and expands your config to both rules automatically, until the old name is removed in v6. The full split list is in [Renames and Splits](/docs/migration/v4-to-v5/rules/rule-names).
+:::
+
+:::caution Severity change
+The deprecated half drops from `error` to `warning`, because MDN/BCD deprecation is factual data rather than a spec MUST. The obsolete half stays `error`.
+:::
+
+:::note Not related to this rule: non-standard element detection
+`deprecated-element` never detected non-standard elements — only obsolete and deprecated ones, both handled above. Non-standard detection (e.g. `<bgsound>`) lives in a completely separate v4 rule, `no-unsupported-features`, behind its `checkNonStandard` option (`false` by default, so it did nothing unless a config explicitly opted in). That option is now the independent `no-nonstandard-features` rule — see [Renames and Splits](/docs/migration/v4-to-v5/rules/rule-names) for the full `no-unsupported-features` split.
 :::
