@@ -15,7 +15,7 @@ Node.js を **v24.0.0 以降**にアップデートしてください。Markupli
 v5 ではルールカタログの大半が改名・分割されましたが、ほぼすべては非推奨警告付きで旧名のまま動作します。次の2件だけは何も知らせてくれません。
 
 - **`permitted-contents`** または **`no-refer-to-non-existent-id`** を生設定（プリセットを使わない設定）で直接有効化している場合、そこから分割されたチェックを静かに失います。どちらもルール名が変わっていないため、非推奨警告が出ません。
-- **6つのルールが `warning` から `error` に昇格**します。厳格な zero-warnings ゲートで通っていたビルドが、触っていないコードで失敗するようになります。
+- **3つのルール（`no-table-cell-overlap`、`no-table-span-overflow`、`no-empty-table-track` — いずれも正真正銘の v4 由来の severity 変更で、v5 新設の検査ではありません）が `warning` から `error` に昇格**します。厳格な zero-warnings ゲートで通っていたビルドが、触っていないコードで失敗するようになります。
 
 どちらも[改名と分割](/docs/migration/v4-to-v5/rules/rule-names)に詳細があります。
 :::

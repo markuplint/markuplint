@@ -15,7 +15,7 @@ Update your Node.js to **v24.0.0 or later**. This is required for all Markuplint
 v5 renames or splits most of the rule catalog, and almost all of it keeps working under the old name with a deprecation warning. Two things do not announce themselves:
 
 - If you enable **`permitted-contents`** or **`no-refer-to-non-existent-id`** directly in a raw (non-preset) config, you silently lose the checks split off from them. Neither rule was renamed, so there is no deprecation warning to tell you.
-- **Six rules escalate from `warning` to `error`**, which fails a build that was passing under a strict zero-warnings gate — on code you did not touch.
+- **Three rules escalate from `warning` to `error`** (`no-table-cell-overlap`, `no-table-span-overflow`, `no-empty-table-track` — all genuine v4 severities, not new-in-v5 checks), which fails a build that was passing under a strict zero-warnings gate — on code you did not touch.
 
 Both are detailed in [Renames and Splits](/docs/migration/v4-to-v5/rules/rule-names).
 :::

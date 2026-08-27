@@ -104,7 +104,7 @@ v5 renames or splits most of the rule catalog. Read `/docs/migration/v4-to-v5/ru
 1. If the config enables **`permitted-contents`** or **`no-refer-to-non-existent-id`** directly (not via a preset), the checks split off from them are silently lost. Neither rule was renamed, so no deprecation warning fires. Confirm with the user whether to add the split-off siblings:
    - `permitted-contents` → also add `no-disallowed-ancestor`, `require-ancestor`, `no-duplicate-sibling-attr`
    - `no-refer-to-non-existent-id` → also add `no-broken-fragment-link`
-2. **Six rules escalate from `warning` to `error`** (four rows of the guide's severity table — the first row alone covers three table-model rules), which can fail a build using a strict zero-warnings gate on code the user did not touch. Before upgrading, run the v4 build and record the current warning counts for these rules, then confirm the approach with the user.
+2. **Three rules escalate from `warning` to `error`** (`no-table-cell-overlap`, `no-table-span-overflow`, `no-empty-table-track` — the single row in the guide's severity table backed by a real v4 baseline; other `error`-level rows in that table have no v4 predecessor to escalate from), which can fail a build using a strict zero-warnings gate on code the user did not touch. Before upgrading, run the v4 build and record the current warning counts for these rules, then confirm the approach with the user.
 
 ## Reference: Named Rule Groups
 

@@ -95,7 +95,7 @@ ARIA 1.3 では `image` がプライマリロール名、`img` がシノニム�
 
 ## 傘ルールの削除
 
-v4/rc.4 では、`wai-aria` は21個の検査を1つに束ねた傘ルールで、各検査は独立したブールオプション（`checkingDeprecatedRole`、`disallowSetImplicitProps`、`checkingRequiredOwnedElements`/`checkingAllowedAccessibilityChildRoles` 等）で個別にトグルできました。v5.0.0 がリリースされる前に、これらの検査は全て既に独立したルールに分割されており（`no-abstract-role`、`no-unknown-role`、`require-owned-elements`、`no-focusable-in-aria-hidden` 等、合計20件）、`wai-aria` 自体は両方が有効な場合にその作業を重複させるだけになっていました。v5 ではこれが完全に削除され、傘ルールだけが消費していたオプショントグル機構も一緒に削除されます。
+安定版 v4 では、`wai-aria` は約12個の ARIA 検査を1つのルールに内部実装したもので、各検査は独立したブールオプション（`checkingDeprecatedRole`、`disallowSetImplicitProps`、`checkingRequiredOwnedElements` 等）でトグルできました。v5 の alpha/rc 開発の過程で、これらの検査 — と一部の純粋に新しい検査 — が1つずつ独立したルールに切り出されていき（`no-abstract-role`、`no-unknown-role`、`require-owned-elements`、`no-focusable-in-aria-hidden` 等）、今回の最終再設計が始まった時点では既に20個が独立ルールとして存在し、`wai-aria` 自体はそれらを再トグルするだけの薄いオプショントグル用シムに縮小していました（オプション名もその間に変化しており、例えば `checkingRequiredOwnedElements` には `checkingAllowedAccessibilityChildRoles` という別名が加わっていました）。v5 ではこのシムが完全に削除され、それだけが消費していたオプショントグル機構も一緒に削除されます。
 
 `wai-aria: v` は引き続き動作します — 非推奨警告が報告され、設定は21個の後継ルール（上記20件に加え新設の `no-aria-on-unsupported-element`）全てに同じ severity/reason で展開されます。傘ルールの各チェック用オプショントグルには展開先がありません: これらのルールは分割された時点で既に自身の検査を無条件に実行しており、いずれのスキーマも `options` オブジェクトを受け付けないため、トグルは単純に破棄されます。以前オプションで無効化していたチェックを無効のままにしたい場合は、そのルール自体を無効化してください:
 

@@ -43,7 +43,7 @@ The rule bundled one spec-permitted style check with three table model errors. I
 :::
 
 :::caution Severity escalation can turn a green pipeline red
-In rc.4 the whole rule was `warning`. The three table model errors are now `error`, because HTML LS forbids authors from producing them — a MUST. Only `consistent-table-row-length` stays `warning`: HTML LS §4.9.12.1 Step 7 grows the table to fit a wider row, so a ragged table is a likely mistake rather than a conformance violation.
+In v4 the whole rule was `warning`. The three table model errors are now `error`, because HTML LS forbids authors from producing them — a MUST. Only `consistent-table-row-length` stays `warning`: HTML LS §4.9.12.1 Step 7 grows the table to fit a wider row, so a ragged table is a likely mistake rather than a conformance violation.
 
 If your build uses a strict gate such as `--max-warnings 0`, check your current warning counts on these rules before upgrading.
 :::
@@ -151,7 +151,7 @@ Step 6 anchors each cell past the slots a `rowspan` still occupies, so the rows 
 
 Every new report is a table model error that HTML LS forbids authors from producing, so fix the markup: shorten the `colspan` or `rowspan`, add the missing cell, or remove the `<col>` that no row fills.
 
-These three are `error` in v5, so a table model error that was only a warning in rc.4 now fails a build that treats errors as fatal. To keep v4 behaviour, either downgrade the severity:
+These three are `error` in v5, so a table model error that was only a warning in v4 now fails a build that treats errors as fatal. To keep v4 behaviour, either downgrade the severity:
 
 ```json
 {

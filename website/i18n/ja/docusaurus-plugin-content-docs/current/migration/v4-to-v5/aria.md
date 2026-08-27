@@ -148,7 +148,7 @@ ARIA 1.3 では `image` がプライマリロール名、`img` がシノニム�
 
 ## 傘ルールの削除 {#umbrella-rule-removed}
 
-v4 の `wai-aria` は21個のチェックをまとめて実行する傘ルールで、各チェックは真偽値オプション（`checkingDeprecatedRole`、`disallowSetImplicitProps`、`checkingRequiredOwnedElements` など）で個別に切り替えられました。しかし v5.0.0 リリース前に、21検査のうち20件は独立したルールに分割済みでした（`no-abstract-role`、`no-unknown-role`、`require-owned-elements`、`no-focusable-in-aria-hidden` など）。両方が同時に有効な場合、`wai-aria` はそれらの仕事を二重に行っていただけでした。21件目は後述の新ルールです。
+安定版 v4 の `wai-aria` は約12個の ARIA 検査を1つのルールに内部実装したもので、各検査は真偽値オプション（`checkingDeprecatedRole`、`disallowSetImplicitProps`、`checkingRequiredOwnedElements` など）で個別に切り替えられました。v5 の alpha/rc 開発の過程で、これらの検査 — と一部の純粋に新しい検査 — が1つずつ独立したルールに切り出されていきました（`no-abstract-role`、`no-unknown-role`、`require-owned-elements`、`no-focusable-in-aria-hidden` など）。今回の最終再設計が始まった時点では既に20個が独立ルールとして存在し、`wai-aria` 自体はそれらを再トグルするだけの薄いシムに縮小していました。21件目 — `wai-aria` に対応するトグルが元々存在しなかったルール — は後述の新ルールです。
 
 v5 では `wai-aria` を完全に削除し、それだけが消費していたオプショントグルの仕組みも削除しました。
 

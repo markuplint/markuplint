@@ -148,7 +148,7 @@ See Issue [#3641](https://github.com/markuplint/markuplint/issues/3641) for back
 
 ## Umbrella rule removed {#umbrella-rule-removed}
 
-In v4, `wai-aria` was an umbrella rule running 21 checks together, each independently toggleable via a boolean option (`checkingDeprecatedRole`, `disallowSetImplicitProps`, `checkingRequiredOwnedElements`, and so on). Twenty of those checks had already been split into their own independent rules before v5.0.0 shipped — `no-abstract-role`, `no-unknown-role`, `require-owned-elements`, `no-focusable-in-aria-hidden`, and so on — and `wai-aria` only duplicated their work when both were enabled together. The 21st is the new rule below.
+In stable v4, `wai-aria` was a single rule that internally implemented around a dozen ARIA checks, each toggleable via a boolean option (`checkingDeprecatedRole`, `disallowSetImplicitProps`, `checkingRequiredOwnedElements`, and so on). During v5's alpha/rc development, those checks — and a few genuinely new ones — were carved out one at a time into independent rules: `no-abstract-role`, `no-unknown-role`, `require-owned-elements`, `no-focusable-in-aria-hidden`, and so on. By the time this final redesign started, 20 such rules already existed on their own, and `wai-aria` itself had shrunk to a thin option-toggle shim re-triggering them. The 21st rule — one with no prior toggle in `wai-aria` at all — is new below.
 
 v5 removes `wai-aria` entirely, along with the option-toggle mechanism it alone consumed.
 
