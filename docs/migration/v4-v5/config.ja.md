@@ -109,12 +109,14 @@ const ariaVersion = el.rule.options.ariaVersion;
 import { ARIA_RECOMMENDED_VERSION } from '@markuplint/ml-spec';
 
 const ariaVersion =
-  el.rule.options?.ariaVersion
+  el.rule.options?.version
   ?? document.ruleCommonSettings?.ariaVersion
   ?? ARIA_RECOMMENDED_VERSION;
 ```
 
 `document.ruleCommonSettings` は、ルールの `verify()` コールバックに渡される `MLDocument` インスタンスで利用可能です。
+
+ルールごとのオプションのフィールド名は自由に決められます — markuplint 自身の21個の ARIA ルールのうち19個は `version` と名付けており、ここではその慣例に従っています。2つの組み込みルール（`require-accessible-name`、`no-refer-to-non-existent-id`）は `ariaVersion` という名前を使っています。どちらでも構いませんが、自作ルールの `verify()` がそのルールのスキーマで宣言したフィールド名を読むようにしてください。`ruleCommonSettings.ariaVersion` はフレームワーク側で固定されており、常にこの綴りです。
 
 ## Named NodeRules
 

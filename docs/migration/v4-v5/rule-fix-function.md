@@ -5,11 +5,11 @@
 - **Custom rule authors** who want to add auto-fix capability to their rules
 - **Plugin developers** who maintain third-party markuplint rules
 
-> This is a **new feature** in v5 — there is no v4 equivalent. Existing rules continue to work without changes. This guide explains how to opt into the new fix API.
+> v4 had a `RuleSeed.fix()` hook and a working `--fix` CLI flag, but no built-in rule ever implemented it — running `--fix` in v4 was a no-op for every bundled rule. v5 replaces that whole-document hook with an inline, per-violation `fix` callback on `report()`, and now ships eleven built-in rules that use it. Existing rules that don't add a `fix` callback continue to work without changes. This guide explains how to opt into the new fix API.
 
 ## Overview
 
-v5 introduces an auto-fix system inspired by ESLint's `SourceCodeFixer`. Rules can now provide a `fix` callback on `report()` calls. When the user runs markuplint with `fix=true`, these callbacks produce `TextEdit` objects that are applied to the source code.
+v5 redesigns auto-fix around a system inspired by ESLint's `SourceCodeFixer`. Rules can now provide a `fix` callback on `report()` calls. When the user runs markuplint with `fix=true`, these callbacks produce `TextEdit` objects that are applied to the source code.
 
 ## Adding a Fix Callback
 
@@ -68,12 +68,13 @@ fix: fixer => fixer.replaceText(
 A fix callback can return a single `TextEdit` or an array of `TextEdit` objects. Multiple edits within a single callback are applied atomically — if any edit overlaps with another rule's fix, all edits in the group are skipped:
 
 ```typescript
-fix: fixer => [
-  fixer.remove(attr.spacesBeforeEqual),
-  fixer.remove(attr.equal),
-  fixer.remove(attr.valueNode),
-],
+fix: fixer =>
+  [attr.spacesBeforeEqual, attr.equal, attr.valueNode]
+    .filter((token): token is NonNullable<typeof token> => token != null)
+    .map(token => fixer.remove(token)),
 ```
+
+`spacesBeforeEqual`, `equal`, and `valueNode` are typed `MLToken | null` (`null` when the attribute has no value) — filter them out before calling `fixer.remove()`, which requires a non-null token.
 
 ## Examples
 

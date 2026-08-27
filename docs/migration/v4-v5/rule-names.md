@@ -213,7 +213,7 @@ becomes
 
 ## Known Migration Gap
 
-Two rules keep their name (not renamed, not deprecated) but gain a sibling from a split: `permitted-contents` (→ `no-disallowed-ancestor`/`require-ancestor`/`no-duplicate-sibling-attr`) and `no-refer-to-non-existent-id` (→ `no-broken-fragment-link`). Because the *old* name is unchanged, there's no alias table entry to expand it — if you enabled either rule directly in a raw config (not through a preset), you silently lose the split-off check with **no deprecation warning**. Preset users are unaffected: the new sibling checks are already added as their own preset entries.
+Two rules keep their name (not renamed, not deprecated) but gain a sibling from a split: `permitted-contents` (→ `no-disallowed-ancestor`/`require-ancestor`/`no-duplicate-sibling-attr`) and `no-refer-to-non-existent-id` (→ `no-broken-fragment-link`). Because the *old* name is unchanged, there's no alias table entry to expand it — if you enabled either rule directly in a raw config (not through a preset), you silently lose the split-off check with **no deprecation warning**. Preset users are mostly unaffected: the new sibling checks are already added as their own preset entries — with one gap. `no-broken-fragment-link` is in the `a11y` preset (alongside `no-refer-to-non-existent-id`) but missing from `html-standard`, even though `html-standard` carries `no-refer-to-non-existent-id` itself. `markuplint:recommended` extends both, so it's unaffected; extending `html-standard` alone is not.
 
 ```json
 {
@@ -253,7 +253,7 @@ to keep the same coverage in v5.
 | `require-h1` / `no-duplicate-h1` | `error` (as `required-h1`) | `warning` | WCAG Technique H42 is non-normative |
 | `require-adjacent-popover` | `error` (as `neighbor-popovers`) | `warning` | HTML LS states this in a non-normative Note |
 
-`no-consecutive-br` is a deliberate, documented exception: it stays `warning` even though it's a proxy for an HTML LS MUST, because the detection can false-positive on legitimate uses (e.g. poem line breaks).
+`no-consecutive-br` is a deliberate exception, explained here rather than in the rule's own files: it stays `warning` even though it's a proxy for an HTML LS MUST, because the detection can false-positive on legitimate uses (e.g. poem line breaks).
 
 The four `warning`→`error` rows above cover six rules (the first row alone holds three), any of which can turn a previously-green CI pipeline red on unrelated code for teams using a strict, zero-warnings gate (e.g. `--max-warnings 0`) — check your current warning counts against these specific rules before upgrading.
 

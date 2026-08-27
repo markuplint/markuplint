@@ -77,21 +77,21 @@ This affects:
 | `generic` transparent for child roles | No | Yes |
 | `generic` transparent for parent role | No | Yes |
 | `presentation` / `none` transparent for child roles | Yes | Yes |
-| `presentation` / `none` transparent for parent role | No | Yes |
+| `presentation` / `none` transparent for parent role | Yes | Yes |
 
 ## Image / IMG Role Synonym
 
-In ARIA 1.3, `image` is the primary role name and `img` is a synonym. When either appears in an element's permitted roles, both are accepted:
+In ARIA 1.3, `image` is the primary role name and `img` is a synonym. When either appears in an element's permitted roles, both are accepted. This affects elements whose permitted-roles list includes `img` — `<img>` itself isn't one of them, since its own implicit role is already `img`; `<embed>` and `<iframe>` are:
 
 ```html
-<!-- ARIA 1.2: permitted roles include only "img" -->
-<!-- ARIA 1.3: permitted roles include both "image" and "img" -->
-<img alt="photo" />
+<!-- ARIA 1.2: role="image" is not a permitted role for <embed> -->
+<!-- ARIA 1.3: role="image" is accepted as a synonym of the permitted "img" -->
+<embed src="chart.svg" role="image" />
 ```
 
 ## `<aside>` Conditional Role Mapping (ARIA 1.3)
 
-`<aside>`'s implicit role is now conditional per ARIA 1.3: `complementary` when it's not a descendant of `<article>`/`<aside>`/`<main>`/`<nav>`/`<section>`, `generic` when it is. `no-nested-top-level-landmark` (the rule split off from `landmark-roles`, see below) deliberately does not check `complementary` as a top-level landmark for this reason — its selector-based detection cannot tell a demoted `<aside>` apart from a true one, so checking it would produce false positives on any `<aside>` nested in a sectioning ancestor.
+`<aside>`'s implicit role is now conditional per ARIA 1.3: `complementary` when it's not a descendant of `<article>`/`<aside>`/`<blockquote>`/`<details>`/`<dialog>`/`<fieldset>`/`<figure>`/`<nav>`/`<section>`/`<td>`, `generic` when it is — unless the `<aside>` itself has an accessible name (e.g. `aria-label`), in which case it keeps `complementary`. `no-nested-top-level-landmark` (the rule split off from `landmark-roles`, see below) deliberately does not check `complementary` as a top-level landmark for this reason — its selector-based detection cannot tell a demoted `<aside>` apart from a true one, so checking it would produce false positives on any `<aside>` nested in one of those ancestors.
 
 ## Umbrella Rule Removed
 

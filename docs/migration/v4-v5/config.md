@@ -109,12 +109,14 @@ const ariaVersion = el.rule.options.ariaVersion;
 import { ARIA_RECOMMENDED_VERSION } from '@markuplint/ml-spec';
 
 const ariaVersion =
-  el.rule.options?.ariaVersion
+  el.rule.options?.version
   ?? document.ruleCommonSettings?.ariaVersion
   ?? ARIA_RECOMMENDED_VERSION;
 ```
 
 `document.ruleCommonSettings` is available on the `MLDocument` instance passed to rule `verify()` callbacks.
+
+The per-rule option's field name is yours to choose -- 19 of markuplint's own 21 ARIA rules name it `version`, so that's the convention shown here. Two built-in rules (`require-accessible-name`, `no-refer-to-non-existent-id`) instead call it `ariaVersion`; either works as long as your rule's own `verify()` reads whatever field name its schema declares. `ruleCommonSettings.ariaVersion` is fixed by the framework and always spelled that way.
 
 ## Named NodeRules
 

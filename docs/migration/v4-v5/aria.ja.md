@@ -77,21 +77,21 @@ ARIA 1.3 では、ユーザーエージェントは `generic` または `none` �
 | `generic` が子ロールで透過的 | いいえ | はい |
 | `generic` が親ロールで透過的 | いいえ | はい |
 | `presentation` / `none` が子ロールで透過的 | はい | はい |
-| `presentation` / `none` が親ロールで透過的 | いいえ | はい |
+| `presentation` / `none` が親ロールで透過的 | はい | はい |
 
 ## Image / IMG ロールの同義語
 
-ARIA 1.3 では `image` がプライマリロール名、`img` がシノニムとなりました。いずれかが要素の許可されるロールに含まれる場合、両方が受け入れられます:
+ARIA 1.3 では `image` がプライマリロール名、`img` がシノニムとなりました。いずれかが要素の許可されるロールに含まれる場合、両方が受け入れられます。これは許可ロール一覧に `img` を含む要素に影響します — `<img>` 自体は対象外です（暗黙ロールが既に `img` のため）。対象となるのは `<embed>` や `<iframe>` です:
 
 ```html
-<!-- ARIA 1.2: 許可されるロールは "img" のみ -->
-<!-- ARIA 1.3: 許可されるロールは "image" と "img" の両方 -->
-<img alt="photo" />
+<!-- ARIA 1.2: <embed> に role="image" は許可されるロールに含まれない -->
+<!-- ARIA 1.3: 許可されている "img" の同義語として role="image" が受理される -->
+<embed src="chart.svg" role="image" />
 ```
 
 ## `<aside>` の条件付きロールマッピング（ARIA 1.3）
 
-`<aside>` の暗黙のロールは ARIA 1.3 に基づき条件付きになりました: `<article>`/`<aside>`/`<main>`/`<nav>`/`<section>` の子孫でない場合は `complementary`、子孫である場合は `generic` です。`landmark-roles` から分割された `no-nested-top-level-landmark`（下記参照）は、この理由により意図的に `complementary` をトップレベルランドマークとしてチェックしません — セレクタベースの検出では降格した `<aside>` と真の `complementary` を区別できないため、チェックするとセクショニング祖先内にネストされたあらゆる `<aside>` で誤検知が発生します。
+`<aside>` の暗黙のロールは ARIA 1.3 に基づき条件付きになりました: `<article>`/`<aside>`/`<blockquote>`/`<details>`/`<dialog>`/`<fieldset>`/`<figure>`/`<nav>`/`<section>`/`<td>` の子孫でない場合は `complementary`、子孫である場合は `generic` です。ただし `<aside>` 自体にアクセシブルネーム（`aria-label` など）がある場合は `complementary` を維持します。`landmark-roles` から分割された `no-nested-top-level-landmark`（下記参照）は、この理由により意図的に `complementary` をトップレベルランドマークとしてチェックしません — セレクタベースの検出では降格した `<aside>` と真の `complementary` を区別できないため、チェックするとそれらの祖先内にネストされたあらゆる `<aside>` で誤検知が発生します。
 
 ## 傘ルールの削除
 
