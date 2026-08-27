@@ -54,7 +54,7 @@ Elements with implicit or explicit `generic` (bare `<div>` / `<span>`) are skipp
 | `presentation` / `none` transparent for child roles | Yes           | Yes   |
 | `presentation` / `none` transparent for parent role | Yes           | Yes   |
 
-## `<aside>` conditional role (ARIA 1.3)
+## `<aside>` conditional role (ARIA 1.3) {#aside-conditional-role-mapping-aria-13}
 
 - Not a descendant of `<article>`, `<aside>`, `<blockquote>`, `<details>`, `<dialog>`, `<fieldset>`, `<figure>`, `<nav>`, `<section>`, or `<td>` → `complementary`
 - Descendant of one of those → `generic`, unless the `<aside>` has an accessible name, in which case it stays `complementary`

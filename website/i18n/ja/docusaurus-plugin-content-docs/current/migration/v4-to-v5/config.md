@@ -46,7 +46,7 @@ v4 の `wai-aria` `options.version` は 21 後継には渡りません。
 
 **pretender `data`:** 連結（v4 は置き換え）。`files` / `imports` は上書きのまま。
 
-## 標準タグへの pretender
+## 標準タグへの pretender {#pretender-が標準-html-要素には適用されなくなった}
 
 認識された HTML/SVG 要素への pretender は無視されます（[issue #3740](https://github.com/markuplint/markuplint/issues/3740)）。黙らせるならルールの disable / severity を使ってください。
 

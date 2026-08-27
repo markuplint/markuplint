@@ -54,7 +54,7 @@ v5 は ARIA 1.3 を追加し、既定にします（v4 は 1.2）。v4 の `wai-
 | 子ロール探索で `presentation` / `none` が透過 | はい          | はい  |
 | 親ロール探索で `presentation` / `none` が透過 | はい          | はい  |
 
-## `<aside>` の条件付きロール（ARIA 1.3）
+## `<aside>` の条件付きロール（ARIA 1.3） {#aside-conditional-role-mapping-aria-13}
 
 - `<article>`、`<aside>`、`<blockquote>`、`<details>`、`<dialog>`、`<fieldset>`、`<figure>`、`<nav>`、`<section>`、`<td>` の子孫でない → `complementary`
 - それらの子孫 → `generic`。ただしアクセシブルネームがあれば `complementary` のまま

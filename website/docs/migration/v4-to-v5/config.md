@@ -77,7 +77,7 @@ Violations expose `ruleId` (base rule) and `name` (group). `specConformance` is 
 
 **Pretender `data`:** concatenated (v4 replaced). `files` / `imports` still override.
 
-## Pretenders on standard tags
+## Pretenders on standard tags {#pretenders-no-longer-apply-to-standard-html-tags}
 
 A pretender whose selector is a recognized HTML/SVG element is ignored ([issue #3740](https://github.com/markuplint/markuplint/issues/3740)). Use per-rule disable/severity to silence a built-in tag; do not masquerade it as another element.
 
