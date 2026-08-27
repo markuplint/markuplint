@@ -34,7 +34,7 @@ Node.js を **v24.0.0 以降**にしてください。v5 の全パッケージ�
 [Claude Code](https://claude.com/claude-code):
 
 ```bash
-npx skills add markuplint/markuplint@migrate4-5
+npx skills add markuplint/markuplint@migrations/v4-v5
 ```
 
 :::

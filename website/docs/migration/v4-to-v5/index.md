@@ -38,7 +38,7 @@ Rewrite from those lines. Then check the silent gaps above by hand. 5. If CI tre
 With [Claude Code](https://claude.com/claude-code):
 
 ```bash
-npx skills add markuplint/markuplint@migrate4-5
+npx skills add markuplint/markuplint@migrations/v4-v5
 ```
 
 :::
