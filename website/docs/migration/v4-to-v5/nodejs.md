@@ -1,59 +1,39 @@
 ---
 sidebar_position: 1
-title: Node.js
+title: 'Node.js'
 ---
 
 # Node.js
 
-:::caution Required for all users
-Markuplint v5 requires **Node.js v24.0.0 or later**. Check your version before upgrading.
-:::
+v5 requires **Node.js v24.0.0 or later**. Every published package sets `"engines": { "node": ">=24" }`.
 
-## Minimum Version: v24.0.0
-
-The minimum Node.js version has been raised from v18.18.0 to **v24.0.0**. All packages now enforce this through the `engines` field.
-
-Check your current version:
+v4 documented **v18.18.0 or later**. v4 packages did not set an `engines` field.
 
 ```bash
 node -v
 # Must be v24.0.0 or later
 ```
 
-### Using a version manager
-
 ```bash
-# nvm
 nvm install 24
 nvm use 24
-
-# volta
-volta install node@24
 ```
-
-### Updating CI configuration
 
 ```yaml
-# Before (v4)
+# v4 CI
 node-version: [18, 20]
 
-# After (v5)
-node-version: [24, 26]
+# v5 CI
+node-version: [24]
 ```
 
-## Removed Polyfills
+## Polyfills
 
-v5 uses native APIs instead of polyfills. These packages were removed internally:
+Internal replacements (add the packages yourself only if your app imported them transitively from Markuplint):
 
-- `uuid` -- replaced by native `crypto.randomUUID()`
-- `@ungap/structured-clone` -- replaced by native `structuredClone()`
+- `uuid` → `crypto.randomUUID()`
+- `@ungap/structured-clone` → `structuredClone()`
 
-:::note
-These are internal changes. If your project depended on these as transitive dependencies from Markuplint, add them directly to your `package.json`.
-:::
+## TypeScript target
 
-## TypeScript Target Changed to ES2022
-
-The compilation target changed from ES2020 to ES2022. This affects custom rule and parser plugin authors who compile with Markuplint's TypeScript configuration.
-
-Ensure your runtime supports ES2022 features like top-level `await` and `Error.cause`.
+Shared compiler options use `"target": "ES2022"`. Custom rules and parsers that compile against Markuplint's TypeScript config need a runtime that supports ES2022.

@@ -1,44 +1,38 @@
-# Rule Renames and Splits: v4 to v5 Migration Guide
+# Rule renames and splits
 
-## Who This Guide Is For
+Master reference for rule-name changes with a **stable v4** lineage (`v4.18.3`). Option-format changes beyond a rename or split are on the per-rule pages under `rules/`. ARIA version and `wai-aria` option mapping: [ARIA](./aria.md).
 
-- **Everyone** — this is the master reference for every rule-name change with a real v4 lineage. See [ARIA Changes](./aria.md) for the `wai-aria` umbrella rule (a special case — its split happened gradually across v5's pre-release development, not in one step), [New in v5](#new-in-v5-no-v4-equivalent) for rules that have no v4 predecessor at all, and the per-rule guides under `rules/` for rules with option-format changes beyond the rename/split itself.
+v5 redoes the catalog: verb-prefix names, one rule per independent check, and spec-conformance metadata. **v4's 38 built-in rules become 106 in v5.** Of that: 12 were renamed, 10 were split, `wai-aria` became 21 independent rules, and the rest are new checks with no v4 predecessor.
 
-## Summary
-
-v5.0.0 redoes the rule catalog end to end: consistent ESLint-style verb-prefix naming, one rule per independent spec requirement, and machine-readable spec-conformance metadata. **v4's 38 rules become 106 in v5.0.0.** Of that growth: 12 rules were renamed outright, 10 rules were split into several (invalid-attr, doctype, character-reference, deprecated-attr, deprecated-element, landmark-roles, no-refer-to-non-existent-id, permitted-contents, required-h1, table-row-column-alignment), the `wai-aria` umbrella became 21 independent rules (see [ARIA Changes](./aria.md#umbrella-rule-removed)), 1 rule was removed outright (see [Deletions](#deletions)), and the rest are either entirely new capabilities with no v4 predecessor, or rules that already went through one rename during v5's alpha/rc development and are getting a second one now (see [New in v5](#new-in-v5-no-v4-equivalent)).
-
-:::caution A note on scope
-markuplint's v5 development spanned many alpha/rc releases before this final rework. A few rule names below (and the ones under [New in v5](#new-in-v5-no-v4-equivalent)) never existed in a stable v4 release — they were introduced, and sometimes already renamed once, during that intermediate period.
-:::
-
-**Nothing breaks silently** — with one documented exception. Every renamed or split rule keeps working under its old name — markuplint reports a deprecation warning and expands the old config to the new rule(s) automatically. Old names are removed in v6. The exception: two rules keep their pre-v5 name and gain a split-off sibling with no alias/warning mechanism to announce it — see [Known Migration Gap](#known-migration-gap) if you use `permitted-contents` or `no-refer-to-non-existent-id` directly in a raw (non-preset) config.
+Old names that **were renamed or split** keep working: Markuplint reports a deprecation warning and expands the config. Those aliases are removed in v6. Names that **did not change** have no alias — see [Known migration gap](#known-migration-gap).
 
 ## Categories
 
-v4's 5-category scheme (`validation`, `a11y`, `naming-convention`, `maintainability`, `style`) is replaced by 9 categories, each `meta.ts`'s `category` field. `validation` (too coarse to browse — it held the largest share of v4's rules) is split by what the rule actually checks; `naming-convention` (1 rule, `class-naming`) folds into `style`.
+v4 used five categories (`validation`, `a11y`, `naming-convention`, `maintainability`, `style`). v5 uses nine, from each rule's `meta.ts` `category`. Categories are a browsing aid on the rules index; they do not appear in config files.
 
 | Category | What it covers |
-|----------|-----------------|
-| `syntax` | Parse-level conformance — malformed markup, character references, tag/element structure at the token level |
-| `structure` | Document/content-model structure — permitted contents, ancestor/descendant constraints, doctype, table model |
-| `attributes` | Attribute name/value conformance — unknown/disallowed attributes, value type checks, srcset, dimensions |
-| `references` | Cross-reference integrity — ID references, `for`/`form`/`list`/`usemap` attribute targets |
-| `forms` | Form-control-specific best practices |
-| `a11y` | ARIA and other accessibility-specific checks |
-| `style` | Opinionated formatting/naming preferences with no single correct answer |
-| `maintainability` | Project-hygiene checks unrelated to spec conformance or accessibility |
-| `compat` | Browser/engine compatibility — browserslist × BCD, experimental/non-standard feature flags |
+| --- | --- |
+| `syntax` | Parse-level conformance |
+| `structure` | Content model, ancestors, doctype, table model |
+| `attributes` | Attribute name/value conformance |
+| `references` | ID and fragment references |
+| `forms` | Form-control checks |
+| `a11y` | ARIA and accessibility |
+| `style` | Opinionated formatting/naming |
+| `maintainability` | Project hygiene |
+| `compat` | browserslist × BCD, experimental/non-standard flags |
 
-## 1:1 Renames
+`naming-convention` (only `class-naming`) folds into `style`.
 
-These 12 rules existed under the listed name in a real, stable v4 release and were simply renamed:
+## 1:1 renames
+
+These 12 names existed in stable v4 and map 1:1:
 
 | Old name (v4) | New name |
-|------------------|----------|
+| --- | --- |
 | `attr-duplication` | `no-duplicate-attr` |
 | `id-duplication` | `no-duplicate-id` |
-| `required-attr` | `require-attr` (plain rename, full scope kept — see [Scope Narrowed](#scope-narrowed) below for why) |
+| `required-attr` | `require-attr` |
 | `required-element` | `require-element` |
 | `ineffective-attr` | `no-ineffective-attr` |
 | `end-tag` | `require-end-tag` |
@@ -49,216 +43,122 @@ These 12 rules existed under the listed name in a real, stable v4 release and we
 | `no-use-event-handler-attr` | `no-event-handler-attr` |
 | `use-list` | `no-pseudo-list` |
 
-:::note `wai-aria` is a separate case
-Every rule you might expect here with a `wai-aria-*` old name (e.g. `wai-aria-abstract-role` → `no-abstract-role`) is **not** a v4 rename — no stable v4 release ever had a rule named `wai-aria-abstract-role`. That name only existed briefly during v5's own alpha/rc development, when the single v4 rule `wai-aria` was first split into 20 pieces before this final redesign renamed each piece again. If you're migrating from a real v4 config, the rule you have is `wai-aria` itself, and its migration path — a single `wai-aria: v` alias that expands to all 21 final rules with no config changes required — is covered in full in [ARIA Changes](./aria.md#umbrella-rule-removed). You only need the `wai-aria-*` names above if you already adopted an intermediate v5 pre-release and configured one of those split rules directly.
-:::
+`required-attr` → `require-attr` keeps `{ name, value }` matching. See [Scope changes](#scope-changes).
 
 ## Splits
 
-Each split's checks correspond to independent spec requirements, so they can be enabled/disabled/set to a different severity independently. These 10 old names all existed in a real, stable v4 release.
+These 10 names existed in stable v4. Each split is independently configurable.
 
 | Old name (v4) | Split into | What each checks |
-|------------------|------------|-------------------|
-| `invalid-attr` | `no-unknown-attr` | Attribute name not defined by the spec at all (typo candidates, case mismatches) |
-| | `no-disallowed-attr` | Attribute defined but disallowed here (`noUse`, unmet conditional-allow condition, `is` on an autonomous custom element). `aria-*`/`role` are exempt from all three spec-checking rules — the ARIA rules own them, `no-aria-on-unsupported-element` in particular |
-| | `no-invalid-attr-value` | Attribute value type/grammar violation |
-| | `no-restricted-attr` | User-defined `disallowAttrs` denylisting (its only option — `allowAttrs` goes to the three spec-checking rules instead) |
-| `doctype` | `require-doctype` | Missing DOCTYPE declaration entirely |
-| | `no-obsolete-doctype` | Legacy DOCTYPE with a public/system identifier (`about:legacy-compat` is still permitted per spec) |
-| `character-reference` | `no-malformed-character-reference` | parse5's malformed-character-reference parse errors |
-| | `no-unescaped-char` | Unescaped literal `<` or ambiguous `&` (default); `strict` option adds `>`, `"`, and any bare `&` |
-| `deprecated-attr` | `no-obsolete-attr` | HTML LS §16.2 obsolete attributes (conformance violation, `error`) |
-| | `no-deprecated-attr` | Spec-valid but MDN/BCD-flagged deprecated attributes (`warning`) |
-| `deprecated-element` | `no-obsolete-element` | Same, for elements (`error`) |
-| | `no-deprecated-element` | Same, for elements (`warning`) |
-| `landmark-roles` | `no-nested-top-level-landmark` | `banner`/`main`/`contentinfo` nested inside another landmark |
-| | `require-landmark-label` | Missing accessible name when the same landmark role appears more than once |
-| `no-refer-to-non-existent-id` | `no-refer-to-non-existent-id` | `DOMID`-typed attribute / ARIA ID-reference property pointing at a nonexistent ID (rule keeps its name — see [Known Migration Gap](#known-migration-gap)) |
-| | `no-broken-fragment-link` | `a[href]`/`area[href]` fragment pointing at a nonexistent ID (`fragmentRefersNameAttr` option moved here) |
-| `permitted-contents` | `permitted-contents` | Child-node content-model conformance (rule keeps its name — see [Known Migration Gap](#known-migration-gap)) |
-| | `no-disallowed-ancestor` | Appears as a descendant of a forbidden ancestor (spec's `forbiddenAncestors`) |
-| | `require-ancestor` | Missing a required ancestor (spec's `descendantOf`) |
-| | `no-duplicate-sibling-attr` | Attribute that must be unique among siblings is duplicated (e.g. `track[default]`) |
+| --- | --- | --- |
+| `invalid-attr` | `no-unknown-attr` | Name not defined by the spec |
+|  | `no-disallowed-attr` | Name defined but disallowed here (`noUse`, unmet condition, `is` on an autonomous custom element) |
+|  | `no-invalid-attr-value` | Value type/grammar |
+|  | `no-restricted-attr` | User `disallowAttrs` only — omitted from the alias unless `disallowAttrs` was set |
+| `doctype` | `require-doctype` | Missing DOCTYPE |
+|  | `no-obsolete-doctype` | Legacy public/system identifier (`about:legacy-compat` still allowed). Omitted if `denyObsoleteType` was `false` |
+| `character-reference` | `no-malformed-character-reference` | Malformed character references |
+|  | `no-unescaped-char` | Unescaped `<` / ambiguous `&` |
+| `deprecated-attr` | `no-obsolete-attr` | HTML LS obsolete attributes (`error`) |
+|  | `no-deprecated-attr` | MDN/BCD deprecated attributes (`warning`) |
+| `deprecated-element` | `no-obsolete-element` | Obsolete elements (`error`) |
+|  | `no-deprecated-element` | Deprecated elements (`warning`) |
+| `landmark-roles` | `no-nested-top-level-landmark` | Nested `banner` / `main` / `contentinfo` (`ignoreRoles` carried over) |
+|  | `require-landmark-label` | Duplicate landmark without an accessible name. Omitted if `labelEachArea` was `false` |
+| `no-refer-to-non-existent-id` | `no-refer-to-non-existent-id` | `DOMID` / ARIA ID-reference (name unchanged — [gap](#known-migration-gap)) |
+|  | `no-broken-fragment-link` | `a[href]` / `area[href]` fragment (`fragmentRefersNameAttr` moved here) |
+| `permitted-contents` | `permitted-contents` | Child content model (name unchanged — [gap](#known-migration-gap)) |
+|  | `no-disallowed-ancestor` | `forbiddenAncestors` |
+|  | `require-ancestor` | `descendantOf` |
+|  | `no-duplicate-sibling-attr` | Sibling-unique attributes (e.g. `track[default]`) |
 | `required-h1` | `require-h1` | Missing `<h1>` |
-| | `no-duplicate-h1` | Duplicate `<h1>` |
-| `table-row-column-alignment` | `no-table-cell-overlap` | Cell overlap from `rowspan`/`colspan` (table model error) |
-| | `no-table-span-overflow` | Span overflows its row group or table boundary (table model error) |
-| | `no-empty-table-track` | A row or column with no cells starting in it (table model error) |
-| | `consistent-table-row-length` | Inconsistent column count across rows (spec permits this; the only `warning`-level entry of the four) |
+|  | `no-duplicate-h1` | Duplicate `<h1>`. Omitted if `expected-once` was `false` |
+| `table-row-column-alignment` | `no-table-cell-overlap` | Cell overlap (`error`) |
+|  | `no-table-span-overflow` | Span past row-group/table (`error`) |
+|  | `no-empty-table-track` | Row/column with no anchored cell (`error`) |
+|  | `consistent-table-row-length` | Ragged column count (`warning`) |
 
-:::note Two more splits have no v4 predecessor
-`wai-aria-disallowed-props` and `wai-aria-implicit-props` — split respectively into `no-prohibited-naming`/`element-supports-aria-prop`/`role-supports-aria-prop` and `no-redundant-aria-prop`/`no-contradictory-aria-prop` — look like splits of a v4 rule, but neither name existed in a real v4 release. Both were themselves pieces of the `wai-aria` umbrella's earlier pre-release split. See [ARIA Changes](./aria.md#umbrella-rule-removed) for the full `wai-aria` → 21-rules story that covers them, and `no-unsupported-features` and `script-content` and `srcset-sizes-constraint` in [New in v5](#new-in-v5-no-v4-equivalent) for three more "looks like a split, has no v4 predecessor" cases.
-:::
+`aria-*` and `role` are exempt from the three spec-checking `invalid-attr` successors; ARIA rules own them.
 
-### Option-Routed Splits: Before / After
+### Option-routed splits
 
-Most splits above are unconditional — every old check gets its own new rule regardless of options. Five are not: `doctype`, `landmark-roles`, `required-h1`, `no-unsupported-features`, and `invalid-attr` route to a subset of their new siblings depending on what the old options said. The alias table expands these automatically (with a deprecation warning) — this is only relevant if you're rewriting your config by hand instead of relying on that. (`no-unsupported-features` is the [New in v5](#new-in-v5-no-v4-equivalent) rule with no v4 predecessor — its walkthrough below is for anyone who already adopted it during v5's pre-release period.)
+Most splits copy the old setting to every successor. These do not:
 
-`doctype` with both checks on:
+- `doctype`: drop `no-obsolete-doctype` when `denyObsoleteType` was `false`.
+- `landmark-roles`: drop `require-landmark-label` when `labelEachArea` was `false`.
+- `required-h1`: drop `no-duplicate-h1` when `expected-once` was `false`.
+- `invalid-attr`: add `no-restricted-attr` only when `disallowAttrs` was set. Option routing: [`invalid-attr`](./rules/invalid-attr.md).
 
-```json
-{ "rules": { "doctype": "always" } }
-```
+The alias does this automatically. Hand-written configs should match that routing.
 
-becomes
+## New in v5 (no v4 equivalent)
 
-```json
-{
-  "rules": {
-    "require-doctype": true,
-    "no-obsolete-doctype": true
-  }
-}
-```
+These checks have no v4 rule to migrate from. Presets may enable some of them (see [Preset changes](#preset-changes)).
 
-— `no-obsolete-doctype` is omitted entirely if the old config set `denyObsoleteType: false`.
+`attr-order`, `form-attr-references-form`, `head-element-order`, `input-list-references-datalist`, `itemprop-requires-itemscope`, `label-for-references-labelable`, `label-no-multiple-controls`, `link-types`, `map-id-name-match`, `meta-charset-position`, `meter-value-bounds`, `no-always-matching-source`, `no-content-after-body`, `no-duplicate-autofocus`, `no-duplicate-visible-main`, `no-experimental-features`, `no-extra-selected-options`, `no-input-file-value`, `no-mismatched-aspect-ratio`, `no-mixed-srcset-descriptors`, `no-nonstandard-features`, `no-redundant-accessible-name`, `no-stray-head-or-body-tag`, `no-unclosed-element-at-eof`, `no-unpaired-srcset-sizes`, `no-unsupported-browser-features`, `progress-value-bounds`, `require-dialog-autofocus`, `sizes-auto-requires-lazy-loading`, `usemap-references-map`, `valid-importmap`, `valid-speculation-rules`.
 
-`landmark-roles` with both checks on:
+`label-no-multiple-controls` is new as a **rule name**, but the check lived inside v4 `label-has-control` — [Known migration gap](#known-migration-gap).
 
-```json
-{ "rules": { "landmark-roles": { "options": { "ignoreRoles": ["region"] } } } }
-```
-
-becomes
-
-```json
-{
-  "rules": {
-    "no-nested-top-level-landmark": { "options": { "ignoreRoles": ["region"] } },
-    "require-landmark-label": true
-  }
-}
-```
-
-— `require-landmark-label` is omitted entirely if the old config set `labelEachArea: false`.
-
-`required-h1` with both checks on:
-
-```json
-{ "rules": { "required-h1": { "options": { "in-document-fragment": true } } } }
-```
-
-becomes
-
-```json
-{
-  "rules": {
-    "require-h1": { "options": { "in-document-fragment": true } },
-    "no-duplicate-h1": { "options": { "in-document-fragment": true } }
-  }
-}
-```
-
-— `no-duplicate-h1` is omitted entirely if the old config set `expected-once: false`.
-
-`no-unsupported-features` with every check on:
-
-```json
-{
-  "rules": {
-    "no-unsupported-features": {
-      "options": { "checkExperimental": true, "checkNonStandard": true, "ignoreFeatures": ["css-grid"] }
-    }
-  }
-}
-```
-
-becomes
-
-```json
-{
-  "rules": {
-    "no-unsupported-browser-features": { "options": { "ignoreFeatures": ["css-grid"] } },
-    "no-experimental-features": { "options": { "ignoreFeatures": ["css-grid"] } },
-    "no-nonstandard-features": { "options": { "ignoreFeatures": ["css-grid"] } }
-  }
-}
-```
-
-— `no-experimental-features`/`no-nonstandard-features` are each omitted entirely unless the old config explicitly set the matching `check*` option to `true` (the default for both was `false`, i.e. that check didn't run at all unless a config asked for it).
-
-`invalid-attr` always expands to `no-unknown-attr`, `no-disallowed-attr`, and `no-invalid-attr-value`; `no-restricted-attr` joins them only when the old config actually set `disallowAttrs`, so a bare `invalid-attr: true` never enables a rule with nothing to restrict. The old options are routed rather than copied wholesale — see [`invalid-attr` Breaking Changes](./rules/invalid-attr.md) for which option lands on which new rule.
-
-## New in v5 (no v4 equivalent) {#new-in-v5-no-v4-equivalent}
-
-These rules have **no v4 predecessor at all** — there is nothing to migrate for them. Each was introduced during v5's alpha/rc development, under the "old name" listed below, then renamed again by this final redesign. If you're on real, stable v4, they're simply new checks you can opt into. If you already adopted a v5 pre-release and configured one of the "old names," the usual `renamed(...)`/split alias still expands it automatically.
-
-| Old name (v5 pre-release only) | New name(s) | What it checks |
-|---------------------------------|-------------|-------------------|
-| `correct-aspect-ratio` | `no-mismatched-aspect-ratio` | `width`/`height` attributes that don't match the image's intrinsic aspect ratio |
-| `input-file-empty-value` | `no-input-file-value` | `<input type="file" value="...">`, which the spec forbids setting |
-| `redundant-accessible-name` | `no-redundant-accessible-name` | Elements with multiple accessible-name sources where a higher-priority source overrides a lower-priority one |
-| `no-unsupported-features` | `no-unsupported-browser-features`, `no-experimental-features`, `no-nonstandard-features` | browserslist × BCD unsupported features, experimental-flagged features, non-standard-flagged features (see [Option-Routed Splits](#option-routed-splits-before--after) above for how the three relate) |
-| `script-content` | `valid-importmap`, `valid-speculation-rules` | `type=importmap` / `type=speculationrules` JSON structure |
-| `srcset-sizes-constraint` | `no-unpaired-srcset-sizes`, `no-mixed-srcset-descriptors`, `sizes-auto-requires-lazy-loading`, `no-always-matching-source` | `srcset`/`sizes` consistency checks |
+Two ARIA rules (`require-parent-role`, `tab-requires-tabpanel`) are also new relative to the v4 `wai-aria` implementation; they still receive the `wai-aria` alias. See [ARIA](./aria.md).
 
 ## Deletions
 
-Only `wai-aria` is a genuine v4 removal. `input-button-non-empty-value` was introduced and removed entirely within v5's pre-release period — it has no v4 predecessor, so real v4 users have nothing to migrate for it either.
+Only `wai-aria` is removed as a rule name. The alias expands it to 21 successors until v6. There is no other v4 built-in rule deletion.
 
-| Removed rule | Replaced by |
-|--------------|-------------|
-| `wai-aria` (umbrella) | Its 21 successor rules — 20 already independent, plus the new `no-aria-on-unsupported-element`; see [ARIA Changes](./aria.md#umbrella-rule-removed) |
-| `input-button-non-empty-value` (v5 pre-release only, no v4 predecessor) | `require-accessible-name` — see [ARIA Changes](./aria.md#removed-input-button-non-empty-value) |
+## Scope changes
 
-## Scope Narrowed
+- **`require-attr`**: full v4 `required-attr` scope, including `{ name, value }` patterns.
+- **`label-has-control`**: only reports a `<label>` with no associated control. Reporting a second descendant control is `label-no-multiple-controls`.
 
-- **`require-attr`** (renamed from `required-attr`): a plain rename, not a scope change. The design originally proposed narrowing it to existence-checking only and moving its `{ name, value }` pattern-matching to `no-restricted-attr`, but that was reconsidered once `no-restricted-attr` actually landed — "require this attribute's value to match a pattern" is a positive REQUIRE constraint, not a denylist, and only fits `no-restricted-attr`'s deny-only shape via an awkward negated pattern. `require-attr` keeps its full pre-rename scope, including `{ name, value }` matching.
-- **`label-has-control`**: detects only a `<label>` with no associated control now. Detecting a *second* control inside the same `<label>` was already `label-no-multiple-controls`'s job; `label-has-control` reporting it too was a duplicate.
+## Known migration gap {#known-migration-gap}
 
-## Known Migration Gap
+> [!CAUTION]
+> These old names are **not** deprecated (they still exist), so there is **no** alias warning. A raw config that enabled only the old name silently drops the split-off check.
 
-Two rules keep their name (not renamed, not deprecated) but gain a sibling from a split: `permitted-contents` (→ `no-disallowed-ancestor`/`require-ancestor`/`no-duplicate-sibling-attr`) and `no-refer-to-non-existent-id` (→ `no-broken-fragment-link`). Because the *old* name is unchanged, there's no alias table entry to expand it — if you enabled either rule directly in a raw config (not through a preset), you silently lose the split-off check with **no deprecation warning**. Preset users are mostly unaffected: the new sibling checks are already added as their own preset entries — with one gap. `no-broken-fragment-link` is in the `a11y` preset (alongside `no-refer-to-non-existent-id`) but missing from `html-standard`, even though `html-standard` carries `no-refer-to-non-existent-id` itself. `markuplint:recommended` extends both, so it's unaffected; extending `html-standard` alone is not.
+| v4 name you still use | Split-off rules you must add yourself |
+| --- | --- |
+| `permitted-contents` | `no-disallowed-ancestor`, `require-ancestor`, `no-duplicate-sibling-attr` |
+| `no-refer-to-non-existent-id` | `no-broken-fragment-link` |
+| `label-has-control` | `label-no-multiple-controls` |
 
-```json
-{
-  "rules": {
-    "permitted-contents": true
-  }
-}
-```
+Preset users: `markuplint:html-standard` already enables the `permitted-contents` siblings and `label-no-multiple-controls`. `markuplint:a11y` enables `no-broken-fragment-link` and `label-has-control`. `markuplint:recommended` extends both.
 
-needs
+Gaps that remain even with presets:
 
-```json
-{
-  "rules": {
-    "permitted-contents": true,
-    "no-disallowed-ancestor": true,
-    "require-ancestor": true,
-    "no-duplicate-sibling-attr": true
-  }
-}
-```
+- Extending **`markuplint:html-standard` alone** does not enable `no-broken-fragment-link` (it is only in `a11y`), while it does enable `no-refer-to-non-existent-id`.
+- Extending **`markuplint:a11y` alone** does not enable `label-no-multiple-controls` (it is only in `html-standard`), while v4 `a11y` ran that check inside `label-has-control`.
 
-to keep the same coverage in v5.
+## Severity changes
 
-## Severity Changes
+Compared to the v4 default (`createRule` defaults to `error` unless `defaultSeverity` is set):
 
-These are all genuine v4 → v5 severity changes — every rule below (under its old name) shipped in a real, stable v4 release with the severity in the "v4" column.
+| Rule | v4 | v5 |
+| --- | --- | --- |
+| `no-table-cell-overlap` / `no-table-span-overflow` / `no-empty-table-track` | `warning` (as `table-row-column-alignment`) | `error` |
+| `consistent-table-row-length` | `warning` (same compound rule) | `warning` |
+| `no-duplicate-dt` | `error` | `warning` |
+| `no-obsolete-attr` / `no-obsolete-element` | `error` (as `deprecated-attr` / `deprecated-element`) | `error` |
+| `no-deprecated-attr` / `no-deprecated-element` | `error` (same compound rules) | `warning` |
+| `no-broken-fragment-link` | `error` (as part of `no-refer-to-non-existent-id`) | `warning` |
+| `require-h1` / `no-duplicate-h1` | `error` (as `required-h1`) | `warning` |
+| `require-adjacent-popover` | `error` (as `neighbor-popovers`) | `warning` |
 
-| Rule | v4 | v5 | Why |
-|------|------|-----|-----|
-| `no-table-cell-overlap` / `no-table-span-overflow` / `no-empty-table-track` | `warning` | `error` | Table model errors are a MUST; the spec-permitted inconsistent row length is the one check split into `consistent-table-row-length` and kept at `warning` |
-| `no-duplicate-dt` | `error` | `warning` | HTML LS phrases this as a SHOULD |
-| `no-obsolete-attr` / `no-obsolete-element` | `error` (as part of `deprecated-attr`/`deprecated-element`) | `error` (unchanged) | Obsolete (spec-removed) is a MUST |
-| `no-deprecated-attr` / `no-deprecated-element` | `error` (as part of `deprecated-attr`/`deprecated-element`) | `warning` | Factual, MDN/BCD-sourced data, not a spec MUST |
-| `no-broken-fragment-link` | `error` (as part of `no-refer-to-non-existent-id`) | `warning` | Not a conformance violation per HTML LS |
-| `require-h1` / `no-duplicate-h1` | `error` (as `required-h1`) | `warning` | WCAG Technique H42 is non-normative |
-| `require-adjacent-popover` | `error` (as `neighbor-popovers`) | `warning` | HTML LS states this in a non-normative Note |
+`no-consecutive-br` stays `warning` (false positives on legitimate line breaks).
 
-:::note Three more severities have no v4 baseline to compare against
-`no-mismatched-aspect-ratio`, `no-contradictory-aria-prop`, and `require-owned-elements` are all `error` in v5 — but none of them (nor their pre-release old names, `correct-aspect-ratio` and the `wai-aria-implicit-props`/`wai-aria-required-owned-elements` pieces of the `wai-aria` split) ever shipped in a stable v4 release, so there's no prior severity to have "changed" from. If you're coming from real v4, treat these as new `error`-level checks, not severity bumps.
-:::
+> [!WARNING]
+> The three table-model `error`s can fail CI that treats errors as fatal, on markup that only warned in v4.
 
-`no-consecutive-br` is a deliberate exception: it stays `warning` even though it's a proxy for an HTML LS MUST, because the detection can false-positive on legitimate uses (e.g. poem line breaks).
+## Preset changes
 
-The `warning`→`error` row above (table model errors) can turn a previously-green CI pipeline red on unrelated code for teams using a strict, zero-warnings gate (e.g. `--max-warnings 0`) — check your current warning counts against `no-table-cell-overlap`/`no-table-span-overflow`/`no-empty-table-track` before upgrading. The same applies to the three new `error`-level checks above if you already adopted them during v5's pre-release period.
+Verified against `v4.18.3` preset JSON and current `preset.*.jsonc`.
 
-## Preset Changes
+- **`markuplint:code-styles`** was `{}` in v4. It now enables `case-sensitive-attr-name` and `case-sensitive-tag-name`.
+- **`markuplint:security`** was `{}` in v4. It now enables `no-event-handler-attr`.
+- **`markuplint:compat`** did not exist in v4. v5's `markuplint:recommended` extends it, enabling `no-unsupported-browser-features` and `no-nonstandard-features` (`no-experimental-features` stays opt-in).
+- **`markuplint:performance`** gains `head-element-order` and `no-mismatched-aspect-ratio`. Its `nodeRules` (charset, `defer`, img dimensions, iframe `loading`) are unchanged in substance.
+- **`markuplint:html-standard`** drops `no-duplicate-dt` and `no-ineffective-attr` (both were on in v4). It **adds** `no-unknown-attr` / `no-disallowed-attr` / `no-invalid-attr-value` — v4's `html-standard` did **not** include `invalid-attr`. It also adds many new MUST checks (parse structure, srcset, forms, `itemprop-requires-itemscope`, and the `permitted-contents` siblings).
+- **`markuplint:a11y`** still includes `wai-aria` coverage, now as named groups. That enables checks the v4 umbrella left **off** by default, plus two checks the v4 umbrella never ran. See [ARIA](./aria.md).
+- **`no-refer-to-non-existent-id`** and **`no-duplicate-id`** remain in both `a11y` and `html-standard`.
+- **`markuplint:recommended`** still extends code-styles, html-standard, a11y, performance, security, and rdfa, and now also **compat**.
 
-- **`code-styles`** and **`security`** were empty in v4 (verified: both presets were still `{}` in the last stable v4 release). `code-styles` now includes `case-sensitive-attr-name`/`case-sensitive-tag-name`; `security` now includes `no-event-handler-attr`.
-- **`performance`** now includes `head-element-order` and `no-mismatched-aspect-ratio` as plain rules (its existing `nodeRules`-scoped entries are unchanged). Neither has a v4 predecessor — see [New in v5](#new-in-v5-no-v4-equivalent) for `no-mismatched-aspect-ratio`'s pre-release history; `head-element-order` is new outright.
-- **`html-standard`** drops `no-duplicate-dt` (a SHOULD) and `no-ineffective-attr` (non-normative) — both were present in v4's `html-standard` preset, so this is a genuine removal — the preset only admits rules whose spec conformance is `sources: ['html']` + `level: 'must'`. `input-button-non-empty-value` is also gone from it (the rule is removed). It also gains `itemprop-requires-itemscope`, which has no v4 predecessor at all.
-- **`no-refer-to-non-existent-id`** and **`no-duplicate-id`** stay in both `a11y` and `html-standard`, deliberately — verified unchanged from v4, where both were also in both presets.
-- Nine rules are deliberately in **no preset at all** (opinionated formatting rules that need explicit configuration, or checks with a high false-positive rate): `attr-order`, `attr-value-quotes`, `class-naming`, `no-boolean-attr-value`, `no-default-value`, `no-empty-palpable-content`, `no-duplicate-dt`, `no-ineffective-attr`, `no-experimental-features`. Each rule's README documents why. `no-experimental-features` is the one that isn't opinion-driven, but it also has no v4 predecessor: it succeeds the `checkExperimental` option of `no-unsupported-features` (itself introduced during v5's pre-release period — see [New in v5](#new-in-v5-no-v4-equivalent)), whose default was `false`, so enabling the rule stays an explicit opt-in. `compat` carries only its two siblings, `no-unsupported-browser-features` and `no-nonstandard-features`.
+Rules intentionally in **no** preset: `attr-order`, `attr-value-quotes`, `class-naming`, `no-boolean-attr-value`, `no-default-value`, `no-empty-palpable-content`, `no-duplicate-dt`, `no-ineffective-attr`, `no-experimental-features`.

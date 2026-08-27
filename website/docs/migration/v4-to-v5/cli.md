@@ -1,108 +1,38 @@
 ---
 sidebar_position: 2
-title: CLI
+title: 'CLI'
 ---
 
 # CLI
 
-Changes to CLI flags and behavior in v5.
+## `--fix-dry-run`
 
-## New: `--fix-dry-run`
-
-Preview what `--fix` would change without modifying files. The output is a unified diff:
+Prints a unified diff of what `--fix` would do, without writing files. If both `--fix` and `--fix-dry-run` are set, dry-run wins (stderr warning).
 
 ```bash
 markuplint --fix-dry-run index.html
 ```
 
-```diff
---- a/index.html
-+++ b/index.html
-@@ -1,1 +1,1 @@
--<input required="required" />
-+<input required />
-```
+## `--allow-warnings` default
 
-:::tip
-When both `--fix` and `--fix-dry-run` are specified, `--fix-dry-run` takes precedence. No files are modified.
-:::
+v4: warnings produced a non-zero exit status unless `--allow-warnings` was passed.
 
-## `--allow-warnings` Default Changed
-
-In v4, warnings caused a non-zero exit code by default. In v5, warnings are **allowed by default**.
-
-### Before (v4)
+v5: warnings are allowed by default. Restore v4 with `--no-allow-warnings`.
 
 ```bash
-# Warnings cause exit code 1
-markuplint index.html
-echo $?  # 1 (if warnings exist)
-```
-
-### After (v5)
-
-```bash
-# Warnings are allowed (exit code 0)
-markuplint index.html
-echo $?  # 0 (even if warnings exist)
-```
-
-### What you need to do
-
-:::caution CI pipelines that rely on catching warnings
-Add `--no-allow-warnings` to preserve the old behavior:
-
-```bash
-# v4
+# v4 default
 markuplint index.html
 
-# v5 -- same behavior
+# v5 equivalent
 markuplint --no-allow-warnings index.html
 ```
 
-:::
+`--max-warnings=N` still caps warnings.
 
-If you already used `--allow-warnings`, remove it. It's now the default:
+## `--config` does not merge
 
-```bash
-# v4
-markuplint --allow-warnings index.html
+v4: `--config file` loaded that file **and** auto-discovered `.markuplintrc`, then merged.
 
-# v5 -- no longer needed
-markuplint index.html
-```
+v5: `--config file` loads **only** that file.
 
-:::tip
-Use `--max-warnings=N` for finer control over warning thresholds.
-:::
-
-## `--config` No Longer Merges with Default Config
-
-In v4, `--config` loaded both the specified file and the auto-discovered config (`.markuplintrc`), then merged them. In v5, `--config` uses **only** the specified file.
-
-### Before (v4)
-
-```bash
-# Both custom.json AND .markuplintrc are loaded and merged
-markuplint --config custom.json index.html
-```
-
-### After (v5)
-
-```bash
-# Only custom.json is loaded; .markuplintrc is ignored
-markuplint --config custom.json index.html
-```
-
-### What you need to do
-
-If you relied on merging, use `extends` in your config file instead:
-
-```json
-{
-  "extends": ["./.markuplintrc"],
-  "rules": {
-    "your-custom-rule": true
-  }
-}
-```
+If you relied on the merge, `extends` the project config from the file you pass to `--config`.

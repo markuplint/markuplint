@@ -1,8 +1,3 @@
----
-sidebar_position: 5
-title: 'parse-error'
----
-
 # `parse-error`
 
 Not a rule rename. The built-in `parse-error` channel in v4 reported **fatal** `ParserError`s only. v5 can also surface non-fatal HTML LS tokenizer / tree-construction errors (parse5 `onParseError`). **Off by default.**
