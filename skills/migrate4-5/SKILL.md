@@ -5,7 +5,7 @@ description: Guides you through migrating markuplint configuration from v4 to v5
 
 # migrate4-5
 
-Guides you through migrating markuplint configuration from v4 to v5.
+Guides you through migrating markuplint from **stable v4** (last release `v4.18.3`) to v5. Treat v5 alpha/rc rule names as if they never existed.
 
 ## When to Use
 
@@ -21,184 +21,121 @@ Use this skill when the user requests any of the following:
 ### 1. Detect Current Versions
 
 - Detect the current versions of markuplint-related packages (`markuplint`, `@markuplint/*`) from `package.json` and list them
-- Locate and review configuration files (`.markuplintrc`, `.markuplintrc.json`, `markuplint.config.js`, etc.)
+- Locate configuration files (`.markuplintrc`, `.markuplintrc.json`, `markuplint.config.js`, etc.)
+- Confirm Node.js is **v24.0.0 or later** (v4 documented v18.18.0). Stop and have the user upgrade Node before changing packages.
 
 ### 2. Review the Migration Guide
 
-- Use WebFetch to retrieve the migration guide and review breaking changes between the versions — use https://next.markuplint.dev/docs/migration/ while the target v5 version is a prerelease (`alpha` / `beta` / `rc`), https://markuplint.dev/docs/migration/ once it is stable
-- Check the version-specific migration guide (e.g., v4-to-v5) if available
-- **Fetch the "Renames and Splits" page** (`/docs/migration/v4-to-v5/rules/rule-names`) — it is the master reference for every v5 rule-name change and is required to map the user's existing config; see the reference section below
-- Pay special attention to Named Rule Group changes
-- Identify newly added rules and list those not included in the recommended preset
-- Inspect source code and preset definitions in `node_modules/markuplint` for accurate information
+- Fetch the v4→v5 guide. While v5 is a prerelease, use https://next.markuplint.dev/docs/migration/v4-to-v5/ ; after stable, use https://markuplint.dev/docs/migration/v4-to-v5/
+- **Required pages:** index, [Renames and splits](https://next.markuplint.dev/docs/migration/v4-to-v5/rules/rule-names), [ARIA](https://next.markuplint.dev/docs/migration/v4-to-v5/aria), [CLI](https://next.markuplint.dev/docs/migration/v4-to-v5/cli), [Config](https://next.markuplint.dev/docs/migration/v4-to-v5/config)
+- Also fetch Framework, `invalid-attr`, `required-element`, `deprecated-element`, `table-row-column-alignment` if the config uses those
+- If this repository is the markuplint source tree, prefer `docs/migration/v4-v5/` over the live site (it is the GitHub-browsable source)
+- Inspect `node_modules` presets and `rule-aliases` only to confirm what the installed v5 actually expands — do not invent names from memory
+- Do **not** migrate using `wai-aria-*` intermediate names, `no-unsupported-features`, `script-content`, `srcset-sizes-constraint`, or `input-button-non-empty-value`. Those were not stable v4 rule names.
 
 ### 3. Confirm with the User (use AskUserQuestion extensively)
 
-**Important: Always use AskUserQuestion at each decision point. Never make decisions without user confirmation.**
-**AskUserQuestion supports up to 4 questions at once. Batch related questions for efficiency.**
-**For rules that require configuration values, always confirm the specific values (whether `true` suffices or custom values are needed).**
+**Always use AskUserQuestion at each decision. Never decide for the user.** Batch up to 4 related questions.
 
-#### Phase 1: Handling Breaking Changes
+#### Phase 1: Silent gaps and CI (must ask)
 
-- Confirm the approach for each breaking change (adopt latest behavior vs. preserve legacy behavior)
-- If ARIA version changes exist, confirm the approach
-- Confirm the update scope of related parsers/plugins (e.g., `@markuplint/pug-parser`)
-- Discuss alternatives for removed/deprecated features
+These do not produce a deprecation warning:
 
-#### Phase 2: Adopting New Rules
+1. Raw (non-preset) **`permitted-contents`** → add `no-disallowed-ancestor`, `require-ancestor`, `no-duplicate-sibling-attr` to keep v4 coverage?
+2. Raw **`no-refer-to-non-existent-id`** → add `no-broken-fragment-link`? (`markuplint:html-standard` alone still lacks this sibling; `a11y` / `recommended` include it.)
+3. Raw **`label-has-control`** → add `label-no-multiple-controls`? (`markuplint:a11y` alone does **not** enable the sibling; `html-standard` / `recommended` do.)
+4. Table-model rules `no-table-cell-overlap`, `no-table-span-overflow`, `no-empty-table-track` escalate **warning → error**. Keep errors, or set `"severity": "warning"` to mimic v4?
+5. v4 CI treated warnings as failures? Add **`--no-allow-warnings`** (v5 allows warnings by default).
+6. ARIA default is **1.3**. Keep 1.3, or set `ruleCommonSettings.ariaVersion` to `"1.2"`?
+7. `wai-aria: true` / `markuplint:a11y` now also run checks that were **off or absent** in v4 `wai-aria` defaults: `no-aria-on-presentational-children`, `no-focusable-in-aria-hidden`, `no-default-aria-value`, `require-parent-role`, `tab-requires-tabpanel`. Keep them, or disable individually?
 
-- Present the list of rules not included in the recommended preset and confirm whether to adopt each
-- Provide explanations and benefits for each rule to help the user decide
-- All rules may be presented as options at once
+#### Phase 2: Preset extras on `markuplint:recommended`
 
-#### Phase 3: Rule Configuration Values (for each rule adopted in Phase 2)
+v4 `recommended` did not include these; v5 does. Confirm whether to keep or disable:
 
-- **Always confirm whether `true` is sufficient or custom configuration is needed**
-- Rules like `attr-order` significantly change behavior based on their configuration values — have the user specify the exact attribute order
-- For rules depending on external configuration (e.g., browserslist), explain this and verify the project's setup
-- After receiving answers, repeat them back to confirm mutual understanding
+- `markuplint:compat`: `no-unsupported-browser-features`, `no-nonstandard-features` (needs browserslist for the former; `no-experimental-features` stays opt-in)
+- `markuplint:code-styles`: `case-sensitive-attr-name`, `case-sensitive-tag-name`
+- `markuplint:security`: `no-event-handler-attr`
+- `markuplint:html-standard` now enables `no-unknown-attr` / `no-disallowed-attr` / `no-invalid-attr-value` (v4 `html-standard` did not include `invalid-attr`) and drops `no-duplicate-dt` / `no-ineffective-attr`
+
+#### Phase 3: Other breaking changes that apply
+
+Ask only if the config uses the feature:
+
+- `--config` no longer merges with auto-discovered config
+- `extends`: array rule values **replace**; nested `options` are **shallow**-merged
+- `required-element` → `require-element`; ghost elements no longer satisfy requirements (`ignoreOmittedElements` default `true`)
+- `invalid-attr` `{ type: X }` wrapper removed; route options per the guide
+- htmx: `@markuplint/htmx-parser` → `@markuplint/htmx-spec` (drop `parser` entry)
+- Alpine: keep parser; spec `@markuplint/alpine-parser/spec` → `@markuplint/alpine-spec`
+- `@markuplint/rule-textlint` removed
+- pretenders on standard HTML/SVG tags are ignored
+- `:closest()` → `:is(… *)` (removed in v6)
+
+#### Phase 4: New rules not in any preset
+
+Present opt-in rules (`attr-order`, `class-naming`, … — list from the guide's "no preset" set). For `attr-order`, the user must supply the exact order array; `true` is not enough.
 
 ### 4. Update Dependency Versions
 
-- Update markuplint-related package versions in `package.json`
-- Run the package manager to update dependencies
-- **Ensure parser versions match the markuplint core version** (e.g., `@markuplint/pug-parser` should be the same version)
+- Bump `markuplint` and every `@markuplint/*` to the **same** v5 version
+- Uninstall `@markuplint/htmx-parser` / `@markuplint/rule-textlint` if present
+- Install `@markuplint/htmx-spec` / `@markuplint/alpine-spec` when those frameworks are in use
 
 ### 5. Update Configuration Files
 
-Update configuration files based on the user's responses. Key areas:
-
-- Preset name changes
-- `overrideMode` behavior changes
-- `nodeRules` / `childNodeRules` selector and format changes
-- Conversion to Named Rule Groups (see reference below)
-- `parser` configuration format changes
-- Addition of new rules
+- Rewrite deprecated rule names from Markuplint's deprecation warnings after one run (old names work until v6; still rewrite now)
+- Apply the silent-gap siblings the user confirmed
+- Set `ruleCommonSettings.ariaVersion` if they chose 1.2
+- Disable extra ARIA/preset rules they declined
+- Convert `invalid-attr` / `required-element` / framework `parser`/`specs` as agreed
+- Named preset groups (`a11y/html-lang`, `a11y/wai-aria/*`, …) can be toggled in `rules` without renaming the user's own nodeRules unless they want names
 
 ### 6. Update Tests
 
-- Run markuplint and review the output for each test case
-- Include `ruleId` and Named Rule Group names in test output format
-- Update fixture files to comply with new rules (especially attr-order)
-- **Changing attribute order affects column numbers** — update expected values in related tests accordingly
-- Ensure all tests pass
+- Run markuplint; include `ruleId` and Named Rule Group `name` in assertions when present
+- `--config` / `-c` in tests loads **only** that file
+- Attribute-order and column numbers may shift if `attr-order` is adopted
 
 ### 7. Commit
 
-Split commits by package and change type:
+Split by change type in the **user's** repo (example):
 
-1. `feat(markuplint)!: upgrade markuplint to vX.X.X` — package.json + lockfile
-2. `test(markuplint): update test expectations` — test expectation updates
-3. `feat(markuplint): convert rules to new format` — configuration file changes
-4. `test(markuplint): add tests for new rules` — tests for new rules
+1. `feat!: upgrade markuplint to v5` — package.json + lockfile
+2. `fix: migrate markuplint config for v5` — config
+3. `test: update fixtures for markuplint v5`
 
-## Reference: Rule Renames and Splits
+## Reference: must-check (no warning)
 
-v5 renames or splits most of the rule catalog. Read `/docs/migration/v4-to-v5/rules/rule-names` on the docs site for the authoritative tables — do not migrate rule names from memory.
+| Situation | Add or change |
+| --- | --- |
+| Raw `permitted-contents` | `no-disallowed-ancestor`, `require-ancestor`, `no-duplicate-sibling-attr` |
+| Raw `no-refer-to-non-existent-id` | `no-broken-fragment-link` |
+| Raw `label-has-control` | `label-no-multiple-controls` |
+| Table model | three rules now `error` |
+| CI on warnings | `--no-allow-warnings` |
 
-- **Old names keep working.** Markuplint reports a deprecation warning and expands the old config to the new rule(s) automatically. Old names are removed in v6, so rewrite them during this migration rather than relying on the alias.
-- **Some splits are option-routed.** `doctype`, `landmark-roles`, `required-h1`, `no-unsupported-features`, and `invalid-attr` expand to only a subset of their new siblings depending on what the old options said. When rewriting by hand, check the guide instead of enabling every sibling.
+Old **renamed/split** names still work with a deprecation warning until v6. Option-routed splits (stable v4): `doctype`, `landmark-roles`, `required-h1`, `invalid-attr` — do not blindly enable every sibling.
 
-**Two must-check items** — these are the only changes that give the user no warning at all:
-
-1. If the config enables **`permitted-contents`** or **`no-refer-to-non-existent-id`** directly (not via a preset), the checks split off from them are silently lost. Neither rule was renamed, so no deprecation warning fires. Confirm with the user whether to add the split-off siblings:
-   - `permitted-contents` → also add `no-disallowed-ancestor`, `require-ancestor`, `no-duplicate-sibling-attr`
-   - `no-refer-to-non-existent-id` → also add `no-broken-fragment-link`
-2. **Three rules escalate from `warning` to `error`** (`no-table-cell-overlap`, `no-table-span-overflow`, `no-empty-table-track` — the single row in the guide's severity table backed by a real v4 baseline; other `error`-level rows in that table have no v4 predecessor to escalate from), which can fail a build using a strict zero-warnings gate on code the user did not touch. Before upgrading, run the v4 build and record the current warning counts for these rules, then confirm the approach with the user.
+`wai-aria` expands to 21 rules; toggles are **not** mapped. See the ARIA guide for the v4 option table.
 
 ## Reference: Named Rule Groups
 
-In versions that support Named Rule Groups, adding a `name` property to `nodeRules` entries creates a Named Rule Group. The `name` serves as a reference key from the `rules` section and is displayed as `[name]` in violation messages.
-
-### Pattern 1: Add name to nodeRules
-
-```js
-// Before
-nodeRules: [
-  {
-    selector: 'img',
-    rules: {
-      'require-attr': { value: 'alt', reason: '...' },
-    },
-  },
-]
-
-// After
-nodeRules: [
-  {
-    name: 'my-project/img-require-alt',  // added
-    selector: 'img',
-    rules: {
-      'require-attr': { value: 'alt', reason: '...' },
-    },
-  },
-]
-```
-
-### Pattern 2: Convert rules to Named Rule Groups
-
-```js
-// Before — defined directly in rules section
-rules: {
-  'no-restricted-element': {
-    value: ['br'],
-    reason: '...',
-  },
-}
-
-// After — nested as Named Rule Group
-rules: {
-  'my-project/no-br': {
-    rules: {
-      'no-restricted-element': {
-        value: ['br'],
-        reason: '...',
-      },
-    },
-  },
-}
-```
-
-Named Rule Groups defined in presets can be individually controlled in the `rules` section:
+Preset entries with a `name` (for example `a11y/html-lang`) can be disabled or given a different severity from `rules`:
 
 ```js
 rules: {
-  'performance/img-aspect-ratio': false,                    // disable entirely
-  'a11y/require-accessible-name': { severity: 'warning' },  // change severity
+  'a11y/html-lang': false,
+  'a11y/*': false,
 }
 ```
 
-## Reference: attr-order Rule
+Adding `name` to the user's own `nodeRules` is optional, not required for v4→v5.
 
-- Attributes are ordered according to the specified array
-- `{ group: 'aria' }` groups `aria-*` attributes together
-- `{ group: 'data' }` groups `data-*` attributes together
-- Attributes not in the array are placed after the specified groups in alphabetical order
-- **Existing fixture attribute order may need to be changed**
-- Changing attribute order shifts column numbers, so expected values in other rule tests may also need updating
+## Reference: `-c` / `--config`
 
-## Reference: Test Output Format
+v5 loads **only** the file passed to `--config`. It does not merge `.markuplintrc`. Tests that used v4 merge behavior must `extends` the project config or pass a complete file.
 
-Violation messages for rules with Named Rule Groups include the group name. To verify in tests:
+## Reference: browserslist rules
 
-```js
-const formatted = violations.map(
-  (v) =>
-    `${n(v.filePath)}:${v.line}:${v.col} ${v.message} (${v.ruleId})${v.name ? ` [${v.name}]` : ''}`,
-);
-```
-
-Example output:
-
-- `file.html:9:9 ... (permitted-contents) [html-standard/permitted-contents]`
-- `file.html:26:3 ... (no-restricted-element) [my-project/no-br]`
-
-## Reference: `-c` Flag Behavior
-
-In some versions, the `-c` flag completely replaces the project's configuration file with the specified configuration. When using `-c` in tests, be aware that only the specified configuration may be applied.
-
-## Reference: no-unsupported-browser-features
-
-- A rule that detects browser-unsupported elements and attributes based on browserslist configuration
-- Becomes a no-op in projects without browserslist configuration
-- Split from the former `no-unsupported-features` rule; experimental and non-standard feature detection now live in the separate `no-experimental-features` and `no-nonstandard-features` rules
+`no-unsupported-browser-features` (in `markuplint:compat`, hence `recommended`) is a no-op without browserslist. `no-experimental-features` is **not** in the compat preset (opt-in). `no-nonstandard-features` is in compat.
