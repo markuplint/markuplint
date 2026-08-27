@@ -32,7 +32,11 @@ Rule "table-row-column-alignment" is deprecated and will be removed in v6.
 Use no-table-cell-overlap, no-table-span-overflow, no-empty-table-track, consistent-table-row-length instead.
 ```
 
-Rewrite from those lines. Then check the silent gaps above by hand. 5. If CI treated warnings as failures, add `--no-allow-warnings`. See [CLI](/docs/migration/v4-to-v5/cli). 6. If you used `--config`, it no longer merges with `.markuplintrc`. 7. If you used `extends` with array rule values or nested `options`, see [Config](/docs/migration/v4-to-v5/config).
+Rewrite from those lines. That does not cover the silent gaps above; check [Renames and Splits](/docs/migration/v4-to-v5/rules/rule-names#known-migration-gap) by hand.
+
+5. If CI treated warnings as failures, add `--no-allow-warnings`. See [CLI](/docs/migration/v4-to-v5/cli).
+6. If you used `--config`, confirm it no longer merges with `.markuplintrc`.
+7. If you used `extends` with array rule values or nested `options`, see [Config](/docs/migration/v4-to-v5/config).
 
 :::tip AI-assisted migration
 With [Claude Code](https://claude.com/claude-code):
