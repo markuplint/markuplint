@@ -1,59 +1,26 @@
 ---
 sidebar_position: 1
-title: Node.js
+title: 'Node.js'
 ---
 
 # Node.js
 
-:::caution 全ユーザー必須
-Markuplint v5 は **Node.js v24.0.0 以降**が必要です。アップグレード前にバージョンを確認してください。
-:::
+v5 は **Node.js v24.0.0 以降** が必要です。公開パッケージはすべて `"engines": { "node": ">=24" }` です。
 
-## 最小バージョン: v24.0.0
-
-最小 Node.js バージョンが v18.18.0 から **v24.0.0** に引き上げられました。すべてのパッケージの `engines` フィールドで強制されます。
-
-現在のバージョンを確認してください:
+v4 の文書は **v18.18.0 以降**です。v4 のパッケージに `engines` フィールドはありませんでした。
 
 ```bash
 node -v
-# v24.0.0 以降である必要があります
+# v24.0.0 以降であること
 ```
 
-### バージョンマネージャーを使用している場合
+## ポリフィル
 
-```bash
-# nvm
-nvm install 24
-nvm use 24
+内部置換です（Markuplint 経由の推移依存で使っていた場合だけ自分で足してください）。
 
-# volta
-volta install node@24
-```
+- `uuid` → `crypto.randomUUID()`
+- `@ungap/structured-clone` → `structuredClone()`
 
-### CI 設定の更新
+## TypeScript ターゲット
 
-```yaml
-# 変更前（v4）
-node-version: [18, 20]
-
-# 変更後（v5）
-node-version: [24, 26]
-```
-
-## ポリフィルの削除
-
-v5 ではポリフィルの代わりにネイティブ API を使用します。以下のパッケージが内部的に削除されました:
-
-- `uuid` -- ネイティブの `crypto.randomUUID()` に置換
-- `@ungap/structured-clone` -- ネイティブの `structuredClone()` に置換
-
-:::note
-これらは内部的な変更です。Markuplint の推移的な依存関係としてこれらを使用していた場合は、`package.json` に直接追加してください。
-:::
-
-## TypeScript ターゲットが ES2022 に変更
-
-コンパイルターゲットが ES2020 から ES2022 に変更されました。Markuplint の TypeScript 設定でコンパイルするカスタムルールやパーサープラグインの作成者に影響します。
-
-ランタイムがトップレベル `await` や `Error.cause` などの ES2022 機能をサポートしていることを確認してください。
+共有設定は `"target": "ES2022"` です。

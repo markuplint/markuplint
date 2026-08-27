@@ -1,32 +1,28 @@
 ---
 sidebar_position: 4
-title: ARIA
+title: 'ARIA'
 ---
 
-# ARIA の変更
+# ARIA
 
-v5 では ARIA 1.3 のサポートが追加され、デフォルトの ARIA バージョンが 1.3 に変更されました。また `wai-aria` 傘ルールが削除され、21個の独立した後継ルールに置き換わりました。
+v5 は ARIA 1.3 を追加し、既定にします（v4 は 1.2）。v4 の `wai-aria` は 21 の独立ルールになります。
 
-## 変更点
+## 何が変わったか
 
-| 変更内容                                        | 影響を受けるユーザー                                        |
-| ----------------------------------------------- | ----------------------------------------------------------- |
-| ARIA 1.3 サポートの追加（デフォルト）           | すべてのユーザー                                            |
-| 1.3 で `generic` ロールが透過的に               | すべてのユーザー                                            |
-| 1.3 で `<aside>` の条件付きロールマッピング     | すべてのユーザー                                            |
-| 1.3 で `image` / `img` ロールが同義に           | すべてのユーザー                                            |
-| 「No role permitted」が明示 `role` を厳密に禁止 | `<img>` などに `role="presentation"` 等を書いていたユーザー |
-| `wai-aria` 傘ルールの削除                       | `wai-aria` を使っている設定すべて                           |
-| `input-button-non-empty-value` の削除           | このルールを使っている設定                                  |
-| すべての `wai-aria-*` ルールのリネーム          | これらのルールを直接指定している設定                        |
+| 変更                                | 影響                                                     |
+| ----------------------------------- | -------------------------------------------------------- |
+| 既定 ARIA `"1.3"`                   | 全員                                                     |
+| 1.3 で `generic` が透過             | 必須の親子ロールを `<div>` / `<span>` で包むマークアップ |
+| 1.3 の `<aside>` 条件付き暗黙ロール | 入れ子の `<aside>`                                       |
+| 1.3 の `image` / `img` 同義         | `img` を許可する要素の `role="image"`                    |
+| 「ロール禁止」が厳密                | 暗黙ロールと同じ明示 `role`                              |
+| ルール名 `wai-aria` の削除          | `wai-aria` を書いた設定                                  |
 
-:::tip
-ARIA に限らないカタログ全体のルール改名・分割は[改名と分割](/docs/migration/v4-to-v5/rules/rule-names)にまとまっています。
-:::
+共有バージョンは [設定](/docs/migration/v4-to-v5/config#rulecommonsettings)。カタログは [改名と分割](/docs/migration/v4-to-v5/rules/rule-names)。
 
-## ARIA バージョンの設定
+## ARIA バージョン
 
-デフォルトの ARIA バージョンは `"1.3"` になりました。以前の動作が必要な場合は、`ruleCommonSettings` で `ariaVersion` をグローバルに設定します。このプロパティの詳細は[設定の移行ガイド](/docs/migration/v4-to-v5/config)を参照してください。
+既定は `"1.3"`。1.2 のままにするには:
 
 ```json
 {
@@ -36,175 +32,88 @@ ARIA に限らないカタログ全体のルール改名・分割は[改名と�
 }
 ```
 
-ルールごとの `options.ariaVersion` による上書きを受け付けるのは `require-accessible-name` と `no-refer-to-non-existent-id` の2ルールだけです。
+ルール単位の `options.ariaVersion` が残るのは `require-accessible-name` と `no-refer-to-non-existent-id` だけです。21 後継は **options を持ちません。** v4 の `wai-aria` `options.version` は `ruleCommonSettings.ariaVersion` へ移します。
 
-```json
-{
-  "rules": {
-    "require-accessible-name": {
-      "options": {
-        "ariaVersion": "1.2"
-      }
-    }
-  }
-}
-```
+## `generic` の透過（ARIA 1.3）
 
-それ以外の ARIA ルール（旧 `wai-aria` 傘ルールの21個の後継）は `ruleCommonSettings.ariaVersion` のみを読みます。ルールごとのバージョンオプションを持たないため、v4 の `wai-aria` の `options.version` には移行先がありません。
-
-:::note
-デフォルトは `"1.3"` です。ARIA 1.2 の動作が必要な場合のみ設定を変更してください。
-:::
-
-## Generic ロールの透過性（ARIA 1.3）
-
-ARIA 1.3 で最も重要な変更です。`generic` ロールを持つ要素（素の `<div>` や `<span>` を含む）がアクセシビリティツリーの走査で**透過的**になります。
-
-### 変更前（ARIA 1.2）
-
-`tablist` と `tab` の間に `<div>` ラッパーを挟むと、親子ロールの関係が壊れていました:
+暗黙・明示の `generic`（素の `<div>` / `<span>`）は、必須の親・所有子の探索でスキップされます。
 
 ```html
-<!-- ARIA 1.2: エラー -- <div> が tablist > tab の関係をブロック -->
-<div role="tablist">
-  <div class="wrapper">
-    <button role="tab">Tab 1</button>
+<!-- ARIA 1.2: list → listitem が失敗。ARIA 1.3: 通る。 -->
+<ul>
+  <div>
+    <li>item</li>
   </div>
-</div>
+</ul>
 ```
 
-### 変更後（ARIA 1.3）
+| 振る舞い                                      | `1.1` / `1.2` | `1.3` |
+| --------------------------------------------- | ------------- | ----- |
+| 子ロール探索で `generic` が透過               | いいえ        | はい  |
+| 親ロール探索で `generic` が透過               | いいえ        | はい  |
+| 子ロール探索で `presentation` / `none` が透過 | はい          | はい  |
+| 親ロール探索で `presentation` / `none` が透過 | はい          | はい  |
 
-同じ HTML がパスします。ARIA 1.3 では `generic` または `none` ロールの要素を無視すると定義されています:
+## `<aside>` の条件付きロール（ARIA 1.3）
 
-```html
-<!-- ARIA 1.3: OK -- <div>（generic）は透過的 -->
-<div role="tablist">
-  <div class="wrapper">
-    <button role="tab">Tab 1</button>
-  </div>
-</div>
-```
+- `<article>`、`<aside>`、`<blockquote>`、`<details>`、`<dialog>`、`<fieldset>`、`<figure>`、`<nav>`、`<section>`、`<td>` の子孫でない → `complementary`
+- それらの子孫 → `generic`。ただしアクセシブルネームがあれば `complementary` のまま
 
-### バージョンによる動作の違い
+`no-nested-top-level-landmark` は `complementary` をトップレベルランドマークとして扱いません（セレクタでは降格した `<aside>` と本物を区別できないため）。
 
-| 動作                                       | `'1.1'` / `'1.2'` | `'1.3'` |
-| ------------------------------------------ | ----------------- | ------- |
-| `generic` が子ロールで透過的               | いいえ            | はい    |
-| `generic` が親ロールで透過的               | いいえ            | はい    |
-| `presentation` / `none` が子ロールで透過的 | はい              | はい    |
-| `presentation` / `none` が親ロールで透過的 | はい              | はい    |
+## `image` / `img` 同義（ARIA 1.3）
 
-## `<aside>` の条件付きロールマッピング（ARIA 1.3） {#aside-conditional-role-mapping-aria-13}
+許可ロールに `img` があるとき `image` も受け付けます（`<embed>`、`<iframe>`）。`<img>` はもともと暗黙 `img` です。
 
-`<aside>` 要素が ARIA 1.3 仕様に基づく**条件付きロールマッピング**を使用するようになりました:
+## 「ロール禁止」が厳密
 
-- `<aside>` が `<article>`、`<aside>`、`<blockquote>`、`<details>`、`<dialog>`、`<fieldset>`、`<figure>`、`<nav>`、`<section>`、`<td>` の**子孫でない**場合 → ロールは `complementary`
-- `<aside>` がこれらの要素の**子孫である**場合 → ロールは `generic`。ただし `<aside>` 自体にアクセシブルネーム（`aria-label` など）がある場合は `complementary` を維持
+[ARIA in HTML](https://w3c.github.io/html-aria/) がロール禁止とするとき、v5 は暗黙ロールと同じ値でも明示 `role` を禁止します。v4 は一致を許していました。属性を外してください。暗黙ロールは残ります。[issue #3641](https://github.com/markuplint/markuplint/issues/3641)。
 
-`landmark-roles` から分割された `no-nested-top-level-landmark` ルールは、この理由により `complementary` をトップレベルのランドマークとしてチェックしません。セレクターベースの検出では、降格した `<aside>` と本来の `<aside>` を区別できないため、チェックするとセクショニング要素配下の `<aside>` すべてで誤検知が出てしまいます。
+## `wai-aria` 傘ルール {#傘ルールの削除}
 
-:::caution
-ARIA 1.3 がデフォルトになったため、この変更は全ユーザーに即座に影響します。セクショニング要素内で `<aside>` を使用している場合、リント結果が変わる可能性があります。
-:::
+v4 では `wai-aria` が複数検査を行い、一部は boolean オプションで切れていました。
 
-## `image` / `img` ロールの同義語（ARIA 1.3）
+`wai-aria: true` は v6 まで動きます。非推奨警告のあと、同じ severity/reason で 21 ルールに展開します。**オプションのトグルは引き継ぎません。** 切るならそのルールを無効化します。
 
-ARIA 1.3 では `image` がプライマリロール名、`img` がシノニムになりました。いずれかが許可されるロールに含まれる場合、両方が受け入れられます。これは許可ロールの一覧に `img` を含む要素に影響します — `<img>` 自体は対象外です（暗黙ロールが既に `img` のため）。対象となるのは `<embed>` や `<iframe>` です:
+### v4 オプション → v5 ルール
 
-```html
-<!-- ARIA 1.2: <embed> に role="image" は許可されるロールに含まれない -->
-<!-- ARIA 1.3: 許可されている "img" の同義語として role="image" が受理される -->
-<embed src="chart.svg" role="image" />
-```
+| v4 オプション                    | v4 既定 | v5 ルール                                                |
+| -------------------------------- | ------- | -------------------------------------------------------- |
+| `checkingValue`                  | `true`  | `no-invalid-aria-prop-value`                             |
+| `checkingDeprecatedRole`         | `true`  | `no-deprecated-role`                                     |
+| `checkingDeprecatedProps`        | `true`  | `no-deprecated-aria-prop`                                |
+| `permittedAriaRoles`             | `true`  | `permitted-roles`                                        |
+| `checkingRequiredOwnedElements`  | `true`  | `require-owned-elements`                                 |
+| `checkingPresentationalChildren` | `false` | `no-aria-on-presentational-children`                     |
+| `checkingInteractionInHidden`    | `false` | `no-focusable-in-aria-hidden`                            |
+| `disallowSetImplicitRole`        | `true`  | `no-redundant-role`                                      |
+| `disallowSetImplicitProps`       | `true`  | `no-redundant-aria-prop` と `no-contradictory-aria-prop` |
+| `disallowDefaultValue`           | `false` | `no-default-aria-value`                                  |
+| `version`                        | `"1.2"` | `ruleCommonSettings.ariaVersion`                         |
 
-## 「No role permitted」の厳密適用
+v4 で常時（トグルなし）: `#ARIAAttrs: false` → `no-aria-on-unsupported-element`；未知・抽象ロール；必須 ARIA プロパティ；不許可プロパティ（`no-prohibited-naming`、`element-supports-aria-prop`、`role-supports-aria-prop`）；ロール無しのグローバルプロパティ → `aria-prop-requires-role`。
 
-[ARIA in HTML](https://w3c.github.io/html-aria/) で要素の状態が「No role permitted（明示 role 禁止）」と規定されている場合、v5 では暗黙ロールに一致する値であっても明示的な `role` 属性を一切許可しません。v4 では暗黙ロールに一致する値は黙って通していました。
+v4 の `wai-aria` は `require-parent-role` と `tab-requires-tabpanel` を実装していません。エイリアスと `markuplint:a11y` では有効になります。
 
-代表的な影響例:
+### v4 既定より増える報告
 
-```html
-<!-- ❌ v5 ではエラー — 暗黙ロールは `presentation` だが明示 role は禁止 -->
-<img src="spacer.png" alt="" role="presentation" />
-<img src="spacer.png" alt="" role="none" />
-```
+トグルを捨てるため、`wai-aria: true`（および `markuplint:a11y`）では次も動きます。
 
-同じ規則で新たに対象となる主な要素（暗黙ロールに一致する明示 role を書いていた場合）:
+- `no-aria-on-presentational-children`（v4 既定オフ）
+- `no-focusable-in-aria-hidden`（v4 既定オフ）
+- `no-default-aria-value`（v4 既定オフ）
+- `require-parent-role`（新規）
+- `tab-requires-tabpanel`（新規）
 
-| パターン                                                                   | 暗黙ロール | 対応          |
-| -------------------------------------------------------------------------- | ---------- | ------------- |
-| `<img>`（`alt` なし・他のアクセシブル名なし）+ 任意の role                 | `img`      | `role` を削除 |
-| `<area href="...">` + 任意の role                                          | `link`     | `role` を削除 |
-| `<figure><figcaption>...</figcaption></figure>` + `<figure>` に任意の role | `figure`   | `role` を削除 |
-| `<tr>`（`<table>` / `[role=table\|grid\|treegrid]` 配下）+ 任意の role     | `row`      | `role` を削除 |
-| `<html role="document">`（ARIA 1.1）                                       | `document` | `role` を削除 |
-| `<meter>` + 任意の role                                                    | `meter`    | `role` を削除 |
-| `<input type="email\|number\|password\|...">` + 暗黙ロールに一致する role  | （様々）   | `role` を削除 |
+個別に `false` にするか、`a11y/wai-aria/*` のグループ名で切ってください。
 
-**マイグレーション:** 該当する `role` 属性を削除してください。HTML-AAM 由来の暗黙ロールは引き続き適用されるため、アクセシビリティ挙動は維持されます。
+`landmark-roles` と `required-h1` の分割は `wai-aria` エイリアスではなく [改名と分割](/docs/migration/v4-to-v5/rules/rule-names) です。
 
-背景は Issue [#3641](https://github.com/markuplint/markuplint/issues/3641) を参照してください。
+## 用語（カスタムルール作者）
 
-## 傘ルールの削除 {#umbrella-rule-removed}
+`ARIARole` 上の ARIA 1.3 名（旧名は `@deprecated` エイリアス）:
 
-安定版 v4 の `wai-aria` は約12個の ARIA 検査を1つのルールに内部実装したもので、各検査は真偽値オプション（`checkingDeprecatedRole`、`disallowSetImplicitProps`、`checkingRequiredOwnedElements` など）で個別に切り替えられました。v5 の alpha/rc 開発の過程で、これらの検査 — と一部の純粋に新しい検査 — が1つずつ独立したルールに切り出されていきました（`no-abstract-role`、`no-unknown-role`、`require-owned-elements`、`no-focusable-in-aria-hidden` など）。今回の最終再設計が始まった時点では既に20個が独立ルールとして存在し、`wai-aria` 自体はそれらを再トグルするだけの薄いシムに縮小していました。21件目 — `wai-aria` に対応するトグルが元々存在しなかったルール — は後述の新ルールです。
-
-v5 では `wai-aria` を完全に削除し、それだけが消費していたオプショントグルの仕組みも削除しました。
-
-`wai-aria: v` はそのまま動作します。markuplint が非推奨警告を報告し、設定を21個の後継ルール（上記の20個 + 新設の `no-aria-on-unsupported-element`）へ同じ severity・reason で展開します。
-
-:::caution チェックごとのオプショントグルは失われます
-移行先がありません。これらのルールは傘ルールから分割された時点でそれぞれ単一のチェックを無条件に実行するようになっており、どのルールのスキーマも `options` オブジェクトを受け付けません。
-
-以前オプションで無効化していたチェックを無効のままにするには、該当するルール自体を無効化してください:
-
-```json
-{
-  "rules": {
-    "no-redundant-role": false
-  }
-}
-```
-
-これが、傘ルールの `disallowSetImplicitRole: false` で無効化していた v4 のパターンの置き換えです。
-:::
-
-### 新ルール: `no-aria-on-unsupported-element`
-
-傘ルールの最初のチェック（仕様データが「ARIA 属性を一切サポートしない」とマークする要素に対する `role` / `aria-*` の禁止）は、v5 まで独立した後継ルールを持っていませんでした。これが `no-aria-on-unsupported-element` になりました。
-
-### 削除: `input-button-non-empty-value` {#removed-input-button-non-empty-value}
-
-このルールは「アクセシブルネームがない」ことの代理検出として `<input type="button" value="">` を検出していましたが、過剰検出（アクセシブルネームを持つ `aria-label` 付きのボタンも報告していた）と検出漏れ（同じく空のアクセシブルネームになる `value` 属性そのものの欠落を見逃していた）の両方を抱えていました。`require-accessible-name` がこのケースを正しくカバーしているため、v5 ではそちらに任せてルールを削除しました。
-
-### `wai-aria-*` ルールのリネーム
-
-`wai-aria-` プレフィックスを持つルールはすべてプレフィックスを外し、v5 の命名規則に合わせてリネームされました（`wai-aria-non-existent-role` → `no-unknown-role`、`wai-aria-required-owned-elements` → `require-owned-elements` など）。うち2つはさらに分割されています:
-
-| 旧ルール                    | 分割後                                                                          |
-| --------------------------- | ------------------------------------------------------------------------------- |
-| `wai-aria-disallowed-props` | `no-prohibited-naming`、`element-supports-aria-prop`、`role-supports-aria-prop` |
-| `wai-aria-implicit-props`   | `no-redundant-aria-prop`（`warning`）、`no-contradictory-aria-prop`（`error`）  |
-
-ARIA に隣接する2ルールも分割されています:
-
-- `landmark-roles` → `no-nested-top-level-landmark`（`ignoreRoles` 側）と `require-landmark-label`（`labelEachArea` 側）
-- `required-h1` → `require-h1`（`<h1>` 欠落側）と `no-duplicate-h1`（`expected-once` 側）。どちらも既定が `warning` になりました。いずれのチェックも根拠として挙げられる WCAG 達成技法 H42 が非規範的であるためです。
-
-旧名はすべて非推奨警告付きのエイリアス経由で v6 の削除まで動作します。対応表の全体は[改名と分割](/docs/migration/v4-to-v5/rules/rule-names)にあります。
-
-## 用語の変更（カスタムルール作成者向け）
-
-:::info カスタムルール作成者向け
-このセクションは内部 API の変更を扱います。ARIA ルールの設定のみ行う場合はスキップできます。
-:::
-
-ARIA 1.3 でいくつかの内部概念がリネームされました。`ARIARole` 型は新旧両方のプロパティ名を公開しています:
-
-| ARIA 1.3（新）                    | ARIA 1.2（非推奨）      |
+| ARIA 1.3                          | 旧                      |
 | --------------------------------- | ----------------------- |
 | `requiredAccessibilityParentRole` | `requiredContextRole`   |
 | `allowedAccessibilityChildRoles`  | `requiredOwnedElements` |
-
-両方のプロパティは同じ値を保持します。旧名は `@deprecated` エイリアスとして残されています。

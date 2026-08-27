@@ -5,34 +5,37 @@ title: 'v4 to v5'
 
 # Migrating from v4 to v5
 
-This guide covers all breaking changes in Markuplint v5. Read through the areas that apply to your setup.
+This guide is for upgrading from the last stable v4 release (`v4.18.3`) to v5.
 
 :::caution Before you start
-Update your Node.js to **v24.0.0 or later**. This is required for all Markuplint v5 packages.
+Update Node.js to **v24.0.0 or later**. Required for every Markuplint v5 package. See [Node.js](/docs/migration/v4-to-v5/nodejs).
 :::
 
-:::danger Two changes give you no warning
-v5 renames or splits most of the rule catalog, and almost all of it keeps working under the old name with a deprecation warning. Two things do not announce themselves:
+:::danger Changes that give you no deprecation warning
+Almost every renamed or split rule still works under the old name until v6. These do **not**:
 
-- If you enable **`permitted-contents`** or **`no-refer-to-non-existent-id`** directly in a raw (non-preset) config, you silently lose the checks split off from them. Neither rule was renamed, so there is no deprecation warning to tell you.
-- **Three rules escalate from `warning` to `error`** (`no-table-cell-overlap`, `no-table-span-overflow`, `no-empty-table-track` — all genuine v4 severities, not new-in-v5 checks), which fails a build that was passing under a strict zero-warnings gate — on code you did not touch.
+- Raw (non-preset) **`permitted-contents`**, **`no-refer-to-non-existent-id`**, or **`label-has-control`** — the name stayed, so split-off checks are dropped with no alias warning. Preset holes: `html-standard` alone lacks `no-broken-fragment-link`; `a11y` alone lacks `label-no-multiple-controls`.
+- Three table-model checks escalate **`warning` → `error`**: `no-table-cell-overlap`, `no-table-span-overflow`, `no-empty-table-track`.
 
-Both are detailed in [Renames and Splits](/docs/migration/v4-to-v5/rules/rule-names).
+Details: [Renames and Splits](/docs/migration/v4-to-v5/rules/rule-names#known-migration-gap).
 :::
 
-:::tip The fastest way to see what your config needs
-Upgrade, then run Markuplint once. Every renamed or split rule you use reports its own replacement by name:
+## Procedure
+
+1. Install Node.js v24+. Update CI. See [Node.js](/docs/migration/v4-to-v5/nodejs).
+2. Upgrade `markuplint` and every `@markuplint/*` package to the same v5 version.
+3. Apply [Framework](/docs/migration/v4-to-v5/framework) package moves if you used htmx or Alpine.
+4. Run Markuplint once. Renamed or split rules report their replacements:
 
 ```
 Rule "table-row-column-alignment" is deprecated and will be removed in v6.
 Use no-table-cell-overlap, no-table-span-overflow, no-empty-table-track, consistent-table-row-length instead.
 ```
 
-Rewrite your config from those lines and the warnings go away. This covers everything except the two silent changes above, which no warning can tell you about.
-:::
+Rewrite from those lines. Then check the silent gaps above by hand. 5. If CI treated warnings as failures, add `--no-allow-warnings`. See [CLI](/docs/migration/v4-to-v5/cli). 6. If you used `--config`, it no longer merges with `.markuplintrc`. 7. If you used `extends` with array rule values or nested `options`, see [Config](/docs/migration/v4-to-v5/config).
 
-:::tip AI-Assisted Migration
-If you use [Claude Code](https://claude.com/claude-code), you can install a migration skill that walks you through the upgrade interactively:
+:::tip AI-assisted migration
+With [Claude Code](https://claude.com/claude-code):
 
 ```bash
 npx skills add markuplint/markuplint@migrate4-5
@@ -40,40 +43,36 @@ npx skills add markuplint/markuplint@migrate4-5
 
 :::
 
-## For Users
+## For users
 
-Changes that affect CLI users, config authors, and CI/CD pipelines.
-
-| Area                                            | Summary                                                                                                                                                                                                                           | Who's Affected                               |
-| ----------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
-| [Node.js](/docs/migration/v4-to-v5/nodejs)      | Minimum version raised to v24.0.0 (was v18.18.0). Polyfills removed. TypeScript target changed to ES2022.                                                                                                                         | All users                                    |
-| [CLI](/docs/migration/v4-to-v5/cli)             | New `--fix-dry-run` flag. `--allow-warnings` default flipped to `true`. `--config` no longer merges with auto-discovered config.                                                                                                  | CLI users, CI/CD pipelines                   |
-| [Config](/docs/migration/v4-to-v5/config)       | New `ruleCommonSettings` for shared ARIA version. Named nodeRules for independently configurable checks. Array values now override instead of concatenate. Options use shallow merge. `:closest()` selector deprecated.           | Config authors, preset authors               |
-| [ARIA](/docs/migration/v4-to-v5/aria)           | ARIA 1.3 is now the default (was 1.2). `generic` role becomes transparent. `<aside>` conditional role mapping. `image`/`img` role synonyms. `wai-aria` umbrella rule removed in favour of its 21 successors.                      | All users                                    |
-| [Framework](/docs/migration/v4-to-v5/framework) | `@markuplint/htmx-parser` removed (use `@markuplint/htmx-spec`). `@markuplint/alpine-parser/spec` removed (use `@markuplint/alpine-spec`). New `directivePatterns` system. `useIDLAttributeNames` renamed to `acceptedAttrNames`. | htmx / Alpine.js users, spec package authors |
+| Area                                            | Summary                                                                                                                       | Who's affected   |
+| ----------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ---------------- |
+| [Node.js](/docs/migration/v4-to-v5/nodejs)      | Minimum version v24.0.0 (v4 documented v18.18.0). TypeScript target ES2022.                                                   | Everyone         |
+| [CLI](/docs/migration/v4-to-v5/cli)             | `--fix-dry-run`. Warnings allowed by default (`--no-allow-warnings` restores v4). `--config` does not merge.                  | CLI, CI          |
+| [Config](/docs/migration/v4-to-v5/config)       | `ruleCommonSettings`, named nodeRules, array override, shallow option merge, pretender restrictions, `:closest()` deprecated. | Config authors   |
+| [ARIA](/docs/migration/v4-to-v5/aria)           | Default ARIA 1.3. `wai-aria` expands to 21 rules; some checks that were off or absent in v4 now run.                          | Everyone         |
+| [Framework](/docs/migration/v4-to-v5/framework) | `@markuplint/htmx-parser` removed. Alpine spec is `@markuplint/alpine-spec`.                                                  | htmx / Alpine.js |
 
 ### Rules
 
-| Rule                                                                                    | Summary                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Who's Affected                                                  |
-| --------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| [Renames and Splits](/docs/migration/v4-to-v5/rules/rule-names)                         | **Start here.** The master reference for every rule-name change: 30 renames, 25 splits, 2 removals, 1 new rule, the severity changes, and the preset reorganization. Old names keep working via a deprecation warning until v6, with two documented exceptions.                                                                                                                                                                                                                                                                                                                                             | Everyone                                                        |
-| [invalid-attr](/docs/migration/v4-to-v5/rules/invalid-attr)                             | Split into `no-unknown-attr`, `no-disallowed-attr`, `no-invalid-attr-value`, and `no-restricted-attr`. `{ type: X }` wrapper removed from attribute values. Deprecated `attrs` option deleted. Object format deprecated.                                                                                                                                                                                                                                                                                                                                                                                    | Config authors using `allowAttrs` / `disallowAttrs`             |
-| [required-element](/docs/migration/v4-to-v5/rules/required-element)                     | Renamed to `require-element`. `ignoreOmittedElements` default changed from `false` to `true`. Ghost elements no longer satisfy requirements.                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Config authors using `required-element`                         |
-| [deprecated-element](/docs/migration/v4-to-v5/rules/deprecated-element)                 | Split into `no-obsolete-element` (`error`) and `no-deprecated-element` (`warning`).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | Config authors using `deprecated-element`                       |
-| [textlint](/docs/migration/v4-to-v5/rules/textlint)                                     | `@markuplint/rule-textlint` package removed. Use textlint standalone with `textlint-plugin-html`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | Users of the `textlint` rule                                    |
-| [parse-error](/docs/migration/v4-to-v5/rules/parse-error) (built-in)                    | The built-in channel can now surface non-fatal HTML LS tokenizer / tree-construction parse errors (parse5 `onParseError` events) in addition to fatal `ParserError`s. **Off by default** — opt-in per parse5 code via `severity.parseError`. `severity.parseError` also accepts a `Partial<Record<MLASTParseErrorCode, …>>` for per-code control. A new `parserOptions.documentMode` (`'auto' \| 'document' \| 'fragment'`) overrides the document-vs-fragment auto-detection so SSR partials starting with `<head>` can opt out of document-level errors, and complete pages without a doctype can opt in. | Users who want to lint non-fatal HTML LS parse errors           |
-| [table-row-column-alignment](/docs/migration/v4-to-v5/rules/table-row-column-alignment) | Split into `no-table-cell-overlap`, `no-table-span-overflow`, `no-empty-table-track` (all three now `error`), and `consistent-table-row-length` (`warning`). Tables are modelled with the HTML LS _forming a table_ algorithm. Columns and rows that no cell begins in, and a `rowspan` reaching past the end of a row group, are now reported; a `rowspan` that exactly fills the rows below it no longer reports an extra column.                                                                                                                                                                         | Anyone linting tables that use `colspan`, `rowspan`, or `<col>` |
+| Page                                                                                    | Summary                                                                                    | Who's affected                              |
+| --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------- |
+| [Renames and Splits](/docs/migration/v4-to-v5/rules/rule-names)                         | **Start here.** 12 renames, 10 splits, `wai-aria` → 21, silent gaps, severity and presets. | Everyone                                    |
+| [invalid-attr](/docs/migration/v4-to-v5/rules/invalid-attr)                             | Four rules. `{ type: X }` wrapper removed.                                                 | `allowAttrs` / `disallowAttrs`              |
+| [required-element](/docs/migration/v4-to-v5/rules/required-element)                     | Renamed to `require-element`. Ghost elements ignored by default.                           | `required-element` users                    |
+| [deprecated-element](/docs/migration/v4-to-v5/rules/deprecated-element)                 | `no-obsolete-element` (`error`) and `no-deprecated-element` (`warning`).                   | `deprecated-element` users                  |
+| [table-row-column-alignment](/docs/migration/v4-to-v5/rules/table-row-column-alignment) | Four rules; three escalate to `error`.                                                     | Tables with `colspan` / `rowspan` / `<col>` |
+| [parse-error](/docs/migration/v4-to-v5/rules/parse-error)                               | Non-fatal HTML parse errors via `severity.parseError`. Off by default.                     | Opt-in parse linting                        |
+| [textlint](/docs/migration/v4-to-v5/rules/textlint)                                     | `@markuplint/rule-textlint` removed.                                                       | Former `textlint` rule users                |
 
-## For Developers
+## For developers
 
-Changes that affect custom rule authors, parser plugin developers, and Node.js API users.
-
-| Area                                                            | Summary                                                                                                                          | Who's Affected           |
-| --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
-| [Rule Fix Function](/docs/migration/v4-to-v5/rule-fix-function) | New auto-fix API for custom rules. Eleven built-in rules now support `--fix`.                                                    | Custom rule authors      |
-| [API](/docs/migration/v4-to-v5/api)                             | Legacy `exec()` function removed. New `FixSummary` on results. `computeCursorOffset()` exported.                                 | Node.js API users        |
-| [AST](/docs/migration/v4-to-v5/ast)                             | Token properties renamed (`startOffset` to `offset`, etc.). `selfClosingSolidus` removed. `MLMarkupLanguageParser` type removed. | Parser plugin developers |
+| Area                                                            | Summary                                                        | Who's affected      |
+| --------------------------------------------------------------- | -------------------------------------------------------------- | ------------------- |
+| [Rule Fix Function](/docs/migration/v4-to-v5/rule-fix-function) | Per-violation `fix`. v4 `--fix` was a no-op for bundled rules. | Custom rule authors |
+| [API](/docs/migration/v4-to-v5/api)                             | Legacy `exec()` export removed. `FixSummary` added.            | Node.js API         |
+| [AST](/docs/migration/v4-to-v5/ast)                             | Token fields renamed. Parser types removed.                    | Parser plugins      |
 
 :::tip
-If you only use Markuplint through the CLI or CI/CD, you can skip the "For Developers" section.
+If you only use Markuplint through the CLI or CI, you can skip the developers section.
 :::
