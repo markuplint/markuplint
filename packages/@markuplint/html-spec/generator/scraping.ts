@@ -163,7 +163,9 @@ function getAttributes(
 			$myHeading?.attr('id') === 'obsolete_attributes' ||
 			undefined;
 		const deprecated =
-			$dt.find('.icon-thumbs-down-alt, .icon.deprecated, .icon.icon-deprecated').length > 0 ||
+			$dt.find(
+				'.icon-thumbs-down-alt, .icon.deprecated, .icon.icon-deprecated, .icon.discouraged, .icon.removing',
+			).length > 0 ||
 			$myHeading?.attr('id') === 'deprecated_attributes' ||
 			undefined;
 		const nonStandard =
