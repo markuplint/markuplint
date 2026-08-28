@@ -48859,7 +48859,6 @@
 			"attributes": {
 				"attributionsrc": {
 					"description": "Specifies that you want the browser to send an Attribution-Reporting-Eligible header. On the server-side this is used to trigger sending an Attribution-Reporting-Register-Source header in the response, to register a navigation-based attribution source. The browser stores the source data associated with the navigation-based attribution source (as provided in the Attribution-Reporting-Register-Source response header) when the user clicks the link. See the Attribution Reporting API for more details. There are two versions of this attribute that you can set: Boolean, i.e., just the attributionsrc name. This specifies that you want the Attribution-Reporting-Eligible header sent to the same server as the href attribute points to. This is fine when you are handling the attribution source registration on the same server. Value containing one or more URLs, for example: htmlattributionsrc=\"https://a.example/register-source https://b.example/register-source\" This is useful in cases where the requested resource is not on a server you control, or you just want to handle registering the attribution source on a different server. In this case, you can specify one or more URLs as the value of attributionsrc. When the resource request occurs, the Attribution-Reporting-Eligible header will be sent to the URL(s) specified in attributionsrc in addition to the resource origin. These URLs can then respond with the Attribution-Reporting-Register-Source to complete registration. Note: Specifying multiple URLs means that multiple attribution sources can be registered on the same feature. You might for example have different campaigns that you are trying to measure the success of, which involve generating different reports on different data. <a> elements cannot be used as attribution triggers, only sources.",
-					"deprecated": true,
 					"nonStandard": true
 				},
 				"charset": {
@@ -48942,7 +48941,7 @@
 		{
 			"name": "acronym",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <acronym> HTML element allows authors to clearly indicate a sequence of characters that compose an acronym or abbreviation for a word. Warning: Don't use this element. Use the <abbr> element instead.",
+			"description": "The <acronym> HTML element allows authors to clearly indicate a sequence of characters that compose an acronym or abbreviation for a word. Warning: Don't use this element. Use the <abbr> element instead.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -49404,7 +49403,7 @@
 		{
 			"name": "big",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <big> HTML deprecated element renders the enclosed text at a font size one level larger than the surrounding text (medium becomes large, for example). The size is capped at the browser's maximum permitted font size. Warning: This element has been removed from the specification and shouldn't be used anymore. Use the CSS font-size property to adjust the font size.",
+			"description": "The <big> HTML deprecated element renders the enclosed text at a font size one level larger than the surrounding text (medium becomes large, for example). The size is capped at the browser's maximum permitted font size. Warning: This element has been removed from the specification and shouldn't be used anymore. Use the CSS font-size property to adjust the font size.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -49845,7 +49844,6 @@
 				},
 				"moz-opaque": {
 					"description": "Lets the canvas know whether translucency will be a factor. If the canvas knows there's no translucency, painting performance can be optimized. This is only supported by Mozilla-based browsers; use the standardized canvas.getContext('2d', { alpha: false }) instead.",
-					"deprecated": true,
 					"nonStandard": true
 				},
 				"width": {
@@ -49893,7 +49891,7 @@
 		{
 			"name": "center",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <center> HTML element is a block-level element that displays its block-level or inline contents centered horizontally within its containing element. The container is usually, but isn't required to be, <body>. This tag has been deprecated in HTML 4 (and XHTML 1) in favor of the CSS text-align property, which can be applied to the <div> element or to an individual <p>. For centering blocks, use other CSS properties like margin-left and margin-right and set them to auto (or set margin to 0 auto).",
+			"description": "The <center> HTML element is a block-level element that displays its block-level or inline contents centered horizontally within its containing element. The container is usually, but isn't required to be, <body>. This tag has been deprecated in HTML 4 (and XHTML 1) in favor of the CSS text-align property, which can be applied to the <div> element or to an individual <p>. For centering blocks, use other CSS properties like margin-left and margin-right and set them to auto (or set margin to 0 auto).",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -50331,7 +50329,7 @@
 		{
 			"name": "dir",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <dir> HTML element is used as a container for a directory of files and/or folders, potentially with styles and icons applied by the user agent. Do not use this obsolete element; instead, you should use the <ul> element for lists, including lists of files. Warning: Do not use this element. Though present in early HTML specifications, it has been deprecated in HTML 4, and has since been removed entirely.",
+			"description": "The <dir> HTML element is used as a container for a directory of files and/or folders, potentially with styles and icons applied by the user agent. Do not use this obsolete element; instead, you should use the <ul> element for lists, including lists of files. Warning: Do not use this element. Though present in early HTML specifications, it has been deprecated in HTML 4, and has since been removed entirely.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -50346,7 +50344,6 @@
 			"attributes": {
 				"compact": {
 					"description": "This Boolean attribute hints that the list should be rendered in a compact style. The interpretation of this attribute depends on the user agent and it doesn't work in all browsers.",
-					"deprecated": true,
 					"nonStandard": true
 				}
 			}
@@ -50464,8 +50461,7 @@
 			},
 			"attributes": {
 				"compact": {
-					"description": "This Boolean attribute hints that the list should be rendered in a compact style. The interpretation of this attribute is browser-specific. Use CSS instead: to give a similar effect as the compact attribute, the CSS property line-height can be used with a value of 80%.",
-					"deprecated": true
+					"description": "This Boolean attribute hints that the list should be rendered in a compact style. The interpretation of this attribute is browser-specific. Use CSS instead: to give a similar effect as the compact attribute, the CSS property line-height can be used with a value of 80%."
 				}
 			}
 		},
@@ -50677,8 +50673,8 @@
 		},
 		{
 			"name": "font",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <font> HTML element defines the font size, color and face for its content. Warning: Do not use this element. Use the CSS Fonts properties to style text.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/font",
+			"description": "The <font> HTML element defines the font size, color and face for its content. Warning: Do not use this element. Use the CSS Fonts properties to style text.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -50689,7 +50685,11 @@
 			},
 			"omission": false,
 			"obsolete": true,
-			"globalAttrs": {},
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#HTMLGlobalAttrs": true
+			},
 			"attributes": {
 				"color": {
 					"description": "This attribute sets the text color using either a named color or a color specified in the hexadecimal #RRGGBB format.",
@@ -50776,8 +50776,7 @@
 			},
 			"attributes": {
 				"accept": {
-					"description": "Comma-separated content types the server accepts. Note: This attribute has been deprecated and should not be used. Instead, use the accept attribute on <input type=file> elements.",
-					"deprecated": true
+					"description": "Comma-separated content types the server accepts. Note: This attribute has been deprecated and should not be used. Instead, use the accept attribute on <input type=file> elements."
 				},
 				"accept-charset": {
 					"description": "The character encoding accepted by the server. The specification allows a single case-insensitive value of \"UTF-8\", reflecting the ubiquity of this encoding (historically multiple character encodings could be specified as a comma-separated or space-separated list).",
@@ -50833,7 +50832,7 @@
 		{
 			"name": "frame",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <frame> HTML element defines a particular area in which another HTML document can be displayed. A frame should be used within a <frameset>. Using the <frame> element is not encouraged because of certain disadvantages such as performance problems and lack of accessibility for users with screen readers. Instead of the <frame> element, <iframe> may be preferred.",
+			"description": "The <frame> HTML element defines a particular area in which another HTML document can be displayed. A frame should be used within a <frameset>. Using the <frame> element is not encouraged because of certain disadvantages such as performance problems and lack of accessibility for users with screen readers. Instead of the <frame> element, <iframe> may be preferred.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -50848,37 +50847,30 @@
 			"attributes": {
 				"frameborder": {
 					"description": "This attribute allows you to specify a frame's border.",
-					"deprecated": true,
 					"nonStandard": true
 				},
 				"marginheight": {
 					"description": "This attribute defines the height of the margin between frames.",
-					"deprecated": true,
 					"nonStandard": true
 				},
 				"marginwidth": {
 					"description": "This attribute defines the width of the margin between frames.",
-					"deprecated": true,
 					"nonStandard": true
 				},
 				"name": {
 					"description": "This attribute is used for labeling frames. Without labeling, every link will open in the frame that it's in – the closest parent frame. See the target attribute for more information.",
-					"deprecated": true,
 					"nonStandard": true
 				},
 				"noresize": {
 					"description": "This attribute prevents resizing of frames by users.",
-					"deprecated": true,
 					"nonStandard": true
 				},
 				"scrolling": {
 					"description": "This attribute defines the existence of a scrollbar. If this attribute is not used, the browser adds a scrollbar when necessary. There are two choices: \"yes\" for forcing a scrollbar even when it is not necessary and \"no\" for forcing no scrollbar even when it is necessary.",
-					"deprecated": true,
 					"nonStandard": true
 				},
 				"src": {
 					"description": "This attribute specifies the document that will be displayed by the frame.",
-					"deprecated": true,
 					"nonStandard": true
 				}
 			}
@@ -50886,7 +50878,7 @@
 		{
 			"name": "frameset",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <frameset> HTML element is used to contain <frame> elements. Note: Because the use of frames is now discouraged in favor of using <iframe>, this element is not typically used by modern websites.",
+			"description": "The <frameset> HTML element is used to contain <frame> elements. Note: Because the use of frames is now discouraged in favor of using <iframe>, this element is not typically used by modern websites.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -50901,12 +50893,10 @@
 			"attributes": {
 				"cols": {
 					"description": "This attribute specifies the number and size of horizontal spaces in a frameset.",
-					"deprecated": true,
 					"nonStandard": true
 				},
 				"rows": {
 					"description": "This attribute specifies the number and size of vertical spaces in a frameset.",
-					"deprecated": true,
 					"nonStandard": true
 				}
 			}
@@ -51104,8 +51094,7 @@
 			},
 			"attributes": {
 				"profile": {
-					"description": "The URIs of one or more metadata profiles, separated by white space.",
-					"deprecated": true
+					"description": "The URIs of one or more metadata profiles, separated by white space."
 				}
 			}
 		},
@@ -51197,7 +51186,7 @@
 		{
 			"name": "hr",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/hr",
-			"description": "The <hr> HTML element represents a thematic break between paragraph-level elements: for example, a change of scene in a story, or a shift of topic within a section.",
+			"description": "The <hr> HTML element represents a thematic break between elements: for example, a change of scene in a story, or a shift of topic within a section.",
 			"categories": ["#flow"],
 			"contentModel": {
 				"contents": false
@@ -51219,27 +51208,22 @@
 			"attributes": {
 				"align": {
 					"description": "Sets the alignment of the rule on the page. If no value is specified, the default value is left.",
-					"deprecated": true,
 					"nonStandard": true
 				},
 				"color": {
 					"description": "Sets the color of the rule through color name or hexadecimal value.",
-					"deprecated": true,
 					"nonStandard": true
 				},
 				"noshade": {
 					"description": "Sets the rule to have no shading.",
-					"deprecated": true,
 					"nonStandard": true
 				},
 				"size": {
 					"description": "Sets the height, in pixels, of the rule.",
-					"deprecated": true,
 					"nonStandard": true
 				},
 				"width": {
 					"description": "Sets the length of the rule on the page through a pixel or percentage value.",
-					"deprecated": true,
 					"nonStandard": true
 				}
 			}
@@ -51277,8 +51261,7 @@
 			},
 			"attributes": {
 				"version": {
-					"description": "Specifies the version of the HTML Document Type Definition that governs the current document. This attribute is not needed, because it is redundant with the version information in the document type declaration.",
-					"deprecated": true
+					"description": "Specifies the version of the HTML Document Type Definition that governs the current document. This attribute is not needed, because it is redundant with the version information in the document type declaration."
 				},
 				"xmlns": {
 					"description": "Specifies the XML Namespace of the document. Default value is \"http://www.w3.org/1999/xhtml\". This is required in documents parsed with XML parsers, and optional in text/html documents.",
@@ -51349,12 +51332,10 @@
 				},
 				"allowpaymentrequest": {
 					"description": "Set to true if a cross-origin <iframe> should be allowed to invoke the Payment Request API. Note: This attribute is considered a legacy attribute and redefined as allow=\"payment *\".",
-					"deprecated": true,
 					"nonStandard": true
 				},
 				"browsingtopics": {
 					"description": "A boolean attribute that, if present, specifies that the selected topics for the current user should be sent with the request for the <iframe>'s source.",
-					"deprecated": true,
 					"nonStandard": true
 				},
 				"credentialless": {
@@ -51536,7 +51517,6 @@
 				},
 				"attributionsrc": {
 					"description": "Specifies that you want the browser to send an Attribution-Reporting-Eligible header along with the image request. On the server-side this is used to trigger sending an Attribution-Reporting-Register-Source or Attribution-Reporting-Register-Trigger header in the response, to register an image-based attribution source or attribution trigger, respectively. Which response header should be sent back depends on the value of the Attribution-Reporting-Eligible header that triggered the registration. The corresponding source or trigger event is set off once the browser receives the response containing the image file. Note: See the Attribution Reporting API for more details. There are two versions of this attribute that you can set: Boolean, i.e., just the attributionsrc name. This specifies that you want the Attribution-Reporting-Eligible header sent to the same server as the src attribute points to. This is fine when you are handling the attribution source or trigger registration on the same server. When registering an attribution trigger this property is optional, and a boolean value will be used if it is omitted. Value containing one or more URLs, for example: html<img src=\"image-file.png\" alt=\"My image file description\" attributionsrc=\"https://a.example/register-source https://b.example/register-source\" /> This is useful in cases where the requested resource is not on a server you control, or you just want to handle registering the attribution source on a different server. In this case, you can specify one or more URLs as the value of attributionsrc. When the resource request occurs the Attribution-Reporting-Eligible header will be sent to the URL(s) specified in attributionSrc in addition to the resource origin. These URLs can then respond with an Attribution-Reporting-Register-Source or Attribution-Reporting-Register-Trigger header as appropriate to complete registration. Note: Specifying multiple URLs means that multiple attribution sources can be registered on the same feature. You might for example have different campaigns that you are trying to measure the success of, which involve generating different reports on different data.",
-					"deprecated": true,
 					"nonStandard": true
 				},
 				"border": {
@@ -52928,8 +52908,7 @@
 			},
 			"attributes": {
 				"type": {
-					"description": "This character attribute indicates the numbering type: a: lowercase letters A: uppercase letters i: lowercase Roman numerals I: uppercase Roman numerals 1: numbers This type overrides the one used by its parent <ol> element, if any. Note: This attribute has been deprecated; use the CSS list-style-type property instead.",
-					"deprecated": true
+					"description": "This character attribute indicates the numbering type: a: lowercase letters A: uppercase letters i: lowercase Roman numerals I: uppercase Roman numerals 1: numbers This type overrides the one used by its parent <ol> element, if any. Note: This attribute has been deprecated; use the CSS list-style-type property instead."
 				},
 				"value": {
 					"description": "This integer attribute indicates the current ordinal value of the list item as defined by the <ol> element. The only allowed value for this attribute is a number, even if the list is displayed with Roman numerals or letters. List items that follow this one continue numbering from the value set. This attribute has no meaning for unordered lists (<ul>) or for menus (<menu>).",
@@ -53009,8 +52988,7 @@
 				},
 				"charset": {
 					"description": "This attribute defines the character encoding of the linked resource. The value is a space- and/or comma-delimited list of character sets as defined in RFC 2045. The default value is iso-8859-1. Note: To produce the same effect as this obsolete attribute, use the Content-Type HTTP header on the linked resource.",
-					"obsolete": true,
-					"deprecated": true
+					"obsolete": true
 				},
 				"color": {
 					"type": "<color>",
@@ -53067,8 +53045,7 @@
 				},
 				"rev": {
 					"description": "The value of this attribute shows the relationship of the current document to the linked document, as defined by the href attribute. The attribute thus defines the reverse relationship compared to the value of the rel attribute. Link type values for the attribute are similar to the possible values for rel. Note: Instead of rev, you should use the rel attribute with the opposite link type value. For example, to establish the reverse link for made, specify author. Also, this attribute doesn't stand for \"revision\" and must not be used with a version number, even though many sites misuse it in this way.",
-					"obsolete": true,
-					"deprecated": true
+					"obsolete": true
 				},
 				"sizes": {
 					"description": "This attribute defines the sizes of the icons for visual media contained in the resource. It must be present only if the rel contains a value of icon or a non-standard type such as Apple's apple-touch-icon. It may have the following values: any, meaning that the icon can be scaled to any size as it is in a vector format, like image/svg+xml. a white-space separated list of sizes, each in the format <width in pixels>x<height in pixels> or <width in pixels>X<height in pixels>. Each of these sizes must be contained in the resource. Note: Most icon formats are only able to store one single icon; therefore, most of the time, the sizes attribute contains only one entry. Microsoft's ICO format and Apple's ICNS format can store multiple icon sizes in a single file. ICO has better browser support, so you should use this format if cross-browser support is a concern.",
@@ -53082,8 +53059,7 @@
 					"condition": ["[rel~='icon' i]", "[rel~='apple-touch-icon' i]"]
 				},
 				"target": {
-					"description": "Defines the frame or window name that has the defined linking relationship or that will show the rendering of any linked resource.",
-					"deprecated": true
+					"description": "Defines the frame or window name that has the defined linking relationship or that will show the rendering of any linked resource."
 				},
 				"title": {
 					"description": "The title attribute has special semantics on the <link> element. When used on a <link rel=\"stylesheet\"> it defines a default or an alternate stylesheet.",
@@ -53204,7 +53180,7 @@
 		{
 			"name": "marquee",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <marquee> HTML element is used to insert a scrolling area of text. You can control what happens when the text reaches the edges of its content area using its attributes. The HTML <marquee> element is deprecated and its use is strongly discouraged. If you must create the effect of scrolling text or continuous elements, consider using CSS animations with CSS transforms instead of <marquee> elements to smoothly animate content. Additionally, include the prefers-reduced-motion CSS @media query to stop the animation based on user preference, thereby improving user experience and accessibility.",
+			"description": "The <marquee> HTML element is used to insert a scrolling area of text. You can control what happens when the text reaches the edges of its content area using its attributes. The HTML <marquee> element is deprecated and its use is strongly discouraged. If you must create the effect of scrolling text or continuous elements, consider using CSS animations with CSS transforms instead of <marquee> elements to smoothly animate content. Additionally, include the prefers-reduced-motion CSS @media query to stop the animation based on user preference, thereby improving user experience and accessibility.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -53218,53 +53194,42 @@
 			"globalAttrs": {},
 			"attributes": {
 				"behavior": {
-					"description": "Sets how the text is scrolled within the marquee. Possible values are scroll, slide and alternate. If no value is specified, the default value is scroll.",
-					"deprecated": true
+					"description": "Sets how the text is scrolled within the marquee. Possible values are scroll, slide and alternate. If no value is specified, the default value is scroll."
 				},
 				"bgcolor": {
-					"description": "Sets the background color through color name or hexadecimal value.",
-					"deprecated": true
+					"description": "Sets the background color through color name or hexadecimal value."
 				},
 				"direction": {
-					"description": "Sets the direction of the scrolling within the marquee. Possible values are left, right, up and down. If no value is specified, the default value is left.",
-					"deprecated": true
+					"description": "Sets the direction of the scrolling within the marquee. Possible values are left, right, up and down. If no value is specified, the default value is left."
 				},
 				"height": {
 					"description": "Sets the height in pixels or percentage value.",
-					"deprecated": true,
 					"nonStandard": true
 				},
 				"hspace": {
 					"description": "Sets the horizontal margin",
-					"deprecated": true,
 					"nonStandard": true
 				},
 				"loop": {
-					"description": "Sets the number of times the marquee will scroll. If no value is specified, the default value is −1, which means the marquee will scroll continuously.",
-					"deprecated": true
+					"description": "Sets the number of times the marquee will scroll. If no value is specified, the default value is −1, which means the marquee will scroll continuously."
 				},
 				"scrollamount": {
 					"description": "Sets the amount of scrolling at each interval in pixels. The default value is 6.",
-					"deprecated": true,
 					"nonStandard": true
 				},
 				"scrolldelay": {
 					"description": "Sets the interval between each scroll movement in milliseconds. The default value is 85. Note that any value smaller than 60 is ignored and the value 60 is used instead unless truespeed is specified.",
-					"deprecated": true,
 					"nonStandard": true
 				},
 				"truespeed": {
-					"description": "By default, scrolldelay values lower than 60 are ignored. If truespeed is present, those values are not ignored.",
-					"deprecated": true
+					"description": "By default, scrolldelay values lower than 60 are ignored. If truespeed is present, those values are not ignored."
 				},
 				"vspace": {
 					"description": "Sets the vertical margin in pixels or percentage value.",
-					"deprecated": true,
 					"nonStandard": true
 				},
 				"width": {
 					"description": "Sets the width in pixels or percentage value.",
-					"deprecated": true,
 					"nonStandard": true
 				}
 			}
@@ -53323,8 +53288,7 @@
 			},
 			"attributes": {
 				"compact": {
-					"description": "This Boolean attribute hints that the list should be rendered in a compact style. The interpretation of this attribute is browser-specific. Use CSS instead: to give a similar effect as the compact attribute, the CSS property line-height can be used with a value of 80%.",
-					"deprecated": true
+					"description": "This Boolean attribute hints that the list should be rendered in a compact style. The interpretation of this attribute is browser-specific. Use CSS instead: to give a similar effect as the compact attribute, the CSS property line-height can be used with a value of 80%."
 				}
 			}
 		},
@@ -53575,7 +53539,7 @@
 		{
 			"name": "nobr",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <nobr> HTML element prevents the text it contains from automatically wrapping across multiple lines, potentially resulting in the user having to scroll horizontally to see the entire width of the text. Warning: Although this element is widely supported, it was never standard HTML, so you shouldn't use it. Instead, use the CSS property white-space like this: html<span class=\"nobr\">Long line with no breaks</span> css.nobr { white-space: nowrap; }",
+			"description": "The <nobr> HTML element prevents the text it contains from automatically wrapping across multiple lines, potentially resulting in the user having to scroll horizontally to see the entire width of the text. Warning: Although this element is widely supported, it was never standard HTML, so you shouldn't use it. Instead, use the CSS property white-space like this: html<span class=\"nobr\">Long line with no breaks</span> css.nobr { white-space: nowrap; }",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -53592,7 +53556,7 @@
 		{
 			"name": "noembed",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <noembed> HTML element is an obsolete, non-standard way to provide alternative, or \"fallback\", content for browsers that do not support the <embed> element or do not support the type of embedded content an author wishes to use. This element was deprecated in HTML 4.01 and above in favor of placing fallback content between the opening and closing tags of an <object> element. Note: While this element currently still works in many browsers, it is obsolete and should not be used. Use <object> instead, with fallback content between the opening and closing tags of the element.",
+			"description": "The <noembed> HTML element is an obsolete, non-standard way to provide alternative, or \"fallback\", content for browsers that do not support the <embed> element or do not support the type of embedded content an author wishes to use. This element was deprecated in HTML 4.01 and above in favor of placing fallback content between the opening and closing tags of an <object> element. Note: While this element currently still works in many browsers, it is obsolete and should not be used. Use <object> instead, with fallback content between the opening and closing tags of the element.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -53609,7 +53573,7 @@
 		{
 			"name": "noframes",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <noframes> HTML element provides content to be presented in browsers that don't support (or have disabled support for) the <frame> element. Although most commonly-used browsers support frames, there are exceptions, including certain special-use browsers including some mobile browsers, as well as text-mode browsers. A <noframes> element can contain any HTML elements that are allowed within the body of an HTML document, except for the <frameset> and <frame> elements, since using frames when they aren't supported doesn't make sense. <noframes> can be used to present a message explaining that the user's browser doesn't support frames, but ideally should be used to present an alternate form of the site that doesn't use frames but still offers the same or similar functionality. Note: This element is obsolete and shouldn't be used, since the <frame> and <frameset> elements are also obsolete. When frames are needed at all, they should be presented using the <iframe> element.",
+			"description": "The <noframes> HTML element provides content to be presented in browsers that don't support (or have disabled support for) the <frame> element. Although most commonly-used browsers support frames, there are exceptions, including certain special-use browsers including some mobile browsers, as well as text-mode browsers. A <noframes> element can contain any HTML elements that are allowed within the body of an HTML document, except for the <frameset> and <frame> elements, since using frames when they aren't supported doesn't make sense. <noframes> can be used to present a message explaining that the user's browser doesn't support frames, but ideally should be used to present an alternate form of the site that doesn't use frames but still offers the same or similar functionality. Note: This element is obsolete and shouldn't be used, since the <frame> and <frameset> elements are also obsolete. When frames are needed at all, they should be presented using the <iframe> element.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -53674,24 +53638,19 @@
 			},
 			"attributes": {
 				"archive": {
-					"description": "A space-separated list of URIs for archives of resources for the object.",
-					"deprecated": true
+					"description": "A space-separated list of URIs for archives of resources for the object."
 				},
 				"border": {
-					"description": "The width of a border around the control, in pixels.",
-					"deprecated": true
+					"description": "The width of a border around the control, in pixels."
 				},
 				"classid": {
-					"description": "The URI of the object's implementation. It can be used together with, or in place of, the data attribute.",
-					"deprecated": true
+					"description": "The URI of the object's implementation. It can be used together with, or in place of, the data attribute."
 				},
 				"codebase": {
-					"description": "The base path used to resolve relative URIs specified by classid, data, or archive. If not specified, the default is the base URI of the current document.",
-					"deprecated": true
+					"description": "The base path used to resolve relative URIs specified by classid, data, or archive. If not specified, the default is the base URI of the current document."
 				},
 				"codetype": {
-					"description": "The content type of the data specified by classid.",
-					"deprecated": true
+					"description": "The content type of the data specified by classid."
 				},
 				"data": {
 					"description": "The address of the resource as a valid URL. At least one of data and type must be defined.",
@@ -53699,8 +53658,7 @@
 					"requiredEither": ["type"]
 				},
 				"declare": {
-					"description": "The presence of this Boolean attribute makes this element a declaration only. The object must be instantiated by a subsequent <object> element. Repeat the <object> element completely each time the resource is reused.",
-					"deprecated": true
+					"description": "The presence of this Boolean attribute makes this element a declaration only. The object must be instantiated by a subsequent <object> element. Repeat the <object> element completely each time the resource is reused."
 				},
 				"form": {
 					"description": "The form element, if any, that the object element is associated with (its form owner). The value of the attribute must be an ID of a <form> element in the same document."
@@ -53713,8 +53671,7 @@
 					"type": "NavigableTargetName"
 				},
 				"standby": {
-					"description": "A message that the browser can show while loading the object's implementation and data.",
-					"deprecated": true
+					"description": "A message that the browser can show while loading the object's implementation and data."
 				},
 				"type": {
 					"description": "The content type of the resource specified by data. At least one of data and type must be defined.",
@@ -53722,8 +53679,7 @@
 					"requiredEither": ["data"]
 				},
 				"usemap": {
-					"description": "A hash-name reference to a <map> element; that is a '#' followed by the value of a name of a map element.",
-					"deprecated": true
+					"description": "A hash-name reference to a <map> element; that is a '#' followed by the value of a name of a map element."
 				},
 				"width": {
 					"description": "The width of the display resource, as in <integer> in CSS pixels."
@@ -53785,7 +53741,6 @@
 			"attributes": {
 				"compact": {
 					"description": "This Boolean attribute hints that the list should be rendered in a compact style. The interpretation of this attribute is browser-specific. Use CSS instead: to give a similar effect as the compact attribute, the CSS property line-height can be used with a value of 80%.",
-					"deprecated": true,
 					"nonStandard": true
 				},
 				"reversed": {
@@ -54008,7 +53963,7 @@
 		{
 			"name": "param",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <param> HTML element defines parameters for an <object> element. Note: Use the <object> element with a data attribute to set the URL of an external resource.",
+			"description": "The <param> HTML element defines parameters for an <object> element. Note: Use the <object> element with a data attribute to set the URL of an external resource.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -54023,22 +53978,18 @@
 			"attributes": {
 				"name": {
 					"description": "Name of the parameter.",
-					"deprecated": true,
 					"nonStandard": true
 				},
 				"type": {
 					"description": "Only used if the valuetype is set to ref. Specifies the MIME type of values found at the URI specified by value.",
-					"deprecated": true,
 					"nonStandard": true
 				},
 				"value": {
 					"description": "Specifies the value of the parameter.",
-					"deprecated": true,
 					"nonStandard": true
 				},
 				"valuetype": {
 					"description": "Specifies the type of the value attribute. Possible values are: data: Default value. The value is passed to the object's implementation as a string. ref: The value is a URI to a resource where run-time values are stored. object: An ID of another <object> in the same document.",
-					"deprecated": true,
 					"nonStandard": true
 				}
 			}
@@ -54093,7 +54044,7 @@
 		{
 			"name": "plaintext",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <plaintext> HTML element renders everything following the start tag as raw text, ignoring any following HTML. There is no closing tag, since everything after it is considered raw text. Warning: Do not use this element. <plaintext> is deprecated since HTML 2, and not all browsers implemented it. Browsers that did implement it didn't do so consistently. <plaintext> is obsolete; browsers that accept it may instead treat it as a <pre> element that still interprets HTML within. If <plaintext> is the first element on the page (other than any non-displayed elements, like <head>), do not use HTML at all. Instead serve a text file with the text/plain MIME-type. Instead of <plaintext>, use the <pre> element or, if semantically accurate (such as for inline text), the <code> element. Escape any <, > and & characters, to prevent browsers inadvertently parsing the element content as HTML. A monospaced font can be applied to any HTML element via a CSS font-family style with the monospace generic value.",
+			"description": "The <plaintext> HTML element renders everything following the start tag as raw text, ignoring any following HTML. There is no closing tag, since everything after it is considered raw text. Warning: Do not use this element. <plaintext> is deprecated since HTML 2, and not all browsers implemented it. Browsers that did implement it didn't do so consistently. <plaintext> is obsolete; browsers that accept it may instead treat it as a <pre> element that still interprets HTML within. If <plaintext> is the first element on the page (other than any non-displayed elements, like <head>), do not use HTML at all. Instead serve a text file with the text/plain MIME-type. Instead of <plaintext>, use the <pre> element or, if semantically accurate (such as for inline text), the <code> element. Escape any <, > and & characters, to prevent browsers inadvertently parsing the element content as HTML. A monospaced font can be applied to any HTML element via a CSS font-family style with the monospace generic value.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -54136,12 +54087,10 @@
 			"attributes": {
 				"width": {
 					"description": "Contains the preferred count of characters that a line should have. Though technically still implemented, this attribute has no visual effect; to achieve such an effect, use CSS width instead.",
-					"deprecated": true,
 					"nonStandard": true
 				},
 				"wrap": {
 					"description": "Is a hint indicating how the overflow must happen. In modern browser this hint is ignored and no visual effect results in its present; to achieve such an effect, use CSS white-space instead.",
-					"deprecated": true,
 					"nonStandard": true
 				}
 			}
@@ -54243,7 +54192,7 @@
 		{
 			"name": "rb",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <rb> HTML element is used to delimit the base text component of a <ruby> annotation, i.e., the text that is being annotated. One <rb> element should wrap each separate atomic segment of the base text.",
+			"description": "The <rb> HTML element is used to delimit the base text component of a <ruby> annotation, i.e., the text that is being annotated. One <rb> element should wrap each separate atomic segment of the base text.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -54309,7 +54258,7 @@
 		{
 			"name": "rtc",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <rtc> HTML element embraces semantic annotations of characters presented in a ruby of <rb> elements used inside of <ruby> element. <rb> elements can have both pronunciation (<rt>) and semantic (<rtc>) annotations.",
+			"description": "The <rtc> HTML element embraces semantic annotations of characters presented in a ruby of <rb> elements used inside of <ruby> element. <rb> elements can have both pronunciation (<rt>) and semantic (<rtc>) annotations.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -54467,7 +54416,6 @@
 				},
 				"attributionsrc": {
 					"description": "Specifies that you want the browser to send an Attribution-Reporting-Eligible header along with the script resource request. On the server-side this is used to trigger sending an Attribution-Reporting-Register-Source or Attribution-Reporting-Register-Trigger header in the response, to register a JavaScript-based attribution source or attribution trigger, respectively. Which response header should be sent back depends on the value of the Attribution-Reporting-Eligible header that triggered the registration. Note: Alternatively, JavaScript-based attribution sources or triggers can be registered by sending a fetch() request containing the attributionReporting option (either set directly on the fetch() call or on a Request object passed into the fetch() call), or by sending an XMLHttpRequest with setAttributionReporting() invoked on the request object. There are two versions of this attribute that you can set: Boolean, i.e., just the attributionsrc name. This specifies that you want the Attribution-Reporting-Eligible header sent to the same server as the src attribute points to. This is fine when you are handling the attribution source or trigger registration on the same server. When registering an attribution trigger this property is optional, and an empty string value will be used if it is omitted. Value containing one or more URLs, for example: html<script src=\"myscript.js\" attributionsrc=\"https://a.example/register-source https://b.example/register-source\"></script> This is useful in cases where the requested resource is not on a server you control, or you just want to handle registering the attribution source on a different server. In this case, you can specify one or more URLs as the value of attributionsrc. When the resource request occurs the Attribution-Reporting-Eligible header will be sent to the URL(s) specified in attributionSrc in addition to the resource origin. These URLs can then respond with an Attribution-Reporting-Register-Source or Attribution-Reporting-Register-Trigger header as appropriate to complete registration. Note: Specifying multiple URLs means that multiple attribution sources can be registered on the same feature. You might for example have different campaigns that you are trying to measure the success of, which involve generating different reports on different data. See the Attribution Reporting API for more details.",
-					"deprecated": true,
 					"nonStandard": true
 				},
 				"blocking": {
@@ -54885,7 +54833,7 @@
 		{
 			"name": "strike",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <strike> HTML element places a strikethrough (horizontal line) over text. Warning: This element is deprecated in HTML 4 and XHTML 1, and obsoleted in the HTML Living Standard. If semantically appropriate, i.e., if it represents deleted content, use <del> instead. In all other cases use <s>.",
+			"description": "The <strike> HTML element places a strikethrough (horizontal line) over text. Warning: This element is deprecated in HTML 4 and XHTML 1, and obsoleted in the HTML Living Standard. If semantically appropriate, i.e., if it represents deleted content, use <del> instead. In all other cases use <s>.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -55845,7 +55793,7 @@
 		{
 			"name": "tt",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <tt> HTML element creates inline text which is presented using the user agent's default monospace font face. This element was created for the purpose of rendering text as it would be displayed on a fixed-width display such as a teletype, text-only screen, or line printer. The terms non-proportional, monotype, and monospace are used interchangeably and have the same general meaning: they describe a typeface whose characters are all the same number of pixels wide. This element is obsolete, however. You should use the more semantically helpful <code>, <kbd>, <samp>, or <var> elements for inline text that needs to be presented in monospace type, or the <pre> tag for content that should be presented as a separate block. Note: If none of the semantic elements are appropriate for your use case (for example, if you need to show some content in a non-proportional font), you should consider using the <span> element, styling it as desired using CSS. The font-family property is a good place to start.",
+			"description": "The <tt> HTML element creates inline text which is presented using the user agent's default monospace font face. This element was created for the purpose of rendering text as it would be displayed on a fixed-width display such as a teletype, text-only screen, or line printer. The terms non-proportional, monotype, and monospace are used interchangeably and have the same general meaning: they describe a typeface whose characters are all the same number of pixels wide. This element is obsolete, however. You should use the more semantically helpful <code>, <kbd>, <samp>, or <var> elements for inline text that needs to be presented in monospace type, or the <pre> tag for content that should be presented as a separate block. Note: If none of the semantic elements are appropriate for your use case (for example, if you need to show some content in a non-proportional font), you should consider using the <span> element, styling it as desired using CSS. The font-family property is a good place to start.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -55941,12 +55889,10 @@
 			},
 			"attributes": {
 				"compact": {
-					"description": "This Boolean attribute hints that the list should be rendered in a compact style. The interpretation of this attribute is browser-specific. Use CSS instead: to give a similar effect as the compact attribute, the CSS property line-height can be used with a value of 80%.",
-					"deprecated": true
+					"description": "This Boolean attribute hints that the list should be rendered in a compact style. The interpretation of this attribute is browser-specific. Use CSS instead: to give a similar effect as the compact attribute, the CSS property line-height can be used with a value of 80%."
 				},
 				"type": {
-					"description": "This attribute sets the bullet style for the list. The values defined under HTML3.2 and the transitional version of HTML 4.0/4.01 are: circle disc square A fourth bullet type has been defined in the WebTV interface, but not all browsers support it: triangle. If not present and if no CSS list-style-type property applies to the element, the user agent selects a bullet type depending on the nesting level of the list. Warning: Do not use this attribute, as it has been deprecated; use the CSS list-style-type property instead.",
-					"deprecated": true
+					"description": "This attribute sets the bullet style for the list. The values defined under HTML3.2 and the transitional version of HTML 4.0/4.01 are: circle disc square A fourth bullet type has been defined in the WebTV interface, but not all browsers support it: triangle. If not present and if no CSS list-style-type property applies to the element, the user agent selects a bullet type depending on the nesting level of the list. Warning: Do not use this attribute, as it has been deprecated; use the CSS list-style-type property instead."
 				}
 			}
 		},
@@ -56120,7 +56066,7 @@
 		{
 			"name": "xmp",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time.",
+			"description": "Summary The <xmp> HTML element renders text between the start and end tags without interpreting the HTML in between and using a monospaced font. The HTML2 specification recommended that it should be rendered wide enough to allow 80 characters per line. Note: Do not use this element. It has been deprecated since HTML3.2 and was not implemented in a consistent way. It was completely removed from current HTML. Use the <pre> element or, if semantically adequate, the <code> element instead. Note that you will need to escape the < character as &lt; and the & character as &amp; to make sure they are not interpreted as markup. A monospaced font can also be obtained on any element, by applying an adequate CSS style using monospace as the generic-font value for the font-family property.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -56164,7 +56110,6 @@
 				},
 				"src": {
 					"description": "The location of an external source for semantic information.",
-					"deprecated": true,
 					"type": "URL"
 				}
 			}
@@ -56205,7 +56150,6 @@
 				},
 				"src": {
 					"description": "The location of an external source for semantic information.",
-					"deprecated": true,
 					"type": "URL"
 				}
 			}
@@ -56214,7 +56158,7 @@
 			"name": "mml:maction",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/maction",
-			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <maction> MathML element allows to bind actions to mathematical expressions. By default, only the first child is rendered but some browsers may take into account actiontype and selection attributes to implement custom behaviors. Note: Historically, this element provided a mechanism to make MathML formulas interactive. Nowadays, it is recommended to rely on JavaScript and other Web technologies to implement this use case.",
+			"description": "The <maction> MathML element allows to bind actions to mathematical expressions. By default, only the first child is rendered but some browsers may take into account actiontype and selection attributes to implement custom behaviors. Note: Historically, this element provided a mechanism to make MathML formulas interactive. Nowadays, it is recommended to rely on JavaScript and other Web technologies to implement this use case.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -56243,13 +56187,11 @@
 			"attributes": {
 				"actiontype": {
 					"description": "The action which specifies what happens for this element. Special behavior for the following values were implemented by some browsers: statusline: If there is a click on the expression or the reader moves the pointer over it, the message is sent to the browser's status line. The syntax is: <maction actiontype=\"statusline\"> expression message </maction>. toggle: When there is a click on the subexpression, the rendering alternates the display of selected subexpressions. Therefore each click increments the selection value. The syntax is: <maction actiontype=\"toggle\" selection=\"positive-integer\" > expression1 expression2 expressionN </maction>.",
-					"deprecated": true,
 					"nonStandard": true,
 					"type": "Any"
 				},
 				"selection": {
 					"description": "The child element currently visible, only taken into account for actiontype=\"toggle\" or non-standard actiontype values. The default value is 1, which is the first child element.",
-					"deprecated": true,
 					"nonStandard": true,
 					"type": "Any"
 				}
@@ -56372,7 +56314,7 @@
 			"name": "mml:mfenced",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mfenced",
-			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. Non-standard: This feature is not standardized. We do not recommend using non-standard features in production, as they have limited browser support, and may change or be removed. However, they can be a suitable alternative in specific cases where no standard option exists. The <mfenced> MathML element provides the possibility to add custom opening and closing brackets (such as parentheses) and separators (such as commas or semicolons) to an expression. Note: Historically, the <mfenced> element was defined as a shorthand for writing fenced expressions and equivalent to an expanded form involving <mrow> and <mo> elements. Nowadays, it is recommended to use that equivalent form instead.",
+			"description": "Non-standard: This feature is not standardized. We do not recommend using non-standard features in production, as they have limited browser support, and may change or be removed. However, they can be a suitable alternative in specific cases where no standard option exists. The <mfenced> MathML element provides the possibility to add custom opening and closing brackets (such as parentheses) and separators (such as commas or semicolons) to an expression. Note: Historically, the <mfenced> element was defined as a shorthand for writing fenced expressions and equivalent to an expanded form involving <mrow> and <mo> elements. Nowadays, it is recommended to use that equivalent form instead.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -56445,7 +56387,6 @@
 			"attributes": {
 				"denomalign": {
 					"description": "The alignment of the denominator under the fraction. Possible values are: left, center (default), and right.",
-					"deprecated": true,
 					"nonStandard": true
 				},
 				"linethickness": {
@@ -56454,7 +56395,6 @@
 				},
 				"numalign": {
 					"description": "The alignment of the numerator over the fraction. Possible values are: left, center (default), and right.",
-					"deprecated": true,
 					"nonStandard": true
 				}
 			}
@@ -56524,12 +56464,10 @@
 			"attributes": {
 				"subscriptshift": {
 					"description": "A <length-percentage> indicating the minimum amount to shift the baseline of the subscript down.",
-					"deprecated": true,
 					"nonStandard": true
 				},
 				"superscriptshift": {
 					"description": "A <length-percentage> indicating the minimum amount to shift the baseline of the superscript up.",
-					"deprecated": true,
 					"nonStandard": true
 				}
 			}
@@ -56998,27 +56936,22 @@
 			"attributes": {
 				"background": {
 					"description": "Use CSS property background-color instead.",
-					"deprecated": true,
 					"nonStandard": true
 				},
 				"color": {
 					"description": "Use CSS property color instead.",
-					"deprecated": true,
 					"nonStandard": true
 				},
 				"fontsize": {
 					"description": "Use CSS property font-size instead.",
-					"deprecated": true,
 					"nonStandard": true
 				},
 				"fontstyle": {
 					"description": "Use CSS property font-style instead.",
-					"deprecated": true,
 					"nonStandard": true
 				},
 				"fontweight": {
 					"description": "Use CSS property font-weight instead.",
-					"deprecated": true,
 					"nonStandard": true
 				}
 			}
@@ -57057,7 +56990,6 @@
 			"attributes": {
 				"subscriptshift": {
 					"description": "A <length-percentage> indicating the minimum amount to shift the baseline of the subscript down.",
-					"deprecated": true,
 					"nonStandard": true
 				}
 			}
@@ -57096,12 +57028,10 @@
 			"attributes": {
 				"subscriptshift": {
 					"description": "A <length-percentage> indicating the minimum amount to shift the baseline of the subscript down.",
-					"deprecated": true,
 					"nonStandard": true
 				},
 				"superscriptshift": {
 					"description": "A <length-percentage> indicating the minimum amount to shift the baseline of the superscript up.",
-					"deprecated": true,
 					"nonStandard": true
 				}
 			}
@@ -57140,7 +57070,6 @@
 			"attributes": {
 				"superscriptshift": {
 					"description": "A <length-percentage> indicating the minimum amount to shift the baseline of the superscript up.",
-					"deprecated": true,
 					"nonStandard": true
 				}
 			}
@@ -57607,8 +57536,7 @@
 					"description": "A MIME type for the linked URL. Value type: <string>; Default value: none; Animatable: no"
 				},
 				"xlink:href": {
-					"description": "The URL or URL fragment that the hyperlink points to. May be required for backwards compatibility for older browsers. Value type: <URL>; Default value: none; Animatable: yes",
-					"deprecated": true
+					"description": "The URL or URL fragment that the hyperlink points to. May be required for backwards compatibility for older browsers. Value type: <URL>; Default value: none; Animatable: yes"
 				}
 			}
 		},
@@ -61164,8 +61092,7 @@
 					"description": "Positions the image horizontally from the origin. Value type: <length> | <percentage>; Default value: 0; Animatable: yes"
 				},
 				"xlink:href": {
-					"description": "Points at a URL for the image file. Value type: <URL>; Default value: none; Animatable: no",
-					"deprecated": true
+					"description": "Points at a URL for the image file. Value type: <URL>; Default value: none; Animatable: no"
 				},
 				"y": {
 					"description": "Positions the image vertically from the origin. Value type: <length> | <percentage>; Default value: 0; Animatable: yes"
@@ -61453,8 +61380,7 @@
 					"animatable": true
 				},
 				"xlink:href": {
-					"description": "An <IRI> reference to another <linearGradient> element that will be used as a template. Value type: <IRI>; Default value: none; Animatable: yes",
-					"deprecated": true
+					"description": "An <IRI> reference to another <linearGradient> element that will be used as a template. Value type: <IRI>; Default value: none; Animatable: yes"
 				},
 				"y1": {
 					"description": "This attribute defines the y coordinate of the starting point of the vector gradient along which the linear gradient is drawn. Value type: <length>; Default value: 0%; Animatable: yes",
@@ -62136,8 +62062,7 @@
 					"description": "This attribute determines the x coordinate shift of the pattern tile. Value type: <length>; Default value: 0; Animatable: yes"
 				},
 				"xlink:href": {
-					"description": "This attribute references a template pattern that provides default values for the <pattern> attributes. Value type: <URL>; Default value: none; Animatable: yes Note: For browsers implementing href, if both href and xlink:href are set, xlink:href will be ignored and only href will be used.",
-					"deprecated": true
+					"description": "This attribute references a template pattern that provides default values for the <pattern> attributes. Value type: <URL>; Default value: none; Animatable: yes Note: For browsers implementing href, if both href and xlink:href are set, xlink:href will be ignored and only href will be used."
 				},
 				"y": {
 					"description": "This attribute determines the y coordinate shift of the pattern tile. Value type: <length>; Default value: 0; Animatable: yes"
@@ -62548,8 +62473,7 @@
 					"animatable": true
 				},
 				"xlink:href": {
-					"description": "An <IRI> reference to another <radialGradient> element that will be used as a template. Value type: <IRI>; Default value: none; Animatable: yes",
-					"deprecated": true
+					"description": "An <IRI> reference to another <radialGradient> element that will be used as a template. Value type: <IRI>; Default value: none; Animatable: yes"
 				}
 			}
 		},
@@ -62749,8 +62673,7 @@
 					"defaultValue": "application/ecmascript"
 				},
 				"xlink:href": {
-					"description": "The URL to the script to load. Value type: <URL>; Default value: none; Animatable: no",
-					"deprecated": true
+					"description": "The URL to the script to load. Value type: <URL>; Default value: none; Animatable: no"
 				}
 			}
 		},
@@ -63954,8 +63877,7 @@
 					"description": "The x coordinate of an additional final offset transformation applied to the <use> element. Value type: <coordinate>; Default value: 0; Animatable: yes"
 				},
 				"xlink:href": {
-					"description": "An <IRI> reference to an element/fragment that needs to be duplicated. If both href and xlink:href are present, the value given by href is used. Value type: <IRI>; Default value: none; Animatable: yes Warning: Since SVG 2, the xlink:href attribute is deprecated in favor of href. See xlink:href page for more information.",
-					"deprecated": true
+					"description": "An <IRI> reference to an element/fragment that needs to be duplicated. If both href and xlink:href are present, the value given by href is used. Value type: <IRI>; Default value: none; Animatable: yes Warning: Since SVG 2, the xlink:href attribute is deprecated in favor of href. See xlink:href page for more information."
 				},
 				"y": {
 					"description": "The y coordinate of an additional final offset transformation applied to the <use> element. Value type: <coordinate>; Default value: 0; Animatable: yes"
