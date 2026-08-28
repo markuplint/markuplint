@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-rc.5](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.4...v5.0.0-rc.5) (2026-08-28)
+
+### Bug Fixes
+
+- **types): strict charset=utf-8; feat(rules:** usemap-references-map ([#3969](https://github.com/markuplint/markuplint/issues/3969)) ([c63070e](https://github.com/markuplint/markuplint/commit/c63070e29ccb283da7468b2fc67db372ebfcf42a)), closes [#3945](https://github.com/markuplint/markuplint/issues/3945) [#3966](https://github.com/markuplint/markuplint/issues/3966) [#3966](https://github.com/markuplint/markuplint/issues/3966) [#3928](https://github.com/markuplint/markuplint/issues/3928)
+- **types:** clarify MediaQueryList Stage A vs Stage B responsibility ([6cbb070](https://github.com/markuplint/markuplint/commit/6cbb070822576b2e56f1de5cdb37dbb675755f23))
+- **types:** detect IPv4-non-decimal-part validation error in checkURL ([#3972](https://github.com/markuplint/markuplint/issues/3972)) ([c052c25](https://github.com/markuplint/markuplint/commit/c052c25b5a1c247dd9bf071db54c096d6033ed3f)), closes [#3966](https://github.com/markuplint/markuplint/issues/3966) [#3966](https://github.com/markuplint/markuplint/issues/3966) [#3966](https://github.com/markuplint/markuplint/issues/3966)
+- **types:** extend URL forbidden code point detection and fix vtab trim bug ([dbc34be](https://github.com/markuplint/markuplint/commit/dbc34be3ac54ce2a713c7de3e34d62b133e857da)), closes [#3629](https://github.com/markuplint/markuplint/issues/3629)
+- **types:** reject duplicate descriptors in Srcset checker ([5ff8641](https://github.com/markuplint/markuplint/commit/5ff8641c915cb0c5d0790c0908371156107ddbc6))
+- **types:** reject standalone "webauthn" in checkAutoComplete ([84c8a3b](https://github.com/markuplint/markuplint/commit/84c8a3b7b71961636e0f0011edef5396b8cf5e2f))
+- **types:** reject unterminated quoted-string in MIME type parameters ([741b41c](https://github.com/markuplint/markuplint/commit/741b41c275cb81eb51f88605f3fa4a297619ff80)), closes [#3851](https://github.com/markuplint/markuplint/issues/3851) [#3851](https://github.com/markuplint/markuplint/issues/3851)
+- **types:** rename HashName test fixture "mymap" to "my-map" for cspell ([08d5796](https://github.com/markuplint/markuplint/commit/08d57965d726bc7d5bb8713da85c235ddcc9f475))
+- **types:** require non-empty name in HashName type ([af494fb](https://github.com/markuplint/markuplint/commit/af494fb2092c4f7a9ebf3279a9239b4fe1bddbd9))
+- **types:** spelling — unparseable → unparsable in AbsoluteURL comment ([7c7a7d7](https://github.com/markuplint/markuplint/commit/7c7a7d7873dbbfe60d8b4d98e0d6af7278fcb0d9))
+- **types:** tighten MediaQueryList negative-value & fatal-error guards ([c185ea6](https://github.com/markuplint/markuplint/commit/c185ea60e7095b28338edca9652d78fe3dc2d33f)), closes [#3866](https://github.com/markuplint/markuplint/issues/3866)
+- **types:** tighten Srcset URL and SourceSizeList numeric bounds ([3b122aa](https://github.com/markuplint/markuplint/commit/3b122aaf6ddbe3a8b797d02978108d842119030e))
+
+### Features
+
+- **types:** add DateStringWithOptionalTime and tighten global date and time fraction separator ([95cf050](https://github.com/markuplint/markuplint/commit/95cf0504285ba04dbdb8bdf5addd03bac06396f7))
+- **types:** add HTTPEquivRefresh and HTTPEquivContentType validators ([649a259](https://github.com/markuplint/markuplint/commit/649a2591825c87c7993fcd0f5b667cf6d8cafa92)), closes [#3734](https://github.com/markuplint/markuplint/issues/3734) [#3734](https://github.com/markuplint/markuplint/issues/3734)
+- **types:** add MediaQueryList typed checker for media= attribute validation ([b5bc19a](https://github.com/markuplint/markuplint/commit/b5bc19a806d39099e0b62d2eacae882456bd3c3e)), closes [#3850](https://github.com/markuplint/markuplint/issues/3850)
+- **types:** catch URL Living Standard validation errors in URL type checker ([289932d](https://github.com/markuplint/markuplint/commit/289932df8e5f11dc4c60116843e4c31bd8be6e63)), closes [#3848](https://github.com/markuplint/markuplint/issues/3848)
+- **types:** enforce element-context autocomplete constraints (select webauthn, input[type=hidden] on/off) ([#3930](https://github.com/markuplint/markuplint/issues/3930)) ([dc51d46](https://github.com/markuplint/markuplint/commit/dc51d460731541c963c9aa8bdf407c20974dced4))
+- **types:** expand URL Living Standard coverage and add per-attribute URL variants ([b577b2c](https://github.com/markuplint/markuplint/commit/b577b2c4aa8e3ee31a368f62c2108e63aa457628)), closes [#3868](https://github.com/markuplint/markuplint/issues/3868)
+- **types:** reject general-enclosed matches in MediaQueryList and SourceSizeList ([#3934](https://github.com/markuplint/markuplint/issues/3934)) ([2fc8615](https://github.com/markuplint/markuplint/commit/2fc8615c475540d4e5b85661baa1491d791cb661))
+- **types:** validate BCP 47 language tags against the IANA subtag registry ([#3973](https://github.com/markuplint/markuplint/issues/3973)) ([cb8ea69](https://github.com/markuplint/markuplint/commit/cb8ea69bd1b7eb35b4b5507183f8da01edb161c5)), closes [#3829](https://github.com/markuplint/markuplint/issues/3829) [#3829](https://github.com/markuplint/markuplint/issues/3829) [#3829](https://github.com/markuplint/markuplint/issues/3829)
+- **types:** validate CSP3 grammar for meta[content][http-equiv=content-security-policy] ([#3982](https://github.com/markuplint/markuplint/issues/3982)) ([b2d1d84](https://github.com/markuplint/markuplint/commit/b2d1d84ea92c754fe2dbf54950ae8fdb74fe51eb)), closes [#3942](https://github.com/markuplint/markuplint/issues/3942) [#3942](https://github.com/markuplint/markuplint/issues/3942) [#3942](https://github.com/markuplint/markuplint/issues/3942) [#3946](https://github.com/markuplint/markuplint/issues/3946)
+- **types:** validate media feature value types per Media Queries Level 5 §4 ([d231374](https://github.com/markuplint/markuplint/commit/d231374ad6ae2c77dc9dbb5b5b403581f5d3738c))
+
 # [5.0.0-rc.4](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.3...v5.0.0-rc.4) (2026-04-19)
 
 **Note:** Version bump only for package @markuplint/types

@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/config-presets",
-	"version": "5.0.0-rc.4",
+	"version": "5.0.0-rc.5",
 	"description": "markuplint config presets",
 	"repository": {
 		"type": "git",
@@ -20,7 +20,7 @@
 	},
 	"devDependencies": {
 		"@isaacs/brace-expansion": "5.0.1",
-		"@markuplint/rules": "5.0.0-rc.4",
+		"@markuplint/rules": "5.0.0-rc.5",
 		"glob": "13.0.6",
 		"jsonc-parser": "3.3.1",
 		"mustache": "4.2.0"

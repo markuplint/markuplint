@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/smarty-parser",
-	"version": "5.0.0-rc.4",
+	"version": "5.0.0-rc.5",
 	"description": "Smarty parser for markuplint",
 	"repository": {
 		"type": "git",
@@ -28,9 +28,9 @@
 		"clean": "tsc --build --clean tsconfig.build.json"
 	},
 	"dependencies": {
-		"@markuplint/html-parser": "5.0.0-rc.4"
+		"@markuplint/html-parser": "5.0.0-rc.5"
 	},
 	"devDependencies": {
-		"@markuplint/parser-utils": "5.0.0-rc.4"
+		"@markuplint/parser-utils": "5.0.0-rc.5"
 	}
 }

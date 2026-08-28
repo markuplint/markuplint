@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-rc.5](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.4...v5.0.0-rc.5) (2026-08-28)
+
+### Bug Fixes
+
+- **selector:** match HTML attribute names ASCII case-insensitively ([b7fa271](https://github.com/markuplint/markuplint/commit/b7fa271b9a195f438afbd1d7e9fe3eeecc35665e))
+
 # [5.0.0-rc.4](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.3...v5.0.0-rc.4) (2026-04-19)
 
 **Note:** Version bump only for package @markuplint/selector
