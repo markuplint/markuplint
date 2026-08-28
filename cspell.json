@@ -4,6 +4,8 @@
 	"allowCompoundWords": true,
 	"ignorePaths": [
 		"cspell.json",
+		"CHANGELOG.md",
+		"**/CHANGELOG.md",
 		".github/ISSUE_TEMPLATE/*",
 		"test/fixture/**",
 		"tests/external/**",
