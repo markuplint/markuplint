@@ -50461,7 +50461,8 @@
 			},
 			"attributes": {
 				"compact": {
-					"description": "This Boolean attribute hints that the list should be rendered in a compact style. The interpretation of this attribute is browser-specific. Use CSS instead: to give a similar effect as the compact attribute, the CSS property line-height can be used with a value of 80%."
+					"description": "This Boolean attribute hints that the list should be rendered in a compact style. The interpretation of this attribute is browser-specific. Use CSS instead: to give a similar effect as the compact attribute, the CSS property line-height can be used with a value of 80%.",
+					"deprecated": true
 				}
 			}
 		},
@@ -50776,7 +50777,8 @@
 			},
 			"attributes": {
 				"accept": {
-					"description": "Comma-separated content types the server accepts. Note: This attribute has been deprecated and should not be used. Instead, use the accept attribute on <input type=file> elements."
+					"description": "Comma-separated content types the server accepts. Note: This attribute has been deprecated and should not be used. Instead, use the accept attribute on <input type=file> elements.",
+					"deprecated": true
 				},
 				"accept-charset": {
 					"description": "The character encoding accepted by the server. The specification allows a single case-insensitive value of \"UTF-8\", reflecting the ubiquity of this encoding (historically multiple character encodings could be specified as a comma-separated or space-separated list).",
@@ -51094,7 +51096,8 @@
 			},
 			"attributes": {
 				"profile": {
-					"description": "The URIs of one or more metadata profiles, separated by white space."
+					"description": "The URIs of one or more metadata profiles, separated by white space.",
+					"deprecated": true
 				}
 			}
 		},
@@ -51208,22 +51211,27 @@
 			"attributes": {
 				"align": {
 					"description": "Sets the alignment of the rule on the page. If no value is specified, the default value is left.",
+					"deprecated": true,
 					"nonStandard": true
 				},
 				"color": {
 					"description": "Sets the color of the rule through color name or hexadecimal value.",
+					"deprecated": true,
 					"nonStandard": true
 				},
 				"noshade": {
 					"description": "Sets the rule to have no shading.",
+					"deprecated": true,
 					"nonStandard": true
 				},
 				"size": {
 					"description": "Sets the height, in pixels, of the rule.",
+					"deprecated": true,
 					"nonStandard": true
 				},
 				"width": {
 					"description": "Sets the length of the rule on the page through a pixel or percentage value.",
+					"deprecated": true,
 					"nonStandard": true
 				}
 			}
@@ -51261,7 +51269,8 @@
 			},
 			"attributes": {
 				"version": {
-					"description": "Specifies the version of the HTML Document Type Definition that governs the current document. This attribute is not needed, because it is redundant with the version information in the document type declaration."
+					"description": "Specifies the version of the HTML Document Type Definition that governs the current document. This attribute is not needed, because it is redundant with the version information in the document type declaration.",
+					"deprecated": true
 				},
 				"xmlns": {
 					"description": "Specifies the XML Namespace of the document. Default value is \"http://www.w3.org/1999/xhtml\". This is required in documents parsed with XML parsers, and optional in text/html documents.",
@@ -52908,7 +52917,8 @@
 			},
 			"attributes": {
 				"type": {
-					"description": "This character attribute indicates the numbering type: a: lowercase letters A: uppercase letters i: lowercase Roman numerals I: uppercase Roman numerals 1: numbers This type overrides the one used by its parent <ol> element, if any. Note: This attribute has been deprecated; use the CSS list-style-type property instead."
+					"description": "This character attribute indicates the numbering type: a: lowercase letters A: uppercase letters i: lowercase Roman numerals I: uppercase Roman numerals 1: numbers This type overrides the one used by its parent <ol> element, if any. Note: This attribute has been deprecated; use the CSS list-style-type property instead.",
+					"deprecated": true
 				},
 				"value": {
 					"description": "This integer attribute indicates the current ordinal value of the list item as defined by the <ol> element. The only allowed value for this attribute is a number, even if the list is displayed with Roman numerals or letters. List items that follow this one continue numbering from the value set. This attribute has no meaning for unordered lists (<ul>) or for menus (<menu>).",
@@ -53059,7 +53069,8 @@
 					"condition": ["[rel~='icon' i]", "[rel~='apple-touch-icon' i]"]
 				},
 				"target": {
-					"description": "Defines the frame or window name that has the defined linking relationship or that will show the rendering of any linked resource."
+					"description": "Defines the frame or window name that has the defined linking relationship or that will show the rendering of any linked resource.",
+					"deprecated": true
 				},
 				"title": {
 					"description": "The title attribute has special semantics on the <link> element. When used on a <link rel=\"stylesheet\"> it defines a default or an alternate stylesheet.",
@@ -53288,7 +53299,8 @@
 			},
 			"attributes": {
 				"compact": {
-					"description": "This Boolean attribute hints that the list should be rendered in a compact style. The interpretation of this attribute is browser-specific. Use CSS instead: to give a similar effect as the compact attribute, the CSS property line-height can be used with a value of 80%."
+					"description": "This Boolean attribute hints that the list should be rendered in a compact style. The interpretation of this attribute is browser-specific. Use CSS instead: to give a similar effect as the compact attribute, the CSS property line-height can be used with a value of 80%.",
+					"deprecated": true
 				}
 			}
 		},
@@ -53638,19 +53650,24 @@
 			},
 			"attributes": {
 				"archive": {
-					"description": "A space-separated list of URIs for archives of resources for the object."
+					"description": "A space-separated list of URIs for archives of resources for the object.",
+					"deprecated": true
 				},
 				"border": {
-					"description": "The width of a border around the control, in pixels."
+					"description": "The width of a border around the control, in pixels.",
+					"deprecated": true
 				},
 				"classid": {
-					"description": "The URI of the object's implementation. It can be used together with, or in place of, the data attribute."
+					"description": "The URI of the object's implementation. It can be used together with, or in place of, the data attribute.",
+					"deprecated": true
 				},
 				"codebase": {
-					"description": "The base path used to resolve relative URIs specified by classid, data, or archive. If not specified, the default is the base URI of the current document."
+					"description": "The base path used to resolve relative URIs specified by classid, data, or archive. If not specified, the default is the base URI of the current document.",
+					"deprecated": true
 				},
 				"codetype": {
-					"description": "The content type of the data specified by classid."
+					"description": "The content type of the data specified by classid.",
+					"deprecated": true
 				},
 				"data": {
 					"description": "The address of the resource as a valid URL. At least one of data and type must be defined.",
@@ -53658,7 +53675,8 @@
 					"requiredEither": ["type"]
 				},
 				"declare": {
-					"description": "The presence of this Boolean attribute makes this element a declaration only. The object must be instantiated by a subsequent <object> element. Repeat the <object> element completely each time the resource is reused."
+					"description": "The presence of this Boolean attribute makes this element a declaration only. The object must be instantiated by a subsequent <object> element. Repeat the <object> element completely each time the resource is reused.",
+					"deprecated": true
 				},
 				"form": {
 					"description": "The form element, if any, that the object element is associated with (its form owner). The value of the attribute must be an ID of a <form> element in the same document."
@@ -53671,7 +53689,8 @@
 					"type": "NavigableTargetName"
 				},
 				"standby": {
-					"description": "A message that the browser can show while loading the object's implementation and data."
+					"description": "A message that the browser can show while loading the object's implementation and data.",
+					"deprecated": true
 				},
 				"type": {
 					"description": "The content type of the resource specified by data. At least one of data and type must be defined.",
@@ -53679,7 +53698,8 @@
 					"requiredEither": ["data"]
 				},
 				"usemap": {
-					"description": "A hash-name reference to a <map> element; that is a '#' followed by the value of a name of a map element."
+					"description": "A hash-name reference to a <map> element; that is a '#' followed by the value of a name of a map element.",
+					"deprecated": true
 				},
 				"width": {
 					"description": "The width of the display resource, as in <integer> in CSS pixels."
@@ -53741,6 +53761,7 @@
 			"attributes": {
 				"compact": {
 					"description": "This Boolean attribute hints that the list should be rendered in a compact style. The interpretation of this attribute is browser-specific. Use CSS instead: to give a similar effect as the compact attribute, the CSS property line-height can be used with a value of 80%.",
+					"deprecated": true,
 					"nonStandard": true
 				},
 				"reversed": {
@@ -53791,7 +53812,7 @@
 			},
 			"attributes": {
 				"disabled": {
-					"description": "If this Boolean attribute is set, none of the items in this option group is selectable. Often browsers grey out such control and it won't receive any browsing events, like mouse clicks or focus-related ones."
+					"description": "If this Boolean attribute is set, none of the items in this option group is selectable. Often browsers gray out such control and it won't receive any browsing events, like mouse clicks or focus-related ones."
 				},
 				"label": {
 					"description": "The name of the group of options, which the browser can use when labeling the options in the user interface. This attribute is mandatory if this element is used.",
@@ -53875,7 +53896,7 @@
 			},
 			"attributes": {
 				"disabled": {
-					"description": "If this Boolean attribute is set, this option is not checkable. Often browsers grey out such control and it won't receive any browsing event, like mouse clicks or focus-related ones. If this attribute is not set, the element can still be disabled if one of its ancestors is a disabled <optgroup> element."
+					"description": "If this Boolean attribute is set, this option is not checkable. Often browsers gray out such control and it won't receive any browsing event, like mouse clicks or focus-related ones. If this attribute is not set, the element can still be disabled if one of its ancestors is a disabled <optgroup> element."
 				},
 				"label": {
 					"description": "This attribute is text for the label indicating the meaning of the option. If the label attribute isn't defined, its value is that of the element text content.",
@@ -54087,10 +54108,12 @@
 			"attributes": {
 				"width": {
 					"description": "Contains the preferred count of characters that a line should have. Though technically still implemented, this attribute has no visual effect; to achieve such an effect, use CSS width instead.",
+					"deprecated": true,
 					"nonStandard": true
 				},
 				"wrap": {
 					"description": "Is a hint indicating how the overflow must happen. In modern browser this hint is ignored and no visual effect results in its present; to achieve such an effect, use CSS white-space instead.",
+					"deprecated": true,
 					"nonStandard": true
 				}
 			}
@@ -55275,7 +55298,7 @@
 		{
 			"name": "template",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/template",
-			"description": "The <template> HTML element serves as a mechanism for holding HTML fragments, which can either be used later via JavaScript or generated immediately into shadow DOM.",
+			"description": "The <template> HTML element serves as a mechanism for holding HTML fragments, which can either be used later via JavaScript, generated immediately and inserted into a shadow DOM, or used as part of out-of-order patching with <template for=\"...\">.",
 			"categories": ["#metadata", "#flow", "#phrasing", "#script-supporting"],
 			"contentModel": {
 				"contents": true
@@ -55292,6 +55315,9 @@
 				"#HTMLGlobalAttrs": true
 			},
 			"attributes": {
+				"for": {
+					"description": "The for attribute is used for out-of-order patching with <template for=\"...\">, matching an equivalent <?start id=\"...\"> or <?marker \"...\"> marker. See the out-of-order patching section and examples section."
+				},
 				"shadowrootclonable": {
 					"description": "Sets the value of the clonable property of a ShadowRoot created using this element to true. If set, a clone of the shadow host (the parent element of this <template>) created with Node.cloneNode() or Document.importNode() will include a shadow root in the copy.",
 					"type": "Boolean"
@@ -55889,10 +55915,12 @@
 			},
 			"attributes": {
 				"compact": {
-					"description": "This Boolean attribute hints that the list should be rendered in a compact style. The interpretation of this attribute is browser-specific. Use CSS instead: to give a similar effect as the compact attribute, the CSS property line-height can be used with a value of 80%."
+					"description": "This Boolean attribute hints that the list should be rendered in a compact style. The interpretation of this attribute is browser-specific. Use CSS instead: to give a similar effect as the compact attribute, the CSS property line-height can be used with a value of 80%.",
+					"deprecated": true
 				},
 				"type": {
-					"description": "This attribute sets the bullet style for the list. The values defined under HTML3.2 and the transitional version of HTML 4.0/4.01 are: circle disc square A fourth bullet type has been defined in the WebTV interface, but not all browsers support it: triangle. If not present and if no CSS list-style-type property applies to the element, the user agent selects a bullet type depending on the nesting level of the list. Warning: Do not use this attribute, as it has been deprecated; use the CSS list-style-type property instead."
+					"description": "This attribute sets the bullet style for the list. The values defined under HTML3.2 and the transitional version of HTML 4.0/4.01 are: circle disc square A fourth bullet type has been defined in the WebTV interface, but not all browsers support it: triangle. If not present and if no CSS list-style-type property applies to the element, the user agent selects a bullet type depending on the nesting level of the list. Warning: Do not use this attribute, as it has been deprecated; use the CSS list-style-type property instead.",
+					"deprecated": true
 				}
 			}
 		},
@@ -56110,6 +56138,7 @@
 				},
 				"src": {
 					"description": "The location of an external source for semantic information.",
+					"deprecated": true,
 					"type": "URL"
 				}
 			}
@@ -56150,6 +56179,7 @@
 				},
 				"src": {
 					"description": "The location of an external source for semantic information.",
+					"deprecated": true,
 					"type": "URL"
 				}
 			}
@@ -56158,7 +56188,7 @@
 			"name": "mml:maction",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/maction",
-			"description": "The <maction> MathML element allows to bind actions to mathematical expressions. By default, only the first child is rendered but some browsers may take into account actiontype and selection attributes to implement custom behaviors. Note: Historically, this element provided a mechanism to make MathML formulas interactive. Nowadays, it is recommended to rely on JavaScript and other Web technologies to implement this use case.",
+			"description": "The <maction> MathML element allows you to bind actions to mathematical expressions. By default, only the first child is rendered but some browsers may take into account actiontype and selection attributes to implement custom behaviors. Note: Historically, this element provided a mechanism to make MathML formulas interactive. Nowadays, it is recommended to rely on JavaScript and other Web technologies to implement this use case.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -56187,11 +56217,13 @@
 			"attributes": {
 				"actiontype": {
 					"description": "The action which specifies what happens for this element. Special behavior for the following values were implemented by some browsers: statusline: If there is a click on the expression or the reader moves the pointer over it, the message is sent to the browser's status line. The syntax is: <maction actiontype=\"statusline\"> expression message </maction>. toggle: When there is a click on the subexpression, the rendering alternates the display of selected subexpressions. Therefore each click increments the selection value. The syntax is: <maction actiontype=\"toggle\" selection=\"positive-integer\" > expression1 expression2 expressionN </maction>.",
+					"deprecated": true,
 					"nonStandard": true,
 					"type": "Any"
 				},
 				"selection": {
 					"description": "The child element currently visible, only taken into account for actiontype=\"toggle\" or non-standard actiontype values. The default value is 1, which is the first child element.",
+					"deprecated": true,
 					"nonStandard": true,
 					"type": "Any"
 				}
@@ -56387,6 +56419,7 @@
 			"attributes": {
 				"denomalign": {
 					"description": "The alignment of the denominator under the fraction. Possible values are: left, center (default), and right.",
+					"deprecated": true,
 					"nonStandard": true
 				},
 				"linethickness": {
@@ -56395,6 +56428,7 @@
 				},
 				"numalign": {
 					"description": "The alignment of the numerator over the fraction. Possible values are: left, center (default), and right.",
+					"deprecated": true,
 					"nonStandard": true
 				}
 			}
@@ -56464,10 +56498,12 @@
 			"attributes": {
 				"subscriptshift": {
 					"description": "A <length-percentage> indicating the minimum amount to shift the baseline of the subscript down.",
+					"deprecated": true,
 					"nonStandard": true
 				},
 				"superscriptshift": {
 					"description": "A <length-percentage> indicating the minimum amount to shift the baseline of the superscript up.",
+					"deprecated": true,
 					"nonStandard": true
 				}
 			}
@@ -56936,22 +56972,27 @@
 			"attributes": {
 				"background": {
 					"description": "Use CSS property background-color instead.",
+					"deprecated": true,
 					"nonStandard": true
 				},
 				"color": {
 					"description": "Use CSS property color instead.",
+					"deprecated": true,
 					"nonStandard": true
 				},
 				"fontsize": {
 					"description": "Use CSS property font-size instead.",
+					"deprecated": true,
 					"nonStandard": true
 				},
 				"fontstyle": {
 					"description": "Use CSS property font-style instead.",
+					"deprecated": true,
 					"nonStandard": true
 				},
 				"fontweight": {
 					"description": "Use CSS property font-weight instead.",
+					"deprecated": true,
 					"nonStandard": true
 				}
 			}
@@ -56990,6 +57031,7 @@
 			"attributes": {
 				"subscriptshift": {
 					"description": "A <length-percentage> indicating the minimum amount to shift the baseline of the subscript down.",
+					"deprecated": true,
 					"nonStandard": true
 				}
 			}
@@ -57028,10 +57070,12 @@
 			"attributes": {
 				"subscriptshift": {
 					"description": "A <length-percentage> indicating the minimum amount to shift the baseline of the subscript down.",
+					"deprecated": true,
 					"nonStandard": true
 				},
 				"superscriptshift": {
 					"description": "A <length-percentage> indicating the minimum amount to shift the baseline of the superscript up.",
+					"deprecated": true,
 					"nonStandard": true
 				}
 			}
@@ -57070,6 +57114,7 @@
 			"attributes": {
 				"superscriptshift": {
 					"description": "A <length-percentage> indicating the minimum amount to shift the baseline of the superscript up.",
+					"deprecated": true,
 					"nonStandard": true
 				}
 			}
@@ -60127,7 +60172,7 @@
 			"name": "svg:fePointLight",
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/fePointLight",
-			"description": "The <fePointLight> SVG element defines a light source which allows to create a point light effect. It can be used within a lighting filter primitive: <feDiffuseLighting> or <feSpecularLighting>.",
+			"description": "The <fePointLight> SVG element defines a light source which allows you to create a point light effect. It can be used within a lighting filter primitive: <feDiffuseLighting> or <feSpecularLighting>.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -60360,7 +60405,7 @@
 			"name": "svg:feTile",
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feTile",
-			"description": "The <feTile> SVG filter primitive allows to fill a target rectangle with a repeated, tiled pattern of an input image. The effect is similar to the one of a <pattern>.",
+			"description": "The <feTile> SVG filter primitive allows you to fill a target rectangle with a repeated, tiled pattern of an input image. The effect is similar to the one of a <pattern>.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -62620,7 +62665,7 @@
 			"name": "svg:script",
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/script",
-			"description": "The <script> SVG element allows to add scripts to an SVG document. Note: While SVG's script element is equivalent to the HTML <script> element, it has some discrepancies, like it uses the href attribute instead of src and it doesn't support ECMAScript modules so far (See browser compatibility below for details)",
+			"description": "The <script> SVG element allows you to add scripts to an SVG document. Note: While SVG's script element is equivalent to the HTML <script> element, it has some discrepancies, like it uses the href attribute instead of src and it doesn't support ECMAScript modules so far (See browser compatibility below for details)",
 			"categories": [],
 			"contentModel": {
 				"contents": [
