@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 # Documentation Policy (JSDoc-first)
 
-Repository markdown must not contain WHAT or HOW that is derivable by reading code. WHY and non-derivable constraints (spec citations, invariants, intended contracts, known limitations) live in JSDoc at the closest code; architecture-level WHY lives in module-level JSDoc at the owning package's entry point. Do NOT create new `ARCHITECTURE.md` or `docs/*.md` files. See the [doc skill](.claude/skills/doc/SKILL.md) for the full policy and its exemptions (rule READMEs are website source; package READMEs are npm-facing; `docs/migration/v4-v5/` is a kept historical exception; JSDoc on public API symbols may contain WHAT for IDE users).
+Repository markdown must not contain WHAT or HOW that is derivable by reading code. WHY and non-derivable constraints (spec citations, invariants, intended contracts, known limitations) live in JSDoc at the closest code; architecture-level WHY lives in module-level JSDoc at the owning package's entry point. Do NOT create new `ARCHITECTURE.md` or `docs/*.md` files. See the [doc skill](.claude/skills/doc/SKILL.md) for the full policy and its exemptions (rule READMEs are website source; package READMEs are npm-facing; JSDoc on public API symbols may contain WHAT for IDE users).
 
 Intentional decisions that look like mistakes (full WHY at the JSDoc cited):
 

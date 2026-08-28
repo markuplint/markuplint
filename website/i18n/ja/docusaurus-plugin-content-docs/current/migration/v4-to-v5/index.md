@@ -20,6 +20,14 @@ Node.js を **v24.0.0 以降**にしてください。v5 の全パッケージ�
 詳細は[改名と分割](/docs/migration/v4-to-v5/rules/rule-names#既知の移行ギャップ)です。
 :::
 
+:::info v5 で新設されたマークアップレベルのチェック（設定の対応不要、非推奨警告なし）
+v5 では属性値以外の検証もいくつか厳格化されています（[`invalid-attr`](/docs/migration/v4-to-v5/rules/invalid-attr#上記に含まれていない追加パターン)側で個別に扱う項目とは別です）。いずれも発火に設定変更は不要で、v4 に対応する挙動が無いため非推奨警告も出ません。
+
+- **`no-prohibited-naming`**: 明示的な `role` を持たない自律型カスタム要素（`<x-y>`、`is=` なし）は、`aria-label` / `aria-labelledby` / `aria-braillelabel` を持てなくなりました。ナーミングをサポートする role を付けるか、属性を外してください。
+- **`element-supports-aria-prop`**: 3 つの文脈依存 ARIA 制約（[#3735](https://github.com/markuplint/markuplint/issues/3735)）— html-spec の定義で `properties: false` になっている要素（例: `<input type="hidden">`）はすべての `aria-*` 属性が禁止に、`button[popovertarget]`（状態は暗黙的に提供される）と `details` 内の `summary` では `aria-expanded` が禁止になりました。
+- **`permitted-contents`**: MathML 要素は子要素数の厳密なチェックが入ります（例: `mfrac` はちょうど2個の子要素が必要）。SVG の `<a>` の自己ネストは禁止（SVG2 §17.6）。`<dl>` 内の `<div>` は `dt`+/`dd`+ のグループを1つだけ許容します — 複数グループにする場合は `<dl>` 直下に並べ、`<div>` はグループごとに1つにしてください。
+  :::
+
 ## 手順
 
 1. Node.js v24 以降。CI も更新。[Node.js](/docs/migration/v4-to-v5/nodejs)。

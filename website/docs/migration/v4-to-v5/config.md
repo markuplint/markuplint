@@ -77,6 +77,10 @@ Violations expose `ruleId` (base rule) and `name` (group). `specConformance` is 
 
 **Pretender `data`:** concatenated (v4 replaced). `files` / `imports` still override.
 
+## `nodeRules` selectors match HTML attribute names case-insensitively
+
+Per HTML LS / Selectors L4, attribute names are ASCII case-insensitive when the element is in the HTML namespace. v4's selector engine compared them case-sensitively; v5 folds case for HTML elements, so `[charset]` now also matches `<meta CHARSET="utf-8">`. This can widen — or, if you relied on the old mismatch to exclude something, narrow — which elements your own `nodeRules` selectors target. SVG and MathML elements are unaffected: attribute names there stay case-sensitive (`[viewBox]` does not match `viewbox`).
+
 ## Pretenders on standard tags {#pretenders-no-longer-apply-to-standard-html-tags}
 
 A pretender whose selector is a recognized HTML/SVG element is ignored ([issue #3740](https://github.com/markuplint/markuplint/issues/3740)). Use per-rule disable/severity to silence a built-in tag; do not masquerade it as another element.

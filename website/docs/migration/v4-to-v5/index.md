@@ -20,6 +20,14 @@ Almost every renamed or split rule still works under the old name until v6. Thes
 Details: [Renames and Splits](/docs/migration/v4-to-v5/rules/rule-names#known-migration-gap).
 :::
 
+:::info New markup-level checks in v5 (no config action, no deprecation warning)
+v5 also tightened several checks unrelated to attribute values (covered separately in [`invalid-attr`](/docs/migration/v4-to-v5/rules/invalid-attr#additional-patterns-not-covered-above)). None of these need a config change to fire, and none have a v4 equivalent to deprecate:
+
+- **`no-prohibited-naming`**: autonomous custom elements (`<x-y>`, no `is=`) without an explicit `role` can no longer carry `aria-label` / `aria-labelledby` / `aria-braillelabel`. Add a role that supports naming, or drop the attribute.
+- **`element-supports-aria-prop`**: three contextual ARIA constraints ([#3735](https://github.com/markuplint/markuplint/issues/3735)) — elements whose html-spec entry sets `properties: false` (e.g. `<input type="hidden">`) reject every `aria-*` attribute; `aria-expanded` is now disallowed on `button[popovertarget]` (the state is implicit) and on `summary` inside `details`.
+- **`permitted-contents`**: MathML elements enforce their exact child count (e.g. `mfrac` requires exactly two children); nested SVG `<a>` is rejected (SVG2 §17.6); a `<div>` inside `<dl>` now allows only one `dt`+/`dd`+ group — repeat groups directly under `<dl>`, one `<div>` per group.
+  :::
+
 ## Procedure
 
 1. Install Node.js v24+. Update CI. See [Node.js](/docs/migration/v4-to-v5/nodejs).
