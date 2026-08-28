@@ -22,6 +22,25 @@ on:
             - '.oxlintrc.json'
             - 'cspell.json'
             - 'vscode/**'
+    push:
+        branches:
+            - dev
+        paths:
+            - '.github/workflows/test.yml'
+            - 'vitest.config.ts'
+            - 'vitest.cross-os.config.ts'
+            - 'package.json'
+            - 'packages/**'
+            - '!**/*.md'
+            - 'packages/@markuplint/config-presets/src/README.md'
+            - 'test/**'
+            - 'tests/external/bench/**'
+            - 'yarn.lock'
+            - '.yarnrc.yml'
+            - '.oxfmtrc.json'
+            - '.oxlintrc.json'
+            - 'cspell.json'
+            - 'vscode/**'
 
 env:
     NODE_BUILD_VERSION: 26

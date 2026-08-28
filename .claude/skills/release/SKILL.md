@@ -3,24 +3,76 @@ name: release
 metadata:
   internal: true
 description: >
-  Release markuplint — version bump (lerna fixed mode), tag push, publish
-  workflow monitoring, npm-state verification, GitHub Release notes, and X
-  post drafting. Use when asked to release, publish, or cut a new version.
+  Release markuplint — branch promotion, version bump (lerna fixed mode), tag
+  push, publish workflow monitoring, npm-state verification, GitHub Release
+  notes, and X post drafting. Use when asked to release, publish, or cut a new
+  version.
 disable-model-invocation: true
 ---
 
 # Preconditions
 
 - **Fixed versioning**: all packages share one version (`lerna.json` `version`).
-- Releases are cut from `dev`. Pushing a `v*` tag triggers `.github/workflows/publish.yml`, which runs `lerna publish from-git` with a dist-tag derived from the version string (`-alpha.*` → `alpha`, `-beta.*` → `beta`, `-rc.*` → `rc`, no prerelease suffix → `latest`) via npm OIDC Trusted Publishing.
+- **The release branch is not the development branch.** See [Branch model](#branch-model) — getting this wrong is the single most common mistake in this repository.
+- Pushing a `v*` tag triggers `.github/workflows/publish.yml`, which runs `lerna publish from-git` with a dist-tag derived from the version string (`-alpha.*` → `alpha`, `-beta.*` → `beta`, `-rc.*` → `rc`, no prerelease suffix → `latest`) via npm OIDC Trusted Publishing.
 - **Publishing cannot be undone.** Confirm with the user at each gate.
 - The VS Code extension ships separately (`yarn vscode:package` to verify the VSIX build locally, then `yarn vscode:release`) and is out of scope here.
 
+# Branch model
+
+| Release type | Cut from | How work gets there |
+| --- | --- | --- |
+| **Stable** (`X.Y.Z`) | `main` | Merge `dev` (or the prerelease branch) into `main` first, then run `yarn release` on `main` |
+| **Prerelease** (`-rc.N` / `-beta.N` / `-alpha.N`) | A dedicated branch, e.g. `v5-rc`, `v5-alpha` | Branch off `dev`, run `yarn release:rc` there, then merge that branch back into `dev` |
+| Development | `dev` (v5 line), `v4` (v4 maintenance) | — never released from directly |
+
+Verify the claim rather than trusting this table if anything looks off:
+
+```bash
+git log --oneline main --grep="chore(release)"   # stable releases live on main
+git log --oneline v5-rc --grep="chore(release)"  # rc.0–rc.4 live on v5-rc
+```
+
+Three consequences that matter:
+
+- **`main` looking "stale" is normal.** It carries the last released version until the next release. Merging into `main` *is* the release act, not a chore someone forgot.
+- **Never run `yarn release` on `dev`.** `.husky/pre-commit` rejects every commit on `dev`, and Lerna only passes `--no-verify` when `commitHooks` is `false` (it defaults to `true`), so the version commit is refused. `main` and the prerelease branches are not guarded.
+- **Prereleases are rare** — the v5 cycle is the only one so far. Keep using a dedicated branch for them; the v6 line will need the same.
+
+## What the `main` merge switches over
+
+For a stable release, merging into `main` flips four user-facing surfaces at once. There is no way to stage them separately, so treat the merge as the point of no return:
+
+| Surface | Wiring |
+| --- | --- |
+| npm packages | the `v*` tag push fires `publish.yml` |
+| markuplint.dev (production docs) | `website/config.js` — no `NEXT_VERSION` ⇒ production URL, editUrl `main` |
+| JSON Schema | `config.schema.json` and every rule `schema.json` `$ref` a `raw.githubusercontent.com/.../main/...` URL |
+| VS Code completion | `vscode/package.json` — `markuplint.defaultConfig` `$ref` and `jsonValidation[0].url` point at that same schema |
+
+Website changes therefore reach production in the same step. Confirm with the user that the website is in a shippable state before merging.
+
 # Steps
 
-## 1. Working tree and branch
+## 1. Determine the release type and target branch
 
-`git status` must be clean, on `dev`, up to date (`git pull origin dev`). Anything dirty or diverged: report and wait for instructions.
+Ask the user for the release type if it is not already clear, then pick the branch from [Branch model](#branch-model). Everything below writes `<release-branch>` for that branch.
+
+`git status` must be clean. Anything dirty: report and wait for instructions.
+
+```bash
+git fetch origin
+git checkout <release-branch>
+git pull origin <release-branch>
+```
+
+For a **stable** release, merge the source branch in first and let the user review the diff before continuing:
+
+```bash
+git merge origin/dev          # or the prerelease branch, e.g. origin/v5-rc
+```
+
+For a **prerelease**, create the branch from `dev` if it does not exist yet (`git checkout -b v6-rc origin/dev`).
 
 ## 2. Unmerged PRs
 
@@ -28,15 +80,17 @@ disable-model-invocation: true
 gh pr list --base dev --state open
 ```
 
-Present anything that looks release-relevant; confirm whether to continue.
+Present anything that looks release-relevant; confirm whether to continue. (PRs target `dev`, not the release branch.)
 
 ## 3. Pre-checks
 
-`yarn lint-check`, `yarn build`, `yarn test` must all pass in this session. Also confirm `dev` CI is green:
+`yarn lint-check`, `yarn build`, `yarn test` must all pass **in this session, on the release branch after the merge**. This is the only real gate:
 
-```bash
-gh run list --branch dev --limit 5
-```
+- `.github/workflows/test.yml` also triggers on `push` to `dev` (added alongside this skill's rewrite), so `gh run list --branch dev --workflow=test.yml` is real evidence for `dev`. It is not evidence for `main` or a prerelease branch — those still need this session's own `yarn lint-check && yarn build && yarn test`.
+- Yarn 4 does not run arbitrary pre/post lifecycle hooks, so the root `prerelease` script (build + test) is NOT executed by any `yarn release*` variant.
+- `publish.yml` does not run tests either — it installs, builds, and publishes.
+
+If the release touches any rule the benchmark covers, also run `yarn bench:xref --audit` (see the `bench-xref` skill).
 
 ## 4. Present release contents
 
@@ -52,14 +106,14 @@ Show the current version (`lerna.json`). `yarn release` derives the next version
 `lerna version` is an interactive command (selection/confirmation prompts) that cannot be driven through the `!` prefix — the prompt renders but accepts no input. Ask the user to:
 
 1. Exit the Claude Code session (`exit`)
-2. Run the release command directly in the terminal and answer the prompts
+2. Confirm they are on `<release-branch>`, then run the release command directly in the terminal and answer the prompts
 3. Return to this conversation with `claude --continue`
 
 ```
-yarn release          # graduate (stable) — the standard path
+yarn release          # graduate (stable) — run on main
 ```
 
-Guide to a prerelease variant only when the user has explicitly asked for one:
+For a prerelease, on the dedicated branch:
 
 ```
 yarn release:rc       # RC prerelease
@@ -69,7 +123,7 @@ yarn release:alpha    # alpha prerelease
 
 Notes:
 
-- Yarn 4 does not run arbitrary pre/post lifecycle hooks, so the root `prerelease` script (build + test) is NOT executed automatically by any variant — step 3 must have passed in this session.
+- Graduating from a prerelease: `--conventional-graduate` targets every package carrying a prerelease id, and `semver.inc` returns the same base version for major, minor and patch alike — `5.0.0-rc.4` becomes `5.0.0` even when the range contains a `feat!`.
 - All variants use `--no-push`: the version commit and tag stay local until step 6.
 
 ## 6. Push the version commit and tag
@@ -78,11 +132,18 @@ Verify the tag exists locally, then push:
 
 ```bash
 git tag --points-at HEAD
-git push origin dev --follow-tags
+git push origin <release-branch> --follow-tags
 git ls-remote --tags origin
 ```
 
-## 7. Watch the publish workflow
+## 7. Merge back
+
+- **Stable**: merge `main` back into `dev` so the version commit is not lost (`git checkout dev && git merge origin/main`, then push via a PR if `dev` is protected).
+- **Prerelease**: merge the prerelease branch into `dev`.
+
+Do this before step 8 so a failure in verification does not leave the branches diverged.
+
+## 8. Watch the publish workflow
 
 The `v*` tag push fires `publish.yml`:
 
@@ -90,9 +151,9 @@ The `v*` tag push fires `publish.yml`:
 gh run watch --exit-status
 ```
 
-On failure, show the log URL and go to step 9.
+On failure, show the log URL and go to step 10.
 
-## 8. Verify npm state (the actual success gate)
+## 9. Verify npm state (the actual success gate)
 
 Workflow success only means the publish process exited 0. Verify the registry:
 
@@ -108,13 +169,13 @@ npm view @markuplint/rules dist-tags
 
 **Do not report the release as done before this step passes.**
 
-## 9. Failure handling
+## 10. Failure handling
 
 - **Workflow failed before anything published**: fix the cause, `gh run rerun`.
 - **Partial publish**: published versions are immutable. Ask the user before retrying — options are `gh run rerun` (re-attempts the same tag) or a local `npx lerna publish from-package` (publishes only versions missing from the registry; requires local npm auth, which OIDC does not provide).
 - **Wrong version published**: unpublish is generally impossible. Propose `npm deprecate <package>@<version> "<reason>"` plus a corrected follow-up release — only with the user's explicit approval.
 
-## 10. GitHub Release notes
+## 11. GitHub Release notes
 
 Create a GitHub Release for the tag. All content in **English**.
 
@@ -180,7 +241,7 @@ Formatting rules:
 - `Updated Packages` lists only packages with version bumps in this release
 - Omit sections that have no entries
 
-## 11. X (Twitter) post
+## 12. X (Twitter) post
 
 Generate an X post message and present it to the user for copying.
 
