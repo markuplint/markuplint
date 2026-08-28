@@ -31,21 +31,20 @@ Use this skill when the user requests any of the following:
 **Documentation base URL**: check the target v5 version with `npx markuplint --version`. If it contains `alpha`, `beta`, or `rc`, use `https://next.markuplint.dev`; otherwise use `https://markuplint.dev`.
 
 - **Website guide (users):** `{base}/docs/migration/v4-to-v5/`
-- **GitHub guide (markuplint source tree):** prefer `docs/migration/v4-v5/` over the live site — it is the browsable source with the same facts
 
-**Required pages:** index (`README.md` / index), [Renames and splits](docs/migration/v4-v5/rule-names.md), [ARIA](docs/migration/v4-v5/aria.md), [CLI](docs/migration/v4-v5/cli.md), [Config](docs/migration/v4-v5/config.md)
+**Required pages:** `{base}/docs/migration/v4-to-v5/` (index), `{base}/docs/migration/v4-to-v5/rules/rule-names` (renames and splits), `{base}/docs/migration/v4-to-v5/aria`, `{base}/docs/migration/v4-to-v5/cli`, `{base}/docs/migration/v4-to-v5/config`
 
 Also fetch when the config uses the feature:
 
-| Topic | GitHub path | Website path |
-| --- | --- | --- |
-| Framework parsers | `docs/migration/v4-v5/framework.md` | `{base}/docs/migration/v4-to-v5/framework` |
-| `invalid-attr` split | `docs/migration/v4-v5/rules/invalid-attr.md` | `{base}/docs/migration/v4-to-v5/rules/invalid-attr` |
-| `required-element` | `docs/migration/v4-v5/rules/required-element.md` | `{base}/docs/migration/v4-to-v5/rules/required-element` |
-| `deprecated-element` | `docs/migration/v4-v5/rules/deprecated-element.md` | `{base}/docs/migration/v4-to-v5/rules/deprecated-element` |
-| Table model | `docs/migration/v4-v5/rules/table-row-column-alignment.md` | `{base}/docs/migration/v4-to-v5/rules/table-row-column-alignment` |
-| Parse errors (opt-in) | `docs/migration/v4-v5/rules/parse-error.md` | `{base}/docs/migration/v4-to-v5/rules/parse-error` |
-| textlint removal | `docs/migration/v4-v5/rules/textlint.md` | `{base}/docs/migration/v4-to-v5/rules/textlint` |
+| Topic | Website path |
+| --- | --- |
+| Framework parsers | `{base}/docs/migration/v4-to-v5/framework` |
+| `invalid-attr` split | `{base}/docs/migration/v4-to-v5/rules/invalid-attr` |
+| `required-element` | `{base}/docs/migration/v4-to-v5/rules/required-element` |
+| `deprecated-element` | `{base}/docs/migration/v4-to-v5/rules/deprecated-element` |
+| Table model | `{base}/docs/migration/v4-to-v5/rules/table-row-column-alignment` |
+| Parse errors (opt-in) | `{base}/docs/migration/v4-to-v5/rules/parse-error` |
+| textlint removal | `{base}/docs/migration/v4-to-v5/rules/textlint` |
 
 Inspect `node_modules` presets and `rule-aliases` only to confirm what the installed v5 actually expands — do not invent names from memory.
 
