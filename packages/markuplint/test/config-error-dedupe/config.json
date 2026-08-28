@@ -1,0 +1,6 @@
+{
+	"rules": {
+		"id-duplication": true,
+		"required-attr": true
+	}
+}

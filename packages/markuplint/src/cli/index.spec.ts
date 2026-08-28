@@ -419,6 +419,41 @@ describe('Issues', () => {
 	});
 });
 
+describe('config-error deduplication', () => {
+	const fixtureDir = path.resolve(import.meta.dirname, '../../test/config-error-dedupe');
+	const configPath = path.join(fixtureDir, 'config.json');
+	const targetFiles = ['clean-1.html', 'clean-2.html', 'clean-3.html'].map(name => path.join(fixtureDir, name));
+
+	test('the same deprecated-rule message is reported once per run, not once per file', async () => {
+		const { stdout } = await execa(
+			entryFilePath,
+			['--config', escape(configPath), '--no-search-config', '--format', 'json', ...targetFiles.map(escape)],
+			{ reject: false },
+		);
+
+		const violations = JSON.parse(stdout) as { ruleId: string; message: string; filePath: string }[];
+		const configErrorMessages = violations.filter(v => v.ruleId === 'config-error').map(v => v.message);
+
+		// Two deprecated rule names in the config, three identical files: without
+		// dedupe this would be 6 (one pair per file), not 2.
+		expect(configErrorMessages).toHaveLength(2);
+		expect(new Set(configErrorMessages).size).toBe(2);
+	});
+
+	test('a file whose only violations are config-error counts as passed, not failed', async () => {
+		const { stderr } = await execa(
+			entryFilePath,
+			['--config', escape(configPath), '--no-search-config', ...targetFiles.map(escape)],
+			{ reject: false },
+		);
+
+		// All three files are clean HTML; the config-level deprecation notices
+		// are attributed to whichever file reports them first, but none of the
+		// files has a markup violation of its own.
+		expect(stderr).toContain('3 files checked: 3 passed, 0 failed');
+	});
+});
+
 describe('--max-warnings option', () => {
 	test('--max-warnings=-1 (default) does not limit warnings', async () => {
 		const targetFilePath = path.resolve(import.meta.dirname, '../../../../test/fixture/002.html');

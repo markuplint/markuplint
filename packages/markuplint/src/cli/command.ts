@@ -78,6 +78,12 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 	const collector = new ViolationCollector(options.maxCount);
 	const processedFiles: string[] = [];
 	const skippedFiles: string[] = [];
+	// `config-error` violations (deprecated rule names, unresolved rule
+	// references, ...) come from resolving this run's config, so the same
+	// message is identical across every file. Track messages already
+	// reported once so a run over many files doesn't repeat the same lines
+	// per file — the config is one thing, not N things.
+	const seenConfigMessages = new Set<string>();
 	const filesContent = new Map<string, { sourceCode: string; fixedCode: string }>();
 	const engines = new Map<string, MLEngine>();
 	const severityParseError = options.severityParseError?.toLowerCase();
@@ -148,9 +154,24 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 		// the exit code and suppressions reflect the written output.
 		// With --fix-dry-run the file is NOT modified, so keep the first-pass
 		// violations, which match the file on disk.
-		const reportedViolations = fixDryRun
+		const violationsBeforeDedupe = fixDryRun
 			? result.violations
 			: (result.fixSummary?.finalPassViolations ?? result.violations);
+
+		// `config-error` is regenerated fresh per file (config resolution is
+		// not shared across a run), so an identical message would otherwise
+		// repeat once per file. Keep only the first occurrence across this run.
+		const reportedViolations = violationsBeforeDedupe.filter(violation => {
+			if (violation.ruleId !== 'config-error') {
+				return true;
+			}
+			const key = `${violation.ruleId} ${violation.message}`;
+			if (seenConfigMessages.has(key)) {
+				return false;
+			}
+			seenConfigMessages.add(key);
+			return true;
+		});
 
 		// Progressive出力が有効でJSON形式でない場合
 		if (options.progressiveOutput && format !== 'json') {
@@ -358,7 +379,10 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 
 	for (const filePath of processedFiles) {
 		const violations = outputViolationsByFile.get(filePath) || [];
-		if (violations.length > 0) {
+		// A file whose only violations are `config-error` didn't fail on its
+		// own content — the config issue is reported once for the whole run
+		// (see the dedupe above), not attributable to this particular file.
+		if (violations.some(violation => violation.ruleId !== 'config-error')) {
 			failedFileCount++;
 		}
 		for (const violation of violations) {
