@@ -16,7 +16,11 @@ Constraints and judgment rules for editing spec data. None of this is derivable 
 
 - Manual `src/spec.*.jsonc` data overrides same-named MDN-scraped data. Use this to correct inaccurate MDN data.
 - MDN-only attributes (no manual entry) can only be overridden or suppressed by ADDING a manual entry — merely deleting nothing has no effect.
-- In a regenerated diff: minor MDN description rewording, new MDN-sourced attributes, and flag transitions → commit as-is. Substantive changes (ARIA mappings, content models) → require manual spec edits verified against HTML Living Standard / WAI-ARIA / HTML-ARIA (fetch the live spec; MDN is not the authority).
+- In a regenerated diff: minor MDN description rewording and new MDN-sourced attributes → commit as-is. Substantive changes (ARIA mappings, content models) → require manual spec edits verified against HTML Living Standard / WAI-ARIA / HTML-ARIA (fetch the live spec; MDN is not the authority).
+- **Flag transitions (`deprecated` / `nonStandard` / `experimental` / `obsolete` appearing or disappearing) are data updates only when they're isolated — a handful of attributes on a page that genuinely changed status.** If a regeneration flips dozens of flags at once across unrelated elements, that is a scraper regression, not an MDN update: MDN's page markup (badge class names, section structure) changes far more often than the underlying status does. Before committing a mass flag change, check in this order:
+  1. Does [BCD](https://github.com/mdn/browser-compat-data) still mark the feature with the flag in question for the affected items? (`api.status` in the relevant `browser-compat-data/*.json`, or `npx bcd-utils` if available)
+  2. Does the MDN page's source markdown ([mdn/content](https://github.com/mdn/content)) still carry the corresponding macro (e.g. `{{deprecated_inline}}`, `{{non-standard_inline}}`) for those items?
+  3. If both still say yes, fetch the live rendered page and compare its actual badge markup (class names, `title` text) against what `generator/scraping.ts` selects for. A renamed or restructured badge — not a real status change — is the usual cause. Confirm by checking whether _other_ flags scraped from the same `<dt>` (e.g. `nonStandard`, `experimental`) also went missing; if only one flag type vanished across many elements while sibling flags on the same nodes stayed intact, the selector for that one flag is stale.
 
 ## ARIA version placement
 
