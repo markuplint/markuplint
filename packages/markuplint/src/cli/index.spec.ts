@@ -345,6 +345,41 @@ describe('STDOUT Test', () => {
 		expect(stderr).toContain('✖ 3 problems (0 errors, 3 warnings) in 2 files');
 		expect(stderr).toContain('2 files checked: 1 passed, 1 failed');
 	});
+
+	test('--max-count truncation is identical with and without --progressive-output', async () => {
+		const targetFiles = [
+			path.resolve(import.meta.dirname, '../../../../test/fixture/001.html'), // No violations
+			path.resolve(import.meta.dirname, '../../../../test/fixture/002.html'), // Has violations
+			path.resolve(import.meta.dirname, '../../../../test/fixture/003.html'), // Should be skipped
+		];
+
+		const [batch, progressive] = await Promise.all([
+			execa(
+				entryFilePath,
+				[
+					'--no-color',
+					'--max-count=3',
+					'--format=simple',
+					'--no-progressive-output',
+					...targetFiles.map(escape),
+				],
+				{ reject: false },
+			),
+			execa(
+				entryFilePath,
+				['--no-color', '--max-count=3', '--format=simple', '--progressive-output', ...targetFiles.map(escape)],
+				{ reject: false },
+			),
+		]);
+
+		// `--max-count` truncates across the whole run, not per file, so
+		// progressive output must fall back to batch mode to respect it —
+		// otherwise it would print every violation in the file that hits the
+		// limit, and never print the skipped-file notice for later files.
+		expect(progressive.stdout).toBe(batch.stdout);
+		expect(progressive.stderr).toBe(batch.stderr);
+		expect(progressive.exitCode).toBe(batch.exitCode);
+	});
 });
 
 describe('Issues', () => {

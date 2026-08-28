@@ -36,3 +36,19 @@ v4: `--config file` loaded that file **and** auto-discovered `.markuplintrc`, th
 v5: `--config file` loads **only** that file.
 
 If you relied on the merge, `extends` the project config from the file you pass to `--config`.
+
+## Progressive output by default
+
+v4: results were printed only after every file had been processed.
+
+v5: results print immediately as each file is processed. Restore v4 with `--no-progressive-output`.
+
+```bash
+# v4 default
+markuplint --no-progressive-output "**/*.html"
+
+# v5 default (no flag needed)
+markuplint "**/*.html"
+```
+
+JSON output (`--format json`) is unaffected, and always uses batch mode.
