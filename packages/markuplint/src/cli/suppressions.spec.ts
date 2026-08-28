@@ -141,4 +141,32 @@ describe('Bulk Suppressions CLI', { timeout: 30_000 }, () => {
 		expect(exitCode).toBe(1);
 		expect(stderr).toContain('cannot be used together');
 	});
+
+	test('--progressive-output does not print violations suppressed by an active suppressions file', async () => {
+		const suppressionsFile = path.join(tmpDir, 'markuplint-suppressions.json');
+
+		// First, generate suppressions for no-duplicate-attr
+		await execa(entryFilePath, ['--suppress', '--suppressions-location', suppressionsFile, targetFile], {
+			reject: false,
+		});
+
+		const [withoutProgressive, withProgressive] = await Promise.all([
+			execa(entryFilePath, ['--no-color', '--suppressions-location', suppressionsFile, targetFile], {
+				reject: false,
+			}),
+			execa(
+				entryFilePath,
+				['--no-color', '--progressive-output', '--suppressions-location', suppressionsFile, targetFile],
+				{ reject: false },
+			),
+		]);
+
+		// The suppressed rule must not appear in either mode, and both modes
+		// must agree, since progressive output falls back to batch mode
+		// whenever a non-empty suppressions file is active.
+		expect(withoutProgressive.stdout).not.toContain('no-duplicate-attr');
+		expect(withProgressive.stdout).not.toContain('no-duplicate-attr');
+		expect(withProgressive.stdout).toBe(withoutProgressive.stdout);
+		expect(withProgressive.exitCode).toBe(withoutProgressive.exitCode);
+	});
 });

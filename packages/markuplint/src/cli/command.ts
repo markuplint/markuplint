@@ -92,6 +92,32 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 			? { parseError: severityParseError as Severity | 'off' }
 			: {};
 
+	// Progressive output prints each file's own violations as soon as that
+	// file is processed, ahead of the two whole-run passes that batch output
+	// waits for: suppressions (applied once at the end, below, via
+	// `applySuppressions`, since scope resolution and the "unused entry"
+	// report need the complete result set) and `--max-count` truncation
+	// (enforced by `collector.pushWithFile`'s running total across files,
+	// including which file the limit is hit within and which later files are
+	// skipped entirely). Printing per file ahead of either pass would show
+	// violations, or omit a skipped-file notice, that the run's own summary
+	// and exit code then contradict. Rather than duplicate that truncation
+	// and suppression logic in the progressive branch, fall back to batch
+	// output for the whole run whenever either is in play; --suppress and
+	// --prune-suppressions manage the suppressions file directly and are
+	// unaffected.
+	let progressiveOutput = options.progressiveOutput;
+	if (progressiveOutput && options.maxCount > 0) {
+		progressiveOutput = false;
+	}
+	if (progressiveOutput && !isSuppressMode && !isPruneMode) {
+		const suppressionsFilePathForCheck = resolveSuppressionsPath(options.suppressionsLocation);
+		const existingSuppressions = await readSuppressionsFile(suppressionsFilePathForCheck);
+		if (Object.keys(existingSuppressions).length > 0) {
+			progressiveOutput = false;
+		}
+	}
+
 	for (const file of fileList) {
 		// Check if collector is already locked (max-count reached)
 		if (collector.isLocked()) {
@@ -174,7 +200,7 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 		});
 
 		// Progressive出力が有効でJSON形式でない場合
-		if (options.progressiveOutput && format !== 'json') {
+		if (progressiveOutput && format !== 'json') {
 			// 即座に出力
 			output(
 				{
@@ -330,7 +356,7 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 	}
 
 	// Progressive出力が無効の場合のみループ後に出力
-	if (!options.progressiveOutput) {
+	if (!progressiveOutput) {
 		// Output per file - include processed files without violations
 		for (const filePath of processedFiles) {
 			const violations = outputViolationsByFile.get(filePath) || [];

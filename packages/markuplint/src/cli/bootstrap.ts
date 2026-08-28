@@ -26,7 +26,7 @@ Options
 	--severity-parse-error                 Severity for the built-in parse-error channel. Supports "error", "warning", and "off". Unset by default: fatal ParserErrors emit at "error" and non-fatal parse5 events are off (opt-in per code via config).
 	--max-count                            Limit the number of violations shown. Default: 0 (no limit).
 	--max-warnings                         Number of warnings to trigger nonzero exit code. Default: -1 (no limit).
-	--progressive-output                   Output results immediately after processing each file. Default: false.
+	--no-progressive-output                Wait until every file is processed before outputting results. Default: false (output progressively).
 
 	--suppress                             [Experimental] Generate/update suppressions file for all current errors.
 	--suppress-rule RULE_ID                [Experimental] Suppress only the specified rule.
@@ -130,8 +130,7 @@ export const cli = meow(help, {
 		},
 		progressiveOutput: {
 			type: 'boolean',
-			// TODO: It will be changed to `true` in the next major version.
-			default: false,
+			default: true,
 		},
 		suppress: {
 			type: 'boolean',
