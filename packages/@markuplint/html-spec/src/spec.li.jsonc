@@ -15,6 +15,9 @@
 		"#ARIAAttrs": true
 	},
 	"attributes": {
+		"type": {
+			"deprecated": true
+		},
 		// https://html.spec.whatwg.org/multipage/grouping-content.html#attr-li-value
 		"value": {
 			"type": "Int",

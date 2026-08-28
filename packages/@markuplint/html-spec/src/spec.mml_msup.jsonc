@@ -22,7 +22,11 @@
 		"#ARIAAttrs": true,
 		"#MathMLGlobalAttrs": true
 	},
-	"attributes": {},
+	"attributes": {
+		"superscriptshift": {
+			"deprecated": true
+		}
+	},
 	"aria": {
 		"implicitRole": false,
 		"permittedRoles": true

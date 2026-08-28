@@ -19,7 +19,8 @@
 		},
 		// https://www.w3.org/TR/mathml-core/#semantics-and-presentation
 		"src": {
-			"type": "URL"
+			"type": "URL",
+			"deprecated": true
 		}
 	},
 	"aria": {

@@ -17,7 +17,11 @@
 		"#GlobalEventAttrs": true,
 		"#ARIAAttrs": true
 	},
-	"attributes": {},
+	"attributes": {
+		"version": {
+			"deprecated": true
+		}
+	},
 	"aria": {
 		"implicitRole": "generic",
 		"permittedRoles": ["document", "generic"],
