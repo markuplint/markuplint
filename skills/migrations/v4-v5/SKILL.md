@@ -110,13 +110,22 @@ Present opt-in rules (`attr-order`, `class-naming`, … — list from rule-names
 - Convert `invalid-attr` / `required-element` / framework `parser`/`specs` as agreed
 - Named preset groups (`a11y/html-lang`, `a11y/wai-aria/*`, …) can be toggled in `rules` without renaming the user's own nodeRules unless they want names
 
-### 6. Update Tests
+### 6. Triage newly flagged markup
+
+Everything above is about **config**. Separately, v5 tightened a number of built-in checks so that markup which passed under v4 now fails **with no config change involved** — see [Reference: newly flagged markup](#reference-newly-flagged-markup-no-config-change). Run markuplint once (after step 5) and treat any violation from that list as an expected v5 finding, not a false positive:
+
+- Fix the markup, or
+- If a specific case is load-bearing for this project, add a targeted `nodeRules` disable/severity override and note why
+
+Do not silence these by disabling the rule outright — they are spec-conformance checks, not new opt-in preferences.
+
+### 7. Update Tests
 
 - Run markuplint; include `ruleId` and Named Rule Group `name` in assertions when present
 - `--config` / `-c` in tests loads **only** that file
 - Attribute-order and column numbers may shift if `attr-order` is adopted
 
-### 7. Commit
+### 8. Commit
 
 Split by change type in the **user's** repo (example):
 
@@ -135,6 +144,19 @@ Split by change type in the **user's** repo (example):
 | CI on warnings | `--no-allow-warnings` |
 
 Old **renamed/split** names still work with a deprecation warning until v6. Option-routed splits (stable v4): `doctype`, `landmark-roles`, `required-h1`, `invalid-attr` — do not blindly enable every sibling.
+
+## Reference: newly flagged markup (no config change)
+
+Full detail with cited spec sections and examples: [`invalid-attr` migration page](https://markuplint.dev/docs/migration/v4-to-v5/rules/invalid-attr#newly-flagged-values-in-v5) (see also its "Additional patterns" section) and the markup-level-checks note near the top of the [index page](https://markuplint.dev/docs/migration/v4-to-v5/) (fetch via `{base}` for the prerelease-vs-stable host, per step 2). Summary, grouped by enforcing rule:
+
+| Rule | What now fails |
+| --- | --- |
+| `no-invalid-attr-value`, `no-disallowed-attr`, `require-attr` (the `invalid-attr` split) | URL Living Standard strictness on every URL-typed attribute; empty URLs on `src`/`action`/`poster`/etc.; `lang`/`hreflang` validated against the IANA subtag registry; deprecated `media=` types/features and malformed media conditions; `script` attribute applicability (e.g. `defer` on `type=module`); `meta[charset]` must be literal `utf-8`; CSP3 grammar on `meta[http-equiv=content-security-policy]`; `bdo[dir]` excludes `auto` and is required; `usemap="#"`; `itemid`/`itemtype` require `itemscope`; `input` `min`/`max` per-type format; `source[sizes]` requires `srcset` |
+| `no-prohibited-naming` | Autonomous custom elements (`<x-y>`, no `is=`) without an explicit role can't carry `aria-label`/`aria-labelledby`/`aria-braillelabel` |
+| `element-supports-aria-prop` | Elements with `properties: false` (e.g. `input[type=hidden]`) reject all `aria-*`; `aria-expanded` disallowed on `button[popovertarget]` and `summary` in `details` |
+| `permitted-contents` | MathML elements enforce exact child counts (e.g. `mfrac` needs exactly two); nested SVG `<a>` rejected; `<div>` in `<dl>` allows only one `dt`+/`dd`+ group |
+
+Also: `nodeRules` selectors now match HTML attribute names case-insensitively (`[charset]` matches `<meta CHARSET>`) — not a new violation, but can change which elements the user's own `nodeRules` target. See [Config](https://markuplint.dev/docs/migration/v4-to-v5/config).
 
 `wai-aria` expands to 21 rules; toggles are **not** mapped. See the ARIA guide for the v4 option table.
 
