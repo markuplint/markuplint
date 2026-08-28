@@ -46,6 +46,10 @@ v4 の `wai-aria` `options.version` は 21 後継には渡りません。
 
 **pretender `data`:** 連結（v4 は置き換え）。`files` / `imports` は上書きのまま。
 
+## `nodeRules` セレクタが HTML 属性名を大文字小文字非依存でマッチするように
+
+HTML LS / Selectors L4 では、要素が HTML 名前空間に属する場合、属性名は ASCII 大文字小文字非依存です。v4 のセレクタエンジンは大文字小文字を区別して比較していましたが、v5 は HTML 要素についてケースを畳み込むため、`[charset]` は `<meta CHARSET="utf-8">` にもマッチするようになりました。これにより、自分の `nodeRules` セレクタが対象とする要素の範囲が広がる（あるいは、旧来の不一致を除外のために利用していた場合は狭まる）可能性があります。SVG / MathML 要素には影響しません — そちらは引き続き大文字小文字を区別します（`[viewBox]` は `viewbox` にマッチしません）。
+
 ## 標準タグへの pretender {#pretender-が標準-html-要素には適用されなくなった}
 
 認識された HTML/SVG 要素への pretender は無視されます（[issue #3740](https://github.com/markuplint/markuplint/issues/3740)）。黙らせるならルールの disable / severity を使ってください。

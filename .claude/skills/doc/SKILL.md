@@ -21,8 +21,7 @@ Maintain documentation under this repository's documentation policy. **The imple
 4. **Do NOT create new `ARCHITECTURE.md`, `docs/*.md`, or similar explanatory markdown.** That content belongs in JSDoc (rule 2).
 5. **Exempt — rule READMEs** (`packages/@markuplint/rules/src/*/README.md` + `README.ja.md`): these are WEBSITE SOURCE (user-facing). Both languages MUST stay in sync — updating only one is a recurring mistake; always verify.
 6. **Exempt — package READMEs** (`packages/**/README.md`): npm-facing user documentation, not covered by rule 1.
-7. **Exempt — `docs/migration/v4-v5/`**: historical migration guide kept for direct GitHub browsing. Do not extend it; the maintained version lives at `website/docs/migration/v4-to-v5/`.
-8. **No plan-relative concepts** in JSDoc, test names, or documentation: Phase/Step numbers, "this PR", "the old implementation", "to be introduced". Write self-contained descriptions of current behavior and intentional absences. External references are limited to issue / PR numbers.
+7. **No plan-relative concepts** in JSDoc, test names, or documentation: Phase/Step numbers, "this PR", "the old implementation", "to be introduced". Write self-contained descriptions of current behavior and intentional absences. External references are limited to issue / PR numbers.
 
 # Rules
 

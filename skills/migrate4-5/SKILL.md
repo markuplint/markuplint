@@ -5,7 +5,7 @@ description: Deprecated install path for the v4-to-v5 migration skill. Prefer np
 
 # migrate4-5 (legacy install path)
 
-This directory exists so `npx skills add markuplint/markuplint@migrate4-5` keeps resolving after the skill moved to **`skills/migrations/v4-v5/`** (mirroring `docs/migration/v4-v5/`).
+This directory exists so `npx skills add markuplint/markuplint@migrate4-5` keeps resolving after the skill moved to **`skills/migrations/v4-v5/`**.
 
 **Canonical install:**
 
