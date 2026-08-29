@@ -9,7 +9,37 @@ on:
             - 'vscode/**'
 
 jobs:
+    check:
+        runs-on: ubuntu-latest
+        outputs:
+            release-only: ${{ steps.check.outputs.release-only }}
+        steps:
+            - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+              with:
+                  # SEE: https://github.com/lerna/lerna/issues/2542
+                  fetch-depth: '0'
+
+            - name: Check whether the vscode/** diff is release-only
+              id: check
+              run: |
+                  CHANGED=$(git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}" -- vscode/ | sort)
+                  EXPECTED=$(printf 'vscode/CHANGELOG.md\nvscode/package.json')
+                  # A version-bump PR touches exactly these two files together —
+                  # never the extension's own source or scripts, and never just one
+                  # of the two (a real dependency bump, e.g. from Renovate, only
+                  # touches package.json). Packaging a release-only diff exercises
+                  # nothing new and, right after a tag push, can spuriously fail on
+                  # the npm-registry propagation race for a workspace package that
+                  # publish.yml is still publishing (see #4010).
+                  if [ "$CHANGED" = "$EXPECTED" ]; then
+                    echo "release-only=true" >> "$GITHUB_OUTPUT"
+                  else
+                    echo "release-only=false" >> "$GITHUB_OUTPUT"
+                  fi
+
     build:
+        needs: check
+        if: needs.check.outputs.release-only != 'true'
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
