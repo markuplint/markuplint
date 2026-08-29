@@ -169,6 +169,9 @@ export const benchmarkConfig: Config = {
 		// remediation is a UX-shape choice (remove aria-hidden vs. remove focus), not a purely
 		// mechanical fix; the bench escalates to align with the ARIA-in-HTML MUST NOT.
 		'no-focusable-in-aria-hidden': { severity: 'error' },
+		// ARIA in HTML §att-hidden: "authors MUST NOT use aria-hidden=\"true\" on any element
+		// which also has the hidden attribute specified in the Hidden Until Found state."
+		'no-aria-hidden-on-hidden-until-found': true,
 		'no-invalid-aria-prop-value': true,
 		'require-owned-elements': true,
 		'require-parent-role': true,
