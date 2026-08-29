@@ -327,12 +327,25 @@ Controls the severity of parse errors. Set to `"off"` or `false` to suppress par
 }
 ```
 
+#### `deprecation`
+
+Controls the severity of deprecated-rule-name notices (a rule name from before the v5 rule-system redesign that still resolves but will be removed in v6). Defaults to `"warning"`. Set to `"off"` or `false` to suppress these notices.
+
+```json class=config
+{
+  "severity": {
+    "deprecation": "off"
+  }
+}
+```
+
 #### Interface {#severity/interface}
 
 ```ts
 interface Config {
   severity?: {
     parseError?: 'error' | 'warning' | 'info' | 'off' | boolean;
+    deprecation?: 'error' | 'warning' | 'info' | 'off' | boolean;
   };
 }
 ```

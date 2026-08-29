@@ -302,12 +302,25 @@ interface Config {
 }
 ```
 
+#### `deprecation`
+
+非推奨のルール名に関する通知（v5 のルール体系再設計より前の名前で、現在も解決はできるが v6 で削除される予定のもの）の深刻度を制御します。デフォルトは `"warning"` です。`"off"` または `false` を設定するとこの通知を抑制できます。
+
+```json class=config
+{
+  "severity": {
+    "deprecation": "off"
+  }
+}
+```
+
 #### インターフェイス {#severity/interface}
 
 ```ts
 interface Config {
   severity?: {
     parseError?: 'error' | 'warning' | 'info' | 'off' | boolean;
+    deprecation?: 'error' | 'warning' | 'info' | 'off' | boolean;
   };
 }
 ```
