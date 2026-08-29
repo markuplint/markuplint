@@ -17,6 +17,15 @@ jobs:
         # https://securitylab.github.com/research/github-actions-preventing-pwn-requests/
         if: github.event_name == 'push' || contains(github.event.pull_request.labels.*.name, 'pull_request_target ok')
         runs-on: ubuntu-latest
+        # A healthy run completes in ~1-2 minutes on a cache hit (checkout +
+        # install + a handful of screenshots); a cold cache (yarn.lock or
+        # Playwright version bump) can push that out by several minutes for
+        # `yarn install`/`apt-get`/browser download. 30 minutes leaves ample
+        # room above either case while still cutting off the platform
+        # default of 360 minutes, which is exactly what let a hung
+        # `playwright install` step burn 6 hours per run instead of failing
+        # fast — see #4000.
+        timeout-minutes: 30
         steps:
             - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
               with:
@@ -48,6 +57,11 @@ jobs:
                   key: playwright-${{ runner.os }}-${{ hashFiles('website/yarn.lock') }}
 
             - name: Install Playwright Browsers
+              # Step-level timeout, tighter than the job's, so a hang here
+              # specifically (the observed failure mode in #4000) is
+              # attributed to this step rather than surfacing as a generic
+              # job timeout.
+              timeout-minutes: 10
               run: cd website && npx playwright install --with-deps chromium
 
             - name: Capture screenshots
