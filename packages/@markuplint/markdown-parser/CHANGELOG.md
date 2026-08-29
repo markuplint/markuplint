@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-rc.5](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.4...v5.0.0-rc.5) (2026-08-28)
+
+### Features
+
+- **markdown-parser,pug-parser:** force fragment parsing for embedded HTML ([57c4172](https://github.com/markuplint/markuplint/commit/57c4172d5a68adb7e20a4f4e4d8dbe802983e3ca)), closes [#3844](https://github.com/markuplint/markuplint/issues/3844)
+- **markdown-parser,pug-parser:** forward embedded HTML parseErrors to outer document ([9ec7988](https://github.com/markuplint/markuplint/commit/9ec79882840cbedd76c5b8f774ff10c876d2c858)), closes [#3844](https://github.com/markuplint/markuplint/issues/3844)
+
 # [5.0.0-rc.4](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.3...v5.0.0-rc.4) (2026-04-19)
 
 **Note:** Version bump only for package @markuplint/markdown-parser

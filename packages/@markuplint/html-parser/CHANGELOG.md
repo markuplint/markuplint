@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-rc.5](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.4...v5.0.0-rc.5) (2026-08-28)
+
+### Features
+
+- **html-parser:** honour parserOptions.documentMode ([36aa8b9](https://github.com/markuplint/markuplint/commit/36aa8b9eea2d28f7799a77164b20e635b4be947d)), closes [#3844](https://github.com/markuplint/markuplint/issues/3844)
+- **html-parser:** wire parse5 onParseError into MLASTDocument.parseErrors ([e3d0927](https://github.com/markuplint/markuplint/commit/e3d09278015d59dd33753d3e64ab05d3d0814bc7)), closes [#3844](https://github.com/markuplint/markuplint/issues/3844)
+
 # [5.0.0-rc.4](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.3...v5.0.0-rc.4) (2026-04-19)
 
 **Note:** Version bump only for package @markuplint/html-parser

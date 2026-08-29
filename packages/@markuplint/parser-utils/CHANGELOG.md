@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-rc.5](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.4...v5.0.0-rc.5) (2026-08-28)
+
+### Bug Fixes
+
+- **parser-utils:** handle raw-text element body in parseCodeFragment per HTML LS §13.2.5.1 ([4a1b0f7](https://github.com/markuplint/markuplint/commit/4a1b0f701c5c0eec91b325c4f3a9f9fb773766e8)), closes [#3825](https://github.com/markuplint/markuplint/issues/3825)
+
+### Features
+
+- **parser-utils:** introduce accumulateParseErrors() for embedded parser delegation ([49e15d6](https://github.com/markuplint/markuplint/commit/49e15d6f528282ca145e77baf03ae8f6561b2b09)), closes [#3844](https://github.com/markuplint/markuplint/issues/3844)
+- **parser-utils:** propagate Tokenized.parseErrors onto MLASTDocument ([37c8430](https://github.com/markuplint/markuplint/commit/37c8430f454d24d691e093fda9e9fb71b658b4d2)), closes [#3844](https://github.com/markuplint/markuplint/issues/3844)
+
 # [5.0.0-rc.4](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.3...v5.0.0-rc.4) (2026-04-19)
 
 **Note:** Version bump only for package @markuplint/parser-utils

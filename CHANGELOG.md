@@ -3,6 +3,198 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-rc.5](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.4...v5.0.0-rc.5) (2026-08-28)
+
+### Bug Fixes
+
+- **astro-parser:** discriminate astro-eslint-parser ParseError from Tier 1 SyntaxError ([f961bf8](https://github.com/markuplint/markuplint/commit/f961bf8a89e3713565b06ff51bd214e6d69dea3e))
+- **astro-parser:** preserve spread attributes containing TypeScript and expression-child siblings ([0e4c64d](https://github.com/markuplint/markuplint/commit/0e4c64d90f77f9350a4895f24ba07ec90eda6546)), closes [#3856](https://github.com/markuplint/markuplint/issues/3856)
+- **astro-parser:** stop surfacing non-fatal Astro diagnostics as parse errors ([3a2c262](https://github.com/markuplint/markuplint/commit/3a2c262316e58196838ab075d5a554751cd976ac)), closes [#3834](https://github.com/markuplint/markuplint/issues/3834) [#3823](https://github.com/markuplint/markuplint/issues/3823)
+- drop the min/max ordering exclusion — HTML LS mandates the ordering ([9315931](https://github.com/markuplint/markuplint/commit/9315931c0764001e783a067fcfcbb29cabe46647))
+- **file-resolver:** make generalImport() OS-independent for POSIX absolute paths ([23aa492](https://github.com/markuplint/markuplint/commit/23aa492202a4b305022651210d9fc413e9baef2d)), closes [#3841](https://github.com/markuplint/markuplint/issues/3841) [#3843](https://github.com/markuplint/markuplint/issues/3843) [#3840](https://github.com/markuplint/markuplint/issues/3840)
+- **github:** derive sandbox Yarn version from root packageManager ([0a89270](https://github.com/markuplint/markuplint/commit/0a892703ccf67d5e118c7e14498aa9a60ba033ee)), closes [#3758](https://github.com/markuplint/markuplint/issues/3758)
+- **html-spec:** condition link[disabled] and require title on alternate+stylesheet ([cc56f78](https://github.com/markuplint/markuplint/commit/cc56f78bef8dbc6a1d63cf8acdddab52b86fce76))
+- **html-spec:** div in dl allows exactly one dt+dd group per HTML LS ([6f344bb](https://github.com/markuplint/markuplint/commit/6f344bbc72bc82dbe2d1ebf05600a5fce9838de1))
+- **html-spec:** drop case-insensitive flag from input[name] isindex pattern ([6cd6173](https://github.com/markuplint/markuplint/commit/6cd617379f5c8627e3192e819cf0c9406388da0d))
+- **html-spec:** enforce non-empty title on alternate stylesheet link ([380da48](https://github.com/markuplint/markuplint/commit/380da48eeda19d1d672de466e389f76c373a8848))
+- **html-spec:** enforce script attr applicability table per HTML LS 4.12.1 ([5331d2c](https://github.com/markuplint/markuplint/commit/5331d2cc7bcc6e7038515487f288f9cd00478b20)), closes [#3648](https://github.com/markuplint/markuplint/issues/3648)
+- **html-spec:** forbid aria-expanded / aria-pressed on summary in details ([#3927](https://github.com/markuplint/markuplint/issues/3927)) ([92efa50](https://github.com/markuplint/markuplint/commit/92efa500ff6033d0bb82f816cbc27090afb5dbfe))
+- **html-spec:** forbid input[name="isindex"] ([eb770e8](https://github.com/markuplint/markuplint/commit/eb770e8057a93d8e74da29c1855fb6bdadf47852))
+- **html-spec:** forbid nested svg|a per SVG2 §17.6 ([d18f1bf](https://github.com/markuplint/markuplint/commit/d18f1bf691ecab30482a9e30f52d5196367dedf4))
+- **html-spec:** mark separator aria-valuenow as focusable-conditional ([386b16c](https://github.com/markuplint/markuplint/commit/386b16c82795256224da35c01b95a85dc1ea727f)), closes [#3682](https://github.com/markuplint/markuplint/issues/3682)
+- **html-spec:** preserve deprecated flags dropped by MDN scrape ([#3995](https://github.com/markuplint/markuplint/issues/3995)) ([d38ebfe](https://github.com/markuplint/markuplint/commit/d38ebfe2625102ed53809302b4fc6d67c88a7a9f)), closes [#3981](https://github.com/markuplint/markuplint/issues/3981)
+- **html-spec:** restore deprecated attribute flags lost to MDN's Baseline badge rename ([#4003](https://github.com/markuplint/markuplint/issues/4003)) ([c5c91b5](https://github.com/markuplint/markuplint/commit/c5c91b581606ffb02816fcd784c5b8cc9167c465)), closes [#3994](https://github.com/markuplint/markuplint/issues/3994) [#3995](https://github.com/markuplint/markuplint/issues/3995)
+- **html-spec:** route media= attribute through MediaQueryList type checker ([e86d8c8](https://github.com/markuplint/markuplint/commit/e86d8c88961b4669fe36b7c306b4b0e722abcda4)), closes [#3850](https://github.com/markuplint/markuplint/issues/3850)
+- **html-spec:** tighten itemref uniqueness and itemtype empty handling ([9ba05bf](https://github.com/markuplint/markuplint/commit/9ba05bff5e60df25fd2ac887f32349088e284009))
+- **html-spec:** tighten MathML element content models per MathML Core ([2b1abb4](https://github.com/markuplint/markuplint/commit/2b1abb44d14015c7602d74947eb8f79dde41cf09)), closes [#3844](https://github.com/markuplint/markuplint/issues/3844)
+- **html-spec:** tighten progress[value] lower bound and img[sizes]/srcset pairing ([74ac375](https://github.com/markuplint/markuplint/commit/74ac37541e24269f5ad10f740a7dc0dbe525c45c))
+- **html-spec:** tighten script attribute conditions per HTML LS ([9285373](https://github.com/markuplint/markuplint/commit/92853738945f5b5a998455d48e9a0cddce07566f))
+- **html-spec:** tighten source[sizes] to also require srcset ([71d3dd1](https://github.com/markuplint/markuplint/commit/71d3dd18d22a5b08e7c3ac9900d05f4c2d3af3b5))
+- **html-spec:** tighten URL attribute types and required-attribute markers ([a946b43](https://github.com/markuplint/markuplint/commit/a946b433c28974db90e860dd101a5cfe016f7d1b))
+- **html-spec:** video[poster] is NonEmptyURL (HTML LS §4.8.9) ([ed00089](https://github.com/markuplint/markuplint/commit/ed000898669da831b664a54e26130c57cc40db97))
+- **markuplint:** report post-fix violations for exit code and suppressions ([03855d6](https://github.com/markuplint/markuplint/commit/03855d6641ae736b65994fa6123e91779d2eb41e)), closes [#3890](https://github.com/markuplint/markuplint/issues/3890)
+- **markuplint:** stop repeating config-error messages once per file ([#4007](https://github.com/markuplint/markuplint/issues/4007)) ([466193d](https://github.com/markuplint/markuplint/commit/466193d286628f69e0d99fc8b2f66028523025aa)), closes [#4006](https://github.com/markuplint/markuplint/issues/4006)
+- **ml-config:** restore `oneOf` in `rules`/`baseRules` of `config.schema.json` ([e9628e6](https://github.com/markuplint/markuplint/commit/e9628e60c0e67b76666a386112a4600d4d612c6a)), closes [#3786](https://github.com/markuplint/markuplint/issues/3786) [#3743](https://github.com/markuplint/markuplint/issues/3743)
+- **ml-core:** look up dedupe contract under both alias and base rule names ([a5dde7e](https://github.com/markuplint/markuplint/commit/a5dde7e23a12a43d976fbfaa1cc3dec67265447e)), closes [#3844](https://github.com/markuplint/markuplint/issues/3844) [#3871](https://github.com/markuplint/markuplint/issues/3871)
+- **ml-core:** re-verify fixed code and detect N-pass fix cycles ([8c96516](https://github.com/markuplint/markuplint/commit/8c96516d8057acdcf06dc279c2183390f0966e98)), closes [#3890](https://github.com/markuplint/markuplint/issues/3890) [#3891](https://github.com/markuplint/markuplint/issues/3891)
+- **ml-core:** stop accumulating duplicate mapping errors across setCode ([2874d5b](https://github.com/markuplint/markuplint/commit/2874d5b60b24ccc501f7dae1f6ab25fb6e51e58b)), closes [#3900](https://github.com/markuplint/markuplint/issues/3900)
+- **parser-utils:** handle raw-text element body in parseCodeFragment per HTML LS §13.2.5.1 ([4a1b0f7](https://github.com/markuplint/markuplint/commit/4a1b0f701c5c0eec91b325c4f3a9f9fb773766e8)), closes [#3825](https://github.com/markuplint/markuplint/issues/3825)
+- **pretenders:** resolve same-named components via imports, not scan order ([#3957](https://github.com/markuplint/markuplint/issues/3957)) ([d46a514](https://github.com/markuplint/markuplint/commit/d46a5148c4d7afb156962f4ed795f40a9324e6c5)), closes [#3951](https://github.com/markuplint/markuplint/issues/3951) [#3951](https://github.com/markuplint/markuplint/issues/3951) [#3951](https://github.com/markuplint/markuplint/issues/3951)
+- **rules:** apply always-matching check to srcset-less sources ([2b6960d](https://github.com/markuplint/markuplint/commit/2b6960d59f6be3b35cc44466d549813c9c14f2c3))
+- **rules:** apply deprecated-element and no-unsupported-features to pretendered components ([9becedd](https://github.com/markuplint/markuplint/commit/9becedd2e6403721fe57cc4624673d46343b811b)), closes [#3740](https://github.com/markuplint/markuplint/issues/3740)
+- **rules:** flag placeholder-label-option on empty required select ([#3936](https://github.com/markuplint/markuplint/issues/3936)) ([8a80802](https://github.com/markuplint/markuplint/commit/8a80802fb27010f4cba5a604857ee85608398caa))
+- **rules:** heading-levels must only fire when preceded by another heading ([34d380c](https://github.com/markuplint/markuplint/commit/34d380c4ada1315a389a18357feabb93daab2c93))
+- **rules:** keep transparent element itself in parent content-model check ([#3960](https://github.com/markuplint/markuplint/issues/3960)) ([88c0412](https://github.com/markuplint/markuplint/commit/88c04125a0a582436d865c7463c3d52b528e529e)), closes [#3928](https://github.com/markuplint/markuplint/issues/3928) [#3928](https://github.com/markuplint/markuplint/issues/3928) [#3928](https://github.com/markuplint/markuplint/issues/3928) [#3838](https://github.com/markuplint/markuplint/issues/3838)
+- **rules:** log when the permitted-contents transparent pattern cap is exceeded ([3d26ed4](https://github.com/markuplint/markuplint/commit/3d26ed4018a6a219fe0f69864d2d1e39cd3130c7)), closes [#3895](https://github.com/markuplint/markuplint/issues/3895)
+- **rules:** only require aria-valuenow on focusable separators ([fe97162](https://github.com/markuplint/markuplint/commit/fe971625962a25540a1cd0aff790fd882541da30)), closes [#3682](https://github.com/markuplint/markuplint/issues/3682)
+- **rules:** preserve [invalid-attr-valid-007] structure and mark breaking change inline ([de27044](https://github.com/markuplint/markuplint/commit/de27044fd64526ddcdf345795dca17ebb8456cf1))
+- **rules:** quote input-button-non-empty-value description in YAML frontmatter ([d289824](https://github.com/markuplint/markuplint/commit/d289824ed6b394d4a130de3f6ac819e568b06761))
+- **rules:** rename test fixture id "myform" to "form1" for cspell ([a9a1194](https://github.com/markuplint/markuplint/commit/a9a11943809e434d81a724aad516f18e29df794b))
+- **rules:** replace "unparseable" with "unparsable" for cspell ([fb63696](https://github.com/markuplint/markuplint/commit/fb6369612fcdae0f4f12a3581e467fe92faaad96))
+- **rules:** script-content guards Tier 1 errors and covers scopes specifier-map branches ([7004652](https://github.com/markuplint/markuplint/commit/700465223ad504b7b014d0314fe6a1c456ad20f7))
+- **rules:** skip condition-disallow when a referenced attr value is dynamic ([f04557d](https://github.com/markuplint/markuplint/commit/f04557d2f5526ad0b47a3ffc2691ccba9a67fa49))
+- **rules:** srcset-sizes-constraint now covers source-in-picture for w-without-sizes ([fb442a6](https://github.com/markuplint/markuplint/commit/fb442a6c3a9e2d4e20f1adcad1723621fbaa3c2c))
+- **rules:** strip only ASCII whitespace in always-matching media check ([e309e97](https://github.com/markuplint/markuplint/commit/e309e97bc4ba0bb2cf66b2c07a17c826b544482c))
+- **rules:** surface disallowed-element reason via reasonOnly (close [#3815](https://github.com/markuplint/markuplint/issues/3815)) ([#3986](https://github.com/markuplint/markuplint/issues/3986)) ([0142cec](https://github.com/markuplint/markuplint/commit/0142cec667f70fee086f2a6e06d7a26e66bda380))
+- **rules:** tighten new conformance rules from QA review ([3096626](https://github.com/markuplint/markuplint/commit/3096626bcf34c1897c8fb77cc0ff6a4f3d4c9fb4))
+- **rules:** wrap attr-bearing tags in description so MDX accepts them ([1ad1225](https://github.com/markuplint/markuplint/commit/1ad12256f67246d6ec18d5b97078ef1e2a85fd85))
+- **selector:** match HTML attribute names ASCII case-insensitively ([b7fa271](https://github.com/markuplint/markuplint/commit/b7fa271b9a195f438afbd1d7e9fe3eeecc35665e))
+- **types): strict charset=utf-8; feat(rules:** usemap-references-map ([#3969](https://github.com/markuplint/markuplint/issues/3969)) ([c63070e](https://github.com/markuplint/markuplint/commit/c63070e29ccb283da7468b2fc67db372ebfcf42a)), closes [#3945](https://github.com/markuplint/markuplint/issues/3945) [#3966](https://github.com/markuplint/markuplint/issues/3966) [#3966](https://github.com/markuplint/markuplint/issues/3966) [#3928](https://github.com/markuplint/markuplint/issues/3928)
+- **types:** clarify MediaQueryList Stage A vs Stage B responsibility ([6cbb070](https://github.com/markuplint/markuplint/commit/6cbb070822576b2e56f1de5cdb37dbb675755f23))
+- **types:** detect IPv4-non-decimal-part validation error in checkURL ([#3972](https://github.com/markuplint/markuplint/issues/3972)) ([c052c25](https://github.com/markuplint/markuplint/commit/c052c25b5a1c247dd9bf071db54c096d6033ed3f)), closes [#3966](https://github.com/markuplint/markuplint/issues/3966) [#3966](https://github.com/markuplint/markuplint/issues/3966) [#3966](https://github.com/markuplint/markuplint/issues/3966)
+- **types:** extend URL forbidden code point detection and fix vtab trim bug ([dbc34be](https://github.com/markuplint/markuplint/commit/dbc34be3ac54ce2a713c7de3e34d62b133e857da)), closes [#3629](https://github.com/markuplint/markuplint/issues/3629)
+- **types:** reject duplicate descriptors in Srcset checker ([5ff8641](https://github.com/markuplint/markuplint/commit/5ff8641c915cb0c5d0790c0908371156107ddbc6))
+- **types:** reject standalone "webauthn" in checkAutoComplete ([84c8a3b](https://github.com/markuplint/markuplint/commit/84c8a3b7b71961636e0f0011edef5396b8cf5e2f))
+- **types:** reject unterminated quoted-string in MIME type parameters ([741b41c](https://github.com/markuplint/markuplint/commit/741b41c275cb81eb51f88605f3fa4a297619ff80)), closes [#3851](https://github.com/markuplint/markuplint/issues/3851) [#3851](https://github.com/markuplint/markuplint/issues/3851)
+- **types:** rename HashName test fixture "mymap" to "my-map" for cspell ([08d5796](https://github.com/markuplint/markuplint/commit/08d57965d726bc7d5bb8713da85c235ddcc9f475))
+- **types:** require non-empty name in HashName type ([af494fb](https://github.com/markuplint/markuplint/commit/af494fb2092c4f7a9ebf3279a9239b4fe1bddbd9))
+- **types:** spelling — unparseable → unparsable in AbsoluteURL comment ([7c7a7d7](https://github.com/markuplint/markuplint/commit/7c7a7d7873dbbfe60d8b4d98e0d6af7278fcb0d9))
+- **types:** tighten MediaQueryList negative-value & fatal-error guards ([c185ea6](https://github.com/markuplint/markuplint/commit/c185ea60e7095b28338edca9652d78fe3dc2d33f)), closes [#3866](https://github.com/markuplint/markuplint/issues/3866)
+- **types:** tighten Srcset URL and SourceSizeList numeric bounds ([3b122aa](https://github.com/markuplint/markuplint/commit/3b122aaf6ddbe3a8b797d02978108d842119030e))
+- **vscode:** convert absolute paths to file:// URLs before import ([b684b2f](https://github.com/markuplint/markuplint/commit/b684b2fb25833163e812408e013c070f621fb695)), closes [#3795](https://github.com/markuplint/markuplint/issues/3795)
+- **vscode:** make toImportSpecifier OS-independent for POSIX absolute paths ([61da724](https://github.com/markuplint/markuplint/commit/61da7244038b686f9f6ed7536948179ce45936e5)), closes [#3841](https://github.com/markuplint/markuplint/issues/3841) [#3836](https://github.com/markuplint/markuplint/issues/3836) [#3840](https://github.com/markuplint/markuplint/issues/3840) [#3840](https://github.com/markuplint/markuplint/issues/3840) [#3842](https://github.com/markuplint/markuplint/issues/3842)
+
+### Code Refactoring
+
+- **rules:** redesign v5 rule system — naming, splits, specConformance ([#3989](https://github.com/markuplint/markuplint/issues/3989)) ([e925565](https://github.com/markuplint/markuplint/commit/e925565ce537848d7d1573369723cbce724a841b)), closes [#4](https://github.com/markuplint/markuplint/issues/4) [#aside-conditional-role-mapping-aria-13](https://github.com/markuplint/markuplint/issues/aside-conditional-role-mapping-aria-13)
+
+- feat(markuplint)!: stop forcing severity.parseError default in CLI ([79ff00b](https://github.com/markuplint/markuplint/commit/79ff00b5d068802f4d7e0d8d30ee63e55b8bc7f1)), closes [#3844](https://github.com/markuplint/markuplint/issues/3844)
+- feat(rules)!: enforce ARIA naming prohibition on autonomous custom elements ([7e01a4b](https://github.com/markuplint/markuplint/commit/7e01a4b691df643255ad5b1e6542688198b01a01))
+- fix(ml-core)!: reject pretender on standard HTML elements ([0576425](https://github.com/markuplint/markuplint/commit/0576425baf9b78141523bcd0e4a102062b96bc81)), closes [#3740](https://github.com/markuplint/markuplint/issues/3740)
+- fix(rules)!: scope invalid-attr virtual rules to narrow checks (#3803) ([77acb1d](https://github.com/markuplint/markuplint/commit/77acb1d1ac7cadd35203fa209ca016f802775b59)), closes [#3803](https://github.com/markuplint/markuplint/issues/3803)
+- fix(config-presets)!: enable invalid-attr in html-standard, simplify rdfa nodeRule (#3803) ([2114933](https://github.com/markuplint/markuplint/commit/2114933f90640110baf8dcc85f34cab73b412bdf)), closes [#3803](https://github.com/markuplint/markuplint/issues/3803)
+
+### Features
+
+- add --audit mode to bench xref CLI and tighten config invariants ([5d1d706](https://github.com/markuplint/markuplint/commit/5d1d7060fc7cab1d9a11a8e452f5d1865e9bc5f5)), closes [#3619](https://github.com/markuplint/markuplint/issues/3619) [#3637](https://github.com/markuplint/markuplint/issues/3637) [#3634](https://github.com/markuplint/markuplint/issues/3634) [#3634](https://github.com/markuplint/markuplint/issues/3634)
+- add `pretenders.auto` for on-demand import-graph resolution ([#3962](https://github.com/markuplint/markuplint/issues/3962)) ([5870671](https://github.com/markuplint/markuplint/commit/58706711a20c12cff080d49359f3f6443345eca3)), closes [#3951](https://github.com/markuplint/markuplint/issues/3951) [#3957](https://github.com/markuplint/markuplint/issues/3957) [#3951](https://github.com/markuplint/markuplint/issues/3951) [#3957](https://github.com/markuplint/markuplint/issues/3957) [#3951](https://github.com/markuplint/markuplint/issues/3951) [#3957](https://github.com/markuplint/markuplint/issues/3957) [#3951](https://github.com/markuplint/markuplint/issues/3951) [#3957](https://github.com/markuplint/markuplint/issues/3957) [#3951](https://github.com/markuplint/markuplint/issues/3951) [#3957](https://github.com/markuplint/markuplint/issues/3957) [#3959](https://github.com/markuplint/markuplint/issues/3959) [#3951](https://github.com/markuplint/markuplint/issues/3951) [#3957](https://github.com/markuplint/markuplint/issues/3957) [#3951](https://github.com/markuplint/markuplint/issues/3951) [#3957](https://github.com/markuplint/markuplint/issues/3957) [#3959](https://github.com/markuplint/markuplint/issues/3959) [#3951](https://github.com/markuplint/markuplint/issues/3951) [#3951](https://github.com/markuplint/markuplint/issues/3951)
+- add benchmark cross-reference CLI for related GitHub issues ([5ee6f22](https://github.com/markuplint/markuplint/commit/5ee6f22416e494c572aa76c9eafb3ca5462c09b5)), closes [#3684](https://github.com/markuplint/markuplint/issues/3684) [#3634](https://github.com/markuplint/markuplint/issues/3634)
+- **config-presets:** add 6 new conformance rules to html-standard preset ([595e3b9](https://github.com/markuplint/markuplint/commit/595e3b91a2e4c8c33a8fd1c9d179b3a9dc8be054))
+- **config-presets:** forbid <base> after <link> or <script> in <head> ([#3925](https://github.com/markuplint/markuplint/issues/3925)) ([ceb892d](https://github.com/markuplint/markuplint/commit/ceb892d64772d459a6bd9564684218e3afbdec2e))
+- **config-presets:** wire form-attr-references-form + no-refer-to-non-existent-id ([8fad30f](https://github.com/markuplint/markuplint/commit/8fad30f79b679f5581f368de1f187cfad4870731))
+- **html-parser:** honour parserOptions.documentMode ([36aa8b9](https://github.com/markuplint/markuplint/commit/36aa8b9eea2d28f7799a77164b20e635b4be947d)), closes [#3844](https://github.com/markuplint/markuplint/issues/3844)
+- **html-parser:** wire parse5 onParseError into MLASTDocument.parseErrors ([e3d0927](https://github.com/markuplint/markuplint/commit/e3d09278015d59dd33753d3e64ab05d3d0814bc7)), closes [#3844](https://github.com/markuplint/markuplint/issues/3844)
+- **html-spec:** add shadowrootslotassignment + customelementregistry on template ([96df2ff](https://github.com/markuplint/markuplint/commit/96df2ffb337648ccea0e008c0ca944254e6b2007))
+- **html-spec:** enforce X-UA-Compatible content="IE=edge" ([#3929](https://github.com/markuplint/markuplint/issues/3929)) ([2638fba](https://github.com/markuplint/markuplint/commit/2638fba826a489ad745ee30c4b8ed195b2362403)), closes [#3928](https://github.com/markuplint/markuplint/issues/3928) [#3928](https://github.com/markuplint/markuplint/issues/3928) [#3734](https://github.com/markuplint/markuplint/issues/3734)
+- **html-spec:** forbid aria-expanded on button[popovertarget] ([3bdc265](https://github.com/markuplint/markuplint/commit/3bdc2652519ff106e8b67512bd352be1b6e8fe68)), closes [#3735](https://github.com/markuplint/markuplint/issues/3735)
+- **html-spec:** forbid dir="auto" on bdo per HTML LS ([71bba9e](https://github.com/markuplint/markuplint/commit/71bba9e9f2be556ac3c256d37e035548bd3ccbd2))
+- **html-spec:** harden generator validation and summarize spec changes ([2297699](https://github.com/markuplint/markuplint/commit/229769996539658d4d9a3d76a1bb60df4754490d)), closes [#3894](https://github.com/markuplint/markuplint/issues/3894) [#3897](https://github.com/markuplint/markuplint/issues/3897)
+- **html-spec:** narrow del/ins datetime attribute to DateStringWithOptionalTime ([fd8848d](https://github.com/markuplint/markuplint/commit/fd8848d0bc97270ddba425faf81a110d755bd524))
+- **html-spec:** require as attribute on link[rel=preload] ([3b11c49](https://github.com/markuplint/markuplint/commit/3b11c499c642af51587464fa43c0b162c50bc0ed))
+- **html-spec:** require itemscope/itemtype for itemid and itemtype ([42f8fb9](https://github.com/markuplint/markuplint/commit/42f8fb9a292f491da21df63b852c5e3fd73c5c7e)), closes [#3733](https://github.com/markuplint/markuplint/issues/3733)
+- **html-spec:** split meta[content] by http-equiv value ([e055f32](https://github.com/markuplint/markuplint/commit/e055f32822b86618f658971085c363d79777ce65)), closes [#3598](https://github.com/markuplint/markuplint/issues/3598) [#3734](https://github.com/markuplint/markuplint/issues/3734)
+- **html-spec:** tighten input min/max + progress max value types ([3b0749d](https://github.com/markuplint/markuplint/commit/3b0749d212a651e238ac111f81740d93fe6ee5d4))
+- **html-spec:** type svg:script async/defer attributes as Boolean ([#3961](https://github.com/markuplint/markuplint/issues/3961)) ([65f8a1d](https://github.com/markuplint/markuplint/commit/65f8a1da82e2c2d0ffa4ab742e792fdbfbfc2e90))
+- **html-spec:** wire NonEmptyURL / AbsoluteURLOrEmpty into URL-typed attributes ([8ed5116](https://github.com/markuplint/markuplint/commit/8ed51169c688853d5bba21a0cedd82b35bc5eb96)), closes [#3868](https://github.com/markuplint/markuplint/issues/3868)
+- **markdown-parser,pug-parser:** force fragment parsing for embedded HTML ([57c4172](https://github.com/markuplint/markuplint/commit/57c4172d5a68adb7e20a4f4e4d8dbe802983e3ca)), closes [#3844](https://github.com/markuplint/markuplint/issues/3844)
+- **markdown-parser,pug-parser:** forward embedded HTML parseErrors to outer document ([9ec7988](https://github.com/markuplint/markuplint/commit/9ec79882840cbedd76c5b8f774ff10c876d2c858)), closes [#3844](https://github.com/markuplint/markuplint/issues/3844)
+- **ml-ast:** add documentMode to ParserOptions ([530493e](https://github.com/markuplint/markuplint/commit/530493e7f99eb27dd2f420666474e233db450c26)), closes [#3844](https://github.com/markuplint/markuplint/issues/3844)
+- **ml-ast:** add MLASTParseError + MLASTParseErrorCode types and parseErrors field ([be34fbd](https://github.com/markuplint/markuplint/commit/be34fbd36ba7fb36b0a07cd6e865c8d81d8752ae)), closes [#3844](https://github.com/markuplint/markuplint/issues/3844)
+- **ml-config:** accept per-code severity for severity.parseError ([7a0ef81](https://github.com/markuplint/markuplint/commit/7a0ef81443b9d9e004eff153369134bc6d812076)), closes [#3844](https://github.com/markuplint/markuplint/issues/3844)
+- **ml-core:** hook-based dedupe for parse-error channel via mirrorsParseErrorCodes ([6a36f17](https://github.com/markuplint/markuplint/commit/6a36f17d292a2400494a3670c93cb2f02999b48b)), closes [#3844](https://github.com/markuplint/markuplint/issues/3844)
+- **ml-core:** surface non-fatal parser errors via opt-in parse-error channel ([d715fbe](https://github.com/markuplint/markuplint/commit/d715fbe586c478b98472a570b3175873cf244aef)), closes [#3844](https://github.com/markuplint/markuplint/issues/3844)
+- **ml-spec:** add requiredCondition field to ARIARoleOwnedProperties ([6867215](https://github.com/markuplint/markuplint/commit/686721537b3d9b141dac12666a2796635d320151)), closes [#3682](https://github.com/markuplint/markuplint/issues/3682)
+- parallelise bench xref audit and gate it via a GitHub Action ([550c100](https://github.com/markuplint/markuplint/commit/550c1001f47bbc21fbe9eac056c5dc914337ec1d))
+- **parser-utils:** introduce accumulateParseErrors() for embedded parser delegation ([49e15d6](https://github.com/markuplint/markuplint/commit/49e15d6f528282ca145e77baf03ae8f6561b2b09)), closes [#3844](https://github.com/markuplint/markuplint/issues/3844)
+- **parser-utils:** propagate Tokenized.parseErrors onto MLASTDocument ([37c8430](https://github.com/markuplint/markuplint/commit/37c8430f454d24d691e093fda9e9fb71b658b4d2)), closes [#3844](https://github.com/markuplint/markuplint/issues/3844)
+- **rules:** add form-attr-references-form rule ([6b541f0](https://github.com/markuplint/markuplint/commit/6b541f032b76c3712c99ea35596b6b0aa79b6137))
+- **rules:** add input-button-non-empty-value rule ([2cc73dd](https://github.com/markuplint/markuplint/commit/2cc73ddd0f874fae9faf005f498d73fa364b682c))
+- **rules:** add input-file-empty-value rule ([228cbd7](https://github.com/markuplint/markuplint/commit/228cbd752956d3df8f525e4f19f9278a44d87160))
+- **rules:** add input-list-references-datalist rule ([#3931](https://github.com/markuplint/markuplint/issues/3931)) ([bf4ef54](https://github.com/markuplint/markuplint/commit/bf4ef54a1b2937ecbe05fbe5121ddfe199781a95))
+- **rules:** add itemprop-requires-itemscope rule ([2b4cba4](https://github.com/markuplint/markuplint/commit/2b4cba4a3afe205f1b4c96744e8d5115ea3bc0ee)), closes [#3852](https://github.com/markuplint/markuplint/issues/3852)
+- **rules:** add label-for-references-labelable rule ([#3932](https://github.com/markuplint/markuplint/issues/3932)) ([3713e6b](https://github.com/markuplint/markuplint/commit/3713e6b435a76fe03a941a36a5e33c0ab06c9a80)), closes [#3918](https://github.com/markuplint/markuplint/issues/3918)
+- **rules:** add label-no-multiple-controls rule ([5da3f85](https://github.com/markuplint/markuplint/commit/5da3f8523dd6ffd9f44ea73d9012952aad85d821))
+- **rules:** add map-id-name-match rule ([1472daf](https://github.com/markuplint/markuplint/commit/1472daf62470bf56c4cb326ab47dc43ba87a8cb3))
+- **rules:** add meter-value-bounds rule ([82cb9a0](https://github.com/markuplint/markuplint/commit/82cb9a01edaf574f5b3b1e8e8ce531d0fab21f1c))
+- **rules:** add no-extra-selected-options rule ([3ea75ac](https://github.com/markuplint/markuplint/commit/3ea75ac0b6850c36d5419924b18c1002dfb864a9))
+- **rules:** add progress-value-bounds rule ([#3926](https://github.com/markuplint/markuplint/issues/3926)) ([1e259ec](https://github.com/markuplint/markuplint/commit/1e259ec9929ceb3c7ac5864ce2807420646e9602))
+- **rules:** add script-content rule for `<script type=importmap>` JSON validation ([c635970](https://github.com/markuplint/markuplint/commit/c6359707af6b37abb0bca130e880cb1e9b5b9005))
+- **rules:** add wai-aria-tab-requires-tabpanel rule ([#3955](https://github.com/markuplint/markuplint/issues/3955)) ([eac9abe](https://github.com/markuplint/markuplint/commit/eac9abef20ef304c3da2114849686b9cf0733942))
+- **rules:** character-reference consumes parse5 malformed-reference codes via parseErrors hook ([a33bb4e](https://github.com/markuplint/markuplint/commit/a33bb4e6674c23ae06b6a12d45ace1c2e954b3be)), closes [#3844](https://github.com/markuplint/markuplint/issues/3844)
+- **rules:** declare mirrorsParseErrorCodes on attr-duplication / doctype / no-orphaned-end-tag ([06893f0](https://github.com/markuplint/markuplint/commit/06893f07584be548c9719153cfae288bd2fdf83e)), closes [#3844](https://github.com/markuplint/markuplint/issues/3844)
+- **rules:** detect always-matching source in srcset-sizes-constraint ([a11199c](https://github.com/markuplint/markuplint/commit/a11199cb13011a775630788a80820ade189b21bd))
+- **rules:** disallow aria-\* on elements where html-spec says properties: false ([1850ee3](https://github.com/markuplint/markuplint/commit/1850ee3a854d25fd5291d4c2a555b8be3f99f245)), closes [#3735](https://github.com/markuplint/markuplint/issues/3735) [#3735](https://github.com/markuplint/markuplint/issues/3735)
+- **rules:** extend label-no-multiple-controls for external labeled control ([#3933](https://github.com/markuplint/markuplint/issues/3933)) ([392f051](https://github.com/markuplint/markuplint/commit/392f051c0d7ee8be8f3dc12afae6a902c6c8ea2b))
+- **rules:** report HTML LS table model errors in table-row-column-alignment ([#3953](https://github.com/markuplint/markuplint/issues/3953)) ([bacdcd6](https://github.com/markuplint/markuplint/commit/bacdcd697f76300153388f5b1cabaa8504f08d1f)), closes [#3916](https://github.com/markuplint/markuplint/issues/3916) [#3915](https://github.com/markuplint/markuplint/issues/3915) [#3916](https://github.com/markuplint/markuplint/issues/3916) [#3915](https://github.com/markuplint/markuplint/issues/3915)
+- **rules:** script-content validates the integrity top-level key ([cc1a050](https://github.com/markuplint/markuplint/commit/cc1a0504ab0664c96ae326e6c5580d4fe04fed58))
+- **rules:** surface parse5-silent HTML LS parse errors (close nu-only umbrella [#3943](https://github.com/markuplint/markuplint/issues/3943)) ([#3980](https://github.com/markuplint/markuplint/issues/3980)) ([89951fa](https://github.com/markuplint/markuplint/commit/89951fa274007d56370510cb0cf11aead808ce13))
+- **rules:** validate `<script type="speculationrules">` content ([d000a84](https://github.com/markuplint/markuplint/commit/d000a84badfc359c11258f8d46230c44a254cc05)), closes [#3882](https://github.com/markuplint/markuplint/issues/3882)
+- **types:** add DateStringWithOptionalTime and tighten global date and time fraction separator ([95cf050](https://github.com/markuplint/markuplint/commit/95cf0504285ba04dbdb8bdf5addd03bac06396f7))
+- **types:** add HTTPEquivRefresh and HTTPEquivContentType validators ([649a259](https://github.com/markuplint/markuplint/commit/649a2591825c87c7993fcd0f5b667cf6d8cafa92)), closes [#3734](https://github.com/markuplint/markuplint/issues/3734) [#3734](https://github.com/markuplint/markuplint/issues/3734)
+- **types:** add MediaQueryList typed checker for media= attribute validation ([b5bc19a](https://github.com/markuplint/markuplint/commit/b5bc19a806d39099e0b62d2eacae882456bd3c3e)), closes [#3850](https://github.com/markuplint/markuplint/issues/3850)
+- **types:** catch URL Living Standard validation errors in URL type checker ([289932d](https://github.com/markuplint/markuplint/commit/289932df8e5f11dc4c60116843e4c31bd8be6e63)), closes [#3848](https://github.com/markuplint/markuplint/issues/3848)
+- **types:** enforce element-context autocomplete constraints (select webauthn, input[type=hidden] on/off) ([#3930](https://github.com/markuplint/markuplint/issues/3930)) ([dc51d46](https://github.com/markuplint/markuplint/commit/dc51d460731541c963c9aa8bdf407c20974dced4))
+- **types:** expand URL Living Standard coverage and add per-attribute URL variants ([b577b2c](https://github.com/markuplint/markuplint/commit/b577b2c4aa8e3ee31a368f62c2108e63aa457628)), closes [#3868](https://github.com/markuplint/markuplint/issues/3868)
+- **types:** reject general-enclosed matches in MediaQueryList and SourceSizeList ([#3934](https://github.com/markuplint/markuplint/issues/3934)) ([2fc8615](https://github.com/markuplint/markuplint/commit/2fc8615c475540d4e5b85661baa1491d791cb661))
+- **types:** validate BCP 47 language tags against the IANA subtag registry ([#3973](https://github.com/markuplint/markuplint/issues/3973)) ([cb8ea69](https://github.com/markuplint/markuplint/commit/cb8ea69bd1b7eb35b4b5507183f8da01edb161c5)), closes [#3829](https://github.com/markuplint/markuplint/issues/3829) [#3829](https://github.com/markuplint/markuplint/issues/3829) [#3829](https://github.com/markuplint/markuplint/issues/3829)
+- **types:** validate CSP3 grammar for meta[content][http-equiv=content-security-policy] ([#3982](https://github.com/markuplint/markuplint/issues/3982)) ([b2d1d84](https://github.com/markuplint/markuplint/commit/b2d1d84ea92c754fe2dbf54950ae8fdb74fe51eb)), closes [#3942](https://github.com/markuplint/markuplint/issues/3942) [#3942](https://github.com/markuplint/markuplint/issues/3942) [#3942](https://github.com/markuplint/markuplint/issues/3942) [#3946](https://github.com/markuplint/markuplint/issues/3946)
+- **types:** validate media feature value types per Media Queries Level 5 §4 ([d231374](https://github.com/markuplint/markuplint/commit/d231374ad6ae2c77dc9dbb5b5b403581f5d3738c))
+- wire script-content into preset, bench, and default-rules ([dd0507a](https://github.com/markuplint/markuplint/commit/dd0507a9f54fcff25dba666a1c8fbc082489bdc8))
+
+### BREAKING CHANGES
+
+- **rules:** with no alias coverage.
+- CLI invocations that previously relied on the implicit
+  \`severity.parseError: 'error'\` default for _fatal_ parser errors are
+  unaffected — fatal errors continue to emit at \`'error'\` regardless. But
+  projects that lint malformed HTML and expected non-fatal parse5 events to
+  show up by default must now pass \`--severity-parse-error error\` (or set
+  \`severity.parseError\` in their config).
+- **rules:** is visible in the test source, not only in git history.
+
+Also drop the duplicate `//user:pass@sample.com/path/to` case from
+[invalid-attr-invalid-044]; valid-007 now carries the canonical
+assertion for that URL, while invalid-044 covers the empty-userinfo
+variant (`http://@host`) and the other six URL LS categories.
+
+- <my-widget aria-label="x"> now reports an error
+  under wai-aria-disallowed-props. Add an explicit role
+  (<my-widget role="button" aria-label="x">) or remove the naming
+  attribute. Affects autonomous custom elements only;
+  customised-built-in elements (<button is="x-y">) are unaffected.
+
+Source: https://w3c.github.io/html-aria/#docconformance
+
+Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>
+
+- `pretenders` config entries whose selector matches a
+  standard HTML element are now ignored. Configurations that previously
+  relied on `<marquee as="div">` to suppress markuplint violations must
+  remove the entry; the original element is now linted on its own merits.
+- Named rules wrapping `invalid-attr` (e.g., `a11y/no-accesskey`)
+  only perform their configured allow/disallow checks and no longer fall back to
+  HTML-spec validation. To retain spec validation, extend `markuplint:html-standard`
+  or set `"invalid-attr": true` in your config.
+
+Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
+
+- `markuplint:html-standard` now enables the base `invalid-attr` rule.
+  `rdfa/meta-property` is no longer a named rule — override behavior is preserved by
+  the unnamed nodeRule. Users who disabled this named rule via
+  `rules: { "rdfa/meta-property": false }` should remove that entry.
+
+Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
+
 # [5.0.0-rc.4](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.3...v5.0.0-rc.4) (2026-04-19)
 
 **Note:** Version bump only for package markuplint-packages

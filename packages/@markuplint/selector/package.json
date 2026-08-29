@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/selector",
-	"version": "5.0.0-rc.4",
+	"version": "5.0.0-rc.5",
 	"description": "Extended W3C Selectors matcher",
 	"repository": {
 		"type": "git",
@@ -31,8 +31,8 @@
 		"clean": "tsc --build --clean tsconfig.build.json"
 	},
 	"dependencies": {
-		"@markuplint/ml-spec": "5.0.0-rc.4",
-		"@markuplint/shared": "5.0.0-rc.4",
+		"@markuplint/ml-spec": "5.0.0-rc.5",
+		"@markuplint/shared": "5.0.0-rc.5",
 		"@types/debug": "4.1.13",
 		"debug": "4.4.3",
 		"postcss-selector-parser": "7.1.1",

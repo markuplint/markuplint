@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-rc.5](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.4...v5.0.0-rc.5) (2026-08-28)
+
+### Features
+
+- **ml-ast:** add documentMode to ParserOptions ([530493e](https://github.com/markuplint/markuplint/commit/530493e7f99eb27dd2f420666474e233db450c26)), closes [#3844](https://github.com/markuplint/markuplint/issues/3844)
+- **ml-ast:** add MLASTParseError + MLASTParseErrorCode types and parseErrors field ([be34fbd](https://github.com/markuplint/markuplint/commit/be34fbd36ba7fb36b0a07cd6e865c8d81d8752ae)), closes [#3844](https://github.com/markuplint/markuplint/issues/3844)
+
 # [5.0.0-rc.4](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.3...v5.0.0-rc.4) (2026-04-19)
 
 **Note:** Version bump only for package @markuplint/ml-ast

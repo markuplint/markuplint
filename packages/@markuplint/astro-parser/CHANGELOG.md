@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-rc.5](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.4...v5.0.0-rc.5) (2026-08-28)
+
+### Bug Fixes
+
+- **astro-parser:** discriminate astro-eslint-parser ParseError from Tier 1 SyntaxError ([f961bf8](https://github.com/markuplint/markuplint/commit/f961bf8a89e3713565b06ff51bd214e6d69dea3e))
+- **astro-parser:** preserve spread attributes containing TypeScript and expression-child siblings ([0e4c64d](https://github.com/markuplint/markuplint/commit/0e4c64d90f77f9350a4895f24ba07ec90eda6546)), closes [#3856](https://github.com/markuplint/markuplint/issues/3856)
+- **astro-parser:** stop surfacing non-fatal Astro diagnostics as parse errors ([3a2c262](https://github.com/markuplint/markuplint/commit/3a2c262316e58196838ab075d5a554751cd976ac)), closes [#3834](https://github.com/markuplint/markuplint/issues/3834) [#3823](https://github.com/markuplint/markuplint/issues/3823)
+
 # [5.0.0-rc.4](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.3...v5.0.0-rc.4) (2026-04-19)
 
 **Note:** Version bump only for package @markuplint/astro-parser

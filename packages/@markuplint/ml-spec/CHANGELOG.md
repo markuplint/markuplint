@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-rc.5](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.4...v5.0.0-rc.5) (2026-08-28)
+
+### Bug Fixes
+
+- **html-spec:** div in dl allows exactly one dt+dd group per HTML LS ([6f344bb](https://github.com/markuplint/markuplint/commit/6f344bbc72bc82dbe2d1ebf05600a5fce9838de1))
+
+### Features
+
+- **ml-spec:** add requiredCondition field to ARIARoleOwnedProperties ([6867215](https://github.com/markuplint/markuplint/commit/686721537b3d9b141dac12666a2796635d320151)), closes [#3682](https://github.com/markuplint/markuplint/issues/3682)
+
 # [5.0.0-rc.4](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.3...v5.0.0-rc.4) (2026-04-19)
 
 **Note:** Version bump only for package @markuplint/ml-spec
