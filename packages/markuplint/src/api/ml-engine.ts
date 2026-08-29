@@ -46,15 +46,20 @@ type MLEngineOptions = {
 	 * Optional and additive: omitted, each `MLEngine` still creates its own
 	 * provider exactly as before.
 	 *
-	 * **Caveat — `watch: true`**: `ConfigProvider.resolve`'s cache-busting
+	 * **Caveat — `watch: true`**: `resolveConfig()`'s cache-busting
 	 * (`cache: false`, used internally on every watch-triggered re-resolve)
-	 * clears the *entire* shared provider, not anything scoped to one engine
-	 * or file. Sharing one `configProvider` across multiple engines that also
-	 * have `watch: true` risks one engine's re-resolve silently invalidating
-	 * another's in-flight or just-cached config. Neither the CLI (which
-	 * doesn't support `--watch`) nor `lint()` (which never sets `watch`)
-	 * create this combination — it only arises if a direct API consumer
-	 * builds it deliberately.
+	 * calls `ConfigProvider#invalidate()`, which clears the *entire* shared
+	 * provider, not anything scoped to one engine or file. `resolveConfig()`
+	 * runs through `ConfigProvider#runExclusive()`, so an overlapping call
+	 * from another engine can no longer interleave with — and corrupt — this
+	 * one's in-flight resolve (see #4015); it can only run *before* or
+	 * *after* it. Sharing one `configProvider` across multiple engines that
+	 * also have `watch: true` still risks one engine's re-resolve evicting
+	 * another's already-cached config, forcing an avoidable re-resolve on
+	 * that engine's next lookup. Neither the CLI (which doesn't support
+	 * `--watch`) nor `lint()` (which never sets `watch`) create this
+	 * combination — it only arises if a direct API consumer builds it
+	 * deliberately.
 	 */
 	readonly configProvider?: ConfigProvider;
 };
@@ -449,42 +454,63 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		this.emit('log', 'resolveConfig', JSON.stringify(this.#configProvider, null, 2));
 		configLog('configProvider: %s', this.#configProvider);
 
-		const defaultConfigKey =
-			this.#options?.defaultConfig &&
-			this.#configProvider.set(mergeConfig(this.#options.defaultConfig), undefined, this.#options.defaultConfig);
-		configLog('defaultConfigKey: %s', defaultConfigKey ?? 'N/A');
-		this.emit('log', 'defaultConfigKey', defaultConfigKey ?? 'N/A');
+		// Runs the whole invalidate → set → search → resolve sequence as one
+		// exclusive unit on the provider — an overlapping call on the same
+		// (possibly shared, e.g. two watch-triggered re-resolves close
+		// together) `ConfigProvider` must not interleave its own `invalidate()`
+		// in the middle of this one's `set()`/`search()` calls, which would
+		// wipe the keys just registered below before `resolve()` gets to use
+		// them. See #4015.
+		const resolvedConfigSet = await this.#configProvider.runExclusive(async () => {
+			if (!cache) {
+				// Must run before any `set()` call below — `ConfigProvider#resolve()`
+				// no longer clears its own store on `cache: false`, so invalidating
+				// after registering this call's inline config would discard it
+				// again immediately. See #4015.
+				this.#configProvider.invalidate();
+			}
 
-		const targetConfig = await this.#configProvider.search(this.#file);
-		this.emit('log', 'targetConfig', targetConfig ?? 'N/A');
+			const defaultConfigKey =
+				this.#options?.defaultConfig &&
+				this.#configProvider.set(
+					mergeConfig(this.#options.defaultConfig),
+					undefined,
+					this.#options.defaultConfig,
+				);
+			configLog('defaultConfigKey: %s', defaultConfigKey ?? 'N/A');
+			this.emit('log', 'defaultConfigKey', defaultConfigKey ?? 'N/A');
 
-		const configFilePathsFromTarget =
-			this.#options?.noSearchConfig || this.#options?.configFile
-				? (defaultConfigKey ?? null)
-				: (targetConfig ?? defaultConfigKey);
-		configLog('configFilePathsFromTarget: %s', configFilePathsFromTarget ?? 'N/A');
-		this.emit('log', 'configFilePathsFromTarget', configFilePathsFromTarget ?? 'N/A');
+			const targetConfig = await this.#configProvider.search(this.#file);
+			this.emit('log', 'targetConfig', targetConfig ?? 'N/A');
 
-		const configKey =
-			this.#options?.config &&
-			this.#configProvider.set(mergeConfig(this.#options.config), undefined, this.#options.config);
-		configLog('option.config: %s', configKey ?? 'N/A');
-		this.emit('log', 'option.config', configFilePathsFromTarget ?? 'N/A');
+			const configFilePathsFromTarget =
+				this.#options?.noSearchConfig || this.#options?.configFile
+					? (defaultConfigKey ?? null)
+					: (targetConfig ?? defaultConfigKey);
+			configLog('configFilePathsFromTarget: %s', configFilePathsFromTarget ?? 'N/A');
+			this.emit('log', 'configFilePathsFromTarget', configFilePathsFromTarget ?? 'N/A');
 
-		let defaultRecommended: string | null = null;
-		if (!defaultConfigKey && !configFilePathsFromTarget && !configKey && !this.#options?.configFile) {
-			// No configured
-			// Default: set recommended
-			defaultRecommended = this.#configProvider.set(RECOMMENDED_CONFIG);
-		}
-		configLog('defaultRecommended: %s', defaultRecommended ?? 'N/A');
-		this.emit('log', 'defaultRecommended', defaultRecommended ?? 'N/A');
+			const configKey =
+				this.#options?.config &&
+				this.#configProvider.set(mergeConfig(this.#options.config), undefined, this.#options.config);
+			configLog('option.config: %s', configKey ?? 'N/A');
+			this.emit('log', 'option.config', configFilePathsFromTarget ?? 'N/A');
 
-		const resolvedConfigSet = await this.#configProvider.resolve(
-			this.#file,
-			[configFilePathsFromTarget, this.#options?.configFile, configKey, defaultRecommended],
-			cache,
-		);
+			let defaultRecommended: string | null = null;
+			if (!defaultConfigKey && !configFilePathsFromTarget && !configKey && !this.#options?.configFile) {
+				// No configured
+				// Default: set recommended
+				defaultRecommended = this.#configProvider.set(RECOMMENDED_CONFIG);
+			}
+			configLog('defaultRecommended: %s', defaultRecommended ?? 'N/A');
+			this.emit('log', 'defaultRecommended', defaultRecommended ?? 'N/A');
+
+			return this.#configProvider.resolve(
+				this.#file,
+				[configFilePathsFromTarget, this.#options?.configFile, configKey, defaultRecommended],
+				cache,
+			);
+		});
 
 		// Rewrite deprecated rule names (v5 rule-system redesign, #3989) to
 		// their current replacement(s) so old configurations keep working.

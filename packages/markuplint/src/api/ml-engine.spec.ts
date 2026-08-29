@@ -503,3 +503,34 @@ describe('configProvider option (#3997)', () => {
 		expect(configSetB.config).toStrictEqual(configSetA.config);
 	});
 });
+
+describe('resolveConfig(false) with inline config (#4015)', () => {
+	it('does not throw for an inline `config` option', async () => {
+		const file = await MLEngine.toMLFile({ sourceCode: '<p>a</p>', name: 'a.html' });
+		const engine = new MLEngine(file!, { config: { rules: { 'no-duplicate-id': true } } });
+
+		const configSet = await engine.resolveConfig(false);
+
+		expect(configSet.config.rules).toStrictEqual({ 'no-duplicate-id': true });
+	});
+
+	it('does not throw for an inline `defaultConfig` option', async () => {
+		const file = await MLEngine.toMLFile({ sourceCode: '<p>a</p>', name: 'a.html' });
+		const engine = new MLEngine(file!, { defaultConfig: { rules: { 'no-duplicate-id': true } } });
+
+		const configSet = await engine.resolveConfig(false);
+
+		expect(configSet.config.rules).toStrictEqual({ 'no-duplicate-id': true });
+	});
+
+	it('re-resolving twice with cache: false still works (watch-mode-like repeated re-resolve)', async () => {
+		const file = await MLEngine.toMLFile({ sourceCode: '<p>a</p>', name: 'a.html' });
+		const engine = new MLEngine(file!, { config: { rules: { 'no-duplicate-id': true } } });
+
+		const first = await engine.resolveConfig(false);
+		const second = await engine.resolveConfig(false);
+
+		expect(first.config.rules).toStrictEqual({ 'no-duplicate-id': true });
+		expect(second.config.rules).toStrictEqual({ 'no-duplicate-id': true });
+	});
+});
