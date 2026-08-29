@@ -18,9 +18,7 @@ describe('rule aliasing', () => {
 				'no-duplicate-id': true,
 			},
 		});
-		const deprecationNotices = violations.filter(
-			v => v.ruleId === 'config-error' && v.message.includes('is deprecated'),
-		);
+		const deprecationNotices = violations.filter(v => v.ruleId === 'rule-deprecation');
 		expect(deprecationNotices).toStrictEqual([]);
 		expect(violations.some(v => v.ruleId === 'no-duplicate-id')).toBe(true);
 	});
@@ -31,11 +29,9 @@ describe('rule aliasing', () => {
 				'id-duplication': true,
 			},
 		});
-		const deprecationNotice = violations.find(
-			v => v.ruleId === 'config-error' && v.message.includes('is deprecated'),
-		);
+		const deprecationNotice = violations.find(v => v.ruleId === 'rule-deprecation');
 		expect(deprecationNotice).toStrictEqual({
-			ruleId: 'config-error',
+			ruleId: 'rule-deprecation',
 			severity: 'warning',
 			message: 'Rule "id-duplication" is deprecated and will be removed in v6. Use no-duplicate-id instead.',
 			col: 1,
@@ -45,6 +41,31 @@ describe('rule aliasing', () => {
 		// The check itself still ran, reported under the replacement's rule ID.
 		expect(violations.some(v => v.ruleId === 'no-duplicate-id')).toBe(true);
 		expect(violations.some(v => v.ruleId === 'id-duplication')).toBe(false);
+	});
+
+	it('severity.deprecation "off" suppresses the notice; a genuine config-error is unaffected', async () => {
+		const { violations } = await mlTest('<div id="a"></div><div id="a"></div>', {
+			rules: {
+				'id-duplication': true,
+				'nonexistent-rule': true,
+			},
+			severity: { deprecation: 'off' },
+		});
+		expect(violations.some(v => v.ruleId === 'rule-deprecation')).toBe(false);
+		expect(
+			violations.some(v => v.ruleId === 'config-error' && v.message === 'Rule not found: nonexistent-rule'),
+		).toBe(true);
+	});
+
+	it('severity.deprecation "error" escalates the notice', async () => {
+		const { violations } = await mlTest('<div id="a"></div><div id="a"></div>', {
+			rules: {
+				'id-duplication': true,
+			},
+			severity: { deprecation: 'error' },
+		});
+		const deprecationNotice = violations.find(v => v.ruleId === 'rule-deprecation');
+		expect(deprecationNotice?.severity).toBe('error');
 	});
 
 	it('a deprecated boolean rule name disabled with `false` stays disabled under the replacement', async () => {
