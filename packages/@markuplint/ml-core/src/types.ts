@@ -2,7 +2,7 @@ import type { AnyMLRule } from './ml-rule/index.js';
 import type { Ruleset } from './ruleset/index.js';
 import type { LocaleSet } from '@markuplint/i18n';
 import type { MLParser, ParserOptions } from '@markuplint/ml-ast';
-import type { Pretender, RuleCommonSettings, SeverityOptions } from '@markuplint/ml-config';
+import type { Pretender, RuleAliasWarning, RuleCommonSettings, SeverityOptions } from '@markuplint/ml-config';
 import type { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
 
 /**
@@ -26,4 +26,11 @@ export type MLFabric = {
 	readonly severity: SeverityOptions;
 	readonly pretenders: readonly Pretender[];
 	readonly configErrors?: readonly Readonly<Error>[];
+	/**
+	 * Deprecated-rule-name notices found while applying the rule-alias table
+	 * (v5 rule-system redesign, #3989). Kept structured, separate from
+	 * {@link configErrors}, so `MLCore.verify()` can report them under their
+	 * own `rule-deprecation` ruleId instead of `config-error`.
+	 */
+	readonly ruleDeprecations?: readonly RuleAliasWarning[];
 };

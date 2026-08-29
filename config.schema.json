@@ -341,6 +341,21 @@
 							}
 						}
 					]
+				},
+				"deprecation": {
+					"description": "Severity for the built-in `rule-deprecation` channel (deprecated rule names that still work but will be removed in v6). Defaults to `warning`.",
+					"oneOf": [
+						{
+							"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/ml-config/schema.json#/definitions/severity"
+						},
+						{
+							"type": "string",
+							"enum": ["off"]
+						},
+						{
+							"type": "boolean"
+						}
+					]
 				}
 			}
 		},

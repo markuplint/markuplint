@@ -1,7 +1,7 @@
 import type { APIOptions, MLEngineEventMap } from './types.js';
 import type { MLResultInfo } from '../types.js';
 import type { ConfigSet, MLFile, Target } from '@markuplint/file-resolver';
-import type { PlainData } from '@markuplint/ml-config';
+import type { PlainData, RuleAliasWarning } from '@markuplint/ml-config';
 import type { Ruleset, Plugin, Document, RuleConfigValue, MLFabric } from '@markuplint/ml-core';
 
 import {
@@ -43,6 +43,17 @@ export type FromCodeOptions = APIOptions &
 		/** Optional working directory for config resolution */
 		readonly dirname?: string;
 	};
+
+/**
+ * A {@link ConfigSet} widened with deprecated-rule-name notices found while
+ * applying {@link applyRuleAliasesToConfig}. Kept structured (not folded
+ * into `errs` as generic `Error`s) so `MLCore` can report them under their
+ * own `rule-deprecation` ruleId instead of `config-error` — see
+ * `packages/@markuplint/ml-core/src/ml-core.ts`'s `verify()`.
+ */
+type ResolvedConfigSet = ConfigSet & {
+	readonly ruleDeprecations: readonly RuleAliasWarning[];
+};
 
 /**
  * The main markuplint engine that orchestrates file resolution, configuration loading,
@@ -279,7 +290,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 	}
 
 	async #provide(cache = true): Promise<MLFabric | null> {
-		let configSet: ConfigSet;
+		let configSet: ResolvedConfigSet;
 
 		try {
 			configSet = await this.resolveConfig(cache);
@@ -290,6 +301,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 					plugins: [],
 					files: new Set(),
 					errs: [error],
+					ruleDeprecations: [],
 				};
 			} else {
 				throw error;
@@ -377,6 +389,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 			locale,
 			ruleCommonSettings,
 			configErrors: configSet.errs,
+			ruleDeprecations: configSet.ruleDeprecations,
 		};
 	}
 
@@ -396,7 +409,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 	 * @param cache - Whether to reuse previously loaded config files
 	 * @returns The resolved configuration set
 	 */
-	async resolveConfig(cache: boolean) {
+	async resolveConfig(cache: boolean): Promise<ResolvedConfigSet> {
 		this.emit('log', 'resolveConfig', JSON.stringify(this.#configProvider, null, 2));
 		configLog('configProvider: %s', this.#configProvider);
 
@@ -445,22 +458,14 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 			resolvedConfigSet.config,
 			ruleAliasTable,
 		);
-		const configSet: ConfigSet =
+		// Kept structured (not folded into `errs` as generic `Error`s) so
+		// `MLCore` can report these under their own `rule-deprecation` ruleId,
+		// separate from genuine config-validation failures — see
+		// `ResolvedConfigSet`'s doc comment.
+		const configSet: ResolvedConfigSet =
 			ruleAliasWarnings.length === 0
-				? resolvedConfigSet
-				: {
-						...resolvedConfigSet,
-						config: aliasedConfig,
-						errs: [
-							...resolvedConfigSet.errs,
-							...ruleAliasWarnings.map(
-								({ deprecatedName, replacedBy }) =>
-									new Error(
-										`Rule "${deprecatedName}" is deprecated and will be removed in v6. Use ${replacedBy.join(', ')} instead.`,
-									),
-							),
-						],
-					};
+				? { ...resolvedConfigSet, ruleDeprecations: [] }
+				: { ...resolvedConfigSet, config: aliasedConfig, ruleDeprecations: ruleAliasWarnings };
 
 		this.emit('config', this.#file.path, configSet);
 

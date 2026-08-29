@@ -87,6 +87,7 @@ Options
 	--verbose                              Output with detailed information.
 	--include-node-modules                 Include files in node_modules directory. Default: false.
 	--severity-parse-error                 Specifies the severity level of parse errors. Supports "error", "warning", and "off". Default: "error".
+	--severity-deprecation                 Specifies the severity level of deprecated rule name notices. Supports "error", "warning", and "off". Default: "warning".
 	--max-count                            Limit the number of violations shown. Default: 0 (no limit).
 	--max-warnings                         Number of warnings to trigger nonzero exit code. Default: -1 (no limit).
 	--progressive-output                   Output results immediately after processing each file. Default: false.
