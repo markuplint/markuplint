@@ -9,8 +9,10 @@ import type {
 	NodeRule,
 	PlainData,
 	Pretender,
+	RuleAliasWarning,
 	RuleCommonSettings,
 	RuleConfigValue,
+	Severity,
 	SeverityOptions,
 	TextEdit,
 	Violation,
@@ -24,6 +26,22 @@ import { Document } from './ml-dom/index.js';
 import { expandNamedNodeRules, expandNamedRules } from './virtual-rule.js';
 
 const resultLog = log.extend('result');
+
+/**
+ * `ruleId` of a genuinely broken config (unresolved rule reference, plugin
+ * resolution failure, ...). Exported so consumers that need to recognize
+ * config-level violations (e.g. the CLI's per-run dedupe and failed-file
+ * counting in `packages/markuplint/src/cli/command.ts`) reference the same
+ * literal `MLCore.verify()` emits, instead of duplicating the string.
+ */
+export const CONFIG_ERROR_RULE_ID = 'config-error';
+
+/**
+ * `ruleId` of a deprecated-but-working rule name notice — see
+ * {@link CONFIG_ERROR_RULE_ID} for why this is exported rather than a
+ * private literal.
+ */
+export const RULE_DEPRECATION_RULE_ID = 'rule-deprecation';
 
 /**
  * Summary of the multi-pass fix process.
@@ -119,6 +137,13 @@ export class MLCore {
 	 */
 	#configErrors: Error[];
 	/**
+	 * Deprecated-rule-name notices, kept structured and separate from
+	 * `#configErrors` so `verify()` can report them under their own
+	 * `rule-deprecation` ruleId. Set once per construction/`update()`, same
+	 * lifecycle as `#configErrors`.
+	 */
+	#ruleDeprecations: readonly RuleAliasWarning[];
+	/**
 	 * Rule-mapping errors for the CURRENT document. Reset (not accumulated) on
 	 * every `#createDocument()` so repeated `setCode()` calls don't duplicate
 	 * them. See https://github.com/markuplint/markuplint/issues/3900.
@@ -148,6 +173,7 @@ export class MLCore {
 		filename,
 		debug,
 		configErrors,
+		ruleDeprecations,
 	}: MLCoreParams) {
 		if (debug) {
 			enableDebug();
@@ -163,6 +189,7 @@ export class MLCore {
 		this.#severity = severity;
 		this.#pretenders = [...pretenders];
 		this.#configErrors = [...(configErrors ?? [])];
+		this.#ruleDeprecations = [...(ruleDeprecations ?? [])];
 
 		// Preserve pre-expansion nodeRules for hot-reload
 		this.#originalNodeRules = ruleset.nodeRules ?? [];
@@ -214,12 +241,23 @@ export class MLCore {
 	 *
 	 * @param fabric - Partial fabric with the properties to update
 	 */
-	update({ parser, ruleset, rules, locale, schemas, parserOptions, pretenders, configErrors }: Partial<MLFabric>) {
+	update({
+		parser,
+		ruleset,
+		rules,
+		locale,
+		schemas,
+		parserOptions,
+		pretenders,
+		configErrors,
+		ruleDeprecations,
+	}: Partial<MLFabric>) {
 		this.#parser = parser ?? this.#parser;
 		this.#locale = locale ?? this.#locale;
 		this.#schemas = schemas ?? this.#schemas;
 		this.#pretenders = pretenders ? [...pretenders] : this.#pretenders;
 		this.#configErrors = [...(configErrors ?? [])];
+		this.#ruleDeprecations = [...(ruleDeprecations ?? [])];
 
 		const baseRules = rules ? [...rules] : this.#rules.filter(r => !r.baseRuleId);
 
@@ -328,7 +366,7 @@ export class MLCore {
 			}
 			if (!definedRuleName.has(setRuleName)) {
 				configViolations.push({
-					ruleId: 'config-error',
+					ruleId: CONFIG_ERROR_RULE_ID,
 					severity: 'warning',
 					message: `Rule not found: ${setRuleName}`,
 					col: 1,
@@ -340,13 +378,27 @@ export class MLCore {
 
 		for (const error of [...this.#configErrors, ...this.#mappingErrors]) {
 			configViolations.push({
-				ruleId: 'config-error',
+				ruleId: CONFIG_ERROR_RULE_ID,
 				severity: 'warning',
 				message: error.message,
 				col: 1,
 				line: 1,
 				raw: '',
 			});
+		}
+
+		const deprecationSeverity = this.#resolveDeprecationSeverity();
+		if (deprecationSeverity != null) {
+			for (const { deprecatedName, replacedBy } of this.#ruleDeprecations) {
+				configViolations.push({
+					ruleId: RULE_DEPRECATION_RULE_ID,
+					severity: deprecationSeverity,
+					message: `Rule "${deprecatedName}" is deprecated and will be removed in v6. Use ${replacedBy.join(', ')} instead.`,
+					col: 1,
+					line: 1,
+					raw: '',
+				});
+			}
 		}
 
 		violations.push(...configViolations);
@@ -536,6 +588,23 @@ export class MLCore {
 	}
 
 	/**
+	 * Resolves `severity.deprecation`, honouring its single-value form only
+	 * (unlike `severity.parseError`, there's no fixed enum of deprecated rule
+	 * names to key a per-code `Record` on).
+	 *
+	 * Unlike `#createParseError`'s parse-error channel, this defaults to
+	 * `'warning'` (not off/suppressed) when unset — the deprecation channel
+	 * is being carved out of the always-on `config-error` channel, not
+	 * introduced cold, so leaving the option unset must not silence a notice
+	 * users already see today.
+	 *
+	 * @returns the resolved severity, or `null` if suppressed.
+	 */
+	#resolveDeprecationSeverity(): Violation['severity'] | null {
+		return resolveUniformSeverity(this.#severity.deprecation, 'warning');
+	}
+
+	/**
 	 * Builds a `ruleId: 'parse-error'` violation, honouring
 	 * `severity.parseError`.
 	 *
@@ -556,34 +625,19 @@ export class MLCore {
 	): Violation | null {
 		const cfg = this.#severity.parseError;
 
-		if (cfg === false || cfg === 'off') {
+		// Fatal ParserErrors (no `code`) can't be targeted by the per-code
+		// Record form, so they fall back to `'error'` there; under the
+		// uniform form they default to `'error'` too, while non-fatal entries
+		// default to suppressed when unset — see `resolveUniformSeverity`.
+		const severity =
+			typeof cfg === 'object'
+				? code == null
+					? 'error'
+					: resolveUniformSeverity(cfg[code], null)
+				: resolveUniformSeverity(cfg, code == null ? 'error' : null);
+
+		if (severity == null) {
 			return null;
-		}
-
-		let severity: Violation['severity'];
-
-		if (typeof cfg === 'object') {
-			if (code == null) {
-				// Fatal ParserError without a code; the Record form cannot target
-				// it, so fall back to `'error'` (the channel is otherwise enabled).
-				severity = 'error';
-			} else {
-				const perCode = cfg[code];
-				if (perCode == null || perCode === false || perCode === 'off') {
-					return null;
-				}
-				severity = perCode === true ? 'error' : perCode;
-			}
-		} else if (cfg == null) {
-			// New default: non-fatal `parseErrors` entries are off; fatal
-			// `ParserError`s (no code) still emit at `'error'`.
-			if (code != null) {
-				return null;
-			}
-			severity = 'error';
-		} else {
-			// Uniform string/boolean form (legacy).
-			severity = cfg === true ? 'error' : cfg;
 		}
 
 		return {
@@ -803,6 +857,28 @@ export class MLCore {
 			}
 		}
 	}
+}
+
+/**
+ * Normalizes a single-value `Severity | 'off' | boolean | undefined` option
+ * (the shape `severity.deprecation` and `severity.parseError`'s uniform/
+ * per-code leaf values share) to a resolved severity or `null` (suppressed).
+ *
+ * Shared so the same three-way rule — `false`/`'off'` → suppressed, `true` →
+ * `'error'`, unset → `defaultWhenUnset` — isn't reimplemented at each call
+ * site as channels using this shape are added.
+ */
+function resolveUniformSeverity(
+	cfg: Severity | 'off' | boolean | undefined,
+	defaultWhenUnset: Violation['severity'] | null,
+): Violation['severity'] | null {
+	if (cfg === false || cfg === 'off') {
+		return null;
+	}
+	if (cfg == null) {
+		return defaultWhenUnset;
+	}
+	return cfg === true ? 'error' : cfg;
 }
 
 function extractDisabledNamespaces(rules: { readonly [key: string]: unknown }): readonly string[] {
