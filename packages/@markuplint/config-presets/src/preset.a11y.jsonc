@@ -342,6 +342,10 @@
 			"specConformance": "non-normative",
 			"severity": "warning",
 			"rules": { "no-focusable-in-aria-hidden": true }
+		},
+		"a11y/wai-aria/hidden-until-found": {
+			"specConformance": "normative",
+			"rules": { "no-aria-hidden-on-hidden-until-found": true }
 		}
 	},
 	"nodeRules": [
