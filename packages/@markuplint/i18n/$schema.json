@@ -255,6 +255,7 @@
 				"{0}. Or, {1}": { "type": "string" },
 				"\"{0}\" {1}": { "type": "string" },
 				"\"{0}\" ID": { "type": "string" },
+				"\"aria-hidden\" must not be \"{0}\" on an element with \"hidden\" value \"{1}\"": { "type": "string" },
 				"a {0}": { "type": "string" },
 				"add {0}": { "type": "string" },
 				"allowed values are: {0}": { "type": "string" },
