@@ -297,3 +297,81 @@ test('Overrides with OverrideMode', async () => {
 		bar: true,
 	});
 });
+
+test('Overrides remain per-file correct when sharing one ConfigProvider across files (#3997)', async () => {
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures');
+	const resetKey = path.resolve(testDir, '011', '.markuplintrc.reset.json');
+	const htmlFile = getFile(path.resolve(testDir, '011', 'target.html'));
+	const vueFile = getFile(path.resolve(testDir, '011', 'target.vue'));
+
+	// Same ConfigProvider, same `names` (`resetKey`) for both files — the base
+	// config is cached once, but each file's `overrides` match must still be
+	// evaluated independently on every call.
+	const sharedProvider = new ConfigProvider();
+
+	// .vue resolves first, populating the shared base cache after resolving
+	// an overrides-eligible target.
+	const vueResult = await sharedProvider.resolve(vueFile, [resetKey]);
+	expect(vueResult.config.rules).toStrictEqual({ foo: false });
+
+	// .html resolves second, same `names` — must NOT inherit .vue's override.
+	const htmlResult = await sharedProvider.resolve(htmlFile, [resetKey]);
+	expect(htmlResult.config.rules).toStrictEqual({ foo: true, bar: true });
+});
+
+test('Overrides remain per-file correct when sharing one ConfigProvider, opposite resolve order (#3997)', async () => {
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures');
+	const resetKey = path.resolve(testDir, '011', '.markuplintrc.reset.json');
+	const htmlFile = getFile(path.resolve(testDir, '011', 'target.html'));
+	const vueFile = getFile(path.resolve(testDir, '011', 'target.vue'));
+
+	const sharedProvider = new ConfigProvider();
+
+	// .html resolves first, populating the shared base cache after resolving
+	// a target with no override match.
+	const htmlResult = await sharedProvider.resolve(htmlFile, [resetKey]);
+	expect(htmlResult.config.rules).toStrictEqual({ foo: true, bar: true });
+
+	// .vue resolves second, same `names` — must still get its own override.
+	const vueResult = await sharedProvider.resolve(vueFile, [resetKey]);
+	expect(vueResult.config.rules).toStrictEqual({ foo: false });
+});
+
+test('Base config resolution is cached and reused across files sharing one ConfigProvider (#3997)', async () => {
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures');
+	const resetKey = path.resolve(testDir, '011', '.markuplintrc.reset.json');
+	const htmlFile = getFile(path.resolve(testDir, '011', 'target.html'));
+	const vueFile = getFile(path.resolve(testDir, '011', 'target.vue'));
+
+	const sharedProvider = new ConfigProvider();
+	const htmlResult = await sharedProvider.resolve(htmlFile, [resetKey]);
+	const vueResult = await sharedProvider.resolve(vueFile, [resetKey]);
+
+	// Both calls resolve the same `names`; `files`/`plugins` must be the SAME
+	// object across both results — proof the second call reused the cached
+	// base config instead of redoing merge/validate/plugin-resolution.
+	expect(vueResult.files).toBe(htmlResult.files);
+	expect(vueResult.plugins).toBe(htmlResult.plugins);
+});
+
+test('set() reuses the same key for the same config object identity (#3997)', () => {
+	const provider = new ConfigProvider();
+	const inlineConfig = { rules: { foo: true } };
+
+	const key1 = provider.set(inlineConfig);
+	const key2 = provider.set(inlineConfig);
+	expect(key2).toBe(key1);
+
+	// A different object, even with identical content, still gets its own key.
+	const key3 = provider.set({ rules: { foo: true } });
+	expect(key3).not.toBe(key1);
+});
+
+test('set() with an explicit identity stabilizes the key across differently-merged values (#3997)', () => {
+	const provider = new ConfigProvider();
+	const identity = { rules: { foo: true } };
+
+	const key1 = provider.set({ rules: { foo: true }, extends: ['a'] }, undefined, identity);
+	const key2 = provider.set({ rules: { foo: true }, extends: ['b'] }, undefined, identity);
+	expect(key2).toBe(key1);
+});

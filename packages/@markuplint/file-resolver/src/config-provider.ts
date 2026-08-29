@@ -30,12 +30,30 @@ const KEY_SEPARATOR = '__ML_CONFIG_MERGE__';
  *
  * Handles `extends` chains, plugins, presets, overrides, and circular reference detection.
  * Configuration files are searched via cosmiconfig and cached by file path.
+ *
+ * Designed to be shared across every target file in a run (see
+ * `MLEngineOptions.configProvider` in `packages/markuplint/src/api/ml-engine.ts`):
+ * {@link resolve}'s cache is keyed by the resolved config's `names`, not by
+ * target file, so one instance reused across many files avoids redoing
+ * merge/validate/plugin-resolution once per file that shares the same
+ * config — see #3997.
  */
 export class ConfigProvider {
 	#cache = new Map<string, ConfigSet>();
 	#held = new Set<string>();
 	#recursiveLoadKeyAndDepth = new Map<string, number>();
 	#store = new Map<string, Config | ConfigLoadError>();
+	/**
+	 * Stabilizes {@link set}'s auto-generated key for an inline config object
+	 * across repeated calls with the *same* object reference (e.g. one caller
+	 * sharing one `ConfigProvider` — and one `options.config`/`defaultConfig`
+	 * object — across many target files). Without this, `set()` would mint a
+	 * fresh UUID per call even for identical content, so `resolve()`'s cache
+	 * (keyed on that UUID) would never hit for inline (non-file-path) config.
+	 * Keyed on object identity, not content, so it costs nothing to check and
+	 * needs no hashing of arbitrary config shapes.
+	 */
+	#autoKeys = new WeakMap<object, string>();
 
 	/**
 	 * Recursively loads a configuration and all its `extends` dependencies.
@@ -102,6 +120,15 @@ export class ConfigProvider {
 	 * Resolves the full configuration for a target file by merging all named configs,
 	 * resolving plugins, and applying file-specific overrides.
 	 *
+	 * Split into a cacheable "base" phase (`#resolveBase`: merge/validate/plugin
+	 * resolution/plugin-provided `extends`) and a per-call `overrides` phase, because
+	 * `overrides` matching depends on `targetFile` while everything else in `names`
+	 * resolution does not. Only the base result is cached (keyed on `names`, not on
+	 * `targetFile`) — callers sharing one `ConfigProvider` across many target files
+	 * (see #3997) get that work done once, while `overrides` are always re-evaluated
+	 * per call so a `.vue`-only override never leaks into a `.html` file's result (or
+	 * vice versa) just because they resolve the same `names`.
+	 *
 	 * @param targetFile - The file being linted
 	 * @param names - Config file paths or module names to merge
 	 * @param cache - Whether to use cached results
@@ -111,21 +138,34 @@ export class ConfigProvider {
 		if (!cache) {
 			this.#store.clear();
 			this.#cache.clear();
+			this.#autoKeys = new WeakMap();
 			cacheClear();
 		}
 
 		const keys = names.filter(nonNullableFilter);
 		const key = keys.join(KEY_SEPARATOR);
-		const currentConfig = this.#cache.get(key);
-		if (currentConfig) {
-			return currentConfig;
+
+		let baseConfigSet = this.#cache.get(key);
+		if (!baseConfigSet) {
+			baseConfigSet = await this.#resolveBase(keys, cache, targetFile.path);
+			this.#cache.set(key, baseConfigSet);
 		}
-		let configSet = await this.#mergeConfigs(keys, cache, targetFile.path);
+
+		return this.#applyOverrides(baseConfigSet, targetFile);
+	}
+
+	/**
+	 * The `names`-dependent, `targetFile`-independent part of {@link resolve}:
+	 * merges all named configs, validates, resolves plugins, and expands
+	 * plugin-provided `extends`. Safe to cache under a `names`-only key.
+	 */
+	async #resolveBase(keys: readonly string[], cache: boolean, referrer: string): Promise<ConfigSet> {
+		let configSet = await this.#mergeConfigs(keys, cache, referrer);
 
 		const filePath = [...configSet.files].toReversed()[0];
 		if (!filePath) {
 			throw new ConfigParserError('Config file not found', {
-				filePath: targetFile.path,
+				filePath: referrer,
 			});
 		}
 		const errors = this.#validateConfig(configSet.config, filePath);
@@ -151,40 +191,36 @@ export class ConfigProvider {
 				}
 			}
 
-			configSet = await this.#mergeConfigs([...keys, ...extendHelds], cache, targetFile.path);
+			configSet = await this.#mergeConfigs([...keys, ...extendHelds], cache, referrer);
 
 			this.#held.clear();
 		}
 
-		// Resolves `overrides`
-		if (configSet.config.overrides) {
-			const overrides = configSet.config.overrides;
-			const globs = Object.keys(overrides);
-			for (const glob of globs) {
-				const isMatched = targetFile.matches(glob);
-				const config = overrides[glob];
-				if (isMatched && config) {
-					switch (configSet.config.overrideMode) {
-						case 'merge': {
-							configSet.config = mergeConfig(configSet.config, config);
-							break;
-						}
-						default: /* or "reset" */ {
-							configSet.config = config;
-							break;
-						}
-					}
-				}
-			}
-		}
-
-		const result = {
+		return {
 			...configSet,
 			plugins,
 		};
+	}
 
-		this.#cache.set(key, result);
-		return result;
+	/**
+	 * The `targetFile`-dependent part of {@link resolve}: matches `config.overrides`
+	 * globs against `targetFile` and applies whichever match, per `overrideMode`.
+	 * Never mutates `baseConfigSet` — returns it unchanged (same reference) when no
+	 * override matches, or a shallow copy with a freshly computed `config` otherwise,
+	 * so the cached base entry stays valid for the next target file.
+	 */
+	#applyOverrides(baseConfigSet: ConfigSet, targetFile: Readonly<MLFile>): ConfigSet {
+		let config = baseConfigSet.config;
+		if (config.overrides) {
+			const overrides = config.overrides;
+			for (const glob of Object.keys(overrides)) {
+				const overrideConfig = overrides[glob];
+				if (targetFile.matches(glob) && overrideConfig) {
+					config = config.overrideMode === 'merge' ? mergeConfig(config, overrideConfig) : overrideConfig;
+				}
+			}
+		}
+		return config === baseConfigSet.config ? baseConfigSet : { ...baseConfigSet, config };
 	}
 
 	/**
@@ -223,12 +259,39 @@ export class ConfigProvider {
 	 *
 	 * @param config - The optimized configuration to store
 	 * @param key - An optional key to store the config under; auto-generated if omitted
+	 * @param identity - Object identity to auto-key on when `key` is omitted (e.g. the
+	 * caller's original, pre-merge config object). Repeated calls with the same
+	 * `identity` reuse the same generated key instead of minting a fresh UUID each
+	 * time, so `resolve()`'s base cache can hit for inline (non-file-path) config
+	 * shared across multiple target files — see #3997. Falls back to `config` itself
+	 * (which is rebuilt fresh by every caller today, so this is a no-op unless a
+	 * caller passes a stable `identity`).
+	 *
+	 * **Invariant**: an `identity` must correspond to `config` content that is
+	 * effectively immutable for as long as that identity is reused — a second
+	 * call with the same `identity` but *different* `config` content returns
+	 * the *first* call's key/content, silently discarding the new content. Not
+	 * reachable via `MLEngine`'s call sites today (they hold `options.config`/
+	 * `defaultConfig` as one unchanged reference per run); a future caller
+	 * passing a reused identity for genuinely different content would hit this.
 	 * @returns The key under which the config was stored
 	 */
-	set(config: OptimizedConfig, key?: string) {
-		key = key ?? uuid();
-		this.#store.set(key, config);
-		return key;
+	set(config: OptimizedConfig, key?: string, identity?: object) {
+		if (key != null) {
+			this.#store.set(key, config);
+			return key;
+		}
+
+		const identityKey = identity ?? config;
+		const existingKey = this.#autoKeys.get(identityKey);
+		if (existingKey != null) {
+			return existingKey;
+		}
+
+		const newKey = uuid();
+		this.#store.set(newKey, config);
+		this.#autoKeys.set(identityKey, newKey);
+		return newKey;
 	}
 
 	async #load(filePath: string, cache: boolean, referrer: string) {
