@@ -33,6 +33,7 @@ import MeterValueBounds from './meter-value-bounds/index.js';
 import NoAbstractRole from './no-abstract-role/index.js';
 import NoAlwaysMatchingSource from './no-always-matching-source/index.js';
 import NoAmbiguousNavigableTargetNames from './no-ambiguous-navigable-target-names/index.js';
+import NoAriaHiddenOnHiddenUntilFound from './no-aria-hidden-on-hidden-until-found/index.js';
 import NoAriaOnPresentationalChildren from './no-aria-on-presentational-children/index.js';
 import NoAriaOnUnsupportedElement from './no-aria-on-unsupported-element/index.js';
 import NoBooleanAttrValue from './no-boolean-attr-value/index.js';
@@ -145,6 +146,7 @@ const rules = {
 	'no-abstract-role': NoAbstractRole,
 	'no-always-matching-source': NoAlwaysMatchingSource,
 	'no-ambiguous-navigable-target-names': NoAmbiguousNavigableTargetNames,
+	'no-aria-hidden-on-hidden-until-found': NoAriaHiddenOnHiddenUntilFound,
 	'no-aria-on-presentational-children': NoAriaOnPresentationalChildren,
 	'no-aria-on-unsupported-element': NoAriaOnUnsupportedElement,
 	'no-boolean-attr-value': NoBooleanAttrValue,
