@@ -375,3 +375,70 @@ test('set() with an explicit identity stabilizes the key across differently-merg
 	const key2 = provider.set({ rules: { foo: true }, extends: ['b'] }, undefined, identity);
 	expect(key2).toBe(key1);
 });
+
+test('resolve(cache: false) no longer clears entries registered via set() before the call (#4015)', async () => {
+	const provider = new ConfigProvider();
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures');
+	const file = getFile(path.resolve(testDir, '002', 'target.html'));
+
+	// Mirrors `MLEngine#resolveConfig()`'s pattern: `set()` an inline config,
+	// then immediately `resolve()` referencing that key with `cache: false`.
+	const key = provider.set({ rules: { foo: true } });
+	const configSet = await provider.resolve(file, [key], false);
+
+	expect(configSet.config.rules).toStrictEqual({ foo: true });
+});
+
+test('invalidate() clears entries registered via set() (#4015)', async () => {
+	const provider = new ConfigProvider();
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures');
+	const file = getFile(path.resolve(testDir, '002', 'target.html'));
+
+	const key = provider.set({ rules: { foo: true } });
+	provider.invalidate();
+
+	// The key only ever lived in the store; once cleared, resolving it falls
+	// through to `#load()`, which treats it as a file path/module name.
+	await expect(provider.resolve(file, [key], false)).rejects.toThrow(/is not an absolute path/);
+});
+
+test('runExclusive() serializes overlapping calls, deferring a later call until an earlier one settles (#4015)', async () => {
+	// `MLEngine#resolveConfig()` wraps its whole invalidate → set → search →
+	// resolve sequence in `runExclusive()` so that an overlapping call on the
+	// same (possibly shared) provider can't run its own `invalidate()` in the
+	// middle of another call's `set()`/`resolve()` sequence. This exercises
+	// `runExclusive()`'s serialization directly, with the interleaving under
+	// the test's own control instead of relying on incidental async timing.
+	const provider = new ConfigProvider();
+	const order: string[] = [];
+
+	let releaseFirst: () => void = () => {};
+	const firstGate = new Promise<void>(resolve => {
+		releaseFirst = resolve;
+	});
+
+	const first = provider.runExclusive(async () => {
+		order.push('first-start');
+		await firstGate;
+		order.push('first-end');
+	});
+
+	const second = provider.runExclusive(() => {
+		order.push('second-start');
+		order.push('second-end');
+		return Promise.resolve();
+	});
+
+	releaseFirst();
+	await Promise.all([first, second]);
+
+	// If `runExclusive()` let the two calls run concurrently instead of
+	// queueing, `second`'s callback (no internal `await`) would complete
+	// before `first`'s gated one resumes, producing
+	// ['first-start', 'second-start', 'second-end', 'first-end'] instead.
+	// Asserting only on this final, fully-settled order (not on intermediate
+	// state after N microtask ticks) keeps the assertion independent of a
+	// runtime's exact `await` scheduling — relevant since this repo also
+	// tests under Bun and Deno, not just Node/V8.
+	expect(order).toStrictEqual(['first-start', 'first-end', 'second-start', 'second-end']);
+});

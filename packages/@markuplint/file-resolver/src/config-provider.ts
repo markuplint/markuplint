@@ -10,7 +10,7 @@ import { ConfigParserError } from '@markuplint/parser-utils';
 import { InvalidSelectorError, createSelector } from '@markuplint/selector';
 import { nonNullableFilter, toNoEmptyStringArrayFromStringOrArray, ConfigLoadError } from '@markuplint/shared';
 
-import { load as loadConfig, search } from './cosmiconfig.js';
+import { load as loadConfig, search, clearExplorerCache } from './cosmiconfig.js';
 import { log } from './debug.js';
 import { generalImport } from './general-import.js';
 import { getPreset } from './get-preset.js';
@@ -54,6 +54,67 @@ export class ConfigProvider {
 	 * needs no hashing of arbitrary config shapes.
 	 */
 	#autoKeys = new WeakMap<object, string>();
+
+	/**
+	 * Serializes {@link runExclusive} calls on this instance.
+	 */
+	#queue: Promise<void> = Promise.resolve();
+
+	/**
+	 * Clears every cached and stored config entry: the base-config cache
+	 * (`#cache`), the loaded/registered config store (`#store`), `set()`'s
+	 * identity→key stabilization (`#autoKeys`), `resolve-plugins.ts`'s own
+	 * module-level plugin-resolution cache, and the shared `cosmiconfig`
+	 * explorer's own search/load caches (so {@link search}, called right
+	 * after this, re-reads the current file content instead of a stale
+	 * cosmiconfig-level cache).
+	 *
+	 * The `cosmiconfig` explorer and the `resolve-plugins.ts` cache are
+	 * module-level singletons shared by every `ConfigProvider` instance in
+	 * the process — clearing them here affects other instances too, not just
+	 * this one. Harmless (they just re-search/re-load), but worth knowing
+	 * when reasoning about a cache-busting re-resolve's blast radius.
+	 *
+	 * Callers doing a cache-busting re-resolve (e.g. watch mode after a file
+	 * change) must call this **before** registering any inline config via
+	 * {@link set}, and before {@link search}, for that same resolve —
+	 * `resolve()` itself no longer clears anything, so a `set()`/`search()`
+	 * call made after `invalidate()` survives through to `resolve()`. Wrap
+	 * the whole `invalidate()` → `set()`/`search()` → `resolve()` sequence in
+	 * {@link runExclusive} so an overlapping call on the same instance can't
+	 * interleave its own `invalidate()` in the middle of it. See #4015.
+	 */
+	invalidate() {
+		this.#store.clear();
+		this.#cache.clear();
+		this.#autoKeys = new WeakMap();
+		cacheClear();
+		clearExplorerCache();
+	}
+
+	/**
+	 * Runs `fn` exclusively with respect to every other `runExclusive` call on
+	 * this instance: queued calls wait for earlier ones to settle before
+	 * starting, so two overlapping cache-busting re-resolves (e.g. two
+	 * watch-triggered `MLEngine#resolveConfig(false)` calls close together,
+	 * whether from one engine's own provider or several engines sharing one)
+	 * can't interleave — one call's {@link invalidate} can no longer wipe the
+	 * `set()`/`search()` entries another call registered a moment earlier but
+	 * hasn't yet consumed. See #4015.
+	 */
+	async runExclusive<T>(fn: () => Promise<T>): Promise<T> {
+		const previous = this.#queue;
+		let release: () => void;
+		this.#queue = new Promise(resolve => {
+			release = resolve;
+		});
+		await previous;
+		try {
+			return await fn();
+		} finally {
+			release!();
+		}
+	}
 
 	/**
 	 * Recursively loads a configuration and all its `extends` dependencies.
@@ -129,19 +190,21 @@ export class ConfigProvider {
 	 * per call so a `.vue`-only override never leaks into a `.html` file's result (or
 	 * vice versa) just because they resolve the same `names`.
 	 *
+	 * Does NOT clear the provider's store/cache itself — call {@link invalidate}
+	 * first if a fresh re-read is needed (e.g. a watch-triggered re-resolve).
+	 * `cache` only controls whether an already-loaded `names` entry (this call's
+	 * base-config cache, and — deeper still — cosmiconfig's own per-file cache in
+	 * `#load`) is reused; it used to also wipe the store/cache up front, which
+	 * discarded any `set()` call the caller had just made for this same resolve
+	 * (e.g. `MLEngine#resolveConfig()` registering inline `config`/`defaultConfig`
+	 * right before calling this) — see #4015.
+	 *
 	 * @param targetFile - The file being linted
 	 * @param names - Config file paths or module names to merge
-	 * @param cache - Whether to use cached results
+	 * @param cache - Whether to reuse already-loaded/cached entries
 	 * @returns The fully resolved configuration set including plugins and errors
 	 */
 	async resolve(targetFile: Readonly<MLFile>, names: readonly Nullable<string>[], cache = true): Promise<ConfigSet> {
-		if (!cache) {
-			this.#store.clear();
-			this.#cache.clear();
-			this.#autoKeys = new WeakMap();
-			cacheClear();
-		}
-
 		const keys = names.filter(nonNullableFilter);
 		const key = keys.join(KEY_SEPARATOR);
 
