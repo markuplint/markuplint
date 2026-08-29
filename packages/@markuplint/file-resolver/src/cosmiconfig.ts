@@ -49,6 +49,18 @@ const explorer = cosmiconfig('markuplint', {
 
 type CosmiConfig = ReturnType<LoaderSync>;
 
+/**
+ * Clears the shared `cosmiconfig` explorer's own internal search/load caches.
+ * Distinct from this module's `cacheClear` parameters (which clear the same
+ * caches but only as a side effect of one `search`/`load` call) — this lets a
+ * caller (see `ConfigProvider#invalidate`) clear them up front, before any
+ * `search`/`load` call, so a subsequent `search` reads the current file
+ * content instead of the explorer's stale cache. See #4015.
+ */
+export function clearExplorerCache() {
+	explorer.clearCaches();
+}
+
 export async function search<T = CosmiConfig>(filePath: string, cacheClear: boolean) {
 	if (cacheClear) {
 		explorer.clearCaches();
