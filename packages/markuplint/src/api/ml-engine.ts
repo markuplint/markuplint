@@ -31,7 +31,43 @@ const configLog = log.extend('config');
 type MLEngineOptions = {
 	readonly debug?: boolean;
 	readonly watch?: boolean;
+	/**
+	 * A pre-built {@link ConfigProvider} to resolve config through, instead of
+	 * the one this instance would otherwise create for itself.
+	 *
+	 * `ConfigProvider` caches by the resolved config's `names` (file paths),
+	 * not by target file — so a caller looping over many files (the CLI, or
+	 * the `lint()` API) that constructs one `MLEngine` per file should share
+	 * a single `ConfigProvider` across that loop; every file whose config
+	 * resolves to the same `names` then reuses the same cached base config
+	 * (merge/validate/plugin-resolution) instead of redoing that work once
+	 * per file. See #3997.
+	 *
+	 * Optional and additive: omitted, each `MLEngine` still creates its own
+	 * provider exactly as before.
+	 *
+	 * **Caveat — `watch: true`**: `ConfigProvider.resolve`'s cache-busting
+	 * (`cache: false`, used internally on every watch-triggered re-resolve)
+	 * clears the *entire* shared provider, not anything scoped to one engine
+	 * or file. Sharing one `configProvider` across multiple engines that also
+	 * have `watch: true` risks one engine's re-resolve silently invalidating
+	 * another's in-flight or just-cached config. Neither the CLI (which
+	 * doesn't support `--watch`) nor `lint()` (which never sets `watch`)
+	 * create this combination — it only arises if a direct API consumer
+	 * builds it deliberately.
+	 */
+	readonly configProvider?: ConfigProvider;
 };
+
+/**
+ * The config passed to {@link ConfigProvider.set} when no config was
+ * discovered, requested, or provided by the caller. A module-level constant
+ * (not rebuilt per call) so its object identity is stable — letting
+ * `ConfigProvider.set`'s auto-key cache (keyed by identity) recognize repeat
+ * calls across every file in a run sharing one `ConfigProvider`, the same
+ * way a stable `options.config`/`defaultConfig` reference does. See #3997.
+ */
+const RECOMMENDED_CONFIG = { extends: ['markuplint:recommended'] };
 
 /**
  * Options for creating an {@link MLEngine} from inline source code.
@@ -116,7 +152,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 
 		this.#file = file;
 		this.#options = options;
-		this.#configProvider = new ConfigProvider();
+		this.#configProvider = options?.configProvider ?? new ConfigProvider();
 		this.watchMode(!!this.#options?.watch);
 
 		log('[MLEngine] Initialized: %s', this.#file.path);
@@ -414,7 +450,8 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		configLog('configProvider: %s', this.#configProvider);
 
 		const defaultConfigKey =
-			this.#options?.defaultConfig && this.#configProvider.set(mergeConfig(this.#options?.defaultConfig));
+			this.#options?.defaultConfig &&
+			this.#configProvider.set(mergeConfig(this.#options.defaultConfig), undefined, this.#options.defaultConfig);
 		configLog('defaultConfigKey: %s', defaultConfigKey ?? 'N/A');
 		this.emit('log', 'defaultConfigKey', defaultConfigKey ?? 'N/A');
 
@@ -428,7 +465,9 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		configLog('configFilePathsFromTarget: %s', configFilePathsFromTarget ?? 'N/A');
 		this.emit('log', 'configFilePathsFromTarget', configFilePathsFromTarget ?? 'N/A');
 
-		const configKey = this.#options?.config && this.#configProvider.set(mergeConfig(this.#options.config));
+		const configKey =
+			this.#options?.config &&
+			this.#configProvider.set(mergeConfig(this.#options.config), undefined, this.#options.config);
 		configLog('option.config: %s', configKey ?? 'N/A');
 		this.emit('log', 'option.config', configFilePathsFromTarget ?? 'N/A');
 
@@ -436,7 +475,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		if (!defaultConfigKey && !configFilePathsFromTarget && !configKey && !this.#options?.configFile) {
 			// No configured
 			// Default: set recommended
-			defaultRecommended = this.#configProvider.set({ extends: ['markuplint:recommended'] });
+			defaultRecommended = this.#configProvider.set(RECOMMENDED_CONFIG);
 		}
 		configLog('defaultRecommended: %s', defaultRecommended ?? 'N/A');
 		this.emit('log', 'defaultRecommended', defaultRecommended ?? 'N/A');

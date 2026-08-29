@@ -7,8 +7,8 @@ import type { Severity, SeverityOptions, Violation } from '@markuplint/ml-config
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 
-import { resolveFiles } from '@markuplint/file-resolver';
-import { CONFIG_ERROR_RULE_ID, RULE_DEPRECATION_RULE_ID, ViolationCollector } from '@markuplint/ml-core';
+import { ConfigProvider, resolveFiles } from '@markuplint/file-resolver';
+import { ViolationCollector } from '@markuplint/ml-core';
 import { isFatalError } from '@markuplint/shared';
 
 import { MLEngine } from '../api/index.js';
@@ -22,19 +22,10 @@ import {
 	resolveSuppressionsPath,
 	writeSuppressionsFile,
 } from '../suppressions/index.js';
+import { CONFIG_LEVEL_RULE_IDS, dedupeConfigLevelViolations } from '../dedupe-config-violations.js';
 
 import { outputDryRunDiff } from './dry-run-output.js';
 import { output, outputSummary } from './output.js';
-
-/**
- * Synthetic ruleIds produced from resolving the run's config rather than
- * from linting a file's content (`config-error`: broken config;
- * `rule-deprecation`: deprecated-but-working rule names). Both regenerate
- * identically for every file in a run, so both need the same per-run dedupe
- * and the same exclusion from per-file failure counting — see the two call
- * sites below.
- */
-const CONFIG_LEVEL_RULE_IDS = new Set([CONFIG_ERROR_RULE_ID, RULE_DEPRECATION_RULE_ID]);
 
 /**
  * Validates a `--severity-*` flag's raw string value against the uniform
@@ -105,14 +96,16 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 	const collector = new ViolationCollector(options.maxCount);
 	const processedFiles: string[] = [];
 	const skippedFiles: string[] = [];
-	// Config-level violations (`CONFIG_LEVEL_RULE_IDS`: unresolved rule
-	// references, deprecated rule names, ...) come from resolving this run's
-	// config, so the same message is identical across every file. Track
-	// messages already reported once so a run over many files doesn't repeat
-	// the same lines per file — the config is one thing, not N things.
+	// See `dedupeConfigLevelViolations` for why this Set needs to persist
+	// across the whole run (not per file).
 	const seenConfigMessages = new Set<string>();
 	const filesContent = new Map<string, { sourceCode: string; fixedCode: string }>();
 	const engines = new Map<string, MLEngine>();
+	// Shared across every file in this run so its config cache — keyed by
+	// resolved config `names`, not by target file — actually helps: config
+	// loading/merging/plugin-resolution is done once per distinct config,
+	// not once per file. See #3997.
+	const configProvider = new ConfigProvider();
 	const parsedSeverityParseError = parseSeverityFlag(options.severityParseError);
 	const parsedSeverityDeprecation = parseSeverityFlag(options.severityDeprecation);
 	const severity: SeverityOptions = {
@@ -164,6 +157,7 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 			debug: verbose,
 			severity,
 			...apiOptions,
+			configProvider,
 		});
 
 		if (options.showConfig != null) {
@@ -213,21 +207,7 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 			? result.violations
 			: (result.fixSummary?.finalPassViolations ?? result.violations);
 
-		// Config-level violations are regenerated fresh per file (config
-		// resolution is not shared across a run), so an identical message
-		// would otherwise repeat once per file. Keep only the first
-		// occurrence across this run.
-		const reportedViolations = violationsBeforeDedupe.filter(violation => {
-			if (!CONFIG_LEVEL_RULE_IDS.has(violation.ruleId)) {
-				return true;
-			}
-			const key = `${violation.ruleId} ${violation.message}`;
-			if (seenConfigMessages.has(key)) {
-				return false;
-			}
-			seenConfigMessages.add(key);
-			return true;
-		});
+		const reportedViolations = dedupeConfigLevelViolations(violationsBeforeDedupe, seenConfigMessages);
 
 		// Progressive出力が有効でJSON形式でない場合
 		if (progressiveOutput && format !== 'json') {
