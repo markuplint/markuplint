@@ -55349,7 +55349,8 @@
 			},
 			"attributes": {
 				"for": {
-					"description": "The for attribute is used for out-of-order patching with <template for=\"...\">, matching an equivalent <?start id=\"...\"> or <?marker \"...\"> marker. See the out-of-order patching section and examples section."
+					"description": "The for attribute is used for out-of-order patching with <template for=\"...\">, matching an equivalent <?start id=\"...\"> or <?marker \"...\"> marker. See the out-of-order patching section and examples section.",
+					"experimental": true
 				},
 				"shadowrootclonable": {
 					"description": "Sets the value of the clonable property of a ShadowRoot created using this element to true. If set, a clone of the shadow host (the parent element of this <template>) created with Node.cloneNode() or Document.importNode() will include a shadow root in the copy.",
