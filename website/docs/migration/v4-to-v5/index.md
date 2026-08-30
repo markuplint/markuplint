@@ -57,13 +57,14 @@ npx skills add markuplint/markuplint@migrations/v4-v5
 
 ## For users
 
-| Area                                            | Summary                                                                                                                       | Who's affected   |
-| ----------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ---------------- |
-| [Node.js](/docs/migration/v4-to-v5/nodejs)      | Minimum version v24.0.0 (v4 documented v18.18.0). TypeScript target ES2022.                                                   | Everyone         |
-| [CLI](/docs/migration/v4-to-v5/cli)             | `--fix-dry-run`. Warnings allowed by default (`--no-allow-warnings` restores v4). `--config` does not merge.                  | CLI, CI          |
-| [Config](/docs/migration/v4-to-v5/config)       | `ruleCommonSettings`, named nodeRules, array override, shallow option merge, pretender restrictions, `:closest()` deprecated. | Config authors   |
-| [ARIA](/docs/migration/v4-to-v5/aria)           | Default ARIA 1.3. `wai-aria` expands to 21 rules; some checks that were off or absent in v4 now run.                          | Everyone         |
-| [Framework](/docs/migration/v4-to-v5/framework) | `@markuplint/htmx-parser` removed. Alpine spec is `@markuplint/alpine-spec`.                                                  | htmx / Alpine.js |
+| Area                                            | Summary                                                                                                                                              | Who's affected         |
+| ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------- |
+| [Node.js](/docs/migration/v4-to-v5/nodejs)      | Minimum version v24.0.0 (v4 documented v18.18.0). TypeScript target ES2022.                                                                          | Everyone               |
+| [CLI](/docs/migration/v4-to-v5/cli)             | `--fix-dry-run`. Warnings allowed by default (`--no-allow-warnings` restores v4). `--config` does not merge.                                         | CLI, CI                |
+| [Config](/docs/migration/v4-to-v5/config)       | `ruleCommonSettings`, named nodeRules, array override, shallow option merge, pretender restrictions, `:closest()` deprecated.                        | Config authors         |
+| [ARIA](/docs/migration/v4-to-v5/aria)           | Default ARIA 1.3. `wai-aria` expands to 21 rules; some checks that were off or absent in v4 now run.                                                 | Everyone               |
+| [Framework](/docs/migration/v4-to-v5/framework) | `@markuplint/htmx-parser` removed. Alpine spec is `@markuplint/alpine-spec`.                                                                         | htmx / Alpine.js       |
+| [AST](/docs/migration/v4-to-v5/ast)             | Bundled parsers (html, vue, ejs, astro, mdx, jsx, svelte) now keep `/` in unquoted attribute values instead of splitting on it. `pug` is unaffected. | Users of those parsers |
 
 ### Rules
 
