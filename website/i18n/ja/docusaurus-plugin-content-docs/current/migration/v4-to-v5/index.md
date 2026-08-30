@@ -49,13 +49,14 @@ npx skills add markuplint/markuplint@migrations/v4-v5
 
 ## ユーザー向け
 
-| 領域                                                 | 概要                                                                                                       | 影響             |
-| ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- | ---------------- |
-| [Node.js](/docs/migration/v4-to-v5/nodejs)           | 最小 v24.0.0（v4 の文書は v18.18.0）。TypeScript は ES2022。                                               | 全員             |
-| [CLI](/docs/migration/v4-to-v5/cli)                  | `--fix-dry-run`。警告は既定で許容（v4 相当は `--no-allow-warnings`）。`--config` はマージしない。          | CLI、CI          |
-| [設定](/docs/migration/v4-to-v5/config)              | `ruleCommonSettings`、名前付き nodeRules、配列上書き、shallow merge、pretender 制限、`:closest()` 非推奨。 | 設定作者         |
-| [ARIA](/docs/migration/v4-to-v5/aria)                | 既定 ARIA 1.3。`wai-aria` は 21 ルール。v4 既定オフ／未実装の検査も動く。                                  | 全員             |
-| [フレームワーク](/docs/migration/v4-to-v5/framework) | `@markuplint/htmx-parser` 削除。Alpine spec は `@markuplint/alpine-spec`。                                 | htmx / Alpine.js |
+| 領域                                                 | 概要                                                                                                                                                     | 影響                 |
+| ---------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------- |
+| [Node.js](/docs/migration/v4-to-v5/nodejs)           | 最小 v24.0.0（v4 の文書は v18.18.0）。TypeScript は ES2022。                                                                                             | 全員                 |
+| [CLI](/docs/migration/v4-to-v5/cli)                  | `--fix-dry-run`。警告は既定で許容（v4 相当は `--no-allow-warnings`）。`--config` はマージしない。                                                        | CLI、CI              |
+| [設定](/docs/migration/v4-to-v5/config)              | `ruleCommonSettings`、名前付き nodeRules、配列上書き、shallow merge、pretender 制限、`:closest()` 非推奨。                                               | 設定作者             |
+| [ARIA](/docs/migration/v4-to-v5/aria)                | 既定 ARIA 1.3。`wai-aria` は 21 ルール。v4 既定オフ／未実装の検査も動く。                                                                                | 全員                 |
+| [フレームワーク](/docs/migration/v4-to-v5/framework) | `@markuplint/htmx-parser` 削除。Alpine spec は `@markuplint/alpine-spec`。                                                                               | htmx / Alpine.js     |
+| [AST](/docs/migration/v4-to-v5/ast)                  | 同梱パーサー（html、vue、ejs、astro、mdx、jsx、svelte）は引用符なし属性値中の `/` で区切らず、値の一部として保持するようになりました。`pug` は影響なし。 | 該当パーサーの利用者 |
 
 ### ルール
 
