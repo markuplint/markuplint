@@ -1,6 +1,7 @@
 {
 	"rules": {
 		"id-duplication": true,
-		"required-attr": true
+		"required-attr": true,
+		"no-such-rule": true
 	}
 }

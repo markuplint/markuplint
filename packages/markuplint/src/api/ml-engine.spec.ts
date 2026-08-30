@@ -5,6 +5,7 @@ import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
+import { ConfigProvider } from '@markuplint/file-resolver';
 import { describe, it, expect } from 'vitest';
 
 import { MLEngine } from './ml-engine.js';
@@ -466,5 +467,70 @@ describe('Parse Error Severity', () => {
 
 		const boolFalse = await new MLEngine(file!, { config: options.config, severity: { parseError: false } }).exec();
 		expect(boolFalse?.violations?.[0]?.severity).toBeUndefined();
+	});
+});
+
+describe('configProvider option (#3997)', () => {
+	it('shares config resolution across engines given the same configProvider', async () => {
+		const configProvider = new ConfigProvider();
+		const config = { rules: { 'no-duplicate-id': true } };
+
+		const fileA = await MLEngine.toMLFile({ sourceCode: '<p>a</p>', name: 'a.html' });
+		const fileB = await MLEngine.toMLFile({ sourceCode: '<p>b</p>', name: 'b.html' });
+
+		const configSetA = await new MLEngine(fileA!, { config, configProvider }).resolveConfig(true);
+		const configSetB = await new MLEngine(fileB!, { config, configProvider }).resolveConfig(true);
+
+		// Same inline `config` object, same shared provider — the base config
+		// resolution (files/plugins) must be reused, not redone per engine.
+		expect(configSetB.files).toBe(configSetA.files);
+		expect(configSetB.plugins).toBe(configSetA.plugins);
+	});
+
+	it('does not share config resolution across engines without an explicit configProvider', async () => {
+		const config = { rules: { 'no-duplicate-id': true } };
+
+		const fileA = await MLEngine.toMLFile({ sourceCode: '<p>a</p>', name: 'a.html' });
+		const fileB = await MLEngine.toMLFile({ sourceCode: '<p>b</p>', name: 'b.html' });
+
+		const configSetA = await new MLEngine(fileA!, { config }).resolveConfig(true);
+		const configSetB = await new MLEngine(fileB!, { config }).resolveConfig(true);
+
+		// No shared provider (today's default): each engine resolves its own
+		// config independently, so the underlying objects are NOT the same
+		// reference, even though their content is equal.
+		expect(configSetB.files).not.toBe(configSetA.files);
+		expect(configSetB.config).toStrictEqual(configSetA.config);
+	});
+});
+
+describe('resolveConfig(false) with inline config (#4015)', () => {
+	it('does not throw for an inline `config` option', async () => {
+		const file = await MLEngine.toMLFile({ sourceCode: '<p>a</p>', name: 'a.html' });
+		const engine = new MLEngine(file!, { config: { rules: { 'no-duplicate-id': true } } });
+
+		const configSet = await engine.resolveConfig(false);
+
+		expect(configSet.config.rules).toStrictEqual({ 'no-duplicate-id': true });
+	});
+
+	it('does not throw for an inline `defaultConfig` option', async () => {
+		const file = await MLEngine.toMLFile({ sourceCode: '<p>a</p>', name: 'a.html' });
+		const engine = new MLEngine(file!, { defaultConfig: { rules: { 'no-duplicate-id': true } } });
+
+		const configSet = await engine.resolveConfig(false);
+
+		expect(configSet.config.rules).toStrictEqual({ 'no-duplicate-id': true });
+	});
+
+	it('re-resolving twice with cache: false still works (watch-mode-like repeated re-resolve)', async () => {
+		const file = await MLEngine.toMLFile({ sourceCode: '<p>a</p>', name: 'a.html' });
+		const engine = new MLEngine(file!, { config: { rules: { 'no-duplicate-id': true } } });
+
+		const first = await engine.resolveConfig(false);
+		const second = await engine.resolveConfig(false);
+
+		expect(first.config.rules).toStrictEqual({ 'no-duplicate-id': true });
+		expect(second.config.rules).toStrictEqual({ 'no-duplicate-id': true });
 	});
 });

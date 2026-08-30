@@ -429,5 +429,9 @@ test('default-rules', () => {
 			category: 'a11y',
 			defaultValue: true,
 		},
+		'no-aria-hidden-on-hidden-until-found': {
+			category: 'a11y',
+			defaultValue: true,
+		},
 	});
 });

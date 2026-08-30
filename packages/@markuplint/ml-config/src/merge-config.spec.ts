@@ -116,6 +116,18 @@ describe('mergeConfig', () => {
 		});
 	});
 
+	test('severity shallow merge: deprecation independent of parseError', () => {
+		expect(
+			mergeConfig(
+				{ severity: { parseError: 'error' } },
+				// @ts-ignore -- test with partial config
+				{ severity: { deprecation: 'off' } },
+			),
+		).toStrictEqual({
+			severity: { parseError: 'error', deprecation: 'off' },
+		});
+	});
+
 	test('parserOptions merge', () => {
 		expect(
 			mergeConfig(

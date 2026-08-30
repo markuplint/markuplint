@@ -7,7 +7,7 @@ import type { Severity, SeverityOptions, Violation } from '@markuplint/ml-config
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 
-import { resolveFiles } from '@markuplint/file-resolver';
+import { ConfigProvider, resolveFiles } from '@markuplint/file-resolver';
 import { ViolationCollector } from '@markuplint/ml-core';
 import { isFatalError } from '@markuplint/shared';
 
@@ -22,9 +22,27 @@ import {
 	resolveSuppressionsPath,
 	writeSuppressionsFile,
 } from '../suppressions/index.js';
+import { CONFIG_LEVEL_RULE_IDS, dedupeConfigLevelViolations } from '../dedupe-config-violations.js';
 
 import { outputDryRunDiff } from './dry-run-output.js';
 import { output, outputSummary } from './output.js';
+
+/**
+ * Validates a `--severity-*` flag's raw string value against the uniform
+ * single-value form both `--severity-parse-error` and `--severity-deprecation`
+ * accept, shared so adding another such flag doesn't mean copy-pasting this
+ * check again.
+ *
+ * @returns the validated value, or `undefined` if unset or not one of
+ * `"error"`, `"warning"`, `"off"`.
+ */
+function parseSeverityFlag(value: string | undefined): Severity | 'off' | undefined {
+	const normalized = value?.toLowerCase();
+	if (normalized != null && ['error', 'warning', 'off'].includes(normalized)) {
+		return normalized as Severity | 'off';
+	}
+	return undefined;
+}
 
 export async function command(files: readonly Readonly<Target>[], options: CLIOptions, apiOptions?: APIOptions) {
 	const fixDryRun = options.fixDryRun;
@@ -78,19 +96,22 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 	const collector = new ViolationCollector(options.maxCount);
 	const processedFiles: string[] = [];
 	const skippedFiles: string[] = [];
-	// `config-error` violations (deprecated rule names, unresolved rule
-	// references, ...) come from resolving this run's config, so the same
-	// message is identical across every file. Track messages already
-	// reported once so a run over many files doesn't repeat the same lines
-	// per file — the config is one thing, not N things.
+	// See `dedupeConfigLevelViolations` for why this Set needs to persist
+	// across the whole run (not per file).
 	const seenConfigMessages = new Set<string>();
 	const filesContent = new Map<string, { sourceCode: string; fixedCode: string }>();
 	const engines = new Map<string, MLEngine>();
-	const severityParseError = options.severityParseError?.toLowerCase();
-	const severity: SeverityOptions =
-		severityParseError != null && ['error', 'warning', 'off'].includes(severityParseError)
-			? { parseError: severityParseError as Severity | 'off' }
-			: {};
+	// Shared across every file in this run so its config cache — keyed by
+	// resolved config `names`, not by target file — actually helps: config
+	// loading/merging/plugin-resolution is done once per distinct config,
+	// not once per file. See #3997.
+	const configProvider = new ConfigProvider();
+	const parsedSeverityParseError = parseSeverityFlag(options.severityParseError);
+	const parsedSeverityDeprecation = parseSeverityFlag(options.severityDeprecation);
+	const severity: SeverityOptions = {
+		...(parsedSeverityParseError != null && { parseError: parsedSeverityParseError }),
+		...(parsedSeverityDeprecation != null && { deprecation: parsedSeverityDeprecation }),
+	};
 
 	// Progressive output prints each file's own violations as soon as that
 	// file is processed, ahead of the two whole-run passes that batch output
@@ -136,6 +157,7 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 			debug: verbose,
 			severity,
 			...apiOptions,
+			configProvider,
 		});
 
 		if (options.showConfig != null) {
@@ -152,6 +174,7 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 					dependencies,
 					plugins: configSet.plugins,
 					errors: configSet.errs,
+					ruleDeprecations: configSet.ruleDeprecations,
 				};
 			} else {
 				data = configSet.config;
@@ -184,20 +207,7 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 			? result.violations
 			: (result.fixSummary?.finalPassViolations ?? result.violations);
 
-		// `config-error` is regenerated fresh per file (config resolution is
-		// not shared across a run), so an identical message would otherwise
-		// repeat once per file. Keep only the first occurrence across this run.
-		const reportedViolations = violationsBeforeDedupe.filter(violation => {
-			if (violation.ruleId !== 'config-error') {
-				return true;
-			}
-			const key = `${violation.ruleId} ${violation.message}`;
-			if (seenConfigMessages.has(key)) {
-				return false;
-			}
-			seenConfigMessages.add(key);
-			return true;
-		});
+		const reportedViolations = dedupeConfigLevelViolations(violationsBeforeDedupe, seenConfigMessages);
 
 		// Progressive出力が有効でJSON形式でない場合
 		if (progressiveOutput && format !== 'json') {
@@ -405,10 +415,11 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 
 	for (const filePath of processedFiles) {
 		const violations = outputViolationsByFile.get(filePath) || [];
-		// A file whose only violations are `config-error` didn't fail on its
-		// own content — the config issue is reported once for the whole run
-		// (see the dedupe above), not attributable to this particular file.
-		if (violations.some(violation => violation.ruleId !== 'config-error')) {
+		// A file whose only violations are config-level (`CONFIG_LEVEL_RULE_IDS`)
+		// didn't fail on its own content — the config issue is reported once
+		// for the whole run (see the dedupe above), not attributable to this
+		// particular file.
+		if (violations.some(violation => !CONFIG_LEVEL_RULE_IDS.has(violation.ruleId))) {
 			failedFileCount++;
 		}
 		for (const violation of violations) {

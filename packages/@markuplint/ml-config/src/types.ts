@@ -147,6 +147,24 @@ export type SeverityOptions = {
 	 * ```
 	 */
 	readonly parseError?: ParseErrorSeverity | Partial<Record<MLASTParseErrorCode, ParseErrorSeverity>>;
+
+	/**
+	 * Severity for deprecated-rule-name notices, surfaced via the built-in
+	 * `rule-deprecation` channel. A deprecated name is one the v5
+	 * rule-system redesign (#3989) renamed or split; the notice reports that
+	 * the config still works today but will stop resolving in v6.
+	 *
+	 * Unlike {@link parseError}, this defaults to `'warning'` (not off) —
+	 * it carves an already-surfaced notice out of the generic `config-error`
+	 * channel rather than introducing a new one, so leaving it unset must
+	 * not silence something users already see.
+	 *
+	 * @example
+	 * ```jsonc
+	 * { "severity": { "deprecation": "off" } }
+	 * ```
+	 */
+	readonly deprecation?: Severity | 'off' | boolean;
 };
 
 /**
