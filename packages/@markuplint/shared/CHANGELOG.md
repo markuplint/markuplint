@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-rc.6](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.5...v5.0.0-rc.6) (2026-08-30)
+
+### Features
+
+- split rule-deprecation notices out of config-error ([#4013](https://github.com/markuplint/markuplint/issues/4013)) ([812e6f3](https://github.com/markuplint/markuplint/commit/812e6f356839af8f257cfd91e6b16cfdfdd7cf33))
+
+### BREAKING CHANGES
+
+- violations for deprecated rule names now have
+  `ruleId: 'rule-deprecation'` instead of `ruleId: 'config-error'`. Any
+  consumer filtering `MLCore.verify()` output (or the markuplint CLI/API) by
+  `ruleId === 'config-error'` to catch deprecation messages must also check
+  for `rule-deprecation`.
+
+- feat(markuplint): add --severity-deprecation CLI flag
+
+Wires the new severity.deprecation config option (@markuplint/ml-config)
+and the rule-deprecation ruleId (@markuplint/ml-core) through the CLI:
+
+- --severity-deprecation flag, mirroring --severity-parse-error
+- --show-config details now also surfaces ruleDeprecations
+- per-run dedupe and failed-file counting generalized to cover both
+  config-level ruleIds (config-error and rule-deprecation), not just
+  config-error
+
+* docs(website): document severity.deprecation (EN + JA)
+
 # [5.0.0-rc.5](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.4...v5.0.0-rc.5) (2026-08-28)
 
 **Note:** Version bump only for package @markuplint/shared

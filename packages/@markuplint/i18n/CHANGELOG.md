@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-rc.6](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.5...v5.0.0-rc.6) (2026-08-30)
+
+### Bug Fixes
+
+- add no-aria-hidden-on-hidden-until-found rule (closes [#3999](https://github.com/markuplint/markuplint/issues/3999)) ([#4017](https://github.com/markuplint/markuplint/issues/4017)) ([3dfb300](https://github.com/markuplint/markuplint/commit/3dfb3001dc66452918d5cebbb071244b68779b30))
+
 # [5.0.0-rc.5](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.4...v5.0.0-rc.5) (2026-08-28)
 
 ### Code Refactoring

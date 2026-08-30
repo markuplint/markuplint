@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-rc.6](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.5...v5.0.0-rc.6) (2026-08-30)
+
+### Bug Fixes
+
+- resolveConfig(false) crashes with inline config (not a file path) ([#4018](https://github.com/markuplint/markuplint/issues/4018)) ([7e38b64](https://github.com/markuplint/markuplint/commit/7e38b64caa8cca69009ee765e4aada37fc48c559)), closes [#4015](https://github.com/markuplint/markuplint/issues/4015) [#4015](https://github.com/markuplint/markuplint/issues/4015)
+
+### Performance Improvements
+
+- share ConfigProvider across a run's files, fix latent overrides caching bug ([#4016](https://github.com/markuplint/markuplint/issues/4016)) ([fcc1875](https://github.com/markuplint/markuplint/commit/fcc1875b1a984a5ef1bb36aa04e7b3522fefc58e)), closes [#3997](https://github.com/markuplint/markuplint/issues/3997) [#3997](https://github.com/markuplint/markuplint/issues/3997)
+
+### BREAKING CHANGES
+
+- `ConfigProvider#resolve(targetFile, names, false)` no longer
+  clears the provider's store/cache/plugin-resolution caches by itself. Callers
+  that relied on `cache: false` alone to force a fresh re-read must now call
+  the new `ConfigProvider#invalidate()` first.
+
 # [5.0.0-rc.5](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.4...v5.0.0-rc.5) (2026-08-28)
 
 ### Bug Fixes

@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/shared",
-	"version": "5.0.0-rc.5",
+	"version": "5.0.0-rc.6",
 	"description": "Shared functions for Markuplint",
 	"repository": {
 		"type": "git",
