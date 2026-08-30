@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/ml-config",
-	"version": "5.0.0-rc.5",
+	"version": "5.0.0-rc.6",
 	"description": "JSON Schema and TypeScript types of markuplint configure JSON",
 	"repository": {
 		"type": "git",
@@ -31,10 +31,10 @@
 		"clean": "tsc --build --clean  tsconfig.build.json"
 	},
 	"dependencies": {
-		"@markuplint/ml-ast": "5.0.0-rc.5",
-		"@markuplint/ml-spec": "5.0.0-rc.5",
-		"@markuplint/selector": "5.0.0-rc.5",
-		"@markuplint/shared": "5.0.0-rc.5",
+		"@markuplint/ml-ast": "5.0.0-rc.6",
+		"@markuplint/ml-spec": "5.0.0-rc.6",
+		"@markuplint/selector": "5.0.0-rc.6",
+		"@markuplint/shared": "5.0.0-rc.6",
 		"@types/mustache": "4.2.6",
 		"is-plain-object": "5.0.0",
 		"mustache": "4.2.0",
