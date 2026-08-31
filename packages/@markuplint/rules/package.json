@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/rules",
-	"version": "5.0.0-rc.6",
+	"version": "5.0.0-rc.7",
 	"description": "Built-in rules of markuplint",
 	"repository": {
 		"type": "git",
@@ -31,13 +31,13 @@
 		"./lib/permitted-contents/debug.js": "./lib/permitted-contents/debug.browser.js"
 	},
 	"dependencies": {
-		"@markuplint/html-spec": "5.0.0-rc.6",
-		"@markuplint/ml-config": "5.0.0-rc.6",
-		"@markuplint/ml-core": "5.0.0-rc.6",
-		"@markuplint/ml-spec": "5.0.0-rc.6",
-		"@markuplint/selector": "5.0.0-rc.6",
-		"@markuplint/shared": "5.0.0-rc.6",
-		"@markuplint/types": "5.0.0-rc.6",
+		"@markuplint/html-spec": "5.0.0-rc.7",
+		"@markuplint/ml-config": "5.0.0-rc.7",
+		"@markuplint/ml-core": "5.0.0-rc.7",
+		"@markuplint/ml-spec": "5.0.0-rc.7",
+		"@markuplint/selector": "5.0.0-rc.7",
+		"@markuplint/shared": "5.0.0-rc.7",
+		"@markuplint/types": "5.0.0-rc.7",
 		"@mdn/browser-compat-data": "^7.3.2",
 		"@types/debug": "4.1.13",
 		"ansi-colors": "4.1.3",

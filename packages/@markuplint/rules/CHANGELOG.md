@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-rc.7](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.6...v5.0.0-rc.7) (2026-08-31)
+
+### Bug Fixes
+
+- **rules:** exempt no-unclosed-element-at-eof for never-close-tag parsers ([4f426d9](https://github.com/markuplint/markuplint/commit/4f426d9dd7e29fc28b14873674069dcbd7424970)), closes [#4022](https://github.com/markuplint/markuplint/issues/4022)
+
 # [5.0.0-rc.6](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.5...v5.0.0-rc.6) (2026-08-30)
 
 ### Bug Fixes

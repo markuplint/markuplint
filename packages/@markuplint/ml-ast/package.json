@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/ml-ast",
-	"version": "5.0.0-rc.6",
+	"version": "5.0.0-rc.7",
 	"description": "The markuplint AST types.",
 	"repository": {
 		"type": "git",

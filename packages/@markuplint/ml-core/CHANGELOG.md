@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-rc.7](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.6...v5.0.0-rc.7) (2026-08-31)
+
+### Bug Fixes
+
+- **ml-core:** fix named rule group disable propagation and validation ([139f466](https://github.com/markuplint/markuplint/commit/139f4661a12ac10b15ade305c30bbd8234b07b0f))
+
 # [5.0.0-rc.6](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.5...v5.0.0-rc.6) (2026-08-30)
 
 ### Features

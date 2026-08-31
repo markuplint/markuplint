@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/html-spec",
-	"version": "5.0.0-rc.6",
+	"version": "5.0.0-rc.7",
 	"description": "A specification of HTML Living Standard for markuplint",
 	"repository": {
 		"type": "git",
@@ -33,7 +33,7 @@
 		"gen:format": "npx oxfmt --write index.json"
 	},
 	"devDependencies": {
-		"@markuplint/test-tools": "5.0.0-rc.6",
+		"@markuplint/test-tools": "5.0.0-rc.7",
 		"@types/cheerio": "1.0.0",
 		"@types/cli-progress": "3.11.6",
 		"cheerio": "1.2.0",
@@ -43,6 +43,6 @@
 		"type-fest": "5.6.0"
 	},
 	"dependencies": {
-		"@markuplint/ml-spec": "5.0.0-rc.6"
+		"@markuplint/ml-spec": "5.0.0-rc.7"
 	}
 }

@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/cli-utils",
-	"version": "5.0.0-rc.6",
+	"version": "5.0.0-rc.7",
 	"description": "Utilities for CLI of Markuplint",
 	"repository": {
 		"type": "git",
