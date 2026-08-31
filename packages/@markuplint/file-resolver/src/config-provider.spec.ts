@@ -298,6 +298,57 @@ test('Overrides with OverrideMode', async () => {
 	});
 });
 
+test('Overrides: multiple matching globs (reset mode) — last match replaces every earlier one outright', async () => {
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures');
+	const key = path.resolve(testDir, '012', '.markuplintrc.multi-reset.json');
+	const file = getFile(path.resolve(testDir, '012', 'target.html'));
+	const configSet = await configProvider.resolve(file, [key]);
+	// `./target.*` matched after `./*.html`, so under the default `reset` mode
+	// its config entirely replaces the first match's — `foo`/`bar` are gone.
+	expect(configSet.config).toStrictEqual({
+		rules: {
+			baz: true,
+		},
+	});
+	expect(configSet.appliedOverrides).toStrictEqual([
+		path.resolve(testDir, '012', '*.html'),
+		path.resolve(testDir, '012', 'target.*'),
+	]);
+});
+
+test('Overrides: multiple matching globs (merge mode) — appliedOverrides records match order', async () => {
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures');
+	const key = path.resolve(testDir, '012', '.markuplintrc.multi-merge.json');
+	const file = getFile(path.resolve(testDir, '012', 'target.html'));
+	const configSet = await configProvider.resolve(file, [key]);
+	expect(configSet.config.rules).toStrictEqual({
+		foo: false,
+		bar: true,
+		baz: true,
+	});
+	expect(configSet.appliedOverrides).toStrictEqual([
+		path.resolve(testDir, '012', '*.html'),
+		path.resolve(testDir, '012', 'target.*'),
+	]);
+});
+
+test('appliedOverrides is absent when the config has no overrides at all', async () => {
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures');
+	const key = path.resolve(testDir, '001', '.markuplintrc');
+	const file = getFile(path.resolve(testDir, '001', 'target.html'));
+	const configSet = await configProvider.resolve(file, [key]);
+	expect(configSet.appliedOverrides).toBeUndefined();
+});
+
+test('appliedOverrides is absent when overrides exist but none match the target file', async () => {
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures');
+	const key = path.resolve(testDir, '012', '.markuplintrc.no-match.json');
+	const file = getFile(path.resolve(testDir, '012', 'target.html'));
+	const configSet = await configProvider.resolve(file, [key]);
+	expect(configSet.config.rules).toStrictEqual({ foo: true });
+	expect(configSet.appliedOverrides).toBeUndefined();
+});
+
 test('Overrides remain per-file correct when sharing one ConfigProvider across files (#3997)', async () => {
 	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures');
 	const resetKey = path.resolve(testDir, '011', '.markuplintrc.reset.json');

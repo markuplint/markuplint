@@ -586,6 +586,29 @@ describe('config-level violation deduplication', () => {
 		);
 		expect(data.ruleDeprecations).toHaveLength(2);
 	});
+
+	test('--show-config details surfaces which overrides glob(s) matched the target file', async () => {
+		const fixtureDir = path.resolve(import.meta.dirname, '../../test/show-config-overrides');
+		const overridesConfigPath = path.join(fixtureDir, 'config.json');
+		const overridesTargetFile = path.join(fixtureDir, 'target.html');
+
+		const { stdout } = await execa(
+			entryFilePath,
+			[
+				'--config',
+				escape(overridesConfigPath),
+				'--no-search-config',
+				'--show-config',
+				'details',
+				escape(overridesTargetFile),
+			],
+			{ reject: false },
+		);
+
+		const data = JSON.parse(stdout) as { appliedOverrides: readonly string[] };
+
+		expect(data.appliedOverrides).toStrictEqual([path.join(fixtureDir, 'target.*')]);
+	});
 });
 
 describe('--max-warnings option', () => {
