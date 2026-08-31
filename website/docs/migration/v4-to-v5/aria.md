@@ -105,6 +105,72 @@ v4 always ran (no option): `#ARIAAttrs: false` → `no-aria-on-unsupported-eleme
 
 v4 `wai-aria` **did not** implement `require-parent-role` or `tab-requires-tabpanel`. The alias and `markuplint:a11y` still enable them.
 
+### All 21 successor rules
+
+If you extend `markuplint:a11y` (or `markuplint:recommended`), you don't need this list at all:
+`"a11y/wai-aria/*": false` disables every one of them at once (see
+[Named rules in presets](/docs/guides/presets#named-rules)).
+
+The list below is for a **raw `wai-aria: true` config with no preset** — there, each of the 21
+current rule names must be disabled individually. It's also the bare-rule-name column if you're
+disabling one check by name rather than by preset group (see
+[base rule name disables reach every named group](/docs/configuration/properties#disable-by-base-rule-name)):
+
+| Rule name                            | `markuplint:a11y` group name               |
+| ------------------------------------ | ------------------------------------------ |
+| `no-aria-on-unsupported-element`     | `a11y/wai-aria/unsupported-element`        |
+| `no-unknown-role`                    | `a11y/wai-aria/non-existent-role`          |
+| `no-abstract-role`                   | `a11y/wai-aria/abstract-role`              |
+| `require-parent-role`                | `a11y/wai-aria/required-parent-role`       |
+| `require-aria-prop`                  | `a11y/wai-aria/required-props`             |
+| `no-deprecated-role`                 | `a11y/wai-aria/deprecated-role`            |
+| `no-redundant-role`                  | `a11y/wai-aria/implicit-role`              |
+| `permitted-roles`                    | `a11y/wai-aria/permitted-roles`            |
+| `no-prohibited-naming`               | `a11y/wai-aria/prohibited-naming`          |
+| `element-supports-aria-prop`         | `a11y/wai-aria/element-supports-aria-prop` |
+| `role-supports-aria-prop`            | `a11y/wai-aria/disallowed-props`           |
+| `no-deprecated-aria-prop`            | `a11y/wai-aria/deprecated-props`           |
+| `no-redundant-aria-prop`             | `a11y/wai-aria/implicit-props`             |
+| `no-contradictory-aria-prop`         | `a11y/wai-aria/contradictory-props`        |
+| `no-invalid-aria-prop-value`         | `a11y/wai-aria/value`                      |
+| `no-default-aria-value`              | `a11y/wai-aria/default-value`              |
+| `aria-prop-requires-role`            | `a11y/wai-aria/no-global-prop`             |
+| `require-owned-elements`             | `a11y/wai-aria/required-owned-elements`    |
+| `no-aria-on-presentational-children` | `a11y/wai-aria/presentational-children`    |
+| `no-focusable-in-aria-hidden`        | `a11y/wai-aria/interaction-in-hidden`      |
+| `tab-requires-tabpanel`              | `a11y/wai-aria/tab-requires-tabpanel`      |
+
+```json
+{
+  "rules": {
+    "no-aria-on-unsupported-element": false,
+    "no-unknown-role": false,
+    "no-abstract-role": false,
+    "require-parent-role": false,
+    "require-aria-prop": false,
+    "no-deprecated-role": false,
+    "no-redundant-role": false,
+    "permitted-roles": false,
+    "no-prohibited-naming": false,
+    "element-supports-aria-prop": false,
+    "role-supports-aria-prop": false,
+    "no-deprecated-aria-prop": false,
+    "no-redundant-aria-prop": false,
+    "no-contradictory-aria-prop": false,
+    "no-invalid-aria-prop-value": false,
+    "no-default-aria-value": false,
+    "aria-prop-requires-role": false,
+    "require-owned-elements": false,
+    "no-aria-on-presentational-children": false,
+    "no-focusable-in-aria-hidden": false,
+    "tab-requires-tabpanel": false
+  }
+}
+```
+
+`no-aria-hidden-on-hidden-until-found` (`a11y/wai-aria/hidden-until-found`) is a related, but
+separate, new-in-v5 check — the `wai-aria` alias does **not** expand to it, so it isn't in this list.
+
 ### Extra reports vs v4 defaults
 
 Because toggles are dropped, `wai-aria: true` (and `markuplint:a11y`) now also run:

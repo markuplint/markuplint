@@ -1301,6 +1301,38 @@ It can override the following properties:
 - [`childNodeRules`](#childnoderules)
 - [`pretenders`](#pretenders)
 
+#### When more than one glob matches the same file
+
+Entries are evaluated in the order they're written. Each matching entry is applied on top of the
+previous result, so with the default [`overrideMode`](#overridemode) (`reset`), **the last-matching
+entry replaces every earlier match outright** — not just the base configuration:
+
+```json class=config
+{
+  "rules": {
+    "any-rule": true,
+    "another-rule": true
+  },
+  "overrides": {
+    "./src/**/*": {
+      "rules": { "any-rule": false }
+    },
+    "./src/legacy/**/*": {
+      "rules": { "another-rule": false }
+    }
+  }
+}
+```
+
+For a file under `./src/legacy/`, both entries match. Under `reset` mode, the second entry's
+`{ "rules": { "another-rule": false } }` becomes the entire configuration — `any-rule: false` from
+the first match is discarded along with everything else from the base config, since the second
+entry is applied to the _first entry's result_, and `reset` replaces its input wholesale. Reorder
+the entries, or switch [`overrideMode`](#overridemode) to `merge`, to combine both instead.
+
+Run `markuplint --show-config=details` on the target file to see which `overrides` entries matched
+and in what order (`appliedOverrides` in the output).
+
 #### Interface {#overrides/interface}
 
 ```ts

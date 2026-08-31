@@ -19,6 +19,7 @@ Most additions are opt-in. Merge changes under `extends` are breaking.
 | Pretenders ignored on standard HTML/SVG tags          | Configs that pretended built-in tags         |
 | `--config` loads only the given file                  | CLI; see [CLI](/docs/migration/v4-to-v5/cli) |
 | `:closest()` deprecated                               | Selectors in nodeRules                       |
+| Multiple `overrides` globs matching one file          | Config authors using `overrides`             |
 
 ## `ruleCommonSettings` {#rulecommonsettings}
 
@@ -67,6 +68,11 @@ Presets attach a `name` (for example `a11y/html-lang`) to a `nodeRules` entry so
 
 Violations expose `ruleId` (base rule) and `name` (group). `specConformance` is metadata only (`normative` / `non-normative`); it does not change severity.
 
+You don't have to spell out every named group to disable a check everywhere it's wrapped: setting
+the **base rule name** to `false` (e.g. `"no-broken-fragment-link": false`) disables it inside
+every named group that wraps it, in addition to any bare use. See
+[Disabling by base rule name](/docs/configuration/properties#disable-by-base-rule-name).
+
 ## Merge behavior
 
 **Named nodeRules:** same `name` is replaced by the child config. Unnamed entries still concatenate.
@@ -84,6 +90,17 @@ Per HTML LS / Selectors L4, attribute names are ASCII case-insensitive when the 
 ## Pretenders on standard tags {#pretenders-no-longer-apply-to-standard-html-tags}
 
 A pretender whose selector is a recognized HTML/SVG element is ignored ([issue #3740](https://github.com/markuplint/markuplint/issues/3740)). Use per-rule disable/severity to silence a built-in tag; do not masquerade it as another element.
+
+## `overrides` with multiple matching globs
+
+Not a v5 change, but worth checking while you're touching config during migration: if more than
+one [`overrides`](/docs/configuration/properties#overrides) glob matches the same file, the
+last-matching entry replaces every earlier match outright under the default `overrideMode: 'reset'`
+— it isn't merged with them. See
+[When more than one glob matches the same file](/docs/configuration/properties#when-more-than-one-glob-matches-the-same-file).
+
+Run `--show-config=details` (see [CLI](/docs/migration/v4-to-v5/cli#diagnosing-config-drift-with---show-configdetails))
+to see exactly which globs matched a given file, in order, before assuming a v5 regression.
 
 ## `:closest()` deprecated
 
