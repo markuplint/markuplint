@@ -53,3 +53,25 @@ test('[no-unclosed-element-at-eof-valid-003] void elements are never flagged', a
 test('[no-unclosed-element-at-eof-valid-004] an element autoclosed mid-document by a sibling is not an EOF case', async () => {
 	expect((await mlRuleTest(rule, '<p>one<div>two</div>')).violations).toStrictEqual([]);
 });
+
+test('[no-unclosed-element-at-eof-issue-4022-001] a parser that never emits close tags (Pug) is exempt entirely', async () => {
+	expect(
+		(
+			await mlRuleTest(
+				rule,
+				`doctype html
+html(lang="ja")
+	head
+		title Sample
+		meta(charset="UTF-8")
+	body
+		div Hello`,
+				{
+					parser: {
+						'.*': '@markuplint/pug-parser',
+					},
+				},
+			)
+		).violations,
+	).toStrictEqual([]);
+});
