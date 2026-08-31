@@ -14,6 +14,15 @@ export interface ConfigSet {
 	readonly files: ReadonlySet<string>;
 	/** Errors encountered during config loading or resolution */
 	readonly errs: readonly Readonly<Error>[];
+	/**
+	 * `overrides` keys (resolved to absolute globs by `OptimizedConfig`) that
+	 * matched the target file, in the order they were applied — config-key
+	 * order, so later entries win under `overrideMode: 'reset'`, the default.
+	 * Absent — never an empty array — when no override matched this target
+	 * file, whether because the config has no `overrides` at all or none of
+	 * its globs matched.
+	 */
+	readonly appliedOverrides?: readonly string[];
 }
 
 /**

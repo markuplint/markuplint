@@ -271,19 +271,29 @@ export class ConfigProvider {
 	 * Never mutates `baseConfigSet` — returns it unchanged (same reference) when no
 	 * override matches, or a shallow copy with a freshly computed `config` otherwise,
 	 * so the cached base entry stays valid for the next target file.
+	 *
+	 * Matches are applied in `Object.keys(overrides)` order (config-key insertion
+	 * order), each round re-assigning `config` rather than accumulating — so under
+	 * the default `overrideMode: 'reset'`, the last-matching glob's config entirely
+	 * replaces every earlier match, not just the base config. `appliedOverrides`
+	 * records that match order for `--show-config=details` to surface, since this
+	 * "last match wins outright" behavior is easy to mistake for a bug (see #4023).
 	 */
 	#applyOverrides(baseConfigSet: ConfigSet, targetFile: Readonly<MLFile>): ConfigSet {
 		let config = baseConfigSet.config;
+		const appliedOverrides: string[] = [];
 		if (config.overrides) {
 			const overrides = config.overrides;
 			for (const glob of Object.keys(overrides)) {
 				const overrideConfig = overrides[glob];
 				if (targetFile.matches(glob) && overrideConfig) {
 					config = config.overrideMode === 'merge' ? mergeConfig(config, overrideConfig) : overrideConfig;
+					appliedOverrides.push(glob);
 				}
 			}
+			return config === baseConfigSet.config ? baseConfigSet : { ...baseConfigSet, config, appliedOverrides };
 		}
-		return config === baseConfigSet.config ? baseConfigSet : { ...baseConfigSet, config };
+		return baseConfigSet;
 	}
 
 	/**
