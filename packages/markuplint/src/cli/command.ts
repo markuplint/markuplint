@@ -175,6 +175,7 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 					plugins: configSet.plugins,
 					errors: configSet.errs,
 					ruleDeprecations: configSet.ruleDeprecations,
+					appliedOverrides: configSet.appliedOverrides ?? [],
 				};
 			} else {
 				data = configSet.config;
