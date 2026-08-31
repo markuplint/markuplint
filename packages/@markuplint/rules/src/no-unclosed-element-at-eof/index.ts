@@ -72,6 +72,17 @@ function deepEndOffset(node: EndAnchored): number {
 export default createRule<boolean>({
 	meta: meta,
 	async verify({ document, report, t }) {
+		/**
+		 * A parser with `endTagType: 'never'` (e.g. `@markuplint/pug-parser`)
+		 * structurally never records a close tag for any element, so
+		 * `el.closeTag == null` carries no signal about whether the source is
+		 * actually malformed — see `require-end-tag`'s identical guard for the
+		 * same rationale.
+		 */
+		if (document.endTag === 'never') {
+			return;
+		}
+
 		const eof = document.raw.length;
 
 		await document.walkOn('Element', el => {
