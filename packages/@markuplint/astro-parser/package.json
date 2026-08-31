@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/astro-parser",
-	"version": "5.0.0-rc.6",
+	"version": "5.0.0-rc.7",
 	"description": "astro parser for markuplint",
 	"repository": {
 		"type": "git",
@@ -32,8 +32,8 @@
 		"clean": "tsc --build --clean tsconfig.build.json"
 	},
 	"dependencies": {
-		"@markuplint/ml-ast": "5.0.0-rc.6",
-		"@markuplint/parser-utils": "5.0.0-rc.6",
+		"@markuplint/ml-ast": "5.0.0-rc.7",
+		"@markuplint/parser-utils": "5.0.0-rc.7",
 		"astro-eslint-parser": "1.4.0"
 	},
 	"devDependencies": {

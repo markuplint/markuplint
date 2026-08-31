@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-rc.7](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.6...v5.0.0-rc.7) (2026-08-31)
+
+### Features
+
+- **file-resolver:** record which overrides globs matched a target file ([c4cba6d](https://github.com/markuplint/markuplint/commit/c4cba6d9444ecb19752204a1655caad0d27f3ff8)), closes [#4023](https://github.com/markuplint/markuplint/issues/4023)
+
 # [5.0.0-rc.6](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.5...v5.0.0-rc.6) (2026-08-30)
 
 ### Bug Fixes
