@@ -815,6 +815,33 @@ describe('Named nodeRules integration', () => {
 			);
 			expect(violations.find(v => v.name === 'custom/li-data')).toBeUndefined();
 		});
+
+		it('a non-false override of a shared base rule does not leak to an unrelated named childNodeRule virtual rule (issue #4023)', async () => {
+			// Same guard as the nodeRules case above, for the childNodeRules propagation path.
+			// 'custom/li-data' only targets descendants of :where(ul); the div childNodeRule below
+			// overrides the shared base rule 'require-attr' with an unrelated value ('role') for
+			// descendants of :where(div) instead.
+			const { violations } = await mlTest(
+				'<!doctype html><html lang="en"><head><meta charset="UTF-8"></head><body><div><li>outside</li></div><ul><li>inside</li></ul></body></html>',
+				{
+					childNodeRules: [
+						{
+							name: 'custom/li-data',
+							selector: ':where(ul)',
+							rules: { 'require-attr': ['data-index'] },
+						},
+						{
+							selector: ':where(div)',
+							rules: { 'require-attr': 'role' },
+						},
+					],
+				},
+			);
+			// Exactly one violation: the <li> inside <ul> missing data-index. A leak would
+			// additionally misapply 'custom/li-data' to the <li> inside <div>, doubling this count.
+			const liDataViolations = violations.filter(v => v.name === 'custom/li-data');
+			expect(liDataViolations).toHaveLength(1);
+		});
 	});
 
 	describe('config error: nonexistent virtual rule reference', () => {
@@ -1284,6 +1311,76 @@ describe('Named nodeRules integration', () => {
 			// Both a11y/id-duplication and html-standard/id-duplication should be disabled on div
 			const idViolations = violations.filter(v => v.ruleId === 'no-duplicate-id');
 			expect(idViolations).toHaveLength(0);
+		});
+	});
+
+	describe('later unnamed nodeRules override propagates to an earlier named nodeRule group (issue #4023)', () => {
+		it('base rule disable from a later unnamed nodeRules entry disables the earlier named virtual rule', async () => {
+			const { violations } = await mlTest('<a data-disabled="true">no href</a>', {
+				nodeRules: [
+					{
+						name: 'custom/a-href-required',
+						selector: 'a',
+						rules: { 'require-attr': { value: 'href' } },
+					},
+					{
+						selector: 'a',
+						rules: { 'require-attr': false },
+					},
+				],
+			});
+			expect(violations.find(v => v.name === 'custom/a-href-required')).toBeUndefined();
+		});
+
+		it('a non-false override of a shared base rule does not leak to an unrelated named nodeRule virtual rule', async () => {
+			// Regression guard: propagating a *disable* from an unrelated nodeRules entry to a
+			// selector-scoped virtual rule is safe, but propagating a non-false value is not — it
+			// would apply the virtual rule's semantics to nodes its own selector never matched.
+			// 'custom/html-lang' only targets :where(html); the img nodeRule below overrides the
+			// shared base rule 'require-attr' with an unrelated value ('alt') at <img> instead.
+			const { violations } = await mlTest(
+				'<!doctype html><html><head><meta charset="UTF-8"></head><body><img src="x.png"></body></html>',
+				{
+					nodeRules: [
+						{
+							name: 'custom/html-lang',
+							selector: ':where(html)',
+							rules: { 'require-attr': ['lang'] },
+						},
+						{
+							selector: 'img',
+							rules: { 'require-attr': 'alt' },
+						},
+					],
+				},
+			);
+			// Exactly one violation: <html> missing lang. A leak would additionally misapply
+			// 'custom/html-lang' (requiring "lang") at the unrelated <img> node, doubling this count.
+			const customViolations = violations.filter(v => v.name === 'custom/html-lang');
+			expect(customViolations).toHaveLength(1);
+			expect(customViolations[0]!.raw).toBe('<html>');
+		});
+	});
+
+	describe('preset named rule group disabled via top-level rules (issue #4023)', () => {
+		it('disabling a preset named rule group by its alias name does not report "Rule not found"', async () => {
+			const { violations } = await mlTest('<picture><img src="x" alt="">', {
+				extends: ['markuplint:html-standard'],
+				rules: {
+					'html-standard/no-unclosed-element-at-eof': false,
+				},
+			});
+			expect(violations.find(v => v.ruleId === 'config-error')).toBeUndefined();
+		});
+
+		it('disabling a preset named rule group by its alias name also suppresses the underlying violation', async () => {
+			const { violations } = await mlTest('<picture><img src="x" alt="">', {
+				extends: ['markuplint:html-standard'],
+				rules: {
+					'html-standard/no-unclosed-element-at-eof': false,
+				},
+			});
+			expect(violations.find(v => v.ruleId === 'no-unclosed-element-at-eof')).toBeUndefined();
 		});
 	});
 
