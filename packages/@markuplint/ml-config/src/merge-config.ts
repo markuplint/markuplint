@@ -38,6 +38,12 @@ import { deleteUndefProp, cleanOptions, isRuleConfigValue, isNamedRuleGroup } fr
 export function mergeConfig(a: Config, b?: Config): OptimizedConfig {
 	const deleteExtendsProp = !!b;
 	b = b ?? {};
+	const mergedRules = mergeRules(
+		// Shallow merge: rule-level options are replaced entirely by the overriding config.
+		// Deep merging individual rule options would require schema-aware merging logic.
+		a.rules,
+		b.rules,
+	);
 	const config: OptimizedConfig = {
 		...a,
 		...b,
@@ -56,11 +62,11 @@ export function mergeConfig(a: Config, b?: Config): OptimizedConfig {
 		excludeFiles: concatArray(a.excludeFiles, b.excludeFiles, true),
 		severity: mergeObject(a.severity, b.severity),
 		pretenders: mergePretenders(a.pretenders, b.pretenders),
-		rules: mergeRules(
-			// Shallow merge: rule-level options are replaced entirely by the overriding config.
-			// Deep merging individual rule options would require schema-aware merging logic.
-			a.rules,
-			b.rules,
+		rules: mergedRules.rules,
+		knownNamedRuleGroupKeys: mergeKnownNamedRuleGroupKeys(
+			a.knownNamedRuleGroupKeys,
+			b.knownNamedRuleGroupKeys,
+			mergedRules.knownNamedRuleGroupKeys,
 		),
 		nodeRules: concatArray(a.nodeRules, b.nodeRules, true, 'name'),
 		childNodeRules: concatArray(a.childNodeRules, b.childNodeRules, true, 'name'),
@@ -287,12 +293,19 @@ function getName(item: any, comparePropName: string) {
 	return null;
 }
 
-function mergeRules(a?: Rules, b?: Rules): Rules | undefined {
+type MergeRulesResult = {
+	readonly rules: Rules | undefined;
+	/** See {@link mergeConfig}'s `knownNamedRuleGroupKeys` handling. */
+	readonly knownNamedRuleGroupKeys: readonly string[] | undefined;
+};
+
+function mergeRules(a?: Rules, b?: Rules): MergeRulesResult {
+	const knownNamedRuleGroupKeys = collectNamedRuleGroupKeys(a, b);
 	if (a == null) {
-		return b && optimizeRules(b);
+		return { rules: b && optimizeRules(b), knownNamedRuleGroupKeys };
 	}
 	if (b == null) {
-		return optimizeRules(a);
+		return { rules: optimizeRules(a), knownNamedRuleGroupKeys };
 	}
 	const res = optimizeRules(a);
 	for (const [key, rule] of Object.entries(b)) {
@@ -307,7 +320,51 @@ function mergeRules(a?: Rules, b?: Rules): Rules | undefined {
 		}
 	}
 	deleteUndefProp(res);
-	return Object.freeze(res);
+	return { rules: Object.freeze(res), knownNamedRuleGroupKeys };
+}
+
+/**
+ * Collects `rules` keys that are a genuine {@link NamedRuleGroup} in either
+ * operand, before {@link mergeNamedRuleGroupEntry}'s `false`-collapse erases
+ * that shape. See `Config.knownNamedRuleGroupKeys` for why this must be
+ * tracked separately from the merged `rules` value.
+ */
+function collectNamedRuleGroupKeys(a?: Rules, b?: Rules): readonly string[] | undefined {
+	let known: Set<string> | undefined;
+	for (const rules of [a, b]) {
+		if (!rules) {
+			continue;
+		}
+		for (const [key, value] of Object.entries(rules)) {
+			if (key.includes('/') && isNamedRuleGroup(value)) {
+				known ??= new Set();
+				known.add(key);
+			}
+		}
+	}
+	return known && [...known];
+}
+
+/**
+ * Unions `knownNamedRuleGroupKeys` carried over from each side of a merge
+ * with the keys freshly detected at this merge step, returning `undefined`
+ * (not an empty array) when there's nothing to carry — so `deleteUndefProp`
+ * keeps the field absent from configs that never touch named rule groups.
+ */
+function mergeKnownNamedRuleGroupKeys(
+	...groups: readonly (readonly string[] | undefined)[]
+): readonly string[] | undefined {
+	let known: Set<string> | undefined;
+	for (const group of groups) {
+		if (!group) {
+			continue;
+		}
+		for (const key of group) {
+			known ??= new Set();
+			known.add(key);
+		}
+	}
+	return known && [...known];
 }
 
 function mergeNamedRuleGroupEntry(
