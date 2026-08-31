@@ -982,6 +982,68 @@ describe('Named rule group merging', () => {
 		expect(result.rules?.['a11y/id-duplication']).toBe(false);
 	});
 
+	describe('knownNamedRuleGroupKeys (issue #4023)', () => {
+		test('records a key that was a genuine NamedRuleGroup before being disabled by false', () => {
+			const result = mergeConfig(
+				{
+					rules: {
+						'html-standard/no-unclosed-element-at-eof': {
+							specConformance: 'normative',
+							rules: { 'no-unclosed-element-at-eof': true },
+						},
+					},
+				},
+				{
+					rules: {
+						'html-standard/no-unclosed-element-at-eof': false,
+					},
+				},
+			);
+			expect(result.knownNamedRuleGroupKeys).toStrictEqual(['html-standard/no-unclosed-element-at-eof']);
+		});
+
+		test('does not record a key that was never a NamedRuleGroup, even when disabled by false', () => {
+			const result = mergeConfig(
+				{},
+				{
+					rules: {
+						'totally/nonexistent': false,
+					},
+				},
+			);
+			expect(result.knownNamedRuleGroupKeys).toBeUndefined();
+		});
+
+		test('is absent from configs that never touch a named rule group', () => {
+			const result = mergeConfig({ rules: { 'no-duplicate-id': true } }, { rules: { 'require-attr': false } });
+			expect(result.knownNamedRuleGroupKeys).toBeUndefined();
+		});
+
+		test('carries over across an unrelated later merge step', () => {
+			const disabledStep = mergeConfig(
+				{
+					rules: {
+						'html-standard/no-unclosed-element-at-eof': {
+							rules: { 'no-unclosed-element-at-eof': true },
+						},
+					},
+				},
+				{
+					rules: {
+						'html-standard/no-unclosed-element-at-eof': false,
+					},
+				},
+			);
+			// A further merge step (e.g. user overrides) that never touches the
+			// already-collapsed `false` key must still carry the known-group record.
+			const final = mergeConfig(disabledStep, {
+				rules: { 'no-duplicate-id': true },
+			});
+			expect(final.rules?.['html-standard/no-unclosed-element-at-eof']).toBe(false);
+			expect(final.knownNamedRuleGroupKeys).toStrictEqual(['html-standard/no-unclosed-element-at-eof']);
+		});
+	});
+
 	test('named rule group severity overridden by object', () => {
 		const result = mergeConfig(
 			{

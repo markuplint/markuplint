@@ -208,6 +208,11 @@ export class MLCore {
 			nodeRules: nodeRuleResult.transformedNodeRules,
 			childNodeRules: childNodeRuleResult.transformedNodeRules,
 			baseRuleToVirtualNames: buildBaseRuleToVirtualNames(namedRulesResult.virtualRules),
+			baseRuleToScopedVirtualNames: buildBaseRuleToVirtualNames([
+				...nodeRuleResult.virtualRules,
+				...childNodeRuleResult.virtualRules,
+			]),
+			knownNamedRuleGroupKeys: ruleset.knownNamedRuleGroupKeys ?? new Set(),
 			mappingErrors: [],
 		};
 		this.#disabledNamespaces = extractDisabledNamespaces(resolvedRules);
@@ -285,6 +290,11 @@ export class MLCore {
 			nodeRules: nodeRuleResult.transformedNodeRules,
 			childNodeRules: childNodeRuleResult.transformedNodeRules,
 			baseRuleToVirtualNames: buildBaseRuleToVirtualNames(namedRulesResult.virtualRules),
+			baseRuleToScopedVirtualNames: buildBaseRuleToVirtualNames([
+				...nodeRuleResult.virtualRules,
+				...childNodeRuleResult.virtualRules,
+			]),
+			knownNamedRuleGroupKeys: ruleset?.knownNamedRuleGroupKeys ?? this.#ruleset.knownNamedRuleGroupKeys,
 			mappingErrors: [],
 		};
 		this.#disabledNamespaces = extractDisabledNamespaces(resolvedRules);
@@ -362,6 +372,15 @@ export class MLCore {
 		for (const setRuleName of setRuleNames) {
 			// Skip wildcard patterns (e.g., "a11y/*") — they are namespace disable entries, not rule references
 			if (setRuleName.endsWith('/*')) {
+				continue;
+			}
+			// Skip a named rule group disabled via top-level `rules` (e.g. "html-standard/foo": false).
+			// `expandNamedRules` intentionally doesn't instantiate a virtual rule when the merged value
+			// already resolved to `false` (there's nothing to run), so it never appears in `definedRuleName`.
+			// `knownNamedRuleGroupKeys` (threaded from config merge — see its JSDoc) tells a genuine
+			// named-group disable apart from a typo'd/nonexistent rule name that also happens to be
+			// set to `false` with a `/` in its key; only the former is exempt from this check.
+			if (this.#ruleset.rules[setRuleName] === false && this.#ruleset.knownNamedRuleGroupKeys.has(setRuleName)) {
 				continue;
 			}
 			if (!definedRuleName.has(setRuleName)) {

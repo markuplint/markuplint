@@ -27,6 +27,18 @@ export type Config = {
 	readonly childNodeRules?: readonly ChildNodeRule[];
 	readonly overrideMode?: 'merge' | 'reset';
 	readonly overrides?: Readonly<Record<string, OverrideConfig>>;
+	/**
+	 * Computed by {@link mergeConfig} — never authored in a config file. Tracks
+	 * `rules` keys that were a genuine {@link NamedRuleGroup} in some layer of the
+	 * `extends`/override chain, even where the final merged value collapsed to
+	 * `false` (a whole-group disable erases which base rule(s) it wrapped — see
+	 * `mergeNamedRuleGroupEntry`). Consumers (`@markuplint/ml-core`) use this to
+	 * tell an intentional named-group disable apart from a typo'd/nonexistent
+	 * rule name that also happens to be set to `false` with a `/` in its key —
+	 * both collapse to the same `rules[key] === false` shape after merging, but
+	 * only the former should be exempt from "Rule not found" validation.
+	 */
+	readonly knownNamedRuleGroupKeys?: readonly string[];
 };
 
 /**
