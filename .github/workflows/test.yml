@@ -469,7 +469,7 @@ jobs:
 
             - name: Install pnpm
               if: matrix.pm == 'pnpm'
-              uses: pnpm/action-setup@71c92474e7e4f5bca283fb17ef80fba9cdb2b4b1 # v6
+              uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
               with:
                   version: latest # Use latest pnpm version
                   run_install: false
