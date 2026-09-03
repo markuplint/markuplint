@@ -52,6 +52,12 @@ export const xrefMappings: readonly XrefMapping[] = [
 	// === 1 次群: bench で裏取れる Issue ===
 	{
 		kind: 'primary',
+		issue: 4028,
+		filter: /^html-aria\/misc\/role-.+-inside-h1-novalid/,
+		note: "ARIA in HTML's \"Allowed descendants of ARIA roles\" table (informative) lists 14 roles (alert/alertdialog/application/dialog/document/listbox/log/marquee/math/note/status/tabpanel/timer/toolbar) as Flow content; HTML LS restricts h1-h6 to phrasing content only. `permitted-contents` has no role-driven content-category override, so these 14 fixtures — new to the nu-validator corpus as of submodule commit f84563f (2026-08-30) — stay nu-only until the rule gains role-awareness.",
+	},
+	{
+		kind: 'primary',
 		issue: 293,
 		filter: /html-svg\/filters-/,
 		note: '`ml-only` fixtures here are all W3C SVG 1.1 test-suite files; their violations are `no-obsolete-attr` / `no-unknown-attr` / `no-disallowed-attr` / `permitted-contents` on SVG 1.1 remnants (`version`, `baseProfile`, `xmlns:xlink`, `<font-face>` inside `<defs>`, `font-family` with a custom family), not on filter references. markuplint is spec-correct under SVG 2; nu-validator is lax on these SVG 1.1 features. The proposed `svg-filter-reference-relationship` rule is unrelated and not blocked by this noise.',

@@ -1,3 +1,102 @@
 {
-	"entries": []
+	"entries": [
+		{
+			"path": "html-aria/misc/role-alert-inside-h1-novalid.html",
+			"category": "aria",
+			"nuMessageIds": [
+				"nv-bfce13d28185"
+			]
+		},
+		{
+			"path": "html-aria/misc/role-alertdialog-inside-h1-novalid.html",
+			"category": "aria",
+			"nuMessageIds": [
+				"nv-03bfdbeec87e"
+			]
+		},
+		{
+			"path": "html-aria/misc/role-application-inside-h1-novalid.html",
+			"category": "aria",
+			"nuMessageIds": [
+				"nv-584f26562285"
+			]
+		},
+		{
+			"path": "html-aria/misc/role-dialog-inside-h1-novalid.html",
+			"category": "aria",
+			"nuMessageIds": [
+				"nv-8559b0405804"
+			]
+		},
+		{
+			"path": "html-aria/misc/role-document-inside-h1-novalid.html",
+			"category": "aria",
+			"nuMessageIds": [
+				"nv-c5613fe188f7"
+			]
+		},
+		{
+			"path": "html-aria/misc/role-listbox-inside-h1-novalid.html",
+			"category": "aria",
+			"nuMessageIds": [
+				"nv-a66d5097367e"
+			]
+		},
+		{
+			"path": "html-aria/misc/role-log-inside-h1-novalid.html",
+			"category": "aria",
+			"nuMessageIds": [
+				"nv-ec7ffd0604e5"
+			]
+		},
+		{
+			"path": "html-aria/misc/role-marquee-inside-h1-novalid.html",
+			"category": "aria",
+			"nuMessageIds": [
+				"nv-67403fa4d36a"
+			]
+		},
+		{
+			"path": "html-aria/misc/role-math-inside-h1-novalid.html",
+			"category": "aria",
+			"nuMessageIds": [
+				"nv-4d0a6a305516"
+			]
+		},
+		{
+			"path": "html-aria/misc/role-note-inside-h1-novalid.html",
+			"category": "aria",
+			"nuMessageIds": [
+				"nv-10634351ee10"
+			]
+		},
+		{
+			"path": "html-aria/misc/role-status-inside-h1-novalid.html",
+			"category": "aria",
+			"nuMessageIds": [
+				"nv-6d1fe82b5ee5"
+			]
+		},
+		{
+			"path": "html-aria/misc/role-tabpanel-inside-h1-novalid.html",
+			"category": "aria",
+			"nuMessageIds": [
+				"nv-deeba4a415b0"
+			]
+		},
+		{
+			"path": "html-aria/misc/role-timer-inside-h1-novalid.html",
+			"category": "aria",
+			"nuMessageIds": [
+				"nv-8c0d1cd269ae"
+			]
+		},
+		{
+			"path": "html-aria/misc/role-toolbar-inside-h1-novalid.html",
+			"category": "aria",
+			"nuMessageIds": [
+				"nv-f26a6be4abf9"
+			]
+		}
+	]
 }
