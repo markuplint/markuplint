@@ -135,6 +135,68 @@ describe('group matching', () => {
 	});
 });
 
+describe('role group', () => {
+	test('[attr-order-invalid-021] role group - role should be before aria group', async () => {
+		const { violations } = await mlRuleTest(rule, '<ul aria-label="x" role="radiogroup"></ul>', {
+			rule: { value: [{ group: 'global' }, { group: 'role' }, { group: 'aria' }] },
+		});
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 20,
+				raw: 'role',
+				message: '"role" should be before "aria-label"',
+			},
+		]);
+	});
+
+	test('[attr-order-valid-019] no violation - role before aria matches configured order', async () => {
+		const { violations } = await mlRuleTest(rule, '<ul role="radiogroup" aria-label="x"></ul>', {
+			rule: { value: [{ group: 'global' }, { group: 'role' }, { group: 'aria' }] },
+		});
+		expect(violations.length).toBe(0);
+	});
+
+	test('[attr-order-valid-020] no violation - aria before role matches configured order', async () => {
+		const { violations } = await mlRuleTest(rule, '<ul aria-label="x" role="radiogroup"></ul>', {
+			rule: { value: [{ group: 'aria' }, { group: 'role' }] },
+		});
+		expect(violations.length).toBe(0);
+	});
+
+	test('[attr-order-valid-021] role group does not match aria-* attributes with similar names', async () => {
+		const { violations } = await mlRuleTest(rule, '<div aria-roledescription="x" role="y"></div>', {
+			rule: { value: [{ group: 'aria' }, { group: 'role' }] },
+		});
+		// "aria-roledescription" must stay matched by the aria group (entry 0), not "role" (entry 1)
+		expect(violations.length).toBe(0);
+	});
+
+	test('[attr-order-fix-013] fix: role group placed before aria group', async () => {
+		const { fixedCode } = await mlRuleTest(
+			rule,
+			'<ul aria-label="x" role="radiogroup"></ul>',
+			{ rule: { value: [{ group: 'role' }, { group: 'aria' }] } },
+			true,
+		);
+		expect(fixedCode).toBe('<ul role="radiogroup" aria-label="x"></ul>');
+	});
+
+	test('[attr-order-issue-4033-001] role placed before aria-* via an explicit role group', async () => {
+		const { violations } = await mlRuleTest(rule, '<ul role="radiogroup" aria-label="XXX"></ul>', {
+			rule: {
+				value: [
+					{ group: 'global', order: 'source-order' },
+					{ group: 'role', order: 'source-order' },
+					{ group: 'aria', order: 'source-order' },
+				],
+			},
+		});
+		expect(violations.length).toBe(0);
+	});
+});
+
 describe('pattern matching', () => {
 	test('[attr-order-invalid-010] data- pattern first', async () => {
 		const { violations } = await mlRuleTest(rule, '<div class="a" data-x="1"></div>', {

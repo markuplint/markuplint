@@ -5,7 +5,7 @@ description: Enforces a consistent order of attributes on elements.
 
 # `attr-order`
 
-Enforces a consistent order of **attributes** on elements. By default, attributes are sorted alphabetically. You can configure priority lists, predefined groups (`global`, `event`, `aria`, `data`, `spread`), and custom patterns to define the desired order.
+Enforces a consistent order of **attributes** on elements. By default, attributes are sorted alphabetically. You can configure priority lists, predefined groups (`global`, `event`, `aria`, `role`, `data`, `spread`), and custom patterns to define the desired order.
 
 :::info
 
@@ -41,7 +41,13 @@ Attributes matching the list are placed first in the specified order. Unmatched 
 
 ```json
 {
-  "attr-order": [{ "group": "global" }, { "group": "aria" }, { "group": "event" }, { "group": "data" }]
+  "attr-order": [
+    { "group": "global" },
+    { "group": "role" },
+    { "group": "aria" },
+    { "group": "event" },
+    { "group": "data" }
+  ]
 }
 ```
 
@@ -50,6 +56,7 @@ Attributes matching the list are placed first in the specified order. Unmatched 
 | `global` | HTML global attributes (`id`, `class`, `style`, etc.)  |
 | `event`  | Event handler attributes (`onclick`, `onchange`, etc.) |
 | `aria`   | ARIA attributes (`aria-label`, `aria-hidden`, etc.)    |
+| `role`   | The `role` attribute                                   |
 | `data`   | Custom data attributes (`data-*`)                      |
 | `spread` | Spread attributes (JSX `{...props}`)                   |
 
