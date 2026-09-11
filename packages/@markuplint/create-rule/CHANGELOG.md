@@ -3,13 +3,61 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [4.18.0](https://github.com/markuplint/markuplint/compare/v4.14.1...v4.18.0) (2026-04-22)
+# [5.0.0-rc.7](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.6...v5.0.0-rc.7) (2026-08-31)
 
 **Note:** Version bump only for package @markuplint/create-rule
 
-## [4.8.1](https://github.com/markuplint/markuplint/compare/@markuplint/create-rule@4.8.0...@markuplint/create-rule@4.8.1) (2026-04-21)
+# [5.0.0-rc.6](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.5...v5.0.0-rc.6) (2026-08-30)
 
 **Note:** Version bump only for package @markuplint/create-rule
+
+# [5.0.0-rc.5](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.4...v5.0.0-rc.5) (2026-08-28)
+
+### Code Refactoring
+
+- **rules:** redesign v5 rule system — naming, splits, specConformance ([#3989](https://github.com/markuplint/markuplint/issues/3989)) ([e925565](https://github.com/markuplint/markuplint/commit/e925565ce537848d7d1573369723cbce724a841b)), closes [#4](https://github.com/markuplint/markuplint/issues/4) [#aside-conditional-role-mapping-aria-13](https://github.com/markuplint/markuplint/issues/aside-conditional-role-mapping-aria-13)
+
+### BREAKING CHANGES
+
+- **rules:** with no alias coverage.
+
+# [5.0.0-rc.4](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.3...v5.0.0-rc.4) (2026-04-19)
+
+**Note:** Version bump only for package @markuplint/create-rule
+
+# [5.0.0-rc.3](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.2...v5.0.0-rc.3) (2026-04-19)
+
+**Note:** Version bump only for package @markuplint/create-rule
+
+# [5.0.0-rc.2](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.1...v5.0.0-rc.2) (2026-04-15)
+
+**Note:** Version bump only for package @markuplint/create-rule
+
+# [5.0.0-rc.1](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.0...v5.0.0-rc.1) (2026-03-27)
+
+**Note:** Version bump only for package @markuplint/create-rule
+
+# [5.0.0-rc.0](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.3...v5.0.0-rc.0) (2026-03-12)
+
+**Note:** Version bump only for package @markuplint/create-rule
+
+# [5.0.0-alpha.3](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.2...v5.0.0-alpha.3) (2026-02-26)
+
+**Note:** Version bump only for package @markuplint/create-rule
+
+# [5.0.0-alpha.2](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.1...v5.0.0-alpha.2) (2026-02-23)
+
+**Note:** Version bump only for package @markuplint/create-rule
+
+# [5.0.0-alpha.1](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.0...v5.0.0-alpha.1) (2026-02-22)
+
+**Note:** Version bump only for package @markuplint/create-rule
+
+# [5.0.0-alpha.0](https://github.com/markuplint/markuplint/compare/v4.14.1...v5.0.0-alpha.0) (2026-02-20)
+
+### Bug Fixes
+
+- **create-rule:** use toSorted in spec files to satisfy ESLint ([130372f](https://github.com/markuplint/markuplint/commit/130372fb5f74802f66b31ea9b50c4825d54f1850))
 
 # [4.8.0](https://github.com/markuplint/markuplint/compare/@markuplint/create-rule@4.7.22...@markuplint/create-rule@4.8.0) (2026-02-10)
 

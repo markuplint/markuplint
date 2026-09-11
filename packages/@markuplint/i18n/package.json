@@ -1,10 +1,17 @@
 {
 	"name": "@markuplint/i18n",
-	"version": "4.18.0",
+	"version": "5.0.0-rc.7",
 	"description": "Internationalization for markuplint",
-	"repository": "git@github.com:markuplint/markuplint.git",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/markuplint/markuplint.git",
+		"directory": "packages/@markuplint/i18n"
+	},
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
+	"engines": {
+		"node": ">=24"
+	},
 	"main": "./cjs/index.js",
 	"types": "./cjs/index.d.ts",
 	"exports": {

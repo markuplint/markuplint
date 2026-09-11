@@ -1,0 +1,92 @@
+{
+	"rules": {
+		/**
+		 * Require conventional **`<head>` element order**
+		 *
+		 * A consistent order (charset, viewport, title, then the rest) lets the
+		 * browser start rendering sooner instead of re-parsing metadata.
+		 */
+		"performance/head-element-order": {
+			"specConformance": "non-normative",
+			"rules": {
+				"head-element-order": true
+			}
+		},
+
+		/**
+		 * Require **matching aspect-ratio** attributes
+		 *
+		 * `width`/`height` that mismatch the image's actual aspect ratio still
+		 * cause a layout shift once the image loads, defeating the point of
+		 * setting them.
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/embedded-content-other.html#dimension-attributes
+		 */
+		"performance/no-mismatched-aspect-ratio": {
+			"specConformance": "normative",
+			"rules": {
+				"no-mismatched-aspect-ratio": true
+			}
+		}
+	},
+	"nodeRules": [
+		{
+			/**
+			 * Require `charset=UTF-8`
+			 *
+			 * @see https://html.spec.whatwg.org/multipage/semantics.html#charset
+			 */
+			"name": "performance/head-charset-utf8",
+			"specConformance": "normative",
+			"selector": ":where(head)",
+			"rules": {
+				"require-element": ["meta[charset=\"UTF-8\" i]"]
+			}
+		},
+		{
+			/**
+			 * Require `defer` attr
+			 *
+			 * Should load and parse scripts lazily to avoid render-blocking.
+			 */
+			"name": "performance/script-defer",
+			"specConformance": "non-normative",
+			"selector": ":where(script[src]:not([type=module]))",
+			"rules": {
+				"require-attr": ["defer"]
+			}
+		},
+		{
+			/**
+			 * Require **aspect-ratio**
+			 *
+			 * Require `width` and `height` attr with `<img>` to avoid **Cumulative Layout Shift**
+			 */
+			"name": "performance/img-aspect-ratio",
+			"specConformance": "non-normative",
+			"selector": ":where(img[src])",
+			"rules": {
+				"require-attr": ["width", "height"]
+			}
+		},
+		{
+			/**
+			 * Require loading `<iframe>` lazily
+			 *
+			 * Require `loading=lazy` with `<iframe>` to avoid render-blocking that causes loading if its element is out of the viewport.
+			 */
+			"name": "performance/iframe-lazy-loading",
+			"specConformance": "non-normative",
+			"selector": ":where(iframe)",
+			"rules": {
+				"require-attr": [
+					"title",
+					{
+						"name": "loading",
+						"value": "lazy"
+					}
+				]
+			}
+		}
+	]
+}

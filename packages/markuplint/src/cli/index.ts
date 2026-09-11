@@ -1,9 +1,10 @@
 /**
  * @module cli
  *
- * CLI entry point for markuplint.
- * Parses command-line arguments, dispatches to the appropriate handler
- * (lint, init, search, or help), and manages the process exit code.
+ * Convention: all error reporting in the CLI layer must go through
+ * `process.stderr.write()` — never `console.warn`/`console.error`/
+ * `console.log` — so stdout stays reserved for lint results
+ * (e.g. `--format JSON` output that may be piped to other tools).
  */
 
 import { text } from 'node:stream/consumers';

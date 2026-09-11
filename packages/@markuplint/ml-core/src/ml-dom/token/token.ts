@@ -1,21 +1,15 @@
 import type { MLASTToken } from '@markuplint/ml-ast';
+import { getEndCol, getEndLine } from '@markuplint/parser-utils/location';
 
 /**
  * Represents a single token in the markuplint AST.
  * Wraps an AST token with positional information (line, column, offset)
- * and provides both raw and fixed string representations.
+ * and provides the raw string representation.
  *
  * @template A - The AST token type this token wraps
  */
 export class MLToken<A extends MLASTToken = MLASTToken> {
-	readonly #endCol: number;
-	readonly #endLine: number;
-	readonly #endOffset: number;
-	#fixed: string;
 	readonly #raw: string;
-	readonly #startCol: number;
-	readonly #startLine: number;
-	readonly #startOffset: number;
 
 	/**
 	 * The unique identifier for this token.
@@ -35,14 +29,7 @@ export class MLToken<A extends MLASTToken = MLASTToken> {
 	constructor(astToken: A) {
 		this._astToken = astToken;
 		this.#raw = astToken.raw;
-		this.#fixed = astToken.raw;
 		this.uuid = astToken.uuid;
-		this.#startLine = astToken.startLine;
-		this.#endLine = astToken.endLine;
-		this.#startCol = astToken.startCol;
-		this.#endCol = astToken.endCol;
-		this.#startOffset = astToken.startOffset;
-		this.#endOffset = astToken.endOffset;
 	}
 
 	/**
@@ -51,7 +38,7 @@ export class MLToken<A extends MLASTToken = MLASTToken> {
 	 * @implements `@markuplint/ml-core` API: `MLDOMToken`
 	 */
 	get endCol() {
-		return this.#endCol;
+		return getEndCol(this.raw, this.startCol);
 	}
 
 	/**
@@ -60,7 +47,7 @@ export class MLToken<A extends MLASTToken = MLASTToken> {
 	 * @implements `@markuplint/ml-core` API: `MLDOMToken`
 	 */
 	get endLine() {
-		return this.#endLine;
+		return getEndLine(this.raw, this.startLine);
 	}
 
 	/**
@@ -69,16 +56,7 @@ export class MLToken<A extends MLASTToken = MLASTToken> {
 	 * @implements `@markuplint/ml-core` API: `MLDOMToken`
 	 */
 	get endOffset() {
-		return this.#endOffset;
-	}
-
-	/**
-	 * The fixed (potentially modified) string content of this token.
-	 *
-	 * @implements `@markuplint/ml-core` API: `MLDOMToken`
-	 */
-	get fixed() {
-		return this.#fixed;
+		return this.startOffset + this.raw.length;
 	}
 
 	/**
@@ -96,7 +74,7 @@ export class MLToken<A extends MLASTToken = MLASTToken> {
 	 * @implements `@markuplint/ml-core` API: `MLDOMToken`
 	 */
 	get startCol() {
-		return this.#startCol;
+		return this._astToken.col;
 	}
 
 	/**
@@ -105,7 +83,7 @@ export class MLToken<A extends MLASTToken = MLASTToken> {
 	 * @implements `@markuplint/ml-core` API: `MLDOMToken`
 	 */
 	get startLine() {
-		return this.#startLine;
+		return this._astToken.line;
 	}
 
 	/**
@@ -114,28 +92,16 @@ export class MLToken<A extends MLASTToken = MLASTToken> {
 	 * @implements `@markuplint/ml-core` API: `MLDOMToken`
 	 */
 	get startOffset() {
-		return this.#startOffset;
+		return this._astToken.offset;
 	}
 
 	/**
-	 * Replaces the fixed content of this token with the given string,
-	 * used when applying lint fixes.
+	 * Returns the raw string representation of this token.
 	 *
 	 * @implements `@markuplint/ml-core` API: `MLDOMToken`
-	 * @param raw - The new string content to set as the fixed value
-	 */
-	fix(raw: string) {
-		this.#fixed = raw;
-	}
-
-	/**
-	 * Returns the string representation of this token.
-	 *
-	 * @implements `@markuplint/ml-core` API: `MLDOMToken`
-	 * @param fixed - When true, returns the fixed content; otherwise returns the original raw content
 	 * @returns The string content of this token
 	 */
-	toString(fixed = false) {
-		return fixed ? this.#fixed : this.#raw;
+	toString() {
+		return this.#raw;
 	}
 }

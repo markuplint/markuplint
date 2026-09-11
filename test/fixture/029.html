@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>case-sensitive-attr-name</title>
+</head>
+<body>
+	<!-- Uppercase attribute names -->
+	<div CLASS="foo">uppercase class</div>
+	<div ID="bar">uppercase id</div>
+	<a HREF="/path">uppercase href</a>
+
+	<!-- Mixed case attribute names -->
+	<img SRC="test.png" ALT="test">
+	<input TYPE="checkbox" CHECKED>
+	<div STYLE="color: red" TITLE="tooltip">styled</div>
+
+	<!-- Uppercase data attributes -->
+	<div DATA-VALUE="1" DATA-NAME="test">uppercase data attrs</div>
+
+	<!-- Uppercase aria attributes -->
+	<div ROLE="button" ARIA-LABEL="click me">uppercase aria</div>
+
+	<!-- Multiple uppercase attrs on one element -->
+	<a HREF="/path" TARGET="_blank" REL="noopener" TITLE="link">many uppercase</a>
+</body>
+</html>

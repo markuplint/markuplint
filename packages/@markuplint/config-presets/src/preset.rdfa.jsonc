@@ -1,0 +1,57 @@
+{
+	"nodeRules": [
+		{
+			/**
+			 * Allow `property` attr with `<meta>`
+			 *
+			 * Be able to use **Open-Graph** etc.
+			 */
+			"selector": ":where(meta[property])",
+			"rules": {
+				"no-unknown-attr": {
+					"options": {
+						"allowAttrs": [
+							{
+								"name": "property",
+								"value": "NoEmptyAny"
+							},
+							{
+								"name": "content",
+								"value": "NoEmptyAny"
+							}
+						]
+					}
+				},
+				"no-disallowed-attr": {
+					"options": {
+						"allowAttrs": [
+							{
+								"name": "property",
+								"value": "NoEmptyAny"
+							},
+							{
+								"name": "content",
+								"value": "NoEmptyAny"
+							}
+						]
+					}
+				},
+				"no-invalid-attr-value": {
+					"options": {
+						"allowAttrs": [
+							{
+								"name": "property",
+								"value": "NoEmptyAny"
+							},
+							{
+								"name": "content",
+								"value": "NoEmptyAny"
+							}
+						]
+					}
+				},
+				"require-attr": false
+			}
+		}
+	]
+}

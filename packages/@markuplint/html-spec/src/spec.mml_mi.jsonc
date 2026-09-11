@@ -1,0 +1,34 @@
+// https://www.w3.org/TR/mathml-core/#identifier-mi
+{
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": [
+					":model(MathMLPresentation)",
+					"mml|semantics",
+					"mml|annotation",
+					"mml|annotation-xml",
+					"#text"
+				]
+			}
+		]
+	},
+	"globalAttrs": {
+		"#GlobalEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#MathMLGlobalAttrs": true
+	},
+	"attributes": {
+		// https://www.w3.org/TR/mathml-core/#identifier-mi
+		"mathvariant": {
+			"type": {
+				"enum": ["normal"],
+				"disallowToSurroundBySpaces": false
+			}
+		}
+	},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": true
+	}
+}

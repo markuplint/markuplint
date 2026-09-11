@@ -1,7 +1,7 @@
 import type { ConfigSet } from '@markuplint/file-resolver';
 import type { LocaleSet } from '@markuplint/i18n';
 import type { Config, SeverityOptions, Violation } from '@markuplint/ml-config';
-import type { AnyMLRule, MLSchema, Ruleset } from '@markuplint/ml-core';
+import type { AnyMLRule, FixSummary, MLSchema, Ruleset } from '@markuplint/ml-core';
 
 /**
  * Options for the markuplint API, controlling configuration, locale, rules, and behavior.
@@ -13,14 +13,12 @@ export type APIOptions = {
 	readonly noSearchConfig?: boolean;
 	readonly locale?: string;
 	readonly fix?: boolean;
+	/** When true, compute fixes without writing files (CLI dry-run mode). */
+	readonly fixDryRun?: boolean;
 	readonly ignoreExt?: boolean;
 	readonly rules?: readonly Readonly<AnyMLRule>[];
 	readonly importPresetRules?: boolean;
 	readonly severity?: SeverityOptions;
-	/**
-	 * @deprecated
-	 */
-	readonly autoLoad?: boolean;
 };
 
 /**
@@ -42,7 +40,7 @@ export type MLEngineEventMap = {
 		violations: readonly Violation[],
 		fixedCode: string,
 		debug: readonly string[] | null,
-		message?: string,
+		fixSummary: FixSummary | null,
 	];
 	'lint-error': [filePath: string, sourceCode: string, error: Readonly<Error>];
 	'config-errors': [filePath: string, errors: readonly Readonly<Error>[]];

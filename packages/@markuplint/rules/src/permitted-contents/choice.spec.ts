@@ -6,10 +6,10 @@ import { choice } from './choice.js';
 
 function c(models: any, innerHtml: string) {
 	const el = createTestElement(`<div>${innerHtml}</div>`);
-	return choice(models, [...el.childNodes], specs, { ignoreHasMutableChildren: true }, 0);
+	return choice(models, [...el.childNodes], [], specs, { ignoreHasMutableChildren: true }, 0, 'pretended');
 }
 
-test('ordered requires', () => {
+test('[permitted-contents-invalid-001] ordered requires', () => {
 	const models = {
 		choice: [
 			//
@@ -28,7 +28,7 @@ test('ordered requires', () => {
 	expect(c(models, '<d></d>').type).toBe('MISSING_NODE_REQUIRED');
 });
 
-test('optional', () => {
+test('[permitted-contents-invalid-002] optional', () => {
 	const models = {
 		choice: [
 			[
@@ -56,7 +56,7 @@ test('optional', () => {
 	expect(c(models, '<d></d>').type).toBe('UNEXPECTED_EXTRA_NODE');
 });
 
-test('interleave', () => {
+test('[permitted-contents-invalid-003] interleave', () => {
 	const models = {
 		choice: [
 			[
@@ -86,7 +86,7 @@ test('interleave', () => {
 	expect(c(models, '<b></b><a></a><a></a>').type).toBe('UNEXPECTED_EXTRA_NODE');
 });
 
-test('the dl element', () => {
+test('[permitted-contents-invalid-004] the dl element', () => {
 	const models = {
 		choice: [
 			[
@@ -133,7 +133,35 @@ test('the dl element', () => {
 	expect(c(models, '<dt></dt><dd></dd><dt></dt>').type).toBe('MISSING_NODE_ONE_OR_MORE');
 });
 
-test('part of the ruby element', () => {
+test('[permitted-contents-issue-3592-001] dl with zeroOrMore groups — empty is valid', () => {
+	const models = {
+		choice: [
+			[
+				{
+					zeroOrMore: [
+						{ zeroOrMore: ':model(script-supporting)' },
+						{ oneOrMore: 'dt' },
+						{ zeroOrMore: ':model(script-supporting)' },
+						{ oneOrMore: 'dd' },
+						{ zeroOrMore: ':model(script-supporting)' },
+					],
+				},
+			],
+			[
+				{ zeroOrMore: ':model(script-supporting)' },
+				{ oneOrMore: 'div' },
+				{ zeroOrMore: ':model(script-supporting)' },
+			],
+		],
+	};
+
+	expect(c(models, '').type).toBe('MATCHED_ZERO');
+	expect(c(models, '<dt></dt><dd></dd>').type).toBe('MATCHED');
+	expect(c(models, '<div></div>').type).toBe('MATCHED');
+	expect(c(models, '<dt></dt>').type).toBe('MISSING_NODE_ONE_OR_MORE');
+});
+
+test('[permitted-contents-invalid-005] part of the ruby element', () => {
 	const models = {
 		// 2. One or the other of the following:
 		choice: [
@@ -175,7 +203,7 @@ test('part of the ruby element', () => {
 });
 
 describe('Issues', () => {
-	test('#1146', () => {
+	test('[permitted-contents-issue-1146] #1146', () => {
 		const models = {
 			choice: [
 				[

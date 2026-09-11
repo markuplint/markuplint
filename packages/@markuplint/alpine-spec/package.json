@@ -1,0 +1,33 @@
+{
+	"name": "@markuplint/alpine-spec",
+	"version": "5.0.0-rc.7",
+	"description": "Extended specification for tags and attributes in Alpine.js",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/markuplint/markuplint.git",
+		"directory": "packages/@markuplint/alpine-spec"
+	},
+	"author": "Yusuke Hirao <yusukehirao@me.com>",
+	"license": "MIT",
+	"engines": {
+		"node": ">=24"
+	},
+	"type": "module",
+	"exports": {
+		".": {
+			"import": "./lib/index.js",
+			"types": "./lib/index.d.ts"
+		}
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"build": "tsc --project tsconfig.build.json",
+		"dev": "tsc --watch --project tsconfig.build.json",
+		"clean": "tsc --build --clean tsconfig.build.json"
+	},
+	"dependencies": {
+		"@markuplint/ml-spec": "5.0.0-rc.7"
+	}
+}

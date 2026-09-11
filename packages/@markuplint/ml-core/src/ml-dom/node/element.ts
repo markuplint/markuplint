@@ -5,7 +5,14 @@ import type { MLNamedNodeMap } from './named-node-map.js';
 import type { MLNode } from './node.js';
 import type { MLText } from './text.js';
 import type { ElementNodeType, PretenderContext, PretenderContextPretender } from './types.js';
-import type { ElementType, MLASTAttr, MLASTElement, NamespaceURI } from '@markuplint/ml-ast';
+import type {
+	ElementType,
+	MLASTAttr,
+	MLASTBlockBehavior,
+	MLASTElement,
+	MLASTElementCloseTag,
+	NamespaceURI,
+} from '@markuplint/ml-ast';
 import type {
 	PlainData,
 	Pretender,
@@ -16,7 +23,7 @@ import type {
 } from '@markuplint/ml-config';
 import type { ARIAVersion } from '@markuplint/ml-spec';
 
-import { resolveNamespace } from '@markuplint/ml-spec';
+import { getSpecByTagName, resolveNamespace } from '@markuplint/ml-spec';
 import type { SelectorMatches } from '@markuplint/selector';
 import { matchSelector } from '@markuplint/selector';
 
@@ -29,15 +36,13 @@ import {
 	remove,
 	replaceWith,
 } from '../manipulations/child-node-methods.js';
-import { MLToken } from '../token/token.js';
-
 import { MLAttr } from './attr.js';
 import { MLDomTokenList } from './dom-token-list.js';
 import { MLElementCloseTag } from './element-close-tag.js';
 import { toNamedNodeMap } from './named-node-map.js';
-import { toHTMLCollection } from './node-list.js';
+import { toHTMLCollection, toNodeList } from './node-list.js';
 import { MLParentNode } from './parent-node.js';
-import { UnexpectedCallError } from './unexpected-call-error.js';
+import { UnexpectedCallError } from '@markuplint/shared';
 
 const HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml';
 
@@ -69,7 +74,6 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * - `authored`:  Authored element (JSX Element etc.) through the view framework or the template engine.
 	 */
 	readonly elementType: ElementType;
-	#fixedNodeName: string;
 	#getChildElementsAndTextNodeWithoutWhitespacesCache: (MLElement<T, O> | MLText<T, O>)[] | null = null;
 	/**
 	 * Whether this element belongs to a non-HTML namespace (e.g., SVG or MathML).
@@ -86,6 +90,31 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * The namespace URI of this element (e.g., `http://www.w3.org/1999/xhtml` for HTML elements).
 	 */
 	readonly namespaceURI: NamespaceURI;
+
+	/**
+	 * ## Why this cache exists
+	 *
+	 * Multiple rules and the `:aria(has name)` selector evaluate the accessible name
+	 * of every element during a single lint pass. Without caching, the same
+	 * expensive tree-walking algorithm (AccName Computation 1.2) runs repeatedly
+	 * for the same element — once per consumer. Benchmarks on a 500-element page
+	 * show **14,626 total calls** of which **11,573 (79%) are cache hits**,
+	 * eliminating redundant computation.
+	 *
+	 * ## Why memoization is safe
+	 *
+	 * The MLDOM is **immutable** once constructed — no attributes or child nodes
+	 * change during a lint pass. Therefore the accessible name for a given ARIA
+	 * version is deterministic and will never become stale. No invalidation
+	 * logic is needed. The cache is garbage-collected together with the
+	 * MLElement instance when the document is released.
+	 *
+	 * Introduced to resolve {@link https://github.com/markuplint/markuplint/issues/2179 | #2179}
+	 * (AccName performance bottleneck).
+	 *
+	 * @see {@link getAccessibleName} — the public method that reads/writes this cache
+	 */
+	#accessibleNameCache: Map<ARIAVersion, string> = new Map();
 	#normalizedAttrs: Map<MLAttr<T, O>[], MLNamedNodeMap<T, O>> = new Map();
 	#normalizedString: string | null = null;
 
@@ -132,13 +161,17 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	/**
 	 * The pretender context if this element is participating in pretender behavior,
 	 * or null if it is not a pretender or pretended element.
+	 *
+	 * The virtual element created by `pretending()` is not registered in the
+	 * document's `nodeList`; walkers visit only the original element, which
+	 * delegates its name and attribute getters to the virtual element.
 	 */
 	pretenderContext: PretenderContext<MLElement<T, O>, T, O> | null = null;
 
 	/**
-	 * The self-closing solidus token (`/`), or null if the element is not self-closing.
+	 * Block behavior associated with this element, if any.
 	 */
-	readonly selfClosingSolidus: MLToken | null;
+	readonly blockBehavior: MLASTBlockBehavior | null;
 
 	/**
 	 * The tag close character string (e.g., `>` or `/>` or `%>`).
@@ -163,19 +196,22 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	) {
 		super(astNode, document, astNode.isFragment);
 		this.#attributes = astNode.attributes.map(attr => new MLAttr(attr, this));
-		this.selfClosingSolidus = astNode.selfClosingSolidus ? new MLToken(astNode.selfClosingSolidus) : null;
-		this.closeTag = astNode.pairNode ? new MLElementCloseTag(astNode.pairNode, document, this) : null;
+		const pairAstNode = astNode.pairNodeUuid
+			? (document.getAstNodeByUuid(astNode.pairNodeUuid) as MLASTElementCloseTag | undefined)
+			: null;
+		this.closeTag = pairAstNode ? new MLElementCloseTag(pairAstNode, document, this) : null;
 		const ns = resolveNamespace(astNode.nodeName, astNode.namespace);
-		this.namespaceURI = ns.namespaceURI;
+		this.namespaceURI = astNode.namespace;
 		this.elementType = astNode.elementType;
 		this.#localName = ns.localName;
 		this.isForeignElement = this.namespaceURI !== HTML_NAMESPACE;
-		this.#fixedNodeName = astNode.nodeName;
 
 		this.isOmitted = astNode.isGhost;
 
 		this.tagOpenChar = astNode.tagOpenChar;
 		this.tagCloseChar = astNode.tagCloseChar;
+
+		this.blockBehavior = astNode.blockBehavior;
 	}
 
 	/**
@@ -985,16 +1021,6 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 */
 	get enterKeyHint(): string {
 		throw new UnexpectedCallError('Not supported "enterKeyHint" property');
-	}
-
-	/**
-	 * Returns the fixed (potentially corrected) node name, which may differ from the
-	 * original node name after lint fixes such as case normalization.
-	 *
-	 * @implements `@markuplint/ml-core` API: `MLElement`
-	 */
-	get fixedNodeName() {
-		return this.#fixedNodeName;
 	}
 
 	/**
@@ -3073,6 +3099,9 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	/**
 	 * Returns the rule configuration for this element, respecting the pretender context.
 	 * If the element is a pretended origin, returns the rule from the pretending element.
+	 * Rules are mapped only to nodes in the document's `nodeList`; the virtual
+	 * pretender element never appears there, so it must read the resolved
+	 * rules from the original element.
 	 *
 	 * @implements `@markuplint/ml-core` API: `MLNode`
 	 */
@@ -3381,16 +3410,6 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	/**
-	 * Overrides the fixed node name for this element, used when the element's
-	 * tag name needs to be corrected during linting (e.g., case normalization).
-	 *
-	 * @param name - The new node name to set
-	 */
-	fixNodeName(name: string) {
-		this.#fixedNodeName = name;
-	}
-
-	/**
 	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
 	 *
 	 * @deprecated
@@ -3405,15 +3424,34 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	/**
-	 * Computes the accessible name of this element according to the
-	 * Accessible Name and Description Computation algorithm.
+	 * Returns the accessible name of this element, with per-element memoization.
+	 *
+	 * On the first call for a given ARIA version the full AccName Computation
+	 * algorithm runs (tree walk, `aria-labelledby` resolution, `<label>` lookup,
+	 * etc.) and the result is stored in {@link #accessibleNameCache}.
+	 * Subsequent calls for the same version return the cached value in O(1).
+	 *
+	 * **All callers that need the accessible name of an MLElement should use
+	 * this method** rather than importing `getAccname()` directly, so that
+	 * every consumer benefits from the shared cache. This includes the
+	 * `:aria(has name)` selector in `@markuplint/selector`, which uses
+	 * duck-typing to detect and call this method.
+	 *
+	 * Added as part of the fix for {@link https://github.com/markuplint/markuplint/issues/2179 | #2179}
+	 * to eliminate redundant AccName computation across rules.
 	 *
 	 * @implements `@markuplint/ml-core` API: `MLElement`
 	 * @param version - The ARIA specification version to use for computation
-	 * @returns The computed accessible name string
+	 * @returns The computed accessible name string (may be empty)
 	 */
 	getAccessibleName(version: ARIAVersion): string {
-		return getAccname(this, version);
+		const cached = this.#accessibleNameCache.get(version);
+		if (cached != null) {
+			return cached;
+		}
+		const name = getAccname(this, version);
+		this.#accessibleNameCache.set(version, name);
+		return name;
 	}
 
 	/**
@@ -3484,6 +3522,10 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	/**
 	 * Gets the attribute value from the original (non-pretended) attributes list,
 	 * bypassing any pretender context that might be active.
+	 *
+	 * Exists for the pretender ARIA `{ fromAttr }` accessible-name resolution:
+	 * the source attribute (e.g. `label` on `<MyButton label="...">`) lives on
+	 * the original component element, not on the virtual pretender element.
 	 *
 	 * @implements `@markuplint/ml-core` API: `MLElement`
 	 * @param attrName - The attribute name to look up (case-insensitive)
@@ -3696,6 +3738,12 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * such as preprocessor-specific blocks, slot elements, or (optionally) elements
 	 * with dynamic attributes.
 	 *
+	 * Blocks that carry a `blockBehavior` are not treated as mutable because
+	 * their branches are deterministically enumerable via
+	 * `conditionalChildNodes()`; blocks without one (e.g. expression output
+	 * like `{value}`) can produce arbitrary content, so the children are
+	 * considered mutable.
+	 *
 	 * @implements `@markuplint/ml-core` API: `MLElement`
 	 * @param attr - When true, also considers children with mutable attributes as mutable
 	 * @returns True if this element has potentially mutable children
@@ -3703,7 +3751,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	hasMutableChildren(attr = false) {
 		for (const child of this.getPureChildNodes()) {
 			if (child.is(child.MARKUPLINT_PREPROCESSOR_BLOCK)) {
-				if (child.conditionalType) {
+				if (child.blockBehavior) {
 					continue;
 				}
 				return true;
@@ -3757,7 +3805,6 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		element: MLElement<T, O>,
 	): MLElement<T, O> | null {
-		// TODO:
 		throw new UnexpectedCallError('Does not implement "insertAdjacentElement" method yet');
 	}
 
@@ -3769,7 +3816,6 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @see https://w3c.github.io/DOM-Parsing/#widl-Element-insertAdjacentHTML-void-DOMString-position-DOMString-text
 	 */
 	insertAdjacentHTML(position: InsertPosition, text: string): void {
-		// TODO:
 		throw new UnexpectedCallError('Does not implement "insertAdjacentHTML" method yet');
 	}
 
@@ -3781,7 +3827,6 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @see https://dom.spec.whatwg.org/#dom-element-insertadjacenttext
 	 */
 	insertAdjacentText(where: InsertPosition, data: string): void {
-		// TODO:
 		throw new UnexpectedCallError('Does not implement "insertAdjacentText" method yet');
 	}
 
@@ -3847,6 +3892,11 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * returning detailed match results. When the element is a pretender,
 	 * it attempts to match both as the pretender and as the original element.
 	 *
+	 * The two-phase strategy lets both targeting styles work: selectors for
+	 * the semantic element (e.g. `button`) match via the pretender identity,
+	 * while selectors for the component name (e.g. `MyButton`) still match
+	 * the original.
+	 *
 	 * @param selector - The CSS selector string or regex selector to match against
 	 * @param scope - An optional scope node for scoped selector matching
 	 * @returns The detailed match result including captured groups from regex selectors
@@ -3888,6 +3938,22 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @param pretenders - Optional array of pretender configurations to match against
 	 */
 	pretending(pretenders?: readonly Pretender[]) {
+		// Pretender must not apply to a recognised standard HTML element (e.g. <marquee>,
+		// <h1>, <button>). Allowing such elements to masquerade as another would silently
+		// mask spec-driven rules — deprecation, ARIA role restrictions, browser support —
+		// keyed on the original tag. See issue #3740.
+		//
+		// Names that the HTML parser cannot distinguish from typos (PascalCase JSX-like
+		// usage in plain HTML such as `<SimpleButton>`) get `elementType === 'html'`
+		// from the parser but have no spec entry; those remain pretender-eligible
+		// (this is what `pretenders.scan` relies on). The legacy "no inline `as=` on
+		// HTML elements" guard is preserved further down for that case.
+		if (
+			this.elementType === 'html' &&
+			getSpecByTagName(this.ownerMLDocument.specs.specs, this.localName, this.namespaceURI) != null
+		) {
+			return;
+		}
 		const pretenderConfig = pretenders?.find(option => this.matches(option.selector));
 		const asAttrValue = this.getAttribute('as');
 		const pretenderElement: Pretender['as'] | null =
@@ -3904,14 +3970,14 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		}
 
 		let nodeName: string;
-		let namespace = 'html';
+		let namespace: NamespaceURI = 'http://www.w3.org/1999/xhtml';
 		const attributes: MLASTAttr[] = [];
 		let aria: PretenderARIA | undefined;
 		if (typeof pretenderElement === 'string') {
 			nodeName = pretenderElement;
 		} else {
 			nodeName = pretenderElement.element;
-			namespace = pretenderElement.namespace ?? namespace;
+			namespace = pretenderElement.namespace === 'svg' ? 'http://www.w3.org/2000/svg' : namespace;
 			if (pretenderElement.inheritAttrs) {
 				attributes.push(...this._astToken.attributes);
 			}
@@ -3974,6 +4040,8 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 			aria = pretenderElement.aria;
 		}
 
+		const slots = typeof pretenderElement === 'string' ? undefined : pretenderElement.slots;
+
 		const as = new MLElement<T, O>(
 			{
 				...this._astToken,
@@ -3987,7 +4055,13 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 			this.ownerMLDocument,
 		);
 
-		as.resetChildren(this.childNodes);
+		// When slots is null, the component does not accept children (void-like).
+		// Explicitly set empty children to prevent inheriting from the AST token.
+		if (slots === null) {
+			as.resetChildren(toNodeList([]));
+		} else {
+			as.resetChildren(this.childNodes);
+		}
 		as.pretenderContext = {
 			type: 'origin',
 			origin: this,
@@ -4250,59 +4324,13 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	/**
-	 * Returns a string representation of this element. When `fixed` is true,
-	 * returns the element with any lint fixes applied to the tag name,
-	 * attributes, and embedded comment nodes.
+	 * Returns the raw string representation of this element.
 	 *
 	 * @implements `@markuplint/ml-core` API: `MLElement`
-	 * @param fixed - When true, returns the fixed content; otherwise returns the original raw content
 	 * @returns The string content of this element
 	 */
-	toString(fixed = false) {
-		if (!fixed) {
-			return this.raw;
-		}
-
-		if (this.pretenderContext?.type === 'pretender') {
-			return this.raw;
-		}
-
-		if (this.nodeName.startsWith('#')) {
-			return this.raw;
-		}
-
-		if (this.isOmitted) {
-			return this.raw;
-		}
-
-		let raw = this.raw;
-		let offset = 0;
-
-		const overriddenCommentNodes = this.ownerMLDocument.nodeList.filter(node => {
-			if (node.is(node.COMMENT_NODE)) {
-				return this.startOffset < node.startOffset && node.endOffset < this.endOffset;
-			}
-			return false;
-		});
-
-		const nodes = [
-			{
-				toString: () => this.tagOpenChar + this.fixedNodeName,
-				startOffset: this.startOffset,
-				endOffset: this.startOffset + this.tagOpenChar.length + this.nodeName.length,
-			},
-			...overriddenCommentNodes,
-			...this.attributes,
-		];
-		for (const node of nodes) {
-			const before = raw.slice(0, node.startOffset + offset - this.startOffset);
-			const rawCode = node.toString(true);
-			const after = raw.slice(node.endOffset + offset - this.startOffset);
-			raw = before + rawCode + after;
-			offset += rawCode.length - (node.endOffset - node.startOffset);
-		}
-
-		return raw;
+	toString() {
+		return this.raw;
 	}
 
 	/**

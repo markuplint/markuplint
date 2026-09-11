@@ -20,6 +20,15 @@ import type { ExtendedSpec } from '@markuplint/ml-spec';
  * `defaultValue`, `value`).
  */
 const spec: ExtendedSpec = {
+	/**
+	 * Set to `'idl'` because React JSX accepts only IDL property names
+	 * (e.g. `className`, `htmlFor`), unlike Svelte which accepts both
+	 * forms (`'both'`). The resolution of IDL names to HTML content
+	 * attribute names — and the IDL-name candidate suggestion (e.g.
+	 * `tabindex` -> "Did you mean `tabIndex`?") — is performed by
+	 * `MLAttr` in `@markuplint/ml-core`, not by `@markuplint/jsx-parser`.
+	 */
+	acceptedAttrNames: 'idl',
 	def: {
 		'#globalAttrs': {
 			'#extends': {
@@ -37,14 +46,14 @@ const spec: ExtendedSpec = {
 					type: 'Any',
 				},
 				/**
-				 * React’s replacement for using innerHTML in the browser DOM
+				 * React's replacement for using innerHTML in the browser DOM
 				 */
 				dangerouslySetInnerHTML: {
 					type: 'Any',
 				},
 				/**
 				 * Normally, there is a warning when an element with children
-				 * is also marked as contentEditable, because it won’t work.
+				 * is also marked as contentEditable, because it won't work.
 				 * This attribute suppresses that warning.
 				 */
 				suppressContentEditableWarning: {
@@ -57,6 +66,19 @@ const spec: ExtendedSpec = {
 				 */
 				suppressHydrationWarning: {
 					type: 'Boolean',
+				},
+				/**
+				 * React accepts "inherit" as a valid contentEditable value
+				 * (IDL state value from the ContentEditable interface).
+				 */
+				contenteditable: {
+					type: {
+						enum: ['', 'true', 'false', 'plaintext-only', 'inherit'],
+						disallowToSurroundBySpaces: true,
+						invalidValueDefault: 'inherit',
+						missingValueDefault: 'inherit',
+						sameStates: { true: [''] },
+					},
 				},
 			},
 		},

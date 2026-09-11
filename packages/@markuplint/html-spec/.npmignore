@@ -1,4 +1,5 @@
 src
 test
+generator/
 tsconfig*
-build.mjs
+build.ts

@@ -1,0 +1,42 @@
+# Server-side redirects for Netlify
+# https://docs.netlify.com/manage/routing/redirects/overview/
+#
+# Note: @docusaurus/plugin-client-redirects handles the same redirects
+# for local development. Keep both in sync.
+
+# Legacy URL redirects
+[[redirects]]
+  from = "/getting-started"
+  to = "/docs/guides"
+  status = 301
+
+[[redirects]]
+  from = "/set-up-rules"
+  to = "/docs/guides/applying-rules"
+  status = 301
+
+[[redirects]]
+  from = "/setting-for-other-languages"
+  to = "/docs/guides/beyond-html"
+  status = 301
+
+[[redirects]]
+  from = "/cli"
+  to = "/docs/guides/cli"
+  status = 301
+
+[[redirects]]
+  from = "/api-docs"
+  to = "/docs/api"
+  status = 301
+
+# Renamed pages
+[[redirects]]
+  from = "/docs/guides/besides-html"
+  to = "/docs/guides/beyond-html"
+  status = 301
+
+[[redirects]]
+  from = "/docs/guides/besides-html/*"
+  to = "/docs/guides/beyond-html/:splat"
+  status = 301

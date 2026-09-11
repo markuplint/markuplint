@@ -26,9 +26,12 @@ import { getPosition } from '@markuplint/parser-utils/location';
 import ts from 'typescript';
 
 import { createScanner } from '../create-scanner.js';
+import { collectImportBindings } from '../import-resolver/analyze-jsx-imports.js';
+import { normalizePath } from '../import-resolver/resolve-module-file.js';
 import { PretenderDirector } from '../pretender-director.js';
 
-import { createIndentity } from './create-identify.js';
+import { createCachingCompilerHost } from './compiler-host.js';
+import { createIdentity } from './create-identify.js';
 import { finder } from './finder.js';
 import { getAttributes } from './get-attributes.js';
 import { getChildren } from './get-children.js';
@@ -48,11 +51,18 @@ const {
 	JsxEmit,
 } = ts;
 
-/**
- * Default options for the JSX scanner, including built-in patterns
- * for styled-components and provider components.
- */
-const defaultOptions: Required<PretenderScanJSXOptions> = {
+// `noLib`/`types: []` skip loading lib.d.ts and @types packages, which this
+// scanner never needs (it only walks JSX syntax, never type-checks).
+const COMPILER_OPTIONS: ts.CompilerOptions = {
+	jsx: JsxEmit.ReactJSX,
+	allowJs: true,
+	noLib: true,
+	types: [],
+};
+
+// `sources` has no meaningful default (it's a per-call override), so it's
+// excluded from the Required<> defaults and read straight off `options`.
+const defaultOptions: Required<Omit<PretenderScanJSXOptions, 'sources'>> = {
 	cwd: process.cwd(),
 	asFragment: [/(?:^|\.)provider$/i],
 	ignoreComponentNames: [],
@@ -76,6 +86,10 @@ const defaultOptions: Required<PretenderScanJSXOptions> = {
  * - HOC / wrapper function patterns
  * - Fragment and provider component transparency
  * - `@pretends null` JSDoc tag to opt out a component
+ *
+ * @param files - Absolute file paths to scan (relative paths cause a `ReferenceError`)
+ * @param options - JSX scanner configuration (fragment patterns, styled-components, wrappers, etc.)
+ * @returns Discovered pretender mappings for all components found in the given files
  */
 export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 	(files, options = defaultOptions): Promise<Pretender[]> => {
@@ -85,17 +99,18 @@ export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 			asFragment = defaultOptions.asFragment,
 			taggedStylingComponent = defaultOptions.taggedStylingComponent,
 			extendingWrapper = defaultOptions.extendingWrapper,
+			sources,
 		} = options;
 
 		const director = new PretenderDirector();
 
-		const program = createProgram(files, {
-			jsx: JsxEmit.ReactJSX,
-			allowJs: true,
-		});
+		const host = createCachingCompilerHost(COMPILER_OPTIONS, sources);
+		const program = createProgram(files, COMPILER_OPTIONS, host);
 
 		for (const sourceFile of program.getSourceFiles()) {
 			if (!sourceFile.isDeclarationFile) {
+				const relFilePath = normalizePath(path.relative(cwd, sourceFile.fileName));
+				director.addImports(relFilePath, collectImportBindings(sourceFile));
 				forEachChild(sourceFile, node => visit(node, sourceFile));
 			}
 		}
@@ -173,7 +188,7 @@ export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 			line: number,
 			col: number,
 		) {
-			const filePath = path.relative(cwd, sourceFile.fileName);
+			const filePath = normalizePath(path.relative(cwd, sourceFile.fileName));
 			const find = finder(sourceFile);
 
 			find(root, isReturnStatement, node => {
@@ -252,6 +267,7 @@ export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 						filePath,
 						line,
 						col,
+						`${filePath}#${name}`,
 					);
 				}
 			});
@@ -307,6 +323,7 @@ export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 						filePath,
 						line,
 						col,
+						`${filePath}#${name}`,
 					);
 				}
 			});
@@ -367,12 +384,12 @@ export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 
 				const attrs = getAttributes(el, sourceFile);
 				const children = getChildren(el, sourceFile);
-				const identity = createIndentity(tagName, attrs, children);
-				director.add(name, identity, filePath, line, col);
+				const identity = createIdentity(tagName, attrs, children);
+				director.add(name, identity, filePath, line, col, `${filePath}#${name}`);
 			}
 		}
 
-		return Promise.resolve(director.getPretenders());
+		return Promise.resolve(director.getPretenders(cwd, sources));
 	},
 );
 

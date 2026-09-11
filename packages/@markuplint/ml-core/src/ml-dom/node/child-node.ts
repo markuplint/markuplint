@@ -21,15 +21,6 @@ export type MLChildNode<T extends RuleConfigValue, O extends PlainData = undefin
 	| MLElement<T, O>
 	| MLBlock<T, O>;
 
-/**
- * Determines whether the given node is a child node type
- * (DocumentType, CDATA, Comment, Text, Element, or preprocessor block).
- *
- * @template T - The rule configuration value type
- * @template O - The rule options type
- * @param node - The node to check
- * @returns True if the node is one of the child node types
- */
 export function isChildNode<T extends RuleConfigValue, O extends PlainData = undefined>(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	node: MLNode<T, O>,

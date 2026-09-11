@@ -1,11 +1,11 @@
 import type { MLASTNodeTreeItem } from '@markuplint/ml-ast';
 
 export function sortNodes(a: MLASTNodeTreeItem, b: MLASTNodeTreeItem) {
-	if (a.startOffset === b.startOffset) {
-		return sort(a.endOffset, b.endOffset);
+	if (a.offset === b.offset) {
+		return sort(a.offset + a.raw.length, b.offset + b.raw.length);
 	}
 
-	return sort(a.startOffset, b.startOffset);
+	return sort(a.offset, b.offset);
 }
 
 function sort(a: number, b: number) {

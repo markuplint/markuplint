@@ -13,20 +13,9 @@ let cachedPresetRules: Readonly<AnyMLRule>[] | null = null;
  * @param plugins - The resolved plugins that may provide custom rules
  * @param ruleset - The current ruleset (used for auto-loading)
  * @param importPreset - Whether to import the built-in preset rules from `@markuplint/rules`
- * @param autoLoad - Whether to auto-load rules referenced in the ruleset
  * @returns An array of all resolved MLRule instances
- *
- * @deprecated The `autoLoad` parameter is deprecated
  */
-export async function resolveRules(
-	plugins: readonly Plugin[],
-	ruleset: Ruleset,
-	importPreset: boolean,
-	/**
-	 * @deprecated
-	 */
-	autoLoad: boolean,
-) {
+export async function resolveRules(plugins: readonly Plugin[], ruleset: Ruleset, importPreset: boolean) {
 	const rules = importPreset ? await importPresetRules() : [];
 	for (const plugin of plugins) {
 		if (!plugin.rules) {
@@ -40,11 +29,9 @@ export async function resolveRules(
 			rules.push(rule);
 		}
 	}
-	if (autoLoad) {
-		const { rules: additionalRules } = await autoLoadRules(ruleset);
-		for (const rule of additionalRules) {
-			rules.push(rule);
-		}
+	const { rules: additionalRules } = await autoLoadRules(ruleset);
+	for (const rule of additionalRules) {
+		rules.push(rule);
 	}
 	// Clone
 	return [...rules];

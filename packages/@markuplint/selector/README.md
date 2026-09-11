@@ -60,6 +60,20 @@ Supported selectors and operators:
 | Column combinator                                | <code>div \|\| span</code>                                                                | ❌      |
 | Multiple selectors                               | `div, span`                                                                               | ✅      |
 
+## Case sensitivity
+
+Per HTML LS / Selectors Level 4 — Case sensitivity, names are matched
+according to the element's namespace:
+
+| Match target    | HTML namespace                                                                                            | SVG / MathML / custom elements                  |
+| --------------- | --------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| Tag name        | ASCII case-insensitive (`DIV` matches `div`)                                                              | Case-sensitive                                  |
+| Attribute name  | ASCII case-insensitive (`[CHARSET]` matches `<meta CHARSET>` and `<meta charset>`)                        | Case-sensitive (e.g. SVG `viewBox` ≠ `viewbox`) |
+| Attribute value | Case-sensitive by default; use the `i` flag (e.g. `[lang="en" i]`) for case-insensitive value comparisons | Same                                            |
+
+The `i` flag scopes to attribute **values** only — it does not affect
+attribute name matching, which is governed by the namespace rules above.
+
 ## Extended Selector
 
 The below is selectors that are extended by markuplint:
@@ -110,12 +124,6 @@ For example, `:role(interactive)` matches `<a>`(with `href` attr), `<button>`, a
   "attrValue": "/^[a-z]+$/"
 }
 ```
-
-## Documentation
-
-- [Architecture](ARCHITECTURE.md) ([日本語](ARCHITECTURE.ja.md)) -- Package overview, module map, and class hierarchy
-- [Selector Matching](docs/matching.md) ([日本語](docs/matching.ja.md)) -- CSS and regex selector matching algorithm details
-- [Maintenance Guide](docs/maintenance.md) ([日本語](docs/maintenance.ja.md)) -- Commands, testing, recipes, and troubleshooting
 
 ## Install
 

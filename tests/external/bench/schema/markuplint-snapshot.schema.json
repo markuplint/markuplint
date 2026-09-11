@@ -1,0 +1,45 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"title": "MarkuplintSnapshot",
+	"type": "object",
+	"additionalProperties": false,
+	"required": ["source", "markuplint"],
+	"properties": {
+		"source": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["path", "sha256"],
+			"properties": {
+				"path": { "type": "string" },
+				"sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+			}
+		},
+		"markuplint": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["version", "configId", "violations", "parseError", "parseErrorMessage"],
+			"properties": {
+				"version": { "type": "string" },
+				"configId": { "type": "string" },
+				"parseError": { "type": "boolean" },
+				"parseErrorMessage": { "type": ["string", "null"] },
+				"violations": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"additionalProperties": false,
+						"required": ["ruleId", "severity", "message", "line", "col", "raw"],
+						"properties": {
+							"ruleId": { "type": "string" },
+							"severity": { "type": "string", "enum": ["error", "warning", "info"] },
+							"message": { "type": "string" },
+							"line": { "type": "integer", "minimum": 0 },
+							"col": { "type": "integer", "minimum": 0 },
+							"raw": { "type": "string" }
+						}
+					}
+				}
+			}
+		}
+	}
+}

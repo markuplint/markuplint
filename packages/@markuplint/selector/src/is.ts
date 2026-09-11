@@ -1,42 +1,34 @@
-/**
- * Checks whether the given node is an Element node.
- *
- * @param node - The DOM node to check
- * @returns `true` if the node is an Element
- */
-export function isElement(
-	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	node: Node,
-): node is Element {
-	return node.nodeType === node.ELEMENT_NODE;
+import type { SelectorElement, SelectorNode } from './types.js';
+
+const ELEMENT_NODE = 1;
+
+export function isElement(node: SelectorNode): node is SelectorElement {
+	return node.nodeType === ELEMENT_NODE;
 }
 
-/**
- * Checks whether the given node is a non-DocumentType child node
- * (i.e., has `previousElementSibling` and `nextElementSibling` properties).
- *
- * @param node - The DOM node to check
- * @returns `true` if the node is an Element or CharacterData
- */
-export function isNonDocumentTypeChildNode(
-	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	node: Node,
-): node is Element | CharacterData {
+export function isNonDocumentTypeChildNode(node: SelectorNode): node is SelectorElement {
 	return 'previousElementSibling' in node && 'nextElementSibling' in node;
 }
 
 /**
- * Checks if the given element is a pure HTML element.
+ * For a pure HTML element, `localName` returns lowercase while `nodeName`
+ * returns uppercase. That asymmetry is the convention HTML parsers apply only
+ * to elements in the HTML namespace (e.g. `localName === 'meta'` while
+ * `nodeName === 'META'`); SVG, MathML, and custom elements keep
+ * `localName === nodeName`, so the inequality check discriminates them without
+ * inspecting `namespaceURI`.
  *
- * If a pure HTML element, `localName` returns lowercase,
- * `nodeName` returns uppercase.
+ * Per HTML LS / Selectors Level 4, tag and attribute name comparisons are
+ * ASCII case-insensitive only for HTML elements. Any new logic that compares
+ * names against an element must route through this guard; otherwise SVG
+ * content like `viewBox` and HTML content like `CHARSET` will start drifting
+ * in opposite directions.
  *
- * @param el The element to check.
- * @returns Returns true if the element is a pure HTML element, otherwise returns false.
+ * @see https://www.w3.org/TR/selectors-4/
  */
 export function isPureHTMLElement(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Element,
+	el: SelectorElement,
 ) {
 	return el.localName !== el.nodeName;
 }

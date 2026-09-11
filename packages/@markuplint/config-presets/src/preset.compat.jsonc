@@ -1,0 +1,6 @@
+{
+	"rules": {
+		"no-unsupported-browser-features": true,
+		"no-nonstandard-features": true
+	}
+}

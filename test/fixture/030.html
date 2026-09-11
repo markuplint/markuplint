@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>no-boolean-attr-value</title>
+</head>
+<body>
+	<!-- Boolean attrs with redundant values (same as attr name) -->
+	<input type="text" disabled="disabled">
+	<input type="checkbox" checked="checked">
+	<input type="text" required="required">
+	<input type="text" readonly="readonly">
+	<select multiple="multiple"><option>a</option></select>
+	<textarea autofocus="autofocus"></textarea>
+
+	<!-- Boolean attrs with empty string value -->
+	<input type="text" disabled="">
+	<input type="checkbox" checked="">
+	<input type="text" required="">
+
+	<!-- Boolean attrs with different quoting -->
+	<input type="text" disabled='disabled'>
+	<input type="checkbox" checked='checked'>
+
+	<!-- Boolean attrs on various elements -->
+	<details open="open"><summary>Details</summary>Content</details>
+	<video controls="controls" muted="muted" autoplay="autoplay" loop="loop" src="video.mp4"></video>
+	<audio controls="controls" muted="muted" src="audio.mp3"></audio>
+	<dialog open="open">Dialog</dialog>
+	<ol reversed="reversed"><li>item</li></ol>
+
+	<!-- Boolean attrs on form elements -->
+	<form novalidate="novalidate" action="/submit">
+		<input type="text" required="required" autofocus="autofocus">
+		<fieldset disabled="disabled"><legend>Group</legend></fieldset>
+		<button formnovalidate="formnovalidate" type="submit">Submit</button>
+	</form>
+
+	<!-- Correct usage (no value) - should NOT be flagged -->
+	<input type="text" disabled>
+	<input type="checkbox" checked>
+	<input type="text" required>
+</body>
+</html>

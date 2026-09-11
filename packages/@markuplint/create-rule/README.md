@@ -50,7 +50,7 @@ $ npx @markuplint/create-rule -p project -n my-plugin -r no-empty-alt --json
 | `--json`               |       | Output result as JSON                    | `false`                          |
 | `--help`               | `-h`  | Show help message                        |                                  |
 
-Available categories: `validation`, `a11y`, `naming-convention`, `maintainability`, `style`
+Available categories: `syntax`, `structure`, `attributes`, `references`, `forms`, `a11y`, `style`, `maintainability`, `compat`
 
 > When contributing to core (`--purpose core`), `--lang` is always TypeScript and `--test` is always enabled regardless of the options provided.
 
@@ -73,7 +73,7 @@ The CLI asks questions in the following order:
 3. **Rule name** — The kebab-case name of the rule (e.g., `no-empty-alt`)
 4. **Core-only questions** (contribute to core only):
    - Description
-   - Category (`validation`, `a11y`, `naming-convention`, `maintainability`, `style`)
+   - Category (`syntax`, `structure`, `attributes`, `references`, `forms`, `a11y`, `style`, `maintainability`, `compat`)
    - Severity (`error` or `warning`)
 5. **Language** — TypeScript or JavaScript (core mode always uses TypeScript)
 6. **Tests** — Whether to generate test files (core mode always includes tests)

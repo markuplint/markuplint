@@ -3,13 +3,77 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [4.18.0](https://github.com/markuplint/markuplint/compare/v4.14.1...v4.18.0) (2026-04-22)
+# [5.0.0-rc.7](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.6...v5.0.0-rc.7) (2026-08-31)
 
 **Note:** Version bump only for package @markuplint/jsx-parser
 
-## [4.7.24](https://github.com/markuplint/markuplint/compare/@markuplint/jsx-parser@4.7.23...@markuplint/jsx-parser@4.7.24) (2026-04-21)
+# [5.0.0-rc.6](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.5...v5.0.0-rc.6) (2026-08-30)
 
 **Note:** Version bump only for package @markuplint/jsx-parser
+
+# [5.0.0-rc.5](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.4...v5.0.0-rc.5) (2026-08-28)
+
+**Note:** Version bump only for package @markuplint/jsx-parser
+
+# [5.0.0-rc.4](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.3...v5.0.0-rc.4) (2026-04-19)
+
+**Note:** Version bump only for package @markuplint/jsx-parser
+
+# [5.0.0-rc.3](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.2...v5.0.0-rc.3) (2026-04-19)
+
+**Note:** Version bump only for package @markuplint/jsx-parser
+
+# [5.0.0-rc.2](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.1...v5.0.0-rc.2) (2026-04-15)
+
+**Note:** Version bump only for package @markuplint/jsx-parser
+
+# [5.0.0-rc.1](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.0...v5.0.0-rc.1) (2026-03-27)
+
+- feat!: adapt framework parsers to UUID-based node references ([6d543b8](https://github.com/markuplint/markuplint/commit/6d543b8c11506fe113d0ceeae3526f552f4ee26d))
+
+### BREAKING CHANGES
+
+- Parser output no longer contains parentNode/pairNode
+  object references. Use parentNodeUuid/pairNodeUuid string fields instead.
+
+Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
+
+# [5.0.0-rc.0](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.3...v5.0.0-rc.0) (2026-03-12)
+
+**Note:** Version bump only for package @markuplint/jsx-parser
+
+# [5.0.0-alpha.3](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.2...v5.0.0-alpha.3) (2026-02-26)
+
+**Note:** Version bump only for package @markuplint/jsx-parser
+
+# [5.0.0-alpha.2](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.1...v5.0.0-alpha.2) (2026-02-23)
+
+**Note:** Version bump only for package @markuplint/jsx-parser
+
+# [5.0.0-alpha.1](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.0...v5.0.0-alpha.1) (2026-02-22)
+
+**Note:** Version bump only for package @markuplint/jsx-parser
+
+# [5.0.0-alpha.0](https://github.com/markuplint/markuplint/compare/v4.14.1...v5.0.0-alpha.0) (2026-02-20)
+
+### Bug Fixes
+
+- **jsx-parser:** add type assertion for error.location in parseError ([7fc2d5c](https://github.com/markuplint/markuplint/commit/7fc2d5c5c01cf3877ce28a218884acae313f39ea))
+- **jsx-parser:** use error.location instead of getter properties for parse error position ([674ad9a](https://github.com/markuplint/markuplint/commit/674ad9a5b9d71feda6d3f64839896e962a4d9f63))
+- **ml-core:** improve detection of namespace ([5b507ad](https://github.com/markuplint/markuplint/commit/5b507ad7c19c5015b8ce587845d901e31dfa6518))
+
+- refactor(jsx-parser)!: update blockBehavior comment for new API ([efab137](https://github.com/markuplint/markuplint/commit/efab137c748647f64d6b4fbbcb0f48fc7f7a5217))
+
+### Features
+
+- **jsx-parser:** support loop blocks ([8b287a8](https://github.com/markuplint/markuplint/commit/8b287a811bab67a17a8dd9372058721e4416ab70))
+
+### BREAKING CHANGES
+
+- Replace conditionalType reference with
+  blockBehavior in TODO comment.
+
+Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
 
 ## [4.7.23](https://github.com/markuplint/markuplint/compare/@markuplint/jsx-parser@4.7.22...@markuplint/jsx-parser@4.7.23) (2026-02-10)
 

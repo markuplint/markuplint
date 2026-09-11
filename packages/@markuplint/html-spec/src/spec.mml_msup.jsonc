@@ -1,0 +1,34 @@
+// https://www.w3.org/TR/mathml-core/#subscripts-and-superscripts-msub-msup-msubsup
+{
+	"contentModel": {
+		"contents": [
+			{
+				// MathML Core §3.4.1 — msup requires exactly two children
+				// (base and superscript).
+				"require": [
+					":model(MathMLPresentation)",
+					"mml|semantics",
+					"mml|annotation",
+					"mml|annotation-xml",
+					"#text"
+				],
+				"min": 2,
+				"max": 2
+			}
+		]
+	},
+	"globalAttrs": {
+		"#GlobalEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#MathMLGlobalAttrs": true
+	},
+	"attributes": {
+		"superscriptshift": {
+			"deprecated": true
+		}
+	},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": true
+	}
+}

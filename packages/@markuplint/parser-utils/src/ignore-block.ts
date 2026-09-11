@@ -6,6 +6,15 @@ import { MASK_CHAR } from './const.js';
 import { getPosition } from './get-location.js';
 import { ParserError } from './parser-error.js';
 
+/**
+ * Masks the source regions that match the given tag patterns so that
+ * template expressions do not interfere with HTML tokenization.
+ *
+ * Invariant: the masked output must keep exactly the same character count
+ * and line breaks as the original source — `restoreNode` and all position
+ * reporting depend on offsets and line numbers in the masked code matching
+ * the original.
+ */
 export function ignoreBlock(source: string, tags: readonly IgnoreTag[], maskChar = MASK_CHAR): IgnoreBlock {
 	let replaced = source;
 	const stack: Code[] = [];
@@ -15,18 +24,21 @@ export function ignoreBlock(source: string, tags: readonly IgnoreTag[], maskChar
 				maskChar.repeat(startTag.length) +
 				taggedCode.replaceAll(/[^\n]/g, maskChar) +
 				maskChar.repeat((endTag ?? '').length);
+			// Wrap in `<!` ... `>` (bogus comment syntax) so the HTML tokenizer
+			// consumes the masked region as a single bogus comment node instead of
+			// interpreting it as text or markup. The slices drop three mask
+			// characters to compensate for the three wrapper characters,
+			// preserving the total length.
 			const taggedMask = `<!${mask.slice(2).slice(0, -1)}>`;
 			return taggedMask;
 		});
 		replaced = text.replaced;
 		stack.push(...text.stack.map(res => ({ ...res, type: tag.type })));
 	}
-	stack.sort((a, b) => a.index - b.index);
-
 	return {
 		source,
 		replaced,
-		stack,
+		stack: stack.toSorted((a, b) => a.index - b.index),
 		maskChar,
 	};
 }
@@ -83,7 +95,8 @@ export function restoreNode(
 		const raw = `${tag.startTag}${tag.taggedCode}${tag.endTag ?? ''}`;
 		const tagIndexEnd = tag.index + raw.length;
 
-		const node = newNodeList.find(node => node.startOffset <= tag.index && node.endOffset >= tagIndexEnd);
+		const nodeEndOffset = (n: MLASTNodeTreeItem) => n.offset + n.raw.length;
+		const node = newNodeList.find(node => node.offset <= tag.index && nodeEndOffset(node) >= tagIndexEnd);
 
 		if (!node) {
 			continue;
@@ -91,40 +104,37 @@ export function restoreNode(
 
 		const replacementChildNodes: (MLASTText | MLASTPreprocessorSpecificBlock)[] = [];
 
-		if (node.startOffset === tag.index && node.endOffset === tagIndexEnd) {
-			const token = parser.createToken(raw, node.startOffset, node.startLine, node.startCol);
+		if (node.offset === tag.index && nodeEndOffset(node) === tagIndexEnd) {
+			const token = parser.createToken(raw, node.offset, node.line, node.col);
 
 			const psNode: MLASTPreprocessorSpecificBlock = {
 				...token,
 				type: 'psblock',
-				conditionalType: null,
 				depth: node.depth,
 				nodeName: `#ps:${tag.type}`,
+				parentNodeUuid: node.parentNode?.uuid ?? null,
 				parentNode: node.parentNode,
 				childNodes: [],
+				blockBehavior: null,
 				isBogus: false,
-				isFragment: false, // TODO: Case by case
+				isFragment: false, // Whether this block is a fragment depends on the preprocessor directive type, but defaults to false as a safe assumption for ignore-block replacements.
 			};
 
 			replacementChildNodes.push(psNode);
 		} else if (node.type === 'text') {
-			const offset = tag.index - node.startOffset;
+			const offset = tag.index - node.offset;
 			const above = node.raw.slice(0, offset);
 			const below = node.raw.slice(offset + raw.length);
 
 			if (above) {
 				const { line, column } = getPosition(node.raw, 0);
-				const token = parser.createToken(
-					above,
-					node.startOffset,
-					node.startLine + line - 1,
-					node.startCol + column - 1,
-				);
+				const token = parser.createToken(above, node.offset, node.line + line - 1, node.col + column - 1);
 
 				const aboveNode: MLASTText = {
 					...token,
 					nodeName: '#text',
 					type: 'text',
+					parentNodeUuid: node.parentNode?.uuid ?? null,
 					parentNode: node.parentNode,
 					depth: node.depth,
 				};
@@ -133,23 +143,19 @@ export function restoreNode(
 			}
 
 			const { line, column } = getPosition(raw, offset);
-			const token = parser.createToken(
-				raw,
-				node.startOffset + offset,
-				node.startLine + line - 1,
-				node.startCol + column - 1,
-			);
+			const token = parser.createToken(raw, node.offset + offset, node.line + line - 1, node.col + column - 1);
 
 			const psNode: MLASTPreprocessorSpecificBlock = {
 				...token,
 				type: 'psblock',
-				conditionalType: null,
 				depth: node.depth,
 				nodeName: `#ps:${tag.type}`,
+				parentNodeUuid: node.parentNode?.uuid ?? null,
 				parentNode: node.parentNode,
 				childNodes: [],
+				blockBehavior: null,
 				isBogus: false,
-				isFragment: false, // TODO: Case by case
+				isFragment: false, // Whether this block is a fragment depends on the preprocessor directive type, but defaults to false as a safe assumption for ignore-block replacements.
 			};
 			replacementChildNodes.push(psNode);
 
@@ -157,15 +163,16 @@ export function restoreNode(
 				const { line, column } = getPosition(node.raw, offset + raw.length);
 				const token = parser.createToken(
 					below,
-					node.startOffset + offset + raw.length,
-					node.startLine + line - 1,
-					node.startCol + column - 1,
+					node.offset + offset + raw.length,
+					node.line + line - 1,
+					node.col + column - 1,
 				);
 
 				const aboveNode: MLASTText = {
 					...token,
 					nodeName: '#text',
 					type: 'text',
+					parentNodeUuid: node.parentNode?.uuid ?? null,
 					parentNode: node.parentNode,
 					depth: node.depth,
 				};
@@ -196,8 +203,11 @@ export function restoreNode(
 					const raw = tag.startTag + tag.taggedCode + tag.endTag;
 					const length = raw.length;
 
-					if (attr.value.startOffset <= tag.index && tag.index + length <= attr.value.endOffset) {
-						const offset = tag.index - attr.value.startOffset;
+					if (
+						attr.value.offset <= tag.index &&
+						tag.index + length <= attr.value.offset + attr.value.raw.length
+					) {
+						const offset = tag.index - attr.value.offset;
 						const above = attr.value.raw.slice(0, offset);
 						const below = attr.value.raw.slice(offset + length);
 						parser.updateRaw(attr.value, above + raw + below);
@@ -217,9 +227,8 @@ export function restoreNode(
 					);
 				}
 
-				// Update node raw
 				const length = attr.raw.length;
-				const offset = attr.startOffset - node.startOffset;
+				const offset = attr.offset - node.offset;
 				const above = node.raw.slice(0, offset);
 				const below = node.raw.slice(offset + length);
 				parser.updateRaw(node, above + attr.raw + below);

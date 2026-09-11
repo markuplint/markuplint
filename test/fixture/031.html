@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>no-default-value</title>
+</head>
+<body>
+	<!-- input type="text" is the default -->
+	<input type="text">
+	<input type="text" name="name">
+
+	<!-- col span="1" is the default -->
+	<table>
+		<colgroup>
+			<col span="1">
+		</colgroup>
+		<tr><td>cell</td></tr>
+	</table>
+
+	<!-- Non-default values - should NOT be flagged -->
+	<input type="email">
+	<input type="password">
+	<input type="number">
+</body>
+</html>

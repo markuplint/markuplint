@@ -1,4 +1,4 @@
-import type { SelectorMatchedResult, SelectorResult, Specificity } from './types.js';
+import type { SelectorElement, SelectorMatchedResult, SelectorNode, SelectorResult, Specificity } from './types.js';
 import type { ReadonlyDeep, Writable } from 'type-fest';
 
 import { resolveNamespace } from '@markuplint/ml-spec';
@@ -12,34 +12,50 @@ import { isElement, isNonDocumentTypeChildNode, isPureHTMLElement } from './is.j
 const selLog = coreLog.extend('selector');
 const resLog = coreLog.extend('result');
 
-type ExtendedPseudoClass = Readonly<
+/**
+ * Registry of extended pseudo-class handlers keyed by pseudo-class name.
+ *
+ * Each handler is a curried function: given the pseudo-class content string,
+ * it returns a matcher that tests a {@link SelectorElement} and produces
+ * a {@link SelectorResult}.
+ *
+ * By convention, every handler reports a specificity of `[0, 1, 0]` so that
+ * extended pseudo-classes always weigh the same as a standard pseudo-class.
+ */
+export type ExtendedPseudoClass = Readonly<
 	Record<
 		string,
 		(content: string) => (
 			// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-			el: Element,
+			el: SelectorElement,
 		) => SelectorResult
 	>
 >;
 
 /**
- * CSS selector matcher that parses a selector string and matches it against DOM nodes.
+ * CSS selector matcher that parses a selector string and matches it against nodes.
  *
  * Use {@link createSelector} to create cached instances with extended pseudo-class support.
  */
 export class Selector {
 	#ruleset: Ruleset;
 
+	/**
+	 * @param selector - The CSS selector string to parse
+	 * @param extended - Extended pseudo-class handlers to register
+	 */
 	constructor(selector: string, extended: ExtendedPseudoClass = {}) {
 		this.#ruleset = Ruleset.parse(selector, extended);
 	}
 
-	match(
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		el: Node,
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		scope?: ParentNode | null,
-	): Specificity | false {
+	/**
+	 * Tests whether the given node matches this selector.
+	 *
+	 * @param el - The node to test
+	 * @param scope - The scope node for `:scope` pseudo-class resolution
+	 * @returns The specificity of the first matching selector, or `false` if none matched
+	 */
+	match(el: SelectorNode, scope?: SelectorNode | null): Specificity | false {
 		scope = scope ?? (isElement(el) ? el : null);
 		const results = this.search(el, scope);
 		for (const result of results) {
@@ -50,12 +66,15 @@ export class Selector {
 		return false;
 	}
 
-	search(
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		el: Node,
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		scope?: ParentNode | null,
-	) {
+	/**
+	 * Evaluates all comma-separated selectors against the given node
+	 * and returns each result (matched or unmatched).
+	 *
+	 * @param el - The node to test
+	 * @param scope - The scope node for `:scope` pseudo-class resolution
+	 * @returns An array of results, one per comma-separated selector alternative
+	 */
+	search(el: SelectorNode, scope?: SelectorNode | null) {
 		scope = scope ?? (isElement(el) ? el : null);
 		return this.#ruleset.match(el, scope);
 	}
@@ -93,12 +112,7 @@ class Ruleset {
 		}
 	}
 
-	match(
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		el: Node,
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		scope: ParentNode | null,
-	): SelectorResult[] {
+	match(el: SelectorNode, scope: SelectorNode | null): SelectorResult[] {
 		if (coreLog.enabled) {
 			coreLog(
 				'<%s> (%s)',
@@ -162,12 +176,7 @@ class StructuredSelector {
 		return this.#selector.nodes.join('');
 	}
 
-	match(
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		el: Node,
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		scope: ParentNode | null,
-	): SelectorResult {
+	match(el: SelectorNode, scope: SelectorNode | null): SelectorResult {
 		return this.#edge.match(el, scope, 0);
 	}
 }
@@ -231,14 +240,8 @@ class SelectorTarget {
 		this.#combinedFrom = { target, combinator };
 	}
 
-	match(
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		el: Node,
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		scope: ParentNode | null,
-		count: number,
-	): SelectorResult {
-		const result = this._match(el, scope, count);
+	match(el: SelectorNode, scope: SelectorNode | null, count: number): SelectorResult {
+		const result = this.#match(el, scope, count);
 		if (selLog.enabled) {
 			const nodeName = el.nodeName;
 			const selector = this.#combinedFrom?.target.toString() ?? this.toString();
@@ -262,14 +265,8 @@ class SelectorTarget {
 		].join('');
 	}
 
-	private _match(
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		el: Node,
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		scope: ParentNode | null,
-		count: number,
-	): SelectorResult & { combinator?: string } {
-		const unitCheck = this._matchWithoutCombineChecking(el, scope);
+	#match(el: SelectorNode, scope: SelectorNode | null, count: number): SelectorResult & { combinator?: string } {
+		const unitCheck = this.#matchWithoutCombineChecking(el, scope);
 		if (!unitCheck.matched) {
 			return unitCheck;
 		}
@@ -283,7 +280,7 @@ class SelectorTarget {
 		switch (combinator.value) {
 			// Descendant combinator
 			case ' ': {
-				const matchedNodes: (Element | Text)[] = [];
+				const matchedNodes: SelectorElement[] = [];
 				const has: SelectorMatchedResult[] = [];
 				const not: SelectorMatchedResult[] = [];
 				let ancestor = el.parentElement;
@@ -333,7 +330,7 @@ class SelectorTarget {
 			}
 			// Child combinator
 			case '>': {
-				const matchedNodes: (Element | Text)[] = [];
+				const matchedNodes: SelectorElement[] = [];
 				const has: SelectorMatchedResult[] = [];
 				const not: SelectorMatchedResult[] = [];
 				const specificity: Writable<Specificity> = [...unitCheck.specificity];
@@ -376,7 +373,7 @@ class SelectorTarget {
 			}
 			// Next-sibling combinator
 			case '+': {
-				const matchedNodes: (Element | Text)[] = [];
+				const matchedNodes: SelectorElement[] = [];
 				const has: SelectorMatchedResult[] = [];
 				const not: SelectorMatchedResult[] = [];
 				const specificity: Writable<Specificity> = [...unitCheck.specificity];
@@ -418,7 +415,7 @@ class SelectorTarget {
 			}
 			// Subsequent-sibling combinator
 			case '~': {
-				const matchedNodes: (Element | Text)[] = [];
+				const matchedNodes: SelectorElement[] = [];
 				const has: SelectorMatchedResult[] = [];
 				const not: SelectorMatchedResult[] = [];
 				let prev = el.previousElementSibling;
@@ -484,14 +481,8 @@ class SelectorTarget {
 	 *
 	 * @param el
 	 * @param scope
-	 * @private
 	 */
-	private _matchWithoutCombineChecking(
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		el: Node,
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		scope: ParentNode | null,
-	): SelectorResult {
+	#matchWithoutCombineChecking(el: SelectorNode, scope: SelectorNode | null): SelectorResult {
 		const specificity: Writable<Specificity> = [0, 0, 0];
 
 		if (!isElement(el)) {
@@ -513,6 +504,15 @@ class SelectorTarget {
 				}
 				case 'svg': {
 					if (el.namespaceURI !== 'http://www.w3.org/2000/svg') {
+						return {
+							specificity,
+							matched: false,
+						};
+					}
+					break;
+				}
+				case 'mml': {
+					if (el.namespaceURI !== 'http://www.w3.org/1998/Math/MathML') {
 						return {
 							specificity,
 							matched: false,
@@ -583,7 +583,7 @@ class SelectorTarget {
 		if (matched) {
 			return {
 				specificity,
-				matched,
+				matched: true,
 				nodes: [el],
 				has,
 			};
@@ -591,7 +591,7 @@ class SelectorTarget {
 
 		return {
 			specificity,
-			matched,
+			matched: false,
 			not,
 		};
 	}
@@ -600,10 +600,18 @@ class SelectorTarget {
 function attrMatch(
 	attr: ReadonlyDeep<parser.Attribute>,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Element,
+	el: SelectorElement,
 ) {
+	// HTML LS / Selectors L4: attribute names are ASCII case-insensitive when
+	// the element is in the HTML namespace. SVG, MathML, and custom elements
+	// keep case-sensitive matching (e.g. SVG `viewBox`). The `isPureHTMLElement`
+	// guard mirrors the same convention used for tag-name matching in
+	// SelectorTarget#matchWithoutCombineChecking.
+	const isHTML = isPureHTMLElement(el);
+	const selectorAttrName = isHTML ? attr.attribute.toLowerCase() : attr.attribute;
 	return [...el.attributes].some(attrOfEl => {
-		if (attr.attribute !== attrOfEl.localName) {
+		const elAttrName = isHTML ? attrOfEl.localName.toLowerCase() : attrOfEl.localName;
+		if (selectorAttrName !== elAttrName) {
 			return false;
 		}
 		if (attr.namespace != null && attr.namespace !== true && attr.namespace !== '*') {
@@ -615,6 +623,9 @@ function attrMatch(
 		if (attr.value != null) {
 			let value = attr.value;
 			let valueOfEl = attrOfEl.value;
+			// Unlike name matching, Selectors L4 puts attribute-value casing under
+			// author control: values are folded only when the `i` flag is set,
+			// regardless of the element's namespace.
 			if (attr.insensitive) {
 				value = value.toLowerCase();
 				valueOfEl = valueOfEl.toLowerCase();
@@ -665,9 +676,8 @@ function attrMatch(
 function pseudoMatch(
 	pseudo: ReadonlyDeep<parser.Pseudo>,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Element,
-	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	scope: ParentNode | null,
+	el: SelectorElement,
+	scope: SelectorNode | null,
 	extended: ExtendedPseudoClass,
 	depth: number,
 ): SelectorResult {
@@ -677,6 +687,9 @@ function pseudoMatch(
 		/**
 		 * Below, markuplint Specific Selector
 		 */
+		// `:closest()` is a markuplint extension that is not in the W3C Selectors
+		// specification. Deprecated in v5 and will be removed in v6 — use
+		// `:is(selector *)` instead (e.g. `:closest(nav)` → `:is(nav *)`).
 		case ':closest': {
 			const ruleset = new Ruleset(pseudo.nodes, extended, depth + 1);
 			const specificity = getSpecificity(ruleset.match(el, scope));
@@ -888,25 +901,24 @@ function pseudoMatch(
 
 function isScope(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Element,
-	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	scope: ParentNode | null,
+	el: SelectorElement,
+	scope: SelectorNode | null,
 ) {
 	return el === scope || el.parentNode === null;
 }
 
 function getDescendants(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Element,
+	el: SelectorElement,
 	includeSelf = false,
-): Element[] {
+): SelectorElement[] {
 	return [...[...el.children].flatMap(child => getDescendants(child, true)), ...(includeSelf ? [el] : [])];
 }
 
 function getSiblings(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Element,
-) {
+	el: SelectorElement,
+): SelectorElement[] {
 	return [...(el.parentElement?.children ?? [])];
 }
 

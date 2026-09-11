@@ -2,6 +2,7 @@
   "extends": "@docusaurus/tsconfig",
   "compilerOptions": {
     "baseUrl": ".",
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "lib": ["ESNext"]
   }
 }

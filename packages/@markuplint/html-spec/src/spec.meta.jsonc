@@ -1,0 +1,98 @@
+// https://html.spec.whatwg.org/multipage/semantics.html#the-meta-element
+// https://www.w3.org/TR/html-aria/#el-meta
+// https://w3c.github.io/html-aria/#el-meta
+{
+	"contentModel": {
+		"contents": false
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#HTMLLinkAndFetchingAttrs": ["media"]
+	},
+	"attributes": {
+		// https://html.spec.whatwg.org/multipage/semantics.html#the-meta-element:names:-the-itemprop-attribute-5
+		"itemprop": {
+			"requiredEither": ["name", "http-equiv", "charset"],
+			"condition": [":not([name])", ":not([http-equiv])", ":not([charset])"]
+		},
+		// https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-name
+		"name": {
+			"type": "Any",
+			"requiredEither": ["itemprop", "http-equiv", "charset"],
+			"condition": [":not([itemprop])", ":not([http-equiv])", ":not([charset])"]
+		},
+		// https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-http-equiv
+		"http-equiv": {
+			"type": {
+				"enum": ["content-type", "default-style", "refresh", "x-ua-compatible", "content-security-policy"]
+			},
+			"requiredEither": ["itemprop", "name", "charset"],
+			"condition": [":not([itemprop])", ":not([name])", ":not([charset])"]
+		},
+		// https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-content
+		"content": {
+			// ConditionalAttributeType (#3685) — split by http-equiv value.
+			// Each condition's spec anchor is a fragment on the meta element
+			// page so future readers can verify the quote in one click:
+			//   - refresh          → HTML LS §4.2.5.3 refresh directive grammar
+			//                        https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-http-equiv-refresh
+			//   - content-type     → HTML LS §4.2.5.2 Encoding declaration grammar
+			//                        https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-http-equiv-content-type
+			//   - x-ua-compatible  → HTML LS §4.2.5.4 X-UA-Compatible state:
+			//                        "content attribute must have a value that
+			//                        is an ASCII case-insensitive match for
+			//                        the string 'IE=edge'"
+			//                        https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-http-equiv-x-ua-compatible
+			//   - content-security-policy → CSP3 §4 Framework serialized-policy
+			//                        grammar (fixed in #3942; the `deferred-CSP`
+			//                        entries in `excluded-ids.json` were removed
+			//                        accordingly)
+			//                        https://www.w3.org/TR/CSP3/#framework-policy
+			// Other http-equiv values (default-style) and `name` / `itemprop`
+			// fall through to "Any" at runtime (see `rules/helpers.ts` fallback
+			// for ConditionalAttributeType[] with no matching condition).
+			"type": [
+				{
+					"condition": "[http-equiv='refresh' i]",
+					"type": "HTTPEquivRefresh"
+				},
+				{
+					"condition": "[http-equiv='content-type' i]",
+					"type": "HTTPEquivContentType"
+				},
+				{
+					"condition": "[http-equiv='x-ua-compatible' i]",
+					"type": {
+						"enum": ["IE=edge"],
+						"caseInsensitive": true
+					}
+				},
+				{
+					"condition": "[http-equiv='content-security-policy' i]",
+					"type": "ContentSecurityPolicy"
+				}
+			],
+			"required": ["[name]", "[http-equiv]", "[itemprop]"],
+			"condition": ["[name]", "[http-equiv]", "[itemprop]"]
+		},
+		// https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-charset
+		"charset": {
+			"type": {
+				"enum": ["utf-8"],
+				"caseInsensitive": true
+			},
+			"condition": [":not([itemprop])", ":not([name])", ":not([http-equiv])"]
+		},
+		// https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-media
+		"media": {
+			"condition": "[name='theme-color']"
+		}
+	},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": false,
+		"properties": false
+	}
+}

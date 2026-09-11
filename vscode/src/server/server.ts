@@ -1,20 +1,35 @@
 import type { SendDiagnostics } from './document-events.js';
-import type { LangConfigs, Log } from '../types.js';
-import type { InitializeResult } from 'vscode-languageserver/node.js';
+import type { InitializationOptions, Log } from '../types.js';
+import type { CodeAction, CodeActionParams, InitializeResult } from 'vscode-languageserver/node.js';
 
-import { createConnection, TextDocuments, TextDocumentSyncKind, ProposedFeatures } from 'vscode-languageserver/node.js';
+import {
+	CodeActionKind,
+	createConnection,
+	TextDocuments,
+	TextDocumentSyncKind,
+	ProposedFeatures,
+} from 'vscode-languageserver/node.js';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 
-import { NO_INSTALL_WARNING } from '../const.js';
+import { IMPORT_ASSERTION_COMPAT_WARNING, NO_INSTALL_WARNING } from '../const.js';
 import { t } from '../i18n.js';
-import { errorToPopup, logToDiagnosticsChannel, logToPrimaryChannel, status } from '../lsp.js';
+import { errorToPopup, logToDiagnosticsChannel, logToPrimaryChannel, status, warningToPopup } from '../lsp.js';
 
+import { SOURCE_FIX_ALL_MARKUPLINT } from './code-actions.js';
 import { verbosely } from './debug.js';
 import { createEventHandlers } from './document-events.js';
 import { getModule } from './get-module.js';
+import { configureGitPath } from './suppression-support.js';
 
 const DEBUG = false;
 
+/**
+ * Bootstrap the LSP language server.
+ *
+ * Creates the LSP connection, sets up logging handlers, resolves the markuplint module,
+ * registers document event handlers, and starts listening. If the local markuplint module
+ * is unavailable or incompatible, displays appropriate warnings to the user.
+ */
 export function bootServer() {
 	const connection = createConnection(ProposedFeatures.all);
 
@@ -38,11 +53,19 @@ export function bootServer() {
 
 	documents.listen(connection);
 
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	let codeActionHandler: (params: CodeActionParams) => CodeAction[] = () => [];
+
+	connection.onCodeAction(params => codeActionHandler(params));
+
 	connection.onInitialize((params): InitializeResult => {
 		log('onInitialize');
 
 		const locale = params.locale ?? 'en';
-		const langConfigs: LangConfigs = params.initializationOptions.langConfigs;
+		const initOptions: InitializationOptions = params.initializationOptions;
+		const { langConfigs, workingDirectories, workspaceFolders, gitPath } = initOptions;
+
+		configureGitPath(gitPath);
 
 		connection.onInitialized(async () => {
 			log('onInitialized');
@@ -56,10 +79,16 @@ export function bootServer() {
 			log(`Found version: ${mod.version} (isLocalModule: ${mod.isLocalModule})`, 'info');
 			log(`Locale: ${locale}`, 'info');
 
-			const { onDidOpen, onDidChangeContent, onHover } = createEventHandlers({
+			if (workingDirectories) {
+				log(`Working directories: ${JSON.stringify(workingDirectories)}`, 'info');
+			}
+
+			const { onDidOpen, onDidChangeContent, onHover, onCodeAction } = createEventHandlers({
 				mod,
 				locale,
 				langConfigs,
+				workingDirectories,
+				workspaceFolders: workspaceFolders ?? [],
 				log,
 				diagnosticsLog,
 				errorLog,
@@ -75,6 +104,12 @@ export function bootServer() {
 					if (message) {
 						void connection.sendNotification(logToPrimaryChannel, [message, 'warn']);
 					}
+
+					if (mod.fallbackReason === 'import-assertion-compat') {
+						const compatMessage = t(IMPORT_ASSERTION_COMPAT_WARNING, mod.version);
+						void connection.sendNotification(warningToPopup, compatMessage);
+						void connection.sendNotification(logToPrimaryChannel, [compatMessage, 'warn']);
+					}
 				},
 			});
 
@@ -85,12 +120,16 @@ export function bootServer() {
 			documents.onDidChangeContent(e => onDidChangeContent(e.document));
 
 			connection.onHover(onHover);
+			codeActionHandler = onCodeAction;
 		});
 
 		return {
 			capabilities: {
 				textDocumentSync: TextDocumentSyncKind.Incremental,
 				hoverProvider: true,
+				codeActionProvider: {
+					codeActionKinds: [CodeActionKind.QuickFix, SOURCE_FIX_ALL_MARKUPLINT],
+				},
 			},
 		};
 	});

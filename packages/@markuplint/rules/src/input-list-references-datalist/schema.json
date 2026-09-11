@@ -1,0 +1,29 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"definitions": {
+		"value": {
+			"type": "boolean",
+			"description": "Require that an input element's `list` attribute references an actual datalist element by ID.",
+			"description:ja": "`input` 要素の `list` 属性は、実在する `datalist` 要素の ID を参照しなければならないことを強制します。"
+		}
+	},
+	"oneOf": [
+		{
+			"$ref": "#/definitions/value"
+		},
+		{
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"value": { "$ref": "#/definitions/value" },
+				"severity": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/ml-config/schema.json#/definitions/severity",
+					"default": "error"
+				},
+				"reason": {
+					"type": "string"
+				}
+			}
+		}
+	]
+}

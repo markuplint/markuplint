@@ -1,0 +1,83 @@
+// https://html.spec.whatwg.org/multipage/media.html#the-video-element
+// https://www.w3.org/TR/html-aria/#el-video
+// https://w3c.github.io/html-aria/#el-video
+{
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": "source"
+			},
+			{
+				"zeroOrMore": "track"
+			},
+			{
+				"transparent": ":not(audio, video, :has(audio, video))"
+			}
+		],
+		"conditional": [
+			{
+				"condition": "[src]",
+				"contents": [
+					{
+						"zeroOrMore": "track"
+					},
+					{
+						"transparent": ":not(audio, video, :has(audio, video))"
+					}
+				]
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#HTMLLinkAndFetchingAttrs": ["crossorigin", "loading"],
+		"#HTMLEmbededAndMediaContentAttrs": [
+			"src",
+			"preload",
+			"autoplay",
+			"loop",
+			"muted",
+			"controls",
+			"height",
+			"width"
+		]
+	},
+	"attributes": {
+		"loading": {
+			// MDN incorrectly marks this as experimental, but it is defined in the HTML Living Standard.
+			// https://html.spec.whatwg.org/multipage/media.html#the-video-element
+			"experimental": false
+		},
+		// https://html.spec.whatwg.org/multipage/media.html#attr-video-poster
+		// Spec: "a valid non-empty URL potentially surrounded by spaces"
+		"poster": {
+			"type": "NonEmptyURL"
+		},
+		// https://html.spec.whatwg.org/multipage/media.html#attr-video-playsinline
+		"playsinline": {
+			"type": "Boolean"
+		},
+		// https://wicg.github.io/controls-list/html-output/multipage/embedded-content.html#attr-media-controlslist
+		"controlslist": {
+			"type": {
+				"token": {
+					"enum": ["nodownload", "nofullscreen", "noremoteplayback"]
+				},
+				"ordered": false,
+				"caseInsensitive": true,
+				"unique": true,
+				"separator": "space"
+			}
+		}
+	},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": ["application"],
+		"properties": {
+			"global": true,
+			"role": "application"
+		}
+	}
+}

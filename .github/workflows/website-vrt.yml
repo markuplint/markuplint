@@ -1,0 +1,100 @@
+name: Website Visual Regression Test
+
+on:
+    pull_request_target:
+        branches:
+            - dev
+        paths:
+            - 'website/**'
+        types: [opened, labeled]
+
+env:
+    NODE_BUILD_VERSION: 26
+
+jobs:
+    visual-regression-test:
+        # Security: only run on push or when explicitly labeled
+        # https://securitylab.github.com/research/github-actions-preventing-pwn-requests/
+        if: github.event_name == 'push' || contains(github.event.pull_request.labels.*.name, 'pull_request_target ok')
+        runs-on: ubuntu-latest
+        # A healthy run completes in ~1-2 minutes on a cache hit (checkout +
+        # install + a handful of screenshots); a cold cache (yarn.lock or
+        # Playwright version bump) can push that out by several minutes for
+        # `yarn install`/`apt-get`/browser download. 30 minutes leaves ample
+        # room above either case while still cutting off the platform
+        # default of 360 minutes, which is exactly what let a hung
+        # `playwright install` step burn 6 hours per run instead of failing
+        # fast — see #4000.
+        timeout-minutes: 30
+        steps:
+            - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+              with:
+                  ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+            - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
+              uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+              with:
+                  node-version: ${{ env.NODE_BUILD_VERSION }}
+
+            - name: Enable Corepack and setup Yarn v4
+              run: |
+                  corepack enable
+                  yarn --version
+
+            - name: Cache Restore website dependencies
+              uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
+              with:
+                  path: 'website/node_modules'
+                  key: website-depends-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('website/yarn.lock') }}
+
+            - name: Install website dependencies
+              run: cd website && yarn install --immutable
+
+            - name: Cache Playwright binaries
+              uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
+              with:
+                  path: ~/.cache/ms-playwright
+                  key: playwright-${{ runner.os }}-${{ hashFiles('website/yarn.lock') }}
+
+            - name: Install Playwright Browsers
+              # Step-level timeout, tighter than the job's, so a hang here
+              # specifically (the observed failure mode in #4000) is
+              # attributed to this step rather than surfacing as a generic
+              # job timeout.
+              timeout-minutes: 10
+              run: cd website && npx playwright install --with-deps chromium
+
+            - name: Capture screenshots
+              run: cd website && yarn site:screenshot
+
+            - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
+              id: get-target-hash
+              if: github.event_name == 'pull_request_target'
+              with:
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
+                  result-encoding: string
+                  script: |
+                      const runs = await github.rest.actions.listWorkflowRuns({
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          workflow_id: 'website-vrt.yml',
+                          branch: context.payload.pull_request.base.ref,
+                      });
+                      if (runs.data.workflow_runs.length === 0) {
+                          return context.payload.pull_request.base.sha;
+                      } else {
+                          return runs.data.workflow_runs[0].head_sha;
+                      }
+
+            - uses: reg-viz/reg-actions@v2
+              if: github.event_name == 'pull_request_target'
+              with:
+                  github-token: '${{ secrets.GITHUB_TOKEN }}'
+                  image-directory-path: './website/__screenshots__'
+                  target-hash: '${{ steps.get-target-hash.outputs.result }}'
+
+            - uses: reg-viz/reg-actions@v2
+              if: github.event_name != 'pull_request_target'
+              with:
+                  github-token: '${{ secrets.GITHUB_TOKEN }}'
+                  image-directory-path: './website/__screenshots__'

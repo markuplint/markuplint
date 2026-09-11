@@ -1,0 +1,90 @@
+// https://html.spec.whatwg.org/multipage/form-elements.html#the-option-element
+// https://www.w3.org/TR/html-aria/#el-option
+// https://w3c.github.io/html-aria/#el-option
+{
+	"contentModel": {
+		// https://html.spec.whatwg.org/multipage/form-elements.html#the-option-element
+		// Without the label attribute, the text content must not be empty.
+		"contents": [
+			{
+				"require": "#nonEmptyText"
+			}
+		],
+		"conditional": [
+			{
+				"condition": "[label][value]",
+				"contents": false
+			},
+			{
+				"condition": "label",
+				"contents": [
+					{
+						"optional": "#text"
+					}
+				]
+			},
+			{
+				// In datalist, option text is optional (value attribute is used as suggestion)
+				"condition": "datalist > :scope",
+				"contents": [
+					{
+						"optional": "#text"
+					}
+				]
+			},
+			{
+				"condition": "datalist > [label]",
+				"contents": [
+					{
+						"optional": "#text"
+					}
+				]
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#HTMLFormControlElementAttrs": ["disabled"]
+	},
+	"attributes": {
+		"label": {
+			// https://html.spec.whatwg.org/multipage/form-elements.html#attr-option-label
+			"type": "Any"
+		},
+		"selected": {
+			// https://html.spec.whatwg.org/multipage/form-elements.html#attr-option-selected
+			"type": "Boolean"
+		},
+		"value": {
+			// https://html.spec.whatwg.org/multipage/form-elements.html#attr-option-value
+			"type": "Any"
+		}
+	},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": false,
+		"properties": false,
+		"conditions": {
+			":is(select, select > optgroup, datalist) > option": {
+				"implicitRole": "option",
+				"properties": {
+					"global": true,
+					"role": "option",
+					// Authors SHOULD NOT use the aria-selected attribute on the option element.
+					"without": [
+						{
+							"type": "should-not",
+							"name": "aria-selected",
+							"alt": {
+								"method": "set-attr",
+								"target": "selected"
+							}
+						}
+					]
+				}
+			}
+		}
+	}
+}

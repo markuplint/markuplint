@@ -30,12 +30,12 @@ img要素とsource要素のファイル名を一致させたい場合。
 
 ## 設定
 
-[`invalid-attr`](/docs/rules/invalid-attr)ルールと[`regexSelector`](/docs/configuration/properties#regexselector)を使います。
+[`no-invalid-attr-value`](/docs/rules/no-invalid-attr-value)ルールと[`regexSelector`](/docs/configuration/properties#regexselector)を使います。
 
 ```json class=config
 {
   "rules": {
-    "invalid-attr": true
+    "no-invalid-attr-value": true
   },
   "nodeRules": [
     {
@@ -52,7 +52,7 @@ img要素とsource要素のファイル名を一致させたい場合。
         }
       },
       "rules": {
-        "invalid-attr": {
+        "no-invalid-attr-value": {
           "options": {
             "allowAttrs": [
               {

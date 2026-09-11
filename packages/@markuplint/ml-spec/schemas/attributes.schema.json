@@ -6,6 +6,26 @@
 			"oneOf": [{ "type": "string" }, { "type": "array", "minItems": 2, "items": { "type": "string" } }]
 		},
 		"AttributeType": { "$ref": "../../types/types.schema.json#/definitions/type" },
+		"ConditionalAttributeType": {
+			"description": "Declares that an attribute value type depends on a condition (a CSS selector) matched against the owning element. Used when an attribute's valid values differ based on the value of another attribute — for example, `<input value>` is `<'color'>` when `type=color`, or a `URL` when `type=url`. Shipped type-only in v5.0 (#3685); validation logic is deferred to #3598 and #3189.",
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["condition", "type"],
+			"properties": {
+				"condition": { "$ref": "#/definitions/AttributeCondition" },
+				"type": {
+					"oneOf": [
+						{ "$ref": "#/definitions/AttributeType" },
+						{
+							"type": "array",
+							"minItems": 1,
+							"uniqueItems": true,
+							"items": { "$ref": "#/definitions/AttributeType" }
+						}
+					]
+				}
+			}
+		},
 		"AttributeJSON": {
 			"type": "object",
 			"additionalProperties": false,
@@ -19,6 +39,12 @@
 							"minItems": 1,
 							"uniqueItems": true,
 							"items": { "$ref": "#/definitions/AttributeType" }
+						},
+						{
+							"type": "array",
+							"minItems": 1,
+							"uniqueItems": true,
+							"items": { "$ref": "#/definitions/ConditionalAttributeType" }
 						}
 					]
 				},

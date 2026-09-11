@@ -48,9 +48,6 @@ typings/
 # Optional npm cache directory
 .npm
 
-# Optional eslint cache
-.eslintcache
-
 # Optional REPL history
 .node_repl_history
 
@@ -90,3 +87,11 @@ packages/@markuplint/rules/src/__*
 # Yarn v4 (node_modules mode)
 .yarn/install-state.gz
 .yarn/build-state.yml
+
+# Worktrees
+.worktree/
+
+# nu-validator benchmark raw snapshots (regenerated locally)
+tests/external/snapshots/nu-validator/
+tests/external/snapshots/markuplint/
+

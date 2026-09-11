@@ -1,0 +1,29 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"definitions": {
+		"value": {
+			"type": "boolean",
+			"description": "Enforce the descendant-control constraints on a label element per HTML LS §4.10.4. Disallow more than one form-control descendant; additionally disallow any descendant control when `for` references an external labelable element.",
+			"description:ja": "HTML LS §4.10.4 が定める `label` 要素の子孫コントロール制約を強制します。フォームコントロールの子孫は最大1個まで。加えて、`for` 属性が外部の labelable 要素を参照している場合は子孫コントロールを一切許可しません。"
+		}
+	},
+	"oneOf": [
+		{
+			"$ref": "#/definitions/value"
+		},
+		{
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"value": { "$ref": "#/definitions/value" },
+				"severity": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/ml-config/schema.json#/definitions/severity",
+					"default": "error"
+				},
+				"reason": {
+					"type": "string"
+				}
+			}
+		}
+	]
+}

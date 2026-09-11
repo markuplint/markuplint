@@ -6,12 +6,12 @@ import { getSpec } from '../../utils/get-spec.js';
 
 type Specs = readonly Pick<ElementSpec, 'name' | 'contentModel'>[];
 
-const cachesBySpecs = new Map<Specs, Map<Element, ReadonlyDeep<PermittedContentPattern[]> | boolean | null>>();
+const contentModelCache = new WeakMap<Element, ReadonlyDeep<PermittedContentPattern[]> | boolean | null>();
 
 /**
  * Retrieves the permitted content model for an element. Evaluates any conditional
  * content models based on the element's current attributes (e.g., different content
- * models for `<ol>` vs `<ol reversed>`). Results are cached per element and spec set.
+ * models for `<ol>` vs `<ol reversed>`). Results are cached per element.
  *
  * @param el - The DOM element to retrieve the content model for
  * @param specs - The element specifications containing content model definitions
@@ -22,26 +22,25 @@ export function getContentModel(
 	el: Element,
 	specs: Specs,
 ): ReadonlyDeep<PermittedContentPattern[]> | boolean | null {
-	const cacheByEl = cachesBySpecs.get(specs) ?? new Map<Element, PermittedContentPattern[] | boolean>();
-	const cached = cacheByEl.get(el);
+	const cached = contentModelCache.get(el);
 	if (cached !== undefined) {
 		return cached;
 	}
 
 	const spec = getSpec<'contentModel'>(el, specs);
 	if (!spec) {
-		cacheByEl.set(el, null);
+		contentModelCache.set(el, null);
 		return null;
 	}
 
 	const conditions = spec.contentModel.conditional ?? [];
 	for (const cond of conditions) {
 		if (el.matches(cond.condition)) {
-			cacheByEl.set(el, cond.contents);
+			contentModelCache.set(el, cond.contents);
 			return cond.contents;
 		}
 	}
 
-	cacheByEl.set(el, spec.contentModel.contents);
+	contentModelCache.set(el, spec.contentModel.contents);
 	return spec.contentModel.contents;
 }

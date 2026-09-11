@@ -7,14 +7,14 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"test": "npm-run-all --parallel test:*",
+		"test": "npm-run-all --parallel test:build test:normal test:tsx",
 		"test:build": "tsc --build --dry",
 		"test:normal": "tsc --noEmit",
 		"test:tsx": "tsx index.ts"
 	},
 	"dependencies": {
 		"@types/node": "latest",
-		"typescript": "latest",
+		"typescript": "6.0.3",
 		"tsx": "latest",
 		"markuplint": "file:../../../../markuplint/packages/markuplint",
 		"@markuplint/alpine-parser": "file:../../../../markuplint/packages/@markuplint/alpine-parser",
@@ -39,7 +39,6 @@
 		"@markuplint/php-parser": "file:../../../../markuplint/packages/@markuplint/php-parser",
 		"@markuplint/pug-parser": "file:../../../../markuplint/packages/@markuplint/pug-parser",
 		"@markuplint/react-spec": "file:../../../../markuplint/packages/@markuplint/react-spec",
-		"@markuplint/rule-textlint": "file:../../../../markuplint/packages/@markuplint/rule-textlint",
 		"@markuplint/rules": "file:../../../../markuplint/packages/@markuplint/rules",
 		"@markuplint/selector": "file:../../../../markuplint/packages/@markuplint/selector",
 		"@markuplint/shared": "file:../../../../markuplint/packages/@markuplint/shared",

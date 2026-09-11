@@ -3,13 +3,82 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [4.18.0](https://github.com/markuplint/markuplint/compare/v4.14.1...v4.18.0) (2026-04-22)
+# [5.0.0-rc.7](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.6...v5.0.0-rc.7) (2026-08-31)
 
 **Note:** Version bump only for package @markuplint/shared
 
-## [4.4.14](https://github.com/markuplint/markuplint/compare/@markuplint/shared@4.4.13...@markuplint/shared@4.4.14) (2026-04-21)
+# [5.0.0-rc.6](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.5...v5.0.0-rc.6) (2026-08-30)
+
+### Features
+
+- split rule-deprecation notices out of config-error ([#4013](https://github.com/markuplint/markuplint/issues/4013)) ([812e6f3](https://github.com/markuplint/markuplint/commit/812e6f356839af8f257cfd91e6b16cfdfdd7cf33))
+
+### BREAKING CHANGES
+
+- violations for deprecated rule names now have
+  `ruleId: 'rule-deprecation'` instead of `ruleId: 'config-error'`. Any
+  consumer filtering `MLCore.verify()` output (or the markuplint CLI/API) by
+  `ruleId === 'config-error'` to catch deprecation messages must also check
+  for `rule-deprecation`.
+
+- feat(markuplint): add --severity-deprecation CLI flag
+
+Wires the new severity.deprecation config option (@markuplint/ml-config)
+and the rule-deprecation ruleId (@markuplint/ml-core) through the CLI:
+
+- --severity-deprecation flag, mirroring --severity-parse-error
+- --show-config details now also surfaces ruleDeprecations
+- per-run dedupe and failed-file counting generalized to cover both
+  config-level ruleIds (config-error and rule-deprecation), not just
+  config-error
+
+* docs(website): document severity.deprecation (EN + JA)
+
+# [5.0.0-rc.5](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.4...v5.0.0-rc.5) (2026-08-28)
 
 **Note:** Version bump only for package @markuplint/shared
+
+# [5.0.0-rc.4](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.3...v5.0.0-rc.4) (2026-04-19)
+
+**Note:** Version bump only for package @markuplint/shared
+
+# [5.0.0-rc.3](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.2...v5.0.0-rc.3) (2026-04-19)
+
+**Note:** Version bump only for package @markuplint/shared
+
+# [5.0.0-rc.2](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.1...v5.0.0-rc.2) (2026-04-15)
+
+**Note:** Version bump only for package @markuplint/shared
+
+# [5.0.0-rc.1](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.0...v5.0.0-rc.1) (2026-03-27)
+
+### Bug Fixes
+
+- address QA review findings for error consolidation ([ac994ee](https://github.com/markuplint/markuplint/commit/ac994ee4b4150dbcb18b30d412853df086627f87))
+
+# [5.0.0-rc.0](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.3...v5.0.0-rc.0) (2026-03-12)
+
+**Note:** Version bump only for package @markuplint/shared
+
+# [5.0.0-alpha.3](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.2...v5.0.0-alpha.3) (2026-02-26)
+
+### Features
+
+- **shared:** add getPosition utility for offset-to-line/column conversion ([1cfab8b](https://github.com/markuplint/markuplint/commit/1cfab8b69614e9f9e8da87cfce5a96b2865b9a0e))
+
+# [5.0.0-alpha.2](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.1...v5.0.0-alpha.2) (2026-02-23)
+
+**Note:** Version bump only for package @markuplint/shared
+
+# [5.0.0-alpha.1](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.0...v5.0.0-alpha.1) (2026-02-22)
+
+**Note:** Version bump only for package @markuplint/shared
+
+# [5.0.0-alpha.0](https://github.com/markuplint/markuplint/compare/v4.14.1...v5.0.0-alpha.0) (2026-02-20)
+
+### Bug Fixes
+
+- use explicit `export type` for type-only re-exports ([7c77c05](https://github.com/markuplint/markuplint/commit/7c77c05619518c8d18a183132040f5b2cd0ab6ec))
 
 ## [4.4.13](https://github.com/markuplint/markuplint/compare/@markuplint/shared@4.4.12...@markuplint/shared@4.4.13) (2026-02-10)
 

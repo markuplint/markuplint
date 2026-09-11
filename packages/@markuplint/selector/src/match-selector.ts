@@ -1,4 +1,10 @@
-import type { Specificity, RegexSelector, RegexSelectorCombinator, RegexSelectorWithoutCombination } from './types.js';
+import type {
+	SelectorNode,
+	Specificity,
+	RegexSelector,
+	RegexSelectorCombinator,
+	RegexSelectorWithoutCombination,
+} from './types.js';
 import type { Writable } from 'type-fest';
 import type { MLMLSpec } from '@markuplint/ml-spec';
 
@@ -24,23 +30,21 @@ type SelectorUnmatched = {
 };
 
 /**
- * Matches a CSS selector or regex selector against a DOM node.
+ * Matches a CSS selector or regex selector against a node.
  *
  * Supports both standard CSS selectors (as strings) and markuplint's
  * {@link RegexSelector} for pattern-based matching with captured groups.
  *
- * @param el - The DOM node to test
+ * @param el - The node to test
  * @param selector - A CSS selector string, a regex selector object, or `undefined`
  * @param scope - The scope element for `:scope` pseudo-class resolution
  * @param specs - The HTML/ARIA specification data for extended pseudo-classes
  * @returns A match result with specificity and captured data, or `{ matched: false }`
  */
 export function matchSelector(
-	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Node,
+	el: SelectorNode,
 	selector: string | RegexSelector | undefined,
-	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	scope?: ParentNode | null,
+	scope?: SelectorNode | null,
 	specs?: MLMLSpec,
 ): SelectorMatches {
 	if (selector == null || selector === '') {
@@ -67,11 +71,7 @@ export function matchSelector(
 	return regexSelect(el, selector);
 }
 
-function regexSelect(
-	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Node,
-	selector: RegexSelector,
-): SelectorMatches {
+function regexSelect(el: SelectorNode, selector: RegexSelector): SelectorMatches {
 	let edge = new SelectorTarget(selector);
 	let edgeSelector = selector.combination;
 	while (edgeSelector) {
@@ -100,11 +100,8 @@ class SelectorTarget {
 		this.#combinedFrom = { target, combinator };
 	}
 
-	match(
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		el: Node,
-	): SelectorMatches {
-		const unitCheck = this._matchWithoutCombineChecking(el);
+	match(el: SelectorNode): SelectorMatches {
+		const unitCheck = this.#matchWithoutCombineChecking(el);
 		if (!unitCheck.matched) {
 			return unitCheck;
 		}
@@ -194,19 +191,12 @@ class SelectorTarget {
 		}
 	}
 
-	private _matchWithoutCombineChecking(
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		el: Node,
-	) {
+	#matchWithoutCombineChecking(el: SelectorNode) {
 		return uncombinedRegexSelect(el, this.#selector);
 	}
 }
 
-function uncombinedRegexSelect(
-	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Node,
-	selector: RegexSelectorWithoutCombination,
-): SelectorMatches {
+function uncombinedRegexSelect(el: SelectorNode, selector: RegexSelectorWithoutCombination): SelectorMatches {
 	if (!isElement(el)) {
 		return {
 			matched: false,
@@ -222,6 +212,8 @@ function uncombinedRegexSelect(
 	if (selector.nodeName) {
 		const matchedNodeName = regexSelectorMatches(selector.nodeName, el.localName, isPureHTMLElement(el));
 		if (matchedNodeName) {
+			// `$0` is the whole-match capture — redundant with the element name
+			// itself, so it is dropped from the exposed data.
 			delete matchedNodeName.$0;
 		} else {
 			matched = false;
@@ -253,6 +245,8 @@ function uncombinedRegexSelect(
 					return null;
 				}
 
+				// Likewise, `$0` repeats the attribute name/value verbatim,
+				// so only the sub-captures are exposed.
 				if (matchedAttrName) {
 					delete matchedAttrName.$0;
 				}
@@ -288,14 +282,14 @@ function uncombinedRegexSelect(
 
 	if (matched) {
 		return {
-			matched,
+			matched: true,
 			selector: `${tagSelector}${attrSelector}`,
 			specificity,
 			data,
 		};
 	}
 
-	return { matched };
+	return { matched: false };
 }
 
 function mergeMatches(a: SelectorMatched, b: SelectorMatched, sep: string, close = false): SelectorMatched {

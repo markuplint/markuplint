@@ -3,27 +3,55 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [4.18.0](https://github.com/markuplint/markuplint/compare/v4.14.1...v4.18.0) (2026-04-22)
+# [5.0.0-rc.7](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.6...v5.0.0-rc.7) (2026-08-31)
+
+**Note:** Version bump only for package @markuplint/test-tools
+
+# [5.0.0-rc.6](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.5...v5.0.0-rc.6) (2026-08-30)
+
+**Note:** Version bump only for package @markuplint/test-tools
+
+# [5.0.0-rc.5](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.4...v5.0.0-rc.5) (2026-08-28)
+
+**Note:** Version bump only for package @markuplint/test-tools
+
+# [5.0.0-rc.4](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.3...v5.0.0-rc.4) (2026-04-19)
+
+**Note:** Version bump only for package @markuplint/test-tools
+
+# [5.0.0-rc.3](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.2...v5.0.0-rc.3) (2026-04-19)
+
+**Note:** Version bump only for package @markuplint/test-tools
+
+# [5.0.0-rc.2](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.1...v5.0.0-rc.2) (2026-04-15)
+
+**Note:** Version bump only for package @markuplint/test-tools
+
+# [5.0.0-rc.1](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.0...v5.0.0-rc.1) (2026-03-27)
 
 ### Bug Fixes
 
-- support TypeScript 6.0 ([0dcf708](https://github.com/markuplint/markuplint/commit/0dcf70835eb40b581589c4da824080c512ba198c)), closes [#3759](https://github.com/markuplint/markuplint/issues/3759) [#3759](https://github.com/markuplint/markuplint/issues/3759)
+- **test-tools:** adapt matches() stub to TS 6 overloaded signature ([8338282](https://github.com/markuplint/markuplint/commit/83382824f71d2759a00592f56b74f492b743f767))
 
-### Reverts
+# [5.0.0-rc.0](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.3...v5.0.0-rc.0) (2026-03-12)
 
-- keep vitest 3 and plain markuplint ref for CI compat ([82ba2f9](https://github.com/markuplint/markuplint/commit/82ba2f948c33a145b90517033833e11b76f04bb3))
-- pin jsdom to 26 for Node 18 support ([a82d280](https://github.com/markuplint/markuplint/commit/a82d280cce06b52746b6a7912b3eca9d22a4296d))
+**Note:** Version bump only for package @markuplint/test-tools
 
-## [4.5.24](https://github.com/markuplint/markuplint/compare/@markuplint/test-tools@4.5.23...@markuplint/test-tools@4.5.24) (2026-04-21)
+# [5.0.0-alpha.3](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.2...v5.0.0-alpha.3) (2026-02-26)
 
-### Bug Fixes
+**Note:** Version bump only for package @markuplint/test-tools
 
-- support TypeScript 6.0 ([0dcf708](https://github.com/markuplint/markuplint/commit/0dcf70835eb40b581589c4da824080c512ba198c)), closes [#3759](https://github.com/markuplint/markuplint/issues/3759) [#3759](https://github.com/markuplint/markuplint/issues/3759)
+# [5.0.0-alpha.2](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.1...v5.0.0-alpha.2) (2026-02-23)
 
-### Reverts
+**Note:** Version bump only for package @markuplint/test-tools
 
-- keep vitest 3 and plain markuplint ref for CI compat ([82ba2f9](https://github.com/markuplint/markuplint/commit/82ba2f948c33a145b90517033833e11b76f04bb3))
-- pin jsdom to 26 for Node 18 support ([a82d280](https://github.com/markuplint/markuplint/commit/a82d280cce06b52746b6a7912b3eca9d22a4296d))
+# [5.0.0-alpha.1](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.0...v5.0.0-alpha.1) (2026-02-22)
+
+**Note:** Version bump only for package @markuplint/test-tools
+
+# [5.0.0-alpha.0](https://github.com/markuplint/markuplint/compare/v4.14.1...v5.0.0-alpha.0) (2026-02-20)
+
+**Note:** Version bump only for package @markuplint/test-tools
 
 ## [4.5.23](https://github.com/markuplint/markuplint/compare/@markuplint/test-tools@4.5.22...@markuplint/test-tools@4.5.23) (2026-02-10)
 

@@ -1,0 +1,6 @@
+{
+	"extends": ["markuplint:recommended"],
+	"rules": {
+		"wai-aria": true
+	}
+}

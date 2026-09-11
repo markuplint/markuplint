@@ -3,12 +3,12 @@ import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('Valid', async () => {
+test('[require-datetime-valid-001] Valid', async () => {
 	expect((await mlRuleTest(rule, '<time>2000-01-01</time>')).violations).toStrictEqual([]);
 	expect((await mlRuleTest(rule, '<time datetime="2000-01-01">2000/01/01</time>')).violations).toStrictEqual([]);
 });
 
-test('Mutable', async () => {
+test('[require-datetime-invalid-001] Mutable', async () => {
 	expect(
 		(
 			await mlRuleTest(rule, '<time>{foo}</time>', {
@@ -20,7 +20,7 @@ test('Mutable', async () => {
 	).toStrictEqual([]);
 });
 
-test('Need', async () => {
+test('[require-datetime-invalid-002] Need', async () => {
 	expect((await mlRuleTest(rule, '<time>Content</time>')).violations).toStrictEqual([
 		{
 			severity: 'error',
@@ -32,7 +32,7 @@ test('Need', async () => {
 	]);
 });
 
-test('Candidates', async () => {
+test('[require-datetime-invalid-003] Candidates', async () => {
 	expect((await mlRuleTest(rule, '<time>2000/01/01</time>')).violations).toStrictEqual([
 		{
 			severity: 'error',
@@ -54,7 +54,7 @@ test('Candidates', async () => {
 	]);
 });
 
-test('The `as` attribute', async () => {
+test('[require-datetime-invalid-004] The `as` attribute', async () => {
 	expect((await mlRuleTest(rule, '<x-time as="time">2000/01/01</x-time>')).violations).toStrictEqual([
 		{
 			severity: 'error',

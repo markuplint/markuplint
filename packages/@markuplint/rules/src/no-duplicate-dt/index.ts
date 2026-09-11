@@ -2,14 +2,9 @@ import { createRule } from '@markuplint/ml-core';
 
 import meta from './meta.js';
 
-/**
- * Rule that validates there are no duplicate `<dt>` elements within a `<dl>`.
- *
- * Iterates through each definition list and checks that no two `<dt>` elements
- * (direct children or wrapped in `<div>`) share the same text content.
- */
 export default createRule({
 	meta: meta,
+	defaultSeverity: 'warning',
 	verify({ document, report, t }) {
 		const dlList = [...document.querySelectorAll('dl')];
 		for (const dl of dlList) {
@@ -17,7 +12,8 @@ export default createRule({
 
 			const names = new Set<string>();
 			for (const dt of dtList) {
-				// TODO: Supoort for alternative text for images and accessible names for contained elements.
+				// Support for alternative text for images and accessible names for contained elements
+				// is not yet implemented; currently only textContent is used for comparison.
 				const name = dt.textContent?.trim();
 				if (!name) {
 					continue;

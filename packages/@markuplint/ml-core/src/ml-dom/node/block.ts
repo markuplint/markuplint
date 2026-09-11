@@ -1,7 +1,7 @@
 import type { MLDocument } from './document.js';
 import type { MLElement } from './element.js';
 import type { MarkuplintPreprocessorBlockType } from './types.js';
-import type { MLASTPreprocessorSpecificBlock, MLASTPreprocessorSpecificBlockConditionalType } from '@markuplint/ml-ast';
+import type { MLASTPreprocessorSpecificBlock, MLASTBlockBehavior } from '@markuplint/ml-ast';
 import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
 import { after, before, remove, replaceWith } from '../manipulations/child-node-methods.js';
@@ -13,6 +13,12 @@ import { MLNode } from './node.js';
  * These nodes correspond to template engine constructs such as conditionals (`if`/`else`),
  * loops (`each`), and other preprocessor directives that are not part of standard HTML.
  *
+ * Serves as the bridge between template syntax and HTML content model
+ * validation: transparency keeps the wrapper invisible to DOM traversal so
+ * rules such as `permitted-contents` see the effective HTML children, while
+ * `blockBehavior` lets `conditionalChildNodes()` enumerate every possible
+ * rendering branch.
+ *
  * @template T - The rule configuration value type
  * @template O - The rule options type
  */
@@ -22,9 +28,9 @@ export class MLBlock<T extends RuleConfigValue, O extends PlainData = undefined>
 	MLASTPreprocessorSpecificBlock
 > {
 	/**
-	 * The type of conditional this block represents (e.g., `if`, `each`, `switch:case`).
+	 * Block behavior associated with this block, if any.
 	 */
-	readonly conditionalType: MLASTPreprocessorSpecificBlockConditionalType;
+	readonly blockBehavior: MLASTBlockBehavior | null;
 
 	/**
 	 * Whether this block is transparent, meaning its children are treated
@@ -44,9 +50,10 @@ export class MLBlock<T extends RuleConfigValue, O extends PlainData = undefined>
 		document: MLDocument<T, O>,
 	) {
 		super(astNode, document, astNode.isFragment);
-		// TODO:
+		// Always transparent: blockBehavior may restrict child treatment in the future,
+		// but currently all preprocessor blocks are transparent for tree traversal.
 		this.isTransparent = true;
-		this.conditionalType = astNode.conditionalType;
+		this.blockBehavior = astNode.blockBehavior;
 	}
 
 	/**

@@ -5,28 +5,33 @@ import type { MLDocument } from './document.js';
 import type { MLElement } from './element.js';
 import type { MarkuplintPreprocessorBlockType, NodeType, NodeTypeOf } from './types.js';
 import type { RuleInfo } from '../../index.js';
-import type {
-	MLASTChildNode,
-	MLASTElementCloseTag,
-	MLASTInvalid,
-	MLASTNode,
-	MLASTParentNode,
-} from '@markuplint/ml-ast';
+import type { MLASTChildNode, MLASTElementCloseTag, MLASTInvalid, MLASTNode } from '@markuplint/ml-ast';
 import type { AnyRule, PlainData, Rule, RuleConfigValue } from '@markuplint/ml-config';
 
-import { branchesToPatterns } from '@markuplint/shared';
+import { branchesToPatterns, UnexpectedCallError } from '@markuplint/shared';
 
 import { MLToken } from '../token/token.js';
 
 import { isChildNode } from './child-node.js';
 import { toNodeList } from './node-list.js';
 import { nodeStore } from './node-store.js';
-import { UnexpectedCallError } from './unexpected-call-error.js';
 
 /**
  * Abstract base class for all markuplint DOM node wrappers.
  * Extends `MLToken` with DOM `Node` interface compliance, tree traversal,
  * rule configuration access, and child node management.
+ *
+ * The `implements Node` declaration is a maintenance strategy: conforming to
+ * the built-in DOM interfaces makes the compiler report errors whenever the
+ * TypeScript DOM type definitions gain new members, so the MLDOM API surface
+ * never drifts from the DOM Standard unnoticed. Members that are meaningless
+ * in static analysis (mutation, events, layout) are stubbed to throw
+ * `UnexpectedCallError` instead of being implemented.
+ *
+ * The `T`/`O` generics exist solely for rule authors using `createRule`:
+ * they propagate through the node tree so that `node.rule` is typed as
+ * `RuleInfo<T, O>` inside `verify()`/`fix()` callbacks. They are a
+ * compile-time-only mechanism — see the `rules` field for the runtime side.
  *
  * @template T - The rule configuration value type
  * @template O - The rule options type
@@ -156,9 +161,6 @@ export abstract class MLNode<
 	 */
 	readonly TEXT_NODE = 3;
 
-	/**
-	 * Cached `childNodes` property
-	 */
 	#pureChildNodesCache: NodeListOf<MLChildNode<T, O>> | undefined;
 
 	/**
@@ -166,26 +168,16 @@ export abstract class MLNode<
 	 */
 	readonly isFragment: boolean;
 
-	/**
-	 * Owner `Document`
-	 *
-	 * @implements DOM API: `Node`
-	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-ownerdocument
-	 */
 	readonly #ownerDocument: MLDocument<T, O>;
 
-	/**
-	 * Cached `prevToken` property
-	 */
 	#prevToken: MLNode<T, O> | null | undefined;
 
-	/**
-	 * Cached `conditionalChildNodes` mothod
-	 */
 	#conditionalChildNodes: NodeListOf<MLChildNode<T, O>>[] | undefined;
 
 	/**
-	 *
+	 * Rules mapped to this node by `RuleMapper`. Deliberately untyped
+	 * (`AnyRule`) storage: the `T`/`O` generics are not enforced at runtime —
+	 * the `rule` getter recovers the typed `RuleInfo<T, O>` via a cast.
 	 */
 	readonly rules: Record<string, AnyRule> = {};
 
@@ -217,6 +209,8 @@ export abstract class MLNode<
 
 	/**
 	 * The list of child nodes that contains `Element`, `Text`, and `Comment`.
+	 * Fragment nodes and preprocessor blocks with `each` or `end` block behavior
+	 * are transparent — their child nodes are flattened into this list.
 	 *
 	 * @readonly
 	 * @implements DOM API: `Node`
@@ -226,7 +220,11 @@ export abstract class MLNode<
 		const pureChildNodes = [...this.getPureChildNodes()];
 
 		const childNodes = pureChildNodes.flatMap(node => {
-			if (node.isFragment) {
+			if (
+				node.isFragment ||
+				(node.is(node.MARKUPLINT_PREPROCESSOR_BLOCK) &&
+					['each', 'end'].includes(node.blockBehavior?.type ?? ''))
+			) {
 				return [...node.childNodes];
 			}
 			return [node];
@@ -270,6 +268,9 @@ export abstract class MLNode<
 	}
 
 	/**
+	 * The next node in the syntactical sibling list which, unlike
+	 * `nextSibling`, includes `MLBlock` nodes (AST-level traversal).
+	 *
 	 * @implements `@markuplint/ml-core` API: `MLNode`
 	 */
 	get nextNode(): MLNode<T, O> | null {
@@ -440,6 +441,9 @@ export abstract class MLNode<
 	}
 
 	/**
+	 * The previous node in the syntactical sibling list which, unlike
+	 * `previousSibling`, includes `MLBlock` nodes (AST-level traversal).
+	 *
 	 * @implements `@markuplint/ml-core` API: `MLNode`
 	 */
 	get prevNode(): MLNode<T, O> | null {
@@ -449,6 +453,11 @@ export abstract class MLNode<
 	}
 
 	/**
+	 * The previous node in the document-order `nodeList`.
+	 * Omitted (ghost) elements are skipped because they have no source tokens;
+	 * including them would break offset chains used for indentation analysis
+	 * and source reconstruction.
+	 *
 	 * @implements `@markuplint/ml-core` API: `MLNode`
 	 */
 	get prevToken(): MLNode<T, O> | null {
@@ -572,10 +581,14 @@ export abstract class MLNode<
 		if (this._astToken.type === 'attr' || this._astToken.type === 'spread') {
 			return null;
 		}
-		if (!this._astToken.parentNode) {
+		if (!this._astToken.parentNodeUuid) {
 			return this.ownerMLDocument;
 		}
-		return nodeStore.getNode<MLASTParentNode, T, O>(this._astToken.parentNode);
+		return nodeStore.getNodeByUuid<T, O>(this._astToken.parentNodeUuid) as
+			| MLDocument<any, any>
+			| MLDocumentFragment<any, any>
+			| MLElement<T, O>
+			| MLBlock<T, O>;
 	}
 
 	/**
@@ -646,10 +659,18 @@ export abstract class MLNode<
 	/**
 	 * Returns an array of NodeLists representing the conditional child nodes of the current node.
 	 * Conditional child nodes are nodes that are nested within
-	 * **preprocessor blocks** such as `if`, `each`, or `switch`.
+	 * **preprocessor blocks** such as `if` or `switch`.
 	 * Each NodeList represents a branch of conditional child nodes.
 	 *
 	 * Note: NodeList doesn't include whitespace nodes.
+	 *
+	 * For `if`/`switch` groups, a `null` sentinel is appended to each branch
+	 * group to represent the case where no branch renders at all, so that
+	 * content-model rules also validate the "empty branch" pattern
+	 * (`branchesToPatterns` filters the `null` out of the generated patterns).
+	 * `each` blocks intentionally do not start a conditional mode: their content
+	 * is flattened as always-present rather than treated as an alternative
+	 * branch, even though a loop may render zero times.
 	 *
 	 * @returns An array of NodeLists representing the conditional child nodes.
 	 *
@@ -662,20 +683,16 @@ export abstract class MLNode<
 		}
 
 		const branches: (MLChildNode<T, O> | (MLChildNode<T, O> | null)[])[] = [];
-		let mode: 'if' | 'each' | 'switch' | null = null;
+		let mode: 'if' | 'switch' | null = null;
 		let openConditional = false;
 		let subBranches: (MLChildNode<T, O> | null)[] = [];
 
 		for (const child of this.childNodes) {
 			if (child.is(child.MARKUPLINT_PREPROCESSOR_BLOCK)) {
-				switch (child.conditionalType) {
+				switch (child.blockBehavior?.type) {
 					case 'if':
 					case 'if:elseif': {
 						mode = 'if';
-						break;
-					}
-					case 'each': {
-						mode = 'each';
 						break;
 					}
 					case 'switch:case': {
@@ -685,6 +702,7 @@ export abstract class MLNode<
 
 					/* No default mode */
 					case 'if:else':
+					case 'each':
 					case 'each:empty':
 					case 'switch:default':
 					case 'await':
@@ -706,7 +724,7 @@ export abstract class MLNode<
 			}
 
 			if (openConditional) {
-				if ((['if', 'each', 'switch'] as (typeof mode)[]).includes(mode)) {
+				if ((['if', 'switch'] as (typeof mode)[]).includes(mode)) {
 					subBranches.push(null);
 				}
 				branches.push(subBranches);
@@ -724,7 +742,7 @@ export abstract class MLNode<
 		}
 
 		if (subBranches.length > 0) {
-			if ((['if', 'each', 'switch'] as (typeof mode)[]).includes(mode)) {
+			if ((['if', 'switch'] as (typeof mode)[]).includes(mode)) {
 				subBranches.push(null);
 			}
 			branches.push(subBranches);

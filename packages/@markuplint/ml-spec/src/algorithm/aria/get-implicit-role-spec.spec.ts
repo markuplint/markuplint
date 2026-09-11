@@ -7,14 +7,14 @@ import { describe, test, expect } from 'vitest';
 
 import { getImplicitRole } from './get-implicit-role-spec.js';
 
-function c(html: string, version: ARIAVersion) {
-	const el = createJSDOMElement(html);
+function c(html: string, version: ARIAVersion, selector?: string) {
+	const el = createJSDOMElement(html, selector);
 	return getImplicitRole(
 		specs,
 		el.localName,
 		el.namespaceURI,
 		version,
-		selector => createSelector(selector, specs).match(el) !== false,
+		sel => createSelector(sel, specs).match(el) !== false,
 	);
 }
 
@@ -42,7 +42,14 @@ describe('getImplicitRole', () => {
 	});
 
 	test('the aside element', () => {
+		// ARIA 1.2: always complementary
 		expect(c('<aside></aside>', '1.2')).toBe('complementary');
+		expect(c('<article><aside></aside></article>', '1.2', 'aside')).toBe('complementary');
+		// ARIA 1.3: conditional
+		expect(c('<aside></aside>', '1.3')).toBe('complementary');
+		expect(c('<article><aside></aside></article>', '1.3', 'aside')).toBe('generic');
+		expect(c('<article><aside aria-label="sidebar"></aside></article>', '1.3', 'aside')).toBe('complementary');
+		expect(c('<section><aside></aside></section>', '1.3', 'aside')).toBe('generic');
 	});
 
 	test('the audio element', () => {

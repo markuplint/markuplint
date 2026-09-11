@@ -1,0 +1,6 @@
+{
+	"rules": {
+		"no-duplicate-attr": true,
+		"case-sensitive-attr-name": true
+	}
+}

@@ -1,0 +1,6 @@
+{
+	"extends": ["markuplint:recommended"],
+	"parserOptions": {
+		"ignoreFrontMatter": true
+	}
+}

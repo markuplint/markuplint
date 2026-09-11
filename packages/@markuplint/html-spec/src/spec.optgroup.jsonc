@@ -1,0 +1,36 @@
+// https://html.spec.whatwg.org/multipage/form-elements.html#the-optgroup-element
+// https://www.w3.org/TR/html-aria/#el-optgroup
+// https://w3c.github.io/html-aria/#el-optgroup
+{
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": "option"
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#HTMLFormControlElementAttrs": ["disabled"]
+	},
+	"attributes": {
+		// https://html.spec.whatwg.org/multipage/form-elements.html#attr-optgroup-label
+		// https://html.spec.whatwg.org/multipage/form-elements.html#attr-optgroup-label
+		// "This attribute is mandatory."
+		// The label must not be empty — it provides the group name for the UI.
+		"label": {
+			"type": "NoEmptyAny",
+			"required": true
+		}
+	},
+	"aria": {
+		"implicitRole": "group",
+		"permittedRoles": false,
+		"properties": {
+			"global": true,
+			"role": "group"
+		}
+	}
+}

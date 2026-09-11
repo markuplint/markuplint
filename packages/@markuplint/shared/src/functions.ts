@@ -136,6 +136,20 @@ export function branchesToPatterns<T>(branches: ReadonlyArray<Nullable<T> | Read
  * @param regexpLikeString - The regular expression pattern to parse.
  * @returns - The parsed regular expression or null if the pattern is invalid.
  */
+/**
+ * Computes the line and column of a position within a code fragment.
+ *
+ * @param rawCodeFragment - The full raw source text
+ * @param startOffset - The zero-based byte offset to compute the position of
+ * @returns An object containing one-based `line` and `column`
+ */
+export function getPosition(rawCodeFragment: string, startOffset: number) {
+	const lines = rawCodeFragment.slice(0, startOffset).split('\n');
+	const line = lines.length;
+	const column = (lines.at(-1) ?? '').length + 1;
+	return { line, column } as const;
+}
+
 export function regexParser(regexpLikeString: string): RegExp | null {
 	if (!regexpLikeString.startsWith('/')) {
 		// Early return if the string does not start with a slash.

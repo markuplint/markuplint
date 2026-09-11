@@ -5,14 +5,6 @@ import meta from './meta.js';
 /** The enforced letter case for attribute names. */
 export type Value = 'lower' | 'upper';
 
-/**
- * Rule that enforces consistent letter case for HTML attribute names.
- *
- * Reports attribute names that do not match the configured case (lower or upper)
- * on HTML elements. Foreign elements and case-sensitive attributes (per spec)
- * are excluded. Includes an auto-fix that converts attribute names to the
- * configured case.
- */
 export default createRule<Value>({
 	meta: meta,
 	defaultSeverity: 'warning',
@@ -50,49 +42,16 @@ export default createRule<Value>({
 			}
 
 			if (deny.test(name)) {
+				const nameNode = attr.nameNode;
+				const fixedName = value === 'lower' ? name.toLowerCase() : name.toUpperCase();
 				report({
 					scope: attr,
-					line: attr.nameNode?.startLine,
-					col: attr.nameNode?.startCol,
-					raw: attr.nameNode?.raw,
+					line: nameNode?.startLine,
+					col: nameNode?.startCol,
+					raw: nameNode?.raw,
 					message,
+					fix: nameNode ? fixer => fixer.replaceText(nameNode, fixedName) : undefined, // eslint-disable-line @typescript-eslint/strict-boolean-expressions
 				});
-			}
-		});
-	},
-	async fix({ document }) {
-		await document.walkOn('Attr', attr => {
-			const el = attr.ownerElement;
-
-			if (el.isForeignElement || el.elementType !== 'html') {
-				return;
-			}
-
-			const attrSpecs = getAttrSpecs(el, document.specs);
-
-			const value = attr.rule.value;
-
-			/**
-			 * Ignore when it has the potential name,
-			 * it Interprets `tabIndex` to `tabindex` in JSX for example.
-			 */
-			if (attr.nameNode?.raw !== attr.name) {
-				return;
-			}
-
-			const name = attr.name;
-
-			if (attrSpecs) {
-				const spec = attrSpecs.find(spec => spec.name === name);
-				if (spec && spec.caseSensitive) {
-					return;
-				}
-			}
-
-			if (value === 'lower') {
-				attr.nameNode.fix(name.toLowerCase());
-			} else {
-				attr.nameNode.fix(name.toUpperCase());
 			}
 		});
 	},

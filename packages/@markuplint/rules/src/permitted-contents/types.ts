@@ -117,6 +117,21 @@ export type TagRule = {
 } & ReadonlyDeep<ContentModel>;
 
 /**
+ * Which identity of a pretendered element is being evaluated during a
+ * content-model check. `'pretended'` is the default view: the element is
+ * validated against the HTML spec for the pretender target name (e.g. a
+ * `<Breadcrumbs>` pretending to `<nav>` is validated as `<nav>`).
+ * `'origin'` re-runs the validation with the pretender context suppressed,
+ * so the element is validated against any user-defined tag rule keyed on
+ * the original AST name (e.g. `Breadcrumbs`).
+ *
+ * The mode is threaded through every helper so that selector matching,
+ * transparent-model resolution, and content-model lookups all agree on the
+ * same view of the element identity.
+ */
+export type Mode = 'origin' | 'pretended';
+
+/**
  * Options for the permitted-contents rule that control validation behavior.
  */
 export type Options = {

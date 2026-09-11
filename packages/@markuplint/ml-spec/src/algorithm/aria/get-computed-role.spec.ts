@@ -104,7 +104,7 @@ describe('1.2', () => {
 		expect(c('<div hidden><span tabindex="0" role="none"></span></div>', '1.2', 'span').role?.name).toBe('none');
 	});
 
-	test('Presentational Roles Conflict Resolution (2-1) Required Owned Elements', () => {
+	test('Presentational Roles Conflict Resolution (2-1) Allowed Accessibility Child Roles', () => {
 		expect(c('<table><tr><td>foo</td></tr></table>', '1.2', 'td').role?.name).toBe('cell');
 		expect(c('<table><tr><td role="none">foo</td></tr></table>', '1.2', 'td').role?.name).toBe('cell');
 		expect(c('<table><tbody role="none"><tr><td>foo</td></tr></tbody></table>', '1.2', 'tbody').role?.name).toBe(
@@ -137,7 +137,10 @@ describe('1.2', () => {
 		).toStrictEqual([
 			['table', 'table'],
 			['tbody', 'rowgroup'],
-			['tr', 'row'],
+			// Per ARIA in HTML §3.4 `tr` conditional: "No role permitted" inside a
+			// table with default/table/grid/treegrid role — even `role="row"` matching
+			// the implicit role is disallowed.
+			['tr', 'row', 'NO_PERMITTED'],
 			['td', 'cell', 'NO_PERMITTED'],
 		]);
 		expect(
@@ -148,8 +151,10 @@ describe('1.2', () => {
 		).toStrictEqual([
 			['table', 'grid'],
 			['tbody', 'rowgroup'],
-			['tr', 'row'],
-			['td', 'gridcell'],
+			// Per ARIA in HTML §3.4 `tr` conditional: "No role permitted" when parent
+			// table has default/table/grid/treegrid role. `td` inherits the same.
+			['tr', 'row', 'NO_PERMITTED'],
+			['td', 'gridcell', 'NO_PERMITTED'],
 		]);
 	});
 
@@ -163,6 +168,13 @@ describe('1.2', () => {
 		expect(c('<h1 role="presentation" aria-level="2"> Sample Content </h1>', '1.2').role?.name).toBe(
 			'presentation',
 		);
+	});
+
+	test('Presentational Roles Conflict Resolution with generic wrapper', () => {
+		// In 1.2, generic <div> is NOT transparent. The non-presentational
+		// ancestor is <div> (generic), which has no requiredOwnedElements.
+		// Conflict resolution does not trigger → presentation is kept.
+		expect(c('<ul><div><li role="presentation"></li></div></ul>', '1.2', 'li').role?.name).toBe('presentation');
 	});
 });
 
@@ -235,7 +247,7 @@ describe('1.3', () => {
 		expect(c('<div hidden><span tabindex="0" role="none"></span></div>', '1.3', 'span').role?.name).toBe('none');
 	});
 
-	test('Presentational Roles Conflict Resolution (2-1) Required Owned Elements', () => {
+	test('Presentational Roles Conflict Resolution (2-1) Allowed Accessibility Child Roles', () => {
 		expect(c('<table><tr><td>foo</td></tr></table>', '1.3', 'td').role?.name).toBe('cell');
 		expect(c('<table><tr><td role="none">foo</td></tr></table>', '1.3', 'td').role?.name).toBe('cell');
 		expect(c('<table><tbody role="none"><tr><td>foo</td></tr></tbody></table>', '1.3', 'tbody').role?.name).toBe(
@@ -255,6 +267,8 @@ describe('1.3', () => {
 			['td', 'cell'],
 		]);
 		// TODO: https://github.com/markuplint/markuplint/issues/1265
+		// <td> gets null because its implicit role condition requires
+		// table:is(:not([role]), [role=table]), which doesn't match role="none".
 		expect(tree('<table role="none"><tr><td>foo</td></tr></table>', '1.3')).toStrictEqual([
 			['table', 'none'],
 			['tbody', null, 'NO_OWNER'],
@@ -269,7 +283,9 @@ describe('1.3', () => {
 		).toStrictEqual([
 			['table', 'table'],
 			['tbody', 'rowgroup'],
-			['tr', 'row'],
+			// Per ARIA in HTML §3.4 `tr` conditional: "No role permitted" inside a
+			// table — even `role="row"` matching the implicit role is disallowed.
+			['tr', 'row', 'NO_PERMITTED'],
 			['td', 'cell', 'NO_PERMITTED'],
 		]);
 		expect(
@@ -280,8 +296,10 @@ describe('1.3', () => {
 		).toStrictEqual([
 			['table', 'grid'],
 			['tbody', 'rowgroup'],
-			['tr', 'row'],
-			['td', 'gridcell'],
+			// Per ARIA in HTML §3.4 `tr` conditional: "No role permitted" when parent
+			// table has default/table/grid/treegrid role.
+			['tr', 'row', 'NO_PERMITTED'],
+			['td', 'gridcell', 'NO_PERMITTED'],
 		]);
 	});
 
@@ -294,6 +312,16 @@ describe('1.3', () => {
 		);
 		expect(c('<h1 role="presentation" aria-level="2"> Sample Content </h1>', '1.3').role?.name).toBe(
 			'presentation',
+		);
+	});
+
+	test('Presentational Roles Conflict Resolution with generic wrapper', () => {
+		// In 1.3, generic <div> is transparent for getNonPresentationalAncestor,
+		// so <ul> (list) is found as the ancestor with requiredOwnedElements.
+		// <li role="presentation"> matches listitem → conflict resolution triggers.
+		expect(c('<ul><div><li role="presentation"></li></div></ul>', '1.3', 'li').role?.name).toBe('listitem');
+		expect(c('<ul><div><li role="presentation"></li></div></ul>', '1.3', 'li').errorType).toBe(
+			'REQUIRED_OWNED_ELEMENT_MUST_NOT_BE_PRESENTATIONAL',
 		);
 	});
 });
@@ -315,5 +343,42 @@ describe('Issues', () => {
 		expect(
 			c('<svg role="img"><rect aria-label="accname" width="30" height="30" /></svg>', '1.2', 'rect').role?.name,
 		).toBe('graphics-symbol');
+	});
+});
+
+describe('isNativeContextIntact — implicit role context check skip (#3214)', () => {
+	test('option inside select retains implicit role', () => {
+		// <option> has requiredAccessibilityParentRole ["listbox"] but <select> maps to "combobox".
+		// isNativeContextIntact returns true, so the context check is skipped.
+		expect(c('<select><option>A</option></select>', '1.2', 'option').role?.name).toBe('option');
+		expect(c('<select><option>A</option></select>', '1.3', 'option').role?.name).toBe('option');
+	});
+
+	test('option inside select with explicit role — context check proceeds', () => {
+		// Parent has explicit role="listbox" — isNativeContextIntact returns false.
+		// Context check proceeds and "listbox" satisfies option's requirement.
+		expect(c('<select role="listbox"><option>A</option></select>', '1.2', 'option').role?.name).toBe('option');
+		expect(c('<select role="listbox"><option>A</option></select>', '1.3', 'option').role?.name).toBe('option');
+	});
+
+	test('table role="none" cascades to td (context is not intact)', () => {
+		// Parent chain: <table role="none"> makes tbody computed role null → context not intact.
+		expect(c('<table role="none"><tr><td>C</td></tr></table>', '1.2', 'td').role?.name).toBe(undefined);
+		expect(c('<table role="none"><tr><td>C</td></tr></table>', '1.3', 'td').role?.name).toBe(undefined);
+	});
+
+	test('li inside ul retains implicit role (native context intact)', () => {
+		expect(c('<ul><li>Item</li></ul>', '1.2', 'li').role?.name).toBe('listitem');
+		expect(c('<ul><li>Item</li></ul>', '1.3', 'li').role?.name).toBe('listitem');
+	});
+
+	test('option inside select > optgroup retains implicit role', () => {
+		// Optgroup intermediary — parent (optgroup) has no explicit role, computed role is non-null.
+		expect(c('<select><optgroup><option>A</option></optgroup></select>', '1.2', 'option').role?.name).toBe(
+			'option',
+		);
+		expect(c('<select><optgroup><option>A</option></optgroup></select>', '1.3', 'option').role?.name).toBe(
+			'option',
+		);
 	});
 });

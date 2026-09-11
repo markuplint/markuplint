@@ -12,7 +12,7 @@ const srcDir = path.resolve(dirname, 'src');
 const currents = await glob('preset.*.json,!preset.___json');
 await Promise.all(currents.map(current => rm(current)));
 
-const files = await glob('*.json', { cwd: srcDir });
+const files = await glob('*.jsonc', { cwd: srcDir });
 const md = await readFile(path.resolve(srcDir, 'README.md'), { encoding: 'utf8' });
 
 files.sort();
@@ -26,9 +26,10 @@ for (const file of files) {
 	const code = await readFile(path.resolve(srcDir, filename), { encoding: 'utf8' });
 	const json = JSON.parse(stripComments(code));
 	const compressed = JSON.stringify(json);
-	await writeFile(path.resolve(dirname, filename), compressed, { encoding: 'utf8' });
+	const outputFilename = filename.replace(/\.jsonc$/, '.json');
+	await writeFile(path.resolve(dirname, outputFilename), compressed, { encoding: 'utf8' });
 
-	const name = filename.replaceAll(/^preset\.|\.json/g, '');
+	const name = filename.replaceAll(/^preset\.|\.jsonc/g, '');
 	presets.push(name);
 	extended[name] = (json['extends'] ?? []).map(name => name.replace('markuplint:', ''));
 

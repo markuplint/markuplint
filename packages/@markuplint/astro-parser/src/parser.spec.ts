@@ -60,11 +60,11 @@ div {
 		'[10:64]>[11:1](151,152)#text: ⏎',
 		'[11:1]>[11:5](152,156)ul: <ul>',
 		'[11:5]>[12:1](156,157)#text: ⏎',
-		'[12:1]>[12:19](157,175)#ps:MustacheTag: {list.map(item␣=>␣',
+		'[12:1]>[12:19](157,175)#ps:MustacheTag (each): {list.map(item␣=>␣',
 		'[12:19]>[12:23](175,179)li: <li>',
 		'[12:23]>[12:29](179,185)#ps:MustacheTag: {item}',
 		'[12:29]>[12:34](185,190)li: </li>',
-		'[12:34]>[12:36](190,192)#ps:MustacheTag: )}',
+		'[12:34]>[12:36](190,192)#ps:MustacheTag (end): )}',
 		'[12:36]>[13:1](192,193)#text: ⏎',
 		'[13:1]>[13:6](193,198)ul: </ul>',
 		'[13:6]>[14:1](198,199)#text: ⏎',
@@ -113,11 +113,11 @@ div {
 		'  isDirective: false',
 		'  isDynamicValue: true',
 		'[14:3]>[15:1](116,118)#text: ␣⏎',
-		'[15:1]>[16:2](118,138)#ps:MustacheTag: {list.map(item␣=>␣⏎→',
+		'[15:1]>[16:2](118,138)#ps:MustacheTag (each): {list.map(item␣=>␣⏎→',
 		'[16:2]>[17:3](138,145)li: <li␣⏎→>',
 		'[17:3]>[17:9](145,151)#ps:MustacheTag: {item}',
 		'[17:9]>[18:3](151,159)li: </li␣⏎→>',
-		'[18:3]>[19:3](159,163)#ps:MustacheTag: ␣⏎)}',
+		'[18:3]>[19:3](159,163)#ps:MustacheTag (end): ␣⏎)}',
 		'[19:3]>[20:1](163,165)#text: ␣⏎',
 		'[20:1]>[20:6](165,170)ul: </ul>',
 	]);
@@ -225,9 +225,12 @@ test('Siblings2', () => {
 });
 
 test('Pair', () => {
-	expect(parse('<tag1></tag1>').nodeList[0].pairNode?.raw).toBe('</tag1>');
-	expect(parse('<tag1><tag2 /></tag1>').nodeList[1].pairNode?.raw).toBeUndefined();
-	expect(parse('<tag1><tag2></tag2></tag1>').nodeList[1].pairNode?.raw).toBe('</tag2>');
+	const doc1 = parse('<tag1></tag1>');
+	expect(doc1.nodeList.find(n => n.uuid === doc1.nodeList[0].pairNodeUuid)?.raw).toBe('</tag1>');
+	const doc2 = parse('<tag1><tag2 /></tag1>');
+	expect(doc2.nodeList[1].pairNodeUuid).toBeNull();
+	const doc3 = parse('<tag1><tag2></tag2></tag1>');
+	expect(doc3.nodeList.find(n => n.uuid === doc3.nodeList[1].pairNodeUuid)?.raw).toBe('</tag2>');
 });
 
 test('Missing end tag (HTML)', () => {
@@ -336,10 +339,10 @@ describe('Issue', () => {
 		const map = nodeListToDebugMaps(ast.nodeList);
 		expect(map).toEqual([
 			'[1:1]>[1:5](0,4)ul: <ul>',
-			'[1:5]>[2:17](4,22)#ps:MustacheTag: {⏎→list.map(()␣=>␣',
+			'[1:5]>[2:17](4,22)#ps:MustacheTag (each): {⏎→list.map(()␣=>␣',
 			'[2:17]>[2:21](22,26)li: <li>',
 			'[2:21]>[2:26](26,31)li: </li>',
-			'[2:26]>[3:2](31,34)#ps:MustacheTag: )⏎}',
+			'[2:26]>[3:2](31,34)#ps:MustacheTag (end): )⏎}',
 			'[3:2]>[3:7](34,39)ul: </ul>',
 		]);
 	});
@@ -402,7 +405,7 @@ describe('Issue', () => {
 			'[5:29]>[6:5](77,82)#text: ⏎→→→→',
 			'[6:5]>[6:10](82,87)div: <div>',
 			'[6:10]>[7:6](87,93)#text: ⏎→→→→→',
-			'[7:6]>[8:7](93,124)#ps:MustacheTag: {values.map((value)␣=>␣(⏎→→→→→→',
+			'[7:6]>[8:7](93,124)#ps:MustacheTag (each): {values.map((value)␣=>␣(⏎→→→→→→',
 			'[8:7]>[8:14](124,131)label: <label>',
 			'[8:14]>[9:8](131,139)#text: ⏎→→→→→→→',
 			'[9:8]>[9:47](139,178)input: <input␣type="checkbox"␣value={value}␣/>',
@@ -434,7 +437,7 @@ describe('Issue', () => {
 			'[10:21]>[10:28](199,206)span: </span>',
 			'[10:28]>[11:7](206,213)#text: ⏎→→→→→→',
 			'[11:7]>[11:15](213,221)label: </label>',
-			'[11:15]>[12:9](221,230)#ps:MustacheTag: ⏎→→→→→))}',
+			'[11:15]>[12:9](221,230)#ps:MustacheTag (end): ⏎→→→→→))}',
 			'[12:9]>[13:5](230,235)#text: ⏎→→→→',
 			'[13:5]>[13:11](235,241)div: </div>',
 			'[13:11]>[14:4](241,245)#text: ⏎→→→',
@@ -598,18 +601,6 @@ describe('Issue', () => {
 		]);
 	});
 
-	test('No close tag', () => {
-		expect(parse('<div />').nodeList).toMatchObject([
-			{
-				raw: '<div />',
-				nodeName: 'div',
-				selfClosingSolidus: {
-					raw: '/',
-				},
-			},
-		]);
-	});
-
 	test('#1377', () => {
 		expect(
 			nodeListToDebugMaps(
@@ -662,5 +653,522 @@ describe('Issue', () => {
 <p title="Today is &#39;24/04/01">text</p>
 `);
 		expect(ast).toBeTruthy();
+	});
+
+	describe('#3823 script tag diagnostics are not fatal', () => {
+		test('script type="module" parses to a script element', () => {
+			const ast = parse('<script type="module">console.log("hello");</script>');
+			expect(ast.parseError).toBeUndefined();
+			const map = nodeListToDebugMaps(ast.nodeList);
+			expect(map[0]).toBe('[1:1]>[1:23](0,22)script: <script␣type="module">');
+		});
+
+		test('script defer parses to a script element', () => {
+			const ast = parse('<script defer>console.log("hello");</script>');
+			expect(ast.parseError).toBeUndefined();
+			const map = nodeListToDebugMaps(ast.nodeList);
+			expect(map[0]).toBe('[1:1]>[1:15](0,14)script: <script␣defer>');
+		});
+
+		test('script with data-* attribute parses to a script element', () => {
+			const ast = parse('<script data-widget="example">console.log("hello");</script>');
+			expect(ast.parseError).toBeUndefined();
+			const map = nodeListToDebugMaps(ast.nodeList);
+			expect(map[0]).toBe('[1:1]>[1:31](0,30)script: <script␣data-widget="example">');
+		});
+
+		test('script with define:vars parses to a script element', () => {
+			const ast = parse('<script define:vars={{ foo: 1 }}>console.log(foo);</script>');
+			expect(ast.parseError).toBeUndefined();
+			const map = nodeListToDebugMaps(ast.nodeList);
+			expect(map[0]).toBe('[1:1]>[1:34](0,33)script: <script␣define:vars={{␣foo:␣1␣}}>');
+		});
+	});
+
+	describe('#3856 spread attribute parsing (v5 mirror of #3824)', () => {
+		const findStartTag = (ast: any) => ast.nodeList.find((n: any) => n.type === 'starttag');
+
+		test('TypeScript assertion in spread attribute', () => {
+			const ast = parse(
+				'<button type="button" {...{ command: "close" } as any} commandfor="dialog-id">close</button>',
+			);
+			expect(ast.parseError).toBeUndefined();
+			const start = findStartTag(ast);
+			const spreads = start.attributes.filter((a: any) => a.type === 'spread');
+			expect(spreads).toHaveLength(1);
+			expect(spreads[0].raw).toBe('{...{ command: "close" } as any}');
+			const attrNames = start.attributes.filter((a: any) => a.type === 'attr').map((a: any) => a.nodeName);
+			expect(attrNames).toEqual(['type', 'commandfor']);
+		});
+
+		test('spread attribute with expression child on same element', () => {
+			const ast = parse('<div {...props}>{label}</div>');
+			expect(ast.parseError).toBeUndefined();
+			const start = findStartTag(ast);
+			const spreads = start.attributes.filter((a: any) => a.type === 'spread');
+			expect(spreads).toHaveLength(1);
+			expect(spreads[0].raw).toBe('{...props}');
+		});
+
+		test('dynamic tag (PascalCase) with spread + expression child', () => {
+			const ast = parse('<ContainerTag class="container" {...containerProps}>{title}</ContainerTag>');
+			expect(ast.parseError).toBeUndefined();
+			const start = findStartTag(ast);
+			const spreads = start.attributes.filter((a: any) => a.type === 'spread');
+			expect(spreads).toHaveLength(1);
+			expect(spreads[0].raw).toBe('{...containerProps}');
+		});
+
+		test('textarea with conditional spread + expression child', () => {
+			const ast = parse(
+				"<textarea {...fieldSizingContent ? { 'data-field-sizing': 'content' } : {}}>{value}</textarea>",
+			);
+			expect(ast.parseError).toBeUndefined();
+			const start = findStartTag(ast);
+			const spreads = start.attributes.filter((a: any) => a.type === 'spread');
+			expect(spreads).toHaveLength(1);
+			expect(spreads[0].raw).toBe("{...fieldSizingContent ? { 'data-field-sizing': 'content' } : {}}");
+		});
+
+		test('multiple spread attributes on dynamic tag with expression child', () => {
+			const ast = parse(`<Element
+  {...iconOnly ? { title: label } : {}}
+  {...rest}
+>
+  {label}
+</Element>`);
+			expect(ast.parseError).toBeUndefined();
+			const start = findStartTag(ast);
+			const spreads = start.attributes.filter((a: any) => a.type === 'spread');
+			expect(spreads).toHaveLength(2);
+			expect(spreads[0].raw).toBe('{...iconOnly ? { title: label } : {}}');
+			expect(spreads[1].raw).toBe('{...rest}');
+		});
+
+		test('component with conditional spread and descendant expression child', () => {
+			const ast = parse(`<Comp {...enabled ? { title: title } : {}}>
+  <div>{title}</div>
+</Comp>`);
+			expect(ast.parseError).toBeUndefined();
+			const start = findStartTag(ast);
+			const spreads = start.attributes.filter((a: any) => a.type === 'spread');
+			expect(spreads).toHaveLength(1);
+			expect(spreads[0].raw).toBe('{...enabled ? { title: title } : {}}');
+		});
+
+		test('static spread + text child still works (regression guard)', () => {
+			const ast = parse('<div {...props}>text</div>');
+			expect(ast.parseError).toBeUndefined();
+			const start = findStartTag(ast);
+			const spreads = start.attributes.filter((a: any) => a.type === 'spread');
+			expect(spreads).toHaveLength(1);
+			expect(spreads[0].raw).toBe('{...props}');
+		});
+
+		test('simple spread shorthand still works (regression guard)', () => {
+			const ast = parse('<div {a} {...b} />');
+			expect(ast.parseError).toBeUndefined();
+			const start = findStartTag(ast);
+			const spreads = start.attributes.filter((a: any) => a.type === 'spread');
+			expect(spreads).toHaveLength(1);
+			expect(spreads[0].raw).toBe('{...b}');
+		});
+
+		test('multi-line spread reports correct line, column, and offset', () => {
+			const ast = parse('<Element\n  {...rest}\n/>');
+			const start = findStartTag(ast);
+			const spread = start.attributes.find((a: any) => a.type === 'spread');
+			expect(spread.line).toBe(2);
+			expect(spread.col).toBe(3);
+			expect(spread.offset).toBe(11);
+			expect(spread.raw).toBe('{...rest}');
+		});
+
+		test('CRLF line endings preserve correct line, column, and offset', () => {
+			const ast = parse('<Element\r\n  {...rest}\r\n/>');
+			const start = findStartTag(ast);
+			const spread = start.attributes.find((a: any) => a.type === 'spread');
+			expect(spread.line).toBe(2);
+			expect(spread.col).toBe(3);
+			expect(spread.raw).toBe('{...rest}');
+		});
+
+		test('spread attribute on component with block-behavior expression child (dev-specific)', () => {
+			// Guards the interaction between the new spread pre-pass (#3856) and
+			// dev's `detectBlockBehavior()` for `.map()` expression children.
+			const ast = parse('<Comp {...rest}>{list.map(item => <li>{item}</li>)}</Comp>');
+			expect(ast.parseError).toBeUndefined();
+			const start = findStartTag(ast);
+			const spreads = start.attributes.filter((a: any) => a.type === 'spread');
+			expect(spreads).toHaveLength(1);
+			expect(spreads[0].raw).toBe('{...rest}');
+			const debugMaps = nodeListToDebugMaps(ast.nodeList);
+			expect(debugMaps.some(line => line.includes('#ps:MustacheTag (each)'))).toBe(true);
+		});
+	});
+
+	describe('#3825 raw-text element body (script/style)', () => {
+		test('script body with HTML-like regex parses without parseError', () => {
+			const ast = parse('<script>const t = s.replace(/<br\\s*\\/?>/gi, " ");</script>');
+			expect(ast.parseError).toBeUndefined();
+			const tags = ast.nodeList.filter((n: any) => n.type === 'starttag' || n.type === 'endtag');
+			expect(tags.map((t: any) => `${t.type}:${t.nodeName}`)).toEqual(['starttag:script', 'endtag:script']);
+		});
+
+		test('issue example with frontmatter, title, and TS regex script', () => {
+			const ast = parse(`---
+const title = 'Script HTML-like regex';
+---
+
+<h1>{title}</h1>
+
+<script>
+  function normalizeDescription(source: string): string {
+    return source.replace(/<br\\s*\\/?>/gi, ' ');
+  }
+
+  console.log(normalizeDescription('line<br>break'));
+</script>`);
+			expect(ast.parseError).toBeUndefined();
+			const tags = ast.nodeList.filter((n: any) => n.type === 'starttag' || n.type === 'endtag');
+			const tagSig = tags.map((t: any) => `${t.type}:${t.nodeName}`);
+			// Strict equality: an extra phantom <script> or a swallowed <h1> would silently
+			// pass under `toContain`.
+			expect(tagSig).toEqual(['starttag:h1', 'endtag:h1', 'starttag:script', 'endtag:script']);
+		});
+
+		test('style body with HTML-like content parses without parseError', () => {
+			const ast = parse('<style>/* <br = */ a { color: red; }</style>');
+			expect(ast.parseError).toBeUndefined();
+			const tags = ast.nodeList.filter((n: any) => n.type === 'starttag' || n.type === 'endtag');
+			expect(tags.map((t: any) => `${t.type}:${t.nodeName}`)).toEqual(['starttag:style', 'endtag:style']);
+		});
+
+		test('script with attributes + body containing regex', () => {
+			const ast = parse('<script type="module" is:inline>const t = s.replace(/<br\\s*\\/?>/gi, " ");</script>');
+			expect(ast.parseError).toBeUndefined();
+			const map = nodeListToDebugMaps(ast.nodeList);
+			expect(map[0]).toBe('[1:1]>[1:33](0,32)script: <script␣type="module"␣is:inline>');
+			// End tag must still be emitted; without this guard a regression that
+			// drops the close tag would silently pass since `map[0]` only checks
+			// the start tag.
+			expect(map.at(-1)).toMatch(/script: <\/script>$/);
+		});
+
+		test('self-closing script (regression guard)', () => {
+			const ast = parse('<script src="x.js" />');
+			expect(ast.parseError).toBeUndefined();
+			const tags = ast.nodeList.filter((n: any) => n.type === 'starttag');
+			expect(tags).toHaveLength(1);
+			expect(tags[0].nodeName).toBe('script');
+		});
+
+		test('empty script (regression guard)', () => {
+			const ast = parse('<script></script>');
+			expect(ast.parseError).toBeUndefined();
+			const tags = ast.nodeList.filter((n: any) => n.type === 'starttag' || n.type === 'endtag');
+			expect(tags.map((t: any) => `${t.type}:${t.nodeName}`)).toEqual(['starttag:script', 'endtag:script']);
+		});
+
+		test('multi-line script body reports correct end tag position', () => {
+			const ast = parse(`<script>
+const t = s.replace(/<br\\s*\\/?>/gi, " ");
+</script>`);
+			expect(ast.parseError).toBeUndefined();
+			const endTag = ast.nodeList.find((n: any) => n.type === 'endtag' && n.nodeName === 'script');
+			expect(endTag).toBeDefined();
+			expect(endTag!.line).toBe(3);
+			expect(endTag!.col).toBe(1);
+			expect(endTag!.raw).toBe('</script>');
+		});
+
+		test('script close tag is matched ASCII-case-insensitively (uppercase close)', () => {
+			// Note: the reverse pairing (`<SCRIPT>...</script>`) is not testable here
+			// because Astro upstream classifies `<SCRIPT>` as a component (PascalCase
+			// component-name rule), not the HTML script element — its body is then
+			// parsed as JSX-style children, not raw text. Case-insensitive close-tag
+			// matching is a parser-utils concern, locked in only for the
+			// lowercase-open + uppercase-close direction here.
+			const ast = parse('<script>const t = "<br>";</SCRIPT>');
+			expect(ast.parseError).toBeUndefined();
+			const endTag = ast.nodeList.find((n: any) => n.type === 'endtag');
+			expect(endTag).toBeDefined();
+			expect(endTag!.raw).toBe('</SCRIPT>');
+		});
+
+		test('a different raw-text tag in the body does not terminate the script', () => {
+			// `</style>` inside a script string must NOT close the `<script>` because
+			// the tag names differ. Locks in the per-tag-name match in
+			// `parseCodeFragment`'s raw-text close pattern.
+			//
+			// Note: the stricter HTML LS §13.2.5.1 lookahead variant — `</scripts>`
+			// (same prefix + extra char) must not close — is not testable via Astro
+			// because the Astro upstream tokenizer rejects `</scriptX>` substrings
+			// inside script bodies before markuplint sees them.
+			const ast = parse('<script>const x = "</style>";</script>');
+			expect(ast.parseError).toBeUndefined();
+			const endTags = ast.nodeList.filter((n: any) => n.type === 'endtag' && n.nodeName === 'script');
+			expect(endTags).toHaveLength(1);
+			expect(endTags[0].raw).toBe('</script>');
+		});
+
+		test('unterminated script body falls back to the legacy parse path', () => {
+			// No </script> in the body — the raw-text short-circuit MUST NOT consume the
+			// body and MUST let the existing "unclosed tag" handling run.
+			// Locks in the `if (match)` else branch of `parseCodeFragment`'s raw-text guard.
+			expect(() => parse('<script>const x = 1;')).not.toThrow();
+		});
+
+		test('plain script body (no HTML-like content) still parses correctly (regression)', () => {
+			const ast = parse('<script>const x = 1;</script>');
+			expect(ast.parseError).toBeUndefined();
+			const map = nodeListToDebugMaps(ast.nodeList);
+			expect(map[0]).toBe('[1:1]>[1:9](0,8)script: <script>');
+			expect(map.at(-1)).toBe('[1:21]>[1:30](20,29)script: </script>');
+		});
+	});
+});
+
+describe('Directives', () => {
+	test('server:defer (Astro v5)', () => {
+		const ast = parse('<Component server:defer />');
+		const map = nodeListToDebugMaps(ast.nodeList, true);
+		expect(map).toEqual([
+			'[1:1]>[1:27](0,26)Component: <Component␣server:defer␣/>',
+			'[1:12]>[1:24](11,23)server:defer: server:defer',
+			'  [1:11]>[1:12](10,11)bN: ␣',
+			'  [1:12]>[1:24](11,23)name: server:defer',
+			'  [1:24]>[1:24](23,23)bE: ',
+			'  [1:24]>[1:24](23,23)equal: ',
+			'  [1:24]>[1:24](23,23)aE: ',
+			'  [1:24]>[1:24](23,23)sQ: ',
+			'  [1:24]>[1:24](23,23)value: ',
+			'  [1:24]>[1:24](23,23)eQ: ',
+			'  isDirective: true',
+			'  isDynamicValue: false',
+		]);
+	});
+
+	test('client:load', () => {
+		const ast = parse('<Component client:load />');
+		const map = nodeListToDebugMaps(ast.nodeList, true);
+		expect(map).toEqual([
+			'[1:1]>[1:26](0,25)Component: <Component␣client:load␣/>',
+			'[1:12]>[1:23](11,22)client:load: client:load',
+			'  [1:11]>[1:12](10,11)bN: ␣',
+			'  [1:12]>[1:23](11,22)name: client:load',
+			'  [1:23]>[1:23](22,22)bE: ',
+			'  [1:23]>[1:23](22,22)equal: ',
+			'  [1:23]>[1:23](22,22)aE: ',
+			'  [1:23]>[1:23](22,22)sQ: ',
+			'  [1:23]>[1:23](22,22)value: ',
+			'  [1:23]>[1:23](22,22)eQ: ',
+			'  isDirective: true',
+			'  isDynamicValue: false',
+		]);
+	});
+
+	test('client:only', () => {
+		const ast = parse('<Component client:only="react" />');
+		const map = nodeListToDebugMaps(ast.nodeList, true);
+		expect(map).toEqual([
+			'[1:1]>[1:34](0,33)Component: <Component␣client:only="react"␣/>',
+			'[1:12]>[1:31](11,30)client:only: client:only="react"',
+			'  [1:11]>[1:12](10,11)bN: ␣',
+			'  [1:12]>[1:23](11,22)name: client:only',
+			'  [1:23]>[1:23](22,22)bE: ',
+			'  [1:23]>[1:24](22,23)equal: =',
+			'  [1:24]>[1:24](23,23)aE: ',
+			'  [1:24]>[1:25](23,24)sQ: "',
+			'  [1:25]>[1:30](24,29)value: react',
+			'  [1:30]>[1:31](29,30)eQ: "',
+			'  isDirective: true',
+			'  isDynamicValue: false',
+		]);
+	});
+
+	test('set:html', () => {
+		const ast = parse('<div set:html={rawHTML} />');
+		const map = nodeListToDebugMaps(ast.nodeList, true);
+		expect(map).toEqual([
+			'[1:1]>[1:27](0,26)div: <div␣set:html={rawHTML}␣/>',
+			'[1:6]>[1:24](5,23)set:html: set:html={rawHTML}',
+			'  [1:5]>[1:6](4,5)bN: ␣',
+			'  [1:6]>[1:14](5,13)name: set:html',
+			'  [1:14]>[1:14](13,13)bE: ',
+			'  [1:14]>[1:15](13,14)equal: =',
+			'  [1:15]>[1:15](14,14)aE: ',
+			'  [1:15]>[1:16](14,15)sQ: {',
+			'  [1:16]>[1:23](15,22)value: rawHTML',
+			'  [1:23]>[1:24](22,23)eQ: }',
+			'  isDirective: true',
+			'  isDynamicValue: true',
+		]);
+	});
+
+	test('set:text', () => {
+		const ast = parse('<div set:text={text} />');
+		const map = nodeListToDebugMaps(ast.nodeList, true);
+		expect(map).toEqual([
+			'[1:1]>[1:24](0,23)div: <div␣set:text={text}␣/>',
+			'[1:6]>[1:21](5,20)set:text: set:text={text}',
+			'  [1:5]>[1:6](4,5)bN: ␣',
+			'  [1:6]>[1:14](5,13)name: set:text',
+			'  [1:14]>[1:14](13,13)bE: ',
+			'  [1:14]>[1:15](13,14)equal: =',
+			'  [1:15]>[1:15](14,14)aE: ',
+			'  [1:15]>[1:16](14,15)sQ: {',
+			'  [1:16]>[1:20](15,19)value: text',
+			'  [1:20]>[1:21](19,20)eQ: }',
+			'  isDirective: true',
+			'  isDynamicValue: true',
+		]);
+	});
+
+	test('is:inline', () => {
+		const ast = parse('<script is:inline>console.log("hello")</script>');
+		const map = nodeListToDebugMaps(ast.nodeList, true);
+		expect(map).toEqual([
+			'[1:1]>[1:19](0,18)script: <script␣is:inline>',
+			'[1:9]>[1:18](8,17)is:inline: is:inline',
+			'  [1:8]>[1:9](7,8)bN: ␣',
+			'  [1:9]>[1:18](8,17)name: is:inline',
+			'  [1:18]>[1:18](17,17)bE: ',
+			'  [1:18]>[1:18](17,17)equal: ',
+			'  [1:18]>[1:18](17,17)aE: ',
+			'  [1:18]>[1:18](17,17)sQ: ',
+			'  [1:18]>[1:18](17,17)value: ',
+			'  [1:18]>[1:18](17,17)eQ: ',
+			'  isDirective: true',
+			'  isDynamicValue: false',
+			'[1:39]>[1:48](38,47)script: </script>',
+		]);
+	});
+
+	test('is:raw treats child content as raw text (not parsed HTML)', () => {
+		const ast = parse('<div is:raw><span>{text}</span></div>');
+		const map = nodeListToDebugMaps(ast.nodeList, true);
+		expect(map).toEqual([
+			'[1:1]>[1:13](0,12)div: <div␣is:raw>',
+			'[1:6]>[1:12](5,11)is:raw: is:raw',
+			'  [1:5]>[1:6](4,5)bN: ␣',
+			'  [1:6]>[1:12](5,11)name: is:raw',
+			'  [1:12]>[1:12](11,11)bE: ',
+			'  [1:12]>[1:12](11,11)equal: ',
+			'  [1:12]>[1:12](11,11)aE: ',
+			'  [1:12]>[1:12](11,11)sQ: ',
+			'  [1:12]>[1:12](11,11)value: ',
+			'  [1:12]>[1:12](11,11)eQ: ',
+			'  isDirective: true',
+			'  isDynamicValue: false',
+			'[1:13]>[1:32](12,31)#text: <span>{text}</span>',
+			'[1:32]>[1:38](31,37)div: </div>',
+		]);
+	});
+
+	test('define:vars', () => {
+		const ast = parse('<style define:vars={{ color }}>div { color: var(--color); }</style>');
+		const map = nodeListToDebugMaps(ast.nodeList, true);
+		expect(map).toEqual([
+			'[1:1]>[1:32](0,31)style: <style␣define:vars={{␣color␣}}>',
+			'[1:8]>[1:31](7,30)define:vars: define:vars={{␣color␣}}',
+			'  [1:7]>[1:8](6,7)bN: ␣',
+			'  [1:8]>[1:19](7,18)name: define:vars',
+			'  [1:19]>[1:19](18,18)bE: ',
+			'  [1:19]>[1:20](18,19)equal: =',
+			'  [1:20]>[1:20](19,19)aE: ',
+			'  [1:20]>[1:21](19,20)sQ: {',
+			'  [1:21]>[1:30](20,29)value: {␣color␣}',
+			'  [1:30]>[1:31](29,30)eQ: }',
+			'  isDirective: true',
+			'  isDynamicValue: true',
+			'[1:60]>[1:68](59,67)style: </style>',
+		]);
+	});
+
+	test('transition:animate', () => {
+		const ast = parse('<div transition:animate="slide">content</div>');
+		const map = nodeListToDebugMaps(ast.nodeList, true);
+		expect(map).toEqual([
+			'[1:1]>[1:33](0,32)div: <div␣transition:animate="slide">',
+			'[1:6]>[1:32](5,31)transition:animate: transition:animate="slide"',
+			'  [1:5]>[1:6](4,5)bN: ␣',
+			'  [1:6]>[1:24](5,23)name: transition:animate',
+			'  [1:24]>[1:24](23,23)bE: ',
+			'  [1:24]>[1:25](23,24)equal: =',
+			'  [1:25]>[1:25](24,24)aE: ',
+			'  [1:25]>[1:26](24,25)sQ: "',
+			'  [1:26]>[1:31](25,30)value: slide',
+			'  [1:31]>[1:32](30,31)eQ: "',
+			'  isDirective: true',
+			'  isDynamicValue: false',
+			'[1:33]>[1:40](32,39)#text: content',
+			'[1:40]>[1:46](39,45)div: </div>',
+		]);
+	});
+
+	test('multiple directives on same element', () => {
+		const ast = parse('<Component client:visible set:html={content} />');
+		const map = nodeListToDebugMaps(ast.nodeList, true);
+		expect(map).toEqual([
+			'[1:1]>[1:48](0,47)Component: <Component␣client:visible␣set:html={content}␣/>',
+			'[1:12]>[1:26](11,25)client:visible: client:visible',
+			'  [1:11]>[1:12](10,11)bN: ␣',
+			'  [1:12]>[1:26](11,25)name: client:visible',
+			'  [1:26]>[1:26](25,25)bE: ',
+			'  [1:26]>[1:26](25,25)equal: ',
+			'  [1:26]>[1:26](25,25)aE: ',
+			'  [1:26]>[1:26](25,25)sQ: ',
+			'  [1:26]>[1:26](25,25)value: ',
+			'  [1:26]>[1:26](25,25)eQ: ',
+			'  isDirective: true',
+			'  isDynamicValue: false',
+			'[1:27]>[1:45](26,44)set:html: set:html={content}',
+			'  [1:26]>[1:27](25,26)bN: ␣',
+			'  [1:27]>[1:35](26,34)name: set:html',
+			'  [1:35]>[1:35](34,34)bE: ',
+			'  [1:35]>[1:36](34,35)equal: =',
+			'  [1:36]>[1:36](35,35)aE: ',
+			'  [1:36]>[1:37](35,36)sQ: {',
+			'  [1:37]>[1:44](36,43)value: content',
+			'  [1:44]>[1:45](43,44)eQ: }',
+			'  isDirective: true',
+			'  isDynamicValue: true',
+		]);
+	});
+
+	test('class:list is NOT a directive (special-cased to potentialName)', () => {
+		// class: prefix is special-cased in visitAttr — isDirective stays false, potentialName is set
+		const ast = parse('<div class:list={["a", "b"]} />');
+		const map = nodeListToDebugMaps(ast.nodeList, true);
+		expect(map).toContainEqual(expect.stringContaining('isDirective: false'));
+		expect(map).toContainEqual(expect.stringContaining('potentialName: class'));
+	});
+
+	test('client:media with special characters in value', () => {
+		const ast = parse('<Component client:media="(max-width: 600px)" />');
+		const map = nodeListToDebugMaps(ast.nodeList, true);
+		expect(map).toEqual([
+			'[1:1]>[1:48](0,47)Component: <Component␣client:media="(max-width:␣600px)"␣/>',
+			'[1:12]>[1:45](11,44)client:media: client:media="(max-width:␣600px)"',
+			'  [1:11]>[1:12](10,11)bN: ␣',
+			'  [1:12]>[1:24](11,23)name: client:media',
+			'  [1:24]>[1:24](23,23)bE: ',
+			'  [1:24]>[1:25](23,24)equal: =',
+			'  [1:25]>[1:25](24,24)aE: ',
+			'  [1:25]>[1:26](24,25)sQ: "',
+			'  [1:26]>[1:44](25,43)value: (max-width:␣600px)',
+			'  [1:44]>[1:45](43,44)eQ: "',
+			'  isDirective: true',
+			'  isDynamicValue: false',
+		]);
+	});
+
+	test('arbitrary colon-separated attribute is treated as directive', () => {
+		// Any prefix:name pattern triggers isDirective: true (catch-all in switch default)
+		const ast = parse('<div custom:attr="val" />');
+		const map = nodeListToDebugMaps(ast.nodeList, true);
+		expect(map).toContainEqual(expect.stringContaining('isDirective: true'));
+		expect(map).toContainEqual(expect.stringContaining('name: custom:attr'));
 	});
 });

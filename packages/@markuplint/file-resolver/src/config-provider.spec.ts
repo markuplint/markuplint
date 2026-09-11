@@ -1,15 +1,11 @@
-import type { ConfigLoadError } from './config-load-error.js';
+import type { ConfigLoadError } from '@markuplint/shared';
 
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 
 import { test, expect, vi } from 'vitest';
 
 import { ConfigProvider } from './config-provider.js';
 import { getFile } from './ml-file/index.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 vi.mock('packaged-config', () => {
 	return {
@@ -22,7 +18,7 @@ vi.mock('packaged-config', () => {
 const configProvider = new ConfigProvider();
 
 test('001 + 002', async () => {
-	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures');
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures');
 	const key = path.resolve(testDir, '002', '.markuplintrc.json');
 	const file = getFile(path.resolve(testDir, '002', 'target.html'));
 	const configSet = await configProvider.resolve(file, [key]);
@@ -93,7 +89,7 @@ test('001 + 002', async () => {
 });
 
 test('001 + 002 + 003', async () => {
-	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures');
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures');
 	const file = getFile(path.resolve(testDir, '003', 'dir', 'target.html'));
 	const key = await configProvider.search(file);
 	const configSet = await configProvider.resolve(file, [key]);
@@ -190,7 +186,7 @@ test('001 + 002 + 003', async () => {
 });
 
 test('Deep target', async () => {
-	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures');
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures');
 	const key = path.resolve(testDir, '004', 'dir', 'dir', 'dir', 'dir', 'dir', '.markuplintrc');
 	const file = getFile(path.resolve(testDir, '004', 'dir', 'dir', 'dir', 'dir', 'dir', 'deep-target.html'));
 	const configSet = await configProvider.resolve(file, [key]);
@@ -208,7 +204,7 @@ test('Deep target', async () => {
 });
 
 test('Import packaged config (Issue: #403)', async () => {
-	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures');
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures');
 	const key = path.resolve(testDir, '005', '.markuplintrc');
 	const file = getFile(path.resolve(testDir, '005', 'target.html'));
 	const configSet = await configProvider.resolve(file, [key]);
@@ -218,7 +214,7 @@ test('Import packaged config (Issue: #403)', async () => {
 });
 
 test('Overrides', async () => {
-	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures');
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures');
 	const key = path.resolve(testDir, '006', '.markuplintrc');
 	const file = getFile(path.resolve(testDir, '006', 'target.html'));
 	const configSet = await configProvider.resolve(file, [key]);
@@ -230,15 +226,18 @@ test('Overrides', async () => {
 });
 
 test('Config Presets', async () => {
-	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures');
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures');
 	const key = path.resolve(testDir, '007', '.markuplintrc');
 	const file = getFile(path.resolve(testDir, '007', 'target.html'));
 	const configSet = await configProvider.resolve(file, [key]);
-	expect(configSet.config.rules?.['wai-aria']).toBe(true);
+	expect(configSet.config.rules?.['a11y/wai-aria/non-existent-role']).toStrictEqual({
+		specConformance: 'normative',
+		rules: { 'no-unknown-role': true },
+	});
 });
 
 test('TypeScript (.markuplintrc.ts)', async () => {
-	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures');
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures');
 	const key = path.resolve(testDir, '008', '.markuplintrc.ts');
 	const file = getFile(path.resolve(testDir, '008', 'target.html'));
 	const configSet = await configProvider.resolve(file, [key]);
@@ -246,7 +245,7 @@ test('TypeScript (.markuplintrc.ts)', async () => {
 });
 
 test('TypeScript (markuplint.config.ts)', async () => {
-	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures');
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures');
 	const key = path.resolve(testDir, '009', 'markuplint.config.ts');
 	const file = getFile(path.resolve(testDir, '009', 'target.html'));
 	const configSet = await configProvider.resolve(file, [key]);
@@ -255,7 +254,7 @@ test('TypeScript (markuplint.config.ts)', async () => {
 
 test('Link', async () => {
 	const configProvider = new ConfigProvider();
-	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures', '010');
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures', '010');
 	const start = path.resolve(testDir, 'a.json');
 	const files = await configProvider.recursiveLoad(start, false, 'path/to/index.html');
 
@@ -273,7 +272,7 @@ test('Link', async () => {
 });
 
 test('Overrides with OverrideMode', async () => {
-	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures');
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures');
 	const resetKey = path.resolve(testDir, '011', '.markuplintrc.reset.json');
 	const mergeKey = path.resolve(testDir, '011', '.markuplintrc.merge.json');
 	const htmlFile = getFile(path.resolve(testDir, '011', 'target.html'));
@@ -297,4 +296,200 @@ test('Overrides with OverrideMode', async () => {
 		foo: false,
 		bar: true,
 	});
+});
+
+test('Overrides: multiple matching globs (reset mode) — last match replaces every earlier one outright', async () => {
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures');
+	const key = path.resolve(testDir, '012', '.markuplintrc.multi-reset.json');
+	const file = getFile(path.resolve(testDir, '012', 'target.html'));
+	const configSet = await configProvider.resolve(file, [key]);
+	// `./target.*` matched after `./*.html`, so under the default `reset` mode
+	// its config entirely replaces the first match's — `foo`/`bar` are gone.
+	expect(configSet.config).toStrictEqual({
+		rules: {
+			baz: true,
+		},
+	});
+	expect(configSet.appliedOverrides).toStrictEqual([
+		path.resolve(testDir, '012', '*.html'),
+		path.resolve(testDir, '012', 'target.*'),
+	]);
+});
+
+test('Overrides: multiple matching globs (merge mode) — appliedOverrides records match order', async () => {
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures');
+	const key = path.resolve(testDir, '012', '.markuplintrc.multi-merge.json');
+	const file = getFile(path.resolve(testDir, '012', 'target.html'));
+	const configSet = await configProvider.resolve(file, [key]);
+	expect(configSet.config.rules).toStrictEqual({
+		foo: false,
+		bar: true,
+		baz: true,
+	});
+	expect(configSet.appliedOverrides).toStrictEqual([
+		path.resolve(testDir, '012', '*.html'),
+		path.resolve(testDir, '012', 'target.*'),
+	]);
+});
+
+test('appliedOverrides is absent when the config has no overrides at all', async () => {
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures');
+	const key = path.resolve(testDir, '001', '.markuplintrc');
+	const file = getFile(path.resolve(testDir, '001', 'target.html'));
+	const configSet = await configProvider.resolve(file, [key]);
+	expect(configSet.appliedOverrides).toBeUndefined();
+});
+
+test('appliedOverrides is absent when overrides exist but none match the target file', async () => {
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures');
+	const key = path.resolve(testDir, '012', '.markuplintrc.no-match.json');
+	const file = getFile(path.resolve(testDir, '012', 'target.html'));
+	const configSet = await configProvider.resolve(file, [key]);
+	expect(configSet.config.rules).toStrictEqual({ foo: true });
+	expect(configSet.appliedOverrides).toBeUndefined();
+});
+
+test('Overrides remain per-file correct when sharing one ConfigProvider across files (#3997)', async () => {
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures');
+	const resetKey = path.resolve(testDir, '011', '.markuplintrc.reset.json');
+	const htmlFile = getFile(path.resolve(testDir, '011', 'target.html'));
+	const vueFile = getFile(path.resolve(testDir, '011', 'target.vue'));
+
+	// Same ConfigProvider, same `names` (`resetKey`) for both files — the base
+	// config is cached once, but each file's `overrides` match must still be
+	// evaluated independently on every call.
+	const sharedProvider = new ConfigProvider();
+
+	// .vue resolves first, populating the shared base cache after resolving
+	// an overrides-eligible target.
+	const vueResult = await sharedProvider.resolve(vueFile, [resetKey]);
+	expect(vueResult.config.rules).toStrictEqual({ foo: false });
+
+	// .html resolves second, same `names` — must NOT inherit .vue's override.
+	const htmlResult = await sharedProvider.resolve(htmlFile, [resetKey]);
+	expect(htmlResult.config.rules).toStrictEqual({ foo: true, bar: true });
+});
+
+test('Overrides remain per-file correct when sharing one ConfigProvider, opposite resolve order (#3997)', async () => {
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures');
+	const resetKey = path.resolve(testDir, '011', '.markuplintrc.reset.json');
+	const htmlFile = getFile(path.resolve(testDir, '011', 'target.html'));
+	const vueFile = getFile(path.resolve(testDir, '011', 'target.vue'));
+
+	const sharedProvider = new ConfigProvider();
+
+	// .html resolves first, populating the shared base cache after resolving
+	// a target with no override match.
+	const htmlResult = await sharedProvider.resolve(htmlFile, [resetKey]);
+	expect(htmlResult.config.rules).toStrictEqual({ foo: true, bar: true });
+
+	// .vue resolves second, same `names` — must still get its own override.
+	const vueResult = await sharedProvider.resolve(vueFile, [resetKey]);
+	expect(vueResult.config.rules).toStrictEqual({ foo: false });
+});
+
+test('Base config resolution is cached and reused across files sharing one ConfigProvider (#3997)', async () => {
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures');
+	const resetKey = path.resolve(testDir, '011', '.markuplintrc.reset.json');
+	const htmlFile = getFile(path.resolve(testDir, '011', 'target.html'));
+	const vueFile = getFile(path.resolve(testDir, '011', 'target.vue'));
+
+	const sharedProvider = new ConfigProvider();
+	const htmlResult = await sharedProvider.resolve(htmlFile, [resetKey]);
+	const vueResult = await sharedProvider.resolve(vueFile, [resetKey]);
+
+	// Both calls resolve the same `names`; `files`/`plugins` must be the SAME
+	// object across both results — proof the second call reused the cached
+	// base config instead of redoing merge/validate/plugin-resolution.
+	expect(vueResult.files).toBe(htmlResult.files);
+	expect(vueResult.plugins).toBe(htmlResult.plugins);
+});
+
+test('set() reuses the same key for the same config object identity (#3997)', () => {
+	const provider = new ConfigProvider();
+	const inlineConfig = { rules: { foo: true } };
+
+	const key1 = provider.set(inlineConfig);
+	const key2 = provider.set(inlineConfig);
+	expect(key2).toBe(key1);
+
+	// A different object, even with identical content, still gets its own key.
+	const key3 = provider.set({ rules: { foo: true } });
+	expect(key3).not.toBe(key1);
+});
+
+test('set() with an explicit identity stabilizes the key across differently-merged values (#3997)', () => {
+	const provider = new ConfigProvider();
+	const identity = { rules: { foo: true } };
+
+	const key1 = provider.set({ rules: { foo: true }, extends: ['a'] }, undefined, identity);
+	const key2 = provider.set({ rules: { foo: true }, extends: ['b'] }, undefined, identity);
+	expect(key2).toBe(key1);
+});
+
+test('resolve(cache: false) no longer clears entries registered via set() before the call (#4015)', async () => {
+	const provider = new ConfigProvider();
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures');
+	const file = getFile(path.resolve(testDir, '002', 'target.html'));
+
+	// Mirrors `MLEngine#resolveConfig()`'s pattern: `set()` an inline config,
+	// then immediately `resolve()` referencing that key with `cache: false`.
+	const key = provider.set({ rules: { foo: true } });
+	const configSet = await provider.resolve(file, [key], false);
+
+	expect(configSet.config.rules).toStrictEqual({ foo: true });
+});
+
+test('invalidate() clears entries registered via set() (#4015)', async () => {
+	const provider = new ConfigProvider();
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures');
+	const file = getFile(path.resolve(testDir, '002', 'target.html'));
+
+	const key = provider.set({ rules: { foo: true } });
+	provider.invalidate();
+
+	// The key only ever lived in the store; once cleared, resolving it falls
+	// through to `#load()`, which treats it as a file path/module name.
+	await expect(provider.resolve(file, [key], false)).rejects.toThrow(/is not an absolute path/);
+});
+
+test('runExclusive() serializes overlapping calls, deferring a later call until an earlier one settles (#4015)', async () => {
+	// `MLEngine#resolveConfig()` wraps its whole invalidate → set → search →
+	// resolve sequence in `runExclusive()` so that an overlapping call on the
+	// same (possibly shared) provider can't run its own `invalidate()` in the
+	// middle of another call's `set()`/`resolve()` sequence. This exercises
+	// `runExclusive()`'s serialization directly, with the interleaving under
+	// the test's own control instead of relying on incidental async timing.
+	const provider = new ConfigProvider();
+	const order: string[] = [];
+
+	let releaseFirst: () => void = () => {};
+	const firstGate = new Promise<void>(resolve => {
+		releaseFirst = resolve;
+	});
+
+	const first = provider.runExclusive(async () => {
+		order.push('first-start');
+		await firstGate;
+		order.push('first-end');
+	});
+
+	const second = provider.runExclusive(() => {
+		order.push('second-start');
+		order.push('second-end');
+		return Promise.resolve();
+	});
+
+	releaseFirst();
+	await Promise.all([first, second]);
+
+	// If `runExclusive()` let the two calls run concurrently instead of
+	// queueing, `second`'s callback (no internal `await`) would complete
+	// before `first`'s gated one resumes, producing
+	// ['first-start', 'second-start', 'second-end', 'first-end'] instead.
+	// Asserting only on this final, fully-settled order (not on intermediate
+	// state after N microtask ticks) keeps the assertion independent of a
+	// runtime's exact `await` scheduling — relevant since this repo also
+	// tests under Bun and Deno, not just Node/V8.
+	expect(order).toStrictEqual(['first-start', 'first-end', 'second-start', 'second-end']);
 });

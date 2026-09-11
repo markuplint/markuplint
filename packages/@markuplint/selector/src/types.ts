@@ -1,4 +1,51 @@
 /**
+ * Minimal attribute representation for selector matching.
+ * Pure data — no methods, no class instances.
+ *
+ * In Rust this maps directly to a struct.
+ */
+export interface SelectorAttr {
+	readonly name: string;
+	readonly localName: string;
+	readonly value: string;
+	readonly namespaceURI: string | null;
+}
+
+/**
+ * Minimal node representation for selector matching.
+ * Pure data with tree-navigation references.
+ *
+ * In Rust this maps to a trait backed by arena indices.
+ */
+export interface SelectorNode {
+	readonly nodeType: number;
+	readonly nodeName: string;
+	readonly parentNode: SelectorNode | null;
+}
+
+/**
+ * Minimal element representation for CSS selector matching.
+ * Captures **only** the properties the selector engine actually reads.
+ *
+ * DOM `Element` and `MLElement` both satisfy this interface,
+ * but plain objects can satisfy it too — enabling Rust interop
+ * and unit-testing without a full DOM.
+ *
+ * In Rust this maps to a struct + trait.
+ */
+export interface SelectorElement extends SelectorNode {
+	readonly localName: string;
+	readonly id: string;
+	readonly namespaceURI: string | null;
+	readonly classList: { contains(className: string): boolean };
+	readonly attributes: Iterable<SelectorAttr>;
+	readonly parentElement: SelectorElement | null;
+	readonly previousElementSibling: SelectorElement | null;
+	readonly nextElementSibling: SelectorElement | null;
+	readonly children: Iterable<SelectorElement>;
+}
+
+/**
  * A CSS specificity tuple: `[id, class, type]`.
  * Each component counts selectors of the corresponding category.
  */
@@ -17,8 +64,8 @@ export type SelectorMatchedResult = {
 	/** The computed specificity of the matched selector */
 	readonly specificity: Specificity;
 	readonly matched: true;
-	/** The DOM nodes that were matched */
-	readonly nodes: readonly (Element | Text)[];
+	/** The elements that were matched */
+	readonly nodes: readonly SelectorElement[];
 	/** Results from `:has()` pseudo-class sub-matches */
 	readonly has: readonly SelectorMatchedResult[];
 };

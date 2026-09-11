@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { resolveNamespace, getAttrSpecsByNames } from '@markuplint/ml-spec';
 import { glob } from '@markuplint/test-tools';
 import Ajv from 'ajv';
-import strip from 'strip-json-comments';
+import { parse } from 'jsonc-parser';
 import { describe, test, expect } from 'vitest';
 
 import htmlSpec from '../index.js';
@@ -57,7 +57,7 @@ test('structure', () => {
 describe('schema', () => {
 	const map = [
 		[
-			'spec.*.json',
+			'spec.*.jsonc',
 			new Ajv({
 				schemas: [
 					schemas.element,
@@ -69,15 +69,15 @@ describe('schema', () => {
 				],
 			}).getSchema(schemas.element.$id),
 
-			path.resolve(__dirname, 'spec.*.json'),
+			path.resolve(__dirname, 'spec.*.jsonc'),
 		],
 		[
-			'spec-common.attributes.json',
+			'spec-common.attributes.jsonc',
 			new Ajv({
 				schemas: [schemas.globalAttributes, schemas.attributes, schemas.types],
 			}).getSchema(schemas.globalAttributes.$id),
 
-			path.resolve(__dirname, 'spec-common.attributes.json'),
+			path.resolve(__dirname, 'spec-common.attributes.jsonc'),
 		],
 	];
 
@@ -85,7 +85,7 @@ describe('schema', () => {
 		test(testName, async () => {
 			const files = await glob(targetFiles);
 			for (const jsonPath of files) {
-				const json = JSON.parse(strip(await readFile(jsonPath, { encoding: 'utf-8' })));
+				const json = parse(await readFile(jsonPath, { encoding: 'utf-8' }));
 				const isValid = validator(json);
 				if (!isValid) {
 					throw new Error(`${path.basename(jsonPath)} is invalid (${validator.schemaEnv.baseId})`);

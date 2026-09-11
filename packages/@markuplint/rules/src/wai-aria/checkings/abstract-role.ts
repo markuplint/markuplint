@@ -1,7 +1,7 @@
 import type { Options } from '../types.js';
 import type { AttrChecker } from '@markuplint/ml-core';
 
-import { ariaSpecs } from '@markuplint/ml-spec';
+import { ARIA_RECOMMENDED_VERSION, ariaSpecs } from '@markuplint/ml-spec';
 
 /**
  * Checks whether the `role` attribute value refers to an abstract WAI-ARIA role.
@@ -15,7 +15,11 @@ import { ariaSpecs } from '@markuplint/ml-spec';
 export const checkingAbstractRole: AttrChecker<boolean, Options> =
 	({ attr }) =>
 	t => {
-		const { roles } = ariaSpecs(attr.ownerMLDocument.specs, attr.rule.options.version);
+		const ariaVersion =
+			attr.rule.options?.version ??
+			attr.ownerMLDocument.ruleCommonSettings?.ariaVersion ??
+			ARIA_RECOMMENDED_VERSION;
+		const { roles } = ariaSpecs(attr.ownerMLDocument.specs, ariaVersion);
 		const tokens = attr.tokenList?.allTokens();
 		if (!tokens) {
 			return;

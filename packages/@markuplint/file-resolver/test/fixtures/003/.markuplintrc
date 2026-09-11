@@ -13,7 +13,7 @@
 		},
 		"rule__custom-setting-with-detail-option": {
 			"value": "VALUE",
-			"option": {
+			"options": {
 				"OPTIONAL_PROP": "CHANGED_OPTIONAL_VALUE"
 			}
 		},

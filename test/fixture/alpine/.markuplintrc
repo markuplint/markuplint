@@ -4,6 +4,6 @@
 		"\\.html$": "@markuplint/alpine-parser"
 	},
 	"specs": {
-		"\\.html$": "@markuplint/alpine-parser/spec"
+		"\\.html$": "@markuplint/alpine-spec"
 	}
 }

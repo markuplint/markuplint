@@ -1,4 +1,4 @@
-import type { ContentModelResult, Element, Options, Specs } from './types.js';
+import type { ContentModelResult, Element, Mode, Options, Specs, TagRule } from './types.js';
 import type { ContentModel } from '@markuplint/ml-spec';
 import type { ReadonlyDeep } from 'type-fest';
 
@@ -24,8 +24,10 @@ export function start(
 	contents: ReadonlyDeep<ContentModel['contents']>,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element,
+	rules: readonly TagRule[],
 	specs: Specs,
 	options: Options,
+	mode: Mode,
 ): ContentModelResult[] {
 	const childNodesPatterns = options.evaluateConditionalChildNodes
 		? el.conditionalChildNodes().map(childNodes => [...childNodes])
@@ -64,10 +66,10 @@ export function start(
 			];
 		}
 
-		const patterns = representTransparentNodes(childNodes, specs, options);
+		const patterns = representTransparentNodes(childNodes, rules, specs, options, mode);
 
 		return patterns.flatMap(({ nodes, errors }) => {
-			const result = order(contents, nodes, specs, options, 0);
+			const result = order(contents, nodes, rules, specs, options, 0, mode);
 
 			return [
 				{

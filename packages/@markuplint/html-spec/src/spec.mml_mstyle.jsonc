@@ -1,0 +1,42 @@
+// https://www.w3.org/TR/mathml-core/#style-change-mstyle
+{
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": [
+					":model(MathMLPresentation)",
+					"mml|semantics",
+					"mml|annotation",
+					"mml|annotation-xml",
+					"#text"
+				]
+			}
+		]
+	},
+	"globalAttrs": {
+		"#GlobalEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#MathMLGlobalAttrs": true
+	},
+	"attributes": {
+		"background": {
+			"deprecated": true
+		},
+		"color": {
+			"deprecated": true
+		},
+		"fontsize": {
+			"deprecated": true
+		},
+		"fontstyle": {
+			"deprecated": true
+		},
+		"fontweight": {
+			"deprecated": true
+		}
+	},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": true
+	}
+}

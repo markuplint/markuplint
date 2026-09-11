@@ -8,8 +8,6 @@ import type { FormattedPrimitiveTypeCreator } from '../types.js';
 const TAB_OR_NEWLINE = /[\t\n\r]/;
 
 /**
- * Checks whether a string is a valid navigable target name.
- *
  * @see https://html.spec.whatwg.org/multipage/document-sequences.html#valid-navigable-target-name
  *
  * > A valid navigable target name is any string with at least one character

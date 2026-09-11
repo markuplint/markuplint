@@ -2,28 +2,10 @@ import type { CreateRuleCreatorParams, CreateRuleHelperResult } from './types.js
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 
 import { fsExists } from './fs-exists.js';
 import { transfer } from './transfer.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-/**
- * Installs scaffold template files to the destination directory and optionally
- * generates a `package.json` with appropriate scripts and dependency declarations.
- *
- * This is the low-level function used by all scaffold strategies (core, project, package).
- * It copies template files from the built-in `scaffold/<type>` directory, applies
- * placeholder replacements, and sets up the project structure.
- *
- * @param scaffoldType - The type of scaffold to install ("core", "project", or "package").
- * @param dest - The absolute path to the destination directory.
- * @param params - The creation parameters, extended with an optional `packageJson` flag
- *                 indicating whether to generate a `package.json` file.
- * @returns The scaffold result containing the list of generated files and dependency arrays.
- */
 export async function installScaffold(
 	scaffoldType: 'core' | 'project' | 'package',
 	dest: string,
@@ -36,7 +18,7 @@ export async function installScaffold(
 		await fs.mkdir(dest);
 	}
 
-	const scaffoldDir = path.resolve(__dirname, '..', 'scaffold', scaffoldType);
+	const scaffoldDir = path.resolve(import.meta.dirname, '..', 'scaffold', scaffoldType);
 
 	const transferred = await transfer(scaffoldType, scaffoldDir, dest, {
 		transpile: params.lang === 'JAVASCRIPT',

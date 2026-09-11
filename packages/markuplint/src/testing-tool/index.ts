@@ -31,7 +31,6 @@ export async function mlTest(
 		locale: locale ?? global.locale,
 		fix,
 		ignoreExt: true,
-		autoLoad: true,
 		importPresetRules: !rules,
 	});
 	const result = results[0];
@@ -39,6 +38,7 @@ export async function mlTest(
 	return {
 		violations: result?.violations ?? [],
 		fixedCode: result?.fixedCode ?? sourceCode,
+		fixSummary: result?.fixSummary,
 	};
 }
 
@@ -57,12 +57,13 @@ export async function mlTest(
 export async function mlRuleTest<T extends RuleConfigValue, O extends PlainData>(
 	rule: Readonly<RuleSeed<T, O>>,
 	sourceCode: string,
-	// eslint-disable-next-line unicorn/no-object-as-default-parameter
+	/* eslint-disable unicorn/no-object-as-default-parameter */
 	config: Omit<Config, 'rules' | 'nodeRules' | 'childNodeRules'> & {
 		rule?: Rule<T, Partial<O>>;
 		nodeRule?: NodeRule<T, Partial<O>>[];
 		childNodeRule?: ChildNodeRule<T, Partial<O>>[];
 	} = { rule: true },
+	/* eslint-enable unicorn/no-object-as-default-parameter */
 	fix = false,
 	locale = 'en',
 ) {
@@ -120,6 +121,9 @@ export async function mlRuleTest<T extends RuleConfigValue, O extends PlainData>
 		fix,
 	);
 
+	// The rule under test runs under the temporary name `<current-rule>`,
+	// so `ruleId` is removed to keep test assertions independent of the
+	// rule's actual registered name.
 	res.violations.map(v => {
 		// @ts-ignore
 		delete v.ruleId;
@@ -153,7 +157,6 @@ export async function mlTestFile(
 		fix,
 		ignoreExt: true,
 		noSearchConfig: !!config,
-		autoLoad: true,
 		importPresetRules: !rules,
 	});
 	const result = results[0];

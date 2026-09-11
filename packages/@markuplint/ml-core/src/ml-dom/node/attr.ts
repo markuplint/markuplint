@@ -3,13 +3,14 @@ import type { AttributeNodeType } from './types.js';
 import type { MLASTAttr } from '@markuplint/ml-ast';
 import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
-import { resolveNamespace } from '@markuplint/ml-spec';
+import { resolveNamespace, compileDirectivePatterns, resolveDirective } from '@markuplint/ml-spec';
+import { searchIDLAttribute } from '@markuplint/parser-utils';
 
 import { MLToken } from '../token/token.js';
 
 import { MLDomTokenList } from './dom-token-list.js';
 import { MLNode } from './node.js';
-import { UnexpectedCallError } from './unexpected-call-error.js';
+import { UnexpectedCallError } from '@markuplint/shared';
 
 /**
  * Represents a DOM Attr (attribute) node wrapper in the markuplint DOM tree.
@@ -135,12 +136,56 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 		this.startQuote = new MLToken(this._astToken.startQuote);
 		this.valueNode = new MLToken(this._astToken.value);
 		this.endQuote = new MLToken(this._astToken.endQuote);
-		this.isDynamicValue = this._astToken.isDynamicValue;
-		this.isDirective = this._astToken.isDirective;
 		this.candidate = this._astToken.candidate;
-		this.#potentialName = this._astToken.potentialName ?? this.nameNode?.raw ?? '';
 		this.#potentialValue = this._astToken.potentialValue ?? this.valueNode?.raw ?? '';
-		this.isDuplicatable = this._astToken.isDuplicatable;
+
+		if (this._astToken.potentialName == null) {
+			// Try declarative directive pattern resolution from spec
+			const patterns = ownElement.ownerMLDocument.specs.directivePatterns ?? [];
+			const resolution =
+				patterns.length > 0
+					? resolveDirective(this.nameNode?.raw ?? '', compileDirectivePatterns(patterns))
+					: null;
+
+			if (resolution) {
+				this.#potentialName = resolution.potentialName ?? this.nameNode?.raw ?? '';
+				this.isDynamicValue = resolution.isDynamicValue;
+				this.isDirective = resolution.isDirective;
+				this.isDuplicatable = resolution.isDuplicatable ?? this._astToken.isDuplicatable;
+				if (resolution.valueType) {
+					this.valueType = resolution.valueType;
+				}
+			} else {
+				this.#potentialName = this.nameNode?.raw ?? '';
+				this.isDynamicValue = this._astToken.isDynamicValue;
+				this.isDirective = this._astToken.isDirective;
+				this.isDuplicatable = this._astToken.isDuplicatable;
+			}
+
+			// IDL attribute resolution (after directivePatterns).
+			// Performed in the core, not in each parser: any spec opting in via
+			// `acceptedAttrNames` shares the same IDL-to-content-attribute mapping.
+			if (ownElement.ownerMLDocument.specs.acceptedAttrNames && !this.isDirective) {
+				const { contentAttrName, idlPropName } = searchIDLAttribute(this.#potentialName);
+				if (contentAttrName && contentAttrName !== this.#potentialName) {
+					this.#potentialName = contentAttrName;
+				}
+				// Set candidate for IDL naming suggestions (e.g., tabindex → tabIndex in JSX).
+				// Only in 'idl' mode (React). In 'both' mode (Svelte), both content and IDL names are accepted.
+				if (!resolution && idlPropName && ownElement.ownerMLDocument.specs.acceptedAttrNames === 'idl') {
+					const rawName = this.nameNode?.raw ?? '';
+					if (rawName !== idlPropName) {
+						this.candidate = idlPropName;
+					}
+				}
+			}
+		} else {
+			// Parser-set potentialName takes precedence
+			this.#potentialName = this._astToken.potentialName;
+			this.isDynamicValue = this._astToken.isDynamicValue;
+			this.isDirective = this._astToken.isDirective;
+			this.isDuplicatable = this._astToken.isDuplicatable;
+		}
 
 		const ns = resolveNamespace(this.#potentialName, ownElement.namespaceURI);
 		this.#localName = ns.localName;
@@ -253,23 +298,6 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 	}
 
 	/**
-	 * Fixes the attribute value.
-	 * If the attribute is not a spread attribute, it calls the `fix` method of the `valueNode`.
-	 *
-	 * @implements `@markuplint/ml-core` API: `MLAttr`
-	 *
-	 * @param raw - The raw attribute value.
-	 */
-	fix(raw: string) {
-		if (this.localName === '#spread') {
-			return;
-		}
-
-		// `valueNode` is not null when it is no spread.
-		this.valueNode?.fix(raw);
-	}
-
-	/**
 	 * Returns a normalized string representation of the attribute,
 	 * stripping extraneous whitespace around the name, equal sign, and value tokens.
 	 * Falls back to the raw string if any token is missing.
@@ -285,42 +313,12 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 	}
 
 	/**
-	 * Returns a string representation of the attribute.
+	 * Returns the raw string representation of the attribute.
 	 *
 	 * @implements DOM API: `Attr`
-	 *
-	 * @param includesSpacesBeforeName - Whether to include spaces before the attribute name.
 	 * @returns The string representation of the attribute.
 	 */
-	toString(fixed = false) {
-		if (!fixed) {
-			return this.raw;
-		}
-
-		if (this.localName === '#spread') {
-			return this.raw;
-		}
-
-		const tokens = [this.nameNode?.toString(true) ?? ''];
-		if (this.equal && this.equal.toString(true) !== '') {
-			tokens.push(
-				this.spacesBeforeEqual?.toString(true) ?? '',
-				this.equal?.toString(true) ?? '',
-				this.spacesAfterEqual?.toString(true) ?? '',
-				this.startQuote?.toString(true) ?? '',
-				this.valueNode?.toString(true) ?? '',
-				this.endQuote?.toString(true) ?? '',
-			);
-		} else if (this.valueNode && this.valueNode.toString(true) !== '') {
-			tokens.push(
-				//
-				'=',
-				this.startQuote?.toString(true) || '"',
-				this.valueNode.toString(true),
-				this.endQuote?.toString(true) || '"',
-			);
-		}
-
-		return tokens.join('');
+	toString() {
+		return this.raw;
 	}
 }

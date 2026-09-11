@@ -1,0 +1,27 @@
+// https://www.w3.org/TR/mathml-core/#space-mspace
+{
+	"contentModel": {
+		"contents": false
+	},
+	"globalAttrs": {
+		"#GlobalEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#MathMLGlobalAttrs": true
+	},
+	"attributes": {
+		// https://www.w3.org/TR/mathml-core/#space-mspace
+		"width": {
+			"type": "<length-percentage>"
+		},
+		"height": {
+			"type": "<length-percentage>"
+		},
+		"depth": {
+			"type": "<length-percentage>"
+		}
+	},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": true
+	}
+}

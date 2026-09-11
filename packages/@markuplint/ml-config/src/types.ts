@@ -1,4 +1,5 @@
-import type { ParserOptions } from '@markuplint/ml-ast';
+import type { MLASTParseErrorCode, ParserOptions } from '@markuplint/ml-ast';
+import type { ARIAVersion } from '@markuplint/ml-spec';
 import type { RegexSelector } from '@markuplint/selector';
 import type { Nullable } from '@markuplint/shared';
 
@@ -7,9 +8,12 @@ export type { RegexSelector } from '@markuplint/selector';
 /**
  * The root configuration object for markuplint.
  * Defines rules, parsers, specs, plugins, and overrides for linting markup.
+ *
+ * @see https://markuplint.dev/configuration
  */
 export type Config = {
 	readonly $schema?: string;
+	readonly ruleCommonSettings?: RuleCommonSettings;
 	readonly extends?: string | readonly string[];
 	readonly plugins?: readonly (PluginConfig | string)[];
 	readonly parser?: ParserConfig;
@@ -23,6 +27,26 @@ export type Config = {
 	readonly childNodeRules?: readonly ChildNodeRule[];
 	readonly overrideMode?: 'merge' | 'reset';
 	readonly overrides?: Readonly<Record<string, OverrideConfig>>;
+	/**
+	 * Computed by {@link mergeConfig} — never authored in a config file. Tracks
+	 * `rules` keys that were a genuine {@link NamedRuleGroup} in some layer of the
+	 * `extends`/override chain, even where the final merged value collapsed to
+	 * `false` (a whole-group disable erases which base rule(s) it wrapped — see
+	 * `mergeNamedRuleGroupEntry`). Consumers (`@markuplint/ml-core`) use this to
+	 * tell an intentional named-group disable apart from a typo'd/nonexistent
+	 * rule name that also happens to be set to `false` with a `/` in its key —
+	 * both collapse to the same `rules[key] === false` shape after merging, but
+	 * only the former should be exempt from "Rule not found" validation.
+	 */
+	readonly knownNamedRuleGroupKeys?: readonly string[];
+};
+
+/**
+ * Common settings applied globally to all rules.
+ * These values serve as fallbacks when individual rules do not specify their own.
+ */
+export type RuleCommonSettings = {
+	readonly ariaVersion?: ARIAVersion;
 };
 
 /**
@@ -101,9 +125,71 @@ export type SpecConfig = {
  * Options for controlling the severity of specific diagnostic categories.
  */
 export type SeverityOptions = {
-	readonly parseError?: Severity | 'off' | boolean;
+	/**
+	 * Severity for non-fatal parser conformance errors surfaced via the
+	 * built-in `parse-error` channel.
+	 *
+	 * Accepts either of:
+	 *
+	 * - A single severity (`'error' | 'warning' | 'info' | 'off' | boolean`)
+	 *   applied uniformly to **every** parser error code.
+	 * - A {@link Partial} record keyed by {@link MLASTParseErrorCode}; codes
+	 *   not present in the record fall through to `'off'`.
+	 *
+	 * **Default**: all codes off. The channel emits nothing until the user
+	 * either flips this option to a single severity or opts specific codes in
+	 * via the record form. This preserves backwards compatibility for users
+	 * upgrading from versions where the channel did not exist.
+	 *
+	 * @example single severity (legacy form)
+	 * ```jsonc
+	 * { "severity": { "parseError": "error" } }
+	 * ```
+	 *
+	 * @example per-code opt-in (recommended)
+	 * ```jsonc
+	 * {
+	 *   "severity": {
+	 *     "parseError": {
+	 *       "duplicate-attribute": "error",
+	 *       "unknown-named-character-reference": "warning"
+	 *     }
+	 *   }
+	 * }
+	 * ```
+	 */
+	readonly parseError?: ParseErrorSeverity | Partial<Record<MLASTParseErrorCode, ParseErrorSeverity>>;
+
+	/**
+	 * Severity for deprecated-rule-name notices, surfaced via the built-in
+	 * `rule-deprecation` channel. A deprecated name is one the v5
+	 * rule-system redesign (#3989) renamed or split; the notice reports that
+	 * the config still works today but will stop resolving in v6.
+	 *
+	 * Unlike {@link parseError}, this defaults to `'warning'` (not off) —
+	 * it carves an already-surfaced notice out of the generic `config-error`
+	 * channel rather than introducing a new one, so leaving it unset must
+	 * not silence something users already see.
+	 *
+	 * @example
+	 * ```jsonc
+	 * { "severity": { "deprecation": "off" } }
+	 * ```
+	 */
+	readonly deprecation?: Severity | 'off' | boolean;
 };
 
+/**
+ * Severity values accepted by {@link SeverityOptions.parseError}, in both
+ * the uniform-severity and per-code forms.
+ */
+export type ParseErrorSeverity = Severity | 'off' | boolean;
+
+/**
+ * Normalized form of pretender configuration used after merging.
+ * Contains optional file references, import paths, inline pretender data,
+ * and dynamic scanning configuration.
+ */
 export type PretenderDetails = {
 	/**
 	 * @experimental
@@ -114,17 +200,54 @@ export type PretenderDetails = {
 	 * @experimental
 	 */
 	readonly imports?: readonly string[];
+
+	/**
+	 * Inline pretender definitions.
+	 */
 	readonly data?: readonly Pretender[];
+
+	/**
+	 * Dynamic scanning configuration. Each entry specifies a glob pattern
+	 * for component files to scan. File extensions determine the scanner:
+	 * `.js/.jsx/.ts/.tsx` use the JSX scanner, `.vue/.svelte/.astro` use
+	 * the template scanner.
+	 *
+	 * @experimental
+	 */
+	readonly scan?: readonly PretenderScanConfig[];
+
+	/**
+	 * When `true`, resolves pretenders on demand by scanning the lint
+	 * target's own import graph instead of requiring `files`/`scan`
+	 * pre-configuration. Because only the config file is filesystem-watched,
+	 * results can go stale in watch mode / editor sessions if an imported
+	 * component file changes without the config changing too.
+	 *
+	 * @experimental
+	 */
+	readonly auto?: boolean;
 };
 
 /**
  * Data structure for a pretender definition file.
  */
 export type PretenderFileData = {
+	/**
+	 * Schema version of the pretender file format.
+	 */
 	readonly version: string;
+
+	/**
+	 * Array of pretender definitions in this file.
+	 */
 	readonly data: readonly Pretender[];
 };
 
+/**
+ * Defines a mapping from a custom element (matched by CSS selector) to a standard
+ * HTML element for linting purposes, allowing rules to treat custom components
+ * as if they were native elements.
+ */
 export type Pretender = {
 	/**
 	 * Target node selectors
@@ -141,21 +264,15 @@ export type Pretender = {
 	readonly as: string | OriginalNode;
 
 	/**
-	 * If it is a string, it is resolved as an element name.
-	 * An element regards as having the same attributes
-	 * as the pretended custom element because these are inherited.
-	 * If it is an Object, It can specify in detail the element's attributes.
+	 * Where the component was found, as `<path>:<line>:<column>`. Metadata only —
+	 * nothing in linting reads it to influence pretender matching (matching is by
+	 * `selector` alone). `@markuplint/pretenders` scanners emit `<path>` relative
+	 * to the JSON file this entry will be written into, not the scan-time cwd, so
+	 * it stays resolvable regardless of where the file is later loaded from.
 	 *
 	 * @experimental
 	 */
 	readonly filePath?: string;
-
-	/**
-	 * Dynamic scaning
-	 *
-	 * @experimental
-	 */
-	readonly scan?: readonly PretenderScanConfig[];
 };
 
 export type OriginalNode = {
@@ -282,23 +399,47 @@ export type PretenderARIA = {
 };
 
 /**
+ * Configuration for dynamic component scanning.
+ * File extensions determine the scanner automatically:
+ * `.js/.jsx/.ts/.tsx` → JSX scanner, `.vue/.svelte/.astro` → template scanner.
+ *
  * @experimental
  */
 export type PretenderScanConfig = {
 	/**
-	 * Supporting for Glob format
+	 * Glob pattern(s) for component files to scan.
 	 */
-	readonly files: string;
-	readonly type: string;
-	readonly options: PretenderScanOptions;
+	readonly files: string | readonly string[];
+
+	/**
+	 * Component names to exclude from scanning results.
+	 */
+	readonly ignoreComponentNames?: readonly string[];
 };
 
 /**
+ * Base options for pretender scanners.
+ *
  * @experimental
  */
 export interface PretenderScanOptions {
+	/**
+	 * Working directory for resolving relative file paths.
+	 */
 	readonly cwd?: string;
+
+	/**
+	 * Component names to exclude from scanning results.
+	 */
 	readonly ignoreComponentNames?: readonly string[];
+
+	/**
+	 * In-memory content overrides, keyed by normalized (`/`-delimited)
+	 * absolute file path, consulted before falling back to a disk read.
+	 * For content with no on-disk source of truth yet, such as an editor's
+	 * unsaved buffer for the file currently being linted.
+	 */
+	readonly sources?: ReadonlyMap<string, string>;
 }
 
 /**
@@ -310,28 +451,50 @@ export interface PretenderScanOptions {
 export type Rule<T extends RuleConfigValue, O extends PlainData = undefined> = RuleConfig<T, O> | Readonly<T> | boolean;
 
 /**
- * @deprecated
- */
-export type RuleV2<T extends RuleConfigValue, O extends PlainData = undefined> =
-	| RuleConfigV2<T, O>
-	| Readonly<T>
-	| boolean;
-
-/**
  * A rule setting with any value and option types.
  */
 export type AnyRule = Rule<RuleConfigValue, PlainData>;
 
 /**
- * @deprecated
+ * A named rule group in the `rules` section.
+ * Keys containing `/` in `rules` are treated as named rule groups.
+ * Each group wraps one or more base rules under a namespace,
+ * enabling per-check control and spec conformance metadata.
+ *
+ * @example
+ * ```jsonc
+ * {
+ *   "rules": {
+ *     "a11y/id-duplication": {
+ *       "specConformance": "normative",
+ *       "rules": { "id-duplication": true }
+ *     }
+ *   }
+ * }
+ * ```
  */
-export type AnyRuleV2 = RuleV2<RuleConfigValue, PlainData>;
+export type NamedRuleGroup = {
+	readonly specConformance?: SpecConformance;
+	/** User-applied severity override for all rules in the group */
+	readonly severity?: Severity;
+	readonly rules: BaseRules;
+};
+
+/**
+ * A dictionary mapping base rule names to their configurations.
+ * Does not accept {@link NamedRuleGroup} entries.
+ * Used inside {@link NamedRuleGroup}, {@link NodeRule}, and {@link ChildNodeRule}.
+ */
+export type BaseRules = {
+	readonly [ruleName: string]: AnyRule;
+};
 
 /**
  * A dictionary mapping rule names to their configurations.
+ * Keys containing `/` may be {@link NamedRuleGroup} entries.
  */
 export type Rules = {
-	readonly [ruleName: string]: AnyRule;
+	readonly [ruleName: string]: AnyRule | NamedRuleGroup;
 };
 
 /**
@@ -349,29 +512,23 @@ export type RuleConfig<T extends RuleConfigValue, O extends PlainData = undefine
 	readonly options?: Readonly<O>;
 	/** A human-readable reason for this rule configuration, included in violation messages */
 	readonly reason?: string;
-};
-
-/**
- * @deprecated
- */
-export type RuleConfigV2<T extends RuleConfigValue, O extends PlainData = undefined> = {
-	readonly severity?: Severity;
-	readonly value?: Readonly<T>;
-	readonly reason?: string;
-
-	/**
-	 * Old property
-	 *
-	 * @deprecated
-	 * @see {this.options}
-	 */
-	readonly option?: Readonly<O>;
+	/** When `true`, replaces the violation message with `reason` entirely instead of appending it. Requires `reason` to be set. */
+	readonly reasonOnly?: boolean;
 };
 
 /**
  * The severity level of a lint violation.
  */
 export type Severity = 'error' | 'warning' | 'info';
+
+/**
+ * The spec conformance classification of a rule, based on RFC 2119 keyword strength.
+ *
+ * - `'normative'` — derived from MUST/REQUIRED requirements in the HTML spec
+ * - `'non-normative'` — derived from SHOULD/RECOMMENDED requirements in the HTML spec
+ * - `undefined` — plugin/preset recommendation or user-defined (no spec backing)
+ */
+export type SpecConformance = 'normative' | 'non-normative';
 
 /**
  * The value portion of a rule configuration. Can be a primitive scalar,
@@ -381,24 +538,59 @@ export type RuleConfigValue = PrimitiveScalar | readonly (PrimitiveScalar | Read
 
 /**
  * A rule override that targets specific nodes by CSS selector, regex selector, ARIA roles, or categories.
+ *
+ * When a `name` is provided (must contain `/`), this becomes a **named nodeRule**
+ * that creates a virtual rule instance running independently from the base rule.
+ * Named nodeRules can be individually enabled/disabled via `rules["name/here"]: false`.
  */
 export type NodeRule = {
+	/**
+	 * Alias name for this nodeRule, creating a virtual rule.
+	 * Must contain `/` (e.g., `"a11y/img-has-alt"`).
+	 * With a single non-false entry, this name is used directly.
+	 * With multiple non-false entries, derived names (`name/baseRuleName`)
+	 * are generated automatically, and this name becomes the group name.
+	 */
+	readonly name?: string;
+	/**
+	 * The spec conformance classification of this rule.
+	 * Included in violations as metadata for downstream tools and reporting.
+	 */
+	readonly specConformance?: SpecConformance;
 	readonly selector?: string;
 	readonly regexSelector?: RegexSelector;
 	readonly categories?: readonly string[];
 	readonly roles?: readonly string[];
 	readonly obsolete?: boolean;
-	readonly rules?: Rules;
+	/** Base rule settings. Does not accept {@link NamedRuleGroup} entries. */
+	readonly rules?: BaseRules;
 };
 
 /**
  * A rule override that targets child nodes of elements matching the selector.
+ *
+ * When a `name` is provided (must contain `/`), this becomes a **named childNodeRule**
+ * that creates a virtual rule instance, just like named nodeRules.
  */
 export type ChildNodeRule = {
+	/**
+	 * Alias name for this childNodeRule, creating a virtual rule.
+	 * Must contain `/` (e.g., `"a11y/heading-in-section"`).
+	 * With a single non-false entry, this name is used directly.
+	 * With multiple non-false entries, derived names (`name/baseRuleName`)
+	 * are generated automatically, and this name becomes the group name.
+	 */
+	readonly name?: string;
+	/**
+	 * The spec conformance classification of this rule.
+	 * Included in violations as metadata for downstream tools and reporting.
+	 */
+	readonly specConformance?: SpecConformance;
 	readonly selector?: string;
 	readonly regexSelector?: RegexSelector;
 	readonly inheritance?: boolean;
-	readonly rules?: Rules;
+	/** Base rule settings. Does not accept {@link NamedRuleGroup} entries. */
+	readonly rules?: BaseRules;
 };
 
 /**
@@ -422,6 +614,8 @@ export type Report<T extends RuleConfigValue, O extends PlainData = undefined> =
 export type Report1<T extends RuleConfigValue, O extends PlainData = undefined> = {
 	readonly message: string;
 	readonly scope: Scope<T, O>;
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	readonly fix?: (fixer: IRuleFixer) => TextEdit | readonly TextEdit[];
 };
 
 /**
@@ -432,6 +626,8 @@ export type Report2 = {
 	readonly line: number;
 	readonly col: number;
 	readonly raw: string;
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	readonly fix?: (fixer: IRuleFixer) => TextEdit | readonly TextEdit[];
 };
 
 /**
@@ -448,16 +644,112 @@ export type Scope<T extends RuleConfigValue, O extends PlainData = undefined> = 
 };
 
 /**
+ * A text range replacement on the source code.
+ * Used by the autofix system to describe edits.
+ */
+export type TextEdit = {
+	/** 0-based character offsets (UTF-16 code units): [start, end) */
+	readonly range: readonly [start: number, end: number];
+	/** Replacement text (empty string = deletion) */
+	readonly text: string;
+};
+
+/**
+ * Fix information attached to a {@link Violation}.
+ * Contains one or more {@link TextEdit}s to apply to the source.
+ */
+export type FixData = {
+	readonly edits: readonly TextEdit[];
+};
+
+/**
+ * Minimal token shape required by {@link IRuleFixer} methods.
+ * Any object with a character offset and raw source text satisfies this constraint.
+ */
+export type FixToken = {
+	readonly startOffset: number;
+	readonly raw: string;
+};
+
+/**
+ * A helper interface for building {@link TextEdit}s inside a fix callback.
+ * Passed to the `fix` function on {@link Report1} and {@link Report2}.
+ */
+export interface IRuleFixer {
+	/**
+	 * Replaces a token's entire text with new content.
+	 *
+	 * @param token - The token whose range will be replaced
+	 * @param text - The replacement text
+	 * @returns A TextEdit spanning the token's range
+	 */
+	replaceText(token: FixToken, text: string): TextEdit;
+
+	/**
+	 * Replaces an explicit character range with new content.
+	 *
+	 * @param range - The `[start, end)` character offsets to replace
+	 * @param text - The replacement text
+	 * @returns A TextEdit spanning the given range
+	 */
+	replaceRange(range: readonly [number, number], text: string): TextEdit;
+
+	/**
+	 * Inserts text immediately before a token.
+	 *
+	 * @param token - The token before which to insert
+	 * @param text - The text to insert
+	 * @returns A zero-width TextEdit at the token's start offset
+	 */
+	insertBefore(token: Pick<FixToken, 'startOffset'>, text: string): TextEdit;
+
+	/**
+	 * Inserts text immediately after a token.
+	 *
+	 * @param token - The token after which to insert
+	 * @param text - The text to insert
+	 * @returns A zero-width TextEdit at the token's end offset
+	 */
+	insertAfter(token: FixToken, text: string): TextEdit;
+
+	/**
+	 * Removes a token's entire text from the source.
+	 *
+	 * @param token - The token to remove
+	 * @returns A TextEdit that replaces the token's range with an empty string
+	 */
+	remove(token: FixToken): TextEdit;
+
+	/**
+	 * Removes an explicit character range from the source.
+	 *
+	 * @param range - The `[start, end)` character offsets to remove
+	 * @returns A TextEdit that replaces the range with an empty string
+	 */
+	removeRange(range: readonly [number, number]): TextEdit;
+}
+
+/**
  * A fully resolved lint violation with all information needed for reporting.
  */
 export type Violation = {
+	/** The base rule ID (always the underlying rule name, for backwards compatibility) */
 	readonly ruleId: string;
+	/**
+	 * The display name of the rule. Present only on virtual rules (named nodeRules).
+	 * For regular rules, use `ruleId` as the display name.
+	 */
+	readonly name?: string;
 	readonly severity: Severity;
 	readonly message: string;
 	readonly reason?: string;
+	/** The normative level of the rule that produced this violation */
+	readonly specConformance?: SpecConformance;
 	readonly line: number;
 	readonly col: number;
 	readonly raw: string;
+	/** Fix information for autofix. Present only when the rule provides a fix callback. */
+	readonly fix?: FixData;
 };
 
 /**
@@ -472,6 +764,7 @@ export type RuleInfo<T extends RuleConfigValue, O extends PlainData = undefined>
 	readonly value: Readonly<T>;
 	readonly options: Readonly<O>;
 	readonly reason?: string;
+	readonly reasonOnly?: boolean;
 };
 
 /**

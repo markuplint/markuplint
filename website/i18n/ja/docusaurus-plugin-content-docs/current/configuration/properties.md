@@ -1,6 +1,20 @@
 # プロパティを設定する
 
-設定は、以下のプロパティを持ちます。
+## クイックリファレンス
+
+ほとんどのプロジェクトでは、いくつかのプロパティだけで十分です。やりたいことに応じて使うプロパティを選んでください:
+
+| やりたいこと                           | プロパティ                                                       |
+| -------------------------------------- | ---------------------------------------------------------------- |
+| プリセットを使う                       | [`extends`](#extends)                                            |
+| ルールを有効化・カスタマイズする       | [`rules`](#rules)                                                |
+| フレームワーク（React、Vueなど）で使う | [`parser`](#parser) + [`specs`](#specs)                          |
+| 特定の要素にルールを適用する           | [`nodeRules`](#noderules) or [`childNodeRules`](#childnoderules) |
+| カスタムコンポーネントを検証する       | [`pretenders`](#pretenders)                                      |
+| ファイルをリント対象から除外する       | [`excludeFiles`](#excludefiles)                                  |
+| ディレクトリごとに設定を上書きする     | [`overrides`](#overrides)                                        |
+
+## すべてのプロパティ
 
 ```json class=config
 {
@@ -10,6 +24,7 @@
   "parserOptions": {},
   "specs": [],
   "excludeFiles": [],
+  "severity": {},
   "rules": {},
   "nodeRules": [],
   "childNodeRules": [],
@@ -19,20 +34,21 @@
 }
 ```
 
-| プロパティ                              | 初期ガイド                                                                                                                    | インターフェイス                              |
-| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
-| [**`extends`**](#extends)               | [プリセットをつかう](/docs/guides/presets)                                                                                    | [インターフェイス](#extends/interface)        |
-| [**`plugins`**](#plugins)               | [カスタムルールの適用](/docs/guides/applying-rules#applying-custom-rules), [カスタムルールをつくる](/docs/guides/custom-rule) | [インターフェイス](#plugins/interface)        |
-| [**`parser`**](#parser)                 | [HTML以外につかう](/docs/guides/besides-html)                                                                                 | [インターフェイス](#parser/interface)         |
-| [**`parserOptions`**](#parseroptions)   | -                                                                                                                             | [インターフェイス](#parseroptions/interface)  |
-| [**`specs`**](#specs)                   | [HTML以外につかう](/docs/guides/besides-html)                                                                                 | [インターフェイス](#specs/interface)          |
-| [**`excludeFiles`**](#excludefiles)     | [ファイルの除外](/docs/guides/ignoring-code#ignoring-file)                                                                    | [インターフェイス](#excludefiles/interface)   |
-| [**`rules`**](#rules)                   | [ルールを適用する](/docs/guides/applying-rules)                                                                               | [インターフェイス](#rules/interface)          |
-| [**`nodeRules`**](#noderules)           | [部分的な適用](/docs/guides/applying-rules#applying-to-some)                                                                  | [インターフェイス](#noderules/interface)      |
-| [**`childNodeRules`**](#childnoderules) | [部分的な適用](/docs/guides/applying-rules#applying-to-some)                                                                  | [インターフェイス](#childnoderules/interface) |
-| [**`pretenders`**](#pretenders)         | [プリテンダー（偽装機能）](/docs/guides/besides-html#pretenders)                                                              | [インターフェイス](#pretenders/interface)     |
-| [**`overrideMode`**](#overridemode)     | [ルールを上書きして無効化](/docs/guides/ignoring-code#overriding-to-disable-rules)                                            | [インターフェイス](#overridemode/interface)   |
-| [**`overrides`**](#overrides)           | [ルールを上書きして無効化](/docs/guides/ignoring-code#overriding-to-disable-rules)                                            | [インターフェイス](#overrides/interface)      |
+| プロパティ                              | 初期ガイド                                                                                                                 | インターフェイス                              |
+| --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
+| [**`extends`**](#extends)               | [プリセットをつかう](/docs/guides/presets)                                                                                 | [インターフェイス](#extends/interface)        |
+| [**`plugins`**](#plugins)               | [カスタムルールを使う](/docs/guides/applying-rules#using-custom-rules), [カスタムルールをつくる](/docs/guides/custom-rule) | [インターフェイス](#plugins/interface)        |
+| [**`parser`**](#parser)                 | [HTML以外で使う](/docs/guides/beyond-html)                                                                                 | [インターフェイス](#parser/interface)         |
+| [**`parserOptions`**](#parseroptions)   | -                                                                                                                          | [インターフェイス](#parseroptions/interface)  |
+| [**`specs`**](#specs)                   | [HTML以外で使う](/docs/guides/beyond-html)                                                                                 | [インターフェイス](#specs/interface)          |
+| [**`excludeFiles`**](#excludefiles)     | [ファイルの除外](/docs/guides/ignoring-code#ignoring-file)                                                                 | [インターフェイス](#excludefiles/interface)   |
+| [**`severity`**](#severity)             | -                                                                                                                          | [インターフェイス](#severity/interface)       |
+| [**`rules`**](#rules)                   | [ルールを適用する](/docs/guides/applying-rules)                                                                            | [インターフェイス](#rules/interface)          |
+| [**`nodeRules`**](#noderules)           | [部分的な適用](/docs/guides/applying-rules#applying-rules-to-specific-elements)                                            | [インターフェイス](#noderules/interface)      |
+| [**`childNodeRules`**](#childnoderules) | [部分的な適用](/docs/guides/applying-rules#applying-rules-to-specific-elements)                                            | [インターフェイス](#childnoderules/interface) |
+| [**`pretenders`**](#pretenders)         | [プリテンダー（偽装機能）](/docs/guides/beyond-html#pretenders)                                                            | [インターフェイス](#pretenders/interface)     |
+| [**`overrideMode`**](#overridemode)     | [ルールを上書きして無効化](/docs/guides/ignoring-code#overriding-to-disable-rules)                                         | [インターフェイス](#overridemode/interface)   |
+| [**`overrides`**](#overrides)           | [ルールを上書きして無効化](/docs/guides/ignoring-code#overriding-to-disable-rules)                                         | [インターフェイス](#overrides/interface)      |
 
 ## パスの解決 {#resolving-specified-paths}
 
@@ -128,7 +144,7 @@ interface Config {
 
 ### `parser`
 
-キーに正規表現を、値に[パーサ](/docs/guides/besides-html#supported-syntaxes)のファイル[パス](#resolving-specified-paths)またはパッケージ名を指定します。正規表現は、対象ファイルにマッチするものを指定します（例は拡張子を示しています）。
+キーに正規表現を、値に[パーサ](/docs/guides/beyond-html#supported-syntaxes)のファイル[パス](#resolving-specified-paths)またはパッケージ名を指定します。正規表現は、対象ファイルにマッチするものを指定します（例は拡張子を示しています）。
 
 ```json class=config
 {
@@ -137,6 +153,7 @@ interface Config {
     "\\.[jt]sx?$": "@markuplint/jsx-parser",
     "\\.vue$": "@markuplint/vue-parser",
     "\\.svelte$": "@markuplint/svelte-parser",
+    "\\.ts$": "@markuplint/tagged-template-literal-parser",
     "\\.ext$": "./path/to/custom-parser/any-lang.js"
   }
 }
@@ -209,7 +226,7 @@ interface Config {
 
 ### `specs`
 
-キーに正規表現を、値に[**スペック**](/docs/guides/besides-html#supported-syntaxes)ファイルの[パス](#resolving-specified-paths)またはパッケージ名を指定します。正規表現は、対象ファイルにマッチするものを指定します（例は拡張子を示しています）。
+キーに正規表現を、値に[**スペック**](/docs/guides/beyond-html#supported-syntaxes)ファイルの[パス](#resolving-specified-paths)またはパッケージ名を指定します。正規表現は、対象ファイルにマッチするものを指定します（例は拡張子を示しています）。
 
 ```json class=config
 {
@@ -266,6 +283,45 @@ interface Config {
 ```ts
 interface Config {
   excludeFiles?: string[];
+}
+```
+
+### `severity`
+
+診断カテゴリごとにデフォルトの深刻度を制御します。
+
+#### `parseError`
+
+パースエラーの深刻度を制御します。`"off"` または `false` を設定するとパースエラーの報告を抑制できます。
+
+```json class=config
+{
+  "severity": {
+    "parseError": "warning"
+  }
+}
+```
+
+#### `deprecation`
+
+非推奨のルール名に関する通知（v5 のルール体系再設計より前の名前で、現在も解決はできるが v6 で削除される予定のもの）の深刻度を制御します。デフォルトは `"warning"` です。`"off"` または `false` を設定するとこの通知を抑制できます。
+
+```json class=config
+{
+  "severity": {
+    "deprecation": "off"
+  }
+}
+```
+
+#### インターフェイス {#severity/interface}
+
+```ts
+interface Config {
+  severity?: {
+    parseError?: 'error' | 'warning' | 'info' | 'off' | boolean;
+    deprecation?: 'error' | 'warning' | 'info' | 'off' | boolean;
+  };
 }
 ```
 
@@ -333,12 +389,158 @@ interface Config {
 }
 ```
 
+#### プリセットの名前付きルール {#named-rules-from-presets}
+
+プリセットは `namespace/rule-name` 形式の名前付きルールを定義します。名前付きルールは違反レポートに表示され、`rules` プロパティで個別にカスタマイズ可能です。
+
+```json class=config
+{
+  "extends": ["markuplint:recommended"],
+  "rules": {
+    // プリセットの特定の名前付きルールを無効化
+    "a11y/html-lang": false,
+
+    // 名前付きルールの深刻度を変更
+    "html-standard/head-charset-utf8": { "severity": "warning" },
+
+    // ワイルドカードで名前空間内のすべての名前付きルールを無効化
+    "a11y/*": false,
+
+    // ベースルール名で無効化（詳細は下記参照）
+    "no-duplicate-id": false
+  }
+}
+```
+
+##### ベースルール名による無効化 {#disable-by-base-rule-name}
+
+ベースルール名を`false`に設定すると、そのベースルールをラップしている名前付きルールグループ内の該当エントリが無効化されます。例えば、プリセットが以下のように定義されているとします：
+
+```json class=config
+{
+  "rules": {
+    "my-checks/validation": {
+      "rules": {
+        "no-duplicate-id": true,
+        "no-invalid-attr-value": true
+      }
+    }
+  }
+}
+```
+
+設定に`"no-duplicate-id": false`を追加すると、グループ内の該当ベースルールだけが無効化されます：
+
+```json class=config
+{
+  "rules": {
+    "my-checks/validation": {
+      "rules": {
+        "no-duplicate-id": false,
+        "no-invalid-attr-value": true
+      }
+    }
+  }
+}
+```
+
+同グループ内の`no-invalid-attr-value`は影響を受けずに有効のままです。これは全グループに適用されます — `a11y/id-duplication`と`html-standard/id-duplication`の両方が`no-duplicate-id`ベースルールをラップしている場合、両方とも無効化されます。この機能は後方互換性のために提供されています。
+
+一覧は[プリセット内の名前付きルール](/docs/guides/presets#named-rules)を参照してください。
+
+#### 名前付きルールグループ {#named-rule-groups}
+
+`/` を含むキーと `rules` フィールドを持つ値を使って、独自の名前付きルールグループを定義できます。1つ以上のベースルールを名前空間でラップし、個別制御やメタデータの付与が可能になります。
+
+```json class=config
+{
+  "rules": {
+    "my-project/no-accesskey": {
+      "specConformance": "non-normative",
+      "rules": {
+        "no-restricted-attr": {
+          "options": { "disallowAttrs": ["accesskey"] }
+        }
+      }
+    }
+  }
+}
+```
+
+##### `specConformance` {#spec-conformance}
+
+`'normative'` または `'non-normative'` を受け取ります。省略可能です。チェックがHTML仕様の規範的要件に関するものか非規範的要件に関するものかを示すメタデータで、違反レポートに含まれますが、深刻度には影響しません。
+
+- `'normative'`: MUST や REQUIRED の要件に対応するチェック。
+- `'non-normative'`: SHOULD や RECOMMENDED の要件に対応するチェック。
+
+MarkuplintのHTML仕様に基づく組み込みプリセットルールにはこの値が自動的に設定されます。ユーザーが独自に設定することも可能です — 例えば、MarkuplintがHTML仕様の更新にまだ対応していない場合や、Markuplintのバージョンアップがやむを得ずできない場合に利用できます。
+
+:::warning
+このフィールドはHTML仕様に基づくチェックのみを対象としています。独自ルールやハウスルールに対して使用しないでください。乱用すると、違反レポートに表示される準拠レベルを見たユーザーが、HTML仕様上の要件だと誤解する恐れがあります。
+:::
+
+##### `severity`
+
+`'error'`、`'warning'`、または `'info'` を受け取ります。省略可能です。指定すると、グループ内の全ルールのデフォルト深刻度を上書きします。
+
+##### `rules`
+
+[`rules`](#rules)プロパティと同じ個別ルール設定を受け取りますが、名前付きルールグループのネストは受け付けません。必須です。ラップするベースルールを1つ以上含みます。
+
+##### 複数エントリの命名規則
+
+名前付きルールグループに1つのエントリがある場合、グループキーがそのままルール名になります。2つ以上のエントリがある場合、各エントリに`グループキー/ベースルール名`形式の派生名が付与され、グループキーはグループ名になります。
+
+```json class=config
+{
+  "rules": {
+    // 単一エントリ: ルール名は "my-project/no-accesskey"
+    "my-project/no-accesskey": {
+      "rules": { "no-restricted-attr": { "options": { "disallowAttrs": ["accesskey"] } } }
+    },
+    // 複数エントリ: ルール名は "my-project/checks/no-duplicate-attr"
+    // と "my-project/checks/class-naming"
+    "my-project/checks": {
+      "rules": {
+        "no-duplicate-attr": true,
+        "class-naming": "/[a-z]+/"
+      }
+    }
+  }
+}
+```
+
+グループ名を使って複数エントリのグループを一括で無効化できます：
+
+```json class=config
+{
+  "rules": {
+    "my-project/checks": false
+  }
+}
+```
+
+#### 積み上げ動作 {#accumulation}
+
+複数の名前付きルールグループが同じベースルールをラップしている場合（例: `a11y/id-duplication` と `html-standard/id-duplication`）、それぞれ独立して実行され、両方が違反を報告します。各名前付きルールは独立して制御できます：
+
+```json class=config
+{
+  "extends": ["markuplint:a11y", "markuplint:html-standard"],
+  "rules": {
+    // a11y の観点のみ無効化。html-standard の観点は有効のまま
+    "a11y/id-duplication": false
+  }
+}
+```
+
 #### インターフェイス {#rules/interface}
 
 ```ts
 interface Config {
   rules?: {
-    [ruleName: string]: Rule<T, O>;
+    [ruleName: string]: Rule<T, O> | NamedRuleGroup;
   };
 }
 
@@ -351,13 +553,31 @@ type Rule<T, O> =
       option?: O;
       reason?: string;
     };
+
+type NamedRuleGroup = {
+  specConformance?: 'normative' | 'non-normative';
+  severity?: 'error' | 'warning' | 'info';
+  rules: {
+    [ruleName: string]: Rule<T, O>;
+  };
+};
 ```
 
 ### `nodeRules`
 
-特定の[要素にのみルールを適用](/docs/guides/applying-rules#applying-to-some)させたい場合、このプロパティを指定します。値が配列であることに注意してください。
+特定の[要素にのみルールを適用](/docs/guides/applying-rules#applying-rules-to-specific-elements)させたい場合、このプロパティを指定します。値が配列であることに注意してください。
 
-`selector`か`regexSelector`のどちらかが必要です。`rules`フィールドも必須です。[`rules`](#rules)プロパティと同じ値を指定します。
+`selector`か`regexSelector`のどちらかが必要です。`rules`フィールドも必須です。個別のルール設定（[`rules`](#rules)プロパティのエントリと同じ形式）を受け取りますが、[名前付きルールグループ](#named-rule-groups)の定義（新しいグループの作成）は受け取れません。
+
+ただし、プリセットが作成した仮想ルールをベースルール名や名前空間ワイルドカードで制御できます:
+
+- **ベースルール名**: `"no-unknown-role": false` は仮想ルール `a11y/wai-aria/non-existent-role`（および `no-unknown-role` をラップする他のすべての仮想ルール）を無効化します
+- **名前空間ワイルドカード**: `"a11y/*": false` は `a11y/` 名前空間内のすべての仮想ルールを無効化します
+- **オプション上書き**: `"no-unknown-role": { "options": { ... } }` は `no-unknown-role` をラップする仮想ルールにオプションを伝播します
+
+:::note
+名前空間ワイルドカードは `false` のみ受け付けます。オプションを指定するには、具体的なルール名（ベースまたは仮想）を使用してください。
+:::
 
 ```json class=config
 {
@@ -372,9 +592,19 @@ type Rule<T, O> =
 }
 ```
 
+#### `name`
+
+`/` を含む文字列（例: `a11y/html-lang`）を受け取ります。省略可能です。指定すると、[`rules`](#rules) プロパティで個別に設定可能な**名前付きルール**を作成します。主にプリセットで使用されます。
+
+`rules` フィールドに1つのエントリがある場合、この名前がそのままルール名になります。2つ以上のエントリがある場合、各エントリに `name/ベースルール名` 形式の派生名が付与され、この名前はグループ名になります。グループは `rules["グループ名"]: false` で一括無効化できます。
+
+#### `specConformance`
+
+Named Rule Groupsの[`specConformance`](#spec-conformance)と同じです。
+
 #### `rules` {#to-some-rules}
 
-[`rules`](#rules)プロパティと同じ値を受け取ります。必須です。
+個別のルール設定（[`rules`](#rules)プロパティのエントリと同じ形式）を受け取りますが、[名前付きルールグループ](#named-rule-groups)の定義は受け取れません。必須です。ベースルール名と名前空間ワイルドカードに対応しています — 詳細は [nodeRules](#noderules) を参照してください。
 
 #### `selector`
 
@@ -550,12 +780,16 @@ interface Config {
   nodeRules?: (
     | {
         selector: string;
+        name?: string;
+        specConformance?: 'normative' | 'non-normative';
         rules: {
           [ruleName: string]: Rule<T, O>;
         };
       }
     | {
         regexSelector: RegexSelector;
+        name?: string;
+        specConformance?: 'normative' | 'non-normative';
         rules: {
           [ruleName: string]: Rule<T, O>;
         };
@@ -595,6 +829,8 @@ interface Config {
     | {
         selector: string;
         inheritance?: boolean;
+        name?: string;
+        specConformance?: 'normative' | 'non-normative';
         rules: {
           [ruleName: string]: Rule<T, O>;
         };
@@ -602,6 +838,8 @@ interface Config {
     | {
         regexSelector: RegexSelector;
         inheritance?: boolean;
+        name?: string;
+        specConformance?: 'normative' | 'non-normative';
         rules: {
           [ruleName: string]: Rule<T, O>;
         };
@@ -612,11 +850,17 @@ interface Config {
 
 ### `pretenders`
 
-[**プリテンダー**](/docs/guides/besides-html#pretenders)機能は、カスタムコンポーネントをネイティブのHTML要素のように見せかける機能です。いくつかのルールで、コンポーネントをレンダリングされた結果の要素として評価するために利用します。値が配列であることに注意してください。
+[**プリテンダー**](/docs/guides/beyond-html#pretenders)機能は、カスタムコンポーネントをネイティブのHTML要素のように見せかける機能です。いくつかのルールで、コンポーネントをレンダリングされた結果の要素として評価するために利用します。
+
+値はプリテンダー定義の**配列**、または`data`、`scan`などのフィールドを持つ**オブジェクト**のいずれかです。
 
 #### `selector`
 
 対象コンポーネントにマッチさせるための[**セレクタ**](/docs/guides/selectors)を受け取ります。必須です。
+
+:::caution 標準 HTML 要素は対象外
+セレクタが標準 HTML / SVG 要素にマッチする pretender エントリは暗黙的に無視されます。pretender は custom component（Web Components、JSX/Vue/Svelte 等の authored component、または HTML パースで spec エントリがない不明な名前）のみが対象です。`<button>` や `<marquee>` を指定しても何も起きません（[移行ガイド](/docs/migration/v4-to-v5/config#pretender-が標準-html-要素には適用されなくなった)を参照）。
+:::
 
 #### `as`
 
@@ -685,7 +929,7 @@ const MyComponent = props => {
 <div>
   {/* レンダリングされたdiv要素がaria-live="polite"を持つものとして評価します。  */}
   <MyComponent aria-live="polite">Lorem Ipsam</MyComponent>
-</div>;
+</div>
 ```
 
 #### `as.attrs`
@@ -724,7 +968,7 @@ const MyPicture = () => {
 <div>
   {/* レンダリングされたimg要素がsrc属性とalt="Lorem ipsam"を持つものとして評価されます。*/}
   <MyComponent />
-</div>;
+</div>
 ```
 
 #### `as.attrs[].name`
@@ -775,21 +1019,153 @@ const MyIcon = ({ label }) => {
 <div>
   {/* アクセシブルな名前が「my icon name」であるとして評価します。 */}
   <MyIcon label="my icon name" />
-</div>;
+</div>
 ```
+
+#### `as.slots` {#pretenders/as-slots}
+
+:::caution[実験的機能]
+このプロパティは**実験的**であり、将来のリリースで変更される可能性があります。
+:::
+
+コンポーネントが子要素を受け入れるか、スロットを持つかどうかを指定します。省略可能です。
+
+- **`null`**: コンポーネントは子要素を受け入れない、またはスロットを持ちません。例えば、`<img>`（void要素）としてレンダリングされるコンポーネントです。
+- **`true`**: コンポーネントは子要素を受け入れ、ラッパー要素が最も外側の要素です。
+- **配列**: 複数の名前付きスロット。各スロットは要素仕様として記述されます（高度な使い方）。
+
+```jsx
+// このコンポーネントは子要素を受け入れる — slotsはtrueにすべき
+const Wrapper = ({ children }) => <div>{children}</div>;
+
+// このコンポーネントは子要素を受け入れない — slotsはnullにすべき
+const Icon = props => <img src={props.src} />;
+```
+
+```json class=config
+{
+  "pretenders": [
+    {
+      "selector": "Wrapper",
+      "as": {
+        "element": "div",
+        "slots": true
+      }
+    },
+    {
+      "selector": "Icon",
+      "as": {
+        "element": "img",
+        "slots": null
+      }
+    }
+  ]
+}
+```
+
+#### `scan` {#pretenders/scan}
+
+:::caution[実験的機能]
+このプロパティは**実験的**であり、将来のリリースで変更される可能性があります。
+:::
+
+`pretenders`の**オブジェクト形式**を使用する場合、`scan`フィールドで**動的コンポーネントスキャン**を有効にできます。すべてのコンポーネントを手動でリストアップする代わりに、markuplintがコンポーネントファイルをスキャンしてプリテンダーマッピングを自動的に発見します。
+
+ファイルの拡張子によってスキャナーが決定されます:
+
+- `.js`, `.jsx`, `.ts`, `.tsx` → JSXスキャナー
+- `.vue`, `.svelte`, `.astro` → テンプレートスキャナー
+
+```json class=config
+{
+  "pretenders": {
+    "scan": [
+      {
+        "files": "./src/components/**/*.tsx"
+      },
+      {
+        "files": "./src/components/**/*.vue",
+        "ignoreComponentNames": ["BaseLayout"]
+      }
+    ]
+  }
+}
+```
+
+##### `scan[].files`
+
+スキャンするコンポーネントファイルのglobパターン（またはglobパターンの配列）。必須です。
+
+##### `scan[].ignoreComponentNames`
+
+スキャン結果から除外するコンポーネント名の配列。省略可能です。
+
+#### `data`（オブジェクト形式） {#pretenders/data}
+
+オブジェクト形式を使用する場合、インラインのプリテンダー定義は`data`フィールドに記述します:
+
+```json class=config
+{
+  "pretenders": {
+    "data": [
+      {
+        "selector": "MyComponent",
+        "as": "div"
+      }
+    ],
+    "scan": [
+      {
+        "files": "./src/components/**/*.vue"
+      }
+    ]
+  }
+}
+```
+
+#### `auto`（オブジェクト形式） {#pretenders/auto}
+
+:::caution[実験的機能]
+このプロパティは**実験的機能**であり、将来のリリースで変更される可能性があります。
+:::
+
+オブジェクト形式を使用する場合、`auto: true`を指定すると、`data`/`scan`をあらかじめ設定しなくても、リント対象ファイル自身のimportグラフをスキャンしてプリテンダーを解決します:
+
+```json class=config
+{
+  "pretenders": {
+    "auto": true
+  }
+}
+```
+
+設定済みのファイル集合を一度だけ事前スキャンする`scan`とは異なり、`auto`はリント対象ごとに実行され、リント対象ファイルが実際に（推移的に）importしているコンポーネントのみを対象とします。そのため、無関係なファイルにある同名コンポーネントが衝突することは構造的にありません。ただし、次のトレードオフがあります:
+
+- ファイルシステムの監視対象は設定ファイルのみのため、watchモードやエディタセッション中に、設定を変更せずにimport先のコンポーネントファイルを変更すると、結果が古いままになることがあります。
+- `auto`を指定できるのは`pretenders`の**オブジェクト形式**のみです。配列形式の省略記法では指定できません。
+
+同じセレクターに対しては、`files`・`imports`・`data`・`scan`など他のプリテンダー解決元が先に解決されるため、`auto`よりも優先されます。
 
 #### インターフェイス {#pretenders/interface}
 
 ```ts
 interface Config {
-  pretenders?: {
-    selector: string;
-    as: string | OriginalNode;
-  }[];
+  pretenders?:
+    | Pretender[]
+    | {
+        data?: Pretender[];
+        scan?: PretenderScanConfig[]; // @experimental
+        auto?: boolean; // @experimental
+      };
 }
+
+type Pretender = {
+  selector: string;
+  as: string | OriginalNode;
+};
 
 type OriginalNode = {
   element: string;
+  slots?: null | true | Slot[]; // @experimental
   namespace?: 'svg';
 
   inheritAttrs?: boolean;
@@ -809,6 +1185,13 @@ type OriginalNode = {
           fromAttr: string;
         };
   };
+};
+
+type Slot = Omit<OriginalNode, 'slots'>; // @experimental
+
+type PretenderScanConfig = {
+  files: string | string[];
+  ignoreComponentNames?: string[];
 };
 ```
 
@@ -867,8 +1250,8 @@ interface Config {
 - [`specs`](#specs)
 - [`excludeFiles`](#excludefiles)
 - [`rules`](#rules)
-- [`nodeRules`](#childnoderules)
-- [`childNodeRules`](#noderules)
+- [`nodeRules`](#noderules)
+- [`childNodeRules`](#childnoderules)
 - [`pretenders`](#pretenders)
 
 #### インターフェイス {#overrides/interface}

@@ -3,7 +3,7 @@ import type { MLASTText } from '@markuplint/ml-ast';
 import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
 import { MLCharacterData } from './character-data.js';
-import { UnexpectedCallError } from './unexpected-call-error.js';
+import { UnexpectedCallError } from '@markuplint/shared';
 
 /**
  * Raw text elements
@@ -32,6 +32,16 @@ export class MLText<T extends RuleConfigValue, O extends PlainData = undefined>
 	 */
 	get assignedSlot(): HTMLSlotElement {
 		throw new UnexpectedCallError('Not supported  "assignedSlot" property');
+	}
+
+	/**
+	 * Returns `true` if this text node originated from an invalid (bogus) AST
+	 * node, such as an orphaned end tag.
+	 *
+	 * @implements `@markuplint/ml-core` API: `MLText`
+	 */
+	get isBogus(): boolean {
+		return (this._astToken as MLASTText & { readonly isBogus?: boolean }).isBogus ?? false;
 	}
 
 	/**

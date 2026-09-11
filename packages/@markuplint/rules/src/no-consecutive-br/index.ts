@@ -2,14 +2,6 @@ import { createRule } from '@markuplint/ml-core';
 
 import meta from './meta.js';
 
-/**
- * Rule that disallows consecutive `<br>` elements.
- *
- * Queries all `<br>` elements in the document and checks whether the next
- * non-whitespace sibling is another `<br>`. Consecutive line breaks are
- * typically a sign that a more semantic element (e.g., `<p>`) should be
- * used instead, which is important for accessibility.
- */
 export default createRule({
 	meta: meta,
 	defaultSeverity: 'warning',
@@ -22,9 +14,11 @@ export default createRule({
 				next = next.nextSibling;
 			}
 			if (next && next.nodeName === 'BR') {
+				const target = next;
 				report({
-					scope: next,
+					scope: target,
 					message: t('{0} detected', t('Consecutive {0}', t('"{0*}" {1}', 'br', 'elements'))),
+					fix: fixer => fixer.remove({ startOffset: target.startOffset, raw: target.raw }),
 				});
 			}
 		}

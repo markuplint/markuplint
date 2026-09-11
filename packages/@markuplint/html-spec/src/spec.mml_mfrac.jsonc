@@ -1,0 +1,39 @@
+// https://www.w3.org/TR/mathml-core/#fractions-mfrac
+{
+	"contentModel": {
+		"contents": [
+			{
+				// MathML Core §3.3.2 — mfrac requires exactly two children
+				// (numerator and denominator).
+				"require": [
+					":model(MathMLPresentation)",
+					"mml|semantics",
+					"#text"
+				],
+				"min": 2,
+				"max": 2
+			}
+		]
+	},
+	"globalAttrs": {
+		"#GlobalEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#MathMLGlobalAttrs": true
+	},
+	"attributes": {
+		// https://www.w3.org/TR/mathml-core/#fractions-mfrac
+		"linethickness": {
+			"type": "<length-percentage>"
+		},
+		"denomalign": {
+			"deprecated": true
+		},
+		"numalign": {
+			"deprecated": true
+		}
+	},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": true
+	}
+}

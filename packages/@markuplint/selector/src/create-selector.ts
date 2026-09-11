@@ -31,7 +31,7 @@ export function createSelector(selector: string, specs?: MLMLSpec) {
 		specs
 			? {
 					model: contentModelPseudoClass(specs),
-					aria: ariaPseudoClass(),
+					aria: ariaPseudoClass(specs),
 					role: ariaRolePseudoClass(specs),
 				}
 			: undefined,

@@ -2,7 +2,7 @@ import { test, expect } from 'vitest';
 
 import { parseADatetime, getCandidateDatetimeString } from './utils.js';
 
-test('parseADatetime', () => {
+test('[require-datetime-invalid-001] parseADatetime', () => {
 	expect(parseADatetime('2000/1/1', ['en'])).toStrictEqual({
 		datetime: {
 			year: 2000,
@@ -47,7 +47,7 @@ test('parseADatetime', () => {
 	expect(parseADatetime('令和5年', ['ja'])).toStrictEqual(null);
 });
 
-test('getCandidateDatetimeString', () => {
+test('[require-datetime-invalid-002] getCandidateDatetimeString', () => {
 	expect(getCandidateDatetimeString('2000/1/1')).toBe('2000-01-01');
 	expect(getCandidateDatetimeString('1/2/2011')).toBe('2011-01-02');
 	expect(getCandidateDatetimeString('2000/1/2 12:15')).toBe('2000-01-02T12:15');

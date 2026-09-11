@@ -1,4 +1,3 @@
-/** Rule metadata for the `require-datetime` rule, categorized as validation. */
 export default {
-	category: 'validation',
+	category: 'attributes',
 } as const;

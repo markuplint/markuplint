@@ -1,0 +1,18 @@
+{
+	"rules": {
+		"foo": true,
+		"bar": true
+	},
+	"overrides": {
+		"./*.html": {
+			"rules": {
+				"foo": false
+			}
+		},
+		"./target.*": {
+			"rules": {
+				"baz": true
+			}
+		}
+	}
+}

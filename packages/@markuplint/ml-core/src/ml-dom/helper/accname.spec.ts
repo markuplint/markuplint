@@ -1,4 +1,5 @@
 import { parser } from '@markuplint/html-parser';
+import { ARIA_RECOMMENDED_VERSION } from '@markuplint/ml-spec';
 import { test, expect } from 'vitest';
 
 import { convertRuleset } from '../../index.js';
@@ -12,7 +13,7 @@ function c(sourceCode: string) {
 	const ast = parser.parse(sourceCode);
 	const astNode = ast.nodeList[0]!;
 	const ruleset = convertRuleset({});
-	const document = new MLDocument(ast, ruleset, dummySchemas());
+	const document = new MLDocument(ast, ruleset, dummySchemas(), { ariaVersion: ARIA_RECOMMENDED_VERSION });
 	const node = createNode(astNode, document);
 	if (node.is(node.ELEMENT_NODE)) {
 		return node;
@@ -39,9 +40,9 @@ test('Invisible element', () => {
 });
 
 /**
- * @see https://www.w3.org/TR/accname-1.1/#ex-1-example-1-element1-id-el1-aria-labelledby-el3-element2-id-el2-aria-labelledby-el1-element3-id-el3-hello-element3
+ * @see https://www.w3.org/TR/accname-1.2/#ex-1-example-1-element1-id-el1-aria-labelledby-el3-element2-id-el2-aria-labelledby-el1-element3-id-el3-hello-element3
  */
-test('accname-1.1 Example 1', () => {
+test('accname-1.2 Example 1', () => {
 	const complex = c(`<div>
 <input id="el1" aria-labelledby="el3" />
 <input id="el2" aria-labelledby="el1" />
@@ -53,9 +54,9 @@ test('accname-1.1 Example 1', () => {
 });
 
 /**
- * https://www.w3.org/TR/accname-1.1/#ex-2-example-2-h1-files-h1-ul-li-a-id-file_row1-href-files-documentation-pdf-documentation-pdf-a-span-role-button-tabindex-0-id-del_row1-aria-label-delete-aria-labelledby-del_row1-file_row1-span-li-li-a-id-file_row2-href-files-holidayletter-pdf-holidayletter-pdf-a-span-role-button-tabindex-0-id-del_row2-aria-label-delete-aria-labelledby-del_row2-file_row2-span-li-ul
+ * https://www.w3.org/TR/accname-1.2/#ex-2-example-2-h1-files-h1-ul-li-a-id-file_row1-href-files-documentation-pdf-documentation-pdf-a-span-role-button-tabindex-0-id-del_row1-aria-label-delete-aria-labelledby-del_row1-file_row1-span-li-li-a-id-file_row2-href-files-holidayletter-pdf-holidayletter-pdf-a-span-role-button-tabindex-0-id-del_row2-aria-label-delete-aria-labelledby-del_row2-file_row2-span-li-ul
  */
-test('accname-1.1 Example 2', () => {
+test('accname-1.2 Example 2', () => {
 	const complex = c(`<ul>
 	<li>
 		<a id="file_row1" href="./files/Documentation.pdf">Documentation.pdf</a>
@@ -72,9 +73,9 @@ test('accname-1.1 Example 2', () => {
 });
 
 /**
- * https://www.w3.org/TR/accname-1.1/#ex-3-example-3-div-role-checkbox-aria-checked-false-flash-the-screen-span-role-textbox-aria-multiline-false-5-span-times-div
+ * https://www.w3.org/TR/accname-1.2/#ex-3-example-3-div-role-checkbox-aria-checked-false-flash-the-screen-span-role-textbox-aria-multiline-false-5-span-times-div
  */
-test('accname-1.1 Example 3', () => {
+test('accname-1.2 Example 3', () => {
 	const complex = c(
 		'<div role="checkbox" aria-checked="false">Flash the screen <span role="textbox" aria-multiline="false"> 5 </span> times</div>',
 	);

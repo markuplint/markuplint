@@ -3,17 +3,122 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [4.18.0](https://github.com/markuplint/markuplint/compare/v4.14.1...v4.18.0) (2026-04-22)
+# [5.0.0-rc.7](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.6...v5.0.0-rc.7) (2026-08-31)
 
-### Reverts
+**Note:** Version bump only for package vscode-markuplint
 
-- keep vitest 3 and plain markuplint ref for CI compat ([82ba2f9](https://github.com/markuplint/markuplint/commit/82ba2f948c33a145b90517033833e11b76f04bb3))
+# [5.0.0-rc.6](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.5...v5.0.0-rc.6) (2026-08-30)
 
-## [4.9.2](https://github.com/markuplint/markuplint/compare/vscode-markuplint@4.9.1...vscode-markuplint@4.9.2) (2026-04-21)
+**Note:** Version bump only for package vscode-markuplint
 
-### Reverts
+# [5.0.0-rc.5](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.4...v5.0.0-rc.5) (2026-08-28)
 
-- keep vitest 3 and plain markuplint ref for CI compat ([82ba2f9](https://github.com/markuplint/markuplint/commit/82ba2f948c33a145b90517033833e11b76f04bb3))
+### Bug Fixes
+
+- **vscode:** convert absolute paths to file:// URLs before import ([b684b2f](https://github.com/markuplint/markuplint/commit/b684b2fb25833163e812408e013c070f621fb695)), closes [#3795](https://github.com/markuplint/markuplint/issues/3795)
+- **vscode:** make toImportSpecifier OS-independent for POSIX absolute paths ([61da724](https://github.com/markuplint/markuplint/commit/61da7244038b686f9f6ed7536948179ce45936e5)), closes [#3841](https://github.com/markuplint/markuplint/issues/3841) [#3836](https://github.com/markuplint/markuplint/issues/3836) [#3840](https://github.com/markuplint/markuplint/issues/3840) [#3840](https://github.com/markuplint/markuplint/issues/3840) [#3842](https://github.com/markuplint/markuplint/issues/3842)
+
+### Features
+
+- add `pretenders.auto` for on-demand import-graph resolution ([#3962](https://github.com/markuplint/markuplint/issues/3962)) ([5870671](https://github.com/markuplint/markuplint/commit/58706711a20c12cff080d49359f3f6443345eca3)), closes [#3951](https://github.com/markuplint/markuplint/issues/3951) [#3957](https://github.com/markuplint/markuplint/issues/3957) [#3951](https://github.com/markuplint/markuplint/issues/3951) [#3957](https://github.com/markuplint/markuplint/issues/3957) [#3951](https://github.com/markuplint/markuplint/issues/3951) [#3957](https://github.com/markuplint/markuplint/issues/3957) [#3951](https://github.com/markuplint/markuplint/issues/3951) [#3957](https://github.com/markuplint/markuplint/issues/3957) [#3951](https://github.com/markuplint/markuplint/issues/3951) [#3957](https://github.com/markuplint/markuplint/issues/3957) [#3959](https://github.com/markuplint/markuplint/issues/3959) [#3951](https://github.com/markuplint/markuplint/issues/3951) [#3957](https://github.com/markuplint/markuplint/issues/3957) [#3951](https://github.com/markuplint/markuplint/issues/3951) [#3957](https://github.com/markuplint/markuplint/issues/3957) [#3959](https://github.com/markuplint/markuplint/issues/3959) [#3951](https://github.com/markuplint/markuplint/issues/3951) [#3951](https://github.com/markuplint/markuplint/issues/3951)
+
+# [5.0.0-rc.4](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.3...v5.0.0-rc.4) (2026-04-19)
+
+**Note:** Version bump only for package vscode-markuplint
+
+# [5.0.0-rc.3](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.2...v5.0.0-rc.3) (2026-04-19)
+
+- feat(vscode)!: migrate publisher to markuplint namespace ([f46e4b1](https://github.com/markuplint/markuplint/commit/f46e4b159598f36cdcdb7a98025ff93147f04eb7))
+
+### Features
+
+- **vscode:** support prerelease extension packaging and publishing ([b7399c9](https://github.com/markuplint/markuplint/commit/b7399c90c5c407d9d859a96087d2dab53a9c8459)), closes [#3754](https://github.com/markuplint/markuplint/issues/3754)
+
+### BREAKING CHANGES
+
+- The VS Code extension is now published under the `markuplint`
+  publisher (Marketplace ID: `markuplint.vscode-markuplint`). The legacy
+  `yusukehirao.vscode-markuplint` ID is deprecated from `v5.0.0-rc.3` onwards
+  and no longer receives updates; users must install the new extension.
+
+# [5.0.0-rc.2](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.1...v5.0.0-rc.2) (2026-04-15)
+
+### Bug Fixes
+
+- **vscode:** fix git blame porcelain parsing for repeated commits ([b5bb18d](https://github.com/markuplint/markuplint/commit/b5bb18d68b64f35228c7e352fd944afb284a6fe5))
+- **vscode:** import isFatalError via markuplint/suppressions ([17226e4](https://github.com/markuplint/markuplint/commit/17226e4bd01adf8b7df7f7682d33cd28564ea5cd))
+
+- build!: remove ESLint and replace with oxlint ([1e0a337](https://github.com/markuplint/markuplint/commit/1e0a337707f76b903b16beeeb8c4d4fc0d8fc9e4))
+
+### Features
+
+- **vscode:** add suppressed message prefix and blame parser tests ([cd80a80](https://github.com/markuplint/markuplint/commit/cd80a802c3bad29a8a1d510d2160a21a6f0a2682))
+- **vscode:** add v5 handler with bulk suppression severity downgrade ([f31c0c9](https://github.com/markuplint/markuplint/commit/f31c0c93810a312aba948906f7f80e8814fc4078)), closes [#3536](https://github.com/markuplint/markuplint/issues/3536)
+
+### BREAKING CHANGES
+
+- ESLint is no longer used. Use oxlint instead.
+
+# [5.0.0-rc.1](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.0...v5.0.0-rc.1) (2026-03-27)
+
+**Note:** Version bump only for package vscode-markuplint
+
+# [5.0.0-rc.0](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.3...v5.0.0-rc.0) (2026-03-12)
+
+**Note:** Version bump only for package vscode-markuplint
+
+# [5.0.0-alpha.3](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.2...v5.0.0-alpha.3) (2026-02-26)
+
+### Bug Fixes
+
+- **vscode:** inline offsetToPosition to avoid unpublished @markuplint/shared export ([350bac4](https://github.com/markuplint/markuplint/commit/350bac41d9d898ac22047d324cbf4de13580e4bd))
+
+### Features
+
+- **vscode:** add Code Action support for autofix ([2e5e04e](https://github.com/markuplint/markuplint/commit/2e5e04e6cb6fdefcd14e476d362b1ab69a83a89c))
+- **vscode:** display specConformance and unify separator ([dfba104](https://github.com/markuplint/markuplint/commit/dfba1046c052a0d6c631dc174b6fadd2006c2b74))
+
+# [5.0.0-alpha.2](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.1...v5.0.0-alpha.2) (2026-02-23)
+
+### Bug Fixes
+
+- **vscode:** handle empty string from VS Code config for ariaVersion ([7cef580](https://github.com/markuplint/markuplint/commit/7cef58014d433de7acd0126e500784410c727edc))
+- **vscode:** remove hardcoded ARIA version default to follow markuplint's default ([f94a692](https://github.com/markuplint/markuplint/commit/f94a692378a18688ffff433ed42efc37ee24887c))
+
+### Features
+
+- **vscode:** add workingDirectories option for monorepo support ([69aa2ee](https://github.com/markuplint/markuplint/commit/69aa2ee66e2ffd3973ebc6953dc6e48aa4320288)), closes [#1287](https://github.com/markuplint/markuplint/issues/1287)
+
+# [5.0.0-alpha.1](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.0...v5.0.0-alpha.1) (2026-02-22)
+
+**Note:** Version bump only for package vscode-markuplint
+
+# [5.0.0-alpha.0](https://github.com/markuplint/markuplint/compare/v4.14.1...v5.0.0-alpha.0) (2026-02-20)
+
+### Bug Fixes
+
+- **vscode:** activate extension before command registration tests ([73cf1e2](https://github.com/markuplint/markuplint/commit/73cf1e23255415a82bb77fd32dbf76cea288bb5d))
+- **vscode:** add caret to engines.vscode for forward compatibility ([068e72f](https://github.com/markuplint/markuplint/commit/068e72faac12448cebae186531059e169191b08d))
+- **vscode:** deep-clone defaultConfig and align fallback values ([c6d1876](https://github.com/markuplint/markuplint/commit/c6d187657bbd4ed3695a114d994a719b7fa21640))
+- **vscode:** guard enable check against undefined ([bc1ae12](https://github.com/markuplint/markuplint/commit/bc1ae12f2652183852f9231091ff4803d6963120))
+- **vscode:** poll for extension availability before activation in tests ([735b32a](https://github.com/markuplint/markuplint/commit/735b32a073a923a0b7ab5d06cfd59827d065c108))
+- **vscode:** register commands before config/client setup in activate() ([4a1b7b3](https://github.com/markuplint/markuplint/commit/4a1b7b3721785fefb6f528c9495875c75295aafd))
+- **vscode:** use getConfiguration('markuplint') in config test ([e22a7a7](https://github.com/markuplint/markuplint/commit/e22a7a7a0b108de0e04a03b870f66666e26d7d3d))
+- **vscode:** use JSON round-trip instead of structuredClone for config ([e70ee38](https://github.com/markuplint/markuplint/commit/e70ee38246cd7a757d4d7143ab63f29f7b6384c1))
+- **vscode:** use scoped getConfiguration for per-language config ([bc5c29e](https://github.com/markuplint/markuplint/commit/bc5c29e6eb1e844b92348345008b3ccb3d064b6a))
+
+- feat!: remove deprecated v1 API ([f8999ae](https://github.com/markuplint/markuplint/commit/f8999aecc8e05c3ba2022a93698c87b01bbd573b))
+
+### Features
+
+- **vscode:** show specific warning for Node.js 22+ import assertion incompatibility ([7c77bc8](https://github.com/markuplint/markuplint/commit/7c77bc8a6c5ee37f2f9ecfd698459a54913da2ca)), closes [#2838](https://github.com/markuplint/markuplint/issues/2838)
+- **vscode:** use ARIA_RECOMMENDED_VERSION constant and add 1.3 to enum ([ff7c3c2](https://github.com/markuplint/markuplint/commit/ff7c3c20baf53710ac46fd875588474589a90141))
+
+### BREAKING CHANGES
+
+- The `exec` export (v1 API) has been removed.
+
+Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
 
 ## [4.9.1](https://github.com/markuplint/markuplint/compare/vscode-markuplint@4.9.0...vscode-markuplint@4.9.1) (2026-02-10)
 

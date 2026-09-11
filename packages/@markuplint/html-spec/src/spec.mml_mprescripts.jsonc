@@ -1,0 +1,16 @@
+// https://www.w3.org/TR/mathml-core/#prescripts-and-tensor-indices-mmultiscripts
+{
+	"contentModel": {
+		"contents": false
+	},
+	"globalAttrs": {
+		"#GlobalEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#MathMLGlobalAttrs": true
+	},
+	"attributes": {},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": true
+	}
+}

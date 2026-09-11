@@ -1,11 +1,11 @@
 # タイプAPI
 
 **タイプAPI**は、属性などのルールに指定できる型情報を定義していたり、評価するAPIを提供しています。
-例えば、[`invalid-attr`](/docs/rules/invalid-attr)ルールの[`allowAttrs`](/docs/rules/invalid-attr#setting-allow-attrs-option)や[`disallowAttrs`](/docs/rules/invalid-attr#setting-disallow-attrs-option)オプションで使用されています。
+例えば、[`no-unknown-attr`](/docs/rules/no-unknown-attr)ルールの[`allowAttrs`](/docs/rules/no-unknown-attr#setting-allow-attrs-option)オプションや、[`no-restricted-attr`](/docs/rules/no-restricted-attr)ルールの[`disallowAttrs`](/docs/rules/no-restricted-attr#setting-disallow-attrs-option)オプションで使用されています。
 
 ```json
 {
-  "invalid-attr": {
+  "no-unknown-attr": {
     "options": {
       "allowAttrs": [
         {
@@ -53,6 +53,9 @@
 | `NavigableTargetNameOrKeyword`     | `a[target]`ほか                                        | [WHATWG](https://html.spec.whatwg.org/multipage/document-sequences.html#valid-navigable-target-name-or-keyword)    | ✅       |
 | `HTTPSchemaURL`                    | `a[ping]`ほか（リストとして）                          | [WHATWG](https://html.spec.whatwg.org/multipage/links.html#ping)                                                   | ✅       |
 | `MIMEType`                         | `embed[type]`ほか                                      | [WHATWG](https://mimesniff.spec.whatwg.org/#valid-mime-type)                                                       | ✅       |
+| `HTTPEquivRefresh`                 | `http-equiv=refresh`の`meta[content]`                  | [WHATWG](https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-http-equiv-refresh)                       | ✅       |
+| `HTTPEquivContentType`             | `http-equiv=content-type`の`meta[content]`             | [WHATWG](https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-http-equiv-content-type)                  | ✅       |
+| `ContentSecurityPolicy`            | `http-equiv=content-security-policy`の`meta[content]`  | [W3C](https://www.w3.org/TR/CSP3/#framework-policy)                                                                | ✅       |
 | `ItemProp`                         | `itemprop`属性（リストとして）                         | [WHATWG](https://html.spec.whatwg.org/multipage/microdata.html#names:-the-itemprop-attribute)                      | ✅       |
 | `Srcset`                           | `img[srcset]`ほか                                      | [WHATWG](https://html.spec.whatwg.org/multipage/images.html#srcset-attributes)                                     | ✅       |
 | `SourceSizeList`                   | `img[sizes]`ほか                                       | [WHATWG](https://html.spec.whatwg.org/multipage/images.html#sizes-attributes)                                      | ✅       |

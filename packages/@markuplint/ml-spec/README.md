@@ -6,7 +6,7 @@
 
 This package serves as the foundational layer for markuplint's specification system, providing:
 
-- **Type definitions** for markup language specifications (HTML, ARIA, SVG)
+- **Type definitions** for markup language specifications (HTML, ARIA, SVG, MathML)
 - **W3C specification algorithms** (HTML Standard, WAI-ARIA 1.1/1.2/1.3 compliance)
 - **JSON schemas** that define the structure of element specifications
 - **Runtime utilities** for specification resolution, attribute validation, and content model checking
@@ -54,7 +54,7 @@ Generated TypeScript types (do not edit directly):
 
 **WAI-ARIA Specification Algorithms**:
 
-- **Accessible Name Computation** - W3C AccName 1.1 compliant (via `dom-accessibility-api`)
+- **Accessible Name Computation** - W3C AccName 1.2 / HTML-AAM §4.1 compliant (`src/algorithm/aria/accname/`)
 - **Role Computation** - Explicit/implicit role resolution with conflict handling (`src/algorithm/aria/get-computed-role.ts`)
 - **Accessibility Tree Computation** - Element inclusion/exclusion logic (`src/algorithm/aria/is-exposed.ts`)
 - **ARIA Property Computation** - Attribute value resolution with HTML equivalents (`src/algorithm/aria/get-computed-aria-props.ts`)
@@ -84,7 +84,7 @@ Generated TypeScript types (do not edit directly):
 - **Spec Resolution**: `getSpecByTagName`, `getAttrSpecs`, `getRoleSpec`
 - **Content Model Utilities**: `getContentModel`, `isPalpableElements`, `isVoidElement`
 - **ARIA Utilities**: `getAria`, `getPermittedRoles`, `hasRequiredOwnedElements`
-- **Accessibility Utilities**: `accnameComputation`, `isExposed`, `mayBeFocusable`
+- **Accessibility Utilities**: `getAccname`, `isExposed`, `mayBeFocusable`
 - **Schema Utilities**: `schemaToSpec`, `resolveNamespace`, `validateAriaVersion`
 - **Framework Extension**: Merges base HTML specs with framework-specific extensions
 
@@ -96,7 +96,7 @@ Generated TypeScript types (do not edit directly):
 
 - **Built output**: `index.json` (48K+ lines, consolidated specification data)
 - **Sources**: `src/spec-*.json` (individual element specifications)
-- **Build process**: `build.mjs` → `@markuplint/spec-generator` → enriched with MDN/W3C data
+- **Build process**: `build.ts` → `generator/` scripts → enriched with MDN/W3C data
 
 **@markuplint/ml-spec** (this package) provides:
 
@@ -125,14 +125,6 @@ yarn add @markuplint/ml-spec
 
 - "HTML Schema" and "Specs" are used interchangeably in markuplint to mean the JSON Schema that
   describes HTML element specs (attributes, ARIA, content models, etc) and their TypeScript types.
-
-### Contributing
-
-For schema editing workflows, generation commands, common recipes, dependency management, and troubleshooting, see the [Maintenance Guide](docs/maintenance.md).
-
-For schema merging and spec extension details, see [Spec Resolution](docs/spec-resolution.md).
-
-For content model categories and pattern format, see [HTML Algorithms](docs/html-algorithms.md).
 
 ### License
 

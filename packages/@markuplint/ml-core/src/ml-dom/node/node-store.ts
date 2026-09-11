@@ -28,13 +28,24 @@ class NodeStore {
 				})),
 			);
 			throw new TargetParserError('Broke mapping nodes.', {
-				line: astNode.startLine,
-				col: astNode.startCol,
+				line: astNode.line,
+				col: astNode.col,
 				raw: astNode.raw,
 				nodeName: astNode.nodeName,
 			});
 		}
 		return node as MappedNode<N, T, O>;
+	}
+
+	getNodeByUuid<T extends RuleConfigValue, O extends PlainData = undefined>(uuid: string): MLNode<T, O, any> {
+		const node = this.#store.get(uuid);
+		if (!node) {
+			nodeStoreError('Ref UUID: %s', uuid);
+			throw new TargetParserError('Broke mapping nodes.', {
+				raw: `uuid:${uuid}`,
+			});
+		}
+		return node as MLNode<T, O, any>;
 	}
 
 	setNode<A extends MLASTNode, T extends RuleConfigValue, O extends PlainData = undefined>(
@@ -61,7 +72,4 @@ class NodeStore {
 	}
 }
 
-/**
- * `NodeStore` Singleton
- */
 export const nodeStore = new NodeStore();

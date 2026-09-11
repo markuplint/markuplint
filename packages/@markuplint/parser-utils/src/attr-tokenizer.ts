@@ -17,13 +17,17 @@ const EQUAL = '=';
  * @see https://html.spec.whatwg.org/multipage/parsing.html#tag-name-state
  * @see https://html.spec.whatwg.org/multipage/parsing.html#before-attribute-name-state
  * @see https://html.spec.whatwg.org/multipage/parsing.html#attribute-name-state
+ * @see https://html.spec.whatwg.org/multipage/parsing.html#attribute-value-(unquoted)-state
  */
 export function attrTokenizer(
 	raw: string,
 	quoteSet = defaultQuoteSet,
 	startState = AttrState.BeforeName,
 	noQuoteValueType: ValueType = 'string',
-	endOfUnquotedValueChars: ReadonlyArray<string> = [...defaultSpaces, '/', '>'],
+	// Default follows the spec referenced above: only whitespace and `>` terminate
+	// the value. `/` is handled by the outer tag tokenizer (before/after attribute
+	// name state), not here.
+	endOfUnquotedValueChars: ReadonlyArray<string> = [...defaultSpaces, '>'],
 ) {
 	let state: AttrState = startState;
 	let spacesBeforeAttrName = '';

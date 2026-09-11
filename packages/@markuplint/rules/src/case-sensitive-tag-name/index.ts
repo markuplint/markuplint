@@ -5,14 +5,6 @@ import meta from './meta.js';
 /** The enforced letter case for tag names. */
 export type Value = 'lower' | 'upper';
 
-/**
- * Rule that enforces consistent letter case for HTML tag names.
- *
- * Reports opening and closing tag names that do not match the configured
- * case (lower or upper) on HTML elements. Skipped when the document is
- * tag-name-case-sensitive or for foreign elements. Includes an auto-fix
- * that converts tag names to the configured case.
- */
 export default createRule<Value>({
 	meta: meta,
 	defaultSeverity: 'warning',
@@ -27,6 +19,7 @@ export default createRule<Value>({
 			}
 			const ms = el.rule.severity === 'error' ? 'must' : 'should';
 			const deny = el.rule.value === 'lower' ? /[A-Z]/ : /[a-z]/;
+			const fixedName = el.rule.value === 'lower' ? el.rawName.toLowerCase() : el.rawName.toUpperCase();
 			const message = t(
 				`{0} ${ms} be {1}`,
 				t('{0} of {1}', 'tag names', 'HTML elements'),
@@ -34,16 +27,21 @@ export default createRule<Value>({
 			);
 			if (deny.test(el.rawName)) {
 				const loc = el.getNameLocation();
+				const nameOffset = loc.offset + el.tagOpenChar.length;
 				report({
 					scope: el,
 					message,
 					line: loc.line,
 					col: loc.col,
 					raw: el.rawName,
+					fix: fixer => fixer.replaceText({ startOffset: nameOffset, raw: el.rawName }, fixedName),
 				});
 			}
 			const closeTag = el.closeTag;
-			if (closeTag && deny.test(closeTag.raw)) {
+			if (closeTag && deny.test(closeTag.rawName)) {
+				const closeNameOffset = closeTag.startOffset + el.tagOpenChar.length + '/'.length;
+				const fixedCloseName =
+					el.rule.value === 'lower' ? closeTag.rawName.toLowerCase() : closeTag.rawName.toUpperCase();
 				report({
 					scope: {
 						rule: el.rule,
@@ -52,25 +50,9 @@ export default createRule<Value>({
 						raw: closeTag.raw,
 					},
 					message,
+					fix: fixer =>
+						fixer.replaceText({ startOffset: closeNameOffset, raw: closeTag.rawName }, fixedCloseName),
 				});
-			}
-		});
-	},
-	async fix({ document }) {
-		if (document.tagNameCaseSensitive) {
-			return;
-		}
-		await document.walkOn('Element', el => {
-			if (el.isForeignElement || el.elementType !== 'html') {
-				return;
-			}
-			const deny = el.rule.value === 'lower' ? /[A-Z]/ : /[a-z]/;
-			if (deny.test(el.nodeName)) {
-				if (el.rule.value === 'lower') {
-					el.fixNodeName(el.nodeName.toLowerCase());
-				} else {
-					el.fixNodeName(el.nodeName.toUpperCase());
-				}
 			}
 		});
 	},

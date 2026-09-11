@@ -1,0 +1,32 @@
+// https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/menclose
+{
+	"nonStandard": true,
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": [
+					":model(MathMLPresentation)",
+					"mml|semantics",
+					"mml|annotation",
+					"mml|annotation-xml",
+					"#text"
+				]
+			}
+		]
+	},
+	"globalAttrs": {
+		"#GlobalEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#MathMLGlobalAttrs": true
+	},
+	"attributes": {
+		// https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/menclose
+		"notation": {
+			"type": "Any"
+		}
+	},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": true
+	}
+}

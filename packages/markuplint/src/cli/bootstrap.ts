@@ -2,10 +2,6 @@ import type { ReadonlyDeep } from 'type-fest';
 
 import meow from 'meow';
 
-/**
- * Help text displayed when the CLI is invoked with `--help` or without arguments.
- * Documents all available options, flags, and usage examples.
- */
 export const help = `
 Usage
 	$ markuplint <HTML file paths (glob format)>
@@ -14,6 +10,7 @@ Usage
 Options
 	--config,                -c FILE_PATH  A configuration file path.
 	--fix,                                 Fix HTML.
+	--fix-dry-run                          Show what --fix would change without writing files.
 	--format,                -f FORMAT     Output format. Support "JSON", "Simple", "GitHub" and "Standard". Default: "Standard".
 	--no-search-config                     No search a configure file automatically.
 	--ignore-ext                           Evaluate files that are received even though the type of extension.
@@ -21,15 +18,21 @@ Options
 	--locale                               Locale of the message of violation. Default is an OS setting.
 	--no-color,                            Output no color.
 	--problem-only,          -p            Output only problems, without passeds.
-	--allow-warnings                       Return status code 0 even if there are warnings.
+	--no-allow-warnings                    Return status code 1 even if there are warnings.
 	--allow-empty-input                    Return status code 1 even if there are no input files.
 	--show-config                          Output computed configuration of the target file. Supports "details" and empty. Default: empty.
 	--verbose                              Output with detailed information.
 	--include-node-modules                 Include files in node_modules directory. Default: false.
-	--severity-parse-error                 Specifies the severity level of parse errors. Supports "error", "warning", and "off". Default: "error".
+	--severity-parse-error                 Severity for the built-in parse-error channel. Supports "error", "warning", and "off". Unset by default: fatal ParserErrors emit at "error" and non-fatal parse5 events are off (opt-in per code via config).
+	--severity-deprecation                 Severity for the built-in rule-deprecation channel (deprecated rule names). Supports "error", "warning", and "off". Default: "warning".
 	--max-count                            Limit the number of violations shown. Default: 0 (no limit).
 	--max-warnings                         Number of warnings to trigger nonzero exit code. Default: -1 (no limit).
-	--progressive-output                   Output results immediately after processing each file. Default: false.
+	--no-progressive-output                Wait until every file is processed before outputting results. Default: false (output progressively).
+
+	--suppress                             [Experimental] Generate/update suppressions file for all current errors.
+	--suppress-rule RULE_ID                [Experimental] Suppress only the specified rule.
+	--prune-suppressions                   [Experimental] Remove stale entries from the suppressions file.
+	--suppressions-location PATH           [Experimental] Custom path for the suppressions file. Default: "markuplint-suppressions.json".
 
 	--init                                 Initialize settings interactively.
 	--search                               Search lines of codes that include the target element by selectors.
@@ -42,10 +45,6 @@ Examples
 	$ cat verifyee.html | markuplint
 `;
 
-/**
- * The parsed CLI instance created by `meow`, providing access to
- * positional arguments (`cli.input`) and parsed flags (`cli.flags`).
- */
 export const cli = meow(help, {
 	importMeta: import.meta,
 	flags: {
@@ -54,6 +53,10 @@ export const cli = meow(help, {
 			shortFlag: 'c',
 		},
 		fix: {
+			type: 'boolean',
+			default: false,
+		},
+		fixDryRun: {
 			type: 'boolean',
 			default: false,
 		},
@@ -87,8 +90,7 @@ export const cli = meow(help, {
 		},
 		allowWarnings: {
 			type: 'boolean',
-			// TODO: It will be changed to `true` in the next major version.
-			default: false,
+			default: true,
 		},
 		allowEmptyInput: {
 			type: 'boolean',
@@ -118,7 +120,9 @@ export const cli = meow(help, {
 		},
 		severityParseError: {
 			type: 'string',
-			default: 'error',
+		},
+		severityDeprecation: {
+			type: 'string',
 		},
 		maxCount: {
 			type: 'number',
@@ -130,14 +134,23 @@ export const cli = meow(help, {
 		},
 		progressiveOutput: {
 			type: 'boolean',
-			// TODO: It will be changed to `true` in the next major version.
+			default: true,
+		},
+		suppress: {
+			type: 'boolean',
 			default: false,
+		},
+		suppressRule: {
+			type: 'string',
+		},
+		pruneSuppressions: {
+			type: 'boolean',
+			default: false,
+		},
+		suppressionsLocation: {
+			type: 'string',
 		},
 	},
 });
 
-/**
- * Deeply read-only type representing the parsed CLI flags.
- * Derived from the `meow` flag definitions in {@link cli}.
- */
 export type CLIOptions = ReadonlyDeep<typeof cli.flags>;

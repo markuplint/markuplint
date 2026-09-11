@@ -1,5 +1,5 @@
 import type { ARIA } from './aria.js';
-import type { AttributeJSON, AttributeType, GlobalAttributes } from './attributes.js';
+import type { AttributeJSON, AttributeType, ConditionalAttributeType, GlobalAttributes } from './attributes.js';
 import type { ContentModel, Category } from './permitted-structures.js';
 import type { ariaVersions } from '../utils/aria-version.js';
 import type { NamespaceURI } from '@markuplint/ml-ast';
@@ -12,6 +12,18 @@ export interface MLMLSpec {
 	readonly cites: Cites;
 	readonly def: SpecDefs;
 	readonly specs: readonly ElementSpec[];
+	readonly directivePatterns?: readonly DirectivePattern[];
+	/**
+	 * Controls how `@markuplint/ml-core`'s `MLAttr` resolves attribute names.
+	 *
+	 * - `'idl'`: enables IDL-to-content attribute name resolution (e.g.
+	 *   `className` → `class`) and suggests the IDL name as a candidate when the
+	 *   content attribute name is used (e.g. `tabindex` → "Did you mean
+	 *   `tabIndex`?"). Used by React, which accepts only IDL property names.
+	 * - `'both'`: enables the same resolution but accepts both content attribute
+	 *   names and IDL property names without suggesting either. Used by Svelte.
+	 */
+	readonly acceptedAttrNames?: 'idl' | 'both';
 }
 
 /**
@@ -32,6 +44,71 @@ export type ExtendedSpec = {
 	readonly cites?: Cites;
 	readonly def?: Partial<SpecDefs>;
 	readonly specs?: readonly ExtendedElementSpec[];
+	readonly directivePatterns?: readonly DirectivePattern[];
+	/**
+	 * See {@link MLMLSpec.acceptedAttrNames}. Last-write-wins across merged
+	 * specs; omitting the property does not reset a previously set value.
+	 */
+	readonly acceptedAttrNames?: 'idl' | 'both';
+};
+
+/**
+ * A declarative pattern for resolving framework-specific directive
+ * attributes to their canonical names and metadata. Stored as part
+ * of the spec, enabling "parser-less" framework support.
+ *
+ * The `pattern` is a regex string matched against the raw attribute name.
+ * Capture groups can be referenced in `potentialName` using `$1`, `$2`, etc.
+ *
+ * Patterns are evaluated in order and the first match wins. Merging specs
+ * (`schemaToSpec`) concatenates pattern arrays, so spec authors should define
+ * patterns from most specific to most general.
+ */
+export type DirectivePattern = {
+	/**
+	 * A regex string (without delimiters) matched against the raw attribute name.
+	 * Must be a valid JavaScript RegExp pattern. Capture groups can be used
+	 * for potentialName templates.
+	 * @example "^(?:x-bind:|:)([^.]+)(?:\\.[^.]+)?$"
+	 */
+	readonly pattern: string;
+
+	/**
+	 * Optional regex flags (e.g., "i" for case-insensitive).
+	 * @default "i"
+	 */
+	readonly flags?: string;
+
+	/**
+	 * Template for the resolved potentialName. References capture groups
+	 * with $1, $2, etc. If omitted, the attribute is treated as a directive
+	 * with no potentialName change.
+	 * @example "on$1"  -- for `@click` -> `onclick`
+	 * @example "$1"    -- for `:href` -> `href`
+	 */
+	readonly potentialName?: string;
+
+	/**
+	 * Whether this attribute is a framework directive.
+	 */
+	readonly isDirective?: true;
+
+	/**
+	 * Whether this attribute has a dynamic value.
+	 */
+	readonly isDynamicValue?: true;
+
+	/**
+	 * The semantic value type for matched attributes.
+	 */
+	readonly valueType?: 'string' | 'number' | 'boolean' | 'code';
+
+	/**
+	 * If true, the attribute can appear multiple times on the same element.
+	 * Can also be a string array of potentialName values for which
+	 * duplication is allowed (e.g., ['class', 'style']).
+	 */
+	readonly isDuplicatable?: true | readonly string[];
 };
 
 /**
@@ -60,6 +137,7 @@ export type SpecDefs = {
 type ARIASpec = {
 	readonly roles: readonly ARIARoleInSchema[];
 	readonly graphicsRoles: readonly ARIARoleInSchema[];
+	readonly dpubRoles: readonly ARIARoleInSchema[];
 	readonly props: readonly ARIAProperty[];
 };
 
@@ -89,12 +167,15 @@ export type ElementSpec = {
 	readonly description?: string;
 
 	/**
-	 * Experimental technology
+	 * Experimental technology: not yet standardized (proposed or draft;
+	 * subject to change or removal).
 	 */
 	readonly experimental?: true;
 
 	/**
-	 * Obsolete or alternative elements
+	 * Obsolete or alternative elements: removed from the spec entirely
+	 * (browsers may no longer recognize it). Optionally points to an
+	 * alternative element via `alt`.
 	 */
 	readonly obsolete?:
 		| true
@@ -103,12 +184,14 @@ export type ElementSpec = {
 		  };
 
 	/**
-	 * Deprecated
+	 * Deprecated: still defined by the spec but its use is discouraged
+	 * (usually still works in browsers).
 	 */
 	readonly deprecated?: true;
 
 	/**
-	 * Non-standard
+	 * Non-standard: never part of any standard (vendor-specific or
+	 * proprietary).
 	 */
 	readonly nonStandard?: true;
 
@@ -169,9 +252,15 @@ type ElementCondition = {
  */
 export type Attribute = {
 	readonly name: string;
-	readonly type: ReadonlyDeep<AttributeType> | readonly ReadonlyDeep<AttributeType>[];
+	readonly type:
+		| ReadonlyDeep<AttributeType>
+		| readonly ReadonlyDeep<AttributeType>[]
+		| readonly ReadonlyDeep<ConditionalAttributeType>[];
 	readonly description?: string;
 	readonly caseSensitive?: true;
+	// Status flags share the semantics documented on `ElementSpec` above:
+	// experimental = not yet standardized; obsolete = removed from the spec;
+	// deprecated = discouraged but still defined; nonStandard = never standard.
 	readonly experimental?: boolean;
 	readonly obsolete?: true;
 	readonly deprecated?: boolean;
@@ -187,7 +276,19 @@ export type ARIARole = {
 	readonly name: string;
 	readonly isAbstract: boolean;
 	readonly deprecated: boolean;
+	/** Required Accessibility Parent Role (ARIA 1.3 name) */
+	readonly requiredAccessibilityParentRole: readonly string[];
+	/** Allowed Accessibility Child Roles (ARIA 1.3 name) */
+	readonly allowedAccessibilityChildRoles: readonly string[];
+	/**
+	 * @deprecated Use {@link ARIARole.requiredAccessibilityParentRole} instead.
+	 * Retained for ARIA 1.2 backward compatibility.
+	 */
 	readonly requiredContextRole: readonly string[];
+	/**
+	 * @deprecated Use {@link ARIARole.allowedAccessibilityChildRoles} instead.
+	 * Retained for ARIA 1.2 backward compatibility.
+	 */
 	readonly requiredOwnedElements: readonly string[];
 	readonly accessibleNameRequired: boolean;
 	readonly accessibleNameFromAuthor: boolean;
@@ -214,11 +315,19 @@ export type ARIARoleInSchema = Partial<
 /**
  * Describes a property owned by an ARIA role, including whether it is inherited,
  * required, or deprecated.
+ *
+ * `requiredCondition` qualifies `required: true` so that the property is only
+ * required when the condition holds. The W3C ARIA source markup does not encode
+ * such conditions; values are populated by manual overrides in
+ * `@markuplint/html-spec/generator/aria.ts`. Currently the only value is
+ * `'focusable'` (applied to `separator`'s `aria-valuenow`); the `wai-aria`
+ * checker resolves this through `mayBeFocusable` from `@markuplint/ml-spec`.
  */
 export type ARIARoleOwnedProperties = {
 	readonly name: string;
 	readonly inherited?: true;
 	readonly required?: true;
+	readonly requiredCondition?: 'focusable';
 	readonly deprecated?: true;
 };
 

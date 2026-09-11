@@ -35,14 +35,14 @@ Core packages (Application Layer)
 
 ### Source Files (EDIT THESE)
 
-- **`src/spec.*.json`** - Individual element specifications (177 files)
-- **`src/spec-common.attributes.json`** - Global attribute category definitions (19 categories)
-- **`src/spec-common.contents.json`** - Content model category macros (HTML 10 + SVG 19 categories)
+- **`src/spec.*.jsonc`** - Individual element specifications (208 files)
+- **`src/spec-common.attributes.jsonc`** - Global attribute category definitions (20 categories)
+- **`src/spec-common.contents.jsonc`** - Content model category macros (HTML 10 + SVG 19 + MathML 3 categories)
 
 ### Build System
 
-- **`build.mjs`** - Generation script that invokes `@markuplint/spec-generator`
-- Fetches live data from MDN, W3C ARIA specs, and HTML Living Standard
+- **`build.ts`** - Generation script that invokes `generator/` modules
+- Fetches live data from MDN, W3C ARIA specs, Graphics ARIA, DPub ARIA, HTML-ARIA mappings, HTML Living Standard, SVG specs, and MathML specs
 
 ## Relationship to @markuplint/ml-spec
 
@@ -74,13 +74,6 @@ $ yarn add @markuplint/html-spec
 </details>
 
 ## Contributing
-
-For detailed documentation, see:
-
-- [Architecture](ARCHITECTURE.md) -- Package structure, data flow, and integration points
-- [Element Specification Format](docs/element-spec-format.md) -- JSON spec file reference, content models, ARIA integration
-- [Build Pipeline](docs/build-pipeline.md) -- Build process, external data sources, spec-generator modules
-- [Maintenance Guide](docs/maintenance.md) -- Common recipes, testing, troubleshooting
 
 ## License
 

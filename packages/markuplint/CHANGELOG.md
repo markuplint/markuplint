@@ -3,25 +3,193 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [4.18.0](https://github.com/markuplint/markuplint/compare/v4.14.1...v4.18.0) (2026-04-22)
+# [5.0.0-rc.7](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.6...v5.0.0-rc.7) (2026-08-31)
+
+### Features
+
+- **markuplint:** surface appliedOverrides in --show-config=details ([10ed615](https://github.com/markuplint/markuplint/commit/10ed6157cf99786971ae90551ea0411cecdc8433))
+
+# [5.0.0-rc.6](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.5...v5.0.0-rc.6) (2026-08-30)
 
 ### Bug Fixes
 
-- **deps:** adapt code to breaking changes from upgrade ([ced7fab](https://github.com/markuplint/markuplint/commit/ced7fab5b50ea3effd844e17b1f676fce790b53c))
+- add no-aria-hidden-on-hidden-until-found rule (closes [#3999](https://github.com/markuplint/markuplint/issues/3999)) ([#4017](https://github.com/markuplint/markuplint/issues/4017)) ([3dfb300](https://github.com/markuplint/markuplint/commit/3dfb3001dc66452918d5cebbb071244b68779b30))
+- resolveConfig(false) crashes with inline config (not a file path) ([#4018](https://github.com/markuplint/markuplint/issues/4018)) ([7e38b64](https://github.com/markuplint/markuplint/commit/7e38b64caa8cca69009ee765e4aada37fc48c559)), closes [#4015](https://github.com/markuplint/markuplint/issues/4015) [#4015](https://github.com/markuplint/markuplint/issues/4015)
 
-### Reverts
+### Features
 
-- pin meow and os-locale for Node 18 support ([ed61c88](https://github.com/markuplint/markuplint/commit/ed61c8829aca912b81fd6efb518b4518199db2ca))
+- split rule-deprecation notices out of config-error ([#4013](https://github.com/markuplint/markuplint/issues/4013)) ([812e6f3](https://github.com/markuplint/markuplint/commit/812e6f356839af8f257cfd91e6b16cfdfdd7cf33))
 
-## [4.14.2](https://github.com/markuplint/markuplint/compare/markuplint@4.14.1...markuplint@4.14.2) (2026-04-21)
+### Performance Improvements
+
+- share ConfigProvider across a run's files, fix latent overrides caching bug ([#4016](https://github.com/markuplint/markuplint/issues/4016)) ([fcc1875](https://github.com/markuplint/markuplint/commit/fcc1875b1a984a5ef1bb36aa04e7b3522fefc58e)), closes [#3997](https://github.com/markuplint/markuplint/issues/3997) [#3997](https://github.com/markuplint/markuplint/issues/3997)
+
+### BREAKING CHANGES
+
+- `ConfigProvider#resolve(targetFile, names, false)` no longer
+  clears the provider's store/cache/plugin-resolution caches by itself. Callers
+  that relied on `cache: false` alone to force a fresh re-read must now call
+  the new `ConfigProvider#invalidate()` first.
+- violations for deprecated rule names now have
+  `ruleId: 'rule-deprecation'` instead of `ruleId: 'config-error'`. Any
+  consumer filtering `MLCore.verify()` output (or the markuplint CLI/API) by
+  `ruleId === 'config-error'` to catch deprecation messages must also check
+  for `rule-deprecation`.
+
+- feat(markuplint): add --severity-deprecation CLI flag
+
+Wires the new severity.deprecation config option (@markuplint/ml-config)
+and the rule-deprecation ruleId (@markuplint/ml-core) through the CLI:
+
+- --severity-deprecation flag, mirroring --severity-parse-error
+- --show-config details now also surfaces ruleDeprecations
+- per-run dedupe and failed-file counting generalized to cover both
+  config-level ruleIds (config-error and rule-deprecation), not just
+  config-error
+
+* docs(website): document severity.deprecation (EN + JA)
+
+# [5.0.0-rc.5](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.4...v5.0.0-rc.5) (2026-08-28)
 
 ### Bug Fixes
 
-- **deps:** adapt code to breaking changes from upgrade ([ced7fab](https://github.com/markuplint/markuplint/commit/ced7fab5b50ea3effd844e17b1f676fce790b53c))
+- **markuplint:** report post-fix violations for exit code and suppressions ([03855d6](https://github.com/markuplint/markuplint/commit/03855d6641ae736b65994fa6123e91779d2eb41e)), closes [#3890](https://github.com/markuplint/markuplint/issues/3890)
+- **markuplint:** stop repeating config-error messages once per file ([#4007](https://github.com/markuplint/markuplint/issues/4007)) ([466193d](https://github.com/markuplint/markuplint/commit/466193d286628f69e0d99fc8b2f66028523025aa)), closes [#4006](https://github.com/markuplint/markuplint/issues/4006)
+- **pretenders:** resolve same-named components via imports, not scan order ([#3957](https://github.com/markuplint/markuplint/issues/3957)) ([d46a514](https://github.com/markuplint/markuplint/commit/d46a5148c4d7afb156962f4ed795f40a9324e6c5)), closes [#3951](https://github.com/markuplint/markuplint/issues/3951) [#3951](https://github.com/markuplint/markuplint/issues/3951) [#3951](https://github.com/markuplint/markuplint/issues/3951)
+- **rules:** surface disallowed-element reason via reasonOnly (close [#3815](https://github.com/markuplint/markuplint/issues/3815)) ([#3986](https://github.com/markuplint/markuplint/issues/3986)) ([0142cec](https://github.com/markuplint/markuplint/commit/0142cec667f70fee086f2a6e06d7a26e66bda380))
+- **types): strict charset=utf-8; feat(rules:** usemap-references-map ([#3969](https://github.com/markuplint/markuplint/issues/3969)) ([c63070e](https://github.com/markuplint/markuplint/commit/c63070e29ccb283da7468b2fc67db372ebfcf42a)), closes [#3945](https://github.com/markuplint/markuplint/issues/3945) [#3966](https://github.com/markuplint/markuplint/issues/3966) [#3966](https://github.com/markuplint/markuplint/issues/3966) [#3928](https://github.com/markuplint/markuplint/issues/3928)
 
-### Reverts
+### Code Refactoring
 
-- pin meow and os-locale for Node 18 support ([ed61c88](https://github.com/markuplint/markuplint/commit/ed61c8829aca912b81fd6efb518b4518199db2ca))
+- **rules:** redesign v5 rule system — naming, splits, specConformance ([#3989](https://github.com/markuplint/markuplint/issues/3989)) ([e925565](https://github.com/markuplint/markuplint/commit/e925565ce537848d7d1573369723cbce724a841b)), closes [#4](https://github.com/markuplint/markuplint/issues/4) [#aside-conditional-role-mapping-aria-13](https://github.com/markuplint/markuplint/issues/aside-conditional-role-mapping-aria-13)
+
+- feat(markuplint)!: stop forcing severity.parseError default in CLI ([79ff00b](https://github.com/markuplint/markuplint/commit/79ff00b5d068802f4d7e0d8d30ee63e55b8bc7f1)), closes [#3844](https://github.com/markuplint/markuplint/issues/3844)
+
+### Features
+
+- add `pretenders.auto` for on-demand import-graph resolution ([#3962](https://github.com/markuplint/markuplint/issues/3962)) ([5870671](https://github.com/markuplint/markuplint/commit/58706711a20c12cff080d49359f3f6443345eca3)), closes [#3951](https://github.com/markuplint/markuplint/issues/3951) [#3957](https://github.com/markuplint/markuplint/issues/3957) [#3951](https://github.com/markuplint/markuplint/issues/3951) [#3957](https://github.com/markuplint/markuplint/issues/3957) [#3951](https://github.com/markuplint/markuplint/issues/3951) [#3957](https://github.com/markuplint/markuplint/issues/3957) [#3951](https://github.com/markuplint/markuplint/issues/3951) [#3957](https://github.com/markuplint/markuplint/issues/3957) [#3951](https://github.com/markuplint/markuplint/issues/3951) [#3957](https://github.com/markuplint/markuplint/issues/3957) [#3959](https://github.com/markuplint/markuplint/issues/3959) [#3951](https://github.com/markuplint/markuplint/issues/3951) [#3957](https://github.com/markuplint/markuplint/issues/3957) [#3951](https://github.com/markuplint/markuplint/issues/3951) [#3957](https://github.com/markuplint/markuplint/issues/3957) [#3959](https://github.com/markuplint/markuplint/issues/3959) [#3951](https://github.com/markuplint/markuplint/issues/3951) [#3951](https://github.com/markuplint/markuplint/issues/3951)
+- **config-presets:** forbid <base> after <link> or <script> in <head> ([#3925](https://github.com/markuplint/markuplint/issues/3925)) ([ceb892d](https://github.com/markuplint/markuplint/commit/ceb892d64772d459a6bd9564684218e3afbdec2e))
+- **rules:** add form-attr-references-form rule ([6b541f0](https://github.com/markuplint/markuplint/commit/6b541f032b76c3712c99ea35596b6b0aa79b6137))
+- **rules:** add input-button-non-empty-value rule ([2cc73dd](https://github.com/markuplint/markuplint/commit/2cc73ddd0f874fae9faf005f498d73fa364b682c))
+- **rules:** add input-file-empty-value rule ([228cbd7](https://github.com/markuplint/markuplint/commit/228cbd752956d3df8f525e4f19f9278a44d87160))
+- **rules:** add input-list-references-datalist rule ([#3931](https://github.com/markuplint/markuplint/issues/3931)) ([bf4ef54](https://github.com/markuplint/markuplint/commit/bf4ef54a1b2937ecbe05fbe5121ddfe199781a95))
+- **rules:** add label-for-references-labelable rule ([#3932](https://github.com/markuplint/markuplint/issues/3932)) ([3713e6b](https://github.com/markuplint/markuplint/commit/3713e6b435a76fe03a941a36a5e33c0ab06c9a80)), closes [#3918](https://github.com/markuplint/markuplint/issues/3918)
+- **rules:** add label-no-multiple-controls rule ([5da3f85](https://github.com/markuplint/markuplint/commit/5da3f8523dd6ffd9f44ea73d9012952aad85d821))
+- **rules:** add map-id-name-match rule ([1472daf](https://github.com/markuplint/markuplint/commit/1472daf62470bf56c4cb326ab47dc43ba87a8cb3))
+- **rules:** add no-extra-selected-options rule ([3ea75ac](https://github.com/markuplint/markuplint/commit/3ea75ac0b6850c36d5419924b18c1002dfb864a9))
+- **rules:** add progress-value-bounds rule ([#3926](https://github.com/markuplint/markuplint/issues/3926)) ([1e259ec](https://github.com/markuplint/markuplint/commit/1e259ec9929ceb3c7ac5864ce2807420646e9602))
+- **rules:** add wai-aria-tab-requires-tabpanel rule ([#3955](https://github.com/markuplint/markuplint/issues/3955)) ([eac9abe](https://github.com/markuplint/markuplint/commit/eac9abef20ef304c3da2114849686b9cf0733942))
+- **rules:** surface parse5-silent HTML LS parse errors (close nu-only umbrella [#3943](https://github.com/markuplint/markuplint/issues/3943)) ([#3980](https://github.com/markuplint/markuplint/issues/3980)) ([89951fa](https://github.com/markuplint/markuplint/commit/89951fa274007d56370510cb0cf11aead808ce13))
+- wire script-content into preset, bench, and default-rules ([dd0507a](https://github.com/markuplint/markuplint/commit/dd0507a9f54fcff25dba666a1c8fbc082489bdc8))
+
+### BREAKING CHANGES
+
+- **rules:** with no alias coverage.
+- CLI invocations that previously relied on the implicit
+  \`severity.parseError: 'error'\` default for _fatal_ parser errors are
+  unaffected — fatal errors continue to emit at \`'error'\` regardless. But
+  projects that lint malformed HTML and expected non-fatal parse5 events to
+  show up by default must now pass \`--severity-parse-error error\` (or set
+  \`severity.parseError\` in their config).
+
+# [5.0.0-rc.4](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.3...v5.0.0-rc.4) (2026-04-19)
+
+**Note:** Version bump only for package markuplint
+
+# [5.0.0-rc.3](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.2...v5.0.0-rc.3) (2026-04-19)
+
+**Note:** Version bump only for package markuplint
+
+# [5.0.0-rc.2](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.1...v5.0.0-rc.2) (2026-04-15)
+
+### Bug Fixes
+
+- **markuplint:** add default export condition and re-export isFatalError ([55a990a](https://github.com/markuplint/markuplint/commit/55a990affeec62c23a96cf15b42327fcb867e809))
+- **markuplint:** add missing status property to github-reporter test data ([bb7ba62](https://github.com/markuplint/markuplint/commit/bb7ba62e9350c173987f76de2741aaeb3ba0997b))
+
+- build!: remove ESLint and replace with oxlint ([1e0a337](https://github.com/markuplint/markuplint/commit/1e0a337707f76b903b16beeeb8c4d4fc0d8fc9e4))
+- feat(markuplint)!: remove deprecated autoLoad option and MLResultInfo_v1 interface ([4eb1d05](https://github.com/markuplint/markuplint/commit/4eb1d05eb2829019cd4073afa153a512b1c4c8fa))
+
+### Features
+
+- **config-presets:** add document uniqueness rules to html-standard preset ([6ed848b](https://github.com/markuplint/markuplint/commit/6ed848bd800416d1220b9de95ece7a3d752d881f))
+- **markuplint:** add CLI summary output ([4743ba0](https://github.com/markuplint/markuplint/commit/4743ba0be7311288ea2b28fb9345567cf97c1a23))
+- **markuplint:** add suppressions subpath export and editor severity downgrade ([362adef](https://github.com/markuplint/markuplint/commit/362adef1a040c66fec36c01bd8d8fcbe9a66c453))
+- **vscode:** add suppressed message prefix and blame parser tests ([cd80a80](https://github.com/markuplint/markuplint/commit/cd80a802c3bad29a8a1d510d2160a21a6f0a2682))
+
+### BREAKING CHANGES
+
+- ESLint is no longer used. Use oxlint instead.
+- The autoLoad option has been removed from APIOptions.
+  Rules are now always auto-loaded unconditionally.
+  The MLResultInfo_v1 interface has also been removed.
+
+# [5.0.0-rc.1](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.0...v5.0.0-rc.1) (2026-03-27)
+
+### Bug Fixes
+
+- add isFatalError guard to MLEngine.exec and fix accname Deno crash ([c4b20de](https://github.com/markuplint/markuplint/commit/c4b20de128b2cfee582b3588e5004cb90065825b))
+- **markuplint:** use platform-native paths in suppressions round-trip test ([df4b6a5](https://github.com/markuplint/markuplint/commit/df4b6a5f83b0fed3f74afba72cccd7bc2dbf8606))
+
+### Features
+
+- **markuplint:** add experimental bulk suppressions ([bd3ab72](https://github.com/markuplint/markuplint/commit/bd3ab7204870dd6061e8e4ccbeaacd751d069a73)), closes [#3503](https://github.com/markuplint/markuplint/issues/3503)
+- **markuplint:** add selector scope (LCA) to bulk suppressions ([84cf73d](https://github.com/markuplint/markuplint/commit/84cf73dd92db49f1f93ff6a5c9b71c7807ce31e9)), closes [#3509](https://github.com/markuplint/markuplint/issues/3509)
+
+# [5.0.0-rc.0](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.3...v5.0.0-rc.0) (2026-03-12)
+
+### Bug Fixes
+
+- **markuplint:** guard Error.stack access for Deno source map compat ([40508a3](https://github.com/markuplint/markuplint/commit/40508a3e25a9ed84f84f63adc95cc524628b9468))
+
+# [5.0.0-alpha.3](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.2...v5.0.0-alpha.3) (2026-02-26)
+
+### Features
+
+- **markuplint:** add --fix-dry-run CLI flag and fix summary passthrough ([ecd4550](https://github.com/markuplint/markuplint/commit/ecd455042d732f950b16ca79c283bd95dc3c2a72))
+- **markuplint:** add fixSummary to lint event and fixable test fixtures ([287a8be](https://github.com/markuplint/markuplint/commit/287a8be7d96e121115e357f1696314dd6b0f1a1c))
+- **markuplint:** display specConformance in CLI reporters ([aaae2de](https://github.com/markuplint/markuplint/commit/aaae2de8166d6b6151f7c397ba7cd99d4a867442))
+
+# [5.0.0-alpha.2](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.1...v5.0.0-alpha.2) (2026-02-23)
+
+### Features
+
+- **markuplint:** integrate autofix results into MLEngine ([1558a5c](https://github.com/markuplint/markuplint/commit/1558a5cbdddda6845cf2570252920f5c489a6acc))
+
+# [5.0.0-alpha.1](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.0...v5.0.0-alpha.1) (2026-02-22)
+
+**Note:** Version bump only for package markuplint
+
+# [5.0.0-alpha.0](https://github.com/markuplint/markuplint/compare/v4.14.1...v5.0.0-alpha.0) (2026-02-20)
+
+### Bug Fixes
+
+- **markuplint:** remove async from i18n since os-locale v8 is sync ([3d1f4a6](https://github.com/markuplint/markuplint/commit/3d1f4a68afd2c2a2eac286710d9874dec492c326))
+- **markuplint:** set LANG=en in allow warnings test for CI compatibility ([5d4ea00](https://github.com/markuplint/markuplint/commit/5d4ea003e8153e481b9501b18253757a4b891267))
+- **markuplint:** update os-locale from v6 to v8 ([f10d128](https://github.com/markuplint/markuplint/commit/f10d1280b9dec56ff34fe0d27065f69a61d9231d))
+
+- feat!: stop loading default config when --config is specified (#1862) ([1b8aa71](https://github.com/markuplint/markuplint/commit/1b8aa710bad65fa626e55a0ebae80d591b915e31)), closes [#1862](https://github.com/markuplint/markuplint/issues/1862)
+- feat!: remove deprecated v1 API ([f8999ae](https://github.com/markuplint/markuplint/commit/f8999aecc8e05c3ba2022a93698c87b01bbd573b))
+- feat(markuplint)!: wire ruleCommonSettings and set allowWarnings default to true ([79524a4](https://github.com/markuplint/markuplint/commit/79524a407f1bf5015c700d11599c4caca0d3a33d))
+
+### Features
+
+- delete htmx-parser, simplify alpine-parser, add migration guide and tests ([f8dbb09](https://github.com/markuplint/markuplint/commit/f8dbb090707d8cfbf3d859a9b868b2087064f89b))
+- **markuplint:** display virtual rule names in reporters ([39a0473](https://github.com/markuplint/markuplint/commit/39a04737926d254d72082a1091b931c72b68cbc6))
+- **rules:** add redundant-accessible-name rule for detecting overridden accessible name sources ([63b89d4](https://github.com/markuplint/markuplint/commit/63b89d47bf5056f823d5b27cda4fda2b96419bb3))
+
+### BREAKING CHANGES
+
+- `--config` no longer merges with auto-discovered config files.
+
+Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
+
+- The `exec` export (v1 API) has been removed.
+
+Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
+
+- --allow-warnings now defaults to true. Use --no-allow-warnings
+  to restore the previous behavior of returning exit code 1 when warnings exist.
 
 ## [4.14.1](https://github.com/markuplint/markuplint/compare/markuplint@4.14.0...markuplint@4.14.1) (2026-02-10)
 

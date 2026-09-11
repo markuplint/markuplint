@@ -1,0 +1,24 @@
+// https://www.w3.org/TR/mathml-core/#radicals-msqrt-mroot
+{
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": [
+					":model(MathMLPresentation)",
+					"mml|semantics",
+					"#text"
+				]
+			}
+		]
+	},
+	"globalAttrs": {
+		"#GlobalEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#MathMLGlobalAttrs": true
+	},
+	"attributes": {},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": true
+	}
+}

@@ -1,3 +1,5 @@
+import type { TextEdit } from '@markuplint/ml-config';
+
 import { createRule } from '@markuplint/ml-core';
 
 import meta from './meta.js';
@@ -19,13 +21,6 @@ const quoteList: QuoteMap = {
 	single: "'",
 };
 
-/**
- * Rule that enforces consistent quotation marks around attribute values.
- *
- * Verifies that all attribute values use the configured quote style (double
- * or single). Attributes without values, dynamic values, and directives are
- * skipped. Includes an auto-fix that replaces mismatched quotes.
- */
 export default createRule<Type>({
 	meta: meta,
 	defaultSeverity: 'warning',
@@ -42,20 +37,22 @@ export default createRule<Type>({
 				return;
 			}
 			const quote = attr.startQuote?.raw;
-			if (quote !== quoteList[attr.rule.value]) {
+			const expectedQuote = quoteList[attr.rule.value];
+			if (quote !== expectedQuote) {
 				report({
 					scope: attr,
 					message,
+					fix: fixer => {
+						const edits: TextEdit[] = [];
+						if (attr.startQuote) {
+							edits.push(fixer.replaceText(attr.startQuote, expectedQuote));
+						}
+						if (attr.endQuote) {
+							edits.push(fixer.replaceText(attr.endQuote, expectedQuote));
+						}
+						return edits;
+					},
 				});
-			}
-		});
-	},
-	async fix({ document }) {
-		await document.walkOn('Attr', attr => {
-			const quote = quoteList[attr.rule.value];
-			if (quote && attr.startQuote && attr.startQuote.raw !== quote) {
-				attr.startQuote.fix(quote);
-				attr.endQuote?.fix(quote);
 			}
 		});
 	},

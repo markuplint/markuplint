@@ -1,0 +1,149 @@
+// https://html.spec.whatwg.org/multipage/form-elements.html#the-button-element
+// https://www.w3.org/TR/html-aria/#el-button
+// https://w3c.github.io/html-aria/#el-button
+{
+	"contentModel": {
+		"contents": [
+			{
+				"oneOrMore": ":model(phrasing):not(:model(interactive), :has(:model(interactive)))"
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#HTMLFormControlElementAttrs": [
+			"disabled",
+			"form",
+			"formaction",
+			"formenctype",
+			"formmethod",
+			"formnovalidate",
+			"formtarget",
+			"name"
+		]
+	},
+	"attributes": {
+		// https://developer.mozilla.org/ja/docs/Web/HTML/Element/button#command
+		"command": {
+			"type": [
+				{
+					"enum": ["toggle-popover", "show-popover", "hide-popover", "close", "request-close", "show-modal"],
+					"invalidValueDefault": "unknown",
+					"missingValueDefault": "unknown"
+				},
+				"ValidCustomCommand"
+			]
+		},
+		// https://developer.mozilla.org/ja/docs/Web/HTML/Element/button#commandfor
+		"commandfor": {
+			"type": "DOMID"
+		},
+		// https://open-ui.org/components/interest-invokers.explainer/
+		"interestfor": {
+			"type": "DOMID",
+			"experimental": true
+		},
+		// https://html.spec.whatwg.org/multipage/popover.html#attr-popovertarget
+		"popovertarget": {
+			"type": "DOMID"
+		},
+		// https://html.spec.whatwg.org/multipage/popover.html#attr-popovertargetaction
+		"popovertargetaction": {
+			"type": {
+				"enum": ["toggle", "show", "hide"],
+				"disallowToSurroundBySpaces": true,
+				"invalidValueDefault": "toggle",
+				"missingValueDefault": "toggle"
+			}
+		},
+		// https://html.spec.whatwg.org/multipage/form-elements.html#attr-button-type
+		"type": {
+			"type": {
+				"enum": ["submit", "reset", "button"],
+				"invalidValueDefault": "submit",
+				"missingValueDefault": "submit"
+			}
+		},
+		// https://html.spec.whatwg.org/multipage/form-elements.html#attr-button-value
+		"value": {
+			"type": "Any"
+		}
+	},
+	"aria": {
+		"implicitRole": "button",
+		"permittedRoles": [
+			"checkbox",
+			"combobox",
+			"gridcell",
+			"link",
+			"menuitem",
+			"menuitemcheckbox",
+			"menuitemradio",
+			"option",
+			"radio",
+			"separator",
+			"slider",
+			"switch",
+			"tab",
+			"treeitem"
+		],
+		"conditions": {
+			// HTML LS Popover API: a button that triggers a popover via the
+			// popovertarget attribute manages the expanded/collapsed state
+			// automatically, so authors must not also set aria-expanded.
+			// @see https://html.spec.whatwg.org/multipage/popover.html#attr-popovertarget
+			"[popovertarget]": {
+				"properties": {
+					"global": true,
+					"role": true,
+					"without": [
+						{
+							"type": "must-not",
+							"name": "aria-expanded",
+							"alt": {
+								"method": "set-attr",
+								"target": "popovertarget"
+							}
+						}
+					]
+				}
+			},
+			// HTML LS Invoker Commands API: a button that invokes a popover or
+			// dialog via commandfor manages the expanded state automatically
+			// (same reasoning as popovertarget), so a manual aria-expanded would
+			// drift from the actual UI state.
+			// @see https://html.spec.whatwg.org/multipage/form-elements.html#attr-button-commandfor
+			"[commandfor]": {
+				"properties": {
+					"global": true,
+					"role": true,
+					"without": [
+						{
+							"type": "must-not",
+							"name": "aria-expanded",
+							"alt": {
+								"method": "set-attr",
+								"target": "commandfor"
+							}
+						}
+					]
+				}
+			}
+		},
+		"1.1": {
+			"permittedRoles": [
+				"checkbox",
+				"link",
+				"menuitem",
+				"menuitemcheckbox",
+				"menuitemradio",
+				"option",
+				"radio",
+				"switch",
+				"tab"
+			]
+		}
+	}
+}

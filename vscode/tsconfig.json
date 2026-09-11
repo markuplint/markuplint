@@ -6,6 +6,9 @@
 	},
 	"references": [
 		{
+			"path": "../packages/@markuplint/ml-spec"
+		},
+		{
 			"path": "../packages/markuplint"
 		}
 	]

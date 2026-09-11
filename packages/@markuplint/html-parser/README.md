@@ -16,8 +16,3 @@ $ yarn add @markuplint/html-parser
 ```
 
 </details>
-
-## Documentation
-
-- [Architecture](ARCHITECTURE.md) ([日本語](ARCHITECTURE.ja.md)) — Package overview, parse5 integration, and ghost element handling
-- [Maintenance Guide](docs/maintenance.md) ([日本語](docs/maintenance.ja.md)) — Commands, recipes, and troubleshooting

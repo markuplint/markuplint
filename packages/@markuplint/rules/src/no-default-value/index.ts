@@ -1,16 +1,9 @@
 import { createRule, getAttrSpecs } from '@markuplint/ml-core';
 
-import { toNormalizedValue } from '../helpers.js';
+import { removeAttr, toNormalizedValue } from '../helpers.js';
 
 import meta from './meta.js';
 
-/**
- * Rule that disallows explicitly setting an attribute to its default value.
- *
- * Looks up each attribute's default value from the spec and reports when
- * the authored value matches the default, since the attribute can be
- * omitted entirely for the same effect.
- */
 export default createRule({
 	meta: meta,
 	defaultSeverity: 'warning',
@@ -42,6 +35,7 @@ export default createRule({
 					col: attr.valueNode?.startCol,
 					raw: attr.valueNode?.raw,
 					message: t('It is {0}', t('the {0}', 'default value')),
+					fix: fixer => removeAttr(fixer, attr),
 				});
 			}
 		});

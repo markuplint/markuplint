@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>attr-value-quotes</title>
+</head>
+<body>
+	<!-- Unquoted attribute values -->
+	<div class=foo>unquoted class</div>
+	<div data-value=bar>unquoted data attr</div>
+	<input type=text name=field>
+
+	<!-- Single-quoted attribute values -->
+	<div class='bar'>single-quoted class</div>
+	<a href='/path'>single-quoted href</a>
+	<img src='test.png' alt='test image'>
+
+	<!-- Mixed quoting on same element -->
+	<div class=foo id='bar' title="baz">mixed quotes</div>
+
+	<!-- Correct usage (double quotes) - should NOT be flagged -->
+	<div class="correct">double-quoted</div>
+	<a href="/path" title="link">correct</a>
+</body>
+</html>

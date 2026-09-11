@@ -7,17 +7,6 @@ const commandName = name.toLowerCase();
 const loggerError = font.red;
 const loggerWarning = xterm(208);
 
-/**
- * Formats lint results using the simple (compact) reporter.
- *
- * Produces one line per violation showing location, severity icon,
- * message, and rule ID in a condensed format. Clean files display
- * a check mark or warning icon unless `--problem-only` is set.
- *
- * @param results - The lint result information for a single file.
- * @param options - CLI options controlling problem-only output.
- * @returns An array of formatted output lines.
- */
 export function simpleReporter(results: MLResultInfo, options: CLIOptions) {
 	const sizes = {
 		line: 0,
@@ -28,7 +17,7 @@ export function simpleReporter(results: MLResultInfo, options: CLIOptions) {
 	for (const violation of results.violations) {
 		sizes.line = Math.max(sizes.line, violation.line.toString(10).length);
 		sizes.col = Math.max(sizes.col, violation.col.toString(10).length);
-		const meg = messageToString(violation.message, violation.reason);
+		const meg = messageToString(violation.message, violation.specConformance, violation.reason);
 		sizes.meg = Math.max(sizes.meg, getWidth(meg));
 	}
 
@@ -38,11 +27,11 @@ export function simpleReporter(results: MLResultInfo, options: CLIOptions) {
 		out.push(`<${commandName}> ${font.underline(results.filePath)}: ${loggerError('✗')}`);
 		for (const violation of results.violations) {
 			const s = violation.severity === 'error' ? loggerError('✖') : loggerWarning('⚠️');
-			const meg = messageToString(violation.message, violation.reason);
+			const meg = messageToString(violation.message, violation.specConformance, violation.reason);
 			out.push(
 				`  ${font.cyan(
 					`${pad(violation.line, sizes.line, true)}:${pad(violation.col, sizes.col)}`,
-				)} ${s}  ${pad(meg, sizes.meg)} ${xterm(8)(violation.ruleId)} `,
+				)} ${s}  ${pad(meg, sizes.meg)} ${xterm(8)(violation.name ?? violation.ruleId)} `,
 			);
 		}
 	} else if (!options.problemOnly) {

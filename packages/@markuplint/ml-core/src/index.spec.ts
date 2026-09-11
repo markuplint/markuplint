@@ -4,7 +4,22 @@ import specs from '@markuplint/html-spec';
 import { describe, test, expect } from 'vitest';
 
 import { createRule } from './ml-rule/create-test-rule.js';
-import { createTestDocument, createTestElement, createTestNodeList, createTestTokenList } from './test/index.js';
+import { createTestDocument, createTestElement, createTestNodeList } from './test/index.js';
+
+/**
+ * Creates a flat, offset-sorted token list for test assertions (replaces removed createTestTokenList).
+ */
+function createTestTokenList(sourceCode) {
+	const document = createTestDocument(sourceCode);
+	const tokens = [];
+	for (const node of document.nodeList) {
+		tokens.push(node);
+		if (node.is(node.ELEMENT_NODE) && node.closeTag) {
+			tokens.push(node.closeTag);
+		}
+	}
+	return tokens.toSorted((a, b) => a.startOffset - b.startOffset);
+}
 
 describe('AST', () => {
 	test('node count', () => {
@@ -81,21 +96,6 @@ describe('AST', () => {
 		expect([...el.classList]).toStrictEqual(['a', 'b', 'c']);
 	});
 
-	test('fixNodeName', () => {
-		const el = createTestElement('<div attr></div>');
-		el.fixNodeName('x-div');
-		expect(el.toString()).toBe('<div attr>');
-		expect(el.toString(true)).toBe('<x-div attr>');
-		expect(el.closeTag?.toString(true)).toBe('</x-div>');
-	});
-
-	test('fix', () => {
-		const el = createTestElement('<div attr></div>');
-		el.attributes[0].fix('value');
-		expect(el.toString()).toBe('<div attr>');
-		expect(el.toString(true)).toBe('<div attr="value">');
-	});
-
 	test('namespace', () => {
 		const tokens = createTestTokenList(`<div>
 	<svg>
@@ -134,18 +134,37 @@ describe('AST', () => {
 		expect(
 			createTestElement('<label></label>', {
 				parser: await import('@markuplint/jsx-parser'),
+				specs: { ...specs, acceptedAttrNames: 'idl' },
 			}).getAttributeNode('for')?.localName,
 		).toBeUndefined();
 		expect(
 			createTestElement('<label htmlFor></label>', {
 				parser: await import('@markuplint/jsx-parser'),
+				specs: { ...specs, acceptedAttrNames: 'idl' },
 			}).getAttributeNode('for')?.localName,
 		).toBe('for');
 		expect(
 			createTestElement('<label htmlFor></label>', {
 				parser: await import('@markuplint/jsx-parser'),
+				specs: { ...specs, acceptedAttrNames: 'idl' },
 			}).getAttributeNode('htmlFor')?.localName,
 		).toBeUndefined();
+	});
+
+	test('IDL attribute candidate in idl mode vs both mode', async () => {
+		// In 'idl' mode, using content name suggests the IDL name
+		const idlEl = createTestElement('<div tabindex="0"></div>', {
+			parser: await import('@markuplint/jsx-parser'),
+			specs: { ...specs, acceptedAttrNames: 'idl' },
+		});
+		expect(idlEl.getAttributeNode('tabindex')?.candidate).toBe('tabIndex');
+
+		// In 'both' mode, no candidate is set (both names are accepted)
+		const bothEl = createTestElement('<div tabindex="0"></div>', {
+			parser: await import('@markuplint/jsx-parser'),
+			specs: { ...specs, acceptedAttrNames: 'both' },
+		});
+		expect(bothEl.getAttributeNode('tabindex')?.candidate).toBeUndefined();
 	});
 
 	test('rule', () => {
@@ -230,12 +249,14 @@ div#hoge.foo.bar
 		expect(
 			createTestElement('<div tabIndex className><label htmlFor></label></div>', {
 				parser: await import('@markuplint/jsx-parser'),
+				specs: { ...specs, acceptedAttrNames: 'idl' },
 			}).matches('[tabindex][class]:has(>label[for])'),
 		).toBeTruthy();
 
 		expect(
 			createTestElement('<svg><image clipPath /></svg>', {
 				parser: await import('@markuplint/jsx-parser'),
+				specs: { ...specs, acceptedAttrNames: 'idl' },
 			}).matches('svg:has(>image[clip-path])'),
 		).toBeTruthy();
 	});
@@ -267,6 +288,119 @@ div#hoge.foo.bar
 				],
 			}).matches('Custom'),
 		).toBeTruthy();
+	});
+
+	test('pretenders: slots: null treats component as void-like (no children shared)', async () => {
+		const jsxParser = await import('@markuplint/jsx-parser');
+
+		// slots: null — virtual element should have no children
+		const voidEl = createTestElement('<VoidComp>child text</VoidComp>', {
+			parser: jsxParser,
+			pretenders: [
+				{
+					selector: 'VoidComp',
+					as: { element: 'img', slots: null },
+				},
+			],
+		});
+		expect(voidEl.pretenderContext?.type).toBe('pretender');
+		expect([...(voidEl.pretenderContext as any).as.childNodes]).toHaveLength(0);
+
+		// slots: true — virtual element should share children
+		const slotEl = createTestElement('<SlotComp>child text</SlotComp>', {
+			parser: jsxParser,
+			pretenders: [
+				{
+					selector: 'SlotComp',
+					as: { element: 'div', slots: true },
+				},
+			],
+		});
+		expect(slotEl.pretenderContext?.type).toBe('pretender');
+		expect([...(slotEl.pretenderContext as any).as.childNodes].length).toBeGreaterThan(0);
+	});
+
+	test('pretenders: bare string identity (slots undefined) shares children for backward compat', async () => {
+		const jsxParser = await import('@markuplint/jsx-parser');
+
+		const el = createTestElement('<Comp>child text</Comp>', {
+			parser: jsxParser,
+			pretenders: [
+				{
+					selector: 'Comp',
+					as: 'div',
+				},
+			],
+		});
+		expect(el.pretenderContext?.type).toBe('pretender');
+		expect([...(el.pretenderContext as any).as.childNodes].length).toBeGreaterThan(0);
+	});
+
+	// Issue #3740: HTML elements must never be pretendered. Allowing `<marquee as="div">`
+	// or a config-driven HTML→HTML pretender would silently mask standards-conformance
+	// violations (deprecation, ARIA role restrictions) on the original tag.
+	test('pretenders: ignored when selector matches an HTML element (issue-3740)', () => {
+		const el = createTestElement('<marquee>x</marquee>', {
+			specs,
+			pretenders: [
+				{
+					selector: 'marquee',
+					as: 'div',
+				},
+			],
+		});
+		expect(el.pretenderContext).toBeNull();
+		expect(el.localName).toBe('marquee');
+	});
+
+	test('pretenders: still applies to web-component selectors (issue-3740)', () => {
+		const el = createTestElement('<x-marquee>x</x-marquee>', {
+			specs,
+			pretenders: [
+				{
+					selector: 'x-marquee',
+					as: 'marquee',
+				},
+			],
+		});
+		expect(el.pretenderContext?.type).toBe('pretender');
+		expect(el.localName).toBe('marquee');
+	});
+
+	test('pretenders: applies to non-spec custom names parsed as HTML (issue-3740)', () => {
+		// `<SimpleButton>` lowercased by the HTML parser becomes `simplebutton`. It is
+		// not a hyphenated custom element, so the parser tags it `elementType='html'`,
+		// but the spec has no entry — pretender should still apply (covers the
+		// pretenders.scan workflow).
+		const el = createTestElement('<SimpleButton>x</SimpleButton>', {
+			specs,
+			pretenders: [
+				{
+					selector: 'SimpleButton',
+					as: 'button',
+				},
+			],
+		});
+		expect(el.pretenderContext?.type).toBe('pretender');
+		expect(el.localName).toBe('button');
+	});
+
+	test('pretenders: aria field on HTML selector is ignored (issue-3740)', () => {
+		// Even an `aria` payload cannot opt an HTML element back into pretender mode —
+		// the entire config entry is a no-op when the selector resolves to a standard
+		// HTML element. This guards against accidentally bypassing the standard-HTML
+		// reject by adding `aria.name`.
+		const el = createTestElement('<button>x</button>', {
+			specs,
+			pretenders: [
+				{
+					selector: 'button',
+					as: { element: 'a', aria: { name: 'overridden' } },
+				},
+			],
+		});
+		expect(el.pretenderContext).toBeNull();
+		expect(el.localName).toBe('button');
 	});
 });
 
@@ -481,6 +615,56 @@ describe('Rule', () => {
 		expect(document.nodeList[2].rule).toStrictEqual(resultE);
 	});
 
+	test('reasonOnly setting', () => {
+		const document = createTestDocument('<div></div>', {
+			config: {
+				rules: {
+					ruleA: {
+						reason: '123',
+						reasonOnly: true,
+					},
+					ruleB: {
+						reason: '456',
+					},
+				},
+			},
+		});
+		const ruleA = createRule({
+			name: 'ruleA',
+			defaultValue: 'foo',
+			defaultOptions: null,
+			verify() {
+				throw new Error();
+			},
+		});
+		document.setRule(ruleA);
+		expect(document.nodeList[0].rule).toStrictEqual({
+			disabled: false,
+			severity: 'error',
+			value: 'foo',
+			options: null,
+			reason: '123',
+			reasonOnly: true,
+		});
+
+		const ruleB = createRule({
+			name: 'ruleB',
+			defaultValue: 'bar',
+			defaultOptions: null,
+			verify() {
+				throw new Error();
+			},
+		});
+		document.setRule(ruleB);
+		expect(document.nodeList[0].rule).toStrictEqual({
+			disabled: false,
+			severity: 'error',
+			value: 'bar',
+			options: null,
+			reason: '456',
+		});
+	});
+
 	test('regexSelector + pug', async () => {
 		const document = createTestDocument(
 			`section.Card
@@ -576,6 +760,7 @@ describe('Rule', () => {
 					],
 				},
 				parser: await import('@markuplint/jsx-parser'),
+				specs: { ...specs, acceptedAttrNames: 'idl' },
 			},
 		);
 		const ruleA = createRule({
@@ -911,178 +1096,21 @@ describe('Conditional Child Nodes', () => {
 	});
 });
 
-describe('Fix', () => {
-	test('HTML', () => {
-		const doc = createTestDocument(
-			[
-				'<!doctype html>',
-				'<html lang="en">',
-				'	<head>',
-				'		<meta charset="utf-8">',
-				'		<title>title</title>',
-				'	</head>',
-				'	<body>',
-				'		<h1>text</h1>',
-				'		<div',
-				'			id="app"',
-				'			class="app"',
-				'		>',
-				'			<span>text</span>',
-				'		</div>',
-				'	</body>',
-				'</html>',
-			].join('\n'),
+describe('ChildNode with blockBehavior', () => {
+	test('each', async () => {
+		const dom = createTestDocument(
+			`
+<dl>
+  {#each collection.items as item}
+    <dt>{item.name}</dt>
+  {/each}
+</dl>
+`.replaceAll(/\t|\n/g, ''),
+			{ parser: await import('@markuplint/svelte-parser') },
 		);
-		doc.querySelector('div')?.attributes[0].fix('foo');
-		doc.querySelector('span')?.fixNodeName('a');
-		expect(doc.toString(true).split('\n')).toStrictEqual([
-			'<!doctype html>',
-			'<html lang="en">',
-			'	<head>',
-			'		<meta charset="utf-8">',
-			'		<title>title</title>',
-			'	</head>',
-			'	<body>',
-			'		<h1>text</h1>',
-			'		<div',
-			'			id="foo"',
-			'			class="app"',
-			'		>',
-			'			<a>text</a>',
-			'		</div>',
-			'	</body>',
-			'</html>',
-		]);
-	});
 
-	test('Astro', async () => {
-		const doc = createTestDocument(
-			[
-				'---',
-				"import { Header } from './Header.astro'",
-				'---',
-				'<!doctype html>',
-				'<html lang="en">',
-				'	<Header>',
-				'		<meta charset="utf-8">',
-				'		<title>title</title>',
-				'	</Header>',
-				'	<body>',
-				'		<h1>text</h1>',
-				'		<div',
-				'			id="app"',
-				'			class="app"',
-				'		>',
-				'			<span>text</span>',
-				'		</div>',
-				'	</body>',
-				'</html>',
-			].join('\n'),
-			{
-				parser: await import('@markuplint/astro-parser'),
-			},
-		);
-		doc.querySelector('div')?.attributes[0].fix('foo');
-		doc.querySelector('span')?.fixNodeName('a');
-		expect(doc.toString(true).split('\n')).toStrictEqual([
-			'---',
-			"import { Header } from './Header.astro'",
-			'---',
-			'<!doctype html>',
-			'<html lang="en">',
-			'	<Header>',
-			'		<meta charset="utf-8">',
-			'		<title>title</title>',
-			'	</Header>',
-			'	<body>',
-			'		<h1>text</h1>',
-			'		<div',
-			'			id="foo"',
-			'			class="app"',
-			'		>',
-			'			<a>text</a>',
-			'		</div>',
-			'	</body>',
-			'</html>',
-		]);
-	});
-
-	test('Pug', async () => {
-		const doc = createTestDocument(
-			[
-				'html(lang="en")',
-				'	head',
-				'		meta(charset="utf-8")',
-				'		title title',
-				'	body',
-				'		h1 text',
-				'		div(',
-				'			id="app",',
-				'			class="app"',
-				'		)',
-				'			span text',
-			].join('\n'),
-			{
-				parser: await import('@markuplint/pug-parser'),
-			},
-		);
-		doc.querySelector('div')?.attributes[0].fix('foo');
-		doc.querySelector('span')?.fixNodeName('a');
-		expect(doc.toString(true).split('\n')).toStrictEqual([
-			'html(lang="en")',
-			'	head',
-			'		meta(charset="utf-8")',
-			'		title title',
-			'	body',
-			'		h1 text',
-			'		div(',
-			'			id="foo",',
-			'			class="app"',
-			'		)',
-			'			a text',
-		]);
-	});
-
-	test('JSX', async () => {
-		const doc = createTestDocument(
-			[
-				'export const Component = ({ list, id }) => {',
-				'  return (',
-				'    <>',
-				'      <p id={id}></p>',
-				'      <ul',
-				'        // Inline Comment in start tag',
-				'        id="hard-coded" /* Block Comment in start tag */>',
-				'        {list.map(item => (',
-				'          <li key={item.key}>{item.text}</li>',
-				'        ))}',
-				'      </ul>',
-				'    </>',
-				'  );',
-				'};',
-			].join('\n'),
-			{
-				parser: await import('@markuplint/jsx-parser'),
-			},
-		);
-		doc.querySelector('ul')?.attributes[0].fix('foo');
-		doc.querySelector('li')?.fixNodeName('Li');
-		expect(doc.toString(true).split('\n')).toStrictEqual([
-			'export const Component = ({ list, id }) => {',
-			'  return (',
-			'    <>',
-			'      <p id={id}></p>',
-			'      <ul',
-			'        // Inline Comment in start tag',
-			'        id="foo" /* Block Comment in start tag */>',
-			'        {list.map(item => (',
-			'          <Li key={item.key}>{item.text}</Li>',
-			'        ))}',
-			'      </ul>',
-			'    </>',
-			'  );',
-			'};',
-		]);
+		expect(dom.nodeList[0]?.nodeName).toEqual('DL');
+		expect(dom.nodeList[0]?.children[0]?.nodeName).toEqual('DT');
 	});
 });
 
@@ -1282,5 +1310,25 @@ key: value
 		expect(createTestDocument(contents[0], ignoreFrontMatter).toString()).toBe(contents[0]);
 		expect(createTestDocument(contents[1]).toString()).toBe(contents[1]);
 		expect(createTestDocument(contents[2]).toString()).toBe(contents[2]);
+	});
+
+	test('#3823 — Astro <script> with non-src attributes is parseable end-to-end', async () => {
+		// Reproduces https://github.com/markuplint/markuplint/issues/3823: in
+		// previous versions the Astro compiler's `is:inline` Hint reached
+		// markuplint as a fatal `parse-error`. The fix lives in
+		// `@markuplint/astro-parser`; this test pins the contract at the
+		// document-creation boundary so a regression in the parser package is
+		// caught at the integration seam, not just in the parser unit tests.
+		const parser = await import('@markuplint/astro-parser');
+		const cases = [
+			'<script define:vars={{ foo: 1 }}>console.log(foo);</script>',
+			'<script type="module">console.log("hello");</script>',
+			'<script data-widget="example">console.log("hello");</script>',
+			'<script defer>console.log("hello");</script>',
+		];
+		for (const code of cases) {
+			const doc = createTestDocument(code, { parser });
+			expect(doc.querySelector('script')).not.toBeNull();
+		}
 	});
 });

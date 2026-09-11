@@ -4,7 +4,7 @@ import { describe, test, expect } from 'vitest';
 import rule from './index.js';
 
 describe('verify', () => {
-	test('default', async () => {
+	test('[attr-value-quotes-invalid-001] default', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -32,7 +32,7 @@ describe('verify', () => {
 		]);
 	});
 
-	test('double', async () => {
+	test('[attr-value-quotes-invalid-002] double', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -66,7 +66,7 @@ describe('verify', () => {
 		]);
 	});
 
-	test('single', async () => {
+	test('[attr-value-quotes-invalid-003] single', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -100,7 +100,7 @@ describe('verify', () => {
 		]);
 	});
 
-	test('empty', async () => {
+	test('[attr-value-quotes-valid-001] empty', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -115,12 +115,12 @@ describe('verify', () => {
 });
 
 describe('fix', () => {
-	test('empty', async () => {
+	test('[attr-value-quotes-fix-001] empty', async () => {
 		const { fixedCode } = await mlRuleTest(rule, '<div attr noop=noop foo="bar" hoge=\'fuga\'>', undefined, true);
 		expect(fixedCode).toEqual('<div attr noop="noop" foo="bar" hoge="fuga">');
 	});
 
-	test('empty', async () => {
+	test('[attr-value-quotes-fix-002] empty', async () => {
 		const { fixedCode } = await mlRuleTest(
 			rule,
 			'<div attr noop=noop foo="bar" hoge=\'fuga\'>',
@@ -128,5 +128,37 @@ describe('fix', () => {
 			true,
 		);
 		expect(fixedCode).toEqual("<div attr noop='noop' foo='bar' hoge='fuga'>");
+	});
+});
+
+describe('fix with parsers', () => {
+	test('[attr-value-quotes-fix-003] fix: Pug single → double', async () => {
+		const { fixedCode } = await mlRuleTest(
+			rule,
+			"div(class='foo')",
+			{ rule: { severity: 'error', value: 'double' }, parser: { '.*': '@markuplint/pug-parser' } },
+			true,
+		);
+		expect(fixedCode).toBe('div(class="foo")');
+	});
+
+	test('[attr-value-quotes-fix-004] fix: Vue single → double', async () => {
+		const { fixedCode } = await mlRuleTest(
+			rule,
+			"<template><div :class='foo'></div></template>",
+			{ rule: { severity: 'error', value: 'double' }, parser: { '.*': '@markuplint/vue-parser' } },
+			true,
+		);
+		expect(fixedCode).toBe('<template><div :class="foo"></div></template>');
+	});
+
+	test('[attr-value-quotes-fix-005] fix: Markdown raw HTML single → double', async () => {
+		const { fixedCode } = await mlRuleTest(
+			rule,
+			"Some text\n\n<div data-attr='value'>content</div>\n",
+			{ rule: { severity: 'error', value: 'double' }, parser: { '.*': '@markuplint/markdown-parser' } },
+			true,
+		);
+		expect(fixedCode).toBe('Some text\n\n<div data-attr="value">content</div>\n');
 	});
 });

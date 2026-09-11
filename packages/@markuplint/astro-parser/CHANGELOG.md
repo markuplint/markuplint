@@ -3,13 +3,88 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [4.18.0](https://github.com/markuplint/markuplint/compare/v4.14.1...v4.18.0) (2026-04-22)
+# [5.0.0-rc.7](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.6...v5.0.0-rc.7) (2026-08-31)
 
 **Note:** Version bump only for package @markuplint/astro-parser
 
-## [4.6.24](https://github.com/markuplint/markuplint/compare/@markuplint/astro-parser@4.6.23...@markuplint/astro-parser@4.6.24) (2026-04-21)
+# [5.0.0-rc.6](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.5...v5.0.0-rc.6) (2026-08-30)
 
 **Note:** Version bump only for package @markuplint/astro-parser
+
+# [5.0.0-rc.5](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.4...v5.0.0-rc.5) (2026-08-28)
+
+### Bug Fixes
+
+- **astro-parser:** discriminate astro-eslint-parser ParseError from Tier 1 SyntaxError ([f961bf8](https://github.com/markuplint/markuplint/commit/f961bf8a89e3713565b06ff51bd214e6d69dea3e))
+- **astro-parser:** preserve spread attributes containing TypeScript and expression-child siblings ([0e4c64d](https://github.com/markuplint/markuplint/commit/0e4c64d90f77f9350a4895f24ba07ec90eda6546)), closes [#3856](https://github.com/markuplint/markuplint/issues/3856)
+- **astro-parser:** stop surfacing non-fatal Astro diagnostics as parse errors ([3a2c262](https://github.com/markuplint/markuplint/commit/3a2c262316e58196838ab075d5a554751cd976ac)), closes [#3834](https://github.com/markuplint/markuplint/issues/3834) [#3823](https://github.com/markuplint/markuplint/issues/3823)
+
+# [5.0.0-rc.4](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.3...v5.0.0-rc.4) (2026-04-19)
+
+**Note:** Version bump only for package @markuplint/astro-parser
+
+# [5.0.0-rc.3](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.2...v5.0.0-rc.3) (2026-04-19)
+
+**Note:** Version bump only for package @markuplint/astro-parser
+
+# [5.0.0-rc.2](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.1...v5.0.0-rc.2) (2026-04-15)
+
+**Note:** Version bump only for package @markuplint/astro-parser
+
+# [5.0.0-rc.1](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.0...v5.0.0-rc.1) (2026-03-27)
+
+- feat!: adapt framework parsers to UUID-based node references ([6d543b8](https://github.com/markuplint/markuplint/commit/6d543b8c11506fe113d0ceeae3526f552f4ee26d))
+
+### Features
+
+- **astro-parser:** add component-scanner subpath export for pretenders auto scan ([3d85bc5](https://github.com/markuplint/markuplint/commit/3d85bc5f5904c0157415de175227eedf89539cda))
+
+### BREAKING CHANGES
+
+- Parser output no longer contains parentNode/pairNode
+  object references. Use parentNodeUuid/pairNodeUuid string fields instead.
+
+Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
+
+# [5.0.0-rc.0](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.3...v5.0.0-rc.0) (2026-03-12)
+
+**Note:** Version bump only for package @markuplint/astro-parser
+
+# [5.0.0-alpha.3](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.2...v5.0.0-alpha.3) (2026-02-26)
+
+**Note:** Version bump only for package @markuplint/astro-parser
+
+# [5.0.0-alpha.2](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.1...v5.0.0-alpha.2) (2026-02-23)
+
+**Note:** Version bump only for package @markuplint/astro-parser
+
+# [5.0.0-alpha.1](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.0...v5.0.0-alpha.1) (2026-02-22)
+
+**Note:** Version bump only for package @markuplint/astro-parser
+
+# [5.0.0-alpha.0](https://github.com/markuplint/markuplint/compare/v4.14.1...v5.0.0-alpha.0) (2026-02-20)
+
+### Bug Fixes
+
+- **ml-core:** improve detection of namespace ([5b507ad](https://github.com/markuplint/markuplint/commit/5b507ad7c19c5015b8ce587845d901e31dfa6518))
+
+- refactor(astro-parser)!: update for simplified AST token properties ([4c05de1](https://github.com/markuplint/markuplint/commit/4c05de151d30233a8d4a184c4cb70c26de19b36b))
+
+### Features
+
+- **astro-parser:** support loop blocks ([ebe2eb6](https://github.com/markuplint/markuplint/commit/ebe2eb6b85aa32ff3f29964e333d058afe99d18b))
+
+### BREAKING CHANGES
+
+- Adapt to renamed token properties and remove
+  selfClosingSolidus test.
+
+* Token property access: startOffset -> offset, startLine -> line,
+  startCol -> col
+* Replace selfClosingSolidus check with tagCloseChar
+* Remove selfClosingSolidus test case
+
+Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
 
 ## [4.6.23](https://github.com/markuplint/markuplint/compare/@markuplint/astro-parser@4.6.22...@markuplint/astro-parser@4.6.23) (2026-02-10)
 

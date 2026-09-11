@@ -1,0 +1,33 @@
+// https://html.spec.whatwg.org/multipage/grouping-content.html#the-pre-element
+// https://www.w3.org/TR/html-aria/#el-pre
+// https://w3c.github.io/html-aria/#el-pre
+{
+	"contentModel": {
+		"contents": [
+			{
+				"oneOrMore": ":model(phrasing)"
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {
+		"width": {
+			"deprecated": true
+		},
+		"wrap": {
+			"deprecated": true
+		}
+	},
+	"aria": {
+		"implicitRole": "generic",
+		"permittedRoles": true,
+		"namingProhibited": true,
+		"1.1": {
+			"implicitRole": false
+		}
+	}
+}

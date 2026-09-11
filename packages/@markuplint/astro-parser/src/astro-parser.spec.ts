@@ -1,5 +1,6 @@
 // @ts-nocheck
 
+import { ParserError } from '@markuplint/parser-utils';
 import { describe, test, expect } from 'vitest';
 
 import { astroParse } from './astro-parser.js';
@@ -532,5 +533,92 @@ describe('Issues', () => {
 				],
 			}),
 		);
+	});
+
+	/**
+	 * Astro emits a Hint (severity=4) for `<script>` tags carrying any
+	 * non-`src` attribute without an explicit `is:inline`, and Warnings
+	 * (severity=2) for things like `set:html` overwriting children. The AST
+	 * is fully populated in both cases, so markuplint must not treat them as
+	 * a parse failure (#3823). This block also pins down the negative side:
+	 * severity=Error diagnostics and raw upstream syntax errors must still
+	 * surface as ParserError, never as a silent pass-through or as a leaked
+	 * upstream error type.
+	 */
+	describe('#3823 only severity=Error Astro diagnostics are fatal', () => {
+		describe('Hint (severity=4) is non-fatal', () => {
+			test('script with define:vars', () => {
+				expect(() => astroParse('<script define:vars={{ foo: 1 }}>console.log(foo);</script>')).not.toThrow();
+				const ast = astroParse('<script define:vars={{ foo: 1 }}>console.log(foo);</script>');
+				expect(ast.children?.[0]).toEqual(
+					expect.objectContaining({
+						type: 'element',
+						name: 'script',
+					}),
+				);
+			});
+
+			test('script type="module"', () => {
+				expect(() => astroParse('<script type="module">console.log("hello");</script>')).not.toThrow();
+				const ast = astroParse('<script type="module">console.log("hello");</script>');
+				expect(ast.children?.[0]).toEqual(
+					expect.objectContaining({
+						type: 'element',
+						name: 'script',
+					}),
+				);
+			});
+
+			test('script with data-* attribute', () => {
+				expect(() => astroParse('<script data-widget="example">console.log("hello");</script>')).not.toThrow();
+				const ast = astroParse('<script data-widget="example">console.log("hello");</script>');
+				expect(ast.children?.[0]).toEqual(
+					expect.objectContaining({
+						type: 'element',
+						name: 'script',
+					}),
+				);
+			});
+
+			test('script defer', () => {
+				expect(() => astroParse('<script defer>console.log("hello");</script>')).not.toThrow();
+				const ast = astroParse('<script defer>console.log("hello");</script>');
+				expect(ast.children?.[0]).toEqual(
+					expect.objectContaining({
+						type: 'element',
+						name: 'script',
+					}),
+				);
+			});
+		});
+
+		describe('Warning (severity=2) is non-fatal', () => {
+			test('set:html with children passes through (WARNING_SET_WITH_CHILDREN, code 2006)', () => {
+				expect(() => astroParse('<div set:html="x">child</div>')).not.toThrow();
+				const ast = astroParse('<div set:html="x">child</div>');
+				expect(ast.children?.[0]).toEqual(
+					expect.objectContaining({
+						type: 'element',
+						name: 'div',
+					}),
+				);
+			});
+		});
+
+		describe('Error (severity=1) and upstream syntax errors are fatal', () => {
+			test('unterminated /* in frontmatter throws ParserError with location', () => {
+				const fn = () => astroParse('---\n/* unterminated\n---\n<div></div>');
+				expect(fn).toThrow(ParserError);
+				expect(fn).toThrow(/unterminated/i);
+			});
+
+			test('unclosed HTML comment throws ParserError (normalized from upstream SyntaxError)', () => {
+				expect(() => astroParse('<!-- not closed\n<div></div>')).toThrow(ParserError);
+			});
+
+			test('unclosed expression throws ParserError (normalized from upstream SyntaxError)', () => {
+				expect(() => astroParse('<div>{ x </div>')).toThrow(ParserError);
+			});
+		});
 	});
 });

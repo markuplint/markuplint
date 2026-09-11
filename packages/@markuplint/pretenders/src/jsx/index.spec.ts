@@ -1,13 +1,15 @@
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 
 import { describe, test, expect } from 'vitest';
 
+import { normalizePath } from '../import-resolver/resolve-module-file.js';
+
 import { jsxScanner } from './index.js';
 
-const __dirname = fileURLToPath(new URL('.', import.meta.url));
-const _ = (filePath: string) => filePath.split('/').join(path.sep);
-const testDir = path.resolve(__dirname, '..', '..', 'test', 'fixtures');
+// Scanners always emit `/`-delimited filePath now (for stable, cross-platform
+// JSON output), so this is a no-op — kept so call sites don't need touching.
+const _ = (filePath: string) => filePath;
+const testDir = path.resolve(import.meta.dirname, '..', '..', 'test', 'fixtures');
 
 describe('jsxScanner', () => {
 	test('001.tsx', async () => {
@@ -28,7 +30,7 @@ describe('jsxScanner', () => {
 							name: 'aria-yyy',
 						},
 					],
-					slots: [],
+					slots: null,
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/001.tsx:1:6'),
 			},
@@ -37,7 +39,7 @@ describe('jsxScanner', () => {
 				as: {
 					element: 'BReturns',
 					inheritAttrs: true,
-					slots: [],
+					slots: null,
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/001.tsx:11:6'),
 			},
@@ -158,5 +160,162 @@ describe('jsxScanner', () => {
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/004.tsx:1:6'),
 			},
 		]);
+	});
+
+	test('005 — children slot detection', async () => {
+		expect(await jsxScanner([path.resolve(testDir, '005.tsx')])).toStrictEqual([
+			{
+				selector: 'AttrOnlyChildren',
+				as: {
+					element: 'div',
+					attrs: [{ name: 'data-ref' }],
+					slots: null,
+				},
+				filePath: _('packages/@markuplint/pretenders/test/fixtures/005.tsx:32:6'),
+			},
+			{
+				selector: 'NestedChildren',
+				as: {
+					element: 'div',
+					slots: true,
+				},
+				filePath: _('packages/@markuplint/pretenders/test/fixtures/005.tsx:22:6'),
+			},
+			{
+				selector: 'StaticContent',
+				as: 'p',
+				filePath: _('packages/@markuplint/pretenders/test/fixtures/005.tsx:17:6'),
+			},
+			{
+				selector: 'TernaryChildren',
+				as: {
+					element: 'div',
+					slots: true,
+				},
+				filePath: _('packages/@markuplint/pretenders/test/fixtures/005.tsx:37:6'),
+			},
+			{
+				selector: 'VoidComponent',
+				as: {
+					element: 'img',
+					attrs: [{ name: 'src' }],
+					slots: null,
+				},
+				filePath: _('packages/@markuplint/pretenders/test/fixtures/005.tsx:12:6'),
+			},
+			{
+				selector: 'WithChildren',
+				as: {
+					element: 'div',
+					attrs: [{ name: 'className', value: 'wrapper' }],
+					slots: true,
+				},
+				filePath: _('packages/@markuplint/pretenders/test/fixtures/005.tsx:2:6'),
+			},
+			{
+				selector: 'WithPropsChildren',
+				as: {
+					element: 'section',
+					slots: true,
+				},
+				filePath: _('packages/@markuplint/pretenders/test/fixtures/005.tsx:7:6'),
+			},
+		]);
+	});
+
+	describe('name collision across files (issue #3951)', () => {
+		const collisionDir = path.resolve(testDir, 'collision');
+
+		test('components with the same name in different files resolve independently', async () => {
+			const result = await jsxScanner(
+				[path.resolve(collisionDir, 'a.tsx'), path.resolve(collisionDir, 'b.tsx')],
+				{ cwd: collisionDir },
+			);
+
+			const a = result.find(p => p.selector === 'A');
+			// B's own render root is <ul>, not <Item> (Item is nested inside it) — B itself
+			// doesn't chain to Item. What matters here is that the two `Item` pretenders
+			// below stay independent instead of one silently overwriting the other.
+			const b = result.find(p => p.selector === 'B');
+			const items = result.filter(p => p.selector === 'Item');
+			const itemFromA = items.find(p => p.filePath?.startsWith('a.tsx:'));
+			const itemFromB = items.find(p => p.filePath?.startsWith('b.tsx:'));
+
+			expect(items).toHaveLength(2);
+			expect(itemFromA).toMatchObject({
+				selector: 'Item',
+				as: { element: 'button', slots: true, inheritAttrs: true },
+			});
+			expect(itemFromB).toMatchObject({
+				selector: 'Item',
+				as: { element: 'li', slots: true, inheritAttrs: true },
+			});
+			expect(a).toMatchObject({
+				selector: 'A',
+				as: { element: 'button', slots: true, inheritAttrs: true },
+				_via: ['Item'],
+			});
+			expect(a?.filePath).toMatch(/^a\.tsx:/);
+			expect(b).toMatchObject({ selector: 'B', as: 'ul' });
+		});
+
+		test('a named import resolves to the actual declaration file, not the first-registered same-named one', async () => {
+			// b.tsx is listed first (and a.tsx is only pulled in transitively via c.tsx's
+			// import) so that, absent import-based resolution, the plain name index would
+			// register b.tsx's `Item` (li) first and resolve c.tsx's reference to it.
+			const result = await jsxScanner(
+				[path.resolve(collisionDir, 'b.tsx'), path.resolve(collisionDir, 'c.tsx')],
+				{
+					cwd: collisionDir,
+				},
+			);
+			const c = result.find(p => p.selector === 'C');
+			expect(c).toMatchObject({
+				selector: 'C',
+				as: { element: 'button', slots: true, inheritAttrs: true },
+				_via: ['Item'],
+			});
+			expect(c?.filePath).toMatch(/^a\.tsx:/);
+		});
+
+		test('a default import resolves via the target file export table, not the first-registered same-named one', async () => {
+			// f.tsx is listed first (and d.tsx is only pulled in transitively via e.tsx's
+			// import) so that, absent import-based resolution, the plain name index would
+			// register f.tsx's `Item` (div) first and resolve e.tsx's reference to it.
+			const result = await jsxScanner(
+				[path.resolve(collisionDir, 'f.tsx'), path.resolve(collisionDir, 'e.tsx')],
+				{
+					cwd: collisionDir,
+				},
+			);
+			const e = result.find(p => p.selector === 'E');
+			expect(e).toMatchObject({
+				selector: 'E',
+				as: { element: 'span', slots: true, inheritAttrs: true },
+				_via: ['Item'],
+			});
+		});
+	});
+
+	describe('sources (in-memory content override)', () => {
+		test('an in-memory override is scanned instead of the file on disk', async () => {
+			const filePath = path.resolve(testDir, '001.tsx');
+			const sources = new Map([[normalizePath(filePath), 'export const InMemoryOnly = () => <span />;']]);
+
+			const result = await jsxScanner([filePath], { sources });
+
+			expect(result).toStrictEqual([expect.objectContaining({ selector: 'InMemoryOnly', as: 'span' })]);
+		});
+
+		test('files without an override fall back to reading from disk', async () => {
+			const overriddenPath = path.resolve(testDir, '002.tsx');
+			const diskPath = path.resolve(testDir, '001.tsx');
+			const sources = new Map([[normalizePath(overriddenPath), 'export const Overridden = () => <span />;']]);
+
+			const result = await jsxScanner([overriddenPath, diskPath], { sources });
+
+			expect(result.find(p => p.selector === 'Overridden')).toMatchObject({ as: 'span' });
+			expect(result.find(p => p.selector === 'NodeA')).toBeDefined();
+		});
 	});
 });

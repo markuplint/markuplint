@@ -16,6 +16,11 @@ const defaultListFormat: ListFormat = {
  * - **List formatting**: `t(["apple", "banana", "cherry"], true)` – formats an array of strings
  *   into a human-readable list (e.g. `"apple", "banana" and "cherry"`).
  *
+ * Placeholder flags carry translation intent:
+ * - `{0:c}` resolves through a `c:`-prefixed keyword (complement form); see `translateKeyword` below.
+ * - `{0*}` inserts the argument verbatim, for dynamic values such as attribute names or
+ *   user input that must not go through keyword translation.
+ *
  * @param localeSet - The locale configuration providing translations and formatting rules
  * @returns A translator function for producing localized messages
  */
@@ -83,17 +88,12 @@ export function translator(localeSet?: LocaleSet): Translator {
 }
 
 /**
- * Creates a tagged template literal translator function.
- *
- * Allows using template literal syntax for translations:
  * ```ts
  * const tt = taggedTemplateTranslator(localeSet);
  * const msg = tt`The ${name} is ${value}`;
  * ```
  *
  * @experimental
- * @param localeSet - The locale configuration providing translations and formatting rules
- * @returns A tagged template function that produces localized strings
  */
 export function taggedTemplateTranslator(localeSet?: LocaleSet) {
 	const t = translator(localeSet);
@@ -111,6 +111,16 @@ export function taggedTemplateTranslator(localeSet?: LocaleSet) {
 	};
 }
 
+/**
+ * Resolves a keyword to its translation in the locale set.
+ *
+ * When the `c` flag is given (from a `{n:c}` placeholder), the lookup tries the
+ * `c:`-prefixed dictionary entry first. Complement (`c:`) keywords exist for languages
+ * such as Japanese where the translation must be a predicate that attaches to the
+ * preceding subject (e.g. `c:deprecated` → 「は非推奨です」, yielding 「〇〇は非推奨です」),
+ * which cannot be produced from the plain keyword translation. The plain keyword
+ * (without `c:`) may still exist as a separate dictionary entry for non-complement use.
+ */
 function translateKeyword(keyword: string, flag: string, localeSet?: LocaleSet) {
 	// No translate
 	if (/^%[^%]+%$/.test(keyword)) {

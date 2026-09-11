@@ -1,14 +1,19 @@
 /**
- * Combines a lint violation message with an optional reason string.
- * When a reason is provided, it is appended after a " / " separator.
+ * Combines a lint violation message with an optional specConformance tag
+ * and reason string.
  *
  * @param message - The primary violation message
+ * @param specConformance - An optional conformance level (e.g. "normative")
  * @param reason - An optional supplementary reason or detail to append
  * @returns The combined message string
  */
-export function messageToString(message: string, reason?: string) {
-	if (!reason) {
-		return message;
+export function messageToString(message: string, specConformance?: string, reason?: string) {
+	let result = message;
+	if (specConformance) {
+		result += ` [${specConformance}]`;
 	}
-	return `${message} / ${reason}`;
+	if (reason) {
+		result += ` / ${reason}`;
+	}
+	return result;
 }

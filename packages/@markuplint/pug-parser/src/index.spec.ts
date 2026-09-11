@@ -211,7 +211,7 @@ html
 		// console.log(map);
 		expect(map).toStrictEqual([
 			'[1:1]>[1:3](0,2)ul: ul',
-			'[2:2]>[2:15](4,17)#ps:Each: each␣i␣in␣obj',
+			'[2:2]>[2:15](4,17)#ps:Each (each): each␣i␣in␣obj',
 			'[3:3]>[3:5](20,22)li: li',
 			'[3:5]>[3:8](22,25)#ps:Code: =␣i',
 		]);
@@ -357,16 +357,16 @@ else
 		]);
 		const input1 = doc.nodeList[2];
 		const input2 = doc.nodeList[4];
-		expect(input1.startOffset).toBe(6);
-		expect(input1.startLine).toBe(2);
-		expect(input1.startCol).toBe(2);
-		expect(input1.attributes[0].startLine).toBe(2);
-		expect(input1.attributes[0].startCol).toBe(9);
-		expect(input2.startOffset).toBe(29);
-		expect(input2.startLine).toBe(3);
-		expect(input2.startCol).toBe(2);
-		expect(input2.attributes[0].startLine).toBe(3);
-		expect(input2.attributes[0].startCol).toBe(9);
+		expect(input1.offset).toBe(6);
+		expect(input1.line).toBe(2);
+		expect(input1.col).toBe(2);
+		expect(input1.attributes[0].line).toBe(2);
+		expect(input1.attributes[0].col).toBe(9);
+		expect(input2.offset).toBe(29);
+		expect(input2.line).toBe(3);
+		expect(input2.col).toBe(2);
+		expect(input2.attributes[0].line).toBe(3);
+		expect(input2.attributes[0].col).toBe(9);
 	});
 
 	test('block-in-tag attr2', () => {
@@ -387,18 +387,18 @@ else
 		const attr1 = input1.attributes[0];
 		const attr2 = input2.attributes[0];
 		const attr3 = input2.attributes[1];
-		expect(attr1.startLine).toBe(22);
-		expect(attr1.startCol).toBe(9);
-		expect(attr1.name.startLine).toBe(22);
-		expect(attr1.name.startCol).toBe(9);
-		expect(attr2.startLine).toBe(23);
-		expect(attr2.startCol).toBe(9);
-		expect(attr2.name.startLine).toBe(23);
-		expect(attr2.name.startCol).toBe(9);
-		expect(attr3.startLine).toBe(23);
-		expect(attr3.startCol).toBe(22);
-		expect(attr3.name.startLine).toBe(23);
-		expect(attr3.name.startCol).toBe(22);
+		expect(attr1.line).toBe(22);
+		expect(attr1.col).toBe(9);
+		expect(attr1.name.line).toBe(22);
+		expect(attr1.name.col).toBe(9);
+		expect(attr2.line).toBe(23);
+		expect(attr2.col).toBe(9);
+		expect(attr2.name.line).toBe(23);
+		expect(attr2.name.col).toBe(9);
+		expect(attr3.line).toBe(23);
+		expect(attr3.col).toBe(22);
+		expect(attr3.name.line).toBe(23);
+		expect(attr3.name.col).toBe(22);
 	});
 
 	test('add space to below', () => {
@@ -1587,14 +1587,14 @@ describe('Issues', () => {
 		const text = doc.nodeList[3];
 		const spanClose = doc.nodeList[4];
 
-		expect(html.uuid).toBe(p.parentNode.uuid);
+		expect(html.uuid).toBe(p.parentNodeUuid);
 		expect(html.childNodes.length).toBe(1);
 		expect(p.uuid).toBe(html.childNodes[0].uuid);
 		expect(p.childNodes.length).toBe(2);
 		expect(span.uuid).toBe(p.childNodes[0].uuid);
 		expect(span.childNodes.length).toBe(1);
 		expect(text.uuid).toBe(span.childNodes[0].uuid);
-		expect(spanClose.uuid).toBe(span.pairNode.uuid);
+		expect(spanClose.uuid).toBe(span.pairNodeUuid);
 	});
 
 	test('#1741', () => {
@@ -1706,5 +1706,28 @@ html
 			'                        ┗━ #text(001d)',
 			'007: [001d]         #text(001d)',
 		]);
+	});
+});
+
+describe('Embedded HTML — parseErrors propagation (#3844)', () => {
+	test('emits tokenizer-level parse5 events for malformed embedded HTML', () => {
+		// Pug's `<div>` literal (a single line beginning with `<`) is handed
+		// to the internal `HtmlInPugParser`. A `duplicate-attribute` in the
+		// raw HTML must still surface on `MLASTDocument.parseErrors`.
+		const doc = parse('<div a a></div>');
+		const codes = (doc.parseErrors ?? []).map(e => e.code);
+		expect(codes).toContain('duplicate-attribute');
+	});
+
+	test('forces fragment parsing so document-level parse5 events do NOT leak from embedded HTML', () => {
+		// Pug owns the document boundary (`doctype html`, `html(...)`), so
+		// any raw HTML line is by definition a fragment. `HtmlInPugParser`'s
+		// `documentMode: 'fragment'` enforcement is what prevents parse5
+		// from firing `missing-doctype` here — this test pins that contract.
+		const doc = parse('<head><meta charset="utf-8"></head>');
+		const codes = (doc.parseErrors ?? []).map(e => e.code);
+		expect(codes).not.toContain('missing-doctype');
+		expect(codes).not.toContain('misplaced-doctype');
+		expect(codes).not.toContain('non-conforming-doctype');
 	});
 });

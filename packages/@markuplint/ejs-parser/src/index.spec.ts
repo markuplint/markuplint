@@ -92,7 +92,8 @@ describe('Node list', () => {
 		]);
 
 		const el = doc.nodeList[3];
-		const el2 = doc.nodeList[3].parentNode.childNodes[0];
+		const parent = doc.nodeList.find(n => n.uuid === doc.nodeList[3].parentNodeUuid);
+		const el2 = parent && 'childNodes' in parent ? parent.childNodes[0] : undefined;
 		expect(el.nodeName).toBe(el2.nodeName);
 		expect(el.uuid).toBe(el2.uuid);
 	});
@@ -223,5 +224,23 @@ describe('Issues', () => {
 			'[9:9]>[10:1](238,239)#text: ⏎',
 			'[10:1]>[10:8](239,246)html: </html>',
 		]);
+	});
+});
+
+describe('parserOptions.documentMode propagation (#3844)', () => {
+	test('documentMode "fragment" suppresses missing-doctype on bare <head> EJS templates', () => {
+		const doc = parser.parse('<head><meta charset="utf-8"><% scriptlet %></head>', {
+			documentMode: 'fragment',
+		});
+		const codes = (doc.parseErrors ?? []).map(e => e.code);
+		expect(codes).not.toContain('missing-doctype');
+	});
+
+	test('documentMode "document" surfaces missing-doctype on the same EJS template', () => {
+		const doc = parser.parse('<head><meta charset="utf-8"><% scriptlet %></head>', {
+			documentMode: 'document',
+		});
+		const codes = (doc.parseErrors ?? []).map(e => e.code);
+		expect(codes).toContain('missing-doctype');
 	});
 });

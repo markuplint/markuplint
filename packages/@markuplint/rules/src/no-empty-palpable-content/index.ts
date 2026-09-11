@@ -29,14 +29,6 @@ const allowedElements = new Set([
 	'img',
 ]);
 
-/**
- * Rule that warns when palpable content elements are empty.
- *
- * Palpable content elements are expected to have visible or meaningful content.
- * This rule reports elements that contain only whitespace text nodes, while
- * excluding elements that are naturally empty (e.g., `<textarea>`, `<video>`)
- * or have a nothing content model.
- */
 export default createRule<boolean, Options>({
 	meta: meta,
 	defaultSeverity: 'warning',

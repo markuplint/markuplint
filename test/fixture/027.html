@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>attr-duplication</title>
+</head>
+<body>
+	<!-- Duplicate class attribute -->
+	<div class="foo" class="bar">duplicate class</div>
+
+	<!-- Duplicate id attribute -->
+	<p id="first" id="second">duplicate id</p>
+
+	<!-- Duplicate data attribute -->
+	<span data-value="1" data-value="2">duplicate data attr</span>
+
+	<!-- Duplicate event handler -->
+	<button onclick="doA()" onclick="doB()">duplicate onclick</button>
+
+	<!-- Duplicate aria attribute -->
+	<div role="button" aria-label="one" aria-label="two">duplicate aria-label</div>
+</body>
+</html>

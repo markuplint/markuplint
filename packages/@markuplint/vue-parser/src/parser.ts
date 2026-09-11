@@ -1,6 +1,5 @@
 import type { ASTNode, ASTComment } from './vue-parser/index.js';
 import type { MLASTParentNode, MLASTNodeTreeItem } from '@markuplint/ml-ast';
-import type { Token, Tokenized } from '@markuplint/parser-utils';
 
 import { ParserError, Parser } from '@markuplint/parser-utils';
 
@@ -11,17 +10,32 @@ type State = {
 };
 
 /**
- * Parser implementation for Vue SFC templates.
- * Extends the base Parser to handle Vue elements, text nodes, expression containers,
- * directives (`v-bind`, `v-on`, `v-model`, `v-slot`), and template comments.
- * Recognizes Vue built-in components and PascalCase user components.
+ * Directive resolution is intentionally not performed by this parser:
+ * `directivePatterns` declared in `@markuplint/vue-spec` are applied later by
+ * `ml-core`'s `MLAttr` constructor. Consequently, parser-level output (and
+ * `index.spec.ts`) shows unresolved attribute metadata, while the final
+ * `potentialName`/`isDirective`/`isDynamicValue` values only appear at the
+ * core level.
+ *
+ * Known limitation: `v-if`/`v-for`/`v-else`/`v-else-if` do not set
+ * `blockBehavior`, so content-model rules such as `permitted-contents` cannot
+ * enumerate conditional branches via `conditionalChildNodes()` as they can for
+ * Svelte, Pug, Alpine, JSX, and Astro. Unlike Alpine's fixed
+ * `<template x-if="...">` wrapper, which converts cleanly into a PSBlock, Vue
+ * directives attach to arbitrary elements that must remain valid HTML elements
+ * for attribute validation while also acting as blocks for content-model
+ * analysis, and `v-else`/`v-else-if` branch across sibling elements — both
+ * beyond the per-node `nodeize()` model. These directives are handled at the
+ * attribute level only (`isDirective: true`), which suppresses attribute
+ * validation errors but provides no structural block information to the core
+ * engine.
  */
 class VueParser extends Parser<ASTNode, State> {
-	readonly duplicatableAttrs = new Set(['class', 'style']);
-
 	constructor() {
 		super(
 			{
+				// Vue SFC is a compiled format that uses explicit XML-style
+				// closing tags (including `/>`), not HTML void-element rules.
 				endTagType: 'xml',
 			},
 			{
@@ -30,7 +44,7 @@ class VueParser extends Parser<ASTNode, State> {
 		);
 	}
 
-	tokenize(): Tokenized<ASTNode, State> {
+	tokenize(): { readonly ast: ASTNode[]; readonly isFragment: boolean } {
 		const ast = vueParse(this.rawCode);
 		if (ast.templateBody?.comments) {
 			this.state.comments = ast.templateBody.comments;
@@ -42,6 +56,8 @@ class VueParser extends Parser<ASTNode, State> {
 	}
 
 	parseError(error: any) {
+		// vue-eslint-parser syntax errors carry `lineNumber` (1-based) and
+		// `column` (0-based); non-SyntaxError cases fall back to the base handler.
 		if (error instanceof SyntaxError && 'lineNumber' in error && 'column' in error) {
 			throw new ParserError(error.message, {
 				line: error.lineNumber as number,
@@ -52,16 +68,6 @@ class VueParser extends Parser<ASTNode, State> {
 		return super.parseError(error);
 	}
 
-	/**
-	 * Converts a Vue AST node into markuplint node tree items.
-	 * Handles VText (text nodes), VExpressionContainer (template expressions),
-	 * and VElement (elements with start/end tags and children).
-	 *
-	 * @param originNode - The Vue AST node to convert
-	 * @param parentNode - The parent node in the markuplint tree, or null for root nodes
-	 * @param depth - The nesting depth of the node
-	 * @returns An array of markuplint node tree items
-	 */
 	nodeize(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		originNode: ASTNode,
@@ -79,6 +85,8 @@ class VueParser extends Parser<ASTNode, State> {
 				});
 			}
 			case 'VExpressionContainer': {
+				// Template expressions (`{{ ... }}`) are treated as opaque
+				// pseudo-blocks; their JavaScript content is intentionally not parsed.
 				return this.visitPsBlock({
 					...token,
 					depth,
@@ -96,7 +104,6 @@ class VueParser extends Parser<ASTNode, State> {
 						depth,
 						parentNode,
 						nodeName: originNode.name,
-						namespace: originNode.namespace,
 					},
 					originNode.children,
 					{
@@ -118,12 +125,9 @@ class VueParser extends Parser<ASTNode, State> {
 	}
 
 	/**
-	 * Extends the base flattening to inject Vue template comments between sibling nodes.
-	 * Comments from the vue-eslint-parser are inserted at the correct positions
-	 * based on their source offsets relative to adjacent nodes.
-	 *
-	 * @param nodeTree - The hierarchical node tree to flatten
-	 * @returns A flat list of nodes including interleaved comments
+	 * This second pass that interleaves comments is required because
+	 * vue-eslint-parser provides comments separately (`templateBody.comments`)
+	 * from the main node tree, so they cannot be emitted during `nodeize()`.
 	 */
 	flattenNodes(nodeTree: readonly MLASTNodeTreeItem[]) {
 		const nodeList = super.flattenNodes(nodeTree);
@@ -131,10 +135,14 @@ class VueParser extends Parser<ASTNode, State> {
 
 		let prevNode: MLASTNodeTreeItem | null = null;
 		for (const node of nodeList) {
-			const lastOffset = prevNode?.endOffset ?? node.parentNode?.endOffset ?? 0;
+			const lastOffset = prevNode
+				? prevNode.offset + prevNode.raw.length
+				: node.parentNode
+					? node.parentNode.offset + node.parentNode.raw.length
+					: 0;
 
 			const betweenComment = this.state.comments.find(comment => {
-				return lastOffset <= comment.range[0] && comment.range[1] <= node.startOffset;
+				return lastOffset <= comment.range[0] && comment.range[1] <= node.offset;
 			});
 
 			if (betweenComment) {
@@ -144,7 +152,7 @@ class VueParser extends Parser<ASTNode, State> {
 					{
 						...token,
 						depth: node.depth,
-						parentNode: node.parentNode,
+						parentNode: node.parentNode ?? null,
 					},
 					{
 						isBogus: betweenComment.type === 'HTMLBogusComment',
@@ -169,124 +177,13 @@ class VueParser extends Parser<ASTNode, State> {
 	}
 
 	afterFlattenNodes(nodeList: readonly MLASTNodeTreeItem[]) {
+		// All base post-processing is disabled because Vue's template parser
+		// handles whitespace and node validity differently from raw HTML parsing.
 		return super.afterFlattenNodes(nodeList, {
 			exposeInvalidNode: false,
 			exposeWhiteSpace: false,
 			concatText: false,
 		});
-	}
-
-	/**
-	 * Visits an attribute token and resolves Vue-specific directive shorthands.
-	 * Handles `v-on` / `@` (event binding), `v-bind` / `:` (property binding),
-	 * `v-model`, `v-slot` / `#`, and other `v-` prefixed directives.
-	 *
-	 * @param token - The token representing the attribute
-	 * @returns The parsed attribute node with Vue-specific metadata
-	 */
-	visitAttr(token: Token) {
-		const attr = super.visitAttr(token);
-
-		if (attr.type === 'spread') {
-			return attr;
-		}
-
-		{
-			/**
-			 * `v-on`
-			 */
-			const [, directive, potentialName] = attr.name.raw.match(/^(v-on:|@)([^.]+)(?:\.([^.]+))?$/i) ?? [];
-			if (directive && potentialName) {
-				return {
-					...attr,
-					potentialName: `on${potentialName.toLowerCase()}`,
-					isDynamicValue: true as const,
-				};
-			}
-		}
-
-		{
-			/**
-			 * `v-bind`
-			 */
-			const [, directive, potentialName, modifier] =
-				attr.name.raw.match(/^(v-bind:|:)([^.]+)(?:\.([^.]+))?$/i) ?? [];
-			if (directive && potentialName) {
-				if (this.duplicatableAttrs.has(potentialName.toLowerCase())) {
-					this.updateAttr(attr, { isDuplicatable: true });
-				}
-
-				if (!modifier) {
-					return {
-						...attr,
-						potentialName,
-						isDynamicValue: true as const,
-					};
-				}
-
-				switch (modifier) {
-					case '.attr': {
-						return {
-							...attr,
-							potentialName,
-							isDynamicValue: true as const,
-						};
-					}
-					/* eslint-disable unicorn/no-useless-switch-case */
-					case '.prop':
-					case '.camel':
-					default: {
-						const name = `v-bind:${potentialName}${modifier ?? ''}`;
-						return {
-							...attr,
-							potentialName: attr.name.raw === name ? undefined : name,
-							isDirective: true as const,
-						};
-					}
-					/* eslint-enable unicorn/no-useless-switch-case */
-				}
-			}
-		}
-
-		{
-			/**
-			 * `v-model`
-			 */
-			const [, directive] = attr.name.raw.match(/^(v-model)(?:\.([^.]+))?$/i) ?? [];
-			if (directive) {
-				return {
-					...attr,
-					isDirective: true as const,
-				};
-			}
-		}
-
-		{
-			/**
-			 * `v-slot`
-			 */
-			const slotName = (attr.name.raw.match(/^(v-slot:|#)(.+)$/i) ?? [])[2];
-			const name = `v-slot:${slotName}`;
-			if (slotName) {
-				return {
-					...attr,
-					potentialName: attr.name.raw === name ? undefined : name,
-					isDirective: true as const,
-				};
-			}
-		}
-
-		/**
-		 * If directives
-		 */
-		if (attr.name.raw.startsWith('v-')) {
-			return {
-				...attr,
-				isDirective: true as const,
-			};
-		}
-
-		return attr;
 	}
 
 	/**
@@ -299,8 +196,6 @@ class VueParser extends Parser<ASTNode, State> {
 	 * @see https://vuejs.org/guide/essentials/component-basics#using-a-component
 	 * @see https://vuejs.org/api/built-in-components.html
 	 * @see https://vuejs.org/api/built-in-special-elements.html#built-in-special-elements
-	 * @param nodeName
-	 * @returns
 	 */
 	detectElementType(nodeName: string) {
 		return super.detectElementType(nodeName, [

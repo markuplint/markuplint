@@ -1,7 +1,7 @@
 import type {
 	Config,
 	AnyRule,
-	AnyRuleV2,
+	NamedRuleGroup,
 	Rules,
 	OptimizedConfig,
 	OverrideConfig,
@@ -12,18 +12,24 @@ import type {
 import type { Nullable } from '@markuplint/shared';
 import type { Writable } from 'type-fest';
 
-import deepmerge from 'deepmerge';
-
-import { deleteUndefProp, cleanOptions, isRuleConfigValue } from './utils.js';
+import { deleteUndefProp, cleanOptions, isRuleConfigValue, isNamedRuleGroup } from './utils.js';
 
 /**
- * Deep-merges two markuplint configurations into an optimized result.
+ * Merges two markuplint configurations into an optimized result.
  *
  * Plugins, arrays, and rules are merged with specific strategies:
- * - Plugins are concatenated and deduplicated by name
+ * - Plugins are concatenated and deduplicated by name (settings shallow-merged)
  * - Arrays (excludeFiles, nodeRules, childNodeRules) are concatenated
  * - Rules are merged per-key with right-side precedence
+ * - Objects (parser, specs, etc.) are shallow-merged
  * - The `extends` property is removed from the result when `b` is provided
+ *
+ * Top-level collections (plugins, excludeFiles, nodeRules, childNodeRules)
+ * accumulate across config layers because their items are independent
+ * entries forming a collection; rule values, by contrast, are overridden
+ * (see {@link mergeRule}) because they represent a single rule's configuration.
+ *
+ * @see https://markuplint.dev/configuration
  *
  * @param a - The base configuration
  * @param b - The configuration to merge on top of `a`
@@ -32,9 +38,16 @@ import { deleteUndefProp, cleanOptions, isRuleConfigValue } from './utils.js';
 export function mergeConfig(a: Config, b?: Config): OptimizedConfig {
 	const deleteExtendsProp = !!b;
 	b = b ?? {};
+	const mergedRules = mergeRules(
+		// Shallow merge: rule-level options are replaced entirely by the overriding config.
+		// Deep merging individual rule options would require schema-aware merging logic.
+		a.rules,
+		b.rules,
+	);
 	const config: OptimizedConfig = {
 		...a,
 		...b,
+		ruleCommonSettings: mergeObject(a.ruleCommonSettings, b.ruleCommonSettings),
 		plugins: concatArray(a.plugins, b.plugins, true, 'name')?.map(plugin => {
 			if (typeof plugin === 'string') {
 				return {
@@ -49,13 +62,14 @@ export function mergeConfig(a: Config, b?: Config): OptimizedConfig {
 		excludeFiles: concatArray(a.excludeFiles, b.excludeFiles, true),
 		severity: mergeObject(a.severity, b.severity),
 		pretenders: mergePretenders(a.pretenders, b.pretenders),
-		rules: mergeRules(
-			// TODO: Deep merge
-			a.rules,
-			b.rules,
+		rules: mergedRules.rules,
+		knownNamedRuleGroupKeys: mergeKnownNamedRuleGroupKeys(
+			a.knownNamedRuleGroupKeys,
+			b.knownNamedRuleGroupKeys,
+			mergedRules.knownNamedRuleGroupKeys,
 		),
-		nodeRules: concatArray(a.nodeRules, b.nodeRules),
-		childNodeRules: concatArray(a.childNodeRules, b.childNodeRules),
+		nodeRules: concatArray(a.nodeRules, b.nodeRules, true, 'name'),
+		childNodeRules: concatArray(a.childNodeRules, b.childNodeRules, true, 'name'),
 		overrideMode: b.overrideMode ?? a.overrideMode,
 		overrides: mergeOverrides(a.overrides, b.overrides),
 		extends: concatArray(toReadonlyArray(a.extends), toReadonlyArray(b.extends)),
@@ -72,14 +86,20 @@ export function mergeConfig(a: Config, b?: Config): OptimizedConfig {
  * Merges two rule configurations with right-side precedence.
  *
  * If `b` is `false`, the rule is unconditionally disabled.
- * If `b` is a direct value, it replaces or extends `a`.
- * If both are full config objects, their properties are merged.
+ * If `b` is a direct value (including arrays), it overrides `a`.
+ * If both are full config objects, their properties are merged
+ * (severity/value/reason/reasonOnly: right-side wins, options: shallow-merged).
+ *
+ * Array values intentionally override rather than concatenate: the more
+ * specific config replaces the rule's value entirely, matching ESLint and
+ * Biome behavior, because an array here is a single rule's configuration
+ * value rather than a collection of independent items.
  *
  * @param a - The base rule configuration (may be `null` or `undefined`)
  * @param b - The rule configuration to merge on top
  * @returns The merged rule configuration
  */
-export function mergeRule(a: Nullable<AnyRule | AnyRuleV2>, b: AnyRule | AnyRuleV2): AnyRule {
+export function mergeRule(a: Nullable<AnyRule>, b: AnyRule): AnyRule {
 	const oA = optimizeRule(a);
 	const oB = optimizeRule(b);
 
@@ -100,13 +120,9 @@ export function mergeRule(a: Nullable<AnyRule | AnyRuleV2>, b: AnyRule | AnyRule
 
 	if (isRuleConfigValue(oB)) {
 		if (isRuleConfigValue(oA)) {
-			if (Array.isArray(oA) && Array.isArray(oB)) {
-				return [...oA, ...oB];
-			}
 			return oB;
 		}
-		const value = Array.isArray(oA.value) && Array.isArray(oB) ? [...oA.value, ...oB] : oB;
-		const res = cleanOptions({ ...oA, value });
+		const res = cleanOptions({ ...oA, value: oB });
 		deleteUndefProp(res);
 		return res;
 	}
@@ -115,11 +131,13 @@ export function mergeRule(a: Nullable<AnyRule | AnyRuleV2>, b: AnyRule | AnyRule
 	const value = oB.value ?? (isRuleConfigValue(oA) ? oA : oA.value);
 	const options = mergeObject(isRuleConfigValue(oA) ? undefined : oA.options, oB.options);
 	const reason = oB.reason ?? (isRuleConfigValue(oA) ? undefined : oA.reason);
+	const reasonOnly = oB.reasonOnly ?? (isRuleConfigValue(oA) ? undefined : oA.reasonOnly);
 	const res = {
 		severity,
 		value,
 		options,
 		reason,
+		reasonOnly,
 	};
 	deleteUndefProp(res);
 	return res;
@@ -132,14 +150,30 @@ function mergePretenders(
 	if (!a && !b) {
 		return;
 	}
-	const aDetails = a ? convertPretenersToDetails(a) : undefined;
-	const bDetails = b ? convertPretenersToDetails(b) : undefined;
-	const details = mergeObject(aDetails, bDetails) ?? {};
+	const aDetails = a ? toPretenderDetails(a) : undefined;
+	const bDetails = b ? toPretenderDetails(b) : undefined;
+
+	if (!aDetails) {
+		return bDetails;
+	}
+	if (!bDetails) {
+		return aDetails;
+	}
+
+	// files/imports: override (right-side wins)
+	// data/scan: append (concatenate)
+	const details: PretenderDetails = {
+		files: bDetails.files ?? aDetails.files,
+		imports: bDetails.imports ?? aDetails.imports,
+		data: concatArray(aDetails.data, bDetails.data),
+		scan: concatArray(aDetails.scan, bDetails.scan),
+		auto: bDetails.auto ?? aDetails.auto,
+	};
 	deleteUndefProp(details);
 	return details;
 }
 
-function convertPretenersToDetails(pretenders: readonly Pretender[] | PretenderDetails): PretenderDetails {
+function toPretenderDetails(pretenders: readonly Pretender[] | PretenderDetails): PretenderDetails {
 	if (isReadonlyArray(pretenders)) {
 		return {
 			data: pretenders,
@@ -177,6 +211,14 @@ function mergeOverrides(
 	return result;
 }
 
+/**
+ * Shallow merge (`{...a, ...b}`) is a deliberate middle ground between
+ * ESLint (complete replacement) and Biome (deep merge): top-level keys are
+ * merged, nested objects are replaced. A deep-merge library was removed in
+ * favor of plain object spread because every merged object in markuplint
+ * config (parser, specs, parserOptions, severity, plugin settings, rule
+ * options) is a flat key-value map.
+ */
 function mergeObject<T>(a: Nullable<T>, b: Nullable<T>): T | undefined {
 	if (a == null) {
 		return b ?? undefined;
@@ -184,12 +226,12 @@ function mergeObject<T>(a: Nullable<T>, b: Nullable<T>): T | undefined {
 	if (b == null) {
 		return a ?? undefined;
 	}
-	const res = deepmerge<T>(a, b);
+	const res = { ...a, ...b } as T;
 	deleteUndefProp(res);
 	return res;
 }
 
-function concatArray<T extends any>(
+function concatArray<T>(
 	a: Nullable<readonly T[]>,
 	b: Nullable<readonly T[]>,
 	uniquely = false,
@@ -227,13 +269,7 @@ function concatArray<T extends any>(
 		}
 
 		const existed = newArray[existedIndex];
-		const merged = mergeObject(existed, item);
-		if (!merged) {
-			newArray.push(item);
-			return;
-		}
-
-		newArray.splice(existedIndex, 1, merged);
+		newArray.splice(existedIndex, 1, { ...existed, ...item });
 	}
 
 	// eslint-disable-next-line unicorn/no-array-for-each
@@ -257,28 +293,116 @@ function getName(item: any, comparePropName: string) {
 	return null;
 }
 
-function mergeRules(a?: Rules, b?: Rules): Rules | undefined {
+type MergeRulesResult = {
+	readonly rules: Rules | undefined;
+	/** See {@link mergeConfig}'s `knownNamedRuleGroupKeys` handling. */
+	readonly knownNamedRuleGroupKeys: readonly string[] | undefined;
+};
+
+function mergeRules(a?: Rules, b?: Rules): MergeRulesResult {
+	const knownNamedRuleGroupKeys = collectNamedRuleGroupKeys(a, b);
 	if (a == null) {
-		return b && optimizeRules(b);
+		return { rules: b && optimizeRules(b), knownNamedRuleGroupKeys };
 	}
 	if (b == null) {
-		return optimizeRules(a);
+		return { rules: optimizeRules(a), knownNamedRuleGroupKeys };
 	}
 	const res = optimizeRules(a);
 	for (const [key, rule] of Object.entries(b)) {
-		const merged = mergeRule(res[key], rule);
-		if (merged != null) {
-			res[key] = merged;
+		if (key.includes('/')) {
+			// Named rule group key: special merge semantics
+			res[key] = mergeNamedRuleGroupEntry(res[key], rule);
+		} else {
+			const merged = mergeRule(res[key], rule as AnyRule);
+			if (merged != null) {
+				res[key] = merged;
+			}
 		}
 	}
 	deleteUndefProp(res);
-	return Object.freeze(res);
+	return { rules: Object.freeze(res), knownNamedRuleGroupKeys };
+}
+
+/**
+ * Collects `rules` keys that are a genuine {@link NamedRuleGroup} in either
+ * operand, before {@link mergeNamedRuleGroupEntry}'s `false`-collapse erases
+ * that shape. See `Config.knownNamedRuleGroupKeys` for why this must be
+ * tracked separately from the merged `rules` value.
+ */
+function collectNamedRuleGroupKeys(a?: Rules, b?: Rules): readonly string[] | undefined {
+	let known: Set<string> | undefined;
+	for (const rules of [a, b]) {
+		if (!rules) {
+			continue;
+		}
+		for (const [key, value] of Object.entries(rules)) {
+			if (key.includes('/') && isNamedRuleGroup(value)) {
+				known ??= new Set();
+				known.add(key);
+			}
+		}
+	}
+	return known && [...known];
+}
+
+/**
+ * Unions `knownNamedRuleGroupKeys` carried over from each side of a merge
+ * with the keys freshly detected at this merge step, returning `undefined`
+ * (not an empty array) when there's nothing to carry — so `deleteUndefProp`
+ * keeps the field absent from configs that never touch named rule groups.
+ */
+function mergeKnownNamedRuleGroupKeys(
+	...groups: readonly (readonly string[] | undefined)[]
+): readonly string[] | undefined {
+	let known: Set<string> | undefined;
+	for (const group of groups) {
+		if (!group) {
+			continue;
+		}
+		for (const key of group) {
+			known ??= new Set();
+			known.add(key);
+		}
+	}
+	return known && [...known];
+}
+
+function mergeNamedRuleGroupEntry(
+	a: AnyRule | NamedRuleGroup | undefined,
+	b: AnyRule | NamedRuleGroup,
+): AnyRule | NamedRuleGroup {
+	// false disables the group
+	if (b === false) {
+		return false;
+	}
+	// Partial override: object without `rules` merging into an existing NamedRuleGroup
+	// Only merge valid NamedRuleGroup keys to avoid contamination from RuleConfig keys
+	if (typeof b === 'object' && b !== null && !isNamedRuleGroup(b) && a !== undefined && isNamedRuleGroup(a)) {
+		const bObj = b as Record<string, unknown>;
+		const override: Record<string, unknown> = {};
+		if ('severity' in bObj) {
+			override.severity = bObj.severity;
+		}
+		if ('specConformance' in bObj) {
+			override.specConformance = bObj.specConformance;
+		}
+		const merged = { ...a, ...override };
+		deleteUndefProp(merged);
+		return merged;
+	}
+	// Right side wins for everything else
+	return b;
 }
 
 function optimizeRules(rules: Rules) {
 	const res: Writable<Rules> = {};
 	for (const [key, rule] of Object.entries(rules)) {
-		const _rule = optimizeRule(rule);
+		// Pass through NamedRuleGroup entries without optimization
+		if (key.includes('/') && isNamedRuleGroup(rule)) {
+			res[key] = rule;
+			continue;
+		}
+		const _rule = optimizeRule(rule as AnyRule);
 		if (_rule != null) {
 			res[key] = _rule;
 		}
@@ -286,7 +410,7 @@ function optimizeRules(rules: Rules) {
 	return res;
 }
 
-function optimizeRule(rule: Nullable<AnyRule | AnyRuleV2>): AnyRule | undefined {
+function optimizeRule(rule: Nullable<AnyRule>): AnyRule | undefined {
 	if (rule === undefined) {
 		return;
 	}
@@ -305,15 +429,7 @@ function toReadonlyArray<T>(value: NonNullable<T> | readonly NonNullable<T>[] | 
 }
 
 /**
- * Checks if a value is a readonly array.
- *
- * If the array is readonly, it passes the type check.
- * However, it saves the type because using ESLint warns `@typescript-eslint/prefer-readonly-parameter-types`.
- *
- * @param value - The value to check.
- * @returns `true` if the value is a readonly array, `false` otherwise.
- * @template T - The type of elements in the array.
- * @template X - The type of the value if it's not an array.
+ * Saves the type because using ESLint warns `@typescript-eslint/prefer-readonly-parameter-types`.
  */
 function isReadonlyArray<T, X = unknown>(value: readonly T[] | X): value is ReadonlyArray<T> {
 	return Array.isArray(value);

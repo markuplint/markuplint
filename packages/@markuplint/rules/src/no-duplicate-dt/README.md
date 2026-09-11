@@ -7,6 +7,12 @@ description: No duplicate names in `<dl>`
 
 No duplicate names in `<dl>`.
 
+:::info
+
+Not included in any preset: `markuplint:html-standard` only admits rules for a HTML LS MUST; this is a SHOULD.
+
+:::
+
 ❌ Examples of **incorrect** code for this rule
 
 ```html

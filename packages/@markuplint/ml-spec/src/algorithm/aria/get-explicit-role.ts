@@ -6,6 +6,11 @@ import { resolveNamespace } from '../../utils/resolve-namespace.js';
 
 import { getPermittedRoles } from './get-permitted-roles.js';
 
+/**
+ * Implements the WAI-ARIA "Handling Author Errors" algorithm.
+ *
+ * @see https://w3c.github.io/aria/#document-handling_author-errors
+ */
 export function getExplicitRole(
 	specs: MLMLSpec,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types

@@ -3,25 +3,64 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [4.18.0](https://github.com/markuplint/markuplint/compare/v4.14.1...v4.18.0) (2026-04-22)
+# [5.0.0-rc.7](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.6...v5.0.0-rc.7) (2026-08-31)
+
+**Note:** Version bump only for package @markuplint/selector
+
+# [5.0.0-rc.6](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.5...v5.0.0-rc.6) (2026-08-30)
+
+**Note:** Version bump only for package @markuplint/selector
+
+# [5.0.0-rc.5](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.4...v5.0.0-rc.5) (2026-08-28)
+
+### Bug Fixes
+
+- **selector:** match HTML attribute names ASCII case-insensitively ([b7fa271](https://github.com/markuplint/markuplint/commit/b7fa271b9a195f438afbd1d7e9fe3eeecc35665e))
+
+# [5.0.0-rc.4](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.3...v5.0.0-rc.4) (2026-04-19)
+
+**Note:** Version bump only for package @markuplint/selector
+
+# [5.0.0-rc.3](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.2...v5.0.0-rc.3) (2026-04-19)
+
+**Note:** Version bump only for package @markuplint/selector
+
+# [5.0.0-rc.2](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.1...v5.0.0-rc.2) (2026-04-15)
+
+**Note:** Version bump only for package @markuplint/selector
+
+# [5.0.0-rc.1](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.0...v5.0.0-rc.1) (2026-03-27)
+
+**Note:** Version bump only for package @markuplint/selector
+
+# [5.0.0-rc.0](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.3...v5.0.0-rc.0) (2026-03-12)
+
+**Note:** Version bump only for package @markuplint/selector
+
+# [5.0.0-alpha.3](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.2...v5.0.0-alpha.3) (2026-02-26)
+
+**Note:** Version bump only for package @markuplint/selector
+
+# [5.0.0-alpha.2](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.1...v5.0.0-alpha.2) (2026-02-23)
+
+### Features
+
+- **selector:** add MathML namespace selector support ([59c385d](https://github.com/markuplint/markuplint/commit/59c385dedb28c0be2fa9fbbb351e8debd0401412))
+
+# [5.0.0-alpha.1](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.0...v5.0.0-alpha.1) (2026-02-22)
+
+**Note:** Version bump only for package @markuplint/selector
+
+# [5.0.0-alpha.0](https://github.com/markuplint/markuplint/compare/v4.14.1...v5.0.0-alpha.0) (2026-02-20)
 
 ### Bug Fixes
 
 - resolve additional eslint-plugin-unicorn v63 errors ([e58a72c](https://github.com/markuplint/markuplint/commit/e58a72c17c97bbec522f9513b99777fac6904d64))
+- use explicit `export type` for type-only re-exports ([7c77c05](https://github.com/markuplint/markuplint/commit/7c77c05619518c8d18a183132040f5b2cd0ab6ec))
 
-### Reverts
+### Performance Improvements
 
-- pin jsdom to 26 for Node 18 support ([a82d280](https://github.com/markuplint/markuplint/commit/a82d280cce06b52746b6a7912b3eca9d22a4296d))
-
-## [4.7.9](https://github.com/markuplint/markuplint/compare/@markuplint/selector@4.7.8...@markuplint/selector@4.7.9) (2026-04-21)
-
-### Bug Fixes
-
-- resolve additional eslint-plugin-unicorn v63 errors ([e58a72c](https://github.com/markuplint/markuplint/commit/e58a72c17c97bbec522f9513b99777fac6904d64))
-
-### Reverts
-
-- pin jsdom to 26 for Node 18 support ([a82d280](https://github.com/markuplint/markuplint/commit/a82d280cce06b52746b6a7912b3eca9d22a4296d))
+- **selector:** use cached getAccessibleName in :aria() pseudo-class ([42ea466](https://github.com/markuplint/markuplint/commit/42ea4665308e2b90e90856b29be939a6e8022347)), closes [#2179](https://github.com/markuplint/markuplint/issues/2179)
 
 ## [4.7.8](https://github.com/markuplint/markuplint/compare/@markuplint/selector@4.7.7...@markuplint/selector@4.7.8) (2026-02-10)
 

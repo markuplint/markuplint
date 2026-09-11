@@ -1,0 +1,65 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"definitions": {
+		"value": {
+			"oneOf": [
+				{
+					"type": "boolean"
+				},
+				{
+					"type": "array",
+					"uniqueItems": true,
+					"minItems": 1,
+					"items": {
+						"type": "string",
+						"minLength": 1
+					}
+				}
+			],
+			"description": "Set to true to disallow all event handler attributes, or specify an array of event names (without the 'on' prefix) to selectively disallow.",
+			"description:ja": "trueですべてのイベントハンドラ属性を禁止、またはイベント名の配列（onプレフィックスなし）で選択的に禁止します。"
+		},
+		"options": {
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"ignore": {
+					"oneOf": [
+						{
+							"type": "string"
+						},
+						{
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						}
+					],
+					"description": "Specify the event handler to ignore as string or string array. It accepts even in a regex format.",
+					"description:ja": "除外するイベントハンドラを文字列か文字列の配列で指定します。正規表現形式も受け付けます。"
+				}
+			}
+		}
+	},
+	"oneOf": [
+		{
+			"$ref": "#/definitions/value"
+		},
+		{
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"value": { "$ref": "#/definitions/value" },
+				"options": { "$ref": "#/definitions/options" },
+				"option": { "$ref": "#/definitions/options", "deprecated": true },
+				"severity": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/ml-config/schema.json#/definitions/severity",
+					"default": "warning"
+				},
+				"reason": {
+					"type": "string"
+				}
+			}
+		}
+	]
+}

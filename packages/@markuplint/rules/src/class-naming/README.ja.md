@@ -6,6 +6,12 @@ description: 指定された規則に則ったクラス名でなければ警告�
 
 指定された規則に則ったクラス名でなければ警告します。
 
+:::info
+
+いずれのプリセットにも含まれません。このルールには有用なデフォルトが無く（`class-naming: true`だけでは何にもマッチしません）、パターンを明示的に設定する必要があります。
+
+:::
+
 <!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
 
 ❌ 間違ったコード例

@@ -1,12 +1,16 @@
 import type { SendDiagnostics } from './document-events.js';
 import type { Config, Log } from '../types.js';
+import type { WorkingDirectoryEntry } from '../utils/resolve-working-directory.js';
 import type { ConfigSet } from '@markuplint/file-resolver';
 import type { ARIAVersion } from '@markuplint/ml-spec';
 import type { MLEngine as _MLEngine } from 'markuplint';
 import type { Position, TextDocumentIdentifier } from 'vscode-languageserver';
 import type { TextDocument } from 'vscode-languageserver-textdocument';
 
+import path from 'node:path';
+
 import { getFilePath } from '../utils/get-file-path.js';
+import { resolveWorkingDirectory } from '../utils/resolve-working-directory.js';
 
 import { convertDiagnostics } from './convert-diagnostics.js';
 
@@ -24,6 +28,8 @@ export async function onDidOpen(
 	diagnosticsLog: Log,
 	sendDiagnostics: SendDiagnostics,
 	notFoundParserError: (e: unknown) => void,
+	workingDirectories?: readonly WorkingDirectoryEntry[],
+	workspaceFolders?: readonly string[],
 ) {
 	const key = document.uri;
 	log(`Opened: ${key}`, 'debug');
@@ -35,8 +41,20 @@ export async function onDidOpen(
 	const filePath = getFilePath(document.uri, document.languageId);
 	log(`${filePath.dirname}/${filePath.basename}`, 'debug');
 
+	const absoluteFilePath = `${filePath.dirname}/${filePath.basename}`;
+	const resolved = resolveWorkingDirectory(absoluteFilePath, workspaceFolders ?? [], workingDirectories);
+	const workspace = resolved?.directory ?? filePath.dirname;
+	if (resolved) {
+		log(`Resolved working directory: ${workspace} (for ${filePath.basename})`, 'debug');
+	}
+
 	const sourceCode = document.getText();
-	const file = await MLEngine.toMLFile({ sourceCode, name: filePath.basename, workspace: filePath.dirname });
+	// `name` must be the workspace-relative path (not just the basename), or
+	// MLFile.path collapses subdirectory files to workspace-root + basename —
+	// which breaks pretender import resolution, nested config discovery, and
+	// excludeFiles/overrides glob matching for anything outside the workspace root.
+	const relativeFilePath = path.relative(workspace, absoluteFilePath);
+	const file = await MLEngine.toMLFile({ sourceCode, name: relativeFilePath, workspace });
 
 	if (!file) {
 		log(`File not found: ${filePath.basename}`, 'warn');
@@ -101,7 +119,13 @@ export async function onDidOpen(
 				}
 			}
 
-			const diagnostics = convertDiagnostics({ filePath, sourceCode, violations, fixedCode });
+			const diagnostics = convertDiagnostics({
+				filePath,
+				sourceCode,
+				violations,
+				fixedCode,
+				status: 'processed',
+			});
 			sendDiagnostics({
 				uri: document.uri,
 				diagnostics,

@@ -1,0 +1,61 @@
+// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/source
+// https://www.w3.org/TR/html-aria/#el-source
+// https://w3c.github.io/html-aria/#el-source
+{
+	"contentModel": {
+		"contents": false
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#HTMLEmbededAndMediaContentAttrs": ["height", "srcset", "sizes", "width"]
+	},
+	"attributes": {
+		"type": {
+			// https://html.spec.whatwg.org/multipage/embedded-content.html#attr-source-type
+			"type": "MIMEType"
+		},
+		"src": {
+			// https://html.spec.whatwg.org/multipage/embedded-content.html#attr-source-src
+			"type": "NonEmptyURL",
+			"required": ":is(video, audio) > source",
+			"condition": ":is(video, audio) > source"
+		},
+		"srcset": {
+			// https://html.spec.whatwg.org/multipage/embedded-content.html#attr-source-srcset
+			"required": "picture > source",
+			"condition": "picture > source"
+		},
+		"sizes": {
+			// https://html.spec.whatwg.org/multipage/embedded-content.html#attr-source-sizes
+			// Spec: "The sizes attribute must not be specified unless the
+			// srcset attribute is also specified."
+			// Note: `srcset` itself is `required: "picture > source"`, so the
+			// no-srcset case is also caught by require-attr — but pinning the
+			// pairing on `sizes` keeps the contract symmetric with `img[sizes]`.
+			"condition": "picture > source[srcset]"
+		},
+		"media": {
+			// https://html.spec.whatwg.org/multipage/embedded-content.html#attr-source-media
+			// See spec-common.attributes.jsonc `media` for the rationale on
+			// using the dedicated `MediaQueryList` checker rather than the
+			// generic CSS-syntax `<media-query-list>` (catches deprecated
+			// media types/features that the CSS-syntax route silently passes).
+			"type": "MediaQueryList"
+		},
+		"width": {
+			// https://html.spec.whatwg.org/multipage/embedded-content-other.html#attr-dim-width
+			"condition": "picture > source"
+		},
+		"height": {
+			// https://html.spec.whatwg.org/multipage/embedded-content-other.html#attr-dim-height
+			"condition": "picture > source"
+		}
+	},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": false,
+		"properties": false
+	}
+}

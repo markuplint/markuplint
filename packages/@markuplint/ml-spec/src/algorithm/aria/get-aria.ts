@@ -32,12 +32,30 @@ export function getARIA(
 	}
 	const conditions = aria.conditions;
 	if (!conditions) {
-		return aria;
+		return {
+			...aria,
+			permittedRoles: optimizePermittedRoles(aria.permittedRoles, version),
+		};
 	}
 	const conditionKeys = Object.keys(conditions);
 	let { implicitRole, permittedRoles, implicitProperties, properties, namingProhibited } = aria;
 	for (const cond of conditionKeys) {
-		if (!matches(cond)) {
+		let matched: boolean;
+		try {
+			matched = matches(cond);
+		} catch (error: unknown) {
+			// Native Element.prototype.matches() cannot evaluate :aria()
+			// pseudo-class. When called from getImplicitRoleName() or
+			// getPermittedRoles() via accname-computation, native matches
+			// is used, which throws a DOMException (name: "SyntaxError").
+			// Note: JSDOM's DOMException is context-local, so instanceof
+			// checks against the global DOMException/SyntaxError fail.
+			if (error instanceof Error && error.name === 'SyntaxError') {
+				continue;
+			}
+			throw error;
+		}
+		if (!matched) {
 			continue;
 		}
 		const condARIA = conditions[cond];
@@ -52,13 +70,17 @@ export function getARIA(
 	}
 	return {
 		implicitRole,
-		permittedRoles,
+		permittedRoles: optimizePermittedRoles(permittedRoles, version),
 		implicitProperties,
 		properties,
 		namingProhibited,
 	};
 }
 
+/**
+ * Returns raw ARIA spec without permittedRoles optimization.
+ * Callers must apply optimizePermittedRoles() to the result.
+ */
 function getVersionResolvedARIA(specs: MLMLSpec, localName: string, namespace: string | null, version: ARIAVersion) {
 	const key = localName + namespace + version;
 	let aria = cache.get(key);
@@ -71,17 +93,11 @@ function getVersionResolvedARIA(specs: MLMLSpec, localName: string, namespace: s
 		return null;
 	}
 	aria = resolveVersion(spec, version);
-	if (aria.permittedRoles !== false) {
-		aria = {
-			...aria,
-			permittedRoles: optimizePermittedRoles(aria.permittedRoles),
-		};
-	}
 	cache.set(key, aria);
 	return aria;
 }
 
-function optimizePermittedRoles(permittedRoles: ReadonlyDeep<PermittedRoles>) {
+function optimizePermittedRoles(permittedRoles: ReadonlyDeep<PermittedRoles>, version: ARIAVersion) {
 	if (!Array.isArray(permittedRoles)) {
 		return permittedRoles;
 	}
@@ -95,5 +111,16 @@ function optimizePermittedRoles(permittedRoles: ReadonlyDeep<PermittedRoles>) {
 		unique.add('presentation');
 	}
 
-	return [...unique].sort();
+	// https://w3c.github.io/aria/#ref-for-image
+	// In ARIA 1.3, `image` is the primary role name and `img` is a synonym.
+	if (version === '1.3') {
+		if (unique.has('image')) {
+			unique.add('img');
+		}
+		if (unique.has('img')) {
+			unique.add('image');
+		}
+	}
+
+	return [...unique].toSorted();
 }

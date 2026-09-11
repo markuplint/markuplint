@@ -10,20 +10,20 @@ import type { Ruleset } from '../../ruleset/index.js';
 import type { MLSchema } from '../../types.js';
 import type { Walker } from '../helper/walkers.js';
 import type { MLToken } from '../token/token.js';
-import type { EndTagType, MLASTDocument, MLASTNodeTreeItem } from '@markuplint/ml-ast';
-import type { PlainData, Pretender, RuleConfigValue } from '@markuplint/ml-config';
+import type { EndTagType, MLASTDocument, MLASTNodeTreeItem, MLASTParseError } from '@markuplint/ml-ast';
+import type { PlainData, Pretender, RuleCommonSettings, RuleConfigValue } from '@markuplint/ml-config';
 import type { ARIAVersion, MLMLSpec } from '@markuplint/ml-spec';
 
 import { exchangeValueOnRule, mergeRule } from '@markuplint/ml-config';
 import {
 	schemaToSpec,
-	getAccname,
 	getComputedRole,
 	mayBeFocusable,
 	getComputedAriaProps,
 	isExposed,
 	ARIA_RECOMMENDED_VERSION,
 } from '@markuplint/ml-spec';
+
 import { ConfigParserError } from '@markuplint/parser-utils';
 import { InvalidSelectorError } from '@markuplint/selector';
 
@@ -35,7 +35,7 @@ import { sequentialWalker, syncWalk } from '../helper/walkers.js';
 import { nodeListToHTMLCollection } from './node-list.js';
 import { MLParentNode } from './parent-node.js';
 import { RuleMapper } from './rule-mapper.js';
-import { UnexpectedCallError } from './unexpected-call-error.js';
+import { UnexpectedCallError } from '@markuplint/shared';
 
 const log = coreLog.extend('ml-dom');
 const docLog = log.extend('document');
@@ -82,9 +82,8 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 */
 	readonly endTag: EndTagType;
 
-	/**
-	 * The file path of the source document, if available.
-	 */
+	readonly #astNodeMap: ReadonlyMap<string, MLASTNodeTreeItem>;
+
 	readonly #filename?: string;
 
 	/**
@@ -151,17 +150,24 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 */
 	readonly tagNameCaseSensitive: boolean;
 
-	#tokenList: ReadonlyArray<MLToken> | null = null;
+	/**
+	 * Common settings applied globally to all rules, such as the ARIA version.
+	 * Rules use this as a fallback when their own options do not specify a value.
+	 */
+	readonly ruleCommonSettings: RuleCommonSettings;
 
 	/**
-	 *
 	 * @param ast node list of markuplint AST
 	 * @param ruleset ruleset object
+	 * @param schemas base HTML/ARIA spec with optional framework-specific extensions
+	 * @param ruleCommonSettings common settings applied globally to all rules
+	 * @param options optional configuration for document behavior
 	 */
 	constructor(
 		ast: MLASTDocument,
 		ruleset: Ruleset,
 		schemas: MLSchema,
+		ruleCommonSettings: RuleCommonSettings,
 		options?: {
 			readonly filename?: string;
 			readonly endTag?: 'xml' | 'omittable' | 'never';
@@ -179,6 +185,10 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		this.endTag = options?.endTag ?? 'omittable';
 		this.#filename = options?.filename;
 		this.tagNameCaseSensitive = options?.tagNameCaseSensitive ?? false;
+		this.ruleCommonSettings = ruleCommonSettings;
+
+		// Build UUID → AST node map for cross-reference lookups (e.g., pairNodeUuid)
+		this.#astNodeMap = new Map(ast.nodeList.map(n => [n.uuid, n]));
 
 		// console.log(ast.nodeList.map((n, i) => `${i}: ${n.uuid} "${n.raw.trim()}"(${n.type})`));
 		this.nodeList = Object.freeze(
@@ -192,10 +202,10 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 				.filter((n): n is MLNode<T, O> => !!n),
 		);
 
-		this._pretending(options?.pretenders);
+		this.#pretending(options?.pretenders);
 
 		try {
-			this._ruleMapping(ruleset);
+			this.#ruleMapping(ruleset);
 		} catch (error: unknown) {
 			if (error instanceof InvalidSelectorError) {
 				throw new ConfigParserError(error.message, {
@@ -204,6 +214,16 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 			}
 			throw error;
 		}
+	}
+
+	/**
+	 * Looks up an AST node by its UUID from the parsed document's node list.
+	 *
+	 * @param uuid - The UUID of the AST node to find
+	 * @returns The AST node, or `undefined` if not found
+	 */
+	getAstNodeByUuid(uuid: string): MLASTNodeTreeItem | undefined {
+		return this.#astNodeMap.get(uuid);
 	}
 
 	/**
@@ -425,6 +445,28 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 */
 	get dir(): string {
 		throw new UnexpectedCallError('Not supported "dir" property');
+	}
+
+	/**
+	 * Non-fatal parser conformance errors collected during tokenisation by
+	 * the underlying parser (currently `@markuplint/html-parser` and the
+	 * template-engine parsers that delegate to it). Empty array when the
+	 * parser does not produce events or the source had none.
+	 *
+	 * Rules that have claimed responsibility for parse5 events via
+	 * `meta.mirrorsParseErrorCodes` typically read this array to surface
+	 * the corresponding violations themselves. `character-reference` is the
+	 * canonical example: its self-detection covers unescaped `<`, `>`, `&`,
+	 * `"` (the "missed escape" direction), and reading `parseErrors` adds
+	 * coverage for parse5's malformed-reference codes (`&xyz;`, etc.) under
+	 * the same rule id.
+	 *
+	 * ml-core's built-in parse-error channel suppresses the mirrored codes
+	 * unconditionally — so the rule that reads them here is the only place
+	 * the user sees the violation.
+	 */
+	get parseErrors(): readonly MLASTParseError[] {
+		return (this._astToken as unknown as MLASTDocument).parseErrors ?? [];
 	}
 
 	/**
@@ -3004,6 +3046,10 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * ARIA role, accessible name, focusability, and ARIA property values.
 	 * Returns null for non-element nodes.
 	 *
+	 * The accessible name is obtained via `node.getAccessibleName()` so that
+	 * the per-element memoization cache is shared with other consumers
+	 * (rules, selectors). See {@link MLElement.getAccessibleName}.
+	 *
 	 * @param node - The node to compute accessibility properties for
 	 * @param ariaVersion - The ARIA specification version to use for computation
 	 * @returns The computed accessibility properties, or null for non-element nodes
@@ -3038,7 +3084,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		};
 
 		const role = getComputedRole(node.ownerMLDocument.specs, node, ariaVersion);
-		const name = getAccname(node).trim();
+		const name = node.getAccessibleName(ariaVersion).trim();
 		const focusable = mayBeFocusable(node, node.ownerMLDocument.specs);
 
 		const nameRequired = role.role?.accessibleNameRequired ?? false;
@@ -3089,7 +3135,6 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @implements DOM API: `Document`
 	 */
 	getElementById(elementId: string) {
-		// TODO:
 		return this.querySelector(`#${elementId}`);
 	}
 
@@ -3141,29 +3186,6 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 */
 	getSelection(): Selection | null {
 		throw new UnexpectedCallError('Not supported "getSelection" method');
-	}
-
-	/**
-	 * Returns a flat, offset-sorted list of all tokens in the document,
-	 * including element close tags. The result is cached after the first call.
-	 *
-	 * @implements `@markuplint/ml-core` API: `MLDocument`
-	 * @returns A frozen array of tokens sorted by their starting offset
-	 */
-	getTokenList() {
-		if (this.#tokenList) {
-			return this.#tokenList;
-		}
-		const tokens: MLToken[] = [];
-		for (const node of this.nodeList) {
-			tokens.push(node);
-			if (node.is(node.ELEMENT_NODE) && node.closeTag) {
-				tokens.push(node.closeTag);
-			}
-		}
-		tokens.sort((a, b) => a.startOffset - b.startOffset);
-		this.#tokenList = Object.freeze(tokens);
-		return this.#tokenList;
 	}
 
 	/**
@@ -3321,29 +3343,13 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	}
 
 	/**
-	 * Returns a string representation of the entire document. When `fixed` is true,
-	 * returns the document with all lint fixes applied by substituting
-	 * fixed token content at the appropriate offsets.
+	 * Returns the raw string representation of the document.
 	 *
 	 * @implements `@markuplint/ml-core` API: `MLDocument`
-	 * @param fixed - When true, returns the fixed content; otherwise returns the original raw content
 	 * @returns The string content of the document
 	 */
-	toString(fixed = false) {
-		if (!fixed) {
-			return this.raw;
-		}
-		let raw = this.raw;
-		let offset = 0;
-		for (const node of this.getTokenList()) {
-			const nodeRaw = node.toString(true);
-			if (nodeRaw === node.raw) {
-				continue;
-			}
-			raw = raw.slice(0, node.startOffset + offset) + nodeRaw + raw.slice(node.endOffset + offset);
-			offset += nodeRaw.length - (node.endOffset - node.startOffset);
-		}
-		return raw;
+	toString() {
+		return this.raw;
 	}
 
 	/**
@@ -3410,11 +3416,11 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	}
 
 	/**
-	 * Initializes pretender contexts for all element nodes in the document.
-	 *
-	 * @param pretenders - Optional pretender configurations from the document options
+	 * Must run before `#ruleMapping`: rule selectors (e.g. a `nodeRules`
+	 * entry targeting `button`) are matched against the pretender identity,
+	 * so the pretender link has to exist when rules are mapped.
 	 */
-	private _pretending(pretenders?: readonly Pretender[]) {
+	#pretending(pretenders?: readonly Pretender[]) {
 		if (docLog.enabled) {
 			docLog('Pretending: %O', pretenders);
 		}
@@ -3425,14 +3431,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		}
 	}
 
-	/**
-	 * Maps the ruleset configuration to each node in the document.
-	 * Applies global rules, node-specific rules (by selector), and
-	 * child-node rules to build the per-node rule configuration.
-	 *
-	 * @param ruleset - The ruleset containing rules, nodeRules, and childNodeRules
-	 */
-	private _ruleMapping(ruleset: Ruleset) {
+	#ruleMapping(ruleset: Ruleset) {
 		if (docLog.enabled) {
 			docLog('Rule Mapping: %O', Object.keys(ruleset.rules));
 		}
@@ -3509,6 +3508,29 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 						continue;
 					}
 
+					// Namespace wildcard (e.g., "a11y/*": false)
+					if (ruleName.endsWith('/*')) {
+						if (rule !== false) {
+							ruleset.mappingErrors.push(
+								new Error(
+									`Namespace wildcard "${ruleName}" only accepts false; use a specific rule name for options`,
+								),
+							);
+							continue;
+						}
+						const nsPrefix = ruleName.slice(0, -1); // "a11y/*" → "a11y/"
+						for (const key of Object.keys(ruleset.rules)) {
+							if (key.startsWith(nsPrefix)) {
+								ruleMapper.set(node, key, {
+									from: 'nodeRules',
+									specificity: matches.specificity,
+									rule: false,
+								});
+							}
+						}
+						continue;
+					}
+
 					const convertedRule = exchangeValueOnRule(rule, matches.data ?? {});
 					if (convertedRule === undefined) {
 						continue;
@@ -3523,6 +3545,44 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 						specificity: matches.specificity,
 						rule: mergedRule,
 					});
+
+					// Propagate to top-level-group virtual rules that wrap this base rule. These
+					// wrappers have no selector scope of their own (they mirror the base rule
+					// globally), so any matched value is safe to forward.
+					const virtualNames = ruleset.baseRuleToVirtualNames.get(ruleName);
+					if (virtualNames) {
+						for (const vName of virtualNames) {
+							const vGlobalRule = ruleset.rules[vName];
+							const vMergedRule =
+								vGlobalRule == null ? convertedRule : mergeRule(vGlobalRule, convertedRule);
+							ruleMapper.set(node, vName, {
+								from: 'nodeRules',
+								specificity: matches.specificity,
+								rule: vMergedRule,
+							});
+						}
+					}
+
+					// Propagate a disable to selector-scoped (nodeRules/childNodeRules-named) virtual
+					// rules that wrap this base rule. Limited to `false`: unlike the top-level-group
+					// case above, these wrappers DO have their own selector scope, so forwarding a
+					// non-false value would apply their semantics (e.g. a required attribute name) to
+					// every node this (unrelated) nodeRule matches, even where the virtual rule's own
+					// selector never matched — see issue #4023's fix history for the regression this caused.
+					if (convertedRule === false) {
+						const scopedVirtualNames = ruleset.baseRuleToScopedVirtualNames.get(ruleName);
+						if (scopedVirtualNames) {
+							for (const vName of scopedVirtualNames) {
+								// No merge needed: mergeRule(_, false) always returns false, so the
+								// disable is unconditional regardless of any global config for vName.
+								ruleMapper.set(node, vName, {
+									from: 'nodeRules',
+									specificity: matches.specificity,
+									rule: false,
+								});
+							}
+						}
+					}
 				}
 			}
 
@@ -3568,6 +3628,31 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 							continue;
 						}
 
+						// Namespace wildcard (e.g., "a11y/*": false)
+						if (ruleName.endsWith('/*')) {
+							if (rule !== false) {
+								ruleset.mappingErrors.push(
+									new Error(
+										`Namespace wildcard "${ruleName}" only accepts false; use a specific rule name for options`,
+									),
+								);
+								continue;
+							}
+							const nsPrefix = ruleName.slice(0, -1); // "a11y/*" → "a11y/"
+							for (const key of Object.keys(ruleset.rules)) {
+								if (key.startsWith(nsPrefix)) {
+									for (const descendant of targetDescendants) {
+										ruleMapper.set(descendant, key, {
+											from: 'childNodeRules',
+											specificity: matches.specificity,
+											rule: false,
+										});
+									}
+								}
+							}
+							continue;
+						}
+
 						const convertedRule = exchangeValueOnRule(rule, matches.data ?? {});
 						if (convertedRule === undefined) {
 							continue;
@@ -3583,6 +3668,44 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 								specificity: matches.specificity,
 								rule: mergedRule,
 							});
+						}
+
+						// Propagate to top-level-group virtual rules — see the matching nodeRules
+						// propagation above for why any value is safe to forward here.
+						const virtualNames = ruleset.baseRuleToVirtualNames.get(ruleName);
+						if (virtualNames) {
+							for (const vName of virtualNames) {
+								const vGlobalRule = ruleset.rules[vName];
+								const vMergedRule =
+									vGlobalRule == null ? convertedRule : mergeRule(vGlobalRule, convertedRule);
+								for (const descendant of targetDescendants) {
+									ruleMapper.set(descendant, vName, {
+										from: 'childNodeRules',
+										specificity: matches.specificity,
+										rule: vMergedRule,
+									});
+								}
+							}
+						}
+
+						// Propagate a disable to selector-scoped virtual rules. Limited to `false` —
+						// see the matching nodeRules propagation above for why a non-false value must
+						// not be forwarded to a virtual rule whose own selector didn't match.
+						if (convertedRule === false) {
+							const scopedVirtualNames = ruleset.baseRuleToScopedVirtualNames.get(ruleName);
+							if (scopedVirtualNames) {
+								for (const vName of scopedVirtualNames) {
+									// No merge needed: mergeRule(_, false) always returns false, so the
+									// disable is unconditional regardless of any global config for vName.
+									for (const descendant of targetDescendants) {
+										ruleMapper.set(descendant, vName, {
+											from: 'childNodeRules',
+											specificity: matches.specificity,
+											rule: false,
+										});
+									}
+								}
+							}
 						}
 					}
 				}

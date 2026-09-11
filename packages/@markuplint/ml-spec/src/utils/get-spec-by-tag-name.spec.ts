@@ -9,23 +9,19 @@ const divSpec = {
 			condition: 'dl > div',
 			contents: [
 				{
-					oneOrMore: [
-						{
-							zeroOrMore: ':model(script-supporting)',
-						},
-						{
-							oneOrMore: 'dt',
-						},
-						{
-							zeroOrMore: ':model(script-supporting)',
-						},
-						{
-							oneOrMore: 'dd',
-						},
-						{
-							zeroOrMore: ':model(script-supporting)',
-						},
-					],
+					zeroOrMore: ':model(script-supporting)',
+				},
+				{
+					oneOrMore: 'dt',
+				},
+				{
+					zeroOrMore: ':model(script-supporting)',
+				},
+				{
+					oneOrMore: 'dd',
+				},
+				{
+					zeroOrMore: ':model(script-supporting)',
 				},
 			],
 		},

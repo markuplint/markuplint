@@ -3,13 +3,6 @@ import type { TokenEachCheck } from '../../token/token-collection.js';
 import { log } from '../../debug.js';
 import { matched, unmatched } from '../../match-result.js';
 
-/**
- * Collection of token check functions for datetime component validation.
- *
- * Each property is a {@link TokenEachCheck} function that validates a specific
- * datetime component (year, month, date, hour, minute, second, etc.)
- * according to the WHATWG specification.
- */
 export const datetimeTokenCheck: Record<
 	| 'year'
 	| 'month'
@@ -549,9 +542,6 @@ export const datetimeTokenCheck: Record<
 		}
 	},
 
-	/**
-	 * Extra token
-	 */
 	extra(extra) {
 		log('Parsing Datetime EXTRA STRING: "%s"', extra?.value);
 
@@ -591,12 +581,6 @@ const daysOfMonth = [
 	31,
 ] as const;
 
-/**
- * Calculates the maximum ISO week number for a given year.
- *
- * @param year - The year to calculate for
- * @returns The maximum week number (52 or 53) for the year
- */
 export function getMaxWeekNum(year: number) {
 	let date = 31;
 	while (date > 0) {

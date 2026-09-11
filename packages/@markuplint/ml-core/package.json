@@ -1,10 +1,17 @@
 {
 	"name": "@markuplint/ml-core",
-	"version": "4.18.0",
+	"version": "5.0.0-rc.7",
 	"description": "The core module of markuplint",
-	"repository": "git@github.com:markuplint/markuplint.git",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/markuplint/markuplint.git",
+		"directory": "packages/@markuplint/ml-core"
+	},
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
+	"engines": {
+		"node": ">=24"
+	},
 	"type": "module",
 	"exports": {
 		".": {
@@ -27,16 +34,16 @@
 		"./lib/configs.js": "./lib/configs.browser.js"
 	},
 	"dependencies": {
-		"@markuplint/config-presets": "4.18.0",
-		"@markuplint/html-parser": "4.18.0",
-		"@markuplint/html-spec": "4.18.0",
-		"@markuplint/i18n": "4.18.0",
-		"@markuplint/ml-ast": "4.18.0",
-		"@markuplint/ml-config": "4.18.0",
-		"@markuplint/ml-spec": "4.18.0",
-		"@markuplint/parser-utils": "4.18.0",
-		"@markuplint/selector": "4.18.0",
-		"@markuplint/shared": "4.18.0",
+		"@markuplint/config-presets": "5.0.0-rc.7",
+		"@markuplint/html-parser": "5.0.0-rc.7",
+		"@markuplint/html-spec": "5.0.0-rc.7",
+		"@markuplint/i18n": "5.0.0-rc.7",
+		"@markuplint/ml-ast": "5.0.0-rc.7",
+		"@markuplint/ml-config": "5.0.0-rc.7",
+		"@markuplint/ml-spec": "5.0.0-rc.7",
+		"@markuplint/parser-utils": "5.0.0-rc.7",
+		"@markuplint/selector": "5.0.0-rc.7",
+		"@markuplint/shared": "5.0.0-rc.7",
 		"@types/debug": "4.1.13",
 		"debug": "4.4.3",
 		"is-plain-object": "5.0.0",

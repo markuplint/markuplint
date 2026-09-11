@@ -1,15 +1,20 @@
 ---
 id: permitted-contents
-description: Warn if a child element has a not allowed element or text node.
+description: Validate the content model and structural constraints of HTML elements.
 ---
 
 # `permitted-contents`
 
-Warn if a child element has a not allowed element or text node.
+Validate the content model and structural constraints of HTML elements according to the [HTML Living Standard](https://html.spec.whatwg.org/). It has settings in [`@markuplint/html-spec`](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/html-spec/src).
 
-This rule refer [HTML Living Standard](https://html.spec.whatwg.org/) based [MDN Web docs](https://developer.mozilla.org/en/docs/Web/HTML). It has settings in [`@markuplint/html-spec`](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/html-spec/src).
+This rule warns when:
+
+- A child element or text node is not allowed by the parent's content model
+- An element that requires non-empty text content is empty or contains only whitespace (e.g., `<title>`, `<option>` without `label`)
 
 It is possible to make the structure robust by setting element relationships on template engines such as custom elements and Vue.
+
+A few related structural constraints are separate rules: an element appearing as a descendant of a forbidden ancestor is [`no-disallowed-ancestor`](/docs/rules/no-disallowed-ancestor)'s concern (e.g., `<address>` inside `<address>`), a missing required ancestor is [`require-ancestor`](/docs/rules/require-ancestor)'s (e.g., `<area>` outside `<map>`), and a sibling-unique attribute repeated on multiple elements of the same type is [`no-duplicate-sibling-attr`](/docs/rules/no-duplicate-sibling-attr)'s (e.g., multiple `<track default>`).
 
 ❌ Examples of **incorrect** code for this rule
 
@@ -25,6 +30,19 @@ It is possible to make the structure robust by setting element relationships on 
 	<tfoot><tr><td>Wrong ordered TFOOT element<td></tr></tfoot>
 	<tbody><tr><td>Body cell<td></tr></tbody>
 </table>
+
+<!-- header's content model disallows a nested header regardless of ancestry -->
+<header>
+	<div>
+		<header>Not allowed nested header</header>
+	</div>
+</header>
+
+<!-- button disallows interactive content descendants; a[href] is interactive
+     content even though <a> itself has a transparent content model -->
+<button>
+	<a href="/path"><span>Not allowed interactive content</span></a>
+</button>
 ```
 <!-- prettier-ignore-end -->
 
@@ -42,6 +60,14 @@ It is possible to make the structure robust by setting element relationships on 
 	<tbody><tr><td>Body cell<td></tr></tbody>
 	<tfoot><tr><td>Footer cell<td></tr></tfoot>
 </table>
+
+<header>
+	<nav>Navigation</nav>
+</header>
+
+<button>
+	<a>Non-interactive because it has no href attribute</a>
+</button>
 ```
 <!-- prettier-ignore-end -->
 
@@ -149,6 +175,45 @@ The `choice` keyword has the following meanings for the specified array:
 }
 ```
 
+### Tag rules with the [`pretenders`](/docs/guides/beyond-html#pretenders) option
+
+When an element is mapped to an HTML element via [`pretenders`](/docs/guides/beyond-html#pretenders) (e.g., a JSX component `<Breadcrumbs>` pretending to be `<nav>`), this rule evaluates the element in **two independent passes**:
+
+1. **Pretended pass** — validates the element against the HTML content model of the pretender target (e.g., `<nav>`). This is how all other rules see the element and matches the historical behavior.
+2. **Origin pass** — if you have declared a tag rule keyed on the component's original name (the identifier that appears in the source code), that rule is additionally evaluated with the pretender context suppressed, so child selectors match the component identities (e.g., `BreadcrumbList` matches `<BreadcrumbList>`, not the pretended `<ol>`).
+
+The origin pass only runs when **both** conditions hold:
+
+- The element has a pretender mapping (from the `pretenders` config or an `as` attribute), **and**
+- The `permitted-contents` config contains an entry whose `tag` equals the component's source-level name
+
+If the user has not declared a tag rule for the component name, the origin pass is skipped and the rule behaves exactly as it did before — existing configurations are not affected.
+
+```json class=config
+{
+  "pretenders": [
+    { "selector": "Breadcrumbs", "as": "nav" },
+    { "selector": "BreadcrumbsLabel", "as": "span" },
+    { "selector": "BreadcrumbList", "as": "ol" },
+    { "selector": "BreadcrumbItem", "as": "li" },
+    { "selector": "BreadcrumbLink", "as": "a" }
+  ],
+  "rules": {
+    "permitted-contents": [
+      {
+        "tag": "Breadcrumbs",
+        "contents": [{ "optional": "BreadcrumbsLabel" }, { "require": "BreadcrumbList" }]
+      },
+      { "tag": "BreadcrumbList", "contents": [{ "oneOrMore": "BreadcrumbItem" }] },
+      { "tag": "BreadcrumbItem", "contents": [{ "require": "BreadcrumbLink" }] },
+      { "tag": "BreadcrumbLink", "contents": [{ "require": "#text" }] }
+    ]
+  }
+}
+```
+
+With this config, the rule enforces the component-level structure (origin pass) **and** the pretended HTML content model (`<nav>`/`<ol>`/…) simultaneously. Because the two passes report violations independently, a single child node may receive multiple diagnostics when it breaks both views — this is intentional so that the author can see each perspective.
+
 ### Setting `ignoreHasMutableChildren` option
 
 - Type: `boolean`
@@ -164,3 +229,15 @@ html
 	body
 		p lorem...
 ```
+
+### Detection limit for conditional transparent elements
+
+When many transparent elements (e.g. `<a>`, `<ins>`, `<del>`) with conditional branches such as `v-if`/`v-else` or `{#if}` are siblings, the rule evaluates the cross-product of their branches. To keep this from growing exponentially, the cross-product is capped (currently `2^10 = 1024` patterns). Beyond the cap — roughly **11 or more conditional transparent siblings** — the rule falls back to a conservative over-approximation that merges all branches together. This never produces false positives, but it may **under-report** real violations (false negatives) in that one structure.
+
+This limit is intentional and rarely reached in real markup. To check whether a document hit it, run with the debug logger enabled:
+
+```shell
+DEBUG=ml-rules:content-model npx markuplint target.html
+```
+
+A `Transparent pattern cap exceeded` line is logged for each element that triggered the fallback.

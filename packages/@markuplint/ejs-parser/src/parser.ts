@@ -9,10 +9,21 @@ import { HtmlParser } from '@markuplint/html-parser';
  * - `<%- ... %>` (unescaped output)
  * - `<%# ... %>` (comments)
  * - `<% ... %>` (plain scriptlets)
+ *
+ * Known limitation: EJS expressions inside unquoted attribute values
+ * (e.g. `<div attr=<%= value %>>`) are not supported; quoted attribute
+ * values work. This limitation is shared by all template engine parsers.
+ *
+ * @see https://github.com/markuplint/markuplint/issues/240
+ * @see https://markuplint.dev/docs/guides/besides-html
  */
 class EJSParser extends HtmlParser {
 	constructor() {
 		super({
+			// Patterns are matched in order, so the entries are ordered from
+			// most specific to least specific; the catch-all `ejs-scriptlet`
+			// pattern must remain last, otherwise it would match the more
+			// specific tag variants first.
 			ignoreTags: [
 				{
 					type: 'ejs-whitespace-slurping',
@@ -36,6 +47,8 @@ class EJSParser extends HtmlParser {
 				},
 				{
 					type: 'ejs-scriptlet',
+					// The negative lookahead `(?!%)` excludes `<%%`, EJS's literal
+					// escape sequence, which must remain a literal text node.
 					start: /<%(?!%)/,
 					end: '%>',
 				},

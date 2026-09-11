@@ -1,0 +1,768 @@
+{
+	"rules": {
+		/**
+		 * No duplicate attr
+		 *
+		 * The parser ignores all such duplicate occurrences of the attribute.
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/parsing.html#parse-error-duplicate-attribute
+		 */
+		"html-standard/attr-duplication": {
+			"specConformance": "normative",
+			"rules": {
+				"no-duplicate-attr": true
+			}
+		},
+
+		/**
+		 * No obsolete attr
+		 *
+		 * Authors must not use attributes the spec has removed entirely. The
+		 * group name is kept as `deprecated-attr` for backward compatibility.
+		 */
+		"html-standard/deprecated-attr": {
+			"specConformance": "normative",
+			"rules": {
+				"no-obsolete-attr": true
+			}
+		},
+
+		/**
+		 * No deprecated attr
+		 *
+		 * MDN/BCD-sourced (factual, not a spec MUST) — kept enabled here
+		 * (severity downgraded to warning, not removed from the preset) so
+		 * existing markuplint:html-standard users keep this coverage.
+		 */
+		"html-standard/no-deprecated-attr": {
+			"specConformance": "non-normative",
+			"rules": {
+				"no-deprecated-attr": true
+			}
+		},
+
+		/**
+		 * No obsolete element
+		 *
+		 * Authors must not use elements the spec has removed entirely. The
+		 * group name is kept as `deprecated-element` for backward
+		 * compatibility.
+		 */
+		"html-standard/deprecated-element": {
+			"specConformance": "normative",
+			"rules": {
+				"no-obsolete-element": true
+			}
+		},
+
+		/**
+		 * No deprecated element
+		 *
+		 * MDN/BCD-sourced (factual, not a spec MUST) — kept enabled here
+		 * (severity downgraded to warning, not removed from the preset) so
+		 * existing markuplint:html-standard users keep this coverage.
+		 */
+		"html-standard/no-deprecated-element": {
+			"specConformance": "non-normative",
+			"rules": {
+				"no-deprecated-element": true
+			}
+		},
+
+		/**
+		 * Require `doctype`
+		 *
+		 * It has the effect of avoiding quirks mode. The group name is kept
+		 * as `doctype` for backward compatibility.
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/syntax.html#syntax-doctype
+		 */
+		"html-standard/doctype": {
+			"specConformance": "normative",
+			"rules": {
+				"require-doctype": true
+			}
+		},
+
+		/**
+		 * No obsolete doctype
+		 *
+		 * Authors must not use an obsolete DOCTYPE (a public identifier, or a
+		 * system identifier other than the one legacy-string exception the
+		 * spec still permits).
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/syntax.html#the-doctype
+		 */
+		"html-standard/no-obsolete-doctype": {
+			"specConformance": "normative",
+			"rules": {
+				"no-obsolete-doctype": true
+			}
+		},
+
+		/**
+		 * Must not skip heading levels
+		 *
+		 */
+		"html-standard/heading-levels": {
+			"specConformance": "non-normative",
+			"rules": {
+				"no-skipped-heading-level": true
+			}
+		},
+
+		/**
+		 * Must not duplicate **ID**
+		 *
+		 */
+		"html-standard/id-duplication": {
+			"specConformance": "normative",
+			"rules": {
+				"no-duplicate-id": true
+			}
+		},
+
+		/**
+		 * No duplicate autofocus
+		 *
+		 * There must not be two elements with the autofocus attribute specified
+		 * in the same document.
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/interaction.html#the-autofocus-attribute
+		 */
+		"html-standard/no-duplicate-autofocus": {
+			"specConformance": "normative",
+			"rules": {
+				"no-duplicate-autofocus": true
+			}
+		},
+
+		/**
+		 * No duplicate visible main
+		 *
+		 * There must not be more than one visible main element in a document.
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/grouping-content.html#the-main-element
+		 */
+		"html-standard/no-duplicate-visible-main": {
+			"specConformance": "normative",
+			"rules": {
+				"no-duplicate-visible-main": true
+			}
+		},
+
+		/**
+		 * No invalid attr
+		 *
+		 * Each element's attribute names and values must conform to the HTML
+		 * specification.
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/dom.html#attributes
+		 */
+		"no-unknown-attr": true,
+		"no-disallowed-attr": true,
+		"no-invalid-attr-value": true,
+
+		/**
+		 * No refer to no existent **ID**
+		 */
+		"html-standard/no-refer-to-non-existent-id": {
+			"specConformance": "normative",
+			"rules": {
+				"no-refer-to-non-existent-id": true
+			}
+		},
+
+		/**
+		 * No use **orphaned end tag**
+		 *
+		 */
+		"html-standard/no-orphaned-end-tag": {
+			"specConformance": "normative",
+			"rules": {
+				"no-orphaned-end-tag": true
+			}
+		},
+
+		/**
+		 * No **stray head or body tag**
+		 *
+		 */
+		"html-standard/no-stray-head-or-body-tag": {
+			"specConformance": "normative",
+			"rules": {
+				"no-stray-head-or-body-tag": true
+			}
+		},
+
+		/**
+		 * No **content after body**
+		 *
+		 */
+		"html-standard/no-content-after-body": {
+			"specConformance": "normative",
+			"rules": {
+				"no-content-after-body": true
+			}
+		},
+
+		/**
+		 * No **unclosed element at EOF**
+		 *
+		 */
+		"html-standard/no-unclosed-element-at-eof": {
+			"specConformance": "normative",
+			"rules": {
+				"no-unclosed-element-at-eof": true
+			}
+		},
+
+		/**
+		 * **Meta charset** position within the first 1024 bytes
+		 *
+		 */
+		"html-standard/meta-charset-position": {
+			"specConformance": "normative",
+			"rules": {
+				"meta-charset-position": true
+			}
+		},
+
+		/**
+		 * Allow only **permitted contents**
+		 *
+		 */
+		"html-standard/permitted-contents": {
+			"specConformance": "normative",
+			"rules": {
+				"permitted-contents": true
+			}
+		},
+
+		/**
+		 * No disallowed ancestor
+		 *
+		 * An element must not appear as a descendant of an ancestor its
+		 * content model forbids (e.g. `<address>` inside `<address>`).
+		 * Split off from `permitted-contents` — kept as its own named group
+		 * here so preset users keep this coverage.
+		 */
+		"html-standard/no-disallowed-ancestor": {
+			"specConformance": "normative",
+			"rules": {
+				"no-disallowed-ancestor": true
+			}
+		},
+
+		/**
+		 * Require ancestor
+		 *
+		 * An element must appear as a descendant of a required ancestor
+		 * (e.g. `<area>` outside `<map>`). Split off from
+		 * `permitted-contents` — kept as its own named group here so preset
+		 * users keep this coverage.
+		 */
+		"html-standard/require-ancestor": {
+			"specConformance": "normative",
+			"rules": {
+				"require-ancestor": true
+			}
+		},
+
+		/**
+		 * No duplicate sibling attr
+		 *
+		 * An attribute the content model marks as sibling-unique must not
+		 * appear on more than one element of the same type within the same
+		 * parent (e.g. multiple `<track default>`). Split off from
+		 * `permitted-contents` — kept as its own named group here so preset
+		 * users keep this coverage.
+		 */
+		"html-standard/no-duplicate-sibling-attr": {
+			"specConformance": "normative",
+			"rules": {
+				"no-duplicate-sibling-attr": true
+			}
+		},
+
+		/**
+		 * Need **placeholder label option**
+		 *
+		 */
+		"html-standard/placeholder-label-option": {
+			"specConformance": "normative",
+			"rules": {
+				"placeholder-label-option": true
+			}
+		},
+
+		/**
+		 * Require the `datetime` attribute if the content of the `time` element is invalid
+		 *
+		 */
+		"html-standard/require-datetime": {
+			"specConformance": "normative",
+			"rules": {
+				"require-datetime": true
+			}
+		},
+
+		/**
+		 * Specify required attr
+		 *
+		 */
+		"html-standard/required-attr": {
+			"specConformance": "normative",
+			"rules": {
+				"require-attr": true
+			}
+		},
+
+		/**
+		 * Validate `<script type="importmap">` body against the import map spec
+		 *
+		 * Split from the former `script-content` rule (#3989). This group keeps its name — and
+		 * wraps only this one rule, so a group with 2+ rules doesn't get its virtual rule name
+		 * suffixed with the base rule name — for anyone overriding it directly.
+		 * `valid-speculation-rules` lives in its own sibling group below for the same reason.
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/webappapis.html#parse-an-import-map-string
+		 */
+		"html-standard/script-content": {
+			"specConformance": "normative",
+			"rules": {
+				"valid-importmap": true
+			}
+		},
+
+		/**
+		 * Validate `<script type="speculationrules">` body against the Speculation Rules spec
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/speculative-loading.html
+		 */
+		"html-standard/valid-speculation-rules": {
+			"specConformance": "normative",
+			"rules": {
+				"valid-speculation-rules": true
+			}
+		},
+
+		/**
+		 * Require `sizes` wherever `srcset` uses width descriptors, and vice versa
+		 *
+		 * Split from the former `srcset-sizes-constraint` rule (#3989). This group keeps its
+		 * name — and wraps only this one rule, so a group with 2+ rules doesn't get its virtual
+		 * rule name suffixed with the base rule name — for anyone overriding it directly. The
+		 * other three checks live in their own sibling groups below for the same reason.
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/images.html#srcset-attributes
+		 */
+		"html-standard/srcset-sizes-constraint": {
+			"specConformance": "normative",
+			"rules": {
+				"no-unpaired-srcset-sizes": true
+			}
+		},
+
+		/**
+		 * Disallow mixing width and pixel density descriptors in `srcset`
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/images.html#srcset-attributes
+		 */
+		"html-standard/no-mixed-srcset-descriptors": {
+			"specConformance": "normative",
+			"rules": {
+				"no-mixed-srcset-descriptors": true
+			}
+		},
+
+		/**
+		 * Require `loading="lazy"` wherever `sizes="auto"` is used
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/embedded-content.html#the-img-element
+		 */
+		"html-standard/sizes-auto-requires-lazy-loading": {
+			"specConformance": "normative",
+			"rules": {
+				"sizes-auto-requires-lazy-loading": true
+			}
+		},
+
+		/**
+		 * Require a distinguishing `media` or `type` on a `<source>` with a following
+		 * srcset-bearing sibling
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/embedded-content.html#the-source-element
+		 */
+		"html-standard/no-always-matching-source": {
+			"specConformance": "normative",
+			"rules": {
+				"no-always-matching-source": true
+			}
+		},
+
+		/**
+		 * Validate link type keywords
+		 *
+		 * Validates that `rel` attribute keywords are allowed on the given element
+		 * and context (e.g., body-ok for `<link>` inside `<body>`).
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/links.html#linkTypes
+		 */
+		"html-standard/link-types": {
+			"specConformance": "normative",
+			"rules": {
+				"link-types": true
+			}
+		},
+
+		/**
+		 * Form-associated `form` attribute must reference a form element
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fae-form
+		 */
+		"html-standard/form-attr-references-form": {
+			"specConformance": "normative",
+			"rules": {
+				"form-attr-references-form": true
+			}
+		},
+
+		/**
+		 * `<input type="file">` value must be empty when specified
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/input.html#file-upload-state-(type=file)
+		 */
+		"html-standard/input-file-empty-value": {
+			"specConformance": "normative",
+			"rules": {
+				"no-input-file-value": true
+			}
+		},
+
+		/**
+		 * `<input list>` must reference a `<datalist>` element by ID
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/input.html#the-list-attribute
+		 */
+		"html-standard/input-list-references-datalist": {
+			"specConformance": "normative",
+			"rules": {
+				"input-list-references-datalist": true
+			}
+		},
+
+		/**
+		 * `<label for>` must reference a labelable element by ID
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/forms.html#attr-label-for
+		 */
+		"html-standard/label-for-references-labelable": {
+			"specConformance": "normative",
+			"rules": {
+				"label-for-references-labelable": true
+			}
+		},
+
+		/**
+		 * `<label>` descendant-control constraints (at most one form-control descendant; none when `for` targets an external labelable element)
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/forms.html#the-label-element
+		 */
+		"html-standard/label-no-multiple-controls": {
+			"specConformance": "normative",
+			"rules": {
+				"label-no-multiple-controls": true
+			}
+		},
+
+		/**
+		 * `<map>` `id` must equal `name` when both are specified
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/image-maps.html#the-map-element
+		 */
+		"html-standard/map-id-name-match": {
+			"specConformance": "normative",
+			"rules": {
+				"map-id-name-match": true
+			}
+		},
+
+		/**
+		 * `<img usemap>` must be a valid hash-name reference to a `<map>` element
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/image-maps.html#attr-hyperlink-usemap
+		 */
+		"html-standard/usemap-references-map": {
+			"specConformance": "normative",
+			"rules": {
+				"usemap-references-map": true
+			}
+		},
+
+		/**
+		 * `<meter>` attribute inequalities (min ≤ value ≤ max etc.)
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/form-elements.html#the-meter-element
+		 */
+		"html-standard/meter-value-bounds": {
+			"specConformance": "normative",
+			"rules": {
+				"meter-value-bounds": true
+			}
+		},
+
+		/**
+		 * `<progress>` attribute inequalities (value ≤ max; value ≤ 1 when max is absent)
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/form-elements.html#the-progress-element
+		 */
+		"html-standard/progress-value-bounds": {
+			"specConformance": "normative",
+			"rules": {
+				"progress-value-bounds": true
+			}
+		},
+
+		/**
+		 * Single `<select>` allows at most one selected `<option>`
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/form-elements.html#the-select-element
+		 */
+		"html-standard/no-extra-selected-options": {
+			"specConformance": "normative",
+			"rules": {
+				"no-extra-selected-options": true
+			}
+		},
+
+		/**
+		 * Every `itemprop` belongs to an `itemscope`d item
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/microdata.html#associating-names-with-items
+		 */
+		"html-standard/itemprop-requires-itemscope": {
+			"specConformance": "normative",
+			"rules": {
+				"itemprop-requires-itemscope": true
+			}
+		}
+	},
+	"nodeRules": [
+		{
+			/**
+			 * Specify `charset=UTF-8`
+			 *
+			 * @see https://html.spec.whatwg.org/multipage/semantics.html#charset
+			 */
+			"name": "html-standard/head-charset-utf8",
+			"specConformance": "normative",
+			"selector": ":where(head)",
+			"rules": {
+				"require-element": ["meta[charset=\"UTF-8\" i]"]
+			}
+		},
+		{
+			/**
+			 * No duplicate meta charset
+			 *
+			 * There must not be more than one meta element with a charset attribute
+			 * per document.
+			 *
+			 * @see https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-charset
+			 */
+			"name": "html-standard/no-duplicate-charset",
+			"specConformance": "normative",
+			"selector": ":where(head)",
+			"rules": {
+				"no-restricted-element": {
+					"value": ["meta[charset] ~ meta[charset]"],
+					"reason": "There must not be more than one meta element with a charset attribute per document. https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-charset",
+					"reasonOnly": true
+				}
+			}
+		},
+		{
+			/**
+			 * No duplicate meta description
+			 *
+			 * There must not be more than one meta element where the name attribute
+			 * value is an ASCII case-insensitive match for "description" per document.
+			 *
+			 * @see https://html.spec.whatwg.org/multipage/semantics.html#standard-metadata-names
+			 */
+			"name": "html-standard/no-duplicate-description",
+			"specConformance": "normative",
+			"selector": ":where(head)",
+			"rules": {
+				"no-restricted-element": {
+					"value": ["meta[name=\"description\" i] ~ meta[name=\"description\" i]"],
+					"reason": "There must not be more than one meta element where the name attribute value is an ASCII case-insensitive match for \"description\" per document. https://html.spec.whatwg.org/multipage/semantics.html#standard-metadata-names",
+					"reasonOnly": true
+				}
+			}
+		},
+		{
+			/**
+			 * No coexistence of meta charset and meta http-equiv content-type
+			 *
+			 * A document must not contain both a meta element with an http-equiv
+			 * attribute in the Encoding declaration state and a meta element with
+			 * the charset attribute.
+			 *
+			 * @see https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-charset
+			 */
+			"name": "html-standard/no-charset-http-equiv-coexist",
+			"specConformance": "normative",
+			"selector": ":where(head)",
+			"rules": {
+				"no-restricted-element": {
+					"value": [
+						"meta[charset] ~ meta[http-equiv=\"content-type\" i]",
+						"meta[http-equiv=\"content-type\" i] ~ meta[charset]"
+					],
+					"reason": "A document must not contain both a meta element with an http-equiv attribute in the Encoding declaration state and a meta element with the charset attribute. https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-charset",
+					"reasonOnly": true
+				}
+			}
+		},
+		{
+			/**
+			 * `<base>` must precede `<link>` and `<script>`
+			 *
+			 * A base element must come before any other elements in the tree that have
+			 * attributes defined as taking URLs, except the html element. In `<head>`,
+			 * the URL-taking elements are `<link>` (href, imagesrcset) and `<script>` (src);
+			 * a `<base>` that follows either shadows its own effect on those references.
+			 *
+			 * @see https://html.spec.whatwg.org/multipage/semantics.html#the-base-element
+			 */
+			"name": "html-standard/no-base-after-link-or-script",
+			"specConformance": "normative",
+			"selector": ":where(head)",
+			"rules": {
+				"no-restricted-element": {
+					"value": [":is(link, script) ~ base"],
+					"reason": "A base element must come before any other elements in the tree that have attributes defined as taking URLs, except the html element. https://html.spec.whatwg.org/multipage/semantics.html#the-base-element",
+					"reasonOnly": true
+				}
+			}
+		},
+		{
+			/**
+			 * No use `<small>` as **subheadings**
+			 *
+			 * The small element must not be used for subheadings.
+			 *
+			 * @see https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-small-element
+			 */
+			"name": "html-standard/no-small-in-heading",
+			"specConformance": "normative",
+			"selector": "h1, h2, h3, h4, h5, h6",
+			"rules": {
+				"no-restricted-element": {
+					"value": ["small"],
+					"reason": "The small element must not be used for subheadings. https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-small-element"
+				}
+			}
+		},
+		{
+			/**
+			 * No use `<caption>` within `<figure>`
+			 *
+			 * When `<table>` is the only content in `<figure>` other than `<figcaption>`, `<caption>` should be omitted in favor of `<figcaption>`.
+			 *
+			 * @see https://html.spec.whatwg.org/multipage/tables.html#the-caption-element
+			 */
+			"name": "html-standard/figure-no-caption",
+			"specConformance": "non-normative",
+			"selector": ":where(figcaption ~ table, table:has(~ figcaption))",
+			"rules": {
+				"no-restricted-element": {
+					"value": ["caption"],
+					"reason": "When a table element is the only content in a figure element other than the figcaption, the caption element should be omitted in favor of the figcaption. (https://html.spec.whatwg.org/multipage/tables.html#the-caption-element)"
+				},
+				"require-accessible-name": false
+			}
+		},
+		{
+			/**
+			 * Require `title` attr in `<input pattern>`
+			 *
+			 * When an `<input>` element has a `pattern` attribute specified, authors should include a `title` attribute to give a description of the pattern.
+			 *
+			 * @see https://html.spec.whatwg.org/multipage/input.html#attr-input-pattern
+			 */
+			"name": "html-standard/input-pattern-title",
+			"specConformance": "non-normative",
+			"selector": ":where(input[pattern])",
+			"rules": {
+				"require-attr": {
+					"value": [{ "name": "title" }]
+				}
+			}
+		},
+		{
+			/**
+			 * No nested same `<details>` name group
+			 *
+			 * A document must not contain a details element that is a descendant
+			 * of another details element in the same details name group.
+			 */
+			"name": "html-standard/no-nested-details-name",
+			"specConformance": "normative",
+			"regexSelector": {
+				"nodeName": "details",
+				"attrName": "name",
+				"attrValue": "^(?<value>.+)$",
+				"combination": {
+					"combinator": " ",
+					"nodeName": "details"
+				}
+			},
+			"rules": {
+				"no-restricted-attr": {
+					"options": {
+						"disallowAttrs": [
+							{
+								"name": "name",
+								"value": {
+									"pattern": "{{ value }}"
+								}
+							}
+						]
+					},
+					"reason": "A document must not contain a details element that is a descendant of another details element in the same details name group."
+				}
+			}
+		},
+		{
+			/**
+			 * No use `shortcut` keyword in `<link rel>`
+			 *
+			 * For historical reasons, the icon keyword may be preceded by the keyword "shortcut".
+			 * However, pages should not use the keyword "shortcut" as it is unnecessary.
+			 *
+			 * @see https://html.spec.whatwg.org/multipage/links.html#rel-shortcut-icon
+			 */
+			"name": "html-standard/no-shortcut-icon",
+			"specConformance": "non-normative",
+			"selector": "link",
+			"rules": {
+				"no-restricted-attr": {
+					"options": {
+						"disallowAttrs": [
+							{
+								"name": "rel",
+								"value": {
+									"pattern": "/\\bshortcut\\b/i"
+								}
+							}
+						]
+					},
+					"reason": "The \"shortcut\" keyword is unnecessary. Use rel=\"icon\" instead. https://html.spec.whatwg.org/multipage/links.html#rel-shortcut-icon"
+				}
+			}
+		}
+	]
+}

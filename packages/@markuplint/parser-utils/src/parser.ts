@@ -31,11 +31,13 @@ import type {
 	MLASTInvalid,
 	Walker,
 	MLASTHTMLAttr,
-	MLASTPreprocessorSpecificBlockConditionalType,
+	MLASTBlockBehavior,
+	MLASTParseError,
+	NamespaceURI,
 } from '@markuplint/ml-ast';
 
+import { randomUUID } from 'node:crypto';
 import { isVoidElement as detectVoidElement } from '@markuplint/ml-spec';
-import { v4 as uuid } from 'uuid';
 
 import { attrTokenizer } from './attr-tokenizer.js';
 import { defaultSpaces } from './const.js';
@@ -47,6 +49,7 @@ import { ignoreBlock, restoreNode } from './ignore-block.js';
 import { ignoreFrontMatter } from './ignore-front-matter.js';
 import { ParserError } from './parser-error.js';
 import { sortNodes } from './sort-nodes.js';
+import { getNamespace } from './get-namespace.js';
 
 const timer = new PerformanceTimer();
 
@@ -55,6 +58,24 @@ const timer = new PerformanceTimer();
  * including tokenization, tree traversal, node flattening, and error handling.
  * Subclasses must implement `nodeize` to convert language-specific AST nodes
  * into the markuplint AST format.
+ *
+ * When adding framework support, choose the lightest extension that fits:
+ *
+ * - **Spec-only package** (`ExtendedSpec`, no parser) when the framework is
+ *   valid HTML plus extra attributes.
+ * - **`HtmlParser` subclass** (from `@markuplint/html-parser`) configuring
+ *   only `ignoreTags` when the syntax is HTML with embedded template
+ *   expressions (EJS, ERB, Liquid, Mustache, Nunjucks, PHP, Smarty) — the
+ *   expressions are masked before HTML parsing and restored as `psblock`
+ *   nodes, so no external parsing library is needed.
+ * - **Direct `Parser` subclass** only when the document structure itself
+ *   diverges from HTML (JSX, Vue SFC, Svelte, Pug, Astro).
+ *
+ * Direct subclasses should delegate tokenization to the framework's
+ * established parser library rather than hand-rolling one, and those
+ * libraries are chosen to span multiple major framework versions (e.g.
+ * `vue-eslint-parser` covers both Vue 2 and Vue 3 template syntax) so the
+ * parsers keep working across version ranges without frequent updates.
  *
  * @template Node - The language-specific AST node type produced by the tokenizer
  * @template State - An optional parser state type that persists across tokenization
@@ -69,6 +90,26 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	readonly #selfCloseType: SelfCloseType = 'html';
 	readonly #spaceChars: readonly string[] = defaultSpaces;
 	readonly #rawTextElements: readonly string[] = ['style', 'script'];
+
+	/**
+	 * Buffer for parse errors collected from **embedded** parse() calls
+	 * (e.g., Markdown's inline HTML blocks, Pug's raw HTML lines — these
+	 * invoke a separate HtmlParser instance from inside `nodeize()`).
+	 *
+	 * Subclasses that delegate to an internal parser should push the
+	 * resulting `parseErrors` onto this array via {@link Parser.accumulateParseErrors}.
+	 * The base `parse()` merges them with the top-level tokenize result so
+	 * the final `MLASTDocument.parseErrors` is complete.
+	 *
+	 * Reset on every `parse()` invocation.
+	 */
+	#embeddedParseErrors: MLASTParseError[] = [];
+	/**
+	 * Keyed by the original tag name (as authored in source) so a
+	 * `tagNameCaseSensitive` parser that preserves casing reuses the same
+	 * `RegExp` for every occurrence.
+	 */
+	readonly #rawTextCloseTagPatternCache = new Map<string, RegExp>();
 	#authoredElementName?: ParserAuthoredElementNameDistinguishing;
 	#originalRawCode = '';
 	#rawCode = '';
@@ -164,6 +205,11 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	 * the raw source code. The default implementation prepends offset spaces
 	 * based on the parse options.
 	 *
+	 * Overrides must call `super.beforeParse()` first: the offset spaces
+	 * prepended here are removed again by {@link Parser.afterParse}, and the
+	 * two hooks must stay symmetric or position reporting for embedded code
+	 * fragments (e.g., a `<template>` block inside a `.vue` file) breaks.
+	 *
 	 * @param rawCode - The raw source code about to be parsed
 	 * @param options - Parse options that may specify offset positioning
 	 * @returns The preprocessed source code to be used for tokenization
@@ -211,6 +257,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			const tokenized = this.tokenize(options);
 			const ast = tokenized.ast;
 			const isFragment = tokenized.isFragment;
+			const parseErrors = tokenized.parseErrors;
 
 			this.#defaultDepth = options?.depth ?? this.#defaultDepth;
 
@@ -258,8 +305,23 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 				nodeList = [fmNode, ...newNodeList];
 			}
 
+			timer.push('removeCircularRefs');
+			// Remove circular object references (parentNodeUuid/pairNodeUuid are already set)
+			for (const node of nodeList) {
+				const n = node as any;
+				delete n.parentNode;
+				delete n.pairNode;
+			}
+
 			timer.log();
 			domLog(nodeList);
+
+			// Merge top-level tokenizer parseErrors with any parseErrors
+			// pushed by embedded parser delegations (Markdown / Pug HTML
+			// regions). Snapshot before #reset() clears the buffer.
+			const embeddedErrors = this.embeddedParseErrors;
+			const mergedParseErrors: readonly MLASTParseError[] | undefined =
+				parseErrors || embeddedErrors.length > 0 ? [...(parseErrors ?? []), ...embeddedErrors] : undefined;
 
 			this.#reset();
 
@@ -267,6 +329,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 				raw: rawCode,
 				nodeList,
 				isFragment,
+				...(mergedParseErrors && mergedParseErrors.length > 0 ? { parseErrors: mergedParseErrors } : {}),
 			};
 		} catch (error) {
 			throw this.parseError(error);
@@ -277,6 +340,9 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	 * Hook called after the main parse pipeline completes, allowing subclasses
 	 * to perform final transformations on the node list. The default implementation
 	 * removes any offset spaces that were prepended during preprocessing.
+	 *
+	 * Overrides must call `super.afterParse()` first: it is the counterpart of
+	 * {@link Parser.beforeParse} and removes the offset spaces prepended there.
 	 *
 	 * @param nodeList - The fully parsed and flattened node list
 	 * @param options - The parse options used for this parse invocation
@@ -338,7 +404,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			const filteredNodes: MLASTNodeTreeItem[] = [];
 			for (const node of nodes) {
 				// Remove duplicated nodes
-				const id = `${node.startOffset}:${node.endOffset}:${node.nodeName}:${node.type}:${node.raw}`;
+				const id = `${node.offset}:${node.offset + node.raw.length}:${node.nodeName}:${node.type}:${node.raw}`;
 				if (existence.has(id)) {
 					continue;
 				}
@@ -367,10 +433,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	 * @returns The node tree sorted by source position
 	 */
 	afterTraverse(nodeTree: readonly MLASTNodeTreeItem[]): readonly MLASTNodeTreeItem[] {
-		return Array.prototype.toSorted == null
-			? // TODO: Use sort instead of toSorted until we end support for Node 18
-				[...nodeTree].sort(sortNodes)
-			: nodeTree.toSorted(sortNodes);
+		return nodeTree.toSorted(sortNodes);
 	}
 
 	/**
@@ -495,6 +558,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			...this.createToken(token),
 			type: 'doctype',
 			nodeName: '#doctype',
+			parentNodeUuid: token.parentNode?.uuid ?? null,
 		};
 		return [node];
 	}
@@ -521,6 +585,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			type: 'comment',
 			nodeName: '#comment',
 			isBogus,
+			parentNodeUuid: token.parentNode?.uuid ?? null,
 		};
 		return [node];
 	}
@@ -546,6 +611,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			...this.createToken(token),
 			type: 'text',
 			nodeName: '#text',
+			parentNodeUuid: token.parentNode?.uuid ?? null,
 		};
 
 		if (options?.researchTags) {
@@ -568,7 +634,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	 * and recursively traversed child nodes. Handles ghost elements (empty raw),
 	 * self-closing tags, and nameless fragments (e.g., JSX `<>`).
 	 *
-	 * @param token - The child token with the element's node name and namespace
+	 * @param token - The child token with the element's node name; namespace is auto-detected from tag name and parent node
 	 * @param childNodes - The language-specific child AST nodes to traverse
 	 * @param options - Controls end tag creation, fragment handling, and property overrides
 	 * @returns An array of AST nodes including the start tag, optional end tag, and any sibling nodes
@@ -576,7 +642,6 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	visitElement(
 		token: ChildToken & {
 			readonly nodeName: string;
-			readonly namespace: string;
 		},
 		childNodes: readonly Node[] = [],
 		options?: {
@@ -599,12 +664,16 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 				elementType: 'html',
 				attributes: [],
 				childNodes: [],
+				blockBehavior: null,
 				parentNode: token.parentNode,
+				parentNodeUuid: token.parentNode?.uuid ?? null,
 				pairNode: null,
+				pairNodeUuid: null,
 				tagCloseChar: '',
 				tagOpenChar: '',
 				isGhost: true,
 				isFragment: false,
+				namespace: getNamespace(null, token.parentNode),
 				...overwriteProps,
 			};
 
@@ -617,7 +686,6 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			...this.#parseStartTag(
 				token,
 				{
-					namespace: token.namespace,
 					...overwriteProps,
 				},
 				namelessFragment,
@@ -647,7 +715,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	 *
 	 * @param token - The child token with the block's node name and fragment flag
 	 * @param childNodes - The language-specific child AST nodes to traverse
-	 * @param conditionalType - The conditional type if this is a conditional block (e.g., "if", "else")
+	 * @param blockBehavior - The block behavior if this is a control-flow block (e.g., "if", "each")
 	 * @param originBlockNode - The original language-specific block node for reference
 	 * @returns An array of AST nodes including the block node and any sibling nodes
 	 */
@@ -657,7 +725,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			readonly isFragment: boolean;
 		},
 		childNodes: readonly Node[] = [],
-		conditionalType: MLASTPreprocessorSpecificBlockConditionalType = null,
+		blockBehavior: MLASTBlockBehavior | null = null,
 		originBlockNode?: Node,
 	): readonly MLASTNodeTreeItem[] {
 		timer.push('visitPsBlock');
@@ -665,10 +733,11 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			...token,
 			...this.createToken(token),
 			type: 'psblock',
-			conditionalType,
+			blockBehavior,
 			nodeName: `#ps:${token.nodeName}`,
 			childNodes: [],
 			isBogus: false,
+			parentNodeUuid: token.parentNode?.uuid ?? null,
 		};
 
 		const siblings = this.visitChildren(childNodes, block);
@@ -724,11 +793,10 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			return null;
 		}
 
-		const node = this.createToken(raw, token.startOffset, token.startLine, token.startCol);
+		const node = this.createToken(raw, token.offset, token.line, token.col);
 
 		return {
 			...node,
-			...this.#getEndLocation(node),
 			type: 'spread',
 			nodeName: '#spread',
 		};
@@ -739,6 +807,10 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	 * into its constituent parts: spaces, name, equal sign, quotes, and value.
 	 * Also detects spread attributes. If there is leftover text after the attribute,
 	 * it is returned in the `__rightText` property for further processing.
+	 *
+	 * Subclass contract: overrides must call `super.visitAttr()` first — the base
+	 * implementation owns the token decomposition; subclasses only post-process
+	 * the returned node (e.g. directive detection).
 	 *
 	 * @param token - The token containing the raw attribute text and position
 	 * @param options - Controls quoting behavior, value types, and the initial parser state
@@ -761,9 +833,9 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		const noQuoteValueType = options?.noQuoteValueType;
 		const endOfUnquotedValueChars = options?.endOfUnquotedValueChars;
 
-		let startOffset = token.startOffset;
-		let startLine = token.startLine;
-		let startCol = token.startCol;
+		let curOffset = token.offset;
+		let curLine = token.line;
+		let curCol = token.col;
 
 		let tokens: ReturnType<typeof attrTokenizer>;
 		try {
@@ -775,42 +847,28 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			throw error;
 		}
 
-		const spacesBeforeName = this.createToken(tokens.spacesBeforeAttrName, startOffset, startLine, startCol);
-		startLine = spacesBeforeName.endLine;
-		startCol = spacesBeforeName.endCol;
-		startOffset = spacesBeforeName.endOffset;
+		const spacesBeforeName = this.createToken(tokens.spacesBeforeAttrName, curOffset, curLine, curCol);
+		({ offset: curOffset, line: curLine, col: curCol } = this.#getEndLocation(spacesBeforeName));
 
-		const name = this.createToken(tokens.attrName, startOffset, startLine, startCol);
-		startLine = name.endLine;
-		startCol = name.endCol;
-		startOffset = name.endOffset;
+		const name = this.createToken(tokens.attrName, curOffset, curLine, curCol);
+		({ offset: curOffset, line: curLine, col: curCol } = this.#getEndLocation(name));
 
-		const spacesBeforeEqual = this.createToken(tokens.spacesBeforeEqual, startOffset, startLine, startCol);
-		startLine = spacesBeforeEqual.endLine;
-		startCol = spacesBeforeEqual.endCol;
-		startOffset = spacesBeforeEqual.endOffset;
+		const spacesBeforeEqual = this.createToken(tokens.spacesBeforeEqual, curOffset, curLine, curCol);
+		({ offset: curOffset, line: curLine, col: curCol } = this.#getEndLocation(spacesBeforeEqual));
 
-		const equal = this.createToken(tokens.equal, startOffset, startLine, startCol);
-		startLine = equal.endLine;
-		startCol = equal.endCol;
-		startOffset = equal.endOffset;
+		const equal = this.createToken(tokens.equal, curOffset, curLine, curCol);
+		({ offset: curOffset, line: curLine, col: curCol } = this.#getEndLocation(equal));
 
-		const spacesAfterEqual = this.createToken(tokens.spacesAfterEqual, startOffset, startLine, startCol);
-		startLine = spacesAfterEqual.endLine;
-		startCol = spacesAfterEqual.endCol;
-		startOffset = spacesAfterEqual.endOffset;
+		const spacesAfterEqual = this.createToken(tokens.spacesAfterEqual, curOffset, curLine, curCol);
+		({ offset: curOffset, line: curLine, col: curCol } = this.#getEndLocation(spacesAfterEqual));
 
-		const startQuote = this.createToken(tokens.quoteStart, startOffset, startLine, startCol);
-		startLine = startQuote.endLine;
-		startCol = startQuote.endCol;
-		startOffset = startQuote.endOffset;
+		const startQuote = this.createToken(tokens.quoteStart, curOffset, curLine, curCol);
+		({ offset: curOffset, line: curLine, col: curCol } = this.#getEndLocation(startQuote));
 
-		const value = this.createToken(tokens.attrValue, startOffset, startLine, startCol);
-		startLine = value.endLine;
-		startCol = value.endCol;
-		startOffset = value.endOffset;
+		const value = this.createToken(tokens.attrValue, curOffset, curLine, curCol);
+		({ offset: curOffset, line: curLine, col: curCol } = this.#getEndLocation(value));
 
-		const endQuote = this.createToken(tokens.quoteEnd, startOffset, startLine, startCol);
+		const endQuote = this.createToken(tokens.quoteEnd, curOffset, curLine, curCol);
 
 		const attrToken = this.createToken(
 			tokens.attrName +
@@ -820,9 +878,9 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 				tokens.quoteStart +
 				tokens.attrValue +
 				tokens.quoteEnd,
-			name.startOffset,
-			name.startLine,
-			name.startCol,
+			name.offset,
+			name.line,
+			name.col,
 		);
 
 		const htmlAttr: MLASTAttr = {
@@ -855,11 +913,27 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	/**
 	 * Re-parses a text token to discover embedded HTML/XML tags within it,
 	 * splitting the content into a sequence of tag and text AST nodes.
-	 * Handles self-closing detection, depth tracking, and void element recognition.
+	 * Handles self-closing detection, depth tracking, void element recognition,
+	 * and the raw-text element body short-circuit (HTML LS §13.2.5.1).
+	 *
+	 * Raw-text element handling only covers the elements listed in
+	 * `rawTextElements` (default `['style', 'script']`). HTML LS *escapable* raw
+	 * text elements — `<title>` and `<textarea>` — are intentionally NOT in the
+	 * default. They allow character references (`&amp;` etc.) in their body, and
+	 * decoding is not implemented in this short-circuit. A subclass that adds
+	 * them via the `rawTextElements` option will see character references passed
+	 * through verbatim.
+	 *
+	 * `@markuplint/astro-parser` is the only downstream caller that hands a full
+	 * element raw (start tag + body + end tag) to this method, so it is the only
+	 * package that exercises the raw-text branch — when changing that branch,
+	 * its tests are the most sensitive regression signal.
 	 *
 	 * @param token - The child token containing the code fragment to re-parse
 	 * @param options - Controls whether nameless fragments (JSX `<>`) are recognized
 	 * @returns An array of tag and text AST nodes discovered in the code fragment
+	 * @see https://html.spec.whatwg.org/multipage/syntax.html#cdata-rcdata-restrictions
+	 * @see https://github.com/markuplint/markuplint/issues/3825
 	 */
 	parseCodeFragment(
 		token: ChildToken,
@@ -870,9 +944,9 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		const nodes: (MLASTTag | MLASTText)[] = [];
 
 		let raw = token.raw;
-		let startOffset = token.startOffset;
-		let startLine = token.startLine;
-		let startCol = token.startCol;
+		let curOffset = token.offset;
+		let curLine = token.line;
+		let curCol = token.col;
 		let depth = token.depth;
 
 		const depthStack = new Map<
@@ -886,11 +960,11 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			const parsed = this.#parseTag(
 				{
 					raw,
-					startOffset,
-					startLine,
-					startCol,
+					offset: curOffset,
+					line: curLine,
+					col: curCol,
 					depth,
-					parentNode: null,
+					parentNode: token.parentNode,
 				},
 				true,
 				true,
@@ -898,13 +972,14 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			);
 
 			if (parsed.__left) {
-				const token = this.createToken(parsed.__left, startOffset, startLine, startCol);
+				const token = this.createToken(parsed.__left, curOffset, curLine, curCol);
 				const textNode: MLASTText = {
 					...token,
 					type: 'text',
 					depth,
 					nodeName: '#text',
 					parentNode: null,
+					parentNodeUuid: null,
 				};
 				nodes.push(textNode);
 			}
@@ -917,11 +992,9 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 
 			const tag = parsed.token;
 
-			startLine = tag.endLine;
-			startCol = tag.endCol;
-			startOffset = tag.endOffset;
+			({ offset: curOffset, line: curLine, col: curCol } = this.#getEndLocation(tag));
 
-			let isSelfClose = tag.type === 'starttag' && tag.selfClosingSolidus?.raw === '/';
+			let isSelfClose = tag.type === 'starttag' && tag.tagCloseChar.startsWith('/');
 			const isVoidElement = detectVoidElement({ localName: tag.nodeName.toLowerCase() });
 
 			switch (this.#selfCloseType) {
@@ -969,28 +1042,70 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 
 				nodes.push(tag);
 			}
+
+			/**
+			 * Raw-text element body short-circuit (HTML Living Standard §13.2.5.1
+			 * — "Restrictions on the contents of raw text and escapable raw text
+			 * elements". The spec section anchor is `cdata-rcdata-restrictions`,
+			 * where RCDATA stands for "Raw text + Character REF data" — the broader
+			 * class that covers escapable raw text such as `<title>` / `<textarea>`).
+			 *
+			 * Per spec, the contents of `<script>` / `<style>` (and any caller-supplied
+			 * raw-text element) are NOT re-tokenized as HTML — the only thing that
+			 * terminates the body is `</tagName` followed by a tab/LF/FF/CR/space/`>`
+			 * /`/`. Without this guard, fragments like `<script>const t = s.replace(
+			 * /<br\s*\/?>/gi, " ");</script>` would feed the regex to `#parseTag`,
+			 * which would try to parse `<br\s*\/?>` as a tag and throw on the
+			 * backslash (#3825).
+			 *
+			 * This is dormant for `jsx-parser` and `mdx-parser` because their upstream
+			 * tokenizers reject bare `<` in element body before reaching here, but the
+			 * fix keeps `parseCodeFragment` honest for any future caller.
+			 *
+			 * @see https://html.spec.whatwg.org/multipage/syntax.html#cdata-rcdata-restrictions
+			 * @see https://github.com/markuplint/markuplint/issues/3825
+			 */
+			if (tag.type === 'starttag' && !isSelfClose && this.#rawTextElements.includes(tag.nodeName.toLowerCase())) {
+				const closeTagPattern = this.#getRawTextCloseTagPattern(tag.nodeName);
+				const match = closeTagPattern.exec(raw);
+				if (match) {
+					const bodyRaw = raw.slice(0, match.index);
+					if (bodyRaw) {
+						const bodyToken = this.createToken(bodyRaw, curOffset, curLine, curCol);
+						const bodyNode: MLASTText = {
+							...bodyToken,
+							type: 'text',
+							depth,
+							nodeName: '#text',
+							parentNode: null,
+							parentNodeUuid: null,
+						};
+						nodes.push(bodyNode);
+						({ offset: curOffset, line: curLine, col: curCol } = this.#getEndLocation(bodyToken));
+					}
+					raw = raw.slice(match.index);
+				}
+				// If no matching close tag is found, fall through to the generic loop
+				// so the existing "unclosed tag" handling remains in effect.
+			}
 		}
 		return nodes;
 	}
 
 	/**
-	 * Updates the position and depth properties of an AST node, recalculating
-	 * end offsets, lines, and columns based on the new start values.
+	 * Updates the position and depth properties of an AST node.
 	 *
 	 * @param node - The AST node whose location should be updated
 	 * @param props - The new position and depth values to apply (only provided values are changed)
 	 */
 	updateLocation(
 		node: MLASTNodeTreeItem,
-		props: Partial<Pick<MLASTNodeTreeItem, 'startOffset' | 'startLine' | 'startCol' | 'depth'>>,
+		props: Partial<Pick<MLASTNodeTreeItem, 'offset' | 'line' | 'col' | 'depth'>>,
 	) {
 		Object.assign(node, {
-			startOffset: props.startOffset ?? node.startOffset,
-			startLine: props.startLine ?? node.startLine,
-			startCol: props.startCol ?? node.startCol,
-			endOffset: props.startOffset == null ? node.endOffset : props.startOffset + node.raw.length,
-			endLine: props.startLine == null ? node.endLine : getEndLine(node.raw, props.startLine),
-			endCol: props.startCol == null ? node.endCol : getEndCol(node.raw, props.startCol),
+			offset: props.offset ?? node.offset,
+			line: props.line ?? node.line,
+			col: props.col ?? node.col,
 			depth: props.depth ?? node.depth,
 		});
 	}
@@ -998,27 +1113,12 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	/**
 	 * Set new raw code to target node.
 	 *
-	 * Replace the raw code and update the start/end offset/line/column.
-	 *
 	 * @param node target node
 	 * @param raw new raw code
 	 */
 	updateRaw(node: MLASTToken, raw: string) {
-		const startOffset = node.startOffset;
-		const startLine = node.startLine;
-		const startCol = node.startCol;
-		const endOffset = startOffset + raw.length;
-		const endLine = getEndLine(raw, startLine);
-		const endCol = getEndCol(raw, startCol);
-
 		Object.assign(node, {
 			raw,
-			startOffset,
-			endOffset,
-			startLine,
-			endLine,
-			startCol,
-			endCol,
 		});
 	}
 
@@ -1074,32 +1174,31 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	}
 
 	/**
-	 * Creates a new MLASTToken with a generated UUID and computed end position.
+	 * Creates a new MLASTToken with a generated UUID.
 	 * Accepts either a Token object or a raw string with explicit start coordinates.
 	 *
 	 * @param token - A Token object or raw string to create the AST token from
-	 * @param startOffset - The byte offset where the token starts (required when token is a string)
-	 * @param startLine - The line number where the token starts (required when token is a string)
-	 * @param startCol - The column number where the token starts (required when token is a string)
-	 * @returns A fully populated AST token with UUID, start/end positions, and raw content
+	 * @param offset - The zero-based byte offset where the token starts (required when token is a string)
+	 * @param line - The one-based line number where the token starts (required when token is a string)
+	 * @param col - The one-based column number where the token starts (required when token is a string)
+	 * @returns An AST token with UUID, start position, and raw content
 	 */
 	createToken(token: Token): MLASTToken;
-	createToken(token: string, startOffset: number, startLine: number, startCol: number): MLASTToken;
-	createToken(token: string | Token, startOffset?: number, startLine?: number, startCol?: number): MLASTToken {
+	createToken(token: string, offset: number, line: number, col: number): MLASTToken;
+	createToken(token: string | Token, offset?: number, line?: number, col?: number): MLASTToken {
 		const props =
 			typeof token === 'string'
 				? {
 						raw: token,
-						startOffset: startOffset ?? 0,
-						startLine: startLine ?? 1,
-						startCol: startCol ?? 1,
+						offset: offset ?? 0,
+						line: line ?? 1,
+						col: col ?? 1,
 					}
 				: token;
 
 		return {
-			uuid: uuid().slice(0, 8),
+			uuid: randomUUID().slice(0, 8),
 			...props,
-			...this.#getEndLocation(props),
 		};
 	}
 
@@ -1113,12 +1212,12 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	 */
 	sliceFragment(start: number, end?: number): Token {
 		const raw = this.rawCode.slice(start, end);
-		const { line, column } = getPosition(this.rawCode, start);
+		const { line: l, column } = getPosition(this.rawCode, start);
 		return {
 			raw,
-			startOffset: start,
-			startLine: line,
-			startCol: column,
+			offset: start,
+			line: l,
+			col: column,
 		};
 	}
 
@@ -1177,7 +1276,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		for (const appendingChild of childNodes) {
 			const currentIndex = parentNode.childNodes.findIndex(n => n.uuid === appendingChild.uuid);
 
-			Object.assign(appendingChild, { parentNode });
+			Object.assign(appendingChild, { parentNode, parentNodeUuid: parentNode.uuid });
 
 			if (currentIndex === -1) {
 				newChildNodes.push(appendingChild);
@@ -1188,11 +1287,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		}
 
 		Object.assign(parentNode, {
-			childNodes:
-				Array.prototype.toSorted == null
-					? // TODO: Use sort instead of toSorted until we end support for Node 18
-						[...newChildNodes].sort(sortNodes)
-					: newChildNodes.toSorted(sortNodes),
+			childNodes: newChildNodes.toSorted(sortNodes),
 		});
 	}
 
@@ -1211,13 +1306,6 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	) {
 		const index = parentNode.childNodes.findIndex(childNode => childNode.uuid === oldChildNode.uuid);
 		if (index === -1) {
-			return;
-		}
-		if (Array.prototype.toSpliced == null) {
-			const newChildNodes = [...parentNode.childNodes];
-			// TODO: Use splice instead of toSpliced until we end support for Node 18
-			newChildNodes.splice(index, 1, ...replacementChildNodes);
-			Object.assign(parentNode, { childNodes: newChildNodes });
 			return;
 		}
 		const newChildNodes = parentNode.childNodes.toSpliced(index, 1, ...replacementChildNodes);
@@ -1245,7 +1333,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 				prevNode?.nodeName === '#text' &&
 				node.type === 'text' &&
 				node.nodeName === '#text' &&
-				prevNode?.endOffset === node.startOffset
+				prevNode.offset + prevNode.raw.length === node.offset
 			) {
 				const newNode = this.#concatTextNodes(prevNode, node);
 				newNodeList.pop();
@@ -1271,18 +1359,15 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 
 		const textNode: MLASTText = {
 			...firstNode,
-			uuid: uuid().slice(0, 8),
+			uuid: randomUUID().slice(0, 8),
 			raw: nodes.map(n => n.raw).join(''),
-			endOffset: lastNode.endOffset,
-			endLine: lastNode.endLine,
-			endCol: lastNode.endCol,
 		};
 
 		for (const node of nodes) {
-			this.#removeChild(node.parentNode, node);
+			this.#removeChild(node.parentNode ?? null, node);
 		}
 
-		this.appendChild(textNode.parentNode, textNode);
+		this.appendChild(textNode.parentNode ?? null, textNode);
 
 		return textNode;
 	}
@@ -1366,12 +1451,14 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			const sequentailPrevNode = nodeList[i - 1] ?? null;
 
 			if (!this.#rawTextElements.includes(node.nodeName.toLowerCase())) {
-				const endOffset = sequentailPrevNode?.endOffset ?? 0;
+				const prevEndOffset = sequentailPrevNode
+					? sequentailPrevNode.offset + sequentailPrevNode.raw.length
+					: 0;
 				const remnantNodes = this.#createRemnantNode(
-					endOffset,
-					node.startOffset,
+					prevEndOffset,
+					node.offset,
 					node.depth,
-					node.parentNode,
+					node.parentNode ?? null,
 					invalidNode,
 					whitespace,
 				);
@@ -1390,10 +1477,10 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		}
 
 		const remnantNodes = this.#createRemnantNode(
-			lastNode.endOffset,
+			lastNode.offset + lastNode.raw.length,
 			undefined,
 			lastNode.depth,
-			lastNode.parentNode,
+			lastNode.parentNode ?? null,
 			invalidNode,
 			whitespace,
 		);
@@ -1408,12 +1495,42 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	}
 
 	#getEndLocation(token: Token) {
-		const endOffset = token.startOffset + token.raw.length;
 		return {
-			endOffset,
-			endLine: getEndLine(token.raw, token.startLine),
-			endCol: getEndCol(token.raw, token.startCol),
+			offset: token.offset + token.raw.length,
+			line: getEndLine(token.raw, token.line),
+			col: getEndCol(token.raw, token.col),
 		} as const;
+	}
+
+	/**
+	 * The pattern matches `</tagName` followed by a tab/LF/FF/CR/space/`>`/`/`
+	 * (HTML LS §13.2.5.1) ASCII-case-insensitively. Caching avoids recompiling the
+	 * `RegExp` for every `<script>` / `<style>` start tag in large documents.
+	 */
+	#getRawTextCloseTagPattern(tagName: string): RegExp {
+		const cached = this.#rawTextCloseTagPatternCache.get(tagName);
+		if (cached) {
+			return cached;
+		}
+		const escapedName = tagName.replaceAll(/[$()*+.?[\\\]^{|}]/g, '\\$&');
+		// `regexp/strict` cannot statically verify a pattern built from the
+		// dynamic `escapedName` interpolation; the escape above is the contract
+		// that makes this safe for any caller-supplied `rawTextElements` value.
+		// eslint-disable-next-line regexp/strict
+		const pattern = new RegExp(`</${escapedName}(?=[\\t\\n\\f\\r >/])`, 'i');
+		this.#rawTextCloseTagPatternCache.set(tagName, pattern);
+		return pattern;
+	}
+
+	#isDescendantOf(node: MLASTNodeTreeItem, potentialAncestor: MLASTNodeTreeItem): boolean {
+		let current: MLASTParentNode | null = 'parentNode' in node ? (node.parentNode ?? null) : null;
+		while (current) {
+			if (current === potentialAncestor) {
+				return true;
+			}
+			current = current.parentNode ?? null;
+		}
+		return false;
 	}
 
 	#orphanEndTagToBogusMark(nodeList: readonly MLASTNodeTreeItem[]) {
@@ -1422,7 +1539,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			if (node.type === 'endtag') {
 				const endTagUUID = node.uuid;
 				const openTag = newNodeList.findLast<MLASTElement>((n): n is MLASTElement =>
-					n.type === 'starttag' && !n.isGhost ? n.pairNode?.uuid === endTagUUID : false,
+					n.type === 'starttag' && !n.isGhost ? n.pairNodeUuid === endTagUUID : false,
 				);
 				if (!openTag) {
 					node = this.#convertIntoInvalidNode(node);
@@ -1434,9 +1551,9 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	}
 
 	#pairing(startTag: MLASTElement, endTag: MLASTElementCloseTag) {
-		Object.assign(startTag, { pairNode: endTag });
-		Object.assign(endTag, { pairNode: startTag });
-		this.appendChild(startTag.parentNode, endTag);
+		Object.assign(startTag, { pairNode: endTag, pairNodeUuid: endTag.uuid });
+		Object.assign(endTag, { pairNode: startTag, pairNodeUuid: startTag.uuid });
+		this.appendChild(startTag.parentNode ?? null, endTag);
 	}
 
 	#parseEndTag(token: ChildToken, namelessFragment: boolean): MLASTElementCloseTag {
@@ -1468,9 +1585,9 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	#parseTag(token: ChildToken, praseAttr: boolean, failSafe: boolean, namelessFragment: boolean) {
 		const raw = token.raw;
 		const depth = token.depth;
-		const initialOffset = token.startOffset;
-		const initialLine = token.startLine;
-		const initialCol = token.startCol;
+		const initialOffset = token.offset;
+		const initialLine = token.line;
+		const initialCol = token.col;
 
 		let offset = initialOffset;
 		let line = initialLine;
@@ -1483,7 +1600,6 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		let state: TagState = TagState.BeforeOpenTag;
 		let beforeOpenTagChars = '';
 		let tagName = '';
-		let afterAttrsSpaceChars = '';
 		let selfClosingSolidusChar = '';
 		let isOpenTag = true;
 		const attrs: MLASTAttr[] = [];
@@ -1500,9 +1616,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 				case TagState.BeforeOpenTag: {
 					if (char === '<') {
 						const beforeOpenTag = this.createToken(beforeOpenTagChars, offset, line, col);
-						line = beforeOpenTag.endLine;
-						col = beforeOpenTag.endCol;
-						offset = beforeOpenTag.endOffset;
+						({ offset, line, col } = this.#getEndLocation(beforeOpenTag));
 
 						tagStartOffset = offset;
 						tagStartLine = line;
@@ -1582,14 +1696,12 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 
 						const attr = this.visitAttr({
 							raw: leftover,
-							startOffset: offset,
-							startLine: line,
-							startCol: col,
+							offset,
+							line,
+							col,
 						});
 
-						line = attr.endLine;
-						col = attr.endCol;
-						offset = attr.endOffset;
+						({ offset, line, col } = this.#getEndLocation(attr));
 
 						if (leftover === attr.__rightText) {
 							throw new SyntaxError(`Invalid attribute syntax: ${leftover}`);
@@ -1611,7 +1723,6 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 					}
 
 					if (this.#spaceChars.includes(char)) {
-						afterAttrsSpaceChars += char;
 						break;
 					}
 
@@ -1639,13 +1750,6 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			throw new SyntaxError(`No tag name: "${raw}"`);
 		}
 
-		const endSpace = this.createToken(afterAttrsSpaceChars, offset, line, col);
-		line = endSpace.endLine;
-		col = endSpace.endCol;
-		offset = endSpace.endOffset;
-
-		const selfClosingSolidus = this.createToken(selfClosingSolidusChar, offset, line, col);
-
 		const rawCodeFragment = raw.slice(beforeOpenTagChars.length, raw.length - leftover.length);
 
 		if (!rawCodeFragment) {
@@ -1663,6 +1767,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			depth,
 			nodeName: isFragment ? '#jsx-fragment' : tagName,
 			parentNode: null,
+			parentNodeUuid: null,
 		};
 
 		const tag: MLASTTag = isOpenTag
@@ -1671,13 +1776,17 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 					...commons,
 					type: 'starttag',
 					elementType: this.detectElementType(tagName),
-					namespace: '',
+					namespace:
+						'namespace' in token
+							? (token.namespace as NamespaceURI)
+							: getNamespace(tagName, token.parentNode),
 					attributes: attrs,
 					childNodes: [],
 					pairNode: null,
+					pairNodeUuid: null,
 					tagOpenChar: '<',
 					tagCloseChar: selfClosingSolidusChar + '>',
-					selfClosingSolidus,
+					blockBehavior: null,
 					isGhost: false,
 					isFragment,
 				}
@@ -1686,6 +1795,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 					...commons,
 					type: 'endtag',
 					pairNode: {} as MLASTElement,
+					pairNodeUuid: null,
 					tagOpenChar: '</',
 					tagCloseChar: '>',
 				};
@@ -1711,22 +1821,12 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	 * @param nodeOrders [Disruptive change]
 	 */
 	#removeDeprecatedNode(nodeOrders: readonly MLASTNodeTreeItem[]) {
-		/**
-		 * sorting
-		 */
-		const sorted =
-			Array.prototype.toSorted == null
-				? // TODO: Use sort instead of toSorted until we end support for Node 18
-					[...nodeOrders].sort(sortNodes)
-				: nodeOrders.toSorted(sortNodes);
+		const sorted = nodeOrders.toSorted(sortNodes);
 
-		/**
-		 * remove duplicated node
-		 */
 		const stack: { [pos: string]: number } = {};
 		const removeIndexes: number[] = [];
 		for (const [i, node] of sorted.entries()) {
-			const id = `${node.startOffset}::${node.nodeName}`;
+			const id = `${node.offset}::${node.nodeName}`;
 			if (stack[id] != null) {
 				removeIndexes.push(i);
 			}
@@ -1760,29 +1860,51 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		const raw = firstNode.raw.slice(offsetOffset);
 
 		if (!raw) {
-			if (Array.prototype.toSpliced == null) {
-				const newNodeList = [...nodeList];
-				// TODO: Use splice instead of toSpliced until we end support for Node 18
-				newNodeList.splice(0, 1);
-				return newNodeList;
-			}
 			return nodeList.toSpliced(0, 1);
 		}
 
 		this.updateRaw(firstNode, raw);
 		this.updateLocation(firstNode, {
-			startOffset: offsetOffset,
-			startLine: offsetLine,
-			startCol: offsetColumn,
+			offset: offsetOffset,
+			line: offsetLine,
+			col: offsetColumn,
 		});
 
 		return nodeList;
 	}
 
 	#reset() {
-		// Reset state
 		this.state = structuredClone(this.#defaultState);
 		this.#defaultDepth = 0;
+		this.#embeddedParseErrors = [];
+	}
+
+	/**
+	 * Subclass hook for parsers that delegate to an embedded parse() call —
+	 * e.g., `@markuplint/markdown-parser` parsing inline HTML blocks via a
+	 * private `HtmlParser` instance, or `@markuplint/pug-parser` re-running
+	 * each raw HTML line through `HtmlInPugParser`. Push the embedded
+	 * document's `parseErrors` here so the top-level `parse()` can merge
+	 * them into the outer `MLASTDocument.parseErrors`.
+	 *
+	 * If the embedded document has no `parseErrors`, this is a no-op.
+	 *
+	 * @param parseErrors - Parse errors collected by the embedded parser. May be `undefined`.
+	 */
+	protected accumulateParseErrors(parseErrors: readonly MLASTParseError[] | undefined): void {
+		if (parseErrors && parseErrors.length > 0) {
+			this.#embeddedParseErrors.push(...parseErrors);
+		}
+	}
+
+	/**
+	 * @internal Read-only snapshot of accumulated embedded parse errors.
+	 * Used by {@link Parser.parse} to merge them with the top-level tokenize
+	 * result. Subclasses should not call this directly — push via
+	 * {@link Parser.accumulateParseErrors} instead.
+	 */
+	get embeddedParseErrors(): readonly MLASTParseError[] {
+		return this.#embeddedParseErrors;
 	}
 
 	#setRawCode(rawCode: string, originalRawCode?: string) {
@@ -1791,25 +1913,24 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	}
 
 	/**
-	 * Trim overlapping sections of text nodes for proper node separation
+	 * Prevents text content from bleeding into adjacent elements that
+	 * occupy a later (or overlapping) source range.
 	 *
-	 * @param nodeList
-	 * @returns
+	 * Skips trimming when the text node is a descendant of the next node
+	 * in the tree hierarchy, because synthetic parsers (e.g., Markdown)
+	 * can produce child elements that share the same source range as their
+	 * parent and therefore appear before the parent in offset-sorted order.
 	 */
 	#trimText(nodeList: readonly MLASTNodeTreeItem[]) {
 		const newNodeList: MLASTNodeTreeItem[] = [];
 		let prevNode: MLASTNodeTreeItem | null = null;
 		for (const node of nodeList) {
-			if (
-				prevNode?.type === 'text' &&
-				// Empty node
-				node.startOffset !== node.endOffset
-			) {
-				const prevNodeEndOffset = prevNode.endOffset;
-				const nodeStartOffset = node.startOffset;
-				if (prevNodeEndOffset > nodeStartOffset) {
+			if (prevNode?.type === 'text' && node.raw.length > 0) {
+				const prevNodeEndOffset = prevNode.offset + prevNode.raw.length;
+				const nodeStartOffset = node.offset;
+				if (prevNodeEndOffset > nodeStartOffset && !this.#isDescendantOf(prevNode, node)) {
 					const prevNodeRaw = prevNode.raw;
-					const prevNodeTrimmedRaw = prevNodeRaw.slice(0, nodeStartOffset - prevNode.startOffset);
+					const prevNodeTrimmedRaw = prevNodeRaw.slice(0, nodeStartOffset - prevNode.offset);
 					this.updateRaw(prevNode, prevNodeTrimmedRaw);
 				}
 			}

@@ -4,9 +4,6 @@ import { MLRule } from '@markuplint/ml-core';
 
 const cache = new Map<string, AnyMLRule>();
 
-/**
- * @deprecated
- */
 export async function autoLoadRules(ruleset: Ruleset) {
 	const rules: AnyMLRule[] = [];
 	const errors: unknown[] = [];

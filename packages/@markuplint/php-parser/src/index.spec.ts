@@ -90,7 +90,8 @@ describe('Node list', () => {
 		]);
 
 		const el = doc.nodeList[3];
-		const el2 = doc.nodeList[3]?.parentNode?.childNodes?.[0];
+		const parent = doc.nodeList.find(n => n.uuid === doc.nodeList[3]?.parentNodeUuid);
+		const el2 = parent && 'childNodes' in parent ? parent.childNodes?.[0] : undefined;
 		expect(el?.nodeName).toBe(el2?.nodeName);
 		expect(el?.uuid).toBe(el2?.uuid);
 	});
@@ -118,5 +119,23 @@ describe('Tags', () => {
 	test('php-short-tag', () => {
 		expect(parse('<? any; ?>').nodeList[0]?.nodeName).toBe('#ps:php-short-tag');
 		expect(parse('<? any;').nodeList[0]?.nodeName).toBe('#ps:php-short-tag');
+	});
+});
+
+describe('parserOptions.documentMode propagation (#3844)', () => {
+	test('documentMode "fragment" suppresses missing-doctype on bare <head> PHP templates', () => {
+		const doc = parser.parse('<head><meta charset="utf-8"><?php do_thing(); ?></head>', {
+			documentMode: 'fragment',
+		});
+		const codes = (doc.parseErrors ?? []).map(e => e.code);
+		expect(codes).not.toContain('missing-doctype');
+	});
+
+	test('documentMode "document" surfaces missing-doctype on the same PHP template', () => {
+		const doc = parser.parse('<head><meta charset="utf-8"><?php do_thing(); ?></head>', {
+			documentMode: 'document',
+		});
+		const codes = (doc.parseErrors ?? []).map(e => e.code);
+		expect(codes).toContain('missing-doctype');
 	});
 });

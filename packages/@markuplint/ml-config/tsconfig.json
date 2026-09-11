@@ -8,6 +8,9 @@
 			"path": "../ml-ast"
 		},
 		{
+			"path": "../ml-spec"
+		},
+		{
 			"path": "../selector"
 		},
 		{

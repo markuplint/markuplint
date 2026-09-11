@@ -1,0 +1,81 @@
+// https://html.spec.whatwg.org/multipage/form-elements.html#the-select-element
+// https://www.w3.org/TR/html-aria/#el-select
+// https://w3c.github.io/html-aria/#el-select
+{
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": ["option", "optgroup", "hr", "#script-supporting"]
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#HTMLFormControlElementAttrs": ["autocomplete", "disabled", "form", "name", "required"]
+	},
+	"attributes": {
+		// https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete
+		// Override of the common `#HTMLFormControlElementAttrs` autocomplete
+		// type: HTML LS §attr-fe-autocomplete-webauthn scopes the `webauthn`
+		// token to input/textarea only. `<select>` accepts every other
+		// autofill grammar production, so the variant type is used here.
+		"autocomplete": {
+			"type": "AutoCompleteNoWebauthn"
+		},
+		// https://html.spec.whatwg.org/multipage/form-elements.html#attr-select-multiple
+		"multiple": {
+			"type": "Boolean"
+		},
+		// https://html.spec.whatwg.org/multipage/form-elements.html#attr-select-size
+		"size": {
+			"type": {
+				"type": "integer",
+				"gt": 0
+			}
+		}
+	},
+	"aria": {
+		"implicitRole": "combobox",
+		"permittedRoles": ["menu"],
+		"properties": {
+			// Otherwise, any global aria-* attributes and any other aria-* attributes applicable to the combobox or menu role.
+			"global": true,
+			"role": ["combobox", "menu"],
+			// Authors SHOULD NOT use the aria-multiselectable attribute on a select element.
+			"without": [
+				{
+					"type": "should-not",
+					"name": "aria-multiselectable",
+					"alt": {
+						"method": "set-attr",
+						"target": "multiple"
+					}
+				}
+			]
+		},
+		"conditions": {
+			"[multiple], [size]:not([size=1])": {
+				"implicitRole": "listbox",
+				"permittedRoles": false,
+				"properties": {
+					// Otherwise, any global aria-* attributes and any other aria-* attributes applicable to the listbox role.
+					"global": true,
+					"role": "listbox",
+					// Authors SHOULD NOT use the aria-multiselectable attribute on a select element.
+					"without": [
+						{
+							"type": "should-not",
+							"name": "aria-multiselectable",
+							"alt": {
+								"method": "set-attr",
+								"target": "multiple"
+							}
+						}
+					]
+				}
+			}
+		}
+	}
+}

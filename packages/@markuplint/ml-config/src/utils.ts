@@ -1,11 +1,11 @@
 import type {
 	AnyRule,
-	AnyRuleV2,
+	NamedRuleGroup,
 	PlainData,
 	PrimitiveScalar,
 	RuleConfig,
-	RuleConfigV2,
 	RuleConfigValue,
+	Severity,
 } from './types.js';
 
 // @ts-ignore
@@ -45,10 +45,7 @@ export function provideValue(template: string, data: Readonly<Record<string, str
  * @param data - Key-value pairs for template variable replacement
  * @returns The rule with all template strings rendered, or `undefined` if rendering fails
  */
-export function exchangeValueOnRule(
-	rule: AnyRule | AnyRuleV2,
-	data: Readonly<Record<string, string>>,
-): AnyRule | undefined {
+export function exchangeValueOnRule(rule: AnyRule, data: Readonly<Record<string, string>>): AnyRule | undefined {
 	if (isRuleConfigValue(rule)) {
 		return exchangeValue(rule, data);
 	}
@@ -59,7 +56,7 @@ export function exchangeValueOnRule(
 			value: exchangeValue(result.value, data),
 		};
 	}
-	const options = extractOptions(result);
+	const options = result.options;
 	if (options != null && options !== '' && options !== 0) {
 		const newOptions = exchangeOption(options, data);
 		result = {
@@ -84,23 +81,50 @@ export function exchangeValueOnRule(
 
 /**
  * Normalizes a rule configuration by extracting the standard fields
- * (`severity`, `value`, `options`, `reason`) and removing `undefined` properties.
- * Also handles the deprecated `option` field by mapping it to `options`.
+ * (`severity`, `value`, `options`, `reason`, `reasonOnly`) and removing `undefined` properties.
  *
  * @param rule - The rule configuration to normalize
  * @returns A clean rule configuration with only defined properties
  */
-export function cleanOptions(
-	rule: RuleConfig<RuleConfigValue, PlainData> | RuleConfigV2<RuleConfigValue, PlainData>,
-): RuleConfig<RuleConfigValue, PlainData> {
+export function cleanOptions(rule: RuleConfig<RuleConfigValue, PlainData>): RuleConfig<RuleConfigValue, PlainData> {
 	const res = {
 		severity: rule.severity,
 		value: rule.value,
-		options: extractOptions(rule),
+		options: rule.options,
 		reason: rule.reason,
+		reasonOnly: rule.reasonOnly,
 	};
 	deleteUndefProp(res);
 	return res;
+}
+
+/**
+ * Type guard that checks whether a value is a {@link NamedRuleGroup}.
+ * A NamedRuleGroup is an object with a `rules` property (and optionally `specConformance` and `severity`).
+ *
+ * @param v - The value to check
+ * @returns `true` if `v` is a named rule group
+ */
+export function isNamedRuleGroup(v: unknown): v is NamedRuleGroup {
+	return (
+		v != null &&
+		typeof v === 'object' &&
+		!Array.isArray(v) &&
+		'rules' in v &&
+		(v as Record<string, unknown>).rules != null &&
+		typeof (v as Record<string, unknown>).rules === 'object' &&
+		!Array.isArray((v as Record<string, unknown>).rules)
+	);
+}
+
+/**
+ * Type guard that checks whether a string is a valid {@link Severity} value.
+ *
+ * @param v - The string to check
+ * @returns `true` if `v` is "error", "warning", or "info"
+ */
+export function isSeverity(v: string): v is Severity {
+	return v === 'error' || v === 'warning' || v === 'info';
 }
 
 /**
@@ -134,25 +158,10 @@ export function deleteUndefProp(obj: any) {
 	if (!isPlainObject(obj)) {
 		return;
 	}
-	for (const key in obj) {
+	for (const key of Object.keys(obj)) {
 		if (obj[key] === undefined) {
 			delete obj[key];
 		}
-	}
-}
-
-/**
- * Return options from `options` or `option`
- *
- * @param rule
- * @returns
- */
-function extractOptions(rule: RuleConfig<RuleConfigValue, PlainData> | RuleConfigV2<RuleConfigValue, PlainData>) {
-	if ('options' in rule && rule.options != null) {
-		return rule.options;
-	}
-	if ('option' in rule && rule.option != null) {
-		return rule.option;
 	}
 }
 
@@ -198,14 +207,9 @@ function exchangeOption(optionValue: PlainData, data: Readonly<Record<string, st
 }
 
 /**
- * Array.isArray for ReadonlyArray
- *
- * > Array.isArray type narrows to any[] for ReadonlyArray<T>
+ * `Array.isArray` narrows to `any[]` for `ReadonlyArray<T>`.
  *
  * @see https://github.com/microsoft/TypeScript/issues/17002
- *
- * @param value
- * @returns
  */
 function isArray<T>(value: any): value is T[] | readonly T[] {
 	return Array.isArray(value);

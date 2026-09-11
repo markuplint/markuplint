@@ -3,7 +3,7 @@ import { describe, test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('No control', async () => {
+test('[label-has-control-invalid-001] No control', async () => {
 	const { violations } = await mlRuleTest(rule, '<label>foo</label>');
 	expect(violations).toStrictEqual([
 		{
@@ -16,36 +16,28 @@ test('No control', async () => {
 	]);
 });
 
-test('Not single control', async () => {
-	const { violations } = await mlRuleTest(rule, '<label><input><select></select></label>');
-	expect(violations).toStrictEqual([
-		{
-			severity: 'warning',
-			line: 1,
-			col: 15,
-			raw: '<select>',
-			message: 'The "label" element associates only first control',
-		},
-	]);
+test('[label-has-control-valid-001] A single control is associated', async () => {
+	const { violations } = await mlRuleTest(rule, '<label><input></label>');
+	expect(violations).toStrictEqual([]);
 });
 
-test('The `as` attribute', async () => {
-	expect((await mlRuleTest(rule, '<x-label as="label"><input><select></select></x-label>')).violations).toStrictEqual(
-		[
-			{
-				severity: 'warning',
-				line: 1,
-				col: 28,
-				raw: '<select>',
-				message: 'The "label" element associates only first control',
-			},
-		],
-	);
-	expect((await mlRuleTest(rule, '<x-label as="label"><input></x-label>')).violations).toStrictEqual([]);
+test('[label-has-control-valid-002] Multiple controls are still associated (excess controls are label-no-multiple-controls’s responsibility)', async () => {
+	const { violations } = await mlRuleTest(rule, '<label><input><select></select></label>');
+	expect(violations).toStrictEqual([]);
+});
+
+test('[label-has-control-valid-003] The `for` attribute counts as an association even without descendants', async () => {
+	const { violations } = await mlRuleTest(rule, '<label for="x">foo</label><input id="x">');
+	expect(violations).toStrictEqual([]);
+});
+
+test('[label-has-control-valid-004] The `as` attribute makes descendants known, and a single control is associated', async () => {
+	const { violations } = await mlRuleTest(rule, '<x-label as="label"><input></x-label>');
+	expect(violations).toStrictEqual([]);
 });
 
 describe('issues', () => {
-	test('#2392', async () => {
+	test('[label-has-control-issue-2392] #2392', async () => {
 		const { violations } = await mlRuleTest(rule, '<Component></Component>', {
 			parser: {
 				'.*': '@markuplint/jsx-parser',

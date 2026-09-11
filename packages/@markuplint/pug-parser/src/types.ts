@@ -1,7 +1,3 @@
-/**
- * Additional location and raw source data that is computed during AST optimization
- * and appended to the original Pug AST node types.
- */
 export type AdditionalASTData = {
 	raw: string;
 	offset: number;
@@ -10,7 +6,6 @@ export type AdditionalASTData = {
 	endColumn: number;
 };
 
-/** Union of all optimized Pug AST node types that the parser can produce. */
 export type ASTNode =
 	| ASTDoctype
 	| ASTComment
@@ -35,105 +30,81 @@ export type ASTNode =
 	| ASTNamedBlock
 	| ASTFilter;
 
-/** Represents a Pug block containing an ordered list of child nodes. */
 export type ASTBlock = {
 	type: 'Block';
 	nodes: readonly ASTNode[];
 	line: number;
 };
 
-/** An optimized Pug doctype node with computed location data. */
 export type ASTDoctype = PugAST.Doctype & AdditionalASTData;
 
-/** An optimized Pug single-line comment node with computed location data. */
 export type ASTComment = PugAST.Comments.Comment & AdditionalASTData;
 
-/** An optimized Pug block comment node with computed location data and an optimized child block. */
 export type ASTBlockComment = Omit<PugAST.Comments.BlockComment, 'block'> & {
 	block: ASTBlock | null;
 } & AdditionalASTData;
 
-/** An optimized Pug text node with computed location data. */
 export type ASTText = PugAST.Text & AdditionalASTData;
 
-/** An optimized Pug tag node with computed attributes and child block. */
 export type ASTTag = Omit<PugAST.Tag, 'attrs' | 'block'> & {
 	attrs: readonly ASTAttr[];
 	block: ASTBlock | null;
 } & AdditionalASTData;
 
-/** An optimized Pug interpolated tag node with computed child block. */
 export type ASTInterpolatedTag = Omit<PugAST.InterpolatedTag, 'block'> & {
 	block: ASTBlock | null;
 } & AdditionalASTData;
 
-/** An optimized Pug code node (unbuffered/buffered JavaScript) with computed child block. */
 export type ASTCode = Omit<PugAST.Code, 'block'> & {
 	block: ASTBlock | null;
 } & AdditionalASTData;
 
-/** An optimized Pug conditional (`if`/`else if`/`else`) node with computed child block. */
 export type ASTConditional = Omit<PugAST.CodeHelpers.Conditional, 'consequent' | 'alternate'> & {
 	block: ASTBlock | null;
 } & AdditionalASTData;
 
-/** An optimized Pug `case` node with computed child block. */
 export type ASTCase = Omit<PugAST.CodeHelpers.CaseWhen.Case, 'block'> & {
 	block: ASTBlock | null;
 } & AdditionalASTData;
 
-/** An optimized Pug `when` node with computed child block. */
 export type ASTWhen = Omit<PugAST.CodeHelpers.CaseWhen.When, 'block'> & {
 	block: ASTBlock | null;
 } & AdditionalASTData;
 
-/** An optimized Pug `while` loop node with computed location data. */
 export type ASTWhile = PugAST.While & AdditionalASTData;
 
-/** An optimized Pug `each` iteration node with computed child block. */
 export type ASTEach = Omit<PugAST.Each, 'block' | 'alternate'> & {
 	block: ASTBlock | null;
 } & AdditionalASTData;
 
-/** An optimized Pug mixin (definition or call) node with computed child block. */
 export type ASTMixin = Omit<PugAST.Mixin, 'block'> & {
 	block: ASTBlock | null;
 } & AdditionalASTData;
 
-/** An optimized Pug `block` placeholder inside a mixin definition. */
 export type ASTMixinBlock = PugAST.MixinBlock & AdditionalASTData;
 
-/** An optimized Pug `yield` block placeholder. */
 export type ASTYieldBlock = PugAST.YieldBlock & AdditionalASTData;
 
-/** An optimized Pug file reference node with computed location data. */
 export type ASTFileReference = PugAST.FileOperations.FileReference & AdditionalASTData;
 
-/** An optimized Pug `include` node with computed child block. */
 export type ASTInclude = Omit<PugAST.FileOperations.Include, 'block'> & {
 	block: ASTBlock | null;
 } & AdditionalASTData;
 
-/** An optimized Pug raw `include` node with computed location data. */
 export type ASTRawInclude = PugAST.FileOperations.RawInclude & AdditionalASTData;
 
-/** An optimized Pug include filter node with computed location data. */
 export type ASTIncludeFilter = PugAST.FileOperations.IncludeFilter & AdditionalASTData;
 
-/** An optimized Pug `extends` node with computed location data. */
 export type ASTExtends = PugAST.FileOperations.Extends & AdditionalASTData;
 
-/** An optimized Pug named block node with computed child nodes. */
 export type ASTNamedBlock = Omit<PugAST.FileOperations.NamedBlock, 'nodes'> & {
 	nodes: readonly ASTNode[];
 } & AdditionalASTData;
 
-/** An optimized Pug filter node with computed child block. */
 export type ASTFilter = Omit<PugAST.Filter, 'block'> & {
 	block: ASTBlock | null;
 } & AdditionalASTData;
 
-/** An optimized Pug attribute with computed location and raw source data. */
 export type ASTAttr = PugAST.AbstractNodeTypes.Attribute & AdditionalASTData;
 
 // eslint-disable-next-line @typescript-eslint/no-namespace

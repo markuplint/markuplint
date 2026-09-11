@@ -9,6 +9,16 @@ import { mergeArray } from './merge-array.js';
  *
  * Ex: `@markuplint/html-spec` + `{ specs: { "\\.vue$": "@markuplint/vue-spec" } }` in configure files.
  *
+ * The merge is an additive overlay with silent, unconditional override: later
+ * specs win, and there is deliberately no conflict detection and no provenance
+ * tracking in the merged result. Framework specs exist precisely to relax or
+ * extend base HTML constraints (e.g. React's `dangerouslySetInnerHTML`, Vue's
+ * `v-if`), so every key collision with the base spec is treated as a
+ * deliberate decision by the `ExtendedSpec` author — an extension that
+ * unintentionally weakens a base constraint is not flagged anywhere.
+ *
+ * @see https://github.com/markuplint/markuplint/issues/3893
+ *
  * @param schemas - A tuple where the first element is the base `MLMLSpec` and subsequent elements are extended specs to merge
  * @returns The merged specification combining the base spec with all extensions
  */
@@ -40,6 +50,10 @@ export function schemaToSpec(schemas: readonly [MLMLSpec, ...ExtendedSpec[]]) {
 							def['#aria']['1.1'].graphicsRoles,
 							extendedSpec.def['#aria']['1.1'].graphicsRoles,
 						),
+						dpubRoles: mergeArray(
+							def['#aria']['1.1'].dpubRoles,
+							extendedSpec.def['#aria']['1.1'].dpubRoles,
+						),
 					},
 					'1.2': {
 						roles: mergeArray(def['#aria']['1.2'].roles, extendedSpec.def['#aria']['1.2'].roles),
@@ -48,6 +62,10 @@ export function schemaToSpec(schemas: readonly [MLMLSpec, ...ExtendedSpec[]]) {
 							def['#aria']['1.2'].graphicsRoles,
 							extendedSpec.def['#aria']['1.2'].graphicsRoles,
 						),
+						dpubRoles: mergeArray(
+							def['#aria']['1.2'].dpubRoles,
+							extendedSpec.def['#aria']['1.2'].dpubRoles,
+						),
 					},
 					'1.3': {
 						roles: mergeArray(def['#aria']['1.3'].roles, extendedSpec.def['#aria']['1.3'].roles),
@@ -55,6 +73,10 @@ export function schemaToSpec(schemas: readonly [MLMLSpec, ...ExtendedSpec[]]) {
 						graphicsRoles: mergeArray(
 							def['#aria']['1.3'].graphicsRoles,
 							extendedSpec.def['#aria']['1.3'].graphicsRoles,
+						),
+						dpubRoles: mergeArray(
+							def['#aria']['1.3'].dpubRoles,
+							extendedSpec.def['#aria']['1.3'].dpubRoles,
 						),
 					},
 				};
@@ -73,6 +95,12 @@ export function schemaToSpec(schemas: readonly [MLMLSpec, ...ExtendedSpec[]]) {
 				def['#contentModels'] = models;
 			}
 			result.def = def;
+		}
+		if (extendedSpec.directivePatterns) {
+			result.directivePatterns = [...(result.directivePatterns ?? []), ...extendedSpec.directivePatterns];
+		}
+		if (extendedSpec.acceptedAttrNames != null) {
+			result.acceptedAttrNames = extendedSpec.acceptedAttrNames;
 		}
 		if (extendedSpec.specs) {
 			const exSpecs = [...extendedSpec.specs];

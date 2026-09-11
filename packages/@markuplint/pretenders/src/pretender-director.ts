@@ -1,45 +1,66 @@
-import type { Identifier, Identity } from './types.js';
+import type { ImportBinding } from './import-resolver/types.js';
+import type { Identifier, Identity, ImportPath } from './types.js';
 
 import { dependencyMapper } from './dependency-mapper.js';
 
-/**
- * Internal map structure storing component identifiers to their identity and source location.
- */
-type PretenderDirectorMap = Map<Identifier, [identity: Identity, filePath?: string]>;
+export type PretenderDirectorMap = Map<
+	string,
+	[identifier: Identifier, identity: Identity, filePath?: string, sourceFile?: string]
+>;
 
 /**
- * Collects and manages pretender mappings discovered during source file scanning.
- * Acts as a registry where component-to-element relationships are added during
- * traversal, then resolved into a flat list of pretenders with dependency linking.
+ * The internal map keys on import paths when available, falling back to
+ * component identifiers (names) for backward compatibility with name-based scanners.
  */
 export class PretenderDirector {
 	#map: PretenderDirectorMap = new Map();
+	#nameIndex: Map<Identifier, string> = new Map();
+	#importsByFile: Map<string, readonly ImportBinding[]> = new Map();
 
 	/**
-	 * Registers a component as a pretender mapping. If the identifier is already
-	 * registered, the call is silently ignored (first definition wins).
-	 *
-	 * @param identifier - The component selector (e.g., component name)
-	 * @param identity - The native HTML element the component renders as
-	 * @param filePath - The relative file path where the component is defined
-	 * @param line - The line number of the component declaration
-	 * @param col - The column number of the component declaration
+	 * When the key (import path or identifier) is already registered, the call
+	 * is silently ignored (first definition wins).
 	 */
-	add(identifier: Identifier, identity: Identity, filePath: string, line: number, col: number) {
-		if (this.#map.has(identifier)) {
+	add(
+		identifier: Identifier,
+		identity: Identity,
+		filePath: string,
+		line: number,
+		col: number,
+		importPath?: ImportPath,
+	) {
+		const key = importPath ?? identifier;
+
+		if (this.#map.has(key)) {
 			return;
 		}
 
-		this.#map.set(identifier, [identity, `${filePath}:${line}:${col}`]);
+		this.#map.set(key, [identifier, identity, `${filePath}:${line}:${col}`, filePath]);
+
+		if (!this.#nameIndex.has(identifier)) {
+			this.#nameIndex.set(identifier, key);
+		}
 	}
 
 	/**
-	 * Resolves all registered mappings into a sorted array of Pretender objects.
-	 * Follows component-to-component chains to determine the final native element identity.
-	 *
-	 * @returns A sorted array of resolved Pretender objects
+	 * Registers the import bindings found in `filePath`, so that
+	 * {@link dependencyMapper} can resolve a JSX/template reference to the
+	 * file it was actually imported from instead of guessing by name alone.
 	 */
-	getPretenders() {
-		return dependencyMapper(this.#map);
+	addImports(filePath: string, bindings: readonly ImportBinding[]) {
+		this.#importsByFile.set(filePath, bindings);
+	}
+
+	/**
+	 * @param cwd - Base directory that the recorded `sourceFile` paths (and any
+	 *   module resolution triggered while chasing an import) are relative to.
+	 *   Must match the `cwd` the scanner itself used to build those paths.
+	 * @param sources - The same in-memory content overrides (keyed by normalized
+	 *   absolute path) passed to the scanner, so cross-file import resolution
+	 *   reads a file's current (possibly unsaved) content instead of always
+	 *   falling back to disk.
+	 */
+	getPretenders(cwd?: string, sources?: ReadonlyMap<string, string>) {
+		return dependencyMapper(this.#map, this.#nameIndex, { importsByFile: this.#importsByFile, cwd, sources });
 	}
 }

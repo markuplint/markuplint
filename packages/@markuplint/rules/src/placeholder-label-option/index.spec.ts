@@ -3,7 +3,7 @@ import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('Valid placeholder', async () => {
+test('[placeholder-label-option-invalid-001] Valid placeholder', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -44,7 +44,7 @@ test('Valid placeholder', async () => {
 	).toStrictEqual([]);
 });
 
-test("Invalid: first option element's value is not empty", async () => {
+test("[placeholder-label-option-invalid-002] Invalid: first option element's value is not empty", async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -88,7 +88,7 @@ test("Invalid: first option element's value is not empty", async () => {
 	]);
 });
 
-test("Invalid: Invalid: first option element's parent is optgroup", async () => {
+test("[placeholder-label-option-invalid-003] Invalid: Invalid: first option element's parent is optgroup", async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -113,7 +113,7 @@ test("Invalid: Invalid: first option element's parent is optgroup", async () => 
 	]);
 });
 
-test('The `as` attribute', async () => {
+test('[placeholder-label-option-invalid-004] The `as` attribute', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -133,6 +133,30 @@ test('The `as` attribute', async () => {
 			line: 1,
 			col: 1,
 			raw: '<x-select as="select" required>',
+			message: 'Need the placeholder label option',
+		},
+	]);
+});
+
+test('[placeholder-label-option-invalid-005] Invalid: empty select without any option', async () => {
+	expect((await mlRuleTest(rule, '<select required></select>')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			raw: '<select required>',
+			message: 'Need the placeholder label option',
+		},
+	]);
+});
+
+test('[placeholder-label-option-invalid-006] Invalid: required select with only non-option children', async () => {
+	expect((await mlRuleTest(rule, '<select required><script></script></select>')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			raw: '<select required>',
 			message: 'Need the placeholder label option',
 		},
 	]);

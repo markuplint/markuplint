@@ -29,13 +29,17 @@ i18n/ja/docusaurus-plugin-content-docs/current/rules/*.md
 community/contributing.md
 community/code-of-conduct.md
 
+
 # Env
 .env
 
 # Dynamically created files
 contributors.json
 
-pretenders.json
+# Playwright
+playwright-report
+test-results
+__screenshots__
 
 # Yarn v4 (node_modules mode)
 .yarn/install-state.gz

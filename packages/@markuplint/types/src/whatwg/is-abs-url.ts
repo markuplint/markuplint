@@ -1,8 +1,6 @@
 import type { FormattedPrimitiveTypeCreator } from '../types.js';
 
 /**
- * Checks whether a string is a valid absolute URL.
- *
  * @see https://url.spec.whatwg.org/#syntax-url-absolute
  *
  * > An absolute-URL string must be one of the following:
@@ -20,12 +18,7 @@ export const isAbsURL: FormattedPrimitiveTypeCreator = () => {
 		try {
 			new URL(value);
 		} catch (error: unknown) {
-			if (
-				error &&
-				typeof error === 'object' &&
-				'code' in error && // @ts-ignore
-				error.code === 'ERR_INVALID_URL'
-			) {
+			if (error instanceof TypeError) {
 				return false;
 			}
 			throw error;

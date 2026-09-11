@@ -1,0 +1,67 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"title": "NuValidatorSnapshot",
+	"type": "object",
+	"additionalProperties": false,
+	"required": ["source", "nuValidator"],
+	"properties": {
+		"source": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["path", "sha256", "filenameHint"],
+			"properties": {
+				"path": { "type": "string" },
+				"sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+				"filenameHint": {
+					"type": "string",
+					"enum": ["novalid", "isvalid", "haswarn", "hasinfo", "other"]
+				}
+			}
+		},
+		"nuValidator": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["imageDigest", "messages"],
+			"properties": {
+				"imageDigest": { "type": "string" },
+				"error": { "type": "string" },
+				"messages": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"additionalProperties": false,
+						"required": [
+							"id",
+							"type",
+							"subType",
+							"message",
+							"firstLine",
+							"lastLine",
+							"firstColumn",
+							"lastColumn",
+							"extract",
+							"hiliteStart",
+							"hiliteLength"
+						],
+						"properties": {
+							"id": { "type": "string", "pattern": "^nv-[0-9a-f]{12}(-[0-9]+)?$" },
+							"type": {
+								"type": "string",
+								"enum": ["error", "warning", "info", "non-document-error"]
+							},
+							"subType": { "type": ["string", "null"] },
+							"message": { "type": "string" },
+							"firstLine": { "type": ["integer", "null"] },
+							"lastLine": { "type": ["integer", "null"] },
+							"firstColumn": { "type": ["integer", "null"] },
+							"lastColumn": { "type": ["integer", "null"] },
+							"extract": { "type": ["string", "null"] },
+							"hiliteStart": { "type": ["integer", "null"] },
+							"hiliteLength": { "type": ["integer", "null"] }
+						}
+					}
+				}
+			}
+		}
+	}
+}

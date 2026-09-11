@@ -8,34 +8,39 @@ $ markuplint target.html target2.html
 $ markuplint "**/*.html"
 ```
 
-The CLI takes target HTML files as variadic arguments.
-Or it accepts glob formats.
+The CLI takes target HTML files as arguments. Glob patterns are also accepted.
 
-It returns the exit code `0` when it succeeded.
-And returns `1` if the result has problems one or more.
+It returns exit code `0` on success, and `1` if one or more violations are found.
+
+With `--fix`, the exit code reflects the violations **remaining in the fixed output**: it returns `0` when every violation has been fixed. With `--fix-dry-run`, files are not modified, so the exit code reflects the file on disk.
 
 ## Options
 
-| Long Option                | Short Option | Argument                                 | Default    | Description                                                           |
-| -------------------------- | ------------ | ---------------------------------------- | ---------- | --------------------------------------------------------------------- |
-| `--config`                 | `-c`         | File path                                | none       | A configuration file path                                             |
-| `--fix`                    | none         | none                                     | false      | Fix target files if the rule supports.                                |
-| `--format`                 | `-f`         | `JSON`, `Simple`, `GitHub` or `Standard` | `Standard` | Select output format.                                                 |
-| `--no-search-config`       | none         | none                                     | false      | No search a configure file automatically.                             |
-| `--ignore-ext`             | none         | none                                     | false      | Evaluate files that are received even though the type of extension.   |
-| `--no-import-preset-rules` | none         | none                                     | false      | No import preset rules.                                               |
-| `--locale`                 | none         | Language code (example: `en`)            | OS setting | Locale of the message of violation.                                   |
-| `--no-color`               | none         | none                                     | false      | Output no color.                                                      |
-| `--problem-only`           | `-p`         | none                                     | false      | Output only problems.                                                 |
-| `--allow-warnings`         | none         | none                                     | false      | Return status code 0 even if there are warnings.                      |
-| `--no-allow-empty-input`   | none         | none                                     | false      | Return status code 1 even if there are no input files.                |
-| `--show-config`            | none         | empty, `details`                         | none       | Output computed configuration of the target file.                     |
-| `--verbose`                | none         | none                                     | false      | Output with detailed information.                                     |
-| `--include-node-modules`   | none         | none                                     | false      | Include files in node_modules directory.                              |
-| `--severity-parse-error`   | none         | `error`, `warning` or `off`              | `error`    | Specifies the severity level of parse errors.                         |
-| `--max-count`              | none         | Number                                   | `0`        | Limit the number of violations shown. `0` means no limit.             |
-| `--max-warnings`           | none         | Number                                   | `-1`       | Number of warnings to trigger nonzero exit code. `-1` means no limit. |
-| `--progressive-output`     | none         | none                                     | false     | Output results immediately after processing each file.                |
+| Long Option                | Short Option | Argument                                 | Default                        | Description                                                                  |
+| -------------------------- | ------------ | ---------------------------------------- | ------------------------------ | ---------------------------------------------------------------------------- |
+| `--config`                 | `-c`         | File path                                | none                           | A configuration file path                                                    |
+| `--fix`                    | none         | none                                     | false                          | Fix target files if the rule supports.                                       |
+| `--fix-dry-run`            | none         | none                                     | false                          | Preview what `--fix` would change without modifying files.                   |
+| `--format`                 | `-f`         | `JSON`, `Simple`, `GitHub` or `Standard` | `Standard`                     | Select output format.                                                        |
+| `--no-search-config`       | none         | none                                     | false                          | Skip automatic configuration file search.                                    |
+| `--ignore-ext`             | none         | none                                     | false                          | Evaluate files regardless of their extension.                                |
+| `--no-import-preset-rules` | none         | none                                     | false                          | Do not import preset rules.                                                  |
+| `--locale`                 | none         | Language code (example: `en`)            | OS setting                     | Locale for violation messages.                                               |
+| `--no-color`               | none         | none                                     | false                          | Disable colored output.                                                      |
+| `--problem-only`           | `-p`         | none                                     | false                          | Output only violations.                                                      |
+| `--allow-warnings`         | none         | none                                     | true                           | Return status code 0 even if there are warnings.                             |
+| `--no-allow-empty-input`   | none         | none                                     | false                          | Return status code 1 even if there are no input files.                       |
+| `--show-config`            | none         | empty, `details`                         | none                           | Output computed configuration of the target file.                            |
+| `--verbose`                | none         | none                                     | false                          | Output with detailed information.                                            |
+| `--include-node-modules`   | none         | none                                     | false                          | Include files in node_modules directory.                                     |
+| `--severity-parse-error`   | none         | `error`, `warning` or `off`              | `error`                        | Specifies the severity level of parse errors.                                |
+| `--max-count`              | none         | Number                                   | `0`                            | Limit the number of violations shown. `0` means no limit.                    |
+| `--max-warnings`           | none         | Number                                   | `-1`                           | Number of warnings to trigger nonzero exit code. `-1` means no limit.        |
+| `--no-progressive-output`  | none         | none                                     | false                          | Wait until every file is processed before outputting results.                |
+| `--suppress`               | none         | none                                     | false                          | **[Experimental]** Generate/update suppressions file for all current errors. |
+| `--suppress-rule`          | none         | Rule ID                                  | none                           | **[Experimental]** Suppress only the specified rule.                         |
+| `--prune-suppressions`     | none         | none                                     | false                          | **[Experimental]** Remove stale entries from the suppressions file.          |
+| `--suppressions-location`  | none         | File path                                | `markuplint-suppressions.json` | **[Experimental]** Custom path for the suppressions file.                    |
 
 ## Particular run
 
@@ -45,18 +50,17 @@ Show help. (Short option: `-h`)
 
 ### `--version`
 
-Show installed version. (Short option: `-v`)
+Show the installed version. (Short option: `-v`)
 
 ### `--init`
 
-Initialization; Create a [configuration](configuration/index.md) file and install dependencies.
+Create a [configuration](/docs/configuration) file and install dependencies interactively.
 
 ```shell
 $ npx markuplint --init
 ```
 
-Answer questions interactively.
-Then it installs modules needed.
+Answer the interactive questions and the required modules will be installed automatically.
 
 ### `--max-count`
 
@@ -119,31 +123,65 @@ $ markuplint index.html --max-warnings=-1
 3. Gradually reduce warnings and lower the limit over time
 4. Eventually reach zero warnings with `--max-warnings=0`
 
-### `--progressive-output`
+### `--no-progressive-output`
 
-Output results immediately after processing each file instead of waiting for all files to be processed. This option improves the user experience when processing large numbers of files by providing real-time feedback and preventing the appearance of the CLI being frozen.
+By default, the CLI outputs results immediately after processing each file instead of waiting for all files to be processed. This improves the user experience when processing large numbers of files by providing real-time feedback and preventing the appearance of the CLI being frozen. Pass `--no-progressive-output` to restore the traditional batch behavior instead.
 
 ```shell
-# Output results progressively as each file is processed
-$ markuplint "**/*.html" --progressive-output
-
-# Traditional batch output (default behavior)
+# Output results progressively as each file is processed (default)
 $ markuplint "**/*.html"
+
+# Wait until every file is processed before outputting results
+$ markuplint "**/*.html" --no-progressive-output
 ```
 
 **Key features:**
 
 - **Real-time feedback**: See results as soon as each file is processed
 - **Improved UX**: Prevents the appearance of CLI being frozen during large file processing
-- **Backward compatibility**: Defaults to `false` to maintain existing behavior
 - **JSON format exception**: JSON output always uses batch mode regardless of this setting
+- **Suppressions exception**: When an active [suppressions](#suppress) file has entries, the CLI falls back to batch mode for the whole run, since which violations are suppressed can only be determined after every file has been checked
+- **`--max-count` exception**: When `--max-count` is set, the CLI falls back to batch mode for the whole run, since the limit applies across the whole run rather than per file
 - **Performance**: No performance impact, only changes output timing
 
-**When to use:**
+**When to use `--no-progressive-output`:**
 
-- Processing large numbers of files (hundreds or thousands)
-- Interactive development workflows where immediate feedback is valuable
-- CI/CD pipelines where you want to see progress in real-time
-- Debugging issues with specific files in large projects
+- Scripts that parse the traditional batch summary output
+- Reproducing v4 output ordering
 
-**Note:** This option will default to `true` in the next major version of Markuplint.
+### `--suppress` / `--suppress-rule` {#suppress}
+
+:::caution Experimental
+This feature is experimental and may change in future releases.
+:::
+
+Record existing violations in a suppressions file so that rules are enforced only on new code. See [Bulk Suppressions](./ignoring-code.md#bulk-suppressions) for the full guide.
+
+```shell
+# Suppress all current error violations
+$ markuplint "**/*.html" --suppress
+
+# Suppress only a specific rule
+$ markuplint "**/*.html" --suppress-rule no-duplicate-attr
+
+# Use a custom suppressions file path
+$ markuplint "**/*.html" --suppress --suppressions-location .config/suppressions.json
+```
+
+### `--prune-suppressions` {#prune-suppressions}
+
+:::caution Experimental
+This feature is experimental and may change in future releases.
+:::
+
+Remove stale entries from the suppressions file after fixing violations.
+
+```shell
+$ markuplint "**/*.html" --prune-suppressions
+```
+
+## Next steps
+
+- **[Ignoring Code](/docs/guides/ignoring-code)** — Suppress violations, disable rules for specific elements or files
+- **[Configuration](/docs/configuration)** — Configuration file formats and properties
+- **[FAQ](/docs/guides/faq)** — Common questions and troubleshooting

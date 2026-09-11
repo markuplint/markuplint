@@ -1,10 +1,17 @@
 {
 	"name": "@markuplint/file-resolver",
-	"version": "4.18.0",
+	"version": "5.0.0-rc.7",
 	"description": "The file resolver of markuplint",
-	"repository": "git@github.com:markuplint/markuplint.git",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/markuplint/markuplint.git",
+		"directory": "packages/@markuplint/file-resolver"
+	},
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
+	"engines": {
+		"node": ">=24"
+	},
 	"type": "module",
 	"exports": {
 		".": {
@@ -24,17 +31,18 @@
 		"clean": "tsc --build --clean"
 	},
 	"devDependencies": {
-		"@types/node": "24.12.2"
+		"@types/node": "24.13.3"
 	},
 	"dependencies": {
-		"@markuplint/html-parser": "4.18.0",
-		"@markuplint/ml-ast": "4.18.0",
-		"@markuplint/ml-config": "4.18.0",
-		"@markuplint/ml-core": "4.18.0",
-		"@markuplint/ml-spec": "4.18.0",
-		"@markuplint/parser-utils": "4.18.0",
-		"@markuplint/selector": "4.18.0",
-		"@markuplint/shared": "4.18.0",
+		"@markuplint/html-parser": "5.0.0-rc.7",
+		"@markuplint/ml-ast": "5.0.0-rc.7",
+		"@markuplint/ml-config": "5.0.0-rc.7",
+		"@markuplint/ml-core": "5.0.0-rc.7",
+		"@markuplint/ml-spec": "5.0.0-rc.7",
+		"@markuplint/parser-utils": "5.0.0-rc.7",
+		"@markuplint/pretenders": "5.0.0-rc.7",
+		"@markuplint/selector": "5.0.0-rc.7",
+		"@markuplint/shared": "5.0.0-rc.7",
 		"cosmiconfig": "9.0.1",
 		"debug": "4.4.3",
 		"glob": "13.0.6",

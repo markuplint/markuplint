@@ -1,13 +1,10 @@
-/** A grid cell coordinate key in "row:column" format. */
-export type Key = `${number}:${number}`;
-
 /**
- * Represents the type of a cell in the table grid model.
+ * Represents what covers one slot of the table grid.
  *
- * - `'●'` - A regular cell (single-span).
- * - `'◎'` - The origin cell of a colspan or rowspan.
- * - `'↓'` - A cell occupied by a rowspan from a row above.
- * - `'→'` - A cell occupied by a colspan from a column to the left.
- * - `'x'` - An overlapping cell caused by conflicting spans.
+ * - `'●'` - A cell is anchored here and spans nothing else.
+ * - `'◎'` - A cell is anchored here and spans further columns and/or rows.
+ * - `'↓'` - Covered by a cell anchored in an earlier row.
+ * - `'→'` - Covered by a cell anchored earlier in the same row.
+ * - `'x'` - Covered by more than one cell (HTML LS §4.9.12.1 Step 14).
  */
 export type CellType = '●' | '◎' | '↓' | '→' | 'x';

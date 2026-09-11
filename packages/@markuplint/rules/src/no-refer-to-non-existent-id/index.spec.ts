@@ -3,7 +3,7 @@ import { describe, test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('label[for]', async () => {
+test('[no-refer-to-non-existent-id-invalid-001] label[for]', async () => {
 	const { violations } = await mlRuleTest(rule, '<label for="foo"></label>');
 	expect(violations).toStrictEqual([
 		{
@@ -16,7 +16,7 @@ test('label[for]', async () => {
 	]);
 });
 
-test('td[headers]', async () => {
+test('[no-refer-to-non-existent-id-invalid-002] td[headers]', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`<table>
@@ -43,7 +43,7 @@ test('td[headers]', async () => {
 	]);
 });
 
-test('td[headers] (Dynamic)', async () => {
+test('[no-refer-to-non-existent-id-valid-001] td[headers] (Dynamic)', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`<table>
@@ -62,7 +62,7 @@ test('td[headers] (Dynamic)', async () => {
 	expect(violations.length).toBe(0);
 });
 
-test('td[headers] (Dynamic)', async () => {
+test('[no-refer-to-non-existent-id-valid-002] td[headers] (Dynamic)', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		// cspell: disable
@@ -83,7 +83,7 @@ test('td[headers] (Dynamic)', async () => {
 	expect(violations.length).toBe(0);
 });
 
-test('aria-describedby', async () => {
+test('[no-refer-to-non-existent-id-invalid-003] aria-describedby', async () => {
 	const { violations } = await mlRuleTest(rule, '<section aria-describedby="foo"></section>');
 	expect(violations).toStrictEqual([
 		{
@@ -96,115 +96,7 @@ test('aria-describedby', async () => {
 	]);
 });
 
-test('fragment', async () => {
-	expect((await mlRuleTest(rule, '<a href="#foo"></a>')).violations).toStrictEqual([
-		{
-			severity: 'error',
-			line: 1,
-			col: 10,
-			raw: '#foo',
-			message: 'Missing "foo" ID',
-		},
-	]);
-
-	expect((await mlRuleTest(rule, '<a href="#"></a>')).violations).toStrictEqual([]);
-
-	expect((await mlRuleTest(rule, '<a href="#top"></a>')).violations).toStrictEqual([]);
-
-	expect((await mlRuleTest(rule, '<a href="#TOP"></a>')).violations).toStrictEqual([]);
-
-	expect(
-		(await mlRuleTest(rule, `<a href="#${encodeURI('あいうえお')}"></a><div id="あいうえお"></div>`)).violations,
-	).toStrictEqual([]);
-
-	expect(
-		(
-			await mlRuleTest(rule, '<><a href="#foo" /><div id="foo" /></>', {
-				parser: {
-					'.*': '@markuplint/jsx-parser',
-				},
-			})
-		).violations,
-	).toStrictEqual([]);
-
-	expect(
-		(
-			await mlRuleTest(rule, '<><a href="#foo" /><div id={foo} /></>', {
-				parser: {
-					'.*': '@markuplint/jsx-parser',
-				},
-			})
-		).violations,
-	).toStrictEqual([]);
-
-	expect(
-		(
-			await mlRuleTest(rule, '<><a href="#foo" /><div name="foo" /></>', {
-				parser: {
-					'.*': '@markuplint/jsx-parser',
-				},
-			})
-		).violations,
-	).toStrictEqual([
-		{
-			severity: 'error',
-			line: 1,
-			col: 12,
-			raw: '#foo',
-			message: 'Missing "foo" ID',
-		},
-	]);
-
-	expect(
-		(
-			await mlRuleTest(rule, '<><a href="#foo" /><div name={foo} /></>', {
-				parser: {
-					'.*': '@markuplint/jsx-parser',
-				},
-			})
-		).violations,
-	).toStrictEqual([
-		{
-			severity: 'error',
-			line: 1,
-			col: 12,
-			raw: '#foo',
-			message: 'Missing "foo" ID',
-		},
-	]);
-
-	expect(
-		(
-			await mlRuleTest(rule, '<><a href="#foo" /><div name="foo" /></>', {
-				parser: {
-					'.*': '@markuplint/jsx-parser',
-				},
-				rule: {
-					options: {
-						fragmentRefersNameAttr: true,
-					},
-				},
-			})
-		).violations,
-	).toStrictEqual([]);
-
-	expect(
-		(
-			await mlRuleTest(rule, '<><a href="#foo" /><div name={foo} /></>', {
-				parser: {
-					'.*': '@markuplint/jsx-parser',
-				},
-				rule: {
-					options: {
-						fragmentRefersNameAttr: true,
-					},
-				},
-			})
-		).violations,
-	).toStrictEqual([]);
-});
-
-test('The `as` attribute', async () => {
+test('[no-refer-to-non-existent-id-invalid-004] The `as` attribute', async () => {
 	const { violations } = await mlRuleTest(rule, '<x-label as="label" for="foo"></x-label>');
 	expect(violations).toStrictEqual([
 		{
@@ -218,55 +110,7 @@ test('The `as` attribute', async () => {
 });
 
 describe('Issues', () => {
-	test('#748', async () => {
-		expect(
-			(
-				await mlRuleTest(
-					rule,
-					`
-	<main>
-		<?php foo() ?>
-		<a href="#foo">link</a>
-		<div id="foo"></div>
-	</main>`,
-					{
-						parser: {
-							'.*': '@markuplint/php-parser',
-						},
-					},
-				)
-			).violations,
-		).toStrictEqual([]);
-	});
-
-	test('#776', async () => {
-		expect(
-			(
-				await mlRuleTest(
-					rule,
-					/* cSpell:disable */
-					`
-						<a href="#apple%3Aorange">apple:orange</a>
-						<p id="apple:orange">apple:orange</p>
-
-						<a href="#apple%26orange">apple&amp;orange</a>
-						<p id="apple&amp;orange">apple&amp;orange</p>
-
-						<a href="#apple%26lemon">apple&amp;lemon</a>
-						<p id="apple&lemon">apple&amp;lemon</p>
-					`,
-					/* cSpell:enable */
-					{
-						parser: {
-							'.*': '@markuplint/php-parser',
-						},
-					},
-				)
-			).violations,
-		).toStrictEqual([]);
-	});
-
-	test('#1611', async () => {
+	test('[no-refer-to-non-existent-id-issue-1611] #1611', async () => {
 		expect(
 			(
 				await mlRuleTest(

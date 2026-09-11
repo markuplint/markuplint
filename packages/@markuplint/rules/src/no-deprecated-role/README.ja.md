@@ -1,0 +1,23 @@
+---
+description: 非推奨（廃止予定）のロールが使用された場合に警告します。
+---
+
+# `no-deprecated-role`
+
+非推奨（廃止予定）のロールが使用された場合に警告します。
+
+<!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
+
+❌ 間違ったコード例
+
+```html
+<div role="directory"></div>
+```
+
+✅ 正しいコード例
+
+```html
+<div role="list"></div>
+```
+
+<!-- textlint-enable ja-technical-writing/ja-no-mixed-period -->

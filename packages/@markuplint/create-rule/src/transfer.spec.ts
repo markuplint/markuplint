@@ -1,17 +1,13 @@
 import { rm } from 'node:fs/promises';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 
 import { test, expect, afterAll, beforeAll } from 'vitest';
 
 import { glob } from './glob.js';
 import { transfer } from './transfer.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const SCAFFOLD = path.resolve(__dirname, '..', 'scaffold');
-const TEST_SANDBOX = path.resolve(__dirname, '..', '__test_sandbox__');
+const SCAFFOLD = path.resolve(import.meta.dirname, '..', 'scaffold');
+const TEST_SANDBOX = path.resolve(import.meta.dirname, '..', '__test_sandbox__');
 
 async function removeTestDir() {
 	await rm(TEST_SANDBOX, { recursive: true, force: true });
@@ -39,7 +35,7 @@ test('transfer', async () => {
 		},
 	});
 	const fileList = await glob(path.resolve(TEST_SANDBOX, '**', '*'));
-	expect(fileList.sort().map(file => path.relative(TEST_SANDBOX, file).split(path.sep).join('/'))).toEqual([
+	expect(fileList.toSorted().map(file => path.relative(TEST_SANDBOX, file).split(path.sep).join('/'))).toEqual([
 		'core',
 		'core/README.ja.md',
 		'core/README.md',

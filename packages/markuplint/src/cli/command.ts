@@ -1,33 +1,66 @@
 import type { CLIOptions } from './bootstrap.js';
 import type { APIOptions } from '../api/types.js';
+import type { PositionedNode } from '../suppressions/compute-scope.js';
 import type { Target } from '@markuplint/file-resolver';
-import type { Severity, SeverityOptions } from '@markuplint/ml-config';
+import type { Severity, SeverityOptions, Violation } from '@markuplint/ml-config';
 
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 
-import { resolveFiles } from '@markuplint/file-resolver';
+import { ConfigProvider, resolveFiles } from '@markuplint/file-resolver';
 import { ViolationCollector } from '@markuplint/ml-core';
+import { isFatalError } from '@markuplint/shared';
 
 import { MLEngine } from '../api/index.js';
 import { log } from '../debug.js';
+import {
+	applySuppressions,
+	generateSuppressions,
+	mergeSuppressions,
+	pruneSuppressions,
+	readSuppressionsFile,
+	resolveSuppressionsPath,
+	writeSuppressionsFile,
+} from '../suppressions/index.js';
+import { CONFIG_LEVEL_RULE_IDS, dedupeConfigLevelViolations } from '../dedupe-config-violations.js';
 
-import { output } from './output.js';
+import { outputDryRunDiff } from './dry-run-output.js';
+import { output, outputSummary } from './output.js';
 
 /**
- * Executes the markuplint linting command against the given files.
+ * Validates a `--severity-*` flag's raw string value against the uniform
+ * single-value form both `--severity-parse-error` and `--severity-deprecation`
+ * accept, shared so adding another such flag doesn't mean copy-pasting this
+ * check again.
  *
- * Resolves file targets, creates an {@link MLEngine} for each file, collects
- * violations, and outputs results in the requested format. When the `--fix`
- * flag is set, overwrites files with their auto-fixed content.
- *
- * @param files - The list of file targets (paths or inline source code) to lint.
- * @param options - CLI options controlling output format, fix mode, locale, and other behaviors.
- * @param apiOptions - Optional overrides for the underlying API (e.g., custom rules or config).
- * @returns `true` if any errors were found (or warnings exceeded the limit), `false` otherwise.
+ * @returns the validated value, or `undefined` if unset or not one of
+ * `"error"`, `"warning"`, `"off"`.
  */
+function parseSeverityFlag(value: string | undefined): Severity | 'off' | undefined {
+	const normalized = value?.toLowerCase();
+	if (normalized != null && ['error', 'warning', 'off'].includes(normalized)) {
+		return normalized as Severity | 'off';
+	}
+	return undefined;
+}
+
 export async function command(files: readonly Readonly<Target>[], options: CLIOptions, apiOptions?: APIOptions) {
-	const fix = options.fix;
+	const fixDryRun = options.fixDryRun;
+	if (options.fix && fixDryRun) {
+		log('Both --fix and --fix-dry-run specified; --fix-dry-run takes precedence');
+		process.stderr.write('Warning: --fix-dry-run takes precedence over --fix. Files will not be modified.\n');
+	}
+	const fix = options.fix || fixDryRun;
+
+	// Mutual exclusion checks for suppressions flags
+	const isSuppressMode = options.suppress || options.suppressRule != null;
+	const isPruneMode = options.pruneSuppressions;
+
+	if (isSuppressMode && isPruneMode) {
+		process.stderr.write('Error: --suppress/--suppress-rule and --prune-suppressions cannot be used together.\n');
+		return true;
+	}
+
 	const configFile =
 		options.config &&
 		(path.isAbsolute(options.config) ? options.config : path.resolve(process.cwd(), options.config));
@@ -63,13 +96,48 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 	const collector = new ViolationCollector(options.maxCount);
 	const processedFiles: string[] = [];
 	const skippedFiles: string[] = [];
+	// See `dedupeConfigLevelViolations` for why this Set needs to persist
+	// across the whole run (not per file).
+	const seenConfigMessages = new Set<string>();
 	const filesContent = new Map<string, { sourceCode: string; fixedCode: string }>();
-	const severityParseError = options.severityParseError.toLowerCase();
+	const engines = new Map<string, MLEngine>();
+	// Shared across every file in this run so its config cache — keyed by
+	// resolved config `names`, not by target file — actually helps: config
+	// loading/merging/plugin-resolution is done once per distinct config,
+	// not once per file. See #3997.
+	const configProvider = new ConfigProvider();
+	const parsedSeverityParseError = parseSeverityFlag(options.severityParseError);
+	const parsedSeverityDeprecation = parseSeverityFlag(options.severityDeprecation);
 	const severity: SeverityOptions = {
-		parseError: ['error', 'warning', 'off'].includes(severityParseError)
-			? (severityParseError as Severity | 'off')
-			: true,
+		...(parsedSeverityParseError != null && { parseError: parsedSeverityParseError }),
+		...(parsedSeverityDeprecation != null && { deprecation: parsedSeverityDeprecation }),
 	};
+
+	// Progressive output prints each file's own violations as soon as that
+	// file is processed, ahead of the two whole-run passes that batch output
+	// waits for: suppressions (applied once at the end, below, via
+	// `applySuppressions`, since scope resolution and the "unused entry"
+	// report need the complete result set) and `--max-count` truncation
+	// (enforced by `collector.pushWithFile`'s running total across files,
+	// including which file the limit is hit within and which later files are
+	// skipped entirely). Printing per file ahead of either pass would show
+	// violations, or omit a skipped-file notice, that the run's own summary
+	// and exit code then contradict. Rather than duplicate that truncation
+	// and suppression logic in the progressive branch, fall back to batch
+	// output for the whole run whenever either is in play; --suppress and
+	// --prune-suppressions manage the suppressions file directly and are
+	// unaffected.
+	let progressiveOutput = options.progressiveOutput;
+	if (progressiveOutput && options.maxCount > 0) {
+		progressiveOutput = false;
+	}
+	if (progressiveOutput && !isSuppressMode && !isPruneMode) {
+		const suppressionsFilePathForCheck = resolveSuppressionsPath(options.suppressionsLocation);
+		const existingSuppressions = await readSuppressionsFile(suppressionsFilePathForCheck);
+		if (Object.keys(existingSuppressions).length > 0) {
+			progressiveOutput = false;
+		}
+	}
 
 	for (const file of fileList) {
 		// Check if collector is already locked (max-count reached)
@@ -89,6 +157,7 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 			debug: verbose,
 			severity,
 			...apiOptions,
+			configProvider,
 		});
 
 		if (options.showConfig != null) {
@@ -105,6 +174,8 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 					dependencies,
 					plugins: configSet.plugins,
 					errors: configSet.errs,
+					ruleDeprecations: configSet.ruleDeprecations,
+					appliedOverrides: configSet.appliedOverrides ?? [],
 				};
 			} else {
 				data = configSet.config;
@@ -119,12 +190,32 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 			continue;
 		}
 
+		processedFiles.push(result.filePath);
+		filesContent.set(result.filePath, {
+			sourceCode: result.sourceCode,
+			fixedCode: result.fixedCode,
+		});
+
+		// Store engine for scope computation in suppressions
+		engines.set(result.filePath, engine);
+
+		// In fix mode, report the violations remaining in the FIXED code
+		// (re-verified by ml-core) instead of the pre-fix violations, so that
+		// the exit code and suppressions reflect the written output.
+		// With --fix-dry-run the file is NOT modified, so keep the first-pass
+		// violations, which match the file on disk.
+		const violationsBeforeDedupe = fixDryRun
+			? result.violations
+			: (result.fixSummary?.finalPassViolations ?? result.violations);
+
+		const reportedViolations = dedupeConfigLevelViolations(violationsBeforeDedupe, seenConfigMessages);
+
 		// Progressive出力が有効でJSON形式でない場合
-		if (options.progressiveOutput && format !== 'json') {
+		if (progressiveOutput && format !== 'json') {
 			// 即座に出力
 			output(
 				{
-					violations: result.violations,
+					violations: reportedViolations,
 					filePath: result.filePath,
 					sourceCode: result.sourceCode,
 					fixedCode: result.fixedCode,
@@ -132,20 +223,13 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 				},
 				options,
 			);
-		} else {
-			// 従来の動作：メモリに蓄積
-			processedFiles.push(result.filePath);
-			filesContent.set(result.filePath, {
-				sourceCode: result.sourceCode,
-				fixedCode: result.fixedCode,
-			});
 		}
 
 		// Add violations to collector
-		collector.pushWithFile(result.filePath, ...result.violations);
+		collector.pushWithFile(result.filePath, ...reportedViolations);
 
-		const errorCount = result.violations.filter(v => v.severity === 'error').length;
-		const warningCount = result.violations.filter(v => v.severity === 'warning').length;
+		const errorCount = reportedViolations.filter(v => v.severity === 'error').length;
+		const warningCount = reportedViolations.filter(v => v.severity === 'warning').length;
 
 		// Track total warning count across all files
 		totalWarningCount += warningCount;
@@ -154,27 +238,139 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 			hasError = true;
 		}
 
-		if (fix) {
+		if (fix && !fixDryRun) {
 			log('Overwrite file: %s', result.filePath);
 			await fs.writeFile(result.filePath, result.fixedCode, { encoding: 'utf8' });
+		} else if (fix && fixDryRun && result.sourceCode !== result.fixedCode) {
+			outputDryRunDiff(result.filePath, result.sourceCode, result.fixedCode);
 		}
+	}
+
+	// --- Suppressions handling ---
+	const suppressionsFilePath = resolveSuppressionsPath(options.suppressionsLocation);
+	const collectedViolationsByFile = collector.groupByFile();
+
+	// Build nodeLists map from engines for scope computation
+	const nodeLists = new Map<string, readonly PositionedNode[]>();
+	for (const [filePath, engine] of engines) {
+		const doc = engine.document;
+		if (doc) {
+			// MLNode structurally satisfies PositionedNode (startLine, startCol, localName,
+			// id, classList, parentElement, children are all present). The double cast is
+			// needed because TypeScript can't verify structural compatibility between the
+			// generic MLNode<T,O> and the plain PositionedNode interface at compile time.
+			nodeLists.set(filePath, doc.nodeList as unknown as PositionedNode[]);
+		}
+	}
+
+	if (isSuppressMode) {
+		// Suppress mode: generate/update suppressions file
+		const existing = await readSuppressionsFile(suppressionsFilePath);
+		const generated = generateSuppressions(collectedViolationsByFile, suppressionsFilePath, {
+			filterRule: options.suppressRule,
+			nodeLists,
+		});
+		const merged = mergeSuppressions(existing, generated);
+		await writeSuppressionsFile(suppressionsFilePath, merged);
+
+		let totalSuppressed = 0;
+		let totalRules = 0;
+		for (const rules of Object.values(generated)) {
+			for (const entry of Object.values(rules)) {
+				totalSuppressed += entry.count;
+				totalRules++;
+			}
+		}
+		process.stderr.write(
+			`[Experimental] ${totalSuppressed} violation(s) for ${totalRules} rule(s) suppressed in ${path.relative(process.cwd(), suppressionsFilePath)}\n`,
+		);
+		return false;
+	}
+
+	if (isPruneMode) {
+		// Prune mode: remove stale entries
+		const existing = await readSuppressionsFile(suppressionsFilePath);
+		if (Object.keys(existing).length === 0) {
+			process.stderr.write('No suppressions file found. Nothing to prune.\n');
+			return false;
+		}
+		const pruned = pruneSuppressions(collectedViolationsByFile, existing, suppressionsFilePath);
+		await writeSuppressionsFile(suppressionsFilePath, pruned);
+
+		const existingCount = Object.values(existing).reduce((sum, rules) => sum + Object.keys(rules).length, 0);
+		const prunedCount = Object.values(pruned).reduce((sum, rules) => sum + Object.keys(rules).length, 0);
+		const removedCount = existingCount - prunedCount;
+		process.stderr.write(
+			`[Experimental] Suppressions pruned: ${removedCount} entry/entries removed, ${prunedCount} remaining.\n`,
+		);
+		return false;
+	}
+
+	// Normal lint mode: apply suppressions if file exists
+	let outputViolationsByFile = collectedViolationsByFile;
+	let suppressionsApplied = false;
+
+	try {
+		await fs.access(suppressionsFilePath);
+		const suppressionsData = await readSuppressionsFile(suppressionsFilePath);
+		if (Object.keys(suppressionsData).length > 0) {
+			const { filtered, unusedEntries } = applySuppressions(
+				collectedViolationsByFile,
+				suppressionsData,
+				suppressionsFilePath,
+				{ nodeLists },
+			);
+			outputViolationsByFile = filtered;
+			suppressionsApplied = true;
+
+			if (unusedEntries.length > 0) {
+				process.stderr.write(
+					`[Experimental] ${unusedEntries.length} unused suppression entry/entries found. Run with --prune-suppressions to clean up.\n`,
+				);
+			}
+
+			// Recalculate hasError and totalWarningCount from filtered violations
+			hasError = false;
+			totalWarningCount = 0;
+			for (const violations of filtered.values()) {
+				const errorCount = violations.filter(v => v.severity === 'error').length;
+				const warningCount = violations.filter(v => v.severity === 'warning').length;
+				totalWarningCount += warningCount;
+				if (errorCount > 0 || (warningCount > 0 && !options.allowWarnings)) {
+					hasError = true;
+				}
+			}
+		}
+	} catch (error) {
+		if (isFatalError(error)) {
+			throw error;
+		}
+		// Suppressions file does not exist or is unreadable, proceed normally
 	}
 
 	// Output results
 	if (format === 'json') {
-		const jsonOutput = collector.toArray();
-		process.stdout.write(JSON.stringify(jsonOutput, null, 2) + '\n');
+		if (suppressionsApplied) {
+			// Build filtered array with filePath
+			const jsonOutput: (Violation & { filePath: string })[] = [];
+			for (const [filePath, violations] of outputViolationsByFile) {
+				for (const violation of violations) {
+					jsonOutput.push({ ...violation, filePath });
+				}
+			}
+			process.stdout.write(JSON.stringify(jsonOutput, null, 2) + '\n');
+		} else {
+			const jsonOutput = collector.toArray();
+			process.stdout.write(JSON.stringify(jsonOutput, null, 2) + '\n');
+		}
 		return false;
 	}
 
 	// Progressive出力が無効の場合のみループ後に出力
-	if (!options.progressiveOutput) {
-		// For standard/simple/github output, group violations by file
-		const violationsByFile = collector.groupByFile();
-
+	if (!progressiveOutput) {
 		// Output per file - include processed files without violations
 		for (const filePath of processedFiles) {
-			const violations = violationsByFile.get(filePath) || [];
+			const violations = outputViolationsByFile.get(filePath) || [];
 			const content = filesContent.get(filePath) || { sourceCode: '', fixedCode: '' };
 
 			if (violations.length === 0 && !options.problemOnly) {
@@ -212,6 +408,50 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 			}
 		}
 	}
+
+	let errorCount = 0;
+	let warningCount = 0;
+	let noticeCount = 0;
+	let failedFileCount = 0;
+
+	for (const filePath of processedFiles) {
+		const violations = outputViolationsByFile.get(filePath) || [];
+		// A file whose only violations are config-level (`CONFIG_LEVEL_RULE_IDS`)
+		// didn't fail on its own content — the config issue is reported once
+		// for the whole run (see the dedupe above), not attributable to this
+		// particular file.
+		if (violations.some(violation => !CONFIG_LEVEL_RULE_IDS.has(violation.ruleId))) {
+			failedFileCount++;
+		}
+		for (const violation of violations) {
+			switch (violation.severity) {
+				case 'error': {
+					errorCount++;
+					break;
+				}
+				case 'warning': {
+					warningCount++;
+					break;
+				}
+				case 'info': {
+					noticeCount++;
+					break;
+				}
+			}
+		}
+	}
+
+	outputSummary(
+		{
+			checkedFileCount: processedFiles.length,
+			failedFileCount,
+			skippedFileCount: skippedFiles.length,
+			errorCount,
+			warningCount,
+			noticeCount,
+		},
+		options,
+	);
 
 	// Check if max-warnings limit is exceeded (ESLint compatible)
 	if (!hasError && options.maxWarnings >= 0 && totalWarningCount > options.maxWarnings) {

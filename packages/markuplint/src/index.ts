@@ -23,8 +23,3 @@ export * from './types.js';
 
 /** The current markuplint package version string. */
 export { version } from './version.js';
-
-/**
- * @deprecated Use the current API exports instead.
- */
-export * from './v1.js';

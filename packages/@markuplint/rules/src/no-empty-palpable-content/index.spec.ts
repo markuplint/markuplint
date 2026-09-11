@@ -3,7 +3,7 @@ import { describe, test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('No space', async () => {
+test('[no-empty-palpable-content-valid-001] No space', async () => {
 	expect((await mlRuleTest(rule, '<div></div>')).violations).toStrictEqual([
 		{
 			severity: 'warning',
@@ -43,7 +43,7 @@ test('No space', async () => {
 	expect((await mlRuleTest(rule, '<svg><rect /></svg>')).violations).toStrictEqual([]);
 });
 
-test('White space', async () => {
+test('[no-empty-palpable-content-invalid-001] White space', async () => {
 	expect((await mlRuleTest(rule, '<div> </div>')).violations).toStrictEqual([
 		{
 			severity: 'warning',
@@ -64,21 +64,21 @@ test('White space', async () => {
 	]);
 });
 
-test('Has content', async () => {
+test('[no-empty-palpable-content-valid-002] Has content', async () => {
 	expect((await mlRuleTest(rule, '<div>\n\ttext\n\n</div>')).violations).toStrictEqual([]);
 	expect((await mlRuleTest(rule, '<div><img /></div>')).violations).toStrictEqual([]);
 });
 
-test('Has content', async () => {
+test('[no-empty-palpable-content-valid-003] Has content', async () => {
 	expect((await mlRuleTest(rule, '<div>\n\ttext\n\n</div>')).violations).toStrictEqual([]);
 	expect((await mlRuleTest(rule, '<div><img /></div>')).violations).toStrictEqual([]);
 });
 
-test('Element exception', async () => {
+test('[no-empty-palpable-content-valid-004] Element exception', async () => {
 	expect((await mlRuleTest(rule, '<textarea></textarea>')).violations).toStrictEqual([]);
 });
 
-test('Ignore aria-busy', async () => {
+test('[no-empty-palpable-content-valid-005] Ignore aria-busy', async () => {
 	expect((await mlRuleTest(rule, '<div aria-busy="true"></div>')).violations).toStrictEqual([]);
 	expect((await mlRuleTest(rule, '<div aria-busy="true">\n\t\n\n</div>')).violations).toStrictEqual([]);
 	expect(
@@ -103,18 +103,18 @@ test('Ignore aria-busy', async () => {
 });
 
 describe('Issues', () => {
-	test('#593', async () => {
+	test('[no-empty-palpable-content-issue-593] #593', async () => {
 		expect((await mlRuleTest(rule, '<iframe></iframe>')).violations).toStrictEqual([]);
 	});
 
-	test('#775', async () => {
+	test('[no-empty-palpable-content-issue-775] #775', async () => {
 		expect((await mlRuleTest(rule, '<pre>text</pre>')).violations).toStrictEqual([]);
 		expect((await mlRuleTest(rule, '<pre>\n\ttext</pre>')).violations).toStrictEqual([]);
 		expect((await mlRuleTest(rule, '<pre>text\ntext</pre>')).violations).toStrictEqual([]);
 		expect((await mlRuleTest(rule, '<pre>\ntext</pre>')).violations).toStrictEqual([]);
 	});
 
-	test('#1948', async () => {
+	test('[no-empty-palpable-content-issue-1948] #1948', async () => {
 		expect((await mlRuleTest(rule, '<audio></audio>')).violations).toStrictEqual([]);
 		expect((await mlRuleTest(rule, '<canvas></canvas>')).violations).toStrictEqual([]);
 		expect((await mlRuleTest(rule, '<video></video>')).violations).toStrictEqual([]);

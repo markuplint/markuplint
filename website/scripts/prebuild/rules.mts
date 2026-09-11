@@ -8,7 +8,18 @@ import { rewriteRuleContent } from './rule-content.mjs';
 import { dropFiles, getEditUrlBase, glob, importFileData, output, projectRoot } from './utils.mjs';
 
 type RuleIndexContents = Readonly<
-  Record<'validation' | 'a11y' | 'naming-convention' | 'maintainability' | 'style', readonly string[]>
+  Record<
+    | 'syntax'
+    | 'structure'
+    | 'attributes'
+    | 'references'
+    | 'forms'
+    | 'a11y'
+    | 'style'
+    | 'maintainability'
+    | 'compat',
+    readonly string[]
+  >
 >;
 type RuleIndex = Readonly<{ lang: string; contents: RuleIndexContents }>;
 type DocData = {
@@ -17,6 +28,7 @@ type DocData = {
   description: string;
   category: string;
   severity: string;
+  fixable: boolean;
   contents: string;
 };
 
@@ -47,6 +59,7 @@ async function getDocFile(
   value: any,
   options: any,
   severity: 'error' | 'warning',
+  fixable: boolean,
   inherit?: Partial<Readonly<DocData>>,
 ): Promise<Partial<DocData>> {
   const editUrlBase = await getEditUrlBase();
@@ -62,7 +75,7 @@ async function getDocFile(
 
   const id = frontMatter.id ?? inherit?.id;
 
-  let rewrote = rewriteRuleContent(content, id, value, options, severity ?? inherit?.severity, lang);
+  let rewrote = rewriteRuleContent(content, id, value, options, severity ?? inherit?.severity, lang, fixable);
 
   // eslint-disable-next-line import/no-named-as-default-member
   rewrote = matter.stringify(rewrote, frontMatter);
@@ -85,13 +98,15 @@ async function createRuleDoc(path: string) {
   const meta = await importFileData(resolve(path, 'meta.js'));
   const { value, options } = schema.definitions;
   const category = meta.category;
+  const fixable = meta.fixable === true;
   const severity = schema.oneOf.find((val: any) => val.properties)?.properties?.severity?.default ?? 'N/A';
   const docFile = resolve(path, 'README.md');
-  const doc = await getDocFile(docFile, value, options, severity);
+  const doc = await getDocFile(docFile, value, options, severity, fixable);
   doc.category = category;
   doc.severity = severity;
+  doc.fixable = fixable;
   const i18nDocFiles = await glob(resolve(path, 'README.*.md'));
-  const i18nDocs = await Promise.all(i18nDocFiles.map(docPath => getDocFile(docPath, value, options, severity, doc)));
+  const i18nDocs = await Promise.all(i18nDocFiles.map(docPath => getDocFile(docPath, value, options, severity, fixable, doc)));
 
   return [doc, ...i18nDocs];
 }
@@ -101,11 +116,15 @@ async function createRuleDoc(path: string) {
  */
 function createIndexContents(): RuleIndexContents {
   return {
-    validation: [],
+    syntax: [],
+    structure: [],
+    attributes: [],
+    references: [],
+    forms: [],
     a11y: [],
-    'naming-convention': [],
-    maintainability: [],
     style: [],
+    maintainability: [],
+    compat: [],
   };
 }
 
@@ -132,6 +151,7 @@ async function createEachRule(
       index.contents[doc.category].push({
         id: doc.id,
         description: doc.description,
+        fixable: doc.fixable,
       });
 
       if (!indexes.some(idx => idx.lang === doc.lang)) {
@@ -157,17 +177,17 @@ async function createEachRule(
 async function crateRuleIndexDoc(index: RuleIndexContents, ruleDocsDistDir: string) {
   const ruleListItem = (rule: any) =>
     rule.href
-      ? `[\`${rule.id}\`](${rule.href})|${rule.description}`
-      : `[\`${rule.id}\`](/docs/rules/${rule.id})|${rule.description}`;
+      ? `[\`${rule.id}\`](${rule.href})|${rule.fixable ? '🔧' : ''}|${rule.description}`
+      : `[\`${rule.id}\`](/docs/rules/${rule.id})|${rule.fixable ? '🔧' : ''}|${rule.description}`;
 
   const table = (list: readonly any[]) => {
-    return ['Rule ID|Description', '---|---', ...list.map(ruleListItem)];
+    return ['Rule ID|Fixable|Description', '---|:---:|---', ...list.map(ruleListItem)];
   };
 
   const removedTable = (list: readonly any[], drop: string) => {
     return [
-      'Rule ID|Description|Drop',
-      '---|---|---',
+      'Rule ID|Fixable|Description|Drop',
+      '---|:---:|---|---',
       ...list.map(ruleListItem).map((line: string) => `${line}|Since \`${drop}\``),
     ];
   };
@@ -178,16 +198,26 @@ async function crateRuleIndexDoc(index: RuleIndexContents, ruleDocsDistDir: stri
     'sidebar_class_name: hidden',
     '---',
     //
-    '## Conformance checking',
-    ...table(index.validation),
+    'The complete list of built-in rules. Most users don\'t need to configure these individually — [presets](/docs/guides/presets) enable them for you. See [Applying Rules](/docs/guides/applying-rules) to customize.',
+    '',
+    '## Syntax',
+    ...table(index.syntax),
+    '## Structure',
+    ...table(index.structure),
+    '## Attributes',
+    ...table(index.attributes),
+    '## References',
+    ...table(index.references),
+    '## Forms',
+    ...table(index.forms),
     '## Accessibility',
     ...table(index.a11y),
-    '## Naming Convention',
-    ...table(index['naming-convention']),
-    '## Maintainability',
-    ...table(index.maintainability),
     '## Style',
     ...table(index.style),
+    '## Maintainability',
+    ...table(index.maintainability),
+    '## Browser Compatibility',
+    ...table(index.compat),
     '---',
     '## Removed rules',
     ...removedTable(

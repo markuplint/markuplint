@@ -15,8 +15,17 @@ export type Options = {
 	checkingDeprecatedRole: boolean;
 	/** Whether to enforce the list of permitted ARIA roles for each element. */
 	permittedAriaRoles: boolean;
-	/** Whether to verify that roles requiring specific owned elements contain them. */
+	/** Whether to verify "Allowed Accessibility Child Roles" (ARIA 1.3 name). */
+	checkingAllowedAccessibilityChildRoles: boolean;
+	/**
+	 * @deprecated Use `checkingAllowedAccessibilityChildRoles` instead.
+	 * Retained for backward compatibility.
+	 */
 	checkingRequiredOwnedElements: boolean;
+	/** Whether to verify "Required Accessibility Parent Role" (ARIA 1.3 name) / "Required Context Role" (ARIA 1.2 name). */
+	checkingRequiredAccessibilityParentRole: boolean;
+	/** Whether to verify that an active `tab` role has a corresponding `tabpanel` role. */
+	checkingTabRequiresTabpanel: boolean;
 	/** Whether to warn when ARIA attributes are set on descendants of presentational-children roles. */
 	checkingPresentationalChildren: boolean;
 	/** Whether to warn about focusable interactive elements hidden via `aria-hidden`. */
@@ -28,5 +37,5 @@ export type Options = {
 	/** Whether to disallow explicitly setting an ARIA property to its default value. */
 	disallowDefaultValue: boolean;
 	/** The WAI-ARIA specification version to validate against. */
-	version: ARIAVersion;
+	version?: ARIAVersion;
 };

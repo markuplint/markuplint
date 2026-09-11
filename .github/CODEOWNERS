@@ -5,6 +5,10 @@
 
 # Contributors
 website/ @kagankan
+website/docs/ @YusukeHirao
+website/src/pages/index.tsx @YusukeHirao
+website/**/*.md @YusukeHirao
+website/**/*.mdx @YusukeHirao
 
 # Renovate
 package.json

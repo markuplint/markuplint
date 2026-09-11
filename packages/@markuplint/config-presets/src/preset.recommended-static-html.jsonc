@@ -1,0 +1,53 @@
+{
+	"extends": [
+		"markuplint:code-styles",
+		"markuplint:html-standard",
+		"markuplint:a11y",
+		"markuplint:performance",
+		"markuplint:security",
+		"markuplint:rdfa"
+	],
+	"rules": {
+		/**
+		 * Use [**no-unescaped-char**](https://markuplint.dev/docs/rules/no-unescaped-char)
+		 *
+		 * Warns when a literal `<` (the one character HTML LS always
+		 * prohibits unescaped) appears in a text node or attribute value.
+		 * The group name is kept as `character-reference` for backward
+		 * compatibility.
+		 */
+		"static-html/character-reference": {
+			"specConformance": "normative",
+			"rules": {
+				"no-unescaped-char": true
+			}
+		},
+
+		/**
+		 * Use [**no-malformed-character-reference**](https://markuplint.dev/docs/rules/no-malformed-character-reference)
+		 *
+		 * Warns when a `&...;`-shaped character reference is malformed
+		 * (unknown name, missing semicolon, or a NULL/surrogate/control/
+		 * noncharacter/out-of-range numeric reference).
+		 */
+		"static-html/no-malformed-character-reference": {
+			"specConformance": "normative",
+			"rules": {
+				"no-malformed-character-reference": true
+			}
+		},
+
+		/**
+		 * No omit **end-tag**
+		 *
+		 * Recommend to write an end-tag always because it is too difficult
+		 * for a human decide an element is end-tag omittable.
+		 */
+		"static-html/end-tag": {
+			"specConformance": "non-normative",
+			"rules": {
+				"require-end-tag": true
+			}
+		}
+	}
+}

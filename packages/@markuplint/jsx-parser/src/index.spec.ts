@@ -109,7 +109,7 @@ describe('parse', () => {
 		expect(ast.nodeList[1].nodeName).toBe('#ps:JSXExpressionContainer');
 		// @ts-ignore
 		expect(ast.nodeList[1].childNodes[0].uuid).toBe(ast.nodeList[2].uuid);
-		expect(ast.nodeList[2].parentNode?.uuid).toBe(ast.nodeList[1].uuid);
+		expect(ast.nodeList[2].parentNodeUuid).toBe(ast.nodeList[1].uuid);
 	});
 
 	test('Code 2', () => {
@@ -148,7 +148,7 @@ describe('parse', () => {
 		expect(maps).toStrictEqual([
 			'[3:3]>[3:7](38,42)ul: <ul>',
 			'[3:7]>[4:4](42,46)#text: ⏎→→→',
-			'[4:4]>[6:7](46,108)#ps:JSXExpressionContainer: {[1,␣2,␣3].map(item␣=>␣(⏎→→→→<li␣key={item}>{item}</li>⏎→→→))}',
+			'[4:4]>[6:7](46,108)#ps:JSXExpressionContainer (each): {[1,␣2,␣3].map(item␣=>␣(⏎→→→→<li␣key={item}>{item}</li>⏎→→→))}',
 			'[5:5]>[5:20](75,90)li: <li␣key={item}>',
 			'[5:20]>[5:26](90,96)#ps:JSXExpressionContainer: {item}',
 			'[5:26]>[5:31](96,101)li: </li>',
@@ -176,8 +176,8 @@ describe('parse', () => {
 		// @ts-ignore
 		expect(ast.nodeList[0].childNodes[2].nodeName).toBe('#text');
 		// @ts-ignore
-		expect(ast.nodeList[2].parentNode?.uuid).toBe(ast.nodeList[0].uuid);
-		expect(ast.nodeList[3].parentNode?.uuid).toBe(ast.nodeList[2].uuid);
+		expect(ast.nodeList[2].parentNodeUuid).toBe(ast.nodeList[0].uuid);
+		expect(ast.nodeList[3].parentNodeUuid).toBe(ast.nodeList[2].uuid);
 	});
 
 	test('Code 4', () => {
@@ -193,7 +193,7 @@ describe('parse', () => {
 		const ast = parse('const Component = () => <Children prop={<PropElement />} />;');
 		// @ts-ignore
 		expect(ast.nodeList[0].childNodes.length).toBe(0);
-		expect(ast.nodeList[1].parentNode).toBeNull();
+		expect(ast.nodeList[1].parentNodeUuid).toBeNull();
 	});
 
 	test('Code 5', () => {
@@ -313,7 +313,7 @@ const Component3 = memo(() => <div>Component3</div>);`);
 		const maps = nodeListToDebugMaps(ast.nodeList);
 		expect(maps).toStrictEqual([
 			'[1:1]>[1:4](0,3)p: <p>',
-			'[1:4]>[1:27](3,26)#ps:JSXExpressionContainer: {array.map(_␣=>␣<></>)}',
+			'[1:4]>[1:27](3,26)#ps:JSXExpressionContainer (each): {array.map(_␣=>␣<></>)}',
 			'[1:20]>[1:22](19,21)#jsx-fragment: <>',
 			'[1:22]>[1:25](21,24)#jsx-fragment: </>',
 			'[1:27]>[1:31](26,30)p: </p>',
@@ -327,14 +327,16 @@ const Component3 = memo(() => <div>Component3</div>);`);
 
 		expect(ast.nodeList[3].raw).toBe('</>');
 		// @ts-ignore
-		expect(ast.nodeList[0].childNodes[0].childNodes[0].pairNode.raw).toBe('</>');
+		const startNode = ast.nodeList[0].childNodes[0].childNodes[0];
+		const startNodePair = ast.nodeList.find(n => n.uuid === startNode.pairNodeUuid);
+		expect(startNodePair?.raw).toBe('</>');
 		// @ts-ignore
-		expect(ast.nodeList[0].childNodes[0].childNodes[0].pairNode.uuid).toBe(ast.nodeList[3].uuid);
+		expect(startNode.pairNodeUuid).toBe(ast.nodeList[3].uuid);
 
 		// @ts-ignore
-		expect(ast.nodeList[2].uuid).toBe(ast.nodeList[3].pairNode.uuid);
+		expect(ast.nodeList[2].uuid).toBe(ast.nodeList[3].pairNodeUuid);
 		// @ts-ignore
-		expect(ast.nodeList[2].pairNode.uuid).toBe(ast.nodeList[3].uuid);
+		expect(ast.nodeList[2].pairNodeUuid).toBe(ast.nodeList[3].uuid);
 	});
 
 	test('Attribute', () => {
@@ -349,7 +351,7 @@ const Component3 = memo(() => <div>Component3</div>);`);
 		]);
 		expect(attrMaps).toStrictEqual([
 			[
-				'[1:12]>[1:27](11,26)class: className="foo"',
+				'[1:12]>[1:27](11,26)className: className="foo"',
 				'  [1:11]>[1:12](10,11)bN: ␣',
 				'  [1:12]>[1:21](11,20)name: className',
 				'  [1:21]>[1:21](20,20)bE: ',
@@ -360,10 +362,9 @@ const Component3 = memo(() => <div>Component3</div>);`);
 				'  [1:26]>[1:27](25,26)eQ: "',
 				'  isDirective: false',
 				'  isDynamicValue: false',
-				'  potentialName: class',
 			],
 			[
-				'[1:28]>[1:41](27,40)tabindex: tabIndex="-1"',
+				'[1:28]>[1:41](27,40)tabIndex: tabIndex="-1"',
 				'  [1:27]>[1:28](26,27)bN: ␣',
 				'  [1:28]>[1:36](27,35)name: tabIndex',
 				'  [1:36]>[1:36](35,35)bE: ',
@@ -374,7 +375,6 @@ const Component3 = memo(() => <div>Component3</div>);`);
 				'  [1:40]>[1:41](39,40)eQ: "',
 				'  isDirective: false',
 				'  isDynamicValue: false',
-				'  potentialName: tabindex',
 			],
 			[
 				'[1:42]>[1:55](41,54)tabindex: tabindex="-1"',
@@ -388,8 +388,6 @@ const Component3 = memo(() => <div>Component3</div>);`);
 				'  [1:54]>[1:55](53,54)eQ: "',
 				'  isDirective: false',
 				'  isDynamicValue: false',
-				'  potentialName: tabindex',
-				'  candidate: tabIndex',
 			],
 			[
 				'[1:56]>[1:76](55,75)aria-label: aria-label="accname"',
@@ -437,7 +435,6 @@ const Component3 = memo(() => <div>Component3</div>);`);
 				'  [1:10]>[1:11](9,10)eQ: "',
 				'  isDirective: false',
 				'  isDynamicValue: false',
-				'  potentialName: href',
 			],
 		]);
 	});
@@ -459,7 +456,6 @@ const Component3 = memo(() => <div>Component3</div>);`);
 				'  [1:10]>[1:11](9,10)eQ: }',
 				'  isDirective: false',
 				'  isDynamicValue: true',
-				'  potentialName: href',
 			],
 		]);
 	});
@@ -489,7 +485,7 @@ key
 		expect(nodeListToDebugMaps(ast.nodeList)).toStrictEqual([
 			'[4:3]>[5:2](41,47)ul: <ul␣⏎>',
 			'[5:2]>[6:1](47,49)#text: ␣⏎',
-			'[6:1]>[16:7](49,126)#ps:JSXExpressionContainer: {[1,␣2,␣3]␣⏎.map(item␣=>␣(␣⏎<li␣⏎key␣⏎=␣⏎{␣⏎→item␣⏎}>{␣⏎→item␣⏎}</li>␣⏎→→→))}',
+			'[6:1]>[16:7](49,126)#ps:JSXExpressionContainer (each): {[1,␣2,␣3]␣⏎.map(item␣=>␣(␣⏎<li␣⏎key␣⏎=␣⏎{␣⏎→item␣⏎}>{␣⏎→item␣⏎}</li>␣⏎→→→))}',
 			'[8:1]>[13:3](77,102)li: <li␣⏎key␣⏎=␣⏎{␣⏎→item␣⏎}>',
 			'[13:3]>[15:2](102,113)#ps:JSXExpressionContainer: {␣⏎→item␣⏎}',
 			'[15:2]>[15:7](113,118)li: </li>',
@@ -522,6 +518,18 @@ key
 	});
 
 	test('namespace', () => {
+		const doc = parse('<svg><path /><foreignObject><a></a></foreignObject></svg>');
+		expect(doc.nodeList[0].nodeName).toBe('svg');
+		expect(doc.nodeList[0].namespace).toBe('http://www.w3.org/2000/svg');
+		expect(doc.nodeList[1].nodeName).toBe('path');
+		expect(doc.nodeList[1].namespace).toBe('http://www.w3.org/2000/svg');
+		expect(doc.nodeList[2].nodeName).toBe('foreignObject');
+		expect(doc.nodeList[2].namespace).toBe('http://www.w3.org/2000/svg');
+		expect(doc.nodeList[3].nodeName).toBe('a');
+		expect(doc.nodeList[3].namespace).toBe('http://www.w3.org/1999/xhtml');
+	});
+
+	test('namespace', () => {
 		const doc = parse('<div><svg><feBlend /></svg></div>');
 		expect(doc.nodeList[0].nodeName).toBe('div');
 		expect(doc.nodeList[0].namespace).toBe('http://www.w3.org/1999/xhtml');
@@ -530,6 +538,15 @@ key
 		expect(doc.nodeList[2].nodeName).toBe('feBlend');
 		expect(doc.nodeList[2].namespace).toBe('http://www.w3.org/2000/svg');
 		expect(doc.nodeList[2].elementType).toBe('html');
+	});
+
+	test('namespace', () => {
+		const doc = parse('<svg>{list.map(item => <path />)}</svg>');
+		expect(doc.nodeList[0].nodeName).toBe('svg');
+		expect(doc.nodeList[0].namespace).toBe('http://www.w3.org/2000/svg');
+		expect(doc.nodeList[1].nodeName).toBe('#ps:JSXExpressionContainer');
+		expect(doc.nodeList[2].nodeName).toBe('path');
+		expect(doc.nodeList[2].namespace).toBe('http://www.w3.org/2000/svg');
 	});
 
 	test('isCustomElement', () => {
@@ -609,7 +626,6 @@ describe('Issues', () => {
 			'  [3:33]>[3:34](69,70)eQ: }',
 			'  isDirective: false',
 			'  isDynamicValue: true',
-			'  potentialName: style',
 			'[3:35]>[3:41](71,77)div: </div>',
 		]);
 	});
@@ -626,6 +642,19 @@ const C = () => {
   return <div />;
 };`);
 		expect(nodeListToDebugMaps(doc.nodeList, true)).toStrictEqual(['[9:10]>[9:17](148,155)div: <div␣/>']);
+	});
+
+	// Pins the cross-package impact of Issue #3594's default change.
+	// JSX does not allow unquoted string attribute values at the language level
+	// (typescript-estree rejects them), so the default change is behaviorally
+	// inert for JSX. This test pins that fact: `/` in curly-brace expressions
+	// stays untouched because the tokenizer switches to `script` quote type
+	// before `endOfUnquotedValueChars` is consulted.
+	test('#3594 JSX curly-brace expressions still parse paths containing "/"', () => {
+		const doc = parse('const C = () => <img src={"/foo/bar.png"} alt="x" />;');
+		const img = doc.nodeList.find(n => n.nodeName === 'img');
+		const srcAttr = img.attributes.find(a => a.name?.raw === 'src');
+		expect(srcAttr.value.raw).toBe('"/foo/bar.png"');
 	});
 
 	test('#1451', () => {
@@ -717,7 +746,6 @@ const C = () => {
 			'  [1:15]>[1:16](14,15)eQ: "',
 			'  isDirective: false',
 			'  isDynamicValue: false',
-			'  potentialName: lang',
 			'[1:17]>[2:2](16,18)#text: ⏎→',
 			'[2:2]>[2:8](18,24)head: <head>',
 			'[2:8]>[3:3](24,27)#text: ⏎→→',
@@ -726,7 +754,7 @@ const C = () => {
 			'[3:14]>[3:22](38,46)title: </title>',
 			'[3:22]>[4:3](46,49)#text: ⏎→→',
 			'[4:3]>[4:27](49,73)meta: <meta␣charSet="UTF-8"␣/>',
-			'[4:9]>[4:24](55,70)charset: charSet="UTF-8"',
+			'[4:9]>[4:24](55,70)charSet: charSet="UTF-8"',
 			'  [4:8]>[4:9](54,55)bN: ␣',
 			'  [4:9]>[4:16](55,62)name: charSet',
 			'  [4:16]>[4:16](62,62)bE: ',
@@ -737,10 +765,9 @@ const C = () => {
 			'  [4:23]>[4:24](69,70)eQ: "',
 			'  isDirective: false',
 			'  isDynamicValue: false',
-			'  potentialName: charset',
 			'[4:27]>[5:3](73,76)#text: ⏎→→',
 			'[5:3]>[5:57](76,130)meta: <meta␣httpEquiv="x-ua-compatible"␣content="ie=edge"␣/>',
-			'[5:9]>[5:36](82,109)http-equiv: httpEquiv="x-ua-compatible"',
+			'[5:9]>[5:36](82,109)httpEquiv: httpEquiv="x-ua-compatible"',
 			'  [5:8]>[5:9](81,82)bN: ␣',
 			'  [5:9]>[5:18](82,91)name: httpEquiv',
 			'  [5:18]>[5:18](91,91)bE: ',
@@ -751,7 +778,6 @@ const C = () => {
 			'  [5:35]>[5:36](108,109)eQ: "',
 			'  isDirective: false',
 			'  isDynamicValue: false',
-			'  potentialName: http-equiv',
 			'[5:37]>[5:54](110,127)content: content="ie=edge"',
 			'  [5:36]>[5:37](109,110)bN: ␣',
 			'  [5:37]>[5:44](110,117)name: content',
@@ -763,7 +789,6 @@ const C = () => {
 			'  [5:53]>[5:54](126,127)eQ: "',
 			'  isDirective: false',
 			'  isDynamicValue: false',
-			'  potentialName: content',
 			'[5:57]>[6:2](130,132)#text: ⏎→',
 			'[6:2]>[6:9](132,139)head: </head>',
 			'[6:9]>[7:2](139,141)#text: ⏎→',
@@ -772,5 +797,36 @@ const C = () => {
 			'[7:15]>[8:1](154,155)#text: ⏎',
 			'[8:1]>[8:8](155,162)html: </html>',
 		]);
+	});
+
+	describe('#3825 raw-text element body via JSX expression child', () => {
+		// Note: JSX's <script>{`...`}</script> path does NOT exercise parser-utils'
+		// raw-text branch in `parseCodeFragment` — the body is a JSXExpressionContainer
+		// child and never re-tokenized. The primary value of these tests is to lock in
+		// the upstream invariant "TypeScript ESTree rejects bare `<` in element body
+		// before markuplint sees it", so a future upstream relaxation can't silently
+		// change observed JSX tag emissions.
+
+		test('script body wrapped in template literal expression child', () => {
+			const doc = parse('<div><script>{`const t = s.replace(/<br\\s*\\/?>/gi, " ");`}</script></div>');
+			const tags = doc.nodeList.filter((n: any) => n.type === 'starttag' || n.type === 'endtag');
+			expect(tags.map((t: any) => `${t.type}:${t.nodeName}`)).toEqual([
+				'starttag:div',
+				'starttag:script',
+				'endtag:script',
+				'endtag:div',
+			]);
+		});
+
+		test('style body wrapped in template literal expression child', () => {
+			const doc = parse('<div><style>{`/* <br = */ a{color:red}`}</style></div>');
+			const tags = doc.nodeList.filter((n: any) => n.type === 'starttag' || n.type === 'endtag');
+			expect(tags.map((t: any) => `${t.type}:${t.nodeName}`)).toEqual([
+				'starttag:div',
+				'starttag:style',
+				'endtag:style',
+				'endtag:div',
+			]);
+		});
 	});
 });

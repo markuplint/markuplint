@@ -211,6 +211,9 @@ test('global-date-and-time-string', () => {
 	expect(isGlobalDateAndTime('2000-01-01T00:00:00+0000').matched).toBe(true);
 	expect(isGlobalDateAndTime('2000-01-01T00:00:00.000+0000').matched).toBe(true);
 	expect(isGlobalDateAndTime('2000-01-01T00:00:00.000+0000a').reason).toBe('extra-token');
+	// Locks down the second-segment pattern that previously accepted comma as
+	// a fraction separator. The spec only allows U+002E FULL STOP (`.`).
+	expect(isGlobalDateAndTime('2000-01-01T00:00:00,000+0000').matched).toBe(false);
 });
 
 test('week-string', () => {

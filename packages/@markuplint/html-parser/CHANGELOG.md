@@ -3,13 +3,75 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [4.18.0](https://github.com/markuplint/markuplint/compare/v4.14.1...v4.18.0) (2026-04-22)
+# [5.0.0-rc.7](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.6...v5.0.0-rc.7) (2026-08-31)
 
 **Note:** Version bump only for package @markuplint/html-parser
 
-## [4.6.24](https://github.com/markuplint/markuplint/compare/@markuplint/html-parser@4.6.23...@markuplint/html-parser@4.6.24) (2026-04-21)
+# [5.0.0-rc.6](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.5...v5.0.0-rc.6) (2026-08-30)
 
 **Note:** Version bump only for package @markuplint/html-parser
+
+# [5.0.0-rc.5](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.4...v5.0.0-rc.5) (2026-08-28)
+
+### Features
+
+- **html-parser:** honour parserOptions.documentMode ([36aa8b9](https://github.com/markuplint/markuplint/commit/36aa8b9eea2d28f7799a77164b20e635b4be947d)), closes [#3844](https://github.com/markuplint/markuplint/issues/3844)
+- **html-parser:** wire parse5 onParseError into MLASTDocument.parseErrors ([e3d0927](https://github.com/markuplint/markuplint/commit/e3d09278015d59dd33753d3e64ab05d3d0814bc7)), closes [#3844](https://github.com/markuplint/markuplint/issues/3844)
+
+# [5.0.0-rc.4](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.3...v5.0.0-rc.4) (2026-04-19)
+
+**Note:** Version bump only for package @markuplint/html-parser
+
+# [5.0.0-rc.3](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.2...v5.0.0-rc.3) (2026-04-19)
+
+**Note:** Version bump only for package @markuplint/html-parser
+
+# [5.0.0-rc.2](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.1...v5.0.0-rc.2) (2026-04-15)
+
+- build!: remove ESLint and replace with oxlint ([1e0a337](https://github.com/markuplint/markuplint/commit/1e0a337707f76b903b16beeeb8c4d4fc0d8fc9e4))
+
+### BREAKING CHANGES
+
+- ESLint is no longer used. Use oxlint instead.
+
+# [5.0.0-rc.1](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.0...v5.0.0-rc.1) (2026-03-27)
+
+**Note:** Version bump only for package @markuplint/html-parser
+
+# [5.0.0-rc.0](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.3...v5.0.0-rc.0) (2026-03-12)
+
+**Note:** Version bump only for package @markuplint/html-parser
+
+# [5.0.0-alpha.3](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.2...v5.0.0-alpha.3) (2026-02-26)
+
+**Note:** Version bump only for package @markuplint/html-parser
+
+# [5.0.0-alpha.2](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.1...v5.0.0-alpha.2) (2026-02-23)
+
+**Note:** Version bump only for package @markuplint/html-parser
+
+# [5.0.0-alpha.1](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.0...v5.0.0-alpha.1) (2026-02-22)
+
+**Note:** Version bump only for package @markuplint/html-parser
+
+# [5.0.0-alpha.0](https://github.com/markuplint/markuplint/compare/v4.14.1...v5.0.0-alpha.0) (2026-02-20)
+
+### Bug Fixes
+
+- **ml-core:** improve detection of namespace ([5b507ad](https://github.com/markuplint/markuplint/commit/5b507ad7c19c5015b8ce587845d901e31dfa6518))
+
+- refactor(html-parser)!: update for simplified AST token properties ([524ce5d](https://github.com/markuplint/markuplint/commit/524ce5d6fc23c8bff73583ed4ac42fdff1759938))
+
+### BREAKING CHANGES
+
+- Adapt to renamed MLASTToken properties.
+
+* Use getEndPosition() for ghost element position calculation
+* Update test assertions: startCol -> col, startOffset -> offset,
+  startLine -> line
+* Remove endOffset/endLine/endCol assertions from tests
+
+Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
 
 ## [4.6.23](https://github.com/markuplint/markuplint/compare/@markuplint/html-parser@4.6.22...@markuplint/html-parser@4.6.23) (2026-02-10)
 

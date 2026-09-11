@@ -1,11 +1,3 @@
-/**
- * @module cli/init
- *
- * Interactive initialization wizard for markuplint.
- * Guides the user through selecting template engines, rule categories,
- * and dependency installation, then writes a `.markuplintrc` config file.
- */
-
 import type { Category, DefaultRules, Langs, RuleSettingMode } from './types.js';
 
 import fs from 'node:fs/promises';
@@ -23,30 +15,35 @@ const ruleCategories: Record<
 		message: string;
 	}
 > = {
-	validation: {
-		message: 'Are you going to conformance check according to HTML standard?',
+	syntax: {
+		message: 'Are you going to conformance check according to HTML syntax?',
+	},
+	structure: {
+		message: 'Are you going to conformance check the document structure?',
+	},
+	attributes: {
+		message: 'Are you going to conformance check attribute names and values?',
+	},
+	references: {
+		message: 'Are you going to check that ID/attribute references resolve?',
+	},
+	forms: {
+		message: 'Are you going to check form-related best practices?',
 	},
 	a11y: {
 		message: 'Do you want high accessibility?',
 	},
-	'naming-convention': {
-		message: 'Are you going to set the convention about naming?',
+	style: {
+		message: 'Are you going to check for the code styles?',
 	},
 	maintainability: {
 		message: 'Do you want high maintainability?',
 	},
-	style: {
-		message: 'Are you going to check for the code styles?',
+	compat: {
+		message: 'Are you going to check browser compatibility?',
 	},
 };
 
-/**
- * Runs the interactive initialization flow.
- *
- * Prompts the user to select template engines, choose rule categories or the
- * recommended preset, generates a `.markuplintrc` configuration file in the
- * current working directory, and optionally installs the required npm packages.
- */
 export async function initialize() {
 	process.stdout.write(header('Initialization'));
 	process.stdout.write('\n');

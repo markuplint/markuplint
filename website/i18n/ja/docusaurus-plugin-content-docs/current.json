@@ -13,5 +13,14 @@
   },
   "sidebar.api.link.API document": {
     "message": "APIドキュメント"
+  },
+  "sidebar.migration.category.Migration": {
+    "message": "マイグレーション"
+  },
+  "sidebar.migration.category.For Users": {
+    "message": "ユーザー向け"
+  },
+  "sidebar.migration.category.For Developers": {
+    "message": "開発者向け"
   }
 }

@@ -1,0 +1,70 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"definitions": {
+		"order-entry": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["selector"],
+			"properties": {
+				"selector": {
+					"type": "string",
+					"minLength": 1,
+					"description": "CSS selector to match elements",
+					"description:ja": "要素にマッチするCSSセレクタ"
+				},
+				"order": {
+					"type": "string",
+					"enum": ["source-order", "alphabetical"],
+					"default": "source-order",
+					"description": "Sort order within the group",
+					"description:ja": "グループ内のソート順"
+				},
+				"attr": {
+					"type": "string",
+					"minLength": 1,
+					"description": "Attribute name to use as sort key when order is 'alphabetical'",
+					"description:ja": "order が 'alphabetical' の場合にソートキーとして使う属性名"
+				}
+			}
+		},
+		"value": {
+			"type": "array",
+			"minItems": 1,
+			"items": {
+				"oneOf": [
+					{
+						"type": "string",
+						"minLength": 1
+					},
+					{
+						"$ref": "#/definitions/order-entry"
+					}
+				]
+			},
+			"description": "An array of CSS selectors or order entries that define the expected order of elements within <head>",
+			"description:ja": "<head>内の要素の期待される順序を定義するCSSセレクタまたは順序エントリの配列"
+		}
+	},
+	"oneOf": [
+		{
+			"type": "boolean"
+		},
+		{
+			"$ref": "#/definitions/value"
+		},
+		{
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"value": { "$ref": "#/definitions/value" },
+				"severity": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/ml-config/schema.json#/definitions/severity",
+					"default": "warning"
+				},
+				"reason": {
+					"type": "string"
+				}
+			}
+		}
+	]
+}

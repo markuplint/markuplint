@@ -1,0 +1,47 @@
+// https://www.w3.org/TR/mathml-core/#adjust-space-around-content-mpadded
+{
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": [
+					":model(MathMLPresentation)",
+					"mml|semantics",
+					"mml|annotation",
+					"mml|annotation-xml",
+					"#text"
+				]
+			}
+		]
+	},
+	"globalAttrs": {
+		"#GlobalEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#MathMLGlobalAttrs": true
+	},
+	"attributes": {
+		// https://www.w3.org/TR/mathml-core/#adjust-space-around-content-mpadded
+		"width": {
+			"type": "<length-percentage>"
+		},
+		// https://www.w3.org/TR/mathml-core/#adjust-space-around-content-mpadded
+		"height": {
+			"type": "<length-percentage>"
+		},
+		// https://www.w3.org/TR/mathml-core/#adjust-space-around-content-mpadded
+		"depth": {
+			"type": "<length-percentage>"
+		},
+		// https://www.w3.org/TR/mathml-core/#adjust-space-around-content-mpadded
+		"lspace": {
+			"type": "<length-percentage>"
+		},
+		// https://www.w3.org/TR/mathml-core/#adjust-space-around-content-mpadded
+		"voffset": {
+			"type": "<length-percentage>"
+		}
+	},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": true
+	}
+}

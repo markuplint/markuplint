@@ -7,6 +7,12 @@ description: Warns if the attribute value is not quoted.
 
 Warns if the attribute value is not **quoted**.
 
+:::info
+
+Not included in any preset: HTML permits unquoted attribute values, so requiring quotes is purely a project style preference.
+
+:::
+
 ❌ Examples of **incorrect** code for this rule
 
 <!-- prettier-ignore-start -->

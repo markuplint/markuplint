@@ -1,0 +1,64 @@
+// https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-object-element
+// https://www.w3.org/TR/html-aria/#el-object
+// https://w3c.github.io/html-aria/#el-object
+{
+	"contentModel": {
+		"contents": [
+			{
+				"oneOrMore": ":model(flow)"
+			}
+		]
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#HTMLEmbededAndMediaContentAttrs": ["height", "width"],
+		"#HTMLFormControlElementAttrs": ["form"]
+	},
+	"attributes": {
+		// https://html.spec.whatwg.org/multipage/iframe-embed-object.html#attr-object-data
+		// Spec: "a valid non-empty URL potentially surrounded by spaces"
+		"data": {
+			"type": "NonEmptyURL",
+			"requiredEither": ["type"]
+		},
+		// https://html.spec.whatwg.org/multipage/iframe-embed-object.html#attr-object-type
+		"type": {
+			"type": "MIMEType",
+			"requiredEither": ["data"]
+		},
+		// https://html.spec.whatwg.org/multipage/iframe-embed-object.html#attr-object-name
+		"name": {
+			"type": "NavigableTargetName"
+		},
+		"archive": {
+			"deprecated": true
+		},
+		"border": {
+			"deprecated": true
+		},
+		"classid": {
+			"deprecated": true
+		},
+		"codebase": {
+			"deprecated": true
+		},
+		"codetype": {
+			"deprecated": true
+		},
+		"declare": {
+			"deprecated": true
+		},
+		"standby": {
+			"deprecated": true
+		},
+		"usemap": {
+			"deprecated": true
+		}
+	},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": ["application", "document", "img"]
+	}
+}

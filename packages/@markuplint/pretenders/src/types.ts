@@ -28,6 +28,14 @@ export type Identifier = Pretender['selector'];
 export type Identity = Pretender['as'];
 
 /**
+ * An import path string used to uniquely identify a component across files.
+ * When provided, this is used as the map key instead of the component name,
+ * enabling disambiguation of identically named components from different locations
+ * (e.g., `../A/Button.vue` vs `../B/Button.vue`).
+ */
+export type ImportPath = string;
+
+/**
  * Represents an attribute found on a JSX element during scanning.
  */
 export type Attr = {

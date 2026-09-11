@@ -90,6 +90,12 @@ const config: Config = {
           label: 'API',
         },
         {
+          type: 'doc',
+          docId: 'migration/index',
+          position: 'left',
+          label: 'Migration',
+        },
+        {
           to: '/community',
           position: 'left',
           label: 'Community',
@@ -189,7 +195,11 @@ const config: Config = {
           },
           {
             from: '/setting-for-other-languages',
-            to: '/docs/guides/besides-html',
+            to: '/docs/guides/beyond-html',
+          },
+          {
+            from: '/docs/guides/besides-html',
+            to: '/docs/guides/beyond-html',
           },
           {
             from: '/cli',
@@ -201,7 +211,7 @@ const config: Config = {
           },
         ],
         createRedirects(existingPath) {
-          const docsDirs = ['/docs/guides', '/docs/rules', '/docs/configuration', '/docs/api'];
+          const docsDirs = ['/docs/guides', '/docs/rules', '/docs/configuration', '/docs/api', '/docs/migration'];
           for (const dir of docsDirs) {
             if (existingPath.includes(dir)) {
               return [existingPath.replace('/docs', '')];

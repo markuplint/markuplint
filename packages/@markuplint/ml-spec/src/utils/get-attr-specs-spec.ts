@@ -40,7 +40,7 @@ export function getAttrSpecs(localName: string, namespace: NamespaceURI | null, 
 	const globalAttrs = schema.def['#globalAttrs'];
 	let attrs: Record<string, Partial<Attribute>> = {};
 
-	for (const catName in elSpec.globalAttrs) {
+	for (const catName of Object.keys(elSpec.globalAttrs)) {
 		// @ts-ignore
 		const catAttrs: boolean | string[] = elSpec.globalAttrs[catName];
 		if (catAttrs === false) {
@@ -70,7 +70,7 @@ export function getAttrSpecs(localName: string, namespace: NamespaceURI | null, 
 		}
 	}
 
-	for (const attrName in elSpec.attributes) {
+	for (const attrName of Object.keys(elSpec.attributes)) {
 		const attr = elSpec.attributes[attrName];
 		if (!attr) {
 			continue;
@@ -85,12 +85,12 @@ export function getAttrSpecs(localName: string, namespace: NamespaceURI | null, 
 		};
 	}
 
-	const attrList = Object.keys(attrs).map<Attribute>(name => {
-		const attr = attrs[name];
-		return { name, type: 'Any', ...attr };
-	});
-
-	attrList.sort(nameCompare);
+	const attrList = Object.keys(attrs)
+		.map<Attribute>(name => {
+			const attr = attrs[name];
+			return { name, type: 'Any', ...attr };
+		})
+		.toSorted(nameCompare);
 
 	cacheMap.set(localNameWithNS, attrList);
 	return attrList;

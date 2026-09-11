@@ -1,7 +1,8 @@
 import { readFile } from 'node:fs/promises';
-import path from 'node:path';
 
 import { log } from './debug.js';
+
+import { fromFileURL } from './path-utils.js';
 
 const fLog = log.extend('force-import-json-in-module');
 
@@ -28,11 +29,7 @@ export async function forceImportJsonInModule(modPath: string) {
 			return error;
 		}
 
-		const normalizePath = absPath
-			.replace(/^file:\/\//, '')
-			.replaceAll('/', path.sep)
-			// Windows
-			.replace(/^[/\\](?=[a-z]:)/i, ''); // only remove a leading slash
+		const normalizePath = absPath.startsWith('file:') ? fromFileURL(absPath) : absPath;
 		fLog('Find JSON file path: %s', normalizePath);
 
 		const fileContent = await readFile(normalizePath, { encoding: 'utf8' });

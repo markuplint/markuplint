@@ -6,6 +6,9 @@
  */
 
 export * from './whatwg/is-custom-element-name.js';
+export * from './whatwg/check-link-type.js';
 export * from './check.js';
 export * from './check-base.js';
-export * from './types.js';
+export { getCandidate } from './get-candidate.js';
+export { checkPattern } from './pattern.js';
+export type * from './types.js';

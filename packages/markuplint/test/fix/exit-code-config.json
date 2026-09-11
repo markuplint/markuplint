@@ -1,0 +1,8 @@
+{
+	"rules": {
+		"no-boolean-attr-value": {
+			"severity": "error",
+			"value": true
+		}
+	}
+}

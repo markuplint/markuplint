@@ -8,12 +8,21 @@ export function rewriteRuleContent(
   options: object,
   severity: string,
   lang?: string,
+  fixable?: boolean,
 ): string {
   // Replace internal page URL
   content = content.replaceAll('(https://markuplint.dev/', '(/');
 
   const separator = /\n\n---\n\n/;
   const target = content.search(separator) === -1 ? /$/ : separator;
+
+  if (fixable) {
+    const fixableNote =
+      lang === 'ja'
+        ? ':::info\n🔧 このルールは `--fix` オプションによる[自動修正](/docs/guides/cli)に対応しています。\n:::'
+        : ':::info\n🔧 This rule supports [auto-fix](/docs/guides/cli) with the `--fix` option.\n:::';
+    content = content.replace(/(#[^\n]+\n)/, '$1\n' + fixableNote + '\n');
+  }
 
   content = content.replace(
     target,
@@ -33,8 +42,10 @@ export function rewriteRuleContent(
     ].join('\n'),
   );
 
-  // Replace relative paths
+  // Replace relative paths and strip README filenames for Docusaurus compatibility
   content = content.replaceAll('](../', '](./');
+  content = content.replaceAll('/README.md)', ')');
+  content = content.replaceAll('/README.ja.md)', ')');
 
   return content;
 }
@@ -63,12 +74,24 @@ function type(value: any, escape = false): string {
 
   if (value.type === 'object') {
     if (typeof value._type === 'string') {
-      return value._type.replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+      let result = value._type.replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+      if (escape) {
+        result = result.replaceAll('|', '&#x7C;<wbr />');
+      }
+      return result;
     }
     return value._type ?? 'Object';
   }
 
   return value.type;
+}
+
+/**
+ * Escape HTML-like tags in plain text so MDX does not interpret them as JSX elements.
+ * For example, `<head>` becomes `` `<head>` ``.
+ */
+function escapeMdx(text: string): string {
+	return text.replaceAll(/<([a-zA-Z][a-zA-Z0-9-]*)>/g, '`<$1>`');
 }
 
 function code(value: any, escape = false): string {
@@ -106,7 +129,7 @@ function valueDoc(value: any, lang?: string): string[] {
   const desc = value[`description:${lang}`] ?? value.description;
 
   if (desc) {
-    return [desc];
+    return [escapeMdx(desc)];
   }
 
   return [];

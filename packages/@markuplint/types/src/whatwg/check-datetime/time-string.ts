@@ -6,8 +6,6 @@ import { TokenCollection } from '../../token/index.js';
 import { datetimeTokenCheck } from './datetime-tokens.js';
 
 /**
- * Validates a time string in the format `HH:MM[:SS[.sss]]`.
- *
  * @see https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#times
  */
 export const checkTimeString: CustomSyntaxChecker = () =>
