@@ -64,10 +64,32 @@
 			]
 		},
 		{
+			"path": "html-aria/misc/a-href-inside-role-tab-haswarn.html",
+			"category": "aria",
+			"ruleIds": [
+				"require-accessible-name"
+			]
+		},
+		{
+			"path": "html-aria/misc/aria-controls-broken-idref-isvalid.html",
+			"category": "aria",
+			"ruleIds": [
+				"no-refer-to-non-existent-id"
+			]
+		},
+		{
 			"path": "html-aria/misc/aria-controls-broken-idref-novalid.html",
 			"category": "aria",
 			"ruleIds": [
 				"no-refer-to-non-existent-id"
+			]
+		},
+		{
+			"path": "html-aria/misc/aria-describedby-broken-idref-isvalid.html",
+			"category": "aria",
+			"ruleIds": [
+				"no-refer-to-non-existent-id",
+				"require-accessible-name"
 			]
 		},
 		{
@@ -76,6 +98,13 @@
 			"ruleIds": [
 				"no-refer-to-non-existent-id",
 				"require-accessible-name"
+			]
+		},
+		{
+			"path": "html-aria/misc/aria-flowto-broken-idref-isvalid.html",
+			"category": "aria",
+			"ruleIds": [
+				"no-refer-to-non-existent-id"
 			]
 		},
 		{
@@ -94,7 +123,7 @@
 			]
 		},
 		{
-			"path": "html-aria/misc/aria-labelledby-broken-idref-novalid.html",
+			"path": "html-aria/misc/aria-labelledby-broken-idref-isvalid.html",
 			"category": "aria",
 			"ruleIds": [
 				"no-refer-to-non-existent-id",
@@ -102,13 +131,11 @@
 			]
 		},
 		{
-			"path": "html-aria/misc/aria-owns-broken-idref-novalid.html",
+			"path": "html-aria/misc/aria-labelledby-broken-idref-novalid.html",
 			"category": "aria",
 			"ruleIds": [
 				"no-refer-to-non-existent-id",
-				"require-accessible-name",
-				"require-owned-elements",
-				"require-parent-role"
+				"role-supports-aria-prop"
 			]
 		},
 		{
@@ -143,6 +170,13 @@
 		},
 		{
 			"path": "html-aria/misc/input-checkbox-role-button-aria-pressed-isvalid.html",
+			"category": "aria",
+			"ruleIds": [
+				"require-accessible-name"
+			]
+		},
+		{
+			"path": "html-aria/misc/input-checkbox-role-switch-aria-expanded-isvalid.html",
 			"category": "aria",
 			"ruleIds": [
 				"require-accessible-name"
@@ -215,6 +249,13 @@
 				"element-supports-aria-prop",
 				"require-accessible-name",
 				"role-supports-aria-prop"
+			]
+		},
+		{
+			"path": "html-aria/misc/tabindex-inside-role-tab-haswarn.html",
+			"category": "aria",
+			"ruleIds": [
+				"require-accessible-name"
 			]
 		},
 		{
@@ -407,10 +448,32 @@
 			]
 		},
 		{
+			"path": "html-aria/presentational-children/img-button-descendant-haswarn.html",
+			"category": "aria",
+			"ruleIds": [
+				"no-aria-on-presentational-children"
+			]
+		},
+		{
+			"path": "html-aria/presentational-children/testcase-839-haswarn.html",
+			"category": "aria",
+			"ruleIds": [
+				"no-aria-on-presentational-children"
+			]
+		},
+		{
 			"path": "html-aria/presentational-children/testcase-839.html",
 			"category": "aria",
 			"ruleIds": [
 				"no-aria-on-presentational-children"
+			]
+		},
+		{
+			"path": "html-aria/presentational-children/testcase-840-haswarn.html",
+			"category": "aria",
+			"ruleIds": [
+				"no-aria-on-presentational-children",
+				"require-accessible-name"
 			]
 		},
 		{
@@ -422,10 +485,25 @@
 			]
 		},
 		{
+			"path": "html-aria/presentational-children/testcase-842-haswarn.html",
+			"category": "aria",
+			"ruleIds": [
+				"no-aria-on-presentational-children"
+			]
+		},
+		{
 			"path": "html-aria/presentational-children/testcase-842.html",
 			"category": "aria",
 			"ruleIds": [
 				"no-aria-on-presentational-children"
+			]
+		},
+		{
+			"path": "html-aria/presentational-children/testcase-843-haswarn.html",
+			"category": "aria",
+			"ruleIds": [
+				"no-aria-on-presentational-children",
+				"require-accessible-name"
 			]
 		},
 		{
@@ -1908,6 +1986,13 @@
 			"category": "aria",
 			"ruleIds": [
 				"require-accessible-name"
+			]
+		},
+		{
+			"path": "html-aria/setsize-posinset-level/testcase-769-isvalid.html",
+			"category": "aria",
+			"ruleIds": [
+				"require-parent-role"
 			]
 		},
 		{
@@ -7815,6 +7900,13 @@
 			]
 		},
 		{
+			"path": "html-svg/svg-nested-transform-isvalid.html",
+			"category": "uncategorized",
+			"ruleIds": [
+				"no-invalid-attr-value"
+			]
+		},
+		{
 			"path": "html-svg/text-align-01-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
@@ -8520,6 +8612,13 @@
 			]
 		},
 		{
+			"path": "html/elements/a/href-isvalid.html",
+			"category": "attribute-errors",
+			"ruleIds": [
+				"require-accessible-name"
+			]
+		},
+		{
 			"path": "html/elements/a/href/scheme-data-contains-fragment-haswarn.html",
 			"category": "attribute-errors",
 			"ruleIds": [
@@ -8543,6 +8642,13 @@
 		},
 		{
 			"path": "html/elements/area/href-empty-isvalid.html",
+			"category": "attribute-errors",
+			"ruleIds": [
+				"require-accessible-name"
+			]
+		},
+		{
+			"path": "html/elements/area/href-isvalid.html",
 			"category": "attribute-errors",
 			"ruleIds": [
 				"require-accessible-name"
@@ -8595,6 +8701,13 @@
 			"category": "attribute-errors",
 			"ruleIds": [
 				"no-invalid-attr-value"
+			]
+		},
+		{
+			"path": "html/elements/button/formaction-isvalid.html",
+			"category": "attribute-errors",
+			"ruleIds": [
+				"require-accessible-name"
 			]
 		},
 		{
@@ -8655,6 +8768,13 @@
 			]
 		},
 		{
+			"path": "html/elements/img/controls-isvalid.html",
+			"category": "attribute-errors",
+			"ruleIds": [
+				"no-unknown-attr"
+			]
+		},
+		{
 			"path": "html/elements/img/srcset-width-descriptor-loading-lazy-no-sizes-isvalid.html",
 			"category": "attribute-errors",
 			"ruleIds": [
@@ -8698,6 +8818,13 @@
 		},
 		{
 			"path": "html/elements/input/type-url-value-empty-isvalid.html",
+			"category": "attribute-errors",
+			"ruleIds": [
+				"require-accessible-name"
+			]
+		},
+		{
+			"path": "html/elements/input/type-url-value-isvalid.html",
 			"category": "attribute-errors",
 			"ruleIds": [
 				"require-accessible-name"
@@ -8814,6 +8941,13 @@
 		{
 			"path": "html/elements/option/model-isvalid.html",
 			"category": "content-model",
+			"ruleIds": [
+				"require-accessible-name"
+			]
+		},
+		{
+			"path": "html/elements/option/omitted-end-tag-before-optgroup-isvalid.html",
+			"category": "attribute-errors",
 			"ruleIds": [
 				"require-accessible-name"
 			]
@@ -9077,6 +9211,13 @@
 			"category": "uncategorized",
 			"ruleIds": [
 				"permitted-roles"
+			]
+		},
+		{
+			"path": "langdetect/lang-en-dir-ltr-content-ja-haswarn.html",
+			"category": "uncategorized",
+			"ruleIds": [
+				"permitted-contents"
 			]
 		},
 		{
