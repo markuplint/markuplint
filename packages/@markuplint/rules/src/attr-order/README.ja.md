@@ -4,7 +4,7 @@ description: 要素の属性の順序を統一します。
 
 # `attr-order`
 
-要素の**属性**の順序を統一します。デフォルトではアルファベット順にソートされます。優先度リスト、定義済みグループ（`global`、`event`、`aria`、`data`、`spread`）、カスタムパターンを使って順序を指定できます。
+要素の**属性**の順序を統一します。デフォルトではアルファベット順にソートされます。優先度リスト、定義済みグループ（`global`、`event`、`aria`、`role`、`data`、`spread`）、カスタムパターンを使って順序を指定できます。
 
 :::info
 
@@ -42,7 +42,13 @@ description: 要素の属性の順序を統一します。
 
 ```json
 {
-  "attr-order": [{ "group": "global" }, { "group": "aria" }, { "group": "event" }, { "group": "data" }]
+  "attr-order": [
+    { "group": "global" },
+    { "group": "role" },
+    { "group": "aria" },
+    { "group": "event" },
+    { "group": "data" }
+  ]
 }
 ```
 
@@ -51,6 +57,7 @@ description: 要素の属性の順序を統一します。
 | `global` | HTMLグローバル属性（`id`、`class`、`style` など）  |
 | `event`  | イベントハンドラ属性（`onclick`、`onchange` など） |
 | `aria`   | ARIA属性（`aria-label`、`aria-hidden` など）       |
+| `role`   | `role` 属性                                        |
 | `data`   | カスタムデータ属性（`data-*`）                     |
 | `spread` | スプレッド属性（JSXの `{...props}`）               |
 

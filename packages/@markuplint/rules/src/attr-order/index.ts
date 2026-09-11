@@ -4,7 +4,7 @@ import { createRule } from '@markuplint/ml-core';
 
 import meta from './meta.js';
 
-type PredefinedGroup = 'global' | 'event' | 'aria' | 'data' | 'spread';
+type PredefinedGroup = 'global' | 'event' | 'aria' | 'role' | 'data' | 'spread';
 
 type SortOrder = 'alphabetical' | 'source-order' | string[];
 
@@ -170,6 +170,13 @@ function compileEntries(
 						entryIndex,
 						order: groupOrder,
 						match: (name: string) => /^aria-.+$/.test(name),
+					};
+				}
+				case 'role': {
+					return {
+						entryIndex,
+						order: groupOrder,
+						match: (name: string) => name === 'role',
 					};
 				}
 				case 'data': {
