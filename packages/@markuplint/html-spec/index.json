@@ -50186,7 +50186,7 @@
 		{
 			"name": "del",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/del",
-			"description": "The <del> HTML element represents a range of text that has been deleted from a document. This can be used when rendering \"track changes\" or source code diff information, for example. The <ins> element can be used for the opposite purpose: to indicate text that has been added to the document.",
+			"description": "The <del> HTML element represents a range of text that has been deleted from a document. This can be used when rendering \"track changes\" or source code diff information, for example. The <ins> element can be used for the opposite purpose: to indicate text that has been added to the document. This element is often (but need not be) rendered by applying a strike-through style to the text.",
 			"categories": ["#flow", "#phrasing"],
 			"contentModel": {
 				"contents": [
@@ -50754,7 +50754,7 @@
 		{
 			"name": "form",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/form",
-			"description": "The <form> HTML element represents a document section containing interactive controls for submitting information.",
+			"description": "The <form> HTML element represents a document section containing interactive controls for submitting information. It is possible to use the :valid and :invalid CSS pseudo-classes to style a <form> element based on whether the elements inside the form are valid.",
 			"categories": ["#flow", "#palpable"],
 			"contentModel": {
 				"contents": [
