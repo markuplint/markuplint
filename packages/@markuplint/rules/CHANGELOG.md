@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.7...v5.0.0) (2026-09-11)
+
+### Bug Fixes
+
+- **rules:** add role predefined group to attr-order ([ed07019](https://github.com/markuplint/markuplint/commit/ed07019cafaf5dc85ce5c5e6f4ac56f908b93b54)), closes [#4033](https://github.com/markuplint/markuplint/issues/4033)
+
 # [5.0.0-rc.7](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.6...v5.0.0-rc.7) (2026-08-31)
 
 ### Bug Fixes

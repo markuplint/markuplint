@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.7...v5.0.0) (2026-09-11)
+
+### Bug Fixes
+
+- **ml-config:** restore `oneOf` structure in `rules` definition of `config.schema.json` ([bd74130](https://github.com/markuplint/markuplint/commit/bd74130bbc9e17df06f4b6bfa4d37b66eae0d1c3)), closes [#3743](https://github.com/markuplint/markuplint/issues/3743)
+- **rules:** add role predefined group to attr-order ([ed07019](https://github.com/markuplint/markuplint/commit/ed07019cafaf5dc85ce5c5e6f4ac56f908b93b54)), closes [#4033](https://github.com/markuplint/markuplint/issues/4033)
+
+# [4.18.0](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.4...v4.18.0) (2026-04-22)
+
+### Bug Fixes
+
+- **deps:** adapt code to breaking changes from upgrade ([ced7fab](https://github.com/markuplint/markuplint/commit/ced7fab5b50ea3effd844e17b1f676fce790b53c))
+- support TypeScript 6.0 ([0dcf708](https://github.com/markuplint/markuplint/commit/0dcf70835eb40b581589c4da824080c512ba198c)), closes [#3759](https://github.com/markuplint/markuplint/issues/3759) [#3759](https://github.com/markuplint/markuplint/issues/3759)
+- **test:** force local file: resolution in isolated-env sandbox tests ([d8cfa32](https://github.com/markuplint/markuplint/commit/d8cfa32af8ab2fff9096556a2170e16425a46075)), closes [#ts6](https://github.com/markuplint/markuplint/issues/ts6)
+
+### Reverts
+
+- keep vitest 3 and plain markuplint ref for CI compat ([82ba2f9](https://github.com/markuplint/markuplint/commit/82ba2f948c33a145b90517033833e11b76f04bb3))
+- pin jsdom to 26 for Node 18 support ([a82d280](https://github.com/markuplint/markuplint/commit/a82d280cce06b52746b6a7912b3eca9d22a4296d))
+- pin meow and os-locale for Node 18 support ([ed61c88](https://github.com/markuplint/markuplint/commit/ed61c8829aca912b81fd6efb518b4518199db2ca))
+- pin uuid to 13 for Node 18 support ([b2bae14](https://github.com/markuplint/markuplint/commit/b2bae1460a0810f6a17fefa2d042d44eab5f0641))
+
 # [5.0.0-rc.7](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.6...v5.0.0-rc.7) (2026-08-31)
 
 ### Bug Fixes
