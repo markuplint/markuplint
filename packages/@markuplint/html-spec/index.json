@@ -52737,8 +52737,7 @@
 					]
 				},
 				"webkitdirectory": {
-					"description": "The Boolean webkitdirectory attribute, if present, indicates that only directories should be available to be selected by the user in the file picker interface. See HTMLInputElement.webkitdirectory for additional details and examples. Though originally implemented only for WebKit-based browsers, webkitdirectory is also usable in Microsoft Edge as well as Firefox 50 and later. However, even though it has relatively broad support, it is still not standard and should not be used unless you have no alternative.",
-					"nonStandard": true
+					"description": "The Boolean webkitdirectory attribute, if present, indicates that only directories should be available to be selected by the user in the file picker interface. See HTMLInputElement.webkitdirectory for additional details and examples. Note: webkitdirectory is defined in the File and Directory Entries API. It's named webkitdirectory because of its origins as a Chrome-specific API. It is now available in all browsers."
 				},
 				"width": {
 					"description": "Valid for the image input button only, the width is the width of the image file to display to represent the graphical submit button. See the image input type.",
