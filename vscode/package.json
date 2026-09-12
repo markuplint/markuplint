@@ -1,6 +1,6 @@
 {
 	"name": "markuplint-vscode",
-	"displayName": "Markuplint",
+	"displayName": "Markuplint for VS Code",
 	"description": "Markuplint for VS Code",
 	"version": "5.0.0",
 	"publisher": "markuplint",
