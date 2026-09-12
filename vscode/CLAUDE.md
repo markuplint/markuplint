@@ -47,9 +47,11 @@ don't reintroduce them without revisiting that decision.
 ## Legacy publisher
 
 The extension previously published under `yusukehirao.vscode-markuplint`.
-That listing is deprecated in favor of the `markuplint` publisher namespace
-above; its final version and migration notice are tracked separately and are
-out of scope for this file.
+That listing was **deleted** (`vsce unpublish`, which is a hard delete) at
+the v5.0.0 release — not merely deprecated — because the Marketplace refused
+to publish the new listing while the old one existed (see the `repository`
+section below). Its last published version was 4.18.3, a metadata-only
+release carrying a deprecation notice in `description`.
 
 ## Package `name` differs from the npm/legacy convention
 
@@ -85,3 +87,22 @@ the publisher. `displayName` was changed to `"Markuplint for VS Code"` to
 resolve it. Don't revert to plain `"Markuplint"` without first freeing the
 name (e.g. renaming the legacy listing's `displayName`) or confirming the
 Marketplace behavior has changed.
+
+## `repository` URL is claimed per publisher, and the claim outlives the listing
+
+The third v5.0.0 rejection was `ERROR Repository URL
+"https://github.com/markuplint/markuplint.git" is already in use by another
+publisher` — the legacy `yusukehirao` listing pointed at the same monorepo.
+Two things that did **not** release the claim:
+
+- Republishing the legacy listing with the `repository` field removed
+  (4.18.3). The visible page updated; the uniqueness check still failed.
+- Deleting the legacy listing outright (`vsce unpublish`) and retrying
+  immediately.
+
+What worked: the same retry a few minutes after the delete. The Marketplace's
+repository-claim index lags the delete, just as the npm registry's dist-tags
+lag a publish. So the actual rule is: the claim is released only by deleting
+the listing that holds it, and only after propagation — don't conclude the
+claim is permanent (or start editing `repository` to a fake URL) on an
+immediate retry.
