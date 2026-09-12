@@ -56,8 +56,9 @@ channels.
 The extension is published under the `markuplint` publisher
 (Marketplace ID: `markuplint.markuplint-vscode`).
 
-The legacy `yusukehirao.vscode-markuplint` ID is deprecated from
-`v5.0.0-rc.4` onwards and no longer receives updates.
+The legacy `yusukehirao.vscode-markuplint` listing was deleted from the
+Marketplace at the v5.0.0 release (see `vscode/CLAUDE.md` for why it could
+not simply be left deprecated).
 
 `yarn vscode:login` runs `vsce login markuplint`, so the Azure DevOps
 Personal Access Token you authenticate with must have rights on the
