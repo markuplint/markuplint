@@ -1,4 +1,4 @@
-# vscode-markuplint
+# Markuplint for VS Code
 
 [Markuplint](https://markuplint.dev) for Visual Studio Code
 
@@ -82,4 +82,4 @@ If not set, markuplint uses the parent directory of each file as the working dir
 
 ## Release
 
-[Changelog](https://marketplace.visualstudio.com/items/markuplint.vscode-markuplint/changelog)
+[Changelog](https://marketplace.visualstudio.com/items/markuplint.markuplint-vscode/changelog)

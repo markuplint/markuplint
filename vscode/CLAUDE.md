@@ -50,3 +50,27 @@ The extension previously published under `yusukehirao.vscode-markuplint`.
 That listing is deprecated in favor of the `markuplint` publisher namespace
 above; its final version and migration notice are tracked separately and are
 out of scope for this file.
+
+## Package `name` differs from the npm/legacy convention
+
+`package.json`'s `name` is `markuplint-vscode`, not `vscode-markuplint` — the
+extension identity is therefore `markuplint.markuplint-vscode`, not
+`markuplint.vscode-markuplint`. This is not a stylistic choice:
+
+- On the first publish attempt to the new `markuplint` publisher (v5.0.0),
+  the Marketplace rejected `name: "vscode-markuplint"` with `ERROR The
+extension 'vscode-markuplint' already exists in the Marketplace` — its
+  name-uniqueness check apparently applies to the raw extension `name`
+  across _all_ publishers, not the full `publisher.name` identity, so the
+  string `vscode-markuplint` already in use by the legacy `yusukehirao`
+  listing blocked reuse under `markuplint` too.
+- `name: "markuplint"` (matching the npm CLI package) was tried next and
+  rejected locally before publishing: it collides with
+  `packages/markuplint`'s own `name: "markuplint"` in the same Yarn
+  workspace (`vscode` is a workspace member — see root `package.json`
+  `workspaces`), which breaks Nx/Lerna project-graph construction
+  (`lerna ERR!` duplicate project name) as soon as both are installed
+  together.
+
+Don't rename `name` back to `vscode-markuplint` or to `markuplint` without
+confirming both constraints above no longer apply.

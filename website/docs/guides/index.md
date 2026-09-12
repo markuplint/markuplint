@@ -4,7 +4,7 @@
 
 ### The quickest way: VS Code extension
 
-Install the [Markuplint extension](https://marketplace.visualstudio.com/items?itemName=markuplint.vscode-markuplint) from the Visual Studio Marketplace, or search "markuplint" in the VS Code extensions panel.
+Install the [Markuplint extension](https://marketplace.visualstudio.com/items?itemName=markuplint.markuplint-vscode) from the Visual Studio Marketplace, or search "markuplint" in the VS Code extensions panel.
 
 ![VS Code extensions panel: searching "markuplint" shows the Markuplint extension by Yusuke Hirao](/img/guides/vscode-search.png)
 
