@@ -74,3 +74,14 @@ extension 'vscode-markuplint' already exists in the Marketplace` — its
 
 Don't rename `name` back to `vscode-markuplint` or to `markuplint` without
 confirming both constraints above no longer apply.
+
+## `displayName` is also globally unique, not just `name`
+
+After fixing the `name` collision above, the v5.0.0 publish hit a second
+Marketplace rejection: `ERROR This extension display name is taken` for
+`displayName: "Markuplint"` — the same legacy `yusukehirao.vscode-markuplint`
+listing already uses that display name, and this check also isn't scoped to
+the publisher. `displayName` was changed to `"Markuplint for VS Code"` to
+resolve it. Don't revert to plain `"Markuplint"` without first freeing the
+name (e.g. renaming the legacy listing's `displayName`) or confirming the
+Marketplace behavior has changed.
