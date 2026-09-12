@@ -54,7 +54,7 @@ channels.
 ### Publisher
 
 The extension is published under the `markuplint` publisher
-(Marketplace ID: `markuplint.vscode-markuplint`).
+(Marketplace ID: `markuplint.markuplint-vscode`).
 
 The legacy `yusukehirao.vscode-markuplint` ID is deprecated from
 `v5.0.0-rc.4` onwards and no longer receives updates.

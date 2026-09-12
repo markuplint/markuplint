@@ -159,7 +159,7 @@ See [ESLint's Bulk Suppressions](https://eslint.org/docs/latest/use/suppressions
 
 ## Editor Extensions
 
-- [Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=markuplint.vscode-markuplint)
+- [Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=markuplint.markuplint-vscode)
 
 ## License
 
