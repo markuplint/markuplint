@@ -30,12 +30,18 @@ jobs:
                   submodules: recursive
 
             - name: Install Rust
-              uses: dtolnay/rust-toolchain@stable
+              # dtolnay/rust-toolchain has no tags; `@stable` is a mutable
+              # branch ref, not an immutable release. Pin a commit from the
+              # master branch's history instead (master's action.yml requires
+              # `toolchain` as an explicit input with no default — omitting it
+              # fails the step).
+              uses: dtolnay/rust-toolchain@6c977a6ca4077a0ceb28ffbe03f59d46e9ac8772 # master (2026-08-05)
               with:
+                  toolchain: stable
                   components: rustfmt, clippy
 
             - name: Cache cargo
-              uses: actions/cache@v4
+              uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
               with:
                   path: |
                       ~/.cargo/registry
@@ -66,7 +72,11 @@ jobs:
             - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
             - name: Install Rust
-              uses: dtolnay/rust-toolchain@stable
+              # See the fmt-clippy-test job above for why this is pinned by
+              # commit SHA with an explicit `toolchain` input.
+              uses: dtolnay/rust-toolchain@6c977a6ca4077a0ceb28ffbe03f59d46e9ac8772 # master (2026-08-05)
+              with:
+                  toolchain: stable
 
             - name: Use Node.js
               uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6
@@ -74,7 +84,7 @@ jobs:
                   node-version: 22
 
             - name: Cache cargo
-              uses: actions/cache@v4
+              uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
               with:
                   path: |
                       ~/.cargo/registry
