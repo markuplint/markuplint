@@ -14,7 +14,11 @@ regex = { workspace = true }
 strsim = "0.11"
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
-whichtime = "0.1"
+# Pinned exactly: a low-download-count, single-maintainer crate on the
+# natural-language date parsing path (rules/require_datetime.rs). A caret
+# range would let a future 0.1.x land without review whenever the
+# lockfile is regenerated.
+whichtime = "=0.1.0"
 
 [dev-dependencies]
 markuplint-dom = { path = "../markuplint-dom", features = ["html-parser"] }
