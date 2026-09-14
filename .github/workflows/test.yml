@@ -157,6 +157,15 @@ jobs:
                   key: ${{ runner.os }}-cargo-napi-${{ hashFiles('crates/Cargo.lock') }}
                   restore-keys: ${{ runner.os }}-cargo-napi-
 
+            # napi runs `cargo metadata` (no --locked) before invoking
+            # `cargo build`; see rust.yml's napi-smoke job for why that
+            # alone can rewrite Cargo.lock and make a plain `-- --locked` on
+            # the build insufficient on its own.
+            - name: Verify Cargo.lock
+              if: steps.cache-restore-prod.outputs.cache-hit != 'true'
+              working-directory: crates
+              run: cargo metadata --locked --format-version 1 > /dev/null
+
             # @napi-rs/cli is already in node_modules from the `yarn install`
             # above (packages/@markuplint/core devDependency), pinned via
             # yarn.lock — not a bare `npm install -g @napi-rs/cli`, which
@@ -165,6 +174,10 @@ jobs:
               if: steps.cache-restore-prod.outputs.cache-hit != 'true'
               working-directory: packages/@markuplint/core
               run: yarn build:napi:debug
+
+            - name: Assert Cargo.lock unchanged
+              if: steps.cache-restore-prod.outputs.cache-hit != 'true'
+              run: git diff --exit-code -- crates/Cargo.lock
 
             - name: Build
               if: steps.cache-restore-prod.outputs.cache-hit != 'true'

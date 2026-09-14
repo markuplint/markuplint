@@ -127,9 +127,28 @@ jobs:
                   key: ${{ runner.os }}-cargo-napi-${{ hashFiles('crates/Cargo.lock') }}
                   restore-keys: ${{ runner.os }}-cargo-napi-
 
+            # napi runs `cargo metadata` (no --locked) before invoking
+            # `cargo build`, and that call alone can rewrite Cargo.lock —
+            # verified locally: a Cargo.toml requirement that no longer
+            # matched the committed lock was silently absorbed into
+            # Cargo.lock by this step, and the subsequent `cargo build
+            # --locked` then succeeded against the *rewritten* lock instead
+            # of failing against the original one. `-- --locked` on the
+            # build alone is therefore not sufficient; this pre-check and
+            # the post-check below are both required.
+            - name: Verify Cargo.lock
+              working-directory: crates
+              run: cargo metadata --locked --format-version 1 > /dev/null
+
             - name: Build napi
               working-directory: packages/@markuplint/core
               run: yarn build:napi:debug
+
+            # Tripwire: even with the pre-check above, napi's internal
+            # `cargo metadata` call runs again during this build and could
+            # still rewrite the lockfile. Fail if it did.
+            - name: Assert Cargo.lock unchanged
+              run: git diff --exit-code -- crates/Cargo.lock
 
             - name: Smoke test (DOM)
               working-directory: packages/@markuplint/core
