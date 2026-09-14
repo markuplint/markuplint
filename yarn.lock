@@ -12633,6 +12633,15 @@ __metadata:
     typedoc-plugin-resolve-crossmodule-references: "npm:0.3.3"
     typescript: "npm:6.0.3"
     vitest: "npm:4.1.5"
+  dependenciesMeta:
+    "@vscode/vsce-sign":
+      built: true
+    esbuild:
+      built: true
+    keytar:
+      built: true
+    nx:
+      built: true
   languageName: unknown
   linkType: soft
 
