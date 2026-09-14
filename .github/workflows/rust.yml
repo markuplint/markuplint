@@ -53,17 +53,24 @@ jobs:
                   key: ${{ runner.os }}-cargo-${{ hashFiles('crates/Cargo.lock') }}
                   restore-keys: ${{ runner.os }}-cargo-
 
+            # cargo fmt has no --locked flag (it doesn't touch dependency
+            # resolution), so lockfile integrity is verified here instead,
+            # before any other cargo invocation in this job.
+            - name: Verify Cargo.lock
+              working-directory: crates
+              run: cargo metadata --locked --format-version 1 > /dev/null
+
             - name: Check formatting
               working-directory: crates
               run: cargo fmt --check
 
             - name: Clippy
               working-directory: crates
-              run: cargo clippy -- -D warnings
+              run: cargo clippy --locked -- -D warnings
 
             - name: Test
               working-directory: crates
-              run: cargo test
+              run: cargo test --locked
 
     napi-smoke:
         runs-on: ${{ matrix.os }}
