@@ -1,0 +1,85 @@
+# cargo-deny configuration.
+# Schema: https://embarkstudios.github.io/cargo-deny/checks/index.html
+#
+# Written for cargo-deny 0.20.x. Keys removed from that schema
+# ([advisories] vulnerability / severity-threshold / notice,
+# [licenses] unlicensed / deny / copyleft / allow-osi-fsf-free,
+# top-level `version = 2`) must NOT be reintroduced — they now error
+# instead of being silently ignored.
+
+[graph]
+# napi ships prebuilt binaries for these three platforms; resolve the
+# dependency graph as it would be for each of them.
+targets = [
+    "x86_64-unknown-linux-gnu",
+    "x86_64-pc-windows-msvc",
+    "aarch64-apple-darwin",
+]
+
+[advisories]
+db-urls = ["https://github.com/rustsec/advisory-db"]
+yanked = "deny"
+ignore = []
+
+[licenses]
+# Every license expression currently present across the 141 third-party
+# crates in Cargo.lock. A crate with an expression not covered here
+# fails the check until reviewed and added.
+allow = [
+    "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
+    "ISC",
+    "MIT",
+    "Unicode-3.0",
+    "Unlicense",
+    "Zlib",
+]
+confidence-threshold = 0.93
+# The seven workspace crates are `publish = false` and carry no license
+# field of their own — don't fail the check on them.
+private = { ignore = true }
+
+[bans]
+multiple-versions = "warn"
+wildcards = "deny"
+allow-wildcard-paths = true
+
+[bans.build]
+# Any third-party crate not listed here that starts shipping a build.rs
+# fails this check. This is the control that would have caught the
+# 2026-08-20 arrayref incident: the malicious `proc-macro1` dependency
+# was a build.rs the real proc-macro2 never had, added silently via a
+# compromised maintainer account. Workspace members are excluded from
+# this list by default (include-workspace is false) since their build
+# scripts are reviewed as ordinary source changes.
+allow-build-scripts = [
+    "anyhow",
+    "chrono-tz",
+    "getrandom",
+    "iana-time-zone-haiku",
+    "icu_normalizer_data",
+    "icu_properties_data",
+    "libc",
+    "napi",
+    "num-traits",
+    "prettyplease",
+    "proc-macro2",
+    "quote",
+    "rustix",
+    "serde",
+    "serde_core",
+    "serde_json",
+    "thiserror",
+    "wasm-bindgen",
+    "wasm-bindgen-shared",
+    "wit-bindgen",
+    "wit-bindgen-rust",
+    "wit-bindgen-rust-macro",
+    "zmij",
+]
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]
+allow-git = []

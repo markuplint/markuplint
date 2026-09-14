@@ -1,0 +1,47 @@
+name: Cargo Deny
+
+permissions:
+    contents: read
+
+on:
+    pull_request:
+        branches:
+            - dev
+            - v6
+        paths:
+            - '.github/workflows/cargo-deny.yml'
+            - 'crates/**'
+    push:
+        branches:
+            - dev
+            - v6
+        paths:
+            - '.github/workflows/cargo-deny.yml'
+            - 'crates/**'
+    # NOTE: GitHub only runs scheduled workflows from a repository's
+    # default branch, so this trigger stays inert on v6 until it merges
+    # into dev.
+    schedule:
+        - cron: '17 4 * * 1'
+
+jobs:
+    cargo-deny:
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                checks:
+                    - advisories
+                    - bans licenses sources
+        # advisories is time-dependent — a new RustSec entry can land
+        # without any code change here — so it reports without blocking
+        # the job. bans/licenses/sources are deterministic given the
+        # lockfile and do block.
+        continue-on-error: ${{ matrix.checks == 'advisories' }}
+        steps:
+            - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+            - uses: EmbarkStudios/cargo-deny-action@3c6349835b2b7b196a839186cb8b78e02f7b5f25 # v2.1.1
+              with:
+                  manifest-path: crates/Cargo.toml
+                  command: check ${{ matrix.checks }}
