@@ -86,6 +86,30 @@ jobs:
               with:
                   node-version: 22
 
+            - name: Enable Corepack and setup Yarn v4
+              run: |
+                  corepack enable
+                  yarn --version
+
+            - name: Get yarn cache directory path
+              id: yarn-cache-dir-path
+              run: echo "dir=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
+
+            - name: Cache Restore devDependencies
+              uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
+              with:
+                  path: |
+                      '**/node_modules'
+                      ${{ steps.yarn-cache-dir-path.outputs.dir }}
+                  key: dev-depends-${{ runner.os }}-node22-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
+
+            # @napi-rs/cli comes from this install, pinned via yarn.lock —
+            # not a bare `npm install -g @napi-rs/cli`, which would pull an
+            # unpinned CLI (and its own unpinned transitive dependencies)
+            # from the registry on every run.
+            - name: Install dependencies
+              run: yarn install --immutable
+
             - name: Cache cargo
               uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
               with:
@@ -96,12 +120,9 @@ jobs:
                   key: ${{ runner.os }}-cargo-napi-${{ hashFiles('crates/Cargo.lock') }}
                   restore-keys: ${{ runner.os }}-cargo-napi-
 
-            - name: Install napi-rs CLI
-              run: npm install -g @napi-rs/cli
-
             - name: Build napi
               working-directory: packages/@markuplint/core
-              run: napi build --manifest-path ../../../crates/markuplint-builder/Cargo.toml --output-dir . --platform --js index.cjs
+              run: yarn build:napi:debug
 
             - name: Smoke test (DOM)
               working-directory: packages/@markuplint/core

@@ -157,12 +157,14 @@ jobs:
                   key: ${{ runner.os }}-cargo-napi-${{ hashFiles('crates/Cargo.lock') }}
                   restore-keys: ${{ runner.os }}-cargo-napi-
 
+            # @napi-rs/cli is already in node_modules from the `yarn install`
+            # above (packages/@markuplint/core devDependency), pinned via
+            # yarn.lock — not a bare `npm install -g @napi-rs/cli`, which
+            # would pull an unpinned CLI from the registry on every run.
             - name: Build napi (generates index.cjs and index.d.ts)
               if: steps.cache-restore-prod.outputs.cache-hit != 'true'
               working-directory: packages/@markuplint/core
-              run: |
-                  npm install -g @napi-rs/cli
-                  napi build --manifest-path ../../../crates/markuplint-builder/Cargo.toml --output-dir . --platform --js index.cjs
+              run: yarn build:napi:debug
 
             - name: Build
               if: steps.cache-restore-prod.outputs.cache-hit != 'true'
