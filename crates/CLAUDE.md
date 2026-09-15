@@ -19,6 +19,7 @@ cargo test --locked
 ```
 
 - `-D warnings` is what `.github/workflows/rust.yml` runs, so a clippy warning is a CI failure. The workspace enables `clippy::pedantic` (`Cargo.toml`), so lints such as `missing_errors_doc` and `match_same_arms` apply.
+- **Keep the local toolchain current** (`rustup update stable`). Nothing in the repo pins a Rust version, and CI installs whatever stable is current, so clippy's lint set moves even when no code changes — a stale local toolchain reports clean on exactly the code CI rejects. When CI names a lint that does not reproduce locally, compare `rustc --version` before looking for anything subtler.
 - `--locked` everywhere, and the `cargo metadata` line first: the napi build's internal `cargo metadata` can rewrite `Cargo.lock`, and CI asserts the lock is unchanged after building the addon (`test.yml`, "Assert Cargo.lock unchanged"). `cargo fmt` has no `--locked` flag, so the metadata call is what fails fast on a stale lock.
 - Dependency changes also pass `cargo-deny` in CI (`deny.toml`, `.github/workflows/cargo-deny.yml`) — licences and advisories. Adding a crate means satisfying `deny.toml`.
 
