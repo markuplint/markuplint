@@ -164,7 +164,7 @@ const config: Config = {
 			darkTheme: prismDark,
 		},
 		algolia: {
-			appId: 'SIO9QLVJBB', // cspell:disable-line
+			appId: 'SIO9QLVJBB',
 			apiKey: '9c005a1976113e7cb45e7dd417d8eb0f',
 			indexName: algoliaIndexName,
 		},

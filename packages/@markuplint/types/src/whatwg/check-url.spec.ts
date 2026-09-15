@@ -2,8 +2,6 @@ import { test, expect } from 'vitest';
 
 import { checkURL } from './check-url.js';
 
-// cspell:ignore FDEF FFFE XFFFE XFFFF AFFFE AFFFF BFFFE BFFFF CFFFE CFFFF DFFFE DFFFF EFFFE EFFFF FFFFE FFFFF
-
 const check = checkURL();
 
 test('valid absolute URLs', () => {

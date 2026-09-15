@@ -56,5 +56,5 @@ test('[require-datetime-invalid-002] getCandidateDatetimeString', () => {
 	expect(getCandidateDatetimeString('2014-11-30T08:15:30-05:30')).toBe('2014-11-30T08:15:30-0530');
 	expect(getCandidateDatetimeString('6:15PM, June 13, 2022')).toBe('2022-06-13T18:15');
 	expect(getCandidateDatetimeString('昭和60年7月9日')).toBe('1985-07-09');
-	expect(getCandidateDatetimeString('Le 5 juin 2001')).toBe('2001-06-05'); // cspell:disable-line
+	expect(getCandidateDatetimeString('Le 5 juin 2001')).toBe('2001-06-05');
 });

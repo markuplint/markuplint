@@ -305,7 +305,6 @@ static WHATWG_KEYWORDS: &[WhatwgKeyword] = &[
 
 // Combined microformat keywords (formats + proposals + html5 extensions + brainstorming + posh + dublin core)
 // excluding any that overlap with WHATWG standard keywords.
-// cspell:disable
 #[rustfmt::skip]
 static MICROFORMAT_KEYWORDS: &[MicroformatKeyword] = &[
     // formats
@@ -482,7 +481,6 @@ static MICROFORMAT_KEYWORDS: &[MicroformatKeyword] = &[
     // dublin core
     MicroformatKeyword { keyword: "schema.DC", link: true, a: false },
 ];
-// cspell:enable
 
 static DROPPED_KEYWORDS: &[&str] = &[
     "banner",
@@ -511,9 +509,8 @@ static DROPPED_KEYWORDS: &[&str] = &[
 
 static DROPPED_WITHOUT_PREJUDICE: &[&str] = &["first", "index", "last", "up"];
 
-static REJECTED_KEYWORDS: &[&str] = &["logo", "pavatar"]; // cspell:disable-line
+static REJECTED_KEYWORDS: &[&str] = &["logo", "pavatar"];
 
-// cspell:disable
 static NON_HTML_REL_VALUES: &[&str] = &[
     "self",
     "http://gdata.youtube.com/schemas/2007#in-reply-to",
@@ -544,7 +541,6 @@ static NON_HTML_REL_VALUES: &[&str] = &[
     "predecessor-version",
     "successor-version",
 ];
-// cspell:enable
 
 #[cfg(test)]
 pub mod tests {

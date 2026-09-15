@@ -25,7 +25,6 @@ on:
             - '.yarnrc.yml'
             - '.oxfmtrc.json'
             - '.oxlintrc.json'
-            - 'cspell.json'
             - 'vscode/**'
     push:
         branches:
@@ -44,7 +43,6 @@ on:
             - '.yarnrc.yml'
             - '.oxfmtrc.json'
             - '.oxlintrc.json'
-            - 'cspell.json'
             - 'vscode/**'
 
 env:
@@ -255,9 +253,6 @@ jobs:
 
             - name: Format (oxfmt)
               run: yarn lint-check:format
-
-            - name: Spellcheck
-              run: yarn lint:spellcheck
 
     cross-os-setup:
         runs-on: ${{ matrix.os }}

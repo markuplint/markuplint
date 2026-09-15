@@ -47,7 +47,6 @@ describe('applyFixes', () => {
 		const fix1: FixData = { edits: [{ range: [0, 7], text: 'HELLO' }] };
 		const fix2: FixData = { edits: [{ range: [5, 11], text: 'WORLD' }] };
 		const result = applyFixes('hello world', [fix1, fix2]);
-		// cspell:disable-next-line
 		expect(result.output).toBe('HELLOorld');
 		expect(result.applied).toStrictEqual([fix1]);
 		expect(result.skipped).toStrictEqual([fix2]);

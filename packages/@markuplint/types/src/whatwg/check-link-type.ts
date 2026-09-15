@@ -189,29 +189,29 @@ const DEF_LINK_TYPE_MICROFORMATS_HTML5_LINK_TYPE_EXTENSIONS: DefLinkTypeMicrofor
 	{ keyword: 'chrome-webstore-item', link: true, a: false },
 	{ keyword: 'content-repository', link: true, a: true },
 	{ keyword: 'content-license', link: true, a: true },
-	{ keyword: 'DCTERMS.conformsTo', link: true, a: false }, // cspell:disable-line
-	{ keyword: 'DCTERMS.contributor', link: true, a: false }, // cspell:disable-line
-	{ keyword: 'DCTERMS.creator', link: true, a: false }, // cspell:disable-line
-	{ keyword: 'DCTERMS.description', link: true, a: false }, // cspell:disable-line
-	{ keyword: 'DCTERMS.hasFormat', link: true, a: false }, // cspell:disable-line
-	{ keyword: 'DCTERMS.hasPart', link: true, a: false }, // cspell:disable-line
-	{ keyword: 'DCTERMS.hasVersion', link: true, a: false }, // cspell:disable-line
-	{ keyword: 'DCTERMS.isFormatOf', link: true, a: false }, // cspell:disable-line
-	{ keyword: 'DCTERMS.isPartOf', link: true, a: false }, // cspell:disable-line
-	{ keyword: 'DCTERMS.isReferencedBy', link: true, a: false }, // cspell:disable-line
-	{ keyword: 'DCTERMS.isReplacedBy', link: true, a: false }, // cspell:disable-line
-	{ keyword: 'DCTERMS.isRequiredBy', link: true, a: false }, // cspell:disable-line
-	{ keyword: 'DCTERMS.isVersionOf', link: true, a: false }, // cspell:disable-line
-	{ keyword: 'DCTERMS.license', link: true, a: false }, // cspell:disable-line
-	{ keyword: 'DCTERMS.mediator', link: true, a: false }, // cspell:disable-line
-	{ keyword: 'DCTERMS.publisher', link: true, a: false }, // cspell:disable-line
-	{ keyword: 'DCTERMS.references', link: true, a: false }, // cspell:disable-line
-	{ keyword: 'DCTERMS.relation', link: true, a: false }, // cspell:disable-line
-	{ keyword: 'DCTERMS.replaces', link: true, a: false }, // cspell:disable-line
-	{ keyword: 'DCTERMS.requires', link: true, a: false }, // cspell:disable-line
-	{ keyword: 'DCTERMS.rightsHolder', link: true, a: false }, // cspell:disable-line
-	{ keyword: 'DCTERMS.source', link: true, a: false }, // cspell:disable-line
-	{ keyword: 'DCTERMS.subject', link: true, a: false }, // cspell:disable-line
+	{ keyword: 'DCTERMS.conformsTo', link: true, a: false },
+	{ keyword: 'DCTERMS.contributor', link: true, a: false },
+	{ keyword: 'DCTERMS.creator', link: true, a: false },
+	{ keyword: 'DCTERMS.description', link: true, a: false },
+	{ keyword: 'DCTERMS.hasFormat', link: true, a: false },
+	{ keyword: 'DCTERMS.hasPart', link: true, a: false },
+	{ keyword: 'DCTERMS.hasVersion', link: true, a: false },
+	{ keyword: 'DCTERMS.isFormatOf', link: true, a: false },
+	{ keyword: 'DCTERMS.isPartOf', link: true, a: false },
+	{ keyword: 'DCTERMS.isReferencedBy', link: true, a: false },
+	{ keyword: 'DCTERMS.isReplacedBy', link: true, a: false },
+	{ keyword: 'DCTERMS.isRequiredBy', link: true, a: false },
+	{ keyword: 'DCTERMS.isVersionOf', link: true, a: false },
+	{ keyword: 'DCTERMS.license', link: true, a: false },
+	{ keyword: 'DCTERMS.mediator', link: true, a: false },
+	{ keyword: 'DCTERMS.publisher', link: true, a: false },
+	{ keyword: 'DCTERMS.references', link: true, a: false },
+	{ keyword: 'DCTERMS.relation', link: true, a: false },
+	{ keyword: 'DCTERMS.replaces', link: true, a: false },
+	{ keyword: 'DCTERMS.requires', link: true, a: false },
+	{ keyword: 'DCTERMS.rightsHolder', link: true, a: false },
+	{ keyword: 'DCTERMS.source', link: true, a: false },
+	{ keyword: 'DCTERMS.subject', link: true, a: false },
 	{ keyword: 'disclosure', link: false, a: true },
 	{ keyword: 'discussion', link: true, a: true },
 	{ keyword: 'donation', link: true, a: true },
@@ -222,9 +222,9 @@ const DEF_LINK_TYPE_MICROFORMATS_HTML5_LINK_TYPE_EXTENSIONS: DefLinkTypeMicrofor
 	{ keyword: 'entry-content', link: false, a: true },
 	{ keyword: 'external', link: false, a: true },
 	{ keyword: 'first', link: true, a: true },
-	{ keyword: 'gbfs', link: true, a: false }, // cspell:disable-line
-	{ keyword: 'gtfs-static', link: true, a: false }, // cspell:disable-line
-	{ keyword: 'gtfs-realtime', link: true, a: false }, // cspell:disable-line
+	{ keyword: 'gbfs', link: true, a: false },
+	{ keyword: 'gtfs-static', link: true, a: false },
+	{ keyword: 'gtfs-realtime', link: true, a: false },
 	{ keyword: 'home', link: true, a: true },
 	{ keyword: 'hub', link: true, a: true },
 	{ keyword: 'import', link: true, a: false },
@@ -232,7 +232,7 @@ const DEF_LINK_TYPE_MICROFORMATS_HTML5_LINK_TYPE_EXTENSIONS: DefLinkTypeMicrofor
 	{ keyword: 'root', link: true, a: true },
 	{ keyword: 'index', link: true, a: true },
 	{ keyword: 'issues', link: true, a: true },
-	{ keyword: 'jslicense', link: true, a: true }, // cspell:disable-line
+	{ keyword: 'jslicense', link: true, a: true },
 	{ keyword: 'last', link: true, a: true },
 	{ keyword: 'lightbox', link: false, a: true },
 	{ keyword: 'lightvideo', link: false, a: true },
@@ -253,10 +253,10 @@ const DEF_LINK_TYPE_MICROFORMATS_HTML5_LINK_TYPE_EXTENSIONS: DefLinkTypeMicrofor
 	{ keyword: 'prerender', link: true, a: true },
 	{ keyword: 'profile', link: true, a: true },
 	{ keyword: 'publisher', link: true, a: true },
-	{ keyword: 'radioepg', link: true, a: true }, // cspell:disable-line
+	{ keyword: 'radioepg', link: true, a: true },
 	{ keyword: 'rendition', link: true, a: true },
 	{ keyword: 'reply-to', link: true, a: true },
-	{ keyword: 'schema.DCTERMS', link: true, a: false }, // cspell:disable-line
+	{ keyword: 'schema.DCTERMS', link: true, a: false },
 	{ keyword: 'service', link: true, a: false },
 	{ keyword: 'shortlink', link: true, a: false },
 	{ keyword: 'sidebar', link: true, a: true },
@@ -268,7 +268,7 @@ const DEF_LINK_TYPE_MICROFORMATS_HTML5_LINK_TYPE_EXTENSIONS: DefLinkTypeMicrofor
 	{ keyword: 'token_endpoint', link: true, a: false },
 	{ keyword: 'webmention', link: true, a: true },
 	{ keyword: 'widget', link: true, a: true },
-	{ keyword: 'wlwmanifest', link: true, a: false }, // cspell:disable-line
+	{ keyword: 'wlwmanifest', link: true, a: false },
 	{ keyword: 'image_src', link: true, a: false },
 	{ keyword: 'http://docs.oasis-open.org/ns/cmis/link/200908/acl', link: true, a: true },
 	{ keyword: 'stylesheet/less', link: true, a: false },
@@ -304,9 +304,9 @@ const DEF_LINK_TYPE_MICROFORMATS_BRAINSTORMING: DefLinkTypeMicroformats[] = [
 	{ keyword: 'profile', link: true, a: true },
 	{ keyword: 'shortlink', link: true, a: true },
 	{ keyword: 'source', link: true, a: true },
-	{ keyword: 'vcalendar-parent', link: true, a: true }, // cspell:disable-line
-	{ keyword: 'vcalendar-child', link: true, a: true }, // cspell:disable-line
-	{ keyword: 'vcalendar-sibling', link: true, a: true }, // cspell:disable-line
+	{ keyword: 'vcalendar-parent', link: true, a: true },
+	{ keyword: 'vcalendar-child', link: true, a: true },
+	{ keyword: 'vcalendar-sibling', link: true, a: true },
 	{ keyword: 'status', link: true, a: true },
 	{ keyword: 'https://api.w.org/', link: true, a: true },
 ];
@@ -364,7 +364,7 @@ const DEF_LINK_TYPE_MICROFORMATS_POSH_USAGE: DefLinkTypeMicroformats[] = [
 	{ keyword: 'trackback', link: true, a: true },
 	{ keyword: 'unendorsed', link: true, a: true },
 	{ keyword: 'user', link: true, a: true },
-	{ keyword: 'wlwmanifest', link: true, a: true }, // cspell:disable-line
+	{ keyword: 'wlwmanifest', link: true, a: true },
 ];
 
 /**
@@ -382,7 +382,7 @@ const DEF_LINK_TYPE_MICROFORMATS_POSH_USAGE: DefLinkTypeMicroformats[] = [
  */
 const DEF_LINK_TYPE_MICROFORMATS_DUBLIN_CORE: DefLinkTypeMicroformats[] = [
 	{ keyword: 'schema.DC', link: true, a: false },
-	{ keyword: 'schema.DCTERMS', link: true, a: false }, // cspell:disable-line
+	{ keyword: 'schema.DCTERMS', link: true, a: false },
 ];
 
 /**
@@ -400,7 +400,7 @@ export const DEF_LINK_TYPE_MICROFORMATS_NON_HTML_REL_VALUES: DefLinkTypeMicrofor
 	{ keyword: 'self' },
 	{ keyword: 'http://gdata.youtube.com/schemas/2007#in-reply-to' },
 	{ keyword: 'collection' },
-	{ keyword: 'compensatingtx' }, // cspell:disable-line
+	{ keyword: 'compensatingtx' },
 	{ keyword: 'east' },
 	{ keyword: 'events' },
 	{ keyword: 'exit' },
@@ -418,7 +418,7 @@ export const DEF_LINK_TYPE_MICROFORMATS_NON_HTML_REL_VALUES: DefLinkTypeMicrofor
 	{ keyword: 'shadowbox' },
 	{ keyword: 'permission' },
 	{ keyword: 'sub' },
-	{ keyword: 'unsub' }, // cspell:disable-line
+	{ keyword: 'unsub' },
 	{ keyword: 'version-history' },
 	{ keyword: 'latest-version' },
 	{ keyword: 'working-copy' },
@@ -441,7 +441,7 @@ export const DEF_LINK_TYPE_MICROFORMATS_NON_HTML_REL_VALUES: DefLinkTypeMicrofor
 export const DEF_LINK_TYPE_MICROFORMATS_DROPPED: DefLinkTypeMicroformatsDropped[] = [
 	{ keyword: 'banner' },
 	{ keyword: 'begin' },
-	{ keyword: 'biblioentry' }, // cspell:disable-line
+	{ keyword: 'biblioentry' },
 	{ keyword: 'bibliography' },
 	{ keyword: 'child' },
 	{ keyword: 'citation' },
@@ -496,7 +496,7 @@ export const DEF_LINK_TYPE_MICROFORMATS_DROPPED_WITHOUT_PREJUDICE: DefLinkTypeMi
  */
 export const DEF_LINK_TYPE_MICROFORMATS_REJECTED: DefLinkTypeMicroformatsDropped[] = [
 	{ keyword: 'logo' },
-	{ keyword: 'pavatar' }, // cspell:disable-line
+	{ keyword: 'pavatar' },
 ];
 
 /**

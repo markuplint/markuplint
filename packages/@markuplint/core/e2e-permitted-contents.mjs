@@ -208,7 +208,6 @@ test('ruby:3 complex multi-rt valid', () => {
 	return (
 		pc(
 			lintHtml(
-				// cspell:disable-next-line
 				'<ruby>♥ <rt> Heart <rt lang=fr> Cœur </rt>☘ <rt> Shamrock <rt lang=fr> Trèfle </rt>✶ <rt> Star <rt lang=fr> Étoile </rt></ruby>',
 			),
 		).length === 0

@@ -32,8 +32,8 @@ The root `skills/` directory is NOT for this repository's development — it con
 
 ### Lint
 
-- **Check only**: `yarn lint-check` (no arguments) — oxlint + oxfmt (check mode) + CSpell
-- **With auto-fix**: `yarn lint` (no arguments) — oxlint `--fix` + oxfmt `--write` + CSpell + actionlint (workflow files; not part of `lint-check`)
+- **Check only**: `yarn lint-check` (no arguments) — oxlint + oxfmt (check mode)
+- **With auto-fix**: `yarn lint` (no arguments) — oxlint `--fix` + oxfmt `--write` + actionlint (workflow files; not part of `lint-check`)
 - **NEVER run linters individually** (e.g., `npx oxlint ...` alone) — always use the root scripts to ensure all linters run
 
 ### Build
@@ -65,7 +65,6 @@ The main working directory MUST stay on `dev` at all times:
   A plain `yarn build` from a worktree nested inside the main checkout mis-resolves the Nx workspace root to the main checkout: it reports success while `packages/*/lib/` stays empty in the worktree (artifacts land in the main tree).
 
 - **Husky hooks DO run in worktrees** once `yarn install` has run (`core.hooksPath` is relative, and the install recreates `.husky/_`). Known exception: `git commit --amend` during an interactive rebase can fail hook resolution — only then is `--no-verify` acceptable, followed by a manual `yarn lint`.
-- **CSpell may silently no-op in worktrees.** When a lint run finishes suspiciously fast after adding new identifiers, verify the spell-check step actually executed before pushing.
 - **Command discipline**: run `cd` standalone (never `cd dir && cmd`), never chain commands with `&&`, never use `git -C <path>` — each command must be separate so permission prompts stay per-command.
 - **v6 only:** the `html5lib-tests` conformance suite is a git submodule under `crates/markuplint-html-parser/tests/html5lib-tests/`; run `git submodule update --init --recursive` after creating a worktree.
 

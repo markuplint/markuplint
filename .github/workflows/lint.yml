@@ -17,7 +17,6 @@ on:
             - 'yarn.lock'
             - '.yarnrc.yml'
             - '.prettierrc'
-            - '.cspell.json'
 
 env:
     NODE_BUILD_VERSION: 24
@@ -56,6 +55,3 @@ jobs:
 
             - name: Format (oxfmt)
               run: yarn lint-check:format
-
-            - name: Spellcheck
-              run: yarn lint:spellcheck
