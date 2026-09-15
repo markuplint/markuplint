@@ -1199,9 +1199,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/aix-ppc64@npm:0.28.0":
-  version: 0.28.0
-  resolution: "@esbuild/aix-ppc64@npm:0.28.0"
+"@esbuild/aix-ppc64@npm:0.28.1":
+  version: 0.28.1
+  resolution: "@esbuild/aix-ppc64@npm:0.28.1"
   conditions: os=aix & cpu=ppc64
   languageName: node
   linkType: hard
@@ -1213,9 +1213,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/android-arm64@npm:0.28.0":
-  version: 0.28.0
-  resolution: "@esbuild/android-arm64@npm:0.28.0"
+"@esbuild/android-arm64@npm:0.28.1":
+  version: 0.28.1
+  resolution: "@esbuild/android-arm64@npm:0.28.1"
   conditions: os=android & cpu=arm64
   languageName: node
   linkType: hard
@@ -1227,9 +1227,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/android-arm@npm:0.28.0":
-  version: 0.28.0
-  resolution: "@esbuild/android-arm@npm:0.28.0"
+"@esbuild/android-arm@npm:0.28.1":
+  version: 0.28.1
+  resolution: "@esbuild/android-arm@npm:0.28.1"
   conditions: os=android & cpu=arm
   languageName: node
   linkType: hard
@@ -1241,9 +1241,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/android-x64@npm:0.28.0":
-  version: 0.28.0
-  resolution: "@esbuild/android-x64@npm:0.28.0"
+"@esbuild/android-x64@npm:0.28.1":
+  version: 0.28.1
+  resolution: "@esbuild/android-x64@npm:0.28.1"
   conditions: os=android & cpu=x64
   languageName: node
   linkType: hard
@@ -1255,9 +1255,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/darwin-arm64@npm:0.28.0":
-  version: 0.28.0
-  resolution: "@esbuild/darwin-arm64@npm:0.28.0"
+"@esbuild/darwin-arm64@npm:0.28.1":
+  version: 0.28.1
+  resolution: "@esbuild/darwin-arm64@npm:0.28.1"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
@@ -1269,9 +1269,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/darwin-x64@npm:0.28.0":
-  version: 0.28.0
-  resolution: "@esbuild/darwin-x64@npm:0.28.0"
+"@esbuild/darwin-x64@npm:0.28.1":
+  version: 0.28.1
+  resolution: "@esbuild/darwin-x64@npm:0.28.1"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
@@ -1283,9 +1283,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/freebsd-arm64@npm:0.28.0":
-  version: 0.28.0
-  resolution: "@esbuild/freebsd-arm64@npm:0.28.0"
+"@esbuild/freebsd-arm64@npm:0.28.1":
+  version: 0.28.1
+  resolution: "@esbuild/freebsd-arm64@npm:0.28.1"
   conditions: os=freebsd & cpu=arm64
   languageName: node
   linkType: hard
@@ -1297,9 +1297,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/freebsd-x64@npm:0.28.0":
-  version: 0.28.0
-  resolution: "@esbuild/freebsd-x64@npm:0.28.0"
+"@esbuild/freebsd-x64@npm:0.28.1":
+  version: 0.28.1
+  resolution: "@esbuild/freebsd-x64@npm:0.28.1"
   conditions: os=freebsd & cpu=x64
   languageName: node
   linkType: hard
@@ -1311,9 +1311,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/linux-arm64@npm:0.28.0":
-  version: 0.28.0
-  resolution: "@esbuild/linux-arm64@npm:0.28.0"
+"@esbuild/linux-arm64@npm:0.28.1":
+  version: 0.28.1
+  resolution: "@esbuild/linux-arm64@npm:0.28.1"
   conditions: os=linux & cpu=arm64
   languageName: node
   linkType: hard
@@ -1325,9 +1325,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/linux-arm@npm:0.28.0":
-  version: 0.28.0
-  resolution: "@esbuild/linux-arm@npm:0.28.0"
+"@esbuild/linux-arm@npm:0.28.1":
+  version: 0.28.1
+  resolution: "@esbuild/linux-arm@npm:0.28.1"
   conditions: os=linux & cpu=arm
   languageName: node
   linkType: hard
@@ -1339,9 +1339,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/linux-ia32@npm:0.28.0":
-  version: 0.28.0
-  resolution: "@esbuild/linux-ia32@npm:0.28.0"
+"@esbuild/linux-ia32@npm:0.28.1":
+  version: 0.28.1
+  resolution: "@esbuild/linux-ia32@npm:0.28.1"
   conditions: os=linux & cpu=ia32
   languageName: node
   linkType: hard
@@ -1353,9 +1353,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/linux-loong64@npm:0.28.0":
-  version: 0.28.0
-  resolution: "@esbuild/linux-loong64@npm:0.28.0"
+"@esbuild/linux-loong64@npm:0.28.1":
+  version: 0.28.1
+  resolution: "@esbuild/linux-loong64@npm:0.28.1"
   conditions: os=linux & cpu=loong64
   languageName: node
   linkType: hard
@@ -1367,9 +1367,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/linux-mips64el@npm:0.28.0":
-  version: 0.28.0
-  resolution: "@esbuild/linux-mips64el@npm:0.28.0"
+"@esbuild/linux-mips64el@npm:0.28.1":
+  version: 0.28.1
+  resolution: "@esbuild/linux-mips64el@npm:0.28.1"
   conditions: os=linux & cpu=mips64el
   languageName: node
   linkType: hard
@@ -1381,9 +1381,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/linux-ppc64@npm:0.28.0":
-  version: 0.28.0
-  resolution: "@esbuild/linux-ppc64@npm:0.28.0"
+"@esbuild/linux-ppc64@npm:0.28.1":
+  version: 0.28.1
+  resolution: "@esbuild/linux-ppc64@npm:0.28.1"
   conditions: os=linux & cpu=ppc64
   languageName: node
   linkType: hard
@@ -1395,9 +1395,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/linux-riscv64@npm:0.28.0":
-  version: 0.28.0
-  resolution: "@esbuild/linux-riscv64@npm:0.28.0"
+"@esbuild/linux-riscv64@npm:0.28.1":
+  version: 0.28.1
+  resolution: "@esbuild/linux-riscv64@npm:0.28.1"
   conditions: os=linux & cpu=riscv64
   languageName: node
   linkType: hard
@@ -1409,9 +1409,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/linux-s390x@npm:0.28.0":
-  version: 0.28.0
-  resolution: "@esbuild/linux-s390x@npm:0.28.0"
+"@esbuild/linux-s390x@npm:0.28.1":
+  version: 0.28.1
+  resolution: "@esbuild/linux-s390x@npm:0.28.1"
   conditions: os=linux & cpu=s390x
   languageName: node
   linkType: hard
@@ -1430,6 +1430,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@esbuild/linux-x64@npm:0.28.1":
+  version: 0.28.1
+  resolution: "@esbuild/linux-x64@npm:0.28.1"
+  conditions: os=linux & cpu=x64
+  languageName: node
+  linkType: hard
+
 "@esbuild/netbsd-arm64@npm:0.27.4":
   version: 0.27.4
   resolution: "@esbuild/netbsd-arm64@npm:0.27.4"
@@ -1437,9 +1444,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/netbsd-arm64@npm:0.28.0":
-  version: 0.28.0
-  resolution: "@esbuild/netbsd-arm64@npm:0.28.0"
+"@esbuild/netbsd-arm64@npm:0.28.1":
+  version: 0.28.1
+  resolution: "@esbuild/netbsd-arm64@npm:0.28.1"
   conditions: os=netbsd & cpu=arm64
   languageName: node
   linkType: hard
@@ -1451,9 +1458,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/netbsd-x64@npm:0.28.0":
-  version: 0.28.0
-  resolution: "@esbuild/netbsd-x64@npm:0.28.0"
+"@esbuild/netbsd-x64@npm:0.28.1":
+  version: 0.28.1
+  resolution: "@esbuild/netbsd-x64@npm:0.28.1"
   conditions: os=netbsd & cpu=x64
   languageName: node
   linkType: hard
@@ -1465,9 +1472,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/openbsd-arm64@npm:0.28.0":
-  version: 0.28.0
-  resolution: "@esbuild/openbsd-arm64@npm:0.28.0"
+"@esbuild/openbsd-arm64@npm:0.28.1":
+  version: 0.28.1
+  resolution: "@esbuild/openbsd-arm64@npm:0.28.1"
   conditions: os=openbsd & cpu=arm64
   languageName: node
   linkType: hard
@@ -1479,9 +1486,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/openbsd-x64@npm:0.28.0":
-  version: 0.28.0
-  resolution: "@esbuild/openbsd-x64@npm:0.28.0"
+"@esbuild/openbsd-x64@npm:0.28.1":
+  version: 0.28.1
+  resolution: "@esbuild/openbsd-x64@npm:0.28.1"
   conditions: os=openbsd & cpu=x64
   languageName: node
   linkType: hard
@@ -1493,9 +1500,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/openharmony-arm64@npm:0.28.0":
-  version: 0.28.0
-  resolution: "@esbuild/openharmony-arm64@npm:0.28.0"
+"@esbuild/openharmony-arm64@npm:0.28.1":
+  version: 0.28.1
+  resolution: "@esbuild/openharmony-arm64@npm:0.28.1"
   conditions: os=openharmony & cpu=arm64
   languageName: node
   linkType: hard
@@ -1507,9 +1514,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/sunos-x64@npm:0.28.0":
-  version: 0.28.0
-  resolution: "@esbuild/sunos-x64@npm:0.28.0"
+"@esbuild/sunos-x64@npm:0.28.1":
+  version: 0.28.1
+  resolution: "@esbuild/sunos-x64@npm:0.28.1"
   conditions: os=sunos & cpu=x64
   languageName: node
   linkType: hard
@@ -1521,9 +1528,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/win32-arm64@npm:0.28.0":
-  version: 0.28.0
-  resolution: "@esbuild/win32-arm64@npm:0.28.0"
+"@esbuild/win32-arm64@npm:0.28.1":
+  version: 0.28.1
+  resolution: "@esbuild/win32-arm64@npm:0.28.1"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
@@ -1535,9 +1542,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/win32-ia32@npm:0.28.0":
-  version: 0.28.0
-  resolution: "@esbuild/win32-ia32@npm:0.28.0"
+"@esbuild/win32-ia32@npm:0.28.1":
+  version: 0.28.1
+  resolution: "@esbuild/win32-ia32@npm:0.28.1"
   conditions: os=win32 & cpu=ia32
   languageName: node
   linkType: hard
@@ -1552,6 +1559,13 @@ __metadata:
 "@esbuild/win32-x64@npm:0.28.0":
   version: 0.28.0
   resolution: "@esbuild/win32-x64@npm:0.28.0"
+  conditions: os=win32 & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@esbuild/win32-x64@npm:0.28.1":
+  version: 0.28.1
+  resolution: "@esbuild/win32-x64@npm:0.28.1"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
@@ -2323,7 +2337,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@markuplint-dev/tsconfig@npm:5.0.0-rc.4, @markuplint-dev/tsconfig@workspace:packages/@markuplint-dev/tsconfig":
+"@markuplint-dev/tsconfig@npm:5.0.0, @markuplint-dev/tsconfig@workspace:packages/@markuplint-dev/tsconfig":
   version: 0.0.0-use.local
   resolution: "@markuplint-dev/tsconfig@workspace:packages/@markuplint-dev/tsconfig"
   languageName: unknown
@@ -2339,7 +2353,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@markuplint-test/react@workspace:packages/@markuplint-test/react"
   dependencies:
-    "@markuplint/pretenders": "npm:5.0.0-rc.4"
+    "@markuplint/pretenders": "npm:5.0.0"
   languageName: unknown
   linkType: soft
 
@@ -2347,8 +2361,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@markuplint/alpine-parser@workspace:packages/@markuplint/alpine-parser"
   dependencies:
-    "@markuplint/html-parser": "npm:5.0.0-rc.4"
-    "@markuplint/parser-utils": "npm:5.0.0-rc.4"
+    "@markuplint/html-parser": "npm:5.0.0"
+    "@markuplint/parser-utils": "npm:5.0.0"
   languageName: unknown
   linkType: soft
 
@@ -2356,22 +2370,22 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@markuplint/alpine-spec@workspace:packages/@markuplint/alpine-spec"
   dependencies:
-    "@markuplint/ml-spec": "npm:5.0.0-rc.4"
+    "@markuplint/ml-spec": "npm:5.0.0"
   languageName: unknown
   linkType: soft
 
-"@markuplint/astro-parser@npm:5.0.0-rc.4, @markuplint/astro-parser@workspace:packages/@markuplint/astro-parser":
+"@markuplint/astro-parser@npm:5.0.0, @markuplint/astro-parser@workspace:packages/@markuplint/astro-parser":
   version: 0.0.0-use.local
   resolution: "@markuplint/astro-parser@workspace:packages/@markuplint/astro-parser"
   dependencies:
     "@astrojs/compiler": "npm:3.0.1"
-    "@markuplint/ml-ast": "npm:5.0.0-rc.4"
-    "@markuplint/parser-utils": "npm:5.0.0-rc.4"
+    "@markuplint/ml-ast": "npm:5.0.0"
+    "@markuplint/parser-utils": "npm:5.0.0"
     astro-eslint-parser: "npm:1.4.0"
   languageName: unknown
   linkType: soft
 
-"@markuplint/cli-utils@npm:5.0.0-rc.4, @markuplint/cli-utils@workspace:packages/@markuplint/cli-utils":
+"@markuplint/cli-utils@npm:5.0.0, @markuplint/cli-utils@workspace:packages/@markuplint/cli-utils":
   version: 0.0.0-use.local
   resolution: "@markuplint/cli-utils@workspace:packages/@markuplint/cli-utils"
   dependencies:
@@ -2384,11 +2398,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@markuplint/config-presets@npm:5.0.0-rc.4, @markuplint/config-presets@workspace:packages/@markuplint/config-presets":
+"@markuplint/config-presets@npm:5.0.0, @markuplint/config-presets@workspace:packages/@markuplint/config-presets":
   version: 0.0.0-use.local
   resolution: "@markuplint/config-presets@workspace:packages/@markuplint/config-presets"
   dependencies:
     "@isaacs/brace-expansion": "npm:5.0.1"
+    "@markuplint/rules": "npm:5.0.0"
     glob: "npm:13.0.6"
     jsonc-parser: "npm:3.3.1"
     mustache: "npm:4.2.0"
@@ -2407,8 +2422,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@markuplint/create-rule@workspace:packages/@markuplint/create-rule"
   dependencies:
-    "@markuplint/cli-utils": "npm:5.0.0-rc.4"
-    "@markuplint/ml-core": "npm:5.0.0-rc.4"
+    "@markuplint/cli-utils": "npm:5.0.0"
+    "@markuplint/ml-core": "npm:5.0.0"
     "@types/fs-extra": "npm:11.0.4"
     fs-extra: "npm:11.3.4"
     glob: "npm:13.0.6"
@@ -2423,8 +2438,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@markuplint/ejs-parser@workspace:packages/@markuplint/ejs-parser"
   dependencies:
-    "@markuplint/html-parser": "npm:5.0.0-rc.4"
-    "@markuplint/parser-utils": "npm:5.0.0-rc.4"
+    "@markuplint/html-parser": "npm:5.0.0"
+    "@markuplint/parser-utils": "npm:5.0.0"
   languageName: unknown
   linkType: soft
 
@@ -2432,25 +2447,25 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@markuplint/erb-parser@workspace:packages/@markuplint/erb-parser"
   dependencies:
-    "@markuplint/html-parser": "npm:5.0.0-rc.4"
-    "@markuplint/parser-utils": "npm:5.0.0-rc.4"
+    "@markuplint/html-parser": "npm:5.0.0"
+    "@markuplint/parser-utils": "npm:5.0.0"
   languageName: unknown
   linkType: soft
 
-"@markuplint/file-resolver@npm:5.0.0-rc.4, @markuplint/file-resolver@workspace:packages/@markuplint/file-resolver":
+"@markuplint/file-resolver@npm:5.0.0, @markuplint/file-resolver@workspace:packages/@markuplint/file-resolver":
   version: 0.0.0-use.local
   resolution: "@markuplint/file-resolver@workspace:packages/@markuplint/file-resolver"
   dependencies:
-    "@markuplint/html-parser": "npm:5.0.0-rc.4"
-    "@markuplint/ml-ast": "npm:5.0.0-rc.4"
-    "@markuplint/ml-config": "npm:5.0.0-rc.4"
-    "@markuplint/ml-core": "npm:5.0.0-rc.4"
-    "@markuplint/ml-spec": "npm:5.0.0-rc.4"
-    "@markuplint/parser-utils": "npm:5.0.0-rc.4"
-    "@markuplint/pretenders": "npm:5.0.0-rc.4"
-    "@markuplint/selector": "npm:5.0.0-rc.4"
-    "@markuplint/shared": "npm:5.0.0-rc.4"
-    "@types/node": "npm:24.5.1"
+    "@markuplint/html-parser": "npm:5.0.0"
+    "@markuplint/ml-ast": "npm:5.0.0"
+    "@markuplint/ml-config": "npm:5.0.0"
+    "@markuplint/ml-core": "npm:5.0.0"
+    "@markuplint/ml-spec": "npm:5.0.0"
+    "@markuplint/parser-utils": "npm:5.0.0"
+    "@markuplint/pretenders": "npm:5.0.0"
+    "@markuplint/selector": "npm:5.0.0"
+    "@markuplint/shared": "npm:5.0.0"
+    "@types/node": "npm:24.13.3"
     cosmiconfig: "npm:9.0.1"
     debug: "npm:4.4.3"
     glob: "npm:13.0.6"
@@ -2461,23 +2476,23 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@markuplint/html-parser@npm:5.0.0-rc.4, @markuplint/html-parser@workspace:packages/@markuplint/html-parser":
+"@markuplint/html-parser@npm:5.0.0, @markuplint/html-parser@workspace:packages/@markuplint/html-parser":
   version: 0.0.0-use.local
   resolution: "@markuplint/html-parser@workspace:packages/@markuplint/html-parser"
   dependencies:
-    "@markuplint/ml-ast": "npm:5.0.0-rc.4"
-    "@markuplint/parser-utils": "npm:5.0.0-rc.4"
+    "@markuplint/ml-ast": "npm:5.0.0"
+    "@markuplint/parser-utils": "npm:5.0.0"
     parse5: "npm:8.0.1"
     type-fest: "npm:5.6.0"
   languageName: unknown
   linkType: soft
 
-"@markuplint/html-spec@npm:5.0.0-rc.4, @markuplint/html-spec@workspace:packages/@markuplint/html-spec":
+"@markuplint/html-spec@npm:5.0.0, @markuplint/html-spec@workspace:packages/@markuplint/html-spec":
   version: 0.0.0-use.local
   resolution: "@markuplint/html-spec@workspace:packages/@markuplint/html-spec"
   dependencies:
-    "@markuplint/ml-spec": "npm:5.0.0-rc.4"
-    "@markuplint/test-tools": "npm:5.0.0-rc.4"
+    "@markuplint/ml-spec": "npm:5.0.0"
+    "@markuplint/test-tools": "npm:5.0.0"
     "@types/cheerio": "npm:1.0.0"
     "@types/cli-progress": "npm:3.11.6"
     cheerio: "npm:1.2.0"
@@ -2492,11 +2507,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@markuplint/htmx-spec@workspace:packages/@markuplint/htmx-spec"
   dependencies:
-    "@markuplint/ml-spec": "npm:5.0.0-rc.4"
+    "@markuplint/ml-spec": "npm:5.0.0"
   languageName: unknown
   linkType: soft
 
-"@markuplint/i18n@npm:5.0.0-rc.4, @markuplint/i18n@workspace:packages/@markuplint/i18n":
+"@markuplint/i18n@npm:5.0.0, @markuplint/i18n@workspace:packages/@markuplint/i18n":
   version: 0.0.0-use.local
   resolution: "@markuplint/i18n@workspace:packages/@markuplint/i18n"
   languageName: unknown
@@ -2506,9 +2521,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@markuplint/jsx-parser@workspace:packages/@markuplint/jsx-parser"
   dependencies:
-    "@markuplint/html-parser": "npm:5.0.0-rc.4"
-    "@markuplint/ml-ast": "npm:5.0.0-rc.4"
-    "@markuplint/parser-utils": "npm:5.0.0-rc.4"
+    "@markuplint/html-parser": "npm:5.0.0"
+    "@markuplint/ml-ast": "npm:5.0.0"
+    "@markuplint/parser-utils": "npm:5.0.0"
     "@typescript-eslint/types": "npm:8.59.0"
     "@typescript-eslint/typescript-estree": "npm:8.59.0"
   languageName: unknown
@@ -2518,18 +2533,18 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@markuplint/liquid-parser@workspace:packages/@markuplint/liquid-parser"
   dependencies:
-    "@markuplint/html-parser": "npm:5.0.0-rc.4"
-    "@markuplint/parser-utils": "npm:5.0.0-rc.4"
+    "@markuplint/html-parser": "npm:5.0.0"
+    "@markuplint/parser-utils": "npm:5.0.0"
   languageName: unknown
   linkType: soft
 
-"@markuplint/markdown-parser@npm:5.0.0-rc.4, @markuplint/markdown-parser@workspace:packages/@markuplint/markdown-parser":
+"@markuplint/markdown-parser@npm:5.0.0, @markuplint/markdown-parser@workspace:packages/@markuplint/markdown-parser":
   version: 0.0.0-use.local
   resolution: "@markuplint/markdown-parser@workspace:packages/@markuplint/markdown-parser"
   dependencies:
-    "@markuplint/html-parser": "npm:5.0.0-rc.4"
-    "@markuplint/ml-ast": "npm:5.0.0-rc.4"
-    "@markuplint/parser-utils": "npm:5.0.0-rc.4"
+    "@markuplint/html-parser": "npm:5.0.0"
+    "@markuplint/ml-ast": "npm:5.0.0"
+    "@markuplint/parser-utils": "npm:5.0.0"
     "@types/mdast": "npm:4.0.4"
     remark-frontmatter: "npm:5.0.0"
     remark-gfm: "npm:4.0.1"
@@ -2542,9 +2557,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@markuplint/mdx-parser@workspace:packages/@markuplint/mdx-parser"
   dependencies:
-    "@markuplint/markdown-parser": "npm:5.0.0-rc.4"
-    "@markuplint/ml-ast": "npm:5.0.0-rc.4"
-    "@markuplint/parser-utils": "npm:5.0.0-rc.4"
+    "@markuplint/markdown-parser": "npm:5.0.0"
+    "@markuplint/ml-ast": "npm:5.0.0"
+    "@markuplint/parser-utils": "npm:5.0.0"
     "@types/mdast": "npm:4.0.4"
     remark-frontmatter: "npm:5.0.0"
     remark-gfm: "npm:4.0.1"
@@ -2554,20 +2569,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@markuplint/ml-ast@npm:5.0.0-rc.4, @markuplint/ml-ast@workspace:packages/@markuplint/ml-ast":
+"@markuplint/ml-ast@npm:5.0.0, @markuplint/ml-ast@workspace:packages/@markuplint/ml-ast":
   version: 0.0.0-use.local
   resolution: "@markuplint/ml-ast@workspace:packages/@markuplint/ml-ast"
   languageName: unknown
   linkType: soft
 
-"@markuplint/ml-config@npm:5.0.0-rc.4, @markuplint/ml-config@workspace:packages/@markuplint/ml-config":
+"@markuplint/ml-config@npm:5.0.0, @markuplint/ml-config@workspace:packages/@markuplint/ml-config":
   version: 0.0.0-use.local
   resolution: "@markuplint/ml-config@workspace:packages/@markuplint/ml-config"
   dependencies:
-    "@markuplint/ml-ast": "npm:5.0.0-rc.4"
-    "@markuplint/ml-spec": "npm:5.0.0-rc.4"
-    "@markuplint/selector": "npm:5.0.0-rc.4"
-    "@markuplint/shared": "npm:5.0.0-rc.4"
+    "@markuplint/ml-ast": "npm:5.0.0"
+    "@markuplint/ml-spec": "npm:5.0.0"
+    "@markuplint/selector": "npm:5.0.0"
+    "@markuplint/shared": "npm:5.0.0"
     "@types/mustache": "npm:4.2.6"
     is-plain-object: "npm:5.0.0"
     mustache: "npm:4.2.0"
@@ -2575,20 +2590,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@markuplint/ml-core@npm:5.0.0-rc.4, @markuplint/ml-core@workspace:packages/@markuplint/ml-core":
+"@markuplint/ml-core@npm:5.0.0, @markuplint/ml-core@workspace:packages/@markuplint/ml-core":
   version: 0.0.0-use.local
   resolution: "@markuplint/ml-core@workspace:packages/@markuplint/ml-core"
   dependencies:
-    "@markuplint/config-presets": "npm:5.0.0-rc.4"
-    "@markuplint/html-parser": "npm:5.0.0-rc.4"
-    "@markuplint/html-spec": "npm:5.0.0-rc.4"
-    "@markuplint/i18n": "npm:5.0.0-rc.4"
-    "@markuplint/ml-ast": "npm:5.0.0-rc.4"
-    "@markuplint/ml-config": "npm:5.0.0-rc.4"
-    "@markuplint/ml-spec": "npm:5.0.0-rc.4"
-    "@markuplint/parser-utils": "npm:5.0.0-rc.4"
-    "@markuplint/selector": "npm:5.0.0-rc.4"
-    "@markuplint/shared": "npm:5.0.0-rc.4"
+    "@markuplint/config-presets": "npm:5.0.0"
+    "@markuplint/html-parser": "npm:5.0.0"
+    "@markuplint/html-spec": "npm:5.0.0"
+    "@markuplint/i18n": "npm:5.0.0"
+    "@markuplint/ml-ast": "npm:5.0.0"
+    "@markuplint/ml-config": "npm:5.0.0"
+    "@markuplint/ml-spec": "npm:5.0.0"
+    "@markuplint/parser-utils": "npm:5.0.0"
+    "@markuplint/selector": "npm:5.0.0"
+    "@markuplint/shared": "npm:5.0.0"
     "@types/debug": "npm:4.1.13"
     debug: "npm:4.4.3"
     is-plain-object: "npm:5.0.0"
@@ -2596,13 +2611,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@markuplint/ml-spec@npm:5.0.0-rc.4, @markuplint/ml-spec@workspace:packages/@markuplint/ml-spec":
+"@markuplint/ml-spec@npm:5.0.0, @markuplint/ml-spec@workspace:packages/@markuplint/ml-spec":
   version: 0.0.0-use.local
   resolution: "@markuplint/ml-spec@workspace:packages/@markuplint/ml-spec"
   dependencies:
-    "@markuplint/ml-ast": "npm:5.0.0-rc.4"
-    "@markuplint/test-tools": "npm:5.0.0-rc.4"
-    "@markuplint/types": "npm:5.0.0-rc.4"
+    "@markuplint/ml-ast": "npm:5.0.0"
+    "@markuplint/test-tools": "npm:5.0.0"
+    "@markuplint/types": "npm:5.0.0"
     is-plain-object: "npm:5.0.0"
     json-schema-to-typescript: "npm:15.0.4"
     type-fest: "npm:5.6.0"
@@ -2613,8 +2628,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@markuplint/mustache-parser@workspace:packages/@markuplint/mustache-parser"
   dependencies:
-    "@markuplint/html-parser": "npm:5.0.0-rc.4"
-    "@markuplint/parser-utils": "npm:5.0.0-rc.4"
+    "@markuplint/html-parser": "npm:5.0.0"
+    "@markuplint/parser-utils": "npm:5.0.0"
   languageName: unknown
   linkType: soft
 
@@ -2622,19 +2637,19 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@markuplint/nunjucks-parser@workspace:packages/@markuplint/nunjucks-parser"
   dependencies:
-    "@markuplint/html-parser": "npm:5.0.0-rc.4"
-    "@markuplint/parser-utils": "npm:5.0.0-rc.4"
+    "@markuplint/html-parser": "npm:5.0.0"
+    "@markuplint/parser-utils": "npm:5.0.0"
   languageName: unknown
   linkType: soft
 
-"@markuplint/parser-utils@npm:5.0.0-rc.4, @markuplint/parser-utils@workspace:packages/@markuplint/parser-utils":
+"@markuplint/parser-utils@npm:5.0.0, @markuplint/parser-utils@workspace:packages/@markuplint/parser-utils":
   version: 0.0.0-use.local
   resolution: "@markuplint/parser-utils@workspace:packages/@markuplint/parser-utils"
   dependencies:
-    "@markuplint/ml-ast": "npm:5.0.0-rc.4"
-    "@markuplint/ml-spec": "npm:5.0.0-rc.4"
-    "@markuplint/shared": "npm:5.0.0-rc.4"
-    "@markuplint/types": "npm:5.0.0-rc.4"
+    "@markuplint/ml-ast": "npm:5.0.0"
+    "@markuplint/ml-spec": "npm:5.0.0"
+    "@markuplint/shared": "npm:5.0.0"
+    "@markuplint/types": "npm:5.0.0"
     "@typescript-eslint/typescript-estree": "npm:8.59.0"
     debug: "npm:4.4.3"
     espree: "npm:11.2.0"
@@ -2646,21 +2661,22 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@markuplint/php-parser@workspace:packages/@markuplint/php-parser"
   dependencies:
-    "@markuplint/html-parser": "npm:5.0.0-rc.4"
-    "@markuplint/parser-utils": "npm:5.0.0-rc.4"
+    "@markuplint/html-parser": "npm:5.0.0"
+    "@markuplint/parser-utils": "npm:5.0.0"
   languageName: unknown
   linkType: soft
 
-"@markuplint/pretenders@npm:5.0.0-rc.4, @markuplint/pretenders@workspace:packages/@markuplint/pretenders":
+"@markuplint/pretenders@npm:5.0.0, @markuplint/pretenders@workspace:packages/@markuplint/pretenders":
   version: 0.0.0-use.local
   resolution: "@markuplint/pretenders@workspace:packages/@markuplint/pretenders"
   dependencies:
-    "@markuplint/astro-parser": "npm:5.0.0-rc.4"
-    "@markuplint/ml-ast": "npm:5.0.0-rc.4"
-    "@markuplint/ml-config": "npm:5.0.0-rc.4"
-    "@markuplint/parser-utils": "npm:5.0.0-rc.4"
-    "@markuplint/svelte-parser": "npm:5.0.0-rc.4"
-    "@markuplint/vue-parser": "npm:5.0.0-rc.4"
+    "@markuplint/astro-parser": "npm:5.0.0"
+    "@markuplint/ml-ast": "npm:5.0.0"
+    "@markuplint/ml-config": "npm:5.0.0"
+    "@markuplint/parser-utils": "npm:5.0.0"
+    "@markuplint/shared": "npm:5.0.0"
+    "@markuplint/svelte-parser": "npm:5.0.0"
+    "@markuplint/vue-parser": "npm:5.0.0"
     es-module-lexer: "npm:2.0.0"
     glob: "npm:13.0.6"
     meow: "npm:14.1.0"
@@ -2681,9 +2697,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@markuplint/pug-parser@workspace:packages/@markuplint/pug-parser"
   dependencies:
-    "@markuplint/html-parser": "npm:5.0.0-rc.4"
-    "@markuplint/ml-ast": "npm:5.0.0-rc.4"
-    "@markuplint/parser-utils": "npm:5.0.0-rc.4"
+    "@markuplint/html-parser": "npm:5.0.0"
+    "@markuplint/ml-ast": "npm:5.0.0"
+    "@markuplint/parser-utils": "npm:5.0.0"
     pug-lexer: "npm:5.0.1"
     pug-parser: "npm:6.0.0"
   languageName: unknown
@@ -2693,20 +2709,21 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@markuplint/react-spec@workspace:packages/@markuplint/react-spec"
   dependencies:
-    "@markuplint/ml-spec": "npm:5.0.0-rc.4"
+    "@markuplint/ml-spec": "npm:5.0.0"
   languageName: unknown
   linkType: soft
 
-"@markuplint/rules@npm:5.0.0-rc.4, @markuplint/rules@workspace:packages/@markuplint/rules":
+"@markuplint/rules@npm:5.0.0, @markuplint/rules@workspace:packages/@markuplint/rules":
   version: 0.0.0-use.local
   resolution: "@markuplint/rules@workspace:packages/@markuplint/rules"
   dependencies:
-    "@markuplint/html-spec": "npm:5.0.0-rc.4"
-    "@markuplint/ml-core": "npm:5.0.0-rc.4"
-    "@markuplint/ml-spec": "npm:5.0.0-rc.4"
-    "@markuplint/selector": "npm:5.0.0-rc.4"
-    "@markuplint/shared": "npm:5.0.0-rc.4"
-    "@markuplint/types": "npm:5.0.0-rc.4"
+    "@markuplint/html-spec": "npm:5.0.0"
+    "@markuplint/ml-config": "npm:5.0.0"
+    "@markuplint/ml-core": "npm:5.0.0"
+    "@markuplint/ml-spec": "npm:5.0.0"
+    "@markuplint/selector": "npm:5.0.0"
+    "@markuplint/shared": "npm:5.0.0"
+    "@markuplint/types": "npm:5.0.0"
     "@mdn/browser-compat-data": "npm:^7.3.2"
     "@types/debug": "npm:4.1.13"
     ansi-colors: "npm:4.1.3"
@@ -2718,22 +2735,22 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@markuplint/selector@npm:5.0.0-rc.4, @markuplint/selector@workspace:packages/@markuplint/selector":
+"@markuplint/selector@npm:5.0.0, @markuplint/selector@workspace:packages/@markuplint/selector":
   version: 0.0.0-use.local
   resolution: "@markuplint/selector@workspace:packages/@markuplint/selector"
   dependencies:
-    "@markuplint/ml-spec": "npm:5.0.0-rc.4"
-    "@markuplint/shared": "npm:5.0.0-rc.4"
+    "@markuplint/ml-spec": "npm:5.0.0"
+    "@markuplint/shared": "npm:5.0.0"
     "@types/debug": "npm:4.1.13"
     "@types/jsdom": "npm:28.0.1"
     debug: "npm:4.4.3"
     jsdom: "npm:29.0.2"
-    postcss-selector-parser: "npm:7.1.1"
+    postcss-selector-parser: "npm:7.1.3"
     type-fest: "npm:5.6.0"
   languageName: unknown
   linkType: soft
 
-"@markuplint/shared@npm:5.0.0-rc.4, @markuplint/shared@workspace:packages/@markuplint/shared":
+"@markuplint/shared@npm:5.0.0, @markuplint/shared@workspace:packages/@markuplint/shared":
   version: 0.0.0-use.local
   resolution: "@markuplint/shared@workspace:packages/@markuplint/shared"
   dependencies:
@@ -2745,8 +2762,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@markuplint/smarty-parser@workspace:packages/@markuplint/smarty-parser"
   dependencies:
-    "@markuplint/html-parser": "npm:5.0.0-rc.4"
-    "@markuplint/parser-utils": "npm:5.0.0-rc.4"
+    "@markuplint/html-parser": "npm:5.0.0"
+    "@markuplint/parser-utils": "npm:5.0.0"
   languageName: unknown
   linkType: soft
 
@@ -2754,8 +2771,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@markuplint/spec-generator@workspace:packages/@markuplint/spec-generator"
   dependencies:
-    "@markuplint/ml-spec": "npm:5.0.0-rc.4"
-    "@markuplint/test-tools": "npm:5.0.0-rc.4"
+    "@markuplint/ml-spec": "npm:5.0.0"
+    "@markuplint/test-tools": "npm:5.0.0"
     "@types/cheerio": "npm:1.0.0"
     "@types/cli-progress": "npm:3.11.6"
     ajv: "npm:8.18.0"
@@ -2768,13 +2785,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@markuplint/svelte-parser@npm:5.0.0-rc.4, @markuplint/svelte-parser@workspace:packages/@markuplint/svelte-parser":
+"@markuplint/svelte-parser@npm:5.0.0, @markuplint/svelte-parser@workspace:packages/@markuplint/svelte-parser":
   version: 0.0.0-use.local
   resolution: "@markuplint/svelte-parser@workspace:packages/@markuplint/svelte-parser"
   dependencies:
-    "@markuplint/html-parser": "npm:5.0.0-rc.4"
-    "@markuplint/ml-ast": "npm:5.0.0-rc.4"
-    "@markuplint/parser-utils": "npm:5.0.0-rc.4"
+    "@markuplint/html-parser": "npm:5.0.0"
+    "@markuplint/ml-ast": "npm:5.0.0"
+    "@markuplint/parser-utils": "npm:5.0.0"
     svelte: "npm:5.55.7"
   languageName: unknown
   linkType: soft
@@ -2783,7 +2800,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@markuplint/svelte-spec@workspace:packages/@markuplint/svelte-spec"
   dependencies:
-    "@markuplint/ml-spec": "npm:5.0.0-rc.4"
+    "@markuplint/ml-spec": "npm:5.0.0"
   languageName: unknown
   linkType: soft
 
@@ -2791,15 +2808,15 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@markuplint/tagged-template-literal-parser@workspace:packages/@markuplint/tagged-template-literal-parser"
   dependencies:
-    "@markuplint/html-parser": "npm:5.0.0-rc.4"
-    "@markuplint/ml-ast": "npm:5.0.0-rc.4"
-    "@markuplint/parser-utils": "npm:5.0.0-rc.4"
+    "@markuplint/html-parser": "npm:5.0.0"
+    "@markuplint/ml-ast": "npm:5.0.0"
+    "@markuplint/parser-utils": "npm:5.0.0"
     "@typescript-eslint/types": "npm:8.59.0"
     "@typescript-eslint/typescript-estree": "npm:8.59.0"
   languageName: unknown
   linkType: soft
 
-"@markuplint/test-tools@npm:5.0.0-rc.4, @markuplint/test-tools@workspace:packages/@markuplint/test-tools":
+"@markuplint/test-tools@npm:5.0.0, @markuplint/test-tools@workspace:packages/@markuplint/test-tools":
   version: 0.0.0-use.local
   resolution: "@markuplint/test-tools@workspace:packages/@markuplint/test-tools"
   dependencies:
@@ -2814,7 +2831,7 @@ __metadata:
     jsdom: "npm:29.0.2"
     textlint-rule-prh: "npm:6.1.0"
     type-fest: "npm:5.6.0"
-    vitest: "npm:4.1.5"
+    vitest: "npm:4.1.11"
   dependenciesMeta:
     "@esbuild/linux-x64":
       optional: true
@@ -2825,29 +2842,30 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@markuplint/types@npm:5.0.0-rc.4, @markuplint/types@workspace:packages/@markuplint/types":
+"@markuplint/types@npm:5.0.0, @markuplint/types@workspace:packages/@markuplint/types":
   version: 0.0.0-use.local
   resolution: "@markuplint/types@workspace:packages/@markuplint/types"
   dependencies:
-    "@markuplint/shared": "npm:5.0.0-rc.4"
+    "@markuplint/shared": "npm:5.0.0"
     "@types/css-tree": "npm:2.3.11"
     "@types/debug": "npm:4.1.13"
     bcp-47: "npm:2.1.0"
     css-tree: "npm:3.2.1"
     debug: "npm:4.4.3"
+    language-subtag-registry: "npm:0.4.2"
     leven: "npm:4.1.0"
     type-fest: "npm:5.6.0"
     whatwg-mimetype: "npm:5.0.0"
   languageName: unknown
   linkType: soft
 
-"@markuplint/vue-parser@npm:5.0.0-rc.4, @markuplint/vue-parser@workspace:packages/@markuplint/vue-parser":
+"@markuplint/vue-parser@npm:5.0.0, @markuplint/vue-parser@workspace:packages/@markuplint/vue-parser":
   version: 0.0.0-use.local
   resolution: "@markuplint/vue-parser@workspace:packages/@markuplint/vue-parser"
   dependencies:
-    "@markuplint/html-parser": "npm:5.0.0-rc.4"
-    "@markuplint/ml-ast": "npm:5.0.0-rc.4"
-    "@markuplint/parser-utils": "npm:5.0.0-rc.4"
+    "@markuplint/html-parser": "npm:5.0.0"
+    "@markuplint/ml-ast": "npm:5.0.0"
+    "@markuplint/parser-utils": "npm:5.0.0"
     vue-eslint-parser: "npm:10.4.0"
   languageName: unknown
   linkType: soft
@@ -2856,7 +2874,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@markuplint/vue-spec@workspace:packages/@markuplint/vue-spec"
   dependencies:
-    "@markuplint/ml-spec": "npm:5.0.0-rc.4"
+    "@markuplint/ml-spec": "npm:5.0.0"
   languageName: unknown
   linkType: soft
 
@@ -4291,135 +4309,135 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@oxlint/binding-android-arm-eabi@npm:1.59.0":
-  version: 1.59.0
-  resolution: "@oxlint/binding-android-arm-eabi@npm:1.59.0"
+"@oxlint/binding-android-arm-eabi@npm:1.78.0":
+  version: 1.78.0
+  resolution: "@oxlint/binding-android-arm-eabi@npm:1.78.0"
   conditions: os=android & cpu=arm
   languageName: node
   linkType: hard
 
-"@oxlint/binding-android-arm64@npm:1.59.0":
-  version: 1.59.0
-  resolution: "@oxlint/binding-android-arm64@npm:1.59.0"
+"@oxlint/binding-android-arm64@npm:1.78.0":
+  version: 1.78.0
+  resolution: "@oxlint/binding-android-arm64@npm:1.78.0"
   conditions: os=android & cpu=arm64
   languageName: node
   linkType: hard
 
-"@oxlint/binding-darwin-arm64@npm:1.59.0":
-  version: 1.59.0
-  resolution: "@oxlint/binding-darwin-arm64@npm:1.59.0"
+"@oxlint/binding-darwin-arm64@npm:1.78.0":
+  version: 1.78.0
+  resolution: "@oxlint/binding-darwin-arm64@npm:1.78.0"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@oxlint/binding-darwin-x64@npm:1.59.0":
-  version: 1.59.0
-  resolution: "@oxlint/binding-darwin-x64@npm:1.59.0"
+"@oxlint/binding-darwin-x64@npm:1.78.0":
+  version: 1.78.0
+  resolution: "@oxlint/binding-darwin-x64@npm:1.78.0"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@oxlint/binding-freebsd-x64@npm:1.59.0":
-  version: 1.59.0
-  resolution: "@oxlint/binding-freebsd-x64@npm:1.59.0"
+"@oxlint/binding-freebsd-x64@npm:1.78.0":
+  version: 1.78.0
+  resolution: "@oxlint/binding-freebsd-x64@npm:1.78.0"
   conditions: os=freebsd & cpu=x64
   languageName: node
   linkType: hard
 
-"@oxlint/binding-linux-arm-gnueabihf@npm:1.59.0":
-  version: 1.59.0
-  resolution: "@oxlint/binding-linux-arm-gnueabihf@npm:1.59.0"
+"@oxlint/binding-linux-arm-gnueabihf@npm:1.78.0":
+  version: 1.78.0
+  resolution: "@oxlint/binding-linux-arm-gnueabihf@npm:1.78.0"
   conditions: os=linux & cpu=arm
   languageName: node
   linkType: hard
 
-"@oxlint/binding-linux-arm-musleabihf@npm:1.59.0":
-  version: 1.59.0
-  resolution: "@oxlint/binding-linux-arm-musleabihf@npm:1.59.0"
+"@oxlint/binding-linux-arm-musleabihf@npm:1.78.0":
+  version: 1.78.0
+  resolution: "@oxlint/binding-linux-arm-musleabihf@npm:1.78.0"
   conditions: os=linux & cpu=arm
   languageName: node
   linkType: hard
 
-"@oxlint/binding-linux-arm64-gnu@npm:1.59.0":
-  version: 1.59.0
-  resolution: "@oxlint/binding-linux-arm64-gnu@npm:1.59.0"
+"@oxlint/binding-linux-arm64-gnu@npm:1.78.0":
+  version: 1.78.0
+  resolution: "@oxlint/binding-linux-arm64-gnu@npm:1.78.0"
   conditions: os=linux & cpu=arm64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@oxlint/binding-linux-arm64-musl@npm:1.59.0":
-  version: 1.59.0
-  resolution: "@oxlint/binding-linux-arm64-musl@npm:1.59.0"
+"@oxlint/binding-linux-arm64-musl@npm:1.78.0":
+  version: 1.78.0
+  resolution: "@oxlint/binding-linux-arm64-musl@npm:1.78.0"
   conditions: os=linux & cpu=arm64 & libc=musl
   languageName: node
   linkType: hard
 
-"@oxlint/binding-linux-ppc64-gnu@npm:1.59.0":
-  version: 1.59.0
-  resolution: "@oxlint/binding-linux-ppc64-gnu@npm:1.59.0"
+"@oxlint/binding-linux-ppc64-gnu@npm:1.78.0":
+  version: 1.78.0
+  resolution: "@oxlint/binding-linux-ppc64-gnu@npm:1.78.0"
   conditions: os=linux & cpu=ppc64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@oxlint/binding-linux-riscv64-gnu@npm:1.59.0":
-  version: 1.59.0
-  resolution: "@oxlint/binding-linux-riscv64-gnu@npm:1.59.0"
+"@oxlint/binding-linux-riscv64-gnu@npm:1.78.0":
+  version: 1.78.0
+  resolution: "@oxlint/binding-linux-riscv64-gnu@npm:1.78.0"
   conditions: os=linux & cpu=riscv64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@oxlint/binding-linux-riscv64-musl@npm:1.59.0":
-  version: 1.59.0
-  resolution: "@oxlint/binding-linux-riscv64-musl@npm:1.59.0"
+"@oxlint/binding-linux-riscv64-musl@npm:1.78.0":
+  version: 1.78.0
+  resolution: "@oxlint/binding-linux-riscv64-musl@npm:1.78.0"
   conditions: os=linux & cpu=riscv64 & libc=musl
   languageName: node
   linkType: hard
 
-"@oxlint/binding-linux-s390x-gnu@npm:1.59.0":
-  version: 1.59.0
-  resolution: "@oxlint/binding-linux-s390x-gnu@npm:1.59.0"
+"@oxlint/binding-linux-s390x-gnu@npm:1.78.0":
+  version: 1.78.0
+  resolution: "@oxlint/binding-linux-s390x-gnu@npm:1.78.0"
   conditions: os=linux & cpu=s390x & libc=glibc
   languageName: node
   linkType: hard
 
-"@oxlint/binding-linux-x64-gnu@npm:1.59.0":
-  version: 1.59.0
-  resolution: "@oxlint/binding-linux-x64-gnu@npm:1.59.0"
+"@oxlint/binding-linux-x64-gnu@npm:1.78.0":
+  version: 1.78.0
+  resolution: "@oxlint/binding-linux-x64-gnu@npm:1.78.0"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@oxlint/binding-linux-x64-musl@npm:1.59.0":
-  version: 1.59.0
-  resolution: "@oxlint/binding-linux-x64-musl@npm:1.59.0"
+"@oxlint/binding-linux-x64-musl@npm:1.78.0":
+  version: 1.78.0
+  resolution: "@oxlint/binding-linux-x64-musl@npm:1.78.0"
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
 
-"@oxlint/binding-openharmony-arm64@npm:1.59.0":
-  version: 1.59.0
-  resolution: "@oxlint/binding-openharmony-arm64@npm:1.59.0"
+"@oxlint/binding-openharmony-arm64@npm:1.78.0":
+  version: 1.78.0
+  resolution: "@oxlint/binding-openharmony-arm64@npm:1.78.0"
   conditions: os=openharmony & cpu=arm64
   languageName: node
   linkType: hard
 
-"@oxlint/binding-win32-arm64-msvc@npm:1.59.0":
-  version: 1.59.0
-  resolution: "@oxlint/binding-win32-arm64-msvc@npm:1.59.0"
+"@oxlint/binding-win32-arm64-msvc@npm:1.78.0":
+  version: 1.78.0
+  resolution: "@oxlint/binding-win32-arm64-msvc@npm:1.78.0"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"@oxlint/binding-win32-ia32-msvc@npm:1.59.0":
-  version: 1.59.0
-  resolution: "@oxlint/binding-win32-ia32-msvc@npm:1.59.0"
+"@oxlint/binding-win32-ia32-msvc@npm:1.78.0":
+  version: 1.78.0
+  resolution: "@oxlint/binding-win32-ia32-msvc@npm:1.78.0"
   conditions: os=win32 & cpu=ia32
   languageName: node
   linkType: hard
 
-"@oxlint/binding-win32-x64-msvc@npm:1.59.0":
-  version: 1.59.0
-  resolution: "@oxlint/binding-win32-x64-msvc@npm:1.59.0"
+"@oxlint/binding-win32-x64-msvc@npm:1.78.0":
+  version: 1.78.0
+  resolution: "@oxlint/binding-win32-x64-msvc@npm:1.78.0"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
@@ -5518,12 +5536,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:24.5.1":
-  version: 24.5.1
-  resolution: "@types/node@npm:24.5.1"
+"@types/node@npm:24.13.3":
+  version: 24.13.3
+  resolution: "@types/node@npm:24.13.3"
   dependencies:
-    undici-types: "npm:~7.12.0"
-  checksum: 10c0/5f0cb038be789b58170e616452ba1f8ebb85bf2fbce58a7e32b1eb08391f64f5e31a9cdbccefbfcd9e6d73b66b564b5e037a1d678ab20213559a32e1d7b6ce17
+    undici-types: "npm:~7.18.0"
+  checksum: 10c0/a5bc08f49b9581dcdca90e02cd77197a3c799840807664942e5cd5161a553d4d2ae8064f7e3294410d748d7d098b5c1848be7fa50c06f29c4193ab16be4e59eb
   languageName: node
   linkType: hard
 
@@ -5703,25 +5721,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vitest/expect@npm:4.1.5":
-  version: 4.1.5
-  resolution: "@vitest/expect@npm:4.1.5"
+"@vitest/expect@npm:4.1.11":
+  version: 4.1.11
+  resolution: "@vitest/expect@npm:4.1.11"
   dependencies:
     "@standard-schema/spec": "npm:^1.1.0"
     "@types/chai": "npm:^5.2.2"
-    "@vitest/spy": "npm:4.1.5"
-    "@vitest/utils": "npm:4.1.5"
+    "@vitest/spy": "npm:4.1.11"
+    "@vitest/utils": "npm:4.1.11"
     chai: "npm:^6.2.2"
     tinyrainbow: "npm:^3.1.0"
-  checksum: 10c0/5184682304db471aa20024c1154210ad3d6d590afb61646201ce1a15297259f9a35f92f8fad4435bc8a82135e307ddd27c8495f72417d72d9aa139eb281d9e06
+  checksum: 10c0/0aa5e0973aca93a58cbdc3041c6bfed5897e976124965203b96a23b811f4ca403590c7eb15802c8d8366ec27a1db0682451e8a91c4d06617636de262baf86e4b
   languageName: node
   linkType: hard
 
-"@vitest/mocker@npm:4.1.5":
-  version: 4.1.5
-  resolution: "@vitest/mocker@npm:4.1.5"
+"@vitest/mocker@npm:4.1.11":
+  version: 4.1.11
+  resolution: "@vitest/mocker@npm:4.1.11"
   dependencies:
-    "@vitest/spy": "npm:4.1.5"
+    "@vitest/spy": "npm:4.1.11"
     estree-walker: "npm:^3.0.3"
     magic-string: "npm:^0.30.21"
   peerDependencies:
@@ -5732,7 +5750,16 @@ __metadata:
       optional: true
     vite:
       optional: true
-  checksum: 10c0/bcfe97700476130933c7ea33fa670c8d2768a81de5325ce407f901e55c2f66cabbb88a7b6cffb46ddf33dff7d8fc209d769fb298f568e310fbeead9b36f6fdb9
+  checksum: 10c0/3111ea34bd5046f6c70bbd67cf8b89608ee8c41cb27ab2bd61d42f4b68810e9ea16a9a757a71bc254c105f73b407d00ebb6bab1ab0f7f5cdcc9d7d16602a3933
+  languageName: node
+  linkType: hard
+
+"@vitest/pretty-format@npm:4.1.11":
+  version: 4.1.11
+  resolution: "@vitest/pretty-format@npm:4.1.11"
+  dependencies:
+    tinyrainbow: "npm:^3.1.0"
+  checksum: 10c0/ad32525c73807c0b72f38dc29bc51fd5a17879dc650f37995a9c5adbb8526e15f787691f76aa8768448ec7ed5bf5ba2b12329eac8fda1428b4d6b8c036390f71
   languageName: node
   linkType: hard
 
@@ -5745,32 +5772,43 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vitest/runner@npm:4.1.5":
-  version: 4.1.5
-  resolution: "@vitest/runner@npm:4.1.5"
+"@vitest/runner@npm:4.1.11":
+  version: 4.1.11
+  resolution: "@vitest/runner@npm:4.1.11"
   dependencies:
-    "@vitest/utils": "npm:4.1.5"
+    "@vitest/utils": "npm:4.1.11"
     pathe: "npm:^2.0.3"
-  checksum: 10c0/6a03b313a121155f6dd9e32eeb103c0e12440f586bc4ba1f0d77444e44c6df4652a44443718552037463115635b8378e11f35902d90ce1326f77743219fca056
+  checksum: 10c0/3c782b055e9e688e1785f7c8937bd1669bad1b0e5758cb8b844f918f30a324b1d21e174d46c941ce80ebf37f2b89b55b6d619a675025914a1ece6377b95909e2
   languageName: node
   linkType: hard
 
-"@vitest/snapshot@npm:4.1.5":
-  version: 4.1.5
-  resolution: "@vitest/snapshot@npm:4.1.5"
+"@vitest/snapshot@npm:4.1.11":
+  version: 4.1.11
+  resolution: "@vitest/snapshot@npm:4.1.11"
   dependencies:
-    "@vitest/pretty-format": "npm:4.1.5"
-    "@vitest/utils": "npm:4.1.5"
+    "@vitest/pretty-format": "npm:4.1.11"
+    "@vitest/utils": "npm:4.1.11"
     magic-string: "npm:^0.30.21"
     pathe: "npm:^2.0.3"
-  checksum: 10c0/e11bf50d06702331290750a40eaef86078c108df3cd9a52bb1be7b84250048790163f36827525be6a383a4bb1994fc35e6d0c24239a41688b0bb68a1d15d172f
+  checksum: 10c0/35d82a7c2a3e4b57529c30387d568d9106b6bf960189214e5d8cb1f5288cb042305c2e5c7b0b2f8cb56a2c814973de0310bc56d72deb79427bea272b6224190c
   languageName: node
   linkType: hard
 
-"@vitest/spy@npm:4.1.5":
-  version: 4.1.5
-  resolution: "@vitest/spy@npm:4.1.5"
-  checksum: 10c0/fda6b1ee0a2fec1a152d8041aba7a79744c3876863b244d1ed406d02b36e8ccc997edb2e3963d1027d728d3dc5a33813e11bef53a0a14fc7de4de5e721d0f591
+"@vitest/spy@npm:4.1.11":
+  version: 4.1.11
+  resolution: "@vitest/spy@npm:4.1.11"
+  checksum: 10c0/06c68247a8efd21006abe7532fee17f30ba83c8cda3e0b952ef89e278d58058f4b1de69b6bbaa2ed614c568bf4f5769fcc76be42802dedf2bcdd9c0aae601740
+  languageName: node
+  linkType: hard
+
+"@vitest/utils@npm:4.1.11":
+  version: 4.1.11
+  resolution: "@vitest/utils@npm:4.1.11"
+  dependencies:
+    "@vitest/pretty-format": "npm:4.1.11"
+    convert-source-map: "npm:^2.0.0"
+    tinyrainbow: "npm:^3.1.0"
+  checksum: 10c0/a2c1ddc64333458c3e031465c1ee0440a7660fd1b298c54ccbf865ef1e5cf3ebdd6c5c75a5ea235d8a672498b394e7121f992b096f021f45014ab25e9abd1b52
   languageName: node
   linkType: hard
 
@@ -8677,36 +8715,36 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild@npm:0.28.0":
-  version: 0.28.0
-  resolution: "esbuild@npm:0.28.0"
+"esbuild@npm:0.28.1":
+  version: 0.28.1
+  resolution: "esbuild@npm:0.28.1"
   dependencies:
-    "@esbuild/aix-ppc64": "npm:0.28.0"
-    "@esbuild/android-arm": "npm:0.28.0"
-    "@esbuild/android-arm64": "npm:0.28.0"
-    "@esbuild/android-x64": "npm:0.28.0"
-    "@esbuild/darwin-arm64": "npm:0.28.0"
-    "@esbuild/darwin-x64": "npm:0.28.0"
-    "@esbuild/freebsd-arm64": "npm:0.28.0"
-    "@esbuild/freebsd-x64": "npm:0.28.0"
-    "@esbuild/linux-arm": "npm:0.28.0"
-    "@esbuild/linux-arm64": "npm:0.28.0"
-    "@esbuild/linux-ia32": "npm:0.28.0"
-    "@esbuild/linux-loong64": "npm:0.28.0"
-    "@esbuild/linux-mips64el": "npm:0.28.0"
-    "@esbuild/linux-ppc64": "npm:0.28.0"
-    "@esbuild/linux-riscv64": "npm:0.28.0"
-    "@esbuild/linux-s390x": "npm:0.28.0"
-    "@esbuild/linux-x64": "npm:0.28.0"
-    "@esbuild/netbsd-arm64": "npm:0.28.0"
-    "@esbuild/netbsd-x64": "npm:0.28.0"
-    "@esbuild/openbsd-arm64": "npm:0.28.0"
-    "@esbuild/openbsd-x64": "npm:0.28.0"
-    "@esbuild/openharmony-arm64": "npm:0.28.0"
-    "@esbuild/sunos-x64": "npm:0.28.0"
-    "@esbuild/win32-arm64": "npm:0.28.0"
-    "@esbuild/win32-ia32": "npm:0.28.0"
-    "@esbuild/win32-x64": "npm:0.28.0"
+    "@esbuild/aix-ppc64": "npm:0.28.1"
+    "@esbuild/android-arm": "npm:0.28.1"
+    "@esbuild/android-arm64": "npm:0.28.1"
+    "@esbuild/android-x64": "npm:0.28.1"
+    "@esbuild/darwin-arm64": "npm:0.28.1"
+    "@esbuild/darwin-x64": "npm:0.28.1"
+    "@esbuild/freebsd-arm64": "npm:0.28.1"
+    "@esbuild/freebsd-x64": "npm:0.28.1"
+    "@esbuild/linux-arm": "npm:0.28.1"
+    "@esbuild/linux-arm64": "npm:0.28.1"
+    "@esbuild/linux-ia32": "npm:0.28.1"
+    "@esbuild/linux-loong64": "npm:0.28.1"
+    "@esbuild/linux-mips64el": "npm:0.28.1"
+    "@esbuild/linux-ppc64": "npm:0.28.1"
+    "@esbuild/linux-riscv64": "npm:0.28.1"
+    "@esbuild/linux-s390x": "npm:0.28.1"
+    "@esbuild/linux-x64": "npm:0.28.1"
+    "@esbuild/netbsd-arm64": "npm:0.28.1"
+    "@esbuild/netbsd-x64": "npm:0.28.1"
+    "@esbuild/openbsd-arm64": "npm:0.28.1"
+    "@esbuild/openbsd-x64": "npm:0.28.1"
+    "@esbuild/openharmony-arm64": "npm:0.28.1"
+    "@esbuild/sunos-x64": "npm:0.28.1"
+    "@esbuild/win32-arm64": "npm:0.28.1"
+    "@esbuild/win32-ia32": "npm:0.28.1"
+    "@esbuild/win32-x64": "npm:0.28.1"
   dependenciesMeta:
     "@esbuild/aix-ppc64":
       optional: true
@@ -8762,7 +8800,7 @@ __metadata:
       optional: true
   bin:
     esbuild: bin/esbuild
-  checksum: 10c0/8acd95c238ec6c4a9d16163277faf228a8994b642d187b3fe667ffbb469008e6748cde144fdc3c175bf8e78ee49e15a0ed9b9f183fdb5fcea1772f87fb1372a4
+  checksum: 10c0/29cd456a79ce35ac2c7e05fe871330416b2c395c045d849653f843e51378d6e0d6e774d6dcd01b35f4e83238a29bf8decd04fcd34b3780c589a250b21e5f92bb
   languageName: node
   linkType: hard
 
@@ -11854,6 +11892,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"language-subtag-registry@npm:0.4.2":
+  version: 0.4.2
+  resolution: "language-subtag-registry@npm:0.4.2"
+  checksum: 10c0/c86ad5e27c94a9f200a7f06e70b2308d5a5fc1397fcd70aa47224a96d0fe8adbfb6ecab052e4ab7913f47aaa076fc981b912246fb00b875a23f4f839e6eb35c2
+  languageName: node
+  linkType: hard
+
 "lcov-parse@npm:^1.0.0":
   version: 1.0.0
   resolution: "lcov-parse@npm:1.0.0"
@@ -12619,7 +12664,7 @@ __metadata:
     lint-staged: "npm:16.4.0"
     npm-run-all2: "npm:8.0.4"
     oxfmt: "npm:0.46.0"
-    oxlint: "npm:1.59.0"
+    oxlint: "npm:1.78.0"
     textlint: "npm:15.5.4"
     textlint-filter-rule-comments: "npm:1.3.0"
     textlint-rule-preset-ja-spacing: "npm:2.4.3"
@@ -12632,7 +12677,7 @@ __metadata:
     typedoc-plugin-mdn-links: "npm:5.1.1"
     typedoc-plugin-resolve-crossmodule-references: "npm:0.3.3"
     typescript: "npm:6.0.3"
-    vitest: "npm:4.1.5"
+    vitest: "npm:4.1.11"
   dependenciesMeta:
     "@vscode/vsce-sign":
       built: true
@@ -12645,22 +12690,49 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"markuplint-vscode@workspace:vscode":
+  version: 0.0.0-use.local
+  resolution: "markuplint-vscode@workspace:vscode"
+  dependencies:
+    "@markuplint-dev/tsconfig": "npm:5.0.0"
+    "@markuplint/file-resolver": "npm:5.0.0"
+    "@markuplint/i18n": "npm:5.0.0"
+    "@markuplint/ml-spec": "npm:5.0.0"
+    "@types/mocha": "npm:10.0.10"
+    "@types/node": "npm:22.17.0"
+    "@types/semver": "npm:7.7.1"
+    "@types/vscode": "npm:1.99.1"
+    "@vscode/test-electron": "npm:2.5.2"
+    "@vscode/vsce": "npm:3.9.1"
+    debug: "npm:4.4.3"
+    esbuild: "npm:0.28.1"
+    glob: "npm:13.0.6"
+    markuplint: "npm:5.0.0"
+    mocha: "npm:11.7.5"
+    semver: "npm:7.7.4"
+    typescript: "npm:6.0.3"
+    vscode-languageclient: "npm:9.0.1"
+    vscode-languageserver: "npm:9.0.1"
+    vscode-languageserver-textdocument: "npm:1.0.12"
+  languageName: unknown
+  linkType: soft
+
 "markuplint@workspace:*, markuplint@workspace:packages/markuplint":
   version: 0.0.0-use.local
   resolution: "markuplint@workspace:packages/markuplint"
   dependencies:
-    "@markuplint/cli-utils": "npm:5.0.0-rc.4"
+    "@markuplint/cli-utils": "npm:5.0.0"
     "@markuplint/core": "npm:5.0.0-rc.4"
-    "@markuplint/file-resolver": "npm:5.0.0-rc.4"
-    "@markuplint/html-parser": "npm:5.0.0-rc.4"
-    "@markuplint/html-spec": "npm:5.0.0-rc.4"
-    "@markuplint/i18n": "npm:5.0.0-rc.4"
-    "@markuplint/ml-ast": "npm:5.0.0-rc.4"
-    "@markuplint/ml-config": "npm:5.0.0-rc.4"
-    "@markuplint/ml-core": "npm:5.0.0-rc.4"
-    "@markuplint/ml-spec": "npm:5.0.0-rc.4"
-    "@markuplint/rules": "npm:5.0.0-rc.4"
-    "@markuplint/shared": "npm:5.0.0-rc.4"
+    "@markuplint/file-resolver": "npm:5.0.0"
+    "@markuplint/html-parser": "npm:5.0.0"
+    "@markuplint/html-spec": "npm:5.0.0"
+    "@markuplint/i18n": "npm:5.0.0"
+    "@markuplint/ml-ast": "npm:5.0.0"
+    "@markuplint/ml-config": "npm:5.0.0"
+    "@markuplint/ml-core": "npm:5.0.0"
+    "@markuplint/ml-spec": "npm:5.0.0"
+    "@markuplint/rules": "npm:5.0.0"
+    "@markuplint/shared": "npm:5.0.0"
     "@types/debug": "npm:4.1.13"
     chokidar: "npm:5.0.0"
     debug: "npm:4.4.3"
@@ -14775,31 +14847,32 @@ __metadata:
   languageName: node
   linkType: hard
 
-"oxlint@npm:1.59.0":
-  version: 1.59.0
-  resolution: "oxlint@npm:1.59.0"
+"oxlint@npm:1.78.0":
+  version: 1.78.0
+  resolution: "oxlint@npm:1.78.0"
   dependencies:
-    "@oxlint/binding-android-arm-eabi": "npm:1.59.0"
-    "@oxlint/binding-android-arm64": "npm:1.59.0"
-    "@oxlint/binding-darwin-arm64": "npm:1.59.0"
-    "@oxlint/binding-darwin-x64": "npm:1.59.0"
-    "@oxlint/binding-freebsd-x64": "npm:1.59.0"
-    "@oxlint/binding-linux-arm-gnueabihf": "npm:1.59.0"
-    "@oxlint/binding-linux-arm-musleabihf": "npm:1.59.0"
-    "@oxlint/binding-linux-arm64-gnu": "npm:1.59.0"
-    "@oxlint/binding-linux-arm64-musl": "npm:1.59.0"
-    "@oxlint/binding-linux-ppc64-gnu": "npm:1.59.0"
-    "@oxlint/binding-linux-riscv64-gnu": "npm:1.59.0"
-    "@oxlint/binding-linux-riscv64-musl": "npm:1.59.0"
-    "@oxlint/binding-linux-s390x-gnu": "npm:1.59.0"
-    "@oxlint/binding-linux-x64-gnu": "npm:1.59.0"
-    "@oxlint/binding-linux-x64-musl": "npm:1.59.0"
-    "@oxlint/binding-openharmony-arm64": "npm:1.59.0"
-    "@oxlint/binding-win32-arm64-msvc": "npm:1.59.0"
-    "@oxlint/binding-win32-ia32-msvc": "npm:1.59.0"
-    "@oxlint/binding-win32-x64-msvc": "npm:1.59.0"
+    "@oxlint/binding-android-arm-eabi": "npm:1.78.0"
+    "@oxlint/binding-android-arm64": "npm:1.78.0"
+    "@oxlint/binding-darwin-arm64": "npm:1.78.0"
+    "@oxlint/binding-darwin-x64": "npm:1.78.0"
+    "@oxlint/binding-freebsd-x64": "npm:1.78.0"
+    "@oxlint/binding-linux-arm-gnueabihf": "npm:1.78.0"
+    "@oxlint/binding-linux-arm-musleabihf": "npm:1.78.0"
+    "@oxlint/binding-linux-arm64-gnu": "npm:1.78.0"
+    "@oxlint/binding-linux-arm64-musl": "npm:1.78.0"
+    "@oxlint/binding-linux-ppc64-gnu": "npm:1.78.0"
+    "@oxlint/binding-linux-riscv64-gnu": "npm:1.78.0"
+    "@oxlint/binding-linux-riscv64-musl": "npm:1.78.0"
+    "@oxlint/binding-linux-s390x-gnu": "npm:1.78.0"
+    "@oxlint/binding-linux-x64-gnu": "npm:1.78.0"
+    "@oxlint/binding-linux-x64-musl": "npm:1.78.0"
+    "@oxlint/binding-openharmony-arm64": "npm:1.78.0"
+    "@oxlint/binding-win32-arm64-msvc": "npm:1.78.0"
+    "@oxlint/binding-win32-ia32-msvc": "npm:1.78.0"
+    "@oxlint/binding-win32-x64-msvc": "npm:1.78.0"
   peerDependencies:
-    oxlint-tsgolint: ">=0.18.0"
+    oxlint-tsgolint: ">=7.0.2001"
+    vite-plus: "*"
   dependenciesMeta:
     "@oxlint/binding-android-arm-eabi":
       optional: true
@@ -14842,9 +14915,11 @@ __metadata:
   peerDependenciesMeta:
     oxlint-tsgolint:
       optional: true
+    vite-plus:
+      optional: true
   bin:
     oxlint: bin/oxlint
-  checksum: 10c0/68614addf6b6a95df8a0c8ba764ee09d2d6d1693b55b62a4f31eda3be63915d24666a11b31dfe1fabbe88e1d7ab814243a1e7ecb40db87d0f567135d17f44e2c
+  checksum: 10c0/f9f1f9c6dfd7794ec9ef38ead5850bf2e9714249401fed1cfd2f1df76993b43de62b710521329f02f4e376cf015528c1eb9dc06f8a9f5688658166abca210ad9
   languageName: node
   linkType: hard
 
@@ -15440,7 +15515,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss-selector-parser@npm:7.1.1, postcss-selector-parser@npm:^7.0.0":
+"postcss-selector-parser@npm:7.1.3":
+  version: 7.1.3
+  resolution: "postcss-selector-parser@npm:7.1.3"
+  dependencies:
+    cssesc: "npm:^3.0.0"
+    util-deprecate: "npm:^1.0.2"
+  checksum: 10c0/5ae5f56bd1f208c02b5d38193ac2efe0864296cd971862d654c7976b8c08016df4d604b57e4228eb27dce03a480d013b7d9075087278ee68d32589f0f2270f76
+  languageName: node
+  linkType: hard
+
+"postcss-selector-parser@npm:^7.0.0":
   version: 7.1.1
   resolution: "postcss-selector-parser@npm:7.1.1"
   dependencies:
@@ -18524,13 +18609,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"undici-types@npm:~7.12.0":
-  version: 7.12.0
-  resolution: "undici-types@npm:7.12.0"
-  checksum: 10c0/326e455bbc0026db1d6b81c76a1cf10c63f7e2f9821db2e24fdc258f482814e5bfa8481f8910d07c68e305937c5c049610fdc441c5e8b7bb0daca7154fb8a306
-  languageName: node
-  linkType: hard
-
 "undici-types@npm:~7.18.0":
   version: 7.18.2
   resolution: "undici-types@npm:7.18.2"
@@ -18938,17 +19016,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vitest@npm:4.1.5":
-  version: 4.1.5
-  resolution: "vitest@npm:4.1.5"
+"vitest@npm:4.1.11":
+  version: 4.1.11
+  resolution: "vitest@npm:4.1.11"
   dependencies:
-    "@vitest/expect": "npm:4.1.5"
-    "@vitest/mocker": "npm:4.1.5"
-    "@vitest/pretty-format": "npm:4.1.5"
-    "@vitest/runner": "npm:4.1.5"
-    "@vitest/snapshot": "npm:4.1.5"
-    "@vitest/spy": "npm:4.1.5"
-    "@vitest/utils": "npm:4.1.5"
+    "@vitest/expect": "npm:4.1.11"
+    "@vitest/mocker": "npm:4.1.11"
+    "@vitest/pretty-format": "npm:4.1.11"
+    "@vitest/runner": "npm:4.1.11"
+    "@vitest/snapshot": "npm:4.1.11"
+    "@vitest/spy": "npm:4.1.11"
+    "@vitest/utils": "npm:4.1.11"
     es-module-lexer: "npm:^2.0.0"
     expect-type: "npm:^1.3.0"
     magic-string: "npm:^0.30.21"
@@ -18966,12 +19044,12 @@ __metadata:
     "@edge-runtime/vm": "*"
     "@opentelemetry/api": ^1.9.0
     "@types/node": ^20.0.0 || ^22.0.0 || >=24.0.0
-    "@vitest/browser-playwright": 4.1.5
-    "@vitest/browser-preview": 4.1.5
-    "@vitest/browser-webdriverio": 4.1.5
-    "@vitest/coverage-istanbul": 4.1.5
-    "@vitest/coverage-v8": 4.1.5
-    "@vitest/ui": 4.1.5
+    "@vitest/browser-playwright": 4.1.11
+    "@vitest/browser-preview": 4.1.11
+    "@vitest/browser-webdriverio": 4.1.11
+    "@vitest/coverage-istanbul": 4.1.11
+    "@vitest/coverage-v8": 4.1.11
+    "@vitest/ui": 4.1.11
     happy-dom: "*"
     jsdom: "*"
     vite: ^6.0.0 || ^7.0.0 || ^8.0.0
@@ -19001,8 +19079,8 @@ __metadata:
     vite:
       optional: false
   bin:
-    vitest: vitest.mjs
-  checksum: 10c0/196eaf5e95b45a3f6d3001a2408d7dc6f146c29c873ed4e42e1ad4c9327122934fb3793a12b6ce3b7c25d355e738b20123acc0894ce30358c3370b15f4bd0865
+    vitest: ./vitest.mjs
+  checksum: 10c0/3fa0948cf74adcccc8cbcdb4e6d30ada6933bdfb1816ff99200f3d3b689325b37dc483b22535b57b6d911f7a7b64eaa6a5f8da1606cfe7f2466f48000c21e296
   languageName: node
   linkType: hard
 
@@ -19058,33 +19136,6 @@ __metadata:
   checksum: 10c0/8a0838d77c98a211c76e54bd3a6249fc877e4e1a73322673fb0e921168d8e91de4f170f1d4ff7e8b6289d0698207afc6aba6662d4c1cd8e4bd7cae96afd6b0c2
   languageName: node
   linkType: hard
-
-"vscode-markuplint@workspace:vscode":
-  version: 0.0.0-use.local
-  resolution: "vscode-markuplint@workspace:vscode"
-  dependencies:
-    "@markuplint-dev/tsconfig": "npm:5.0.0-rc.4"
-    "@markuplint/file-resolver": "npm:5.0.0-rc.4"
-    "@markuplint/i18n": "npm:5.0.0-rc.4"
-    "@markuplint/ml-spec": "npm:5.0.0-rc.4"
-    "@types/mocha": "npm:10.0.10"
-    "@types/node": "npm:22.17.0"
-    "@types/semver": "npm:7.7.1"
-    "@types/vscode": "npm:1.99.1"
-    "@vscode/test-electron": "npm:2.5.2"
-    "@vscode/vsce": "npm:3.9.1"
-    debug: "npm:4.4.3"
-    esbuild: "npm:0.28.0"
-    glob: "npm:13.0.6"
-    markuplint: "npm:5.0.0-rc.4"
-    mocha: "npm:11.7.5"
-    semver: "npm:7.7.4"
-    typescript: "npm:6.0.3"
-    vscode-languageclient: "npm:9.0.1"
-    vscode-languageserver: "npm:9.0.1"
-    vscode-languageserver-textdocument: "npm:1.0.12"
-  languageName: unknown
-  linkType: soft
 
 "vscode-uri@npm:^3.1.0":
   version: 3.1.0

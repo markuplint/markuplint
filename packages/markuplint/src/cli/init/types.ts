@@ -16,7 +16,16 @@ export type Langs =
 	| 'nunjucks'
 	| 'liquid';
 
-export type Category = 'validation' | 'a11y' | 'naming-convention' | 'style' | 'maintainability';
+export type Category =
+	| 'syntax'
+	| 'structure'
+	| 'attributes'
+	| 'references'
+	| 'forms'
+	| 'a11y'
+	| 'style'
+	| 'maintainability'
+	| 'compat';
 
 export type RuleSettingMode =
 	// Customize

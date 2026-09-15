@@ -94,6 +94,15 @@ describe('cleanOptions', () => {
 			value: true,
 		});
 	});
+
+	test('keeps reasonOnly', () => {
+		expect(cleanOptions({ severity: 'error', value: true, reason: 'because', reasonOnly: true })).toStrictEqual({
+			severity: 'error',
+			value: true,
+			reason: 'because',
+			reasonOnly: true,
+		});
+	});
 });
 
 test('exchangeValueOnRule', () => {

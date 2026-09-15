@@ -40,29 +40,31 @@ test('[permitted-contents-invalid-001] <div>', () => {
 });
 
 test('[permitted-contents-invalid-002] <audio>', () => {
-	expect(c('<audio></audio>')).toStrictEqual([[]]);
-	expect(c('<audio><span></span></audio>')).toStrictEqual([['span*']]);
-	expect(c('<audio><source></source><span></span></audio>')).toStrictEqual([['span*']]);
-	expect(c('<audio><source></source><track></track><span></span></audio>')).toStrictEqual([['span*']]);
+	// The transparent element itself is kept in the flattened list (#3928) so
+	// the parent's content model can still evaluate its own placement.
+	expect(c('<audio></audio>')).toStrictEqual([['audio']]);
+	expect(c('<audio><span></span></audio>')).toStrictEqual([['audio', 'span*']]);
+	expect(c('<audio><source></source><span></span></audio>')).toStrictEqual([['audio', 'span*']]);
+	expect(c('<audio><source></source><track></track><span></span></audio>')).toStrictEqual([['audio', 'span*']]);
 });
 
 describe('non-conditional mode', () => {
 	test('[permitted-contents-invalid-003] <a> with multiple children produces single pattern', () => {
 		const result = c('<a><span></span><em></em></a>', false);
-		expect(result).toStrictEqual([['span*', 'em*']]);
+		expect(result).toStrictEqual([['a', 'span*', 'em*']]);
 	});
 
 	test('[permitted-contents-invalid-004] multiple sibling <a> elements produce single pattern', () => {
 		const result = c('<a><span></span></a><a><em></em></a>', false);
-		expect(result).toStrictEqual([['span*', 'em*']]);
+		expect(result).toStrictEqual([['a', 'span*', 'a', 'em*']]);
 	});
 
 	test('[permitted-contents-invalid-005] 12 sibling <a> elements with 2 children each produce single pattern', () => {
 		const tags = Array.from({ length: 12 }, (_, i) => '<a><span></span><em></em></a>').join('');
 		const result = c(tags, false);
 		expect(result).toHaveLength(1);
-		// Each <a> contributes 2 children (span* + em*) = 24 total
-		expect(result[0]).toHaveLength(24);
+		// Each <a> contributes itself plus 2 children (a + span* + em*) = 36 total
+		expect(result[0]).toHaveLength(36);
 	});
 });
 
@@ -72,10 +74,10 @@ describe('MAX_PATTERNS cap', () => {
 		const tags = Array.from({ length: 10 }, () => '<a href>{#if x}<span>s</span>{/if}</a>').join('');
 		const result = svelteC(tags);
 		expect(result).toHaveLength(1024);
-		// First pattern: every branch taken
-		expect(result[0]).toStrictEqual(Array.from({ length: 10 }, () => 'span*'));
-		// Last pattern: no branch taken — branch distinction is preserved
-		expect(result.at(-1)).toStrictEqual([]);
+		// First pattern: every branch taken — each <a> keeps itself (#3928) plus its span
+		expect(result[0]).toStrictEqual(Array.from({ length: 10 }, () => ['a', 'span*']).flat());
+		// Last pattern: no branch taken — branch distinction is preserved, but each <a> itself remains
+		expect(result.at(-1)).toStrictEqual(Array.from({ length: 10 }, () => 'a'));
 	});
 
 	test('[permitted-contents-issue-3895-002] 11th conditional sibling exceeds the cap and merges branches', () => {
@@ -85,9 +87,10 @@ describe('MAX_PATTERNS cap', () => {
 		const tags = Array.from({ length: 11 }, () => '<a href>{#if x}<span>s</span>{/if}</a>').join('');
 		const result = svelteC(tags);
 		expect(result).toHaveLength(1024);
-		expect(result[0]).toStrictEqual(Array.from({ length: 11 }, () => 'span*'));
+		expect(result[0]).toStrictEqual(Array.from({ length: 11 }, () => ['a', 'span*']).flat());
 		// Even the all-branches-empty pattern receives the merged children —
-		// the cap loses the branch distinction for the 11th sibling
-		expect(result.at(-1)).toStrictEqual(['span*']);
+		// the cap loses the branch distinction for the 11th sibling, but every
+		// <a> (including the first 10, resolved before the cap was hit) keeps itself
+		expect(result.at(-1)).toStrictEqual([...Array.from({ length: 11 }, () => 'a'), 'span*']);
 	});
 });

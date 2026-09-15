@@ -76,7 +76,7 @@ Markuplint supports the **`:has` selector**. Combined with combinator operators,
       // Apply to all elements that are <picture>'s child and previous siblings of <img>
       "selector": "picture img:has(~)",
       "rules": {
-        "required-attr": true
+        "require-attr": true
       }
     }
   ]
@@ -96,14 +96,14 @@ Markuplint applies **specificity** the same way as **CSS Selectors**, allowing y
       // Apply
       "selector": "#id.class-name", // Specificity: 1-1-0
       "rules": {
-        "required-attr": true
+        "require-attr": true
       }
     },
     {
       // Don't apply (Ignore)
       "selector": ".class-name", // Specificity: 0-1-0
       "rules": {
-        "required-attr": false
+        "require-attr": false
       }
     }
   ]
@@ -124,14 +124,14 @@ Markuplint supports the **`:where` selector**, which always has zero specificity
       // Don't apply
       "selector": ":where(#id.class-name)", // Specificity: 0-0-0
       "rules": {
-        "required-attr": true
+        "require-attr": true
       }
     },
     {
       // Apply (Overwrite)
       "selector": ".class-name", // Specificity: 0-1-0
       "rules": {
-        "required-attr": false
+        "require-attr": false
       }
     }
   ]
@@ -234,7 +234,7 @@ Use **regular expressions** to select elements by matching the **node name**, **
         "attrValue": "/^[a-z]+$/"
       },
       "rules": {
-        "required-attr": "true"
+        "require-attr": "true"
       }
     }
   ]

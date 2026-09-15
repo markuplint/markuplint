@@ -302,12 +302,25 @@ interface Config {
 }
 ```
 
+#### `deprecation`
+
+非推奨のルール名に関する通知（v5 のルール体系再設計より前の名前で、現在も解決はできるが v6 で削除される予定のもの）の深刻度を制御します。デフォルトは `"warning"` です。`"off"` または `false` を設定するとこの通知を抑制できます。
+
+```json class=config
+{
+  "severity": {
+    "deprecation": "off"
+  }
+}
+```
+
 #### インターフェイス {#severity/interface}
 
 ```ts
 interface Config {
   severity?: {
     parseError?: 'error' | 'warning' | 'info' | 'off' | boolean;
+    deprecation?: 'error' | 'warning' | 'info' | 'off' | boolean;
   };
 }
 ```
@@ -394,7 +407,7 @@ interface Config {
     "a11y/*": false,
 
     // ベースルール名で無効化（詳細は下記参照）
-    "id-duplication": false
+    "no-duplicate-id": false
   }
 }
 ```
@@ -408,30 +421,30 @@ interface Config {
   "rules": {
     "my-checks/validation": {
       "rules": {
-        "id-duplication": true,
-        "invalid-attr": true
+        "no-duplicate-id": true,
+        "no-invalid-attr-value": true
       }
     }
   }
 }
 ```
 
-設定に`"id-duplication": false`を追加すると、グループ内の該当ベースルールだけが無効化されます：
+設定に`"no-duplicate-id": false`を追加すると、グループ内の該当ベースルールだけが無効化されます：
 
 ```json class=config
 {
   "rules": {
     "my-checks/validation": {
       "rules": {
-        "id-duplication": false,
-        "invalid-attr": true
+        "no-duplicate-id": false,
+        "no-invalid-attr-value": true
       }
     }
   }
 }
 ```
 
-同グループ内の`invalid-attr`は影響を受けずに有効のままです。これは全グループに適用されます — `a11y/id-duplication`と`html-standard/id-duplication`の両方が`id-duplication`ベースルールをラップしている場合、両方とも無効化されます。この機能は後方互換性のために提供されています。
+同グループ内の`no-invalid-attr-value`は影響を受けずに有効のままです。これは全グループに適用されます — `a11y/id-duplication`と`html-standard/id-duplication`の両方が`no-duplicate-id`ベースルールをラップしている場合、両方とも無効化されます。この機能は後方互換性のために提供されています。
 
 一覧は[プリセット内の名前付きルール](/docs/guides/presets#named-rules)を参照してください。
 
@@ -445,7 +458,7 @@ interface Config {
     "my-project/no-accesskey": {
       "specConformance": "non-normative",
       "rules": {
-        "invalid-attr": {
+        "no-restricted-attr": {
           "options": { "disallowAttrs": ["accesskey"] }
         }
       }
@@ -484,13 +497,13 @@ MarkuplintのHTML仕様に基づく組み込みプリセットルールにはこ
   "rules": {
     // 単一エントリ: ルール名は "my-project/no-accesskey"
     "my-project/no-accesskey": {
-      "rules": { "invalid-attr": { "options": { "disallowAttrs": ["accesskey"] } } }
+      "rules": { "no-restricted-attr": { "options": { "disallowAttrs": ["accesskey"] } } }
     },
-    // 複数エントリ: ルール名は "my-project/checks/attr-duplication"
+    // 複数エントリ: ルール名は "my-project/checks/no-duplicate-attr"
     // と "my-project/checks/class-naming"
     "my-project/checks": {
       "rules": {
-        "attr-duplication": true,
+        "no-duplicate-attr": true,
         "class-naming": "/[a-z]+/"
       }
     }
@@ -558,9 +571,9 @@ type NamedRuleGroup = {
 
 ただし、プリセットが作成した仮想ルールをベースルール名や名前空間ワイルドカードで制御できます:
 
-- **ベースルール名**: `"wai-aria": false` は仮想ルール `a11y/wai-aria`（および `wai-aria` をラップする他のすべての仮想ルール）を無効化します
+- **ベースルール名**: `"no-unknown-role": false` は仮想ルール `a11y/wai-aria/non-existent-role`（および `no-unknown-role` をラップする他のすべての仮想ルール）を無効化します
 - **名前空間ワイルドカード**: `"a11y/*": false` は `a11y/` 名前空間内のすべての仮想ルールを無効化します
-- **オプション上書き**: `"wai-aria": { "options": { ... } }` は `wai-aria` をラップする仮想ルールにオプションを伝播します
+- **オプション上書き**: `"no-unknown-role": { "options": { ... } }` は `no-unknown-role` をラップする仮想ルールにオプションを伝播します
 
 :::note
 名前空間ワイルドカードは `false` のみ受け付けます。オプションを指定するには、具体的なルール名（ベースまたは仮想）を使用してください。
@@ -1109,6 +1122,29 @@ const Icon = props => <img src={props.src} />;
 }
 ```
 
+#### `auto`（オブジェクト形式） {#pretenders/auto}
+
+:::caution[実験的機能]
+このプロパティは**実験的機能**であり、将来のリリースで変更される可能性があります。
+:::
+
+オブジェクト形式を使用する場合、`auto: true`を指定すると、`data`/`scan`をあらかじめ設定しなくても、リント対象ファイル自身のimportグラフをスキャンしてプリテンダーを解決します:
+
+```json class=config
+{
+  "pretenders": {
+    "auto": true
+  }
+}
+```
+
+設定済みのファイル集合を一度だけ事前スキャンする`scan`とは異なり、`auto`はリント対象ごとに実行され、リント対象ファイルが実際に（推移的に）importしているコンポーネントのみを対象とします。そのため、無関係なファイルにある同名コンポーネントが衝突することは構造的にありません。ただし、次のトレードオフがあります:
+
+- ファイルシステムの監視対象は設定ファイルのみのため、watchモードやエディタセッション中に、設定を変更せずにimport先のコンポーネントファイルを変更すると、結果が古いままになることがあります。
+- `auto`を指定できるのは`pretenders`の**オブジェクト形式**のみです。配列形式の省略記法では指定できません。
+
+同じセレクターに対しては、`files`・`imports`・`data`・`scan`など他のプリテンダー解決元が先に解決されるため、`auto`よりも優先されます。
+
 #### インターフェイス {#pretenders/interface}
 
 ```ts
@@ -1118,6 +1154,7 @@ interface Config {
     | {
         data?: Pretender[];
         scan?: PretenderScanConfig[]; // @experimental
+        auto?: boolean; // @experimental
       };
 }
 

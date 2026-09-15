@@ -84,7 +84,7 @@
       // <picture> の子で <img> より前に現れるすべての要素に適用
       "selector": "picture img:has(~)",
       "rules": {
-        "required-attr": true
+        "require-attr": true
       }
     }
   ]
@@ -104,14 +104,14 @@
       // 適用される
       "selector": "#id.class-name", // 詳細度: 1-1-0
       "rules": {
-        "required-attr": true
+        "require-attr": true
       }
     },
     {
       // 適用されない (除外される)
       "selector": ".class-name", // 詳細度: 0-1-0
       "rules": {
-        "required-attr": false
+        "require-attr": false
       }
     }
   ]
@@ -135,14 +135,14 @@
       // 適用されない
       "selector": ":where(#id.class-name)", // 詳細度: 0-0-0
       "rules": {
-        "required-attr": true
+        "require-attr": true
       }
     },
     {
       // 適用される（上書き）
       "selector": ".class-name", // 詳細度: 0-1-0
       "rules": {
-        "required-attr": false
+        "require-attr": false
       }
     }
   ]
@@ -245,7 +245,7 @@ WAI-ARIAのバージョンは`:role(form|1.1)`のようにパイプで区切っ�
         "attrValue": "/^[a-z]+$/"
       },
       "rules": {
-        "required-attr": "true"
+        "require-attr": "true"
       }
     }
   ]

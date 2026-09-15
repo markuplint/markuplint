@@ -327,12 +327,25 @@ Controls the severity of parse errors. Set to `"off"` or `false` to suppress par
 }
 ```
 
+#### `deprecation`
+
+Controls the severity of deprecated-rule-name notices (a rule name from before the v5 rule-system redesign that still resolves but will be removed in v6). Defaults to `"warning"`. Set to `"off"` or `false` to suppress these notices.
+
+```json class=config
+{
+  "severity": {
+    "deprecation": "off"
+  }
+}
+```
+
 #### Interface {#severity/interface}
 
 ```ts
 interface Config {
   severity?: {
     parseError?: 'error' | 'warning' | 'info' | 'off' | boolean;
+    deprecation?: 'error' | 'warning' | 'info' | 'off' | boolean;
   };
 }
 ```
@@ -424,7 +437,7 @@ Presets define named rules using the `namespace/rule-name` format. These named r
     "a11y/*": false,
 
     // Disable by base rule name (see explanation below)
-    "id-duplication": false
+    "no-duplicate-id": false
   }
 }
 ```
@@ -438,30 +451,30 @@ Setting a base rule name to `false` disables it inside every named rule group th
   "rules": {
     "my-checks/validation": {
       "rules": {
-        "id-duplication": true,
-        "invalid-attr": true
+        "no-duplicate-id": true,
+        "no-invalid-attr-value": true
       }
     }
   }
 }
 ```
 
-Adding `"id-duplication": false` to your config is equivalent to reaching into the group and disabling that specific base rule:
+Adding `"no-duplicate-id": false` to your config is equivalent to reaching into the group and disabling that specific base rule:
 
 ```json class=config
 {
   "rules": {
     "my-checks/validation": {
       "rules": {
-        "id-duplication": false,
-        "invalid-attr": true
+        "no-duplicate-id": false,
+        "no-invalid-attr-value": true
       }
     }
   }
 }
 ```
 
-The `invalid-attr` rule in the same group remains active. This applies across all groups — if both `a11y/id-duplication` and `html-standard/id-duplication` wrap the `id-duplication` base rule, both are disabled. This is provided for backward compatibility.
+The `no-invalid-attr-value` rule in the same group remains active. This applies across all groups — if both `a11y/id-duplication` and `html-standard/id-duplication` wrap the `no-duplicate-id` base rule, both are disabled. This is provided for backward compatibility.
 
 See [Named rules in presets](/docs/guides/presets#named-rules) for the full list.
 
@@ -475,7 +488,7 @@ You can define your own named rule groups by using a key that contains `/` and a
     "my-project/no-accesskey": {
       "specConformance": "non-normative",
       "rules": {
-        "invalid-attr": {
+        "no-restricted-attr": {
           "options": { "disallowAttrs": ["accesskey"] }
         }
       }
@@ -514,13 +527,13 @@ When a named rule group contains a single entry, the group key is used directly 
   "rules": {
     // Single entry: rule name is "my-project/no-accesskey"
     "my-project/no-accesskey": {
-      "rules": { "invalid-attr": { "options": { "disallowAttrs": ["accesskey"] } } }
+      "rules": { "no-restricted-attr": { "options": { "disallowAttrs": ["accesskey"] } } }
     },
-    // Multi entry: rule names are "my-project/checks/attr-duplication"
+    // Multi entry: rule names are "my-project/checks/no-duplicate-attr"
     // and "my-project/checks/class-naming"
     "my-project/checks": {
       "rules": {
-        "attr-duplication": true,
+        "no-duplicate-attr": true,
         "class-naming": "/[a-z]+/"
       }
     }
@@ -569,6 +582,7 @@ type Rule<T, O> =
       value?: T;
       option?: O;
       reason?: string;
+      reasonOnly?: boolean;
     };
 
 type NamedRuleGroup = {
@@ -591,9 +605,9 @@ It requires either [`selector`](#selector) or [`regexSelector`](#regexselector).
 
 However, you can reference named rules by their base rule name or use namespace wildcards to control virtual rules created by presets:
 
-- **Base rule name**: `"wai-aria": false` disables the virtual rule `a11y/wai-aria` (and any other virtual rule wrapping `wai-aria`)
+- **Base rule name**: `"no-unknown-role": false` disables the virtual rule `a11y/wai-aria/non-existent-role` (and any other virtual rule wrapping `no-unknown-role`)
 - **Namespace wildcard**: `"a11y/*": false` disables all virtual rules in the `a11y/` namespace
-- **Option override**: `"wai-aria": { "options": { ... } }` propagates options to virtual rules wrapping `wai-aria`
+- **Option override**: `"no-unknown-role": { "options": { ... } }` propagates options to virtual rules wrapping `no-unknown-role`
 
 :::note
 Namespace wildcards only accept `false`. To set options, use a specific rule name (base or virtual).
@@ -1149,6 +1163,29 @@ When using the object form, inline pretender definitions go in the `data` field:
 }
 ```
 
+#### `auto` (object form) {#pretenders/auto}
+
+:::caution[Experimental]
+This property is **experimental** and may change in future releases.
+:::
+
+When using the object form, `auto: true` resolves pretenders by scanning the file being linted's own import graph, instead of requiring `data`/`scan` to be configured up front:
+
+```json class=config
+{
+  "pretenders": {
+    "auto": true
+  }
+}
+```
+
+Unlike `scan`, which pre-scans a configured set of files once, `auto` runs per lint target and only ever considers components the linted file actually imports (transitively) — so same-named components in unrelated files can never collide. This comes with two trade-offs:
+
+- Only the config file is filesystem-watched, so in watch mode or an editor session, results can go stale if an imported component file changes without the config changing too.
+- Only the **object form** of `pretenders` can express `auto`; the array shorthand cannot.
+
+Other pretender sources (`files`, `imports`, `data`, `scan`) take precedence over `auto` for the same selector, since they're resolved first.
+
 #### Interface {#pretenders/interface}
 
 ```ts
@@ -1158,6 +1195,7 @@ interface Config {
     | {
         data?: Pretender[];
         scan?: PretenderScanConfig[]; // @experimental
+        auto?: boolean; // @experimental
       };
 }
 
@@ -1262,6 +1300,38 @@ It can override the following properties:
 - [`nodeRules`](#noderules)
 - [`childNodeRules`](#childnoderules)
 - [`pretenders`](#pretenders)
+
+#### When more than one glob matches the same file
+
+Entries are evaluated in the order they're written. Each matching entry is applied on top of the
+previous result, so with the default [`overrideMode`](#overridemode) (`reset`), **the last-matching
+entry replaces every earlier match outright** — not just the base configuration:
+
+```json class=config
+{
+  "rules": {
+    "any-rule": true,
+    "another-rule": true
+  },
+  "overrides": {
+    "./src/**/*": {
+      "rules": { "any-rule": false }
+    },
+    "./src/legacy/**/*": {
+      "rules": { "another-rule": false }
+    }
+  }
+}
+```
+
+For a file under `./src/legacy/`, both entries match. Under `reset` mode, the second entry's
+`{ "rules": { "another-rule": false } }` becomes the entire configuration — `any-rule: false` from
+the first match is discarded along with everything else from the base config, since the second
+entry is applied to the _first entry's result_, and `reset` replaces its input wholesale. Reorder
+the entries, or switch [`overrideMode`](#overridemode) to `merge`, to combine both instead.
+
+Run `markuplint --show-config=details` on the target file to see which `overrides` entries matched
+and in what order (`appliedOverrides` in the output).
 
 #### Interface {#overrides/interface}
 

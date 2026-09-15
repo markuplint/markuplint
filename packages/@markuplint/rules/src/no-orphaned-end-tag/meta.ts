@@ -1,5 +1,5 @@
 export default {
-	category: 'validation',
+	category: 'syntax',
 	fixable: true,
 	// Mirrors parse5's `end-tag-without-matching-open-element`. This rule
 	// reads `text.isBogus` (set by parser-utils from parse5's tree-construction

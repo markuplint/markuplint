@@ -24,6 +24,12 @@
 		// https://www.w3.org/TR/mathml-core/#fractions-mfrac
 		"linethickness": {
 			"type": "<length-percentage>"
+		},
+		"denomalign": {
+			"deprecated": true
+		},
+		"numalign": {
+			"deprecated": true
 		}
 	},
 	"aria": {

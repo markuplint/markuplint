@@ -26,13 +26,6 @@ describe('valid per HTML LS §4.2.5.2 "Encoding declaration"', () => {
 	test('tab and other ASCII whitespace separators', () => {
 		expect(check('text/html;\tcharset=utf-8').matched).toBe(true);
 	});
-
-	test('accepts labels that are valid Encoding LS shapes even if not UTF-8', () => {
-		// Shape check only. HTML LS separately requires UTF-8; that
-		// document-level requirement is out of this checker's scope.
-		expect(check('text/html; charset=iso-8859-1').matched).toBe(true);
-		expect(check('text/html; charset=windows-1252').matched).toBe(true);
-	});
 });
 
 describe('invalid per HTML LS §4.2.5.2', () => {
@@ -69,8 +62,14 @@ describe('invalid per HTML LS §4.2.5.2', () => {
 	});
 
 	test('charset label with forbidden characters', () => {
-		// Encoding LS labels are ASCII alphanumerics + "." + "_" + "-".
 		expect(check('text/html; charset=utf 8').matched).toBe(false);
 		expect(check('text/html; charset=utf@8').matched).toBe(false);
+	});
+
+	test('a valid Encoding LS label that is not "utf-8" is rejected', () => {
+		// HTML LS requires the literal string "charset=utf-8", not any
+		// Encoding-LS-shaped label.
+		expect(check('text/html; charset=iso-8859-1').matched).toBe(false);
+		expect(check('text/html; charset=windows-1252').matched).toBe(false);
 	});
 });

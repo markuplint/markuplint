@@ -142,7 +142,7 @@ describe('multi-pass fix', () => {
 					'case-sensitive-tag-name': true,
 					'case-sensitive-attr-name': true,
 					'attr-value-quotes': true,
-					'attr-duplication': true,
+					'no-duplicate-attr': true,
 				},
 			},
 			undefined,
@@ -209,14 +209,14 @@ describe('multi-pass fix with parsers', () => {
 		expect(fixedCode).toBe('<template><input disabled data-foo="bar" /></template>');
 	});
 
-	test('[multi-pass-fix-fix-008] Vue: attr-value-quotes + attr-duplication', async () => {
+	test('[multi-pass-fix-fix-008] Vue: attr-value-quotes + no-duplicate-attr', async () => {
 		const { fixedCode } = await mlTest(
 			"<template><div class='a' class='b'></div></template>",
 			{
 				parser: { '.*': '@markuplint/vue-parser' },
 				rules: {
 					'attr-value-quotes': { severity: 'error', value: 'double' },
-					'attr-duplication': true,
+					'no-duplicate-attr': true,
 				},
 			},
 			undefined,
@@ -268,7 +268,7 @@ describe('finalPassViolations', () => {
 			{
 				rules: {
 					'attr-value-quotes': true,
-					'invalid-attr': true,
+					'no-unknown-attr': true,
 				},
 			},
 			undefined,
@@ -278,10 +278,10 @@ describe('finalPassViolations', () => {
 		expect(fixedCode).toBe('<img src="x" foo="bar">');
 		// First-pass violations contain both the fixed and the unfixable ones
 		expect(violations.filter(v => v.ruleId === 'attr-value-quotes')).toHaveLength(2);
-		expect(violations.filter(v => v.ruleId === 'invalid-attr')).toHaveLength(1);
+		expect(violations.filter(v => v.ruleId === 'no-unknown-attr')).toHaveLength(1);
 		// finalPassViolations reflect the FIXED code: quotes are resolved,
 		// the invalid attribute remains
-		expect(fixSummary?.finalPassViolations?.map(v => v.ruleId)).toStrictEqual(['invalid-attr']);
+		expect(fixSummary?.finalPassViolations?.map(v => v.ruleId)).toStrictEqual(['no-unknown-attr']);
 	});
 
 	test('[multi-pass-fix-issue-3890-002] empty when every violation is fixed', async () => {

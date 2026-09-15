@@ -6,7 +6,9 @@ import { jsxScanner } from './jsx/index.js';
 import { scan } from './scan.js';
 import { templateScanner } from './template/index.js';
 
-const _ = (filePath: string) => filePath.split('/').join(path.sep);
+// Scanners always emit `/`-delimited filePath now (for stable, cross-platform
+// JSON output), so this is a no-op — kept so call sites don't need touching.
+const _ = (filePath: string) => filePath;
 const fixtureDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures');
 const jsxFixture = (name: string) => path.resolve(fixtureDir, name);
 const templateFixture = (name: string) => path.resolve(fixtureDir, 'template', name);

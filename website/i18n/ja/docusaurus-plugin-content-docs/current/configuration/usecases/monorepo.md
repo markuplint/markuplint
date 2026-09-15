@@ -31,7 +31,8 @@
   "extends": ["markuplint:recommended"],
   "rules": {
     "class-naming": false,
-    "character-reference": false
+    "no-unescaped-char": false,
+    "no-malformed-character-reference": false
   }
 }
 ```

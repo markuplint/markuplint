@@ -116,6 +116,18 @@ describe('mergeConfig', () => {
 		});
 	});
 
+	test('severity shallow merge: deprecation independent of parseError', () => {
+		expect(
+			mergeConfig(
+				{ severity: { parseError: 'error' } },
+				// @ts-ignore -- test with partial config
+				{ severity: { deprecation: 'off' } },
+			),
+		).toStrictEqual({
+			severity: { parseError: 'error', deprecation: 'off' },
+		});
+	});
+
 	test('parserOptions merge', () => {
 		expect(
 			mergeConfig(
@@ -402,6 +414,41 @@ describe('mergeRule', () => {
 			value: 'never',
 			options: { a: 1, b: 3, c: 4 },
 			reason: 'override reason',
+		});
+	});
+
+	test('reasonOnly is overridden by b', () => {
+		expect(
+			mergeRule(
+				{ value: true, reason: 'old', reasonOnly: false },
+				{ value: true, reason: 'new', reasonOnly: true },
+			),
+		).toStrictEqual({
+			value: true,
+			reason: 'new',
+			reasonOnly: true,
+		});
+	});
+
+	test('reasonOnly is preserved from a when b has no reasonOnly', () => {
+		expect(mergeRule({ value: true, reason: 'base', reasonOnly: true }, { severity: 'warning' })).toStrictEqual({
+			value: true,
+			severity: 'warning',
+			reason: 'base',
+			reasonOnly: true,
+		});
+	});
+
+	test('reasonOnly: false in b overrides reasonOnly: true in a', () => {
+		expect(
+			mergeRule(
+				{ value: true, reason: 'old', reasonOnly: true },
+				{ value: true, reason: 'new', reasonOnly: false },
+			),
+		).toStrictEqual({
+			value: true,
+			reason: 'new',
+			reasonOnly: false,
 		});
 	});
 
@@ -805,6 +852,69 @@ describe('Pretenders', () => {
 			},
 		});
 	});
+
+	test('auto: right side wins', () => {
+		expect(
+			mergeConfig(
+				{
+					pretenders: {
+						auto: true,
+					},
+				},
+				{
+					pretenders: {
+						auto: false,
+					},
+				},
+			),
+		).toStrictEqual({
+			pretenders: {
+				auto: false,
+			},
+		});
+	});
+
+	test("auto: an omitted right side leaves the left side's value untouched", () => {
+		expect(
+			mergeConfig(
+				{
+					pretenders: {
+						auto: true,
+					},
+				},
+				{
+					pretenders: {
+						data: [{ selector: 'Comp', as: 'div' }],
+					},
+				},
+			),
+		).toStrictEqual({
+			pretenders: {
+				auto: true,
+				data: [{ selector: 'Comp', as: 'div' }],
+			},
+		});
+	});
+
+	test('auto is preserved when merging with array-form pretenders', () => {
+		expect(
+			mergeConfig(
+				{
+					pretenders: [{ selector: 'Comp', as: 'div' }],
+				},
+				{
+					pretenders: {
+						auto: true,
+					},
+				},
+			),
+		).toStrictEqual({
+			pretenders: {
+				data: [{ selector: 'Comp', as: 'div' }],
+				auto: true,
+			},
+		});
+	});
 });
 
 describe('Named rule group merging', () => {
@@ -870,6 +980,68 @@ describe('Named rule group merging', () => {
 			},
 		);
 		expect(result.rules?.['a11y/id-duplication']).toBe(false);
+	});
+
+	describe('knownNamedRuleGroupKeys (issue #4023)', () => {
+		test('records a key that was a genuine NamedRuleGroup before being disabled by false', () => {
+			const result = mergeConfig(
+				{
+					rules: {
+						'html-standard/no-unclosed-element-at-eof': {
+							specConformance: 'normative',
+							rules: { 'no-unclosed-element-at-eof': true },
+						},
+					},
+				},
+				{
+					rules: {
+						'html-standard/no-unclosed-element-at-eof': false,
+					},
+				},
+			);
+			expect(result.knownNamedRuleGroupKeys).toStrictEqual(['html-standard/no-unclosed-element-at-eof']);
+		});
+
+		test('does not record a key that was never a NamedRuleGroup, even when disabled by false', () => {
+			const result = mergeConfig(
+				{},
+				{
+					rules: {
+						'totally/nonexistent': false,
+					},
+				},
+			);
+			expect(result.knownNamedRuleGroupKeys).toBeUndefined();
+		});
+
+		test('is absent from configs that never touch a named rule group', () => {
+			const result = mergeConfig({ rules: { 'no-duplicate-id': true } }, { rules: { 'require-attr': false } });
+			expect(result.knownNamedRuleGroupKeys).toBeUndefined();
+		});
+
+		test('carries over across an unrelated later merge step', () => {
+			const disabledStep = mergeConfig(
+				{
+					rules: {
+						'html-standard/no-unclosed-element-at-eof': {
+							rules: { 'no-unclosed-element-at-eof': true },
+						},
+					},
+				},
+				{
+					rules: {
+						'html-standard/no-unclosed-element-at-eof': false,
+					},
+				},
+			);
+			// A further merge step (e.g. user overrides) that never touches the
+			// already-collapsed `false` key must still carry the known-group record.
+			const final = mergeConfig(disabledStep, {
+				rules: { 'no-duplicate-id': true },
+			});
+			expect(final.rules?.['html-standard/no-unclosed-element-at-eof']).toBe(false);
+			expect(final.knownNamedRuleGroupKeys).toStrictEqual(['html-standard/no-unclosed-element-at-eof']);
+		});
 	});
 
 	test('named rule group severity overridden by object', () => {

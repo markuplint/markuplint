@@ -441,3 +441,82 @@ test('case insensitivity', () => {
 	expect(check('ON').matched).toBe(true);
 	expect(check('OFF').matched).toBe(true);
 });
+
+test('anchorMantle option (input type=hidden)', () => {
+	// HTML LS §autofill-anchor-mantle: "When wearing the autofill anchor
+	// mantle, the autocomplete attribute [...] must have a value that is
+	// an ordered set of space-separated tokens consisting of just
+	// autofill detail tokens (i.e. the 'on' and 'off' keywords are not
+	// allowed)." Applies to `<input type=hidden>` only.
+	const anchor = checkAutoComplete({ anchorMantle: true });
+
+	// Field names and detail tokens still valid.
+	expect(anchor('name').matched).toBe(true);
+	expect(anchor('given-name').matched).toBe(true);
+	expect(anchor('section-foo billing name').matched).toBe(true);
+	expect(anchor('transaction-currency').matched).toBe(true);
+	expect(anchor('transaction-amount').matched).toBe(true);
+
+	// on/off are rejected regardless of case.
+	expect(anchor('on').matched).toBe(false);
+	expect(anchor('off').matched).toBe(false);
+	expect(anchor('ON').matched).toBe(false);
+	expect(anchor('Off').matched).toBe(false);
+
+	// on/off in non-leading positions are also caught by the anchor-mantle
+	// guard (not the trailing on/off "extra-token" path), so the
+	// diagnostic keeps citing the anchor-mantle spec.
+	expect(anchor('name on').matched).toBe(false);
+	expect(anchor('off name').matched).toBe(false);
+	expect(anchor('section-foo on').matched).toBe(false);
+	expect(anchor('on off').matched).toBe(false);
+
+	// Standalone webauthn is still rejected via the "webauthn must not be
+	// the only token" guard even in anchor mantle — pin so a future refactor
+	// of the anchor guard doesn't accidentally shadow that check.
+	expect(anchor('webauthn').matched).toBe(false);
+
+	// Anchor-mantle rejection cites the spec URL so users can jump straight
+	// to the constraint. Pin this ref so refactors that drop it fail loudly.
+	const rejected = anchor('on');
+	expect(rejected.matched).toBe(false);
+	if (!rejected.matched) {
+		expect(rejected.ref).toBe(
+			'https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill-anchor-mantle',
+		);
+	}
+});
+
+test('anchorMantle + noWebauthn combined', () => {
+	// No production wiring uses both flags today, but the checker is
+	// composable so pin the combined behaviour: on/off rejected first
+	// (anchor mantle gate runs before the backward parse), webauthn
+	// rejected via the noWebauthn branch when it survives the anchor gate.
+	const strict = checkAutoComplete({ anchorMantle: true, noWebauthn: true });
+	expect(strict('name').matched).toBe(true);
+	expect(strict('on').matched).toBe(false);
+	expect(strict('name webauthn').matched).toBe(false);
+});
+
+test('noWebauthn option', () => {
+	// HTML LS §attr-fe-autocomplete-webauthn: "webauthn is only valid for
+	// input and textarea elements." The `noWebauthn` variant is applied to
+	// `<select>` (and would apply to any other element that accepts the
+	// autocomplete attribute but not the webauthn token).
+	const noWebauthn = checkAutoComplete({ noWebauthn: true });
+
+	// Plain autofill grammar still works.
+	expect(noWebauthn('on').matched).toBe(true);
+	expect(noWebauthn('off').matched).toBe(true);
+	expect(noWebauthn('name').matched).toBe(true);
+	expect(noWebauthn('given-name').matched).toBe(true);
+	expect(noWebauthn('section-foo billing work email').matched).toBe(true);
+	expect(noWebauthn('home tel').matched).toBe(true);
+
+	// Every webauthn combination becomes invalid.
+	expect(noWebauthn('webauthn').matched).toBe(false);
+	expect(noWebauthn('name webauthn').matched).toBe(false);
+	expect(noWebauthn('tel webauthn').matched).toBe(false);
+	expect(noWebauthn('section-foo billing work tel-country-code webauthn').matched).toBe(false);
+	expect(noWebauthn('WebAuthn').matched).toBe(false);
+});

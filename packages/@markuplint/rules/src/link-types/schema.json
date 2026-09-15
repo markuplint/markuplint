@@ -24,7 +24,7 @@
 							}
 						}
 					],
-					"default": false,
+					"default": true,
 					"description": "Whether to allow Microformats link type keywords. `false` allows only WHATWG standard keywords. `true` allows all registered Microformats keywords. An array of strings allows only the specified keywords.",
 					"description:ja": "Microformatsのリンクタイプキーワードを許可するかどうか。`false`はWHATWG標準キーワードのみを許可します。`true`は登録済みのすべてのMicroformatsキーワードを許可します。文字列の配列は指定されたキーワードのみを許可します。"
 				}

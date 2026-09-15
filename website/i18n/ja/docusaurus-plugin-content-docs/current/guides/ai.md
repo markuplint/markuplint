@@ -4,10 +4,10 @@ AIコーディングアシスタントを活用すると、Markuplintをより�
 
 ## 警告を理解する
 
-Markuplintが違反を報告したら、エラーメッセージをAIアシスタントに貼り付けて、説明と修正方法を聞くことができます。各違反にはルール名（例: `attr-duplication`）が含まれており、AIが内容を調べてくれます。
+Markuplintが違反を報告したら、エラーメッセージをAIアシスタントに貼り付けて、説明と修正方法を聞くことができます。各違反にはルール名（例: `no-duplicate-attr`）が含まれており、AIが内容を調べてくれます。
 
 ```
-The attribute name is duplicated Markuplint(attr-duplication) [Ln 11, Col 45]
+The attribute name is duplicated Markuplint(no-duplicate-attr) [Ln 11, Col 45]
 ```
 
 AIアシスタントに聞いてみましょう:
@@ -45,15 +45,17 @@ Markuplintは[Claude Code](https://claude.ai/claude-code)向けのインスト�
 npx skills add markuplint/markuplint@markuplint
 npx skills add markuplint/markuplint@markuplint-setup
 npx skills add markuplint/markuplint@markuplint-configure
+npx skills add markuplint/markuplint@migrations/v4-v5
 ```
 
 ### 利用可能なスキル
 
-| スキル                 | タイプ             | 説明                                                                                                                   |
-| ---------------------- | ------------------ | ---------------------------------------------------------------------------------------------------------------------- |
-| `markuplint`           | 自動読み込み       | リファレンスナレッジ — 違反メッセージの解釈、CLI使用法、設定パターン。HTMLファイルの作業時にClaudeが自動的に参照。     |
-| `markuplint-setup`     | スラッシュコマンド | ゼロからのセットアップ — フレームワーク検出、プリセット選択、初回リント、Bulk Suppressionsを含むルールごとの採用判断。 |
-| `markuplint-configure` | スラッシュコマンド | ルールの追加・削除・調整 — 適切なスコープ（プロジェクト / ファイル / 要素）を判断して設定変更を提案。                  |
+| スキル                 | タイプ             | 説明                                                                                                                                                      |
+| ---------------------- | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `markuplint`           | 自動読み込み       | リファレンスナレッジ — 違反メッセージの解釈、CLI使用法、設定パターン。HTMLファイルの作業時にClaudeが自動的に参照。                                        |
+| `markuplint-setup`     | スラッシュコマンド | ゼロからのセットアップ — フレームワーク検出、プリセット選択、初回リント、Bulk Suppressionsを含むルールごとの採用判断。                                    |
+| `markuplint-configure` | スラッシュコマンド | ルールの追加・削除・調整 — 適切なスコープ（プロジェクト / ファイル / 要素）を判断して設定変更を提案。                                                     |
+| `migrate4-5`           | 自動ロード         | Markuplint v4からv5への移行 — 破壊的変更を確認し、パッケージと設定を段階的に更新。インストールパス: `@migrations/v4-v5`（`@migrate4-5` はレガシー別名）。 |
 
 ### 使い方
 

@@ -20,6 +20,11 @@
  *   (`@markuplint/ml-core`) is the conversion boundary: these become
  *   ordinary violations (`parse-error` / `config-error`) merged into lint
  *   results, because the user can fix them like any other violation.
+ *   Deprecated-rule-name notices are a third synthetic ruleId on the same
+ *   boundary (`rule-deprecation`) — kept structured end-to-end
+ *   (`RuleAliasWarning[]` from `@markuplint/ml-config`'s `rule-aliases.ts`)
+ *   rather than as generic `Error`s, so they never collapse into
+ *   `config-error`.
  *
  * Rules for any new `catch` block in the monorepo:
  *

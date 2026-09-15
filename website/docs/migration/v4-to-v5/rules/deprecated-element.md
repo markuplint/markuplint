@@ -1,57 +1,12 @@
 ---
 sidebar_position: 3
-title: deprecated-element
+title: 'deprecated-element'
 ---
 
-# `deprecated-element` Rule Changes
+# `deprecated-element`
 
-This page covers a scope change in the `deprecated-element` rule. If you relied on this rule to detect non-standard elements, read on.
+Split into `no-obsolete-element` (`error`, HTML LS removed elements) and `no-deprecated-element` (`warning`, MDN/BCD). The alias copies the old setting to both until v6.
 
-## Summary
+v4 `deprecated-element` defaulted to `error` for both kinds. In v5 only obsolete stays `error`.
 
-| Change                                                            | Who is affected                                                   |
-| ----------------------------------------------------------------- | ----------------------------------------------------------------- |
-| Non-standard element detection moved to `no-unsupported-features` | Configs using `deprecated-element` to catch non-standard elements |
-
-## What changed
-
-In v4, `deprecated-element` detected three categories:
-
-- **Deprecated** elements
-- **Obsolete** elements
-- **Non-standard** elements
-
-In v5, non-standard element detection has been moved to the new `no-unsupported-features` rule. `deprecated-element` now only detects deprecated and obsolete elements.
-
-### Before (v4)
-
-`deprecated-element` automatically flagged non-standard elements like `<bgsound>`:
-
-```html
-<!-- Reported by deprecated-element in v4 -->
-<bgsound src="music.mid"></bgsound>
-```
-
-### After (v5)
-
-`deprecated-element` no longer reports non-standard elements.
-
-## How to fix
-
-Enable `no-unsupported-features` with the `checkNonStandard` option:
-
-```json
-{
-  "rules": {
-    "no-unsupported-features": {
-      "options": {
-        "checkNonStandard": true
-      }
-    }
-  }
-}
-```
-
-:::tip
-If you use the `recommended` preset, `no-unsupported-features` is already enabled via the `compat` preset. No action is needed.
-:::
+This rule never checked non-standard elements. That check is the new `no-nonstandard-features` rule (not present in v4). See [Renames and splits](/docs/migration/v4-to-v5/rules/rule-names).

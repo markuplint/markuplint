@@ -34,7 +34,7 @@
 						},
 						"group": {
 							"type": "string",
-							"enum": ["global", "event", "aria", "data", "spread"],
+							"enum": ["global", "event", "aria", "role", "data", "spread"],
 							"description": "A predefined group of attributes."
 						},
 						"order": {

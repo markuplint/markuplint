@@ -12,6 +12,7 @@ export const defaultOptions: Options = {
 	checkingAllowedAccessibilityChildRoles: true,
 	checkingRequiredOwnedElements: true,
 	checkingRequiredAccessibilityParentRole: true,
+	checkingTabRequiresTabpanel: true,
 	checkingPresentationalChildren: false,
 	checkingInteractionInHidden: false,
 	disallowSetImplicitRole: true,

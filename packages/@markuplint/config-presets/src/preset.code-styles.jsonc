@@ -1,1 +1,33 @@
-{}
+{
+	"rules": {
+		/**
+		 * Consistent **attribute name** casing
+		 *
+		 * HTML permits any mix of ASCII upper/lower case in attribute names; this
+		 * is a style preference, not a spec requirement.
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/syntax.html#attributes-2
+		 */
+		"code-styles/case-sensitive-attr-name": {
+			"specConformance": "non-normative",
+			"rules": {
+				"case-sensitive-attr-name": true
+			}
+		},
+
+		/**
+		 * Consistent **tag name** casing
+		 *
+		 * HTML permits any mix of ASCII upper/lower case in tag names; this is a
+		 * style preference, not a spec requirement.
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/syntax.html#syntax-tag-name
+		 */
+		"code-styles/case-sensitive-tag-name": {
+			"specConformance": "non-normative",
+			"rules": {
+				"case-sensitive-tag-name": true
+			}
+		}
+	}
+}

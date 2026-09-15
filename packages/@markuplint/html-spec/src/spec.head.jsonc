@@ -20,7 +20,11 @@
 		"#GlobalEventAttrs": true,
 		"#ARIAAttrs": true
 	},
-	"attributes": {},
+	"attributes": {
+		"profile": {
+			"deprecated": true
+		}
+	},
 	"aria": {
 		"implicitRole": false,
 		"permittedRoles": false,

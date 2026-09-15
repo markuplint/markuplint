@@ -40,6 +40,9 @@ description: select要素にプレースホルダーラベルオプションが�
   <option value="option1">オプション1</option>
   <option value="option2">オプション2</option>
 </select>
+
+<!-- 不正: option要素がない -->
+<select required></select>
 ```
 
 ✅ 正しいコード例

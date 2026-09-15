@@ -282,3 +282,27 @@ test('Stage A error message surfaces the offending value detail to the user', ()
 	expect(result.partName).toMatch(/<length> required for "min-width"/);
 	expect(result.partName).toMatch(/\(/);
 });
+
+test.each([
+	['(min-width:)', '(min-width:)'],
+	['(123)', '(123)'],
+	['screen and (min-width:)', '(min-width:)'],
+])('<general-enclosed> match "%s" is rejected (MQ5 §3 forbids in author stylesheets)', (input, rawExpected) => {
+	const result = check(input);
+	expect(result.matched).toBe(false);
+	if (result.matched) return;
+	expect(result.reason).toBe('syntax-error');
+	expect(result.raw).toBe(rawExpected);
+	expect(result.partName).toMatch(/Media Queries Level 5 §3/);
+	expect(result.partName).toMatch(/general-enclosed/);
+});
+
+test.each(['(foo-bar: 42)', '(-webkit-min-device-pixel-ratio: 2)', '(future-prop: 1em)'])(
+	'unknown-but-well-formed feature %s stays out of <general-enclosed>',
+	input => {
+		const result = check(input);
+		if (!result.matched) {
+			expect(result.partName ?? '').not.toMatch(/general-enclosed/);
+		}
+	},
+);

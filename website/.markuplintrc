@@ -11,7 +11,7 @@
     "scan": [{ "files": "./src/**/*.tsx" }]
   },
   "rules": {
-    "heading-levels": false
+    "no-skipped-heading-level": false
   },
   "nodeRules": [
     {
@@ -22,7 +22,7 @@
             "allowAttrs": ["property", "content"]
           }
         },
-        "required-attr": false
+        "require-attr": false
       }
     },
     {
@@ -50,7 +50,7 @@
         {
           "selector": "img",
           "rules": {
-            "required-attr": false
+            "require-attr": false
           }
         }
       ]

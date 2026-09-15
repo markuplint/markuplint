@@ -4,7 +4,7 @@
 
 ### The quickest way: VS Code extension
 
-Install the [Markuplint extension](https://marketplace.visualstudio.com/items?itemName=markuplint.vscode-markuplint) from the Visual Studio Marketplace, or search "markuplint" in the VS Code extensions panel.
+Install the [Markuplint extension](https://marketplace.visualstudio.com/items?itemName=markuplint.markuplint-vscode) from the Visual Studio Marketplace, or search "markuplint" in the VS Code extensions panel.
 
 ![VS Code extensions panel: searching "markuplint" shows the Markuplint extension by Yusuke Hirao](/img/guides/vscode-search.png)
 
@@ -76,7 +76,7 @@ The [recommended preset](/docs/guides/presets) is applied automatically when no 
 
 #### The required spec
 
-- **Node.js** v22.0.0 or later
+- **Node.js** v24.0.0 or later
 
 ## Next steps
 

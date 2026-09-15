@@ -26,8 +26,11 @@ import { getPosition } from '@markuplint/parser-utils/location';
 import ts from 'typescript';
 
 import { createScanner } from '../create-scanner.js';
+import { collectImportBindings } from '../import-resolver/analyze-jsx-imports.js';
+import { normalizePath } from '../import-resolver/resolve-module-file.js';
 import { PretenderDirector } from '../pretender-director.js';
 
+import { createCachingCompilerHost } from './compiler-host.js';
 import { createIdentity } from './create-identify.js';
 import { finder } from './finder.js';
 import { getAttributes } from './get-attributes.js';
@@ -48,7 +51,18 @@ const {
 	JsxEmit,
 } = ts;
 
-const defaultOptions: Required<PretenderScanJSXOptions> = {
+// `noLib`/`types: []` skip loading lib.d.ts and @types packages, which this
+// scanner never needs (it only walks JSX syntax, never type-checks).
+const COMPILER_OPTIONS: ts.CompilerOptions = {
+	jsx: JsxEmit.ReactJSX,
+	allowJs: true,
+	noLib: true,
+	types: [],
+};
+
+// `sources` has no meaningful default (it's a per-call override), so it's
+// excluded from the Required<> defaults and read straight off `options`.
+const defaultOptions: Required<Omit<PretenderScanJSXOptions, 'sources'>> = {
 	cwd: process.cwd(),
 	asFragment: [/(?:^|\.)provider$/i],
 	ignoreComponentNames: [],
@@ -85,22 +99,18 @@ export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 			asFragment = defaultOptions.asFragment,
 			taggedStylingComponent = defaultOptions.taggedStylingComponent,
 			extendingWrapper = defaultOptions.extendingWrapper,
+			sources,
 		} = options;
 
 		const director = new PretenderDirector();
 
-		const program = createProgram(files, {
-			jsx: JsxEmit.ReactJSX,
-			allowJs: true,
-		});
-
-		// Trigger the binder so that parent pointers are set on AST nodes.
-		// getChildren() relies on node.parent to navigate from JsxOpeningElement
-		// to its containing JsxElement for children slot detection.
-		program.getTypeChecker();
+		const host = createCachingCompilerHost(COMPILER_OPTIONS, sources);
+		const program = createProgram(files, COMPILER_OPTIONS, host);
 
 		for (const sourceFile of program.getSourceFiles()) {
 			if (!sourceFile.isDeclarationFile) {
+				const relFilePath = normalizePath(path.relative(cwd, sourceFile.fileName));
+				director.addImports(relFilePath, collectImportBindings(sourceFile));
 				forEachChild(sourceFile, node => visit(node, sourceFile));
 			}
 		}
@@ -178,7 +188,7 @@ export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 			line: number,
 			col: number,
 		) {
-			const filePath = path.relative(cwd, sourceFile.fileName);
+			const filePath = normalizePath(path.relative(cwd, sourceFile.fileName));
 			const find = finder(sourceFile);
 
 			find(root, isReturnStatement, node => {
@@ -379,7 +389,7 @@ export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 			}
 		}
 
-		return Promise.resolve(director.getPretenders());
+		return Promise.resolve(director.getPretenders(cwd, sources));
 	},
 );
 

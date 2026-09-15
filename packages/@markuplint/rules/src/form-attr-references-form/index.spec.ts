@@ -15,7 +15,7 @@ test('[form-attr-references-form-valid-002] no form attribute on form-associated
 
 test('[form-attr-references-form-valid-003] form attribute on non form-associated element ignored', async () => {
 	// `<div form="x">` is not a form-associated element; the attribute is non-conforming
-	// per the HTML spec but that is invalid-attr's concern, not this rule's.
+	// per the HTML spec but that is no-unknown-attr's concern, not this rule's.
 	const { violations } = await mlRuleTest(rule, '<div form="anything">x</div>');
 	expect(violations).toStrictEqual([]);
 });

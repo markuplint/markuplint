@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/types",
-	"version": "5.0.0-rc.4",
+	"version": "5.0.0",
 	"description": "Type declaration and value checker",
 	"repository": {
 		"type": "git",
@@ -10,7 +10,7 @@
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
 	"engines": {
-		"node": ">=22"
+		"node": ">=24"
 	},
 	"type": "module",
 	"exports": {
@@ -34,12 +34,13 @@
 		"schema:schema": "npx json2ts \"./types.schema.json\" > \"./src/types.schema.ts\""
 	},
 	"dependencies": {
-		"@markuplint/shared": "5.0.0-rc.4",
+		"@markuplint/shared": "5.0.0",
 		"@types/css-tree": "2.3.11",
 		"@types/debug": "4.1.13",
 		"bcp-47": "2.1.0",
 		"css-tree": "3.2.1",
 		"debug": "4.4.3",
+		"language-subtag-registry": "0.4.2",
 		"leven": "4.1.0",
 		"type-fest": "5.6.0",
 		"whatwg-mimetype": "5.0.0"

@@ -12,7 +12,7 @@ permissions:
 
 env:
     BRANCH_NAME: auto/update-html-spec
-    NODE_BUILD_VERSION: 24
+    NODE_BUILD_VERSION: 26
     NX_DISABLE_DB: true
 
 jobs:

@@ -16,6 +16,14 @@
 		"#HTMLFormControlElementAttrs": ["autocomplete", "disabled", "form", "name", "required"]
 	},
 	"attributes": {
+		// https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete
+		// Override of the common `#HTMLFormControlElementAttrs` autocomplete
+		// type: HTML LS §attr-fe-autocomplete-webauthn scopes the `webauthn`
+		// token to input/textarea only. `<select>` accepts every other
+		// autofill grammar production, so the variant type is used here.
+		"autocomplete": {
+			"type": "AutoCompleteNoWebauthn"
+		},
 		// https://html.spec.whatwg.org/multipage/form-elements.html#attr-select-multiple
 		"multiple": {
 			"type": "Boolean"

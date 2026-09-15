@@ -31,6 +31,9 @@
 				"invalidValueDefault": "decimal",
 				"missingValueDefault": "decimal"
 			}
+		},
+		"compact": {
+			"deprecated": true
 		}
 	},
 	"aria": {

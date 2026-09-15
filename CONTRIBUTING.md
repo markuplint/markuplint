@@ -47,15 +47,18 @@ for the setup, command list, and the Docker / `excluded-ids.json` workflow.
 
 The npm packages are published automatically from CI (npm trusted publisher).
 The VS Code extension, in contrast, is published **manually** after the core
-packages land.
+packages land. See [`vscode/CLAUDE.md`](https://github.com/markuplint/markuplint/blob/dev/vscode/CLAUDE.md#release-policy-mandatory)
+for why stable and prerelease versions are distributed through different
+channels.
 
 ### Publisher
 
 The extension is published under the `markuplint` publisher
-(Marketplace ID: `markuplint.vscode-markuplint`).
+(Marketplace ID: `markuplint.markuplint-vscode`).
 
-The legacy `yusukehirao.vscode-markuplint` ID is deprecated from
-`v5.0.0-rc.3` onwards and no longer receives updates.
+The legacy `yusukehirao.vscode-markuplint` listing was deleted from the
+Marketplace at the v5.0.0 release (see `vscode/CLAUDE.md` for why it could
+not simply be left deprecated).
 
 `yarn vscode:login` runs `vsce login markuplint`, so the Azure DevOps
 Personal Access Token you authenticate with must have rights on the
@@ -65,7 +68,7 @@ Personal Access Token you authenticate with must have rights on the
 
 All packages — including the VS Code extension — share a single version
 because Lerna is configured in non-independent mode. The extension version
-always matches the core version (e.g. `5.0.0`, `5.0.0-rc.2`).
+always matches the core version (e.g. `5.0.0`, `5.0.0-rc.4`).
 
 ### Workflow
 

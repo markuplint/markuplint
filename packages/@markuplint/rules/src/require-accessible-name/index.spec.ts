@@ -396,6 +396,42 @@ test('[require-accessible-name-valid-009] The `as` attribute', async () => {
 	expect((await mlRuleTest(rule, '<x-image as="img" alt="Name"></x-image>')).violations).toStrictEqual([]);
 });
 
+test('[require-accessible-name-invalid-014] input[type=button] with an explicit empty value has no accessible name', async () => {
+	const { violations } = await mlRuleTest(rule, '<input type="button" value="">');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: 'Require accessible name',
+			raw: '<input type="button" value="">',
+		},
+	]);
+});
+
+test('[require-accessible-name-invalid-015] input[type=button] with the value attribute omitted has no accessible name (type=button has no default label)', async () => {
+	const { violations } = await mlRuleTest(rule, '<input type="button">');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: 'Require accessible name',
+			raw: '<input type="button">',
+		},
+	]);
+});
+
+test('[require-accessible-name-valid-010] input[type=button] with an empty value falls back to aria-label', async () => {
+	const { violations } = await mlRuleTest(rule, '<input type="button" value="" aria-label="Go">');
+	expect(violations).toStrictEqual([]);
+});
+
+test('[require-accessible-name-valid-011] input[type=button] with a non-empty value has an accessible name from it', async () => {
+	const { violations } = await mlRuleTest(rule, '<input type="button" value="OK">');
+	expect(violations).toStrictEqual([]);
+});
+
 describe('Markdown parser', () => {
 	test('[require-accessible-name-parser-002] email autolink in markdown should have accessible name from text content', async () => {
 		const { violations } = await mlRuleTest(rule, 'user@example.com', {

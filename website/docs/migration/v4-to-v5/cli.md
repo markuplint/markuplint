@@ -1,108 +1,79 @@
 ---
 sidebar_position: 2
-title: CLI
+title: 'CLI'
 ---
 
 # CLI
 
-Changes to CLI flags and behavior in v5.
+## `--fix-dry-run`
 
-## New: `--fix-dry-run`
-
-Preview what `--fix` would change without modifying files. The output is a unified diff:
+Prints a unified diff of what `--fix` would do, without writing files. If both `--fix` and `--fix-dry-run` are set, dry-run wins (stderr warning).
 
 ```bash
 markuplint --fix-dry-run index.html
 ```
 
-```diff
---- a/index.html
-+++ b/index.html
-@@ -1,1 +1,1 @@
--<input required="required" />
-+<input required />
-```
+## `--allow-warnings` default
 
-:::tip
-When both `--fix` and `--fix-dry-run` are specified, `--fix-dry-run` takes precedence. No files are modified.
-:::
+v4: warnings produced a non-zero exit status unless `--allow-warnings` was passed.
 
-## `--allow-warnings` Default Changed
-
-In v4, warnings caused a non-zero exit code by default. In v5, warnings are **allowed by default**.
-
-### Before (v4)
+v5: warnings are allowed by default. Restore v4 with `--no-allow-warnings`.
 
 ```bash
-# Warnings cause exit code 1
-markuplint index.html
-echo $?  # 1 (if warnings exist)
-```
-
-### After (v5)
-
-```bash
-# Warnings are allowed (exit code 0)
-markuplint index.html
-echo $?  # 0 (even if warnings exist)
-```
-
-### What you need to do
-
-:::caution CI pipelines that rely on catching warnings
-Add `--no-allow-warnings` to preserve the old behavior:
-
-```bash
-# v4
+# v4 default
 markuplint index.html
 
-# v5 -- same behavior
+# v5 equivalent
 markuplint --no-allow-warnings index.html
 ```
 
-:::
+`--max-warnings=N` still caps warnings.
 
-If you already used `--allow-warnings`, remove it. It's now the default:
+## `--config` does not merge
 
-```bash
-# v4
-markuplint --allow-warnings index.html
+v4: `--config file` loaded that file **and** auto-discovered `.markuplintrc`, then merged.
 
-# v5 -- no longer needed
-markuplint index.html
-```
+v5: `--config file` loads **only** that file.
 
-:::tip
-Use `--max-warnings=N` for finer control over warning thresholds.
-:::
+If you relied on the merge, `extends` the project config from the file you pass to `--config`.
 
-## `--config` No Longer Merges with Default Config
+## Progressive output by default
 
-In v4, `--config` loaded both the specified file and the auto-discovered config (`.markuplintrc`), then merged them. In v5, `--config` uses **only** the specified file.
+v4: results were printed only after every file had been processed.
 
-### Before (v4)
+v5: results print immediately as each file is processed. Restore v4 with `--no-progressive-output`.
 
 ```bash
-# Both custom.json AND .markuplintrc are loaded and merged
-markuplint --config custom.json index.html
+# v4 default
+markuplint --no-progressive-output "**/*.html"
+
+# v5 default (no flag needed)
+markuplint "**/*.html"
 ```
 
-### After (v5)
+JSON output (`--format json`) is unaffected, and always uses batch mode.
+
+## Diagnosing config drift with `--show-config=details`
+
+If a rule you expected to run silently doesn't fire — or a rename/split alias doesn't seem to
+apply — run `--show-config=details` on the target file before assuming a bug:
 
 ```bash
-# Only custom.json is loaded; .markuplintrc is ignored
-markuplint --config custom.json index.html
+markuplint --show-config=details path/to/file.html
 ```
 
-### What you need to do
+It prints the fully computed configuration for that file as JSON, including:
 
-If you relied on merging, use `extends` in your config file instead:
+- `computedConfig` — the final merged config actually used to lint the file
+- `configurationFile` / `dependencies` — every config file that contributed, in load order. Useful
+  when more than one `.markuplintrc` / `markuplint.config.*` exists in the project and it's unclear
+  which one (or which combination) applies to a given file
+- `ruleDeprecations` — old rule names found in the resolved config and what they expanded to (see
+  [Renames and Splits](/docs/migration/v4-to-v5/rules/rule-names))
+- `appliedOverrides` — which [`overrides`](/docs/configuration/properties#overrides) glob(s)
+  matched this file, in the order they were applied. See
+  [When more than one glob matches the same file](/docs/configuration/properties#when-more-than-one-glob-matches-the-same-file)
+  if more than one appears here — the last one can replace everything before it.
 
-```json
-{
-  "extends": ["./.markuplintrc"],
-  "rules": {
-    "your-custom-rule": true
-  }
-}
-```
+This resolves the config only; it does not run rule resolution, so a `Rule not found` config error
+won't appear here even if the same config would produce one at lint time.

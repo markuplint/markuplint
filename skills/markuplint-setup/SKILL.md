@@ -38,6 +38,8 @@ Use `WebFetch` to get the latest supported syntaxes and preset information:
 - Presets: fetch https://markuplint.dev/docs/guides/presets
 - Framework parsers: fetch https://markuplint.dev/docs/guides/beyond-html
 
+If installing a prerelease version (`alpha` / `beta` / `rc`), use `https://next.markuplint.dev` as the doc base instead — the stable site does not document prerelease behavior.
+
 **Use AskUserQuestion to confirm:**
 
 1. Detected framework — is it correct?

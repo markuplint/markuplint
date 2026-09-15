@@ -3,7 +3,7 @@
 	"private": true,
 	"type": "module",
 	"engines": {
-		"node": ">=22"
+		"node": ">=24"
 	},
 	"scripts": {
 		"all": "run-s up lint clean build test site:up",
@@ -13,12 +13,12 @@
 		"test": "vitest --typecheck run",
 		"test:coverage": "vitest run --coverage",
 		"lint": "run-p lint:oxlint lint:format lint:spellcheck lint:github-actions",
-		"lint:oxlint": "oxlint --fix -c .oxlintrc.json \"./{packages,vscode}/**/*.{ts,mjs,cjs,spec.js}\"",
+		"lint:oxlint": "oxlint --fix -c .oxlintrc.json packages vscode",
 		"lint:format": "oxfmt --write \"./{packages,vscode}/**/*.{ts,tsx,js,cjs,mjs,json,rc,md}\"",
 		"lint:spellcheck": "cspell --no-progress --show-suggestions \"**\"",
 		"lint:github-actions": "actionlint",
 		"lint-check": "run-p lint-check:oxlint lint-check:format lint:spellcheck",
-		"lint-check:oxlint": "oxlint -c .oxlintrc.json \"./{packages,vscode}/**/*.{ts,mjs,cjs,spec.js}\"",
+		"lint-check:oxlint": "oxlint -c .oxlintrc.json packages vscode",
 		"lint-check:format": "oxfmt --check \"./{packages,vscode}/**/*.{ts,tsx,js,cjs,mjs,json,rc,md}\"",
 		"up": "run-s up:deps up:gen up:schema",
 		"up:deps": "npx npm-check-updates --interactive --workspaces --format group",
@@ -90,7 +90,7 @@
 		"lint-staged": "16.4.0",
 		"npm-run-all2": "8.0.4",
 		"oxfmt": "0.46.0",
-		"oxlint": "1.59.0",
+		"oxlint": "1.78.0",
 		"textlint": "15.5.4",
 		"textlint-filter-rule-comments": "1.3.0",
 		"textlint-rule-preset-ja-spacing": "2.4.3",
@@ -103,7 +103,7 @@
 		"typedoc-plugin-mdn-links": "5.1.1",
 		"typedoc-plugin-resolve-crossmodule-references": "0.3.3",
 		"typescript": "6.0.3",
-		"vitest": "4.1.5"
+		"vitest": "4.1.11"
 	},
 	"config": {
 		"commitizen": {

@@ -3,7 +3,7 @@ import path from 'node:path';
 import { describe, test, expect } from 'vitest';
 
 import { setGlobal } from './global-settings.js';
-import { mlTest } from './testing-tool/index.js';
+import { mlTest, mlTestFile } from './testing-tool/index.js';
 
 setGlobal({
 	locale: 'en',
@@ -243,6 +243,62 @@ describe('pretenders.scan integration', () => {
 
 			// Recognized: <button> is valid inside <div>, no violations
 			expect(recognizedViolations.filter(v => v.ruleId === 'permitted-contents')).toStrictEqual([]);
+		});
+	});
+
+	describe('lint-time disambiguation of same-named components (issue #3951)', () => {
+		const collisionDir = path.resolve(jsxFixturesDir, 'collision');
+		const jsxParserConfig = { parser: { '\\.tsx$': '@markuplint/jsx-parser' } };
+
+		test('linting b.tsx resolves its own Item to <li>, not the first-scanned a.tsx Item (<button>)', async () => {
+			// b.tsx: `export const Item = styled.li\`\`; export const B = () => <ul><Item>y</Item></ul>;`
+			// <li> is valid inside <ul>. Before the fix, the scan-order-first `Item` (a.tsx's
+			// <button>) would win regardless of which file is being linted, and <button> is
+			// NOT valid directly inside <ul> — so this would report a permitted-contents violation.
+			const { violations } = await mlTestFile(path.join(collisionDir, 'b.tsx'), {
+				...jsxParserConfig,
+				pretenders: {
+					scan: [{ files: [path.join(collisionDir, 'a.tsx'), path.join(collisionDir, 'b.tsx')] }],
+				},
+				rules: {
+					'permitted-contents': true,
+				},
+			});
+			expect(violations.filter(v => v.ruleId === 'permitted-contents')).toStrictEqual([]);
+		});
+
+		test('linting a.tsx still resolves its own Item to <button>', async () => {
+			const { violations } = await mlTestFile(path.join(collisionDir, 'a.tsx'), {
+				...jsxParserConfig,
+				pretenders: {
+					scan: [{ files: [path.join(collisionDir, 'a.tsx'), path.join(collisionDir, 'b.tsx')] }],
+				},
+				rules: {
+					'permitted-contents': true,
+				},
+			});
+			// <button> is valid content on its own (not nested inside another interactive
+			// element here), so no permitted-contents violation is expected either way —
+			// this asserts the other side of the collision didn't regress.
+			expect(violations.filter(v => v.ruleId === 'permitted-contents')).toStrictEqual([]);
+		});
+
+		test('mlTest (inline source, no real file path) falls back to the pre-existing behavior without throwing', async () => {
+			// With no real file path to resolve imports against, disambiguation can't
+			// confirm a winner and must leave the pretender list untouched — this must
+			// not throw or otherwise break linting.
+			const { violations } = await mlTest('<div><Item></Item></div>', {
+				pretenders: {
+					data: [
+						{ selector: 'Item', as: 'button', filePath: path.join(collisionDir, 'a.tsx') + ':2:14' },
+						{ selector: 'Item', as: 'li', filePath: path.join(collisionDir, 'b.tsx') + ':2:14' },
+					],
+				},
+				rules: {
+					'permitted-contents': true,
+				},
+			});
+			expect(violations.filter(v => v.ruleId === 'permitted-contents')).toStrictEqual([]);
 		});
 	});
 });

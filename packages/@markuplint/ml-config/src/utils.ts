@@ -81,7 +81,7 @@ export function exchangeValueOnRule(rule: AnyRule, data: Readonly<Record<string,
 
 /**
  * Normalizes a rule configuration by extracting the standard fields
- * (`severity`, `value`, `options`, `reason`) and removing `undefined` properties.
+ * (`severity`, `value`, `options`, `reason`, `reasonOnly`) and removing `undefined` properties.
  *
  * @param rule - The rule configuration to normalize
  * @returns A clean rule configuration with only defined properties
@@ -92,6 +92,7 @@ export function cleanOptions(rule: RuleConfig<RuleConfigValue, PlainData>): Rule
 		value: rule.value,
 		options: rule.options,
 		reason: rule.reason,
+		reasonOnly: rule.reasonOnly,
 	};
 	deleteUndefProp(res);
 	return res;

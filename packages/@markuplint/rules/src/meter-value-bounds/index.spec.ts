@@ -122,13 +122,13 @@ test('[meter-value-bounds-invalid-008] optimum below min', async () => {
 });
 
 test('[meter-value-bounds-valid-005] dynamic value attributes are skipped', async () => {
-	// Templating frameworks pass through to invalid-attr / parser layers; the bounds rule
+	// Templating frameworks pass through to no-invalid-attr-value / parser layers; the bounds rule
 	// has nothing to assert without a concrete numeric value.
 	const { violations } = await mlRuleTest(rule, '<meter value="{{ score }}" max="10">{{ score }}</meter>');
 	expect(violations.length).toBe(0);
 });
 
-test('[meter-value-bounds-valid-006] unparsable specified value is left to invalid-attr', async () => {
+test('[meter-value-bounds-valid-006] unparsable specified value is left to no-invalid-attr-value', async () => {
 	const { violations } = await mlRuleTest(rule, '<meter value="abc" max="10">abc</meter>');
 	expect(violations.length).toBe(0);
 });

@@ -3,8 +3,8 @@
 	"definitions": {
 		"value": {
 			"type": "boolean",
-			"description": "Disallow more than one form-control descendant of a label element per HTML LS §4.10.4.",
-			"description:ja": "HTML LS §4.10.4 が定める「label要素の配下にフォームコントロール子孫は最大1個」というルールを強制します。"
+			"description": "Enforce the descendant-control constraints on a label element per HTML LS §4.10.4. Disallow more than one form-control descendant; additionally disallow any descendant control when `for` references an external labelable element.",
+			"description:ja": "HTML LS §4.10.4 が定める `label` 要素の子孫コントロール制約を強制します。フォームコントロールの子孫は最大1個まで。加えて、`for` 属性が外部の labelable 要素を参照している場合は子孫コントロールを一切許可しません。"
 		}
 	},
 	"oneOf": [

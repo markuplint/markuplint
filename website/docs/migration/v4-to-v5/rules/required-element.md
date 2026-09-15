@@ -1,32 +1,19 @@
 ---
 sidebar_position: 2
-title: required-element
+title: 'required-element'
 ---
 
-# `required-element` Rule Changes
+# `required-element`
 
-This page covers a default value change in the `required-element` rule. If you use this rule to check for required child elements, read on.
+Renamed to `require-element`. Alias until v6. See [Renames and splits](/docs/migration/v4-to-v5/rules/rule-names).
 
-## Summary
+## `ignoreOmittedElements` default
 
-| Change                                            | Who is affected                                           |
-| ------------------------------------------------- | --------------------------------------------------------- |
-| `ignoreOmittedElements` default: `false` → `true` | Configs relying on ghost elements to satisfy requirements |
+v4 default: `false` — parser-inserted ghost nodes (for example omitted `<tbody>`) **satisfied** the requirement.
 
-## What changed
-
-HTML allows certain tags to be omitted. For example, `<tbody>` is optional inside `<table>`. When omitted, the HTML parser still creates a "ghost" node for it internally.
-
-:::caution Breaking Change
-In v5, ghost elements are **ignored** by default. Only elements explicitly written in the source code satisfy the `required-element` check.
-:::
-
-### Before (v4)
-
-The ghost `<tbody>` satisfied the requirement. No violation was reported:
+v5 default: `true` — only elements present in the source count.
 
 ```html
-<!-- No violation in v4 -->
 <table>
   <tr>
     <td>Text</td>
@@ -34,40 +21,9 @@ The ghost `<tbody>` satisfied the requirement. No violation was reported:
 </table>
 ```
 
-```json
-{
-  "nodeRules": [
-    {
-      "selector": "table",
-      "rules": {
-        "required-element": ["tbody"]
-      }
-    }
-  ]
-}
-```
+With `required-element` / `require-element`: `["tbody"]` on `table`, v4 was clean; v5 reports.
 
-### After (v5)
-
-The same config now reports a violation because the ghost `<tbody>` is ignored.
-
-## How to fix
-
-You have two options.
-
-**Option 1: Write the element explicitly** (recommended):
-
-```html
-<table>
-  <tbody>
-    <tr>
-      <td>Text</td>
-    </tr>
-  </tbody>
-</table>
-```
-
-**Option 2: Restore the v4 behavior** by setting `ignoreOmittedElements` to `false`:
+Restore v4:
 
 ```json
 {
@@ -75,18 +31,12 @@ You have two options.
     {
       "selector": "table",
       "rules": {
-        "required-element": {
+        "require-element": {
           "value": ["tbody"],
-          "options": {
-            "ignoreOmittedElements": false
-          }
+          "options": { "ignoreOmittedElements": false }
         }
       }
     }
   ]
 }
 ```
-
-:::tip
-Writing elements explicitly makes your HTML clearer and avoids relying on parser-generated ghost nodes. Option 1 is recommended.
-:::

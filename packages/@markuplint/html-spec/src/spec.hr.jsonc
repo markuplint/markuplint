@@ -10,7 +10,24 @@
 		"#GlobalEventAttrs": true,
 		"#ARIAAttrs": true
 	},
-	"attributes": {},
+	"attributes": {
+		// MDN dropped the deprecated badge; HTML presentational attrs remain deprecated.
+		"align": {
+			"deprecated": true
+		},
+		"color": {
+			"deprecated": true
+		},
+		"noshade": {
+			"deprecated": true
+		},
+		"size": {
+			"deprecated": true
+		},
+		"width": {
+			"deprecated": true
+		}
+	},
 	"aria": {
 		"implicitRole": "separator",
 		"permittedRoles": ["presentation", "none"],

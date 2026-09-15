@@ -9,7 +9,7 @@ description: >
   cross-platform/cross-runtime compatibility (Windows, Deno, Bun).
   Language- and framework-agnostic — works with any repository.
   Trigger this skill on keywords: code review, test, coverage, QA, quality check,
-  test generation, refactoring, review, test, coverage, refactor.
+  test generation, refactoring.
   Always use this skill when the user requests a PR review or test improvement.
 ---
 
@@ -108,7 +108,7 @@ Test names should state the spec ("calling sort on an empty list does not throw"
 
 ### 9a. Rule Test ID Convention (markuplint-specific)
 
-Every `test()` in `packages/@markuplint/rules/src/**/*.spec.ts` **MUST** have a unique `[rule-name-category-NNN]` ID prefix (categories: `valid`, `invalid`, `fix`, `parser`, `issue-NNNN`). Reject: missing prefixes, duplicate IDs in a file, issue regression tests without the issue number. Verify with `node .claude/commands/scripts/list-rule-test.mjs --no-id` — output must be empty.
+Every `test()` in rule spec files — `packages/@markuplint/rules/src/<rule-name>/**/*.spec.ts` — **MUST** have a unique `[rule-name-category-NNN]` ID prefix (categories: `valid`, `invalid`, `fix`, `parser`, `issue-NNNN`). Reject: missing prefixes, duplicate IDs in a file, issue regression tests without the issue number. Verify with `node .claude/skills/list-rule-test/scripts/list-rule-test.mjs --no-id` — the only expected hits are repo-wide meta specs directly under `src/` (e.g. `mirrors-parse-error-codes.spec.ts`), which are exempt.
 
 ### 10. Cross-Platform and Cross-Runtime Compatibility
 

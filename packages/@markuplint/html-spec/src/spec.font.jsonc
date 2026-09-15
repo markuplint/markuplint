@@ -1,0 +1,27 @@
+// https://html.spec.whatwg.org/multipage/obsolete.html#font
+{
+	"obsolete": true,
+	"contentModel": {
+		"contents": true
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {
+		"color": {
+			"deprecated": true
+		},
+		"face": {
+			"deprecated": true
+		},
+		"size": {
+			"deprecated": true
+		}
+	},
+	"aria": {
+		"permittedRoles": true,
+		"implicitRole": false
+	}
+}

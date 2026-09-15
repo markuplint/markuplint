@@ -7,7 +7,7 @@ import type { Severity, SeverityOptions, Violation } from '@markuplint/ml-config
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 
-import { resolveFiles } from '@markuplint/file-resolver';
+import { ConfigProvider, resolveFiles } from '@markuplint/file-resolver';
 import { ViolationCollector } from '@markuplint/ml-core';
 import { isFatalError } from '@markuplint/shared';
 
@@ -22,9 +22,27 @@ import {
 	resolveSuppressionsPath,
 	writeSuppressionsFile,
 } from '../suppressions/index.js';
+import { CONFIG_LEVEL_RULE_IDS, dedupeConfigLevelViolations } from '../dedupe-config-violations.js';
 
 import { outputDryRunDiff } from './dry-run-output.js';
 import { output, outputSummary } from './output.js';
+
+/**
+ * Validates a `--severity-*` flag's raw string value against the uniform
+ * single-value form both `--severity-parse-error` and `--severity-deprecation`
+ * accept, shared so adding another such flag doesn't mean copy-pasting this
+ * check again.
+ *
+ * @returns the validated value, or `undefined` if unset or not one of
+ * `"error"`, `"warning"`, `"off"`.
+ */
+function parseSeverityFlag(value: string | undefined): Severity | 'off' | undefined {
+	const normalized = value?.toLowerCase();
+	if (normalized != null && ['error', 'warning', 'off'].includes(normalized)) {
+		return normalized as Severity | 'off';
+	}
+	return undefined;
+}
 
 export async function command(files: readonly Readonly<Target>[], options: CLIOptions, apiOptions?: APIOptions) {
 	const fixDryRun = options.fixDryRun;
@@ -78,13 +96,48 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 	const collector = new ViolationCollector(options.maxCount);
 	const processedFiles: string[] = [];
 	const skippedFiles: string[] = [];
+	// See `dedupeConfigLevelViolations` for why this Set needs to persist
+	// across the whole run (not per file).
+	const seenConfigMessages = new Set<string>();
 	const filesContent = new Map<string, { sourceCode: string; fixedCode: string }>();
 	const engines = new Map<string, MLEngine>();
-	const severityParseError = options.severityParseError?.toLowerCase();
-	const severity: SeverityOptions =
-		severityParseError != null && ['error', 'warning', 'off'].includes(severityParseError)
-			? { parseError: severityParseError as Severity | 'off' }
-			: {};
+	// Shared across every file in this run so its config cache — keyed by
+	// resolved config `names`, not by target file — actually helps: config
+	// loading/merging/plugin-resolution is done once per distinct config,
+	// not once per file. See #3997.
+	const configProvider = new ConfigProvider();
+	const parsedSeverityParseError = parseSeverityFlag(options.severityParseError);
+	const parsedSeverityDeprecation = parseSeverityFlag(options.severityDeprecation);
+	const severity: SeverityOptions = {
+		...(parsedSeverityParseError != null && { parseError: parsedSeverityParseError }),
+		...(parsedSeverityDeprecation != null && { deprecation: parsedSeverityDeprecation }),
+	};
+
+	// Progressive output prints each file's own violations as soon as that
+	// file is processed, ahead of the two whole-run passes that batch output
+	// waits for: suppressions (applied once at the end, below, via
+	// `applySuppressions`, since scope resolution and the "unused entry"
+	// report need the complete result set) and `--max-count` truncation
+	// (enforced by `collector.pushWithFile`'s running total across files,
+	// including which file the limit is hit within and which later files are
+	// skipped entirely). Printing per file ahead of either pass would show
+	// violations, or omit a skipped-file notice, that the run's own summary
+	// and exit code then contradict. Rather than duplicate that truncation
+	// and suppression logic in the progressive branch, fall back to batch
+	// output for the whole run whenever either is in play; --suppress and
+	// --prune-suppressions manage the suppressions file directly and are
+	// unaffected.
+	let progressiveOutput = options.progressiveOutput;
+	if (progressiveOutput && options.maxCount > 0) {
+		progressiveOutput = false;
+	}
+	if (progressiveOutput && !isSuppressMode && !isPruneMode) {
+		const suppressionsFilePathForCheck = resolveSuppressionsPath(options.suppressionsLocation);
+		const existingSuppressions = await readSuppressionsFile(suppressionsFilePathForCheck);
+		if (Object.keys(existingSuppressions).length > 0) {
+			progressiveOutput = false;
+		}
+	}
 
 	for (const file of fileList) {
 		// Check if collector is already locked (max-count reached)
@@ -105,6 +158,7 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 			severity,
 			experimentalRustCore: options.experimentalRustCore,
 			...apiOptions,
+			configProvider,
 		});
 
 		if (options.showConfig != null) {
@@ -121,6 +175,8 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 					dependencies,
 					plugins: configSet.plugins,
 					errors: configSet.errs,
+					ruleDeprecations: configSet.ruleDeprecations,
+					appliedOverrides: configSet.appliedOverrides ?? [],
 				};
 			} else {
 				data = configSet.config;
@@ -149,12 +205,14 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 		// the exit code and suppressions reflect the written output.
 		// With --fix-dry-run the file is NOT modified, so keep the first-pass
 		// violations, which match the file on disk.
-		const reportedViolations = fixDryRun
+		const violationsBeforeDedupe = fixDryRun
 			? result.violations
 			: (result.fixSummary?.finalPassViolations ?? result.violations);
 
+		const reportedViolations = dedupeConfigLevelViolations(violationsBeforeDedupe, seenConfigMessages);
+
 		// Progressive出力が有効でJSON形式でない場合
-		if (options.progressiveOutput && format !== 'json') {
+		if (progressiveOutput && format !== 'json') {
 			// 即座に出力
 			output(
 				{
@@ -310,7 +368,7 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 	}
 
 	// Progressive出力が無効の場合のみループ後に出力
-	if (!options.progressiveOutput) {
+	if (!progressiveOutput) {
 		// Output per file - include processed files without violations
 		for (const filePath of processedFiles) {
 			const violations = outputViolationsByFile.get(filePath) || [];
@@ -359,7 +417,11 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 
 	for (const filePath of processedFiles) {
 		const violations = outputViolationsByFile.get(filePath) || [];
-		if (violations.length > 0) {
+		// A file whose only violations are config-level (`CONFIG_LEVEL_RULE_IDS`)
+		// didn't fail on its own content — the config issue is reported once
+		// for the whole run (see the dedupe above), not attributable to this
+		// particular file.
+		if (violations.some(violation => !CONFIG_LEVEL_RULE_IDS.has(violation.ruleId))) {
 			failedFileCount++;
 		}
 		for (const violation of violations) {

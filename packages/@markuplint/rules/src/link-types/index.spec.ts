@@ -129,8 +129,19 @@ describe('Body-ok: fragment mode', () => {
 });
 
 describe('Microformats control', () => {
-	test('[link-types-invalid-008] default: <link rel="apple-touch-icon"> — not allowed', async () => {
+	test('[link-types-valid-018] default (allowMicroformats: true): <link rel="apple-touch-icon"> — allowed', async () => {
+		// HTML LS §4.6.6 the rel attribute requires conformance checkers to accept
+		// microformats-wiki-registered keywords, so this is the spec-conformant default.
 		const { violations } = await mlRuleTest(rule, '<link rel="apple-touch-icon">');
+		expect(violations.length).toBe(0);
+	});
+
+	test('[link-types-invalid-008] allowMicroformats: false — <link rel="apple-touch-icon"> — not allowed (explicit opt-out)', async () => {
+		const { violations } = await mlRuleTest(rule, '<link rel="apple-touch-icon">', {
+			rule: {
+				options: { allowMicroformats: false },
+			},
+		});
 		expect(violations.length).toBe(1);
 		expect(violations[0]?.message).toBe('The "apple-touch-icon" keyword is not allowed');
 	});

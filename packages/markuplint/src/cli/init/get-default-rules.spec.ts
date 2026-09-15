@@ -5,8 +5,8 @@ import { getDefaultRules } from './get-default-rules.js';
 test('default-rules', () => {
 	const defaultRules = getDefaultRules();
 	expect(defaultRules).toStrictEqual({
-		'attr-duplication': {
-			category: 'validation',
+		'no-duplicate-attr': {
+			category: 'syntax',
 			defaultValue: true,
 		},
 		'attr-order': {
@@ -25,72 +25,88 @@ test('default-rules', () => {
 			category: 'style',
 			defaultValue: false,
 		},
-		'character-reference': {
-			category: 'style',
+		'no-malformed-character-reference': {
+			category: 'syntax',
+			defaultValue: true,
+		},
+		'no-unescaped-char': {
+			category: 'syntax',
 			defaultValue: true,
 		},
 		'class-naming': {
-			category: 'naming-convention',
+			category: 'style',
 			defaultValue: false,
 		},
-		'correct-aspect-ratio': {
-			category: 'validation',
-			defaultValue: false,
-		},
-		'deprecated-attr': {
-			category: 'validation',
+		'no-mismatched-aspect-ratio': {
+			category: 'attributes',
 			defaultValue: true,
 		},
-		'deprecated-element': {
-			category: 'validation',
-			defaultValue: true,
-		},
-		'disallowed-element': {
-			category: 'validation',
+		'no-restricted-element': {
+			category: 'structure',
 			defaultValue: [],
 		},
-		doctype: {
-			category: 'validation',
+		'require-doctype': {
+			category: 'structure',
 			defaultValue: 'always',
 		},
-		'end-tag': {
+		'no-obsolete-doctype': {
+			category: 'structure',
+			defaultValue: true,
+		},
+		'require-end-tag': {
 			category: 'style',
 			defaultValue: false,
 		},
 		'form-attr-references-form': {
-			category: 'validation',
+			category: 'references',
 			defaultValue: true,
 		},
 		'head-element-order': {
-			category: 'style',
+			category: 'structure',
 			defaultValue: false,
 		},
-		'heading-levels': {
-			category: 'validation',
+		'no-skipped-heading-level': {
+			category: 'a11y',
 			defaultValue: true,
 		},
-		'id-duplication': {
-			category: 'validation',
+		'no-duplicate-id': {
+			category: 'references',
 			defaultValue: true,
 		},
-		'ineffective-attr': {
-			category: 'style',
+		'no-ineffective-attr': {
+			category: 'attributes',
 			defaultValue: false,
 		},
-		'input-button-non-empty-value': {
-			category: 'validation',
+		'no-input-file-value': {
+			category: 'forms',
 			defaultValue: true,
 		},
-		'input-file-empty-value': {
-			category: 'validation',
+		'input-list-references-datalist': {
+			category: 'references',
 			defaultValue: true,
 		},
-		'invalid-attr': {
-			category: 'validation',
+		'no-unknown-attr': {
+			category: 'attributes',
+			defaultValue: true,
+		},
+		'no-disallowed-attr': {
+			category: 'attributes',
+			defaultValue: true,
+		},
+		'no-invalid-attr-value': {
+			category: 'attributes',
+			defaultValue: true,
+		},
+		'no-restricted-attr': {
+			category: 'attributes',
 			defaultValue: true,
 		},
 		'itemprop-requires-itemscope': {
-			category: 'validation',
+			category: 'attributes',
+			defaultValue: true,
+		},
+		'label-for-references-labelable': {
+			category: 'references',
 			defaultValue: true,
 		},
 		'label-has-control': {
@@ -98,31 +114,39 @@ test('default-rules', () => {
 			defaultValue: false,
 		},
 		'label-no-multiple-controls': {
-			category: 'validation',
+			category: 'forms',
 			defaultValue: true,
 		},
-		'landmark-roles': {
+		'no-nested-top-level-landmark': {
+			category: 'a11y',
+			defaultValue: false,
+		},
+		'require-landmark-label': {
 			category: 'a11y',
 			defaultValue: false,
 		},
 		'link-types': {
-			category: 'validation',
+			category: 'attributes',
 			defaultValue: true,
 		},
 		'map-id-name-match': {
-			category: 'validation',
+			category: 'attributes',
+			defaultValue: true,
+		},
+		'meta-charset-position': {
+			category: 'structure',
 			defaultValue: true,
 		},
 		'meter-value-bounds': {
-			category: 'validation',
+			category: 'attributes',
 			defaultValue: true,
 		},
-		'neighbor-popovers': {
+		'require-adjacent-popover': {
 			category: 'a11y',
-			defaultValue: true,
+			defaultValue: false,
 		},
 		'no-ambiguous-navigable-target-names': {
-			category: 'a11y',
+			category: 'attributes',
 			defaultValue: false,
 		},
 		'no-boolean-attr-value': {
@@ -133,59 +157,99 @@ test('default-rules', () => {
 			category: 'a11y',
 			defaultValue: false,
 		},
+		'no-content-after-body': {
+			category: 'syntax',
+			defaultValue: true,
+		},
 		'no-default-value': {
 			category: 'style',
 			defaultValue: false,
 		},
 		'no-duplicate-autofocus': {
-			category: 'validation',
+			category: 'attributes',
 			defaultValue: true,
 		},
 		'no-duplicate-dt': {
-			category: 'validation',
-			defaultValue: true,
+			category: 'structure',
+			defaultValue: false,
 		},
 		'no-duplicate-visible-main': {
-			category: 'validation',
+			category: 'structure',
 			defaultValue: true,
 		},
 		'no-empty-palpable-content': {
-			category: 'validation',
+			category: 'structure',
 			defaultValue: false,
 		},
 		'no-extra-selected-options': {
-			category: 'validation',
+			category: 'forms',
 			defaultValue: true,
 		},
-		'no-hard-code-id': {
+		'no-hardcoded-id': {
 			category: 'maintainability',
 			defaultValue: false,
 		},
 		'no-orphaned-end-tag': {
-			category: 'validation',
+			category: 'syntax',
 			defaultValue: true,
 		},
 		'no-refer-to-non-existent-id': {
-			category: 'a11y',
+			category: 'references',
 			defaultValue: true,
 		},
-		'no-unsupported-features': {
-			category: 'validation',
+		'no-broken-fragment-link': {
+			category: 'references',
 			defaultValue: false,
 		},
-		'no-use-event-handler-attr': {
+		'no-stray-head-or-body-tag': {
+			category: 'syntax',
+			defaultValue: true,
+		},
+		'no-unclosed-element-at-eof': {
+			category: 'syntax',
+			defaultValue: true,
+		},
+		'no-unsupported-browser-features': {
+			category: 'compat',
+			defaultValue: false,
+		},
+		'no-experimental-features': {
+			category: 'compat',
+			defaultValue: false,
+		},
+		'no-nonstandard-features': {
+			category: 'compat',
+			defaultValue: false,
+		},
+		'no-event-handler-attr': {
 			category: 'maintainability',
 			defaultValue: false,
 		},
 		'permitted-contents': {
-			category: 'validation',
+			category: 'structure',
 			defaultValue: [],
 		},
-		'placeholder-label-option': {
-			category: 'validation',
+		'no-disallowed-ancestor': {
+			category: 'structure',
 			defaultValue: true,
 		},
-		'redundant-accessible-name': {
+		'require-ancestor': {
+			category: 'structure',
+			defaultValue: true,
+		},
+		'no-duplicate-sibling-attr': {
+			category: 'structure',
+			defaultValue: true,
+		},
+		'placeholder-label-option': {
+			category: 'forms',
+			defaultValue: true,
+		},
+		'progress-value-bounds': {
+			category: 'attributes',
+			defaultValue: true,
+		},
+		'no-redundant-accessible-name': {
 			category: 'a11y',
 			defaultValue: false,
 		},
@@ -194,106 +258,178 @@ test('default-rules', () => {
 			defaultValue: true,
 		},
 		'require-datetime': {
-			category: 'validation',
+			category: 'attributes',
 			defaultValue: true,
 		},
 		'require-dialog-autofocus': {
 			category: 'a11y',
 			defaultValue: false,
 		},
-		'required-attr': {
-			category: 'validation',
+		'require-attr': {
+			category: 'attributes',
 			defaultValue: [],
 		},
-		'required-element': {
-			category: 'validation',
+		'require-element': {
+			category: 'structure',
 			defaultValue: [],
 		},
-		'required-h1': {
-			category: 'a11y',
-			defaultValue: true,
-		},
-		'script-content': {
-			category: 'validation',
-			defaultValue: true,
-		},
-		'srcset-sizes-constraint': {
-			category: 'validation',
-			defaultValue: true,
-		},
-		'table-row-column-alignment': {
+		'require-h1': {
 			category: 'a11y',
 			defaultValue: false,
 		},
-		'use-list': {
+		'no-duplicate-h1': {
 			category: 'a11y',
 			defaultValue: false,
 		},
-		'wai-aria': {
+		'valid-importmap': {
+			category: 'syntax',
+			defaultValue: true,
+		},
+		'valid-speculation-rules': {
+			category: 'syntax',
+			defaultValue: true,
+		},
+		'no-unpaired-srcset-sizes': {
+			category: 'attributes',
+			defaultValue: true,
+		},
+		'no-mixed-srcset-descriptors': {
+			category: 'attributes',
+			defaultValue: true,
+		},
+		'sizes-auto-requires-lazy-loading': {
+			category: 'attributes',
+			defaultValue: true,
+		},
+		'no-always-matching-source': {
+			category: 'attributes',
+			defaultValue: true,
+		},
+		'no-table-cell-overlap': {
+			category: 'structure',
+			defaultValue: true,
+		},
+		'no-table-span-overflow': {
+			category: 'structure',
+			defaultValue: true,
+		},
+		'no-empty-table-track': {
+			category: 'structure',
+			defaultValue: true,
+		},
+		'consistent-table-row-length': {
+			category: 'structure',
+			defaultValue: false,
+		},
+		'no-pseudo-list': {
+			category: 'a11y',
+			defaultValue: false,
+		},
+		'usemap-references-map': {
+			category: 'references',
+			defaultValue: true,
+		},
+		'no-abstract-role': {
 			category: 'a11y',
 			defaultValue: true,
 		},
-		'wai-aria-abstract-role': {
+		'no-default-aria-value': {
+			category: 'a11y',
+			defaultValue: false,
+		},
+		'no-deprecated-aria-prop': {
+			category: 'a11y',
+			defaultValue: false,
+		},
+		'no-deprecated-attr': {
+			category: 'attributes',
+			defaultValue: false,
+		},
+		'no-deprecated-element': {
+			category: 'structure',
+			defaultValue: false,
+		},
+		'no-obsolete-attr': {
+			category: 'attributes',
+			defaultValue: true,
+		},
+		'no-obsolete-element': {
+			category: 'structure',
+			defaultValue: true,
+		},
+		'no-deprecated-role': {
+			category: 'a11y',
+			defaultValue: false,
+		},
+		'no-prohibited-naming': {
 			category: 'a11y',
 			defaultValue: true,
 		},
-		'wai-aria-default-value': {
-			category: 'a11y',
-			defaultValue: false,
-		},
-		'wai-aria-deprecated-props': {
-			category: 'a11y',
-			defaultValue: false,
-		},
-		'wai-aria-deprecated-role': {
-			category: 'a11y',
-			defaultValue: false,
-		},
-		'wai-aria-disallowed-props': {
+		'element-supports-aria-prop': {
 			category: 'a11y',
 			defaultValue: true,
 		},
-		'wai-aria-implicit-props': {
-			category: 'a11y',
-			defaultValue: false,
-		},
-		'wai-aria-implicit-role': {
-			category: 'a11y',
-			defaultValue: false,
-		},
-		'wai-aria-interaction-in-hidden': {
-			category: 'a11y',
-			defaultValue: false,
-		},
-		'wai-aria-no-global-prop': {
+		'role-supports-aria-prop': {
 			category: 'a11y',
 			defaultValue: true,
 		},
-		'wai-aria-non-existent-role': {
-			category: 'a11y',
-			defaultValue: true,
-		},
-		'wai-aria-permitted-roles': {
-			category: 'a11y',
-			defaultValue: true,
-		},
-		'wai-aria-presentational-children': {
+		'no-redundant-aria-prop': {
 			category: 'a11y',
 			defaultValue: false,
 		},
-		'wai-aria-required-owned-elements': {
+		'no-contradictory-aria-prop': {
+			category: 'a11y',
+			defaultValue: true,
+		},
+		'no-redundant-role': {
 			category: 'a11y',
 			defaultValue: false,
 		},
-		'wai-aria-required-parent-role': {
+		'no-focusable-in-aria-hidden': {
+			category: 'a11y',
+			defaultValue: false,
+		},
+		'aria-prop-requires-role': {
 			category: 'a11y',
 			defaultValue: true,
 		},
-		'wai-aria-required-props': {
+		'no-unknown-role': {
 			category: 'a11y',
 			defaultValue: true,
 		},
-		'wai-aria-value': {
+		'permitted-roles': {
+			category: 'a11y',
+			defaultValue: true,
+		},
+		'no-aria-on-unsupported-element': {
+			category: 'a11y',
+			defaultValue: true,
+		},
+		'no-aria-on-presentational-children': {
+			category: 'a11y',
+			defaultValue: false,
+		},
+		'require-owned-elements': {
+			category: 'a11y',
+			defaultValue: true,
+		},
+		'require-parent-role': {
+			category: 'a11y',
+			defaultValue: true,
+		},
+		'require-aria-prop': {
+			category: 'a11y',
+			defaultValue: true,
+		},
+		'tab-requires-tabpanel': {
+			category: 'a11y',
+			defaultValue: true,
+		},
+		'no-invalid-aria-prop-value': {
+			category: 'a11y',
+			defaultValue: true,
+		},
+		'no-aria-hidden-on-hidden-until-found': {
 			category: 'a11y',
 			defaultValue: true,
 		},

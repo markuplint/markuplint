@@ -17,7 +17,7 @@
 		 */
 		"react/no-hard-code-id": {
 			"rules": {
-				"no-hard-code-id": true
+				"no-hardcoded-id": true
 			}
 		}
 	}

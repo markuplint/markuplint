@@ -1,0 +1,19 @@
+{
+	"rules": {
+		"foo": true,
+		"bar": true
+	},
+	"overrideMode": "merge",
+	"overrides": {
+		"./*.html": {
+			"rules": {
+				"foo": false
+			}
+		},
+		"./target.*": {
+			"rules": {
+				"baz": true
+			}
+		}
+	}
+}

@@ -7,6 +7,7 @@ import { matched, matches, unmatched } from './match-result.js';
 import { splitUnit, isFloat, isUint, isInt } from './primitive/index.js';
 import { isBCP47 } from './rfc/is-bcp-47.js';
 import { Token, TokenCollection } from './token/index.js';
+import { checkContentSecurityPolicy } from './w3c/check-content-security-policy.js';
 import { checkSerializedPermissionsPolicy } from './w3c/check-serialized-permissions-policy.js';
 import { checkAutoComplete } from './whatwg/check-autocomplete.js';
 import { checkDateTime } from './whatwg/check-datetime/index.js';
@@ -18,7 +19,7 @@ import { checkTimeString } from './whatwg/check-datetime/time-string.js';
 import { checkWeekString } from './whatwg/check-datetime/week-string.js';
 import { checkHTTPEquivContentType } from './whatwg/check-http-equiv-content-type.js';
 import { checkHTTPEquivRefresh } from './whatwg/check-http-equiv-refresh.js';
-import { checkMediaQueryList } from './whatwg/check-media-query-list.js';
+import { checkMediaQueryList, findGeneralEnclosed } from './whatwg/check-media-query-list.js';
 import { checkMIMEType } from './whatwg/check-mime-type.js';
 import { checkURL } from './whatwg/check-url.js';
 import { isAbsURL } from './whatwg/is-abs-url.js';
@@ -659,11 +660,12 @@ export const defs: Defs = {
 		is: checkMediaQueryList(),
 	},
 
-	// `HTTPEquivRefresh` / `HTTPEquivContentType` are selected at runtime by a
-	// `ConditionalAttributeType[]` entry on `meta.content` in
-	// `@markuplint/html-spec`, keyed by the `http-equiv` value
-	// (`refresh` / `content-type`). Other `http-equiv` values fall through to
-	// `Any` via the resolver in `@markuplint/rules`.
+	// `HTTPEquivRefresh` / `HTTPEquivContentType` / `ContentSecurityPolicy` are
+	// selected at runtime by a `ConditionalAttributeType[]` entry on
+	// `meta.content` in `@markuplint/html-spec`, keyed by the `http-equiv`
+	// value (`refresh` / `content-type` / `content-security-policy`). Other
+	// `http-equiv` values fall through to `Any` via the resolver in
+	// `@markuplint/rules`.
 	HTTPEquivRefresh: {
 		ref: 'https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-http-equiv-refresh',
 		expects: [
@@ -684,6 +686,17 @@ export const defs: Defs = {
 			},
 		],
 		is: checkHTTPEquivContentType(),
+	},
+
+	ContentSecurityPolicy: {
+		ref: 'https://www.w3.org/TR/CSP3/#framework-policy',
+		expects: [
+			{
+				type: 'format',
+				value: 'Content Security Policy (a semicolon-separated list of directives)',
+			},
+		],
+		is: checkContentSecurityPolicy(),
 	},
 
 	ItemProp: {
@@ -907,6 +920,45 @@ export const defs: Defs = {
 					expects: [{ type: 'format', value: 'non-negative <length>' }],
 				});
 			}
+			// Each top-level `(<any-value>?)` group inside the sizes list is a
+			// `<media-condition>` per HTML LS. Media Queries Level 5 §3 forbids
+			// `<general-enclosed>` in author stylesheets, but css-tree accepts
+			// it grammatically (that's the point of the fallback — future syntax
+			// must parse in older UAs). Extract each balanced-parens group and
+			// route it through the media-query walker so malformed feature forms
+			// like `(min-width:)` (empty value) and `(123)` (non-ident content)
+			// surface as syntax errors rather than silently accepted GE matches.
+			let depth = 0;
+			let groupStart = -1;
+			for (let i = 0; i < value.length; i++) {
+				const c = value[i];
+				if (c === '(') {
+					if (depth === 0) {
+						// A `(` preceded by an identifier / digit character is a CSS
+						// function call (`clamp(...)`, `min(...)`, `calc(...)`, `env(...)`)
+						// inside a `<source-size-value>`, not a `<media-condition>`.
+						// Skip: its contents are function arguments, not a media query.
+						const prev = i > 0 ? (value[i - 1] ?? '') : '';
+						const isFunctionCall = /[\w-]/u.test(prev);
+						groupStart = isFunctionCall ? -1 : i;
+					}
+					depth++;
+				} else if (c === ')') {
+					depth--;
+					if (depth === 0 && groupStart >= 0) {
+						const groupText = value.slice(groupStart, i + 1);
+						const hit = findGeneralEnclosed(groupText);
+						if (hit) {
+							return new Token(hit.raw, groupStart + hit.offset, value).unmatched({
+								reason: 'syntax-error',
+								expects: [{ type: 'format', value: 'media condition' }],
+								partName: `unknown or malformed media condition ${JSON.stringify(hit.raw)} (Media Queries Level 5 §3 forbids <general-enclosed> in author stylesheets)`,
+							});
+						}
+						groupStart = -1;
+					}
+				}
+			}
 			return matched();
 		},
 	},
@@ -964,6 +1016,31 @@ export const defs: Defs = {
 	AutoComplete: {
 		ref: 'https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete',
 		is: checkAutoComplete(),
+	},
+
+	/**
+	 * `autocomplete` variant for elements where the `webauthn` token is not
+	 * valid. Per HTML LS §attr-fe-autocomplete-webauthn: "webauthn is only
+	 * valid for input and textarea elements." Applied to `button`,
+	 * `fieldset`, `object`, `output`, and `select`.
+	 *
+	 * @see https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete-webauthn
+	 */
+	AutoCompleteNoWebauthn: {
+		ref: 'https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete-webauthn',
+		is: checkAutoComplete({ noWebauthn: true }),
+	},
+
+	/**
+	 * `autocomplete` variant for the autofill anchor mantle: on `<input
+	 * type=hidden>`, the `on` / `off` keywords are not allowed and the
+	 * value must consist of just autofill detail tokens.
+	 *
+	 * @see https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill-anchor-mantle
+	 */
+	AutoCompleteAnchorMantle: {
+		ref: 'https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill-anchor-mantle',
+		is: checkAutoComplete({ anchorMantle: true }),
 	},
 
 	Accept: {

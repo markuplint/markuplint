@@ -40,7 +40,7 @@
 
 ## Editor Extensions
 
-- [Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=markuplint.vscode-markuplint)
+- [Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=markuplint.markuplint-vscode)
 
 ## License
 

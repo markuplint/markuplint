@@ -11,12 +11,13 @@
 			"items": {
 				"type": "object",
 				"additionalProperties": false,
-				"required": ["id", "path", "nuMessage", "reason", "addedAt", "addedBy"],
+				"required": ["id", "path", "nuMessage", "reason", "specUrl", "addedAt", "addedBy"],
 				"properties": {
 					"id": { "type": "string", "pattern": "^nv-[0-9a-f]{12}(-[0-9]+)?$" },
 					"path": { "type": "string" },
 					"nuMessage": { "type": "string" },
 					"reason": { "type": "string" },
+					"specUrl": { "type": "string", "format": "uri" },
 					"addedAt": { "type": "string", "format": "date" },
 					"addedBy": { "type": "string" }
 				}

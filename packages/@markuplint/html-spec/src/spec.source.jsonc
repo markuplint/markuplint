@@ -32,7 +32,7 @@
 			// Spec: "The sizes attribute must not be specified unless the
 			// srcset attribute is also specified."
 			// Note: `srcset` itself is `required: "picture > source"`, so the
-			// no-srcset case is also caught by required-attr — but pinning the
+			// no-srcset case is also caught by require-attr — but pinning the
 			// pairing on `sizes` keeps the contract symmetric with `img[sizes]`.
 			"condition": "picture > source[srcset]"
 		},

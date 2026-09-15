@@ -330,3 +330,39 @@ test('data: URL with `,` is accepted', () => {
 	expect(check('data:text/plain,foo').matched).toBe(true);
 	expect(check('data:text/plain;base64,SGVsbG8=').matched).toBe(true);
 });
+
+// URL LS §3.5 IPv4 number parser — `IPv4-non-decimal-part`
+test('IPv4-non-decimal-part: hex host label is rejected', () => {
+	expect(check('http://192.0x00A80001').matched).toBe(false);
+});
+
+test('IPv4-non-decimal-part: fullwidth Unicode obfuscation is rejected', () => {
+	// NFKC-normalizes to "0Xc0.0250.01" — hex + octal-leading-zero labels.
+	expect(check('http://０Ｘｃ０．０２５０．０１').matched).toBe(false);
+});
+
+test('IPv4-non-decimal-part: percent-encoded obfuscation is rejected', () => {
+	// Decodes to "0xc0.0250.01" — hex + octal-leading-zero labels.
+	expect(check('http://%30%78%63%30%2e%30%32%35%30.01').matched).toBe(false);
+});
+
+test('IPv4-non-decimal-part: leading-zero octal host label is rejected', () => {
+	expect(check('http://127.000.000.1').matched).toBe(false);
+});
+
+test('valid decimal IPv4 host is accepted', () => {
+	expect(check('http://192.168.0.1').matched).toBe(true);
+	expect(check('http://0.0.0.0').matched).toBe(true);
+	expect(check('http://127.0.0.1:8080/path').matched).toBe(true);
+});
+
+test('IPv4-non-decimal-part check does not false-positive on ordinary domains', () => {
+	// Last label ("com") does not look numeric, so the IPv4 parser never runs.
+	expect(check('http://0x1.example.com').matched).toBe(true);
+	expect(check('http://order-0123.example.com/path').matched).toBe(true);
+});
+
+test('IPv4-non-decimal-part check is scoped to special-scheme/scheme-relative hosts', () => {
+	// Non-special schemes have an opaque host — no IPv4 parsing applies.
+	expect(check('mailto:0x1@example.com').matched).toBe(true);
+});

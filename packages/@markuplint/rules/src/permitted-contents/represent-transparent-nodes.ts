@@ -205,20 +205,23 @@ export function representTransparentNodes(
 			branchGroups.push(branchChildren);
 		}
 
-		if (branchGroups.every(g => g.length === 0)) {
-			continue;
-		}
-
+		// The transparent element itself is still a child of the current parent
+		// and must be evaluated against the parent's own content model (e.g., a
+		// `<button>` must reject an `<a href>` descendant even though `<a>`'s
+		// children are also transparently checked). It is pushed exactly once
+		// per resulting pattern below — never once per branch group — so
+		// conditional (`v-if`/`v-else`) branches don't multiply it.
+		// See https://github.com/markuplint/markuplint/issues/3928
 		if (branchGroups.length === 1) {
 			const singleGroup = branchGroups[0]!;
 			for (const p of patterns) {
-				p.push(...singleGroup);
+				p.push(childNode, ...singleGroup);
 			}
 		} else if (patterns.length * branchGroups.length <= MAX_PATTERNS) {
 			const newPatterns: (ChildNode | Result)[][] = [];
 			for (const p of patterns) {
 				for (const group of branchGroups) {
-					newPatterns.push([...p, ...group]);
+					newPatterns.push([...p, childNode, ...group]);
 				}
 			}
 			patterns = newPatterns;
@@ -235,7 +238,7 @@ export function representTransparentNodes(
 			);
 			const allChildren = branchGroups.flat();
 			for (const p of patterns) {
-				p.push(...allChildren);
+				p.push(childNode, ...allChildren);
 			}
 		}
 	}

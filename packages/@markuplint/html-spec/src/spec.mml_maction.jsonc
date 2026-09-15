@@ -22,11 +22,13 @@
 	"attributes": {
 		// https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/maction
 		"actiontype": {
-			"type": "Any"
+			"type": "Any",
+			"deprecated": true
 		},
 		// https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/maction
 		"selection": {
-			"type": "Any"
+			"type": "Any",
+			"deprecated": true
 		}
 	},
 	"aria": {

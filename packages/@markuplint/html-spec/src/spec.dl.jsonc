@@ -50,7 +50,11 @@
 		"#GlobalEventAttrs": true,
 		"#ARIAAttrs": true
 	},
-	"attributes": {},
+	"attributes": {
+		"compact": {
+			"deprecated": true
+		}
+	},
 	"aria": {
 		"implicitRole": false,
 		"permittedRoles": ["group", "list", "none", "presentation"]

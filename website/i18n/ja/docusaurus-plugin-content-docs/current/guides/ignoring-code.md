@@ -38,8 +38,8 @@
     {
       "selector": ".legacy",
       "rules": {
-        // ベースルール名で無効化 — a11y/wai-aria も無効化されます
-        "wai-aria": false,
+        // ベースルール名で無効化 — a11y/wai-aria/non-existent-role も無効化されます
+        "no-unknown-role": false,
 
         // この要素のすべての a11y/* 名前付きルールを無効化
         "a11y/*": false
@@ -64,7 +64,7 @@
     "a11y/*": false,
 
     // ベースルール名で無効化（詳細はプロパティリファレンス参照）
-    "id-duplication": false
+    "no-duplicate-id": false
   }
 }
 ```
@@ -128,7 +128,7 @@ $ markuplint --prune-suppressions "src/**/*.html"
 ```json title="markuplint-suppressions.json"
 {
   "src/index.html": {
-    "attr-duplication": { "count": 3, "scope": "#main-nav > ul" }
+    "no-duplicate-attr": { "count": 3, "scope": "#main-nav > ul" }
   }
 }
 ```

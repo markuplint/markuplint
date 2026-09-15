@@ -3,6 +3,72 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.7...v5.0.0) (2026-09-11)
+
+**Note:** Version bump only for package @markuplint/ml-core
+
+# [5.0.0-rc.7](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.6...v5.0.0-rc.7) (2026-08-31)
+
+### Bug Fixes
+
+- **ml-core:** fix named rule group disable propagation and validation ([139f466](https://github.com/markuplint/markuplint/commit/139f4661a12ac10b15ade305c30bbd8234b07b0f))
+
+# [5.0.0-rc.6](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.5...v5.0.0-rc.6) (2026-08-30)
+
+### Features
+
+- split rule-deprecation notices out of config-error ([#4013](https://github.com/markuplint/markuplint/issues/4013)) ([812e6f3](https://github.com/markuplint/markuplint/commit/812e6f356839af8f257cfd91e6b16cfdfdd7cf33))
+
+### BREAKING CHANGES
+
+- violations for deprecated rule names now have
+  `ruleId: 'rule-deprecation'` instead of `ruleId: 'config-error'`. Any
+  consumer filtering `MLCore.verify()` output (or the markuplint CLI/API) by
+  `ruleId === 'config-error'` to catch deprecation messages must also check
+  for `rule-deprecation`.
+
+- feat(markuplint): add --severity-deprecation CLI flag
+
+Wires the new severity.deprecation config option (@markuplint/ml-config)
+and the rule-deprecation ruleId (@markuplint/ml-core) through the CLI:
+
+- --severity-deprecation flag, mirroring --severity-parse-error
+- --show-config details now also surfaces ruleDeprecations
+- per-run dedupe and failed-file counting generalized to cover both
+  config-level ruleIds (config-error and rule-deprecation), not just
+  config-error
+
+* docs(website): document severity.deprecation (EN + JA)
+
+# [5.0.0-rc.5](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.4...v5.0.0-rc.5) (2026-08-28)
+
+### Bug Fixes
+
+- **ml-core:** look up dedupe contract under both alias and base rule names ([a5dde7e](https://github.com/markuplint/markuplint/commit/a5dde7e23a12a43d976fbfaa1cc3dec67265447e)), closes [#3844](https://github.com/markuplint/markuplint/issues/3844) [#3871](https://github.com/markuplint/markuplint/issues/3871)
+- **ml-core:** re-verify fixed code and detect N-pass fix cycles ([8c96516](https://github.com/markuplint/markuplint/commit/8c96516d8057acdcf06dc279c2183390f0966e98)), closes [#3890](https://github.com/markuplint/markuplint/issues/3890) [#3891](https://github.com/markuplint/markuplint/issues/3891)
+- **ml-core:** stop accumulating duplicate mapping errors across setCode ([2874d5b](https://github.com/markuplint/markuplint/commit/2874d5b60b24ccc501f7dae1f6ab25fb6e51e58b)), closes [#3900](https://github.com/markuplint/markuplint/issues/3900)
+- **pretenders:** resolve same-named components via imports, not scan order ([#3957](https://github.com/markuplint/markuplint/issues/3957)) ([d46a514](https://github.com/markuplint/markuplint/commit/d46a5148c4d7afb156962f4ed795f40a9324e6c5)), closes [#3951](https://github.com/markuplint/markuplint/issues/3951) [#3951](https://github.com/markuplint/markuplint/issues/3951) [#3951](https://github.com/markuplint/markuplint/issues/3951)
+- **rules:** surface disallowed-element reason via reasonOnly (close [#3815](https://github.com/markuplint/markuplint/issues/3815)) ([#3986](https://github.com/markuplint/markuplint/issues/3986)) ([0142cec](https://github.com/markuplint/markuplint/commit/0142cec667f70fee086f2a6e06d7a26e66bda380))
+
+### Code Refactoring
+
+- **rules:** redesign v5 rule system — naming, splits, specConformance ([#3989](https://github.com/markuplint/markuplint/issues/3989)) ([e925565](https://github.com/markuplint/markuplint/commit/e925565ce537848d7d1573369723cbce724a841b)), closes [#4](https://github.com/markuplint/markuplint/issues/4) [#aside-conditional-role-mapping-aria-13](https://github.com/markuplint/markuplint/issues/aside-conditional-role-mapping-aria-13)
+
+- fix(ml-core)!: reject pretender on standard HTML elements ([0576425](https://github.com/markuplint/markuplint/commit/0576425baf9b78141523bcd0e4a102062b96bc81)), closes [#3740](https://github.com/markuplint/markuplint/issues/3740)
+
+### Features
+
+- **ml-core:** hook-based dedupe for parse-error channel via mirrorsParseErrorCodes ([6a36f17](https://github.com/markuplint/markuplint/commit/6a36f17d292a2400494a3670c93cb2f02999b48b)), closes [#3844](https://github.com/markuplint/markuplint/issues/3844)
+- **ml-core:** surface non-fatal parser errors via opt-in parse-error channel ([d715fbe](https://github.com/markuplint/markuplint/commit/d715fbe586c478b98472a570b3175873cf244aef)), closes [#3844](https://github.com/markuplint/markuplint/issues/3844)
+
+### BREAKING CHANGES
+
+- **rules:** with no alias coverage.
+- `pretenders` config entries whose selector matches a
+  standard HTML element are now ignored. Configurations that previously
+  relied on `<marquee as="div">` to suppress markuplint violations must
+  remove the entry; the original element is now linted on its own merits.
+
 # [5.0.0-rc.4](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.3...v5.0.0-rc.4) (2026-04-19)
 
 **Note:** Version bump only for package @markuplint/ml-core

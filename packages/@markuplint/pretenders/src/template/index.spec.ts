@@ -2,9 +2,13 @@ import path from 'node:path';
 
 import { describe, test, expect } from 'vitest';
 
+import { normalizePath } from '../import-resolver/resolve-module-file.js';
+
 import { templateScanner } from './index.js';
 
-const _ = (filePath: string) => filePath.split('/').join(path.sep);
+// Scanners always emit `/`-delimited filePath now (for stable, cross-platform
+// JSON output), so this is a no-op — kept so call sites don't need touching.
+const _ = (filePath: string) => filePath;
 const fixtureDir = path.resolve(import.meta.dirname, '..', '..', 'test', 'fixtures', 'template');
 const resolve = (name: string) => path.resolve(fixtureDir, name);
 
@@ -182,6 +186,44 @@ describe('templateScanner', () => {
 		});
 	});
 
+	describe('Name collision resolved via import (issue #3951)', () => {
+		test('a wrapper component resolves its imported child to the file it actually imports, not a same-named sibling', async () => {
+			// subB/Button.vue is scanned first (and subA/Button.vue only appears after
+			// the wrapper) so that, absent import-based resolution, the plain name index
+			// would register subB's `Button` (div) first and resolve the wrapper's
+			// reference to it instead of the file it actually imports.
+			const result = await templateScanner([
+				resolve('subB/Button.vue'),
+				resolve('collision/wrapper-uses-a.vue'),
+				resolve('subA/Button.vue'),
+			]);
+
+			const wrapper = result.find(p => p.selector === 'WrapperUsesA');
+			expect(wrapper).toMatchObject({
+				as: expect.objectContaining({ element: 'button' }),
+			});
+		});
+
+		test('a wrapper importing through a barrel resolves to the re-exported SFC, not a same-named sibling', async () => {
+			// Same decoy ordering as above, but the wrapper reaches subA/Button.vue
+			// indirectly: `barrel/index.ts` re-exports it. Re-export chains have to
+			// recognize a template-component target the same way a direct import
+			// does — otherwise the SFC gets parsed as TypeScript in search of an
+			// export table it can never have, and resolution falls back to the flat
+			// name index, picking subB's `Button` (div).
+			const result = await templateScanner([
+				resolve('subB/Button.vue'),
+				resolve('barrel/wrapper-uses-barrel.vue'),
+				resolve('subA/Button.vue'),
+			]);
+
+			const wrapper = result.find(p => p.selector === 'WrapperUsesBarrel');
+			expect(wrapper).toMatchObject({
+				as: expect.objectContaining({ element: 'button' }),
+			});
+		});
+	});
+
 	describe('Edge cases', () => {
 		test('rejects relative file paths', () => {
 			expect(() => templateScanner(['relative/path.vue'])).toThrow(ReferenceError);
@@ -190,6 +232,39 @@ describe('templateScanner', () => {
 		test('unsupported file extension returns empty result', async () => {
 			const result = await templateScanner([resolve('SimpleButton.vue').replace('.vue', '.html')]);
 			expect(result).toStrictEqual([]);
+		});
+	});
+
+	describe('sources (in-memory content override)', () => {
+		test('an in-memory override is scanned instead of the file on disk', async () => {
+			const filePath = resolve('SimpleButton.vue');
+			const sources = new Map([[normalizePath(filePath), '<template><span class="override" /></template>']]);
+
+			const result = await templateScanner([filePath], { sources });
+
+			expect(result).toStrictEqual([
+				expect.objectContaining({
+					selector: 'SimpleButton',
+					as: expect.objectContaining({ element: 'span' }),
+				}),
+			]);
+		});
+
+		test('files without an override fall back to reading from disk', async () => {
+			const overriddenPath = resolve('WithSlot.vue');
+			const diskPath = resolve('SimpleButton.vue');
+			const sources = new Map([
+				[normalizePath(overriddenPath), '<template><span class="override" /></template>'],
+			]);
+
+			const result = await templateScanner([overriddenPath, diskPath], { sources });
+
+			expect(result.find(p => p.selector === 'WithSlot')).toMatchObject({
+				as: expect.objectContaining({ element: 'span' }),
+			});
+			expect(result.find(p => p.selector === 'SimpleButton')).toMatchObject({
+				as: expect.objectContaining({ element: 'button' }),
+			});
 		});
 	});
 });

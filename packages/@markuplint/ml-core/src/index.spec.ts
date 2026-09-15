@@ -615,6 +615,56 @@ describe('Rule', () => {
 		expect(document.nodeList[2].rule).toStrictEqual(resultE);
 	});
 
+	test('reasonOnly setting', () => {
+		const document = createTestDocument('<div></div>', {
+			config: {
+				rules: {
+					ruleA: {
+						reason: '123',
+						reasonOnly: true,
+					},
+					ruleB: {
+						reason: '456',
+					},
+				},
+			},
+		});
+		const ruleA = createRule({
+			name: 'ruleA',
+			defaultValue: 'foo',
+			defaultOptions: null,
+			verify() {
+				throw new Error();
+			},
+		});
+		document.setRule(ruleA);
+		expect(document.nodeList[0].rule).toStrictEqual({
+			disabled: false,
+			severity: 'error',
+			value: 'foo',
+			options: null,
+			reason: '123',
+			reasonOnly: true,
+		});
+
+		const ruleB = createRule({
+			name: 'ruleB',
+			defaultValue: 'bar',
+			defaultOptions: null,
+			verify() {
+				throw new Error();
+			},
+		});
+		document.setRule(ruleB);
+		expect(document.nodeList[0].rule).toStrictEqual({
+			disabled: false,
+			severity: 'error',
+			value: 'bar',
+			options: null,
+			reason: '456',
+		});
+	});
+
 	test('regexSelector + pug', async () => {
 		const document = createTestDocument(
 			`section.Card

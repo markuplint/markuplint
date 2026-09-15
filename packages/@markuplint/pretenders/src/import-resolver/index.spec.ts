@@ -267,14 +267,36 @@ import { Card } from './ui'
 		});
 	});
 
+	describe('JSX/TSX (issue #3951)', () => {
+		test('extracts imports from TSX source, including files that also contain JSX syntax', async () => {
+			const source = "import Item from './a';\nexport const A = () => <Item>x</Item>;";
+			const result = await analyzeImports('A.tsx', source);
+			expect(result).not.toBeNull();
+			expect(result!.bindings).toStrictEqual([
+				{ localName: 'Item', importedName: 'default', source: './a', type: 'default' },
+			]);
+		});
+
+		test('extracts imports from plain JS', async () => {
+			const result = await analyzeImports('a.js', "import { Item } from './b';");
+			expect(result).not.toBeNull();
+			expect(result!.bindings).toStrictEqual([
+				{ localName: 'Item', importedName: 'Item', source: './b', type: 'named' },
+			]);
+		});
+
+		test('extracts imports from plain TS', async () => {
+			const result = await analyzeImports('a.ts', "import { Item } from './b';");
+			expect(result).not.toBeNull();
+			expect(result!.bindings).toStrictEqual([
+				{ localName: 'Item', importedName: 'Item', source: './b', type: 'named' },
+			]);
+		});
+	});
+
 	describe('unsupported frameworks', () => {
 		test('returns null for .html files', async () => {
 			const result = await analyzeImports('page.html', '<div>hello</div>');
-			expect(result).toBeNull();
-		});
-
-		test('returns null for .tsx files', async () => {
-			const result = await analyzeImports('App.tsx', 'export default () => <div />');
 			expect(result).toBeNull();
 		});
 	});

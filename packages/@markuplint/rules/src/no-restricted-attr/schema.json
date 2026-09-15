@@ -1,0 +1,73 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"definitions": {
+		"value": {
+			"type": "boolean"
+		},
+		"options": {
+			"type": "object",
+			"additionalProperties": false,
+			"description": "```ts\ntype Attr = {\n  name: string;\n  value: AttributeType | Pattern;\n}\n\ntype Pattern = { pattern: string; };\n```\n\n`AttributeType` is [The type API](/docs/api/types). `Pattern` is also part of the type API.",
+			"description:ja": "```ts\ntype Attr = {\n  name: string;\n  value: AttributeType | Pattern;\n}\n\ntype Pattern = { pattern: string; };\n```\n\n`AttributeType`は[タイプAPI](/docs/api/types)を参照してください。`Pattern`もタイプAPIの一部です。",
+			"properties": {
+				"disallowAttrs": {
+					"oneOf": [
+						{
+							"type": "array",
+							"items": {
+								"oneOf": [
+									{
+										"type": "string"
+									},
+									{
+										"type": "object",
+										"_type": "Attr",
+										"additionalProperties": false,
+										"required": ["name", "value"],
+										"properties": {
+											"name": { "type": "string" },
+											"value": {
+												"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/types/types.schema.json#/definitions/type"
+											}
+										}
+									}
+								]
+							}
+						},
+						{
+							"deprecated": true,
+							"type": "object",
+							"_type": "Record<string, AttributeType | Pattern>",
+							"additionalProperties": {
+								"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/types/types.schema.json#/definitions/type"
+							}
+						}
+					],
+					"description": "Specify the attributes **to disallow**. Even if they are allowed in the HTML Standard, you can use this option to intentionally prohibit them based on your project's rules. You can specify the attribute name only, or a value pattern/type so the attribute is disallowed only when its value matches.",
+					"description:ja": "**許可しない**属性を指定します。HTML標準で許可されていたとしても、あえてプロジェクトのルールで禁止するような場合に利用します。属性名だけの指定もできますし、値のパターンや型を指定して、その値に一致する場合だけ禁止することもできます。"
+				}
+			}
+		}
+	},
+	"oneOf": [
+		{
+			"$ref": "#/definitions/value"
+		},
+		{
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"value": { "$ref": "#/definitions/value" },
+				"options": { "$ref": "#/definitions/options" },
+				"option": { "$ref": "#/definitions/options", "deprecated": true },
+				"severity": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/ml-config/schema.json#/definitions/severity",
+					"default": "error"
+				},
+				"reason": {
+					"type": "string"
+				}
+			}
+		}
+	]
+}

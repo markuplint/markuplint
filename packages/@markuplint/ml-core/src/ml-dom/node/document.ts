@@ -3546,7 +3546,9 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 						rule: mergedRule,
 					});
 
-					// Propagate to virtual rules that wrap this base rule
+					// Propagate to top-level-group virtual rules that wrap this base rule. These
+					// wrappers have no selector scope of their own (they mirror the base rule
+					// globally), so any matched value is safe to forward.
 					const virtualNames = ruleset.baseRuleToVirtualNames.get(ruleName);
 					if (virtualNames) {
 						for (const vName of virtualNames) {
@@ -3558,6 +3560,27 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 								specificity: matches.specificity,
 								rule: vMergedRule,
 							});
+						}
+					}
+
+					// Propagate a disable to selector-scoped (nodeRules/childNodeRules-named) virtual
+					// rules that wrap this base rule. Limited to `false`: unlike the top-level-group
+					// case above, these wrappers DO have their own selector scope, so forwarding a
+					// non-false value would apply their semantics (e.g. a required attribute name) to
+					// every node this (unrelated) nodeRule matches, even where the virtual rule's own
+					// selector never matched — see issue #4023's fix history for the regression this caused.
+					if (convertedRule === false) {
+						const scopedVirtualNames = ruleset.baseRuleToScopedVirtualNames.get(ruleName);
+						if (scopedVirtualNames) {
+							for (const vName of scopedVirtualNames) {
+								// No merge needed: mergeRule(_, false) always returns false, so the
+								// disable is unconditional regardless of any global config for vName.
+								ruleMapper.set(node, vName, {
+									from: 'nodeRules',
+									specificity: matches.specificity,
+									rule: false,
+								});
+							}
 						}
 					}
 				}
@@ -3647,7 +3670,8 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 							});
 						}
 
-						// Propagate to virtual rules that wrap this base rule
+						// Propagate to top-level-group virtual rules — see the matching nodeRules
+						// propagation above for why any value is safe to forward here.
 						const virtualNames = ruleset.baseRuleToVirtualNames.get(ruleName);
 						if (virtualNames) {
 							for (const vName of virtualNames) {
@@ -3660,6 +3684,26 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 										specificity: matches.specificity,
 										rule: vMergedRule,
 									});
+								}
+							}
+						}
+
+						// Propagate a disable to selector-scoped virtual rules. Limited to `false` —
+						// see the matching nodeRules propagation above for why a non-false value must
+						// not be forwarded to a virtual rule whose own selector didn't match.
+						if (convertedRule === false) {
+							const scopedVirtualNames = ruleset.baseRuleToScopedVirtualNames.get(ruleName);
+							if (scopedVirtualNames) {
+								for (const vName of scopedVirtualNames) {
+									// No merge needed: mergeRule(_, false) always returns false, so the
+									// disable is unconditional regardless of any global config for vName.
+									for (const descendant of targetDescendants) {
+										ruleMapper.set(descendant, vName, {
+											from: 'childNodeRules',
+											specificity: matches.specificity,
+											rule: false,
+										});
+									}
 								}
 							}
 						}

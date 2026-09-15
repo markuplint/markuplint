@@ -20,7 +20,7 @@
 
 以下が必要です。
 
-- Node.js v22以降
+- Node.js v24以降
 - Yarn
 
 リポジトリをクローンした後、[Docker](https://github.com/markuplint/markuplint/blob/main/Dockerfile)からのインストールも可能です。

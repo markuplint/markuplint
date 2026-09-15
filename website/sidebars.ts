@@ -143,9 +143,12 @@ const sidebars: SidebarsConfig = {
 									label: 'Rules',
 									collapsed: false,
 									items: [
+										'migration/v4-to-v5/rules/rule-names',
 										'migration/v4-to-v5/rules/invalid-attr',
 										'migration/v4-to-v5/rules/required-element',
 										'migration/v4-to-v5/rules/deprecated-element',
+										'migration/v4-to-v5/rules/table-row-column-alignment',
+										'migration/v4-to-v5/rules/parse-error',
 										'migration/v4-to-v5/rules/textlint',
 									],
 								},

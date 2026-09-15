@@ -7,7 +7,11 @@ description: Warns if the label element has no control.
 
 Warns if the label element has no control. This rule is used for finding unassociated labels that don't have original purposes.
 
-And warns if there are controls after the first because only it can be associated with the label element.
+:::note
+
+An excess of descendant controls after the first is `label-no-multiple-controls`'s responsibility, not this rule's — that rule also accounts for the case where `for` references an external labelable element.
+
+:::
 
 ❌ Examples of **incorrect** code for this rule
 

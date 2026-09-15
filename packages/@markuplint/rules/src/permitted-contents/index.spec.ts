@@ -88,13 +88,6 @@ describe('verify', () => {
 				message: 'The "address" element is not allowed in the "address" element in this context',
 				raw: '<address>',
 			},
-			{
-				severity: 'error',
-				line: 1,
-				col: 10,
-				message: 'The "address" element must not appear as a descendant of the "address" element',
-				raw: '<address>',
-			},
 		]);
 
 		const { violations: violations2 } = await mlRuleTest(
@@ -107,13 +100,6 @@ describe('verify', () => {
 				line: 1,
 				col: 25,
 				message: 'The "address" element is not allowed in the "address" element in this context',
-				raw: '<address>',
-			},
-			{
-				severity: 'error',
-				line: 1,
-				col: 25,
-				message: 'The "address" element must not appear as a descendant of the "address" element',
 				raw: '<address>',
 			},
 		]);
@@ -2199,94 +2185,6 @@ describe('Issues', () => {
 		expect(violations).toStrictEqual([]);
 	}, 5000);
 
-	test('[permitted-contents-issue-3632-001] main must not be descendant of article', async () => {
-		const { violations } = await mlRuleTest(rule, '<article><main>x</main></article>');
-		expect(violations).toContainEqual(
-			expect.objectContaining({
-				message: 'The "main" element must not appear as a descendant of the "article" element',
-			}),
-		);
-	});
-
-	test('[permitted-contents-issue-3632-002] main standalone is valid', async () => {
-		const { violations } = await mlRuleTest(rule, '<main>x</main>');
-		const ancestorViolations = violations.filter(v => v.message.includes('must not appear'));
-		expect(ancestorViolations).toStrictEqual([]);
-	});
-
-	test('[permitted-contents-issue-3632-003] main in deeply nested nav', async () => {
-		const { violations } = await mlRuleTest(rule, '<nav><div><div><main>x</main></div></div></nav>');
-		expect(violations).toContainEqual(
-			expect.objectContaining({
-				message: 'The "main" element must not appear as a descendant of the "nav" element',
-			}),
-		);
-	});
-
-	test('[permitted-contents-issue-3670-001] area outside map is invalid', async () => {
-		const { violations } = await mlRuleTest(rule, '<div><area alt="x" href="#"></div>');
-		const descendantViolations = violations.filter(v => v.message?.includes('must appear as a descendant'));
-		expect(descendantViolations).toStrictEqual([
-			expect.objectContaining({
-				severity: 'error',
-				message: 'The "area" element must appear as a descendant of the "map" element',
-			}),
-		]);
-	});
-
-	test('[permitted-contents-issue-3670-002] area inside map is valid', async () => {
-		const { violations } = await mlRuleTest(rule, '<map name="m"><area alt="x" href="#"></map>');
-		const descendantViolations = violations.filter(v => v.message?.includes('descendant'));
-		expect(descendantViolations).toStrictEqual([]);
-	});
-
-	test('[permitted-contents-issue-3670-003] area inside deeply nested map has no descendantOf violation', async () => {
-		const { violations } = await mlRuleTest(rule, '<map name="m"><div><p><area alt="x" href="#"></p></div></map>');
-		const descendantViolations = violations.filter(v => v.message?.includes('descendant'));
-		expect(descendantViolations).toStrictEqual([]);
-	});
-
-	test('[permitted-contents-issue-3640-001] multiple track default is invalid', async () => {
-		const { violations } = await mlRuleTest(
-			rule,
-			'<video><track kind="subtitles" src="a.vtt" default><track kind="captions" src="b.vtt" default></video>',
-		);
-		const uniqueViolations = violations.filter(v => v.message?.includes('"default" attribute'));
-		expect(uniqueViolations).toStrictEqual([
-			expect.objectContaining({
-				severity: 'error',
-				raw: '<track kind="captions" src="b.vtt" default>',
-				message:
-					'The "default" attribute must not appear on more than one "track" element within the same parent',
-			}),
-		]);
-	});
-
-	test('[permitted-contents-issue-3640-002] single track default is valid', async () => {
-		const { violations } = await mlRuleTest(
-			rule,
-			'<video><track kind="subtitles" src="a.vtt" default><track kind="captions" src="b.vtt"></video>',
-		);
-		const uniqueViolations = violations.filter(v => v.message?.includes('"default" attribute'));
-		expect(uniqueViolations).toStrictEqual([]);
-	});
-
-	test('[permitted-contents-issue-3640-003] multiple track default in audio is invalid', async () => {
-		const { violations } = await mlRuleTest(
-			rule,
-			'<audio><track kind="subtitles" src="a.vtt" default><track kind="captions" src="b.vtt" default></audio>',
-		);
-		const uniqueViolations = violations.filter(v => v.message?.includes('"default" attribute'));
-		expect(uniqueViolations).toStrictEqual([
-			expect.objectContaining({
-				severity: 'error',
-				raw: '<track kind="captions" src="b.vtt" default>',
-				message:
-					'The "default" attribute must not appear on more than one "track" element within the same parent',
-			}),
-		]);
-	});
-
 	test('[permitted-contents-issue-3635-001] empty title is invalid', async () => {
 		const { violations } = await mlRuleTest(rule, '<html><head><title></title></head><body></body></html>');
 		expect(violations).toContainEqual(
@@ -2340,15 +2238,6 @@ describe('Issues', () => {
 		expect(optionViolations).toStrictEqual([]);
 	});
 
-	test('[permitted-contents-issue-3632-004] footer in header', async () => {
-		const { violations } = await mlRuleTest(rule, '<header><footer>x</footer></header>');
-		expect(violations).toContainEqual(
-			expect.objectContaining({
-				message: 'The "footer" element must not appear as a descendant of the "header" element',
-			}),
-		);
-	});
-
 	// #3592: empty dl is valid (zero or more groups)
 	test('[permitted-contents-issue-3592-001] empty dl is valid', async () => {
 		expect((await mlRuleTest(rule, '<dl></dl>')).violations).toStrictEqual([]);
@@ -2392,6 +2281,134 @@ describe('Issues', () => {
 		expect((await mlRuleTest(rule, '<dl><dt>a</dt><dd>b</dd><dt>c</dt><dd>d</dd></dl>')).violations).toStrictEqual(
 			[],
 		);
+	});
+
+	// HTML LS §4.4.9: div inside dl allows exactly one group (dt+ dd+),
+	// not repeated groups. Group repetition is expressed at the dl level.
+	test('[permitted-contents-invalid-034] div in dl with multiple dt+dd groups is invalid', async () => {
+		const { violations } = await mlRuleTest(rule, '<dl><div><dt>a</dt><dd>b</dd><dt>c</dt><dd>d</dd></div></dl>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 30,
+				message: 'The "dt" element is not allowed in the "div" element in this context',
+				raw: '<dt>',
+			},
+		]);
+	});
+
+	test('[permitted-contents-valid-003] div in dl with single dt+dd group is valid', async () => {
+		expect(
+			(await mlRuleTest(rule, '<dl><div><dt>a</dt><dt>b</dt><dd>c</dd><dd>d</dd></div></dl>')).violations,
+		).toStrictEqual([]);
+	});
+
+	// #3928: a transparent-content-model element (e.g. <a>, <audio>, <ins>) must
+	// still be evaluated against the parent's own content model at its own
+	// position — the transparent flattening that lets its children pass through
+	// must not make the element itself disappear from that check.
+	test('[permitted-contents-issue-3928-001] a[href] (interactive) directly inside button is invalid', async () => {
+		const { violations } = await mlRuleTest(rule, '<button><a href="/x"><span>text</span></a></button>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 9,
+				raw: '<a href="/x">',
+				message: 'The "a" element is not allowed in the "button" element in this context',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-3928-002] audio[controls] (interactive) directly inside button is invalid', async () => {
+		const { violations } = await mlRuleTest(rule, '<button><audio controls></audio></button>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 9,
+				raw: '<audio controls>',
+				message: 'The "audio" element is not allowed in the "button" element in this context',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-3928-003] video directly inside picture is invalid', async () => {
+		const { violations } = await mlRuleTest(rule, '<picture><video></video><img src="x" alt=""></picture>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				raw: '<picture>',
+				message: 'Require an element. (Need "img")',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-3928-004] audio directly inside picture is invalid', async () => {
+		const { violations } = await mlRuleTest(rule, '<picture><audio></audio><img src="x" alt=""></picture>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				raw: '<picture>',
+				message: 'Require an element. (Need "img")',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-3928-005] canvas directly inside picture is invalid', async () => {
+		const { violations } = await mlRuleTest(rule, '<picture><canvas></canvas><img src="x" alt=""></picture>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				raw: '<picture>',
+				message: 'Require an element. (Need "img")',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-3928-006] a wrapping img directly inside picture is invalid', async () => {
+		const { violations } = await mlRuleTest(rule, '<picture><a><img src="x" alt=""></a></picture>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				raw: '<picture>',
+				message: 'Require an element. (Need "img")',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-3928-007] ins directly inside picture is invalid', async () => {
+		const { violations } = await mlRuleTest(rule, '<picture><ins></ins><img src="x" alt=""></picture>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				raw: '<picture>',
+				message: 'Require an element. (Need "img")',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-3928-008] non-interactive a inside button stays valid', async () => {
+		// <a> without href is not interactive content, so it remains permitted
+		// phrasing content — the fix must not flag benign transparent usage.
+		const { violations } = await mlRuleTest(rule, '<button><a>text</a></button>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-3928-009] a[href] wrapping phrasing content inside p stays valid', async () => {
+		const { violations } = await mlRuleTest(rule, '<p><a href="#">text</a></p>');
+		expect(violations).toStrictEqual([]);
 	});
 });
 

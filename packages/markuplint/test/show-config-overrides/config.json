@@ -1,0 +1,12 @@
+{
+	"rules": {
+		"id-duplication": true
+	},
+	"overrides": {
+		"./target.*": {
+			"rules": {
+				"required-attr": true
+			}
+		}
+	}
+}

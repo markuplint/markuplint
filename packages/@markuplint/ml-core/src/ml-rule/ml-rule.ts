@@ -183,6 +183,7 @@ export class MLRule<T extends RuleConfigValue, O extends PlainData = undefined> 
 						: configSettings.value,
 				options: mergeOptions(this.defaultOptions, configSettings.options),
 				reason: configSettings.reason,
+				...(configSettings.reasonOnly === undefined ? {} : { reasonOnly: configSettings.reasonOnly }),
 			};
 		}
 		return {
@@ -242,30 +243,30 @@ export class MLRule<T extends RuleConfigValue, O extends PlainData = undefined> 
 				}
 				return {
 					severity: report.scope.rule.severity,
-					message: report.message,
+					...resolveMessageAndReason(
+						report.message,
+						report.scope.rule.reason ?? document.rule.reason,
+						report.scope.rule.reasonOnly ?? document.rule.reasonOnly,
+					),
 					line,
 					col,
 					raw,
 					ruleId,
 					...(aliasName != null && { name: aliasName }),
 					...(this.specConformance != null && { specConformance: this.specConformance }),
-					...((report.scope.rule.reason ?? document.rule.reason)
-						? { reason: report.scope.rule.reason ?? document.rule.reason }
-						: {}),
 					...(fixData != null && { fix: fixData }),
 				};
 			}
 
 			return {
 				severity: document.rule.severity,
-				message: report.message,
+				...resolveMessageAndReason(report.message, document.rule.reason, document.rule.reasonOnly),
 				line: report.line,
 				col: report.col,
 				raw: report.raw,
 				ruleId,
 				...(aliasName != null && { name: aliasName }),
 				...(this.specConformance != null && { specConformance: this.specConformance }),
-				...(document.rule.reason ? { reason: document.rule.reason } : {}),
 				...(fixData != null && { fix: fixData }),
 			};
 		});
@@ -291,6 +292,23 @@ function isRuleConfig<T extends RuleConfigValue, O extends PlainData = undefined
 	data: T | RuleConfig<T, O>,
 ): data is RuleConfig<T, O> {
 	return isPlainObject(data);
+}
+
+/**
+ * Resolves a violation's `message`/`reason` pair from the rule's configured `reason`/`reasonOnly`.
+ * When `reasonOnly` is set and a `reason` is configured, `reason` replaces `message` entirely and
+ * is omitted from the result (it is now redundant with `message`); otherwise `reason` is appended
+ * as a separate field, preserving the original `message`.
+ */
+function resolveMessageAndReason(
+	message: string,
+	reason: string | undefined,
+	reasonOnly: boolean | undefined,
+): { message: string; reason?: string } {
+	if (reason && reasonOnly) {
+		return { message: reason };
+	}
+	return { message, ...(reason ? { reason } : {}) };
 }
 
 function mergeOptions<O extends PlainData>(a: Readonly<O>, b: Readonly<O> | undefined): O {

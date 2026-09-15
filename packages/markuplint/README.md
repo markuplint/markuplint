@@ -25,7 +25,7 @@
 $ npx markuplint target.html
 ```
 
-Supported for _Node.js_ `v22.0.0` or later.
+Supported for _Node.js_ `v24.0.0` or later.
 
 ## Usage
 
@@ -87,6 +87,7 @@ Options
 	--verbose                              Output with detailed information.
 	--include-node-modules                 Include files in node_modules directory. Default: false.
 	--severity-parse-error                 Specifies the severity level of parse errors. Supports "error", "warning", and "off". Default: "error".
+	--severity-deprecation                 Specifies the severity level of deprecated rule name notices. Supports "error", "warning", and "off". Default: "warning".
 	--max-count                            Limit the number of violations shown. Default: 0 (no limit).
 	--max-warnings                         Number of warnings to trigger nonzero exit code. Default: -1 (no limit).
 	--progressive-output                   Output results immediately after processing each file. Default: false.
@@ -138,7 +139,7 @@ $ markuplint --prune-suppressions "src/**/*.html"
 ```json
 {
   "src/index.html": {
-    "attr-duplication": { "count": 3, "scope": "#main-nav > ul" }
+    "no-duplicate-attr": { "count": 3, "scope": "#main-nav > ul" }
   }
 }
 ```
@@ -182,7 +183,7 @@ Fallback is automatic and per-file: eligible files use Rust, ineligible files us
 
 ## Editor Extensions
 
-- [Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=markuplint.vscode-markuplint)
+- [Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=markuplint.markuplint-vscode)
 
 ## License
 

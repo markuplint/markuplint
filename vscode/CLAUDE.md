@@ -1,0 +1,108 @@
+# vscode
+
+## Release policy (MANDATORY)
+
+The VS Code Marketplace rejects semver prerelease suffixes (`5.0.0-rc.4` is
+literally refused on upload), and its own prerelease channel requires a
+version scheme divorced from semver (an odd/even minor split), which
+conflicts with this repo's Lerna non-independent versioning. Rather than
+maintain a divergent version mapping for the extension alone, releases are
+split by channel instead:
+
+| Release type                                  | npm     | Marketplace                | GitHub Release (`.vsix`)      |
+| --------------------------------------------- | ------- | -------------------------- | ----------------------------- |
+| Stable (`X.Y.Z`)                              | CI auto | Manual publish (see below) | Attach for archival           |
+| Prerelease (`-rc.N` / `-beta.N` / `-alpha.N`) | CI auto | **Never**                  | **Only** distribution channel |
+
+A prerelease build is therefore installable only via the `.vsix` attached to
+its GitHub Release, never via the Marketplace's own prerelease channel.
+
+## Publishing (stable only)
+
+There is no CI publish job for the extension — Marketplace publishing is a
+manual step performed after the npm packages for that version are out:
+
+```bash
+yarn vscode:package   # builds and verifies the VSIX (installable, no upload)
+yarn vscode:release   # publishes the verified VSIX to the Marketplace
+```
+
+Always run `vscode:package` first and sanity-check the resulting `.vsix`
+before `vscode:release` — there is no dry-run for the Marketplace upload
+itself.
+
+An OIDC-based publish pipeline (replacing the long-lived Marketplace PAT)
+was scoped but not adopted — there is no `vscode-marketplace` GitHub
+Environment and no Azure-related repo secret. Publishing still uses the PAT
+via `vsce`'s interactive login (`yarn vscode:login`).
+
+## Build modes
+
+`vscode/scripts/install.mjs [mode]` only accepts `package` and `release`
+(see `vscode/scripts/resolve-mode.mjs`). Prerelease modes (`pre-package` /
+`pre-release`) existed briefly during the switch to the `markuplint`
+publisher namespace and were removed once the policy above was decided —
+don't reintroduce them without revisiting that decision.
+
+## Legacy publisher
+
+The extension previously published under `yusukehirao.vscode-markuplint`.
+That listing was **deleted** (`vsce unpublish`, which is a hard delete) at
+the v5.0.0 release — not merely deprecated — because the Marketplace refused
+to publish the new listing while the old one existed (see the `repository`
+section below). Its last published version was 4.18.3, a metadata-only
+release carrying a deprecation notice in `description`.
+
+## Package `name` differs from the npm/legacy convention
+
+`package.json`'s `name` is `markuplint-vscode`, not `vscode-markuplint` — the
+extension identity is therefore `markuplint.markuplint-vscode`, not
+`markuplint.vscode-markuplint`. This is not a stylistic choice:
+
+- On the first publish attempt to the new `markuplint` publisher (v5.0.0),
+  the Marketplace rejected `name: "vscode-markuplint"` with `ERROR The
+extension 'vscode-markuplint' already exists in the Marketplace` — its
+  name-uniqueness check apparently applies to the raw extension `name`
+  across _all_ publishers, not the full `publisher.name` identity, so the
+  string `vscode-markuplint` already in use by the legacy `yusukehirao`
+  listing blocked reuse under `markuplint` too.
+- `name: "markuplint"` (matching the npm CLI package) was tried next and
+  rejected locally before publishing: it collides with
+  `packages/markuplint`'s own `name: "markuplint"` in the same Yarn
+  workspace (`vscode` is a workspace member — see root `package.json`
+  `workspaces`), which breaks Nx/Lerna project-graph construction
+  (`lerna ERR!` duplicate project name) as soon as both are installed
+  together.
+
+Don't rename `name` back to `vscode-markuplint` or to `markuplint` without
+confirming both constraints above no longer apply.
+
+## `displayName` is also globally unique, not just `name`
+
+After fixing the `name` collision above, the v5.0.0 publish hit a second
+Marketplace rejection: `ERROR This extension display name is taken` for
+`displayName: "Markuplint"` — the same legacy `yusukehirao.vscode-markuplint`
+listing already uses that display name, and this check also isn't scoped to
+the publisher. `displayName` was changed to `"Markuplint for VS Code"` to
+resolve it. Don't revert to plain `"Markuplint"` without first freeing the
+name (e.g. renaming the legacy listing's `displayName`) or confirming the
+Marketplace behavior has changed.
+
+## `repository` URL is claimed per publisher, and the claim outlives the listing
+
+The third v5.0.0 rejection was `ERROR Repository URL
+"https://github.com/markuplint/markuplint.git" is already in use by another
+publisher` — the legacy `yusukehirao` listing pointed at the same monorepo.
+Two things that did **not** release the claim:
+
+- Republishing the legacy listing with the `repository` field removed
+  (4.18.3). The visible page updated; the uniqueness check still failed.
+- Deleting the legacy listing outright (`vsce unpublish`) and retrying
+  immediately.
+
+What worked: the same retry a few minutes after the delete. The Marketplace's
+repository-claim index lags the delete, just as the npm registry's dist-tags
+lag a publish. So the actual rule is: the claim is released only by deleting
+the listing that holds it, and only after propagation — don't conclude the
+claim is permanent (or start editing `repository` to a fake URL) on an
+immediate retry.

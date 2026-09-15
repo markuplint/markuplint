@@ -18,7 +18,23 @@
 		"#ARIAAttrs": true,
 		"#MathMLGlobalAttrs": true
 	},
-	"attributes": {},
+	"attributes": {
+		"background": {
+			"deprecated": true
+		},
+		"color": {
+			"deprecated": true
+		},
+		"fontsize": {
+			"deprecated": true
+		},
+		"fontstyle": {
+			"deprecated": true
+		},
+		"fontweight": {
+			"deprecated": true
+		}
+	},
 	"aria": {
 		"implicitRole": false,
 		"permittedRoles": true

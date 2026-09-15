@@ -41,9 +41,45 @@
 			"id": "nv-00d2f9879fd4",
 			"path": "html/elements/script/importmap/scopes-key-not-url-novalid.html",
 			"nuMessage": "`<script type=importmap>` scope key fails nu's looks-like-URL check (`scope1_not_url`).",
-			"reason": "HTML LS § Sorting and normalizing scopes step 2 URL-parses scopePrefix *with* baseURL. Relative strings like `scope1_not_url` parse successfully against any base, so step 3's URL-parse-failure warning never fires; the resulting scope simply applies to `<base>/scope1_not_url`. nu-validator additionally requires the key to look URL-like (scheme or `/`/`./`/`../`), which is stricter than the spec. The `script-content` rule deliberately follows the spec letter and does not flag this case.",
+			"reason": "HTML LS § Sorting and normalizing scopes step 2 URL-parses scopePrefix *with* baseURL. Relative strings like `scope1_not_url` parse successfully against any base, so step 3's URL-parse-failure warning never fires; the resulting scope simply applies to `<base>/scope1_not_url`. nu-validator additionally requires the key to look URL-like (scheme or `/`/`./`/`../`), which is stricter than the spec. The `valid-importmap` rule deliberately follows the spec letter and does not flag this case.",
 			"specUrl": "https://html.spec.whatwg.org/multipage/webappapis.html#sorting-and-normalizing-scopes",
 			"addedAt": "2026-05-18",
+			"addedBy": "hirao"
+		},
+		{
+			"id": "nv-d7b3d14cfb44",
+			"path": "html/elements/table/row-width-exceeds-col-markup-novalid.html",
+			"nuMessage": "A table row was 3 columns wide and exceeded the column count established using column markup (2).",
+			"reason": "HTML LS §4.9.12.1 *Algorithm for processing rows* Step 7: 'If xcurrent is equal to xwidth, then increase xwidth by 1.' xwidth grows automatically when a row has more cells than the current column count established by column markup. There is no spec rule that row width must not exceed column markup width — extra columns are silently created. After xwidth growth every column in this row has an anchor cell, so Step 20 (no-anchor) is also not violated. nu-validator's 'exceeded the column count established using column markup' is heuristic over-detection.",
+			"specUrl": "https://html.spec.whatwg.org/multipage/tables.html#forming-a-table",
+			"addedAt": "2026-07-01",
+			"addedBy": "hirao"
+		},
+		{
+			"id": "nv-cd593c007a34",
+			"path": "html/datatypes/sandbox-scripts-same-origin-haswarn.html",
+			"nuMessage": "Bad value “allow-scripts allow-same-origin” for attribute “sandbox” on element “iframe”: Setting both “allow-scripts” and “allow-same-origin” is not recommended, because it effectively enables an embedded page to break out of all sandboxing.",
+			"reason": "HTML LS § the iframe element renders this advisory as `<p class=warning>`: 'Setting both the allow-scripts and allow-same-origin keywords together when the embedded page has the same origin as the page containing the iframe allows the embedded page to simply remove the sandbox attribute and then reload itself, effectively breaking out of the sandbox altogether.' The `<p class=warning>` container marks the paragraph as a non-normative advisory (contrast with `must` / `must not` prose in the same section). The two-keyword pair is spec-conformant; nu-validator escalates the advisory to an error. markuplint follows the letter of the spec here and does not flag it.",
+			"specUrl": "https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-iframe-element",
+			"addedAt": "2026-07-03",
+			"addedBy": "hirao"
+		},
+		{
+			"id": "nv-54c78eff3c7d",
+			"path": "html/elements/input/type-button-empty-value-novalid.html",
+			"nuMessage": "Element “input” with attribute “type” whose value is “button” must have non-empty attribute “value”.",
+			"reason": "HTML LS §4.10.5.1.21 Button state (type=button) has two adjacent sentences: (i) 'A label for the button must be provided in the value attribute, though it may be the empty string.' — a locus rule constraining *where* the label goes when the author does provide one, not a hard requirement that the value attribute be present; (ii) 'If the element has a value attribute, the button's label must be the value of that attribute; otherwise, it must be the empty string.' — a UA-side fallback that defines a spec-conformant behaviour for the missing-attribute case. The existence of the UA fallback in (ii) means the spec treats a missing value attribute as a supported state, not as a `must`-violation of (i). The `input-button-non-empty-value` rule reads the two sentences the same way and deliberately fires only on the explicit `value=\"\"` case (spec-cited rationale in the rule's JSDoc and README; design decision recorded in commit 3096626bc `fix(rules): tighten new conformance rules from QA review`, section 3). nu-validator's Assertions.java enforces both the missing and the empty-string case; markuplint follows the spec letter on missing.",
+			"specUrl": "https://html.spec.whatwg.org/multipage/input.html#button-state-(type=button)",
+			"addedAt": "2026-07-05",
+			"addedBy": "hirao"
+		},
+		{
+			"id": "nv-c5efac320bbb",
+			"path": "html/elements/style/css-property-error-novalid.html",
+			"nuMessage": "CSS: “colr”: Property “colr” doesn't exist.",
+			"reason": "deferred-CSS (#3946). markuplint's tracked spec scope per `.claude/skills/bench-triage/SKILL.md` is HTML Living Standard + WAI-ARIA + URL Living Standard. CSS syntax and the property registry are governed by CSS specifications (CSS Syntax Level 3, CSS Values and Units, and the individual property specifications hosted by W3C CSSWG), not by HTML LS. `colr` is not a registered CSS property (see the CSS property registry at https://www.w3.org/Style/CSS/all-properties.en.html — the closest tokens are `color` and the color-adjacent family, none of which spell `colr`), so nu-validator is spec-correct. markuplint currently does not validate CSS content inside `<style>` or `[style]`.",
+			"specUrl": "https://www.w3.org/TR/css-syntax-3/",
+			"addedAt": "2026-07-06",
 			"addedBy": "hirao"
 		}
 	],

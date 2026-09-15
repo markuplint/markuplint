@@ -87,4 +87,4 @@ When generating or updating user-facing READMEs and documentation, always includ
 
 For features with evolving specs, explicitly state: the current spec stage (finalized / provisional / under discussion), the history and rationale behind changes, and how to check the latest spec (URL, point of contact, channel).
 
-Note: in THIS repository, documentation placement is governed by `/doc` (`.claude/commands/doc.md`) — repo markdown must not restate code-derivable WHAT/HOW; WHY lives in JSDoc. The rules above apply to user-facing docs (READMEs, website), which are exempt.
+Note: in THIS repository, documentation placement is governed by the `doc` skill (`.claude/skills/doc/SKILL.md`) — repo markdown must not restate code-derivable WHAT/HOW; WHY lives in JSDoc. The rules above apply to user-facing docs (READMEs, website), which are exempt.

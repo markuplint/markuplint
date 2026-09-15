@@ -7,6 +7,8 @@ import type { MLEngine as _MLEngine } from 'markuplint';
 import type { Position, TextDocumentIdentifier } from 'vscode-languageserver';
 import type { TextDocument } from 'vscode-languageserver-textdocument';
 
+import path from 'node:path';
+
 import { getFilePath } from '../utils/get-file-path.js';
 import { resolveWorkingDirectory } from '../utils/resolve-working-directory.js';
 
@@ -47,7 +49,12 @@ export async function onDidOpen(
 	}
 
 	const sourceCode = document.getText();
-	const file = await MLEngine.toMLFile({ sourceCode, name: filePath.basename, workspace });
+	// `name` must be the workspace-relative path (not just the basename), or
+	// MLFile.path collapses subdirectory files to workspace-root + basename —
+	// which breaks pretender import resolution, nested config discovery, and
+	// excludeFiles/overrides glob matching for anything outside the workspace root.
+	const relativeFilePath = path.relative(workspace, absoluteFilePath);
+	const file = await MLEngine.toMLFile({ sourceCode, name: relativeFilePath, workspace });
 
 	if (!file) {
 		log(`File not found: ${filePath.basename}`, 'warn');

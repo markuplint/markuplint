@@ -7,13 +7,13 @@ describe('categories catalogue', () => {
 		expect(categories.map(c => c.id)).toEqual([
 			'content-model',
 			'deprecated',
-			'required-attr',
-			'id-duplication',
+			'require-attr',
+			'no-duplicate-id',
 			'assertions',
 			'global-attr',
 			'data-types',
 			'aria',
-			'invalid-attr',
+			'attribute-errors',
 		]);
 	});
 });
@@ -23,13 +23,13 @@ describe('inferCategory', () => {
 		['html/elements/a/model-isvalid.html', 'content-model'],
 		['html/elements/h4/model-novalid.html', 'content-model'],
 		['html/obsolete/center-novalid.html', 'deprecated'],
-		['html/assertions/img-missing-alt-novalid.html', 'required-attr'],
-		['html/assertions/duplicate-id-novalid.html', 'id-duplication'],
+		['html/assertions/img-missing-alt-novalid.html', 'require-attr'],
+		['html/assertions/duplicate-id-novalid.html', 'no-duplicate-id'],
 		['html/assertions/section-lacks-heading-haswarn.html', 'assertions'],
 		['html/attributes/lang-isvalid.html', 'global-attr'],
 		['html/datatypes/url-novalid.html', 'data-types'],
 		['html-aria/role-button-novalid.html', 'aria'],
-		['html/elements/a-novalid.html', 'invalid-attr'],
+		['html/elements/a-novalid.html', 'attribute-errors'],
 	])('maps %s to %s', (path, expected) => {
 		expect(inferCategory(path)).toBe(expected);
 	});
@@ -40,20 +40,20 @@ describe('inferCategory', () => {
 		expect(inferCategory('langdetect/lang-en.html')).toBe('uncategorized');
 	});
 
-	test('exclude list wins over include list (model-* not treated as invalid-attr)', () => {
-		// invalid-attr includes html/elements/**/*.html but excludes model-*.html
+	test('exclude list wins over include list (model-* not treated as attribute-errors)', () => {
+		// attribute-errors includes html/elements/**/*.html but excludes model-*.html
 		expect(inferCategory('html/elements/a/model-isvalid.html')).toBe('content-model');
 		expect(inferCategory('html/elements/a/model-novalid.html')).toBe('content-model');
 	});
 
-	test('id-duplication wins over the broader assertions category', () => {
+	test('no-duplicate-id wins over the broader assertions category', () => {
 		// html/assertions/*duplicate-id* would otherwise hit the generic assertions bucket.
-		expect(inferCategory('html/assertions/foo-duplicate-id-novalid.html')).toBe('id-duplication');
+		expect(inferCategory('html/assertions/foo-duplicate-id-novalid.html')).toBe('no-duplicate-id');
 	});
 
-	test('required-attr wins over the broader assertions category', () => {
-		// html/assertions/*missing* must route to required-attr, not assertions.
-		expect(inferCategory('html/assertions/img-missing-alt-novalid.html')).toBe('required-attr');
+	test('require-attr wins over the broader assertions category', () => {
+		// html/assertions/*missing* must route to require-attr, not assertions.
+		expect(inferCategory('html/assertions/img-missing-alt-novalid.html')).toBe('require-attr');
 	});
 });
 
@@ -64,7 +64,7 @@ describe('filterByCategory', () => {
 			'html/elements/a/model-isvalid.html',
 			'html-aria/role-button.html',
 		];
-		expect(filterByCategory(paths, 'invalid-attr')).toEqual(['html/elements/a-novalid.html']);
+		expect(filterByCategory(paths, 'attribute-errors')).toEqual(['html/elements/a-novalid.html']);
 		expect(filterByCategory(paths, 'content-model')).toEqual(['html/elements/a/model-isvalid.html']);
 		expect(filterByCategory(paths, 'aria')).toEqual(['html-aria/role-button.html']);
 	});

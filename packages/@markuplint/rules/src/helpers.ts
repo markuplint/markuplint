@@ -1,13 +1,7 @@
-import type { Log } from './debug.js';
-import type { Translator } from '@markuplint/i18n';
 import type { FixToken, IRuleFixer, PlainData, TextEdit } from '@markuplint/ml-config';
 import type { Element, RuleConfigValue, Document } from '@markuplint/ml-core';
 import type { Attribute } from '@markuplint/ml-spec';
 import type { WritableDeep } from 'type-fest';
-
-import { isConditionalAttributeTypeArray } from '@markuplint/ml-spec';
-
-import { attrCheck } from './attr-check.js';
 
 /** A `null`/`undefined` condition means the attribute applies unconditionally. */
 export function attrMatches<T extends RuleConfigValue, O extends PlainData>(
@@ -30,7 +24,7 @@ export function attrMatches<T extends RuleConfigValue, O extends PlainData>(
  * attribute's value is dynamic (template-interpolated) the condition result is
  * indeterminate and must not be used to report a violation.
  */
-function conditionDependsOnDynamicAttr<T extends RuleConfigValue, O extends PlainData>(
+export function conditionDependsOnDynamicAttr<T extends RuleConfigValue, O extends PlainData>(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	node: Element<T, O>,
 	condition: NonNullable<Attribute['condition']>,
@@ -95,54 +89,6 @@ export const rePCENChar = [
 	'[\uFDF0-\uFFFD]',
 	'[\uD800-\uDBFF][\uDC00-\uDFFF]',
 ].join('|');
-
-export function isValidAttr(
-	t: Translator,
-	name: string,
-	value: string,
-	isDynamicValue: boolean,
-	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	node: Element<any, any>,
-	attrSpecs: readonly Attribute[],
-	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	log?: Log,
-) {
-	let spec = attrSpecs.find(s => s.name.toLowerCase() === name.toLowerCase());
-	log?.('Spec of the %s attr: %o', name, spec);
-
-	// Resolve ConditionalAttributeType[] to a concrete type based on element matching (#3598).
-	if (spec && isConditionalAttributeTypeArray(spec.type)) {
-		const matched = spec.type.find(entry => {
-			const cond = typeof entry.condition === 'string' ? entry.condition : entry.condition.join(',');
-			return node.matches(cond);
-		});
-		log?.('ConditionalAttributeType resolution for %s: %o', name, matched);
-		// Fallback to 'Any' when no condition matches: input types without an explicit
-		// entry (text, search, tel, password, hidden, checkbox, radio, file, submit,
-		// image, reset, button) have no value constraints per the HTML spec.
-		spec = { ...spec, type: matched ? matched.type : 'Any' };
-	}
-
-	const allAttrNames = attrSpecs.map(s => s.name);
-	let invalid: ReturnType<typeof attrCheck> = attrCheck(t, name, value, false, spec, allAttrNames);
-	if (
-		invalid === false &&
-		spec &&
-		spec.condition != null &&
-		!node.hasSpreadAttr &&
-		!conditionDependsOnDynamicAttr(node, spec.condition) &&
-		!attrMatches(node, spec.condition)
-	) {
-		invalid = {
-			invalidType: 'non-existent',
-			message: t('{0} is {1}', t('the "{0*}" {1}', name, 'attribute'), 'disallowed'),
-		};
-	}
-	if (invalid !== false && (Array.isArray(invalid) || invalid.invalidType === 'invalid-value') && isDynamicValue) {
-		invalid = false;
-	}
-	return invalid;
-}
 
 export function toNormalizedValue(value: string, spec: Attribute) {
 	let normalized = value;

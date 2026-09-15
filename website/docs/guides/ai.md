@@ -4,10 +4,10 @@ AI coding assistants can help you get the most out of Markuplint — from unders
 
 ## Understanding warnings
 
-When Markuplint reports a violation, you can paste the error message into an AI assistant to get an explanation and suggested fix. Each violation includes a rule name (e.g., `attr-duplication`) that the AI can look up.
+When Markuplint reports a violation, you can paste the error message into an AI assistant to get an explanation and suggested fix. Each violation includes a rule name (e.g., `no-duplicate-attr`) that the AI can look up.
 
 ```
-The attribute name is duplicated Markuplint(attr-duplication) [Ln 11, Col 45]
+The attribute name is duplicated Markuplint(no-duplicate-attr) [Ln 11, Col 45]
 ```
 
 Ask your AI assistant:
@@ -45,15 +45,17 @@ Markuplint provides installable [skills](https://github.com/markuplint/markuplin
 npx skills add markuplint/markuplint@markuplint
 npx skills add markuplint/markuplint@markuplint-setup
 npx skills add markuplint/markuplint@markuplint-configure
+npx skills add markuplint/markuplint@migrations/v4-v5
 ```
 
 ### Available skills
 
-| Skill                  | Type          | Description                                                                                                                                    |
-| ---------------------- | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `markuplint`           | Auto-loaded   | Reference knowledge — violation interpretation, CLI usage, config patterns. Claude automatically references this when working with HTML files. |
-| `markuplint-setup`     | Slash command | Set up Markuplint from scratch — framework detection, preset selection, initial lint, rule-by-rule adoption with Bulk Suppressions.            |
-| `markuplint-configure` | Slash command | Add, remove, or adjust rules — determines the right scope (project / file / element) and proposes configuration changes.                       |
+| Skill                  | Type          | Description                                                                                                                                                                                          |
+| ---------------------- | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `markuplint`           | Auto-loaded   | Reference knowledge — violation interpretation, CLI usage, config patterns. Claude automatically references this when working with HTML files.                                                       |
+| `markuplint-setup`     | Slash command | Set up Markuplint from scratch — framework detection, preset selection, initial lint, rule-by-rule adoption with Bulk Suppressions.                                                                  |
+| `markuplint-configure` | Slash command | Add, remove, or adjust rules — determines the right scope (project / file / element) and proposes configuration changes.                                                                             |
+| `migrate4-5`           | Auto-loaded   | Migrate a project from Markuplint v4 to v5 — reviews breaking changes, updates packages and configuration step by step. Install path: `@migrations/v4-v5` (`@migrate4-5` remains as a legacy alias). |
 
 ### How to use
 

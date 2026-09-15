@@ -31,6 +31,30 @@
 		// https://html.spec.whatwg.org/multipage/iframe-embed-object.html#attr-object-name
 		"name": {
 			"type": "NavigableTargetName"
+		},
+		"archive": {
+			"deprecated": true
+		},
+		"border": {
+			"deprecated": true
+		},
+		"classid": {
+			"deprecated": true
+		},
+		"codebase": {
+			"deprecated": true
+		},
+		"codetype": {
+			"deprecated": true
+		},
+		"declare": {
+			"deprecated": true
+		},
+		"standby": {
+			"deprecated": true
+		},
+		"usemap": {
+			"deprecated": true
 		}
 	},
 	"aria": {

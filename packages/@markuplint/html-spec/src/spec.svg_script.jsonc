@@ -30,6 +30,14 @@
 				"disallowToSurroundBySpaces": false
 			},
 			"animatable": true
+		},
+		// Not yet formalized in the SVG2 draft (tracked as an open requirement);
+		// MDN documents browser-implemented behavior equivalent to HTML's async/defer.
+		"async": {
+			"type": "Boolean"
+		},
+		"defer": {
+			"type": "Boolean"
 		}
 	},
 	"aria": {

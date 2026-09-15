@@ -1,9 +1,6 @@
 {
 	"rules": {
-		"no-unsupported-features": {
-			"options": {
-				"checkNonStandard": true
-			}
-		}
+		"no-unsupported-browser-features": true,
+		"no-nonstandard-features": true
 	}
 }

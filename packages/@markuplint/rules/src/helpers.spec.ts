@@ -6,7 +6,8 @@ import { createTestElement } from '@markuplint/ml-core';
 import { i18n } from 'markuplint';
 import { test, expect, beforeAll } from 'vitest';
 
-import { isValidAttr } from './helpers.js';
+import { attrCheck } from './attr-check.js';
+import { resolveAttrEligibility } from './attr-eligibility.js';
 
 let t: Translator;
 
@@ -15,15 +16,42 @@ beforeAll(() => {
 	t = translator(locale);
 });
 
-/*
- * #3685 / #3598 — Integration tests for `isValidAttr` with ConditionalAttributeType[].
- *
- * These exercise the boundary where the `invalid-attr` rule meets the
- * attribute spec data. `isValidAttr` resolves `ConditionalAttributeType[]` by
- * matching the element against each condition and validating against the
- * matched type. If no condition matches, it falls back to `Any`.
+/**
+ * Runs the same two-step pipeline `no-invalid-attr-value` runs: resolve
+ * eligibility (which also resolves `ConditionalAttributeType[]` to a
+ * concrete type), then check the value against the resolved spec.
+ * Returns `false` when valid, an `Invalid` (or array) otherwise — matching
+ * the pre-split `isValidAttr`'s return shape these tests were written against.
  */
-test('[helpers-issue-3685-001] isValidAttr falls back to Any when no condition matches', () => {
+function checkValue(
+	name: string,
+	value: string,
+	isDynamicValue: boolean,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: ReturnType<typeof createTestElement>,
+	attrSpecs: readonly Attribute[],
+) {
+	const eligibility = resolveAttrEligibility(name, el, attrSpecs);
+	if (eligibility.status !== 'ok') {
+		return { invalidType: 'non-existent', message: '' } as const;
+	}
+	const invalid = attrCheck(t, name, value, false, eligibility.spec);
+	if (invalid !== false && isDynamicValue) {
+		return false;
+	}
+	return invalid;
+}
+
+/*
+ * #3685 / #3598 — Integration tests for `resolveAttrEligibility` with ConditionalAttributeType[].
+ *
+ * These exercise the boundary where the spec-validating rules (`no-unknown-attr`,
+ * `no-disallowed-attr`, `no-invalid-attr-value`) meet the attribute spec data.
+ * `resolveAttrEligibility` resolves `ConditionalAttributeType[]` by matching the
+ * element against each condition and validating against the matched type. If no
+ * condition matches, it falls back to `Any`.
+ */
+test('[helpers-issue-3685-001] falls back to Any when no condition matches', () => {
 	const el = createTestElement('<custom-el value="not-a-url-or-color"></custom-el>');
 	const attrSpecs: readonly Attribute[] = [
 		{
@@ -34,12 +62,12 @@ test('[helpers-issue-3685-001] isValidAttr falls back to Any when no condition m
 			],
 		},
 	];
-	const result = isValidAttr(t, 'value', 'not-a-url-or-color', false, el, attrSpecs);
+	const result = checkValue('value', 'not-a-url-or-color', false, el, attrSpecs);
 	// No condition matches (element has no `type` attribute) → fallback to Any → valid.
 	expect(result).toBe(false);
 });
 
-test('[helpers-issue-3685-002] isValidAttr still reports violations for regular AttributeType[] specs', () => {
+test('[helpers-issue-3685-002] still reports violations for regular AttributeType[] specs', () => {
 	const el = createTestElement('<custom-el autocomplete="bogus"></custom-el>');
 	const attrSpecs: readonly Attribute[] = [
 		{
@@ -47,12 +75,12 @@ test('[helpers-issue-3685-002] isValidAttr still reports violations for regular 
 			type: [{ enum: ['on', 'off'] }],
 		},
 	];
-	const result = isValidAttr(t, 'autocomplete', 'bogus', false, el, attrSpecs);
+	const result = checkValue('autocomplete', 'bogus', false, el, attrSpecs);
 	// Enum[] is not a ConditionalAttributeType[] → normal path → violation reported.
 	expect(result).not.toBe(false);
 });
 
-test('[helpers-issue-3685-003] isValidAttr does not crash when attribute is absent from a conditional spec', () => {
+test('[helpers-issue-3685-003] does not crash when attribute is absent from a conditional spec', () => {
 	const el = createTestElement('<custom-el></custom-el>');
 	const attrSpecs: readonly Attribute[] = [
 		{
@@ -63,9 +91,8 @@ test('[helpers-issue-3685-003] isValidAttr does not crash when attribute is abse
 	// Missing attribute: "unknown-attr" is not in the spec → existence error,
 	// but crucially the surrounding spec with ConditionalAttributeType[] must
 	// not poison iteration over attrSpecs.
-	const result = isValidAttr(t, 'unknown-attr', 'x', false, el, attrSpecs);
-	expect(result).not.toBe(false);
-	expect(result).toHaveProperty('invalidType', 'non-existent');
+	const eligibility = resolveAttrEligibility('unknown-attr', el, attrSpecs);
+	expect(eligibility.status).toBe('unknown');
 });
 
 /*
@@ -82,7 +109,7 @@ test('[helpers-issue-3598-001] resolves condition and validates: valid simple co
 			],
 		},
 	];
-	const result = isValidAttr(t, 'value', '#ff0000', false, el, attrSpecs);
+	const result = checkValue('value', '#ff0000', false, el, attrSpecs);
 	expect(result).toBe(false);
 });
 
@@ -97,7 +124,7 @@ test('[helpers-issue-3598-002] resolves condition and validates: invalid simple 
 			],
 		},
 	];
-	const result = isValidAttr(t, 'value', 'red', false, el, attrSpecs);
+	const result = checkValue('value', 'red', false, el, attrSpecs);
 	expect(result).not.toBe(false);
 });
 
@@ -112,7 +139,7 @@ test('[helpers-issue-3598-003] resolves second condition: valid URL', () => {
 			],
 		},
 	];
-	const result = isValidAttr(t, 'value', 'https://example.com', false, el, attrSpecs);
+	const result = checkValue('value', 'https://example.com', false, el, attrSpecs);
 	expect(result).toBe(false);
 });
 
@@ -128,7 +155,7 @@ test('[helpers-issue-3598-004] resolves second condition: invalid URL', () => {
 		},
 	];
 	// Absolute URL with unencoded space — reliably rejected by the URL checker.
-	const result = isValidAttr(t, 'value', 'http://example.com/a b', false, el, attrSpecs);
+	const result = checkValue('value', 'http://example.com/a b', false, el, attrSpecs);
 	expect(result).not.toBe(false);
 });
 
@@ -143,7 +170,7 @@ test('[helpers-issue-3598-005] unmatched type falls back to Any', () => {
 			],
 		},
 	];
-	const result = isValidAttr(t, 'value', 'anything', false, el, attrSpecs);
+	const result = checkValue('value', 'anything', false, el, attrSpecs);
 	// type=text matches no condition → fallback to Any → valid.
 	expect(result).toBe(false);
 });
@@ -156,7 +183,7 @@ test('[helpers-issue-3598-006] case-insensitive condition matching', () => {
 			type: [{ condition: "[type='color' i]", type: 'SimpleColor' }],
 		},
 	];
-	const result = isValidAttr(t, 'value', 'red', false, el, attrSpecs);
+	const result = checkValue('value', 'red', false, el, attrSpecs);
 	// type=COLOR matches [type='color' i] → validates as SimpleColor → "red" is invalid.
 	expect(result).not.toBe(false);
 });
@@ -174,7 +201,7 @@ test('[helpers-issue-3598-007] array condition (OR logic)', () => {
 			],
 		},
 	];
-	const result = isValidAttr(t, 'value', '42', false, el, attrSpecs);
+	const result = checkValue('value', '42', false, el, attrSpecs);
 	expect(result).toBe(false);
 });
 
@@ -187,6 +214,6 @@ test('[helpers-issue-3598-008] isDynamicValue suppresses invalid-value after con
 		},
 	];
 	// "red" is invalid SimpleColor, but isDynamicValue=true should suppress invalid-value errors.
-	const result = isValidAttr(t, 'value', 'red', true, el, attrSpecs);
+	const result = checkValue('value', 'red', true, el, attrSpecs);
 	expect(result).toBe(false);
 });

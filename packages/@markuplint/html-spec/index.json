@@ -3878,7 +3878,7 @@
 					},
 					{
 						"name": "definition",
-						"description": "A definition of a term or concept. See related term.\n\nAuthors MUST identify the element being defined and assign that element a role of term.\n\nAuthors SHOULD NOT use the definition role on interactive elements such as form controls because doing so could prevent users of assistive technologies from interacting with those elements.",
+						"description": "A definition of a term or concept. See related term.\n\nAuthors MUST identify the element being defined and assign that element a role of term.\n\nThe relationship between a term and its definition is conveyed on the term element; see the term role for more information.",
 						"generalization": ["section"],
 						"requiredContextRole": [],
 						"requiredOwnedElements": [],
@@ -9725,10 +9725,12 @@
 								"inherited": true
 							},
 							{
-								"name": "aria-valuemax"
+								"name": "aria-valuemax",
+								"inherited": true
 							},
 							{
-								"name": "aria-valuemin"
+								"name": "aria-valuemin",
+								"inherited": true
 							},
 							{
 								"name": "aria-valuenow",
@@ -10810,10 +10812,12 @@
 								"inherited": true
 							},
 							{
-								"name": "aria-valuemax"
+								"name": "aria-valuemax",
+								"inherited": true
 							},
 							{
-								"name": "aria-valuemin"
+								"name": "aria-valuemin",
+								"inherited": true
 							},
 							{
 								"name": "aria-valuenow",
@@ -11392,7 +11396,7 @@
 					},
 					{
 						"name": "suggestion",
-						"description": "A single proposed change to content.\n\nFor example, in an editing system that supports multiple users, one user can suggest a change, and another user would be responsible for accepting or rejecting the suggestion.\n\nAuthors MUST ensure that a suggestion contains either one insertion child or one deletion child or ensure that it contains two children where one is an insertion and the other is a deletion. Authors MUST ensure a suggestion does not contain any other children.\n\nAuthors MAY use aria-details or aria-description to associate the suggestion with related information such as comments, authoring info, and time stamps.\n\nWhen a suggestion is accepted, authors SHOULD remove the suggestion role, indicating that the proposed revision has been made. After the suggestion role is removed, child insertion and deletion elements can either be retained to document the revision or replaced with the revised content.",
+						"description": "A single proposed change to content.\n\nFor example, in an editing system that supports multiple users, one user can suggest a change, and another user would be responsible for accepting or rejecting the suggestion.\n\nAuthors MUST ensure that a suggestion has either exactly one insertion accessibility child or exactly one deletion accessibility child, or exactly two accessibility children where one is an insertion and the other is a deletion. Authors MUST NOT include any additional accessibility children in a suggestion.\n\nAuthors MAY use aria-details or aria-description to associate the suggestion with related information such as comments, authoring info, and time stamps.\n\nWhen a suggestion is accepted, authors SHOULD remove the suggestion role, indicating that the proposed revision has been made. After the suggestion role is removed, child insertion and deletion elements can either be retained to document the revision or replaced with the revised content.",
 						"generalization": ["section"],
 						"requiredContextRole": [],
 						"requiredOwnedElements": ["insertion", "deletion"],
@@ -13131,7 +13135,7 @@
 					},
 					{
 						"name": "treeitem",
-						"description": "An item in a tree.\n\nA treeitem element can contain a sub-level group of elements that can be expanded or collapsed. An expandable collection of treeitem elements are enclosed in an element with the group role.\n\nAuthors MUST ensure elements with role treeitem are accessibility children of an element with role tree or an element with role group that is the accessibility child of an element with role treeitem.\n\nIn certain conditions, a user agent MAY provide an implicit value for aria-selected for each treeitem in a tree, and if it does, the user agent MUST ensure the following conditions are met before providing an implicit value:\n\nIf a user agent provides an implicit aria-selected value for a treeitem, the value SHOULD be true if the treeitem has DOM focus or the tree has DOM focus and the treeitem is referenced by aria-activedescendant. Otherwise, if a user agent provides an implicit aria-selected value for a treeitem, the value SHOULD be false.\n\nAuthors MAY indicate selection for treeitem elements using either aria-selected or aria-checked. Some user interfaces indicate selection with aria-selected in single-select trees and with aria-checked in multi-select trees. Authors SHOULD NOT specify both aria-selected and aria-checked on treeitem elements contained by the same tree except in the extremely rare circumstances where all the following conditions are met:",
+						"description": "An item in a tree.\n\nA treeitem element can contain a sub-level group of elements that can be expanded or collapsed. An expandable collection of treeitem elements are usually enclosed in an element with the group role.\n\nAuthors MUST ensure elements with role treeitem are accessibility children of an element with role tree or an element with role group that is the accessibility child of an element with role treeitem.\n\nAuthors MAY use nested group elements to implicitly indicate level hierarchy. Otherwise, authors MUST ensure all treeitem elements in the tree have explicit values for aria-level, aria-posinset, and aria-setsize.\n\nUser agents MUST calculate an implicit value for aria-level from the document structure if the author does not explicitly specify a value.\n\nIn certain conditions, a user agent MAY provide an implicit value for aria-selected for each treeitem in a tree, and if it does, the user agent MUST ensure the following conditions are met before providing an implicit value:\n\nIf a user agent provides an implicit aria-selected value for a treeitem, the value SHOULD be true if the treeitem has DOM focus or the tree has DOM focus and the treeitem is referenced by aria-activedescendant. Otherwise, if a user agent provides an implicit aria-selected value for a treeitem, the value SHOULD be false.\n\nAuthors MAY indicate selection for treeitem elements using either aria-selected or aria-checked. Some user interfaces indicate selection with aria-selected in single-select trees and with aria-checked in multi-select trees. Authors SHOULD NOT specify both aria-selected and aria-checked on treeitem elements contained by the same tree except in the extremely rare circumstances where all the following conditions are met:",
 						"generalization": ["listitem", "option"],
 						"requiredContextRole": ["tree", "treeitem > group"],
 						"requiredOwnedElements": [],
@@ -48938,7 +48942,7 @@
 		{
 			"name": "acronym",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <acronym> HTML element allows authors to clearly indicate a sequence of characters that compose an acronym or abbreviation for a word. Warning: Don't use this element. Use the <abbr> element instead.",
+			"description": "The <acronym> HTML element allows authors to clearly indicate a sequence of characters that compose an acronym or abbreviation for a word. Warning: Don't use this element. Use the <abbr> element instead.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -49229,7 +49233,7 @@
 					"description": "A Boolean attribute: if specified, the audio player will automatically seek back to the start upon reaching the end of the audio."
 				},
 				"muted": {
-					"description": "A Boolean attribute that indicates whether the audio will be initially silenced. Its default value is false."
+					"description": "A Boolean attribute that indicates the default audio mute setting contained in the audio. If set, the audio will be initially silenced. Its default value is false, meaning the audio will be heard when the audio is played. Note: To unmute, setting muted=\"false\" will not work; the audio will be muted if the attribute is present at all. To unmute, the attribute must be removed entirely."
 				},
 				"preload": {
 					"description": "This enumerated attribute is intended to provide a hint to the browser about what the author thinks will lead to the best user experience. It may have one of the following values: none: Indicates that the audio should not be preloaded. metadata: Indicates that only audio metadata (e.g., length) is fetched. auto: Indicates that the whole audio file can be downloaded, even if the user is not expected to use it. empty string: A synonym of the auto value. The default value is different for each browser. The spec advises it to be set to metadata. Note: Audio with the loading=\"lazy\" attribute set will only apply the preload behavior once the audio controls are near or within the viewport. The autoplay attribute has precedence over preload. If autoplay is specified, the browser would obviously need to start downloading the audio for playback. The browser is not forced by the specification to follow the value of this attribute; it is a mere hint."
@@ -49400,7 +49404,7 @@
 		{
 			"name": "big",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <big> HTML deprecated element renders the enclosed text at a font size one level larger than the surrounding text (medium becomes large, for example). The size is capped at the browser's maximum permitted font size. Warning: This element has been removed from the specification and shouldn't be used anymore. Use the CSS font-size property to adjust the font size.",
+			"description": "The <big> HTML deprecated element renders the enclosed text at a font size one level larger than the surrounding text (medium becomes large, for example). The size is capped at the browser's maximum permitted font size. Warning: This element has been removed from the specification and shouldn't be used anymore. Use the CSS font-size property to adjust the font size.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -49680,6 +49684,22 @@
 								}
 							]
 						}
+					},
+					"[commandfor]": {
+						"properties": {
+							"global": true,
+							"role": true,
+							"without": [
+								{
+									"type": "must-not",
+									"name": "aria-expanded",
+									"alt": {
+										"method": "set-attr",
+										"target": "commandfor"
+									}
+								}
+							]
+						}
 					}
 				},
 				"1.1": {
@@ -49873,7 +49893,7 @@
 		{
 			"name": "center",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <center> HTML element is a block-level element that displays its block-level or inline contents centered horizontally within its containing element. The container is usually, but isn't required to be, <body>. This tag has been deprecated in HTML 4 (and XHTML 1) in favor of the CSS text-align property, which can be applied to the <div> element or to an individual <p>. For centering blocks, use other CSS properties like margin-left and margin-right and set them to auto (or set margin to 0 auto).",
+			"description": "The <center> HTML element is a block-level element that displays its block-level or inline contents centered horizontally within its containing element. The container is usually, but isn't required to be, <body>. This tag has been deprecated in HTML 4 (and XHTML 1) in favor of the CSS text-align property, which can be applied to the <div> element or to an individual <p>. For centering blocks, use other CSS properties like margin-left and margin-right and set them to auto (or set margin to 0 auto).",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -50166,7 +50186,7 @@
 		{
 			"name": "del",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/del",
-			"description": "The <del> HTML element represents a range of text that has been deleted from a document. This can be used when rendering \"track changes\" or source code diff information, for example. The <ins> element can be used for the opposite purpose: to indicate text that has been added to the document.",
+			"description": "The <del> HTML element represents a range of text that has been deleted from a document. This can be used when rendering \"track changes\" or source code diff information, for example. The <ins> element can be used for the opposite purpose: to indicate text that has been added to the document. This element is often (but need not be) rendered by applying a strike-through style to the text.",
 			"categories": ["#flow", "#phrasing"],
 			"contentModel": {
 				"contents": [
@@ -50311,7 +50331,7 @@
 		{
 			"name": "dir",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <dir> HTML element is used as a container for a directory of files and/or folders, potentially with styles and icons applied by the user agent. Do not use this obsolete element; instead, you should use the <ul> element for lists, including lists of files. Warning: Do not use this element. Though present in early HTML specifications, it has been deprecated in HTML 4, and has since been removed entirely.",
+			"description": "The <dir> HTML element is used as a container for a directory of files and/or folders, potentially with styles and icons applied by the user agent. Do not use this obsolete element; instead, you should use the <ul> element for lists, including lists of files. Warning: Do not use this element. Though present in early HTML specifications, it has been deprecated in HTML 4, and has since been removed entirely.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -50347,23 +50367,19 @@
 						"condition": "dl > div",
 						"contents": [
 							{
-								"oneOrMore": [
-									{
-										"zeroOrMore": ":model(script-supporting)"
-									},
-									{
-										"oneOrMore": "dt"
-									},
-									{
-										"zeroOrMore": ":model(script-supporting)"
-									},
-									{
-										"oneOrMore": "dd"
-									},
-									{
-										"zeroOrMore": ":model(script-supporting)"
-									}
-								]
+								"zeroOrMore": ":model(script-supporting)"
+							},
+							{
+								"oneOrMore": "dt"
+							},
+							{
+								"zeroOrMore": ":model(script-supporting)"
+							},
+							{
+								"oneOrMore": "dd"
+							},
+							{
+								"zeroOrMore": ":model(script-supporting)"
 							}
 						]
 					}
@@ -50661,8 +50677,8 @@
 		},
 		{
 			"name": "font",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <font> HTML element defines the font size, color and face for its content. Warning: Do not use this element. Use the CSS Fonts properties to style text.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/font",
+			"description": "The <font> HTML element defines the font size, color and face for its content. Warning: Do not use this element. Use the CSS Fonts properties to style text.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -50673,7 +50689,11 @@
 			},
 			"omission": false,
 			"obsolete": true,
-			"globalAttrs": {},
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#HTMLGlobalAttrs": true
+			},
 			"attributes": {
 				"color": {
 					"description": "This attribute sets the text color using either a named color or a color specified in the hexadecimal #RRGGBB format.",
@@ -50734,7 +50754,7 @@
 		{
 			"name": "form",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/form",
-			"description": "The <form> HTML element represents a document section containing interactive controls for submitting information.",
+			"description": "The <form> HTML element represents a document section containing interactive controls for submitting information. It is possible to use the :valid and :invalid CSS pseudo-classes to style a <form> element based on whether the elements inside the form are valid.",
 			"categories": ["#flow", "#palpable"],
 			"contentModel": {
 				"contents": [
@@ -50817,7 +50837,7 @@
 		{
 			"name": "frame",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <frame> HTML element defines a particular area in which another HTML document can be displayed. A frame should be used within a <frameset>. Using the <frame> element is not encouraged because of certain disadvantages such as performance problems and lack of accessibility for users with screen readers. Instead of the <frame> element, <iframe> may be preferred.",
+			"description": "The <frame> HTML element defines a particular area in which another HTML document can be displayed. A frame should be used within a <frameset>. Using the <frame> element is not encouraged because of certain disadvantages such as performance problems and lack of accessibility for users with screen readers. Instead of the <frame> element, <iframe> may be preferred.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -50870,7 +50890,7 @@
 		{
 			"name": "frameset",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <frameset> HTML element is used to contain <frame> elements. Note: Because the use of frames is now discouraged in favor of using <iframe>, this element is not typically used by modern websites.",
+			"description": "The <frameset> HTML element is used to contain <frame> elements. Note: Because the use of frames is now discouraged in favor of using <iframe>, this element is not typically used by modern websites.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -51181,7 +51201,7 @@
 		{
 			"name": "hr",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/hr",
-			"description": "The <hr> HTML element represents a thematic break between paragraph-level elements: for example, a change of scene in a story, or a shift of topic within a section.",
+			"description": "The <hr> HTML element represents a thematic break between elements: for example, a change of scene in a story, or a shift of topic within a section.",
 			"categories": ["#flow"],
 			"contentModel": {
 				"contents": false
@@ -51337,7 +51357,7 @@
 					"nonStandard": true
 				},
 				"browsingtopics": {
-					"description": "A boolean attribute that, if present, specifies that the selected topics for the current user should be sent with the request for the <iframe>'s source. See Using the Topics API for more details.",
+					"description": "A boolean attribute that, if present, specifies that the selected topics for the current user should be sent with the request for the <iframe>'s source.",
 					"deprecated": true,
 					"nonStandard": true
 				},
@@ -52265,6 +52285,16 @@
 				},
 				"autocomplete": {
 					"description": "(Not a Boolean attribute!) The autocomplete attribute takes as its value a space-separated string that describes what, if any, type of autocomplete functionality the input should provide. A typical implementation of autocomplete recalls previous values entered in the same input field, but more complex forms of autocomplete can exist. For instance, a browser could integrate with a device's contacts list to autocomplete email addresses in an email input field. See autocomplete for permitted values. The autocomplete attribute is valid on hidden, text, search, url, tel, email, date, month, week, time, datetime-local, number, range, color, and password. This attribute has no effect on input types that do not return numeric or text data, being valid for all input types except checkbox, radio, file, or any of the button types. See the autocomplete attribute for additional information, including information on password security and how autocomplete is slightly different for hidden than for other input types.",
+					"type": [
+						{
+							"condition": "[type='hidden' i]",
+							"type": "AutoCompleteAnchorMantle"
+						},
+						{
+							"condition": ":not([type='hidden' i])",
+							"type": "AutoComplete"
+						}
+					],
 					"condition": [
 						":not([type])",
 						"[type='hidden' i]",
@@ -52773,7 +52803,7 @@
 		{
 			"name": "kbd",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/kbd",
-			"description": "The <kbd> HTML element represents a span of inline text denoting textual user input from a keyboard, voice input, or any other text entry device. By convention, the user agent defaults to rendering the contents of a <kbd> element using its default monospace font, although this is not mandated by the HTML standard.",
+			"description": "The <kbd> HTML element represents user input (typically keyboard input). By default, the content text is displayed using the user agent's default monospace font. <kbd> may be nested in various combinations with the <samp> (Sample Output) element to represent various forms of input or output based on visual cues.",
 			"categories": ["#flow", "#phrasing", "#palpable"],
 			"contentModel": {
 				"contents": [
@@ -52943,7 +52973,7 @@
 			},
 			"attributes": {
 				"as": {
-					"description": "This attribute is required when rel=\"preload\" has been set on the <link> element, optional when rel=\"modulepreload\" has been set, and otherwise should not be used. It specifies the type of content being loaded by the <link>, which is necessary for request matching, application of correct content security policy, and setting of correct Accept request header. Furthermore, rel=\"preload\" uses this as a signal for request prioritization. The table below lists the valid values for this attribute and the elements or resources they apply to. Value Applies To audio <audio> elements document <iframe> and <frame> elements embed <embed> elements fetch fetch, XHR Note: This value also requires <link> to contain the crossorigin attribute, see CORS-enabled fetches. font CSS @font-face Note: This value also requires <link> to contain the crossorigin attribute, see CORS-enabled fetches. image <img> and <picture> elements with srcset or imageset attributes, SVG <image> elements, CSS *-image rules json modulepreload destinations. object <object> elements script <script> elements, Worker importScripts, and modulepreload destinations. style <link rel=stylesheet> elements, CSS @import and modulepreload destinations. track <track> elements video <video> elements worker Worker, SharedWorker",
+					"description": "This attribute is required when rel=\"preload\" has been set on the <link> element, optional when rel=\"modulepreload\" has been set, and otherwise should not be used. It specifies the type of content being loaded by the <link>, which is necessary for request matching, application of correct content security policy, and setting of correct Accept request header. Furthermore, rel=\"preload\" uses this as a signal for request prioritization. The table below lists the valid values for this attribute and the elements or resources they apply to. As value Rel value Applies To audioworklet modulepreload AudioWorklet modules fetch preload fetch, XHR Note: This value also requires <link> to contain the crossorigin attribute, see CORS-enabled fetches. font preload CSS @font-face Note: This value also requires <link> to contain the crossorigin attribute, see CORS-enabled fetches. image preload <img> and <picture> elements with srcset or imageset attributes, SVG <image> elements, CSS *-image rules json modulepreload Supplementary JSON file paintworklet modulepreload PaintWorklet modules script preload or modulepreload <script> elements, Worker importScripts, and modulepreload destinations. serviceworker modulepreload ServiceWorker modules sharedworker modulepreload SharedWorker style preload or modulepreload <link rel=stylesheet> elements, CSS @import and modulepreload destinations. text modulepreload Supplementary plain text file track preload <track> elements (WebVTT, MIME type text/vtt) worker modulepreload Worker modules",
 					"type": [
 						{
 							"condition": "[rel~='preload' i]",
@@ -53178,7 +53208,7 @@
 		{
 			"name": "marquee",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <marquee> HTML element is used to insert a scrolling area of text. You can control what happens when the text reaches the edges of its content area using its attributes. The HTML <marquee> element is deprecated and its use is strongly discouraged. If you must create the effect of scrolling text or continuous elements, consider using CSS animations with CSS transforms instead of <marquee> elements to smoothly animate content. Additionally, include the prefers-reduced-motion CSS @media query to stop the animation based on user preference, thereby improving user experience and accessibility.",
+			"description": "The <marquee> HTML element is used to insert a scrolling area of text. You can control what happens when the text reaches the edges of its content area using its attributes. The HTML <marquee> element is deprecated and its use is strongly discouraged. If you must create the effect of scrolling text or continuous elements, consider using CSS animations with CSS transforms instead of <marquee> elements to smoothly animate content. Additionally, include the prefers-reduced-motion CSS @media query to stop the animation based on user preference, thereby improving user experience and accessibility.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -53358,6 +53388,17 @@
 						{
 							"condition": "[http-equiv='content-type' i]",
 							"type": "HTTPEquivContentType"
+						},
+						{
+							"condition": "[http-equiv='x-ua-compatible' i]",
+							"type": {
+								"enum": ["IE=edge"],
+								"caseInsensitive": true
+							}
+						},
+						{
+							"condition": "[http-equiv='content-security-policy' i]",
+							"type": "ContentSecurityPolicy"
 						}
 					],
 					"required": ["[name]", "[http-equiv]", "[itemprop]"],
@@ -53538,7 +53579,7 @@
 		{
 			"name": "nobr",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <nobr> HTML element prevents the text it contains from automatically wrapping across multiple lines, potentially resulting in the user having to scroll horizontally to see the entire width of the text. Warning: Although this element is widely supported, it was never standard HTML, so you shouldn't use it. Instead, use the CSS property white-space like this: html<span class=\"nobr\">Long line with no breaks</span> css.nobr { white-space: nowrap; }",
+			"description": "The <nobr> HTML element prevents the text it contains from automatically wrapping across multiple lines, potentially resulting in the user having to scroll horizontally to see the entire width of the text. Warning: Although this element is widely supported, it was never standard HTML, so you shouldn't use it. Instead, use the CSS property white-space like this: html<span class=\"nobr\">Long line with no breaks</span> css.nobr { white-space: nowrap; }",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -53555,7 +53596,7 @@
 		{
 			"name": "noembed",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <noembed> HTML element is an obsolete, non-standard way to provide alternative, or \"fallback\", content for browsers that do not support the <embed> element or do not support the type of embedded content an author wishes to use. This element was deprecated in HTML 4.01 and above in favor of placing fallback content between the opening and closing tags of an <object> element. Note: While this element currently still works in many browsers, it is obsolete and should not be used. Use <object> instead, with fallback content between the opening and closing tags of the element.",
+			"description": "The <noembed> HTML element is an obsolete, non-standard way to provide alternative, or \"fallback\", content for browsers that do not support the <embed> element or do not support the type of embedded content an author wishes to use. This element was deprecated in HTML 4.01 and above in favor of placing fallback content between the opening and closing tags of an <object> element. Note: While this element currently still works in many browsers, it is obsolete and should not be used. Use <object> instead, with fallback content between the opening and closing tags of the element.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -53572,7 +53613,7 @@
 		{
 			"name": "noframes",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <noframes> HTML element provides content to be presented in browsers that don't support (or have disabled support for) the <frame> element. Although most commonly-used browsers support frames, there are exceptions, including certain special-use browsers including some mobile browsers, as well as text-mode browsers. A <noframes> element can contain any HTML elements that are allowed within the body of an HTML document, except for the <frameset> and <frame> elements, since using frames when they aren't supported doesn't make sense. <noframes> can be used to present a message explaining that the user's browser doesn't support frames, but ideally should be used to present an alternate form of the site that doesn't use frames but still offers the same or similar functionality. Note: This element is obsolete and shouldn't be used, since the <frame> and <frameset> elements are also obsolete. When frames are needed at all, they should be presented using the <iframe> element.",
+			"description": "The <noframes> HTML element provides content to be presented in browsers that don't support (or have disabled support for) the <frame> element. Although most commonly-used browsers support frames, there are exceptions, including certain special-use browsers including some mobile browsers, as well as text-mode browsers. A <noframes> element can contain any HTML elements that are allowed within the body of an HTML document, except for the <frameset> and <frame> elements, since using frames when they aren't supported doesn't make sense. <noframes> can be used to present a message explaining that the user's browser doesn't support frames, but ideally should be used to present an alternate form of the site that doesn't use frames but still offers the same or similar functionality. Note: This element is obsolete and shouldn't be used, since the <frame> and <frameset> elements are also obsolete. When frames are needed at all, they should be presented using the <iframe> element.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -53799,7 +53840,7 @@
 			},
 			"attributes": {
 				"disabled": {
-					"description": "If this Boolean attribute is set, none of the items in this option group is selectable. Often browsers grey out such control and it won't receive any browsing events, like mouse clicks or focus-related ones."
+					"description": "If this Boolean attribute is set, none of the items in this option group is selectable. Often browsers gray out such control and it won't receive any browsing events, like mouse clicks or focus-related ones."
 				},
 				"label": {
 					"description": "The name of the group of options, which the browser can use when labeling the options in the user interface. This attribute is mandatory if this element is used.",
@@ -53883,7 +53924,7 @@
 			},
 			"attributes": {
 				"disabled": {
-					"description": "If this Boolean attribute is set, this option is not checkable. Often browsers grey out such control and it won't receive any browsing event, like mouse clicks or focus-related ones. If this attribute is not set, the element can still be disabled if one of its ancestors is a disabled <optgroup> element."
+					"description": "If this Boolean attribute is set, this option is not checkable. Often browsers gray out such control and it won't receive any browsing event, like mouse clicks or focus-related ones. If this attribute is not set, the element can still be disabled if one of its ancestors is a disabled <optgroup> element."
 				},
 				"label": {
 					"description": "This attribute is text for the label indicating the meaning of the option. If the label attribute isn't defined, its value is that of the element text content.",
@@ -53971,7 +54012,7 @@
 		{
 			"name": "param",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <param> HTML element defines parameters for an <object> element. Note: Use the <object> element with a data attribute to set the URL of an external resource.",
+			"description": "The <param> HTML element defines parameters for an <object> element. Note: Use the <object> element with a data attribute to set the URL of an external resource.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -54056,7 +54097,7 @@
 		{
 			"name": "plaintext",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <plaintext> HTML element renders everything following the start tag as raw text, ignoring any following HTML. There is no closing tag, since everything after it is considered raw text. Warning: Do not use this element. <plaintext> is deprecated since HTML 2, and not all browsers implemented it. Browsers that did implement it didn't do so consistently. <plaintext> is obsolete; browsers that accept it may instead treat it as a <pre> element that still interprets HTML within. If <plaintext> is the first element on the page (other than any non-displayed elements, like <head>), do not use HTML at all. Instead serve a text file with the text/plain MIME-type. Instead of <plaintext>, use the <pre> element or, if semantically accurate (such as for inline text), the <code> element. Escape any <, > and & characters, to prevent browsers inadvertently parsing the element content as HTML. A monospaced font can be applied to any HTML element via a CSS font-family style with the monospace generic value.",
+			"description": "The <plaintext> HTML element renders everything following the start tag as raw text, ignoring any following HTML. There is no closing tag, since everything after it is considered raw text. Warning: Do not use this element. <plaintext> is deprecated since HTML 2, and not all browsers implemented it. Browsers that did implement it didn't do so consistently. <plaintext> is obsolete; browsers that accept it may instead treat it as a <pre> element that still interprets HTML within. If <plaintext> is the first element on the page (other than any non-displayed elements, like <head>), do not use HTML at all. Instead serve a text file with the text/plain MIME-type. Instead of <plaintext>, use the <pre> element or, if semantically accurate (such as for inline text), the <code> element. Escape any <, > and & characters, to prevent browsers inadvertently parsing the element content as HTML. A monospaced font can be applied to any HTML element via a CSS font-family style with the monospace generic value.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -54206,7 +54247,7 @@
 		{
 			"name": "rb",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <rb> HTML element is used to delimit the base text component of a <ruby> annotation, i.e., the text that is being annotated. One <rb> element should wrap each separate atomic segment of the base text.",
+			"description": "The <rb> HTML element is used to delimit the base text component of a <ruby> annotation, i.e., the text that is being annotated. One <rb> element should wrap each separate atomic segment of the base text.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -54272,7 +54313,7 @@
 		{
 			"name": "rtc",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <rtc> HTML element embraces semantic annotations of characters presented in a ruby of <rb> elements used inside of <ruby> element. <rb> elements can have both pronunciation (<rt>) and semantic (<rtc>) annotations.",
+			"description": "The <rtc> HTML element embraces semantic annotations of characters presented in a ruby of <rb> elements used inside of <ruby> element. <rb> elements can have both pronunciation (<rt>) and semantic (<rtc>) annotations.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -54657,7 +54698,8 @@
 			},
 			"attributes": {
 				"autocomplete": {
-					"description": "A string providing a hint for a user agent's autocomplete feature. See The HTML autocomplete attribute for a complete list of values and details on how to use autocomplete."
+					"description": "A string providing a hint for a user agent's autocomplete feature. See The HTML autocomplete attribute for a complete list of values and details on how to use autocomplete.",
+					"type": "AutoCompleteNoWebauthn"
 				},
 				"autofocus": {
 					"description": "This Boolean attribute lets you specify that a form control should have input focus when the page loads. Only one form element in a document can have the autofocus attribute."
@@ -54669,17 +54711,17 @@
 					"description": "The <form> element to associate the <select> with (its form owner). The value of this attribute must be the id of a <form> in the same document. (If this attribute is not set, the <select> is associated with its ancestor <form> element, if any.) This attribute lets you associate <select> elements to <form>s anywhere in the document, not just inside a <form>. It can also override an ancestor <form> element."
 				},
 				"multiple": {
-					"description": "This Boolean attribute indicates that multiple options can be selected in the list. If it is not specified, then only one option can be selected at a time. When multiple is specified, most browsers will show a scrolling list box instead of a single line dropdown. Multiple selected options are submitted using the URLSearchParams array convention, i.e., name=value1&name=value2.",
+					"description": "This Boolean attribute indicates that zero or more options can be selected in the list. If it is not specified, then only one option can be selected at a time. Multiple selected options are submitted using the URLSearchParams array convention, i.e., name=value1&name=value2. If multiple is specified, size defaults to 4 instead of 1.",
 					"type": "Boolean"
 				},
 				"name": {
 					"description": "This attribute is used to specify the name of the control."
 				},
 				"required": {
-					"description": "A Boolean attribute indicating that an option with a non-empty string value must be selected."
+					"description": "This Boolean attribute indicates that the user must select at least one option before the form can be submitted. The <select> has no selected options if it has no options, multiple is specified and the user deselects all options, the select's value is programmatically set to \"\", or only the placeholder label option is selected. Any option other than the placeholder label option is considered valid, even if its value is also empty. The placeholder label option is the text shown in the box before the user makes a choice, like the \"--Please choose an option--\" in the Try it demo above. Semantically, it is considered equivalent to the placeholder attribute and is not considered an actual option. It is defined as the first option in the options list which is a direct child of the <select> (not inside an <optgroup>) and has an empty string as its value. It is only relevant when the size is 1 and multiple is not specified; in all other cases, such an <option> is just a regular option due to the way the <select> is rendered."
 				},
 				"size": {
-					"description": "If the control is presented as a scrolling list box (e.g., when multiple is specified), this attribute represents the number of rows in the list that should be visible at one time. Browsers are not required to present a select element as a scrolled list box. The default value is 0. Note: According to the HTML specification, the default value for size should be 1; however, in practice, this has been found to break some websites, and no other browser currently does that, so Mozilla has opted to continue to return 0 for the time being with Firefox.",
+					"description": "This attribute represents the number of options to show at once, and must be a positive integer. If the value is 1, browsers will render a drop-down list. If the value is greater than 1, browsers will render a scrolling list box that has the specified number of rows visible. If the attribute is not specified, the default value is 1. If the multiple attribute is specified, the default value is 4. However, due to backwards compatibility, the size property will always return 0 as the default value.",
 					"type": {
 						"type": "integer",
 						"gt": 0
@@ -54712,7 +54754,7 @@
 			},
 			"attributes": {
 				"name": {
-					"description": "The slot's name. A named slot is a <slot> element with a name attribute, while an unnamed slot has no name attribute, and the name defaults to the empty string. When a shadow root uses named slot assignment, top-level child elements of its host are are rendered in slots that have a matching name in their slot attribute. Slot names should be unique per shadow root: if you have two slots with the same name, all of the elements with a matching slot attribute are rendered in the first slot. All top-level child elements that don't have a slot attribute are rendered in the first unnamed <slot> element, which is referred to as the default slot. The name has no effect if the shadow root uses manual slot assignment. For more information see shadowrootslotassignment on the <template> element and Element.attachShadow().",
+					"description": "The slot's name. A named slot is a <slot> element with a name attribute, while an unnamed slot has no name attribute, and the name defaults to the empty string. When a shadow root uses named slot assignment, top-level child elements of its host are rendered in slots that have a matching name in their slot attribute. Slot names should be unique per shadow root: if you have two slots with the same name, all of the elements with a matching slot attribute are rendered in the first slot. All top-level child elements that don't have a slot attribute are rendered in the first unnamed <slot> element, which is referred to as the default slot. The name has no effect if the shadow root uses manual slot assignment. For more information see shadowrootslotassignment on the <template> element and Element.attachShadow().",
 					"type": "NoEmptyAny"
 				}
 			}
@@ -54847,7 +54889,7 @@
 		{
 			"name": "strike",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <strike> HTML element places a strikethrough (horizontal line) over text. Warning: This element is deprecated in HTML 4 and XHTML 1, and obsoleted in the HTML Living Standard. If semantically appropriate, i.e., if it represents deleted content, use <del> instead. In all other cases use <s>.",
+			"description": "The <strike> HTML element places a strikethrough (horizontal line) over text. Warning: This element is deprecated in HTML 4 and XHTML 1, and obsoleted in the HTML Living Standard. If semantically appropriate, i.e., if it represents deleted content, use <del> instead. In all other cases use <s>.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -54996,6 +55038,24 @@
 				"properties": {
 					"global": true,
 					"role": "button"
+				},
+				"conditions": {
+					"details > summary:not(summary ~ summary)": {
+						"properties": {
+							"global": true,
+							"role": "button",
+							"without": [
+								{
+									"type": "must-not",
+									"name": "aria-expanded"
+								},
+								{
+									"type": "must-not",
+									"name": "aria-pressed"
+								}
+							]
+						}
+					}
 				}
 			},
 			"omission": false,
@@ -55242,7 +55302,7 @@
 					"deprecated": true
 				},
 				"colspan": {
-					"description": "Contains a non-negative integer value that indicates how many columns the data cell spans or extends. The default value is 1. User agents dismiss values higher than 1000 as incorrect, setting to the default value (1)."
+					"description": "Contains a non-negative integer value that indicates how many columns the data cell spans or extends. The default value is 1. Values higher than 1000 are clipped to 1000."
 				},
 				"headers": {
 					"description": "Contains a list of space-separated strings, each corresponding to the id attribute of the <th> elements that provide headings for this table cell."
@@ -55271,7 +55331,7 @@
 		{
 			"name": "template",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/template",
-			"description": "The <template> HTML element serves as a mechanism for holding HTML fragments, which can either be used later via JavaScript or generated immediately into shadow DOM.",
+			"description": "The <template> HTML element serves as a mechanism for holding HTML fragments, which can either be used later via JavaScript, generated immediately and inserted into a shadow DOM, or used as part of out-of-order patching with <template for=\"...\">.",
 			"categories": ["#metadata", "#flow", "#phrasing", "#script-supporting"],
 			"contentModel": {
 				"contents": true
@@ -55288,6 +55348,10 @@
 				"#HTMLGlobalAttrs": true
 			},
 			"attributes": {
+				"for": {
+					"description": "The for attribute is used for out-of-order patching with <template for=\"...\">, matching an equivalent <?start id=\"...\"> or <?marker \"...\"> marker. See the out-of-order patching section and examples section.",
+					"experimental": true
+				},
 				"shadowrootclonable": {
 					"description": "Sets the value of the clonable property of a ShadowRoot created using this element to true. If set, a clone of the shadow host (the parent element of this <template>) created with Node.cloneNode() or Document.importNode() will include a shadow root in the copy.",
 					"type": "Boolean"
@@ -55320,6 +55384,7 @@
 				},
 				"shadowrootslotassignment": {
 					"description": "Sets the slotAssignment property of a ShadowRoot created using this element. This is the declarative equivalent of the slotAssignment option of the Element.attachShadow() method. named Elements are automatically assigned to <slot> elements within this shadow root. This is the default value. Elements with the slot attribute are assigned to the first <slot> in the template that has the corresponding name attribute. If multiple elements specify the same slot name, they are all added to the first slot in the template that has that name, and rendered in the order they are declared. All unnamed elements — elements that don't specify a slot attribute — are assigned to the default slot in the order they are declared. This is the first unnamed <slot> in the template. manual Elements are manually assigned to particular slot elements using HTMLSlotElement.assign(). No automatic assignment takes place.",
+					"experimental": true,
 					"type": {
 						"enum": ["named", "manual"],
 						"missingValueDefault": "named",
@@ -55553,7 +55618,7 @@
 					"deprecated": true
 				},
 				"colspan": {
-					"description": "A non-negative integer value indicating how many columns the header cell spans or extends. The default value is 1. User agents dismiss values higher than 1000 as incorrect, defaulting such values to 1."
+					"description": "A non-negative integer value indicating how many columns the header cell spans or extends. The default value is 1. Values higher than 1000 are clipped to 1000."
 				},
 				"headers": {
 					"description": "A list of space-separated strings corresponding to the id attributes of the <th> elements that provide the headers for this header cell."
@@ -55788,7 +55853,7 @@
 		{
 			"name": "tt",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <tt> HTML element creates inline text which is presented using the user agent's default monospace font face. This element was created for the purpose of rendering text as it would be displayed on a fixed-width display such as a teletype, text-only screen, or line printer. The terms non-proportional, monotype, and monospace are used interchangeably and have the same general meaning: they describe a typeface whose characters are all the same number of pixels wide. This element is obsolete, however. You should use the more semantically helpful <code>, <kbd>, <samp>, or <var> elements for inline text that needs to be presented in monospace type, or the <pre> tag for content that should be presented as a separate block. Note: If none of the semantic elements are appropriate for your use case (for example, if you need to show some content in a non-proportional font), you should consider using the <span> element, styling it as desired using CSS. The font-family property is a good place to start.",
+			"description": "The <tt> HTML element creates inline text which is presented using the user agent's default monospace font face. This element was created for the purpose of rendering text as it would be displayed on a fixed-width display such as a teletype, text-only screen, or line printer. The terms non-proportional, monotype, and monospace are used interchangeably and have the same general meaning: they describe a typeface whose characters are all the same number of pixels wide. This element is obsolete, however. You should use the more semantically helpful <code>, <kbd>, <samp>, or <var> elements for inline text that needs to be presented in monospace type, or the <pre> tag for content that should be presented as a separate block. Note: If none of the semantic elements are appropriate for your use case (for example, if you need to show some content in a non-proportional font), you should consider using the <span> element, styling it as desired using CSS. The font-family property is a good place to start.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -56013,7 +56078,7 @@
 					"description": "A Boolean attribute; if specified, the browser will automatically seek back to the start upon reaching the end of the video."
 				},
 				"muted": {
-					"description": "A Boolean attribute that indicates the default audio mute setting contained in the video. If set, the audio will be initially silenced. Its default value is false, meaning the audio will be played when the video is played."
+					"description": "A Boolean attribute that indicates the default audio mute setting contained in the video. If set, the audio will be initially silenced. Its default value is false, meaning the audio will be heard when the video is played. Note: To unmute, setting muted=\"false\" will not work; the audio will be muted if the attribute is present at all. To unmute, the attribute must be removed entirely."
 				},
 				"playsinline": {
 					"description": "A Boolean attribute indicating that the video is to be played \"inline\", that is, within the element's playback area. Note that the absence of this attribute does not imply that the video will always be played in fullscreen.",
@@ -56063,7 +56128,7 @@
 		{
 			"name": "xmp",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time.",
+			"description": "Summary The <xmp> HTML element renders text between the start and end tags without interpreting the HTML in between and using a monospaced font. The HTML2 specification recommended that it should be rendered wide enough to allow 80 characters per line. Note: Do not use this element. It has been deprecated since HTML3.2 and was not implemented in a consistent way. It was completely removed from current HTML. Use the <pre> element or, if semantically adequate, the <code> element instead. Note that you will need to escape the < character as &lt; and the & character as &amp; to make sure they are not interpreted as markup. A monospaced font can also be obtained on any element, by applying an adequate CSS style using monospace as the generic-font value for the font-family property.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -56157,7 +56222,7 @@
 			"name": "mml:maction",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/maction",
-			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <maction> MathML element allows to bind actions to mathematical expressions. By default, only the first child is rendered but some browsers may take into account actiontype and selection attributes to implement custom behaviors. Note: Historically, this element provided a mechanism to make MathML formulas interactive. Nowadays, it is recommended to rely on JavaScript and other Web technologies to implement this use case.",
+			"description": "The <maction> MathML element allows you to bind actions to mathematical expressions. By default, only the first child is rendered but some browsers may take into account actiontype and selection attributes to implement custom behaviors. Note: Historically, this element provided a mechanism to make MathML formulas interactive. Nowadays, it is recommended to rely on JavaScript and other Web technologies to implement this use case.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -56315,7 +56380,7 @@
 			"name": "mml:mfenced",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mfenced",
-			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. Non-standard: This feature is not standardized. We do not recommend using non-standard features in production, as they have limited browser support, and may change or be removed. However, they can be a suitable alternative in specific cases where no standard option exists. The <mfenced> MathML element provides the possibility to add custom opening and closing brackets (such as parentheses) and separators (such as commas or semicolons) to an expression. Note: Historically, the <mfenced> element was defined as a shorthand for writing fenced expressions and equivalent to an expanded form involving <mrow> and <mo> elements. Nowadays, it is recommended to use that equivalent form instead.",
+			"description": "Non-standard: This feature is not standardized. We do not recommend using non-standard features in production, as they have limited browser support, and may change or be removed. However, they can be a suitable alternative in specific cases where no standard option exists. The <mfenced> MathML element provides the possibility to add custom opening and closing brackets (such as parentheses) and separators (such as commas or semicolons) to an expression. Note: Historically, the <mfenced> element was defined as a shorthand for writing fenced expressions and equivalent to an expanded form involving <mrow> and <mo> elements. Nowadays, it is recommended to use that equivalent form instead.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -59576,7 +59641,7 @@
 			"name": "svg:feGaussianBlur",
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feGaussianBlur",
-			"description": "The <feGaussianBlur> SVG filter primitive blurs the input image by the amount specified in stdDeviation, which defines the bell-curve. Like other filter primitives, it handles color components in the linearRGB color space by default. You can use color-interpolation-filters to use sRGB instead.",
+			"description": "The <feGaussianBlur> SVG filter primitive blurs the input image by the amount specified in stdDeviation, which defines the bell-curve. Like other filter primitives, it handles color components in the linearRGB color space by default. You can use color-interpolation-filters to use sRGB instead. A Gaussian blur can extend beyond the bounds of the input image. The <filter> element's x, y, width, and height attributes define the filter region within which the blurred output is rendered; pixels outside this region are clipped. By default, x and y are -10% and width and height are 120%, providing a margin for the blur to spread. For larger stdDeviation values, expand the filter region further. For example: svg<filter x=\"-30%\" y=\"-30%\" width=\"160%\" height=\"160%\">",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -60142,7 +60207,7 @@
 			"name": "svg:fePointLight",
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/fePointLight",
-			"description": "The <fePointLight> SVG element defines a light source which allows to create a point light effect. It can be used within a lighting filter primitive: <feDiffuseLighting> or <feSpecularLighting>.",
+			"description": "The <fePointLight> SVG element defines a light source which allows you to create a point light effect. It can be used within a lighting filter primitive: <feDiffuseLighting> or <feSpecularLighting>.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -60375,7 +60440,7 @@
 			"name": "svg:feTile",
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feTile",
-			"description": "The <feTile> SVG filter primitive allows to fill a target rectangle with a repeated, tiled pattern of an input image. The effect is similar to the one of a <pattern>.",
+			"description": "The <feTile> SVG filter primitive allows you to fill a target rectangle with a repeated, tiled pattern of an input image. The effect is similar to the one of a <pattern>.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -60846,7 +60911,7 @@
 			"name": "svg:g",
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/g",
-			"description": "The <g> SVG element is a container used to group other SVG elements. Transformations applied to the <g> element are performed on its child elements, and its attributes are inherited by its children. It can also group multiple elements to be referenced later with the <use> element.",
+			"description": "The <g> SVG element is a container used to group other SVG elements. Transformations applied to the <g> element are performed on its child elements, and most of its presentation attributes are inherited by its children. It can also group multiple elements to be referenced later with the <use> element.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -62639,7 +62704,7 @@
 			"name": "svg:script",
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/script",
-			"description": "The <script> SVG element allows to add scripts to an SVG document. Note: While SVG's script element is equivalent to the HTML <script> element, it has some discrepancies, like it uses the href attribute instead of src and it doesn't support ECMAScript modules so far (See browser compatibility below for details)",
+			"description": "The <script> SVG element allows you to add scripts to an SVG document. Note: While SVG's script element is equivalent to the HTML <script> element, it has some discrepancies, like it uses the href attribute instead of src and it doesn't support ECMAScript modules so far (See browser compatibility below for details)",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -62659,6 +62724,11 @@
 				"#XLinkAttrs": ["xlink:href", "xlink:title"]
 			},
 			"attributes": {
+				"async": {
+					"description": "If the async attribute is present, then the external script will be fetched in parallel to parsing and evaluated as soon as it is available. Equivalent to the async attribute on the HTML <script> element. Value type: boolean; Default value: none; Animatable: no",
+					"experimental": true,
+					"type": "Boolean"
+				},
 				"crossorigin": {
 					"description": "This attribute defines CORS settings as define for the HTML <script> element. Value type: [ anonymous | use-credentials ]?; Default value: ?; Animatable: yes",
 					"type": {
@@ -62666,6 +62736,11 @@
 						"disallowToSurroundBySpaces": false
 					},
 					"animatable": true
+				},
+				"defer": {
+					"description": "If the defer attribute is present, then the external script will be executed after the document has been parsed, but before firing DOMContentLoaded. Equivalent to the defer attribute on the HTML <script> element. Value type: boolean; Default value: none; Animatable: no",
+					"experimental": true,
+					"type": "Boolean"
 				},
 				"fetchpriority": {
 					"description": "Provides a hint of the relative priority to use when fetching an external script. Allowed values: high Fetches the external script at a high priority relative to other external scripts. low Fetches the external script at a low priority relative to other external scripts. auto Doesn't set a preference for the fetch priority. It is used if no value or an invalid value is set. This is the default.",
@@ -63058,7 +63133,7 @@
 			"name": "svg:switch",
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/switch",
-			"description": "The <switch> SVG element evaluates any requiredFeatures, requiredExtensions and systemLanguage attributes on its direct child elements in order, and then renders the first child where these attributes evaluate to true. Other direct children will be bypassed and therefore not rendered. If a child element is a container element, like <g>, then its subtree is also processed/rendered or bypassed/not rendered. Note: The display and visibility properties have no effect on <switch> element processing. In particular, setting display:none on a child has no effect on the true/false testing for <switch> processing.",
+			"description": "The <switch> SVG element evaluates any requiredExtensions and systemLanguage attributes on its direct child elements in order, and then renders the first child where these attributes evaluate to true. Other direct children will be bypassed and therefore not rendered. If a child element is a container element, like <g>, then its subtree is also processed/rendered or bypassed/not rendered. Note: The display and visibility properties have no effect on <switch> element processing. In particular, setting display:none on a child has no effect on the true/false testing for <switch> processing.",
 			"categories": [],
 			"contentModel": {
 				"contents": [

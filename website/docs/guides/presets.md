@@ -85,13 +85,36 @@ See the [rulesets tables](#rulesets-of-base-presets) below for the full list of 
 | Named Rule                                 | Description                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `a11y/id-duplication`                      | Warns when `id` attribute values are duplicated in one document. Avoids problems in assistive technologies from the viewpoint of machine readability. |
-| `a11y/no-refer-to-non-existent-id`         | Checks whether IDs specified in `for`, `form`, `aria-*`, and fragment links reference an ID that exists in the same document.                         |
-| `a11y/wai-aria`                            | Warns if `role` and `aria-*` attributes don't conform to WAI-ARIA, DPub-ARIA, and ARIA in HTML specifications.                                        |
+| `a11y/no-refer-to-non-existent-id`         | Checks whether IDs specified in `for`, `form`, `aria-*`, and more reference an ID that exists in the same document.                                   |
+| `a11y/no-broken-fragment-link`             | Checks whether a fragment in a hyperlink references an ID that exists in the same document.                                                           |
+| `a11y/wai-aria/unsupported-element`        | Disallows ARIA attributes on elements that don't support ARIA at all.                                                                                 |
+| `a11y/wai-aria/non-existent-role`          | Warns when a role attribute value does not exist in the WAI-ARIA specification.                                                                       |
+| `a11y/wai-aria/abstract-role`              | Warns when an abstract WAI-ARIA role is used.                                                                                                         |
+| `a11y/wai-aria/permitted-roles`            | Warns when a role is not permitted on the element according to ARIA in HTML.                                                                          |
+| `a11y/wai-aria/implicit-role`              | Warns when the explicit role attribute duplicates the element's implicit role.                                                                        |
+| `a11y/wai-aria/implicit-props`             | Warns when an ARIA property redundantly restates the same semantics as an equivalent native HTML attribute.                                           |
+| `a11y/wai-aria/contradictory-props`        | Warns when an ARIA property's value contradicts an equivalent native HTML attribute.                                                                  |
+| `a11y/wai-aria/required-props`             | Warns when required ARIA properties for a role are missing.                                                                                           |
+| `a11y/wai-aria/disallowed-props`           | Warns when an ARIA property or state is disallowed on the element's computed role.                                                                    |
+| `a11y/wai-aria/prohibited-naming`          | Warns when `aria-label`, `aria-labelledby`, or `aria-braillelabel` is used on a naming-prohibited element.                                            |
+| `a11y/wai-aria/element-supports-aria-prop` | Warns when an ARIA property or state is disallowed by an element-specific ARIA in HTML restriction.                                                   |
+| `a11y/wai-aria/deprecated-role`            | Warns when a deprecated WAI-ARIA role is used.                                                                                                        |
+| `a11y/wai-aria/deprecated-props`           | Warns when a deprecated ARIA property or state is used on a role.                                                                                     |
+| `a11y/wai-aria/value`                      | Warns when an ARIA property or state value does not conform to its expected type.                                                                     |
+| `a11y/wai-aria/required-owned-elements`    | Warns when a role does not contain its required child roles.                                                                                          |
+| `a11y/wai-aria/required-parent-role`       | Warns when an element with an explicit role is placed outside its required parent context.                                                            |
+| `a11y/wai-aria/tab-requires-tabpanel`      | Warns when an active "tab" role element has no corresponding "tabpanel" role element.                                                                 |
+| `a11y/wai-aria/presentational-children`    | Warns when ARIA attributes are set on descendants of roles with presentational children.                                                              |
+| `a11y/wai-aria/no-global-prop`             | Warns when a non-global ARIA property is used on an element without an explicit role.                                                                 |
+| `a11y/wai-aria/default-value`              | Warns when an ARIA property is explicitly set to its spec-defined default value.                                                                      |
+| `a11y/wai-aria/interaction-in-hidden`      | Warns when focusable interactive elements are placed inside an `aria-hidden` subtree.                                                                 |
 | `a11y/require-accessible-name`             | Warns if the element has no accessible name according to its ARIA role.                                                                               |
 | `a11y/redundant-accessible-name`           | Detects elements with multiple accessible name sources where a higher-priority source overrides a lower-priority one.                                 |
-| `a11y/label-has-control`                   | Warns if the `<label>` element has no associated control or contains multiple controls.                                                               |
-| `a11y/landmark-roles`                      | Checks that `banner`, `main`, `complementary`, and `contentinfo` are top-level landmarks, and that multiple landmarks have unique labels.             |
+| `a11y/label-has-control`                   | Warns if the `<label>` element has no associated control.                                                                                             |
+| `a11y/landmark-roles`                      | Checks that `banner`, `main`, and `contentinfo` are top-level landmarks.                                                                              |
+| `a11y/require-landmark-label`              | Checks that landmarks with a duplicated role have unique accessible names.                                                                            |
 | `a11y/required-h1`                         | Warns if there is no `<h1>` element in the document.                                                                                                  |
+| `a11y/no-duplicate-h1`                     | Warns if there is more than one `<h1>` element in the document.                                                                                       |
 | `a11y/html-lang`                           | Requires the `lang` attribute on the `<html>` element for assistive technologies to identify the document language.                                   |
 | `a11y/abbr-title`                          | Requires the `title` attribute on `<abbr>` elements to provide the full expansion of abbreviations.                                                   |
 | `a11y/media-track`                         | Requires `<track>` elements in `<audio>` and `<video>` for captions and descriptions.                                                                 |
@@ -104,6 +127,9 @@ See the [rulesets tables](#rulesets-of-base-presets) below for the full list of 
 | `a11y/no-ambiguous-navigable-target-names` | Prevents typographical errors in links that could replace special navigational keywords like `_blank` with invalid target names.                      |
 | `a11y/use-list`                            | Prompts to use a list element when a bullet character appears at the start of a text node.                                                            |
 | `a11y/table-row-column-alignment`          | Ensures consistency in the defined number of rows and columns, accounting for `colspan` and `rowspan`.                                                |
+| `a11y/no-table-cell-overlap`               | Disallows `rowspan` / `colspan` values that cause two cells to cover the same slot.                                                                   |
+| `a11y/no-table-span-overflow`              | Disallows a `rowspan` that reaches past the end of its `<thead>`, `<tbody>`, or `<tfoot>`.                                                            |
+| `a11y/no-empty-table-track`                | Disallows a table row or column that no cell is anchored to.                                                                                          |
 | `a11y/no-merge-cells`                      | Disallows `colspan` and `rowspan` attributes on table cells to prevent merged cells that are difficult for assistive technologies.                    |
 | `a11y/neighbor-popovers`                   | Warns when popover triggers and their corresponding targets are not adjacent in the DOM.                                                              |
 | `a11y/summary-no-interactive`              | There is a case where an assistive technology can't access contents, or contents don't propagate a mouse event to `<summary>`.                        |
@@ -111,31 +137,40 @@ See the [rulesets tables](#rulesets-of-base-presets) below for the full list of 
 
 ### `markuplint:html-standard` {#preset-html-standard}
 
-Also enables the base rule [`invalid-attr`](/docs/rules/invalid-attr) for spec-based attribute validation. Named rules wrapping `invalid-attr` (such as `a11y/no-accesskey`) perform only their narrow allow/disallow checks — general HTML-spec validation is handled by the base rule.
+Also enables the base rules [`no-unknown-attr`](/docs/rules/no-unknown-attr), [`no-disallowed-attr`](/docs/rules/no-disallowed-attr), and [`no-invalid-attr-value`](/docs/rules/no-invalid-attr-value) for spec-based attribute validation. Named rules that restrict specific attributes (such as `a11y/no-accesskey`) wrap [`no-restricted-attr`](/docs/rules/no-restricted-attr) instead — that rule only enforces its own configured denylist and never performs spec validation, so it stays narrow no matter where it's used.
 
-| Named Rule                                  | Description                                                                                                                                     |
-| ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| `html-standard/id-duplication`              | Warns when `id` attribute values are duplicated in one document.                                                                                |
-| `html-standard/no-refer-to-non-existent-id` | Checks whether IDs specified in `for`, `form`, `aria-*`, and fragment links reference an ID that exists in the same document.                   |
-| `html-standard/attr-duplication`            | The parser ignores all such duplicate occurrences of the attribute.                                                                             |
-| `html-standard/deprecated-attr`             | Authors must not use deprecated attributes from the viewpoint of compatibility.                                                                 |
-| `html-standard/deprecated-element`          | Authors must not use deprecated elements from the viewpoint of compatibility.                                                                   |
-| `html-standard/doctype`                     | It has the effect of avoiding quirks mode.                                                                                                      |
-| `html-standard/permitted-contents`          | Warns if a child element is not allowed by the HTML specification for its parent element.                                                       |
-| `html-standard/required-attr`               | Warns if required attributes defined by the HTML specification are not present on an element.                                                   |
-| `html-standard/ineffective-attr`            | Warns when a specified attribute has no effect on the element (e.g., `disabled` on a `<div>`).                                                  |
-| `html-standard/no-orphaned-end-tag`         | Warns when an end tag appears without a corresponding start tag, which constitutes an inner parse error.                                        |
-| `html-standard/heading-levels`              | Each heading must be equal to or one level greater than the previous heading.                                                                   |
-| `html-standard/no-duplicate-dt`             | Within a single `<dl>` element, there should not be more than one `<dt>` element for each name.                                                 |
-| `html-standard/placeholder-label-option`    | Checks whether the `<select>` element needs the placeholder label option (first `<option>` with an empty value).                                |
-| `html-standard/require-datetime`            | Warns that the `datetime` attribute is needed if the `<time>` element has content that is not a valid date/time string.                         |
-| `html-standard/srcset-sizes-constraint`     | Enforces WHATWG constraints between `srcset`, `sizes`, `loading`, `media`, and `type` attributes on `<img>` and `<source>` elements.            |
-| `html-standard/head-charset-utf8`           | Requires a `<meta charset="UTF-8">` element in the document head.                                                                               |
-| `html-standard/no-small-in-heading`         | Should not use `<small>` in `<h1>`, `<h2>`, `<h3>`, `<h4>`, `<h5>`, and `<h6>`.                                                                 |
-| `html-standard/figure-no-caption`           | When `<table>` is the only content in `<figure>` other than `<figcaption>`, `<caption>` should be omitted in favor of `<figcaption>`.           |
-| `html-standard/input-pattern-title`         | When an `<input>` element has a `pattern` attribute specified, authors should include a `title` attribute to give a description of the pattern. |
-| `html-standard/no-nested-details-name`      | A document must not contain a `<details>` element that is a descendant of another `<details>` element in the same name group.                   |
-| `html-standard/no-shortcut-icon`            | The `shortcut` keyword in `<link rel>` is unnecessary. Use `rel="icon"` instead.                                                                |
+| Named Rule                                       | Description                                                                                                                                         |
+| ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `html-standard/id-duplication`                   | Warns when `id` attribute values are duplicated in one document.                                                                                    |
+| `html-standard/no-refer-to-non-existent-id`      | Checks whether IDs specified in `for`, `form`, `aria-*`, and more reference an ID that exists in the same document.                                 |
+| `html-standard/attr-duplication`                 | The parser ignores all such duplicate occurrences of the attribute.                                                                                 |
+| `html-standard/deprecated-attr`                  | Authors must not use attributes the HTML spec has removed entirely (obsolete, non-conforming features).                                             |
+| `html-standard/no-deprecated-attr`               | Warns on attributes MDN/BCD marks as deprecated (still defined by the spec, but discouraged).                                                       |
+| `html-standard/deprecated-element`               | Authors must not use elements the HTML spec has removed entirely (obsolete, non-conforming features).                                               |
+| `html-standard/no-deprecated-element`            | Warns on elements MDN/BCD marks as deprecated (still defined by the spec, but discouraged).                                                         |
+| `html-standard/doctype`                          | It has the effect of avoiding quirks mode.                                                                                                          |
+| `html-standard/no-obsolete-doctype`              | Authors must not use an obsolete DOCTYPE (a public identifier, or a system identifier other than the one legacy-string exception the spec permits). |
+| `html-standard/permitted-contents`               | Warns if a child element is not allowed by the HTML specification for its parent element.                                                           |
+| `html-standard/no-disallowed-ancestor`           | Warns if an element appears as a descendant of an ancestor its content model forbids (e.g. `<address>` inside `<address>`).                         |
+| `html-standard/require-ancestor`                 | Warns if an element appears outside a required ancestor (e.g. `<area>` outside `<map>`).                                                            |
+| `html-standard/no-duplicate-sibling-attr`        | Warns if an attribute the content model marks as sibling-unique appears on more than one element of the same type within the same parent.           |
+| `html-standard/required-attr`                    | Warns if required attributes defined by the HTML specification are not present on an element.                                                       |
+| `html-standard/ineffective-attr`                 | Warns when a specified attribute has no effect on the element (e.g., `disabled` on a `<div>`).                                                      |
+| `html-standard/no-orphaned-end-tag`              | Warns when an end tag appears without a corresponding start tag, which constitutes an inner parse error.                                            |
+| `html-standard/heading-levels`                   | Each heading must be equal to or one level greater than the previous heading.                                                                       |
+| `html-standard/no-duplicate-dt`                  | Within a single `<dl>` element, there should not be more than one `<dt>` element for each name.                                                     |
+| `html-standard/placeholder-label-option`         | Checks whether the `<select>` element needs the placeholder label option (first `<option>` with an empty value).                                    |
+| `html-standard/require-datetime`                 | Warns that the `datetime` attribute is needed if the `<time>` element has content that is not a valid date/time string.                             |
+| `html-standard/srcset-sizes-constraint`          | Requires `sizes` wherever `srcset` uses width descriptors, and vice versa.                                                                          |
+| `html-standard/no-mixed-srcset-descriptors`      | Disallows mixing width and pixel density descriptors in a `srcset` attribute.                                                                       |
+| `html-standard/sizes-auto-requires-lazy-loading` | Requires `loading="lazy"` wherever `sizes="auto"` is used.                                                                                          |
+| `html-standard/no-always-matching-source`        | Requires a distinguishing `media` or `type` on a `<source>` with a following srcset-bearing sibling.                                                |
+| `html-standard/head-charset-utf8`                | Requires a `<meta charset="UTF-8">` element in the document head.                                                                                   |
+| `html-standard/no-small-in-heading`              | Should not use `<small>` in `<h1>`, `<h2>`, `<h3>`, `<h4>`, `<h5>`, and `<h6>`.                                                                     |
+| `html-standard/figure-no-caption`                | When `<table>` is the only content in `<figure>` other than `<figcaption>`, `<caption>` should be omitted in favor of `<figcaption>`.               |
+| `html-standard/input-pattern-title`              | When an `<input>` element has a `pattern` attribute specified, authors should include a `title` attribute to give a description of the pattern.     |
+| `html-standard/no-nested-details-name`           | A document must not contain a `<details>` element that is a descendant of another `<details>` element in the same name group.                       |
+| `html-standard/no-shortcut-icon`                 | The `shortcut` keyword in `<link rel>` is unnecessary. Use `rel="icon"` instead.                                                                    |
 
 ### `markuplint:performance` {#preset-performance}
 
@@ -148,7 +183,7 @@ Also enables the base rule [`invalid-attr`](/docs/rules/invalid-attr) for spec-b
 
 ### `markuplint:rdfa` {#preset-rdfa}
 
-Extends `invalid-attr` to allow the `property` and `content` attributes on `<meta property>` so that RDFa-based metadata (e.g., **Open Graph**) does not trigger spec-validation violations. Also disables `required-attr` on the same elements.
+Extends `no-unknown-attr`, `no-disallowed-attr`, and `no-invalid-attr-value` to allow the `property` and `content` attributes on `<meta property>` so that RDFa-based metadata (e.g., **Open Graph**) does not trigger spec-validation violations. Also disables `require-attr` on the same elements.
 
 No named rules are exposed by this preset.
 
@@ -156,10 +191,11 @@ No named rules are exposed by this preset.
 
 Includes all [base presets](#base-presets) plus the following rules:
 
-| Named Rule                        | Description                                                                                                                     |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `static-html/character-reference` | Warns when illegal characters in text nodes or attribute values are not escaped with character references.                      |
-| `static-html/end-tag`             | Recommends always writing end tags because it is too difficult for a human to decide whether an element's end tag is omittable. |
+| Named Rule                                     | Description                                                                                                                     |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `static-html/character-reference`              | Warns when a literal `<` in a text node or attribute value isn't escaped with a character reference.                            |
+| `static-html/no-malformed-character-reference` | Warns when a `&...;`-shaped character reference is malformed (unknown name, missing semicolon, invalid numeric reference).      |
+| `static-html/end-tag`                          | Recommends always writing end tags because it is too difficult for a human to decide whether an element's end tag is omittable. |
 
 ### `markuplint:recommended-react` {#preset-react}
 

@@ -137,3 +137,27 @@ test('[placeholder-label-option-invalid-004] The `as` attribute', async () => {
 		},
 	]);
 });
+
+test('[placeholder-label-option-invalid-005] Invalid: empty select without any option', async () => {
+	expect((await mlRuleTest(rule, '<select required></select>')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			raw: '<select required>',
+			message: 'Need the placeholder label option',
+		},
+	]);
+});
+
+test('[placeholder-label-option-invalid-006] Invalid: required select with only non-option children', async () => {
+	expect((await mlRuleTest(rule, '<select required><script></script></select>')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			raw: '<select required>',
+			message: 'Need the placeholder label option',
+		},
+	]);
+});

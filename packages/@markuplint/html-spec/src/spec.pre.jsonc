@@ -14,7 +14,14 @@
 		"#GlobalEventAttrs": true,
 		"#ARIAAttrs": true
 	},
-	"attributes": {},
+	"attributes": {
+		"width": {
+			"deprecated": true
+		},
+		"wrap": {
+			"deprecated": true
+		}
+	},
 	"aria": {
 		"implicitRole": "generic",
 		"permittedRoles": true,

@@ -27,6 +27,18 @@ export type Config = {
 	readonly childNodeRules?: readonly ChildNodeRule[];
 	readonly overrideMode?: 'merge' | 'reset';
 	readonly overrides?: Readonly<Record<string, OverrideConfig>>;
+	/**
+	 * Computed by {@link mergeConfig} — never authored in a config file. Tracks
+	 * `rules` keys that were a genuine {@link NamedRuleGroup} in some layer of the
+	 * `extends`/override chain, even where the final merged value collapsed to
+	 * `false` (a whole-group disable erases which base rule(s) it wrapped — see
+	 * `mergeNamedRuleGroupEntry`). Consumers (`@markuplint/ml-core`) use this to
+	 * tell an intentional named-group disable apart from a typo'd/nonexistent
+	 * rule name that also happens to be set to `false` with a `/` in its key —
+	 * both collapse to the same `rules[key] === false` shape after merging, but
+	 * only the former should be exempt from "Rule not found" validation.
+	 */
+	readonly knownNamedRuleGroupKeys?: readonly string[];
 };
 
 /**
@@ -147,6 +159,24 @@ export type SeverityOptions = {
 	 * ```
 	 */
 	readonly parseError?: ParseErrorSeverity | Partial<Record<MLASTParseErrorCode, ParseErrorSeverity>>;
+
+	/**
+	 * Severity for deprecated-rule-name notices, surfaced via the built-in
+	 * `rule-deprecation` channel. A deprecated name is one the v5
+	 * rule-system redesign (#3989) renamed or split; the notice reports that
+	 * the config still works today but will stop resolving in v6.
+	 *
+	 * Unlike {@link parseError}, this defaults to `'warning'` (not off) —
+	 * it carves an already-surfaced notice out of the generic `config-error`
+	 * channel rather than introducing a new one, so leaving it unset must
+	 * not silence something users already see.
+	 *
+	 * @example
+	 * ```jsonc
+	 * { "severity": { "deprecation": "off" } }
+	 * ```
+	 */
+	readonly deprecation?: Severity | 'off' | boolean;
 };
 
 /**
@@ -185,6 +215,17 @@ export type PretenderDetails = {
 	 * @experimental
 	 */
 	readonly scan?: readonly PretenderScanConfig[];
+
+	/**
+	 * When `true`, resolves pretenders on demand by scanning the lint
+	 * target's own import graph instead of requiring `files`/`scan`
+	 * pre-configuration. Because only the config file is filesystem-watched,
+	 * results can go stale in watch mode / editor sessions if an imported
+	 * component file changes without the config changing too.
+	 *
+	 * @experimental
+	 */
+	readonly auto?: boolean;
 };
 
 /**
@@ -223,10 +264,11 @@ export type Pretender = {
 	readonly as: string | OriginalNode;
 
 	/**
-	 * If it is a string, it is resolved as an element name.
-	 * An element regards as having the same attributes
-	 * as the pretended custom element because these are inherited.
-	 * If it is an Object, It can specify in detail the element's attributes.
+	 * Where the component was found, as `<path>:<line>:<column>`. Metadata only —
+	 * nothing in linting reads it to influence pretender matching (matching is by
+	 * `selector` alone). `@markuplint/pretenders` scanners emit `<path>` relative
+	 * to the JSON file this entry will be written into, not the scan-time cwd, so
+	 * it stays resolvable regardless of where the file is later loaded from.
 	 *
 	 * @experimental
 	 */
@@ -390,6 +432,14 @@ export interface PretenderScanOptions {
 	 * Component names to exclude from scanning results.
 	 */
 	readonly ignoreComponentNames?: readonly string[];
+
+	/**
+	 * In-memory content overrides, keyed by normalized (`/`-delimited)
+	 * absolute file path, consulted before falling back to a disk read.
+	 * For content with no on-disk source of truth yet, such as an editor's
+	 * unsaved buffer for the file currently being linted.
+	 */
+	readonly sources?: ReadonlyMap<string, string>;
 }
 
 /**
@@ -462,6 +512,8 @@ export type RuleConfig<T extends RuleConfigValue, O extends PlainData = undefine
 	readonly options?: Readonly<O>;
 	/** A human-readable reason for this rule configuration, included in violation messages */
 	readonly reason?: string;
+	/** When `true`, replaces the violation message with `reason` entirely instead of appending it. Requires `reason` to be set. */
+	readonly reasonOnly?: boolean;
 };
 
 /**
@@ -712,6 +764,7 @@ export type RuleInfo<T extends RuleConfigValue, O extends PlainData = undefined>
 	readonly value: Readonly<T>;
 	readonly options: Readonly<O>;
 	readonly reason?: string;
+	readonly reasonOnly?: boolean;
 };
 
 /**

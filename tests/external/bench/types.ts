@@ -90,12 +90,22 @@ export type MarkuplintSnapshot = {
  * does not flag, so the verdict collapses from `nu-over` to `match-clean`.
  * Every field is required so `reason`, `addedAt`, and `addedBy` leave an
  * audit trail.
+ *
+ * Only `id` participates in exclusion matching (see `compare.ts`); the
+ * `path`, `nuMessage`, `specUrl`, `reason`, `addedAt`, and `addedBy` fields
+ * are stored for the audit trail and to make stale entries readable
+ * without consulting the snapshot tree. `id` is a SHA-256 over
+ * `path + type + message + firstLine + firstColumn` (see `message-id.ts`),
+ * so any wording or position drift invalidates the prior `id` and the
+ * stale entry stops matching — its fixture reappears in `nu-only` on the
+ * next bench run, which is the intended re-review signal.
  */
 export type ExcludedIdEntry = {
 	readonly id: string;
 	readonly path: string;
 	readonly nuMessage: string;
 	readonly reason: string;
+	readonly specUrl: string;
 	readonly addedAt: string;
 	readonly addedBy: string;
 };
