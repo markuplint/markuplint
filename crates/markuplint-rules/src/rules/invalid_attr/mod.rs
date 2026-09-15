@@ -537,11 +537,68 @@ fn matches_condition(condition: &AttributeCondition, arena: &DomArena, node_id: 
         AttributeCondition::Multiple(v) => v.join(","),
     };
 
-    let Ok(sel) = parser::parse(&selector_str) else {
-        return true; // If selector can't be parsed, assume condition is met
-    };
+    // An unparsable selector counts as met, so a spec entry we cannot read never
+    // invents a violation.
+    matches_selector(&selector_str, arena, node_id, spec).unwrap_or(true)
+}
 
-    markuplint_selector::matcher::matches(&sel, arena, node_id, Some(node_id), Some(spec), None)
+/// `None` when the selector cannot be parsed — callers pick the lenient answer for
+/// their own context.
+fn matches_selector(selector_str: &str, arena: &DomArena, node_id: NodeId, spec: &MLMLSpec) -> Option<bool> {
+    let sel = parser::parse(selector_str).ok()?;
+    Some(markuplint_selector::matcher::matches(
+        &sel,
+        arena,
+        node_id,
+        Some(node_id),
+        Some(spec),
+        None,
+    ))
+}
+
+/// A `ConditionalAttributeType[]`, discriminated as TS's `isConditionalAttributeType()`
+/// does: an array whose first entry is an object carrying a `condition` key.
+fn is_conditional_attribute_type_array(attr_type: &serde_json::Value) -> bool {
+    attr_type
+        .as_array()
+        .and_then(|entries| entries.first())
+        .is_some_and(|first| first.get("condition").is_some())
+}
+
+/// Reduce `[{ condition, type }, ...]` to the type of the first entry whose condition
+/// matches this element.
+///
+/// Port of the resolution step in `packages/@markuplint/rules/src/attr-eligibility.ts`,
+/// including its `Any` fallback: an element that matches no condition has no value
+/// constraint per the HTML spec (`input` types with no entry of their own, say), so it
+/// must not be reported.
+fn resolve_conditional_attribute_type(attr_type: &serde_json::Value, ctx: &AttrCheckContext<'_>) -> serde_json::Value {
+    let entries = attr_type.as_array().map_or([].as_slice(), Vec::as_slice);
+    for entry in entries {
+        let matched = entry
+            .get("condition")
+            .and_then(condition_selector)
+            // An unparsable selector falls through to the next entry rather than
+            // claiming this one, ending at the `Any` fallback below.
+            .and_then(|selector| matches_selector(&selector, ctx.arena, ctx.node_id, ctx.spec))
+            .unwrap_or(false);
+        if matched {
+            return entry.get("type").cloned().unwrap_or(serde_json::Value::Null);
+        }
+    }
+    serde_json::Value::String("Any".to_string())
+}
+
+/// A condition is a selector string, or several that are joined as a selector list.
+fn condition_selector(condition: &serde_json::Value) -> Option<String> {
+    match condition {
+        serde_json::Value::String(selector) => Some(selector.clone()),
+        serde_json::Value::Array(selectors) => {
+            let parts: Vec<&str> = selectors.iter().filter_map(serde_json::Value::as_str).collect();
+            (!parts.is_empty()).then(|| parts.join(","))
+        }
+        _ => None,
+    }
 }
 
 fn check_global_attr_flags(spec: &MLMLSpec, element_name: &str, attr_name: &str) -> (bool, Option<AttributeCondition>) {
@@ -597,6 +654,18 @@ fn check_attr_value_type(
     if attr_type.as_str() == Some("Boolean") {
         return None;
     }
+
+    // A `ConditionalAttributeType[]` — `[{ condition, type }, ...]` — is not a list of
+    // alternatives: the element picks exactly one entry. Resolve it before the array
+    // handling below, which would otherwise pass each `{condition, type}` object to
+    // `value_to_type` as if it were a type of its own.
+    let resolved_type;
+    let attr_type = if is_conditional_attribute_type_array(attr_type) {
+        resolved_type = resolve_conditional_attribute_type(attr_type, ctx);
+        &resolved_type
+    } else {
+        attr_type
+    };
 
     // attr_type can be a single type or an array of alternative types
     let types: Vec<serde_json::Value> = match attr_type {
