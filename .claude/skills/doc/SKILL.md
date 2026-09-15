@@ -19,15 +19,15 @@ Maintain documentation under this repository's documentation policy. **The imple
    - **Public API symbols** (exported from a published package entry point — lands in `.d.ts` and IDE hover) MAY contain WHAT for end users.
    - **Internal code** JSDoc must not restate WHAT — only WHY, constraints, and non-obvious contracts.
 4. **Do NOT create new `ARCHITECTURE.md`, `docs/*.md`, or similar explanatory markdown.** That content belongs in JSDoc (rule 2).
-5. **Exempt — rule READMEs** (`packages/@markuplint/rules/src/*/README.md` + `README.ja.md`): these are WEBSITE SOURCE (user-facing). Both languages MUST stay in sync — updating only one is a recurring mistake; always verify.
+5. **Exempt — rule READMEs** (`packages/@markuplint/rules/src/*/README.md` + `README.ja.md`): these are website source (user-facing). Both languages must stay in sync — updating only one is a recurring mistake.
 6. **Exempt — package READMEs** (`packages/**/README.md`): npm-facing user documentation, not covered by rule 1.
 7. **No plan-relative concepts** in JSDoc, test names, or documentation: Phase/Step numbers, "this PR", "the old implementation", "to be introduced". Write self-contained descriptions of current behavior and intentional absences. External references are limited to issue / PR numbers.
 
 # Rules
 
 - Use the language specified in each document
-- **NEVER modify the implementation** when updating documentation — do not change function bodies, type definitions, export statements, or even the ordering of declarations
-- **NEVER include specific dependency version numbers** (e.g., a version of a parser library) — versions change frequently and cause maintenance burden. `package.json` is the source of truth. Specification versions like ARIA 1.3 are not dependencies and may be mentioned.
+- Do not modify the implementation when updating documentation — do not change function bodies, type definitions, export statements, or even the ordering of declarations
+- Do not include specific dependency version numbers (e.g., a version of a parser library) — versions change frequently and cause maintenance burden. `package.json` is the source of truth. Specification versions like ARIA 1.3 are not dependencies and may be mentioned.
 - If the intent of code or documentation is unclear, ask the user rather than guessing
 
 # JSDoc
@@ -39,6 +39,8 @@ Maintain documentation under this repository's documentation policy. **The imple
   - `@template` — for each type parameter; include a description
 - Do not add redundant type annotations that TypeScript already provides — describe purpose, semantics, and constraints
 
-# Final Step (MANDATORY)
+# Final Step
 
-After all documentation changes are complete, **always run `yarn lint`** to verify formatting, spelling, and style. Fix any errors before committing.
+After all documentation changes are complete, run `yarn lint` and fix any errors before committing.
+
+What `yarn lint` covers differs between branches — `package.json` `scripts.lint` is the source of truth. In particular, spell checking exists on the `dev` line and not on the v6 line, so never report that prose was spell-checked without confirming the branch actually ran that step.

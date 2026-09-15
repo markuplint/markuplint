@@ -1,6 +1,6 @@
 # vscode
 
-## Release policy (MANDATORY)
+## Release policy
 
 The VS Code Marketplace rejects semver prerelease suffixes (`5.0.0-rc.4` is
 literally refused on upload), and its own prerelease channel requires a

@@ -12,6 +12,10 @@ export default {
 				[
 					...packages,
 					// Tags
+					// `crates` covers the Rust workspace on the v6 line: those crates are not
+					// Lerna packages, and stripping the `markuplint-` prefix would collide with
+					// the JS package of the same name (`core`, `rules`, `types`, …).
+					'crates',
 					'release',
 					'deps',
 					'changelog',
