@@ -13,7 +13,7 @@ disable-model-invocation: true
 # Steps
 
 1. Confirm that implementation scope, approach, and trade-offs are agreed in the conversation. A plan approved through the `issue` skill counts as agreed. If agreement is missing, run the `grill-me` skill and reach it before continuing.
-2. **Branch check**: ensure you are in a Claude Code–managed worktree on a topic branch (Branch & Worktree Policy in the root `CLAUDE.md`). Fresh worktree setup: `yarn install`, then `NX_WORKSPACE_ROOT_PATH=<worktree-absolute-path> yarn build`.
+2. **Branch check**: ensure you are in a Claude Code–managed worktree on a topic branch, cut from the line the work belongs to (Branch Topology and Branch & Worktree Policy in the root `CLAUDE.md`). Fresh worktree setup: `yarn install`, then `NX_WORKSPACE_ROOT_PATH=<worktree-absolute-path> yarn build`. On a branch that has a `crates/` directory, that is not the whole setup — follow `crates/CLAUDE.md` as well (submodules, native addon) before building.
 3. **Read the governing constraints** before writing code: the package-level `CLAUDE.md` of every package you will touch, plus any matching `.claude/rules/*.md`.
 4. Implement exactly what was agreed, test-first: add failing spec tests that define the expected behavior (never throwaway reproduction scripts), then make them pass.
 5. **`/code-review medium` (user-executed):** `/code-review` cannot be invoked by Claude. Present the following to the user, ask them to run it, and **wait here for the results**. Then fix all findings.
@@ -25,8 +25,8 @@ disable-model-invocation: true
    Writing a substitute review yourself, or skipping this step because you cannot invoke it, is **forbidden**.
 6. Run the `qa-engineer` skill; fix all findings.
 7. Run the `product-manager` skill; fix all findings (includes documentation consistency — JSDoc placement, comment policy).
-8. Run `yarn lint`; fix all errors.
-9. Run `yarn test`; fix all failures.
+8. Run `yarn lint`; fix all errors. Note that which linters this runs differs between branches — `package.json` is the source of truth, never another branch's set.
+9. Run `yarn test`; fix all failures. If the change touches `crates/`, also run `cargo fmt --check`, `cargo clippy --locked -- -D warnings`, and `cargo test --locked`: `yarn test` does not reach the Rust workspace and neither does lint-staged.
 10. Commit following the `git` skill.
 11. Create the PR following the `pr` skill.
 

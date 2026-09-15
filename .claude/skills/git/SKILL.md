@@ -17,8 +17,8 @@ Before any commit, check the current branch:
 git branch --show-current
 ```
 
-- If on `dev` or `main`: **STOP immediately.** Direct commits to `dev` are blocked by husky. Branch work happens in a Claude Code–managed worktree (see the Branch & Worktree Policy in the root `CLAUDE.md`) — never create a branch in the main working directory.
-- On a topic branch: proceed.
+- If on a development integration branch (`dev`, `v6`) or on `main`: **STOP immediately.** `dev` and `v6` are blocked by husky; `main` is unguarded only so that `lerna version` can write release commits, which is not a licence to commit there by hand. Branch work happens in a Claude Code–managed worktree (see Branch Topology and the Branch & Worktree Policy in the root `CLAUDE.md`) — never create a branch in the main working directory.
+- On a topic branch: proceed. The verification gates below differ between the two lines, so establish which one you are on from the working tree itself (a `crates/` directory means the v6 line) rather than from the branch name.
 
 # Commit creation
 
@@ -74,7 +74,9 @@ When committing changes that span multiple packages, always commit **from leaves
 - Within the same tier, order does not matter
 - Root config changes (`.oxlintrc.json`, `.oxfmtrc.json`, `tsconfig.base.json`, CI) should be committed before any package changes
 - Single-package changes do not need ordering -- just commit that package
+- **The package set differs between the two lines** (the v6 line drops `htmx-parser` and `rule-textlint`, and adds `core` — the napi addon that `markuplint` depends on, so commit it before Tier 11). The table above describes the `dev` line; on any branch, `npx lerna list --graph` is the source of truth
 - If unsure, verify with `npx lerna list --graph`
+- `crates/*` changes are outside the Lerna graph. Commit them before the packages that consume them (`core`, then `markuplint`)
 
 # Commit message format
 
@@ -96,6 +98,7 @@ When committing changes that span multiple packages, always commit **from leaves
   - Scopes are dynamically generated from Lerna packages (see `.commitlintrc.js`)
     - Package names have `-markuplint` / `markuplint-` prefixes stripped
     - Additional scopes:
+      - `crates` — the Rust workspace on the v6 line. Its crates are not Lerna packages, and the per-crate names would collide with the JS packages (`core`, `rules`, `types`, …), so they share this one scope
       - `release`
       - `deps`
       - `changelog`
@@ -163,3 +166,19 @@ yarn lint
 
 Spec data propagates to `@markuplint/rules` and `@markuplint/ml-spec` tests.
 Package-level tests alone will miss cross-package regressions.
+
+# Pre-commit verification for `crates/` changes (v6 line)
+
+`yarn test`, `yarn lint` and lint-staged cover the TypeScript workspace only — nothing in
+them touches Rust, so a staged `crates/` change can look clean and still break CI
+(`.github/workflows/rust.yml`). When the diff includes `crates/`, run all three from `crates/`
+before committing:
+
+```bash
+cargo fmt --check
+cargo clippy --locked -- -D warnings
+cargo test --locked
+```
+
+`cargo clippy` runs with `-D warnings` in CI, so a warning is a failure. See `crates/CLAUDE.md`
+for the rest of the v6 workspace's constraints.

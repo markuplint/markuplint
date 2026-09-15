@@ -62,7 +62,9 @@ Use the repository's existing Issue templates (`.github/ISSUE_TEMPLATE/`) as the
 
 **CRITICAL: NEVER work in the main working directory.**
 
-Branch work happens in a Claude Code–managed worktree (see the Branch & Worktree Policy in the root `CLAUDE.md`). If this session is not already in one, set one up via the harness worktree feature before touching any file. Branch name: `issue/<number>-<slug>` (slug from title, lowercase, hyphens, max 50 chars — the Issue number is always available at this point). Remember the fresh-worktree setup: `yarn install`, then `NX_WORKSPACE_ROOT_PATH=<worktree-absolute-path> yarn build`.
+Branch work happens in a Claude Code–managed worktree (see Branch Topology and the Branch & Worktree Policy in the root `CLAUDE.md`). If this session is not already in one, set one up via the harness worktree feature before touching any file. Branch name: `issue/<number>-<slug>` (slug from title, lowercase, hyphens, max 50 chars — the Issue number is always available at this point).
+
+Decide which line the fix belongs to before setting up: the harness cuts a new worktree from `dev`, so a v6 fix needs `git fetch origin v6` then `git reset --hard origin/v6` first. Then the fresh-worktree setup: `yarn install`, then `NX_WORKSPACE_ROOT_PATH=<worktree-absolute-path> yarn build` — plus whatever `crates/CLAUDE.md` requires if the branch has a `crates/` directory.
 
 ## Step 3: Analyze the Problem
 

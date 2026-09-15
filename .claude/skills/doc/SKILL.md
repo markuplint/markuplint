@@ -41,4 +41,6 @@ Maintain documentation under this repository's documentation policy. **The imple
 
 # Final Step (MANDATORY)
 
-After all documentation changes are complete, **always run `yarn lint`** to verify formatting, spelling, and style. Fix any errors before committing.
+After all documentation changes are complete, **always run `yarn lint`**. Fix any errors before committing.
+
+What `yarn lint` covers differs between branches — `package.json` `scripts.lint` is the source of truth. In particular, spell checking exists on the `dev` line and not on the v6 line, so never report that prose was spell-checked without confirming the branch actually ran that step.

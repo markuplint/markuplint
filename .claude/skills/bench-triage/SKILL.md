@@ -91,7 +91,9 @@ Quote the exact sentence verbatim into the issue / PR /
 
 ## Step 5: Decide and act
 
-For a `nu-only` fixture, the spec verdict gives a binary action:
+For a `nu-only` fixture, the spec verdict gives a binary action.
+
+Where a fix lands depends on the branch: the paths named throughout this skill (`packages/@markuplint/types`, `packages/@markuplint/html-parser`, …) are the `dev` line. On the v6 line the same behaviour may be implemented in the Rust workspace instead — locate the code before editing, and follow `crates/markuplint-rules/CLAUDE.md` for anything under `crates/`.
 
 | Spec on the markup | Conclusion | Action |
 | --- | --- | --- |
