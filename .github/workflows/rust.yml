@@ -98,8 +98,13 @@ jobs:
                   corepack enable
                   yarn --version
 
+            # `shell: bash` for the same reason as the Verify Cargo.lock step
+            # below: under PowerShell `$GITHUB_OUTPUT` is an undefined variable,
+            # so this silently wrote nothing and the cache below was restored
+            # with an empty path on windows-latest.
             - name: Get yarn cache directory path
               id: yarn-cache-dir-path
+              shell: bash
               run: echo "dir=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
 
             - name: Cache Restore devDependencies
@@ -136,7 +141,12 @@ jobs:
             # of failing against the original one. `-- --locked` on the
             # build alone is therefore not sufficient; this pre-check and
             # the post-check below are both required.
+            #
+            # `shell: bash` because this job also runs on windows-latest,
+            # where the default shell is PowerShell and `> /dev/null` is a
+            # path, not a discard — it fails with OpenError.
             - name: Verify Cargo.lock
+              shell: bash
               working-directory: crates
               run: cargo metadata --locked --format-version 1 > /dev/null
 
