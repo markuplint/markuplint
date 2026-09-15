@@ -393,7 +393,7 @@ fn check_disallow(
                     EntryCheckResult::Violated(attr_value_violation(
                         ctx,
                         html_attr,
-                        format!("The \"{name}\" attribute is matched with the below disallowed patterns: {original}",),
+                        format!("The \"{name}\" attribute is matched with the below disallowed patterns: {original}"),
                     ))
                 } else {
                     EntryCheckResult::Allowed // Value doesn't match pattern
