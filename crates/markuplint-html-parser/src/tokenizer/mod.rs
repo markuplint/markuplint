@@ -342,8 +342,7 @@ impl<'a> Tokenizer<'a> {
     fn emit_temp_buffer_as_chars(&mut self, base_offset: usize, base_line: u32, base_col: u32) {
         let buf: Vec<char> = self.temp_buffer.chars().collect();
         let mut off = base_offset;
-        let mut col = base_col;
-        for ch in buf {
+        for (col, ch) in (base_col..).zip(buf) {
             self.emit_char(
                 ch,
                 Position {
@@ -353,7 +352,6 @@ impl<'a> Tokenizer<'a> {
                 },
             );
             off += ch.len_utf8();
-            col += 1;
         }
     }
 

@@ -96,7 +96,7 @@ impl<'a> Parser<'a> {
 
         let subject = compounds.pop().unwrap();
         let mut chain = Vec::new();
-        for (compound, combinator) in compounds.into_iter().zip(combinators.into_iter()) {
+        for (compound, combinator) in compounds.into_iter().zip(combinators) {
             chain.push((combinator, compound));
         }
         chain.reverse();

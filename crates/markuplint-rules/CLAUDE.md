@@ -1,8 +1,8 @@
 # markuplint-rules (Rust)
 
-## File Structure (MANDATORY)
+## File Structure
 
-Each rule MUST be a directory module with separate impl and test files:
+Each rule is a directory module with separate impl and test files:
 
 ```
 src/rules/
@@ -11,13 +11,13 @@ src/rules/
     tests.rs    # All tests for this rule
 ```
 
-**NEVER** put tests inline in `mod.rs`. **NEVER** use a single `<rule_name>.rs` file.
+Tests do not go inline in `mod.rs`, and a rule is not a single `<rule_name>.rs` file.
 
 > **Note:** As of this writing, 16 rules follow this structure. The remaining rules still use single-file format and will be migrated incrementally.
 
-## Test ID Convention (MANDATORY)
+## Test ID Convention
 
-Every `#[test]` function MUST use an ID that matches the TS test suite (`packages/@markuplint/rules/`).
+Every `#[test]` function uses an ID that matches the TS test suite (`packages/@markuplint/rules/`).
 
 ### Naming format
 
@@ -38,11 +38,11 @@ fn v6_doctype_001() {
 }
 ```
 
-### `_ID` constant (MANDATORY for TS-mapped tests)
+### `_ID` constant (TS-mapped tests)
 
-Every test that corresponds to a TS test MUST have `const _ID: &str = "rule-name-category-NNN";` as the first line of the function body. This enables `grep` to find TS IDs (which use hyphens) in Rust code (which uses underscores in function names).
+Every test that corresponds to a TS test has `const _ID: &str = "rule-name-category-NNN";` as the first line of the function body. This enables `grep` to find TS IDs (which use hyphens) in Rust code (which uses underscores in function names).
 
-- `_ID` is required for TS-mapped tests only — `v6_*` tests do NOT need it
+- `_ID` is for TS-mapped tests only — `v6_*` tests do not need it
 - The `_` prefix suppresses unused-variable warnings
 - `cargo fmt` and `cargo clippy` do not touch or warn about it (verified)
 
@@ -62,7 +62,7 @@ Same as TS side:
 
 - Numbers are sequential per category, starting at `001` — must match TS numbering
 - Rust-only tests (no TS counterpart) use `v6_<rule_name>_NNN` prefix
-- Each test file MUST have a header comment listing the ID mapping:
+- Each test file has a header comment listing the ID mapping:
 
 ```rust
 //! Test ID mapping (TS → Rust):
@@ -71,9 +71,9 @@ Same as TS side:
 //!   v6_doctype_001       — Rust-only: description
 ```
 
-## Test Pattern (MANDATORY)
+## Test Pattern
 
-Tests MUST use the full lint pipeline (`html_arena` → `lint`), NOT manual DOM construction. This ensures the test input and expected output match the TS side exactly.
+Tests use the full lint pipeline (`html_arena` → `lint`), not manual DOM construction, so the test input and expected output match the TS side exactly.
 
 ```rust
 use crate::lint::{lint, LintConfig};
@@ -99,7 +99,7 @@ fn spec() -> MLMLSpec {
 
 ### Assertion requirements
 
-When a test has the same ID as a TS test, it MUST use:
+When a test has the same ID as a TS test, it uses:
 - **The same HTML input** as the TS test
 - **The same expected violations** (count, severity, message, line, col, raw, reason)
 - **Hardcoded assertion values** — no computed expectations
@@ -124,9 +124,4 @@ fn doctype_invalid_001() {
 
 ## Verification
 
-```bash
-# From crates/ directory
-cargo test -p markuplint-rules
-cargo clippy -- -D warnings
-cargo fmt --check
-```
+The full gate is in `crates/CLAUDE.md`. While iterating on one rule, `cargo test -p markuplint-rules` from `crates/` is the fast loop; run the full gate before committing.

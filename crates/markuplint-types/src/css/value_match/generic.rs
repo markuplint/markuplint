@@ -181,12 +181,10 @@ fn match_dimension(
                 return true;
             }
         }
-        Some(Token::Number(value)) if allow_zero_unitless && *value == 0.0 => {
-            // `0` is valid for <length> without a unit
-            if check_range(0.0, range) {
-                matcher.advance();
-                return true;
-            }
+        // `0` is valid for <length> without a unit
+        Some(Token::Number(value)) if allow_zero_unitless && *value == 0.0 && check_range(0.0, range) => {
+            matcher.advance();
+            return true;
         }
         _ => {}
     }
