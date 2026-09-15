@@ -28,13 +28,16 @@ The root `skills/` directory is NOT for this repository's development — it con
 - **Single file with type-checking**: `npx vitest --typecheck run <path>`
 - **NEVER use**: `npx lerna run test`, `yarn test --scope @markuplint/*`, or any other variant
 - **NEVER use**: `npx tsc --noEmit` — does not work correctly in this monorepo (no root `include`, `composite` conflicts with `--noEmit` in build mode)
+- `yarn test` gates the TypeScript workspace only. A branch carrying another toolchain has its own gate that `yarn test` does not run — see that directory's `CLAUDE.md` (e.g. `crates/CLAUDE.md`).
 - CI additionally runs cross-OS (`vitest.cross-os.config.ts` on macOS/Windows) and alternative runtimes/package managers (bun, deno, pnpm, npm) — a green local `yarn test` does not cover those paths
 
 ### Lint
 
-- **Check only**: `yarn lint-check` (no arguments) — oxlint + oxfmt (check mode) + CSpell
-- **With auto-fix**: `yarn lint` (no arguments) — oxlint `--fix` + oxfmt `--write` + CSpell + actionlint (workflow files; not part of `lint-check`)
+- **Check only**: `yarn lint-check` (no arguments) — non-destructive check
+- **With auto-fix**: `yarn lint` (no arguments) — auto-fix, plus actionlint over workflow files (actionlint is not part of `lint-check`)
+- **Which linters these scripts run differs between branches.** `package.json` `scripts.lint` is the only source of truth — never report that a check ran because another branch has it.
 - **NEVER run linters individually** (e.g., `npx oxlint ...` alone) — always use the root scripts to ensure all linters run
+- **Spell check, on branches that have a `cspell.json`**: register new spec terminology (ABNF symbols such as `DQUOTE`, `OWS`) in its `Specs` section _before_ using the term. In a worktree whose `.git` is a file rather than a directory, the CSpell step can silently pass having scanned zero files — when a lint run finishes suspiciously fast after new identifiers were added, confirm it actually scanned before pushing.
 
 ### Build
 
@@ -45,14 +48,31 @@ The root `skills/` directory is NOT for this repository's development — it con
 
 Every `test()` in rule spec files under `packages/@markuplint/rules/src/<rule-name>/` MUST have a unique `[rule-name-category-NNN]` prefix. See [`packages/@markuplint/rules/CLAUDE.md`](packages/@markuplint/rules/CLAUDE.md) for the full convention.
 
+# Branch Topology (MANDATORY)
+
+Two major lines are developed in parallel:
+
+| Branch | Role                                                                           |
+| ------ | ------------------------------------------------------------------------------ |
+| `main` | Released stable. Releases are cut here — never from `dev`.                     |
+| `dev`  | v5 line: the current stable major.                                             |
+| `v6`   | Next major. Carries a Rust workspace under `crates/` that `dev` does not have. |
+| `v4`   | v4 maintenance.                                                                |
+
+- **Merge direction is `dev` → `v6` only. NEVER merge `v6` into `dev`.**
+- Never call `dev` "the v6 branch" or vice versa. Before stating any toolchain fact — which linters run, what the test gate covers, which packages exist — read the _current branch's_ `package.json`. The two lines have already diverged on all three.
+- **Where a fact belongs.** Anything true of both lines goes in a file both lines share, worded so it stays true on both (make the condition explicit, as the spell-check bullet above does). Anything true of one line only goes in a file that exists only on that line — `crates/CLAUDE.md` for the v6 Rust workspace. Never keep divergent copies of the same paragraph on `dev` and `v6`: every `dev` → `v6` merge conflicts on it, forever.
+
 # Branch & Worktree Policy (MANDATORY)
 
-**CRITICAL: Direct commits to `dev` are BLOCKED (husky pre-commit). All work requires a feature branch.**
+**CRITICAL: Direct commits to a development integration branch (`dev`, `v6`) are BLOCKED (husky pre-commit). All work requires a topic branch.** `main` and the prerelease branches are deliberately unguarded — `lerna version` writes its release commit there.
 
 The main working directory MUST stay on `dev` at all times:
 
 - **NEVER run `git checkout <branch>`, `git switch`, or create a branch in the main working directory.**
 - All branch work — no matter how small — happens in a Claude Code–managed worktree (`claude --worktree` / the harness worktree feature). Do not create worktrees manually.
+- **Exception:** `.worktree/v6` is a long-lived worktree checked out on `v6`. It is not disposable — never remove it, and never commit to it directly.
+- **Targeting the v6 line:** the harness branches a new worktree from the repository default branch (`dev`). For v6 work, re-point it before starting — `git fetch origin v6` then `git reset --hard origin/v6` — and open the PR against `v6`.
 
 ### Working in a worktree
 
@@ -64,8 +84,8 @@ The main working directory MUST stay on `dev` at all times:
 
   A plain `yarn build` from a worktree nested inside the main checkout mis-resolves the Nx workspace root to the main checkout: it reports success while `packages/*/lib/` stays empty in the worktree (artifacts land in the main tree).
 
+- **Branch-specific setup**: `yarn install` is not always the whole setup — a branch may also need submodules or a native addon built. Before building, check the current branch for path-scoped `CLAUDE.md` files it introduces (e.g. `crates/CLAUDE.md`).
 - **Husky hooks DO run in worktrees** once `yarn install` has run (`core.hooksPath` is relative, and the install recreates `.husky/_`). Known exception: `git commit --amend` during an interactive rebase can fail hook resolution — only then is `--no-verify` acceptable, followed by a manual `yarn lint`.
-- **CSpell may silently no-op in worktrees.** When a lint run finishes suspiciously fast after adding new identifiers, verify the spell-check step actually executed before pushing.
 - **Command discipline**: run `cd` standalone (never `cd dir && cmd`), never chain commands with `&&`, never use `git -C <path>` — each command must be separate so permission prompts stay per-command.
 
 # Security
