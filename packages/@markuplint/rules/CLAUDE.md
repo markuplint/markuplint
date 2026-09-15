@@ -2,16 +2,16 @@
 
 ## Adding a New Rule (checklist — steps 2–4 have NO enforcing test; forgetting them fails silently)
 
-1. `src/<rule-name>/`: `index.ts`, `meta.ts`, `schema.json`, spec file(s), `README.md` **and** `README.ja.md` — both languages are website source and MUST stay in sync; updating only one is a recurring mistake
+1. `src/<rule-name>/`: `index.ts`, `meta.ts`, `schema.json`, spec file(s), `README.md` **and** `README.ja.md` — both languages are website source and must stay in sync; updating only one is a recurring mistake
    - `meta.ts`'s `category` must be one of the v5 9-category scheme: `syntax`, `structure`, `attributes`, `references`, `forms`, `a11y`, `style`, `maintainability`, `compat` (see the [Categories section](https://markuplint.dev/docs/migration/v4-to-v5/rules/rule-names#categories) of the website's rule-names guide for what each covers)
    - `meta.ts` should also declare `specConformance` (`sources`/`level`/`cites`) once you know the rule's governing spec and requirement strength — `level: 'must'` or `'should'` requires a non-empty `cites`. The rollout across pre-existing rules is incremental and partial by design (enforced only for rules that declare it — see `spec-conformance.spec.ts` and `@markuplint/config-presets`'s `html-standard-entries.spec.ts`), but a **new** rule should declare it from the start
 2. Register the rule in `src/index.ts` (import + registry entry)
 3. Add a `$ref` entry to `packages/@markuplint/rules/schema.json` — this file is a **manually maintained registry** (no generator produces it, despite looking generated)
 4. If the rule belongs in a preset, update `packages/@markuplint/config-presets/src/`
 
-## Test ID Convention (MANDATORY)
+## Test ID Convention
 
-Every `test()` block in rule spec files — `src/<rule-name>/**/*.spec.ts` — MUST have a unique ID prefix:
+Every `test()` block in rule spec files — `src/<rule-name>/**/*.spec.ts` — has a unique ID prefix:
 
 ```
 [rule-name-category-NNN] description
@@ -72,7 +72,7 @@ turning the incorrect example into a copy of the correct one. Apply it to `READM
 The CI website check only runs when a PR already touches `website/`, so a new rule can land with a
 broken description and detonate in someone else's PR. Run `yarn site:build` before pushing.
 
-## Assertion Convention (MANDATORY)
+## Assertion Convention
 
 When asserting reported violations in rule specs, use `toStrictEqual` with the exact violation object `{ severity, line, col, message, raw }`. Never loose or partial matchers for violation objects. (Assertions on other values — counts, fixed code strings, registry invariants — use whatever matcher fits.)
 

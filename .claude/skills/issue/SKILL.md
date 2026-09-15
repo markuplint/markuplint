@@ -60,7 +60,7 @@ Use the repository's existing Issue templates (`.github/ISSUE_TEMPLATE/`) as the
 
 ## Step 2: Ensure You Are in a Worktree
 
-**CRITICAL: NEVER work in the main working directory.**
+Do not work in the main working directory.
 
 Branch work happens in a Claude Code–managed worktree (see Branch Topology and the Branch & Worktree Policy in the root `CLAUDE.md`). If this session is not already in one, set one up via the harness worktree feature before touching any file. Branch name: `issue/<number>-<slug>` (slug from title, lowercase, hyphens, max 50 chars — the Issue number is always available at this point).
 

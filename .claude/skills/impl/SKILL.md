@@ -22,7 +22,7 @@ disable-model-invocation: true
    /code-review medium
    ```
 
-   Writing a substitute review yourself, or skipping this step because you cannot invoke it, is **forbidden**.
+   Writing a substitute review yourself, or skipping this step because you cannot invoke it, is not an option.
 6. Run the `qa-engineer` skill; fix all findings.
 7. Run the `product-manager` skill; fix all findings (includes documentation consistency — JSDoc placement, comment policy).
 8. Run `yarn lint`; fix all errors. Note that which linters this runs differs between branches — `package.json` is the source of truth, never another branch's set.
