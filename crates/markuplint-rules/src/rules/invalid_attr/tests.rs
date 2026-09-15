@@ -1909,7 +1909,11 @@ fn invalid_attr_issue_3631_005() {
     assert_eq!(result.violations[0].message, "The \"nomodule\" attribute is disallowed");
 }
 
-/// TS: `[invalid-attr-issue-3631-006]` — module with defer is not disallowed
+/// TS: `[invalid-attr-issue-3631-006]` — module with defer is disallowed
+///
+/// HTML LS §4.12.1: "Module scripts may specify the async attribute, but must not
+/// specify the defer attribute." Applies whether or not `src` is present. Matches
+/// `[no-disallowed-attr-issue-3631-006]` on the TS side.
 #[test]
 fn invalid_attr_issue_3631_006() {
     const _ID: &str = "invalid-attr-issue-3631-006";
@@ -1918,16 +1922,15 @@ fn invalid_attr_issue_3631_006() {
         "rules": { "invalid-attr": true }
     }))
     .unwrap();
-    assert_eq!(
-        lint(
-            &html_arena(r#"<script type="module" src="m.js" defer></script>"#),
-            &spec,
-            &config
-        )
-        .violations
-        .len(),
-        0
+    let result = lint(
+        &html_arena(r#"<script type="module" src="m.js" defer></script>"#),
+        &spec,
+        &config,
     );
+    assert_eq!(result.violations.len(), 1, "violations: {:#?}", result.violations);
+    assert_eq!(result.violations[0].col, 34);
+    assert_eq!(result.violations[0].message, "The \"defer\" attribute is disallowed");
+    assert_eq!(result.violations[0].raw, "defer");
 }
 
 /// TS: `[invalid-attr-issue-3631-007]` — charset requires src
@@ -2242,7 +2245,10 @@ fn invalid_attr_issue_1987() {
         0
     );
     // Invalid: values removed from spec
-    let expected_msg = "The \"as\" attribute expects either \"audioworklet\", \"fetch\", \"font\", \"image\", \"json\", \"paintworklet\", \"script\", \"serviceworker\", \"sharedworker\", \"style\", \"track\", \"worker\"";
+    // `rel="preload"` and `rel="modulepreload"` take different value sets (#3189), so the
+    // message lists the six preload values only — not the union of both conditions.
+    let expected_msg =
+        "The \"as\" attribute expects either \"fetch\", \"font\", \"image\", \"script\", \"style\", \"track\"";
     let r1 = lint(
         &html_arena(r#"<link rel="preload" as="audio" href="/audio.mp3" />"#),
         &spec,
