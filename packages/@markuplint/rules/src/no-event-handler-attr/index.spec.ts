@@ -183,21 +183,13 @@ test('[no-event-handler-attr-valid-005] "on" attribute alone is not treated as a
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-event-handler-attr-parser-003] value: ["click"] with Vue @click', async () => {
+test('[no-event-handler-attr-parser-003] value: ["click"] does not report Vue @click', async () => {
 	const { violations } = await mlRuleTest(rule, '<template><div @click="fn()"></div></template>', {
 		rule: { value: ['click'] },
 		parser: { '.*': '@markuplint/vue-parser' },
 		specs: { '.*': '@markuplint/vue-spec' },
 	});
-	expect(violations).toStrictEqual([
-		{
-			severity: 'warning',
-			line: 1,
-			col: 16,
-			raw: '@click="fn()"',
-			message: 'The "onclick" attribute is disallowed',
-		},
-	]);
+	expect(violations).toStrictEqual([]);
 });
 
 test('[no-event-handler-attr-invalid-008] value: ["click"] with regex ignore — ignore takes priority', async () => {
@@ -213,4 +205,67 @@ test('[no-event-handler-attr-invalid-008] value: ["click"] with regex ignore —
 			message: 'The "onmousedown" attribute is disallowed',
 		},
 	]);
+});
+
+test('[no-event-handler-attr-issue-4044-001] does not report Vue @click directive', async () => {
+	const { violations } = await mlRuleTest(rule, '<template><div @click="fn()"></div></template>', {
+		parser: { '.*': '@markuplint/vue-parser' },
+		specs: { '.*': '@markuplint/vue-spec' },
+	});
+	expect(violations).toStrictEqual([]);
+});
+
+test('[no-event-handler-attr-issue-4044-002] does not report Alpine.js @click directive', async () => {
+	const { violations } = await mlRuleTest(rule, '<div @click="fn()"></div>', {
+		parser: { '.*': '@markuplint/alpine-parser' },
+		specs: { '.*': '@markuplint/alpine-spec' },
+	});
+	expect(violations).toStrictEqual([]);
+});
+
+test('[no-event-handler-attr-issue-4044-003] does not report htmx hx-on:click directive', async () => {
+	const { violations } = await mlRuleTest(rule, '<div hx-on:click="fn()"></div>', {
+		specs: { '.*': '@markuplint/htmx-spec' },
+	});
+	expect(violations).toStrictEqual([]);
+});
+
+test('[no-event-handler-attr-issue-4044-004] does not report Svelte on:click directive', async () => {
+	const { violations } = await mlRuleTest(rule, '<div on:click={fn}></div>', {
+		parser: { '.*': '@markuplint/svelte-parser' },
+		specs: { '.*': '@markuplint/svelte-spec' },
+	});
+	expect(violations).toStrictEqual([]);
+});
+
+test('[no-event-handler-attr-issue-4044-005] still reports a literal onclick attribute in a Vue template', async () => {
+	const { violations } = await mlRuleTest(rule, '<template><div onclick="fn()"></div></template>', {
+		parser: { '.*': '@markuplint/vue-parser' },
+		specs: { '.*': '@markuplint/vue-spec' },
+	});
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 16,
+			raw: 'onclick="fn()"',
+			message: 'The "onclick" attribute is disallowed',
+		},
+	]);
+});
+
+test('[no-event-handler-attr-issue-4044-006] does not report Vue v-on:click directive (long form)', async () => {
+	const { violations } = await mlRuleTest(rule, '<template><div v-on:click="fn()"></div></template>', {
+		parser: { '.*': '@markuplint/vue-parser' },
+		specs: { '.*': '@markuplint/vue-spec' },
+	});
+	expect(violations).toStrictEqual([]);
+});
+
+test('[no-event-handler-attr-issue-4044-007] does not report Alpine.js x-on:click directive (long form)', async () => {
+	const { violations } = await mlRuleTest(rule, '<div x-on:click="fn()"></div>', {
+		parser: { '.*': '@markuplint/alpine-parser' },
+		specs: { '.*': '@markuplint/alpine-spec' },
+	});
+	expect(violations).toStrictEqual([]);
 });

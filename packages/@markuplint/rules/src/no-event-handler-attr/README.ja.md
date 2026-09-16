@@ -88,4 +88,13 @@ description: イベントハンドラ属性を指定すると警告します。
 
 上記の例では `onclick` が `ignore` で除外されるため、`onmousedown` のみ報告されます。
 
+### フレームワークのディレクティブ属性
+
+Vue の `@click`、Alpine.js の `x-on:click`、htmx の `hx-on:click`、Svelte の `on:click` のようなイベントバインディングのディレクティブは、`onXxx` という名前に解決される場合でも報告されません。各フレームワークの spec パッケージがこれらをディレクティブ属性としてマークしており、このルールはそのようにマークされた属性をすべてスキップします。
+
+```html
+<!-- 報告されない: リテラルなHTML属性ではなくVueのディレクティブのため -->
+<button @click="doSomething">Click</button>
+```
+
 <!-- textlint-enable ja-technical-writing/ja-no-mixed-period -->
