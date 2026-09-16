@@ -230,10 +230,7 @@ fn has_owned_label(arena: &DomArena, node_id: NodeId, _tag: &str) -> bool {
 
     // Implicit association: an ancestor `<label>` wrapping this element.
     let mut current = node_id;
-    loop {
-        let Some(node) = arena.get(current) else {
-            break;
-        };
+    while let Some(node) = arena.get(current) {
         let Some(base) = node.base() else {
             break;
         };

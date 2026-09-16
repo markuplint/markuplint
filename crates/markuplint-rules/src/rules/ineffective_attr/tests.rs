@@ -2,7 +2,7 @@
 //!
 //! Test ID mapping (TS → Rust):
 //!   ineffective-attr-invalid-001  → ineffective_attr_invalid_001
-//!   ineffective-attr-invalid-002  → ineffective_attr_invalid_002
+//!   ineffective-attr-invalid-002  — removed on both sides (see the note below)
 //!   ineffective-attr-fix-*        — SKIP: auto-fix not implemented in Rust
 
 use crate::lint::{LintConfig, lint};
@@ -48,24 +48,8 @@ fn ineffective_attr_invalid_001() {
     assert_eq!(result.violations[0].raw, "defer");
 }
 
-/// TS: `[ineffective-attr-invalid-002]` — script[src][type=module][defer]
-#[test]
-fn ineffective_attr_invalid_002() {
-    const _ID: &str = "ineffective-attr-invalid-002";
-    let arena = html_arena(r#"<script type="module" src="path/to" defer></script>"#);
-    let spec = spec();
-    let config: LintConfig = serde_json::from_value(serde_json::json!({
-        "rules": { "ineffective-attr": true }
-    }))
-    .unwrap();
-    let result = lint(&arena, &spec, &config);
-    assert_eq!(result.violations.len(), 1);
-    assert_eq!(result.violations[0].severity, Severity::Warning);
-    assert_eq!(result.violations[0].line, 1);
-    assert_eq!(result.violations[0].col, 37);
-    assert_eq!(
-        result.violations[0].message,
-        "The \"defer\" attribute is ineffective. It doesn't need the attribute"
-    );
-    assert_eq!(result.violations[0].raw, "defer");
-}
+// `ineffective-attr-invalid-002` (defer on type=module) was removed here for the same
+// reason as on the TS side: HTML LS §4.12.1 ("Module scripts ... must not specify the
+// defer attribute") landed in `spec.script.jsonc`, so module+defer is disallowed rather
+// than ineffective, and `invalid_attr_issue_3631_006` covers it. The numbering gap is
+// intentional; do not renumber later tests.
