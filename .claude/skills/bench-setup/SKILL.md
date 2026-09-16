@@ -30,6 +30,9 @@ coverage work.
   ```
   git submodule update --init tests/external/validator
   ```
+  This path is deliberately narrow — it is the only submodule the bench needs. A branch may carry
+  others for unrelated suites (the v6 line vendors `html5lib-tests` for the Rust parser), so do not
+  widen it to a bare `git submodule update --init` and assume the result is bench setup.
 
 ## Fresh-clone bootstrap
 
