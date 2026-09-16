@@ -91,12 +91,14 @@ Quote the exact sentence verbatim into the issue / PR /
 
 ## Step 5: Decide and act
 
-For a `nu-only` fixture, the spec verdict gives a binary action:
+For a `nu-only` fixture, the spec verdict gives a binary action.
+
+Where a fix lands depends on the branch: the paths named throughout this skill (`packages/@markuplint/types`, `packages/@markuplint/html-parser`, …) are the `dev` line. On the v6 line the same behaviour may be implemented in the Rust workspace instead — locate the code before editing, and follow `crates/markuplint-rules/CLAUDE.md` for anything under `crates/`.
 
 | Spec on the markup | Conclusion | Action |
 | --- | --- | --- |
 | **Forbidden (HTML LS / ARIA / URL LS)** | nu correct, markuplint has a coverage gap. | Add or extend a markuplint rule. Open an Issue if the work is non-trivial. After fix, `yarn bench:update:ml` — fixture should flip to `match-error`. |
-| **Forbidden, but spec is outside markuplint's reference scope** (e.g. WICG draft, vendor extension) | nu is enforcing a spec that markuplint deliberately does not track. Open an Issue for future coverage AND record the messages in `excluded-ids.json` so the bench can focus on actionable HTML LS gaps. | Issue + `excluded-ids.json` pattern. Reason field must explicitly note `deferred-WICG / deferred-<spec>` so future readers can distinguish from regular nu-over. Tracking Issue # MUST be in the reason. |
+| **Forbidden, but spec is outside markuplint's reference scope** (e.g. WICG draft, vendor extension) | nu is enforcing a spec that markuplint deliberately does not track. Open an Issue for future coverage AND record the messages in `excluded-ids.json` so the bench can focus on actionable HTML LS gaps. | Issue + `excluded-ids.json` pattern. Reason field must explicitly note `deferred-WICG / deferred-<spec>` so future readers can distinguish from regular nu-over. The tracking Issue # goes in the reason. |
 | **Permitted by HTML LS** | nu over-detecting. | Record in `excluded-ids.json` (per-ID or pattern; see below). After edit, `yarn bench:compare` — fixture should flip to `nu-over`. |
 | **Ambiguous / under discussion** | Spec issue or PR ongoing. | Note the spec-tracker URL in `snapshots/diff/summary.md` follow-up. Do not silently close. |
 
@@ -164,7 +166,7 @@ flicker, not a real signal.
 
 When the verdict points at "open or extend an Issue" and the Issue
 body cites specific repository assets — file paths, package names,
-spec data files, helper libraries — every reference MUST be verified
+spec data files, helper libraries — every reference must be verified
 to exist in the current tree before the Issue is filed. Implementers
 read the Issue first; a wrong path sends them to a dead end.
 

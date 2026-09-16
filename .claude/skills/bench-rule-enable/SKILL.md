@@ -39,7 +39,7 @@ The bench is the spec-conformance comparison surface. A rule belongs
 in `bench/config.ts` only when its assertions map onto a
 nu-validator capability. Use this checklist:
 
-1. The rule is registered in `packages/@markuplint/rules/src/index.ts`.
+1. The rule is registered in `packages/@markuplint/rules/src/index.ts`. On the v6 line, confirm where the rule actually lives before editing anything: that branch carries a second rule implementation under `crates/markuplint-rules`, governed by `crates/markuplint-rules/CLAUDE.md`.
 2. The rule reports diagnostics with severity `'error'` (or you
    intend to override severity — see the next section).
 3. Either:

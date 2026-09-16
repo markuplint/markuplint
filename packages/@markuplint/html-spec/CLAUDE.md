@@ -4,13 +4,13 @@ Constraints and judgment rules for editing spec data. None of this is derivable 
 
 ## Mandatory procedure
 
-- `index.json` is generated — NEVER edit it directly. Edit `src/*.jsonc`, then run `yarn up:gen` to regenerate. Skipping `up:gen` ships stale data.
+- `index.json` is generated — do not edit it directly. Edit `src/*.jsonc`, then run `yarn up:gen` to regenerate. Skipping `up:gen` ships stale data.
 - Idempotency check when modifying `src/spec.*.jsonc`: stage the spec files and `index.json`, run `yarn up:gen` again, and confirm the attributes you changed do NOT reappear in the diff. If they do, the spec file and the generator produce different values — investigate before committing. Then discard the regenerated `index.json` (`git checkout`) and commit the staged version.
 - Run the full `yarn test` suite before committing — spec data changes propagate to `@markuplint/rules` and `@markuplint/ml-spec` tests.
 
 ## Editing hazards
 
-- `index.json` contains WAI-ARIA 1.1 / 1.2 / 1.3 role definitions, so many strings appear three times. NEVER use `replace_all` on it — always target the specific version block.
+- `index.json` contains WAI-ARIA 1.1 / 1.2 / 1.3 role definitions, so many strings appear three times. Do not use `replace_all` on it; target the specific version block.
 
 ## Data precedence (manual spec vs MDN)
 
@@ -25,7 +25,7 @@ Constraints and judgment rules for editing spec data. None of this is derivable 
 ## ARIA version placement
 
 - Top-level `aria` = default/latest; mutable — keep it matching the current W3C Recommendation ("ARIA in HTML", ARIA 1.2 based).
-- `"1.1"` key = frozen snapshot — NEVER add new roles to it.
+- `"1.1"` key = frozen snapshot — do not add new roles to it.
 - ARIA 1.3 draft-only role (not in the W3C Rec) → add to top-level AND create a `"1.2"` key freezing the current 1.2 list. Role already in the W3C Rec → top-level only.
 - Keep `permittedRoles` arrays in alphabetical order.
 

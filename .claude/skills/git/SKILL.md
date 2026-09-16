@@ -9,41 +9,28 @@ description: >
   commit, git commit, stage, staging, commit message, conventional commits.
 ---
 
-# Branch guard (MUST RUN FIRST)
+# Branch guard (run first)
 
-Before any commit, check the current branch:
+Check the current branch before any commit:
 
 ```bash
 git branch --show-current
 ```
 
-- If on `dev` or `main`: **STOP immediately.** Direct commits to `dev` are blocked by husky. Branch work happens in a Claude Code–managed worktree (see the Branch & Worktree Policy in the root `CLAUDE.md`) — never create a branch in the main working directory.
-- On a topic branch: proceed.
+On `dev`, `v6`, or `main`, stop. `dev` and `v6` are rejected by husky; `main` is unguarded only so `lerna version` can write release commits. Branch work happens in a Claude Code–managed worktree (Branch Topology and Branch & Worktree Policy in the root `CLAUDE.md`).
+
+On a topic branch, proceed. The verification gates below differ between the two lines, so tell them apart from the working tree (a `crates/` directory means the v6 line), not the branch name.
 
 # Commit creation
 
-- When asked to "commit":
-  - **CRITICAL: ALWAYS start by checking `git status` to see current state**
-  - **CRITICAL: NEVER trust previous state or memory - always verify current staging area**
-  1. If files are already staged:
-     - **CRITICAL: NEVER use `git add` or `git restore` when staged files exist**
-     - **CRITICAL: NEVER modify the staging area in any way**
-     - Check staged files using `git diff --staged` and create a commit message using _only_ the staged files
-     - Execute `git commit` directly with the message (user will approve as appropriate)
-     - The user has already prepared the staging area - respect their decision completely
-  2. If no files are staged:
-     - Check the differences using `git status`
-     - Stage files sequentially based on the following commit granularity before committing:
-       - Separate commits by package
-       - Commit dependencies first (if dependency order is unclear, check using `npx lerna list --graph`)
-- **AFTER EACH COMMIT:**
-  - **CRITICAL: DO NOT automatically proceed to the next commit**
-  - **CRITICAL: DO NOT make assumptions about what to do next**
-  - **CRITICAL: DO NOT trust your memory of previous state**
-  - Stop and check the current state using `git status` and `git diff`
-  - Return to the beginning of this decision process (check if files are staged or not)
-  - Wait for user confirmation or new instructions before proceeding
-- If the OS, application settings, or context suggest a language other than English is being used, provide a translation and explanation of the commit message in that language immediately before executing the commit command.
+Start every commit from a fresh `git status` — the staging area may have changed since you last looked.
+
+- If files are already staged, the user prepared that set. Do not `git add`, `git restore`, or otherwise touch the staging area; read `git diff --staged` and write the message from those files alone, then run `git commit` (the user approves the command).
+- If nothing is staged, stage by the granularity below — one commit per package, dependencies first (`npx lerna list --graph` when the order is unclear).
+
+After each commit, stop: re-read `git status` and `git diff`, and wait for the user before starting the next one. Do not carry forward assumptions about what remains.
+
+If the OS, application settings, or context suggest a language other than English is being used, give a translation and explanation of the commit message in that language immediately before running the commit command.
 
 # Pre-commit content check
 
@@ -74,7 +61,9 @@ When committing changes that span multiple packages, always commit **from leaves
 - Within the same tier, order does not matter
 - Root config changes (`.oxlintrc.json`, `.oxfmtrc.json`, `tsconfig.base.json`, CI) should be committed before any package changes
 - Single-package changes do not need ordering -- just commit that package
+- **The package set differs between the two lines** (the v6 line drops `htmx-parser` and `rule-textlint`, and adds `core` — the napi addon that `markuplint` depends on, so commit it before Tier 11). The table above describes the `dev` line; on any branch, `npx lerna list --graph` is the source of truth
 - If unsure, verify with `npx lerna list --graph`
+- `crates/*` changes are outside the Lerna graph. Commit them before the packages that consume them (`core`, then `markuplint`)
 
 # Commit message format
 
@@ -96,6 +85,7 @@ When committing changes that span multiple packages, always commit **from leaves
   - Scopes are dynamically generated from Lerna packages (see `.commitlintrc.js`)
     - Package names have `-markuplint` / `markuplint-` prefixes stripped
     - Additional scopes:
+      - `crates` — the Rust workspace on the v6 line. Its crates are not Lerna packages, and the per-crate names would collide with the JS packages (`core`, `rules`, `types`, …), so they share this one scope
       - `release`
       - `deps`
       - `changelog`
@@ -108,9 +98,9 @@ When committing changes that span multiple packages, always commit **from leaves
 
 # Commit message safety guidelines
 
-- For breaking changes or complex commit messages, ALWAYS use heredoc format (see below)
+- For breaking changes or complex commit messages, use heredoc format (see below)
 - For simple, single-line commits, use single quotes (')
-- NEVER use multiple -m flags for breaking changes (causes commitlint parse errors)
+- Do not use multiple -m flags for breaking changes (causes commitlint parse errors)
 
 ## Heredoc Format (REQUIRED for Breaking Changes)
 
@@ -163,3 +153,19 @@ yarn lint
 
 Spec data propagates to `@markuplint/rules` and `@markuplint/ml-spec` tests.
 Package-level tests alone will miss cross-package regressions.
+
+# Pre-commit verification for `crates/` changes (v6 line)
+
+`yarn test`, `yarn lint` and lint-staged cover the TypeScript workspace only — nothing in
+them touches Rust, so a staged `crates/` change can look clean and still break CI
+(`.github/workflows/rust.yml`). When the diff includes `crates/`, run all three from `crates/`
+before committing:
+
+```bash
+cargo fmt --check
+cargo clippy --locked -- -D warnings
+cargo test --locked
+```
+
+`cargo clippy` runs with `-D warnings` in CI, so a warning is a failure. See `crates/CLAUDE.md`
+for the rest of the v6 workspace's constraints.
