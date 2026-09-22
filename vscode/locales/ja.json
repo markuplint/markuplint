@@ -13,6 +13,9 @@
 	"sentences": {
 		"since markuplint could not be found in the node_modules of the workspace, this use the version (v{0}) installed in vs code extension": "ワークスペースのnode_modulesにmarkuplintが発見できなかったためVS Code拡張にインストールされているバージョン(v{0})を利用します",
 		"your local markuplint is incompatible with node.js 22+ due to import assertion syntax. the bundled version (v{0}) is used instead. to use your local version, upgrade to markuplint@4.10.0 or later. see: https://github.com/markuplint/markuplint/issues/2837": "ローカルのmarkuplintはimport assertion構文のためNode.js 22+と互換性がありません。代わりにバンドル版(v{0})を使用しています。ローカル版を使用するにはmarkuplint@4.10.0以降にアップグレードしてください。詳細: https://github.com/markuplint/markuplint/issues/2837",
-		"[suppressed] this warning is suppressed but should be fixed:": "[抑制中] この警告は抑制されていますが、本来は修正すべき問題です:"
+		"[suppressed] this warning is suppressed but should be fixed:": "[抑制中] この警告は抑制されていますが、本来は修正すべき問題です:",
+		"parser not found. you probably need to install {0} for documents of language {1}.": "パーサーが見つかりません。言語 {1} の文書には {0} をインストールする必要があります。",
+		"the markuplint bundled with the extension (v{0}) cannot load parsers installed in your workspace. install markuplint and {1} in {2}, then run \"markuplint: restart language server\" so the extension can use the local installation.": "拡張機能にバンドルされたmarkuplint(v{0})はワークスペースにインストールされたパーサーを読み込めません。拡張機能がローカル版を使えるように、{2} にmarkuplintと{1}をインストールしてから「Markuplint: Restart Language Server」コマンドを実行してください。",
+		"the markuplint bundled with the extension (v{0}) cannot load {1} from {2} because the markuplint installed there is incompatible with node.js 22+. upgrade it to markuplint@4.10.0 or later, then run \"markuplint: restart language server\".": "拡張機能にバンドルされたmarkuplint(v{0})は {2} の{1}を読み込めません。そこにインストールされたmarkuplintがNode.js 22+と互換性がないためです。markuplint@4.10.0以降にアップグレードしてから「Markuplint: Restart Language Server」コマンドを実行してください。"
 	}
 }

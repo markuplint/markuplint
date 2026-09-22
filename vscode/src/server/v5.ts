@@ -1,6 +1,5 @@
 import type { SendDiagnostics } from './document-events.js';
 import type { Config, Log } from '../types.js';
-import type { WorkingDirectoryEntry } from '../utils/resolve-working-directory.js';
 import type { ConfigSet } from '@markuplint/file-resolver';
 import type { Violation } from '@markuplint/ml-config';
 import type { ARIAVersion } from '@markuplint/ml-spec';
@@ -14,7 +13,6 @@ import { isFatalError } from 'markuplint/suppressions';
 
 import { t } from '../i18n.js';
 import { getFilePath } from '../utils/get-file-path.js';
-import { resolveWorkingDirectory } from '../utils/resolve-working-directory.js';
 
 import { createQuickFixActions, createFixAllAction } from './code-actions.js';
 import { convertDiagnostics } from './convert-diagnostics.js';
@@ -59,8 +57,7 @@ export function getFixState(uri: string): FixState | undefined {
  * @param diagnosticsLog - Logger for diagnostic-specific messages
  * @param sendDiagnostics - Callback to publish diagnostics to the client
  * @param notFoundParserError - Callback invoked when a parser is not found
- * @param workingDirectories - Optional list of configured working directories
- * @param workspaceFolders - Optional list of workspace folder paths
+ * @param workspace - The working directory the document belongs to; the base for config discovery
  */
 export async function onDidOpen(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -74,8 +71,7 @@ export async function onDidOpen(
 	diagnosticsLog: Log,
 	sendDiagnostics: SendDiagnostics,
 	notFoundParserError: (e: unknown) => void,
-	workingDirectories?: readonly WorkingDirectoryEntry[],
-	workspaceFolders?: readonly string[],
+	workspace: string,
 ) {
 	moduleLog = log;
 	const key = document.uri;
@@ -89,11 +85,6 @@ export async function onDidOpen(
 	log(`${filePath.dirname}/${filePath.basename}`, 'debug');
 
 	const absoluteFilePath = `${filePath.dirname}/${filePath.basename}`;
-	const resolved = resolveWorkingDirectory(absoluteFilePath, workspaceFolders ?? [], workingDirectories);
-	const workspace = resolved?.directory ?? filePath.dirname;
-	if (resolved) {
-		log(`Resolved working directory: ${workspace} (for ${filePath.basename})`, 'debug');
-	}
 
 	const sourceCode = document.getText();
 	// `name` must be the workspace-relative path (not just the basename), or
