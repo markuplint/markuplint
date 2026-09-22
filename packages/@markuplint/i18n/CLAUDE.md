@@ -3,7 +3,7 @@
 Constraints not derivable from code:
 
 - `$schema.json` is maintained **by hand** and uses `additionalProperties: false`.
-  Every keyword or sentence added to a locale file MUST also be added to
+  Every keyword or sentence added to a locale file must also be added to
   `$schema.json`, or the locale fails schema validation. Keep the files in sync.
 - `en.json` is intentionally minimal: the English sentence key itself serves as
   the template, so `en.json` only carries entries that need capitalization or

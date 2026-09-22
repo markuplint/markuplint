@@ -1,5 +1,5 @@
-import type { Module } from './get-module.js';
-import type { LangConfigs, Log } from '../types.js';
+import type { Module, ModuleResolver } from './get-module.js';
+import type { Config, LangConfigs, Log } from '../types.js';
 import type { WorkingDirectoryEntry } from '../utils/resolve-working-directory.js';
 import type {
 	CodeAction,
@@ -9,11 +9,15 @@ import type {
 } from 'vscode-languageserver/node.js';
 import type { TextDocument } from 'vscode-languageserver-textdocument';
 
+import { isFatalError } from 'markuplint/suppressions';
 import { satisfies, lt, gte } from 'semver';
 import { MarkupKind } from 'vscode-languageserver/node.js';
 
 import { t } from '../i18n.js';
+import { getFilePath } from '../utils/get-file-path.js';
+import { resolveWorkingDirectory } from '../utils/resolve-working-directory.js';
 
+import { createParserErrorHandler } from './parser-load-failure.js';
 import * as v2 from './v2.js';
 import * as v3 from './v3.js';
 import * as v4 from './v4.js';
@@ -31,8 +35,8 @@ export type SendDiagnostics = (
  * Options for creating the document event handlers.
  */
 export type EventHandlerOptions = {
-	/** The resolved markuplint module (local or bundled) */
-	mod: Module;
+	/** Loads the markuplint module for a document's working directory */
+	resolveModule: ModuleResolver;
 	/** The user's locale (e.g. `"en"`, `"ja"`) */
 	locale: string;
 	/** Per-language configuration from VS Code settings */
@@ -45,25 +49,139 @@ export type EventHandlerOptions = {
 	diagnosticsLog: Log;
 	errorLog: Log;
 	sendDiagnostics: SendDiagnostics;
-	initUI: () => void;
+	/**
+	 * Called on every document open with the module that document is linted with.
+	 * The status bar therefore reflects the most recently opened document, not the active editor.
+	 */
+	reportStatus: (mod: Module) => void;
 	/** Path to the git binary, from VS Code's `git.path` setting. */
 	gitPath?: string;
 };
 
 /**
- * Creates version-aware event handlers for document open, change, and hover events.
+ * Determines the working directory a document belongs to.
  *
- * Dispatches to the appropriate version handler (v2, v3, or v4) based on the
- * resolved markuplint module version.
+ * Both config discovery and markuplint module resolution are anchored here, so the two never
+ * disagree about which installation governs the document.
  *
- * @param options - Configuration including the markuplint module, locale, and settings
- * @returns An object containing `onDidOpen`, `onDidChangeContent`, and `onHover` handlers
+ * @param document - The text document
+ * @param workspaceFolders - Absolute paths of VS Code workspace folders
+ * @param workingDirectories - User-configured working directories
+ * @param log - Logger for general messages
+ * @returns The matched working directory, or the document's own directory when nothing matches
+ */
+export function resolveDocumentWorkspace(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	document: TextDocument,
+	workspaceFolders: readonly string[],
+	workingDirectories: readonly WorkingDirectoryEntry[] | undefined,
+	log: Log,
+): string {
+	const filePath = getFilePath(document.uri, document.languageId);
+	const absoluteFilePath = `${filePath.dirname}/${filePath.basename}`;
+	const resolved = resolveWorkingDirectory(absoluteFilePath, workspaceFolders, workingDirectories);
+	const workspace = resolved?.directory ?? filePath.dirname;
+	if (resolved) {
+		log(`Resolved working directory: ${workspace} (for ${filePath.basename})`, 'debug');
+	}
+	return workspace;
+}
+
+/**
+ * Creates version-aware event handlers for document open, change, code action, and hover events.
+ *
+ * Each document is linted with the markuplint module resolved from its own working directory,
+ * and dispatched to the handler (v2, v3, v4, or v5) matching that module's version.
+ *
+ * @param options - Configuration including the module resolver, locale, and settings
+ * @returns An object containing `onDidOpen`, `onDidChangeContent`, `onCodeAction`, and `onHover` handlers
  */
 export function createEventHandlers(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	options: EventHandlerOptions,
 ) {
-	let uiInitialized = false;
+	const documentModules = new Map<string, Module>();
+
+	function parserErrorHandler(mod: Module, languageId: string) {
+		return createParserErrorHandler(
+			{
+				languageId,
+				isLocalModule: mod.isLocalModule,
+				version: mod.version,
+				workspace: mod.workspace,
+				fallbackReason: mod.fallbackReason,
+			},
+			options.errorLog,
+		);
+	}
+
+	function dispatchOpen(
+		mod: Module,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		document: TextDocument,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		langConfig: Config,
+		workspace: string,
+	) {
+		const onError = parserErrorHandler(mod, document.languageId);
+
+		if (satisfies(mod.version, '2.x')) {
+			void v2.onDidOpen(
+				document,
+				mod.markuplint.MLEngine,
+				langConfig,
+				options.locale,
+				options.sendDiagnostics,
+				onError,
+				workspace,
+				options.log,
+			);
+			return;
+		}
+
+		if (satisfies(mod.version, '3.x')) {
+			void v3.onDidOpen(
+				document,
+				mod.markuplint.MLEngine,
+				langConfig,
+				options.locale,
+				options.log,
+				options.diagnosticsLog,
+				options.sendDiagnostics,
+				onError,
+				workspace,
+			);
+			return;
+		}
+
+		if (satisfies(mod.version, '4.x')) {
+			void v4.onDidOpen(
+				document,
+				mod.markuplint.MLEngine,
+				langConfig,
+				options.locale,
+				options.log,
+				options.diagnosticsLog,
+				options.sendDiagnostics,
+				onError,
+				workspace,
+			);
+			return;
+		}
+
+		// v5+
+		void v5.onDidOpen(
+			document,
+			mod.markuplint.MLEngine,
+			langConfig,
+			options.locale,
+			options.log,
+			options.diagnosticsLog,
+			options.sendDiagnostics,
+			onError,
+			workspace,
+		);
+	}
 
 	return {
 		onDidOpen(
@@ -80,113 +198,74 @@ export function createEventHandlers(
 
 			options.log(`Evaluate ${document.uri} from languageId:${languageId}`, 'info');
 
-			if (!uiInitialized) {
-				options.initUI();
-				uiInitialized = true;
-			}
-
-			if (satisfies(options.mod.version, '2.x')) {
-				void v2.onDidOpen(
-					document,
-					options.mod.markuplint.MLEngine,
-					langConfig,
-					options.locale,
-					options.sendDiagnostics,
-					notFoundParserError(languageId, options.errorLog),
-					options.workingDirectories,
-					options.workspaceFolders,
-					options.log,
-				);
-				return;
-			}
-
-			if (satisfies(options.mod.version, '3.x')) {
-				void v3.onDidOpen(
-					document,
-					options.mod.markuplint.MLEngine,
-					langConfig,
-					options.locale,
-					options.log,
-					options.diagnosticsLog,
-					options.sendDiagnostics,
-					notFoundParserError(languageId, options.errorLog),
-					options.workingDirectories,
-					options.workspaceFolders,
-				);
-				return;
-			}
-
-			if (satisfies(options.mod.version, '4.x')) {
-				void v4.onDidOpen(
-					document,
-					options.mod.markuplint.MLEngine,
-					langConfig,
-					options.locale,
-					options.log,
-					options.diagnosticsLog,
-					options.sendDiagnostics,
-					notFoundParserError(languageId, options.errorLog),
-					options.workingDirectories,
-					options.workspaceFolders,
-				);
-				return;
-			}
-
-			// v5+
-			void v5.onDidOpen(
+			const workspace = resolveDocumentWorkspace(
 				document,
-				options.mod.markuplint.MLEngine,
-				langConfig,
-				options.locale,
-				options.log,
-				options.diagnosticsLog,
-				options.sendDiagnostics,
-				notFoundParserError(languageId, options.errorLog),
-				options.workingDirectories,
 				options.workspaceFolders,
+				options.workingDirectories,
+				options.log,
 			);
+
+			void (async () => {
+				const mod = documentModules.get(document.uri) ?? (await options.resolveModule(workspace));
+				// Recorded before the engine exists so change events arriving during the
+				// asynchronous engine setup are routed to the same version handler.
+				documentModules.set(document.uri, mod);
+				options.reportStatus(mod);
+				dispatchOpen(mod, document, langConfig, workspace);
+			})().catch((error: unknown) => {
+				if (isFatalError(error)) {
+					throw error;
+				}
+				options.errorLog(`Failed to load markuplint for ${workspace}: ${error}`);
+			});
 		},
 
 		onDidChangeContent(
 			// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 			document: TextDocument,
 		) {
-			const languageId = document.languageId;
-			const langConfig = options.langConfigs[languageId] ?? null;
-
-			if (!langConfig?.enable) {
+			const mod = documentModules.get(document.uri);
+			if (!mod) {
 				return;
 			}
 
-			if (satisfies(options.mod.version, '2.x')) {
-				v2.onDidChangeContent(document, notFoundParserError(languageId, options.errorLog));
+			const onError = parserErrorHandler(mod, document.languageId);
+
+			if (satisfies(mod.version, '2.x')) {
+				v2.onDidChangeContent(document, onError);
 				return;
 			}
 
-			if (satisfies(options.mod.version, '3.x')) {
-				v3.onDidChangeContent(document, options.log, notFoundParserError(languageId, options.errorLog));
+			if (satisfies(mod.version, '3.x')) {
+				v3.onDidChangeContent(document, options.log, onError);
 				return;
 			}
 
-			if (satisfies(options.mod.version, '4.x')) {
-				v4.onDidChangeContent(document, options.log, notFoundParserError(languageId, options.errorLog));
+			if (satisfies(mod.version, '4.x')) {
+				v4.onDidChangeContent(document, options.log, onError);
 				return;
 			}
 
 			// v5+
-			v5.onDidChangeContent(document, options.log, notFoundParserError(languageId, options.errorLog));
+			v5.onDidChangeContent(document, options.log, onError);
 		},
 
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		onCodeAction(params: CodeActionParams): CodeAction[] {
+			const uri = params.textDocument.uri;
+			const mod = documentModules.get(uri);
+			if (!mod) {
+				options.log(`Code Actions skipped: no module for ${uri}`, 'debug');
+				return [];
+			}
 			// Code Actions require v5.0.0+ (Violation.fix data + lint event fixSummary)
 			// Use '5.0.0-0' to include alpha/beta prereleases
-			if (!gte(options.mod.version, '5.0.0-0')) {
-				options.log(`Code Actions skipped: markuplint ${options.mod.version} < 5.0.0`, 'debug');
+			if (!gte(mod.version, '5.0.0-0')) {
+				options.log(`Code Actions skipped: markuplint ${mod.version} < 5.0.0`, 'debug');
 				return [];
 			}
 			const actions = v5.onCodeAction(params);
-			options.log(`Code Actions: ${actions.length} for ${params.textDocument.uri}`, 'debug');
+			options.log(`Code Actions: ${actions.length} for ${uri}`, 'debug');
 			return actions;
 		},
 
@@ -200,10 +279,15 @@ export function createEventHandlers(
 				return;
 			}
 
-			const ariaVersion =
-				options.langConfigs['html']?.hover.accessibility.ariaVersion ?? options.mod.ariaRecommendedVersion;
+			const mod = documentModules.get(params.textDocument.uri);
+			if (!mod) {
+				return;
+			}
 
-			if (lt(options.mod.version, '4.0.0')) {
+			const ariaVersion =
+				options.langConfigs['html']?.hover.accessibility.ariaVersion ?? mod.ariaRecommendedVersion;
+
+			if (lt(mod.version, '4.0.0')) {
 				const node = v3.getNodeWithAccessibilityProps(params.textDocument, params.position, ariaVersion);
 
 				if (!node) {
@@ -226,7 +310,7 @@ export function createEventHandlers(
 				};
 			}
 
-			const aria = satisfies(options.mod.version, '4.x')
+			const aria = satisfies(mod.version, '4.x')
 				? await v4.getNodeWithAccessibilityProps(params.textDocument, params.position, ariaVersion)
 				: await v5.getNodeWithAccessibilityProps(params.textDocument, params.position, ariaVersion);
 			if (!aria) {
@@ -251,19 +335,5 @@ export function createEventHandlers(
 				},
 			};
 		},
-	};
-}
-
-function notFoundParserError(languageId: string, errorLog: Log) {
-	return (e: unknown) => {
-		if (e instanceof Error) {
-			const { groups } = /Cannot find module.+(?<parser>@markuplint\/[a-z]+-parser)/.exec(e.message) || {};
-			const parser = groups?.parser;
-			errorLog(
-				`Parser not found. You probably need to install ${parser} because it detected languageId: ${languageId}.`,
-			);
-			return;
-		}
-		throw e;
 	};
 }

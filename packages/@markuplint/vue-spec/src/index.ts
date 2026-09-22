@@ -58,6 +58,7 @@ const spec: ExtendedSpec = {
 		{
 			pattern: '^(?:v-on:|@)([^.]+)(?:\\..+)?$',
 			potentialName: 'on$1',
+			isDirective: true,
 			isDynamicValue: true,
 		},
 		// v-model (with optional modifiers)

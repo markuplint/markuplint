@@ -86,3 +86,12 @@ The `ignore` option excludes specific attributes by their **full attribute name*
 ```
 
 In the example above, `onclick` is excluded by `ignore`, so only `onmousedown` is reported.
+
+### Framework directives
+
+Event-binding directives such as Vue's `@click`, Alpine.js's `x-on:click`, htmx's `hx-on:click`, and Svelte's `on:click` are not reported, even though they resolve to an `onXxx` name. Each framework's spec package marks them as directive attributes, and this rule skips any attribute so marked.
+
+```html
+<!-- Not reported: a Vue directive, not a literal HTML attribute -->
+<button @click="doSomething">Click</button>
+```
