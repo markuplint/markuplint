@@ -79,7 +79,7 @@
 				},
 				"markuplint.workingDirectories": {
 					"type": "array",
-					"markdownDescription": "Specifies working directories for markuplint config resolution. Useful for **monorepos** where each sub-package has its own `.markuplintrc`.\n\nExamples:\n- `[\"./client\", \"./server\"]` — explicit directories\n- `[{ \"pattern\": \"./packages/*/\" }]` — glob pattern\n- `[{ \"mode\": \"auto\" }]` — auto-detect from `package.json` / `.markuplintrc`",
+					"markdownDescription": "Specifies working directories for markuplint config resolution. Useful for **monorepos** where each sub-package has its own `.markuplintrc`. The `markuplint` package (and the parsers installed with it) is also resolved from the working directory.\n\nExamples:\n- `[\"./client\", \"./server\"]` — explicit directories\n- `[{ \"pattern\": \"./packages/*/\" }]` — glob pattern\n- `[{ \"mode\": \"auto\" }]` — auto-detect from `package.json` / `.markuplintrc`",
 					"items": {
 						"anyOf": [
 							{

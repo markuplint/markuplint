@@ -11,14 +11,13 @@ import {
 } from 'vscode-languageserver/node.js';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 
-import { IMPORT_ASSERTION_COMPAT_WARNING, NO_INSTALL_WARNING } from '../const.js';
-import { t } from '../i18n.js';
 import { errorToPopup, logToDiagnosticsChannel, logToPrimaryChannel, status, warningToPopup } from '../lsp.js';
 
 import { SOURCE_FIX_ALL_MARKUPLINT } from './code-actions.js';
 import { verbosely } from './debug.js';
 import { createEventHandlers } from './document-events.js';
-import { getModule } from './get-module.js';
+import { createModuleResolver } from './get-module.js';
+import { createModuleNotices } from './module-notices.js';
 import { configureGitPath } from './suppression-support.js';
 
 const DEBUG = false;
@@ -26,9 +25,10 @@ const DEBUG = false;
 /**
  * Bootstrap the LSP language server.
  *
- * Creates the LSP connection, sets up logging handlers, resolves the markuplint module,
- * registers document event handlers, and starts listening. If the local markuplint module
- * is unavailable or incompatible, displays appropriate warnings to the user.
+ * Creates the LSP connection, sets up logging handlers, registers document event handlers,
+ * and starts listening. The markuplint module is resolved lazily per working directory as
+ * documents open; the bundled-fallback notice is logged once per directory and the import
+ * assertion popup is shown once per session (see `createModuleNotices`).
  */
 export function bootServer() {
 	const connection = createConnection(ProposedFeatures.all);
@@ -67,24 +67,29 @@ export function bootServer() {
 
 		configureGitPath(gitPath);
 
-		connection.onInitialized(async () => {
+		connection.onInitialized(() => {
 			log('onInitialized');
 
 			if (DEBUG) {
 				verbosely();
 			}
 
-			const mod = await getModule(log);
-
-			log(`Found version: ${mod.version} (isLocalModule: ${mod.isLocalModule})`, 'info');
 			log(`Locale: ${locale}`, 'info');
 
 			if (workingDirectories) {
 				log(`Working directories: ${JSON.stringify(workingDirectories)}`, 'info');
 			}
 
+			const notices = createModuleNotices({
+				log,
+				popup: message => void connection.sendNotification(warningToPopup, message),
+				sendStatus: current => void connection.sendRequest(status, current),
+			});
+
+			const resolveModule = createModuleResolver({ log, onFirstResolve: notices.onFirstResolve });
+
 			const { onDidOpen, onDidChangeContent, onHover, onCodeAction } = createEventHandlers({
-				mod,
+				resolveModule,
 				locale,
 				langConfigs,
 				workingDirectories,
@@ -93,24 +98,7 @@ export function bootServer() {
 				diagnosticsLog,
 				errorLog,
 				sendDiagnostics,
-				initUI() {
-					const message = mod.isLocalModule ? null : t(NO_INSTALL_WARNING, mod.version) + t('. ');
-					void connection.sendRequest(status, {
-						version: mod.version,
-						isLocalModule: mod.isLocalModule,
-						message,
-					});
-
-					if (message) {
-						void connection.sendNotification(logToPrimaryChannel, [message, 'warn']);
-					}
-
-					if (mod.fallbackReason === 'import-assertion-compat') {
-						const compatMessage = t(IMPORT_ASSERTION_COMPAT_WARNING, mod.version);
-						void connection.sendNotification(warningToPopup, compatMessage);
-						void connection.sendNotification(logToPrimaryChannel, [compatMessage, 'warn']);
-					}
-				},
+				reportStatus: notices.reportStatus,
 			});
 
 			documents.onDidOpen(e => onDidOpen(e.document));
