@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.1](https://github.com/markuplint/markuplint/compare/v5.0.0...v5.0.1) (2026-09-22)
+
+### Bug Fixes
+
+- revert incidental yarn.lock noise from local environment ([33b85c2](https://github.com/markuplint/markuplint/commit/33b85c28df5a10af1c0c4554569821110eeb0999))
+- **rules:** skip framework directives in no-event-handler-attr ([1da97ed](https://github.com/markuplint/markuplint/commit/1da97ed5ff6a17aeabd9dbe7077ebe057a3b674d)), closes [#4044](https://github.com/markuplint/markuplint/issues/4044)
+- **vscode:** rename displayName to avoid Marketplace collision ([dab64ea](https://github.com/markuplint/markuplint/commit/dab64ea065b409221842ab37a718d9fb4d0aca36))
+- **vscode:** rename extension package to avoid Marketplace name collision ([63ef874](https://github.com/markuplint/markuplint/commit/63ef874652572e8dea72cbb1c4a8be785a76cad9))
+- **vscode:** resolve the markuplint module per working directory ([0b15fbe](https://github.com/markuplint/markuplint/commit/0b15fbe6a72b3d886bc026e216beaf67fec37522)), closes [#4048](https://github.com/markuplint/markuplint/issues/4048)
+- **vue-spec:** mark v-on/@ event directives as isDirective ([21635a3](https://github.com/markuplint/markuplint/commit/21635a3ac3f5e517eade96aa360c00aa74f7fac4))
+
 # [5.0.0](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.7...v5.0.0) (2026-09-11)
 
 ### Bug Fixes
