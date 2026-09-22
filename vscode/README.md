@@ -44,6 +44,8 @@ To automatically fix all auto-fixable Markuplint problems when you save a file, 
 
 In monorepo setups where each sub-package has its own `.markuplintrc`, you may need to configure `markuplint.workingDirectories` so that markuplint resolves configuration files from the correct directory.
 
+The working directory is also where the extension looks for the `markuplint` package itself, so parsers, specs, and plugins installed alongside it (for example `@markuplint/jsx-parser`) are resolved from there. If no local installation is found upward from the working directory, the version bundled with the extension is used — which cannot load parsers installed in your workspace. After installing `markuplint` in a working directory, run **Markuplint: Restart Language Server** — the resolved module is cached until the server restarts.
+
 ### Examples
 
 **Explicit directories:**

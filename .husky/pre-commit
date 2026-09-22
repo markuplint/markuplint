@@ -1,8 +1,10 @@
 # Get the current branch name
 branch_name=$(git symbolic-ref --short HEAD)
 
-# Prevent direct commits to the main or dev branch
-if [ "$branch_name" = "dev" ]; then
+# Prevent direct commits to a development integration branch.
+# `main` and the prerelease branches are deliberately NOT listed: `lerna version`
+# writes its release commit there with commit hooks enabled. See the release skill.
+if [ "$branch_name" = "dev" ] || [ "$branch_name" = "v6" ]; then
   echo "Direct commits to the $branch_name branch are prohibited."
   echo "Please commit to an appropriate branch and merge it instead."
   exit 1

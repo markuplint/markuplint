@@ -6,6 +6,7 @@ overrides:
   '@markuplint/alpine-parser': $@markuplint/alpine-parser
   '@markuplint/astro-parser': $@markuplint/astro-parser
   '@markuplint/config-presets': $@markuplint/config-presets
+  '@markuplint/core': $@markuplint/core
   '@markuplint/cli-utils': $@markuplint/cli-utils
   '@markuplint/ejs-parser': $@markuplint/ejs-parser
   '@markuplint/erb-parser': $@markuplint/erb-parser

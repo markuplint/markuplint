@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.1](https://github.com/markuplint/markuplint/compare/v5.0.0...v5.0.1) (2026-09-22)
+
+### Bug Fixes
+
+- **vue-spec:** mark v-on/@ event directives as isDirective ([21635a3](https://github.com/markuplint/markuplint/commit/21635a3ac3f5e517eade96aa360c00aa74f7fac4))
+
 # [5.0.0](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.7...v5.0.0) (2026-09-11)
 
 **Note:** Version bump only for package @markuplint/vue-spec

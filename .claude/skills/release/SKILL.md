@@ -23,8 +23,8 @@ disable-model-invocation: true
 | Release type | Cut from | How work gets there |
 | --- | --- | --- |
 | **Stable** (`X.Y.Z`) | `main` | Merge `dev` (or the prerelease branch) into `main` first, then run `yarn release` on `main` |
-| **Prerelease** (`-rc.N` / `-beta.N` / `-alpha.N`) | A dedicated branch, e.g. `v5-rc`, `v5-alpha` | Branch off `dev`, run `yarn release:rc` there, then merge that branch back into `dev` |
-| Development | `dev` (v5 line), `v4` (v4 maintenance) | — never released from directly |
+| **Prerelease** (`-rc.N` / `-beta.N` / `-alpha.N`) | A dedicated branch, e.g. `v5-rc`, `v5-alpha` | Branch off **the line being released**, run `yarn release:rc` there, then merge that branch back into that line |
+| Development | `dev` (v5 line), `v6` (next major), `v4` (v4 maintenance) | — never released from directly |
 
 Verify the claim rather than trusting this table if anything looks off:
 
@@ -37,7 +37,16 @@ Three consequences that matter:
 
 - **`main` looking "stale" is normal.** It carries the last released version until the next release. Merging into `main` *is* the release act, not a chore someone forgot.
 - **Never run `yarn release` on `dev`.** `.husky/pre-commit` rejects every commit on `dev`, and Lerna only passes `--no-verify` when `commitHooks` is `false` (it defaults to `true`), so the version commit is refused. `main` and the prerelease branches are not guarded.
-- **Prereleases are rare** — the v5 cycle is the only one so far. Keep using a dedicated branch for them; the v6 line will need the same.
+- **Prereleases are rare** — the v5 cycle is the only one so far. Keep using a dedicated branch for them; the v6 line will need the same, cut from `v6` (not from `dev`).
+
+## Releasing while two lines are live
+
+`dev` (v5, the shipped major) and `v6` (the next major) are developed in parallel. Every one of the following is unresolved as of this skill's last revision — **treat a request to release anything from the v6 line as blocked until the user has decided each point explicitly**, and say so rather than improvising:
+
+- **`publish.yml` does not build the native addon.** It runs `yarn build`, and `@markuplint/core` has no `build` script — only `build:napi` / `build:napi:debug` — so `lerna publish from-git` would ship `@markuplint/core` without its `*.node` binary, and no per-platform packages at all. Publishing cannot be undone, so a v6 publish is blocked until `publish.yml` cross-builds napi.
+- **The version namespace is shared.** `lerna.json` is at the same version on both branches and versioning is fixed-mode, so both lines derive their next version from conventional commits into the same `v*` tag namespace and the same CHANGELOG lineage. The v6 line cannot rely on automatic derivation to reach `6.0.0`; the target version is a decision, not an inference — the "do NOT ask the user to choose a release type" rule in step 4 applies to the v5 line only.
+- **dist-tags are a single slot per name.** The tag comes from the version string alone (`-alpha.*` → `alpha`, and so on), so a v6 prerelease and a v5 prerelease using the same suffix overwrite each other's tag. Run `npm dist-tag ls markuplint` before any prerelease and confirm which line owns which tag.
+- **Merging `v6` into `main` retires the v5 line in one step.** Per [What the `main` merge switches over](#what-the-main-merge-switches-over), that merge flips the production docs, the JSON Schema `$ref` URLs, and VS Code completion to v6 for every existing v5 user simultaneously. There is no staged path. Do not merge `v6` into `main` for a prerelease — use a dedicated prerelease branch, which leaves `main` alone.
 
 ## What the `main` merge switches over
 
@@ -72,21 +81,22 @@ For a **stable** release, merge the source branch in first and let the user revi
 git merge origin/dev          # or the prerelease branch, e.g. origin/v5-rc
 ```
 
-For a **prerelease**, create the branch from `dev` if it does not exist yet (`git checkout -b v6-rc origin/dev`).
+For a **prerelease**, create the branch from the line being released if it does not exist yet — `git checkout -b v5-rc origin/dev` for the v5 line, `git checkout -b v6-alpha origin/v6` for the next major. Cutting a v6 prerelease from `dev` silently drops everything the v6 line adds.
 
 ## 2. Unmerged PRs
 
 ```bash
-gh pr list --base dev --state open
+gh pr list --base <source-branch> --state open
 ```
 
-Present anything that looks release-relevant; confirm whether to continue. (PRs target `dev`, not the release branch.)
+`<source-branch>` is the development branch the release draws from — `dev` for the v5 line, `v6` for the next major. Present anything that looks release-relevant; confirm whether to continue. (PRs target the development branch, not the release branch.)
 
 ## 3. Pre-checks
 
 `yarn lint-check`, `yarn build`, `yarn test` must all pass **in this session, on the release branch after the merge**. This is the only real gate:
 
-- `.github/workflows/test.yml` also triggers on `push` to `dev` (added alongside this skill's rewrite), so `gh run list --branch dev --workflow=test.yml` is real evidence for `dev`. It is not evidence for `main` or a prerelease branch — those still need this session's own `yarn lint-check && yarn build && yarn test`.
+- On a release branch with a `crates/` directory, `yarn test` is not the whole gate: add `cargo fmt --check`, `cargo clippy --locked -- -D warnings`, and `cargo test --locked` (what `.github/workflows/rust.yml` enforces), and confirm `@markuplint/core` was built with `yarn build:napi` — `yarn build` alone does not produce the addon.
+- `.github/workflows/test.yml` also triggers on `push` to `dev` (added alongside this skill's rewrite), so `gh run list --branch dev --workflow=test.yml` is real evidence for `dev`. It is not evidence for `main` or a prerelease branch — those still need this session's own `yarn lint-check && yarn build && yarn test`. For the v6 line, `test.yml` alone is not evidence either; `rust.yml` and `cargo-deny.yml` must be green too.
 - Yarn 4 does not run arbitrary pre/post lifecycle hooks, so the root `prerelease` script (build + test) is NOT executed by any `yarn release*` variant.
 - `publish.yml` does not run tests either — it installs, builds, and publishes.
 
@@ -138,8 +148,8 @@ git ls-remote --tags origin
 
 ## 7. Merge back
 
-- **Stable**: merge `main` back into `dev` so the version commit is not lost (`git checkout dev && git merge origin/main`, then push via a PR if `dev` is protected).
-- **Prerelease**: merge the prerelease branch into `dev`.
+- **Stable**: merge `main` back into `dev` so the version commit is not lost (`git checkout dev && git merge origin/main`, then push via a PR if `dev` is protected). Then carry `dev` forward into `v6` — the version commit has to reach the next-major line too, and `dev` → `v6` is the only permitted direction.
+- **Prerelease**: merge the prerelease branch into the line it was cut from (`dev` or `v6`), then, if it was `dev`, carry `dev` forward into `v6`.
 
 Do this before step 8 so a failure in verification does not leave the branches diverged.
 

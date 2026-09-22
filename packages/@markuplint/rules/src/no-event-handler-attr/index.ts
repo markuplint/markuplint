@@ -41,6 +41,14 @@ export default createRule<boolean | readonly string[], Options>({
 				return;
 			}
 
+			// Framework directives that resolve to an `onXxx` name (Vue `@click`, Alpine
+			// `x-on:click`, htmx `hx-on:click`, Svelte `on:click`) are excluded: they never
+			// reach the DOM as a literal inline-handler attribute, and each framework
+			// documents them as its recommended event-binding idiom.
+			if (attr.isDirective) {
+				return;
+			}
+
 			const ignoreList = Array.isArray(attr.rule.options.ignore)
 				? attr.rule.options.ignore
 				: attr.rule.options.ignore
