@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.1](https://github.com/markuplint/markuplint/compare/v5.0.0...v5.0.1) (2026-09-22)
+
+### Bug Fixes
+
+- **vscode:** rename extension package to avoid Marketplace name collision ([63ef874](https://github.com/markuplint/markuplint/commit/63ef874652572e8dea72cbb1c4a8be785a76cad9))
+
 # [5.0.0](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.7...v5.0.0) (2026-09-11)
 
 **Note:** Version bump only for package markuplint

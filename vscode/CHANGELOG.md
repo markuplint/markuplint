@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.1](https://github.com/markuplint/markuplint/compare/v5.0.0...v5.0.1) (2026-09-22)
+
+### Bug Fixes
+
+- **vscode:** rename displayName to avoid Marketplace collision ([dab64ea](https://github.com/markuplint/markuplint/commit/dab64ea065b409221842ab37a718d9fb4d0aca36))
+- **vscode:** rename extension package to avoid Marketplace name collision ([63ef874](https://github.com/markuplint/markuplint/commit/63ef874652572e8dea72cbb1c4a8be785a76cad9))
+- **vscode:** resolve the markuplint module per working directory ([0b15fbe](https://github.com/markuplint/markuplint/commit/0b15fbe6a72b3d886bc026e216beaf67fec37522)), closes [#4048](https://github.com/markuplint/markuplint/issues/4048)
+
 # [5.0.0](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.7...v5.0.0) (2026-09-11)
 
 **Note:** Version bump only for package vscode-markuplint
