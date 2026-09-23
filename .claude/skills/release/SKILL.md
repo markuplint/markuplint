@@ -113,6 +113,19 @@ Show the current version (`lerna.json`). `yarn release` derives the next version
 
 ## 5. Version bump (user-executed)
 
+Before handing over, remove `vscode/package-lock.json` if it exists. It is a gitignored leftover of an npm-based extension build (`vscode/scripts/install.mjs` deletes it only on success; a manual `vsce package` or an interrupted build leaves it behind). `lerna version` updates every per-package `package-lock.json` it finds and passes it to `git add`, which refuses ignored paths — the run then dies after every manifest and CHANGELOG has been rewritten and staged, one step short of the commit (v5.0.1).
+
+```bash
+ls vscode/package-lock.json && rm vscode/package-lock.json
+```
+
+If the run does fail there anyway, nothing needs recomputing: the staged tree is exactly what Lerna was about to commit, so finish its last two steps by hand and continue with step 6.
+
+```bash
+git commit -m "chore(release): publish"   # keep hooks on; lint-staged restores lerna.json's tab indentation
+git tag v<VERSION> -m v<VERSION>          # annotated, same as Lerna's gitTag
+```
+
 `lerna version` is an interactive command (selection/confirmation prompts) that cannot be driven through the `!` prefix — the prompt renders but accepts no input. Ask the user to:
 
 1. Exit the Claude Code session (`exit`)
