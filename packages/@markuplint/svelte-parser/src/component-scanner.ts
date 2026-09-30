@@ -18,11 +18,14 @@ export interface ComponentScanResult {
 }
 
 /**
- * A static attribute extracted from a component's root element.
+ * An attribute extracted from an element of a component: a static one with its value, or
+ * a `dynamic` one whose value is an expression.
  */
 export interface ComponentScanAttr {
 	readonly name: string;
 	readonly value?: string;
+	/** The attribute is present and its value is an expression, unknown at scan time. `value` is omitted. */
+	readonly dynamic?: true;
 }
 
 /**
@@ -97,14 +100,38 @@ function isElement(n: MLASTChildNode): n is MLASTElement {
 	return n.type === 'starttag';
 }
 
+/**
+ * An attribute whose value is an expression (`type={kind}`, the shorthand `{type}`, `bind:value`,
+ * or `{}` inside a quoted value) is an attribute the element has, and it is `dynamic`. The other
+ * directives (`on:`, `class:`, `use:`, and so on) are not attributes by name and are left out.
+ */
+const INTERPOLATION = /\{[^}]*\}/;
+const BINDING_WITHOUT_NAME = new Set(['group', 'this']);
+
 function extractAttrs(el: MLASTElement): ComponentScanAttr[] {
 	const attrs: ComponentScanAttr[] = [];
 	for (const attr of el.attributes) {
 		if (attr.type !== 'attr') {
 			continue;
 		}
+		if (attr.name.raw === '') {
+			if (attr.potentialName) {
+				attrs.push({ name: attr.potentialName, dynamic: true });
+			}
+			continue;
+		}
+		const directive = /^([a-z]+):(.+)$/i.exec(attr.nodeName);
+		if (directive) {
+			const [, prefix, name] = directive;
+			if (prefix === 'bind' && name && !BINDING_WITHOUT_NAME.has(name)) {
+				attrs.push({ name: name.toLowerCase(), dynamic: true });
+			}
+			continue;
+		}
 		const value = attr.value.raw;
-		if (value === '') {
+		if (attr.isDynamicValue || INTERPOLATION.test(value)) {
+			attrs.push({ name: attr.nodeName, dynamic: true });
+		} else if (value === '') {
 			attrs.push({ name: attr.nodeName });
 		} else {
 			attrs.push({ name: attr.nodeName, value });
