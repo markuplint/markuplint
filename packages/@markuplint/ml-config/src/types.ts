@@ -358,9 +358,11 @@ export type OriginalNode = {
 	 *
 	 * When omitted, the given children are the whole content.
 	 *
-	 * Known limitation: only `permitted-contents` reads it. Rules that look at the
-	 * children of the element for another purpose, such as the accessible name,
-	 * still see only the children given at the usage site.
+	 * Known limitation: `permitted-contents` and the accessible name computation
+	 * (name from content, `legend`, `caption`, and label text) read it. Other rules that
+	 * look at the children of the element, and the `title` of an SVG and the `option`s
+	 * of a `select` in the name computation, still see only the children given at the
+	 * usage site.
 	 *
 	 * @experimental
 	 */
