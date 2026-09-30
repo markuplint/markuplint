@@ -117,7 +117,7 @@ Which element a component is decided by what its own `return` statements can pro
 Known limitations:
 
 - When a component renders another component (`<Base><span /></Base>`), it takes the mapping of `Base`. Its own `slots` and `contents` are composed into it (the `span` above is placed where `Base` renders its children), but its own attributes and ARIA properties are not merged.
-- Only `permitted-contents` reads `contents`. Rules that look at the children of the element for another purpose, such as the accessible name, see only the children given at the usage site.
+- Only `permitted-contents` and the accessible name computation (for example `require-accessible-name`) read `contents`. Other rules that look at the children of the element see only the children given at the usage site.
 
 ### Template Scanner
 
