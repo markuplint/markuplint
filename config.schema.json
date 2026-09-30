@@ -387,63 +387,176 @@
 								"attrs": {
 									"type": "array",
 									"items": {
-										"type": "object",
-										"additionalProperties": false,
-										"required": ["name"],
-										"properties": {
-											"name": {
-												"type": "string"
-											},
-											"value": {
-												"oneOf": [
-													{
-														"type": "string"
-													},
-													{
-														"type": "object",
-														"additionalProperties": false,
-														"required": ["fromAttr"],
-														"properties": {
-															"fromAttr": {
-																"type": "string"
-															}
-														}
-													}
-												]
+										"$ref": "#/definitions/pretenderAttr"
+									}
+								},
+								"inheritAttrs": {
+									"type": "boolean"
+								},
+								"slots": {
+									"oneOf": [
+										{
+											"type": "null"
+										},
+										{
+											"const": true
+										},
+										{
+											"type": "array",
+											"items": {
+												"$ref": "#/definitions/pretenderSlot"
 											}
 										}
+									]
+								},
+								"contents": {
+									"type": "array",
+									"items": {
+										"$ref": "#/definitions/pretenderContent"
 									}
 								},
 								"aria": {
-									"type": "object",
-									"additionalProperties": false,
-									"required": ["name"],
-									"properties": {
-										"name": {
-											"type": "string"
-										},
-										"value": {
-											"oneOf": [
-												{
-													"type": "boolean"
-												},
-												{
-													"type": "object",
-													"additionalProperties": false,
-													"required": ["fromAttr"],
-													"properties": {
-														"fromAttr": {
-															"type": "string"
-														}
-													}
-												}
-											]
-										}
-									}
+									"$ref": "#/definitions/pretenderAria"
 								}
 							}
 						}
 					]
+				}
+			}
+		},
+		"pretenderAria": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["name"],
+			"properties": {
+				"name": {
+					"type": "string"
+				},
+				"value": {
+					"oneOf": [
+						{
+							"type": "boolean"
+						},
+						{
+							"type": "object",
+							"additionalProperties": false,
+							"required": ["fromAttr"],
+							"properties": {
+								"fromAttr": {
+									"type": "string"
+								}
+							}
+						}
+					]
+				}
+			}
+		},
+		"pretenderAttr": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["name"],
+			"properties": {
+				"name": {
+					"type": "string"
+				},
+				"value": {
+					"oneOf": [
+						{
+							"type": "string"
+						},
+						{
+							"type": "object",
+							"additionalProperties": false,
+							"required": ["fromAttr"],
+							"properties": {
+								"fromAttr": {
+									"type": "string"
+								}
+							}
+						},
+						{
+							"type": "object",
+							"additionalProperties": false,
+							"required": ["dynamic"],
+							"properties": {
+								"dynamic": {
+									"const": true
+								}
+							}
+						}
+					]
+				}
+			}
+		},
+		"pretenderContent": {
+			"oneOf": [
+				{
+					"type": "object",
+					"additionalProperties": false,
+					"required": ["element"],
+					"properties": {
+						"element": {
+							"type": "string"
+						},
+						"attrs": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/pretenderAttr"
+							}
+						}
+					}
+				},
+				{
+					"type": "object",
+					"additionalProperties": false,
+					"required": ["slot"],
+					"properties": {
+						"slot": {
+							"const": true
+						}
+					}
+				},
+				{
+					"type": "object",
+					"additionalProperties": false,
+					"required": ["dynamic"],
+					"properties": {
+						"dynamic": {
+							"const": true
+						}
+					}
+				}
+			]
+		},
+		"pretenderSlot": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["element"],
+			"properties": {
+				"element": {
+					"type": "string"
+				},
+				"namespace": {
+					"type": "string",
+					"enum": ["svg"]
+				},
+				"attrs": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/pretenderAttr"
+					}
+				},
+				"inheritAttrs": {
+					"type": "boolean"
+				},
+				"contents": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/pretenderContent"
+					}
+				},
+				"aria": {
+					"$ref": "#/definitions/pretenderAria"
 				}
 			}
 		},
