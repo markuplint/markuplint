@@ -125,6 +125,50 @@ export type PretenderContextPretender<
 	readonly type: 'pretender';
 	readonly as: N;
 	readonly aria?: PretenderARIA;
+
+	/**
+	 * Present only when the pretender describes what the component renders around
+	 * its children (`contents`, or exactly-one/multiple `slots` wrappers).
+	 * Absent means the children given at the usage site are the whole content of
+	 * the outermost element, which is the behavior of a bare-string pretender.
+	 */
+	readonly slotContent?: PretenderSlotContent<N, T, O>;
+};
+
+/**
+ * What a rule needs to evaluate the children given to a pretended component
+ * the way the component actually renders them.
+ *
+ * @template N - The element type
+ * @template T - The rule configuration value type
+ * @template O - The rule options type
+ */
+export type PretenderSlotContent<
+	N extends MLElement<T, O>,
+	T extends RuleConfigValue,
+	O extends PlainData = undefined,
+> = {
+	/**
+	 * The element whose content model governs the evaluated children:
+	 * the pretender itself, or the virtual element for the single slot wrapper.
+	 * `null` when the wrapper is unknown (several slot wrappers), in which case
+	 * the children must not be validated.
+	 */
+	readonly wrapper: N | null;
+
+	/**
+	 * `true` when `contents` has an entry whose content is unknown at scan time,
+	 * so a required child may be rendered there.
+	 */
+	readonly mutable: boolean;
+
+	/**
+	 * Builds the children of {@link wrapper} from the nodes given at the usage
+	 * site: the static entries of `contents` as virtual elements, with the given
+	 * nodes placed at the slot position (appended when there is no slot entry).
+	 * Virtual elements are created once and reused on each call.
+	 */
+	readonly fill: <C>(given: readonly C[]) => readonly (C | N)[];
 };
 
 /**

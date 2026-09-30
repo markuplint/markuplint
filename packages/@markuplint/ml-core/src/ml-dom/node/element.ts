@@ -4,7 +4,7 @@ import type { MLDocument } from './document.js';
 import type { MLNamedNodeMap } from './named-node-map.js';
 import type { MLNode } from './node.js';
 import type { MLText } from './text.js';
-import type { ElementNodeType, PretenderContext, PretenderContextPretender } from './types.js';
+import type { ElementNodeType, PretenderContext, PretenderContextPretender, PretenderSlotContent } from './types.js';
 import type {
 	ElementType,
 	MLASTAttr,
@@ -14,9 +14,11 @@ import type {
 	NamespaceURI,
 } from '@markuplint/ml-ast';
 import type {
+	OriginalNode,
 	PlainData,
 	Pretender,
 	PretenderARIA,
+	PretenderAttr,
 	RegexSelector,
 	RuleConfigValue,
 	RuleInfo,
@@ -165,6 +167,12 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * The virtual element created by `pretending()` is not registered in the
 	 * document's `nodeList`; walkers visit only the original element, which
 	 * delegates its name and attribute getters to the virtual element.
+	 *
+	 * The children a rule should validate are not `as.childNodes` (which mirrors
+	 * only whether the component accepts children). They are
+	 * `slotContent.fill(childNodes)` when the pretender describes `slots` /
+	 * `contents`, because the component renders its own elements around the
+	 * children given at the usage site.
 	 */
 	pretenderContext: PretenderContext<MLElement<T, O>, T, O> | null = null;
 
@@ -3982,60 +3990,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 				attributes.push(...this._astToken.attributes);
 			}
 			if (pretenderElement.attrs) {
-				attributes.push(
-					...pretenderElement.attrs.map(({ name, value }, i) => {
-						const _value =
-							value == null
-								? ''
-								: typeof value === 'string'
-									? value
-									: (this.getAttribute(value.fromAttr) ?? '');
-						return {
-							...this._astToken,
-							uuid: `${this.uuid}_attr_${i}`,
-							type: 'attr',
-							nodeName: name,
-							spacesBeforeName: {
-								...this._astToken,
-								raw: '',
-							},
-							name: {
-								...this._astToken,
-								raw: name,
-							},
-							spacesBeforeEqual: {
-								...this._astToken,
-								raw: '',
-							},
-							equal: {
-								...this._astToken,
-								raw: '',
-							},
-							spacesAfterEqual: {
-								...this._astToken,
-								raw: '',
-							},
-							startQuote: {
-								...this._astToken,
-								raw: '',
-							},
-							value: {
-								...this._astToken,
-								raw: _value,
-							},
-							endQuote: {
-								...this._astToken,
-								raw: '',
-							},
-							isDuplicatable: true,
-							parentNode: null,
-							nextNode: null,
-							prevNode: null,
-							isFragment: false,
-							isGhost: false,
-						} as MLASTAttr;
-					}),
-				);
+				attributes.push(...this.#createPretenderAttrs(pretenderElement.attrs, this.uuid));
 			}
 			aria = pretenderElement.aria;
 		}
@@ -4067,10 +4022,184 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 			origin: this,
 		};
 
+		const slotContent =
+			typeof pretenderElement === 'string' ? undefined : this.#createSlotContent(pretenderElement, as, namespace);
+
 		this.pretenderContext = {
 			type: 'pretender',
 			as,
 			aria,
+			...(slotContent ? { slotContent } : {}),
+		};
+	}
+
+	/**
+	 * Converts pretender attributes to AST attributes for a virtual element.
+	 * `{ fromAttr }` reads this (the origin) element's attribute; `{ dynamic: true }`
+	 * yields an attribute flagged `isDynamicValue`, which rules do not validate.
+	 */
+	#createPretenderAttrs(attrs: readonly PretenderAttr[], uuidBase: string): MLASTAttr[] {
+		return attrs.map(({ name, value }, i) => {
+			const isDynamic = value != null && typeof value === 'object' && 'dynamic' in value;
+			const _value =
+				value == null || isDynamic
+					? ''
+					: typeof value === 'string'
+						? value
+						: (this.getAttribute(value.fromAttr) ?? '');
+			return {
+				...this._astToken,
+				uuid: `${uuidBase}_attr_${i}`,
+				type: 'attr',
+				nodeName: name,
+				spacesBeforeName: {
+					...this._astToken,
+					raw: '',
+				},
+				name: {
+					...this._astToken,
+					raw: name,
+				},
+				spacesBeforeEqual: {
+					...this._astToken,
+					raw: '',
+				},
+				equal: {
+					...this._astToken,
+					raw: '',
+				},
+				spacesAfterEqual: {
+					...this._astToken,
+					raw: '',
+				},
+				startQuote: {
+					...this._astToken,
+					raw: '',
+				},
+				value: {
+					...this._astToken,
+					raw: _value,
+				},
+				endQuote: {
+					...this._astToken,
+					raw: '',
+				},
+				isDuplicatable: true,
+				...(isDynamic ? { isDynamicValue: true } : {}),
+				parentNode: null,
+				nextNode: null,
+				prevNode: null,
+				isFragment: false,
+				isGhost: false,
+			} as MLASTAttr;
+		});
+	}
+
+	/**
+	 * Creates a childless virtual element that is not registered in the document's
+	 * `nodeList`, used for a slot wrapper or a static entry of `contents`.
+	 * Its close tag is deliberately dropped (`pairNodeUuid: null`): the MLElement
+	 * constructor would otherwise re-register the origin's real close tag under
+	 * the virtual element.
+	 */
+	#createVirtualElement(
+		spec: {
+			readonly element: string;
+			readonly namespace?: 'svg';
+			readonly attrs?: readonly PretenderAttr[];
+			readonly inheritAttrs?: boolean;
+		},
+		uuid: string,
+		parentNodeUuid: string,
+		fallbackNamespace: NamespaceURI,
+	): MLElement<T, O> {
+		const attributes: MLASTAttr[] = [];
+		if (spec.inheritAttrs) {
+			attributes.push(...this._astToken.attributes);
+		}
+		if (spec.attrs) {
+			attributes.push(...this.#createPretenderAttrs(spec.attrs, uuid));
+		}
+		const virtual = new MLElement<T, O>(
+			{
+				...this._astToken,
+				uuid,
+				raw: `<${spec.element}>`,
+				nodeName: spec.element,
+				namespace: getVirtualNamespace(spec, fallbackNamespace),
+				elementType: spec.element.includes('-') ? 'web-component' : 'html',
+				attributes,
+				childNodes: [],
+				pairNodeUuid: null,
+				parentNodeUuid,
+			},
+			this.ownerMLDocument,
+		);
+		virtual.resetChildren(toNodeList([]));
+		// Like the pretender element `as`, it stands for this element, so that a report
+		// on it can be moved to where the user wrote the component.
+		virtual.pretenderContext = { type: 'origin', origin: this };
+		return virtual;
+	}
+
+	/**
+	 * Builds {@link PretenderSlotContent} from the pretender definition.
+	 * Returns `undefined` when the definition says nothing about what surrounds
+	 * the children, so that the children given at the usage site stay the whole
+	 * content of the outermost element (the bare-string pretender behavior).
+	 */
+	#createSlotContent(
+		node: OriginalNode,
+		as: MLElement<T, O>,
+		namespace: NamespaceURI,
+	): PretenderSlotContent<MLElement<T, O>, T, O> | undefined {
+		const { slots } = node;
+		let wrapper: MLElement<T, O> = as;
+		let contents = node.contents;
+
+		if (slots != null && slots !== true && slots.length > 0) {
+			const [slot] = slots;
+			if (slots.length > 1 || !slot) {
+				return { wrapper: null, mutable: false, fill: <C>(given: readonly C[]) => given };
+			}
+			wrapper = this.#createVirtualElement(slot, `${this.uuid}_pretender_slot`, this.uuid, namespace);
+			contents = slot.contents ?? [{ slot: true }];
+		}
+
+		if (!contents) {
+			return undefined;
+		}
+
+		const entries = contents.map((entry, i) =>
+			'element' in entry
+				? this.#createVirtualElement(
+						entry,
+						`${this.uuid}_pretender_content_${i}`,
+						wrapper === as ? this.uuid : wrapper.uuid,
+						namespace,
+					)
+				: entry,
+		);
+
+		return {
+			wrapper,
+			mutable: entries.some(entry => !(entry instanceof MLElement) && 'dynamic' in entry),
+			fill: <C>(given: readonly C[]) => {
+				const filled: (C | MLElement<T, O>)[] = [];
+				let placed = false;
+				for (const entry of entries) {
+					if (entry instanceof MLElement) {
+						filled.push(entry);
+					} else if ('slot' in entry && !placed) {
+						filled.push(...given);
+						placed = true;
+					}
+				}
+				if (!placed) {
+					filled.push(...given);
+				}
+				return filled;
+			},
 		};
 	}
 
@@ -4365,4 +4494,19 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	webkitMatchesSelector(selectors: string): boolean {
 		throw new UnexpectedCallError('Not supported "webkitMatchesSelector" method');
 	}
+}
+
+/**
+ * The namespace of a virtual element made from a pretender definition.
+ * `svg` and `math` are foreign elements wherever they are written, and a
+ * definition can only state `namespace: 'svg'`, so the name decides.
+ */
+function getVirtualNamespace(spec: { readonly element: string; readonly namespace?: 'svg' }, fallback: NamespaceURI) {
+	if (spec.namespace === 'svg' || spec.element === 'svg') {
+		return 'http://www.w3.org/2000/svg';
+	}
+	if (spec.element === 'math') {
+		return 'http://www.w3.org/1998/Math/MathML';
+	}
+	return fallback;
 }
