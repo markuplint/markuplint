@@ -35,13 +35,16 @@ export interface ComponentScanResult {
 }
 
 /**
- * A static attribute extracted from a component's root element.
+ * An attribute extracted from an element of a component: a static one with its value, or
+ * a `dynamic` one whose value is an expression.
  */
 export interface ComponentScanAttr {
 	/** The attribute name */
 	readonly name: string;
 	/** The attribute value (omitted for boolean attributes) */
 	readonly value?: string;
+	/** The attribute is present and its value is an expression, unknown at scan time. `value` is omitted. */
+	readonly dynamic?: true;
 }
 
 /**

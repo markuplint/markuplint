@@ -12,7 +12,7 @@ import { PretenderDirector } from '../pretender-director.js';
 import { getScanner } from '../scanner-loader.js';
 
 import { deriveName } from './derive-name.js';
-import { deriveSlotInfo } from './slot-info.js';
+import { deriveSlotInfo, toAttrs } from './slot-info.js';
 
 /**
  * Template scanner for Vue, Svelte, and Astro component files.
@@ -67,9 +67,7 @@ export const templateScanner = createScanner<PretenderScanTemplateOptions>(async
 
 		const relFilePath = normalizePath(path.relative(cwd, filePath));
 
-		const attrs: readonly PretenderAttr[] = scan.attrs.map(a =>
-			a.value === undefined ? { name: a.name } : { name: a.name, value: a.value },
-		);
+		const attrs: readonly PretenderAttr[] = toAttrs(scan.attrs);
 
 		const { slots, contents } = deriveSlotInfo(scan);
 		const hasContents = !isTrivialContents(contents);
