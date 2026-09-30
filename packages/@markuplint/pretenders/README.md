@@ -104,7 +104,20 @@ const Bar = styled(Foo)`
 ]
 ```
 
-The JSX scanner detects **slots** (children). If a component accepts `children` props, the resulting pretender includes `slots: true` in its `as` field.
+The JSX scanner detects **slots** (children). If a component accepts `children` props, the resulting pretender includes `slots: true` in its `as` field. When an inner element directly wraps the children (`<div><p>{children}</p></div>`), that element is recorded instead (`slots: [{ "element": "p" }]`), and the static children around the slot are recorded as `contents`.
+
+Which element a component is decided by what its own `return` statements can produce. A function nested in the returned element (`items.map(...)`) is not a return point of the component.
+
+- Branches that render different elements produce no pretender.
+- Branches that render the same element keep only the attributes they share, and the slot they agree on.
+- `null`, `undefined`, `false`, and a result that cannot be determined statically (`return children`) are ignored.
+- A fragment with several roots (`<><label /><input /></>`) is `element: "#fragment"`.
+- An attribute whose value is an expression is `{ "dynamic": true }`; a literal such as `{0}` or `{'x'}` is a static value.
+
+Known limitations:
+
+- When a component renders another component (`<Base><span /></Base>`), it takes the mapping of `Base`, and its own `slots` and `contents` are not merged into it.
+- Only `permitted-contents` reads `contents`. Rules that look at the children of the element for another purpose, such as the accessible name, see only the children given at the usage site.
 
 ### Template Scanner
 
@@ -133,6 +146,8 @@ Slot detection covers:
 
 - `<slot>` elements in Vue, Svelte, and Astro
 - `{@render children()}` snippets in Svelte 5
+
+The element that directly wraps a slot and the static children around it are recorded in the same way as the JSX scanner (`slots` and `contents`).
 
 ### Import Resolver
 

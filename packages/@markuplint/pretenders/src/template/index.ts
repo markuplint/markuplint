@@ -4,6 +4,7 @@ import type { OriginalNode, PretenderAttr } from '@markuplint/ml-config';
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { isTrivialContents } from '../contents.js';
 import { createScanner } from '../create-scanner.js';
 import { analyzeImports } from '../import-resolver/index.js';
 import { normalizePath } from '../import-resolver/resolve-module-file.js';
@@ -11,6 +12,7 @@ import { PretenderDirector } from '../pretender-director.js';
 import { getScanner } from '../scanner-loader.js';
 
 import { deriveName } from './derive-name.js';
+import { deriveSlotInfo } from './slot-info.js';
 
 /**
  * Template scanner for Vue, Svelte, and Astro component files.
@@ -69,12 +71,16 @@ export const templateScanner = createScanner<PretenderScanTemplateOptions>(async
 			a.value === undefined ? { name: a.name } : { name: a.name, value: a.value },
 		);
 
+		const { slots, contents } = deriveSlotInfo(scan);
+		const hasContents = !isTrivialContents(contents);
+
 		const identity: string | OriginalNode =
-			attrs.length > 0 || scan.hasSlots
+			attrs.length > 0 || slots !== null || hasContents
 				? {
 						element: scan.rootElement,
 						...(attrs.length > 0 ? { attrs } : {}),
-						slots: scan.hasSlots ? true : null,
+						slots,
+						...(hasContents ? { contents } : {}),
 					}
 				: scan.rootElement;
 
