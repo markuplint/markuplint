@@ -332,9 +332,39 @@ export type OriginalNode = {
 	 * );
 	 * ```
 	 *
+	 * At the usage site, the children given to the component are evaluated
+	 * against the content model of the element that wraps the slot:
+	 *
+	 * - `true` or omitted: the outermost element (`element`).
+	 * - An array with exactly one {@link Slot}: that slot's `element`.
+	 * - An array with two or more slots: the children are not validated,
+	 *   because the wrapper each child belongs to is unknown.
+	 * - `null`: there is no slot position, so {@link OriginalNode.contents}
+	 *   is the whole content and given children are appended after it.
+	 *
 	 * @experimental
 	 */
 	readonly slots?: null | true | readonly Slot[];
+
+	/**
+	 * The static direct children of the element that wraps the slot
+	 * (the outermost element when `slots` is `true` or `null`,
+	 * otherwise each {@link Slot}), in document order.
+	 *
+	 * Permitted-content style rules evaluate the children at the usage site as
+	 * this list with the given children substituted for the `{ slot: true }` entry.
+	 * That is what lets `<details>{children}</details>` still require a `summary`
+	 * while `<picture>{children}<img /></picture>` does not report a missing `img`.
+	 *
+	 * When omitted, the given children are the whole content.
+	 *
+	 * Known limitation: only `permitted-contents` reads it. Rules that look at the
+	 * children of the element for another purpose, such as the accessible name,
+	 * still see only the children given at the usage site.
+	 *
+	 * @experimental
+	 */
+	readonly contents?: readonly PretenderContent[];
 
 	/**
 	 * Namespace
@@ -363,7 +393,35 @@ export type OriginalNode = {
 /**
  * @experimental
  */
-export type Slot = Omit<OriginalNode, 'slot'>;
+export type Slot = Omit<OriginalNode, 'slots'>;
+
+/**
+ * A static direct child of the element that wraps the slot.
+ *
+ * @experimental
+ */
+export type PretenderContent =
+	| {
+			/**
+			 * A native element that the component always renders there.
+			 */
+			readonly element: string;
+			readonly attrs?: readonly PretenderAttr[];
+	  }
+	| {
+			/**
+			 * The position where the children given at the usage site are placed.
+			 */
+			readonly slot: true;
+	  }
+	| {
+			/**
+			 * Something rendered there whose content is unknown at scan time
+			 * (an expression, a conditional, another component, and so on).
+			 * Required-content checks are skipped for the pretender.
+			 */
+			readonly dynamic: true;
+	  };
 
 export type PretenderAttr = {
 	/**
@@ -373,11 +431,18 @@ export type PretenderAttr = {
 
 	/**
 	 * If it omits this property, the attribute is resolved as a boolean.
+	 *
+	 * `{ dynamic: true }` means the attribute is present but its value is
+	 * unknown at scan time (e.g. `tabIndex={selected ? 0 : -1}`);
+	 * rules treat it as a dynamic value and do not validate it.
 	 */
 	readonly value?:
 		| string
 		| {
 				readonly fromAttr: string;
+		  }
+		| {
+				readonly dynamic: true;
 		  };
 };
 

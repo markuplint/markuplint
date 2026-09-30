@@ -7,18 +7,11 @@
  * and fragment providers.
  */
 
+import type { Root } from './collect-roots.js';
+import type { Draft } from './create-identify.js';
 import type { PretenderScanJSXOptions } from './types.js';
 import type { Pretender } from '@markuplint/ml-config';
-import type {
-	FunctionDeclaration,
-	JSDoc,
-	JsxFragment,
-	JsxOpeningElement,
-	JsxSelfClosingElement,
-	Node,
-	SourceFile,
-	VariableDeclaration,
-} from 'typescript';
+import type { FunctionDeclaration, JSDoc, Node, SourceFile, VariableDeclaration } from 'typescript';
 
 import path from 'node:path';
 
@@ -30,22 +23,18 @@ import { collectImportBindings } from '../import-resolver/analyze-jsx-imports.js
 import { normalizePath } from '../import-resolver/resolve-module-file.js';
 import { PretenderDirector } from '../pretender-director.js';
 
+import { collectReturnExpressions, findComponentFunction, resolveRoots } from './collect-roots.js';
 import { createCachingCompilerHost } from './compiler-host.js';
-import { createIdentity } from './create-identify.js';
+import { createIdentity, mergeDrafts } from './create-identify.js';
 import { finder } from './finder.js';
-import { getAttributes } from './get-attributes.js';
-import { getChildren } from './get-children.js';
+import { getAttributes, toPretenderAttrs } from './get-attributes.js';
+import { getSlotInfo } from './get-contents.js';
 
 const {
 	createProgram,
 	forEachChild,
-	isArrowFunction,
 	isCallExpression,
 	isFunctionDeclaration,
-	isJsxFragment,
-	isJsxOpeningElement,
-	isJsxSelfClosingElement,
-	isReturnStatement,
 	isTaggedTemplateExpression,
 	isVariableDeclaration,
 	JsxEmit,
@@ -80,6 +69,19 @@ const defaultOptions: Required<Omit<PretenderScanJSXOptions, 'sources'>> = {
  * Uses the TypeScript compiler API to parse and traverse the AST, identifying component
  * definitions and the native HTML elements they render.
  *
+ * Which element a component is decided by the values its own `return` points can
+ * produce. A nested function such as `items.map(i => <li />)` is not one of them, and
+ * a result that is not statically known (`return children`) is ignored rather than
+ * guessed. Branches rendering different elements produce no pretender, because any
+ * single choice would be a false positive for the other branch. Branches rendering the
+ * same element keep only what all of them agree on.
+ *
+ * What surrounds the children is recorded as `slots` (the element that directly wraps
+ * `{children}`) and `contents` (the static children of that element), so that the children
+ * given at the usage site are evaluated as the component renders them. Known limitation:
+ * a component that renders another component takes the mapping of the latter, and its own
+ * `slots` / `contents` are dropped (see `dependencyMapper`).
+ *
  * Supports:
  * - Function components (function declarations and arrow functions)
  * - Styled-components (`styled.element` tagged templates)
@@ -104,6 +106,13 @@ export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 
 		const director = new PretenderDirector();
 
+		// A `g` / `y` flag makes `test()` stateful (`lastIndex`), so the results would
+		// depend on how many elements were tested before.
+		const fragmentPatterns = asFragment.map(frag => {
+			const pattern = typeof frag === 'string' ? toRegexp(frag) : frag;
+			return new RegExp(pattern.source, pattern.flags.replaceAll(/[gy]/g, ''));
+		});
+
 		const host = createCachingCompilerHost(COMPILER_OPTIONS, sources);
 		const program = createProgram(files, COMPILER_OPTIONS, host);
 
@@ -113,6 +122,43 @@ export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 				director.addImports(relFilePath, collectImportBindings(sourceFile));
 				forEachChild(sourceFile, node => visit(node, sourceFile));
 			}
+		}
+
+		function isFragmentTag(tag: string) {
+			return fragmentPatterns.some(pattern => pattern.test(tag));
+		}
+
+		/**
+		 * Describes what a component renders in one branch, or `undefined` when a
+		 * pretender cannot express it.
+		 */
+		function toDraft(
+			root: Root,
+			// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+			sourceFile: SourceFile,
+		): Draft | undefined {
+			const info = getSlotInfo(root, sourceFile, isFragmentTag);
+			if (!info) {
+				return undefined;
+			}
+
+			/**
+			 * ```
+			 * return <><Foo /><Bar /></>
+			 * -------^
+			 * ```
+			 */
+			if (root.type === 'fragment') {
+				return { element: '#fragment', attrs: [], hasSpread: false, ...info };
+			}
+
+			const attrs = getAttributes(root.element, sourceFile);
+			return {
+				element: root.element.tagName.getText(sourceFile),
+				attrs: toPretenderAttrs(attrs),
+				hasSpread: attrs.some(attr => attr.nodeType === 'spread'),
+				...info,
+			};
 		}
 
 		function visit(
@@ -191,53 +237,36 @@ export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 			const filePath = normalizePath(path.relative(cwd, sourceFile.fileName));
 			const find = finder(sourceFile);
 
-			find(root, isReturnStatement, node => {
-				/**
-				 * ```
-				 * return <Foo></Foo>
-				 * -------^
-				 * ```
-				 */
-				find(node, isJsxOpeningElement, foundElement);
-				/**
-				 * ```
-				 * return <Foo />
-				 * -------^
-				 * ```
-				 */
-				find(node, isJsxSelfClosingElement, foundElement);
-				/**
-				 * ```
-				 * return <></>
-				 * -------^
-				 * ```
-				 */
-				find(node, isJsxFragment, foundFragment);
-			});
+			/**
+			 * ```
+			 * const Component = () => <Foo />
+			 * ---------------------------^
+			 * ```
+			 *
+			 * Only the component's own return points decide which element it is, so
+			 * a nested function (`items.map(i => <li />)`) is not one of them.
+			 */
+			const fn = findComponentFunction(isVariableDeclaration(root) ? root.initializer : root);
+			if (fn) {
+				const drafts: Draft[] = [];
+				let representable = true;
 
-			find(root, isArrowFunction, fn => {
-				/**
-				 * ```
-				 * (...) => <Foo></Foo>
-				 * ---------^
-				 * ```
-				 */
-				find(fn, isJsxOpeningElement, foundElement);
-				/**
-				 * ```
-				 * (...) => <Foo />
-				 * ---------^
-				 * ```
-				 */
-				find(fn, isJsxSelfClosingElement, foundElement);
-				/**
-				 * ```
-				 * (...) => <></>
-				 * ---------^
-				 * ```
-				 */
-				find(fn, isJsxFragment, foundFragment);
-			});
+				for (const expression of collectReturnExpressions(fn)) {
+					for (const branch of resolveRoots(expression, sourceFile, isFragmentTag)) {
+						const draft = toDraft(branch, sourceFile);
+						if (draft) {
+							drafts.push(draft);
+						} else {
+							representable = false;
+						}
+					}
+				}
+
+				const merged = representable ? mergeDrafts(drafts) : undefined;
+				if (merged) {
+					director.add(name, createIdentity(merged), filePath, line, col, `${filePath}#${name}`);
+				}
+			}
 
 			find(root, isTaggedTemplateExpression, tagged => {
 				const tag = tagged.tag.getText(sourceFile);
@@ -327,66 +356,6 @@ export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 					);
 				}
 			});
-
-			function foundFragment(
-				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-				fragment: JsxFragment,
-			) {
-				/**
-				 * ```
-				 * <>
-				 *   <Foo></Foo>
-				 * --^
-				 * </>
-				 * ```
-				 */
-				find(fragment, isJsxOpeningElement, foundElement);
-				/**
-				 * ```
-				 * <>
-				 *   <Foo />
-				 * --^
-				 * </>
-				 * ```
-				 */
-				find(fragment, isJsxSelfClosingElement, foundElement);
-			}
-
-			function foundElement(
-				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-				el: JsxOpeningElement | JsxSelfClosingElement,
-			) {
-				const tagName = el.tagName.getText(sourceFile);
-
-				for (const frag of asFragment) {
-					const pattern = typeof frag === 'string' ? toRegexp(frag) : frag;
-					/**
-					 * ```
-					 * <Provider>
-					 *   <Foo></Foo>
-					 * --^
-					 * </Provider>
-					 *
-					 * <Namespace.Provider>
-					 *   <Foo></Foo>
-					 * --^
-					 * </Namespace.Provider>
-					 * ```
-					 */
-					if (pattern.test(tagName)) {
-						for (const child of el.getChildren(sourceFile)) {
-							find(child, isJsxOpeningElement, foundElement);
-							find(child, isJsxSelfClosingElement, foundElement);
-						}
-						return;
-					}
-				}
-
-				const attrs = getAttributes(el, sourceFile);
-				const children = getChildren(el, sourceFile);
-				const identity = createIdentity(tagName, attrs, children);
-				director.add(name, identity, filePath, line, col, `${filePath}#${name}`);
-			}
 		}
 
 		return Promise.resolve(director.getPretenders(cwd, sources));

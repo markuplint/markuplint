@@ -977,7 +977,11 @@ const MyPicture = () => {
 
 #### `as.attrs[].value`
 
-属性値を受け取ります。省略可能です。
+属性値を受け取ります。省略可能です。省略した場合、その属性は真偽値属性になります。
+
+- **文字列**: 静的な値です。
+- **`{ "fromAttr": "name" }`**: コンポーネントが持つ属性の値です。
+- **`{ "dynamic": true }`**: 属性は存在しますが、値はコンポーネントがレンダリングされるまで分からない場合（例：`tabIndex={selected ? 0 : -1}`）に指定します。ルールは動的な値として扱い、検証しません。
 
 #### `as.aria`
 
@@ -1032,7 +1036,7 @@ const MyIcon = ({ label }) => {
 
 - **`null`**: コンポーネントは子要素を受け入れない、またはスロットを持ちません。例えば、`<img>`（void要素）としてレンダリングされるコンポーネントです。
 - **`true`**: コンポーネントは子要素を受け入れ、ラッパー要素が最も外側の要素です。
-- **配列**: 複数の名前付きスロット。各スロットは要素仕様として記述されます（高度な使い方）。
+- **配列**: 子要素を包む要素が最も外側の要素ではない場合に、その要素を要素仕様として記述します。コンポーネントに渡された子要素は、最も外側の要素ではなくこの要素に対して評価されます。配列に2つ以上の仕様がある場合、子要素がどの仕様に属するかが分からないため、子要素は検証されません。
 
 ```jsx
 // このコンポーネントは子要素を受け入れる — slotsはtrueにすべき
@@ -1062,6 +1066,94 @@ const Icon = props => <img src={props.src} />;
   ]
 }
 ```
+
+子要素が内側の要素に包まれている場合は、その要素を指定します。
+
+```jsx
+const Card = ({ children }) => (
+  <div>
+    <h2>lorem ipsum</h2>
+    <p>{children}</p>
+  </div>
+);
+```
+
+```json class=config
+{
+  "pretenders": [
+    {
+      "selector": "Card",
+      "as": {
+        "element": "div",
+        "slots": [{ "element": "p" }]
+      }
+    }
+  ]
+}
+```
+
+`<Card><div></div></Card>` は、`div`要素が`p`要素の中では許可されないため報告されます。
+
+#### `as.contents` {#pretenders/as-contents}
+
+:::caution[実験的機能]
+このプロパティは**実験的**であり、将来のリリースで変更される可能性があります。
+:::
+
+コンポーネントが、スロットを包む要素の直下にレンダリングするものを順番に指定します。省略可能です。スロットを包む要素とは、最も外側の要素、または`slots`配列の各仕様の要素です。
+
+- **`{ "element": "img", "attrs": [...] }`**: コンポーネントが常にその位置にレンダリングするネイティブ要素です。
+- **`{ "slot": true }`**: コンポーネントに渡された子要素が置かれる位置です。
+- **`{ "dynamic": true }`**: その位置にレンダリングされるものの内容が分からない場合（式、条件分岐、別のコンポーネントなど）に指定します。必須の子要素が欠けていることの検査はスキップされます。
+
+`permitted-contents`などのコンテンツを検査するルールは、ラッパー要素の子をこのリストとして評価し、`{ "slot": true }`の位置に渡された子要素を置きます。リストに`{ "slot": true }`がない場合、渡された子要素はリストの後ろに置かれます。省略した場合、渡された子要素がコンテンツのすべてです。
+
+```jsx
+const Picture = () => (
+  <picture>
+    <img src="example.gif" alt="Example" />
+  </picture>
+);
+
+const Details = ({ children }) => <details>{children}</details>;
+```
+
+```json class=config
+{
+  "pretenders": [
+    {
+      "selector": "Picture",
+      "as": {
+        "element": "picture",
+        "slots": null,
+        "contents": [
+          {
+            "element": "img",
+            "attrs": [
+              { "name": "src", "value": "example.gif" },
+              { "name": "alt", "value": "Example" }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "selector": "Details",
+      "as": {
+        "element": "details",
+        "slots": true,
+        "contents": [{ "slot": true }]
+      }
+    }
+  ]
+}
+```
+
+`<Picture />`は、コンポーネント自身が`img`要素をレンダリングするため、`img`要素の欠如は報告されません。`<Details></Details>`は、`summary`要素を用意できるのは使用側だけなので、`summary`要素の欠如が報告されます。
+
+現在、`contents`を利用するのは`permitted-contents`だけです。アクセシブルな名前の算出など、要素の子を参照するほかのルールには、コンポーネントに渡された子要素だけが見えます。
+
+コンポーネントがルートに複数の要素をレンダリングする場合は、`element`に`"#fragment"`を指定します。コンポーネント自身は要素ではなく、その`contents`が親の中でコンポーネントの位置に置かれます。
 
 #### `scan` {#pretenders/scan}
 
@@ -1166,6 +1258,7 @@ type Pretender = {
 type OriginalNode = {
   element: string;
   slots?: null | true | Slot[]; // @experimental
+  contents?: Content[]; // @experimental
   namespace?: 'svg';
 
   inheritAttrs?: boolean;
@@ -1175,6 +1268,9 @@ type OriginalNode = {
       | string
       | {
           fromAttr: string;
+        }
+      | {
+          dynamic: true;
         };
   }[];
 
@@ -1188,6 +1284,9 @@ type OriginalNode = {
 };
 
 type Slot = Omit<OriginalNode, 'slots'>; // @experimental
+
+type Content = // @experimental
+  { element: string; attrs?: OriginalNode['attrs'] } | { slot: true } | { dynamic: true };
 
 type PretenderScanConfig = {
   files: string | string[];

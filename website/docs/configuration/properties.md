@@ -1016,7 +1016,11 @@ It accepts an attribute name. It's required.
 
 #### `as.attrs[].value`
 
-It accepts an attribute value. It's optional.
+It accepts an attribute value. It's optional. If it is omitted, the attribute is a boolean attribute.
+
+- **string**: A static value.
+- **`{ "fromAttr": "name" }`**: The value of the attribute that the component has.
+- **`{ "dynamic": true }`**: The attribute exists but its value is not known until the component renders, such as `tabIndex={selected ? 0 : -1}`. Rules treat it as a dynamic value and do not validate it.
 
 #### `as.aria`
 
@@ -1073,7 +1077,7 @@ It specifies whether the component accepts children or has slots. It's optional.
 
 - **`null`**: The component does **not** accept children or does not have slots. For example, a component that renders as `<img>` (a void element).
 - **`true`**: The component accepts children, and the wrapper element is the outermost element.
-- **Array**: Multiple named slots, each described as an element specification (advanced usage).
+- **Array**: The element that wraps the children when it is not the outermost element, described as an element specification. The children given to the component are evaluated against that element instead of the outermost element. If the array has two or more specifications, which one a child belongs to is unknown, so the children are not validated.
 
 ```jsx
 // This component accepts children — slots should be true
@@ -1103,6 +1107,94 @@ const Icon = props => <img src={props.src} />;
   ]
 }
 ```
+
+When the children are wrapped by an inner element, specify that element:
+
+```jsx
+const Card = ({ children }) => (
+  <div>
+    <h2>lorem ipsum</h2>
+    <p>{children}</p>
+  </div>
+);
+```
+
+```json class=config
+{
+  "pretenders": [
+    {
+      "selector": "Card",
+      "as": {
+        "element": "div",
+        "slots": [{ "element": "p" }]
+      }
+    }
+  ]
+}
+```
+
+`<Card><div></div></Card>` is reported because the `div` element is not allowed in the `p` element.
+
+#### `as.contents` {#pretenders/as-contents}
+
+:::caution[Experimental]
+This property is **experimental** and may change in future releases.
+:::
+
+It specifies what the component renders directly inside the element that wraps the slot, in order. It's optional. The element that wraps the slot is the outermost element, or each specification of the `slots` array.
+
+- **`{ "element": "img", "attrs": [...] }`**: A native element that the component always renders there.
+- **`{ "slot": true }`**: The position of the children given to the component.
+- **`{ "dynamic": true }`**: Something rendered there whose content is unknown, such as an expression, a conditional, or another component. The check that a required child is missing is skipped.
+
+Rules that check the content, such as `permitted-contents`, evaluate the children of the wrapper element as this list with the given children placed at the `{ "slot": true }` position. If the list has no `{ "slot": true }`, the given children are placed after the list. If it is omitted, the given children are the whole content.
+
+```jsx
+const Picture = () => (
+  <picture>
+    <img src="example.gif" alt="Example" />
+  </picture>
+);
+
+const Details = ({ children }) => <details>{children}</details>;
+```
+
+```json class=config
+{
+  "pretenders": [
+    {
+      "selector": "Picture",
+      "as": {
+        "element": "picture",
+        "slots": null,
+        "contents": [
+          {
+            "element": "img",
+            "attrs": [
+              { "name": "src", "value": "example.gif" },
+              { "name": "alt", "value": "Example" }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "selector": "Details",
+      "as": {
+        "element": "details",
+        "slots": true,
+        "contents": [{ "slot": true }]
+      }
+    }
+  ]
+}
+```
+
+`<Picture />` is not reported for the missing `img` element because the component renders it. `<Details></Details>` is reported for the missing `summary` element because only the usage can provide it.
+
+Currently only `permitted-contents` uses `contents`. Other rules that look at the children of the element, such as the one computing the accessible name, see only the children given to the component.
+
+If the component renders several elements at its root, set `element` to `"#fragment"`. The component is not an element itself; its `contents` stand in its place in the parent.
 
 #### `scan` {#pretenders/scan}
 
@@ -1207,6 +1299,7 @@ type Pretender = {
 type OriginalNode = {
   element: string;
   slots?: null | true | Slot[]; // @experimental
+  contents?: Content[]; // @experimental
   namespace?: 'svg';
 
   inheritAttrs?: boolean;
@@ -1216,6 +1309,9 @@ type OriginalNode = {
       | string
       | {
           fromAttr: string;
+        }
+      | {
+          dynamic: true;
         };
   }[];
 
@@ -1229,6 +1325,9 @@ type OriginalNode = {
 };
 
 type Slot = Omit<OriginalNode, 'slots'>; // @experimental
+
+type Content = // @experimental
+  { element: string; attrs?: OriginalNode['attrs'] } | { slot: true } | { dynamic: true };
 
 type PretenderScanConfig = {
   files: string | string[];

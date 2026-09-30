@@ -17,6 +17,13 @@ export interface ComponentScanResult {
 	readonly attrs: readonly ComponentScanAttr[];
 	/** Whether the component template contains slot usage (Vue `<slot>`, Svelte `{@render}`, etc.) */
 	readonly hasSlots: boolean;
+	/**
+	 * The elements that directly wrap a slot. Absent for scanners that do not report
+	 * them, in which case only {@link hasSlots} is known.
+	 */
+	readonly slotWrappers?: readonly ComponentScanSlotWrapper[];
+	/** The direct children of the root element (see {@link ComponentScanContent}) */
+	readonly rootContents?: readonly ComponentScanContent[];
 	/** Extracted script/ESM source block for import analysis */
 	readonly scriptSource?: ComponentScanScriptSource;
 	/** SVG namespace indicator (only set when root is in SVG namespace) */
@@ -35,6 +42,31 @@ export interface ComponentScanAttr {
 	readonly name: string;
 	/** The attribute value (omitted for boolean attributes) */
 	readonly value?: string;
+}
+
+/**
+ * A direct child of an element that wraps a slot. A native element is itself
+ * (its own content is not tracked), the slot is its position, and anything
+ * else (an expression, a block, a component) is unknown content.
+ */
+export type ComponentScanContent =
+	| { readonly element: string; readonly attrs?: readonly ComponentScanAttr[] }
+	| { readonly slot: true }
+	| { readonly dynamic: true };
+
+/**
+ * An element that directly wraps a slot. A component has no `attrs` and no
+ * `contents`: what it renders is unknown.
+ */
+export interface ComponentScanSlotWrapper {
+	/** The element name */
+	readonly element: string;
+	/** Whether it is the root element itself */
+	readonly isRoot: boolean;
+	/** Static attributes of the element */
+	readonly attrs: readonly ComponentScanAttr[];
+	/** The direct children of the element */
+	readonly contents: readonly ComponentScanContent[];
 }
 
 /**

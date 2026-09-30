@@ -25,6 +25,7 @@ describe('jsxScanner', () => {
 						},
 						{
 							name: 'aria-xxx',
+							value: { dynamic: true },
 						},
 						{
 							name: 'aria-yyy',
@@ -45,7 +46,11 @@ describe('jsxScanner', () => {
 			},
 			{
 				selector: 'NodeC',
-				as: 'CReturns',
+				as: {
+					element: 'CReturns',
+					slots: null,
+					contents: [{ element: 'span' }],
+				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/001.tsx:15:6'),
 			},
 			{
@@ -168,7 +173,7 @@ describe('jsxScanner', () => {
 				selector: 'AttrOnlyChildren',
 				as: {
 					element: 'div',
-					attrs: [{ name: 'data-ref' }],
+					attrs: [{ name: 'data-ref', value: { dynamic: true } }],
 					slots: null,
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/005.tsx:32:6'),
@@ -177,7 +182,7 @@ describe('jsxScanner', () => {
 				selector: 'NestedChildren',
 				as: {
 					element: 'div',
-					slots: true,
+					slots: [{ element: 'main' }],
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/005.tsx:22:6'),
 			},
@@ -198,7 +203,7 @@ describe('jsxScanner', () => {
 				selector: 'VoidComponent',
 				as: {
 					element: 'img',
-					attrs: [{ name: 'src' }],
+					attrs: [{ name: 'src', value: { dynamic: true } }],
 					slots: null,
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/005.tsx:12:6'),
@@ -256,7 +261,10 @@ describe('jsxScanner', () => {
 				_via: ['Item'],
 			});
 			expect(a?.filePath).toMatch(/^a\.tsx:/);
-			expect(b).toMatchObject({ selector: 'B', as: 'ul' });
+			expect(b).toMatchObject({
+				selector: 'B',
+				as: { element: 'ul', slots: null, contents: [{ dynamic: true }] },
+			});
 		});
 
 		test('a named import resolves to the actual declaration file, not the first-registered same-named one', async () => {
