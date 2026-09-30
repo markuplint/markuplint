@@ -255,7 +255,7 @@ Instead of manually listing every component, you can let Markuplint **scan your 
 This single configuration replaces what might otherwise be dozens of manual pretender entries. When Markuplint runs, it analyzes your component files and determines:
 
 - **Which HTML element** each component renders as its root element
-- **Whether the component accepts children** (slots detection)
+- **Whether the component accepts children** (slots detection), which element wraps them, and what the component renders around them
 - **Static attributes** on the root element
 
 #### Supported file types
