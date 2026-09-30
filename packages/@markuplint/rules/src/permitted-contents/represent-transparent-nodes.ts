@@ -3,6 +3,7 @@ import type { ChildNode, Mode, Options, Result, Specs, TagRule } from './types.j
 import { resolveContentModel } from './content-model.js';
 import { cmLog } from './debug.js';
 import { order } from './order.js';
+import { expandChildren, getContentOwner, getSlotContent } from './slot-content.js';
 import { Collection, isTransparent, matches } from './utils.js';
 
 /**
@@ -119,6 +120,17 @@ export function representTransparentNodes(
 			continue;
 		}
 
+		// A component whose children sit inside an inner wrapper element (or one of
+		// several) cannot be looked through as transparent content: the children
+		// belong to the wrapper, not to the outermost element that is being matched.
+		const childSlot = getSlotContent(childNode, mode);
+		if (childSlot && (!childSlot.wrapper || getContentOwner(childNode, mode) !== childNode)) {
+			for (const p of patterns) {
+				p.push(childNode);
+			}
+			continue;
+		}
+
 		const models = resolveContentModel(childNode, rules, specs, mode);
 
 		if (models == null || typeof models === 'boolean') {
@@ -138,8 +150,12 @@ export function representTransparentNodes(
 		}
 
 		const childNodesPatterns = options.evaluateConditionalChildNodes
-			? childNode.conditionalChildNodes().map(childNodes => [...childNodes])
-			: [[...childNode.childNodes].filter(child => !(child.is(child.TEXT_NODE) && child.isWhitespace()))];
+			? childNode.conditionalChildNodes().map(childNodes => [...expandChildren(childNode, [...childNodes], mode)])
+			: [
+					[...expandChildren(childNode, [...childNode.childNodes], mode)].filter(
+						child => !(child.is(child.TEXT_NODE) && child.isWhitespace()),
+					),
+				];
 
 		const branchGroups: (ChildNode | Result)[][] = [];
 

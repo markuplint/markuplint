@@ -4,6 +4,7 @@ import type { ReadonlyDeep } from 'type-fest';
 
 import { getContentModel } from '@markuplint/ml-spec';
 
+import { getContentOwner, getSlotContent } from './slot-content.js';
 import { start } from './start.js';
 
 /**
@@ -27,7 +28,19 @@ export function contentModel(
 	options: Options,
 	mode: Mode,
 ): ContentModelResult[] {
-	const { model, specs } = createModel(el, rules, mode);
+	const slotContent = getSlotContent(el, mode);
+	if (slotContent && !slotContent.wrapper) {
+		// Several slot wrappers: which one a given child belongs to is unknown.
+		return [
+			{
+				type: 'MATCHED',
+				scope: el,
+				query: '*',
+				hint: {},
+			},
+		];
+	}
+	const { model, specs } = createModel(getContentOwner(el, mode), rules, mode);
 	if (model == null) {
 		return [
 			{
