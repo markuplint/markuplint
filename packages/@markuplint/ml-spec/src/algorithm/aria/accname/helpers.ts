@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/prefer-readonly-parameter-types -- AccnameElement wraps mutable DOM types */
 
-import type { AccnameElement, AccnameResolver, AccnameResult, AccnameSource } from './types.js';
+import type { AccnameElement, AccnameNode, AccnameResolver, AccnameResult, AccnameSource } from './types.js';
 
 import { ELEMENT_NODE, SVG_NAMESPACE, TEXT_NODE, TEXT_LIKE_INPUT_TYPES } from '../../../const/index.js';
 
@@ -50,7 +50,7 @@ export function resolveNameFromContent(
 	inLabelledbyTraversal: boolean,
 ): string {
 	const parts: string[] = [];
-	for (const child of el.childNodes) {
+	for (const child of getChildNodes(el, resolver)) {
 		if (child.nodeType === TEXT_NODE) {
 			parts.push(child.textContent ?? '');
 		} else if (child.nodeType === ELEMENT_NODE) {
@@ -105,7 +105,7 @@ function collectTextContent(
 		return '';
 	}
 	const parts: string[] = [];
-	for (const child of el.childNodes) {
+	for (const child of getChildNodes(el, resolver)) {
 		if (child.nodeType === TEXT_NODE) {
 			parts.push(child.textContent ?? '');
 		} else if (child.nodeType === ELEMENT_NODE) {
@@ -243,10 +243,30 @@ function isTextLikeInput(el: AccnameElement): boolean {
 	return TEXT_LIKE_INPUT_TYPES.has(getInputType(el));
 }
 
-export function findChildByLocalName(el: AccnameElement, localName: string): AccnameElement | null {
-	for (const child of el.children) {
-		if (child.localName === localName) {
-			return child;
+/**
+ * The child nodes to traverse for `el`: what the resolver says it renders,
+ * or `el.childNodes` when it says nothing.
+ */
+export function getChildNodes(el: AccnameElement, resolver: AccnameResolver): Iterable<AccnameNode> {
+	return resolver.getChildNodes?.(el) ?? el.childNodes;
+}
+
+export function findChildByLocalName(
+	el: AccnameElement,
+	localName: string,
+	resolver?: AccnameResolver,
+): AccnameElement | null {
+	if (!resolver?.getChildNodes) {
+		for (const child of el.children) {
+			if (child.localName === localName) {
+				return child;
+			}
+		}
+		return null;
+	}
+	for (const child of resolver.getChildNodes(el)) {
+		if (child.nodeType === ELEMENT_NODE && (child as AccnameElement).localName === localName) {
+			return child as AccnameElement;
 		}
 	}
 	return null;
