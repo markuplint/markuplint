@@ -49,6 +49,21 @@ import { FSWatcher } from 'chokidar';
  */
 const ARM_TIMEOUT_MS = 2000;
 
+/**
+ * Deno implements `fs.watch` of a file with an inotify watch on its inode, and
+ * counts the watches of a path: when chokidar re-attaches to a file that an
+ * atomic save has replaced, by closing its watch and opening a new one on the
+ * same path at once, the new watch is believed to exist already and stays on
+ * the old inode, deaf to every save after the second (Deno documents the
+ * atomic save dropping its own watcher on Linux, at
+ * https://docs.deno.com/runtime/run/watch_mode/). Polling does not go through
+ * that watch. Unconfirmed against Deno's source; it is what the CI of the
+ * Deno job shows.
+ */
+const IS_DENO = 'deno' in process.versions;
+
+const DENO_POLL_INTERVAL_MS = 50;
+
 export type WatchEventName = 'add' | 'change' | 'unlink';
 
 export type WatchListener = (filePath: string, event: WatchEventName) => void;
@@ -149,7 +164,10 @@ export async function whenWatching(filePath: string): Promise<void> {
 }
 
 function createGeneration(): Generation {
-	const watcher = new FSWatcher({ ignoreInitial: true });
+	const watcher = new FSWatcher({
+		ignoreInitial: true,
+		...(IS_DENO ? { usePolling: true, interval: DENO_POLL_INTERVAL_MS } : {}),
+	});
 	const generation: Generation = { watcher, entries: new Map(), subscribers: new Set() };
 
 	watcher.on('add', filePath => dispatch(generation, 'add', filePath));
