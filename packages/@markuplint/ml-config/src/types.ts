@@ -510,6 +510,33 @@ export interface PretenderScanOptions {
 	 * unsaved buffer for the file currently being linted.
 	 */
 	readonly sources?: ReadonlyMap<string, string>;
+
+	/**
+	 * A sink the scan adds to: the normalized (`/`-delimited) absolute paths
+	 * of the files whose content its result depends on. A watch-mode host
+	 * watches them to learn when to scan again (#4065).
+	 *
+	 * Recorded: the files given to the scan; the source files the TypeScript
+	 * program reaches from them through relative imports (beyond any depth
+	 * `autoScan` walks); the files read to resolve an imported component
+	 * (barrels and the files they re-export from); and the `tsconfig.json`
+	 * the imports were resolved with, with the configs it `extends`.
+	 *
+	 * Not recorded — a change to these is picked up only by a later full
+	 * resolution of the config:
+	 *
+	 * - Declaration files, and anything under `node_modules`
+	 *   (`package.json` `exports` included).
+	 * - Files that do not exist yet: a candidate of an import specifier, a
+	 *   nearer `tsconfig.json`, a new file matching a `scan` glob. A file that
+	 *   was removed and comes back is one of them: once the result no longer
+	 *   reads it, it is no longer reported.
+	 * - Files reached only through a `paths` alias beyond `autoScan`'s walk —
+	 *   the TypeScript program the JSX scanner builds reads no `tsconfig.json`.
+	 *
+	 * The scan only adds; the caller owns the set.
+	 */
+	readonly dependencies?: Set<string>;
 }
 
 /**
