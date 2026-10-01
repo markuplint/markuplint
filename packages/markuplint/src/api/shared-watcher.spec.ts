@@ -170,11 +170,29 @@ describe('shared watcher', () => {
 
 		await whenWatching(file);
 		await fs.writeFile(file, '1');
+		// It comes back as an `add` where chokidar watches the directory for it, and
+		// as a `change` where it keeps the handle (Windows).
+		const [comingBack, event] = await recorder.next();
+		expect(comingBack).toBe(file);
+		expect(['add', 'change']).toContain(event);
+	});
+
+	// Where chokidar lets go of a removed file (not Windows), the watcher has to
+	// add it again by itself, and has to leave it watched as before.
+	test.skipIf(process.platform === 'win32')('watches a file that came back as it did before', async () => {
+		const file = path.join(tmpDir, 'came-back.txt');
+		await fs.writeFile(file, '0');
+		const recorder = createRecorder();
+		await open(recorder.listener).update([file]);
+		await fs.rm(file);
+		expect(await recorder.next()).toStrictEqual([file, 'unlink']);
+		await whenWatching(file);
+		await fs.writeFile(file, '1');
 		expect(await recorder.next()).toStrictEqual([file, 'add']);
 
-		// And it is watched as before: the next save is a change again.
 		await afterChangeThrottle();
 		await fs.writeFile(file, '2');
+
 		expect(await recorder.next()).toStrictEqual([file, 'change']);
 	});
 
