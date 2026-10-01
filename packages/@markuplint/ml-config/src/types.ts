@@ -217,15 +217,36 @@ export type PretenderDetails = {
 	readonly scan?: readonly PretenderScanConfig[];
 
 	/**
-	 * When `true`, resolves pretenders on demand by scanning the lint
-	 * target's own import graph instead of requiring `files`/`scan`
+	 * When `true` (or an object), resolves pretenders on demand by scanning
+	 * the lint target's own import graph instead of requiring `files`/`scan`
 	 * pre-configuration. Because only the config file is filesystem-watched,
 	 * results can go stale in watch mode / editor sessions if an imported
 	 * component file changes without the config changing too.
 	 *
+	 * The object form tunes the walk ({@link PretenderAutoOptions}); `true`
+	 * and `{}` use the defaults. When configs are merged, the right side
+	 * replaces this value as a whole (the two forms are never combined).
+	 *
 	 * @experimental
 	 */
-	readonly auto?: boolean;
+	readonly auto?: boolean | PretenderAutoOptions;
+};
+
+/**
+ * Options of the object form of {@link PretenderDetails.auto}.
+ *
+ * @experimental
+ */
+export type PretenderAutoOptions = {
+	/**
+	 * How many import hops from the linted file are followed. `0` considers
+	 * only the linted file itself. Defaults to `8`.
+	 *
+	 * Must be a non-negative integer; `config.schema.json` enforces it, but a
+	 * config handed over the API directly is not validated: a negative number
+	 * or `NaN` behaves like `0`, and a fraction is rounded up.
+	 */
+	readonly depth?: number;
 };
 
 /**
