@@ -1,16 +1,16 @@
 import type { APIOptions, MLEngineEventMap } from './types.js';
 import type { MLResultInfo } from '../types.js';
-import type { ConfigSet, MLFile, Target } from '@markuplint/file-resolver';
+import type { ConfigSet, MLFile, PretenderResolver, Target } from '@markuplint/file-resolver';
 import type { PlainData, RuleAliasWarning } from '@markuplint/ml-config';
 import type { Ruleset, Plugin, Document, RuleConfigValue, MLFabric } from '@markuplint/ml-core';
 
 import {
 	ConfigProvider,
+	createPretenderResolver,
 	disambiguatePretendersForFile,
 	invalidatePretenderResolutionCaches,
 	resolveFiles,
 	resolveParser,
-	resolvePretenders,
 	resolveRules,
 	resolveSpecs,
 } from '@markuplint/file-resolver';
@@ -146,6 +146,24 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 	#core: MLCore | null = null;
 	#file: Readonly<MLFile>;
 	#options?: APIOptions & MLEngineOptions;
+	/**
+	 * The resolver of the latest config resolution, kept so `setCode()` can
+	 * re-resolve the pretenders that depend on the source without re-reading
+	 * the ones that depend on the config and the filesystem only. See #4064.
+	 */
+	#pretenderResolver: PretenderResolver | null = null;
+	/**
+	 * Counts `setCode()` calls so that, when they overlap, only the latest one
+	 * reaches the file and the core — `setCode()` awaits the pretender
+	 * re-resolution, and an earlier call finishing later must not put its
+	 * older code back.
+	 */
+	#setCodeSeq = 0;
+	/**
+	 * The latest `setCode()` call's application, so that a superseded call can
+	 * resolve only after it has taken effect.
+	 */
+	#latestSetCode: Promise<void> = Promise.resolve();
 	#watcher = new FSWatcher();
 
 	constructor(file: Readonly<MLFile>, options?: APIOptions & MLEngineOptions) {
@@ -255,19 +273,59 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 	}
 
 	/**
-	 * Updates the source code and re-parses the document without re-resolving configuration.
+	 * Updates the source code and re-parses the document without re-resolving
+	 * configuration.
+	 *
+	 * The pretenders that depend on the source — `pretenders.auto`, which walks
+	 * the file's own imports, and the disambiguation of same-selector entries,
+	 * which reads them too — are re-resolved from the new code; the ones that
+	 * depend on the config and the filesystem only are kept from the latest
+	 * config resolution (see #4064 and {@link PretenderResolver}).
+	 *
+	 * When calls overlap, only the latest one takes effect, and every call
+	 * settles only once that latest one has — so a host that runs
+	 * {@link exec} right after awaiting any of them (the VS Code extension
+	 * does) lints the document the file now holds, never the previous
+	 * document against the newer file. For the same reason a superseded call
+	 * rejects when the latest one fails: resolving would tell its caller the
+	 * latest code is in place when it is not.
 	 *
 	 * @param code - The new markup source code
 	 */
 	async setCode(code: string) {
+		const applied = this.#applyCode(code);
+		this.#latestSetCode = applied;
+		await applied;
+
+		let awaited = applied;
+		while (this.#latestSetCode !== awaited) {
+			awaited = this.#latestSetCode;
+			await awaited;
+		}
+	}
+
+	/**
+	 * The body of one {@link setCode} call. Two checks against the sequence
+	 * number: the one after setup spares a superseded call its resolution;
+	 * the one after resolution keeps a superseded call that was already
+	 * resolving from overwriting the newer result.
+	 */
+	async #applyCode(code: string) {
+		const seq = ++this.#setCodeSeq;
 		const core = await this.#setup();
 
-		if (!core) {
+		if (!core || seq !== this.#setCodeSeq) {
 			return;
 		}
 
 		this.#file.setCode(code);
-		core.setCode(code);
+		const pretenders = await this.#resolvePretendersForCurrentCode();
+
+		if (seq !== this.#setCodeSeq) {
+			return;
+		}
+
+		core.setCode(code, { pretenders });
 	}
 
 	/**
@@ -564,8 +622,25 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 			// resolving as it did before the change for the rest of the process's lifetime.
 			await invalidatePretenderResolutionCaches();
 		}
+		// One resolver per config resolution: this is the only place the
+		// pretenders that depend on the config and the filesystem (files /
+		// imports / data / scan) are read. `setCode()` reuses it.
+		this.#pretenderResolver = createPretenderResolver(configSet.config.pretenders);
+		return this.#resolvePretendersForCurrentCode();
+	}
+
+	/**
+	 * Disambiguation runs here, on every call, and not only at config
+	 * resolution: it reads the target's import statements, so it is as
+	 * source-dependent as `auto` is.
+	 */
+	async #resolvePretendersForCurrentCode() {
+		const resolver = this.#pretenderResolver;
+		if (!resolver) {
+			return [];
+		}
 		const sourceCode = await this.#file.getCode();
-		const pretenders = await resolvePretenders(configSet.config.pretenders, {
+		const pretenders = await resolver.resolve({
 			filePath: this.#file.path,
 			sourceCode,
 		});
