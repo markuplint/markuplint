@@ -199,6 +199,22 @@ describe('composeIdentity', () => {
 			});
 		});
 
+		test('a chain that enters a cycle also ends with the identity of the component it came back to', () => {
+			const result = dependencyMapper(
+				new Map([
+					['X', ['X', { element: 'A', slots: null, contents: [{ element: 'img' }] }]],
+					['A', ['A', { element: 'B', slots: true }]],
+					['B', ['B', { element: 'A', slots: true }]],
+				]),
+			);
+
+			expect(result.find(pretender => pretender.selector === 'X')).toStrictEqual({
+				selector: 'X',
+				_via: ['A', 'B', '...[Recursive]'],
+				as: { element: 'B', slots: true },
+			});
+		});
+
 		test('components that render each other terminate and report the recursion', () => {
 			const result = dependencyMapper(
 				new Map([
