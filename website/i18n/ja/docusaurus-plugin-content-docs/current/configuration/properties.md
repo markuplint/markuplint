@@ -1151,7 +1151,7 @@ const Details = ({ children }) => <details>{children}</details>;
 
 `<Picture />`は、コンポーネント自身が`img`要素をレンダリングするため、`img`要素の欠如は報告されません。`<Details></Details>`は、`summary`要素を用意できるのは使用側だけなので、`summary`要素の欠如が報告されます。
 
-現在、`contents`を利用するのは`permitted-contents`と、アクセシブルな名前の算出（`require-accessible-name`などが利用）だけです。要素の子を参照するほかのルールには、コンポーネントに渡された子要素だけが見えます。
+現在、`contents`を利用するのは`permitted-contents`と、アクセシブルな名前の算出（`require-accessible-name`などが利用）だけです。名前の算出では、`{ "dynamic": true }`は名前の出どころになりません。また`slots`が`null`のコンポーネントに渡された子要素は使われません。要素の子を参照するほかのルールには、コンポーネントに渡された子要素だけが見えます。
 
 コンポーネントがルートに複数の要素をレンダリングする場合は、`element`に`"#fragment"`を指定します。コンポーネント自身は要素ではなく、その`contents`が親の中でコンポーネントの位置に置かれます。
 

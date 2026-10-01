@@ -1192,7 +1192,7 @@ const Details = ({ children }) => <details>{children}</details>;
 
 `<Picture />` is not reported for the missing `img` element because the component renders it. `<Details></Details>` is reported for the missing `summary` element because only the usage can provide it.
 
-Currently only `permitted-contents` and the accessible name computation (used by rules such as `require-accessible-name`) use `contents`. Other rules that look at the children of the element see only the children given to the component.
+Currently only `permitted-contents` and the accessible name computation (used by rules such as `require-accessible-name`) use `contents`. In the name computation, `{ "dynamic": true }` is not a source of a name, and children given to a component whose `slots` is `null` are not used. Other rules that look at the children of the element see only the children given to the component.
 
 If the component renders several elements at its root, set `element` to `"#fragment"`. The component is not an element itself; its `contents` stand in its place in the parent.
 
