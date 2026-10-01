@@ -62,7 +62,7 @@ Instead of the CLI, you can configure dynamic scanning directly in your markupli
 }
 ```
 
-Only the config file is filesystem-watched, so in watch mode or an editor session, results can go stale if an imported component file changes without the config changing too. Edits to the linted file itself — adding, removing, or changing an import — are reflected on the next lint of that file; only the imported component files are not watched.
+In watch mode or an editor session, the component files `auto` (and `scan`) read are watched along with the config file, so editing one re-lints the files that use it. What is not watched, so a change to it is picked up only when the config changes: a component file that does not exist yet (including a new match of a `scan` glob, and a file that was removed and comes back), files under `node_modules`, and the files of `files` and `imports`. Edits to the linted file itself — adding, removing, or changing an import — are reflected on the next lint of that file.
 
 ## How It Works
 
@@ -188,10 +188,11 @@ const pretenders = await scan([
 
 #### Parameters
 
-| Parameter                      | Type                | Description                             |
-| ------------------------------ | ------------------- | --------------------------------------- |
-| `files`                        | `readonly string[]` | Absolute file paths to scan             |
-| `options.ignoreComponentNames` | `readonly string[]` | Component names to exclude from results |
+| Parameter                      | Type                | Description                                                                                |
+| ------------------------------ | ------------------- | ------------------------------------------------------------------------------------------ |
+| `files`                        | `readonly string[]` | Absolute file paths to scan                                                                |
+| `options.ignoreComponentNames` | `readonly string[]` | Component names to exclude from results                                                    |
+| `options.dependencies`         | `Set<string>`       | A set the scan adds the files its result depends on to (see [Dependencies](#dependencies)) |
 
 ### `jsxScanner(files, options)`
 
@@ -332,17 +333,18 @@ const resolved = await disambiguatePretenders(pretenders, {
 
 #### Parameters
 
-| Parameter            | Type                   | Description                                 |
-| -------------------- | ---------------------- | ------------------------------------------- |
-| `pretenders`         | `readonly Pretender[]` | The resolved pretender list to disambiguate |
-| `options.filePath`   | `string`               | Absolute path of the file being linted      |
-| `options.sourceCode` | `string`               | Full source text of the file being linted   |
+| Parameter              | Type                   | Description                                                                                                  |
+| ---------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `pretenders`           | `readonly Pretender[]` | The resolved pretender list to disambiguate                                                                  |
+| `options.filePath`     | `string`               | Absolute path of the file being linted                                                                       |
+| `options.sourceCode`   | `string`               | Full source text of the file being linted                                                                    |
+| `options.dependencies` | `Set<string>`          | A set to add the `tsconfig.json` files the imports were resolved with to (see [Dependencies](#dependencies)) |
 
 #### Returns
 
 `Promise<readonly Pretender[]>` — The disambiguated pretender list, or `pretenders` itself when there was nothing to resolve or nothing could be confirmed.
 
-### `autoScan(entryAbsPath, sourceCode)`
+### `autoScan(entryAbsPath, sourceCode, options)`
 
 Resolves pretenders on demand by walking a single lint target's own import graph (breadth-first, extension-agnostic — a `.tsx` entry can import a `.vue` file and vice versa) and scanning the collected files in one batch. This is the resolution logic behind the `pretenders.auto` config option; it's normally invoked automatically as part of `markuplint`'s config resolution, not called directly.
 
@@ -354,10 +356,11 @@ const pretenders = await autoScan('/absolute/path/to/Page.tsx', sourceCode);
 
 #### Parameters
 
-| Parameter      | Type     | Description                                                   |
-| -------------- | -------- | ------------------------------------------------------------- |
-| `entryAbsPath` | `string` | Absolute path of the file being linted                        |
-| `sourceCode`   | `string` | The entry file's current text (may be unsaved editor content) |
+| Parameter              | Type          | Description                                                                                                                                              |
+| ---------------------- | ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `entryAbsPath`         | `string`      | Absolute path of the file being linted                                                                                                                   |
+| `sourceCode`           | `string`      | The entry file's current text (may be unsaved editor content)                                                                                            |
+| `options.dependencies` | `Set<string>` | A set to add the files the result depends on to, the entry file included — also when the result comes from the cache (see [Dependencies](#dependencies)) |
 
 #### Returns
 
@@ -365,9 +368,15 @@ const pretenders = await autoScan('/absolute/path/to/Page.tsx', sourceCode);
 
 Results are cached per entry path, keyed on `sourceCode` equality (not mtime, which doesn't exist for unsaved editor content); `node_modules` is never traversed into, and import cycles are handled via a visited set. Traversal is capped at 8 import hops for template-language (`.vue`/`.svelte`/`.astro`) chains, but this cap does not hold for JSX/TSX-only chains: `jsxScanner` builds a `ts.Program` from the collected files, and TypeScript's own module resolution transitively pulls in whatever those files import regardless of the cap.
 
+### Dependencies
+
+`scan`, `autoScan` and `disambiguatePretenders` take an optional `dependencies` set and add to it the normalized (`/`-delimited) absolute paths of the files their result depends on: the files given to the scan, the source files the TypeScript program reaches from them through relative imports, the files read to resolve an imported component (barrels and what they re-export from), and the `tsconfig.json` the imports were resolved with, together with the configs it `extends`. A watch-mode host watches them to learn when to resolve again.
+
+Not recorded: declaration files and anything under `node_modules`; files that do not exist yet (a candidate of an import, a nearer `tsconfig.json`, a new match of a glob); files reached only through a `paths` alias beyond `autoScan`'s walk, because the JSX scanner's TypeScript program reads no `tsconfig.json`.
+
 ### `clearPretenderCaches()`
 
-Clears the module-level caches that back import/export resolution (module resolution, export tables, parsed JSX source files, `autoScan` results). None of these caches expire on their own, so a long-running host (watch mode, an editor extension) that keeps resolving pretenders across file edits must call this after each edit — otherwise a renamed export or a newly valid tsconfig `paths` alias keeps resolving as it did before the change for the rest of the process's lifetime.
+Clears the module-level caches that back import/export resolution (module resolution, export tables, parsed JSX source files, `autoScan` results). None of these caches expire on their own, so a long-running host (watch mode, an editor extension) that keeps resolving pretenders across file edits must call this after each edit to a file in the `dependencies` — otherwise a renamed export or a newly valid tsconfig `paths` alias keeps resolving as it did before the change for the rest of the process's lifetime.
 
 ```ts
 import { clearPretenderCaches } from '@markuplint/pretenders';

@@ -52,6 +52,11 @@
  *   implementation detail that has shifted before: treat "call it after every edit" as
  *   the contract rather than reasoning about the exceptions.
  *
+ *   Which files an edit matters for is what {@link ScanOptions.dependencies} (and
+ *   {@link AutoScanOptions.dependencies}, {@link DisambiguateOptions.dependencies}) report: a host
+ *   watches those, and calls this when one of them changes. Edits to the entry file itself need
+ *   no watching — {@link autoScan} keys its cache on that file's text.
+ *
  *   Content that has no on-disk representation yet (an editor's unsaved buffer) is handled
  *   separately, by passing it as `sources` to {@link scan} / {@link autoScan} rather than
  *   by invalidating caches.
@@ -63,6 +68,7 @@ import { clearModuleResolutionCaches } from './import-resolver/resolve-module-fi
 import { clearSourceFileCache } from './jsx/compiler-host.js';
 
 export { autoScan } from './auto-scan.js';
+export type { AutoScanOptions } from './auto-scan.js';
 export type { DisambiguateOptions } from './disambiguate.js';
 export { disambiguatePretenders } from './disambiguate.js';
 export { jsxScanner } from './jsx/index.js';

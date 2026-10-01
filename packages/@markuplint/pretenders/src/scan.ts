@@ -16,6 +16,12 @@ export interface ScanOptions {
 	 * absolute file path, consulted before falling back to a disk read.
 	 */
 	readonly sources?: ReadonlyMap<string, string>;
+
+	/**
+	 * A sink for the files the scan's result depends on
+	 * (see `PretenderScanOptions#dependencies`).
+	 */
+	readonly dependencies?: Set<string>;
 }
 
 /**
@@ -35,11 +41,14 @@ export async function scan(files: readonly string[], options?: ScanOptions): Pro
 
 	const ignoreComponentNames = options?.ignoreComponentNames ? [...options.ignoreComponentNames] : undefined;
 	const sources = options?.sources;
+	const dependencies = options?.dependencies;
 
 	const [jsxPretenders, templatePretenders] = await Promise.all([
-		jsxFiles.length > 0 ? jsxScanner(jsxFiles, { ignoreComponentNames, sources }) : Promise.resolve([]),
+		jsxFiles.length > 0
+			? jsxScanner(jsxFiles, { ignoreComponentNames, sources, dependencies })
+			: Promise.resolve([]),
 		templateFiles.length > 0
-			? templateScanner(templateFiles, { ignoreComponentNames, sources })
+			? templateScanner(templateFiles, { ignoreComponentNames, sources, dependencies })
 			: Promise.resolve([]),
 	]);
 

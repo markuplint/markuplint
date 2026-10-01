@@ -30,7 +30,16 @@ const DEFAULT_COMPILER_OPTIONS: ts.CompilerOptions = {
 	module: ts.ModuleKind.ESNext,
 };
 
-const parsedConfigCache = new Map<string, ts.ParsedCommandLine | null>();
+type ParsedConfig = {
+	readonly parsed: ts.ParsedCommandLine | null;
+	/**
+	 * The config file and everything it `extends`, kept with the parsed result
+	 * so a cache hit can still report them (see {@link resolveModuleFile}).
+	 */
+	readonly files: readonly string[];
+};
+
+const parsedConfigCache = new Map<string, ParsedConfig>();
 const moduleResolutionCacheByConfig = new Map<string, ts.ModuleResolutionCache>();
 
 /**
@@ -41,7 +50,11 @@ const moduleResolutionCacheByConfig = new Map<string, ts.ModuleResolutionCache>(
  * file change) — otherwise an edited `tsconfig.json` (a new `paths` alias)
  * or a newly created file that makes a previously-unresolvable specifier
  * resolvable keeps using the stale parsed config / resolution result for
- * the rest of the process's lifetime.
+ * the rest of the process's lifetime. An edit to a `tsconfig.json` is one a
+ * host can learn of from the `dependencies` of `resolveModuleFile()`; the
+ * creation of a file is not (it is not there to be reported yet), so a host
+ * that watches only the reported files sees it with its next full
+ * re-resolution.
  */
 export function clearModuleResolutionCaches() {
 	parsedConfigCache.clear();
@@ -62,23 +75,56 @@ export function normalizePath(filePath: string): string {
 	return filePath.split('\\').join('/');
 }
 
-function getParsedConfig(importerDir: string): ts.ParsedCommandLine | null {
-	const configPath = ts.findConfigFile(importerDir, ts.sys.fileExists);
-	if (!configPath) {
-		return null;
+/**
+ * Adds `filePath` to `dependencies` (see `PretenderScanOptions#dependencies`),
+ * unless it is under `node_modules`. A no-op without a sink.
+ *
+ * @param dependencies - The sink, if the caller wants one
+ * @param filePath - The path of a file the result depends on
+ */
+export function recordDependency(dependencies: Set<string> | undefined, filePath: string): void {
+	if (!dependencies) {
+		return;
 	}
+	const normalized = normalizePath(filePath);
+	if (!normalized.includes('/node_modules/')) {
+		dependencies.add(normalized);
+	}
+}
 
+function getParsedConfig(configPath: string): ParsedConfig {
 	const cached = parsedConfigCache.get(configPath);
 	if (cached !== undefined) {
 		return cached;
 	}
 
 	const configFile = ts.readConfigFile(configPath, ts.sys.readFile);
-	const parsed = configFile.error
-		? null
-		: ts.parseJsonConfigFileContent(configFile.config as unknown, ts.sys, path.dirname(configPath));
-	parsedConfigCache.set(configPath, parsed);
-	return parsed;
+	let entry: ParsedConfig;
+	if (configFile.error) {
+		entry = { parsed: null, files: [configPath] };
+	} else {
+		// `parseJsonConfigFileContent` is given no source file here, so it does not
+		// report `extendedSourceFiles`; the extended-config cache lists every file of
+		// the `extends` chain, nested ones included. Its keys are lower-cased on a
+		// case-insensitive file system, hence the files are read from the values.
+		const extendedConfigCache = new Map<string, ts.ExtendedConfigCacheEntry>();
+		const parsed = ts.parseJsonConfigFileContent(
+			configFile.config as unknown,
+			ts.sys,
+			path.dirname(configPath),
+			undefined,
+			configPath,
+			undefined,
+			undefined,
+			extendedConfigCache,
+		);
+		entry = {
+			parsed,
+			files: [configPath, ...[...extendedConfigCache.values()].map(extended => extended.extendedResult.fileName)],
+		};
+	}
+	parsedConfigCache.set(configPath, entry);
+	return entry;
 }
 
 function getModuleResolutionCache(configPath: string, compilerOptions: ts.CompilerOptions): ts.ModuleResolutionCache {
@@ -96,15 +142,25 @@ function getModuleResolutionCache(configPath: string, compilerOptions: ts.Compil
  *
  * @param importerAbsPath - Absolute path of the file containing the import
  * @param specifier - The module specifier text (e.g. `./Button`, `@/components/Button`)
+ * @param dependencies - A sink for the `tsconfig.json` the import was resolved
+ *                       with and the configs it `extends`, recorded on a cache
+ *                       hit too (see `PretenderScanOptions#dependencies`)
  * @returns The normalized (`/`-delimited) absolute path of the resolved file,
  *          or `null` when resolution fails (e.g. a bare npm specifier with no
  *          matching package, or a relative specifier with no matching file).
  */
-export function resolveModuleFile(importerAbsPath: string, specifier: string): string | null {
+export function resolveModuleFile(
+	importerAbsPath: string,
+	specifier: string,
+	dependencies?: Set<string>,
+): string | null {
 	const importerDir = path.dirname(importerAbsPath);
 	const configPath = ts.findConfigFile(importerDir, ts.sys.fileExists);
-	const parsedConfig = configPath ? getParsedConfig(importerDir) : null;
-	const compilerOptions = parsedConfig?.options ?? DEFAULT_COMPILER_OPTIONS;
+	const config = configPath ? getParsedConfig(configPath) : null;
+	for (const file of config?.files ?? []) {
+		recordDependency(dependencies, file);
+	}
+	const compilerOptions = config?.parsed?.options ?? DEFAULT_COMPILER_OPTIONS;
 	const cache = getModuleResolutionCache(configPath ?? '__default__', compilerOptions);
 
 	const result = ts.resolveModuleName(specifier, importerAbsPath, compilerOptions, ts.sys, cache);
