@@ -24,7 +24,7 @@ import path from 'node:path';
 import { isFatalError } from '@markuplint/shared';
 
 import { analyzeImports } from './import-resolver/index.js';
-import { normalizePath, resolveModuleFile } from './import-resolver/resolve-module-file.js';
+import { normalizePath, recordDependency, resolveModuleFile } from './import-resolver/resolve-module-file.js';
 import { scan } from './scan.js';
 
 const SCANNABLE_EXTENSIONS = new Set([
@@ -62,16 +62,28 @@ export interface AutoScanOptions {
 	 * a negative number or `NaN` behaves like `0`, and a fraction is rounded up.
 	 */
 	readonly depth?: number;
+
+	/**
+	 * A sink for the files the result depends on (see
+	 * `PretenderScanOptions#dependencies`), the entry file included — the
+	 * caller already holds it and skips it. A cached result reports the files
+	 * it was computed from, the same as a fresh one.
+	 */
+	readonly dependencies?: Set<string>;
 }
 
-const resultCache = new Map<string, { sourceCode: string; depth: number; pretenders: Pretender[] }>();
+const resultCache = new Map<
+	string,
+	{ sourceCode: string; depth: number; pretenders: Pretender[]; dependencies: ReadonlySet<string> }
+>();
 
 /**
  * Clears the module-level auto-scan result cache. This cache is keyed on the
  * ENTRY file's path and content only, so an edit to any other file in the
  * entry's import graph does not invalidate it — a long-running host must call
  * `clearPretenderCaches()` (which includes this one) after an edit to any file
- * `autoScan` may have walked, not just after an edit to the entry itself.
+ * `autoScan` may have walked, not just after an edit to the entry itself. Those
+ * files are what {@link AutoScanOptions.dependencies} reports.
  */
 export function clearAutoScanCache() {
 	resultCache.clear();
@@ -84,7 +96,7 @@ export function clearAutoScanCache() {
  *
  * @param entryAbsPath - Absolute path of the file currently being linted
  * @param sourceCode - The entry file's current text (may be unsaved editor content)
- * @param options - Traversal options
+ * @param options - Traversal options, and where to report the files the result depends on
  * @returns Discovered pretender mappings for the entry file and its import graph
  */
 export async function autoScan(
@@ -97,9 +109,15 @@ export async function autoScan(
 
 	const cached = resultCache.get(entryKey);
 	if (cached && cached.sourceCode === sourceCode && cached.depth === maxDepth) {
+		for (const dependency of cached.dependencies) {
+			options?.dependencies?.add(dependency);
+		}
 		return cached.pretenders;
 	}
 
+	// Collected here, not into the caller's sink: the cache keeps this set, and a
+	// caller's own contents must not be replayed to the next caller.
+	const dependencies = new Set<string>();
 	const sources = new Map([[entryKey, sourceCode]]);
 	const visited = new Set([entryKey]);
 	const collected: string[] = [];
@@ -122,7 +140,7 @@ export async function autoScan(
 			}
 
 			for (const binding of analysis.bindings) {
-				const resolved = resolveModuleFile(absPath, binding.source);
+				const resolved = resolveModuleFile(absPath, binding.source, dependencies);
 				if (!resolved) {
 					continue;
 				}
@@ -138,6 +156,8 @@ export async function autoScan(
 				}
 
 				collected.push(resolved);
+				// Before the read: a file that cannot be read now, but comes back, is a change.
+				recordDependency(dependencies, resolved);
 
 				const childSource = readFileSafe(resolved);
 				if (childSource == null) {
@@ -158,8 +178,11 @@ export async function autoScan(
 
 	// `followImports: false`: this walk already decided which files belong, so
 	// the TypeScript program must not add more of them (see `DEFAULT_DEPTH`).
-	const pretenders = await scan(collected, { sources, followImports: false });
-	resultCache.set(entryKey, { sourceCode, depth: maxDepth, pretenders });
+	const pretenders = await scan(collected, { sources, followImports: false, dependencies });
+	resultCache.set(entryKey, { sourceCode, depth: maxDepth, pretenders, dependencies });
+	for (const dependency of dependencies) {
+		options?.dependencies?.add(dependency);
+	}
 	return pretenders;
 }
 
