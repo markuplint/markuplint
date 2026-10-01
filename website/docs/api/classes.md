@@ -24,19 +24,19 @@ const file = await MLEngine.toMLFile('./path/to/page.html');
 - `Object`
 - Optional
 
-| Property            | Type       | Optional | Description                                                            |
-| ------------------- | ---------- | -------- | ---------------------------------------------------------------------- |
-| `configFile`        | `string`   | ✓        | The file path of the configuration.                                    |
-| `config`            | `Object`   | ✓        | The configuration.                                                     |
-| `defaultConfig`     | `Object`   | ✓        | The Fallback configuration when failing to auto search.                |
-| `noSearchConfig`    | `boolean`  | ✓        | No search a configure file automatically.                              |
-| `locale`            | `string`   | ✓        | Locale.                                                                |
-| `fix`               | `boolean`  | ✓        | Returns the fixed code after the execution.                            |
-| `ignoreExt`         | `boolean`  | ✓        | Evaluates files even though the type of extension.                     |
-| `rules`             | `Object[]` | ✓        | Additional custom rules.                                               |
-| `importPresetRules` | `boolean`  | ✓        | No imports preset rules.                                               |
-| `debug`             | `boolean`  | ✓        | Outputs logs for debugging.                                            |
-| `watch`             | `boolean`  | ✓        | Fires `lint` event when the target file or the config file is updated. |
+| Property            | Type       | Optional | Description                                                                                                                                                                  |
+| ------------------- | ---------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `configFile`        | `string`   | ✓        | The file path of the configuration.                                                                                                                                          |
+| `config`            | `Object`   | ✓        | The configuration.                                                                                                                                                           |
+| `defaultConfig`     | `Object`   | ✓        | The Fallback configuration when failing to auto search.                                                                                                                      |
+| `noSearchConfig`    | `boolean`  | ✓        | No search a configure file automatically.                                                                                                                                    |
+| `locale`            | `string`   | ✓        | Locale.                                                                                                                                                                      |
+| `fix`               | `boolean`  | ✓        | Returns the fixed code after the execution.                                                                                                                                  |
+| `ignoreExt`         | `boolean`  | ✓        | Evaluates files even though the type of extension.                                                                                                                           |
+| `rules`             | `Object[]` | ✓        | Additional custom rules.                                                                                                                                                     |
+| `importPresetRules` | `boolean`  | ✓        | No imports preset rules.                                                                                                                                                     |
+| `debug`             | `boolean`  | ✓        | Outputs logs for debugging.                                                                                                                                                  |
+| `watch`             | `boolean`  | ✓        | Fires `lint` event when the config file or a component file that `pretenders` reads is updated. The target file is not watched; tell the engine of its edits with `setCode`. |
 
 ### Methods
 
