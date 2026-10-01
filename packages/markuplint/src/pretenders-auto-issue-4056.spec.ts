@@ -94,6 +94,10 @@ describe('pretenders.auto: issue #4056', () => {
 		expect(await lint('<Action>Label</Action>')).toStrictEqual([]);
 	});
 
+	test('text written inside a component that never renders its children is not its name', async () => {
+		expect(await lint('<Unnamed>Save</Unnamed>')).toStrictEqual(['require-accessible-name: <Unnamed>']);
+	});
+
 	test('the children given at the usage site still name a component that renders none itself', async () => {
 		expect(await lint('<Plain>Label</Plain>')).toStrictEqual([]);
 		expect(await lint('<Plain></Plain>')).toStrictEqual(['require-accessible-name: <Plain>']);
