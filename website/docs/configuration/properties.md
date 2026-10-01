@@ -1283,7 +1283,7 @@ The walk follows up to 8 import hops from the linted file. Use the object form t
 
 Unlike `scan`, which pre-scans a configured set of files once, `auto` runs per lint target and only ever considers components the linted file actually imports (transitively) — so same-named components in unrelated files can never collide. This comes with two trade-offs:
 
-- Only the config file is filesystem-watched, so in watch mode or an editor session, results can go stale if an imported component file changes without the config changing too. Edits to the linted file itself — adding, removing, or changing an import — are reflected on the next lint of that file; only the imported component files are not watched.
+- In watch mode or an editor session, the component files `auto` (and `scan`) read are watched along with the config file, so editing one re-lints the files that use it. What is not watched, so a change to it is picked up only when the config changes: a component file that does not exist yet (including a new match of a `scan` glob, and a file that was removed and comes back), files under `node_modules`, and the files of `files` and `imports`. Edits to the linted file itself — adding, removing, or changing an import — are reflected on the next lint of that file.
 - Only the **object form** of `pretenders` can express `auto`; the array shorthand cannot.
 
 Other pretender sources (`files`, `imports`, `data`, `scan`) take precedence over `auto` for the same selector, since they're resolved first.

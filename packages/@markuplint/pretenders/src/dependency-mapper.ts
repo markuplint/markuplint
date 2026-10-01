@@ -13,7 +13,7 @@ import { composeIdentity } from './compose-identity.js';
 import { getExportTable } from './export-table.js';
 import { scriptKindForPath } from './import-resolver/analyze-jsx-imports.js';
 import { resolveComponentImport } from './import-resolver/index.js';
-import { normalizePath, resolveModuleFile } from './import-resolver/resolve-module-file.js';
+import { normalizePath, recordDependency, resolveModuleFile } from './import-resolver/resolve-module-file.js';
 
 import type { ExportEntry } from './export-table.js';
 
@@ -31,7 +31,23 @@ export interface DependencyMapperContext {
 	 * (see the module JSDoc on `getExportTableForFile`).
 	 */
 	readonly sources?: ReadonlyMap<string, string>;
+	/**
+	 * A sink for the files read while chasing imports — each export table's file,
+	 * and the `tsconfig.json` (with what it `extends`) the imports were resolved
+	 * with. See `PretenderScanOptions#dependencies`.
+	 */
+	readonly dependencies?: Set<string>;
 }
+
+/**
+ * What resolving one hop needs besides the hop itself, passed down as one
+ * object so a new input does not touch every signature on the way.
+ */
+type ResolveEnv = {
+	readonly cwd: string;
+	readonly sources: ReadonlyMap<string, string> | undefined;
+	readonly dependencies: Set<string> | undefined;
+};
 
 /**
  * Follows chains where one component wraps another (e.g., MyButton -> Button -> button)
@@ -60,7 +76,7 @@ export function dependencyMapper(
 	const resolvedNameIndex = nameIndex ?? buildNameIndex(map);
 	const importsByFile = context?.importsByFile;
 	const cwd = context?.cwd ?? process.cwd();
-	const sources = context?.sources;
+	const env: ResolveEnv = { cwd, sources: context?.sources, dependencies: context?.dependencies };
 	const linkedPretenders: Pretender[] = [];
 
 	for (const [key, [identifier, _identity, _filePath, _sourceFile]] of map) {
@@ -72,7 +88,7 @@ export function dependencyMapper(
 		const visited = new Set<string>([key]);
 
 		while (true) {
-			const lookupKey = resolveHop(elName, currentFile, key, map, importsByFile, resolvedNameIndex, cwd, sources);
+			const lookupKey = resolveHop(elName, currentFile, key, map, importsByFile, resolvedNameIndex, env);
 			const mappedPretender = map.get(lookupKey);
 			if (!mappedPretender) {
 				break;
@@ -123,8 +139,7 @@ function resolveHop(
 	map: Readonly<PretenderDirectorMap>,
 	importsByFile: ReadonlyMap<string, readonly ImportBinding[]> | undefined,
 	resolvedNameIndex: Readonly<Map<Identifier, string>>,
-	cwd: string,
-	sources: ReadonlyMap<string, string> | undefined,
+	env: ResolveEnv,
 ): string {
 	if (currentFile) {
 		const sameFileKey = `${currentFile}#${elName}`;
@@ -132,7 +147,7 @@ function resolveHop(
 			return sameFileKey;
 		}
 
-		const viaImport = resolveThroughImport(elName, currentFile, importsByFile, cwd, sources);
+		const viaImport = resolveThroughImport(elName, currentFile, importsByFile, env);
 		if (viaImport && map.has(viaImport)) {
 			return viaImport;
 		}
@@ -153,8 +168,7 @@ function resolveThroughImport(
 	elName: string,
 	currentFile: string,
 	importsByFile: ReadonlyMap<string, readonly ImportBinding[]> | undefined,
-	cwd: string,
-	sources: ReadonlyMap<string, string> | undefined,
+	env: ResolveEnv,
 ): string | null {
 	const bindings = importsByFile?.get(currentFile);
 	if (!bindings) {
@@ -166,17 +180,17 @@ function resolveThroughImport(
 		return null;
 	}
 
-	const importerAbs = path.resolve(cwd, currentFile);
-	const resolvedAbs = resolveModuleFile(importerAbs, binding.source);
+	const importerAbs = path.resolve(env.cwd, currentFile);
+	const resolvedAbs = resolveModuleFile(importerAbs, binding.source, env.dependencies);
 	if (!resolvedAbs) {
 		return null;
 	}
 
 	if (isTemplateComponentFile(resolvedAbs)) {
-		return templateComponentKey(resolvedAbs, cwd);
+		return templateComponentKey(resolvedAbs, env.cwd);
 	}
 
-	return resolveExportedName(resolvedAbs, binding.importedName, cwd, new Set(), sources);
+	return resolveExportedName(resolvedAbs, binding.importedName, new Set(), env);
 }
 
 const TEMPLATE_COMPONENT_EXTENSIONS = new Set(['.vue', '.svelte', '.astro']);
@@ -204,9 +218,8 @@ function templateComponentKey(fileAbs: string, cwd: string): string {
 function resolveExportedName(
 	fileAbs: string,
 	exportedName: string,
-	cwd: string,
 	visited: Set<string>,
-	sources: ReadonlyMap<string, string> | undefined,
+	env: ResolveEnv,
 ): string | null {
 	if (visited.size >= MAX_RE_EXPORT_DEPTH) {
 		return null;
@@ -217,34 +230,33 @@ function resolveExportedName(
 	}
 	visited.add(visitKey);
 
-	const table = getExportTableForFile(fileAbs, sources);
+	const table = getExportTableForFile(fileAbs, env);
 	const entry = table?.byName.get(exportedName);
 	if (!entry) {
 		return null;
 	}
 
-	const fileRel = normalizePath(path.relative(cwd, fileAbs));
+	const fileRel = normalizePath(path.relative(env.cwd, fileAbs));
 
 	if (entry.kind === 'local') {
 		return `${fileRel}#${entry.localName}`;
 	}
 
-	return resolveReExport(fileAbs, entry, cwd, visited, sources);
+	return resolveReExport(fileAbs, entry, visited, env);
 }
 
 function resolveReExport(
 	fileAbs: string,
 	entry: Extract<ExportEntry, { kind: 're-export' }>,
-	cwd: string,
 	visited: Set<string>,
-	sources: ReadonlyMap<string, string> | undefined,
+	env: ResolveEnv,
 ): string | null {
 	if (entry.importedName === '*') {
 		// Namespace re-export target — no single member to pin to.
 		return null;
 	}
 
-	const nextAbs = resolveModuleFile(fileAbs, entry.source);
+	const nextAbs = resolveModuleFile(fileAbs, entry.source, env.dependencies);
 	if (!nextAbs) {
 		return null;
 	}
@@ -256,10 +268,10 @@ function resolveReExport(
 		// name index, silently resolving to whichever same-named component happened
 		// to be registered first — the exact failure issue #3951 fixed for direct
 		// imports.
-		return templateComponentKey(nextAbs, cwd);
+		return templateComponentKey(nextAbs, env.cwd);
 	}
 
-	return resolveExportedName(nextAbs, entry.importedName, cwd, visited, sources);
+	return resolveExportedName(nextAbs, entry.importedName, visited, env);
 }
 
 type ExportTableCacheEntry = {
@@ -316,9 +328,12 @@ export function clearExportTableCache() {
  * on both would mean giving up freshness there or paying per-reference I/O here.
  * The two look alike but answer different questions; keep them separate.
  */
-function getExportTableForFile(fileAbs: string, sources: ReadonlyMap<string, string> | undefined) {
+function getExportTableForFile(fileAbs: string, env: ResolveEnv) {
 	const key = normalizePath(fileAbs);
-	const overrideText = sources?.get(key);
+	// Recorded before the cache is consulted: a hit reads nothing, yet the result
+	// still depends on this file.
+	recordDependency(env.dependencies, key);
+	const overrideText = env.sources?.get(key);
 	const cached = exportTableCache.get(key);
 
 	if (cached && cached.sourceText === (overrideText ?? null)) {

@@ -7,7 +7,7 @@ import path from 'node:path';
 import { isTrivialContents } from '../contents.js';
 import { createScanner } from '../create-scanner.js';
 import { analyzeImports } from '../import-resolver/index.js';
-import { normalizePath } from '../import-resolver/resolve-module-file.js';
+import { normalizePath, recordDependency } from '../import-resolver/resolve-module-file.js';
 import { PretenderDirector } from '../pretender-director.js';
 import { getScanner } from '../scanner-loader.js';
 
@@ -42,6 +42,9 @@ export const templateScanner = createScanner<PretenderScanTemplateOptions>(async
 		if (!scanner) {
 			continue;
 		}
+
+		// Recorded even when the read below fails: the file coming back is a change too.
+		recordDependency(options?.dependencies, filePath);
 
 		const overrideSource = options?.sources?.get(normalizePath(filePath));
 		let sourceCode: string;
@@ -90,5 +93,5 @@ export const templateScanner = createScanner<PretenderScanTemplateOptions>(async
 		}
 	}
 
-	return director.getPretenders(cwd, options?.sources);
+	return director.getPretenders(cwd, options?.sources, options?.dependencies);
 });

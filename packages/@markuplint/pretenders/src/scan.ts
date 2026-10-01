@@ -24,6 +24,12 @@ export interface ScanOptions {
 	 * files never follow imports, so this does not affect them.
 	 */
 	readonly followImports?: boolean;
+
+	/**
+	 * A sink for the files the scan's result depends on
+	 * (see `PretenderScanOptions#dependencies`).
+	 */
+	readonly dependencies?: Set<string>;
 }
 
 /**
@@ -44,13 +50,14 @@ export async function scan(files: readonly string[], options?: ScanOptions): Pro
 	const ignoreComponentNames = options?.ignoreComponentNames ? [...options.ignoreComponentNames] : undefined;
 	const sources = options?.sources;
 	const followImports = options?.followImports;
+	const dependencies = options?.dependencies;
 
 	const [jsxPretenders, templatePretenders] = await Promise.all([
 		jsxFiles.length > 0
-			? jsxScanner(jsxFiles, { ignoreComponentNames, sources, followImports })
+			? jsxScanner(jsxFiles, { ignoreComponentNames, sources, followImports, dependencies })
 			: Promise.resolve([]),
 		templateFiles.length > 0
-			? templateScanner(templateFiles, { ignoreComponentNames, sources })
+			? templateScanner(templateFiles, { ignoreComponentNames, sources, dependencies })
 			: Promise.resolve([]),
 	]);
 
