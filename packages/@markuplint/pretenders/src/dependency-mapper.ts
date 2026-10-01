@@ -9,6 +9,7 @@ import path from 'node:path';
 import { isFatalError } from '@markuplint/shared';
 import ts from 'typescript';
 
+import { composeIdentity } from './compose-identity.js';
 import { getExportTable } from './export-table.js';
 import { scriptKindForPath } from './import-resolver/analyze-jsx-imports.js';
 import { resolveComponentImport } from './import-resolver/index.js';
@@ -46,6 +47,10 @@ export interface DependencyMapperContext {
  * (1) and (2) are what let same-named components declared in different files
  * (e.g., two unrelated `Item` components) resolve independently instead of the
  * first-registered one silently winning for every reference — see issue #3951.
+ *
+ * Each hop composes the `slots` / `contents` of the component so far into those of the
+ * component it renders (`composeIdentity`, issue #4057); the rest of the identity is
+ * the last hop's.
  */
 export function dependencyMapper(
 	map: Readonly<PretenderDirectorMap>,
@@ -73,7 +78,7 @@ export function dependencyMapper(
 				break;
 			}
 
-			identity = mappedPretender[1];
+			identity = composeIdentity(identity, mappedPretender[1]);
 			filePath = mappedPretender[2];
 
 			if (visited.has(lookupKey)) {

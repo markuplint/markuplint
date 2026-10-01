@@ -78,9 +78,10 @@ const defaultOptions: Required<Omit<PretenderScanJSXOptions, 'sources'>> = {
  *
  * What surrounds the children is recorded as `slots` (the element that directly wraps
  * `{children}`) and `contents` (the static children of that element), so that the children
- * given at the usage site are evaluated as the component renders them. Known limitation:
- * a component that renders another component takes the mapping of the latter, and its own
- * `slots` / `contents` are dropped (see `dependencyMapper`).
+ * given at the usage site are evaluated as the component renders them. A component that
+ * renders another component is described by the element the latter renders, with its own
+ * `slots` / `contents` composed in (see `composeIdentity`). Known limitation: its `attrs`,
+ * `aria`, and `inheritAttrs` are not composed.
  *
  * Supports:
  * - Function components (function declarations and arrow functions)
