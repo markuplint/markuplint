@@ -109,7 +109,7 @@ function extractAttrs(el: MLASTElement): ComponentScanAttr[] {
 		const binding = BINDING.exec(attr.nodeName)?.[1]?.toLowerCase();
 		if (binding) {
 			if (!SPECIAL_PROPS.has(binding)) {
-				attrs.push({ name: binding, dynamic: true });
+				addAttr(attrs, { name: binding, dynamic: true });
 			}
 			continue;
 		}
@@ -118,12 +118,25 @@ function extractAttrs(el: MLASTElement): ComponentScanAttr[] {
 		}
 		const value = attr.value.raw;
 		if (value === '') {
-			attrs.push({ name: attr.nodeName });
+			addAttr(attrs, { name: attr.nodeName });
 		} else {
-			attrs.push({ name: attr.nodeName, value });
+			addAttr(attrs, { name: attr.nodeName, value });
 		}
 	}
 	return attrs;
+}
+
+/**
+ * One name written in two forms (`class="btn" :class="x"`) is one attribute: dynamic
+ * when any of the forms is, in the position of the first.
+ */
+function addAttr(attrs: ComponentScanAttr[], attr: ComponentScanAttr) {
+	const index = attrs.findIndex(existing => existing.name === attr.name);
+	if (index === -1) {
+		attrs.push(attr);
+	} else if (attr.dynamic) {
+		attrs[index] = attr;
+	}
 }
 
 function containsSlot(n: MLASTChildNode): boolean {
