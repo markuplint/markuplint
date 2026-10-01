@@ -78,13 +78,18 @@ export function dependencyMapper(
 				break;
 			}
 
-			identity = composeIdentity(identity, mappedPretender[1]);
 			filePath = mappedPretender[2];
 
 			if (visited.has(lookupKey)) {
+				// Back at a component already passed: the result is that component as it is
+				// (the contract the cycle tests pin). Composing once more would hand over what
+				// the cycle hands over a second time. A cycle is not valid input, so what the
+				// components before it hand over is not worth keeping.
+				identity = mappedPretender[1];
 				via.push('...[Recursive]');
 				break;
 			}
+			identity = composeIdentity(identity, mappedPretender[1]);
 			visited.add(lookupKey);
 			via.push(elName);
 			elName = getElName(identity);
