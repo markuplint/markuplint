@@ -62,7 +62,7 @@ Instead of the CLI, you can configure dynamic scanning directly in your markupli
 }
 ```
 
-Only the config file is filesystem-watched, so in watch mode or an editor session, results can go stale if an imported component file changes without the config changing too.
+Only the config file is filesystem-watched, so in watch mode or an editor session, results can go stale if an imported component file changes without the config changing too. Edits to the linted file itself — adding, removing, or changing an import — are reflected on the next lint of that file; only the imported component files are not watched.
 
 ## How It Works
 

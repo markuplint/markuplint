@@ -1,12 +1,12 @@
 import type { ConfigSet } from '@markuplint/file-resolver';
-import type { Violation } from '@markuplint/ml-config';
+import type { Config, Violation } from '@markuplint/ml-config';
 
 import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
 import { ConfigProvider } from '@markuplint/file-resolver';
-import { describe, it, expect } from 'vitest';
+import { afterEach, beforeEach, describe, it, expect } from 'vitest';
 
 import { MLEngine } from './ml-engine.js';
 
@@ -386,6 +386,244 @@ describe('#3900 config-error does not accumulate across setCode', () => {
 		await engine.setCode("<div id='b'></div>");
 		const second = await engine.exec();
 		expect(countWildcardErrors(second?.violations)).toBe(1);
+	});
+});
+
+describe('#4064 setCode re-resolves the pretenders that depend on the source', () => {
+	// Each page renders a component directly inside <ul>, so permitted-contents
+	// names the element the component resolves to — or the component itself
+	// when it is unresolved. That name is what tells the states apart.
+	const disallowedIn = (violations: readonly Violation[] | undefined, name: string) =>
+		(violations ?? []).some(v => v.ruleId === 'permitted-contents' && v.message.includes(name));
+
+	// Built the way the VS Code extension builds its engines: the file is a
+	// code-based MLFile named relative to the workspace (a file-based one is
+	// read-only and rejects setCode), and `exec()` is run before any setCode.
+	const createEngine = async (tmpDir: string, sourceCode: string, pretenders: Config['pretenders']) => {
+		const file = (await MLEngine.toMLFile({ sourceCode, name: 'page.tsx', workspace: tmpDir }))!;
+		const engine = new MLEngine(file, {
+			noSearchConfig: true,
+			locale: 'en',
+			config: {
+				parser: { '\\.tsx$': '@markuplint/jsx-parser' },
+				pretenders,
+				rules: { 'permitted-contents': true },
+			},
+		});
+		return { engine, file };
+	};
+
+	let tmpDir: string;
+
+	beforeEach(async () => {
+		tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'ml-engine-setcode-pretenders-'));
+	});
+
+	afterEach(async () => {
+		await fs.rm(tmpDir, { recursive: true, force: true });
+	});
+
+	it('follows an import added, then removed, by setCode when pretenders.auto is on', async () => {
+		await fs.writeFile(path.join(tmpDir, 'Child.tsx'), 'export const Child = () => <button>x</button>;');
+		const withoutImport = 'export const Page = () => <ul><Child>x</Child></ul>;';
+		const withImport = `import { Child } from './Child';\n${withoutImport}`;
+
+		const { engine } = await createEngine(tmpDir, withoutImport, { auto: true });
+
+		const unresolved = await engine.exec();
+		expect(disallowedIn(unresolved?.violations, 'Child')).toBe(true);
+		expect(disallowedIn(unresolved?.violations, 'button')).toBe(false);
+
+		await engine.setCode(withImport);
+		const resolved = await engine.exec();
+		expect(disallowedIn(resolved?.violations, 'button')).toBe(true);
+		expect(disallowedIn(resolved?.violations, 'Child')).toBe(false);
+
+		await engine.setCode(withoutImport);
+		const unresolvedAgain = await engine.exec();
+		expect(disallowedIn(unresolvedAgain?.violations, 'Child')).toBe(true);
+		expect(disallowedIn(unresolvedAgain?.violations, 'button')).toBe(false);
+	});
+
+	it('re-disambiguates same-selector scan results against the imports of the new source', async () => {
+		const aPath = path.join(tmpDir, 'a', 'Item.tsx');
+		const bPath = path.join(tmpDir, 'b', 'Item.tsx');
+		await fs.mkdir(path.dirname(aPath));
+		await fs.mkdir(path.dirname(bPath));
+		await fs.writeFile(aPath, 'export const Item = () => <button>x</button>;');
+		await fs.writeFile(bPath, 'export const Item = () => <span>x</span>;');
+		const importA = "import { Item } from './a/Item';\nexport const Page = () => <ul><Item>x</Item></ul>;";
+		const importB = "import { Item } from './b/Item';\nexport const Page = () => <ul><Item>x</Item></ul>;";
+
+		const { engine } = await createEngine(tmpDir, importA, { scan: [{ files: [aPath, bPath] }] });
+
+		const fromA = await engine.exec();
+		expect(disallowedIn(fromA?.violations, 'button')).toBe(true);
+		expect(disallowedIn(fromA?.violations, 'span')).toBe(false);
+
+		await engine.setCode(importB);
+		const fromB = await engine.exec();
+		expect(disallowedIn(fromB?.violations, 'span')).toBe(true);
+		expect(disallowedIn(fromB?.violations, 'button')).toBe(false);
+	});
+
+	it('does not re-read the scanned files on setCode: what scan yields changes only with the config', async () => {
+		const itemPath = path.join(tmpDir, 'Item.tsx');
+		await fs.writeFile(itemPath, 'export const Item = () => <button>x</button>;');
+
+		const { engine } = await createEngine(
+			tmpDir,
+			"import { Item } from './Item';\nexport const Page = () => <ul><Item>x</Item></ul>;",
+			{ scan: [{ files: [itemPath] }] },
+		);
+
+		const first = await engine.exec();
+		expect(disallowedIn(first?.violations, 'button')).toBe(true);
+
+		// The scanned component changes on disk; the page is edited elsewhere.
+		await fs.writeFile(itemPath, 'export const Item = () => <span>x</span>;');
+		await engine.setCode("import { Item } from './Item';\nexport const Page = () => <ul><Item>y</Item></ul>;");
+		const second = await engine.exec();
+		expect(disallowedIn(second?.violations, 'button')).toBe(true);
+		expect(disallowedIn(second?.violations, 'span')).toBe(false);
+	});
+
+	// `A` sits behind a chain of components, each in its own file, so that its
+	// auto-resolution takes many more sequential file reads than `B`'s single
+	// one: a setCode(useA) started first still finishes after a setCode(useB)
+	// started right after it. That is the order the sequence guard exists for;
+	// without it, the slower first call would overwrite the second one's result.
+	const writeSlowAndFastComponents = async (dir: string) => {
+		await fs.writeFile(path.join(dir, 'A.tsx'), "import { A1 } from './A1';\nexport const A = () => <A1>x</A1>;");
+		for (let i = 1; i <= 5; i++) {
+			await fs.writeFile(
+				path.join(dir, `A${i}.tsx`),
+				`import { A${i + 1} } from './A${i + 1}';\nexport const A${i} = () => <A${i + 1}>x</A${i + 1}>;`,
+			);
+		}
+		await fs.writeFile(path.join(dir, 'A6.tsx'), 'export const A6 = () => <button>x</button>;');
+		await fs.writeFile(path.join(dir, 'B.tsx'), 'export const B = () => <span>x</span>;');
+	};
+	const useA = "import { A } from './A';\nexport const Page = () => <ul><A>x</A></ul>;";
+	const useB = "import { B } from './B';\nexport const Page = () => <ul><B>x</B></ul>;";
+
+	it('applies only the latest of overlapping setCode calls, even when an earlier one finishes later', async () => {
+		await writeSlowAndFastComponents(tmpDir);
+
+		const { engine, file } = await createEngine(tmpDir, 'export const Page = () => <ul></ul>;', { auto: true });
+		await engine.exec();
+
+		const earlier = engine.setCode(useA);
+		// Start the second call only once the first one has claimed the file —
+		// i.e. while it is resolving its pretenders, not before it got going.
+		// Started back to back, the first call would notice the second one as
+		// soon as it got going and step aside without resolving anything,
+		// which is the other, cheaper, way of being superseded.
+		while ((await file.getCode()) !== useA) {
+			await Promise.resolve();
+		}
+		const latest = engine.setCode(useB);
+
+		await Promise.all([earlier, latest]);
+		const result = await engine.exec();
+		expect(result?.sourceCode).toBe(useB);
+		expect(disallowedIn(result?.violations, 'span')).toBe(true);
+		expect(disallowedIn(result?.violations, 'button')).toBe(false);
+	});
+
+	it('resolves a superseded setCode call only once the latest one has taken effect', async () => {
+		await writeSlowAndFastComponents(tmpDir);
+
+		const { engine } = await createEngine(tmpDir, 'export const Page = () => <ul></ul>;', { auto: true });
+		await engine.exec();
+
+		// The VS Code extension runs exec() right after awaiting its own setCode
+		// call. If that call was superseded, the exec must still see the latest
+		// code applied to the document — not the file at B with the document
+		// still at the state before A.
+		const superseded = engine.setCode(useA);
+		const latest = engine.setCode(useB);
+		await superseded;
+		const result = await engine.exec();
+		await latest;
+
+		expect(result?.sourceCode).toBe(useB);
+		expect(disallowedIn(result?.violations, 'span')).toBe(true);
+		expect(disallowedIn(result?.violations, 'button')).toBe(false);
+	});
+
+	it('rejects a superseded setCode call with the failure of the latest one', async () => {
+		// A file-based MLFile is read-only, so the latest call fails at the
+		// file. The superseded call never touched the file itself (it stepped
+		// aside as soon as it saw the newer call), yet it must not resolve: its
+		// caller would take that as "the latest code is in place" and lint.
+		const pagePath = path.join(tmpDir, 'page.tsx');
+		await fs.writeFile(pagePath, 'export const Page = () => <ul></ul>;');
+		const file = await MLEngine.toMLFile(pagePath);
+		const engine = new MLEngine(file!, {
+			noSearchConfig: true,
+			locale: 'en',
+			config: { parser: { '\\.tsx$': '@markuplint/jsx-parser' }, rules: { 'permitted-contents': true } },
+		});
+		await engine.exec();
+
+		const superseded = engine.setCode(useA);
+		const latest = engine.setCode(useB);
+
+		await expect(latest).rejects.toThrow('This file object is readonly');
+		await expect(superseded).rejects.toThrow('This file object is readonly');
+	});
+
+	it('resolves the pretenders for the new code when setCode runs before the first exec', async () => {
+		await fs.writeFile(path.join(tmpDir, 'Child.tsx'), 'export const Child = () => <button>x</button>;');
+		const withoutImport = 'export const Page = () => <ul><Child>x</Child></ul>;';
+		const withImport = `import { Child } from './Child';\n${withoutImport}`;
+
+		const { engine } = await createEngine(tmpDir, withoutImport, { auto: true });
+
+		await engine.setCode(withImport);
+		const result = await engine.exec();
+		expect(disallowedIn(result?.violations, 'button')).toBe(true);
+		expect(disallowedIn(result?.violations, 'Child')).toBe(false);
+	});
+
+	it('picks up a change on disk to a scanned file with the next config resolution, not with setCode', async () => {
+		const itemPath = path.join(tmpDir, 'Item.tsx');
+		const configPath = path.join(tmpDir, '.markuplintrc');
+		await fs.writeFile(itemPath, 'export const Item = () => <button>x</button>;');
+		const config = {
+			parser: { '\\.tsx$': '@markuplint/jsx-parser' },
+			pretenders: { scan: [{ files: ['Item.tsx'] }] },
+			rules: { 'permitted-contents': true },
+		};
+		await fs.writeFile(configPath, JSON.stringify(config));
+		const code = "import { Item } from './Item';\nexport const Page = () => <ul><Item>x</Item></ul>;";
+
+		const file = await MLEngine.toMLFile({ sourceCode: code, name: 'page.tsx', workspace: tmpDir });
+		const engine = new MLEngine(file!, { watch: true, locale: 'en' });
+		try {
+			const first = await engine.exec();
+			expect(disallowedIn(first?.violations, 'button')).toBe(true);
+
+			await fs.writeFile(itemPath, 'export const Item = () => <span>x</span>;');
+
+			await engine.setCode(`${code}\n`);
+			const afterEdit = await engine.exec();
+			expect(disallowedIn(afterEdit?.violations, 'button')).toBe(true);
+			expect(disallowedIn(afterEdit?.violations, 'span')).toBe(false);
+
+			// Touching the config file (no semantic change) triggers the watcher's
+			// config re-resolution, which is where the scanned files are read.
+			const lintPromise = new Promise<readonly Violation[]>(resolve => {
+				engine.on('lint', (_, __, violations) => resolve(violations));
+			});
+			await fs.writeFile(configPath, JSON.stringify(config));
+			const afterConfig = await lintPromise;
+			expect(disallowedIn(afterConfig, 'span')).toBe(true);
+			expect(disallowedIn(afterConfig, 'button')).toBe(false);
+		} finally {
+			await engine.close();
+		}
 	});
 });
 

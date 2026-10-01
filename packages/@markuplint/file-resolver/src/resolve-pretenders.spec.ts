@@ -5,6 +5,7 @@ import path from 'node:path';
 import { test, expect, describe, beforeEach, afterEach } from 'vitest';
 
 import {
+	createPretenderResolver,
 	disambiguatePretendersForFile,
 	hasResolvableCollision,
 	invalidatePretenderResolutionCaches,
@@ -359,5 +360,96 @@ describe('invalidatePretenderResolutionCaches (long-running processes)', () => {
 
 		const fresh = await resolvePretenders({ scan: [{ files: [targetFile, importerFile] }] });
 		expect(fresh.find(p => p.selector === 'E')?.as).toBe('span');
+	});
+});
+
+describe('createPretenderResolver (one lint target across edits)', () => {
+	let tmpDir: string;
+
+	beforeEach(async () => {
+		tmpDir = await mkdtemp(path.join(os.tmpdir(), 'file-resolver-pretenders-resolver-'));
+	});
+
+	afterEach(async () => {
+		await rm(tmpDir, { recursive: true, force: true });
+	});
+
+	test('re-runs auto against each resolve()’s source, but reads the target-independent sources once', async () => {
+		const entryPath = path.join(tmpDir, 'entry.tsx');
+		const childPath = path.join(tmpDir, 'Child.tsx');
+		const scannedPath = path.join(tmpDir, 'Scanned.tsx');
+		await writeFile(childPath, 'export const Child = () => <button>x</button>;');
+		await writeFile(scannedPath, 'export const Scanned = () => <button>x</button>;');
+
+		const resolver = createPretenderResolver({ scan: [{ files: [scannedPath] }], auto: true });
+
+		const withImport = await resolver.resolve({
+			filePath: entryPath,
+			sourceCode: "import { Child } from './Child';\nexport const Entry = () => <Child />;",
+		});
+		expect(withImport.find(p => p.selector === 'Child')).toMatchObject({ as: 'button' });
+		expect(withImport.find(p => p.selector === 'Scanned')).toMatchObject({ as: 'button' });
+
+		// The scanned file changes on disk, and the entry drops its import. The
+		// resolver follows the entry (auto) but not the disk (scan): what the
+		// `scan` section yields is a function of the config and the filesystem,
+		// not of the target's source, so it is read when the resolver is
+		// created and nowhere else.
+		await writeFile(scannedPath, 'export const Scanned = () => <span>x</span>;');
+		const withoutImport = await resolver.resolve({
+			filePath: entryPath,
+			sourceCode: 'export const Entry = () => <div />;',
+		});
+		expect(withoutImport.find(p => p.selector === 'Child')).toBeUndefined();
+		expect(withoutImport.find(p => p.selector === 'Scanned')).toMatchObject({ as: 'button' });
+
+		// A new resolver (what a host creates on every config resolution) does
+		// read the disk again.
+		const fresh = await createPretenderResolver({ scan: [{ files: [scannedPath] }], auto: true }).resolve({
+			filePath: entryPath,
+			sourceCode: 'export const Entry = () => <div />;',
+		});
+		expect(fresh.find(p => p.selector === 'Scanned')).toMatchObject({ as: 'span' });
+	});
+
+	test('yields the files section on every resolve(), the same as resolvePretenders() does', async () => {
+		const reactDir = path.resolve(import.meta.dirname, '..', '..', '..', '@markuplint-test', 'react');
+		const resolver = createPretenderResolver({ files: [path.resolve(reactDir, 'pretenders.json')] });
+		const expected = [
+			{
+				selector: 'Sample',
+				as: 'div',
+				filePath: `${path.resolve(reactDir, 'sample.jsx')}:1:16`,
+			},
+		];
+
+		expect(await resolver.resolve()).toStrictEqual(expected);
+		expect(await resolver.resolve()).toStrictEqual(expected);
+	});
+
+	test('returns a fresh array on every resolve(), so a caller cannot mutate the retained sources', async () => {
+		const resolver = createPretenderResolver({ data: [{ selector: 'Foo', as: 'div' }] });
+		const entryPath = path.join(tmpDir, 'entry.tsx');
+
+		const first = await resolver.resolve({ filePath: entryPath, sourceCode: '' });
+		first.push({ selector: 'Injected', as: 'span' });
+
+		const second = await resolver.resolve({ filePath: entryPath, sourceCode: '' });
+		expect(second).toStrictEqual([{ selector: 'Foo', as: 'div' }]);
+	});
+
+	test('skips auto when resolve() is called without a context, like resolvePretenders()', async () => {
+		const childPath = path.join(tmpDir, 'Child.tsx');
+		await writeFile(childPath, 'export const Child = () => <button>x</button>;');
+
+		const resolver = createPretenderResolver({ data: [{ selector: 'Foo', as: 'div' }], auto: true });
+
+		expect(await resolver.resolve()).toStrictEqual([{ selector: 'Foo', as: 'div' }]);
+	});
+
+	test('resolves to nothing when the pretenders section is absent', async () => {
+		const resolver = createPretenderResolver();
+
+		expect(await resolver.resolve({ filePath: path.join(tmpDir, 'entry.tsx'), sourceCode: '' })).toStrictEqual([]);
 	});
 });
