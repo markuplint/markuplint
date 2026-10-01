@@ -35,6 +35,44 @@ describe('AccnameResolver.getChildNodes', () => {
 		expect(computeAccessibleName(button, resolver)).toStrictEqual({ name: 'Rendered', source: 'content' });
 	});
 
+	test('the hook applies to descendants as well as to the element', () => {
+		const button = element('button');
+		const span = element('span');
+		const resolver = {
+			...createTestResolver({ nameFromContent: new Set(['button']) }),
+			getChildNodes: (el: typeof button) => {
+				if (el === button) {
+					return [span];
+				}
+				return el === span ? [textNode('Nested')] : el.childNodes;
+			},
+		};
+
+		expect(computeAccessibleName(button, resolver)).toStrictEqual({ name: 'Nested', source: 'content' });
+	});
+
+	test('the caption of a table is looked up through the resolver', () => {
+		const table = element('table');
+		const caption = element('caption', { children: [textNode('Prices')] });
+		const resolver = {
+			...createTestResolver({ nameFromContent: new Set(['caption']) }),
+			getChildNodes: (el: typeof table) => (el === table ? [caption] : el.childNodes),
+		};
+
+		expect(computeAccessibleName(table, resolver)).toStrictEqual({ name: 'Prices', source: 'caption' });
+	});
+
+	test('the text of a label is read through the resolver', () => {
+		const input = element('input', { attrs: { id: 'field1', type: 'text' } });
+		const label = element('label');
+		const resolver = {
+			...createTestResolver({ labels: new Map([['field1', [label]]]) }),
+			getChildNodes: (el: typeof label) => (el === label ? [textNode('Rendered label')] : el.childNodes),
+		};
+
+		expect(computeAccessibleName(input, resolver)).toStrictEqual({ name: 'Rendered label', source: 'label' });
+	});
+
 	test('the legend of a fieldset is looked up through the resolver', () => {
 		const fieldset = element('fieldset');
 		const legend = element('legend', { children: [textNode('Address')] });
