@@ -10,7 +10,7 @@ import { log } from '../../debug.js';
 const nodeStoreLog = log.extend('node-store');
 const nodeStoreError = nodeStoreLog.extend('error');
 
-class NodeStore {
+export class NodeStore {
 	#store = new Map<string, MLNode<any, any, any>>();
 
 	getNode<N extends MLASTNode, T extends RuleConfigValue, O extends PlainData = undefined>(
@@ -72,4 +72,25 @@ class NodeStore {
 	}
 }
 
-export const nodeStore = new NodeStore();
+/**
+ * One `NodeStore` per owning document, rather than a single process-wide
+ * instance: a document's nodes are only ever looked up through that same
+ * document (via `parentNodeUuid`/`pairNodeUuid` cross-references), so there is
+ * no reason for their mapping to outlive the document itself.
+ *
+ * Keyed by a `WeakMap` so a store is reclaimed together with its document
+ * once nothing else references that document — otherwise, in a process that
+ * calls `MLEngine#exec()`/`#setCode()` many times (a long-lived language
+ * server, or a CLI run across many files), every parsed document's entire
+ * node tree would stay reachable forever through a single shared `Map`.
+ */
+const storesByDocument = new WeakMap<object, NodeStore>();
+
+export function getNodeStoreFor(document: object): NodeStore {
+	let store = storesByDocument.get(document);
+	if (!store) {
+		store = new NodeStore();
+		storesByDocument.set(document, store);
+	}
+	return store;
+}
