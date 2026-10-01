@@ -78,13 +78,16 @@ export function dependencyMapper(
 				break;
 			}
 
-			identity = composeIdentity(identity, mappedPretender[1]);
 			filePath = mappedPretender[2];
 
 			if (visited.has(lookupKey)) {
+				// Back at a component already passed: it stands as it is. Composing once
+				// more would hand over what the cycle hands over a second time.
+				identity = mappedPretender[1];
 				via.push('...[Recursive]');
 				break;
 			}
+			identity = composeIdentity(identity, mappedPretender[1]);
 			visited.add(lookupKey);
 			via.push(elName);
 			elName = getElName(identity);

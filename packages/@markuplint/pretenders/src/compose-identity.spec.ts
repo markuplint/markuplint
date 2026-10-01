@@ -184,6 +184,21 @@ describe('composeIdentity', () => {
 	});
 
 	describe('through dependencyMapper', () => {
+		test('a cycle ends with the identity of the component it came back to, composed no further', () => {
+			const [a] = dependencyMapper(
+				new Map([
+					['A', ['A', { element: 'B', slots: true, contents: [{ slot: true }, { element: 'img' }] }]],
+					['B', ['B', { element: 'A', slots: true }]],
+				]),
+			);
+
+			expect(a).toStrictEqual({
+				selector: 'A',
+				_via: ['B', '...[Recursive]'],
+				as: { element: 'B', slots: true, contents: [{ slot: true }, { element: 'img' }] },
+			});
+		});
+
 		test('components that render each other terminate and report the recursion', () => {
 			const result = dependencyMapper(
 				new Map([
