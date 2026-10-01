@@ -1,4 +1,4 @@
-import { readFile, writeFile, mkdtemp, rm } from 'node:fs/promises';
+import { mkdir, readFile, realpath, writeFile, mkdtemp, rm } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
@@ -451,5 +451,109 @@ describe('createPretenderResolver (one lint target across edits)', () => {
 		const resolver = createPretenderResolver();
 
 		expect(await resolver.resolve({ filePath: path.join(tmpDir, 'entry.tsx'), sourceCode: '' })).toStrictEqual([]);
+	});
+});
+
+describe('dependencies (the files a resolution depends on, for watch mode — #4065)', () => {
+	let tmpDir: string;
+
+	// The sink holds `/`-delimited real paths (see `PretenderScanOptions#dependencies`).
+	const abs = (...segments: string[]) =>
+		path
+			.join(tmpDir, ...segments)
+			.split('\\')
+			.join('/');
+
+	beforeEach(async () => {
+		tmpDir = await realpath(await mkdtemp(path.join(os.tmpdir(), 'file-resolver-pretenders-deps-')));
+	});
+
+	afterEach(async () => {
+		await rm(tmpDir, { recursive: true, force: true });
+	});
+
+	test('the scanned files are reported by every resolve(), including those served from the retained target-independent entries', async () => {
+		const scannedPath = path.join(tmpDir, 'Scanned.tsx');
+		await writeFile(scannedPath, 'export const Scanned = () => <button>x</button>;');
+		const resolver = createPretenderResolver({ scan: [{ files: [scannedPath] }] });
+		const first = new Set<string>();
+		const second = new Set<string>();
+
+		await resolver.resolve(undefined, { dependencies: first });
+		await resolver.resolve(undefined, { dependencies: second });
+
+		expect([...first]).toStrictEqual([abs('Scanned.tsx')]);
+		expect([...second]).toStrictEqual([abs('Scanned.tsx')]);
+	});
+
+	test('overlapping first resolve() calls both receive the scanned files', async () => {
+		const scannedPath = path.join(tmpDir, 'Scanned.tsx');
+		await writeFile(scannedPath, 'export const Scanned = () => <button>x</button>;');
+		const resolver = createPretenderResolver({ scan: [{ files: [scannedPath] }] });
+		const first = new Set<string>();
+		const second = new Set<string>();
+
+		await Promise.all([
+			resolver.resolve(undefined, { dependencies: first }),
+			resolver.resolve(undefined, { dependencies: second }),
+		]);
+
+		expect([...first]).toStrictEqual([abs('Scanned.tsx')]);
+		expect([...second]).toStrictEqual([abs('Scanned.tsx')]);
+	});
+
+	test('the files auto reached follow the source of each resolve()', async () => {
+		const entryPath = path.join(tmpDir, 'entry.tsx');
+		await writeFile(path.join(tmpDir, 'Child.tsx'), 'export const Child = () => <button>x</button>;');
+		const resolver = createPretenderResolver({ auto: true });
+		const withImport = new Set<string>();
+		const withoutImport = new Set<string>();
+
+		await resolver.resolve(
+			{
+				filePath: entryPath,
+				sourceCode: "import { Child } from './Child';\nexport const Entry = () => <Child />;",
+			},
+			{ dependencies: withImport },
+		);
+		await resolver.resolve(
+			{ filePath: entryPath, sourceCode: 'export const Entry = () => <div />;' },
+			{ dependencies: withoutImport },
+		);
+
+		expect(withImport).toContain(abs('Child.tsx'));
+		expect(withoutImport).not.toContain(abs('Child.tsx'));
+	});
+
+	test('resolvePretenders() reports them as well', async () => {
+		const scannedPath = path.join(tmpDir, 'Scanned.tsx');
+		await writeFile(scannedPath, 'export const Scanned = () => <button>x</button>;');
+		const dependencies = new Set<string>();
+
+		await resolvePretenders({ scan: [{ files: [scannedPath] }] }, undefined, { dependencies });
+
+		expect([...dependencies]).toStrictEqual([abs('Scanned.tsx')]);
+	});
+
+	test('disambiguatePretendersForFile() reports the tsconfig it resolved the target imports with', async () => {
+		const targetPath = path.join(tmpDir, 'Page.tsx');
+		await writeFile(path.join(tmpDir, 'tsconfig.json'), '{}');
+		await mkdir(path.join(tmpDir, 'a'));
+		await mkdir(path.join(tmpDir, 'b'));
+		await writeFile(path.join(tmpDir, 'a', 'Item.tsx'), 'export const Item = () => <button />;');
+		await writeFile(path.join(tmpDir, 'b', 'Item.tsx'), 'export const Item = () => <span />;');
+		const dependencies = new Set<string>();
+
+		await disambiguatePretendersForFile(
+			targetPath,
+			"import { Item } from './a/Item';\nexport const Page = () => <Item />;",
+			[
+				{ selector: 'Item', as: 'button', filePath: abs('a', 'Item.tsx') },
+				{ selector: 'Item', as: 'span', filePath: abs('b', 'Item.tsx') },
+			],
+			{ dependencies },
+		);
+
+		expect([...dependencies]).toStrictEqual([abs('tsconfig.json')]);
 	});
 });
