@@ -99,12 +99,16 @@ function createMLCoreResolver(
 			// TODO: Remove cast when AccnameResolver is generic (#3178)
 			const targetEl = target as MLElement<any, any>;
 			const context = targetEl.pretenderContext;
+			if (context?.type !== 'pretender') {
+				return targetEl.childNodes;
+			}
+			// The children the component renders: `as.childNodes` is empty when it never
+			// renders its children (`slots: null`), so text written inside `<Img>Save</Img>`
+			// does not become its name.
+			const given = [...context.as.childNodes];
 			// A pretended component renders its own elements (`contents`) around the
 			// children given at the usage site; the name can come from either.
-			if (context?.type === 'pretender' && context.slotContent) {
-				return context.slotContent.fill([...targetEl.childNodes]);
-			}
-			return targetEl.childNodes;
+			return context.slotContent ? context.slotContent.fill(given) : given;
 		},
 	};
 }
