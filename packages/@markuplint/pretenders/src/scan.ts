@@ -16,13 +16,21 @@ export interface ScanOptions {
 	 * absolute file path, consulted before falling back to a disk read.
 	 */
 	readonly sources?: ReadonlyMap<string, string>;
+
+	/**
+	 * Whether the JSX scanner also scans the files that the given JS/TS files
+	 * import. Defaults to `true`; `autoScan` passes `false` because it has
+	 * already collected the files itself, within its own depth limit. Template
+	 * files never follow imports, so this does not affect them.
+	 */
+	readonly followImports?: boolean;
 }
 
 /**
  * Dispatches files to the appropriate scanner based on file extension,
  * runs both scanners in parallel, and merges + sorts the results.
  *
- * - `.js`, `.jsx`, `.ts`, `.tsx` → {@link jsxScanner}
+ * - `.js`, `.jsx`, `.ts`, `.tsx`, `.mjs`, `.cjs`, `.mts`, `.cts` → {@link jsxScanner}
  * - `.vue`, `.svelte`, `.astro` → {@link templateScanner} (delegates to parser component-scanners)
  *
  * @param files - Absolute file paths to scan
@@ -30,14 +38,17 @@ export interface ScanOptions {
  * @returns All discovered pretender mappings, sorted by selector
  */
 export async function scan(files: readonly string[], options?: ScanOptions): Promise<Pretender[]> {
-	const jsxFiles = files.filter(filePath => /\.[jt]sx?$/.test(filePath));
+	const jsxFiles = files.filter(filePath => /\.(?:[cm]?[jt]s|[jt]sx)$/.test(filePath));
 	const templateFiles = files.filter(filePath => /\.(?:vue|svelte|astro)$/.test(filePath));
 
 	const ignoreComponentNames = options?.ignoreComponentNames ? [...options.ignoreComponentNames] : undefined;
 	const sources = options?.sources;
+	const followImports = options?.followImports;
 
 	const [jsxPretenders, templatePretenders] = await Promise.all([
-		jsxFiles.length > 0 ? jsxScanner(jsxFiles, { ignoreComponentNames, sources }) : Promise.resolve([]),
+		jsxFiles.length > 0
+			? jsxScanner(jsxFiles, { ignoreComponentNames, sources, followImports })
+			: Promise.resolve([]),
 		templateFiles.length > 0
 			? templateScanner(templateFiles, { ignoreComponentNames, sources })
 			: Promise.resolve([]),
