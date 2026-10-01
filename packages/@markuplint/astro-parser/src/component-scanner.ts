@@ -90,6 +90,9 @@ function isElement(n: MLASTChildNode): n is MLASTElement {
 	return n.type === 'starttag';
 }
 
+// The parser flags every `prefix:name` as a directive, including the XML namespaces of SVG
+const XML_NAMESPACED = /^(?:xlink|xml|xmlns):/;
+
 /**
  * An attribute whose value is an expression (`type={kind}`, the shorthand `{type}`, or a
  * template literal) is an attribute the element has, and it is `dynamic`. The directives
@@ -103,23 +106,36 @@ function extractAttrs(el: MLASTElement): ComponentScanAttr[] {
 		}
 		if (attr.name.raw === '') {
 			if (attr.potentialName) {
-				attrs.push({ name: attr.potentialName, dynamic: true });
+				addAttr(attrs, { name: attr.potentialName, dynamic: true });
 			}
 			continue;
 		}
-		if (attr.isDirective || attr.nodeName.includes(':')) {
+		if ((attr.isDirective || attr.nodeName.includes(':')) && !XML_NAMESPACED.test(attr.nodeName)) {
 			continue;
 		}
 		const value = attr.value.raw;
 		if (attr.isDynamicValue || /^`.*`$/s.test(value)) {
-			attrs.push({ name: attr.nodeName, dynamic: true });
+			addAttr(attrs, { name: attr.nodeName, dynamic: true });
 		} else if (value === '') {
-			attrs.push({ name: attr.nodeName });
+			addAttr(attrs, { name: attr.nodeName });
 		} else {
-			attrs.push({ name: attr.nodeName, value });
+			addAttr(attrs, { name: attr.nodeName, value });
 		}
 	}
 	return attrs;
+}
+
+/**
+ * One name written in two forms (`class="btn" :class="x"`) is one attribute: dynamic
+ * when any of the forms is, in the position of the first.
+ */
+function addAttr(attrs: ComponentScanAttr[], attr: ComponentScanAttr) {
+	const index = attrs.findIndex(existing => existing.name === attr.name);
+	if (index === -1) {
+		attrs.push(attr);
+	} else if (attr.dynamic) {
+		attrs[index] = attr;
+	}
 }
 
 function containsSlot(n: MLASTChildNode): boolean {
