@@ -35,7 +35,7 @@ export function getElementSpecificName(
 	inLabelledbyTraversal: boolean,
 ): AccnameResult | null {
 	if (isSvgElement(el)) {
-		return handleSvgElement(el);
+		return handleSvgElement(el, resolver);
 	}
 
 	const { localName } = el;
@@ -478,8 +478,8 @@ function handleTitleOnly(el: AccnameElement): AccnameResult | null {
  * SVG-AAM: SVG elements get name from `<title>` child element.
  * @see https://www.w3.org/TR/svg-aam-1.0/#mapping_additional_nd — SVG-AAM §8.1
  */
-function handleSvgElement(el: AccnameElement): AccnameResult | null {
-	const titleEl = findChildByLocalName(el, 'title');
+function handleSvgElement(el: AccnameElement, resolver: AccnameResolver): AccnameResult | null {
+	const titleEl = findChildByLocalName(el, 'title', resolver);
 	if (titleEl?.textContent?.trim()) {
 		return makeResult(titleEl.textContent, 'svg-title');
 	}

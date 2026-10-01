@@ -83,4 +83,49 @@ describe('AccnameResolver.getChildNodes', () => {
 
 		expect(computeAccessibleName(fieldset, resolver)).toStrictEqual({ name: 'Address', source: 'legend' });
 	});
+
+	test('the title of an SVG element is looked up through the resolver', () => {
+		const svg = element('svg', { namespaceURI: 'http://www.w3.org/2000/svg' });
+		const title = element('title', {
+			children: [textNode('Logo')],
+			namespaceURI: 'http://www.w3.org/2000/svg',
+		});
+		const resolver = {
+			...createTestResolver(),
+			getChildNodes: (el: typeof svg) => (el === svg ? [title] : el.childNodes),
+		};
+
+		expect(computeAccessibleName(svg, resolver)).toStrictEqual({ name: 'Logo', source: 'svg-title' });
+	});
+
+	test('the options of a select are collected through the resolver', () => {
+		const select = element('select');
+		const red = element('option', { children: [textNode('Red')] });
+		const blue = element('option', { attrs: { selected: '' }, children: [textNode('Blue')] });
+		const heading = element('h1', { children: [textNode('Color: '), select] });
+		const resolver = {
+			...createTestResolver({ nameFromContent: new Set(['h1']) }),
+			getChildNodes: (el: typeof select) => (el === select ? [red, blue] : el.childNodes),
+		};
+
+		expect(computeAccessibleName(heading, resolver).name).toBe('Color: Blue');
+	});
+
+	test('the options of an optgroup are collected through the resolver', () => {
+		const select = element('select');
+		const optgroup = element('optgroup');
+		const red = element('option', { children: [textNode('Red')] });
+		const heading = element('h1', { children: [textNode('Color: '), select] });
+		const resolver = {
+			...createTestResolver({ nameFromContent: new Set(['h1']) }),
+			getChildNodes: (el: typeof select) => {
+				if (el === select) {
+					return [optgroup];
+				}
+				return el === optgroup ? [red] : el.childNodes;
+			},
+		};
+
+		expect(computeAccessibleName(heading, resolver).name).toBe('Color: Red');
+	});
 });
