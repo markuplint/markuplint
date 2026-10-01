@@ -62,6 +62,17 @@ Instead of the CLI, you can configure dynamic scanning directly in your markupli
 }
 ```
 
+The walk follows up to 8 import hops from the linted file. `auto` also accepts an object to change that:
+
+```jsonc
+// .markuplintrc
+{
+  "pretenders": {
+    "auto": { "depth": 3 }, // `0` considers only the linted file itself
+  },
+}
+```
+
 Only the config file is filesystem-watched, so in watch mode or an editor session, results can go stale if an imported component file changes without the config changing too. Edits to the linted file itself — adding, removing, or changing an import — are reflected on the next lint of that file; only the imported component files are not watched.
 
 ## How It Works
@@ -188,10 +199,11 @@ const pretenders = await scan([
 
 #### Parameters
 
-| Parameter                      | Type                | Description                             |
-| ------------------------------ | ------------------- | --------------------------------------- |
-| `files`                        | `readonly string[]` | Absolute file paths to scan             |
-| `options.ignoreComponentNames` | `readonly string[]` | Component names to exclude from results |
+| Parameter                      | Type                | Description                                                                                                                                       |
+| ------------------------------ | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `files`                        | `readonly string[]` | Absolute file paths to scan                                                                                                                       |
+| `options.ignoreComponentNames` | `readonly string[]` | Component names to exclude from results                                                                                                           |
+| `options.followImports`        | `boolean`           | Whether the JSX scanner also scans the files the given JS/TS files import (default `true`; `autoScan` passes `false` to keep its own depth limit) |
 
 ### `jsxScanner(files, options)`
 
@@ -342,7 +354,7 @@ const resolved = await disambiguatePretenders(pretenders, {
 
 `Promise<readonly Pretender[]>` — The disambiguated pretender list, or `pretenders` itself when there was nothing to resolve or nothing could be confirmed.
 
-### `autoScan(entryAbsPath, sourceCode)`
+### `autoScan(entryAbsPath, sourceCode, options)`
 
 Resolves pretenders on demand by walking a single lint target's own import graph (breadth-first, extension-agnostic — a `.tsx` entry can import a `.vue` file and vice versa) and scanning the collected files in one batch. This is the resolution logic behind the `pretenders.auto` config option; it's normally invoked automatically as part of `markuplint`'s config resolution, not called directly.
 
@@ -354,16 +366,17 @@ const pretenders = await autoScan('/absolute/path/to/Page.tsx', sourceCode);
 
 #### Parameters
 
-| Parameter      | Type     | Description                                                   |
-| -------------- | -------- | ------------------------------------------------------------- |
-| `entryAbsPath` | `string` | Absolute path of the file being linted                        |
-| `sourceCode`   | `string` | The entry file's current text (may be unsaved editor content) |
+| Parameter       | Type     | Description                                                                                        |
+| --------------- | -------- | -------------------------------------------------------------------------------------------------- |
+| `entryAbsPath`  | `string` | Absolute path of the file being linted                                                             |
+| `sourceCode`    | `string` | The entry file's current text (may be unsaved editor content)                                      |
+| `options.depth` | `number` | How many import hops from the entry file are followed; `0` scans only the entry file (default `8`) |
 
 #### Returns
 
 `Promise<Pretender[]>` — Discovered pretender mappings for the entry file and its import graph.
 
-Results are cached per entry path, keyed on `sourceCode` equality (not mtime, which doesn't exist for unsaved editor content); `node_modules` is never traversed into, and import cycles are handled via a visited set. Traversal is capped at 8 import hops for template-language (`.vue`/`.svelte`/`.astro`) chains, but this cap does not hold for JSX/TSX-only chains: `jsxScanner` builds a `ts.Program` from the collected files, and TypeScript's own module resolution transitively pulls in whatever those files import regardless of the cap.
+Results are cached per entry path, keyed on `sourceCode` and `options.depth` equality (not mtime, which doesn't exist for unsaved editor content); `node_modules` is never traversed into, and import cycles are handled via a visited set. The depth limit holds for every file type, JSX/TSX included: the collected files are scanned without letting TypeScript follow their imports any further.
 
 ### `clearPretenderCaches()`
 

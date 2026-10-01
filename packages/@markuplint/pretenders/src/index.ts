@@ -36,7 +36,8 @@
  *
  * - {@link autoScan} — Resolves pretenders for a single lint target by walking its own
  *   import graph (breadth-first, extension-agnostic) instead of requiring pre-configured
- *   `files`/`scan` glob patterns. Backs the `pretenders: { auto: true }` config option.
+ *   `files`/`scan` glob patterns, up to a configurable number of import hops. Backs the
+ *   `pretenders: { auto: true }` config option.
  *
  * ## Caching
  *
@@ -62,6 +63,7 @@ import { clearExportTableCache } from './dependency-mapper.js';
 import { clearModuleResolutionCaches } from './import-resolver/resolve-module-file.js';
 import { clearSourceFileCache } from './jsx/compiler-host.js';
 
+export type { AutoScanOptions } from './auto-scan.js';
 export { autoScan } from './auto-scan.js';
 export type { DisambiguateOptions } from './disambiguate.js';
 export { disambiguatePretenders } from './disambiguate.js';

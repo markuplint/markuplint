@@ -42,15 +42,29 @@ const SCANNABLE_EXTENSIONS = new Set([
 ]);
 
 // Bounds runaway traversal (a deep or wrongly resolved chain) rather than
-// expressing a real limit on legitimate component nesting. Note this only
-// bounds which files BFS explicitly visits: for JSX/TSX files, jsxScanner
-// builds a ts.Program from the collected file list, and TypeScript's own
-// module resolution transitively pulls in whatever those files import —
-// including files past this depth — so the cap is not a hard ceiling on
-// what ends up scanned when the chain is JSX/TSX throughout.
-const MAX_DEPTH = 8;
+// expressing a real limit on legitimate component nesting; the value itself
+// was picked without a measured basis, which is why `pretenders.auto` lets
+// a config override it. The limit holds for every file type because the
+// final `scan()` is told not to follow imports (`followImports: false`):
+// otherwise jsxScanner's ts.Program would pull in whatever the collected
+// files import, past this depth.
+const DEFAULT_DEPTH = 8;
 
-const resultCache = new Map<string, { sourceCode: string; pretenders: Pretender[] }>();
+/**
+ * Options of {@link autoScan}.
+ */
+export interface AutoScanOptions {
+	/**
+	 * How many import hops from the entry file are followed. `0` scans only
+	 * the entry file. Defaults to `8`.
+	 *
+	 * Not validated here (the config schema validates `pretenders.auto.depth`):
+	 * a negative number or `NaN` behaves like `0`, and a fraction is rounded up.
+	 */
+	readonly depth?: number;
+}
+
+const resultCache = new Map<string, { sourceCode: string; depth: number; pretenders: Pretender[] }>();
 
 /**
  * Clears the module-level auto-scan result cache. This cache is keyed on the
@@ -65,18 +79,24 @@ export function clearAutoScanCache() {
 
 /**
  * Resolves pretenders on demand by scanning `entryAbsPath`'s own import graph:
- * the entry file plus every file it transitively imports (up to a fixed
- * traversal depth), scanned together in one `scan()` call.
+ * the entry file plus every file it transitively imports (up to
+ * `options.depth` hops), scanned together in one `scan()` call.
  *
  * @param entryAbsPath - Absolute path of the file currently being linted
  * @param sourceCode - The entry file's current text (may be unsaved editor content)
+ * @param options - Traversal options
  * @returns Discovered pretender mappings for the entry file and its import graph
  */
-export async function autoScan(entryAbsPath: string, sourceCode: string): Promise<Pretender[]> {
+export async function autoScan(
+	entryAbsPath: string,
+	sourceCode: string,
+	options?: AutoScanOptions,
+): Promise<Pretender[]> {
 	const entryKey = normalizePath(entryAbsPath);
+	const maxDepth = options?.depth ?? DEFAULT_DEPTH;
 
 	const cached = resultCache.get(entryKey);
-	if (cached && cached.sourceCode === sourceCode) {
+	if (cached && cached.sourceCode === sourceCode && cached.depth === maxDepth) {
 		return cached.pretenders;
 	}
 
@@ -92,7 +112,7 @@ export async function autoScan(entryAbsPath: string, sourceCode: string): Promis
 		{ absPath: entryAbsPath, source: sourceCode },
 	];
 
-	for (let depth = 0; depth < MAX_DEPTH && frontier.length > 0; depth++) {
+	for (let depth = 0; depth < maxDepth && frontier.length > 0; depth++) {
 		const nextFrontier: { absPath: string; source: string }[] = [];
 
 		for (const { absPath, source } of frontier) {
@@ -136,8 +156,10 @@ export async function autoScan(entryAbsPath: string, sourceCode: string): Promis
 		frontier = nextFrontier;
 	}
 
-	const pretenders = await scan(collected, { sources });
-	resultCache.set(entryKey, { sourceCode, pretenders });
+	// `followImports: false`: this walk already decided which files belong, so
+	// the TypeScript program must not add more of them (see `DEFAULT_DEPTH`).
+	const pretenders = await scan(collected, { sources, followImports: false });
+	resultCache.set(entryKey, { sourceCode, depth: maxDepth, pretenders });
 	return pretenders;
 }
 
