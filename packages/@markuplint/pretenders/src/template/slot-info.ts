@@ -38,8 +38,13 @@ export function deriveSlotInfo(scan: ComponentScanResult): SlotInfo {
 	};
 }
 
-function toAttrs(attrs: readonly ComponentScanAttr[]): PretenderAttr[] {
-	return attrs.map(attr => (attr.value === undefined ? { name: attr.name } : { name: attr.name, value: attr.value }));
+export function toAttrs(attrs: readonly ComponentScanAttr[]): PretenderAttr[] {
+	return attrs.map((attr): PretenderAttr => {
+		if (attr.dynamic) {
+			return { name: attr.name, value: { dynamic: true } };
+		}
+		return attr.value === undefined ? { name: attr.name } : { name: attr.name, value: attr.value };
+	});
 }
 
 function toContents(contents: readonly ComponentScanContent[]): PretenderContent[] {

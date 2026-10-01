@@ -121,7 +121,7 @@ Known limitations:
 
 ### Template Scanner
 
-The template scanner delegates to each parser package's `component-scanner` subpath export (e.g., `@markuplint/vue-parser/component-scanner`). Each parser's component-scanner uses its own MLAST parser to extract the root element at depth=0, detect static attributes, slot/children usage, and extract script source blocks. This keeps framework-specific scanning logic co-located with the parser that understands the framework best.
+The template scanner delegates to each parser package's `component-scanner` subpath export (e.g., `@markuplint/vue-parser/component-scanner`). Each parser's component-scanner uses its own MLAST parser to extract the root element at depth=0, detect attributes (an attribute whose value is an expression, such as `:type` in Vue or `type={kind}` in Svelte and Astro, is recorded as `{ "dynamic": true }` under its own name; event handlers and other directives are not attributes), slot/children usage, and extract script source blocks. This keeps framework-specific scanning logic co-located with the parser that understands the framework best.
 
 ```vue
 <template>

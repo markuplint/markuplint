@@ -18,11 +18,14 @@ export interface ComponentScanResult {
 }
 
 /**
- * A static attribute extracted from a component's root element.
+ * An attribute extracted from an element of a component: a static one with its value, or
+ * a `dynamic` one whose value is an expression.
  */
 export interface ComponentScanAttr {
 	readonly name: string;
 	readonly value?: string;
+	/** The attribute is present and its value is an expression, unknown at scan time. `value` is omitted. */
+	readonly dynamic?: true;
 }
 
 /**
@@ -87,20 +90,53 @@ function isElement(n: MLASTChildNode): n is MLASTElement {
 	return n.type === 'starttag';
 }
 
+/**
+ * A binding (`:type`, `v-bind:type`) is an attribute the element has, and its value is an
+ * expression: it is `dynamic` under its own name. Event handlers, `v-bind` objects, the other
+ * directives, and bindings without a name known here (modifiers, `[name]`) are not
+ * attributes by name and are left out.
+ */
+const BINDING = /^(?:v-bind:|:)([^.[]+)$/;
+const NOT_ATTRIBUTE = /^(?:v-|[@:.#])/;
+const SPECIAL_PROPS = new Set(['key', 'ref', 'is']);
+
 function extractAttrs(el: MLASTElement): ComponentScanAttr[] {
 	const attrs: ComponentScanAttr[] = [];
 	for (const attr of el.attributes) {
 		if (attr.type !== 'attr') {
 			continue;
 		}
+		const binding = BINDING.exec(attr.nodeName)?.[1]?.toLowerCase();
+		if (binding) {
+			if (!SPECIAL_PROPS.has(binding)) {
+				addAttr(attrs, { name: binding, dynamic: true });
+			}
+			continue;
+		}
+		if (NOT_ATTRIBUTE.test(attr.nodeName)) {
+			continue;
+		}
 		const value = attr.value.raw;
 		if (value === '') {
-			attrs.push({ name: attr.nodeName });
+			addAttr(attrs, { name: attr.nodeName });
 		} else {
-			attrs.push({ name: attr.nodeName, value });
+			addAttr(attrs, { name: attr.nodeName, value });
 		}
 	}
 	return attrs;
+}
+
+/**
+ * One name written in two forms (`class="btn" :class="x"`) is one attribute: dynamic
+ * when any of the forms is, in the position of the first.
+ */
+function addAttr(attrs: ComponentScanAttr[], attr: ComponentScanAttr) {
+	const index = attrs.findIndex(existing => existing.name === attr.name);
+	if (index === -1) {
+		attrs.push(attr);
+	} else if (attr.dynamic) {
+		attrs[index] = attr;
+	}
 }
 
 function containsSlot(n: MLASTChildNode): boolean {

@@ -18,11 +18,14 @@ export interface ComponentScanResult {
 }
 
 /**
- * A static attribute extracted from a component's root element.
+ * An attribute extracted from an element of a component: a static one with its value, or
+ * a `dynamic` one whose value is an expression.
  */
 export interface ComponentScanAttr {
 	readonly name: string;
 	readonly value?: string;
+	/** The attribute is present and its value is an expression, unknown at scan time. `value` is omitted. */
+	readonly dynamic?: true;
 }
 
 /**
@@ -97,20 +100,86 @@ function isElement(n: MLASTChildNode): n is MLASTElement {
 	return n.type === 'starttag';
 }
 
+/**
+ * An attribute whose value is an expression (`type={kind}`, the shorthand `{type}`, `bind:value`,
+ * or `{}` inside a quoted value) is an attribute the element has, and it is `dynamic`. The other
+ * directives (`on:`, `class:`, `use:`, and so on) are not attributes by name and are left out.
+ */
+const INTERPOLATION = /\{[^}]*\}/;
+const DIRECTIVE = /^(bind|on|class|style|use|animate|transition|in|out|let):(.+)$/i;
+// Bindings to a value of the element that is not an attribute (`bind:clientWidth`, `bind:this`)
+const BINDING_WITHOUT_ATTRIBUTE = new Set([
+	'group',
+	'this',
+	'clientwidth',
+	'clientheight',
+	'offsetwidth',
+	'offsetheight',
+	'contentrect',
+	'contentboxsize',
+	'borderboxsize',
+	'devicepixelcontentboxsize',
+	'innerhtml',
+	'innertext',
+	'textcontent',
+	'naturalwidth',
+	'naturalheight',
+	'videowidth',
+	'videoheight',
+	'buffered',
+	'seekable',
+	'played',
+	'seeking',
+	'ended',
+	'readystate',
+	'duration',
+	'currenttime',
+	'paused',
+]);
+
 function extractAttrs(el: MLASTElement): ComponentScanAttr[] {
 	const attrs: ComponentScanAttr[] = [];
 	for (const attr of el.attributes) {
 		if (attr.type !== 'attr') {
 			continue;
 		}
+		if (attr.name.raw === '') {
+			if (attr.potentialName) {
+				addAttr(attrs, { name: attr.potentialName, dynamic: true });
+			}
+			continue;
+		}
+		const directive = DIRECTIVE.exec(attr.nodeName);
+		if (directive) {
+			const [, prefix, name] = directive;
+			if (prefix?.toLowerCase() === 'bind' && name && !BINDING_WITHOUT_ATTRIBUTE.has(name.toLowerCase())) {
+				addAttr(attrs, { name: name.toLowerCase(), dynamic: true });
+			}
+			continue;
+		}
 		const value = attr.value.raw;
-		if (value === '') {
-			attrs.push({ name: attr.nodeName });
+		if (attr.isDynamicValue || INTERPOLATION.test(value)) {
+			addAttr(attrs, { name: attr.nodeName, dynamic: true });
+		} else if (value === '') {
+			addAttr(attrs, { name: attr.nodeName });
 		} else {
-			attrs.push({ name: attr.nodeName, value });
+			addAttr(attrs, { name: attr.nodeName, value });
 		}
 	}
 	return attrs;
+}
+
+/**
+ * One name written in two forms (`class="btn" :class="x"`) is one attribute: dynamic
+ * when any of the forms is, in the position of the first.
+ */
+function addAttr(attrs: ComponentScanAttr[], attr: ComponentScanAttr) {
+	const index = attrs.findIndex(existing => existing.name === attr.name);
+	if (index === -1) {
+		attrs.push(attr);
+	} else if (attr.dynamic) {
+		attrs[index] = attr;
+	}
 }
 
 function containsSlot(n: MLASTChildNode): boolean {
