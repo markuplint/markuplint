@@ -232,10 +232,21 @@ export class MLCore {
 	/**
 	 * Replaces the source code and re-parses the document.
 	 *
+	 * `options.pretenders` is for a host that re-resolves pretenders from the
+	 * new source (`pretenders.auto` and selector disambiguation both read the
+	 * file's own imports, see #4064): they take effect in this same re-parse.
+	 * Routing them through {@link update} instead would also reset
+	 * `configErrors` / `ruleDeprecations` to whatever that call carries — and
+	 * those are config-time values an edit of the source does not change.
+	 *
 	 * @param sourceCode - The new markup source code
+	 * @param options - `pretenders` replaces the current pretenders; omitted, they are kept
 	 */
-	setCode(sourceCode: string) {
+	setCode(sourceCode: string, options?: { readonly pretenders?: readonly Pretender[] }) {
 		this.#sourceCode = sourceCode;
+		if (options?.pretenders) {
+			this.#pretenders = [...options.pretenders];
+		}
 		this.#parse();
 		this.#createDocument();
 	}
