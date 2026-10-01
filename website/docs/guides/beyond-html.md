@@ -256,7 +256,7 @@ This single configuration replaces what might otherwise be dozens of manual pret
 
 - **Which HTML element** each component renders as its root element
 - **Whether the component accepts children** (slots detection), which element wraps them, and what the component renders around them
-- **Static attributes** on the root element
+- **Attributes** on the root element. An attribute whose value is an expression (such as `:type="kind"` in Vue) is recorded as present with a value that is not validated
 
 #### Supported file types
 
