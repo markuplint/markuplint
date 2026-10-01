@@ -157,8 +157,9 @@ export type PretenderSlotContent<
 	readonly wrapper: N | null;
 
 	/**
-	 * `true` when `contents` has an entry whose content is unknown at scan time,
-	 * so a required child may be rendered there.
+	 * `true` when `contents` (of any slot when there are several) has an entry
+	 * whose content is unknown at scan time, so a required child, or a name,
+	 * may be rendered there.
 	 */
 	readonly mutable: boolean;
 

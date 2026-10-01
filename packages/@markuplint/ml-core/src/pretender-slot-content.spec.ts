@@ -146,6 +146,25 @@ describe('pretenders: slot content (issue-4054)', () => {
 		});
 
 		expect(el.pretenderContext.slotContent.wrapper).toBeNull();
+		expect(el.pretenderContext.slotContent.mutable).toBe(false);
+	});
+
+	test('a dynamic entry in one of several slot wrappers marks the content mutable', async () => {
+		const el = createTestElement('<Card />', {
+			...(await jsxOptions()),
+			pretenders: [
+				{
+					selector: 'Card',
+					as: {
+						element: 'div',
+						slots: [{ element: 'p' }, { element: 'ul', contents: [{ dynamic: true }] }],
+					},
+				},
+			],
+		});
+
+		expect(el.pretenderContext.slotContent.wrapper).toBeNull();
+		expect(el.pretenderContext.slotContent.mutable).toBe(true);
 	});
 
 	test.each([
