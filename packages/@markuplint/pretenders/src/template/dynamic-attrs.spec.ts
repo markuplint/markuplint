@@ -55,4 +55,39 @@ describe('templateScanner dynamic attributes (issue #4058)', () => {
 			slots: null,
 		});
 	});
+
+	test('[vue] a name written both statically and as a binding is one dynamic attribute', async () => {
+		expect(await scan('DuplicateAttrs.vue')).toStrictEqual({
+			element: 'button',
+			attrs: [
+				{ name: 'class', value: { dynamic: true } },
+				{ name: 'type', value: { dynamic: true } },
+			],
+			slots: null,
+		});
+	});
+
+	test('[svelte] namespaced attributes stay static; a binding to a property that is not an attribute is left out', async () => {
+		expect(await scan('NamespacedAttrs.svelte')).toStrictEqual({
+			element: 'input',
+			attrs: [
+				{ name: 'xlink:href', value: '#a' },
+				{ name: 'xml:lang', value: 'en' },
+				{ name: 'open', value: { dynamic: true } },
+				{ name: 'value', value: { dynamic: true } },
+			],
+			slots: null,
+		});
+	});
+
+	test('[astro] namespaced attributes stay static even though the parser flags them as directives', async () => {
+		expect(await scan('NamespacedAttrs.astro')).toStrictEqual({
+			element: 'input',
+			attrs: [
+				{ name: 'xlink:href', value: '#a' },
+				{ name: 'xml:lang', value: 'en' },
+			],
+			slots: null,
+		});
+	});
 });
