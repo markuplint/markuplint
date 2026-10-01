@@ -106,7 +106,36 @@ function isElement(n: MLASTChildNode): n is MLASTElement {
  * directives (`on:`, `class:`, `use:`, and so on) are not attributes by name and are left out.
  */
 const INTERPOLATION = /\{[^}]*\}/;
-const BINDING_WITHOUT_NAME = new Set(['group', 'this']);
+const DIRECTIVE = /^(bind|on|class|style|use|animate|transition|in|out|let):(.+)$/i;
+// Bindings to a value of the element that is not an attribute (`bind:clientWidth`, `bind:this`)
+const BINDING_WITHOUT_ATTRIBUTE = new Set([
+	'group',
+	'this',
+	'clientwidth',
+	'clientheight',
+	'offsetwidth',
+	'offsetheight',
+	'contentrect',
+	'contentboxsize',
+	'borderboxsize',
+	'devicepixelcontentboxsize',
+	'innerhtml',
+	'innertext',
+	'textcontent',
+	'naturalwidth',
+	'naturalheight',
+	'videowidth',
+	'videoheight',
+	'buffered',
+	'seekable',
+	'played',
+	'seeking',
+	'ended',
+	'readystate',
+	'duration',
+	'currenttime',
+	'paused',
+]);
 
 function extractAttrs(el: MLASTElement): ComponentScanAttr[] {
 	const attrs: ComponentScanAttr[] = [];
@@ -116,28 +145,41 @@ function extractAttrs(el: MLASTElement): ComponentScanAttr[] {
 		}
 		if (attr.name.raw === '') {
 			if (attr.potentialName) {
-				attrs.push({ name: attr.potentialName, dynamic: true });
+				addAttr(attrs, { name: attr.potentialName, dynamic: true });
 			}
 			continue;
 		}
-		const directive = /^([a-z]+):(.+)$/i.exec(attr.nodeName);
+		const directive = DIRECTIVE.exec(attr.nodeName);
 		if (directive) {
 			const [, prefix, name] = directive;
-			if (prefix === 'bind' && name && !BINDING_WITHOUT_NAME.has(name)) {
-				attrs.push({ name: name.toLowerCase(), dynamic: true });
+			if (prefix?.toLowerCase() === 'bind' && name && !BINDING_WITHOUT_ATTRIBUTE.has(name.toLowerCase())) {
+				addAttr(attrs, { name: name.toLowerCase(), dynamic: true });
 			}
 			continue;
 		}
 		const value = attr.value.raw;
 		if (attr.isDynamicValue || INTERPOLATION.test(value)) {
-			attrs.push({ name: attr.nodeName, dynamic: true });
+			addAttr(attrs, { name: attr.nodeName, dynamic: true });
 		} else if (value === '') {
-			attrs.push({ name: attr.nodeName });
+			addAttr(attrs, { name: attr.nodeName });
 		} else {
-			attrs.push({ name: attr.nodeName, value });
+			addAttr(attrs, { name: attr.nodeName, value });
 		}
 	}
 	return attrs;
+}
+
+/**
+ * One name written in two forms (`class="btn" :class="x"`) is one attribute: dynamic
+ * when any of the forms is, in the position of the first.
+ */
+function addAttr(attrs: ComponentScanAttr[], attr: ComponentScanAttr) {
+	const index = attrs.findIndex(existing => existing.name === attr.name);
+	if (index === -1) {
+		attrs.push(attr);
+	} else if (attr.dynamic) {
+		attrs[index] = attr;
+	}
 }
 
 function containsSlot(n: MLASTChildNode): boolean {
