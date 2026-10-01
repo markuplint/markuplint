@@ -17,7 +17,10 @@ type DetailedIdentity = Exclude<Identity, string>;
  * - `true` or omitted: among the children it hands to `inner`, so they end up in
  *   whatever wraps `inner`'s slot. The result keeps `inner`'s `slots`.
  * - An array: inside the wrapper of `outer`, which lives inside `inner`'s slot.
- *   The result keeps that wrapper.
+ *   The result keeps that wrapper. Known limitation: what `inner` renders around it
+ *   (its own `contents`, or its own slot wrapper) is dropped, because a pretender cannot
+ *   nest one wrapper in another. The children are still evaluated against the wrapper
+ *   of `outer`; only the placement of that wrapper inside `inner` goes unchecked.
  *
  * When `inner` does not render its children (`slots: null`), nothing `outer` hands over
  * is rendered, so `inner` is the result as it is. So is it when `outer` is only an element

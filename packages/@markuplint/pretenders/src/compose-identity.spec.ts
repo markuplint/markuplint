@@ -125,7 +125,77 @@ describe('composeIdentity', () => {
 		});
 	});
 
+	describe('the inner component is only an element name', () => {
+		test('an outer component that never renders its children gives the inner element its contents', () => {
+			expect(
+				composeIdentity({ element: 'Pic', slots: null, contents: [{ element: 'img' }] }, 'picture'),
+			).toStrictEqual({ element: 'picture', slots: null, contents: [{ element: 'img' }] });
+		});
+
+		test('an outer component that renders its children keeps the default slot implicit', () => {
+			expect(
+				composeIdentity(
+					{ element: 'Pic', slots: true, contents: [{ slot: true }, { element: 'img' }] },
+					'picture',
+				),
+			).toStrictEqual({ element: 'picture', contents: [{ slot: true }, { element: 'img' }] });
+		});
+
+		test('an outer component that renders its children and hands over nothing else gives the name only', () => {
+			expect(composeIdentity({ element: 'Base', slots: true }, 'details')).toBe('details');
+		});
+	});
+
+	describe('what the outer component hands over is not described', () => {
+		test('slots: null without contents hands over nothing', () => {
+			expect(composeIdentity({ element: 'Base', slots: null }, { element: 'div', slots: true })).toStrictEqual({
+				element: 'div',
+				slots: null,
+			});
+		});
+
+		test('the wrapper of the outer component wins over the wrapper of the inner one', () => {
+			expect(
+				composeIdentity(
+					{ element: 'Card', slots: [{ element: 'p' }] },
+					{ element: 'div', slots: [{ element: 'ul' }] },
+				),
+			).toStrictEqual({ element: 'div', slots: [{ element: 'p' }] });
+		});
+
+		test('the attributes of the outer component are not composed', () => {
+			expect(
+				composeIdentity(
+					{
+						element: 'Pic',
+						attrs: [{ name: 'class', value: 'outer' }],
+						slots: null,
+						contents: [{ element: 'img' }],
+					},
+					{ element: 'picture', attrs: [{ name: 'id', value: 'inner' }], slots: true },
+				),
+			).toStrictEqual({
+				element: 'picture',
+				attrs: [{ name: 'id', value: 'inner' }],
+				slots: null,
+				contents: [{ element: 'img' }],
+			});
+		});
+	});
+
 	describe('through dependencyMapper', () => {
+		test('components that render each other terminate and report the recursion', () => {
+			const result = dependencyMapper(
+				new Map([
+					['A', ['A', { element: 'B', slots: null, contents: [{ element: 'img' }] }]],
+					['B', ['B', { element: 'A', slots: true }]],
+				]),
+			);
+
+			expect(result.map(pretender => pretender.selector)).toStrictEqual(['A', 'B']);
+			expect(result.map(pretender => pretender._via?.at(-1))).toStrictEqual(['...[Recursive]', '...[Recursive]']);
+		});
+
 		test('Hero -> Pic: the img that Hero always renders is in the contents', () => {
 			const img = { element: 'img', attrs: [{ name: 'alt', value: 'Example' }] };
 
