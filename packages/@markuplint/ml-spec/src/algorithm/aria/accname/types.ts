@@ -52,6 +52,15 @@ export interface AccnameResolver {
 	 * accessible names through configuration.
 	 */
 	getPrecomputedName?(el: AccnameElement): string | null;
+	/**
+	 * Returns the child nodes to traverse for `el`, in place of `el.childNodes`.
+	 * Used by ml-core for a pretended component: it renders its own elements around
+	 * the children given at the usage site (`contents` of the pretender), and those
+	 * can carry the accessible name (`<button><img alt="Save"></button>`).
+	 * Consulted by name-from-content, label text, and the legend/caption lookups;
+	 * the other lookups (SVG `title`, `<select>` options) still read the element itself.
+	 */
+	getChildNodes?(el: AccnameElement): Iterable<AccnameNode>;
 }
 
 /**

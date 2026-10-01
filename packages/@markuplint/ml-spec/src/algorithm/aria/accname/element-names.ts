@@ -298,7 +298,7 @@ function handleFieldset(
 	) => AccnameResult,
 	inLabelledbyTraversal: boolean,
 ): AccnameResult | null {
-	const legend = findChildByLocalName(el, 'legend');
+	const legend = findChildByLocalName(el, 'legend', resolver);
 	if (legend) {
 		const content = resolveNameFromContent(legend, resolver, visited, computeFn, inLabelledbyTraversal);
 		if (content.trim()) {
@@ -331,7 +331,7 @@ function handleTable(
 	) => AccnameResult,
 	inLabelledbyTraversal: boolean,
 ): AccnameResult | null {
-	const caption = findChildByLocalName(el, 'caption');
+	const caption = findChildByLocalName(el, 'caption', resolver);
 	if (caption) {
 		const content = resolveNameFromContent(caption, resolver, visited, computeFn, inLabelledbyTraversal);
 		if (content.trim()) {

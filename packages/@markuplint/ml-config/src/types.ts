@@ -341,6 +341,8 @@ export type OriginalNode = {
 	 *   because the wrapper each child belongs to is unknown.
 	 * - `null`: there is no slot position, so {@link OriginalNode.contents}
 	 *   is the whole content and given children are appended after it.
+	 *   The accessible name computation does not use the given children,
+	 *   because the component does not render them.
 	 *
 	 * @experimental
 	 */
@@ -358,9 +360,12 @@ export type OriginalNode = {
 	 *
 	 * When omitted, the given children are the whole content.
 	 *
-	 * Known limitation: only `permitted-contents` reads it. Rules that look at the
-	 * children of the element for another purpose, such as the accessible name,
-	 * still see only the children given at the usage site.
+	 * Known limitation: `permitted-contents` and the accessible name computation
+	 * (name from content, `legend`, `caption`, and label text) read it. Other rules that
+	 * look at the children of the element, and the `title` of an SVG and the `option`s
+	 * of a `select` in the name computation, still see only the children given at the
+	 * usage site. In the name computation, `{ dynamic: true }` is not a source of
+	 * a name: a component that renders only an expression is still unnamed.
 	 *
 	 * @experimental
 	 */
