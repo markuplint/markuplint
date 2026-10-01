@@ -34,6 +34,62 @@ export type ResolvePretendersContext = {
 };
 
 /**
+ * Resolves pretenders for one lint target, across edits of that target.
+ *
+ * The sections of `config.pretenders` split by what their result depends on.
+ * `files`, `imports`, `data`, and `scan` depend on the config and the
+ * filesystem only; `auto` depends on the target's own source as well — the
+ * import graph it walks starts from the target's import statements. (So does
+ * the selector disambiguation the caller runs on the result.) A resolver
+ * reads the first group once, on the first `resolve()`, and reads the target
+ * on every `resolve()`, so a host that re-resolves after each edit of the
+ * target (`MLEngine.setCode`) re-does exactly the part an edit can change.
+ * The first group is read again only by a new resolver, which a host creates
+ * on each config resolution — a change on disk to a scanned component is
+ * therefore picked up with the next config resolution, not with the next
+ * edit of the target. See #4064.
+ */
+export type PretenderResolver = {
+	/**
+	 * @param context - The lint target's path/source, required only for
+	 *   `config.auto`; without it `auto` is skipped, as in {@link resolvePretenders}
+	 * @returns All resolved pretender definitions — a new array on every call,
+	 *   so the retained target-independent entries are never exposed to mutation
+	 */
+	resolve(context?: ResolvePretendersContext): Promise<Pretender[]>;
+};
+
+/**
+ * Creates a {@link PretenderResolver} for `config`. One resolver stands for one
+ * resolution of the config: its target-independent entries are read on the
+ * first `resolve()` and kept for the resolver's lifetime (a failure there is
+ * kept as well — the host's next config resolution creates a new resolver).
+ *
+ * @param config - The pretenders configuration section from the optimized config
+ * @returns The resolver; its `resolve()` yields `[]` when `config` is absent
+ */
+export function createPretenderResolver(config: PretendersConfig): PretenderResolver {
+	let targetIndependent: Promise<Pretender[]> | null = null;
+
+	return {
+		async resolve(context) {
+			if (!config) {
+				return [];
+			}
+
+			targetIndependent ??= resolveTargetIndependentPretenders(config);
+			const data = [...(await targetIndependent)];
+
+			if (config.auto && context) {
+				await appendAutoPretenders(data, context);
+			}
+
+			return data;
+		},
+	};
+}
+
+/**
  * Resolves pretender definitions from files, imported modules, inline data,
  * dynamic component scanning, and (when `context` is given) the lint
  * target's own import graph.
@@ -49,18 +105,23 @@ export type ResolvePretendersContext = {
  * 5. `config.auto` — on-demand scan of `context`'s own import graph (requires
  *    `context`; a no-op without it, e.g. when the caller has no lint target yet)
  *
+ * Equivalent to one `resolve()` of a fresh {@link createPretenderResolver};
+ * a host that resolves the same config repeatedly for one target keeps the
+ * resolver instead.
+ *
  * @param config - The pretenders configuration section from the optimized config
  * @param context - The lint target's path/source, required only for `config.auto`
  * @returns An array of all resolved pretender definitions
  */
-export async function resolvePretenders(
-	config: PretendersConfig,
-	context?: ResolvePretendersContext,
-): Promise<Pretender[]> {
-	if (!config) {
-		return [];
-	}
+export function resolvePretenders(config: PretendersConfig, context?: ResolvePretendersContext): Promise<Pretender[]> {
+	return createPretenderResolver(config).resolve(context);
+}
 
+/**
+ * Steps 1–4 of {@link resolvePretenders}: the sections whose result does not
+ * depend on the lint target.
+ */
+async function resolveTargetIndependentPretenders(config: NonNullable<PretendersConfig>): Promise<Pretender[]> {
 	const data: Pretender[] = [];
 
 	if (config.files) {
@@ -112,36 +173,40 @@ export async function resolvePretenders(
 		}
 	}
 
-	if (config.auto && context) {
-		const { autoScan } = await import('@markuplint/pretenders');
-		const scanned = await autoScan(context.filePath, context.sourceCode);
-		// `autoScan()` reports filePath relative to `process.cwd()`, same as `scan()`.
-		const rebased = rebasePretenderFilePaths(scanned, process.cwd());
-		// `scan` and `auto` can both walk into the same file (e.g. a component
-		// `scan`'s glob already covers that `auto`'s import-graph walk also
-		// reaches); de-duping on (selector, filePath) keeps that file's entry
-		// from appearing twice while still letting a same-selector entry from a
-		// genuinely different file through for `disambiguatePretendersForFile`
-		// to resolve. `selector` is a markuplint CSS-like selector and can
-		// legitimately contain spaces (a descendant combinator), so the pair is
-		// joined via `JSON.stringify` rather than a plain-string delimiter —
-		// otherwise two distinct (selector, filePath) pairs could concatenate to
-		// the same string and be mistaken for a duplicate.
-		const dedupeKey = (p: Pretender) => JSON.stringify([p.selector, p.filePath]);
-		const seen = new Set(data.filter(p => p.filePath).map(p => dedupeKey(p)));
-		for (const pretender of rebased) {
-			if (pretender.filePath) {
-				const key = dedupeKey(pretender);
-				if (seen.has(key)) {
-					continue;
-				}
-				seen.add(key);
-			}
-			data.push(pretender);
-		}
-	}
-
 	return data;
+}
+
+/**
+ * Step 5 of {@link resolvePretenders}: appends what `config.auto` finds in
+ * `context`'s import graph to `data`, the target-independent entries.
+ */
+async function appendAutoPretenders(data: Pretender[], context: ResolvePretendersContext): Promise<void> {
+	const { autoScan } = await import('@markuplint/pretenders');
+	const scanned = await autoScan(context.filePath, context.sourceCode);
+	// `autoScan()` reports filePath relative to `process.cwd()`, same as `scan()`.
+	const rebased = rebasePretenderFilePaths(scanned, process.cwd());
+	// `scan` and `auto` can both walk into the same file (e.g. a component
+	// `scan`'s glob already covers that `auto`'s import-graph walk also
+	// reaches); de-duping on (selector, filePath) keeps that file's entry
+	// from appearing twice while still letting a same-selector entry from a
+	// genuinely different file through for `disambiguatePretendersForFile`
+	// to resolve. `selector` is a markuplint CSS-like selector and can
+	// legitimately contain spaces (a descendant combinator), so the pair is
+	// joined via `JSON.stringify` rather than a plain-string delimiter —
+	// otherwise two distinct (selector, filePath) pairs could concatenate to
+	// the same string and be mistaken for a duplicate.
+	const dedupeKey = (p: Pretender) => JSON.stringify([p.selector, p.filePath]);
+	const seen = new Set(data.filter(p => p.filePath).map(p => dedupeKey(p)));
+	for (const pretender of rebased) {
+		if (pretender.filePath) {
+			const key = dedupeKey(pretender);
+			if (seen.has(key)) {
+				continue;
+			}
+			seen.add(key);
+		}
+		data.push(pretender);
+	}
 }
 
 /**
