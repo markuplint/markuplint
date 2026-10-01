@@ -29,6 +29,18 @@ const components = {
 export function Select({ children }) {
 	return <select>{children}</select>;
 }`,
+	'Option.tsx': `
+export function Option() {
+	return <option value="red"></option>;
+}`,
+	'Title.tsx': `
+export function Title() {
+	return <title id="logo-title"></title>;
+}`,
+	'Textarea.tsx': `
+export function Textarea() {
+	return <textarea name="note"></textarea>;
+}`,
 	'Placeholder.tsx': `
 export function Placeholder() {
 	return (
@@ -76,5 +88,23 @@ describe('pretenders.auto: issue #4067', () => {
 		expect(
 			await lint('<button type="button"><Placeholder><option>Red</option></Placeholder></button>'),
 		).toStrictEqual(['require-accessible-name: <button type="button">']);
+	});
+
+	test('text written inside an option component that never renders it is not the selected text', async () => {
+		expect(await lint('<button type="button"><Select><Option>Red</Option></Select></button>')).toStrictEqual([
+			'require-accessible-name: <button type="button">',
+		]);
+	});
+
+	test('text written inside a title component that never renders it does not name the svg', async () => {
+		expect(await lint('<button type="button"><svg><Title>Logo</Title></svg></button>')).toStrictEqual([
+			'require-accessible-name: <button type="button">',
+		]);
+	});
+
+	test('text written inside a textarea component that never renders it is not its value', async () => {
+		expect(await lint('<button type="button"><Textarea>Draft</Textarea></button>')).toStrictEqual([
+			'require-accessible-name: <button type="button">',
+		]);
 	});
 });

@@ -14,9 +14,11 @@ import type { AccnameElement } from './types.js';
  * Checks (in order): `aria-label`, `aria-labelledby`, `<title>` child, `<desc>` child.
  *
  * Known limitation: this reads `el.children`, not `AccnameResolver.getChildNodes`,
- * because `getComputedRole` has no resolver to pass. An `<svg>` whose title comes
- * only from the `contents` of a pretender is therefore not seen here, while
- * the name computation does find it.
+ * because `getComputedRole` has no resolver to pass. For a pretended component it
+ * therefore answers from the children written at the usage site, while the name
+ * computation reads the ones the component renders. A `<title>` that comes only
+ * from the `contents` of a pretender names nothing in either: those entries are
+ * childless, so it has no text.
  *
  * @param el - The SVG element to check for accessible name sources
  * @returns True if the element has aria-label, aria-labelledby, or a title/desc child

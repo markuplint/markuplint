@@ -58,7 +58,9 @@ export interface AccnameResolver {
 	 * the children given at the usage site (`contents` of the pretender), and those
 	 * can carry the accessible name (`<button><img alt="Save"></button>`).
 	 * Consulted by name-from-content, label text, the legend/caption/SVG `title`
-	 * lookups, and the `<select>` options.
+	 * lookups, the `<select>` options, and wherever the computation reads an
+	 * element's text (`getTextContent`): an option, an SVG `title`, the value of
+	 * an embedded control. `hasSvgAccessibleNameSource` is the exception.
 	 */
 	getChildNodes?(el: AccnameElement): Iterable<AccnameNode>;
 }

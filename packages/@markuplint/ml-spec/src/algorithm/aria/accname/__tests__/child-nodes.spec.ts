@@ -128,4 +128,51 @@ describe('AccnameResolver.getChildNodes', () => {
 
 		expect(computeAccessibleName(heading, resolver).name).toBe('Color: Red');
 	});
+
+	test('the text of the selected option is read through the resolver', () => {
+		const select = element('select');
+		const option = element('option', { children: [textNode('Written')] });
+		const heading = element('h1', { children: [textNode('Color: '), select] });
+		const resolver = {
+			...createTestResolver({ nameFromContent: new Set(['h1']) }),
+			getChildNodes: (el: typeof select) => {
+				if (el === select) {
+					return [option];
+				}
+				return el === option ? [textNode('Rendered')] : el.childNodes;
+			},
+		};
+
+		expect(computeAccessibleName(heading, resolver).name).toBe('Color: Rendered');
+	});
+
+	test('the text of an SVG title is read through the resolver', () => {
+		const svg = element('svg', { namespaceURI: 'http://www.w3.org/2000/svg' });
+		const title = element('title', {
+			children: [textNode('Written')],
+			namespaceURI: 'http://www.w3.org/2000/svg',
+		});
+		const resolver = {
+			...createTestResolver(),
+			getChildNodes: (el: typeof svg) => {
+				if (el === svg) {
+					return [title];
+				}
+				return el === title ? [] : el.childNodes;
+			},
+		};
+
+		expect(computeAccessibleName(svg, resolver)).toStrictEqual({ name: '', source: null });
+	});
+
+	test('the value of an embedded text control is read through the resolver', () => {
+		const textarea = element('textarea', { children: [textNode('Written')] });
+		const heading = element('h1', { children: [textNode('Note: '), textarea] });
+		const resolver = {
+			...createTestResolver({ nameFromContent: new Set(['h1']) }),
+			getChildNodes: (el: typeof textarea) => (el === textarea ? [textNode('Rendered')] : el.childNodes),
+		};
+
+		expect(computeAccessibleName(heading, resolver).name).toBe('Note: Rendered');
+	});
 });

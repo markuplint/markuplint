@@ -8,7 +8,14 @@ import {
 	DEFAULT_SUBMIT_LABEL,
 	TEXT_INPUT_TYPES,
 } from '../../../const/index.js';
-import { findChildByLocalName, getInputType, isSvgElement, makeResult, resolveNameFromContent } from './helpers.js';
+import {
+	findChildByLocalName,
+	getInputType,
+	getTextContent,
+	isSvgElement,
+	makeResult,
+	resolveNameFromContent,
+} from './helpers.js';
 import { resolveLabelText } from './label-steps.js';
 
 /**
@@ -480,8 +487,9 @@ function handleTitleOnly(el: AccnameElement): AccnameResult | null {
  */
 function handleSvgElement(el: AccnameElement, resolver: AccnameResolver): AccnameResult | null {
 	const titleEl = findChildByLocalName(el, 'title', resolver);
-	if (titleEl?.textContent?.trim()) {
-		return makeResult(titleEl.textContent, 'svg-title');
+	const title = titleEl ? getTextContent(titleEl, resolver) : '';
+	if (title.trim()) {
+		return makeResult(title, 'svg-title');
 	}
 
 	return null;
