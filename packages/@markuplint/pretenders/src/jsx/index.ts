@@ -63,6 +63,7 @@ const defaultOptions: Required<Omit<PretenderScanJSXOptions, 'sources' | 'depend
 		/^styled\s*\(\s*(?<tagName>[a-z][\da-z]*)\s*\)$/i,
 	],
 	extendingWrapper: [],
+	followImports: true,
 };
 
 /**
@@ -93,7 +94,8 @@ const defaultOptions: Required<Omit<PretenderScanJSXOptions, 'sources' | 'depend
  *
  * @param files - Absolute file paths to scan (relative paths cause a `ReferenceError`)
  * @param options - JSX scanner configuration (fragment patterns, styled-components, wrappers, etc.)
- * @returns Discovered pretender mappings for all components found in the given files
+ * @returns Discovered pretender mappings for all components found in the given files and,
+ *          unless `followImports` is `false`, in the files they import
  */
 export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 	(files, options = defaultOptions): Promise<Pretender[]> => {
@@ -103,6 +105,7 @@ export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 			asFragment = defaultOptions.asFragment,
 			taggedStylingComponent = defaultOptions.taggedStylingComponent,
 			extendingWrapper = defaultOptions.extendingWrapper,
+			followImports = defaultOptions.followImports,
 			sources,
 			dependencies,
 		} = options;
@@ -116,8 +119,9 @@ export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 			return new RegExp(pattern.source, pattern.flags.replaceAll(/[gy]/g, ''));
 		});
 
-		const host = createCachingCompilerHost(COMPILER_OPTIONS, sources);
-		const program = createProgram(files, COMPILER_OPTIONS, host);
+		const compilerOptions = followImports ? COMPILER_OPTIONS : { ...COMPILER_OPTIONS, noResolve: true };
+		const host = createCachingCompilerHost(compilerOptions, sources);
+		const program = createProgram(files, compilerOptions, host);
 
 		for (const sourceFile of program.getSourceFiles()) {
 			if (!sourceFile.isDeclarationFile) {

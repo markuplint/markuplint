@@ -1,4 +1,4 @@
-import type { OptimizedConfig, Pretender, PretenderFileData } from '@markuplint/ml-config';
+import type { OptimizedConfig, Pretender, PretenderAutoOptions, PretenderFileData } from '@markuplint/ml-config';
 
 import path from 'node:path';
 
@@ -123,7 +123,7 @@ export function createPretenderResolver(config: PretendersConfig): PretenderReso
 			}
 
 			if (config.auto && context) {
-				await appendAutoPretenders(data, context, options?.dependencies);
+				await appendAutoPretenders(data, context, config.auto, options?.dependencies);
 			}
 
 			return data;
@@ -144,7 +144,8 @@ export function createPretenderResolver(config: PretendersConfig): PretenderReso
  * 3. `config.data` — inline pretender definitions
  * 4. `config.scan` — dynamic component scanning via glob patterns
  *    (`files` accepts `string | string[]`)
- * 5. `config.auto` — on-demand scan of `context`'s own import graph (requires
+ * 5. `config.auto` — on-demand scan of `context`'s own import graph, up to
+ *    `config.auto.depth` hops when the object form gives one (requires
  *    `context`; a no-op without it, e.g. when the caller has no lint target yet)
  *
  * Equivalent to one `resolve()` of a fresh {@link createPretenderResolver};
@@ -234,10 +235,14 @@ async function resolveTargetIndependentPretenders(
 async function appendAutoPretenders(
 	data: Pretender[],
 	context: ResolvePretendersContext,
+	auto: true | PretenderAutoOptions,
 	dependencies: Set<string> | undefined,
 ): Promise<void> {
 	const { autoScan } = await import('@markuplint/pretenders');
-	const scanned = await autoScan(context.filePath, context.sourceCode, { dependencies });
+	const scanned = await autoScan(context.filePath, context.sourceCode, {
+		depth: auto === true ? undefined : auto.depth,
+		dependencies,
+	});
 	// `autoScan()` reports filePath relative to `process.cwd()`, same as `scan()`.
 	const rebased = rebasePretenderFilePaths(scanned, process.cwd());
 	// `scan` and `auto` can both walk into the same file (e.g. a component

@@ -1271,6 +1271,16 @@ When using the object form, `auto: true` resolves pretenders by scanning the fil
 }
 ```
 
+The walk follows up to 8 import hops from the linted file. Use the object form to change that; `0` considers only the linted file itself. When configs are merged through `extends`, `auto` of the later one replaces the earlier one as a whole, so `{}` brings the limit back to 8:
+
+```json class=config
+{
+  "pretenders": {
+    "auto": { "depth": 3 }
+  }
+}
+```
+
 Unlike `scan`, which pre-scans a configured set of files once, `auto` runs per lint target and only ever considers components the linted file actually imports (transitively) — so same-named components in unrelated files can never collide. This comes with two trade-offs:
 
 - In watch mode or an editor session, the component files `auto` (and `scan`) read are watched along with the config file, so editing one re-lints the files that use it. What is not watched, so a change to it is picked up only when the config changes: a component file that does not exist yet (including a new match of a `scan` glob, and a file that was removed and comes back), files under `node_modules`, and the files of `files` and `imports`. Edits to the linted file itself — adding, removing, or changing an import — are reflected on the next lint of that file.
@@ -1287,7 +1297,7 @@ interface Config {
     | {
         data?: Pretender[];
         scan?: PretenderScanConfig[]; // @experimental
-        auto?: boolean; // @experimental
+        auto?: boolean | { depth?: number }; // @experimental
       };
 }
 

@@ -92,6 +92,30 @@ describe('pretenders.auto integration', () => {
 		expect(violations.filter(v => v.ruleId === 'permitted-contents' && v.raw === '<Item>')).toStrictEqual([]);
 	});
 
+	test('auto: { depth: 1 } follows the one import hop to Item', async () => {
+		const wrapperPath = await writeVoidItemFixture(tmpDir);
+
+		const { violations } = await mlTestFile(wrapperPath, {
+			...jsxParserConfig,
+			pretenders: { auto: { depth: 1 } },
+			rules: { 'permitted-contents': true },
+		});
+
+		expect(violations).toStrictEqual([expect.objectContaining({ ruleId: 'permitted-contents', raw: '<Item>' })]);
+	});
+
+	test('auto: { depth: 0 } stops before the imported Item, leaving it unresolved', async () => {
+		const wrapperPath = await writeVoidItemFixture(tmpDir);
+
+		const { violations } = await mlTestFile(wrapperPath, {
+			...jsxParserConfig,
+			pretenders: { auto: { depth: 0 } },
+			rules: { 'permitted-contents': true },
+		});
+
+		expect(violations.filter(v => v.ruleId === 'permitted-contents' && v.raw === '<Item>')).toStrictEqual([]);
+	});
+
 	test('inline data for the same selector wins over the auto-resolved mapping', async () => {
 		// data maps Item to <div> (children permitted), overriding the
 		// auto-resolved <img> (void, children forbidden). A clean result here

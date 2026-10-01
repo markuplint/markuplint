@@ -251,6 +251,23 @@ describe('auto (on-demand import-graph resolution)', () => {
 		expect(pretenders.find(p => p.selector === 'Child')).toMatchObject({ as: 'button' });
 	});
 
+	test('`auto: { depth }` limits how far the import graph is walked', async () => {
+		const entryPath = path.join(tmpDir, 'entry.tsx');
+		await writeFile(path.join(tmpDir, 'Inner.tsx'), 'export const Inner = () => <button>x</button>;');
+		await writeFile(
+			path.join(tmpDir, 'Outer.tsx'),
+			"import { Inner } from './Inner';\nexport const Outer = () => <Inner />;",
+		);
+		const sourceCode = "import { Outer } from './Outer';\nexport const Entry = () => <Outer />;";
+
+		const shallow = await resolvePretenders({ auto: { depth: 1 } }, { filePath: entryPath, sourceCode });
+		const deep = await resolvePretenders({ auto: {} }, { filePath: entryPath, sourceCode });
+
+		expect(shallow.some(p => p.selector === 'Outer')).toBe(true);
+		expect(shallow.some(p => p.selector === 'Inner')).toBe(false);
+		expect(deep.some(p => p.selector === 'Inner')).toBe(true);
+	});
+
 	test('is a no-op when context is not given, even if auto is on', async () => {
 		const pretenders = await resolvePretenders({ auto: true });
 		expect(pretenders).toStrictEqual([]);

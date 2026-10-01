@@ -140,11 +140,7 @@ describe('autoScan', () => {
 
 	test('does not traverse past the depth limit', async () => {
 		// entry -> chain0.vue -> chain1.vue -> ... -> chain8.vue (9 hops from
-		// entry). Uses .vue files (not .tsx) because jsxScanner's own
-		// ts.Program transitively resolves imports on its own regardless of
-		// what BFS collected, which would mask the traversal cap; templateScanner
-		// has no such transitive resolution, so only files BFS actually visits
-		// get scanned.
+		// entry). The .tsx-only counterpart is under 'import depth'.
 		const CHAIN_LENGTH = 9;
 		for (let i = 0; i < CHAIN_LENGTH; i++) {
 			const next = i === CHAIN_LENGTH - 1 ? null : `./chain${i + 1}.vue`;
@@ -162,6 +158,86 @@ describe('autoScan', () => {
 
 		expect(selectors.has('Chain0')).toBe(true);
 		expect(selectors.has(`Chain${CHAIN_LENGTH - 1}`)).toBe(false);
+	});
+
+	describe('import depth', () => {
+		// entry -> Chain0.tsx -> Chain1.tsx -> ... -> Chain{length-1}.tsx
+		const writeTsxChain = async (dir: string, length: number) => {
+			for (let i = 0; i < length; i++) {
+				const next = i === length - 1 ? null : `import { Chain${i + 1} } from './Chain${i + 1}';\n`;
+				const body = next ? `<Chain${i + 1} />` : '<div />';
+				await writeFile(
+					path.join(dir, `Chain${i}.tsx`),
+					`${next ?? ''}export const Chain${i} = () => ${body};`,
+				);
+			}
+		};
+		const entrySource = "import { Chain0 } from './Chain0';\nexport const Entry = () => <Chain0 />;";
+
+		test('a .tsx-only chain stops at the default depth of 8', async () => {
+			await writeTsxChain(tmpDir, 12);
+
+			const result = await autoScan(path.join(tmpDir, 'entry.tsx'), entrySource);
+			const selectors = new Set(result.map(p => p.selector));
+
+			expect(selectors.has('Chain7')).toBe(true);
+			expect(selectors.has('Chain8')).toBe(false);
+			expect(selectors.has('Chain11')).toBe(false);
+		});
+
+		test('`depth` changes where the traversal stops', async () => {
+			await writeTsxChain(tmpDir, 12);
+
+			const result = await autoScan(path.join(tmpDir, 'entry.tsx'), entrySource, { depth: 2 });
+			const selectors = new Set(result.map(p => p.selector));
+
+			expect(selectors.has('Chain1')).toBe(true);
+			expect(selectors.has('Chain2')).toBe(false);
+		});
+
+		test('`depth: 0` scans only the entry file', async () => {
+			await writeTsxChain(tmpDir, 3);
+
+			const result = await autoScan(path.join(tmpDir, 'entry.tsx'), entrySource, { depth: 0 });
+			const selectors = result.map(p => p.selector);
+
+			expect(selectors).toStrictEqual(['Entry']);
+		});
+
+		test('a different `depth` for the same entry source is not served from the cache', async () => {
+			await writeTsxChain(tmpDir, 4);
+			const entryPath = path.join(tmpDir, 'entry.tsx');
+
+			const shallow = await autoScan(entryPath, entrySource, { depth: 1 });
+			const deep = await autoScan(entryPath, entrySource);
+
+			expect(shallow.some(p => p.selector === 'Chain1')).toBe(false);
+			expect(deep.some(p => p.selector === 'Chain1')).toBe(true);
+		});
+	});
+
+	test('a styled wrapper of a component declared in another file still resolves without TypeScript following imports', async () => {
+		const entryPath = path.join(tmpDir, 'entry.tsx');
+		await writeFile(path.join(tmpDir, 'Button.tsx'), 'export const Button = () => <button>x</button>;');
+		await writeFile(
+			path.join(tmpDir, 'Wrapped.tsx'),
+			"import { Button } from './Button';\nexport const Wrapped = styled(Button)`color: red;`;",
+		);
+		const entrySource = "import { Wrapped } from './Wrapped';\nexport const Entry = () => <Wrapped />;";
+
+		const result = await autoScan(entryPath, entrySource);
+
+		expect(result.find(p => p.selector === 'Wrapped')).toMatchObject({ as: 'button' });
+	});
+
+	test('a .tsx entry resolves a .mjs import', async () => {
+		const entryPath = path.join(tmpDir, 'entry.tsx');
+		await writeFile(path.join(tmpDir, 'Child.mjs'), 'export const Child = () => <button>x</button>;');
+		const entrySource = "import { Child } from './Child.mjs';\nexport const Entry = () => <Child />;";
+
+		const result = await autoScan(entryPath, entrySource);
+
+		expect(result.find(p => p.selector === 'Child')).toMatchObject({ as: 'button' });
 	});
 
 	test('an unsupported entry extension returns an empty result', async () => {
