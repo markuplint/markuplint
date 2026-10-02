@@ -37,42 +37,58 @@ describe('Event notification', () => {
 
 describe('Watcher', () => {
 	it('updates config', async () => {
-		const file = await MLEngine.toMLFile('test/fixture/002.html');
-		const engine = new MLEngine(file!, {
-			watch: true,
-		});
-		const configPromise = new Promise<string[]>(resolve => {
-			engine.on('config', (_, configSet) => {
-				resolve([...configSet.files]);
+		// This test rewrites the config file the watcher is observing. Spec
+		// files run in parallel workers, and the CLI specs lint the shared
+		// `test/fixture/002.html` with `test/fixture/.markuplintrc`: writing
+		// to that file would let them read the rewritten config and report
+		// fewer warnings. So the fixture pair is copied into a temporary
+		// directory and the copy is rewritten instead.
+		const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'ml-engine-watcher-'));
+		let engine: MLEngine | undefined;
+		try {
+			await fs.copyFile('test/fixture/002.html', path.join(tmpDir, '002.html'));
+			await fs.copyFile('test/fixture/.markuplintrc', path.join(tmpDir, '.markuplintrc'));
+			const file = await MLEngine.toMLFile(path.join(tmpDir, '002.html'));
+			const watched = new MLEngine(file!, {
+				watch: true,
 			});
-		});
-		// First evaluation
-		const result1st = await engine.exec();
-		// Get config file
-		const files = await configPromise;
-		engine.removeAllListeners();
-		const targetFile = files.at(-1)!;
-		const targetFileOriginData = await fs.readFile(targetFile, { encoding: 'utf8' });
-		const config = JSON.parse(targetFileOriginData);
-		const result2ndPromise = new Promise<ReadonlyArray<Violation>>(resolve => {
-			engine.on('lint', (_, __, violations) => {
-				resolve(violations);
+			engine = watched;
+			const configPromise = new Promise<string[]>(resolve => {
+				watched.on('config', (_, configSet) => {
+					resolve([...configSet.files]);
+				});
 			});
-		});
-		// Disable rules
-		const config2 = {
-			...config,
-			rules: {},
-		};
-		await fs.writeFile(targetFile, JSON.stringify(config2), { encoding: 'utf8' });
-		// Second evaluation
-		const result2nd = await result2ndPromise;
-		// Revert the file
-		await fs.writeFile(targetFile, targetFileOriginData, { encoding: 'utf8' });
-		await engine.close();
-		expect(result1st?.violations.length).toBe(6);
-		expect(result2nd.length).toBe(5);
-		return;
+			// First evaluation
+			const result1st = await watched.exec();
+			// Get config file
+			const files = await configPromise;
+			watched.removeAllListeners();
+			const targetFile = files.at(-1)!;
+			// Guard: the file about to be rewritten must be the copy, never the shared fixture.
+			expect(await fs.realpath(path.dirname(targetFile))).toBe(await fs.realpath(tmpDir));
+			const targetFileOriginData = await fs.readFile(targetFile, { encoding: 'utf8' });
+			const config = JSON.parse(targetFileOriginData);
+			const result2ndPromise = new Promise<ReadonlyArray<Violation>>(resolve => {
+				watched.on('lint', (_, __, violations) => {
+					resolve(violations);
+				});
+			});
+			// Disable rules
+			const config2 = {
+				...config,
+				rules: {},
+			};
+			await fs.writeFile(targetFile, JSON.stringify(config2), { encoding: 'utf8' });
+			// Second evaluation
+			const result2nd = await result2ndPromise;
+			expect(result1st?.violations.length).toBe(6);
+			expect(result2nd.length).toBe(5);
+		} finally {
+			// Close before removing the directory so a failed assertion does
+			// not leave the shared watcher subscribed to a deleted path.
+			await engine?.close();
+			await fs.rm(tmpDir, { recursive: true, force: true });
+		}
 	});
 
 	it('re-resolving config also invalidates pretenders resolution caches (issue #3951 follow-up)', async () => {
