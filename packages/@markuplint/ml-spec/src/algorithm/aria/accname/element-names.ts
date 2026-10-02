@@ -8,7 +8,14 @@ import {
 	DEFAULT_SUBMIT_LABEL,
 	TEXT_INPUT_TYPES,
 } from '../../../const/index.js';
-import { findChildByLocalName, getInputType, isSvgElement, makeResult, resolveNameFromContent } from './helpers.js';
+import {
+	findChildByLocalName,
+	getInputType,
+	getTextContent,
+	isSvgElement,
+	makeResult,
+	resolveNameFromContent,
+} from './helpers.js';
 import { resolveLabelText } from './label-steps.js';
 
 /**
@@ -35,7 +42,7 @@ export function getElementSpecificName(
 	inLabelledbyTraversal: boolean,
 ): AccnameResult | null {
 	if (isSvgElement(el)) {
-		return handleSvgElement(el);
+		return handleSvgElement(el, resolver);
 	}
 
 	const { localName } = el;
@@ -478,10 +485,11 @@ function handleTitleOnly(el: AccnameElement): AccnameResult | null {
  * SVG-AAM: SVG elements get name from `<title>` child element.
  * @see https://www.w3.org/TR/svg-aam-1.0/#mapping_additional_nd — SVG-AAM §8.1
  */
-function handleSvgElement(el: AccnameElement): AccnameResult | null {
-	const titleEl = findChildByLocalName(el, 'title');
-	if (titleEl?.textContent?.trim()) {
-		return makeResult(titleEl.textContent, 'svg-title');
+function handleSvgElement(el: AccnameElement, resolver: AccnameResolver): AccnameResult | null {
+	const titleEl = findChildByLocalName(el, 'title', resolver);
+	const title = titleEl ? getTextContent(titleEl, resolver) : '';
+	if (title.trim()) {
+		return makeResult(title, 'svg-title');
 	}
 
 	return null;

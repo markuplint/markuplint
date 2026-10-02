@@ -57,7 +57,7 @@ export function resolveNameFromContent(
 			const childEl = child as AccnameElement;
 			if (resolver.isEmbeddedControl(childEl)) {
 				// Step 2C: Embedded controls — use value directly, aria-label is ignored
-				parts.push(getEmbeddedControlValue(childEl));
+				parts.push(getEmbeddedControlValue(childEl, resolver));
 			} else {
 				const result = computeFn(childEl, resolver, inLabelledbyTraversal, visited);
 				if (result.name) {
@@ -111,7 +111,7 @@ function collectTextContent(
 		} else if (child.nodeType === ELEMENT_NODE) {
 			const childEl = child as AccnameElement;
 			if (resolver.isEmbeddedControl(childEl)) {
-				parts.push(getEmbeddedControlValue(childEl));
+				parts.push(getEmbeddedControlValue(childEl, resolver));
 			} else {
 				const result = computeFn(childEl, resolver, inLabelledbyTraversal, visited);
 				if (result.name) {
@@ -135,7 +135,7 @@ function collectTextContent(
  *
  * @see https://www.w3.org/TR/accname-1.2/#comp_embedded_control — AccName 1.2 §4.3.2 Step 2C
  */
-function getEmbeddedControlValue(el: AccnameElement): string {
+function getEmbeddedControlValue(el: AccnameElement, resolver: AccnameResolver): string {
 	const role = el.getAttribute('role')?.trim().split(/\s+/)[0];
 
 	// Range controls: slider, spinbutton, input[type=range]
@@ -152,7 +152,7 @@ function getEmbeddedControlValue(el: AccnameElement): string {
 		if (value?.trim()) {
 			return value;
 		}
-		return el.textContent ?? '';
+		return getTextContent(el, resolver);
 	}
 
 	// Textbox/combobox: value attr -> textContent
@@ -167,14 +167,14 @@ function getEmbeddedControlValue(el: AccnameElement): string {
 		if (value != null) {
 			return value;
 		}
-		return el.textContent ?? '';
+		return getTextContent(el, resolver);
 	}
 
 	// Listbox/select: selected option text
 	if (el.localName === 'select') {
-		return getSelectedOptionText(el);
+		return getSelectedOptionText(el, resolver);
 	}
-	return el.textContent ?? '';
+	return getTextContent(el, resolver);
 }
 
 /**
@@ -201,18 +201,18 @@ function getEmbeddedControlValue(el: AccnameElement): string {
  *
  * @see https://github.com/markuplint/markuplint/issues/2069 — `<select>` and `<selectedcontent>` support
  */
-function getSelectedOptionText(el: AccnameElement): string {
-	const options = collectOptions(el);
+function getSelectedOptionText(el: AccnameElement, resolver: AccnameResolver): string {
+	const options = collectOptions(el, resolver);
 	const selected = options.filter(opt => opt.hasAttribute('selected'));
 
 	if (selected.length > 0) {
-		return selected.map(opt => opt.textContent?.trim() ?? '').join(' ');
+		return selected.map(opt => getTextContent(opt, resolver).trim()).join(' ');
 	}
 
 	// No explicit selected attr: HTML spec says first non-disabled option is selected
 	// (only for non-multiple selects, but we approximate for all)
 	const first = options.find(opt => !opt.hasAttribute('disabled'));
-	return first?.textContent?.trim() ?? '';
+	return first ? getTextContent(first, resolver).trim() : '';
 }
 
 /**
@@ -223,13 +223,13 @@ function getSelectedOptionText(el: AccnameElement): string {
  *
  * @see https://github.com/markuplint/markuplint/issues/2069
  */
-function collectOptions(el: AccnameElement): AccnameElement[] {
+function collectOptions(el: AccnameElement, resolver: AccnameResolver): AccnameElement[] {
 	const result: AccnameElement[] = [];
-	for (const child of el.children) {
+	for (const child of getChildElements(el, resolver)) {
 		if (child.localName === 'option') {
 			result.push(child);
 		} else if (child.localName === 'optgroup') {
-			for (const grandchild of child.children) {
+			for (const grandchild of getChildElements(child, resolver)) {
 				if (grandchild.localName === 'option') {
 					result.push(grandchild);
 				}
@@ -249,6 +249,30 @@ function isTextLikeInput(el: AccnameElement): boolean {
  */
 export function getChildNodes(el: AccnameElement, resolver: AccnameResolver): Iterable<AccnameNode> {
 	return resolver.getChildNodes?.(el) ?? el.childNodes;
+}
+
+/**
+ * `el.textContent` as the resolver sees the element: the text of the nodes it
+ * says the element renders, at any depth. Text written inside a pretended
+ * component that never renders its children is not among them.
+ */
+export function getTextContent(el: AccnameElement, resolver: AccnameResolver): string {
+	if (!resolver.getChildNodes) {
+		return el.textContent ?? '';
+	}
+	let text = '';
+	for (const child of resolver.getChildNodes(el)) {
+		if (child.nodeType === TEXT_NODE) {
+			text += child.textContent ?? '';
+		} else if (child.nodeType === ELEMENT_NODE) {
+			text += getTextContent(child as AccnameElement, resolver);
+		}
+	}
+	return text;
+}
+
+function getChildElements(el: AccnameElement, resolver: AccnameResolver): AccnameElement[] {
+	return [...getChildNodes(el, resolver)].filter((child): child is AccnameElement => child.nodeType === ELEMENT_NODE);
 }
 
 export function findChildByLocalName(

@@ -57,8 +57,10 @@ export interface AccnameResolver {
 	 * Used by ml-core for a pretended component: it renders its own elements around
 	 * the children given at the usage site (`contents` of the pretender), and those
 	 * can carry the accessible name (`<button><img alt="Save"></button>`).
-	 * Consulted by name-from-content, label text, and the legend/caption lookups;
-	 * the other lookups (SVG `title`, `<select>` options) still read the element itself.
+	 * Consulted by name-from-content, label text, the legend/caption/SVG `title`
+	 * lookups, the `<select>` options, and wherever the computation reads an
+	 * element's text (`getTextContent`): an option, an SVG `title`, the value of
+	 * an embedded control. `hasSvgAccessibleNameSource` is the exception.
 	 */
 	getChildNodes?(el: AccnameElement): Iterable<AccnameNode>;
 }
