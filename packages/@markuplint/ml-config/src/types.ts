@@ -463,11 +463,19 @@ export type PretenderAttr = {
 	 * `{ dynamic: true }` means the attribute is present but its value is
 	 * unknown at scan time (e.g. `tabIndex={selected ? 0 : -1}`);
 	 * rules treat it as a dynamic value and do not validate it.
+	 *
+	 * `{ fromAttr }` takes the value of the attribute the component has at the usage site.
+	 * If that attribute is an expression (`<Button kind={kind} />`), the result is dynamic
+	 * too. With `omitIfMissing`, the element has no such attribute when the usage site does
+	 * not write it, which is what a component that forwards an optional prop renders
+	 * (`<button type={kind}>` omits `type` when `kind` is `undefined`); without it, the
+	 * attribute is present and empty.
 	 */
 	readonly value?:
 		| string
 		| {
 				readonly fromAttr: string;
+				readonly omitIfMissing?: true;
 		  }
 		| {
 				readonly dynamic: true;
