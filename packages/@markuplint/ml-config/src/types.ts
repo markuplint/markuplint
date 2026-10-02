@@ -217,15 +217,36 @@ export type PretenderDetails = {
 	readonly scan?: readonly PretenderScanConfig[];
 
 	/**
-	 * When `true`, resolves pretenders on demand by scanning the lint
-	 * target's own import graph instead of requiring `files`/`scan`
+	 * When `true` (or an object), resolves pretenders on demand by scanning
+	 * the lint target's own import graph instead of requiring `files`/`scan`
 	 * pre-configuration. Because only the config file is filesystem-watched,
 	 * results can go stale in watch mode / editor sessions if an imported
 	 * component file changes without the config changing too.
 	 *
+	 * The object form tunes the walk ({@link PretenderAutoOptions}); `true`
+	 * and `{}` use the defaults. When configs are merged, the right side
+	 * replaces this value as a whole (the two forms are never combined).
+	 *
 	 * @experimental
 	 */
-	readonly auto?: boolean;
+	readonly auto?: boolean | PretenderAutoOptions;
+};
+
+/**
+ * Options of the object form of {@link PretenderDetails.auto}.
+ *
+ * @experimental
+ */
+export type PretenderAutoOptions = {
+	/**
+	 * How many import hops from the linted file are followed. `0` considers
+	 * only the linted file itself. Defaults to `8`.
+	 *
+	 * Must be a non-negative integer; `config.schema.json` enforces it, but a
+	 * config handed over the API directly is not validated: a negative number
+	 * or `NaN` behaves like `0`, and a fraction is rounded up.
+	 */
+	readonly depth?: number;
 };
 
 /**
@@ -510,6 +531,35 @@ export interface PretenderScanOptions {
 	 * unsaved buffer for the file currently being linted.
 	 */
 	readonly sources?: ReadonlyMap<string, string>;
+
+	/**
+	 * A sink the scan adds to: the normalized (`/`-delimited) absolute paths
+	 * of the files whose content its result depends on. A watch-mode host
+	 * watches them to learn when to scan again (#4065).
+	 *
+	 * Recorded: the files given to the scan; the source files the TypeScript
+	 * program reaches from them through relative imports (it follows none
+	 * under `autoScan`, which has collected the files itself, within its
+	 * depth); the files read to resolve an imported component (barrels and the
+	 * files they re-export from); and the `tsconfig.json` the imports were
+	 * resolved with, with the configs it `extends`.
+	 *
+	 * Not recorded — a change to these is picked up only by a later full
+	 * resolution of the config:
+	 *
+	 * - Declaration files, and anything under `node_modules`
+	 *   (`package.json` `exports` included).
+	 * - Files that do not exist yet: a candidate of an import specifier, a
+	 *   nearer `tsconfig.json`, a new file matching a `scan` glob. A file that
+	 *   was removed and comes back is one of them: once the result no longer
+	 *   reads it, it is no longer reported.
+	 * - Files that a plain `scan()` could reach only through a `paths` alias —
+	 *   the TypeScript program the JSX scanner builds reads no `tsconfig.json`
+	 *   and follows relative imports only (`autoScan` resolves aliases itself).
+	 *
+	 * The scan only adds; the caller owns the set.
+	 */
+	readonly dependencies?: Set<string>;
 }
 
 /**

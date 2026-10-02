@@ -1,6 +1,8 @@
+import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import os from 'node:os';
 import path from 'node:path';
 
-import { describe, test, expect } from 'vitest';
+import { describe, test, expect, beforeEach, afterEach } from 'vitest';
 
 import { jsxScanner } from './jsx/index.js';
 import { scan } from './scan.js';
@@ -131,6 +133,41 @@ describe('scan', () => {
 		test('.jsx files are dispatched to the JSX scanner', async () => {
 			const result = await scan([jsxFixture('008.jsx')]);
 			expect(result).toStrictEqual([expect.objectContaining({ selector: 'JsxCard', as: 'article' })]);
+		});
+
+		// A relative path makes `createScanner` throw, which proves the file reached
+		// jsxScanner rather than being silently dropped by the dispatch filter.
+		test.each(['.mjs', '.cjs', '.mts', '.cts'])('%s files are dispatched to the JSX scanner', async ext => {
+			await expect(scan([`relative/path${ext}`])).rejects.toThrow(ReferenceError);
+		});
+	});
+
+	describe('followImports', () => {
+		let tmpDir: string;
+
+		beforeEach(async () => {
+			tmpDir = await mkdtemp(path.join(os.tmpdir(), 'scan-follow-imports-'));
+			await writeFile(path.join(tmpDir, 'Child.tsx'), 'export const Child = () => <button>x</button>;');
+			await writeFile(
+				path.join(tmpDir, 'Parent.tsx'),
+				"import { Child } from './Child';\nexport const Parent = () => <Child />;",
+			);
+		});
+
+		afterEach(async () => {
+			await rm(tmpDir, { recursive: true, force: true });
+		});
+
+		test('by default the scanner also reads the files the given file imports', async () => {
+			const result = await scan([path.join(tmpDir, 'Parent.tsx')]);
+
+			expect(result.map(p => p.selector)).toStrictEqual(['Child', 'Parent']);
+		});
+
+		test('`followImports: false` scans only the given files', async () => {
+			const result = await scan([path.join(tmpDir, 'Parent.tsx')], { followImports: false });
+
+			expect(result.map(p => p.selector)).toStrictEqual(['Parent']);
 		});
 	});
 

@@ -627,8 +627,23 @@
 					}
 				},
 				"auto": {
-					"description": "@experimental Resolve pretenders on demand by scanning the lint target's own import graph.",
-					"type": "boolean"
+					"description": "@experimental Resolve pretenders on demand by scanning the lint target's own import graph. `true` uses the defaults; the object form tunes the walk.",
+					"oneOf": [
+						{
+							"type": "boolean"
+						},
+						{
+							"type": "object",
+							"additionalProperties": false,
+							"properties": {
+								"depth": {
+									"description": "How many import hops from the linted file are followed. `0` considers only the linted file itself. Defaults to `8`.",
+									"type": "integer",
+									"minimum": 0
+								}
+							}
+						}
+					]
 				}
 			}
 		}

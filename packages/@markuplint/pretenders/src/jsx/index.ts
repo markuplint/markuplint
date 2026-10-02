@@ -20,7 +20,7 @@ import ts from 'typescript';
 
 import { createScanner } from '../create-scanner.js';
 import { collectImportBindings } from '../import-resolver/analyze-jsx-imports.js';
-import { normalizePath } from '../import-resolver/resolve-module-file.js';
+import { normalizePath, recordDependency } from '../import-resolver/resolve-module-file.js';
 import { PretenderDirector } from '../pretender-director.js';
 
 import { collectReturnExpressions, findComponentFunction, resolveRoots } from './collect-roots.js';
@@ -49,9 +49,10 @@ const COMPILER_OPTIONS: ts.CompilerOptions = {
 	types: [],
 };
 
-// `sources` has no meaningful default (it's a per-call override), so it's
-// excluded from the Required<> defaults and read straight off `options`.
-const defaultOptions: Required<Omit<PretenderScanJSXOptions, 'sources'>> = {
+// `sources` and `dependencies` have no meaningful default (they are per-call
+// inputs / sinks), so they're excluded from the Required<> defaults and read
+// straight off `options`.
+const defaultOptions: Required<Omit<PretenderScanJSXOptions, 'sources' | 'dependencies'>> = {
 	cwd: process.cwd(),
 	asFragment: [/(?:^|\.)provider$/i],
 	ignoreComponentNames: [],
@@ -62,6 +63,7 @@ const defaultOptions: Required<Omit<PretenderScanJSXOptions, 'sources'>> = {
 		/^styled\s*\(\s*(?<tagName>[a-z][\da-z]*)\s*\)$/i,
 	],
 	extendingWrapper: [],
+	followImports: true,
 };
 
 /**
@@ -92,7 +94,8 @@ const defaultOptions: Required<Omit<PretenderScanJSXOptions, 'sources'>> = {
  *
  * @param files - Absolute file paths to scan (relative paths cause a `ReferenceError`)
  * @param options - JSX scanner configuration (fragment patterns, styled-components, wrappers, etc.)
- * @returns Discovered pretender mappings for all components found in the given files
+ * @returns Discovered pretender mappings for all components found in the given files and,
+ *          unless `followImports` is `false`, in the files they import
  */
 export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 	(files, options = defaultOptions): Promise<Pretender[]> => {
@@ -102,7 +105,9 @@ export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 			asFragment = defaultOptions.asFragment,
 			taggedStylingComponent = defaultOptions.taggedStylingComponent,
 			extendingWrapper = defaultOptions.extendingWrapper,
+			followImports = defaultOptions.followImports,
 			sources,
+			dependencies,
 		} = options;
 
 		const director = new PretenderDirector();
@@ -114,11 +119,15 @@ export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 			return new RegExp(pattern.source, pattern.flags.replaceAll(/[gy]/g, ''));
 		});
 
-		const host = createCachingCompilerHost(COMPILER_OPTIONS, sources);
-		const program = createProgram(files, COMPILER_OPTIONS, host);
+		const compilerOptions = followImports ? COMPILER_OPTIONS : { ...COMPILER_OPTIONS, noResolve: true };
+		const host = createCachingCompilerHost(compilerOptions, sources);
+		const program = createProgram(files, compilerOptions, host);
 
 		for (const sourceFile of program.getSourceFiles()) {
 			if (!sourceFile.isDeclarationFile) {
+				// The program reaches files beyond `files` through relative imports; a
+				// change to any of them can change what is scanned.
+				recordDependency(dependencies, sourceFile.fileName);
 				const relFilePath = normalizePath(path.relative(cwd, sourceFile.fileName));
 				director.addImports(relFilePath, collectImportBindings(sourceFile));
 				forEachChild(sourceFile, node => visit(node, sourceFile));
@@ -359,7 +368,7 @@ export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 			});
 		}
 
-		return Promise.resolve(director.getPretenders(cwd, sources));
+		return Promise.resolve(director.getPretenders(cwd, sources, dependencies));
 	},
 );
 

@@ -34,6 +34,12 @@ export interface DisambiguateOptions {
 	readonly filePath: string;
 	/** Full source text of the file being linted. */
 	readonly sourceCode: string;
+	/**
+	 * A sink for the `tsconfig.json` (with what it `extends`) the target's
+	 * imports were resolved with (see `PretenderScanOptions#dependencies`).
+	 * The target file itself is not recorded: the caller already holds it.
+	 */
+	readonly dependencies?: Set<string>;
 }
 
 /**
@@ -62,7 +68,7 @@ export async function disambiguatePretenders(
 	const losers = new Set<Pretender>();
 
 	for (const candidates of groups.values()) {
-		const winner = resolveWinner(candidates, options.filePath, bindings);
+		const winner = resolveWinner(candidates, options.filePath, bindings, options.dependencies);
 		if (!winner) {
 			continue;
 		}
@@ -114,6 +120,7 @@ function resolveWinner(
 	candidates: readonly Pretender[],
 	filePath: string,
 	bindings: readonly ImportBinding[],
+	dependencies: Set<string> | undefined,
 ): Pretender | null {
 	const local = candidates.find(c => matchesFile(c.filePath!, filePath));
 	if (local) {
@@ -125,7 +132,7 @@ function resolveWinner(
 		return null;
 	}
 
-	const resolvedAbs = resolveModuleFile(filePath, binding.source);
+	const resolvedAbs = resolveModuleFile(filePath, binding.source, dependencies);
 	if (!resolvedAbs) {
 		return null;
 	}
