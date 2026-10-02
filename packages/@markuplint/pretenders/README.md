@@ -128,7 +128,7 @@ Which element a component is decided by what its own `return` statements can pro
 Known limitations:
 
 - When a component renders another component (`<Base><span /></Base>`), it takes the mapping of `Base`. Its own `slots` and `contents` are composed into it (the `span` above is placed where `Base` renders its children), but its own attributes and ARIA properties are not merged.
-- Only `permitted-contents` and the accessible name computation (for example `require-accessible-name`) read `contents`. In the name computation, `{ "dynamic": true }` is not a source of a name, and children given to a component with `slots: null` are not used. Other rules that look at the children of the element see only the children given at the usage site.
+- Only `permitted-contents` and the accessible name computation (for example `require-accessible-name`) read `contents`. In the name computation, `{ "dynamic": true }` is not a source of a name (a component whose only possible name is such an entry is not reported by `require-accessible-name`, because the entry may be the name), and children given to a component with `slots: null` are not used. Other rules that look at the children of the element see only the children given at the usage site.
 
 ### Template Scanner
 
