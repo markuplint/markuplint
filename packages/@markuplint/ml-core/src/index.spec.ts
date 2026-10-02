@@ -336,6 +336,54 @@ div#hoge.foo.bar
 		expect([...(el.pretenderContext as any).as.childNodes].length).toBeGreaterThan(0);
 	});
 
+	describe('pretenders: fromAttr', () => {
+		const createComp = async (code: string, omitIfMissing: boolean) =>
+			createTestElement(code, {
+				parser: await import('@markuplint/jsx-parser'),
+				pretenders: [
+					{
+						selector: 'Comp',
+						as: {
+							element: 'button',
+							attrs: [
+								{
+									name: 'type',
+									value: omitIfMissing
+										? { fromAttr: 'kind', omitIfMissing: true }
+										: { fromAttr: 'kind' },
+								},
+							],
+						},
+					},
+				],
+			});
+
+		const getAs = (el: { pretenderContext: unknown }) =>
+			(el.pretenderContext as { as: { getAttribute(name: string): string | null } }).as;
+
+		test('the value of the attribute at the usage site is copied', async () => {
+			const el = await createComp('<Comp kind="submit" />', true);
+			expect(getAs(el).getAttribute('type')).toBe('submit');
+		});
+
+		test('an attribute that is missing at the usage site is not created with omitIfMissing', async () => {
+			const el = await createComp('<Comp />', true);
+			expect(getAs(el).getAttribute('type')).toBeNull();
+		});
+
+		test('an attribute that is missing at the usage site is created empty without omitIfMissing', async () => {
+			const el = await createComp('<Comp />', false);
+			expect(getAs(el).getAttribute('type')).toBe('');
+		});
+
+		test.each([true, false])('an expression at the usage site stays dynamic (omitIfMissing: %s)', async flag => {
+			const el = await createComp('<Comp kind={kind} />', flag);
+			const as = (el.pretenderContext as { as: { getAttributeToken(name: string): { isDynamicValue?: true }[] } })
+				.as;
+			expect(as.getAttributeToken('type').map(attr => attr.isDynamicValue)).toStrictEqual([true]);
+		});
+	});
+
 	// Issue #3740: HTML elements must never be pretendered. Allowing `<marquee as="div">`
 	// or a config-driven HTML→HTML pretender would silently mask standards-conformance
 	// violations (deprecation, ARIA role restrictions) on the original tag.
