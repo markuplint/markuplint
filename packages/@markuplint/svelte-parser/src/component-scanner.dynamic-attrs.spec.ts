@@ -9,9 +9,12 @@ function scanAttrs(attrs: string) {
 describe('componentScanner (Svelte): dynamic attributes', () => {
 	test('an expression value and the shorthand are dynamic attributes of their own name', () => {
 		expect(scanAttrs('type={kind} {disabled} onclick={go}')).toStrictEqual([
-			{ name: 'type', dynamic: true },
-			{ name: 'disabled', dynamic: true },
-			{ name: 'onclick', dynamic: true },
+			// { name: 'type', dynamic: true }, // without `expression`
+			// { name: 'disabled', dynamic: true }, // without `expression`
+			// { name: 'onclick', dynamic: true }, // without `expression`
+			{ name: 'type', dynamic: true, expression: 'kind' },
+			{ name: 'disabled', dynamic: true, expression: 'disabled' },
+			{ name: 'onclick', dynamic: true, expression: 'go' },
 		]);
 	});
 
@@ -48,5 +51,21 @@ describe('componentScanner (Svelte): dynamic attributes', () => {
 			{ name: 'xlink:href', value: '#a' },
 			{ name: 'xml:lang', value: 'en' },
 		]);
+	});
+});
+
+describe('componentScanner (Svelte): spreads', () => {
+	const scan = (attrs: string) => componentScanner.scanComponent(`<button ${attrs}>x</button>`);
+
+	test('the expressions of the spreads of the root', () => {
+		expect(scan('{...rest} type={kind} {...$$restProps}')?.spreads).toStrictEqual(['rest', '$$restProps']);
+	});
+
+	test('a root without a spread has none', () => {
+		expect(scan('type={kind}')).not.toHaveProperty('spreads');
+	});
+
+	test('an interpolation inside a quoted value has no expression', () => {
+		expect(scan('data-id="id-{kind}"')?.attrs).toStrictEqual([{ name: 'data-id', dynamic: true }]);
 	});
 });

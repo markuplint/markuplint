@@ -183,6 +183,298 @@ describe('composeIdentity', () => {
 		});
 	});
 
+	describe('attributes the outer component writes on the inner one', () => {
+		test('they are added when the inner component spreads its props', () => {
+			expect(
+				composeIdentity(
+					{ element: 'Base', attrs: [{ name: 'type', value: 'submit' }], slots: true },
+					{ element: 'button', slots: true, inheritAttrs: true },
+				),
+			).toStrictEqual({ element: 'button', attrs: [{ name: 'type', value: 'submit' }], slots: true });
+		});
+
+		test('they are dropped when the inner component does not spread its props', () => {
+			expect(
+				composeIdentity(
+					{ element: 'Base', attrs: [{ name: 'variant', value: 'primary' }], slots: true },
+					{ element: 'button', slots: true },
+				),
+			).toStrictEqual({ element: 'button', slots: true });
+		});
+
+		test('the same name with the same value stays as it is', () => {
+			expect(
+				composeIdentity(
+					{ element: 'Base', attrs: [{ name: 'type', value: 'button' }], slots: true },
+					{ element: 'button', attrs: [{ name: 'type', value: 'button' }], slots: true, inheritAttrs: true },
+				),
+			).toStrictEqual({ element: 'button', attrs: [{ name: 'type', value: 'button' }], slots: true });
+		});
+
+		test('the same name with a different value is dynamic, as which one wins depends on the position of the spread', () => {
+			expect(
+				composeIdentity(
+					{ element: 'Base', attrs: [{ name: 'type', value: 'submit' }], slots: true },
+					{ element: 'button', attrs: [{ name: 'type', value: 'button' }], slots: true, inheritAttrs: true },
+				),
+			).toStrictEqual({ element: 'button', attrs: [{ name: 'type', value: { dynamic: true } }], slots: true });
+		});
+
+		test('an attribute that only the outer component writes is added after those of the inner one', () => {
+			expect(
+				composeIdentity(
+					{ element: 'Base', attrs: [{ name: 'id', value: 'a' }], slots: true },
+					{ element: 'button', attrs: [{ name: 'type', value: 'button' }], slots: true, inheritAttrs: true },
+				),
+			).toStrictEqual({
+				element: 'button',
+				attrs: [
+					{ name: 'type', value: 'button' },
+					{ name: 'id', value: 'a' },
+				],
+				slots: true,
+			});
+		});
+
+		test('they are added even when the inner component does not render its children', () => {
+			expect(
+				composeIdentity(
+					{ element: 'Base', attrs: [{ name: 'alt', value: 'x' }], slots: true },
+					{ element: 'img', slots: null, inheritAttrs: true },
+				),
+			).toStrictEqual({ element: 'img', attrs: [{ name: 'alt', value: 'x' }], slots: null });
+		});
+	});
+
+	describe('the same attribute written in different ways', () => {
+		test('names that differ only in case are one attribute', () => {
+			expect(
+				composeIdentity(
+					{ element: 'Base', attrs: [{ name: 'tabIndex', value: '0' }], slots: true },
+					{ element: 'button', attrs: [{ name: 'tabindex', value: '-1' }], slots: true, inheritAttrs: true },
+				),
+			).toStrictEqual({
+				element: 'button',
+				attrs: [{ name: 'tabindex', value: { dynamic: true } }],
+				slots: true,
+			});
+		});
+
+		test('values that say the same thing agree whatever the order of their keys', () => {
+			expect(
+				composeIdentity(
+					{
+						element: 'Base',
+						attrs: [{ name: 'aria-label', value: { omitIfMissing: true, fromAttr: 'text' } }],
+						slots: true,
+					},
+					{
+						element: 'button',
+						attrs: [{ name: 'aria-label', value: { fromAttr: 'text', omitIfMissing: true } }],
+						slots: true,
+						inheritAttrs: true,
+					},
+				),
+			).toStrictEqual({
+				element: 'button',
+				attrs: [{ name: 'aria-label', value: { fromAttr: 'text', omitIfMissing: true } }],
+				slots: true,
+			});
+		});
+	});
+
+	describe('inheritAttrs', () => {
+		test('it holds when both components spread their props', () => {
+			expect(
+				composeIdentity(
+					{ element: 'Base', slots: true, inheritAttrs: true },
+					{ element: 'button', slots: true, inheritAttrs: true },
+				),
+			).toStrictEqual({ element: 'button', slots: true, inheritAttrs: true });
+		});
+
+		test('it does not when only the inner component spreads', () => {
+			expect(
+				composeIdentity(
+					{ element: 'Base', slots: true },
+					{ element: 'button', slots: true, inheritAttrs: true },
+				),
+			).toStrictEqual({ element: 'button', slots: true });
+		});
+
+		test('it does not when only the outer component spreads', () => {
+			expect(
+				composeIdentity(
+					{ element: 'Base', slots: true, inheritAttrs: true },
+					{ element: 'button', slots: true },
+				),
+			).toStrictEqual({ element: 'button', slots: true });
+		});
+
+		test('a bare element name of the outer component spreads nothing', () => {
+			expect(composeIdentity('Base', { element: 'button', slots: true, inheritAttrs: true })).toStrictEqual({
+				element: 'button',
+				slots: true,
+			});
+		});
+	});
+
+	describe('an attribute that takes the value of a prop (fromAttr) of the inner component', () => {
+		const inner = {
+			element: 'button',
+			attrs: [{ name: 'aria-label', value: { fromAttr: 'label', omitIfMissing: true as const } }],
+			slots: true as const,
+		};
+
+		test('it takes the value that the outer component writes', () => {
+			expect(
+				composeIdentity({ element: 'Base', attrs: [{ name: 'label', value: 'Save' }], slots: true }, inner),
+			).toStrictEqual({ element: 'button', attrs: [{ name: 'aria-label', value: 'Save' }], slots: true });
+		});
+
+		test('it is dynamic when the outer component writes an expression', () => {
+			expect(
+				composeIdentity(
+					{ element: 'Base', attrs: [{ name: 'label', value: { dynamic: true } }], slots: true },
+					inner,
+				),
+			).toStrictEqual({
+				element: 'button',
+				attrs: [{ name: 'aria-label', value: { dynamic: true } }],
+				slots: true,
+			});
+		});
+
+		test('it is dynamic when the outer component writes the attribute without a value', () => {
+			expect(composeIdentity({ element: 'Base', attrs: [{ name: 'label' }], slots: true }, inner)).toStrictEqual({
+				element: 'button',
+				attrs: [{ name: 'aria-label', value: { dynamic: true } }],
+				slots: true,
+			});
+		});
+
+		test('it follows a prop of the outer component that the outer component forwards', () => {
+			expect(
+				composeIdentity(
+					{
+						element: 'Base',
+						attrs: [{ name: 'label', value: { fromAttr: 'text', omitIfMissing: true } }],
+						slots: true,
+					},
+					inner,
+				),
+			).toStrictEqual({
+				element: 'button',
+				attrs: [{ name: 'aria-label', value: { fromAttr: 'text', omitIfMissing: true } }],
+				slots: true,
+			});
+		});
+
+		test('it is dynamic when the outer component writes it and spreads its props too', () => {
+			expect(
+				composeIdentity(
+					{
+						element: 'Base',
+						attrs: [{ name: 'label', value: 'Save' }],
+						slots: true,
+						inheritAttrs: true,
+					},
+					inner,
+				),
+			).toStrictEqual({
+				element: 'button',
+				attrs: [{ name: 'aria-label', value: { dynamic: true } }],
+				slots: true,
+			});
+		});
+
+		test('it is left as it is when the outer component spreads its props and does not write it', () => {
+			expect(composeIdentity({ element: 'Base', slots: true, inheritAttrs: true }, inner)).toStrictEqual(inner);
+		});
+
+		test('it is omitted when the outer component neither writes it nor spreads its props', () => {
+			expect(composeIdentity({ element: 'Base', slots: true }, inner)).toStrictEqual({
+				element: 'button',
+				slots: true,
+			});
+		});
+
+		test('it is omitted when the outer component is only an element name', () => {
+			expect(composeIdentity('Base', inner)).toStrictEqual({ element: 'button', slots: true });
+		});
+
+		test('it is an empty attribute without omitIfMissing when the outer component neither writes it nor spreads', () => {
+			expect(
+				composeIdentity(
+					{ element: 'Base', slots: true },
+					{
+						element: 'button',
+						attrs: [{ name: 'type', value: { fromAttr: 'kind' } }],
+						slots: true,
+					},
+				),
+			).toStrictEqual({ element: 'button', attrs: [{ name: 'type' }], slots: true });
+		});
+
+		test('it is resolved in the wrapper of a slot and in the contents too', () => {
+			expect(
+				composeIdentity(
+					{ element: 'Base', attrs: [{ name: 'label', value: 'Save' }], slots: true },
+					{
+						element: 'div',
+						slots: [
+							{
+								element: 'span',
+								attrs: [{ name: 'title', value: { fromAttr: 'label', omitIfMissing: true } }],
+								contents: [
+									{
+										element: 'i',
+										attrs: [
+											{ name: 'aria-label', value: { fromAttr: 'label', omitIfMissing: true } },
+										],
+									},
+									{ slot: true },
+								],
+							},
+						],
+					},
+				),
+			).toStrictEqual({
+				element: 'div',
+				slots: [
+					{
+						element: 'span',
+						attrs: [{ name: 'title', value: 'Save' }],
+						contents: [{ element: 'i', attrs: [{ name: 'aria-label', value: 'Save' }] }, { slot: true }],
+					},
+				],
+			});
+		});
+
+		test('it is resolved in the contents of the root too', () => {
+			expect(
+				composeIdentity(
+					{ element: 'Base', slots: true },
+					{
+						element: 'div',
+						slots: true,
+						contents: [
+							{
+								element: 'i',
+								attrs: [{ name: 'aria-label', value: { fromAttr: 'label', omitIfMissing: true } }],
+							},
+							{ slot: true },
+						],
+					},
+				),
+			).toStrictEqual({
+				element: 'div',
+				slots: true,
+				contents: [{ element: 'i' }, { slot: true }],
+			});
+		});
+	});
+
 	describe('through dependencyMapper', () => {
 		test('a cycle ends with the identity of the component it came back to, composed no further', () => {
 			const [a] = dependencyMapper(

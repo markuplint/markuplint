@@ -9,8 +9,10 @@ function scanAttrs(attrs: string) {
 describe('componentScanner (Astro): dynamic attributes', () => {
 	test('an expression value and the shorthand are dynamic attributes of their own name', () => {
 		expect(scanAttrs('type={kind} {disabled}')).toStrictEqual([
-			{ name: 'type', dynamic: true },
-			{ name: 'disabled', dynamic: true },
+			// { name: 'type', dynamic: true }, // without `expression`
+			// { name: 'disabled', dynamic: true }, // without `expression`
+			{ name: 'type', dynamic: true, expression: 'kind' },
+			{ name: 'disabled', dynamic: true, expression: 'disabled' },
 		]);
 	});
 
@@ -30,5 +32,25 @@ describe('componentScanner (Astro): dynamic attributes', () => {
 			{ name: 'xlink:href', value: '#a' },
 			{ name: 'xml:lang', value: 'en' },
 		]);
+	});
+});
+
+describe('componentScanner (Astro): spreads', () => {
+	const scan = (attrs: string) => componentScanner.scanComponent(`---\n---\n<button ${attrs}>x</button>\n`);
+
+	test('the expressions of the spreads of the root', () => {
+		expect(scan('{...rest} type={kind} {...Astro.props}')?.spreads).toStrictEqual(['rest', 'Astro.props']);
+	});
+
+	test('a root without a spread has none', () => {
+		expect(scan('type={kind}')).not.toHaveProperty('spreads');
+	});
+
+	test('a name written in two forms is not one expression', () => {
+		expect(scan('class="btn" class={x}')?.attrs).toStrictEqual([{ name: 'class', dynamic: true }]);
+	});
+
+	test('a template literal has no expression', () => {
+		expect(scan('data-id=`id-${kind}`')?.attrs).toStrictEqual([{ name: 'data-id', dynamic: true }]);
 	});
 });
