@@ -91,10 +91,12 @@ function Bar() {
 
 ```json
 [
-  { "selector": "Foo", "as": "div" },
-  { "selector": "Bar", "as": "span" }
+  { "selector": "Foo", "as": { "element": "div", "slots": null } },
+  { "selector": "Bar", "as": { "element": "span", "slots": null } }
 ]
 ```
+
+`slots: null` records that the component does not render the children written at the usage site. The scanners always write it, because a bare element name (`"as": "div"`) means a component that renders them.
 
 The JSX scanner also infers HTML elements from styled-components patterns and infers dependencies from wrapper function arguments:
 

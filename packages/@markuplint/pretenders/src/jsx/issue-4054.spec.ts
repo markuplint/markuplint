@@ -93,7 +93,9 @@ describe('jsxScanner: issue #4054', () => {
 		});
 
 		test('a branch returning null is ignored', () => {
-			expect(asOf('NullBranch')).toBe('section');
+			// BREAKING CHANGE (#4082): `slots: null` is kept instead of collapsing to the bare tag name.
+			// expect(asOf('NullBranch')).toBe('section'); // pre-#4082 baseline
+			expect(asOf('NullBranch')).toStrictEqual({ element: 'section', slots: null });
 		});
 
 		test('a branch whose result is not statically known is ignored', () => {
@@ -113,7 +115,9 @@ describe('jsxScanner: issue #4054', () => {
 		});
 
 		test('memo() and forwardRef() wrappers are looked through', () => {
-			expect(asOf('Memo')).toBe('aside');
+			// BREAKING CHANGE (#4082): `slots: null` is kept instead of collapsing to the bare tag name.
+			// expect(asOf('Memo')).toBe('aside'); // pre-#4082 baseline
+			expect(asOf('Memo')).toStrictEqual({ element: 'aside', slots: null });
 			expect(asOf('Fwd')).toStrictEqual({
 				element: 'nav',
 				attrs: [{ name: 'ref', value: { dynamic: true } }],

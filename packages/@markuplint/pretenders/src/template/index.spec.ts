@@ -66,6 +66,17 @@ describe('templateScanner', () => {
 				},
 			]);
 		});
+
+		test('scans Bare.vue — no attributes and no slot keep `slots: null` (issue #4082)', async () => {
+			const result = await templateScanner([resolve('Bare.vue')]);
+			expect(result).toStrictEqual([
+				{
+					selector: 'Bare',
+					as: { element: 'span', slots: null },
+					filePath: _('packages/@markuplint/pretenders/test/fixtures/template/Bare.vue:2:2'),
+				},
+			]);
+		});
 	});
 
 	describe('Svelte', () => {
@@ -116,6 +127,17 @@ describe('templateScanner', () => {
 				},
 			]);
 		});
+
+		test('scans Bare.svelte — no attributes and no slot keep `slots: null` (issue #4082)', async () => {
+			const result = await templateScanner([resolve('Bare.svelte')]);
+			expect(result).toStrictEqual([
+				{
+					selector: 'Bare',
+					as: { element: 'span', slots: null },
+					filePath: _('packages/@markuplint/pretenders/test/fixtures/template/Bare.svelte:1:1'),
+				},
+			]);
+		});
 	});
 
 	describe('Astro', () => {
@@ -148,6 +170,17 @@ describe('templateScanner', () => {
 						slots: true,
 					},
 					filePath: _('packages/@markuplint/pretenders/test/fixtures/template/WithSlot.astro:3:1'),
+				},
+			]);
+		});
+
+		test('scans Bare.astro — no attributes and no slot keep `slots: null` (issue #4082)', async () => {
+			const result = await templateScanner([resolve('Bare.astro')]);
+			expect(result).toStrictEqual([
+				{
+					selector: 'Bare',
+					as: { element: 'span', slots: null },
+					filePath: _('packages/@markuplint/pretenders/test/fixtures/template/Bare.astro:3:1'),
 				},
 			]);
 		});
