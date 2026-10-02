@@ -14,7 +14,7 @@ import { MLToken } from '../token/token.js';
 
 import { isChildNode } from './child-node.js';
 import { toNodeList } from './node-list.js';
-import { nodeStore } from './node-store.js';
+import { getNodeStoreFor } from './node-store.js';
 
 /**
  * Abstract base class for all markuplint DOM node wrappers.
@@ -193,7 +193,14 @@ export abstract class MLNode<
 		this._astToken = astNode;
 		this.#ownerDocument = document;
 		this.isFragment = !!isFragment;
-		nodeStore.setNode(astNode, this);
+		// `document` is only ever `null` for the `MLDocument` instance being
+		// constructed itself (see its `super(ast, null)` call); every other
+		// node receives its real owning document. `NodeStore.setNode()`
+		// already skips storing the document node, so the only thing this
+		// guard avoids is calling `getNodeStoreFor()` with a `null` key.
+		if (document) {
+			getNodeStoreFor(document).setNode(astNode, this);
+		}
 	}
 
 	/**
@@ -584,7 +591,7 @@ export abstract class MLNode<
 		if (!this._astToken.parentNodeUuid) {
 			return this.ownerMLDocument;
 		}
-		return nodeStore.getNodeByUuid<T, O>(this._astToken.parentNodeUuid) as
+		return getNodeStoreFor(this.#ownerDocument).getNodeByUuid<T, O>(this._astToken.parentNodeUuid) as
 			| MLDocument<any, any>
 			| MLDocumentFragment<any, any>
 			| MLElement<T, O>
@@ -851,7 +858,7 @@ export abstract class MLNode<
 					return node;
 				}) ?? [];
 			const childNodes = astChildren
-				.map(node => nodeStore.getNode<typeof node, T, O>(node))
+				.map(node => getNodeStoreFor(this.#ownerDocument).getNode<typeof node, T, O>(node))
 				.filter(node => isChildNode(node));
 
 			// Cache
