@@ -381,8 +381,8 @@ export type OriginalNode = {
 	 *
 	 * When omitted, the given children are the whole content.
 	 *
-	 * Known limitation: `permitted-contents` and the accessible name computation
-	 * (name from content, `legend`, `caption`, and label text) read it. Other rules that
+	 * Known limitation: `permitted-contents`, `require-owned-elements` and the accessible
+	 * name computation (name from content, `legend`, `caption`, and label text) read it. Other rules that
 	 * look at the children of the element, and the `title` of an SVG and the `option`s
 	 * of a `select` in the name computation, still see only the children given at the
 	 * usage site. In the name computation, `{ dynamic: true }` is not a source of
