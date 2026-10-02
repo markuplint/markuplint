@@ -26,6 +26,7 @@ describe('templateScanner dynamic attributes (issue #4058)', () => {
 				{ name: 'tabindex', value: { dynamic: true } },
 			],
 			slots: null,
+			inheritAttrs: true,
 		});
 	});
 
@@ -64,6 +65,7 @@ describe('templateScanner dynamic attributes (issue #4058)', () => {
 				{ name: 'type', value: { dynamic: true } },
 			],
 			slots: null,
+			inheritAttrs: true,
 		});
 	});
 

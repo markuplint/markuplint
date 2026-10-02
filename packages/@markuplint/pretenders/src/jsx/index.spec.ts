@@ -203,7 +203,9 @@ describe('jsxScanner', () => {
 				selector: 'VoidComponent',
 				as: {
 					element: 'img',
-					attrs: [{ name: 'src', value: { dynamic: true } }],
+					// `props.src` is a prop of the component passed as it is.
+					// attrs: [{ name: 'src', value: { dynamic: true } }], // without the prop resolved
+					attrs: [{ name: 'src', value: { fromAttr: 'src', omitIfMissing: true } }],
 					slots: null,
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/005.tsx:12:6'),
@@ -255,11 +257,16 @@ describe('jsxScanner', () => {
 				selector: 'Item',
 				as: { element: 'li', slots: true, inheritAttrs: true },
 			});
+			// `A` renders `<Item>` without spreading its own props, so the
+			// attributes written at the usage site of `A` do not reach the `button`. `inheritAttrs` of
+			// `Item` is no longer carried over to `A`.
+			// as: { element: 'button', slots: true, inheritAttrs: true }, // with `inheritAttrs` of the inner component
 			expect(a).toMatchObject({
 				selector: 'A',
-				as: { element: 'button', slots: true, inheritAttrs: true },
+				as: { element: 'button', slots: true },
 				_via: ['Item'],
 			});
+			expect(a?.as).not.toHaveProperty('inheritAttrs');
 			expect(a?.filePath).toMatch(/^a\.tsx:/);
 			expect(b).toMatchObject({
 				selector: 'B',
@@ -278,11 +285,14 @@ describe('jsxScanner', () => {
 				},
 			);
 			const c = result.find(p => p.selector === 'C');
+			// See the `A` case above.
+			// as: { element: 'button', slots: true, inheritAttrs: true }, // with `inheritAttrs` of the inner component
 			expect(c).toMatchObject({
 				selector: 'C',
-				as: { element: 'button', slots: true, inheritAttrs: true },
+				as: { element: 'button', slots: true },
 				_via: ['Item'],
 			});
+			expect(c?.as).not.toHaveProperty('inheritAttrs');
 			expect(c?.filePath).toMatch(/^a\.tsx:/);
 		});
 
@@ -297,11 +307,14 @@ describe('jsxScanner', () => {
 				},
 			);
 			const e = result.find(p => p.selector === 'E');
+			// See the `A` case above.
+			// as: { element: 'span', slots: true, inheritAttrs: true }, // with `inheritAttrs` of the inner component
 			expect(e).toMatchObject({
 				selector: 'E',
-				as: { element: 'span', slots: true, inheritAttrs: true },
+				as: { element: 'span', slots: true },
 				_via: ['Item'],
 			});
+			expect(e?.as).not.toHaveProperty('inheritAttrs');
 		});
 	});
 

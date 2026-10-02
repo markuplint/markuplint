@@ -64,9 +64,9 @@ type ResolveEnv = {
  * (e.g., two unrelated `Item` components) resolve independently instead of the
  * first-registered one silently winning for every reference — see issue #3951.
  *
- * Each hop composes the `slots` / `contents` of the component so far into those of the
- * component it renders (`composeIdentity`, issue #4057); the rest of the identity is
- * the last hop's.
+ * Each hop composes the `slots` / `contents` and the attributes of the component so far
+ * into those of the component it renders (`composeIdentity`, issue #4057); the rest of the
+ * identity is the last hop's.
  */
 export function dependencyMapper(
 	map: Readonly<PretenderDirectorMap>,
