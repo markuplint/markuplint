@@ -137,16 +137,15 @@ export const templateScanner = createScanner<PretenderScanTemplateOptions>(async
 		const { slots, contents } = deriveSlotInfo(scan, resolveProp);
 		const hasContents = !isTrivialContents(contents);
 
-		const identity: string | OriginalNode =
-			attrs.length > 0 || slots !== null || hasContents || isInherit
-				? {
-						element: scan.rootElement,
-						...(attrs.length > 0 ? { attrs } : {}),
-						slots,
-						...(hasContents ? { contents } : {}),
-						...(isInherit ? { inheritAttrs: true } : {}),
-					}
-				: scan.rootElement;
+		// Never just the element name: a bare name reads as an element that renders
+		// the children written at the usage site, so it would lose `slots: null`.
+		const identity: OriginalNode = {
+			element: scan.rootElement,
+			...(attrs.length > 0 ? { attrs } : {}),
+			slots,
+			...(hasContents ? { contents } : {}),
+			...(isInherit ? { inheritAttrs: true } : {}),
+		};
 
 		director.add(componentName, identity, relFilePath, scan.line ?? 1, scan.col ?? 1, relFilePath);
 
