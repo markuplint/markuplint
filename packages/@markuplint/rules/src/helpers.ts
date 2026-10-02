@@ -3,6 +3,8 @@ import type { Element, RuleConfigValue, Document } from '@markuplint/ml-core';
 import type { Attribute } from '@markuplint/ml-spec';
 import type { WritableDeep } from 'type-fest';
 
+import { escapeCSS } from '@markuplint/ml-spec';
+
 /** A `null`/`undefined` condition means the attribute applies unconditionally. */
 export function attrMatches<T extends RuleConfigValue, O extends PlainData>(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -139,6 +141,68 @@ export function accnameMayBeMutable(
 	}
 
 	return false;
+}
+
+/**
+ * Whether the accessible name of `el` may be rendered by content the pretender
+ * does not know: an unknown entry (`{ dynamic: true }`) in the `contents` of
+ * `el`, of a pretended descendant among the children the name computation
+ * traverses, of an element `aria-labelledby` refers to, or of the owned label.
+ *
+ * Not folded into {@link accnameMayBeMutable}: a component with an unknown
+ * entry and a static name (`aria-label`, static text) is still decidable and
+ * must stay checked (and reported as redundant by `no-redundant-accessible-name`).
+ * Call it only once the static name has been computed and found empty.
+ */
+export function accnameMayComeFromUnknownContent(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element<any, any>,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	document: Document<any, any>,
+) {
+	if (hasUnknownContent(el)) {
+		return true;
+	}
+
+	const labelledby = el.getAttribute('aria-labelledby');
+	if (labelledby) {
+		const referenced = labelledby
+			.trim()
+			.split(/\s+/)
+			.map(id => document.querySelector(`#${escapeCSS(id)}`));
+		if (referenced.some(target => target && hasUnknownContent(target))) {
+			return true;
+		}
+	}
+
+	const ownedLabel = getOwnedLabel(el, document);
+	return !!ownedLabel && hasUnknownContent(ownedLabel);
+}
+
+/**
+ * Walks the same children the accname resolver of `@markuplint/ml-core` does:
+ * for a pretended element, the children the component renders (`as.childNodes`,
+ * placed into `contents`), so that a nested component contributes its own
+ * `contents`; otherwise the children as written. A hidden child is skipped
+ * because the name computation never reads it (`isHidden` in that resolver).
+ */
+function hasUnknownContent(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element<any, any>,
+): boolean {
+	const context = el.pretenderContext;
+	if (context?.type === 'pretender' && context.slotContent?.mutable) {
+		return true;
+	}
+	const given = context?.type === 'pretender' ? [...context.as.childNodes] : [...el.childNodes];
+	const children = context?.type === 'pretender' && context.slotContent ? context.slotContent.fill(given) : given;
+	return children.some(
+		child =>
+			child.is(child.ELEMENT_NODE) &&
+			child.getAttribute('aria-hidden') !== 'true' &&
+			!child.hasAttribute('hidden') &&
+			hasUnknownContent(child),
+	);
 }
 
 export const labelable = ['button', 'input:not([type=hidden])', 'meter', 'output', 'progress', 'select', 'textarea'];

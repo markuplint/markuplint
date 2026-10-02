@@ -386,7 +386,9 @@ export type OriginalNode = {
 	 * look at the children of the element, and the `title` of an SVG and the `option`s
 	 * of a `select` in the name computation, still see only the children given at the
 	 * usage site. In the name computation, `{ dynamic: true }` is not a source of
-	 * a name: a component that renders only an expression is still unnamed.
+	 * a name, so a component that renders only an expression is unnamed;
+	 * `require-accessible-name` does not report it because the expression may
+	 * be the name.
 	 *
 	 * @experimental
 	 */

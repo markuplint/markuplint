@@ -4160,7 +4160,13 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		if (slots != null && slots !== true && slots.length > 0) {
 			const [slot] = slots;
 			if (slots.length > 1 || !slot) {
-				return { wrapper: null, mutable: false, fill: <C>(given: readonly C[]) => given };
+				// The wrapper of each child is unknown, so the children are not validated,
+				// but a slot may still render unknown content (which may be a name).
+				return {
+					wrapper: null,
+					mutable: slots.some(s => s.contents?.some(entry => 'dynamic' in entry) ?? false),
+					fill: <C>(given: readonly C[]) => given,
+				};
 			}
 			wrapper = this.#createVirtualElement(slot, `${this.uuid}_pretender_slot`, this.uuid, namespace);
 			contents = slot.contents ?? [{ slot: true }];
