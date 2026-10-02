@@ -75,15 +75,12 @@ export const templateScanner = createScanner<PretenderScanTemplateOptions>(async
 		const { slots, contents } = deriveSlotInfo(scan);
 		const hasContents = !isTrivialContents(contents);
 
-		const identity: string | OriginalNode =
-			attrs.length > 0 || slots !== null || hasContents
-				? {
-						element: scan.rootElement,
-						...(attrs.length > 0 ? { attrs } : {}),
-						slots,
-						...(hasContents ? { contents } : {}),
-					}
-				: scan.rootElement;
+		const identity: OriginalNode = {
+			element: scan.rootElement,
+			...(attrs.length > 0 ? { attrs } : {}),
+			slots,
+			...(hasContents ? { contents } : {}),
+		};
 
 		director.add(componentName, identity, relFilePath, scan.line ?? 1, scan.col ?? 1, relFilePath);
 

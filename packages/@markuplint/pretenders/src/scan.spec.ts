@@ -22,7 +22,10 @@ describe('scan', () => {
 			expect(result).toStrictEqual([
 				{
 					selector: 'FooBar',
-					as: 'div',
+					as: {
+						element: 'div',
+						slots: null,
+					},
 					filePath: _('packages/@markuplint/pretenders/test/fixtures/002.tsx:1:6'),
 				},
 			]);
@@ -88,8 +91,10 @@ describe('scan', () => {
 			expect(typeof voidComp!.as).toBe('object');
 			expect((voidComp!.as as any).slots).toBe(null);
 
-			// Static content with no attrs returns bare string — slots info implicit
-			expect(typeof staticComp!.as).toBe('string');
+			expect(staticComp!.as).toStrictEqual({
+				element: 'p',
+				slots: null,
+			});
 		});
 
 		test('template scanner produces correct slots values', async () => {
@@ -114,7 +119,9 @@ describe('scan', () => {
 	describe('file extension dispatch for non-tsx extensions', () => {
 		test('.js files are dispatched to the JSX scanner', async () => {
 			const result = await scan([jsxFixture('006.js')]);
-			expect(result).toStrictEqual([expect.objectContaining({ selector: 'JsButton', as: 'button' })]);
+			expect(result).toStrictEqual([
+				expect.objectContaining({ selector: 'JsButton', as: { element: 'button', slots: null } }),
+			]);
 		});
 
 		test('.ts files are dispatched to the JSX scanner', async () => {
@@ -132,7 +139,9 @@ describe('scan', () => {
 
 		test('.jsx files are dispatched to the JSX scanner', async () => {
 			const result = await scan([jsxFixture('008.jsx')]);
-			expect(result).toStrictEqual([expect.objectContaining({ selector: 'JsxCard', as: 'article' })]);
+			expect(result).toStrictEqual([
+				expect.objectContaining({ selector: 'JsxCard', as: { element: 'article', slots: null } }),
+			]);
 		});
 
 		// A relative path makes `createScanner` throw, which proves the file reached

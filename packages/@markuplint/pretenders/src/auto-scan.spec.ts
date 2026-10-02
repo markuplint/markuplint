@@ -29,7 +29,9 @@ describe('autoScan', () => {
 
 		const result = await autoScan(entryPath, entrySource);
 
-		expect(result.find(p => p.selector === 'Child')).toMatchObject({ as: 'button' });
+		expect(result.find(p => p.selector === 'Child')).toMatchObject({
+			as: { element: 'button', slots: null },
+		});
 	});
 
 	test('a .tsx entry resolves a .vue import (BFS is extension-agnostic)', async () => {
@@ -58,7 +60,9 @@ describe('autoScan', () => {
 
 		const result = await autoScan(entryPath, entrySource);
 
-		expect(result.find(p => p.selector === 'Child')).toMatchObject({ as: 'em' });
+		expect(result.find(p => p.selector === 'Child')).toMatchObject({
+			as: { element: 'em', slots: null },
+		});
 	});
 
 	test('a circular import pair does not loop forever', async () => {
@@ -112,8 +116,12 @@ describe('autoScan', () => {
 
 		const result = await autoScan(entryPath, entrySource);
 
-		expect(result.find(p => p.selector === 'Helper')).toMatchObject({ as: 'span' });
-		expect(result.find(p => p.selector === 'Widget')).toMatchObject({ as: 'span' });
+		expect(result.find(p => p.selector === 'Helper')).toMatchObject({
+			as: { element: 'span', slots: null },
+		});
+		expect(result.find(p => p.selector === 'Widget')).toMatchObject({
+			as: { element: 'span', slots: null },
+		});
 	});
 
 	test('does not scan a .d.mts ambient declaration file reached during BFS', async () => {
@@ -227,7 +235,9 @@ describe('autoScan', () => {
 
 		const result = await autoScan(entryPath, entrySource);
 
-		expect(result.find(p => p.selector === 'Wrapped')).toMatchObject({ as: 'button' });
+		expect(result.find(p => p.selector === 'Wrapped')).toMatchObject({
+			as: { element: 'button', slots: null },
+		});
 	});
 
 	test('a .tsx entry resolves a .mjs import', async () => {
@@ -237,7 +247,9 @@ describe('autoScan', () => {
 
 		const result = await autoScan(entryPath, entrySource);
 
-		expect(result.find(p => p.selector === 'Child')).toMatchObject({ as: 'button' });
+		expect(result.find(p => p.selector === 'Child')).toMatchObject({
+			as: { element: 'button', slots: null },
+		});
 	});
 
 	test('an unsupported entry extension returns an empty result', async () => {
@@ -262,7 +274,9 @@ describe('autoScan', () => {
 		const second = await autoScan(entryPath, entrySource);
 
 		expect(second).toStrictEqual(first);
-		expect(second.find(p => p.selector === 'Child')).toMatchObject({ as: 'button' });
+		expect(second.find(p => p.selector === 'Child')).toMatchObject({
+			as: { element: 'button', slots: null },
+		});
 	});
 
 	test('does not read a transitively-imported file from disk twice', async () => {
@@ -316,6 +330,8 @@ describe('autoScan', () => {
 		clearAutoScanCache();
 		const result = await autoScan(entryPath, entrySource);
 
-		expect(result.find(p => p.selector === 'Child')).toMatchObject({ as: 'span' });
+		expect(result.find(p => p.selector === 'Child')).toMatchObject({
+			as: { element: 'span', slots: null },
+		});
 	});
 });

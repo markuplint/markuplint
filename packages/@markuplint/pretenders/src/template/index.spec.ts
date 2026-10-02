@@ -267,4 +267,48 @@ describe('templateScanner', () => {
 			});
 		});
 	});
+
+	describe('issue #4082: attribute-less components with no slots emit object with slots: null', () => {
+		test('Vue: emits { element, slots: null } instead of bare string', async () => {
+			const filePath = resolve('Bare.vue');
+			const sources = new Map([[normalizePath(filePath), '<template><span></span></template>']]);
+
+			const result = await templateScanner([filePath], { sources });
+
+			expect(result).toStrictEqual([
+				expect.objectContaining({
+					selector: 'Bare',
+					as: { element: 'span', slots: null },
+				}),
+			]);
+		});
+
+		test('Svelte: emits { element, slots: null } instead of bare string', async () => {
+			const filePath = resolve('Bare.svelte');
+			const sources = new Map([[normalizePath(filePath), '<span></span>']]);
+
+			const result = await templateScanner([filePath], { sources });
+
+			expect(result).toStrictEqual([
+				expect.objectContaining({
+					selector: 'Bare',
+					as: { element: 'span', slots: null },
+				}),
+			]);
+		});
+
+		test('Astro: emits { element, slots: null } instead of bare string', async () => {
+			const filePath = resolve('Bare.astro');
+			const sources = new Map([[normalizePath(filePath), '---\n---\n<span></span>']]);
+
+			const result = await templateScanner([filePath], { sources });
+
+			expect(result).toStrictEqual([
+				expect.objectContaining({
+					selector: 'Bare',
+					as: { element: 'span', slots: null },
+				}),
+			]);
+		});
+	});
 });

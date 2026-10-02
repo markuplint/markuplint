@@ -93,7 +93,7 @@ describe('jsxScanner: issue #4054', () => {
 		});
 
 		test('a branch returning null is ignored', () => {
-			expect(asOf('NullBranch')).toBe('section');
+			expect(asOf('NullBranch')).toStrictEqual({ element: 'section', slots: null });
 		});
 
 		test('a branch whose result is not statically known is ignored', () => {
@@ -113,7 +113,7 @@ describe('jsxScanner: issue #4054', () => {
 		});
 
 		test('memo() and forwardRef() wrappers are looked through', () => {
-			expect(asOf('Memo')).toBe('aside');
+			expect(asOf('Memo')).toStrictEqual({ element: 'aside', slots: null });
 			expect(asOf('Fwd')).toStrictEqual({
 				element: 'nav',
 				attrs: [{ name: 'ref', value: { dynamic: true } }],

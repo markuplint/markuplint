@@ -55,32 +55,50 @@ describe('jsxScanner', () => {
 			},
 			{
 				selector: 'NodeD',
-				as: 'DReturns',
+				as: {
+					element: 'DReturns',
+					slots: null,
+				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/001.tsx:25:6'),
 			},
 			{
 				selector: 'NodeE',
-				as: 'EReturns',
+				as: {
+					element: 'EReturns',
+					slots: null,
+				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/001.tsx:27:6'),
 			},
 			{
 				selector: 'NodeF',
-				as: 'FReturns',
+				as: {
+					element: 'FReturns',
+					slots: null,
+				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/001.tsx:33:9'),
 			},
 			{
 				selector: 'NodeG',
-				as: 'GReturns',
+				as: {
+					element: 'GReturns',
+					slots: null,
+				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/001.tsx:38:16'),
 			},
 			{
 				selector: 'NodeH',
-				as: 'HReturns',
+				as: {
+					element: 'HReturns',
+					slots: null,
+				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/001.tsx:42:24'),
 			},
 			{
 				selector: 'NodeI',
-				as: 'IReturns',
+				as: {
+					element: 'IReturns',
+					slots: null,
+				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/001.tsx:46:9'),
 			},
 		]);
@@ -188,7 +206,10 @@ describe('jsxScanner', () => {
 			},
 			{
 				selector: 'StaticContent',
-				as: 'p',
+				as: {
+					element: 'p',
+					slots: null,
+				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/005.tsx:17:6'),
 			},
 			{
@@ -257,7 +278,7 @@ describe('jsxScanner', () => {
 			});
 			expect(a).toMatchObject({
 				selector: 'A',
-				as: { element: 'button', slots: true, inheritAttrs: true },
+				as: { element: 'button', slots: null, inheritAttrs: true },
 				_via: ['Item'],
 			});
 			expect(a?.filePath).toMatch(/^a\.tsx:/);
@@ -280,7 +301,7 @@ describe('jsxScanner', () => {
 			const c = result.find(p => p.selector === 'C');
 			expect(c).toMatchObject({
 				selector: 'C',
-				as: { element: 'button', slots: true, inheritAttrs: true },
+				as: { element: 'button', slots: null, inheritAttrs: true },
 				_via: ['Item'],
 			});
 			expect(c?.filePath).toMatch(/^a\.tsx:/);
@@ -299,7 +320,7 @@ describe('jsxScanner', () => {
 			const e = result.find(p => p.selector === 'E');
 			expect(e).toMatchObject({
 				selector: 'E',
-				as: { element: 'span', slots: true, inheritAttrs: true },
+				as: { element: 'span', slots: null, inheritAttrs: true },
 				_via: ['Item'],
 			});
 		});
@@ -312,7 +333,9 @@ describe('jsxScanner', () => {
 
 			const result = await jsxScanner([filePath], { sources });
 
-			expect(result).toStrictEqual([expect.objectContaining({ selector: 'InMemoryOnly', as: 'span' })]);
+			expect(result).toStrictEqual([
+				expect.objectContaining({ selector: 'InMemoryOnly', as: { element: 'span', slots: null } }),
+			]);
 		});
 
 		test('files without an override fall back to reading from disk', async () => {
@@ -322,8 +345,26 @@ describe('jsxScanner', () => {
 
 			const result = await jsxScanner([overriddenPath, diskPath], { sources });
 
-			expect(result.find(p => p.selector === 'Overridden')).toMatchObject({ as: 'span' });
+			expect(result.find(p => p.selector === 'Overridden')).toMatchObject({
+				as: { element: 'span', slots: null },
+			});
 			expect(result.find(p => p.selector === 'NodeA')).toBeDefined();
+		});
+	});
+
+	describe('issue #4082: attribute-less component with no children emits object with slots: null', () => {
+		test('emits { element, slots: null } instead of bare string', async () => {
+			const filePath = path.resolve(testDir, 'Comp.tsx');
+			const sources = new Map([[normalizePath(filePath), 'export function Comp() { return <span></span>; }']]);
+
+			const result = await jsxScanner([filePath], { sources });
+
+			expect(result).toStrictEqual([
+				expect.objectContaining({
+					selector: 'Comp',
+					as: { element: 'span', slots: null },
+				}),
+			]);
 		});
 	});
 });

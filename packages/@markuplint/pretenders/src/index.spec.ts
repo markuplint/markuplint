@@ -24,7 +24,7 @@ describe('clearPretenderCaches (long-running processes)', () => {
 		await writeFile(importerFile, "import Item from './target';\nexport const E = () => <Item>x</Item>;");
 
 		const before = await jsxScanner([targetFile, importerFile], { cwd: tmpDir });
-		expect(before.find(p => p.selector === 'E')?.as).toBe('button');
+		expect(before.find(p => p.selector === 'E')?.as).toStrictEqual({ element: 'button', slots: null });
 
 		// Rename the default-exported declaration. Without cache invalidation,
 		// resolution keeps looking up the map key for the old local name
@@ -32,11 +32,11 @@ describe('clearPretenderCaches (long-running processes)', () => {
 		// unresolved instead of picking up the new declaration.
 		await writeFile(targetFile, 'export default function Widget() { return <span>x</span>; }');
 		const stale = await jsxScanner([targetFile, importerFile], { cwd: tmpDir });
-		expect(stale.find(p => p.selector === 'E')?.as).toBe('Item');
+		expect(stale.find(p => p.selector === 'E')?.as).toStrictEqual({ element: 'Item', slots: null });
 
 		clearPretenderCaches();
 
 		const fresh = await jsxScanner([targetFile, importerFile], { cwd: tmpDir });
-		expect(fresh.find(p => p.selector === 'E')?.as).toBe('span');
+		expect(fresh.find(p => p.selector === 'E')?.as).toStrictEqual({ element: 'span', slots: null });
 	});
 });
