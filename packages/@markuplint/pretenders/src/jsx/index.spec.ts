@@ -353,7 +353,7 @@ describe('jsxScanner', () => {
 	});
 
 	describe('issue #4082: attribute-less component with no children emits object with slots: null', () => {
-		test('emits { element, slots: null } instead of bare string', async () => {
+		test('a component that renders no children and has no attributes is recorded with slots: null', async () => {
 			const filePath = path.resolve(testDir, 'Comp.tsx');
 			const sources = new Map([[normalizePath(filePath), 'export function Comp() { return <span></span>; }']]);
 

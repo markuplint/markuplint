@@ -269,7 +269,7 @@ describe('templateScanner', () => {
 	});
 
 	describe('issue #4082: attribute-less components with no slots emit object with slots: null', () => {
-		test('Vue: emits { element, slots: null } instead of bare string', async () => {
+		test('Vue: a component that renders no children and has no attributes is recorded with slots: null', async () => {
 			const filePath = resolve('Bare.vue');
 			const sources = new Map([[normalizePath(filePath), '<template><span></span></template>']]);
 
@@ -283,7 +283,7 @@ describe('templateScanner', () => {
 			]);
 		});
 
-		test('Svelte: emits { element, slots: null } instead of bare string', async () => {
+		test('Svelte: a component that renders no children and has no attributes is recorded with slots: null', async () => {
 			const filePath = resolve('Bare.svelte');
 			const sources = new Map([[normalizePath(filePath), '<span></span>']]);
 
@@ -297,7 +297,7 @@ describe('templateScanner', () => {
 			]);
 		});
 
-		test('Astro: emits { element, slots: null } instead of bare string', async () => {
+		test('Astro: a component that renders no children and has no attributes is recorded with slots: null', async () => {
 			const filePath = resolve('Bare.astro');
 			const sources = new Map([[normalizePath(filePath), '---\n---\n<span></span>']]);
 

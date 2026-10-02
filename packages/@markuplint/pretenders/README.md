@@ -91,8 +91,8 @@ function Bar() {
 
 ```json
 [
-  { "selector": "Foo", "as": "div" },
-  { "selector": "Bar", "as": "span" }
+  { "selector": "Foo", "as": { "element": "div", "slots": null } },
+  { "selector": "Bar", "as": { "element": "span", "slots": null } }
 ]
 ```
 
@@ -110,8 +110,8 @@ const Bar = styled(Foo)`
 
 ```json
 [
-  { "selector": "Foo", "as": "div" },
-  { "selector": "Bar", "as": "div" }
+  { "selector": "Foo", "as": { "element": "div", "slots": true, "inheritAttrs": true } },
+  { "selector": "Bar", "as": { "element": "div", "slots": true, "inheritAttrs": true } }
 ]
 ```
 

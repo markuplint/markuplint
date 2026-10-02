@@ -23,10 +23,13 @@ const config = {
 	parser: {
 		'\\.tsx$': '@markuplint/jsx-parser',
 		'\\.vue$': '@markuplint/vue-parser',
+		'\\.svelte$': '@markuplint/svelte-parser',
+		'\\.astro$': '@markuplint/astro-parser',
 	},
 	specs: {
 		'\\.tsx$': '@markuplint/react-spec',
 		'\\.vue$': '@markuplint/vue-spec',
+		'\\.svelte$': '@markuplint/svelte-spec',
 	},
 	pretenders: { auto: true },
 	rules: { 'require-accessible-name': true },
@@ -55,6 +58,12 @@ export function Select({ children }) {
 }`,
 	'Bare.vue': `
 <template><span></span></template>
+`,
+	'Bare.svelte': `<span></span>
+`,
+	'Bare.astro': `---
+---
+<span></span>
 `,
 };
 
@@ -116,6 +125,40 @@ describe('pretenders.auto: issue #4082', () => {
 import Bare from './Bare.vue';
 </script>
 <template><button type="button"><Bare>Save</Bare></button></template>
+`,
+		);
+		const { violations } = await mlTestFile(file, config);
+		expect(violations.map(v => `${v.ruleId}: ${v.raw}`)).toStrictEqual([
+			'require-accessible-name: <button type="button">',
+		]);
+	});
+
+	test('Svelte: an attribute-less component with no slot does not render its children', async () => {
+		const file = path.join(tmpDir, 'Usage.svelte');
+		await writeFile(
+			file,
+			`<script>
+	import Bare from './Bare.svelte';
+</script>
+
+<button type="button"><Bare>Save</Bare></button>
+`,
+		);
+		const { violations } = await mlTestFile(file, config);
+		expect(violations.map(v => `${v.ruleId}: ${v.raw}`)).toStrictEqual([
+			'require-accessible-name: <button type="button">',
+		]);
+	});
+
+	test('Astro: an attribute-less component with no slot does not render its children', async () => {
+		const file = path.join(tmpDir, 'Usage.astro');
+		await writeFile(
+			file,
+			`---
+import Bare from './Bare.astro';
+---
+
+<button type="button"><Bare>Save</Bare></button>
 `,
 		);
 		const { violations } = await mlTestFile(file, config);
