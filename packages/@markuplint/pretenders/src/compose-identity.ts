@@ -88,7 +88,8 @@ function substitute(
 
 /**
  * A bare element name stays a bare name, and `slots` is left out when it would
- * only restate the default, the same as the scanners write their identities.
+ * only restate the default that `inner` left implicit. The scanners never write
+ * a bare name, so this only keeps the shape of an identity written in a config.
  */
 function build(
 	rest: Omit<DetailedIdentity, 'slots' | 'contents'>,
