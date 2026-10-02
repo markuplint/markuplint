@@ -12,6 +12,7 @@ export interface ComponentScanResult {
 	readonly slotWrappers?: readonly ComponentScanSlotWrapper[];
 	readonly rootContents?: readonly ComponentScanContent[];
 	readonly scriptSource?: ComponentScanScriptSource;
+	readonly spreads?: readonly string[];
 	readonly namespace?: 'svg';
 	readonly line?: number;
 	readonly col?: number;
@@ -26,6 +27,8 @@ export interface ComponentScanAttr {
 	readonly value?: string;
 	/** The attribute is present and its value is an expression, unknown at scan time. `value` is omitted. */
 	readonly dynamic?: true;
+	/** The source of the expression of a `dynamic` attribute that is written as one expression. */
+	readonly expression?: string;
 }
 
 /**
@@ -65,13 +68,28 @@ function extractComponentInfo(
 		return null;
 	}
 
+	const spreads = extractSpreads(root);
 	return {
 		rootElement: root.nodeName,
 		attrs: extractAttrs(root),
+		...(spreads.length > 0 ? { spreads } : {}),
 		namespace: root.namespace === 'http://www.w3.org/2000/svg' ? 'svg' : undefined,
 		line: root.line,
 		col: root.col,
 	};
+}
+
+const SPREAD = /^\{\s*\.\.\.([\s\S]*)\}$/;
+
+/**
+ * The expressions of `{...expr}`, which gives the element the attributes of an object
+ * (`{...rest}` is what the component receives and does not declare as props).
+ */
+function extractSpreads(el: MLASTElement): string[] {
+	return el.attributes.flatMap(attr => {
+		const expression = attr.type === 'spread' ? SPREAD.exec(attr.raw.trim())?.[1]?.trim() : undefined;
+		return expression ? [expression] : [];
+	});
 }
 
 /**
@@ -145,7 +163,8 @@ function extractAttrs(el: MLASTElement): ComponentScanAttr[] {
 		}
 		if (attr.name.raw === '') {
 			if (attr.potentialName) {
-				addAttr(attrs, { name: attr.potentialName, dynamic: true });
+				// The shorthand `{type}` is `type={type}`
+				addAttr(attrs, { name: attr.potentialName, dynamic: true, expression: attr.potentialName });
 			}
 			continue;
 		}
@@ -158,7 +177,10 @@ function extractAttrs(el: MLASTElement): ComponentScanAttr[] {
 			continue;
 		}
 		const value = attr.value.raw;
-		if (attr.isDynamicValue || INTERPOLATION.test(value)) {
+		if (attr.isDynamicValue) {
+			const expression = value.trim();
+			addAttr(attrs, { name: attr.nodeName, dynamic: true, ...(expression === '' ? {} : { expression }) });
+		} else if (INTERPOLATION.test(value)) {
 			addAttr(attrs, { name: attr.nodeName, dynamic: true });
 		} else if (value === '') {
 			addAttr(attrs, { name: attr.nodeName });
@@ -171,14 +193,16 @@ function extractAttrs(el: MLASTElement): ComponentScanAttr[] {
 
 /**
  * One name written in two forms (`class="btn" :class="x"`) is one attribute: dynamic
- * when any of the forms is, in the position of the first.
+ * when any of the forms is, in the position of the first. It is not one expression any
+ * more, so it has no `expression`.
  */
 function addAttr(attrs: ComponentScanAttr[], attr: ComponentScanAttr) {
 	const index = attrs.findIndex(existing => existing.name === attr.name);
-	if (index === -1) {
+	const existing = attrs[index];
+	if (!existing) {
 		attrs.push(attr);
-	} else if (attr.dynamic) {
-		attrs[index] = attr;
+	} else if (existing.dynamic || attr.dynamic) {
+		attrs[index] = { name: attr.name, dynamic: true };
 	}
 }
 
