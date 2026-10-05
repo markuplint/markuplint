@@ -46,6 +46,27 @@ function createCore(sourceCode: string, pretenders: readonly Pretender[] = []) {
 	return new MLCore(params);
 }
 
+/**
+ * The first node of `core`'s current document, isolated so callers can take
+ * a `WeakRef` of it without a local variable keeping the document itself
+ * (and everything in its node store) alive regardless of the fix under test.
+ */
+function firstNode(core: MLCore) {
+	const document = core.document;
+	if (document instanceof Error) {
+		throw document;
+	}
+	const [node] = document.nodeList;
+	if (!node) {
+		throw new Error('Expected at least one parsed node');
+	}
+	return node;
+}
+
+function firstNodeRef(core: MLCore): WeakRef<object> {
+	return new WeakRef(firstNode(core));
+}
+
 describe('getNodeStoreFor', () => {
 	test('returns the same store for the same document object', () => {
 		const doc = createCore('<div></div>').document;
@@ -72,21 +93,7 @@ describe('NodeStore memory scoping (regression for the process-wide leak)', () =
 	// analysis and a standalone heap-snapshot repro.
 	test('a document dropped after MLCore#setCode() is collectible', async () => {
 		const core = createCore('<div><p>hello</p></div>');
-
-		// Isolated in a closure so the only thing that escapes is the
-		// WeakRef — a local variable still holding `firstDocument` here would
-		// keep it (and everything in `nodeStore`) alive regardless of the fix.
-		const nodeRef = (() => {
-			const firstDocument = core.document;
-			if (firstDocument instanceof Error) {
-				throw firstDocument;
-			}
-			const [firstNode] = firstDocument.nodeList;
-			if (!firstNode) {
-				throw new Error('Expected at least one parsed node');
-			}
-			return new WeakRef(firstNode);
-		})();
+		const nodeRef = firstNodeRef(core);
 
 		// Replaces `core`'s internal document with a new one, exactly like a
 		// language server re-linting on every edit (`MLEngine#setCode()` ->
@@ -102,18 +109,8 @@ describe('NodeStore memory scoping (regression for the process-wide leak)', () =
 		const core = createCore('<div><p>hello</p></div>');
 
 		const refs = Array.from({ length: 20 }, (_, i) => {
-			return (() => {
-				core.setCode(`<div id="d${i}"><p>hello ${i}</p></div>`);
-				const document = core.document;
-				if (document instanceof Error) {
-					throw document;
-				}
-				const [firstNode] = document.nodeList;
-				if (!firstNode) {
-					throw new Error('Expected at least one parsed node');
-				}
-				return new WeakRef(firstNode);
-			})();
+			core.setCode(`<div id="d${i}"><p>hello ${i}</p></div>`);
+			return firstNodeRef(core);
 		});
 
 		// One final setCode() so every ref above — including the most recent
