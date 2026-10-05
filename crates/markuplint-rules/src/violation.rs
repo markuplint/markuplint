@@ -11,7 +11,7 @@ pub enum Severity {
 #[derive(Clone, Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Violation {
-    /// Always the base rule name (e.g., `"invalid-attr"`), never the alias.
+    /// Always the base rule name (e.g., `"no-restricted-attr"`), never the alias.
     pub rule_id: String,
     /// Alias name (e.g., `"a11y/no-accesskey"`), populated when the violation
     /// originates from a `NamedRuleGroup` or named `nodeRule`.

@@ -204,7 +204,7 @@ pub struct Attribute {
     #[serde(default)]
     pub name: Option<String>,
     /// Remains `Value` — 900+ CSS property keyword types as discriminated union.
-    /// Will be typed in Phase 8-9 (invalid-attr rule implementation).
+    /// Will be typed in Phase 8-9.
     #[serde(default, rename = "type")]
     pub attr_type: Value,
     #[serde(default)]

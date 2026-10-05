@@ -1,15 +1,18 @@
-//! `invalid-attr` rule: validate attributes against the HTML spec.
+//! Attribute checking shared by the four rules `invalid-attr` was split into:
+//! `no-unknown-attr`, `no-disallowed-attr`, `no-invalid-attr-value` and
+//! `no-restricted-attr`.
 //!
-//! Checks:
-//! 1. Unknown attribute detection (not in spec, not data-*, not aria-*)
-//! 2. Typo suggestion via Levenshtein distance
-//! 3. Config-based allow/disallow lists (with enum/pattern/type constraints)
-//! 4. Prefix-based ignore
-//! 5. noUse attribute detection (deprecated/disallowed in spec)
-//! 6. Condition-based attribute validation (CSS selector matching)
-//! 7. adapt-* experimental attribute bypass
+//! Port of `packages/@markuplint/rules/src/attr-eligibility.ts` and
+//! `attr-check.ts`. The split exists so that one answer to "what does the spec
+//! say about this attribute name on this element" ([`resolve_attr_eligibility`])
+//! feeds all three spec-driven rules; each acts on a different part of it, and
+//! none re-derives it.
+//!
+//! The walk over elements and attributes ([`walk_attrs`]) is shared as well, so
+//! the per-node `nodeRules` handling, the ghost-element skip and the directive
+//! skip behave identically in every one of the four rules.
 
-use markuplint_core::mlast::MLASTAttr;
+use markuplint_core::mlast::{ElementType, MLASTAttr, MLASTHTMLAttr};
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_selector::parser;
 use markuplint_types::spec::lookup::{get_attr_specs, get_spec};
@@ -19,89 +22,14 @@ use strsim::levenshtein;
 
 use markuplint_types::check::types::CheckResult;
 
-use crate::rule::{Rule, RuleConfigSet};
+use crate::rule::RuleConfigSet;
 use crate::violation::Violation;
-
-#[cfg(test)]
-mod tests;
-
-pub struct InvalidAttr;
 
 const MAX_TYPO_DISTANCE: usize = 2;
 
-impl Rule for InvalidAttr {
-    fn id(&self) -> &'static str {
-        "invalid-attr"
-    }
-
-    fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
-        if config.global().value == serde_json::Value::Bool(false) {
-            return vec![];
-        }
-
-        let mut violations = Vec::new();
-
-        for (node_id, el) in arena.elements() {
-            let rule_config = config.get(node_id);
-            if rule_config.disabled {
-                continue;
-            }
-            if rule_config.value == serde_json::Value::Bool(false) {
-                continue;
-            }
-            if el.is_ghost {
-                continue;
-            }
-
-            let opts = ParsedOptions::from_config(&rule_config.options);
-
-            // Skip non-HTML elements unless they have explicit allow/disallow config.
-            let has_explicit_config = !opts.allow_attrs.is_empty()
-                || !opts.allow_entries.is_empty()
-                || !opts.disallow_attrs.is_empty()
-                || !opts.disallow_entries.is_empty();
-            if el.element_type != markuplint_core::mlast::ElementType::Html && !has_explicit_config {
-                continue;
-            }
-            // Note: SVG/MathML elements are NOT skipped. Spec lookup uses case-insensitive
-            // matching to handle mixed-case SVG attribute names (viewBox, textLength, etc.).
-
-            let el_name = &el.base.node_name;
-            let attr_specs = get_attr_specs(spec, el_name);
-            let global_attr_names = get_global_attr_names(spec, el_name);
-
-            for attr in &el.attributes {
-                let MLASTAttr::HTMLAttr(html_attr) = attr else {
-                    continue;
-                };
-                if html_attr.is_directive == Some(true) {
-                    continue;
-                }
-
-                let ctx = AttrCheckContext {
-                    spec,
-                    arena,
-                    node_id,
-                    el_name,
-                    attr_specs: &attr_specs,
-                    global_attr_names: &global_attr_names,
-                    opts: &opts,
-                    rule_id: self.id(),
-                    severity: &rule_config.severity,
-                };
-                if let Some(v) = check_attr(html_attr, &ctx) {
-                    violations.push(v);
-                }
-            }
-        }
-
-        violations
-    }
-}
-
 /// Value constraint for allow/disallow entries.
 #[derive(Debug)]
-enum ValueConstraint {
+pub(crate) enum ValueConstraint {
     /// Accept any value (no constraint).
     Any,
     /// Value must be one of these strings.
@@ -112,68 +40,230 @@ enum ValueConstraint {
     Type(String),
 }
 
-/// Result of checking allow/disallow entries.
-enum EntryCheckResult {
-    /// Not in the list — continue to next check.
-    NotInList,
-    /// In the list and allowed (no violation).
-    Allowed,
-    /// In the list and violated.
-    Violated(Violation),
+/// One entry of `allowAttrs` or `disallowAttrs` that names an attribute together
+/// with a value constraint.
+pub(crate) struct AttrEntry {
+    pub(crate) name: String,
+    pub(crate) constraint: ValueConstraint,
 }
 
-struct DisallowEntry {
-    name: String,
-    constraint: ValueConstraint,
+/// What the spec says about one attribute on one element, in the order the
+/// pre-split `invalid-attr` rule decided it: existence, then case-sensitivity,
+/// then `noUse`, then `condition`.
+pub(crate) enum AttrEligibility {
+    /// Not judged by these rules: `data-*`, `adapt-*`, ARIA (`aria-*` / `role`) and
+    /// event handlers (`on*`) are validated elsewhere or have any type by definition,
+    /// and an element the spec does not know cannot say what its attributes are.
+    Exempt,
+    /// The spec does not define this attribute name for the element.
+    Unknown { candidate: Option<String> },
+    /// The name matches a case-sensitive spec name only when written in a different case.
+    CaseMismatch { expected_name: String },
+    /// The spec marks the attribute as not to be used.
+    NoUse,
+    /// The attribute exists, but its `condition` does not hold on this element.
+    ConditionNotMet,
+    /// The attribute applies. `attr_type` is the spec type to check its value against,
+    /// falling back to the global attribute type when the element-specific entry has none.
+    Ok { attr_type: serde_json::Value },
 }
 
-struct AllowEntry {
-    name: String,
-    constraint: ValueConstraint,
+pub(crate) struct AttrCheckContext<'a> {
+    pub(crate) spec: &'a MLMLSpec,
+    pub(crate) arena: &'a DomArena,
+    pub(crate) node_id: NodeId,
+    pub(crate) el_name: &'a str,
+    pub(crate) element_type: ElementType,
+    pub(crate) attr_specs: &'a std::collections::HashMap<&'a str, &'a markuplint_types::spec::types::Attribute>,
+    pub(crate) global_attr_names: &'a [String],
+    pub(crate) rule_id: &'a str,
+    pub(crate) severity: &'a crate::violation::Severity,
 }
 
-struct ParsedOptions {
-    allow_attrs: Vec<String>,
-    allow_entries: Vec<AllowEntry>,
-    disallow_attrs: Vec<String>,
-    disallow_entries: Vec<DisallowEntry>,
-    ignore_prefixes: Vec<String>,
-    allow_to_add_properties_for_pretender: bool,
-}
-
-impl ParsedOptions {
-    fn from_config(options: &serde_json::Value) -> Self {
-        let (allow_attrs, allow_entries) = parse_allow_attrs(options);
-        let (disallow_attrs, disallow_entries) = parse_disallow_attrs(options);
-        let allow_pretender = options
-            .get("allowToAddPropertiesForPretender")
-            .and_then(serde_json::Value::as_bool)
-            .unwrap_or(true);
-        Self {
-            allow_attrs,
-            allow_entries,
-            disallow_attrs,
-            disallow_entries,
-            ignore_prefixes: parse_ignore_prefixes(options),
-            allow_to_add_properties_for_pretender: allow_pretender,
-        }
+impl AttrCheckContext<'_> {
+    pub(crate) fn is_html(&self) -> bool {
+        self.element_type == ElementType::Html
     }
 }
 
-struct AttrCheckContext<'a> {
-    spec: &'a MLMLSpec,
-    arena: &'a DomArena,
-    node_id: NodeId,
-    el_name: &'a str,
-    attr_specs: &'a std::collections::HashMap<&'a str, &'a markuplint_types::spec::types::Attribute>,
-    global_attr_names: &'a [String],
-    opts: &'a ParsedOptions,
-    rule_id: &'a str,
-    severity: &'a crate::violation::Severity,
+/// Runs `check` on every attribute of every element the rule applies to.
+///
+/// `parse_options` runs once per element, since `nodeRules` can give an element
+/// options of its own. An element the rule is disabled for (globally, by
+/// `nodeRules`, or because it is a ghost element) and attributes that are parser
+/// directives are skipped.
+pub(crate) fn walk_attrs<O>(
+    rule_id: &str,
+    arena: &DomArena,
+    spec: &MLMLSpec,
+    config: &RuleConfigSet,
+    parse_options: impl Fn(&serde_json::Value) -> O,
+    mut check: impl FnMut(&O, &MLASTHTMLAttr, &AttrCheckContext<'_>) -> Option<Violation>,
+) -> Vec<Violation> {
+    if config.global().value == serde_json::Value::Bool(false) {
+        return vec![];
+    }
+
+    let mut violations = Vec::new();
+
+    for (node_id, el) in arena.elements() {
+        let rule_config = config.get(node_id);
+        if rule_config.disabled || rule_config.value == serde_json::Value::Bool(false) || el.is_ghost {
+            continue;
+        }
+
+        let options = parse_options(&rule_config.options);
+        let el_name = &el.base.node_name;
+        let attr_specs = get_attr_specs(spec, el_name);
+        let global_attr_names = get_global_attr_names(spec, el_name);
+
+        for attr in &el.attributes {
+            let MLASTAttr::HTMLAttr(html_attr) = attr else {
+                continue;
+            };
+            if html_attr.is_directive == Some(true) {
+                continue;
+            }
+
+            let ctx = AttrCheckContext {
+                spec,
+                arena,
+                node_id,
+                el_name,
+                element_type: el.element_type.clone(),
+                attr_specs: &attr_specs,
+                global_attr_names: &global_attr_names,
+                rule_id,
+                severity: &rule_config.severity,
+            };
+            if let Some(v) = check(&options, html_attr, &ctx) {
+                violations.push(v);
+            }
+        }
+    }
+
+    violations
+}
+
+/// Resolves what the spec says about the attribute `name` on the element of `ctx`.
+///
+/// Port of `resolveAttrEligibility()` in `attr-eligibility.ts`.
+pub(crate) fn resolve_attr_eligibility(name: &str, ctx: &AttrCheckContext<'_>) -> AttrEligibility {
+    let name_lower = name.to_ascii_lowercase();
+
+    // The TS patterns are case-sensitive, but its spec lookup is case-insensitive and
+    // finds `role` for `ROLE`, so the effective behavior is a case-insensitive bypass.
+    // `on*` is Rust-specific: the global event handler category is left out of the
+    // attribute names collected here, as it is checked by `no-event-handler-attr`.
+    if name_lower.starts_with("data-")
+        || name_lower.starts_with("aria-")
+        || name_lower == "role"
+        || (name_lower.len() > 2 && name_lower.starts_with("on"))
+        || name_lower.starts_with("adapt-")
+    {
+        return AttrEligibility::Exempt;
+    }
+
+    // Case-insensitive lookup so SVG mixed-case attrs like `viewBox` are found.
+    let attr_spec = ctx
+        .attr_specs
+        .get_key_value(name_lower.as_str())
+        .map(|(k, v)| (*k, *v))
+        .or_else(|| {
+            ctx.attr_specs
+                .iter()
+                .find(|(k, _)| k.eq_ignore_ascii_case(&name_lower))
+                .map(|(k, v)| (*k, *v))
+        });
+
+    if let Some((spec_name, spec)) = attr_spec {
+        // The spec name is the key of the element's `attributes`: the entry itself
+        // carries no `name`, and TS takes it from the key as well.
+        let has_uppercase = spec_name.chars().any(|c| c.is_ascii_uppercase());
+        if has_uppercase && name != spec_name {
+            return AttrEligibility::CaseMismatch {
+                expected_name: spec_name.to_string(),
+            };
+        }
+
+        // The element-specific entry is merged over the global definition, as
+        // `getAttrSpecs()` does in TS: a key the element-specific entry does not carry
+        // (`referrerpolicy` on `<a>` has only a description) comes from the global
+        // category it belongs to (`#HTMLLinkAndFetchingAttrs`), including its `condition`.
+        let global = find_global_attr(ctx.spec, ctx.el_name, &name_lower);
+
+        let no_use = spec.no_use.unwrap_or_else(|| global.is_some_and(global_attr_no_use));
+        if no_use {
+            return AttrEligibility::NoUse;
+        }
+
+        let condition_met = match &spec.condition {
+            Some(cond) => matches_condition(cond, ctx.arena, ctx.node_id, ctx.spec),
+            None => global
+                .and_then(global_attr_condition)
+                .is_none_or(|cond| matches_condition(&cond, ctx.arena, ctx.node_id, ctx.spec)),
+        };
+        if !condition_met {
+            return AttrEligibility::ConditionNotMet;
+        }
+
+        let attr_type = if spec.attr_type.is_null()
+            || (spec.attr_type.is_object() && spec.attr_type.as_object().unwrap().is_empty())
+        {
+            global
+                .and_then(|g| g.get("type").cloned())
+                .unwrap_or(serde_json::Value::Null)
+        } else {
+            spec.attr_type.clone()
+        };
+        return AttrEligibility::Ok { attr_type };
+    }
+
+    if ctx.global_attr_names.contains(&name_lower) {
+        let global = find_global_attr(ctx.spec, ctx.el_name, &name_lower);
+        if global.is_some_and(global_attr_no_use) {
+            return AttrEligibility::NoUse;
+        }
+        if global
+            .and_then(global_attr_condition)
+            .is_some_and(|cond| !matches_condition(&cond, ctx.arena, ctx.node_id, ctx.spec))
+        {
+            return AttrEligibility::ConditionNotMet;
+        }
+        return AttrEligibility::Ok {
+            attr_type: global
+                .and_then(|g| g.get("type").cloned())
+                .unwrap_or(serde_json::Value::Null),
+        };
+    }
+
+    // An element the spec does not know (e.g., SVG elements like feFlood that the HTML
+    // parser doesn't recognize as foreign) cannot say which attributes are unknown, so
+    // nothing is reported. A hyphenated name is the exception, but only an element the
+    // parser typed as HTML gets this far: `no-unknown-attr` and `no-disallowed-attr`
+    // return early for web components.
+    if get_spec(ctx.spec, ctx.el_name).is_none() && !ctx.el_name.contains('-') {
+        return AttrEligibility::Exempt;
+    }
+
+    let mut known: Vec<&str> = ctx.attr_specs.keys().copied().collect();
+    for ga in ctx.global_attr_names {
+        known.push(ga.as_str());
+    }
+    AttrEligibility::Unknown {
+        candidate: find_closest_match(&name_lower, &known).map(str::to_string),
+    }
+}
+
+/// Whether the spec lets elements of this name carry properties it does not
+/// define (`possibleToAddProperties`), in which case an unrecognized or
+/// condition-less attribute is not reported.
+pub(crate) fn element_allows_additional_properties(ctx: &AttrCheckContext<'_>) -> bool {
+    get_spec(ctx.spec, ctx.el_name).is_some_and(|s| s.possible_to_add_properties == Some(true))
 }
 
 /// Reports with `raw` set to the attribute name only.
-fn attr_violation(
+pub(crate) fn attr_violation(
     ctx: &AttrCheckContext<'_>,
     html_attr: &markuplint_core::mlast::MLASTHTMLAttr,
     message: String,
@@ -192,7 +282,7 @@ fn attr_violation(
 
 /// Reports with `raw` set to the full attribute text, used for noUse flags
 /// where TS reports the entire attribute.
-fn attr_full_violation(
+pub(crate) fn attr_full_violation(
     ctx: &AttrCheckContext<'_>,
     html_attr: &markuplint_core::mlast::MLASTHTMLAttr,
     message: String,
@@ -212,7 +302,7 @@ fn attr_full_violation(
 /// Create a violation at the attribute VALUE position (for invalid-value type).
 ///
 /// Matches TS behavior where `invalid-value` reports at `valueNode.startLine/startCol`.
-fn attr_value_violation(
+pub(crate) fn attr_value_violation(
     ctx: &AttrCheckContext<'_>,
     html_attr: &markuplint_core::mlast::MLASTHTMLAttr,
     message: String,
@@ -227,308 +317,6 @@ fn attr_value_violation(
         raw: html_attr.value.raw.clone(),
         reason: None,
     }
-}
-
-/// Check a single attribute following the TS flow:
-/// 1. Candidate (typo suggestion from parser)
-/// 2. Bypass data-*, aria-*, on*, adapt-*
-/// 3. Ignore prefix check
-/// 4. If attr is in allowAttrs/allowEntries → validate value against constraint
-/// 5. Else if attr is in disallowAttrs/disallowEntries → check disallow constraint
-/// 6. Else → run spec-based validation (existence, noUse, condition)
-fn check_attr(html_attr: &markuplint_core::mlast::MLASTHTMLAttr, ctx: &AttrCheckContext<'_>) -> Option<Violation> {
-    // Use the raw (original-case) attribute name, matching TS behavior.
-    // The WHATWG parser lowercases node_name, but TS preserves original case.
-    let name = markuplint_dom::helpers::get_raw_attr_name(html_attr);
-    let name_lower = name.to_ascii_lowercase();
-
-    // 1. Candidate check (typo suggestion from parser)
-    if let Some(candidate) = &html_attr.candidate {
-        return Some(attr_violation(
-            ctx,
-            html_attr,
-            format!("The \"{name}\" attribute is disallowed. Did you mean \"{candidate}\"?"),
-        ));
-    }
-
-    // 2. Ignore prefix check
-    if ctx.opts.ignore_prefixes.iter().any(|p| name_lower.starts_with(p)) {
-        return None;
-    }
-
-    // 3. Check allowAttrs/allowEntries first (TS: if allowValue !== null)
-    match check_allow(name, html_attr, ctx) {
-        EntryCheckResult::Allowed => return None,
-        EntryCheckResult::Violated(v) => return Some(v),
-        EntryCheckResult::NotInList => {}
-    }
-
-    // 4. Check disallowAttrs/disallowEntries (TS: else if disallowValue !== null)
-    match check_disallow(name, html_attr, ctx) {
-        EntryCheckResult::Allowed => return None,
-        EntryCheckResult::Violated(v) => return Some(v),
-        EntryCheckResult::NotInList => {}
-    }
-
-    // 5. Bypass special prefixes for spec validation
-    // TS: attrCheck with isCustomRule=false skips data-*, aria-*, role, adapt-*
-    // TS regex is case-sensitive (/^data-.+$/ etc.), but isValidAttr does
-    // case-insensitive spec lookup which finds "role" etc. for uppercase variants.
-    // Use name_lower for bypass to match the effective TS behavior.
-    if name_lower.starts_with("data-")
-        || name_lower.starts_with("aria-")
-        || name_lower == "role"
-        || (name_lower.len() > 2 && name_lower.starts_with("on"))
-        || name_lower.starts_with("adapt-")
-    {
-        return None;
-    }
-
-    // 6. Spec-based validation (TS: else clause)
-    check_spec_validation(name, &name_lower, html_attr, ctx)
-}
-
-fn check_allow(
-    name: &str,
-    html_attr: &markuplint_core::mlast::MLASTHTMLAttr,
-    ctx: &AttrCheckContext<'_>,
-) -> EntryCheckResult {
-    if ctx.opts.allow_attrs.iter().any(|a| a.eq_ignore_ascii_case(name)) {
-        return EntryCheckResult::Allowed;
-    }
-
-    for entry in &ctx.opts.allow_entries {
-        if !entry.name.eq_ignore_ascii_case(name) {
-            continue;
-        }
-        return match &entry.constraint {
-            ValueConstraint::Any => EntryCheckResult::Allowed,
-            ValueConstraint::Enum(values) => {
-                if values.iter().any(|v| v == get_clean_value(html_attr)) {
-                    EntryCheckResult::Allowed
-                } else {
-                    let msg = if values.len() == 1 {
-                        format!("The \"{name}\" attribute expects {}", values[0])
-                    } else {
-                        let list = values.iter().map(|v| format!("\"{v}\"")).collect::<Vec<_>>().join(", ");
-                        format!("The \"{name}\" attribute expects either {list}")
-                    };
-                    EntryCheckResult::Violated(attr_value_violation(ctx, html_attr, msg))
-                }
-            }
-            ValueConstraint::Pattern(re, original) => {
-                if re.is_match(get_clean_value(html_attr)) {
-                    EntryCheckResult::Allowed
-                } else {
-                    EntryCheckResult::Violated(attr_value_violation(
-                        ctx,
-                        html_attr,
-                        format!("The \"{name}\" attribute expects regular expression ({original})"),
-                    ))
-                }
-            }
-            ValueConstraint::Type(type_name) => {
-                if check_type_constraint(get_clean_value(html_attr), type_name) {
-                    EntryCheckResult::Allowed
-                } else {
-                    // Run full type validation to get TS-compatible error message
-                    let type_json = serde_json::Value::String(type_name.clone());
-                    let violation = check_attr_value_type(name, html_attr, &type_json, ctx);
-                    if let Some(v) = violation {
-                        return EntryCheckResult::Violated(v);
-                    }
-                    EntryCheckResult::Violated(attr_value_violation(
-                        ctx,
-                        html_attr,
-                        format!("The \"{name}\" attribute value is invalid"),
-                    ))
-                }
-            }
-        };
-    }
-
-    EntryCheckResult::NotInList
-}
-
-fn check_disallow(
-    name: &str,
-    html_attr: &markuplint_core::mlast::MLASTHTMLAttr,
-    ctx: &AttrCheckContext<'_>,
-) -> EntryCheckResult {
-    // A bare disallow attr is always disallowed (equivalent to `constraint = Any`).
-    if ctx.opts.disallow_attrs.iter().any(|a| a.eq_ignore_ascii_case(name)) {
-        return EntryCheckResult::Violated(attr_violation(
-            ctx,
-            html_attr,
-            format!("The \"{name}\" attribute is disallowed"),
-        ));
-    }
-
-    for entry in &ctx.opts.disallow_entries {
-        if !entry.name.eq_ignore_ascii_case(name) {
-            continue;
-        }
-        return match &entry.constraint {
-            ValueConstraint::Any => EntryCheckResult::Violated(attr_violation(
-                ctx,
-                html_attr,
-                format!("The \"{name}\" attribute is disallowed"),
-            )),
-            ValueConstraint::Enum(values) => {
-                if values.iter().any(|v| v == get_clean_value(html_attr)) {
-                    EntryCheckResult::Violated(attr_value_violation(
-                        ctx,
-                        html_attr,
-                        format!(
-                            "The \"{name}\" attribute is disallowed to accept the following values: {}",
-                            values.iter().map(|v| format!("\"{v}\"")).collect::<Vec<_>>().join(", ")
-                        ),
-                    ))
-                } else {
-                    EntryCheckResult::Allowed // Value not in disallowed enum
-                }
-            }
-            ValueConstraint::Pattern(re, original) => {
-                if re.is_match(get_clean_value(html_attr)) {
-                    EntryCheckResult::Violated(attr_value_violation(
-                        ctx,
-                        html_attr,
-                        format!("The \"{name}\" attribute is matched with the below disallowed patterns: {original}"),
-                    ))
-                } else {
-                    EntryCheckResult::Allowed // Value doesn't match pattern
-                }
-            }
-            ValueConstraint::Type(type_name) => {
-                if check_type_constraint(get_clean_value(html_attr), type_name) {
-                    EntryCheckResult::Violated(attr_value_violation(
-                        ctx,
-                        html_attr,
-                        format!("The type of the \"{name}\" attribute is disallowed"),
-                    ))
-                } else {
-                    EntryCheckResult::Allowed // Value doesn't match type
-                }
-            }
-        };
-    }
-
-    EntryCheckResult::NotInList
-}
-
-fn check_spec_validation(
-    name: &str,
-    name_lower: &str,
-    html_attr: &markuplint_core::mlast::MLASTHTMLAttr,
-    ctx: &AttrCheckContext<'_>,
-) -> Option<Violation> {
-    // Case-insensitive lookup so SVG mixed-case attrs like `viewBox` are found.
-    let attr_spec = ctx.attr_specs.get(name_lower).copied().or_else(|| {
-        ctx.attr_specs
-            .iter()
-            .find(|(k, _)| k.eq_ignore_ascii_case(name_lower))
-            .map(|(_, v)| *v)
-    });
-
-    if let Some(spec) = attr_spec {
-        if let Some(spec_name) = &spec.name {
-            let has_uppercase = spec_name.chars().any(|c| c.is_ascii_uppercase());
-            if has_uppercase && name != spec_name {
-                return Some(attr_violation(
-                    ctx,
-                    html_attr,
-                    format!("The \"{name}\" attribute is disallowed. Did you mean \"{spec_name}\"?"),
-                ));
-            }
-        }
-
-        if spec.no_use == Some(true) {
-            return Some(attr_full_violation(
-                ctx,
-                html_attr,
-                format!("The \"{name}\" attribute is disallowed"),
-            ));
-        }
-
-        if spec
-            .condition
-            .as_ref()
-            .is_some_and(|cond| !matches_condition(cond, ctx.arena, ctx.node_id, ctx.spec))
-        {
-            return Some(attr_violation(
-                ctx,
-                html_attr,
-                format!("The \"{name}\" attribute is disallowed"),
-            ));
-        }
-
-        // An element-specific attr with no type falls back to the global attr type
-        // (e.g. `referrerpolicy` on `<a>` is typed in the `#HTMLLinkAndFetchingAttrs` category).
-        let effective_type = if spec.attr_type.is_null()
-            || (spec.attr_type.is_object() && spec.attr_type.as_object().unwrap().is_empty())
-        {
-            get_global_attr_type(ctx.spec, ctx.el_name, name_lower).unwrap_or(serde_json::Value::Null)
-        } else {
-            spec.attr_type.clone()
-        };
-        if let Some(violation) = check_attr_value_type(name, html_attr, &effective_type, ctx) {
-            return Some(violation);
-        }
-
-        return None;
-    }
-
-    if ctx.global_attr_names.iter().any(|a| a == name_lower) {
-        let (no_use, condition) = check_global_attr_flags(ctx.spec, ctx.el_name, name_lower);
-        if no_use {
-            return Some(attr_full_violation(
-                ctx,
-                html_attr,
-                format!("The \"{name}\" attribute is disallowed"),
-            ));
-        }
-        if condition
-            .as_ref()
-            .is_some_and(|cond| !matches_condition(cond, ctx.arena, ctx.node_id, ctx.spec))
-        {
-            return Some(attr_violation(
-                ctx,
-                html_attr,
-                format!("The \"{name}\" attribute is disallowed"),
-            ));
-        }
-        if let Some(type_val) = get_global_attr_type(ctx.spec, ctx.el_name, name_lower)
-            && let Some(violation) = check_attr_value_type(name, html_attr, &type_val, ctx)
-        {
-            return Some(violation);
-        }
-        return None;
-    }
-
-    if ctx.opts.allow_to_add_properties_for_pretender
-        && get_spec(ctx.spec, ctx.el_name).is_some_and(|s| s.possible_to_add_properties == Some(true))
-    {
-        return None;
-    }
-
-    // If the element itself is not in the spec AND is not a custom element
-    // (e.g., SVG elements like feFlood that the HTML parser doesn't recognize as
-    // foreign), skip unknown attr reporting. Custom elements (containing '-') are
-    // HTML elements that should still be checked.
-    if get_spec(ctx.spec, ctx.el_name).is_none() && !ctx.el_name.contains('-') {
-        return None;
-    }
-
-    let mut known: Vec<&str> = ctx.attr_specs.keys().copied().collect();
-    for ga in ctx.global_attr_names {
-        known.push(ga.as_str());
-    }
-    let message = match find_closest_match(name_lower, &known) {
-        Some(candidate) => format!("The \"{name}\" attribute is disallowed. Did you mean \"{candidate}\"?"),
-        None => format!("The \"{name}\" attribute is disallowed"),
-    };
-
-    Some(attr_violation(ctx, html_attr, message))
 }
 
 fn matches_condition(condition: &AttributeCondition, arena: &DomArena, node_id: NodeId, spec: &MLMLSpec) -> bool {
@@ -601,33 +389,18 @@ fn condition_selector(condition: &serde_json::Value) -> Option<String> {
     }
 }
 
-fn check_global_attr_flags(spec: &MLMLSpec, element_name: &str, attr_name: &str) -> (bool, Option<AttributeCondition>) {
-    let Some(el) = get_spec(spec, element_name) else {
-        return (false, None);
-    };
-    for category in el.global_attrs.keys() {
-        if category == "#ARIAAttrs" || category == "#GlobalEventAttrs" {
-            continue;
-        }
-        if let Some(attrs_map) = spec.def.global_attrs.get(category)
-            && let Some(attr_val) = attrs_map.get(attr_name)
-        {
-            let no_use = attr_val
-                .get("noUse")
-                .and_then(serde_json::Value::as_bool)
-                .unwrap_or(false);
-            let condition = attr_val
-                .get("condition")
-                .and_then(|v| serde_json::from_value::<AttributeCondition>(v.clone()).ok());
-            return (no_use, condition);
-        }
-    }
-    (false, None)
+fn global_attr_no_use(def: &serde_json::Value) -> bool {
+    def.get("noUse").and_then(serde_json::Value::as_bool).unwrap_or(false)
+}
+
+fn global_attr_condition(def: &serde_json::Value) -> Option<AttributeCondition> {
+    def.get("condition")
+        .and_then(|v| serde_json::from_value::<AttributeCondition>(v.clone()).ok())
 }
 
 /// Get the clean attribute value, stripping trailing `>` and whitespace
 /// that the parser may include in unquoted attribute values.
-fn get_clean_value(html_attr: &markuplint_core::mlast::MLASTHTMLAttr) -> &str {
+pub(crate) fn get_clean_value(html_attr: &markuplint_core::mlast::MLASTHTMLAttr) -> &str {
     let raw = &html_attr.value.raw;
     // A quoted value is already clean; only unquoted values pick up trailing `>`/whitespace.
     if !html_attr.start_quote.raw.is_empty() {
@@ -642,7 +415,7 @@ fn get_clean_value(html_attr: &markuplint_core::mlast::MLASTHTMLAttr) -> &str {
 /// the full type validation system. Returns violations for each failing
 /// type alternative (matching TS behavior where each alternative error
 /// is reported separately).
-fn check_attr_value_type(
+pub(crate) fn check_attr_value_type(
     name: &str,
     html_attr: &markuplint_core::mlast::MLASTHTMLAttr,
     attr_type: &serde_json::Value,
@@ -858,24 +631,27 @@ fn keyword_type_description(type_name: &str) -> Option<&str> {
     }
 }
 
-/// Get the type definition of a global attribute from the raw JSON spec.
-fn get_global_attr_type(spec: &MLMLSpec, element_name: &str, attr_name: &str) -> Option<serde_json::Value> {
+/// The raw definition of a global attribute the element enables, from the category of
+/// `globalAttrs` it belongs to. A category enabled with an array enables only the
+/// attributes it lists; `#ARIAAttrs` and `#GlobalEventAttrs` are checked elsewhere.
+fn find_global_attr<'a>(spec: &'a MLMLSpec, element_name: &str, attr_name: &str) -> Option<&'a serde_json::Value> {
     let el = get_spec(spec, element_name)?;
     for (category, cat_value) in &el.global_attrs {
         if category == "#ARIAAttrs" || category == "#GlobalEventAttrs" {
             continue;
         }
-        // Check if this element uses only a subset of the category's attrs.
-        // If cat_value is an array, only those listed attrs are enabled.
         if let Some(arr) = cat_value.as_array()
             && !arr.iter().any(|v| v.as_str() == Some(attr_name))
         {
             continue;
         }
-        if let Some(attrs_map) = spec.def.global_attrs.get(category)
-            && let Some(attr_val) = attrs_map.get(attr_name)
+        if let Some(attr_val) = spec
+            .def
+            .global_attrs
+            .get(category)
+            .and_then(|attrs_map| attrs_map.get(attr_name))
         {
-            return attr_val.get("type").cloned();
+            return Some(attr_val);
         }
     }
     None
@@ -883,7 +659,7 @@ fn get_global_attr_type(spec: &MLMLSpec, element_name: &str, attr_name: &str) ->
 
 /// Parse a value constraint from a JSON value specification.
 /// Handles: `"Any"`, `{ enum: [...] }`, `{ pattern: "..." }`, `"TypeName"`.
-fn parse_value_constraint(value: &serde_json::Value) -> ValueConstraint {
+pub(crate) fn parse_value_constraint(value: &serde_json::Value) -> ValueConstraint {
     match value {
         serde_json::Value::String(s) => {
             if s == "Any" {
@@ -911,7 +687,7 @@ fn parse_value_constraint(value: &serde_json::Value) -> ValueConstraint {
 
 /// Parse the `allowAttrs` option.
 /// Formats: `string[]`, `[{ name, value }]`, `{ name: type }`.
-fn parse_allow_attrs(options: &serde_json::Value) -> (Vec<String>, Vec<AllowEntry>) {
+pub(crate) fn parse_allow_attrs(options: &serde_json::Value) -> (Vec<String>, Vec<AttrEntry>) {
     let mut simple = Vec::new();
     let mut entries = Vec::new();
 
@@ -922,7 +698,7 @@ fn parse_allow_attrs(options: &serde_json::Value) -> (Vec<String>, Vec<AllowEntr
                     simple.push(s.to_string());
                 } else if let Some(name) = v.get("name").and_then(serde_json::Value::as_str) {
                     if let Some(value_spec) = v.get("value") {
-                        entries.push(AllowEntry {
+                        entries.push(AttrEntry {
                             name: name.to_string(),
                             constraint: parse_value_constraint(value_spec),
                         });
@@ -934,7 +710,7 @@ fn parse_allow_attrs(options: &serde_json::Value) -> (Vec<String>, Vec<AllowEntr
         }
         Some(serde_json::Value::Object(obj)) => {
             for (name, type_val) in obj {
-                entries.push(AllowEntry {
+                entries.push(AttrEntry {
                     name: name.clone(),
                     constraint: parse_value_constraint(type_val),
                 });
@@ -948,7 +724,7 @@ fn parse_allow_attrs(options: &serde_json::Value) -> (Vec<String>, Vec<AllowEntr
 
 /// Parse the `disallowAttrs` option.
 /// Formats: `string[]`, `[{ name, value }]`, `{ name: constraint }`.
-fn parse_disallow_attrs(options: &serde_json::Value) -> (Vec<String>, Vec<DisallowEntry>) {
+pub(crate) fn parse_disallow_attrs(options: &serde_json::Value) -> (Vec<String>, Vec<AttrEntry>) {
     let mut simple = Vec::new();
     let mut entries = Vec::new();
 
@@ -959,12 +735,12 @@ fn parse_disallow_attrs(options: &serde_json::Value) -> (Vec<String>, Vec<Disall
                     simple.push(s.to_string());
                 } else if let Some(name) = v.get("name").and_then(serde_json::Value::as_str) {
                     if let Some(value_spec) = v.get("value") {
-                        entries.push(DisallowEntry {
+                        entries.push(AttrEntry {
                             name: name.to_string(),
                             constraint: parse_value_constraint(value_spec),
                         });
                     } else {
-                        entries.push(DisallowEntry {
+                        entries.push(AttrEntry {
                             name: name.to_string(),
                             constraint: ValueConstraint::Any,
                         });
@@ -974,7 +750,7 @@ fn parse_disallow_attrs(options: &serde_json::Value) -> (Vec<String>, Vec<Disall
         }
         Some(serde_json::Value::Object(obj)) => {
             for (name, type_val) in obj {
-                entries.push(DisallowEntry {
+                entries.push(AttrEntry {
                     name: name.clone(),
                     constraint: parse_value_constraint(type_val),
                 });
@@ -1010,7 +786,7 @@ fn parse_regex_pattern(pattern: &str) -> Option<Regex> {
     }
 }
 
-fn check_type_constraint(value: &str, type_name: &str) -> bool {
+pub(crate) fn check_type_constraint(value: &str, type_name: &str) -> bool {
     match type_name {
         "Int" | "Integer" => value.parse::<i64>().is_ok(),
         "Float" | "Number" => value.parse::<f64>().is_ok(),
@@ -1020,7 +796,7 @@ fn check_type_constraint(value: &str, type_name: &str) -> bool {
     }
 }
 
-fn parse_ignore_prefixes(options: &serde_json::Value) -> Vec<String> {
+pub(crate) fn parse_ignore_prefixes(options: &serde_json::Value) -> Vec<String> {
     match options.get("ignoreAttrNamePrefix") {
         Some(serde_json::Value::String(s)) => vec![s.to_ascii_lowercase()],
         Some(serde_json::Value::Array(arr)) => arr
@@ -1060,7 +836,7 @@ fn get_global_attr_names(spec: &MLMLSpec, element_name: &str) -> Vec<String> {
     names
 }
 
-fn find_closest_match<'a>(name: &str, candidates: &[&'a str]) -> Option<&'a str> {
+pub(crate) fn find_closest_match<'a>(name: &str, candidates: &[&'a str]) -> Option<&'a str> {
     let mut best: Option<(&str, usize)> = None;
 
     for candidate in candidates {

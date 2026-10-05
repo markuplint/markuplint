@@ -70,7 +70,7 @@ pub fn get_attr_specs<'a>(spec: &'a MLMLSpec, element_name: &str) -> HashMap<&'a
     // Blocked: `SpecDefs.global_attrs` inner values are `serde_json::Value`, not `Attribute`.
     // The JSON structure for global attrs differs from element-specific attrs (uses partial
     // attribute definitions), so typing requires a `PartialAttribute` or flexible deserializer.
-    // Tracked in #3521. Needed when ARIA rules or `invalid-attr` access global attrs.
+    // Tracked in #3521. Needed when ARIA rules or the attribute rules (`attr_check`) access global attrs.
 
     result
 }

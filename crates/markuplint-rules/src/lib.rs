@@ -18,6 +18,7 @@
 
 pub mod aria;
 pub mod aria_resolver_impl;
+pub mod attr_check;
 pub mod content_model;
 pub mod helpers;
 pub mod lint;

@@ -18,7 +18,6 @@ use crate::rules::class_naming::ClassNaming;
 use crate::rules::deprecated_attr::DeprecatedAttr;
 use crate::rules::deprecated_element::DeprecatedElement;
 use crate::rules::doctype::Doctype;
-use crate::rules::invalid_attr::InvalidAttr;
 use crate::rules::label_has_control::LabelHasControl;
 use crate::rules::landmark_roles::LandmarkRoles;
 use crate::rules::link_types::LinkTypes;
@@ -26,6 +25,7 @@ use crate::rules::no_ambiguous_navigable_target_names::NoAmbiguousNavigableTarge
 use crate::rules::no_boolean_attr_value::NoBooleanAttrValue;
 use crate::rules::no_consecutive_br::NoConsecutiveBr;
 use crate::rules::no_default_value::NoDefaultValue;
+use crate::rules::no_disallowed_attr::NoDisallowedAttr;
 use crate::rules::no_duplicate_attr::NoDuplicateAttr;
 use crate::rules::no_duplicate_dt::NoDuplicateDt;
 use crate::rules::no_duplicate_id::NoDuplicateId;
@@ -33,12 +33,15 @@ use crate::rules::no_empty_palpable_content::NoEmptyPalpableContent;
 use crate::rules::no_event_handler_attr::NoEventHandlerAttr;
 use crate::rules::no_hardcoded_id::NoHardcodedId;
 use crate::rules::no_ineffective_attr::NoIneffectiveAttr;
+use crate::rules::no_invalid_attr_value::NoInvalidAttrValue;
 use crate::rules::no_orphaned_end_tag::NoOrphanedEndTag;
 use crate::rules::no_pseudo_list::NoPseudoList;
 use crate::rules::no_redundant_accessible_name::NoRedundantAccessibleName;
 use crate::rules::no_refer_to_non_existent_id::NoReferToNonExistentId;
+use crate::rules::no_restricted_attr::NoRestrictedAttr;
 use crate::rules::no_restricted_element::NoRestrictedElement;
 use crate::rules::no_skipped_heading_level::NoSkippedHeadingLevel;
+use crate::rules::no_unknown_attr::NoUnknownAttr;
 use crate::rules::no_unsupported_features::NoUnsupportedFeatures;
 use crate::rules::permitted_contents::PermittedContents;
 use crate::rules::placeholder_label_option::PlaceholderLabelOption;
@@ -95,7 +98,7 @@ pub fn lint(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig) -> LintResul
 
     // The index must accept plain keys ("no-duplicate-attr"), namespaced keys
     // ("html-standard/no-duplicate-attr"), and NamedRuleGroup entries
-    // ("a11y/no-accesskey": { rules: { "invalid-attr": { options: ... } } }).
+    // ("a11y/no-accesskey": { rules: { "no-restricted-attr": { options: ... } } }).
     // NamedRuleGroups are expanded inline: the inner rules are indexed by their
     // base rule ID, with the alias name preserved for violation ruleIds.
 
@@ -391,8 +394,8 @@ fn is_named_rule_group(value: &Value) -> bool {
     }
 }
 
-/// For a `NamedRuleGroup` entry like `"a11y/no-accesskey": { rules: { "invalid-attr": { options: ... } } }`:
-/// - Single non-false inner rule: alias = outer key (`a11y/no-accesskey`), base = inner key (`invalid-attr`)
+/// For a `NamedRuleGroup` entry like `"a11y/no-accesskey": { rules: { "no-restricted-attr": { options: ... } } }`:
+/// - Single non-false inner rule: alias = outer key (`a11y/no-accesskey`), base = inner key (`no-restricted-attr`)
 /// - Multiple non-false inner rules: alias = `outer_key/inner_key`, base = inner key
 ///
 /// The group-level `severity` is inherited by inner rules that don't specify their own.
@@ -548,7 +551,10 @@ fn get_all_rules() -> Vec<Box<dyn Rule>> {
         Box::new(RequiredH1),
         Box::new(TableRowColumnAlignment),
         Box::new(NoPseudoList),
-        Box::new(InvalidAttr),
+        Box::new(NoUnknownAttr),
+        Box::new(NoDisallowedAttr),
+        Box::new(NoInvalidAttrValue),
+        Box::new(NoRestrictedAttr),
         Box::new(WaiAria),
     ]
 }
@@ -1259,19 +1265,19 @@ mod tests {
         assert!(ra_violations[0].message.contains("role"));
     }
 
-    // --- invalid-attr nodeRules tests ---
+    // --- no-invalid-attr-value / no-restricted-attr nodeRules tests ---
 
     #[test]
-    fn node_rules_invalid_attr_custom_element_allow_with_type() {
+    fn node_rules_no_invalid_attr_value_custom_element_allow_with_type() {
         // Port of TS: custom element with allowAttrs { "any-attr": "Int" }
         let arena = html_arena(r#"<custom-element any-attr="any-string"></custom-element>"#);
         let spec = html_spec();
         let config: LintConfig = serde_json::from_value(serde_json::json!({
-            "rules": { "invalid-attr": true },
+            "rules": { "no-invalid-attr-value": true },
             "nodeRules": [{
                 "selector": "custom-element",
                 "rules": {
-                    "invalid-attr": {
+                    "no-invalid-attr-value": {
                         "options": {
                             "allowAttrs": { "any-attr": "Int" }
                         }
@@ -1285,28 +1291,28 @@ mod tests {
         let ia_violations: Vec<_> = result
             .violations
             .iter()
-            .filter(|v| v.rule_id == "invalid-attr")
+            .filter(|v| v.rule_id == "no-invalid-attr-value")
             .collect();
         // "any-string" is not a valid Int → violation
         assert_eq!(
             ia_violations.len(),
             1,
-            "Expected 1 invalid-attr violation, got: {ia_violations:?}"
+            "Expected 1 no-invalid-attr-value violation, got: {ia_violations:?}"
         );
     }
 
     #[test]
-    fn node_rules_invalid_attr_viewport_disallow_pattern() {
+    fn node_rules_no_restricted_attr_viewport_disallow_pattern() {
         // Port of TS: #716 — disallow user-scalable=no in viewport meta
         let arena =
             html_arena(r#"<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">"#);
         let spec = html_spec();
         let config: LintConfig = serde_json::from_value(serde_json::json!({
-            "rules": { "invalid-attr": true },
+            "rules": { "no-restricted-attr": true },
             "nodeRules": [{
                 "selector": "meta[name='viewport' i]",
                 "rules": {
-                    "invalid-attr": {
+                    "no-restricted-attr": {
                         "options": {
                             "disallowAttrs": [{
                                 "name": "content",
@@ -1325,7 +1331,7 @@ mod tests {
         let ia_violations: Vec<_> = result
             .violations
             .iter()
-            .filter(|v| v.rule_id == "invalid-attr")
+            .filter(|v| v.rule_id == "no-restricted-attr")
             .collect();
         assert_eq!(
             ia_violations.len(),
@@ -1340,16 +1346,16 @@ mod tests {
     }
 
     #[test]
-    fn node_rules_invalid_attr_viewport_no_violation_when_allowed() {
+    fn node_rules_no_restricted_attr_viewport_no_violation_when_allowed() {
         // No user-scalable in content → no violation
         let arena = html_arena(r#"<meta name="viewport" content="width=device-width, initial-scale=1">"#);
         let spec = html_spec();
         let config: LintConfig = serde_json::from_value(serde_json::json!({
-            "rules": { "invalid-attr": true },
+            "rules": { "no-restricted-attr": true },
             "nodeRules": [{
                 "selector": "meta[name='viewport' i]",
                 "rules": {
-                    "invalid-attr": {
+                    "no-restricted-attr": {
                         "options": {
                             "disallowAttrs": [{
                                 "name": "content",
@@ -1368,7 +1374,7 @@ mod tests {
         let ia_violations: Vec<_> = result
             .violations
             .iter()
-            .filter(|v| v.rule_id == "invalid-attr")
+            .filter(|v| v.rule_id == "no-restricted-attr")
             .collect();
         assert_eq!(ia_violations.len(), 0, "Expected 0 violations, got: {ia_violations:?}");
     }
@@ -1713,7 +1719,7 @@ mod tests {
 
     #[test]
     fn named_rule_group_single_entry_expands() {
-        // "a11y/no-accesskey" is a NamedRuleGroup wrapping invalid-attr with disallowAttrs
+        // "a11y/no-accesskey" is a NamedRuleGroup wrapping no-restricted-attr with disallowAttrs
         let arena = html_arena(r#"<body accesskey="x"></body>"#);
         let spec = html_spec();
         let config: LintConfig = serde_json::from_value(serde_json::json!({
@@ -1721,7 +1727,7 @@ mod tests {
                 "a11y/no-accesskey": {
                     "specConformance": "non-normative",
                     "rules": {
-                        "invalid-attr": {
+                        "no-restricted-attr": {
                             "options": {
                                 "disallowAttrs": ["accesskey"]
                             }
@@ -1738,7 +1744,7 @@ mod tests {
             "Expected violation for disallowed accesskey attr"
         );
         assert_eq!(
-            result.violations[0].rule_id, "invalid-attr",
+            result.violations[0].rule_id, "no-restricted-attr",
             "ruleId should be the base rule name"
         );
         assert_eq!(
@@ -1910,7 +1916,7 @@ mod tests {
         })));
         assert!(is_named_rule_group(&serde_json::json!({
             "severity": "warning",
-            "rules": { "invalid-attr": { "options": {} } }
+            "rules": { "no-restricted-attr": { "options": {} } }
         })));
 
         // Negative cases
@@ -2075,7 +2081,7 @@ mod tests {
                     "name": "a11y/no-autofocus-outside-dialog",
                     "selector": ":where(:not(dialog, dialog *))",
                     "rules": {
-                        "invalid-attr": {
+                        "no-restricted-attr": {
                             "options": {
                                 "disallowAttrs": ["autofocus"]
                             }
@@ -2101,7 +2107,10 @@ mod tests {
                 .map(|v| (&v.rule_id, &v.name))
                 .collect::<Vec<_>>()
         );
-        assert_eq!(named[0].rule_id, "invalid-attr", "ruleId should be base rule name");
+        assert_eq!(
+            named[0].rule_id, "no-restricted-attr",
+            "ruleId should be base rule name"
+        );
     }
 
     #[test]

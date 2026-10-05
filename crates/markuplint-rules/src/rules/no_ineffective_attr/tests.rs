@@ -51,5 +51,5 @@ fn no_ineffective_attr_invalid_001() {
 // `no-ineffective-attr-invalid-002` (defer on type=module) was removed here for the same
 // reason as on the TS side: HTML LS §4.12.1 ("Module scripts ... must not specify the
 // defer attribute") landed in `spec.script.jsonc`, so module+defer is disallowed rather
-// than ineffective, and `invalid_attr_issue_3631_006` covers it. The numbering gap is
+// than ineffective, and `no_disallowed_attr_issue_3631_006` covers it. The numbering gap is
 // intentional; do not renumber later tests.
