@@ -12,6 +12,8 @@ export interface ComponentScanResult {
 	readonly slotWrappers?: readonly ComponentScanSlotWrapper[];
 	readonly rootContents?: readonly ComponentScanContent[];
 	readonly scriptSource?: ComponentScanScriptSource;
+	readonly spreads?: readonly string[];
+	readonly hasSiblingRoots?: true;
 	readonly namespace?: 'svg';
 	readonly line?: number;
 	readonly col?: number;
@@ -26,6 +28,8 @@ export interface ComponentScanAttr {
 	readonly value?: string;
 	/** The attribute is present and its value is an expression, unknown at scan time. `value` is omitted. */
 	readonly dynamic?: true;
+	/** The source of the expression of a `dynamic` attribute that is written as one expression. */
+	readonly expression?: string;
 }
 
 /**
@@ -65,13 +69,50 @@ function extractComponentInfo(
 		return null;
 	}
 
+	const spreads = extractSpreads(root);
 	return {
 		rootElement: root.nodeName,
 		attrs: extractAttrs(root),
+		...(spreads.length > 0 ? { spreads } : {}),
+		...(hasSiblingRoots(doc, root) ? { hasSiblingRoots: true as const } : {}),
 		namespace: root.namespace === 'http://www.w3.org/2000/svg' ? 'svg' : undefined,
 		line: root.line,
 		col: root.col,
 	};
+}
+
+/**
+ * The expressions of `v-bind="expr"` (without an argument), which gives the element the
+ * attributes of an object. `v-bind="$attrs"` is what the component receives and does not
+ * declare as props.
+ */
+function extractSpreads(el: MLASTElement): string[] {
+	return el.attributes.flatMap(attr =>
+		attr.type === 'attr' && attr.nodeName === 'v-bind' && attr.value.raw.trim() !== ''
+			? [attr.value.raw.trim()]
+			: [],
+	);
+}
+
+/**
+ * Another root beside the root element: an element (`v-else-if` / `v-else` continue the
+ * `v-if` before them and are not another root), text, or an interpolation such as `{{ x }}`.
+ */
+function hasSiblingRoots(doc: MLASTDocument, root: MLASTElement): boolean {
+	return doc.nodeList.some(n => {
+		if (n.uuid === root.uuid) {
+			return false;
+		}
+		if (n.type === 'text' || n.type === 'psblock') {
+			return n.depth === 0 && n.raw.trim() !== '';
+		}
+		return (
+			n.type === 'starttag' &&
+			n.depth === 0 &&
+			!n.isFragment &&
+			!n.attributes.some(attr => attr.type === 'attr' && /^v-else(?:-if)?$/.test(attr.nodeName))
+		);
+	});
 }
 
 function isSlotNode(n: MLASTChildNode): boolean {
@@ -109,7 +150,8 @@ function extractAttrs(el: MLASTElement): ComponentScanAttr[] {
 		const binding = BINDING.exec(attr.nodeName)?.[1]?.toLowerCase();
 		if (binding) {
 			if (!SPECIAL_PROPS.has(binding)) {
-				addAttr(attrs, { name: binding, dynamic: true });
+				const expression = attr.value.raw.trim();
+				addAttr(attrs, { name: binding, dynamic: true, ...(expression === '' ? {} : { expression }) });
 			}
 			continue;
 		}
@@ -128,14 +170,16 @@ function extractAttrs(el: MLASTElement): ComponentScanAttr[] {
 
 /**
  * One name written in two forms (`class="btn" :class="x"`) is one attribute: dynamic
- * when any of the forms is, in the position of the first.
+ * when any of the forms is, in the position of the first. It is not one expression any
+ * more, so it has no `expression`.
  */
 function addAttr(attrs: ComponentScanAttr[], attr: ComponentScanAttr) {
 	const index = attrs.findIndex(existing => existing.name === attr.name);
-	if (index === -1) {
+	const existing = attrs[index];
+	if (!existing) {
 		attrs.push(attr);
-	} else if (attr.dynamic) {
-		attrs[index] = attr;
+	} else if (existing.dynamic || attr.dynamic) {
+		attrs[index] = { name: attr.name, dynamic: true };
 	}
 }
 

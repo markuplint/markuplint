@@ -4035,63 +4035,82 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 
 	/**
 	 * Converts pretender attributes to AST attributes for a virtual element.
-	 * `{ fromAttr }` reads this (the origin) element's attribute; `{ dynamic: true }`
-	 * yields an attribute flagged `isDynamicValue`, which rules do not validate.
+	 *
+	 * `{ fromAttr }` reads this (the origin) element's attribute. When that attribute is an
+	 * expression (`kind={kind}`), the result is dynamic as well: the value the component
+	 * receives is unknown, and the source text of the expression is not a value to validate.
+	 * When the attribute is not written and `omitIfMissing` is set, the virtual element gets
+	 * no such attribute, as a component that forwards an `undefined` prop renders none.
+	 * Without `omitIfMissing`, it is an empty attribute.
+	 *
+	 * `{ dynamic: true }` yields an attribute flagged `isDynamicValue`, which rules do not
+	 * validate.
 	 */
 	#createPretenderAttrs(attrs: readonly PretenderAttr[], uuidBase: string): MLASTAttr[] {
-		return attrs.map(({ name, value }, i) => {
-			const isDynamic = value != null && typeof value === 'object' && 'dynamic' in value;
-			const _value =
-				value == null || isDynamic
-					? ''
-					: typeof value === 'string'
-						? value
-						: (this.getAttribute(value.fromAttr) ?? '');
-			return {
-				...this._astToken,
-				uuid: `${uuidBase}_attr_${i}`,
-				type: 'attr',
-				nodeName: name,
-				spacesBeforeName: {
+		return attrs.flatMap(({ name, value }, i): MLASTAttr[] => {
+			let isDynamic = value != null && typeof value === 'object' && 'dynamic' in value;
+			let _value = '';
+			if (typeof value === 'string') {
+				_value = value;
+			} else if (value != null && 'fromAttr' in value) {
+				const fromAttr = value.fromAttr.toLowerCase();
+				const origin = this.#attributes.find(attr => attr.name.toLowerCase() === fromAttr);
+				if (!origin && value.omitIfMissing) {
+					return [];
+				}
+				if (origin?.isDynamicValue) {
+					isDynamic = true;
+				} else {
+					_value = origin?.value ?? '';
+				}
+			}
+			return [
+				{
 					...this._astToken,
-					raw: '',
-				},
-				name: {
-					...this._astToken,
-					raw: name,
-				},
-				spacesBeforeEqual: {
-					...this._astToken,
-					raw: '',
-				},
-				equal: {
-					...this._astToken,
-					raw: '',
-				},
-				spacesAfterEqual: {
-					...this._astToken,
-					raw: '',
-				},
-				startQuote: {
-					...this._astToken,
-					raw: '',
-				},
-				value: {
-					...this._astToken,
-					raw: _value,
-				},
-				endQuote: {
-					...this._astToken,
-					raw: '',
-				},
-				isDuplicatable: true,
-				...(isDynamic ? { isDynamicValue: true } : {}),
-				parentNode: null,
-				nextNode: null,
-				prevNode: null,
-				isFragment: false,
-				isGhost: false,
-			} as MLASTAttr;
+					uuid: `${uuidBase}_attr_${i}`,
+					type: 'attr',
+					nodeName: name,
+					spacesBeforeName: {
+						...this._astToken,
+						raw: '',
+					},
+					name: {
+						...this._astToken,
+						raw: name,
+					},
+					spacesBeforeEqual: {
+						...this._astToken,
+						raw: '',
+					},
+					equal: {
+						...this._astToken,
+						raw: '',
+					},
+					spacesAfterEqual: {
+						...this._astToken,
+						raw: '',
+					},
+					startQuote: {
+						...this._astToken,
+						raw: '',
+					},
+					value: {
+						...this._astToken,
+						raw: _value,
+					},
+					endQuote: {
+						...this._astToken,
+						raw: '',
+					},
+					isDuplicatable: true,
+					...(isDynamic ? { isDynamicValue: true } : {}),
+					parentNode: null,
+					nextNode: null,
+					prevNode: null,
+					isFragment: false,
+					isGhost: false,
+				} as MLASTAttr,
+			];
 		});
 	}
 
@@ -4160,7 +4179,13 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		if (slots != null && slots !== true && slots.length > 0) {
 			const [slot] = slots;
 			if (slots.length > 1 || !slot) {
-				return { wrapper: null, mutable: false, fill: <C>(given: readonly C[]) => given };
+				// The wrapper of each child is unknown, so the children are not validated,
+				// but a slot may still render unknown content (which may be a name).
+				return {
+					wrapper: null,
+					mutable: slots.some(s => s.contents?.some(entry => 'dynamic' in entry) ?? false),
+					fill: <C>(given: readonly C[]) => given,
+				};
 			}
 			wrapper = this.#createVirtualElement(slot, `${this.uuid}_pretender_slot`, this.uuid, namespace);
 			contents = slot.contents ?? [{ slot: true }];

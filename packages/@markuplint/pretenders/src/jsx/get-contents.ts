@@ -1,4 +1,5 @@
 import type { Root } from './collect-roots.js';
+import type { PropResolver } from './resolve-prop.js';
 import type { ContentEntry, SlotInfo } from '../contents.js';
 import type { PretenderContent, Slot } from '@markuplint/ml-config';
 import type { JsxChild, JsxElement, JsxOpeningElement, JsxTagNameExpression, Node, SourceFile } from 'typescript';
@@ -26,11 +27,14 @@ const {
  *
  * Returns `undefined` when the pretender cannot express the component: a fragment
  * with several roots whose children are rendered inside one of the roots.
+ *
+ * `resolveProp` is for the attributes of the wrappers and the contents (see `getAttributes`).
  */
 export function getSlotInfo(
 	root: Root,
 	sourceFile: SourceFile,
 	isFragmentTag: (tag: string) => boolean,
+	resolveProp?: PropResolver,
 ): SlotInfo | undefined {
 	if (root.type === 'element' && isJsxSelfClosingElement(root.element)) {
 		return { slots: null, contents: [] };
@@ -43,11 +47,11 @@ export function getSlotInfo(
 	const others = [...wrappers].filter((wrapper): wrapper is JsxOpeningElement => wrapper !== null);
 
 	if (wrappers.size === 0) {
-		return { slots: null, contents: toContents(children, sourceFile, isFragmentTag) };
+		return { slots: null, contents: toContents(children, sourceFile, isFragmentTag, resolveProp) };
 	}
 
 	if (others.length === 0) {
-		return { slots: true, contents: toContents(children, sourceFile, isFragmentTag) };
+		return { slots: true, contents: toContents(children, sourceFile, isFragmentTag, resolveProp) };
 	}
 
 	if (!rootElement) {
@@ -55,8 +59,8 @@ export function getSlotInfo(
 	}
 
 	const slots = [
-		...(wrappers.has(null) ? [toSlot(rootElement, sourceFile, isFragmentTag)] : []),
-		...others.map(wrapper => toSlot(wrapper, sourceFile, isFragmentTag)),
+		...(wrappers.has(null) ? [toSlot(rootElement, sourceFile, isFragmentTag, resolveProp)] : []),
+		...others.map(wrapper => toSlot(wrapper, sourceFile, isFragmentTag, resolveProp)),
 	];
 	return { slots, contents: [] };
 }
@@ -130,14 +134,16 @@ function toContents(
 	children: readonly JsxChild[],
 	sourceFile: SourceFile,
 	isFragmentTag: (tag: string) => boolean,
+	resolveProp: PropResolver | undefined,
 ): PretenderContent[] {
-	return resolveTextEntries(collectContents(children, sourceFile, isFragmentTag));
+	return resolveTextEntries(collectContents(children, sourceFile, isFragmentTag, resolveProp));
 }
 
 function collectContents(
 	children: readonly JsxChild[],
 	sourceFile: SourceFile,
 	isFragmentTag: (tag: string) => boolean,
+	resolveProp: PropResolver | undefined,
 ): ContentEntry[] {
 	const contents: ContentEntry[] = [];
 
@@ -157,14 +163,14 @@ function collectContents(
 		}
 
 		if (isJsxFragment(child)) {
-			contents.push(...collectContents(child.children, sourceFile, isFragmentTag));
+			contents.push(...collectContents(child.children, sourceFile, isFragmentTag, resolveProp));
 			continue;
 		}
 
 		const opening = isJsxElement(child) ? child.openingElement : child;
 
 		if (isJsxElement(child) && isFragmentTag(opening.tagName.getText(sourceFile))) {
-			contents.push(...collectContents(child.children, sourceFile, isFragmentTag));
+			contents.push(...collectContents(child.children, sourceFile, isFragmentTag, resolveProp));
 			continue;
 		}
 
@@ -173,7 +179,7 @@ function collectContents(
 			continue;
 		}
 
-		const attrs = toPretenderAttrs(getAttributes(opening, sourceFile));
+		const attrs = toPretenderAttrs(getAttributes(opening, sourceFile, resolveProp));
 		contents.push({
 			element: opening.tagName.getText(sourceFile),
 			...(attrs.length > 0 ? { attrs } : {}),
@@ -187,14 +193,19 @@ function collectContents(
  * A native slot wrapper is described with its attributes and content. A component
  * has neither: what it renders is unknown here, so it stays a name that no spec knows.
  */
-function toSlot(opening: JsxOpeningElement, sourceFile: SourceFile, isFragmentTag: (tag: string) => boolean): Slot {
+function toSlot(
+	opening: JsxOpeningElement,
+	sourceFile: SourceFile,
+	isFragmentTag: (tag: string) => boolean,
+	resolveProp: PropResolver | undefined,
+): Slot {
 	const element = opening.tagName.getText(sourceFile);
 	if (!isIntrinsicTag(opening.tagName)) {
 		return { element };
 	}
 
-	const attrs = toPretenderAttrs(getAttributes(opening, sourceFile));
-	const contents = toContents((opening.parent as JsxElement).children, sourceFile, isFragmentTag);
+	const attrs = toPretenderAttrs(getAttributes(opening, sourceFile, resolveProp));
+	const contents = toContents((opening.parent as JsxElement).children, sourceFile, isFragmentTag, resolveProp);
 	return {
 		element,
 		...(attrs.length > 0 ? { attrs } : {}),

@@ -9,6 +9,7 @@
 
 import type { Root } from './collect-roots.js';
 import type { Draft } from './create-identify.js';
+import type { PropResolver } from './resolve-prop.js';
 import type { PretenderScanJSXOptions } from './types.js';
 import type { Pretender } from '@markuplint/ml-config';
 import type { FunctionDeclaration, JSDoc, Node, SourceFile, VariableDeclaration } from 'typescript';
@@ -29,6 +30,7 @@ import { createIdentity, mergeDrafts } from './create-identify.js';
 import { finder } from './finder.js';
 import { getAttributes, toPretenderAttrs } from './get-attributes.js';
 import { getSlotInfo } from './get-contents.js';
+import { createPropResolver } from './resolve-prop.js';
 
 const {
 	createProgram,
@@ -82,8 +84,17 @@ const defaultOptions: Required<Omit<PretenderScanJSXOptions, 'sources' | 'depend
  * `{children}`) and `contents` (the static children of that element), so that the children
  * given at the usage site are evaluated as the component renders them. A component that
  * renders another component is described by the element the latter renders, with its own
- * `slots` / `contents` composed in (see `composeIdentity`). Known limitation: its `attrs`,
- * `aria`, and `inheritAttrs` are not composed.
+ * `slots` / `contents` and attributes composed in (see `composeIdentity`).
+ *
+ * An attribute whose value is just a prop of the component (`aria-label={label}`,
+ * `aria-label={props.label}`) is `{ fromAttr: 'label', omitIfMissing: true }`: the attribute
+ * the usage site writes, absent when it does not write it (see `createPropResolver`).
+ * That is why the scanner never writes `aria`: `aria-label` and the like are attributes, and
+ * the accessible name algorithm computes the name from them, `aria-labelledby` included.
+ *
+ * Known limitation: a prop with a default value, an expression that does more than name
+ * the prop, and a prop of a component that is not the first parameter of the function stay
+ * `{ dynamic: true }`, so they are not validated.
  *
  * Supports:
  * - Function components (function declarations and arrow functions)
@@ -146,8 +157,9 @@ export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 			root: Root,
 			// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 			sourceFile: SourceFile,
+			resolveProp: PropResolver,
 		): Draft | undefined {
-			const info = getSlotInfo(root, sourceFile, isFragmentTag);
+			const info = getSlotInfo(root, sourceFile, isFragmentTag, resolveProp);
 			if (!info) {
 				return undefined;
 			}
@@ -162,7 +174,7 @@ export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 				return { element: '#fragment', attrs: [], hasSpread: false, ...info };
 			}
 
-			const attrs = getAttributes(root.element, sourceFile);
+			const attrs = getAttributes(root.element, sourceFile, resolveProp);
 			return {
 				element: root.element.tagName.getText(sourceFile),
 				attrs: toPretenderAttrs(attrs),
@@ -260,10 +272,11 @@ export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 			if (fn) {
 				const drafts: Draft[] = [];
 				let representable = true;
+				const resolveProp = createPropResolver(fn);
 
 				for (const expression of collectReturnExpressions(fn)) {
 					for (const branch of resolveRoots(expression, sourceFile, isFragmentTag)) {
-						const draft = toDraft(branch, sourceFile);
+						const draft = toDraft(branch, sourceFile, resolveProp);
 						if (draft) {
 							drafts.push(draft);
 						} else {

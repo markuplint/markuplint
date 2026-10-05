@@ -980,7 +980,8 @@ const MyPicture = () => {
 属性値を受け取ります。省略可能です。省略した場合、その属性は真偽値属性になります。
 
 - **文字列**: 静的な値です。
-- **`{ "fromAttr": "name" }`**: コンポーネントが持つ属性の値です。
+- **`{ "fromAttr": "name" }`**: コンポーネントが持つ属性の値です。その属性が式（`<MyButton kind={kind} />`）であれば、値も動的になります。コンポーネントがその属性を持たない場合、要素はその属性を空の値で持ちます。
+- **`{ "fromAttr": "name", "omitIfMissing": true }`**: 同上ですが、コンポーネントがその属性を持たない場合、要素もその属性を持ちません。省略可能なpropをそのまま渡すコンポーネントが描画する結果です（`<button type={kind}>`は`kind`が`undefined`のとき`type`を持ちません）。
 - **`{ "dynamic": true }`**: 属性は存在しますが、値はコンポーネントがレンダリングされるまで分からない場合（例：`tabIndex={selected ? 0 : -1}`）に指定します。ルールは動的な値として扱い、検証しません。
 
 #### `as.aria`
@@ -1151,7 +1152,7 @@ const Details = ({ children }) => <details>{children}</details>;
 
 `<Picture />`は、コンポーネント自身が`img`要素をレンダリングするため、`img`要素の欠如は報告されません。`<Details></Details>`は、`summary`要素を用意できるのは使用側だけなので、`summary`要素の欠如が報告されます。
 
-現在、`contents`を利用するのは`permitted-contents`と、アクセシブルな名前の算出（`require-accessible-name`などが利用）だけです。名前の算出では、`{ "dynamic": true }`は名前の出どころになりません。また`slots`が`null`のコンポーネントに渡された子要素は使われません。要素の子を参照するほかのルールには、コンポーネントに渡された子要素だけが見えます。
+現在、`contents`を利用するのは`permitted-contents`、`require-owned-elements`と、アクセシブルな名前の算出（`require-accessible-name`などが利用）だけです。名前の算出では、`{ "dynamic": true }`は名前の出どころになりません（ただし、それ以外に名前の出どころがないコンポーネントは、その内容が名前かもしれないため`require-accessible-name`は報告しません）。また`slots`が`null`のコンポーネントに渡された子要素は使われません。要素の子を参照するほかのルールには、コンポーネントに渡された子要素だけが見えます。
 
 コンポーネントがルートに複数の要素をレンダリングする場合は、`element`に`"#fragment"`を指定します。コンポーネント自身は要素ではなく、その`contents`が親の中でコンポーネントの位置に置かれます。
 
@@ -1278,6 +1279,7 @@ type OriginalNode = {
       | string
       | {
           fromAttr: string;
+          omitIfMissing?: true;
         }
       | {
           dynamic: true;

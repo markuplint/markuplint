@@ -1019,7 +1019,8 @@ It accepts an attribute name. It's required.
 It accepts an attribute value. It's optional. If it is omitted, the attribute is a boolean attribute.
 
 - **string**: A static value.
-- **`{ "fromAttr": "name" }`**: The value of the attribute that the component has.
+- **`{ "fromAttr": "name" }`**: The value of the attribute that the component has. If that attribute is an expression (`<MyButton kind={kind} />`), the value is dynamic too. If the component does not have the attribute, the element has the attribute with an empty value.
+- **`{ "fromAttr": "name", "omitIfMissing": true }`**: The same, except that the element does not have the attribute if the component does not have it. It is what a component that passes an optional prop on renders (`<button type={kind}>` has no `type` when `kind` is `undefined`).
 - **`{ "dynamic": true }`**: The attribute exists but its value is not known until the component renders, such as `tabIndex={selected ? 0 : -1}`. Rules treat it as a dynamic value and do not validate it.
 
 #### `as.aria`
@@ -1192,7 +1193,7 @@ const Details = ({ children }) => <details>{children}</details>;
 
 `<Picture />` is not reported for the missing `img` element because the component renders it. `<Details></Details>` is reported for the missing `summary` element because only the usage can provide it.
 
-Currently only `permitted-contents` and the accessible name computation (used by rules such as `require-accessible-name`) use `contents`. In the name computation, `{ "dynamic": true }` is not a source of a name, and children given to a component whose `slots` is `null` are not used. Other rules that look at the children of the element see only the children given to the component.
+Currently only `permitted-contents`, `require-owned-elements` and the accessible name computation (used by rules such as `require-accessible-name`) use `contents`. In the name computation, `{ "dynamic": true }` is not a source of a name (a component whose only possible name is such an entry is not reported by `require-accessible-name`, because the entry may be the name), and children given to a component whose `slots` is `null` are not used. Other rules that look at the children of the element see only the children given to the component.
 
 If the component renders several elements at its root, set `element` to `"#fragment"`. The component is not an element itself; its `contents` stand in its place in the parent.
 
@@ -1319,6 +1320,7 @@ type OriginalNode = {
       | string
       | {
           fromAttr: string;
+          omitIfMissing?: true;
         }
       | {
           dynamic: true;

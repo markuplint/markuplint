@@ -381,12 +381,14 @@ export type OriginalNode = {
 	 *
 	 * When omitted, the given children are the whole content.
 	 *
-	 * Known limitation: `permitted-contents` and the accessible name computation
-	 * (name from content, `legend`, `caption`, and label text) read it. Other rules that
+	 * Known limitation: `permitted-contents`, `require-owned-elements` and the accessible
+	 * name computation (name from content, `legend`, `caption`, and label text) read it. Other rules that
 	 * look at the children of the element, and the `title` of an SVG and the `option`s
 	 * of a `select` in the name computation, still see only the children given at the
 	 * usage site. In the name computation, `{ dynamic: true }` is not a source of
-	 * a name: a component that renders only an expression is still unnamed.
+	 * a name, so a component that renders only an expression is unnamed;
+	 * `require-accessible-name` does not report it because the expression may
+	 * be the name.
 	 *
 	 * @experimental
 	 */
@@ -461,11 +463,19 @@ export type PretenderAttr = {
 	 * `{ dynamic: true }` means the attribute is present but its value is
 	 * unknown at scan time (e.g. `tabIndex={selected ? 0 : -1}`);
 	 * rules treat it as a dynamic value and do not validate it.
+	 *
+	 * `{ fromAttr }` takes the value of the attribute the component has at the usage site.
+	 * If that attribute is an expression (`<Button kind={kind} />`), the result is dynamic
+	 * too. With `omitIfMissing`, the element has no such attribute when the usage site does
+	 * not write it, which is what a component that forwards an optional prop renders
+	 * (`<button type={kind}>` omits `type` when `kind` is `undefined`); without it, the
+	 * attribute is present and empty.
 	 */
 	readonly value?:
 		| string
 		| {
 				readonly fromAttr: string;
+				readonly omitIfMissing?: true;
 		  }
 		| {
 				readonly dynamic: true;

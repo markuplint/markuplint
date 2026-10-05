@@ -26,6 +26,16 @@ export interface ComponentScanResult {
 	readonly rootContents?: readonly ComponentScanContent[];
 	/** Extracted script/ESM source block for import analysis */
 	readonly scriptSource?: ComponentScanScriptSource;
+	/**
+	 * The expressions of the spread attributes of the root element: `{...rest}` in Svelte
+	 * and Astro, `v-bind="$attrs"` in Vue. Absent when there is none.
+	 */
+	readonly spreads?: readonly string[];
+	/**
+	 * Whether the template has another root beside the root element, which Vue does not
+	 * fall attributes through to. Only Vue reports it. A `v-else` branch is not another root.
+	 */
+	readonly hasSiblingRoots?: true;
 	/** SVG namespace indicator (only set when root is in SVG namespace) */
 	readonly namespace?: 'svg';
 	/** Line number of the root element in the source */
@@ -45,6 +55,13 @@ export interface ComponentScanAttr {
 	readonly value?: string;
 	/** The attribute is present and its value is an expression, unknown at scan time. `value` is omitted. */
 	readonly dynamic?: true;
+	/**
+	 * The source of the expression of a `dynamic` attribute that is written as one expression
+	 * (`:type="kind"`, `type={kind}`, `{type}`), so that a prop of the component passed as
+	 * it is can be told from any other expression. Absent for a value that has an expression
+	 * inside (`"a-{b}"`), and for a name written in more than one form.
+	 */
+	readonly expression?: string;
 }
 
 /**

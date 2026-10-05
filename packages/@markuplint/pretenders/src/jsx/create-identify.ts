@@ -15,18 +15,17 @@ export type Draft = SlotInfo & {
 };
 
 /**
- * Returns just the tag name string when there is nothing to say about the element
- * besides its name. Otherwise a detailed identity object: attributes, the slot
- * (`null` when the component does not render its children), what surrounds the
- * slot, and whether the element inherits spread attributes.
+ * Returns a detailed identity object: attributes, the slot (`null` when the
+ * component does not render its children), what surrounds the slot, and whether
+ * the element inherits spread attributes.
+ *
+ * Never just the tag name, even when there is nothing else to say: a bare name
+ * reads as an element that renders the children written at the usage site, so it
+ * would lose `slots: null` (issue #4082).
  */
 export function createIdentity(draft: Draft): Identity {
 	const { element, attrs, hasSpread, slots, contents } = draft;
 	const hasContents = !isTrivialContents(contents);
-
-	if (attrs.length === 0 && !hasSpread && slots === null && !hasContents) {
-		return element;
-	}
 
 	return {
 		element,

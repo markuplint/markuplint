@@ -1,4 +1,5 @@
 import type { Attr } from '../types.js';
+import type { PropResolver } from './resolve-prop.js';
 import type { PretenderAttr } from '@markuplint/ml-config';
 import type { Expression, JsxOpeningElement, JsxSelfClosingElement, SourceFile } from 'typescript';
 
@@ -20,7 +21,8 @@ const {
 
 /**
  * Classifies each attribute by node type: static (string literal, or an expression
- * that is just a literal), boolean (no value), dynamic (any other expression),
+ * that is just a literal), boolean (no value), prop (an expression that is just a
+ * prop of the component, when `resolveProp` is given), dynamic (any other expression),
  * or spread (`{...props}`).
  *
  * The value is classified by the initializer itself and never by the literals
@@ -32,6 +34,7 @@ export function getAttributes(
 	el: JsxOpeningElement | JsxSelfClosingElement,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	sourceFile: SourceFile,
+	resolveProp?: PropResolver,
 ) {
 	const attrs: Attr[] = [];
 
@@ -63,7 +66,10 @@ export function getAttributes(
 		}
 
 		const literal = isJsxExpression(initializer) ? getLiteralText(initializer.expression) : undefined;
-		if (literal === undefined) {
+		const prop = isJsxExpression(initializer) ? resolveProp?.(initializer.expression) : undefined;
+		if (prop !== undefined) {
+			attrs.push({ nodeType: 'prop', name, value: prop });
+		} else if (literal === undefined) {
 			attrs.push({
 				nodeType: 'dynamic',
 				name,
@@ -80,8 +86,9 @@ export function getAttributes(
 /**
  * Converts the classified attributes to the pretender format:
  * a static value keeps its value, a boolean has no `value`,
- * and a dynamic one is `{ dynamic: true }`. Spread attributes are dropped
- * (they are expressed by `inheritAttrs`).
+ * a prop of the component is `{ fromAttr, omitIfMissing: true }` (the usage site writes
+ * it, and an omitted prop renders no attribute), and a dynamic one is `{ dynamic: true }`.
+ * Spread attributes are dropped (they are expressed by `inheritAttrs`).
  */
 export function toPretenderAttrs(attrs: readonly Attr[]): PretenderAttr[] {
 	return attrs
@@ -89,6 +96,9 @@ export function toPretenderAttrs(attrs: readonly Attr[]): PretenderAttr[] {
 		.map((attr): PretenderAttr => {
 			if (attr.nodeType === 'dynamic') {
 				return { name: attr.name, value: { dynamic: true } };
+			}
+			if (attr.nodeType === 'prop') {
+				return { name: attr.name, value: { fromAttr: attr.value, omitIfMissing: true } };
 			}
 			return attr.nodeType === 'static' && attr.value
 				? { name: attr.name, value: attr.value }

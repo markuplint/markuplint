@@ -22,7 +22,9 @@ describe('scan', () => {
 			expect(result).toStrictEqual([
 				{
 					selector: 'FooBar',
-					as: 'div',
+					// BREAKING CHANGE (#4082): `slots: null` is kept instead of collapsing to the bare tag name.
+					// as: 'div', // pre-#4082 baseline
+					as: { element: 'div', slots: null },
 					filePath: _('packages/@markuplint/pretenders/test/fixtures/002.tsx:1:6'),
 				},
 			]);
@@ -89,7 +91,9 @@ describe('scan', () => {
 			expect((voidComp!.as as any).slots).toBe(null);
 
 			// Static content with no attrs returns bare string — slots info implicit
-			expect(typeof staticComp!.as).toBe('string');
+			// BREAKING CHANGE (#4082): `slots: null` is kept instead of collapsing to the bare tag name.
+			// expect(typeof staticComp!.as).toBe('string'); // pre-#4082 baseline
+			expect(typeof staticComp!.as).toBe('object');
 		});
 
 		test('template scanner produces correct slots values', async () => {
@@ -114,7 +118,11 @@ describe('scan', () => {
 	describe('file extension dispatch for non-tsx extensions', () => {
 		test('.js files are dispatched to the JSX scanner', async () => {
 			const result = await scan([jsxFixture('006.js')]);
-			expect(result).toStrictEqual([expect.objectContaining({ selector: 'JsButton', as: 'button' })]);
+			// BREAKING CHANGE (#4082): `slots: null` is kept instead of collapsing to the bare tag name.
+			// expect(result).toStrictEqual([expect.objectContaining({ selector: 'JsButton', as: 'button' })]); // pre-#4082 baseline
+			expect(result).toStrictEqual([
+				expect.objectContaining({ selector: 'JsButton', as: { element: 'button', slots: null } }),
+			]);
 		});
 
 		test('.ts files are dispatched to the JSX scanner', async () => {
@@ -132,7 +140,11 @@ describe('scan', () => {
 
 		test('.jsx files are dispatched to the JSX scanner', async () => {
 			const result = await scan([jsxFixture('008.jsx')]);
-			expect(result).toStrictEqual([expect.objectContaining({ selector: 'JsxCard', as: 'article' })]);
+			// BREAKING CHANGE (#4082): `slots: null` is kept instead of collapsing to the bare tag name.
+			// expect(result).toStrictEqual([expect.objectContaining({ selector: 'JsxCard', as: 'article' })]); // pre-#4082 baseline
+			expect(result).toStrictEqual([
+				expect.objectContaining({ selector: 'JsxCard', as: { element: 'article', slots: null } }),
+			]);
 		});
 
 		// A relative path makes `createScanner` throw, which proves the file reached
