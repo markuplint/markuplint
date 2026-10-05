@@ -217,15 +217,16 @@ pub mod tests {
     }
 
     #[test]
-    fn non_standard_attr_input_webkitdirectory() {
-        // input[webkitdirectory] is non-standard
+    fn non_standard_attr_input_incremental() {
+        // input[incremental] is non-standard. This used to be input[webkitdirectory];
+        // the html-spec data no longer marks that one as non-standard.
         let v = run_with_options(
-            r#"<input type="file" webkitdirectory>"#,
+            r#"<input type="search" incremental>"#,
             serde_json::json!({ "checkNonStandard": true }),
         );
         assert_eq!(v.len(), 1);
         assert!(v[0].message.contains("non-standard"));
-        assert!(v[0].message.contains("webkitdirectory"));
+        assert!(v[0].message.contains("incremental"));
     }
 
     // --- checkExperimental ---
