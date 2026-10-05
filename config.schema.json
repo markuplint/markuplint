@@ -471,6 +471,9 @@
 							"properties": {
 								"fromAttr": {
 									"type": "string"
+								},
+								"omitIfMissing": {
+									"const": true
 								}
 							}
 						},
