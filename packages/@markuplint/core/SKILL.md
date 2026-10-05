@@ -22,7 +22,7 @@ This package is a Node.js native addon built with napi-rs v3. It wraps six Rust 
 
 - **markuplint-core** (`crates/markuplint-core/`) — MLAST serde types
 - **markuplint-dom** (`crates/markuplint-dom/`) — Arena-based DOM builder and traversal
-- **markuplint-rules** (`crates/markuplint-rules/`) — Lint engine, rule trait, built-in rules (permitted-contents, attr-duplication)
+- **markuplint-rules** (`crates/markuplint-rules/`) — Lint engine, rule trait, built-in rules (permitted-contents, no-duplicate-attr)
 - **markuplint-selector** (`crates/markuplint-selector/`) — CSS selector parser and matcher
 - **markuplint-types** (`crates/markuplint-types/`) — Type validators, CSS value matching, spec data
 - **markuplint-builder** (`crates/markuplint-builder/`) — napi bridge exposing all of the above to JS
