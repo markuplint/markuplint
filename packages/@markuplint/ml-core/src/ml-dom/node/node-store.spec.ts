@@ -4,12 +4,16 @@ import type { MLMLSpec } from '@markuplint/ml-spec';
 
 import { parser } from '@markuplint/html-parser';
 import spec from '@markuplint/html-spec';
-import { describe, test, expect } from 'vitest';
+import { describe, test, expect, beforeAll } from 'vitest';
 
 import { convertRuleset } from '../../convert-ruleset.js';
 import { MLCore } from '../../ml-core.js';
 
 import { getNodeStoreFor } from './node-store.js';
+
+beforeAll(() => {
+	expect(globalThis.gc, 'run Vitest with --expose-gc').toBeTypeOf('function');
+});
 
 /**
  * A single synchronous `globalThis.gc()` right after dropping a reference does
