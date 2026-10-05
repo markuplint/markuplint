@@ -1,4 +1,4 @@
-//! `disallowed-element` rule: report elements matching configured CSS selectors.
+//! `no-restricted-element` rule: report elements matching configured CSS selectors.
 //!
 //! TS implementation has two phases:
 //! 1. Global rule value: querySelectorAll on document (check all elements)
@@ -16,11 +16,11 @@ use crate::violation::Violation;
 #[cfg(test)]
 mod tests;
 
-pub struct DisallowedElement;
+pub struct NoRestrictedElement;
 
-impl Rule for DisallowedElement {
+impl Rule for NoRestrictedElement {
     fn id(&self) -> &'static str {
-        "disallowed-element"
+        "no-restricted-element"
     }
 
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {

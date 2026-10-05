@@ -1,4 +1,4 @@
-//! `end-tag` rule: reports missing end tags on non-void HTML elements.
+//! `require-end-tag` rule: reports missing end tags on non-void HTML elements.
 
 use markuplint_core::mlast::NamespaceURI;
 use markuplint_dom::arena::DomArena;
@@ -11,11 +11,11 @@ use crate::violation::Violation;
 #[cfg(test)]
 mod tests;
 
-pub struct EndTag;
+pub struct RequireEndTag;
 
-impl Rule for EndTag {
+impl Rule for RequireEndTag {
     fn id(&self) -> &'static str {
-        "end-tag"
+        "require-end-tag"
     }
 
     /// Matches TS `createRule({ defaultSeverity: 'warning' })`.

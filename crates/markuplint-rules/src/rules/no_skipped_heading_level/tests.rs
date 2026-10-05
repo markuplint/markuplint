@@ -1,9 +1,9 @@
-//! Tests for `heading-levels` rule.
+//! Tests for `no-skipped-heading-level` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   heading-levels-valid-001    → heading_levels_valid_001
-//!   heading-levels-invalid-001  → heading_levels_invalid_001
-//!   heading-levels-parser-*     — SKIP: Markdown/MDX parsers not available in Rust
+//!   no-skipped-heading-level-valid-001    → no_skipped_heading_level_valid_001
+//!   no-skipped-heading-level-invalid-001  → no_skipped_heading_level_invalid_001
+//!   no-skipped-heading-level-parser-*     — SKIP: Markdown/MDX parsers not available in Rust
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::Severity;
@@ -26,32 +26,32 @@ fn spec() -> MLMLSpec {
     load_spec(include_str!("../../../../../packages/@markuplint/html-spec/index.json")).unwrap()
 }
 
-/// TS: `[heading-levels-valid-001]` — no skipped levels
+/// TS: `[no-skipped-heading-level-valid-001]` — no skipped levels
 #[test]
-fn heading_levels_valid_001() {
-    const _ID: &str = "heading-levels-valid-001";
+fn no_skipped_heading_level_valid_001() {
+    const _ID: &str = "no-skipped-heading-level-valid-001";
     let arena = html_arena(
         "\n<h1>...</h1>\n<p>...</p>\n<h2>...</h2>\n<p>...</p>\n<h3>...</h3>\n<p>...</p>\n<h2>...</h2>\n<p>...</p>\n<h3>...</h3>\n<p>...</p>\n<h4>...</h4>\n<p>...</p>\n<h2>...</h2>\n<p>...</p>\n",
     );
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
-        "rules": { "heading-levels": true }
+        "rules": { "no-skipped-heading-level": true }
     }))
     .unwrap();
     let result = lint(&arena, &spec, &config);
     assert_eq!(result.violations.len(), 0);
 }
 
-/// TS: `[heading-levels-invalid-001]` — skipped levels
+/// TS: `[no-skipped-heading-level-invalid-001]` — skipped levels
 #[test]
-fn heading_levels_invalid_001() {
-    const _ID: &str = "heading-levels-invalid-001";
+fn no_skipped_heading_level_invalid_001() {
+    const _ID: &str = "no-skipped-heading-level-invalid-001";
     let arena = html_arena(
         "\n<h1>...</h1>\n<p>...</p>\n<h2>...</h2>\n<p>...</p>\n<h4>...</h4>\n<p>...</p>\n<h2>...</h2>\n<p>...</p>\n<h5>...</h5>\n<p>...</p>\n",
     );
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
-        "rules": { "heading-levels": true }
+        "rules": { "no-skipped-heading-level": true }
     }))
     .unwrap();
     let result = lint(&arena, &spec, &config);

@@ -1,4 +1,4 @@
-//! `required-element` rule: require descendant elements matching CSS selectors.
+//! `require-element` rule: require descendant elements matching CSS selectors.
 
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::node::DomNode;
@@ -9,11 +9,11 @@ use markuplint_types::spec::types::MLMLSpec;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
-pub struct RequiredElement;
+pub struct RequireElement;
 
-impl Rule for RequiredElement {
+impl Rule for RequireElement {
     fn id(&self) -> &'static str {
-        "required-element"
+        "require-element"
     }
 
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
@@ -135,7 +135,7 @@ fn check_required_elements(
 mod tests {
     use super::*;
     use crate::rule::{RuleConfig, RuleConfigSet};
-    use crate::rules::attr_duplication::tests::make_element_with_attrs;
+    use crate::rules::no_duplicate_attr::tests::make_element_with_attrs;
     use markuplint_types::spec::load_spec;
 
     fn spec() -> MLMLSpec {
@@ -146,7 +146,7 @@ mod tests {
     fn element_present_no_violation() {
         let arena = make_element_with_attrs("div", &[]);
         let s = spec();
-        let rule = RequiredElement;
+        let rule = RequireElement;
         let config = RuleConfig {
             value: serde_json::json!(["div"]),
             ..Default::default()
@@ -159,7 +159,7 @@ mod tests {
     fn missing_element_reported() {
         let arena = make_element_with_attrs("div", &[]);
         let s = spec();
-        let rule = RequiredElement;
+        let rule = RequireElement;
         let config = RuleConfig {
             value: serde_json::json!(["nav"]),
             ..Default::default()
@@ -219,7 +219,7 @@ mod tests {
         }
         let arena = builder.finish();
         let s = spec();
-        let rule = RequiredElement;
+        let rule = RequireElement;
 
         // Default (ignoreOmittedElements=true): ghost nav is excluded
         let config_default = RuleConfig {
@@ -250,7 +250,7 @@ mod tests {
     fn no_config_no_violation() {
         let arena = make_element_with_attrs("div", &[]);
         let s = spec();
-        let rule = RequiredElement;
+        let rule = RequireElement;
         let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }

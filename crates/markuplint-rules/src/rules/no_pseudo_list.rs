@@ -1,4 +1,4 @@
-//! `use-list` rule: suggest using `<li>` elements instead of text with bullet characters.
+//! `no-pseudo-list` rule: suggest using `<li>` elements instead of text with bullet characters.
 
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::node::DomNode;
@@ -7,10 +7,10 @@ use markuplint_types::spec::types::MLMLSpec;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
-pub struct UseList;
+pub struct NoPseudoList;
 
 /// Default bullet-like characters that suggest list semantics.
-/// Matches the TS `defaultValue` in `use-list/index.ts`.
+/// Matches the TS `defaultValue` in `no-pseudo-list/index.ts`.
 const DEFAULT_BULLETS: &[&str] = &[
     "\u{2022}", // • BULLET
     "\u{2023}", // ‣ TRIANGULAR BULLET
@@ -39,9 +39,9 @@ const DEFAULT_BULLETS: &[&str] = &[
 /// Matches the TS `defaultOptions.spaceNeededBullets`.
 const SPACE_NEEDED_BULLETS: &[&str] = &["-", "*", "+"];
 
-impl Rule for UseList {
+impl Rule for NoPseudoList {
     fn id(&self) -> &'static str {
-        "use-list"
+        "no-pseudo-list"
     }
 
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
@@ -255,7 +255,7 @@ mod tests {
     fn normal_text_no_violation() {
         let arena = make_text_node("Hello world");
         let s = spec();
-        let rule = UseList;
+        let rule = NoPseudoList;
         let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
@@ -264,7 +264,7 @@ mod tests {
     fn bullet_text_reported() {
         let arena = make_text_node("\u{2022} Item one");
         let s = spec();
-        let rule = UseList;
+        let rule = NoPseudoList;
         let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
         assert_eq!(violations[0].message, "Use the li element");
@@ -274,7 +274,7 @@ mod tests {
     fn dash_text_reported() {
         let arena = make_text_node("- Item");
         let s = spec();
-        let rule = UseList;
+        let rule = NoPseudoList;
         let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
         assert_eq!(violations[0].message, "Use the li element");
@@ -284,7 +284,7 @@ mod tests {
     fn asterisk_bullet_reported() {
         let arena = make_text_node("* Item one");
         let s = spec();
-        let rule = UseList;
+        let rule = NoPseudoList;
         let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
         assert_eq!(violations[0].message, "Use the li element");
@@ -295,7 +295,7 @@ mod tests {
         // Text node containing only spaces → no violation (whitespace text is skipped)
         let arena = make_text_node("   ");
         let s = spec();
-        let rule = UseList;
+        let rule = NoPseudoList;
         let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
@@ -306,7 +306,7 @@ mod tests {
         // "*hello" → no violation (no space after *)
         let arena = make_text_node("*hello");
         let s = spec();
-        let rule = UseList;
+        let rule = NoPseudoList;
         let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
@@ -316,7 +316,7 @@ mod tests {
         // TS: consecutive identical chars (e.g., "--") → not a list item
         let arena = make_text_node("-- separator");
         let s = spec();
-        let rule = UseList;
+        let rule = NoPseudoList;
         let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
@@ -326,7 +326,7 @@ mod tests {
         // TS: text.length === 1 → skip
         let arena = make_text_node("\u{2022}");
         let s = spec();
-        let rule = UseList;
+        let rule = NoPseudoList;
         let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
@@ -337,7 +337,7 @@ mod tests {
         // "> item" should match, ">item" should not
         let arena = make_text_node("> item");
         let s = spec();
-        let rule = UseList;
+        let rule = NoPseudoList;
         let config = RuleConfig {
             value: serde_json::json!(["-", "*", "+", ">"]),
             options: serde_json::json!({ "spaceNeededBullets": [">"] }),
@@ -362,7 +362,7 @@ mod tests {
         // When noPrev=false, text with no prev sibling should be skipped
         let arena = make_text_node("- Item");
         let s = spec();
-        let rule = UseList;
+        let rule = NoPseudoList;
         let config = RuleConfig {
             options: serde_json::json!({ "noPrev": false }),
             ..Default::default()
@@ -474,7 +474,7 @@ mod tests {
         }
         let arena = builder.finish();
         let s = spec();
-        let rule = UseList;
+        let rule = NoPseudoList;
 
         // Default: prevElement=true → violation reported
         let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
@@ -582,7 +582,7 @@ mod tests {
         }
         let arena = builder.finish();
         let s = spec();
-        let rule = UseList;
+        let rule = NoPseudoList;
 
         // Default: prevComment=true → violation
         let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
@@ -692,7 +692,7 @@ mod tests {
         }
         let arena = builder.finish();
         let s = spec();
-        let rule = UseList;
+        let rule = NoPseudoList;
 
         // Default: prevCodeBlock=false → no violation (PSBlock prev is skipped by default)
         let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));

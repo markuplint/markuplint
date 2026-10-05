@@ -1,6 +1,6 @@
-//! `attr-duplication` rule: reports duplicate attributes on elements.
+//! `no-duplicate-attr` rule: reports duplicate attributes on elements.
 //!
-//! Ports `packages/@markuplint/rules/src/attr-duplication/`.
+//! Ports `packages/@markuplint/rules/src/no-duplicate-attr/`.
 
 use std::collections::HashMap;
 
@@ -14,11 +14,11 @@ use crate::violation::Violation;
 #[cfg(test)]
 pub(crate) mod tests;
 
-pub struct AttrDuplication;
+pub struct NoDuplicateAttr;
 
-impl Rule for AttrDuplication {
+impl Rule for NoDuplicateAttr {
     fn id(&self) -> &'static str {
-        "attr-duplication"
+        "no-duplicate-attr"
     }
 
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {

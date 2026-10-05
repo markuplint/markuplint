@@ -112,7 +112,7 @@ fn is_navigable_keyword(value: &str) -> bool {
 mod tests {
     use super::*;
     use crate::rule::{RuleConfig, RuleConfigSet};
-    use crate::rules::attr_duplication::tests::make_element_with_attrs;
+    use crate::rules::no_duplicate_attr::tests::make_element_with_attrs;
     use markuplint_types::spec::load_spec;
 
     fn spec() -> MLMLSpec {

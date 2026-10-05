@@ -91,7 +91,7 @@ impl Rule for NoEmptyPalpableContent {
 mod tests {
     use super::*;
     use crate::rule::{RuleConfig, RuleConfigSet};
-    use crate::rules::attr_duplication::tests::make_element_with_attrs;
+    use crate::rules::no_duplicate_attr::tests::make_element_with_attrs;
     use markuplint_core::mlast::{ElementType, NamespaceURI};
     use markuplint_dom::arena::DomArenaBuilder;
     use markuplint_dom::node::{DocumentData, ElementData, NodeBase, TextData};

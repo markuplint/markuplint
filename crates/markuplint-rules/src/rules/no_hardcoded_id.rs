@@ -1,4 +1,4 @@
-//! `no-hard-code-id` rule: reports hard-coded `id` attributes in fragment documents.
+//! `no-hardcoded-id` rule: reports hard-coded `id` attributes in fragment documents.
 
 use markuplint_core::mlast::MLASTAttr;
 use markuplint_dom::arena::DomArena;
@@ -8,11 +8,11 @@ use markuplint_types::spec::types::MLMLSpec;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
-pub struct NoHardCodeId;
+pub struct NoHardcodedId;
 
-impl Rule for NoHardCodeId {
+impl Rule for NoHardcodedId {
     fn id(&self) -> &'static str {
-        "no-hard-code-id"
+        "no-hardcoded-id"
     }
 
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
@@ -63,7 +63,7 @@ impl Rule for NoHardCodeId {
 mod tests {
     use super::*;
     use crate::rule::{RuleConfig, RuleConfigSet};
-    use crate::rules::attr_duplication::tests::make_element_with_attrs;
+    use crate::rules::no_duplicate_attr::tests::make_element_with_attrs;
     use crate::violation::Severity;
     use markuplint_core::mlast::{ElementType, MLASTHTMLAttr, MLASTToken, NamespaceURI};
     use markuplint_dom::arena::DomArenaBuilder;
@@ -180,7 +180,7 @@ mod tests {
         // make_element_with_attrs creates fragment documents
         let arena = make_element_with_attrs("div", &[("id", "my-id")]);
         let s = spec();
-        let rule = NoHardCodeId;
+        let rule = NoHardcodedId;
         let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
         assert_eq!(violations[0].message, "It is hard-coded");
@@ -190,7 +190,7 @@ mod tests {
     fn non_fragment_no_violation() {
         let arena = make_non_fragment_arena("div", &[("id", "my-id")]);
         let s = spec();
-        let rule = NoHardCodeId;
+        let rule = NoHardcodedId;
         let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
@@ -199,7 +199,7 @@ mod tests {
     fn fragment_without_id_no_violation() {
         let arena = make_element_with_attrs("div", &[("class", "foo")]);
         let s = spec();
-        let rule = NoHardCodeId;
+        let rule = NoHardcodedId;
         let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
@@ -289,7 +289,7 @@ mod tests {
         }
         let arena = builder.finish();
         let s = spec();
-        let rule = NoHardCodeId;
+        let rule = NoHardcodedId;
         let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }

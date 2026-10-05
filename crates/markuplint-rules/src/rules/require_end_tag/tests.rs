@@ -1,12 +1,12 @@
-//! Tests for `end-tag` rule.
+//! Tests for `require-end-tag` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   end-tag-valid-001    → end_tag_valid_001
-//!   end-tag-invalid-001  → end_tag_invalid_001
-//!   end-tag-valid-002    → end_tag_valid_002
-//!   end-tag-invalid-002  → end_tag_invalid_002
-//!   end-tag-parser-*     — SKIP: framework parsers (Pug/JSX/Vue/Svelte/Astro)
-//!   end-tag-issue-1349   — SKIP: Nunjucks parser
+//!   require-end-tag-valid-001    → require_end_tag_valid_001
+//!   require-end-tag-invalid-001  → require_end_tag_invalid_001
+//!   require-end-tag-valid-002    → require_end_tag_valid_002
+//!   require-end-tag-invalid-002  → require_end_tag_invalid_002
+//!   require-end-tag-parser-*     — SKIP: framework parsers (Pug/JSX/Vue/Svelte/Astro)
+//!   require-end-tag-issue-1349   — SKIP: Nunjucks parser
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::Severity;
@@ -29,15 +29,15 @@ fn spec() -> MLMLSpec {
     load_spec(include_str!("../../../../../packages/@markuplint/html-spec/index.json")).unwrap()
 }
 
-/// TS: `[end-tag-valid-001]` — basic (two sub-tests)
+/// TS: `[require-end-tag-valid-001]` — basic (two sub-tests)
 #[test]
-fn end_tag_valid_001() {
-    const _ID: &str = "end-tag-valid-001";
+fn require_end_tag_valid_001() {
+    const _ID: &str = "require-end-tag-valid-001";
     // Sub-test 1: complete tags → no violations
     let arena = html_arena("<html><body></body></html>");
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
-        "rules": { "end-tag": true }
+        "rules": { "require-end-tag": true }
     }))
     .unwrap();
     let result = lint(&arena, &spec, &config);
@@ -54,14 +54,14 @@ fn end_tag_valid_001() {
     assert_eq!(result2.violations[0].raw, "<html>");
 }
 
-/// TS: `[end-tag-invalid-001]` — missing end tags on span
+/// TS: `[require-end-tag-invalid-001]` — missing end tags on span
 #[test]
-fn end_tag_invalid_001() {
-    const _ID: &str = "end-tag-invalid-001";
+fn require_end_tag_invalid_001() {
+    const _ID: &str = "require-end-tag-invalid-001";
     let arena = html_arena("<div><span><span /></div>");
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
-        "rules": { "end-tag": true }
+        "rules": { "require-end-tag": true }
     }))
     .unwrap();
     let result = lint(&arena, &spec, &config);
@@ -78,31 +78,31 @@ fn end_tag_invalid_001() {
     assert_eq!(result.violations[1].raw, "<span />");
 }
 
-/// TS: `[end-tag-valid-002]` — void elements (img)
+/// TS: `[require-end-tag-valid-002]` — void elements (img)
 #[test]
-fn end_tag_valid_002() {
-    const _ID: &str = "end-tag-valid-002";
+fn require_end_tag_valid_002() {
+    const _ID: &str = "require-end-tag-valid-002";
     let arena = html_arena("<div><img><img /></div>");
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
-        "rules": { "end-tag": true }
+        "rules": { "require-end-tag": true }
     }))
     .unwrap();
     let result = lint(&arena, &spec, &config);
     assert_eq!(result.violations.len(), 0);
 }
 
-/// TS: `[end-tag-invalid-002]` — SVG self-closing is OK
+/// TS: `[require-end-tag-invalid-002]` — SVG self-closing is OK
 #[test]
-fn end_tag_invalid_002() {
-    const _ID: &str = "end-tag-invalid-002";
+fn require_end_tag_invalid_002() {
+    const _ID: &str = "require-end-tag-invalid-002";
     // SVG with self-closing <circle /> and <circle></circle> — both OK
     let arena = html_arena(
         "<svg>\n\t<defs>\n\t\t<clipPath>\n\t\t\t<circle />\n\t\t\t<circle></circle>\n\t\t</clipPath>\n\t</defs>\n</svg>",
     );
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
-        "rules": { "end-tag": true }
+        "rules": { "require-end-tag": true }
     }))
     .unwrap();
     let result = lint(&arena, &spec, &config);

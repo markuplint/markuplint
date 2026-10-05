@@ -1,12 +1,12 @@
-//! Tests for `attr-duplication` rule.
+//! Tests for `no-duplicate-attr` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   attr-duplication-invalid-001  → attr_duplication_invalid_001
-//!   attr-duplication-invalid-002  → attr_duplication_invalid_002
-//!   attr-duplication-invalid-003  — SKIP: i18n (ja locale) not supported in Rust
-//!   attr-duplication-invalid-004  → attr_duplication_invalid_004
-//!   attr-duplication-parser-*     — SKIP: framework parsers not available in Rust
-//!   attr-duplication-fix-*        — SKIP: auto-fix not implemented in Rust
+//!   no-duplicate-attr-invalid-001  → no_duplicate_attr_invalid_001
+//!   no-duplicate-attr-invalid-002  → no_duplicate_attr_invalid_002
+//!   no-duplicate-attr-invalid-003  — SKIP: i18n (ja locale) not supported in Rust
+//!   no-duplicate-attr-invalid-004  → no_duplicate_attr_invalid_004
+//!   no-duplicate-attr-parser-*     — SKIP: framework parsers not available in Rust
+//!   no-duplicate-attr-fix-*        — SKIP: auto-fix not implemented in Rust
 //!   v6_attr_duplication_001       — Rust-only: no duplicate attrs (valid)
 //!   v6_attr_duplication_002       — Rust-only: case-insensitive duplicate
 //!   v6_attr_duplication_003       — Rust-only: triple duplicate
@@ -38,18 +38,18 @@ fn spec() -> MLMLSpec {
     load_spec(include_str!("../../../../../packages/@markuplint/html-spec/index.json")).unwrap()
 }
 
-/// TS: `[attr-duplication-invalid-001]`
+/// TS: `[no-duplicate-attr-invalid-001]`
 /// Same HTML as TS template literal (with leading newline + tab indentation)
 #[test]
-fn attr_duplication_invalid_001() {
-    const _ID: &str = "attr-duplication-invalid-001";
+fn no_duplicate_attr_invalid_001() {
+    const _ID: &str = "no-duplicate-attr-invalid-001";
     // Exact TS template literal bytes: \n\t\t<div ...>\n\t\t\tlorem\n\t\t\t<p>ipsam</p>\n\t\t</div>\n\t\t
     let arena = html_arena(
         "\n\t\t<div data-attr=\"value\" data-Attr='db' data-attR=tr>\n\t\t\tlorem\n\t\t\t<p>ipsam</p>\n\t\t</div>\n\t\t",
     );
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
-        "rules": { "attr-duplication": true }
+        "rules": { "no-duplicate-attr": true }
     }))
     .unwrap();
     let result = lint(&arena, &spec, &config);
@@ -66,18 +66,18 @@ fn attr_duplication_invalid_001() {
     assert_eq!(result.violations[1].raw, "data-attR");
 }
 
-/// TS: `[attr-duplication-invalid-002]`
+/// TS: `[no-duplicate-attr-invalid-002]`
 /// Same HTML as TS template literal (multi-line with tab indentation)
 #[test]
-fn attr_duplication_invalid_002() {
-    const _ID: &str = "attr-duplication-invalid-002";
+fn no_duplicate_attr_invalid_002() {
+    const _ID: &str = "no-duplicate-attr-invalid-002";
     // Exact TS template literal bytes: \n\t\t<div\n\t\t\tdata-attr="value"\n\t\t\tdata-Attr='db'\n\t\t\tdata-attR=tr>\n\t\t\tlorem\n\t\t\t<p>ipsam</p>\n\t\t</div>\n\t\t
     let arena = html_arena(
         "\n\t\t<div\n\t\t\tdata-attr=\"value\"\n\t\t\tdata-Attr='db'\n\t\t\tdata-attR=tr>\n\t\t\tlorem\n\t\t\t<p>ipsam</p>\n\t\t</div>\n\t\t",
     );
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
-        "rules": { "attr-duplication": true }
+        "rules": { "no-duplicate-attr": true }
     }))
     .unwrap();
     let result = lint(&arena, &spec, &config);
@@ -94,20 +94,20 @@ fn attr_duplication_invalid_002() {
     assert_eq!(result.violations[1].raw, "data-attR");
 }
 
-/// TS: `[attr-duplication-invalid-004]` — nodeRules disable
+/// TS: `[no-duplicate-attr-invalid-004]` — nodeRules disable
 /// Input: `<div><span attr attr></span></div>` with nodeRule disabling span
 /// Expect: 0 violations
 #[test]
-fn attr_duplication_invalid_004() {
-    const _ID: &str = "attr-duplication-invalid-004";
+fn no_duplicate_attr_invalid_004() {
+    const _ID: &str = "no-duplicate-attr-invalid-004";
     let arena = html_arena("<div><span attr attr></span></div>");
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
-        "rules": { "attr-duplication": true },
+        "rules": { "no-duplicate-attr": true },
         "nodeRules": [
             {
                 "selector": "span",
-                "rules": { "attr-duplication": false }
+                "rules": { "no-duplicate-attr": false }
             }
         ]
     }))
@@ -227,7 +227,7 @@ fn v6_attr_duplication_001() {
     let arena = html_arena(r#"<div class="a" id="b"></div>"#);
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
-        "rules": { "attr-duplication": true }
+        "rules": { "no-duplicate-attr": true }
     }))
     .unwrap();
     let result = lint(&arena, &spec, &config);
@@ -240,7 +240,7 @@ fn v6_attr_duplication_002() {
     let arena = html_arena(r#"<div Class="a" class="b"></div>"#);
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
-        "rules": { "attr-duplication": true }
+        "rules": { "no-duplicate-attr": true }
     }))
     .unwrap();
     let result = lint(&arena, &spec, &config);
@@ -253,7 +253,7 @@ fn v6_attr_duplication_003() {
     let arena = html_arena(r#"<div id="a" id="b" id="c"></div>"#);
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
-        "rules": { "attr-duplication": true }
+        "rules": { "no-duplicate-attr": true }
     }))
     .unwrap();
     let result = lint(&arena, &spec, &config);
@@ -266,7 +266,7 @@ fn v6_attr_duplication_004() {
     let arena = html_arena("<div></div>");
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
-        "rules": { "attr-duplication": true }
+        "rules": { "no-duplicate-attr": true }
     }))
     .unwrap();
     let result = lint(&arena, &spec, &config);
@@ -280,7 +280,7 @@ fn v6_attr_duplication_005() {
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": {
-            "attr-duplication": { "severity": "warning" }
+            "no-duplicate-attr": { "severity": "warning" }
         }
     }))
     .unwrap();

@@ -1,4 +1,4 @@
-//! `heading-levels` rule: reports heading level skips (e.g., h2 followed by h4).
+//! `no-skipped-heading-level` rule: reports heading level skips (e.g., h2 followed by h4).
 
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::node::DomNode;
@@ -10,7 +10,7 @@ use crate::violation::Violation;
 #[cfg(test)]
 mod tests;
 
-pub struct HeadingLevels;
+pub struct NoSkippedHeadingLevel;
 
 fn heading_level(name: &str) -> Option<u8> {
     let lower = name.to_ascii_lowercase();
@@ -25,9 +25,9 @@ fn heading_level(name: &str) -> Option<u8> {
     }
 }
 
-impl Rule for HeadingLevels {
+impl Rule for NoSkippedHeadingLevel {
     fn id(&self) -> &'static str {
-        "heading-levels"
+        "no-skipped-heading-level"
     }
 
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {

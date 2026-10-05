@@ -10,7 +10,6 @@ use serde_json::Value;
 
 use crate::rule::{Rule, RuleConfig, RuleConfigSet};
 use crate::rule_mapper::{self, NodeRuleEntry};
-use crate::rules::attr_duplication::AttrDuplication;
 use crate::rules::attr_value_quotes::AttrValueQuotes;
 use crate::rules::case_sensitive_attr_name::CaseSensitiveAttrName;
 use crate::rules::case_sensitive_tag_name::CaseSensitiveTagName;
@@ -18,40 +17,41 @@ use crate::rules::character_reference::CharacterReference;
 use crate::rules::class_naming::ClassNaming;
 use crate::rules::deprecated_attr::DeprecatedAttr;
 use crate::rules::deprecated_element::DeprecatedElement;
-use crate::rules::disallowed_element::DisallowedElement;
 use crate::rules::doctype::Doctype;
-use crate::rules::end_tag::EndTag;
-use crate::rules::heading_levels::HeadingLevels;
-use crate::rules::id_duplication::IdDuplication;
-use crate::rules::ineffective_attr::IneffectiveAttr;
 use crate::rules::invalid_attr::InvalidAttr;
 use crate::rules::label_has_control::LabelHasControl;
 use crate::rules::landmark_roles::LandmarkRoles;
 use crate::rules::link_types::LinkTypes;
-use crate::rules::neighbor_popovers::NeighborPopovers;
 use crate::rules::no_ambiguous_navigable_target_names::NoAmbiguousNavigableTargetNames;
 use crate::rules::no_boolean_attr_value::NoBooleanAttrValue;
 use crate::rules::no_consecutive_br::NoConsecutiveBr;
 use crate::rules::no_default_value::NoDefaultValue;
+use crate::rules::no_duplicate_attr::NoDuplicateAttr;
 use crate::rules::no_duplicate_dt::NoDuplicateDt;
+use crate::rules::no_duplicate_id::NoDuplicateId;
 use crate::rules::no_empty_palpable_content::NoEmptyPalpableContent;
-use crate::rules::no_hard_code_id::NoHardCodeId;
+use crate::rules::no_event_handler_attr::NoEventHandlerAttr;
+use crate::rules::no_hardcoded_id::NoHardcodedId;
+use crate::rules::no_ineffective_attr::NoIneffectiveAttr;
 use crate::rules::no_orphaned_end_tag::NoOrphanedEndTag;
+use crate::rules::no_pseudo_list::NoPseudoList;
+use crate::rules::no_redundant_accessible_name::NoRedundantAccessibleName;
 use crate::rules::no_refer_to_non_existent_id::NoReferToNonExistentId;
+use crate::rules::no_restricted_element::NoRestrictedElement;
+use crate::rules::no_skipped_heading_level::NoSkippedHeadingLevel;
 use crate::rules::no_unsupported_features::NoUnsupportedFeatures;
-use crate::rules::no_use_event_handler_attr::NoUseEventHandlerAttr;
 use crate::rules::permitted_contents::PermittedContents;
 use crate::rules::placeholder_label_option::PlaceholderLabelOption;
-use crate::rules::redundant_accessible_name::RedundantAccessibleName;
 use crate::rules::require_accessible_name::RequireAccessibleName;
+use crate::rules::require_adjacent_popover::RequireAdjacentPopover;
+use crate::rules::require_attr::RequireAttr;
 use crate::rules::require_datetime::RequireDatetime;
 use crate::rules::require_dialog_autofocus::RequireDialogAutofocus;
-use crate::rules::required_attr::RequiredAttr;
-use crate::rules::required_element::RequiredElement;
+use crate::rules::require_element::RequireElement;
+use crate::rules::require_end_tag::RequireEndTag;
 use crate::rules::required_h1::RequiredH1;
 use crate::rules::srcset_sizes_constraint::SrcsetSizesConstraint;
 use crate::rules::table_row_column_alignment::TableRowColumnAlignment;
-use crate::rules::use_list::UseList;
 use crate::rules::wai_aria::WaiAria;
 use crate::violation::{Severity, Violation};
 
@@ -93,8 +93,8 @@ pub fn lint(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig) -> LintResul
 
     let has_node_rules = !config.node_rules.is_empty() || !config.child_node_rules.is_empty();
 
-    // The index must accept plain keys ("attr-duplication"), namespaced keys
-    // ("html-standard/attr-duplication"), and NamedRuleGroup entries
+    // The index must accept plain keys ("no-duplicate-attr"), namespaced keys
+    // ("html-standard/no-duplicate-attr"), and NamedRuleGroup entries
     // ("a11y/no-accesskey": { rules: { "invalid-attr": { options: ... } } }).
     // NamedRuleGroups are expanded inline: the inner rules are indexed by their
     // base rule ID, with the alias name preserved for violation ruleIds.
@@ -383,7 +383,7 @@ pub fn lint_from_json(mlast_json: &str, config_json: &str, spec_json: &str) -> R
 }
 
 /// A `NamedRuleGroup` is an object with a `rules` key whose value is also an object.
-/// Example: `{ "specConformance": "normative", "severity": "warning", "rules": { "id-duplication": true } }`
+/// Example: `{ "specConformance": "normative", "severity": "warning", "rules": { "no-duplicate-id": true } }`
 fn is_named_rule_group(value: &Value) -> bool {
     match value {
         Value::Object(obj) => obj.get("rules").is_some_and(|v| matches!(v, Value::Object(_))),
@@ -507,7 +507,7 @@ pub fn parse_rule_config(value: &Value) -> Option<RuleConfig> {
 
 fn get_all_rules() -> Vec<Box<dyn Rule>> {
     vec![
-        Box::new(AttrDuplication),
+        Box::new(NoDuplicateAttr),
         Box::new(AttrValueQuotes),
         Box::new(CaseSensitiveAttrName),
         Box::new(CaseSensitiveTagName),
@@ -515,39 +515,39 @@ fn get_all_rules() -> Vec<Box<dyn Rule>> {
         Box::new(ClassNaming),
         Box::new(DeprecatedAttr),
         Box::new(DeprecatedElement),
-        Box::new(DisallowedElement),
+        Box::new(NoRestrictedElement),
         Box::new(Doctype),
-        Box::new(EndTag),
-        Box::new(HeadingLevels),
-        Box::new(IdDuplication),
-        Box::new(IneffectiveAttr),
+        Box::new(RequireEndTag),
+        Box::new(NoSkippedHeadingLevel),
+        Box::new(NoDuplicateId),
+        Box::new(NoIneffectiveAttr),
         Box::new(LabelHasControl),
         Box::new(LandmarkRoles),
         Box::new(LinkTypes),
-        Box::new(NeighborPopovers),
+        Box::new(RequireAdjacentPopover),
         Box::new(NoAmbiguousNavigableTargetNames),
         Box::new(NoBooleanAttrValue),
         Box::new(NoConsecutiveBr),
         Box::new(NoDefaultValue),
         Box::new(NoDuplicateDt),
         Box::new(NoEmptyPalpableContent),
-        Box::new(NoHardCodeId),
+        Box::new(NoHardcodedId),
         Box::new(NoOrphanedEndTag),
         Box::new(NoReferToNonExistentId),
         Box::new(NoUnsupportedFeatures),
-        Box::new(NoUseEventHandlerAttr),
+        Box::new(NoEventHandlerAttr),
         Box::new(PermittedContents),
         Box::new(PlaceholderLabelOption),
-        Box::new(RedundantAccessibleName),
+        Box::new(NoRedundantAccessibleName),
         Box::new(RequireAccessibleName),
         Box::new(RequireDatetime),
         Box::new(RequireDialogAutofocus),
         Box::new(SrcsetSizesConstraint),
-        Box::new(RequiredAttr),
-        Box::new(RequiredElement),
+        Box::new(RequireAttr),
+        Box::new(RequireElement),
         Box::new(RequiredH1),
         Box::new(TableRowColumnAlignment),
-        Box::new(UseList),
+        Box::new(NoPseudoList),
         Box::new(InvalidAttr),
         Box::new(WaiAria),
     ]
@@ -594,12 +594,12 @@ mod tests {
 
     #[test]
     fn lint_pipeline_finds_duplicate_attrs() {
-        use crate::rules::attr_duplication::tests::make_element_with_attrs;
+        use crate::rules::no_duplicate_attr::tests::make_element_with_attrs;
 
         let arena = make_element_with_attrs("div", &[("class", "a"), ("class", "b")]);
         let spec = load_spec(include_str!("../../../packages/@markuplint/html-spec/index.json")).unwrap();
         let config = LintConfig {
-            rules: [("attr-duplication".to_string(), Value::Bool(true))]
+            rules: [("no-duplicate-attr".to_string(), Value::Bool(true))]
                 .into_iter()
                 .collect(),
             node_rules: vec![],
@@ -608,19 +608,19 @@ mod tests {
 
         let result = lint(&arena, &spec, &config);
         assert_eq!(result.violations.len(), 1);
-        assert_eq!(result.violations[0].rule_id, "attr-duplication");
+        assert_eq!(result.violations[0].rule_id, "no-duplicate-attr");
         assert_eq!(result.violations[0].severity, Severity::Error);
         assert_eq!(result.violations[0].line, 1);
     }
 
     #[test]
     fn lint_pipeline_disabled_rule_no_violations() {
-        use crate::rules::attr_duplication::tests::make_element_with_attrs;
+        use crate::rules::no_duplicate_attr::tests::make_element_with_attrs;
 
         let arena = make_element_with_attrs("div", &[("class", "a"), ("class", "b")]);
         let spec = load_spec(include_str!("../../../packages/@markuplint/html-spec/index.json")).unwrap();
         let config = LintConfig {
-            rules: [("attr-duplication".to_string(), Value::Bool(false))]
+            rules: [("no-duplicate-attr".to_string(), Value::Bool(false))]
                 .into_iter()
                 .collect(),
             node_rules: vec![],
@@ -633,12 +633,12 @@ mod tests {
 
     #[test]
     fn lint_pipeline_severity_override() {
-        use crate::rules::attr_duplication::tests::make_element_with_attrs;
+        use crate::rules::no_duplicate_attr::tests::make_element_with_attrs;
 
         let arena = make_element_with_attrs("div", &[("id", "a"), ("id", "b")]);
         let spec = load_spec(include_str!("../../../packages/@markuplint/html-spec/index.json")).unwrap();
         let config = LintConfig {
-            rules: [("attr-duplication".to_string(), Value::String("warning".to_string()))]
+            rules: [("no-duplicate-attr".to_string(), Value::String("warning".to_string()))]
                 .into_iter()
                 .collect(),
             node_rules: vec![],
@@ -693,17 +693,17 @@ mod tests {
 
     #[test]
     fn node_rules_severity_override() {
-        // attr-duplication is "error" by default, but "warning" for <main>
+        // no-duplicate-attr is "error" by default, but "warning" for <main>
         let arena = html_arena(r#"<div id="a" id="b"><main id="c" id="d"></main></div>"#);
         let spec = html_spec();
         let config: LintConfig = serde_json::from_value(serde_json::json!({
             "rules": {
-                "attr-duplication": true
+                "no-duplicate-attr": true
             },
             "nodeRules": [
                 {
                     "selector": "main",
-                    "rules": { "attr-duplication": "warning" }
+                    "rules": { "no-duplicate-attr": "warning" }
                 }
             ]
         }))
@@ -820,18 +820,18 @@ mod tests {
 
     #[test]
     fn node_rules_attr_duplication_disable_for_span() {
-        // Port of TS test: attr-duplication nodeRules disable
+        // Port of TS test: no-duplicate-attr nodeRules disable
         // <div><span attr attr></span></div> with nodeRule selector:"span" rule:false → 0 violations
         let arena = html_arena(r#"<div><span attr attr></span></div>"#);
         let spec = html_spec();
         let config: LintConfig = serde_json::from_value(serde_json::json!({
             "rules": {
-                "attr-duplication": true
+                "no-duplicate-attr": true
             },
             "nodeRules": [
                 {
                     "selector": "span",
-                    "rules": { "attr-duplication": false }
+                    "rules": { "no-duplicate-attr": false }
                 }
             ]
         }))
@@ -841,7 +841,7 @@ mod tests {
         assert_eq!(
             result.violations.len(),
             0,
-            "attr-duplication should be disabled for <span> via nodeRules, got: {:?}",
+            "no-duplicate-attr should be disabled for <span> via nodeRules, got: {:?}",
             result.violations
         );
     }
@@ -1142,7 +1142,7 @@ mod tests {
         );
     }
 
-    // --- required-attr nodeRules tests ---
+    // --- require-attr nodeRules tests ---
 
     #[test]
     fn node_rules_required_attr_img_alt() {
@@ -1153,7 +1153,7 @@ mod tests {
             "rules": {},
             "nodeRules": [{
                 "selector": "img",
-                "rules": { "required-attr": { "severity": "error", "value": "alt" } }
+                "rules": { "require-attr": { "severity": "error", "value": "alt" } }
             }]
         }))
         .unwrap();
@@ -1162,12 +1162,12 @@ mod tests {
         let ra_violations: Vec<_> = result
             .violations
             .iter()
-            .filter(|v| v.rule_id == "required-attr")
+            .filter(|v| v.rule_id == "require-attr")
             .collect();
         assert_eq!(
             ra_violations.len(),
             1,
-            "Expected 1 required-attr violation, got: {ra_violations:?}"
+            "Expected 1 require-attr violation, got: {ra_violations:?}"
         );
         assert!(
             ra_violations[0].message.contains("alt"),
@@ -1185,7 +1185,7 @@ mod tests {
             "rules": {},
             "nodeRules": [{
                 "selector": "img",
-                "rules": { "required-attr": { "severity": "error", "value": ["width", "height", "alt"] } }
+                "rules": { "require-attr": { "severity": "error", "value": ["width", "height", "alt"] } }
             }]
         }))
         .unwrap();
@@ -1194,12 +1194,12 @@ mod tests {
         let ra_violations: Vec<_> = result
             .violations
             .iter()
-            .filter(|v| v.rule_id == "required-attr")
+            .filter(|v| v.rule_id == "require-attr")
             .collect();
         assert_eq!(
             ra_violations.len(),
             3,
-            "Expected 3 required-attr violations, got: {ra_violations:?}"
+            "Expected 3 require-attr violations, got: {ra_violations:?}"
         );
     }
 
@@ -1212,7 +1212,7 @@ mod tests {
             "rules": {},
             "nodeRules": [{
                 "selector": "svg",
-                "rules": { "required-attr": { "severity": "error", "value": "viewBox" } }
+                "rules": { "require-attr": { "severity": "error", "value": "viewBox" } }
             }]
         }))
         .unwrap();
@@ -1221,12 +1221,12 @@ mod tests {
         let ra_violations: Vec<_> = result
             .violations
             .iter()
-            .filter(|v| v.rule_id == "required-attr")
+            .filter(|v| v.rule_id == "require-attr")
             .collect();
         assert_eq!(
             ra_violations.len(),
             1,
-            "Expected 1 required-attr violation for svg viewBox, got: {ra_violations:?}"
+            "Expected 1 require-attr violation for svg viewBox, got: {ra_violations:?}"
         );
         assert!(ra_violations[0].message.contains("viewBox"));
     }
@@ -1240,7 +1240,7 @@ mod tests {
             "rules": {},
             "nodeRules": [{
                 "selector": "img[src$=\".svg\"]",
-                "rules": { "required-attr": "role" }
+                "rules": { "require-attr": "role" }
             }]
         }))
         .unwrap();
@@ -1249,12 +1249,12 @@ mod tests {
         let ra_violations: Vec<_> = result
             .violations
             .iter()
-            .filter(|v| v.rule_id == "required-attr")
+            .filter(|v| v.rule_id == "require-attr")
             .collect();
         assert_eq!(
             ra_violations.len(),
             1,
-            "Expected 1 required-attr violation for role, got: {ra_violations:?}"
+            "Expected 1 require-attr violation for role, got: {ra_violations:?}"
         );
         assert!(ra_violations[0].message.contains("role"));
     }
@@ -1643,12 +1643,12 @@ mod tests {
 
     #[test]
     fn namespaced_rule_uses_base_id_and_name_field() {
-        use crate::rules::attr_duplication::tests::make_element_with_attrs;
+        use crate::rules::no_duplicate_attr::tests::make_element_with_attrs;
 
         let arena = make_element_with_attrs("div", &[("class", "a"), ("class", "b")]);
         let spec = html_spec();
         let config = LintConfig {
-            rules: [("html-standard/attr-duplication".to_string(), Value::Bool(true))]
+            rules: [("html-standard/no-duplicate-attr".to_string(), Value::Bool(true))]
                 .into_iter()
                 .collect(),
             node_rules: vec![],
@@ -1658,28 +1658,28 @@ mod tests {
         let result = lint(&arena, &spec, &config);
         assert_eq!(result.violations.len(), 1);
         assert_eq!(
-            result.violations[0].rule_id, "attr-duplication",
+            result.violations[0].rule_id, "no-duplicate-attr",
             "ruleId must be the base rule name (matching TS behavior)"
         );
         assert_eq!(
             result.violations[0].name.as_deref(),
-            Some("html-standard/attr-duplication"),
+            Some("html-standard/no-duplicate-attr"),
             "name field must carry the namespace alias"
         );
     }
 
     #[test]
     fn multiple_namespaces_same_base_rule_run_independently() {
-        use crate::rules::attr_duplication::tests::make_element_with_attrs;
+        use crate::rules::no_duplicate_attr::tests::make_element_with_attrs;
 
         let arena = make_element_with_attrs("div", &[("id", "a"), ("id", "b")]);
         let spec = html_spec();
         // Two namespaced entries for the same base rule — both should produce violations
         let config = LintConfig {
             rules: [
-                ("html-standard/attr-duplication".to_string(), Value::Bool(true)),
+                ("html-standard/no-duplicate-attr".to_string(), Value::Bool(true)),
                 (
-                    "a11y/attr-duplication".to_string(),
+                    "a11y/no-duplicate-attr".to_string(),
                     Value::String("warning".to_string()),
                 ),
             ]
@@ -1696,7 +1696,7 @@ mod tests {
         let all_dup: Vec<_> = result
             .violations
             .iter()
-            .filter(|v| v.rule_id == "attr-duplication")
+            .filter(|v| v.rule_id == "no-duplicate-attr")
             .collect();
         assert_eq!(
             all_dup.len(),
@@ -1705,8 +1705,8 @@ mod tests {
         );
         // Verify both namespaces are present
         let names: Vec<_> = all_dup.iter().map(|v| v.name.as_deref()).collect();
-        assert!(names.contains(&Some("html-standard/attr-duplication")));
-        assert!(names.contains(&Some("a11y/attr-duplication")));
+        assert!(names.contains(&Some("html-standard/no-duplicate-attr")));
+        assert!(names.contains(&Some("a11y/no-duplicate-attr")));
     }
 
     // --- NamedRuleGroup expansion tests ---
@@ -1757,7 +1757,7 @@ mod tests {
             "rules": {
                 "custom/multi": {
                     "rules": {
-                        "attr-duplication": true,
+                        "no-duplicate-attr": true,
                         "class-naming": "/^[a-z]+$/"
                     }
                 }
@@ -1769,20 +1769,20 @@ mod tests {
         let duplication: Vec<_> = result
             .violations
             .iter()
-            .filter(|v| v.rule_id == "attr-duplication" && v.name.as_deref() == Some("custom/multi/attr-duplication"))
+            .filter(|v| v.rule_id == "no-duplicate-attr" && v.name.as_deref() == Some("custom/multi/no-duplicate-attr"))
             .collect();
         let naming: Vec<_> = result
             .violations
             .iter()
             .filter(|v| v.rule_id == "class-naming" && v.name.as_deref() == Some("custom/multi/class-naming"))
             .collect();
-        assert_eq!(duplication.len(), 1, "attr-duplication should fire once");
+        assert_eq!(duplication.len(), 1, "no-duplicate-attr should fire once");
         assert_eq!(naming.len(), 1, "class-naming should fire once");
     }
 
     #[test]
     fn named_rule_group_severity_inherited() {
-        use crate::rules::attr_duplication::tests::make_element_with_attrs;
+        use crate::rules::no_duplicate_attr::tests::make_element_with_attrs;
 
         let arena = make_element_with_attrs("div", &[("id", "a"), ("id", "b")]);
         let spec = html_spec();
@@ -1791,7 +1791,7 @@ mod tests {
                 "a11y/dup": {
                     "severity": "warning",
                     "rules": {
-                        "attr-duplication": true
+                        "no-duplicate-attr": true
                     }
                 }
             }
@@ -1801,14 +1801,14 @@ mod tests {
         let result = lint(&arena, &spec, &config);
         assert_eq!(result.violations.len(), 1);
         assert_eq!(result.violations[0].severity, Severity::Warning);
-        assert_eq!(result.violations[0].rule_id, "attr-duplication");
+        assert_eq!(result.violations[0].rule_id, "no-duplicate-attr");
         assert_eq!(result.violations[0].name.as_deref(), Some("a11y/dup"));
     }
 
     #[test]
     fn named_rule_group_false_disables() {
         // false value for a NamedRuleGroup key should disable it
-        use crate::rules::attr_duplication::tests::make_element_with_attrs;
+        use crate::rules::no_duplicate_attr::tests::make_element_with_attrs;
 
         let arena = make_element_with_attrs("div", &[("id", "a"), ("id", "b")]);
         let spec = html_spec();
@@ -1826,7 +1826,7 @@ mod tests {
     #[test]
     fn named_rule_group_inner_false_skipped() {
         // Inner rule set to false should be skipped
-        use crate::rules::attr_duplication::tests::make_element_with_attrs;
+        use crate::rules::no_duplicate_attr::tests::make_element_with_attrs;
 
         let arena = make_element_with_attrs("div", &[("id", "a"), ("id", "b")]);
         let spec = html_spec();
@@ -1834,7 +1834,7 @@ mod tests {
             "rules": {
                 "test/group": {
                     "rules": {
-                        "attr-duplication": false,
+                        "no-duplicate-attr": false,
                         "class-naming": "/^[a-z]+$/"
                     }
                 }
@@ -1843,33 +1843,33 @@ mod tests {
         .unwrap();
 
         let result = lint(&arena, &spec, &config);
-        // attr-duplication is false → no violation from it
+        // no-duplicate-attr is false → no violation from it
         // class-naming → no class attr on test element → no violation
         let duplication: Vec<_> = result
             .violations
             .iter()
-            .filter(|v| v.rule_id.contains("attr-duplication"))
+            .filter(|v| v.rule_id.contains("no-duplicate-attr"))
             .collect();
         assert!(
             duplication.is_empty(),
-            "attr-duplication should be disabled within the group"
+            "no-duplicate-attr should be disabled within the group"
         );
     }
 
     #[test]
     fn named_rule_group_coexists_with_plain_rule() {
         // Both a NamedRuleGroup and a plain rule for the same base rule
-        use crate::rules::attr_duplication::tests::make_element_with_attrs;
+        use crate::rules::no_duplicate_attr::tests::make_element_with_attrs;
 
         let arena = make_element_with_attrs("div", &[("id", "a"), ("id", "b")]);
         let spec = html_spec();
         let config: LintConfig = serde_json::from_value(serde_json::json!({
             "rules": {
-                "attr-duplication": true,
+                "no-duplicate-attr": true,
                 "html-standard/dup": {
                     "severity": "warning",
                     "rules": {
-                        "attr-duplication": true
+                        "no-duplicate-attr": true
                     }
                 }
             }
@@ -1883,7 +1883,7 @@ mod tests {
         let all: Vec<_> = result
             .violations
             .iter()
-            .filter(|v| v.rule_id == "attr-duplication")
+            .filter(|v| v.rule_id == "no-duplicate-attr")
             .collect();
         assert_eq!(
             all.len(),
@@ -1902,11 +1902,11 @@ mod tests {
     fn is_named_rule_group_detection() {
         // Positive cases
         assert!(is_named_rule_group(&serde_json::json!({
-            "rules": { "id-duplication": true }
+            "rules": { "no-duplicate-id": true }
         })));
         assert!(is_named_rule_group(&serde_json::json!({
             "specConformance": "normative",
-            "rules": { "id-duplication": true }
+            "rules": { "no-duplicate-id": true }
         })));
         assert!(is_named_rule_group(&serde_json::json!({
             "severity": "warning",
@@ -1930,7 +1930,7 @@ mod tests {
 
     #[test]
     fn named_rule_group_empty_rules_no_crash() {
-        use crate::rules::attr_duplication::tests::make_element_with_attrs;
+        use crate::rules::no_duplicate_attr::tests::make_element_with_attrs;
 
         let arena = make_element_with_attrs("div", &[("id", "a"), ("id", "b")]);
         let spec = html_spec();
@@ -1950,7 +1950,7 @@ mod tests {
 
     #[test]
     fn named_rule_group_all_false_rules_no_violations() {
-        use crate::rules::attr_duplication::tests::make_element_with_attrs;
+        use crate::rules::no_duplicate_attr::tests::make_element_with_attrs;
 
         let arena = make_element_with_attrs("div", &[("id", "a"), ("id", "b")]);
         let spec = html_spec();
@@ -1958,7 +1958,7 @@ mod tests {
             "rules": {
                 "test/all-false": {
                     "rules": {
-                        "attr-duplication": false
+                        "no-duplicate-attr": false
                     }
                 }
             }
@@ -1972,12 +1972,12 @@ mod tests {
 
     #[test]
     fn plain_rule_id_still_works() {
-        use crate::rules::attr_duplication::tests::make_element_with_attrs;
+        use crate::rules::no_duplicate_attr::tests::make_element_with_attrs;
 
         let arena = make_element_with_attrs("div", &[("class", "a"), ("class", "b")]);
         let spec = html_spec();
         let config = LintConfig {
-            rules: [("attr-duplication".to_string(), Value::Bool(true))]
+            rules: [("no-duplicate-attr".to_string(), Value::Bool(true))]
                 .into_iter()
                 .collect(),
             node_rules: vec![],
@@ -1987,7 +1987,7 @@ mod tests {
         let result = lint(&arena, &spec, &config);
         assert_eq!(result.violations.len(), 1);
         assert_eq!(
-            result.violations[0].rule_id, "attr-duplication",
+            result.violations[0].rule_id, "no-duplicate-attr",
             "Plain ruleId without namespace must be preserved"
         );
     }
@@ -2036,7 +2036,7 @@ mod tests {
         let spec = html_spec();
         let config: LintConfig = serde_json::from_value(serde_json::json!({
             "rules": {
-                "attr-duplication": true
+                "no-duplicate-attr": true
             },
             "nodeRules": [
                 {
@@ -2052,7 +2052,7 @@ mod tests {
         let dup: Vec<_> = result
             .violations
             .iter()
-            .filter(|v| v.rule_id == "attr-duplication")
+            .filter(|v| v.rule_id == "no-duplicate-attr")
             .collect();
         let naming: Vec<_> = result
             .violations

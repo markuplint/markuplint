@@ -1,4 +1,4 @@
-//! `id-duplication` rule: reports duplicate `id` attribute values across all elements.
+//! `no-duplicate-id` rule: reports duplicate `id` attribute values across all elements.
 
 use std::collections::HashMap;
 
@@ -12,11 +12,11 @@ use crate::violation::Violation;
 #[cfg(test)]
 mod tests;
 
-pub struct IdDuplication;
+pub struct NoDuplicateId;
 
-impl Rule for IdDuplication {
+impl Rule for NoDuplicateId {
     fn id(&self) -> &'static str {
-        "id-duplication"
+        "no-duplicate-id"
     }
 
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {

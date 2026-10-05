@@ -1,4 +1,4 @@
-//! `ineffective-attr` rule: report attributes that have no effect on their owner element.
+//! `no-ineffective-attr` rule: report attributes that have no effect on their owner element.
 
 use markuplint_core::mlast::MLASTAttr;
 use markuplint_dom::arena::DomArena;
@@ -14,11 +14,11 @@ use crate::violation::Violation;
 #[cfg(test)]
 mod tests;
 
-pub struct IneffectiveAttr;
+pub struct NoIneffectiveAttr;
 
-impl Rule for IneffectiveAttr {
+impl Rule for NoIneffectiveAttr {
     fn id(&self) -> &'static str {
-        "ineffective-attr"
+        "no-ineffective-attr"
     }
 
     /// Matches TS `createRule({ defaultSeverity: 'warning' })`.

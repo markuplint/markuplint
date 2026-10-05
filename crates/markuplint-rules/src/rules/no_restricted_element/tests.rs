@@ -1,9 +1,9 @@
-//! Tests for `disallowed-element` rule.
+//! Tests for `no-restricted-element` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   disallowed-element-invalid-001  → disallowed_element_invalid_001
-//!   disallowed-element-invalid-002  → disallowed_element_invalid_002
-//!   disallowed-element-invalid-003  → disallowed_element_invalid_003
+//!   no-restricted-element-invalid-001  → no_restricted_element_invalid_001
+//!   no-restricted-element-invalid-002  → no_restricted_element_invalid_002
+//!   no-restricted-element-invalid-003  → no_restricted_element_invalid_003
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::Severity;
@@ -26,15 +26,15 @@ fn spec() -> MLMLSpec {
     load_spec(include_str!("../../../../../packages/@markuplint/html-spec/index.json")).unwrap()
 }
 
-/// TS: `[disallowed-element-invalid-001]` — global rule
+/// TS: `[no-restricted-element-invalid-001]` — global rule
 #[test]
-fn disallowed_element_invalid_001() {
-    const _ID: &str = "disallowed-element-invalid-001";
+fn no_restricted_element_invalid_001() {
+    const _ID: &str = "no-restricted-element-invalid-001";
     let arena = html_arena("<div><hgroup><h1>Heading</h1></hgroup></div>");
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": {
-            "disallowed-element": ["hgroup"]
+            "no-restricted-element": ["hgroup"]
         }
     }))
     .unwrap();
@@ -47,21 +47,21 @@ fn disallowed_element_invalid_001() {
     assert_eq!(result.violations[0].message, "The \"hgroup\" element is disallowed");
 }
 
-/// TS: `[disallowed-element-invalid-002]` — node rule (check children)
+/// TS: `[no-restricted-element-invalid-002]` — node rule (check children)
 #[test]
-fn disallowed_element_invalid_002() {
-    const _ID: &str = "disallowed-element-invalid-002";
+fn no_restricted_element_invalid_002() {
+    const _ID: &str = "no-restricted-element-invalid-002";
     let arena = html_arena("<h1><span>Title</span><small>Sub-title</small></h1>");
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": {
-            "disallowed-element": true
+            "no-restricted-element": true
         },
         "nodeRules": [
             {
                 "selector": "h1, h2, h3, h4, h5, h6",
                 "rules": {
-                    "disallowed-element": ["small"]
+                    "no-restricted-element": ["small"]
                 }
             }
         ]
@@ -76,18 +76,18 @@ fn disallowed_element_invalid_002() {
     assert_eq!(result.violations[0].message, "The \"small\" element is disallowed");
 }
 
-/// TS: `[disallowed-element-invalid-003]` — Recommend (label + :model(interactive))
+/// TS: `[no-restricted-element-invalid-003]` — Recommend (label + :model(interactive))
 #[test]
-fn disallowed_element_invalid_003() {
-    const _ID: &str = "disallowed-element-invalid-003";
+fn no_restricted_element_invalid_003() {
+    const _ID: &str = "no-restricted-element-invalid-003";
 
     // Sub-test 1: nodeRule with ['label'] selector
     let arena = html_arena(r#"<details><summary><label id="foo">foo</label></summary><input id="foo"/></details>"#);
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
-        "rules": { "disallowed-element": true },
+        "rules": { "no-restricted-element": true },
         "nodeRules": [
-            { "selector": "summary", "rules": { "disallowed-element": ["label"] } }
+            { "selector": "summary", "rules": { "no-restricted-element": ["label"] } }
         ]
     }))
     .unwrap();
@@ -102,9 +102,9 @@ fn disallowed_element_invalid_003() {
     // Sub-test 2: nodeRule with [':model(interactive)'] selector
     let arena2 = html_arena(r#"<details><summary><label id="foo">foo</label></summary><input id="foo"/></details>"#);
     let config2: LintConfig = serde_json::from_value(serde_json::json!({
-        "rules": { "disallowed-element": true },
+        "rules": { "no-restricted-element": true },
         "nodeRules": [
-            { "selector": "summary", "rules": { "disallowed-element": [":model(interactive)"] } }
+            { "selector": "summary", "rules": { "no-restricted-element": [":model(interactive)"] } }
         ]
     }))
     .unwrap();

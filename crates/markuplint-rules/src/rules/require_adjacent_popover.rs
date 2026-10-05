@@ -1,4 +1,4 @@
-//! `neighbor-popovers` rule: no focusable or perceptible content between popover trigger and target.
+//! `require-adjacent-popover` rule: no focusable or perceptible content between popover trigger and target.
 
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::helpers;
@@ -9,11 +9,11 @@ use crate::aria::may_be_focusable::may_be_focusable;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
-pub struct NeighborPopovers;
+pub struct RequireAdjacentPopover;
 
-impl Rule for NeighborPopovers {
+impl Rule for RequireAdjacentPopover {
     fn id(&self) -> &'static str {
-        "neighbor-popovers"
+        "require-adjacent-popover"
     }
 
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
@@ -271,7 +271,7 @@ mod tests {
 
         let arena = builder.finish();
         let s = spec();
-        let rule = NeighborPopovers;
+        let rule = RequireAdjacentPopover;
         let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
@@ -334,7 +334,7 @@ mod tests {
 
         let arena = builder.finish();
         let s = spec();
-        let rule = NeighborPopovers;
+        let rule = RequireAdjacentPopover;
         let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
         assert_eq!(
@@ -389,7 +389,7 @@ mod tests {
 
         let arena = builder.finish();
         let s = spec();
-        let rule = NeighborPopovers;
+        let rule = RequireAdjacentPopover;
         let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
         assert_eq!(
@@ -456,7 +456,7 @@ mod tests {
 
         let arena = builder.finish();
         let s = spec();
-        let rule = NeighborPopovers;
+        let rule = RequireAdjacentPopover;
         let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }

@@ -1,4 +1,4 @@
-//! `redundant-accessible-name` rule: detects elements with multiple accessible name sources
+//! `no-redundant-accessible-name` rule: detects elements with multiple accessible name sources
 //! where a higher-priority source overrides a lower-priority one.
 
 use markuplint_dom::arena::{DomArena, NodeId};
@@ -13,11 +13,11 @@ use crate::aria::is_exposed::is_exposed;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
-pub struct RedundantAccessibleName;
+pub struct NoRedundantAccessibleName;
 
-impl Rule for RedundantAccessibleName {
+impl Rule for NoRedundantAccessibleName {
     fn id(&self) -> &'static str {
-        "redundant-accessible-name"
+        "no-redundant-accessible-name"
     }
 
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
@@ -277,7 +277,7 @@ pub mod tests {
             severity: Severity::Warning,
             ..Default::default()
         });
-        RedundantAccessibleName.verify(&arena, &spec, &config)
+        NoRedundantAccessibleName.verify(&arena, &spec, &config)
     }
 
     fn run_with_options(html: &str, options: Value) -> Vec<Violation> {
@@ -288,7 +288,7 @@ pub mod tests {
             options,
             ..Default::default()
         });
-        RedundantAccessibleName.verify(&arena, &spec, &config)
+        NoRedundantAccessibleName.verify(&arena, &spec, &config)
     }
 
     // --- No violations (single source) ---

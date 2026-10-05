@@ -1,4 +1,4 @@
-//! `no-use-event-handler-attr` rule: disallow inline event handler attributes.
+//! `no-event-handler-attr` rule: disallow inline event handler attributes.
 
 use markuplint_core::mlast::MLASTAttr;
 use markuplint_dom::arena::DomArena;
@@ -8,11 +8,11 @@ use crate::helpers::pattern_match;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
-pub struct NoUseEventHandlerAttr;
+pub struct NoEventHandlerAttr;
 
-impl Rule for NoUseEventHandlerAttr {
+impl Rule for NoEventHandlerAttr {
     fn id(&self) -> &'static str {
-        "no-use-event-handler-attr"
+        "no-event-handler-attr"
     }
 
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
@@ -94,7 +94,7 @@ impl Rule for NoUseEventHandlerAttr {
 mod tests {
     use super::*;
     use crate::rule::{RuleConfig, RuleConfigSet};
-    use crate::rules::attr_duplication::tests::make_element_with_attrs;
+    use crate::rules::no_duplicate_attr::tests::make_element_with_attrs;
     use crate::violation::Severity;
     use markuplint_types::spec::load_spec;
     use markuplint_types::spec::types::MLMLSpec;
@@ -107,7 +107,7 @@ mod tests {
     fn onclick_reported() {
         let arena = make_element_with_attrs("button", &[("onclick", "alert()")]);
         let s = spec();
-        let rule = NoUseEventHandlerAttr;
+        let rule = NoEventHandlerAttr;
         let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
         assert_eq!(violations[0].message, "The \"onclick\" attribute is disallowed");
@@ -117,7 +117,7 @@ mod tests {
     fn onload_reported() {
         let arena = make_element_with_attrs("body", &[("onload", "init()")]);
         let s = spec();
-        let rule = NoUseEventHandlerAttr;
+        let rule = NoEventHandlerAttr;
         let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
         assert_eq!(violations[0].message, "The \"onload\" attribute is disallowed");
@@ -127,7 +127,7 @@ mod tests {
     fn non_event_attr_no_violation() {
         let arena = make_element_with_attrs("div", &[("class", "foo"), ("id", "bar")]);
         let s = spec();
-        let rule = NoUseEventHandlerAttr;
+        let rule = NoEventHandlerAttr;
         let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
@@ -136,7 +136,7 @@ mod tests {
     fn disabled_by_config() {
         let arena = make_element_with_attrs("button", &[("onclick", "alert()")]);
         let s = spec();
-        let rule = NoUseEventHandlerAttr;
+        let rule = NoEventHandlerAttr;
         let config = RuleConfig {
             severity: Severity::Error,
             value: serde_json::Value::Bool(false),
@@ -152,7 +152,7 @@ mod tests {
     fn on_attribute_alone_not_event_handler() {
         let arena = make_element_with_attrs("div", &[("on", "value")]);
         let s = spec();
-        let rule = NoUseEventHandlerAttr;
+        let rule = NoEventHandlerAttr;
         let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
@@ -161,7 +161,7 @@ mod tests {
     fn disabled_by_false_value() {
         let arena = make_element_with_attrs("button", &[("onclick", "doSomething()")]);
         let s = spec();
-        let rule = NoUseEventHandlerAttr;
+        let rule = NoEventHandlerAttr;
         let config = RuleConfig {
             value: serde_json::Value::Bool(false),
             ..Default::default()
@@ -175,7 +175,7 @@ mod tests {
         // value: ["click"] → only onclick is disallowed
         let arena = make_element_with_attrs("button", &[("onclick", "x()"), ("onload", "y()")]);
         let s = spec();
-        let rule = NoUseEventHandlerAttr;
+        let rule = NoEventHandlerAttr;
         let config = RuleConfig {
             value: serde_json::json!(["click"]),
             ..Default::default()
@@ -189,7 +189,7 @@ mod tests {
     fn ignore_option_skips_attr() {
         let arena = make_element_with_attrs("div", &[("onclick", "x()"), ("onload", "y()")]);
         let s = spec();
-        let rule = NoUseEventHandlerAttr;
+        let rule = NoEventHandlerAttr;
         let config = RuleConfig {
             options: serde_json::json!({ "ignore": ["onclick"] }),
             ..Default::default()

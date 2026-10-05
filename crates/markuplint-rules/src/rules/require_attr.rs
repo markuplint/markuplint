@@ -1,4 +1,4 @@
-//! `required-attr` rule: report elements missing required attributes per spec.
+//! `require-attr` rule: report elements missing required attributes per spec.
 
 use markuplint_core::mlast::{MLASTAttr, NamespaceURI};
 use markuplint_dom::arena::DomArena;
@@ -10,11 +10,11 @@ use markuplint_types::spec::types::{AttributeCondition, AttributeRequired, MLMLS
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
-pub struct RequiredAttr;
+pub struct RequireAttr;
 
-impl Rule for RequiredAttr {
+impl Rule for RequireAttr {
     fn id(&self) -> &'static str {
-        "required-attr"
+        "require-attr"
     }
 
     #[allow(clippy::too_many_lines)]
@@ -213,7 +213,7 @@ fn condition_matches(condition: &AttributeCondition, arena: &DomArena, node_id: 
 mod tests {
     use super::*;
     use crate::rule::{RuleConfig, RuleConfigSet};
-    use crate::rules::attr_duplication::tests::make_element_with_attrs;
+    use crate::rules::no_duplicate_attr::tests::make_element_with_attrs;
     use markuplint_types::spec::load_spec;
 
     fn spec() -> MLMLSpec {
@@ -225,7 +225,7 @@ mod tests {
         // <optgroup> always requires "label"
         let arena = make_element_with_attrs("optgroup", &[]);
         let s = spec();
-        let rule = RequiredAttr;
+        let rule = RequireAttr;
         let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(
             violations.iter().any(|v| v.message.contains("\"label\"")),
@@ -237,7 +237,7 @@ mod tests {
     fn optgroup_with_label_no_violation() {
         let arena = make_element_with_attrs("optgroup", &[("label", "Group 1")]);
         let s = spec();
-        let rule = RequiredAttr;
+        let rule = RequireAttr;
         let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty(), "Expected no violations, got: {violations:?}");
     }
@@ -247,7 +247,7 @@ mod tests {
         // <track> always requires "src"
         let arena = make_element_with_attrs("track", &[]);
         let s = spec();
-        let rule = RequiredAttr;
+        let rule = RequireAttr;
         let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(
             violations.iter().any(|v| v.message.contains("\"src\"")),
@@ -260,7 +260,7 @@ mod tests {
         // <img src="photo.jpg" alt="A photo"> → no violation (src and alt present)
         let arena = make_element_with_attrs("img", &[("src", "photo.jpg"), ("alt", "A photo")]);
         let s = spec();
-        let rule = RequiredAttr;
+        let rule = RequireAttr;
         let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(
             violations.is_empty(),
@@ -273,7 +273,7 @@ mod tests {
         // <optgroup> requires "label", but ignoreAttrs: ["label"] should skip it
         let arena = make_element_with_attrs("optgroup", &[]);
         let s = spec();
-        let rule = RequiredAttr;
+        let rule = RequireAttr;
         let config = RuleConfig {
             options: serde_json::json!({ "ignoreAttrs": ["label"] }),
             ..Default::default()
@@ -291,7 +291,7 @@ mod tests {
         // Config value array with object format: [{ "name": "title" }]
         let arena = make_element_with_attrs("div", &[]);
         let s = spec();
-        let rule = RequiredAttr;
+        let rule = RequireAttr;
         let config = RuleConfig {
             value: serde_json::json!([{ "name": "title" }]),
             ..Default::default()
@@ -308,7 +308,7 @@ mod tests {
         // Config with object format, attribute is present → no violation
         let arena = make_element_with_attrs("div", &[("title", "Hello")]);
         let s = spec();
-        let rule = RequiredAttr;
+        let rule = RequireAttr;
         let config = RuleConfig {
             value: serde_json::json!([{ "name": "title" }]),
             ..Default::default()
@@ -327,7 +327,7 @@ mod tests {
         // (img spec has requiredEither: ["srcset"] on src, and vice versa)
         let arena = make_element_with_attrs("img", &[("alt", "A photo")]);
         let s = spec();
-        let rule = RequiredAttr;
+        let rule = RequireAttr;
         let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(
             violations
@@ -341,11 +341,11 @@ mod tests {
     fn img_without_alt_no_violation() {
         // <img src="photo.jpg"> → no violation in the spec data
         // Note: alt on <img> is NOT marked as "required" in the HTML spec JSON;
-        // the TS version handles this via a separate `required-element` or
+        // the TS version handles this via a separate `require-element` or
         // accessibility rule. This test documents the current Rust behavior.
         let arena = make_element_with_attrs("img", &[("src", "photo.jpg")]);
         let s = spec();
-        let rule = RequiredAttr;
+        let rule = RequireAttr;
         let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(
             violations.is_empty(),

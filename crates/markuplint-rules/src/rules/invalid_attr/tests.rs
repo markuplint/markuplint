@@ -73,7 +73,7 @@
 
 use super::*;
 use crate::rule::{RuleConfig, RuleConfigSet};
-use crate::rules::attr_duplication::tests::make_element_with_attrs;
+use crate::rules::no_duplicate_attr::tests::make_element_with_attrs;
 use crate::violation::Severity;
 use markuplint_types::spec::load_spec;
 
