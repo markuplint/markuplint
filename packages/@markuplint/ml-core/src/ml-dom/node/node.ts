@@ -857,8 +857,9 @@ export abstract class MLNode<
 					}
 					return node;
 				}) ?? [];
+			const nodeStore = getNodeStoreFor(this.#ownerDocument);
 			const childNodes = astChildren
-				.map(node => getNodeStoreFor(this.#ownerDocument).getNode<typeof node, T, O>(node))
+				.map(node => nodeStore.getNode<typeof node, T, O>(node))
 				.filter(node => isChildNode(node));
 
 			// Cache
