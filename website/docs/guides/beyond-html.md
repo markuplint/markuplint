@@ -255,8 +255,8 @@ Instead of manually listing every component, you can let Markuplint **scan your 
 This single configuration replaces what might otherwise be dozens of manual pretender entries. When Markuplint runs, it analyzes your component files and determines:
 
 - **Which HTML element** each component renders as its root element
-- **Whether the component accepts children** (slots detection)
-- **Static attributes** on the root element
+- **Whether the component accepts children** (slots detection), which element wraps them, and what the component renders around them
+- **Attributes** on the root element. An attribute whose value is an expression (such as `:type="kind"` in Vue) is recorded as present with a value that is not validated
 
 #### Supported file types
 

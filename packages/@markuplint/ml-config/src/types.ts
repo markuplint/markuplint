@@ -217,15 +217,36 @@ export type PretenderDetails = {
 	readonly scan?: readonly PretenderScanConfig[];
 
 	/**
-	 * When `true`, resolves pretenders on demand by scanning the lint
-	 * target's own import graph instead of requiring `files`/`scan`
+	 * When `true` (or an object), resolves pretenders on demand by scanning
+	 * the lint target's own import graph instead of requiring `files`/`scan`
 	 * pre-configuration. Because only the config file is filesystem-watched,
 	 * results can go stale in watch mode / editor sessions if an imported
 	 * component file changes without the config changing too.
 	 *
+	 * The object form tunes the walk ({@link PretenderAutoOptions}); `true`
+	 * and `{}` use the defaults. When configs are merged, the right side
+	 * replaces this value as a whole (the two forms are never combined).
+	 *
 	 * @experimental
 	 */
-	readonly auto?: boolean;
+	readonly auto?: boolean | PretenderAutoOptions;
+};
+
+/**
+ * Options of the object form of {@link PretenderDetails.auto}.
+ *
+ * @experimental
+ */
+export type PretenderAutoOptions = {
+	/**
+	 * How many import hops from the linted file are followed. `0` considers
+	 * only the linted file itself. Defaults to `8`.
+	 *
+	 * Must be a non-negative integer; `config.schema.json` enforces it, but a
+	 * config handed over the API directly is not validated: a negative number
+	 * or `NaN` behaves like `0`, and a fraction is rounded up.
+	 */
+	readonly depth?: number;
 };
 
 /**
@@ -332,9 +353,46 @@ export type OriginalNode = {
 	 * );
 	 * ```
 	 *
+	 * At the usage site, the children given to the component are evaluated
+	 * against the content model of the element that wraps the slot:
+	 *
+	 * - `true` or omitted: the outermost element (`element`).
+	 * - An array with exactly one {@link Slot}: that slot's `element`.
+	 * - An array with two or more slots: the children are not validated,
+	 *   because the wrapper each child belongs to is unknown.
+	 * - `null`: there is no slot position, so {@link OriginalNode.contents}
+	 *   is the whole content and given children are appended after it.
+	 *   The accessible name computation does not use the given children,
+	 *   because the component does not render them.
+	 *
 	 * @experimental
 	 */
 	readonly slots?: null | true | readonly Slot[];
+
+	/**
+	 * The static direct children of the element that wraps the slot
+	 * (the outermost element when `slots` is `true` or `null`,
+	 * otherwise each {@link Slot}), in document order.
+	 *
+	 * Permitted-content style rules evaluate the children at the usage site as
+	 * this list with the given children substituted for the `{ slot: true }` entry.
+	 * That is what lets `<details>{children}</details>` still require a `summary`
+	 * while `<picture>{children}<img /></picture>` does not report a missing `img`.
+	 *
+	 * When omitted, the given children are the whole content.
+	 *
+	 * Known limitation: `permitted-contents`, `require-owned-elements` and the accessible
+	 * name computation (name from content, `legend`, `caption`, and label text) read it. Other rules that
+	 * look at the children of the element, and the `title` of an SVG and the `option`s
+	 * of a `select` in the name computation, still see only the children given at the
+	 * usage site. In the name computation, `{ dynamic: true }` is not a source of
+	 * a name, so a component that renders only an expression is unnamed;
+	 * `require-accessible-name` does not report it because the expression may
+	 * be the name.
+	 *
+	 * @experimental
+	 */
+	readonly contents?: readonly PretenderContent[];
 
 	/**
 	 * Namespace
@@ -363,7 +421,35 @@ export type OriginalNode = {
 /**
  * @experimental
  */
-export type Slot = Omit<OriginalNode, 'slot'>;
+export type Slot = Omit<OriginalNode, 'slots'>;
+
+/**
+ * A static direct child of the element that wraps the slot.
+ *
+ * @experimental
+ */
+export type PretenderContent =
+	| {
+			/**
+			 * A native element that the component always renders there.
+			 */
+			readonly element: string;
+			readonly attrs?: readonly PretenderAttr[];
+	  }
+	| {
+			/**
+			 * The position where the children given at the usage site are placed.
+			 */
+			readonly slot: true;
+	  }
+	| {
+			/**
+			 * Something rendered there whose content is unknown at scan time
+			 * (an expression, a conditional, another component, and so on).
+			 * Required-content checks are skipped for the pretender.
+			 */
+			readonly dynamic: true;
+	  };
 
 export type PretenderAttr = {
 	/**
@@ -373,11 +459,26 @@ export type PretenderAttr = {
 
 	/**
 	 * If it omits this property, the attribute is resolved as a boolean.
+	 *
+	 * `{ dynamic: true }` means the attribute is present but its value is
+	 * unknown at scan time (e.g. `tabIndex={selected ? 0 : -1}`);
+	 * rules treat it as a dynamic value and do not validate it.
+	 *
+	 * `{ fromAttr }` takes the value of the attribute the component has at the usage site.
+	 * If that attribute is an expression (`<Button kind={kind} />`), the result is dynamic
+	 * too. With `omitIfMissing`, the element has no such attribute when the usage site does
+	 * not write it, which is what a component that forwards an optional prop renders
+	 * (`<button type={kind}>` omits `type` when `kind` is `undefined`); without it, the
+	 * attribute is present and empty.
 	 */
 	readonly value?:
 		| string
 		| {
 				readonly fromAttr: string;
+				readonly omitIfMissing?: true;
+		  }
+		| {
+				readonly dynamic: true;
 		  };
 };
 
@@ -440,6 +541,35 @@ export interface PretenderScanOptions {
 	 * unsaved buffer for the file currently being linted.
 	 */
 	readonly sources?: ReadonlyMap<string, string>;
+
+	/**
+	 * A sink the scan adds to: the normalized (`/`-delimited) absolute paths
+	 * of the files whose content its result depends on. A watch-mode host
+	 * watches them to learn when to scan again (#4065).
+	 *
+	 * Recorded: the files given to the scan; the source files the TypeScript
+	 * program reaches from them through relative imports (it follows none
+	 * under `autoScan`, which has collected the files itself, within its
+	 * depth); the files read to resolve an imported component (barrels and the
+	 * files they re-export from); and the `tsconfig.json` the imports were
+	 * resolved with, with the configs it `extends`.
+	 *
+	 * Not recorded — a change to these is picked up only by a later full
+	 * resolution of the config:
+	 *
+	 * - Declaration files, and anything under `node_modules`
+	 *   (`package.json` `exports` included).
+	 * - Files that do not exist yet: a candidate of an import specifier, a
+	 *   nearer `tsconfig.json`, a new file matching a `scan` glob. A file that
+	 *   was removed and comes back is one of them: once the result no longer
+	 *   reads it, it is no longer reported.
+	 * - Files that a plain `scan()` could reach only through a `paths` alias —
+	 *   the TypeScript program the JSX scanner builds reads no `tsconfig.json`
+	 *   and follows relative imports only (`autoScan` resolves aliases itself).
+	 *
+	 * The scan only adds; the caller owns the set.
+	 */
+	readonly dependencies?: Set<string>;
 }
 
 /**

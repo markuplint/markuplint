@@ -1,5 +1,5 @@
 import type { MLElement } from '../node/element.js';
-import type { AccnameElement, AccnameResolver, ARIAVersion } from '@markuplint/ml-spec';
+import type { AccnameElement, AccnameNode, AccnameResolver, ARIAVersion } from '@markuplint/ml-spec';
 
 import {
 	computeAccessibleName,
@@ -93,6 +93,22 @@ function createMLCoreResolver(
 			const attrName = ariaName.fromAttr;
 			const attrValue = targetEl.getAttributePretended(attrName);
 			return attrValue || null;
+		},
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		getChildNodes(target: AccnameElement): Iterable<AccnameNode> {
+			// TODO: Remove cast when AccnameResolver is generic (#3178)
+			const targetEl = target as MLElement<any, any>;
+			const context = targetEl.pretenderContext;
+			if (context?.type !== 'pretender') {
+				return targetEl.childNodes;
+			}
+			// The children the component renders: `as.childNodes` is empty when it never
+			// renders its children (`slots: null`), so text written inside `<Img>Save</Img>`
+			// does not become its name.
+			const given = [...context.as.childNodes];
+			// A pretended component renders its own elements (`contents`) around the
+			// children given at the usage site; the name can come from either.
+			return context.slotContent ? context.slotContent.fill(given) : given;
 		},
 	};
 }

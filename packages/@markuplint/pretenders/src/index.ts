@@ -36,7 +36,8 @@
  *
  * - {@link autoScan} — Resolves pretenders for a single lint target by walking its own
  *   import graph (breadth-first, extension-agnostic) instead of requiring pre-configured
- *   `files`/`scan` glob patterns. Backs the `pretenders: { auto: true }` config option.
+ *   `files`/`scan` glob patterns, up to a configurable number of import hops. Backs the
+ *   `pretenders: { auto: true }` config option.
  *
  * ## Caching
  *
@@ -52,6 +53,11 @@
  *   implementation detail that has shifted before: treat "call it after every edit" as
  *   the contract rather than reasoning about the exceptions.
  *
+ *   Which files an edit matters for is what {@link ScanOptions.dependencies} (and
+ *   {@link AutoScanOptions.dependencies}, {@link DisambiguateOptions.dependencies}) report: a host
+ *   watches those, and calls this when one of them changes. Edits to the entry file itself need
+ *   no watching — {@link autoScan} keys its cache on that file's text.
+ *
  *   Content that has no on-disk representation yet (an editor's unsaved buffer) is handled
  *   separately, by passing it as `sources` to {@link scan} / {@link autoScan} rather than
  *   by invalidating caches.
@@ -62,6 +68,7 @@ import { clearExportTableCache } from './dependency-mapper.js';
 import { clearModuleResolutionCaches } from './import-resolver/resolve-module-file.js';
 import { clearSourceFileCache } from './jsx/compiler-host.js';
 
+export type { AutoScanOptions } from './auto-scan.js';
 export { autoScan } from './auto-scan.js';
 export type { DisambiguateOptions } from './disambiguate.js';
 export { disambiguatePretenders } from './disambiguate.js';

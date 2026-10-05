@@ -1,5 +1,5 @@
 import type { Options } from '../types.js';
-import type { Element, ElementChecker, Block } from '@markuplint/ml-core';
+import type { Element, ElementChecker, Block, ChildNode } from '@markuplint/ml-core';
 import type { ARIARole, ARIAVersion } from '@markuplint/ml-spec';
 
 import {
@@ -9,6 +9,8 @@ import {
 	isTransparentForOwnership,
 } from '@markuplint/ml-spec';
 
+import { expandChildren, isContentMutable } from '../../permitted-contents/slot-content.js';
+
 /**
  * Represents a classified child node when checking required owned elements.
  *
@@ -16,10 +18,11 @@ import {
  * - `BUSY`: the child has `aria-busy="true"`, indicating content is still loading.
  * - `OTHER`: the child is an element but does not satisfy any required owned role.
  * - `PB`: the child is a preprocessor block (template syntax), which may produce required elements.
+ * - `UNKNOWN`: the element is a pretended component whose rendered children cannot be known.
  * - `NO_ELEMENT`: the child is not an element node (e.g., text or comment).
  */
 type OwnedElement =
-	| [node: Element<boolean, Options>, type: 'REQUIRED' | 'BUSY' | 'OTHER']
+	| [node: Element<boolean, Options>, type: 'REQUIRED' | 'BUSY' | 'OTHER' | 'UNKNOWN']
 	| [node: Block<boolean, Options>, type: 'PB']
 	| [node: null, type: 'NO_ELEMENT'];
 
@@ -31,6 +34,8 @@ type OwnedElement =
  * For example, a `list` role must own at least one element with the `listitem` role.
  * This checker respects `aria-busy="true"` (which signals that content is still loading),
  * preprocessor blocks, and mutable children from template engines.
+ * For a pretended component, the owned elements are the ones the component renders
+ * itself (`contents`) together with the children given to it, not the usage site alone.
  *
  * @see https://w3c.github.io/aria/#mustContain
  * @param el - The element node to inspect for allowed accessibility child roles.
@@ -74,7 +79,7 @@ export const checkingRequiredOwnedElements: ElementChecker<
 			el.rule.options?.version ?? el.ownerMLDocument.ruleCommonSettings?.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
 		const children: OwnedElement[] = classifyChildren(el, role, ariaVersion);
 
-		if (children.some(([, type]) => type === 'BUSY')) {
+		if (children.some(([, type]) => type === 'BUSY' || type === 'UNKNOWN')) {
 			return;
 		}
 
@@ -105,13 +110,15 @@ export const checkingRequiredOwnedElements: ElementChecker<
 		 * </table>
 		 * ```
 		 */
-		if (el.hasMutableChildren(true)) {
+		// A virtual slot wrapper stands for the component, whose nodes are the ones given to it.
+		const component = el.pretenderContext?.type === 'origin' ? el.pretenderContext.origin : el;
+		if (component.hasMutableChildren(true) || isContentMutable(component, 'pretended')) {
 			return;
 		}
 
-		if (mayBeBeforeCreated(el)) {
+		if (mayBeBeforeCreated(getOwnedChildNodes(el) ?? [])) {
 			return {
-				scope: el,
+				scope: component,
 				message: t(
 					'{0}. Or, {1}',
 					t(
@@ -127,7 +134,7 @@ export const checkingRequiredOwnedElements: ElementChecker<
 		}
 
 		return {
-			scope: el,
+			scope: component,
 			message: t(
 				'{0} expects {1}',
 				t('the "{0*}" {1}', role.name, 'role'),
@@ -145,17 +152,14 @@ export const checkingRequiredOwnedElements: ElementChecker<
  * @param el - The element to inspect.
  * @returns `true` if the element is empty or only contains script/template children.
  */
-function mayBeBeforeCreated(
-	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Element<boolean, Options>,
-) {
-	if (el.isEmpty()) {
+function mayBeBeforeCreated(childNodes: readonly ChildNode<boolean, Options>[]) {
+	if (childNodes.every(child => child.is(child.TEXT_NODE) && child.textContent?.trim() === '')) {
 		return true;
 	}
 
-	return [...el.children].every(child => {
-		return ['script', 'template'].includes(child.localName);
-	});
+	return childNodes
+		.filter(child => child.is(child.ELEMENT_NODE))
+		.every(child => ['script', 'template'].includes(child.localName));
 }
 
 /**
@@ -176,14 +180,30 @@ function classifyChildren(
 	role: ARIARole,
 	version: ARIAVersion,
 ): OwnedElement[] {
+	const childNodes = getOwnedChildNodes(el);
+	if (!childNodes) {
+		return [[el, 'UNKNOWN']];
+	}
 	const result: OwnedElement[] = [];
-	for (const child of el.childNodes) {
+	for (const child of childNodes) {
 		if (child.is(child.ELEMENT_NODE)) {
 			if (child.matches('[aria-busy="true" i]')) {
 				result.push([child, 'BUSY']);
 				continue;
 			}
-			const computedChild = getComputedRole(child.ownerMLDocument.specs, child, version);
+			/**
+			 * The role of a child is resolved against its DOM parent. A child that a pretender
+			 * places somewhere other than under its DOM parent (a node given at the usage site
+			 * that the component renders inside its slot wrapper, or an element a fragment
+			 * component renders in place) would be judged against the wrong parent and lose
+			 * its role, so it is resolved on its own.
+			 */
+			const computedChild = getComputedRole(
+				child.ownerMLDocument.specs,
+				child,
+				version,
+				child.parentElement !== el,
+			);
 			if (
 				role.allowedAccessibilityChildRoles.some(ownedRole =>
 					isRequiredOwnedElement(
@@ -199,6 +219,10 @@ function classifyChildren(
 				continue;
 			}
 			if (isTransparentForOwnership(computedChild.role?.name, version)) {
+				if (isContentMutable(child, 'pretended')) {
+					result.push([child, 'UNKNOWN']);
+					continue;
+				}
 				result.push(...classifyChildren(child, role, version));
 				continue;
 			}
@@ -210,4 +234,49 @@ function classifyChildren(
 		}
 	}
 	return result;
+}
+
+/**
+ * The child nodes that `el` owns as the page renders them.
+ *
+ * For a pretended component this is what the component renders, not what is written
+ * at the usage site: the nodes it renders itself (`contents`) around the nodes given
+ * to it, `slotContent.fill(given)`. The nodes "given" are `as.childNodes`, which is
+ * empty when the component never renders its children (`slots: null`).
+ *
+ * - A single slot wrapper that differs from the outermost element sits between them:
+ *   the outermost element owns the wrapper, and the wrapper owns the filled nodes.
+ * - Several slot wrappers leave the owner of each node unknown, so `null` is returned
+ *   and nothing is claimed about the element.
+ *
+ * @param el - The element, or the virtual slot wrapper of a pretended component.
+ * @returns The child nodes, or `null` when they cannot be known.
+ */
+function getOwnedChildNodes(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element<boolean, Options>,
+): readonly ChildNode<boolean, Options>[] | null {
+	const context = el.pretenderContext;
+
+	if (context?.type === 'pretender') {
+		const wrapper = context.slotContent?.wrapper;
+		if (wrapper === null) {
+			return null;
+		}
+		if (wrapper && wrapper !== context.as) {
+			return [wrapper];
+		}
+		return expandChildren(el, [...context.as.childNodes], 'pretended');
+	}
+
+	// The virtual slot wrapper has no child nodes of its own.
+	if (context?.type === 'origin') {
+		const origin = context.origin;
+		const originContext = origin.pretenderContext;
+		if (originContext?.type === 'pretender' && originContext.slotContent?.wrapper === el) {
+			return expandChildren(origin, [...originContext.as.childNodes], 'pretended');
+		}
+	}
+
+	return expandChildren(el, [...el.childNodes], 'pretended');
 }

@@ -1,4 +1,4 @@
-import type { MLASTDocument, MLASTElement } from '@markuplint/ml-ast';
+import type { MLASTChildNode, MLASTDocument, MLASTElement } from '@markuplint/ml-ast';
 
 import { parser } from './parser.js';
 
@@ -9,18 +9,48 @@ export interface ComponentScanResult {
 	readonly rootElement: string | null;
 	readonly attrs: readonly ComponentScanAttr[];
 	readonly hasSlots: boolean;
+	readonly slotWrappers?: readonly ComponentScanSlotWrapper[];
+	readonly rootContents?: readonly ComponentScanContent[];
 	readonly scriptSource?: ComponentScanScriptSource;
+	readonly spreads?: readonly string[];
+	readonly hasSiblingRoots?: true;
 	readonly namespace?: 'svg';
 	readonly line?: number;
 	readonly col?: number;
 }
 
 /**
- * A static attribute extracted from a component's root element.
+ * An attribute extracted from an element of a component: a static one with its value, or
+ * a `dynamic` one whose value is an expression.
  */
 export interface ComponentScanAttr {
 	readonly name: string;
 	readonly value?: string;
+	/** The attribute is present and its value is an expression, unknown at scan time. `value` is omitted. */
+	readonly dynamic?: true;
+	/** The source of the expression of a `dynamic` attribute that is written as one expression. */
+	readonly expression?: string;
+}
+
+/**
+ * A direct child of an element that wraps a slot. A native element is itself
+ * (its own content is not tracked), the slot is its position, and anything
+ * else (an expression, a block, a component) is unknown content.
+ */
+export type ComponentScanContent =
+	| { readonly element: string; readonly attrs?: readonly ComponentScanAttr[] }
+	| { readonly slot: true }
+	| { readonly dynamic: true };
+
+/**
+ * An element that directly wraps a slot. A component has no `attrs` and no
+ * `contents`: what it renders is unknown.
+ */
+export interface ComponentScanSlotWrapper {
+	readonly element: string;
+	readonly isRoot: boolean;
+	readonly attrs: readonly ComponentScanAttr[];
+	readonly contents: readonly ComponentScanContent[];
 }
 
 /**
@@ -31,36 +61,249 @@ export interface ComponentScanScriptSource {
 	readonly offset: number;
 }
 
-function extractComponentInfo(doc: MLASTDocument): Omit<ComponentScanResult, 'hasSlots' | 'scriptSource'> | null {
-	const root = doc.nodeList.find((n): n is MLASTElement => n.type === 'starttag' && n.depth === 0 && !n.isFragment);
+function extractComponentInfo(
+	doc: MLASTDocument,
+): Omit<ComponentScanResult, 'hasSlots' | 'slotWrappers' | 'rootContents' | 'scriptSource'> | null {
+	const root = findRoot(doc);
 	if (!root) {
 		return null;
 	}
 
-	const attrs: ComponentScanAttr[] = [];
-	for (const attr of root.attributes) {
-		if (attr.type !== 'attr') {
-			continue;
-		}
-		const value = attr.value.raw;
-		if (value === '') {
-			attrs.push({ name: attr.nodeName });
-		} else {
-			attrs.push({ name: attr.nodeName, value });
-		}
-	}
-
+	const spreads = extractSpreads(root);
 	return {
 		rootElement: root.nodeName,
-		attrs,
+		attrs: extractAttrs(root),
+		...(spreads.length > 0 ? { spreads } : {}),
+		...(hasSiblingRoots(doc, root) ? { hasSiblingRoots: true as const } : {}),
 		namespace: root.namespace === 'http://www.w3.org/2000/svg' ? 'svg' : undefined,
 		line: root.line,
 		col: root.col,
 	};
 }
 
+/**
+ * The expressions of `v-bind="expr"` (without an argument), which gives the element the
+ * attributes of an object. `v-bind="$attrs"` is what the component receives and does not
+ * declare as props.
+ */
+function extractSpreads(el: MLASTElement): string[] {
+	return el.attributes.flatMap(attr =>
+		attr.type === 'attr' && attr.nodeName === 'v-bind' && attr.value.raw.trim() !== ''
+			? [attr.value.raw.trim()]
+			: [],
+	);
+}
+
+/**
+ * Another root beside the root element: an element (`v-else-if` / `v-else` continue the
+ * `v-if` before them and are not another root), text, or an interpolation such as `{{ x }}`.
+ */
+function hasSiblingRoots(doc: MLASTDocument, root: MLASTElement): boolean {
+	return doc.nodeList.some(n => {
+		if (n.uuid === root.uuid) {
+			return false;
+		}
+		if (n.type === 'text' || n.type === 'psblock') {
+			return n.depth === 0 && n.raw.trim() !== '';
+		}
+		return (
+			n.type === 'starttag' &&
+			n.depth === 0 &&
+			!n.isFragment &&
+			!n.attributes.some(attr => attr.type === 'attr' && /^v-else(?:-if)?$/.test(attr.nodeName))
+		);
+	});
+}
+
+function isSlotNode(n: MLASTChildNode): boolean {
+	return n.type === 'starttag' && n.nodeName === 'slot';
+}
+
 function detectSlots(doc: MLASTDocument): boolean {
-	return doc.nodeList.some(n => n.type === 'starttag' && n.nodeName === 'slot');
+	return doc.nodeList.some(n => n.type !== 'doctype' && isSlotNode(n));
+}
+
+function findRoot(doc: MLASTDocument): MLASTElement | undefined {
+	return doc.nodeList.find((n): n is MLASTElement => n.type === 'starttag' && n.depth === 0 && !n.isFragment);
+}
+
+function isElement(n: MLASTChildNode): n is MLASTElement {
+	return n.type === 'starttag';
+}
+
+/**
+ * A binding (`:type`, `v-bind:type`) is an attribute the element has, and its value is an
+ * expression: it is `dynamic` under its own name. Event handlers, `v-bind` objects, the other
+ * directives, and bindings without a name known here (modifiers, `[name]`) are not
+ * attributes by name and are left out.
+ */
+const BINDING = /^(?:v-bind:|:)([^.[]+)$/;
+const NOT_ATTRIBUTE = /^(?:v-|[@:.#])/;
+const SPECIAL_PROPS = new Set(['key', 'ref', 'is']);
+
+function extractAttrs(el: MLASTElement): ComponentScanAttr[] {
+	const attrs: ComponentScanAttr[] = [];
+	for (const attr of el.attributes) {
+		if (attr.type !== 'attr') {
+			continue;
+		}
+		const binding = BINDING.exec(attr.nodeName)?.[1]?.toLowerCase();
+		if (binding) {
+			if (!SPECIAL_PROPS.has(binding)) {
+				const expression = attr.value.raw.trim();
+				addAttr(attrs, { name: binding, dynamic: true, ...(expression === '' ? {} : { expression }) });
+			}
+			continue;
+		}
+		if (NOT_ATTRIBUTE.test(attr.nodeName)) {
+			continue;
+		}
+		const value = attr.value.raw;
+		if (value === '') {
+			addAttr(attrs, { name: attr.nodeName });
+		} else {
+			addAttr(attrs, { name: attr.nodeName, value });
+		}
+	}
+	return attrs;
+}
+
+/**
+ * One name written in two forms (`class="btn" :class="x"`) is one attribute: dynamic
+ * when any of the forms is, in the position of the first. It is not one expression any
+ * more, so it has no `expression`.
+ */
+function addAttr(attrs: ComponentScanAttr[], attr: ComponentScanAttr) {
+	const index = attrs.findIndex(existing => existing.name === attr.name);
+	const existing = attrs[index];
+	if (!existing) {
+		attrs.push(attr);
+	} else if (existing.dynamic || attr.dynamic) {
+		attrs[index] = { name: attr.name, dynamic: true };
+	}
+}
+
+function containsSlot(n: MLASTChildNode): boolean {
+	return isSlotNode(n) || ('childNodes' in n && n.childNodes.some(child => containsSlot(child)));
+}
+
+/**
+ * The nearest element above the node. Blocks, fragments and `<template>` are
+ * looked through: they are not elements the component renders.
+ */
+function findWrapper(n: MLASTChildNode, nodes: ReadonlyMap<string, MLASTChildNode>): MLASTElement | null {
+	let current = n.parentNodeUuid ? nodes.get(n.parentNodeUuid) : undefined;
+	while (current) {
+		if (isElement(current) && !current.isFragment && current.nodeName !== 'template') {
+			return current;
+		}
+		current = current.parentNodeUuid ? nodes.get(current.parentNodeUuid) : undefined;
+	}
+	return null;
+}
+
+function isWithin(n: MLASTChildNode, root: MLASTElement, nodes: ReadonlyMap<string, MLASTChildNode>): boolean {
+	let current: MLASTChildNode | undefined = n;
+	while (current) {
+		if (current.uuid === root.uuid) {
+			return true;
+		}
+		current = current.parentNodeUuid ? nodes.get(current.parentNodeUuid) : undefined;
+	}
+	return false;
+}
+
+function extractContents(el: MLASTElement): ComponentScanContent[] {
+	const entries: (ComponentScanContent | { readonly text: true })[] = [];
+	for (const child of el.childNodes) {
+		if (child.type === 'endtag' || child.type === 'comment') {
+			continue;
+		}
+		if (child.type === 'text') {
+			if (child.raw.trim() !== '') {
+				entries.push({ text: true });
+			}
+			continue;
+		}
+		if (
+			isElement(child) &&
+			child.attributes.some(attr => attr.type === 'attr' && /^v-(?:if|else-if|else|for)$/.test(attr.nodeName))
+		) {
+			// Whether it exists, and how many times, is decided at render time
+			entries.push({ dynamic: true });
+			continue;
+		}
+		if (containsSlot(child)) {
+			entries.push({ slot: true });
+			continue;
+		}
+		if (child.type === 'psblock') {
+			// Closing tags of blocks (`{/if}`) render nothing
+			if (!child.nodeName.startsWith('#ps:/')) {
+				entries.push({ dynamic: true });
+			}
+			continue;
+		}
+		if (isElement(child) && child.elementType === 'html' && child.nodeName !== 'template') {
+			const attrs = extractAttrs(child);
+			entries.push({ element: child.nodeName, ...(attrs.length > 0 ? { attrs } : {}) });
+			continue;
+		}
+		entries.push({ dynamic: true });
+	}
+	// Text beside elements can still satisfy a content model (`<ruby>漢<rt>kan</rt></ruby>`),
+	// so it is unknown content there. Text alone cannot be what a required child needs.
+	const hasElement = entries.some(entry => 'element' in entry);
+	const contents: ComponentScanContent[] = [];
+	for (const entry of entries) {
+		if (!('text' in entry)) {
+			contents.push(entry);
+			continue;
+		}
+		const last = contents.at(-1);
+		if (hasElement && !(last && 'dynamic' in last)) {
+			contents.push({ dynamic: true });
+		}
+	}
+	return contents;
+}
+
+/**
+ * Finds the element that directly wraps each slot inside the root element and
+ * what surrounds the slots: the direct children of the root.
+ */
+function scanSlotContent(doc: MLASTDocument): Pick<ComponentScanResult, 'slotWrappers' | 'rootContents'> {
+	const root = findRoot(doc);
+	if (!root) {
+		return {};
+	}
+
+	const nodes = new Map<string, MLASTChildNode>(
+		doc.nodeList.filter((n): n is MLASTChildNode => n.type !== 'doctype').map(n => [n.uuid, n]),
+	);
+	const wrappers = new Map<string, MLASTElement>();
+	for (const n of nodes.values()) {
+		if (!isSlotNode(n)) {
+			continue;
+		}
+		const wrapper = findWrapper(n, nodes);
+		if (wrapper && isWithin(wrapper, root, nodes)) {
+			wrappers.set(wrapper.uuid, wrapper);
+		}
+	}
+
+	return {
+		slotWrappers: [...wrappers.values()].map(wrapper => {
+			const isNative = wrapper.elementType === 'html';
+			return {
+				element: wrapper.nodeName,
+				isRoot: wrapper.uuid === root.uuid,
+				attrs: isNative ? extractAttrs(wrapper) : [],
+				contents: isNative ? extractContents(wrapper) : [],
+			};
+		}),
+		rootContents: extractContents(root),
+	};
 }
 
 function extractVueScriptSetup(source: string): ComponentScanScriptSource | null {
@@ -113,7 +356,7 @@ export const componentScanner = {
 		const hasSlots = detectSlots(doc);
 		const scriptSource = extractVueScriptSetup(sourceCode) ?? undefined;
 
-		return { ...info, hasSlots, scriptSource };
+		return { ...info, hasSlots, ...scanSlotContent(doc), scriptSource };
 	},
 
 	extractScriptSource(sourceCode: string): ComponentScanScriptSource | null {

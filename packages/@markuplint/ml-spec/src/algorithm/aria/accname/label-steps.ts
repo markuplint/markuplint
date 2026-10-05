@@ -3,7 +3,7 @@
 import type { AccnameElement, AccnameResolver, AccnameResult } from './types.js';
 
 import { ELEMENT_NODE, TEXT_NODE } from '../../../const/index.js';
-import { flattenText, makeResult, resolveLabel } from './helpers.js';
+import { flattenText, getChildNodes, makeResult, resolveLabel } from './helpers.js';
 
 /**
  * Part of AccName 1.2 §4.3.2 Step 2E — for labelable elements, the HTML label
@@ -63,7 +63,7 @@ function collectLabelText(
 	inLabelledbyTraversal: boolean,
 ): string {
 	const parts: string[] = [];
-	for (const child of label.childNodes) {
+	for (const child of getChildNodes(label, resolver)) {
 		if (child.nodeType === TEXT_NODE) {
 			parts.push(child.textContent ?? '');
 		} else if (child.nodeType === ELEMENT_NODE) {

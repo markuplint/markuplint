@@ -4,6 +4,7 @@ import type { ReadonlyDeep } from 'type-fest';
 
 import { order } from './order.js';
 import { representTransparentNodes } from './represent-transparent-nodes.js';
+import { expandChildren } from './slot-content.js';
 
 /**
  * Entry point for validating an element's child nodes against a content model definition.
@@ -29,9 +30,15 @@ export function start(
 	options: Options,
 	mode: Mode,
 ): ContentModelResult[] {
-	const childNodesPatterns = options.evaluateConditionalChildNodes
+	const givenPatterns = options.evaluateConditionalChildNodes
 		? el.conditionalChildNodes().map(childNodes => [...childNodes])
-		: [[...el.childNodes].filter(child => !(child.is(child.TEXT_NODE) && child.isWhitespace()))];
+		: [[...el.childNodes]];
+	const childNodesPatterns = givenPatterns.map(given => {
+		const children = expandChildren(el, given, mode);
+		return options.evaluateConditionalChildNodes
+			? [...children]
+			: children.filter(child => !(child.is(child.TEXT_NODE) && child.isWhitespace()));
+	});
 
 	return childNodesPatterns.flatMap<ContentModelResult>(childNodes => {
 		if (contents === false) {

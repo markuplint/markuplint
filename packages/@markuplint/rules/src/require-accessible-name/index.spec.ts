@@ -693,3 +693,360 @@ describe('Issues', () => {
 		).toStrictEqual([]);
 	});
 });
+
+describe('#4069', () => {
+	const jsx = { '.*': '@markuplint/jsx-parser' };
+
+	test('[require-accessible-name-issue-4069-001] the unknown content of the component may be its name', async () => {
+		expect(
+			(
+				await mlRuleTest(rule, '<MyButton label="Save" />', {
+					parser: jsx,
+					pretenders: [
+						{
+							selector: 'MyButton',
+							as: {
+								element: 'button',
+								contents: [{ dynamic: true }],
+							},
+						},
+					],
+				})
+			).violations,
+		).toStrictEqual([]);
+	});
+
+	test('[require-accessible-name-issue-4069-002] a static content is still reported', async () => {
+		expect(
+			(
+				await mlRuleTest(rule, '<MyButton />', {
+					parser: jsx,
+					pretenders: [
+						{
+							selector: 'MyButton',
+							as: {
+								element: 'button',
+								contents: [{ element: 'span' }],
+							},
+						},
+					],
+				})
+			).violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'Require accessible name',
+				raw: '<MyButton />',
+			},
+		]);
+	});
+
+	test('[require-accessible-name-issue-4069-003] a static name beside the unknown content is still used', async () => {
+		expect(
+			(
+				await mlRuleTest(rule, '<MyButton />', {
+					parser: jsx,
+					pretenders: [
+						{
+							selector: 'MyButton',
+							as: {
+								element: 'button',
+								contents: [{ element: 'span' }, { dynamic: true }],
+								attrs: [{ name: 'aria-label', value: 'Save' }],
+							},
+						},
+					],
+				})
+			).violations,
+		).toStrictEqual([]);
+	});
+
+	test('[require-accessible-name-issue-4069-004] the unknown content of a single slot wrapper may be the name', async () => {
+		expect(
+			(
+				await mlRuleTest(rule, '<MyButton />', {
+					parser: jsx,
+					pretenders: [
+						{
+							selector: 'MyButton',
+							as: {
+								element: 'button',
+								slots: [{ element: 'span', contents: [{ dynamic: true }] }],
+							},
+						},
+					],
+				})
+			).violations,
+		).toStrictEqual([]);
+	});
+
+	test('[require-accessible-name-issue-4069-005] the unknown content of a pretended child may be the name', async () => {
+		expect(
+			(
+				await mlRuleTest(rule, '<button><Label text="Save" /></button>', {
+					parser: jsx,
+					pretenders: [
+						{
+							selector: 'Label',
+							as: {
+								element: 'span',
+								contents: [{ dynamic: true }],
+							},
+						},
+					],
+				})
+			).violations,
+		).toStrictEqual([]);
+	});
+
+	test('[require-accessible-name-issue-4069-006] the unknown content of a pretended child placed in the contents may be the name', async () => {
+		expect(
+			(
+				await mlRuleTest(rule, '<MyButton><Label text="Save" /></MyButton>', {
+					parser: jsx,
+					pretenders: [
+						{
+							selector: 'MyButton',
+							as: {
+								element: 'button',
+								contents: [{ element: 'span' }, { slot: true }],
+							},
+						},
+						{
+							selector: 'Label',
+							as: {
+								element: 'span',
+								contents: [{ dynamic: true }],
+							},
+						},
+					],
+				})
+			).violations,
+		).toStrictEqual([]);
+	});
+
+	test('[require-accessible-name-issue-4069-007] the unknown content of a pretended child of the owned label may be the name', async () => {
+		expect(
+			(
+				await mlRuleTest(rule, '<label><Label text="Name" /><input /></label>', {
+					parser: jsx,
+					pretenders: [
+						{
+							selector: 'Label',
+							as: {
+								element: 'span',
+								contents: [{ dynamic: true }],
+							},
+						},
+					],
+				})
+			).violations,
+		).toStrictEqual([]);
+	});
+
+	test('[require-accessible-name-issue-4069-008] the unknown content of one of several slot wrappers may be the name', async () => {
+		expect(
+			(
+				await mlRuleTest(rule, '<MyButton />', {
+					parser: jsx,
+					pretenders: [
+						{
+							selector: 'MyButton',
+							as: {
+								element: 'button',
+								slots: [
+									{ element: 'span', contents: [{ slot: true }] },
+									{ element: 'span', contents: [{ dynamic: true }] },
+								],
+							},
+						},
+					],
+				})
+			).violations,
+		).toStrictEqual([]);
+	});
+
+	test('[require-accessible-name-issue-4069-009] a hidden pretended child is not read by the name computation and is still reported', async () => {
+		expect(
+			(
+				await mlRuleTest(rule, '<button><Icon aria-hidden="true" /></button>', {
+					parser: jsx,
+					pretenders: [
+						{
+							selector: 'Icon',
+							as: {
+								element: 'span',
+								inheritAttrs: true,
+								contents: [{ dynamic: true }],
+							},
+						},
+					],
+				})
+			).violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'Require accessible name',
+				raw: '<button>',
+			},
+		]);
+	});
+
+	test('[require-accessible-name-issue-4069-010] the unknown content of the element aria-labelledby refers to may be the name', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					'<div><button aria-labelledby="label1"></button><Label id="label1" text="Save" /></div>',
+					{
+						parser: jsx,
+						pretenders: [
+							{
+								selector: 'Label',
+								as: {
+									element: 'span',
+									inheritAttrs: true,
+									contents: [{ dynamic: true }],
+								},
+							},
+						],
+					},
+				)
+			).violations,
+		).toStrictEqual([]);
+	});
+
+	test('[require-accessible-name-issue-4069-011] a pretended child with a static content is still reported', async () => {
+		expect(
+			(
+				await mlRuleTest(rule, '<button><Icon /></button>', {
+					parser: jsx,
+					pretenders: [
+						{
+							selector: 'Icon',
+							as: {
+								element: 'span',
+								contents: [{ element: 'svg' }],
+							},
+						},
+					],
+				})
+			).violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'Require accessible name',
+				raw: '<button>',
+			},
+		]);
+	});
+
+	test('[require-accessible-name-issue-4069-012] a pretended child with the hidden attribute is not read by the name computation and is still reported', async () => {
+		expect(
+			(
+				await mlRuleTest(rule, '<button><Icon hidden /></button>', {
+					parser: jsx,
+					pretenders: [
+						{
+							selector: 'Icon',
+							as: {
+								element: 'span',
+								inheritAttrs: true,
+								contents: [{ dynamic: true }],
+							},
+						},
+					],
+				})
+			).violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'Require accessible name',
+				raw: '<button>',
+			},
+		]);
+	});
+
+	test('[require-accessible-name-issue-4069-013] aria-labelledby with a missing id and a reference to unknown content is not reported', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					'<div><button aria-labelledby="  missing   label1 "></button><Label id="label1" text="Save" /></div>',
+					{
+						parser: jsx,
+						pretenders: [
+							{
+								selector: 'Label',
+								as: {
+									element: 'span',
+									inheritAttrs: true,
+									contents: [{ dynamic: true }],
+								},
+							},
+						],
+					},
+				)
+			).violations,
+		).toStrictEqual([]);
+	});
+
+	test('[require-accessible-name-issue-4069-014] aria-labelledby referring only to static content is still reported', async () => {
+		expect(
+			(
+				await mlRuleTest(rule, '<div><button aria-labelledby="label1"></button><Label id="label1" /></div>', {
+					parser: jsx,
+					pretenders: [
+						{
+							selector: 'Label',
+							as: {
+								element: 'span',
+								inheritAttrs: true,
+								contents: [{ element: 'svg' }],
+							},
+						},
+					],
+				})
+			).violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 6,
+				message: 'Require accessible name',
+				raw: '<button aria-labelledby="label1">',
+			},
+		]);
+	});
+
+	test('[require-accessible-name-issue-4069-015] the unknown content of a pretended child of the label referred to by for may be the name', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					'<div><label for="input1"><Label text="Name" /></label><input id="input1" /></div>',
+					{
+						parser: jsx,
+						pretenders: [
+							{
+								selector: 'Label',
+								as: {
+									element: 'span',
+									contents: [{ dynamic: true }],
+								},
+							},
+						],
+					},
+				)
+			).violations,
+		).toStrictEqual([]);
+	});
+});

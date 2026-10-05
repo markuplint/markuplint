@@ -874,6 +874,26 @@ describe('Pretenders', () => {
 		});
 	});
 
+	test('auto: the object form replaces the boolean form as a whole, and vice versa', () => {
+		expect(mergeConfig({ pretenders: { auto: true } }, { pretenders: { auto: { depth: 3 } } })).toStrictEqual({
+			pretenders: { auto: { depth: 3 } },
+		});
+		expect(mergeConfig({ pretenders: { auto: { depth: 3 } } }, { pretenders: { auto: true } })).toStrictEqual({
+			pretenders: { auto: true },
+		});
+	});
+
+	test('auto: an omitted right side leaves the left side object form untouched', () => {
+		expect(
+			mergeConfig(
+				{ pretenders: { auto: { depth: 3 } } },
+				{ pretenders: { data: [{ selector: 'Comp', as: 'div' }] } },
+			),
+		).toStrictEqual({
+			pretenders: { auto: { depth: 3 }, data: [{ selector: 'Comp', as: 'div' }] },
+		});
+	});
+
 	test("auto: an omitted right side leaves the left side's value untouched", () => {
 		expect(
 			mergeConfig(

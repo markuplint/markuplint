@@ -11,6 +11,82 @@ import { clearExportTableCache, dependencyMapper } from './dependency-mapper.js'
 
 const fixtureDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures', 'dependency-mapper');
 
+describe('dependencyMapper: attributes through a chain', () => {
+	const iconButton = {
+		element: 'button',
+		attrs: [{ name: 'aria-label', value: { fromAttr: 'label', omitIfMissing: true as const } }],
+		slots: true as const,
+	};
+
+	test('Fancy -> IconButton -> button: the prop that Fancy passes on is the prop of the result', () => {
+		const map: PretenderDirectorMap = new Map([
+			['IconButton', ['IconButton', iconButton]],
+			[
+				'Fancy',
+				[
+					'Fancy',
+					{
+						element: 'IconButton',
+						attrs: [{ name: 'label', value: { fromAttr: 'title', omitIfMissing: true } }],
+						slots: true,
+					},
+				],
+			],
+		]);
+
+		expect(dependencyMapper(map).find(pretender => pretender.selector === 'Fancy')).toStrictEqual({
+			selector: 'Fancy',
+			_via: ['IconButton'],
+			as: {
+				element: 'button',
+				attrs: [{ name: 'aria-label', value: { fromAttr: 'title', omitIfMissing: true } }],
+				slots: true,
+			},
+		});
+	});
+
+	test('Page -> Fancy -> IconButton -> button: it composes one hop at a time', () => {
+		const map: PretenderDirectorMap = new Map([
+			['IconButton', ['IconButton', iconButton]],
+			[
+				'Fancy',
+				[
+					'Fancy',
+					{
+						element: 'IconButton',
+						attrs: [{ name: 'label', value: { fromAttr: 'title', omitIfMissing: true } }],
+						slots: true,
+					},
+				],
+			],
+			['Page', ['Page', { element: 'Fancy', attrs: [{ name: 'title', value: 'Save' }], slots: true }]],
+		]);
+
+		expect(dependencyMapper(map).find(pretender => pretender.selector === 'Page')).toStrictEqual({
+			selector: 'Page',
+			_via: ['Fancy', 'IconButton'],
+			as: {
+				element: 'button',
+				attrs: [{ name: 'aria-label', value: 'Save' }],
+				slots: true,
+			},
+		});
+	});
+
+	test('a component that does not pass the prop on gives no attribute', () => {
+		const map: PretenderDirectorMap = new Map([
+			['IconButton', ['IconButton', iconButton]],
+			['Plain', ['Plain', { element: 'IconButton', slots: true }]],
+		]);
+
+		expect(dependencyMapper(map).find(pretender => pretender.selector === 'Plain')).toStrictEqual({
+			selector: 'Plain',
+			_via: ['IconButton'],
+			as: { element: 'button', slots: true },
+		});
+	});
+});
+
 describe('dependencyMapper', () => {
 	test('B -> A', () => {
 		expect(

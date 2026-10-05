@@ -39,11 +39,14 @@ export type ImportPath = string;
  * Represents an attribute found on a JSX element during scanning.
  */
 export type Attr = {
-	/** The kind of attribute: static string, boolean, dynamic expression, or spread */
-	readonly nodeType: 'static' | 'boolean' | 'dynamic' | 'spread';
+	/**
+	 * The kind of attribute: static string, boolean, dynamic expression, a prop of the
+	 * component passed as it is (`aria-label={label}`), or spread
+	 */
+	readonly nodeType: 'static' | 'boolean' | 'dynamic' | 'prop' | 'spread';
 	/** The attribute name */
 	readonly name: string;
-	/** The attribute value (empty string for boolean, 'N/A' for spread) */
+	/** The attribute value (empty string for boolean, the name of the prop for `prop`, 'N/A' for spread) */
 	readonly value: string;
 	/** Optional type annotation for the attribute */
 	readonly type?: string;
