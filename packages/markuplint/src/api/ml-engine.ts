@@ -1106,7 +1106,7 @@ async function loadNapiBinding(): Promise<NapiBinding> {
  *
  * Rust LintConfig expects: `{ rules: {...}, node_rules: [...], child_node_rules: [...] }`
  *
- * Namespaced rule IDs (e.g., "html-standard/attr-duplication") are passed through as-is.
+ * Namespaced rule IDs (e.g., "html-standard/no-duplicate-attr") are passed through as-is.
  * Rust strips the namespace prefix internally for rule lookup and preserves the original
  * key in violation ruleIds.
  */
