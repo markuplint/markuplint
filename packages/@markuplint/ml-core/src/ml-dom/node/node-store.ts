@@ -1,3 +1,4 @@
+import type { MLDocument } from './document.js';
 import type { MLNode } from './node.js';
 import type { MappedNode } from './types.js';
 import type { MLASTNode } from '@markuplint/ml-ast';
@@ -84,9 +85,9 @@ export class NodeStore {
  * server, or a CLI run across many files), every parsed document's entire
  * node tree would stay reachable forever through a single shared `Map`.
  */
-const storesByDocument = new WeakMap<object, NodeStore>();
+const storesByDocument = new WeakMap<MLDocument<any, any>, NodeStore>();
 
-export function getNodeStoreFor(document: object): NodeStore {
+export function getNodeStoreFor(document: MLDocument<any, any>): NodeStore {
 	let store = storesByDocument.get(document);
 	if (!store) {
 		store = new NodeStore();

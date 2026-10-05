@@ -44,12 +44,17 @@ function createCore(sourceCode: string, pretenders: readonly Pretender[] = []) {
 
 describe('getNodeStoreFor', () => {
 	test('returns the same store for the same document object', () => {
-		const doc = {};
+		const doc = createCore('<div></div>').document;
+		if (doc instanceof Error) throw doc;
 		expect(getNodeStoreFor(doc)).toBe(getNodeStoreFor(doc));
 	});
 
 	test('returns independent stores for different document objects', () => {
-		expect(getNodeStoreFor({})).not.toBe(getNodeStoreFor({}));
+		const docA = createCore('<div></div>').document;
+		const docB = createCore('<span></span>').document;
+		if (docA instanceof Error) throw docA;
+		if (docB instanceof Error) throw docB;
+		expect(getNodeStoreFor(docA)).not.toBe(getNodeStoreFor(docB));
 	});
 });
 
