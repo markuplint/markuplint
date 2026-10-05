@@ -122,4 +122,16 @@ describe('NodeStore memory scoping (regression for the process-wide leak)', () =
 		const stillAlive = refs.filter(ref => ref.deref() !== undefined);
 		expect(stillAlive).toHaveLength(0);
 	});
+
+	test('a document with pretender-generated virtual elements is collectible', async () => {
+		const core = createCore('<x-btn></x-btn>', [{ selector: 'x-btn', as: 'button' }]);
+		expect(firstNode(core).nodeName).toBe('BUTTON');
+		const nodeRef = firstNodeRef(core);
+
+		core.setCode('<span></span>');
+
+		await forceGc();
+
+		expect(nodeRef.deref()).toBeUndefined();
+	});
 });
