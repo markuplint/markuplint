@@ -1052,7 +1052,7 @@ describe('experimentalRustCore falls back to the TypeScript engine when pretende
 		expect(stderrOf(write)).toContain('falling back to TypeScript engine');
 	});
 
-	it('stays on the Rust engine without pretenders, and reports no fallback', async () => {
+	it('does not blame pretenders for leaving the Rust engine when none are configured', async () => {
 		const write = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
 		const file = await MLEngine.toMLFile({ sourceCode, name: 'page.html' });
 		const engine = new MLEngine(file!, {
@@ -1065,6 +1065,8 @@ describe('experimentalRustCore falls back to the TypeScript engine when pretende
 		const result = await engine.exec();
 
 		expect(result?.violations).toStrictEqual([]);
-		expect(stderrOf(write)).not.toContain('falling back');
+		// Not "falling back" alone: an environment without the native addon falls
+		// back too, for a reason that has nothing to do with pretenders.
+		expect(stderrOf(write)).not.toContain('has pretenders');
 	});
 });
