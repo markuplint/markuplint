@@ -18,7 +18,7 @@
 
 ### 対応しているエディタはVS Codeだけですか？
 
-公式に対応しているのは**VS Code**ですが、**Cursor**、**Windsurf**、**VSCodium**などVS Codeベースのエディタであれば、VS Code拡張機能がそのまま利用できるため動作が期待できます。[VS Code拡張のソースコード](https://github.com/markuplint/markuplint/tree/main/vscode)は公開しているので、その他のエディタについても有志による開発がなされることに期待しています。
+公式に対応しているのは**VS Code**ですが、**Cursor**、**Windsurf**、**VSCodium**などVS Codeベースのエディタであれば、VS Code拡張機能がそのまま利用できるため動作が期待できます。そのほかのエディタ向けには、`@markuplint/language-server` がMarkuplintを言語サーバーとして動かします。任意の[LSP](https://microsoft.github.io/language-server-protocol/)クライアントから使えます。Claude CodeとOpenCodeの設定は[AIと使う](/docs/guides/ai#言語サーバー)、Neovimは[パッケージのREADME](https://github.com/markuplint/markuplint/tree/main/packages/@markuplint/language-server)を参照してください。[VS Code拡張のソースコード](https://github.com/markuplint/markuplint/tree/main/vscode)も公開しています。
 
 ## 警告を解決したい
 
