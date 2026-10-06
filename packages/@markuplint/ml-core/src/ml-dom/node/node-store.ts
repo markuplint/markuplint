@@ -67,10 +67,6 @@ export class NodeStore {
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		node: MLNode<T, O, A>,
 	) {
-		if (node.is(node.DOCUMENT_NODE)) {
-			return;
-		}
-
 		if (!astNode.uuid) {
 			nodeStoreError('UUID is invalid: %s (%s: "%s")', astNode.uuid, astNode.nodeName, astNode.raw);
 			nodeStoreError('Invalid node: %O', node);
