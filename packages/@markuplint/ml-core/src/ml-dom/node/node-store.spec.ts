@@ -21,6 +21,12 @@ beforeAll(() => {
  * tick between collections (observed empirically; not specific to this
  * package). Looping a couple of times is a cheap, deterministic way to make
  * the GC-sensitive tests below reliable instead of flaky.
+ *
+ * On JavaScriptCore (Bun) this is only deterministic with concurrent JIT
+ * compilation disabled: an in-flight DFG/FTL plan is a GC root for every value
+ * it froze, including the `astNode => createNode(astNode, this)` closure of a
+ * superseded `MLDocument`, and `gc()` cannot complete plans. CI's `test-bun`
+ * job therefore sets `BUN_JSC_useConcurrentJIT=0`.
  */
 async function forceGc(): Promise<void> {
 	for (let i = 0; i < 3; i++) {
@@ -120,14 +126,9 @@ describe('NodeStore memory scoping (regression for the process-wide leak)', () =
 		await forceGc();
 
 		// Before the fix, the single process-wide `Map` never released
-		// anything, so all 20 refs would still be reachable here. A couple
-		// of stragglers can survive a single forced-GC pass depending on the
-		// engine/platform running the test (observed on Bun; see PR #4081),
-		// so this asserts growth is bounded rather than requiring every ref
-		// to be collected within this exact window — the single-document
-		// tests above already pin down that each one is fully collectible.
+		// anything, so all 20 refs would still be reachable here.
 		const stillAlive = refs.filter(ref => ref.deref() !== undefined);
-		expect(stillAlive.length).toBeLessThan(refs.length);
+		expect(stillAlive).toHaveLength(0);
 	});
 
 	test('a document with pretender-generated virtual elements is collectible', async () => {

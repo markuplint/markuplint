@@ -557,6 +557,14 @@ jobs:
 
             - name: Test with Bun
               run: bunx --bun vitest run
+              env:
+                  # JavaScriptCore's concurrent DFG/FTL compilation plans are GC roots for
+                  # every value they freeze (`DFG::Plan::checkLivenessAndVisitChildren`),
+                  # and `Bun.gc(true)` never completes them. A plan that froze a per-document
+                  # closure keeps a superseded document alive across `gc()`, which makes the
+                  # WeakRef-based collectability tests in `@markuplint/ml-core` flaky. With
+                  # synchronous compilation a plan is finalized before it can be scanned.
+                  BUN_JSC_useConcurrentJIT: '0'
 
     test-deno:
         needs: build
