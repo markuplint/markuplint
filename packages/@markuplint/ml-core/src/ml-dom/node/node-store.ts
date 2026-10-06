@@ -11,6 +11,10 @@ import { log } from '../../debug.js';
 const nodeStoreLog = log.extend('node-store');
 const nodeStoreError = nodeStoreLog.extend('error');
 
+/**
+ * Maps the AST nodes of one document to the `MLNode`s built from them. A
+ * document's store is obtained through {@link getNodeStoreFor}.
+ */
 export class NodeStore {
 	#store = new Map<string, MLNode<any, any, any>>();
 
@@ -73,6 +77,8 @@ export class NodeStore {
 	}
 }
 
+const storesByDocument = new WeakMap<MLDocument<any, any>, NodeStore>();
+
 /**
  * One `NodeStore` per owning document, rather than a single process-wide
  * instance: a document's nodes are only ever looked up through that same
@@ -84,9 +90,10 @@ export class NodeStore {
  * calls `MLEngine#exec()`/`#setCode()` many times on one engine (a long-lived
  * language server), every parsed document's entire node tree would stay
  * reachable forever through a single shared `Map`.
+ *
+ * @param document The document that owns the nodes being registered or resolved
+ * @returns The store belonging to `document`, created on first use
  */
-const storesByDocument = new WeakMap<MLDocument<any, any>, NodeStore>();
-
 export function getNodeStoreFor(document: MLDocument<any, any>): NodeStore {
 	let store = storesByDocument.get(document);
 	if (!store) {
