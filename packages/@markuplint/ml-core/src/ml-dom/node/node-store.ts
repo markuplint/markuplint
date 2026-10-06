@@ -81,9 +81,9 @@ export class NodeStore {
  *
  * Keyed by a `WeakMap` so a store is reclaimed together with its document
  * once nothing else references that document — otherwise, in a process that
- * calls `MLEngine#exec()`/`#setCode()` many times (a long-lived language
- * server, or a CLI run across many files), every parsed document's entire
- * node tree would stay reachable forever through a single shared `Map`.
+ * calls `MLEngine#exec()`/`#setCode()` many times on one engine (a long-lived
+ * language server), every parsed document's entire node tree would stay
+ * reachable forever through a single shared `Map`.
  */
 const storesByDocument = new WeakMap<MLDocument<any, any>, NodeStore>();
 
