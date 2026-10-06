@@ -53,7 +53,7 @@ function createCore(sourceCode: string, pretenders: readonly Pretender[] = []) {
 /**
  * The first node of `core`'s current document, isolated so callers can take
  * a `WeakRef` of it without a local variable keeping the document itself
- * (and everything in its node store) alive regardless of the fix under test.
+ * (and everything in its node store) alive.
  */
 function firstNode(core: MLCore) {
 	const document = core.document;
@@ -71,14 +71,11 @@ function firstNodeRef(core: MLCore): WeakRef<object> {
 	return new WeakRef(firstNode(core));
 }
 
-describe('NodeStore memory scoping (regression for the process-wide leak)', () => {
-	// A document's node tree must not outlive the document itself: before this
-	// fix, every node was registered in one module-level `Map` shared by the
-	// whole process (keyed by a UUID string, never deleted), so re-parsing in
-	// a long-lived process (a language server's `onDidChangeContent`, or a
-	// CLI run across many files) leaked every past document's full DOM tree
-	// for the process's lifetime. See the upstream issue for the full
-	// analysis and a standalone heap-snapshot repro.
+describe('NodeStore is scoped to its owning document', () => {
+	// A document's node tree must not outlive the document itself: its nodes are
+	// registered in a store the document owns, not in process-wide state, so a
+	// process that re-parses repeatedly (a language server's
+	// `onDidChangeContent`) does not retain every past document. See #4074.
 	test('a document dropped after MLCore#setCode() is collectible', async () => {
 		const core = createCore('<div><p>hello</p></div>');
 		const nodeRef = firstNodeRef(core);
@@ -107,8 +104,7 @@ describe('NodeStore memory scoping (regression for the process-wide leak)', () =
 
 		await forceGc();
 
-		// Before the fix, the single process-wide `Map` never released
-		// anything, so all 20 refs would still be reachable here.
+		// A process-wide registry would keep all 20 documents reachable here.
 		const stillAlive = refs.filter(ref => ref.deref() !== undefined);
 		expect(stillAlive).toHaveLength(0);
 	});
