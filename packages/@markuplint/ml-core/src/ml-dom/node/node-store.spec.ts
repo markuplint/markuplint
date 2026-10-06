@@ -9,8 +9,6 @@ import { describe, test, expect, beforeAll } from 'vitest';
 import { convertRuleset } from '../../convert-ruleset.js';
 import { MLCore } from '../../ml-core.js';
 
-import { getNodeStoreFor } from './node-store.js';
-
 beforeAll(() => {
 	expect(globalThis.gc, 'run Vitest with --expose-gc').toBeTypeOf('function');
 });
@@ -72,22 +70,6 @@ function firstNode(core: MLCore) {
 function firstNodeRef(core: MLCore): WeakRef<object> {
 	return new WeakRef(firstNode(core));
 }
-
-describe('getNodeStoreFor', () => {
-	test('returns the same store for the same document object', () => {
-		const doc = createCore('<div></div>').document;
-		if (doc instanceof Error) throw doc;
-		expect(getNodeStoreFor(doc)).toBe(getNodeStoreFor(doc));
-	});
-
-	test('returns independent stores for different document objects', () => {
-		const docA = createCore('<div></div>').document;
-		const docB = createCore('<span></span>').document;
-		if (docA instanceof Error) throw docA;
-		if (docB instanceof Error) throw docB;
-		expect(getNodeStoreFor(docA)).not.toBe(getNodeStoreFor(docB));
-	});
-});
 
 describe('NodeStore memory scoping (regression for the process-wide leak)', () => {
 	// A document's node tree must not outlive the document itself: before this

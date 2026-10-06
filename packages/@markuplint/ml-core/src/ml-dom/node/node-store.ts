@@ -1,4 +1,3 @@
-import type { MLDocument } from './document.js';
 import type { MLNode } from './node.js';
 import type { MappedNode } from './types.js';
 import type { MLASTNode } from '@markuplint/ml-ast';
@@ -12,8 +11,18 @@ const nodeStoreLog = log.extend('node-store');
 const nodeStoreError = nodeStoreLog.extend('error');
 
 /**
- * Maps the AST nodes of one document to the `MLNode`s built from them. A
- * document's store is obtained through {@link getNodeStoreFor}.
+ * Maps the AST nodes of one document to the `MLNode`s built from them.
+ *
+ * Each `MLDocument` owns its own store, which `MLNode`'s constructor shares
+ * with every node of that document, instead of all documents sharing one
+ * process-wide instance. A node is only ever looked up through its own
+ * document (`syntacticalParentNode` resolves `parentNodeUuid`,
+ * `getPureChildNodes` resolves child AST nodes), so a mapping has no reason to
+ * outlive that document. A process-wide `Map` keyed by UUID was never
+ * cleared, which kept every document ever parsed — its whole node tree —
+ * reachable for the life of the process; a per-document store is reclaimed
+ * together with its document when an engine calls `setCode()` / `exec()`
+ * repeatedly, as a long-lived editor integration does (see #4074).
  */
 export class NodeStore {
 	#store = new Map<string, MLNode<any, any, any>>();
@@ -75,30 +84,4 @@ export class NodeStore {
 		);
 		this.#store.set(astNode.uuid, node);
 	}
-}
-
-const storesByDocument = new WeakMap<MLDocument<any, any>, NodeStore>();
-
-/**
- * One `NodeStore` per owning document, rather than a single process-wide
- * instance: a document's nodes are only ever looked up through that same
- * document (via `parentNodeUuid` lookups and child-node resolution), so there
- * is no reason for their mapping to outlive the document itself.
- *
- * Keyed by a `WeakMap` so a store is reclaimed together with its document
- * once nothing else references that document — otherwise, in a process that
- * calls `MLEngine#exec()`/`#setCode()` many times on one engine (a long-lived
- * language server), every parsed document's entire node tree would stay
- * reachable forever through a single shared `Map`.
- *
- * @param document The document that owns the nodes being registered or resolved
- * @returns The store belonging to `document`, created on first use
- */
-export function getNodeStoreFor(document: MLDocument<any, any>): NodeStore {
-	let store = storesByDocument.get(document);
-	if (!store) {
-		store = new NodeStore();
-		storesByDocument.set(document, store);
-	}
-	return store;
 }
