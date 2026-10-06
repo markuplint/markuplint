@@ -96,7 +96,7 @@ export function convertGlobToRegex(pattern: string): RegExp {
  * Resolves the working directory for a given file based on workingDirectories configuration.
  *
  * @param filePath - Absolute file path of the document being linted
- * @param workspaceFolders - VS Code workspace folder paths (absolute)
+ * @param workspaceFolders - Workspace folder paths (absolute)
  * @param workingDirectories - The user-configured working directories
  * @returns The resolved working directory, or `undefined` to use the default behavior
  */

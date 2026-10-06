@@ -35,6 +35,50 @@ AI coding agents such as [Claude Code](https://claude.ai/claude-code), [Cursor](
 `npx markuplint --init` is interactive and requires manual input. AI agents should write the configuration file directly instead. See [Beyond HTML](/docs/guides/beyond-html) for the parser and spec packages to include.
 :::
 
+## Language server
+
+Some agents start language servers in the background and read their diagnostics after every edit, so violations reach the agent without running the CLI. `@markuplint/language-server` provides Markuplint to them.
+
+```shell
+npm install --save-dev @markuplint/language-server
+```
+
+The server is `markuplint-language-server --stdio`. It needs no settings: it lints with the project's configuration file and falls back to `markuplint:recommended` like the CLI. The client decides which files the server receives, so list the extensions to lint.
+
+### Claude Code
+
+Claude Code registers language servers through plugins. Create a directory with a `.lsp.json` file, and load it with `claude --plugin-dir <directory>`:
+
+```json title=".lsp.json"
+{
+  "markuplint": {
+    "command": "npx",
+    "args": ["markuplint-language-server", "--stdio"],
+    "extensionToLanguage": { ".html": "html" }
+  }
+}
+```
+
+Claude Code uses one server per extension. Leave out the extensions that another language server already handles.
+
+### OpenCode
+
+OpenCode passes only the `error` diagnostics to the model. `severityMap` re-reports Markuplint's warnings as errors:
+
+```json title="opencode.json"
+{
+  "lsp": {
+    "markuplint": {
+      "command": ["npx", "markuplint-language-server", "--stdio"],
+      "extensions": [".html"],
+      "initialization": { "severityMap": { "warning": "error" } }
+    }
+  }
+}
+```
+
+See the [package README](https://github.com/markuplint/markuplint/tree/main/packages/@markuplint/language-server) for Neovim and the other options.
+
 ## Skills for Claude Code
 
 Markuplint provides installable [skills](https://github.com/markuplint/markuplint/tree/dev/skills) for [Claude Code](https://claude.ai/claude-code) that guide agents through common workflows.

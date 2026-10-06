@@ -1,6 +1,7 @@
+import { DiagnosticSeverity } from 'vscode-languageserver/node.js';
 import { describe, test, expect } from 'vitest';
 
-import { convertDiagnostics } from './convert-diagnostics.js';
+import { applySeverityMap, convertDiagnostics } from './convert-diagnostics.js';
 
 describe('convertDiagnostics', () => {
 	test('sets data.violationIndex on each diagnostic', () => {
@@ -108,5 +109,41 @@ describe('convertDiagnostics', () => {
 	test('returns empty array for null result', () => {
 		const diagnostics = convertDiagnostics(null);
 		expect(diagnostics).toHaveLength(0);
+	});
+});
+
+describe('applySeverityMap', () => {
+	const range = { start: { line: 0, character: 0 }, end: { line: 0, character: 1 } };
+	const diagnostics = [
+		{ severity: DiagnosticSeverity.Error, message: 'e', range },
+		{ severity: DiagnosticSeverity.Warning, message: 'w', range },
+		{ severity: DiagnosticSeverity.Information, message: 'i', range },
+	];
+
+	test('returns the diagnostics unchanged without a map', () => {
+		expect(applySeverityMap(diagnostics)).toStrictEqual(diagnostics);
+	});
+
+	test('re-reports a warning as an error', () => {
+		const mapped = applySeverityMap(diagnostics, { warning: 'error' });
+		expect(mapped.map(d => d.severity)).toStrictEqual([
+			DiagnosticSeverity.Error,
+			DiagnosticSeverity.Error,
+			DiagnosticSeverity.Information,
+		]);
+	});
+
+	test('maps every severity the LSP defines', () => {
+		const mapped = applySeverityMap(diagnostics, { error: 'hint', warning: 'info', info: 'warning' });
+		expect(mapped.map(d => d.severity)).toStrictEqual([
+			DiagnosticSeverity.Hint,
+			DiagnosticSeverity.Information,
+			DiagnosticSeverity.Warning,
+		]);
+	});
+
+	test('does not mutate its input', () => {
+		applySeverityMap(diagnostics, { warning: 'error' });
+		expect(diagnostics[1]!.severity).toBe(DiagnosticSeverity.Warning);
 	});
 });

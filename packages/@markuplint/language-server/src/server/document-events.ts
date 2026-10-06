@@ -24,6 +24,17 @@ import * as v4 from './v4.js';
 import * as v5 from './v5.js';
 
 /**
+ * The configuration of a language for a client that sends no `langConfigs`. It enables
+ * linting and leaves `defaultConfig` unset, so config discovery and the
+ * `markuplint:recommended` fallback behave as they do in the CLI.
+ */
+export const DEFAULT_LANG_CONFIG: Config = {
+	enable: true,
+	debug: false,
+	hover: { accessibility: { enable: true } },
+};
+
+/**
  * Callback for publishing diagnostics from the language server to the client.
  */
 export type SendDiagnostics = (
@@ -39,11 +50,14 @@ export type EventHandlerOptions = {
 	resolveModule: ModuleResolver;
 	/** The user's locale (e.g. `"en"`, `"ja"`) */
 	locale: string;
-	/** Per-language configuration from VS Code settings */
-	langConfigs: LangConfigs;
+	/**
+	 * Per-language configuration from the client's settings. Without it every document is
+	 * linted with {@link DEFAULT_LANG_CONFIG}.
+	 */
+	langConfigs?: LangConfigs;
 	/** User-configured working directories for monorepo support */
 	workingDirectories?: readonly WorkingDirectoryEntry[];
-	/** Absolute paths of VS Code workspace folders */
+	/** Absolute paths of the workspace folders */
 	workspaceFolders: readonly string[];
 	log: Log;
 	diagnosticsLog: Log;
@@ -54,7 +68,7 @@ export type EventHandlerOptions = {
 	 * The status bar therefore reflects the most recently opened document, not the active editor.
 	 */
 	reportStatus: (mod: Module) => void;
-	/** Path to the git binary, from VS Code's `git.path` setting. */
+	/** Path to the git binary used for bulk suppression. */
 	gitPath?: string;
 };
 
@@ -65,7 +79,7 @@ export type EventHandlerOptions = {
  * disagree about which installation governs the document.
  *
  * @param document - The text document
- * @param workspaceFolders - Absolute paths of VS Code workspace folders
+ * @param workspaceFolders - Absolute paths of the workspace folders
  * @param workingDirectories - User-configured working directories
  * @param log - Logger for general messages
  * @returns The matched working directory, or the document's own directory when nothing matches
@@ -189,10 +203,10 @@ export function createEventHandlers(
 			document: TextDocument,
 		) {
 			const languageId = document.languageId;
-			const langConfig = options.langConfigs[languageId] ?? null;
+			const langConfig = options.langConfigs ? (options.langConfigs[languageId] ?? null) : DEFAULT_LANG_CONFIG;
 
 			if (!langConfig?.enable) {
-				options.log(`Disabled for languageId:${languageId} according to VS Code settings.`, 'warn');
+				options.log(`Disabled for languageId:${languageId} according to the settings of the client.`, 'warn');
 				return;
 			}
 
@@ -273,9 +287,10 @@ export function createEventHandlers(
 			// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 			params: HoverParams,
 		) {
-			const enable = options.langConfigs['html']?.hover.accessibility.enable;
+			const hoverSettings = (options.langConfigs ? options.langConfigs['html'] : DEFAULT_LANG_CONFIG)?.hover
+				.accessibility;
 
-			if (!enable) {
+			if (!hoverSettings?.enable) {
 				return;
 			}
 
@@ -284,8 +299,7 @@ export function createEventHandlers(
 				return;
 			}
 
-			const ariaVersion =
-				options.langConfigs['html']?.hover.accessibility.ariaVersion ?? mod.ariaRecommendedVersion;
+			const ariaVersion = hoverSettings.ariaVersion ?? mod.ariaRecommendedVersion;
 
 			if (lt(mod.version, '4.0.0')) {
 				const node = v3.getNodeWithAccessibilityProps(params.textDocument, params.position, ariaVersion);

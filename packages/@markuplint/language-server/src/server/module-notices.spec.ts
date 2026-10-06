@@ -10,7 +10,7 @@ vi.mock('../i18n.js', () => ({
 }));
 
 const NO_INSTALL =
-	'since markuplint could not be found in the node_modules of the workspace, this use the version (v5.0.0) installed in VS Code Extension. ';
+	'since markuplint could not be found in the node_modules of the workspace, this use the version (v5.0.0) installed with the language server. ';
 const COMPAT =
 	'your local markuplint is incompatible with Node.js 22+ due to import assertion syntax. The bundled version (v5.0.0) is used instead. To use your local version, upgrade to markuplint@4.10.0 or later. See: https://github.com/markuplint/markuplint/issues/2837';
 

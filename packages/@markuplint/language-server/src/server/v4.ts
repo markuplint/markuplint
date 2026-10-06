@@ -9,15 +9,12 @@ import type { TextDocument } from 'vscode-languageserver-textdocument';
 
 import path from 'node:path';
 
-import { isFatalError } from 'markuplint/suppressions';
-
 import { t } from '../i18n.js';
 import { getFilePath } from '../utils/get-file-path.js';
 
 import { createQuickFixActions, createFixAllAction } from './code-actions.js';
 import { convertDiagnostics } from './convert-diagnostics.js';
 import { getAccessibilityByLocation } from './get-accessibility-by-location.js';
-import { applySuppressionsToViolations, loadSuppressions } from './suppression-support.js';
 
 /**
  * Snapshot of the latest lint result for a document, used to produce Code Actions.
@@ -46,12 +43,11 @@ export function getFixState(uri: string): FixState | undefined {
 /**
  * Handles the `textDocument/didOpen` event by creating an MLEngine for the document.
  *
- * Sets up linting, diagnostics, fix-state tracking, and bulk suppression
- * severity downgrade for the opened document.
+ * Sets up linting, diagnostics, and fix-state tracking for the opened document.
  *
  * @param document - The opened text document
  * @param MLEngine - The MLEngine constructor
- * @param config - The extension configuration
+ * @param config - The language configuration
  * @param locale - The locale for diagnostic messages
  * @param log - Logger for general messages
  * @param diagnosticsLog - Logger for diagnostic-specific messages
@@ -131,41 +127,21 @@ export async function onDidOpen(
 		}
 	});
 
-	engine.on('lint', (lintFilePath, lintSourceCode, violations, fixedCode, debug, fixSummary) => {
-		clearTimeout(debounceTimers.get(key));
+	engine.on('lint', (filePath, sourceCode, violations, fixedCode, debug, fixSummary) => {
+		clearTimeout(debounceTimer);
 		diagnosticsLog('', 'clear');
 
 		// Execute after 300ms from the last change.
-		debounceTimers.set(
-			key,
-			setTimeout(() => {
-				lint().catch((error: unknown) => {
-					log(String(error), 'error');
-				});
-			}, 300),
-		);
+		debounceTimer = setTimeout(lint, 300);
 
-		async function lint() {
+		function lint() {
 			diagnosticsLog(`Lint: ${document.uri}`);
 
-			// Apply bulk suppression severity downgrade and prefix suppressed messages
-			const suppressedPrefix = t('[suppressed] this warning is suppressed but should be fixed:');
-			const downgraded = await applyBulkSuppressions(absoluteFilePath, violations, workspace, log);
-			const effectiveViolations = downgraded.map(v =>
-				'originalSeverity' in v && v.originalSeverity
-					? { ...v, message: `${suppressedPrefix} ${v.message}` }
-					: v,
-			);
-
-			const errors = effectiveViolations.filter(v => v.severity === 'error');
-			const warns = effectiveViolations.filter(v => v.severity === 'warning');
-			const suppressed = effectiveViolations.filter(v => v.severity === 'info');
+			const errors = violations.filter(v => v.severity === 'error');
+			const warns = violations.filter(v => v.severity === 'warning');
 
 			log(`Errors: ${errors.length}`, 'debug');
 			log(`Warnings: ${warns.length}`, 'debug');
-			if (suppressed.length > 0) {
-				log(`Suppressed (info): ${suppressed.length}`, 'debug');
-			}
 
 			if (debug) {
 				diagnosticsLog('  Tracing AST Mapping:\n' + debug.map(line => `  ${line}`).join('\n'), 'trace');
@@ -190,19 +166,14 @@ export async function onDidOpen(
 			}
 
 			const diagnostics = convertDiagnostics({
-				filePath: lintFilePath,
-				sourceCode: lintSourceCode,
-				violations: effectiveViolations,
+				filePath,
+				sourceCode,
+				violations,
 				fixedCode,
 				status: 'processed',
 			});
 
-			fixStates.set(key, {
-				sourceCode: lintSourceCode,
-				violations: effectiveViolations,
-				fixedCode,
-				fixSummary,
-			});
+			fixStates.set(key, { sourceCode, violations, fixedCode, fixSummary });
 
 			if (diagnostics.length > 0) {
 				diagnosticsLog(`  Violations(${diagnostics.length}):`);
@@ -229,7 +200,7 @@ export async function onDidOpen(
 	});
 }
 
-const debounceTimers = new Map<string, ReturnType<typeof setTimeout>>();
+let debounceTimer: ReturnType<typeof setTimeout>;
 
 /**
  * Handles the `textDocument/didChangeContent` event by re-running the lint engine.
@@ -247,32 +218,29 @@ export function onDidChangeContent(
 	log: Log,
 	notFoundParserError: (e: unknown) => void,
 ) {
-	const key = document.uri;
-	clearTimeout(debounceTimers.get(key));
+	clearTimeout(debounceTimer);
 
+	const key = document.uri;
 	const engine = engines.get(key);
 
-	debounceTimers.set(
-		key,
-		setTimeout(async () => {
-			if (!engine) {
+	debounceTimer = setTimeout(async () => {
+		if (!engine) {
+			return;
+		}
+
+		const code = document.getText();
+		try {
+			await engine.setCode(code);
+			log('Run `engine.exec()` in `onDidChangeContent`', 'debug');
+			engine.exec().catch((error: unknown) => notFoundParserError(error));
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				log(error.message, 'error');
 				return;
 			}
-
-			const code = document.getText();
-			try {
-				await engine.setCode(code);
-				log('Run `engine.exec()` in `onDidChangeContent`', 'debug');
-				engine.exec().catch((error: unknown) => notFoundParserError(error));
-			} catch (error: unknown) {
-				if (error instanceof Error) {
-					log(error.message, 'error');
-					return;
-				}
-				log(`UnknownError: ${error}`, 'error');
-			}
-		}, 300),
-	);
+			log(`UnknownError: ${error}`, 'error');
+		}
+	}, 300);
 }
 
 /**
@@ -366,7 +334,7 @@ export async function getNodeWithAccessibilityProps(
 }
 
 /**
- * Handles `textDocument/codeAction` requests for markuplint v5.
+ * Handles `textDocument/codeAction` requests for markuplint v4+.
  *
  * Returns per-violation QuickFix actions and a SourceFixAll action
  * (`source.fixAll.markuplint`) when fixable violations exist.
@@ -393,30 +361,4 @@ export function onCodeAction(params: CodeActionParams): CodeAction[] {
 	const fixAll = createFixAllAction(uri, params.context.diagnostics, fixState);
 
 	return fixAll ? [...quickFixes, fixAll] : quickFixes;
-}
-
-/**
- * Applies bulk suppression to violations, downgrading severity to 'info'
- * for suppressed violations. Uses git blame for count-exceeded cases.
- */
-async function applyBulkSuppressions(
-	absoluteFilePath: string,
-	violations: readonly Violation[],
-	workspace: string,
-	log: Log,
-): Promise<readonly Violation[]> {
-	try {
-		const cache = await loadSuppressions(workspace, log);
-		if (!cache) {
-			return violations;
-		}
-
-		return await applySuppressionsToViolations(absoluteFilePath, violations, cache, log);
-	} catch (error) {
-		if (isFatalError(error)) {
-			throw error;
-		}
-		log(`Bulk suppression failed: ${error instanceof Error ? error.message : String(error)}`, 'warn');
-		return violations;
-	}
 }

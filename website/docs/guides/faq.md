@@ -16,7 +16,7 @@ We do not have official support for Angular, but a volunteer has created [`marku
 
 ### Is VS Code the only editor that is supported?
 
-The officially supported editor is **VS Code**, but VS Code-based editors such as **Cursor**, **Windsurf**, and **VSCodium** are also expected to work since they support VS Code extensions. [The source code for the VS Code extension](https://github.com/markuplint/markuplint/tree/main/vscode) is available to the public, so we expect volunteers will develop extensions for other editors as well.
+The officially supported editor is **VS Code**, but VS Code-based editors such as **Cursor**, **Windsurf**, and **VSCodium** are also expected to work since they support VS Code extensions. For other editors, `@markuplint/language-server` runs Markuplint as a language server that any [LSP](https://microsoft.github.io/language-server-protocol/) client can use. See [Using with AI](/docs/guides/ai#language-server) for the setup of Claude Code and OpenCode, and [the package README](https://github.com/markuplint/markuplint/tree/main/packages/@markuplint/language-server) for Neovim. [The source code for the VS Code extension](https://github.com/markuplint/markuplint/tree/main/vscode) is also available to the public.
 
 ## I want to resolve a warning
 

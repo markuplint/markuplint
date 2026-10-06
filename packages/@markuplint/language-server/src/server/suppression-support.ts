@@ -32,7 +32,7 @@ const CACHE_TTL_MS = 30_000;
 const DEFAULT_FILE_NAME = 'markuplint-suppressions.json';
 
 /**
- * Path to the git binary. Resolved from VS Code's `git.path` setting,
+ * Path to the git binary. Resolved from the client's `gitPath` option,
  * falling back to `'git'` (system PATH lookup).
  */
 let gitBinaryPath = 'git';
@@ -49,7 +49,7 @@ let gitAvailable: boolean | undefined;
  * Configures the git binary path for suppression support.
  * Should be called once during server initialization.
  *
- * @param gitPath - Path to the git binary from VS Code's `git.path` setting
+ * @param gitPath - Path to the git binary from the client's `gitPath` option
  */
 export function configureGitPath(gitPath: string | undefined): void {
 	if (gitPath) {

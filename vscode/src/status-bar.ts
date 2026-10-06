@@ -1,9 +1,9 @@
-import type { Status } from './types.js';
+import type { Status } from '@markuplint/language-server/protocol';
 import type { StatusBarItem } from 'vscode';
 
 import { ThemeColor } from 'vscode';
 
-import { NAME } from './const.js';
+import { NAME } from '@markuplint/language-server/protocol';
 
 export class StatusBar {
 	#item: StatusBarItem;

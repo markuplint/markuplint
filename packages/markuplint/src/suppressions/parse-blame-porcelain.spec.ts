@@ -1,6 +1,6 @@
 import { describe, test, expect } from 'vitest';
 
-import { parseBlamePorcelain } from '../../../../vscode/src/server/suppression-support.js';
+import { parseBlamePorcelain } from '../../../@markuplint/language-server/src/server/suppression-support.js';
 
 // 40-char hex SHAs for test data
 const SHA_A = 'a'.repeat(40);

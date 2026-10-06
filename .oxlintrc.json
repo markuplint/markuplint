@@ -541,7 +541,7 @@
 			}
 		},
 		{
-			"files": ["vscode/src/server/{v1,v2}.ts"],
+			"files": ["packages/@markuplint/language-server/src/server/{v1,v2}.ts"],
 			"rules": {
 				"no-console": "off"
 			}
