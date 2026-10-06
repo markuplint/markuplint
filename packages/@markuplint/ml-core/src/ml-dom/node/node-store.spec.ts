@@ -14,17 +14,28 @@ beforeAll(() => {
 });
 
 /**
- * A single synchronous `globalThis.gc()` right after dropping a reference does
- * not reliably clear a `WeakRef` in this V8 build — it needs a microtask
- * tick between collections (observed empirically; not specific to this
- * package). Looping a couple of times is a cheap, deterministic way to make
- * the GC-sensitive tests below reliable instead of flaky.
+ * Runs garbage collection so that a `WeakRef` whose target is no longer
+ * referenced can be observed as cleared.
+ *
+ * `new WeakRef(target)` and `WeakRef#deref()` add `target` to the agent's
+ * kept-alive list, which holds it strongly until the current job ends
+ * (ECMAScript `AddToKeptObjects` / `ClearKeptObjects`, "KeepDuringJob"). A
+ * `gc()` in the same job as the `WeakRef` creation or `deref()` therefore
+ * cannot collect the target. Yielding to the macrotask queue with
+ * `setImmediate` ends the job; a microtask (`await Promise.resolve()`) does
+ * not, and the tests below then fail on Node.
+ *
+ * Three rounds is a margin, not a derived minimum: a single round was enough
+ * in every trial on Node and Bun, so the extra rounds only absorb collector
+ * timing differences between runtimes.
  *
  * On JavaScriptCore (Bun) this is only deterministic with concurrent JIT
  * compilation disabled: an in-flight DFG/FTL plan is a GC root for every value
  * it froze, including the `astNode => createNode(astNode, this)` closure of a
  * superseded `MLDocument`, and `gc()` cannot complete plans. CI's `test-bun`
  * job therefore sets `BUN_JSC_useConcurrentJIT=0`.
+ *
+ * @see https://tc39.es/ecma262/#sec-weak-ref-objects
  */
 async function forceGc(): Promise<void> {
 	for (let i = 0; i < 3; i++) {
