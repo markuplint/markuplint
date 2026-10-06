@@ -9,10 +9,6 @@ import { describe, test, expect, beforeAll } from 'vitest';
 import { convertRuleset } from '../../convert-ruleset.js';
 import { MLCore } from '../../ml-core.js';
 
-beforeAll(() => {
-	expect(globalThis.gc, 'run Vitest with --expose-gc').toBeTypeOf('function');
-});
-
 /**
  * Runs garbage collection so that a `WeakRef` whose target is no longer
  * referenced can be observed as cleared.
@@ -83,6 +79,10 @@ function firstNodeRef(core: MLCore): WeakRef<object> {
 }
 
 describe('NodeStore is scoped to its owning document', () => {
+	beforeAll(() => {
+		expect(globalThis.gc, 'run Vitest with --expose-gc').toBeTypeOf('function');
+	});
+
 	// A document's node tree must not outlive the document itself: its nodes are
 	// registered in a store the document owns, not in process-wide state, so a
 	// process that re-parses repeatedly (a language server's
