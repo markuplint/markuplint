@@ -27,6 +27,11 @@
 	"bin": {
 		"markuplint-language-server": "./bin/markuplint-language-server.mjs"
 	},
+	"files": [
+		"bin",
+		"lib",
+		"locales"
+	],
 	"publishConfig": {
 		"access": "public"
 	},
