@@ -60,5 +60,8 @@ jobs:
             - name: Install root dependencies
               run: yarn install
 
+            - name: Build packages
+              run: yarn build
+
             - name: Install dependencies and package
               run: yarn run vscode:package
