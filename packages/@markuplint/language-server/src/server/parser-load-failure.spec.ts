@@ -77,13 +77,13 @@ describe('describeParserLoadFailure', () => {
 
 	test('explains the bundled fallback and points to the working directory', () => {
 		expect(describeParserLoadFailure(error, bundled)).toBe(
-			'The markuplint bundled with the extension (v5.0.0) cannot load parsers installed in your workspace. Install markuplint and @markuplint/jsx-parser in /repo/applications/app, then run "Markuplint: Restart Language Server" so the extension can use the local installation.',
+			'The markuplint bundled with the language server (v5.0.0) cannot load parsers installed in your workspace. Install markuplint and @markuplint/jsx-parser in /repo/applications/app, then restart the language server so that it can use the local installation.',
 		);
 	});
 
 	test('asks to upgrade rather than install when the local module was skipped for import assertions', () => {
 		expect(describeParserLoadFailure(error, { ...bundled, fallbackReason: 'import-assertion-compat' })).toBe(
-			'The markuplint bundled with the extension (v5.0.0) cannot load @markuplint/jsx-parser from /repo/applications/app because the markuplint installed there is incompatible with Node.js 22+. Upgrade it to markuplint@4.10.0 or later, then run "Markuplint: Restart Language Server".',
+			'The markuplint bundled with the language server (v5.0.0) cannot load @markuplint/jsx-parser from /repo/applications/app because the markuplint installed there is incompatible with Node.js 22+. Upgrade it to markuplint@4.10.0 or later, then restart the language server.',
 		);
 	});
 

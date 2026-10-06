@@ -1,0 +1,54 @@
+{
+	"name": "@markuplint/language-server",
+	"version": "5.0.1",
+	"description": "Language Server Protocol server for markuplint",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/markuplint/markuplint.git",
+		"directory": "packages/@markuplint/language-server"
+	},
+	"author": "Yusuke Hirao <yusukehirao@me.com>",
+	"license": "MIT",
+	"engines": {
+		"node": ">=24"
+	},
+	"type": "module",
+	"exports": {
+		".": {
+			"import": "./lib/index.js",
+			"types": "./lib/index.d.ts"
+		},
+		"./protocol": {
+			"import": "./lib/protocol.js",
+			"types": "./lib/protocol.d.ts"
+		},
+		"./package.json": "./package.json"
+	},
+	"bin": {
+		"markuplint-language-server": "./bin/markuplint-language-server.mjs"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"build": "tsc --project tsconfig.build.json",
+		"dev": "tsc --watch --project tsconfig.build.json",
+		"clean": "tsc --build --clean tsconfig.build.json"
+	},
+	"dependencies": {
+		"@markuplint/file-resolver": "5.0.1",
+		"@markuplint/i18n": "5.0.1",
+		"@markuplint/ml-config": "5.0.1",
+		"@markuplint/ml-spec": "5.0.1",
+		"debug": "4.4.3",
+		"markuplint": "5.0.1",
+		"semver": "7.7.4",
+		"vscode-languageserver": "9.0.1",
+		"vscode-languageserver-textdocument": "1.0.12"
+	},
+	"devDependencies": {
+		"@types/debug": "4.1.13",
+		"@types/semver": "7.7.1",
+		"vscode-jsonrpc": "8.2.0"
+	}
+}

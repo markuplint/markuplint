@@ -1,9 +1,46 @@
 import type { MLResultInfo } from 'markuplint';
+import type { ReportedSeverity, SeverityMap } from '../types.js';
 import type { Diagnostic } from 'vscode-languageserver/node.js';
 
 import { DiagnosticSeverity } from 'vscode-languageserver/node.js';
 
 import { NAME, WEBSITE_URL_RULE_PAGE } from '../const.js';
+
+const REPORTED: Record<ReportedSeverity, DiagnosticSeverity> = {
+	error: DiagnosticSeverity.Error,
+	warning: DiagnosticSeverity.Warning,
+	info: DiagnosticSeverity.Information,
+	hint: DiagnosticSeverity.Hint,
+};
+
+/**
+ * Re-reports diagnostics with the severities a client asked for.
+ *
+ * Runs on the LSP severity rather than on the markuplint one, so one place covers the v2–v5
+ * handlers. `convertDiagnostics` maps the two one to one, which makes the keys of the map
+ * mean the same on both sides.
+ *
+ * @param diagnostics - The diagnostics to re-report
+ * @param map - The client's `severityMap`; severities it does not list are kept
+ * @returns New diagnostics. The input is not modified.
+ */
+export function applySeverityMap<T extends Diagnostic>(diagnostics: readonly T[], map: SeverityMap | undefined): T[] {
+	if (!map) {
+		return [...diagnostics];
+	}
+	return diagnostics.map(diagnostic => {
+		const from =
+			diagnostic.severity === DiagnosticSeverity.Error
+				? 'error'
+				: diagnostic.severity === DiagnosticSeverity.Warning
+					? 'warning'
+					: diagnostic.severity === DiagnosticSeverity.Information
+						? 'info'
+						: undefined;
+		const to = from && map[from];
+		return to ? { ...diagnostic, severity: REPORTED[to] } : diagnostic;
+	});
+}
 
 /**
  * Converts markuplint violations into LSP diagnostics.

@@ -1,5 +1,6 @@
 import type { Module } from './get-module.js';
 
+import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import os from 'node:os';
 import path from 'node:path';
@@ -324,6 +325,23 @@ describe('loadModule', () => {
 		expect(mod.isLocalModule).toBe(false);
 		expect(mod.version).toBe('5.0.0');
 		expect(mod.fallbackReason).toBe('import-assertion-compat');
+		expect(mod.markuplint).toBe(bundledExports);
+	});
+
+	test('takes the version of the bundled module from the package.json of this package when markuplint/package.json is not importable', async () => {
+		const ownPackageJson = path.resolve(import.meta.dirname, '..', '..', 'package.json');
+		const d = deps({
+			resolveEntry: vi.fn(() => {
+				throw notFound;
+			}),
+			importBundledPackageJson: vi.fn(() => Promise.reject(new Error('ERR_PACKAGE_PATH_NOT_EXPORTED'))),
+			readPackageJson: vi.fn((packageJsonPath: string) => JSON.parse(readFileSync(packageJsonPath, 'utf8'))),
+		});
+		const mod = await loadModule(workspace, noop, d);
+		expect(d.readPackageJson).toHaveBeenCalledWith(ownPackageJson);
+		expect(JSON.parse(readFileSync(ownPackageJson, 'utf8')).name).toBe('@markuplint/language-server');
+		expect(mod.isLocalModule).toBe(false);
+		expect(mod.version).toMatch(/^\d+\.\d+\.\d+/);
 		expect(mod.markuplint).toBe(bundledExports);
 	});
 
