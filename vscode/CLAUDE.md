@@ -31,6 +31,16 @@ Always run `vscode:package` first and sanity-check the resulting `.vsix`
 before `vscode:release` — there is no dry-run for the Marketplace upload
 itself.
 
+The language server is not in this directory: it is
+`packages/@markuplint/language-server`, and the extension depends on it as an
+ordinary package. `scripts/install.mjs` takes `vscode` out of the workspaces
+before installing, so every dependency comes from the registry — except the
+language server, which it packs from the checkout and points `vscode/package.json`
+at for the duration of the build. Installed from the registry it would be the
+published build, or a 404 while the version is still being prepared, and the VSIX
+would never carry the server of the commit. Packing needs the built package, so
+run `yarn build` before `vscode:package` (the CI job does).
+
 An OIDC-based publish pipeline (replacing the long-lived Marketplace PAT)
 was scoped but not adopted — there is no `vscode-marketplace` GitHub
 Environment and no Azure-related repo secret. Publishing still uses the PAT

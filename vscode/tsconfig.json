@@ -9,7 +9,7 @@
 			"path": "../packages/@markuplint/ml-spec"
 		},
 		{
-			"path": "../packages/markuplint"
+			"path": "../packages/@markuplint/language-server"
 		}
 	]
 }

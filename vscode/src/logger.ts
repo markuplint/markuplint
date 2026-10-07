@@ -1,4 +1,4 @@
-import type { LogType } from './types.js';
+import type { LogType } from '@markuplint/language-server/protocol';
 import type { LogOutputChannel } from 'vscode';
 
 export class Logger {

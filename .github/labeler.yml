@@ -95,5 +95,6 @@ Specs:
 VS Code Extension:
     - changed-files:
           - any-glob-to-any-file:
-                - vscode/locales/**/*
+                - packages/@markuplint/language-server/locales/**/*
+                - packages/@markuplint/language-server/src/**/*
                 - vscode/src/**/*

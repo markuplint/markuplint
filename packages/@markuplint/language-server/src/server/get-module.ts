@@ -1,9 +1,21 @@
 import type { Log } from '../types.js';
 import { ARIA_RECOMMENDED_VERSION, type ARIAVersion } from '@markuplint/ml-spec';
 
+import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import path from 'node:path';
 
 import { isFatalError } from 'markuplint/suppressions';
+
+const require = createRequire(import.meta.url);
+
+/**
+ * Reads and parses a `package.json`. `require()` is not used for this because it caches the
+ * parsed object and a server process outlives installs in the working directories it serves.
+ */
+function readJsonFile(filePath: string): any {
+	return JSON.parse(readFileSync(filePath, 'utf8'));
+}
 
 /**
  * Convert a module path into a specifier that Node's ESM `import()` accepts.
@@ -69,7 +81,7 @@ export function toImportSpecifier(modPath: string): string {
  *
  * Attempts to load a markuplint installed upward from `workspace` first.
  * If the local module fails to load (not installed, or import assertion incompatibility
- * on Node.js 22+), falls back to the bundled version shipped with the VS Code extension.
+ * on Node.js 22+), falls back to the version installed with the language server.
  *
  * @param workspace - Absolute directory used as the resolution base
  * @param log - Logger function for diagnostic output
@@ -111,16 +123,16 @@ export async function loadModule(workspace: string, log: Log, deps?: LoadDeps): 
 			log('Found package: markuplint', 'debug');
 			pkg = await importBundledPackageJson().catch(() => {
 				log('Failed to resolve package: markuplint/package.json (ERR_PACKAGE_PATH_NOT_EXPORTED)', 'debug');
-				const vscodePkg = readPackageJson(path.resolve(__dirname, '..', 'package.json'));
+				const ownPkg = readPackageJson(path.resolve(import.meta.dirname, '..', '..', 'package.json'));
 				return {
-					version: vscodePkg.dependencies.markuplint,
+					version: ownPkg.dependencies.markuplint,
 					type: 'module',
 				};
 			});
 			pkg = pkg.default ?? pkg;
 			log('Found package: markuplint/package.json', 'debug');
 		} catch (error) {
-			log('Failed to resolve package: markuplint in VS Code', 'debug');
+			log('Failed to resolve package: markuplint installed with the language server', 'debug');
 			throw error;
 		}
 	}
@@ -153,7 +165,7 @@ function nodeLoadDeps(): LoadDeps {
 		resolveEntry: resolveWithRequire,
 		importModule: specifier => import(specifier),
 		importBundledPackageJson: () => import('markuplint/package.json', { with: { type: 'json' } }),
-		readPackageJson: require,
+		readPackageJson: readJsonFile,
 	};
 }
 
@@ -258,7 +270,7 @@ type RequireDeps = {
 function nodeRequireDeps(): RequireDeps {
 	return {
 		requireResolve: (name, options) => require.resolve(name, { paths: [...options.paths] }),
-		readPackageJson: require,
+		readPackageJson: readJsonFile,
 	};
 }
 
