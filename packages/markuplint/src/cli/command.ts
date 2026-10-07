@@ -1,6 +1,7 @@
 import type { CLIOptions } from './bootstrap.js';
 import type { APIOptions } from '../api/types.js';
 import type { PositionedNode } from '../suppressions/compute-scope.js';
+import type { SuppressionsData } from '../suppressions/types.js';
 import type { Target } from '@markuplint/file-resolver';
 import type { Severity, SeverityOptions, Violation } from '@markuplint/ml-config';
 
@@ -100,7 +101,33 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 	// across the whole run (not per file).
 	const seenConfigMessages = new Set<string>();
 	const filesContent = new Map<string, { sourceCode: string; fixedCode: string }>();
-	const engines = new Map<string, MLEngine>();
+	// Suppressions scope computation is the only consumer of the parsed
+	// documents, so a document is retained past its file's own iteration only
+	// when that computation will run (--suppress, or a non-empty suppressions
+	// file in a normal run). Retaining every file's document otherwise keeps N
+	// DOM trees reachable until the command ends.
+	//
+	// A normal run reads the suppressions file exactly once, here, and applies
+	// that same snapshot at the end: deciding retention from one read and
+	// applying from a later one could disagree if the file changed mid-run,
+	// leaving `applySuppressions` without the node lists it needs.
+	const suppressionsFilePath = resolveSuppressionsPath(options.suppressionsLocation);
+	let normalRunSuppressions: SuppressionsData = {};
+	let suppressionsReadError: unknown;
+	if (!isSuppressMode && !isPruneMode) {
+		try {
+			normalRunSuppressions = await readSuppressionsFile(suppressionsFilePath);
+		} catch (error) {
+			if (isFatalError(error)) {
+				throw error;
+			}
+			// Proceed as if there were no suppressions; only the progressive
+			// output check below treats an unreadable file as an error.
+			suppressionsReadError = error;
+		}
+	}
+	const needsScope = isSuppressMode || Object.keys(normalRunSuppressions).length > 0;
+	const nodeLists = new Map<string, readonly PositionedNode[]>();
 	// Shared across every file in this run so its config cache — keyed by
 	// resolved config `names`, not by target file — actually helps: config
 	// loading/merging/plugin-resolution is done once per distinct config,
@@ -132,9 +159,10 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 		progressiveOutput = false;
 	}
 	if (progressiveOutput && !isSuppressMode && !isPruneMode) {
-		const suppressionsFilePathForCheck = resolveSuppressionsPath(options.suppressionsLocation);
-		const existingSuppressions = await readSuppressionsFile(suppressionsFilePathForCheck);
-		if (Object.keys(existingSuppressions).length > 0) {
+		if (suppressionsReadError != null) {
+			throw suppressionsReadError;
+		}
+		if (needsScope) {
 			progressiveOutput = false;
 		}
 	}
@@ -196,8 +224,16 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 			fixedCode: result.fixedCode,
 		});
 
-		// Store engine for scope computation in suppressions
-		engines.set(result.filePath, engine);
+		if (needsScope) {
+			const doc = engine.document;
+			if (doc) {
+				// MLNode structurally satisfies PositionedNode (startLine, startCol, localName,
+				// id, classList, parentElement, children are all present). The double cast is
+				// needed because TypeScript can't verify structural compatibility between the
+				// generic MLNode<T,O> and the plain PositionedNode interface at compile time.
+				nodeLists.set(result.filePath, doc.nodeList as unknown as PositionedNode[]);
+			}
+		}
 
 		// In fix mode, report the violations remaining in the FIXED code
 		// (re-verified by ml-core) instead of the pre-fix violations, so that
@@ -247,21 +283,7 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 	}
 
 	// --- Suppressions handling ---
-	const suppressionsFilePath = resolveSuppressionsPath(options.suppressionsLocation);
 	const collectedViolationsByFile = collector.groupByFile();
-
-	// Build nodeLists map from engines for scope computation
-	const nodeLists = new Map<string, readonly PositionedNode[]>();
-	for (const [filePath, engine] of engines) {
-		const doc = engine.document;
-		if (doc) {
-			// MLNode structurally satisfies PositionedNode (startLine, startCol, localName,
-			// id, classList, parentElement, children are all present). The double cast is
-			// needed because TypeScript can't verify structural compatibility between the
-			// generic MLNode<T,O> and the plain PositionedNode interface at compile time.
-			nodeLists.set(filePath, doc.nodeList as unknown as PositionedNode[]);
-		}
-	}
 
 	if (isSuppressMode) {
 		// Suppress mode: generate/update suppressions file
@@ -311,12 +333,10 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 	let suppressionsApplied = false;
 
 	try {
-		await fs.access(suppressionsFilePath);
-		const suppressionsData = await readSuppressionsFile(suppressionsFilePath);
-		if (Object.keys(suppressionsData).length > 0) {
+		if (needsScope) {
 			const { filtered, unusedEntries } = applySuppressions(
 				collectedViolationsByFile,
-				suppressionsData,
+				normalRunSuppressions,
 				suppressionsFilePath,
 				{ nodeLists },
 			);
