@@ -14,7 +14,7 @@ import { MLToken } from '../token/token.js';
 
 import { isChildNode } from './child-node.js';
 import { toNodeList } from './node-list.js';
-import { nodeStore } from './node-store.js';
+import { NodeStore } from './node-store.js';
 
 /**
  * Abstract base class for all markuplint DOM node wrappers.
@@ -170,6 +170,13 @@ export abstract class MLNode<
 
 	readonly #ownerDocument: MLDocument<T, O>;
 
+	/**
+	 * Scoped to the owning document so the mapping is reclaimed together with
+	 * it, and held directly on each node so the hot `syntacticalParentNode` /
+	 * `getPureChildNodes` paths reach it without a lookup.
+	 */
+	readonly #nodeStore: NodeStore;
+
 	#prevToken: MLNode<T, O> | null | undefined;
 
 	#conditionalChildNodes: NodeListOf<MLChildNode<T, O>>[] | undefined;
@@ -193,7 +200,17 @@ export abstract class MLNode<
 		this._astToken = astNode;
 		this.#ownerDocument = document;
 		this.isFragment = !!isFragment;
-		nodeStore.setNode(astNode, this);
+		// `document` is `null` only for the `MLDocument` being constructed (see
+		// its `super(ast, null)` call), which creates the store its nodes share.
+		// The document node is deliberately not registered: its AST node has no
+		// `uuid`, and nothing resolves it through the store (see
+		// `syntacticalParentNode`, which returns `ownerMLDocument` directly).
+		if (document) {
+			this.#nodeStore = document.#nodeStore;
+			this.#nodeStore.setNode(astNode, this);
+		} else {
+			this.#nodeStore = new NodeStore();
+		}
 	}
 
 	/**
@@ -584,7 +601,7 @@ export abstract class MLNode<
 		if (!this._astToken.parentNodeUuid) {
 			return this.ownerMLDocument;
 		}
-		return nodeStore.getNodeByUuid<T, O>(this._astToken.parentNodeUuid) as
+		return this.#nodeStore.getNodeByUuid<T, O>(this._astToken.parentNodeUuid) as
 			| MLDocument<any, any>
 			| MLDocumentFragment<any, any>
 			| MLElement<T, O>
@@ -851,7 +868,7 @@ export abstract class MLNode<
 					return node;
 				}) ?? [];
 			const childNodes = astChildren
-				.map(node => nodeStore.getNode<typeof node, T, O>(node))
+				.map(node => this.#nodeStore.getNode<typeof node, T, O>(node))
 				.filter(node => isChildNode(node));
 
 			// Cache
