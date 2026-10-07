@@ -25,8 +25,8 @@ import { MLDocument } from './document.js';
  * not, and the tests below then fail on Node.
  *
  * Three rounds is a margin, not a derived minimum: a single round was enough
- * in every trial on Node and Bun, so the extra rounds only absorb collector
- * timing differences between runtimes.
+ * in every trial on Node, so the extra rounds only absorb collector timing
+ * differences on other runtimes.
  *
  * On JavaScriptCore (Bun) this is only deterministic with concurrent JIT
  * compilation disabled: an in-flight DFG/FTL plan is a GC root for every value
@@ -92,6 +92,8 @@ describe('NodeStore resolves nodes within their own document', () => {
 		const pA = docA.querySelector('p');
 		const divB = docB.querySelector('div');
 
+		// `toBe` on two distinct MLNodes makes Vitest call `isEqualNode`, which
+		// MLDOM does not support, so identity is compared with `Object.is`.
 		expect(Object.is(pA?.parentNode, divA)).toBe(true);
 		expect(Object.is(pA?.parentNode, divB)).toBe(false);
 		expect(Object.is(divA?.childNodes[0], pA)).toBe(true);
