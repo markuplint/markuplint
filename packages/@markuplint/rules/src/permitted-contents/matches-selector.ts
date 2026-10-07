@@ -241,8 +241,12 @@ const conditionWithoutSpecs: Record<string, Condition> = {
 /**
  * Cache of parsed conditions keyed by specs instance and query string.
  * Prevents redundant category expansion for the same query across multiple elements.
+ *
+ * Weakly keyed because each parsed document builds its own specs object: a
+ * strong map would gain one entry per parse and never release it, growing
+ * without bound in long-lived processes (language server, watch mode).
  */
-const optConditionSpecsBaseCaches = new Map<Specs, Map<string, Condition>>();
+const optConditionSpecsBaseCaches = new WeakMap<Specs, Map<string, Condition>>();
 
 /**
  * Parses a content model query string into a Condition object by expanding
