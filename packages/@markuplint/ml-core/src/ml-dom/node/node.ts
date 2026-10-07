@@ -172,8 +172,8 @@ export abstract class MLNode<
 
 	/**
 	 * Maps AST nodes to the nodes built from them, shared by every node of one
-	 * document. It is a field rather than a module-level registry so the
-	 * mapping is reclaimed together with the document, and so the hot
+	 * document. Scoped to each document so the mapping is reclaimed together
+	 * with it, and held directly on each node so the hot
 	 * `syntacticalParentNode` / `getPureChildNodes` paths reach it without a
 	 * lookup.
 	 */

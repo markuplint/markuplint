@@ -104,9 +104,9 @@ describe('NodeStore is scoped to its owning document', () => {
 	});
 
 	// A document's node tree must not outlive the document itself: its nodes are
-	// registered in a store the document owns, not in process-wide state, so a
-	// process that re-parses repeatedly (a language server's
-	// `onDidChangeContent`) does not retain every past document. See #4074.
+	// registered in a store the document owns, so a process that re-parses
+	// repeatedly (a language server's `onDidChangeContent`) does not retain
+	// every past document. See #4074.
 	test('a document dropped after MLCore#setCode() is collectible', async () => {
 		const core = createCore('<div><p>hello</p></div>');
 		const nodeRef = firstNodeRef(core);
@@ -135,7 +135,6 @@ describe('NodeStore is scoped to its owning document', () => {
 
 		await forceGc();
 
-		// A process-wide registry would keep all 20 documents reachable here.
 		const stillAlive = refs.filter(ref => ref.deref() !== undefined);
 		expect(stillAlive).toHaveLength(0);
 	});
