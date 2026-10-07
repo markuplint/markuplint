@@ -13,16 +13,13 @@ const nodeStoreError = nodeStoreLog.extend('error');
 /**
  * Maps the AST nodes of one document to the `MLNode`s built from them.
  *
- * Each `MLDocument` owns its own store, which `MLNode`'s constructor shares
- * with every node of that document, instead of all documents sharing one
- * process-wide instance. A node is only ever looked up through its own
- * document (`syntacticalParentNode` resolves `parentNodeUuid`,
- * `getPureChildNodes` resolves child AST nodes), so a mapping has no reason to
- * outlive that document. A process-wide `Map` keyed by UUID was never
- * cleared, which kept every document ever parsed — its whole node tree —
- * reachable for the life of the process; a per-document store is reclaimed
- * together with its document when an engine calls `setCode()` / `exec()`
- * repeatedly, as a long-lived editor integration does (see #4074).
+ * Owned by a single `MLDocument` and shared with its nodes through `MLNode`'s
+ * constructor. A node is only ever looked up through its own document
+ * (`syntacticalParentNode` resolves `parentNodeUuid`, `getPureChildNodes`
+ * resolves child AST nodes), so the store must not be held anywhere that
+ * outlives that document: a longer-lived holder keeps every node — and through
+ * `ownerMLDocument` the whole tree — reachable, which an engine that calls
+ * `setCode()` / `exec()` repeatedly accumulates without bound (see #4074).
  */
 export class NodeStore {
 	#store = new Map<string, MLNode<any, any, any>>();

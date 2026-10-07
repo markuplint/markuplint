@@ -8,6 +8,9 @@ import { describe, test, expect, beforeAll } from 'vitest';
 
 import { convertRuleset } from '../../convert-ruleset.js';
 import { MLCore } from '../../ml-core.js';
+import { dummySchemas } from '../../test/index.js';
+
+import { MLDocument } from './document.js';
 
 /**
  * Runs garbage collection so that a `WeakRef` whose target is no longer
@@ -77,6 +80,23 @@ function firstNode(core: MLCore) {
 function firstNodeRef(core: MLCore): WeakRef<object> {
 	return new WeakRef(firstNode(core));
 }
+
+describe('NodeStore resolves nodes within their own document', () => {
+	test('nodes resolve their parent and children within their own document', () => {
+		const ast = parser.parse('<div><p>a</p></div>');
+		const ruleset = convertRuleset({});
+		const docA = new MLDocument(ast, ruleset, dummySchemas(), {});
+		const docB = new MLDocument(ast, ruleset, dummySchemas(), {});
+
+		const divA = docA.querySelector('div');
+		const pA = docA.querySelector('p');
+		const divB = docB.querySelector('div');
+
+		expect(Object.is(pA?.parentNode, divA)).toBe(true);
+		expect(Object.is(pA?.parentNode, divB)).toBe(false);
+		expect(Object.is(divA?.childNodes[0], pA)).toBe(true);
+	});
+});
 
 describe('NodeStore is scoped to its owning document', () => {
 	beforeAll(() => {
