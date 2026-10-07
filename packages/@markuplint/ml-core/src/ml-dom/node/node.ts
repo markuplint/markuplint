@@ -171,11 +171,9 @@ export abstract class MLNode<
 	readonly #ownerDocument: MLDocument<T, O>;
 
 	/**
-	 * Maps AST nodes to the nodes built from them, shared by every node of one
-	 * document. Scoped to each document so the mapping is reclaimed together
-	 * with it, and held directly on each node so the hot
-	 * `syntacticalParentNode` / `getPureChildNodes` paths reach it without a
-	 * lookup.
+	 * Scoped to the owning document so the mapping is reclaimed together with
+	 * it, and held directly on each node so the hot `syntacticalParentNode` /
+	 * `getPureChildNodes` paths reach it without a lookup.
 	 */
 	readonly #nodeStore: NodeStore;
 
