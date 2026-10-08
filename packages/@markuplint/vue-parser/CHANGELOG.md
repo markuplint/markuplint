@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.1.0](https://github.com/markuplint/markuplint/compare/v5.0.1...v5.1.0) (2026-10-08)
+
+### Bug Fixes
+
+- **vue-parser:** merge a static and a bound attribute of the same name ([4adc718](https://github.com/markuplint/markuplint/commit/4adc718e99768a06deee3dae2b1a92dd86d1f9fa)), closes [#4058](https://github.com/markuplint/markuplint/issues/4058)
+
+### Features
+
+- **vue-parser:** report a bound attribute as dynamic under its own name ([8246612](https://github.com/markuplint/markuplint/commit/824661259b3893971beb3acf0f2eb5581d56a5e6)), closes [#4058](https://github.com/markuplint/markuplint/issues/4058)
+- **vue-parser:** report the expression, the spreads of the root, and whether it has siblings ([b811d81](https://github.com/markuplint/markuplint/commit/b811d81363bea86e57a2652086e13dbb5f5d90e0))
+- **vue-parser:** report the slot wrappers and the direct children of the root ([7930ee7](https://github.com/markuplint/markuplint/commit/7930ee7b352292cbcc975e89c4976f101b19882b)), closes [#4054](https://github.com/markuplint/markuplint/issues/4054)
+
 ## [5.0.1](https://github.com/markuplint/markuplint/compare/v5.0.0...v5.0.1) (2026-09-22)
 
 **Note:** Version bump only for package @markuplint/vue-parser

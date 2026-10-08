@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.1.0](https://github.com/markuplint/markuplint/compare/v5.0.1...v5.1.0) (2026-10-08)
+
+### Bug Fixes
+
+- **rules:** count owned elements rendered by a pretended component in require-owned-elements ([87ae63d](https://github.com/markuplint/markuplint/commit/87ae63d65196829c3908f4c3c74ceffb2fedc60d)), closes [#4068](https://github.com/markuplint/markuplint/issues/4068)
+- **rules:** hold permitted-contents condition cache weakly by specs ([9b3200e](https://github.com/markuplint/markuplint/commit/9b3200e49cab314f978b8753c56463a2025d8bd0))
+- **rules:** skip require-accessible-name when unknown pretender content may be the name ([f82b254](https://github.com/markuplint/markuplint/commit/f82b25451f4e1f1da67a568444fce9d51709378e)), closes [#4069](https://github.com/markuplint/markuplint/issues/4069)
+
+### Features
+
+- **rules:** evaluate pretender slot content in permitted-contents ([1da4b30](https://github.com/markuplint/markuplint/commit/1da4b30d7997ee6e1e7500e3b6602c46ea576548)), closes [#4054](https://github.com/markuplint/markuplint/issues/4054)
+
 ## [5.0.1](https://github.com/markuplint/markuplint/compare/v5.0.0...v5.0.1) (2026-09-22)
 
 ### Bug Fixes

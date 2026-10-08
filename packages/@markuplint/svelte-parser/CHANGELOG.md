@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.1.0](https://github.com/markuplint/markuplint/compare/v5.0.1...v5.1.0) (2026-10-08)
+
+### Bug Fixes
+
+- **svelte-parser:** treat only known prefixes as directives in the scanned attributes ([c75b999](https://github.com/markuplint/markuplint/commit/c75b999c4aa30aae73777eeec37f45a989c10c58)), closes [#4058](https://github.com/markuplint/markuplint/issues/4058)
+
+### Features
+
+- **svelte-parser:** report an attribute with an expression value as dynamic ([f30ffdd](https://github.com/markuplint/markuplint/commit/f30ffdd2771c2e21ff2791f6537646f015f5dcf8)), closes [#4058](https://github.com/markuplint/markuplint/issues/4058)
+- **svelte-parser:** report the expression of a dynamic attribute and the spreads of the root ([8496c6e](https://github.com/markuplint/markuplint/commit/8496c6e8079ce8393caa658eef6aad7c5c93c521))
+- **svelte-parser:** report the slot wrappers and the direct children of the root ([edfa78e](https://github.com/markuplint/markuplint/commit/edfa78eb90e3d3fc64020c32e38f479073760ebb)), closes [#4054](https://github.com/markuplint/markuplint/issues/4054)
+
 ## [5.0.1](https://github.com/markuplint/markuplint/compare/v5.0.0...v5.0.1) (2026-09-22)
 
 **Note:** Version bump only for package @markuplint/svelte-parser

@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.1.0](https://github.com/markuplint/markuplint/compare/v5.0.1...v5.1.0) (2026-10-08)
+
+### Bug Fixes
+
+- **ml-core:** compute the accessible name of a pretender from what it renders ([22ea8f9](https://github.com/markuplint/markuplint/commit/22ea8f9da831a06084e5748ec5db44c6e1e66e24)), closes [#4056](https://github.com/markuplint/markuplint/issues/4056)
+- **ml-core:** ignore the children of a component that never renders them in its name ([9867097](https://github.com/markuplint/markuplint/commit/986709732e69ed2bc63d7261efbaeb1567ab6505)), closes [#4056](https://github.com/markuplint/markuplint/issues/4056)
+- **ml-core:** mark the slot content mutable when any of several slots has unknown content ([b657ab9](https://github.com/markuplint/markuplint/commit/b657ab97de39242ba3d26d5484693230d89400aa))
+- **ml-core:** narrow getNodeStoreFor()'s parameter to MLDocument ([bbdbc44](https://github.com/markuplint/markuplint/commit/bbdbc444a2e5267418ef8adedb9e3e40aa42b6e6)), closes [#4081](https://github.com/markuplint/markuplint/issues/4081) [/github.com/markuplint/markuplint/pull/4081#discussion_r4162890932](https://github.com//github.com/markuplint/markuplint/pull/4081/issues/discussion_r4162890932)
+- **ml-core:** omit a forwarded attribute the usage site does not write ([7be4d86](https://github.com/markuplint/markuplint/commit/7be4d867ed95f6e50f68a7bd267bf693a18e7c4c))
+- **ml-core:** scope NodeStore per document instead of a process-wide singleton ([71e2042](https://github.com/markuplint/markuplint/commit/71e204262261ca4317bb1fbe8967e998dd24628f))
+
+### Features
+
+- **ml-core:** build slot wrappers and static contents for pretenders ([7770c19](https://github.com/markuplint/markuplint/commit/7770c197e76f6cc6f1f8380c4b8221d9e878e058)), closes [#4054](https://github.com/markuplint/markuplint/issues/4054)
+- **ml-core:** let setCode swap in pretenders within the same re-parse ([0b8a3c5](https://github.com/markuplint/markuplint/commit/0b8a3c5e8b9ce048dedae43e8ba1cc91f9ec5e31)), closes [#4064](https://github.com/markuplint/markuplint/issues/4064)
+
 ## [5.0.1](https://github.com/markuplint/markuplint/compare/v5.0.0...v5.0.1) (2026-09-22)
 
 **Note:** Version bump only for package @markuplint/ml-core

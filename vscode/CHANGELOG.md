@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.1.0](https://github.com/markuplint/markuplint/compare/v5.0.1...v5.1.0) (2026-10-08)
+
+### Features
+
+- **language-server:** add a language server that runs on any LSP client ([ab03edc](https://github.com/markuplint/markuplint/commit/ab03edc35457b6502a9d55e176a8adca5427f796))
+
 ## [5.0.1](https://github.com/markuplint/markuplint/compare/v5.0.0...v5.0.1) (2026-09-22)
 
 ### Bug Fixes

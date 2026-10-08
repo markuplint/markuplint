@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.1.0](https://github.com/markuplint/markuplint/compare/v5.0.1...v5.1.0) (2026-10-08)
+
+### Bug Fixes
+
+- **ml-config:** accept omitIfMissing in the fromAttr value of the JSON Schema ([92f647a](https://github.com/markuplint/markuplint/commit/92f647a47ecc9c541db777f248df73e1135e0584))
+- **ml-config:** add omitIfMissing to the fromAttr value of a pretender attribute ([2f1ba7a](https://github.com/markuplint/markuplint/commit/2f1ba7a6f388831a8b25dce453bb4cff7200fae4))
+
+### Features
+
+- **ml-config:** accept an object with `depth` for `pretenders.auto` ([42df9b5](https://github.com/markuplint/markuplint/commit/42df9b5a7d922c60bafc2c581e9e7c3a0230ac3b)), closes [#4066](https://github.com/markuplint/markuplint/issues/4066)
+- **ml-config:** add a dependencies sink to the pretender scan options ([e6432c0](https://github.com/markuplint/markuplint/commit/e6432c01a7adb6de3cb788a43dcb1ca4555b706a)), closes [#4065](https://github.com/markuplint/markuplint/issues/4065)
+- **ml-config:** add dynamic attribute values and slot contents to pretenders ([4f509b2](https://github.com/markuplint/markuplint/commit/4f509b246a0de3d1b598171833e084f390c7f192)), closes [#4054](https://github.com/markuplint/markuplint/issues/4054)
+
 ## [5.0.1](https://github.com/markuplint/markuplint/compare/v5.0.0...v5.0.1) (2026-09-22)
 
 **Note:** Version bump only for package @markuplint/ml-config

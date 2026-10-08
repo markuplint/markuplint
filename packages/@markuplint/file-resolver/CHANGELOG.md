@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.1.0](https://github.com/markuplint/markuplint/compare/v5.0.1...v5.1.0) (2026-10-08)
+
+### Features
+
+- **file-resolver:** add createPretenderResolver for one lint target across edits ([e8e2e55](https://github.com/markuplint/markuplint/commit/e8e2e55c523d38e0bacf54a8229bba6c1b91d6e4)), closes [#4064](https://github.com/markuplint/markuplint/issues/4064)
+- **file-resolver:** pass `pretenders.auto.depth` on to `autoScan` ([dad6334](https://github.com/markuplint/markuplint/commit/dad63348db7336b47b0287246dd29a36de97ee3a)), closes [#4066](https://github.com/markuplint/markuplint/issues/4066)
+- **file-resolver:** report the files a pretenders resolution depends on ([9257322](https://github.com/markuplint/markuplint/commit/92573229d0493387380adab6c7ecba1b902a2869)), closes [#4065](https://github.com/markuplint/markuplint/issues/4065)
+
 ## [5.0.1](https://github.com/markuplint/markuplint/compare/v5.0.0...v5.0.1) (2026-09-22)
 
 **Note:** Version bump only for package @markuplint/file-resolver
