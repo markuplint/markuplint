@@ -135,6 +135,10 @@ export async function onDidOpen(
 		debounceTimer = setTimeout(lint, 300);
 
 		function lint() {
+			// `onDidClose` cannot clear this timer: it is shared by every document.
+			if (engines.get(key) !== engine) {
+				return;
+			}
 			diagnosticsLog(`Lint: ${document.uri}`);
 
 			const errors = violations.filter(v => v.severity === 'error');
@@ -241,6 +245,22 @@ export function onDidChangeContent(
 			log(`UnknownError: ${error}`, 'error');
 		}
 	}, 300);
+}
+
+/**
+ * Handles the `textDocument/didClose` event by releasing the engine and the fix state of the document.
+ *
+ * @param uri - The URI of the closed document
+ */
+export async function onDidClose(uri: string) {
+	fixStates.delete(uri);
+
+	const engine = engines.get(uri);
+	if (!engine) {
+		return;
+	}
+	engines.delete(uri);
+	await engine.close();
 }
 
 /**

@@ -151,6 +151,11 @@ export async function onDidOpen(
 			// Apply bulk suppression severity downgrade and prefix suppressed messages
 			const suppressedPrefix = t('[suppressed] this warning is suppressed but should be fixed:');
 			const downgraded = await applyBulkSuppressions(absoluteFilePath, violations, workspace, log);
+			// The document may have been closed while the suppressions were loading; publishing
+			// now would resurrect the diagnostics `onDidClose` cleared and re-add the fix state.
+			if (engines.get(key) !== engine) {
+				return;
+			}
 			const effectiveViolations = downgraded.map(v =>
 				'originalSeverity' in v && v.originalSeverity
 					? { ...v, message: `${suppressedPrefix} ${v.message}` }
@@ -273,6 +278,27 @@ export function onDidChangeContent(
 			}
 		}, 300),
 	);
+}
+
+/**
+ * Handles the `textDocument/didClose` event by releasing everything kept for the document.
+ *
+ * Without it every document opened during a session would keep its engine, its DOM and
+ * its config watcher (`watch: true`) until the server exits.
+ *
+ * @param uri - The URI of the closed document
+ */
+export async function onDidClose(uri: string) {
+	clearTimeout(debounceTimers.get(uri));
+	debounceTimers.delete(uri);
+	fixStates.delete(uri);
+
+	const engine = engines.get(uri);
+	if (!engine) {
+		return;
+	}
+	engines.delete(uri);
+	await engine.close();
 }
 
 /**

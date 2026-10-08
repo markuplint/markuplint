@@ -15,20 +15,27 @@ import * as v3 from './v3.js';
 import * as v4 from './v4.js';
 import * as v5 from './v5.js';
 
-vi.mock('./v2.js', () => ({ onDidOpen: vi.fn(), onDidChangeContent: vi.fn() }));
+vi.mock('./v2.js', () => ({
+	onDidOpen: vi.fn(),
+	onDidChangeContent: vi.fn(),
+	onDidClose: vi.fn(() => Promise.resolve()),
+}));
 vi.mock('./v3.js', () => ({
 	onDidOpen: vi.fn(),
 	onDidChangeContent: vi.fn(),
+	onDidClose: vi.fn(() => Promise.resolve()),
 	getNodeWithAccessibilityProps: vi.fn(),
 }));
 vi.mock('./v4.js', () => ({
 	onDidOpen: vi.fn(),
 	onDidChangeContent: vi.fn(),
+	onDidClose: vi.fn(() => Promise.resolve()),
 	getNodeWithAccessibilityProps: vi.fn(),
 }));
 vi.mock('./v5.js', () => ({
 	onDidOpen: vi.fn(),
 	onDidChangeContent: vi.fn(),
+	onDidClose: vi.fn(() => Promise.resolve()),
 	getNodeWithAccessibilityProps: vi.fn(),
 	onCodeAction: vi.fn(() => []),
 }));
@@ -102,6 +109,7 @@ function setup(withWorkingDirectories = true) {
 	const reportStatus = vi.fn();
 	const log = vi.fn();
 	const errorLog = vi.fn();
+	const sendDiagnostics = vi.fn();
 	const handlers = createEventHandlers({
 		resolveModule,
 		locale: 'en',
@@ -113,10 +121,10 @@ function setup(withWorkingDirectories = true) {
 		log,
 		diagnosticsLog: vi.fn(),
 		errorLog,
-		sendDiagnostics: vi.fn(),
+		sendDiagnostics,
 		reportStatus,
 	});
-	return { handlers, resolveModule, reportStatus, log, errorLog };
+	return { handlers, resolveModule, reportStatus, log, errorLog, sendDiagnostics };
 }
 
 beforeEach(() => {
@@ -232,6 +240,149 @@ describe('createEventHandlers', () => {
 		expect(vi.mocked(v5.onDidChangeContent).mock.calls[0]![0]).toBe(appDoc);
 		expect(v3.onDidChangeContent).toHaveBeenCalledTimes(1);
 		expect(vi.mocked(v3.onDidChangeContent).mock.calls[0]![0]).toBe(libDoc);
+	});
+
+	test('routes close events to the version handler the document was opened with', async () => {
+		const { handlers } = setup();
+		handlers.onDidOpen(appDoc);
+		handlers.onDidOpen(libDoc);
+		handlers.onDidOpen(fourDoc);
+		handlers.onDidOpen(legacyDoc);
+		await vi.waitFor(() => {
+			expect(v5.onDidOpen).toHaveBeenCalledTimes(1);
+			expect(v4.onDidOpen).toHaveBeenCalledTimes(1);
+			expect(v3.onDidOpen).toHaveBeenCalledTimes(1);
+			expect(v2.onDidOpen).toHaveBeenCalledTimes(1);
+		});
+
+		handlers.onDidClose(appDoc);
+		handlers.onDidClose(libDoc);
+		handlers.onDidClose(fourDoc);
+		handlers.onDidClose(legacyDoc);
+
+		await vi.waitFor(() => expect(v2.onDidClose).toHaveBeenCalledTimes(1));
+		expect(v5.onDidClose).toHaveBeenCalledExactlyOnceWith(appDoc.uri);
+		expect(v3.onDidClose).toHaveBeenCalledExactlyOnceWith(libDoc.uri);
+		expect(v4.onDidClose).toHaveBeenCalledExactlyOnceWith(fourDoc.uri);
+		expect(v2.onDidClose).toHaveBeenCalledExactlyOnceWith(legacyDoc.uri);
+	});
+
+	test('releases a document closed while its engine is still being set up, after the setup', async () => {
+		const { handlers } = setup();
+		const order: string[] = [];
+		let finishSetup: () => void = () => {};
+		vi.mocked(v5.onDidOpen).mockImplementationOnce(async () => {
+			await new Promise<void>(resolve => {
+				finishSetup = resolve;
+			});
+			order.push('opened');
+		});
+		vi.mocked(v5.onDidClose).mockImplementationOnce(() => {
+			order.push('closed');
+			return Promise.resolve();
+		});
+		handlers.onDidOpen(appDoc);
+		await vi.waitFor(() => expect(v5.onDidOpen).toHaveBeenCalledTimes(1));
+
+		handlers.onDidClose(appDoc);
+		await Promise.resolve();
+		expect(v5.onDidClose).not.toHaveBeenCalled();
+		finishSetup();
+
+		await vi.waitFor(() => expect(v5.onDidClose).toHaveBeenCalledTimes(1));
+		expect(order).toEqual(['opened', 'closed']);
+	});
+
+	test('opens a reopened document only after the previous engine is released', async () => {
+		const { handlers } = setup();
+		const order: string[] = [];
+		let finishRelease: () => void = () => {};
+		const open = () => {
+			order.push('open');
+			return Promise.resolve();
+		};
+		vi.mocked(v5.onDidOpen).mockImplementationOnce(open).mockImplementationOnce(open);
+		vi.mocked(v5.onDidClose).mockImplementationOnce(async () => {
+			order.push('close');
+			await new Promise<void>(resolve => {
+				finishRelease = resolve;
+			});
+			order.push('released');
+		});
+		handlers.onDidOpen(appDoc);
+		await vi.waitFor(() => expect(v5.onDidOpen).toHaveBeenCalledTimes(1));
+		handlers.onDidClose(appDoc);
+		await vi.waitFor(() => expect(v5.onDidClose).toHaveBeenCalledTimes(1));
+
+		handlers.onDidOpen(appDoc);
+		await Promise.resolve();
+		expect(v5.onDidOpen).toHaveBeenCalledTimes(1);
+		finishRelease();
+
+		await vi.waitFor(() => expect(v5.onDidOpen).toHaveBeenCalledTimes(2));
+		expect(order).toEqual(['open', 'close', 'released', 'open']);
+	});
+
+	test('clears the diagnostics of a closed document', async () => {
+		const { handlers, sendDiagnostics } = setup();
+		handlers.onDidOpen(appDoc);
+		await vi.waitFor(() => expect(v5.onDidOpen).toHaveBeenCalledTimes(1));
+
+		handlers.onDidClose(appDoc);
+
+		await vi.waitFor(() =>
+			expect(sendDiagnostics).toHaveBeenCalledExactlyOnceWith({ uri: appDoc.uri, diagnostics: [] }),
+		);
+	});
+
+	test('forgets the module of a closed document so that its change and code action events are ignored', async () => {
+		const { handlers } = setup();
+		handlers.onDidOpen(appDoc);
+		await vi.waitFor(() => expect(v5.onDidOpen).toHaveBeenCalledTimes(1));
+
+		handlers.onDidClose(appDoc);
+		await vi.waitFor(() => expect(v5.onDidClose).toHaveBeenCalledTimes(1));
+		handlers.onDidChangeContent(appDoc);
+
+		expect(v5.onDidChangeContent).not.toHaveBeenCalled();
+		expect(handlers.onCodeAction(codeActionParams(appDoc.uri))).toEqual([]);
+		expect(v5.onCodeAction).not.toHaveBeenCalled();
+	});
+
+	test('resolves the module again when a closed document is reopened', async () => {
+		const { handlers, resolveModule } = setup();
+		handlers.onDidOpen(appDoc);
+		await vi.waitFor(() => expect(v5.onDidOpen).toHaveBeenCalledTimes(1));
+		handlers.onDidClose(appDoc);
+		await vi.waitFor(() => expect(v5.onDidClose).toHaveBeenCalledTimes(1));
+
+		handlers.onDidOpen(appDoc);
+
+		await vi.waitFor(() => expect(v5.onDidOpen).toHaveBeenCalledTimes(2));
+		expect(resolveModule).toHaveBeenCalledTimes(2);
+	});
+
+	test('ignores close events for documents that have not been opened', async () => {
+		const { handlers, sendDiagnostics } = setup();
+		handlers.onDidClose(appDoc);
+		await new Promise(resolve => setTimeout(resolve, 0));
+		expect(v2.onDidClose).not.toHaveBeenCalled();
+		expect(v3.onDidClose).not.toHaveBeenCalled();
+		expect(v4.onDidClose).not.toHaveBeenCalled();
+		expect(v5.onDidClose).not.toHaveBeenCalled();
+		expect(sendDiagnostics).not.toHaveBeenCalled();
+	});
+
+	test('reports a failure to release the engine without throwing', async () => {
+		const { handlers, errorLog } = setup();
+		handlers.onDidOpen(appDoc);
+		await vi.waitFor(() => expect(v5.onDidOpen).toHaveBeenCalledTimes(1));
+		vi.mocked(v5.onDidClose).mockRejectedValueOnce(new Error('close failed'));
+
+		handlers.onDidClose(appDoc);
+
+		await vi.waitFor(() => expect(errorLog).toHaveBeenCalledTimes(1));
+		expect(errorLog.mock.calls[0]![0]).toBe(`Failed to release markuplint for ${appDoc.uri}: Error: close failed`);
 	});
 
 	test('returns no code actions for an unknown document or a pre-v5 module', async () => {

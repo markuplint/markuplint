@@ -88,6 +88,10 @@ export async function onDidOpen(
 		diagnosticsLog('', 'clear');
 
 		debounceTimer = setTimeout(() => {
+			// `onDidClose` cannot clear this timer: it is shared by every document.
+			if (engines.get(key) !== engine) {
+				return;
+			}
 			diagnosticsLog(`Lint: ${document.uri}`);
 			if (debug) {
 				diagnosticsLog('  Tracing AST Mapping:\n' + debug.map(line => `  ${line}`).join('\n'), 'trace');
@@ -174,6 +178,20 @@ export function onDidChangeContent(
 			log(`UnknownError: ${error}`, 'error');
 		}
 	}, 300);
+}
+
+/**
+ * Handles the `textDocument/didClose` event by releasing the engine of the document.
+ *
+ * @param uri - The URI of the closed document
+ */
+export async function onDidClose(uri: string) {
+	const engine = engines.get(uri);
+	if (!engine) {
+		return;
+	}
+	engines.delete(uri);
+	await engine.close();
 }
 
 export function getNodeWithAccessibilityProps(

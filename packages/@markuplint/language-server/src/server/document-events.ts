@@ -108,13 +108,42 @@ export function resolveDocumentWorkspace(
  * and dispatched to the handler (v2, v3, v4, or v5) matching that module's version.
  *
  * @param options - Configuration including the module resolver, locale, and settings
- * @returns An object containing `onDidOpen`, `onDidChangeContent`, `onCodeAction`, and `onHover` handlers
+ * @returns An object containing `onDidOpen`, `onDidChangeContent`, `onDidClose`, `onCodeAction`, and `onHover` handlers
  */
 export function createEventHandlers(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	options: EventHandlerOptions,
 ) {
 	const documentModules = new Map<string, Module>();
+	const queues = new Map<string, Promise<void>>();
+
+	/**
+	 * Runs `task` after every earlier open/close of the same document has finished.
+	 *
+	 * Opening is asynchronous (module resolution, then engine setup), so a close that
+	 * arrives meanwhile would find nothing to release and the engine created afterwards
+	 * would leak; a reopen that overlapped the release would start a second engine on
+	 * the file while the first one's watcher is still shutting down.
+	 *
+	 * `task` must handle its own failures; only an error that must not be swallowed (a
+	 * fatal one) may escape, and it is rethrown outside the queue so that it surfaces
+	 * as an uncaught exception instead of stalling the document's later events.
+	 */
+	function enqueue(uri: string, task: () => Promise<void>) {
+		const tail: Promise<void> = (queues.get(uri) ?? Promise.resolve())
+			.then(task)
+			.catch((error: unknown) => {
+				queueMicrotask(() => {
+					throw error;
+				});
+			})
+			.then(() => {
+				if (queues.get(uri) === tail) {
+					queues.delete(uri);
+				}
+			});
+		queues.set(uri, tail);
+	}
 
 	function parserErrorHandler(mod: Module, languageId: string) {
 		return createParserErrorHandler(
@@ -140,7 +169,7 @@ export function createEventHandlers(
 		const onError = parserErrorHandler(mod, document.languageId);
 
 		if (satisfies(mod.version, '2.x')) {
-			void v2.onDidOpen(
+			return v2.onDidOpen(
 				document,
 				mod.markuplint.MLEngine,
 				langConfig,
@@ -150,11 +179,10 @@ export function createEventHandlers(
 				workspace,
 				options.log,
 			);
-			return;
 		}
 
 		if (satisfies(mod.version, '3.x')) {
-			void v3.onDidOpen(
+			return v3.onDidOpen(
 				document,
 				mod.markuplint.MLEngine,
 				langConfig,
@@ -165,11 +193,10 @@ export function createEventHandlers(
 				onError,
 				workspace,
 			);
-			return;
 		}
 
 		if (satisfies(mod.version, '4.x')) {
-			void v4.onDidOpen(
+			return v4.onDidOpen(
 				document,
 				mod.markuplint.MLEngine,
 				langConfig,
@@ -180,11 +207,10 @@ export function createEventHandlers(
 				onError,
 				workspace,
 			);
-			return;
 		}
 
 		// v5+
-		void v5.onDidOpen(
+		return v5.onDidOpen(
 			document,
 			mod.markuplint.MLEngine,
 			langConfig,
@@ -219,18 +245,20 @@ export function createEventHandlers(
 				options.log,
 			);
 
-			void (async () => {
-				const mod = documentModules.get(document.uri) ?? (await options.resolveModule(workspace));
-				// Recorded before the engine exists so change events arriving during the
-				// asynchronous engine setup are routed to the same version handler.
-				documentModules.set(document.uri, mod);
-				options.reportStatus(mod);
-				dispatchOpen(mod, document, langConfig, workspace);
-			})().catch((error: unknown) => {
-				if (isFatalError(error)) {
-					throw error;
+			enqueue(document.uri, async () => {
+				try {
+					const mod = documentModules.get(document.uri) ?? (await options.resolveModule(workspace));
+					// Recorded before the engine exists so change events arriving during the
+					// asynchronous engine setup are routed to the same version handler.
+					documentModules.set(document.uri, mod);
+					options.reportStatus(mod);
+					await dispatchOpen(mod, document, langConfig, workspace);
+				} catch (error: unknown) {
+					if (isFatalError(error)) {
+						throw error;
+					}
+					options.errorLog(`Failed to load markuplint for ${workspace}: ${error}`);
 				}
-				options.errorLog(`Failed to load markuplint for ${workspace}: ${error}`);
 			});
 		},
 
@@ -262,6 +290,42 @@ export function createEventHandlers(
 
 			// v5+
 			v5.onDidChangeContent(document, options.log, onError);
+		},
+
+		onDidClose(
+			// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+			document: TextDocument,
+		) {
+			const uri = document.uri;
+			enqueue(uri, async () => {
+				const mod = documentModules.get(uri);
+				if (!mod) {
+					return;
+				}
+				documentModules.delete(uri);
+
+				const release = satisfies(mod.version, '2.x')
+					? v2.onDidClose
+					: satisfies(mod.version, '3.x')
+						? v3.onDidClose
+						: satisfies(mod.version, '4.x')
+							? v4.onDidClose
+							: v5.onDidClose;
+
+				try {
+					await release(uri);
+				} catch (error: unknown) {
+					if (isFatalError(error)) {
+						throw error;
+					}
+					options.errorLog(`Failed to release markuplint for ${uri}: ${error}`);
+				}
+
+				// The client keeps showing the last diagnostics of a document until told
+				// otherwise. Sent after the release: the engine's listeners are gone by then,
+				// so no lint can publish over it.
+				options.sendDiagnostics({ uri, diagnostics: [] });
+			});
 		},
 
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
