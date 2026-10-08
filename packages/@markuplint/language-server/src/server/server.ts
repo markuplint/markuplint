@@ -88,7 +88,7 @@ export function bootServer(connection: Connection) {
 
 			const resolveModule = createModuleResolver({ log, onFirstResolve: notices.onFirstResolve });
 
-			const { onDidOpen, onDidChangeContent, onHover, onCodeAction } = createEventHandlers({
+			const { onDidOpen, onDidChangeContent, onDidClose, onHover, onCodeAction } = createEventHandlers({
 				resolveModule,
 				locale,
 				langConfigs,
@@ -106,6 +106,8 @@ export function bootServer(connection: Connection) {
 			documents.all().forEach(onDidOpen);
 
 			documents.onDidChangeContent(e => onDidChangeContent(e.document));
+
+			documents.onDidClose(e => onDidClose(e.document));
 
 			connection.onHover(onHover);
 			codeActionHandler = onCodeAction;

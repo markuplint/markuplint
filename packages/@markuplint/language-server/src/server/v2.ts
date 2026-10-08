@@ -115,7 +115,8 @@ export function onDidChangeContent(
 	const engine = engines.get(key);
 
 	debounceTimer = setTimeout(async () => {
-		if (!engine) {
+		// The document may have been closed within the debounce delay.
+		if (!engine || engines.get(key) !== engine) {
 			return;
 		}
 
@@ -129,4 +130,18 @@ export function onDidChangeContent(
 			// continue;
 		}
 	}, 300);
+}
+
+/**
+ * Handles the `textDocument/didClose` event by releasing the engine of the document.
+ *
+ * @param uri - The URI of the closed document
+ */
+export async function onDidClose(uri: string) {
+	const engine = engines.get(uri);
+	if (!engine) {
+		return;
+	}
+	engines.delete(uri);
+	await engine.close();
 }
