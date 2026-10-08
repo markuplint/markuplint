@@ -161,7 +161,8 @@ export function onDidChangeContent(
 	const engine = engines.get(key);
 
 	debounceTimer = setTimeout(async () => {
-		if (!engine) {
+		// The document may have been closed within the debounce delay.
+		if (!engine || engines.get(key) !== engine) {
 			return;
 		}
 

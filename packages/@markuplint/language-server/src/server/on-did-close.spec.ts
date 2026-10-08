@@ -30,6 +30,7 @@ class FakeEngine {
 
 	readonly listeners = new Map<string, Listener>();
 	readonly close = vi.fn(() => Promise.resolve());
+	readonly setCode = vi.fn(() => Promise.resolve());
 
 	constructor() {
 		FakeEngine.instances.push(this);
@@ -126,6 +127,27 @@ describe('lints pending at close and the fix state', () => {
 		await v4.onDidClose(doc.uri);
 
 		expect(v4.getFixState(doc.uri)).toBeUndefined();
+	});
+
+	test('v2, v3 and v4 do not touch the engine for a change still pending when the document is closed', async () => {
+		await v2.onDidOpen(doc, FakeMLEngine, config, 'en', noop, noop, root, noop);
+		await v3.onDidOpen(doc, FakeMLEngine, config, 'en', noop, noop, noop, noop, root);
+		await v4.onDidOpen(doc, FakeMLEngine, config, 'en', noop, noop, noop, noop, root);
+
+		v2.onDidChangeContent(doc, noop);
+		await v2.onDidClose(doc.uri);
+		await vi.advanceTimersByTimeAsync(300);
+		v3.onDidChangeContent(doc, noop, noop);
+		await v3.onDidClose(doc.uri);
+		await vi.advanceTimersByTimeAsync(300);
+		v4.onDidChangeContent(doc, noop, noop);
+		await v4.onDidClose(doc.uri);
+		await vi.advanceTimersByTimeAsync(300);
+
+		expect(FakeEngine.instances).toHaveLength(3);
+		for (const engine of FakeEngine.instances) {
+			expect(engine.setCode).not.toHaveBeenCalled();
+		}
 	});
 
 	test('v3 and v4 publish no diagnostics for a lint still pending when the document is closed', async () => {

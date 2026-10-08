@@ -285,12 +285,73 @@ describe('createEventHandlers', () => {
 		await vi.waitFor(() => expect(v5.onDidOpen).toHaveBeenCalledTimes(1));
 
 		handlers.onDidClose(appDoc);
-		await Promise.resolve();
+		await new Promise(resolve => setTimeout(resolve, 0));
 		expect(v5.onDidClose).not.toHaveBeenCalled();
 		finishSetup();
 
 		await vi.waitFor(() => expect(v5.onDidClose).toHaveBeenCalledTimes(1));
 		expect(order).toEqual(['opened', 'closed']);
+	});
+
+	test('ignores change and code action events of a document closed while its engine is still being set up', async () => {
+		const { handlers } = setup();
+		let finishSetup: () => void = () => {};
+		vi.mocked(v5.onDidOpen).mockImplementationOnce(async () => {
+			await new Promise<void>(resolve => {
+				finishSetup = resolve;
+			});
+		});
+		handlers.onDidOpen(appDoc);
+		await vi.waitFor(() => expect(v5.onDidOpen).toHaveBeenCalledTimes(1));
+
+		handlers.onDidClose(appDoc);
+		handlers.onDidChangeContent(appDoc);
+		const actions = handlers.onCodeAction(codeActionParams(appDoc.uri));
+		finishSetup();
+
+		expect(v5.onDidChangeContent).not.toHaveBeenCalled();
+		expect(actions).toEqual([]);
+		expect(v5.onCodeAction).not.toHaveBeenCalled();
+		await vi.waitFor(() => expect(v5.onDidClose).toHaveBeenCalledTimes(1));
+	});
+
+	test('serves a reopened document again once it is opened after being closed', async () => {
+		const { handlers } = setup();
+		handlers.onDidOpen(appDoc);
+		await vi.waitFor(() => expect(v5.onDidOpen).toHaveBeenCalledTimes(1));
+		handlers.onDidClose(appDoc);
+		handlers.onDidOpen(appDoc);
+		await vi.waitFor(() => expect(v5.onDidOpen).toHaveBeenCalledTimes(2));
+
+		handlers.onDidChangeContent(appDoc);
+
+		expect(v5.onDidChangeContent).toHaveBeenCalledTimes(1);
+	});
+
+	test('clears the diagnostics even when releasing the engine fails', async () => {
+		const { handlers, sendDiagnostics, errorLog } = setup();
+		handlers.onDidOpen(appDoc);
+		await vi.waitFor(() => expect(v5.onDidOpen).toHaveBeenCalledTimes(1));
+		vi.mocked(v5.onDidClose).mockRejectedValueOnce(new Error('close failed'));
+
+		handlers.onDidClose(appDoc);
+
+		await vi.waitFor(() =>
+			expect(sendDiagnostics).toHaveBeenCalledExactlyOnceWith({ uri: appDoc.uri, diagnostics: [] }),
+		);
+		expect(errorLog).toHaveBeenCalledTimes(1);
+	});
+
+	test('reports a failure of the version handler to open a document without blaming the module load', async () => {
+		const { handlers, errorLog } = setup();
+		vi.mocked(v5.onDidOpen).mockRejectedValueOnce(new Error('setup failed'));
+
+		handlers.onDidOpen(appDoc);
+
+		await vi.waitFor(() => expect(errorLog).toHaveBeenCalledTimes(1));
+		expect(errorLog.mock.calls[0]![0]).toBe(
+			`Failed to open ${appDoc.uri} with markuplint 5.0.0: Error: setup failed`,
+		);
 	});
 
 	test('opens a reopened document only after the previous engine is released', async () => {
@@ -315,7 +376,7 @@ describe('createEventHandlers', () => {
 		await vi.waitFor(() => expect(v5.onDidClose).toHaveBeenCalledTimes(1));
 
 		handlers.onDidOpen(appDoc);
-		await Promise.resolve();
+		await new Promise(resolve => setTimeout(resolve, 0));
 		expect(v5.onDidOpen).toHaveBeenCalledTimes(1);
 		finishRelease();
 

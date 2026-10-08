@@ -116,6 +116,16 @@ export function createEventHandlers(
 ) {
 	const documentModules = new Map<string, Module>();
 	const queues = new Map<string, Promise<void>>();
+	/**
+	 * Documents whose close has been received but not yet carried out. The module of a
+	 * document is only forgotten when the queued close runs, which is after any open still in
+	 * progress; until then change, code action and hover requests must not reach the engine.
+	 */
+	const closedDocuments = new Map<string, symbol>();
+
+	function activeModule(uri: string) {
+		return closedDocuments.has(uri) ? undefined : documentModules.get(uri);
+	}
 
 	/**
 	 * Runs `task` after every earlier open/close of the same document has finished.
@@ -245,19 +255,29 @@ export function createEventHandlers(
 				options.log,
 			);
 
+			closedDocuments.delete(document.uri);
 			enqueue(document.uri, async () => {
+				let mod: Module;
 				try {
-					const mod = documentModules.get(document.uri) ?? (await options.resolveModule(workspace));
-					// Recorded before the engine exists so change events arriving during the
-					// asynchronous engine setup are routed to the same version handler.
-					documentModules.set(document.uri, mod);
-					options.reportStatus(mod);
-					await dispatchOpen(mod, document, langConfig, workspace);
+					mod = documentModules.get(document.uri) ?? (await options.resolveModule(workspace));
 				} catch (error: unknown) {
 					if (isFatalError(error)) {
 						throw error;
 					}
 					options.errorLog(`Failed to load markuplint for ${workspace}: ${error}`);
+					return;
+				}
+				// Recorded before the engine exists so change events arriving during the
+				// asynchronous engine setup are routed to the same version handler.
+				documentModules.set(document.uri, mod);
+				options.reportStatus(mod);
+				try {
+					await dispatchOpen(mod, document, langConfig, workspace);
+				} catch (error: unknown) {
+					if (isFatalError(error)) {
+						throw error;
+					}
+					options.errorLog(`Failed to open ${document.uri} with markuplint ${mod.version}: ${error}`);
 				}
 			});
 		},
@@ -266,7 +286,7 @@ export function createEventHandlers(
 			// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 			document: TextDocument,
 		) {
-			const mod = documentModules.get(document.uri);
+			const mod = activeModule(document.uri);
 			if (!mod) {
 				return;
 			}
@@ -297,9 +317,14 @@ export function createEventHandlers(
 			document: TextDocument,
 		) {
 			const uri = document.uri;
+			const closing = Symbol(uri);
+			closedDocuments.set(uri, closing);
 			enqueue(uri, async () => {
 				const mod = documentModules.get(uri);
 				if (!mod) {
+					if (closedDocuments.get(uri) === closing) {
+						closedDocuments.delete(uri);
+					}
 					return;
 				}
 				documentModules.delete(uri);
@@ -319,19 +344,22 @@ export function createEventHandlers(
 						throw error;
 					}
 					options.errorLog(`Failed to release markuplint for ${uri}: ${error}`);
+				} finally {
+					// The client keeps showing the last diagnostics of a document until told
+					// otherwise. Sent after the release: the engine's listeners are gone by then,
+					// so no lint can publish over it.
+					options.sendDiagnostics({ uri, diagnostics: [] });
+					if (closedDocuments.get(uri) === closing) {
+						closedDocuments.delete(uri);
+					}
 				}
-
-				// The client keeps showing the last diagnostics of a document until told
-				// otherwise. Sent after the release: the engine's listeners are gone by then,
-				// so no lint can publish over it.
-				options.sendDiagnostics({ uri, diagnostics: [] });
 			});
 		},
 
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		onCodeAction(params: CodeActionParams): CodeAction[] {
 			const uri = params.textDocument.uri;
-			const mod = documentModules.get(uri);
+			const mod = activeModule(uri);
 			if (!mod) {
 				options.log(`Code Actions skipped: no module for ${uri}`, 'debug');
 				return [];
@@ -358,7 +386,7 @@ export function createEventHandlers(
 				return;
 			}
 
-			const mod = documentModules.get(params.textDocument.uri);
+			const mod = activeModule(params.textDocument.uri);
 			if (!mod) {
 				return;
 			}
