@@ -3,6 +3,68 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.1.0](https://github.com/markuplint/markuplint/compare/v5.0.1...v5.1.0) (2026-10-08)
+
+### Bug Fixes
+
+- **astro-parser:** keep XML-namespaced attributes as static attributes ([4cc4253](https://github.com/markuplint/markuplint/commit/4cc4253c18f0b190177a79290a170996d1db8d02)), closes [#4058](https://github.com/markuplint/markuplint/issues/4058)
+- **language-server:** release the engine of a closed document ([35d584b](https://github.com/markuplint/markuplint/commit/35d584b00164648364dd5ad488cf8daff6529212)), closes [#4090](https://github.com/markuplint/markuplint/issues/4090)
+- **language-server:** stop serving a document as soon as its close arrives ([0c4e729](https://github.com/markuplint/markuplint/commit/0c4e72904e69aa2d0d4450236af9d5c8321a79d6))
+- **markuplint:** poll for file changes under Deno ([ccfeea1](https://github.com/markuplint/markuplint/commit/ccfeea1e1726fda526deff979cafac5093f179bb))
+- **markuplint:** re-resolve the pretenders that depend on the source on setCode ([525404e](https://github.com/markuplint/markuplint/commit/525404e296b1936ef86e48d03f79479071c7e7d0)), closes [#4064](https://github.com/markuplint/markuplint/issues/4064)
+- **ml-config:** accept omitIfMissing in the fromAttr value of the JSON Schema ([92f647a](https://github.com/markuplint/markuplint/commit/92f647a47ecc9c541db777f248df73e1135e0584))
+- **ml-config:** add omitIfMissing to the fromAttr value of a pretender attribute ([2f1ba7a](https://github.com/markuplint/markuplint/commit/2f1ba7a6f388831a8b25dce453bb4cff7200fae4))
+- **ml-core:** compute the accessible name of a pretender from what it renders ([22ea8f9](https://github.com/markuplint/markuplint/commit/22ea8f9da831a06084e5748ec5db44c6e1e66e24)), closes [#4056](https://github.com/markuplint/markuplint/issues/4056)
+- **ml-core:** ignore the children of a component that never renders them in its name ([9867097](https://github.com/markuplint/markuplint/commit/986709732e69ed2bc63d7261efbaeb1567ab6505)), closes [#4056](https://github.com/markuplint/markuplint/issues/4056)
+- **ml-core:** mark the slot content mutable when any of several slots has unknown content ([b657ab9](https://github.com/markuplint/markuplint/commit/b657ab97de39242ba3d26d5484693230d89400aa))
+- **ml-core:** narrow getNodeStoreFor()'s parameter to MLDocument ([bbdbc44](https://github.com/markuplint/markuplint/commit/bbdbc444a2e5267418ef8adedb9e3e40aa42b6e6)), closes [#4081](https://github.com/markuplint/markuplint/issues/4081) [/github.com/markuplint/markuplint/pull/4081#discussion_r4162890932](https://github.com//github.com/markuplint/markuplint/pull/4081/issues/discussion_r4162890932)
+- **ml-core:** omit a forwarded attribute the usage site does not write ([7be4d86](https://github.com/markuplint/markuplint/commit/7be4d867ed95f6e50f68a7bd267bf693a18e7c4c))
+- **ml-core:** scope NodeStore per document instead of a process-wide singleton ([71e2042](https://github.com/markuplint/markuplint/commit/71e204262261ca4317bb1fbe8967e998dd24628f))
+- **ml-spec:** read option, SVG title and control text through the accname resolver ([4c66d1f](https://github.com/markuplint/markuplint/commit/4c66d1fb960e746dc9f3c6cec0c8b3c9284a657e))
+- **ml-spec:** read the SVG title and select options through the accname resolver ([0a7c162](https://github.com/markuplint/markuplint/commit/0a7c162a83a553d7872388184ea0020735def6fb)), closes [#4067](https://github.com/markuplint/markuplint/issues/4067)
+- **pretenders:** compose attributes through a chain of components and resolve forwarded props ([d348cec](https://github.com/markuplint/markuplint/commit/d348cec5131d9eec41a0a4d994cfc9272f46dd6e))
+- **pretenders:** compose slots and contents through a chain of components ([ac6147f](https://github.com/markuplint/markuplint/commit/ac6147f4caee1a61d40c7925321fb0cdb64a88b8)), closes [#4057](https://github.com/markuplint/markuplint/issues/4057)
+- **pretenders:** do not compose again when a chain of components comes back to itself ([5fe0906](https://github.com/markuplint/markuplint/commit/5fe0906e6a791e1205eebe2f5ae3b7531049357f))
+- **pretenders:** hold the `pretenders.auto` import depth cap for JSX/TSX ([bb41901](https://github.com/markuplint/markuplint/commit/bb41901a3144cee48e646144a03ae254b80d4ba0)), closes [#4066](https://github.com/markuplint/markuplint/issues/4066)
+- **pretenders:** keep slots: null for a component with no attributes ([b786f18](https://github.com/markuplint/markuplint/commit/b786f18513315793c3c8dee0ea5c6e8b3fa7ef27)), closes [#4082](https://github.com/markuplint/markuplint/issues/4082)
+- **pretenders:** stop pretender false positives in the JSX and template scanners ([6f3f589](https://github.com/markuplint/markuplint/commit/6f3f589f42d91748230e9ca7113103c6fbff7a55)), closes [#4054](https://github.com/markuplint/markuplint/issues/4054)
+- **rules:** count owned elements rendered by a pretended component in require-owned-elements ([87ae63d](https://github.com/markuplint/markuplint/commit/87ae63d65196829c3908f4c3c74ceffb2fedc60d)), closes [#4068](https://github.com/markuplint/markuplint/issues/4068)
+- **rules:** hold permitted-contents condition cache weakly by specs ([9b3200e](https://github.com/markuplint/markuplint/commit/9b3200e49cab314f978b8753c56463a2025d8bd0))
+- **rules:** skip require-accessible-name when unknown pretender content may be the name ([f82b254](https://github.com/markuplint/markuplint/commit/f82b25451f4e1f1da67a568444fce9d51709378e)), closes [#4069](https://github.com/markuplint/markuplint/issues/4069)
+- **svelte-parser:** treat only known prefixes as directives in the scanned attributes ([c75b999](https://github.com/markuplint/markuplint/commit/c75b999c4aa30aae73777eeec37f45a989c10c58)), closes [#4058](https://github.com/markuplint/markuplint/issues/4058)
+- **vue-parser:** merge a static and a bound attribute of the same name ([4adc718](https://github.com/markuplint/markuplint/commit/4adc718e99768a06deee3dae2b1a92dd86d1f9fa)), closes [#4058](https://github.com/markuplint/markuplint/issues/4058)
+
+### Features
+
+- **astro-parser:** report an attribute with an expression value as dynamic ([18f0985](https://github.com/markuplint/markuplint/commit/18f0985d1877be0f9b2821ba555f1896a2379307)), closes [#4058](https://github.com/markuplint/markuplint/issues/4058)
+- **astro-parser:** report the expression of a dynamic attribute and the spreads of the root ([994b3bb](https://github.com/markuplint/markuplint/commit/994b3bb8f8a83f8cf1596d63174d1b21257625d7))
+- **astro-parser:** report the slot wrappers and the direct children of the root ([2572e32](https://github.com/markuplint/markuplint/commit/2572e328789631df2903b3d730210aff65502d42)), closes [#4054](https://github.com/markuplint/markuplint/issues/4054)
+- describe pretender slots, contents, and dynamic attributes in the config schema ([b5d613f](https://github.com/markuplint/markuplint/commit/b5d613f32e2cf42118787fc46194e8b41a97a56d)), closes [#4054](https://github.com/markuplint/markuplint/issues/4054)
+- **file-resolver:** add createPretenderResolver for one lint target across edits ([e8e2e55](https://github.com/markuplint/markuplint/commit/e8e2e55c523d38e0bacf54a8229bba6c1b91d6e4)), closes [#4064](https://github.com/markuplint/markuplint/issues/4064)
+- **file-resolver:** pass `pretenders.auto.depth` on to `autoScan` ([dad6334](https://github.com/markuplint/markuplint/commit/dad63348db7336b47b0287246dd29a36de97ee3a)), closes [#4066](https://github.com/markuplint/markuplint/issues/4066)
+- **file-resolver:** report the files a pretenders resolution depends on ([9257322](https://github.com/markuplint/markuplint/commit/92573229d0493387380adab6c7ecba1b902a2869)), closes [#4065](https://github.com/markuplint/markuplint/issues/4065)
+- **language-server:** add a language server that runs on any LSP client ([ab03edc](https://github.com/markuplint/markuplint/commit/ab03edc35457b6502a9d55e176a8adca5427f796))
+- **markuplint:** watch the files that pretenders.scan and auto read ([b4c63ef](https://github.com/markuplint/markuplint/commit/b4c63ef246cb42ecd1b943de46dca1f58738a701)), closes [#4065](https://github.com/markuplint/markuplint/issues/4065)
+- **ml-config:** accept an object with `depth` for `pretenders.auto` ([42df9b5](https://github.com/markuplint/markuplint/commit/42df9b5a7d922c60bafc2c581e9e7c3a0230ac3b)), closes [#4066](https://github.com/markuplint/markuplint/issues/4066)
+- **ml-config:** add a dependencies sink to the pretender scan options ([e6432c0](https://github.com/markuplint/markuplint/commit/e6432c01a7adb6de3cb788a43dcb1ca4555b706a)), closes [#4065](https://github.com/markuplint/markuplint/issues/4065)
+- **ml-config:** add dynamic attribute values and slot contents to pretenders ([4f509b2](https://github.com/markuplint/markuplint/commit/4f509b246a0de3d1b598171833e084f390c7f192)), closes [#4054](https://github.com/markuplint/markuplint/issues/4054)
+- **ml-core:** build slot wrappers and static contents for pretenders ([7770c19](https://github.com/markuplint/markuplint/commit/7770c197e76f6cc6f1f8380c4b8221d9e878e058)), closes [#4054](https://github.com/markuplint/markuplint/issues/4054)
+- **ml-core:** let setCode swap in pretenders within the same re-parse ([0b8a3c5](https://github.com/markuplint/markuplint/commit/0b8a3c5e8b9ce048dedae43e8ba1cc91f9ec5e31)), closes [#4064](https://github.com/markuplint/markuplint/issues/4064)
+- **ml-spec:** let the accname resolver supply the child nodes to traverse ([caa8263](https://github.com/markuplint/markuplint/commit/caa82633dcecb604b32e8e9438b1096c116f059c)), closes [#4056](https://github.com/markuplint/markuplint/issues/4056)
+- **pretenders:** record the files a scan result depends on ([2961161](https://github.com/markuplint/markuplint/commit/29611611eaf63a9d3135c096467873e81ef419eb)), closes [#4065](https://github.com/markuplint/markuplint/issues/4065)
+- **pretenders:** turn dynamic template attributes into dynamic pretender attrs ([f856283](https://github.com/markuplint/markuplint/commit/f856283b233d130c6b41d7e0da25d72c5790179b)), closes [#4058](https://github.com/markuplint/markuplint/issues/4058)
+- **rules:** evaluate pretender slot content in permitted-contents ([1da4b30](https://github.com/markuplint/markuplint/commit/1da4b30d7997ee6e1e7500e3b6602c46ea576548)), closes [#4054](https://github.com/markuplint/markuplint/issues/4054)
+- **svelte-parser:** report an attribute with an expression value as dynamic ([f30ffdd](https://github.com/markuplint/markuplint/commit/f30ffdd2771c2e21ff2791f6537646f015f5dcf8)), closes [#4058](https://github.com/markuplint/markuplint/issues/4058)
+- **svelte-parser:** report the expression of a dynamic attribute and the spreads of the root ([8496c6e](https://github.com/markuplint/markuplint/commit/8496c6e8079ce8393caa658eef6aad7c5c93c521))
+- **svelte-parser:** report the slot wrappers and the direct children of the root ([edfa78e](https://github.com/markuplint/markuplint/commit/edfa78eb90e3d3fc64020c32e38f479073760ebb)), closes [#4054](https://github.com/markuplint/markuplint/issues/4054)
+- **vue-parser:** report a bound attribute as dynamic under its own name ([8246612](https://github.com/markuplint/markuplint/commit/824661259b3893971beb3acf0f2eb5581d56a5e6)), closes [#4058](https://github.com/markuplint/markuplint/issues/4058)
+- **vue-parser:** report the expression, the spreads of the root, and whether it has siblings ([b811d81](https://github.com/markuplint/markuplint/commit/b811d81363bea86e57a2652086e13dbb5f5d90e0))
+- **vue-parser:** report the slot wrappers and the direct children of the root ([7930ee7](https://github.com/markuplint/markuplint/commit/7930ee7b352292cbcc975e89c4976f101b19882b)), closes [#4054](https://github.com/markuplint/markuplint/issues/4054)
+
+### Performance Improvements
+
+- **markuplint:** retain parsed documents only when suppressions scope needs them ([1f5326a](https://github.com/markuplint/markuplint/commit/1f5326a14d8efbf1da441452b192bcfcd3892384))
+
 ## [5.0.1](https://github.com/markuplint/markuplint/compare/v5.0.0...v5.0.1) (2026-09-22)
 
 ### Bug Fixes

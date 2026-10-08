@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.1.0](https://github.com/markuplint/markuplint/compare/v5.0.1...v5.1.0) (2026-10-08)
+
+### Bug Fixes
+
+- **markuplint:** poll for file changes under Deno ([ccfeea1](https://github.com/markuplint/markuplint/commit/ccfeea1e1726fda526deff979cafac5093f179bb))
+- **markuplint:** re-resolve the pretenders that depend on the source on setCode ([525404e](https://github.com/markuplint/markuplint/commit/525404e296b1936ef86e48d03f79479071c7e7d0)), closes [#4064](https://github.com/markuplint/markuplint/issues/4064)
+- **ml-spec:** read option, SVG title and control text through the accname resolver ([4c66d1f](https://github.com/markuplint/markuplint/commit/4c66d1fb960e746dc9f3c6cec0c8b3c9284a657e))
+- **ml-spec:** read the SVG title and select options through the accname resolver ([0a7c162](https://github.com/markuplint/markuplint/commit/0a7c162a83a553d7872388184ea0020735def6fb)), closes [#4067](https://github.com/markuplint/markuplint/issues/4067)
+- **pretenders:** compose slots and contents through a chain of components ([ac6147f](https://github.com/markuplint/markuplint/commit/ac6147f4caee1a61d40c7925321fb0cdb64a88b8)), closes [#4057](https://github.com/markuplint/markuplint/issues/4057)
+
+### Features
+
+- **language-server:** add a language server that runs on any LSP client ([ab03edc](https://github.com/markuplint/markuplint/commit/ab03edc35457b6502a9d55e176a8adca5427f796))
+- **markuplint:** watch the files that pretenders.scan and auto read ([b4c63ef](https://github.com/markuplint/markuplint/commit/b4c63ef246cb42ecd1b943de46dca1f58738a701)), closes [#4065](https://github.com/markuplint/markuplint/issues/4065)
+
+### Performance Improvements
+
+- **markuplint:** retain parsed documents only when suppressions scope needs them ([1f5326a](https://github.com/markuplint/markuplint/commit/1f5326a14d8efbf1da441452b192bcfcd3892384))
+
 ## [5.0.1](https://github.com/markuplint/markuplint/compare/v5.0.0...v5.0.1) (2026-09-22)
 
 ### Bug Fixes

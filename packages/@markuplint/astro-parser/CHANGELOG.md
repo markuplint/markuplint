@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.1.0](https://github.com/markuplint/markuplint/compare/v5.0.1...v5.1.0) (2026-10-08)
+
+### Bug Fixes
+
+- **astro-parser:** keep XML-namespaced attributes as static attributes ([4cc4253](https://github.com/markuplint/markuplint/commit/4cc4253c18f0b190177a79290a170996d1db8d02)), closes [#4058](https://github.com/markuplint/markuplint/issues/4058)
+
+### Features
+
+- **astro-parser:** report an attribute with an expression value as dynamic ([18f0985](https://github.com/markuplint/markuplint/commit/18f0985d1877be0f9b2821ba555f1896a2379307)), closes [#4058](https://github.com/markuplint/markuplint/issues/4058)
+- **astro-parser:** report the expression of a dynamic attribute and the spreads of the root ([994b3bb](https://github.com/markuplint/markuplint/commit/994b3bb8f8a83f8cf1596d63174d1b21257625d7))
+- **astro-parser:** report the slot wrappers and the direct children of the root ([2572e32](https://github.com/markuplint/markuplint/commit/2572e328789631df2903b3d730210aff65502d42)), closes [#4054](https://github.com/markuplint/markuplint/issues/4054)
+
 ## [5.0.1](https://github.com/markuplint/markuplint/compare/v5.0.0...v5.0.1) (2026-09-22)
 
 **Note:** Version bump only for package @markuplint/astro-parser

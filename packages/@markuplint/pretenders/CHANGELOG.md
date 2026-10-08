@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.1.0](https://github.com/markuplint/markuplint/compare/v5.0.1...v5.1.0) (2026-10-08)
+
+### Bug Fixes
+
+- **pretenders:** compose attributes through a chain of components and resolve forwarded props ([d348cec](https://github.com/markuplint/markuplint/commit/d348cec5131d9eec41a0a4d994cfc9272f46dd6e))
+- **pretenders:** compose slots and contents through a chain of components ([ac6147f](https://github.com/markuplint/markuplint/commit/ac6147f4caee1a61d40c7925321fb0cdb64a88b8)), closes [#4057](https://github.com/markuplint/markuplint/issues/4057)
+- **pretenders:** do not compose again when a chain of components comes back to itself ([5fe0906](https://github.com/markuplint/markuplint/commit/5fe0906e6a791e1205eebe2f5ae3b7531049357f))
+- **pretenders:** hold the `pretenders.auto` import depth cap for JSX/TSX ([bb41901](https://github.com/markuplint/markuplint/commit/bb41901a3144cee48e646144a03ae254b80d4ba0)), closes [#4066](https://github.com/markuplint/markuplint/issues/4066)
+- **pretenders:** keep slots: null for a component with no attributes ([b786f18](https://github.com/markuplint/markuplint/commit/b786f18513315793c3c8dee0ea5c6e8b3fa7ef27)), closes [#4082](https://github.com/markuplint/markuplint/issues/4082)
+- **pretenders:** stop pretender false positives in the JSX and template scanners ([6f3f589](https://github.com/markuplint/markuplint/commit/6f3f589f42d91748230e9ca7113103c6fbff7a55)), closes [#4054](https://github.com/markuplint/markuplint/issues/4054)
+
+### Features
+
+- **pretenders:** record the files a scan result depends on ([2961161](https://github.com/markuplint/markuplint/commit/29611611eaf63a9d3135c096467873e81ef419eb)), closes [#4065](https://github.com/markuplint/markuplint/issues/4065)
+- **pretenders:** turn dynamic template attributes into dynamic pretender attrs ([f856283](https://github.com/markuplint/markuplint/commit/f856283b233d130c6b41d7e0da25d72c5790179b)), closes [#4058](https://github.com/markuplint/markuplint/issues/4058)
+
 ## [5.0.1](https://github.com/markuplint/markuplint/compare/v5.0.0...v5.0.1) (2026-09-22)
 
 **Note:** Version bump only for package @markuplint/pretenders

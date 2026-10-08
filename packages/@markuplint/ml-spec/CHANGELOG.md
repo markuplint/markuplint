@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.1.0](https://github.com/markuplint/markuplint/compare/v5.0.1...v5.1.0) (2026-10-08)
+
+### Bug Fixes
+
+- **ml-spec:** read option, SVG title and control text through the accname resolver ([4c66d1f](https://github.com/markuplint/markuplint/commit/4c66d1fb960e746dc9f3c6cec0c8b3c9284a657e))
+- **ml-spec:** read the SVG title and select options through the accname resolver ([0a7c162](https://github.com/markuplint/markuplint/commit/0a7c162a83a553d7872388184ea0020735def6fb)), closes [#4067](https://github.com/markuplint/markuplint/issues/4067)
+
+### Features
+
+- **ml-spec:** let the accname resolver supply the child nodes to traverse ([caa8263](https://github.com/markuplint/markuplint/commit/caa82633dcecb604b32e8e9438b1096c116f059c)), closes [#4056](https://github.com/markuplint/markuplint/issues/4056)
+
 ## [5.0.1](https://github.com/markuplint/markuplint/compare/v5.0.0...v5.0.1) (2026-09-22)
 
 **Note:** Version bump only for package @markuplint/ml-spec
