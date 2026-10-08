@@ -20,6 +20,7 @@ overrides:
   '@markuplint/nunjucks-parser': $@markuplint/nunjucks-parser
   '@markuplint/parser-utils': $@markuplint/parser-utils
   '@markuplint/php-parser': $@markuplint/php-parser
+  '@markuplint/pretenders': $@markuplint/pretenders
   '@markuplint/pug-parser': $@markuplint/pug-parser
   '@markuplint/react-spec': $@markuplint/react-spec
   '@markuplint/rules': $@markuplint/rules
