@@ -11,7 +11,7 @@
 	},
 	"dependencies": {
 		"@types/node": "latest",
-		"typescript": "latest",
+		"typescript": "6.0.3",
 		"tsx": "latest",
 		"markuplint": "file:../../../../markuplint/packages/markuplint",
 		"@markuplint/alpine-parser": "file:../../../../markuplint/packages/@markuplint/alpine-parser",
