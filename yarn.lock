@@ -2672,7 +2672,7 @@ __metadata:
     "@markuplint/shared": "npm:5.1.0"
     "@types/css-tree": "npm:2.3.11"
     "@types/debug": "npm:4.1.13"
-    bcp-47: "npm:2.1.0"
+    bcp-47: "npm:2.1.1"
     css-tree: "npm:3.2.1"
     debug: "npm:4.4.3"
     language-subtag-registry: "npm:0.4.2"
@@ -5621,14 +5621,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bcp-47@npm:2.1.0":
-  version: 2.1.0
-  resolution: "bcp-47@npm:2.1.0"
+"bcp-47@npm:2.1.1":
+  version: 2.1.1
+  resolution: "bcp-47@npm:2.1.1"
   dependencies:
     is-alphabetical: "npm:^2.0.0"
     is-alphanumerical: "npm:^2.0.0"
     is-decimal: "npm:^2.0.0"
-  checksum: 10c0/0b461b6d5bad215665e59bc57c4e1489312da541612558629e4f3d3538b16ce6c2709a4b62ec9ed6fca7a339740c27df6a454d5821a849b3df5ff7e697372885
+  checksum: 10c0/086cb208c8bb0a2dad6ffcfc626ed9f81116037b92cecb63525410ccc943c1dfb78cb1b9ad41a8bcd239d98500933d1c4c44ae6903d5af428f738f2d743f8dec
   languageName: node
   linkType: hard
 
