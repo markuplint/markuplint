@@ -640,7 +640,7 @@
 							"additionalProperties": false,
 							"properties": {
 								"depth": {
-									"description": "How many import hops from the linted file are followed. `0` considers only the linted file itself. Defaults to `8`.",
+									"description": "How many import hops from the linted file are followed. `0` considers only the linted file itself. Defaults to `8`. Passing through a barrel file (`export ... from`) takes a hop too.",
 									"type": "integer",
 									"minimum": 0
 								}

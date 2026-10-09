@@ -21,6 +21,7 @@ import type { Pretender } from '@markuplint/ml-config';
 
 import { parsePretenderFilePath } from '@markuplint/ml-config';
 
+import { resolveDeclarationFile } from './dependency-mapper.js';
 import { analyzeImports, resolveComponentImport } from './import-resolver/index.js';
 import { normalizePath, resolveModuleFile } from './import-resolver/resolve-module-file.js';
 
@@ -36,7 +37,8 @@ export interface DisambiguateOptions {
 	readonly sourceCode: string;
 	/**
 	 * A sink for the `tsconfig.json` (with what it `extends`) the target's
-	 * imports were resolved with (see `PretenderScanOptions#dependencies`).
+	 * imports were resolved with, and for the files read to follow a barrel's
+	 * re-exports (see `PretenderScanOptions#dependencies`).
 	 * The target file itself is not recorded: the caller already holds it.
 	 */
 	readonly dependencies?: Set<string>;
@@ -68,7 +70,7 @@ export async function disambiguatePretenders(
 	const losers = new Set<Pretender>();
 
 	for (const candidates of groups.values()) {
-		const winner = resolveWinner(candidates, options.filePath, bindings, options.dependencies);
+		const winner = resolveWinner(candidates, options, bindings);
 		if (!winner) {
 			continue;
 		}
@@ -113,14 +115,15 @@ function groupAmbiguousCandidates(pretenders: readonly Pretender[]): Map<string,
 /**
  * Picks the one candidate `filePath` actually refers to: first a same-file
  * local declaration, then an import binding resolved via TypeScript module
- * resolution. Returns `null` when neither confirms a candidate, so the
- * caller leaves the whole group untouched.
+ * resolution — and, when the imported module is a barrel that declares none
+ * of the candidates, through its re-exports to the declaring file. Returns
+ * `null` when nothing confirms a candidate, so the caller leaves the whole
+ * group untouched.
  */
 function resolveWinner(
 	candidates: readonly Pretender[],
-	filePath: string,
+	{ filePath, sourceCode, dependencies }: DisambiguateOptions,
 	bindings: readonly ImportBinding[],
-	dependencies: Set<string> | undefined,
 ): Pretender | null {
 	const local = candidates.find(c => matchesFile(c.filePath!, filePath));
 	if (local) {
@@ -137,7 +140,27 @@ function resolveWinner(
 		return null;
 	}
 
-	return candidates.find(c => matchesFile(c.filePath!, resolvedAbs)) ?? null;
+	const direct = candidates.find(c => matchesFile(c.filePath!, resolvedAbs));
+	if (direct) {
+		return direct;
+	}
+
+	// The lint target can be part of a re-export chain, so its unsaved text
+	// stands in for what is on disk — and it stays out of `dependencies`, as the
+	// option promises.
+	const targetKey = normalizePath(filePath);
+	const sources = new Map([[targetKey, sourceCode]]);
+	const read = new Set<string>();
+	const declarationAbs = resolveDeclarationFile(resolvedAbs, binding.importedName, { sources, dependencies: read });
+	for (const file of read) {
+		if (file !== targetKey) {
+			dependencies?.add(file);
+		}
+	}
+	if (!declarationAbs) {
+		return null;
+	}
+	return candidates.find(c => matchesFile(c.filePath!, declarationAbs)) ?? null;
 }
 
 function matchesFile(pretenderFilePath: string, targetAbsPath: string): boolean {
