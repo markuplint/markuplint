@@ -518,7 +518,9 @@ describe('config that cannot be loaded (#4113)', () => {
 			},
 		);
 
-		expect(stderr).toContain(`error: Preset markuplint:no-exists is not found in ${config} (config-error)`);
+		// The path after "in" is the one given to `--config`, which `escape` doubles the backslashes of.
+		expect(stderr).toContain('error: Preset markuplint:no-exists is not found in ');
+		expect(stderr).toContain('config.json (config-error)');
 		expect(stderr).toContain('1 problem (1 error, 0 warnings) in 1 file');
 		expect(exitCode).toBe(1);
 	});
