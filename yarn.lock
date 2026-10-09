@@ -2583,7 +2583,7 @@ __metadata:
     "@markuplint/ml-spec": "npm:5.1.0"
     "@markuplint/shared": "npm:5.1.0"
     "@types/debug": "npm:4.1.13"
-    "@types/jsdom": "npm:28.0.1"
+    "@types/jsdom": "npm:28.0.3"
     debug: "npm:4.4.3"
     jsdom: "npm:29.0.2"
     postcss-selector-parser: "npm:7.1.6"
@@ -4536,15 +4536,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jsdom@npm:28.0.1":
-  version: 28.0.1
-  resolution: "@types/jsdom@npm:28.0.1"
+"@types/jsdom@npm:28.0.3":
+  version: 28.0.3
+  resolution: "@types/jsdom@npm:28.0.3"
   dependencies:
     "@types/node": "npm:*"
     "@types/tough-cookie": "npm:*"
-    parse5: "npm:^7.0.0"
+    parse5: "npm:^8.0.0"
     undici-types: "npm:^7.21.0"
-  checksum: 10c0/4d0e412b4de5389279544ff227c6bacf6a8cb3e2fcabf8b543026568444c60e770848ba752cd134ef90f6ce3e7bafd3158b2a3dc1947c2961a5824b12d15bfac
+  checksum: 10c0/08b1cd61ee3e9610676be3c68a782a94667b86a5f73b8a262095d05f84c9e864fc11b25ae53450cd519a0abd46c202906a735bd61aa176257a981964bc5b1166
   languageName: node
   linkType: hard
 
