@@ -240,7 +240,10 @@ export type PretenderDetails = {
 export type PretenderAutoOptions = {
 	/**
 	 * How many import hops from the linted file are followed. `0` considers
-	 * only the linted file itself. Defaults to `8`.
+	 * only the linted file itself. Defaults to `8`. A re-export
+	 * (`export ... from`) in a JS/TS file (or in the linted file itself when it
+	 * is MDX) is followed like an import, so passing through a barrel file takes
+	 * a hop too.
 	 *
 	 * Must be a non-negative integer; `config.schema.json` enforces it, but a
 	 * config handed over the API directly is not validated: a negative number
