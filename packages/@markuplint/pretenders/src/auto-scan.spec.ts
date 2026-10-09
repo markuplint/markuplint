@@ -333,4 +333,164 @@ describe('autoScan', () => {
 		// expect(result.find(p => p.selector === 'Child')).toMatchObject({ as: 'span' }); // pre-#4082 baseline
 		expect(result.find(p => p.selector === 'Child')).toMatchObject({ as: { element: 'span', slots: null } });
 	});
+	describe('re-exports (barrel files)', () => {
+		const writeUiBarrel = async (dir: string, indexSource: string) => {
+			const uiDir = path.join(dir, 'ui');
+			await mkdir(uiDir, { recursive: true });
+			await writeFile(
+				path.join(uiDir, 'Base.tsx'),
+				[
+					'export type Props = { label: string };',
+					'export const Link = ({ children }) => <a href="/">{children}</a>;',
+					'export const IconButton = ({ label }) => <button aria-label={label} />;',
+				].join('\n'),
+			);
+			await writeFile(path.join(uiDir, 'index.ts'), indexSource);
+			return uiDir;
+		};
+		const entrySource =
+			'import { Link, IconButton } from \'./ui\';\nexport const App = () => <Link><IconButton label="close" /></Link>;';
+
+		test('a named re-export from a barrel resolves to the re-exported component', async () => {
+			await writeUiBarrel(tmpDir, "export { Link, IconButton } from './Base';");
+
+			const result = await autoScan(path.join(tmpDir, 'App.tsx'), entrySource);
+
+			expect(result.find(p => p.selector === 'Link')).toMatchObject({
+				as: expect.objectContaining({ element: 'a' }),
+			});
+			expect(result.find(p => p.selector === 'IconButton')).toMatchObject({
+				as: expect.objectContaining({ element: 'button' }),
+			});
+		});
+
+		test('a star re-export from a barrel resolves to the re-exported component', async () => {
+			await writeUiBarrel(tmpDir, "export * from './Base';");
+
+			const result = await autoScan(path.join(tmpDir, 'App.tsx'), entrySource);
+
+			expect(result.find(p => p.selector === 'Link')).toMatchObject({
+				as: expect.objectContaining({ element: 'a' }),
+			});
+		});
+
+		test('the walk reaches the module behind a namespace re-export', async () => {
+			// Only the walk is checked: matching `<Base.Link>` to the `Link`
+			// pretender is a separate concern, and fails for a direct
+			// `import * as Base` as well.
+			await writeUiBarrel(tmpDir, "export * as Base from './Base';");
+
+			const result = await autoScan(
+				path.join(tmpDir, 'App.tsx'),
+				"import { Base } from './ui';\nexport const App = () => <Base.Link />;",
+			);
+
+			expect(result.find(p => p.selector === 'Link')).toMatchObject({
+				as: expect.objectContaining({ element: 'a' }),
+			});
+		});
+
+		test('a nested barrel chain is followed', async () => {
+			const uiDir = await writeUiBarrel(tmpDir, "export * from './buttons';");
+			const buttonsDir = path.join(uiDir, 'buttons');
+			await mkdir(buttonsDir);
+			await writeFile(path.join(buttonsDir, 'index.ts'), "export { Button } from './Button';");
+			await writeFile(path.join(buttonsDir, 'Button.tsx'), 'export const Button = () => <button>x</button>;');
+
+			const result = await autoScan(
+				path.join(tmpDir, 'App.tsx'),
+				"import { Button } from './ui';\nexport const App = () => <Button />;",
+			);
+
+			expect(result.find(p => p.selector === 'Button')).toMatchObject({
+				as: expect.objectContaining({ element: 'button' }),
+			});
+		});
+
+		test('a .vue entry resolves a component through a barrel', async () => {
+			await writeUiBarrel(tmpDir, "export { Link } from './Base';");
+
+			const result = await autoScan(
+				path.join(tmpDir, 'App.vue'),
+				['<script setup>', "import { Link } from './ui';", '</script>', '<template><Link /></template>'].join(
+					'\n',
+				),
+			);
+
+			expect(result.find(p => p.selector === 'Link')).toMatchObject({
+				as: expect.objectContaining({ element: 'a' }),
+			});
+		});
+
+		test('an .mdx entry resolves a component it re-exports', async () => {
+			await writeUiBarrel(tmpDir, "export { Link } from './Base';");
+
+			const result = await autoScan(
+				path.join(tmpDir, 'page.mdx'),
+				["export { Link } from './ui';", '', '# Title', '', '<Link>x</Link>'].join('\n'),
+			);
+
+			expect(result.find(p => p.selector === 'Link')).toMatchObject({
+				as: expect.objectContaining({ element: 'a' }),
+			});
+		});
+
+		test('a type-only re-export is not followed', async () => {
+			await writeUiBarrel(tmpDir, "export type { Props } from './Base';\nexport const version = 1;");
+
+			const result = await autoScan(
+				path.join(tmpDir, 'App.tsx'),
+				"import { version } from './ui';\nexport const App = () => <div>{version}</div>;",
+			);
+
+			expect(result.find(p => p.selector === 'Link')).toBeUndefined();
+		});
+
+		test('the hop through a barrel counts towards `depth`', async () => {
+			await writeUiBarrel(tmpDir, "export { Link, IconButton } from './Base';");
+			const entryPath = path.join(tmpDir, 'App.tsx');
+
+			const shallow = await autoScan(entryPath, entrySource, { depth: 1 });
+			const deep = await autoScan(entryPath, entrySource, { depth: 2 });
+
+			expect(shallow.find(p => p.selector === 'Link')).toBeUndefined();
+			expect(deep.find(p => p.selector === 'Link')).toMatchObject({
+				as: expect.objectContaining({ element: 'a' }),
+			});
+		});
+
+		test('a component rendering a same-named import through a star barrel resolves to the re-exported one', async () => {
+			await mkdir(path.join(tmpDir, 'ui'));
+			await mkdir(path.join(tmpDir, 'other'));
+			await writeFile(path.join(tmpDir, 'ui', 'index.ts'), "export * from './Item';");
+			await writeFile(path.join(tmpDir, 'ui', 'Item.tsx'), 'export const Item = () => <li />;');
+			await writeFile(path.join(tmpDir, 'other', 'Item.tsx'), 'export const Item = () => <span />;');
+			await writeFile(
+				path.join(tmpDir, 'Wrapper.tsx'),
+				"import { Item } from './ui';\nexport const Wrapper = () => <Item />;",
+			);
+			// `other/Item.tsx` is reached first, so a fallback to the flat name
+			// index would pick its `Item`.
+			const entrySource = [
+				"import { Item as OtherItem } from './other/Item';",
+				"import { Wrapper } from './Wrapper';",
+				'export const App = () => <><OtherItem /><Wrapper /></>;',
+			].join('\n');
+
+			const result = await autoScan(path.join(tmpDir, 'App.tsx'), entrySource);
+
+			expect(result.find(p => p.selector === 'Wrapper')).toMatchObject({
+				as: expect.objectContaining({ element: 'li' }),
+			});
+		});
+
+		test('reports the re-exported file as a dependency', async () => {
+			const uiDir = await writeUiBarrel(tmpDir, "export { Link, IconButton } from './Base';");
+			const dependencies = new Set<string>();
+
+			await autoScan(path.join(tmpDir, 'App.tsx'), entrySource, { dependencies });
+
+			expect(dependencies).toContain(normalizePath(path.join(uiDir, 'Base.tsx')));
+		});
+	});
 });

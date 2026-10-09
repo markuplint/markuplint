@@ -62,7 +62,7 @@ Instead of the CLI, you can configure dynamic scanning directly in your markupli
 }
 ```
 
-The walk follows up to 8 import hops from the linted file. `auto` also accepts an object to change that:
+The walk follows up to 8 import hops from the linted file. A re-export (`export ... from`) in a JS/TS file (or in the linted file itself when it is MDX) is followed like an import, so components imported through a barrel file are found, and passing through the barrel takes a hop. `auto` also accepts an object to change the limit:
 
 ```jsonc
 // .markuplintrc
@@ -183,7 +183,7 @@ Barrel file re-exports can be resolved with `resolveBarrelExport`, which maps a 
 
 ### Lint-time Disambiguation
 
-When the same component name is declared in more than one scanned file (e.g., two unrelated `Item` components rendering different elements), the generated pretenders keep independent entries for each — but `markuplint`'s lint pipeline still needs to know, for the specific file being linted, which one it actually refers to. `disambiguatePretenders` resolves this from the lint target's own declarations and imports; it's normally invoked automatically by `markuplint`'s config resolution, not called directly.
+When the same component name is declared in more than one scanned file (e.g., two unrelated `Item` components rendering different elements), the generated pretenders keep independent entries for each — but `markuplint`'s lint pipeline still needs to know, for the specific file being linted, which one it actually refers to. `disambiguatePretenders` resolves this from the lint target's own declarations and imports, following an imported barrel file's re-exports (`export { X } from`, `export * from`) to the file that declares the component; it's normally invoked automatically by `markuplint`'s config resolution, not called directly.
 
 In long-running hosts (watch mode, editor extensions) that keep re-resolving pretenders across file edits, call `clearPretenderCaches()` after each edit — otherwise a renamed export or a newly valid tsconfig `paths` alias keeps resolving as it did before the change for the rest of the process's lifetime.
 
@@ -385,7 +385,7 @@ const pretenders = await autoScan('/absolute/path/to/Page.tsx', sourceCode);
 
 `Promise<Pretender[]>` — Discovered pretender mappings for the entry file and its import graph.
 
-Results are cached per entry path, keyed on `sourceCode` and `options.depth` equality (not mtime, which doesn't exist for unsaved editor content); `node_modules` is never traversed into, and import cycles are handled via a visited set. The depth limit holds for every file type, JSX/TSX included: the collected files are scanned without letting TypeScript follow their imports any further.
+Results are cached per entry path, keyed on `sourceCode` and `options.depth` equality (not mtime, which doesn't exist for unsaved editor content); `node_modules` is never traversed into, and import cycles are handled via a visited set. In a JS/TS file, and in the top-level ESM of an MDX entry file, re-exports (`export ... from`, except type-only ones) are followed like imports, so a barrel file leads on to the files it re-exports from. The depth limit holds for every file type, JSX/TSX included: the collected files are scanned without letting TypeScript follow their imports any further.
 
 ### Dependencies
 

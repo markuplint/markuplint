@@ -14,6 +14,13 @@
  * follow into `.vue` (it falls back to a filesystem search; see
  * `resolveModuleFile`). Per-extension scanner dispatch only happens at the
  * final `scan()` call.
+ *
+ * In a JS/TS file, and in the top-level ESM of an MDX entry file (an imported
+ * `.mdx` is not scannable, so the walk never reads one), a re-export
+ * (`export ... from`) is an edge of the walk just like an import, whichever
+ * names it re-exports: otherwise a component imported through a barrel file
+ * would never be reached. A re-export in a Vue / Svelte / Astro script block
+ * is not followed.
  */
 
 import type { Pretender } from '@markuplint/ml-config';
@@ -23,7 +30,7 @@ import path from 'node:path';
 
 import { isFatalError } from '@markuplint/shared';
 
-import { analyzeImports } from './import-resolver/index.js';
+import { collectReferencedModules } from './import-resolver/index.js';
 import { normalizePath, recordDependency, resolveModuleFile } from './import-resolver/resolve-module-file.js';
 import { scan } from './scan.js';
 
@@ -56,7 +63,8 @@ const DEFAULT_DEPTH = 8;
 export interface AutoScanOptions {
 	/**
 	 * How many import hops from the entry file are followed. `0` scans only
-	 * the entry file. Defaults to `8`.
+	 * the entry file. Defaults to `8`. Passing through a barrel file takes a
+	 * hop too, since a re-export is followed like an import.
 	 *
 	 * Not validated here (the config schema validates `pretenders.auto.depth`):
 	 * a negative number or `NaN` behaves like `0`, and a fraction is rounded up.
@@ -134,13 +142,13 @@ export async function autoScan(
 		const nextFrontier: { absPath: string; source: string }[] = [];
 
 		for (const { absPath, source } of frontier) {
-			const analysis = await analyzeImports(absPath, source);
-			if (!analysis) {
+			const specifiers = await collectReferencedModules(absPath, source);
+			if (!specifiers) {
 				continue;
 			}
 
-			for (const binding of analysis.bindings) {
-				const resolved = resolveModuleFile(absPath, binding.source, dependencies);
+			for (const specifier of specifiers) {
+				const resolved = resolveModuleFile(absPath, specifier, dependencies);
 				if (!resolved) {
 					continue;
 				}
