@@ -14,7 +14,9 @@
  *   installed, file I/O failure). `MLEngine.exec()` (package `markuplint`)
  *   is the conversion boundary: it emits a `lint-error` event and returns a
  *   single error-severity violation for that file so other files keep
- *   processing.
+ *   processing. For a config that cannot be loaded (`ConfigLoadError`, or any
+ *   other non-fatal error thrown while resolving it) the file is not linted
+ *   and the violation's ruleId is `config-error`.
  * - **Tier 3 (Violation)** — the user's source code or config is at fault
  *   (`ParserError` family, `InvalidSelectorError`). `MLCore.verify()`
  *   (`@markuplint/ml-core`) is the conversion boundary: these become

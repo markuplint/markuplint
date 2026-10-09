@@ -1,7 +1,9 @@
 /**
- * Thrown when a configuration file cannot be loaded
- * (Tier 2 — Per-File Recoverable). The affected file is skipped
- * while other files continue to be processed.
+ * Thrown, or collected into a config set's `errs`, when a configuration
+ * cannot be loaded (Tier 2 — Per-File Recoverable): a config file that is
+ * missing, empty or malformed, or a preset that cannot be imported.
+ * `MLEngine` does not lint the affected file; it reports one error-severity
+ * `config-error` violation for it, while other files continue to be processed.
  */
 export class ConfigLoadError extends Error {
 	filePath: string;
