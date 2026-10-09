@@ -504,6 +504,26 @@ describe('Issues', () => {
 	});
 });
 
+describe('config that cannot be loaded (#4113)', () => {
+	test('an unknown preset fails the run', async () => {
+		const filePath = path.resolve(import.meta.dirname, '../../test/issue4113/index.html');
+		const config = path.resolve(import.meta.dirname, '../../test/issue4113/config.json');
+
+		// Not `--format json`: that format always exits 0.
+		const { stderr, exitCode } = await execa(
+			entryFilePath,
+			[escape(filePath), '--config', escape(config), '--no-color', '--no-search-config'],
+			{
+				reject: false,
+			},
+		);
+
+		expect(stderr).toContain(`error: Preset markuplint:no-exists is not found in ${config} (config-error)`);
+		expect(stderr).toContain('1 problem (1 error, 0 warnings) in 1 file');
+		expect(exitCode).toBe(1);
+	});
+});
+
 describe('config-level violation deduplication', () => {
 	// `config.json` deliberately mixes both config-level channels: two
 	// deprecated-but-working rule names (`id-duplication`, `required-attr`)

@@ -2,7 +2,7 @@ import type { APIOptions, MLEngineEventMap } from './types.js';
 import type { MLResultInfo } from '../types.js';
 import type { WatchSubscription } from './shared-watcher.js';
 import type { ConfigSet, MLFile, PretenderResolver, Target } from '@markuplint/file-resolver';
-import type { PlainData, Pretender, RuleAliasWarning } from '@markuplint/ml-config';
+import type { PlainData, Pretender, RuleAliasWarning, Violation } from '@markuplint/ml-config';
 import type { Ruleset, Plugin, Document, RuleConfigValue, MLFabric } from '@markuplint/ml-core';
 
 import {
@@ -18,9 +18,9 @@ import {
 import path from 'node:path';
 
 import { applyRuleAliasesToConfig, mergeConfig } from '@markuplint/ml-config';
-import { MLCore, convertRuleset } from '@markuplint/ml-core';
+import { CONFIG_ERROR_RULE_ID, MLCore, convertRuleset } from '@markuplint/ml-core';
 import { ruleAliasTable } from '@markuplint/rules';
-import { isFatalError } from '@markuplint/shared';
+import { ConfigLoadError, isFatalError } from '@markuplint/shared';
 import { Emitter } from 'strict-event-emitter';
 
 import { log as coreLog, verbosely } from '../debug.js';
@@ -157,6 +157,15 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 	}
 
 	#configProvider: ConfigProvider;
+	/**
+	 * Why the latest config resolution left nothing to lint with: a config that
+	 * cannot be loaded (Tier 2). `null` while the latest resolution succeeded.
+	 *
+	 * Set by `#provide` and reported by `#reportConfigFailure` as one
+	 * error-severity `config-error` for the file. It is not folded into an empty
+	 * config plus a warning: a file that no rule has looked at must not pass.
+	 */
+	#configFailure: Error | null = null;
 	#core: MLCore | null = null;
 	#file: Readonly<MLFile>;
 	#options?: APIOptions & MLEngineOptions;
@@ -263,6 +272,10 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		const core = await this.#setup();
 
 		if (!core) {
+			if (this.#configFailure) {
+				log('exec: config cannot be loaded');
+				return this.#reportConfigFailure(this.#configFailure);
+			}
 			log('exec: cancel (unsetuped yet)');
 			return null;
 		}
@@ -514,7 +527,19 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 
 		const fabric = await this.#provide(false);
 
-		if (!fabric || !this.#options?.watch) {
+		if (!fabric) {
+			if (this.#configFailure) {
+				// The core holds the config that no longer loads. Dropping it makes the
+				// next `exec()` / `setCode()` resolve again instead of linting on it.
+				this.#core = null;
+				if (this.#options?.watch) {
+					await this.#reportConfigFailure(this.#configFailure);
+				}
+			}
+			return;
+		}
+
+		if (!this.#options?.watch) {
 			return;
 		}
 
@@ -523,7 +548,13 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		}
 
 		this.emit('log', 'update:core', this.#file.path);
-		this.#core?.update(fabric);
+		if (this.#core) {
+			this.#core.update(fabric);
+		} else {
+			// No core yet — the config did not load until now. `#exec()` would
+			// resolve once more through `#setup()`, for the fabric just resolved.
+			await this.#createCore(fabric);
+		}
 		await this.#exec();
 	}
 
@@ -596,23 +627,33 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		await this.#syncWatch();
 	}
 
+	/**
+	 * Resolves everything a lint of the file needs and returns it, or `null`
+	 * when there is nothing to lint with: the file is missing, excluded, or
+	 * unmatched by the extension — or its config cannot be loaded, which
+	 * `#configFailure` records.
+	 *
+	 * A config that cannot be loaded is a Tier 2 failure (see the module JSDoc
+	 * of `@markuplint/shared`'s `errors/index.ts`): any non-fatal error thrown by
+	 * the resolution, or a `ConfigLoadError` collected into the config set's
+	 * `errs`, fails the file. Tier 1 errors — markuplint's own bugs
+	 * (`isFatalError()`) — are not caught here. The other `errs` (a rule or a
+	 * plugin that is not found, an invalid selector, a circular `extends`)
+	 * leave the rest of the config usable, so they stay `config-error` warnings
+	 * that `MLCore.verify()` reports.
+	 */
 	async #provide(cache = true): Promise<MLFabric | null> {
+		this.#configFailure = null;
+
 		let configSet: ResolvedConfigSet;
 
 		try {
 			configSet = await this.resolveConfig(cache);
 		} catch (error: unknown) {
-			if (error instanceof Error) {
-				configSet = {
-					config: {},
-					plugins: [],
-					files: new Set(),
-					errs: [error],
-					ruleDeprecations: [],
-				};
-			} else {
+			if (isFatalError(error) || !(error instanceof Error)) {
 				throw error;
 			}
+			return this.#failConfig(error);
 		}
 
 		fileLog('Fetched Config files: %O', configSet.files);
@@ -620,9 +661,12 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		fileLog('Resolved Plugins: %O', configSet.plugins);
 		fileLog('Resolve Errors: %O', configSet.errs);
 
-		if (!(await this.#file.isFile())) {
-			this.emit('log', 'file-no-exists', `The file doesn't exist or it is not a file: ${this.#file.path}`);
-			fileLog("The file doesn't exist or it is not a file: %s", this.#file.path);
+		const loadError = configSet.errs.find(error => error instanceof ConfigLoadError);
+		if (loadError) {
+			return this.#failConfig(loadError);
+		}
+
+		if (!(await this.#isTargetFile())) {
 			return null;
 		}
 
@@ -891,6 +935,63 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		const { schemas } = await resolveSpecs(this.#file.path, configSet.config.specs);
 		this.emit('schemas', this.#file.path, schemas);
 		return schemas;
+	}
+
+	async #isTargetFile() {
+		if (await this.#file.isFile()) {
+			return true;
+		}
+		this.emit('log', 'file-no-exists', `The file doesn't exist or it is not a file: ${this.#file.path}`);
+		fileLog("The file doesn't exist or it is not a file: %s", this.#file.path);
+		return false;
+	}
+
+	/**
+	 * Records that the config cannot be loaded, unless the file is missing too,
+	 * which is the more basic reason to skip it. Always resolves to `null`: the
+	 * "nothing to lint with" answer of `#provide`.
+	 */
+	async #failConfig(error: Error) {
+		fileLog('Config cannot be loaded: %O', error);
+		if (await this.#isTargetFile()) {
+			this.#configFailure = error;
+		}
+		return null;
+	}
+
+	/**
+	 * Reports a config that cannot be loaded as the file's only violation, at
+	 * error severity, so the run fails instead of passing a file no rule has
+	 * checked.
+	 *
+	 * Emits `lint` as well as `lint-error`: an editor shows its diagnostics from
+	 * `lint`, and a config that stops loading while it is being edited must show
+	 * up there. See `#exec` for the `lint-error` conversion of a failed
+	 * `verify()`, which has no violations to publish.
+	 */
+	async #reportConfigFailure(error: Readonly<Error>): Promise<MLResultInfo> {
+		const sourceCode = await this.#file.getCode();
+		const violations: Violation[] = [
+			{
+				ruleId: CONFIG_ERROR_RULE_ID,
+				severity: 'error',
+				message: error.message,
+				line: 1,
+				col: 1,
+				raw: '',
+			},
+		];
+
+		this.emit('lint-error', this.#file.path, sourceCode, error);
+		this.emit('lint', this.#file.path, sourceCode, violations, sourceCode, null, null);
+
+		return {
+			violations,
+			filePath: this.#file.path,
+			sourceCode,
+			fixedCode: sourceCode,
+			status: 'processed',
+		};
 	}
 
 	async #setup() {

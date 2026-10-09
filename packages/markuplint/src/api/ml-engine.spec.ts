@@ -6,7 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 
 import { ConfigProvider } from '@markuplint/file-resolver';
-import { afterEach, beforeEach, describe, it, expect } from 'vitest';
+import { afterEach, beforeEach, describe, it, expect, vi } from 'vitest';
 
 import { MLEngine } from './ml-engine.js';
 
@@ -1016,5 +1016,178 @@ describe('resolveConfig(false) with inline config (#4015)', () => {
 
 		expect(first.config.rules).toStrictEqual({ 'no-duplicate-id': true });
 		expect(second.config.rules).toStrictEqual({ 'no-duplicate-id': true });
+	});
+});
+
+describe('config that cannot be loaded (#4113)', () => {
+	const missingPreset = { extends: ['markuplint:no-exists'] };
+
+	it('reports one error-severity config-error and lints nothing', async () => {
+		const file = await MLEngine.toMLFile({ sourceCode: '<dl><span>no</span></dl>', name: 'a.html' });
+		const engine = new MLEngine(file!, { noSearchConfig: true, config: missingPreset });
+
+		const result = await engine.exec();
+
+		expect(result?.status).toBe('processed');
+		expect(result?.violations).toStrictEqual([
+			{
+				ruleId: 'config-error',
+				severity: 'error',
+				message: expect.stringContaining('Preset markuplint:no-exists is not found'),
+				line: 1,
+				col: 1,
+				raw: '',
+			},
+		]);
+	});
+
+	it('reports it for an extension the default parser does not match', async () => {
+		const file = await MLEngine.toMLFile({ sourceCode: '<template><p>a</p></template>', name: 'a.vue' });
+		const engine = new MLEngine(file!, { noSearchConfig: true, config: missingPreset });
+
+		const result = await engine.exec();
+
+		expect(result?.violations.map(v => [v.ruleId, v.severity])).toStrictEqual([['config-error', 'error']]);
+	});
+
+	it('emits lint-error with the cause', async () => {
+		const file = await MLEngine.toMLFile({ sourceCode: '<p>a</p>', name: 'a.html' });
+		const engine = new MLEngine(file!, { noSearchConfig: true, config: missingPreset });
+		const messages: string[] = [];
+		engine.on('lint-error', (_filePath, _sourceCode, error) => {
+			messages.push(error.message);
+		});
+
+		await engine.exec();
+
+		expect(messages).toStrictEqual([expect.stringContaining('Preset markuplint:no-exists is not found')]);
+	});
+
+	it('reports a config file that does not exist', async () => {
+		const file = await MLEngine.toMLFile({ sourceCode: '<p>a</p>', name: 'a.html' });
+		const configFile = path.join(os.tmpdir(), 'markuplint-no-such-config.json');
+		const engine = new MLEngine(file!, { noSearchConfig: true, configFile });
+
+		const result = await engine.exec();
+
+		expect(result?.violations.map(v => [v.ruleId, v.severity])).toStrictEqual([['config-error', 'error']]);
+	});
+
+	it('reports any other non-fatal error thrown while resolving the config', async () => {
+		const configProvider = new ConfigProvider();
+		vi.spyOn(configProvider, 'search').mockRejectedValue(new Error('cannot read the config directory'));
+		const file = await MLEngine.toMLFile({ sourceCode: '<p>a</p>', name: 'a.html' });
+		const engine = new MLEngine(file!, { configProvider });
+
+		const result = await engine.exec();
+
+		expect(result?.violations).toStrictEqual([
+			{
+				ruleId: 'config-error',
+				severity: 'error',
+				message: 'cannot read the config directory',
+				line: 1,
+				col: 1,
+				raw: '',
+			},
+		]);
+	});
+
+	it("does not catch markuplint's own bug (Tier 1) while resolving the config", async () => {
+		const configProvider = new ConfigProvider();
+		vi.spyOn(configProvider, 'search').mockRejectedValue(new TypeError('a bug in markuplint'));
+		const file = await MLEngine.toMLFile({ sourceCode: '<p>a</p>', name: 'a.html' });
+		const engine = new MLEngine(file!, { configProvider });
+
+		await expect(engine.exec()).rejects.toThrow(new TypeError('a bug in markuplint'));
+	});
+
+	it('does not lint a file that has gone, whatever its config', async () => {
+		const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'ml-engine-config-failure-'));
+		try {
+			const targetFile = path.join(tmpDir, 'a.html');
+			await fs.writeFile(targetFile, '<p>a</p>');
+			const file = await MLEngine.toMLFile(targetFile);
+			await fs.rm(targetFile);
+			const engine = new MLEngine(file!, { noSearchConfig: true, config: missingPreset });
+
+			const result = await engine.exec();
+
+			expect(result).toBeNull();
+		} finally {
+			await fs.rm(tmpDir, { recursive: true, force: true });
+		}
+	});
+
+	it('keeps reporting the failure on exec() after setCode() while the config cannot be loaded', async () => {
+		const file = await MLEngine.toMLFile({ sourceCode: '<p>a</p>', name: 'a.html' });
+		const engine = new MLEngine(file!, { noSearchConfig: true, config: missingPreset });
+
+		await engine.setCode('<p>b</p>');
+		const result = await engine.exec();
+
+		expect(result?.violations.map(v => [v.ruleId, v.severity])).toStrictEqual([['config-error', 'error']]);
+	});
+
+	it('reports a config that stops loading in watch mode, and lints again once it loads', async () => {
+		const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'ml-engine-config-failure-'));
+		let engine: MLEngine | undefined;
+		try {
+			const configFile = path.join(tmpDir, '.markuplintrc');
+			const targetFile = path.join(tmpDir, 'a.html');
+			await fs.writeFile(configFile, JSON.stringify({ extends: ['markuplint:html-standard'] }));
+			await fs.writeFile(targetFile, '<dl><span>no</span></dl>');
+			const file = await MLEngine.toMLFile(targetFile);
+			const watched = new MLEngine(file!, { watch: true });
+			engine = watched;
+
+			// Events of one change can arrive more than once, so wait for the one
+			// that matches instead of for the next one.
+			const lintMatching = (predicate: (violations: readonly Violation[]) => boolean) =>
+				new Promise<readonly Violation[]>(resolve => {
+					watched.on('lint', (_, __, violations) => {
+						if (predicate(violations)) {
+							resolve(violations);
+						}
+					});
+				});
+			const isConfigFailure = (violations: readonly Violation[]) =>
+				violations.length === 1 && violations[0]?.ruleId === 'config-error';
+			const hasPermittedContents = (violations: readonly Violation[]) =>
+				violations.some(v => v.ruleId === 'permitted-contents');
+
+			const first = await watched.exec();
+			expect(first?.violations.some(v => v.ruleId === 'permitted-contents')).toBe(true);
+
+			const failed = lintMatching(isConfigFailure);
+			await fs.writeFile(configFile, JSON.stringify({ extends: ['markuplint:no-exists'] }));
+			expect((await failed)[0]?.severity).toBe('error');
+
+			// A lint asked for now must not pass on the config it had before.
+			const whileBroken = await watched.exec();
+			expect(whileBroken?.violations.map(v => [v.ruleId, v.severity])).toStrictEqual([['config-error', 'error']]);
+
+			const recovered = lintMatching(hasPermittedContents);
+			// chokidar drops a `change` that follows another one of the same path within 50ms.
+			await new Promise<void>(resolve => setTimeout(resolve, 75));
+			await fs.writeFile(configFile, JSON.stringify({ extends: ['markuplint:html-standard'] }));
+			expect(hasPermittedContents(await recovered)).toBe(true);
+		} finally {
+			await engine?.close();
+			await fs.rm(tmpDir, { recursive: true, force: true });
+		}
+	});
+
+	it('keeps a rule that is not found as a warning while the other rules still lint', async () => {
+		const file = await MLEngine.toMLFile({ sourceCode: '<dl><span>no</span></dl>', name: 'a.html' });
+		const engine = new MLEngine(file!, {
+			noSearchConfig: true,
+			config: { extends: ['markuplint:html-standard'], rules: { 'no-such-rule': true } },
+		});
+
+		const result = await engine.exec();
+
+		expect(result?.violations.find(v => v.ruleId === 'config-error')?.severity).toBe('warning');
+		expect(result?.violations.some(v => v.ruleId === 'permitted-contents')).toBe(true);
 	});
 });
