@@ -1625,16 +1625,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/win32-x64@npm:0.28.0":
-  version: 0.28.0
-  resolution: "@esbuild/win32-x64@npm:0.28.0"
+"@esbuild/win32-x64@npm:0.28.1":
+  version: 0.28.1
+  resolution: "@esbuild/win32-x64@npm:0.28.1"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
-"@esbuild/win32-x64@npm:0.28.1":
-  version: 0.28.1
-  resolution: "@esbuild/win32-x64@npm:0.28.1"
+"@esbuild/win32-x64@npm:0.28.2":
+  version: 0.28.2
+  resolution: "@esbuild/win32-x64@npm:0.28.2"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
@@ -2644,7 +2644,7 @@ __metadata:
   resolution: "@markuplint/test-tools@workspace:packages/@markuplint/test-tools"
   dependencies:
     "@esbuild/linux-x64": "npm:0.28.2"
-    "@esbuild/win32-x64": "npm:0.28.0"
+    "@esbuild/win32-x64": "npm:0.28.2"
     "@rollup/rollup-linux-x64-gnu": "npm:4.60.2"
     "@vitest/coverage-v8": "npm:4.1.5"
     browser-resolve: "npm:2.0.0"
