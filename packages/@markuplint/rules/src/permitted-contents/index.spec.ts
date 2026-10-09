@@ -2636,3 +2636,102 @@ describe('#3739 (pretender + user tag rule)', () => {
 		expect(violations).toStrictEqual([]);
 	});
 });
+
+describe('#4099 (pretender inside a content model that includes #custom)', () => {
+	const jsxConfig = {
+		parser: { '.*': '@markuplint/jsx-parser' },
+	};
+
+	test('[permitted-contents-issue-4099-001] p rejects a pretender that stands for section', async () => {
+		const { violations } = await mlRuleTest(rule, '<p><Panel/></p>', {
+			...jsxConfig,
+			pretenders: [{ selector: 'Panel', as: 'section' }],
+		});
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 4,
+				raw: '<Panel/>',
+				message: 'The "section" element is not allowed in the "p" element in this context',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-4099-002] span rejects a pretender that stands for section', async () => {
+		const { violations } = await mlRuleTest(rule, '<span><Panel/></span>', {
+			...jsxConfig,
+			pretenders: [{ selector: 'Panel', as: 'section' }],
+		});
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 7,
+				raw: '<Panel/>',
+				message: 'The "section" element is not allowed in the "span" element in this context',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-4099-003] button rejects a pretender that stands for section', async () => {
+		const { violations } = await mlRuleTest(rule, '<button><Panel/></button>', {
+			...jsxConfig,
+			pretenders: [{ selector: 'Panel', as: 'section' }],
+		});
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 9,
+				raw: '<Panel/>',
+				message: 'The "section" element is not allowed in the "button" element in this context',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-4099-004] p accepts a pretender that stands for span', async () => {
+		const { violations } = await mlRuleTest(rule, '<p><Panel/></p>', {
+			...jsxConfig,
+			pretenders: [{ selector: 'Panel', as: 'span' }],
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4099-005] p accepts a pretender that stands for a custom element name', async () => {
+		const { violations } = await mlRuleTest(rule, '<p><Panel/></p>', {
+			...jsxConfig,
+			pretenders: [{ selector: 'Panel', as: 'my-element' }],
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4099-006] a transparent a inside p rejects a pretender that stands for section', async () => {
+		const { violations } = await mlRuleTest(rule, '<p><a href="#"><Panel/></a></p>', {
+			...jsxConfig,
+			pretenders: [{ selector: 'Panel', as: 'section' }],
+		});
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 16,
+				raw: '<Panel/>',
+				message:
+					'The "section" element is not allowed in the "p" element through the transparent model in this context',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-4099-007] origin mode still treats the pretender as an authored element', async () => {
+		const { violations } = await mlRuleTest(rule, '<Para><Panel/></Para>', {
+			...jsxConfig,
+			pretenders: [
+				{ selector: 'Para', as: 'p' },
+				{ selector: 'Panel', as: 'span' },
+			],
+			rule: [{ tag: 'Para', contents: [{ zeroOrMore: '#phrasing' }] }],
+		});
+		expect(violations).toStrictEqual([]);
+	});
+});

@@ -1,4 +1,4 @@
-import type { ChildNode, Mode, Result, Specs } from './types.js';
+import type { ChildNode, Element, Mode, Result, Specs } from './types.js';
 import type { Category } from '@markuplint/ml-spec';
 
 import { contentModelCategoryToTagNames } from '@markuplint/ml-spec';
@@ -153,7 +153,7 @@ export function matchesSelector(
 	}
 
 	if (childNode.is(childNode.ELEMENT_NODE)) {
-		if (childNode.elementType !== 'html' && hasCustom) {
+		if (hasCustom && isTreatedAsCustom(childNode, mode)) {
 			nodeLog('%s.matches(%s) => CustomElement', childNode.raw, query);
 			return {
 				type: 'MATCHED',
@@ -212,6 +212,37 @@ export function matchesSelector(
 		query,
 		hint: {},
 	};
+}
+
+/**
+ * Whether an element is accepted by the `#custom` entry of a content model
+ * category without being checked against that category's tag list.
+ *
+ * `elementType` comes from the parser and does not change when the element is
+ * pretended, so a component that stands for `<section>` would still look
+ * authored and slip through `<p>`, `<span>` and `<button>`. In `'pretended'`
+ * mode such an element is judged by what it stands for instead, exactly as if
+ * the user had written that element. The pretender target is always created
+ * with `elementType: 'html'`, so a target that is itself a custom element
+ * (its name contains a hyphen) is recognised by name.
+ *
+ * In `'origin'` mode the pretender context is suppressed while matching (see
+ * {@link matches}) and the element is seen under its authored name, so it stays
+ * accepted as a custom element.
+ */
+function isTreatedAsCustom(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	element: Element,
+	mode: Mode,
+): boolean {
+	if (element.elementType === 'html') {
+		return false;
+	}
+	const pretenderContext = element.pretenderContext;
+	if (mode === 'pretended' && pretenderContext?.type === 'pretender') {
+		return pretenderContext.as.localName.includes('-');
+	}
+	return true;
 }
 
 /**
