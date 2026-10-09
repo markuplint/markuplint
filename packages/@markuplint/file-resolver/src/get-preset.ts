@@ -1,20 +1,25 @@
 import type { Config } from '@markuplint/ml-config';
 
-import { forceImportJsonInModule } from './force-import-json-in-module.js';
+import { log } from './debug.js';
 
 const cache = new Map<string, Config>();
+const pLog = log.extend('get-preset');
 
 export async function getPreset(name: string): Promise<Config> {
 	if (cache.has(name)) {
 		return cache.get(name)!;
 	}
 
-	const json = await forceImportJsonInModule(`@markuplint/config-presets/preset.${name}.json`);
+	const imported = await import(`@markuplint/config-presets/preset.${name}.json`, {
+		with: { type: 'json' },
+	}).catch(error => error);
 
-	if (json instanceof Error) {
+	if (imported instanceof Error) {
+		pLog('Error in getPreset: %O', imported);
 		throw new ReferenceError(`Preset markuplint:${name} is not found`);
 	}
 
+	const json: Config = imported.default ?? imported;
 	cache.set(name, json);
 
 	return json;
