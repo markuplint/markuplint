@@ -43,7 +43,7 @@
 		"@markuplint/pretenders": "5.1.1",
 		"@markuplint/selector": "5.1.1",
 		"@markuplint/shared": "5.1.1",
-		"cosmiconfig": "9.0.1",
+		"cosmiconfig": "9.0.2",
 		"debug": "4.4.3",
 		"glob": "13.0.6",
 		"ignore": "7.0.5",
