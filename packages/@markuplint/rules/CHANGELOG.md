@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.1.1](https://github.com/markuplint/markuplint/compare/v5.1.0...v5.1.1) (2026-10-09)
+
+### Bug Fixes
+
+- **rules:** check pretenders against content models that include #custom ([d70aa26](https://github.com/markuplint/markuplint/commit/d70aa2666c2318daaab4585aed62db00e5fd9a45))
+
 # [5.1.0](https://github.com/markuplint/markuplint/compare/v5.0.1...v5.1.0) (2026-10-08)
 
 ### Bug Fixes

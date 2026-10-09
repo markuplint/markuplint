@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.1.1](https://github.com/markuplint/markuplint/compare/v5.1.0...v5.1.1) (2026-10-09)
+
+### Bug Fixes
+
+- **file-resolver:** import preset JSON with a type attribute ([92cf368](https://github.com/markuplint/markuplint/commit/92cf368fceaaf64a324b9d719d10b4fa37ac776e))
+- **file-resolver:** throw ConfigLoadError when a preset cannot be loaded ([cf51090](https://github.com/markuplint/markuplint/commit/cf510906400b3150c2693a85cd75877227b85419))
+- **markuplint:** fail a file whose config cannot be loaded instead of passing it ([4579d89](https://github.com/markuplint/markuplint/commit/4579d890e4b3e18f34fbe91f8b8d7f59ca886e92))
+- **pretenders:** follow barrel re-exports in pretenders.auto ([521c110](https://github.com/markuplint/markuplint/commit/521c110a39a59abf691b481fc4d481718e4843c0)), closes [#4097](https://github.com/markuplint/markuplint/issues/4097)
+- **rules:** check pretenders against content models that include #custom ([d70aa26](https://github.com/markuplint/markuplint/commit/d70aa2666c2318daaab4585aed62db00e5fd9a45))
+
 # [5.1.0](https://github.com/markuplint/markuplint/compare/v5.0.1...v5.1.0) (2026-10-08)
 
 ### Bug Fixes

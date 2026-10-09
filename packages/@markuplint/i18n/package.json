@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/i18n",
-	"version": "5.1.0",
+	"version": "5.1.1",
 	"description": "Internationalization for markuplint",
 	"repository": {
 		"type": "git",

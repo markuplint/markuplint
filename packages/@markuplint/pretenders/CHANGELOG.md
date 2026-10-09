@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.1.1](https://github.com/markuplint/markuplint/compare/v5.1.0...v5.1.1) (2026-10-09)
+
+### Bug Fixes
+
+- **pretenders:** follow barrel re-exports in pretenders.auto ([521c110](https://github.com/markuplint/markuplint/commit/521c110a39a59abf691b481fc4d481718e4843c0)), closes [#4097](https://github.com/markuplint/markuplint/issues/4097)
+
 # [5.1.0](https://github.com/markuplint/markuplint/compare/v5.0.1...v5.1.0) (2026-10-08)
 
 ### Bug Fixes

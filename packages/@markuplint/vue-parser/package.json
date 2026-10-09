@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/vue-parser",
-	"version": "5.1.0",
+	"version": "5.1.1",
 	"description": "Vue parser for markuplint",
 	"repository": {
 		"type": "git",
@@ -32,9 +32,9 @@
 		"clean": "tsc --build --clean tsconfig.build.json"
 	},
 	"dependencies": {
-		"@markuplint/html-parser": "5.1.0",
-		"@markuplint/ml-ast": "5.1.0",
-		"@markuplint/parser-utils": "5.1.0",
+		"@markuplint/html-parser": "5.1.1",
+		"@markuplint/ml-ast": "5.1.1",
+		"@markuplint/parser-utils": "5.1.1",
 		"vue-eslint-parser": "10.4.0"
 	}
 }

@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.1.1](https://github.com/markuplint/markuplint/compare/v5.1.0...v5.1.1) (2026-10-09)
+
+### Bug Fixes
+
+- **file-resolver:** import preset JSON with a type attribute ([92cf368](https://github.com/markuplint/markuplint/commit/92cf368fceaaf64a324b9d719d10b4fa37ac776e))
+- **file-resolver:** throw ConfigLoadError when a preset cannot be loaded ([cf51090](https://github.com/markuplint/markuplint/commit/cf510906400b3150c2693a85cd75877227b85419))
+
 # [5.1.0](https://github.com/markuplint/markuplint/compare/v5.0.1...v5.1.0) (2026-10-08)
 
 ### Features
