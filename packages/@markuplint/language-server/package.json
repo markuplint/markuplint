@@ -54,6 +54,6 @@
 	"devDependencies": {
 		"@types/debug": "4.1.13",
 		"@types/semver": "7.7.1",
-		"vscode-jsonrpc": "8.2.0"
+		"vscode-jsonrpc": "8.2.1"
 	}
 }
