@@ -2518,7 +2518,7 @@ __metadata:
     "@markuplint/shared": "npm:5.1.1"
     "@markuplint/svelte-parser": "npm:5.1.1"
     "@markuplint/vue-parser": "npm:5.1.1"
-    es-module-lexer: "npm:2.0.0"
+    es-module-lexer: "npm:2.3.2"
     glob: "npm:13.0.6"
     meow: "npm:14.1.0"
     typescript: "npm:6.0.3"
@@ -7799,7 +7799,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"es-module-lexer@npm:2.0.0, es-module-lexer@npm:^2.0.0":
+"es-module-lexer@npm:2.3.2":
+  version: 2.3.2
+  resolution: "es-module-lexer@npm:2.3.2"
+  checksum: 10c0/5e7389424c43478439f12f9a6aca1750f6f99afa384fc3de329f4a45f152ab156671055008adaafc74960877abf8cc338aeebf6bed8c21297b146fd6eb7a22f8
+  languageName: node
+  linkType: hard
+
+"es-module-lexer@npm:^2.0.0":
   version: 2.0.0
   resolution: "es-module-lexer@npm:2.0.0"
   checksum: 10c0/ae78dbbd43035a4b972c46cfb6877e374ea290adfc62bc2f5a083fea242c0b2baaab25c5886af86be55f092f4a326741cb94334cd3c478c383fdc8a9ec5ff817
