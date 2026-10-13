@@ -2,7 +2,7 @@ import type { APIOptions, MLEngineEventMap } from './types.js';
 import type { MLResultInfo } from '../types.js';
 import type { WatchSubscription } from './shared-watcher.js';
 import type { ConfigSet, MLFile, PretenderResolver, Target } from '@markuplint/file-resolver';
-import type { PlainData, Pretender, RuleAliasWarning, Violation } from '@markuplint/ml-config';
+import type { PlainData, Pretender, RuleAliasWarning, RuleCommonSettings, Violation } from '@markuplint/ml-config';
 import type { Ruleset, Plugin, Document, RuleConfigValue, MLFabric } from '@markuplint/ml-core';
 
 import {
@@ -417,7 +417,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		const sourceCode = await this.#file.getCode();
 
 		// Build config JSON for Rust
-		const configJson = buildRustConfigJson(fabric.ruleset);
+		const configJson = buildRustConfigJson(fabric.ruleset, fabric.ruleCommonSettings);
 		const specJson = JSON.stringify(fabric.schemas[0]);
 
 		log('exec: rust path lintHtml');
@@ -1104,16 +1104,26 @@ async function loadNapiBinding(): Promise<NapiBinding> {
 /**
  * Converts the TS Ruleset into a JSON string that the Rust LintConfig can deserialize.
  *
- * Rust LintConfig expects: `{ rules: {...}, node_rules: [...], child_node_rules: [...] }`
+ * Rust LintConfig expects:
+ * `{ rules: {...}, node_rules: [...], child_node_rules: [...], rule_common_settings: {...} }`
  *
  * Namespaced rule IDs (e.g., "html-standard/no-duplicate-attr") are passed through as-is.
  * Rust strips the namespace prefix internally for rule lookup and preserves the original
  * key in violation ruleIds.
+ *
+ * `ruleCommonSettings` carries settings that several rules read but that belong to no
+ * rule's own options (`ariaVersion`, which the ARIA rules fall back to when a rule has no
+ * `version` option of its own). Dropping it would make the Rust engine ignore the version
+ * the TS engine applies.
  */
-function buildRustConfigJson(ruleset: Partial<Readonly<Ruleset>>): string {
+function buildRustConfigJson(
+	ruleset: Partial<Readonly<Ruleset>>,
+	ruleCommonSettings: Readonly<RuleCommonSettings>,
+): string {
 	return JSON.stringify({
 		rules: ruleset.rules ?? {},
 		node_rules: ruleset.nodeRules ?? [],
 		child_node_rules: ruleset.childNodeRules ?? [],
+		rule_common_settings: ruleCommonSettings,
 	});
 }
