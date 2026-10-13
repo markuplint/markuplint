@@ -1,7 +1,11 @@
 import { Ruleset } from '@markuplint/ml-core';
-import { test, expect, vi } from 'vitest';
+import { afterEach, test, expect, vi } from 'vitest';
 
-import { autoLoadRules } from './auto-load-rules.js';
+import { autoLoadRules, cacheClear } from './auto-load-rules.js';
+
+afterEach(() => {
+	cacheClear();
+});
 
 vi.mock('markuplint-rule-fake', () => {
 	return {
@@ -33,4 +37,18 @@ test('invalid-rules', async () => {
 
 	expect(r.rules).toEqual([]);
 	expect(r.errors.length).toBe(2);
+});
+
+test('missing rules are not re-imported until cacheClear', async () => {
+	const ruleset = new Ruleset({
+		rules: {
+			'not-installed': true,
+		},
+	});
+
+	await autoLoadRules(ruleset);
+	expect((await autoLoadRules(ruleset)).errors.length).toBe(0);
+
+	cacheClear();
+	expect((await autoLoadRules(ruleset)).errors.length).toBe(2);
 });

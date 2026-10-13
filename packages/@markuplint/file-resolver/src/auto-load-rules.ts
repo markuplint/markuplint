@@ -2,7 +2,15 @@ import type { Ruleset, AnyMLRule, AnyRuleSeed } from '@markuplint/ml-core';
 
 import { MLRule } from '@markuplint/ml-core';
 
-const cache = new Map<string, AnyMLRule>();
+/**
+ * `null` records a miss. Built-in rule names never resolve to a package and this runs once per linted
+ * file, so without it every file repeats two failing imports per rule.
+ */
+const cache = new Map<string, AnyMLRule | null>();
+
+export function cacheClear() {
+	cache.clear();
+}
 
 export async function autoLoadRules(ruleset: Ruleset) {
 	const rules: AnyMLRule[] = [];
@@ -12,6 +20,9 @@ export async function autoLoadRules(ruleset: Ruleset) {
 		const cached = cache.get(ruleName);
 		if (cached) {
 			rules.push(cached);
+			continue;
+		}
+		if (cache.has(ruleName)) {
 			continue;
 		}
 
@@ -58,6 +69,8 @@ export async function autoLoadRules(ruleset: Ruleset) {
 			rules.push(rule);
 			continue;
 		}
+
+		cache.set(ruleName, null);
 	}
 
 	return {
