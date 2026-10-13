@@ -14,12 +14,8 @@ use crate::rules::aria_prop_requires_role::AriaPropRequiresRole;
 use crate::rules::attr_value_quotes::AttrValueQuotes;
 use crate::rules::case_sensitive_attr_name::CaseSensitiveAttrName;
 use crate::rules::case_sensitive_tag_name::CaseSensitiveTagName;
-use crate::rules::character_reference::CharacterReference;
 use crate::rules::class_naming::ClassNaming;
 use crate::rules::consistent_table_row_length::ConsistentTableRowLength;
-use crate::rules::deprecated_attr::DeprecatedAttr;
-use crate::rules::deprecated_element::DeprecatedElement;
-use crate::rules::doctype::Doctype;
 use crate::rules::element_supports_aria_prop::ElementSupportsAriaProp;
 use crate::rules::label_has_control::LabelHasControl;
 use crate::rules::link_types::LinkTypes;
@@ -34,6 +30,8 @@ use crate::rules::no_contradictory_aria_prop::NoContradictoryAriaProp;
 use crate::rules::no_default_aria_value::NoDefaultAriaValue;
 use crate::rules::no_default_value::NoDefaultValue;
 use crate::rules::no_deprecated_aria_prop::NoDeprecatedAriaProp;
+use crate::rules::no_deprecated_attr::NoDeprecatedAttr;
+use crate::rules::no_deprecated_element::NoDeprecatedElement;
 use crate::rules::no_deprecated_role::NoDeprecatedRole;
 use crate::rules::no_disallowed_attr::NoDisallowedAttr;
 use crate::rules::no_duplicate_attr::NoDuplicateAttr;
@@ -49,9 +47,13 @@ use crate::rules::no_hardcoded_id::NoHardcodedId;
 use crate::rules::no_ineffective_attr::NoIneffectiveAttr;
 use crate::rules::no_invalid_aria_prop_value::NoInvalidAriaPropValue;
 use crate::rules::no_invalid_attr_value::NoInvalidAttrValue;
+use crate::rules::no_malformed_character_reference::NoMalformedCharacterReference;
 use crate::rules::no_mixed_srcset_descriptors::NoMixedSrcsetDescriptors;
 use crate::rules::no_nested_top_level_landmark::NoNestedTopLevelLandmark;
 use crate::rules::no_nonstandard_features::NoNonstandardFeatures;
+use crate::rules::no_obsolete_attr::NoObsoleteAttr;
+use crate::rules::no_obsolete_doctype::NoObsoleteDoctype;
+use crate::rules::no_obsolete_element::NoObsoleteElement;
 use crate::rules::no_orphaned_end_tag::NoOrphanedEndTag;
 use crate::rules::no_prohibited_naming::NoProhibitedNaming;
 use crate::rules::no_pseudo_list::NoPseudoList;
@@ -64,6 +66,7 @@ use crate::rules::no_restricted_element::NoRestrictedElement;
 use crate::rules::no_skipped_heading_level::NoSkippedHeadingLevel;
 use crate::rules::no_table_cell_overlap::NoTableCellOverlap;
 use crate::rules::no_table_span_overflow::NoTableSpanOverflow;
+use crate::rules::no_unescaped_char::NoUnescapedChar;
 use crate::rules::no_unknown_attr::NoUnknownAttr;
 use crate::rules::no_unknown_role::NoUnknownRole;
 use crate::rules::no_unpaired_srcset_sizes::NoUnpairedSrcsetSizes;
@@ -77,6 +80,7 @@ use crate::rules::require_aria_prop::RequireAriaProp;
 use crate::rules::require_attr::RequireAttr;
 use crate::rules::require_datetime::RequireDatetime;
 use crate::rules::require_dialog_autofocus::RequireDialogAutofocus;
+use crate::rules::require_doctype::RequireDoctype;
 use crate::rules::require_element::RequireElement;
 use crate::rules::require_end_tag::RequireEndTag;
 use crate::rules::require_h1::RequireH1;
@@ -569,12 +573,16 @@ fn get_all_rules() -> Vec<Box<dyn Rule>> {
         Box::new(AttrValueQuotes),
         Box::new(CaseSensitiveAttrName),
         Box::new(CaseSensitiveTagName),
-        Box::new(CharacterReference),
+        Box::new(NoMalformedCharacterReference),
+        Box::new(NoUnescapedChar),
         Box::new(ClassNaming),
-        Box::new(DeprecatedAttr),
-        Box::new(DeprecatedElement),
+        Box::new(NoObsoleteAttr),
+        Box::new(NoDeprecatedAttr),
+        Box::new(NoObsoleteElement),
+        Box::new(NoDeprecatedElement),
         Box::new(NoRestrictedElement),
-        Box::new(Doctype),
+        Box::new(RequireDoctype),
+        Box::new(NoObsoleteDoctype),
         Box::new(RequireEndTag),
         Box::new(NoSkippedHeadingLevel),
         Box::new(NoDuplicateId),

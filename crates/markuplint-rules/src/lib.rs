@@ -25,6 +25,7 @@ pub(crate) mod feature_check;
 pub(crate) mod h1_check;
 pub mod helpers;
 pub(crate) mod landmark_check;
+pub(crate) mod lifecycle_check;
 pub mod lint;
 pub mod rule;
 pub mod rule_mapper;
