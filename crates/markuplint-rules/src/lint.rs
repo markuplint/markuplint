@@ -21,6 +21,7 @@ use crate::rules::consistent_table_row_length::ConsistentTableRowLength;
 use crate::rules::element_supports_aria_prop::ElementSupportsAriaProp;
 use crate::rules::label_has_control::LabelHasControl;
 use crate::rules::link_types::LinkTypes;
+use crate::rules::meter_value_bounds::MeterValueBounds;
 use crate::rules::no_abstract_role::NoAbstractRole;
 use crate::rules::no_always_matching_source::NoAlwaysMatchingSource;
 use crate::rules::no_ambiguous_navigable_target_names::NoAmbiguousNavigableTargetNames;
@@ -37,16 +38,20 @@ use crate::rules::no_deprecated_element::NoDeprecatedElement;
 use crate::rules::no_deprecated_role::NoDeprecatedRole;
 use crate::rules::no_disallowed_attr::NoDisallowedAttr;
 use crate::rules::no_duplicate_attr::NoDuplicateAttr;
+use crate::rules::no_duplicate_autofocus::NoDuplicateAutofocus;
 use crate::rules::no_duplicate_dt::NoDuplicateDt;
 use crate::rules::no_duplicate_h1::NoDuplicateH1;
 use crate::rules::no_duplicate_id::NoDuplicateId;
+use crate::rules::no_duplicate_sibling_attr::NoDuplicateSiblingAttr;
 use crate::rules::no_empty_palpable_content::NoEmptyPalpableContent;
 use crate::rules::no_empty_table_track::NoEmptyTableTrack;
 use crate::rules::no_event_handler_attr::NoEventHandlerAttr;
 use crate::rules::no_experimental_features::NoExperimentalFeatures;
+use crate::rules::no_extra_selected_options::NoExtraSelectedOptions;
 use crate::rules::no_focusable_in_aria_hidden::NoFocusableInAriaHidden;
 use crate::rules::no_hardcoded_id::NoHardcodedId;
 use crate::rules::no_ineffective_attr::NoIneffectiveAttr;
+use crate::rules::no_input_file_value::NoInputFileValue;
 use crate::rules::no_invalid_aria_prop_value::NoInvalidAriaPropValue;
 use crate::rules::no_invalid_attr_value::NoInvalidAttrValue;
 use crate::rules::no_malformed_character_reference::NoMalformedCharacterReference;
@@ -76,6 +81,7 @@ use crate::rules::no_unsupported_browser_features::NoUnsupportedBrowserFeatures;
 use crate::rules::permitted_contents::PermittedContents;
 use crate::rules::permitted_roles::PermittedRoles;
 use crate::rules::placeholder_label_option::PlaceholderLabelOption;
+use crate::rules::progress_value_bounds::ProgressValueBounds;
 use crate::rules::require_accessible_name::RequireAccessibleName;
 use crate::rules::require_adjacent_popover::RequireAdjacentPopover;
 use crate::rules::require_aria_prop::RequireAriaProp;
@@ -668,6 +674,12 @@ fn get_all_rules() -> Vec<Box<dyn Rule>> {
         Box::new(TabRequiresTabpanel),
         Box::new(NoAriaOnPresentationalChildren),
         Box::new(NoFocusableInAriaHidden),
+        Box::new(MeterValueBounds),
+        Box::new(ProgressValueBounds),
+        Box::new(NoExtraSelectedOptions),
+        Box::new(NoInputFileValue),
+        Box::new(NoDuplicateAutofocus),
+        Box::new(NoDuplicateSiblingAttr),
     ]
 }
 

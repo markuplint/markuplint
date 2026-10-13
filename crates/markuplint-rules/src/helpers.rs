@@ -117,9 +117,119 @@ pub fn get_owned_label(arena: &DomArena, node_id: NodeId) -> Option<NodeId> {
         .map(|(label_id, _)| label_id)
 }
 
+/// JS `Number(value)` for a string (ECMAScript `StringToNumber`): the whole string, trimmed of
+/// JS whitespace, must be a decimal literal, `Infinity`, or an unsigned `0x`/`0o`/`0b` integer;
+/// anything else is `NaN`. An empty (or all-whitespace) string is `0`.
+///
+/// Unlike `Number.parseFloat`, no trailing garbage is allowed (`"1px"` is `NaN`) and the
+/// non-decimal prefixes are accepted (`"0x10"` is `16`, but `"-0x10"` is `NaN`).
+pub fn js_string_to_number(value: &str) -> f64 {
+    let s = value.trim_matches(crate::aria_check::is_js_whitespace);
+    if s.is_empty() {
+        return 0.0;
+    }
+
+    let bytes = s.as_bytes();
+    if bytes.len() > 2 && bytes[0] == b'0' {
+        let radix = match bytes[1] {
+            b'x' | b'X' => Some(16),
+            b'o' | b'O' => Some(8),
+            b'b' | b'B' => Some(2),
+            _ => None,
+        };
+        if let Some(radix) = radix {
+            let digits = &s[2..];
+            if !digits.chars().all(|c| c.is_digit(radix)) {
+                return f64::NAN;
+            }
+            return u128::from_str_radix(digits, radix).map_or_else(
+                // Too many digits for u128: accumulate in f64 instead.
+                |_| {
+                    digits
+                        .chars()
+                        .filter_map(|c| c.to_digit(radix))
+                        .fold(0.0, |acc, d| acc * f64::from(radix) + f64::from(d))
+                },
+                // `as` rounds to the nearest f64, as JS does.
+                #[allow(clippy::cast_precision_loss)]
+                |n| n as f64,
+            );
+        }
+    }
+
+    match s {
+        "Infinity" | "+Infinity" => return f64::INFINITY,
+        "-Infinity" => return f64::NEG_INFINITY,
+        _ => {}
+    }
+
+    // Rust's float grammar is the JS decimal literal grammar plus `inf`/`infinity`/`nan`, which
+    // the character check rules out.
+    if !bytes
+        .iter()
+        .all(|b| b.is_ascii_digit() || matches!(b, b'+' | b'-' | b'.' | b'e' | b'E'))
+    {
+        return f64::NAN;
+    }
+    s.parse::<f64>().unwrap_or(f64::NAN)
+}
+
+/// The `parseFloatAttr()` of the TS `meter-value-bounds` / `progress-value-bounds` rules: the
+/// attribute value as a finite JS `Number`, or `None` when it is absent, blank, or not a finite
+/// number.
+pub fn finite_number_attr(raw: Option<&str>) -> Option<f64> {
+    let trimmed = raw?.trim_matches(crate::aria_check::is_js_whitespace);
+    if trimmed.is_empty() {
+        return None;
+    }
+    Some(js_string_to_number(trimmed)).filter(|n| n.is_finite())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn js_string_to_number_decimal() {
+        assert!((js_string_to_number("1.5") - 1.5).abs() < f64::EPSILON);
+        assert!((js_string_to_number(" +3 ") - 3.0).abs() < f64::EPSILON);
+        assert!((js_string_to_number("-.5") + 0.5).abs() < f64::EPSILON);
+        assert!((js_string_to_number("5.") - 5.0).abs() < f64::EPSILON);
+        assert!((js_string_to_number("1.e1") - 10.0).abs() < f64::EPSILON);
+        assert!((js_string_to_number("1E+2") - 100.0).abs() < f64::EPSILON);
+        assert!(js_string_to_number("").abs() < f64::EPSILON);
+        assert!(js_string_to_number("\u{a0}\u{feff}").abs() < f64::EPSILON);
+    }
+
+    #[test]
+    fn js_string_to_number_non_decimal() {
+        assert!((js_string_to_number("0x1F") - 31.0).abs() < f64::EPSILON);
+        assert!((js_string_to_number("0o17") - 15.0).abs() < f64::EPSILON);
+        assert!((js_string_to_number("0B11") - 3.0).abs() < f64::EPSILON);
+        assert!(js_string_to_number("-0x10").is_nan());
+        assert!(js_string_to_number("0x").is_nan());
+        assert!(js_string_to_number("0b12").is_nan());
+    }
+
+    #[test]
+    fn js_string_to_number_rejects_what_js_rejects() {
+        for s in [
+            "1px", "abc", ".", "e5", "1e", "inf", "infinity", "NaN", "1_000", "--1", "\u{85}1",
+        ] {
+            assert!(js_string_to_number(s).is_nan(), "{s}");
+        }
+        assert!(js_string_to_number("Infinity").is_infinite());
+        assert!(js_string_to_number("-Infinity").is_infinite());
+    }
+
+    #[test]
+    fn finite_number_attr_matches_parse_float_attr() {
+        assert_eq!(finite_number_attr(None), None);
+        assert_eq!(finite_number_attr(Some("  ")), None);
+        assert_eq!(finite_number_attr(Some("Infinity")), None);
+        assert_eq!(finite_number_attr(Some("abc")), None);
+        assert_eq!(finite_number_attr(Some(" 2 ")), Some(2.0));
+    }
 
     #[test]
     fn regex_pattern_matches() {
