@@ -400,10 +400,12 @@ export type OriginalNode = {
 	/**
 	 * Namespace
 	 *
-	 * Supports `"svg"` and `undefined` only.
-	 * If it is `undefined`, the namespace is HTML.
+	 * If it is `undefined`, the namespace is the one an element of the same name gets
+	 * when written where it is rendered. A slot wrapper is taken to be rendered directly
+	 * in the root element, so one that is not (one inside `foreignObject` in an `svg`
+	 * root) states its namespace.
 	 */
-	readonly namespace?: 'svg';
+	readonly namespace?: 'html' | 'svg' | 'math';
 
 	/**
 	 * Attributes

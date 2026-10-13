@@ -382,7 +382,7 @@
 								},
 								"namespace": {
 									"type": "string",
-									"enum": ["svg"]
+									"enum": ["html", "svg", "math"]
 								},
 								"attrs": {
 									"type": "array",
@@ -541,7 +541,7 @@
 				},
 				"namespace": {
 					"type": "string",
-					"enum": ["svg"]
+					"enum": ["html", "svg", "math"]
 				},
 				"attrs": {
 					"type": "array",
