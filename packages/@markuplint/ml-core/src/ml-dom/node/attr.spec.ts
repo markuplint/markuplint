@@ -236,3 +236,71 @@ describe('multiple attributes on same element', () => {
 		expect(id!.isDynamicValue).toBeUndefined();
 	});
 });
+
+describe('namespaceURI', () => {
+	test('an attribute without a prefix on an HTML element has no namespace', () => {
+		const el = createTestElement('<div id="a"></div>');
+		const attr = el.attributes.find(a => a.name === 'id');
+		expect(attr).toBeDefined();
+		expect(attr!.namespaceURI).toBeNull();
+	});
+
+	test('an attribute without a prefix on an SVG element has no namespace', () => {
+		const el = createTestElement('<svg viewBox="0 0 1 1"></svg>');
+		const attr = el.attributes.find(a => a.name === 'viewBox');
+		expect(attr).toBeDefined();
+		expect(attr!.namespaceURI).toBeNull();
+	});
+
+	test('an attribute without a prefix on a MathML element has no namespace', () => {
+		const el = createTestElement('<math display="block"></math>');
+		const attr = el.attributes.find(a => a.name === 'display');
+		expect(attr).toBeDefined();
+		expect(attr!.namespaceURI).toBeNull();
+	});
+
+	test('an attribute with the xlink prefix has the XLink namespace', () => {
+		const el = createTestElement('<svg xlink:href="#a"></svg>');
+		const attr = el.attributes.find(a => a.name === 'xlink:href');
+		expect(attr).toBeDefined();
+		expect(attr!.namespaceURI).toBe('http://www.w3.org/1999/xlink');
+	});
+
+	test('an attribute with an unknown prefix has no namespace', () => {
+		const el = createTestElement('<svg foo:bar="a"></svg>');
+		const attr = el.attributes.find(a => a.name === 'foo:bar');
+		expect(attr).toBeDefined();
+		expect(attr!.namespaceURI).toBeNull();
+	});
+
+	test('an attribute renamed by a directive pattern has no namespace', () => {
+		const specs = createSpecWithPatterns([{ pattern: '^:(.+)$', potentialName: '$1', isDynamicValue: true }]);
+		const el = createTestElement('<svg :width="w"></svg>', { specs });
+		const attr = el.attributes.find(a => a.nameNode?.raw === ':width');
+		expect(attr).toBeDefined();
+		expect(attr!.name).toBe('width');
+		expect(attr!.namespaceURI).toBeNull();
+	});
+
+	test('a spread attribute has no namespace rather than undefined', async () => {
+		const el = createTestElement('<div {...props} />', { parser: await import('@markuplint/jsx-parser') });
+		const attr = el.attributes.find(a => a.localName === '#spread');
+		expect(attr).toBeDefined();
+		expect(attr!.namespaceURI).toBeNull();
+	});
+
+	test('a namespaced attribute selector does not match an attribute without a prefix by the element namespace', () => {
+		const svg = createTestElement('<svg viewBox="0 0 1 1"></svg>');
+		expect(svg.matches('[viewBox]')).toBe(true);
+		expect(svg.matches('[|viewBox]')).toBe(true);
+		expect(svg.matches('[*|viewBox]')).toBe(true);
+		expect(svg.matches('[svg|viewBox]')).toBe(false);
+
+		const math = createTestElement('<math display="block"></math>');
+		expect(math.matches('[mml|display]')).toBe(false);
+
+		const div = createTestElement('<div id="a"></div>');
+		expect(div.matches('[id]')).toBe(true);
+		expect(div.matches('[html|id]')).toBe(false);
+	});
+});
