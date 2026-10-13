@@ -1093,6 +1093,13 @@ describe('experimentalRustCore falls back to the TypeScript engine for browser s
 	});
 });
 
+// The cross-OS job runs the specs without building the native addon; the jobs that do build it
+// run the two tests below, which need the Rust engine to take the file.
+const nativeAddonIsBuilt = await import('@markuplint/core').then(
+	() => true,
+	() => false,
+);
+
 describe('experimentalRustCore applies the configured pretenders', () => {
 	// `require-accessible-name` fires only when `<x-btn>` is read as the
 	// `<button>` it pretends to be, so the violation proves the pretenders reached
@@ -1109,23 +1116,26 @@ describe('experimentalRustCore applies the configured pretenders', () => {
 	const stderrOf = (write: { readonly mock: { readonly calls: readonly unknown[][] } }) =>
 		write.mock.calls.map(args => String(args[0])).join('');
 
-	it('lints the component as the element it pretends to be without leaving the Rust engine for it', async () => {
-		const write = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
-		const file = await MLEngine.toMLFile({ sourceCode, name: 'page.html' });
-		const engine = new MLEngine(file!, {
-			noSearchConfig: true,
-			locale: 'en',
-			experimentalRustCore: true,
-			config: { ...config, pretenders: [{ selector: 'x-btn', as: 'button' }] },
-		});
+	it.skipIf(!nativeAddonIsBuilt)(
+		'lints the component as the element it pretends to be without leaving the Rust engine for it',
+		async () => {
+			const write = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
+			const file = await MLEngine.toMLFile({ sourceCode, name: 'page.html' });
+			const engine = new MLEngine(file!, {
+				noSearchConfig: true,
+				locale: 'en',
+				experimentalRustCore: true,
+				config: { ...config, pretenders: [{ selector: 'x-btn', as: 'button' }] },
+			});
 
-		const result = await engine.exec();
+			const result = await engine.exec();
 
-		expect(result?.violations.map(v => v.ruleId)).toStrictEqual(['require-accessible-name']);
-		// Not "has pretenders": that guard is gone. A "falling back" line would mean the
-		// TS engine linted the file, which says nothing about the Rust pretender support.
-		expect(stderrOf(write)).not.toContain('falling back to TypeScript engine');
-	});
+			expect(result?.violations.map(v => v.ruleId)).toStrictEqual(['require-accessible-name']);
+			// Not "has pretenders": that guard is gone. A "falling back" line would mean the
+			// TS engine linted the file, which says nothing about the Rust pretender support.
+			expect(stderrOf(write)).not.toContain('falling back to TypeScript engine');
+		},
+	);
 
 	it('falls back to the TypeScript engine for a pretender the Rust engine cannot read', async () => {
 		const write = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
@@ -1148,7 +1158,7 @@ describe('experimentalRustCore applies the configured pretenders', () => {
 		expect(stderrOf(write)).toContain('falling back to TypeScript engine');
 	});
 
-	it('lints a file without pretenders in the Rust engine', async () => {
+	it.skipIf(!nativeAddonIsBuilt)('lints a file without pretenders in the Rust engine', async () => {
 		const write = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
 		const file = await MLEngine.toMLFile({ sourceCode, name: 'page.html' });
 		const engine = new MLEngine(file!, {
