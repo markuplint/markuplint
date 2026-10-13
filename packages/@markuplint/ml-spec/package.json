@@ -39,7 +39,7 @@
 		"@markuplint/ml-ast": "5.1.1",
 		"@markuplint/types": "5.1.1",
 		"is-plain-object": "5.1.0",
-		"type-fest": "5.6.0"
+		"type-fest": "5.10.0"
 	},
 	"devDependencies": {
 		"@markuplint/test-tools": "5.1.1",

@@ -42,7 +42,7 @@
 		"debug": "4.4.3",
 		"language-subtag-registry": "0.4.2",
 		"leven": "4.1.0",
-		"type-fest": "5.6.0",
+		"type-fest": "5.10.0",
 		"whatwg-mimetype": "5.0.0"
 	}
 }
