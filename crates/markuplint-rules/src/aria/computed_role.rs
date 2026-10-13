@@ -646,8 +646,10 @@ mod tests {
     fn v6_self_referencing_labelledby_terminates() {
         let s = spec();
         let (arena, id) = make_arena("section", &[("id", "a"), ("aria-labelledby", "a")]);
-        // Only termination matters here: the name of the element depends on its own role.
-        let _ = get_computed_role(&s, &arena, id, ARIAVersion::V1_2, false);
+        // The name of the element depends on its own role; the only name source is itself and it
+        // is empty, so the element is unnamed and has no implicit role.
+        let cr = get_computed_role(&s, &arena, id, ARIAVersion::V1_2, false);
+        assert!(cr.role.is_none());
     }
 
     #[test]
