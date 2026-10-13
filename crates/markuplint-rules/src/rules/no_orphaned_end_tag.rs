@@ -117,6 +117,21 @@ mod tests {
         assert_eq!(violations[0].message, "Orphaned end tag detected");
     }
 
+    /// A text node that contains a start tag (here the ignored second `<body>`) is kept whole,
+    /// the stray `</head>` in it included, so that end tag is not reported. TS (`mlRuleTest`)
+    /// reports nothing on the same input.
+    #[test]
+    fn v6_no_orphaned_end_tag_001() {
+        assert_eq!(
+            crate::test_util::lint_brief(
+                "no-orphaned-end-tag",
+                "<!doctype html>\n<head>\n<meta charset=utf-8>\n<title>math in head</title>\n<math><mi>x</mi></math>\n</head>\n<body></body>\n",
+                serde_json::json!({ "rules": { "no-orphaned-end-tag": true } }),
+            ),
+            []
+        );
+    }
+
     #[test]
     fn severity_from_config() {
         let mut builder = DomArenaBuilder::new();

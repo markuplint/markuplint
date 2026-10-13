@@ -21,6 +21,7 @@ use crate::rules::class_naming::ClassNaming;
 use crate::rules::consistent_table_row_length::ConsistentTableRowLength;
 use crate::rules::element_supports_aria_prop::ElementSupportsAriaProp;
 use crate::rules::form_attr_references_form::FormAttrReferencesForm;
+use crate::rules::head_element_order::HeadElementOrder;
 use crate::rules::input_list_references_datalist::InputListReferencesDatalist;
 use crate::rules::itemprop_requires_itemscope::ItempropRequiresItemscope;
 use crate::rules::label_for_references_labelable::LabelForReferencesLabelable;
@@ -28,15 +29,18 @@ use crate::rules::label_has_control::LabelHasControl;
 use crate::rules::label_no_multiple_controls::LabelNoMultipleControls;
 use crate::rules::link_types::LinkTypes;
 use crate::rules::map_id_name_match::MapIdNameMatch;
+use crate::rules::meta_charset_position::MetaCharsetPosition;
 use crate::rules::meter_value_bounds::MeterValueBounds;
 use crate::rules::no_abstract_role::NoAbstractRole;
 use crate::rules::no_always_matching_source::NoAlwaysMatchingSource;
 use crate::rules::no_ambiguous_navigable_target_names::NoAmbiguousNavigableTargetNames;
+use crate::rules::no_aria_hidden_on_hidden_until_found::NoAriaHiddenOnHiddenUntilFound;
 use crate::rules::no_aria_on_presentational_children::NoAriaOnPresentationalChildren;
 use crate::rules::no_aria_on_unsupported_element::NoAriaOnUnsupportedElement;
 use crate::rules::no_boolean_attr_value::NoBooleanAttrValue;
 use crate::rules::no_broken_fragment_link::NoBrokenFragmentLink;
 use crate::rules::no_consecutive_br::NoConsecutiveBr;
+use crate::rules::no_content_after_body::NoContentAfterBody;
 use crate::rules::no_contradictory_aria_prop::NoContradictoryAriaProp;
 use crate::rules::no_default_aria_value::NoDefaultAriaValue;
 use crate::rules::no_default_value::NoDefaultValue;
@@ -44,6 +48,7 @@ use crate::rules::no_deprecated_aria_prop::NoDeprecatedAriaProp;
 use crate::rules::no_deprecated_attr::NoDeprecatedAttr;
 use crate::rules::no_deprecated_element::NoDeprecatedElement;
 use crate::rules::no_deprecated_role::NoDeprecatedRole;
+use crate::rules::no_disallowed_ancestor::NoDisallowedAncestor;
 use crate::rules::no_disallowed_attr::NoDisallowedAttr;
 use crate::rules::no_duplicate_attr::NoDuplicateAttr;
 use crate::rules::no_duplicate_autofocus::NoDuplicateAutofocus;
@@ -51,6 +56,7 @@ use crate::rules::no_duplicate_dt::NoDuplicateDt;
 use crate::rules::no_duplicate_h1::NoDuplicateH1;
 use crate::rules::no_duplicate_id::NoDuplicateId;
 use crate::rules::no_duplicate_sibling_attr::NoDuplicateSiblingAttr;
+use crate::rules::no_duplicate_visible_main::NoDuplicateVisibleMain;
 use crate::rules::no_empty_palpable_content::NoEmptyPalpableContent;
 use crate::rules::no_empty_table_track::NoEmptyTableTrack;
 use crate::rules::no_event_handler_attr::NoEventHandlerAttr;
@@ -79,8 +85,10 @@ use crate::rules::no_refer_to_non_existent_id::NoReferToNonExistentId;
 use crate::rules::no_restricted_attr::NoRestrictedAttr;
 use crate::rules::no_restricted_element::NoRestrictedElement;
 use crate::rules::no_skipped_heading_level::NoSkippedHeadingLevel;
+use crate::rules::no_stray_head_or_body_tag::NoStrayHeadOrBodyTag;
 use crate::rules::no_table_cell_overlap::NoTableCellOverlap;
 use crate::rules::no_table_span_overflow::NoTableSpanOverflow;
+use crate::rules::no_unclosed_element_at_eof::NoUnclosedElementAtEof;
 use crate::rules::no_unescaped_char::NoUnescapedChar;
 use crate::rules::no_unknown_attr::NoUnknownAttr;
 use crate::rules::no_unknown_role::NoUnknownRole;
@@ -92,6 +100,7 @@ use crate::rules::placeholder_label_option::PlaceholderLabelOption;
 use crate::rules::progress_value_bounds::ProgressValueBounds;
 use crate::rules::require_accessible_name::RequireAccessibleName;
 use crate::rules::require_adjacent_popover::RequireAdjacentPopover;
+use crate::rules::require_ancestor::RequireAncestor;
 use crate::rules::require_aria_prop::RequireAriaProp;
 use crate::rules::require_attr::RequireAttr;
 use crate::rules::require_datetime::RequireDatetime;
@@ -603,6 +612,8 @@ pub fn parse_rule_config(value: &Value) -> Option<RuleConfig> {
     }
 }
 
+// One registration per rule, so the length follows the number of rules.
+#[allow(clippy::too_many_lines)]
 fn get_all_rules() -> Vec<Box<dyn Rule>> {
     vec![
         Box::new(NoDuplicateAttr),
@@ -702,6 +713,15 @@ fn get_all_rules() -> Vec<Box<dyn Rule>> {
         Box::new(NoBrokenFragmentLink),
         Box::new(ValidImportmap),
         Box::new(ValidSpeculationRules),
+        Box::new(HeadElementOrder),
+        Box::new(MetaCharsetPosition),
+        Box::new(NoContentAfterBody),
+        Box::new(NoStrayHeadOrBodyTag),
+        Box::new(NoUnclosedElementAtEof),
+        Box::new(NoDuplicateVisibleMain),
+        Box::new(NoDisallowedAncestor),
+        Box::new(RequireAncestor),
+        Box::new(NoAriaHiddenOnHiddenUntilFound),
     ]
 }
 

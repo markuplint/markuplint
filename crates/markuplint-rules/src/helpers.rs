@@ -197,6 +197,28 @@ pub fn finite_number_attr(raw: Option<&str>) -> Option<f64> {
     Some(js_string_to_number(trimmed)).filter(|n| n.is_finite())
 }
 
+/// TS `document.specs.specs.find(s => s.name === el.localName)?.contentModel?.[key]`: a field of
+/// the content model of the spec named exactly `local_name`.
+pub fn content_model_field<'a>(
+    spec: &'a markuplint_types::spec::types::MLMLSpec,
+    local_name: &str,
+    key: &str,
+) -> Option<&'a serde_json::Value> {
+    spec.specs
+        .iter()
+        .find(|s| s.name == local_name)
+        .and_then(|s| s.content_model.get(key))
+}
+
+/// TS `el.parentElement`, followed up while it is an element: the ancestors of `node_id`,
+/// nearest first.
+pub fn ancestor_elements(arena: &DomArena, node_id: NodeId) -> impl Iterator<Item = NodeId> + '_ {
+    std::iter::successors(arena.get(node_id).and_then(DomNode::parent_id), move |&id| {
+        arena.get(id).and_then(DomNode::parent_id)
+    })
+    .take_while(move |&id| arena.get(id).and_then(DomNode::as_element).is_some())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

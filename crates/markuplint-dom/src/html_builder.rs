@@ -31,9 +31,10 @@ pub fn build_from_html_arena(source: &str, parser_arena: &ParserArena, is_fragme
 
     let parser_doc = parser_arena.get(parser_arena.document_id());
     let mut top_level_ids = Vec::new();
+    let mut text_tags = TextTags::new(parser_arena);
 
     for &child_id in &parser_doc.children {
-        let converted = convert_parser_node(source, parser_arena, child_id, &mut dom, 0);
+        let converted = convert_parser_node(source, parser_arena, child_id, &mut dom, 0, &mut text_tags);
         top_level_ids.push(converted);
     }
 
@@ -44,8 +45,12 @@ pub fn build_from_html_arena(source: &str, parser_arena: &ParserArena, is_fragme
     resolve_links(&mut dom, &top_level_ids, 0);
 
     // Add orphaned end tags as bogus Text nodes (matching TS behavior where
-    // orphaned end tags become text nodes with isBogus=true)
+    // orphaned end tags become text nodes with isBogus=true). An orphaned end tag
+    // inside a text node kept whole stays part of that text, as in TS.
     for (tag_name, span) in &parser_arena.orphaned_end_tags {
+        if text_tags.is_kept_in_text(span.start.offset, span.end.offset) {
+            continue;
+        }
         let bogus_id = dom.len();
         let raw = slice_span(source, span.start.offset, span.end.offset);
         dom.push(DomNode::Text(TextData {
@@ -123,6 +128,7 @@ fn convert_parser_node(
     parser_id: ParserNodeId,
     dom: &mut DomArena,
     depth: u32,
+    text_tags: &mut TextTags,
 ) -> NodeId {
     let node = parser_arena.get(parser_id);
 
@@ -255,7 +261,7 @@ fn convert_parser_node(
             let child_ids: Vec<NodeId> = node
                 .children
                 .iter()
-                .map(|&child_id| convert_parser_node(source, parser_arena, child_id, dom, depth + 1))
+                .map(|&child_id| convert_parser_node(source, parser_arena, child_id, dom, depth + 1, text_tags))
                 .collect();
 
             if let Some(DomNode::Element(data)) = dom.get_mut(dom_id) {
@@ -268,13 +274,7 @@ fn convert_parser_node(
             let dom_id = dom.len();
             let uuid = dom_id.to_string();
             let mut base = make_base(dom_id, &uuid, source, node, depth);
-            // Strip orphaned end tag text from the raw content.
-            // WHATWG parser correctly appends characters before and after an
-            // orphaned end tag into the same Text node, so the span covers
-            // source text that includes the end tag. TS separates orphaned
-            // end tags into MLASTInvalid nodes, so text nodes never contain
-            // them. We replicate that by removing orphaned spans from raw.
-            base.raw = strip_orphaned_end_tags(&base.raw, node.span.start.offset, &parser_arena.orphaned_end_tags);
+            base.raw = text_tags.text_raw(&base.raw, node.span.start.offset);
             dom.push(DomNode::Text(TextData { base, is_bogus: false }))
         }
         NodeKind::Comment { .. } => {
@@ -350,42 +350,77 @@ fn restore_foreign_attr_colon(name: &str) -> String {
     }
 }
 
-/// Remove orphaned end tag text from a text node's raw content.
+/// The tags a text node's source span can contain, and what TS makes of them.
 ///
-/// WHATWG-compliant parsers merge character data before and after an orphaned
-/// end tag into a single Text node. TS parser-utils separates orphaned end
-/// tags into `MLASTInvalid` nodes so text nodes never contain them.
-/// This function replicates TS behavior by stripping orphaned spans from raw.
-fn strip_orphaned_end_tags(
-    raw: &str,
-    text_start_offset: usize,
-    orphaned: &[(String, markuplint_html_parser::input::Span)],
-) -> String {
-    let text_end_offset = text_start_offset + raw.len();
-    let mut to_remove: Vec<(usize, usize)> = Vec::new();
-    for (_tag, span) in orphaned {
-        let s = span.start.offset;
-        let e = span.end.offset;
-        if s >= text_start_offset && e <= text_end_offset {
-            to_remove.push((s - text_start_offset, e - text_start_offset));
+/// The WHATWG tree builder appends the characters before and after a tag it consumes
+/// without creating a node — an orphaned end tag, an end tag of an element whose end
+/// was already handled (`</html>` after `</body>`, say), an ignored start tag such as a
+/// second `<body>` — to the same text node, so the text node's span covers that tag.
+/// TS (`@markuplint/parser-utils` `visitText` with `researchTags` and
+/// `invalidTagAsText`) re-tokenizes such a span: when it contains a start tag the text
+/// node is kept whole, tags included; otherwise the end tags are split out of it. The
+/// raw of a text node here follows that: kept whole when it contains a start tag, and
+/// otherwise without the end tags the parser consumed.
+struct TextTags {
+    /// `(start, end)` byte offsets of every end tag the parser consumed (the end tag
+    /// of an element or an orphaned one), sorted.
+    end_tags: Vec<(usize, usize)>,
+    /// `(start, end)` byte offsets of the text nodes kept whole.
+    kept_whole: Vec<(usize, usize)>,
+}
+
+impl TextTags {
+    fn new(parser_arena: &ParserArena) -> Self {
+        let mut end_tags: Vec<(usize, usize)> = parser_arena
+            .orphaned_end_tags
+            .iter()
+            .map(|(_, span)| span)
+            .chain(parser_arena.iter().filter_map(|(_, node)| node.end_tag_span.as_ref()))
+            .map(|span| (span.start.offset, span.end.offset))
+            .collect();
+        end_tags.sort_unstable();
+        end_tags.dedup();
+        Self {
+            end_tags,
+            kept_whole: Vec::new(),
         }
     }
-    if to_remove.is_empty() {
-        return raw.to_owned();
-    }
-    to_remove.sort_by_key(|&(s, _)| s);
-    let mut result = String::with_capacity(raw.len());
-    let mut pos = 0;
-    for (s, e) in &to_remove {
-        if *s > pos {
-            result.push_str(&raw[pos..*s]);
+
+    /// The raw of the text node whose source span is `raw`, starting at `start`.
+    fn text_raw(&mut self, raw: &str, start: usize) -> String {
+        let end = start + raw.len();
+        // The tokenizer reads `<` followed by an ASCII letter as a tag open, so in the
+        // span of a text node it is a start tag the tree builder consumed — or the
+        // content of a raw text or RCDATA element, which has no end tag to remove.
+        let has_start_tag = raw
+            .as_bytes()
+            .windows(2)
+            .any(|w| w[0] == b'<' && w[1].is_ascii_alphabetic());
+        if has_start_tag {
+            self.kept_whole.push((start, end));
+            return raw.to_owned();
         }
-        pos = *e;
+        let first = self.end_tags.partition_point(|&(s, _)| s < start);
+        let mut result = String::with_capacity(raw.len());
+        let mut pos = start;
+        for &(s, e) in &self.end_tags[first..] {
+            if e > end {
+                break;
+            }
+            if s < pos {
+                continue;
+            }
+            result.push_str(&raw[pos - start..s - start]);
+            pos = e;
+        }
+        result.push_str(&raw[pos - start..]);
+        result
     }
-    if pos < raw.len() {
-        result.push_str(&raw[pos..]);
+
+    /// Whether the tag at `start..end` lies in a text node kept whole.
+    fn is_kept_in_text(&self, start: usize, end: usize) -> bool {
+        self.kept_whole.iter().any(|&(s, e)| s <= start && end <= e)
     }
-    result
 }
 
 fn resolve_links(dom: &mut DomArena, child_ids: &[NodeId], parent_id: NodeId) {
@@ -459,6 +494,45 @@ mod tests {
         assert_eq!(extract_raw_for_parse_error(&long, 1, 1), "a".repeat(32));
     }
 
+    fn build_document(html: &str) -> DomArena {
+        let parser_arena = markuplint_html_parser::parse_document(html);
+        build_from_html_arena(html, &parser_arena, false)
+    }
+
+    fn texts(dom: &DomArena) -> Vec<(&str, bool)> {
+        (0..dom.len())
+            .filter_map(|id| match dom.get(id) {
+                Some(DomNode::Text(text)) => Some((text.base.raw.as_str(), text.is_bogus)),
+                _ => None,
+            })
+            .collect()
+    }
+
+    /// `</html>` after `</body>` is consumed by the tree builder; the whitespace around it
+    /// is one text node in `<body>`, without the end tag.
+    #[test]
+    fn text_raw_leaves_out_a_consumed_end_tag() {
+        let dom = build_document("<!doctype html><body><p>x</p></body>\n</html>\n");
+        assert_eq!(texts(&dom), [("x", false), ("\n\n", false)]);
+    }
+
+    /// The text after `</math>` spans a stray `</head>` (orphaned) and an ignored second
+    /// `<body>`. It contains a start tag, so it is kept whole and the orphaned end tag is
+    /// not a bogus node of its own.
+    #[test]
+    fn text_raw_is_kept_whole_when_it_contains_a_start_tag() {
+        let dom = build_document("<!doctype html><head><math></math>\n</head>\n<body></body>\n");
+        assert_eq!(texts(&dom), [("\n</head>\n<body></body>\n", false)]);
+    }
+
+    /// An orphaned end tag in a text without a start tag is left out of the text and becomes
+    /// a bogus node.
+    #[test]
+    fn text_raw_leaves_out_an_orphaned_end_tag() {
+        let dom = build("<p>a</span>b</p>");
+        assert_eq!(texts(&dom), [("ab", false), ("</span>", true)]);
+    }
+
     #[test]
     fn element_inner_source_is_the_text_between_the_tags() {
         let html = "<p>x</p><script type=\"importmap\">\n {\"a\": \"<b>\"} </script><br><i></i><em>";
@@ -473,6 +547,17 @@ mod tests {
         // No close tag.
         assert_eq!(inner("br"), None);
         assert_eq!(inner("em"), None);
+    }
+
+    #[test]
+    fn close_tag_carries_its_byte_offset() {
+        let dom = build("<p>é</p>");
+        let (_, p) = dom.elements().find(|(_, el)| el.base.node_name == "p").unwrap();
+        let close_tag = p.close_tag.as_ref().unwrap();
+        assert_eq!(close_tag.raw, "</p>");
+        // `é` is two bytes in UTF-8.
+        assert_eq!(close_tag.offset, 5);
+        assert_eq!((close_tag.line, close_tag.col), (1, 5));
     }
 
     #[test]

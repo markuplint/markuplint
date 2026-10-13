@@ -32,6 +32,32 @@ pub fn get_spec_by_tag_name<'a>(spec: &'a MLMLSpec, name: &str, namespace: Optio
     get_spec(spec, name)
 }
 
+/// The void elements of the HTML standard, by local name. Port of `@markuplint/ml-spec`
+/// `isVoidElement()` (`algorithm/html/is-void-element.ts`), which is a fixed list rather
+/// than spec data: unlike [`is_void_element`] it excludes `iframe` (no content in the
+/// spec data, yet not void) and the obsolete `param`.
+///
+/// <https://html.spec.whatwg.org/multipage/syntax.html#void-elements>
+#[must_use]
+pub fn is_void_element_name(local_name: &str) -> bool {
+    matches!(
+        local_name,
+        "area"
+            | "base"
+            | "br"
+            | "col"
+            | "embed"
+            | "hr"
+            | "img"
+            | "input"
+            | "link"
+            | "meta"
+            | "source"
+            | "track"
+            | "wbr"
+    )
+}
+
 /// Void elements have `contentModel.contents === false` in the spec data.
 pub fn is_void_element(spec: &MLMLSpec, name: &str) -> bool {
     get_spec(spec, name).is_some_and(|el| {
