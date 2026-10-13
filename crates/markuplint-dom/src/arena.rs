@@ -2,6 +2,8 @@
 
 use std::collections::HashMap;
 
+use markuplint_core::mlast::MLASTParseError;
+
 use crate::node::DomNode;
 
 pub type NodeId = usize;
@@ -11,9 +13,13 @@ pub struct DomArena {
     pub(crate) nodes: Vec<DomNode>,
     pub(crate) uuid_to_id: HashMap<String, NodeId>,
     /// Populated only when built from the HTML parser path (Path B), so rules can
-    /// read source text at specific offsets (e.g. character-reference rule checking
+    /// read source text at specific offsets (e.g. `no-unescaped-char` checking
     /// unresolved entity text); the MLAST path leaves it `None`.
     pub(crate) source: Option<String>,
+    /// Non-fatal parse errors (TS `document.parseErrors`), in source order. Populated
+    /// only on the HTML parser path (Path B), which records the character-reference
+    /// errors; the MLAST path leaves it empty.
+    pub(crate) parse_errors: Vec<MLASTParseError>,
 }
 
 impl DomArena {
@@ -23,12 +29,18 @@ impl DomArena {
             nodes: Vec::new(),
             uuid_to_id: HashMap::new(),
             source: None,
+            parse_errors: Vec::new(),
         }
     }
 
     #[must_use]
     pub fn source(&self) -> Option<&str> {
         self.source.as_deref()
+    }
+
+    #[must_use]
+    pub fn parse_errors(&self) -> &[MLASTParseError] {
+        &self.parse_errors
     }
 
     #[must_use]

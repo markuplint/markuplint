@@ -278,6 +278,22 @@ pub struct MLASTSpreadAttr {
     pub node_name: String,
 }
 
+/// Corresponds to `MLASTParseError` in TS: a non-fatal parse error the parser
+/// reported, which does not abort linting but which rules can read.
+#[derive(Debug, Clone, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub struct MLASTParseError {
+    /// The parse error code, kebab-case (parse5's `ERR` names).
+    pub code: String,
+    pub start_offset: usize,
+    pub start_line: u32,
+    pub start_col: u32,
+    pub end_offset: usize,
+    pub end_line: u32,
+    pub end_col: u32,
+    pub raw: String,
+}
+
 /// Corresponds to `MLASTToken` in TS.
 #[derive(Debug, Clone, Deserialize)]
 pub struct MLASTToken {

@@ -129,6 +129,7 @@ impl<'a> TreeBuilder<'a> {
                 break;
             }
         }
+        self.arena.tokenizer_errors = self.tokenizer.take_errors();
     }
 
     /// WHATWG §13.2.6.4: Fragment parsing algorithm.

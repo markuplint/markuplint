@@ -2,7 +2,7 @@
 //! root). Bypasses MLAST JSON entirely to minimize String allocation. Gated on the
 //! `html-parser` feature.
 
-use markuplint_core::mlast::{ElementType, NamespaceURI};
+use markuplint_core::mlast::{ElementType, MLASTParseError, NamespaceURI};
 use markuplint_html_parser::tree::Arena as ParserArena;
 use markuplint_html_parser::tree::node::{Namespace, NodeId as ParserNodeId, NodeKind};
 
@@ -67,7 +67,53 @@ pub fn build_from_html_arena(source: &str, parser_arena: &ParserArena, is_fragme
         }));
     }
 
+    dom.parse_errors = parser_arena
+        .tokenizer_errors
+        .iter()
+        .map(|e| MLASTParseError {
+            code: e.code.to_owned(),
+            start_offset: e.position.offset,
+            start_line: e.position.line,
+            start_col: e.position.col,
+            end_offset: e.position.offset,
+            end_line: e.position.line,
+            end_col: e.position.col,
+            raw: extract_raw_for_parse_error(source, e.position.offset, e.position.offset),
+        })
+        .collect();
+
     dom
+}
+
+/// Port of TS `extractRawForParseError` (`@markuplint/html-parser`). parse5 reports
+/// most errors as a point, which would leave `raw` empty, so a point is widened to the
+/// surrounding run of characters up to a delimiter (whitespace, `<>"'/=&`), looking at
+/// most 32 characters ahead.
+fn extract_raw_for_parse_error(source: &str, start: usize, end: usize) -> String {
+    let is_delimiter = |c: char| c.is_whitespace() || matches!(c, '<' | '>' | '"' | '\'' | '/' | '=' | '&');
+    if end > start {
+        return slice_span(source, start, end);
+    }
+    let start = start.min(source.len());
+    let begin = source[..start]
+        .char_indices()
+        .rev()
+        .find(|&(_, c)| is_delimiter(c))
+        .map_or(0, |(i, c)| i + c.len_utf8());
+    let end = source[start..]
+        .char_indices()
+        .take(32)
+        .find(|&(_, c)| is_delimiter(c))
+        .map_or_else(
+            || {
+                source[start..]
+                    .char_indices()
+                    .nth(32)
+                    .map_or(source.len(), |(i, _)| start + i)
+            },
+            |(i, _)| start + i,
+        );
+    source[begin..end].to_owned()
 }
 
 #[allow(clippy::too_many_lines)]
@@ -374,6 +420,42 @@ fn resolve_links(dom: &mut DomArena, child_ids: &[NodeId], parent_id: NodeId) {
 mod tests {
     use super::*;
     use markuplint_core::mlast::MLASTAttr;
+
+    fn build(html: &str) -> DomArena {
+        let parser_arena = markuplint_html_parser::parse_fragment(html);
+        build_from_html_arena(html, &parser_arena, true)
+    }
+
+    #[test]
+    fn parse_errors_carry_the_tokenizer_errors() {
+        let arena = build("<p>\n  a &xyz; b &amp c</p>");
+        let errors = arena.parse_errors();
+        assert_eq!(errors.len(), 2);
+        assert_eq!(errors[0].code, "unknown-named-character-reference");
+        assert_eq!(
+            (errors[0].start_line, errors[0].start_col, errors[0].start_offset),
+            (2, 9, 12)
+        );
+        assert_eq!(
+            (errors[0].end_line, errors[0].end_col, errors[0].end_offset),
+            (2, 9, 12)
+        );
+        assert_eq!(errors[0].raw, "xyz;");
+        assert_eq!(errors[1].code, "missing-semicolon-after-character-reference");
+        assert_eq!(errors[1].raw, "amp");
+    }
+
+    /// Port of TS `extractRawForParseError` (`@markuplint/html-parser`).
+    #[test]
+    fn extract_raw_for_parse_error_expands_a_point() {
+        assert_eq!(extract_raw_for_parse_error("<p>&xyz;</p>", 7, 7), "xyz;");
+        assert_eq!(extract_raw_for_parse_error("<p>&amp text</p>", 7, 7), "amp");
+        assert_eq!(extract_raw_for_parse_error("<p>&#x110000</p>", 12, 12), "#x110000");
+        assert_eq!(extract_raw_for_parse_error("abcdef", 1, 4), "bcd");
+        // The forward scan stops 32 characters after the point.
+        let long = format!("&{}", "a".repeat(40));
+        assert_eq!(extract_raw_for_parse_error(&long, 1, 1), "a".repeat(32));
+    }
 
     #[test]
     fn restore_foreign_attr_colon_xlink_href() {

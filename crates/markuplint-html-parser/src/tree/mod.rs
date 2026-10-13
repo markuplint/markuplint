@@ -3,6 +3,7 @@
 pub mod node;
 
 use crate::input::{Position, Span};
+use crate::tokenizer::TokenizerError;
 use node::{Attribute, Namespace, NodeId, NodeKind, TreeNode};
 
 #[derive(Debug)]
@@ -14,6 +15,9 @@ pub struct Arena {
     /// These correspond to cases where the TS parser fails with "Broke mapping nodes"
     /// (e.g., unclosed formatting elements causing tree rearrangement).
     pub parse_errors: Vec<(String, String, Span)>,
+    /// Non-fatal parse errors the tokenizer recorded, in source order. Unlike
+    /// `parse_errors` these do not abort linting; rules read them.
+    pub tokenizer_errors: Vec<TokenizerError>,
 }
 
 impl Arena {
@@ -36,6 +40,7 @@ impl Arena {
             nodes: vec![doc],
             orphaned_end_tags: Vec::new(),
             parse_errors: Vec::new(),
+            tokenizer_errors: Vec::new(),
         }
     }
 
