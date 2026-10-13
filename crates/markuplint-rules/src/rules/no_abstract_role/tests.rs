@@ -7,6 +7,7 @@
 //!   v6_no_abstract_role_002       — Rust-only: only the abstract token of several is reported, at its own position
 //!   v6_no_abstract_role_003       — Rust-only: an unknown token is not this rule's business
 //!   v6_no_abstract_role_004       — Rust-only: severity and `rules: false`
+//!   v6_no_abstract_role_005       — Rust-only: `role="button"` is not abstract in ARIA 1.1 and 1.2, by option and by `ruleCommonSettings`
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::Severity;
@@ -105,4 +106,24 @@ fn v6_no_abstract_role_004() {
 
     let disabled = lint(&arena, &spec(), &config(serde_json::json!(false)));
     assert!(disabled.violations.is_empty());
+}
+
+#[test]
+fn v6_no_abstract_role_005() {
+    let arena = html_arena(r#"<div role="button"></div>"#);
+    for version in ["1.1", "1.2"] {
+        let by_option = lint(
+            &arena,
+            &spec(),
+            &config(serde_json::json!({ "options": { "version": version } })),
+        );
+        assert!(by_option.violations.is_empty(), "{version}");
+
+        let common: LintConfig = serde_json::from_value(serde_json::json!({
+            "rules": { "no-abstract-role": true },
+            "ruleCommonSettings": { "ariaVersion": version }
+        }))
+        .unwrap();
+        assert!(lint(&arena, &spec(), &common).violations.is_empty(), "{version}");
+    }
 }

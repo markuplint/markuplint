@@ -8,6 +8,7 @@
 //!   v6_no_default_aria_value_003  — Rust-only: property names are matched case-sensitively
 //!   v6_no_default_aria_value_004  — Rust-only: a dynamic value is skipped (the HTML parser has none, so the check function is called directly)
 //!   v6_no_default_aria_value_005  — Rust-only: `version` option, `severity` override, `rules: false`
+//!   v6_no_default_aria_value_006  — Rust-only: `aria-checked="undefined"` on `checkbox` is the default
 
 use super::*;
 use crate::aria_check::html_attrs;
@@ -121,4 +122,15 @@ fn v6_no_default_aria_value_005() {
         vec![violation(Severity::Error, 1, 6, "aria-live=\"off\"")]
     );
     assert_eq!(run(html, serde_json::json!(false)), vec![]);
+}
+
+#[test]
+fn v6_no_default_aria_value_006() {
+    assert_eq!(
+        run(
+            r#"<div role="checkbox" aria-checked="undefined"></div>"#,
+            serde_json::json!(true)
+        ),
+        vec![violation(Severity::Warning, 1, 22, "aria-checked=\"undefined\"")]
+    );
 }

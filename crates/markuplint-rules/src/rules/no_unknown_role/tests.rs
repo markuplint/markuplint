@@ -10,6 +10,8 @@
 //!   v6_no_unknown_role_004       — Rust-only: only the first unknown token is reported, at its own position
 //!   v6_no_unknown_role_005       — Rust-only: independent of `no-abstract-role` for `role="widget hoge"`
 //!   v6_no_unknown_role_006       — Rust-only: severity and `rules: false`
+//!   v6_no_unknown_role_007       — Rust-only: an unknown first token before known ones is reported once
+//!   v6_no_unknown_role_008       — Rust-only: `role="button"` is known in ARIA 1.1 and 1.2, by option and by `ruleCommonSettings`
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::Severity;
@@ -153,4 +155,43 @@ fn v6_no_unknown_role_006() {
 
     let disabled = lint(&arena, &spec(), &config(serde_json::json!(false)));
     assert!(disabled.violations.is_empty());
+}
+
+#[test]
+fn v6_no_unknown_role_007() {
+    for html in [
+        r#"<div role="hoge button"></div>"#,
+        r#"<div role="hoge button link"></div>"#,
+    ] {
+        let result = lint(&html_arena(html), &spec(), &config(serde_json::json!(true)));
+        assert_eq!(result.violations.len(), 1, "{html}");
+        assert_eq!(result.violations[0].severity, Severity::Error);
+        assert_eq!(result.violations[0].line, 1);
+        assert_eq!(result.violations[0].col, 12);
+        assert_eq!(
+            result.violations[0].message,
+            "The \"hoge\" role does not exist according to the WAI-ARIA specification."
+        );
+        assert_eq!(result.violations[0].raw, "hoge");
+    }
+}
+
+#[test]
+fn v6_no_unknown_role_008() {
+    let arena = html_arena(r#"<div role="button"></div>"#);
+    for version in ["1.1", "1.2"] {
+        let by_option = lint(
+            &arena,
+            &spec(),
+            &config(serde_json::json!({ "options": { "version": version } })),
+        );
+        assert!(by_option.violations.is_empty(), "{version}");
+
+        let common: LintConfig = serde_json::from_value(serde_json::json!({
+            "rules": { "no-unknown-role": true },
+            "ruleCommonSettings": { "ariaVersion": version }
+        }))
+        .unwrap();
+        assert!(lint(&arena, &spec(), &common).violations.is_empty(), "{version}");
+    }
 }

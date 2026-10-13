@@ -26,6 +26,7 @@
 //!   v6_permitted_roles_007             — Rust-only: `<meta>` permits no role
 //!   v6_permitted_roles_008             — Rust-only: the implicit role is permitted, conditions applied (`a[href]`)
 //!   v6_permitted_roles_009             — Rust-only: severity and `rules: false`
+//!   v6_permitted_roles_010             — Rust-only: `div` permits `button` in ARIA 1.1 and 1.2, by option and by `ruleCommonSettings`
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::{Severity, Violation};
@@ -330,4 +331,24 @@ fn v6_permitted_roles_009() {
 
     let disabled = lint(&arena, &spec(), &config(serde_json::json!(false)));
     assert!(disabled.violations.is_empty());
+}
+
+#[test]
+fn v6_permitted_roles_010() {
+    let arena = html_arena(r#"<div role="button"></div>"#);
+    for version in ["1.1", "1.2"] {
+        let by_option = lint(
+            &arena,
+            &spec(),
+            &config(serde_json::json!({ "options": { "version": version } })),
+        );
+        assert!(by_option.violations.is_empty(), "{version}");
+
+        let common: LintConfig = serde_json::from_value(serde_json::json!({
+            "rules": { "permitted-roles": true },
+            "ruleCommonSettings": { "ariaVersion": version }
+        }))
+        .unwrap();
+        assert!(lint(&arena, &spec(), &common).violations.is_empty(), "{version}");
+    }
 }

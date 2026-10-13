@@ -78,7 +78,8 @@ pub fn get_attr_specs<'a>(spec: &'a MLMLSpec, element_name: &str) -> HashMap<&'a
 fn namespace_to_prefix(namespace: &str) -> &str {
     match namespace {
         "http://www.w3.org/2000/svg" => "svg",
-        "http://www.w3.org/1998/Math/MathML" => "math",
+        // The spec names MathML elements with the `mml:` prefix (`mml:annotation`).
+        "http://www.w3.org/1998/Math/MathML" => "mml",
         _ => "",
     }
 }
@@ -91,6 +92,13 @@ mod tests {
     fn html_spec() -> MLMLSpec {
         let json = include_str!("../../../../packages/@markuplint/html-spec/index.json");
         load_spec(json).unwrap()
+    }
+
+    #[test]
+    fn get_spec_by_tag_name_uses_the_mml_prefix_for_mathml() {
+        let spec = html_spec();
+        let found = get_spec_by_tag_name(&spec, "annotation", Some("http://www.w3.org/1998/Math/MathML"));
+        assert_eq!(found.map(|el| el.name.as_str()), Some("mml:annotation"));
     }
 
     // --- get_spec ---

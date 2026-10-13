@@ -8,6 +8,7 @@
 //!   v6_no_redundant_role_002       — Rust-only: only the first matching token is reported, at its own position
 //!   v6_no_redundant_role_003       — Rust-only: the comparison is case-sensitive; an uppercase tag is quoted in lower case
 //!   v6_no_redundant_role_004       — Rust-only: `generic` on `div`, and `rules: false`
+//!   v6_no_redundant_role_005       — Rust-only: `heading` on `h1` and `button` on `button`
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::Severity;
@@ -143,4 +144,31 @@ fn v6_no_redundant_role_004() {
 
     let disabled = lint(&arena, &spec(), &config(serde_json::json!(false)));
     assert!(disabled.violations.is_empty());
+}
+
+#[test]
+fn v6_no_redundant_role_005() {
+    let arena = html_arena(r#"<h1 role="heading">x</h1>"#);
+    let result = lint(&arena, &spec(), &config(serde_json::json!(true)));
+    assert_eq!(result.violations.len(), 1);
+    assert_eq!(result.violations[0].severity, Severity::Warning);
+    assert_eq!(result.violations[0].line, 1);
+    assert_eq!(result.violations[0].col, 11);
+    assert_eq!(
+        result.violations[0].message,
+        "The \"heading\" role is the implicit role of the \"h1\" element"
+    );
+    assert_eq!(result.violations[0].raw, "heading");
+
+    let arena = html_arena(r#"<button role="button">x</button>"#);
+    let result = lint(&arena, &spec(), &config(serde_json::json!(true)));
+    assert_eq!(result.violations.len(), 1);
+    assert_eq!(result.violations[0].severity, Severity::Warning);
+    assert_eq!(result.violations[0].line, 1);
+    assert_eq!(result.violations[0].col, 15);
+    assert_eq!(
+        result.violations[0].message,
+        "The \"button\" role is the implicit role of the \"button\" element"
+    );
+    assert_eq!(result.violations[0].raw, "button");
 }

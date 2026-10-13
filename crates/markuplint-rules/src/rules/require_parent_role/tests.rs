@@ -9,6 +9,7 @@
 //!   v6_require_parent_role_004  — Rust-only: a fragment root and implicit roles are not reported
 //!   v6_require_parent_role_005  — Rust-only: tokens are matched case-sensitively against the core roles only
 //!   v6_require_parent_role_006  — Rust-only: severity, multi-line position and `rules: false`
+//!   v6_require_parent_role_007  — Rust-only: `listitem` outside a list, explicit on `div` and on `li`; not at a fragment root
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::{Severity, Violation};
@@ -199,4 +200,24 @@ fn v6_require_parent_role_006() {
         &run_rule(r#"<div><div role="option"></div></div>"#, serde_json::json!(false)),
         &[],
     );
+}
+
+const LISTITEM_MESSAGE: &str =
+    "The \"listitem\" role requires an accessibility parent with one of the roles: \"directory\", \"list\"";
+
+#[test]
+fn v6_require_parent_role_007() {
+    assert_violations(
+        &run_rule(r#"<div><div role="listitem"></div></div>"#, serde_json::json!(true)),
+        &[(Severity::Error, 1, 17, LISTITEM_MESSAGE, "listitem")],
+    );
+    assert_violations(
+        &run_rule(r#"<div><li role="listitem">x</li></div>"#, serde_json::json!(true)),
+        &[(Severity::Error, 1, 16, LISTITEM_MESSAGE, "listitem")],
+    );
+    assert_violations(
+        &run_rule(r#"<div role="listitem"></div>"#, serde_json::json!(true)),
+        &[],
+    );
+    assert_violations(&run_rule(r#"<li role="listitem">x</li>"#, serde_json::json!(true)), &[]);
 }

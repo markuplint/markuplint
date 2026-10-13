@@ -13,7 +13,7 @@ src/rules/
 
 Tests do not go inline in `mod.rs`, and a rule is not a single `<rule_name>.rs` file.
 
-> **Note:** As of this writing, 16 rules follow this structure. The remaining rules still use single-file format and will be migrated incrementally.
+> **Note:** Some older rules still use a single `<rule_name>.rs` file. A new or split rule always uses the structure above.
 
 ## Test ID Convention
 

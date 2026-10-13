@@ -11,6 +11,8 @@
 //!   v6_no_invalid_aria_prop_value_006  — Rust-only: dynamic value is skipped (the HTML parser has none, so the check function is called directly)
 //!   v6_no_invalid_aria_prop_value_007  — Rust-only: `version` option, `rules: false`
 //!   v6_no_invalid_aria_prop_value_008  — Rust-only: integer and number values through the pipeline
+//!   v6_no_invalid_aria_prop_value_009  — Rust-only: character references are not decoded before the check
+//!   v6_no_invalid_aria_prop_value_010  — Rust-only: valid token, true/false and integer values
 //!   v6_check_aria_value_*  — Rust-only: unit tests of `check_aria_value`; expectations are the results of the TS
 //!                            `checkAriaValue` for the same inputs
 //!
@@ -494,4 +496,15 @@ fn v6_check_aria_value_free_form_types() {
     assert!(check_aria_value(&ARIAAttributeValue::IdReference, "", &[]));
     assert!(check_aria_value(&ARIAAttributeValue::IdReferenceList, "a b", &[]));
     assert!(check_aria_value(&ARIAAttributeValue::Uri, "x", &[]));
+}
+
+#[test]
+fn v6_no_invalid_aria_prop_value_010() {
+    for html in [
+        r#"<input role="combobox" aria-autocomplete="list">"#,
+        r#"<div role="button" aria-disabled="true"></div>"#,
+        r#"<div role="heading" aria-level="2"></div>"#,
+    ] {
+        assert_eq!(run(html, serde_json::json!(true)), vec![], "{html}");
+    }
 }
