@@ -549,6 +549,36 @@ key
 		expect(doc.nodeList[2].namespace).toBe('http://www.w3.org/2000/svg');
 	});
 
+	test('a component named like svg or math does not enter the namespace', () => {
+		const math = parse('<div><Math><b /></Math></div>');
+		expect(math.nodeList[1].nodeName).toBe('Math');
+		expect(math.nodeList[1].namespace).toBe('http://www.w3.org/1999/xhtml');
+		expect(math.nodeList[2].nodeName).toBe('b');
+		expect(math.nodeList[2].namespace).toBe('http://www.w3.org/1999/xhtml');
+
+		const svg = parse('<div><Svg><g /></Svg></div>');
+		expect(svg.nodeList[1].nodeName).toBe('Svg');
+		expect(svg.nodeList[1].namespace).toBe('http://www.w3.org/1999/xhtml');
+		expect(svg.nodeList[2].nodeName).toBe('g');
+		expect(svg.nodeList[2].namespace).toBe('http://www.w3.org/1999/xhtml');
+	});
+
+	test('a component takes the namespace of where it is written', () => {
+		const inSvg = parse('<svg><Icon><path /></Icon></svg>');
+		expect(inSvg.nodeList[1].nodeName).toBe('Icon');
+		expect(inSvg.nodeList[1].namespace).toBe('http://www.w3.org/2000/svg');
+		expect(inSvg.nodeList[2].namespace).toBe('http://www.w3.org/2000/svg');
+
+		const inSvgNamedMath = parse('<svg><Math><path /></Math></svg>');
+		expect(inSvgNamedMath.nodeList[1].namespace).toBe('http://www.w3.org/2000/svg');
+		expect(inSvgNamedMath.nodeList[2].namespace).toBe('http://www.w3.org/2000/svg');
+
+		const inForeignObject = parse('<svg><foreignObject><Svg><a /></Svg></foreignObject></svg>');
+		expect(inForeignObject.nodeList[2].nodeName).toBe('Svg');
+		expect(inForeignObject.nodeList[2].namespace).toBe('http://www.w3.org/1999/xhtml');
+		expect(inForeignObject.nodeList[3].namespace).toBe('http://www.w3.org/1999/xhtml');
+	});
+
 	test('isCustomElement', () => {
 		expect(parse('<div/>').nodeList[0].elementType).toBe('html');
 		expect(parse('<Div/>').nodeList[0].elementType).toBe('authored');
