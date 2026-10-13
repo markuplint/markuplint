@@ -16,6 +16,7 @@ use crate::rules::case_sensitive_attr_name::CaseSensitiveAttrName;
 use crate::rules::case_sensitive_tag_name::CaseSensitiveTagName;
 use crate::rules::character_reference::CharacterReference;
 use crate::rules::class_naming::ClassNaming;
+use crate::rules::consistent_table_row_length::ConsistentTableRowLength;
 use crate::rules::deprecated_attr::DeprecatedAttr;
 use crate::rules::deprecated_element::DeprecatedElement;
 use crate::rules::doctype::Doctype;
@@ -39,6 +40,7 @@ use crate::rules::no_duplicate_dt::NoDuplicateDt;
 use crate::rules::no_duplicate_h1::NoDuplicateH1;
 use crate::rules::no_duplicate_id::NoDuplicateId;
 use crate::rules::no_empty_palpable_content::NoEmptyPalpableContent;
+use crate::rules::no_empty_table_track::NoEmptyTableTrack;
 use crate::rules::no_event_handler_attr::NoEventHandlerAttr;
 use crate::rules::no_experimental_features::NoExperimentalFeatures;
 use crate::rules::no_focusable_in_aria_hidden::NoFocusableInAriaHidden;
@@ -58,6 +60,8 @@ use crate::rules::no_refer_to_non_existent_id::NoReferToNonExistentId;
 use crate::rules::no_restricted_attr::NoRestrictedAttr;
 use crate::rules::no_restricted_element::NoRestrictedElement;
 use crate::rules::no_skipped_heading_level::NoSkippedHeadingLevel;
+use crate::rules::no_table_cell_overlap::NoTableCellOverlap;
+use crate::rules::no_table_span_overflow::NoTableSpanOverflow;
 use crate::rules::no_unknown_attr::NoUnknownAttr;
 use crate::rules::no_unknown_role::NoUnknownRole;
 use crate::rules::no_unsupported_browser_features::NoUnsupportedBrowserFeatures;
@@ -79,7 +83,6 @@ use crate::rules::require_parent_role::RequireParentRole;
 use crate::rules::role_supports_aria_prop::RoleSupportsAriaProp;
 use crate::rules::srcset_sizes_constraint::SrcsetSizesConstraint;
 use crate::rules::tab_requires_tabpanel::TabRequiresTabpanel;
-use crate::rules::table_row_column_alignment::TableRowColumnAlignment;
 use crate::violation::{Severity, Violation};
 
 #[derive(Debug, Deserialize)]
@@ -602,7 +605,10 @@ fn get_all_rules() -> Vec<Box<dyn Rule>> {
         Box::new(RequireElement),
         Box::new(RequireH1),
         Box::new(NoDuplicateH1),
-        Box::new(TableRowColumnAlignment),
+        Box::new(NoTableCellOverlap),
+        Box::new(NoTableSpanOverflow),
+        Box::new(NoEmptyTableTrack),
+        Box::new(ConsistentTableRowLength),
         Box::new(NoPseudoList),
         Box::new(NoUnknownAttr),
         Box::new(NoDisallowedAttr),
