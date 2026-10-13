@@ -1045,6 +1045,23 @@ describe('experimentalRustCore falls back to the TypeScript engine for browser s
 		expect(stderrOf(write)).toContain('falling back to TypeScript engine');
 	});
 
+	it('says why it left the Rust engine when no-mismatched-aspect-ratio is enabled', async () => {
+		// The rule reads the image files from disk, which only the TS engine does.
+		const write = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
+		const file = await MLEngine.toMLFile({ sourceCode: '<p>a</p>', name: 'page.html' });
+		const engine = new MLEngine(file!, {
+			noSearchConfig: true,
+			locale: 'en',
+			experimentalRustCore: true,
+			config: { rules: { 'no-mismatched-aspect-ratio': true } },
+		});
+
+		await engine.exec();
+
+		expect(stderrOf(write)).toContain('no-mismatched-aspect-ratio');
+		expect(stderrOf(write)).toContain('falling back to TypeScript engine');
+	});
+
 	it('says why it left the Rust engine when only a node rule enables it', async () => {
 		const write = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
 		const file = await MLEngine.toMLFile({ sourceCode: '<p>a</p>', name: 'page.html' });

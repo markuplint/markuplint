@@ -390,11 +390,12 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 			return null;
 		}
 
-		// Fallback: the Rust engine has neither browserslist resolution nor
-		// browser-compat-data, so this rule would silently report nothing there.
-		if (enablesRule(fabric.ruleset, 'no-unsupported-browser-features')) {
+		// Fallback: rules whose input is outside the document. Without the Rust side
+		// having it they would silently report nothing there.
+		const unsupportedRule = RULES_ONLY_THE_TS_ENGINE_EVALUATES.find(id => enablesRule(fabric.ruleset, id));
+		if (unsupportedRule) {
 			process.stderr.write(
-				`⚠ [experimental-rust-core] "${this.#file.path}" enables no-unsupported-browser-features, which the Rust engine cannot evaluate — falling back to TypeScript engine.\n`,
+				`⚠ [experimental-rust-core] "${this.#file.path}" enables ${unsupportedRule}, which the Rust engine cannot evaluate — falling back to TypeScript engine.\n`,
 			);
 			return null;
 		}
@@ -1108,6 +1109,13 @@ async function loadNapiBinding(): Promise<NapiBinding> {
 	cachedNapi = mod;
 	return cachedNapi;
 }
+
+/**
+ * Rules whose input lives outside the document, which only the TS engine can read:
+ * `no-unsupported-browser-features` needs browserslist and browser-compat-data,
+ * `no-mismatched-aspect-ratio` reads the image files from disk.
+ */
+const RULES_ONLY_THE_TS_ENGINE_EVALUATES = ['no-unsupported-browser-features', 'no-mismatched-aspect-ratio'] as const;
 
 /**
  * Whether `ruleset` turns the rule `ruleId` on, globally or for some nodes.
