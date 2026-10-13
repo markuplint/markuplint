@@ -61,14 +61,18 @@ use crate::rules::permitted_roles::PermittedRoles;
 use crate::rules::placeholder_label_option::PlaceholderLabelOption;
 use crate::rules::require_accessible_name::RequireAccessibleName;
 use crate::rules::require_adjacent_popover::RequireAdjacentPopover;
+use crate::rules::require_aria_prop::RequireAriaProp;
 use crate::rules::require_attr::RequireAttr;
 use crate::rules::require_datetime::RequireDatetime;
 use crate::rules::require_dialog_autofocus::RequireDialogAutofocus;
 use crate::rules::require_element::RequireElement;
 use crate::rules::require_end_tag::RequireEndTag;
+use crate::rules::require_owned_elements::RequireOwnedElements;
+use crate::rules::require_parent_role::RequireParentRole;
 use crate::rules::required_h1::RequiredH1;
 use crate::rules::role_supports_aria_prop::RoleSupportsAriaProp;
 use crate::rules::srcset_sizes_constraint::SrcsetSizesConstraint;
+use crate::rules::tab_requires_tabpanel::TabRequiresTabpanel;
 use crate::rules::table_row_column_alignment::TableRowColumnAlignment;
 use crate::rules::wai_aria::WaiAria;
 use crate::violation::{Severity, Violation};
@@ -611,6 +615,10 @@ fn get_all_rules() -> Vec<Box<dyn Rule>> {
         Box::new(RoleSupportsAriaProp),
         Box::new(NoRedundantAriaProp),
         Box::new(NoContradictoryAriaProp),
+        Box::new(RequireAriaProp),
+        Box::new(RequireParentRole),
+        Box::new(RequireOwnedElements),
+        Box::new(TabRequiresTabpanel),
     ]
 }
 

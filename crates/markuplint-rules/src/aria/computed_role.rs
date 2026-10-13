@@ -123,28 +123,35 @@ fn compute_role(
     if !role.required_accessibility_parent_role.is_empty()
         && !is_native_context_intact(spec, arena, node_id, role, version)
     {
-        if let Some(parent_id) = node.parent_id() {
-            let ancestor_role = get_non_presentational_ancestor(spec, arena, parent_id, version, visited);
-            if !matches_context_role(
-                &role.required_accessibility_parent_role,
-                spec,
-                arena,
-                node_id,
-                version,
-                visited,
-            ) {
-                return ComputedRole {
-                    role: None,
-                    error_type: Some(RoleComputationError::InvalidRequiredContextRole),
-                };
-            }
-            let _ = ancestor_role;
-        } else {
+        // TS `el.parentElement === null`: an element at the root (of a fragment, or under the
+        // document) cannot satisfy the requirement, and keeps its role, reported as `NoOwner`.
+        let parent_element_id = node.parent_id().filter(|&parent_id| {
+            arena
+                .get(parent_id)
+                .and_then(markuplint_dom::node::DomNode::as_element)
+                .is_some()
+        });
+        let Some(parent_id) = parent_element_id else {
             return ComputedRole {
-                role: None,
+                role: computed_role.clone(),
                 error_type: Some(RoleComputationError::NoOwner),
             };
+        };
+        let ancestor_role = get_non_presentational_ancestor(spec, arena, parent_id, version, visited);
+        if !matches_context_role(
+            &role.required_accessibility_parent_role,
+            spec,
+            arena,
+            node_id,
+            version,
+            visited,
+        ) {
+            return ComputedRole {
+                role: None,
+                error_type: Some(RoleComputationError::InvalidRequiredContextRole),
+            };
         }
+        let _ = ancestor_role;
     }
 
     // Step 5: SVG accessibility tree inclusion

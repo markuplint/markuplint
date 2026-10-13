@@ -296,6 +296,15 @@ pub(crate) fn aria_prop_attrs(el: &ElementData) -> Vec<&MLASTHTMLAttr> {
     html_attrs(el).filter(|attr| is_aria_prop_attr(attr)).collect()
 }
 
+/// A list of names as TS `t(list)` writes it without the last-separator flag: `"a", "b", "c"`.
+pub(crate) fn quoted_list(items: &[String]) -> String {
+    items
+        .iter()
+        .map(|item| format!("\"{item}\""))
+        .collect::<Vec<_>>()
+        .join(", ")
+}
+
 /// `"property"` or `"state"`, the word the messages put after `ARIA`.
 pub(crate) fn prop_type_label(prop_type: &ARIAPropertyType) -> &'static str {
     match prop_type {
