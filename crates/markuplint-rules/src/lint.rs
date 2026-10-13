@@ -19,8 +19,14 @@ use crate::rules::case_sensitive_tag_name::CaseSensitiveTagName;
 use crate::rules::class_naming::ClassNaming;
 use crate::rules::consistent_table_row_length::ConsistentTableRowLength;
 use crate::rules::element_supports_aria_prop::ElementSupportsAriaProp;
+use crate::rules::form_attr_references_form::FormAttrReferencesForm;
+use crate::rules::input_list_references_datalist::InputListReferencesDatalist;
+use crate::rules::itemprop_requires_itemscope::ItempropRequiresItemscope;
+use crate::rules::label_for_references_labelable::LabelForReferencesLabelable;
 use crate::rules::label_has_control::LabelHasControl;
+use crate::rules::label_no_multiple_controls::LabelNoMultipleControls;
 use crate::rules::link_types::LinkTypes;
+use crate::rules::map_id_name_match::MapIdNameMatch;
 use crate::rules::meter_value_bounds::MeterValueBounds;
 use crate::rules::no_abstract_role::NoAbstractRole;
 use crate::rules::no_always_matching_source::NoAlwaysMatchingSource;
@@ -98,6 +104,7 @@ use crate::rules::require_parent_role::RequireParentRole;
 use crate::rules::role_supports_aria_prop::RoleSupportsAriaProp;
 use crate::rules::sizes_auto_requires_lazy_loading::SizesAutoRequiresLazyLoading;
 use crate::rules::tab_requires_tabpanel::TabRequiresTabpanel;
+use crate::rules::usemap_references_map::UsemapReferencesMap;
 use crate::violation::{Severity, Violation};
 
 #[derive(Debug, Deserialize)]
@@ -680,6 +687,13 @@ fn get_all_rules() -> Vec<Box<dyn Rule>> {
         Box::new(NoInputFileValue),
         Box::new(NoDuplicateAutofocus),
         Box::new(NoDuplicateSiblingAttr),
+        Box::new(FormAttrReferencesForm),
+        Box::new(InputListReferencesDatalist),
+        Box::new(LabelForReferencesLabelable),
+        Box::new(LabelNoMultipleControls),
+        Box::new(MapIdNameMatch),
+        Box::new(UsemapReferencesMap),
+        Box::new(ItempropRequiresItemscope),
     ]
 }
 

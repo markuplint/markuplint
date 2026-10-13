@@ -1,4 +1,4 @@
-use markuplint_core::mlast::MLASTAttr;
+use markuplint_core::mlast::{MLASTAttr, MLASTHTMLAttr};
 
 use crate::arena::{DomArena, NodeId};
 use crate::node::ElementData;
@@ -21,6 +21,22 @@ pub fn get_attr_value_from_el<'a>(el: &'a ElementData, attr_name: &str) -> Optio
         }
     }
     None
+}
+
+/// TS `MLElement#getAttributeNode()`: the first HTML attribute whose name, as written in
+/// the source, equals `attr_name` lower-cased.
+///
+/// Unlike [`get_attr_value_from_el`] (TS `getAttribute()`, which compares both sides
+/// lower-cased), TS compares the attribute's source name as is, so `<input FORM="x">`
+/// has no `form` attribute node. The source name is read from the `name` token because
+/// the HTML parser lower-cases `node_name`.
+#[must_use]
+pub fn get_attr_node_from_el<'a>(el: &'a ElementData, attr_name: &str) -> Option<&'a MLASTHTMLAttr> {
+    let attr_name = attr_name.to_ascii_lowercase();
+    el.attributes.iter().find_map(|attr| match attr {
+        MLASTAttr::HTMLAttr(html_attr) if get_raw_attr_name(html_attr) == attr_name => Some(&**html_attr),
+        _ => None,
+    })
 }
 
 /// `attr_name` is matched case-insensitively.

@@ -41,6 +41,18 @@ fn parse_regex_literal(pattern: &str) -> Option<fancy_regex::Regex> {
     fancy_regex::Regex::new(&regex_str).ok()
 }
 
+/// TS `el.pretenderContext?.type === 'pretender' && !el.hasAttribute('as')`: an element
+/// a pretender makes pretend, without the `as` attribute that would say its type at the
+/// usage site. The reference rules skip such an element, whose attributes and
+/// descendants are those of the component's usage, not of what it renders.
+///
+/// TS reads `as` through the pretender, which inherits it, so the effective attributes
+/// are read here too.
+#[must_use]
+pub fn is_pretender_without_as_attr(el: &ElementData) -> bool {
+    el.pretended().is_some() && get_attr_value_from_el(el, "as").is_none()
+}
+
 /// TS `accnameMayComeFromUnknownContent()`: whether the accessible name of `node_id` may be
 /// rendered by content the pretender does not know — an unknown entry (`{ dynamic: true }`) in
 /// the `contents` of the element, of a pretended descendant among the children the name
