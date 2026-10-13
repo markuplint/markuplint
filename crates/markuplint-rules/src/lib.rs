@@ -23,6 +23,7 @@ pub mod attr_check;
 pub mod content_model;
 pub(crate) mod h1_check;
 pub mod helpers;
+pub(crate) mod landmark_check;
 pub mod lint;
 pub mod rule;
 pub mod rule_mapper;

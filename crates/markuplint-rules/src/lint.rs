@@ -21,7 +21,6 @@ use crate::rules::deprecated_element::DeprecatedElement;
 use crate::rules::doctype::Doctype;
 use crate::rules::element_supports_aria_prop::ElementSupportsAriaProp;
 use crate::rules::label_has_control::LabelHasControl;
-use crate::rules::landmark_roles::LandmarkRoles;
 use crate::rules::link_types::LinkTypes;
 use crate::rules::no_abstract_role::NoAbstractRole;
 use crate::rules::no_ambiguous_navigable_target_names::NoAmbiguousNavigableTargetNames;
@@ -46,6 +45,7 @@ use crate::rules::no_hardcoded_id::NoHardcodedId;
 use crate::rules::no_ineffective_attr::NoIneffectiveAttr;
 use crate::rules::no_invalid_aria_prop_value::NoInvalidAriaPropValue;
 use crate::rules::no_invalid_attr_value::NoInvalidAttrValue;
+use crate::rules::no_nested_top_level_landmark::NoNestedTopLevelLandmark;
 use crate::rules::no_orphaned_end_tag::NoOrphanedEndTag;
 use crate::rules::no_prohibited_naming::NoProhibitedNaming;
 use crate::rules::no_pseudo_list::NoPseudoList;
@@ -71,6 +71,7 @@ use crate::rules::require_dialog_autofocus::RequireDialogAutofocus;
 use crate::rules::require_element::RequireElement;
 use crate::rules::require_end_tag::RequireEndTag;
 use crate::rules::require_h1::RequireH1;
+use crate::rules::require_landmark_label::RequireLandmarkLabel;
 use crate::rules::require_owned_elements::RequireOwnedElements;
 use crate::rules::require_parent_role::RequireParentRole;
 use crate::rules::role_supports_aria_prop::RoleSupportsAriaProp;
@@ -571,7 +572,8 @@ fn get_all_rules() -> Vec<Box<dyn Rule>> {
         Box::new(NoDuplicateId),
         Box::new(NoIneffectiveAttr),
         Box::new(LabelHasControl),
-        Box::new(LandmarkRoles),
+        Box::new(NoNestedTopLevelLandmark),
+        Box::new(RequireLandmarkLabel),
         Box::new(LinkTypes),
         Box::new(RequireAdjacentPopover),
         Box::new(NoAmbiguousNavigableTargetNames),
