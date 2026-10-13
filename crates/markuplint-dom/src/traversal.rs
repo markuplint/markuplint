@@ -12,6 +12,20 @@ impl DomArena {
         self.get(id).map(DomNode::children)
     }
 
+    /// The source text between the end of an element's start tag and the start of its
+    /// close tag, as TS slices it: `document.raw.slice(el.endOffset, el.closeTag.startOffset)`.
+    ///
+    /// The raw-text content of `<script>` and `<style>` is read this way, because the
+    /// TS rules do. `None` when `id` is not an element, has no close tag, or the arena
+    /// has no [`Self::source`] (it was not built by the HTML parser path).
+    #[must_use]
+    pub fn element_inner_source(&self, id: NodeId) -> Option<&str> {
+        let el = self.get(id)?.as_element()?;
+        let close_tag = el.close_tag.as_ref()?;
+        let start = el.base.offset + el.base.raw.len();
+        self.source()?.get(start..close_tag.offset)
+    }
+
     /// Mirrors TS `getPureChildNodes()` which filters out `type === 'endtag'`
     /// and `type === 'invalid'` nodes. In Rust, this also filters Text/Comment/PSBlock
     /// nodes with `is_bogus = true`.

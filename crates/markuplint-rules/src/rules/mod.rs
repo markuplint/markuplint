@@ -1,6 +1,7 @@
 //! Built-in lint rules.
 
 pub mod aria_prop_requires_role;
+pub mod attr_order;
 pub mod attr_value_quotes;
 pub mod case_sensitive_attr_name;
 pub mod case_sensitive_tag_name;
@@ -22,6 +23,7 @@ pub mod no_ambiguous_navigable_target_names;
 pub mod no_aria_on_presentational_children;
 pub mod no_aria_on_unsupported_element;
 pub mod no_boolean_attr_value;
+pub mod no_broken_fragment_link;
 pub mod no_consecutive_br;
 pub mod no_contradictory_aria_prop;
 pub mod no_default_aria_value;
@@ -93,3 +95,5 @@ pub mod role_supports_aria_prop;
 pub mod sizes_auto_requires_lazy_loading;
 pub mod tab_requires_tabpanel;
 pub mod usemap_references_map;
+pub mod valid_importmap;
+pub mod valid_speculation_rules;

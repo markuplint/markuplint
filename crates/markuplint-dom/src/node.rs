@@ -147,6 +147,9 @@ pub struct ElementData {
 #[derive(Debug, Clone)]
 pub struct CloseTagInfo {
     pub raw: String,
+    /// Offset of the `<` that starts the close tag in [`DomArena::source`](crate::arena::DomArena::source)
+    /// (TS `closeTag.startOffset`).
+    pub offset: usize,
     /// 1-based line number.
     pub line: u32,
     /// 1-based column number.

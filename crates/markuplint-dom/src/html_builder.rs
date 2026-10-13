@@ -244,6 +244,7 @@ fn convert_parser_node(
                 is_ghost: node.is_implicit,
                 close_tag: node.end_tag_span.map(|s| crate::node::CloseTagInfo {
                     raw: slice_span(source, s.start.offset, s.end.offset),
+                    offset: s.start.offset,
                     line: s.start.line,
                     col: s.start.col,
                 }),
@@ -456,6 +457,22 @@ mod tests {
         // The forward scan stops 32 characters after the point.
         let long = format!("&{}", "a".repeat(40));
         assert_eq!(extract_raw_for_parse_error(&long, 1, 1), "a".repeat(32));
+    }
+
+    #[test]
+    fn element_inner_source_is_the_text_between_the_tags() {
+        let html = "<p>x</p><script type=\"importmap\">\n {\"a\": \"<b>\"} </script><br><i></i><em>";
+        let dom = build(html);
+        let inner = |name: &str| {
+            let (id, _) = dom.elements().find(|(_, el)| el.base.node_name == name).unwrap();
+            dom.element_inner_source(id)
+        };
+        assert_eq!(inner("script"), Some("\n {\"a\": \"<b>\"} "));
+        assert_eq!(inner("p"), Some("x"));
+        assert_eq!(inner("i"), Some(""));
+        // No close tag.
+        assert_eq!(inner("br"), None);
+        assert_eq!(inner("em"), None);
     }
 
     #[test]

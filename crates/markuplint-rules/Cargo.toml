@@ -7,6 +7,7 @@ publish = false
 [dependencies]
 markuplint-core = { path = "../markuplint-core" }
 markuplint-dom = { path = "../markuplint-dom" }
+markuplint-html-parser = { path = "../markuplint-html-parser" }
 markuplint-selector = { path = "../markuplint-selector" }
 markuplint-types = { path = "../markuplint-types" }
 fancy-regex = "0.14"
@@ -22,7 +23,6 @@ whichtime = "=0.1.0"
 
 [dev-dependencies]
 markuplint-dom = { path = "../markuplint-dom", features = ["html-parser"] }
-markuplint-html-parser = { path = "../markuplint-html-parser" }
 
 [lints]
 workspace = true

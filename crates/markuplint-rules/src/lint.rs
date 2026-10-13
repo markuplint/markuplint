@@ -13,6 +13,7 @@ use crate::pretending;
 use crate::rule::{Rule, RuleCommonSettings, RuleConfig, RuleConfigSet};
 use crate::rule_mapper::{self, NodeRuleEntry};
 use crate::rules::aria_prop_requires_role::AriaPropRequiresRole;
+use crate::rules::attr_order::AttrOrder;
 use crate::rules::attr_value_quotes::AttrValueQuotes;
 use crate::rules::case_sensitive_attr_name::CaseSensitiveAttrName;
 use crate::rules::case_sensitive_tag_name::CaseSensitiveTagName;
@@ -34,6 +35,7 @@ use crate::rules::no_ambiguous_navigable_target_names::NoAmbiguousNavigableTarge
 use crate::rules::no_aria_on_presentational_children::NoAriaOnPresentationalChildren;
 use crate::rules::no_aria_on_unsupported_element::NoAriaOnUnsupportedElement;
 use crate::rules::no_boolean_attr_value::NoBooleanAttrValue;
+use crate::rules::no_broken_fragment_link::NoBrokenFragmentLink;
 use crate::rules::no_consecutive_br::NoConsecutiveBr;
 use crate::rules::no_contradictory_aria_prop::NoContradictoryAriaProp;
 use crate::rules::no_default_aria_value::NoDefaultAriaValue;
@@ -105,6 +107,8 @@ use crate::rules::role_supports_aria_prop::RoleSupportsAriaProp;
 use crate::rules::sizes_auto_requires_lazy_loading::SizesAutoRequiresLazyLoading;
 use crate::rules::tab_requires_tabpanel::TabRequiresTabpanel;
 use crate::rules::usemap_references_map::UsemapReferencesMap;
+use crate::rules::valid_importmap::ValidImportmap;
+use crate::rules::valid_speculation_rules::ValidSpeculationRules;
 use crate::violation::{Severity, Violation};
 
 #[derive(Debug, Deserialize)]
@@ -694,6 +698,10 @@ fn get_all_rules() -> Vec<Box<dyn Rule>> {
         Box::new(MapIdNameMatch),
         Box::new(UsemapReferencesMap),
         Box::new(ItempropRequiresItemscope),
+        Box::new(AttrOrder),
+        Box::new(NoBrokenFragmentLink),
+        Box::new(ValidImportmap),
+        Box::new(ValidSpeculationRules),
     ]
 }
 
