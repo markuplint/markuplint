@@ -12,6 +12,7 @@ pub mod label_has_control;
 pub mod landmark_roles;
 pub mod link_types;
 pub mod no_ambiguous_navigable_target_names;
+pub mod no_aria_on_unsupported_element;
 pub mod no_boolean_attr_value;
 pub mod no_consecutive_br;
 pub mod no_default_value;

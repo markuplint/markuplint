@@ -29,6 +29,19 @@ pub fn has_attr(arena: &DomArena, node_id: NodeId, attr_name: &str) -> bool {
     get_attr_value(arena, node_id, attr_name).is_some()
 }
 
+/// The first element, in document order, whose `id` attribute equals `id`.
+///
+/// Counterpart of `document.getElementById()`, which the TS rules (`tab-requires-tabpanel`
+/// and others) use to resolve `aria-controls` and similar ID references. The attribute
+/// name is matched case-insensitively and the value exactly, as the DOM does.
+#[must_use]
+pub fn find_element_by_id(arena: &DomArena, id: &str) -> Option<NodeId> {
+    arena
+        .elements()
+        .find(|(_, el)| get_attr_value_from_el(el, "id") == Some(id))
+        .map(|(node_id, _)| node_id)
+}
+
 /// Extracts the tag name from the element's `raw` source, preserving original case
 /// (unlike `node_name`, which the HTML parser normalizes to lowercase).
 #[must_use]

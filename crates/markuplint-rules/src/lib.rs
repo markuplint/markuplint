@@ -17,6 +17,7 @@
 //! `aria_resolver_impl`), keeping the lower crates acyclic.
 
 pub mod aria;
+pub mod aria_check;
 pub mod aria_resolver_impl;
 pub mod attr_check;
 pub mod content_model;

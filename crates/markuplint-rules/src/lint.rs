@@ -8,7 +8,7 @@ use markuplint_types::spec::types::MLMLSpec;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
-use crate::rule::{Rule, RuleConfig, RuleConfigSet};
+use crate::rule::{Rule, RuleCommonSettings, RuleConfig, RuleConfigSet};
 use crate::rule_mapper::{self, NodeRuleEntry};
 use crate::rules::attr_value_quotes::AttrValueQuotes;
 use crate::rules::case_sensitive_attr_name::CaseSensitiveAttrName;
@@ -22,6 +22,7 @@ use crate::rules::label_has_control::LabelHasControl;
 use crate::rules::landmark_roles::LandmarkRoles;
 use crate::rules::link_types::LinkTypes;
 use crate::rules::no_ambiguous_navigable_target_names::NoAmbiguousNavigableTargetNames;
+use crate::rules::no_aria_on_unsupported_element::NoAriaOnUnsupportedElement;
 use crate::rules::no_boolean_attr_value::NoBooleanAttrValue;
 use crate::rules::no_consecutive_br::NoConsecutiveBr;
 use crate::rules::no_default_value::NoDefaultValue;
@@ -72,6 +73,10 @@ pub struct LintConfig {
     /// Overrides applied to children of elements matching a selector.
     #[serde(default, alias = "child_node_rules")]
     pub child_node_rules: Vec<NodeRuleEntry>,
+
+    /// Settings shared by several rules (`ruleCommonSettings`), e.g. `ariaVersion`.
+    #[serde(default, alias = "rule_common_settings")]
+    pub rule_common_settings: Option<RuleCommonSettings>,
 }
 
 #[derive(Debug, Serialize)]
@@ -79,8 +84,15 @@ pub struct LintResult {
     pub violations: Vec<Violation>,
 }
 
-#[allow(clippy::too_many_lines)]
 pub fn lint(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig) -> LintResult {
+    lint_with_rules(arena, spec, config, &get_all_rules())
+}
+
+/// [`lint`] over an explicit rule set. Exists so the engine's own behavior (how a
+/// rule's `default_severity()` is applied, say) can be tested with a purpose-built
+/// rule instead of depending on whichever built-in rule happens to exercise it.
+#[allow(clippy::too_many_lines)]
+fn lint_with_rules(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig, rules: &[Box<dyn Rule>]) -> LintResult {
     // TS: if (this.#document instanceof ParserError) { return parse-error only }
     // When the document has a parse error (e.g., unclosed formatting elements
     // causing "Broke mapping nodes" in TS), return only a parse-error violation
@@ -91,10 +103,10 @@ pub fn lint(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig) -> LintResul
         };
     }
 
-    let rules = get_all_rules();
     let mut violations = Vec::new();
 
     let has_node_rules = !config.node_rules.is_empty() || !config.child_node_rules.is_empty();
+    let common_settings = config.rule_common_settings.clone().unwrap_or_default();
 
     // The index must accept plain keys ("no-duplicate-attr"), namespaced keys
     // ("html-standard/no-duplicate-attr"), and NamedRuleGroup entries
@@ -128,7 +140,7 @@ pub fn lint(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig) -> LintResul
             .push((alias_name.as_str(), config_value));
     }
 
-    for rule in &rules {
+    for rule in rules {
         let base_id = rule.id();
 
         let matching_entries = config_index.get(base_id);
@@ -162,7 +174,8 @@ pub fn lint(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig) -> LintResul
                 )
             } else {
                 RuleConfigSet::global_only(global_config)
-            };
+            }
+            .with_common_settings(common_settings.clone());
             let rule_violations = rule.verify(arena, spec, &config_set);
             violations.extend(rule_violations);
             continue;
@@ -187,7 +200,8 @@ pub fn lint(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig) -> LintResul
                 arena,
                 spec,
                 rule.default_severity(),
-            );
+            )
+            .with_common_settings(common_settings.clone());
             let rule_violations = rule.verify(arena, spec, &config_set);
             violations.extend(rule_violations);
         }
@@ -220,7 +234,8 @@ pub fn lint(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig) -> LintResul
                 )
             } else {
                 RuleConfigSet::global_only(global_config)
-            };
+            }
+            .with_common_settings(common_settings.clone());
 
             let mut rule_violations = rule.verify(arena, spec, &config_set);
 
@@ -241,13 +256,22 @@ pub fn lint(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig) -> LintResul
     // is expanded into a separate rule execution.
     let rule_lookup: std::collections::HashMap<&str, &dyn Rule> = rules.iter().map(|r| (r.id(), r.as_ref())).collect();
 
-    run_named_entries(&config.node_rules, false, &rule_lookup, arena, spec, &mut violations);
+    run_named_entries(
+        &config.node_rules,
+        false,
+        &rule_lookup,
+        arena,
+        spec,
+        &common_settings,
+        &mut violations,
+    );
     run_named_entries(
         &config.child_node_rules,
         true,
         &rule_lookup,
         arena,
         spec,
+        &common_settings,
         &mut violations,
     );
 
@@ -328,6 +352,7 @@ fn run_named_entries(
     rule_lookup: &std::collections::HashMap<&str, &dyn Rule>,
     arena: &DomArena,
     spec: &MLMLSpec,
+    common_settings: &RuleCommonSettings,
     violations: &mut Vec<Violation>,
 ) {
     for entry in entries {
@@ -363,6 +388,7 @@ fn run_named_entries(
             ) else {
                 continue;
             };
+            let config_set = config_set.with_common_settings(common_settings.clone());
 
             let mut rule_violations = rule.verify(arena, spec, &config_set);
             for v in &mut rule_violations {
@@ -556,6 +582,7 @@ fn get_all_rules() -> Vec<Box<dyn Rule>> {
         Box::new(NoInvalidAttrValue),
         Box::new(NoRestrictedAttr),
         Box::new(WaiAria),
+        Box::new(NoAriaOnUnsupportedElement),
     ]
 }
 
@@ -610,6 +637,7 @@ mod tests {
                 .collect(),
             node_rules: vec![],
             child_node_rules: vec![],
+            rule_common_settings: None,
         };
 
         let result = lint(&arena, &spec, &config);
@@ -631,6 +659,7 @@ mod tests {
                 .collect(),
             node_rules: vec![],
             child_node_rules: vec![],
+            rule_common_settings: None,
         };
 
         let result = lint(&arena, &spec, &config);
@@ -649,6 +678,7 @@ mod tests {
                 .collect(),
             node_rules: vec![],
             child_node_rules: vec![],
+            rule_common_settings: None,
         };
 
         let result = lint(&arena, &spec, &config);
@@ -1659,6 +1689,7 @@ mod tests {
                 .collect(),
             node_rules: vec![],
             child_node_rules: vec![],
+            rule_common_settings: None,
         };
 
         let result = lint(&arena, &spec, &config);
@@ -1693,6 +1724,7 @@ mod tests {
             .collect(),
             node_rules: vec![],
             child_node_rules: vec![],
+            rule_common_settings: None,
         };
 
         let result = lint(&arena, &spec, &config);
@@ -1988,6 +2020,7 @@ mod tests {
                 .collect(),
             node_rules: vec![],
             child_node_rules: vec![],
+            rule_common_settings: None,
         };
 
         let result = lint(&arena, &spec, &config);
@@ -2219,5 +2252,128 @@ mod tests {
             "Expected base violations from the all_namespaced+nodeRule path, got: {:?}",
             result.violations
         );
+    }
+}
+
+#[cfg(test)]
+mod engine_tests {
+    use super::*;
+
+    /// Reports once per element, with the severity and `ariaVersion` the engine handed it.
+    struct ProbeRule;
+
+    impl Rule for ProbeRule {
+        fn id(&self) -> &'static str {
+            "test-probe"
+        }
+
+        fn default_severity(&self) -> Severity {
+            Severity::Warning
+        }
+
+        fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
+            arena
+                .elements()
+                .filter(|(node_id, _)| !config.get(*node_id).disabled)
+                .map(|(node_id, el)| Violation {
+                    rule_id: self.id().to_string(),
+                    name: None,
+                    severity: config.get(node_id).severity,
+                    message: format!("{:?}", config.common_settings().aria_version),
+                    line: el.base.line,
+                    col: el.base.col,
+                    raw: el.base.raw.clone(),
+                    reason: None,
+                })
+                .collect()
+        }
+    }
+
+    fn run(html: &str, config: serde_json::Value) -> Vec<Violation> {
+        let as_doc = markuplint_html_parser::should_parse_as_document(html);
+        let parser_arena = if as_doc {
+            markuplint_html_parser::parse_document(html)
+        } else {
+            markuplint_html_parser::parse_fragment(html)
+        };
+        let arena = markuplint_dom::html_builder::build_from_html_arena(html, &parser_arena, !as_doc);
+        let spec = load_spec(include_str!("../../../packages/@markuplint/html-spec/index.json")).unwrap();
+        let config: LintConfig = serde_json::from_value(config).unwrap();
+        lint_with_rules(&arena, &spec, &config, &[Box::new(ProbeRule)]).violations
+    }
+
+    #[test]
+    fn rule_default_severity_applies_to_a_bare_true() {
+        let violations = run("<div></div>", serde_json::json!({ "rules": { "test-probe": true } }));
+        assert_eq!(violations.len(), 1);
+        assert_eq!(violations[0].severity, Severity::Warning);
+    }
+
+    #[test]
+    fn rule_default_severity_applies_to_an_object_without_severity() {
+        let violations = run(
+            "<div></div>",
+            serde_json::json!({ "rules": { "test-probe": { "value": true } } }),
+        );
+        assert_eq!(violations.len(), 1);
+        assert_eq!(violations[0].severity, Severity::Warning);
+    }
+
+    #[test]
+    fn explicit_severity_overrides_the_rule_default() {
+        let as_string = run("<div></div>", serde_json::json!({ "rules": { "test-probe": "error" } }));
+        assert_eq!(as_string[0].severity, Severity::Error);
+
+        let as_object = run(
+            "<div></div>",
+            serde_json::json!({ "rules": { "test-probe": { "severity": "info" } } }),
+        );
+        assert_eq!(as_object[0].severity, Severity::Info);
+    }
+
+    #[test]
+    fn rule_default_severity_applies_to_a_node_rule() {
+        let violations = run(
+            "<div></div>",
+            serde_json::json!({
+                "nodeRules": [{ "selector": "div", "rules": { "test-probe": true } }]
+            }),
+        );
+        assert_eq!(violations.len(), 1);
+        assert_eq!(violations[0].severity, Severity::Warning);
+    }
+
+    #[test]
+    fn rule_common_settings_reach_the_rules() {
+        for key in ["ruleCommonSettings", "rule_common_settings"] {
+            let violations = run(
+                "<div></div>",
+                serde_json::json!({
+                    "rules": { "test-probe": true },
+                    key: { "ariaVersion": "1.2" }
+                }),
+            );
+            assert_eq!(violations.len(), 1, "{key}");
+            assert_eq!(violations[0].message, "Some(\"1.2\")", "{key}");
+        }
+    }
+
+    #[test]
+    fn rule_common_settings_reach_node_rules() {
+        let violations = run(
+            "<div></div>",
+            serde_json::json!({
+                "nodeRules": [{ "selector": "div", "rules": { "test-probe": true } }],
+                "ruleCommonSettings": { "ariaVersion": "1.1" }
+            }),
+        );
+        assert_eq!(violations.len(), 1);
+        assert_eq!(violations[0].message, "Some(\"1.1\")");
+    }
+
+    #[test]
+    fn rule_common_settings_default_to_nothing() {
+        let violations = run("<div></div>", serde_json::json!({ "rules": { "test-probe": true } }));
+        assert_eq!(violations[0].message, "None");
     }
 }
