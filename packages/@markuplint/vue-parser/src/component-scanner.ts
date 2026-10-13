@@ -1,4 +1,6 @@
-import type { MLASTChildNode, MLASTDocument, MLASTElement } from '@markuplint/ml-ast';
+import type { MLASTChildNode, MLASTDocument, MLASTElement, NamespaceURI } from '@markuplint/ml-ast';
+
+import { getNamespaceBelow } from '@markuplint/parser-utils';
 
 import { parser } from './parser.js';
 
@@ -51,6 +53,8 @@ export interface ComponentScanSlotWrapper {
 	readonly isRoot: boolean;
 	readonly attrs: readonly ComponentScanAttr[];
 	readonly contents: readonly ComponentScanContent[];
+	/** The namespace of the element when the elements between it and the root element decide it. */
+	readonly namespace?: NamespaceURI;
 }
 
 /**
@@ -202,6 +206,30 @@ function findWrapper(n: MLASTChildNode, nodes: ReadonlyMap<string, MLASTChildNod
 	return null;
 }
 
+/**
+ * The names of the elements from the child of `root` down to `el`, for the namespace of `el`
+ * (`getNamespaceBelow`). A component is `null`, as it does not enter a namespace by its name.
+ */
+function getNamesBelow(
+	el: MLASTElement,
+	root: MLASTElement,
+	nodes: ReadonlyMap<string, MLASTChildNode>,
+): (string | null)[] {
+	const names: (string | null)[] = [];
+	let current: MLASTChildNode | undefined = el;
+	while (current && current.uuid !== root.uuid) {
+		if (isElement(current) && !current.isFragment && current.nodeName !== 'template') {
+			names.unshift(getNamespaceSubject(current));
+		}
+		current = current.parentNodeUuid ? nodes.get(current.parentNodeUuid) : undefined;
+	}
+	return names;
+}
+
+function getNamespaceSubject(el: MLASTElement): string | null {
+	return el.elementType === 'authored' ? null : el.nodeName;
+}
+
 function isWithin(n: MLASTChildNode, root: MLASTElement, nodes: ReadonlyMap<string, MLASTChildNode>): boolean {
 	let current: MLASTChildNode | undefined = n;
 	while (current) {
@@ -295,11 +323,15 @@ function scanSlotContent(doc: MLASTDocument): Pick<ComponentScanResult, 'slotWra
 	return {
 		slotWrappers: [...wrappers.values()].map(wrapper => {
 			const isNative = wrapper.elementType === 'html';
+			const namespace = isNative
+				? getNamespaceBelow(getNamespaceSubject(root), getNamesBelow(wrapper, root, nodes))
+				: null;
 			return {
 				element: wrapper.nodeName,
 				isRoot: wrapper.uuid === root.uuid,
 				attrs: isNative ? extractAttrs(wrapper) : [],
 				contents: isNative ? extractContents(wrapper) : [],
+				...(namespace ? { namespace } : {}),
 			};
 		}),
 		rootContents: extractContents(root),
