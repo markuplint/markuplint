@@ -938,6 +938,14 @@ It accepts an **element name** or an **element with properties**. It's required.
 
 It accepts an **element name**. It's required.
 
+#### `as.namespace`
+
+It accepts `"html"`, `"svg"`, or `"math"`. It's optional.
+
+If omitted, the element gets the namespace that an element of the same name gets when it is written where the component is used: `svg` and `math` enter their namespaces, and the others take the namespace of their parent (HTML inside `foreignObject`). The children given to the component take the namespace of the element that the component renders them in.
+
+An element in the [`slots`](#pretenders/as-slots) array is taken to be directly inside the outermost element. Specify the namespace of one that is not, such as an element inside `foreignObject` in an `svg`.
+
 #### `as.inheritAttrs`
 
 It accepts boolean.
@@ -1311,7 +1319,7 @@ type OriginalNode = {
   element: string;
   slots?: null | true | Slot[]; // @experimental
   contents?: Content[]; // @experimental
-  namespace?: 'svg';
+  namespace?: 'html' | 'svg' | 'math';
 
   inheritAttrs?: boolean;
   attrs?: {
