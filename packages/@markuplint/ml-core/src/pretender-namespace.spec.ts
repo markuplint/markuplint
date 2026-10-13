@@ -195,6 +195,14 @@ describe('pretender namespace', () => {
 		expect(doc.querySelector('b')?.namespaceURI).toBe(HTML);
 	});
 
+	test('a component named like a foreign element is an HTML element without a pretender', async () => {
+		const doc = createTestDocument('<div><Svg><g /></Svg><Math><b /></Math></div>', await jsx());
+		expect(doc.querySelector('Svg')?.namespaceURI).toBe(HTML);
+		expect(doc.querySelector('g')?.namespaceURI).toBe(HTML);
+		expect(doc.querySelector('Math')?.namespaceURI).toBe(HTML);
+		expect(doc.querySelector('b')?.namespaceURI).toBe(HTML);
+	});
+
 	test('a component in a MathML text integration point has the namespace of an element written there', () => {
 		const doc = createTestDocument('<math><mi><x-label></x-label><span></span></mi></math>', {
 			pretenders: [{ selector: 'x-label', as: 'span' }],

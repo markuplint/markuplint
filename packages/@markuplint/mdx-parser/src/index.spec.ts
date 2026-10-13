@@ -16,6 +16,14 @@ describe('MDXParser', () => {
 			expect(maps).toStrictEqual(['[1:1]>[1:29](0,28)MyComponent: <MyComponent␣prop="value"␣/>']);
 		});
 
+		test('component named like svg or math does not enter the namespace', () => {
+			const doc = parse('<div><Svg><g /></Svg></div>');
+			const svg = doc.nodeList.find(node => node.nodeName === 'Svg');
+			const g = doc.nodeList.find(node => node.nodeName === 'g');
+			expect(svg?.namespace).toBe('http://www.w3.org/1999/xhtml');
+			expect(g?.namespace).toBe('http://www.w3.org/1999/xhtml');
+		});
+
 		test('HTML element with children', () => {
 			const doc = parse('<div>hello</div>');
 			const maps = nodeListToDebugMaps(doc.nodeList);

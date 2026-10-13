@@ -306,6 +306,14 @@ test('namespace', () => {
 	expect(doc2.nodeList[2].namespace).toBe('http://www.w3.org/1999/xhtml');
 });
 
+test('namespace of a component named like svg or math', () => {
+	const doc = parse('<div><Svg><g /></Svg></div>');
+	expect(doc.nodeList[1].nodeName).toBe('Svg');
+	expect(doc.nodeList[1].namespace).toBe('http://www.w3.org/1999/xhtml');
+	expect(doc.nodeList[2].nodeName).toBe('g');
+	expect(doc.nodeList[2].namespace).toBe('http://www.w3.org/1999/xhtml');
+});
+
 test('frontmatter', () => {
 	const ast = parse(`---
 // Example: <SomeComponent greeting="(Optional) Hello" name="Required Name" />
