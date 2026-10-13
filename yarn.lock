@@ -10990,13 +10990,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"invert-kv@npm:^3.0.0":
-  version: 3.0.1
-  resolution: "invert-kv@npm:3.0.1"
-  checksum: 10c0/a3d90951a635e35dea9c9a5fd749e981e9c54e8a362ad80b2253dad03b9257314b7c4e4d250d61bcd79698ccd5f4c6b0c750cd991bb5ce16352bf830e77ea64b
-  languageName: node
-  linkType: hard
-
 "ip-address@npm:10.0.1, ip-address@npm:^10.0.1":
   version: 10.0.1
   resolution: "ip-address@npm:10.0.1"
@@ -12212,15 +12205,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lcid@npm:^3.1.1":
-  version: 3.1.1
-  resolution: "lcid@npm:3.1.1"
-  dependencies:
-    invert-kv: "npm:^3.0.0"
-  checksum: 10c0/43a39c39d92d756b9671691bb36ac2667c44c4a7e30f55403dc9c98ca4e7bba8c2b35599e8d7967163d65c1697e0d136596e9a9b9bccbd2292caf915c77416a4
-  languageName: node
-  linkType: hard
-
 "lcov-parse@npm:^1.0.0":
   version: 1.0.0
   resolution: "lcov-parse@npm:1.0.0"
@@ -12965,7 +12949,7 @@ __metadata:
     chokidar: "npm:5.0.0"
     debug: "npm:4.4.3"
     meow: "npm:13.2.0"
-    os-locale: "npm:6.0.2"
+    os-locale: "npm:8.0.0"
     strict-event-emitter: "npm:0.5.1"
     strip-ansi: "npm:7.2.0"
     type-fest: "npm:5.6.0"
@@ -14432,12 +14416,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"os-locale@npm:6.0.2":
-  version: 6.0.2
-  resolution: "os-locale@npm:6.0.2"
-  dependencies:
-    lcid: "npm:^3.1.1"
-  checksum: 10c0/15778a074367ff91ab7a3701f374fca8897cdea39e5c542c4df58a6ada0b811f0e98eb0e3a5401ca7dcf29bd20f37c9786864dbe051b363c56ecd2f481f90254
+"os-locale@npm:8.0.0":
+  version: 8.0.0
+  resolution: "os-locale@npm:8.0.0"
+  checksum: 10c0/5e7bea7afcbfb70c8b36424aadf85f7f170aabc7b50735f73ebe45046082a346f354bc9b79718bd304c0d7f2439825258617b67c7d9440cff7e88131b5426329
   languageName: node
   linkType: hard
 
