@@ -24,6 +24,7 @@ use crate::rules::element_supports_aria_prop::ElementSupportsAriaProp;
 use crate::rules::label_has_control::LabelHasControl;
 use crate::rules::link_types::LinkTypes;
 use crate::rules::no_abstract_role::NoAbstractRole;
+use crate::rules::no_always_matching_source::NoAlwaysMatchingSource;
 use crate::rules::no_ambiguous_navigable_target_names::NoAmbiguousNavigableTargetNames;
 use crate::rules::no_aria_on_presentational_children::NoAriaOnPresentationalChildren;
 use crate::rules::no_aria_on_unsupported_element::NoAriaOnUnsupportedElement;
@@ -48,6 +49,7 @@ use crate::rules::no_hardcoded_id::NoHardcodedId;
 use crate::rules::no_ineffective_attr::NoIneffectiveAttr;
 use crate::rules::no_invalid_aria_prop_value::NoInvalidAriaPropValue;
 use crate::rules::no_invalid_attr_value::NoInvalidAttrValue;
+use crate::rules::no_mixed_srcset_descriptors::NoMixedSrcsetDescriptors;
 use crate::rules::no_nested_top_level_landmark::NoNestedTopLevelLandmark;
 use crate::rules::no_nonstandard_features::NoNonstandardFeatures;
 use crate::rules::no_orphaned_end_tag::NoOrphanedEndTag;
@@ -64,6 +66,7 @@ use crate::rules::no_table_cell_overlap::NoTableCellOverlap;
 use crate::rules::no_table_span_overflow::NoTableSpanOverflow;
 use crate::rules::no_unknown_attr::NoUnknownAttr;
 use crate::rules::no_unknown_role::NoUnknownRole;
+use crate::rules::no_unpaired_srcset_sizes::NoUnpairedSrcsetSizes;
 use crate::rules::no_unsupported_browser_features::NoUnsupportedBrowserFeatures;
 use crate::rules::permitted_contents::PermittedContents;
 use crate::rules::permitted_roles::PermittedRoles;
@@ -81,7 +84,7 @@ use crate::rules::require_landmark_label::RequireLandmarkLabel;
 use crate::rules::require_owned_elements::RequireOwnedElements;
 use crate::rules::require_parent_role::RequireParentRole;
 use crate::rules::role_supports_aria_prop::RoleSupportsAriaProp;
-use crate::rules::srcset_sizes_constraint::SrcsetSizesConstraint;
+use crate::rules::sizes_auto_requires_lazy_loading::SizesAutoRequiresLazyLoading;
 use crate::rules::tab_requires_tabpanel::TabRequiresTabpanel;
 use crate::violation::{Severity, Violation};
 
@@ -600,7 +603,10 @@ fn get_all_rules() -> Vec<Box<dyn Rule>> {
         Box::new(RequireAccessibleName),
         Box::new(RequireDatetime),
         Box::new(RequireDialogAutofocus),
-        Box::new(SrcsetSizesConstraint),
+        Box::new(NoUnpairedSrcsetSizes),
+        Box::new(NoMixedSrcsetDescriptors),
+        Box::new(SizesAutoRequiresLazyLoading),
+        Box::new(NoAlwaysMatchingSource),
         Box::new(RequireAttr),
         Box::new(RequireElement),
         Box::new(RequireH1),

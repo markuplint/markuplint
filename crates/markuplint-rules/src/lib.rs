@@ -29,5 +29,6 @@ pub mod lint;
 pub mod rule;
 pub mod rule_mapper;
 pub mod rules;
+pub(crate) mod srcset_check;
 pub(crate) mod table_grid;
 pub mod violation;
