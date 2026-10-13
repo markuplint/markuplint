@@ -40,12 +40,14 @@ use crate::rules::no_duplicate_h1::NoDuplicateH1;
 use crate::rules::no_duplicate_id::NoDuplicateId;
 use crate::rules::no_empty_palpable_content::NoEmptyPalpableContent;
 use crate::rules::no_event_handler_attr::NoEventHandlerAttr;
+use crate::rules::no_experimental_features::NoExperimentalFeatures;
 use crate::rules::no_focusable_in_aria_hidden::NoFocusableInAriaHidden;
 use crate::rules::no_hardcoded_id::NoHardcodedId;
 use crate::rules::no_ineffective_attr::NoIneffectiveAttr;
 use crate::rules::no_invalid_aria_prop_value::NoInvalidAriaPropValue;
 use crate::rules::no_invalid_attr_value::NoInvalidAttrValue;
 use crate::rules::no_nested_top_level_landmark::NoNestedTopLevelLandmark;
+use crate::rules::no_nonstandard_features::NoNonstandardFeatures;
 use crate::rules::no_orphaned_end_tag::NoOrphanedEndTag;
 use crate::rules::no_prohibited_naming::NoProhibitedNaming;
 use crate::rules::no_pseudo_list::NoPseudoList;
@@ -58,7 +60,7 @@ use crate::rules::no_restricted_element::NoRestrictedElement;
 use crate::rules::no_skipped_heading_level::NoSkippedHeadingLevel;
 use crate::rules::no_unknown_attr::NoUnknownAttr;
 use crate::rules::no_unknown_role::NoUnknownRole;
-use crate::rules::no_unsupported_features::NoUnsupportedFeatures;
+use crate::rules::no_unsupported_browser_features::NoUnsupportedBrowserFeatures;
 use crate::rules::permitted_contents::PermittedContents;
 use crate::rules::permitted_roles::PermittedRoles;
 use crate::rules::placeholder_label_option::PlaceholderLabelOption;
@@ -585,7 +587,9 @@ fn get_all_rules() -> Vec<Box<dyn Rule>> {
         Box::new(NoHardcodedId),
         Box::new(NoOrphanedEndTag),
         Box::new(NoReferToNonExistentId),
-        Box::new(NoUnsupportedFeatures),
+        Box::new(NoUnsupportedBrowserFeatures),
+        Box::new(NoExperimentalFeatures),
+        Box::new(NoNonstandardFeatures),
         Box::new(NoEventHandlerAttr),
         Box::new(PermittedContents),
         Box::new(PlaceholderLabelOption),
