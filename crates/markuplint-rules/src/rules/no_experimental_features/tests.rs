@@ -4,13 +4,14 @@
 //!   no-experimental-features-invalid-001         → no_experimental_features_invalid_001
 //!   no-experimental-features-valid-001           → no_experimental_features_valid_001
 //!   no-experimental-features-invalid-002         → no_experimental_features_invalid_002
-//!   no-experimental-features-issue-3740-001      — SKIP: `pretenders` (the Rust DOM has no pretender resolution)
+//!   no-experimental-features-issue-3740-001      → no_experimental_features_issue_3740_001
 //!   v6_no_experimental_features_001  — Rust-only: message, position and `raw` of an attribute report
 //!   v6_no_experimental_features_002  — Rust-only: global attributes and element attributes merged over them
 //!   v6_no_experimental_features_003  — Rust-only: the attribute name is matched as written, the element name lower-cased
 //!   v6_no_experimental_features_004  — Rust-only: `ignoreFeatures` keys
 //!   v6_no_experimental_features_005  — Rust-only: per-node `ignoreFeatures` and `rules: false`
 //!   v6_no_experimental_features_006  — Rust-only: what is not checked
+//!   v6_no_experimental_features_007  — Rust-only: a pretender is gated by the namespace of the element written
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::{Severity, Violation};
@@ -200,4 +201,57 @@ fn v6_no_experimental_features_006() {
     assert!(run("<div></div><div class=\"test\"></div>").is_empty());
     assert!(run("<canvas moz-opaque></canvas>").is_empty());
     assert!(run_rule("<iframe credentialless></iframe>", serde_json::json!(false)).is_empty());
+}
+
+fn run_pretended(html: &str, pretenders: serde_json::Value) -> Vec<crate::test_util::Brief> {
+    crate::test_util::lint_brief(
+        "no-experimental-features",
+        html,
+        serde_json::json!({ "rules": { "no-experimental-features": true }, "pretenders": pretenders }),
+    )
+}
+
+fn credentialless(col: u32) -> Vec<crate::test_util::Brief> {
+    vec![crate::test_util::brief(
+        crate::violation::Severity::Warning,
+        1,
+        col,
+        "The \"credentialless\" attribute is experimental",
+        "credentialless",
+    )]
+}
+
+/// TS: `[no-experimental-features-issue-3740-001]` — web-component pretendered to
+/// experimental HTML reports
+#[test]
+fn no_experimental_features_issue_3740_001() {
+    const _ID: &str = "no-experimental-features-issue-3740-001";
+    assert_eq!(
+        run_pretended(
+            "<x-iframe credentialless></x-iframe>",
+            serde_json::json!([{ "selector": "x-iframe", "as": { "element": "iframe", "inheritAttrs": true } }])
+        ),
+        credentialless(11)
+    );
+}
+
+/// Rust-only: TS gates on the namespace of the element as written, so a pretender in the
+/// SVG namespace is still checked and one written inside `<math>` is not. Expected values
+/// from the TS rule.
+#[test]
+fn v6_no_experimental_features_007() {
+    assert_eq!(
+        run_pretended(
+            "<x-iframe credentialless></x-iframe>",
+            serde_json::json!([{ "selector": "x-iframe", "as": { "element": "iframe", "inheritAttrs": true, "namespace": "svg" } }])
+        ),
+        credentialless(11)
+    );
+    assert_eq!(
+        run_pretended(
+            "<math><x-iframe credentialless></x-iframe></math>",
+            serde_json::json!([{ "selector": "x-iframe", "as": { "element": "iframe", "inheritAttrs": true } }])
+        ),
+        []
+    );
 }

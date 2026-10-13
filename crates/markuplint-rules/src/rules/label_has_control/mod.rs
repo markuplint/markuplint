@@ -37,6 +37,12 @@ impl Rule for LabelHasControl {
             if !el.base.node_name.eq_ignore_ascii_case("label") {
                 continue;
             }
+            // A pretended label's descendants are unknown, unless the `as` attribute says
+            // what it is: then the descendants are the ones written (TS reads the attribute
+            // through the pretender, which inherits it).
+            if el.pretended().is_some() && markuplint_dom::helpers::get_attr_value_from_el(el, "as").is_none() {
+                continue;
+            }
 
             let for_value = el.attributes.iter().find_map(|attr| {
                 if let MLASTAttr::HTMLAttr(html_attr) = attr

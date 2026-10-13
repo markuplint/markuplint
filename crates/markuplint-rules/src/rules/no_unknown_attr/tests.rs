@@ -16,8 +16,9 @@
 //!   no-unknown-attr-issue-1487-002  → no_unknown_attr_issue_1487_002  (was invalid-attr-issue-1487-002)
 //!   no-unknown-attr-issue-1487-003  → no_unknown_attr_issue_1487_003  (was invalid-attr-issue-1487-003)
 //!   no-unknown-attr-invalid-003  → no_unknown_attr_invalid_003  (was invalid-attr-invalid-020)
-//!   no-unknown-attr-invalid-004  — SKIP: Pretenders (JSX parser) (was invalid-attr-invalid-023)
-//!   no-unknown-attr-valid-006  — SKIP: `as` attribute (pretenders) (was invalid-attr-valid-013)
+//!   no-unknown-attr-invalid-004  — JSX parser; ported as v6_no_unknown_attr_002 (was invalid-attr-invalid-023)
+//!   no-unknown-attr-valid-006  → no_unknown_attr_valid_006  (was invalid-attr-valid-013)
+//!   v6_no_unknown_attr_002  — Rust-only: no-unknown-attr-invalid-004 with a custom element
 //!   no-unknown-attr-issue-525-001  — SKIP: Svelte parser + spec (was invalid-attr-issue-525-001)
 //!   no-unknown-attr-issue-525-002  — SKIP: Svelte parser + spec (was invalid-attr-issue-525-002)
 //!   no-unknown-attr-issue-525-003  — SKIP: Svelte parser + spec (listed by the `issue-525-*` wildcard; old test is `describe` contentEditable "inherit") (was invalid-attr-issue-525-003)
@@ -613,4 +614,61 @@ fn v6_no_unknown_attr_001() {
         "The \"viewbox\" attribute is disallowed. Did you mean \"viewBox\"?"
     );
     assert_eq!(result.violations[0].raw, "viewbox");
+}
+
+fn run_pretended(html: &str, rule: serde_json::Value, pretenders: serde_json::Value) -> Vec<crate::test_util::Brief> {
+    crate::test_util::lint_brief(
+        "no-unknown-attr",
+        html,
+        serde_json::json!({ "rules": { "no-unknown-attr": rule }, "pretenders": pretenders }),
+    )
+}
+
+/// TS: `[no-unknown-attr-valid-006]` — The `as` attribute (was invalid-attr-valid-013)
+#[test]
+fn no_unknown_attr_valid_006() {
+    const _ID: &str = "no-unknown-attr-valid-006";
+    assert_eq!(
+        run_pretended(r#"<a as="span"></a>"#, serde_json::json!(true), serde_json::json!([])),
+        [crate::test_util::brief(
+            crate::violation::Severity::Error,
+            1,
+            4,
+            "The \"as\" attribute is disallowed. Did you mean \"is\"?",
+            "as"
+        )]
+    );
+    assert_eq!(
+        run_pretended(
+            r#"<x-link as="a" foo></x-link>"#,
+            serde_json::json!(true),
+            serde_json::json!([])
+        ),
+        []
+    );
+}
+
+/// TS `[no-unknown-attr-invalid-004]` (JSX): a pretended component may take attributes the
+/// element it pretends to be does not define, unless `allowToAddPropertiesForPretender` is
+/// `false`.
+#[test]
+fn v6_no_unknown_attr_002() {
+    let html = "<x-image objectFit alt></x-image>";
+    let img = serde_json::json!([{ "selector": "x-image", "as": { "element": "img", "inheritAttrs": true } }]);
+    assert_eq!(run_pretended(html, serde_json::json!(true), serde_json::json!([])), []);
+    assert_eq!(run_pretended(html, serde_json::json!(true), img.clone()), []);
+    assert_eq!(
+        run_pretended(
+            html,
+            serde_json::json!({ "options": { "allowToAddPropertiesForPretender": false } }),
+            img
+        ),
+        [crate::test_util::brief(
+            crate::violation::Severity::Error,
+            1,
+            10,
+            "The \"objectFit\" attribute is disallowed",
+            "objectFit"
+        )]
+    );
 }

@@ -25,6 +25,9 @@ struct Options {
     /// is `no-invalid-attr-value`'s concern.
     allowed_names: Vec<String>,
     ignore_prefixes: Vec<String>,
+    /// `allowToAddPropertiesForPretender` (default `true`): a pretended component may take
+    /// attributes the element it pretends to be does not define (its own props).
+    allow_pretender_properties: bool,
 }
 
 impl Options {
@@ -35,6 +38,10 @@ impl Options {
         Self {
             allowed_names,
             ignore_prefixes: parse_ignore_prefixes(options),
+            allow_pretender_properties: options
+                .get("allowToAddPropertiesForPretender")
+                .and_then(serde_json::Value::as_bool)
+                .unwrap_or(true),
         }
     }
 }
@@ -90,6 +97,18 @@ fn check(
         AttrEligibility::Unknown { candidate: None } => format!("The \"{name}\" attribute is disallowed"),
         _ => return None,
     };
+
+    // TS: the attribute's owner element is the pretender's `as` element, whose context is
+    // `origin`, i.e. the element pretends.
+    if options.allow_pretender_properties
+        && ctx
+            .arena
+            .get(ctx.node_id)
+            .and_then(markuplint_dom::node::DomNode::as_element)
+            .is_some_and(|el| el.pretended().is_some())
+    {
+        return None;
+    }
 
     if element_allows_additional_properties(ctx) {
         return None;

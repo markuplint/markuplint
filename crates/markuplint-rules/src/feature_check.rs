@@ -61,7 +61,11 @@ pub(crate) fn check_features(
         if rule_config.disabled || el.is_ghost {
             continue;
         }
-        if el.namespace != NamespaceURI::XHTML || el.element_type != ElementType::Html {
+        // TS gates on the namespace of the element as written (`el.namespaceURI` is not
+        // delegated to a pretender), and lets a non-HTML element through when it pretends.
+        if *el.identity(true).namespace != NamespaceURI::XHTML
+            || (el.element_type != ElementType::Html && el.pretended().is_none())
+        {
             continue;
         }
         let el_name = el.base.node_name.to_ascii_lowercase();

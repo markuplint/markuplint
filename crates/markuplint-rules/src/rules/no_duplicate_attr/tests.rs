@@ -12,6 +12,7 @@
 //!   v6_attr_duplication_003       — Rust-only: triple duplicate
 //!   v6_attr_duplication_004       — Rust-only: no attrs, no violation
 //!   v6_attr_duplication_005       — Rust-only: severity from config
+//!   v6_attr_duplication_006       — Rust-only: pretender attributes, and names compared as written on a non-HTML element
 
 use markuplint_core::mlast::{ElementType, MLASTAttr, MLASTHTMLAttr, MLASTToken, NamespaceURI};
 use markuplint_dom::arena::{DomArena, DomArenaBuilder};
@@ -288,4 +289,34 @@ fn v6_attr_duplication_005() {
     let result = lint(&arena, &spec, &config);
     assert_eq!(result.violations.len(), 1);
     assert_eq!(result.violations[0].severity, Severity::Warning);
+}
+
+/// Rust-only: the attributes a pretender adds may repeat the ones written (TS
+/// `isDuplicatable`), and a non-HTML element (by the element as written) compares names
+/// case-sensitively. Expected values from the TS rule.
+#[test]
+fn v6_attr_duplication_006() {
+    let run = |html: &str, pretenders: serde_json::Value| {
+        crate::test_util::lint_brief(
+            "no-duplicate-attr",
+            html,
+            serde_json::json!({ "rules": { "no-duplicate-attr": true }, "pretenders": pretenders }),
+        )
+    };
+    let button = serde_json::json!([{ "selector": "x-btn", "as": { "element": "button", "inheritAttrs": true, "attrs": [
+        { "name": "aria-label", "value": "b" }, { "name": "aria-label", "value": "c" }
+    ] } }]);
+    assert_eq!(run(r#"<x-btn aria-label="a"></x-btn>"#, button.clone()), []);
+    assert_eq!(run(r#"<x-btn a="1" A="2"></x-btn>"#, button), []);
+    assert_eq!(run(r#"<x-btn a="1" A="2"></x-btn>"#, serde_json::json!([])), []);
+    assert_eq!(
+        run(r#"<div a="1" A="2"></div>"#, serde_json::json!([])),
+        [crate::test_util::brief(
+            crate::violation::Severity::Error,
+            1,
+            12,
+            "The attribute name is duplicated",
+            "A"
+        )]
+    );
 }

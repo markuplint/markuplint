@@ -255,4 +255,24 @@ mod tests {
         let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
+
+    /// TS: `[require-element-invalid-008]` — The `as` attribute
+    #[test]
+    fn require_element_invalid_008() {
+        const _ID: &str = "require-element-invalid-008";
+        assert_eq!(
+            crate::test_util::lint_brief(
+                "require-element",
+                r#"<x-div as="div"><span>Text</span></x-div>"#,
+                serde_json::json!({ "rules": {}, "nodeRules": [{ "selector": "div", "rules": { "require-element": ["a"] } }] }),
+            ),
+            [crate::test_util::brief(
+                crate::violation::Severity::Error,
+                1,
+                1,
+                "Require the \"a\" element",
+                r#"<x-div as="div">"#
+            )]
+        );
+    }
 }

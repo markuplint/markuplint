@@ -17,8 +17,23 @@
 //!   v6_require_owned_elements_007  — Rust-only: native containers with their native children
 //!   v6_require_owned_elements_008  — Rust-only: severity, `rules: false`
 //!
-//! Not ported, waiting for the pretender port (they configure `pretenders` with the JSX parser):
-//!   require-owned-elements-issue-4068-001 … require-owned-elements-issue-4068-014
+//!
+//! The pretender tests use the JSX parser; each is ported with custom elements in HTML:
+//!   require-owned-elements-issue-4068-001  — v6_require_owned_elements_009
+//!   require-owned-elements-issue-4068-002  — v6_require_owned_elements_010
+//!   require-owned-elements-issue-4068-003  — v6_require_owned_elements_011
+//!   require-owned-elements-issue-4068-004  — v6_require_owned_elements_012
+//!   require-owned-elements-issue-4068-005  — v6_require_owned_elements_013
+//!   require-owned-elements-issue-4068-006  — v6_require_owned_elements_014
+//!   require-owned-elements-issue-4068-007  — v6_require_owned_elements_015
+//!   require-owned-elements-issue-4068-008  — v6_require_owned_elements_016
+//!   require-owned-elements-issue-4068-009  — v6_require_owned_elements_017
+//!   require-owned-elements-issue-4068-010  — v6_require_owned_elements_018
+//!   require-owned-elements-issue-4068-011  — v6_require_owned_elements_019
+//!   require-owned-elements-issue-4068-012  — v6_require_owned_elements_020
+//!   require-owned-elements-issue-4068-013  — v6_require_owned_elements_021 (a `<slot>` for the JSX expression)
+//!   require-owned-elements-issue-4068-014  — v6_require_owned_elements_022
+//!   v6_require_owned_elements_023  — Rust-only: a child placed in a slot wrapper is resolved on its own
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::{Severity, Violation};
@@ -284,4 +299,245 @@ fn v6_require_owned_elements_008() {
         &[(Severity::Warning, 1, 1, EXPECTS_LISTITEM, "<ul>")],
     );
     assert_violations(&run_rule("<ul></ul>", serde_json::json!(false)), &[]);
+}
+
+// ============================================================
+// Pretenders (issue #4068). The TS tests use the JSX parser; these are the same
+// scenarios with custom elements parsed as HTML (`<List />` → `<x-list>`), expected
+// values from the TS engine run on the HTML input.
+// ============================================================
+
+fn run_pretended(html: &str, rule: serde_json::Value, pretenders: serde_json::Value) -> Vec<Violation> {
+    crate::test_util::lint_html(
+        html,
+        serde_json::json!({ "rules": { "require-owned-elements": rule }, "pretenders": pretenders }),
+    )
+}
+
+fn pretended(html: &str, pretenders: serde_json::Value) -> Vec<Violation> {
+    run_pretended(html, serde_json::json!(true), pretenders)
+}
+
+/// TS `[require-owned-elements-issue-4068-001]`: the owned element the component
+/// renders itself satisfies the role.
+#[test]
+fn v6_require_owned_elements_009() {
+    assert_violations(
+        &pretended(
+            "<x-list></x-list>",
+            serde_json::json!([{ "selector": "x-list", "as": { "element": "ul", "contents": [{ "element": "li" }] } }]),
+        ),
+        &[],
+    );
+}
+
+/// TS `[require-owned-elements-issue-4068-002]`: rendered elements that are not owned
+/// elements do not satisfy the role.
+#[test]
+fn v6_require_owned_elements_010() {
+    assert_violations(
+        &pretended(
+            "<x-list></x-list>",
+            serde_json::json!([{ "selector": "x-list", "as": { "element": "ul", "contents": [{ "element": "div" }] } }]),
+        ),
+        &[(Severity::Error, 1, 1, EXPECTS_LISTITEM, "<x-list>")],
+    );
+}
+
+/// TS `[require-owned-elements-issue-4068-003]`: children given at the usage site still
+/// count next to the rendered elements.
+#[test]
+fn v6_require_owned_elements_011() {
+    let pretenders = serde_json::json!([{ "selector": "x-list", "as": {
+        "element": "ul", "slots": true, "contents": [{ "element": "div" }, { "slot": true }]
+    } }]);
+    assert_violations(&pretended("<x-list><li>a</li></x-list>", pretenders.clone()), &[]);
+    assert_violations(
+        &pretended("<x-list></x-list>", pretenders),
+        &[(Severity::Error, 1, 1, EXPECTS_LISTITEM, "<x-list>")],
+    );
+}
+
+/// TS `[require-owned-elements-issue-4068-004]`: children written inside a component
+/// that never renders them are not owned.
+#[test]
+fn v6_require_owned_elements_012() {
+    assert_violations(
+        &pretended(
+            "<x-list><li>a</li></x-list>",
+            serde_json::json!([{ "selector": "x-list", "as": { "element": "ul", "slots": null, "contents": [{ "element": "div" }] } }]),
+        ),
+        &[(Severity::Error, 1, 1, EXPECTS_LISTITEM, "<x-list>")],
+    );
+}
+
+/// TS `[require-owned-elements-issue-4068-005]`: content of unknown shape (dynamic) may
+/// be the owned element.
+#[test]
+fn v6_require_owned_elements_013() {
+    assert_violations(
+        &pretended(
+            "<x-list></x-list>",
+            serde_json::json!([{ "selector": "x-list", "as": { "element": "ul", "contents": [{ "dynamic": true }] } }]),
+        ),
+        &[],
+    );
+}
+
+/// TS `[require-owned-elements-issue-4068-006]`: a generic slot wrapper is transparent
+/// for ownership in ARIA 1.3.
+#[test]
+fn v6_require_owned_elements_014() {
+    assert_violations(
+        &run_pretended(
+            "<x-list><li>a</li></x-list>",
+            serde_json::json!({ "options": { "version": "1.3" } }),
+            serde_json::json!([{ "selector": "x-list", "as": {
+                "element": "div",
+                "attrs": [{ "name": "role", "value": "list" }],
+                "slots": [{ "element": "div", "contents": [{ "slot": true }] }]
+            } }]),
+        ),
+        &[],
+    );
+}
+
+/// TS `[require-owned-elements-issue-4068-007]`: a slot wrapper that has a role requiring
+/// owned elements is checked and reported on the component.
+#[test]
+fn v6_require_owned_elements_015() {
+    let pretenders =
+        serde_json::json!([{ "selector": "x-card", "as": { "element": "div", "slots": [{ "element": "ul" }] } }]);
+    assert_violations(&pretended("<x-card><li>a</li></x-card>", pretenders.clone()), &[]);
+    assert_violations(
+        &pretended("<x-card></x-card>", pretenders.clone()),
+        &[(Severity::Error, 1, 1, REQUIRES_LISTITEM, "<x-card>")],
+    );
+    assert_violations(
+        &pretended("<x-card><p>a</p></x-card>", pretenders),
+        &[(Severity::Error, 1, 1, EXPECTS_LISTITEM, "<x-card>")],
+    );
+}
+
+/// TS `[require-owned-elements-issue-4068-008]`: an explicit role on a slot wrapper owns
+/// the children given at the usage site.
+#[test]
+fn v6_require_owned_elements_016() {
+    assert_violations(
+        &pretended(
+            r#"<x-tabs><button role="tab">A</button></x-tabs>"#,
+            serde_json::json!([{ "selector": "x-tabs", "as": {
+                "element": "div", "slots": [{ "element": "div", "attrs": [{ "name": "role", "value": "tablist" }] }]
+            } }]),
+        ),
+        &[],
+    );
+}
+
+/// TS `[require-owned-elements-issue-4068-009]`: several slot wrappers leave the owner of
+/// the children unknown.
+#[test]
+fn v6_require_owned_elements_017() {
+    assert_violations(
+        &pretended(
+            "<x-list></x-list>",
+            serde_json::json!([{ "selector": "x-list", "as": {
+                "element": "div",
+                "attrs": [{ "name": "role", "value": "list" }],
+                "slots": [
+                    { "element": "p", "contents": [{ "slot": true }] },
+                    { "element": "ul", "contents": [{ "slot": true }] }
+                ]
+            } }]),
+        ),
+        &[],
+    );
+}
+
+/// TS `[require-owned-elements-issue-4068-010]`: a fragment component supplies the owned
+/// element in place.
+#[test]
+fn v6_require_owned_elements_018() {
+    assert_violations(
+        &pretended(
+            "<x-list><x-items></x-items></x-list>",
+            serde_json::json!([
+                { "selector": "x-list", "as": "ul" },
+                { "selector": "x-items", "as": { "element": "#fragment", "contents": [{ "element": "li" }] } }
+            ]),
+        ),
+        &[],
+    );
+}
+
+/// TS `[require-owned-elements-issue-4068-011]`: a transparent component whose content is
+/// unknown may supply the owned element.
+#[test]
+fn v6_require_owned_elements_019() {
+    assert_violations(
+        &run_pretended(
+            "<x-list><x-wrap></x-wrap></x-list>",
+            serde_json::json!({ "options": { "version": "1.3" } }),
+            serde_json::json!([
+                { "selector": "x-list", "as": "ul" },
+                { "selector": "x-wrap", "as": { "element": "div", "contents": [{ "dynamic": true }] } }
+            ]),
+        ),
+        &[],
+    );
+}
+
+/// TS `[require-owned-elements-issue-4068-012]`: a fragment component whose content is
+/// unknown may supply the owned element.
+#[test]
+fn v6_require_owned_elements_020() {
+    assert_violations(
+        &pretended(
+            "<x-list><x-items></x-items></x-list>",
+            serde_json::json!([
+                { "selector": "x-list", "as": "ul" },
+                { "selector": "x-items", "as": { "element": "#fragment", "contents": [{ "dynamic": true }] } }
+            ]),
+        ),
+        &[],
+    );
+}
+
+/// TS `[require-owned-elements-issue-4068-013]`: an expression given to a slot wrapper may
+/// be the owned element. HTML has no expression; a `<slot>` is its counterpart (mutable
+/// children).
+#[test]
+fn v6_require_owned_elements_021() {
+    assert_violations(
+        &pretended(
+            "<x-card><slot></slot></x-card>",
+            serde_json::json!([{ "selector": "x-card", "as": { "element": "div", "slots": [{ "element": "ul" }] } }]),
+        ),
+        &[],
+    );
+}
+
+/// TS `[require-owned-elements-issue-4068-014]`: a component that renders none of its
+/// own still depends on the usage site.
+#[test]
+fn v6_require_owned_elements_022() {
+    let pretenders = serde_json::json!([{ "selector": "x-list", "as": "ul" }]);
+    assert_violations(&pretended("<x-list><li>a</li></x-list>", pretenders.clone()), &[]);
+    assert_violations(
+        &pretended("<x-list><p>a</p></x-list>", pretenders),
+        &[(Severity::Error, 1, 1, EXPECTS_LISTITEM, "<x-list>")],
+    );
+}
+
+/// TS: a child given to a component that renders it inside a slot wrapper is resolved
+/// on its own (`assumeSingleNode`), not against its DOM parent.
+#[test]
+fn v6_require_owned_elements_023() {
+    assert_violations(
+        &pretended(
+            "<x-card><li>a</li></x-card>",
+            serde_json::json!([{ "selector": "x-card", "as": { "element": "div", "slots": [{ "element": "ul", "contents": [{ "slot": true }] }] } }]),
+        ),
+        &[],
+    );
 }

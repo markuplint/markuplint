@@ -4,7 +4,7 @@
 
 use std::collections::HashMap;
 
-use markuplint_core::mlast::MLASTAttr;
+use markuplint_core::mlast::{ElementType, MLASTAttr};
 use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::types::MLMLSpec;
 
@@ -30,14 +30,25 @@ impl Rule for NoDuplicateAttr {
                 continue;
             }
             let mut seen: HashMap<String, usize> = HashMap::new();
+            // TS compares names case-insensitively on an element written as an HTML element
+            // only (`node.elementType`, which a pretender does not change).
+            let case_insensitive = *el.identity(true).element_type == ElementType::Html;
 
             for attr in &el.attributes {
                 let MLASTAttr::HTMLAttr(html_attr) = attr else {
                     continue;
                 };
+                // An attribute a pretender adds may repeat one written on the element.
+                if html_attr.is_duplicatable {
+                    continue;
+                }
 
-                let name_lower = html_attr.node_name.to_ascii_lowercase();
-                let count = seen.entry(name_lower.clone()).or_insert(0);
+                let name = if case_insensitive {
+                    html_attr.node_name.to_ascii_lowercase()
+                } else {
+                    markuplint_dom::helpers::get_raw_attr_name(html_attr).to_owned()
+                };
+                let count = seen.entry(name).or_insert(0);
                 *count += 1;
 
                 if *count > 1 {

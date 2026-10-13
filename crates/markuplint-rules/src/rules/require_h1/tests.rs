@@ -5,7 +5,7 @@
 //!   require-h1-valid-001    → require_h1_valid_001
 //!   require-h1-valid-002    → require_h1_valid_002
 //!   require-h1-invalid-002  → require_h1_invalid_002
-//!   require-h1-invalid-003  — SKIP: `as` attribute (pretenders); the Rust DOM has no `as` resolution
+//!   require-h1-invalid-003  → require_h1_invalid_003
 //!   require-h1-valid-003    → require_h1_valid_003
 //!   v6_require_h1_001  — Rust-only: `raw` is the first character of the first node, whatever it is
 //!   v6_require_h1_002  — Rust-only: an `<H1>` and an `<h1>` inside `<svg>` both count
@@ -149,5 +149,29 @@ fn v6_require_h1_004() {
         )
         .len(),
         0
+    );
+}
+
+/// TS: `[require-h1-invalid-003]` — The `as` attribute
+#[test]
+fn require_h1_invalid_003() {
+    const _ID: &str = "require-h1-invalid-003";
+    let run = |html: &str| {
+        crate::test_util::lint_brief(
+            "require-h1",
+            html,
+            serde_json::json!({ "rules": { "require-h1": true } }),
+        )
+    };
+    assert_eq!(run(r#"<html><body><x-h1 as="h1">text</x-h1></body></html>"#), []);
+    assert_eq!(
+        run(r#"<html><body><x-h2 as="h2">text</x-h2></body></html>"#),
+        [crate::test_util::brief(
+            crate::violation::Severity::Warning,
+            1,
+            1,
+            "Require the \"h1\" element",
+            "<"
+        )]
     );
 }

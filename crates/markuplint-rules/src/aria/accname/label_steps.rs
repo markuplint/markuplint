@@ -8,7 +8,7 @@ use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::helpers as dom;
 use markuplint_dom::node::DomNode;
 
-use super::helpers::{collect_text_content, flatten_text};
+use super::helpers::{child_nodes, flatten_text};
 use super::{AccnameResolver, AccnameResult, AccnameSource};
 
 pub fn resolve_label_text(
@@ -57,12 +57,8 @@ fn collect_label_text(
     in_labelledby_traversal: bool,
     computing: &mut HashSet<NodeId>,
 ) -> String {
-    let Some(children) = arena.children_of(label_id) else {
-        return String::new();
-    };
-
     let mut parts = Vec::new();
-    for &child_id in children {
+    for child_id in child_nodes(arena, label_id, resolver) {
         if child_id == exclude_id {
             continue;
         }
@@ -81,7 +77,17 @@ fn collect_label_text(
                     computing,
                 );
                 if result.name.is_empty() {
-                    let text = collect_text_content(arena, child_id);
+                    // Transparent traversal (TS `collectLabelText` recurses, still
+                    // excluding the labeled element).
+                    let text = collect_label_text(
+                        arena,
+                        child_id,
+                        exclude_id,
+                        resolver,
+                        visited,
+                        in_labelledby_traversal,
+                        computing,
+                    );
                     if !text.is_empty() {
                         parts.push(text);
                     }

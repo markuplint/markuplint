@@ -90,9 +90,11 @@ pub(crate) fn verify_attr_lifecycle(
 /// TS reports `obsolete` when the field is present at all (`spec.obsolete != null`)
 /// and `deprecated` when it is truthy. Elements in the `MathML` namespace are out of
 /// scope (the spec's deprecated `mml:mfenced` and `mml:maction` are not reported),
-/// and so are custom and authored
-/// elements: TS checks those only through a `pretenders` mapping, which the Rust
-/// engine does not have.
+/// and so are custom and authored elements, unless they pretend to be an element.
+///
+/// TS gates on, and looks the pretender name up in, the namespace of the element as
+/// written (`el.namespaceURI` is not delegated to the pretender), so this reads the
+/// original namespace of a pretended element.
 pub(crate) fn verify_element_lifecycle(
     rule_id: &str,
     lifecycle: Lifecycle,
@@ -104,12 +106,12 @@ pub(crate) fn verify_element_lifecycle(
 
     for (node_id, el) in arena.elements() {
         let rule_config = config.get(node_id);
-        if rule_config.disabled || el.element_type != ElementType::Html {
+        if rule_config.disabled || (el.element_type != ElementType::Html && el.pretended().is_none()) {
             continue;
         }
         // TS `el.localName`: lower-case for HTML, as written (case-adjusted by the
         // parser) for SVG.
-        let (local_name, qualified_name) = match el.namespace {
+        let (local_name, qualified_name) = match el.identity(true).namespace {
             NamespaceURI::XHTML => {
                 let name = el.base.node_name.to_ascii_lowercase();
                 (name.clone(), name)

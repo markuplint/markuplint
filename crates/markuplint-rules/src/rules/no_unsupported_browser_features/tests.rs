@@ -5,7 +5,7 @@
 //!   no-unsupported-browser-features-valid-004  → no_unsupported_browser_features_valid_004
 //!   no-unsupported-browser-features-invalid-001..006  — SKIP: need browserslist resolution and BCD, unavailable in Rust
 //!   no-unsupported-browser-features-valid-001, -002, -005, -006  — SKIP: set `browserslist`; without BCD they would pass only because the rule never reports
-//!   no-unsupported-browser-features-issue-3740-001..003  — SKIP: `pretenders`/JSX parser, and browserslist + BCD
+//!   no-unsupported-browser-features-issue-3740-001..003  — SKIP: browserslist + BCD, unavailable in Rust (001 and 002 also use the JSX parser)
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::Violation;

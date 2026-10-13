@@ -742,3 +742,142 @@ fn v6_pretending_lint_008() {
     );
     assert!(v.is_empty());
 }
+
+// ============================================================
+// accname through the pretender (TS `ml-core` `ml-dom/helper/accname.ts`)
+// ============================================================
+
+/// One `require-accessible-name` case with its expected TS output: `None` for no
+/// violation, or the `(col, raw)` of the single violation on line 1.
+fn assert_accname_case(html: &str, pretenders: serde_json::Value, expected: Option<(u32, &str)>) {
+    let v = lint_with(
+        html,
+        json!({ "rules": { "require-accessible-name": true }, "pretenders": pretenders }),
+    );
+    match expected {
+        None => assert!(v.is_empty(), "{html}: {v:?}"),
+        Some((col, raw)) => {
+            assert_eq!(v.len(), 1, "{html}: {v:?}");
+            assert_eq!(v[0].rule_id, "require-accessible-name");
+            assert_eq!(v[0].severity, Severity::Error);
+            assert_eq!(v[0].message, "Require accessible name");
+            assert_eq!((v[0].line, v[0].col), (1, col), "{html}");
+            assert_eq!(v[0].raw, raw);
+        }
+    }
+}
+
+/// TS: a component that never renders its children (`slots: null`) is not named by
+/// the text written inside it.
+#[test]
+fn v6_pretending_accname_001() {
+    assert_accname_case(
+        "<x-btn>Hi</x-btn>",
+        json!([{ "selector": "x-btn", "as": { "element": "button", "slots": null } }]),
+        Some((1, "<x-btn>")),
+    );
+}
+
+/// TS: `aria.name` of the pretender — `true` and `{ fromAttr }` (case-insensitive,
+/// read from the attribute the user wrote) name the element; a missing or empty
+/// source attribute does not.
+#[test]
+fn v6_pretending_accname_002() {
+    assert_accname_case(
+        r#"<x-btn label="Go">Hi</x-btn>"#,
+        json!([{ "selector": "x-btn", "as": { "element": "button", "slots": null, "aria": { "name": { "fromAttr": "LABEL" } } } }]),
+        None,
+    );
+    assert_accname_case(
+        "<x-btn></x-btn>",
+        json!([{ "selector": "x-btn", "as": { "element": "button", "aria": { "name": true } } }]),
+        None,
+    );
+    assert_accname_case(
+        "<x-btn></x-btn>",
+        json!([{ "selector": "x-btn", "as": { "element": "button", "aria": { "name": { "fromAttr": "label" } } } }]),
+        Some((1, "<x-btn>")),
+    );
+    assert_accname_case(
+        r#"<x-btn label=""></x-btn>"#,
+        json!([{ "selector": "x-btn", "as": { "element": "button", "aria": { "name": { "fromAttr": "label" } } } }]),
+        Some((1, r#"<x-btn label="">"#)),
+    );
+}
+
+/// TS: the name can come from an element the component renders (`contents`), and
+/// from the children placed into a single slot wrapper.
+#[test]
+fn v6_pretending_accname_003() {
+    assert_accname_case(
+        "<x-btn></x-btn>",
+        json!([{ "selector": "x-btn", "as": { "element": "button", "contents": [{ "element": "img", "attrs": [{ "name": "alt", "value": "Save" }] }] } }]),
+        None,
+    );
+    assert_accname_case(
+        "<x-btn>Hi</x-btn>",
+        json!([{ "selector": "x-btn", "as": { "element": "button", "slots": [{ "element": "span" }] } }]),
+        None,
+    );
+}
+
+/// TS: a nested component is read as it renders — in name from content, in a label
+/// and through `aria-labelledby`.
+#[test]
+fn v6_pretending_accname_004() {
+    let null_span = |selector: &str| json!([{ "selector": selector, "as": { "element": "span", "slots": null } }]);
+    assert_accname_case(
+        "<button><x-icon>Save</x-icon></button>",
+        null_span("x-icon"),
+        Some((1, "<button>")),
+    );
+    assert_accname_case(
+        "<button><x-icon></x-icon></button>",
+        json!([{ "selector": "x-icon", "as": { "element": "span", "contents": [{ "element": "img", "attrs": [{ "name": "alt", "value": "Save" }] }] } }]),
+        None,
+    );
+    assert_accname_case(
+        "<label><x-txt>Name</x-txt><input></label>",
+        null_span("x-txt"),
+        Some((27, "<input>")),
+    );
+    assert_accname_case(
+        "<label><x-txt>Name</x-txt><input></label>",
+        json!([{ "selector": "x-txt", "as": { "element": "span" } }]),
+        None,
+    );
+    assert_accname_case(
+        r#"<span id="l"><x-t>Name</x-t></span><input aria-labelledby="l">"#,
+        null_span("x-t"),
+        Some((36, r#"<input aria-labelledby="l">"#)),
+    );
+}
+
+/// TS: the options of a `select` that renders none of its children are not read,
+/// neither for its value as an embedded control nor as a label.
+#[test]
+fn v6_pretending_accname_005() {
+    let null_select = json!([{ "selector": "x-sel", "as": { "element": "select", "slots": null } }]);
+    assert_accname_case(
+        "<button><x-sel><option>One</option></x-sel></button>",
+        null_select.clone(),
+        Some((1, "<button>")),
+    );
+    assert_accname_case(
+        "<label><x-sel><option>One</option></x-sel></label>",
+        null_select,
+        Some((8, "<x-sel>")),
+    );
+}
+
+/// TS `collectTextContent` / `collectLabelText`: an element with no name of its own
+/// passes on the names its descendants compute (no pretender involved).
+#[test]
+fn v6_pretending_accname_006() {
+    assert_accname_case(r#"<button><span><img alt="Save"></span></button>"#, json!([]), None);
+    assert_accname_case(
+        r#"<label><span><img alt="Name"></span><input></label>"#,
+        json!([]),
+        None,
+    );
+}

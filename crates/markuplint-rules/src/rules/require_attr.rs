@@ -1,6 +1,6 @@
 //! `require-attr` rule: report elements missing required attributes per spec.
 
-use markuplint_core::mlast::{MLASTAttr, NamespaceURI};
+use markuplint_core::mlast::{ElementType, MLASTAttr, NamespaceURI};
 use markuplint_dom::arena::DomArena;
 use markuplint_selector::matcher;
 use markuplint_selector::parser;
@@ -80,8 +80,11 @@ impl Rule for RequireAttr {
                 .map(|arr| arr.iter().filter_map(|v| v.as_str().map(String::from)).collect())
                 .unwrap_or_default();
 
-            // Spec-based required attributes: only check XHTML namespace
-            if el.namespace != NamespaceURI::XHTML {
+            // Spec-based required attributes: only for an element written as an HTML element
+            // (TS `el.elementType === 'html'` and the namespace of `getAttrSpecs()`, neither
+            // of which a pretender changes).
+            let original = el.identity(true);
+            if *original.namespace != NamespaceURI::XHTML || *original.element_type != ElementType::Html {
                 continue;
             }
 
@@ -350,6 +353,45 @@ mod tests {
         assert!(
             violations.is_empty(),
             "alt on img is not marked as required in the spec data, got: {violations:?}"
+        );
+    }
+
+    /// Rust-only: TS checks the spec's required attributes only on an element written as
+    /// an HTML element, so a component pretending to be an `img` is not asked for `src`;
+    /// the attributes the rule's value requires still apply. Expected values from the TS
+    /// rule.
+    #[test]
+    fn v6_require_attr_pretender_001() {
+        let run = |html: &str, value: serde_json::Value, pretenders: serde_json::Value| {
+            crate::test_util::lint_brief(
+                "require-attr",
+                html,
+                serde_json::json!({ "rules": { "require-attr": value }, "pretenders": pretenders }),
+            )
+        };
+        let img = serde_json::json!([{ "selector": "x-img", "as": "img" }]);
+        assert_eq!(run("<x-img></x-img>", serde_json::json!(true), img.clone()), []);
+        assert_eq!(
+            run(
+                r#"<x-img as="img"></x-img>"#,
+                serde_json::json!(true),
+                serde_json::json!([])
+            ),
+            []
+        );
+        assert_eq!(
+            run("<math><x-img></x-img></math>", serde_json::json!(true), img.clone()),
+            []
+        );
+        assert_eq!(
+            run("<x-img></x-img>", serde_json::json!("title"), img),
+            [crate::test_util::brief(
+                crate::violation::Severity::Error,
+                1,
+                1,
+                "The \"img\" element expects the \"title\" attribute",
+                "<x-img>"
+            )]
         );
     }
 }

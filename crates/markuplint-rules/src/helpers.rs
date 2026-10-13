@@ -1,5 +1,11 @@
 use std::sync::LazyLock;
 
+use markuplint_dom::arena::{DomArena, NodeId};
+use markuplint_dom::helpers::{find_element_by_id, get_attr_value, get_attr_value_from_el, has_attr};
+use markuplint_dom::node::{DomNode, ElementData};
+
+use crate::slot_content::slot_content;
+
 static REGEX_LITERAL_RE: LazyLock<regex::Regex> = LazyLock::new(|| regex::Regex::new(r"^/(.+)/([gim]*)$").unwrap());
 
 /// If the pattern is wrapped in `/` (e.g. `/^[a-z]+$/i`), it is treated
@@ -33,6 +39,82 @@ fn parse_regex_literal(pattern: &str) -> Option<fancy_regex::Regex> {
     regex_str.push_str(body);
 
     fancy_regex::Regex::new(&regex_str).ok()
+}
+
+/// TS `accnameMayComeFromUnknownContent()`: whether the accessible name of `node_id` may be
+/// rendered by content the pretender does not know — an unknown entry (`{ dynamic: true }`) in
+/// the `contents` of the element, of a pretended descendant among the children the name
+/// computation traverses, of an element `aria-labelledby` refers to, or of the owned label.
+///
+/// A component with an unknown entry and a static name (`aria-label`, static text) is still
+/// decidable, so call this only once the static name has been computed and found empty.
+pub fn accname_may_come_from_unknown_content(arena: &DomArena, node_id: NodeId) -> bool {
+    if has_unknown_content(arena, node_id) {
+        return true;
+    }
+
+    if let Some(labelledby) = get_attr_value(arena, node_id, "aria-labelledby")
+        && labelledby
+            .split_whitespace()
+            .filter_map(|id| find_element_by_id(arena, id))
+            .any(|target| has_unknown_content(arena, target))
+    {
+        return true;
+    }
+
+    get_owned_label(arena, node_id).is_some_and(|label| has_unknown_content(arena, label))
+}
+
+/// TS `hasUnknownContent()`: walks the same children the accname resolver does — for a
+/// pretended element, the children the component renders, so that a nested component
+/// contributes its own `contents`; otherwise the children as written. A hidden child is skipped
+/// because the name computation never reads it.
+fn has_unknown_content(arena: &DomArena, node_id: NodeId) -> bool {
+    if slot_content(arena, node_id).is_some_and(|content| content.mutable) {
+        return true;
+    }
+    let children = arena
+        .pretender_rendered_children(node_id)
+        .unwrap_or_else(|| arena.children_of(node_id).map(<[NodeId]>::to_vec).unwrap_or_default());
+    children.into_iter().any(|child| {
+        arena.get(child).and_then(DomNode::as_element).is_some()
+            && get_attr_value(arena, child, "aria-hidden") != Some("true")
+            && !has_attr(arena, child, "hidden")
+            && has_unknown_content(arena, child)
+    })
+}
+
+/// TS `labelable`: the selectors of the elements a `label` can be associated with.
+fn is_labelable(el: &ElementData) -> bool {
+    match el.base.node_name.to_ascii_lowercase().as_str() {
+        "button" | "meter" | "output" | "progress" | "select" | "textarea" => true,
+        "input" => !get_attr_value_from_el(el, "type").is_some_and(|t| t.eq_ignore_ascii_case("hidden")),
+        _ => false,
+    }
+}
+
+/// TS `getOwnedLabel()`: the `label` around a labelable element, else the first one whose `for`
+/// names its `id`.
+pub fn get_owned_label(arena: &DomArena, node_id: NodeId) -> Option<NodeId> {
+    let el = arena.get(node_id)?.as_element()?;
+    if !is_labelable(el) {
+        return None;
+    }
+    let ancestor = arena.ancestors(node_id).find_map(|node| {
+        node.as_element()
+            .filter(|a| a.base.node_name.eq_ignore_ascii_case("label"))
+            .map(|a| a.base.id)
+    });
+    if ancestor.is_some() {
+        return ancestor;
+    }
+    let id = get_attr_value_from_el(el, "id").filter(|id| !id.is_empty())?;
+    arena
+        .elements()
+        .find(|(_, label)| {
+            label.base.node_name.eq_ignore_ascii_case("label") && get_attr_value_from_el(label, "for") == Some(id)
+        })
+        .map(|(label_id, _)| label_id)
 }
 
 #[cfg(test)]

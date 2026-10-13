@@ -12,6 +12,7 @@
 //!   case-sensitive-tag-name-invalid-005  → case_sensitive_tag_name_invalid_005
 //!   case-sensitive-tag-name-valid-005    — SKIP: Astro parser not available in Rust
 //!   case-sensitive-tag-name-fix-001      — SKIP: auto-fix not implemented in Rust
+//!   v6_case_sensitive_tag_name_001       — Rust-only: a pretender is gated by the namespace of the element written
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::Severity;
@@ -205,4 +206,37 @@ fn case_sensitive_tag_name_invalid_005() {
     assert_eq!(result.violations[1].line, 1);
     assert_eq!(result.violations[1].col, 16);
     assert_eq!(result.violations[1].raw, "</XXX-hoge>");
+}
+
+/// Rust-only: TS skips a foreign element by the namespace of the element as written, not
+/// the one it pretends to be: a pretender in the SVG namespace is still checked, an element
+/// written inside `<math>` is not. Expected values from the TS rule.
+#[test]
+fn v6_case_sensitive_tag_name_001() {
+    let run = |html: &str, pretenders: serde_json::Value| {
+        crate::test_util::lint_brief(
+            "case-sensitive-tag-name",
+            html,
+            // The Rust rule has no default severity of `warning` yet, so it is given here.
+            serde_json::json!({ "rules": { "case-sensitive-tag-name": { "severity": "warning" } }, "pretenders": pretenders }),
+        )
+    };
+    let message = "Tag names of HTML elements should be lowercase";
+    assert_eq!(
+        run(
+            "<X-Rect></X-Rect>",
+            serde_json::json!([{ "selector": "x-rect", "as": { "element": "rect", "namespace": "svg" } }])
+        ),
+        [
+            crate::test_util::brief(crate::violation::Severity::Warning, 1, 2, message, "X-Rect"),
+            crate::test_util::brief(crate::violation::Severity::Warning, 1, 9, message, "</X-Rect>"),
+        ]
+    );
+    assert_eq!(
+        run(
+            "<math><X-Btn></X-Btn></math>",
+            serde_json::json!([{ "selector": "x-btn", "as": "button" }])
+        ),
+        []
+    );
 }

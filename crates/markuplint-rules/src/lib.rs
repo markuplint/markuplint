@@ -31,6 +31,9 @@ pub mod pretending;
 pub mod rule;
 pub mod rule_mapper;
 pub mod rules;
+pub(crate) mod slot_content;
 pub(crate) mod srcset_check;
 pub(crate) mod table_grid;
+#[cfg(test)]
+pub(crate) mod test_util;
 pub mod violation;

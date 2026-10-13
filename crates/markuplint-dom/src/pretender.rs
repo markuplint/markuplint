@@ -165,6 +165,36 @@ impl ElementData {
     }
 }
 
+impl crate::arena::DomArena {
+    /// TS `pretenderContext.as.childNodes` of a pretended element: the children
+    /// written at the usage site, or none for `slots: null` (the component renders
+    /// none of them). `None` when `id` does not pretend.
+    #[must_use]
+    pub fn pretender_given_children(&self, id: NodeId) -> Option<Vec<NodeId>> {
+        let pretended = self.get(id)?.as_element()?.pretended()?;
+        Some(if pretended.renders_children {
+            self.children_of(id).map(<[NodeId]>::to_vec).unwrap_or_default()
+        } else {
+            Vec::new()
+        })
+    }
+
+    /// The children a pretended component renders, as the accname resolver of
+    /// `@markuplint/ml-core` (`getChildNodes`) and `hasUnknownContent` of the rules
+    /// see them: [`Self::pretender_given_children`] placed into
+    /// [`SlotContent::fill`] when the pretender describes what surrounds them.
+    /// `None` when `id` does not pretend.
+    #[must_use]
+    pub fn pretender_rendered_children(&self, id: NodeId) -> Option<Vec<NodeId>> {
+        let given = self.pretender_given_children(id)?;
+        let pretended = self.get(id)?.as_element()?.pretended()?;
+        Some(match &pretended.slot_content {
+            Some(content) => content.fill(&given),
+            None => given,
+        })
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

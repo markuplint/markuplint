@@ -46,7 +46,9 @@ impl Rule for RequireEndTag {
 
             // Foreign elements (SVG/MathML) may self-close, so `<.../>` is valid.
             // Matches TS: `el.isForeignElement && el.tagCloseChar.startsWith('/')`.
-            if el.namespace != NamespaceURI::XHTML && el.tag_close_char.starts_with('/') {
+            // `isForeignElement` is the namespace of the element as written, which a
+            // pretender does not change.
+            if *el.identity(true).namespace != NamespaceURI::XHTML && el.tag_close_char.starts_with('/') {
                 continue;
             }
 

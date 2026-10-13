@@ -14,9 +14,7 @@
 //!   permitted-roles-valid-004          → permitted_roles_valid_004
 //!   permitted-roles-issue-3735-001     → permitted_roles_issue_3735_001
 //!   permitted-roles-issue-3735-002     → permitted_roles_issue_3735_002
-//!   permitted-roles-issue-3740-001     — SKIP: Pretenders (the Rust engine has no `pretenders` config; the TS test only
-//!                                        checks that an HTML→HTML pretender is ignored, and `v6_permitted_roles_001` covers
-//!                                        the same input and violation without it)
+//!   permitted-roles-issue-3740-001     → permitted_roles_issue_3740_001
 //!   v6_permitted_roles_001             — Rust-only: `<h1 role="button">`, the input of issue-3740-001 without pretenders
 //!   v6_permitted_roles_002             — Rust-only: only the first non-permitted token is reported, at its own position
 //!   v6_permitted_roles_003             — Rust-only: an empty list reports the first token; no token reports the attribute
@@ -351,4 +349,25 @@ fn v6_permitted_roles_010() {
         .unwrap();
         assert!(lint(&arena, &spec(), &common).violations.is_empty(), "{version}");
     }
+}
+
+/// TS: `[permitted-roles-issue-3740-001]` — HTML→HTML pretender no-ops: original h1 role
+/// restriction still fires
+#[test]
+fn permitted_roles_issue_3740_001() {
+    const _ID: &str = "permitted-roles-issue-3740-001";
+    assert_eq!(
+        crate::test_util::lint_brief(
+            "permitted-roles",
+            r#"<h1 role="button">x</h1>"#,
+            serde_json::json!({ "rules": { "permitted-roles": true }, "pretenders": [{ "selector": "h1", "as": "div" }] }),
+        ),
+        [crate::test_util::brief(
+            Severity::Error,
+            1,
+            11,
+            "Cannot overwrite the \"button\" role to the \"h1\" element according to ARIA in HTML specification",
+            "button"
+        )]
+    );
 }

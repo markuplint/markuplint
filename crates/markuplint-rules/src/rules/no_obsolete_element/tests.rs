@@ -4,17 +4,16 @@
 //!   no-obsolete-element-valid-001        → no_obsolete_element_valid_001
 //!   no-obsolete-element-valid-002        → no_obsolete_element_valid_002
 //!   no-obsolete-element-invalid-001      → no_obsolete_element_invalid_001
-//!   no-obsolete-element-issue-3740-001   — SKIP: JSX parser + `pretenders` (the Rust engine has neither)
-//!   no-obsolete-element-issue-3740-002   — SKIP: JSX parser + `pretenders` (the Rust engine has neither)
-//!   no-obsolete-element-issue-3740-003   — SKIP: `pretenders` (the Rust engine has no `pretenders` config; the TS
-//!                                          test only checks that an HTML→HTML pretender is ignored, and
-//!                                          `v6_no_obsolete_element_001` covers the same input and violation without it)
-//!   no-obsolete-element-issue-3740-004   — SKIP: `pretenders` (the Rust engine has no `pretenders` config)
-//!   no-obsolete-element-issue-3740-005   — SKIP: Vue parser + `pretenders` (the Rust engine has neither)
+//!   no-obsolete-element-issue-3740-001   — SKIP: JSX parser (issue-3740-004 is the same scenario in HTML)
+//!   no-obsolete-element-issue-3740-002   — SKIP: JSX parser (issue-3740-004 is the same scenario in HTML)
+//!   no-obsolete-element-issue-3740-003   → no_obsolete_element_issue_3740_003
+//!   no-obsolete-element-issue-3740-004   → no_obsolete_element_issue_3740_004
+//!   no-obsolete-element-issue-3740-005   — SKIP: Vue parser (issue-3740-004 is the same scenario in HTML)
 //!   v6_no_obsolete_element_001           — Rust-only: `<marquee>x</marquee>`, the input of issue-3740-003 without pretenders
 //!   v6_no_obsolete_element_002           — Rust-only: an upper-case tag reports the lower-case local name
 //!   v6_no_obsolete_element_003           — Rust-only: an SVG element is looked up in the SVG spec, not the HTML one
 //!   v6_no_obsolete_element_004           — Rust-only: a custom element with no pretender is not looked up
+//!   v6_no_obsolete_element_005           — Rust-only: a pretender is looked up in the namespace of the element written
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::Severity;
@@ -126,4 +125,80 @@ fn v6_no_obsolete_element_003() {
 fn v6_no_obsolete_element_004() {
     let violations = run("<x-marquee>x</x-marquee>");
     assert_eq!(violations.len(), 0);
+}
+
+fn run_pretended(html: &str, pretenders: serde_json::Value) -> Vec<crate::test_util::Brief> {
+    crate::test_util::lint_brief(
+        "no-obsolete-element",
+        html,
+        serde_json::json!({ "rules": { "no-obsolete-element": true }, "pretenders": pretenders }),
+    )
+}
+
+/// TS: `[no-obsolete-element-issue-3740-003]` — HTML→HTML pretender ignored: original
+/// deprecation surfaces
+#[test]
+fn no_obsolete_element_issue_3740_003() {
+    const _ID: &str = "no-obsolete-element-issue-3740-003";
+    assert_eq!(
+        run_pretended(
+            "<marquee>x</marquee>",
+            serde_json::json!([{ "selector": "marquee", "as": "div" }])
+        ),
+        [crate::test_util::brief(
+            Severity::Error,
+            1,
+            1,
+            "The \"marquee\" element is obsolete",
+            "<marquee>"
+        )]
+    );
+}
+
+/// TS: `[no-obsolete-element-issue-3740-004]` — web-component pretendered to obsolete HTML
+/// reports
+#[test]
+fn no_obsolete_element_issue_3740_004() {
+    const _ID: &str = "no-obsolete-element-issue-3740-004";
+    assert_eq!(
+        run_pretended(
+            "<x-marquee>x</x-marquee>",
+            serde_json::json!([{ "selector": "x-marquee", "as": "marquee" }])
+        ),
+        [crate::test_util::brief(
+            Severity::Error,
+            1,
+            1,
+            "The \"marquee\" element is obsolete",
+            "<x-marquee>"
+        )]
+    );
+}
+
+/// Rust-only: TS looks a pretended element up by its pretender name in the namespace of
+/// the element as written, so a pretender in the SVG namespace is still found as the HTML
+/// `marquee`, and one written inside `<math>` is not checked. Expected values from the TS
+/// rule.
+#[test]
+fn v6_no_obsolete_element_005() {
+    assert_eq!(
+        run_pretended(
+            "<x-marquee>x</x-marquee>",
+            serde_json::json!([{ "selector": "x-marquee", "as": { "element": "marquee", "namespace": "svg" } }])
+        ),
+        [crate::test_util::brief(
+            Severity::Error,
+            1,
+            1,
+            "The \"marquee\" element is obsolete",
+            "<x-marquee>"
+        )]
+    );
+    assert_eq!(
+        run_pretended(
+            "<math><x-marquee>x</x-marquee></math>",
+            serde_json::json!([{ "selector": "x-marquee", "as": "marquee" }])
+        ),
+        []
+    );
 }

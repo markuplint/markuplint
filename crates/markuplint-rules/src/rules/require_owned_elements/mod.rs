@@ -2,9 +2,13 @@
 //! roles (WAI-ARIA 1.2 "Required Owned Elements") but which owns none of them.
 //!
 //! Ports `packages/@markuplint/rules/src/require-owned-elements/` and its checker
-//! `wai-aria/checkings/required-owned-elements.ts`, without the pretender part (the slot wrapper
-//! of a pretended component and the nodes a component renders itself), which waits for the
-//! pretender port.
+//! `wai-aria/checkings/required-owned-elements.ts`.
+//!
+//! For a pretended component, the owned elements are the ones the component renders: its own
+//! `contents` around the children given at the usage site (none for `slots: null`). A single
+//! slot wrapper sits between the component and those nodes and is checked as well (its role
+//! stands on its own); several slot wrappers leave the owner of each node unknown, so nothing is
+//! claimed. A report on the wrapper, which is not in the source, goes to the component.
 //!
 //! The children are classified as TS does: a child element marked `aria-busy="true"` exempts the
 //! element, as does a child that carries one of the roles (`"rowgroup > row"` queries included),
@@ -20,6 +24,7 @@ use markuplint_core::mlast::{MLASTAttr, MLASTBlockBehaviorType};
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::helpers::get_attr_value;
 use markuplint_dom::node::DomNode;
+use markuplint_dom::pretender::PretenderContext;
 use markuplint_types::spec::aria::ARIAVersion;
 use markuplint_types::spec::types::MLMLSpec;
 
@@ -28,6 +33,7 @@ use crate::aria_check::{
     ElementContext, ElementGate, element_local_name, is_js_whitespace, quoted_list, walk_elements,
 };
 use crate::rule::{Rule, RuleConfigSet};
+use crate::slot_content::{content_owner, expand_children, is_content_mutable, slot_content};
 use crate::violation::Violation;
 
 #[cfg(test)]
@@ -48,7 +54,18 @@ impl Rule for RequireOwnedElements {
             config,
             ElementGate::Supported,
             |_| (),
-            |(), ctx, violations| violations.extend(check(ctx)),
+            |(), ctx, violations| {
+                let role = get_computed_role(ctx.spec, ctx.arena, ctx.node_id, ctx.version, false).role;
+                violations.extend(check(ctx, ctx.node_id, role.as_ref()));
+                // The slot wrapper of a pretended component is not in the document, so the walk
+                // never reaches it, yet it owns the children given to the component. The
+                // component places it, so no context is asked of its parent.
+                let wrapper = content_owner(ctx.arena, ctx.node_id);
+                if wrapper != ctx.node_id {
+                    let role = get_computed_role(ctx.spec, ctx.arena, wrapper, ctx.version, true).role;
+                    violations.extend(check(ctx, wrapper, role.as_ref()));
+                }
+            },
         )
     }
 }
@@ -66,26 +83,38 @@ enum Owned {
     Block,
     /// A text or comment node.
     NoElement,
+    /// A pretended component whose rendered children cannot be known.
+    Unknown,
 }
 
-fn check(ctx: &ElementContext<'_>) -> Option<Violation> {
-    let role = get_computed_role(ctx.spec, ctx.arena, ctx.node_id, ctx.version, false).role?;
+/// TS `checkingRequiredOwnedElements` for `node_id` — the element of `ctx`, or its virtual slot
+/// wrapper — with its computed `role`. A violation is reported on the element of `ctx`.
+fn check(ctx: &ElementContext<'_>, node_id: NodeId, role: Option<&ResolvedRole>) -> Option<Violation> {
+    let role = role?;
     let child_roles = &role.allowed_accessibility_child_roles;
     if child_roles.is_empty() {
         return None;
     }
-    if is_busy(ctx.arena, ctx.node_id) {
+    if is_busy(ctx.arena, node_id) {
         return None;
     }
 
-    let owned = classify_children(ctx.spec, ctx.arena, ctx.node_id, &role, ctx.version);
+    let owned = classify_children(ctx.spec, ctx.arena, node_id, role, ctx.version);
     if owned
         .iter()
-        .any(|o| matches!(o, Owned::Busy | Owned::Required | Owned::Block))
+        .any(|o| matches!(o, Owned::Busy | Owned::Unknown | Owned::Required | Owned::Block))
     {
         return None;
     }
-    if has_mutable_children(ctx.arena, ctx.node_id) {
+    // A virtual slot wrapper stands for the component, whose nodes are the ones given to it.
+    let component = match ctx.arena.get(node_id).and_then(DomNode::as_element) {
+        Some(el) => match el.pretender_context {
+            Some(PretenderContext::Origin { origin }) => origin,
+            _ => node_id,
+        },
+        None => node_id,
+    };
+    if has_mutable_children(ctx.arena, component) || is_content_mutable(ctx.arena, component) {
         return None;
     }
 
@@ -93,7 +122,7 @@ fn check(ctx: &ElementContext<'_>) -> Option<Violation> {
         [single] => format!("the \"{single}\" role"),
         several => format!("the roles: {}", quoted_list(several)),
     };
-    let message = if may_be_before_created(ctx.arena, ctx.node_id) {
+    let message = if may_be_before_created(ctx.arena, &owned_child_nodes(ctx.arena, node_id).unwrap_or_default()) {
         format!("The child element requires {required}. Or, require aria-busy=\"true\"")
     } else {
         format!("The \"{}\" role expects {required}", role.name)
@@ -114,15 +143,24 @@ fn classify_children(
     role: &ResolvedRole,
     version: ARIAVersion,
 ) -> Vec<Owned> {
+    let Some(children) = owned_child_nodes(arena, node_id) else {
+        return vec![Owned::Unknown];
+    };
     let mut result = Vec::new();
-    for child_id in child_nodes(arena, node_id) {
+    for child_id in children {
         match arena.get(child_id) {
-            Some(DomNode::Element(_)) => {
+            Some(DomNode::Element(child)) => {
                 if is_busy(arena, child_id) {
                     result.push(Owned::Busy);
                     continue;
                 }
-                let child_role = get_computed_role(spec, arena, child_id, version, false).role;
+                // The role of a child is resolved against its DOM parent. A child that a
+                // pretender places somewhere other than under its DOM parent (a node given at
+                // the usage site that the component renders inside its slot wrapper, or an
+                // element a fragment component renders in place) would be judged against the
+                // wrong parent and lose its role, so it is resolved on its own.
+                let assume_single_node = child.base.parent != Some(node_id);
+                let child_role = get_computed_role(spec, arena, child_id, version, assume_single_node).role;
                 let child_role_name = child_role.as_ref().map(|r| r.name.as_str());
                 if role
                     .allowed_accessibility_child_roles
@@ -133,6 +171,10 @@ fn classify_children(
                     continue;
                 }
                 if is_transparent_for_ownership(child_role_name, version) {
+                    if is_content_mutable(arena, child_id) {
+                        result.push(Owned::Unknown);
+                        continue;
+                    }
                     result.extend(classify_children(spec, arena, child_id, role, version));
                     continue;
                 }
@@ -230,6 +272,37 @@ fn child_nodes(arena: &DomArena, node_id: NodeId) -> Vec<NodeId> {
     nodes
 }
 
+/// TS `getOwnedChildNodes()`: the child nodes `node_id` owns as the page renders them.
+///
+/// For a pretended component, what it renders (its `contents` around the nodes given to it,
+/// none of which for `slots: null`), not what is written at the usage site. A single slot
+/// wrapper that differs from the component sits between them: the component owns the wrapper,
+/// and the wrapper owns the filled nodes. Several slot wrappers leave the owner of each node
+/// unknown (`None`).
+fn owned_child_nodes(arena: &DomArena, node_id: NodeId) -> Option<Vec<NodeId>> {
+    let el = arena.get(node_id).and_then(DomNode::as_element);
+    if let Some(pretended) = el.and_then(|el| el.pretended()) {
+        if let Some(content) = &pretended.slot_content {
+            let wrapper = content.wrapper?;
+            if wrapper != node_id {
+                return Some(vec![wrapper]);
+            }
+        }
+        let given = arena.pretender_given_children(node_id).unwrap_or_default();
+        return Some(expand_children(arena, node_id, given));
+    }
+
+    // The virtual slot wrapper has no child nodes of its own.
+    if let Some(PretenderContext::Origin { origin }) = el.and_then(|el| el.pretender_context.as_ref())
+        && slot_content(arena, *origin).and_then(|content| content.wrapper) == Some(node_id)
+    {
+        let given = arena.pretender_given_children(*origin).unwrap_or_default();
+        return Some(expand_children(arena, *origin, given));
+    }
+
+    Some(expand_children(arena, node_id, child_nodes(arena, node_id)))
+}
+
 /// TS `el.hasMutableChildren(true)`: below the element there is a preprocessor block without a
 /// behavior, an element with a spread or dynamic attribute, or a `<slot>`.
 fn has_mutable_children(arena: &DomArena, node_id: NodeId) -> bool {
@@ -251,8 +324,7 @@ fn has_mutable_children(arena: &DomArena, node_id: NodeId) -> bool {
 
 /// TS `mayBeBeforeCreated()`: every child node is whitespace-only text, or every child element is
 /// a `<script>` or a `<template>`.
-fn may_be_before_created(arena: &DomArena, node_id: NodeId) -> bool {
-    let children = child_nodes(arena, node_id);
+fn may_be_before_created(arena: &DomArena, children: &[NodeId]) -> bool {
     let blank = children.iter().all(|&child_id| match arena.get(child_id) {
         Some(DomNode::Text(text)) => text.base.raw.chars().all(is_js_whitespace),
         _ => false,

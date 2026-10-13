@@ -7,6 +7,7 @@
 //!   require-end-tag-invalid-002  → require_end_tag_invalid_002
 //!   require-end-tag-parser-*     — SKIP: framework parsers (Pug/JSX/Vue/Svelte/Astro)
 //!   require-end-tag-issue-1349   — SKIP: Nunjucks parser
+//!   v6_require_end_tag_001       — Rust-only: a pretender is foreign by the namespace of the element written
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::Severity;
@@ -107,4 +108,35 @@ fn require_end_tag_invalid_002() {
     .unwrap();
     let result = lint(&arena, &spec, &config);
     assert_eq!(result.violations.len(), 0);
+}
+
+/// Rust-only: TS lets a foreign element self-close by the namespace of the element as
+/// written, so a component pretending to be an SVG `rect` still needs its end tag; the void
+/// check reads the pretender name. Expected values from the TS rule.
+#[test]
+fn v6_require_end_tag_001() {
+    let run = |html: &str, pretenders: serde_json::Value| {
+        crate::test_util::lint_brief(
+            "require-end-tag",
+            html,
+            serde_json::json!({ "rules": { "require-end-tag": true }, "pretenders": pretenders }),
+        )
+    };
+    assert_eq!(
+        run(
+            "<div><x-rect/></div>",
+            serde_json::json!([{ "selector": "x-rect", "as": { "element": "rect", "namespace": "svg" } }])
+        ),
+        [crate::test_util::brief(
+            crate::violation::Severity::Warning,
+            1,
+            6,
+            "Missing the end tag",
+            "<x-rect/>"
+        )]
+    );
+    assert_eq!(
+        run("<x-img>", serde_json::json!([{ "selector": "x-img", "as": "img" }])),
+        []
+    );
 }
