@@ -74,6 +74,7 @@ mod tests {
 
     fn make_br(id_placeholder: usize, line: u32, col: u32) -> ElementData {
         ElementData {
+            pretender_context: None,
             base: NodeBase {
                 id: id_placeholder,
                 uuid: format!("br-{id_placeholder}"),
@@ -115,6 +116,7 @@ mod tests {
         }));
         let br1_id = builder.push(DomNode::Element(make_br(0, 1, 1)));
         let span_id = builder.push(DomNode::Element(ElementData {
+            pretender_context: None,
             base: NodeBase {
                 id: 0,
                 uuid: "span".to_string(),
@@ -276,6 +278,7 @@ mod tests {
             children: vec![],
         }));
         let p_id = builder.push(DomNode::Element(ElementData {
+            pretender_context: None,
             base: NodeBase {
                 id: 0,
                 uuid: "p".to_string(),
@@ -304,6 +307,7 @@ mod tests {
         }));
         let br_id = builder.push(DomNode::Element(make_br(0, 1, 4)));
         let span_id = builder.push(DomNode::Element(ElementData {
+            pretender_context: None,
             base: NodeBase {
                 id: 0,
                 uuid: "span".to_string(),

@@ -343,6 +343,7 @@ mod tests {
                 .collect();
 
             let el_id = builder.push(DomNode::Element(ElementData {
+                pretender_context: None,
                 base: NodeBase {
                     id: 0,
                     uuid: format!("el-{i}"),
@@ -483,6 +484,7 @@ mod tests {
         }));
 
         let el1_id = builder.push(DomNode::Element(ElementData {
+            pretender_context: None,
             base: NodeBase {
                 id: 0,
                 uuid: "el-0".to_string(),
@@ -558,6 +560,7 @@ mod tests {
         }));
 
         let el2_id = builder.push(DomNode::Element(ElementData {
+            pretender_context: None,
             base: NodeBase {
                 id: 0,
                 uuid: "el-1".to_string(),

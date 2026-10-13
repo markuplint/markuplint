@@ -206,6 +206,7 @@ mod tests {
 
     fn make_element_data(tag: &str, attrs: Vec<MLASTAttr>, line: u32) -> ElementData {
         ElementData {
+            pretender_context: None,
             base: NodeBase {
                 id: 0,
                 uuid: String::new(),

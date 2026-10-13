@@ -1,7 +1,6 @@
 //! `no-skipped-heading-level` rule: reports heading level skips (e.g., h2 followed by h4).
 
 use markuplint_dom::arena::DomArena;
-use markuplint_dom::node::DomNode;
 use markuplint_types::spec::types::MLMLSpec;
 
 use crate::rule::{Rule, RuleConfigSet};
@@ -36,10 +35,8 @@ impl Rule for NoSkippedHeadingLevel {
 
         let mut headings: Vec<(u8, u32, u32, String)> = Vec::new();
 
-        for i in 0..arena.len() {
-            if let Some(DomNode::Element(el)) = arena.get(i)
-                && let Some(level) = heading_level(&el.base.node_name)
-            {
+        for (_, el) in arena.elements() {
+            if let Some(level) = heading_level(&el.base.node_name) {
                 headings.push((level, el.base.line, el.base.col, el.base.raw.clone()));
             }
         }

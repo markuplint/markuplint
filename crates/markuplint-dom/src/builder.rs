@@ -105,6 +105,7 @@ fn make_base(
 fn convert_element(el: &mlast::MLASTElement, arena: &mut DomArena) -> NodeId {
     let id = arena.len();
     let node = DomNode::Element(ElementData {
+        pretender_context: None,
         base: make_base(
             id,
             &el.uuid,
@@ -226,6 +227,7 @@ fn convert_psblock(ps: &mlast::MLASTPSBlock, arena: &mut DomArena) -> NodeId {
 fn convert_omitted_tag(ot: &mlast::MLASTOmittedTag, arena: &mut DomArena) -> NodeId {
     let id = arena.len();
     let node = DomNode::Element(ElementData {
+        pretender_context: None,
         base: make_base(
             id,
             &ot.uuid,
@@ -258,6 +260,7 @@ fn convert_invalid(inv: &mlast::MLASTInvalid, arena: &mut DomArena) -> NodeId {
     if inv.kind.as_deref() == Some("starttag") {
         let id = arena.len();
         let node = DomNode::Element(ElementData {
+            pretender_context: None,
             base: make_base(
                 id,
                 &inv.uuid,

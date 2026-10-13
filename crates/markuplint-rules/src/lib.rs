@@ -27,6 +27,7 @@ pub mod helpers;
 pub(crate) mod landmark_check;
 pub(crate) mod lifecycle_check;
 pub mod lint;
+pub mod pretending;
 pub mod rule;
 pub mod rule_mapper;
 pub mod rules;

@@ -230,6 +230,7 @@ fn convert_parser_node(
                 .collect();
 
             let pushed_id = dom.push(DomNode::Element(ElementData {
+                pretender_context: None,
                 base: make_base(dom_id, &uuid, source, node, depth),
                 namespace: ns_uri,
                 element_type,

@@ -251,6 +251,7 @@ pub(crate) mod tests {
             children: vec![],
         }));
         let parent_id = builder.push(DomNode::Element(ElementData {
+            pretender_context: None,
             base: NodeBase {
                 id: 1,
                 uuid: "parent".to_string(),
@@ -278,6 +279,7 @@ pub(crate) mod tests {
             close_tag: None,
         }));
         let child_id = builder.push(DomNode::Element(ElementData {
+            pretender_context: None,
             base: NodeBase {
                 id: 2,
                 uuid: "child".to_string(),

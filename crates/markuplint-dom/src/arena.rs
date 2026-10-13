@@ -4,11 +4,11 @@ use std::collections::HashMap;
 
 use markuplint_core::mlast::MLASTParseError;
 
-use crate::node::DomNode;
+use crate::node::{DomNode, ElementData};
 
 pub type NodeId = usize;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct DomArena {
     pub(crate) nodes: Vec<DomNode>,
     pub(crate) uuid_to_id: HashMap<String, NodeId>,
@@ -66,6 +66,29 @@ impl DomArena {
     #[must_use]
     pub fn is_empty(&self) -> bool {
         self.nodes.is_empty()
+    }
+
+    /// Mutable access to an element, for passes that run after construction
+    /// (the pretending pass rewrites the identity of matched elements).
+    pub fn element_mut(&mut self, id: NodeId) -> Option<&mut ElementData> {
+        match self.nodes.get_mut(id) {
+            Some(DomNode::Element(data)) => Some(data),
+            _ => None,
+        }
+    }
+
+    /// Adds a virtual element (a slot wrapper or a `contents` entry of a
+    /// pretender). It gets its `NodeId` here and is linked into no child list, so
+    /// tree traversals and [`Self::elements`] do not reach it.
+    ///
+    /// # Panics
+    ///
+    /// Panics when `data` is not virtual (its `pretender_context` is not
+    /// [`PretenderContext::Origin`](crate::pretender::PretenderContext::Origin)).
+    pub fn push_virtual_element(&mut self, mut data: ElementData) -> NodeId {
+        assert!(data.is_virtual(), "a virtual element must have an origin");
+        data.base.id = self.nodes.len();
+        self.push(DomNode::Element(data))
     }
 
     pub(crate) fn push(&mut self, node: DomNode) -> NodeId {

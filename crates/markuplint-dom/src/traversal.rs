@@ -61,7 +61,14 @@ impl DomArena {
         }
     }
 
+    /// The elements of the document, in arena order. Virtual elements created
+    /// from pretenders are not part of the document and are skipped (TS keeps them
+    /// out of `nodeList`); [`Self::elements_including_virtual`] includes them.
     pub fn elements(&self) -> impl Iterator<Item = (NodeId, &ElementData)> {
+        self.elements_including_virtual().filter(|(_, data)| !data.is_virtual())
+    }
+
+    pub fn elements_including_virtual(&self) -> impl Iterator<Item = (NodeId, &ElementData)> {
         self.nodes.iter().filter_map(|n| {
             if let DomNode::Element(data) = n {
                 Some((data.base.id, data))

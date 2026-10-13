@@ -9,6 +9,7 @@
 //! Rust HTML parser cannot handle, by accepting their MLAST output verbatim.
 
 pub mod mlast;
+pub mod pretender;
 pub mod violation;
 
 pub type ParseError = serde_json::Error;

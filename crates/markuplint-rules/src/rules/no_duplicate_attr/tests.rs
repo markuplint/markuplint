@@ -186,6 +186,7 @@ pub(crate) fn make_element_with_attrs(tag: &str, attrs: &[(&str, &str)]) -> DomA
         children: vec![],
     }));
     let el_id = builder.push(DomNode::Element(ElementData {
+        pretender_context: None,
         base: NodeBase {
             id: 0,
             uuid: "el".to_string(),

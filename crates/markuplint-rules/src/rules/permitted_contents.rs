@@ -851,6 +851,7 @@ mod tests {
         }));
 
         let parent_id = builder.push(DomNode::Element(ElementData {
+            pretender_context: None,
             base: NodeBase {
                 id: 0,
                 uuid: "parent".to_string(),
@@ -884,6 +885,7 @@ mod tests {
         let mut child_ids = vec![];
         for (tag, _attrs) in children {
             let cid = builder.push(DomNode::Element(ElementData {
+                pretender_context: None,
                 base: NodeBase {
                     id: 0,
                     uuid: format!("child-{tag}"),
@@ -1208,6 +1210,7 @@ mod tests {
             children: vec![],
         }));
         let br_id = builder.push(DomNode::Element(ElementData {
+            pretender_context: None,
             base: NodeBase {
                 id: 0,
                 uuid: "br".to_string(),
@@ -1429,6 +1432,7 @@ mod tests {
             children: vec![],
         }));
         let switch_id = builder.push(DomNode::Element(ElementData {
+            pretender_context: None,
             base: NodeBase {
                 id: 0,
                 uuid: "sw".to_string(),
@@ -1459,6 +1463,7 @@ mod tests {
             e.base.id = switch_id;
         }
         let a_id = builder.push(DomNode::Element(ElementData {
+            pretender_context: None,
             base: NodeBase {
                 id: 0,
                 uuid: "a".to_string(),
@@ -1506,6 +1511,7 @@ mod tests {
     fn make_el_with_attr(tag: &str, attr: &str) -> markuplint_dom::node::ElementData {
         use markuplint_core::mlast::{MLASTAttr, MLASTHTMLAttr, MLASTToken};
         ElementData {
+            pretender_context: None,
             base: NodeBase {
                 id: 0,
                 uuid: String::new(),
@@ -1683,6 +1689,7 @@ mod tests {
             })
             .collect();
         ElementData {
+            pretender_context: None,
             base: NodeBase {
                 id: 0,
                 uuid: String::new(),

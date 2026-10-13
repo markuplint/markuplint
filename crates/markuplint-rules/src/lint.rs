@@ -1,5 +1,6 @@
 //! Top-level lint function: MLAST JSON + config → violations.
 
+use markuplint_core::pretender::Pretender;
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::builder;
 use markuplint_dom::node::DomNode;
@@ -8,6 +9,7 @@ use markuplint_types::spec::types::MLMLSpec;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
+use crate::pretending;
 use crate::rule::{Rule, RuleCommonSettings, RuleConfig, RuleConfigSet};
 use crate::rule_mapper::{self, NodeRuleEntry};
 use crate::rules::aria_prop_requires_role::AriaPropRequiresRole;
@@ -110,6 +112,10 @@ pub struct LintConfig {
     /// Settings shared by several rules (`ruleCommonSettings`), e.g. `ariaVersion`.
     #[serde(default, alias = "rule_common_settings")]
     pub rule_common_settings: Option<RuleCommonSettings>,
+
+    /// Resolved pretenders (TS `Pretender[]`), applied to the DOM before rules run.
+    #[serde(default)]
+    pub pretenders: Vec<Pretender>,
 }
 
 #[derive(Debug, Serialize)]
@@ -135,6 +141,19 @@ fn lint_with_rules(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig, rules
             violations: vec![parse_error],
         };
     }
+
+    // TS applies pretenders while building the document, before rule mapping, so
+    // that `nodeRules` selectors see the pretender identity. The caller's arena is
+    // left as built; only a document with pretenders pays for the copy.
+    let pretended;
+    let arena = if pretending::may_pretend(arena, &config.pretenders) {
+        let mut copy = arena.clone();
+        pretending::apply_pretenders(&mut copy, &config.pretenders, spec);
+        pretended = copy;
+        &pretended
+    } else {
+        arena
+    };
 
     let mut violations = Vec::new();
 
@@ -689,6 +708,29 @@ mod tests {
         assert_eq!(config.value, Value::Bool(true));
     }
 
+    #[test]
+    fn v6_lint_config_pretenders_default_empty() {
+        let config: LintConfig = serde_json::from_value(serde_json::json!({ "rules": {} })).unwrap();
+        assert!(config.pretenders.is_empty());
+    }
+
+    #[test]
+    fn v6_lint_config_pretenders() {
+        use markuplint_core::pretender::PretenderAs;
+
+        let config: LintConfig = serde_json::from_value(serde_json::json!({
+            "rules": {},
+            "pretenders": [
+                { "selector": "x-btn", "as": "button" },
+                { "selector": "x-img", "as": { "element": "img", "slots": null } }
+            ]
+        }))
+        .unwrap();
+        assert_eq!(config.pretenders.len(), 2);
+        assert_eq!(config.pretenders[0].as_, PretenderAs::Name("button".into()));
+        assert!(matches!(config.pretenders[1].as_, PretenderAs::Node(_)));
+    }
+
     // --- Integration test: full pipeline ---
 
     #[test]
@@ -704,6 +746,7 @@ mod tests {
             node_rules: vec![],
             child_node_rules: vec![],
             rule_common_settings: None,
+            pretenders: vec![],
         };
 
         let result = lint(&arena, &spec, &config);
@@ -726,6 +769,7 @@ mod tests {
             node_rules: vec![],
             child_node_rules: vec![],
             rule_common_settings: None,
+            pretenders: vec![],
         };
 
         let result = lint(&arena, &spec, &config);
@@ -745,6 +789,7 @@ mod tests {
             node_rules: vec![],
             child_node_rules: vec![],
             rule_common_settings: None,
+            pretenders: vec![],
         };
 
         let result = lint(&arena, &spec, &config);
@@ -1760,6 +1805,7 @@ mod tests {
             node_rules: vec![],
             child_node_rules: vec![],
             rule_common_settings: None,
+            pretenders: vec![],
         };
 
         let result = lint(&arena, &spec, &config);
@@ -1795,6 +1841,7 @@ mod tests {
             node_rules: vec![],
             child_node_rules: vec![],
             rule_common_settings: None,
+            pretenders: vec![],
         };
 
         let result = lint(&arena, &spec, &config);
@@ -2091,6 +2138,7 @@ mod tests {
             node_rules: vec![],
             child_node_rules: vec![],
             rule_common_settings: None,
+            pretenders: vec![],
         };
 
         let result = lint(&arena, &spec, &config);

@@ -1,8 +1,9 @@
 use markuplint_core::mlast::{ElementType, MLASTAttr, MLASTBlockBehavior, NamespaceURI};
 
 use crate::arena::NodeId;
+use crate::pretender::PretenderContext;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum DomNode {
     Document(DocumentData),
     Element(ElementData),
@@ -100,7 +101,7 @@ impl DomNode {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct NodeBase {
     pub id: NodeId,
     pub uuid: String,
@@ -116,7 +117,7 @@ pub struct NodeBase {
     pub depth: u32,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct DocumentData {
     pub id: NodeId,
     pub raw: String,
@@ -125,7 +126,7 @@ pub struct DocumentData {
     pub children: Vec<NodeId>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct ElementData {
     pub base: NodeBase,
     pub namespace: NamespaceURI,
@@ -139,6 +140,8 @@ pub struct ElementData {
     pub tag_close_char: String,
     pub is_ghost: bool,
     pub close_tag: Option<CloseTagInfo>,
+    /// Set by the pretending pass; see [`crate::pretender`].
+    pub pretender_context: Option<PretenderContext>,
 }
 
 #[derive(Debug, Clone)]
@@ -150,20 +153,20 @@ pub struct CloseTagInfo {
     pub col: u32,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct TextData {
     pub base: NodeBase,
     /// `true` when this text node originates from a bogus/orphaned end tag.
     pub is_bogus: bool,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct CommentData {
     pub base: NodeBase,
     pub is_bogus: bool,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct DoctypeData {
     pub base: NodeBase,
     pub name: String,
@@ -172,7 +175,7 @@ pub struct DoctypeData {
 }
 
 /// Preprocessor-specific block (`PSBlock`) node data.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct PSBlockData {
     pub base: NodeBase,
     pub is_fragment: bool,
@@ -181,12 +184,12 @@ pub struct PSBlockData {
 }
 
 /// End tags carry no semantic content but are preserved for position tracking.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct EndTagData {
     pub base: NodeBase,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct InvalidData {
     pub base: NodeBase,
     pub kind: Option<String>,

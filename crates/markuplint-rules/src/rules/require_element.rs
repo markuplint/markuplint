@@ -185,6 +185,7 @@ mod tests {
             children: vec![],
         }));
         let nav_id = builder.push(DomNode::Element(ElementData {
+            pretender_context: None,
             base: NodeBase {
                 id: 0,
                 uuid: "nav".to_string(),
