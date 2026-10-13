@@ -4,7 +4,7 @@ import type { MLDocument } from './document.js';
 import type { MLNamedNodeMap } from './named-node-map.js';
 import type { MLNode } from './node.js';
 import type { MLText } from './text.js';
-import type { ElementNodeType, PretenderContext, PretenderContextPretender } from './types.js';
+import type { ElementNodeType, PretenderContext, PretenderContextPretender, PretenderSlotContent } from './types.js';
 import type {
 	ElementType,
 	MLASTAttr,
@@ -14,16 +14,21 @@ import type {
 	NamespaceURI,
 } from '@markuplint/ml-ast';
 import type {
+	OriginalNode,
 	PlainData,
 	Pretender,
 	PretenderARIA,
+	PretenderAttr,
 	RegexSelector,
 	RuleConfigValue,
 	RuleInfo,
+	Slot,
 } from '@markuplint/ml-config';
 import type { ARIAVersion } from '@markuplint/ml-spec';
 
 import { getSpecByTagName, resolveNamespace } from '@markuplint/ml-spec';
+import { pretenderNamespaceToURI } from '@markuplint/ml-config';
+import { getChildNamespace } from '@markuplint/parser-utils';
 import type { SelectorMatches } from '@markuplint/selector';
 import { matchSelector } from '@markuplint/selector';
 
@@ -77,8 +82,15 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	#getChildElementsAndTextNodeWithoutWhitespacesCache: (MLElement<T, O> | MLText<T, O>)[] | null = null;
 	/**
 	 * Whether this element belongs to a non-HTML namespace (e.g., SVG or MathML).
+	 *
+	 * Unlike {@link namespaceURI}, it does not follow the pretender: it says how the tag
+	 * written here is parsed (whether the case of its name is kept, whether `/>` closes
+	 * it), and the tag of a component is not parsed as the element it renders. An element
+	 * given to a component as a child is, as it ends up inside what the component renders.
 	 */
-	readonly isForeignElement: boolean;
+	get isForeignElement(): boolean {
+		return this.#namespaceURI !== HTML_NAMESPACE;
+	}
 
 	/**
 	 * Whether this element was implicitly created (e.g., an omitted `<body>` tag in HTML).
@@ -88,8 +100,19 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 
 	/**
 	 * The namespace URI of this element (e.g., `http://www.w3.org/1999/xhtml` for HTML elements).
+	 *
+	 * Like {@link localName}, it follows the pretender, so that a namespaced selector
+	 * (`svg|svg`) and a spec lookup see the element the component renders. An element
+	 * given to a component as a child takes the namespace of where the component renders
+	 * it, resolved when the document pretends.
 	 */
-	readonly namespaceURI: NamespaceURI;
+	get namespaceURI(): NamespaceURI {
+		if (this.pretenderContext?.type === 'pretender') {
+			return this.pretenderContext.as.namespaceURI;
+		}
+		return this.#namespaceURI;
+	}
+	#namespaceURI: NamespaceURI;
 
 	/**
 	 * ## Why this cache exists
@@ -165,6 +188,12 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * The virtual element created by `pretending()` is not registered in the
 	 * document's `nodeList`; walkers visit only the original element, which
 	 * delegates its name and attribute getters to the virtual element.
+	 *
+	 * The children a rule should validate are not `as.childNodes` (which mirrors
+	 * only whether the component accepts children). They are
+	 * `slotContent.fill(childNodes)` when the pretender describes `slots` /
+	 * `contents`, because the component renders its own elements around the
+	 * children given at the usage site.
 	 */
 	pretenderContext: PretenderContext<MLElement<T, O>, T, O> | null = null;
 
@@ -201,10 +230,9 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 			: null;
 		this.closeTag = pairAstNode ? new MLElementCloseTag(pairAstNode, document, this) : null;
 		const ns = resolveNamespace(astNode.nodeName, astNode.namespace);
-		this.namespaceURI = astNode.namespace;
+		this.#namespaceURI = astNode.namespace;
 		this.elementType = astNode.elementType;
 		this.#localName = ns.localName;
-		this.isForeignElement = this.namespaceURI !== HTML_NAMESPACE;
 
 		this.isOmitted = astNode.isGhost;
 
@@ -3931,6 +3959,111 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	/**
+	 * The element this element is rendered in: when the parent is a component, the
+	 * element the component wraps its children with (the slot wrapper, or the element
+	 * it renders), otherwise the parent. `null` at the top level. `undefined` when the
+	 * parent is a component with more than one slot that give the children different
+	 * namespaces.
+	 *
+	 * A custom element is not a component here: it puts the children in its light DOM,
+	 * where they keep the namespace they are parsed in.
+	 *
+	 * The parent has pretended already: `MLDocument` calls `pretending()` in
+	 * document order.
+	 */
+	#getRenderedParent(): MLElement<T, O> | null | undefined {
+		const parent = this.parentElement;
+		if (parent?.pretenderContext?.type !== 'pretender' || parent.elementType === 'web-component') {
+			return parent;
+		}
+		const { as, slotContent } = parent.pretenderContext;
+		if (!slotContent) {
+			return as;
+		}
+		return slotContent.wrapper ?? parent.#sharedWrapper ?? undefined;
+	}
+
+	/**
+	 * For a component with more than one slot, whose wrapper of each child is unknown, a
+	 * wrapper that gives the children the same namespace as all the others do, so that
+	 * the children can still be resolved. `null` when they differ (`<svg>` and the `<div>`
+	 * inside its `foreignObject`).
+	 */
+	#sharedWrapper: MLElement<T, O> | null = null;
+
+	#findSharedWrapper(slots: readonly Slot[], as: MLElement<T, O>): MLElement<T, O> | null {
+		const wrappers = slots.map((slot, i) =>
+			this.#createVirtualElement(slot, `${this.uuid}_pretender_slot_${i}`, this.uuid, as),
+		);
+		const [first] = wrappers;
+		if (!first) {
+			return null;
+		}
+		const namespace = first.#getChildNamespace(null);
+		return wrappers.every(wrapper => wrapper.#getChildNamespace(null) === namespace) ? first : null;
+	}
+
+	/**
+	 * The namespace of an element named `name` rendered as a child of this element, from
+	 * its own resolved namespace rather than the one of what it pretends to be.
+	 * `null` takes the namespace this element gives any element.
+	 */
+	#getChildNamespace(name: string | null): NamespaceURI {
+		return getChildNamespace(name, this.#namespaceURI, this._astToken.nodeName);
+	}
+
+	/**
+	 * Re-resolves the namespace for the element this element is rendered in.
+	 *
+	 * The parser gives the children written inside a component the namespace of where
+	 * the component is written, as it does not know what the component renders: in
+	 * `<Icon><path /></Icon>`, where `Icon` renders `<svg>`, `path` is an HTML element
+	 * to it. Its namespace is kept while the parent is where the parser put it, so that
+	 * where no component is involved, the namespace stays what the parser gave, and when
+	 * where the component renders it is unknown.
+	 *
+	 * `getChildNamespace` leaves foreign content only at `foreignObject`, so an element
+	 * re-resolved here does not follow the other integration points (`<mi>`, `<desc>`),
+	 * nor the HTML elements that break out of foreign content in an HTML document (`<div>`
+	 * inside `<svg>`).
+	 *
+	 * A component is given no name, so that its own name is not taken for an element:
+	 * `getChildNamespace` compares names in lowercase, so `<Math>` would enter MathML.
+	 * The parsers of this repository do the same, but the AST may come from a parser
+	 * that does not.
+	 */
+	#resolveNamespace(renderedParent: MLElement<T, O> | null | undefined) {
+		const parent = this.parentElement;
+		if (!parent || !renderedParent) {
+			return;
+		}
+		if (renderedParent === parent && parent.#namespaceURI === parent._astToken.namespace) {
+			return;
+		}
+		this.#namespaceURI = renderedParent.#getChildNamespace(
+			this.elementType === 'authored' ? null : this._astToken.nodeName,
+		);
+	}
+
+	/**
+	 * The namespace of an element named `name` rendered where this element is, for the
+	 * element this element pretends to be.
+	 *
+	 * Where this element is has the namespace of this element, so the element gets the
+	 * namespace an element written there gets. For a component, it is taken from the
+	 * parent instead, as a parser that does not keep the name of a component out of
+	 * the namespace may have taken it for an element (`<Svg>`, `<Math>`: the names are
+	 * compared in lowercase).
+	 */
+	#getNamespaceInPlace(name: string, renderedParent: MLElement<T, O> | null | undefined): NamespaceURI {
+		let here = this.#namespaceURI;
+		if (this.elementType === 'authored' && renderedParent !== undefined) {
+			here = renderedParent ? renderedParent.#getChildNamespace(null) : HTML_NAMESPACE;
+		}
+		return getChildNamespace(name, here, null);
+	}
+
+	/**
 	 * Initializes the pretender context for this element based on the given pretender
 	 * configurations. If a matching pretender is found or the element has an `as` attribute,
 	 * sets up the pretender/pretended relationship between elements.
@@ -3938,6 +4071,9 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @param pretenders - Optional array of pretender configurations to match against
 	 */
 	pretending(pretenders?: readonly Pretender[]) {
+		const renderedParent = this.#getRenderedParent();
+		this.#resolveNamespace(renderedParent);
+
 		// Pretender must not apply to a recognised standard HTML element (e.g. <marquee>,
 		// <h1>, <button>). Allowing such elements to masquerade as another would silently
 		// mask spec-driven rules — deprecation, ARIA role restrictions, browser support —
@@ -3970,77 +4106,27 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		}
 
 		let nodeName: string;
-		let namespace: NamespaceURI = 'http://www.w3.org/1999/xhtml';
 		const attributes: MLASTAttr[] = [];
 		let aria: PretenderARIA | undefined;
 		if (typeof pretenderElement === 'string') {
 			nodeName = pretenderElement;
 		} else {
 			nodeName = pretenderElement.element;
-			namespace = pretenderElement.namespace === 'svg' ? 'http://www.w3.org/2000/svg' : namespace;
 			if (pretenderElement.inheritAttrs) {
 				attributes.push(...this._astToken.attributes);
 			}
 			if (pretenderElement.attrs) {
-				attributes.push(
-					...pretenderElement.attrs.map(({ name, value }, i) => {
-						const _value =
-							value == null
-								? ''
-								: typeof value === 'string'
-									? value
-									: (this.getAttribute(value.fromAttr) ?? '');
-						return {
-							...this._astToken,
-							uuid: `${this.uuid}_attr_${i}`,
-							type: 'attr',
-							nodeName: name,
-							spacesBeforeName: {
-								...this._astToken,
-								raw: '',
-							},
-							name: {
-								...this._astToken,
-								raw: name,
-							},
-							spacesBeforeEqual: {
-								...this._astToken,
-								raw: '',
-							},
-							equal: {
-								...this._astToken,
-								raw: '',
-							},
-							spacesAfterEqual: {
-								...this._astToken,
-								raw: '',
-							},
-							startQuote: {
-								...this._astToken,
-								raw: '',
-							},
-							value: {
-								...this._astToken,
-								raw: _value,
-							},
-							endQuote: {
-								...this._astToken,
-								raw: '',
-							},
-							isDuplicatable: true,
-							parentNode: null,
-							nextNode: null,
-							prevNode: null,
-							isFragment: false,
-							isGhost: false,
-						} as MLASTAttr;
-					}),
-				);
+				attributes.push(...this.#createPretenderAttrs(pretenderElement.attrs, this.uuid));
 			}
 			aria = pretenderElement.aria;
 		}
 
 		const slots = typeof pretenderElement === 'string' ? undefined : pretenderElement.slots;
+
+		const namespace =
+			typeof pretenderElement !== 'string' && pretenderElement.namespace
+				? pretenderNamespaceToURI(pretenderElement.namespace)
+				: this.#getNamespaceInPlace(nodeName, renderedParent);
 
 		const as = new MLElement<T, O>(
 			{
@@ -4067,10 +4153,213 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 			origin: this,
 		};
 
+		const slotContent =
+			typeof pretenderElement === 'string' ? undefined : this.#createSlotContent(pretenderElement, as);
+
 		this.pretenderContext = {
 			type: 'pretender',
 			as,
 			aria,
+			...(slotContent ? { slotContent } : {}),
+		};
+	}
+
+	/**
+	 * Converts pretender attributes to AST attributes for a virtual element.
+	 *
+	 * `{ fromAttr }` reads this (the origin) element's attribute. When that attribute is an
+	 * expression (`kind={kind}`), the result is dynamic as well: the value the component
+	 * receives is unknown, and the source text of the expression is not a value to validate.
+	 * When the attribute is not written and `omitIfMissing` is set, the virtual element gets
+	 * no such attribute, as a component that forwards an `undefined` prop renders none.
+	 * Without `omitIfMissing`, it is an empty attribute.
+	 *
+	 * `{ dynamic: true }` yields an attribute flagged `isDynamicValue`, which rules do not
+	 * validate.
+	 */
+	#createPretenderAttrs(attrs: readonly PretenderAttr[], uuidBase: string): MLASTAttr[] {
+		return attrs.flatMap(({ name, value }, i): MLASTAttr[] => {
+			let isDynamic = value != null && typeof value === 'object' && 'dynamic' in value;
+			let _value = '';
+			if (typeof value === 'string') {
+				_value = value;
+			} else if (value != null && 'fromAttr' in value) {
+				const fromAttr = value.fromAttr.toLowerCase();
+				const origin = this.#attributes.find(attr => attr.name.toLowerCase() === fromAttr);
+				if (!origin && value.omitIfMissing) {
+					return [];
+				}
+				if (origin?.isDynamicValue) {
+					isDynamic = true;
+				} else {
+					_value = origin?.value ?? '';
+				}
+			}
+			return [
+				{
+					...this._astToken,
+					uuid: `${uuidBase}_attr_${i}`,
+					type: 'attr',
+					nodeName: name,
+					spacesBeforeName: {
+						...this._astToken,
+						raw: '',
+					},
+					name: {
+						...this._astToken,
+						raw: name,
+					},
+					spacesBeforeEqual: {
+						...this._astToken,
+						raw: '',
+					},
+					equal: {
+						...this._astToken,
+						raw: '',
+					},
+					spacesAfterEqual: {
+						...this._astToken,
+						raw: '',
+					},
+					startQuote: {
+						...this._astToken,
+						raw: '',
+					},
+					value: {
+						...this._astToken,
+						raw: _value,
+					},
+					endQuote: {
+						...this._astToken,
+						raw: '',
+					},
+					isDuplicatable: true,
+					...(isDynamic ? { isDynamicValue: true } : {}),
+					parentNode: null,
+					nextNode: null,
+					prevNode: null,
+					isFragment: false,
+					isGhost: false,
+				} as MLASTAttr,
+			];
+		});
+	}
+
+	/**
+	 * Creates a childless virtual element that is not registered in the document's
+	 * `nodeList`, used for a slot wrapper or a static entry of `contents`.
+	 * Its close tag is deliberately dropped (`pairNodeUuid: null`): the MLElement
+	 * constructor would otherwise re-register the origin's real close tag under
+	 * the virtual element.
+	 */
+	#createVirtualElement(
+		spec: {
+			readonly element: string;
+			readonly namespace?: OriginalNode['namespace'];
+			readonly attrs?: readonly PretenderAttr[];
+			readonly inheritAttrs?: boolean;
+		},
+		uuid: string,
+		parentNodeUuid: string,
+		renderedIn: MLElement<T, O>,
+	): MLElement<T, O> {
+		const attributes: MLASTAttr[] = [];
+		if (spec.inheritAttrs) {
+			attributes.push(...this._astToken.attributes);
+		}
+		if (spec.attrs) {
+			attributes.push(...this.#createPretenderAttrs(spec.attrs, uuid));
+		}
+		const virtual = new MLElement<T, O>(
+			{
+				...this._astToken,
+				uuid,
+				raw: `<${spec.element}>`,
+				nodeName: spec.element,
+				namespace: spec.namespace
+					? pretenderNamespaceToURI(spec.namespace)
+					: renderedIn.#getChildNamespace(spec.element),
+				elementType: spec.element.includes('-') ? 'web-component' : 'html',
+				attributes,
+				childNodes: [],
+				pairNodeUuid: null,
+				parentNodeUuid,
+			},
+			this.ownerMLDocument,
+		);
+		virtual.resetChildren(toNodeList([]));
+		// Like the pretender element `as`, it stands for this element, so that a report
+		// on it can be moved to where the user wrote the component.
+		virtual.pretenderContext = { type: 'origin', origin: this };
+		return virtual;
+	}
+
+	/**
+	 * Builds {@link PretenderSlotContent} from the pretender definition.
+	 * Returns `undefined` when the definition says nothing about what surrounds
+	 * the children, so that the children given at the usage site stay the whole
+	 * content of the outermost element (the bare-string pretender behavior).
+	 */
+	#createSlotContent(
+		node: OriginalNode,
+		as: MLElement<T, O>,
+	): PretenderSlotContent<MLElement<T, O>, T, O> | undefined {
+		const { slots } = node;
+		let wrapper: MLElement<T, O> = as;
+		let contents = node.contents;
+
+		if (slots != null && slots !== true && slots.length > 0) {
+			const [slot] = slots;
+			if (slots.length > 1 || !slot) {
+				// The wrapper of each child is unknown, so the children are not validated,
+				// but a slot may still render unknown content (which may be a name).
+				this.#sharedWrapper = this.#findSharedWrapper(slots, as);
+				return {
+					wrapper: null,
+					mutable: slots.some(s => s.contents?.some(entry => 'dynamic' in entry) ?? false),
+					fill: <C>(given: readonly C[]) => given,
+				};
+			}
+			// The elements between the root and the wrapper are not known, so the wrapper is
+			// taken to be a child of the root unless the definition states its namespace.
+			wrapper = this.#createVirtualElement(slot, `${this.uuid}_pretender_slot`, this.uuid, as);
+			contents = slot.contents ?? [{ slot: true }];
+		}
+
+		if (!contents) {
+			return undefined;
+		}
+
+		const entries = contents.map((entry, i) =>
+			'element' in entry
+				? this.#createVirtualElement(
+						entry,
+						`${this.uuid}_pretender_content_${i}`,
+						wrapper === as ? this.uuid : wrapper.uuid,
+						wrapper,
+					)
+				: entry,
+		);
+
+		return {
+			wrapper,
+			mutable: entries.some(entry => !(entry instanceof MLElement) && 'dynamic' in entry),
+			fill: <C>(given: readonly C[]) => {
+				const filled: (C | MLElement<T, O>)[] = [];
+				let placed = false;
+				for (const entry of entries) {
+					if (entry instanceof MLElement) {
+						filled.push(entry);
+					} else if ('slot' in entry && !placed) {
+						filled.push(...given);
+						placed = true;
+					}
+				}
+				if (!placed) {
+					filled.push(...given);
+				}
+				return filled;
+			},
 		};
 	}
 

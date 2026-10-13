@@ -175,6 +175,7 @@ pub(crate) mod tests {
             children: vec![],
         }));
         let el_id = builder.push(DomNode::Element(ElementData {
+            pretender_context: None,
             base: NodeBase {
                 id: 1,
                 uuid: "el-1".to_string(),

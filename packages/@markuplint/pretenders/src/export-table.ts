@@ -13,6 +13,11 @@
  * across files (that is `resolve-module-file`'s job) or follow
  * `export * from` chains — a star re-export is recorded as-is, and any
  * caller doing multi-file resolution must decide how far to follow it.
+ *
+ * Type-only exports (`export type { X } from`, `export type *`, an inline
+ * `type` specifier) are left out: a type carries no component, and both the
+ * declaration lookup and `autoScan`'s walk (through {@link getReExportSources})
+ * read this one table, so they agree on which statements lead anywhere.
  */
 
 import type { SourceFile } from 'typescript';
@@ -84,11 +89,35 @@ export function getExportTable(
 	return { byName, starReExportSources };
 }
 
+/**
+ * Lists the module specifiers a file re-exports from, named, namespace and
+ * star re-exports alike (type-only ones are not in the table). A specifier
+ * appears once per name re-exported from it, so callers that want each
+ * module once deduplicate.
+ *
+ * @param table - The file's export table
+ * @returns The re-exported module specifiers, named and namespace first, then star
+ */
+export function getReExportSources(table: ExportTable): string[] {
+	const sources: string[] = [];
+	for (const entry of table.byName.values()) {
+		if (entry.kind === 're-export') {
+			sources.push(entry.source);
+		}
+	}
+	return [...sources, ...table.starReExportSources];
+}
+
 function collectExportDeclaration(
 	node: ts.ExportDeclaration,
 	byName: Map<string, ExportEntry>,
 	starReExportSources: string[],
 ) {
+	if (node.isTypeOnly) {
+		// `export type { X } from` / `export type * from` — a type carries no component
+		return;
+	}
+
 	const source =
 		node.moduleSpecifier && ts.isStringLiteral(node.moduleSpecifier) ? node.moduleSpecifier.text : undefined;
 
@@ -109,6 +138,9 @@ function collectExportDeclaration(
 	}
 
 	for (const element of node.exportClause.elements) {
+		if (element.isTypeOnly) {
+			continue;
+		}
 		const exportedName = element.name.text;
 		const originalName = element.propertyName?.text ?? exportedName;
 

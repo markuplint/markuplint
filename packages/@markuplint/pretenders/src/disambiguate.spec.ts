@@ -1,11 +1,15 @@
 import type { Pretender } from '@markuplint/ml-config';
 
-import { readFile } from 'node:fs/promises';
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import os from 'node:os';
 import path from 'node:path';
 
-import { describe, test, expect } from 'vitest';
+import { describe, test, expect, beforeEach, afterEach } from 'vitest';
+
+import { clearExportTableCache } from './dependency-mapper.js';
 
 import { disambiguatePretenders } from './disambiguate.js';
+import { normalizePath } from './import-resolver/resolve-module-file.js';
 
 const collisionDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures', 'collision');
 const moduleResolutionDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures', 'module-resolution');
@@ -151,5 +155,88 @@ describe('disambiguatePretenders', () => {
 
 		const result = await disambiguatePretenders(pretenders, { filePath, sourceCode });
 		expect(result).toStrictEqual(pretenders);
+	});
+
+	describe('through a barrel file', () => {
+		let tmpDir: string;
+
+		beforeEach(async () => {
+			tmpDir = await mkdtemp(path.join(os.tmpdir(), 'disambiguate-barrel-'));
+			await writeFile(path.join(tmpDir, 'a.tsx'), 'export const Item = () => <button />;');
+			await writeFile(path.join(tmpDir, 'b.tsx'), 'export const Item = () => <li />;');
+		});
+
+		afterEach(async () => {
+			await rm(tmpDir, { recursive: true, force: true });
+			clearExportTableCache();
+		});
+
+		const candidates = (dir: string): Pretender[] => [
+			{ selector: 'Item', as: 'li', filePath: `${path.join(dir, 'b.tsx')}:1:14` },
+			{ selector: 'Item', as: 'button', filePath: `${path.join(dir, 'a.tsx')}:1:14` },
+		];
+		const target = (dir: string) => ({
+			filePath: path.join(dir, 'page.tsx'),
+			sourceCode: "import { Item } from './barrel';\nexport const Page = () => <Item />;",
+		});
+
+		test('a named re-export resolves to the declaring file', async () => {
+			await writeFile(path.join(tmpDir, 'barrel.ts'), "export { Item } from './a';");
+
+			const result = await disambiguatePretenders(candidates(tmpDir), target(tmpDir));
+
+			expect(result.map(p => p.as)).toStrictEqual(['button']);
+		});
+
+		test('a star re-export resolves to the declaring file', async () => {
+			await writeFile(path.join(tmpDir, 'barrel.ts'), "export * from './a';");
+
+			const result = await disambiguatePretenders(candidates(tmpDir), target(tmpDir));
+
+			expect(result.map(p => p.as)).toStrictEqual(['button']);
+		});
+
+		test('a re-exported template component resolves to its file', async () => {
+			await writeFile(path.join(tmpDir, 'Item.vue'), '<template><em /></template>');
+			await writeFile(path.join(tmpDir, 'barrel.ts'), "export { default as Item } from './Item.vue';");
+			const pretenders: Pretender[] = [
+				...candidates(tmpDir),
+				{ selector: 'Item', as: 'em', filePath: path.join(tmpDir, 'Item.vue') },
+			];
+
+			const result = await disambiguatePretenders(pretenders, target(tmpDir));
+
+			expect(result.map(p => p.as)).toStrictEqual(['em']);
+		});
+
+		test('leaves the array unchanged when two star re-exports supply the name', async () => {
+			await writeFile(path.join(tmpDir, 'barrel.ts'), "export * from './a';\nexport * from './b';");
+			const pretenders = candidates(tmpDir);
+
+			const result = await disambiguatePretenders(pretenders, target(tmpDir));
+
+			expect(result).toBe(pretenders);
+		});
+
+		test('records the files read to follow the re-exports', async () => {
+			await writeFile(path.join(tmpDir, 'barrel.ts'), "export { Item } from './a';");
+			const dependencies = new Set<string>();
+
+			await disambiguatePretenders(candidates(tmpDir), { ...target(tmpDir), dependencies });
+
+			expect(dependencies).toContain(normalizePath(path.join(tmpDir, 'barrel.ts')));
+		});
+
+		test('does not record the lint target even when a re-export chain passes through it', async () => {
+			const { filePath, sourceCode } = target(tmpDir);
+			await writeFile(filePath, sourceCode);
+			await writeFile(path.join(tmpDir, 'barrel.ts'), "export * from './page';\nexport * from './a';");
+			const dependencies = new Set<string>();
+
+			const result = await disambiguatePretenders(candidates(tmpDir), { filePath, sourceCode, dependencies });
+
+			expect(result.map(p => p.as)).toStrictEqual(['button']);
+			expect(dependencies).not.toContain(normalizePath(filePath));
+		});
 	});
 });

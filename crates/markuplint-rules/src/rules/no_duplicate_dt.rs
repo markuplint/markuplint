@@ -104,6 +104,7 @@ mod tests {
 
     fn make_element(tag: &str, line: u32, col: u32) -> ElementData {
         ElementData {
+            pretender_context: None,
             base: NodeBase {
                 id: 0,
                 uuid: String::new(),

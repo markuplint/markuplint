@@ -62,7 +62,18 @@ Instead of the CLI, you can configure dynamic scanning directly in your markupli
 }
 ```
 
-Only the config file is filesystem-watched, so in watch mode or an editor session, results can go stale if an imported component file changes without the config changing too.
+The walk follows up to 8 import hops from the linted file. A re-export (`export ... from`) in a JS/TS file (or in the linted file itself when it is MDX) is followed like an import, so components imported through a barrel file are found, and passing through the barrel takes a hop. `auto` also accepts an object to change the limit:
+
+```jsonc
+// .markuplintrc
+{
+  "pretenders": {
+    "auto": { "depth": 3 }, // `0` considers only the linted file itself
+  },
+}
+```
+
+In watch mode or an editor session, the component files `auto` (and `scan`) read are watched along with the config file, so editing one re-lints the files that use it. What is not watched, so a change to it is picked up only when the config changes: a component file that does not exist yet (including a new match of a `scan` glob, and a file that was removed and comes back), files under `node_modules`, and the files of `files` and `imports`. Edits to the linted file itself — adding, removing, or changing an import — are reflected on the next lint of that file.
 
 ## How It Works
 
@@ -80,10 +91,12 @@ function Bar() {
 
 ```json
 [
-  { "selector": "Foo", "as": "div" },
-  { "selector": "Bar", "as": "span" }
+  { "selector": "Foo", "as": { "element": "div", "slots": null } },
+  { "selector": "Bar", "as": { "element": "span", "slots": null } }
 ]
 ```
+
+`slots: null` records that the component does not render the children written at the usage site. The scanners always write it, because a bare element name (`"as": "div"`) means a component that renders them.
 
 The JSX scanner also infers HTML elements from styled-components patterns and infers dependencies from wrapper function arguments:
 
@@ -104,11 +117,28 @@ const Bar = styled(Foo)`
 ]
 ```
 
-The JSX scanner detects **slots** (children). If a component accepts `children` props, the resulting pretender includes `slots: true` in its `as` field.
+The JSX scanner detects **slots** (children). If a component accepts `children` props, the resulting pretender includes `slots: true` in its `as` field. When an inner element directly wraps the children (`<div><p>{children}</p></div>`), that element is recorded instead (`slots: [{ "element": "p" }]`), and the static children around the slot are recorded as `contents`.
+
+Which element a component is decided by what its own `return` statements can produce. A function nested in the returned element (`items.map(...)`) is not a return point of the component.
+
+- Branches that render different elements produce no pretender.
+- Branches that render the same element keep only the attributes they share, and the slot they agree on.
+- `null`, `undefined`, `false`, and a result that cannot be determined statically (`return children`) are ignored.
+- A fragment with several roots (`<><label /><input /></>`) is `element: "#fragment"`.
+- An attribute whose value is an expression is `{ "dynamic": true }`; a literal such as `{0}` or `{'x'}` is a static value.
+- An attribute whose value is just a prop of the component (`aria-label={label}`, or `aria-label={props.label}`) is `{ "fromAttr": "label", "omitIfMissing": true }`: it takes the value the usage site writes, and is omitted when the usage site does not write it. A prop with a default value (`({ type = 'button' })`), the rest of the props, and an expression that does more than name the prop (`label ?? 'x'`) stay dynamic. It is decided by syntax alone, so a name that the component declares again inside is not trusted to be the prop.
+- The scanners write `aria-label` and the like as attributes, never `aria`: `aria.name` would take precedence over `aria-labelledby`, which no component source says, while the accessible name algorithm computes the name from the attributes.
+
+Known limitations:
+
+- When a component renders another component (`<Base><span /></Base>`), it takes the mapping of `Base`. Its own `slots` and `contents` are composed into it (the `span` above is placed where `Base` renders its children). The attributes it writes on `Base` (`<Base type="submit">`) are added only when `Base` spreads its props (`inheritAttrs`), because they reach the element only through them; a name both write is kept when the values agree and is dynamic otherwise. The result spreads its props only when both do. An attribute of `Base` that takes a prop of `Base` (`{ "fromAttr" }`) takes what the outer component writes for it instead, and is omitted when the outer component does not pass the prop on. ARIA properties are not merged.
+- Only `permitted-contents` and the accessible name computation (for example `require-accessible-name`) read `contents`. In the name computation, `{ "dynamic": true }` is not a source of a name (a component whose only possible name is such an entry is not reported by `require-accessible-name`, because the entry may be the name), and children given to a component with `slots: null` are not used. Other rules that look at the children of the element see only the children given at the usage site.
 
 ### Template Scanner
 
-The template scanner delegates to each parser package's `component-scanner` subpath export (e.g., `@markuplint/vue-parser/component-scanner`). Each parser's component-scanner uses its own MLAST parser to extract the root element at depth=0, detect static attributes, slot/children usage, and extract script source blocks. This keeps framework-specific scanning logic co-located with the parser that understands the framework best.
+The template scanner delegates to each parser package's `component-scanner` subpath export (e.g., `@markuplint/vue-parser/component-scanner`). Each parser's component-scanner uses its own MLAST parser to extract the root element at depth=0, detect attributes (an attribute whose value is an expression, such as `:type` in Vue or `type={kind}` in Svelte and Astro, is recorded as `{ "dynamic": true }` under its own name; event handlers and other directives are not attributes), slot/children usage, and extract script source blocks. This keeps framework-specific scanning logic co-located with the parser that understands the framework best.
+
+The scanner reads the script (`<script setup>` of Vue, the instance script of Svelte, the frontmatter of Astro) for the props the component declares, and an attribute whose expression is just one of them (`:aria-label="label"` after `defineProps(['label'])`, `aria-label={label}` after `let { label } = $props()`, `export let label`, or `const { label } = Astro.props`) is `{ "fromAttr": "label", "omitIfMissing": true }`. Not read: the Options API `props`, a type that is not a literal (`defineProps<Props>()`), and a prop with a default value. A Boolean-typed Vue prop that the usage site omits is `false`, not `undefined`, so the attribute it is passed to is rendered with `"false"`; the scanner omits it, as no type is resolved. `inheritAttrs` is set when the root spreads the props (`{...rest}` of a destructuring, `{...$$restProps}`, `{...Astro.props}`). Vue falls the attributes through to the root of a template that has one root, so it is set for such a component unless it says `inheritAttrs: false` or declares props (the props are not attributes, and `inheritAttrs` cannot say which ones are); `v-bind="$attrs"` on the root sets it as well.
 
 ```vue
 <template>
@@ -134,6 +164,8 @@ Slot detection covers:
 - `<slot>` elements in Vue, Svelte, and Astro
 - `{@render children()}` snippets in Svelte 5
 
+The element that directly wraps a slot and the static children around it are recorded in the same way as the JSX scanner (`slots` and `contents`).
+
 ### Import Resolver
 
 The import resolver analyzes a component file and extracts import bindings, linking component usage to source file locations for cross-file dependency resolution.
@@ -151,7 +183,7 @@ Barrel file re-exports can be resolved with `resolveBarrelExport`, which maps a 
 
 ### Lint-time Disambiguation
 
-When the same component name is declared in more than one scanned file (e.g., two unrelated `Item` components rendering different elements), the generated pretenders keep independent entries for each — but `markuplint`'s lint pipeline still needs to know, for the specific file being linted, which one it actually refers to. `disambiguatePretenders` resolves this from the lint target's own declarations and imports; it's normally invoked automatically by `markuplint`'s config resolution, not called directly.
+When the same component name is declared in more than one scanned file (e.g., two unrelated `Item` components rendering different elements), the generated pretenders keep independent entries for each — but `markuplint`'s lint pipeline still needs to know, for the specific file being linted, which one it actually refers to. `disambiguatePretenders` resolves this from the lint target's own declarations and imports, following an imported barrel file's re-exports (`export { X } from`, `export * from`) to the file that declares the component; it's normally invoked automatically by `markuplint`'s config resolution, not called directly.
 
 In long-running hosts (watch mode, editor extensions) that keep re-resolving pretenders across file edits, call `clearPretenderCaches()` after each edit — otherwise a renamed export or a newly valid tsconfig `paths` alias keeps resolving as it did before the change for the rest of the process's lifetime.
 
@@ -173,10 +205,12 @@ const pretenders = await scan([
 
 #### Parameters
 
-| Parameter                      | Type                | Description                             |
-| ------------------------------ | ------------------- | --------------------------------------- |
-| `files`                        | `readonly string[]` | Absolute file paths to scan             |
-| `options.ignoreComponentNames` | `readonly string[]` | Component names to exclude from results |
+| Parameter                      | Type                | Description                                                                                                                                       |
+| ------------------------------ | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `files`                        | `readonly string[]` | Absolute file paths to scan                                                                                                                       |
+| `options.ignoreComponentNames` | `readonly string[]` | Component names to exclude from results                                                                                                           |
+| `options.followImports`        | `boolean`           | Whether the JSX scanner also scans the files the given JS/TS files import (default `true`; `autoScan` passes `false` to keep its own depth limit) |
+| `options.dependencies`         | `Set<string>`       | A set the scan adds the files its result depends on to (see [Dependencies](#dependencies))                                                        |
 
 ### `jsxScanner(files, options)`
 
@@ -317,17 +351,18 @@ const resolved = await disambiguatePretenders(pretenders, {
 
 #### Parameters
 
-| Parameter            | Type                   | Description                                 |
-| -------------------- | ---------------------- | ------------------------------------------- |
-| `pretenders`         | `readonly Pretender[]` | The resolved pretender list to disambiguate |
-| `options.filePath`   | `string`               | Absolute path of the file being linted      |
-| `options.sourceCode` | `string`               | Full source text of the file being linted   |
+| Parameter              | Type                   | Description                                                                                                  |
+| ---------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `pretenders`           | `readonly Pretender[]` | The resolved pretender list to disambiguate                                                                  |
+| `options.filePath`     | `string`               | Absolute path of the file being linted                                                                       |
+| `options.sourceCode`   | `string`               | Full source text of the file being linted                                                                    |
+| `options.dependencies` | `Set<string>`          | A set to add the `tsconfig.json` files the imports were resolved with to (see [Dependencies](#dependencies)) |
 
 #### Returns
 
 `Promise<readonly Pretender[]>` — The disambiguated pretender list, or `pretenders` itself when there was nothing to resolve or nothing could be confirmed.
 
-### `autoScan(entryAbsPath, sourceCode)`
+### `autoScan(entryAbsPath, sourceCode, options)`
 
 Resolves pretenders on demand by walking a single lint target's own import graph (breadth-first, extension-agnostic — a `.tsx` entry can import a `.vue` file and vice versa) and scanning the collected files in one batch. This is the resolution logic behind the `pretenders.auto` config option; it's normally invoked automatically as part of `markuplint`'s config resolution, not called directly.
 
@@ -339,20 +374,28 @@ const pretenders = await autoScan('/absolute/path/to/Page.tsx', sourceCode);
 
 #### Parameters
 
-| Parameter      | Type     | Description                                                   |
-| -------------- | -------- | ------------------------------------------------------------- |
-| `entryAbsPath` | `string` | Absolute path of the file being linted                        |
-| `sourceCode`   | `string` | The entry file's current text (may be unsaved editor content) |
+| Parameter              | Type          | Description                                                                                                                                              |
+| ---------------------- | ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `entryAbsPath`         | `string`      | Absolute path of the file being linted                                                                                                                   |
+| `sourceCode`           | `string`      | The entry file's current text (may be unsaved editor content)                                                                                            |
+| `options.depth`        | `number`      | How many import hops from the entry file are followed; `0` scans only the entry file (default `8`)                                                       |
+| `options.dependencies` | `Set<string>` | A set to add the files the result depends on to, the entry file included — also when the result comes from the cache (see [Dependencies](#dependencies)) |
 
 #### Returns
 
 `Promise<Pretender[]>` — Discovered pretender mappings for the entry file and its import graph.
 
-Results are cached per entry path, keyed on `sourceCode` equality (not mtime, which doesn't exist for unsaved editor content); `node_modules` is never traversed into, and import cycles are handled via a visited set. Traversal is capped at 8 import hops for template-language (`.vue`/`.svelte`/`.astro`) chains, but this cap does not hold for JSX/TSX-only chains: `jsxScanner` builds a `ts.Program` from the collected files, and TypeScript's own module resolution transitively pulls in whatever those files import regardless of the cap.
+Results are cached per entry path, keyed on `sourceCode` and `options.depth` equality (not mtime, which doesn't exist for unsaved editor content); `node_modules` is never traversed into, and import cycles are handled via a visited set. In a JS/TS file, and in the top-level ESM of an MDX entry file, re-exports (`export ... from`, except type-only ones) are followed like imports, so a barrel file leads on to the files it re-exports from. The depth limit holds for every file type, JSX/TSX included: the collected files are scanned without letting TypeScript follow their imports any further.
+
+### Dependencies
+
+`scan`, `autoScan` and `disambiguatePretenders` take an optional `dependencies` set and add to it the normalized (`/`-delimited) absolute paths of the files their result depends on: the files given to the scan, the source files the TypeScript program reaches from them through relative imports, the files read to resolve an imported component (barrels and what they re-export from), and the `tsconfig.json` the imports were resolved with, together with the configs it `extends`. A watch-mode host watches them to learn when to resolve again.
+
+Not recorded: declaration files and anything under `node_modules`; files that do not exist yet (a candidate of an import, a nearer `tsconfig.json`, a new match of a glob); files that a plain `scan()` could reach only through a `paths` alias, because the JSX scanner's TypeScript program reads no `tsconfig.json` and follows relative imports only (`autoScan` resolves aliases itself).
 
 ### `clearPretenderCaches()`
 
-Clears the module-level caches that back import/export resolution (module resolution, export tables, parsed JSX source files, `autoScan` results). None of these caches expire on their own, so a long-running host (watch mode, an editor extension) that keeps resolving pretenders across file edits must call this after each edit — otherwise a renamed export or a newly valid tsconfig `paths` alias keeps resolving as it did before the change for the rest of the process's lifetime.
+Clears the module-level caches that back import/export resolution (module resolution, export tables, parsed JSX source files, `autoScan` results). None of these caches expire on their own, so a long-running host (watch mode, an editor extension) that keeps resolving pretenders across file edits must call this after each edit to a file in the `dependencies` — otherwise a renamed export or a newly valid tsconfig `paths` alias keeps resolving as it did before the change for the rest of the process's lifetime.
 
 ```ts
 import { clearPretenderCaches } from '@markuplint/pretenders';

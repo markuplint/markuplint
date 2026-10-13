@@ -375,7 +375,7 @@ export class ConfigProvider {
 
 		if (isPresetModuleName(filePath)) {
 			const [, name] = filePath.match(/^markuplint:(.+)$/i) ?? [];
-			const config = await getPreset(name ?? filePath);
+			const config = await getPreset(name ?? filePath, referrer);
 			const pathResolvedConfig = await this.#pathResolve(config, filePath);
 
 			this.#store.set(filePath, pathResolvedConfig);

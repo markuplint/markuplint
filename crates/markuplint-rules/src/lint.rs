@@ -1,5 +1,6 @@
 //! Top-level lint function: MLAST JSON + config → violations.
 
+use markuplint_core::pretender::Pretender;
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::builder;
 use markuplint_dom::node::DomNode;
@@ -8,51 +9,115 @@ use markuplint_types::spec::types::MLMLSpec;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
-use crate::rule::{Rule, RuleConfig, RuleConfigSet};
+use crate::pretending;
+use crate::rule::{Rule, RuleCommonSettings, RuleConfig, RuleConfigSet};
 use crate::rule_mapper::{self, NodeRuleEntry};
-use crate::rules::attr_duplication::AttrDuplication;
+use crate::rules::aria_prop_requires_role::AriaPropRequiresRole;
+use crate::rules::attr_order::AttrOrder;
 use crate::rules::attr_value_quotes::AttrValueQuotes;
 use crate::rules::case_sensitive_attr_name::CaseSensitiveAttrName;
 use crate::rules::case_sensitive_tag_name::CaseSensitiveTagName;
-use crate::rules::character_reference::CharacterReference;
 use crate::rules::class_naming::ClassNaming;
-use crate::rules::deprecated_attr::DeprecatedAttr;
-use crate::rules::deprecated_element::DeprecatedElement;
-use crate::rules::disallowed_element::DisallowedElement;
-use crate::rules::doctype::Doctype;
-use crate::rules::end_tag::EndTag;
-use crate::rules::heading_levels::HeadingLevels;
-use crate::rules::id_duplication::IdDuplication;
-use crate::rules::ineffective_attr::IneffectiveAttr;
-use crate::rules::invalid_attr::InvalidAttr;
+use crate::rules::consistent_table_row_length::ConsistentTableRowLength;
+use crate::rules::element_supports_aria_prop::ElementSupportsAriaProp;
+use crate::rules::form_attr_references_form::FormAttrReferencesForm;
+use crate::rules::head_element_order::HeadElementOrder;
+use crate::rules::input_list_references_datalist::InputListReferencesDatalist;
+use crate::rules::itemprop_requires_itemscope::ItempropRequiresItemscope;
+use crate::rules::label_for_references_labelable::LabelForReferencesLabelable;
 use crate::rules::label_has_control::LabelHasControl;
-use crate::rules::landmark_roles::LandmarkRoles;
+use crate::rules::label_no_multiple_controls::LabelNoMultipleControls;
 use crate::rules::link_types::LinkTypes;
-use crate::rules::neighbor_popovers::NeighborPopovers;
+use crate::rules::map_id_name_match::MapIdNameMatch;
+use crate::rules::meta_charset_position::MetaCharsetPosition;
+use crate::rules::meter_value_bounds::MeterValueBounds;
+use crate::rules::no_abstract_role::NoAbstractRole;
+use crate::rules::no_always_matching_source::NoAlwaysMatchingSource;
 use crate::rules::no_ambiguous_navigable_target_names::NoAmbiguousNavigableTargetNames;
+use crate::rules::no_aria_hidden_on_hidden_until_found::NoAriaHiddenOnHiddenUntilFound;
+use crate::rules::no_aria_on_presentational_children::NoAriaOnPresentationalChildren;
+use crate::rules::no_aria_on_unsupported_element::NoAriaOnUnsupportedElement;
 use crate::rules::no_boolean_attr_value::NoBooleanAttrValue;
+use crate::rules::no_broken_fragment_link::NoBrokenFragmentLink;
 use crate::rules::no_consecutive_br::NoConsecutiveBr;
+use crate::rules::no_content_after_body::NoContentAfterBody;
+use crate::rules::no_contradictory_aria_prop::NoContradictoryAriaProp;
+use crate::rules::no_default_aria_value::NoDefaultAriaValue;
 use crate::rules::no_default_value::NoDefaultValue;
+use crate::rules::no_deprecated_aria_prop::NoDeprecatedAriaProp;
+use crate::rules::no_deprecated_attr::NoDeprecatedAttr;
+use crate::rules::no_deprecated_element::NoDeprecatedElement;
+use crate::rules::no_deprecated_role::NoDeprecatedRole;
+use crate::rules::no_disallowed_ancestor::NoDisallowedAncestor;
+use crate::rules::no_disallowed_attr::NoDisallowedAttr;
+use crate::rules::no_duplicate_attr::NoDuplicateAttr;
+use crate::rules::no_duplicate_autofocus::NoDuplicateAutofocus;
 use crate::rules::no_duplicate_dt::NoDuplicateDt;
+use crate::rules::no_duplicate_h1::NoDuplicateH1;
+use crate::rules::no_duplicate_id::NoDuplicateId;
+use crate::rules::no_duplicate_sibling_attr::NoDuplicateSiblingAttr;
+use crate::rules::no_duplicate_visible_main::NoDuplicateVisibleMain;
 use crate::rules::no_empty_palpable_content::NoEmptyPalpableContent;
-use crate::rules::no_hard_code_id::NoHardCodeId;
+use crate::rules::no_empty_table_track::NoEmptyTableTrack;
+use crate::rules::no_event_handler_attr::NoEventHandlerAttr;
+use crate::rules::no_experimental_features::NoExperimentalFeatures;
+use crate::rules::no_extra_selected_options::NoExtraSelectedOptions;
+use crate::rules::no_focusable_in_aria_hidden::NoFocusableInAriaHidden;
+use crate::rules::no_hardcoded_id::NoHardcodedId;
+use crate::rules::no_ineffective_attr::NoIneffectiveAttr;
+use crate::rules::no_input_file_value::NoInputFileValue;
+use crate::rules::no_invalid_aria_prop_value::NoInvalidAriaPropValue;
+use crate::rules::no_invalid_attr_value::NoInvalidAttrValue;
+use crate::rules::no_malformed_character_reference::NoMalformedCharacterReference;
+use crate::rules::no_mixed_srcset_descriptors::NoMixedSrcsetDescriptors;
+use crate::rules::no_nested_top_level_landmark::NoNestedTopLevelLandmark;
+use crate::rules::no_nonstandard_features::NoNonstandardFeatures;
+use crate::rules::no_obsolete_attr::NoObsoleteAttr;
+use crate::rules::no_obsolete_doctype::NoObsoleteDoctype;
+use crate::rules::no_obsolete_element::NoObsoleteElement;
 use crate::rules::no_orphaned_end_tag::NoOrphanedEndTag;
+use crate::rules::no_prohibited_naming::NoProhibitedNaming;
+use crate::rules::no_pseudo_list::NoPseudoList;
+use crate::rules::no_redundant_accessible_name::NoRedundantAccessibleName;
+use crate::rules::no_redundant_aria_prop::NoRedundantAriaProp;
+use crate::rules::no_redundant_role::NoRedundantRole;
 use crate::rules::no_refer_to_non_existent_id::NoReferToNonExistentId;
-use crate::rules::no_unsupported_features::NoUnsupportedFeatures;
-use crate::rules::no_use_event_handler_attr::NoUseEventHandlerAttr;
+use crate::rules::no_restricted_attr::NoRestrictedAttr;
+use crate::rules::no_restricted_element::NoRestrictedElement;
+use crate::rules::no_skipped_heading_level::NoSkippedHeadingLevel;
+use crate::rules::no_stray_head_or_body_tag::NoStrayHeadOrBodyTag;
+use crate::rules::no_table_cell_overlap::NoTableCellOverlap;
+use crate::rules::no_table_span_overflow::NoTableSpanOverflow;
+use crate::rules::no_unclosed_element_at_eof::NoUnclosedElementAtEof;
+use crate::rules::no_unescaped_char::NoUnescapedChar;
+use crate::rules::no_unknown_attr::NoUnknownAttr;
+use crate::rules::no_unknown_role::NoUnknownRole;
+use crate::rules::no_unpaired_srcset_sizes::NoUnpairedSrcsetSizes;
+use crate::rules::no_unsupported_browser_features::NoUnsupportedBrowserFeatures;
 use crate::rules::permitted_contents::PermittedContents;
+use crate::rules::permitted_roles::PermittedRoles;
 use crate::rules::placeholder_label_option::PlaceholderLabelOption;
-use crate::rules::redundant_accessible_name::RedundantAccessibleName;
+use crate::rules::progress_value_bounds::ProgressValueBounds;
 use crate::rules::require_accessible_name::RequireAccessibleName;
+use crate::rules::require_adjacent_popover::RequireAdjacentPopover;
+use crate::rules::require_ancestor::RequireAncestor;
+use crate::rules::require_aria_prop::RequireAriaProp;
+use crate::rules::require_attr::RequireAttr;
 use crate::rules::require_datetime::RequireDatetime;
 use crate::rules::require_dialog_autofocus::RequireDialogAutofocus;
-use crate::rules::required_attr::RequiredAttr;
-use crate::rules::required_element::RequiredElement;
-use crate::rules::required_h1::RequiredH1;
-use crate::rules::srcset_sizes_constraint::SrcsetSizesConstraint;
-use crate::rules::table_row_column_alignment::TableRowColumnAlignment;
-use crate::rules::use_list::UseList;
-use crate::rules::wai_aria::WaiAria;
+use crate::rules::require_doctype::RequireDoctype;
+use crate::rules::require_element::RequireElement;
+use crate::rules::require_end_tag::RequireEndTag;
+use crate::rules::require_h1::RequireH1;
+use crate::rules::require_landmark_label::RequireLandmarkLabel;
+use crate::rules::require_owned_elements::RequireOwnedElements;
+use crate::rules::require_parent_role::RequireParentRole;
+use crate::rules::role_supports_aria_prop::RoleSupportsAriaProp;
+use crate::rules::sizes_auto_requires_lazy_loading::SizesAutoRequiresLazyLoading;
+use crate::rules::tab_requires_tabpanel::TabRequiresTabpanel;
+use crate::rules::usemap_references_map::UsemapReferencesMap;
+use crate::rules::valid_importmap::ValidImportmap;
+use crate::rules::valid_speculation_rules::ValidSpeculationRules;
 use crate::violation::{Severity, Violation};
 
 #[derive(Debug, Deserialize)]
@@ -69,6 +134,14 @@ pub struct LintConfig {
     /// Overrides applied to children of elements matching a selector.
     #[serde(default, alias = "child_node_rules")]
     pub child_node_rules: Vec<NodeRuleEntry>,
+
+    /// Settings shared by several rules (`ruleCommonSettings`), e.g. `ariaVersion`.
+    #[serde(default, alias = "rule_common_settings")]
+    pub rule_common_settings: Option<RuleCommonSettings>,
+
+    /// Resolved pretenders (TS `Pretender[]`), applied to the DOM before rules run.
+    #[serde(default)]
+    pub pretenders: Vec<Pretender>,
 }
 
 #[derive(Debug, Serialize)]
@@ -76,8 +149,15 @@ pub struct LintResult {
     pub violations: Vec<Violation>,
 }
 
-#[allow(clippy::too_many_lines)]
 pub fn lint(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig) -> LintResult {
+    lint_with_rules(arena, spec, config, &get_all_rules())
+}
+
+/// [`lint`] over an explicit rule set. Exists so the engine's own behavior (how a
+/// rule's `default_severity()` is applied, say) can be tested with a purpose-built
+/// rule instead of depending on whichever built-in rule happens to exercise it.
+#[allow(clippy::too_many_lines)]
+fn lint_with_rules(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig, rules: &[Box<dyn Rule>]) -> LintResult {
     // TS: if (this.#document instanceof ParserError) { return parse-error only }
     // When the document has a parse error (e.g., unclosed formatting elements
     // causing "Broke mapping nodes" in TS), return only a parse-error violation
@@ -88,14 +168,27 @@ pub fn lint(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig) -> LintResul
         };
     }
 
-    let rules = get_all_rules();
+    // TS applies pretenders while building the document, before rule mapping, so
+    // that `nodeRules` selectors see the pretender identity. The caller's arena is
+    // left as built; only a document with pretenders pays for the copy.
+    let pretended;
+    let arena = if pretending::may_pretend(arena, &config.pretenders) {
+        let mut copy = arena.clone();
+        pretending::apply_pretenders(&mut copy, &config.pretenders, spec);
+        pretended = copy;
+        &pretended
+    } else {
+        arena
+    };
+
     let mut violations = Vec::new();
 
     let has_node_rules = !config.node_rules.is_empty() || !config.child_node_rules.is_empty();
+    let common_settings = config.rule_common_settings.clone().unwrap_or_default();
 
-    // The index must accept plain keys ("attr-duplication"), namespaced keys
-    // ("html-standard/attr-duplication"), and NamedRuleGroup entries
-    // ("a11y/no-accesskey": { rules: { "invalid-attr": { options: ... } } }).
+    // The index must accept plain keys ("no-duplicate-attr"), namespaced keys
+    // ("html-standard/no-duplicate-attr"), and NamedRuleGroup entries
+    // ("a11y/no-accesskey": { rules: { "no-restricted-attr": { options: ... } } }).
     // NamedRuleGroups are expanded inline: the inner rules are indexed by their
     // base rule ID, with the alias name preserved for violation ruleIds.
 
@@ -125,7 +218,7 @@ pub fn lint(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig) -> LintResul
             .push((alias_name.as_str(), config_value));
     }
 
-    for rule in &rules {
+    for rule in rules {
         let base_id = rule.id();
 
         let matching_entries = config_index.get(base_id);
@@ -159,7 +252,8 @@ pub fn lint(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig) -> LintResul
                 )
             } else {
                 RuleConfigSet::global_only(global_config)
-            };
+            }
+            .with_common_settings(common_settings.clone());
             let rule_violations = rule.verify(arena, spec, &config_set);
             violations.extend(rule_violations);
             continue;
@@ -184,7 +278,8 @@ pub fn lint(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig) -> LintResul
                 arena,
                 spec,
                 rule.default_severity(),
-            );
+            )
+            .with_common_settings(common_settings.clone());
             let rule_violations = rule.verify(arena, spec, &config_set);
             violations.extend(rule_violations);
         }
@@ -217,7 +312,8 @@ pub fn lint(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig) -> LintResul
                 )
             } else {
                 RuleConfigSet::global_only(global_config)
-            };
+            }
+            .with_common_settings(common_settings.clone());
 
             let mut rule_violations = rule.verify(arena, spec, &config_set);
 
@@ -238,13 +334,22 @@ pub fn lint(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig) -> LintResul
     // is expanded into a separate rule execution.
     let rule_lookup: std::collections::HashMap<&str, &dyn Rule> = rules.iter().map(|r| (r.id(), r.as_ref())).collect();
 
-    run_named_entries(&config.node_rules, false, &rule_lookup, arena, spec, &mut violations);
+    run_named_entries(
+        &config.node_rules,
+        false,
+        &rule_lookup,
+        arena,
+        spec,
+        &common_settings,
+        &mut violations,
+    );
     run_named_entries(
         &config.child_node_rules,
         true,
         &rule_lookup,
         arena,
         spec,
+        &common_settings,
         &mut violations,
     );
 
@@ -325,6 +430,7 @@ fn run_named_entries(
     rule_lookup: &std::collections::HashMap<&str, &dyn Rule>,
     arena: &DomArena,
     spec: &MLMLSpec,
+    common_settings: &RuleCommonSettings,
     violations: &mut Vec<Violation>,
 ) {
     for entry in entries {
@@ -360,6 +466,7 @@ fn run_named_entries(
             ) else {
                 continue;
             };
+            let config_set = config_set.with_common_settings(common_settings.clone());
 
             let mut rule_violations = rule.verify(arena, spec, &config_set);
             for v in &mut rule_violations {
@@ -383,7 +490,7 @@ pub fn lint_from_json(mlast_json: &str, config_json: &str, spec_json: &str) -> R
 }
 
 /// A `NamedRuleGroup` is an object with a `rules` key whose value is also an object.
-/// Example: `{ "specConformance": "normative", "severity": "warning", "rules": { "id-duplication": true } }`
+/// Example: `{ "specConformance": "normative", "severity": "warning", "rules": { "no-duplicate-id": true } }`
 fn is_named_rule_group(value: &Value) -> bool {
     match value {
         Value::Object(obj) => obj.get("rules").is_some_and(|v| matches!(v, Value::Object(_))),
@@ -391,8 +498,8 @@ fn is_named_rule_group(value: &Value) -> bool {
     }
 }
 
-/// For a `NamedRuleGroup` entry like `"a11y/no-accesskey": { rules: { "invalid-attr": { options: ... } } }`:
-/// - Single non-false inner rule: alias = outer key (`a11y/no-accesskey`), base = inner key (`invalid-attr`)
+/// For a `NamedRuleGroup` entry like `"a11y/no-accesskey": { rules: { "no-restricted-attr": { options: ... } } }`:
+/// - Single non-false inner rule: alias = outer key (`a11y/no-accesskey`), base = inner key (`no-restricted-attr`)
 /// - Multiple non-false inner rules: alias = `outer_key/inner_key`, base = inner key
 ///
 /// The group-level `severity` is inherited by inner rules that don't specify their own.
@@ -505,51 +612,116 @@ pub fn parse_rule_config(value: &Value) -> Option<RuleConfig> {
     }
 }
 
+// One registration per rule, so the length follows the number of rules.
+#[allow(clippy::too_many_lines)]
 fn get_all_rules() -> Vec<Box<dyn Rule>> {
     vec![
-        Box::new(AttrDuplication),
+        Box::new(NoDuplicateAttr),
         Box::new(AttrValueQuotes),
         Box::new(CaseSensitiveAttrName),
         Box::new(CaseSensitiveTagName),
-        Box::new(CharacterReference),
+        Box::new(NoMalformedCharacterReference),
+        Box::new(NoUnescapedChar),
         Box::new(ClassNaming),
-        Box::new(DeprecatedAttr),
-        Box::new(DeprecatedElement),
-        Box::new(DisallowedElement),
-        Box::new(Doctype),
-        Box::new(EndTag),
-        Box::new(HeadingLevels),
-        Box::new(IdDuplication),
-        Box::new(IneffectiveAttr),
+        Box::new(NoObsoleteAttr),
+        Box::new(NoDeprecatedAttr),
+        Box::new(NoObsoleteElement),
+        Box::new(NoDeprecatedElement),
+        Box::new(NoRestrictedElement),
+        Box::new(RequireDoctype),
+        Box::new(NoObsoleteDoctype),
+        Box::new(RequireEndTag),
+        Box::new(NoSkippedHeadingLevel),
+        Box::new(NoDuplicateId),
+        Box::new(NoIneffectiveAttr),
         Box::new(LabelHasControl),
-        Box::new(LandmarkRoles),
+        Box::new(NoNestedTopLevelLandmark),
+        Box::new(RequireLandmarkLabel),
         Box::new(LinkTypes),
-        Box::new(NeighborPopovers),
+        Box::new(RequireAdjacentPopover),
         Box::new(NoAmbiguousNavigableTargetNames),
         Box::new(NoBooleanAttrValue),
         Box::new(NoConsecutiveBr),
         Box::new(NoDefaultValue),
         Box::new(NoDuplicateDt),
         Box::new(NoEmptyPalpableContent),
-        Box::new(NoHardCodeId),
+        Box::new(NoHardcodedId),
         Box::new(NoOrphanedEndTag),
         Box::new(NoReferToNonExistentId),
-        Box::new(NoUnsupportedFeatures),
-        Box::new(NoUseEventHandlerAttr),
+        Box::new(NoUnsupportedBrowserFeatures),
+        Box::new(NoExperimentalFeatures),
+        Box::new(NoNonstandardFeatures),
+        Box::new(NoEventHandlerAttr),
         Box::new(PermittedContents),
         Box::new(PlaceholderLabelOption),
-        Box::new(RedundantAccessibleName),
+        Box::new(NoRedundantAccessibleName),
         Box::new(RequireAccessibleName),
         Box::new(RequireDatetime),
         Box::new(RequireDialogAutofocus),
-        Box::new(SrcsetSizesConstraint),
-        Box::new(RequiredAttr),
-        Box::new(RequiredElement),
-        Box::new(RequiredH1),
-        Box::new(TableRowColumnAlignment),
-        Box::new(UseList),
-        Box::new(InvalidAttr),
-        Box::new(WaiAria),
+        Box::new(NoUnpairedSrcsetSizes),
+        Box::new(NoMixedSrcsetDescriptors),
+        Box::new(SizesAutoRequiresLazyLoading),
+        Box::new(NoAlwaysMatchingSource),
+        Box::new(RequireAttr),
+        Box::new(RequireElement),
+        Box::new(RequireH1),
+        Box::new(NoDuplicateH1),
+        Box::new(NoTableCellOverlap),
+        Box::new(NoTableSpanOverflow),
+        Box::new(NoEmptyTableTrack),
+        Box::new(ConsistentTableRowLength),
+        Box::new(NoPseudoList),
+        Box::new(NoUnknownAttr),
+        Box::new(NoDisallowedAttr),
+        Box::new(NoInvalidAttrValue),
+        Box::new(NoRestrictedAttr),
+        Box::new(NoAriaOnUnsupportedElement),
+        Box::new(NoUnknownRole),
+        Box::new(NoAbstractRole),
+        Box::new(NoDeprecatedRole),
+        Box::new(NoRedundantRole),
+        Box::new(PermittedRoles),
+        Box::new(NoDeprecatedAriaProp),
+        Box::new(NoInvalidAriaPropValue),
+        Box::new(NoDefaultAriaValue),
+        Box::new(AriaPropRequiresRole),
+        Box::new(NoProhibitedNaming),
+        Box::new(ElementSupportsAriaProp),
+        Box::new(RoleSupportsAriaProp),
+        Box::new(NoRedundantAriaProp),
+        Box::new(NoContradictoryAriaProp),
+        Box::new(RequireAriaProp),
+        Box::new(RequireParentRole),
+        Box::new(RequireOwnedElements),
+        Box::new(TabRequiresTabpanel),
+        Box::new(NoAriaOnPresentationalChildren),
+        Box::new(NoFocusableInAriaHidden),
+        Box::new(MeterValueBounds),
+        Box::new(ProgressValueBounds),
+        Box::new(NoExtraSelectedOptions),
+        Box::new(NoInputFileValue),
+        Box::new(NoDuplicateAutofocus),
+        Box::new(NoDuplicateSiblingAttr),
+        Box::new(FormAttrReferencesForm),
+        Box::new(InputListReferencesDatalist),
+        Box::new(LabelForReferencesLabelable),
+        Box::new(LabelNoMultipleControls),
+        Box::new(MapIdNameMatch),
+        Box::new(UsemapReferencesMap),
+        Box::new(ItempropRequiresItemscope),
+        Box::new(AttrOrder),
+        Box::new(NoBrokenFragmentLink),
+        Box::new(ValidImportmap),
+        Box::new(ValidSpeculationRules),
+        Box::new(HeadElementOrder),
+        Box::new(MetaCharsetPosition),
+        Box::new(NoContentAfterBody),
+        Box::new(NoStrayHeadOrBodyTag),
+        Box::new(NoUnclosedElementAtEof),
+        Box::new(NoDuplicateVisibleMain),
+        Box::new(NoDisallowedAncestor),
+        Box::new(RequireAncestor),
+        Box::new(NoAriaHiddenOnHiddenUntilFound),
     ]
 }
 
@@ -590,41 +762,68 @@ mod tests {
         assert_eq!(config.value, Value::Bool(true));
     }
 
+    #[test]
+    fn v6_lint_config_pretenders_default_empty() {
+        let config: LintConfig = serde_json::from_value(serde_json::json!({ "rules": {} })).unwrap();
+        assert!(config.pretenders.is_empty());
+    }
+
+    #[test]
+    fn v6_lint_config_pretenders() {
+        use markuplint_core::pretender::PretenderAs;
+
+        let config: LintConfig = serde_json::from_value(serde_json::json!({
+            "rules": {},
+            "pretenders": [
+                { "selector": "x-btn", "as": "button" },
+                { "selector": "x-img", "as": { "element": "img", "slots": null } }
+            ]
+        }))
+        .unwrap();
+        assert_eq!(config.pretenders.len(), 2);
+        assert_eq!(config.pretenders[0].as_, PretenderAs::Name("button".into()));
+        assert!(matches!(config.pretenders[1].as_, PretenderAs::Node(_)));
+    }
+
     // --- Integration test: full pipeline ---
 
     #[test]
     fn lint_pipeline_finds_duplicate_attrs() {
-        use crate::rules::attr_duplication::tests::make_element_with_attrs;
+        use crate::rules::no_duplicate_attr::tests::make_element_with_attrs;
 
         let arena = make_element_with_attrs("div", &[("class", "a"), ("class", "b")]);
         let spec = load_spec(include_str!("../../../packages/@markuplint/html-spec/index.json")).unwrap();
         let config = LintConfig {
-            rules: [("attr-duplication".to_string(), Value::Bool(true))]
+            rules: [("no-duplicate-attr".to_string(), Value::Bool(true))]
                 .into_iter()
                 .collect(),
             node_rules: vec![],
             child_node_rules: vec![],
+            rule_common_settings: None,
+            pretenders: vec![],
         };
 
         let result = lint(&arena, &spec, &config);
         assert_eq!(result.violations.len(), 1);
-        assert_eq!(result.violations[0].rule_id, "attr-duplication");
+        assert_eq!(result.violations[0].rule_id, "no-duplicate-attr");
         assert_eq!(result.violations[0].severity, Severity::Error);
         assert_eq!(result.violations[0].line, 1);
     }
 
     #[test]
     fn lint_pipeline_disabled_rule_no_violations() {
-        use crate::rules::attr_duplication::tests::make_element_with_attrs;
+        use crate::rules::no_duplicate_attr::tests::make_element_with_attrs;
 
         let arena = make_element_with_attrs("div", &[("class", "a"), ("class", "b")]);
         let spec = load_spec(include_str!("../../../packages/@markuplint/html-spec/index.json")).unwrap();
         let config = LintConfig {
-            rules: [("attr-duplication".to_string(), Value::Bool(false))]
+            rules: [("no-duplicate-attr".to_string(), Value::Bool(false))]
                 .into_iter()
                 .collect(),
             node_rules: vec![],
             child_node_rules: vec![],
+            rule_common_settings: None,
+            pretenders: vec![],
         };
 
         let result = lint(&arena, &spec, &config);
@@ -633,16 +832,18 @@ mod tests {
 
     #[test]
     fn lint_pipeline_severity_override() {
-        use crate::rules::attr_duplication::tests::make_element_with_attrs;
+        use crate::rules::no_duplicate_attr::tests::make_element_with_attrs;
 
         let arena = make_element_with_attrs("div", &[("id", "a"), ("id", "b")]);
         let spec = load_spec(include_str!("../../../packages/@markuplint/html-spec/index.json")).unwrap();
         let config = LintConfig {
-            rules: [("attr-duplication".to_string(), Value::String("warning".to_string()))]
+            rules: [("no-duplicate-attr".to_string(), Value::String("warning".to_string()))]
                 .into_iter()
                 .collect(),
             node_rules: vec![],
             child_node_rules: vec![],
+            rule_common_settings: None,
+            pretenders: vec![],
         };
 
         let result = lint(&arena, &spec, &config);
@@ -693,17 +894,17 @@ mod tests {
 
     #[test]
     fn node_rules_severity_override() {
-        // attr-duplication is "error" by default, but "warning" for <main>
+        // no-duplicate-attr is "error" by default, but "warning" for <main>
         let arena = html_arena(r#"<div id="a" id="b"><main id="c" id="d"></main></div>"#);
         let spec = html_spec();
         let config: LintConfig = serde_json::from_value(serde_json::json!({
             "rules": {
-                "attr-duplication": true
+                "no-duplicate-attr": true
             },
             "nodeRules": [
                 {
                     "selector": "main",
-                    "rules": { "attr-duplication": "warning" }
+                    "rules": { "no-duplicate-attr": "warning" }
                 }
             ]
         }))
@@ -820,18 +1021,18 @@ mod tests {
 
     #[test]
     fn node_rules_attr_duplication_disable_for_span() {
-        // Port of TS test: attr-duplication nodeRules disable
+        // Port of TS test: no-duplicate-attr nodeRules disable
         // <div><span attr attr></span></div> with nodeRule selector:"span" rule:false → 0 violations
         let arena = html_arena(r#"<div><span attr attr></span></div>"#);
         let spec = html_spec();
         let config: LintConfig = serde_json::from_value(serde_json::json!({
             "rules": {
-                "attr-duplication": true
+                "no-duplicate-attr": true
             },
             "nodeRules": [
                 {
                     "selector": "span",
-                    "rules": { "attr-duplication": false }
+                    "rules": { "no-duplicate-attr": false }
                 }
             ]
         }))
@@ -841,7 +1042,7 @@ mod tests {
         assert_eq!(
             result.violations.len(),
             0,
-            "attr-duplication should be disabled for <span> via nodeRules, got: {:?}",
+            "no-duplicate-attr should be disabled for <span> via nodeRules, got: {:?}",
             result.violations
         );
     }
@@ -1142,7 +1343,7 @@ mod tests {
         );
     }
 
-    // --- required-attr nodeRules tests ---
+    // --- require-attr nodeRules tests ---
 
     #[test]
     fn node_rules_required_attr_img_alt() {
@@ -1153,7 +1354,7 @@ mod tests {
             "rules": {},
             "nodeRules": [{
                 "selector": "img",
-                "rules": { "required-attr": { "severity": "error", "value": "alt" } }
+                "rules": { "require-attr": { "severity": "error", "value": "alt" } }
             }]
         }))
         .unwrap();
@@ -1162,12 +1363,12 @@ mod tests {
         let ra_violations: Vec<_> = result
             .violations
             .iter()
-            .filter(|v| v.rule_id == "required-attr")
+            .filter(|v| v.rule_id == "require-attr")
             .collect();
         assert_eq!(
             ra_violations.len(),
             1,
-            "Expected 1 required-attr violation, got: {ra_violations:?}"
+            "Expected 1 require-attr violation, got: {ra_violations:?}"
         );
         assert!(
             ra_violations[0].message.contains("alt"),
@@ -1185,7 +1386,7 @@ mod tests {
             "rules": {},
             "nodeRules": [{
                 "selector": "img",
-                "rules": { "required-attr": { "severity": "error", "value": ["width", "height", "alt"] } }
+                "rules": { "require-attr": { "severity": "error", "value": ["width", "height", "alt"] } }
             }]
         }))
         .unwrap();
@@ -1194,12 +1395,12 @@ mod tests {
         let ra_violations: Vec<_> = result
             .violations
             .iter()
-            .filter(|v| v.rule_id == "required-attr")
+            .filter(|v| v.rule_id == "require-attr")
             .collect();
         assert_eq!(
             ra_violations.len(),
             3,
-            "Expected 3 required-attr violations, got: {ra_violations:?}"
+            "Expected 3 require-attr violations, got: {ra_violations:?}"
         );
     }
 
@@ -1212,7 +1413,7 @@ mod tests {
             "rules": {},
             "nodeRules": [{
                 "selector": "svg",
-                "rules": { "required-attr": { "severity": "error", "value": "viewBox" } }
+                "rules": { "require-attr": { "severity": "error", "value": "viewBox" } }
             }]
         }))
         .unwrap();
@@ -1221,12 +1422,12 @@ mod tests {
         let ra_violations: Vec<_> = result
             .violations
             .iter()
-            .filter(|v| v.rule_id == "required-attr")
+            .filter(|v| v.rule_id == "require-attr")
             .collect();
         assert_eq!(
             ra_violations.len(),
             1,
-            "Expected 1 required-attr violation for svg viewBox, got: {ra_violations:?}"
+            "Expected 1 require-attr violation for svg viewBox, got: {ra_violations:?}"
         );
         assert!(ra_violations[0].message.contains("viewBox"));
     }
@@ -1240,7 +1441,7 @@ mod tests {
             "rules": {},
             "nodeRules": [{
                 "selector": "img[src$=\".svg\"]",
-                "rules": { "required-attr": "role" }
+                "rules": { "require-attr": "role" }
             }]
         }))
         .unwrap();
@@ -1249,29 +1450,29 @@ mod tests {
         let ra_violations: Vec<_> = result
             .violations
             .iter()
-            .filter(|v| v.rule_id == "required-attr")
+            .filter(|v| v.rule_id == "require-attr")
             .collect();
         assert_eq!(
             ra_violations.len(),
             1,
-            "Expected 1 required-attr violation for role, got: {ra_violations:?}"
+            "Expected 1 require-attr violation for role, got: {ra_violations:?}"
         );
         assert!(ra_violations[0].message.contains("role"));
     }
 
-    // --- invalid-attr nodeRules tests ---
+    // --- no-invalid-attr-value / no-restricted-attr nodeRules tests ---
 
     #[test]
-    fn node_rules_invalid_attr_custom_element_allow_with_type() {
+    fn node_rules_no_invalid_attr_value_custom_element_allow_with_type() {
         // Port of TS: custom element with allowAttrs { "any-attr": "Int" }
         let arena = html_arena(r#"<custom-element any-attr="any-string"></custom-element>"#);
         let spec = html_spec();
         let config: LintConfig = serde_json::from_value(serde_json::json!({
-            "rules": { "invalid-attr": true },
+            "rules": { "no-invalid-attr-value": true },
             "nodeRules": [{
                 "selector": "custom-element",
                 "rules": {
-                    "invalid-attr": {
+                    "no-invalid-attr-value": {
                         "options": {
                             "allowAttrs": { "any-attr": "Int" }
                         }
@@ -1285,28 +1486,28 @@ mod tests {
         let ia_violations: Vec<_> = result
             .violations
             .iter()
-            .filter(|v| v.rule_id == "invalid-attr")
+            .filter(|v| v.rule_id == "no-invalid-attr-value")
             .collect();
         // "any-string" is not a valid Int → violation
         assert_eq!(
             ia_violations.len(),
             1,
-            "Expected 1 invalid-attr violation, got: {ia_violations:?}"
+            "Expected 1 no-invalid-attr-value violation, got: {ia_violations:?}"
         );
     }
 
     #[test]
-    fn node_rules_invalid_attr_viewport_disallow_pattern() {
+    fn node_rules_no_restricted_attr_viewport_disallow_pattern() {
         // Port of TS: #716 — disallow user-scalable=no in viewport meta
         let arena =
             html_arena(r#"<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">"#);
         let spec = html_spec();
         let config: LintConfig = serde_json::from_value(serde_json::json!({
-            "rules": { "invalid-attr": true },
+            "rules": { "no-restricted-attr": true },
             "nodeRules": [{
                 "selector": "meta[name='viewport' i]",
                 "rules": {
-                    "invalid-attr": {
+                    "no-restricted-attr": {
                         "options": {
                             "disallowAttrs": [{
                                 "name": "content",
@@ -1325,7 +1526,7 @@ mod tests {
         let ia_violations: Vec<_> = result
             .violations
             .iter()
-            .filter(|v| v.rule_id == "invalid-attr")
+            .filter(|v| v.rule_id == "no-restricted-attr")
             .collect();
         assert_eq!(
             ia_violations.len(),
@@ -1340,16 +1541,16 @@ mod tests {
     }
 
     #[test]
-    fn node_rules_invalid_attr_viewport_no_violation_when_allowed() {
+    fn node_rules_no_restricted_attr_viewport_no_violation_when_allowed() {
         // No user-scalable in content → no violation
         let arena = html_arena(r#"<meta name="viewport" content="width=device-width, initial-scale=1">"#);
         let spec = html_spec();
         let config: LintConfig = serde_json::from_value(serde_json::json!({
-            "rules": { "invalid-attr": true },
+            "rules": { "no-restricted-attr": true },
             "nodeRules": [{
                 "selector": "meta[name='viewport' i]",
                 "rules": {
-                    "invalid-attr": {
+                    "no-restricted-attr": {
                         "options": {
                             "disallowAttrs": [{
                                 "name": "content",
@@ -1368,38 +1569,42 @@ mod tests {
         let ia_violations: Vec<_> = result
             .violations
             .iter()
-            .filter(|v| v.rule_id == "invalid-attr")
+            .filter(|v| v.rule_id == "no-restricted-attr")
             .collect();
         assert_eq!(ia_violations.len(), 0, "Expected 0 violations, got: {ia_violations:?}");
     }
 
-    // --- wai-aria nodeRules tests ---
+    // --- ARIA rule nodeRules tests ---
 
     #[test]
-    fn node_rules_wai_aria_disable_implicit_role() {
-        // Port of TS: Safari + VoiceOver — img[src$=.svg] with disallowSetImplicitRole: false
-        let arena = html_arena(r#"<img src="path/to.svg" alt="text" role="img" />"#);
+    fn node_rules_disable_no_redundant_role() {
+        // Safari + VoiceOver need `role="img"` on `img[src$=.svg]`, so a config turns
+        // `no-redundant-role` off for those elements only.
+        let arena =
+            html_arena(r#"<img src="path/to.svg" alt="text" role="img" /><img src="a.png" alt="text" role="img" />"#);
         let spec = html_spec();
         let config: LintConfig = serde_json::from_value(serde_json::json!({
-            "rules": { "wai-aria": true },
+            "rules": { "no-redundant-role": true },
             "nodeRules": [{
                 "selector": "img[src$=\".svg\"]",
-                "rules": {
-                    "wai-aria": {
-                        "options": { "disallowSetImplicitRole": false }
-                    }
-                }
+                "rules": { "no-redundant-role": false }
             }]
         }))
         .unwrap();
 
         let result = lint(&arena, &spec, &config);
-        let wa_violations: Vec<_> = result.violations.iter().filter(|v| v.rule_id == "wai-aria").collect();
+        let violations: Vec<_> = result
+            .violations
+            .iter()
+            .filter(|v| v.rule_id == "no-redundant-role")
+            .collect();
         assert_eq!(
-            wa_violations.len(),
-            0,
-            "Expected 0 wai-aria violations with disallowSetImplicitRole:false, got: {wa_violations:?}"
+            violations.len(),
+            1,
+            "Expected only the .png img to be reported, got: {violations:?}"
         );
+        assert_eq!(violations[0].col, 82);
+        assert_eq!(violations[0].raw, "img");
     }
 
     // --- class-naming: :where() pseudo-class test ---
@@ -1643,43 +1848,45 @@ mod tests {
 
     #[test]
     fn namespaced_rule_uses_base_id_and_name_field() {
-        use crate::rules::attr_duplication::tests::make_element_with_attrs;
+        use crate::rules::no_duplicate_attr::tests::make_element_with_attrs;
 
         let arena = make_element_with_attrs("div", &[("class", "a"), ("class", "b")]);
         let spec = html_spec();
         let config = LintConfig {
-            rules: [("html-standard/attr-duplication".to_string(), Value::Bool(true))]
+            rules: [("html-standard/no-duplicate-attr".to_string(), Value::Bool(true))]
                 .into_iter()
                 .collect(),
             node_rules: vec![],
             child_node_rules: vec![],
+            rule_common_settings: None,
+            pretenders: vec![],
         };
 
         let result = lint(&arena, &spec, &config);
         assert_eq!(result.violations.len(), 1);
         assert_eq!(
-            result.violations[0].rule_id, "attr-duplication",
+            result.violations[0].rule_id, "no-duplicate-attr",
             "ruleId must be the base rule name (matching TS behavior)"
         );
         assert_eq!(
             result.violations[0].name.as_deref(),
-            Some("html-standard/attr-duplication"),
+            Some("html-standard/no-duplicate-attr"),
             "name field must carry the namespace alias"
         );
     }
 
     #[test]
     fn multiple_namespaces_same_base_rule_run_independently() {
-        use crate::rules::attr_duplication::tests::make_element_with_attrs;
+        use crate::rules::no_duplicate_attr::tests::make_element_with_attrs;
 
         let arena = make_element_with_attrs("div", &[("id", "a"), ("id", "b")]);
         let spec = html_spec();
         // Two namespaced entries for the same base rule — both should produce violations
         let config = LintConfig {
             rules: [
-                ("html-standard/attr-duplication".to_string(), Value::Bool(true)),
+                ("html-standard/no-duplicate-attr".to_string(), Value::Bool(true)),
                 (
-                    "a11y/attr-duplication".to_string(),
+                    "a11y/no-duplicate-attr".to_string(),
                     Value::String("warning".to_string()),
                 ),
             ]
@@ -1687,6 +1894,8 @@ mod tests {
             .collect(),
             node_rules: vec![],
             child_node_rules: vec![],
+            rule_common_settings: None,
+            pretenders: vec![],
         };
 
         let result = lint(&arena, &spec, &config);
@@ -1696,7 +1905,7 @@ mod tests {
         let all_dup: Vec<_> = result
             .violations
             .iter()
-            .filter(|v| v.rule_id == "attr-duplication")
+            .filter(|v| v.rule_id == "no-duplicate-attr")
             .collect();
         assert_eq!(
             all_dup.len(),
@@ -1705,15 +1914,15 @@ mod tests {
         );
         // Verify both namespaces are present
         let names: Vec<_> = all_dup.iter().map(|v| v.name.as_deref()).collect();
-        assert!(names.contains(&Some("html-standard/attr-duplication")));
-        assert!(names.contains(&Some("a11y/attr-duplication")));
+        assert!(names.contains(&Some("html-standard/no-duplicate-attr")));
+        assert!(names.contains(&Some("a11y/no-duplicate-attr")));
     }
 
     // --- NamedRuleGroup expansion tests ---
 
     #[test]
     fn named_rule_group_single_entry_expands() {
-        // "a11y/no-accesskey" is a NamedRuleGroup wrapping invalid-attr with disallowAttrs
+        // "a11y/no-accesskey" is a NamedRuleGroup wrapping no-restricted-attr with disallowAttrs
         let arena = html_arena(r#"<body accesskey="x"></body>"#);
         let spec = html_spec();
         let config: LintConfig = serde_json::from_value(serde_json::json!({
@@ -1721,7 +1930,7 @@ mod tests {
                 "a11y/no-accesskey": {
                     "specConformance": "non-normative",
                     "rules": {
-                        "invalid-attr": {
+                        "no-restricted-attr": {
                             "options": {
                                 "disallowAttrs": ["accesskey"]
                             }
@@ -1738,7 +1947,7 @@ mod tests {
             "Expected violation for disallowed accesskey attr"
         );
         assert_eq!(
-            result.violations[0].rule_id, "invalid-attr",
+            result.violations[0].rule_id, "no-restricted-attr",
             "ruleId should be the base rule name"
         );
         assert_eq!(
@@ -1757,7 +1966,7 @@ mod tests {
             "rules": {
                 "custom/multi": {
                     "rules": {
-                        "attr-duplication": true,
+                        "no-duplicate-attr": true,
                         "class-naming": "/^[a-z]+$/"
                     }
                 }
@@ -1769,20 +1978,20 @@ mod tests {
         let duplication: Vec<_> = result
             .violations
             .iter()
-            .filter(|v| v.rule_id == "attr-duplication" && v.name.as_deref() == Some("custom/multi/attr-duplication"))
+            .filter(|v| v.rule_id == "no-duplicate-attr" && v.name.as_deref() == Some("custom/multi/no-duplicate-attr"))
             .collect();
         let naming: Vec<_> = result
             .violations
             .iter()
             .filter(|v| v.rule_id == "class-naming" && v.name.as_deref() == Some("custom/multi/class-naming"))
             .collect();
-        assert_eq!(duplication.len(), 1, "attr-duplication should fire once");
+        assert_eq!(duplication.len(), 1, "no-duplicate-attr should fire once");
         assert_eq!(naming.len(), 1, "class-naming should fire once");
     }
 
     #[test]
     fn named_rule_group_severity_inherited() {
-        use crate::rules::attr_duplication::tests::make_element_with_attrs;
+        use crate::rules::no_duplicate_attr::tests::make_element_with_attrs;
 
         let arena = make_element_with_attrs("div", &[("id", "a"), ("id", "b")]);
         let spec = html_spec();
@@ -1791,7 +2000,7 @@ mod tests {
                 "a11y/dup": {
                     "severity": "warning",
                     "rules": {
-                        "attr-duplication": true
+                        "no-duplicate-attr": true
                     }
                 }
             }
@@ -1801,14 +2010,14 @@ mod tests {
         let result = lint(&arena, &spec, &config);
         assert_eq!(result.violations.len(), 1);
         assert_eq!(result.violations[0].severity, Severity::Warning);
-        assert_eq!(result.violations[0].rule_id, "attr-duplication");
+        assert_eq!(result.violations[0].rule_id, "no-duplicate-attr");
         assert_eq!(result.violations[0].name.as_deref(), Some("a11y/dup"));
     }
 
     #[test]
     fn named_rule_group_false_disables() {
         // false value for a NamedRuleGroup key should disable it
-        use crate::rules::attr_duplication::tests::make_element_with_attrs;
+        use crate::rules::no_duplicate_attr::tests::make_element_with_attrs;
 
         let arena = make_element_with_attrs("div", &[("id", "a"), ("id", "b")]);
         let spec = html_spec();
@@ -1826,7 +2035,7 @@ mod tests {
     #[test]
     fn named_rule_group_inner_false_skipped() {
         // Inner rule set to false should be skipped
-        use crate::rules::attr_duplication::tests::make_element_with_attrs;
+        use crate::rules::no_duplicate_attr::tests::make_element_with_attrs;
 
         let arena = make_element_with_attrs("div", &[("id", "a"), ("id", "b")]);
         let spec = html_spec();
@@ -1834,7 +2043,7 @@ mod tests {
             "rules": {
                 "test/group": {
                     "rules": {
-                        "attr-duplication": false,
+                        "no-duplicate-attr": false,
                         "class-naming": "/^[a-z]+$/"
                     }
                 }
@@ -1843,33 +2052,33 @@ mod tests {
         .unwrap();
 
         let result = lint(&arena, &spec, &config);
-        // attr-duplication is false → no violation from it
+        // no-duplicate-attr is false → no violation from it
         // class-naming → no class attr on test element → no violation
         let duplication: Vec<_> = result
             .violations
             .iter()
-            .filter(|v| v.rule_id.contains("attr-duplication"))
+            .filter(|v| v.rule_id.contains("no-duplicate-attr"))
             .collect();
         assert!(
             duplication.is_empty(),
-            "attr-duplication should be disabled within the group"
+            "no-duplicate-attr should be disabled within the group"
         );
     }
 
     #[test]
     fn named_rule_group_coexists_with_plain_rule() {
         // Both a NamedRuleGroup and a plain rule for the same base rule
-        use crate::rules::attr_duplication::tests::make_element_with_attrs;
+        use crate::rules::no_duplicate_attr::tests::make_element_with_attrs;
 
         let arena = make_element_with_attrs("div", &[("id", "a"), ("id", "b")]);
         let spec = html_spec();
         let config: LintConfig = serde_json::from_value(serde_json::json!({
             "rules": {
-                "attr-duplication": true,
+                "no-duplicate-attr": true,
                 "html-standard/dup": {
                     "severity": "warning",
                     "rules": {
-                        "attr-duplication": true
+                        "no-duplicate-attr": true
                     }
                 }
             }
@@ -1883,7 +2092,7 @@ mod tests {
         let all: Vec<_> = result
             .violations
             .iter()
-            .filter(|v| v.rule_id == "attr-duplication")
+            .filter(|v| v.rule_id == "no-duplicate-attr")
             .collect();
         assert_eq!(
             all.len(),
@@ -1902,15 +2111,15 @@ mod tests {
     fn is_named_rule_group_detection() {
         // Positive cases
         assert!(is_named_rule_group(&serde_json::json!({
-            "rules": { "id-duplication": true }
+            "rules": { "no-duplicate-id": true }
         })));
         assert!(is_named_rule_group(&serde_json::json!({
             "specConformance": "normative",
-            "rules": { "id-duplication": true }
+            "rules": { "no-duplicate-id": true }
         })));
         assert!(is_named_rule_group(&serde_json::json!({
             "severity": "warning",
-            "rules": { "invalid-attr": { "options": {} } }
+            "rules": { "no-restricted-attr": { "options": {} } }
         })));
 
         // Negative cases
@@ -1930,7 +2139,7 @@ mod tests {
 
     #[test]
     fn named_rule_group_empty_rules_no_crash() {
-        use crate::rules::attr_duplication::tests::make_element_with_attrs;
+        use crate::rules::no_duplicate_attr::tests::make_element_with_attrs;
 
         let arena = make_element_with_attrs("div", &[("id", "a"), ("id", "b")]);
         let spec = html_spec();
@@ -1950,7 +2159,7 @@ mod tests {
 
     #[test]
     fn named_rule_group_all_false_rules_no_violations() {
-        use crate::rules::attr_duplication::tests::make_element_with_attrs;
+        use crate::rules::no_duplicate_attr::tests::make_element_with_attrs;
 
         let arena = make_element_with_attrs("div", &[("id", "a"), ("id", "b")]);
         let spec = html_spec();
@@ -1958,7 +2167,7 @@ mod tests {
             "rules": {
                 "test/all-false": {
                     "rules": {
-                        "attr-duplication": false
+                        "no-duplicate-attr": false
                     }
                 }
             }
@@ -1972,22 +2181,24 @@ mod tests {
 
     #[test]
     fn plain_rule_id_still_works() {
-        use crate::rules::attr_duplication::tests::make_element_with_attrs;
+        use crate::rules::no_duplicate_attr::tests::make_element_with_attrs;
 
         let arena = make_element_with_attrs("div", &[("class", "a"), ("class", "b")]);
         let spec = html_spec();
         let config = LintConfig {
-            rules: [("attr-duplication".to_string(), Value::Bool(true))]
+            rules: [("no-duplicate-attr".to_string(), Value::Bool(true))]
                 .into_iter()
                 .collect(),
             node_rules: vec![],
             child_node_rules: vec![],
+            rule_common_settings: None,
+            pretenders: vec![],
         };
 
         let result = lint(&arena, &spec, &config);
         assert_eq!(result.violations.len(), 1);
         assert_eq!(
-            result.violations[0].rule_id, "attr-duplication",
+            result.violations[0].rule_id, "no-duplicate-attr",
             "Plain ruleId without namespace must be preserved"
         );
     }
@@ -2036,7 +2247,7 @@ mod tests {
         let spec = html_spec();
         let config: LintConfig = serde_json::from_value(serde_json::json!({
             "rules": {
-                "attr-duplication": true
+                "no-duplicate-attr": true
             },
             "nodeRules": [
                 {
@@ -2052,7 +2263,7 @@ mod tests {
         let dup: Vec<_> = result
             .violations
             .iter()
-            .filter(|v| v.rule_id == "attr-duplication")
+            .filter(|v| v.rule_id == "no-duplicate-attr")
             .collect();
         let naming: Vec<_> = result
             .violations
@@ -2075,7 +2286,7 @@ mod tests {
                     "name": "a11y/no-autofocus-outside-dialog",
                     "selector": ":where(:not(dialog, dialog *))",
                     "rules": {
-                        "invalid-attr": {
+                        "no-restricted-attr": {
                             "options": {
                                 "disallowAttrs": ["autofocus"]
                             }
@@ -2101,7 +2312,10 @@ mod tests {
                 .map(|v| (&v.rule_id, &v.name))
                 .collect::<Vec<_>>()
         );
-        assert_eq!(named[0].rule_id, "invalid-attr", "ruleId should be base rule name");
+        assert_eq!(
+            named[0].rule_id, "no-restricted-attr",
+            "ruleId should be base rule name"
+        );
     }
 
     #[test]
@@ -2210,5 +2424,128 @@ mod tests {
             "Expected base violations from the all_namespaced+nodeRule path, got: {:?}",
             result.violations
         );
+    }
+}
+
+#[cfg(test)]
+mod engine_tests {
+    use super::*;
+
+    /// Reports once per element, with the severity and `ariaVersion` the engine handed it.
+    struct ProbeRule;
+
+    impl Rule for ProbeRule {
+        fn id(&self) -> &'static str {
+            "test-probe"
+        }
+
+        fn default_severity(&self) -> Severity {
+            Severity::Warning
+        }
+
+        fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
+            arena
+                .elements()
+                .filter(|(node_id, _)| !config.get(*node_id).disabled)
+                .map(|(node_id, el)| Violation {
+                    rule_id: self.id().to_string(),
+                    name: None,
+                    severity: config.get(node_id).severity,
+                    message: format!("{:?}", config.common_settings().aria_version),
+                    line: el.base.line,
+                    col: el.base.col,
+                    raw: el.base.raw.clone(),
+                    reason: None,
+                })
+                .collect()
+        }
+    }
+
+    fn run(html: &str, config: serde_json::Value) -> Vec<Violation> {
+        let as_doc = markuplint_html_parser::should_parse_as_document(html);
+        let parser_arena = if as_doc {
+            markuplint_html_parser::parse_document(html)
+        } else {
+            markuplint_html_parser::parse_fragment(html)
+        };
+        let arena = markuplint_dom::html_builder::build_from_html_arena(html, &parser_arena, !as_doc);
+        let spec = load_spec(include_str!("../../../packages/@markuplint/html-spec/index.json")).unwrap();
+        let config: LintConfig = serde_json::from_value(config).unwrap();
+        lint_with_rules(&arena, &spec, &config, &[Box::new(ProbeRule)]).violations
+    }
+
+    #[test]
+    fn rule_default_severity_applies_to_a_bare_true() {
+        let violations = run("<div></div>", serde_json::json!({ "rules": { "test-probe": true } }));
+        assert_eq!(violations.len(), 1);
+        assert_eq!(violations[0].severity, Severity::Warning);
+    }
+
+    #[test]
+    fn rule_default_severity_applies_to_an_object_without_severity() {
+        let violations = run(
+            "<div></div>",
+            serde_json::json!({ "rules": { "test-probe": { "value": true } } }),
+        );
+        assert_eq!(violations.len(), 1);
+        assert_eq!(violations[0].severity, Severity::Warning);
+    }
+
+    #[test]
+    fn explicit_severity_overrides_the_rule_default() {
+        let as_string = run("<div></div>", serde_json::json!({ "rules": { "test-probe": "error" } }));
+        assert_eq!(as_string[0].severity, Severity::Error);
+
+        let as_object = run(
+            "<div></div>",
+            serde_json::json!({ "rules": { "test-probe": { "severity": "info" } } }),
+        );
+        assert_eq!(as_object[0].severity, Severity::Info);
+    }
+
+    #[test]
+    fn rule_default_severity_applies_to_a_node_rule() {
+        let violations = run(
+            "<div></div>",
+            serde_json::json!({
+                "nodeRules": [{ "selector": "div", "rules": { "test-probe": true } }]
+            }),
+        );
+        assert_eq!(violations.len(), 1);
+        assert_eq!(violations[0].severity, Severity::Warning);
+    }
+
+    #[test]
+    fn rule_common_settings_reach_the_rules() {
+        for key in ["ruleCommonSettings", "rule_common_settings"] {
+            let violations = run(
+                "<div></div>",
+                serde_json::json!({
+                    "rules": { "test-probe": true },
+                    key: { "ariaVersion": "1.2" }
+                }),
+            );
+            assert_eq!(violations.len(), 1, "{key}");
+            assert_eq!(violations[0].message, "Some(\"1.2\")", "{key}");
+        }
+    }
+
+    #[test]
+    fn rule_common_settings_reach_node_rules() {
+        let violations = run(
+            "<div></div>",
+            serde_json::json!({
+                "nodeRules": [{ "selector": "div", "rules": { "test-probe": true } }],
+                "ruleCommonSettings": { "ariaVersion": "1.1" }
+            }),
+        );
+        assert_eq!(violations.len(), 1);
+        assert_eq!(violations[0].message, "Some(\"1.1\")");
+    }
+
+    #[test]
+    fn rule_common_settings_default_to_nothing() {
+        let violations = run("<div></div>", serde_json::json!({ "rules": { "test-probe": true } }));
+        assert_eq!(violations[0].message, "None");
     }
 }

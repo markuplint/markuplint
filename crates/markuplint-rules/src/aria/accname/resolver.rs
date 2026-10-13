@@ -1,9 +1,14 @@
+use markuplint_core::pretender::PretenderAriaName;
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::helpers as dom;
 use markuplint_types::spec::aria::ARIAVersion;
 use markuplint_types::spec::types::MLMLSpec;
 
 use super::AccnameResolver;
+
+/// The name TS `@markuplint/ml-core` gives a pretended element whose pretender
+/// says it has a name (`aria: { name: true }`) without saying which.
+pub const PRETENDER_NAME_SENTINEL: &str = "some-name(Pretender Options)";
 
 pub struct SpecAccnameResolver<'a> {
     spec: &'a MLMLSpec,
@@ -60,5 +65,29 @@ impl AccnameResolver for SpecAccnameResolver<'_> {
                 "textbox" | "combobox" | "listbox" | "slider" | "spinbutton" | "searchbox"
             )
         })
+    }
+
+    /// TS `getPrecomputedName` of `@markuplint/ml-core`: the `aria.name` of the
+    /// pretender. `{ fromAttr }` reads the attribute the user wrote on the
+    /// component (case-insensitively), not one of the pretender's.
+    fn get_precomputed_name(&self, node_id: NodeId) -> Option<String> {
+        let pretended = self.arena.get(node_id)?.as_element()?.pretended()?;
+        match pretended.aria.as_ref()?.name.as_ref()? {
+            PretenderAriaName::Bool(_) => Some(PRETENDER_NAME_SENTINEL.to_owned()),
+            PretenderAriaName::FromAttr { from_attr } => {
+                let value = pretended.original.attributes.iter().find_map(|attr| match attr {
+                    markuplint_core::mlast::MLASTAttr::HTMLAttr(a) if a.node_name.eq_ignore_ascii_case(from_attr) => {
+                        Some(a.value.raw.as_str())
+                    }
+                    _ => None,
+                })?;
+                (!value.is_empty()).then(|| value.to_owned())
+            }
+        }
+    }
+
+    /// TS `getChildNodes` of `@markuplint/ml-core`.
+    fn get_child_nodes(&self, node_id: NodeId) -> Option<Vec<NodeId>> {
+        self.arena.pretender_rendered_children(node_id)
     }
 }

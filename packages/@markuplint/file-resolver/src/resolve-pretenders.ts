@@ -1,4 +1,4 @@
-import type { OptimizedConfig, Pretender, PretenderFileData } from '@markuplint/ml-config';
+import type { OptimizedConfig, Pretender, PretenderAutoOptions, PretenderFileData } from '@markuplint/ml-config';
 
 import path from 'node:path';
 
@@ -34,6 +34,104 @@ export type ResolvePretendersContext = {
 };
 
 /**
+ * Where a resolution reports what it read.
+ */
+export type ResolvePretendersOptions = {
+	/**
+	 * A sink the resolution adds to: the normalized (`/`-delimited) absolute
+	 * paths of the files whose content its result depends on, which a
+	 * watch-mode host watches to learn when to resolve again (#4065). It covers
+	 * what `config.scan` and `config.auto` read, and — for
+	 * {@link disambiguatePretendersForFile} — the `tsconfig.json` the target's
+	 * imports were resolved with. The lint target itself is not excluded; the
+	 * caller already holds it.
+	 *
+	 * Not covered, because a change to them is not picked up even by resolving
+	 * again: `config.files` and `config.imports` (`generalImport` keeps what it
+	 * loaded for the life of the process). For what else is out of reach, see
+	 * `PretenderScanOptions#dependencies` in `@markuplint/ml-config`.
+	 */
+	readonly dependencies?: Set<string>;
+};
+
+/**
+ * Resolves pretenders for one lint target, across edits of that target.
+ *
+ * The sections of `config.pretenders` split by what their result depends on.
+ * `files`, `imports`, `data`, and `scan` depend on the config and the
+ * filesystem only; `auto` depends on the target's own source as well — the
+ * import graph it walks starts from the target's import statements. (So does
+ * the selector disambiguation the caller runs on the result.) A resolver
+ * reads the first group once, on the first `resolve()`, and reads the target
+ * on every `resolve()`, so a host that re-resolves after each edit of the
+ * target (`MLEngine.setCode`) re-does exactly the part an edit can change.
+ * The first group is read again only by a new resolver, which a host creates
+ * on each config resolution — a change on disk to a scanned component is
+ * therefore picked up with the next config resolution, not with the next
+ * edit of the target. See #4064.
+ *
+ * A watch-mode host closes that gap by watching the files `resolve()` reports
+ * in {@link ResolvePretendersOptions.dependencies}: a change to one of them
+ * makes it resolve the config again, which creates the new resolver. See #4065.
+ */
+export type PretenderResolver = {
+	/**
+	 * @param context - The lint target's path/source, required only for
+	 *   `config.auto`; without it `auto` is skipped, as in {@link resolvePretenders}
+	 * @param options - Where to report the files the result depends on. The
+	 *   retained target-independent entries report theirs on every call, not
+	 *   only on the call that read them.
+	 * @returns All resolved pretender definitions — a new array on every call,
+	 *   so the retained target-independent entries are never exposed to mutation
+	 */
+	resolve(context?: ResolvePretendersContext, options?: ResolvePretendersOptions): Promise<Pretender[]>;
+};
+
+/**
+ * What the target-independent sections yield, with the files they were read from.
+ */
+type TargetIndependentResult = {
+	readonly pretenders: readonly Pretender[];
+	readonly dependencies: ReadonlySet<string>;
+};
+
+/**
+ * Creates a {@link PretenderResolver} for `config`. One resolver stands for one
+ * resolution of the config: its target-independent entries are read on the
+ * first `resolve()` and kept for the resolver's lifetime (a failure there is
+ * kept as well — the host's next config resolution creates a new resolver).
+ *
+ * @param config - The pretenders configuration section from the optimized config
+ * @returns The resolver; its `resolve()` yields `[]` when `config` is absent
+ */
+export function createPretenderResolver(config: PretendersConfig): PretenderResolver {
+	// The promise is retained, not its result, so that overlapping first calls
+	// share one read, and the files it was read from ride along with the result.
+	let targetIndependent: Promise<TargetIndependentResult> | null = null;
+
+	return {
+		async resolve(context, options) {
+			if (!config) {
+				return [];
+			}
+
+			targetIndependent ??= resolveTargetIndependentPretenders(config);
+			const retained = await targetIndependent;
+			const data = [...retained.pretenders];
+			for (const dependency of retained.dependencies) {
+				options?.dependencies?.add(dependency);
+			}
+
+			if (config.auto && context) {
+				await appendAutoPretenders(data, context, config.auto, options?.dependencies);
+			}
+
+			return data;
+		},
+	};
+}
+
+/**
  * Resolves pretender definitions from files, imported modules, inline data,
  * dynamic component scanning, and (when `context` is given) the lint
  * target's own import graph.
@@ -46,22 +144,36 @@ export type ResolvePretendersContext = {
  * 3. `config.data` — inline pretender definitions
  * 4. `config.scan` — dynamic component scanning via glob patterns
  *    (`files` accepts `string | string[]`)
- * 5. `config.auto` — on-demand scan of `context`'s own import graph (requires
+ * 5. `config.auto` — on-demand scan of `context`'s own import graph, up to
+ *    `config.auto.depth` hops when the object form gives one (requires
  *    `context`; a no-op without it, e.g. when the caller has no lint target yet)
+ *
+ * Equivalent to one `resolve()` of a fresh {@link createPretenderResolver};
+ * a host that resolves the same config repeatedly for one target keeps the
+ * resolver instead.
  *
  * @param config - The pretenders configuration section from the optimized config
  * @param context - The lint target's path/source, required only for `config.auto`
+ * @param options - Where to report the files the result depends on
  * @returns An array of all resolved pretender definitions
  */
-export async function resolvePretenders(
+export function resolvePretenders(
 	config: PretendersConfig,
 	context?: ResolvePretendersContext,
+	options?: ResolvePretendersOptions,
 ): Promise<Pretender[]> {
-	if (!config) {
-		return [];
-	}
+	return createPretenderResolver(config).resolve(context, options);
+}
 
+/**
+ * Steps 1–4 of {@link resolvePretenders}: the sections whose result does not
+ * depend on the lint target.
+ */
+async function resolveTargetIndependentPretenders(
+	config: NonNullable<PretendersConfig>,
+): Promise<TargetIndependentResult> {
 	const data: Pretender[] = [];
+	const dependencies = new Set<string>();
 
 	if (config.files) {
 		for (const file of config.files) {
@@ -105,6 +217,7 @@ export async function resolvePretenders(
 			if (resolved.length > 0) {
 				const scanned = await scan(resolved, {
 					ignoreComponentNames: entry.ignoreComponentNames ? [...entry.ignoreComponentNames] : undefined,
+					dependencies,
 				});
 				// `scan()` (with no `cwd` option) reports filePath relative to `process.cwd()`.
 				data.push(...rebasePretenderFilePaths(scanned, process.cwd()));
@@ -112,36 +225,48 @@ export async function resolvePretenders(
 		}
 	}
 
-	if (config.auto && context) {
-		const { autoScan } = await import('@markuplint/pretenders');
-		const scanned = await autoScan(context.filePath, context.sourceCode);
-		// `autoScan()` reports filePath relative to `process.cwd()`, same as `scan()`.
-		const rebased = rebasePretenderFilePaths(scanned, process.cwd());
-		// `scan` and `auto` can both walk into the same file (e.g. a component
-		// `scan`'s glob already covers that `auto`'s import-graph walk also
-		// reaches); de-duping on (selector, filePath) keeps that file's entry
-		// from appearing twice while still letting a same-selector entry from a
-		// genuinely different file through for `disambiguatePretendersForFile`
-		// to resolve. `selector` is a markuplint CSS-like selector and can
-		// legitimately contain spaces (a descendant combinator), so the pair is
-		// joined via `JSON.stringify` rather than a plain-string delimiter —
-		// otherwise two distinct (selector, filePath) pairs could concatenate to
-		// the same string and be mistaken for a duplicate.
-		const dedupeKey = (p: Pretender) => JSON.stringify([p.selector, p.filePath]);
-		const seen = new Set(data.filter(p => p.filePath).map(p => dedupeKey(p)));
-		for (const pretender of rebased) {
-			if (pretender.filePath) {
-				const key = dedupeKey(pretender);
-				if (seen.has(key)) {
-					continue;
-				}
-				seen.add(key);
-			}
-			data.push(pretender);
-		}
-	}
+	return { pretenders: data, dependencies };
+}
 
-	return data;
+/**
+ * Step 5 of {@link resolvePretenders}: appends what `config.auto` finds in
+ * `context`'s import graph to `data`, the target-independent entries.
+ */
+async function appendAutoPretenders(
+	data: Pretender[],
+	context: ResolvePretendersContext,
+	auto: true | PretenderAutoOptions,
+	dependencies: Set<string> | undefined,
+): Promise<void> {
+	const { autoScan } = await import('@markuplint/pretenders');
+	const scanned = await autoScan(context.filePath, context.sourceCode, {
+		depth: auto === true ? undefined : auto.depth,
+		dependencies,
+	});
+	// `autoScan()` reports filePath relative to `process.cwd()`, same as `scan()`.
+	const rebased = rebasePretenderFilePaths(scanned, process.cwd());
+	// `scan` and `auto` can both walk into the same file (e.g. a component
+	// `scan`'s glob already covers that `auto`'s import-graph walk also
+	// reaches); de-duping on (selector, filePath) keeps that file's entry
+	// from appearing twice while still letting a same-selector entry from a
+	// genuinely different file through for `disambiguatePretendersForFile`
+	// to resolve. `selector` is a markuplint CSS-like selector and can
+	// legitimately contain spaces (a descendant combinator), so the pair is
+	// joined via `JSON.stringify` rather than a plain-string delimiter —
+	// otherwise two distinct (selector, filePath) pairs could concatenate to
+	// the same string and be mistaken for a duplicate.
+	const dedupeKey = (p: Pretender) => JSON.stringify([p.selector, p.filePath]);
+	const seen = new Set(data.filter(p => p.filePath).map(p => dedupeKey(p)));
+	for (const pretender of rebased) {
+		if (pretender.filePath) {
+			const key = dedupeKey(pretender);
+			if (seen.has(key)) {
+				continue;
+			}
+			seen.add(key);
+		}
+		data.push(pretender);
+	}
 }
 
 /**
@@ -154,6 +279,7 @@ export async function resolvePretenders(
  * @param filePath - Absolute path of the file being linted
  * @param sourceCode - Full source text of the file being linted
  * @param pretenders - The flat pretender list {@link resolvePretenders} produced
+ * @param options - Where to report the files the result depends on
  * @returns The disambiguated pretender list, or `pretenders` itself (same
  *   reference) when there was no collision to resolve
  */
@@ -161,13 +287,14 @@ export async function disambiguatePretendersForFile(
 	filePath: string,
 	sourceCode: string,
 	pretenders: readonly Pretender[],
+	options?: ResolvePretendersOptions,
 ): Promise<readonly Pretender[]> {
 	if (!hasResolvableCollision(pretenders)) {
 		return pretenders;
 	}
 
 	const { disambiguatePretenders } = await import('@markuplint/pretenders');
-	return disambiguatePretenders(pretenders, { filePath, sourceCode });
+	return disambiguatePretenders(pretenders, { filePath, sourceCode, dependencies: options?.dependencies });
 }
 
 /**

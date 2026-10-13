@@ -57,6 +57,7 @@ When committing changes that span multiple packages, always commit **from leaves
 | 9    | `rules`, `file-resolver`                                                                                                                                      |
 | 10   | `pretenders`, `create-rule`                                                                                                                                   |
 | 11   | `markuplint`                                                                                                                                                  |
+| 12   | `language-server`                                                                                                                                             |
 
 - Within the same tier, order does not matter
 - Root config changes (`.oxlintrc.json`, `.oxfmtrc.json`, `tsconfig.base.json`, CI) should be committed before any package changes

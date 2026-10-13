@@ -31,6 +31,7 @@ pub fn build_arena(parent_tag: &str, children: &[ChildNodeInfo]) -> ArenaBridge 
     next_id += 1;
 
     let parent_id = builder.push(DomNode::Element(ElementData {
+        pretender_context: None,
         base: make_base(next_id, parent_tag, Some(doc_id), 0),
         namespace: NamespaceURI::XHTML,
         element_type: ElementType::Html,
@@ -117,6 +118,7 @@ fn build_children(
                 })
                 .collect();
             let eid = builder.push(DomNode::Element(ElementData {
+                pretender_context: None,
                 base: make_base(*next_id, &child.node_name, Some(parent_id), depth),
                 namespace: NamespaceURI::XHTML,
                 element_type: elem_type,

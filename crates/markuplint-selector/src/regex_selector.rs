@@ -7,6 +7,7 @@ use std::sync::LazyLock;
 
 use markuplint_core::mlast::{MLASTAttr, NamespaceURI};
 use markuplint_dom::arena::{DomArena, NodeId};
+use markuplint_dom::node::DomNode;
 use regex::Regex;
 use serde::Deserialize;
 
@@ -93,7 +94,20 @@ pub fn regex_select(arena: &DomArena, node_id: NodeId, selector: &RegexSelector)
     }
 
     let last_idx = targets.len() - 1;
-    match_target(arena, node_id, &targets, last_idx)
+    // Two phases for a pretended element, as `matcher::match_specificity`:
+    // the pretender identity first, then the original one.
+    let pretends = arena
+        .get(node_id)
+        .and_then(DomNode::as_element)
+        .is_some_and(|el| el.pretended().is_some());
+    if pretends {
+        let result = match_target(arena, node_id, &targets, last_idx, None);
+        if result.matched {
+            return result;
+        }
+        return match_target(arena, node_id, &targets, last_idx, Some(node_id));
+    }
+    match_target(arena, node_id, &targets, last_idx, None)
 }
 
 // ============================================================
@@ -107,10 +121,17 @@ struct RegexTarget<'a> {
     combined_from: Option<(usize, &'a str)>,
 }
 
-fn match_target(arena: &DomArena, node_id: NodeId, targets: &[RegexTarget<'_>], target_idx: usize) -> RegexMatchResult {
+/// `original_of` is the element read with its original identity (see [`regex_select`]).
+fn match_target(
+    arena: &DomArena,
+    node_id: NodeId,
+    targets: &[RegexTarget<'_>],
+    target_idx: usize,
+    original_of: Option<NodeId>,
+) -> RegexMatchResult {
     let target = &targets[target_idx];
 
-    let unit_result = uncombined_match(arena, node_id, target);
+    let unit_result = uncombined_match(arena, node_id, target, original_of);
     if !unit_result.matched {
         return unit_result;
     }
@@ -124,7 +145,7 @@ fn match_target(arena: &DomArena, node_id: NodeId, targets: &[RegexTarget<'_>], 
         " " => {
             let mut ancestor_id = element_parent(arena, node_id);
             while let Some(aid) = ancestor_id {
-                let result = match_target(arena, aid, targets, from_idx);
+                let result = match_target(arena, aid, targets, from_idx, original_of);
                 if result.matched {
                     return merge_results(&result, &unit_result, " ");
                 }
@@ -137,7 +158,7 @@ fn match_target(arena: &DomArena, node_id: NodeId, targets: &[RegexTarget<'_>], 
             let Some(parent_id) = element_parent(arena, node_id) else {
                 return RegexMatchResult::unmatched();
             };
-            let result = match_target(arena, parent_id, targets, from_idx);
+            let result = match_target(arena, parent_id, targets, from_idx, original_of);
             if result.matched {
                 merge_results(&result, &unit_result, " > ")
             } else {
@@ -149,7 +170,7 @@ fn match_target(arena: &DomArena, node_id: NodeId, targets: &[RegexTarget<'_>], 
             let Some(prev_id) = prev_element_sibling(arena, node_id) else {
                 return RegexMatchResult::unmatched();
             };
-            let result = match_target(arena, prev_id, targets, from_idx);
+            let result = match_target(arena, prev_id, targets, from_idx, original_of);
             if result.matched {
                 merge_results(&result, &unit_result, " + ")
             } else {
@@ -160,7 +181,7 @@ fn match_target(arena: &DomArena, node_id: NodeId, targets: &[RegexTarget<'_>], 
         "~" => {
             let mut prev_id = prev_element_sibling(arena, node_id);
             while let Some(pid) = prev_id {
-                let result = match_target(arena, pid, targets, from_idx);
+                let result = match_target(arena, pid, targets, from_idx, original_of);
                 if result.matched {
                     return merge_results(&result, &unit_result, " ~ ");
                 }
@@ -173,7 +194,7 @@ fn match_target(arena: &DomArena, node_id: NodeId, targets: &[RegexTarget<'_>], 
             let Some(next_id) = next_element_sibling(arena, node_id) else {
                 return RegexMatchResult::unmatched();
             };
-            let result = match_target(arena, next_id, targets, from_idx);
+            let result = match_target(arena, next_id, targets, from_idx, original_of);
             if result.matched {
                 merge_results(&result, &unit_result, ":has(+ ")
             } else {
@@ -184,7 +205,7 @@ fn match_target(arena: &DomArena, node_id: NodeId, targets: &[RegexTarget<'_>], 
         ":has(~)" => {
             let mut next_id = next_element_sibling(arena, node_id);
             while let Some(nid) = next_id {
-                let result = match_target(arena, nid, targets, from_idx);
+                let result = match_target(arena, nid, targets, from_idx, original_of);
                 if result.matched {
                     return merge_results(&result, &unit_result, ":has(~ ");
                 }
@@ -196,15 +217,21 @@ fn match_target(arena: &DomArena, node_id: NodeId, targets: &[RegexTarget<'_>], 
     }
 }
 
-fn uncombined_match(arena: &DomArena, node_id: NodeId, target: &RegexTarget<'_>) -> RegexMatchResult {
+fn uncombined_match(
+    arena: &DomArena,
+    node_id: NodeId,
+    target: &RegexTarget<'_>,
+    original_of: Option<NodeId>,
+) -> RegexMatchResult {
     let Some(node) = arena.get(node_id) else {
         return RegexMatchResult::unmatched();
     };
     let Some(el) = node.as_element() else {
         return RegexMatchResult::unmatched();
     };
+    let identity = el.identity(original_of == Some(node_id));
 
-    let is_html = el.namespace == NamespaceURI::XHTML;
+    let is_html = *identity.namespace == NamespaceURI::XHTML;
     let mut matched = true;
     let mut data = HashMap::new();
     let mut tag_selector = String::new();
@@ -212,14 +239,14 @@ fn uncombined_match(arena: &DomArena, node_id: NodeId, target: &RegexTarget<'_>)
     let mut specified_attrs: Vec<(String, String)> = Vec::new();
 
     if let Some(pattern) = target.node_name {
-        if let Some(captures) = regex_match(pattern, &el.base.node_name, is_html) {
+        if let Some(captures) = regex_match(pattern, identity.node_name, is_html) {
             // $0 is dropped for nodeName, matching TS behavior.
             for (key, value) in &captures {
                 if key != "$0" {
                     data.insert(key.clone(), value.clone());
                 }
             }
-            tag_selector.clone_from(&el.base.node_name);
+            identity.node_name.clone_into(&mut tag_selector);
             specificity[2] = 1;
         } else {
             matched = false;
@@ -229,7 +256,7 @@ fn uncombined_match(arena: &DomArena, node_id: NodeId, target: &RegexTarget<'_>)
     if target.attr_name.is_some() || target.attr_value.is_some() {
         let mut any_attr_matched = false;
 
-        for attr in &el.attributes {
+        for attr in identity.attributes {
             let (attr_name, attr_value) = get_attr_name_value(attr);
 
             if let Some(pattern) = target.attr_name {
@@ -485,6 +512,7 @@ mod tests {
             children: vec![],
         }));
         let el_id = builder.push(DomNode::Element(ElementData {
+            pretender_context: None,
             base: NodeBase {
                 id: 1,
                 uuid: "el-1".to_string(),
@@ -593,7 +621,7 @@ mod tests {
             attr_value: None,
             combined_from: None,
         };
-        let result = uncombined_match(&arena, id, &target);
+        let result = uncombined_match(&arena, id, &target, None);
         assert!(result.matched);
         assert_eq!(result.specificity, [0, 0, 1]);
     }
@@ -607,7 +635,7 @@ mod tests {
             attr_value: None,
             combined_from: None,
         };
-        let result = uncombined_match(&arena, id, &target);
+        let result = uncombined_match(&arena, id, &target, None);
         assert!(result.matched);
         assert_eq!(result.data["$1"], "3");
     }
@@ -621,7 +649,7 @@ mod tests {
             attr_value: None,
             combined_from: None,
         };
-        let result = uncombined_match(&arena, id, &target);
+        let result = uncombined_match(&arena, id, &target, None);
         assert!(result.matched);
         assert_eq!(result.specificity[1], 1);
     }
@@ -635,7 +663,7 @@ mod tests {
             attr_value: Some("text"),
             combined_from: None,
         };
-        let result = uncombined_match(&arena, id, &target);
+        let result = uncombined_match(&arena, id, &target, None);
         assert!(result.matched);
     }
 
@@ -648,7 +676,7 @@ mod tests {
             attr_value: None,
             combined_from: None,
         };
-        let result = uncombined_match(&arena, id, &target);
+        let result = uncombined_match(&arena, id, &target, None);
         assert!(result.matched);
         assert_eq!(result.specificity[1], 2); // 2 data- attrs matched
     }
@@ -662,7 +690,7 @@ mod tests {
             attr_value: Some("email"),
             combined_from: None,
         };
-        let result = uncombined_match(&arena, id, &target);
+        let result = uncombined_match(&arena, id, &target, None);
         // type matches attrName but "text" != "email" for attrValue, name doesn't match attrName
         assert!(!result.matched);
     }
@@ -676,7 +704,7 @@ mod tests {
             attr_value: None,
             combined_from: None,
         };
-        let result = uncombined_match(&arena, id, &target);
+        let result = uncombined_match(&arena, id, &target, None);
         assert!(result.matched);
         assert_eq!(result.specificity, [0, 0, 0]);
     }
@@ -690,7 +718,7 @@ mod tests {
             attr_value: None,
             combined_from: None,
         };
-        let result = uncombined_match(&arena, id, &target);
+        let result = uncombined_match(&arena, id, &target, None);
         assert!(!result.matched);
     }
 
@@ -703,7 +731,7 @@ mod tests {
             attr_value: Some("email"),
             combined_from: None,
         };
-        let result = uncombined_match(&arena, id, &target);
+        let result = uncombined_match(&arena, id, &target, None);
         assert!(result.matched);
         assert_eq!(result.specificity, [0, 1, 1]);
     }

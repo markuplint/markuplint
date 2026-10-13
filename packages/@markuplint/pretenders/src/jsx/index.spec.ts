@@ -25,6 +25,7 @@ describe('jsxScanner', () => {
 						},
 						{
 							name: 'aria-xxx',
+							value: { dynamic: true },
 						},
 						{
 							name: 'aria-yyy',
@@ -45,37 +46,48 @@ describe('jsxScanner', () => {
 			},
 			{
 				selector: 'NodeC',
-				as: 'CReturns',
+				as: {
+					element: 'CReturns',
+					slots: null,
+					contents: [{ element: 'span' }],
+				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/001.tsx:15:6'),
 			},
 			{
 				selector: 'NodeD',
-				as: 'DReturns',
+				// BREAKING CHANGE (#4082): `slots: null` is kept instead of collapsing to the bare tag name.
+				// as: 'DReturns', // pre-#4082 baseline
+				as: { element: 'DReturns', slots: null },
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/001.tsx:25:6'),
 			},
 			{
 				selector: 'NodeE',
-				as: 'EReturns',
+				// as: 'EReturns', // pre-#4082 baseline
+				as: { element: 'EReturns', slots: null },
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/001.tsx:27:6'),
 			},
 			{
 				selector: 'NodeF',
-				as: 'FReturns',
+				// as: 'FReturns', // pre-#4082 baseline
+				as: { element: 'FReturns', slots: null },
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/001.tsx:33:9'),
 			},
 			{
 				selector: 'NodeG',
-				as: 'GReturns',
+				// as: 'GReturns', // pre-#4082 baseline
+				as: { element: 'GReturns', slots: null },
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/001.tsx:38:16'),
 			},
 			{
 				selector: 'NodeH',
-				as: 'HReturns',
+				// as: 'HReturns', // pre-#4082 baseline
+				as: { element: 'HReturns', slots: null },
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/001.tsx:42:24'),
 			},
 			{
 				selector: 'NodeI',
-				as: 'IReturns',
+				// as: 'IReturns', // pre-#4082 baseline
+				as: { element: 'IReturns', slots: null },
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/001.tsx:46:9'),
 			},
 		]);
@@ -168,7 +180,7 @@ describe('jsxScanner', () => {
 				selector: 'AttrOnlyChildren',
 				as: {
 					element: 'div',
-					attrs: [{ name: 'data-ref' }],
+					attrs: [{ name: 'data-ref', value: { dynamic: true } }],
 					slots: null,
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/005.tsx:32:6'),
@@ -177,13 +189,15 @@ describe('jsxScanner', () => {
 				selector: 'NestedChildren',
 				as: {
 					element: 'div',
-					slots: true,
+					slots: [{ element: 'main' }],
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/005.tsx:22:6'),
 			},
 			{
 				selector: 'StaticContent',
-				as: 'p',
+				// BREAKING CHANGE (#4082): `slots: null` is kept instead of collapsing to the bare tag name.
+				// as: 'p', // pre-#4082 baseline
+				as: { element: 'p', slots: null },
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/005.tsx:17:6'),
 			},
 			{
@@ -198,7 +212,9 @@ describe('jsxScanner', () => {
 				selector: 'VoidComponent',
 				as: {
 					element: 'img',
-					attrs: [{ name: 'src' }],
+					// `props.src` is a prop of the component passed as it is.
+					// attrs: [{ name: 'src', value: { dynamic: true } }], // without the prop resolved
+					attrs: [{ name: 'src', value: { fromAttr: 'src', omitIfMissing: true } }],
 					slots: null,
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/005.tsx:12:6'),
@@ -250,13 +266,22 @@ describe('jsxScanner', () => {
 				selector: 'Item',
 				as: { element: 'li', slots: true, inheritAttrs: true },
 			});
+			// `A` renders `<Item>` without spreading its own props, so the
+			// attributes written at the usage site of `A` do not reach the `button`. `inheritAttrs` of
+			// `Item` is no longer carried over to `A`.
 			expect(a).toMatchObject({
 				selector: 'A',
-				as: { element: 'button', slots: true, inheritAttrs: true },
+				// BREAKING CHANGE (#4082): the component renders `<Item>` without its own children, so `slots: null`.
+				// as: { element: 'button', slots: true, inheritAttrs: true }, // pre-#4082 baseline
+				as: { element: 'button', slots: null },
 				_via: ['Item'],
 			});
+			expect(a?.as).not.toHaveProperty('inheritAttrs');
 			expect(a?.filePath).toMatch(/^a\.tsx:/);
-			expect(b).toMatchObject({ selector: 'B', as: 'ul' });
+			expect(b).toMatchObject({
+				selector: 'B',
+				as: { element: 'ul', slots: null, contents: [{ dynamic: true }] },
+			});
 		});
 
 		test('a named import resolves to the actual declaration file, not the first-registered same-named one', async () => {
@@ -270,11 +295,15 @@ describe('jsxScanner', () => {
 				},
 			);
 			const c = result.find(p => p.selector === 'C');
+			// See the `A` case above.
 			expect(c).toMatchObject({
 				selector: 'C',
-				as: { element: 'button', slots: true, inheritAttrs: true },
+				// BREAKING CHANGE (#4082): the component renders `<Item>` without its own children, so `slots: null`.
+				// as: { element: 'button', slots: true, inheritAttrs: true }, // pre-#4082 baseline
+				as: { element: 'button', slots: null },
 				_via: ['Item'],
 			});
+			expect(c?.as).not.toHaveProperty('inheritAttrs');
 			expect(c?.filePath).toMatch(/^a\.tsx:/);
 		});
 
@@ -289,11 +318,15 @@ describe('jsxScanner', () => {
 				},
 			);
 			const e = result.find(p => p.selector === 'E');
+			// See the `A` case above.
 			expect(e).toMatchObject({
 				selector: 'E',
-				as: { element: 'span', slots: true, inheritAttrs: true },
+				// BREAKING CHANGE (#4082): the component renders `<Item>` without its own children, so `slots: null`.
+				// as: { element: 'span', slots: true, inheritAttrs: true }, // pre-#4082 baseline
+				as: { element: 'span', slots: null },
 				_via: ['Item'],
 			});
+			expect(e?.as).not.toHaveProperty('inheritAttrs');
 		});
 	});
 
@@ -304,7 +337,11 @@ describe('jsxScanner', () => {
 
 			const result = await jsxScanner([filePath], { sources });
 
-			expect(result).toStrictEqual([expect.objectContaining({ selector: 'InMemoryOnly', as: 'span' })]);
+			// BREAKING CHANGE (#4082): `slots: null` is kept instead of collapsing to the bare tag name.
+			// expect(result).toStrictEqual([expect.objectContaining({ selector: 'InMemoryOnly', as: 'span' })]); // pre-#4082 baseline
+			expect(result).toStrictEqual([
+				expect.objectContaining({ selector: 'InMemoryOnly', as: { element: 'span', slots: null } }),
+			]);
 		});
 
 		test('files without an override fall back to reading from disk', async () => {
@@ -314,8 +351,42 @@ describe('jsxScanner', () => {
 
 			const result = await jsxScanner([overriddenPath, diskPath], { sources });
 
-			expect(result.find(p => p.selector === 'Overridden')).toMatchObject({ as: 'span' });
+			// BREAKING CHANGE (#4082): `slots: null` is kept instead of collapsing to the bare tag name.
+			// expect(result.find(p => p.selector === 'Overridden')).toMatchObject({ as: 'span' }); // pre-#4082 baseline
+			expect(result.find(p => p.selector === 'Overridden')).toMatchObject({
+				as: { element: 'span', slots: null },
+			});
 			expect(result.find(p => p.selector === 'NodeA')).toBeDefined();
+		});
+	});
+
+	describe('a component that renders no children (issue #4082)', () => {
+		test('an element without attributes keeps `slots: null` instead of collapsing to its name', async () => {
+			const filePath = path.resolve(testDir, '001.tsx');
+			const sources = new Map([[normalizePath(filePath), 'export const Bare = () => <span></span>;']]);
+
+			const result = await jsxScanner([filePath], { sources });
+
+			expect(result).toStrictEqual([
+				expect.objectContaining({ selector: 'Bare', as: { element: 'span', slots: null } }),
+			]);
+		});
+
+		test('a component rendering another component without children does not take the children of that component', async () => {
+			const filePath = path.resolve(testDir, '001.tsx');
+			const sources = new Map([
+				[
+					normalizePath(filePath),
+					[
+						'export const Labelled = ({ children }) => <span>{children}</span>;',
+						'export const Outer = () => <Labelled />;',
+					].join('\n'),
+				],
+			]);
+
+			const result = await jsxScanner([filePath], { sources });
+
+			expect(result.find(p => p.selector === 'Outer')).toMatchObject({ as: { element: 'span', slots: null } });
 		});
 	});
 });

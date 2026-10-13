@@ -58,7 +58,7 @@ impl Rule for NoOrphanedEndTag {
 mod tests {
     use super::*;
     use crate::rule::{RuleConfig, RuleConfigSet};
-    use crate::rules::attr_duplication::tests::make_element_with_attrs;
+    use crate::rules::no_duplicate_attr::tests::make_element_with_attrs;
     use crate::violation::Severity;
     use markuplint_dom::arena::DomArenaBuilder;
     use markuplint_dom::node::{DocumentData, EndTagData, NodeBase};
@@ -115,6 +115,21 @@ mod tests {
         let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
         assert_eq!(violations[0].message, "Orphaned end tag detected");
+    }
+
+    /// A text node that contains a start tag (here the ignored second `<body>`) is kept whole,
+    /// the stray `</head>` in it included, so that end tag is not reported. TS (`mlRuleTest`)
+    /// reports nothing on the same input.
+    #[test]
+    fn v6_no_orphaned_end_tag_001() {
+        assert_eq!(
+            crate::test_util::lint_brief(
+                "no-orphaned-end-tag",
+                "<!doctype html>\n<head>\n<meta charset=utf-8>\n<title>math in head</title>\n<math><mi>x</mi></math>\n</head>\n<body></body>\n",
+                serde_json::json!({ "rules": { "no-orphaned-end-tag": true } }),
+            ),
+            []
+        );
     }
 
     #[test]

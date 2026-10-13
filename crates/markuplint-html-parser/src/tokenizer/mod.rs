@@ -8,6 +8,18 @@ use crate::input::{Input, Position, Span};
 use state::State;
 use token::{RawAttribute, Token};
 
+/// A parse error recorded by the tokenizer.
+///
+/// Only the character-reference errors are recorded so far; they are what the
+/// `no-malformed-character-reference` rule reports. Codes and positions follow parse5
+/// (the TS parser), which reports each error as a point (start and end coincide).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct TokenizerError {
+    /// The WHATWG parse error code, e.g. `unknown-named-character-reference`.
+    pub code: &'static str,
+    pub position: Position,
+}
+
 #[allow(clippy::struct_excessive_bools)]
 pub struct Tokenizer<'a> {
     input: Input<'a>,
@@ -51,6 +63,9 @@ pub struct Tokenizer<'a> {
     /// Used to pass source position to emitted Character tokens so that
     /// downstream consumers can slice the original source text.
     char_ref_start: Position,
+    /// Whether the current numeric character reference was terminated by `;`.
+    char_ref_has_semicolon: bool,
+    errors: Vec<TokenizerError>,
 }
 
 impl<'a> Tokenizer<'a> {
@@ -128,7 +143,18 @@ impl<'a> Tokenizer<'a> {
                 line: 1,
                 col: 1,
             },
+            char_ref_has_semicolon: false,
+            errors: Vec::new(),
         }
+    }
+
+    /// Takes the parse errors recorded so far.
+    pub fn take_errors(&mut self) -> Vec<TokenizerError> {
+        std::mem::take(&mut self.errors)
+    }
+
+    fn error(&mut self, code: &'static str, position: Position) {
+        self.errors.push(TokenizerError { code, position });
     }
 
     /// Set the tokenizer state (used by the tree constructor to switch
@@ -2366,6 +2392,11 @@ impl<'a> Tokenizer<'a> {
                 return;
             }
 
+            if !ends_with_semicolon {
+                // parse5 points at the character after the name.
+                self.error("missing-semicolon-after-character-reference", self.input.position());
+            }
+
             // Replace temp_buffer with the resolved characters.
             self.temp_buffer.clear();
             for &ch in chars {
@@ -2382,6 +2413,11 @@ impl<'a> Tokenizer<'a> {
                         self.temp_buffer.push(c);
                     }
                     Some(';') => {
+                        // The ambiguous-ampersand error, at the `;`. parse5 enters that
+                        // state only outside attribute values, so it reports nothing there.
+                        if !self.is_return_state_attribute() {
+                            self.error("unknown-named-character-reference", self.input.position());
+                        }
                         self.input.next_char();
                         self.temp_buffer.push(';');
                         break;
@@ -2417,6 +2453,7 @@ impl<'a> Tokenizer<'a> {
 
     fn state_numeric_character_reference(&mut self) {
         self.char_ref_code = 0;
+        self.char_ref_has_semicolon = false;
         match self.input.peek() {
             Some('x' | 'X') => {
                 self.temp_buffer.push(self.input.peek().unwrap());
@@ -2435,7 +2472,10 @@ impl<'a> Tokenizer<'a> {
                 self.state = State::HexadecimalCharacterReference;
             }
             _ => {
-                // Parse error.
+                self.error(
+                    "absence-of-digits-in-numeric-character-reference",
+                    self.input.position(),
+                );
                 self.flush_code_points_consumed_as_char_ref();
                 self.state = self.return_state;
             }
@@ -2448,6 +2488,10 @@ impl<'a> Tokenizer<'a> {
                 self.state = State::DecimalCharacterReference;
             }
             _ => {
+                self.error(
+                    "absence-of-digits-in-numeric-character-reference",
+                    self.input.position(),
+                );
                 self.flush_code_points_consumed_as_char_ref();
                 self.state = self.return_state;
             }
@@ -2464,7 +2508,11 @@ impl<'a> Tokenizer<'a> {
                     .saturating_mul(16)
                     .saturating_add(c.to_digit(16).unwrap());
             }
-            Some(';') | None => {
+            Some(';') => {
+                self.char_ref_has_semicolon = true;
+                self.state = State::NumericCharacterReferenceEnd;
+            }
+            None => {
                 self.state = State::NumericCharacterReferenceEnd;
             }
             Some(_) => {
@@ -2483,7 +2531,11 @@ impl<'a> Tokenizer<'a> {
                     .saturating_mul(10)
                     .saturating_add(c.to_digit(10).unwrap());
             }
-            Some(';') | None => {
+            Some(';') => {
+                self.char_ref_has_semicolon = true;
+                self.state = State::NumericCharacterReferenceEnd;
+            }
+            None => {
                 self.state = State::NumericCharacterReferenceEnd;
             }
             Some(_) => {
@@ -2494,6 +2546,15 @@ impl<'a> Tokenizer<'a> {
     }
 
     fn state_numeric_character_reference_end(&mut self) {
+        // parse5 points both errors at the character after the reference.
+        let position = self.input.position();
+        if !self.char_ref_has_semicolon {
+            self.error("missing-semicolon-after-character-reference", position);
+        }
+        if let Some(code) = numeric_char_ref_error(self.char_ref_code) {
+            self.error(code, position);
+        }
+
         let ch = match self.char_ref_code {
             0x00 => '\u{FFFD}',
             c if c > 0x10_FFFF => '\u{FFFD}',
@@ -2557,6 +2618,28 @@ impl<'a> Tokenizer<'a> {
             self.return_state,
             State::AttributeValueDoubleQuoted | State::AttributeValueSingleQuoted | State::AttributeValueUnquoted
         )
+    }
+}
+
+/// The parse error a numeric character reference's value raises, checked in parse5's
+/// order (`getErrorForNumericCharacterReference`), which is also WHATWG §13.2.5.80's.
+fn numeric_char_ref_error(code: u32) -> Option<&'static str> {
+    let is_noncharacter = (0xFDD0..=0xFDEF).contains(&code) || code & 0xFFFE == 0xFFFE;
+    // C0 controls other than ASCII whitespace, plus DEL and the C1 controls. CR counts
+    // although it is whitespace.
+    let is_control = matches!(code, 0x01..=0x08 | 0x0B | 0x0D..=0x1F | 0x7F..=0x9F);
+    if code == 0 {
+        Some("null-character-reference")
+    } else if code > 0x10_FFFF {
+        Some("character-reference-outside-unicode-range")
+    } else if (0xD800..=0xDFFF).contains(&code) {
+        Some("surrogate-character-reference")
+    } else if is_noncharacter {
+        Some("noncharacter-character-reference")
+    } else if is_control {
+        Some("control-character-reference")
+    } else {
+        None
     }
 }
 
@@ -2814,6 +2897,139 @@ mod tests {
             }
             _ => panic!("expected StartTag"),
         }
+    }
+
+    /// Runs the tokenizer alone (none of the inputs needs a state switch from the tree
+    /// builder) and returns the recorded errors as `(code, line, col)`.
+    fn char_ref_errors(html: &str) -> Vec<(&'static str, u32, u32)> {
+        let mut tokenizer = Tokenizer::new(html);
+        while tokenizer.next_token() != Token::Eof {}
+        tokenizer
+            .take_errors()
+            .into_iter()
+            .map(|e| (e.code, e.position.line, e.position.col))
+            .collect()
+    }
+
+    // Expected positions are parse5's (`onParseError`), as the TS parser reports them.
+
+    #[test]
+    fn char_ref_error_unknown_named() {
+        assert_eq!(
+            char_ref_errors("<p>&xyz;</p>"),
+            vec![("unknown-named-character-reference", 1, 8)]
+        );
+        assert_eq!(
+            char_ref_errors("<span>&#9660;</span><span>&#x25BC;</span><span>&x25BC;</span>"),
+            vec![("unknown-named-character-reference", 1, 54)]
+        );
+        // Without the `;` an unknown name is not an error.
+        assert_eq!(char_ref_errors("<p>&xyz</p>"), vec![]);
+        // In an attribute value parse5 does not enter the ambiguous-ampersand state.
+        assert_eq!(char_ref_errors(r#"<a href="?a=1&xyz;">x</a>"#), vec![]);
+    }
+
+    #[test]
+    fn char_ref_error_missing_semicolon() {
+        assert_eq!(
+            char_ref_errors("<p>&amp text</p>"),
+            vec![("missing-semicolon-after-character-reference", 1, 8)]
+        );
+        assert_eq!(
+            char_ref_errors("<p>&notit;</p>"),
+            vec![("missing-semicolon-after-character-reference", 1, 8)]
+        );
+        assert_eq!(
+            char_ref_errors("<p>&#65</p>"),
+            vec![("missing-semicolon-after-character-reference", 1, 8)]
+        );
+        assert_eq!(
+            char_ref_errors(r#"<a href="?a=1&amp;b&lt">x</a>"#),
+            vec![("missing-semicolon-after-character-reference", 1, 23)]
+        );
+        // A legacy name followed by `=` in an attribute value is not a reference.
+        assert_eq!(char_ref_errors(r#"<a href="?a=1&amp=2">x</a>"#), vec![]);
+        assert_eq!(char_ref_errors("<p>&notin;</p>"), vec![]);
+    }
+
+    #[test]
+    fn char_ref_error_absence_of_digits() {
+        assert_eq!(
+            char_ref_errors("<p>&#;</p>"),
+            vec![("absence-of-digits-in-numeric-character-reference", 1, 6)]
+        );
+        assert_eq!(
+            char_ref_errors("<p>&#x;</p>"),
+            vec![("absence-of-digits-in-numeric-character-reference", 1, 7)]
+        );
+    }
+
+    #[test]
+    fn char_ref_error_numeric_values() {
+        assert_eq!(
+            char_ref_errors("<p>&#x0;</p>"),
+            vec![("null-character-reference", 1, 9)]
+        );
+        assert_eq!(char_ref_errors("<p>&#0;</p>"), vec![("null-character-reference", 1, 8)]);
+        assert_eq!(
+            char_ref_errors("<p>&#xD800;</p>"),
+            vec![("surrogate-character-reference", 1, 12)]
+        );
+        assert_eq!(
+            char_ref_errors("<p>&#x1;</p>"),
+            vec![("control-character-reference", 1, 9)]
+        );
+        assert_eq!(
+            char_ref_errors("<p>&#13;</p>"),
+            vec![("control-character-reference", 1, 9)]
+        );
+        assert_eq!(
+            char_ref_errors("<p>&#x80;</p>"),
+            vec![("control-character-reference", 1, 10)]
+        );
+        assert_eq!(
+            char_ref_errors("<p>&#xFFFE;</p>"),
+            vec![("noncharacter-character-reference", 1, 12)]
+        );
+        assert_eq!(
+            char_ref_errors("<p>&#xFDD0;</p>"),
+            vec![("noncharacter-character-reference", 1, 12)]
+        );
+        assert_eq!(
+            char_ref_errors("<p>&#x10FFFF;</p>"),
+            vec![("noncharacter-character-reference", 1, 14)]
+        );
+        assert_eq!(
+            char_ref_errors("<p>&#x110000;</p>"),
+            vec![("character-reference-outside-unicode-range", 1, 14)]
+        );
+        assert_eq!(
+            char_ref_errors("<p>&#99999999999999999999;</p>"),
+            vec![("character-reference-outside-unicode-range", 1, 27)]
+        );
+        assert_eq!(
+            char_ref_errors("<p>&#x110000</p>"),
+            vec![
+                ("missing-semicolon-after-character-reference", 1, 13),
+                ("character-reference-outside-unicode-range", 1, 13),
+            ]
+        );
+        assert_eq!(char_ref_errors("<p>&#x0000000041;</p>"), vec![]);
+        assert_eq!(
+            char_ref_errors("<a href='&#xD800;'>x</a>"),
+            vec![("surrogate-character-reference", 1, 18)]
+        );
+    }
+
+    #[test]
+    fn char_ref_error_lines() {
+        assert_eq!(
+            char_ref_errors("<p>\n  a &xyz; b\n  &#0;\n</p>"),
+            vec![
+                ("unknown-named-character-reference", 2, 9),
+                ("null-character-reference", 3, 7),
+            ]
+        );
     }
 
     #[test]

@@ -348,10 +348,10 @@ describe('Rust lint() E2E', () => {
 
 	it('detects duplicate attributes', () => {
 		const violations = lintHtml('<div class="a" class="b"></div>', {
-			'attr-duplication': true,
+			'no-duplicate-attr': true,
 		});
 		expect(violations).toHaveLength(1);
-		expect(violations[0].ruleId).toBe('attr-duplication');
+		expect(violations[0].ruleId).toBe('no-duplicate-attr');
 		expect(violations[0].severity).toBe('error');
 		expect(violations[0].message).toContain('class');
 		expect(violations[0].line).toBe(1);
@@ -360,21 +360,21 @@ describe('Rust lint() E2E', () => {
 
 	it('reports no violations for clean HTML', () => {
 		const violations = lintHtml('<div class="a" id="b"></div>', {
-			'attr-duplication': true,
+			'no-duplicate-attr': true,
 		});
 		expect(violations).toHaveLength(0);
 	});
 
 	it('respects disabled rules', () => {
 		const violations = lintHtml('<div class="a" class="b"></div>', {
-			'attr-duplication': false,
+			'no-duplicate-attr': false,
 		});
 		expect(violations).toHaveLength(0);
 	});
 
 	it('respects severity override', () => {
 		const violations = lintHtml('<div id="x" id="y"></div>', {
-			'attr-duplication': 'warning',
+			'no-duplicate-attr': 'warning',
 		});
 		expect(violations).toHaveLength(1);
 		expect(violations[0].severity).toBe('warning');
@@ -382,17 +382,17 @@ describe('Rust lint() E2E', () => {
 
 	it('handles empty HTML', () => {
 		const violations = lintHtml('', {
-			'attr-duplication': true,
+			'no-duplicate-attr': true,
 		});
 		expect(violations).toHaveLength(0);
 	});
 
 	it('handles multiple elements with duplicates', () => {
 		const violations = lintHtml('<div class="a" class="b"></div><span id="x" id="y"></span>', {
-			'attr-duplication': true,
+			'no-duplicate-attr': true,
 		});
 		expect(violations).toHaveLength(2);
-		expect(violations[0].ruleId).toBe('attr-duplication');
-		expect(violations[1].ruleId).toBe('attr-duplication');
+		expect(violations[0].ruleId).toBe('no-duplicate-attr');
+		expect(violations[1].ruleId).toBe('no-duplicate-attr');
 	});
 });

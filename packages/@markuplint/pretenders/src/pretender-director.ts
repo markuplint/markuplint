@@ -59,8 +59,15 @@ export class PretenderDirector {
 	 *   absolute path) passed to the scanner, so cross-file import resolution
 	 *   reads a file's current (possibly unsaved) content instead of always
 	 *   falling back to disk.
+	 * @param dependencies - A sink for the files read while chasing imports
+	 *   (see `PretenderScanOptions#dependencies`)
 	 */
-	getPretenders(cwd?: string, sources?: ReadonlyMap<string, string>) {
-		return dependencyMapper(this.#map, this.#nameIndex, { importsByFile: this.#importsByFile, cwd, sources });
+	getPretenders(cwd?: string, sources?: ReadonlyMap<string, string>, dependencies?: Set<string>) {
+		return dependencyMapper(this.#map, this.#nameIndex, {
+			importsByFile: this.#importsByFile,
+			cwd,
+			sources,
+			dependencies,
+		});
 	}
 }

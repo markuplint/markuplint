@@ -26,4 +26,4 @@ export * from './utils/index.js';
 export * from './violation-collector.js';
 export * from './virtual-rule.js';
 
-export type { AccessibilityProperties } from './ml-dom/node/types.js';
+export type { AccessibilityProperties, PretenderSlotContent } from './ml-dom/node/types.js';

@@ -1,4 +1,4 @@
-import type { Config, InitializationOptions, LangConfigs } from './types.js';
+import type { Config, InitializationOptions, LangConfigs } from '@markuplint/language-server/protocol';
 import type { ExtensionContext } from 'vscode';
 import type { LanguageClientOptions, ServerOptions } from 'vscode-languageclient/node.js';
 
@@ -16,6 +16,7 @@ import {
 	WATCHING_CONFIGURATION_GLOB,
 } from './const.js';
 import { Logger } from './logger.js';
+import { StatusBar } from './status-bar.js';
 import {
 	errorToPopup,
 	infoToPopup,
@@ -23,8 +24,7 @@ import {
 	logToPrimaryChannel,
 	status,
 	warningToPopup,
-} from './lsp.js';
-import { StatusBar } from './status-bar.js';
+} from '@markuplint/language-server/protocol';
 import { ARIA_RECOMMENDED_VERSION } from '@markuplint/ml-spec';
 
 let client: LanguageClient;
@@ -72,7 +72,13 @@ export function activate(
 	logger = new Logger(window.createOutputChannel(OUTPUT_CHANNEL_PRIMARY_CHANNEL_NAME, { log: true }));
 	diagnosticsLogger = new Logger(window.createOutputChannel(OUTPUT_CHANNEL_DIAGNOSTICS_CHANNEL_NAME, { log: true }));
 
-	const serverModule = context.asAbsolutePath(path.join('out', 'server.js'));
+	// The language server is the package's own executable, so it runs on its own `node_modules`
+	// (including the markuplint it falls back to) wherever the package manager put them.
+	const serverModule = path.join(
+		path.dirname(require.resolve('@markuplint/language-server/package.json')),
+		'bin',
+		'markuplint-language-server.mjs',
+	);
 
 	const debugOptions = {
 		execArgv: ['--nolazy', '--inspect=6009'],
@@ -128,6 +134,7 @@ export function activate(
 		workingDirectories,
 		workspaceFolders,
 		gitPath,
+		extendedProtocol: true,
 	};
 
 	const clientOptions: LanguageClientOptions = {

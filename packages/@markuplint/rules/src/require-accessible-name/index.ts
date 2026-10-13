@@ -3,7 +3,7 @@ import type { ARIAVersion } from '@markuplint/ml-spec';
 import { createRule, getRoleSpec, getComputedRole } from '@markuplint/ml-core';
 import { ARIA_RECOMMENDED_VERSION, isExposed } from '@markuplint/ml-spec';
 
-import { accnameMayBeMutable } from '../helpers.js';
+import { accnameMayBeMutable, accnameMayComeFromUnknownContent } from '../helpers.js';
 
 import meta from './meta.js';
 
@@ -35,10 +35,16 @@ export default createRule({
 			}
 
 			const hasAccessibleName = !!el.getAccessibleName(ariaVersion).trim();
-
-			if (!hasAccessibleName) {
-				report({ scope: el, message: t('Require {0}', 'accessible name') });
+			if (hasAccessibleName) {
+				return;
 			}
+
+			// The static scan cannot decide whether the unknown content is the name.
+			if (accnameMayComeFromUnknownContent(el, document)) {
+				return;
+			}
+
+			report({ scope: el, message: t('Require {0}', 'accessible name') });
 		});
 	},
 });

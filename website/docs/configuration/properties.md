@@ -938,6 +938,14 @@ It accepts an **element name** or an **element with properties**. It's required.
 
 It accepts an **element name**. It's required.
 
+#### `as.namespace`
+
+It accepts `"html"`, `"svg"`, or `"math"`. It's optional.
+
+If omitted, the element gets the namespace that an element of the same name gets when it is written where the component is used: `svg` and `math` enter their namespaces, and the others take the namespace of their parent (HTML inside `foreignObject`). The children given to the component take the namespace of the element that the component renders them in.
+
+An element in the [`slots`](#pretenders/as-slots) array is taken to be directly inside the outermost element. Specify the namespace of one that is not, such as an element inside `foreignObject` in an `svg`.
+
 #### `as.inheritAttrs`
 
 It accepts boolean.
@@ -1016,7 +1024,12 @@ It accepts an attribute name. It's required.
 
 #### `as.attrs[].value`
 
-It accepts an attribute value. It's optional.
+It accepts an attribute value. It's optional. If it is omitted, the attribute is a boolean attribute.
+
+- **string**: A static value.
+- **`{ "fromAttr": "name" }`**: The value of the attribute that the component has. If that attribute is an expression (`<MyButton kind={kind} />`), the value is dynamic too. If the component does not have the attribute, the element has the attribute with an empty value.
+- **`{ "fromAttr": "name", "omitIfMissing": true }`**: The same, except that the element does not have the attribute if the component does not have it. It is what a component that passes an optional prop on renders (`<button type={kind}>` has no `type` when `kind` is `undefined`).
+- **`{ "dynamic": true }`**: The attribute exists but its value is not known until the component renders, such as `tabIndex={selected ? 0 : -1}`. Rules treat it as a dynamic value and do not validate it.
 
 #### `as.aria`
 
@@ -1073,7 +1086,7 @@ It specifies whether the component accepts children or has slots. It's optional.
 
 - **`null`**: The component does **not** accept children or does not have slots. For example, a component that renders as `<img>` (a void element).
 - **`true`**: The component accepts children, and the wrapper element is the outermost element.
-- **Array**: Multiple named slots, each described as an element specification (advanced usage).
+- **Array**: The element that wraps the children when it is not the outermost element, described as an element specification. The children given to the component are evaluated against that element instead of the outermost element. If the array has two or more specifications, which one a child belongs to is unknown, so the children are not validated.
 
 ```jsx
 // This component accepts children — slots should be true
@@ -1103,6 +1116,94 @@ const Icon = props => <img src={props.src} />;
   ]
 }
 ```
+
+When the children are wrapped by an inner element, specify that element:
+
+```jsx
+const Card = ({ children }) => (
+  <div>
+    <h2>lorem ipsum</h2>
+    <p>{children}</p>
+  </div>
+);
+```
+
+```json class=config
+{
+  "pretenders": [
+    {
+      "selector": "Card",
+      "as": {
+        "element": "div",
+        "slots": [{ "element": "p" }]
+      }
+    }
+  ]
+}
+```
+
+`<Card><div></div></Card>` is reported because the `div` element is not allowed in the `p` element.
+
+#### `as.contents` {#pretenders/as-contents}
+
+:::caution[Experimental]
+This property is **experimental** and may change in future releases.
+:::
+
+It specifies what the component renders directly inside the element that wraps the slot, in order. It's optional. The element that wraps the slot is the outermost element, or each specification of the `slots` array.
+
+- **`{ "element": "img", "attrs": [...] }`**: A native element that the component always renders there.
+- **`{ "slot": true }`**: The position of the children given to the component.
+- **`{ "dynamic": true }`**: Something rendered there whose content is unknown, such as an expression, a conditional, or another component. The check that a required child is missing is skipped.
+
+Rules that check the content, such as `permitted-contents`, evaluate the children of the wrapper element as this list with the given children placed at the `{ "slot": true }` position. If the list has no `{ "slot": true }`, the given children are placed after the list. If it is omitted, the given children are the whole content.
+
+```jsx
+const Picture = () => (
+  <picture>
+    <img src="example.gif" alt="Example" />
+  </picture>
+);
+
+const Details = ({ children }) => <details>{children}</details>;
+```
+
+```json class=config
+{
+  "pretenders": [
+    {
+      "selector": "Picture",
+      "as": {
+        "element": "picture",
+        "slots": null,
+        "contents": [
+          {
+            "element": "img",
+            "attrs": [
+              { "name": "src", "value": "example.gif" },
+              { "name": "alt", "value": "Example" }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "selector": "Details",
+      "as": {
+        "element": "details",
+        "slots": true,
+        "contents": [{ "slot": true }]
+      }
+    }
+  ]
+}
+```
+
+`<Picture />` is not reported for the missing `img` element because the component renders it. `<Details></Details>` is reported for the missing `summary` element because only the usage can provide it.
+
+Currently only `permitted-contents`, `require-owned-elements` and the accessible name computation (used by rules such as `require-accessible-name`) use `contents`. In the name computation, `{ "dynamic": true }` is not a source of a name (a component whose only possible name is such an entry is not reported by `require-accessible-name`, because the entry may be the name), and children given to a component whose `slots` is `null` are not used. Other rules that look at the children of the element see only the children given to the component.
+
+If the component renders several elements at its root, set `element` to `"#fragment"`. The component is not an element itself; its `contents` stand in its place in the parent.
 
 #### `scan` {#pretenders/scan}
 
@@ -1179,9 +1280,19 @@ When using the object form, `auto: true` resolves pretenders by scanning the fil
 }
 ```
 
+The walk follows up to 8 import hops from the linted file. A re-export (`export ... from`) in a JS/TS file (or in the linted file itself when it is MDX) is followed like an import, so components imported through a barrel file are found, and passing through the barrel takes a hop. Use the object form to change that; `0` considers only the linted file itself. When configs are merged through `extends`, `auto` of the later one replaces the earlier one as a whole, so `{}` brings the limit back to 8:
+
+```json class=config
+{
+  "pretenders": {
+    "auto": { "depth": 3 }
+  }
+}
+```
+
 Unlike `scan`, which pre-scans a configured set of files once, `auto` runs per lint target and only ever considers components the linted file actually imports (transitively) — so same-named components in unrelated files can never collide. This comes with two trade-offs:
 
-- Only the config file is filesystem-watched, so in watch mode or an editor session, results can go stale if an imported component file changes without the config changing too.
+- In watch mode or an editor session, the component files `auto` (and `scan`) read are watched along with the config file, so editing one re-lints the files that use it. What is not watched, so a change to it is picked up only when the config changes: a component file that does not exist yet (including a new match of a `scan` glob, and a file that was removed and comes back), files under `node_modules`, and the files of `files` and `imports`. Edits to the linted file itself — adding, removing, or changing an import — are reflected on the next lint of that file.
 - Only the **object form** of `pretenders` can express `auto`; the array shorthand cannot.
 
 Other pretender sources (`files`, `imports`, `data`, `scan`) take precedence over `auto` for the same selector, since they're resolved first.
@@ -1195,7 +1306,7 @@ interface Config {
     | {
         data?: Pretender[];
         scan?: PretenderScanConfig[]; // @experimental
-        auto?: boolean; // @experimental
+        auto?: boolean | { depth?: number }; // @experimental
       };
 }
 
@@ -1207,7 +1318,8 @@ type Pretender = {
 type OriginalNode = {
   element: string;
   slots?: null | true | Slot[]; // @experimental
-  namespace?: 'svg';
+  contents?: Content[]; // @experimental
+  namespace?: 'html' | 'svg' | 'math';
 
   inheritAttrs?: boolean;
   attrs?: {
@@ -1216,6 +1328,10 @@ type OriginalNode = {
       | string
       | {
           fromAttr: string;
+          omitIfMissing?: true;
+        }
+      | {
+          dynamic: true;
         };
   }[];
 
@@ -1229,6 +1345,9 @@ type OriginalNode = {
 };
 
 type Slot = Omit<OriginalNode, 'slots'>; // @experimental
+
+type Content = // @experimental
+  { element: string; attrs?: OriginalNode['attrs'] } | { slot: true } | { dynamic: true };
 
 type PretenderScanConfig = {
   files: string | string[];

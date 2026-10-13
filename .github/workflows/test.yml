@@ -58,13 +58,13 @@ jobs:
                 os: [ubuntu-latest]
                 node: [24, 26]
         steps:
-            - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+            - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
               with:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
 
             - name: Use Node.js ${{ matrix.node }}
-              uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+              uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
               with:
                   node-version: ${{ matrix.node }}
 
@@ -79,7 +79,7 @@ jobs:
 
             - name: Cache Restore devDependencies
               id: cache-restore-dev-depends
-              uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
+              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
               with:
                   path: |
                       '**/node_modules'
@@ -93,7 +93,7 @@ jobs:
             - name: Cache Save devDependencies
               if: steps.cache-restore-dev-depends.outputs.cache-hit != 'true'
               id: cache-save-dev-depends
-              uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
+              uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
               with:
                   path: |
                       '**/node_modules'
@@ -108,13 +108,13 @@ jobs:
             matrix:
                 os: [ubuntu-latest]
         steps:
-            - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+            - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
               with:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
 
             - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
-              uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+              uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
               with:
                   node-version: ${{ env.NODE_BUILD_VERSION }}
 
@@ -129,7 +129,7 @@ jobs:
 
             - name: Cache Restore devDependencies
               id: cache-restore-dev-depends
-              uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
+              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
               with:
                   path: |
                       '**/node_modules'
@@ -138,7 +138,7 @@ jobs:
 
             - name: Cache Restore Production
               id: cache-restore-prod
-              uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
+              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
               with:
                   path: |
                       packages/**/lib
@@ -203,7 +203,7 @@ jobs:
 
             - name: Cache Save Production
               if: steps.cache-restore-prod.outputs.cache-hit != 'true'
-              uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
+              uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
               with:
                   enableCrossOsArchive: true
                   path: |
@@ -221,10 +221,10 @@ jobs:
     lint:
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+            - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
 
             - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
-              uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+              uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
               with:
                   node-version: ${{ env.NODE_BUILD_VERSION }}
 
@@ -238,7 +238,7 @@ jobs:
               run: echo "dir=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
 
             - name: Cache Restore devDependencies
-              uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
+              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
               with:
                   path: |
                       '**/node_modules'
@@ -272,13 +272,13 @@ jobs:
                     - windows-latest
                 node: [24]
         steps:
-            - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+            - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
               with:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
 
             - name: Use Node.js ${{ matrix.node }}
-              uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+              uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
               with:
                   node-version: ${{ matrix.node }}
 
@@ -293,7 +293,7 @@ jobs:
 
             - name: Cache Restore devDependencies
               id: cache-restore-dev-depends
-              uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
+              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
               with:
                   path: |
                       '**/node_modules'
@@ -306,7 +306,7 @@ jobs:
 
             - name: Cache Save devDependencies
               if: steps.cache-restore-dev-depends.outputs.cache-hit != 'true'
-              uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
+              uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
               with:
                   path: |
                       '**/node_modules'
@@ -321,13 +321,13 @@ jobs:
             matrix:
                 node: [24, 26]
         steps:
-            - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+            - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
               with:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
 
             - name: Use Node.js ${{ matrix.node }}
-              uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+              uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
               with:
                   node-version: ${{ matrix.node }}
 
@@ -341,7 +341,7 @@ jobs:
               run: echo "dir=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
 
             - name: Cache Restore devDependencies
-              uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
+              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
               with:
                   path: |
                       '**/node_modules'
@@ -349,7 +349,7 @@ jobs:
                   key: dev-depends-ubuntu-latest-node${{ matrix.node }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
 
             - name: Cache Restore Production
-              uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
+              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
               with:
                   enableCrossOsArchive: true
                   path: |
@@ -387,13 +387,13 @@ jobs:
                     - windows-latest
                 node: [24]
         steps:
-            - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+            - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
               with:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
 
             - name: Use Node.js ${{ matrix.node }}
-              uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+              uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
               with:
                   node-version: ${{ matrix.node }}
 
@@ -407,7 +407,7 @@ jobs:
               run: echo "dir=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
 
             - name: Cache Restore devDependencies
-              uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
+              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
               with:
                   path: |
                       '**/node_modules'
@@ -415,7 +415,7 @@ jobs:
                   key: dev-depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
 
             - name: Cache Restore Production
-              uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
+              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
               with:
                   enableCrossOsArchive: true
                   path: |
@@ -451,13 +451,13 @@ jobs:
                 pm: [npm, yarn, pnpm]
                 env: [esm, ts, ts-config-ts]
         steps:
-            - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+            - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
               with:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
 
             - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
-              uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+              uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
               with:
                   node-version: ${{ env.NODE_BUILD_VERSION }}
 
@@ -481,7 +481,7 @@ jobs:
               shell: bash
 
             - name: Cache Restore devDependencies
-              uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
+              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
               with:
                   path: |
                       '**/node_modules'
@@ -489,7 +489,7 @@ jobs:
                   key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
 
             - name: Cache Restore Production
-              uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
+              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
               with:
                   enableCrossOsArchive: true
                   path: |
@@ -526,7 +526,7 @@ jobs:
 
             - name: Install pnpm
               if: matrix.pm == 'pnpm'
-              uses: pnpm/action-setup@71c92474e7e4f5bca283fb17ef80fba9cdb2b4b1 # v6
+              uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
               with:
                   version: latest # Use latest pnpm version
                   run_install: false
@@ -564,12 +564,12 @@ jobs:
         runs-on: ubuntu-latest
         continue-on-error: true
         steps:
-            - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+            - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
               with:
                   fetch-depth: '0'
 
             - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
-              uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+              uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
               with:
                   node-version: ${{ env.NODE_BUILD_VERSION }}
 
@@ -588,7 +588,7 @@ jobs:
               run: echo "dir=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
 
             - name: Cache Restore devDependencies
-              uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
+              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
               with:
                   path: |
                       '**/node_modules'
@@ -596,7 +596,7 @@ jobs:
                   key: dev-depends-ubuntu-latest-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
 
             - name: Cache Restore Production
-              uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
+              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
               with:
                   enableCrossOsArchive: true
                   path: |
@@ -616,18 +616,26 @@ jobs:
 
             - name: Test with Bun
               run: bunx --bun vitest run
+              env:
+                  # JavaScriptCore's concurrent DFG/FTL compilation plans are GC roots for
+                  # every value they freeze (`DFG::Plan::checkLivenessAndVisitChildren`),
+                  # and `Bun.gc(true)` never completes them. A plan that froze a per-document
+                  # closure keeps a superseded document alive across `gc()`, which makes the
+                  # WeakRef-based collectability tests in `@markuplint/ml-core` flaky. With
+                  # synchronous compilation a plan is finalized before it can be scanned.
+                  BUN_JSC_useConcurrentJIT: '0'
 
     test-deno:
         needs: build
         runs-on: ubuntu-latest
         continue-on-error: true
         steps:
-            - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+            - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
               with:
                   fetch-depth: '0'
 
             - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
-              uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+              uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
               with:
                   node-version: ${{ env.NODE_BUILD_VERSION }}
 
@@ -646,7 +654,7 @@ jobs:
               run: echo "dir=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
 
             - name: Cache Restore devDependencies
-              uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
+              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
               with:
                   path: |
                       '**/node_modules'
@@ -654,7 +662,7 @@ jobs:
                   key: dev-depends-ubuntu-latest-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
 
             - name: Cache Restore Production
-              uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
+              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
               with:
                   enableCrossOsArchive: true
                   path: |

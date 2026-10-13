@@ -94,6 +94,7 @@ fn make_with_text(tag: &str, attrs: &[(&str, &str)], text: &str) -> (markuplint_
         children: vec![],
     }));
     let el_id = builder.push(DomNode::Element(ElementData {
+        pretender_context: None,
         base: NodeBase {
             id: 0,
             uuid: "el-1".to_string(),
@@ -177,6 +178,7 @@ fn make_two_elements(
     }));
 
     let el1_id = builder.push(DomNode::Element(ElementData {
+        pretender_context: None,
         base: NodeBase {
             id: 0,
             uuid: "el-1".to_string(),
@@ -233,6 +235,7 @@ fn make_two_elements(
     }
 
     let el2_id = builder.push(DomNode::Element(ElementData {
+        pretender_context: None,
         base: NodeBase {
             id: 0,
             uuid: "el-2".to_string(),
@@ -328,6 +331,7 @@ fn make_three_elements(
     let push_element =
         |tag: &str, attrs: &[(&str, &str)], text: &str, builder: &mut DomArenaBuilder| -> (NodeId, Vec<NodeId>) {
             let el_id = builder.push(DomNode::Element(ElementData {
+                pretender_context: None,
                 base: NodeBase {
                     id: 0,
                     uuid: format!("el-{tag}"),
@@ -428,6 +432,7 @@ fn make_parent_with_child_element_and_text(
     }));
 
     let parent_id = builder.push(DomNode::Element(ElementData {
+        pretender_context: None,
         base: NodeBase {
             id: 0,
             uuid: "parent".to_string(),
@@ -459,6 +464,7 @@ fn make_parent_with_child_element_and_text(
     }
 
     let child_id = builder.push(DomNode::Element(ElementData {
+        pretender_context: None,
         base: NodeBase {
             id: 0,
             uuid: "child".to_string(),
@@ -546,6 +552,7 @@ fn make_labeled_input(
 
     // Build label element with for attribute
     let label_id = builder.push(DomNode::Element(ElementData {
+        pretender_context: None,
         base: NodeBase {
             id: 0,
             uuid: "label".to_string(),
@@ -606,6 +613,7 @@ fn make_labeled_input(
     let mut all_attrs: Vec<(&str, &str)> = vec![("id", input_id_value)];
     all_attrs.extend_from_slice(input_attrs);
     let input_node_id = builder.push(DomNode::Element(ElementData {
+        pretender_context: None,
         base: NodeBase {
             id: 0,
             uuid: "input".to_string(),
@@ -669,6 +677,7 @@ fn make_labeled_element(
     }));
 
     let label_id = builder.push(DomNode::Element(ElementData {
+        pretender_context: None,
         base: NodeBase {
             id: 0,
             uuid: "label".to_string(),
@@ -726,6 +735,7 @@ fn make_labeled_element(
     let mut all_attrs: Vec<(&str, &str)> = vec![("id", element_id_value)];
     all_attrs.extend_from_slice(element_attrs);
     let el_node_id = builder.push(DomNode::Element(ElementData {
+        pretender_context: None,
         base: NodeBase {
             id: 0,
             uuid: "target".to_string(),
@@ -2189,6 +2199,7 @@ mod algorithm_tests {
         depth: u32,
     ) -> NodeId {
         let el_id = builder.push(DomNode::Element(ElementData {
+            pretender_context: None,
             base: NodeBase {
                 id: 0,
                 uuid: next_uuid(),
@@ -3242,6 +3253,7 @@ mod algorithm_tests {
             children: vec![],
         }));
         let svg_id = builder.push(DomNode::Element(ElementData {
+            pretender_context: None,
             base: NodeBase {
                 id: 0,
                 uuid: "svg".to_string(),
@@ -3272,6 +3284,7 @@ mod algorithm_tests {
             e.base.id = svg_id;
         }
         let title_id = builder.push(DomNode::Element(ElementData {
+            pretender_context: None,
             base: NodeBase {
                 id: 0,
                 uuid: "title".to_string(),
@@ -3358,6 +3371,7 @@ mod algorithm_tests {
             children: vec![],
         }));
         let svg_id = builder.push(DomNode::Element(ElementData {
+            pretender_context: None,
             base: NodeBase {
                 id: 0,
                 uuid: "svg".to_string(),

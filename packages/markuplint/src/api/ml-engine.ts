@@ -1,28 +1,32 @@
 import type { APIOptions, MLEngineEventMap } from './types.js';
 import type { MLResultInfo } from '../types.js';
-import type { ConfigSet, MLFile, Target } from '@markuplint/file-resolver';
-import type { PlainData, RuleAliasWarning, Violation } from '@markuplint/ml-config';
+import type { WatchSubscription } from './shared-watcher.js';
+import type { ConfigSet, MLFile, PretenderResolver, Target } from '@markuplint/file-resolver';
+import type { PlainData, Pretender, RuleAliasWarning, RuleCommonSettings, Violation } from '@markuplint/ml-config';
 import type { Ruleset, Plugin, Document, RuleConfigValue, MLFabric } from '@markuplint/ml-core';
 
 import {
 	ConfigProvider,
+	createPretenderResolver,
 	disambiguatePretendersForFile,
 	invalidatePretenderResolutionCaches,
 	resolveFiles,
 	resolveParser,
-	resolvePretenders,
 	resolveRules,
 	resolveSpecs,
 } from '@markuplint/file-resolver';
+import path from 'node:path';
+
 import { applyRuleAliasesToConfig, mergeConfig } from '@markuplint/ml-config';
-import { MLCore, convertRuleset } from '@markuplint/ml-core';
+import { CONFIG_ERROR_RULE_ID, MLCore, convertRuleset } from '@markuplint/ml-core';
 import { ruleAliasTable } from '@markuplint/rules';
-import { isFatalError } from '@markuplint/shared';
-import { FSWatcher } from 'chokidar';
+import { ConfigLoadError, isFatalError } from '@markuplint/shared';
 import { Emitter } from 'strict-event-emitter';
 
 import { log as coreLog, verbosely } from '../debug.js';
 import { i18n } from '../i18n.js';
+
+import { subscribe as subscribeToWatcher, toWatchKey } from './shared-watcher.js';
 
 const log = coreLog.extend('ml-engine');
 const fileLog = log.extend('file');
@@ -73,6 +77,16 @@ type MLEngineOptions = {
  * way a stable `options.config`/`defaultConfig` reference does. See #3997.
  */
 const RECOMMENDED_CONFIG = { extends: ['markuplint:recommended'] };
+
+/**
+ * How long watch events are gathered before the engine re-resolves, so that
+ * a change of many files at once (a `git checkout`, a formatter run) is one
+ * re-resolution. Rollup's `watch.buildDelay` is 25ms; tsc waits 250ms and
+ * webpack 20ms. A re-resolution is not interrupted by events that arrive
+ * during it (see `#watchRerun`), so the delay only has to be long enough to
+ * gather the burst, not to outlast the work.
+ */
+const WATCH_DEBOUNCE_MS = 25;
 
 /**
  * Options for creating an {@link MLEngine} from inline source code.
@@ -143,6 +157,15 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 	}
 
 	#configProvider: ConfigProvider;
+	/**
+	 * Why the latest config resolution left nothing to lint with: a config that
+	 * cannot be loaded (Tier 2). `null` while the latest resolution succeeded.
+	 *
+	 * Set by `#provide` and reported by `#reportConfigFailure` as one
+	 * error-severity `config-error` for the file. It is not folded into an empty
+	 * config plus a warning: a file that no rule has looked at must not pass.
+	 */
+	#configFailure: Error | null = null;
 	#core: MLCore | null = null;
 	#file: Readonly<MLFile>;
 	/** Whether any plugin provides custom rules. Updated by #provide() on every exec(). */
@@ -150,7 +173,53 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 	#options?: APIOptions & MLEngineOptions;
 	/** The resolved parser module name. Updated by #provide() on every exec(). */
 	#parserModName = '@markuplint/html-parser';
-	#watcher = new FSWatcher();
+	/**
+	 * The resolver of the latest config resolution, kept so `setCode()` can
+	 * re-resolve the pretenders that depend on the source without re-reading
+	 * the ones that depend on the config and the filesystem only. See #4064.
+	 */
+	#pretenderResolver: PretenderResolver | null = null;
+	/**
+	 * Counts `setCode()` calls so that, when they overlap, only the latest one
+	 * reaches the file and the core — `setCode()` awaits the pretender
+	 * re-resolution, and an earlier call finishing later must not put its
+	 * older code back.
+	 */
+	#setCodeSeq = 0;
+	/**
+	 * The latest `setCode()` call's application, so that a superseded call can
+	 * resolve only after it has taken effect.
+	 */
+	#latestSetCode: Promise<void> = Promise.resolve();
+	/**
+	 * What is running, so that the next piece of work starts when it is over:
+	 * {@link exec}, the application of {@link setCode}, and the re-resolution a
+	 * watched file triggers share one queue. They all read and replace the same
+	 * state — the pretender resolver, the core's document — and `verify()` with
+	 * `fix` rewrites the document while it runs; run side by side, a lint could
+	 * see another's half-done state, and the one that finished last would put
+	 * its older pretenders over a newer resolution.
+	 */
+	#queue: Promise<unknown> = Promise.resolve();
+	/**
+	 * This engine's view of the process-wide watcher (see `./shared-watcher.ts`);
+	 * `null` unless watching.
+	 */
+	#watch: WatchSubscription | null = null;
+	/** The config files of the latest resolution, as {@link ConfigSet.files} names them. */
+	#configFiles: ReadonlySet<string> = new Set();
+	/**
+	 * The files the latest pretenders resolution read (see
+	 * `ResolvePretendersOptions#dependencies`). `setCode()` replaces them, as
+	 * the `auto` ones follow the source's imports.
+	 */
+	#pretenderDependencies: ReadonlySet<string> = new Set();
+	/** The pending gathering of watch events into one re-resolution. */
+	#watchDebounce: ReturnType<typeof setTimeout> | undefined;
+	/** Whether the loop of re-resolutions is running, one at a time. */
+	#rerunning = false;
+	/** Set by an event that arrives while a re-resolution is running: it ran on state older than the event. */
+	#rerunAgain = false;
 
 	constructor(file: Readonly<MLFile>, options?: APIOptions & MLEngineOptions) {
 		super();
@@ -178,11 +247,12 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 	}
 
 	/**
-	 * Closes the engine, removing all event listeners and stopping the file watcher.
+	 * Closes the engine, removing all event listeners and leaving the file
+	 * watcher (the files no other engine watches are released with it).
 	 */
 	async close() {
 		this.removeAllListeners();
-		await this.#watcher.close();
+		await this.#stopWatching();
 	}
 
 	/**
@@ -190,9 +260,18 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 	 *
 	 * Sets up the engine on first call, then verifies the document against all rules.
 	 *
+	 * Runs after whatever the engine is already doing — an earlier `exec()`, a
+	 * {@link setCode} call, a re-resolution a watched file triggered — and
+	 * before whatever is asked for later. That also means that awaiting it from
+	 * inside one of the engine's own event listeners waits on itself.
+	 *
 	 * @returns The lint result including violations and fixed code, or `null` if setup was skipped
 	 */
-	async exec(): Promise<MLResultInfo | null> {
+	exec(): Promise<MLResultInfo | null> {
+		return this.#enqueue(() => this.#exec());
+	}
+
+	async #exec(): Promise<MLResultInfo | null> {
 		log('exec: start');
 
 		// Rust path: resolve fabric first, then decide whether to use Rust or TS
@@ -219,6 +298,10 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		const core = await this.#setup();
 
 		if (!core) {
+			if (this.#configFailure) {
+				log('exec: config cannot be loaded');
+				return this.#reportConfigFailure(this.#configFailure);
+			}
 			log('exec: cancel (unsetuped yet)');
 			return null;
 		}
@@ -289,7 +372,8 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 
 	/**
 	 * Attempts to execute linting via the Rust NAPI engine.
-	 * Returns `null` if the file is not eligible (framework parser, custom rules, fix mode),
+	 * Returns `null` if the file is not eligible (framework parser, custom rules, fix mode,
+	 * or a rule the Rust engine cannot evaluate),
 	 * in which case the caller should fall back to the TS engine.
 	 */
 	async #tryExecRustPath(fabric: MLFabric): Promise<MLResultInfo | null> {
@@ -319,6 +403,16 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 			return null;
 		}
 
+		// Fallback: rules whose input is outside the document. Without the Rust side
+		// having it they would silently report nothing there.
+		const unsupportedRule = RULES_ONLY_THE_TS_ENGINE_EVALUATES.find(id => enablesRule(fabric.ruleset, id));
+		if (unsupportedRule) {
+			process.stderr.write(
+				`⚠ [experimental-rust-core] "${this.#file.path}" enables ${unsupportedRule}, which the Rust engine cannot evaluate — falling back to TypeScript engine.\n`,
+			);
+			return null;
+		}
+
 		// Load NAPI binding
 		let lintHtml: (html: string, configJson: string, specJson: string) => NapiViolation[];
 		try {
@@ -337,7 +431,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		const sourceCode = await this.#file.getCode();
 
 		// Build config JSON for Rust
-		const configJson = buildRustConfigJson(fabric.ruleset);
+		const configJson = buildRustConfigJson(fabric.ruleset, fabric.ruleCommonSettings, fabric.pretenders);
 		const specJson = JSON.stringify(fabric.schemas[0]);
 
 		log('exec: rust path lintHtml');
@@ -348,6 +442,14 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		} catch (error) {
 			if (isFatalError(error)) {
 				throw error;
+			}
+			// The TS runtime accepts pretender shapes that the Rust types reject, and the Rust
+			// side fails on the whole config for one of them. The TS engine reads them all.
+			if (fabric.pretenders.length > 0) {
+				process.stderr.write(
+					`⚠ [experimental-rust-core] "${this.#file.path}" has pretenders the Rust engine could not read — falling back to TypeScript engine.\n`,
+				);
+				return null;
 			}
 			// NAPI errors (config/spec parse failures) — report as lint error
 			const message = error instanceof Error ? error.message : String(error);
@@ -407,24 +509,78 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 	}
 
 	/**
-	 * Updates the source code and re-parses the document without re-resolving configuration.
+	 * Updates the source code and re-parses the document without re-resolving
+	 * configuration.
+	 *
+	 * The pretenders that depend on the source — `pretenders.auto`, which walks
+	 * the file's own imports, and the disambiguation of same-selector entries,
+	 * which reads them too — are re-resolved from the new code; the ones that
+	 * depend on the config and the filesystem only are kept from the latest
+	 * config resolution (see #4064 and {@link PretenderResolver}).
+	 *
+	 * When calls overlap, only the latest one takes effect, and every call
+	 * settles only once that latest one has — so a host that runs
+	 * {@link exec} right after awaiting any of them (the VS Code extension
+	 * does) lints the document the file now holds, never the previous
+	 * document against the newer file. For the same reason a superseded call
+	 * rejects when the latest one fails: resolving would tell its caller the
+	 * latest code is in place when it is not.
 	 *
 	 * @param code - The new markup source code
 	 */
 	async setCode(code: string) {
+		// Numbered when called, not when its turn in the queue comes: a call that
+		// a later one has overtaken by then steps aside without resolving anything.
+		const seq = ++this.#setCodeSeq;
+		const applied = this.#enqueue(() => this.#applyCode(code, seq));
+		this.#latestSetCode = applied;
+		await applied;
+
+		let awaited = applied;
+		while (this.#latestSetCode !== awaited) {
+			awaited = this.#latestSetCode;
+			await awaited;
+		}
+	}
+
+	/**
+	 * The body of one {@link setCode} call. Two checks against the sequence
+	 * number: the one after setup spares a superseded call its resolution;
+	 * the one after resolution keeps a superseded call that was already
+	 * resolving from overwriting the newer result.
+	 */
+	async #applyCode(code: string, seq: number) {
 		const core = await this.#setup();
 
-		if (!core) {
+		if (!core || seq !== this.#setCodeSeq) {
 			return;
 		}
 
 		this.#file.setCode(code);
-		core.setCode(code);
+		const { pretenders, dependencies } = await this.#resolvePretendersForCurrentCode();
+
+		if (seq !== this.#setCodeSeq) {
+			return;
+		}
+
+		core.setCode(code, { pretenders });
+		await this.#watchPretenderDependencies(dependencies);
 	}
 
 	/**
-	 * Enables or disables watch mode. When enabled, the engine watches config files
-	 * for changes and re-lints automatically.
+	 * Enables or disables watch mode. When enabled, the engine watches the
+	 * files its result depends on — config files, and the component files
+	 * `pretenders.scan` and `pretenders.auto` read — and re-lints automatically
+	 * when one changes, is created, or is removed. Changes that arrive together
+	 * are one re-lint, and the lint target itself is not watched: it may be
+	 * watched and managed by a language server or text editor, which tells the
+	 * engine through {@link setCode}.
+	 *
+	 * Not watched, so a change to them is picked up only by the next
+	 * config-triggered re-lint: files that do not exist yet (a component that
+	 * has not been created, a `scan` glob's new match), `node_modules`,
+	 * `pretenders.files` and `pretenders.imports`. See
+	 * `PretenderScanOptions#dependencies` in `@markuplint/ml-config`.
 	 *
 	 * @param enable - Whether to enable watch mode
 	 */
@@ -435,10 +591,26 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		};
 
 		if (enable) {
-			this.#watcher.on('change', this.#onChange.bind(this));
+			if (!this.#watch) {
+				this.#watch = subscribeToWatcher(
+					filePath => this.#watchOnChange(filePath),
+					error => this.#emitWatchError(error),
+				);
+				// Whatever the engine already depends on; it resolves the rest as it goes.
+				void this.#syncWatch();
+			}
 		} else {
-			this.#watcher.removeAllListeners();
+			this.#stopWatching().catch((error: unknown) => {
+				if (isFatalError(error)) {
+					throw error;
+				}
+				this.#emitWatchError(error);
+			});
 		}
+	}
+
+	#emitWatchError(error: unknown) {
+		this.emit('log', 'watch:error', error instanceof Error ? error.message : String(error));
 	}
 
 	async #createCore(fabric: MLFabric) {
@@ -459,16 +631,85 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		return core;
 	}
 
-	async #onChange(filePath: string) {
+	/**
+	 * A watched file changed, was created, or was removed. Gathers the events
+	 * of a burst, then asks for a re-resolution.
+	 */
+	#watchOnChange(filePath: string) {
 		if (!this.#options?.watch) {
 			return;
 		}
 
 		this.emit('log', 'watch:onChange', filePath);
 
+		clearTimeout(this.#watchDebounce);
+		this.#watchDebounce = setTimeout(() => {
+			this.#watchDebounce = undefined;
+			void this.#watchRerun();
+		}, WATCH_DEBOUNCE_MS);
+	}
+
+	/**
+	 * Re-resolves and lints, one at a time. An event that arrives while one is
+	 * running means it ran on state older than the event, so it is followed by
+	 * exactly one more — however many events came — rather than by one each,
+	 * and never alongside it (the same way Rollup's watcher reruns, and webpack
+	 * discards a compilation that a change has outdated).
+	 */
+	async #watchRerun() {
+		if (this.#rerunning) {
+			this.#rerunAgain = true;
+			return;
+		}
+
+		this.#rerunning = true;
+		try {
+			do {
+				this.#rerunAgain = false;
+				try {
+					await this.#enqueue(() => this.#resolveAgain());
+				} catch (error: unknown) {
+					if (isFatalError(error)) {
+						throw error;
+					}
+					// Nobody awaits a re-resolution a file triggered; a failure of one (a
+					// parser that cannot be found, say) must not become an unhandled
+					// rejection, nor spare the event that arrived while it ran its rerun.
+					this.#emitWatchError(error);
+				}
+			} while (this.#rerunAgain && this.#options?.watch);
+		} finally {
+			this.#rerunning = false;
+			if (!this.#watchDebounce) {
+				this.emit('log', 'watch:idle', this.#file.path);
+			}
+		}
+	}
+
+	/**
+	 * A re-resolution is not only the config: it re-reads the files the pretenders
+	 * depend on, which is what a change to one of them is for.
+	 */
+	async #resolveAgain() {
+		if (!this.#options?.watch) {
+			return;
+		}
+
 		const fabric = await this.#provide(false);
 
 		if (!fabric) {
+			if (this.#configFailure) {
+				// The core holds the config that no longer loads. Dropping it makes the
+				// next `exec()` / `setCode()` resolve again instead of linting on it.
+				this.#core = null;
+				if (this.#options?.watch) {
+					await this.#reportConfigFailure(this.#configFailure);
+				}
+			}
+			return;
+		}
+
+		if (!this.#options?.watch) {
 			return;
 		}
 
@@ -477,27 +718,112 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		}
 
 		this.emit('log', 'update:core', this.#file.path);
-		this.#core?.update(fabric);
-		await this.exec();
+		if (this.#core) {
+			this.#core.update(fabric);
+		} else {
+			// No core yet — the config did not load until now. `#exec()` would
+			// resolve once more through `#setup()`, for the fabric just resolved.
+			await this.#createCore(fabric);
+		}
+		await this.#exec();
 	}
 
+	#enqueue<T>(task: () => Promise<T>): Promise<T> {
+		const result = this.#queue.then(task, task);
+		// The queue goes on whether this task succeeded or not; its failure is the
+		// caller's, through `result`.
+		this.#queue = result.then(
+			() => {},
+			() => {},
+		);
+		return result;
+	}
+
+	/**
+	 * Leaves the process-wide watcher. A later `watchMode(true)` subscribes anew.
+	 */
+	async #stopWatching() {
+		clearTimeout(this.#watchDebounce);
+		this.#watchDebounce = undefined;
+		this.#options = { ...this.#options, watch: false };
+		const watch = this.#watch;
+		this.#watch = null;
+		await watch?.close();
+	}
+
+	/**
+	 * Points the process-wide watcher at what this engine depends on now: its
+	 * config files and the files its pretenders were resolved from. Resolves
+	 * once they are being watched, so that a change made after an `exec()` or
+	 * `setCode()` has resolved is not missed.
+	 *
+	 * Left out: relative names (`markuplint:recommended`, the keys of inline
+	 * configs, `extends` of an npm module) that {@link ConfigSet.files} also
+	 * lists, and the lint target itself.
+	 *
+	 * Never rejects: a watcher that cannot be updated costs the engine its
+	 * re-linting, not the `exec()` / `setCode()` whose result is already in hand.
+	 */
+	async #syncWatch() {
+		try {
+			await this.#updateWatch();
+		} catch (error: unknown) {
+			if (isFatalError(error)) {
+				throw error;
+			}
+			this.#emitWatchError(error);
+		}
+	}
+
+	async #updateWatch() {
+		const watch = this.#watch;
+		if (!watch) {
+			return;
+		}
+
+		const targetKey = toWatchKey(this.#file.path);
+		const filePaths = new Set<string>();
+		for (const filePath of [...this.#configFiles, ...this.#pretenderDependencies]) {
+			if (path.isAbsolute(filePath) && toWatchKey(filePath) !== targetKey) {
+				filePaths.add(filePath);
+			}
+		}
+
+		await watch.update(filePaths);
+	}
+
+	async #watchPretenderDependencies(dependencies: ReadonlySet<string>) {
+		this.#pretenderDependencies = dependencies;
+		await this.#syncWatch();
+	}
+
+	/**
+	 * Resolves everything a lint of the file needs and returns it, or `null`
+	 * when there is nothing to lint with: the file is missing, excluded, or
+	 * unmatched by the extension — or its config cannot be loaded, which
+	 * `#configFailure` records.
+	 *
+	 * A config that cannot be loaded is a Tier 2 failure (see the module JSDoc
+	 * of `@markuplint/shared`'s `errors/index.ts`): any non-fatal error thrown by
+	 * the resolution, or a `ConfigLoadError` collected into the config set's
+	 * `errs`, fails the file. Tier 1 errors — markuplint's own bugs
+	 * (`isFatalError()`) — are not caught here. The other `errs` (a rule or a
+	 * plugin that is not found, an invalid selector, a circular `extends`)
+	 * leave the rest of the config usable, so they stay `config-error` warnings
+	 * that `MLCore.verify()` reports.
+	 */
 	async #provide(cache = true): Promise<MLFabric | null> {
+		this.#configFailure = null;
+
 		let configSet: ResolvedConfigSet;
 
 		try {
 			configSet = await this.resolveConfig(cache);
 		} catch (error: unknown) {
-			if (error instanceof Error) {
-				configSet = {
-					config: {},
-					plugins: [],
-					files: new Set(),
-					errs: [error],
-					ruleDeprecations: [],
-				};
-			} else {
+			if (isFatalError(error) || !(error instanceof Error)) {
 				throw error;
 			}
+			return this.#failConfig(error);
 		}
 
 		fileLog('Fetched Config files: %O', configSet.files);
@@ -505,9 +831,12 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		fileLog('Resolved Plugins: %O', configSet.plugins);
 		fileLog('Resolve Errors: %O', configSet.errs);
 
-		if (!(await this.#file.isFile())) {
-			this.emit('log', 'file-no-exists', `The file doesn't exist or it is not a file: ${this.#file.path}`);
-			fileLog("The file doesn't exist or it is not a file: %s", this.#file.path);
+		const loadError = configSet.errs.find(error => error instanceof ConfigLoadError);
+		if (loadError) {
+			return this.#failConfig(loadError);
+		}
+
+		if (!(await this.#isTargetFile())) {
 			return null;
 		}
 
@@ -687,10 +1016,10 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 
 		this.emit('config', this.#file.path, configSet);
 
-		if (this.#options?.watch) {
-			// It doesn't watch the main HTML file because it may is watched and managed by a language server or text editor or more.
-			this.#watcher.add([...configSet.files]);
-		}
+		// The main file is not watched (see `#syncWatch`): it may be watched and managed
+		// by a language server or text editor or more.
+		this.#configFiles = configSet.files;
+		await this.#syncWatch();
 
 		return configSet;
 	}
@@ -717,14 +1046,39 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 			// resolving as it did before the change for the rest of the process's lifetime.
 			await invalidatePretenderResolutionCaches();
 		}
+		// One resolver per config resolution: this is the only place the
+		// pretenders that depend on the config and the filesystem (files /
+		// imports / data / scan) are read. `setCode()` reuses it.
+		this.#pretenderResolver = createPretenderResolver(configSet.config.pretenders);
+		const { pretenders, dependencies } = await this.#resolvePretendersForCurrentCode();
+		await this.#watchPretenderDependencies(dependencies);
+		return pretenders;
+	}
+
+	/**
+	 * Disambiguation runs here, on every call, and not only at config
+	 * resolution: it reads the target's import statements, so it is as
+	 * source-dependent as `auto` is.
+	 *
+	 * @returns The pretenders, and the files they were resolved from, which the
+	 *   caller watches once it has adopted this resolution (a superseded one is dropped).
+	 */
+	async #resolvePretendersForCurrentCode(): Promise<{
+		readonly pretenders: readonly Pretender[];
+		readonly dependencies: ReadonlySet<string>;
+	}> {
+		const resolver = this.#pretenderResolver;
+		const dependencies = new Set<string>();
+		if (!resolver) {
+			return { pretenders: [], dependencies };
+		}
 		const sourceCode = await this.#file.getCode();
-		const pretenders = await resolvePretenders(configSet.config.pretenders, {
-			filePath: this.#file.path,
-			sourceCode,
+		const pretenders = await resolver.resolve({ filePath: this.#file.path, sourceCode }, { dependencies });
+		const disambiguated = await disambiguatePretendersForFile(this.#file.path, sourceCode, pretenders, {
+			dependencies,
 		});
-		const disambiguated = await disambiguatePretendersForFile(this.#file.path, sourceCode, pretenders);
 		fileLog('Resolved pretenders: %O', disambiguated);
-		return disambiguated;
+		return { pretenders: disambiguated, dependencies };
 	}
 
 	async #resolveRules(plugins: readonly Plugin[], ruleset: Ruleset) {
@@ -753,6 +1107,63 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		const { schemas } = await resolveSpecs(this.#file.path, configSet.config.specs);
 		this.emit('schemas', this.#file.path, schemas);
 		return schemas;
+	}
+
+	async #isTargetFile() {
+		if (await this.#file.isFile()) {
+			return true;
+		}
+		this.emit('log', 'file-no-exists', `The file doesn't exist or it is not a file: ${this.#file.path}`);
+		fileLog("The file doesn't exist or it is not a file: %s", this.#file.path);
+		return false;
+	}
+
+	/**
+	 * Records that the config cannot be loaded, unless the file is missing too,
+	 * which is the more basic reason to skip it. Always resolves to `null`: the
+	 * "nothing to lint with" answer of `#provide`.
+	 */
+	async #failConfig(error: Error) {
+		fileLog('Config cannot be loaded: %O', error);
+		if (await this.#isTargetFile()) {
+			this.#configFailure = error;
+		}
+		return null;
+	}
+
+	/**
+	 * Reports a config that cannot be loaded as the file's only violation, at
+	 * error severity, so the run fails instead of passing a file no rule has
+	 * checked.
+	 *
+	 * Emits `lint` as well as `lint-error`: an editor shows its diagnostics from
+	 * `lint`, and a config that stops loading while it is being edited must show
+	 * up there. See `#exec` for the `lint-error` conversion of a failed
+	 * `verify()`, which has no violations to publish.
+	 */
+	async #reportConfigFailure(error: Readonly<Error>): Promise<MLResultInfo> {
+		const sourceCode = await this.#file.getCode();
+		const violations: Violation[] = [
+			{
+				ruleId: CONFIG_ERROR_RULE_ID,
+				severity: 'error',
+				message: error.message,
+				line: 1,
+				col: 1,
+				raw: '',
+			},
+		];
+
+		this.emit('lint-error', this.#file.path, sourceCode, error);
+		this.emit('lint', this.#file.path, sourceCode, violations, sourceCode, null, null);
+
+		return {
+			violations,
+			filePath: this.#file.path,
+			sourceCode,
+			fixedCode: sourceCode,
+			status: 'processed',
+		};
 	}
 
 	async #setup() {
@@ -801,18 +1212,66 @@ async function loadNapiBinding(): Promise<NapiBinding> {
 }
 
 /**
+ * Rules whose input lives outside the document, which only the TS engine can read:
+ * `no-unsupported-browser-features` needs browserslist and browser-compat-data,
+ * `no-mismatched-aspect-ratio` reads the image files from disk.
+ */
+const RULES_ONLY_THE_TS_ENGINE_EVALUATES = ['no-unsupported-browser-features', 'no-mismatched-aspect-ratio'] as const;
+
+/**
+ * Whether `ruleset` turns the rule `ruleId` on, globally or for some nodes.
+ *
+ * The id is compared without its namespace prefix, as the Rust engine looks rules up
+ * (`html-standard/no-duplicate-attr` and `no-duplicate-attr` are the same rule).
+ */
+function enablesRule(ruleset: Partial<Readonly<Ruleset>>, ruleId: string): boolean {
+	const isOn = (config: unknown): boolean => {
+		if (config === undefined || config === false) {
+			return false;
+		}
+		if (typeof config === 'object' && config !== null) {
+			const { value, disabled } = config as { value?: unknown; disabled?: unknown };
+			return value !== false && disabled !== true;
+		}
+		return true;
+	};
+	const hasRule = (rules: Readonly<Record<string, unknown>> | undefined): boolean =>
+		Object.entries(rules ?? {}).some(([id, config]) => id.split('/').pop() === ruleId && isOn(config));
+
+	return (
+		hasRule(ruleset.rules) ||
+		[...(ruleset.nodeRules ?? []), ...(ruleset.childNodeRules ?? [])].some(node => hasRule(node.rules))
+	);
+}
+
+/**
  * Converts the TS Ruleset into a JSON string that the Rust LintConfig can deserialize.
  *
- * Rust LintConfig expects: `{ rules: {...}, node_rules: [...], child_node_rules: [...] }`
+ * Rust LintConfig expects:
+ * `{ rules: {...}, node_rules: [...], child_node_rules: [...], rule_common_settings: {...}, pretenders: [...] }`
  *
- * Namespaced rule IDs (e.g., "html-standard/attr-duplication") are passed through as-is.
+ * `pretenders` is the already-resolved list for this file: scanning the project, reading the
+ * `files` and following `auto` stay in TS, and the Rust engine only applies the result.
+ *
+ * Namespaced rule IDs (e.g., "html-standard/no-duplicate-attr") are passed through as-is.
  * Rust strips the namespace prefix internally for rule lookup and preserves the original
  * key in violation ruleIds.
+ *
+ * `ruleCommonSettings` carries settings that several rules read but that belong to no
+ * rule's own options (`ariaVersion`, which the ARIA rules fall back to when a rule has no
+ * `version` option of its own). Dropping it would make the Rust engine ignore the version
+ * the TS engine applies.
  */
-function buildRustConfigJson(ruleset: Partial<Readonly<Ruleset>>): string {
+function buildRustConfigJson(
+	ruleset: Partial<Readonly<Ruleset>>,
+	ruleCommonSettings: Readonly<RuleCommonSettings>,
+	pretenders: readonly Pretender[],
+): string {
 	return JSON.stringify({
 		rules: ruleset.rules ?? {},
 		node_rules: ruleset.nodeRules ?? [],
 		child_node_rules: ruleset.childNodeRules ?? [],
+		rule_common_settings: ruleCommonSettings,
+		pretenders,
 	});
 }

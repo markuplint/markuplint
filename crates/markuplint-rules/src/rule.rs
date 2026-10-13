@@ -41,24 +41,52 @@ impl Default for RuleConfig {
     }
 }
 
+/// The config's `ruleCommonSettings`: settings shared by several rules that are not
+/// part of any one rule's own `options`.
+///
+/// Only `ariaVersion` exists so far. The ARIA rules read it as the fallback for
+/// `options.version` (TS: `document.ruleCommonSettings?.ariaVersion`).
+#[derive(Debug, Clone, Default, serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct RuleCommonSettings {
+    #[serde(default, alias = "aria_version")]
+    pub aria_version: Option<String>,
+}
+
 #[derive(Debug, Clone)]
 pub struct RuleConfigSet {
     /// From top-level `rules`.
     global: RuleConfig,
     /// From `nodeRules`/`childNodeRules`.
     overrides: HashMap<NodeId, RuleConfig>,
+    /// From top-level `ruleCommonSettings`; shared by every rule of one lint run.
+    common_settings: RuleCommonSettings,
 }
 
 impl RuleConfigSet {
     pub fn new(global: RuleConfig, overrides: HashMap<NodeId, RuleConfig>) -> Self {
-        Self { global, overrides }
+        Self {
+            global,
+            overrides,
+            common_settings: RuleCommonSettings::default(),
+        }
     }
 
     pub fn global_only(global: RuleConfig) -> Self {
-        Self {
-            global,
-            overrides: HashMap::new(),
-        }
+        Self::new(global, HashMap::new())
+    }
+
+    /// Attaches the config's `ruleCommonSettings`. Kept apart from [`Self::new`] so the
+    /// constructors stay source-compatible; `lint()` is the one caller that has the
+    /// settings at hand.
+    #[must_use]
+    pub fn with_common_settings(mut self, common_settings: RuleCommonSettings) -> Self {
+        self.common_settings = common_settings;
+        self
+    }
+
+    pub fn common_settings(&self) -> &RuleCommonSettings {
+        &self.common_settings
     }
 
     /// Returns the per-node override if present, otherwise the global config.

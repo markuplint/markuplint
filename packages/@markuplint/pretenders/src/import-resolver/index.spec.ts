@@ -1,6 +1,6 @@
 import { describe, test, expect } from 'vitest';
 
-import { analyzeImports, resolveComponentImport } from './index.js';
+import { analyzeImports, collectReferencedModules, resolveComponentImport } from './index.js';
 import type { ImportBinding } from './types.js';
 
 describe('analyzeImports', () => {
@@ -347,5 +347,52 @@ describe('resolveComponentImport', () => {
 		expect(resolveComponentImport('Dialog', bindingsWithDynamic)).toBeUndefined();
 		// Static binding still resolves
 		expect(resolveComponentImport('Button', bindingsWithDynamic)).toStrictEqual(bindingsWithDynamic[1]);
+	});
+});
+
+describe('collectReferencedModules', () => {
+	test('lists the imports and the re-exports of a TS file, without duplicates', async () => {
+		const source = [
+			"import { A } from './a';",
+			"export { A, B } from './a';",
+			"export * from './c';",
+			"export type { D } from './d';",
+		].join('\n');
+
+		expect(await collectReferencedModules('index.ts', source)).toStrictEqual(['./a', './c']);
+	});
+
+	test('lists the re-exports in the top-level ESM of an MDX file', async () => {
+		const source = [
+			"import { A } from './a';",
+			"export { Callout } from './Callout';",
+			"export * from './c';",
+			"export type { D } from './d';",
+			'export const meta = { title: "x" };',
+			'',
+			'# Title',
+			'',
+			'<Callout />',
+		].join('\n');
+
+		expect(await collectReferencedModules('page.mdx', source)).toStrictEqual(['./a', './Callout', './c']);
+	});
+
+	test('does not list a re-export in a Vue script block', async () => {
+		const source = [
+			'<script setup>',
+			"import A from './A.vue';",
+			'</script>',
+			'<script>',
+			"export { B } from './B';",
+			'</script>',
+			'<template><A /></template>',
+		].join('\n');
+
+		expect(await collectReferencedModules('App.vue', source)).toStrictEqual(['./A.vue']);
+	});
+
+	test('returns null for an unsupported file type', async () => {
+		expect(await collectReferencedModules('page.html', '<div></div>')).toBeNull();
 	});
 });

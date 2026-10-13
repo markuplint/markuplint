@@ -38,6 +38,28 @@ pub fn get_role_spec<'a>(spec: &'a MLMLSpec, role_name: &str, version: ARIAVersi
     aria.dpub_roles.iter().find(|r| r.name == role_name)
 }
 
+/// TS `getRoleByName` / the lookup of `non-existent-role.ts`: the core roles, then the WAI-ARIA
+/// Graphics Module roles **only for an SVG-namespace element** (`is_svg`), then the `DPub` roles.
+///
+/// Unlike [`get_role_spec`], which searches all three lists regardless of the element, a graphics
+/// role (`graphics-document`, ...) is unknown on an HTML element here, as it is in TS.
+pub fn get_role_spec_for_element<'a>(
+    spec: &'a MLMLSpec,
+    role_name: &str,
+    version: ARIAVersion,
+    is_svg: bool,
+) -> Option<&'a ARIARoleInSchema> {
+    let aria = get_aria_spec(spec, version);
+
+    if let Some(role) = aria.roles.iter().find(|r| r.name == role_name) {
+        return Some(role);
+    }
+    if is_svg && let Some(role) = aria.graphics_roles.iter().find(|r| r.name == role_name) {
+        return Some(role);
+    }
+    aria.dpub_roles.iter().find(|r| r.name == role_name)
+}
+
 /// Abstract roles cannot be used as an explicit `role` value.
 pub fn is_abstract_role(spec: &MLMLSpec, role_name: &str, version: ARIAVersion) -> bool {
     get_role_spec(spec, role_name, version).is_some_and(|r| r.is_abstract.unwrap_or(false))
@@ -220,6 +242,25 @@ mod tests {
         // doc-bibliography is a dpub role
         let role = get_role_spec(&spec, "doc-bibliography", ARIAVersion::V1_3);
         assert!(role.is_some());
+    }
+
+    // --- get_role_spec_for_element ---
+
+    #[test]
+    fn role_spec_for_element_graphics_only_on_svg() {
+        let spec = html_spec();
+        let html = get_role_spec_for_element(&spec, "graphics-document", ARIAVersion::V1_3, false);
+        let svg = get_role_spec_for_element(&spec, "graphics-document", ARIAVersion::V1_3, true);
+        assert!(html.is_none());
+        assert!(svg.is_some());
+    }
+
+    #[test]
+    fn role_spec_for_element_core_and_dpub_everywhere() {
+        let spec = html_spec();
+        assert!(get_role_spec_for_element(&spec, "button", ARIAVersion::V1_3, false).is_some());
+        assert!(get_role_spec_for_element(&spec, "doc-bibliography", ARIAVersion::V1_3, false).is_some());
+        assert!(get_role_spec_for_element(&spec, "BUTTON", ARIAVersion::V1_3, false).is_none());
     }
 
     // --- is_abstract_role ---

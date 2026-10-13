@@ -3,31 +3,23 @@
 //! Follows the TS implementation, which expands a category via
 //! `contentModelCategoryToTagNames()` → `:is(tag1, tag2, ...)`.
 
-use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_types::spec::lookup;
 use markuplint_types::spec::types::MLMLSpec;
 
-pub fn matches_model(spec: &MLMLSpec, arena: &DomArena, node_id: NodeId, category: &str) -> bool {
+/// `element_name` is the name of the element under test in the identity the
+/// selector is matched with (see `matcher::match_specificity`).
+pub fn matches_model(spec: &MLMLSpec, element_name: &str, category: &str) -> bool {
     let category = category.trim().to_ascii_lowercase();
     let category_key = format!("#{category}");
 
-    let Some(node) = arena.get(node_id) else {
-        return false;
-    };
-    let Some(el) = node.as_element() else {
-        return false;
-    };
-
     // `:model(custom)` matches custom elements, identified by a hyphen in the name.
     if category == "custom" {
-        return el.base.node_name.contains('-');
+        return element_name.contains('-');
     }
 
     let Some(tags) = lookup::get_content_model_tags(spec, &category_key) else {
         return false;
     };
-
-    let element_name = &el.base.node_name;
 
     // Tags may carry a selector suffix like `audio[controls]`; match by prefix.
     tags.iter().any(|tag| {

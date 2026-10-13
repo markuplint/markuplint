@@ -7,18 +7,12 @@
  * and fragment providers.
  */
 
+import type { Root } from './collect-roots.js';
+import type { Draft } from './create-identify.js';
+import type { PropResolver } from './resolve-prop.js';
 import type { PretenderScanJSXOptions } from './types.js';
 import type { Pretender } from '@markuplint/ml-config';
-import type {
-	FunctionDeclaration,
-	JSDoc,
-	JsxFragment,
-	JsxOpeningElement,
-	JsxSelfClosingElement,
-	Node,
-	SourceFile,
-	VariableDeclaration,
-} from 'typescript';
+import type { FunctionDeclaration, JSDoc, Node, SourceFile, VariableDeclaration } from 'typescript';
 
 import path from 'node:path';
 
@@ -27,25 +21,22 @@ import ts from 'typescript';
 
 import { createScanner } from '../create-scanner.js';
 import { collectImportBindings } from '../import-resolver/analyze-jsx-imports.js';
-import { normalizePath } from '../import-resolver/resolve-module-file.js';
+import { normalizePath, recordDependency } from '../import-resolver/resolve-module-file.js';
 import { PretenderDirector } from '../pretender-director.js';
 
+import { collectReturnExpressions, findComponentFunction, resolveRoots } from './collect-roots.js';
 import { createCachingCompilerHost } from './compiler-host.js';
-import { createIdentity } from './create-identify.js';
+import { createIdentity, mergeDrafts } from './create-identify.js';
 import { finder } from './finder.js';
-import { getAttributes } from './get-attributes.js';
-import { getChildren } from './get-children.js';
+import { getAttributes, toPretenderAttrs } from './get-attributes.js';
+import { getSlotInfo } from './get-contents.js';
+import { createPropResolver } from './resolve-prop.js';
 
 const {
 	createProgram,
 	forEachChild,
-	isArrowFunction,
 	isCallExpression,
 	isFunctionDeclaration,
-	isJsxFragment,
-	isJsxOpeningElement,
-	isJsxSelfClosingElement,
-	isReturnStatement,
 	isTaggedTemplateExpression,
 	isVariableDeclaration,
 	JsxEmit,
@@ -60,9 +51,10 @@ const COMPILER_OPTIONS: ts.CompilerOptions = {
 	types: [],
 };
 
-// `sources` has no meaningful default (it's a per-call override), so it's
-// excluded from the Required<> defaults and read straight off `options`.
-const defaultOptions: Required<Omit<PretenderScanJSXOptions, 'sources'>> = {
+// `sources` and `dependencies` have no meaningful default (they are per-call
+// inputs / sinks), so they're excluded from the Required<> defaults and read
+// straight off `options`.
+const defaultOptions: Required<Omit<PretenderScanJSXOptions, 'sources' | 'dependencies'>> = {
 	cwd: process.cwd(),
 	asFragment: [/(?:^|\.)provider$/i],
 	ignoreComponentNames: [],
@@ -73,12 +65,36 @@ const defaultOptions: Required<Omit<PretenderScanJSXOptions, 'sources'>> = {
 		/^styled\s*\(\s*(?<tagName>[a-z][\da-z]*)\s*\)$/i,
 	],
 	extendingWrapper: [],
+	followImports: true,
 };
 
 /**
  * A scanner function that analyzes JSX/TSX source files to discover pretender mappings.
  * Uses the TypeScript compiler API to parse and traverse the AST, identifying component
  * definitions and the native HTML elements they render.
+ *
+ * Which element a component is decided by the values its own `return` points can
+ * produce. A nested function such as `items.map(i => <li />)` is not one of them, and
+ * a result that is not statically known (`return children`) is ignored rather than
+ * guessed. Branches rendering different elements produce no pretender, because any
+ * single choice would be a false positive for the other branch. Branches rendering the
+ * same element keep only what all of them agree on.
+ *
+ * What surrounds the children is recorded as `slots` (the element that directly wraps
+ * `{children}`) and `contents` (the static children of that element), so that the children
+ * given at the usage site are evaluated as the component renders them. A component that
+ * renders another component is described by the element the latter renders, with its own
+ * `slots` / `contents` and attributes composed in (see `composeIdentity`).
+ *
+ * An attribute whose value is just a prop of the component (`aria-label={label}`,
+ * `aria-label={props.label}`) is `{ fromAttr: 'label', omitIfMissing: true }`: the attribute
+ * the usage site writes, absent when it does not write it (see `createPropResolver`).
+ * That is why the scanner never writes `aria`: `aria-label` and the like are attributes, and
+ * the accessible name algorithm computes the name from them, `aria-labelledby` included.
+ *
+ * Known limitation: a prop with a default value, an expression that does more than name
+ * the prop, and a prop of a component that is not the first parameter of the function stay
+ * `{ dynamic: true }`, so they are not validated.
  *
  * Supports:
  * - Function components (function declarations and arrow functions)
@@ -89,7 +105,8 @@ const defaultOptions: Required<Omit<PretenderScanJSXOptions, 'sources'>> = {
  *
  * @param files - Absolute file paths to scan (relative paths cause a `ReferenceError`)
  * @param options - JSX scanner configuration (fragment patterns, styled-components, wrappers, etc.)
- * @returns Discovered pretender mappings for all components found in the given files
+ * @returns Discovered pretender mappings for all components found in the given files and,
+ *          unless `followImports` is `false`, in the files they import
  */
 export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 	(files, options = defaultOptions): Promise<Pretender[]> => {
@@ -99,20 +116,71 @@ export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 			asFragment = defaultOptions.asFragment,
 			taggedStylingComponent = defaultOptions.taggedStylingComponent,
 			extendingWrapper = defaultOptions.extendingWrapper,
+			followImports = defaultOptions.followImports,
 			sources,
+			dependencies,
 		} = options;
 
 		const director = new PretenderDirector();
 
-		const host = createCachingCompilerHost(COMPILER_OPTIONS, sources);
-		const program = createProgram(files, COMPILER_OPTIONS, host);
+		// A `g` / `y` flag makes `test()` stateful (`lastIndex`), so the results would
+		// depend on how many elements were tested before.
+		const fragmentPatterns = asFragment.map(frag => {
+			const pattern = typeof frag === 'string' ? toRegexp(frag) : frag;
+			return new RegExp(pattern.source, pattern.flags.replaceAll(/[gy]/g, ''));
+		});
+
+		const compilerOptions = followImports ? COMPILER_OPTIONS : { ...COMPILER_OPTIONS, noResolve: true };
+		const host = createCachingCompilerHost(compilerOptions, sources);
+		const program = createProgram(files, compilerOptions, host);
 
 		for (const sourceFile of program.getSourceFiles()) {
 			if (!sourceFile.isDeclarationFile) {
+				// The program reaches files beyond `files` through relative imports; a
+				// change to any of them can change what is scanned.
+				recordDependency(dependencies, sourceFile.fileName);
 				const relFilePath = normalizePath(path.relative(cwd, sourceFile.fileName));
 				director.addImports(relFilePath, collectImportBindings(sourceFile));
 				forEachChild(sourceFile, node => visit(node, sourceFile));
 			}
+		}
+
+		function isFragmentTag(tag: string) {
+			return fragmentPatterns.some(pattern => pattern.test(tag));
+		}
+
+		/**
+		 * Describes what a component renders in one branch, or `undefined` when a
+		 * pretender cannot express it.
+		 */
+		function toDraft(
+			root: Root,
+			// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+			sourceFile: SourceFile,
+			resolveProp: PropResolver,
+		): Draft | undefined {
+			const info = getSlotInfo(root, sourceFile, isFragmentTag, resolveProp);
+			if (!info) {
+				return undefined;
+			}
+
+			/**
+			 * ```
+			 * return <><Foo /><Bar /></>
+			 * -------^
+			 * ```
+			 */
+			if (root.type === 'fragment') {
+				return { element: '#fragment', attrs: [], hasSpread: false, ...info };
+			}
+
+			const attrs = getAttributes(root.element, sourceFile, resolveProp);
+			return {
+				element: root.element.tagName.getText(sourceFile),
+				attrs: toPretenderAttrs(attrs),
+				hasSpread: attrs.some(attr => attr.nodeType === 'spread'),
+				...info,
+			};
 		}
 
 		function visit(
@@ -191,53 +259,37 @@ export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 			const filePath = normalizePath(path.relative(cwd, sourceFile.fileName));
 			const find = finder(sourceFile);
 
-			find(root, isReturnStatement, node => {
-				/**
-				 * ```
-				 * return <Foo></Foo>
-				 * -------^
-				 * ```
-				 */
-				find(node, isJsxOpeningElement, foundElement);
-				/**
-				 * ```
-				 * return <Foo />
-				 * -------^
-				 * ```
-				 */
-				find(node, isJsxSelfClosingElement, foundElement);
-				/**
-				 * ```
-				 * return <></>
-				 * -------^
-				 * ```
-				 */
-				find(node, isJsxFragment, foundFragment);
-			});
+			/**
+			 * ```
+			 * const Component = () => <Foo />
+			 * ---------------------------^
+			 * ```
+			 *
+			 * Only the component's own return points decide which element it is, so
+			 * a nested function (`items.map(i => <li />)`) is not one of them.
+			 */
+			const fn = findComponentFunction(isVariableDeclaration(root) ? root.initializer : root);
+			if (fn) {
+				const drafts: Draft[] = [];
+				let representable = true;
+				const resolveProp = createPropResolver(fn);
 
-			find(root, isArrowFunction, fn => {
-				/**
-				 * ```
-				 * (...) => <Foo></Foo>
-				 * ---------^
-				 * ```
-				 */
-				find(fn, isJsxOpeningElement, foundElement);
-				/**
-				 * ```
-				 * (...) => <Foo />
-				 * ---------^
-				 * ```
-				 */
-				find(fn, isJsxSelfClosingElement, foundElement);
-				/**
-				 * ```
-				 * (...) => <></>
-				 * ---------^
-				 * ```
-				 */
-				find(fn, isJsxFragment, foundFragment);
-			});
+				for (const expression of collectReturnExpressions(fn)) {
+					for (const branch of resolveRoots(expression, sourceFile, isFragmentTag)) {
+						const draft = toDraft(branch, sourceFile, resolveProp);
+						if (draft) {
+							drafts.push(draft);
+						} else {
+							representable = false;
+						}
+					}
+				}
+
+				const merged = representable ? mergeDrafts(drafts) : undefined;
+				if (merged) {
+					director.add(name, createIdentity(merged), filePath, line, col, `${filePath}#${name}`);
+				}
+			}
 
 			find(root, isTaggedTemplateExpression, tagged => {
 				const tag = tagged.tag.getText(sourceFile);
@@ -327,69 +379,9 @@ export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 					);
 				}
 			});
-
-			function foundFragment(
-				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-				fragment: JsxFragment,
-			) {
-				/**
-				 * ```
-				 * <>
-				 *   <Foo></Foo>
-				 * --^
-				 * </>
-				 * ```
-				 */
-				find(fragment, isJsxOpeningElement, foundElement);
-				/**
-				 * ```
-				 * <>
-				 *   <Foo />
-				 * --^
-				 * </>
-				 * ```
-				 */
-				find(fragment, isJsxSelfClosingElement, foundElement);
-			}
-
-			function foundElement(
-				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-				el: JsxOpeningElement | JsxSelfClosingElement,
-			) {
-				const tagName = el.tagName.getText(sourceFile);
-
-				for (const frag of asFragment) {
-					const pattern = typeof frag === 'string' ? toRegexp(frag) : frag;
-					/**
-					 * ```
-					 * <Provider>
-					 *   <Foo></Foo>
-					 * --^
-					 * </Provider>
-					 *
-					 * <Namespace.Provider>
-					 *   <Foo></Foo>
-					 * --^
-					 * </Namespace.Provider>
-					 * ```
-					 */
-					if (pattern.test(tagName)) {
-						for (const child of el.getChildren(sourceFile)) {
-							find(child, isJsxOpeningElement, foundElement);
-							find(child, isJsxSelfClosingElement, foundElement);
-						}
-						return;
-					}
-				}
-
-				const attrs = getAttributes(el, sourceFile);
-				const children = getChildren(el, sourceFile);
-				const identity = createIdentity(tagName, attrs, children);
-				director.add(name, identity, filePath, line, col, `${filePath}#${name}`);
-			}
 		}
 
-		return Promise.resolve(director.getPretenders(cwd, sources));
+		return Promise.resolve(director.getPretenders(cwd, sources, dependencies));
 	},
 );
 

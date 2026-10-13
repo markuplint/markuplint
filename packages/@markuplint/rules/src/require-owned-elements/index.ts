@@ -3,6 +3,7 @@ import type { Options } from '../wai-aria/types.js';
 import { createRule, getComputedRole, getSpec } from '@markuplint/ml-core';
 import { ARIA_RECOMMENDED_VERSION } from '@markuplint/ml-spec';
 
+import { getContentOwner } from '../permitted-contents/slot-content.js';
 import { checkingRequiredOwnedElements } from '../wai-aria/checkings/required-owned-elements.js';
 import { defaultOptions } from '../wai-aria/default-options.js';
 import meta from './meta.js';
@@ -19,6 +20,18 @@ export default createRule<boolean, Options>({
 				el.rule.options?.version ?? document.ruleCommonSettings?.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
 			const computed = getComputedRole(document.specs, el, ariaVersion);
 			report(checkingRequiredOwnedElements({ el, role: computed.role }));
+
+			/**
+			 * The slot wrapper of a pretended component is a virtual element that is not in
+			 * the document, so the walk never reaches it, yet it is the element that owns
+			 * the children given to the component. Its role stands on its own: the
+			 * component is the one that places it, so no context is asked of its parent.
+			 */
+			const wrapper = getContentOwner(el, 'pretended');
+			if (wrapper !== el) {
+				const wrapperComputed = getComputedRole(document.specs, wrapper, ariaVersion, true);
+				report(checkingRequiredOwnedElements({ el: wrapper, role: wrapperComputed.role }));
+			}
 		});
 	},
 });

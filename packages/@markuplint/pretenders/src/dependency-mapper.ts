@@ -9,10 +9,11 @@ import path from 'node:path';
 import { isFatalError } from '@markuplint/shared';
 import ts from 'typescript';
 
+import { composeIdentity } from './compose-identity.js';
 import { getExportTable } from './export-table.js';
 import { scriptKindForPath } from './import-resolver/analyze-jsx-imports.js';
 import { resolveComponentImport } from './import-resolver/index.js';
-import { normalizePath, resolveModuleFile } from './import-resolver/resolve-module-file.js';
+import { normalizePath, recordDependency, resolveModuleFile } from './import-resolver/resolve-module-file.js';
 
 import type { ExportEntry } from './export-table.js';
 
@@ -30,7 +31,39 @@ export interface DependencyMapperContext {
 	 * (see the module JSDoc on `getExportTableForFile`).
 	 */
 	readonly sources?: ReadonlyMap<string, string>;
+	/**
+	 * A sink for the files read while chasing imports — each export table's file,
+	 * and the `tsconfig.json` (with what it `extends`) the imports were resolved
+	 * with. See `PretenderScanOptions#dependencies`.
+	 */
+	readonly dependencies?: Set<string>;
 }
+
+/**
+ * What resolving one hop needs besides the hop itself, passed down as one
+ * object so a new input does not touch every signature on the way.
+ */
+type ResolveEnv = {
+	readonly cwd: string;
+} & DeclarationEnv;
+
+/**
+ * What following re-exports needs: the in-memory overrides of file content, and
+ * the sink for the files read on the way.
+ */
+type DeclarationEnv = {
+	readonly sources: ReadonlyMap<string, string> | undefined;
+	readonly dependencies: Set<string> | undefined;
+};
+
+/**
+ * The declaration an exported name resolves to. `localName` is `null` for a
+ * template component (Vue/Svelte/Astro), which is the file itself.
+ */
+type Declaration = {
+	readonly fileAbs: string;
+	readonly localName: string | null;
+};
 
 /**
  * Follows chains where one component wraps another (e.g., MyButton -> Button -> button)
@@ -46,6 +79,10 @@ export interface DependencyMapperContext {
  * (1) and (2) are what let same-named components declared in different files
  * (e.g., two unrelated `Item` components) resolve independently instead of the
  * first-registered one silently winning for every reference — see issue #3951.
+ *
+ * Each hop composes the `slots` / `contents` and the attributes of the component so far
+ * into those of the component it renders (`composeIdentity`, issue #4057); the rest of the
+ * identity is the last hop's.
  */
 export function dependencyMapper(
 	map: Readonly<PretenderDirectorMap>,
@@ -55,7 +92,7 @@ export function dependencyMapper(
 	const resolvedNameIndex = nameIndex ?? buildNameIndex(map);
 	const importsByFile = context?.importsByFile;
 	const cwd = context?.cwd ?? process.cwd();
-	const sources = context?.sources;
+	const env: ResolveEnv = { cwd, sources: context?.sources, dependencies: context?.dependencies };
 	const linkedPretenders: Pretender[] = [];
 
 	for (const [key, [identifier, _identity, _filePath, _sourceFile]] of map) {
@@ -67,19 +104,24 @@ export function dependencyMapper(
 		const visited = new Set<string>([key]);
 
 		while (true) {
-			const lookupKey = resolveHop(elName, currentFile, key, map, importsByFile, resolvedNameIndex, cwd, sources);
+			const lookupKey = resolveHop(elName, currentFile, key, map, importsByFile, resolvedNameIndex, env);
 			const mappedPretender = map.get(lookupKey);
 			if (!mappedPretender) {
 				break;
 			}
 
-			identity = mappedPretender[1];
 			filePath = mappedPretender[2];
 
 			if (visited.has(lookupKey)) {
+				// Back at a component already passed: the result is that component as it is
+				// (the contract the cycle tests pin). Composing once more would hand over what
+				// the cycle hands over a second time. A cycle is not valid input, so what the
+				// components before it hand over is not worth keeping.
+				identity = mappedPretender[1];
 				via.push('...[Recursive]');
 				break;
 			}
+			identity = composeIdentity(identity, mappedPretender[1]);
 			visited.add(lookupKey);
 			via.push(elName);
 			elName = getElName(identity);
@@ -113,8 +155,7 @@ function resolveHop(
 	map: Readonly<PretenderDirectorMap>,
 	importsByFile: ReadonlyMap<string, readonly ImportBinding[]> | undefined,
 	resolvedNameIndex: Readonly<Map<Identifier, string>>,
-	cwd: string,
-	sources: ReadonlyMap<string, string> | undefined,
+	env: ResolveEnv,
 ): string {
 	if (currentFile) {
 		const sameFileKey = `${currentFile}#${elName}`;
@@ -122,7 +163,7 @@ function resolveHop(
 			return sameFileKey;
 		}
 
-		const viaImport = resolveThroughImport(elName, currentFile, importsByFile, cwd, sources);
+		const viaImport = resolveThroughImport(elName, currentFile, importsByFile, env);
 		if (viaImport && map.has(viaImport)) {
 			return viaImport;
 		}
@@ -143,8 +184,7 @@ function resolveThroughImport(
 	elName: string,
 	currentFile: string,
 	importsByFile: ReadonlyMap<string, readonly ImportBinding[]> | undefined,
-	cwd: string,
-	sources: ReadonlyMap<string, string> | undefined,
+	env: ResolveEnv,
 ): string | null {
 	const bindings = importsByFile?.get(currentFile);
 	if (!bindings) {
@@ -156,17 +196,41 @@ function resolveThroughImport(
 		return null;
 	}
 
-	const importerAbs = path.resolve(cwd, currentFile);
-	const resolvedAbs = resolveModuleFile(importerAbs, binding.source);
+	const importerAbs = path.resolve(env.cwd, currentFile);
+	const resolvedAbs = resolveModuleFile(importerAbs, binding.source, env.dependencies);
 	if (!resolvedAbs) {
 		return null;
 	}
 
-	if (isTemplateComponentFile(resolvedAbs)) {
-		return templateComponentKey(resolvedAbs, cwd);
-	}
+	const declaration = isTemplateComponentFile(resolvedAbs)
+		? { fileAbs: resolvedAbs, localName: null }
+		: resolveExportedName(resolvedAbs, binding.importedName, new Set(), env);
+	return declaration && declarationKey(declaration, env.cwd);
+}
 
-	return resolveExportedName(resolvedAbs, binding.importedName, cwd, new Set(), sources);
+/**
+ * Resolves `exportedName` of the module at `fileAbs` to the absolute path of
+ * the file that declares it, following re-exports the same way scan-time
+ * resolution does (`export { X } from` and `export * from` chains). Returns
+ * `null` when that cannot be confirmed: an unreadable file, a name the export
+ * tables do not confirm, a namespace re-export, or a name that two star
+ * re-exports supply differently.
+ *
+ * @param fileAbs - Absolute path of the module the name is imported from
+ * @param exportedName - The imported name (`'default'` for a default import)
+ * @param options - In-memory content overrides (keyed by normalized absolute path) and the dependency sink
+ * @returns The declaring file's absolute path, or `null`
+ */
+export function resolveDeclarationFile(
+	fileAbs: string,
+	exportedName: string,
+	options?: { readonly sources?: ReadonlyMap<string, string>; readonly dependencies?: Set<string> },
+): string | null {
+	if (isTemplateComponentFile(fileAbs)) {
+		return fileAbs;
+	}
+	const env: DeclarationEnv = { sources: options?.sources, dependencies: options?.dependencies };
+	return resolveExportedName(fileAbs, exportedName, new Set(), env)?.fileAbs ?? null;
 }
 
 const TEMPLATE_COMPONENT_EXTENSIONS = new Set(['.vue', '.svelte', '.astro']);
@@ -177,27 +241,29 @@ function isTemplateComponentFile(filePath: string): boolean {
 
 /**
  * Template components (Vue/Svelte/Astro) are one-file-one-component: the
- * scanner keys them by file path directly, not by an exported name, so there is
+ * scanner keys them by file path directly (a {@link Declaration} without a
+ * `localName`), not by an exported name, so there is
  * no export table to consult — the resolved file path *is* the key. Every place
  * that resolves a module specifier has to check for this before falling through
  * to export-table lookup, or the SFC's raw text gets parsed as TypeScript in
  * search of a table it can never have.
  */
-function templateComponentKey(fileAbs: string, cwd: string): string {
-	return normalizePath(path.relative(cwd, fileAbs));
+function declarationKey(declaration: Declaration, cwd: string): string {
+	const fileRel = normalizePath(path.relative(cwd, declaration.fileAbs));
+	return declaration.localName == null ? fileRel : `${fileRel}#${declaration.localName}`;
 }
 
 /**
  * Resolves `exportedName` in the file at `fileAbs` down to a local declaration,
- * following `export { X } from '...'` re-export chains up to a depth limit.
+ * following `export { X } from '...'` and `export * from '...'` re-export
+ * chains up to a depth limit.
  */
 function resolveExportedName(
 	fileAbs: string,
 	exportedName: string,
-	cwd: string,
 	visited: Set<string>,
-	sources: ReadonlyMap<string, string> | undefined,
-): string | null {
+	env: DeclarationEnv,
+): Declaration | null {
 	if (visited.size >= MAX_RE_EXPORT_DEPTH) {
 		return null;
 	}
@@ -207,34 +273,79 @@ function resolveExportedName(
 	}
 	visited.add(visitKey);
 
-	const table = getExportTableForFile(fileAbs, sources);
-	const entry = table?.byName.get(exportedName);
+	const table = getExportTableForFile(fileAbs, env);
+	if (!table) {
+		return null;
+	}
+	const entry = table.byName.get(exportedName);
 	if (!entry) {
+		return resolveThroughStarReExports(fileAbs, table.starReExportSources, exportedName, visited, env);
+	}
+
+	if (entry.kind === 'local') {
+		return { fileAbs, localName: entry.localName };
+	}
+
+	return resolveReExport(fileAbs, entry, visited, env);
+}
+
+/**
+ * Looks `exportedName` up behind the `export * from '...'` statements of a file
+ * that does not export it by name. As in ECMAScript, `default` never passes
+ * through `export *`, and a name that two of them supply differently is
+ * ambiguous: neither is picked, so the caller falls back as it does for any
+ * unconfirmed name. Each branch gets its own copy of `visited`, so that the
+ * depth limit counts the hops of one chain and not the breadth of a barrel.
+ */
+function resolveThroughStarReExports(
+	fileAbs: string,
+	starSources: readonly string[],
+	exportedName: string,
+	visited: ReadonlySet<string>,
+	env: DeclarationEnv,
+): Declaration | null {
+	if (exportedName === 'default') {
 		return null;
 	}
 
-	const fileRel = normalizePath(path.relative(cwd, fileAbs));
-
-	if (entry.kind === 'local') {
-		return `${fileRel}#${entry.localName}`;
+	let found: Declaration | null = null;
+	for (const source of starSources) {
+		const nextAbs = resolveModuleFile(fileAbs, source, env.dependencies);
+		// A template component exports `default` only, which `export *` skips. A
+		// package holds no scanned component (the walk does not enter
+		// `node_modules` either), and its own star re-exports can be wide and deep
+		// enough to search on every miss of a name.
+		if (!nextAbs || isTemplateComponentFile(nextAbs) || normalizePath(nextAbs).includes('/node_modules/')) {
+			continue;
+		}
+		const declaration = resolveExportedName(nextAbs, exportedName, new Set(visited), env);
+		if (declaration == null) {
+			continue;
+		}
+		if (
+			found != null &&
+			(normalizePath(found.fileAbs) !== normalizePath(declaration.fileAbs) ||
+				found.localName !== declaration.localName)
+		) {
+			return null;
+		}
+		found = declaration;
 	}
-
-	return resolveReExport(fileAbs, entry, cwd, visited, sources);
+	return found;
 }
 
 function resolveReExport(
 	fileAbs: string,
 	entry: Extract<ExportEntry, { kind: 're-export' }>,
-	cwd: string,
 	visited: Set<string>,
-	sources: ReadonlyMap<string, string> | undefined,
-): string | null {
+	env: DeclarationEnv,
+): Declaration | null {
 	if (entry.importedName === '*') {
 		// Namespace re-export target — no single member to pin to.
 		return null;
 	}
 
-	const nextAbs = resolveModuleFile(fileAbs, entry.source);
+	const nextAbs = resolveModuleFile(fileAbs, entry.source, env.dependencies);
 	if (!nextAbs) {
 		return null;
 	}
@@ -246,10 +357,10 @@ function resolveReExport(
 		// name index, silently resolving to whichever same-named component happened
 		// to be registered first — the exact failure issue #3951 fixed for direct
 		// imports.
-		return templateComponentKey(nextAbs, cwd);
+		return { fileAbs: nextAbs, localName: null };
 	}
 
-	return resolveExportedName(nextAbs, entry.importedName, cwd, visited, sources);
+	return resolveExportedName(nextAbs, entry.importedName, visited, env);
 }
 
 type ExportTableCacheEntry = {
@@ -306,9 +417,12 @@ export function clearExportTableCache() {
  * on both would mean giving up freshness there or paying per-reference I/O here.
  * The two look alike but answer different questions; keep them separate.
  */
-function getExportTableForFile(fileAbs: string, sources: ReadonlyMap<string, string> | undefined) {
+function getExportTableForFile(fileAbs: string, env: DeclarationEnv) {
 	const key = normalizePath(fileAbs);
-	const overrideText = sources?.get(key);
+	// Recorded before the cache is consulted: a hit reads nothing, yet the result
+	// still depends on this file.
+	recordDependency(env.dependencies, key);
+	const overrideText = env.sources?.get(key);
 	const cached = exportTableCache.get(key);
 
 	if (cached && cached.sourceText === (overrideText ?? null)) {

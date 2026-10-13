@@ -17,11 +17,26 @@
 //! `aria_resolver_impl`), keeping the lower crates acyclic.
 
 pub mod aria;
+pub mod aria_check;
 pub mod aria_resolver_impl;
+pub mod attr_check;
 pub mod content_model;
+pub(crate) mod decode;
+pub(crate) mod feature_check;
+pub(crate) mod h1_check;
 pub mod helpers;
+pub(crate) mod inline_script;
+pub(crate) mod js;
+pub(crate) mod landmark_check;
+pub(crate) mod lifecycle_check;
 pub mod lint;
+pub mod pretending;
 pub mod rule;
 pub mod rule_mapper;
 pub mod rules;
+pub(crate) mod slot_content;
+pub(crate) mod srcset_check;
+pub(crate) mod table_grid;
+#[cfg(test)]
+pub(crate) mod test_util;
 pub mod violation;

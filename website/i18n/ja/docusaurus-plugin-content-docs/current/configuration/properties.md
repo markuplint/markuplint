@@ -901,6 +901,14 @@ interface Config {
 
 **要素名**を受け取ります。必須です。
 
+#### `as.namespace`
+
+`"html"`、`"svg"`、`"math"`のいずれかを受け取ります。省略可能です。
+
+省略した場合、コンポーネントを使った場所に同じ名前の要素を書いたときと同じ名前空間になります。`svg`と`math`はそれぞれの名前空間に入り、それ以外は親の名前空間を引き継ぎます（`foreignObject`の中はHTMLです）。コンポーネントに渡した子要素は、コンポーネントがそれを描画する要素の名前空間になります。
+
+[`slots`](#pretenders/as-slots)の配列に指定した要素は、一番外側の要素の直下にあるものとして扱います。そうでない要素、たとえば`svg`の中の`foreignObject`の内側にある要素には名前空間を指定してください。
+
 #### `as.inheritAttrs`
 
 レンダリングされた要素が、コンポーネントで定義された属性を公開するかどうかを論理値を受け取ります。省略可能です。省略した場合のデフォルト値は`false`です。
@@ -977,7 +985,12 @@ const MyPicture = () => {
 
 #### `as.attrs[].value`
 
-属性値を受け取ります。省略可能です。
+属性値を受け取ります。省略可能です。省略した場合、その属性は真偽値属性になります。
+
+- **文字列**: 静的な値です。
+- **`{ "fromAttr": "name" }`**: コンポーネントが持つ属性の値です。その属性が式（`<MyButton kind={kind} />`）であれば、値も動的になります。コンポーネントがその属性を持たない場合、要素はその属性を空の値で持ちます。
+- **`{ "fromAttr": "name", "omitIfMissing": true }`**: 同上ですが、コンポーネントがその属性を持たない場合、要素もその属性を持ちません。省略可能なpropをそのまま渡すコンポーネントが描画する結果です（`<button type={kind}>`は`kind`が`undefined`のとき`type`を持ちません）。
+- **`{ "dynamic": true }`**: 属性は存在しますが、値はコンポーネントがレンダリングされるまで分からない場合（例：`tabIndex={selected ? 0 : -1}`）に指定します。ルールは動的な値として扱い、検証しません。
 
 #### `as.aria`
 
@@ -1032,7 +1045,7 @@ const MyIcon = ({ label }) => {
 
 - **`null`**: コンポーネントは子要素を受け入れない、またはスロットを持ちません。例えば、`<img>`（void要素）としてレンダリングされるコンポーネントです。
 - **`true`**: コンポーネントは子要素を受け入れ、ラッパー要素が最も外側の要素です。
-- **配列**: 複数の名前付きスロット。各スロットは要素仕様として記述されます（高度な使い方）。
+- **配列**: 子要素を包む要素が最も外側の要素ではない場合に、その要素を要素仕様として記述します。コンポーネントに渡された子要素は、最も外側の要素ではなくこの要素に対して評価されます。配列に2つ以上の仕様がある場合、子要素がどの仕様に属するかが分からないため、子要素は検証されません。
 
 ```jsx
 // このコンポーネントは子要素を受け入れる — slotsはtrueにすべき
@@ -1062,6 +1075,94 @@ const Icon = props => <img src={props.src} />;
   ]
 }
 ```
+
+子要素が内側の要素に包まれている場合は、その要素を指定します。
+
+```jsx
+const Card = ({ children }) => (
+  <div>
+    <h2>lorem ipsum</h2>
+    <p>{children}</p>
+  </div>
+);
+```
+
+```json class=config
+{
+  "pretenders": [
+    {
+      "selector": "Card",
+      "as": {
+        "element": "div",
+        "slots": [{ "element": "p" }]
+      }
+    }
+  ]
+}
+```
+
+`<Card><div></div></Card>` は、`div`要素が`p`要素の中では許可されないため報告されます。
+
+#### `as.contents` {#pretenders/as-contents}
+
+:::caution[実験的機能]
+このプロパティは**実験的**であり、将来のリリースで変更される可能性があります。
+:::
+
+コンポーネントが、スロットを包む要素の直下にレンダリングするものを順番に指定します。省略可能です。スロットを包む要素とは、最も外側の要素、または`slots`配列の各仕様の要素です。
+
+- **`{ "element": "img", "attrs": [...] }`**: コンポーネントが常にその位置にレンダリングするネイティブ要素です。
+- **`{ "slot": true }`**: コンポーネントに渡された子要素が置かれる位置です。
+- **`{ "dynamic": true }`**: その位置にレンダリングされるものの内容が分からない場合（式、条件分岐、別のコンポーネントなど）に指定します。必須の子要素が欠けていることの検査はスキップされます。
+
+`permitted-contents`などのコンテンツを検査するルールは、ラッパー要素の子をこのリストとして評価し、`{ "slot": true }`の位置に渡された子要素を置きます。リストに`{ "slot": true }`がない場合、渡された子要素はリストの後ろに置かれます。省略した場合、渡された子要素がコンテンツのすべてです。
+
+```jsx
+const Picture = () => (
+  <picture>
+    <img src="example.gif" alt="Example" />
+  </picture>
+);
+
+const Details = ({ children }) => <details>{children}</details>;
+```
+
+```json class=config
+{
+  "pretenders": [
+    {
+      "selector": "Picture",
+      "as": {
+        "element": "picture",
+        "slots": null,
+        "contents": [
+          {
+            "element": "img",
+            "attrs": [
+              { "name": "src", "value": "example.gif" },
+              { "name": "alt", "value": "Example" }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "selector": "Details",
+      "as": {
+        "element": "details",
+        "slots": true,
+        "contents": [{ "slot": true }]
+      }
+    }
+  ]
+}
+```
+
+`<Picture />`は、コンポーネント自身が`img`要素をレンダリングするため、`img`要素の欠如は報告されません。`<Details></Details>`は、`summary`要素を用意できるのは使用側だけなので、`summary`要素の欠如が報告されます。
+
+現在、`contents`を利用するのは`permitted-contents`、`require-owned-elements`と、アクセシブルな名前の算出（`require-accessible-name`などが利用）だけです。名前の算出では、`{ "dynamic": true }`は名前の出どころになりません（ただし、それ以外に名前の出どころがないコンポーネントは、その内容が名前かもしれないため`require-accessible-name`は報告しません）。また`slots`が`null`のコンポーネントに渡された子要素は使われません。要素の子を参照するほかのルールには、コンポーネントに渡された子要素だけが見えます。
+
+コンポーネントがルートに複数の要素をレンダリングする場合は、`element`に`"#fragment"`を指定します。コンポーネント自身は要素ではなく、その`contents`が親の中でコンポーネントの位置に置かれます。
 
 #### `scan` {#pretenders/scan}
 
@@ -1138,9 +1239,19 @@ const Icon = props => <img src={props.src} />;
 }
 ```
 
+importをたどる段数は、lint対象ファイルから最大8段です。JS/TSファイル（lint対象ファイル自身がMDXの場合はそのファイルも）の再エクスポート（`export ... from`）もimportと同じようにたどるため、バレルファイル経由でimportしたコンポーネントも見つかります。バレルファイルを経由する分も1段に数えます。オブジェクト形式で変更できます。`0`を指定するとlint対象ファイル自身だけが対象になります。`extends`で設定をマージする場合、後の設定の`auto`が前の設定の`auto`を丸ごと置き換えるため、`{}`を指定すると上限は8に戻ります:
+
+```json class=config
+{
+  "pretenders": {
+    "auto": { "depth": 3 }
+  }
+}
+```
+
 設定済みのファイル集合を一度だけ事前スキャンする`scan`とは異なり、`auto`はリント対象ごとに実行され、リント対象ファイルが実際に（推移的に）importしているコンポーネントのみを対象とします。そのため、無関係なファイルにある同名コンポーネントが衝突することは構造的にありません。ただし、次のトレードオフがあります:
 
-- ファイルシステムの監視対象は設定ファイルのみのため、watchモードやエディタセッション中に、設定を変更せずにimport先のコンポーネントファイルを変更すると、結果が古いままになることがあります。
+- watchモードやエディタセッションでは、`auto`（と`scan`）が読み込んだコンポーネントファイルも設定ファイルとあわせて監視されるため、いずれかを編集すると、それを使っているファイルが再lintされます。監視されないため、設定を変更するまで反映されないのは、まだ存在しないコンポーネントファイル（`scan`のglobに新しく一致したファイル、削除後に戻ってきたファイルを含みます）、`node_modules`配下のファイル、`files`と`imports`のファイルです。lint対象のファイル自身の編集（importの追加・削除・変更）は、そのファイルの次回のlintに反映されます。
 - `auto`を指定できるのは`pretenders`の**オブジェクト形式**のみです。配列形式の省略記法では指定できません。
 
 同じセレクターに対しては、`files`・`imports`・`data`・`scan`など他のプリテンダー解決元が先に解決されるため、`auto`よりも優先されます。
@@ -1154,7 +1265,7 @@ interface Config {
     | {
         data?: Pretender[];
         scan?: PretenderScanConfig[]; // @experimental
-        auto?: boolean; // @experimental
+        auto?: boolean | { depth?: number }; // @experimental
       };
 }
 
@@ -1166,7 +1277,8 @@ type Pretender = {
 type OriginalNode = {
   element: string;
   slots?: null | true | Slot[]; // @experimental
-  namespace?: 'svg';
+  contents?: Content[]; // @experimental
+  namespace?: 'html' | 'svg' | 'math';
 
   inheritAttrs?: boolean;
   attrs?: {
@@ -1175,6 +1287,10 @@ type OriginalNode = {
       | string
       | {
           fromAttr: string;
+          omitIfMissing?: true;
+        }
+      | {
+          dynamic: true;
         };
   }[];
 
@@ -1188,6 +1304,9 @@ type OriginalNode = {
 };
 
 type Slot = Omit<OriginalNode, 'slots'>; // @experimental
+
+type Content = // @experimental
+  { element: string; attrs?: OriginalNode['attrs'] } | { slot: true } | { dynamic: true };
 
 type PretenderScanConfig = {
   files: string | string[];

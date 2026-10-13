@@ -25,7 +25,7 @@ export function fromFileURL(fileUrl: string): string {
  * usernames), and URL-reserved characters like `#` / `?` do not get
  * reinterpreted as fragment / query delimiters by Node's URL parser.
  *
- * Mirrors `vscode/src/server/get-module.ts`'s `toImportSpecifier()` —
+ * Mirrors `packages/@markuplint/language-server/src/server/get-module.ts`'s `toImportSpecifier()` —
  * keep the two in sync when adjusting Windows-path handling.
  *
  * Known limitation: UNC paths (`\\server\share\...`) are passed through

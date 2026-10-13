@@ -25,6 +25,8 @@ pub struct ComputedRole {
 pub struct ResolvedRole {
     pub name: String,
     pub is_implicit: bool,
+    /// TS `deprecated: !!role.deprecated`.
+    pub deprecated: bool,
     pub accessible_name_required: bool,
     pub accessible_name_from_author: bool,
     pub children_presentational: bool,
@@ -121,28 +123,35 @@ fn compute_role(
     if !role.required_accessibility_parent_role.is_empty()
         && !is_native_context_intact(spec, arena, node_id, role, version)
     {
-        if let Some(parent_id) = node.parent_id() {
-            let ancestor_role = get_non_presentational_ancestor(spec, arena, parent_id, version, visited);
-            if !matches_context_role(
-                &role.required_accessibility_parent_role,
-                spec,
-                arena,
-                node_id,
-                version,
-                visited,
-            ) {
-                return ComputedRole {
-                    role: None,
-                    error_type: Some(RoleComputationError::InvalidRequiredContextRole),
-                };
-            }
-            let _ = ancestor_role;
-        } else {
+        // TS `el.parentElement === null`: an element at the root (of a fragment, or under the
+        // document) cannot satisfy the requirement, and keeps its role, reported as `NoOwner`.
+        let parent_element_id = node.parent_id().filter(|&parent_id| {
+            arena
+                .get(parent_id)
+                .and_then(markuplint_dom::node::DomNode::as_element)
+                .is_some()
+        });
+        let Some(parent_id) = parent_element_id else {
             return ComputedRole {
-                role: None,
+                role: computed_role.clone(),
                 error_type: Some(RoleComputationError::NoOwner),
             };
+        };
+        let ancestor_role = get_non_presentational_ancestor(spec, arena, parent_id, version, visited);
+        if !matches_context_role(
+            &role.required_accessibility_parent_role,
+            spec,
+            arena,
+            node_id,
+            version,
+            visited,
+        ) {
+            return ComputedRole {
+                role: None,
+                error_type: Some(RoleComputationError::InvalidRequiredContextRole),
+            };
         }
+        let _ = ancestor_role;
     }
 
     // Step 5: SVG accessibility tree inclusion
@@ -302,6 +311,34 @@ pub fn resolve_permitted_roles(
 // Implicit role
 // ============================================================
 
+thread_local! {
+    static EVALUATING_CONDITIONS: std::cell::RefCell<HashSet<NodeId>> = std::cell::RefCell::new(HashSet::new());
+}
+
+/// Marks `node_id` as having its implicit-role conditions evaluated, so a nested evaluation for the
+/// same element (reached through the accessible name) can be detected.
+struct ConditionGuard {
+    node_id: NodeId,
+    nested: bool,
+}
+
+impl ConditionGuard {
+    fn enter(node_id: NodeId) -> Self {
+        let nested = EVALUATING_CONDITIONS.with(|active| !active.borrow_mut().insert(node_id));
+        Self { node_id, nested }
+    }
+}
+
+impl Drop for ConditionGuard {
+    fn drop(&mut self) {
+        if !self.nested {
+            EVALUATING_CONDITIONS.with(|active| {
+                active.borrow_mut().remove(&self.node_id);
+            });
+        }
+    }
+}
+
 fn get_implicit_role(
     spec: &MLMLSpec,
     arena: &DomArena,
@@ -313,12 +350,19 @@ fn get_implicit_role(
     // Elements like <td>/<th> have implicitRole:false but condition-based overrides
     // that set the implicit role based on context (e.g., cell when inside table).
     // Conditions must be checked even when base implicit role is None/false.
+    // The resolver lets `:aria(has name)` conditions (named `<section>` / `<form>`) evaluate, as
+    // TS `getImplicitRole` does through `matchSelector`. Computing the name asks for the role of
+    // the same element again; that nested evaluation runs without the resolver so it terminates.
     if let Some(el_spec) = markuplint_types::spec::lookup::get_spec(spec, tag_name)
         && let Some(ref conditions) = el_spec.aria.conditions
     {
+        let spec_resolver = crate::aria_resolver_impl::SpecAriaResolver { spec };
+        let guard = ConditionGuard::enter(node_id);
+        let resolver: Option<&dyn markuplint_selector::aria_resolver::AriaResolver> =
+            if guard.nested { None } else { Some(&spec_resolver) };
         for (selector_str, override_value) in conditions {
             if let Ok(selector) = markuplint_selector::parser::parse(selector_str)
-                && markuplint_selector::matcher::matches(&selector, arena, node_id, None, Some(spec), None)
+                && markuplint_selector::matcher::matches(&selector, arena, node_id, None, Some(spec), resolver)
                 && let Some(override_obj) = override_value.as_object()
                 && let Some(override_role) = override_obj.get("implicitRole")
             {
@@ -481,6 +525,7 @@ fn resolved_from_spec(role_spec: &ARIARoleInSchema, is_implicit: bool) -> Resolv
     ResolvedRole {
         name: role_spec.name.clone(),
         is_implicit,
+        deprecated: role_spec.deprecated.unwrap_or(false),
         accessible_name_required: role_spec.accessible_name_required.unwrap_or(false),
         accessible_name_from_author: role_spec.accessible_name_from_author.unwrap_or(false),
         children_presentational: role_spec.children_presentational.unwrap_or(false),
@@ -586,6 +631,40 @@ mod tests {
 
     fn spec() -> MLMLSpec {
         load_spec(include_str!("../../../../packages/@markuplint/html-spec/index.json")).unwrap()
+    }
+
+    #[test]
+    fn v6_named_section_is_region() {
+        let s = spec();
+        let (arena, id) = make_arena("section", &[("aria-label", "News")]);
+        let cr = get_computed_role(&s, &arena, id, ARIAVersion::V1_2, false);
+        assert_eq!(cr.role.as_ref().map(|r| r.name.as_str()), Some("region"));
+    }
+
+    #[test]
+    fn v6_named_form_is_form() {
+        let s = spec();
+        let (arena, id) = make_arena("form", &[("aria-label", "Search")]);
+        let cr = get_computed_role(&s, &arena, id, ARIAVersion::V1_2, false);
+        assert_eq!(cr.role.as_ref().map(|r| r.name.as_str()), Some("form"));
+    }
+
+    #[test]
+    fn v6_self_referencing_labelledby_terminates() {
+        let s = spec();
+        let (arena, id) = make_arena("section", &[("id", "a"), ("aria-labelledby", "a")]);
+        // The name of the element depends on its own role; the only name source is itself and it
+        // is empty, so the element is unnamed and has no implicit role.
+        let cr = get_computed_role(&s, &arena, id, ARIAVersion::V1_2, false);
+        assert!(cr.role.is_none());
+    }
+
+    #[test]
+    fn v6_unnamed_section_has_no_role() {
+        let s = spec();
+        let (arena, id) = make_arena("section", &[]);
+        let cr = get_computed_role(&s, &arena, id, ARIAVersion::V1_2, false);
+        assert!(cr.role.is_none());
     }
 
     #[test]

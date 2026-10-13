@@ -1,12 +1,12 @@
 import type { ConfigSet } from '@markuplint/file-resolver';
-import type { Violation } from '@markuplint/ml-config';
+import type { Config, Violation } from '@markuplint/ml-config';
 
 import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
 import { ConfigProvider } from '@markuplint/file-resolver';
-import { describe, it, expect } from 'vitest';
+import { afterEach, beforeEach, describe, it, expect, vi } from 'vitest';
 
 import { MLEngine } from './ml-engine.js';
 
@@ -37,42 +37,58 @@ describe('Event notification', () => {
 
 describe('Watcher', () => {
 	it('updates config', async () => {
-		const file = await MLEngine.toMLFile('test/fixture/002.html');
-		const engine = new MLEngine(file!, {
-			watch: true,
-		});
-		const configPromise = new Promise<string[]>(resolve => {
-			engine.on('config', (_, configSet) => {
-				resolve([...configSet.files]);
+		// This test rewrites the config file the watcher is observing. Spec
+		// files run in parallel workers, and the CLI specs lint the shared
+		// `test/fixture/002.html` with `test/fixture/.markuplintrc`: writing
+		// to that file would let them read the rewritten config and report
+		// fewer warnings. So the fixture pair is copied into a temporary
+		// directory and the copy is rewritten instead.
+		const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'ml-engine-watcher-'));
+		let engine: MLEngine | undefined;
+		try {
+			await fs.copyFile('test/fixture/002.html', path.join(tmpDir, '002.html'));
+			await fs.copyFile('test/fixture/.markuplintrc', path.join(tmpDir, '.markuplintrc'));
+			const file = await MLEngine.toMLFile(path.join(tmpDir, '002.html'));
+			const watched = new MLEngine(file!, {
+				watch: true,
 			});
-		});
-		// First evaluation
-		const result1st = await engine.exec();
-		// Get config file
-		const files = await configPromise;
-		engine.removeAllListeners();
-		const targetFile = files.at(-1)!;
-		const targetFileOriginData = await fs.readFile(targetFile, { encoding: 'utf8' });
-		const config = JSON.parse(targetFileOriginData);
-		const result2ndPromise = new Promise<ReadonlyArray<Violation>>(resolve => {
-			engine.on('lint', (_, __, violations) => {
-				resolve(violations);
+			engine = watched;
+			const configPromise = new Promise<string[]>(resolve => {
+				watched.on('config', (_, configSet) => {
+					resolve([...configSet.files]);
+				});
 			});
-		});
-		// Disable rules
-		const config2 = {
-			...config,
-			rules: {},
-		};
-		await fs.writeFile(targetFile, JSON.stringify(config2), { encoding: 'utf8' });
-		// Second evaluation
-		const result2nd = await result2ndPromise;
-		// Revert the file
-		await fs.writeFile(targetFile, targetFileOriginData, { encoding: 'utf8' });
-		await engine.close();
-		expect(result1st?.violations.length).toBe(6);
-		expect(result2nd.length).toBe(5);
-		return;
+			// First evaluation
+			const result1st = await watched.exec();
+			// Get config file
+			const files = await configPromise;
+			watched.removeAllListeners();
+			const targetFile = files.at(-1)!;
+			// Guard: the file about to be rewritten must be the copy, never the shared fixture.
+			expect(await fs.realpath(path.dirname(targetFile))).toBe(await fs.realpath(tmpDir));
+			const targetFileOriginData = await fs.readFile(targetFile, { encoding: 'utf8' });
+			const config = JSON.parse(targetFileOriginData);
+			const result2ndPromise = new Promise<ReadonlyArray<Violation>>(resolve => {
+				watched.on('lint', (_, __, violations) => {
+					resolve(violations);
+				});
+			});
+			// Disable rules
+			const config2 = {
+				...config,
+				rules: {},
+			};
+			await fs.writeFile(targetFile, JSON.stringify(config2), { encoding: 'utf8' });
+			// Second evaluation
+			const result2nd = await result2ndPromise;
+			expect(result1st?.violations.length).toBe(6);
+			expect(result2nd.length).toBe(5);
+		} finally {
+			// Close before removing the directory so a failed assertion does
+			// not leave the shared watcher subscribed to a deleted path.
+			await engine?.close();
+			await fs.rm(tmpDir, { recursive: true, force: true });
+		}
 	});
 
 	it('re-resolving config also invalidates pretenders resolution caches (issue #3951 follow-up)', async () => {
@@ -389,6 +405,474 @@ describe('#3900 config-error does not accumulate across setCode', () => {
 	});
 });
 
+describe('#4064 setCode re-resolves the pretenders that depend on the source', () => {
+	// Each page renders a component directly inside <ul>, so permitted-contents
+	// names the element the component resolves to — or the component itself
+	// when it is unresolved. That name is what tells the states apart.
+	const disallowedIn = (violations: readonly Violation[] | undefined, name: string) =>
+		(violations ?? []).some(v => v.ruleId === 'permitted-contents' && v.message.includes(name));
+
+	// Built the way the VS Code extension builds its engines: the file is a
+	// code-based MLFile named relative to the workspace (a file-based one is
+	// read-only and rejects setCode), and `exec()` is run before any setCode.
+	const createEngine = async (tmpDir: string, sourceCode: string, pretenders: Config['pretenders']) => {
+		const file = (await MLEngine.toMLFile({ sourceCode, name: 'page.tsx', workspace: tmpDir }))!;
+		const engine = new MLEngine(file, {
+			noSearchConfig: true,
+			locale: 'en',
+			config: {
+				parser: { '\\.tsx$': '@markuplint/jsx-parser' },
+				pretenders,
+				rules: { 'permitted-contents': true },
+			},
+		});
+		return { engine, file };
+	};
+
+	let tmpDir: string;
+
+	beforeEach(async () => {
+		tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'ml-engine-setcode-pretenders-'));
+	});
+
+	afterEach(async () => {
+		await fs.rm(tmpDir, { recursive: true, force: true });
+	});
+
+	it('follows an import added, then removed, by setCode when pretenders.auto is on', async () => {
+		await fs.writeFile(path.join(tmpDir, 'Child.tsx'), 'export const Child = () => <button>x</button>;');
+		const withoutImport = 'export const Page = () => <ul><Child>x</Child></ul>;';
+		const withImport = `import { Child } from './Child';\n${withoutImport}`;
+
+		const { engine } = await createEngine(tmpDir, withoutImport, { auto: true });
+
+		const unresolved = await engine.exec();
+		expect(disallowedIn(unresolved?.violations, 'Child')).toBe(true);
+		expect(disallowedIn(unresolved?.violations, 'button')).toBe(false);
+
+		await engine.setCode(withImport);
+		const resolved = await engine.exec();
+		expect(disallowedIn(resolved?.violations, 'button')).toBe(true);
+		expect(disallowedIn(resolved?.violations, 'Child')).toBe(false);
+
+		await engine.setCode(withoutImport);
+		const unresolvedAgain = await engine.exec();
+		expect(disallowedIn(unresolvedAgain?.violations, 'Child')).toBe(true);
+		expect(disallowedIn(unresolvedAgain?.violations, 'button')).toBe(false);
+	});
+
+	it('re-disambiguates same-selector scan results against the imports of the new source', async () => {
+		const aPath = path.join(tmpDir, 'a', 'Item.tsx');
+		const bPath = path.join(tmpDir, 'b', 'Item.tsx');
+		await fs.mkdir(path.dirname(aPath));
+		await fs.mkdir(path.dirname(bPath));
+		await fs.writeFile(aPath, 'export const Item = () => <button>x</button>;');
+		await fs.writeFile(bPath, 'export const Item = () => <span>x</span>;');
+		const importA = "import { Item } from './a/Item';\nexport const Page = () => <ul><Item>x</Item></ul>;";
+		const importB = "import { Item } from './b/Item';\nexport const Page = () => <ul><Item>x</Item></ul>;";
+
+		const { engine } = await createEngine(tmpDir, importA, { scan: [{ files: [aPath, bPath] }] });
+
+		const fromA = await engine.exec();
+		expect(disallowedIn(fromA?.violations, 'button')).toBe(true);
+		expect(disallowedIn(fromA?.violations, 'span')).toBe(false);
+
+		await engine.setCode(importB);
+		const fromB = await engine.exec();
+		expect(disallowedIn(fromB?.violations, 'span')).toBe(true);
+		expect(disallowedIn(fromB?.violations, 'button')).toBe(false);
+	});
+
+	it('does not re-read the scanned files on setCode: what scan yields changes only with the config', async () => {
+		const itemPath = path.join(tmpDir, 'Item.tsx');
+		await fs.writeFile(itemPath, 'export const Item = () => <button>x</button>;');
+
+		const { engine } = await createEngine(
+			tmpDir,
+			"import { Item } from './Item';\nexport const Page = () => <ul><Item>x</Item></ul>;",
+			{ scan: [{ files: [itemPath] }] },
+		);
+
+		const first = await engine.exec();
+		expect(disallowedIn(first?.violations, 'button')).toBe(true);
+
+		// The scanned component changes on disk; the page is edited elsewhere.
+		await fs.writeFile(itemPath, 'export const Item = () => <span>x</span>;');
+		await engine.setCode("import { Item } from './Item';\nexport const Page = () => <ul><Item>y</Item></ul>;");
+		const second = await engine.exec();
+		expect(disallowedIn(second?.violations, 'button')).toBe(true);
+		expect(disallowedIn(second?.violations, 'span')).toBe(false);
+	});
+
+	// `A` sits behind a chain of components, each in its own file, so that its
+	// auto-resolution takes many more sequential file reads than `B`'s single
+	// one: a setCode(useA) started first still finishes after a setCode(useB)
+	// started right after it. That is the order the sequence guard exists for;
+	// without it, the slower first call would overwrite the second one's result.
+	const writeSlowAndFastComponents = async (dir: string) => {
+		await fs.writeFile(path.join(dir, 'A.tsx'), "import { A1 } from './A1';\nexport const A = () => <A1>x</A1>;");
+		for (let i = 1; i <= 5; i++) {
+			await fs.writeFile(
+				path.join(dir, `A${i}.tsx`),
+				`import { A${i + 1} } from './A${i + 1}';\nexport const A${i} = () => <A${i + 1}>x</A${i + 1}>;`,
+			);
+		}
+		await fs.writeFile(path.join(dir, 'A6.tsx'), 'export const A6 = () => <button>x</button>;');
+		await fs.writeFile(path.join(dir, 'B.tsx'), 'export const B = () => <span>x</span>;');
+	};
+	const useA = "import { A } from './A';\nexport const Page = () => <ul><A>x</A></ul>;";
+	const useB = "import { B } from './B';\nexport const Page = () => <ul><B>x</B></ul>;";
+
+	it('applies only the latest of overlapping setCode calls, even when an earlier one finishes later', async () => {
+		await writeSlowAndFastComponents(tmpDir);
+
+		const { engine, file } = await createEngine(tmpDir, 'export const Page = () => <ul></ul>;', { auto: true });
+		await engine.exec();
+
+		const earlier = engine.setCode(useA);
+		// Start the second call only once the first one has claimed the file —
+		// i.e. while it is resolving its pretenders, not before it got going.
+		// Started back to back, the first call would notice the second one as
+		// soon as it got going and step aside without resolving anything,
+		// which is the other, cheaper, way of being superseded.
+		while ((await file.getCode()) !== useA) {
+			await Promise.resolve();
+		}
+		const latest = engine.setCode(useB);
+
+		await Promise.all([earlier, latest]);
+		const result = await engine.exec();
+		expect(result?.sourceCode).toBe(useB);
+		expect(disallowedIn(result?.violations, 'span')).toBe(true);
+		expect(disallowedIn(result?.violations, 'button')).toBe(false);
+	});
+
+	it('resolves a superseded setCode call only once the latest one has taken effect', async () => {
+		await writeSlowAndFastComponents(tmpDir);
+
+		const { engine } = await createEngine(tmpDir, 'export const Page = () => <ul></ul>;', { auto: true });
+		await engine.exec();
+
+		// The VS Code extension runs exec() right after awaiting its own setCode
+		// call. If that call was superseded, the exec must still see the latest
+		// code applied to the document — not the file at B with the document
+		// still at the state before A.
+		const superseded = engine.setCode(useA);
+		const latest = engine.setCode(useB);
+		await superseded;
+		const result = await engine.exec();
+		await latest;
+
+		expect(result?.sourceCode).toBe(useB);
+		expect(disallowedIn(result?.violations, 'span')).toBe(true);
+		expect(disallowedIn(result?.violations, 'button')).toBe(false);
+	});
+
+	it('rejects a superseded setCode call with the failure of the latest one', async () => {
+		// A file-based MLFile is read-only, so the latest call fails at the
+		// file. The superseded call never touched the file itself (it stepped
+		// aside as soon as it saw the newer call), yet it must not resolve: its
+		// caller would take that as "the latest code is in place" and lint.
+		const pagePath = path.join(tmpDir, 'page.tsx');
+		await fs.writeFile(pagePath, 'export const Page = () => <ul></ul>;');
+		const file = await MLEngine.toMLFile(pagePath);
+		const engine = new MLEngine(file!, {
+			noSearchConfig: true,
+			locale: 'en',
+			config: { parser: { '\\.tsx$': '@markuplint/jsx-parser' }, rules: { 'permitted-contents': true } },
+		});
+		await engine.exec();
+
+		const superseded = engine.setCode(useA);
+		const latest = engine.setCode(useB);
+
+		await expect(latest).rejects.toThrow('This file object is readonly');
+		await expect(superseded).rejects.toThrow('This file object is readonly');
+	});
+
+	it('resolves the pretenders for the new code when setCode runs before the first exec', async () => {
+		await fs.writeFile(path.join(tmpDir, 'Child.tsx'), 'export const Child = () => <button>x</button>;');
+		const withoutImport = 'export const Page = () => <ul><Child>x</Child></ul>;';
+		const withImport = `import { Child } from './Child';\n${withoutImport}`;
+
+		const { engine } = await createEngine(tmpDir, withoutImport, { auto: true });
+
+		await engine.setCode(withImport);
+		const result = await engine.exec();
+		expect(disallowedIn(result?.violations, 'button')).toBe(true);
+		expect(disallowedIn(result?.violations, 'Child')).toBe(false);
+	});
+
+	it('picks up a change on disk to a scanned file through the watcher (#4065), without a config change', async () => {
+		const itemPath = path.join(tmpDir, 'Item.tsx');
+		const configPath = path.join(tmpDir, '.markuplintrc');
+		await fs.writeFile(itemPath, 'export const Item = () => <button>x</button>;');
+		const config = {
+			parser: { '\\.tsx$': '@markuplint/jsx-parser' },
+			pretenders: { scan: [{ files: ['Item.tsx'] }] },
+			rules: { 'permitted-contents': true },
+		};
+		await fs.writeFile(configPath, JSON.stringify(config));
+		const code = "import { Item } from './Item';\nexport const Page = () => <ul><Item>x</Item></ul>;";
+
+		const file = await MLEngine.toMLFile({ sourceCode: code, name: 'page.tsx', workspace: tmpDir });
+		const engine = new MLEngine(file!, { watch: true, locale: 'en' });
+		try {
+			const first = await engine.exec();
+			expect(disallowedIn(first?.violations, 'button')).toBe(true);
+
+			const relint = new Promise<readonly Violation[]>(resolve => {
+				engine.once('lint', (_, __, violations) => resolve(violations));
+			});
+			await fs.writeFile(itemPath, 'export const Item = () => <span>x</span>;');
+			const afterEdit = await relint;
+
+			expect(disallowedIn(afterEdit, 'span')).toBe(true);
+			expect(disallowedIn(afterEdit, 'button')).toBe(false);
+		} finally {
+			await engine.close();
+		}
+	});
+});
+
+describe('#4065 watch mode follows the files that pretenders read', () => {
+	const disallowedIn = (violations: readonly Violation[] | undefined, name: string) =>
+		(violations ?? []).some(v => v.ruleId === 'permitted-contents' && v.message.includes(name));
+
+	// A real path: the engine watches the paths TypeScript reports, which are real paths.
+	let tmpDir: string;
+	let engines: MLEngine[];
+
+	// Built the way the VS Code extension builds its engines (see #4064's describe),
+	// but watching, and with no config file: the files it watches are the pretenders'.
+	const createEngine = async (name: string, sourceCode: string, pretenders: Config['pretenders']) => {
+		const file = (await MLEngine.toMLFile({ sourceCode, name, workspace: tmpDir }))!;
+		const engine = new MLEngine(file, {
+			watch: true,
+			noSearchConfig: true,
+			locale: 'en',
+			config: {
+				parser: { '\\.tsx$': '@markuplint/jsx-parser' },
+				pretenders,
+				rules: { 'permitted-contents': true },
+			},
+		});
+		engines.push(engine);
+		return engine;
+	};
+
+	const nextLint = (engine: MLEngine) =>
+		new Promise<readonly Violation[]>(resolve => {
+			engine.once('lint', (_, __, violations) => resolve(violations));
+		});
+
+	const write = (name: string, content: string) => fs.writeFile(path.join(tmpDir, name), content);
+
+	const component = (name: string, element: string) => `export const ${name} = () => <${element}>x</${element}>;`;
+
+	// What an editor that saves through a temporary file does.
+	const saveAtomically = async (name: string, content: string) => {
+		const temporary = path.join(tmpDir, `${name}.${process.hrtime.bigint()}.new`);
+		await fs.writeFile(temporary, content);
+		await fs.rename(temporary, path.join(tmpDir, name));
+	};
+
+	// chokidar drops a `change` that follows another one of the same path within 50ms.
+	const afterChangeThrottle = () => new Promise<void>(resolve => setTimeout(resolve, 75));
+
+	beforeEach(async () => {
+		tmpDir = await fs.realpath(await fs.mkdtemp(path.join(os.tmpdir(), 'ml-engine-watch-pretenders-')));
+		engines = [];
+	});
+
+	afterEach(async () => {
+		await Promise.all(engines.map(engine => engine.close()));
+		await fs.rm(tmpDir, { recursive: true, force: true });
+	});
+
+	it('re-lints when a file matched by pretenders.scan changes', async () => {
+		await write('Item.tsx', 'export const Item = () => <button>x</button>;');
+		const engine = await createEngine(
+			'page.tsx',
+			"import { Item } from './Item';\nexport const Page = () => <ul><Item>x</Item></ul>;",
+			{ scan: [{ files: [path.join(tmpDir, 'Item.tsx')] }] },
+		);
+		expect(disallowedIn((await engine.exec())?.violations, 'button')).toBe(true);
+
+		const relint = nextLint(engine);
+		await write('Item.tsx', 'export const Item = () => <span>x</span>;');
+		const violations = await relint;
+
+		expect(disallowedIn(violations, 'span')).toBe(true);
+		expect(disallowedIn(violations, 'button')).toBe(false);
+	});
+
+	it('re-lints when a file deep in the import graph that pretenders.auto walked changes', async () => {
+		await write('Wrapper.tsx', "import { Leaf } from './Leaf';\nexport const Wrapper = () => <Leaf>x</Leaf>;");
+		await write('Leaf.tsx', 'export const Leaf = () => <button>x</button>;');
+		const engine = await createEngine(
+			'page.tsx',
+			"import { Wrapper } from './Wrapper';\nexport const Page = () => <ul><Wrapper>x</Wrapper></ul>;",
+			{ auto: true },
+		);
+		expect(disallowedIn((await engine.exec())?.violations, 'button')).toBe(true);
+
+		const relint = nextLint(engine);
+		await write('Leaf.tsx', 'export const Leaf = () => <span>x</span>;');
+		const violations = await relint;
+
+		expect(disallowedIn(violations, 'span')).toBe(true);
+		expect(disallowedIn(violations, 'button')).toBe(false);
+	});
+
+	it('follows an import that setCode added: the component it brought in is watched from then on', async () => {
+		await write('Child.tsx', 'export const Child = () => <button>x</button>;');
+		const withoutImport = 'export const Page = () => <ul><Child>x</Child></ul>;';
+		const engine = await createEngine('page.tsx', withoutImport, { auto: true });
+		await engine.exec();
+
+		await engine.setCode(`import { Child } from './Child';\n${withoutImport}`);
+		expect(disallowedIn((await engine.exec())?.violations, 'button')).toBe(true);
+
+		const relint = nextLint(engine);
+		await write('Child.tsx', 'export const Child = () => <span>x</span>;');
+		const violations = await relint;
+
+		expect(disallowedIn(violations, 'span')).toBe(true);
+		expect(disallowedIn(violations, 'button')).toBe(false);
+	});
+
+	// chokidar re-attaches to a renamed file by inode on macOS and Linux only, and
+	// Windows refuses to rename over a file that is being watched.
+	it.skipIf(process.platform === 'win32')(
+		'keeps telling two engines that share a component, across repeated atomic saves of it',
+		async () => {
+			// Two documents open on the same component: with a watcher per engine the
+			// second atomic save is seen by neither (see the shared watcher's JSDoc).
+			await write('Item.tsx', 'export const Item = () => <b>x</b>;');
+			const pretenders = { scan: [{ files: [path.join(tmpDir, 'Item.tsx')] }] };
+			const code = "import { Item } from './Item';\nexport const Page = () => <ul><Item>x</Item></ul>;";
+			const first = await createEngine('first.tsx', code, pretenders);
+			const second = await createEngine('second.tsx', code, pretenders);
+			await first.exec();
+			await second.exec();
+
+			for (const element of ['mark', 'kbd', 'cite']) {
+				const bothLinted = Promise.all([nextLint(first), nextLint(second)]);
+				await saveAtomically('Item.tsx', `export const Item = () => <${element}>x</${element}>;`);
+				const [firstViolations, secondViolations] = await bothLinted;
+
+				expect(disallowedIn(firstViolations, element)).toBe(true);
+				expect(disallowedIn(secondViolations, element)).toBe(true);
+				await afterChangeThrottle();
+			}
+		},
+	);
+
+	it('does not stop watching a component when another engine that read it closes', async () => {
+		await write('Item.tsx', 'export const Item = () => <b>x</b>;');
+		const pretenders = { scan: [{ files: [path.join(tmpDir, 'Item.tsx')] }] };
+		const code = "import { Item } from './Item';\nexport const Page = () => <ul><Item>x</Item></ul>;";
+		const closing = await createEngine('closing.tsx', code, pretenders);
+		const staying = await createEngine('staying.tsx', code, pretenders);
+		await closing.exec();
+		await staying.exec();
+
+		await closing.close();
+		const relint = nextLint(staying);
+		await write('Item.tsx', 'export const Item = () => <mark>x</mark>;');
+
+		expect(disallowedIn(await relint, 'mark')).toBe(true);
+	});
+
+	describe('several files changing at once', () => {
+		const names = ['A', 'B', 'C', 'D'];
+		const initial = ['button', 'span', 'section', 'article'];
+		const next = ['mark', 'kbd', 'cite', 'abbr'];
+		// One list each: permitted-contents reports the first element of a parent that is not allowed.
+		const page = `${names.map(name => `import { ${name} } from './${name}';`).join('\n')}\nexport const Page = () => <div>${names.map(name => `<ul><${name}>x</${name}></ul>`).join('')}</div>;`;
+
+		it('lints once more, with the latest state, and never runs two lints at the same time', async () => {
+			for (const [index, name] of names.entries()) {
+				await write(`${name}.tsx`, component(name, initial[index]!));
+			}
+			const engine = await createEngine('page.tsx', page, { auto: true });
+
+			// A lint is under way from the moment the config is resolved until it is reported.
+			let inFlight = 0;
+			let maxInFlight = 0;
+			let lints = 0;
+			let latest: readonly Violation[] = [];
+			const settled = new Promise<void>(resolve => {
+				engine.on('config', () => {
+					inFlight++;
+					maxInFlight = Math.max(maxInFlight, inFlight);
+				});
+				engine.on('lint', (_, __, violations) => {
+					inFlight--;
+					lints++;
+					latest = violations;
+				});
+				engine.on('log', phase => {
+					if (phase === 'watch:idle' && next.every(element => disallowedIn(latest, element))) {
+						resolve();
+					}
+				});
+			});
+			await engine.exec();
+			lints = 0;
+
+			await Promise.all(names.map((name, index) => write(`${name}.tsx`, component(name, next[index]!))));
+			await settled;
+
+			for (const element of initial) {
+				expect(disallowedIn(latest, element)).toBe(false);
+			}
+			expect(maxInFlight).toBe(1);
+			// Four files changed: more than two lints would mean the changes were not gathered.
+			expect(lints).toBeLessThanOrEqual(2);
+		});
+	});
+
+	it('ends up with the latest of both when a component changes while setCode is resolving', async () => {
+		// `A` sits behind a chain, so setCode takes a while; `B` is watched (scan)
+		// and changes meanwhile. The two must not overwrite each other: the result
+		// has the new `A` chain and the new `B`.
+		await write('A.tsx', "import { A1 } from './A1';\nexport const A = () => <A1>x</A1>;");
+		await write('A1.tsx', "import { A2 } from './A2';\nexport const A1 = () => <A2>x</A2>;");
+		await write('A2.tsx', 'export const A2 = () => <button>x</button>;');
+		await write('B.tsx', 'export const B = () => <span>x</span>;');
+		const useBoth =
+			"import { A } from './A';\nimport { B } from './B';\nexport const Page = () => <div><ul><A>x</A></ul><ul><B>x</B></ul></div>;";
+		const engine = await createEngine('page.tsx', 'export const Page = () => <ul></ul>;', {
+			scan: [{ files: [path.join(tmpDir, 'B.tsx')] }],
+			auto: true,
+		});
+		await engine.exec();
+
+		let latest: readonly Violation[] = [];
+		const settled = new Promise<void>(resolve => {
+			engine.on('lint', (_, __, violations) => {
+				latest = violations;
+			});
+			engine.on('log', phase => {
+				if (phase === 'watch:idle' && disallowedIn(latest, 'kbd')) {
+					resolve();
+				}
+			});
+		});
+		const applying = engine.setCode(useBoth);
+		await write('B.tsx', component('B', 'kbd'));
+		await applying;
+		await engine.exec();
+		await settled;
+
+		expect(disallowedIn(latest, 'button')).toBe(true);
+		expect(disallowedIn(latest, 'kbd')).toBe(true);
+		expect(disallowedIn(latest, 'span')).toBe(false);
+	});
+});
+
 describe('Parse Error Severity', () => {
 	it('from config', async () => {
 		const file = await MLEngine.toMLFile({
@@ -532,5 +1016,334 @@ describe('resolveConfig(false) with inline config (#4015)', () => {
 
 		expect(first.config.rules).toStrictEqual({ 'no-duplicate-id': true });
 		expect(second.config.rules).toStrictEqual({ 'no-duplicate-id': true });
+	});
+});
+
+describe('experimentalRustCore falls back to the TypeScript engine for browser support checks', () => {
+	// The Rust engine has neither browserslist resolution nor browser-compat-data, so
+	// `no-unsupported-browser-features` never reports there.
+	afterEach(() => {
+		vi.restoreAllMocks();
+	});
+
+	const stderrOf = (write: { readonly mock: { readonly calls: readonly unknown[][] } }) =>
+		write.mock.calls.map(args => String(args[0])).join('');
+
+	it('says why it left the Rust engine when the rule is enabled', async () => {
+		const write = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
+		const file = await MLEngine.toMLFile({ sourceCode: '<p>a</p>', name: 'page.html' });
+		const engine = new MLEngine(file!, {
+			noSearchConfig: true,
+			locale: 'en',
+			experimentalRustCore: true,
+			config: { rules: { 'no-unsupported-browser-features': true } },
+		});
+
+		await engine.exec();
+
+		expect(stderrOf(write)).toContain('no-unsupported-browser-features');
+		expect(stderrOf(write)).toContain('falling back to TypeScript engine');
+	});
+
+	it('says why it left the Rust engine when no-mismatched-aspect-ratio is enabled', async () => {
+		// The rule reads the image files from disk, which only the TS engine does.
+		const write = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
+		const file = await MLEngine.toMLFile({ sourceCode: '<p>a</p>', name: 'page.html' });
+		const engine = new MLEngine(file!, {
+			noSearchConfig: true,
+			locale: 'en',
+			experimentalRustCore: true,
+			config: { rules: { 'no-mismatched-aspect-ratio': true } },
+		});
+
+		await engine.exec();
+
+		expect(stderrOf(write)).toContain('no-mismatched-aspect-ratio');
+		expect(stderrOf(write)).toContain('falling back to TypeScript engine');
+	});
+
+	it('says why it left the Rust engine when only a node rule enables it', async () => {
+		const write = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
+		const file = await MLEngine.toMLFile({ sourceCode: '<p>a</p>', name: 'page.html' });
+		const engine = new MLEngine(file!, {
+			noSearchConfig: true,
+			locale: 'en',
+			experimentalRustCore: true,
+			config: { nodeRules: [{ selector: 'p', rules: { 'no-unsupported-browser-features': true } }] },
+		});
+
+		await engine.exec();
+
+		expect(stderrOf(write)).toContain('no-unsupported-browser-features');
+	});
+
+	it('does not leave the Rust engine for it when the rule is disabled', async () => {
+		const write = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
+		const file = await MLEngine.toMLFile({ sourceCode: '<p>a</p>', name: 'page.html' });
+		const engine = new MLEngine(file!, {
+			noSearchConfig: true,
+			locale: 'en',
+			experimentalRustCore: true,
+			config: { rules: { 'no-unsupported-browser-features': false } },
+		});
+
+		await engine.exec();
+
+		expect(stderrOf(write)).not.toContain('no-unsupported-browser-features');
+	});
+});
+
+// The cross-OS job runs the specs without building the native addon; the jobs that do build it
+// run the two tests below, which need the Rust engine to take the file.
+const nativeAddonIsBuilt = await import('@markuplint/core').then(
+	() => true,
+	() => false,
+);
+
+describe('experimentalRustCore applies the configured pretenders', () => {
+	// `require-accessible-name` fires only when `<x-btn>` is read as the
+	// `<button>` it pretends to be, so the violation proves the pretenders reached
+	// whichever engine linted the file.
+	const sourceCode = '<x-btn></x-btn>';
+	const config: Config = {
+		rules: { 'require-accessible-name': true },
+	};
+
+	afterEach(() => {
+		vi.restoreAllMocks();
+	});
+
+	const stderrOf = (write: { readonly mock: { readonly calls: readonly unknown[][] } }) =>
+		write.mock.calls.map(args => String(args[0])).join('');
+
+	it.skipIf(!nativeAddonIsBuilt)(
+		'lints the component as the element it pretends to be without leaving the Rust engine for it',
+		async () => {
+			const write = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
+			const file = await MLEngine.toMLFile({ sourceCode, name: 'page.html' });
+			const engine = new MLEngine(file!, {
+				noSearchConfig: true,
+				locale: 'en',
+				experimentalRustCore: true,
+				config: { ...config, pretenders: [{ selector: 'x-btn', as: 'button' }] },
+			});
+
+			const result = await engine.exec();
+
+			expect(result?.violations.map(v => v.ruleId)).toStrictEqual(['require-accessible-name']);
+			// Not "has pretenders": that guard is gone. A "falling back" line would mean the
+			// TS engine linted the file, which says nothing about the Rust pretender support.
+			expect(stderrOf(write)).not.toContain('falling back to TypeScript engine');
+		},
+	);
+
+	it('falls back to the TypeScript engine for a pretender the Rust engine cannot read', async () => {
+		const write = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
+		const file = await MLEngine.toMLFile({ sourceCode, name: 'page.html' });
+		const engine = new MLEngine(file!, {
+			noSearchConfig: true,
+			locale: 'en',
+			experimentalRustCore: true,
+			// `inheritAttrs` is a boolean in the type, but the TS runtime takes any truthy
+			// value, while the Rust types reject a string.
+			config: {
+				...config,
+				pretenders: [{ selector: 'x-btn', as: { element: 'button', inheritAttrs: 'yes' } }] as never,
+			},
+		});
+
+		const result = await engine.exec();
+
+		expect(result?.violations.map(v => v.ruleId)).toStrictEqual(['require-accessible-name']);
+		expect(stderrOf(write)).toContain('falling back to TypeScript engine');
+	});
+
+	it.skipIf(!nativeAddonIsBuilt)('lints a file without pretenders in the Rust engine', async () => {
+		const write = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
+		const file = await MLEngine.toMLFile({ sourceCode, name: 'page.html' });
+		const engine = new MLEngine(file!, {
+			noSearchConfig: true,
+			locale: 'en',
+			experimentalRustCore: true,
+			config,
+		});
+
+		const result = await engine.exec();
+
+		expect(result?.violations).toStrictEqual([]);
+		expect(stderrOf(write)).not.toContain('falling back to TypeScript engine');
+	});
+});
+
+describe('config that cannot be loaded (#4113)', () => {
+	const missingPreset = { extends: ['markuplint:no-exists'] };
+
+	it('reports one error-severity config-error and lints nothing', async () => {
+		const file = await MLEngine.toMLFile({ sourceCode: '<dl><span>no</span></dl>', name: 'a.html' });
+		const engine = new MLEngine(file!, { noSearchConfig: true, config: missingPreset });
+
+		const result = await engine.exec();
+
+		expect(result?.status).toBe('processed');
+		expect(result?.violations).toStrictEqual([
+			{
+				ruleId: 'config-error',
+				severity: 'error',
+				message: expect.stringContaining('Preset markuplint:no-exists is not found'),
+				line: 1,
+				col: 1,
+				raw: '',
+			},
+		]);
+	});
+
+	it('reports it for an extension the default parser does not match', async () => {
+		const file = await MLEngine.toMLFile({ sourceCode: '<template><p>a</p></template>', name: 'a.vue' });
+		const engine = new MLEngine(file!, { noSearchConfig: true, config: missingPreset });
+
+		const result = await engine.exec();
+
+		expect(result?.violations.map(v => [v.ruleId, v.severity])).toStrictEqual([['config-error', 'error']]);
+	});
+
+	it('emits lint-error with the cause', async () => {
+		const file = await MLEngine.toMLFile({ sourceCode: '<p>a</p>', name: 'a.html' });
+		const engine = new MLEngine(file!, { noSearchConfig: true, config: missingPreset });
+		const messages: string[] = [];
+		engine.on('lint-error', (_filePath, _sourceCode, error) => {
+			messages.push(error.message);
+		});
+
+		await engine.exec();
+
+		expect(messages).toStrictEqual([expect.stringContaining('Preset markuplint:no-exists is not found')]);
+	});
+
+	it('reports a config file that does not exist', async () => {
+		const file = await MLEngine.toMLFile({ sourceCode: '<p>a</p>', name: 'a.html' });
+		const configFile = path.join(os.tmpdir(), 'markuplint-no-such-config.json');
+		const engine = new MLEngine(file!, { noSearchConfig: true, configFile });
+
+		const result = await engine.exec();
+
+		expect(result?.violations.map(v => [v.ruleId, v.severity])).toStrictEqual([['config-error', 'error']]);
+	});
+
+	it('reports any other non-fatal error thrown while resolving the config', async () => {
+		const configProvider = new ConfigProvider();
+		vi.spyOn(configProvider, 'search').mockRejectedValue(new Error('cannot read the config directory'));
+		const file = await MLEngine.toMLFile({ sourceCode: '<p>a</p>', name: 'a.html' });
+		const engine = new MLEngine(file!, { configProvider });
+
+		const result = await engine.exec();
+
+		expect(result?.violations).toStrictEqual([
+			{
+				ruleId: 'config-error',
+				severity: 'error',
+				message: 'cannot read the config directory',
+				line: 1,
+				col: 1,
+				raw: '',
+			},
+		]);
+	});
+
+	it("does not catch markuplint's own bug (Tier 1) while resolving the config", async () => {
+		const configProvider = new ConfigProvider();
+		vi.spyOn(configProvider, 'search').mockRejectedValue(new TypeError('a bug in markuplint'));
+		const file = await MLEngine.toMLFile({ sourceCode: '<p>a</p>', name: 'a.html' });
+		const engine = new MLEngine(file!, { configProvider });
+
+		await expect(engine.exec()).rejects.toThrow(new TypeError('a bug in markuplint'));
+	});
+
+	it('does not lint a file that has gone, whatever its config', async () => {
+		const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'ml-engine-config-failure-'));
+		try {
+			const targetFile = path.join(tmpDir, 'a.html');
+			await fs.writeFile(targetFile, '<p>a</p>');
+			const file = await MLEngine.toMLFile(targetFile);
+			await fs.rm(targetFile);
+			const engine = new MLEngine(file!, { noSearchConfig: true, config: missingPreset });
+
+			const result = await engine.exec();
+
+			expect(result).toBeNull();
+		} finally {
+			await fs.rm(tmpDir, { recursive: true, force: true });
+		}
+	});
+
+	it('keeps reporting the failure on exec() after setCode() while the config cannot be loaded', async () => {
+		const file = await MLEngine.toMLFile({ sourceCode: '<p>a</p>', name: 'a.html' });
+		const engine = new MLEngine(file!, { noSearchConfig: true, config: missingPreset });
+
+		await engine.setCode('<p>b</p>');
+		const result = await engine.exec();
+
+		expect(result?.violations.map(v => [v.ruleId, v.severity])).toStrictEqual([['config-error', 'error']]);
+	});
+
+	it('reports a config that stops loading in watch mode, and lints again once it loads', async () => {
+		const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'ml-engine-config-failure-'));
+		let engine: MLEngine | undefined;
+		try {
+			const configFile = path.join(tmpDir, '.markuplintrc');
+			const targetFile = path.join(tmpDir, 'a.html');
+			await fs.writeFile(configFile, JSON.stringify({ extends: ['markuplint:html-standard'] }));
+			await fs.writeFile(targetFile, '<dl><span>no</span></dl>');
+			const file = await MLEngine.toMLFile(targetFile);
+			const watched = new MLEngine(file!, { watch: true });
+			engine = watched;
+
+			// Events of one change can arrive more than once, so wait for the one
+			// that matches instead of for the next one.
+			const lintMatching = (predicate: (violations: readonly Violation[]) => boolean) =>
+				new Promise<readonly Violation[]>(resolve => {
+					watched.on('lint', (_, __, violations) => {
+						if (predicate(violations)) {
+							resolve(violations);
+						}
+					});
+				});
+			const isConfigFailure = (violations: readonly Violation[]) =>
+				violations.length === 1 && violations[0]?.ruleId === 'config-error';
+			const hasPermittedContents = (violations: readonly Violation[]) =>
+				violations.some(v => v.ruleId === 'permitted-contents');
+
+			const first = await watched.exec();
+			expect(first?.violations.some(v => v.ruleId === 'permitted-contents')).toBe(true);
+
+			const failed = lintMatching(isConfigFailure);
+			await fs.writeFile(configFile, JSON.stringify({ extends: ['markuplint:no-exists'] }));
+			expect((await failed)[0]?.severity).toBe('error');
+
+			// A lint asked for now must not pass on the config it had before.
+			const whileBroken = await watched.exec();
+			expect(whileBroken?.violations.map(v => [v.ruleId, v.severity])).toStrictEqual([['config-error', 'error']]);
+
+			const recovered = lintMatching(hasPermittedContents);
+			// chokidar drops a `change` that follows another one of the same path within 50ms.
+			await new Promise<void>(resolve => setTimeout(resolve, 75));
+			await fs.writeFile(configFile, JSON.stringify({ extends: ['markuplint:html-standard'] }));
+			expect(hasPermittedContents(await recovered)).toBe(true);
+		} finally {
+			await engine?.close();
+			await fs.rm(tmpDir, { recursive: true, force: true });
+		}
+	});
+
+	it('keeps a rule that is not found as a warning while the other rules still lint', async () => {
+		const file = await MLEngine.toMLFile({ sourceCode: '<dl><span>no</span></dl>', name: 'a.html' });
+		const engine = new MLEngine(file!, {
+			noSearchConfig: true,
+			config: { extends: ['markuplint:html-standard'], rules: { 'no-such-rule': true } },
+		});
+
+		const result = await engine.exec();
+
+		expect(result?.violations.find(v => v.ruleId === 'config-error')?.severity).toBe('warning');
+		expect(result?.violations.some(v => v.ruleId === 'permitted-contents')).toBe(true);
 	});
 });

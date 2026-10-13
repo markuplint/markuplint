@@ -204,7 +204,7 @@ pub struct Attribute {
     #[serde(default)]
     pub name: Option<String>,
     /// Remains `Value` — 900+ CSS property keyword types as discriminated union.
-    /// Will be typed in Phase 8-9 (invalid-attr rule implementation).
+    /// Will be typed in Phase 8-9.
     #[serde(default, rename = "type")]
     pub attr_type: Value,
     #[serde(default)]
@@ -256,24 +256,109 @@ pub struct ElementARIA {
     /// Will be typed in Phase 2-3 (ARIA computation).
     #[serde(default, rename = "permittedRoles")]
     pub permitted_roles: Option<Value>,
-    /// Remains `Value` — complex object with optional fields.
-    /// Will be typed in Phase 2-3 (ARIA computation).
+    /// Remains `Value` — `{ "aria-*": string }`; typed by the consumer
+    /// (`markuplint-rules`' `aria_check`).
+    #[serde(default, rename = "implicitProperties")]
+    pub implicit_properties: Option<Value>,
+    /// Remains `Value` — `false | { global?, role?, only?, without? }`; typed by the
+    /// consumer (`markuplint-rules`' `aria_check`).
     #[serde(default)]
     pub properties: Option<Value>,
     #[serde(default, rename = "namingProhibited")]
     pub naming_prohibited: Option<bool>,
-    /// Values remain `Value` — recursive ARIA override structure.
-    /// Will be typed in Phase 2-3 (ARIA computation).
+    /// Keys are CSS selectors; the values stay `Value` (the same override shape as
+    /// [`ElementARIAVersionBlock`] without `conditions`). Source order is kept because
+    /// a TS `getARIA()` applies every matching condition in object order, so a later
+    /// match wins.
     #[serde(default)]
-    pub conditions: Option<HashMap<String, Value>>,
-    /// Remains `Value` — same shape as `ElementARIA` but version-specific.
-    /// Will be typed in Phase 2-3 (ARIA computation).
+    pub conditions: Option<ARIAConditions>,
     #[serde(default, rename = "1.1")]
-    pub v1_1: Option<Value>,
-    /// Remains `Value` — same shape as `ElementARIA` but version-specific.
-    /// Will be typed in Phase 2-3 (ARIA computation).
+    pub v1_1: Option<ElementARIAVersionBlock>,
     #[serde(default, rename = "1.2")]
-    pub v1_2: Option<Value>,
+    pub v1_2: Option<ElementARIAVersionBlock>,
+    #[serde(default, rename = "1.3")]
+    pub v1_3: Option<ElementARIAVersionBlock>,
+}
+
+/// The ARIA-version-specific override block of an element (`aria["1.1"]` etc.).
+///
+/// Same shape as [`ElementARIA`] minus the version blocks, except that `conditions`
+/// may also be `false`, which removes the base conditions for that version.
+#[derive(Debug, Default, Deserialize)]
+pub struct ElementARIAVersionBlock {
+    #[serde(default, rename = "implicitRole")]
+    pub implicit_role: Option<ImplicitRole>,
+    #[serde(default, rename = "permittedRoles")]
+    pub permitted_roles: Option<Value>,
+    #[serde(default, rename = "implicitProperties")]
+    pub implicit_properties: Option<Value>,
+    #[serde(default)]
+    pub properties: Option<Value>,
+    #[serde(default, rename = "namingProhibited")]
+    pub naming_prohibited: Option<bool>,
+    #[serde(default)]
+    pub conditions: Option<ARIAConditionsOrFalse>,
+}
+
+/// TS: `ConditionsOrFalse = false | Conditions`.
+#[derive(Debug, Deserialize)]
+#[serde(untagged)]
+pub enum ARIAConditionsOrFalse {
+    /// `false` removes the base conditions; `true` is not valid spec data and is
+    /// treated as absent by the consumer.
+    Flag(bool),
+    Conditions(ARIAConditions),
+}
+
+/// `{ [selector]: override }` with the keys kept in source order.
+///
+/// A `HashMap` or `serde_json::Map` would lose that order (the latter sorts keys
+/// without the `preserve_order` feature, which this workspace does not enable).
+#[derive(Debug, Default)]
+pub struct ARIAConditions(Vec<(String, Value)>);
+
+impl ARIAConditions {
+    pub fn iter(&self) -> std::slice::Iter<'_, (String, Value)> {
+        self.0.iter()
+    }
+
+    #[must_use]
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
+}
+
+impl<'a> IntoIterator for &'a ARIAConditions {
+    type Item = &'a (String, Value);
+    type IntoIter = std::slice::Iter<'a, (String, Value)>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.0.iter()
+    }
+}
+
+impl<'de> Deserialize<'de> for ARIAConditions {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        struct OrderedVisitor;
+
+        impl<'de> serde::de::Visitor<'de> for OrderedVisitor {
+            type Value = ARIAConditions;
+
+            fn expecting(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                f.write_str("a map of selector to ARIA override")
+            }
+
+            fn visit_map<A: serde::de::MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                let mut entries = Vec::with_capacity(map.size_hint().unwrap_or(0));
+                while let Some(entry) = map.next_entry::<String, Value>()? {
+                    entries.push(entry);
+                }
+                Ok(ARIAConditions(entries))
+            }
+        }
+
+        deserializer.deserialize_map(OrderedVisitor)
+    }
 }
 
 #[derive(Debug, Deserialize, PartialEq)]
@@ -320,6 +405,11 @@ pub struct ARIARoleOwnedProperty {
     pub inherited: Option<bool>,
     #[serde(default)]
     pub required: Option<bool>,
+    /// Qualifies `required: true`: the property is required only while the condition
+    /// holds. The only value in the spec data is `"focusable"` (`aria-valuenow` of
+    /// `separator`), resolved with `mayBeFocusable` by `require-aria-prop`.
+    #[serde(default, rename = "requiredCondition")]
+    pub required_condition: Option<String>,
     #[serde(default)]
     pub deprecated: Option<bool>,
 }

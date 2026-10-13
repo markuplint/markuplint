@@ -4,7 +4,8 @@
 
 use markuplint_core::mlast::{MLASTAttr, NamespaceURI};
 use markuplint_dom::arena::{DomArena, NodeId};
-use markuplint_dom::node::ElementData;
+use markuplint_dom::node::{DomNode, ElementData};
+use markuplint_dom::pretender::ElementIdentity;
 use markuplint_types::spec::aria::ARIAVersion;
 use markuplint_types::spec::types::MLMLSpec;
 
@@ -37,10 +38,33 @@ impl MatchResult {
     }
 }
 
+/// What one selector evaluation reads besides the element under test.
+#[derive(Clone, Copy)]
+struct Ctx<'a> {
+    arena: &'a DomArena,
+    scope: NodeId,
+    spec: Option<&'a MLMLSpec>,
+    aria: Option<&'a dyn AriaResolver>,
+    /// The element read with its original identity (TS `matchMLSelector`'s second
+    /// phase, which hides the pretender of the element under test only).
+    original_of: Option<NodeId>,
+}
+
+impl<'a> Ctx<'a> {
+    /// Compared by arena index: `base.id` is a separately stored copy that hand-built arenas
+    /// do not keep in step with the index.
+    fn identity(&self, el: &'a ElementData, node_id: NodeId) -> ElementIdentity<'a> {
+        el.identity(self.original_of == Some(node_id))
+    }
+}
+
 /// `scope` is the element for `:scope` resolution; when `None`, the queried
 /// element is its own scope. `spec` enables `:model()`; `aria` enables
 /// `:role()`/`:aria()`. When a required source is absent, the dependent
 /// pseudo-class never matches.
+///
+/// A pretended element matches with either identity, as TS `Element#matches`
+/// does (see [`match_specificity`]).
 pub fn matches(
     selector: &SelectorList,
     arena: &DomArena,
@@ -49,13 +73,22 @@ pub fn matches(
     spec: Option<&MLMLSpec>,
     aria: Option<&dyn AriaResolver>,
 ) -> bool {
-    let scope = scope.unwrap_or(node_id);
-    selector
-        .selectors
-        .iter()
-        .any(|sel| match_complex(sel, arena, node_id, scope, spec, aria).matched)
+    match_specificity(selector, arena, node_id, scope, spec, aria).is_some()
 }
 
+/// The highest specificity among the matching selectors of the list.
+///
+/// Mirrors TS `MLElement#matchMLSelector`: an element that pretends to be another
+/// is matched first with the pretender identity (so `button` matches an
+/// `<x-btn>` pretending to be a button), then, when that fails, with its
+/// original identity (so `x-btn` still matches it). Only the element under test
+/// changes identity in the second phase; its ancestors and siblings keep the
+/// pretender identity, as TS hides the pretender of that element alone.
+///
+/// Known difference: `:role()` and `:aria()` read the effective (pretender)
+/// identity in both phases, because the ARIA resolver reads the arena; TS
+/// computes them from the original element in the second phase.
+///
 /// See [`matches`] for parameter semantics.
 pub fn match_specificity(
     selector: &SelectorList,
@@ -65,10 +98,30 @@ pub fn match_specificity(
     spec: Option<&MLMLSpec>,
     aria: Option<&dyn AriaResolver>,
 ) -> Option<Specificity> {
-    let scope = scope.unwrap_or(node_id);
+    let mut ctx = Ctx {
+        arena,
+        scope: scope.unwrap_or(node_id),
+        spec,
+        aria,
+        original_of: None,
+    };
+    let pretends = arena
+        .get(node_id)
+        .and_then(DomNode::as_element)
+        .is_some_and(|el| el.pretended().is_some());
+    if pretends {
+        if let Some(s) = best_specificity(selector, node_id, &ctx) {
+            return Some(s);
+        }
+        ctx.original_of = Some(node_id);
+    }
+    best_specificity(selector, node_id, &ctx)
+}
+
+fn best_specificity(selector: &SelectorList, node_id: NodeId, ctx: &Ctx<'_>) -> Option<Specificity> {
     let mut best: Option<Specificity> = None;
     for sel in &selector.selectors {
-        let result = match_complex(sel, arena, node_id, scope, spec, aria);
+        let result = match_complex(sel, node_id, ctx);
         if result.matched {
             match &best {
                 None => best = Some(result.specificity),
@@ -83,15 +136,17 @@ pub fn match_specificity(
     best
 }
 
-fn match_complex(
-    selector: &ComplexSelector,
-    arena: &DomArena,
-    node_id: NodeId,
-    scope: NodeId,
-    spec: Option<&MLMLSpec>,
-    aria: Option<&dyn AriaResolver>,
-) -> MatchResult {
-    let result = match_compound(&selector.subject, arena, node_id, scope, spec, aria);
+/// Matching inside a pseudo-class argument: same phase (identity) as the outer match.
+fn matches_inner(selector: &SelectorList, node_id: NodeId, ctx: &Ctx<'_>) -> bool {
+    selector
+        .selectors
+        .iter()
+        .any(|sel| match_complex(sel, node_id, ctx).matched)
+}
+
+fn match_complex(selector: &ComplexSelector, node_id: NodeId, ctx: &Ctx<'_>) -> MatchResult {
+    let arena = ctx.arena;
+    let result = match_compound(&selector.subject, node_id, ctx);
     if !result.matched {
         return result;
     }
@@ -105,7 +160,7 @@ fn match_complex(
                 let mut found = false;
                 let mut ancestor_id = element_parent(arena, current_id);
                 while let Some(aid) = ancestor_id {
-                    let r = match_compound(compound, arena, aid, scope, spec, aria);
+                    let r = match_compound(compound, aid, ctx);
                     if r.matched {
                         add_specificity(&mut specificity, &r.specificity);
                         current_id = aid;
@@ -122,7 +177,7 @@ fn match_complex(
                 let Some(parent_id) = element_parent(arena, current_id) else {
                     return MatchResult::unmatched();
                 };
-                let r = match_compound(compound, arena, parent_id, scope, spec, aria);
+                let r = match_compound(compound, parent_id, ctx);
                 if !r.matched {
                     return MatchResult::unmatched();
                 }
@@ -133,7 +188,7 @@ fn match_complex(
                 let Some(prev_id) = prev_element_sibling(arena, current_id) else {
                     return MatchResult::unmatched();
                 };
-                let r = match_compound(compound, arena, prev_id, scope, spec, aria);
+                let r = match_compound(compound, prev_id, ctx);
                 if !r.matched {
                     return MatchResult::unmatched();
                 }
@@ -144,7 +199,7 @@ fn match_complex(
                 let mut found = false;
                 let mut prev_id = prev_element_sibling(arena, current_id);
                 while let Some(pid) = prev_id {
-                    let r = match_compound(compound, arena, pid, scope, spec, aria);
+                    let r = match_compound(compound, pid, ctx);
                     if r.matched {
                         add_specificity(&mut specificity, &r.specificity);
                         current_id = pid;
@@ -163,20 +218,14 @@ fn match_complex(
     MatchResult::matched(specificity)
 }
 
-fn match_compound(
-    compound: &CompoundSelector,
-    arena: &DomArena,
-    node_id: NodeId,
-    scope: NodeId,
-    spec: Option<&MLMLSpec>,
-    aria: Option<&dyn AriaResolver>,
-) -> MatchResult {
-    let Some(node) = arena.get(node_id) else {
+fn match_compound(compound: &CompoundSelector, node_id: NodeId, ctx: &Ctx<'_>) -> MatchResult {
+    let Some(node) = ctx.arena.get(node_id) else {
         return MatchResult::unmatched();
     };
     let Some(el) = node.as_element() else {
         return MatchResult::unmatched();
     };
+    let identity = ctx.identity(el, node_id);
 
     let mut specificity: Specificity = [0, 0, 0];
 
@@ -186,31 +235,31 @@ fn match_compound(
                 // Universal matches everything — no specificity contribution
             }
             SimpleSelector::Type(name) => {
-                if !el.base.node_name.eq_ignore_ascii_case(name) {
+                if !identity.node_name.eq_ignore_ascii_case(name) {
                     return MatchResult::unmatched();
                 }
                 specificity[2] += 1;
             }
             SimpleSelector::Id(id) => {
-                if !has_attr_value(el, "id", id) {
+                if !has_attr_value(identity.attributes, "id", id) {
                     return MatchResult::unmatched();
                 }
                 specificity[0] += 1;
             }
             SimpleSelector::Class(class) => {
-                if !has_class(el, class) {
+                if !has_class(identity.attributes, class) {
                     return MatchResult::unmatched();
                 }
                 specificity[1] += 1;
             }
             SimpleSelector::Attribute(attr_sel) => {
-                if !match_attribute(el, attr_sel) {
+                if !match_attribute(identity.attributes, attr_sel) {
                     return MatchResult::unmatched();
                 }
                 specificity[1] += 1;
             }
             SimpleSelector::PseudoClass(pseudo) => {
-                let r = match_pseudo_class(pseudo, arena, node_id, scope, spec, aria);
+                let r = match_pseudo_class(pseudo, node_id, identity.node_name, ctx);
                 if !r.matched {
                     return MatchResult::unmatched();
                 }
@@ -223,7 +272,7 @@ fn match_compound(
                     "*" => continue,
                     _ => return MatchResult::unmatched(),
                 };
-                if el.namespace != expected {
+                if *identity.namespace != expected {
                     return MatchResult::unmatched();
                 }
                 // Namespace doesn't contribute to specificity
@@ -234,17 +283,11 @@ fn match_compound(
     MatchResult::matched(specificity)
 }
 
-fn match_pseudo_class(
-    pseudo: &PseudoClassSelector,
-    arena: &DomArena,
-    node_id: NodeId,
-    scope: NodeId,
-    spec: Option<&MLMLSpec>,
-    aria: Option<&dyn AriaResolver>,
-) -> MatchResult {
+fn match_pseudo_class(pseudo: &PseudoClassSelector, node_id: NodeId, node_name: &str, ctx: &Ctx<'_>) -> MatchResult {
+    let arena = ctx.arena;
     match pseudo {
         PseudoClassSelector::Not(inner) => {
-            if matches(inner, arena, node_id, Some(scope), spec, aria) {
+            if matches_inner(inner, node_id, ctx) {
                 MatchResult::unmatched()
             } else {
                 // :not() specificity = most specific selector in the argument list
@@ -253,7 +296,7 @@ fn match_pseudo_class(
             }
         }
         PseudoClassSelector::Is(inner) => {
-            if matches(inner, arena, node_id, Some(scope), spec, aria) {
+            if matches_inner(inner, node_id, ctx) {
                 // :is() specificity = most specific selector in the argument list
                 // (regardless of which arguments matched)
                 MatchResult::matched(max_specificity_of_list(inner))
@@ -268,7 +311,7 @@ fn match_pseudo_class(
             let mut found = false;
             for desc in arena.descendants(node_id) {
                 if let Some(desc_el_id) = desc.as_element().map(|e| e.base.id)
-                    && matches(inner, arena, desc_el_id, Some(scope), spec, aria)
+                    && matches_inner(inner, desc_el_id, ctx)
                 {
                     found = true;
                     break;
@@ -283,7 +326,7 @@ fn match_pseudo_class(
         }
         PseudoClassSelector::Where(inner) => {
             // :where() = same as :is() but zero specificity
-            if matches(inner, arena, node_id, Some(scope), spec, aria) {
+            if matches_inner(inner, node_id, ctx) {
                 MatchResult::matched([0, 0, 0])
             } else {
                 MatchResult::unmatched()
@@ -291,7 +334,7 @@ fn match_pseudo_class(
         }
         PseudoClassSelector::Scope => {
             // :scope matches the scope element, or root if no scope is set
-            if node_id == scope {
+            if node_id == ctx.scope {
                 MatchResult::matched([0, 1, 0])
             } else {
                 MatchResult::unmatched()
@@ -309,7 +352,7 @@ fn match_pseudo_class(
             // :closest() — markuplint-specific: matches if any ancestor matches
             let mut ancestor_id = element_parent(arena, node_id);
             while let Some(aid) = ancestor_id {
-                if matches(inner, arena, aid, Some(scope), spec, aria) {
+                if matches_inner(inner, aid, ctx) {
                     return MatchResult::matched([0, 1, 0]);
                 }
                 ancestor_id = element_parent(arena, aid);
@@ -317,8 +360,8 @@ fn match_pseudo_class(
             MatchResult::unmatched()
         }
         PseudoClassSelector::Model(category) => {
-            if let Some(spec) = spec {
-                if extended::matches_model(spec, arena, node_id, category) {
+            if let Some(spec) = ctx.spec {
+                if extended::matches_model(spec, node_name, category) {
                     MatchResult::matched([0, 1, 0])
                 } else {
                     MatchResult::unmatched()
@@ -327,8 +370,8 @@ fn match_pseudo_class(
                 MatchResult::unmatched()
             }
         }
-        PseudoClassSelector::Role(content) => match_role(content, arena, node_id, aria),
-        PseudoClassSelector::Aria(content) => match_aria(content, arena, node_id, aria),
+        PseudoClassSelector::Role(content) => match_role(content, arena, node_id, ctx.aria),
+        PseudoClassSelector::Aria(content) => match_aria(content, arena, node_id, ctx.aria),
     }
 }
 
@@ -419,8 +462,8 @@ fn split_version(content: &str) -> (&str, ARIAVersion) {
 // Attribute matching
 // ============================================================
 
-fn match_attribute(el: &ElementData, sel: &AttributeSelector) -> bool {
-    let Some(value) = get_attr(el, &sel.name) else {
+fn match_attribute(attributes: &[MLASTAttr], sel: &AttributeSelector) -> bool {
+    let Some(value) = get_attr(attributes, &sel.name) else {
         // Attribute doesn't exist — never matches (even [attr] requires existence)
         return false;
     };
@@ -450,8 +493,8 @@ fn match_attribute(el: &ElementData, sel: &AttributeSelector) -> bool {
     }
 }
 
-fn get_attr<'a>(el: &'a ElementData, name: &str) -> Option<&'a str> {
-    for attr in &el.attributes {
+fn get_attr<'a>(attributes: &'a [MLASTAttr], name: &str) -> Option<&'a str> {
+    for attr in attributes {
         if let MLASTAttr::HTMLAttr(html_attr) = attr
             && html_attr.node_name.eq_ignore_ascii_case(name)
         {
@@ -461,12 +504,12 @@ fn get_attr<'a>(el: &'a ElementData, name: &str) -> Option<&'a str> {
     None
 }
 
-fn has_attr_value(el: &ElementData, name: &str, value: &str) -> bool {
-    get_attr(el, name).is_some_and(|v| v == value)
+fn has_attr_value(attributes: &[MLASTAttr], name: &str, value: &str) -> bool {
+    get_attr(attributes, name).is_some_and(|v| v == value)
 }
 
-fn has_class(el: &ElementData, class_name: &str) -> bool {
-    get_attr(el, "class").is_some_and(|classes| classes.split_ascii_whitespace().any(|c| c == class_name))
+fn has_class(attributes: &[MLASTAttr], class_name: &str) -> bool {
+    get_attr(attributes, "class").is_some_and(|classes| classes.split_ascii_whitespace().any(|c| c == class_name))
 }
 
 // ============================================================
@@ -598,7 +641,7 @@ mod tests {
         };
         // Create a minimal element with attributes
         let el = make_element("input", &[("type", "text")]);
-        assert!(match_attribute(&el, &sel));
+        assert!(match_attribute(&el.attributes, &sel));
     }
 
     #[test]
@@ -610,7 +653,7 @@ mod tests {
             case_insensitive: true,
         };
         let el = make_element("input", &[("type", "text")]);
-        assert!(match_attribute(&el, &sel));
+        assert!(match_attribute(&el.attributes, &sel));
     }
 
     #[test]
@@ -622,7 +665,7 @@ mod tests {
             case_insensitive: false,
         };
         let el = make_element("div", &[("class", "foo bar baz")]);
-        assert!(match_attribute(&el, &sel));
+        assert!(match_attribute(&el.attributes, &sel));
     }
 
     #[test]
@@ -634,7 +677,7 @@ mod tests {
             case_insensitive: false,
         };
         let el = make_element("a", &[("href", "https://example.com")]);
-        assert!(match_attribute(&el, &sel));
+        assert!(match_attribute(&el.attributes, &sel));
     }
 
     #[test]
@@ -646,7 +689,7 @@ mod tests {
             case_insensitive: false,
         };
         let el = make_element("img", &[("src", "image.png")]);
-        assert!(match_attribute(&el, &sel));
+        assert!(match_attribute(&el.attributes, &sel));
     }
 
     #[test]
@@ -658,7 +701,7 @@ mod tests {
             case_insensitive: false,
         };
         let el = make_element("a", &[("href", "https://example.com/page")]);
-        assert!(match_attribute(&el, &sel));
+        assert!(match_attribute(&el.attributes, &sel));
     }
 
     #[test]
@@ -670,13 +713,13 @@ mod tests {
             case_insensitive: false,
         };
         let el = make_element("html", &[("lang", "en-US")]);
-        assert!(match_attribute(&el, &sel));
+        assert!(match_attribute(&el.attributes, &sel));
 
         let el2 = make_element("html", &[("lang", "en")]);
-        assert!(match_attribute(&el2, &sel));
+        assert!(match_attribute(&el2.attributes, &sel));
 
         let el3 = make_element("html", &[("lang", "fr")]);
-        assert!(!match_attribute(&el3, &sel));
+        assert!(!match_attribute(&el3.attributes, &sel));
     }
 
     #[test]
@@ -688,26 +731,26 @@ mod tests {
             case_insensitive: false,
         };
         let el = make_element("a", &[("href", "")]);
-        assert!(match_attribute(&el, &sel));
+        assert!(match_attribute(&el.attributes, &sel));
 
         let el2 = make_element("a", &[]);
-        assert!(!match_attribute(&el2, &sel));
+        assert!(!match_attribute(&el2.attributes, &sel));
     }
 
     #[test]
     fn class_matching() {
         let el = make_element("div", &[("class", "foo bar baz")]);
-        assert!(has_class(&el, "foo"));
-        assert!(has_class(&el, "bar"));
-        assert!(has_class(&el, "baz"));
-        assert!(!has_class(&el, "qux"));
+        assert!(has_class(&el.attributes, "foo"));
+        assert!(has_class(&el.attributes, "bar"));
+        assert!(has_class(&el.attributes, "baz"));
+        assert!(!has_class(&el.attributes, "qux"));
     }
 
     #[test]
     fn id_matching() {
         let el = make_element("div", &[("id", "main")]);
-        assert!(has_attr_value(&el, "id", "main"));
-        assert!(!has_attr_value(&el, "id", "other"));
+        assert!(has_attr_value(&el.attributes, "id", "main"));
+        assert!(!has_attr_value(&el.attributes, "id", "other"));
     }
 
     // ============================================================
@@ -837,6 +880,7 @@ mod tests {
             .collect();
 
         ElementData {
+            pretender_context: None,
             base: markuplint_dom::node::NodeBase {
                 id: 0,
                 uuid: String::new(),

@@ -368,6 +368,14 @@ describe('parser', () => {
 		expect(doc.nodeList[2].namespace).toBe('http://www.w3.org/2000/svg');
 	});
 
+	test('namespace of a component named like svg or math', () => {
+		const doc = parse('<template><div><Svg><g /></Svg></div></template>');
+		expect(doc.nodeList[1].nodeName).toBe('Svg');
+		expect(doc.nodeList[1].namespace).toBe('http://www.w3.org/1999/xhtml');
+		expect(doc.nodeList[2].nodeName).toBe('g');
+		expect(doc.nodeList[2].namespace).toBe('http://www.w3.org/1999/xhtml');
+	});
+
 	test('elementType', () => {
 		expect(parse('<template><div/></template>').nodeList[0].elementType).toBe('html');
 		expect(parse('<template><Div/></template>').nodeList[0].elementType).toBe('authored');

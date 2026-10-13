@@ -90,6 +90,14 @@ pub trait AccnameResolver {
     fn get_precomputed_name(&self, _node_id: NodeId) -> Option<String> {
         None
     }
+
+    /// TS `getChildNodes`: the child nodes to traverse for `node_id` in place of
+    /// the children as written. A pretended component renders its own elements
+    /// (`contents`) around the children given at the usage site, or none of them
+    /// (`slots: null`). `None` means the children as written.
+    fn get_child_nodes(&self, _node_id: NodeId) -> Option<Vec<NodeId>> {
+        None
+    }
 }
 
 // ============================================================

@@ -34,6 +34,15 @@ describe('parser', () => {
 		expect(doc.nodeList.length).toBe(1);
 	});
 
+	test('namespace of an authored element named like svg or math', () => {
+		const doc = parse('div\n  Svg\n    g', { authoredElementName: /^[A-Z]/ });
+		expect(doc.nodeList[1].nodeName).toBe('Svg');
+		expect(doc.nodeList[1].elementType).toBe('authored');
+		expect(doc.nodeList[1].namespace).toBe('http://www.w3.org/1999/xhtml');
+		expect(doc.nodeList[2].nodeName).toBe('g');
+		expect(doc.nodeList[2].namespace).toBe('http://www.w3.org/1999/xhtml');
+	});
+
 	test('HTML in Pug', () => {
 		const doc = parse(
 			`div

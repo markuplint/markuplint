@@ -13,7 +13,7 @@ src/rules/
 
 Tests do not go inline in `mod.rs`, and a rule is not a single `<rule_name>.rs` file.
 
-> **Note:** As of this writing, 16 rules follow this structure. The remaining rules still use single-file format and will be migrated incrementally.
+> **Note:** Some older rules still use a single `<rule_name>.rs` file. A new or split rule always uses the structure above.
 
 ## Test ID Convention
 
@@ -22,17 +22,17 @@ Every `#[test]` function uses an ID that matches the TS test suite (`packages/@m
 ### Naming format
 
 ```rust
-// Matches TS test ID [doctype-valid-001]
-/// TS: `[doctype-valid-001]`
+// Matches TS test ID [require-doctype-valid-001]
+/// TS: `[require-doctype-valid-001]`
 #[test]
-fn doctype_valid_001() {
-    const _ID: &str = "doctype-valid-001";
+fn require_doctype_valid_001() {
+    const _ID: &str = "require-doctype-valid-001";
     // ...
 }
 
 // Rust-only test (no TS counterpart)
 #[test]
-fn v6_doctype_001() {
+fn v6_require_doctype_001() {
     // No _ID — v6-only tests don't need it
     // ...
 }
@@ -66,9 +66,9 @@ Same as TS side:
 
 ```rust
 //! Test ID mapping (TS → Rust):
-//!   doctype-valid-001    → doctype_valid_001
-//!   doctype-invalid-001  → doctype_invalid_001
-//!   v6_doctype_001       — Rust-only: description
+//!   require-doctype-valid-001    → require_doctype_valid_001
+//!   require-doctype-invalid-001  → require_doctype_invalid_001
+//!   v6_require_doctype_001       — Rust-only: description
 ```
 
 ## Test Pattern
@@ -105,14 +105,14 @@ When a test has the same ID as a TS test, it uses:
 - **Hardcoded assertion values** — no computed expectations
 
 ```rust
-/// TS: `[doctype-invalid-001]`
+/// TS: `[require-doctype-invalid-001]`
 #[test]
-fn doctype_invalid_001() {
-    const _ID: &str = "doctype-invalid-001";
+fn require_doctype_invalid_001() {
+    const _ID: &str = "require-doctype-invalid-001";
     let arena = html_arena("<html></html>");  // Same HTML as TS
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
-        "rules": { "doctype": true }
+        "rules": { "require-doctype": true }
     })).unwrap();
     let result = lint(&arena, &spec, &config);
     assert_eq!(result.violations.len(), 1);

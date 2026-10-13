@@ -1762,6 +1762,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		const tagToken = this.createToken(rawCodeFragment, tagStartOffset, tagStartLine, tagStartCol);
 
 		const isFragment = tagName === '';
+		const elementType = this.detectElementType(tagName);
 
 		const commons = {
 			depth,
@@ -1775,11 +1776,14 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 					...tagToken,
 					...commons,
 					type: 'starttag',
-					elementType: this.detectElementType(tagName),
+					elementType,
+					// What a component renders is not known from its name, so an authored
+					// element is not given the name: `<Svg>` and `<Math>` would enter
+					// their namespaces, as `getNamespace` compares names in lowercase.
 					namespace:
 						'namespace' in token
 							? (token.namespace as NamespaceURI)
-							: getNamespace(tagName, token.parentNode),
+							: getNamespace(elementType === 'authored' ? null : tagName, token.parentNode),
 					attributes: attrs,
 					childNodes: [],
 					pairNode: null,

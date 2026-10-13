@@ -1,4 +1,4 @@
-use markuplint_core::mlast::MLASTAttr;
+use markuplint_core::mlast::{MLASTAttr, MLASTHTMLAttr};
 
 use crate::arena::{DomArena, NodeId};
 use crate::node::ElementData;
@@ -23,10 +23,39 @@ pub fn get_attr_value_from_el<'a>(el: &'a ElementData, attr_name: &str) -> Optio
     None
 }
 
+/// TS `MLElement#getAttributeNode()`: the first HTML attribute whose name, as written in
+/// the source, equals `attr_name` lower-cased.
+///
+/// Unlike [`get_attr_value_from_el`] (TS `getAttribute()`, which compares both sides
+/// lower-cased), TS compares the attribute's source name as is, so `<input FORM="x">`
+/// has no `form` attribute node. The source name is read from the `name` token because
+/// the HTML parser lower-cases `node_name`.
+#[must_use]
+pub fn get_attr_node_from_el<'a>(el: &'a ElementData, attr_name: &str) -> Option<&'a MLASTHTMLAttr> {
+    let attr_name = attr_name.to_ascii_lowercase();
+    el.attributes.iter().find_map(|attr| match attr {
+        MLASTAttr::HTMLAttr(html_attr) if get_raw_attr_name(html_attr) == attr_name => Some(&**html_attr),
+        _ => None,
+    })
+}
+
 /// `attr_name` is matched case-insensitively.
 #[must_use]
 pub fn has_attr(arena: &DomArena, node_id: NodeId, attr_name: &str) -> bool {
     get_attr_value(arena, node_id, attr_name).is_some()
+}
+
+/// The first element, in document order, whose `id` attribute equals `id`.
+///
+/// Counterpart of `document.getElementById()`, which the TS rules (`tab-requires-tabpanel`
+/// and others) use to resolve `aria-controls` and similar ID references. The attribute
+/// name is matched case-insensitively and the value exactly, as the DOM does.
+#[must_use]
+pub fn find_element_by_id(arena: &DomArena, id: &str) -> Option<NodeId> {
+    arena
+        .elements()
+        .find(|(_, el)| get_attr_value_from_el(el, "id") == Some(id))
+        .map(|(node_id, _)| node_id)
 }
 
 /// Extracts the tag name from the element's `raw` source, preserving original case

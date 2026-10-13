@@ -27,7 +27,9 @@ impl Rule for CaseSensitiveTagName {
             if rule_config.disabled {
                 continue;
             }
-            if el.namespace != NamespaceURI::XHTML {
+            // TS `el.isForeignElement`: the namespace of the element as written, which a
+            // pretender does not change.
+            if *el.identity(true).namespace != NamespaceURI::XHTML {
                 continue;
             }
 

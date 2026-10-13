@@ -25,9 +25,22 @@
  *
  * ## Barrel file resolution
  *
- * `resolveBarrelExport` is a standalone utility (not called by `analyzeImports`)
- * that resolves a named import from a barrel directory (e.g., `'./components'`)
- * to its original source module. Only single-level re-exports are resolved.
+ * `analyzeImports` reports import bindings only; it does not look through a
+ * barrel file. Three things handle barrels, each for its own caller:
+ *
+ * - `collectReferencedModules` lists the re-exports of a JS/TS file (or of an
+ *   MDX file's top-level ESM) along with its imports, so that `autoScan`'s
+ *   walk reaches the files behind a barrel — named, star and nested barrels
+ *   alike, as each barrel is just another file of the walk.
+ * - The export table (`../export-table.ts`), followed by `../dependency-mapper.ts`,
+ *   maps an imported name through `export { X } from` and `export * from`
+ *   chains to its declaration, for disambiguation at scan time and at lint
+ *   time.
+ * - `resolveBarrelExport` is a standalone public utility (not called by
+ *   `analyzeImports` or the walk) that maps a named import from a barrel
+ *   directory (e.g., `'./components'`) to the specifier it is re-exported
+ *   from. It resolves a single level only and does not see through
+ *   `export * from`.
  */
 
 import type { ComponentScanScriptSource } from '../component-scanner.js';
@@ -37,6 +50,7 @@ import path from 'node:path';
 
 import ts from 'typescript';
 
+import { getExportTable, getReExportSources } from '../export-table.js';
 import { getScanner } from '../scanner-loader.js';
 
 import { collectImportBindings, scriptKindForPath } from './analyze-jsx-imports.js';
@@ -112,14 +126,7 @@ export async function analyzeImports(filePath: string, source: string): Promise<
 	}
 
 	if (framework === 'jsx') {
-		const sourceFile = ts.createSourceFile(
-			filePath,
-			source,
-			ts.ScriptTarget.Latest,
-			true,
-			scriptKindForPath(filePath),
-		);
-		return { bindings: collectImportBindings(sourceFile) };
+		return { bindings: collectImportBindings(parseJsLike(filePath, source)) };
 	}
 
 	// Vue Options API requires special handling: extract regular <script>,
@@ -140,6 +147,65 @@ export async function analyzeImports(filePath: string, source: string): Promise<
 
 	const bindings = await parseImports(scriptSource.content);
 	return { bindings };
+}
+
+/**
+ * Lists the module specifiers a file depends on for its components: those of
+ * {@link analyzeImports}' bindings and, for a JS/TS-family file or the
+ * top-level ESM of an MDX file, those of its re-exports too (from the export
+ * table, see `getReExportSources`), so that a walk over the result passes through
+ * barrel files. A re-export in a Vue / Svelte / Astro script block is not
+ * listed: those files are components, not barrels.
+ *
+ * Unlike {@link analyzeImports}, the result is not tied to local names, which
+ * is why the re-exports can be included here and not there.
+ *
+ * @param filePath - The absolute or relative file path (used for framework detection)
+ * @param source - The full source text of the file
+ * @returns The distinct specifiers in source order, imports first, or
+ *          `null` if the framework is not supported
+ */
+export async function collectReferencedModules(filePath: string, source: string): Promise<readonly string[] | null> {
+	const framework = getImportFrameworkType(filePath);
+	switch (framework) {
+		case null: {
+			return null;
+		}
+		case 'jsx': {
+			const sourceFile = parseJsLike(filePath, source);
+			return distinct([...collectImportBindings(sourceFile).map(b => b.source), ...reExportSources(sourceFile)]);
+		}
+		case 'mdx': {
+			// The same extraction and import parsing as `analyzeImports`, done here so
+			// that the ESM block is extracted once for both lists.
+			const esm = extractMdxEsm(source);
+			if (!esm) {
+				return [];
+			}
+			const bindings = await parseImports(esm.content);
+			// MDX ESM may hold JSX (`export const meta = <X />`), so it is parsed as TSX.
+			return distinct([...bindings.map(b => b.source), ...reExportSources(parseJsLike('esm.tsx', esm.content))]);
+		}
+		default: {
+			const analysis = await analyzeImports(filePath, source);
+			return analysis?.bindings.map(b => b.source) ?? null;
+		}
+	}
+}
+
+function reExportSources(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	sourceFile: ts.SourceFile,
+): string[] {
+	return getReExportSources(getExportTable(sourceFile));
+}
+
+function distinct(specifiers: readonly string[]): string[] {
+	return [...new Set(specifiers)];
+}
+
+function parseJsLike(filePath: string, source: string) {
+	return ts.createSourceFile(filePath, source, ts.ScriptTarget.Latest, true, scriptKindForPath(filePath));
 }
 
 async function analyzeVueOptionsApi(source: string): Promise<ImportAnalysisResult> {

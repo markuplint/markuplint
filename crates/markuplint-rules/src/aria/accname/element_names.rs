@@ -8,7 +8,7 @@ use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::helpers as dom;
 
 use super::helpers::{
-    collect_text_content, find_child_by_local_name, get_input_type, is_svg_element, resolve_name_from_content,
+    find_rendered_child_by_local_name, get_input_type, is_svg_element, resolve_name_from_content, text_content,
 };
 use super::label_steps::resolve_label_text;
 use super::{AccnameResolver, AccnameResult, AccnameSource};
@@ -28,7 +28,7 @@ pub fn get_element_specific_name(
     let tag = el.base.node_name.as_str();
 
     if is_svg_element(arena, node_id) {
-        return handle_svg_element(arena, node_id);
+        return handle_svg_element(arena, node_id, resolver);
     }
 
     match tag {
@@ -184,7 +184,7 @@ fn handle_fieldset(
     in_labelledby: bool,
     computing: &mut HashSet<NodeId>,
 ) -> Option<AccnameResult> {
-    if let Some(legend_id) = find_child_by_local_name(arena, node_id, "legend") {
+    if let Some(legend_id) = find_rendered_child_by_local_name(arena, node_id, "legend", resolver) {
         let content = resolve_name_from_content(arena, legend_id, resolver, visited, in_labelledby, computing);
         if !content.is_empty() {
             return Some(AccnameResult::new(content, AccnameSource::Legend));
@@ -201,7 +201,7 @@ fn handle_table(
     in_labelledby: bool,
     computing: &mut HashSet<NodeId>,
 ) -> Option<AccnameResult> {
-    if let Some(caption_id) = find_child_by_local_name(arena, node_id, "caption") {
+    if let Some(caption_id) = find_rendered_child_by_local_name(arena, node_id, "caption", resolver) {
         let content = resolve_name_from_content(arena, caption_id, resolver, visited, in_labelledby, computing);
         if !content.is_empty() {
             return Some(AccnameResult::new(content, AccnameSource::Caption));
@@ -260,9 +260,9 @@ fn handle_anchor(
     title_attr(arena, node_id)
 }
 
-fn handle_svg_element(arena: &DomArena, node_id: NodeId) -> Option<AccnameResult> {
-    if let Some(title_id) = find_child_by_local_name(arena, node_id, "title") {
-        let text = collect_text_content(arena, title_id);
+fn handle_svg_element(arena: &DomArena, node_id: NodeId, resolver: &dyn AccnameResolver) -> Option<AccnameResult> {
+    if let Some(title_id) = find_rendered_child_by_local_name(arena, node_id, "title", resolver) {
+        let text = text_content(arena, title_id, resolver);
         if !text.is_empty() {
             return Some(AccnameResult::new(text, AccnameSource::SvgTitle));
         }

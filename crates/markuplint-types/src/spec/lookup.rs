@@ -32,6 +32,32 @@ pub fn get_spec_by_tag_name<'a>(spec: &'a MLMLSpec, name: &str, namespace: Optio
     get_spec(spec, name)
 }
 
+/// The void elements of the HTML standard, by local name. Port of `@markuplint/ml-spec`
+/// `isVoidElement()` (`algorithm/html/is-void-element.ts`), which is a fixed list rather
+/// than spec data: unlike [`is_void_element`] it excludes `iframe` (no content in the
+/// spec data, yet not void) and the obsolete `param`.
+///
+/// <https://html.spec.whatwg.org/multipage/syntax.html#void-elements>
+#[must_use]
+pub fn is_void_element_name(local_name: &str) -> bool {
+    matches!(
+        local_name,
+        "area"
+            | "base"
+            | "br"
+            | "col"
+            | "embed"
+            | "hr"
+            | "img"
+            | "input"
+            | "link"
+            | "meta"
+            | "source"
+            | "track"
+            | "wbr"
+    )
+}
+
 /// Void elements have `contentModel.contents === false` in the spec data.
 pub fn is_void_element(spec: &MLMLSpec, name: &str) -> bool {
     get_spec(spec, name).is_some_and(|el| {
@@ -70,7 +96,7 @@ pub fn get_attr_specs<'a>(spec: &'a MLMLSpec, element_name: &str) -> HashMap<&'a
     // Blocked: `SpecDefs.global_attrs` inner values are `serde_json::Value`, not `Attribute`.
     // The JSON structure for global attrs differs from element-specific attrs (uses partial
     // attribute definitions), so typing requires a `PartialAttribute` or flexible deserializer.
-    // Tracked in #3521. Needed when ARIA rules or `invalid-attr` access global attrs.
+    // Tracked in #3521. Needed when ARIA rules or the attribute rules (`attr_check`) access global attrs.
 
     result
 }
@@ -78,7 +104,8 @@ pub fn get_attr_specs<'a>(spec: &'a MLMLSpec, element_name: &str) -> HashMap<&'a
 fn namespace_to_prefix(namespace: &str) -> &str {
     match namespace {
         "http://www.w3.org/2000/svg" => "svg",
-        "http://www.w3.org/1998/Math/MathML" => "math",
+        // The spec names MathML elements with the `mml:` prefix (`mml:annotation`).
+        "http://www.w3.org/1998/Math/MathML" => "mml",
         _ => "",
     }
 }
@@ -91,6 +118,13 @@ mod tests {
     fn html_spec() -> MLMLSpec {
         let json = include_str!("../../../../packages/@markuplint/html-spec/index.json");
         load_spec(json).unwrap()
+    }
+
+    #[test]
+    fn get_spec_by_tag_name_uses_the_mml_prefix_for_mathml() {
+        let spec = html_spec();
+        let found = get_spec_by_tag_name(&spec, "annotation", Some("http://www.w3.org/1998/Math/MathML"));
+        assert_eq!(found.map(|el| el.name.as_str()), Some("mml:annotation"));
     }
 
     // --- get_spec ---

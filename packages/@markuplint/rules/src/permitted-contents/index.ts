@@ -6,6 +6,7 @@ import { createRule } from '@markuplint/ml-core';
 import { contentModel } from './content-model.js';
 import meta from './meta.js';
 import { transparentMode } from './represent-transparent-nodes.js';
+import { getContentOwner, getReportScope, isContentMutable } from './slot-content.js';
 
 export default createRule<TagRule[], Options>({
 	meta: meta,
@@ -46,7 +47,9 @@ export default createRule<TagRule[], Options>({
 						case 'MISSING_NODE_ONE_OR_MORE': {
 							if (
 								scope.rule.options.ignoreHasMutableChildren &&
-								(!scope.is(scope.ELEMENT_NODE) || scope.hasMutableChildren())
+								(!scope.is(scope.ELEMENT_NODE) ||
+									scope.hasMutableChildren() ||
+									isContentMutable(el, mode))
 							) {
 								break;
 							}
@@ -68,7 +71,9 @@ export default createRule<TagRule[], Options>({
 						case 'MISSING_NODE_REQUIRED': {
 							if (
 								scope.rule.options.ignoreHasMutableChildren &&
-								(!scope.is(scope.ELEMENT_NODE) || scope.hasMutableChildren())
+								(!scope.is(scope.ELEMENT_NODE) ||
+									scope.hasMutableChildren() ||
+									isContentMutable(el, mode))
 							) {
 								break;
 							}
@@ -96,16 +101,16 @@ export default createRule<TagRule[], Options>({
 									? t(
 											'{0} is not allowed in {1} through the transparent model in this context',
 											name(not, t, mode),
-											name(el, t, mode),
+											name(getContentOwner(el, mode), t, mode),
 										)
 									: t(
 											'{0} is not allowed in {1} in this context',
 											name(not, t, mode),
-											name(el, t, mode),
+											name(getContentOwner(el, mode), t, mode),
 										));
 
 							report({
-								scope: not,
+								scope: getReportScope(not),
 								message,
 							});
 							break;
@@ -115,7 +120,7 @@ export default createRule<TagRule[], Options>({
 							const tp = hint.transparent ?? el;
 
 							report({
-								scope: not,
+								scope: getReportScope(not),
 								message: t(
 									'{0} is {1} but {2}',
 									name(tp, t, mode),
