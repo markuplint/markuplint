@@ -33,6 +33,11 @@ const resultLog = log.extend('result');
  * config-level violations (e.g. the CLI's per-run dedupe and failed-file
  * counting in `packages/markuplint/src/cli/command.ts`) reference the same
  * literal `MLCore.verify()` emits, instead of duplicating the string.
+ *
+ * Two severities share it. `MLCore.verify()` emits `warning`: the rest of the
+ * config is still usable, so the file is linted. `MLEngine` emits `error`,
+ * as the file's only violation, when the config cannot be loaded at all
+ * (`ConfigLoadError`): no rule has looked at the file, so it must not pass.
  */
 export const CONFIG_ERROR_RULE_ID = 'config-error';
 

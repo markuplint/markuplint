@@ -45,8 +45,24 @@ export interface DependencyMapperContext {
  */
 type ResolveEnv = {
 	readonly cwd: string;
+} & DeclarationEnv;
+
+/**
+ * What following re-exports needs: the in-memory overrides of file content, and
+ * the sink for the files read on the way.
+ */
+type DeclarationEnv = {
 	readonly sources: ReadonlyMap<string, string> | undefined;
 	readonly dependencies: Set<string> | undefined;
+};
+
+/**
+ * The declaration an exported name resolves to. `localName` is `null` for a
+ * template component (Vue/Svelte/Astro), which is the file itself.
+ */
+type Declaration = {
+	readonly fileAbs: string;
+	readonly localName: string | null;
 };
 
 /**
@@ -186,11 +202,35 @@ function resolveThroughImport(
 		return null;
 	}
 
-	if (isTemplateComponentFile(resolvedAbs)) {
-		return templateComponentKey(resolvedAbs, env.cwd);
-	}
+	const declaration = isTemplateComponentFile(resolvedAbs)
+		? { fileAbs: resolvedAbs, localName: null }
+		: resolveExportedName(resolvedAbs, binding.importedName, new Set(), env);
+	return declaration && declarationKey(declaration, env.cwd);
+}
 
-	return resolveExportedName(resolvedAbs, binding.importedName, new Set(), env);
+/**
+ * Resolves `exportedName` of the module at `fileAbs` to the absolute path of
+ * the file that declares it, following re-exports the same way scan-time
+ * resolution does (`export { X } from` and `export * from` chains). Returns
+ * `null` when that cannot be confirmed: an unreadable file, a name the export
+ * tables do not confirm, a namespace re-export, or a name that two star
+ * re-exports supply differently.
+ *
+ * @param fileAbs - Absolute path of the module the name is imported from
+ * @param exportedName - The imported name (`'default'` for a default import)
+ * @param options - In-memory content overrides (keyed by normalized absolute path) and the dependency sink
+ * @returns The declaring file's absolute path, or `null`
+ */
+export function resolveDeclarationFile(
+	fileAbs: string,
+	exportedName: string,
+	options?: { readonly sources?: ReadonlyMap<string, string>; readonly dependencies?: Set<string> },
+): string | null {
+	if (isTemplateComponentFile(fileAbs)) {
+		return fileAbs;
+	}
+	const env: DeclarationEnv = { sources: options?.sources, dependencies: options?.dependencies };
+	return resolveExportedName(fileAbs, exportedName, new Set(), env)?.fileAbs ?? null;
 }
 
 const TEMPLATE_COMPONENT_EXTENSIONS = new Set(['.vue', '.svelte', '.astro']);
@@ -201,26 +241,29 @@ function isTemplateComponentFile(filePath: string): boolean {
 
 /**
  * Template components (Vue/Svelte/Astro) are one-file-one-component: the
- * scanner keys them by file path directly, not by an exported name, so there is
+ * scanner keys them by file path directly (a {@link Declaration} without a
+ * `localName`), not by an exported name, so there is
  * no export table to consult — the resolved file path *is* the key. Every place
  * that resolves a module specifier has to check for this before falling through
  * to export-table lookup, or the SFC's raw text gets parsed as TypeScript in
  * search of a table it can never have.
  */
-function templateComponentKey(fileAbs: string, cwd: string): string {
-	return normalizePath(path.relative(cwd, fileAbs));
+function declarationKey(declaration: Declaration, cwd: string): string {
+	const fileRel = normalizePath(path.relative(cwd, declaration.fileAbs));
+	return declaration.localName == null ? fileRel : `${fileRel}#${declaration.localName}`;
 }
 
 /**
  * Resolves `exportedName` in the file at `fileAbs` down to a local declaration,
- * following `export { X } from '...'` re-export chains up to a depth limit.
+ * following `export { X } from '...'` and `export * from '...'` re-export
+ * chains up to a depth limit.
  */
 function resolveExportedName(
 	fileAbs: string,
 	exportedName: string,
 	visited: Set<string>,
-	env: ResolveEnv,
-): string | null {
+	env: DeclarationEnv,
+): Declaration | null {
 	if (visited.size >= MAX_RE_EXPORT_DEPTH) {
 		return null;
 	}
@@ -231,26 +274,72 @@ function resolveExportedName(
 	visited.add(visitKey);
 
 	const table = getExportTableForFile(fileAbs, env);
-	const entry = table?.byName.get(exportedName);
-	if (!entry) {
+	if (!table) {
 		return null;
 	}
-
-	const fileRel = normalizePath(path.relative(env.cwd, fileAbs));
+	const entry = table.byName.get(exportedName);
+	if (!entry) {
+		return resolveThroughStarReExports(fileAbs, table.starReExportSources, exportedName, visited, env);
+	}
 
 	if (entry.kind === 'local') {
-		return `${fileRel}#${entry.localName}`;
+		return { fileAbs, localName: entry.localName };
 	}
 
 	return resolveReExport(fileAbs, entry, visited, env);
+}
+
+/**
+ * Looks `exportedName` up behind the `export * from '...'` statements of a file
+ * that does not export it by name. As in ECMAScript, `default` never passes
+ * through `export *`, and a name that two of them supply differently is
+ * ambiguous: neither is picked, so the caller falls back as it does for any
+ * unconfirmed name. Each branch gets its own copy of `visited`, so that the
+ * depth limit counts the hops of one chain and not the breadth of a barrel.
+ */
+function resolveThroughStarReExports(
+	fileAbs: string,
+	starSources: readonly string[],
+	exportedName: string,
+	visited: ReadonlySet<string>,
+	env: DeclarationEnv,
+): Declaration | null {
+	if (exportedName === 'default') {
+		return null;
+	}
+
+	let found: Declaration | null = null;
+	for (const source of starSources) {
+		const nextAbs = resolveModuleFile(fileAbs, source, env.dependencies);
+		// A template component exports `default` only, which `export *` skips. A
+		// package holds no scanned component (the walk does not enter
+		// `node_modules` either), and its own star re-exports can be wide and deep
+		// enough to search on every miss of a name.
+		if (!nextAbs || isTemplateComponentFile(nextAbs) || normalizePath(nextAbs).includes('/node_modules/')) {
+			continue;
+		}
+		const declaration = resolveExportedName(nextAbs, exportedName, new Set(visited), env);
+		if (declaration == null) {
+			continue;
+		}
+		if (
+			found != null &&
+			(normalizePath(found.fileAbs) !== normalizePath(declaration.fileAbs) ||
+				found.localName !== declaration.localName)
+		) {
+			return null;
+		}
+		found = declaration;
+	}
+	return found;
 }
 
 function resolveReExport(
 	fileAbs: string,
 	entry: Extract<ExportEntry, { kind: 're-export' }>,
 	visited: Set<string>,
-	env: ResolveEnv,
-): string | null {
+	env: DeclarationEnv,
+): Declaration | null {
 	if (entry.importedName === '*') {
 		// Namespace re-export target — no single member to pin to.
 		return null;
@@ -268,7 +357,7 @@ function resolveReExport(
 		// name index, silently resolving to whichever same-named component happened
 		// to be registered first — the exact failure issue #3951 fixed for direct
 		// imports.
-		return templateComponentKey(nextAbs, env.cwd);
+		return { fileAbs: nextAbs, localName: null };
 	}
 
 	return resolveExportedName(nextAbs, entry.importedName, visited, env);
@@ -328,7 +417,7 @@ export function clearExportTableCache() {
  * on both would mean giving up freshness there or paying per-reference I/O here.
  * The two look alike but answer different questions; keep them separate.
  */
-function getExportTableForFile(fileAbs: string, env: ResolveEnv) {
+function getExportTableForFile(fileAbs: string, env: DeclarationEnv) {
 	const key = normalizePath(fileAbs);
 	// Recorded before the cache is consulted: a hit reads nothing, yet the result
 	// still depends on this file.

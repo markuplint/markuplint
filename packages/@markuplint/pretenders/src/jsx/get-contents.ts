@@ -1,9 +1,12 @@
 import type { Root } from './collect-roots.js';
 import type { PropResolver } from './resolve-prop.js';
 import type { ContentEntry, SlotInfo } from '../contents.js';
+import type { NamespaceURI } from '@markuplint/ml-ast';
 import type { PretenderContent, Slot } from '@markuplint/ml-config';
 import type { JsxChild, JsxElement, JsxOpeningElement, JsxTagNameExpression, Node, SourceFile } from 'typescript';
 
+import { uriToPretenderNamespace } from '@markuplint/ml-config';
+import { getNamespaceBelow } from '@markuplint/parser-utils';
 import ts from 'typescript';
 
 import { isTrivialContents, resolveTextEntries } from '../contents.js';
@@ -42,9 +45,11 @@ export function getSlotInfo(
 
 	const rootElement = root.type === 'element' ? (root.element as JsxOpeningElement) : undefined;
 	const children = root.type === 'element' ? (root.element.parent as JsxElement).children : root.children;
+	const rootName =
+		rootElement && isIntrinsicTag(rootElement.tagName) ? rootElement.tagName.getText(sourceFile) : null;
 
 	const wrappers = findWrappers(children, sourceFile, isFragmentTag);
-	const others = [...wrappers].filter((wrapper): wrapper is JsxOpeningElement => wrapper !== null);
+	const others = [...wrappers.keys()].filter((wrapper): wrapper is JsxOpeningElement => wrapper !== null);
 
 	if (wrappers.size === 0) {
 		return { slots: null, contents: toContents(children, sourceFile, isFragmentTag, resolveProp) };
@@ -60,7 +65,15 @@ export function getSlotInfo(
 
 	const slots = [
 		...(wrappers.has(null) ? [toSlot(rootElement, sourceFile, isFragmentTag, resolveProp)] : []),
-		...others.map(wrapper => toSlot(wrapper, sourceFile, isFragmentTag, resolveProp)),
+		...others.map(wrapper =>
+			toSlot(
+				wrapper,
+				sourceFile,
+				isFragmentTag,
+				resolveProp,
+				getNamespaceBelow(rootName, wrappers.get(wrapper) ?? []) ?? undefined,
+			),
+		),
 	];
 	return { slots, contents: [] };
 }
@@ -69,38 +82,49 @@ export function getSlotInfo(
  * `null` stands for the root; anything else is the opening element that
  * directly contains the reference. A provider (`asFragment`) is not a wrapper.
  * The attributes of an element are not content, so `data-ref={children}` is not a slot.
+ *
+ * Each wrapper maps to the names of the elements from the child of the root down to it,
+ * for its namespace (a component is `null`, as it does not enter a namespace by its name).
  */
 function findWrappers(
 	children: readonly JsxChild[],
 	sourceFile: SourceFile,
 	isFragmentTag: (tag: string) => boolean,
-): Set<JsxOpeningElement | null> {
-	const wrappers = new Set<JsxOpeningElement | null>();
+): Map<JsxOpeningElement | null, readonly (string | null)[]> {
+	const wrappers = new Map<JsxOpeningElement | null, readonly (string | null)[]>();
 
 	const walk = (
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		node: Node,
 		wrapper: JsxOpeningElement | null,
+		path: readonly (string | null)[],
 	) => {
 		if (isJsxAttributes(node) || isJsxSelfClosingElement(node)) {
 			return;
 		}
 		if (isJsxElement(node)) {
-			const next = isFragmentTag(node.openingElement.tagName.getText(sourceFile)) ? wrapper : node.openingElement;
+			const tagName = node.openingElement.tagName.getText(sourceFile);
+			if (isFragmentTag(tagName)) {
+				for (const child of node.children) {
+					walk(child, wrapper, path);
+				}
+				return;
+			}
+			const childPath = [...path, isIntrinsicTag(node.openingElement.tagName) ? tagName : null];
 			for (const child of node.children) {
-				walk(child, next);
+				walk(child, node.openingElement, childPath);
 			}
 			return;
 		}
 		if (isChildrenReference(node)) {
-			wrappers.add(wrapper);
+			wrappers.set(wrapper, path);
 			return;
 		}
-		forEachChild(node, child => walk(child, wrapper));
+		forEachChild(node, child => walk(child, wrapper, path));
 	};
 
 	for (const child of children) {
-		walk(child, null);
+		walk(child, null, []);
 	}
 	return wrappers;
 }
@@ -190,14 +214,17 @@ function collectContents(
 }
 
 /**
- * A native slot wrapper is described with its attributes and content. A component
- * has neither: what it renders is unknown here, so it stays a name that no spec knows.
+ * A native slot wrapper is described with its attributes and content, and with its
+ * namespace when the elements between it and the root decide it (see `getNamespaceBelow`).
+ * A component has none of them: what it renders is unknown here, so it stays a name that
+ * no spec knows.
  */
 function toSlot(
 	opening: JsxOpeningElement,
 	sourceFile: SourceFile,
 	isFragmentTag: (tag: string) => boolean,
 	resolveProp: PropResolver | undefined,
+	namespace?: NamespaceURI,
 ): Slot {
 	const element = opening.tagName.getText(sourceFile);
 	if (!isIntrinsicTag(opening.tagName)) {
@@ -206,8 +233,10 @@ function toSlot(
 
 	const attrs = toPretenderAttrs(getAttributes(opening, sourceFile, resolveProp));
 	const contents = toContents((opening.parent as JsxElement).children, sourceFile, isFragmentTag, resolveProp);
+	const namespaceName = namespace ? uriToPretenderNamespace(namespace) : undefined;
 	return {
 		element,
+		...(namespaceName ? { namespace: namespaceName } : {}),
 		...(attrs.length > 0 ? { attrs } : {}),
 		...(isTrivialContents(contents) ? {} : { contents }),
 	};

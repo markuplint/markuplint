@@ -15,6 +15,7 @@
  */
 export * from './merge-config.js';
 export * from './pretender-file-path.js';
+export * from './pretender-namespace.js';
 export * from './rule-aliases.js';
 export * from './utils.js';
 export type * from './types.js';

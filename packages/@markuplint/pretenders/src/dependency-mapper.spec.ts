@@ -1,13 +1,14 @@
 import type { PretenderDirectorMap } from './pretender-director.js';
 
 import fs from 'node:fs';
-import { writeFile, mkdtemp, rm } from 'node:fs/promises';
+import { mkdir, writeFile, mkdtemp, rm } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
 import { describe, test, expect, afterEach, beforeEach, vi } from 'vitest';
 
 import { clearExportTableCache, dependencyMapper } from './dependency-mapper.js';
+import { normalizePath } from './import-resolver/resolve-module-file.js';
 
 const fixtureDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures', 'dependency-mapper');
 
@@ -463,6 +464,94 @@ describe('dependencyMapper', () => {
 			const result = dependencyMapper(map, nameIndex);
 			const c = result.find(p => p.selector === 'C');
 			expect(c).toStrictEqual({ selector: 'C', as: 'button', _via: ['Item'] });
+		});
+	});
+
+	describe('star re-exports', () => {
+		let tmpDir: string;
+
+		beforeEach(async () => {
+			tmpDir = await mkdtemp(path.join(os.tmpdir(), 'dependency-mapper-star-'));
+		});
+
+		afterEach(async () => {
+			await rm(tmpDir, { recursive: true, force: true });
+			clearExportTableCache();
+		});
+
+		// `c.tsx` renders `Item` imported from `./barrel`; the name index points
+		// at `other.tsx#Item`, which is what an unconfirmed lookup falls back to.
+		const resolveC = (importedName: string, type: 'named' | 'default') => {
+			const map: PretenderDirectorMap = new Map([
+				['a.tsx#Item', ['Item', 'button', undefined, 'a.tsx']],
+				['b.tsx#Item', ['Item', 'em', undefined, 'b.tsx']],
+				['other.tsx#Item', ['Item', 'li', undefined, 'other.tsx']],
+				['c.tsx#C', ['C', 'Item', undefined, 'c.tsx']],
+			]);
+			const nameIndex = new Map([['Item', 'other.tsx#Item']]);
+			const importsByFile = new Map([['c.tsx', [{ localName: 'Item', importedName, source: './barrel', type }]]]);
+			const result = dependencyMapper(map, nameIndex, { importsByFile, cwd: tmpDir });
+			return result.find(p => p.selector === 'C');
+		};
+
+		test('resolves a name through `export * from`', async () => {
+			await writeFile(path.join(tmpDir, 'a.tsx'), 'export const Item = () => <button />;');
+			await writeFile(path.join(tmpDir, 'barrel.ts'), "export * from './a';");
+
+			expect(resolveC('Item', 'named')).toStrictEqual({ selector: 'C', as: 'button', _via: ['Item'] });
+		});
+
+		test('a name supplied by two star re-exports is ambiguous and not picked', async () => {
+			await writeFile(path.join(tmpDir, 'a.tsx'), 'export const Item = () => <button />;');
+			await writeFile(path.join(tmpDir, 'b.tsx'), 'export const Item = () => <em />;');
+			await writeFile(path.join(tmpDir, 'barrel.ts'), "export * from './a';\nexport * from './b';");
+
+			expect(resolveC('Item', 'named')).toStrictEqual({ selector: 'C', as: 'li', _via: ['Item'] });
+		});
+
+		test('`default` does not pass through `export *`', async () => {
+			await writeFile(path.join(tmpDir, 'a.tsx'), 'const Item = () => <button />;\nexport default Item;');
+			await writeFile(path.join(tmpDir, 'barrel.ts'), "export * from './a';");
+
+			expect(resolveC('default', 'default')).toStrictEqual({ selector: 'C', as: 'li', _via: ['Item'] });
+		});
+
+		test('does not look behind a star re-export of a package in node_modules', async () => {
+			const libDir = path.join(tmpDir, 'node_modules', 'some-lib');
+			await mkdir(libDir, { recursive: true });
+			await writeFile(path.join(libDir, 'package.json'), '{"name":"some-lib","main":"index.js"}');
+			await writeFile(path.join(libDir, 'index.js'), 'export const Other = () => null;');
+			await writeFile(path.join(tmpDir, 'a.tsx'), 'export const Item = () => <button />;');
+			await writeFile(path.join(tmpDir, 'barrel.ts'), "export * from 'some-lib';\nexport * from './a';");
+
+			const readFileSyncSpy = vi.spyOn(fs, 'readFileSync');
+			try {
+				expect(resolveC('Item', 'named')).toStrictEqual({ selector: 'C', as: 'button', _via: ['Item'] });
+				// Module resolution reads the package's `package.json`; its export table
+				// is what must not be built.
+				const libReads = readFileSyncSpy.mock.calls.filter(
+					call =>
+						typeof call[0] === 'string' &&
+						normalizePath(call[0]).endsWith('/node_modules/some-lib/index.js'),
+				);
+				expect(libReads).toStrictEqual([]);
+			} finally {
+				readFileSyncSpy.mockRestore();
+			}
+		});
+
+		test('the depth limit counts one chain, not the number of star re-exports in a barrel', async () => {
+			const STAR_COUNT = 12;
+			const lines: string[] = [];
+			for (let i = 0; i < STAR_COUNT - 1; i++) {
+				await writeFile(path.join(tmpDir, `x${i}.tsx`), `export const X${i} = () => <i />;`);
+				lines.push(`export * from './x${i}';`);
+			}
+			await writeFile(path.join(tmpDir, 'a.tsx'), 'export const Item = () => <button />;');
+			lines.push("export * from './a';");
+			await writeFile(path.join(tmpDir, 'barrel.ts'), lines.join('\n'));
+
+			expect(resolveC('Item', 'named')).toStrictEqual({ selector: 'C', as: 'button', _via: ['Item'] });
 		});
 	});
 

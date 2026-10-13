@@ -35,6 +35,50 @@ AIアシスタントに、プロジェクトに合わせたMarkuplintの設定�
 `npx markuplint --init` は対話式のため、手動入力が必要です。AIエージェントは設定ファイルを直接書く方が確実です。パーサーとスペックパッケージについては[HTML以外で使う](/docs/guides/beyond-html)を参照してください。
 :::
 
+## 言語サーバー
+
+エージェントの中には、言語サーバーをバックグラウンドで起動し、編集のたびにその診断を読み取るものがあります。CLIを実行しなくても、違反がエージェントに届きます。`@markuplint/language-server` はそのためにMarkuplintを提供します。
+
+```shell
+npm install --save-dev @markuplint/language-server
+```
+
+サーバーは `markuplint-language-server --stdio` です。設定は不要で、プロジェクトの設定ファイルでリントし、なければCLIと同じく `markuplint:recommended` を使います。どのファイルをサーバーに渡すかはクライアントが決めるため、リント対象の拡張子を列挙してください。
+
+### Claude Code
+
+Claude Codeは言語サーバーをプラグイン経由で登録します。`.lsp.json` を置いたディレクトリを作り、`claude --plugin-dir <ディレクトリ>` で読み込みます:
+
+```json title=".lsp.json"
+{
+  "markuplint": {
+    "command": "npx",
+    "args": ["markuplint-language-server", "--stdio"],
+    "extensionToLanguage": { ".html": "html" }
+  }
+}
+```
+
+Claude Codeは拡張子ごとに1つのサーバーしか使いません。ほかの言語サーバーがすでに担当している拡張子は含めないでください。
+
+### OpenCode
+
+OpenCodeがモデルに渡すのは `error` の診断だけです。`severityMap` を使うと、Markuplintの警告をエラーとして報告し直せます:
+
+```json title="opencode.json"
+{
+  "lsp": {
+    "markuplint": {
+      "command": ["npx", "markuplint-language-server", "--stdio"],
+      "extensions": [".html"],
+      "initialization": { "severityMap": { "warning": "error" } }
+    }
+  }
+}
+```
+
+Neovimやそのほかのオプションは[パッケージのREADME](https://github.com/markuplint/markuplint/tree/main/packages/@markuplint/language-server)を参照してください。
+
 ## Claude Code 向けスキル
 
 Markuplintは[Claude Code](https://claude.ai/claude-code)向けのインストール可能な[スキル](https://github.com/markuplint/markuplint/tree/dev/skills)を提供しています。エージェントがよくあるワークフローをガイドします。

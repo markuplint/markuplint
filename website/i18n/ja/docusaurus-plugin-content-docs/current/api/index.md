@@ -83,7 +83,8 @@ console.log(result.violations);
 
 ### ユーティリティ
 
-| パッケージ                                                                                                       | NPM                                                                                                                              |
-| ---------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| [`@markuplint/pretenders`](https://github.com/markuplint/markuplint/tree/main/packages/@markuplint/pretenders)   | [![npm version](https://badge.fury.io/js/%40markuplint%2Fpretenders.svg)](https://badge.fury.io/js/%40markuplint%2Fpretenders)   |
-| [`@markuplint/create-rule`](https://github.com/markuplint/markuplint/tree/main/packages/@markuplint/create-rule) | [![npm version](https://badge.fury.io/js/%40markuplint%2Fcreate-rule.svg)](https://badge.fury.io/js/%40markuplint%2Fcreate-rule) |
+| パッケージ                                                                                                               | NPM                                                                                                                                      |
+| ------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| [`@markuplint/pretenders`](https://github.com/markuplint/markuplint/tree/main/packages/@markuplint/pretenders)           | [![npm version](https://badge.fury.io/js/%40markuplint%2Fpretenders.svg)](https://badge.fury.io/js/%40markuplint%2Fpretenders)           |
+| [`@markuplint/create-rule`](https://github.com/markuplint/markuplint/tree/main/packages/@markuplint/create-rule)         | [![npm version](https://badge.fury.io/js/%40markuplint%2Fcreate-rule.svg)](https://badge.fury.io/js/%40markuplint%2Fcreate-rule)         |
+| [`@markuplint/language-server`](https://github.com/markuplint/markuplint/tree/main/packages/@markuplint/language-server) | [![npm version](https://badge.fury.io/js/%40markuplint%2Flanguage-server.svg)](https://badge.fury.io/js/%40markuplint%2Flanguage-server) |

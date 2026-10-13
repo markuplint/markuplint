@@ -1,0 +1,24 @@
+{
+	"extends": "../../../tsconfig.json",
+	"compilerOptions": {
+		"composite": true,
+		"resolveJsonModule": true
+	},
+	"references": [
+		{
+			"path": "../file-resolver"
+		},
+		{
+			"path": "../i18n"
+		},
+		{
+			"path": "../ml-config"
+		},
+		{
+			"path": "../ml-spec"
+		},
+		{
+			"path": "../../markuplint"
+		}
+	]
+}

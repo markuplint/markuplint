@@ -2,7 +2,7 @@ import { describe, test, expect } from 'vitest';
 
 import ts from 'typescript';
 
-import { getExportTable } from './export-table.js';
+import { getExportTable, getReExportSources } from './export-table.js';
 
 function sourceFile(code: string) {
 	return ts.createSourceFile('test.tsx', code, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
@@ -67,5 +67,69 @@ describe('getExportTable', () => {
 		expect(table.byName.get('A')).toStrictEqual({ kind: 'local', localName: 'A' });
 		expect(table.byName.get('B')).toStrictEqual({ kind: 'local', localName: 'B' });
 		expect(table.byName.get('default')).toStrictEqual({ kind: 'local', localName: 'A' });
+	});
+
+	describe('type-only exports carry no component and are not recorded', () => {
+		test('export type { X } from', () => {
+			const table = getExportTable(sourceFile("export type { Props } from './a';"));
+			expect(table.byName.has('Props')).toBe(false);
+		});
+
+		test('export { type X } from, next to a value specifier', () => {
+			const table = getExportTable(sourceFile("export { type Props, Item } from './a';"));
+			expect(table.byName.has('Props')).toBe(false);
+			expect(table.byName.get('Item')).toStrictEqual({ kind: 're-export', source: './a', importedName: 'Item' });
+		});
+
+		test('export type * from', () => {
+			const table = getExportTable(sourceFile("export type * from './a';"));
+			expect(table.starReExportSources).toStrictEqual([]);
+		});
+
+		test('export type * as ns from', () => {
+			const table = getExportTable(sourceFile("export type * as NS from './a';"));
+			expect(table.byName.has('NS')).toBe(false);
+		});
+
+		test('export type { X } of a local binding', () => {
+			const table = getExportTable(sourceFile('type Props = {};\nexport type { Props };'));
+			expect(table.byName.has('Props')).toBe(false);
+		});
+	});
+});
+
+describe('getReExportSources', () => {
+	const sources = (code: string) => getReExportSources(getExportTable(sourceFile(code)));
+
+	test('named re-export', () => {
+		expect(sources("export { Link, IconButton } from './Base';")).toStrictEqual(['./Base', './Base']);
+	});
+
+	test('aliased and default re-exports', () => {
+		expect(
+			sources("export { default as Button } from './Button';\nexport { Item as ListItem } from './Item';"),
+		).toStrictEqual(['./Button', './Item']);
+	});
+
+	test('star re-export', () => {
+		expect(sources("export * from './a';")).toStrictEqual(['./a']);
+	});
+
+	test('namespace re-export', () => {
+		expect(sources("export * as NS from './a';")).toStrictEqual(['./a']);
+	});
+
+	test('type-only re-exports are skipped', () => {
+		expect(
+			sources("export type { Props } from './a';\nexport type * from './b';\nexport { type Props2 } from './c';"),
+		).toStrictEqual([]);
+	});
+
+	test('local exports and imports contribute nothing', () => {
+		expect(
+			sources(
+				"import { A } from './a';\nconst B = () => <b />;\nexport { A, B };\nexport const C = () => <i />;",
+			),
+		).toStrictEqual([]);
 	});
 });

@@ -15,10 +15,10 @@ jobs:
     dev-setup:
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+            - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
 
             - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
-              uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+              uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
               with:
                   node-version: ${{ env.NODE_BUILD_VERSION }}
 
@@ -29,7 +29,7 @@ jobs:
 
             - name: Cache Restore website dependencies
               id: cache-restore-website
-              uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
+              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
               with:
                   path: 'website/node_modules'
                   key: website-depends-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('website/yarn.lock') }}
@@ -40,7 +40,7 @@ jobs:
 
             - name: Cache Save website dependencies
               if: steps.cache-restore-website.outputs.cache-hit != 'true'
-              uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
+              uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
               with:
                   path: 'website/node_modules'
                   key: website-depends-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('website/yarn.lock') }}
@@ -49,10 +49,10 @@ jobs:
         needs: dev-setup
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+            - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
 
             - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
-              uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+              uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
               with:
                   node-version: ${{ env.NODE_BUILD_VERSION }}
 
@@ -62,7 +62,7 @@ jobs:
                   yarn --version
 
             - name: Cache Restore website dependencies
-              uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
+              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
               with:
                   path: 'website/node_modules'
                   key: website-depends-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('website/yarn.lock') }}

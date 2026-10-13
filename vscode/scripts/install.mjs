@@ -18,10 +18,12 @@
  */
 
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
-import { execSync } from 'node:child_process';
+import { execFileSync, execSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
+import { pointDependencyAtTarball } from './point-dependency-at-tarball.mjs';
 import { resolveMode } from './resolve-mode.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -31,6 +33,12 @@ const rootDir = path.join(__dirname, '../..');
 const packageJsonPath = path.join(rootDir, 'package.json');
 const backupPath = path.join(rootDir, 'package.json.bak');
 const vscodeDir = path.join(rootDir, 'vscode');
+const vscodePackageJsonPath = path.join(vscodeDir, 'package.json');
+const languageServerDir = path.join(rootDir, 'packages', '@markuplint', 'language-server');
+
+// State that the `finally` block restores
+let vscodePackageJsonOriginal = null;
+let packDir = null;
 
 let mode;
 try {
@@ -53,15 +61,46 @@ try {
 	packageJson.workspaces = packageJson.workspaces.filter(ws => ws !== 'vscode');
 	fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n');
 
-	// 3. Clean vscode node_modules
-	console.log('3. Cleaning vscode node_modules...');
+	// 3. Pack the language server of this checkout and point the extension at the tarball.
+	// Installed from the registry it would be the published build, or nothing at all while the
+	// version is still being prepared, so what the commit holds would never reach the VSIX.
+	console.log('3. Packing the language server...');
+	if (!fs.existsSync(path.join(languageServerDir, 'lib', 'server', 'index.js'))) {
+		throw new Error('@markuplint/language-server is not built. Run `yarn build` first.');
+	}
+	packDir = fs.mkdtempSync(path.join(os.tmpdir(), 'markuplint-vscode-pack-'));
+	const [packed] = JSON.parse(
+		execFileSync('npm', ['pack', '--json', '--pack-destination', packDir], {
+			cwd: languageServerDir,
+			encoding: 'utf8',
+			shell: process.platform === 'win32',
+		}),
+	);
+	const packedPaths = packed.files.map(file => file.path);
+	if (!packedPaths.includes('lib/server/index.js')) {
+		throw new Error(
+			`The tarball of @markuplint/language-server has no lib/server/index.js. It holds: ${packedPaths.join(', ')}`,
+		);
+	}
+	vscodePackageJsonOriginal = fs.readFileSync(vscodePackageJsonPath, 'utf8');
+	fs.writeFileSync(
+		vscodePackageJsonPath,
+		pointDependencyAtTarball(
+			vscodePackageJsonOriginal,
+			'@markuplint/language-server',
+			path.join(packDir, packed.filename),
+		),
+	);
+
+	// 4. Clean vscode node_modules
+	console.log('4. Cleaning vscode node_modules...');
 	const nodeModulesPath = path.join(vscodeDir, 'node_modules');
 	if (fs.existsSync(nodeModulesPath)) {
 		execSync(`rm -rf "${nodeModulesPath}"`, { stdio: 'inherit' });
 	}
 
-	// 4. Install dependencies
-	console.log('4. Installing dependencies...');
+	// 5. Install dependencies
+	console.log('5. Installing dependencies...');
 	// Try yarn first, fallback to npm
 	try {
 		console.log('Trying yarn install...');
@@ -71,16 +110,16 @@ try {
 		execSync('npm install', { cwd: vscodeDir, stdio: 'inherit' });
 	}
 
-	// 5. Build extension
-	console.log('5. Building extension...');
+	// 6. Build extension
+	console.log('6. Building extension...');
 	execSync('npm run vscode:build', { cwd: vscodeDir, stdio: 'inherit' });
 
-	// 6. Run vscode command
-	console.log(`6. Running vscode:${mode}...`);
+	// 7. Run vscode command
+	console.log(`7. Running vscode:${mode}...`);
 	execSync(`npm run vscode:${mode}`, { cwd: vscodeDir, stdio: 'inherit' });
 
-	// 7. Clean up package-lock.json
-	console.log('7. Cleaning up package-lock.json...');
+	// 8. Clean up package-lock.json
+	console.log('8. Cleaning up package-lock.json...');
 	const packageLockPath = path.join(vscodeDir, 'package-lock.json');
 	if (fs.existsSync(packageLockPath)) {
 		fs.unlinkSync(packageLockPath);
@@ -95,11 +134,18 @@ try {
 	// Set exit code but don't exit immediately - let finally block run
 	process.exitCode = 1;
 } finally {
-	// 8. Always restore package.json
-	console.log('8. Restoring package.json...');
+	// 9. Always restore package.json and remove the tarball
+	console.log('9. Restoring package.json...');
 	if (fs.existsSync(backupPath)) {
 		fs.copyFileSync(backupPath, packageJsonPath);
 		fs.unlinkSync(backupPath);
 		console.log('✅ package.json restored successfully');
+	}
+	if (vscodePackageJsonOriginal !== null) {
+		fs.writeFileSync(vscodePackageJsonPath, vscodePackageJsonOriginal);
+		console.log('✅ vscode/package.json restored successfully');
+	}
+	if (packDir !== null) {
+		fs.rmSync(packDir, { recursive: true, force: true });
 	}
 }
