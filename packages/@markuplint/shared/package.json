@@ -31,6 +31,6 @@
 		"clean": "tsc --build --clean tsconfig.build.json"
 	},
 	"dependencies": {
-		"html-entities": "2.6.0"
+		"html-entities": "^2.6.0"
 	}
 }

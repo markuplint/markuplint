@@ -45,11 +45,11 @@
 		"@markuplint/i18n": "5.1.1",
 		"@markuplint/ml-config": "5.1.1",
 		"@markuplint/ml-spec": "5.1.1",
-		"debug": "4.4.3",
+		"debug": "^4.4.3",
 		"markuplint": "5.1.1",
-		"semver": "7.8.5",
-		"vscode-languageserver": "9.0.1",
-		"vscode-languageserver-textdocument": "1.0.15"
+		"semver": "^7.8.5",
+		"vscode-languageserver": "^9.0.1",
+		"vscode-languageserver-textdocument": "^1.0.15"
 	},
 	"devDependencies": {
 		"@types/debug": "4.1.13",

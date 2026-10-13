@@ -46,13 +46,13 @@
 		"@markuplint/ml-spec": "5.1.1",
 		"@markuplint/rules": "5.1.1",
 		"@markuplint/shared": "5.1.1",
-		"@types/debug": "4.1.13",
-		"chokidar": "5.0.0",
-		"debug": "4.4.3",
-		"meow": "14.1.0",
-		"os-locale": "8.0.0",
-		"strict-event-emitter": "0.5.1",
-		"strip-ansi": "7.2.0",
-		"type-fest": "5.10.0"
+		"@types/debug": "^4.1.13",
+		"chokidar": "^5.0.0",
+		"debug": "^4.4.3",
+		"meow": "^14.1.0",
+		"os-locale": "^8.0.0",
+		"strict-event-emitter": "^0.5.1",
+		"strip-ansi": "^7.2.0",
+		"type-fest": "^5.10.0"
 	}
 }
