@@ -19,6 +19,7 @@ use crate::rules::class_naming::ClassNaming;
 use crate::rules::deprecated_attr::DeprecatedAttr;
 use crate::rules::deprecated_element::DeprecatedElement;
 use crate::rules::doctype::Doctype;
+use crate::rules::element_supports_aria_prop::ElementSupportsAriaProp;
 use crate::rules::label_has_control::LabelHasControl;
 use crate::rules::landmark_roles::LandmarkRoles;
 use crate::rules::link_types::LinkTypes;
@@ -27,6 +28,7 @@ use crate::rules::no_ambiguous_navigable_target_names::NoAmbiguousNavigableTarge
 use crate::rules::no_aria_on_unsupported_element::NoAriaOnUnsupportedElement;
 use crate::rules::no_boolean_attr_value::NoBooleanAttrValue;
 use crate::rules::no_consecutive_br::NoConsecutiveBr;
+use crate::rules::no_contradictory_aria_prop::NoContradictoryAriaProp;
 use crate::rules::no_default_aria_value::NoDefaultAriaValue;
 use crate::rules::no_default_value::NoDefaultValue;
 use crate::rules::no_deprecated_aria_prop::NoDeprecatedAriaProp;
@@ -42,8 +44,10 @@ use crate::rules::no_ineffective_attr::NoIneffectiveAttr;
 use crate::rules::no_invalid_aria_prop_value::NoInvalidAriaPropValue;
 use crate::rules::no_invalid_attr_value::NoInvalidAttrValue;
 use crate::rules::no_orphaned_end_tag::NoOrphanedEndTag;
+use crate::rules::no_prohibited_naming::NoProhibitedNaming;
 use crate::rules::no_pseudo_list::NoPseudoList;
 use crate::rules::no_redundant_accessible_name::NoRedundantAccessibleName;
+use crate::rules::no_redundant_aria_prop::NoRedundantAriaProp;
 use crate::rules::no_redundant_role::NoRedundantRole;
 use crate::rules::no_refer_to_non_existent_id::NoReferToNonExistentId;
 use crate::rules::no_restricted_attr::NoRestrictedAttr;
@@ -63,6 +67,7 @@ use crate::rules::require_dialog_autofocus::RequireDialogAutofocus;
 use crate::rules::require_element::RequireElement;
 use crate::rules::require_end_tag::RequireEndTag;
 use crate::rules::required_h1::RequiredH1;
+use crate::rules::role_supports_aria_prop::RoleSupportsAriaProp;
 use crate::rules::srcset_sizes_constraint::SrcsetSizesConstraint;
 use crate::rules::table_row_column_alignment::TableRowColumnAlignment;
 use crate::rules::wai_aria::WaiAria;
@@ -601,6 +606,11 @@ fn get_all_rules() -> Vec<Box<dyn Rule>> {
         Box::new(NoInvalidAriaPropValue),
         Box::new(NoDefaultAriaValue),
         Box::new(AriaPropRequiresRole),
+        Box::new(NoProhibitedNaming),
+        Box::new(ElementSupportsAriaProp),
+        Box::new(RoleSupportsAriaProp),
+        Box::new(NoRedundantAriaProp),
+        Box::new(NoContradictoryAriaProp),
     ]
 }
 

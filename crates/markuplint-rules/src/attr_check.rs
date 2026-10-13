@@ -145,6 +145,48 @@ pub(crate) fn walk_attrs<O>(
     violations
 }
 
+/// Runs `f` with an [`AttrCheckContext`] for the element of `element`, for a rule that walks
+/// elements itself ([`crate::aria_check::walk_elements`]) but asks the spec about attributes the
+/// way the attribute rules do.
+pub(crate) fn with_element_attr_context<R>(
+    element: &crate::aria_check::ElementContext<'_>,
+    f: impl FnOnce(&AttrCheckContext<'_>) -> R,
+) -> R {
+    let attr_specs = get_attr_specs(element.spec, element.el_name);
+    let global_attr_names = get_global_attr_names(element.spec, element.el_name);
+    f(&AttrCheckContext {
+        spec: element.spec,
+        arena: element.arena,
+        node_id: element.node_id,
+        el_name: element.el_name,
+        element_type: element.el.element_type.clone(),
+        attr_specs: &attr_specs,
+        global_attr_names: &global_attr_names,
+        rule_id: element.rule_id,
+        severity: &element.severity,
+    })
+}
+
+/// Whether the merged attribute spec named `name` (an element-specific entry over the global
+/// one, as TS `getAttrSpecs()` builds it) has the type `Boolean`.
+///
+/// TS: `attrSpecs.find(a => a.name === name)?.type === 'Boolean'`. The name is matched exactly.
+pub(crate) fn attr_spec_is_boolean(name: &str, ctx: &AttrCheckContext<'_>) -> bool {
+    let own_type = ctx.attr_specs.get(name).map(|attr| &attr.attr_type);
+    let own_type_declared =
+        own_type.is_some_and(|t| !(t.is_null() || t.as_object().is_some_and(serde_json::Map::is_empty)));
+    if own_type_declared {
+        return own_type.and_then(serde_json::Value::as_str) == Some("Boolean");
+    }
+    if own_type.is_none() && !ctx.global_attr_names.iter().any(|n| n == name) {
+        return false;
+    }
+    find_global_attr(ctx.spec, ctx.el_name, name)
+        .and_then(|global| global.get("type"))
+        .and_then(serde_json::Value::as_str)
+        == Some("Boolean")
+}
+
 /// Resolves what the spec says about the attribute `name` on the element of `ctx`.
 ///
 /// Port of `resolveAttrEligibility()` in `attr-eligibility.ts`.

@@ -27,14 +27,15 @@ use markuplint_core::mlast::{ElementType, MLASTAttr, MLASTHTMLAttr, NamespaceURI
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::node::ElementData;
 use markuplint_selector::parser;
-use markuplint_types::spec::aria::ARIAVersion;
+use markuplint_types::spec::aria::{self, ARIAVersion};
 use markuplint_types::spec::lookup::get_spec_by_tag_name;
 use markuplint_types::spec::types::{
-    ARIAConditions, ARIAConditionsOrFalse, ARIAPropertyType, ElementARIA, ElementARIAVersionBlock, ElementSpec,
-    ImplicitRole, MLMLSpec,
+    ARIAConditions, ARIAConditionsOrFalse, ARIAPropertyType, ARIARoleInSchema, ElementARIA, ElementARIAVersionBlock,
+    ElementSpec, ImplicitRole, MLMLSpec,
 };
 use serde_json::Value;
 
+use crate::aria::computed_role::get_computed_role;
 use crate::aria_resolver_impl::SpecAriaResolver;
 use crate::rule::{RuleCommonSettings, RuleConfigSet};
 use crate::violation::{Severity, Violation};
@@ -823,6 +824,38 @@ fn parse_without_entry(entry: &Value) -> Option<WithoutEntry> {
         restriction,
         alt,
     })
+}
+
+// ============================================================
+// Computed role, property types and attribute lookup
+// ============================================================
+
+impl<'a> ElementContext<'a> {
+    /// The role spec of the element's computed role: TS `getComputedRole(specs, el, version).role`,
+    /// which is an `ARIARole` carrying `ownedProperties`. `None` when the element has no role, or
+    /// the role cannot be computed (an unknown element, an invalid `role` value).
+    pub(crate) fn computed_role(&self) -> Option<&'a ARIARoleInSchema> {
+        let computed = get_computed_role(self.spec, self.arena, self.node_id, self.version, false);
+        let role = computed.role?;
+        aria::get_role_spec(self.spec, &role.name, self.version)
+    }
+
+    /// `"property"` or `"state"` for the `aria-*` attribute `name`, `"property"` when the spec at
+    /// this version does not know it: TS `propSpecs.find(p => p.name === attr.name)?.type ??
+    /// 'property'`. The match is on the name as written, like TS.
+    pub(crate) fn prop_type_of(&self, name: &str) -> &'static str {
+        aria::get_aria_spec(self.spec, self.version)
+            .props
+            .iter()
+            .find(|prop| prop.name == name)
+            .map_or("property", |prop| prop_type_label(&prop.prop_type))
+    }
+}
+
+/// TS `el.getAttributeNode(name)` for an HTML attribute: the first attribute of that name,
+/// matched case-insensitively.
+pub(crate) fn find_attr<'e>(el: &'e ElementData, name: &str) -> Option<&'e MLASTHTMLAttr> {
+    html_attrs(el).find(|attr| attr_name(attr).eq_ignore_ascii_case(name))
 }
 
 #[cfg(test)]
