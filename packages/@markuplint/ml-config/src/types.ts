@@ -401,7 +401,8 @@ export type OriginalNode = {
 	 * Namespace
 	 *
 	 * Supports `"svg"` and `undefined` only.
-	 * If it is `undefined`, the namespace is HTML.
+	 * If omitted, the element inherits the rendered parent's namespace;
+	 * `svg` and `math` roots enter their foreign namespaces from HTML.
 	 */
 	readonly namespace?: 'svg';
 
