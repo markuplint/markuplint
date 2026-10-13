@@ -5,7 +5,8 @@ import type { MLASTParentNode, NamespaceURI } from '@markuplint/ml-ast';
  * Handles namespace transitions between HTML, SVG, and MathML
  * (e.g., entering `<svg>` switches to SVG namespace, `<foreignObject>` switches back to HTML).
  *
- * @param currentNodeName - The tag name of the current node, or null for anonymous nodes
+ * @param currentNodeName - The tag name of the current node, or null for anonymous nodes and
+ *   for an authored element (a component), which does not enter a namespace by its name
  * @param parentNode - The parent node in the AST, or null for root-level nodes
  * @returns The resolved namespace URI for the node
  */

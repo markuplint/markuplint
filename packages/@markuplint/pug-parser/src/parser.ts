@@ -295,13 +295,14 @@ class PugParser extends Parser<ASTNode> {
 			};
 		},
 	) {
+		const elementType = this.detectElementType(token.nodeName);
 		const startTag: MLASTElement = {
 			...token,
 			...this.createToken(token),
 			...options.overwriteProps,
 			type: 'starttag',
-			elementType: this.detectElementType(token.nodeName),
-			namespace: getNamespace(token.nodeName, token.parentNode),
+			elementType,
+			namespace: getNamespace(elementType === 'authored' ? null : token.nodeName, token.parentNode),
 			childNodes: [],
 			blockBehavior: null,
 			parentNodeUuid: token.parentNode?.uuid ?? null,
