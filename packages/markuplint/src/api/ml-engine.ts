@@ -359,7 +359,8 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 
 	/**
 	 * Attempts to execute linting via the Rust NAPI engine.
-	 * Returns `null` if the file is not eligible (framework parser, custom rules, pretenders, fix mode),
+	 * Returns `null` if the file is not eligible (framework parser, custom rules, pretenders, fix mode,
+	 * or a rule the Rust engine cannot evaluate),
 	 * in which case the caller should fall back to the TS engine.
 	 */
 	async #tryExecRustPath(fabric: MLFabric): Promise<MLResultInfo | null> {
@@ -395,6 +396,15 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		if (fabric.pretenders.length > 0) {
 			process.stderr.write(
 				`⚠ [experimental-rust-core] "${this.#file.path}" has pretenders — falling back to TypeScript engine.\n`,
+			);
+			return null;
+		}
+
+		// Fallback: the Rust engine has neither browserslist resolution nor
+		// browser-compat-data, so this rule would silently report nothing there.
+		if (enablesRule(fabric.ruleset, 'no-unsupported-browser-features')) {
+			process.stderr.write(
+				`⚠ [experimental-rust-core] "${this.#file.path}" enables no-unsupported-browser-features, which the Rust engine cannot evaluate — falling back to TypeScript engine.\n`,
 			);
 			return null;
 		}
@@ -1099,6 +1109,32 @@ async function loadNapiBinding(): Promise<NapiBinding> {
 	const mod = (await import('@markuplint/core')) as NapiBinding;
 	cachedNapi = mod;
 	return cachedNapi;
+}
+
+/**
+ * Whether `ruleset` turns the rule `ruleId` on, globally or for some nodes.
+ *
+ * The id is compared without its namespace prefix, as the Rust engine looks rules up
+ * (`html-standard/no-duplicate-attr` and `no-duplicate-attr` are the same rule).
+ */
+function enablesRule(ruleset: Partial<Readonly<Ruleset>>, ruleId: string): boolean {
+	const isOn = (config: unknown): boolean => {
+		if (config === undefined || config === false) {
+			return false;
+		}
+		if (typeof config === 'object' && config !== null) {
+			const { value, disabled } = config as { value?: unknown; disabled?: unknown };
+			return value !== false && disabled !== true;
+		}
+		return true;
+	};
+	const hasRule = (rules: Readonly<Record<string, unknown>> | undefined): boolean =>
+		Object.entries(rules ?? {}).some(([id, config]) => id.split('/').pop() === ruleId && isOn(config));
+
+	return (
+		hasRule(ruleset.rules) ||
+		[...(ruleset.nodeRules ?? []), ...(ruleset.childNodeRules ?? [])].some(node => hasRule(node.rules))
+	);
 }
 
 /**
