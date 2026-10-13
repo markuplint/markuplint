@@ -1076,10 +1076,10 @@ describe('experimentalRustCore falls back to the TypeScript engine for browser s
 	});
 });
 
-describe('experimentalRustCore falls back to the TypeScript engine when pretenders are configured', () => {
-	// The Rust engine does not apply pretenders yet: it would lint `<x-btn>` as
-	// an unknown element. `require-accessible-name` fires only when the
-	// component is read as the `<button>` it pretends to be.
+describe('experimentalRustCore applies the configured pretenders', () => {
+	// `require-accessible-name` fires only when `<x-btn>` is read as the
+	// `<button>` it pretends to be, so the violation proves the pretenders reached
+	// whichever engine linted the file.
 	const sourceCode = '<x-btn></x-btn>';
 	const config: Config = {
 		rules: { 'require-accessible-name': true },
@@ -1092,7 +1092,7 @@ describe('experimentalRustCore falls back to the TypeScript engine when pretende
 	const stderrOf = (write: { readonly mock: { readonly calls: readonly unknown[][] } }) =>
 		write.mock.calls.map(args => String(args[0])).join('');
 
-	it('lints the component as the element it pretends to be, and says why it left the Rust engine', async () => {
+	it('lints the component as the element it pretends to be without leaving the Rust engine for it', async () => {
 		const write = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
 		const file = await MLEngine.toMLFile({ sourceCode, name: 'page.html' });
 		const engine = new MLEngine(file!, {
@@ -1105,11 +1105,32 @@ describe('experimentalRustCore falls back to the TypeScript engine when pretende
 		const result = await engine.exec();
 
 		expect(result?.violations.map(v => v.ruleId)).toStrictEqual(['require-accessible-name']);
-		expect(stderrOf(write)).toContain('pretenders');
+		// Not "has pretenders": that guard is gone. A "falling back" line would mean the
+		// TS engine linted the file, which says nothing about the Rust pretender support.
+		expect(stderrOf(write)).not.toContain('falling back to TypeScript engine');
+	});
+
+	it('falls back to the TypeScript engine for a pretender the Rust engine cannot read', async () => {
+		const write = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
+		const file = await MLEngine.toMLFile({ sourceCode, name: 'page.html' });
+		const engine = new MLEngine(file!, {
+			noSearchConfig: true,
+			locale: 'en',
+			experimentalRustCore: true,
+			// `namespace` only allows 'svg' in the type, but the TS runtime accepts any value.
+			config: {
+				...config,
+				pretenders: [{ selector: 'x-btn', as: { element: 'button', namespace: 'math' } }] as never,
+			},
+		});
+
+		const result = await engine.exec();
+
+		expect(result?.violations.map(v => v.ruleId)).toStrictEqual(['require-accessible-name']);
 		expect(stderrOf(write)).toContain('falling back to TypeScript engine');
 	});
 
-	it('does not blame pretenders for leaving the Rust engine when none are configured', async () => {
+	it('lints a file without pretenders in the Rust engine', async () => {
 		const write = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
 		const file = await MLEngine.toMLFile({ sourceCode, name: 'page.html' });
 		const engine = new MLEngine(file!, {
@@ -1122,8 +1143,6 @@ describe('experimentalRustCore falls back to the TypeScript engine when pretende
 		const result = await engine.exec();
 
 		expect(result?.violations).toStrictEqual([]);
-		// Not "falling back" alone: an environment without the native addon falls
-		// back too, for a reason that has nothing to do with pretenders.
-		expect(stderrOf(write)).not.toContain('has pretenders');
+		expect(stderrOf(write)).not.toContain('falling back to TypeScript engine');
 	});
 });

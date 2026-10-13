@@ -359,7 +359,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 
 	/**
 	 * Attempts to execute linting via the Rust NAPI engine.
-	 * Returns `null` if the file is not eligible (framework parser, custom rules, pretenders, fix mode,
+	 * Returns `null` if the file is not eligible (framework parser, custom rules, fix mode,
 	 * or a rule the Rust engine cannot evaluate),
 	 * in which case the caller should fall back to the TS engine.
 	 */
@@ -386,16 +386,6 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		if (this.#hasPluginRules) {
 			process.stderr.write(
 				`⚠ [experimental-rust-core] "${this.#file.path}" has custom plugin rules — falling back to TypeScript engine.\n`,
-			);
-			return null;
-		}
-
-		// Fallback: pretenders. The Rust DOM has no notion of a component that
-		// stands for an HTML element, so it would lint every pretended component
-		// as an unknown element and silently drop what the TS engine reports.
-		if (fabric.pretenders.length > 0) {
-			process.stderr.write(
-				`⚠ [experimental-rust-core] "${this.#file.path}" has pretenders — falling back to TypeScript engine.\n`,
 			);
 			return null;
 		}
@@ -427,7 +417,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		const sourceCode = await this.#file.getCode();
 
 		// Build config JSON for Rust
-		const configJson = buildRustConfigJson(fabric.ruleset, fabric.ruleCommonSettings);
+		const configJson = buildRustConfigJson(fabric.ruleset, fabric.ruleCommonSettings, fabric.pretenders);
 		const specJson = JSON.stringify(fabric.schemas[0]);
 
 		log('exec: rust path lintHtml');
@@ -438,6 +428,14 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		} catch (error) {
 			if (isFatalError(error)) {
 				throw error;
+			}
+			// The TS runtime accepts pretender shapes that the Rust types reject, and the Rust
+			// side fails on the whole config for one of them. The TS engine reads them all.
+			if (fabric.pretenders.length > 0) {
+				process.stderr.write(
+					`⚠ [experimental-rust-core] "${this.#file.path}" has pretenders the Rust engine could not read — falling back to TypeScript engine.\n`,
+				);
+				return null;
 			}
 			// NAPI errors (config/spec parse failures) — report as lint error
 			const message = error instanceof Error ? error.message : String(error);
@@ -1141,7 +1139,10 @@ function enablesRule(ruleset: Partial<Readonly<Ruleset>>, ruleId: string): boole
  * Converts the TS Ruleset into a JSON string that the Rust LintConfig can deserialize.
  *
  * Rust LintConfig expects:
- * `{ rules: {...}, node_rules: [...], child_node_rules: [...], rule_common_settings: {...} }`
+ * `{ rules: {...}, node_rules: [...], child_node_rules: [...], rule_common_settings: {...}, pretenders: [...] }`
+ *
+ * `pretenders` is the already-resolved list for this file: scanning the project, reading the
+ * `files` and following `auto` stay in TS, and the Rust engine only applies the result.
  *
  * Namespaced rule IDs (e.g., "html-standard/no-duplicate-attr") are passed through as-is.
  * Rust strips the namespace prefix internally for rule lookup and preserves the original
@@ -1155,11 +1156,13 @@ function enablesRule(ruleset: Partial<Readonly<Ruleset>>, ruleId: string): boole
 function buildRustConfigJson(
 	ruleset: Partial<Readonly<Ruleset>>,
 	ruleCommonSettings: Readonly<RuleCommonSettings>,
+	pretenders: readonly Pretender[],
 ): string {
 	return JSON.stringify({
 		rules: ruleset.rules ?? {},
 		node_rules: ruleset.nodeRules ?? [],
 		child_node_rules: ruleset.childNodeRules ?? [],
 		rule_common_settings: ruleCommonSettings,
+		pretenders,
 	});
 }
