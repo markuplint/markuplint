@@ -163,7 +163,7 @@ fn disallow_attrs_with_enum_not_matched() {
     };
     let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
     // role=main is NOT in the disallowed enum, so no violation from disallow
-    // but role is bypassed by aria-* check (it's handled by wai-aria)
+    // but role is bypassed by aria-* check (it's handled by the ARIA rules)
     // actually, "role" is not "aria-*" so it goes through spec validation
     // Let's just check it doesn't trigger the enum-specific message
     for v in &violations {

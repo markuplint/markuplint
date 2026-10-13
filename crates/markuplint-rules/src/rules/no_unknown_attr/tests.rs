@@ -86,7 +86,7 @@ fn aria_attr_skipped() {
     let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
     assert!(
         violations.is_empty(),
-        "aria-* attributes should be skipped (handled by wai-aria)"
+        "aria-* attributes should be skipped (handled by the ARIA rules)"
     );
 }
 

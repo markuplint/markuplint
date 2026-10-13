@@ -17,10 +17,6 @@
 //! Messages are not built here: they are hard-coded English strings per rule, equal to the TS `en`
 //! output.
 
-// The module is staged: the rules that consume most of these items are ported one step at a time,
-// so until then they have no caller. Drop this once the last of the 21 rules is on top of it.
-#![allow(dead_code)]
-
 use std::cell::OnceCell;
 
 use markuplint_core::mlast::{ElementType, MLASTAttr, MLASTHTMLAttr, NamespaceURI};
@@ -121,11 +117,9 @@ pub(crate) struct ElementContext<'a> {
     pub(crate) arena: &'a DomArena,
     pub(crate) node_id: NodeId,
     pub(crate) el: &'a ElementData,
-    /// The element's name as the parser gave it. For spec lookups use [`Self::el_spec`] or
-    /// [`Self::aria`], which also account for the namespace.
+    /// The element's name as the parser gave it. For spec lookups use [`Self::aria`], which also
+    /// accounts for the namespace.
     pub(crate) el_name: &'a str,
-    /// `None` only for a web component admitted by [`ElementGate::SupportedOrWebComponent`].
-    pub(crate) el_spec: Option<&'a ElementSpec>,
     pub(crate) version: ARIAVersion,
     pub(crate) rule_id: &'a str,
     pub(crate) severity: Severity,
@@ -227,7 +221,6 @@ pub(crate) fn walk_elements<O>(
             node_id,
             el,
             el_name: &el.base.node_name,
-            el_spec,
             version: resolve_aria_version(&rule_config.options, config.common_settings()),
             rule_id,
             severity: rule_config.severity,

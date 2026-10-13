@@ -853,8 +853,8 @@ pub(crate) fn parse_ignore_prefixes(options: &serde_json::Value) -> Vec<String> 
 ///
 /// Looks up which global attr categories the element enables (e.g., `#HTMLGlobalAttrs`),
 /// then collects all attribute names from those categories in the spec definitions.
-/// Excludes `#ARIAAttrs` (handled by wai-aria rule) and `#GlobalEventAttrs` (handled
-/// by no-event-handler-attr rule).
+/// Excludes `#ARIAAttrs` (handled by the ARIA rules, such as `role-supports-aria-prop`) and
+/// `#GlobalEventAttrs` (handled by the `no-event-handler-attr` rule).
 fn get_global_attr_names(spec: &MLMLSpec, element_name: &str) -> Vec<String> {
     let mut names = Vec::new();
 

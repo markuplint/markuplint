@@ -25,6 +25,7 @@ use crate::rules::landmark_roles::LandmarkRoles;
 use crate::rules::link_types::LinkTypes;
 use crate::rules::no_abstract_role::NoAbstractRole;
 use crate::rules::no_ambiguous_navigable_target_names::NoAmbiguousNavigableTargetNames;
+use crate::rules::no_aria_on_presentational_children::NoAriaOnPresentationalChildren;
 use crate::rules::no_aria_on_unsupported_element::NoAriaOnUnsupportedElement;
 use crate::rules::no_boolean_attr_value::NoBooleanAttrValue;
 use crate::rules::no_consecutive_br::NoConsecutiveBr;
@@ -39,6 +40,7 @@ use crate::rules::no_duplicate_dt::NoDuplicateDt;
 use crate::rules::no_duplicate_id::NoDuplicateId;
 use crate::rules::no_empty_palpable_content::NoEmptyPalpableContent;
 use crate::rules::no_event_handler_attr::NoEventHandlerAttr;
+use crate::rules::no_focusable_in_aria_hidden::NoFocusableInAriaHidden;
 use crate::rules::no_hardcoded_id::NoHardcodedId;
 use crate::rules::no_ineffective_attr::NoIneffectiveAttr;
 use crate::rules::no_invalid_aria_prop_value::NoInvalidAriaPropValue;
@@ -74,7 +76,6 @@ use crate::rules::role_supports_aria_prop::RoleSupportsAriaProp;
 use crate::rules::srcset_sizes_constraint::SrcsetSizesConstraint;
 use crate::rules::tab_requires_tabpanel::TabRequiresTabpanel;
 use crate::rules::table_row_column_alignment::TableRowColumnAlignment;
-use crate::rules::wai_aria::WaiAria;
 use crate::violation::{Severity, Violation};
 
 #[derive(Debug, Deserialize)]
@@ -599,7 +600,6 @@ fn get_all_rules() -> Vec<Box<dyn Rule>> {
         Box::new(NoDisallowedAttr),
         Box::new(NoInvalidAttrValue),
         Box::new(NoRestrictedAttr),
-        Box::new(WaiAria),
         Box::new(NoAriaOnUnsupportedElement),
         Box::new(NoUnknownRole),
         Box::new(NoAbstractRole),
@@ -619,6 +619,8 @@ fn get_all_rules() -> Vec<Box<dyn Rule>> {
         Box::new(RequireParentRole),
         Box::new(RequireOwnedElements),
         Box::new(TabRequiresTabpanel),
+        Box::new(NoAriaOnPresentationalChildren),
+        Box::new(NoFocusableInAriaHidden),
     ]
 }
 
@@ -1445,33 +1447,37 @@ mod tests {
         assert_eq!(ia_violations.len(), 0, "Expected 0 violations, got: {ia_violations:?}");
     }
 
-    // --- wai-aria nodeRules tests ---
+    // --- ARIA rule nodeRules tests ---
 
     #[test]
-    fn node_rules_wai_aria_disable_implicit_role() {
-        // Port of TS: Safari + VoiceOver — img[src$=.svg] with disallowSetImplicitRole: false
-        let arena = html_arena(r#"<img src="path/to.svg" alt="text" role="img" />"#);
+    fn node_rules_disable_no_redundant_role() {
+        // Safari + VoiceOver need `role="img"` on `img[src$=.svg]`, so a config turns
+        // `no-redundant-role` off for those elements only.
+        let arena =
+            html_arena(r#"<img src="path/to.svg" alt="text" role="img" /><img src="a.png" alt="text" role="img" />"#);
         let spec = html_spec();
         let config: LintConfig = serde_json::from_value(serde_json::json!({
-            "rules": { "wai-aria": true },
+            "rules": { "no-redundant-role": true },
             "nodeRules": [{
                 "selector": "img[src$=\".svg\"]",
-                "rules": {
-                    "wai-aria": {
-                        "options": { "disallowSetImplicitRole": false }
-                    }
-                }
+                "rules": { "no-redundant-role": false }
             }]
         }))
         .unwrap();
 
         let result = lint(&arena, &spec, &config);
-        let wa_violations: Vec<_> = result.violations.iter().filter(|v| v.rule_id == "wai-aria").collect();
+        let violations: Vec<_> = result
+            .violations
+            .iter()
+            .filter(|v| v.rule_id == "no-redundant-role")
+            .collect();
         assert_eq!(
-            wa_violations.len(),
-            0,
-            "Expected 0 wai-aria violations with disallowSetImplicitRole:false, got: {wa_violations:?}"
+            violations.len(),
+            1,
+            "Expected only the .png img to be reported, got: {violations:?}"
         );
+        assert_eq!(violations[0].col, 82);
+        assert_eq!(violations[0].raw, "img");
     }
 
     // --- class-naming: :where() pseudo-class test ---
