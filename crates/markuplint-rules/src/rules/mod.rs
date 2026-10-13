@@ -1,5 +1,6 @@
 //! Built-in lint rules.
 
+pub mod aria_prop_requires_role;
 pub mod attr_value_quotes;
 pub mod case_sensitive_attr_name;
 pub mod case_sensitive_tag_name;
@@ -16,7 +17,9 @@ pub mod no_ambiguous_navigable_target_names;
 pub mod no_aria_on_unsupported_element;
 pub mod no_boolean_attr_value;
 pub mod no_consecutive_br;
+pub mod no_default_aria_value;
 pub mod no_default_value;
+pub mod no_deprecated_aria_prop;
 pub mod no_deprecated_role;
 pub mod no_disallowed_attr;
 pub mod no_duplicate_attr;
@@ -26,6 +29,7 @@ pub mod no_empty_palpable_content;
 pub mod no_event_handler_attr;
 pub mod no_hardcoded_id;
 pub mod no_ineffective_attr;
+pub mod no_invalid_aria_prop_value;
 pub mod no_invalid_attr_value;
 pub mod no_orphaned_end_tag;
 pub mod no_pseudo_list;

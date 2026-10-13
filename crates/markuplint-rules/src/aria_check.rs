@@ -380,7 +380,7 @@ pub(crate) fn role_tokens(attr: &MLASTHTMLAttr) -> Vec<RoleToken> {
 }
 
 /// JS `\s`: Unicode `White_Space` except U+0085, plus U+FEFF.
-fn is_js_whitespace(ch: char) -> bool {
+pub(crate) fn is_js_whitespace(ch: char) -> bool {
     ch == '\u{FEFF}' || (ch.is_whitespace() && ch != '\u{85}')
 }
 

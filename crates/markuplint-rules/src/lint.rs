@@ -10,6 +10,7 @@ use serde_json::Value;
 
 use crate::rule::{Rule, RuleCommonSettings, RuleConfig, RuleConfigSet};
 use crate::rule_mapper::{self, NodeRuleEntry};
+use crate::rules::aria_prop_requires_role::AriaPropRequiresRole;
 use crate::rules::attr_value_quotes::AttrValueQuotes;
 use crate::rules::case_sensitive_attr_name::CaseSensitiveAttrName;
 use crate::rules::case_sensitive_tag_name::CaseSensitiveTagName;
@@ -26,7 +27,9 @@ use crate::rules::no_ambiguous_navigable_target_names::NoAmbiguousNavigableTarge
 use crate::rules::no_aria_on_unsupported_element::NoAriaOnUnsupportedElement;
 use crate::rules::no_boolean_attr_value::NoBooleanAttrValue;
 use crate::rules::no_consecutive_br::NoConsecutiveBr;
+use crate::rules::no_default_aria_value::NoDefaultAriaValue;
 use crate::rules::no_default_value::NoDefaultValue;
+use crate::rules::no_deprecated_aria_prop::NoDeprecatedAriaProp;
 use crate::rules::no_deprecated_role::NoDeprecatedRole;
 use crate::rules::no_disallowed_attr::NoDisallowedAttr;
 use crate::rules::no_duplicate_attr::NoDuplicateAttr;
@@ -36,6 +39,7 @@ use crate::rules::no_empty_palpable_content::NoEmptyPalpableContent;
 use crate::rules::no_event_handler_attr::NoEventHandlerAttr;
 use crate::rules::no_hardcoded_id::NoHardcodedId;
 use crate::rules::no_ineffective_attr::NoIneffectiveAttr;
+use crate::rules::no_invalid_aria_prop_value::NoInvalidAriaPropValue;
 use crate::rules::no_invalid_attr_value::NoInvalidAttrValue;
 use crate::rules::no_orphaned_end_tag::NoOrphanedEndTag;
 use crate::rules::no_pseudo_list::NoPseudoList;
@@ -593,6 +597,10 @@ fn get_all_rules() -> Vec<Box<dyn Rule>> {
         Box::new(NoDeprecatedRole),
         Box::new(NoRedundantRole),
         Box::new(PermittedRoles),
+        Box::new(NoDeprecatedAriaProp),
+        Box::new(NoInvalidAriaPropValue),
+        Box::new(NoDefaultAriaValue),
+        Box::new(AriaPropRequiresRole),
     ]
 }
 
