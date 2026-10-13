@@ -21,6 +21,7 @@ pub mod aria_check;
 pub mod aria_resolver_impl;
 pub mod attr_check;
 pub mod content_model;
+pub(crate) mod h1_check;
 pub mod helpers;
 pub mod lint;
 pub mod rule;

@@ -37,6 +37,7 @@ use crate::rules::no_deprecated_role::NoDeprecatedRole;
 use crate::rules::no_disallowed_attr::NoDisallowedAttr;
 use crate::rules::no_duplicate_attr::NoDuplicateAttr;
 use crate::rules::no_duplicate_dt::NoDuplicateDt;
+use crate::rules::no_duplicate_h1::NoDuplicateH1;
 use crate::rules::no_duplicate_id::NoDuplicateId;
 use crate::rules::no_empty_palpable_content::NoEmptyPalpableContent;
 use crate::rules::no_event_handler_attr::NoEventHandlerAttr;
@@ -69,9 +70,9 @@ use crate::rules::require_datetime::RequireDatetime;
 use crate::rules::require_dialog_autofocus::RequireDialogAutofocus;
 use crate::rules::require_element::RequireElement;
 use crate::rules::require_end_tag::RequireEndTag;
+use crate::rules::require_h1::RequireH1;
 use crate::rules::require_owned_elements::RequireOwnedElements;
 use crate::rules::require_parent_role::RequireParentRole;
-use crate::rules::required_h1::RequiredH1;
 use crate::rules::role_supports_aria_prop::RoleSupportsAriaProp;
 use crate::rules::srcset_sizes_constraint::SrcsetSizesConstraint;
 use crate::rules::tab_requires_tabpanel::TabRequiresTabpanel;
@@ -593,7 +594,8 @@ fn get_all_rules() -> Vec<Box<dyn Rule>> {
         Box::new(SrcsetSizesConstraint),
         Box::new(RequireAttr),
         Box::new(RequireElement),
-        Box::new(RequiredH1),
+        Box::new(RequireH1),
+        Box::new(NoDuplicateH1),
         Box::new(TableRowColumnAlignment),
         Box::new(NoPseudoList),
         Box::new(NoUnknownAttr),
