@@ -45,6 +45,38 @@ describe.each(frameworks)('templateScanner slot content: %s', (ext, fallthrough)
 		});
 	});
 
+	test(`[${ext}] a slot wrapper inside foreignObject states the HTML namespace`, async () => {
+		expect(await scan(`ForeignObjectSlot.${ext}`)).toStrictEqual({
+			element: 'svg',
+			slots: [{ element: 'div', namespace: 'html' }],
+			...fallthrough,
+		});
+	});
+
+	test(`[${ext}] a slot wrapper inside foreignObject below a g root states the HTML namespace`, async () => {
+		expect(await scan(`GroupForeignObjectSlot.${ext}`)).toStrictEqual({
+			element: 'g',
+			slots: [{ element: 'div', namespace: 'html' }],
+			...fallthrough,
+		});
+	});
+
+	test(`[${ext}] a slot wrapper in an svg root states the SVG namespace`, async () => {
+		expect(await scan(`GroupSlot.${ext}`)).toStrictEqual({
+			element: 'svg',
+			slots: [{ element: 'g', namespace: 'svg' }],
+			...fallthrough,
+		});
+	});
+
+	test(`[${ext}] a slot wrapper that enters SVG states the SVG namespace`, async () => {
+		expect(await scan(`InnerSvgSlot.${ext}`)).toStrictEqual({
+			element: 'div',
+			slots: [{ element: 'svg', namespace: 'svg' }],
+			...fallthrough,
+		});
+	});
+
 	test(`[${ext}] the slot position among the static children is kept`, async () => {
 		expect(await scan(`PictureSlot.${ext}`)).toStrictEqual({
 			element: 'picture',

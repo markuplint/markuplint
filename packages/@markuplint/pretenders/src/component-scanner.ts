@@ -7,6 +7,8 @@
  * parser packages import them for implementation.
  */
 
+import type { NamespaceURI } from '@markuplint/ml-ast';
+
 /**
  * Result of scanning a single component file for its root element information.
  */
@@ -87,6 +89,13 @@ export interface ComponentScanSlotWrapper {
 	readonly attrs: readonly ComponentScanAttr[];
 	/** The direct children of the element */
 	readonly contents: readonly ComponentScanContent[];
+	/**
+	 * The namespace of the element when the elements between it and the root element decide
+	 * it (`getNamespaceBelow` of `@markuplint/parser-utils`): inside `foreignObject`, or
+	 * inside an `svg` or `math` that is not the root. Absent when it depends on where the
+	 * root is rendered (a `<g>` root used inside `svg`), which ml-core resolves.
+	 */
+	readonly namespace?: NamespaceURI;
 }
 
 /**

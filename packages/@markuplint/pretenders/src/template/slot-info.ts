@@ -3,6 +3,8 @@ import type { ComponentScanAttr, ComponentScanContent, ComponentScanResult } fro
 import type { SlotInfo } from '../contents.js';
 import type { PretenderAttr, PretenderContent, Slot } from '@markuplint/ml-config';
 
+import { uriToPretenderNamespace } from '@markuplint/ml-config';
+
 import { isTrivialContents } from '../contents.js';
 
 /**
@@ -31,8 +33,10 @@ export function deriveSlotInfo(scan: ComponentScanResult, resolveProp?: Template
 		slots: wrappers.map((wrapper): Slot => {
 			const attrs = toAttrs(wrapper.attrs, resolveProp);
 			const contents = toContents(wrapper.contents, resolveProp);
+			const namespace = wrapper.namespace ? uriToPretenderNamespace(wrapper.namespace) : undefined;
 			return {
 				element: wrapper.element,
+				...(namespace ? { namespace } : {}),
 				...(attrs.length > 0 ? { attrs } : {}),
 				...(isTrivialContents(contents) ? {} : { contents }),
 			};

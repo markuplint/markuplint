@@ -901,6 +901,14 @@ interface Config {
 
 **要素名**を受け取ります。必須です。
 
+#### `as.namespace`
+
+`"html"`、`"svg"`、`"math"`のいずれかを受け取ります。省略可能です。
+
+省略した場合、コンポーネントを使った場所に同じ名前の要素を書いたときと同じ名前空間になります。`svg`と`math`はそれぞれの名前空間に入り、それ以外は親の名前空間を引き継ぎます（`foreignObject`の中はHTMLです）。コンポーネントに渡した子要素は、コンポーネントがそれを描画する要素の名前空間になります。
+
+[`slots`](#pretenders/as-slots)の配列に指定した要素は、一番外側の要素の直下にあるものとして扱います。そうでない要素、たとえば`svg`の中の`foreignObject`の内側にある要素には名前空間を指定してください。
+
 #### `as.inheritAttrs`
 
 レンダリングされた要素が、コンポーネントで定義された属性を公開するかどうかを論理値を受け取ります。省略可能です。省略した場合のデフォルト値は`false`です。
@@ -1270,7 +1278,7 @@ type OriginalNode = {
   element: string;
   slots?: null | true | Slot[]; // @experimental
   contents?: Content[]; // @experimental
-  namespace?: 'svg';
+  namespace?: 'html' | 'svg' | 'math';
 
   inheritAttrs?: boolean;
   attrs?: {
