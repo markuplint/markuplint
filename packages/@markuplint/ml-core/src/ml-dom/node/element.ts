@@ -80,7 +80,9 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	/**
 	 * Whether this element belongs to a non-HTML namespace (e.g., SVG or MathML).
 	 */
-	readonly isForeignElement: boolean;
+	get isForeignElement(): boolean {
+		return this.namespaceURI !== HTML_NAMESPACE;
+	}
 
 	/**
 	 * Whether this element was implicitly created (e.g., an omitted `<body>` tag in HTML).
@@ -90,8 +92,37 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 
 	/**
 	 * The namespace URI of this element (e.g., `http://www.w3.org/1999/xhtml` for HTML elements).
+	 * Like `localName`, it follows the pretender so spec lookups use the rendered element's namespace.
 	 */
-	readonly namespaceURI: NamespaceURI;
+	get namespaceURI(): NamespaceURI {
+		if (this.pretenderContext?.type === 'pretender') {
+			return this.pretenderContext.as.namespaceURI;
+		}
+		// Attributes are built before every parent is registered in the document's NodeStore.
+		if (!this.#namespaceContextReady || this.pretenderContext?.type === 'origin') {
+			return this._astToken.namespace;
+		}
+		const parent = this.parentElement;
+		// Keep parser-resolved integration points unless pretending changed the parent context.
+		if (
+			!parent ||
+			(parent.pretenderContext?.type !== 'pretender' && parent.namespaceURI === parent._astToken.namespace)
+		) {
+			return this._astToken.namespace;
+		}
+		return getVirtualNamespace({ element: this._astToken.nodeName }, this.#getInheritedNamespace());
+	}
+	#namespaceContextReady = false;
+
+	#getInheritedNamespace(): NamespaceURI {
+		const parent = this.parentElement;
+		if (!parent) {
+			return this._astToken.namespace;
+		}
+		const context = parent.pretenderContext;
+		const renderedParent = context?.type === 'pretender' ? (context.slotContent?.wrapper ?? context.as) : parent;
+		return getChildNamespace(renderedParent);
+	}
 
 	/**
 	 * ## Why this cache exists
@@ -209,10 +240,8 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 			: null;
 		this.closeTag = pairAstNode ? new MLElementCloseTag(pairAstNode, document, this) : null;
 		const ns = resolveNamespace(astNode.nodeName, astNode.namespace);
-		this.namespaceURI = astNode.namespace;
 		this.elementType = astNode.elementType;
 		this.#localName = ns.localName;
-		this.isForeignElement = this.namespaceURI !== HTML_NAMESPACE;
 
 		this.isOmitted = astNode.isGhost;
 
@@ -3946,6 +3975,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @param pretenders - Optional array of pretender configurations to match against
 	 */
 	pretending(pretenders?: readonly Pretender[]) {
+		this.#namespaceContextReady = true;
 		// Pretender must not apply to a recognised standard HTML element (e.g. <marquee>,
 		// <h1>, <button>). Allowing such elements to masquerade as another would silently
 		// mask spec-driven rules — deprecation, ARIA role restrictions, browser support —
@@ -3977,15 +4007,14 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 			return;
 		}
 
-		let nodeName: string;
-		let namespace: NamespaceURI = 'http://www.w3.org/1999/xhtml';
+		const nodeName = typeof pretenderElement === 'string' ? pretenderElement : pretenderElement.element;
+		const namespace = getVirtualNamespace(
+			typeof pretenderElement === 'string' ? { element: pretenderElement } : pretenderElement,
+			this.#getInheritedNamespace(),
+		);
 		const attributes: MLASTAttr[] = [];
 		let aria: PretenderARIA | undefined;
-		if (typeof pretenderElement === 'string') {
-			nodeName = pretenderElement;
-		} else {
-			nodeName = pretenderElement.element;
-			namespace = pretenderElement.namespace === 'svg' ? 'http://www.w3.org/2000/svg' : namespace;
+		if (typeof pretenderElement !== 'string') {
 			if (pretenderElement.inheritAttrs) {
 				attributes.push(...this._astToken.attributes);
 			}
@@ -4201,7 +4230,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 						entry,
 						`${this.uuid}_pretender_content_${i}`,
 						wrapper === as ? this.uuid : wrapper.uuid,
-						namespace,
+						getChildNamespace(wrapper),
 					)
 				: entry,
 		);
@@ -4523,15 +4552,24 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 
 /**
  * The namespace of a virtual element made from a pretender definition.
- * `svg` and `math` are foreign elements wherever they are written, and a
- * definition can only state `namespace: 'svg'`, so the name decides.
+ * Explicit namespaces win. In HTML, `svg` and `math` enter their foreign
+ * namespaces; other names inherit the rendered parent context.
  */
 function getVirtualNamespace(spec: { readonly element: string; readonly namespace?: 'svg' }, fallback: NamespaceURI) {
-	if (spec.namespace === 'svg' || spec.element === 'svg') {
+	if (spec.namespace === 'svg' || (fallback === HTML_NAMESPACE && spec.element === 'svg')) {
 		return 'http://www.w3.org/2000/svg';
 	}
-	if (spec.element === 'math') {
+	if (fallback === HTML_NAMESPACE && spec.element === 'math') {
 		return 'http://www.w3.org/1998/Math/MathML';
 	}
 	return fallback;
+}
+
+/**
+ * SVG foreignObject is an HTML integration point for the children it renders.
+ */
+function getChildNamespace(parent: { readonly namespaceURI: NamespaceURI; readonly localName: string }): NamespaceURI {
+	return parent.namespaceURI === 'http://www.w3.org/2000/svg' && parent.localName === 'foreignObject'
+		? HTML_NAMESPACE
+		: parent.namespaceURI;
 }
