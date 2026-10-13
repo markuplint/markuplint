@@ -4029,6 +4029,8 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 *
 	 * A component is given no name, so that its own name is not taken for an element:
 	 * `getChildNamespace` compares names in lowercase, so `<Math>` would enter MathML.
+	 * The parsers of this repository do the same, but the AST may come from a parser
+	 * that does not.
 	 */
 	#resolveNamespace(renderedParent: MLElement<T, O> | null | undefined) {
 		const parent = this.parentElement;
@@ -4049,8 +4051,9 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 *
 	 * Where this element is has the namespace of this element, so the element gets the
 	 * namespace an element written there gets. For a component, it is taken from the
-	 * parent instead, as the parser may have taken the name of the component for an
-	 * element (`<Svg>`, `<Math>`: it compares names in lowercase).
+	 * parent instead, as a parser that does not keep the name of a component out of
+	 * the namespace may have taken it for an element (`<Svg>`, `<Math>`: the names are
+	 * compared in lowercase).
 	 */
 	#getNamespaceInPlace(name: string, renderedParent: MLElement<T, O> | null | undefined): NamespaceURI {
 		let here = this.#namespaceURI;
