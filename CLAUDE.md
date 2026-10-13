@@ -94,4 +94,6 @@ The harness cuts a new worktree from the default branch (`dev`). For v6 work, re
 
 - `yarn dlx` is not used — it executes remote code without a lockfile
 - `npx` is acceptable only for packages already installed in `node_modules` (e.g. `npx vitest`); never for a package that would be fetched from the registry
-- Pin exact versions when adding dependencies (`yarn add foo@1.2.3`); check a new package's trustworthiness first; do not hand-edit `yarn.lock`
+- Version specifiers when adding dependencies: third-party `dependencies` of a published package take a caret range (`yarn add foo@^1.2.3`); `devDependencies`, private packages, and `@markuplint/*` siblings pin exact versions. An exact pin in a published package does not reach its dependencies' own dependencies, and it blocks consumers from taking upstream fixes until we release again. Supply-chain defence for what consumers install rests with their lockfile and package manager; this repo relies on `yarn.lock`, `npmMinimalAgeGate`, and Renovate's `minimumReleaseAge`
+  - Exceptions in published `dependencies`: a package that ships breaking API changes in minor releases takes a tilde range; packages that must resolve to the same version as each other pin exact. The exceptions are enumerated, and the policy enforced, in `packages/@markuplint/test-tools/src/dependency-ranges.spec.ts` — add a new exception there
+- Check a new package's trustworthiness first; do not hand-edit `yarn.lock`

@@ -31,10 +31,10 @@
 		"@markuplint/html-parser": "5.1.1",
 		"@markuplint/ml-ast": "5.1.1",
 		"@markuplint/parser-utils": "5.1.1",
-		"remark-frontmatter": "5.0.0",
-		"remark-gfm": "4.0.1",
-		"remark-parse": "11.0.0",
-		"unified": "11.0.5"
+		"remark-frontmatter": "^5.0.0",
+		"remark-gfm": "^4.0.1",
+		"remark-parse": "^11.0.0",
+		"unified": "^11.0.5"
 	},
 	"devDependencies": {
 		"@types/mdast": "4.0.4"

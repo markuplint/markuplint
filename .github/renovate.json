@@ -52,6 +52,17 @@
 			"ignoreDeps": ["default-markuplint", "test-markuplint"]
 		},
 		{
+			"description": "Raise the lower bound of ranges in published packages on each update, so a consumer's install cannot dedupe onto a version older than the one we last released against",
+			"matchFileNames": ["packages/**/*"],
+			"matchDepTypes": ["dependencies"],
+			"rangeStrategy": "bump"
+		},
+		{
+			"description": "test-tools is private; its dependencies stay exact like devDependencies",
+			"matchFileNames": ["packages/@markuplint/test-tools/package.json"],
+			"rangeStrategy": "pin"
+		},
+		{
 			"matchFileNames": ["package.json"],
 			"ignoreDeps": ["string-width", "strip-ansi", "wrap-ansi"]
 		},

@@ -33,10 +33,10 @@
 	"dependencies": {
 		"@markuplint/ml-spec": "5.1.1",
 		"@markuplint/shared": "5.1.1",
-		"@types/debug": "4.1.13",
-		"debug": "4.4.3",
-		"postcss-selector-parser": "7.1.6",
-		"type-fest": "5.10.0"
+		"@types/debug": "^4.1.13",
+		"debug": "^4.4.3",
+		"postcss-selector-parser": "^7.1.6",
+		"type-fest": "^5.10.0"
 	},
 	"devDependencies": {
 		"@types/jsdom": "28.0.3",

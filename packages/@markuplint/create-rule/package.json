@@ -31,9 +31,9 @@
 	"dependencies": {
 		"@markuplint/cli-utils": "5.1.1",
 		"@markuplint/ml-core": "5.1.1",
-		"glob": "13.0.6",
-		"prettier": "3.9.9",
-		"typescript": "6.0.3"
+		"glob": "^13.0.6",
+		"prettier": "^3.9.9",
+		"typescript": "~6.0.3"
 	},
 	"devDependencies": {
 		"@types/fs-extra": "11.0.4",
