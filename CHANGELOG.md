@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.2.0](https://github.com/markuplint/markuplint/compare/v5.1.1...v5.2.0) (2026-10-13)
+
+### Bug Fixes
+
+- **ml-core:** resolve the namespace of a component and the children given to it ([00ecbba](https://github.com/markuplint/markuplint/commit/00ecbbae6095dd8eb7d10148633d6610bed7f1e2))
+- **ml-core:** return the DOM values from MLAttr.namespaceURI ([05467ad](https://github.com/markuplint/markuplint/commit/05467ad28d61ae0a272c8335db9a0b2f614e5592))
+- **parser-utils:** do not enter a namespace by the name of an authored element ([40e4d2d](https://github.com/markuplint/markuplint/commit/40e4d2d5065a7831721495d9ef2672fdddb51d93))
+- **pretenders:** state the namespace of a slot wrapper ([defa163](https://github.com/markuplint/markuplint/commit/defa163dd16585e6b1be823a0a8afc64aba43c78))
+- **pug-parser:** do not enter a namespace by the name of an authored element ([4d11916](https://github.com/markuplint/markuplint/commit/4d11916346c357b3a55d09b49cbd47e88c6dec70))
+- **selector:** do not match a namespaced attribute selector against an attribute without a namespace ([8843348](https://github.com/markuplint/markuplint/commit/8843348c2f475b408718cbcc624de5a6b37a26e7))
+- use caret ranges for third-party dependencies of published packages ([5fb5d2e](https://github.com/markuplint/markuplint/commit/5fb5d2ee81eaeea45fe7256a40dd41c95ff0d672))
+
+### Features
+
+- **astro-parser:** report the namespace of a slot wrapper ([798c429](https://github.com/markuplint/markuplint/commit/798c429eceecf7bc2b2498c568116d91bcc79178))
+- **ml-config:** accept html and math as the namespace of a pretender ([ae92924](https://github.com/markuplint/markuplint/commit/ae929246e1095400d43512bca82502e068d02fa8))
+- **parser-utils:** add getChildNamespace and getNamespaceBelow ([88cbab7](https://github.com/markuplint/markuplint/commit/88cbab7755d4efcdc6ac8a0f6d61d209f80802e6))
+- **svelte-parser:** report the namespace of a slot wrapper ([557503d](https://github.com/markuplint/markuplint/commit/557503d1fd6ddccf5e2e9bf864b8ab07e7d3c7e6))
+- **vue-parser:** report the namespace of a slot wrapper ([9baec0b](https://github.com/markuplint/markuplint/commit/9baec0b3611bd8f378933d1d8e82de2384627252))
+
 ## [5.1.1](https://github.com/markuplint/markuplint/compare/v5.1.0...v5.1.1) (2026-10-09)
 
 ### Bug Fixes

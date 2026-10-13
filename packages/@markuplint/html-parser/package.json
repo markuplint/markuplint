@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/html-parser",
-	"version": "5.1.1",
+	"version": "5.2.0",
 	"description": "HTML parser for markuplint",
 	"repository": {
 		"type": "git",
@@ -32,7 +32,7 @@
 	},
 	"dependencies": {
 		"@markuplint/ml-ast": "5.1.1",
-		"@markuplint/parser-utils": "5.1.1",
+		"@markuplint/parser-utils": "5.2.0",
 		"parse5": "^8.0.1",
 		"type-fest": "^5.10.0"
 	}
