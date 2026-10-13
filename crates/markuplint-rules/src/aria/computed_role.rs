@@ -25,6 +25,8 @@ pub struct ComputedRole {
 pub struct ResolvedRole {
     pub name: String,
     pub is_implicit: bool,
+    /// TS `deprecated: !!role.deprecated`.
+    pub deprecated: bool,
     pub accessible_name_required: bool,
     pub accessible_name_from_author: bool,
     pub children_presentational: bool,
@@ -481,6 +483,7 @@ fn resolved_from_spec(role_spec: &ARIARoleInSchema, is_implicit: bool) -> Resolv
     ResolvedRole {
         name: role_spec.name.clone(),
         is_implicit,
+        deprecated: role_spec.deprecated.unwrap_or(false),
         accessible_name_required: role_spec.accessible_name_required.unwrap_or(false),
         accessible_name_from_author: role_spec.accessible_name_from_author.unwrap_or(false),
         children_presentational: role_spec.children_presentational.unwrap_or(false),

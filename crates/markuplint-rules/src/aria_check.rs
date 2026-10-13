@@ -141,6 +141,18 @@ impl ElementContext<'_> {
             .as_ref()
     }
 
+    /// TS `el.localName`, the element name the messages quote.
+    pub(crate) fn local_name(&self) -> String {
+        element_local_name(self.el)
+    }
+
+    /// TS `getImplicitRoleName()` (`ml-spec/src/algorithm/aria/get-implicit-role.ts`) for this
+    /// element at the rule's version: the implicit role of [`Self::aria`], `None` for the spec's
+    /// `false` ("no corresponding role") or an element without an ARIA section.
+    pub(crate) fn implicit_role_name(&self) -> Option<&str> {
+        self.aria().and_then(|aria| aria.implicit_role.as_deref())
+    }
+
     /// TS `scope: attr`: the attribute from its name to its end.
     pub(crate) fn attr_violation(&self, attr: &MLASTHTMLAttr, message: impl Into<String>) -> Violation {
         self.violation(attr.name.line, attr.name.col, attr.raw.clone(), message.into())
@@ -254,6 +266,16 @@ pub(crate) fn attr_name(attr: &MLASTHTMLAttr) -> &str {
     attr.potential_name
         .as_deref()
         .unwrap_or_else(|| markuplint_dom::helpers::get_raw_attr_name(attr))
+}
+
+/// TS `el.localName`: an HTML element's name is lower-cased, a foreign (SVG, `MathML`) or
+/// authored/web-component element keeps the case it was written in.
+pub(crate) fn element_local_name(el: &ElementData) -> String {
+    if el.element_type == ElementType::Html && el.namespace == NamespaceURI::XHTML {
+        el.base.node_name.to_ascii_lowercase()
+    } else {
+        el.base.node_name.clone()
+    }
 }
 
 /// TS `/^aria-/i.test(attr.name)`.

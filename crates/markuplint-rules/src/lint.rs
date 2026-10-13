@@ -21,11 +21,13 @@ use crate::rules::doctype::Doctype;
 use crate::rules::label_has_control::LabelHasControl;
 use crate::rules::landmark_roles::LandmarkRoles;
 use crate::rules::link_types::LinkTypes;
+use crate::rules::no_abstract_role::NoAbstractRole;
 use crate::rules::no_ambiguous_navigable_target_names::NoAmbiguousNavigableTargetNames;
 use crate::rules::no_aria_on_unsupported_element::NoAriaOnUnsupportedElement;
 use crate::rules::no_boolean_attr_value::NoBooleanAttrValue;
 use crate::rules::no_consecutive_br::NoConsecutiveBr;
 use crate::rules::no_default_value::NoDefaultValue;
+use crate::rules::no_deprecated_role::NoDeprecatedRole;
 use crate::rules::no_disallowed_attr::NoDisallowedAttr;
 use crate::rules::no_duplicate_attr::NoDuplicateAttr;
 use crate::rules::no_duplicate_dt::NoDuplicateDt;
@@ -38,13 +40,16 @@ use crate::rules::no_invalid_attr_value::NoInvalidAttrValue;
 use crate::rules::no_orphaned_end_tag::NoOrphanedEndTag;
 use crate::rules::no_pseudo_list::NoPseudoList;
 use crate::rules::no_redundant_accessible_name::NoRedundantAccessibleName;
+use crate::rules::no_redundant_role::NoRedundantRole;
 use crate::rules::no_refer_to_non_existent_id::NoReferToNonExistentId;
 use crate::rules::no_restricted_attr::NoRestrictedAttr;
 use crate::rules::no_restricted_element::NoRestrictedElement;
 use crate::rules::no_skipped_heading_level::NoSkippedHeadingLevel;
 use crate::rules::no_unknown_attr::NoUnknownAttr;
+use crate::rules::no_unknown_role::NoUnknownRole;
 use crate::rules::no_unsupported_features::NoUnsupportedFeatures;
 use crate::rules::permitted_contents::PermittedContents;
+use crate::rules::permitted_roles::PermittedRoles;
 use crate::rules::placeholder_label_option::PlaceholderLabelOption;
 use crate::rules::require_accessible_name::RequireAccessibleName;
 use crate::rules::require_adjacent_popover::RequireAdjacentPopover;
@@ -583,6 +588,11 @@ fn get_all_rules() -> Vec<Box<dyn Rule>> {
         Box::new(NoRestrictedAttr),
         Box::new(WaiAria),
         Box::new(NoAriaOnUnsupportedElement),
+        Box::new(NoUnknownRole),
+        Box::new(NoAbstractRole),
+        Box::new(NoDeprecatedRole),
+        Box::new(NoRedundantRole),
+        Box::new(PermittedRoles),
     ]
 }
 
