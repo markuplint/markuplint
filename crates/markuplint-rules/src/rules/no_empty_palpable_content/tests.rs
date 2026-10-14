@@ -24,13 +24,16 @@
 //!   v6_no_empty_palpable_content_012       — Rust-only: the implicit `body` is exposable
 //!   v6_no_empty_palpable_content_013       — Rust-only: the exposable list has the same members as the TS one
 //!   v6_no_empty_palpable_content_014       — Rust-only: every `#palpable` entry of the spec parses as a selector
+//!   v6_no_empty_palpable_content_015       — Rust-only: a fragment block is transparent, so its `li` is empty
+//!   v6_no_empty_palpable_content_016       — Rust-only: a non-fragment block without `each`/`end` is content
+//!   v6_no_empty_palpable_content_017       — Rust-only: an `each` block is replaced by its children
 
 use super::*;
 use crate::rule::{RuleConfig, RuleConfigSet};
 use crate::rules::no_duplicate_attr::tests::make_element_with_attrs;
 use crate::test_util::{Brief, brief, lint_brief};
 use crate::violation::Severity;
-use markuplint_core::mlast::{ElementType, NamespaceURI};
+use markuplint_core::mlast::{ElementType, MLASTBlockBehavior, MLASTBlockBehaviorType, NamespaceURI};
 use markuplint_dom::arena::DomArenaBuilder;
 use markuplint_dom::node::{DocumentData, ElementData, NodeBase, TextData};
 use markuplint_types::spec::load_spec;
@@ -599,8 +602,8 @@ fn v6_no_empty_palpable_content_013() {
     assert_eq!(ts_names, rust_names);
 }
 
-/// A selector the Rust parser rejects would silence the rule, since `verify` returns nothing when
-/// the joined list does not parse; this fails first.
+/// `verify` drops an entry the Rust selector parser rejects, so that element would silently stop
+/// being palpable; this fails first.
 #[test]
 fn v6_no_empty_palpable_content_014() {
     let s = spec();
@@ -610,4 +613,120 @@ fn v6_no_empty_palpable_content_014() {
             "`{entry}` does not parse"
         );
     }
+}
+
+/// `<li>` holding one block child, which holds `text` when given. Built by hand: no parser in this
+/// crate produces blocks.
+fn li_with_block(
+    is_fragment: bool,
+    behavior: Option<MLASTBlockBehaviorType>,
+    text: Option<&str>,
+) -> markuplint_dom::arena::DomArena {
+    use markuplint_dom::node::PSBlockData;
+
+    let node_base = |uuid: &str, raw: &str, name: &str, parent: usize, depth: u32| NodeBase {
+        id: 0,
+        uuid: uuid.to_string(),
+        raw: raw.to_string(),
+        offset: 0,
+        line: 1,
+        col: 1,
+        node_name: name.to_string(),
+        parent: Some(parent),
+        children: vec![],
+        next_sibling: None,
+        prev_sibling: None,
+        depth,
+    };
+    let mut builder = DomArenaBuilder::new();
+    let doc_id = builder.push(DomNode::Document(DocumentData {
+        id: 0,
+        raw: String::new(),
+        is_fragment: true,
+        unknown_parse_error: None,
+        children: vec![],
+    }));
+    let li_id = builder.push(DomNode::Element(ElementData {
+        pretender_context: None,
+        base: node_base("li", "<li>", "li", doc_id, 1),
+        namespace: NamespaceURI::XHTML,
+        element_type: ElementType::Html,
+        is_fragment: false,
+        attributes: vec![],
+        has_spread_attr: false,
+        block_behavior: None,
+        pair_node_id: None,
+        tag_open_char: "<".to_string(),
+        tag_close_char: ">".to_string(),
+        is_ghost: false,
+        close_tag: None,
+    }));
+    let block_id = builder.push(DomNode::PSBlock(PSBlockData {
+        base: node_base("ps", "{block}", "#ps:block", li_id, 2),
+        is_fragment,
+        block_behavior: behavior.map(|behavior_type| MLASTBlockBehavior {
+            behavior_type,
+            expression: String::new(),
+        }),
+        is_bogus: false,
+    }));
+    let text_id = text.map(|raw| {
+        builder.push(DomNode::Text(TextData {
+            base: node_base("t", raw, "#text", block_id, 3),
+            is_bogus: false,
+        }))
+    });
+    if let Some(DomNode::Element(e)) = builder.get_mut(li_id) {
+        e.base.id = li_id;
+        e.base.children = vec![block_id];
+    }
+    if let Some(DomNode::PSBlock(b)) = builder.get_mut(block_id) {
+        b.base.id = block_id;
+        b.base.children = text_id.into_iter().collect();
+    }
+    if let Some(id) = text_id {
+        if let Some(DomNode::Text(t)) = builder.get_mut(id) {
+            t.base.id = id;
+        }
+    }
+    if let Some(DomNode::Document(d)) = builder.get_mut(doc_id) {
+        d.children = vec![li_id];
+    }
+    builder.finish()
+}
+
+fn verify_li(arena: &markuplint_dom::arena::DomArena) -> Vec<String> {
+    NoEmptyPalpableContent
+        .verify(arena, &spec(), &RuleConfigSet::global_only(RuleConfig::default()))
+        .into_iter()
+        .map(|v| v.raw)
+        .collect()
+}
+
+/// A fragment block (a JSX expression `{i.name}`) is transparent to TS `childNodes` and holds no
+/// node of its own, so the `li` around it is empty. Expected values are the TS output on the
+/// same input (`<li key={i.id}>{i.name}</li>` with the JSX parser).
+#[test]
+fn v6_no_empty_palpable_content_015() {
+    assert_eq!(verify_li(&li_with_block(true, None, None)), ["<li>"]);
+}
+
+/// A block that is not a fragment and has no `each`/`end` behavior stays a node of `childNodes`:
+/// which of its branches renders is unknown, so it counts as content. Expected values are the TS
+/// output on `<ul><li>{#if a} {/if}</li></ul>` with the Svelte parser.
+#[test]
+fn v6_no_empty_palpable_content_016() {
+    assert!(verify_li(&li_with_block(false, None, None)).is_empty());
+    let if_block = Some(MLASTBlockBehaviorType::If);
+    assert!(verify_li(&li_with_block(false, if_block, Some(" "))).is_empty());
+}
+
+/// A block of the `each` behavior is replaced by its children: what is left decides. Expected
+/// values are the TS output on `<ul><li>{#each items as i}x{/each}</li></ul>` and the same with a
+/// space for the `x` (Svelte parser).
+#[test]
+fn v6_no_empty_palpable_content_017() {
+    let each = Some(MLASTBlockBehaviorType::Each);
+    assert!(verify_li(&li_with_block(false, each.clone(), Some("x"))).is_empty());
+    assert_eq!(verify_li(&li_with_block(false, each, Some(" "))), ["<li>"]);
 }

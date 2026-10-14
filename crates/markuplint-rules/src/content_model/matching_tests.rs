@@ -1280,6 +1280,90 @@ mod tests {
         }
 
         #[test]
+        fn has_selector_with_a_sequence_stays_inside_the_anchor() {
+            // `<a><div><b></b></div></a>`: the `a` is an ancestor of the anchor `div`, not inside it
+            let outside = ChildNodeInfo::element_with_children("div", vec![ChildNodeInfo::element("b")]);
+            let bridge = arena_bridge::build_arena("a", &[outside]);
+            // `<div><a><b></b></a></div>`: the `a` is inside the anchor
+            let inside = ChildNodeInfo::element_with_children("a", vec![ChildNodeInfo::element("b")]);
+            let bridge2 = arena_bridge::build_arena("div", &[inside]);
+            let sel = markuplint_selector::parser::parse("div:has(a b)").unwrap();
+            let matches = |b: &arena_bridge::ArenaBridge, id| {
+                markuplint_selector::matcher::matches(&sel, &b.arena, id, None, None, None)
+            };
+            assert!(!matches(&bridge, bridge.child_ids[0]));
+            assert!(matches(&bridge2, bridge2.parent_id));
+        }
+
+        #[test]
+        fn has_selector_with_head_combinator_before_a_sequence() {
+            // `<ul><li><a></a></li></ul>` against `ul:has(> li a)`: `li` is a child of the anchor
+            let child_li = ChildNodeInfo::element_with_children("li", vec![ChildNodeInfo::element("a")]);
+            // `<ul><div><li><a></a></li></div></ul>`: `li` is a grandchild
+            let nested_li = ChildNodeInfo::element_with_children(
+                "div",
+                vec![ChildNodeInfo::element_with_children(
+                    "li",
+                    vec![ChildNodeInfo::element("a")],
+                )],
+            );
+            let sel = markuplint_selector::parser::parse("ul:has(> li a)").unwrap();
+            let direct = arena_bridge::build_arena("ul", &[child_li]);
+            let nested = arena_bridge::build_arena("ul", &[nested_li]);
+            let check = |b: &arena_bridge::ArenaBridge| {
+                markuplint_selector::matcher::matches(&sel, &b.arena, b.parent_id, None, None, None)
+            };
+            assert!(check(&direct));
+            assert!(!check(&nested));
+        }
+
+        #[test]
+        fn has_selector_backtracks_to_a_farther_ancestor() {
+            // `<ul><li><div><li><a></a></li></div></li></ul>`: the nearest `li` above the `a` is
+            // not a child of the `ul`, the outer one is, and `ul:has(> li a)` holds
+            let inner = ChildNodeInfo::element_with_children("li", vec![ChildNodeInfo::element("a")]);
+            let outer = ChildNodeInfo::element_with_children(
+                "li",
+                vec![ChildNodeInfo::element_with_children("div", vec![inner])],
+            );
+            let bridge = arena_bridge::build_arena("ul", &[outer]);
+            let sel = markuplint_selector::parser::parse("ul:has(> li a)").unwrap();
+            assert!(markuplint_selector::matcher::matches(
+                &sel,
+                &bridge.arena,
+                bridge.parent_id,
+                None,
+                None,
+                None,
+            ));
+        }
+
+        #[test]
+        fn has_selector_with_a_sibling_head_before_a_sequence() {
+            // `<span></span><i></i><em><b></b></em>` under a `div`
+            let bridge = arena_bridge::build_arena(
+                "div",
+                &[
+                    ChildNodeInfo::element("span"),
+                    ChildNodeInfo::element("i"),
+                    ChildNodeInfo::element_with_children("em", vec![ChildNodeInfo::element("b")]),
+                ],
+            );
+            let check = |input: &str, i: usize| {
+                let sel = markuplint_selector::parser::parse(input).unwrap();
+                markuplint_selector::matcher::matches(&sel, &bridge.arena, bridge.child_ids[i], None, None, None)
+            };
+            // the `em` is not the next sibling of the `span`, but it is a following one
+            assert!(!check("span:has(+ em b)", 0));
+            assert!(check("span:has(~ em b)", 0));
+            assert!(check("i:has(+ em b)", 1));
+            assert!(check("span:has(~ em > b)", 0));
+            // a compound left of the leftmost one cannot be the anchor's own ancestor or sibling
+            assert!(!check("em:has(~ span b)", 2));
+            assert!(!check("em:has(+ i b)", 2));
+        }
+
+        #[test]
         fn has_selector_with_sibling_combinators() {
             let bridge = arena_bridge::build_arena(
                 "div",

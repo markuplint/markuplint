@@ -125,15 +125,6 @@ impl<'a> Parser<'a> {
         }
         chain.reverse();
 
-        // The chain is matched from the subject upward, so a leading combinator cannot be
-        // anchored to the leftmost compound of a multi-compound selector.
-        if head_combinator.is_some() && !chain.is_empty() {
-            return Err(format!(
-                "A combinator before a compound selector sequence in :has() is unsupported at position {}",
-                self.pos
-            ));
-        }
-
         Ok(ComplexSelector {
             subject,
             chain,
@@ -716,8 +707,13 @@ mod tests {
     }
 
     #[test]
-    fn error_leading_combinator_before_a_sequence_in_has() {
-        assert!(parse(":has(> a b)").is_err());
+    fn parse_has_head_combinator_before_a_sequence() {
+        let list = parse(":has(> a b)").unwrap();
+        let SimpleSelector::PseudoClass(PseudoClassSelector::Has(inner)) = &list.selectors[0].subject.parts[0] else {
+            panic!("not :has()");
+        };
+        assert_eq!(inner.selectors[0].head_combinator, Some(Combinator::Child));
+        assert_eq!(inner.selectors[0].chain.len(), 1);
     }
 
     // --- Error cases ---

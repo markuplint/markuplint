@@ -2,13 +2,14 @@
 //!
 //! Palpability is decided as TS `isPalpableElement()` does: the `#palpable` entries of the
 //! spec are evaluated as selectors (an entry may carry a condition, as in `audio[controls]`,
-//! or a trailing space, as in `sup `), joined into one list with the exposable elements when
+//! or a trailing space, as in `sup `), together with the exposable elements when
 //! `extendsExposableElements` is on. `#SVGRenderable` is left out, as the TS rule passes
 //! `extendsSvg: false`.
 
 use markuplint_core::mlast::MLASTAttr;
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::node::DomNode;
+use markuplint_selector::ast::SelectorList;
 use markuplint_selector::{matcher, parser};
 use markuplint_types::spec::lookup::{get_content_model_tags, is_nothing_content_model_name};
 use markuplint_types::spec::types::MLMLSpec;
@@ -81,15 +82,18 @@ impl Rule for NoEmptyPalpableContent {
             .and_then(serde_json::Value::as_bool)
             .unwrap_or(true);
 
-        let mut conditions = get_content_model_tags(spec, "#palpable").unwrap_or_default().join(",");
-        if extends_exposable {
-            if !conditions.is_empty() {
-                conditions.push(',');
-            }
-            conditions.push_str(&EXPOSABLE_ELEMENTS.join(","));
-        }
-        let Ok(palpable) = parser::parse(&conditions) else {
-            return Vec::new();
+        // One entry at a time, so that an entry this parser rejects drops out alone instead of
+        // silencing the rule; `v6_no_empty_palpable_content_014` keeps the spec's entries parseable.
+        let exposable: &[&str] = if extends_exposable { EXPOSABLE_ELEMENTS } else { &[] };
+        let palpable = SelectorList {
+            selectors: get_content_model_tags(spec, "#palpable")
+                .unwrap_or_default()
+                .iter()
+                .map(String::as_str)
+                .chain(exposable.iter().copied())
+                .filter_map(|entry| parser::parse(entry).ok())
+                .flat_map(|list| list.selectors)
+                .collect(),
         };
 
         let mut violations = Vec::new();
@@ -124,10 +128,10 @@ impl Rule for NoEmptyPalpableContent {
                 }
             }
 
-            // Direct children only; anything but whitespace text (a comment included) is content.
+            // Direct children only, as TS `childNodes` sees them (a fragment block such as a JSX
+            // `{i.name}` is transparent); anything but whitespace text (a comment included) is content.
             let is_empty = arena
-                .children_of(node_id)
-                .unwrap_or_default()
+                .child_nodes(node_id)
                 .iter()
                 .all(|&child| matches!(arena.get(child), Some(DomNode::Text(t)) if is_whitespace(&t.base.raw)));
 
