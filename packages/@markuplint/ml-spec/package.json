@@ -43,6 +43,6 @@
 	},
 	"devDependencies": {
 		"@markuplint/test-tools": "5.2.0",
-		"json-schema-to-typescript": "15.0.4"
+		"json-schema-to-typescript": "16.0.0"
 	}
 }
