@@ -800,6 +800,41 @@ mod tests {
             assert_eq!(run_empty("#text").result_type, ResultType::MatchedZero);
         }
 
+        /// `#nonEmptyText` accepts a text node that has content, rejects an empty or
+        /// whitespace-only one, and does not take an element.
+        #[test]
+        fn non_empty_text_selector() {
+            let spec = html_spec();
+            let text = ChildNodeInfo::text("Hello");
+            let r = matches_selector_fn("#nonEmptyText", Some(&text), 1, &spec);
+            assert_eq!(r.result_type, ResultType::Matched);
+            assert!(!r.zero_match);
+
+            let ws = ChildNodeInfo::text("  \n");
+            let r = matches_selector_fn("#nonEmptyText", Some(&ws), 1, &spec);
+            assert_eq!(r.result_type, ResultType::MissingNode);
+            assert!(r.matched.is_empty());
+
+            assert_eq!(run("#nonEmptyText", "a").result_type, ResultType::UnmatchedSelectors);
+            assert_eq!(run_empty("#nonEmptyText").result_type, ResultType::MissingNode);
+        }
+
+        /// The `:model(nonEmptyText)` spelling is the same query as `#nonEmptyText`, and a
+        /// preprocessor block stands for text of unknown content, so it matches zero-width.
+        #[test]
+        fn non_empty_text_model_and_preprocessor_block() {
+            let spec = html_spec();
+            let text = ChildNodeInfo::text("Hello");
+            let r = matches_selector_fn(":model(nonEmptyText)", Some(&text), 1, &spec);
+            assert_eq!(r.result_type, ResultType::Matched);
+            assert_eq!(run_empty(":model(nonEmptyText)").result_type, ResultType::MissingNode);
+
+            let pp = ChildNodeInfo::preprocessor_block("<% code %>");
+            let r = matches_selector_fn("#nonEmptyText", Some(&pp), 1, &spec);
+            assert_eq!(r.result_type, ResultType::Matched);
+            assert!(r.zero_match);
+        }
+
         #[test]
         fn whitespace_text_node() {
             let spec = html_spec();
@@ -1407,6 +1442,18 @@ mod tests {
             assert!(ChildNodeInfo::text("   ").is_whitespace());
             assert!(!ChildNodeInfo::text("hello").is_whitespace());
             assert!(!ChildNodeInfo::element("div").is_whitespace());
+        }
+
+        /// The TS `Text.isWhitespace()` is `/^\s+$/`: empty text is not whitespace, and
+        /// the Unicode spaces of `\s` (not U+0085) are.
+        #[test]
+        fn text_whitespace_follows_js_regexp() {
+            assert!(!ChildNodeInfo::text("").is_whitespace());
+            assert!(ChildNodeInfo::text("\u{00A0}").is_whitespace());
+            assert!(ChildNodeInfo::text("\u{3000}\n").is_whitespace());
+            assert!(ChildNodeInfo::text("\u{FEFF}").is_whitespace());
+            assert!(!ChildNodeInfo::text("\u{0085}").is_whitespace());
+            assert!(!ChildNodeInfo::text(" a ").is_whitespace());
         }
 
         #[test]

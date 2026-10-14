@@ -7,6 +7,9 @@
 //!   permitted-contents-issue-1848           — v6_permitted_contents_022
 //!   permitted-contents-issue-3739-*         — SKIP: user tag rules (`rule: [{ tag }]`) are not accepted by the Rust rule
 //!   v6_permitted_contents_023               — Rust-only: the children are the TS `childNodes` (`{#each}` blocks read through)
+//!   permitted-contents-issue-3635-003/002/006 — v6_permitted_contents_024..026 (`#nonEmptyText`)
+//!   permitted-contents-issue-3635-001/004/005 — v6_permitted_contents_027..029
+//!   v6_permitted_contents_030               — Rust-only: U+3000 is whitespace for `#nonEmptyText`
 
 use super::*;
 use crate::rule::{RuleConfig, RuleConfigSet};
@@ -1340,5 +1343,97 @@ fn v6_permitted_contents_023() {
     assert_eq!(
         (violations[0].line, violations[0].col, violations[0].raw.as_str()),
         (1, 28, "<li>")
+    );
+}
+
+/// TS `[permitted-contents-issue-3635-003]`: a `title` with text satisfies `#nonEmptyText`.
+#[test]
+fn v6_permitted_contents_024() {
+    assert_eq!(
+        lint_pretended(
+            "<html><head><title>Page Title</title></head><body></body></html>",
+            serde_json::json!(true),
+            serde_json::json!([])
+        ),
+        []
+    );
+}
+
+/// TS `[permitted-contents-issue-3635-002]`: a whitespace-only `title` is rejected.
+#[test]
+fn v6_permitted_contents_025() {
+    assert_eq!(
+        lint_pretended(
+            "<html><head><title>  </title></head><body></body></html>",
+            serde_json::json!(true),
+            serde_json::json!([])
+        ),
+        [v(1, 13, "<title>", r##"Require an element. (Need "#nonEmptyText")"##)]
+    );
+}
+
+/// TS `[permitted-contents-issue-3635-001]`: an empty `title` is rejected.
+#[test]
+fn v6_permitted_contents_027() {
+    assert_eq!(
+        lint_pretended(
+            "<html><head><title></title></head><body></body></html>",
+            serde_json::json!(true),
+            serde_json::json!([])
+        ),
+        [v(1, 13, "<title>", r##"Require an element. (Need "#nonEmptyText")"##)]
+    );
+}
+
+/// TS `[permitted-contents-issue-3635-004]`: an empty `option` without `label` is rejected.
+#[test]
+fn v6_permitted_contents_028() {
+    assert_eq!(
+        lint_pretended(
+            "<select><option></option></select>",
+            serde_json::json!(true),
+            serde_json::json!([])
+        ),
+        [v(1, 9, "<option>", r##"Require an element. (Need "#nonEmptyText")"##)]
+    );
+}
+
+/// TS `[permitted-contents-issue-3635-005]`: an empty `option` with `label` is valid.
+#[test]
+fn v6_permitted_contents_029() {
+    assert_eq!(
+        lint_pretended(
+            r#"<select><option label="x" value="v"></option></select>"#,
+            serde_json::json!(true),
+            serde_json::json!([])
+        ),
+        []
+    );
+}
+
+/// A `title` whose only text is U+3000 is whitespace for `#nonEmptyText`, as in the TS
+/// `/^\s+$/`.
+#[test]
+fn v6_permitted_contents_030() {
+    assert_eq!(
+        lint_pretended(
+            "<html><head><title>\u{3000}</title></head><body></body></html>",
+            serde_json::json!(true),
+            serde_json::json!([])
+        ),
+        [v(1, 13, "<title>", r##"Require an element. (Need "#nonEmptyText")"##)]
+    );
+}
+
+/// TS `[permitted-contents-issue-3635-006]`: an `option` with text is valid.
+#[test]
+fn v6_permitted_contents_026() {
+    assert_eq!(
+        lint_pretended(
+            "<select><option>Text</option></select>",
+            serde_json::json!(true),
+            serde_json::json!([])
+        ),
+        []
     );
 }

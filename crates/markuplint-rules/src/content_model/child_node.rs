@@ -103,7 +103,12 @@ impl ChildNodeInfo {
     pub fn text(raw: &str) -> Self {
         Self {
             kind: ChildNodeKind::Text {
-                is_whitespace: raw.chars().all(|c| c.is_ascii_whitespace()),
+                // The TS `Text.isWhitespace()` is `/^\s+$/`: non-empty, and every
+                // character is a JS `\s` (Unicode White_Space and U+FEFF, but not U+0085).
+                is_whitespace: !raw.is_empty()
+                    && raw
+                        .chars()
+                        .all(|c| c == '\u{FEFF}' || (c.is_whitespace() && c != '\u{85}')),
             },
             node_name: String::new(),
             raw: raw.to_string(),
