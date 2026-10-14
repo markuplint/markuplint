@@ -25,8 +25,6 @@ const notInRust = new Set(['no-unsupported-browser-features', 'no-mismatched-asp
  *   `output` and the elements of the "nothing" content model; the port does not.
  * - `no-default-value`: the TS rule points at the value, the port at the whole attribute.
  * - `class-naming`: without a pattern the TS rule reports every class name; the port reports none.
- * - `permitted-contents`: the port has no `#nonEmptyText`, so it reports a `<title>` that has text
- *   (the fixtures leave `<title>` out).
  */
 const differsOnPlainHtml = new Set(['no-empty-palpable-content', 'no-default-value', 'class-naming']);
 
