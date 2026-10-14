@@ -48,6 +48,19 @@ the `bench-setup` skill first.
 not this skill's target — but if you need to understand it, see
 "Note: ml-only readings" at the end.
 
+A verdict tally (`ml-only=32` for a category, the count line in a
+`bench:xref` block) is a pointer, not evidence. It says how many
+fixtures differ, not which rule or attribute differs or whether
+markuplint or nu is the one following the spec. Before a tally is
+quoted in an Issue or PR body, pick one or two representative
+fixtures, regenerate their snapshots (`yarn bench:update --target
+markuplint`, or run them through `mlTest()`), read
+`snapshots/markuplint/<path>.json` `violations[]`, and confirm the
+flagged rule and attribute are the ones the claim is about. An
+`ml-only` count read as "markuplint over-detects" without that step
+has produced Issues whose actual violations came from unrelated
+rules.
+
 ## Step 1: Pick a fixture
 
 Slice `tests/external/snapshots/diff/nu-only.json` (`entries[]` with
