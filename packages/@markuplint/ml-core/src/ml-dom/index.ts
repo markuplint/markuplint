@@ -8,3 +8,5 @@ export type { MLText as Text } from './node/text.js';
 export type { MLChildNode as ChildNode } from './node/child-node.js';
 
 export { MLDocument as Document } from './node/document.js';
+export { resolveAttrNames } from './helper/resolve-attr-names.js';
+export type { ResolvedAttr } from './helper/resolve-attr-names.js';

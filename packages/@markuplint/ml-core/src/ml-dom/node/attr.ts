@@ -3,9 +3,9 @@ import type { AttributeNodeType } from './types.js';
 import type { MLASTAttr } from '@markuplint/ml-ast';
 import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
-import { resolveNamespace, compileDirectivePatterns, resolveDirective } from '@markuplint/ml-spec';
-import { searchIDLAttribute } from '@markuplint/parser-utils';
+import { resolveNamespace } from '@markuplint/ml-spec';
 
+import { resolveAttrNames } from '../helper/resolve-attr-names.js';
 import { MLToken } from '../token/token.js';
 
 import { MLDomTokenList } from './dom-token-list.js';
@@ -136,55 +136,16 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 		this.startQuote = new MLToken(this._astToken.startQuote);
 		this.valueNode = new MLToken(this._astToken.value);
 		this.endQuote = new MLToken(this._astToken.endQuote);
-		this.candidate = this._astToken.candidate;
 		this.#potentialValue = this._astToken.potentialValue ?? this.valueNode?.raw ?? '';
 
-		if (this._astToken.potentialName == null) {
-			// Try declarative directive pattern resolution from spec
-			const patterns = ownElement.ownerMLDocument.specs.directivePatterns ?? [];
-			const resolution =
-				patterns.length > 0
-					? resolveDirective(this.nameNode?.raw ?? '', compileDirectivePatterns(patterns))
-					: null;
-
-			if (resolution) {
-				this.#potentialName = resolution.potentialName ?? this.nameNode?.raw ?? '';
-				this.isDynamicValue = resolution.isDynamicValue;
-				this.isDirective = resolution.isDirective;
-				this.isDuplicatable = resolution.isDuplicatable ?? this._astToken.isDuplicatable;
-				if (resolution.valueType) {
-					this.valueType = resolution.valueType;
-				}
-			} else {
-				this.#potentialName = this.nameNode?.raw ?? '';
-				this.isDynamicValue = this._astToken.isDynamicValue;
-				this.isDirective = this._astToken.isDirective;
-				this.isDuplicatable = this._astToken.isDuplicatable;
-			}
-
-			// IDL attribute resolution (after directivePatterns).
-			// Performed in the core, not in each parser: any spec opting in via
-			// `acceptedAttrNames` shares the same IDL-to-content-attribute mapping.
-			if (ownElement.ownerMLDocument.specs.acceptedAttrNames && !this.isDirective) {
-				const { contentAttrName, idlPropName } = searchIDLAttribute(this.#potentialName);
-				if (contentAttrName && contentAttrName !== this.#potentialName) {
-					this.#potentialName = contentAttrName;
-				}
-				// Set candidate for IDL naming suggestions (e.g., tabindex → tabIndex in JSX).
-				// Only in 'idl' mode (React). In 'both' mode (Svelte), both content and IDL names are accepted.
-				if (!resolution && idlPropName && ownElement.ownerMLDocument.specs.acceptedAttrNames === 'idl') {
-					const rawName = this.nameNode?.raw ?? '';
-					if (rawName !== idlPropName) {
-						this.candidate = idlPropName;
-					}
-				}
-			}
-		} else {
-			// Parser-set potentialName takes precedence
-			this.#potentialName = this._astToken.potentialName;
-			this.isDynamicValue = this._astToken.isDynamicValue;
-			this.isDirective = this._astToken.isDirective;
-			this.isDuplicatable = this._astToken.isDuplicatable;
+		const resolved = resolveAttrNames(this._astToken, ownElement.ownerMLDocument.specs);
+		this.#potentialName = resolved.potentialName;
+		this.candidate = resolved.candidate;
+		this.isDynamicValue = resolved.isDynamicValue;
+		this.isDirective = resolved.isDirective;
+		this.isDuplicatable = resolved.isDuplicatable;
+		if (resolved.valueType) {
+			this.valueType = resolved.valueType;
 		}
 
 		const ns = resolveNamespace(this.#potentialName, ownElement.namespaceURI);
