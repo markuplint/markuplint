@@ -531,6 +531,14 @@ pub(crate) fn matches_selector(
     };
 
     if node.is_text() {
+        if cond.has_non_empty_text {
+            // Whitespace-only text does not satisfy `#nonEmptyText`; it is treated
+            // as if the node were missing, so the requirement is reported.
+            if node.is_whitespace() {
+                return MatchResult::missing(query);
+            }
+            return MatchResult::matched_single(0, total_count, query, false);
+        }
         if cond.has_text {
             return MatchResult::matched_single(0, total_count, query, true);
         }
@@ -548,7 +556,7 @@ pub(crate) fn matches_selector(
     }
 
     if matches!(node.kind, super::child_node::ChildNodeKind::PreprocessorBlock) {
-        return MatchResult::matched_single(0, total_count, query, cond.has_text);
+        return MatchResult::matched_single(0, total_count, query, cond.has_text || cond.has_non_empty_text);
     }
 
     if node.is_custom() {
@@ -774,10 +782,13 @@ fn collect_unmatched(collection: &Collection<'_>) -> Vec<ChildNodeInfo> {
     collection.unmatched_nodes().into_iter().cloned().collect()
 }
 
+#[derive(Default)]
 struct Condition {
     resolved_selector: String,
     has_custom: bool,
     has_text: bool,
+    /// `#nonEmptyText`: unlike `has_text`, rejects empty and whitespace-only text.
+    has_non_empty_text: bool,
 }
 
 fn opt_condition(query: &str, spec: &MLMLSpec) -> Condition {
@@ -785,14 +796,20 @@ fn opt_condition(query: &str, spec: &MLMLSpec) -> Condition {
         return Condition {
             resolved_selector: "#custom".to_string(),
             has_custom: true,
-            has_text: false,
+            ..Condition::default()
         };
     }
     if query == "#text" {
         return Condition {
             resolved_selector: "#text".to_string(),
-            has_custom: false,
             has_text: true,
+            ..Condition::default()
+        };
+    }
+    if query == "#nonEmptyText" || query == ":model(nonEmptyText)" {
+        return Condition {
+            has_non_empty_text: true,
+            ..Condition::default()
         };
     }
 
@@ -808,8 +825,7 @@ fn opt_condition(query: &str, spec: &MLMLSpec) -> Condition {
     let Some(cat) = category else {
         return Condition {
             resolved_selector: query.to_string(),
-            has_custom: false,
-            has_text: false,
+            ..Condition::default()
         };
     };
 
@@ -831,6 +847,7 @@ fn opt_condition(query: &str, spec: &MLMLSpec) -> Condition {
         resolved_selector: query.to_string(),
         has_custom,
         has_text,
+        ..Condition::default()
     }
 }
 
