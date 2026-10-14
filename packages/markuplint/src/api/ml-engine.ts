@@ -19,6 +19,8 @@ import path from 'node:path';
 
 import { applyRuleAliasesToConfig, mergeConfig } from '@markuplint/ml-config';
 import { CONFIG_ERROR_RULE_ID, MLCore, convertRuleset, multiPassFix } from '@markuplint/ml-core';
+import { schemaToSpec } from '@markuplint/ml-spec';
+import { ParserError } from '@markuplint/parser-utils';
 import { ruleAliasTable } from '@markuplint/rules';
 import { ConfigLoadError, isFatalError } from '@markuplint/shared';
 import { Emitter } from 'strict-event-emitter';
@@ -26,6 +28,7 @@ import { Emitter } from 'strict-event-emitter';
 import { log as coreLog, verbosely } from '../debug.js';
 import { i18n } from '../i18n.js';
 
+import { mlastForRust } from './rust-mlast.js';
 import { subscribe as subscribeToWatcher, toWatchKey } from './shared-watcher.js';
 
 const log = coreLog.extend('ml-engine');
@@ -372,20 +375,12 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 
 	/**
 	 * Attempts to execute linting via the Rust NAPI engine.
-	 * Returns `null` if the file is not eligible (framework parser, custom rules,
+	 * Returns `null` if the file is not eligible (custom rules,
 	 * or a rule the Rust engine cannot evaluate),
 	 * in which case the caller should fall back to the TS engine.
 	 */
 	async #tryExecRustPath(fabric: MLFabric): Promise<MLResultInfo | null> {
 		const fix = this.#options?.fix ?? false;
-
-		// Fallback: framework parser
-		if (this.#parserModName !== '@markuplint/html-parser') {
-			process.stderr.write(
-				`⚠ [experimental-rust-core] "${this.#file.path}" uses a framework parser (${this.#parserModName}) — falling back to TypeScript engine.\n`,
-			);
-			return null;
-		}
 
 		// Fallback: custom rules from plugins
 		if (this.#hasPluginRules) {
@@ -406,10 +401,9 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		}
 
 		// Load NAPI binding
-		let lintHtml: (html: string, configJson: string, specJson: string) => NapiViolation[];
+		let napi: NapiBinding;
 		try {
-			const napi = await loadNapiBinding();
-			lintHtml = napi.lintHtml;
+			napi = await loadNapiBinding();
 		} catch (error) {
 			if (isFatalError(error)) {
 				throw error;
@@ -424,9 +418,24 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 
 		// Build config JSON for Rust
 		const configJson = buildRustConfigJson(fabric.ruleset, fabric.ruleCommonSettings, fabric.pretenders);
-		const specJson = JSON.stringify(fabric.schemas[0]);
+		// The extended specs of a framework are merged here, as the TS document does with them.
+		const spec = schemaToSpec(fabric.schemas);
+		const specJson = JSON.stringify(spec);
 
-		log('exec: rust path lintHtml');
+		// The HTML parser is the Rust one; every other parser runs in TS, and its MLAST goes over.
+		const tsParser = {
+			parser: fabric.parser,
+			parserOptions: fabric.parserOptions,
+			severity: fabric.severity,
+			spec,
+		};
+		const lintHtml =
+			this.#parserModName === '@markuplint/html-parser'
+				? napi.lintHtml
+				: (code: string, config: string, specJson: string) =>
+						lintWithTsParser(napi, tsParser, code, config, specJson);
+
+		log('exec: rust path lint');
 
 		let napiViolations: NapiViolation[];
 		try {
@@ -475,8 +484,13 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 				let latest: readonly Violation[] = [];
 				const result = await multiPassFix(sourceCode, violations, {
 					load: code => {
+						let parsed: boolean;
 						try {
-							latest = toViolations(lintHtml(code, configJson, specJson), true);
+							const raw = lintHtml(code, configJson, specJson);
+							latest = toViolations(raw, true);
+							// Read off what the engine returned, not off `latest`: a `parse-error` the
+							// config turns off is not reported but is still a document that did not parse.
+							parsed = !raw.some(v => v.ruleId === PARSE_ERROR_RULE_ID);
 						} catch (error) {
 							if (isFatalError(error)) {
 								throw error;
@@ -487,7 +501,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 							latest = [];
 							return Promise.resolve(false);
 						}
-						return Promise.resolve(!latest.some(v => v.ruleId === PARSE_ERROR_RULE_ID));
+						return Promise.resolve(parsed);
 					},
 					lint: () => Promise.resolve(latest),
 				});
@@ -1228,28 +1242,99 @@ const PARSE_ERROR_RULE_ID = 'parse-error';
  * for, as the TS engine computes it only then.
  */
 function toViolations(napiViolations: readonly NapiViolation[], withFix: boolean): Violation[] {
-	return napiViolations.map(v => ({
-		ruleId: v.ruleId,
-		name: v.name ?? undefined,
-		severity: v.severity as Violation['severity'],
-		message: v.message,
-		line: v.line,
-		col: v.col,
-		raw: v.raw,
-		...(withFix &&
-			v.fix && {
-				fix: {
-					edits: v.fix.edits.map(edit => ({
-						range: [edit.range[0]!, edit.range[1]!] as const,
-						text: edit.text,
-					})),
-				},
-			}),
-	}));
+	return napiViolations
+		.filter(v => v.severity !== SUPPRESSED_SEVERITY)
+		.map(v => ({
+			ruleId: v.ruleId,
+			name: v.name ?? undefined,
+			severity: v.severity as Violation['severity'],
+			message: v.message,
+			line: v.line,
+			col: v.col,
+			raw: v.raw,
+			...(withFix &&
+				v.fix && {
+					fix: {
+						edits: v.fix.edits.map(edit => ({
+							range: [edit.range[0]!, edit.range[1]!] as const,
+							text: edit.text,
+						})),
+					},
+				}),
+		}));
+}
+
+/**
+ * What `MLCore` reports for a document its parser threw a {@link ParserError} for: the one
+ * `parse-error` violation, `error` unless `severity.parseError` says otherwise. A fatal error has
+ * no code, so the per-code form of the option cannot name it and it stays `error` there.
+ */
+function fatalParseErrorViolations(error: ParserError, { parseError }: MLFabric['severity']): NapiViolation[] {
+	const severity =
+		typeof parseError === 'object'
+			? 'error'
+			: parseError === false || parseError === 'off'
+				? null
+				: parseError == null || parseError === true
+					? 'error'
+					: parseError;
+	// Kept when `severity.parseError` turns it off, so that the fix loop still knows the document
+	// did not parse; `toViolations` leaves it out of what is reported.
+	return [
+		{
+			ruleId: PARSE_ERROR_RULE_ID,
+			severity: severity ?? SUPPRESSED_SEVERITY,
+			message: error.message,
+			line: error.line,
+			col: error.col,
+			raw: error.raw,
+		},
+	];
+}
+
+/** What a violation that is kept but not reported is given for a severity. */
+const SUPPRESSED_SEVERITY = 'off';
+
+/**
+ * Lints a file of a parser that runs in TS: the parser builds the AST, and the Rust engine
+ * evaluates it. A document the parser cannot build is the one `parse-error` violation, as the TS
+ * engine reports it.
+ */
+function lintWithTsParser(
+	napi: NapiBinding,
+	{
+		parser,
+		parserOptions,
+		severity,
+		spec,
+	}: {
+		readonly parser: MLFabric['parser'];
+		readonly parserOptions: MLFabric['parserOptions'];
+		readonly severity: MLFabric['severity'];
+		readonly spec: Parameters<typeof mlastForRust>[1]['spec'];
+	},
+	code: string,
+	configJson: string,
+	specJson: string,
+): NapiViolation[] {
+	let ast;
+	try {
+		ast = parser.parse(code, parserOptions);
+	} catch (error) {
+		if (isFatalError(error)) {
+			throw error;
+		}
+		if (error instanceof ParserError) {
+			return fatalParseErrorViolations(error, severity);
+		}
+		throw error;
+	}
+	return napi.lint(mlastForRust(ast, { spec, parser }), configJson, specJson);
 }
 
 type NapiBinding = {
 	lintHtml: (html: string, configJson: string, specJson: string) => NapiViolation[];
+	lint: (mlastJson: string, configJson: string, specJson: string) => NapiViolation[];
 };
 
 let cachedNapi: NapiBinding | undefined;

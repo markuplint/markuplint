@@ -21,7 +21,9 @@ export type APIOptions = {
 	readonly severity?: SeverityOptions;
 	/**
 	 * [Experimental] Use the Rust linting engine for built-in rules.
-	 * Falls back to the TypeScript engine for framework parsers and custom rules.
+	 * The files of framework parsers are parsed in TypeScript and the result is handed to the Rust
+	 * engine. Falls back to the TypeScript engine for custom rules and for the rules that read
+	 * what is outside the document.
 	 */
 	readonly experimentalRustCore?: boolean;
 	/**
