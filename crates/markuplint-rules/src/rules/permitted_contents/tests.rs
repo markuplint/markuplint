@@ -6,6 +6,7 @@
 //!   permitted-contents-invalid-025          — v6_permitted_contents_021
 //!   permitted-contents-issue-1848           — v6_permitted_contents_022
 //!   permitted-contents-issue-3739-*         — SKIP: user tag rules (`rule: [{ tag }]`) are not accepted by the Rust rule
+//!   v6_permitted_contents_023               — Rust-only: the children are the TS `childNodes` (`{#each}` blocks read through)
 
 use super::*;
 use crate::rule::{RuleConfig, RuleConfigSet};
@@ -1316,5 +1317,28 @@ fn v6_permitted_contents_022() {
     assert_eq!(
         pc("<x-c></x-c>", serde_json::json!([{ "selector": "x-c", "as": "Head" }])),
         [v(1, 1, "<x-c>", r#"Require an element. (Need "title")"#)]
+    );
+}
+
+/// What the TS `el.childNodes` gives is what the content model checks: Svelte's `{#each}` and
+/// `{/each}` blocks are read through, so the `li` they hold is a child of `main`, which does not
+/// permit it. The AST is the Svelte parser's (`tests/generate-fixtures.mjs`).
+#[test]
+fn v6_permitted_contents_023() {
+    let arena = markuplint_dom::builder::build_from_json(include_str!(
+        "../../../../markuplint-core/tests/fixtures/svelte-each-block.json"
+    ))
+    .unwrap();
+    let config: crate::lint::LintConfig =
+        serde_json::from_value(serde_json::json!({ "rules": { "permitted-contents": true } })).unwrap();
+    let violations = crate::lint::lint(&arena, &spec(), &config).violations;
+    assert_eq!(violations.len(), 1);
+    assert_eq!(
+        violations[0].message,
+        r#"The "li" element is not allowed in the "main" element in this context"#
+    );
+    assert_eq!(
+        (violations[0].line, violations[0].col, violations[0].raw.as_str()),
+        (1, 28, "<li>")
     );
 }

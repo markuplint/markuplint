@@ -2,7 +2,7 @@
 
 use std::collections::HashMap;
 
-use markuplint_core::mlast::MLASTParseError;
+use markuplint_core::mlast::{DocumentSettings, MLASTParseError};
 
 use crate::node::{DomNode, ElementData};
 
@@ -20,6 +20,10 @@ pub struct DomArena {
     /// only on the HTML parser path (Path B), which records the character-reference
     /// errors; the MLAST path leaves it empty.
     pub(crate) parse_errors: Vec<MLASTParseError>,
+    /// What the parser says about its markup (TS `Document.endTag` and the like). Only the MLAST
+    /// path (Path A) can carry anything but the HTML defaults, as only there is the parser not
+    /// the Rust HTML one.
+    pub(crate) settings: DocumentSettings,
 }
 
 impl DomArena {
@@ -30,7 +34,17 @@ impl DomArena {
             uuid_to_id: HashMap::new(),
             source: None,
             parse_errors: Vec::new(),
+            settings: DocumentSettings::default(),
         }
+    }
+
+    #[must_use]
+    pub fn settings(&self) -> DocumentSettings {
+        self.settings
+    }
+
+    pub fn set_settings(&mut self, settings: DocumentSettings) {
+        self.settings = settings;
     }
 
     #[must_use]

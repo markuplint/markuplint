@@ -8,6 +8,7 @@ use markuplint_core::mlast::{ElementType, MLASTAttr};
 use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::types::MLMLSpec;
 
+use crate::aria_check::attr_name;
 use crate::fix::Fix;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
@@ -44,10 +45,12 @@ impl Rule for NoDuplicateAttr {
                     continue;
                 }
 
+                // TS `attr.name`: the name the parser resolved (`:href` is `href`), else as written.
+                let name = attr_name(html_attr);
                 let name = if case_insensitive {
-                    html_attr.node_name.to_ascii_lowercase()
+                    name.to_ascii_lowercase()
                 } else {
-                    markuplint_dom::helpers::get_raw_attr_name(html_attr).to_owned()
+                    name.to_owned()
                 };
                 let count = seen.entry(name).or_insert(0);
                 *count += 1;

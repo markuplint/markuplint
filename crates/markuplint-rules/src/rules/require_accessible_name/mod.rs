@@ -7,7 +7,7 @@ use markuplint_types::spec::types::MLMLSpec;
 use crate::aria::accname::get_accname;
 use crate::aria::computed_role::get_computed_role;
 use crate::aria::is_exposed::is_exposed;
-use crate::helpers::accname_may_come_from_unknown_content;
+use crate::helpers::{accname_may_be_mutable, accname_may_come_from_unknown_content};
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
@@ -36,8 +36,9 @@ impl Rule for RequireAccessibleName {
                 continue;
             }
 
-            // A framework binding may resolve to a name at runtime, so skip it.
-            if has_dynamic_aria_label(el) {
+            // A framework binding (a dynamic attribute, a spread, a block whose output is not
+            // known) may resolve to a name at runtime, so skip it. TS `accnameMayBeMutable`.
+            if accname_may_be_mutable(arena, node_id) {
                 continue;
             }
 
@@ -79,17 +80,6 @@ fn parse_aria_version(config: &crate::rule::RuleConfig) -> ARIAVersion {
             "1.3" => ARIAVersion::V1_3,
             _ => ARIAVersion::RECOMMENDED,
         })
-}
-
-fn has_dynamic_aria_label(el: &markuplint_dom::node::ElementData) -> bool {
-    use markuplint_core::mlast::MLASTAttr;
-    el.attributes.iter().any(|attr| {
-        if let MLASTAttr::HTMLAttr(a) = attr {
-            a.node_name.eq_ignore_ascii_case("aria-label") && a.is_dynamic_value == Some(true)
-        } else {
-            false
-        }
-    })
 }
 
 #[cfg(test)]

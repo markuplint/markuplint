@@ -11556,6 +11556,7 @@ __metadata:
     "@markuplint/ml-config": "npm:5.1.1"
     "@markuplint/ml-core": "npm:5.1.1"
     "@markuplint/ml-spec": "npm:5.1.1"
+    "@markuplint/parser-utils": "npm:5.1.1"
     "@markuplint/rules": "npm:5.1.1"
     "@markuplint/shared": "npm:5.1.1"
     "@types/debug": "npm:4.1.13"

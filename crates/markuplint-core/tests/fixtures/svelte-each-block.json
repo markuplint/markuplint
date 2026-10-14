@@ -1,0 +1,268 @@
+{
+	"raw": "<main>{#each items as item}<li>x</li>{/each}</main>",
+	"nodeList": [
+		{
+			"uuid": "657bc636",
+			"raw": "<main>",
+			"offset": 0,
+			"line": 1,
+			"col": 1,
+			"depth": 0,
+			"nodeName": "main",
+			"parentNodeUuid": null,
+			"type": "starttag",
+			"elementType": "html",
+			"namespace": "http://www.w3.org/1999/xhtml",
+			"attributes": [],
+			"childNodes": [
+				{
+					"raw": "{#each items as item}",
+					"offset": 6,
+					"line": 1,
+					"col": 7,
+					"depth": 1,
+					"nodeName": "#ps:each",
+					"isFragment": false,
+					"uuid": "10bfd69b",
+					"type": "psblock",
+					"blockBehavior": {
+						"type": "each",
+						"expression": "{#each items as item}"
+					},
+					"childNodes": [
+						{
+							"uuid": "ff7273e9",
+							"raw": "<li>",
+							"offset": 27,
+							"line": 1,
+							"col": 28,
+							"depth": 2,
+							"nodeName": "li",
+							"parentNodeUuid": "10bfd69b",
+							"type": "starttag",
+							"elementType": "html",
+							"namespace": "http://www.w3.org/1999/xhtml",
+							"attributes": [],
+							"childNodes": [
+								{
+									"raw": "x",
+									"offset": 31,
+									"line": 1,
+									"col": 32,
+									"depth": 3,
+									"uuid": "ea2c4218",
+									"type": "text",
+									"nodeName": "#text",
+									"parentNodeUuid": "ff7273e9"
+								}
+							],
+							"pairNodeUuid": "d3640057",
+							"tagOpenChar": "<",
+							"tagCloseChar": ">",
+							"blockBehavior": null,
+							"isGhost": false,
+							"isFragment": false
+						},
+						{
+							"uuid": "d3640057",
+							"raw": "</li>",
+							"offset": 32,
+							"line": 1,
+							"col": 33,
+							"depth": 2,
+							"nodeName": "li",
+							"parentNodeUuid": "10bfd69b",
+							"type": "endtag",
+							"pairNodeUuid": "ff7273e9",
+							"tagOpenChar": "</",
+							"tagCloseChar": ">"
+						}
+					],
+					"isBogus": false,
+					"parentNodeUuid": "657bc636"
+				},
+				{
+					"raw": "{/each}",
+					"offset": 37,
+					"line": 1,
+					"col": 38,
+					"depth": 1,
+					"nodeName": "#ps:/each",
+					"isFragment": false,
+					"uuid": "46e318e0",
+					"type": "psblock",
+					"blockBehavior": {
+						"type": "end",
+						"expression": "{/each}"
+					},
+					"childNodes": [],
+					"isBogus": false,
+					"parentNodeUuid": "657bc636"
+				}
+			],
+			"pairNodeUuid": "1130cb64",
+			"tagOpenChar": "<",
+			"tagCloseChar": ">",
+			"blockBehavior": null,
+			"isGhost": false,
+			"isFragment": false
+		},
+		{
+			"raw": "{#each items as item}",
+			"offset": 6,
+			"line": 1,
+			"col": 7,
+			"depth": 1,
+			"nodeName": "#ps:each",
+			"isFragment": false,
+			"uuid": "10bfd69b",
+			"type": "psblock",
+			"blockBehavior": {
+				"type": "each",
+				"expression": "{#each items as item}"
+			},
+			"childNodes": [
+				{
+					"uuid": "ff7273e9",
+					"raw": "<li>",
+					"offset": 27,
+					"line": 1,
+					"col": 28,
+					"depth": 2,
+					"nodeName": "li",
+					"parentNodeUuid": "10bfd69b",
+					"type": "starttag",
+					"elementType": "html",
+					"namespace": "http://www.w3.org/1999/xhtml",
+					"attributes": [],
+					"childNodes": [
+						{
+							"raw": "x",
+							"offset": 31,
+							"line": 1,
+							"col": 32,
+							"depth": 3,
+							"uuid": "ea2c4218",
+							"type": "text",
+							"nodeName": "#text",
+							"parentNodeUuid": "ff7273e9"
+						}
+					],
+					"pairNodeUuid": "d3640057",
+					"tagOpenChar": "<",
+					"tagCloseChar": ">",
+					"blockBehavior": null,
+					"isGhost": false,
+					"isFragment": false
+				},
+				{
+					"uuid": "d3640057",
+					"raw": "</li>",
+					"offset": 32,
+					"line": 1,
+					"col": 33,
+					"depth": 2,
+					"nodeName": "li",
+					"parentNodeUuid": "10bfd69b",
+					"type": "endtag",
+					"pairNodeUuid": "ff7273e9",
+					"tagOpenChar": "</",
+					"tagCloseChar": ">"
+				}
+			],
+			"isBogus": false,
+			"parentNodeUuid": "657bc636"
+		},
+		{
+			"uuid": "ff7273e9",
+			"raw": "<li>",
+			"offset": 27,
+			"line": 1,
+			"col": 28,
+			"depth": 2,
+			"nodeName": "li",
+			"parentNodeUuid": "10bfd69b",
+			"type": "starttag",
+			"elementType": "html",
+			"namespace": "http://www.w3.org/1999/xhtml",
+			"attributes": [],
+			"childNodes": [
+				{
+					"raw": "x",
+					"offset": 31,
+					"line": 1,
+					"col": 32,
+					"depth": 3,
+					"uuid": "ea2c4218",
+					"type": "text",
+					"nodeName": "#text",
+					"parentNodeUuid": "ff7273e9"
+				}
+			],
+			"pairNodeUuid": "d3640057",
+			"tagOpenChar": "<",
+			"tagCloseChar": ">",
+			"blockBehavior": null,
+			"isGhost": false,
+			"isFragment": false
+		},
+		{
+			"raw": "x",
+			"offset": 31,
+			"line": 1,
+			"col": 32,
+			"depth": 3,
+			"uuid": "ea2c4218",
+			"type": "text",
+			"nodeName": "#text",
+			"parentNodeUuid": "ff7273e9"
+		},
+		{
+			"uuid": "d3640057",
+			"raw": "</li>",
+			"offset": 32,
+			"line": 1,
+			"col": 33,
+			"depth": 2,
+			"nodeName": "li",
+			"parentNodeUuid": "10bfd69b",
+			"type": "endtag",
+			"pairNodeUuid": "ff7273e9",
+			"tagOpenChar": "</",
+			"tagCloseChar": ">"
+		},
+		{
+			"raw": "{/each}",
+			"offset": 37,
+			"line": 1,
+			"col": 38,
+			"depth": 1,
+			"nodeName": "#ps:/each",
+			"isFragment": false,
+			"uuid": "46e318e0",
+			"type": "psblock",
+			"blockBehavior": {
+				"type": "end",
+				"expression": "{/each}"
+			},
+			"childNodes": [],
+			"isBogus": false,
+			"parentNodeUuid": "657bc636"
+		},
+		{
+			"uuid": "1130cb64",
+			"raw": "</main>",
+			"offset": 44,
+			"line": 1,
+			"col": 45,
+			"depth": 0,
+			"nodeName": "main",
+			"parentNodeUuid": null,
+			"type": "endtag",
+			"pairNodeUuid": "657bc636",
+			"tagOpenChar": "</",
+			"tagCloseChar": ">"
+		}
+	],
+	"isFragment": true
+}

@@ -7,7 +7,7 @@
 //!   no-unclosed-element-at-eof-valid-002      → no_unclosed_element_at_eof_valid_002
 //!   no-unclosed-element-at-eof-valid-003      → no_unclosed_element_at_eof_valid_003
 //!   no-unclosed-element-at-eof-valid-004      → no_unclosed_element_at_eof_valid_004
-//!   no-unclosed-element-at-eof-issue-4022-001 — SKIP: Pug parser not available in Rust
+//!   no-unclosed-element-at-eof-issue-4022-001 → v6_no_unclosed_element_at_eof_005 (the Pug parser stays in TS; its `endTag` is set on the document)
 //!   v6_no_unclosed_element_at_eof_001  — Rust-only: `iframe` and `param` are not void elements for this rule
 //!   v6_no_unclosed_element_at_eof_002  — Rust-only: the content end follows the last child, a comment included
 //!   v6_no_unclosed_element_at_eof_003  — Rust-only: a self-closing foreign element has no end tag either
@@ -117,4 +117,25 @@ fn v6_no_unclosed_element_at_eof_003() {
 #[test]
 fn v6_no_unclosed_element_at_eof_004() {
     assert_eq!(run("<div>text</span>"), []);
+}
+
+/// A parser that never records end tags (Pug) leaves every element without one, which says
+/// nothing about the source, so the rule is exempt for the whole document.
+/// TS: `[no-unclosed-element-at-eof-issue-4022-001]`.
+#[test]
+fn v6_no_unclosed_element_at_eof_005() {
+    use markuplint_core::mlast::{DocumentSettings, EndTagType};
+    let run_with = |end_tag| {
+        crate::test_util::lint_brief_with_settings(
+            RULE,
+            "<div>Hello",
+            serde_json::json!({ "rules": { RULE: true } }),
+            DocumentSettings {
+                end_tag,
+                ..DocumentSettings::default()
+            },
+        )
+    };
+    assert_eq!(run_with(EndTagType::Never), []);
+    assert_eq!(run_with(EndTagType::Omittable), [unclosed(1, "div", "<div>")]);
 }

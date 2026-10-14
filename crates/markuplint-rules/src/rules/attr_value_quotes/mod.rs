@@ -43,6 +43,11 @@ impl Rule for AttrValueQuotes {
                     continue;
                 }
 
+                // A value the framework evaluates, or a directive, is not a quoted string.
+                if html_attr.is_dynamic_value == Some(true) || html_attr.is_directive == Some(true) {
+                    continue;
+                }
+
                 if html_attr.start_quote.raw != expected_quote {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),

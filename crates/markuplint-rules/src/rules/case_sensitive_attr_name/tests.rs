@@ -10,6 +10,7 @@
 //!   case-sensitive-attr-name-fix-001      → case_sensitive_attr_name_fix_001
 //!   case-sensitive-attr-name-fix-002      → case_sensitive_attr_name_fix_002
 //!   v6_case_sensitive_attr_name_001       — Rust-only: non-ASCII text before the fixed name
+//!   v6_case_sensitive_attr_name_002       — Rust-only: a resolved name (JSX `tabIndex`) and a non-HTML element have no case to enforce
 
 use crate::lint::{LintConfig, lint};
 use crate::test_util::fixed_code;
@@ -186,4 +187,27 @@ fn v6_case_sensitive_attr_name_001() {
         fixed_code("<p>日本語😀</p><DIV DATA-X></DIV>", &config),
         "<p>日本語😀</p><DIV data-x></DIV>"
     );
+}
+
+/// An attribute whose name the parser resolved to another (JSX's `tabIndex` is `tabindex`) has no
+/// case to enforce, and neither has any attribute of an element that is not an HTML element, as in
+/// TS; a name that stays as written is checked.
+#[test]
+fn v6_case_sensitive_attr_name_002() {
+    let run_mlast = |element_type: &str, name: &str, resolved: serde_json::Value| {
+        crate::test_util::lint_mlast_brief(
+            "case-sensitive-attr-name",
+            &crate::test_util::mlast_element_of_type(
+                "div",
+                element_type,
+                &[(name, "0", resolved)],
+                &serde_json::json!({}),
+            ),
+            serde_json::json!({ "rules": { "case-sensitive-attr-name": true } }),
+        )
+    };
+    let resolved = serde_json::json!({ "potentialName": "tabindex" });
+    assert_eq!(run_mlast("html", "tabIndex", resolved.clone()), []);
+    assert_eq!(run_mlast("authored", "tabIndex", serde_json::json!({})), []);
+    assert_eq!(run_mlast("html", "tabIndex", serde_json::json!({})).len(), 1);
 }

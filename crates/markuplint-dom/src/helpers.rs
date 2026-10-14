@@ -10,14 +10,21 @@ pub fn get_attr_value<'a>(arena: &'a DomArena, node_id: NodeId, attr_name: &str)
     get_attr_value_from_el(el, attr_name)
 }
 
-/// `attr_name` is matched case-insensitively. Only `HTMLAttr` variants match (spread attrs are skipped).
+/// TS `getAttribute()`: `attr_name` is matched case-insensitively against the name the parser
+/// resolved (`potentialName`: JSX's `htmlFor` is `for`), and the answer is the value it resolved
+/// (`potentialValue`), else the one as written. Only `HTMLAttr` variants match (spread attrs
+/// are skipped).
 #[must_use]
 pub fn get_attr_value_from_el<'a>(el: &'a ElementData, attr_name: &str) -> Option<&'a str> {
     for attr in &el.attributes {
         if let MLASTAttr::HTMLAttr(html_attr) = attr
-            && html_attr.node_name.eq_ignore_ascii_case(attr_name)
+            && html_attr
+                .potential_name
+                .as_deref()
+                .unwrap_or(&html_attr.node_name)
+                .eq_ignore_ascii_case(attr_name)
         {
-            return Some(&html_attr.value.raw);
+            return Some(html_attr.potential_value.as_deref().unwrap_or(&html_attr.value.raw));
         }
     }
     None

@@ -17,8 +17,17 @@ mkdirSync(fixturesDir, { recursive: true });
 
 // Dynamic import of the HTML parser
 const { parser } = await import('@markuplint/html-parser');
+// The parsers of the frameworks stay in TypeScript, so what they send over is a fixture too.
+const { parser: svelteParser } = await import('@markuplint/svelte-parser');
 
 const fixtures = [
+	{
+		// A block with a behavior (`each`) and its `end` hold the children, and the DOM reads the
+		// children through them (TS `childNodes`); `</li>` is listed among the children of its block.
+		name: 'svelte-each-block',
+		parser: svelteParser,
+		html: '<main>{#each items as item}<li>x</li>{/each}</main>',
+	},
 	{
 		name: 'simple',
 		html: '<div class="foo">text</div>',
@@ -53,8 +62,8 @@ const fixtures = [
 	},
 ];
 
-for (const { name, html } of fixtures) {
-	const doc = parser.parse(html);
+for (const { name, html, parser: fixtureParser = parser } of fixtures) {
+	const doc = fixtureParser.parse(html);
 	const json = JSON.stringify(doc, null, '\t');
 	const outPath = resolve(fixturesDir, `${name}.json`);
 	writeFileSync(outPath, json + '\n', 'utf-8');

@@ -25,6 +25,9 @@
 			"path": "../@markuplint/ml-spec"
 		},
 		{
+			"path": "../@markuplint/parser-utils"
+		},
+		{
 			"path": "../@markuplint/rules"
 		},
 		{

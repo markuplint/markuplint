@@ -10,11 +10,12 @@
 //!   case-sensitive-tag-name-valid-003    → case_sensitive_tag_name_valid_003
 //!   case-sensitive-tag-name-valid-004    → case_sensitive_tag_name_valid_004
 //!   case-sensitive-tag-name-invalid-005  → case_sensitive_tag_name_invalid_005
-//!   case-sensitive-tag-name-valid-005    — SKIP: Astro parser not available in Rust
+//!   case-sensitive-tag-name-valid-005    → v6_case_sensitive_tag_name_004 (the Astro parser stays in TS; its `tagNameCaseSensitive` is set on the document)
 //!   case-sensitive-tag-name-fix-001      → case_sensitive_tag_name_fix_001
 //!   v6_case_sensitive_tag_name_001       — Rust-only: a pretender is gated by the namespace of the element written
 //!   v6_case_sensitive_tag_name_002       — Rust-only: `value: upper` fixes both tags
 //!   v6_case_sensitive_tag_name_003       — Rust-only: non-ASCII text before the fixed names
+//!   v6_case_sensitive_tag_name_005       — Rust-only: only an element the parser takes for an HTML element has a case to enforce
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::Severity;
@@ -261,6 +262,43 @@ fn v6_case_sensitive_tag_name_002() {
         crate::test_util::fixed_code("<div><span>a</span></div>", &config),
         "<DIV><SPAN>a</SPAN></DIV>"
     );
+}
+
+/// A parser whose tag names are case-sensitive (JSX, Svelte, Astro) has no case to enforce,
+/// as `<Div>` is not the `div` element there.
+#[test]
+fn v6_case_sensitive_tag_name_004() {
+    use markuplint_core::mlast::DocumentSettings;
+    let run_with = |tag_name_case_sensitive| {
+        crate::test_util::lint_brief_with_settings(
+            "case-sensitive-tag-name",
+            "<DIV></DIV>",
+            serde_json::json!({ "rules": { "case-sensitive-tag-name": true } }),
+            DocumentSettings {
+                tag_name_case_sensitive,
+                ..DocumentSettings::default()
+            },
+        )
+    };
+    assert_eq!(run_with(true), []);
+    assert_eq!(run_with(false).len(), 2);
+}
+
+/// Only an element the parser takes for an HTML element has a case to enforce: `<MyComponent>`
+/// (Vue, Astro, Svelte) is an authored component, whatever the parser says about case.
+/// TS: `[case-sensitive-tag-name-valid-005]` (the Astro parser) and the Vue parser's.
+#[test]
+fn v6_case_sensitive_tag_name_005() {
+    let run_mlast = |element_type: &str| {
+        crate::test_util::lint_mlast_brief(
+            "case-sensitive-tag-name",
+            &crate::test_util::mlast_element_of_type("MyComponent", element_type, &[], &serde_json::json!({})),
+            serde_json::json!({ "rules": { "case-sensitive-tag-name": true } }),
+        )
+    };
+    assert_eq!(run_mlast("authored"), []);
+    assert_eq!(run_mlast("web-component"), []);
+    assert_eq!(run_mlast("html").len(), 1);
 }
 
 #[test]

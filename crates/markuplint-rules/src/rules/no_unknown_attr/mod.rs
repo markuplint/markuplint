@@ -8,6 +8,7 @@
 use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::types::MLMLSpec;
 
+use crate::aria_check::attr_name;
 use crate::attr_check::{
     AttrCheckContext, AttrEligibility, attr_violation, element_allows_additional_properties, parse_allow_attrs,
     parse_ignore_prefixes, resolve_attr_eligibility, walk_attrs,
@@ -65,9 +66,9 @@ fn check(
         return None;
     }
 
-    // Use the raw (original-case) attribute name, matching TS behavior.
-    // The WHATWG parser lowercases node_name, but TS preserves original case.
-    let name = markuplint_dom::helpers::get_raw_attr_name(html_attr);
+    // TS `attr.name`: the name the parser resolved (`:href` is `href`), else the raw
+    // (original-case) one. The WHATWG parser lowercases node_name, but TS preserves original case.
+    let name = attr_name(html_attr);
 
     // A parser-supplied IDL naming suggestion (e.g. `tabindex` -> `tabIndex` in JSX)
     // takes priority over spec-driven typo detection below.

@@ -45,6 +45,7 @@
 		"@markuplint/ml-config": "5.1.1",
 		"@markuplint/ml-core": "5.1.1",
 		"@markuplint/ml-spec": "5.1.1",
+		"@markuplint/parser-utils": "5.1.1",
 		"@markuplint/rules": "5.1.1",
 		"@markuplint/shared": "5.1.1",
 		"@types/debug": "4.1.13",

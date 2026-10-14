@@ -162,7 +162,7 @@ $ markuplint "src/**/*.html" --experimental-rust-core
 
 **Known limitations:**
 
-- **HTML only** — files using framework parsers (Vue, JSX, Svelte, etc.) automatically fall back to the TypeScript engine with a warning.
+- **Framework parsers still run in TypeScript** — a file of a framework parser (Vue, JSX, Svelte, etc.) is parsed by that parser as before, and the Rust engine evaluates the result, so only the rules get faster for it.
 - **No custom rules** — projects with plugin rules fall back to the TypeScript engine.
 - **No pretenders** — files with [`pretenders`](https://markuplint.dev/docs/configuration/properties#pretenders) resolved for them fall back to the TypeScript engine, because the Rust engine does not yet read a component as the element it pretends to be.
 - **NamedRuleGroup expansion** — preset virtual rules (e.g., `a11y/no-accesskey`) are not yet expanded for the Rust path.

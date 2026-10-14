@@ -526,6 +526,7 @@ dependencies = [
  "insta",
  "markuplint-core",
  "markuplint-html-parser",
+ "markuplint-types",
  "serde_json",
 ]
 

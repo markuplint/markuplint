@@ -1,11 +1,13 @@
 //! Path A: builds the arena from an `MLASTDocument` (the MLAST JSON path; see crate root).
 
+use std::collections::HashMap;
+
 use markuplint_core::mlast::{self, MLASTChildNode, MLASTDocument, MLASTNode, NamespaceURI};
 
 use crate::arena::{DomArena, NodeId};
 use crate::node::{
-    CommentData, DoctypeData, DocumentData, DomNode, ElementData, EndTagData, InvalidData, NodeBase, PSBlockData,
-    TextData,
+    CloseTagInfo, CommentData, DoctypeData, DocumentData, DomNode, ElementData, EndTagData, InvalidData, NodeBase,
+    PSBlockData, TextData,
 };
 
 #[must_use]
@@ -27,6 +29,7 @@ pub fn build(doc: &MLASTDocument) -> DomArena {
     // (by UUID) when their parent element was converted, and also skip
     // EndTag entries which are structural markers, not real DOM nodes.
     let mut top_level_ids = Vec::new();
+    let mut close_tags = close_tags_by_element(doc);
     for ast_node in &doc.node_list {
         if matches!(ast_node, MLASTNode::EndTag(_)) {
             continue;
@@ -47,7 +50,48 @@ pub fn build(doc: &MLASTDocument) -> DomArena {
 
     resolve_parents_and_siblings(&mut arena, &top_level_ids, 0);
 
+    for id in 0..arena.len() {
+        if let Some(DomNode::Element(el)) = arena.get_mut(id)
+            && let Some(close_tag) = close_tags.remove(el.base.uuid.as_str())
+        {
+            el.close_tag = Some(close_tag);
+        }
+    }
+
     arena
+}
+
+/// The end tag of each element, by the element's uuid. An element learns its end tag through
+/// its own `pairNodeUuid`, as TS `MLElement.closeTag` does from `pairNode`; `nodeList` holds
+/// every node of the document, nested ones included.
+fn close_tags_by_element(doc: &MLASTDocument) -> HashMap<&str, CloseTagInfo> {
+    let end_tags: HashMap<&str, &mlast::MLASTElementCloseTag> = doc
+        .node_list
+        .iter()
+        .filter_map(|node| match node {
+            MLASTNode::EndTag(et) => Some((et.uuid.as_str(), et)),
+            _ => None,
+        })
+        .collect();
+
+    doc.node_list
+        .iter()
+        .filter_map(|node| match node {
+            MLASTNode::Element(el) => {
+                let et = end_tags.get(el.pair_node_uuid.as_deref()?)?;
+                Some((
+                    el.uuid.as_str(),
+                    CloseTagInfo {
+                        raw: et.raw.clone(),
+                        offset: et.offset,
+                        line: et.line,
+                        col: et.col,
+                    },
+                ))
+            }
+            _ => None,
+        })
+        .collect()
 }
 
 fn convert_node(ast_node: &MLASTNode, arena: &mut DomArena) -> NodeId {
@@ -61,6 +105,16 @@ fn convert_node(ast_node: &MLASTNode, arena: &mut DomArena) -> NodeId {
         MLASTNode::OmittedTag(ot) => convert_omitted_tag(ot, arena),
         MLASTNode::Invalid(inv) => convert_invalid(inv, arena),
     }
+}
+
+/// The children of an element or a block. Some parsers (Vue) list an end tag among them; it is not
+/// a node (see [`close_tags_by_element`]), as TS `createNode` has none for an `endtag`.
+fn convert_child_nodes(children: &[MLASTChildNode], arena: &mut DomArena) -> Vec<NodeId> {
+    children
+        .iter()
+        .filter(|child| !matches!(child, MLASTChildNode::EndTag(_)))
+        .map(|child| convert_child_node(child, arena))
+        .collect()
 }
 
 /// Convert a child node (same as top-level but uses `MLASTChildNode` enum).
@@ -102,6 +156,23 @@ fn make_base(
     }
 }
 
+/// TS `attr.nodeName` is `attr.name`: the name the parser resolved (`potentialName`) — Vue's
+/// `:href` is `href`, JSX's `htmlFor` is `for` — else the one as written. The rules read an
+/// attribute's `node_name` where the TS rules read `attr.name`, so the DOM calls it by that; the
+/// name as written stays in the `name` token.
+fn with_resolved_node_name(attr: &mlast::MLASTAttr) -> mlast::MLASTAttr {
+    match attr {
+        mlast::MLASTAttr::HTMLAttr(html_attr) => {
+            let mut html_attr = html_attr.clone();
+            if let Some(potential_name) = &html_attr.potential_name {
+                html_attr.node_name.clone_from(potential_name);
+            }
+            mlast::MLASTAttr::HTMLAttr(html_attr)
+        }
+        mlast::MLASTAttr::Spread(_) => attr.clone(),
+    }
+}
+
 fn convert_element(el: &mlast::MLASTElement, arena: &mut DomArena) -> NodeId {
     let id = arena.len();
     let node = DomNode::Element(ElementData {
@@ -119,7 +190,7 @@ fn convert_element(el: &mlast::MLASTElement, arena: &mut DomArena) -> NodeId {
         namespace: el.namespace.clone(),
         element_type: el.element_type.clone(),
         is_fragment: el.is_fragment,
-        attributes: el.attributes.clone(),
+        attributes: el.attributes.iter().map(with_resolved_node_name).collect(),
         has_spread_attr: el.has_spread_attr.unwrap_or(false),
         block_behavior: el.block_behavior.clone(),
         pair_node_id: None,
@@ -131,7 +202,7 @@ fn convert_element(el: &mlast::MLASTElement, arena: &mut DomArena) -> NodeId {
     let pushed_id = arena.push(node);
     debug_assert_eq!(pushed_id, id);
 
-    let child_ids: Vec<NodeId> = el.child_nodes.iter().map(|c| convert_child_node(c, arena)).collect();
+    let child_ids = convert_child_nodes(&el.child_nodes, arena);
 
     if let Some(DomNode::Element(data)) = arena.get_mut(id) {
         data.base.children = child_ids;
@@ -215,7 +286,7 @@ fn convert_psblock(ps: &mlast::MLASTPSBlock, arena: &mut DomArena) -> NodeId {
     let pushed_id = arena.push(node);
     debug_assert_eq!(pushed_id, id);
 
-    let child_ids: Vec<NodeId> = ps.child_nodes.iter().map(|c| convert_child_node(c, arena)).collect();
+    let child_ids = convert_child_nodes(&ps.child_nodes, arena);
 
     if let Some(DomNode::PSBlock(data)) = arena.get_mut(id) {
         data.base.children = child_ids;
@@ -346,5 +417,11 @@ fn resolve_parents_and_siblings(arena: &mut DomArena, child_ids: &[NodeId], pare
 /// Returns an error if the JSON cannot be parsed as an `MLASTDocument`.
 pub fn build_from_json(json: &str) -> Result<DomArena, markuplint_core::ParseError> {
     let doc = markuplint_core::mlast::parse_mlast(json)?;
-    Ok(build(&doc))
+    // A second read of the same text, for three fields next to the nodes. It skips every node
+    // without building one, which costs far less than the pass above, and keeps `MLASTDocument`
+    // as the TS type is; folding them into one struct would buffer the whole document (`flatten`).
+    let settings = markuplint_core::mlast::parse_document_settings(json)?;
+    let mut arena = build(&doc);
+    arena.set_settings(settings);
+    Ok(arena)
 }

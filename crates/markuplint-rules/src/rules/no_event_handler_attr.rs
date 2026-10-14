@@ -44,10 +44,21 @@ impl Rule for NoEventHandlerAttr {
             if rule_config.disabled {
                 continue;
             }
+            // TS `attr.ownerElement.elementType !== 'html'`, as written (a pretender does not change it).
+            if *el.identity(true).element_type != markuplint_core::mlast::ElementType::Html {
+                continue;
+            }
             for attr in &el.attributes {
                 let MLASTAttr::HTMLAttr(html_attr) = attr else {
                     continue;
                 };
+
+                // Framework directives that resolve to an `onXxx` name (Vue `@click`, Alpine
+                // `x-on:click`, htmx `hx-on:click`, Svelte `on:click`) never reach the DOM as a
+                // literal inline-handler attribute.
+                if html_attr.is_directive == Some(true) {
+                    continue;
+                }
 
                 if html_attr.node_name.len() <= 2 || !html_attr.node_name[..2].eq_ignore_ascii_case("on") {
                     continue;
@@ -198,5 +209,32 @@ mod tests {
         let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
         assert_eq!(violations.len(), 1);
         assert!(violations[0].message.contains("onload"));
+    }
+
+    /// Rust-only: a framework directive that resolves to an `onXxx` name (Vue `@click`, Svelte
+    /// `on:click`) never reaches the DOM as an inline handler, and an element that is not an HTML
+    /// element is not checked, as in TS.
+    #[test]
+    fn v6_directives_and_authored_elements_are_not_checked() {
+        let run_mlast = |element_type: &str, resolved: serde_json::Value| {
+            let json = crate::test_util::mlast_element_of_type(
+                "button",
+                element_type,
+                &[("on:click", "go", resolved)],
+                &serde_json::json!({}),
+            );
+            crate::test_util::lint_mlast_brief(
+                "no-event-handler-attr",
+                &json,
+                serde_json::json!({ "rules": { "no-event-handler-attr": true } }),
+            )
+        };
+        let directive = serde_json::json!({ "potentialName": "onclick", "isDirective": true });
+        let resolved = serde_json::json!({ "potentialName": "onclick" });
+        assert_eq!(run_mlast("html", directive.clone()), []);
+        assert_eq!(run_mlast("authored", resolved.clone()), []);
+        let v = run_mlast("html", resolved);
+        assert_eq!(v.len(), 1);
+        assert_eq!(v[0].3, "The \"onclick\" attribute is disallowed");
     }
 }

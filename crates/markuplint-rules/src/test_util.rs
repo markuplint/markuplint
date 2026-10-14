@@ -106,6 +106,117 @@ pub(crate) fn lint_brief(rule_id: &str, html: &str, config: serde_json::Value) -
         .collect()
 }
 
+/// The MLAST JSON of one element `<tag name="value" …>` as a TS parser sends it: `attrs` are
+/// `(name, value, resolved)`, where `resolved` holds what the parser (or the TS engine after it)
+/// worked out about the attribute — `potentialName`, `isDynamicValue`, `isDirective`,
+/// `isDuplicatable`, `candidate` — and `document` the fields next to the nodes (`endTag`, …).
+pub(crate) fn mlast_element(
+    tag: &str,
+    attrs: &[(&str, &str, serde_json::Value)],
+    document: &serde_json::Value,
+) -> String {
+    mlast_element_of_type(tag, "html", attrs, document)
+}
+
+/// [`mlast_element`] with the `elementType` the parser gave the element (`html`, `web-component`,
+/// `authored`).
+pub(crate) fn mlast_element_of_type(
+    tag: &str,
+    element_type: &str,
+    attrs: &[(&str, &str, serde_json::Value)],
+    document: &serde_json::Value,
+) -> String {
+    let token = |raw: &str, offset: usize| serde_json::json!({ "uuid": format!("t{offset}-{raw}"), "raw": raw, "offset": offset, "line": 1, "col": offset + 1 });
+    let mut offset = 1 + tag.len();
+    let mut attributes = Vec::new();
+    for (name, value, resolved) in attrs {
+        let start = offset + 1;
+        let mut attr = serde_json::json!({
+            "uuid": format!("a{start}"),
+            "raw": format!("{name}=\"{value}\""),
+            "offset": start,
+            "line": 1,
+            "col": start + 1,
+            "type": "attr",
+            "nodeName": name,
+            "spacesBeforeName": token(" ", offset),
+            "name": token(name, start),
+            "spacesBeforeEqual": token("", start + name.len()),
+            "equal": token("=", start + name.len()),
+            "spacesAfterEqual": token("", start + name.len() + 1),
+            "startQuote": token("\"", start + name.len() + 1),
+            "value": token(value, start + name.len() + 2),
+            "endQuote": token("\"", start + name.len() + 2 + value.len()),
+            "isDuplicatable": false,
+        });
+        attr.as_object_mut()
+            .unwrap()
+            .extend(resolved.as_object().unwrap().clone());
+        attributes.push(attr);
+        offset = start + name.len() + 3 + value.len();
+    }
+    let raw = format!(
+        "<{tag}{}>",
+        attrs
+            .iter()
+            .map(|(n, v, _)| format!(" {n}=\"{v}\""))
+            .collect::<String>()
+    );
+    let mut mlast = serde_json::json!({
+        "raw": raw,
+        "isFragment": true,
+        "nodeList": [{
+            "uuid": "el", "raw": raw, "offset": 0, "line": 1, "col": 1, "depth": 0,
+            "nodeName": tag, "parentNodeUuid": null, "type": "starttag", "elementType": element_type,
+            "namespace": "http://www.w3.org/1999/xhtml", "attributes": attributes, "childNodes": [],
+            "pairNodeUuid": null, "tagOpenChar": "<", "tagCloseChar": ">", "blockBehavior": null,
+            "isGhost": false, "isFragment": false
+        }]
+    });
+    mlast
+        .as_object_mut()
+        .unwrap()
+        .extend(document.as_object().unwrap().clone());
+    mlast.to_string()
+}
+
+/// [`lint_brief`] for an MLAST document ([`mlast_element`]), the path a framework parser's
+/// output takes.
+pub(crate) fn lint_mlast_brief(rule_id: &str, mlast_json: &str, config: serde_json::Value) -> Vec<Brief> {
+    let arena = markuplint_dom::builder::build_from_json(mlast_json).unwrap();
+    let config: LintConfig = serde_json::from_value(config).unwrap();
+    lint(&arena, &spec(), &config)
+        .violations
+        .into_iter()
+        .map(|v| {
+            assert_eq!(v.rule_id, rule_id, "{v:?}");
+            (v.severity, v.line, v.col, v.message, v.raw)
+        })
+        .collect()
+}
+
+/// [`lint_brief`] for markup that a parser other than the HTML one produced: the DOM is built
+/// from `html` as the HTML path does, and carries the `settings` the MLAST path would take from
+/// that parser. The tests that read them (`endTag` and the like) need only that, not the parser.
+pub(crate) fn lint_brief_with_settings(
+    rule_id: &str,
+    html: &str,
+    config: serde_json::Value,
+    settings: markuplint_core::mlast::DocumentSettings,
+) -> Vec<Brief> {
+    let config: LintConfig = serde_json::from_value(config).unwrap();
+    let mut arena = html_arena(html);
+    arena.set_settings(settings);
+    lint(&arena, &spec(), &config)
+        .violations
+        .into_iter()
+        .map(|v| {
+            assert_eq!(v.rule_id, rule_id, "{v:?}");
+            (v.severity, v.line, v.col, v.message, v.raw)
+        })
+        .collect()
+}
+
 pub(crate) fn brief(severity: Severity, line: u32, col: u32, message: &str, raw: &str) -> Brief {
     (severity, line, col, message.to_owned(), raw.to_owned())
 }

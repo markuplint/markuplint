@@ -29,7 +29,7 @@ Options
 	--max-warnings                         Number of warnings to trigger nonzero exit code. Default: -1 (no limit).
 	--no-progressive-output                Wait until every file is processed before outputting results. Default: false (output progressively).
 
-	--experimental-rust-core                [Experimental] Use the Rust linting engine for built-in rules (HTML only).
+	--experimental-rust-core                [Experimental] Use the Rust linting engine for built-in rules.
 
 	--suppress                             [Experimental] Generate/update suppressions file for all current errors.
 	--suppress-rule RULE_ID                [Experimental] Suppress only the specified rule.

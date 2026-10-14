@@ -10,13 +10,14 @@ crate-type = ["rlib"]
 [dependencies]
 markuplint-core = { path = "../markuplint-core" }
 markuplint-html-parser = { path = "../markuplint-html-parser", optional = true }
+markuplint-types = { path = "../markuplint-types", optional = true }
 
 [dev-dependencies]
 insta = "1"
 serde_json = { workspace = true }
 
 [features]
-html-parser = ["dep:markuplint-html-parser"]
+html-parser = ["dep:markuplint-html-parser", "dep:markuplint-types"]
 
 [lints]
 workspace = true

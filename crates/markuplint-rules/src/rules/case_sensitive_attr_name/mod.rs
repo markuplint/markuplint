@@ -1,6 +1,6 @@
 //! `case-sensitive-attr-name` rule: attribute names must be lowercase (or uppercase per config).
 
-use markuplint_core::mlast::{MLASTAttr, NamespaceURI};
+use markuplint_core::mlast::{ElementType, MLASTAttr, NamespaceURI};
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::helpers::get_raw_attr_name;
 use markuplint_types::spec::lookup::get_attr_specs;
@@ -32,6 +32,10 @@ impl Rule for CaseSensitiveAttrName {
             if el.namespace != NamespaceURI::XHTML {
                 continue;
             }
+            // TS `el.elementType !== 'html'`, as written (a pretender does not change it).
+            if *el.identity(true).element_type != ElementType::Html {
+                continue;
+            }
 
             let attr_specs = get_attr_specs(spec, &el.base.node_name);
 
@@ -42,6 +46,12 @@ impl Rule for CaseSensitiveAttrName {
 
                 // Use the raw source name so original case is preserved for the comparison.
                 let raw_name = get_raw_attr_name(html_attr);
+
+                // A name the parser resolved to another (JSX's `tabIndex` is `tabindex`) is not
+                // the name written, so there is no case to enforce on it.
+                if html_attr.potential_name.as_deref().is_some_and(|name| name != raw_name) {
+                    continue;
+                }
 
                 // Attributes the spec marks case-sensitive are exempt.
                 let attr_name_lower = raw_name.to_ascii_lowercase();
