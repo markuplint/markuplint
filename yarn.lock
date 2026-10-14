@@ -2413,7 +2413,7 @@ __metadata:
     "@markuplint/selector": "npm:5.2.0"
     "@markuplint/shared": "npm:5.2.0"
     "@markuplint/types": "npm:5.2.0"
-    "@mdn/browser-compat-data": "npm:^7.3.17"
+    "@mdn/browser-compat-data": "npm:^8.1.4"
     "@types/debug": "npm:^4.1.13"
     ansi-colors: "npm:^4.1.3"
     browserslist: "npm:^4.29.3"
@@ -2549,10 +2549,10 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mdn/browser-compat-data@npm:^7.3.17":
-  version: 7.3.17
-  resolution: "@mdn/browser-compat-data@npm:7.3.17"
-  checksum: 10c0/60a634d89dcb016593bc20c2131932aef6d82552a86b3e08d26c74c63c384afcb6255e91abbc4468363d72521c8507b75374f168504eccf65f40c89fc7e487ba
+"@mdn/browser-compat-data@npm:^8.1.4":
+  version: 8.1.4
+  resolution: "@mdn/browser-compat-data@npm:8.1.4"
+  checksum: 10c0/904fd8c96b9854d5a9e17551672ef71b96e25d0d7f65304d66ff20f04a60c21e0d6781ef070fef4251b80902efb202cb6bbb26e208c27a0aef207531d675042d
   languageName: node
   linkType: hard
 
