@@ -203,12 +203,15 @@ fn convert_parser_node(
                                 .unwrap_or(markuplint_html_parser::input::Span::empty(attr.name_span.end)),
                         ),
                         spaces_after_equal: make_token(source, attr.spaces_after_eq_span),
+                        // Without a quote the token has no width; it sits where the value starts,
+                        // after any whitespace that follows the equal sign.
                         start_quote: make_token(
                             source,
                             attr.quote_start_span
-                                .unwrap_or(markuplint_html_parser::input::Span::empty(
-                                    attr.equal_span.map_or(attr.name_span.end, |e| e.end),
-                                )),
+                                .unwrap_or(markuplint_html_parser::input::Span::empty(attr.value_span.map_or_else(
+                                    || attr.equal_span.map_or(attr.name_span.end, |e| e.end),
+                                    |v| v.start,
+                                ))),
                         ),
                         value: make_token(
                             source,

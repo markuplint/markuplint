@@ -34,6 +34,9 @@ pub struct Tokenizer<'a> {
     current_self_closing: bool,
     current_attributes: Vec<RawAttribute>,
     current_tag_start: Position,
+    /// Where the whitespace run that precedes the next attribute began, noted by
+    /// [`Self::note_attribute_spaces`] and taken by `start_new_attribute`.
+    attr_spaces_start: Option<Position>,
     current_attr_spaces_start: Position,
     current_attr_name_start: Position,
     /// Position just past the last character of the current attribute name.
@@ -86,6 +89,7 @@ impl<'a> Tokenizer<'a> {
                 line: 1,
                 col: 1,
             },
+            attr_spaces_start: None,
             current_attr_spaces_start: Position {
                 offset: 0,
                 line: 1,
@@ -264,6 +268,7 @@ impl<'a> Tokenizer<'a> {
         self.current_self_closing = false;
         self.current_attributes.clear();
         self.current_tag_start = pos;
+        self.attr_spaces_start = None;
     }
 
     fn create_end_tag(&mut self, pos: Position) {
@@ -272,10 +277,32 @@ impl<'a> Tokenizer<'a> {
         self.current_self_closing = false;
         self.current_attributes.clear();
         self.current_tag_start = pos;
+        self.attr_spaces_start = None;
+    }
+
+    /// Called on a whitespace character inside a tag: the first one of a run is where the
+    /// whitespace before the next attribute begins. Dropped again where the run turns out
+    /// not to precede an attribute (an equal sign, a `/`).
+    fn note_attribute_spaces(&mut self) {
+        if self.attr_spaces_start.is_none() {
+            self.attr_spaces_start = Some(self.input.prev_position());
+        }
+    }
+
+    /// The whitespace between the equal sign and what follows it, called with the first
+    /// character after that whitespace as the last one consumed.
+    fn spaces_after_equal(&self) -> Span {
+        let start = self
+            .current_attr_equal
+            .map_or(self.input.prev_position(), |equal| equal.end);
+        Span::new(start, self.input.prev_position())
     }
 
     fn start_new_attribute(&mut self) {
-        self.current_attr_spaces_start = self.input.prev_position();
+        self.current_attr_spaces_start = self
+            .attr_spaces_start
+            .take()
+            .unwrap_or_else(|| self.input.prev_position());
         self.current_attr_name_start = self.input.prev_position();
         self.current_attr_name_end = self.input.prev_position();
         self.current_attr_name.clear();
@@ -725,6 +752,7 @@ impl<'a> Tokenizer<'a> {
     fn state_tag_name(&mut self) {
         match self.input.next_char() {
             Some('\t' | '\n' | '\x0C' | ' ') => {
+                self.note_attribute_spaces();
                 self.state = State::BeforeAttributeName;
             }
             Some('/') => {
@@ -1357,7 +1385,8 @@ impl<'a> Tokenizer<'a> {
     fn state_before_attribute_name(&mut self) {
         match self.input.next_char() {
             Some('\t' | '\n' | '\x0C' | ' ') => {
-                // Ignore whitespace.
+                // Ignore whitespace, but remember where it began for the next attribute.
+                self.note_attribute_spaces();
             }
             Some('/' | '>') | None => {
                 self.input.reconsume();
@@ -1416,7 +1445,8 @@ impl<'a> Tokenizer<'a> {
     fn state_after_attribute_name(&mut self) {
         match self.input.next_char() {
             Some('\t' | '\n' | '\x0C' | ' ') => {
-                // Ignore whitespace.
+                // Ignore whitespace, but remember where it began: a new attribute may follow.
+                self.note_attribute_spaces();
             }
             Some('/') => {
                 self.finish_attribute();
@@ -1424,7 +1454,9 @@ impl<'a> Tokenizer<'a> {
             }
             Some('=') => {
                 let eq_start = self.input.prev_position();
-                self.current_attr_spaces_before_eq = Span::empty(eq_start);
+                // The whitespace was between the name and the equal sign, not before an attribute.
+                self.attr_spaces_start = None;
+                self.current_attr_spaces_before_eq = Span::new(self.current_attr_name_end, eq_start);
                 self.current_attr_equal = Some(Span::new(eq_start, self.input.position()));
                 self.state = State::BeforeAttributeValue;
             }
@@ -1452,23 +1484,23 @@ impl<'a> Tokenizer<'a> {
     fn state_before_attribute_value(&mut self) {
         match self.input.next_char() {
             Some('\t' | '\n' | '\x0C' | ' ') => {
-                // Ignore whitespace, but track for spaces_after_eq.
+                // Ignore whitespace; it is the span between the equal sign and the value.
             }
             Some('"') => {
                 self.current_attr_quote = Some('"');
-                self.current_attr_spaces_after_eq = Span::empty(self.input.prev_position());
+                self.current_attr_spaces_after_eq = self.spaces_after_equal();
                 self.current_attr_value_start = self.input.position();
                 self.state = State::AttributeValueDoubleQuoted;
             }
             Some('\'') => {
                 self.current_attr_quote = Some('\'');
-                self.current_attr_spaces_after_eq = Span::empty(self.input.prev_position());
+                self.current_attr_spaces_after_eq = self.spaces_after_equal();
                 self.current_attr_value_start = self.input.position();
                 self.state = State::AttributeValueSingleQuoted;
             }
             Some('>') => {
                 // Parse error. Missing attribute value.
-                self.current_attr_spaces_after_eq = Span::empty(self.input.prev_position());
+                self.current_attr_spaces_after_eq = self.spaces_after_equal();
                 self.current_attr_value_start = self.input.prev_position();
                 self.finish_attribute();
                 self.state = State::Data;
@@ -1476,7 +1508,7 @@ impl<'a> Tokenizer<'a> {
             }
             _ => {
                 self.current_attr_quote = None;
-                self.current_attr_spaces_after_eq = Span::empty(self.input.prev_position());
+                self.current_attr_spaces_after_eq = self.spaces_after_equal();
                 self.current_attr_value_start = self.input.prev_position();
                 self.input.reconsume();
                 self.state = State::AttributeValueUnquoted;
@@ -1541,6 +1573,7 @@ impl<'a> Tokenizer<'a> {
         match self.input.next_char() {
             Some('\t' | '\n' | '\x0C' | ' ') => {
                 self.finish_attribute();
+                self.note_attribute_spaces();
                 self.state = State::BeforeAttributeName;
             }
             Some('&') => {
@@ -1570,6 +1603,7 @@ impl<'a> Tokenizer<'a> {
     fn state_after_attribute_value_quoted(&mut self) {
         match self.input.next_char() {
             Some('\t' | '\n' | '\x0C' | ' ') => {
+                self.note_attribute_spaces();
                 self.state = State::BeforeAttributeName;
             }
             Some('/') => {
@@ -1604,7 +1638,9 @@ impl<'a> Tokenizer<'a> {
                 self.emit(Token::Eof);
             }
             Some(_) => {
-                // Parse error. Reconsume in before attribute name.
+                // Parse error. Reconsume in before attribute name. The `/` sits between any
+                // whitespace before it and the next attribute.
+                self.attr_spaces_start = None;
                 self.input.reconsume();
                 self.state = State::BeforeAttributeName;
             }
@@ -2792,6 +2828,107 @@ mod tests {
             }
             _ => panic!("expected StartTag"),
         }
+    }
+
+    /// The whitespace spans of every attribute of the first tag of `html`, as source text:
+    /// `(before name, before equal, after equal)`.
+    fn attr_spaces(html: &str) -> Vec<(String, String, String)> {
+        let tokens = tokenize(html);
+        let Token::StartTag { attributes, .. } = &tokens[0] else {
+            panic!("expected StartTag");
+        };
+        let text = |span: &Span| html[span.start.offset..span.end.offset].to_string();
+        attributes
+            .iter()
+            .map(|attr| {
+                (
+                    text(&attr.spaces_before),
+                    text(&attr.spaces_before_eq),
+                    text(&attr.spaces_after_eq),
+                )
+            })
+            .collect()
+    }
+
+    #[test]
+    fn attribute_spaces_before_name_follow_the_tag_name() {
+        assert_eq!(
+            attr_spaces("<div  class=a>"),
+            [("  ".into(), String::new(), String::new())]
+        );
+    }
+
+    #[test]
+    fn attribute_spaces_before_name_follow_the_previous_value() {
+        let spaces = attr_spaces("<div class=\"a\"\n\tid='b' title=c hidden  lang>");
+        let before_name: Vec<_> = spaces.into_iter().map(|(before, ..)| before).collect();
+        assert_eq!(before_name, [" ", "\n\t", " ", " ", "  "]);
+    }
+
+    #[test]
+    fn attribute_spaces_before_name_follow_a_boolean_attribute() {
+        let spaces = attr_spaces("<input disabled disabled />");
+        let before_name: Vec<_> = spaces.into_iter().map(|(before, ..)| before).collect();
+        assert_eq!(before_name, [" ", " "]);
+    }
+
+    #[test]
+    fn attribute_without_spaces_before_name_has_none() {
+        let spaces = attr_spaces("<div class=\"a\"id=\"b\">");
+        let before_name: Vec<_> = spaces.into_iter().map(|(before, ..)| before).collect();
+        assert_eq!(before_name, [" ", ""]);
+    }
+
+    #[test]
+    fn attribute_spaces_around_the_equal_sign() {
+        assert_eq!(attr_spaces("<div class = 'a'>"), [(" ".into(), " ".into(), " ".into())]);
+        assert_eq!(attr_spaces("<div class= a>"), [(" ".into(), String::new(), " ".into())]);
+        assert_eq!(attr_spaces("<div class =a>"), [(" ".into(), " ".into(), String::new())]);
+        assert_eq!(
+            attr_spaces("<div class=a>"),
+            [(" ".into(), String::new(), String::new())]
+        );
+    }
+
+    #[test]
+    fn attribute_spaces_carry_their_line_and_column() {
+        let html = "<div\n  a  =  b>";
+        let tokens = tokenize(html);
+        let Token::StartTag { attributes, .. } = &tokens[0] else {
+            panic!("expected StartTag");
+        };
+        let attr = &attributes[0];
+        // The whitespace after the tag name runs across the line break.
+        assert_eq!((attr.spaces_before.start.line, attr.spaces_before.start.col), (1, 5));
+        assert_eq!((attr.spaces_before.end.line, attr.spaces_before.end.col), (2, 3));
+        assert_eq!(
+            (attr.spaces_before_eq.start.line, attr.spaces_before_eq.start.col),
+            (2, 4)
+        );
+        assert_eq!(
+            (attr.spaces_after_eq.start.line, attr.spaces_after_eq.start.col),
+            (2, 7)
+        );
+    }
+
+    #[test]
+    fn attribute_spaces_stop_at_a_slash() {
+        // The whitespace before the `/` is not the attribute's; only what follows the `/` is.
+        let spaces = attr_spaces("<div   /  a>");
+        assert_eq!(spaces, [("  ".into(), String::new(), String::new())]);
+    }
+
+    #[test]
+    fn attribute_spaces_do_not_leak_into_the_next_tag() {
+        let html = "<div class>\n<p id=a>";
+        let tokens = tokenize(html);
+        let Some(Token::StartTag { attributes, .. }) =
+            tokens.iter().filter(|t| matches!(t, Token::StartTag { .. })).nth(1)
+        else {
+            panic!("expected a second StartTag");
+        };
+        let spaces = &attributes[0].spaces_before;
+        assert_eq!(&html[spaces.start.offset..spaces.end.offset], " ");
     }
 
     #[test]
