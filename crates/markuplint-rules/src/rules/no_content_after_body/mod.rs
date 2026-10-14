@@ -67,6 +67,7 @@ impl Rule for NoContentAfterBody {
                     col: base.col,
                     raw: base.raw.clone(),
                     reason: rule_config.reason.clone(),
+                    fix: None,
                 })
             })
             .collect()

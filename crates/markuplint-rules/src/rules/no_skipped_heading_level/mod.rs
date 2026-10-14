@@ -55,6 +55,7 @@ impl Rule for NoSkippedHeadingLevel {
                     col,
                     raw: raw.clone(),
                     reason: None,
+                    fix: None,
                 });
             }
             prev_level = Some(level);

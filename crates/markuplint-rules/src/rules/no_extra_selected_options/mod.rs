@@ -63,6 +63,7 @@ impl Rule for NoExtraSelectedOptions {
                     col: opt.base.col,
                     raw: opt.base.raw.clone(),
                     reason: rule_config.reason.clone(),
+                    fix: None,
                 });
             }
         }

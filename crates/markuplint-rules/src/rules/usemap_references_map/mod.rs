@@ -71,6 +71,7 @@ impl Rule for UsemapReferencesMap {
                 col: usemap_attr.value.col,
                 raw: usemap_attr.value.raw.clone(),
                 reason: None,
+                fix: None,
             });
         }
 

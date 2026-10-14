@@ -51,6 +51,7 @@ impl Rule for NoDuplicateAutofocus {
                 col: el.base.col,
                 raw: el.base.raw.clone(),
                 reason: rule_config.reason.clone(),
+                fix: None,
             });
         }
 

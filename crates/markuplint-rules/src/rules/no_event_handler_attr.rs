@@ -82,6 +82,7 @@ impl Rule for NoEventHandlerAttr {
                     col: html_attr.name.col,
                     raw: html_attr.raw.clone(),
                     reason: None,
+                    fix: None,
                 });
             }
         }

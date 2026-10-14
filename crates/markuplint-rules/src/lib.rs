@@ -23,6 +23,7 @@ pub mod attr_check;
 pub mod content_model;
 pub(crate) mod decode;
 pub(crate) mod feature_check;
+pub mod fix;
 pub(crate) mod h1_check;
 pub mod helpers;
 pub(crate) mod inline_script;

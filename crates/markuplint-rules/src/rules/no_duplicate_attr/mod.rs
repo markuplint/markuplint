@@ -8,6 +8,7 @@ use markuplint_core::mlast::{ElementType, MLASTAttr};
 use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::types::MLMLSpec;
 
+use crate::fix::Fix;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
@@ -61,6 +62,7 @@ impl Rule for NoDuplicateAttr {
                         col: html_attr.name.col,
                         raw: html_attr.name.raw.clone(),
                         reason: None,
+                        fix: Fix::remove_attr(html_attr),
                     });
                 }
             }

@@ -50,6 +50,7 @@ impl Rule for NoMalformedCharacterReference {
                 col: e.start_col,
                 raw: e.raw.clone(),
                 reason: None,
+                fix: None,
             })
             .collect()
     }

@@ -57,6 +57,7 @@ impl Rule for NoInputFileValue {
                 col: value_attr.value.col,
                 raw: value_attr.value.raw.clone(),
                 reason: rule_config.reason.clone(),
+                fix: None,
             });
         }
 

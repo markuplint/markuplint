@@ -9,6 +9,7 @@ use markuplint_types::spec::types::MLMLSpec;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
+use crate::fix::Utf16Index;
 use crate::pretending;
 use crate::rule::{Rule, RuleCommonSettings, RuleConfig, RuleConfigSet};
 use crate::rule_mapper::{self, NodeRuleEntry};
@@ -354,7 +355,28 @@ fn lint_with_rules(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig, rules
     );
 
     sort_and_dedup(&mut violations);
+    convert_fixes_to_utf16(arena, &mut violations);
     LintResult { violations }
+}
+
+/// Rules build fixes in byte offsets; the TS side applies them to a JavaScript string,
+/// so they leave the engine in UTF-16 code units (see [`crate::fix`]). The index is built
+/// only when some violation carries a fix, and not at all for an ASCII source.
+///
+/// An arena built from MLAST JSON (`lint`) has no source: its offsets come from the TS parser,
+/// which already counts UTF-16 code units, and the rules that need the source text to build a
+/// fix (`head-element-order`) leave the violation without one. So there is nothing to convert.
+fn convert_fixes_to_utf16(arena: &DomArena, violations: &mut [Violation]) {
+    if !violations.iter().any(|v| v.fix.is_some()) {
+        return;
+    }
+    let Some(source) = arena.source() else {
+        return;
+    };
+    let index = Utf16Index::new(source);
+    for fix in violations.iter_mut().filter_map(|v| v.fix.as_mut()) {
+        fix.convert_with(&index);
+    }
 }
 
 /// Matches TS behavior where documents that fail to parse return only a
@@ -378,6 +400,7 @@ fn get_parse_error(arena: &DomArena) -> Option<Violation> {
             col,
             raw,
             reason: None,
+            fix: None,
         });
     }
     None
@@ -2456,9 +2479,76 @@ mod engine_tests {
                     col: el.base.col,
                     raw: el.base.raw.clone(),
                     reason: None,
+                    fix: None,
                 })
                 .collect()
         }
+    }
+
+    /// Removes every `<b>` through a fix built, as a rule builds it, in byte offsets.
+    struct FixProbeRule;
+
+    impl Rule for FixProbeRule {
+        fn id(&self) -> &'static str {
+            "test-fix-probe"
+        }
+
+        fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, _config: &RuleConfigSet) -> Vec<Violation> {
+            arena
+                .elements()
+                .filter(|(_, el)| el.base.node_name == "b")
+                .map(|(_, el)| Violation {
+                    rule_id: self.id().to_string(),
+                    name: None,
+                    severity: Severity::Error,
+                    message: String::new(),
+                    line: el.base.line,
+                    col: el.base.col,
+                    raw: el.base.raw.clone(),
+                    reason: None,
+                    fix: Some(crate::fix::Fix::remove(
+                        el.base.offset,
+                        el.base.offset + el.base.raw.len(),
+                    )),
+                })
+                .collect()
+        }
+    }
+
+    fn run_with(rule: Box<dyn Rule>, html: &str, config: serde_json::Value) -> Vec<Violation> {
+        let as_doc = markuplint_html_parser::should_parse_as_document(html);
+        let parser_arena = if as_doc {
+            markuplint_html_parser::parse_document(html)
+        } else {
+            markuplint_html_parser::parse_fragment(html)
+        };
+        let arena = markuplint_dom::html_builder::build_from_html_arena(html, &parser_arena, !as_doc);
+        let spec = load_spec(include_str!("../../../packages/@markuplint/html-spec/index.json")).unwrap();
+        let config: LintConfig = serde_json::from_value(config).unwrap();
+        lint_with_rules(&arena, &spec, &config, &[rule]).violations
+    }
+
+    #[test]
+    fn v6_lint_fix_001_ascii_source_keeps_the_byte_offsets() {
+        let violations = run_with(
+            Box::new(FixProbeRule),
+            "<p>ab<b></b></p>",
+            serde_json::json!({ "rules": { "test-fix-probe": true } }),
+        );
+        assert_eq!(violations.len(), 1);
+        assert_eq!(violations[0].fix.as_ref().unwrap().edits[0].range, [5, 8]);
+    }
+
+    #[test]
+    fn v6_lint_fix_002_multibyte_source_returns_utf16_offsets() {
+        // "日本" is 6 bytes and 2 UTF-16 units: `<b>` is bytes 9..12, units 5..8.
+        let violations = run_with(
+            Box::new(FixProbeRule),
+            "<p>日本<b></b></p>",
+            serde_json::json!({ "rules": { "test-fix-probe": true } }),
+        );
+        assert_eq!(violations.len(), 1);
+        assert_eq!(violations[0].fix.as_ref().unwrap().edits[0].range, [5, 8]);
     }
 
     fn run(html: &str, config: serde_json::Value) -> Vec<Violation> {

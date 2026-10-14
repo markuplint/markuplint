@@ -308,6 +308,7 @@ pub(crate) fn element_violation(
         col: el.base.col,
         raw: el.base.raw.clone(),
         reason: rule_config.reason.clone(),
+        fix: None,
     }
 }
 
@@ -330,6 +331,7 @@ pub(crate) fn attr_violation(
         col: attr.name.col,
         raw: attr.raw.clone(),
         reason: rule_config.reason.clone(),
+        fix: None,
     }
 }
 

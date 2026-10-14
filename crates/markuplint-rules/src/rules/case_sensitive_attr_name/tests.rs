@@ -7,9 +7,12 @@
 //!   case-sensitive-attr-name-invalid-003  → case_sensitive_attr_name_invalid_003
 //!   case-sensitive-attr-name-valid-002    → case_sensitive_attr_name_valid_002
 //!   case-sensitive-attr-name-valid-003    → case_sensitive_attr_name_valid_003
-//!   case-sensitive-attr-name-fix-*        — SKIP: auto-fix not implemented in Rust
+//!   case-sensitive-attr-name-fix-001      → case_sensitive_attr_name_fix_001
+//!   case-sensitive-attr-name-fix-002      → case_sensitive_attr_name_fix_002
+//!   v6_case_sensitive_attr_name_001       — Rust-only: non-ASCII text before the fixed name
 
 use crate::lint::{LintConfig, lint};
+use crate::test_util::fixed_code;
 use crate::violation::Severity;
 use markuplint_dom::html_builder;
 use markuplint_types::spec::load_spec;
@@ -150,4 +153,37 @@ fn case_sensitive_attr_name_valid_003() {
     .unwrap();
     let result = lint(&arena, &spec, &config);
     assert_eq!(result.violations.len(), 0);
+}
+
+/// TS: `[case-sensitive-attr-name-fix-001]` — upper case
+#[test]
+fn case_sensitive_attr_name_fix_001() {
+    const _ID: &str = "case-sensitive-attr-name-fix-001";
+    let config = serde_json::json!({ "rules": { "case-sensitive-attr-name": true } });
+    assert_eq!(
+        fixed_code("<DIV DATA-LOWERCASE></DIV>", &config),
+        "<DIV data-lowercase></DIV>"
+    );
+}
+
+/// TS: `[case-sensitive-attr-name-fix-002]` — upper case
+#[test]
+fn case_sensitive_attr_name_fix_002() {
+    const _ID: &str = "case-sensitive-attr-name-fix-002";
+    let config = serde_json::json!({ "rules": { "case-sensitive-attr-name": { "value": "upper" } } });
+    assert_eq!(
+        fixed_code("<DIV data-lowercase></DIV>", &config),
+        "<DIV DATA-LOWERCASE></DIV>"
+    );
+}
+
+/// The fix ranges are UTF-16 code units, so text before the name that takes more than one
+/// byte per unit must not shift the edit.
+#[test]
+fn v6_case_sensitive_attr_name_001() {
+    let config = serde_json::json!({ "rules": { "case-sensitive-attr-name": true } });
+    assert_eq!(
+        fixed_code("<p>日本語😀</p><DIV DATA-X></DIV>", &config),
+        "<p>日本語😀</p><DIV data-x></DIV>"
+    );
 }

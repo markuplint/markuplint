@@ -6,13 +6,18 @@
 //!   no-duplicate-attr-invalid-003  — SKIP: i18n (ja locale) not supported in Rust
 //!   no-duplicate-attr-invalid-004  → no_duplicate_attr_invalid_004
 //!   no-duplicate-attr-parser-*     — SKIP: framework parsers not available in Rust
-//!   no-duplicate-attr-fix-*        — SKIP: auto-fix not implemented in Rust
+//!   no-duplicate-attr-fix-001      → no_duplicate_attr_fix_001
+//!   no-duplicate-attr-fix-002      → no_duplicate_attr_fix_002
+//!   no-duplicate-attr-fix-003      → no_duplicate_attr_fix_003
+//!   no-duplicate-attr-fix-004      — SKIP: Pug parser not available in Rust
+//!   no-duplicate-attr-fix-005      — SKIP: Vue parser not available in Rust
 //!   v6_attr_duplication_001       — Rust-only: no duplicate attrs (valid)
 //!   v6_attr_duplication_002       — Rust-only: case-insensitive duplicate
 //!   v6_attr_duplication_003       — Rust-only: triple duplicate
 //!   v6_attr_duplication_004       — Rust-only: no attrs, no violation
 //!   v6_attr_duplication_005       — Rust-only: severity from config
 //!   v6_attr_duplication_006       — Rust-only: pretender attributes, and names compared as written on a non-HTML element
+//!   v6_attr_duplication_007       — Rust-only: whitespace around the equal sign, non-ASCII text before the fix
 
 use markuplint_core::mlast::{ElementType, MLASTAttr, MLASTHTMLAttr, MLASTToken, NamespaceURI};
 use markuplint_dom::arena::{DomArena, DomArenaBuilder};
@@ -37,6 +42,42 @@ fn html_arena(html: &str) -> DomArena {
 
 fn spec() -> MLMLSpec {
     load_spec(include_str!("../../../../../packages/@markuplint/html-spec/index.json")).unwrap()
+}
+
+fn fixed(html: &str) -> String {
+    crate::test_util::fixed_code(html, &serde_json::json!({ "rules": { "no-duplicate-attr": true } }))
+}
+
+/// TS: `[no-duplicate-attr-fix-001]` — remove duplicate attribute
+#[test]
+fn no_duplicate_attr_fix_001() {
+    const _ID: &str = "no-duplicate-attr-fix-001";
+    assert_eq!(fixed(r#"<div class="a" class="b"></div>"#), r#"<div class="a"></div>"#);
+}
+
+/// TS: `[no-duplicate-attr-fix-002]` — remove duplicate boolean attribute
+#[test]
+fn no_duplicate_attr_fix_002() {
+    const _ID: &str = "no-duplicate-attr-fix-002";
+    assert_eq!(fixed("<input disabled disabled />"), "<input disabled />");
+}
+
+/// TS: `[no-duplicate-attr-fix-003]` — remove third duplicate attribute
+#[test]
+fn no_duplicate_attr_fix_003() {
+    const _ID: &str = "no-duplicate-attr-fix-003";
+    assert_eq!(
+        fixed(r#"<div data-attr="value" data-Attr='db' data-attR=tr></div>"#),
+        r#"<div data-attr="value"></div>"#
+    );
+}
+
+#[test]
+fn v6_attr_duplication_007() {
+    assert_eq!(
+        fixed("<p>日本語😀</p><div class = 'a'\n\tclass = 'b'></div>"),
+        "<p>日本語😀</p><div class = 'a'></div>"
+    );
 }
 
 /// TS: `[no-duplicate-attr-invalid-001]`

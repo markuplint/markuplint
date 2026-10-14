@@ -59,6 +59,7 @@ impl Rule for NoObsoleteDoctype {
             col: dt.base.col,
             raw: dt.base.raw.clone(),
             reason: None,
+            fix: None,
         }]
     }
 }

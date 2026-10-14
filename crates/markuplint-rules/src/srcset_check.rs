@@ -138,6 +138,7 @@ impl CandidateContext<'_> {
             col,
             raw,
             reason: self.rule_config.reason.clone(),
+            fix: None,
         }
     }
 }

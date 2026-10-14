@@ -94,6 +94,7 @@ impl Rule for LabelNoMultipleControls {
                     col: control.base.col,
                     raw: control.base.raw.clone(),
                     reason: None,
+                    fix: None,
                 });
             }
         }

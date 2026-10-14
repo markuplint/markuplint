@@ -4,6 +4,7 @@ use markuplint_dom::arena::DomArena;
 use markuplint_dom::node::DomNode;
 use markuplint_types::spec::types::MLMLSpec;
 
+use crate::fix::Fix;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
@@ -33,6 +34,7 @@ impl Rule for NoOrphanedEndTag {
                     col: text.base.col,
                     raw: text.base.raw.clone(),
                     reason: None,
+                    fix: Some(Fix::remove(text.base.offset, text.base.offset + text.base.raw.len())),
                 });
             }
             // Also check EndTag nodes (from MLAST JSON path)
@@ -46,6 +48,10 @@ impl Rule for NoOrphanedEndTag {
                     col: end_tag.base.col,
                     raw: end_tag.base.raw.clone(),
                     reason: None,
+                    fix: Some(Fix::remove(
+                        end_tag.base.offset,
+                        end_tag.base.offset + end_tag.base.raw.len(),
+                    )),
                 });
             }
         }
@@ -130,6 +136,29 @@ mod tests {
             ),
             []
         );
+    }
+
+    fn fixed(html: &str) -> String {
+        crate::test_util::fixed_code(html, &serde_json::json!({ "rules": { "no-orphaned-end-tag": true } }))
+    }
+
+    /// TS: `[no-orphaned-end-tag-fix-001]` — remove orphaned end tag
+    #[test]
+    fn no_orphaned_end_tag_fix_001() {
+        const _ID: &str = "no-orphaned-end-tag-fix-001";
+        assert_eq!(fixed("<div></div></span>"), "<div></div>");
+    }
+
+    /// TS: `[no-orphaned-end-tag-fix-002]` — remove multiple orphaned end tags
+    #[test]
+    fn no_orphaned_end_tag_fix_002() {
+        const _ID: &str = "no-orphaned-end-tag-fix-002";
+        assert_eq!(fixed("<div></p></br><p></span></p></div>"), "<div><p></p></div>");
+    }
+
+    #[test]
+    fn v6_no_orphaned_end_tag_002() {
+        assert_eq!(fixed("<p>日本語😀</p></span>"), "<p>日本語😀</p>");
     }
 
     #[test]

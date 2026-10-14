@@ -75,6 +75,7 @@ impl Rule for FormAttrReferencesForm {
                 col: form_attr.value.col,
                 raw: form_attr.value.raw.clone(),
                 reason: None,
+                fix: None,
             });
         }
 

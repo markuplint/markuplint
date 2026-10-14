@@ -98,6 +98,7 @@ impl Rule for ClassNaming {
                             col: class_col,
                             raw: class_name.to_string(),
                             reason: rule_config.reason.clone(),
+                            fix: None,
                         });
                     }
                 }

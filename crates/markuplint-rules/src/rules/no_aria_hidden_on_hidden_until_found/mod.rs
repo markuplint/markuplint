@@ -68,6 +68,7 @@ impl Rule for NoAriaHiddenOnHiddenUntilFound {
                 col: aria_hidden.col,
                 raw: aria_hidden.raw.clone(),
                 reason: rule_config.reason.clone(),
+                fix: None,
             });
         }
         violations

@@ -1,5 +1,7 @@
 use serde::Serialize;
 
+use crate::fix::Fix;
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "lowercase")]
 pub enum Severity {
@@ -27,4 +29,8 @@ pub struct Violation {
     /// Populated from the `reason` field in rule config (nodeRules/childNodeRules).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub reason: Option<String>,
+    /// The edits that resolve this violation (TS `Violation.fix`). A rule builds it in
+    /// byte offsets; `lint()` converts it to UTF-16 code units, see [`crate::fix`].
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub fix: Option<Fix>,
 }

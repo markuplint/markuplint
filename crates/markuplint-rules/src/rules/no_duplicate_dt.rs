@@ -60,6 +60,7 @@ impl Rule for NoDuplicateDt {
                             col,
                             raw: raw.clone(),
                             reason: None,
+                            fix: None,
                         });
                     }
                 }

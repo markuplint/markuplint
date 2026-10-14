@@ -150,6 +150,7 @@ fn check_chars(
                 col,
                 raw: ch.to_string(),
                 reason: None,
+                fix: None,
             });
         }
         if ch == '\n' {

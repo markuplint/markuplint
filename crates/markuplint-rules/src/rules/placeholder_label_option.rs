@@ -73,6 +73,7 @@ impl Rule for PlaceholderLabelOption {
                     col: el.base.col,
                     raw: el.base.raw.clone(),
                     reason: None,
+                    fix: None,
                 });
             }
         }

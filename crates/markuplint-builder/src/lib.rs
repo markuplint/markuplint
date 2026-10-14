@@ -331,6 +331,33 @@ pub struct NapiViolation {
     pub line: u32,
     pub col: u32,
     pub raw: String,
+    /// TS `FixData`; the ranges are UTF-16 code unit offsets.
+    pub fix: Option<NapiFixData>,
+}
+
+#[napi(object)]
+pub struct NapiFixData {
+    pub edits: Vec<NapiTextEdit>,
+}
+
+#[napi(object)]
+pub struct NapiTextEdit {
+    /// `[start, end)`; napi objects have no tuple type.
+    pub range: Vec<u32>,
+    pub text: String,
+}
+
+fn to_napi_fix(fix: markuplint_rules::fix::Fix) -> NapiFixData {
+    NapiFixData {
+        edits: fix
+            .edits
+            .into_iter()
+            .map(|edit| NapiTextEdit {
+                range: edit.range.iter().map(|&offset| offset as u32).collect(),
+                text: edit.text,
+            })
+            .collect(),
+    }
 }
 
 fn to_napi_violations(result: markuplint_rules::lint::LintResult) -> Vec<NapiViolation> {
@@ -349,6 +376,7 @@ fn to_napi_violations(result: markuplint_rules::lint::LintResult) -> Vec<NapiVio
             line: v.line,
             col: v.col,
             raw: v.raw,
+            fix: v.fix.map(to_napi_fix),
         })
         .collect()
 }
