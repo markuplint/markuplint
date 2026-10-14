@@ -58,6 +58,16 @@ pub fn is_void_element_name(local_name: &str) -> bool {
     )
 }
 
+/// Whether an element uses the "nothing" content model: a void element, `iframe` or
+/// `template`. Port of `@markuplint/ml-spec` `isNothingContentModel()`
+/// (`algorithm/html/is-nothing-content-model.ts`).
+///
+/// <https://html.spec.whatwg.org/multipage/dom.html#the-nothing-content-model>
+#[must_use]
+pub fn is_nothing_content_model_name(local_name: &str) -> bool {
+    is_void_element_name(local_name) || matches!(local_name, "iframe" | "template")
+}
+
 /// Void elements have `contentModel.contents === false` in the spec data.
 pub fn is_void_element(spec: &MLMLSpec, name: &str) -> bool {
     get_spec(spec, name).is_some_and(|el| {
@@ -173,6 +183,18 @@ mod tests {
         let div = get_spec_by_tag_name(&spec, "div", None);
         assert!(div.is_some());
         assert_eq!(div.unwrap().name, "div");
+    }
+
+    // --- is_nothing_content_model_name ---
+
+    #[test]
+    fn nothing_content_model_names() {
+        for name in ["br", "img", "input", "iframe", "template"] {
+            assert!(is_nothing_content_model_name(name), "{name} should be nothing");
+        }
+        for name in ["div", "p", "textarea", "video", "svg", ""] {
+            assert!(!is_nothing_content_model_name(name), "{name} should not be nothing");
+        }
     }
 
     // --- is_void_element ---
