@@ -3,7 +3,7 @@ import type { MLResultInfo } from '../types.js';
 import type { WatchSubscription } from './shared-watcher.js';
 import type { ConfigSet, MLFile, PretenderResolver, Target } from '@markuplint/file-resolver';
 import type { PlainData, Pretender, RuleAliasWarning, RuleCommonSettings, Violation } from '@markuplint/ml-config';
-import type { Ruleset, Plugin, Document, RuleConfigValue, MLFabric } from '@markuplint/ml-core';
+import type { Ruleset, Plugin, Document, RuleConfigValue, MLFabric, FixSummary } from '@markuplint/ml-core';
 
 import {
 	ConfigProvider,
@@ -18,7 +18,7 @@ import {
 import path from 'node:path';
 
 import { applyRuleAliasesToConfig, mergeConfig } from '@markuplint/ml-config';
-import { CONFIG_ERROR_RULE_ID, MLCore, convertRuleset } from '@markuplint/ml-core';
+import { CONFIG_ERROR_RULE_ID, MLCore, convertRuleset, multiPassFix } from '@markuplint/ml-core';
 import { ruleAliasTable } from '@markuplint/rules';
 import { ConfigLoadError, isFatalError } from '@markuplint/shared';
 import { Emitter } from 'strict-event-emitter';
@@ -372,20 +372,12 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 
 	/**
 	 * Attempts to execute linting via the Rust NAPI engine.
-	 * Returns `null` if the file is not eligible (framework parser, custom rules, fix mode,
+	 * Returns `null` if the file is not eligible (framework parser, custom rules,
 	 * or a rule the Rust engine cannot evaluate),
 	 * in which case the caller should fall back to the TS engine.
 	 */
 	async #tryExecRustPath(fabric: MLFabric): Promise<MLResultInfo | null> {
-		const fix = this.#options?.fix ?? this.#options?.fixDryRun ?? false;
-
-		// Fallback: fix mode not supported in Rust
-		if (fix) {
-			process.stderr.write(
-				`⚠ [experimental-rust-core] "${this.#file.path}" uses --fix — falling back to TypeScript engine.\n`,
-			);
-			return null;
-		}
+		const fix = this.#options?.fix ?? false;
 
 		// Fallback: framework parser
 		if (this.#parserModName !== '@markuplint/html-parser') {
@@ -472,24 +464,54 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 			};
 		}
 
-		// Convert NapiViolation[] → Violation[]
-		const violations: Violation[] = napiViolations.map(v => ({
-			ruleId: v.ruleId,
-			name: v.name ?? undefined,
-			severity: v.severity as Violation['severity'],
-			message: v.message,
-			line: v.line,
-			col: v.col,
-			raw: v.raw,
-		}));
+		const violations = toViolations(napiViolations, fix);
 
-		this.emit('lint', this.#file.path, sourceCode, violations, sourceCode, null, null);
+		let fixedCode = sourceCode;
+		let fixSummary: FixSummary | undefined;
+		if (fix) {
+			if (violations.some(v => v.fix)) {
+				// The fix loop lints the fixed code again; a pass that no longer parses is
+				// the Rust engine's lone `parse-error` violation.
+				let latest: readonly Violation[] = [];
+				const result = await multiPassFix(sourceCode, violations, {
+					load: code => {
+						try {
+							latest = toViolations(lintHtml(code, configJson, specJson), true);
+						} catch (error) {
+							if (isFatalError(error)) {
+								throw error;
+							}
+							// What the engine cannot lint is as good as unparsable: the loop goes
+							// back to the last code it could, as it does with the TS engine.
+							log('exec: rust path failed on fixed code: %O', error);
+							latest = [];
+							return Promise.resolve(false);
+						}
+						return Promise.resolve(!latest.some(v => v.ruleId === PARSE_ERROR_RULE_ID));
+					},
+					lint: () => Promise.resolve(latest),
+				});
+				fixedCode = result.code;
+				fixSummary = result.summary;
+			} else {
+				fixSummary = {
+					passCount: 0,
+					totalApplied: 0,
+					totalSkipped: 0,
+					reachedMaxPasses: false,
+					firstPassEdits: [],
+				};
+			}
+		}
+
+		this.emit('lint', this.#file.path, sourceCode, violations, fixedCode, null, fixSummary ?? null);
 		return {
 			violations,
 			filePath: this.#file.path,
 			sourceCode,
-			fixedCode: sourceCode,
+			fixedCode,
 			status: 'processed',
+			fixSummary,
 		};
 	}
 
@@ -1194,7 +1216,37 @@ type NapiViolation = {
 	line: number;
 	col: number;
 	raw: string;
+	/** UTF-16 offsets, like `FixData` (napi objects have no tuple type, so a range is `[start, end]` as an array). */
+	fix?: { edits: { range: number[]; text: string }[] };
 };
+
+/** `ruleId` of the violation the Rust engine returns alone for code it cannot build a document from. */
+const PARSE_ERROR_RULE_ID = 'parse-error';
+
+/**
+ * Converts what the Rust engine returned to {@link Violation}s. `fix` is kept only when asked
+ * for, as the TS engine computes it only then.
+ */
+function toViolations(napiViolations: readonly NapiViolation[], withFix: boolean): Violation[] {
+	return napiViolations.map(v => ({
+		ruleId: v.ruleId,
+		name: v.name ?? undefined,
+		severity: v.severity as Violation['severity'],
+		message: v.message,
+		line: v.line,
+		col: v.col,
+		raw: v.raw,
+		...(withFix &&
+			v.fix && {
+				fix: {
+					edits: v.fix.edits.map(edit => ({
+						range: [edit.range[0]!, edit.range[1]!] as const,
+						text: edit.text,
+					})),
+				},
+			}),
+	}));
+}
 
 type NapiBinding = {
 	lintHtml: (html: string, configJson: string, specJson: string) => NapiViolation[];
