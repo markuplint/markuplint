@@ -7,13 +7,18 @@ use markuplint_types::spec::types::MLMLSpec;
 
 use crate::fix::Fix;
 use crate::rule::{Rule, RuleConfigSet};
-use crate::violation::Violation;
+use crate::violation::{Severity, Violation};
 
 pub struct NoDefaultValue;
 
 impl Rule for NoDefaultValue {
     fn id(&self) -> &'static str {
         "no-default-value"
+    }
+
+    /// Matches TS `createRule({ defaultSeverity: 'warning' })`.
+    fn default_severity(&self) -> Severity {
+        Severity::Warning
     }
 
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
@@ -43,14 +48,16 @@ impl Rule for NoDefaultValue {
                 };
 
                 if html_attr.value.raw.eq_ignore_ascii_case(default_value) {
+                    // TS points at the value, not at the attribute. A valueless attribute never gets
+                    // here: no default value in the spec is the empty string.
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
                         name: None,
                         severity: rule_config.severity,
                         message: "It is the default value".to_string(),
-                        line: html_attr.name.line,
-                        col: html_attr.name.col,
-                        raw: html_attr.raw.clone(),
+                        line: html_attr.value.line,
+                        col: html_attr.value.col,
+                        raw: html_attr.value.raw.clone(),
                         reason: None,
                         fix: Fix::remove_attr(html_attr),
                     });
@@ -82,6 +89,7 @@ mod tests {
     use super::*;
     use crate::rule::{RuleConfig, RuleConfigSet};
     use crate::rules::no_duplicate_attr::tests::make_element_with_attrs;
+    use crate::test_util::brief;
     use markuplint_types::spec::load_spec;
 
     fn spec() -> MLMLSpec {
@@ -108,6 +116,61 @@ mod tests {
         assert_eq!(
             fixed("<p>日本語😀</p><input\ttype = 'text' name=a>"),
             "<p>日本語😀</p><input name=a>"
+        );
+    }
+
+    /// TS: `[no-default-value-invalid-001]` — a violation points at the value, not the attribute
+    #[test]
+    fn no_default_value_invalid_001() {
+        const _ID: &str = "no-default-value-invalid-001";
+        assert_eq!(
+            crate::test_util::lint_brief(
+                "no-default-value",
+                r#"<canvas width="300" height="150"></canvas>"#,
+                serde_json::json!({ "rules": { "no-default-value": true } }),
+            ),
+            vec![
+                brief(Severity::Warning, 1, 16, "It is the default value", "300"),
+                brief(Severity::Warning, 1, 29, "It is the default value", "150"),
+            ]
+        );
+    }
+
+    /// TS: `[no-default-value-valid-001]` — `hidden` has no default value to be reported
+    #[test]
+    fn no_default_value_valid_001() {
+        const _ID: &str = "no-default-value-valid-001";
+        for html in [
+            "<div hidden></div>",
+            r#"<div hidden=""></div>"#,
+            r#"<div hidden="hidden"></div>"#,
+            r#"<div hidden="until-found"></div>"#,
+        ] {
+            assert_eq!(
+                crate::test_util::lint_brief(
+                    "no-default-value",
+                    html,
+                    serde_json::json!({ "rules": { "no-default-value": true } }),
+                ),
+                vec![],
+                "{html}"
+            );
+        }
+    }
+
+    #[test]
+    fn v6_no_default_value_002() {
+        // The value is what the violation points at whatever the quote around it is.
+        assert_eq!(
+            crate::test_util::lint_brief(
+                "no-default-value",
+                "<input type='text'>\n<input type=text>",
+                serde_json::json!({ "rules": { "no-default-value": true } }),
+            ),
+            vec![
+                brief(Severity::Warning, 1, 14, "It is the default value", "text"),
+                brief(Severity::Warning, 2, 13, "It is the default value", "text"),
+            ]
         );
     }
 

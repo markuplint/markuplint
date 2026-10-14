@@ -5,6 +5,7 @@ use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::types::MLMLSpec;
 use regex::Regex;
 
+use crate::aria_check::attr_name;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
@@ -32,15 +33,16 @@ impl Rule for ClassNaming {
                 continue;
             }
 
+            // As TS: a missing pattern is an empty list, and an empty list matches nothing, so
+            // every class name is reported.
             let pattern_strs: Vec<String> = match &rule_config.value {
-                serde_json::Value::String(s) if !s.is_empty() => vec![s.clone()],
+                serde_json::Value::String(s) => vec![s.clone()],
                 serde_json::Value::Array(arr) => arr.iter().filter_map(|v| v.as_str().map(String::from)).collect(),
-                _ => continue, // null, empty, or non-string → skip this node
-            };
-
-            if pattern_strs.is_empty() {
-                continue;
+                _ => Vec::new(),
             }
+            .into_iter()
+            .filter(|p| !p.is_empty())
+            .collect();
 
             let regexes: Vec<(String, Regex)> = pattern_strs
                 .iter()
@@ -50,23 +52,22 @@ impl Rule for ClassNaming {
                 })
                 .collect();
 
-            if regexes.is_empty() {
+            // Patterns that are all unparsable as a regex are skipped, as before; that is not the
+            // same as having none.
+            if regexes.is_empty() && !pattern_strs.is_empty() {
                 continue;
             }
 
-            // TS format: quoted patterns joined by ", "
-            let display_pattern = pattern_strs
-                .iter()
-                .map(|p| format!("\"{p}\""))
-                .collect::<Vec<_>>()
-                .join(", ");
+            // TS format: `"a", "b"`, and `""` for no pattern at all.
+            let display_pattern = format!("\"{}\"", pattern_strs.join("\", \""));
 
             for attr in &el.attributes {
                 let MLASTAttr::HTMLAttr(html_attr) = attr else {
                     continue;
                 };
 
-                if !html_attr.node_name.eq_ignore_ascii_case("class") {
+                // TS reads the name the parser resolved, and leaves a template expression alone.
+                if !attr_name(html_attr).eq_ignore_ascii_case("class") || html_attr.is_dynamic_value == Some(true) {
                     continue;
                 }
 

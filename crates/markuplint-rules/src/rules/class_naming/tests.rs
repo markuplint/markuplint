@@ -13,7 +13,9 @@
 //!   class-naming-issue-1263   → class_naming_issue_1263
 //!   class-naming-valid-004    — SKIP: dynamic value (JSX parser)
 //!   class-naming-parser-001   — SKIP: Pug parser
-//!   v6_class_naming_001       — Rust-only: null config disabled
+//!   v6_class_naming_001       — Rust-only: no pattern reports every class name, as TS
+//!   v6_class_naming_002       — Rust-only: the attribute is read by its resolved name; dynamic values are skipped
+//!   v6_class_naming_003       — Rust-only: a directive is not the `class` attribute
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::Severity;
@@ -441,5 +443,65 @@ fn v6_class_naming_001() {
     .unwrap();
     let result = lint(&arena, &spec, &config);
     // value=true → not a string pattern → skip
-    assert_eq!(result.violations.len(), 0);
+    //
+    // CHANGED to follow the TS rule: without a pattern it reports every class name against an
+    // empty pattern list. Whether that is intended is tracked on the TS side; the Rust rule
+    // follows TS until it is settled.
+    // assert_eq!(result.violations.len(), 0); // baseline before the port followed TS
+    assert_eq!(result.violations.len(), 1);
+    assert_eq!(
+        result.violations[0].message,
+        r#"The "anything" class name is unmatched with the below patterns: """#
+    );
+    assert_eq!((result.violations[0].line, result.violations[0].col), (1, 13));
+    assert_eq!(result.violations[0].raw, "anything");
+}
+
+/// TS reads the attribute as the name the parser resolved (`potentialName`), and skips a value
+/// that is a template expression: `:class="b"` of Vue is not a class name to check.
+#[test]
+fn v6_class_naming_002() {
+    use crate::test_util::{brief, lint_mlast_brief, mlast_element};
+
+    let config = serde_json::json!({ "rules": { "class-naming": "/^[a-z]$/" } });
+    let mlast = mlast_element(
+        "div",
+        &[
+            ("class", "a", serde_json::json!({ "potentialName": "class" })),
+            ("class", "B", serde_json::json!({ "potentialName": "class" })),
+            (
+                ":class",
+                "{ a: item.a }",
+                serde_json::json!({ "potentialName": "class", "isDynamicValue": true }),
+            ),
+        ],
+        &serde_json::json!({}),
+    );
+
+    assert_eq!(
+        lint_mlast_brief("class-naming", &mlast, config),
+        vec![brief(
+            Severity::Warning,
+            1,
+            23,
+            r#"The "B" class name is unmatched with the below patterns: "/^[a-z]$/""#,
+            "B"
+        )]
+    );
+}
+
+/// A directive such as Svelte's `class:a={x}` is named `class:a` by the parser, so it is not the
+/// `class` attribute for TS, whatever `nodeName` says.
+#[test]
+fn v6_class_naming_003() {
+    use crate::test_util::{lint_mlast_brief, mlast_element};
+
+    let config = serde_json::json!({ "rules": { "class-naming": "/^[a-z]$/" } });
+    let mlast = mlast_element(
+        "li",
+        &[("class", "X", serde_json::json!({ "potentialName": "class:a" }))],
+        &serde_json::json!({}),
+    );
+
+    assert_eq!(lint_mlast_brief("class-naming", &mlast, config), vec![]);
 }
