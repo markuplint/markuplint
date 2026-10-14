@@ -387,19 +387,7 @@ export class MLCore {
 			});
 		}
 
-		const deprecationSeverity = this.#resolveDeprecationSeverity();
-		if (deprecationSeverity != null) {
-			for (const { deprecatedName, replacedBy } of this.#ruleDeprecations) {
-				configViolations.push({
-					ruleId: RULE_DEPRECATION_RULE_ID,
-					severity: deprecationSeverity,
-					message: `Rule "${deprecatedName}" is deprecated and will be removed in v6. Use ${replacedBy.join(', ')} instead.`,
-					col: 1,
-					line: 1,
-					raw: '',
-				});
-			}
-		}
+		configViolations.push(...createRuleDeprecationViolations(this.#ruleDeprecations, this.#severity));
 
 		violations.push(...configViolations);
 
@@ -588,23 +576,6 @@ export class MLCore {
 	}
 
 	/**
-	 * Resolves `severity.deprecation`, honouring its single-value form only
-	 * (unlike `severity.parseError`, there's no fixed enum of deprecated rule
-	 * names to key a per-code `Record` on).
-	 *
-	 * Unlike `#createParseError`'s parse-error channel, this defaults to
-	 * `'warning'` (not off/suppressed) when unset — the deprecation channel
-	 * is being carved out of the always-on `config-error` channel, not
-	 * introduced cold, so leaving the option unset must not silence a notice
-	 * users already see today.
-	 *
-	 * @returns the resolved severity, or `null` if suppressed.
-	 */
-	#resolveDeprecationSeverity(): Violation['severity'] | null {
-		return resolveUniformSeverity(this.#severity.deprecation, 'warning');
-	}
-
-	/**
 	 * Builds a `ruleId: 'parse-error'` violation, honouring
 	 * `severity.parseError`.
 	 *
@@ -734,6 +705,43 @@ export class MLCore {
 			}
 		}
 	}
+}
+
+/**
+ * Builds the `rule-deprecation` violations of a config, one per deprecated
+ * rule name. Exported so the Rust path of `MLEngine`, which has no
+ * `MLCore.verify()` to emit them, reports the same notices.
+ *
+ * `severity.deprecation` is honoured in its single-value form only (unlike
+ * `severity.parseError`, there's no fixed enum of deprecated rule names to
+ * key a per-code `Record` on).
+ *
+ * Unlike `#createParseError`'s parse-error channel, this defaults to
+ * `'warning'` (not off/suppressed) when unset — the deprecation channel
+ * is being carved out of the always-on `config-error` channel, not
+ * introduced cold, so leaving the option unset must not silence a notice
+ * users already see today.
+ *
+ * @param ruleDeprecations - The notices found while applying the rule aliases
+ * @param severity - The config's `severity` options
+ * @returns the violations; none when `severity.deprecation` suppresses them.
+ */
+export function createRuleDeprecationViolations(
+	ruleDeprecations: readonly RuleAliasWarning[],
+	severity: SeverityOptions,
+): readonly Violation[] {
+	const resolved = resolveUniformSeverity(severity.deprecation, 'warning');
+	if (resolved == null) {
+		return [];
+	}
+	return ruleDeprecations.map(({ deprecatedName, replacedBy }) => ({
+		ruleId: RULE_DEPRECATION_RULE_ID,
+		severity: resolved,
+		message: `Rule "${deprecatedName}" is deprecated and will be removed in v6. Use ${replacedBy.join(', ')} instead.`,
+		col: 1,
+		line: 1,
+		raw: '',
+	}));
 }
 
 /**

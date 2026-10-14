@@ -1175,6 +1175,75 @@ describe('experimentalRustCore applies the configured pretenders', () => {
 	});
 });
 
+describe('experimentalRustCore reports the deprecated rule names', () => {
+	afterEach(() => {
+		vi.restoreAllMocks();
+	});
+
+	const exec = async (config: Config, options: { rust: boolean; fix?: boolean }) => {
+		const file = await MLEngine.toMLFile({ sourceCode: '<html lang=en></html>', name: 'page.html' });
+		const engine = new MLEngine(file!, {
+			noSearchConfig: true,
+			locale: 'en',
+			experimentalRustCore: options.rust,
+			fix: options.fix ?? false,
+			config,
+		});
+		return engine.exec();
+	};
+
+	const deprecations = (violations: readonly { readonly ruleId: string; readonly severity: string }[] | undefined) =>
+		(violations ?? []).filter(v => v.ruleId === 'rule-deprecation');
+
+	it.skipIf(!nativeAddonIsBuilt)(
+		'reports what the TypeScript engine reports, ahead of the rule violations',
+		async () => {
+			const write = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
+			const config: Config = { rules: { 'wai-aria': true } };
+
+			const expected = await exec(config, { rust: false });
+			const actual = await exec(config, { rust: true });
+
+			expect(deprecations(expected?.violations)).not.toHaveLength(0);
+			expect(deprecations(actual?.violations)).toStrictEqual(deprecations(expected?.violations));
+			expect(actual?.violations[0]).toMatchObject({
+				ruleId: 'rule-deprecation',
+				severity: 'warning',
+				line: 1,
+				col: 1,
+				raw: '',
+			});
+			expect(actual?.violations[0]?.message).toMatch(
+				/^Rule "wai-aria" is deprecated and will be removed in v6\. Use /,
+			);
+			expect(String(write.mock.calls.map(args => String(args[0])))).not.toContain(
+				'falling back to TypeScript engine',
+			);
+		},
+	);
+
+	it.skipIf(!nativeAddonIsBuilt)('honors the severity of the notice', async () => {
+		const error = await exec({ rules: { 'wai-aria': true }, severity: { deprecation: 'error' } }, { rust: true });
+		const off = await exec({ rules: { 'wai-aria': true }, severity: { deprecation: 'off' } }, { rust: true });
+
+		expect(deprecations(error?.violations).map(v => v.severity)).toStrictEqual(['error']);
+		expect(deprecations(off?.violations)).toStrictEqual([]);
+	});
+
+	it.skipIf(!nativeAddonIsBuilt)('keeps the notice in the violations of the last pass of a fix', async () => {
+		const config: Config = { rules: { 'wai-aria': true, 'attr-value-quotes': true } };
+
+		const expected = await exec(config, { rust: false, fix: true });
+		const actual = await exec(config, { rust: true, fix: true });
+
+		expect(deprecations(expected?.fixSummary?.finalPassViolations)).not.toHaveLength(0);
+		expect(deprecations(actual?.fixSummary?.finalPassViolations)).toStrictEqual(
+			deprecations(expected?.fixSummary?.finalPassViolations),
+		);
+		expect(deprecations(actual?.violations)).toStrictEqual(deprecations(expected?.violations));
+	});
+});
+
 describe('experimentalRustCore fixes the file', () => {
 	afterEach(() => {
 		vi.restoreAllMocks();

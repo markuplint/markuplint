@@ -23,10 +23,8 @@ const notInRust = new Set(['no-unsupported-browser-features', 'no-mismatched-asp
  *
  * - `no-empty-palpable-content`: the TS rule exempts `img`, `audio`, `video`, `canvas`, `textarea`,
  *   `output` and the elements of the "nothing" content model; the port does not.
- * - `no-default-value`: the TS rule points at the value, the port at the whole attribute.
- * - `class-naming`: without a pattern the TS rule reports every class name; the port reports none.
  */
-const differsOnPlainHtml = new Set(['no-empty-palpable-content', 'no-default-value', 'class-naming']);
+const differsOnPlainHtml = new Set(['no-empty-palpable-content']);
 
 /** Every rule that is not a deprecated alias of others and that the comparison can be made on. */
 const comparedRules = Object.fromEntries(
