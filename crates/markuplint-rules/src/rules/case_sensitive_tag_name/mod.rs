@@ -1,6 +1,6 @@
 //! `case-sensitive-tag-name` rule: checks tag name case (default: lowercase).
 
-use markuplint_core::mlast::NamespaceURI;
+use markuplint_core::mlast::{ElementType, NamespaceURI};
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::helpers::{extract_tag_name_from_raw, get_raw_tag_name};
 use markuplint_types::spec::types::MLMLSpec;
@@ -23,14 +23,19 @@ impl Rule for CaseSensitiveTagName {
         let case = config.global().value.as_str().unwrap_or("lower");
         let mut violations = Vec::new();
 
+        if arena.settings().tag_name_case_sensitive {
+            return violations;
+        }
+
         for (node_id, el) in arena.elements() {
             let rule_config = config.get(node_id);
             if rule_config.disabled {
                 continue;
             }
-            // TS `el.isForeignElement`: the namespace of the element as written, which a
-            // pretender does not change.
-            if *el.identity(true).namespace != NamespaceURI::XHTML {
+            // TS `el.isForeignElement || el.elementType !== 'html'`: the namespace and the type of
+            // the element as written, which a pretender does not change.
+            let identity = el.identity(true);
+            if *identity.namespace != NamespaceURI::XHTML || *identity.element_type != ElementType::Html {
                 continue;
             }
 

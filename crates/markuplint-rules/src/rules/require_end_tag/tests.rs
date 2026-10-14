@@ -5,8 +5,11 @@
 //!   require-end-tag-invalid-001  → require_end_tag_invalid_001
 //!   require-end-tag-valid-002    → require_end_tag_valid_002
 //!   require-end-tag-invalid-002  → require_end_tag_invalid_002
-//!   require-end-tag-parser-*     — SKIP: framework parsers (Pug/JSX/Vue/Svelte/Astro)
+//!   require-end-tag-parser-001   → v6_require_end_tag_002 (Pug: `endTag` of the document is `never`)
+//!   require-end-tag-parser-003..005 → v6_require_end_tag_003 (Vue/Svelte/Astro: `endTag` is `xml`)
+//!   require-end-tag-parser-002   — SKIP: the JSX parser itself rejects the input (the `parse-error` is TS's)
 //!   require-end-tag-issue-1349   — SKIP: Nunjucks parser
+//!     (the framework parsers stay in TS; `ml-engine.rust-framework.spec.ts` compares whole files)
 //!   v6_require_end_tag_001       — Rust-only: a pretender is foreign by the namespace of the element written
 
 use crate::lint::{LintConfig, lint};
@@ -139,4 +142,66 @@ fn v6_require_end_tag_001() {
         run("<x-img>", serde_json::json!([{ "selector": "x-img", "as": "img" }])),
         []
     );
+}
+
+/// Rust-only: `endTag` is what the parser says about the markup, and `never` (Pug) means no
+/// element has an end tag, so none is missing. TS: `[require-end-tag-parser-001]`.
+#[test]
+fn v6_require_end_tag_002() {
+    use markuplint_core::mlast::{DocumentSettings, EndTagType};
+    let violations = |end_tag| {
+        crate::test_util::lint_brief_with_settings(
+            "require-end-tag",
+            "<div><p>text</div>",
+            serde_json::json!({ "rules": { "require-end-tag": true } }),
+            DocumentSettings {
+                end_tag,
+                ..DocumentSettings::default()
+            },
+        )
+    };
+    assert_eq!(violations(EndTagType::Never), []);
+    assert_eq!(
+        violations(EndTagType::Omittable),
+        [crate::test_util::brief(
+            crate::violation::Severity::Warning,
+            1,
+            6,
+            "Missing the end tag",
+            "<p>"
+        )]
+    );
+}
+
+/// Rust-only: with `xml` (JSX, Vue, Svelte, Astro), `<span />` closes itself, as it does for a
+/// foreign element. The MLAST of `<span />` is what a TS parser sends, `endTag` beside the
+/// nodes. TS: `[require-end-tag-parser-003]`.
+#[test]
+fn v6_require_end_tag_003() {
+    let lint_mlast = |extra: serde_json::Value| {
+        let mut mlast = serde_json::json!({
+            "raw": "<span />",
+            "isFragment": true,
+            "nodeList": [{
+                "uuid": "a1", "raw": "<span />", "offset": 0, "line": 1, "col": 1, "depth": 0,
+                "nodeName": "span", "parentNodeUuid": null, "type": "starttag", "elementType": "html",
+                "namespace": "http://www.w3.org/1999/xhtml", "attributes": [], "childNodes": [],
+                "pairNodeUuid": null, "tagOpenChar": "<", "tagCloseChar": "/>", "blockBehavior": null,
+                "isGhost": false, "isFragment": false
+            }]
+        });
+        mlast
+            .as_object_mut()
+            .unwrap()
+            .extend(extra.as_object().unwrap().clone());
+        let arena = markuplint_dom::builder::build_from_json(&mlast.to_string()).unwrap();
+        let config: LintConfig =
+            serde_json::from_value(serde_json::json!({ "rules": { "require-end-tag": true } })).unwrap();
+        lint(&arena, &spec(), &config).violations
+    };
+    assert_eq!(lint_mlast(serde_json::json!({ "endTag": "xml" })).len(), 0);
+    let violations = lint_mlast(serde_json::json!({}));
+    assert_eq!(violations.len(), 1);
+    assert_eq!(violations[0].message, "Missing the end tag");
+    assert_eq!(violations[0].raw, "<span />");
 }

@@ -14,6 +14,7 @@
 //!   v6_attr_value_quotes_002       — Rust-only: no-quote attr reported
 //!   v6_attr_value_quotes_003       — Rust-only: non-ASCII text before the fixed quotes
 //!   v6_attr_value_quotes_004       — Rust-only: whitespace between the equal sign and an unquoted value
+//!   v6_attr_value_quotes_005       — Rust-only: a dynamic value and a directive are not quoted strings
 
 use crate::lint::{LintConfig, lint};
 use crate::test_util::fixed_code;
@@ -222,4 +223,28 @@ fn v6_attr_value_quotes_002() {
         result.violations[0].message,
         "Attribute value is must quote on double quotation mark"
     );
+}
+
+/// Rust-only: a value the framework evaluates (`href={url}` in JSX, `:href` in Vue) is not a
+/// quoted string whatever it is written with, and neither is a directive; an attribute with an
+/// equal sign and no quotes is otherwise reported. TS skips `isDynamicValue`, `isDirective` and
+/// an attribute without an equal sign.
+#[test]
+fn v6_attr_value_quotes_005() {
+    let unquoted = |resolved: serde_json::Value| {
+        let token = |offset: usize| serde_json::json!({ "uuid": format!("q{offset}"), "raw": "", "offset": offset, "line": 1, "col": offset + 1 });
+        let mut attr = serde_json::json!({ "startQuote": token(8), "endQuote": token(11) });
+        attr.as_object_mut()
+            .unwrap()
+            .extend(resolved.as_object().unwrap().clone());
+        let json = crate::test_util::mlast_element("a", &[("href", "url", attr)], &serde_json::json!({}));
+        crate::test_util::lint_mlast_brief(
+            "attr-value-quotes",
+            &json,
+            serde_json::json!({ "rules": { "attr-value-quotes": true } }),
+        )
+    };
+    assert_eq!(unquoted(serde_json::json!({ "isDynamicValue": true })), []);
+    assert_eq!(unquoted(serde_json::json!({ "isDirective": true })), []);
+    assert_eq!(unquoted(serde_json::json!({})).len(), 1);
 }

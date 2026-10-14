@@ -165,7 +165,12 @@ fn convert_parser_node(
                 Namespace::Svg => NamespaceURI::SVG,
                 Namespace::MathML => NamespaceURI::MathML,
             };
-            let element_type = if tag_name.contains('-') {
+            // TS `detectElementType`, on the name as written: the tree builder lower-cases
+            // `tag_name`, and `<XXX-hoge>` is not a custom element name. An implied element
+            // has no raw tag.
+            let raw_tag = slice_span_str(source, node.span.start.offset, node.span.end.offset);
+            let written_name = crate::helpers::extract_tag_name_from_raw(raw_tag).unwrap_or(tag_name);
+            let element_type = if markuplint_types::whatwg::custom_element_name::is_custom_element_name(written_name) {
                 ElementType::WebComponent
             } else {
                 ElementType::Html
@@ -336,9 +341,13 @@ fn make_token(source: &str, span: markuplint_html_parser::input::Span) -> markup
 }
 
 fn slice_span(source: &str, start: usize, end: usize) -> String {
+    slice_span_str(source, start, end).to_owned()
+}
+
+fn slice_span_str(source: &str, start: usize, end: usize) -> &str {
     let end = end.min(source.len());
     let start = start.min(end);
-    source[start..end].to_owned()
+    &source[start..end]
 }
 
 /// Restore colon form for WHATWG §13.2.6.5 foreign attributes.
@@ -483,6 +492,29 @@ mod tests {
         assert_eq!(errors[0].raw, "xyz;");
         assert_eq!(errors[1].code, "missing-semicolon-after-character-reference");
         assert_eq!(errors[1].raw, "amp");
+    }
+
+    /// TS `detectElementType`: an element is a web component when its name, as written, is a
+    /// valid custom element name — lower-case start, a hyphen, not one of the reserved names. The
+    /// tree builder lower-cases `tag_name`, so the raw tag is what tells `<XXX-hoge>` from `<x-hoge>`.
+    #[test]
+    fn element_type_follows_the_custom_element_name_of_the_raw_tag() {
+        // As in TS, the namespace does not matter: `<my-shape>` in an SVG is a web component too.
+        let arena = build(
+            "<x-hoge></x-hoge><XXX-hoge></XXX-hoge><font-face></font-face><div></div><svg><my-shape></my-shape></svg>",
+        );
+        let types: Vec<_> = arena.elements().map(|(_, el)| el.element_type.clone()).collect();
+        assert_eq!(
+            types,
+            [
+                ElementType::WebComponent,
+                ElementType::Html,
+                ElementType::Html,
+                ElementType::Html,
+                ElementType::Html,
+                ElementType::WebComponent,
+            ]
+        );
     }
 
     /// Port of TS `extractRawForParseError` (`@markuplint/html-parser`).

@@ -1,9 +1,11 @@
 use std::sync::LazyLock;
 
+use markuplint_core::mlast::MLASTAttr;
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::helpers::{find_element_by_id, get_attr_value, get_attr_value_from_el, has_attr};
 use markuplint_dom::node::{DomNode, ElementData};
 
+use crate::aria_check::element_local_name;
 use crate::slot_content::slot_content;
 
 static REGEX_LITERAL_RE: LazyLock<regex::Regex> = LazyLock::new(|| regex::Regex::new(r"^/(.+)/([gim]*)$").unwrap());
@@ -51,6 +53,46 @@ fn parse_regex_literal(pattern: &str) -> Option<fancy_regex::Regex> {
 #[must_use]
 pub fn is_pretender_without_as_attr(el: &ElementData) -> bool {
     el.pretended().is_some() && get_attr_value_from_el(el, "as").is_none()
+}
+
+/// TS `el.hasMutableAttributes()`: an attribute is a spread or has a dynamic value (a template
+/// expression), so what the element renders may differ from what is written.
+pub fn has_mutable_attributes(el: &ElementData) -> bool {
+    el.attributes.iter().any(|attr| match attr {
+        MLASTAttr::Spread(_) => true,
+        MLASTAttr::HTMLAttr(attr) => attr.is_dynamic_value == Some(true),
+    })
+}
+
+/// TS `el.hasMutableChildren(attr)`: below the element there is a preprocessor block without a
+/// behavior (its branches cannot be enumerated), a `<slot>`, or — with `attr` — an element with a
+/// mutable attribute.
+pub fn has_mutable_children(arena: &DomArena, node_id: NodeId, attr: bool) -> bool {
+    arena
+        .pure_children_of(node_id)
+        .into_iter()
+        .any(|child_id| match arena.get(child_id) {
+            Some(DomNode::PSBlock(block)) => block.block_behavior.is_none(),
+            Some(DomNode::Element(el)) => {
+                (attr && has_mutable_attributes(el))
+                    || has_mutable_children(arena, child_id, attr)
+                    || element_local_name(el) == "slot"
+            }
+            _ => false,
+        })
+}
+
+/// TS `accnameMayBeMutable()`: the element, or the label it owns, has an attribute or a child
+/// that may change what the accessible name is at runtime, so a static scan cannot judge it.
+pub fn accname_may_be_mutable(arena: &DomArena, node_id: NodeId) -> bool {
+    let is_mutable = |id: NodeId| {
+        arena
+            .get(id)
+            .and_then(DomNode::as_element)
+            .is_some_and(has_mutable_attributes)
+            || has_mutable_children(arena, id, true)
+    };
+    is_mutable(node_id) || get_owned_label(arena, node_id).is_some_and(is_mutable)
 }
 
 /// TS `accnameMayComeFromUnknownContent()`: whether the accessible name of `node_id` may be

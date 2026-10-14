@@ -20,7 +20,6 @@
 //! An element that is empty, or holds nothing but whitespace, comments, `<script>` and
 //! `<template>`, may have its children created later, so the message suggests `aria-busy="true"`.
 
-use markuplint_core::mlast::{MLASTAttr, MLASTBlockBehaviorType};
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::helpers::get_attr_value;
 use markuplint_dom::node::DomNode;
@@ -32,6 +31,7 @@ use crate::aria::computed_role::{ResolvedRole, get_computed_role};
 use crate::aria_check::{
     ElementContext, ElementGate, element_local_name, is_js_whitespace, quoted_list, walk_elements,
 };
+use crate::helpers::has_mutable_children;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::slot_content::{content_owner, expand_children, is_content_mutable, slot_content};
 use crate::violation::Violation;
@@ -114,7 +114,7 @@ fn check(ctx: &ElementContext<'_>, node_id: NodeId, role: Option<&ResolvedRole>)
         },
         None => node_id,
     };
-    if has_mutable_children(ctx.arena, component) || is_content_mutable(ctx.arena, component) {
+    if has_mutable_children(ctx.arena, component, true) || is_content_mutable(ctx.arena, component) {
         return None;
     }
 
@@ -219,7 +219,7 @@ fn closest_non_presentational_descendants(
     version: ARIAVersion,
 ) -> Vec<Option<String>> {
     let mut owned = Vec::new();
-    for child_id in child_nodes(arena, node_id) {
+    for child_id in arena.child_nodes(node_id) {
         if arena.get(child_id).and_then(DomNode::as_element).is_none() {
             continue;
         }
@@ -243,33 +243,6 @@ fn is_transparent_for_ownership(role_name: Option<&str>, version: ARIAVersion) -
         Some("generic") => version == ARIAVersion::V1_3,
         _ => false,
     }
-}
-
-/// TS `node.childNodes`: the pure child nodes, with a fragment and an `each` / `end` block
-/// replaced by their own child nodes.
-fn child_nodes(arena: &DomArena, node_id: NodeId) -> Vec<NodeId> {
-    let mut nodes = Vec::new();
-    for child_id in arena.pure_children_of(node_id) {
-        let flatten = match arena.get(child_id) {
-            Some(DomNode::Element(el)) => el.is_fragment,
-            Some(DomNode::PSBlock(block)) => {
-                block.is_fragment
-                    || block.block_behavior.as_ref().is_some_and(|behavior| {
-                        matches!(
-                            behavior.behavior_type,
-                            MLASTBlockBehaviorType::Each | MLASTBlockBehaviorType::End
-                        )
-                    })
-            }
-            _ => false,
-        };
-        if flatten {
-            nodes.extend(child_nodes(arena, child_id));
-        } else {
-            nodes.push(child_id);
-        }
-    }
-    nodes
 }
 
 /// TS `getOwnedChildNodes()`: the child nodes `node_id` owns as the page renders them.
@@ -300,26 +273,7 @@ fn owned_child_nodes(arena: &DomArena, node_id: NodeId) -> Option<Vec<NodeId>> {
         return Some(expand_children(arena, *origin, given));
     }
 
-    Some(expand_children(arena, node_id, child_nodes(arena, node_id)))
-}
-
-/// TS `el.hasMutableChildren(true)`: below the element there is a preprocessor block without a
-/// behavior, an element with a spread or dynamic attribute, or a `<slot>`.
-fn has_mutable_children(arena: &DomArena, node_id: NodeId) -> bool {
-    arena
-        .pure_children_of(node_id)
-        .into_iter()
-        .any(|child_id| match arena.get(child_id) {
-            Some(DomNode::PSBlock(block)) => block.block_behavior.is_none(),
-            Some(DomNode::Element(el)) => {
-                el.attributes.iter().any(|attr| match attr {
-                    MLASTAttr::Spread(_) => true,
-                    MLASTAttr::HTMLAttr(attr) => attr.is_dynamic_value == Some(true),
-                }) || has_mutable_children(arena, child_id)
-                    || element_local_name(el) == "slot"
-            }
-            _ => false,
-        })
+    Some(expand_children(arena, node_id, arena.child_nodes(node_id)))
 }
 
 /// TS `mayBeBeforeCreated()`: every child node is whitespace-only text, or every child element is

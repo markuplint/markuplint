@@ -15,9 +15,7 @@
 //!   v6_no_invalid_aria_prop_value_010  — Rust-only: valid token, true/false and integer values
 //!   v6_check_aria_value_*  — Rust-only: unit tests of `check_aria_value`; expectations are the results of the TS
 //!                            `checkAriaValue` for the same inputs
-//!
-//! Known gap: the TS `booleanish` argument (JSX parser) has no Rust counterpart, so there is no
-//! test for an empty `true/false` value being accepted.
+//!   v6_no_invalid_aria_prop_value_011  — Rust-only: the `booleanish` setting of the document (JSX parser) accepts an empty `true/false` value
 
 use super::*;
 use crate::aria_check::html_attrs;
@@ -506,5 +504,36 @@ fn v6_no_invalid_aria_prop_value_010() {
         r#"<div role="heading" aria-level="2"></div>"#,
     ] {
         assert_eq!(run(html, serde_json::json!(true)), vec![], "{html}");
+    }
+}
+
+/// With `booleanish` (the JSX parser: `<Component aria-hidden />` is `true`), an omitted value
+/// is accepted for `true/false`, `tristate` and `true/false/undefined`, and for no other type.
+/// Expected values from the TS `checkAriaValue` with `booleanish`.
+#[test]
+fn v6_no_invalid_aria_prop_value_011() {
+    let run_with = |html: &str, booleanish| {
+        let mut arena = html_arena(html);
+        arena.set_settings(markuplint_core::mlast::DocumentSettings {
+            booleanish,
+            ..Default::default()
+        });
+        lint(&arena, &spec(), &config(serde_json::json!(true))).violations.len()
+    };
+    // `aria-hidden`: true/false/undefined, `aria-checked`: tristate, `aria-atomic`: true/false.
+    for html in [
+        r#"<div aria-hidden=""></div>"#,
+        r#"<div role="checkbox" aria-checked=""></div>"#,
+        r#"<div aria-atomic=""></div>"#,
+    ] {
+        assert_eq!(run_with(html, true), 0, "{html}");
+        assert_eq!(run_with(html, false), 1, "{html}");
+    }
+    // `aria-level`: integer, `aria-live`: token — an empty value is invalid whatever the parser.
+    for html in [
+        r#"<div role="heading" aria-level=""></div>"#,
+        r#"<div aria-live=""></div>"#,
+    ] {
+        assert_eq!(run_with(html, true), 1, "{html}");
     }
 }

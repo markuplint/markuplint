@@ -8,11 +8,12 @@
 //! element followed by nothing but whitespace after its content is the EOF case: content
 //! that a sibling closes implicitly mid-document is out of scope.
 //!
-//! TS also skips a document whose parser never records end tags (`endTag: 'never'`, e.g. the
-//! Pug parser); the HTML parser always records them.
+//! A document whose parser never records end tags (`endTag: 'never'`, e.g. the Pug parser) is
+//! skipped, as in TS; the HTML parser always records them.
 //!
 //! <https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inbody>
 
+use markuplint_core::mlast::EndTagType;
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::node::DomNode;
 use markuplint_types::spec::lookup::is_void_element_name;
@@ -56,6 +57,10 @@ impl Rule for NoUnclosedElementAtEof {
     }
 
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
+        if arena.settings().end_tag == EndTagType::Never {
+            return vec![];
+        }
+
         let Some(source) = arena.source().or_else(|| match arena.document() {
             Some(DomNode::Document(doc)) => Some(doc.raw.as_str()),
             _ => None,

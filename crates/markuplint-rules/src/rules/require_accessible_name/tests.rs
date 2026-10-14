@@ -7,6 +7,7 @@
 //!   require-accessible-name-invalid-013        — v6_require_accessible_name_001
 //!   require-accessible-name-issue-2394         — v6_require_accessible_name_002
 //!   require-accessible-name-issue-4069-001..015 — v6_require_accessible_name_003..017
+//!   (Rust-only) v6_require_accessible_name_018 — an element with a dynamic attribute is skipped (TS `accnameMayBeMutable`)
 
 use super::*;
 use crate::aria::may_be_focusable::tests::make_arena;
@@ -397,6 +398,56 @@ fn v6_require_accessible_name_017() {
         run(
             r#"<div><label for="input1"><x-label text="Name"></x-label></label><input id="input1"></div>"#,
             serde_json::json!([dynamic_span("x-label", false)])
+        ),
+        []
+    );
+}
+
+/// Rust-only: an element with a dynamic attribute may get its name at runtime (TS
+/// `accnameMayBeMutable`: `hasMutableAttributes`), so an empty link is not reported when
+/// Vue binds `:class` on it, and is when nothing is bound. A spread attribute counts too.
+#[test]
+fn v6_require_accessible_name_018() {
+    let run_mlast = |attrs: &[(&str, &str, serde_json::Value)]| {
+        crate::test_util::lint_mlast_brief(
+            "require-accessible-name",
+            &crate::test_util::mlast_element("a", attrs, &serde_json::json!({ "endTag": "xml" })),
+            serde_json::json!({ "rules": { "require-accessible-name": true } }),
+        )
+    };
+    let href = || ("href", "x", serde_json::json!({}));
+    assert_eq!(
+        run_mlast(&[href()]),
+        [crate::test_util::brief(
+            crate::violation::Severity::Error,
+            1,
+            1,
+            "Require accessible name",
+            r#"<a href="x">"#
+        )]
+    );
+    let bound = serde_json::json!({ "potentialName": "class", "isDynamicValue": true });
+    assert_eq!(run_mlast(&[href(), (":class", "c", bound)]), []);
+
+    // A spread attribute (`{...props}`) may carry anything, the name included.
+    let mut mlast: serde_json::Value = serde_json::from_str(&crate::test_util::mlast_element(
+        "a",
+        &[href()],
+        &serde_json::json!({ "endTag": "xml" }),
+    ))
+    .unwrap();
+    mlast["nodeList"][0]["attributes"]
+        .as_array_mut()
+        .unwrap()
+        .push(serde_json::json!({
+            "uuid": "spread", "raw": "{...props}", "offset": 12, "line": 1, "col": 13,
+            "type": "spread", "nodeName": "#spread"
+        }));
+    assert_eq!(
+        crate::test_util::lint_mlast_brief(
+            "require-accessible-name",
+            &mlast.to_string(),
+            serde_json::json!({ "rules": { "require-accessible-name": true } }),
         ),
         []
     );

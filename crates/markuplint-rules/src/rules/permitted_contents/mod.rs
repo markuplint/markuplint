@@ -95,7 +95,7 @@ impl Rule for PermittedContents {
             };
 
             let resolved_contents = resolve_content_model(&cm, arena, owner_id);
-            let child_ids = expand_children(arena, node_id, arena.pure_children_of(node_id));
+            let child_ids = expand_children(arena, node_id, arena.child_nodes(node_id));
             // TS `ignoreHasMutableChildren` (default `true`): a required child may be
             // rendered by content the pretender does not know.
             let skip_missing = rule_config
@@ -768,7 +768,7 @@ fn represent_transparent_nodes(arena: &DomArena, children_ids: &[NodeId], spec: 
         let non_transparent = non_transparent_patterns(&child_patterns);
 
         // Whitespace is filtered out before matching, as in TS.
-        let expanded = expand_children(arena, child_id, arena.pure_children_of(child_id));
+        let expanded = expand_children(arena, child_id, arena.child_nodes(child_id));
         let grandchildren: Vec<_> = collect_child_infos(arena, &expanded)
             .into_iter()
             .filter(|c| !matches!(c.kind, ChildNodeKind::Text { is_whitespace: true }))

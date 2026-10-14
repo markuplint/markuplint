@@ -30,6 +30,11 @@ impl Rule for RequireAttr {
                 continue;
             }
 
+            // A spread attribute (`{...props}`) may carry any of them.
+            if el.has_spread_attr {
+                continue;
+            }
+
             // Config-defined required attributes apply in any namespace and are checked first.
             // Both the string form (`"title"`) and the object form (`{ "name": "title" }`) are accepted.
             let required_from_config = match &rule_config.value {
@@ -396,5 +401,27 @@ mod tests {
                 "<x-img>"
             )]
         );
+    }
+
+    /// Rust-only: an element with a spread attribute (`<img {...props} />`) may get any attribute
+    /// from it, so nothing is required of it, as in TS; a bound attribute (`:src`) counts under the
+    /// name it resolves to.
+    #[test]
+    fn v6_spread_and_bound_attributes_satisfy_the_requirement() {
+        let run_mlast = |attrs: &[(&str, &str, serde_json::Value)], spread: bool| {
+            let mut mlast: serde_json::Value =
+                serde_json::from_str(&crate::test_util::mlast_element("img", attrs, &serde_json::json!({}))).unwrap();
+            mlast["nodeList"][0]["hasSpreadAttr"] = spread.into();
+            crate::test_util::lint_mlast_brief(
+                "require-attr",
+                &mlast.to_string(),
+                serde_json::json!({ "rules": { "require-attr": true } }),
+            )
+        };
+        let alt = || ("alt", "x", serde_json::json!({}));
+        assert_eq!(run_mlast(&[alt()], true), []);
+        assert_eq!(run_mlast(&[alt()], false).len(), 1);
+        let bound = serde_json::json!({ "potentialName": "src", "isDynamicValue": true });
+        assert_eq!(run_mlast(&[(":src", "src", bound), alt()], false), []);
     }
 }

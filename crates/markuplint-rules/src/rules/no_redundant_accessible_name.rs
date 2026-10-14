@@ -10,6 +10,7 @@ use serde_json::Value;
 use crate::aria::accname::helpers::{collect_text_content, find_child_by_local_name};
 use crate::aria::computed_role::get_computed_role;
 use crate::aria::is_exposed::is_exposed;
+use crate::helpers::accname_may_be_mutable;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
@@ -27,6 +28,11 @@ impl Rule for NoRedundantAccessibleName {
         for (node_id, el) in arena.elements() {
             let rule_config = config.get(node_id);
             if rule_config.disabled || el.is_ghost {
+                continue;
+            }
+
+            // Mutable elements (template expressions etc.): the name is not known statically.
+            if accname_may_be_mutable(arena, node_id) {
                 continue;
             }
 
@@ -526,5 +532,36 @@ pub mod tests {
         assert_eq!(v.len(), 1);
         assert!(v[0].message.contains("aria-label"));
         assert!(v[0].message.contains("content"));
+    }
+
+    /// Rust-only: an element with a dynamic attribute (Vue `:class`) is skipped, as TS skips
+    /// what `accnameMayBeMutable`, because the name it ends up with is not known statically.
+    #[test]
+    fn v6_skips_an_element_with_a_dynamic_attribute() {
+        let run_mlast = |attrs: &[(&str, &str, Value)]| {
+            let json = crate::test_util::mlast_element("img", attrs, &serde_json::json!({ "endTag": "xml" }));
+            let arena = markuplint_dom::builder::build_from_json(&json).unwrap();
+            let config = RuleConfigSet::global_only(RuleConfig {
+                severity: Severity::Warning,
+                ..Default::default()
+            });
+            NoRedundantAccessibleName.verify(&arena, &html_spec(), &config)
+        };
+        let named = || {
+            [
+                ("alt", "x", serde_json::json!({})),
+                ("aria-label", "y", serde_json::json!({})),
+            ]
+        };
+        let v = run_mlast(&named());
+        assert_eq!(v.len(), 1);
+        assert_eq!(
+            v[0].message,
+            "The accessible name from \"aria-label\" overrides \"alt\""
+        );
+
+        let bound = serde_json::json!({ "potentialName": "class", "isDynamicValue": true });
+        let [alt, label] = named();
+        assert!(run_mlast(&[alt, label, (":class", "c", bound)]).is_empty());
     }
 }

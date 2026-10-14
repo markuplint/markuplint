@@ -461,3 +461,127 @@ fn format_tree(arena: &markuplint_dom::arena::DomArena, id: NodeId, indent: usiz
         format_tree(arena, child_id, indent + 1, output);
     }
 }
+
+// --- End tag pairing and document settings ---
+
+#[test]
+fn element_knows_its_end_tag_from_the_pair_uuid() {
+    let arena = build_from_fixture("simple");
+    let (_, div) = arena.elements().next().unwrap();
+    let close_tag = div.close_tag.as_ref().expect("the end tag the element is paired with");
+    assert_eq!(close_tag.raw, "</div>");
+    assert_eq!(close_tag.offset, 21);
+    assert_eq!((close_tag.line, close_tag.col), (1, 22));
+}
+
+#[test]
+fn element_without_an_end_tag_has_none() {
+    let json = load_fixture("simple").replace(r#""pairNodeUuid": "5ff079ff","#, r#""pairNodeUuid": null,"#);
+    let arena = builder::build_from_json(&json).unwrap();
+    let (_, div) = arena.elements().next().unwrap();
+    assert!(div.close_tag.is_none());
+}
+
+/// Parsers such as Vue's list an end tag among the child nodes of the element that holds it.
+/// TS `createNode` has no node for an `endtag`, and the children of an element skip them, so the
+/// DOM has none; the element knows its end tag only as `close_tag`.
+#[test]
+fn end_tag_among_the_child_nodes_is_not_a_node() {
+    let mut value: serde_json::Value = serde_json::from_str(&load_fixture("simple")).unwrap();
+    let end_tag = value["nodeList"][2].clone();
+    value["nodeList"][0]["childNodes"].as_array_mut().unwrap().push(end_tag);
+    let arena = builder::build_from_json(&value.to_string()).unwrap();
+
+    let (div_id, div) = arena.elements().next().unwrap();
+    assert_eq!(arena.children_of(div_id).unwrap().len(), 1, "only the text");
+    assert!(div.close_tag.is_some());
+    assert!((0..arena.len()).all(|id| !matches!(arena.get(id), Some(DomNode::EndTag(_)))));
+}
+
+/// TS `childNodes` reads through a block with an `each` or `end` behavior (Svelte's `{#each}`
+/// and `{/each}`) to the nodes inside it, while the pure child nodes keep the blocks.
+#[test]
+fn child_nodes_read_through_each_blocks() {
+    let arena = build_from_fixture("svelte-each-block");
+    let (main_id, _) = arena.elements().next().unwrap();
+
+    let names = |ids: Vec<NodeId>| -> Vec<String> {
+        ids.into_iter()
+            .map(|id| arena.get(id).unwrap().base().unwrap().node_name.clone())
+            .collect()
+    };
+    assert_eq!(names(arena.pure_children_of(main_id)), ["#ps:each", "#ps:/each"]);
+    assert_eq!(names(arena.child_nodes(main_id)), ["li"]);
+}
+
+/// TS `getAttribute()` compares `attr.name`, the name the parser resolved, and answers with
+/// `attr.value`, the value it resolved: JSX's `htmlFor` is `for`.
+#[test]
+fn attribute_lookup_goes_by_the_resolved_name_and_value() {
+    let mut value: serde_json::Value = serde_json::from_str(&load_fixture("simple")).unwrap();
+    let attr = &mut value["nodeList"][0]["attributes"][0];
+    attr["potentialName"] = "id".into();
+    attr["potentialValue"] = "resolved".into();
+    let arena = builder::build_from_json(&value.to_string()).unwrap();
+    let (_, div) = arena.elements().next().unwrap();
+
+    assert_eq!(
+        markuplint_dom::helpers::get_attr_value_from_el(div, "id"),
+        Some("resolved")
+    );
+    assert_eq!(
+        markuplint_dom::helpers::get_attr_value_from_el(div, "ID"),
+        Some("resolved")
+    );
+    assert_eq!(markuplint_dom::helpers::get_attr_value_from_el(div, "class"), None);
+}
+
+/// TS `attr.nodeName` is `attr.name`, the name the parser resolved, so that is what the DOM
+/// calls the attribute; the name as written stays in the `name` token.
+#[test]
+fn attribute_node_name_is_the_resolved_name() {
+    let mut value: serde_json::Value = serde_json::from_str(&load_fixture("simple")).unwrap();
+    value["nodeList"][0]["attributes"][0]["potentialName"] = "id".into();
+    let arena = builder::build_from_json(&value.to_string()).unwrap();
+    let (_, div) = arena.elements().next().unwrap();
+    let markuplint_core::mlast::MLASTAttr::HTMLAttr(attr) = &div.attributes[0] else {
+        panic!("an HTML attribute");
+    };
+    assert_eq!(attr.node_name, "id");
+    assert_eq!(attr.name.raw, "class");
+
+    // Without a resolved name the name as written stays.
+    let arena = build_from_fixture("simple");
+    let (_, div) = arena.elements().next().unwrap();
+    let markuplint_core::mlast::MLASTAttr::HTMLAttr(attr) = &div.attributes[0] else {
+        panic!("an HTML attribute");
+    };
+    assert_eq!(attr.node_name, "class");
+}
+
+#[test]
+fn an_unknown_end_tag_type_is_an_error() {
+    let mut value: serde_json::Value = serde_json::from_str(&load_fixture("simple")).unwrap();
+    value["endTag"] = "bogus".into();
+    assert!(builder::build_from_json(&value.to_string()).is_err());
+}
+
+#[test]
+fn document_settings_default_to_those_of_html() {
+    let arena = build_from_fixture("simple");
+    assert_eq!(arena.settings(), markuplint_core::mlast::DocumentSettings::default());
+}
+
+#[test]
+fn document_settings_are_read_from_the_json() {
+    let mut value: serde_json::Value = serde_json::from_str(&load_fixture("simple")).unwrap();
+    let object = value.as_object_mut().unwrap();
+    object.insert("endTag".into(), "never".into());
+    object.insert("booleanish".into(), true.into());
+    object.insert("tagNameCaseSensitive".into(), true.into());
+    let json = value.to_string();
+    let settings = builder::build_from_json(&json).unwrap().settings();
+    assert_eq!(settings.end_tag, markuplint_core::mlast::EndTagType::Never);
+    assert!(settings.booleanish);
+    assert!(settings.tag_name_case_sensitive);
+}

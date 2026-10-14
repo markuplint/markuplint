@@ -5,7 +5,8 @@
 //!   no-duplicate-attr-invalid-002  → no_duplicate_attr_invalid_002
 //!   no-duplicate-attr-invalid-003  — SKIP: i18n (ja locale) not supported in Rust
 //!   no-duplicate-attr-invalid-004  → no_duplicate_attr_invalid_004
-//!   no-duplicate-attr-parser-*     — SKIP: framework parsers not available in Rust
+//!   no-duplicate-attr-parser-*     — SKIP: framework parsers stay in TS (`v6_attr_duplication_008` checks the resolved names;
+//!                                    `ml-engine.rust-framework.spec.ts` compares whole files)
 //!   no-duplicate-attr-fix-001      → no_duplicate_attr_fix_001
 //!   no-duplicate-attr-fix-002      → no_duplicate_attr_fix_002
 //!   no-duplicate-attr-fix-003      → no_duplicate_attr_fix_003
@@ -18,6 +19,7 @@
 //!   v6_attr_duplication_005       — Rust-only: severity from config
 //!   v6_attr_duplication_006       — Rust-only: pretender attributes, and names compared as written on a non-HTML element
 //!   v6_attr_duplication_007       — Rust-only: whitespace around the equal sign, non-ASCII text before the fix
+//!   v6_attr_duplication_008       — Rust-only: names are the ones the parser resolved (`:href` is `href`), `isDuplicatable`
 
 use markuplint_core::mlast::{ElementType, MLASTAttr, MLASTHTMLAttr, MLASTToken, NamespaceURI};
 use markuplint_dom::arena::{DomArena, DomArenaBuilder};
@@ -359,5 +361,41 @@ fn v6_attr_duplication_006() {
             "The attribute name is duplicated",
             "A"
         )]
+    );
+}
+
+/// Rust-only: the name an attribute goes by is the one the parser resolved (`potentialName`), as
+/// TS `attr.name` is: Vue's `:href` is `href`, so it and a written `href` are duplicates, unless
+/// the parser says the attribute may repeat (`:class` beside `class`). TS:
+/// `[no-duplicate-attr-parser-*]` and `[no-duplicate-attr-fix-005]` run the Vue parser.
+#[test]
+fn v6_attr_duplication_008() {
+    let run = |attrs: &[(&str, &str, serde_json::Value)]| {
+        crate::test_util::lint_mlast_brief(
+            "no-duplicate-attr",
+            &crate::test_util::mlast_element("a", attrs, &serde_json::json!({ "endTag": "xml" })),
+            serde_json::json!({ "rules": { "no-duplicate-attr": true } }),
+        )
+    };
+    let bound = serde_json::json!({ "potentialName": "href", "isDynamicValue": true });
+    assert_eq!(
+        run(&[(":href", "url", bound.clone()), ("href", "x", serde_json::json!({}))]),
+        [crate::test_util::brief(
+            crate::violation::Severity::Error,
+            1,
+            16,
+            "The attribute name is duplicated",
+            "href"
+        )]
+    );
+    // Bound and written names that differ are not duplicates.
+    assert_eq!(
+        run(&[(":href", "url", bound), ("title", "x", serde_json::json!({}))]),
+        []
+    );
+    let class = serde_json::json!({ "potentialName": "class", "isDuplicatable": true });
+    assert_eq!(
+        run(&[("class", "a", serde_json::json!({})), (":class", "b", class)]),
+        []
     );
 }

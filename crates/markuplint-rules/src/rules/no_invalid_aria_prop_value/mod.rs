@@ -11,10 +11,10 @@
 //! `Number.parseFloat(v).toString() === v`, so what counts as valid is what JS prints back: `1e-7`
 //! and `NaN` are valid numbers, `1e21` (`1e+21`), `+1`, `-0`, ` 1` and `1.0` are not.
 //!
-//! Known gap: TS passes `document.booleanish` (a parser option for JSX, where an omitted value
-//! means `true`) so that an empty value is accepted for `true/false`, `tristate` and
-//! `true/false/undefined`. The Rust DOM has no such flag, so the default (non-booleanish) behavior
-//! is the only one: an empty value is invalid for those types.
+//! With `booleanish` (a parser option for JSX, where an omitted value means `true`; the document
+//! carries it as [`DomArena::settings`]) an empty value is accepted for `true/false`, `tristate` and
+//! `true/false/undefined`, as TS `checkAriaValue` does. [`check_aria_value`] is the non-booleanish
+//! check; the exemption is made before it, in [`accepts_omitted_value`].
 
 use markuplint_core::mlast::MLASTHTMLAttr;
 use markuplint_dom::arena::DomArena;
@@ -62,19 +62,25 @@ fn check(ctx: &ElementContext<'_>, violations: &mut Vec<Violation>) {
         .map(|role| role.name);
     let props = &aria::get_aria_spec(ctx.spec, ctx.version).props;
 
+    let booleanish = ctx.arena.settings().booleanish;
     for attr in attrs {
+        if booleanish && accepts_omitted_value(attr, props, role_name.as_deref()) {
+            continue;
+        }
         if let Some(message) = invalid_value_message(attr, props, role_name.as_deref()) {
             violations.push(ctx.attr_violation(attr, message));
         }
     }
 }
 
-/// The message for `attr` when its value does not fit the property, `None` when it does, when the
-/// property is unknown, or when the value is dynamic.
-fn invalid_value_message(attr: &MLASTHTMLAttr, props: &[ARIAProperty], role_name: Option<&str>) -> Option<String> {
-    if attr.is_dynamic_value == Some(true) {
-        return None;
-    }
+/// The property `attr` names and the value type its value is checked against: the property's,
+/// or the `conditionalValue` entry for the computed role when there is one. `None` for an
+/// unknown property.
+fn resolve_value_type<'a>(
+    attr: &MLASTHTMLAttr,
+    props: &'a [ARIAProperty],
+    role_name: Option<&str>,
+) -> Option<(&'a ARIAProperty, &'a ARIAAttributeValue)> {
     let name = attr_name(attr);
     let prop = props.iter().find(|p| p.name == name)?;
 
@@ -84,6 +90,29 @@ fn invalid_value_message(attr: &MLASTHTMLAttr, props: &[ARIAProperty], role_name
     {
         value_type = &cond.value;
     }
+    Some((prop, value_type))
+}
+
+/// TS `checkAriaValue` with `booleanish`: an empty value stands for `true` and is valid for the
+/// boolean-like types only.
+fn accepts_omitted_value(attr: &MLASTHTMLAttr, props: &[ARIAProperty], role_name: Option<&str>) -> bool {
+    attr.value.raw.is_empty()
+        && resolve_value_type(attr, props, role_name).is_some_and(|(_, value_type)| {
+            matches!(
+                value_type,
+                ARIAAttributeValue::TrueFalse | ARIAAttributeValue::Tristate | ARIAAttributeValue::TrueFalseUndefined
+            )
+        })
+}
+
+/// The message for `attr` when its value does not fit the property, `None` when it does, when the
+/// property is unknown, or when the value is dynamic.
+fn invalid_value_message(attr: &MLASTHTMLAttr, props: &[ARIAProperty], role_name: Option<&str>) -> Option<String> {
+    if attr.is_dynamic_value == Some(true) {
+        return None;
+    }
+    let name = attr_name(attr);
+    let (prop, value_type) = resolve_value_type(attr, props, role_name)?;
 
     let value = attr.value.raw.as_str();
     if check_aria_value(value_type, value, &prop.enum_values) {
@@ -103,7 +132,7 @@ fn invalid_value_message(attr: &MLASTHTMLAttr, props: &[ARIAProperty], role_name
 }
 
 /// Port of `checkAriaValue` (`wai-aria/checkings/value.ts`) for the non-booleanish case, see the
-/// module docs. `URI`, which TS has no case for, is always valid.
+/// module docs ([`accepts_omitted_value`] is the other case). `URI`, which TS has no case for, is always valid.
 fn check_aria_value(value_type: &ARIAAttributeValue, value: &str, enum_values: &[String]) -> bool {
     match value_type {
         ARIAAttributeValue::Token => enum_values.iter().any(|e| e == value),

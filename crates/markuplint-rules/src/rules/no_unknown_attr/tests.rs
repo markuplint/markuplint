@@ -36,6 +36,8 @@
 //!   no-unknown-attr-parser-010, no-disallowed-attr-parser-005  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-011)
 //!   no-unknown-attr-parser-011, no-disallowed-attr-parser-006  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-012)
 //!   no-unknown-attr-parser-009  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-013)
+//!   (the framework parsers stay in TS: `v6_no_unknown_attr_003` checks the attribute names they resolve, and
+//!    `ml-engine.rust-framework.spec.ts` compares whole files of each parser)
 
 use super::*;
 use crate::attr_check::find_closest_match;
@@ -671,4 +673,33 @@ fn v6_no_unknown_attr_002() {
             "objectFit"
         )]
     );
+}
+
+/// Rust-only: the name checked is the one the parser resolved (`potentialName`), as TS
+/// `attr.name` is: Vue's `:href` is `href` and is known on `a`, `:foo` is `foo` and is not,
+/// and a directive (`v-if`) is not checked at all. The report points at the name as written.
+/// TS: `[no-unknown-attr-parser-*]` run the Vue parser.
+#[test]
+fn v6_no_unknown_attr_003() {
+    let run = |attrs: &[(&str, &str, serde_json::Value)]| {
+        crate::test_util::lint_mlast_brief(
+            "no-unknown-attr",
+            &crate::test_util::mlast_element("a", attrs, &serde_json::json!({ "endTag": "xml" })),
+            serde_json::json!({ "rules": { "no-unknown-attr": true } }),
+        )
+    };
+    let bound = |name: &str| serde_json::json!({ "potentialName": name, "isDynamicValue": true });
+    assert_eq!(run(&[(":href", "url", bound("href"))]), []);
+    assert_eq!(
+        run(&[(":foo", "x", bound("foo"))]),
+        [crate::test_util::brief(
+            crate::violation::Severity::Error,
+            1,
+            4,
+            "The \"foo\" attribute is disallowed",
+            ":foo"
+        )]
+    );
+    let directive = serde_json::json!({ "potentialName": "v-if", "isDirective": true, "isDynamicValue": true });
+    assert_eq!(run(&[("v-if", "show", directive)]), []);
 }

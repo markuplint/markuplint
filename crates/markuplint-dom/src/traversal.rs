@@ -1,3 +1,5 @@
+use markuplint_core::mlast::MLASTBlockBehaviorType;
+
 use crate::arena::{DomArena, NodeId};
 use crate::node::{DomNode, ElementData};
 
@@ -39,6 +41,36 @@ impl DomArena {
             .copied()
             .filter(|&cid| !self.get(cid).is_some_and(DomNode::is_bogus))
             .collect()
+    }
+
+    /// TS `node.childNodes`: the pure child nodes, with a fragment (a JSX `<>`, Vue's template
+    /// wrapper) and a block of the `each` or `end` behavior (Svelte's `{#each}` and `{/each}`)
+    /// replaced by their own child nodes, at any depth. A block of any other behavior (`if`, …)
+    /// stays a node: which of its branches renders is not known.
+    #[must_use]
+    pub fn child_nodes(&self, id: NodeId) -> Vec<NodeId> {
+        let mut nodes = Vec::new();
+        for child_id in self.pure_children_of(id) {
+            let flatten = match self.get(child_id) {
+                Some(DomNode::Element(el)) => el.is_fragment,
+                Some(DomNode::PSBlock(block)) => {
+                    block.is_fragment
+                        || block.block_behavior.as_ref().is_some_and(|behavior| {
+                            matches!(
+                                behavior.behavior_type,
+                                MLASTBlockBehaviorType::Each | MLASTBlockBehaviorType::End
+                            )
+                        })
+                }
+                _ => false,
+            };
+            if flatten {
+                nodes.extend(self.child_nodes(child_id));
+            } else {
+                nodes.push(child_id);
+            }
+        }
+        nodes
     }
 
     #[must_use]

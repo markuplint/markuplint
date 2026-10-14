@@ -3,6 +3,34 @@
 
 use serde::{Deserialize, Serialize};
 
+/// How a parser expects end tags (TS `MLParser.endTag`).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum EndTagType {
+    /// HTML: some end tags may be left out.
+    #[default]
+    Omittable,
+    /// XML-like (JSX, Vue, Svelte, Astro): every element is closed, by an end tag or a `/`.
+    Xml,
+    /// Indentation-based (Pug): no element has an end tag.
+    Never,
+}
+
+/// What the TS `Document` takes from the parser besides its nodes (`MLParser.endTag`,
+/// `booleanish`, `tagNameCaseSensitive`). The TS engine sends them next to the `MLASTDocument`
+/// fields in the same JSON, and every field may be absent, as it is for the HTML parser.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DocumentSettings {
+    #[serde(default)]
+    pub end_tag: EndTagType,
+    /// An attribute written without a value counts as `true` (`<Component aria-hidden />`).
+    #[serde(default)]
+    pub booleanish: bool,
+    #[serde(default)]
+    pub tag_name_case_sensitive: bool,
+}
+
 /// Corresponds to `MLASTDocument` in TS.
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -343,6 +371,15 @@ pub enum Namespace {
 ///
 /// Returns an error if the JSON string is not valid MLAST.
 pub fn parse_mlast(json: &str) -> Result<MLASTDocument, serde_json::Error> {
+    serde_json::from_str(json)
+}
+
+/// The settings the parser sent next to the nodes; see [`DocumentSettings`].
+///
+/// # Errors
+///
+/// Returns an error if the JSON string is not valid JSON or a setting has an unknown value.
+pub fn parse_document_settings(json: &str) -> Result<DocumentSettings, serde_json::Error> {
     serde_json::from_str(json)
 }
 
