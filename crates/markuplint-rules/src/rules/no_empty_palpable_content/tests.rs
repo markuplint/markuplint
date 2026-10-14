@@ -15,6 +15,15 @@
 //!   v6_no_empty_palpable_content_003       — Rust-only: a comment is content; only direct children decide
 //!   v6_no_empty_palpable_content_004       — Rust-only: the exemptions ignore the case of the tag name
 //!   v6_no_empty_palpable_content_005       — Rust-only: whitespace is what a JS `\s` matches
+//!   v6_no_empty_palpable_content_006       — Rust-only: `sup ` (trailing space) in `#palpable` still matches
+//!   v6_no_empty_palpable_content_007       — Rust-only: the exposable elements TS has and Rust lacked
+//!   v6_no_empty_palpable_content_008       — Rust-only: `caption` is not exposable
+//!   v6_no_empty_palpable_content_009       — Rust-only: `ul:has(>li)` and the like need their condition
+//!   v6_no_empty_palpable_content_010       — Rust-only: `extendsExposableElements: false` drops the whole list
+//!   v6_no_empty_palpable_content_011       — Rust-only: namespaced and conditional entries are evaluated
+//!   v6_no_empty_palpable_content_012       — Rust-only: the implicit `body` is exposable
+//!   v6_no_empty_palpable_content_013       — Rust-only: the exposable list has the same members as the TS one
+//!   v6_no_empty_palpable_content_014       — Rust-only: every `#palpable` entry of the spec parses as a selector
 
 use super::*;
 use crate::rule::{RuleConfig, RuleConfigSet};
@@ -500,4 +509,105 @@ fn v6_no_empty_palpable_content_004() {
 fn v6_no_empty_palpable_content_005() {
     assert_eq!(run("<div>\u{feff}</div>"), [warning("<div>")]);
     assert_eq!(run("<div>\u{85}</div>"), []);
+}
+
+/// The spec writes `sup ` (trailing space) in `#palpable`; evaluated as a selector it still matches.
+/// Expected values are the TS output on the same input.
+#[test]
+fn v6_no_empty_palpable_content_006() {
+    assert_eq!(run("<sup></sup>"), [warning("<sup>")]);
+}
+
+/// Exposable elements that belong to no content model: the TS list, not a hand-picked subset.
+/// Expected values are the TS output on the same input.
+#[test]
+fn v6_no_empty_palpable_content_007() {
+    assert_eq!(run("<legend></legend>"), [warning("<legend>")]);
+    assert_eq!(run("<figcaption></figcaption>"), [warning("<figcaption>")]);
+    assert_eq!(run("<summary></summary>"), [warning("<summary>")]);
+    assert_eq!(run("<option></option>"), [warning("<option>")]);
+    assert_eq!(run("<optgroup></optgroup>"), [warning("<optgroup>")]);
+    assert_eq!(run("<body></body>"), [warning("<body>")]);
+    assert_eq!(
+        run("<ruby>a<rp></rp><rt></rt></ruby>"),
+        [
+            brief(Severity::Warning, 1, 8, MESSAGE, "<rp>"),
+            brief(Severity::Warning, 1, 17, MESSAGE, "<rt>"),
+        ]
+    );
+}
+
+/// `caption` is in neither the `#palpable` selectors nor the TS exposable list. Expected values
+/// are the TS output on the same input.
+#[test]
+fn v6_no_empty_palpable_content_008() {
+    assert_eq!(run("<table><caption></caption><tr><td>a</td></tr></table>"), []);
+}
+
+/// A `#palpable` entry may carry a condition (`ul:has(>li)`); an empty list does not satisfy it,
+/// and these elements are not in the exposable list. Expected values are the TS output on the same input.
+#[test]
+fn v6_no_empty_palpable_content_009() {
+    assert_eq!(run("<ul></ul>"), []);
+    assert_eq!(run("<dl></dl>"), []);
+    assert_eq!(run("<menu></menu>"), []);
+}
+
+/// `extendsExposableElements: false` drops the whole TS exposable list, not only `li` and `td`.
+#[test]
+fn v6_no_empty_palpable_content_010() {
+    let off = serde_json::json!({ "extendsExposableElements": false });
+    assert_eq!(run_with_options("<legend></legend>", off.clone()), []);
+    assert_eq!(run_with_options("<body></body>", off), []);
+}
+
+/// The `#palpable` entries with a namespace (`mml|math`) or a condition (`ul:has(>li)`,
+/// `input:not([type='hidden' i])`) are evaluated, not reduced to a tag name. Expected values are
+/// the TS output on the same input.
+#[test]
+fn v6_no_empty_palpable_content_011() {
+    assert_eq!(run("<math></math>"), [warning("<math>")]);
+    assert_eq!(run("<ul><li>a</li></ul>"), []);
+    assert_eq!(
+        run("<ul><li></li></ul>"),
+        [brief(Severity::Warning, 1, 5, MESSAGE, "<li>")]
+    );
+}
+
+/// The implicit `body` of `<html></html>` is exposable and empty. Expected values are the TS
+/// output on the same input.
+#[test]
+fn v6_no_empty_palpable_content_012() {
+    assert_eq!(run("<html></html>"), [brief(Severity::Warning, 1, 7, MESSAGE, "")]);
+}
+
+/// The exposable list is a copy of `exposableElementsThatAreNoBelongingAModel` in
+/// `@markuplint/ml-spec`; fails when the TS list changes and this one does not.
+#[test]
+fn v6_no_empty_palpable_content_013() {
+    const TS_SOURCE: &str =
+        include_str!("../../../../../packages/@markuplint/ml-spec/src/algorithm/html/is-palpable-elements.ts");
+    let list = TS_SOURCE
+        .split_once("exposableElementsThatAreNoBelongingAModel: string[] = [")
+        .and_then(|(_, rest)| rest.split_once("];"))
+        .map(|(body, _)| body)
+        .expect("the TS exposable list is declared in is-palpable-elements.ts");
+    let mut ts_names: Vec<&str> = list.split('\'').skip(1).step_by(2).collect();
+    let mut rust_names = EXPOSABLE_ELEMENTS.to_vec();
+    ts_names.sort_unstable();
+    rust_names.sort_unstable();
+    assert_eq!(ts_names, rust_names);
+}
+
+/// A selector the Rust parser rejects would silence the rule, since `verify` returns nothing when
+/// the joined list does not parse; this fails first.
+#[test]
+fn v6_no_empty_palpable_content_014() {
+    let s = spec();
+    for entry in get_content_model_tags(&s, "#palpable").unwrap() {
+        assert!(
+            markuplint_selector::parser::parse(entry).is_ok(),
+            "`{entry}` does not parse"
+        );
+    }
 }

@@ -1257,6 +1257,50 @@ mod tests {
         }
 
         #[test]
+        fn has_selector_with_head_combinator() {
+            // :has(>li) is a child, not a descendant, relation
+            let child = ChildNodeInfo::element_with_children("ul", vec![ChildNodeInfo::element("li")]);
+            let nested = ChildNodeInfo::element_with_children(
+                "ul",
+                vec![ChildNodeInfo::element_with_children(
+                    "div",
+                    vec![ChildNodeInfo::element("li")],
+                )],
+            );
+            let bridge = arena_bridge::build_arena("div", &[child, nested]);
+            let direct = markuplint_selector::parser::parse("ul:has(>li)").unwrap();
+            let any_depth = markuplint_selector::parser::parse("ul:has(li)").unwrap();
+            let check = |sel, i: usize| {
+                markuplint_selector::matcher::matches(sel, &bridge.arena, bridge.child_ids[i], None, None, None)
+            };
+            assert!(check(&direct, 0));
+            assert!(!check(&direct, 1));
+            assert!(check(&any_depth, 0));
+            assert!(check(&any_depth, 1));
+        }
+
+        #[test]
+        fn has_selector_with_sibling_combinators() {
+            let bridge = arena_bridge::build_arena(
+                "div",
+                &[
+                    ChildNodeInfo::element("span"),
+                    ChildNodeInfo::element("em"),
+                    ChildNodeInfo::element("b"),
+                ],
+            );
+            let check = |input: &str, i: usize| {
+                let sel = markuplint_selector::parser::parse(input).unwrap();
+                markuplint_selector::matcher::matches(&sel, &bridge.arena, bridge.child_ids[i], None, None, None)
+            };
+            assert!(check("span:has(+em)", 0));
+            assert!(!check("span:has(+b)", 0));
+            assert!(check("span:has(~b)", 0));
+            assert!(!check("b:has(~span)", 2));
+            assert!(!check("b:has(+em)", 2));
+        }
+
+        #[test]
         fn is_selector() {
             let spec = html_spec();
             let bridge = arena_bridge::build_arena("div", &[ChildNodeInfo::element("span")]);

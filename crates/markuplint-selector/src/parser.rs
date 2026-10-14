@@ -45,13 +45,22 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_selector_list(&mut self) -> Result<SelectorList, String> {
-        let mut selectors = vec![self.parse_complex_selector()?];
+        self.parse_list(false)
+    }
+
+    /// The argument of `:has()`: each selector may start with a combinator.
+    fn parse_relative_selector_list(&mut self) -> Result<SelectorList, String> {
+        self.parse_list(true)
+    }
+
+    fn parse_list(&mut self, relative: bool) -> Result<SelectorList, String> {
+        let mut selectors = vec![self.parse_complex_selector(relative)?];
         loop {
             self.skip_whitespace();
             if self.peek() == Some(',') {
                 self.advance();
                 self.skip_whitespace();
-                selectors.push(self.parse_complex_selector()?);
+                selectors.push(self.parse_complex_selector(relative)?);
             } else {
                 break;
             }
@@ -59,8 +68,23 @@ impl<'a> Parser<'a> {
         Ok(SelectorList { selectors })
     }
 
-    fn parse_complex_selector(&mut self) -> Result<ComplexSelector, String> {
+    fn parse_complex_selector(&mut self, relative: bool) -> Result<ComplexSelector, String> {
         self.skip_whitespace();
+        let head_combinator = if relative {
+            let head = match self.peek() {
+                Some('>') => Some(Combinator::Child),
+                Some('+') => Some(Combinator::NextSibling),
+                Some('~') => Some(Combinator::SubsequentSibling),
+                _ => None,
+            };
+            if head.is_some() {
+                self.advance();
+                self.skip_whitespace();
+            }
+            head
+        } else {
+            None
+        };
         let first = self.parse_compound_selector()?;
         let mut compounds = vec![first];
         let mut combinators = Vec::new();
@@ -101,7 +125,20 @@ impl<'a> Parser<'a> {
         }
         chain.reverse();
 
-        Ok(ComplexSelector { subject, chain })
+        // The chain is matched from the subject upward, so a leading combinator cannot be
+        // anchored to the leftmost compound of a multi-compound selector.
+        if head_combinator.is_some() && !chain.is_empty() {
+            return Err(format!(
+                "A combinator before a compound selector sequence in :has() is unsupported at position {}",
+                self.pos
+            ));
+        }
+
+        Ok(ComplexSelector {
+            subject,
+            chain,
+            head_combinator,
+        })
     }
 
     fn skip_whitespace_and_check(&mut self) -> bool {
@@ -335,7 +372,7 @@ impl<'a> Parser<'a> {
                     Ok(PseudoClassSelector::Is(list))
                 }
                 "has" => {
-                    let list = self.parse_selector_list()?;
+                    let list = self.parse_relative_selector_list()?;
                     self.skip_whitespace();
                     self.expect(')')?;
                     Ok(PseudoClassSelector::Has(list))
@@ -653,6 +690,34 @@ mod tests {
             &list.selectors[0].subject.parts[0],
             SimpleSelector::PseudoClass(PseudoClassSelector::Has(_))
         ));
+    }
+
+    #[test]
+    fn parse_has_relative_head_combinators() {
+        let heads = |input: &str| -> Vec<Option<Combinator>> {
+            let list = parse(input).unwrap();
+            let SimpleSelector::PseudoClass(PseudoClassSelector::Has(inner)) = &list.selectors[0].subject.parts[0]
+            else {
+                panic!("not :has()");
+            };
+            inner.selectors.iter().map(|s| s.head_combinator).collect()
+        };
+        assert_eq!(heads(":has(li)"), [None]);
+        assert_eq!(heads(":has(>li)"), [Some(Combinator::Child)]);
+        assert_eq!(heads(":has( + li)"), [Some(Combinator::NextSibling)]);
+        assert_eq!(heads(":has(~ li, a)"), [Some(Combinator::SubsequentSibling), None]);
+        assert_eq!(heads(":has(>:is(dt+dd))"), [Some(Combinator::Child)]);
+    }
+
+    #[test]
+    fn error_leading_combinator_outside_has() {
+        assert!(parse(">li").is_err());
+        assert!(parse(":is(>li)").is_err());
+    }
+
+    #[test]
+    fn error_leading_combinator_before_a_sequence_in_has() {
+        assert!(parse(":has(> a b)").is_err());
     }
 
     // --- Error cases ---

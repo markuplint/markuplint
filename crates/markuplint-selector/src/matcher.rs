@@ -305,18 +305,16 @@ fn match_pseudo_class(pseudo: &PseudoClassSelector, node_id: NodeId, node_name: 
             }
         }
         PseudoClassSelector::Has(inner) => {
-            // :has() checks descendants only.
-            // TODO: TS also checks siblings for :has(+ ...) and :has(~ ...)
-            // via headCombinator detection. Relative selectors need parser support.
-            let mut found = false;
-            for desc in arena.descendants(node_id) {
-                if let Some(desc_el_id) = desc.as_element().map(|e| e.base.id)
-                    && matches_inner(inner, desc_el_id, ctx)
-                {
-                    found = true;
-                    break;
-                }
-            }
+            // The head combinator of each relative selector picks the elements it is tried
+            // against: descendants (none given), children, or the following siblings.
+            // Known limitation: the chain of a multi-compound argument (`:has(a b)`) is walked
+            // through the ancestors of the candidate without stopping at the anchor, so it can
+            // match an `a` outside the anchor. The parser rejects that form with a head combinator.
+            let found = inner.selectors.iter().any(|sel| {
+                relative_candidates(arena, node_id, sel.head_combinator)
+                    .into_iter()
+                    .any(|candidate| match_complex(sel, candidate, ctx).matched)
+            });
             if found {
                 // :has() specificity = most specific selector in the argument list
                 MatchResult::matched(max_specificity_of_list(inner))
@@ -524,6 +522,40 @@ fn element_parent(arena: &DomArena, node_id: NodeId) -> Option<NodeId> {
         Some(parent_id)
     } else {
         None
+    }
+}
+
+/// The elements a relative selector of `:has()` is tried against, by its head combinator.
+fn relative_candidates(arena: &DomArena, anchor: NodeId, head: Option<Combinator>) -> Vec<NodeId> {
+    let is_element = |id: &NodeId| arena.get(*id).is_some_and(|n| n.as_element().is_some());
+    match head {
+        None | Some(Combinator::Descendant) => arena
+            .descendants(anchor)
+            .filter_map(|n| n.as_element().map(|e| e.base.id))
+            .collect(),
+        Some(Combinator::Child) => arena
+            .get(anchor)
+            .map(|n| n.children().iter().copied().filter(is_element).collect())
+            .unwrap_or_default(),
+        Some(Combinator::NextSibling | Combinator::SubsequentSibling) => {
+            let Some(parent) = arena
+                .get(anchor)
+                .and_then(DomNode::parent_id)
+                .and_then(|p| arena.get(p))
+            else {
+                return Vec::new();
+            };
+            let siblings = parent.children();
+            let Some(pos) = siblings.iter().position(|&id| id == anchor) else {
+                return Vec::new();
+            };
+            let following = siblings[pos + 1..].iter().copied().filter(is_element);
+            if head == Some(Combinator::NextSibling) {
+                following.take(1).collect()
+            } else {
+                following.collect()
+            }
+        }
     }
 }
 

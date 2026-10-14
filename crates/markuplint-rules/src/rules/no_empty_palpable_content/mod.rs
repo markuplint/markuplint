@@ -1,15 +1,16 @@
 //! `no-empty-palpable-content` rule: palpable content elements should not be empty.
 //!
-//! Known difference from TS: TS decides palpability with `el.matches()` over the `#palpable`
-//! selectors (an entry may carry a condition, as in `audio[controls]`) and its own list of
-//! exposable elements. [`is_palpable_element`] matches the tag name only, dropping the
-//! condition, and the exposable list here differs from TS's (it lacks `body`, `figcaption`,
-//! `legend`, `option`, `summary`, … and has `caption`), so the two can disagree on which elements are palpable.
+//! Palpability is decided as TS `isPalpableElement()` does: the `#palpable` entries of the
+//! spec are evaluated as selectors (an entry may carry a condition, as in `audio[controls]`,
+//! or a trailing space, as in `sup `), joined into one list with the exposable elements when
+//! `extendsExposableElements` is on. `#SVGRenderable` is left out, as the TS rule passes
+//! `extendsSvg: false`.
 
 use markuplint_core::mlast::MLASTAttr;
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::node::DomNode;
-use markuplint_types::spec::lookup::{is_nothing_content_model_name, is_palpable_element};
+use markuplint_selector::{matcher, parser};
+use markuplint_types::spec::lookup::{get_content_model_tags, is_nothing_content_model_name};
 use markuplint_types::spec::types::MLMLSpec;
 
 use crate::rule::{Rule, RuleConfigSet};
@@ -22,11 +23,30 @@ pub struct NoEmptyPalpableContent;
 const ALLOWED_ELEMENTS: &[&str] = &["textarea", "output", "audio", "canvas", "video", "img"];
 
 /// Elements that are not palpable content but are exposed to the accessibility tree.
-const EXPOSABLE_ELEMENTS: &[&str] = &["li", "dt", "dd", "th", "td", "tr", "thead", "tbody", "tfoot", "caption"];
-
-fn is_exposable_element(name: &str) -> bool {
-    EXPOSABLE_ELEMENTS.iter().any(|e| e.eq_ignore_ascii_case(name))
-}
+///
+/// Copy of `exposableElementsThatAreNoBelongingAModel` in `@markuplint/ml-spec`
+/// (`algorithm/html/is-palpable-elements.ts`), which is not spec data and so cannot be read
+/// from the spec; the test `v6_no_empty_palpable_content_013` fails when the two diverge.
+const EXPOSABLE_ELEMENTS: &[&str] = &[
+    "body",
+    "dd",
+    "dt",
+    "figcaption",
+    "html",
+    "legend",
+    "li",
+    "optgroup",
+    "option",
+    "rp",
+    "rt",
+    "summary",
+    "tbody",
+    "td",
+    "tfoot",
+    "th",
+    "thead",
+    "tr",
+];
 
 /// TS `Text.isWhitespace()` (`/^\s+$/`). Not `str::trim`: a JS `\s` matches U+FEFF and not
 /// U+0085, and Rust's `White_Space` is the other way round.
@@ -61,6 +81,17 @@ impl Rule for NoEmptyPalpableContent {
             .and_then(serde_json::Value::as_bool)
             .unwrap_or(true);
 
+        let mut conditions = get_content_model_tags(spec, "#palpable").unwrap_or_default().join(",");
+        if extends_exposable {
+            if !conditions.is_empty() {
+                conditions.push(',');
+            }
+            conditions.push_str(&EXPOSABLE_ELEMENTS.join(","));
+        }
+        let Ok(palpable) = parser::parse(&conditions) else {
+            return Vec::new();
+        };
+
         let mut violations = Vec::new();
 
         for (node_id, el) in arena.elements() {
@@ -72,9 +103,7 @@ impl Rule for NoEmptyPalpableContent {
                 continue;
             }
 
-            let is_palpable = is_palpable_element(spec, &el.base.node_name);
-            let is_exposable = extends_exposable && is_exposable_element(&el.base.node_name);
-            if !is_palpable && !is_exposable {
+            if !matcher::matches(&palpable, arena, node_id, None, Some(spec), None) {
                 continue;
             }
 

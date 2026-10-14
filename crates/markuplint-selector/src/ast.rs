@@ -10,6 +10,9 @@ pub struct ComplexSelector {
     pub subject: CompoundSelector,
     /// Stored reversed (right-to-left): the parent compound is first.
     pub chain: Vec<(Combinator, CompoundSelector)>,
+    /// The leading combinator of a relative selector (`:has(> li)`); `None` everywhere else, and
+    /// for `:has(li)`, which relates to its anchor as a descendant.
+    pub head_combinator: Option<Combinator>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
