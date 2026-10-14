@@ -18,7 +18,13 @@ import {
 import path from 'node:path';
 
 import { applyRuleAliasesToConfig, mergeConfig } from '@markuplint/ml-config';
-import { CONFIG_ERROR_RULE_ID, MLCore, convertRuleset, multiPassFix } from '@markuplint/ml-core';
+import {
+	CONFIG_ERROR_RULE_ID,
+	MLCore,
+	convertRuleset,
+	createRuleDeprecationViolations,
+	multiPassFix,
+} from '@markuplint/ml-core';
 import { schemaToSpec } from '@markuplint/ml-spec';
 import { ParserError } from '@markuplint/parser-utils';
 import { ruleAliasTable } from '@markuplint/rules';
@@ -107,7 +113,9 @@ export type FromCodeOptions = APIOptions &
  * applying {@link applyRuleAliasesToConfig}. Kept structured (not folded
  * into `errs` as generic `Error`s) so `MLCore` can report them under their
  * own `rule-deprecation` ruleId instead of `config-error` — see
- * `packages/@markuplint/ml-core/src/ml-core.ts`'s `verify()`.
+ * `packages/@markuplint/ml-core/src/ml-core.ts`'s `verify()`. The Rust path
+ * has no `verify()`, so `#tryExecRustPath` builds the same violations with
+ * `createRuleDeprecationViolations`.
  */
 type ResolvedConfigSet = ConfigSet & {
 	readonly ruleDeprecations: readonly RuleAliasWarning[];
@@ -473,7 +481,9 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 			};
 		}
 
-		const violations = toViolations(napiViolations, fix);
+		// What `MLCore.verify()` puts ahead of the rule violations; it does not run on this path.
+		const deprecations = createRuleDeprecationViolations(fabric.ruleDeprecations ?? [], fabric.severity);
+		const violations = [...deprecations, ...toViolations(napiViolations, fix)];
 
 		let fixedCode = sourceCode;
 		let fixSummary: FixSummary | undefined;
@@ -487,7 +497,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 						let parsed: boolean;
 						try {
 							const raw = lintHtml(code, configJson, specJson);
-							latest = toViolations(raw, true);
+							latest = [...deprecations, ...toViolations(raw, true)];
 							// Read off what the engine returned, not off `latest`: a `parse-error` the
 							// config turns off is not reported but is still a document that did not parse.
 							parsed = !raw.some(v => v.ruleId === PARSE_ERROR_RULE_ID);
