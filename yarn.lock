@@ -2412,7 +2412,7 @@ __metadata:
     browserslist: "npm:^4.28.1"
     chrono-node: "npm:^2.10.2"
     debug: "npm:^4.4.3"
-    image-size: "npm:^2.0.2"
+    image-size: "npm:^2.0.4"
     type-fest: "npm:^5.10.0"
   languageName: unknown
   linkType: soft
@@ -9240,7 +9240,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"image-size@npm:^2.0.2":
+"image-size@npm:^2.0.4":
   version: 2.0.4
   resolution: "image-size@npm:2.0.4"
   bin:
