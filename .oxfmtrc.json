@@ -18,8 +18,10 @@
 		}
 	],
 	"ignorePatterns": [
+		"**/CHANGELOG.md",
 		"packages/@markuplint/config-presets/README.md",
 		"packages/@markuplint/config-presets/preset.*.json",
+		"packages/@markuplint/create-rule/scaffold/project/rules/__ruleName__.spec.ts",
 		"packages/@markuplint/i18n/cjs",
 		"packages/@markuplint/i18n/esm",
 		"packages/@markuplint/ml-spec/src/types/aria.ts",
