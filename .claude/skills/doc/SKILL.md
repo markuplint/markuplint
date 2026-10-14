@@ -21,7 +21,8 @@ Maintain documentation under this repository's documentation policy. **The imple
 4. **Do NOT create new `ARCHITECTURE.md`, `docs/*.md`, or similar explanatory markdown.** That content belongs in JSDoc (rule 2).
 5. **Exempt — rule READMEs** (`packages/@markuplint/rules/src/*/README.md` + `README.ja.md`): these are website source (user-facing). Both languages must stay in sync — updating only one is a recurring mistake.
 6. **Exempt — package READMEs** (`packages/**/README.md`): npm-facing user documentation, not covered by rule 1.
-7. **No plan-relative concepts** in JSDoc, test names, or documentation: Phase/Step numbers, "this PR", "the old implementation", "to be introduced". Write self-contained descriptions of current behavior and intentional absences. External references are limited to issue / PR numbers.
+7. **No plan-relative concepts** in JSDoc, test names, or documentation: Phase/Step numbers, "this PR", "the old implementation", "to be introduced". Write self-contained descriptions of current behavior and intentional absences.
+8. **No issue or PR numbers in code comments, JSDoc, or `describe` / `test` names.** A number means nothing without opening the tracker; write the reason instead. Existing code carries many such comments — do not imitate them. The exceptions are the rule-spec test ID convention (`[rule-name-issue-NNNN-001]`, required by `packages/@markuplint/rules/CLAUDE.md`), fixture file names that follow an existing pattern (`issue-4054.spec.ts`), and PR bodies and commit messages.
 
 # Rules
 
