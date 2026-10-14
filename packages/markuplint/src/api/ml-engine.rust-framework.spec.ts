@@ -16,20 +16,10 @@ const nativeAddonIsBuilt = await import('@markuplint/core').then(
  */
 const notInRust = new Set(['no-unsupported-browser-features', 'no-mismatched-aspect-ratio']);
 
-/**
- * Rules whose Rust port reports differently from the TS rule on plain HTML too, so the parser is
- * not what these compare. Each is left out until its port is made faithful, not because the
- * framework paths differ.
- *
- * - `no-empty-palpable-content`: the TS rule exempts `img`, `audio`, `video`, `canvas`, `textarea`,
- *   `output` and the elements of the "nothing" content model; the port does not.
- */
-const differsOnPlainHtml = new Set(['no-empty-palpable-content']);
-
 /** Every rule that is not a deprecated alias of others and that the comparison can be made on. */
 const comparedRules = Object.fromEntries(
 	Object.keys(rules)
-		.filter(name => !(name in ruleAliasTable) && !notInRust.has(name) && !differsOnPlainHtml.has(name))
+		.filter(name => !(name in ruleAliasTable) && !notInRust.has(name))
 		.map(name => [name, true]),
 );
 
