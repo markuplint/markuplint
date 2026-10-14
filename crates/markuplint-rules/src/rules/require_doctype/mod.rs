@@ -42,6 +42,7 @@ impl Rule for RequireDoctype {
             col: 1,
             raw: String::new(),
             reason: None,
+            fix: None,
         }]
     }
 }

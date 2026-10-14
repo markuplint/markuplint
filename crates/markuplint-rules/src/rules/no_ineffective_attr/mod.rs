@@ -8,6 +8,7 @@ use markuplint_selector::parser;
 use markuplint_types::spec::lookup::get_attr_specs;
 use markuplint_types::spec::types::{AttributeCondition, MLMLSpec};
 
+use crate::fix::Fix;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
@@ -74,6 +75,7 @@ impl Rule for NoIneffectiveAttr {
                         col: html_attr.name.col,
                         raw: html_attr.name.raw.clone(),
                         reason: None,
+                        fix: Fix::remove_attr(html_attr),
                     });
                 }
             }

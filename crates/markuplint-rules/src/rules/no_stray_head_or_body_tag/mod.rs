@@ -78,6 +78,7 @@ impl Rule for NoStrayHeadOrBodyTag {
                         col: text.base.col,
                         raw: text.base.raw.clone(),
                         reason: rule_config.reason.clone(),
+                        fix: None,
                     });
                 }
             }

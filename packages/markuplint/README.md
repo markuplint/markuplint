@@ -163,7 +163,6 @@ $ markuplint "src/**/*.html" --experimental-rust-core
 **Known limitations:**
 
 - **HTML only** — files using framework parsers (Vue, JSX, Svelte, etc.) automatically fall back to the TypeScript engine with a warning.
-- **No fix mode** — `--fix` and `--fix-dry-run` fall back to the TypeScript engine.
 - **No custom rules** — projects with plugin rules fall back to the TypeScript engine.
 - **No pretenders** — files with [`pretenders`](https://markuplint.dev/docs/configuration/properties#pretenders) resolved for them fall back to the TypeScript engine, because the Rust engine does not yet read a component as the element it pretends to be.
 - **NamedRuleGroup expansion** — preset virtual rules (e.g., `a11y/no-accesskey`) are not yet expanded for the Rust path.

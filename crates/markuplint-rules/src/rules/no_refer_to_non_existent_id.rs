@@ -96,6 +96,7 @@ impl Rule for NoReferToNonExistentId {
                                 col: html_attr.value.col,
                                 raw: html_attr.value.raw.clone(),
                                 reason: None,
+                                fix: None,
                             });
                         }
                     }
@@ -220,6 +221,7 @@ fn check_space_separated_ids(
                 col: html_attr.value.col,
                 raw: html_attr.value.raw.clone(),
                 reason: None,
+                fix: None,
             });
         }
     }

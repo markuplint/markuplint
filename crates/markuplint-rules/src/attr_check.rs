@@ -319,6 +319,7 @@ pub(crate) fn attr_violation(
         col: html_attr.name.col,
         raw: html_attr.name.raw.clone(),
         reason: None,
+        fix: None,
     }
 }
 
@@ -338,6 +339,7 @@ pub(crate) fn attr_full_violation(
         col: html_attr.name.col,
         raw: html_attr.raw.clone(),
         reason: None,
+        fix: None,
     }
 }
 
@@ -358,6 +360,7 @@ pub(crate) fn attr_value_violation(
         col: html_attr.value.col,
         raw: html_attr.value.raw.clone(),
         reason: None,
+        fix: None,
     }
 }
 
@@ -558,6 +561,7 @@ pub(crate) fn check_attr_value_type(
             col,
             raw,
             reason: None,
+            fix: None,
         });
     }
 

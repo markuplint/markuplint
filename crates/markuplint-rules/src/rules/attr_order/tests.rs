@@ -44,8 +44,8 @@
 //!   attr-order-valid-018        → attr_order_valid_018
 //!   attr-order-invalid-019      → attr_order_invalid_019
 //!   attr-order-invalid-020      → attr_order_invalid_020
-//!   attr-order-fix-001 … fix-013 — SKIP: auto-fix not implemented in Rust (fix-008/fix-009/fix-011
-//!                                  also need the Vue/JSX parsers)
+//!   attr-order-fix-001 … fix-007, fix-010, fix-012, fix-013 → attr_order_fix_NNN
+//!   attr-order-fix-008/fix-009/fix-011 — SKIP: Vue/JSX parsers not available in Rust; see v6_attr_order_016
 //!   v6_attr_order_001  — Rust-only: whitespace before `=` is not part of the reported name
 //!   v6_attr_order_002  — Rust-only: names keep the case they are written in
 //!   v6_attr_order_003  — Rust-only: names compare by UTF-16 code unit, as JavaScript strings do
@@ -60,11 +60,14 @@
 //!   v6_attr_order_012  — Rust-only: a pattern may use lookbehind, as JavaScript allows
 //!   v6_attr_order_013  — Rust-only: a pretended element is checked by the attributes of what it pretends to be
 //!   v6_attr_order_014  — Rust-only: `info` severity says "should"
+//!   v6_attr_order_015  — Rust-only: each position keeps its whitespace; non-ASCII text before the fix
+//!   v6_attr_order_016  — Rust-only: a spread attribute leaves the violation without a fix
+//!   v6_attr_order_017  — Rust-only: CRLF line endings between attributes are kept
 
 use markuplint_core::mlast::{MLASTAttr, MLASTSpreadAttr};
 
 use crate::lint::{LintConfig, lint};
-use crate::test_util::{Brief, brief, html_arena, lint_brief, spec};
+use crate::test_util::{Brief, brief, fixed_code, html_arena, lint_brief, spec};
 use crate::violation::Severity;
 
 fn run(html: &str) -> Vec<Brief> {
@@ -85,6 +88,177 @@ fn run_with(html: &str, rule: serde_json::Value) -> Vec<Brief> {
 
 fn warning(line: u32, col: u32, message: &str, raw: &str) -> Brief {
     brief(Severity::Warning, line, col, message, raw)
+}
+
+fn fixed(html: &str) -> String {
+    fixed_code(html, &serde_json::json!({ "rules": { "attr-order": true } }))
+}
+
+fn fixed_with(html: &str, rule: serde_json::Value) -> String {
+    fixed_code(html, &serde_json::json!({ "rules": { "attr-order": rule } }))
+}
+
+/// TS: `[attr-order-fix-001]` — alphabetical sort
+#[test]
+fn attr_order_fix_001() {
+    const _ID: &str = "attr-order-fix-001";
+    assert_eq!(
+        fixed(r#"<div style="x" class="a"></div>"#),
+        r#"<div class="a" style="x"></div>"#
+    );
+}
+
+/// TS: `[attr-order-fix-002]` — three attributes alphabetical
+#[test]
+fn attr_order_fix_002() {
+    const _ID: &str = "attr-order-fix-002";
+    assert_eq!(
+        fixed(r#"<div style="x" class="a" id="b"></div>"#),
+        r#"<div class="a" id="b" style="x"></div>"#
+    );
+}
+
+/// TS: `[attr-order-fix-003]` — priority list
+#[test]
+fn attr_order_fix_003() {
+    const _ID: &str = "attr-order-fix-003";
+    assert_eq!(
+        fixed_with(
+            r#"<div class="a" id="b"></div>"#,
+            serde_json::json!({ "value": ["id", "class"] })
+        ),
+        r#"<div id="b" class="a"></div>"#
+    );
+}
+
+/// TS: `[attr-order-fix-004]` — multiline attributes preserve spacing
+#[test]
+fn attr_order_fix_004() {
+    const _ID: &str = "attr-order-fix-004";
+    assert_eq!(
+        fixed("<div\n  style=\"x\"\n  class=\"a\"\n></div>"),
+        "<div\n  class=\"a\"\n  style=\"x\"\n></div>"
+    );
+}
+
+/// TS: `[attr-order-fix-005]` — boolean attributes
+#[test]
+fn attr_order_fix_005() {
+    const _ID: &str = "attr-order-fix-005";
+    assert_eq!(fixed("<input readonly disabled />"), "<input disabled readonly />");
+}
+
+/// TS: `[attr-order-fix-006]` — group order
+#[test]
+fn attr_order_fix_006() {
+    const _ID: &str = "attr-order-fix-006";
+    assert_eq!(
+        fixed_with(
+            r#"<div data-x="1" class="a" id="b"></div>"#,
+            serde_json::json!({ "value": [{ "group": "global" }, { "group": "data" }] })
+        ),
+        r#"<div class="a" id="b" data-x="1"></div>"#
+    );
+}
+
+/// TS: `[attr-order-fix-007]` — options.alphabetical false: unmatched preserve source order
+/// (`-008` and `-009` are Vue and JSX parser cases, which the Rust engine does not have.)
+#[test]
+fn attr_order_fix_007() {
+    const _ID: &str = "attr-order-fix-007";
+    assert_eq!(
+        fixed_with(
+            r#"<div data-z="z" id="b" data-a="a"></div>"#,
+            serde_json::json!({ "value": ["id"], "options": { "alphabetical": false } })
+        ),
+        r#"<div id="b" data-z="z" data-a="a"></div>"#
+    );
+}
+
+/// TS: `[attr-order-fix-010]` — `{ name }` form
+#[test]
+fn attr_order_fix_010() {
+    const _ID: &str = "attr-order-fix-010";
+    assert_eq!(
+        fixed_with(
+            r#"<div class="a" id="b"></div>"#,
+            serde_json::json!({ "value": [{ "name": "id" }, { "name": "class" }] })
+        ),
+        r#"<div id="b" class="a"></div>"#
+    );
+}
+
+/// TS: `[attr-order-fix-012]` — unlisted attributes within a group sorted alphabetically
+/// (`-011` is a JSX spread case; see `v6_attr_order_016` for the Rust-engine counterpart.)
+#[test]
+fn attr_order_fix_012() {
+    const _ID: &str = "attr-order-fix-012";
+    assert_eq!(
+        fixed_with(
+            r#"<div aria-hidden="y" aria-describedby="x" aria-label="z"></div>"#,
+            serde_json::json!({ "value": [{ "group": "aria", "order": ["aria-label"] }] })
+        ),
+        r#"<div aria-label="z" aria-describedby="x" aria-hidden="y"></div>"#
+    );
+}
+
+/// TS: `[attr-order-fix-013]` — role group placed before aria group
+#[test]
+fn attr_order_fix_013() {
+    const _ID: &str = "attr-order-fix-013";
+    assert_eq!(
+        fixed_with(
+            r#"<ul aria-label="x" role="radiogroup"></ul>"#,
+            serde_json::json!({ "value": [{ "group": "role" }, { "group": "aria" }] })
+        ),
+        r#"<ul role="radiogroup" aria-label="x"></ul>"#
+    );
+}
+
+/// The whitespace of each position stays, and so do the spaces around `=` of what moves.
+#[test]
+fn v6_attr_order_015() {
+    assert_eq!(
+        fixed("<p>日本語😀</p><div  style = 'x'\n\tclass=\"a\" ></div>"),
+        "<p>日本語😀</p><div  class=\"a\"\n\tstyle = 'x' ></div>"
+    );
+}
+
+/// Windows line endings are whitespace like any other: they stay where they are.
+#[test]
+fn v6_attr_order_017() {
+    assert_eq!(
+        fixed("<div\r\n  style=\"x\"\r\n  class=\"a\"\r\n></div>"),
+        "<div\r\n  class=\"a\"\r\n  style=\"x\"\r\n></div>"
+    );
+}
+
+/// The Rust-engine counterpart of TS `[attr-order-fix-011]`: a spread attribute has no tokens
+/// to measure the range from, so the violation is reported with no fix.
+#[test]
+fn v6_attr_order_016() {
+    let mut arena = html_arena(r#"<div id="a" class="b"></div>"#);
+    let (id, _) = arena.elements().next().unwrap();
+    let el = arena.element_mut(id).unwrap();
+    el.attributes.insert(
+        0,
+        MLASTAttr::Spread(MLASTSpreadAttr {
+            uuid: "spread".to_owned(),
+            raw: "{...props}".to_owned(),
+            offset: 5,
+            line: 1,
+            col: 6,
+            node_name: "#spread".to_owned(),
+        }),
+    );
+    el.has_spread_attr = true;
+    let config: LintConfig = serde_json::from_value(serde_json::json!({
+        "rules": { "attr-order": { "value": ["id", "class", { "group": "spread" }] } }
+    }))
+    .unwrap();
+    let violations = lint(&arena, &spec(), &config).violations;
+    assert_eq!(violations.len(), 1);
+    assert_eq!(violations[0].fix, None);
 }
 
 /// TS: `[attr-order-valid-001]` no violation - already sorted

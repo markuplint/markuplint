@@ -5,6 +5,7 @@ use markuplint_dom::arena::DomArena;
 use markuplint_dom::helpers::{extract_tag_name_from_raw, get_raw_tag_name};
 use markuplint_types::spec::types::MLMLSpec;
 
+use crate::fix::Fix;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::{Severity, Violation};
 
@@ -55,6 +56,7 @@ impl Rule for CaseSensitiveTagName {
                 // Report at tag name position (after '<'), with raw = tag name only
                 #[allow(clippy::cast_possible_truncation)]
                 let name_col = el.base.col + el.tag_open_char.len() as u32;
+                let name_start = el.base.offset + el.tag_open_char.len();
                 violations.push(Violation {
                     rule_id: self.id().to_string(),
                     name: None,
@@ -64,6 +66,11 @@ impl Rule for CaseSensitiveTagName {
                     col: name_col,
                     raw: raw_name.to_string(),
                     reason: None,
+                    fix: Some(Fix::replace_range(
+                        name_start,
+                        name_start + raw_name.len(),
+                        convert_case(raw_name, case),
+                    )),
                 });
             }
 
@@ -76,6 +83,8 @@ impl Rule for CaseSensitiveTagName {
                     _ => close_raw_name == close_raw_name.to_ascii_lowercase(),
                 };
                 if !pair_correct {
+                    // `</` precedes the name; the open tag's `<` is the same width as the `tag_open_char`.
+                    let close_name_start = ct.offset + el.tag_open_char.len() + '/'.len_utf8();
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
                         name: None,
@@ -85,11 +94,26 @@ impl Rule for CaseSensitiveTagName {
                         col: ct.col,
                         raw: ct.raw.clone(),
                         reason: None,
+                        fix: Some(Fix::replace_range(
+                            close_name_start,
+                            close_name_start + close_raw_name.len(),
+                            convert_case(close_raw_name, case),
+                        )),
                     });
                 }
             }
         }
 
         violations
+    }
+}
+
+/// The check is ASCII-only, as the TS regex is, but the TS fix converts with
+/// `toLowerCase()` / `toUpperCase()`, which are not.
+fn convert_case(name: &str, case: &str) -> String {
+    if case == "upper" {
+        name.to_uppercase()
+    } else {
+        name.to_lowercase()
     }
 }

@@ -67,6 +67,7 @@ impl Rule for LinkTypes {
                         col: el.base.col,
                         raw: keyword.to_string(),
                         reason: None,
+                        fix: None,
                     });
                 }
             }

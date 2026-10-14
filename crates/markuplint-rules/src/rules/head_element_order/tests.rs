@@ -26,12 +26,21 @@
 //!   head-element-order-valid-015    → head_element_order_valid_015
 //!   head-element-order-invalid-009  → head_element_order_invalid_009
 //!   head-element-order-invalid-010  — SKIP: i18n (ja locale) not supported in Rust
-//!   head-element-order-fix-*        — SKIP: auto-fix not implemented in Rust
+//!   head-element-order-fix-001      → head_element_order_fix_001
+//!   head-element-order-fix-002      → head_element_order_fix_002
+//!   head-element-order-fix-003      → head_element_order_fix_003
+//!   head-element-order-fix-004      → head_element_order_fix_004
+//!   head-element-order-fix-005      → head_element_order_fix_005
+//!   head-element-order-fix-006      → head_element_order_fix_006
+//!   head-element-order-fix-007      → head_element_order_fix_007
 //!   v6_head_element_order_001  — Rust-only: every out-of-place child is reported where it stands
 //!   v6_head_element_order_002  — Rust-only: alphabetical order reports each misplaced `meta`
 //!   v6_head_element_order_003  — Rust-only: `true` uses the default order
+//!   v6_head_element_order_004  — Rust-only: only the first violation carries the fix
+//!   v6_head_element_order_005  — Rust-only: non-ASCII text in the head before the reordered children
+//!   v6_head_element_order_006  — Rust-only: a child with content and no end tag gets no fix
 
-use crate::test_util::{Brief, brief, lint_brief};
+use crate::test_util::{Brief, brief, fixed_code, lint_brief, lint_html};
 use crate::violation::Severity;
 
 const RULE: &str = "head-element-order";
@@ -46,6 +55,131 @@ fn run_value(html: &str, value: serde_json::Value) -> Vec<Brief> {
 
 fn warn(col: u32, message: &str, raw: &str) -> Brief {
     brief(Severity::Warning, 1, col, message, raw)
+}
+
+fn fixed(html: &str, value: serde_json::Value) -> String {
+    fixed_code(html, &serde_json::json!({ "rules": { RULE: { "value": value } } }))
+}
+
+/// TS: `[head-element-order-fix-001]` — basic swap: title and meta[charset]
+#[test]
+fn head_element_order_fix_001() {
+    const _ID: &str = "head-element-order-fix-001";
+    assert_eq!(
+        fixed(
+            r#"<html><head><title>Title</title><meta charset="UTF-8"></head><body></body></html>"#,
+            serde_json::json!(["meta[charset]", "title"]),
+        ),
+        r#"<html><head><meta charset="UTF-8"><title>Title</title></head><body></body></html>"#
+    );
+}
+
+/// TS: `[head-element-order-fix-002]` — multiple elements reorder
+#[test]
+fn head_element_order_fix_002() {
+    const _ID: &str = "head-element-order-fix-002";
+    assert_eq!(
+        fixed(
+            r#"<html><head><script src="app.js"></script><title>Title</title><meta charset="UTF-8"></head><body></body></html>"#,
+            serde_json::json!(["meta[charset]", "title", "script"]),
+        ),
+        r#"<html><head><meta charset="UTF-8"><title>Title</title><script src="app.js"></script></head><body></body></html>"#
+    );
+}
+
+/// TS: `[head-element-order-fix-003]` — preserve indentation
+#[test]
+fn head_element_order_fix_003() {
+    const _ID: &str = "head-element-order-fix-003";
+    assert_eq!(
+        fixed(
+            "<html>\n<head>\n\t<title>Title</title>\n\t<meta charset=\"UTF-8\">\n</head>\n<body></body>\n</html>",
+            serde_json::json!(["meta[charset]", "title"]),
+        ),
+        "<html>\n<head>\n\t<meta charset=\"UTF-8\">\n\t<title>Title</title>\n</head>\n<body></body>\n</html>"
+    );
+}
+
+/// TS: `[head-element-order-fix-004]` — alphabetical sort fix
+#[test]
+fn head_element_order_fix_004() {
+    const _ID: &str = "head-element-order-fix-004";
+    assert_eq!(
+        fixed(
+            r#"<html><head><meta name="viewport" content="width=device-width"><meta name="author" content="Test"><meta name="description" content="Desc"></head><body></body></html>"#,
+            serde_json::json!([{ "selector": "meta", "order": "alphabetical", "attr": "name" }]),
+        ),
+        r#"<html><head><meta name="author" content="Test"><meta name="description" content="Desc"><meta name="viewport" content="width=device-width"></head><body></body></html>"#
+    );
+}
+
+/// TS: `[head-element-order-fix-005]` — already correct order: no change
+#[test]
+fn head_element_order_fix_005() {
+    const _ID: &str = "head-element-order-fix-005";
+    let source = r#"<html><head><meta charset="UTF-8"><title>Title</title></head><body></body></html>"#;
+    assert_eq!(fixed(source, serde_json::json!(["meta[charset]", "title"])), source);
+}
+
+/// TS: `[head-element-order-fix-006]` — reorder elements with child content (script/style)
+#[test]
+fn head_element_order_fix_006() {
+    const _ID: &str = "head-element-order-fix-006";
+    assert_eq!(
+        fixed(
+            r#"<html><head><script>console.log("hello")</script><meta charset="UTF-8"></head><body></body></html>"#,
+            serde_json::json!(["meta[charset]", "script"]),
+        ),
+        r#"<html><head><meta charset="UTF-8"><script>console.log("hello")</script></head><body></body></html>"#
+    );
+}
+
+/// TS: `[head-element-order-fix-007]` — fix: head without explicit close tag
+#[test]
+fn head_element_order_fix_007() {
+    const _ID: &str = "head-element-order-fix-007";
+    assert_eq!(
+        fixed(
+            r#"<html><head><title>Title</title><meta charset="UTF-8"><body></body></html>"#,
+            serde_json::json!(["meta[charset]", "title"]),
+        ),
+        r#"<html><head><meta charset="UTF-8"><title>Title</title><body></body></html>"#
+    );
+}
+
+#[test]
+fn v6_head_element_order_004() {
+    let violations = lint_html(
+        r#"<html><head><script></script><title>T</title><meta charset="UTF-8"></head></html>"#,
+        serde_json::json!({ "rules": { RULE: { "value": ["meta[charset]", "title", "script"] } } }),
+    );
+    // `title` is already where it belongs, so the `script` and the `meta` are reported.
+    let with_fix: Vec<_> = violations.iter().map(|v| v.fix.is_some()).collect();
+    assert_eq!(with_fix, [true, false]);
+}
+
+/// A `<script>` that the end of the file closes has content but no end tag, so its range
+/// would hold only the start tag; moving that would tear the element apart. The violation is
+/// still reported, without a fix.
+#[test]
+fn v6_head_element_order_006() {
+    let violations = lint_html(
+        "<html><head><title>T</title><script>var a = 1;",
+        serde_json::json!({ "rules": { RULE: { "value": ["script", "title"] } } }),
+    );
+    assert_eq!(violations.len(), 2, "{violations:?}");
+    assert!(violations.iter().all(|v| v.fix.is_none()), "{violations:?}");
+}
+
+#[test]
+fn v6_head_element_order_005() {
+    assert_eq!(
+        fixed(
+            "<html><head>\n<title>日本語😀</title>\n<meta charset=\"UTF-8\">\n</head></html>",
+            serde_json::json!(["meta[charset]", "title"]),
+        ),
+        "<html><head>\n<meta charset=\"UTF-8\">\n<title>日本語😀</title>\n</head></html>"
+    );
 }
 
 /// TS: `[head-element-order-valid-001]` correct order: no violations

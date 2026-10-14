@@ -1175,6 +1175,98 @@ describe('experimentalRustCore applies the configured pretenders', () => {
 	});
 });
 
+describe('experimentalRustCore fixes the file', () => {
+	afterEach(() => {
+		vi.restoreAllMocks();
+	});
+
+	const stderrOf = (write: { readonly mock: { readonly calls: readonly unknown[][] } }) =>
+		write.mock.calls.map(args => String(args[0])).join('');
+
+	const exec = async (sourceCode: string, config: Config, options: { rust: boolean; fix: boolean }) => {
+		const file = await MLEngine.toMLFile({ sourceCode, name: 'page.html' });
+		const engine = new MLEngine(file!, {
+			noSearchConfig: true,
+			locale: 'en',
+			experimentalRustCore: options.rust,
+			fix: options.fix,
+			config,
+		});
+		return engine.exec();
+	};
+
+	it.skipIf(!nativeAddonIsBuilt)('fixes the file without leaving the Rust engine', async () => {
+		const write = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
+
+		const result = await exec(
+			'<DIV class="a" class="b"></DIV>',
+			{ rules: { 'case-sensitive-tag-name': true, 'no-duplicate-attr': true } },
+			{ rust: true, fix: true },
+		);
+
+		expect(result?.fixedCode).toBe('<div class="a"></div>');
+		expect(result?.fixSummary?.totalApplied).toBe(3);
+		expect(stderrOf(write)).not.toContain('falling back to TypeScript engine');
+	});
+
+	it.skipIf(!nativeAddonIsBuilt)(
+		'leaves the code alone and the violations without fixes when not asked to fix',
+		async () => {
+			const result = await exec(
+				'<DIV class="a" class="b"></DIV>',
+				{ rules: { 'case-sensitive-tag-name': true, 'no-duplicate-attr': true } },
+				{ rust: true, fix: false },
+			);
+
+			expect(result?.fixedCode).toBe('<DIV class="a" class="b"></DIV>');
+			expect(result?.fixSummary).toBeUndefined();
+			expect(result?.violations.map(v => 'fix' in v)).toStrictEqual([false, false, false]);
+		},
+	);
+
+	it.skipIf(!nativeAddonIsBuilt)('reports a zero summary when nothing can be fixed', async () => {
+		const result = await exec(
+			'<div></div>',
+			{ rules: { 'case-sensitive-tag-name': true } },
+			{ rust: true, fix: true },
+		);
+
+		expect(result?.fixedCode).toBe('<div></div>');
+		expect(result?.fixSummary).toStrictEqual({
+			passCount: 0,
+			totalApplied: 0,
+			totalSkipped: 0,
+			reachedMaxPasses: false,
+			firstPassEdits: [],
+		});
+	});
+
+	// The attribute rules touch the same attributes, so their fixes overlap and the fix loop has
+	// to lint the output again; the text before the element is not ASCII, which is where the
+	// offsets of a byte-based engine and a UTF-16 string part ways.
+	it.skipIf(!nativeAddonIsBuilt)(
+		'fixes as the TypeScript engine does, over several passes and non-ASCII text',
+		async () => {
+			const sourceCode = '<p>日本語😀</p>\n<DIV STYLE = "x"\n  CLASS=\'a\' class=b></DIV>';
+			const config: Config = {
+				rules: {
+					'case-sensitive-tag-name': true,
+					'case-sensitive-attr-name': true,
+					'attr-value-quotes': true,
+					'attr-order': true,
+					'no-duplicate-attr': true,
+				},
+			};
+
+			const rust = await exec(sourceCode, config, { rust: true, fix: true });
+			const typescript = await exec(sourceCode, config, { rust: false, fix: true });
+
+			expect(typescript?.fixedCode).toBe('<p>日本語😀</p>\n<div class="a"\n  style = "x"></div>');
+			expect(rust?.fixedCode).toBe('<p>日本語😀</p>\n<div class="a"\n  style = "x"></div>');
+		},
+	);
+});
+
 describe('config that cannot be loaded (#4113)', () => {
 	const missingPreset = { extends: ['markuplint:no-exists'] };
 

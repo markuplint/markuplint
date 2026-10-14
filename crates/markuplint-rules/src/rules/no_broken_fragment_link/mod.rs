@@ -93,6 +93,7 @@ impl Rule for NoBrokenFragmentLink {
                     col: href.value.col,
                     raw: href.value.raw.clone(),
                     reason: rule_config.reason.clone(),
+                    fix: None,
                 });
             }
         }

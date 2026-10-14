@@ -64,6 +64,7 @@ impl Rule for NoDuplicateId {
                         col,
                         raw: raw.clone(),
                         reason: None,
+                        fix: None,
                     });
                 }
             }

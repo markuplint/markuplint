@@ -52,6 +52,7 @@ impl Rule for RequireH1 {
             col: 1,
             raw,
             reason: None,
+            fix: None,
         }]
     }
 }

@@ -5,6 +5,7 @@ use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::lookup::{get_attr_specs, get_spec};
 use markuplint_types::spec::types::MLMLSpec;
 
+use crate::fix::Fix;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
@@ -51,6 +52,7 @@ impl Rule for NoDefaultValue {
                         col: html_attr.name.col,
                         raw: html_attr.raw.clone(),
                         reason: None,
+                        fix: Fix::remove_attr(html_attr),
                     });
                 }
             }
@@ -84,6 +86,29 @@ mod tests {
 
     fn spec() -> MLMLSpec {
         load_spec(include_str!("../../../../packages/@markuplint/html-spec/index.json")).unwrap()
+    }
+
+    fn fixed(html: &str) -> String {
+        crate::test_util::fixed_code(html, &serde_json::json!({ "rules": { "no-default-value": true } }))
+    }
+
+    /// TS: `[no-default-value-fix-001]` — remove default value attribute
+    /// (`no-default-value-fix-002` is a Pug parser case, which the Rust engine does not have.)
+    #[test]
+    fn no_default_value_fix_001() {
+        const _ID: &str = "no-default-value-fix-001";
+        assert_eq!(
+            fixed(r#"<canvas width="300" height="150"></canvas>"#),
+            "<canvas></canvas>"
+        );
+    }
+
+    #[test]
+    fn v6_no_default_value_001() {
+        assert_eq!(
+            fixed("<p>日本語😀</p><input\ttype = 'text' name=a>"),
+            "<p>日本語😀</p><input name=a>"
+        );
     }
 
     #[test]

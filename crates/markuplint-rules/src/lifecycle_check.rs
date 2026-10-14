@@ -78,6 +78,7 @@ pub(crate) fn verify_attr_lifecycle(
                 col: html_attr.name.col,
                 raw: html_attr.name.raw.clone(),
                 reason: None,
+                fix: None,
             });
         }
     }
@@ -138,6 +139,7 @@ pub(crate) fn verify_element_lifecycle(
             col: el.base.col,
             raw: el.base.raw.clone(),
             reason: None,
+            fix: None,
         });
     }
 

@@ -44,6 +44,7 @@ impl Rule for NoDuplicateH1 {
             col: second.base.col,
             raw: second.base.raw.clone(),
             reason: None,
+            fix: None,
         }]
     }
 }

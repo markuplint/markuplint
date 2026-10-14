@@ -6,6 +6,7 @@ use markuplint_dom::helpers::get_raw_attr_name;
 use markuplint_types::spec::lookup::get_attr_specs;
 use markuplint_types::spec::types::MLMLSpec;
 
+use crate::fix::Fix;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::{Severity, Violation};
 
@@ -64,6 +65,14 @@ impl Rule for CaseSensitiveAttrName {
                     };
                     let case_str = if case == "upper" { "uppercase" } else { "lowercase" };
                     let message = format!("Attribute names of HTML elements {verb} be {case_str}");
+                    // The check above is ASCII-only, as the TS regex is, but the TS fix
+                    // converts with `toLowerCase()` / `toUpperCase()`, which are not.
+                    let fixed_name = if case == "upper" {
+                        raw_name.to_uppercase()
+                    } else {
+                        raw_name.to_lowercase()
+                    };
+                    let name_start = html_attr.name.offset;
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
                         name: None,
@@ -73,6 +82,11 @@ impl Rule for CaseSensitiveAttrName {
                         col: html_attr.name.col,
                         raw: html_attr.name.raw.clone(),
                         reason: None,
+                        fix: Some(Fix::replace_range(
+                            name_start,
+                            name_start + html_attr.name.raw.len(),
+                            fixed_name,
+                        )),
                     });
                 }
             }

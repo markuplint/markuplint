@@ -122,6 +122,7 @@ impl Rule for PermittedContents {
                             col: el.base.col,
                             raw: el.base.raw.clone(),
                             reason: None,
+                            fix: None,
                         });
                     }
                 }
@@ -195,6 +196,7 @@ impl Rule for PermittedContents {
                                     col: if child.col > 0 { child.col } else { el.base.col },
                                     raw: child.raw.clone(),
                                     reason: None,
+                                    fix: None,
                                 });
                             }
                         }
@@ -209,6 +211,7 @@ impl Rule for PermittedContents {
                                 col: el.base.col,
                                 raw: el.base.raw.clone(),
                                 reason: None,
+                                fix: None,
                             });
                         }
                         ResultType::MissingNodeOneOrMore => {
@@ -232,6 +235,7 @@ impl Rule for PermittedContents {
                                 col,
                                 raw,
                                 reason: None,
+                                fix: None,
                             });
                         }
                         ResultType::Nothing => {
@@ -244,6 +248,7 @@ impl Rule for PermittedContents {
                                 col: el.base.col,
                                 raw: el.base.raw.clone(),
                                 reason: None,
+                                fix: None,
                             });
                         }
                         ResultType::TransparentModelDisallows => {
@@ -261,7 +266,8 @@ impl Rule for PermittedContents {
                                     col: if child.col > 0 { child.col } else { el.base.col },
                                     raw: child.raw.clone(),
                                 reason: None,
-            });
+                                fix: None,
+                            });
                             }
                         }
                         // Matched/MatchedZero and internal intermediate types
@@ -542,6 +548,7 @@ fn check_own_transparent_constraint(
                     col: violator.col,
                     raw: violator.raw.clone(),
                 reason: None,
+                fix: None,
             });
                 continue;
             }
@@ -558,6 +565,7 @@ fn check_own_transparent_constraint(
                     col: if child.col > 0 { child.col } else { parent_el.base.col },
                     raw: child.raw.clone(),
                 reason: None,
+                fix: None,
             });
             }
         }

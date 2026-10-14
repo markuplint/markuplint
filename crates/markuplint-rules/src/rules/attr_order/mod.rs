@@ -1,17 +1,17 @@
 //! `attr-order` rule: attributes appear in a configured (by default alphabetical) order.
 //!
-//! The TS rule also offers an auto-fix that rewrites the attribute list. The Rust
-//! engine has no fix mechanism, so only the detection half is ported.
+//! The fix rewrites the attribute list in the expected order (see [`reorder_fix`]).
 
 use std::cmp::Ordering;
 use std::collections::HashSet;
 
-use markuplint_core::mlast::MLASTAttr;
+use markuplint_core::mlast::{MLASTAttr, MLASTHTMLAttr};
 use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::types::MLMLSpec;
 use serde_json::Value;
 
 use crate::aria_check::attr_name;
+use crate::fix::Fix;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::{Severity, Violation};
 
@@ -50,7 +50,7 @@ struct CompiledEntry<'s> {
     matcher: Matcher<'s>,
 }
 
-/// TS `AttrInfo`, minus the fields only the fix uses.
+/// TS `AttrInfo`.
 struct AttrInfo<'a> {
     name: &'a str,
     index: usize,
@@ -58,6 +58,67 @@ struct AttrInfo<'a> {
     /// TS `scopeNode` (`nameNode ?? spacesBeforeName`) as `(line, col, raw)`: absent
     /// for a spread attribute, which has neither token.
     scope: Option<(u32, u32, &'a str)>,
+    /// The attribute whose tokens the fix moves; absent for a spread attribute, which has
+    /// none (TS reads empty text from its absent tokens).
+    tokens: Option<&'a MLASTHTMLAttr>,
+}
+
+impl AttrInfo<'_> {
+    /// TS `spacing`: the whitespace before the name.
+    fn spacing(&self) -> &str {
+        self.tokens.map_or("", |attr| attr.spaces_before_name.raw.as_str())
+    }
+
+    /// TS `buildAttrContent`: everything after the whitespace before the name.
+    fn content(&self) -> String {
+        self.tokens.map_or_else(String::new, |attr| {
+            [
+                &attr.name,
+                &attr.spaces_before_equal,
+                &attr.equal,
+                &attr.spaces_after_equal,
+                &attr.start_quote,
+                &attr.value,
+                &attr.end_quote,
+            ]
+            .iter()
+            .map(|token| token.raw.as_str())
+            .collect()
+        })
+    }
+}
+
+/// TS `getAttrRange` and the replacement the fix puts there: the attributes in `sorted`
+/// order, each position keeping the whitespace the attribute that stood there had. The
+/// range runs from the first attribute's leading whitespace to the end of the last
+/// attribute's last token with text. `None` when either end is a spread attribute, which
+/// has no tokens to measure from — TS makes the same fix a no-op.
+fn reorder_fix(infos: &[AttrInfo<'_>], sorted: &[usize]) -> Option<Fix> {
+    let first = infos.first()?.tokens?;
+    let last = infos.last()?.tokens?;
+    let last_token = [
+        &last.end_quote,
+        &last.value,
+        &last.start_quote,
+        &last.spaces_after_equal,
+        &last.equal,
+        &last.spaces_before_equal,
+        &last.name,
+        &last.spaces_before_name,
+    ]
+    .into_iter()
+    .find(|token| !token.raw.is_empty())?;
+
+    let mut text = String::new();
+    for (slot, &moved) in infos.iter().zip(sorted) {
+        text.push_str(slot.spacing());
+        text.push_str(&infos[moved].content());
+    }
+    Some(Fix::replace_range(
+        first.spaces_before_name.offset,
+        last_token.offset + last_token.raw.len(),
+        text,
+    ))
 }
 
 impl Rule for AttrOrder {
@@ -110,6 +171,7 @@ impl Rule for AttrOrder {
                             html_attr.name.col,
                             markuplint_dom::helpers::get_raw_attr_name(html_attr),
                         )),
+                        tokens: Some(html_attr),
                     },
                     // TS `MLAttr.name` of a spread attribute.
                     MLASTAttr::Spread(_) => AttrInfo {
@@ -117,6 +179,7 @@ impl Rule for AttrOrder {
                         index,
                         is_spread: true,
                         scope: None,
+                        tokens: None,
                     },
                 })
                 .collect();
@@ -155,6 +218,7 @@ impl Rule for AttrOrder {
                     col,
                     raw: raw.to_owned(),
                     reason: rule_config.reason.clone(),
+                    fix: reorder_fix(&infos, &sorted),
                 });
                 break;
             }

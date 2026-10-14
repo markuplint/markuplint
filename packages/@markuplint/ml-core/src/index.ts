@@ -15,6 +15,8 @@ export { enableDebug } from './debug.js';
 export { computeCursorOffset } from './cursor-offset.js';
 export { applyFixes } from './fix-applier.js';
 export type { FixResult } from './fix-applier.js';
+export { multiPassFix } from './multi-pass-fix.js';
+export type { MultiPassFixHost } from './multi-pass-fix.js';
 export * from './convert-ruleset.js';
 export * from './ml-core.js';
 export * from './ml-dom/index.js';

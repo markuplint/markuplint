@@ -178,6 +178,7 @@ impl ElementContext<'_> {
             col,
             raw,
             reason: self.reason.map(str::to_string),
+            fix: None,
         }
     }
 }

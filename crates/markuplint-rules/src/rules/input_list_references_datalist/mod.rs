@@ -68,6 +68,7 @@ impl Rule for InputListReferencesDatalist {
                 col: list_attr.value.col,
                 raw: list_attr.value.raw.clone(),
                 reason: None,
+                fix: None,
             });
         }
 

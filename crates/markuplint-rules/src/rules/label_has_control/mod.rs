@@ -73,6 +73,7 @@ impl Rule for LabelHasControl {
                         col: el.base.col,
                         raw: el.base.raw.clone(),
                         reason: None,
+                        fix: None,
                     });
                     continue;
                 }
@@ -87,6 +88,7 @@ impl Rule for LabelHasControl {
                         col,
                         raw: raw.clone(),
                         reason: None,
+                        fix: None,
                     });
                 }
                 continue;
@@ -102,6 +104,7 @@ impl Rule for LabelHasControl {
                 col: el.base.col,
                 raw: el.base.raw.clone(),
                 reason: None,
+                fix: None,
             });
         }
 

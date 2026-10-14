@@ -4,6 +4,7 @@ use markuplint_dom::arena::DomArena;
 use markuplint_dom::node::DomNode;
 use markuplint_types::spec::types::MLMLSpec;
 
+use crate::fix::Fix;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
@@ -50,6 +51,10 @@ impl Rule for NoConsecutiveBr {
                     col: next_el.base.col,
                     raw: next_el.base.raw.clone(),
                     reason: None,
+                    fix: Some(Fix::remove(
+                        next_el.base.offset,
+                        next_el.base.offset + next_el.base.raw.len(),
+                    )),
                 });
             }
         }
@@ -70,6 +75,37 @@ mod tests {
 
     fn spec() -> MLMLSpec {
         load_spec(include_str!("../../../../packages/@markuplint/html-spec/index.json")).unwrap()
+    }
+
+    fn fixed(html: &str) -> String {
+        crate::test_util::fixed_code(html, &serde_json::json!({ "rules": { "no-consecutive-br": true } }))
+    }
+
+    /// TS: `[no-consecutive-br-fix-001]` — remove second consecutive br
+    #[test]
+    fn no_consecutive_br_fix_001() {
+        const _ID: &str = "no-consecutive-br-fix-001";
+        assert_eq!(fixed("<p>text<br><br></p>"), "<p>text<br></p>");
+    }
+
+    /// TS: `[no-consecutive-br-fix-002]` — three consecutive br elements
+    #[test]
+    fn no_consecutive_br_fix_002() {
+        const _ID: &str = "no-consecutive-br-fix-002";
+        assert_eq!(fixed("<p>text<br><br><br></p>"), "<p>text<br></p>");
+    }
+
+    /// TS: `[no-consecutive-br-fix-003]` — consecutive br with whitespace between
+    /// (`-004` and `-005` are Pug and Markdown parser cases, which the Rust engine does not have.)
+    #[test]
+    fn no_consecutive_br_fix_003() {
+        const _ID: &str = "no-consecutive-br-fix-003";
+        assert_eq!(fixed("<p>text<br>  \n  <br></p>"), "<p>text<br>  \n  </p>");
+    }
+
+    #[test]
+    fn v6_no_consecutive_br_001() {
+        assert_eq!(fixed("<p>日本語😀<br><br></p>"), "<p>日本語😀<br></p>");
     }
 
     fn make_br(id_placeholder: usize, line: u32, col: u32) -> ElementData {

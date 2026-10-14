@@ -11,8 +11,10 @@
 //!   case-sensitive-tag-name-valid-004    → case_sensitive_tag_name_valid_004
 //!   case-sensitive-tag-name-invalid-005  → case_sensitive_tag_name_invalid_005
 //!   case-sensitive-tag-name-valid-005    — SKIP: Astro parser not available in Rust
-//!   case-sensitive-tag-name-fix-001      — SKIP: auto-fix not implemented in Rust
+//!   case-sensitive-tag-name-fix-001      → case_sensitive_tag_name_fix_001
 //!   v6_case_sensitive_tag_name_001       — Rust-only: a pretender is gated by the namespace of the element written
+//!   v6_case_sensitive_tag_name_002       — Rust-only: `value: upper` fixes both tags
+//!   v6_case_sensitive_tag_name_003       — Rust-only: non-ASCII text before the fixed names
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::Severity;
@@ -238,5 +240,34 @@ fn v6_case_sensitive_tag_name_001() {
             serde_json::json!([{ "selector": "x-btn", "as": "button" }])
         ),
         []
+    );
+}
+
+/// TS: `[case-sensitive-tag-name-fix-001]` — upper case
+#[test]
+fn case_sensitive_tag_name_fix_001() {
+    const _ID: &str = "case-sensitive-tag-name-fix-001";
+    let config = serde_json::json!({ "rules": { "case-sensitive-tag-name": true } });
+    assert_eq!(
+        crate::test_util::fixed_code("<DIV data-lowercase></DIV>", &config),
+        "<div data-lowercase></div>"
+    );
+}
+
+#[test]
+fn v6_case_sensitive_tag_name_002() {
+    let config = serde_json::json!({ "rules": { "case-sensitive-tag-name": { "value": "upper" } } });
+    assert_eq!(
+        crate::test_util::fixed_code("<div><span>a</span></div>", &config),
+        "<DIV><SPAN>a</SPAN></DIV>"
+    );
+}
+
+#[test]
+fn v6_case_sensitive_tag_name_003() {
+    let config = serde_json::json!({ "rules": { "case-sensitive-tag-name": true } });
+    assert_eq!(
+        crate::test_util::fixed_code("<p>日本語😀</p><DIV></DIV>", &config),
+        "<p>日本語😀</p><div></div>"
     );
 }

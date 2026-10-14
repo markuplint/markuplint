@@ -4,6 +4,7 @@ use markuplint_core::mlast::MLASTAttr;
 use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::types::MLMLSpec;
 
+use crate::fix::{Fix, TextEdit};
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
@@ -52,6 +53,17 @@ impl Rule for AttrValueQuotes {
                         col: html_attr.name.col,
                         raw: html_attr.raw.clone(),
                         reason: None,
+                        // An unquoted value has quote tokens of no width, which the edits
+                        // turn into insertions on either side of the value.
+                        fix: Some(Fix::new(
+                            [&html_attr.start_quote, &html_attr.end_quote]
+                                .into_iter()
+                                .map(|quote| TextEdit {
+                                    range: [quote.offset, quote.offset + quote.raw.len()],
+                                    text: expected_quote.to_string(),
+                                })
+                                .collect(),
+                        )),
                     });
                 }
             }

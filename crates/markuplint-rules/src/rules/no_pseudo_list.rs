@@ -136,6 +136,7 @@ impl Rule for NoPseudoList {
                 col: text.base.col,
                 raw: text.base.raw.clone(),
                 reason: None,
+                fix: None,
             });
         }
 

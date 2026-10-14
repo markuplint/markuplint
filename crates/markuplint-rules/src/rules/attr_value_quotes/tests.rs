@@ -5,11 +5,18 @@
 //!   attr-value-quotes-invalid-002  → attr_value_quotes_invalid_002
 //!   attr-value-quotes-invalid-003  → attr_value_quotes_invalid_003
 //!   attr-value-quotes-valid-001    → attr_value_quotes_valid_001
-//!   attr-value-quotes-fix-*        — SKIP: auto-fix not implemented in Rust
+//!   attr-value-quotes-fix-001      → attr_value_quotes_fix_001
+//!   attr-value-quotes-fix-002      → attr_value_quotes_fix_002
+//!   attr-value-quotes-fix-003      — SKIP: Pug parser not available in Rust
+//!   attr-value-quotes-fix-004      — SKIP: Vue parser not available in Rust
+//!   attr-value-quotes-fix-005      — SKIP: Markdown parser not available in Rust
 //!   v6_attr_value_quotes_001       — Rust-only: boolean attr skipped
 //!   v6_attr_value_quotes_002       — Rust-only: no-quote attr reported
+//!   v6_attr_value_quotes_003       — Rust-only: non-ASCII text before the fixed quotes
+//!   v6_attr_value_quotes_004       — Rust-only: whitespace between the equal sign and an unquoted value
 
 use crate::lint::{LintConfig, lint};
+use crate::test_util::fixed_code;
 use crate::violation::Severity;
 use markuplint_dom::html_builder;
 use markuplint_types::spec::load_spec;
@@ -28,6 +35,46 @@ fn html_arena(html: &str) -> markuplint_dom::arena::DomArena {
 
 fn spec() -> MLMLSpec {
     load_spec(include_str!("../../../../../packages/@markuplint/html-spec/index.json")).unwrap()
+}
+
+/// TS: `[attr-value-quotes-fix-001]` — empty
+#[test]
+fn attr_value_quotes_fix_001() {
+    const _ID: &str = "attr-value-quotes-fix-001";
+    let config = serde_json::json!({ "rules": { "attr-value-quotes": true } });
+    assert_eq!(
+        fixed_code(r#"<div attr noop=noop foo="bar" hoge='fuga'>"#, &config),
+        r#"<div attr noop="noop" foo="bar" hoge="fuga">"#
+    );
+}
+
+/// TS: `[attr-value-quotes-fix-002]` — empty
+#[test]
+fn attr_value_quotes_fix_002() {
+    const _ID: &str = "attr-value-quotes-fix-002";
+    let config = serde_json::json!({ "rules": { "attr-value-quotes": { "value": "single" } } });
+    assert_eq!(
+        fixed_code(r#"<div attr noop=noop foo="bar" hoge='fuga'>"#, &config),
+        "<div attr noop='noop' foo='bar' hoge='fuga'>"
+    );
+}
+
+/// The quotes go around the value, not right after the equal sign: whitespace between them is
+/// not part of the value.
+#[test]
+fn v6_attr_value_quotes_004() {
+    let config = serde_json::json!({ "rules": { "attr-value-quotes": true } });
+    assert_eq!(fixed_code("<a b= c></a>", &config), r#"<a b= "c"></a>"#);
+    assert_eq!(fixed_code("<a b =\n c></a>", &config), "<a b =\n \"c\"></a>");
+}
+
+#[test]
+fn v6_attr_value_quotes_003() {
+    let config = serde_json::json!({ "rules": { "attr-value-quotes": true } });
+    assert_eq!(
+        fixed_code("<p>日本語😀</p><div a=b>", &config),
+        r#"<p>日本語😀</p><div a="b">"#
+    );
 }
 
 /// TS: `[attr-value-quotes-invalid-001]` — default (double)

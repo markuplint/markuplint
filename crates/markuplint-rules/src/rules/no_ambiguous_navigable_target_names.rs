@@ -62,6 +62,7 @@ impl Rule for NoAmbiguousNavigableTargetNames {
                         col: html_attr.name.col,
                         raw: html_attr.raw.clone(),
                         reason: None,
+                        fix: None,
                     });
                 }
             }

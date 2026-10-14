@@ -39,6 +39,7 @@ impl Rule for NoRestrictedElement {
                         col: el.base.col,
                         raw: el.base.raw.clone(),
                         reason: None,
+                        fix: None,
                     });
                 }
             }
@@ -81,6 +82,7 @@ impl Rule for NoRestrictedElement {
                             col: desc_el.base.col,
                             raw: desc_el.base.raw.clone(),
                             reason: None,
+                            fix: None,
                         });
                     }
                 }

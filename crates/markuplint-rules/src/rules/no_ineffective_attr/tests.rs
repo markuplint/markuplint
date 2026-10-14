@@ -3,7 +3,8 @@
 //! Test ID mapping (TS → Rust):
 //!   no-ineffective-attr-invalid-001  → no_ineffective_attr_invalid_001
 //!   no-ineffective-attr-invalid-002  — removed on both sides (see the note below)
-//!   no-ineffective-attr-fix-*        — SKIP: auto-fix not implemented in Rust
+//!   no-ineffective-attr-fix-001      → no_ineffective_attr_fix_001
+//!   v6_no_ineffective_attr_001       — Rust-only: non-ASCII text before the removed attribute
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::Severity;
@@ -24,6 +25,28 @@ fn html_arena(html: &str) -> markuplint_dom::arena::DomArena {
 
 fn spec() -> MLMLSpec {
     load_spec(include_str!("../../../../../packages/@markuplint/html-spec/index.json")).unwrap()
+}
+
+fn fixed(html: &str) -> String {
+    crate::test_util::fixed_code(html, &serde_json::json!({ "rules": { "no-ineffective-attr": true } }))
+}
+
+/// TS: `[no-ineffective-attr-fix-001]` — remove ineffective defer from inline script
+#[test]
+fn no_ineffective_attr_fix_001() {
+    const _ID: &str = "no-ineffective-attr-fix-001";
+    assert_eq!(
+        fixed(r#"<script defer>const foo = "foo";</script>"#),
+        r#"<script>const foo = "foo";</script>"#
+    );
+}
+
+#[test]
+fn v6_no_ineffective_attr_001() {
+    assert_eq!(
+        fixed("<p>日本語😀</p><script defer>1</script>"),
+        "<p>日本語😀</p><script>1</script>"
+    );
 }
 
 /// TS: `[no-ineffective-attr-invalid-001]` — script[defer] without src

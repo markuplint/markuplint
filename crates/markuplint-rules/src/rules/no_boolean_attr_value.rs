@@ -5,6 +5,7 @@ use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::lookup::{get_attr_specs, get_spec};
 use markuplint_types::spec::types::MLMLSpec;
 
+use crate::fix::Fix;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
@@ -65,6 +66,7 @@ impl Rule for NoBooleanAttrValue {
                         col: html_attr.name.col,
                         raw: html_attr.raw.clone(),
                         reason: None,
+                        fix: Fix::remove_attr_value(html_attr),
                     });
                 }
             }
@@ -100,6 +102,61 @@ mod tests {
 
     fn spec() -> MLMLSpec {
         load_spec(include_str!("../../../../packages/@markuplint/html-spec/index.json")).unwrap()
+    }
+
+    fn fixed(html: &str) -> String {
+        crate::test_util::fixed_code(html, &serde_json::json!({ "rules": { "no-boolean-attr-value": true } }))
+    }
+
+    /// TS: `[no-boolean-attr-value-fix-001]` — remove value from boolean attribute
+    #[test]
+    fn no_boolean_attr_value_fix_001() {
+        const _ID: &str = "no-boolean-attr-value-fix-001";
+        assert_eq!(
+            fixed(r#"<input type="text" required="required" />"#),
+            r#"<input type="text" required />"#
+        );
+    }
+
+    /// TS: `[no-boolean-attr-value-fix-002]` — multiple boolean attributes
+    #[test]
+    fn no_boolean_attr_value_fix_002() {
+        const _ID: &str = "no-boolean-attr-value-fix-002";
+        assert_eq!(
+            fixed(r#"<input disabled="disabled" required="required" />"#),
+            "<input disabled required />"
+        );
+    }
+
+    /// TS: `[no-boolean-attr-value-fix-003]` — spaces around equals
+    #[test]
+    fn no_boolean_attr_value_fix_003() {
+        const _ID: &str = "no-boolean-attr-value-fix-003";
+        assert_eq!(fixed(r#"<input required = "required" />"#), "<input required />");
+    }
+
+    /// TS: `[no-boolean-attr-value-fix-004]` — single-quoted value
+    #[test]
+    fn no_boolean_attr_value_fix_004() {
+        const _ID: &str = "no-boolean-attr-value-fix-004";
+        assert_eq!(fixed("<input required='required' />"), "<input required />");
+    }
+
+    /// TS: `[no-boolean-attr-value-fix-005]` — unquoted value
+    /// (`-006` to `-009` are Pug, JSX, Vue and Markdown parser cases, which the Rust engine
+    /// does not have.)
+    #[test]
+    fn no_boolean_attr_value_fix_005() {
+        const _ID: &str = "no-boolean-attr-value-fix-005";
+        assert_eq!(fixed("<input required=required />"), "<input required />");
+    }
+
+    #[test]
+    fn v6_no_boolean_attr_value_001() {
+        assert_eq!(
+            fixed("<p>日本語😀</p><input required=\"\" />"),
+            "<p>日本語😀</p><input required />"
+        );
     }
 
     #[test]

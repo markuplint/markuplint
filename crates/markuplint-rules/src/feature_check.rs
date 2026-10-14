@@ -91,6 +91,7 @@ pub(crate) fn check_features(
                 col: el.base.col,
                 raw: el.base.raw.clone(),
                 reason: None,
+                fix: None,
             });
         }
 
@@ -121,6 +122,7 @@ pub(crate) fn check_features(
                 col: html_attr.name.col,
                 raw: html_attr.name.raw.clone(),
                 reason: None,
+                fix: None,
             });
         }
     }
