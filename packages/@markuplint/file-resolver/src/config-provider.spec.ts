@@ -2,8 +2,11 @@ import type { ConfigLoadError } from '@markuplint/shared';
 
 import path from 'node:path';
 
+import { Ruleset } from '@markuplint/ml-core';
+
 import { test, expect, vi } from 'vitest';
 
+import { autoLoadRules } from './auto-load-rules.js';
 import { ConfigProvider } from './config-provider.js';
 import { getFile } from './ml-file/index.js';
 
@@ -492,4 +495,20 @@ test('runExclusive() serializes overlapping calls, deferring a later call until 
 	// runtime's exact `await` scheduling — relevant since this repo also
 	// tests under Bun and Deno, not just Node/V8.
 	expect(order).toStrictEqual(['first-start', 'first-end', 'second-start', 'second-end']);
+});
+
+test('invalidate() clears the auto-load rule cache so a cached miss is probed again', async () => {
+	const provider = new ConfigProvider();
+	const ruleset = new Ruleset({ rules: { 'not-installed': true } });
+
+	const first = await autoLoadRules(ruleset);
+	expect(first.errors.length).toBe(2);
+	// Served from the cache: the same error objects, not a new probe
+	expect((await autoLoadRules(ruleset)).errors[0]).toBe(first.errors[0]);
+
+	provider.invalidate();
+
+	const reprobed = await autoLoadRules(ruleset);
+	expect(reprobed.errors.length).toBe(2);
+	expect(reprobed.errors[0]).not.toBe(first.errors[0]);
 });
