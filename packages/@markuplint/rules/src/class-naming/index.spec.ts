@@ -389,6 +389,37 @@ test('[class-naming-invalid-006] regexSelector inheritance', async () => {
 	]);
 });
 
+test('[class-naming-invalid-007] unmatched classes of one attribute share the attribute value position', async () => {
+	const some = await mlRuleTest(rule, '<img class="a b">', { rule: { value: '/^a$/' } });
+	expect(some.violations).toStrictEqual([
+		{
+			severity: 'warning',
+			message: 'The "b" class name is unmatched with the below patterns: "/^a$/"',
+			line: 1,
+			col: 13,
+			raw: 'a b',
+		},
+	]);
+
+	const all = await mlRuleTest(rule, '<img class="a b">', { rule: { value: '/^c$/' } });
+	expect(all.violations).toStrictEqual([
+		{
+			severity: 'warning',
+			message: 'The "a" class name is unmatched with the below patterns: "/^c$/"',
+			line: 1,
+			col: 13,
+			raw: 'a b',
+		},
+		{
+			severity: 'warning',
+			message: 'The "b" class name is unmatched with the below patterns: "/^c$/"',
+			line: 1,
+			col: 13,
+			raw: 'a b',
+		},
+	]);
+});
+
 test('[class-naming-parser-001] pug + regexSelector', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
