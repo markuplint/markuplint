@@ -10,6 +10,7 @@
 //!   class-naming-valid-003    → class_naming_valid_003
 //!   class-naming-invalid-005  → class_naming_invalid_005
 //!   class-naming-invalid-006  → class_naming_invalid_006
+//!   class-naming-invalid-007  → class_naming_invalid_007
 //!   class-naming-issue-1263   → class_naming_issue_1263
 //!   class-naming-issue-4202-001 → class_naming_issue_4202_001
 //!   class-naming-issue-4202-002 → class_naming_issue_4202_002
@@ -532,6 +533,53 @@ fn v6_class_naming_004() {
     .unwrap();
     let result = lint(&arena, &spec, &config);
     assert_eq!(result.violations.len(), 0, "violations: {:#?}", result.violations);
+}
+
+/// TS: `[class-naming-invalid-007]` — every unmatched class of an attribute is reported at the
+/// start of the attribute value with the whole value as `raw` (#4248); the position and `raw` do
+/// not tell the classes apart, the message does.
+#[test]
+fn class_naming_invalid_007() {
+    const _ID: &str = "class-naming-invalid-007";
+    use crate::test_util::{brief, lint_brief};
+
+    let run = |pattern: &str| {
+        lint_brief(
+            "class-naming",
+            r#"<img class="a b">"#,
+            serde_json::json!({ "rules": { "class-naming": { "value": pattern } } }),
+        )
+    };
+
+    assert_eq!(
+        run("/^a$/"),
+        vec![brief(
+            Severity::Warning,
+            1,
+            13,
+            r#"The "b" class name is unmatched with the below patterns: "/^a$/""#,
+            "a b"
+        )]
+    );
+    assert_eq!(
+        run("/^c$/"),
+        vec![
+            brief(
+                Severity::Warning,
+                1,
+                13,
+                r#"The "a" class name is unmatched with the below patterns: "/^c$/""#,
+                "a b"
+            ),
+            brief(
+                Severity::Warning,
+                1,
+                13,
+                r#"The "b" class name is unmatched with the below patterns: "/^c$/""#,
+                "a b"
+            ),
+        ]
+    );
 }
 
 /// TS reads the attribute as the name the parser resolved (`potentialName`), and skips a value

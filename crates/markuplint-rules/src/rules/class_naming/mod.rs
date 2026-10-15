@@ -73,22 +73,12 @@ impl Rule for ClassNaming {
                 }
 
                 let value = &html_attr.value.raw;
-                // Track the offset within the value so each class gets its own column.
-                let value_start_line = html_attr.value.line;
-                let value_start_col = html_attr.value.col;
-                let mut search_from = 0;
 
                 for class_name in value.split_whitespace() {
-                    let pos_in_value = value[search_from..].find(class_name).unwrap_or(0) + search_from;
-                    search_from = pos_in_value + class_name.len();
-
-                    // Assumes a single-line class attribute value.
-                    #[allow(clippy::cast_possible_truncation)]
-                    let class_col = value_start_col + pos_in_value as u32;
-
                     let matches_any = regexes.iter().any(|(_, re)| re.is_match(class_name));
                     if !matches_any {
-                        // TS reports at the class name position with raw = class name.
+                        // As TS: every class of the attribute is reported at the start of the
+                        // attribute value, with the whole value as `raw` (#4248).
                         violations.push(Violation {
                             rule_id: self.id().to_string(),
                             name: None,
@@ -96,9 +86,9 @@ impl Rule for ClassNaming {
                             message: format!(
                                 "The \"{class_name}\" class name is unmatched with the below patterns: {display_pattern}"
                             ),
-                            line: value_start_line,
-                            col: class_col,
-                            raw: class_name.to_string(),
+                            line: html_attr.value.line,
+                            col: html_attr.value.col,
+                            raw: value.clone(),
                             reason: rule_config.reason.clone(),
                             fix: None,
                         });
