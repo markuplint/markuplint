@@ -163,13 +163,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@astrojs/compiler@npm:4.0.0":
-  version: 4.0.0
-  resolution: "@astrojs/compiler@npm:4.0.0"
-  checksum: 10c0/b82c245f88db7fe741128b2c057304866f42e87f296b2bf5962aa84e4bef1aa5c323a4fec8621db4f6ef7195cd0f90d9059c481f7d2708bbf983b481299dc5c0
-  languageName: node
-  linkType: hard
-
 "@azu/format-text@npm:^1.0.1, @azu/format-text@npm:^1.0.2":
   version: 1.0.2
   resolution: "@azu/format-text@npm:1.0.2"
@@ -2182,7 +2175,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@markuplint/astro-parser@workspace:packages/@markuplint/astro-parser"
   dependencies:
-    "@astrojs/compiler": "npm:4.0.0"
     "@markuplint/ml-ast": "npm:5.1.1"
     "@markuplint/parser-utils": "npm:5.2.0"
     astro-eslint-parser: "npm:^3.2.0"

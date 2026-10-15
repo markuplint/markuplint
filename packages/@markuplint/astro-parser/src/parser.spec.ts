@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import { nodeListToDebugMaps } from '@markuplint/parser-utils';
+import { nodeListToDebugMaps, ParserError } from '@markuplint/parser-utils';
 import { describe, test, expect } from 'vitest';
 
 import { parser } from './parser.js';
@@ -27,6 +27,9 @@ div {
 		'[1:1]>[3:4](0,29)#ps:Frontmatter: ---⏎const␣name␣=␣"World";⏎---',
 		'[3:4]>[4:1](29,30)#text: ⏎',
 		'[4:1]>[4:17](30,46)#comment: <!--␣Comment␣-->',
+		// `astro-eslint-parser` v3 keeps the newline between the comment and `<style>`, which the
+		// legacy `@astrojs/compiler` dropped. The line below is new; every other line is unchanged.
+		'[4:17]>[5:1](46,47)#text: ⏎',
 		'[5:1]>[5:8](47,54)style: <style>',
 		'[9:1]>[9:9](79,87)style: </style>',
 		'[9:9]>[10:1](87,88)#text: ⏎',
@@ -234,25 +237,33 @@ test('Pair', () => {
 });
 
 test('Missing end tag (HTML)', () => {
-	const ast = parse('<div><span><span /></div>');
-	const map = nodeListToDebugMaps(ast.nodeList);
-	expect(map).toEqual([
-		'[1:1]>[1:6](0,5)div: <div>',
-		'[1:6]>[1:12](5,11)span: <span>',
-		'[1:12]>[1:20](11,19)span: <span␣/>',
-		'[1:20]>[1:26](19,25)div: </div>',
-	]);
+	// The legacy `@astrojs/compiler` recovered from the missing end tag:
+	// const ast = parse('<div><span><span /></div>');
+	// const map = nodeListToDebugMaps(ast.nodeList);
+	// expect(map).toEqual([
+	// 	'[1:1]>[1:6](0,5)div: <div>',
+	// 	'[1:6]>[1:12](5,11)span: <span>',
+	// 	'[1:12]>[1:20](11,19)span: <span␣/>',
+	// 	'[1:20]>[1:26](19,25)div: </div>',
+	// ]);
+	// `astro-eslint-parser` v3 rejects it, so the file is reported as a parse error.
+	expect(() => parse('<div><span><span /></div>')).toThrow(ParserError);
+	expect(() => parse('<div><span><span /></div>')).toThrow(/Expected corresponding JSX closing tag for 'span'/);
 });
 
 test('Missing end tag (Component)', () => {
-	const ast = parse('<XDiv><XSpan><XSpan /></XDiv>');
-	const map = nodeListToDebugMaps(ast.nodeList);
-	expect(map).toEqual([
-		'[1:1]>[1:7](0,6)XDiv: <XDiv>',
-		'[1:7]>[1:14](6,13)XSpan: <XSpan>',
-		'[1:14]>[1:23](13,22)XSpan: <XSpan␣/>',
-		'[1:23]>[1:30](22,29)XDiv: </XDiv>',
-	]);
+	// The legacy `@astrojs/compiler` recovered from the missing end tag:
+	// const ast = parse('<XDiv><XSpan><XSpan /></XDiv>');
+	// const map = nodeListToDebugMaps(ast.nodeList);
+	// expect(map).toEqual([
+	// 	'[1:1]>[1:7](0,6)XDiv: <XDiv>',
+	// 	'[1:7]>[1:14](6,13)XSpan: <XSpan>',
+	// 	'[1:14]>[1:23](13,22)XSpan: <XSpan␣/>',
+	// 	'[1:23]>[1:30](22,29)XDiv: </XDiv>',
+	// ]);
+	// `astro-eslint-parser` v3 rejects it, so the file is reported as a parse error.
+	expect(() => parse('<XDiv><XSpan><XSpan /></XDiv>')).toThrow(ParserError);
+	expect(() => parse('<XDiv><XSpan><XSpan /></XDiv>')).toThrow(/Expected corresponding JSX closing tag for 'XSpan'/);
 });
 
 test('Doctype', () => {
@@ -897,11 +908,14 @@ const t = s.replace(/<br\\s*\\/?>/gi, " ");
 			// parsed as JSX-style children, not raw text. Case-insensitive close-tag
 			// matching is a parser-utils concern, locked in only for the
 			// lowercase-open + uppercase-close direction here.
-			const ast = parse('<script>const t = "<br>";</SCRIPT>');
-			expect(ast.parseError).toBeUndefined();
-			const endTag = ast.nodeList.find((n: any) => n.type === 'endtag');
-			expect(endTag).toBeDefined();
-			expect(endTag!.raw).toBe('</SCRIPT>');
+			// With `@astrojs/compiler` the close tag was matched case-insensitively:
+			// const ast = parse('<script>const t = "<br>";</SCRIPT>');
+			// expect(ast.parseError).toBeUndefined();
+			// const endTag = ast.nodeList.find((n: any) => n.type === 'endtag');
+			// expect(endTag).toBeDefined();
+			// expect(endTag!.raw).toBe('</SCRIPT>');
+			// `astro-eslint-parser` v3 matches it case-sensitively, so the file is reported as a parse error.
+			expect(() => parse('<script>const t = "<br>";</SCRIPT>')).toThrow(ParserError);
 		});
 
 		test('a different raw-text tag in the body does not terminate the script', () => {
@@ -924,7 +938,9 @@ const t = s.replace(/<br\\s*\\/?>/gi, " ");
 			// No </script> in the body — the raw-text short-circuit MUST NOT consume the
 			// body and MUST let the existing "unclosed tag" handling run.
 			// Locks in the `if (match)` else branch of `parseCodeFragment`'s raw-text guard.
-			expect(() => parse('<script>const x = 1;')).not.toThrow();
+			// expect(() => parse('<script>const x = 1;')).not.toThrow();
+			// `astro-eslint-parser` v3 rejects the unterminated body, so the file is reported as a parse error.
+			expect(() => parse('<script>const x = 1;')).toThrow(ParserError);
 		});
 
 		test('plain script body (no HTML-like content) still parses correctly (regression)', () => {
