@@ -135,6 +135,28 @@ describe('toNodes', () => {
 			]);
 		});
 
+		test('a JSX node held in an object or an array inside the expression is a child exactly once', () => {
+			expect(nodes('<p>{items.map(i => ({ a: [<b></b>] }))}</p>')).toStrictEqual([
+				{
+					type: 'element',
+					start: 0,
+					end: 43,
+					children: [
+						{
+							type: 'expression',
+							start: 3,
+							end: 39,
+							children: [
+								{ type: 'text', start: 4, end: 26 },
+								{ type: 'element', start: 26, end: 33, children: [] },
+								{ type: 'text', start: 33, end: 38 },
+							],
+						},
+					],
+				},
+			]);
+		});
+
 		test('every outermost JSX node of a conditional expression is a child', () => {
 			expect(nodes('<p>{a ? <b></b> : <i></i>}</p>')).toStrictEqual([
 				{

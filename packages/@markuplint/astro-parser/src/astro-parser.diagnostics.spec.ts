@@ -32,9 +32,9 @@ describe('diagnostics', () => {
 		expect(fn).toThrow(expect.objectContaining({ line: 2, col: 5 }));
 	});
 
-	test('an error diagnostic without a label is a parse error at line 1', () => {
+	test('an error diagnostic without a label is a parse error at the start of the source', () => {
 		result.diagnostics = [{ severity: 'error', text: 'No label', hint: '', labels: [] }];
-		expect(() => astroParse('')).toThrow(expect.objectContaining({ line: 1, col: 0 }));
+		expect(() => astroParse('')).toThrow(expect.objectContaining({ line: 1, col: 1 }));
 	});
 
 	test.each(['warning', 'information', 'hint'])('a %s diagnostic does not abort parsing', severity => {

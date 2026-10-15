@@ -45,6 +45,24 @@ describe('expressions that contain elements', () => {
 		]);
 	});
 
+	test('fragment shorthand is a nameless fragment element', () => {
+		expect(map('<><b></b></>')).toEqual([
+			'[1:1]>[1:3](0,2)#jsx-fragment: <>',
+			'[1:3]>[1:6](2,5)b: <b>',
+			'[1:6]>[1:10](5,9)b: </b>',
+			'[1:10]>[1:13](9,12)#jsx-fragment: </>',
+		]);
+	});
+
+	test('the Fragment component is an element named Fragment', () => {
+		expect(map('<Fragment><b></b></Fragment>')).toEqual([
+			'[1:1]>[1:11](0,10)Fragment: <Fragment>',
+			'[1:11]>[1:14](10,13)b: <b>',
+			'[1:14]>[1:18](13,17)b: </b>',
+			'[1:18]>[1:29](17,28)Fragment: </Fragment>',
+		]);
+	});
+
 	test('a self-closing script produces no text node', () => {
 		expect(map('<script />')).toEqual(['[1:1]>[1:11](0,10)script: <script␣/>']);
 	});

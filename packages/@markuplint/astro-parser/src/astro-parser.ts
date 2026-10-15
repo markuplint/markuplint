@@ -94,7 +94,7 @@ export function astroParse(code: string): AstroRoot {
 		const label = fatal.labels[0];
 		throw new ParserError(fatal.text, {
 			line: label?.line ?? 1,
-			col: label ? label.column + 1 : 0,
+			col: label ? label.column + 1 : 1,
 		});
 	}
 
@@ -105,10 +105,10 @@ export function astroParse(code: string): AstroRoot {
 }
 
 /**
- * Where a leading `---` fence opens a frontmatter block (the same shape
- * `extractAstroFrontmatter` in `component-scanner.ts` looks for).
+ * A leading `---` line, which opens a frontmatter block. Spaces may follow the fence
+ * (`astro-eslint-parser` accepts `--- ` as one), and the source may end right after it.
  */
-const RE_FRONTMATTER_FENCE = /^(?:\s*\n)?---\r?\n/;
+const RE_FRONTMATTER_FENCE = /^(?:\s*\n)?---[ \t]*(?:\r?\n|$)/;
 
 /**
  * `astro-eslint-parser` v3 reports an unterminated frontmatter (for example,

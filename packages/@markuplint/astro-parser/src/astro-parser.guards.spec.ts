@@ -19,6 +19,18 @@ describe('unterminated frontmatter', () => {
 		expect(() => astroParse('\n---\nconst a = 1;\n<p></p>')).toThrow('Unterminated frontmatter');
 	});
 
+	test('a fence with trailing spaces that is never closed is detected', () => {
+		expect(() => astroParse('--- \nconst a = 1;\n<p></p>')).toThrow('Unterminated frontmatter');
+	});
+
+	test('a fence with trailing spaces that is closed is not unterminated', () => {
+		expect(() => astroParse('--- \nconst a = 1;\n---\n<p></p>')).not.toThrow();
+	});
+
+	test('a fence that is the whole source is detected', () => {
+		expect(() => astroParse('---')).toThrow('Unterminated frontmatter');
+	});
+
 	test('an empty frontmatter is not unterminated', () => {
 		expect(() => astroParse('---\n---\n<p></p>')).not.toThrow();
 	});
@@ -38,6 +50,18 @@ describe('unclosed HTML comment', () => {
 		expect(fn).toThrow(ParserError);
 		expect(fn).toThrow('Unterminated syntax: the template is not parsed to its end');
 		expect(fn).toThrow(expect.objectContaining({ line: 2, col: 1 }));
+	});
+
+	test('text after an unclosed comment is not mistaken for parsed content', () => {
+		expect(() => astroParse('<p></p>\n<!-- x\n some text')).toThrow(ParserError);
+	});
+
+	test('markup after an unclosed comment is not mistaken for parsed content', () => {
+		expect(() => astroParse('<p></p><!-- x <b>y</b> z')).toThrow(ParserError);
+	});
+
+	test('a source that is only an unclosed comment is a parse error at the start', () => {
+		expect(() => astroParse('<!-- x')).toThrow(expect.objectContaining({ line: 1, col: 1 }));
 	});
 
 	test('a source that does not end with a newline is parsed to its end', () => {
