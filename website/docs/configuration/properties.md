@@ -743,6 +743,7 @@ The numbered capture may conflict and be overwritten.
 ```
 
 :::
+
 You can select the element in complex conditions if you use the `combination` field.
 
 ```json class=config
@@ -1294,6 +1295,8 @@ Unlike `scan`, which pre-scans a configured set of files once, `auto` runs per l
 
 - In watch mode or an editor session, the component files `auto` (and `scan`) read are watched along with the config file, so editing one re-lints the files that use it. What is not watched, so a change to it is picked up only when the config changes: a component file that does not exist yet (including a new match of a `scan` glob, and a file that was removed and comes back), files under `node_modules`, and the files of `files` and `imports`. Edits to the linted file itself — adding, removing, or changing an import — are reflected on the next lint of that file.
 - Only the **object form** of `pretenders` can express `auto`; the array shorthand cannot.
+
+When the walk ends at a component it cannot resolve (one from `node_modules` such as `Tabs.Root`, or one beyond the `depth` limit), what that component renders is unknown. The wrapper is then treated like a component written directly, not as an HTML element of that name. This applies to any name with a capital initial or a `.`, including `as` you write by hand: write the names of HTML elements in lowercase.
 
 Other pretender sources (`files`, `imports`, `data`, `scan`) take precedence over `auto` for the same selector, since they're resolved first.
 

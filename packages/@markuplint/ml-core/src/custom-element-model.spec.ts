@@ -68,3 +68,69 @@ describe('#custom in :model()', () => {
 		expect(el.isCustomElement).toBe(true);
 	});
 });
+
+describe('a pretender target that is a component name', () => {
+	test.each(['Tabs.Root', 'motion.div', 'RouterLink', 'Comp'])(
+		'a component pretending to be "%s" is a custom element',
+		async target => {
+			const el = createTestElement('<MyTabs />', {
+				...(await jsx()),
+				pretenders: [{ selector: 'MyTabs', as: target }],
+			});
+			expect(el.isCustomElement).toBe(true);
+		},
+	);
+
+	test('the target keeps its case and is not given the namespace of a same-named element', async () => {
+		const el = createTestElement('<MyIcon />', {
+			...(await jsx()),
+			pretenders: [{ selector: 'MyIcon', as: 'Svg' }],
+		});
+		expect(el.localName).toBe('Svg');
+		expect(el.namespaceURI).toBe('http://www.w3.org/1999/xhtml');
+	});
+
+	test('a markup language that ignores the case of tag names still sees the target as a component', () => {
+		const el = createTestElement('<MyTabs></MyTabs>', {
+			pretenders: [{ selector: 'MyTabs', as: 'Tabs.Root' }],
+		});
+		expect(el.isCustomElement).toBe(true);
+		expect(el.localName).toBe('Tabs.Root');
+	});
+
+	test('a name that is a valid custom element name stays one even with a dot', async () => {
+		const el = createTestElement('<MyTabs />', {
+			...(await jsx()),
+			pretenders: [{ selector: 'MyTabs', as: 'my-widget.v2' }],
+		});
+		expect(el.isCustomElement).toBe(true);
+		expect(el.localName).toBe('my-widget.v2');
+	});
+
+	test('a lowercase element name is still an HTML element', async () => {
+		const el = createTestElement('<MyTabs />', {
+			...(await jsx()),
+			pretenders: [{ selector: 'MyTabs', as: 'div' }],
+		});
+		expect(el.isCustomElement).toBe(false);
+	});
+
+	test('a slot wrapper that is a component name is a custom element', async () => {
+		const el = createTestElement('<MyTabs />', {
+			...(await jsx()),
+			pretenders: [{ selector: 'MyTabs', as: { element: 'div', slots: [{ element: 'Tooltip' }] } }],
+		});
+		expect(el.pretenderContext).toMatchObject({
+			type: 'pretender',
+			slotContent: { wrapper: { localName: 'Tooltip', isCustomElement: true } },
+		});
+	});
+
+	test('a name written with a capital that only differs in case from an element is a component, even when written by hand', () => {
+		const el = createTestElement('<MyBox></MyBox>', {
+			pretenders: [{ selector: 'MyBox', as: 'Button' }],
+		});
+		expect(el.isCustomElement).toBe(true);
+		expect(el.localName).toBe('Button');
+	});
+});

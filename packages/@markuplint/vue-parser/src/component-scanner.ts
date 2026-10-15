@@ -1,6 +1,6 @@
 import type { MLASTChildNode, MLASTDocument, MLASTElement, NamespaceURI } from '@markuplint/ml-ast';
 
-import { getNamespaceBelow } from '@markuplint/parser-utils';
+import { getNamespaceBelow, isComponentName } from '@markuplint/parser-utils';
 
 import { parser } from './parser.js';
 
@@ -70,6 +70,14 @@ function extractComponentInfo(
 ): Omit<ComponentScanResult, 'hasSlots' | 'slotWrappers' | 'rootContents' | 'scriptSource'> | null {
 	const root = findRoot(doc);
 	if (!root) {
+		return null;
+	}
+
+	// The parser says the root is authored, yet its name is not the one of a component
+	// (`component`, `slot` of Vue): it renders what it is given, so there is no element
+	// to pretend to be. `pretenders` would otherwise emit that name as the target, and
+	// nothing tells it from the name of an element.
+	if (root.elementType === 'authored' && !isComponentName(root.nodeName)) {
 		return null;
 	}
 
