@@ -28,7 +28,7 @@ const expects = (withoutParameters: boolean) => [
  * style spacing, extend this scan to skip OWS before checking for `"`.
  */
 function findUnterminatedQuotedString(value: string): { readonly offset: number } | null {
-	for (let i = 0; i < value.length; ) {
+	for (let i = 0; i < value.length;) {
 		if (value[i] !== ';') {
 			i++;
 			continue;

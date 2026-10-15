@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.2.0](https://github.com/markuplint/markuplint/compare/v5.1.1...v5.2.0) (2026-10-13)
+
+### Bug Fixes
+
+- use caret ranges for third-party dependencies of published packages ([5fb5d2e](https://github.com/markuplint/markuplint/commit/5fb5d2ee81eaeea45fe7256a40dd41c95ff0d672))
+
+### Features
+
+- **astro-parser:** report the namespace of a slot wrapper ([798c429](https://github.com/markuplint/markuplint/commit/798c429eceecf7bc2b2498c568116d91bcc79178))
+
 ## [5.1.1](https://github.com/markuplint/markuplint/compare/v5.1.0...v5.1.1) (2026-10-09)
 
 **Note:** Version bump only for package @markuplint/astro-parser

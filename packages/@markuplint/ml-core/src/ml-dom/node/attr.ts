@@ -60,7 +60,7 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 	 * The token representing the attribute name, or null for spread attributes.
 	 */
 	readonly nameNode: MLToken | null = null;
-	readonly #namespaceURI: string;
+	readonly #namespaceURI: string | null;
 	/**
 	 * @implements DOM API: `Attr`
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-previoussibling%E2%91%A0
@@ -117,7 +117,7 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 		this.ownerElement = ownElement;
 
 		if (this._astToken.type === 'spread') {
-			this.#namespaceURI = ownElement.namespaceURI;
+			this.#namespaceURI = null;
 			this.valueType = 'code';
 			this.#localName = '#spread';
 			this.#potentialName = '#spread';
@@ -150,7 +150,12 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 
 		const ns = resolveNamespace(this.#potentialName, ownElement.namespaceURI);
 		this.#localName = ns.localName;
-		this.#namespaceURI = ns.namespaceURI;
+		// An attribute does not inherit the namespace of its element, so only a known prefix
+		// gives it one. `ns.namespace` equals the prefix exactly when the prefix is a known
+		// one; for an unknown prefix it falls back to the element's namespace.
+		const hasPrefix = ns.localName !== this.#potentialName;
+		const prefix = this.#potentialName.split(':')[0];
+		this.#namespaceURI = hasPrefix && ns.namespace === prefix ? ns.namespaceURI : null;
 	}
 
 	/**
@@ -174,7 +179,9 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 	}
 
 	/**
-	 * Returns the namespace URI of this attribute, resolved from the attribute name.
+	 * Returns the namespace URI of this attribute: that of its prefix when the name has a known
+	 * one (e.g. `xlink:href`), otherwise `null`. An attribute without a prefix has no namespace
+	 * whichever element it is on, and so does a spread attribute.
 	 *
 	 * @implements DOM API: `Attr`
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-attr-namespaceuri

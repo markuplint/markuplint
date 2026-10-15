@@ -93,6 +93,29 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	/**
+	 * Whether the `#custom` entry of a content model category (`:model(flow)` etc.) covers this element.
+	 *
+	 * Anything that is not a native HTML element counts, an authored component (`<Foo />`)
+	 * as well as an autonomous custom element (`<x-foo>`). Keep it in step with `isTreatedAsCustom`
+	 * of `permitted-contents` (`'pretended'` mode), which applies the same criterion to `#custom`;
+	 * they are separate on purpose, as `isTreatedAsCustom` also serves the `'origin'` mode.
+	 *
+	 * Like {@link localName}, it follows the pretender, since a selector sees the element
+	 * the component renders. A pretender target is always created with `elementType: 'html'`,
+	 * so it is a custom element only when its own name has a hyphen.
+	 *
+	 * Known limitation: that test is only the hyphen. A pretender target named after a reserved
+	 * hyphenated name (`annotation-xml`, `font-face`, ...) counts as custom here, whereas the same
+	 * element written directly does not. `isTreatedAsCustom` shares the limitation.
+	 */
+	get isCustomElement(): boolean {
+		if (this.pretenderContext?.type === 'pretender') {
+			return this.pretenderContext.as.localName.includes('-');
+		}
+		return this.elementType !== 'html';
+	}
+
+	/**
 	 * Whether this element was implicitly created (e.g., an omitted `<body>` tag in HTML).
 	 */
 	readonly isOmitted: boolean;

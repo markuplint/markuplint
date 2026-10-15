@@ -17,7 +17,7 @@ description: >
    ```
 
    If the branch has no upstream yet, a `crates/` directory in the working tree means the base is `v6`; otherwise `dev`. Write `<base>` for the result below, and always pass it explicitly: `gh pr create --base <base>`.
-3. **Base tracking (conflict prevention)**: run `git fetch origin <base>`, then `git log HEAD..origin/<base> --oneline`. If the base has advanced, sync before pushing (prefer merge over rebase unless asked otherwise).
+3. **Base tracking (conflict prevention)**: run `git fetch origin <base>`, then `git log HEAD..origin/<base> --oneline`. If the base has advanced, sync with `git merge origin/<base>` before pushing — never rebase (see Branch & Worktree Policy in the root `CLAUDE.md`).
 4. **Pre-flight checks:**
    - If `yarn lint-check`, `yarn build`, and `yarn test` have not already been run and passed in this session, run them **now** before proceeding. Re-run after any base sync.
    - All three must pass. Fix any failures before continuing.

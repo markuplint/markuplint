@@ -207,12 +207,76 @@ describe('parseImports', () => {
 			expect(result).toStrictEqual([]);
 		});
 
+		test('dynamic import whose whole argument is a template literal is excluded even when the glob looks like a path', async () => {
+			const source = 'const Lazy = import(`./Lazy${suffix}.vue`)';
+			const result = await parseImports(source);
+			expect(result).toStrictEqual([]);
+		});
+
+		test('type-position dynamic import is excluded', async () => {
+			const source = ["import Button from './Button.vue'", "type Heavy = typeof import('./Heavy.vue')"].join(
+				'\n',
+			);
+			const result = await parseImports(source);
+			expect(result).toStrictEqual([
+				{ localName: 'Button', importedName: 'default', source: './Button.vue', type: 'default' },
+			]);
+		});
+
+		test('dynamic import used only through a member access in a type is excluded', async () => {
+			const source = ["import Button from './Button.vue'", "type Heavy = import('./Heavy.vue').Props"].join('\n');
+			const result = await parseImports(source);
+			expect(result).toStrictEqual([
+				{ localName: 'Button', importedName: 'default', source: './Button.vue', type: 'default' },
+			]);
+		});
+
+		test('dynamic import with concatenated specifier is excluded', async () => {
+			const source = "const Lazy = import('./components/' + name + '.vue')";
+			const result = await parseImports(source);
+			expect(result).toStrictEqual([]);
+		});
+
+		test('export-star re-export produces no bindings', async () => {
+			const source = ["import Button from './Button.vue'", "export * from './utils'"].join('\n');
+			const result = await parseImports(source);
+			expect(result).toStrictEqual([
+				{ localName: 'Button', importedName: 'default', source: './Button.vue', type: 'default' },
+			]);
+		});
+
 		test('multiple dynamic imports', async () => {
 			const source = ["const A = import('./A.vue')", "const B = import('./B.vue')"].join('\n');
 			const result = await parseImports(source);
 			expect(result).toHaveLength(2);
 			expect(result[0]).toMatchObject({ source: './A.vue', type: 'dynamic' });
 			expect(result[1]).toMatchObject({ source: './B.vue', type: 'dynamic' });
+		});
+	});
+
+	describe('import phases', () => {
+		test('deferred namespace import keeps its namespace binding', async () => {
+			const result = await parseImports("import defer * as ns from './Lazy.vue'");
+			expect(result).toStrictEqual([
+				{ localName: 'ns', importedName: '*', source: './Lazy.vue', type: 'namespace' },
+			]);
+		});
+
+		test('default import named defer is not mistaken for the defer phase', async () => {
+			const result = await parseImports("import defer from './defer.js'");
+			expect(result).toStrictEqual([
+				{ localName: 'defer', importedName: 'default', source: './defer.js', type: 'default' },
+			]);
+		});
+
+		test('source phase import is excluded because it binds a module source, not an export', async () => {
+			const result = await parseImports("import source mod from './Lazy.vue'");
+			expect(result).toStrictEqual([]);
+		});
+
+		test('source phase dynamic import is excluded', async () => {
+			const result = await parseImports("const mod = import.source('./Lazy.vue')");
+			expect(result).toStrictEqual([]);
 		});
 	});
 

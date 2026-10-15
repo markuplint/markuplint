@@ -229,6 +229,9 @@ export function matchesSelector(
  * In `'origin'` mode the pretender context is suppressed while matching (see
  * {@link matches}) and the element is seen under its authored name, so it stays
  * accepted as a custom element.
+ *
+ * The `'pretended'` criterion is the one `MLElement.isCustomElement` gives a
+ * `:model()` selector; change them together.
  */
 function isTreatedAsCustom(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types

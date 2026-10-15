@@ -39,6 +39,12 @@ export interface SelectorElement extends SelectorNode {
 	readonly namespaceURI: string | null;
 	readonly classList: { contains(className: string): boolean };
 	readonly attributes: Iterable<SelectorAttr>;
+	/**
+	 * Whether the `#custom` entry of a content model category (`:model(flow)` etc.) covers
+	 * this element. Absent means it does not: a host without a notion of custom elements
+	 * (a plain DOM) never matches `#custom`.
+	 */
+	readonly isCustomElement?: boolean;
 	readonly parentElement: SelectorElement | null;
 	readonly previousElementSibling: SelectorElement | null;
 	readonly nextElementSibling: SelectorElement | null;

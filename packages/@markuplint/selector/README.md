@@ -113,7 +113,9 @@ You can specify the version of WAI-ARIA by separating the pipe like `:role(form|
 :model(palpable)
 ```
 
-For example, `:role(interactive)` matches `<a>`(with `href` attr), `<button>`, and so on.
+For example, `:model(interactive)` matches `<a>`(with `href` attr), `<button>`, and so on.
+
+A category that lists custom elements in the HTML Standard, such as `flow`, `phrasing` and `palpable`, also matches custom elements (`<x-foo>`) and components (`<Foo />`). An element that a component pretends to be is judged by the name it pretends to be: it matches only when that name contains a hyphen.
 
 ## Regex Selector
 

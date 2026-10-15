@@ -145,12 +145,21 @@ test('[require-end-tag-parser-005] Astro', async () => {
 			})
 		).violations,
 	).toStrictEqual([
+		// With `@astrojs/compiler` the parser recovered from the missing end tag and this rule reported it:
+		// {
+		// 	severity: 'warning',
+		// 	line: 1,
+		// 	col: 6,
+		// 	message: 'Missing the end tag',
+		// 	raw: '<span>',
+		// },
+		// `astro-eslint-parser` v3 rejects the missing end tag, so the file is reported as a parse error.
 		{
-			severity: 'warning',
+			severity: 'error',
 			line: 1,
-			col: 6,
-			message: 'Missing the end tag',
-			raw: '<span>',
+			col: 21,
+			message: "ParserError: Expected corresponding JSX closing tag for 'span'.",
+			raw: '',
 		},
 	]);
 });

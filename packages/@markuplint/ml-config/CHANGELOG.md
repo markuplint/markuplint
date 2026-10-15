@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.2.0](https://github.com/markuplint/markuplint/compare/v5.1.1...v5.2.0) (2026-10-13)
+
+### Bug Fixes
+
+- use caret ranges for third-party dependencies of published packages ([5fb5d2e](https://github.com/markuplint/markuplint/commit/5fb5d2ee81eaeea45fe7256a40dd41c95ff0d672))
+
+### Features
+
+- **ml-config:** accept html and math as the namespace of a pretender ([ae92924](https://github.com/markuplint/markuplint/commit/ae929246e1095400d43512bca82502e068d02fa8))
+
 ## [5.1.1](https://github.com/markuplint/markuplint/compare/v5.1.0...v5.1.1) (2026-10-09)
 
 **Note:** Version bump only for package @markuplint/ml-config

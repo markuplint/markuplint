@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.2.0](https://github.com/markuplint/markuplint/compare/v5.1.1...v5.2.0) (2026-10-13)
+
+### Bug Fixes
+
+- **parser-utils:** do not enter a namespace by the name of an authored element ([40e4d2d](https://github.com/markuplint/markuplint/commit/40e4d2d5065a7831721495d9ef2672fdddb51d93))
+- use caret ranges for third-party dependencies of published packages ([5fb5d2e](https://github.com/markuplint/markuplint/commit/5fb5d2ee81eaeea45fe7256a40dd41c95ff0d672))
+
+### Features
+
+- **parser-utils:** add getChildNamespace and getNamespaceBelow ([88cbab7](https://github.com/markuplint/markuplint/commit/88cbab7755d4efcdc6ac8a0f6d61d209f80802e6))
+
 ## [5.1.1](https://github.com/markuplint/markuplint/compare/v5.1.0...v5.1.1) (2026-10-09)
 
 **Note:** Version bump only for package @markuplint/parser-utils

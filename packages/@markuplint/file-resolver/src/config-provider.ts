@@ -10,6 +10,7 @@ import { ConfigParserError } from '@markuplint/parser-utils';
 import { InvalidSelectorError, createSelector } from '@markuplint/selector';
 import { nonNullableFilter, toNoEmptyStringArrayFromStringOrArray, ConfigLoadError } from '@markuplint/shared';
 
+import { clearAutoLoadRulesCache } from './auto-load-rules.js';
 import { load as loadConfig, search, clearExplorerCache } from './cosmiconfig.js';
 import { log } from './debug.js';
 import { generalImport } from './general-import.js';
@@ -64,16 +65,19 @@ export class ConfigProvider {
 	 * Clears every cached and stored config entry: the base-config cache
 	 * (`#cache`), the loaded/registered config store (`#store`), `set()`'s
 	 * identity→key stabilization (`#autoKeys`), `resolve-plugins.ts`'s own
-	 * module-level plugin-resolution cache, and the shared `cosmiconfig`
-	 * explorer's own search/load caches (so {@link search}, called right
-	 * after this, re-reads the current file content instead of a stale
-	 * cosmiconfig-level cache).
+	 * module-level plugin-resolution cache, `auto-load-rules.ts`'s rule
+	 * cache, and the shared `cosmiconfig` explorer's own search/load caches
+	 * (so {@link search}, called right after this, re-reads the current file
+	 * content instead of a stale cosmiconfig-level cache).
 	 *
-	 * The `cosmiconfig` explorer and the `resolve-plugins.ts` cache are
-	 * module-level singletons shared by every `ConfigProvider` instance in
-	 * the process — clearing them here affects other instances too, not just
-	 * this one. Harmless (they just re-search/re-load), but worth knowing
-	 * when reasoning about a cache-busting re-resolve's blast radius.
+	 * The `cosmiconfig` explorer and the `resolve-plugins.ts` /
+	 * `auto-load-rules.ts` caches are module-level singletons shared by every
+	 * `ConfigProvider` instance in the process — clearing them here affects
+	 * other instances too, not just this one. Correctness is unaffected (they
+	 * just re-search/re-load), but the auto-load cache holds a miss for every
+	 * built-in rule name, so the first lint after a clear repeats two failing
+	 * imports per rule — worth knowing when reasoning about a cache-busting
+	 * re-resolve's blast radius.
 	 *
 	 * Callers doing a cache-busting re-resolve (e.g. watch mode after a file
 	 * change) must call this **before** registering any inline config via
@@ -89,6 +93,7 @@ export class ConfigProvider {
 		this.#cache.clear();
 		this.#autoKeys = new WeakMap();
 		cacheClear();
+		clearAutoLoadRulesCache();
 		clearExplorerCache();
 	}
 

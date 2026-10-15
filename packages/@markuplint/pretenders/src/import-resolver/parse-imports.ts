@@ -13,6 +13,9 @@ import { init, parse } from 'es-module-lexer';
 /** Matches `import type` — TypeScript type-only import (no runtime binding) */
 const RE_TYPE_ONLY_IMPORT = /^import\s+type\s/;
 
+/** Matches the `defer` phase keyword of `import defer * as X from` */
+const RE_DEFER_PHASE = /^import\s+defer\s+/;
+
 /** Matches `import X from` — default import */
 const RE_DEFAULT_IMPORT = /import\s+(\w+)\s+from/;
 
@@ -34,7 +37,7 @@ let initPromise: Promise<void> | null = null;
  * Safe to call multiple times; the WASM module initializes only once.
  */
 async function ensureInit() {
-	initPromise ??= init;
+	initPromise ??= init();
 	await initPromise;
 }
 
@@ -153,8 +156,8 @@ function extractBindingsFromStatement(statementText: string, source: string): Im
 
 /**
  * Processes static imports and dynamic imports with string literal specifiers.
- * `import.meta` references and dynamic imports with non-literal specifiers
- * (template literals, variables) are excluded.
+ * `import.meta` references, dynamic imports with non-literal specifiers
+ * (template literals, variables) and source-phase imports are excluded.
  */
 export async function parseImports(source: string): Promise<readonly ImportBinding[]> {
 	await ensureInit();
@@ -171,33 +174,41 @@ export async function parseImports(source: string): Promise<readonly ImportBindi
 	const bindings: ImportBinding[] = [];
 
 	for (const imp of imports) {
-		// import.meta (d === -2) — always skip
-		if (imp.d === -2) {
+		if (imp.type === 'import-meta') {
 			continue;
 		}
 
-		// n = normalized module specifier (absent for template-literal dynamic imports)
-		if (!imp.n) {
+		// `import source x from` / `import.source(…)` bind a module source object, not an export,
+		// so there is no component binding to follow.
+		if (imp.phase === 'source') {
 			continue;
 		}
 
-		if (imp.d >= 0) {
+		// `specifier` is absent for non-literal dynamic imports. A template literal such as
+		// `import(`./${name}.vue`)` is reported as a glob (`./*.vue`), which is not a real
+		// module path, so it must be excluded as well.
+		if (!imp.specifier || (imp.type === 'dynamic' && imp.glob)) {
+			continue;
+		}
+
+		if (imp.type === 'dynamic') {
 			// Dynamic import with a string literal specifier (e.g., `import('./Foo.vue')`)
 			// Dynamic imports have no local binding name, so we use '*' as a sentinel.
 			// Consumers should check `type === 'dynamic'` to distinguish from namespace imports.
 			bindings.push({
 				localName: '*',
 				importedName: '*',
-				source: imp.n,
+				source: imp.specifier,
 				type: 'dynamic',
 			});
 			continue;
 		}
 
-		// Static imports (d === -1)
-		// ss/se = statement start/end positions
-		const statementText = source.slice(imp.ss, imp.se);
-		bindings.push(...extractBindingsFromStatement(statementText, imp.n));
+		// Static imports (`import …` and `export * from …`; the latter yields no bindings).
+		// The `defer` phase keyword (`import defer * as ns from`) is dropped so the regexes match.
+		const rawStatement = source.slice(imp.importStart, imp.importEnd);
+		const statementText = imp.phase === 'defer' ? rawStatement.replace(RE_DEFER_PHASE, 'import ') : rawStatement;
+		bindings.push(...extractBindingsFromStatement(statementText, imp.specifier));
 	}
 
 	return bindings;
