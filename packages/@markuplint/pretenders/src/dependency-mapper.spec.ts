@@ -596,6 +596,33 @@ describe('dependencyMapper', () => {
 			expect(resolveCard('./barrel')).toStrictEqual({ selector: 'Card', as: 'Button' });
 		});
 
+		test('ends the chain at the package when the component that renders it is itself reached through an import', async () => {
+			await writeFile(path.join(tmpDir, 'card.tsx'), 'export const Card = () => null;');
+			const map: PretenderDirectorMap = new Map([
+				['ui/button.tsx#Button', ['Button', 'section', undefined, 'ui/button.tsx']],
+				['card.tsx#Card', ['Card', 'Button', undefined, 'card.tsx']],
+				['page.tsx#Page', ['Page', 'Card', undefined, 'page.tsx']],
+			]);
+			const nameIndex = new Map([
+				['Button', 'ui/button.tsx#Button'],
+				['Card', 'card.tsx#Card'],
+			]);
+			const importsByFile = new Map([
+				[
+					'card.tsx',
+					[{ localName: 'Button', importedName: 'Button', source: 'some-lib', type: 'named' as const }],
+				],
+				['page.tsx', [{ localName: 'Card', importedName: 'Card', source: './card', type: 'named' as const }]],
+			]);
+
+			const result = dependencyMapper(map, nameIndex, { importsByFile, cwd: tmpDir });
+			expect(result.find(p => p.selector === 'Page')).toStrictEqual({
+				selector: 'Page',
+				as: 'Button',
+				_via: ['Card'],
+			});
+		});
+
 		test('is told from a project that itself sits under a directory named node_modules', async () => {
 			const root = path.join(tmpDir, 'node_modules', 'app');
 			await mkdir(root, { recursive: true });
