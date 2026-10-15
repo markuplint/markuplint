@@ -2,7 +2,7 @@
 //!
 //! Corresponds to the matching logic in `@markuplint/selector/src/selector.ts`.
 
-use markuplint_core::mlast::{MLASTAttr, NamespaceURI};
+use markuplint_core::mlast::{ElementType, MLASTAttr, NamespaceURI};
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::node::{DomNode, ElementData};
 use markuplint_dom::pretender::ElementIdentity;
@@ -14,7 +14,7 @@ use crate::ast::{
     AttrOperator, AttributeSelector, Combinator, ComplexSelector, CompoundSelector, PseudoClassSelector, SelectorList,
     SimpleSelector, Specificity,
 };
-use crate::extended;
+use crate::extended::{self, ModelEntry};
 
 #[derive(Debug, Clone)]
 pub struct MatchResult {
@@ -259,7 +259,7 @@ fn match_compound(compound: &CompoundSelector, node_id: NodeId, ctx: &Ctx<'_>) -
                 specificity[1] += 1;
             }
             SimpleSelector::PseudoClass(pseudo) => {
-                let r = match_pseudo_class(pseudo, node_id, identity.node_name, ctx);
+                let r = match_pseudo_class(pseudo, node_id, ctx);
                 if !r.matched {
                     return MatchResult::unmatched();
                 }
@@ -283,7 +283,7 @@ fn match_compound(compound: &CompoundSelector, node_id: NodeId, ctx: &Ctx<'_>) -
     MatchResult::matched(specificity)
 }
 
-fn match_pseudo_class(pseudo: &PseudoClassSelector, node_id: NodeId, node_name: &str, ctx: &Ctx<'_>) -> MatchResult {
+fn match_pseudo_class(pseudo: &PseudoClassSelector, node_id: NodeId, ctx: &Ctx<'_>) -> MatchResult {
     let arena = ctx.arena;
     match pseudo {
         PseudoClassSelector::Not(inner) => {
@@ -349,12 +349,16 @@ fn match_pseudo_class(pseudo: &PseudoClassSelector, node_id: NodeId, node_name: 
             MatchResult::unmatched()
         }
         PseudoClassSelector::Model(category) => {
-            if let Some(spec) = ctx.spec {
-                if extended::matches_model(spec, node_name, category) {
-                    MatchResult::matched([0, 1, 0])
-                } else {
-                    MatchResult::unmatched()
-                }
+            let Some(entries) = ctx.spec.and_then(|spec| extended::model_entries(spec, category)) else {
+                return MatchResult::unmatched();
+            };
+            let matched = entries.iter().any(|entry| match entry {
+                ModelEntry::Custom => is_custom_element(node_id, ctx),
+                ModelEntry::Text => false,
+                ModelEntry::Selector(list) => matches_inner(list, node_id, ctx),
+            });
+            if matched {
+                MatchResult::matched([0, 1, 0])
             } else {
                 MatchResult::unmatched()
             }
@@ -514,6 +518,26 @@ fn element_parent(arena: &DomArena, node_id: NodeId) -> Option<NodeId> {
     } else {
         None
     }
+}
+
+/// Whether the `#custom` entry of a content-model category covers the element. Port of
+/// `MLElement.isCustomElement`: anything that is not a native HTML element, an authored component
+/// as well as an autonomous custom element.
+///
+/// A pretender follows what it stands for: while the effective identity is read, the element is
+/// custom only when the name of its pretender target has a hyphen (a target is always created as
+/// an HTML element); the original identity, read in the second phase of a match, counts by its
+/// own element type. Known limitation, shared with TS: a target named after a reserved hyphenated
+/// name (`annotation-xml`) counts as custom.
+fn is_custom_element(node_id: NodeId, ctx: &Ctx<'_>) -> bool {
+    let Some(el) = ctx.arena.get(node_id).and_then(DomNode::as_element) else {
+        return false;
+    };
+    let identity = ctx.identity(el, node_id);
+    if ctx.original_of != Some(node_id) && el.pretended().is_some() {
+        return identity.node_name.contains('-');
+    }
+    !matches!(identity.element_type, ElementType::Html)
 }
 
 /// One relative selector of `:has()`, with `anchor` as the element `:has()` is applied to.

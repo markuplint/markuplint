@@ -575,3 +575,96 @@ describe.skipIf(!nativeAddonIsBuilt)('experimentalRustCore reports a document th
 	const stderrOf = (write: { readonly mock: { readonly calls: readonly unknown[][] } }) =>
 		write.mock.calls.map(args => String(args[0])).join('');
 });
+
+describe.skipIf(!nativeAddonIsBuilt)(
+	'experimentalRustCore selects what the TypeScript engine selects with :model()',
+	() => {
+		afterEach(() => {
+			vi.restoreAllMocks();
+		});
+
+		// `no-restricted-element` reports every element its selector matches, so it shows what
+		// `:model()` matches. The entries of a category carry conditions (`ul:has(>li)`,
+		// `audio[controls]`, `input:not([type='hidden' i])`) and `#custom`.
+		//
+		// `selects` is how many elements the TS engine selects, so a case that both engines leave
+		// empty by mistake does not pass.
+		it.each([
+			{ code: '<sup></sup>', selector: ':model(palpable)', selects: 1 },
+			{ code: '<ul><li></li></ul>', selector: ':model(palpable)', selects: 1 },
+			{ code: '<ul></ul>', selector: ':model(palpable)', selects: 0 },
+			{ code: '<audio controls></audio><audio></audio>', selector: ':model(palpable)', selects: 1 },
+			{ code: '<input type="text"><input type="hidden">', selector: ':model(palpable)', selects: 1 },
+			{ code: '<math></math>', selector: ':model(palpable)', selects: 1 },
+			{ code: '<x-foo></x-foo>', selector: ':model(flow)', selects: 1 },
+			{ code: '<x-foo></x-foo>', selector: ':model(phrasing)', selects: 1 },
+			{ code: '<x-foo></x-foo>', selector: ':model(interactive)', selects: 0 },
+			{ code: '<x-foo></x-foo>', selector: ':model(custom)', selects: 0 },
+			{ code: '<annotation-xml></annotation-xml>', selector: ':model(flow)', selects: 0 },
+			{ code: '<svg><rect></rect></svg>', selector: ':model(SVGRenderable)', selects: 2 },
+			{ code: '<div></div><span></span>', selector: ':model( Flow )', selects: 2 },
+			{ code: '<li id="text"></li><li id="custom"></li>', selector: ':model(flow)', selects: 0 },
+		])('selects what the TypeScript engine selects for $selector in $code', async ({ code, selector, selects }) => {
+			const write = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
+			const run = async (rust: boolean) => {
+				const file = await MLEngine.toMLFile({ sourceCode: code, name: 'a.html' });
+				const engine = new MLEngine(file!, {
+					noSearchConfig: true,
+					locale: 'en',
+					experimentalRustCore: rust,
+					config: { rules: { 'no-restricted-element': { value: [selector] } } },
+				});
+				return engine.exec();
+			};
+			const selected = (result: Awaited<ReturnType<typeof run>>) =>
+				result?.violations.map(v => `${v.line}:${v.col} ${v.raw}`).toSorted();
+
+			const expected = await run(false);
+			const actual = await run(true);
+
+			expect(write.mock.calls.map(args => String(args[0])).join('')).not.toContain(
+				'falling back to TypeScript engine',
+			);
+			expect(selected(expected)).toHaveLength(selects);
+			expect(selected(actual)).toStrictEqual(selected(expected));
+		});
+
+		// A component (`<Foo />`) is not a native HTML element, so `#custom` covers it as it does a
+		// custom element (`<x-bar />`); the parser sets its `elementType`.
+		it.each([
+			{ selector: ':model(phrasing)', selects: 3 },
+			{ selector: ':model(flow)', selects: 4 },
+			{ selector: ':model(interactive)', selects: 0 },
+		])('selects a component and a custom element for $selector in JSX', async ({ selector, selects }) => {
+			const write = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
+			const run = async (rust: boolean) => {
+				const file = await MLEngine.toMLFile({
+					sourceCode: 'export const A = () => (<div><Foo /><x-bar /><span /></div>);',
+					name: 'a.jsx',
+				});
+				const engine = new MLEngine(file!, {
+					noSearchConfig: true,
+					locale: 'en',
+					experimentalRustCore: rust,
+					config: {
+						parser: { '\\.jsx$': '@markuplint/jsx-parser' },
+						specs: { '\\.jsx$': '@markuplint/react-spec' },
+						rules: { 'no-restricted-element': { value: [selector] } },
+					},
+				});
+				return engine.exec();
+			};
+			const selected = (result: Awaited<ReturnType<typeof run>>) =>
+				result?.violations.map(v => `${v.line}:${v.col} ${v.raw}`).toSorted();
+
+			const expected = await run(false);
+			const actual = await run(true);
+
+			expect(write.mock.calls.map(args => String(args[0])).join('')).not.toContain(
+				'falling back to TypeScript engine',
+			);
+			expect(selected(expected)).toHaveLength(selects);
+			expect(selected(actual)).toStrictEqual(selected(expected));
+		});
+	},
+);

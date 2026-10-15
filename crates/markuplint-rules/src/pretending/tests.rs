@@ -102,7 +102,10 @@ fn v6_pretending_002() {
     assert!(!matches(&arena, id, "span"));
     // Each phase reads one identity throughout: `:model()` and `:not()` see the
     // original name in the second phase, and a compound never mixes the two.
-    assert!(matches(&arena, id, ":model(custom)"));
+    // assert!(matches(&arena, id, ":model(custom)"));
+    // TS has no `custom` category, so `:model(custom)` selects nothing (it used to match any name
+    // with a hyphen here); `v6_pretending_021` reads the second phase with `:model(phrasing)`.
+    assert!(!matches(&arena, id, ":model(custom)"));
     assert!(matches(&arena, id, "x-custom:not(div)"));
     assert!(!matches(&arena, id, "div:model(custom)"));
     let p = el(&arena, id).pretended().unwrap();
@@ -355,6 +358,32 @@ fn v6_pretending_019() {
 fn v6_pretending_020() {
     let (arena, id) = pretended("<x-btn></x-btn>", json!([{ "selector": "x-btn[", "as": "button" }]));
     assert!(el(&arena, id).pretender_context.is_none());
+}
+
+/// `:model()` reads one identity per phase, and `#custom` follows it: a custom element that
+/// pretends to be a `div` is not custom under the effective identity (`div` has no hyphen) but is
+/// under the original one, which the second phase reads. Expected values are the TS output on the
+/// same input (`createTestElement` with the same pretender).
+#[test]
+fn v6_pretending_021() {
+    let (arena, id) = pretended(
+        r#"<x-custom as="span"></x-custom>"#,
+        json!([{ "selector": "x-custom", "as": "div" }]),
+    );
+    // `div` is not phrasing content: only the second phase, as the custom element, matches.
+    assert!(matches(&arena, id, ":model(phrasing)"));
+    assert!(matches(&arena, id, "x-custom:model(phrasing)"));
+    // A compound never mixes the two identities.
+    assert!(!matches(&arena, id, "div:model(phrasing)"));
+    // `div` is flow content under the effective identity.
+    assert!(matches(&arena, id, "div:model(flow)"));
+
+    // A pretender target with a hyphen is custom under the effective identity, and the original
+    // custom element is under the second phase.
+    let (arena, id) = pretended("<x-a></x-a>", json!([{ "selector": "x-a", "as": "x-b" }]));
+    assert!(matches(&arena, id, "x-b:model(phrasing)"));
+    assert!(matches(&arena, id, "x-a:model(phrasing)"));
+    assert!(!matches(&arena, id, ":model(interactive)"));
 }
 
 // ============================================================
