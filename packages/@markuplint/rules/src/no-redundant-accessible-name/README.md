@@ -162,7 +162,7 @@ When `aria-labelledby` includes the element's own `id`, the accessible name comp
 <button id="delete-button" aria-label="Delete" aria-labelledby="delete-button file-name"></button>
 ```
 
-The accessible name is "Delete Documentation.pdf" ([Example 5](https://www.w3.org/TR/accname-1.2/#comp_label) of the specification), so nothing is reported. Other overrides on the same element, such as `aria-label` overriding content, are still reported.
+The accessible name is "Delete Documentation.pdf" ([Example 5](https://www.w3.org/TR/accname-1.2/#comp_label) of the specification), so nothing is reported. When the element also has `aria-label`, this combination is the technique for composing a name out of the element's own `aria-label` and other elements, so the rule reports nothing for that element, even if it has content or a `<label>`. Without `aria-label`, only `aria-labelledby` is left out of the check, and other overrides on the element are reported as usual.
 
 ## Known Limitations
 
