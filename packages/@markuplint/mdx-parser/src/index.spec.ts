@@ -10,6 +10,11 @@ function parse(code: string) {
 
 describe('MDXParser', () => {
 	describe('JSX elements', () => {
+		test('treats tag and attribute names as case-sensitive', () => {
+			expect(parser.tagNameCaseSensitive).toBe(true);
+			expect(parser.attrNameCaseSensitive).toBe(true);
+		});
+
 		test('self-closing component', () => {
 			const doc = parse('<MyComponent prop="value" />');
 			const maps = nodeListToDebugMaps(doc.nodeList);
