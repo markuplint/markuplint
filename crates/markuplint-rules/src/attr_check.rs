@@ -14,7 +14,6 @@
 
 use markuplint_core::mlast::{ElementType, MLASTAttr, MLASTHTMLAttr};
 use markuplint_dom::arena::{DomArena, NodeId};
-use markuplint_selector::parser;
 use markuplint_types::spec::lookup::{get_attr_specs, get_spec};
 use markuplint_types::spec::types::{AttributeCondition, MLMLSpec};
 use regex::Regex;
@@ -378,7 +377,7 @@ fn matches_condition(condition: &AttributeCondition, arena: &DomArena, node_id: 
 /// `None` when the selector cannot be parsed — callers pick the lenient answer for
 /// their own context.
 fn matches_selector(selector_str: &str, arena: &DomArena, node_id: NodeId, spec: &MLMLSpec) -> Option<bool> {
-    let sel = parser::parse(selector_str).ok()?;
+    let sel = crate::diagnostic::parse_selector("spec attribute condition", selector_str)?;
     Some(markuplint_selector::matcher::matches(
         &sel,
         arena,

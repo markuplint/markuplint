@@ -13,10 +13,11 @@ use std::cmp::Ordering;
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::helpers::get_attr_value;
 use markuplint_dom::node::{DomNode, ElementData};
-use markuplint_selector::{matcher, parser};
+use markuplint_selector::matcher;
 use markuplint_types::spec::types::MLMLSpec;
 use serde_json::Value;
 
+use crate::diagnostic;
 use crate::fix::Fix;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::{Severity, Violation};
@@ -174,7 +175,10 @@ impl Rule for HeadElementOrder {
         }
 
         let entries = entries_from(&head_config.value);
-        let selectors: Vec<_> = entries.iter().map(|e| parser::parse(&e.selector).ok()).collect();
+        let selectors: Vec<_> = entries
+            .iter()
+            .map(|e| diagnostic::parse_selector("config head-element-order selector", &e.selector))
+            .collect();
 
         let blocks: Vec<Block<'_>> = children
             .iter()

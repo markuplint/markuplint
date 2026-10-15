@@ -4,10 +4,10 @@ use markuplint_core::mlast::MLASTAttr;
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::helpers::get_raw_attr_name;
 use markuplint_selector::matcher;
-use markuplint_selector::parser;
 use markuplint_types::spec::lookup::get_attr_specs;
 use markuplint_types::spec::types::{AttributeCondition, MLMLSpec};
 
+use crate::diagnostic;
 use crate::fix::Fix;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
@@ -57,7 +57,7 @@ impl Rule for NoIneffectiveAttr {
                 };
 
                 let is_ineffective = selectors.iter().any(|sel_str| {
-                    let Ok(sel) = parser::parse(sel_str) else {
+                    let Some(sel) = diagnostic::parse_selector("spec attribute ineffective condition", sel_str) else {
                         return false;
                     };
                     matcher::matches(&sel, arena, node_id, Some(node_id), Some(spec), None)

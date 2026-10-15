@@ -9,6 +9,7 @@ use markuplint_types::spec::types::MLMLSpec;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
+use crate::diagnostic::{self, Diagnostic};
 use crate::fix::Utf16Index;
 use crate::pretending;
 use crate::rule::{Rule, RuleCommonSettings, RuleConfig, RuleConfigSet};
@@ -148,6 +149,11 @@ pub struct LintConfig {
 #[derive(Debug, Serialize)]
 pub struct LintResult {
     pub violations: Vec<Violation>,
+    /// Selectors from the spec or the config that the engine could not read and so
+    /// did not apply. See [`crate::diagnostic`]. Omitted from the serialized form when empty,
+    /// so a consumer that reads only `violations` sees the shape it always had.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub diagnostics: Vec<Diagnostic>,
 }
 
 pub fn lint(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig) -> LintResult {
@@ -157,16 +163,22 @@ pub fn lint(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig) -> LintResul
 /// [`lint`] over an explicit rule set. Exists so the engine's own behavior (how a
 /// rule's `default_severity()` is applied, say) can be tested with a purpose-built
 /// rule instead of depending on whichever built-in rule happens to exercise it.
-#[allow(clippy::too_many_lines)]
 fn lint_with_rules(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig, rules: &[Box<dyn Rule>]) -> LintResult {
+    let (violations, diagnostics) = diagnostic::collect(|| run_rules(arena, spec, config, rules));
+    LintResult {
+        violations,
+        diagnostics,
+    }
+}
+
+#[allow(clippy::too_many_lines)]
+fn run_rules(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig, rules: &[Box<dyn Rule>]) -> Vec<Violation> {
     // TS: if (this.#document instanceof ParserError) { return parse-error only }
     // When the document has a parse error (e.g., unclosed formatting elements
     // causing "Broke mapping nodes" in TS), return only a parse-error violation
     // and skip all rules, matching TS behavior.
     if let Some(parse_error) = get_parse_error(arena) {
-        return LintResult {
-            violations: vec![parse_error],
-        };
+        return vec![parse_error];
     }
 
     // TS applies pretenders while building the document, before rule mapping, so
@@ -259,7 +271,7 @@ fn lint_with_rules(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig, rules
                 RuleConfigSet::global_only(global_config)
             }
             .with_common_settings(common_settings.clone());
-            let rule_violations = rule.verify(arena, spec, &config_set);
+            let rule_violations = diagnostic::in_rule(base_id, || rule.verify(arena, spec, &config_set));
             violations.extend(rule_violations);
             continue;
         };
@@ -285,7 +297,7 @@ fn lint_with_rules(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig, rules
                 rule.default_severity(),
             )
             .with_common_settings(common_settings.clone());
-            let rule_violations = rule.verify(arena, spec, &config_set);
+            let rule_violations = diagnostic::in_rule(base_id, || rule.verify(arena, spec, &config_set));
             violations.extend(rule_violations);
         }
 
@@ -320,7 +332,7 @@ fn lint_with_rules(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig, rules
             }
             .with_common_settings(common_settings.clone());
 
-            let mut rule_violations = rule.verify(arena, spec, &config_set);
+            let mut rule_violations = diagnostic::in_rule(base_id, || rule.verify(arena, spec, &config_set));
 
             // If the config key has a namespace prefix, set the alias name
             // (TS keeps ruleId as the base rule name, alias goes in the `name` field)
@@ -360,7 +372,7 @@ fn lint_with_rules(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig, rules
 
     sort_and_dedup(&mut violations);
     convert_fixes_to_utf16(arena, &mut violations);
-    LintResult { violations }
+    violations
 }
 
 /// Rules build fixes in byte offsets; the TS side applies them to a JavaScript string,
@@ -495,7 +507,7 @@ fn run_named_entries(
             };
             let config_set = config_set.with_common_settings(common_settings.clone());
 
-            let mut rule_violations = rule.verify(arena, spec, &config_set);
+            let mut rule_violations = diagnostic::in_rule(base_rule_id, || rule.verify(arena, spec, &config_set));
             for v in &mut rule_violations {
                 v.name = Some(alias_name.clone());
             }
@@ -813,6 +825,63 @@ mod tests {
     }
 
     // --- Integration test: full pipeline ---
+
+    /// #4222: a spec selector the parser rejects comes back in `LintResult.diagnostics`,
+    /// attributed to the rule that was running, once however many elements are tried.
+    #[test]
+    fn v6_lint_diagnostics_001_reports_a_rejected_spec_selector_with_its_rule() {
+        let mut spec = load_spec(include_str!("../../../packages/@markuplint/html-spec/index.json")).unwrap();
+        spec.def
+            .content_models
+            .get_mut("#palpable")
+            .unwrap()
+            .push("x-foo:not-a-supported-pseudo".to_string());
+        let arena = crate::test_util::html_arena("<div></div><div></div>");
+        let config: LintConfig =
+            serde_json::from_value(serde_json::json!({ "rules": { "no-empty-palpable-content": true } })).unwrap();
+
+        let result = lint(&arena, &spec, &config);
+
+        assert_eq!(result.violations.len(), 2);
+        assert_eq!(
+            result.diagnostics,
+            vec![Diagnostic {
+                rule_id: Some("no-empty-palpable-content".to_string()),
+                origin: "spec content model #palpable".to_string(),
+                selector: "x-foo:not-a-supported-pseudo".to_string(),
+                reason: result.diagnostics[0].reason.clone(),
+            }]
+        );
+        assert!(!result.diagnostics[0].reason.is_empty());
+    }
+
+    /// A `nodeRules` selector the parser rejects is reported with no rule: it is read before
+    /// any rule runs.
+    #[test]
+    fn v6_lint_diagnostics_002_reports_a_rejected_node_rules_selector() {
+        let spec = load_spec(include_str!("../../../packages/@markuplint/html-spec/index.json")).unwrap();
+        let arena = crate::test_util::html_arena("<div></div>");
+        let config: LintConfig = serde_json::from_value(serde_json::json!({
+            "nodeRules": [{ "selector": "div:not-a-supported-pseudo", "rules": { "no-empty-palpable-content": true } }]
+        }))
+        .unwrap();
+
+        let result = lint(&arena, &spec, &config);
+
+        assert_eq!(result.diagnostics.len(), 1);
+        assert_eq!(result.diagnostics[0].origin, "config nodeRules selector");
+        assert_eq!(result.diagnostics[0].selector, "div:not-a-supported-pseudo");
+    }
+
+    #[test]
+    fn v6_lint_diagnostics_003_a_clean_run_reports_nothing() {
+        let spec = load_spec(include_str!("../../../packages/@markuplint/html-spec/index.json")).unwrap();
+        let arena = crate::test_util::html_arena("<div></div>");
+        let config: LintConfig =
+            serde_json::from_value(serde_json::json!({ "rules": { "no-empty-palpable-content": true } })).unwrap();
+
+        assert!(lint(&arena, &spec, &config).diagnostics.is_empty());
+    }
 
     #[test]
     fn lint_pipeline_finds_duplicate_attrs() {

@@ -664,11 +664,8 @@ fn matches_transparent_constraint(child: &ChildNodeInfo, constraint: &str, spec:
 
     if matching::needs_full_selector(constraint) || constraint.contains(":model(") {
         let expanded = matching::expand_model_refs(constraint, spec);
-        let Ok(selector) = markuplint_selector::parser::parse(&expanded) else {
-            #[cfg(debug_assertions)]
-            eprintln!(
-                "[permitted-contents] selector parse failure for constraint: {constraint} (expanded: {expanded})"
-            );
+        let origin = format!("spec content model transparent constraint `{constraint}`");
+        let Some(selector) = crate::diagnostic::parse_selector(&origin, &expanded) else {
             return true; // Parse failure — be permissive
         };
 

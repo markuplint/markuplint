@@ -701,7 +701,7 @@ pub(crate) fn needs_full_selector(query: &str) -> bool {
 fn full_selector_match(node: &ChildNodeInfo, query: &str, spec: &MLMLSpec, cond: &Condition) -> bool {
     let expanded = expand_model_refs(query, spec);
 
-    let Ok(selector) = markuplint_selector::parser::parse(&expanded) else {
+    let Some(selector) = crate::diagnostic::parse_selector("spec content model", &expanded) else {
         // Parse failure falls back to simple tag matching.
         return markuplint_types::spec::content_model::matches_model_ref(
             spec,

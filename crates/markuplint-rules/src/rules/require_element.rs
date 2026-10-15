@@ -3,9 +3,9 @@
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::node::DomNode;
 use markuplint_selector::matcher;
-use markuplint_selector::parser;
 use markuplint_types::spec::types::MLMLSpec;
 
+use crate::diagnostic;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
@@ -80,7 +80,7 @@ fn check_required_elements(
         .unwrap_or(true);
 
     for selector_str in &selectors {
-        let Ok(sel) = parser::parse(selector_str) else {
+        let Some(sel) = diagnostic::parse_selector("config require-element selector", selector_str) else {
             continue;
         };
 

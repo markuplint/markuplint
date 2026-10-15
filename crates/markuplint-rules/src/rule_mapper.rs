@@ -195,7 +195,7 @@ fn match_css_selector(
     spec: &MLMLSpec,
     aria: &SpecAriaResolver,
 ) -> Option<(Specificity, HashMap<String, String>)> {
-    let selector = markuplint_selector::parser::parse(selector_str).ok()?;
+    let selector = crate::diagnostic::parse_selector("config nodeRules selector", selector_str)?;
     let specificity =
         markuplint_selector::matcher::match_specificity(&selector, arena, node_id, None, Some(spec), Some(aria));
     specificity.map(|s| (s, HashMap::new()))
