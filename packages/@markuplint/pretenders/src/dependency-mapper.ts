@@ -191,8 +191,17 @@ const MAX_RE_EXPORT_DEPTH = 8;
  */
 const FROM_PACKAGE = Symbol('from-package');
 
-function isPackageFile(fileAbs: string): boolean {
-	return normalizePath(fileAbs).includes('/node_modules/');
+/**
+ * Whether the file is under a `node_modules` directory. With `root` (the base directory
+ * of the paths the project is scanned under), only the part of the path below it counts,
+ * so a project that itself sits under `node_modules` is not taken for a package.
+ *
+ * A symlink is not followed: module resolution already gives the real path of a workspace
+ * package, except with `preserveSymlinks`, where it stays under `node_modules`.
+ */
+function isPackageFile(fileAbs: string, root?: string): boolean {
+	const target = root === undefined ? fileAbs : path.relative(root, fileAbs);
+	return `/${normalizePath(target)}`.includes('/node_modules/');
 }
 
 /**
@@ -225,14 +234,14 @@ function resolveThroughImport(
 		return null;
 	}
 	// Before the export table: a package's own is not built (see `resolveThroughStarReExports`).
-	if (isPackageFile(resolvedAbs)) {
+	if (isPackageFile(resolvedAbs, env.cwd)) {
 		return FROM_PACKAGE;
 	}
 
 	const declaration = isTemplateComponentFile(resolvedAbs)
 		? { fileAbs: resolvedAbs, localName: null }
 		: resolveExportedName(resolvedAbs, binding.importedName, new Set(), env);
-	if (declaration && isPackageFile(declaration.fileAbs)) {
+	if (declaration && isPackageFile(declaration.fileAbs, env.cwd)) {
 		return FROM_PACKAGE;
 	}
 	return declaration && declarationKey(declaration, env.cwd);
