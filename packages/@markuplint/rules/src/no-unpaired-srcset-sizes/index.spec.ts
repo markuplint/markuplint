@@ -84,6 +84,14 @@ describe('Width descriptors require sizes', () => {
 		expect(violations[0]?.raw).toBe('<img srcset="small.png 480w, large.png 1024w" src="large.png" alt="photo">');
 	});
 
+	test('[no-unpaired-srcset-sizes-issue-4180-001] an upper-case SRCSET attribute name is matched', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<img SRCSET="small.png 480w, large.png 1024w" src="large.png" alt="photo">',
+		);
+		expect(violations.length).toBe(1);
+	});
+
 	test('[no-unpaired-srcset-sizes-invalid-005] w + x mixing without sizes → violation (pairing check fires regardless of mixing)', async () => {
 		const { violations } = await mlRuleTest(
 			rule,

@@ -25,6 +25,16 @@ test('[require-landmark-label-valid-001] Duplicated area: has-label', async () =
 	expect(violations).toStrictEqual([]);
 });
 
+test('[require-landmark-label-issue-4180-001] a single banner with an explicit role is not duplicated', async () => {
+	const { violations } = await mlRuleTest(rule, '<html><body><header role="banner"></header></body></html>');
+	expect(violations).toStrictEqual([]);
+});
+
+test('[require-landmark-label-issue-4180-002] a single contentinfo with an explicit role is not duplicated', async () => {
+	const { violations } = await mlRuleTest(rule, '<html><body><footer role="contentinfo"></footer></body></html>');
+	expect(violations).toStrictEqual([]);
+});
+
 test('[require-landmark-label-invalid-001] Duplicated area: no-label', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
