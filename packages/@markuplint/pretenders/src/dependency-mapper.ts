@@ -128,6 +128,11 @@ export function dependencyMapper(
 			currentFile = mappedPretender[3];
 		}
 
+		const isRecursive = via.at(-1) === '...[Recursive]';
+		if (!isRecursive && isAuthoredComponentName(elName, currentFile, importsByFile, env)) {
+			continue;
+		}
+
 		const pretender: Pretender = {
 			selector: identifier,
 			as: identity,
@@ -491,6 +496,49 @@ function getElName(identity: Identity) {
 		return identity;
 	}
 	return identity.element;
+}
+
+const DECLARATION_SUFFIXES = ['.d.ts', '.d.mts', '.d.cts'];
+
+function isDeclarationFile(filePath: string): boolean {
+	const lower = filePath.toLowerCase();
+	return DECLARATION_SUFFIXES.some(suffix => lower.endsWith(suffix));
+}
+
+/**
+ * Whether `name` represents an authored component reference (e.g. a member expression
+ * like `Tabs.Root`, `motion.div`, or an unresolved external component imported from a package)
+ * rather than an intrinsic DOM element, SVG/MathML element, or custom element.
+ */
+function isAuthoredComponentName(
+	name: string,
+	currentFile: string | undefined,
+	importsByFile: ReadonlyMap<string, readonly ImportBinding[]> | undefined,
+	env: ResolveEnv,
+): boolean {
+	if (name.includes('.')) {
+		return true;
+	}
+
+	if (currentFile && importsByFile) {
+		const bindings = importsByFile.get(currentFile);
+		if (bindings) {
+			const binding = resolveComponentImport(name, bindings);
+			if (binding && (binding.type === 'named' || binding.type === 'default')) {
+				const importerAbs = path.resolve(env.cwd, currentFile);
+				const resolvedAbs = resolveModuleFile(importerAbs, binding.source, env.dependencies);
+				if (
+					!resolvedAbs ||
+					normalizePath(resolvedAbs).includes('/node_modules/') ||
+					isDeclarationFile(resolvedAbs)
+				) {
+					return true;
+				}
+			}
+		}
+	}
+
+	return false;
 }
 
 /**

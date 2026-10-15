@@ -131,4 +131,90 @@ describe('pretenders.auto integration', () => {
 
 		expect(violations.filter(v => v.ruleId === 'permitted-contents')).toStrictEqual([]);
 	});
+
+	test('unresolved member-expression component does not trigger false positive (issue #4231)', async () => {
+		const appPath = path.join(tmpDir, 'App.tsx');
+		await writeFile(
+			appPath,
+			[
+				"import { Tabs } from '@base-ui/react';",
+				'export const MyTabs = () => <Tabs.Root><div>Content</div></Tabs.Root>;',
+				'export const App = () => <div><MyTabs /></div>;',
+			].join('\n'),
+		);
+
+		const { violations } = await mlTestFile(appPath, {
+			...jsxParserConfig,
+			pretenders: { auto: true },
+			rules: { 'permitted-contents': true },
+		});
+
+		expect(violations.filter(v => v.ruleId === 'permitted-contents')).toStrictEqual([]);
+	});
+
+	test('unresolved motion.div member-expression component does not trigger false positive', async () => {
+		const appPath = path.join(tmpDir, 'App.tsx');
+		await writeFile(
+			appPath,
+			[
+				"import { motion } from 'framer-motion';",
+				'export const MyMotion = () => <motion.div><div>Content</div></motion.div>;',
+				'export const App = () => <div><MyMotion /></div>;',
+			].join('\n'),
+		);
+
+		const { violations } = await mlTestFile(appPath, {
+			...jsxParserConfig,
+			pretenders: { auto: true },
+			rules: { 'permitted-contents': true },
+		});
+
+		expect(violations.filter(v => v.ruleId === 'permitted-contents')).toStrictEqual([]);
+	});
+
+	test('unresolved standalone component identifier does not trigger false positive', async () => {
+		const appPath = path.join(tmpDir, 'App.tsx');
+		await writeFile(
+			appPath,
+			[
+				"import { ExternalDialog } from 'external-dialog-lib';",
+				'export const MyDialog = () => <ExternalDialog><div>Content</div></ExternalDialog>;',
+				'export const App = () => <div><MyDialog /></div>;',
+			].join('\n'),
+		);
+
+		const { violations } = await mlTestFile(appPath, {
+			...jsxParserConfig,
+			pretenders: { auto: true },
+			rules: { 'permitted-contents': true },
+		});
+
+		expect(violations.filter(v => v.ruleId === 'permitted-contents')).toStrictEqual([]);
+	});
+
+	test('invalid authored HTML inside children is still caught when wrapping unresolved components', async () => {
+		const appPath = path.join(tmpDir, 'App.tsx');
+		await writeFile(
+			appPath,
+			[
+				"import { Tabs } from '@base-ui/react';",
+				'export const MyTabs = () => <Tabs.Root><ul><div>Invalid child in ul</div></ul></Tabs.Root>;',
+			].join('\n'),
+		);
+
+		const { violations } = await mlTestFile(appPath, {
+			...jsxParserConfig,
+			pretenders: { auto: true },
+			rules: { 'permitted-contents': true },
+		});
+
+		expect(violations).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					ruleId: 'permitted-contents',
+					message: expect.stringContaining('The "div" element is not allowed in the "ul" element'),
+				}),
+			]),
+		);
+	});
 });

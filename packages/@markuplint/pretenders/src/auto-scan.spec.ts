@@ -493,4 +493,39 @@ describe('autoScan', () => {
 			expect(dependencies).toContain(normalizePath(path.join(uiDir, 'Base.tsx')));
 		});
 	});
+
+	describe('unresolved component references (issue #4231)', () => {
+		test('does not emit a pretender for a wrapper around an unresolved member expression', async () => {
+			const entryPath = path.join(tmpDir, 'MyTabs.tsx');
+			const entrySource = [
+				"import { Tabs } from '@base-ui/react';",
+				'export const MyTabs = () => <Tabs.Root><div>Content</div></Tabs.Root>;',
+			].join('\n');
+
+			const result = await autoScan(entryPath, entrySource);
+			expect(result.find(p => p.selector === 'MyTabs')).toBeUndefined();
+		});
+
+		test('does not emit a pretender for a wrapper around motion.div member expression', async () => {
+			const entryPath = path.join(tmpDir, 'MyMotion.tsx');
+			const entrySource = [
+				"import { motion } from 'framer-motion';",
+				'export const MyMotion = () => <motion.div><div>Content</div></motion.div>;',
+			].join('\n');
+
+			const result = await autoScan(entryPath, entrySource);
+			expect(result.find(p => p.selector === 'MyMotion')).toBeUndefined();
+		});
+
+		test('does not emit a pretender for a wrapper around an unresolved standalone component', async () => {
+			const entryPath = path.join(tmpDir, 'MyDialog.tsx');
+			const entrySource = [
+				"import { ExternalDialog } from 'external-dialog-lib';",
+				'export const MyDialog = () => <ExternalDialog><div>Content</div></ExternalDialog>;',
+			].join('\n');
+
+			const result = await autoScan(entryPath, entrySource);
+			expect(result.find(p => p.selector === 'MyDialog')).toBeUndefined();
+		});
+	});
 });

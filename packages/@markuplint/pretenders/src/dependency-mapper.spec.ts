@@ -626,4 +626,91 @@ describe('dependencyMapper', () => {
 			}
 		});
 	});
+
+	describe('unresolved component references (issue #4231)', () => {
+		test('unresolved member-expression terminal (Tabs.Root) produces no pretender mapping', () => {
+			const map: PretenderDirectorMap = new Map([['MyTabs', ['MyTabs', 'Tabs.Root']]]);
+			const result = dependencyMapper(map);
+			expect(result.find(p => p.selector === 'MyTabs')).toBeUndefined();
+		});
+
+		test('unresolved member-expression terminal (motion.div) produces no pretender mapping', () => {
+			const map: PretenderDirectorMap = new Map([['MyMotion', ['MyMotion', 'motion.div']]]);
+			const result = dependencyMapper(map);
+			expect(result.find(p => p.selector === 'MyMotion')).toBeUndefined();
+		});
+
+		test('unresolved standalone component identifier (ExternalDialog) produces no pretender mapping', () => {
+			const map: PretenderDirectorMap = new Map([
+				['MyDialog.tsx#MyDialog', ['MyDialog', 'ExternalDialog', undefined, 'MyDialog.tsx']],
+			]);
+			const importsByFile = new Map([
+				[
+					'MyDialog.tsx',
+					[
+						{
+							localName: 'ExternalDialog',
+							importedName: 'ExternalDialog',
+							source: 'external-dialog-lib',
+							type: 'named' as const,
+						},
+					],
+				],
+			]);
+			const result = dependencyMapper(map, undefined, { importsByFile });
+			expect(result.find(p => p.selector === 'MyDialog')).toBeUndefined();
+		});
+
+		test('chain ending in an unresolved component produces no pretender for intermediate wrappers', () => {
+			const map: PretenderDirectorMap = new Map([
+				['Inner', ['Inner', 'Tabs.Root']],
+				['Outer', ['Outer', 'Inner']],
+			]);
+			const result = dependencyMapper(map);
+			expect(result).toStrictEqual([]);
+		});
+
+		test('chain ending in an unresolved standalone component produces no pretender for intermediate wrappers', () => {
+			const map: PretenderDirectorMap = new Map([
+				['Inner.tsx#Inner', ['Inner', 'ExternalDialog', undefined, 'Inner.tsx']],
+				['Outer.tsx#Outer', ['Outer', 'Inner', undefined, 'Outer.tsx']],
+			]);
+			const importsByFile = new Map([
+				[
+					'Inner.tsx',
+					[
+						{
+							localName: 'ExternalDialog',
+							importedName: 'ExternalDialog',
+							source: 'external-dialog-lib',
+							type: 'named' as const,
+						},
+					],
+				],
+			]);
+			const result = dependencyMapper(map, undefined, { importsByFile });
+			expect(result).toStrictEqual([]);
+		});
+
+		test('resolved chain ending in a native HTML element produces expected pretender', () => {
+			const map: PretenderDirectorMap = new Map([
+				['Button', ['Button', 'button']],
+				['MyButton', ['MyButton', 'Button']],
+			]);
+			const result = dependencyMapper(map);
+			expect(result.find(p => p.selector === 'MyButton')).toMatchObject({
+				selector: 'MyButton',
+				as: 'button',
+			});
+		});
+
+		test('chain ending in a custom element produces expected pretender', () => {
+			const map: PretenderDirectorMap = new Map([['MyCard', ['MyCard', 'author-card']]]);
+			const result = dependencyMapper(map);
+			expect(result.find(p => p.selector === 'MyCard')).toMatchObject({
+				selector: 'MyCard',
+				as: 'author-card',
+			});
+		});
+	});
 });
