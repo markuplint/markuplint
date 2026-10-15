@@ -71,11 +71,20 @@ function collectNamingSources<V extends RuleConfigValue, O extends PlainData>(
 	const sources: NamingSource[] = [];
 
 	// 1. aria-labelledby
+	//
+	// A node that references itself is not overridden by its own aria-labelledby: when the
+	// traversal reaches the node again, accname step 2B is skipped and the name falls through
+	// to 2C–2F (aria-label, native sources, content). aria-labelledby then only composes the
+	// node's own name with the other referenced elements, so it is not a competing source.
+	// https://www.w3.org/TR/accname-1.2/#comp_labelledby
 	const ariaLabelledby = el.getAttribute('aria-labelledby');
 	if (ariaLabelledby && ariaLabelledby.trim()) {
 		const ids = ariaLabelledby.trim().split(/\s+/);
+		// An IDREF resolves to the first element with that id, so with duplicate ids a
+		// reference only counts as self-referencing when this element is that first match.
+		const isSelfReferencing = ids.some(id => id === el.id && document.querySelector(`[id="${id}"]`) === el);
 		const hasResolvableId = ids.some(id => document.querySelector(`[id="${id}"]`));
-		if (hasResolvableId) {
+		if (hasResolvableId && !isSelfReferencing) {
 			sources.push({ label: 'aria-labelledby' });
 		}
 	}

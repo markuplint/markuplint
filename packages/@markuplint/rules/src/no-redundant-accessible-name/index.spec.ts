@@ -168,9 +168,12 @@ describe('Violations (override detected)', () => {
 			rule,
 			'<h2 id="h" aria-labelledby="h foo">Meeting</h2><span id="foo">Notes</span>',
 		);
-		expect(violations.length).toBe(1);
-		expect(violations[0]?.message).toContain('aria-labelledby');
-		expect(violations[0]?.message).toContain('content');
+		// Flipped for #4217: accname 2B is skipped on self-reference, so the node's own content is
+		// composed into the name rather than overridden.
+		// expect(violations.length).toBe(1);
+		// expect(violations[0]?.message).toContain('aria-labelledby');
+		// expect(violations[0]?.message).toContain('content');
+		expect(violations.length).toBe(0);
 	});
 
 	test('[no-redundant-accessible-name-invalid-015] aria-labelledby referencing label ID + extra context', async () => {
@@ -188,6 +191,93 @@ describe('Violations (override detected)', () => {
 		expect(violations.length).toBe(1);
 		expect(violations[0]?.message).toContain('aria-label');
 		expect(violations[0]?.message).toContain('content');
+	});
+});
+
+describe('aria-labelledby self-reference (accname 2B is skipped for the node itself)', () => {
+	test('[no-redundant-accessible-name-issue-4217-001] self + other reference with aria-label does not report aria-labelledby overriding aria-label', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<span id="label-target">Delete</span><input id="field" type="text" aria-label="Item 1" aria-labelledby="field label-target">',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[no-redundant-accessible-name-issue-4217-002] self + other reference on a button still reports aria-label overriding content', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<span id="label-target">Delete</span><button id="button1" aria-label="Item 1" aria-labelledby="button1 label-target">×</button>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 38,
+				raw: '<button id="button1" aria-label="Item 1" aria-labelledby="button1 label-target">',
+				message: 'The accessible name from "aria-label" overrides "content"',
+			},
+		]);
+	});
+
+	test('[no-redundant-accessible-name-issue-4217-003] self-reference composes content with another reference, nothing is overridden', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<h2 id="heading" aria-labelledby="heading note">Meeting</h2><span id="note">Notes</span>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[no-redundant-accessible-name-issue-4217-004] other-only reference with aria-label is still reported', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<span id="label-target">Delete</span><input id="field" type="text" aria-label="Item 1" aria-labelledby="label-target">',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 38,
+				raw: '<input id="field" type="text" aria-label="Item 1" aria-labelledby="label-target">',
+				message: 'The accessible name from "aria-labelledby" overrides "aria-label"',
+			},
+		]);
+	});
+
+	test('[no-redundant-accessible-name-issue-4217-005] duplicate id: a reference resolving to another element is not a self-reference', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<span id="dup1">Delete</span><input id="dup1" type="text" aria-label="Item 1" aria-labelledby="dup1">',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 30,
+				raw: '<input id="dup1" type="text" aria-label="Item 1" aria-labelledby="dup1">',
+				message: 'The accessible name from "aria-labelledby" overrides "aria-label"',
+			},
+		]);
+	});
+
+	test('[no-redundant-accessible-name-issue-4217-006] self-reference only (no other id) does not report against content', async () => {
+		const { violations } = await mlRuleTest(rule, '<h2 id="heading" aria-labelledby="heading">Meeting</h2>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[no-redundant-accessible-name-issue-4217-007] self-reference with aria-label and explicit label reports aria-label overriding label', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<span id="note">Note</span><input id="field" type="text" aria-label="Item 1" aria-labelledby="field note"><label for="field">Label</label>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 28,
+				raw: '<input id="field" type="text" aria-label="Item 1" aria-labelledby="field note">',
+				message: 'The accessible name from "aria-label" overrides "label"',
+			},
+		]);
 	});
 });
 
