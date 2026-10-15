@@ -1,4 +1,4 @@
-import type { Node } from './astro-parser.js';
+import type { Node } from './to-nodes.js';
 import type { MLASTNodeTreeItem, MLASTParentNode } from '@markuplint/ml-ast';
 import type { ChildToken, Token } from '@markuplint/parser-utils';
 
@@ -7,6 +7,7 @@ import { AttrState, Parser, ParserError } from '@markuplint/parser-utils';
 import { astroParse } from './astro-parser.js';
 import { detectBlockBehavior } from './detect-block-behavior.js';
 import { extractSpreadAttribute } from './spread-attr.js';
+import { toNodes } from './to-nodes.js';
 
 /**
  * Parser implementation for Astro component templates.
@@ -33,7 +34,7 @@ class AstroParser extends Parser<Node> {
 
 	tokenize() {
 		return {
-			ast: astroParse(this.rawCode).children,
+			ast: toNodes(astroParse(this.rawCode)),
 			isFragment: true,
 		};
 	}
@@ -54,12 +55,8 @@ class AstroParser extends Parser<Node> {
 		parentNode: MLASTParentNode | null,
 		depth: number,
 	) {
-		if (!originNode.position) {
-			throw new TypeError("Node doesn't have position");
-		}
-
-		const offset = originNode.position.start.offset;
-		const endOffset = originNode.position.end?.offset;
+		const offset = originNode.start;
+		const endOffset = originNode.end;
 		const token = this.sliceFragment(offset, endOffset);
 
 		switch (originNode.type) {
@@ -99,14 +96,10 @@ class AstroParser extends Parser<Node> {
 					parentNode,
 				});
 			}
-			case 'component':
-			case 'custom-element':
-			case 'fragment':
 			case 'element': {
-				const tagToken = token.raw ? token : this.sliceFragment(0);
 				return this.visitElement(
 					{
-						...tagToken,
+						...token,
 						depth,
 						parentNode,
 					},
@@ -126,14 +119,14 @@ class AstroParser extends Parser<Node> {
 				let closeExpressionLocation: Token | null = null;
 
 				if (firstChild && lastChild && firstChild !== lastChild) {
-					const startExpressionEndOffset = firstChild.position?.end?.offset ?? endOffset ?? offset;
+					const startExpressionEndOffset = firstChild.end;
 					const startExpressionLocation = this.sliceFragment(offset, startExpressionEndOffset);
 
 					startExpressionRaw = startExpressionLocation.raw;
 					startExpressionStartLine = startExpressionLocation.line;
 					startExpressionStartCol = startExpressionLocation.col;
 
-					closeExpressionLocation = this.sliceFragment(lastChild.position?.start.offset ?? offset, endOffset);
+					closeExpressionLocation = this.sliceFragment(lastChild.start, endOffset);
 				}
 
 				const blockBehavior = detectBlockBehavior(startExpressionRaw);
