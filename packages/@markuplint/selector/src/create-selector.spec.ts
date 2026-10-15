@@ -30,6 +30,16 @@ describe('Extended Selector', () => {
 		expect(c(':not(:model(interactive))', '<a href="path/to"></a>')).toBeFalsy();
 	});
 
+	test(':model matches #custom only for an element that reports isCustomElement', () => {
+		const plain = createJSDOMElement('<x-foo></x-foo>');
+		const custom = Object.defineProperty(createJSDOMElement('<x-foo></x-foo>'), 'isCustomElement', {
+			value: true,
+		});
+		expect(createSelector(':model(flow)', specs).match(plain)).toBeFalsy();
+		expect(createSelector(':model(flow)', specs).match(custom)).toBeTruthy();
+		expect(createSelector(':model(interactive)', specs).match(custom)).toBeFalsy();
+	});
+
 	test('The address element', () => {
 		const contentModel =
 			':model(flow):not(address, :model(heading), :model(sectioning), header, footer, :has(address, :model(heading), :model(sectioning), header, footer))';

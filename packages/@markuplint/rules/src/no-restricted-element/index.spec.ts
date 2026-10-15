@@ -377,3 +377,47 @@ test('[no-restricted-element-issue-3815-004] reasonOnly without reason falls bac
 		},
 	]);
 });
+
+test('[no-restricted-element-issue-4225-001] :model(flow) selects a custom element', async () => {
+	const { violations } = await mlRuleTest(rule, '<x-foo></x-foo>', {
+		rule: [':model(flow)'],
+	});
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			raw: '<x-foo>',
+			message: 'The ":model(flow)" element is disallowed',
+		},
+	]);
+});
+
+test('[no-restricted-element-issue-4225-002] :model(phrasing) selects a custom element and a phrasing element, not a flow-only one', async () => {
+	const { violations } = await mlRuleTest(rule, '<div></div><x-foo></x-foo><span></span>', {
+		rule: [':model(phrasing)'],
+	});
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 12,
+			raw: '<x-foo>',
+			message: 'The ":model(phrasing)" element is disallowed',
+		},
+		{
+			severity: 'error',
+			line: 1,
+			col: 27,
+			raw: '<span>',
+			message: 'The ":model(phrasing)" element is disallowed',
+		},
+	]);
+});
+
+test('[no-restricted-element-issue-4225-003] :model(interactive) does not select a custom element', async () => {
+	const { violations } = await mlRuleTest(rule, '<x-foo></x-foo>', {
+		rule: [':model(interactive)'],
+	});
+	expect(violations).toStrictEqual([]);
+});
