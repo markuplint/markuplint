@@ -153,10 +153,22 @@ AccName 1.2 アルゴリズムは以下の優先順位でアクセシブル名�
 }
 ```
 
+### 自分自身を参照する `aria-labelledby`
+
+`aria-labelledby` が要素自身の `id` を含む場合、アクセシブルネームの算出ではその要素に対して[ステップ 2B](https://www.w3.org/TR/accname-1.2/#comp_labelledby)をスキップし、要素自身の `aria-label`・ネイティブのソース・コンテンツで名前が決まります。この `aria-labelledby` は、要素自身の名前と参照先の要素を組み合わせるだけなので、本ルールは何かを上書きする命名ソースとは扱いません:
+
+```html
+<span id="file-name">Documentation.pdf</span>
+<button id="delete-button" aria-label="削除" aria-labelledby="delete-button file-name"></button>
+```
+
+アクセシブルネームは「削除 Documentation.pdf」になる（仕様の[Example 5](https://www.w3.org/TR/accname-1.2/#comp_label)と同じ形）ため、報告されません。同じ要素で `aria-label` が content を上書きするなど、ほかの上書きは引き続き報告されます。
+
 ## 既知の制限事項
 
 - **CSS 生成コンテンツ**: `::before` / `::after` 疑似要素からのコンテンツは静的解析では検出できず、名前ソースのチェックに含まれません。
 - **SVG `<title>`**: SVG の `<title>` 子要素は SVG 要素のアクセシブル名を提供しますが、HTML の `title` 属性とは異なり、本ルールでは現在対象外です。
+- **自分自身を参照する埋め込みコントロール**: [ステップ 2C（Embedded Control）](https://www.w3.org/TR/accname-1.2/#comp_embedded_control)はモデル化していないため、`textbox`・`combobox`・`listbox`・range ウィジェットが自分自身を参照する `aria-labelledby` は、ほかの要素と同じ扱いになります。
 - **`aria-describedby`**: 本ルールはアクセシブル「名前」ソースのみをチェックします。アクセシブル「説明」（`aria-describedby`）は別の概念であり、対象外です。
 
 ## 関連

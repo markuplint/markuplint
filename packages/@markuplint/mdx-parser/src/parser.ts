@@ -38,6 +38,7 @@ class MDXParser extends MarkdownAwareParser {
 			endTagType: 'xml',
 			booleanish: true,
 			tagNameCaseSensitive: true,
+			attrNameCaseSensitive: true,
 		});
 	}
 

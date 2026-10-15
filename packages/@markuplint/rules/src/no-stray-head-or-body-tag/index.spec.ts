@@ -37,6 +37,16 @@ test('[no-stray-head-or-body-tag-valid-001] a normal document has no stray tags'
 	).toStrictEqual([]);
 });
 
+test('[no-stray-head-or-body-tag-issue-4180-001] tag-shaped text inside xmp is not flagged', async () => {
+	const code = '<!doctype html><head><title>t</title></head><body><xmp></head></xmp></body>';
+	expect((await mlRuleTest(rule, code)).violations).toStrictEqual([]);
+});
+
+test('[no-stray-head-or-body-tag-issue-4180-002] tag-shaped text inside iframe is not flagged', async () => {
+	const code = '<!doctype html><head><title>t</title></head><body><iframe><body></iframe></body>';
+	expect((await mlRuleTest(rule, code)).violations).toStrictEqual([]);
+});
+
 test('[no-stray-head-or-body-tag-valid-002] tag-shaped text inside script/style/title is not flagged', async () => {
 	const code = `<!doctype html><head><title><body></title><script>const s = '<body>';</script></head><body></body>`;
 	expect((await mlRuleTest(rule, code)).violations).toStrictEqual([]);

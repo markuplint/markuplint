@@ -87,6 +87,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	readonly #ignoreTags: readonly IgnoreTag[] = [];
 	readonly #maskChar?: string;
 	readonly #tagNameCaseSensitive: boolean = false;
+	readonly #attrNameCaseSensitive: boolean = false;
 	readonly #selfCloseType: SelfCloseType = 'html';
 	readonly #spaceChars: readonly string[] = defaultSpaces;
 	readonly #rawTextElements: readonly string[] = ['style', 'script'];
@@ -130,6 +131,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		this.#ignoreTags = options?.ignoreTags ?? this.#ignoreTags;
 		this.#maskChar = options?.maskChar ?? this.#maskChar;
 		this.#tagNameCaseSensitive = options?.tagNameCaseSensitive ?? this.#tagNameCaseSensitive;
+		this.#attrNameCaseSensitive = options?.attrNameCaseSensitive ?? this.#attrNameCaseSensitive;
 		this.#selfCloseType = options?.selfCloseType ?? this.#selfCloseType;
 		this.#spaceChars = options?.spaceChars ?? this.#spaceChars;
 		this.#rawTextElements = options?.rawTextElements ?? this.#rawTextElements;
@@ -184,6 +186,16 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	 */
 	get tagNameCaseSensitive() {
 		return this.#tagNameCaseSensitive;
+	}
+
+	/**
+	 * Whether attribute names are case-sensitive in this language (JSX props such as
+	 * `onClick`). Independent of {@link Parser.tagNameCaseSensitive}: Svelte and Astro
+	 * distinguish components by tag-name case but lowercase or pass through HTML
+	 * attribute names, so they leave this `false`.
+	 */
+	get attrNameCaseSensitive() {
+		return this.#attrNameCaseSensitive;
 	}
 
 	/**

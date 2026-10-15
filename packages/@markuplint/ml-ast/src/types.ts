@@ -550,6 +550,12 @@ export interface MLParser {
 
 	/** Whether tag names should be treated as case-sensitive (e.g. for XHTML or JSX) */
 	tagNameCaseSensitive?: boolean;
+
+	/**
+	 * Whether attribute names should be treated as case-sensitive (e.g. JSX props such as `onClick`).
+	 * Currently consumed only by the `case-sensitive-attr-name` rule.
+	 */
+	attrNameCaseSensitive?: boolean;
 }
 
 /**

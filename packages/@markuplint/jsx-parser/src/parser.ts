@@ -27,6 +27,7 @@ class JSXParser extends Parser<JSXNode, State> {
 				endTagType: 'xml',
 				booleanish: true,
 				tagNameCaseSensitive: true,
+				attrNameCaseSensitive: true,
 			},
 			{
 				comments: [],

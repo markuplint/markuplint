@@ -65,7 +65,7 @@ export function computeLandmarkRoles<O extends PlainData>(
 	 * > - section
 	 */
 	const headers = [...document.querySelectorAll('header')].filter(header => {
-		return !header.closest('article, aside, main, nav, section');
+		return !header.closest('article, aside, main, nav, section') && !hasElement(roles.banner, header);
 	});
 	roles.banner.push(...headers);
 
@@ -82,11 +82,25 @@ export function computeLandmarkRoles<O extends PlainData>(
 	 * > - section
 	 */
 	const footers = [...document.querySelectorAll('footer')].filter(footer => {
-		return !footer.closest('article, aside, main, nav, section');
+		return !footer.closest('article, aside, main, nav, section') && !hasElement(roles.contentinfo, footer);
 	});
 	roles.contentinfo.push(...footers);
 
 	return roles;
+}
+
+/**
+ * An element already collected through its explicit `role` attribute (e.g.
+ * `<header role="banner">`) must not be added a second time by the implicit
+ * `<header>` / `<footer>` lookup, or a lone landmark would count as a duplicate (#4180).
+ */
+function hasElement<O extends PlainData>(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	elements: Element<boolean, O>[],
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	target: Element<boolean, O>,
+) {
+	return elements.some(element => element.uuid === target.uuid);
 }
 
 /**

@@ -3603,7 +3603,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		const attrs: MLAttr<T, O>[] = [];
 		attrName = attrName.toLowerCase();
 		for (const attr of this.getAttributeTokens()) {
-			if (attr.name === attrName) {
+			if (attr.name.toLowerCase() === attrName) {
 				attrs.push(attr);
 			}
 		}

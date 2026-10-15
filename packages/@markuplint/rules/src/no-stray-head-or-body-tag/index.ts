@@ -7,9 +7,12 @@ import meta from './meta.js';
  * "generic raw text element parsing algorithm" / "generic RCDATA element
  * parsing algorithm"): the parser never re-tokenizes tag-shaped substrings
  * inside it, so a literal `<body` or `</head` there is ordinary text, not a
- * candidate for either check below.
+ * candidate for either check below. `iframe`, `noembed` and `noframes` are
+ * RAWTEXT too but `@markuplint/parser-utils` still tokenizes their content
+ * as markup (`permitted-contents` relies on that), so they are skipped here
+ * rather than in the parser (#4180).
  */
-const RAW_TEXT_CONTAINERS = new Set(['script', 'style', 'title', 'textarea', 'xmp']);
+const RAW_TEXT_CONTAINERS = new Set(['script', 'style', 'title', 'textarea', 'xmp', 'iframe', 'noembed', 'noframes']);
 
 const STRAY_HEAD_END_TAG = /<\/head(?=[\s/>])/i;
 const DUPLICATE_BODY_START_TAG = /<body(?=[\s/>])/i;

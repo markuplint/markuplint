@@ -17,8 +17,8 @@
 	"exports": {
 		".": {
 			"import": {
-				"default": "./esm/index.mjs",
-				"types": "./esm/index.d.ts"
+				"types": "./esm/index.d.ts",
+				"default": "./esm/index.mjs"
 			},
 			"require": "./cjs/index.js"
 		},

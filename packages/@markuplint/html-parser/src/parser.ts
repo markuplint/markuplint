@@ -32,16 +32,27 @@ type ExtendsOptions = Pick<ParserOptions, 'ignoreTags' | 'maskChar'>;
  * and optimizations for `<head>` / `<body>` tag handling.
  */
 export class HtmlParser extends Parser<Node, State> {
+	/**
+	 * `xmp` is RAWTEXT in HTML, so its content must not be re-tokenized as
+	 * markup; a literal `</head>` there is plain text (#4180). It is listed here
+	 * rather than in the `Parser` default because Vue/Svelte/JSX treat
+	 * `Xmp`/`xmp` as an ordinary element whose children are parsed.
+	 *
+	 * @see https://html.spec.whatwg.org/multipage/parsing.html#rawtext-state
+	 */
 	constructor(options?: ExtendsOptions) {
-		super(options, {
-			startsHeadTagOrBodyTag: null,
-			afterPosition: {
-				endOffset: 0,
-				endLine: 1,
-				endCol: 1,
-				depth: 0,
+		super(
+			{ ...options, rawTextElements: ['style', 'script', 'xmp'] },
+			{
+				startsHeadTagOrBodyTag: null,
+				afterPosition: {
+					endOffset: 0,
+					endLine: 1,
+					endCol: 1,
+					depth: 0,
+				},
 			},
-		});
+		);
 	}
 
 	/**
