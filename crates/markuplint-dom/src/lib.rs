@@ -24,7 +24,7 @@
 //! rules and compare against what those see: an attribute's `node_name` is the name the parser
 //! resolved (`potentialName`), an element knows its end tag as `close_tag` (an `endtag` is never a
 //! node, even where a parser lists it among the children), and what the parser says about its
-//! markup (`endTag`, `booleanish`, `tagNameCaseSensitive`) is kept as [`arena::DomArena::settings`].
+//! markup (`endTag`, `booleanish`, `tagNameCaseSensitive`, `attrNameCaseSensitive`) is kept as [`arena::DomArena::settings`].
 //! `DomArena::child_nodes` is TS `childNodes`, which reads through fragments and `each` blocks.
 //!
 //! Both paths exist on purpose: Path B is faster and dependency-free for plain

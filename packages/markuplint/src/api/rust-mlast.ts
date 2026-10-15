@@ -15,6 +15,7 @@ type MLASTForRustOptions = {
 		readonly endTag?: 'xml' | 'omittable' | 'never';
 		readonly booleanish?: boolean;
 		readonly tagNameCaseSensitive?: boolean;
+		readonly attrNameCaseSensitive?: boolean;
 	};
 };
 
@@ -30,8 +31,9 @@ type MLASTForRustOptions = {
  * - The name an attribute goes by, and whether it is a directive or has a dynamic value, are
  *   resolved from the spec. This is `resolveAttrNames`, the function `MLAttr` is built with, so
  *   the two cannot disagree.
- * - `endTag`, `booleanish` and `tagNameCaseSensitive` of the parser are sent next to the
- *   nodes (`DocumentSettings` on the Rust side), as `MLCore` hands them to `Document`.
+ * - `endTag`, `booleanish`, `tagNameCaseSensitive` and `attrNameCaseSensitive` of the parser are
+ *   sent next to the nodes (`DocumentSettings` on the Rust side), as `MLCore` hands them to
+ *   `Document`.
  *
  * @param ast - What the parser returned; it is not modified.
  * @returns The JSON `lint()` takes as its first argument.
@@ -58,6 +60,7 @@ export function mlastForRust(ast: MLASTDocument, { spec, parser }: MLASTForRustO
 			endTag: parser.endTag,
 			booleanish: parser.booleanish,
 			tagNameCaseSensitive: parser.tagNameCaseSensitive,
+			attrNameCaseSensitive: parser.attrNameCaseSensitive,
 		},
 		(_key, value: unknown) => (isHTMLAttr(value) ? resolveAttr(value) : value),
 	);

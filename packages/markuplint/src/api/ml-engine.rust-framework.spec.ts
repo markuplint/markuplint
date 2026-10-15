@@ -465,7 +465,9 @@ describe.skipIf(!nativeAddonIsBuilt)('experimentalRustCore fixes the files of fr
 			parser: '@markuplint/jsx-parser',
 			rules: { ...quotes, 'case-sensitive-attr-name': true },
 			code: "export const A = () => <><p>日本語😀</p><div class='a' ID='b' /></>;",
-			fixed: 'export const A = () => <><p>日本語😀</p><div class="a" id="b" /></>;',
+			// fixed: 'export const A = () => <><p>日本語😀</p><div class="a" id="b" /></>;',
+			// JSX attribute names are case-sensitive (#4235): `ID` is left as written, `quotes` still fixes.
+			fixed: 'export const A = () => <><p>日本語😀</p><div class="a" ID="b" /></>;',
 		},
 	])('fixes $name as the TypeScript engine does', async ({ fileName, parser, rules, code, fixed }) => {
 		const write = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);

@@ -585,3 +585,15 @@ fn document_settings_are_read_from_the_json() {
     assert!(settings.booleanish);
     assert!(settings.tag_name_case_sensitive);
 }
+
+#[test]
+fn document_settings_read_attr_name_case_sensitive_from_the_json() {
+    let mut value: serde_json::Value = serde_json::from_str(&load_fixture("simple")).unwrap();
+    value
+        .as_object_mut()
+        .unwrap()
+        .insert("attrNameCaseSensitive".into(), true.into());
+    let settings = builder::build_from_json(&value.to_string()).unwrap().settings();
+    assert!(settings.attr_name_case_sensitive);
+    assert!(!settings.tag_name_case_sensitive);
+}

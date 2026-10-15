@@ -24,6 +24,12 @@ impl Rule for CaseSensitiveAttrName {
         let case = config.global().value.as_str().unwrap_or("lower");
         let mut violations = Vec::new();
 
+        // JSX props (`onClick`) are JavaScript identifiers, not case-insensitive HTML attribute
+        // names; lowercasing them breaks the app (TS `document.attrNameCaseSensitive`).
+        if arena.settings().attr_name_case_sensitive {
+            return violations;
+        }
+
         for (node_id, el) in arena.elements() {
             let rule_config = config.get(node_id);
             if rule_config.disabled {

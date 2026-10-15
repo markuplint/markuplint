@@ -11,6 +11,9 @@
 //!   case-sensitive-attr-name-fix-002      → case_sensitive_attr_name_fix_002
 //!   v6_case_sensitive_attr_name_001       — Rust-only: non-ASCII text before the fixed name
 //!   v6_case_sensitive_attr_name_002       — Rust-only: a resolved name (JSX `tabIndex`) and a non-HTML element have no case to enforce
+//!   case-sensitive-attr-name-invalid-004  → case_sensitive_attr_name_invalid_004
+//!   case-sensitive-attr-name-parser-001   → v6_case_sensitive_attr_name_003 (the JSX and MDX parsers stay in TS; their `attrNameCaseSensitive` is set on the document, and so does `-parser-002` and `-003`)
+//!   case-sensitive-attr-name-parser-004   → v6_case_sensitive_attr_name_003 (Svelte and Astro leave it unset, as does `-parser-005`)
 
 use crate::lint::{LintConfig, lint};
 use crate::test_util::fixed_code;
@@ -210,4 +213,56 @@ fn v6_case_sensitive_attr_name_002() {
     assert_eq!(run_mlast("html", "tabIndex", resolved.clone()), []);
     assert_eq!(run_mlast("authored", "tabIndex", serde_json::json!({})), []);
     assert_eq!(run_mlast("html", "tabIndex", serde_json::json!({})).len(), 1);
+}
+
+/// TS: `[case-sensitive-attr-name-invalid-004]` — an inline handler spelled in camelCase in HTML
+#[test]
+fn case_sensitive_attr_name_invalid_004() {
+    const _ID: &str = "case-sensitive-attr-name-invalid-004";
+    let arena = html_arena(r#"<button onClick="onPress()"></button>"#);
+    let spec = spec();
+    let config: LintConfig = serde_json::from_value(serde_json::json!({
+        "rules": { "case-sensitive-attr-name": { "severity": "warning" } }
+    }))
+    .unwrap();
+    let result = lint(&arena, &spec, &config);
+    assert_eq!(result.violations.len(), 1);
+    assert_eq!(result.violations[0].severity, Severity::Warning);
+    assert_eq!(result.violations[0].line, 1);
+    assert_eq!(result.violations[0].col, 9);
+    assert_eq!(result.violations[0].raw, "onClick");
+    assert_eq!(
+        result.violations[0].message,
+        "Attribute names of HTML elements should be lowercase"
+    );
+}
+
+/// A parser whose attribute names are case-sensitive (JSX, MDX) has no case to enforce, as
+/// `onClick` is not the `onclick` attribute there, and a fix would break the handler. The rule
+/// still checks the parsers that leave the option unset (Svelte, Astro).
+#[test]
+fn v6_case_sensitive_attr_name_003() {
+    use markuplint_core::mlast::DocumentSettings;
+    let run_with = |attr_name_case_sensitive| {
+        crate::test_util::lint_brief_with_settings(
+            "case-sensitive-attr-name",
+            "<button onClick={onPress}></button>",
+            serde_json::json!({ "rules": { "case-sensitive-attr-name": { "severity": "warning" } } }),
+            DocumentSettings {
+                attr_name_case_sensitive,
+                ..DocumentSettings::default()
+            },
+        )
+    };
+    assert_eq!(run_with(true), []);
+    assert_eq!(
+        run_with(false),
+        [crate::test_util::brief(
+            Severity::Warning,
+            1,
+            9,
+            "Attribute names of HTML elements should be lowercase",
+            "onClick"
+        )]
+    );
 }
