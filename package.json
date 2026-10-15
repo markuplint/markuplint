@@ -88,7 +88,7 @@
 		"husky": "9.1.7",
 		"lerna": "10.0.1",
 		"lint-staged": "17.6.0",
-		"npm-run-all2": "8.0.4",
+		"npm-run-all2": "9.0.3",
 		"oxfmt": "0.72.0",
 		"oxlint": "1.87.0",
 		"textlint": "15.8.0",
