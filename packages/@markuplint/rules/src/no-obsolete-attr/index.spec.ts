@@ -29,6 +29,26 @@ test('[no-obsolete-attr-invalid-002] obsolete attribute (link[rev])', async () =
 	]);
 });
 
+test('[no-obsolete-attr-issue-4180-001] an attribute name written in upper case is matched case-insensitively', async () => {
+	const { violations } = await mlRuleTest(rule, '<link rel="made" href="/author" REV="made">');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 33,
+			raw: 'REV',
+			message: 'The "rev" attribute is obsolete',
+		},
+	]);
+});
+
+test('[no-obsolete-attr-parser-001] a mixed-case JSX prop is not the obsolete HTML attribute', async () => {
+	const { violations } = await mlRuleTest(rule, '<link rel="made" href="/author" Rev="made" />', {
+		parser: { '.*': '@markuplint/jsx-parser' },
+	});
+	expect(violations).toStrictEqual([]);
+});
+
 test('[no-obsolete-attr-valid-001] no obsolete attribute', async () => {
 	const { violations } = await mlRuleTest(rule, '<link rel="alternate" href="/feed">');
 	expect(violations).toStrictEqual([]);
