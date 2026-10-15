@@ -10,6 +10,11 @@ export default createRule<Value>({
 	defaultSeverity: 'warning',
 	defaultValue: 'lower',
 	async verify({ document, report, t }) {
+		// JSX props (`onClick`, `suppressHydrationWarning`) are JavaScript identifiers,
+		// not case-insensitive HTML attribute names; lowercasing them breaks the app.
+		if (document.attrNameCaseSensitive) {
+			return;
+		}
 		await document.walkOn('Attr', attr => {
 			const el = attr.ownerElement;
 			if (el.isForeignElement || el.elementType !== 'html') {
