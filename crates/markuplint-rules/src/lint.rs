@@ -241,8 +241,6 @@ fn lint_with_rules(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig, rules
         let Some(entries) = matching_entries else {
             // No matching config entries but rule appears in nodeRules — run once with the global
             // config disabled: only the elements a nodeRule matches have the rule enabled, as in TS.
-            // A rule that falls back to a default when it has no value (`class-naming` reports
-            // every class name against an empty pattern list) would otherwise run on the rest too.
             let global_config = RuleConfig {
                 disabled: true,
                 ..Default::default()

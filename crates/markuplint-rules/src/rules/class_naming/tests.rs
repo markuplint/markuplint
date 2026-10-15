@@ -11,11 +11,16 @@
 //!   class-naming-invalid-005  → class_naming_invalid_005
 //!   class-naming-invalid-006  → class_naming_invalid_006
 //!   class-naming-issue-1263   → class_naming_issue_1263
+//!   class-naming-issue-4202-001 → class_naming_issue_4202_001
+//!   class-naming-issue-4202-002 → class_naming_issue_4202_002
+//!   class-naming-issue-4202-003 → class_naming_issue_4202_003
+//!   class-naming-issue-4202-004 → class_naming_issue_4202_004
 //!   class-naming-valid-004    — SKIP: dynamic value (JSX parser)
 //!   class-naming-parser-001   — SKIP: Pug parser
-//!   v6_class_naming_001       — Rust-only: no pattern reports every class name, as TS
+//!   v6_class_naming_001       — Rust-only: an empty-string pattern is a no-op
 //!   v6_class_naming_002       — Rust-only: the attribute is read by its resolved name; dynamic values are skipped
 //!   v6_class_naming_003       — Rust-only: a directive is not the `class` attribute
+//!   v6_class_naming_004       — Rust-only: an array of empty strings is a no-op
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::Severity;
@@ -432,29 +437,101 @@ fn class_naming_issue_1263() {
     assert_eq!(result.violations.len(), 0, "violations: {:#?}", result.violations);
 }
 
-/// Rust-only: null config disabled
+/// TS: `[class-naming-issue-4202-001]` — enabled without a pattern is a no-op
 #[test]
-fn v6_class_naming_001() {
-    let arena = html_arena(r#"<div class="anything"></div>"#);
+fn class_naming_issue_4202_001() {
+    const _ID: &str = "class-naming-issue-4202-001";
+    let arena = html_arena(r#"<img class="a">"#);
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "class-naming": true }
     }))
     .unwrap();
     let result = lint(&arena, &spec, &config);
-    // value=true → not a string pattern → skip
-    //
-    // CHANGED to follow the TS rule: without a pattern it reports every class name against an
-    // empty pattern list. Whether that is intended is tracked on the TS side; the Rust rule
-    // follows TS until it is settled.
-    // assert_eq!(result.violations.len(), 0); // baseline before the port followed TS
+    assert_eq!(result.violations.len(), 0, "violations: {:#?}", result.violations);
+}
+
+/// TS: `[class-naming-issue-4202-002]` — empty pattern array is a no-op
+#[test]
+fn class_naming_issue_4202_002() {
+    const _ID: &str = "class-naming-issue-4202-002";
+    let arena = html_arena(r#"<img class="a">"#);
+    let spec = spec();
+    let config: LintConfig = serde_json::from_value(serde_json::json!({
+        "rules": { "class-naming": { "value": [] } }
+    }))
+    .unwrap();
+    let result = lint(&arena, &spec, &config);
+    assert_eq!(result.violations.len(), 0, "violations: {:#?}", result.violations);
+}
+
+/// TS: `[class-naming-issue-4202-003]` — a pattern set only by childNodeRules still applies
+#[test]
+fn class_naming_issue_4202_003() {
+    const _ID: &str = "class-naming-issue-4202-003";
+    let arena = html_arena(r#"<div class="a"><p class="b"></p></div>"#);
+    let spec = spec();
+    let config: LintConfig = serde_json::from_value(serde_json::json!({
+        "rules": { "class-naming": true },
+        "childNodeRules": [
+            {
+                "selector": "div",
+                "rules": { "class-naming": { "value": "a" } }
+            }
+        ]
+    }))
+    .unwrap();
+    let result = lint(&arena, &spec, &config);
     assert_eq!(result.violations.len(), 1);
+    assert_eq!(result.violations[0].severity, Severity::Warning);
     assert_eq!(
         result.violations[0].message,
-        r#"The "anything" class name is unmatched with the below patterns: """#
+        r#"The "b" class name is unmatched with the below patterns: "a""#
     );
-    assert_eq!((result.violations[0].line, result.violations[0].col), (1, 13));
-    assert_eq!(result.violations[0].raw, "anything");
+    assert_eq!(result.violations[0].line, 1);
+    assert_eq!(result.violations[0].col, 26);
+    assert_eq!(result.violations[0].raw, "b");
+}
+
+/// TS: `[class-naming-issue-4202-004]` — null value is a no-op
+#[test]
+fn class_naming_issue_4202_004() {
+    const _ID: &str = "class-naming-issue-4202-004";
+    let arena = html_arena(r#"<img class="a">"#);
+    let spec = spec();
+    let config: LintConfig = serde_json::from_value(serde_json::json!({
+        "rules": { "class-naming": { "value": null } }
+    }))
+    .unwrap();
+    let result = lint(&arena, &spec, &config);
+    assert_eq!(result.violations.len(), 0, "violations: {:#?}", result.violations);
+}
+
+/// Rust-only: an empty-string pattern is dropped like the other empty patterns, so the rule is a
+/// no-op (TS on `dev` does the same, #4202).
+#[test]
+fn v6_class_naming_001() {
+    let arena = html_arena(r#"<img class="a">"#);
+    let spec = spec();
+    let config: LintConfig = serde_json::from_value(serde_json::json!({
+        "rules": { "class-naming": { "value": "" } }
+    }))
+    .unwrap();
+    let result = lint(&arena, &spec, &config);
+    assert_eq!(result.violations.len(), 0, "violations: {:#?}", result.violations);
+}
+
+/// Rust-only: an array of empty strings leaves no pattern, so the rule is a no-op.
+#[test]
+fn v6_class_naming_004() {
+    let arena = html_arena(r#"<img class="a">"#);
+    let spec = spec();
+    let config: LintConfig = serde_json::from_value(serde_json::json!({
+        "rules": { "class-naming": { "value": ["", ""] } }
+    }))
+    .unwrap();
+    let result = lint(&arena, &spec, &config);
+    assert_eq!(result.violations.len(), 0, "violations: {:#?}", result.violations);
 }
 
 /// TS reads the attribute as the name the parser resolved (`potentialName`), and skips a value
