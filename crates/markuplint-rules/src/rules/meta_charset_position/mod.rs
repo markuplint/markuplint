@@ -32,9 +32,7 @@ impl Rule for MetaCharsetPosition {
     }
 
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
-        let Ok(selector) = parser::parse(DECLARATIONS) else {
-            return vec![];
-        };
+        let selector = parser::parse(DECLARATIONS).expect("a valid built-in selector");
         arena
             .elements()
             .filter(|&(node_id, el)| {

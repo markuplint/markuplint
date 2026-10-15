@@ -275,7 +275,7 @@ pub fn resolve_permitted_roles(
 
     if let Some(ref conditions) = el_spec.aria.conditions {
         for (selector_str, override_value) in conditions {
-            let Ok(selector) = markuplint_selector::parser::parse(selector_str) else {
+            let Some(selector) = crate::diagnostic::parse_selector("spec ARIA condition", selector_str) else {
                 continue;
             };
             if !markuplint_selector::matcher::matches(&selector, arena, node_id, None, Some(spec), None) {
@@ -361,7 +361,7 @@ fn get_implicit_role(
         let resolver: Option<&dyn markuplint_selector::aria_resolver::AriaResolver> =
             if guard.nested { None } else { Some(&spec_resolver) };
         for (selector_str, override_value) in conditions {
-            if let Ok(selector) = markuplint_selector::parser::parse(selector_str)
+            if let Some(selector) = crate::diagnostic::parse_selector("spec ARIA condition", selector_str)
                 && markuplint_selector::matcher::matches(&selector, arena, node_id, None, Some(spec), resolver)
                 && let Some(override_obj) = override_value.as_object()
                 && let Some(override_role) = override_obj.get("implicitRole")

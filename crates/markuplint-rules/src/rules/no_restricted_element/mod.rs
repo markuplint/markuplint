@@ -7,9 +7,9 @@
 
 use markuplint_dom::arena::DomArena;
 use markuplint_selector::matcher;
-use markuplint_selector::parser;
 use markuplint_types::spec::types::MLMLSpec;
 
+use crate::diagnostic;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
@@ -100,6 +100,6 @@ fn parse_selectors(value: &serde_json::Value) -> Vec<(String, markuplint_selecto
         _ => return vec![],
     };
     strs.into_iter()
-        .filter_map(|s| parser::parse(&s).ok().map(|sel| (s, sel)))
+        .filter_map(|s| diagnostic::parse_selector("config no-restricted-element selector", &s).map(|sel| (s, sel)))
         .collect()
 }

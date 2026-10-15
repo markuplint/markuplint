@@ -27,6 +27,7 @@
 //!   v6_no_empty_palpable_content_015       — Rust-only: a fragment block is transparent, so its `li` is empty
 //!   v6_no_empty_palpable_content_016       — Rust-only: a non-fragment block without `each`/`end` is content
 //!   v6_no_empty_palpable_content_017       — Rust-only: an `each` block is replaced by its children
+//!   v6_no_empty_palpable_content_018       — Rust-only: a rejected `#palpable` entry is reported (#4222)
 
 use super::*;
 use crate::rule::{RuleConfig, RuleConfigSet};
@@ -613,6 +614,26 @@ fn v6_no_empty_palpable_content_014() {
             "`{entry}` does not parse"
         );
     }
+}
+
+/// #4222: an entry the selector parser rejects is dropped, and the drop is reported instead of
+/// silent. The other entries still apply.
+#[test]
+fn v6_no_empty_palpable_content_018() {
+    let mut s = spec();
+    s.def
+        .content_models
+        .get_mut("#palpable")
+        .unwrap()
+        .push("x-foo:not-a-supported-pseudo".to_string());
+    let arena = make_element_with_attrs("div", &[]);
+    let (violations, diagnostics) = crate::diagnostic::collect(|| {
+        NoEmptyPalpableContent.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()))
+    });
+    assert_eq!(violations.len(), 1);
+    assert_eq!(diagnostics.len(), 1);
+    assert_eq!(diagnostics[0].origin, "spec content model #palpable");
+    assert_eq!(diagnostics[0].selector, "x-foo:not-a-supported-pseudo");
 }
 
 /// `<li>` holding one block child, which holds `text` when given. Built by hand: no parser in this

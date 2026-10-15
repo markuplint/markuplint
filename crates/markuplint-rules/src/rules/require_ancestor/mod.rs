@@ -5,9 +5,10 @@
 //! `area` must have a `map` ancestor). An element with no ancestor matching it is reported.
 
 use markuplint_dom::arena::DomArena;
-use markuplint_selector::{matcher, parser};
+use markuplint_selector::matcher;
 use markuplint_types::spec::types::MLMLSpec;
 
+use crate::diagnostic;
 use crate::helpers::{ancestor_elements, content_model_field};
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
@@ -30,7 +31,7 @@ impl Rule for RequireAncestor {
             else {
                 continue;
             };
-            let Ok(selector) = parser::parse(descendant_of) else {
+            let Some(selector) = diagnostic::parse_selector("spec content model descendantOf", descendant_of) else {
                 continue;
             };
             if ancestor_elements(arena, node_id)

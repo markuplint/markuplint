@@ -22,6 +22,7 @@ pub mod aria_resolver_impl;
 pub mod attr_check;
 pub mod content_model;
 pub(crate) mod decode;
+pub mod diagnostic;
 pub(crate) mod feature_check;
 pub mod fix;
 pub(crate) mod h1_check;
@@ -31,6 +32,8 @@ pub(crate) mod js;
 pub(crate) mod landmark_check;
 pub(crate) mod lifecycle_check;
 pub mod lint;
+#[cfg(test)]
+mod lint_diagnostics_tests;
 pub mod pretending;
 pub mod rule;
 pub mod rule_mapper;

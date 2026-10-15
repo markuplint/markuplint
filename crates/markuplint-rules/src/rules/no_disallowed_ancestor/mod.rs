@@ -7,9 +7,10 @@
 
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::node::DomNode;
-use markuplint_selector::{matcher, parser};
+use markuplint_selector::matcher;
 use markuplint_types::spec::types::MLMLSpec;
 
+use crate::diagnostic;
 use crate::helpers::{ancestor_elements, content_model_field};
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
@@ -35,7 +36,7 @@ impl Rule for NoDisallowedAncestor {
             let selectors: Vec<_> = forbidden
                 .iter()
                 .filter_map(serde_json::Value::as_str)
-                .filter_map(|s| parser::parse(s).ok())
+                .filter_map(|s| diagnostic::parse_selector("spec content model forbiddenAncestors", s))
                 .collect();
             if selectors.is_empty() {
                 continue;

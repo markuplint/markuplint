@@ -22,7 +22,6 @@ use std::cell::OnceCell;
 use markuplint_core::mlast::{ElementType, MLASTAttr, MLASTHTMLAttr, NamespaceURI};
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::node::ElementData;
-use markuplint_selector::parser;
 use markuplint_types::spec::aria::{self, ARIAVersion};
 use markuplint_types::spec::lookup::get_spec_by_tag_name;
 use markuplint_types::spec::types::{
@@ -536,7 +535,7 @@ pub(crate) fn get_element_aria(
     if let Some(conditions) = conditions {
         let resolver = SpecAriaResolver { spec };
         for (selector, override_value) in conditions {
-            let Ok(selector) = parser::parse(selector) else {
+            let Some(selector) = crate::diagnostic::parse_selector("spec ARIA condition", selector) else {
                 continue;
             };
             if !markuplint_selector::matcher::matches(&selector, arena, node_id, None, Some(spec), Some(&resolver)) {

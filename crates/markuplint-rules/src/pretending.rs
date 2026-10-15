@@ -15,7 +15,7 @@ use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::node::{ElementData, NodeBase};
 use markuplint_dom::pretender::{OriginalIdentity, Pretended, PretenderContext, SlotContent, SlotEntry};
 use markuplint_selector::ast::SelectorList;
-use markuplint_selector::{matcher, parser};
+use markuplint_selector::matcher;
 use markuplint_types::spec::types::MLMLSpec;
 
 use crate::aria_resolver_impl::SpecAriaResolver;
@@ -45,7 +45,10 @@ pub fn may_pretend(arena: &DomArena, pretenders: &[Pretender]) -> bool {
 }
 
 pub fn apply_pretenders(arena: &mut DomArena, pretenders: &[Pretender], spec: &MLMLSpec) {
-    let selectors: Vec<Option<SelectorList>> = pretenders.iter().map(|p| parser::parse(&p.selector).ok()).collect();
+    let selectors: Vec<Option<SelectorList>> = pretenders
+        .iter()
+        .map(|p| crate::diagnostic::parse_selector("config pretenders selector", &p.selector))
+        .collect();
     let ids: Vec<NodeId> = arena.elements().map(|(id, _)| id).collect();
     for id in ids {
         pretend(arena, id, pretenders, &selectors, spec);
