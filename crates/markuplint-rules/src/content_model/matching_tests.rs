@@ -1228,6 +1228,31 @@ mod tests {
         }
 
         #[test]
+        fn model_pseudo_class_needs_a_spec() {
+            // `:model()` reads the categories of the spec; without one it matches nothing
+            let bridge = arena_bridge::build_arena("div", &[ChildNodeInfo::element("span")]);
+            let sel = markuplint_selector::parser::parse(":model(flow)").unwrap();
+            let id = bridge.child_ids[0];
+            let spec = html_spec();
+            assert!(markuplint_selector::matcher::matches(
+                &sel,
+                &bridge.arena,
+                id,
+                None,
+                Some(&spec),
+                None
+            ));
+            assert!(!markuplint_selector::matcher::matches(
+                &sel,
+                &bridge.arena,
+                id,
+                None,
+                None,
+                None
+            ));
+        }
+
+        #[test]
         fn has_selector_with_children() {
             // :has(ruby) checks descendants
             let spec = html_spec();
