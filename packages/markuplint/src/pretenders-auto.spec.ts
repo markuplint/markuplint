@@ -1,4 +1,4 @@
-import { writeFile, mkdtemp, rm } from 'node:fs/promises';
+import { writeFile, mkdir, mkdtemp, rm } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
@@ -178,6 +178,32 @@ describe('pretenders.auto with a component that cannot be resolved', () => {
 		await writeFile(
 			pagePath,
 			"import { MyDialog } from './MyDialog';\nexport const Page = () => <p><MyDialog>text</MyDialog></p>;",
+		);
+
+		const { violations } = await mlTestFile(pagePath, {
+			...jsxParserConfig,
+			pretenders: { auto: true },
+			rules: { 'permitted-contents': true },
+		});
+
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('a wrapper of a component of an installed package is not resolved to a same-named component of the project', async () => {
+		const libDir = path.join(tmpDir, 'node_modules', 'button-library');
+		await mkdir(libDir, { recursive: true });
+		await writeFile(path.join(libDir, 'package.json'), '{"name":"button-library","main":"index.js"}');
+		await writeFile(path.join(libDir, 'index.js'), 'export const Button = () => null;');
+		await mkdir(path.join(tmpDir, 'ui'));
+		await writeFile(path.join(tmpDir, 'ui', 'Button.tsx'), 'export const Button = () => <section>text</section>;');
+		await writeFile(
+			path.join(tmpDir, 'Card.tsx'),
+			"import { Button } from 'button-library';\nexport const Card = ({ children }) => <Button>{children}</Button>;",
+		);
+		const pagePath = path.join(tmpDir, 'Page.tsx');
+		await writeFile(
+			pagePath,
+			"import { Card } from './Card';\nimport { Button } from './ui/Button';\nexport const Page = () => <p><Card>text</Card></p>;",
 		);
 
 		const { violations } = await mlTestFile(pagePath, {
