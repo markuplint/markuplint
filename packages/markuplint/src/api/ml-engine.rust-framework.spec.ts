@@ -628,5 +628,43 @@ describe.skipIf(!nativeAddonIsBuilt)(
 			expect(selected(expected)).toHaveLength(selects);
 			expect(selected(actual)).toStrictEqual(selected(expected));
 		});
+
+		// A component (`<Foo />`) is not a native HTML element, so `#custom` covers it as it does a
+		// custom element (`<x-bar />`); the parser sets its `elementType`.
+		it.each([
+			{ selector: ':model(phrasing)', selects: 3 },
+			{ selector: ':model(flow)', selects: 4 },
+			{ selector: ':model(interactive)', selects: 0 },
+		])('selects a component and a custom element for $selector in JSX', async ({ selector, selects }) => {
+			const write = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
+			const run = async (rust: boolean) => {
+				const file = await MLEngine.toMLFile({
+					sourceCode: 'export const A = () => (<div><Foo /><x-bar /><span /></div>);',
+					name: 'a.jsx',
+				});
+				const engine = new MLEngine(file!, {
+					noSearchConfig: true,
+					locale: 'en',
+					experimentalRustCore: rust,
+					config: {
+						parser: { '\\.jsx$': '@markuplint/jsx-parser' },
+						specs: { '\\.jsx$': '@markuplint/react-spec' },
+						rules: { 'no-restricted-element': { value: [selector] } },
+					},
+				});
+				return engine.exec();
+			};
+			const selected = (result: Awaited<ReturnType<typeof run>>) =>
+				result?.violations.map(v => `${v.line}:${v.col} ${v.raw}`).toSorted();
+
+			const expected = await run(false);
+			const actual = await run(true);
+
+			expect(write.mock.calls.map(args => String(args[0])).join('')).not.toContain(
+				'falling back to TypeScript engine',
+			);
+			expect(selected(expected)).toHaveLength(selects);
+			expect(selected(actual)).toStrictEqual(selected(expected));
+		});
 	},
 );
