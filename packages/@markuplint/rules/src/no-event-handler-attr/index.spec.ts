@@ -149,15 +149,14 @@ test('[no-event-handler-attr-parser-001] value: ["click"] with JSX onClick', asy
 		rule: { value: ['click'] },
 		parser: { '.*': '@markuplint/jsx-parser' },
 	});
-	expect(violations).toStrictEqual([
-		{
-			severity: 'warning',
-			line: 1,
-			col: 6,
-			raw: 'onClick={fn}',
-			message: 'The "onClick" attribute is disallowed',
-		},
-	]);
+	expect(violations).toStrictEqual([]);
+});
+
+test('[no-event-handler-attr-issue-4229-001] JSX handler is not an HTML inline handler', async () => {
+	const { violations } = await mlRuleTest(rule, '<button onClick={onPress}></button>', {
+		parser: { '.*': '@markuplint/jsx-parser' },
+	});
+	expect(violations).toStrictEqual([]);
 });
 
 test('[no-event-handler-attr-parser-002] value: ["mousedown"] does not report JSX onClick', async () => {

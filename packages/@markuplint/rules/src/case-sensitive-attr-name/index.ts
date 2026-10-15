@@ -31,6 +31,11 @@ export default createRule<Value>({
 			if (attr.nameNode?.raw !== attr.name) {
 				return;
 			}
+			// A dynamic JSX-style event prop is not a case-insensitive HTML attribute.
+			// Lowercasing onClick would change which React handler is installed.
+			if (attr.isDynamicValue && /^on[A-Z]/.test(attr.name)) {
+				return;
+			}
 
 			const name = attr.name;
 

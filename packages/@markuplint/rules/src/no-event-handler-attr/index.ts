@@ -48,6 +48,11 @@ export default createRule<boolean | readonly string[], Options>({
 			if (attr.isDirective) {
 				return;
 			}
+			// JSX-style event props bind an expression rather than embedding an
+			// executable string in an HTML inline-handler attribute.
+			if (attr.isDynamicValue && /^on[A-Z]/.test(attr.name)) {
+				return;
+			}
 
 			const ignoreList = Array.isArray(attr.rule.options.ignore)
 				? attr.rule.options.ignore

@@ -49,6 +49,32 @@ describe('verify', () => {
 		const { violations } = await mlRuleTest(rule, '<svg viewBox="0 0 100 100"></svg>');
 		expect(violations.length).toBe(0);
 	});
+
+	test('[case-sensitive-attr-name-issue-4229-001] JSX event prop keeps its case', async () => {
+		const { violations, fixedCode } = await mlRuleTest(
+			rule,
+			'<button onClick={onPress}></button>',
+			{
+				parser: { '.*': '@markuplint/jsx-parser' },
+			},
+			true,
+		);
+		expect(violations).toStrictEqual([]);
+		expect(fixedCode).toBe('<button onClick={onPress}></button>');
+	});
+
+	test('[case-sensitive-attr-name-issue-4229-002] HTML uppercase inline handler remains invalid', async () => {
+		const { violations } = await mlRuleTest(rule, '<button onClick="onPress()"></button>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 9,
+				raw: 'onClick',
+				message: 'Attribute names of HTML elements should be lowercase',
+			},
+		]);
+	});
 });
 
 describe('fix', () => {
