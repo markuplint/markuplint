@@ -305,18 +305,7 @@ fn match_pseudo_class(pseudo: &PseudoClassSelector, node_id: NodeId, node_name: 
             }
         }
         PseudoClassSelector::Has(inner) => {
-            // :has() checks descendants only.
-            // TODO: TS also checks siblings for :has(+ ...) and :has(~ ...)
-            // via headCombinator detection. Relative selectors need parser support.
-            let mut found = false;
-            for desc in arena.descendants(node_id) {
-                if let Some(desc_el_id) = desc.as_element().map(|e| e.base.id)
-                    && matches_inner(inner, desc_el_id, ctx)
-                {
-                    found = true;
-                    break;
-                }
-            }
+            let found = inner.selectors.iter().any(|sel| matches_relative(sel, node_id, ctx));
             if found {
                 // :has() specificity = most specific selector in the argument list
                 MatchResult::matched(max_specificity_of_list(inner))
@@ -525,6 +514,152 @@ fn element_parent(arena: &DomArena, node_id: NodeId) -> Option<NodeId> {
     } else {
         None
     }
+}
+
+/// One relative selector of `:has()`, with `anchor` as the element `:has()` is applied to.
+///
+/// The leftmost compound of the selector must stand in the relation the head combinator names
+/// (a descendant when none is given) to the anchor. The chain is walked with backtracking, so a
+/// nearer element that fits a compound but not the relation does not hide a farther one that does.
+fn matches_relative(selector: &ComplexSelector, anchor: NodeId, ctx: &Ctx<'_>) -> bool {
+    let arena = ctx.arena;
+    let head = selector.head_combinator.unwrap_or(Combinator::Descendant);
+    let subjects = relative_subjects(arena, anchor, head, selector.chain.is_empty());
+    if selector.chain.is_empty() {
+        // The subject is the leftmost compound, and `relative_subjects` returned only what the
+        // head combinator relates to the anchor.
+        return subjects
+            .into_iter()
+            .any(|subject| match_compound(&selector.subject, subject, ctx).matched);
+    }
+    // No compound of the chain can lie on or above the anchor (or, for a sibling head, its parent),
+    // so the leftward walks end there.
+    let anchor_parent = element_parent(arena, anchor);
+    let stop = |id: NodeId| id == anchor || Some(id) == anchor_parent;
+    subjects.into_iter().any(|subject| {
+        match_compound(&selector.subject, subject, ctx).matched
+            && chain_reaches(&selector.chain, subject, ctx, &stop, &|leftmost| {
+                is_related(arena, anchor, leftmost, head)
+            })
+    })
+}
+
+/// Whether the chain, walked from `current` leftward without passing a `stop` element, can end at
+/// an element `accept` takes. A match is backtracked over every candidate; this is the same walk as
+/// in [`match_complex`] (keep the two in step), except that `match_complex` takes the nearest
+/// candidate and does not retry.
+fn chain_reaches(
+    chain: &[(Combinator, CompoundSelector)],
+    current: NodeId,
+    ctx: &Ctx<'_>,
+    stop: &dyn Fn(NodeId) -> bool,
+    accept: &dyn Fn(NodeId) -> bool,
+) -> bool {
+    let Some(((combinator, compound), rest)) = chain.split_first() else {
+        return accept(current);
+    };
+    leftward_candidates(ctx.arena, current, *combinator, stop)
+        .into_iter()
+        .any(|candidate| {
+            match_compound(compound, candidate, ctx).matched && chain_reaches(rest, candidate, ctx, stop, accept)
+        })
+}
+
+/// The elements a compound to the left of `from` can be, by the combinator between them, nearest
+/// first, up to (not including) the first `stop` element.
+fn leftward_candidates(
+    arena: &DomArena,
+    from: NodeId,
+    combinator: Combinator,
+    stop: &dyn Fn(NodeId) -> bool,
+) -> Vec<NodeId> {
+    let walk = |first: Option<NodeId>, next: &dyn Fn(NodeId) -> Option<NodeId>| -> Vec<NodeId> {
+        std::iter::successors(first, |&id| next(id))
+            .take_while(|&id| !stop(id))
+            .collect()
+    };
+    match combinator {
+        Combinator::Descendant => walk(element_parent(arena, from), &|id| element_parent(arena, id)),
+        Combinator::Child => walk(element_parent(arena, from), &|_| None),
+        Combinator::NextSibling => walk(prev_element_sibling(arena, from), &|_| None),
+        Combinator::SubsequentSibling => walk(prev_element_sibling(arena, from), &|id| prev_element_sibling(arena, id)),
+    }
+}
+
+/// The elements a relative selector is tried against as its subject. Without a chain the subject
+/// is the leftmost compound, so only where the head combinator points can match; with one, the
+/// subject can lie deeper.
+fn relative_subjects(arena: &DomArena, anchor: NodeId, head: Combinator, chain_is_empty: bool) -> Vec<NodeId> {
+    let descendant_elements = |id: NodeId| -> Vec<NodeId> {
+        arena
+            .descendants(id)
+            .filter_map(|n| n.as_element().map(|e| e.base.id))
+            .collect()
+    };
+    match head {
+        Combinator::Child if chain_is_empty => child_elements(arena, anchor),
+        Combinator::Descendant | Combinator::Child => descendant_elements(anchor),
+        Combinator::NextSibling if chain_is_empty => {
+            following_element_siblings(arena, anchor).into_iter().take(1).collect()
+        }
+        Combinator::SubsequentSibling if chain_is_empty => following_element_siblings(arena, anchor),
+        Combinator::NextSibling | Combinator::SubsequentSibling => following_element_siblings(arena, anchor)
+            .into_iter()
+            .flat_map(|id| std::iter::once(id).chain(descendant_elements(id)))
+            .collect(),
+    }
+}
+
+/// Whether `leftmost`, where a relative selector's leftmost compound matched, is in the relation
+/// to `anchor` that `head` names.
+fn is_related(arena: &DomArena, anchor: NodeId, leftmost: NodeId, head: Combinator) -> bool {
+    match head {
+        Combinator::Descendant => {
+            leftward_candidates(arena, leftmost, Combinator::Descendant, &|_| false).contains(&anchor)
+        }
+        Combinator::Child => element_parent(arena, leftmost) == Some(anchor),
+        Combinator::NextSibling => prev_element_sibling(arena, leftmost) == Some(anchor),
+        Combinator::SubsequentSibling => {
+            leftward_candidates(arena, leftmost, Combinator::SubsequentSibling, &|_| false).contains(&anchor)
+        }
+    }
+}
+
+fn is_element(arena: &DomArena, id: NodeId) -> bool {
+    arena.get(id).is_some_and(|n| n.as_element().is_some())
+}
+
+fn child_elements(arena: &DomArena, node_id: NodeId) -> Vec<NodeId> {
+    arena
+        .get(node_id)
+        .map(|n| {
+            n.children()
+                .iter()
+                .copied()
+                .filter(|&id| is_element(arena, id))
+                .collect()
+        })
+        .unwrap_or_default()
+}
+
+/// The element siblings after `node_id`, in document order, from one pass over the parent's children.
+fn following_element_siblings(arena: &DomArena, node_id: NodeId) -> Vec<NodeId> {
+    let Some(parent) = arena
+        .get(node_id)
+        .and_then(DomNode::parent_id)
+        .and_then(|p| arena.get(p))
+    else {
+        return Vec::new();
+    };
+    let children = parent.children();
+    let Some(pos) = children.iter().position(|&id| id == node_id) else {
+        return Vec::new();
+    };
+    children[pos + 1..]
+        .iter()
+        .copied()
+        .filter(|&id| is_element(arena, id))
+        .collect()
 }
 
 fn prev_element_sibling(arena: &DomArena, node_id: NodeId) -> Option<NodeId> {

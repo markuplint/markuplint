@@ -77,15 +77,6 @@ pub fn is_void_element(spec: &MLMLSpec, name: &str) -> bool {
     })
 }
 
-/// Some `#palpable` entries include selectors (e.g., `"audio[controls]"`), so this
-/// checks by prefix match on the tag name.
-pub fn is_palpable_element(spec: &MLMLSpec, name: &str) -> bool {
-    spec.def
-        .content_models
-        .get("#palpable")
-        .is_some_and(|tags| tags.iter().any(|t| t == name || t.starts_with(&format!("{name}["))))
-}
-
 /// Categories are prefixed with `#` (e.g., `"#flow"`, `"#phrasing"`, `"#metadata"`).
 pub fn get_content_model_tags<'a>(spec: &'a MLMLSpec, category: &str) -> Option<&'a [String]> {
     spec.def.content_models.get(category).map(std::vec::Vec::as_slice)
@@ -219,25 +210,6 @@ mod tests {
         assert!(!is_void_element(&spec, "span"), "span should not be void");
     }
 
-    // --- is_palpable_element ---
-
-    #[test]
-    fn palpable_elements() {
-        let spec = html_spec();
-        assert!(is_palpable_element(&spec, "a"), "a should be palpable");
-        assert!(is_palpable_element(&spec, "div"), "div should be palpable");
-        assert!(is_palpable_element(&spec, "span"), "span should be palpable");
-        assert!(is_palpable_element(&spec, "p"), "p should be palpable");
-    }
-
-    #[test]
-    fn non_palpable_elements() {
-        let spec = html_spec();
-        assert!(!is_palpable_element(&spec, "link"), "link should not be palpable");
-        assert!(!is_palpable_element(&spec, "meta"), "meta should not be palpable");
-        assert!(!is_palpable_element(&spec, "br"), "br should not be palpable");
-    }
-
     // --- get_content_model_tags ---
 
     #[test]
@@ -299,7 +271,6 @@ mod tests {
         let spec = html_spec();
         assert!(get_spec(&spec, "").is_none());
         assert!(!is_void_element(&spec, ""));
-        assert!(!is_palpable_element(&spec, ""));
         assert!(get_attr_specs(&spec, "").is_empty());
     }
 
