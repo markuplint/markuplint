@@ -78,9 +78,9 @@ function collectNamingSources<V extends RuleConfigValue, O extends PlainData>(
 	// node's own name with the other referenced elements, so it is not a competing source.
 	// https://www.w3.org/TR/accname-1.2/#comp_labelledby (see Example 5 under 2D)
 	//
-	// Combined with aria-label, a self-reference is the documented technique for composing a name
-	// out of the element's own aria-label and other elements (Example 5). The author spells out
-	// that the lower-priority sources are not part of the name, so the element is not reported.
+	// The remaining sources are still ranked as usual: inside the self-referencing traversal,
+	// aria-label (2D) still wins over a label (2E) or content (2F), so those are reported exactly
+	// as on an element without aria-labelledby. A self-reference is not an exemption from that.
 	//
 	// Known limitation: step 2C (Embedded Control) is not modeled, so a self-referencing
 	// textbox, combobox, listbox or range is treated like any other element.
@@ -90,9 +90,6 @@ function collectNamingSources<V extends RuleConfigValue, O extends PlainData>(
 		// An IDREF resolves to the first element with that id, so with duplicate ids a
 		// reference only counts as self-referencing when this element is that first match.
 		const isSelfReferencing = ids.some(id => id === el.id && document.querySelector(`[id="${id}"]`) === el);
-		if (isSelfReferencing && el.getAttribute('aria-label')?.trim()) {
-			return [];
-		}
 		const hasResolvableId = ids.some(id => document.querySelector(`[id="${id}"]`));
 		if (hasResolvableId && !isSelfReferencing) {
 			sources.push({ label: 'aria-labelledby' });

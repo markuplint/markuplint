@@ -208,18 +208,17 @@ describe('aria-labelledby self-reference (accname 2B is skipped for the node its
 			rule,
 			'<span id="label-target">Delete</span><button id="button1" aria-label="Item 1" aria-labelledby="button1 label-target">×</button>',
 		);
-		// Flipped for #4217: a self-referencing aria-labelledby together with aria-label composes the
-		// name on purpose, so no source of that element is reported.
-		// expect(violations).toStrictEqual([
-		// 	{
-		// 		severity: 'warning',
-		// 		line: 1,
-		// 		col: 38,
-		// 		raw: '<button id="button1" aria-label="Item 1" aria-labelledby="button1 label-target">',
-		// 		message: 'The accessible name from "aria-label" overrides "content"',
-		// 	},
-		// ]);
-		expect(violations).toStrictEqual([]);
+		// Restored after #4251: aria-label (2D) still wins over content (2F) inside the
+		// self-referencing traversal, the same as on a button without aria-labelledby.
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 38,
+				raw: '<button id="button1" aria-label="Item 1" aria-labelledby="button1 label-target">',
+				message: 'The accessible name from "aria-label" overrides "content"',
+			},
+		]);
 	});
 
 	test('[no-redundant-accessible-name-issue-4217-003] self-reference composes content with another reference, nothing is overridden', async () => {
@@ -272,25 +271,35 @@ describe('aria-labelledby self-reference (accname 2B is skipped for the node its
 			rule,
 			'<span id="note">Note</span><input id="field" type="checkbox" aria-label="Item 1" aria-labelledby="field note"><label for="field">Label</label>',
 		);
-		// Flipped for #4217: same reason as 4217-002.
-		// expect(violations).toStrictEqual([
-		// 	{
-		// 		severity: 'warning',
-		// 		line: 1,
-		// 		col: 28,
-		// 		raw: '<input id="field" type="checkbox" aria-label="Item 1" aria-labelledby="field note">',
-		// 		message: 'The accessible name from "aria-label" overrides "label"',
-		// 	},
-		// ]);
-		expect(violations).toStrictEqual([]);
+		// Restored after #4251: same reason as 4217-002.
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 28,
+				raw: '<input id="field" type="checkbox" aria-label="Item 1" aria-labelledby="field note">',
+				message: 'The accessible name from "aria-label" overrides "label"',
+			},
+		]);
 	});
 
-	test('[no-redundant-accessible-name-issue-4217-008] self-reference only with aria-label and content reports nothing', async () => {
+	test('[no-redundant-accessible-name-issue-4217-008] self-reference only with aria-label and content reports aria-label overriding content', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<button id="button1" aria-label="Item 1" aria-labelledby="button1">×</button>',
 		);
-		expect(violations).toStrictEqual([]);
+		// Flipped after #4251: a bare self-reference must not silence the warning that
+		// `<button aria-label="Item 1">×</button>` gets.
+		// expect(violations).toStrictEqual([]);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 1,
+				raw: '<button id="button1" aria-label="Item 1" aria-labelledby="button1">',
+				message: 'The accessible name from "aria-label" overrides "content"',
+			},
+		]);
 	});
 });
 
