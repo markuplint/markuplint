@@ -340,6 +340,16 @@ describe('parseImports', () => {
 			expect(result).toStrictEqual([]);
 		});
 
+		test.each([
+			['an invalid unicode escape in a static specifier', String.raw`import A from '\u{zz}'`],
+			['an invalid hex escape in a dynamic specifier', String.raw`import('\xZZ')`],
+			['an out-of-range code point escape', String.raw`import('\u{110000}')`],
+			['an unterminated dynamic import', "import('./a"],
+		])('malformed JS (%s) returns empty bindings without throwing', async (_name, source) => {
+			const result = await parseImports(source);
+			expect(result).toStrictEqual([]);
+		});
+
 		test('concurrent calls do not cause double initialization', async () => {
 			const results = await Promise.all([
 				parseImports("import { A } from './a'"),
