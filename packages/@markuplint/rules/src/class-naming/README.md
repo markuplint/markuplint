@@ -9,7 +9,7 @@ Warn if the class name does not conform to the specified rules.
 
 :::info
 
-Not included in any preset: this rule has no useful default (a bare `class-naming: true` matches nothing), so it must be explicitly configured with a pattern.
+Not included in any preset: this rule has no useful default (a bare `class-naming: true` has no pattern and reports nothing), so it must be explicitly configured with a pattern.
 
 :::
 
