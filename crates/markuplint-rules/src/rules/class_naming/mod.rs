@@ -33,8 +33,9 @@ impl Rule for ClassNaming {
                 continue;
             }
 
-            // As TS: a missing pattern is an empty list, and an empty list matches nothing, so
-            // every class name is reported.
+            // As TS on `dev` (#4202; `v6` receives it with the `dev` → `v6` merge): a missing
+            // pattern is an empty list, and the rule is a no-op for the element, since `null` is
+            // documented as "disable".
             let pattern_strs: Vec<String> = match &rule_config.value {
                 serde_json::Value::String(s) => vec![s.clone()],
                 serde_json::Value::Array(arr) => arr.iter().filter_map(|v| v.as_str().map(String::from)).collect(),
@@ -52,13 +53,13 @@ impl Rule for ClassNaming {
                 })
                 .collect();
 
-            // Patterns that are all unparsable as a regex are skipped, as before; that is not the
-            // same as having none.
-            if regexes.is_empty() && !pattern_strs.is_empty() {
+            // Having no pattern disables the rule. Patterns that all fail to parse as a regex skip
+            // the element too; that is a separate case that happens to end the same way.
+            if regexes.is_empty() {
                 continue;
             }
 
-            // TS format: `"a", "b"`, and `""` for no pattern at all.
+            // TS format: `"a", "b"`.
             let display_pattern = format!("\"{}\"", pattern_strs.join("\", \""));
 
             for attr in &el.attributes {
