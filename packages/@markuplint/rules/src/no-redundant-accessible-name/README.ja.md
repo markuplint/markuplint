@@ -168,6 +168,7 @@ AccName 1.2 アルゴリズムは以下の優先順位でアクセシブル名�
 
 - **CSS 生成コンテンツ**: `::before` / `::after` 疑似要素からのコンテンツは静的解析では検出できず、名前ソースのチェックに含まれません。
 - **SVG `<title>`**: SVG の `<title>` 子要素は SVG 要素のアクセシブル名を提供しますが、HTML の `title` 属性とは異なり、本ルールでは現在対象外です。
+- **自分自身を参照する埋め込みコントロール**: [ステップ 2C（Embedded Control）](https://www.w3.org/TR/accname-1.2/#comp_embedded_control)はモデル化していないため、`textbox`・`combobox`・`listbox`・range ウィジェットが自分自身を参照する `aria-labelledby` は、ほかの要素と同じ扱いになります。
 - **`aria-describedby`**: 本ルールはアクセシブル「名前」ソースのみをチェックします。アクセシブル「説明」（`aria-describedby`）は別の概念であり、対象外です。
 
 ## 関連
