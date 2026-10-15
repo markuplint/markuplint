@@ -151,6 +151,17 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	readonly tagNameCaseSensitive: boolean;
 
 	/**
+	 * Whether attribute names are case-sensitive in the source language (JSX props).
+	 * When false (default for HTML), attribute names are compared case-insensitively.
+	 *
+	 * Known limitation: only the `case-sensitive-attr-name` rule honors this flag.
+	 * Attribute lookup, attribute selectors and duplicate-attribute detection still
+	 * compare names case-insensitively, unlike {@link MLDocument.tagNameCaseSensitive},
+	 * which also drives element selector matching.
+	 */
+	readonly attrNameCaseSensitive: boolean;
+
+	/**
 	 * Common settings applied globally to all rules, such as the ARIA version.
 	 * Rules use this as a fallback when their own options do not specify a value.
 	 */
@@ -173,6 +184,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 			readonly endTag?: 'xml' | 'omittable' | 'never';
 			readonly booleanish?: boolean;
 			readonly tagNameCaseSensitive?: boolean;
+			readonly attrNameCaseSensitive?: boolean;
 			readonly pretenders?: readonly Pretender[];
 		},
 	) {
@@ -185,6 +197,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		this.endTag = options?.endTag ?? 'omittable';
 		this.#filename = options?.filename;
 		this.tagNameCaseSensitive = options?.tagNameCaseSensitive ?? false;
+		this.attrNameCaseSensitive = options?.attrNameCaseSensitive ?? false;
 		this.ruleCommonSettings = ruleCommonSettings;
 
 		// Build UUID → AST node map for cross-reference lookups (e.g., pairNodeUuid)

@@ -518,6 +518,7 @@ export class MLCore {
 				endTag: this.#parser.endTag,
 				booleanish: this.#parser.booleanish,
 				tagNameCaseSensitive: this.#parser.tagNameCaseSensitive,
+				attrNameCaseSensitive: this.#parser.attrNameCaseSensitive,
 				pretenders: this.#pretenders,
 			});
 			// Collect errors from rule mapping (e.g., invalid wildcard usage).
