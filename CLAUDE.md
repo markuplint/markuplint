@@ -31,6 +31,7 @@ Two major lines are developed in parallel:
 | `v4`   | v4 maintenance.                                                                    |
 
 - Merges go `dev` → `v6` only; `v6` is never merged into `dev`.
+- `Fixes #N` closes the issue only when the PR merges into the default branch (`dev`). After a PR into `v6` merges, check each linked issue with `gh issue view <n> --json state` and close the open ones by hand (`gh issue close <n> --reason completed --comment "Fixed by #<PR> (merged into v6)."`). A v6 PR is not done until its issues are closed.
 - The lines have diverged in which linters run, what the test gate covers, and which packages exist. Read the current branch's `package.json` before stating any of these; a fact from the other branch is not evidence.
 - Guidance that applies to both lines lives in a shared file, worded with its condition explicit so it stays true on both. Guidance for one line lives in a file only that line has (`crates/CLAUDE.md`). Divergent copies of the same paragraph conflict on every `dev` → `v6` merge, so do not create them.
 
@@ -81,6 +82,12 @@ The harness cuts a new worktree from the default branch (`dev`). For v6 work, re
 - A branch may need more than `yarn install` (submodules, a native addon). Check for path-scoped `CLAUDE.md` files the branch introduces (`crates/CLAUDE.md`) before building.
 - Husky hooks run in worktrees once `yarn install` has run (`core.hooksPath` is relative; the install recreates `.husky/_`). Exception: `git commit --amend` during an interactive rebase can fail hook resolution — only then is `--no-verify` acceptable, followed by a manual `yarn lint`.
 - Run `cd` standalone (not `cd dir && cmd`), do not chain commands with `&&`, and do not use `git -C <path>` — each command is separate so permission prompts stay per-command.
+- Bring a topic branch up to date with `git fetch origin <base>` then `git merge origin/<base>`. Never rebase: `git commit --amend` inside a rebase breaks husky's hook resolution in a worktree, and merge keeps the branch's history reviewable as-is.
+
+# Pull Requests & Issues
+
+- Reviewing an external contributor's PR: sort every finding into "must be fixed before merge" or "not asked for in this PR" (then do not comment on it) before presenting the review. A "non-blocking, but…" remark hands the decision to the contributor and the owner both. A pre-existing problem outside the PR's scope goes into a separate issue, not into the review.
+- A small number of affected cases, or a low estimated impact, is never a reason to skip an issue or a fix. The criterion is whether the spec requires it; if it does, do it; if the spec is silent, report that instead.
 
 # Security
 
@@ -94,4 +101,6 @@ The harness cuts a new worktree from the default branch (`dev`). For v6 work, re
 
 - `yarn dlx` is not used — it executes remote code without a lockfile
 - `npx` is acceptable only for packages already installed in `node_modules` (e.g. `npx vitest`); never for a package that would be fetched from the registry
-- Pin exact versions when adding dependencies (`yarn add foo@1.2.3`); check a new package's trustworthiness first; do not hand-edit `yarn.lock`
+- Version specifiers when adding dependencies: third-party `dependencies` of a published package take a caret range (`yarn add foo@^1.2.3`); `devDependencies`, private packages, and `@markuplint/*` siblings pin exact versions. An exact pin in a published package does not reach its dependencies' own dependencies, and it blocks consumers from taking upstream fixes until we release again. Supply-chain defence for what consumers install rests with their lockfile and package manager; this repo relies on `yarn.lock`, `npmMinimalAgeGate`, and Renovate's `minimumReleaseAge`
+  - Exceptions in published `dependencies`: a package that ships breaking API changes in minor releases takes a tilde range; packages that must resolve to the same version as each other pin exact. The exceptions are enumerated, and the policy enforced, in `packages/@markuplint/test-tools/src/dependency-ranges.spec.ts` — add a new exception there
+- Check a new package's trustworthiness first; do not hand-edit `yarn.lock`

@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.2.0](https://github.com/markuplint/markuplint/compare/v5.1.1...v5.2.0) (2026-10-13)
+
+### Bug Fixes
+
+- **ml-core:** resolve the namespace of a component and the children given to it ([00ecbba](https://github.com/markuplint/markuplint/commit/00ecbbae6095dd8eb7d10148633d6610bed7f1e2))
+- **ml-core:** return the DOM values from MLAttr.namespaceURI ([05467ad](https://github.com/markuplint/markuplint/commit/05467ad28d61ae0a272c8335db9a0b2f614e5592))
+- use caret ranges for third-party dependencies of published packages ([5fb5d2e](https://github.com/markuplint/markuplint/commit/5fb5d2ee81eaeea45fe7256a40dd41c95ff0d672))
+
 ## [5.1.1](https://github.com/markuplint/markuplint/compare/v5.1.0...v5.1.1) (2026-10-09)
 
 **Note:** Version bump only for package @markuplint/ml-core

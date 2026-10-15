@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/shared",
-	"version": "5.1.1",
+	"version": "5.2.0",
 	"description": "Shared functions for Markuplint",
 	"repository": {
 		"type": "git",
@@ -31,6 +31,6 @@
 		"clean": "npx tsc --build --clean tsconfig.build.json"
 	},
 	"dependencies": {
-		"html-entities": "2.6.0"
+		"html-entities": "^2.6.0"
 	}
 }

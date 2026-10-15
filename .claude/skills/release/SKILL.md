@@ -16,6 +16,7 @@ disable-model-invocation: true
 - **The release branch is not the development branch.** See [Branch model](#branch-model) — getting this wrong is the single most common mistake in this repository.
 - Pushing a `v*` tag triggers `.github/workflows/publish.yml`, which runs `lerna publish from-git` with a dist-tag derived from the version string (`-alpha.*` → `alpha`, `-beta.*` → `beta`, `-rc.*` → `rc`, no prerelease suffix → `latest`) via npm OIDC Trusted Publishing.
 - **Publishing cannot be undone.** Confirm with the user at each gate.
+- **Run this in the user's main checkout, not in a worktree.** The worktree rule in the root `CLAUDE.md` is for topic-branch work; a release needs `main` checked out where the user runs `yarn release`, and a worktree holding `main` blocks the main checkout from switching to it. If this skill is invoked from a worktree session, stop before any checkout or merge and hand the steps to the user for the main checkout.
 - The VS Code extension ships separately (`yarn vscode:package` to verify the VSIX build locally, then `yarn vscode:release`) and is out of scope here.
 
 # Branch model
@@ -161,8 +162,19 @@ git ls-remote --tags origin
 
 ## 7. Merge back
 
-- **Stable**: merge `main` back into `dev` so the version commit is not lost (`git checkout dev && git merge origin/main`, then push via a PR if `dev` is protected). Then carry `dev` forward into `v6` — the version commit has to reach the next-major line too, and `dev` → `v6` is the only permitted direction.
+- **Stable**: merge `main` back into `dev` so the version commit is not lost. Then carry `dev` forward into `v6` — the version commit has to reach the next-major line too, and `dev` → `v6` is the only permitted direction.
 - **Prerelease**: merge the prerelease branch into the line it was cut from (`dev` or `v6`), then, if it was `dev`, carry `dev` forward into `v6`.
+
+The merge back is pushed directly, not through a PR. `dev` is protected, but the admin bypass lets the push through (the output says "Bypassed rule violations"); opening a PR for it only produces a conflict-prone merge PR. The merge commit itself has to be made with `--no-verify`, because lint-staged's `yarn cli` task always fails on the fixtures that are meant to contain errors (`test/fixture/027.html` and friends) — so run `yarn lint-check`, `yarn build`, and `yarn test` on the merged tree first, then:
+
+```bash
+git checkout dev
+git merge origin/main --no-edit --no-verify
+git log --graph --oneline -3        # the merge commit must have two parents
+git push origin dev
+```
+
+If the hook has dropped `MERGE_HEAD` and the commit has one parent, rebuild it with `git commit-tree <tree> -p <main> -p <dev>`. If the push is rejected because `dev` moved (Renovate lands often), `git fetch origin dev`, merge it in, and push again.
 
 Do this before step 8 so a failure in verification does not leave the branches diverged.
 

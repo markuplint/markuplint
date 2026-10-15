@@ -16,8 +16,9 @@ export function contentModelPseudoClass(specs: MLMLSpec) {
 			const selectors = contentModelCategoryToTagNames(`#${category}` as Category, specs.def);
 			const matched = selectors
 				.flatMap<SelectorResult>(selector => {
+					// `#custom` is decided by the host element (`SelectorElement.isCustomElement`),
+					// as the selector package has no notion of element types.
 					if (selector === '#custom') {
-						// @ts-ignore
 						if (el.isCustomElement) {
 							return [
 								{

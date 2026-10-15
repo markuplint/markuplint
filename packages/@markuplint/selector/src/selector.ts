@@ -615,6 +615,10 @@ function attrMatch(
 			return false;
 		}
 		if (attr.namespace != null && attr.namespace !== true && attr.namespace !== '*') {
+			// An attribute without a namespace belongs to no named namespace; `resolveNamespace` would read `null` as HTML.
+			if (attrOfEl.namespaceURI == null) {
+				return false;
+			}
 			const ns = resolveNamespace(attrOfEl.localName, attrOfEl.namespaceURI);
 			if (attr.namespace !== ns.namespace) {
 				return false;

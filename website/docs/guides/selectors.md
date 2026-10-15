@@ -220,6 +220,8 @@ You can specify **version of WAI-ARIA** by separating the pipe like `:role(form|
 
 For example, `:model(interactive)` matches `<a>`(with `href` attr), `<button>`, and more.
 
+A category that lists custom elements in the HTML Standard, such as `flow`, `phrasing` and `palpable`, also matches custom elements (`<x-foo>`) and components (`<Foo />`). An element that a component pretends to be is judged by the name it pretends to be: it matches only when that name contains a hyphen.
+
 ## Regular expression selector
 
 Use **regular expressions** to select elements by matching the **node name**, **attribute name**, **attribute value**, or a combination of these.

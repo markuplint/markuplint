@@ -70,8 +70,8 @@ extension identity is therefore `markuplint.markuplint-vscode`, not
 `markuplint.vscode-markuplint`. This is not a stylistic choice:
 
 - On the first publish attempt to the new `markuplint` publisher (v5.0.0),
-  the Marketplace rejected `name: "vscode-markuplint"` with `ERROR The
-extension 'vscode-markuplint' already exists in the Marketplace` — its
+  the Marketplace rejected `name: "vscode-markuplint"` with
+  `ERROR The extension 'vscode-markuplint' already exists in the Marketplace` — its
   name-uniqueness check apparently applies to the raw extension `name`
   across _all_ publishers, not the full `publisher.name` identity, so the
   string `vscode-markuplint` already in use by the legacy `yusukehirao`
