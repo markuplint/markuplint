@@ -114,4 +114,18 @@ describe('mlastForRust', () => {
 		expect(json).not.toHaveProperty('booleanish');
 		expect(json).not.toHaveProperty('tagNameCaseSensitive');
 	});
+
+	test('[rust-mlast-settings-003] sends whether the parser takes attribute names as case-sensitive', () => {
+		const json = JSON.parse(
+			mlastForRust(html('<div></div>'), { spec: {}, parser: { attrNameCaseSensitive: true } }),
+		) as Record<string, unknown>;
+
+		expect(json).toMatchObject({ attrNameCaseSensitive: true });
+	});
+
+	test('[rust-mlast-settings-004] leaves out `attrNameCaseSensitive` when the parser does not say', () => {
+		const json = JSON.parse(mlastForRust(html('<div></div>'), { spec: {}, parser: {} })) as Record<string, unknown>;
+
+		expect(json).not.toHaveProperty('attrNameCaseSensitive');
+	});
 });

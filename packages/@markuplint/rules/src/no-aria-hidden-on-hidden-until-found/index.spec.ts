@@ -32,6 +32,19 @@ test('[no-aria-hidden-on-hidden-until-found-invalid-001] aria-hidden=true with h
 	]);
 });
 
+test('[no-aria-hidden-on-hidden-until-found-issue-4180-001] an upper-case ARIA-HIDDEN attribute name is matched', async () => {
+	const { violations } = await mlRuleTest(rule, '<div hidden="until-found" ARIA-HIDDEN="true">Hidden content</div>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 27,
+			message: '"aria-hidden" must not be "true" on an element with "hidden" value "until-found"',
+			raw: 'ARIA-HIDDEN="true"',
+		},
+	]);
+});
+
 test('[no-aria-hidden-on-hidden-until-found-invalid-002] case-insensitive and whitespace-padded values still match', async () => {
 	const { violations } = await mlRuleTest(
 		rule,

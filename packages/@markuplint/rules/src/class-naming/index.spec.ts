@@ -500,4 +500,40 @@ describe('Issues', () => {
 		);
 		expect(violations).toStrictEqual([]);
 	});
+
+	test('[class-naming-issue-4202-001] enabled without a pattern is a no-op', async () => {
+		const { violations } = await mlRuleTest(rule, '<img class="a">', { rule: true });
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[class-naming-issue-4202-002] empty pattern array is a no-op', async () => {
+		const { violations } = await mlRuleTest(rule, '<img class="a">', { rule: { value: [] } });
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[class-naming-issue-4202-004] null value is a no-op', async () => {
+		const { violations } = await mlRuleTest(rule, '<img class="a">', { rule: { value: null } });
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[class-naming-issue-4202-003] a pattern set only by childNodeRule still applies', async () => {
+		const { violations } = await mlRuleTest(rule, '<div class="a"><p class="b"></p></div>', {
+			rule: true,
+			childNodeRule: [
+				{
+					selector: 'div',
+					rule: { value: 'a' },
+				},
+			],
+		});
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 26,
+				message: 'The "b" class name is unmatched with the below patterns: "a"',
+				raw: 'b',
+			},
+		]);
+	});
 });

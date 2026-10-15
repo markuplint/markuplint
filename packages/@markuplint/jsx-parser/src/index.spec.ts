@@ -20,6 +20,11 @@ describe('parse', () => {
 		}).toThrow("JSX element 'span' has no corresponding closing tag.");
 	});
 
+	test('treats tag and attribute names as case-sensitive', () => {
+		expect(parser.tagNameCaseSensitive).toBe(true);
+		expect(parser.attrNameCaseSensitive).toBe(true);
+	});
+
 	test('Element only', () => {
 		const ast = parse('<div></div>');
 		const maps = nodeListToDebugMaps(ast.nodeList);

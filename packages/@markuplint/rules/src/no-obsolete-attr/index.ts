@@ -12,7 +12,8 @@ export default createRule({
 				return;
 			}
 
-			const name = attr.name;
+			// A case-sensitive parser (JSX/MDX) treats `Align` as a distinct prop, not the HTML attribute.
+			const name = document.attrNameCaseSensitive ? attr.name : attr.name.toLowerCase();
 			const attrSpec = attrSpecs.find(item => item.name === name);
 			if (!attrSpec) {
 				return;

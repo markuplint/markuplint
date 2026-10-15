@@ -167,6 +167,14 @@ describe('AST', () => {
 		expect(bothEl.getAttributeNode('tabindex')?.candidate).toBeUndefined();
 	});
 
+	test('getAttributeToken matches attribute names case-insensitively (#4180)', () => {
+		const el = createTestElement('<div ARIA-HIDDEN="true" Data-Foo="1"></div>');
+		expect(el.getAttributeToken('aria-hidden').map(attr => attr.value)).toStrictEqual(['true']);
+		expect(el.getAttributeToken('ARIA-HIDDEN').map(attr => attr.value)).toStrictEqual(['true']);
+		expect(el.getAttributeNode('data-foo')?.value).toBe('1');
+		expect(el.getAttributeToken('aria-label')).toStrictEqual([]);
+	});
+
 	test('rule', () => {
 		const document = createTestDocument('<div><span>text</span></div>', {
 			config: {

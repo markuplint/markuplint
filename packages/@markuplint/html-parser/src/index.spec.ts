@@ -1199,6 +1199,13 @@ describe('Issues', () => {
 		expect(node2.childNodes?.[0]?.raw).toBe('\ntext');
 	});
 
+	test('<xmp> content is RAWTEXT and is not re-tokenized as tags (#4180)', () => {
+		expect(nodeListToDebugMaps(parse('<xmp></head><body></xmp>').nodeList)).toStrictEqual([
+			'[1:1]>[1:6](0,5)xmp: <xmp>',
+			'[1:19]>[1:25](18,24)xmp: </xmp>',
+		]);
+	});
+
 	test('#1042', () => {
 		const doc = parse('---\nkey: value\n---\n\n\n<!doctype html>\n<html\n><head\n>\n</head\n><body\n>', {
 			ignoreFrontMatter: true,

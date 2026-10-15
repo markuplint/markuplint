@@ -4,6 +4,12 @@
  * Main package entry point for markuplint.
  * Re-exports the public API surface including the lint engine, types,
  * internationalization utilities, testing tools, and version information.
+ *
+ * Invariant for every published package: the ESM-only build must stay
+ * loadable from CommonJS through `require()`. Node does that synchronously only
+ * while the static module graph has no top-level `await`, so none may be
+ * introduced. `packages/@markuplint/test-tools/src/package-exports.spec.ts`
+ * enforces it.
  */
 
 /** The primary linting engine and options for linting from source code strings. */

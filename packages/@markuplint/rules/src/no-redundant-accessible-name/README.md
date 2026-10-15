@@ -153,10 +153,22 @@ This rule reports this as a violation because `aria-labelledby` overrides `label
 }
 ```
 
+### Self-Referencing `aria-labelledby`
+
+When `aria-labelledby` includes the element's own `id`, the accessible name computation skips [step 2B](https://www.w3.org/TR/accname-1.2/#comp_labelledby) for that element and continues with its own `aria-label`, native sources, and content. `aria-labelledby` then only combines the element's own name with the other referenced elements, so this rule does not treat it as a naming source that overrides anything:
+
+```html
+<span id="file-name">Documentation.pdf</span>
+<button id="delete-button" aria-label="Delete" aria-labelledby="delete-button file-name"></button>
+```
+
+The accessible name is "Delete Documentation.pdf" ([Example 5](https://www.w3.org/TR/accname-1.2/#comp_label) of the specification), so nothing is reported. Other overrides on the same element, such as `aria-label` overriding content, are still reported.
+
 ## Known Limitations
 
 - **CSS generated content**: Content from `::before` / `::after` pseudo-elements is not detectable by static analysis and is not included in the naming source check.
 - **SVG `<title>`**: The `<title>` child element of SVG provides an accessible name for SVG elements, but this is distinct from the HTML `title` attribute and is not currently covered by this rule.
+- **Self-referencing embedded controls**: [Step 2C (Embedded Control)](https://www.w3.org/TR/accname-1.2/#comp_embedded_control) is not modeled, so a self-referencing `aria-labelledby` on a `textbox`, `combobox`, `listbox` or range widget is treated like any other element.
 - **`aria-describedby`**: This rule only checks accessible _name_ sources. The accessible _description_ (`aria-describedby`) is a separate concept and is not in scope.
 
 ## See Also

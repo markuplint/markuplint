@@ -17,8 +17,9 @@ pub enum EndTagType {
 }
 
 /// What the TS `Document` takes from the parser besides its nodes (`MLParser.endTag`,
-/// `booleanish`, `tagNameCaseSensitive`). The TS engine sends them next to the `MLASTDocument`
-/// fields in the same JSON, and every field may be absent, as it is for the HTML parser.
+/// `booleanish`, `tagNameCaseSensitive`, `attrNameCaseSensitive`). The TS engine sends them next
+/// to the `MLASTDocument` fields in the same JSON, and every field may be absent, as it is for
+/// the HTML parser.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct DocumentSettings {
@@ -29,6 +30,9 @@ pub struct DocumentSettings {
     pub booleanish: bool,
     #[serde(default)]
     pub tag_name_case_sensitive: bool,
+    /// JSX and MDX: `onClick` is a distinct prop, not the HTML attribute `onclick`.
+    #[serde(default)]
+    pub attr_name_case_sensitive: bool,
 }
 
 /// Corresponds to `MLASTDocument` in TS.

@@ -11,6 +11,12 @@ test('[no-focusable-in-aria-hidden-valid-002] non-interactive in hidden', async 
 	expect((await mlRuleTest(rule, '<div aria-hidden="true"><span>text</span></div>')).violations).toStrictEqual([]);
 });
 
+test('[no-focusable-in-aria-hidden-issue-4180-001] an upper-case ARIA-HIDDEN attribute name is matched', async () => {
+	const { violations } = await mlRuleTest(rule, '<div ARIA-HIDDEN="true"><button>click</button></div>');
+	expect(violations.length).toBe(1);
+	expect(violations[0]!.severity).toBe('warning');
+});
+
 test('[no-focusable-in-aria-hidden-invalid-001] focusable in hidden', async () => {
 	const { violations } = await mlRuleTest(rule, '<div aria-hidden="true"><button>click</button></div>');
 	expect(violations.length).toBe(1);

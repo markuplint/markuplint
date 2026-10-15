@@ -17,6 +17,12 @@ export default createRule<Value>({
 			const classPatterns = toNoEmptyStringArrayFromStringOrArray(el.rule.value).filter(
 				className => !!className && typeof className === 'string',
 			);
+			// No pattern means the rule is disabled for this element (`null` is
+			// documented as "disable"); without this every class name would be
+			// reported against an empty pattern list. See #4202.
+			if (classPatterns.length === 0) {
+				return;
+			}
 			const attrs = el.getAttributeToken('class');
 			for (const attr of attrs) {
 				if (attr.isDynamicValue) {
