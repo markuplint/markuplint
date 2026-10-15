@@ -1,6 +1,35 @@
-import { describe, test, expect } from 'vitest';
+import type * as esModuleLexer from 'es-module-lexer';
+
+import { afterEach, describe, test, expect, vi } from 'vitest';
+
+const mocks = vi.hoisted(() => ({
+	initMock: vi.fn(),
+	parseMock: vi.fn(),
+	actualInit: null as unknown as typeof esModuleLexer.init,
+	actualParse: null as unknown as typeof esModuleLexer.parse,
+}));
+
+vi.mock('es-module-lexer', async importOriginal => {
+	const actual = await importOriginal<typeof esModuleLexer>();
+	mocks.actualInit = actual.init;
+	mocks.actualParse = actual.parse;
+	mocks.initMock.mockImplementation(actual.init);
+	mocks.parseMock.mockImplementation(actual.parse);
+	return {
+		...actual,
+		init: (...args: unknown[]) => mocks.initMock(...args),
+		parse: (...args: unknown[]) => mocks.parseMock(...args),
+	};
+});
 
 import { parseImports } from './parse-imports.js';
+
+afterEach(() => {
+	mocks.initMock.mockReset();
+	mocks.parseMock.mockReset();
+	mocks.initMock.mockImplementation(mocks.actualInit);
+	mocks.parseMock.mockImplementation(mocks.actualParse);
+});
 
 describe('parseImports', () => {
 	describe('default imports', () => {
@@ -347,6 +376,100 @@ describe('parseImports', () => {
 			]);
 			expect(results[0]).toHaveLength(1);
 			expect(results[1]).toHaveLength(1);
+		});
+	});
+
+	describe('error handling (issue #4215)', () => {
+		describe('initialization retry (Behavior A)', () => {
+			test('surfaces initialization failure on first call and retries on subsequent call', async () => {
+				vi.resetModules();
+				const { parseImports: freshParseImports } = await import('./parse-imports.js');
+
+				const initError = new Error('WASM initialization failed');
+				mocks.initMock.mockRejectedValueOnce(initError);
+
+				// First call should fail and surface the initialization rejection
+				await expect(freshParseImports("import Button from './Button.vue'")).rejects.toThrow(
+					'WASM initialization failed',
+				);
+
+				// Subsequent call should retry initialization rather than reusing the rejected promise
+				const result = await freshParseImports("import Button from './Button.vue'");
+				expect(result).toStrictEqual([
+					{
+						localName: 'Button',
+						importedName: 'default',
+						source: './Button.vue',
+						type: 'default',
+					},
+				]);
+				expect(mocks.initMock).toHaveBeenCalledTimes(2);
+			});
+
+			test('concurrent in-flight calls share initialization, and later call retries after failure', async () => {
+				vi.resetModules();
+				const { parseImports: freshParseImports } = await import('./parse-imports.js');
+
+				const initError = new Error('WASM initialization failed');
+				mocks.initMock.mockRejectedValueOnce(initError);
+
+				// Concurrent calls share the in-flight initialization attempt
+				await expect(
+					Promise.all([
+						freshParseImports("import { A } from './a'"),
+						freshParseImports("import { B } from './b'"),
+					]),
+				).rejects.toThrow('WASM initialization failed');
+				expect(mocks.initMock).toHaveBeenCalledTimes(1);
+
+				// Later call retries initialization
+				const result = await freshParseImports("import { A } from './a'");
+				expect(result).toStrictEqual([
+					{
+						localName: 'A',
+						importedName: 'A',
+						source: './a',
+						type: 'named',
+					},
+				]);
+				expect(mocks.initMock).toHaveBeenCalledTimes(2);
+			});
+		});
+
+		describe('fatal-error handling (Behavior B)', () => {
+			test('re-throws Tier 1 fatal TypeError from parse()', async () => {
+				mocks.parseMock.mockImplementationOnce(() => {
+					throw new TypeError('Fatal type error');
+				});
+
+				await expect(parseImports("import Button from './Button.vue'")).rejects.toThrow(TypeError);
+			});
+
+			test('re-throws Tier 1 fatal SyntaxError from parse()', async () => {
+				mocks.parseMock.mockImplementationOnce(() => {
+					throw new SyntaxError('Fatal syntax error');
+				});
+
+				await expect(parseImports("import Button from './Button.vue'")).rejects.toThrow(SyntaxError);
+			});
+
+			test('re-throws non-Error throws from parse()', async () => {
+				mocks.parseMock.mockImplementationOnce(() => {
+					// eslint-disable-next-line @typescript-eslint/only-throw-error
+					throw 'string error';
+				});
+
+				await expect(parseImports("import Button from './Button.vue'")).rejects.toBe('string error');
+			});
+
+			test('preserves tolerance for non-fatal parse errors (returns empty bindings)', async () => {
+				mocks.parseMock.mockImplementationOnce(() => {
+					throw new Error('Parse error @:1:9');
+				});
+
+				const result = await parseImports('import {');
+				expect(result).toStrictEqual([]);
+			});
 		});
 	});
 });

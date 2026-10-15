@@ -8,6 +8,7 @@
 
 import type { ImportBinding } from './types.js';
 
+import { isFatalError } from '@markuplint/shared';
 import { init, parse } from 'es-module-lexer';
 
 /** Matches `import type` — TypeScript type-only import (no runtime binding) */
@@ -35,9 +36,18 @@ let initPromise: Promise<void> | null = null;
 
 /**
  * Safe to call multiple times; the WASM module initializes only once.
+ * A rejected initialization attempt is not retained, allowing a later retry.
  */
 async function ensureInit() {
-	initPromise ??= init();
+	if (!initPromise) {
+		const promise = init();
+		promise.catch(() => {
+			if (initPromise === promise) {
+				initPromise = null;
+			}
+		});
+		initPromise = promise;
+	}
 	await initPromise;
 }
 
@@ -165,7 +175,10 @@ export async function parseImports(source: string): Promise<readonly ImportBindi
 	let imports;
 	try {
 		[imports] = parse(source);
-	} catch {
+	} catch (error) {
+		if (isFatalError(error)) {
+			throw error;
+		}
 		// Source may contain non-JS content (e.g., MDX with markdown).
 		// Return empty bindings rather than propagating the parse error.
 		return [];
