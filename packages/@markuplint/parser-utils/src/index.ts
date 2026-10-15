@@ -1,4 +1,5 @@
 export * from './debugger.js';
+export * from './decision.js';
 export * from './enums.js';
 export * from './get-namespace.js';
 export * from './idl-attributes.js';
