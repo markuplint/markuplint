@@ -74,11 +74,18 @@ type Declaration = {
  * 2. The file's recorded import bindings, resolved to the actual declaration file
  *    via TypeScript module resolution and the target file's export table.
  * 3. The legacy name-based index, for backward compatibility when no file context
- *    is available (or the reference can't be resolved through it).
+ *    is available (or the reference can't be resolved through it). Not for a name
+ *    imported from a package: the import says where it leads, so a component of the
+ *    project that happens to have the same name is not what it renders. The chain
+ *    ends there, as the walk does not enter `node_modules`.
  *
  * (1) and (2) are what let same-named components declared in different files
  * (e.g., two unrelated `Item` components) resolve independently instead of the
  * first-registered one silently winning for every reference — see issue #3951.
+ *
+ * Known limitation: an import that cannot be resolved at all still falls back to
+ * the name index, as a path alias the module resolution does not know may hide a
+ * file of the project. So a package that is not installed is not told apart.
  *
  * Each hop composes the `slots` / `contents` and the attributes of the component so far
  * into those of the component it renders (`composeIdentity`, issue #4057); the rest of the
@@ -164,6 +171,10 @@ function resolveHop(
 		}
 
 		const viaImport = resolveThroughImport(elName, currentFile, importsByFile, env);
+		if (viaImport === FROM_PACKAGE) {
+			// A name that no key stands for: the chain ends here.
+			return elName;
+		}
 		if (viaImport && map.has(viaImport)) {
 			return viaImport;
 		}
@@ -175,17 +186,29 @@ function resolveHop(
 const MAX_RE_EXPORT_DEPTH = 8;
 
 /**
+ * What {@link resolveThroughImport} returns for a name that is imported from a
+ * package (a file under `node_modules`), as no key of the map can stand for it.
+ */
+const FROM_PACKAGE = Symbol('from-package');
+
+function isPackageFile(fileAbs: string): boolean {
+	return normalizePath(fileAbs).includes('/node_modules/');
+}
+
+/**
  * Resolves `elName` through the import bindings recorded for `currentFile`,
  * returning the map key of the file/name it actually refers to, or `null`
  * when it can't be confirmed (bare/namespace/dynamic specifiers, unresolved
- * modules, or export tables that don't confirm the binding).
+ * modules, or export tables that don't confirm the binding). `FROM_PACKAGE`
+ * when it is confirmed to lead into a package, directly or through a re-export:
+ * unlike `null`, it rules out the name-based fallback.
  */
 function resolveThroughImport(
 	elName: string,
 	currentFile: string,
 	importsByFile: ReadonlyMap<string, readonly ImportBinding[]> | undefined,
 	env: ResolveEnv,
-): string | null {
+): string | typeof FROM_PACKAGE | null {
 	const bindings = importsByFile?.get(currentFile);
 	if (!bindings) {
 		return null;
@@ -201,10 +224,17 @@ function resolveThroughImport(
 	if (!resolvedAbs) {
 		return null;
 	}
+	// Before the export table: a package's own is not built (see `resolveThroughStarReExports`).
+	if (isPackageFile(resolvedAbs)) {
+		return FROM_PACKAGE;
+	}
 
 	const declaration = isTemplateComponentFile(resolvedAbs)
 		? { fileAbs: resolvedAbs, localName: null }
 		: resolveExportedName(resolvedAbs, binding.importedName, new Set(), env);
+	if (declaration && isPackageFile(declaration.fileAbs)) {
+		return FROM_PACKAGE;
+	}
 	return declaration && declarationKey(declaration, env.cwd);
 }
 
@@ -315,7 +345,7 @@ function resolveThroughStarReExports(
 		// package holds no scanned component (the walk does not enter
 		// `node_modules` either), and its own star re-exports can be wide and deep
 		// enough to search on every miss of a name.
-		if (!nextAbs || isTemplateComponentFile(nextAbs) || normalizePath(nextAbs).includes('/node_modules/')) {
+		if (!nextAbs || isTemplateComponentFile(nextAbs) || isPackageFile(nextAbs)) {
 			continue;
 		}
 		const declaration = resolveExportedName(nextAbs, exportedName, new Set(visited), env);

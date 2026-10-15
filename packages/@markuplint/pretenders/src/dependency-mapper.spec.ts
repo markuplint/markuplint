@@ -555,6 +555,52 @@ describe('dependencyMapper', () => {
 		});
 	});
 
+	describe('a name imported from a package', () => {
+		let tmpDir: string;
+
+		beforeEach(async () => {
+			tmpDir = await mkdtemp(path.join(os.tmpdir(), 'dependency-mapper-package-'));
+			const libDir = path.join(tmpDir, 'node_modules', 'some-lib');
+			await mkdir(libDir, { recursive: true });
+			await writeFile(path.join(libDir, 'package.json'), '{"name":"some-lib","main":"index.js"}');
+			await writeFile(path.join(libDir, 'index.js'), 'export const Button = () => null;');
+		});
+
+		afterEach(async () => {
+			await rm(tmpDir, { recursive: true, force: true });
+			clearExportTableCache();
+		});
+
+		// `card.tsx` renders `Button` imported from `source`, and `ui/button.tsx` declares another,
+		// unrelated `Button` that the name index points at: what a lookup falls back to when it
+		// cannot tell where the import leads.
+		const resolveCard = (source: string) => {
+			const map: PretenderDirectorMap = new Map([
+				['ui/button.tsx#Button', ['Button', 'section', undefined, 'ui/button.tsx']],
+				['card.tsx#Card', ['Card', 'Button', undefined, 'card.tsx']],
+			]);
+			const nameIndex = new Map([['Button', 'ui/button.tsx#Button']]);
+			const importsByFile = new Map([
+				['card.tsx', [{ localName: 'Button', importedName: 'Button', source, type: 'named' as const }]],
+			]);
+			const result = dependencyMapper(map, nameIndex, { importsByFile, cwd: tmpDir });
+			return result.find(p => p.selector === 'Card');
+		};
+
+		test('does not resolve to a same-named component of the project', () => {
+			expect(resolveCard('some-lib')).toStrictEqual({ selector: 'Card', as: 'Button' });
+		});
+
+		test('does not resolve to a same-named component of the project when it comes through a barrel', async () => {
+			await writeFile(path.join(tmpDir, 'barrel.ts'), "export { Button } from 'some-lib';");
+			expect(resolveCard('./barrel')).toStrictEqual({ selector: 'Card', as: 'Button' });
+		});
+
+		test('still resolves a same-named component when the import itself cannot be resolved, as a path alias may hide it', () => {
+			expect(resolveCard('@/ui/button')).toStrictEqual({ selector: 'Card', as: 'section', _via: ['Button'] });
+		});
+	});
+
 	describe('exportTableCache invalidation (long-running processes)', () => {
 		let tmpDir: string;
 
