@@ -2497,7 +2497,7 @@ __metadata:
     "@vitest/coverage-v8": "npm:4.1.11"
     browser-resolve: "npm:2.0.0"
     coveralls: "npm:3.1.1"
-    execa: "npm:9.6.1"
+    execa: "npm:10.1.0"
     glob: "npm:13.0.6"
     jsdom: "npm:29.1.1"
     textlint-rule-prh: "npm:6.1.0"
@@ -7934,6 +7934,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"execa@npm:10.1.0":
+  version: 10.1.0
+  resolution: "execa@npm:10.1.0"
+  dependencies:
+    "@sindresorhus/merge-streams": "npm:^4.0.0"
+    figures: "npm:^6.1.0"
+    get-stream: "npm:^9.0.1"
+    human-signals: "npm:^8.0.1"
+    is-plain-obj: "npm:^4.1.0"
+    is-stream: "npm:^4.0.1"
+    npm-run-path: "npm:^6.0.0"
+    pretty-ms: "npm:^9.3.1"
+    signal-exit: "npm:^4.1.0"
+    strip-final-newline: "npm:^4.0.0"
+    which-command: "npm:^0.1.0"
+    yoctocolors: "npm:^2.2.0"
+  checksum: 10c0/15c7ad5d4a7a17c3b722d8b6566661ee0af7ac5bea6cc9ded9177b50473c536b9eac534087d1125689056fa2cac378f472787496698c4f37c9fb3823a7f9c576
+  languageName: node
+  linkType: hard
+
 "execa@npm:5.0.0":
   version: 5.0.0
   resolution: "execa@npm:5.0.0"
@@ -7948,26 +7968,6 @@ __metadata:
     signal-exit: "npm:^3.0.3"
     strip-final-newline: "npm:^2.0.0"
   checksum: 10c0/e110add7ca0de63aea415385ebad7236c8de281d5d9a916dbd69f59009dac3d5d631e6252c2ea5d0258220b0d22acf25649b2caf05fa162eaa1401339fc69ba4
-  languageName: node
-  linkType: hard
-
-"execa@npm:9.6.1":
-  version: 9.6.1
-  resolution: "execa@npm:9.6.1"
-  dependencies:
-    "@sindresorhus/merge-streams": "npm:^4.0.0"
-    cross-spawn: "npm:^7.0.6"
-    figures: "npm:^6.1.0"
-    get-stream: "npm:^9.0.0"
-    human-signals: "npm:^8.0.1"
-    is-plain-obj: "npm:^4.1.0"
-    is-stream: "npm:^4.0.1"
-    npm-run-path: "npm:^6.0.0"
-    pretty-ms: "npm:^9.2.0"
-    signal-exit: "npm:^4.1.0"
-    strip-final-newline: "npm:^4.0.0"
-    yoctocolors: "npm:^2.1.1"
-  checksum: 10c0/636b36585306a3c8bc3a9d7b25d2d915fb06d8c9b9b02a804280d62562de3b34535affc1b7702b039320e0953daa6545a073f3c4b63fe974c1fe11336c56b467
   languageName: node
   linkType: hard
 
@@ -8592,7 +8592,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"get-stream@npm:^9.0.0":
+"get-stream@npm:^9.0.1":
   version: 9.0.1
   resolution: "get-stream@npm:9.0.1"
   dependencies:
@@ -14276,12 +14276,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pretty-ms@npm:^9.2.0":
-  version: 9.3.0
-  resolution: "pretty-ms@npm:9.3.0"
+"pretty-ms@npm:^9.3.1":
+  version: 9.3.1
+  resolution: "pretty-ms@npm:9.3.1"
   dependencies:
     parse-ms: "npm:^4.0.0"
-  checksum: 10c0/555ea39a1de48a30601938aedb76d682871d33b6dee015281c37108921514b11e1792928b1648c2e5589acc73c8ef0fb5e585fb4c718e340a28b86799e90fb34
+  checksum: 10c0/f034e6197922da40d6f0e73c835baa0f87d89f660966deb651305ee0567e20d5258b9c1782de098069b479036653bd1ad4ee1d6d816d1fde0e47c62d0ce5763d
   languageName: node
   linkType: hard
 
@@ -17865,6 +17865,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"which-command@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "which-command@npm:0.1.0"
+  bin:
+    which-command: cli.js
+  checksum: 10c0/15b3952b466961ce147de197ef2d40d0f6242dac7d07785936541f7b8f6dba632bd6eab0abac362b80efc0029c536d044717c10aa96562831b0d0a7d548a0029
+  languageName: node
+  linkType: hard
+
 "which-typed-array@npm:^1.1.16, which-typed-array@npm:^1.1.18, which-typed-array@npm:^1.1.19":
   version: 1.1.20
   resolution: "which-typed-array@npm:1.1.20"
@@ -18267,10 +18276,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yoctocolors@npm:^2.1.1":
-  version: 2.1.2
-  resolution: "yoctocolors@npm:2.1.2"
-  checksum: 10c0/b220f30f53ebc2167330c3adc86a3c7f158bcba0236f6c67e25644c3188e2571a6014ffc1321943bb619460259d3d27eb4c9cc58c2d884c1b195805883ec7066
+"yoctocolors@npm:^2.2.0":
+  version: 2.2.0
+  resolution: "yoctocolors@npm:2.2.0"
+  checksum: 10c0/ca179aa83401aa0711f268fda38145a44c828e612a5f5265439efb5796cd63c46ca6b786bae3b74c75440a48518c36b5b23cba7fbb76ea8af5a9f85f830a5754
   languageName: node
   linkType: hard
 

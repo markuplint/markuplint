@@ -28,7 +28,7 @@
 		"@vitest/coverage-v8": "4.1.11",
 		"browser-resolve": "2.0.0",
 		"coveralls": "3.1.1",
-		"execa": "9.6.1",
+		"execa": "10.1.0",
 		"glob": "13.0.6",
 		"jsdom": "29.1.1",
 		"textlint-rule-prh": "6.1.0",
