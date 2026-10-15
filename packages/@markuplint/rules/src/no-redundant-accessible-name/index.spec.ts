@@ -198,7 +198,7 @@ describe('aria-labelledby self-reference (accname 2B is skipped for the node its
 	test('[no-redundant-accessible-name-issue-4217-001] self + other reference with aria-label does not report aria-labelledby overriding aria-label', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
-			'<span id="label-target">Delete</span><input id="field" type="text" aria-label="Item 1" aria-labelledby="field label-target">',
+			'<span id="label-target">Delete</span><button id="button1" aria-label="Item 1" aria-labelledby="button1 label-target"></button>',
 		);
 		expect(violations).toStrictEqual([]);
 	});
@@ -267,14 +267,14 @@ describe('aria-labelledby self-reference (accname 2B is skipped for the node its
 	test('[no-redundant-accessible-name-issue-4217-007] self-reference with aria-label and explicit label reports aria-label overriding label', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
-			'<span id="note">Note</span><input id="field" type="text" aria-label="Item 1" aria-labelledby="field note"><label for="field">Label</label>',
+			'<span id="note">Note</span><input id="field" type="checkbox" aria-label="Item 1" aria-labelledby="field note"><label for="field">Label</label>',
 		);
 		expect(violations).toStrictEqual([
 			{
 				severity: 'warning',
 				line: 1,
 				col: 28,
-				raw: '<input id="field" type="text" aria-label="Item 1" aria-labelledby="field note">',
+				raw: '<input id="field" type="checkbox" aria-label="Item 1" aria-labelledby="field note">',
 				message: 'The accessible name from "aria-label" overrides "label"',
 			},
 		]);

@@ -158,10 +158,11 @@ This rule reports this as a violation because `aria-labelledby` overrides `label
 When `aria-labelledby` includes the element's own `id`, the accessible name computation skips [step 2B](https://www.w3.org/TR/accname-1.2/#comp_labelledby) for that element and continues with its own `aria-label`, native sources, and content. `aria-labelledby` then only combines the element's own name with the other referenced elements, so this rule does not treat it as a naming source that overrides anything:
 
 ```html
-<span id="target">Delete</span> <input id="field" type="text" aria-label="Item 1" aria-labelledby="field target" />
+<span id="file-name">Documentation.pdf</span>
+<button id="delete-button" aria-label="Delete" aria-labelledby="delete-button file-name"></button>
 ```
 
-The accessible name is "Item 1 Delete", so nothing is reported. Other overrides on the same element, such as `aria-label` overriding content, are still reported.
+The accessible name is "Delete Documentation.pdf" ([Example 5](https://www.w3.org/TR/accname-1.2/#comp_label) of the specification), so nothing is reported. Other overrides on the same element, such as `aria-label` overriding content, are still reported.
 
 ## Known Limitations
 

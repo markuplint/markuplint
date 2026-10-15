@@ -158,10 +158,11 @@ AccName 1.2 アルゴリズムは以下の優先順位でアクセシブル名�
 `aria-labelledby` が要素自身の `id` を含む場合、アクセシブルネームの算出ではその要素に対して[ステップ 2B](https://www.w3.org/TR/accname-1.2/#comp_labelledby)をスキップし、要素自身の `aria-label`・ネイティブのソース・コンテンツで名前が決まります。この `aria-labelledby` は、要素自身の名前と参照先の要素を組み合わせるだけなので、本ルールは何かを上書きする命名ソースとは扱いません:
 
 ```html
-<span id="target">削除</span> <input id="field" type="text" aria-label="項目1" aria-labelledby="field target" />
+<span id="file-name">Documentation.pdf</span>
+<button id="delete-button" aria-label="削除" aria-labelledby="delete-button file-name"></button>
 ```
 
-アクセシブルネームは「項目1 削除」になるため、報告されません。同じ要素で `aria-label` が content を上書きするなど、ほかの上書きは引き続き報告されます。
+アクセシブルネームは「削除 Documentation.pdf」になる（仕様の[Example 5](https://www.w3.org/TR/accname-1.2/#comp_label)と同じ形）ため、報告されません。同じ要素で `aria-label` が content を上書きするなど、ほかの上書きは引き続き報告されます。
 
 ## 既知の制限事項
 
