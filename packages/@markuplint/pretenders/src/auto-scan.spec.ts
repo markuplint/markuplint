@@ -34,6 +34,23 @@ describe('autoScan', () => {
 		expect(result.find(p => p.selector === 'Child')).toMatchObject({ as: { element: 'button', slots: null } });
 	});
 
+	test('a .tsx entry resolves a component it loads with `lazy(() => import(...))`', async () => {
+		const entryPath = path.join(tmpDir, 'entry.tsx');
+		await writeFile(
+			path.join(tmpDir, 'Item.tsx'),
+			'export const Item = () => <img src="x.png" />;\nexport default Item;',
+		);
+		const entrySource = [
+			"import { lazy } from 'react';",
+			"const Item = lazy(() => import('./Item'));",
+			'export const W = () => <div><Item><span>c</span></Item></div>;',
+		].join('\n');
+
+		const result = await autoScan(entryPath, entrySource);
+
+		expect(result.find(p => p.selector === 'Item')).toMatchObject({ as: { element: 'img', slots: null } });
+	});
+
 	test('a .tsx entry resolves a .vue import (BFS is extension-agnostic)', async () => {
 		const entryPath = path.join(tmpDir, 'entry.tsx');
 		const childPath = path.join(tmpDir, 'Child.vue');

@@ -134,6 +134,69 @@ describe('pretenders.auto integration', () => {
 });
 
 /**
+ * A component loaded with `React.lazy(() => import('./X'))` is a module reference
+ * like a static `import`, so the file behind it is scanned.
+ */
+describe('pretenders.auto with a lazily loaded component', () => {
+	let tmpDir: string;
+
+	beforeEach(async () => {
+		tmpDir = await mkdtemp(path.join(os.tmpdir(), 'pretenders-auto-lazy-'));
+	});
+
+	afterEach(async () => {
+		await rm(tmpDir, { recursive: true, force: true });
+	});
+
+	test('a lazy component that pretends to be a void element is checked against its children', async () => {
+		await writeFile(
+			path.join(tmpDir, 'Item.tsx'),
+			'export const Item = () => <img src="x.png" />;\nexport default Item;',
+		);
+		const wrapperPath = path.join(tmpDir, 'Wrapper.tsx');
+		await writeFile(
+			wrapperPath,
+			[
+				"import { lazy } from 'react';",
+				"const Item = lazy(() => import('./Item'));",
+				'export const Wrapper = () => <div><Item><span>c</span></Item></div>;',
+			].join('\n'),
+		);
+
+		const { violations } = await mlTestFile(wrapperPath, {
+			...jsxParserConfig,
+			pretenders: { auto: true },
+			rules: { 'permitted-contents': true },
+		});
+
+		expect(violations).toStrictEqual([
+			expect.objectContaining({ ruleId: 'permitted-contents', severity: 'error', raw: '<Item>' }),
+		]);
+	});
+
+	test('a lazy component that renders what its parent requires is not reported', async () => {
+		await writeFile(path.join(tmpDir, 'Row.tsx'), 'export const Row = () => <li>row</li>;\nexport default Row;');
+		const listPath = path.join(tmpDir, 'List.tsx');
+		await writeFile(
+			listPath,
+			[
+				"import { lazy } from 'react';",
+				"const Row = lazy(() => import('./Row'));",
+				'export const List = () => <ul><Row /></ul>;',
+			].join('\n'),
+		);
+
+		const { violations } = await mlTestFile(listPath, {
+			...jsxParserConfig,
+			pretenders: { auto: true },
+			rules: { 'permitted-contents': true },
+		});
+
+		expect(violations).toStrictEqual([]);
+	});
+});
+
+/**
  * The chain of a wrapper ends at a component the scanner cannot resolve: it does
  * not traverse `node_modules`, so `Tabs.Root` of a package is the last name it
  * has. That name must not be checked as an HTML element.
