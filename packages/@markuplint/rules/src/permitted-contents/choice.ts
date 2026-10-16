@@ -2,7 +2,7 @@ import type { ChildNode, MatchedReason, Mode, Options, Result, Specs, TagRule } 
 import type { PermittedContentChoice } from '@markuplint/ml-spec';
 import type { ReadonlyDeep } from 'type-fest';
 
-import { bgBlue, bgGreen, cmLog } from './debug.js';
+import { bgBlue, bgGreen, depthLog } from './debug.js';
 import { order } from './order.js';
 import { Collection, modelLog } from './utils.js';
 
@@ -42,13 +42,16 @@ export function choice(
 	depth: number,
 	mode: Mode,
 ): Result {
-	const choiceLog = cmLog.extend(`choice#${depth}`);
+	const choiceLog = depthLog('choice', depth);
+	const choiceEnabled = choiceLog.enabled;
 	const collection = new Collection(childNodes);
 	const unmatchedResults: Result[] = [];
 
 	let i = 0;
 	for (const some of pattern.choice) {
-		choiceLog('Patterns[%s]: %s', i, modelLog(some, ''));
+		if (choiceEnabled) {
+			choiceLog('Patterns[%s]: %s', i, modelLog(some, ''));
+		}
 
 		const result = order(some, collection.unmatched, rules, specs, options, depth + 1, mode);
 
@@ -57,7 +60,9 @@ export function choice(
 			result.type === 'MATCHED_ZERO' ||
 			(result.type === 'UNEXPECTED_EXTRA_NODE' && result.matched.length > 0)
 		) {
-			choiceLog('Results[%s]: %s', i, choiceLogString(pattern.choice, i));
+			if (choiceEnabled) {
+				choiceLog('Results[%s]: %s', i, choiceLogString(pattern.choice, i));
+			}
 
 			return {
 				type: result.type,
@@ -72,7 +77,11 @@ export function choice(
 		unmatchedResults.push(result);
 		collection.addMatched(result.matched);
 
-		indexes.set(result, i);
+		// Log-only bookkeeping. The `indexes.get()` below is guarded by the same `choiceEnabled`
+		// snapshot, so the two stay in step.
+		if (choiceEnabled) {
+			indexes.set(result, i);
+		}
 		i++;
 	}
 
@@ -99,9 +108,11 @@ export function choice(
 		throw new Error('Unreachable code');
 	}
 
-	const index = indexes.get(barelyMatchedResult);
-	if (index != null) {
-		choiceLog('Results[%s]: %s', index, choiceLogString(pattern.choice, index, true));
+	if (choiceEnabled) {
+		const index = indexes.get(barelyMatchedResult);
+		if (index != null) {
+			choiceLog('Results[%s]: %s', index, choiceLogString(pattern.choice, index, true));
+		}
 	}
 
 	return {

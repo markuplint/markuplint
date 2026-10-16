@@ -36,8 +36,10 @@ export function getAccname(
 		const result = computeAccessibleName(el, resolver);
 		return result.name;
 	} catch (error) {
-		accnameLog('Raw: %s', el.raw);
-		accnameLog('Error: %O', error);
+		if (accnameLog.enabled) {
+			accnameLog('Raw: %s', el.raw);
+			accnameLog('Error: %O', error);
+		}
 		return '';
 	}
 }

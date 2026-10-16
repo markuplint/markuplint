@@ -21,13 +21,14 @@ Repo-wide meta specs directly under `src/` (e.g. `mirrors-parse-error-codes.spec
 
 ### Categories
 
-| Category     | When to use                                               |
-| ------------ | --------------------------------------------------------- |
-| `valid`      | Test expects 0 violations                                 |
-| `invalid`    | Test expects 1+ violations                                |
-| `fix`        | Test checks `fixedCode` or auto-fix behavior              |
-| `parser`     | Test uses a non-default parser (Vue, React, Pug, etc.)    |
-| `issue-NNNN` | Regression test for a GitHub issue (use the issue number) |
+| Category     | When to use                                                       |
+| ------------ | ----------------------------------------------------------------- |
+| `valid`      | Test expects 0 violations                                         |
+| `invalid`    | Test expects 1+ violations                                        |
+| `fix`        | Test checks `fixedCode` or auto-fix behavior                      |
+| `parser`     | Test uses a non-default parser (Vue, React, Pug, etc.)            |
+| `debug`      | Test checks only debug-logging behavior (not `valid` / `invalid`) |
+| `issue-NNNN` | Regression test for a GitHub issue (use the issue number)         |
 
 ### Rules
 

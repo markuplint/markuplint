@@ -37,27 +37,39 @@ import { checkPattern } from './pattern.js';
  */
 export function checkBase(value: string, type: ReadonlyDeep<Type>, defs: Defs, ref?: string, cache = true): Result {
 	if (isKeyword(type)) {
-		log('Check keyword: %s', type);
+		if (log.enabled) {
+			log('Check keyword: %s', type);
+		}
 		return checkKeywordType(value, type, defs, cache);
 	}
 	if (isList(type)) {
-		log('Check list: %O', type);
+		if (log.enabled) {
+			log('Check list: %O', type);
+		}
 		return checkList(value, type, defs, ref, cache);
 	}
 	if (isEnum(type)) {
-		log('Check enum: %O', type);
+		if (log.enabled) {
+			log('Check enum: %O', type);
+		}
 		return checkEnum(value, type, ref);
 	}
 	if (isNumber(type)) {
-		log('Check number: %O', type);
+		if (log.enabled) {
+			log('Check number: %O', type);
+		}
 		return checkNumber(value, type, ref);
 	}
 	if (isDirective(type)) {
-		log('Check directive: %O', type);
+		if (log.enabled) {
+			log('Check directive: %O', type);
+		}
 		return checkDirective(value, type, defs, ref, cache);
 	}
 	if (isPattern(type)) {
-		log('Check pattern: %O', type);
+		if (log.enabled) {
+			log('Check pattern: %O', type);
+		}
 		return checkPattern(value, type);
 	}
 	throw new Error('Unknown type');

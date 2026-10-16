@@ -310,8 +310,10 @@ export class ConfigProvider {
 	async search(targetFile: Readonly<MLFile>) {
 		const isExists = await targetFile.dirExists();
 
-		cpLog('search: %s', targetFile.path);
-		cpLog('isExists: %s', isExists);
+		if (cpLog.enabled) {
+			cpLog('search: %s', targetFile.path);
+			cpLog('isExists: %s', isExists);
+		}
 
 		if (!isExists) {
 			return null;

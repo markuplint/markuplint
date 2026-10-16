@@ -10,7 +10,9 @@ import { datetimeTokenCheck } from './datetime-tokens.js';
  */
 export const checkYearlessDateString: CustomSyntaxChecker = () =>
 	function checkYearlessDateString(value) {
-		log('CHECK: yearless-date-string');
+		if (log.enabled) {
+			log('CHECK: yearless-date-string');
+		}
 
 		const tokens = TokenCollection.fromPatterns(value, [
 			// MM
@@ -21,7 +23,9 @@ export const checkYearlessDateString: CustomSyntaxChecker = () =>
 			/.\d*/,
 		]);
 
-		log('Yearless Date: "%s" => %O', tokens.value, tokens);
+		if (log.enabled) {
+			log('Yearless Date: "%s" => %O', tokens.value, tokens);
+		}
 
 		const res = tokens.eachCheck(
 			datetimeTokenCheck.month,
@@ -30,7 +34,7 @@ export const checkYearlessDateString: CustomSyntaxChecker = () =>
 			datetimeTokenCheck.extra,
 		);
 
-		if (!res.matched) {
+		if (!res.matched && log.enabled) {
 			log('Failed: %O', res);
 		}
 

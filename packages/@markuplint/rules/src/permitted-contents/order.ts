@@ -5,7 +5,7 @@ import type { ReadonlyDeep } from 'type-fest';
 import { deepCopy } from '../helpers.js';
 
 import { complexBranch } from './complex-branch.js';
-import { cmLog } from './debug.js';
+import { depthLog } from './debug.js';
 import { Collection, mergeHints, modelLog } from './utils.js';
 
 /**
@@ -42,14 +42,18 @@ export function order(
 	depth: number,
 	mode: Mode,
 ): Result {
-	const orderLog = cmLog.extend(`order#${depth}`);
-	const btLog = cmLog.extend(`backtrack#${depth}`);
+	const orderLog = depthLog('order', depth);
+	const btLog = depthLog('backtrack', depth);
+	const orderEnabled = orderLog.enabled;
+	const btEnabled = btLog.enabled;
 
 	const patterns = deepCopy(contents);
 	const collection = new Collection(childNodes);
 
-	orderLog('Model:\n  RegEx: %s\n  Schema: %o', modelLog(patterns, ''), patterns);
-	orderLog('Starts: %s', collection);
+	if (orderEnabled) {
+		orderLog('Model:\n  RegEx: %s\n  Schema: %o', modelLog(patterns, ''), patterns);
+		orderLog('Starts: %s', collection);
+	}
 
 	let result: Result | undefined = undefined;
 	let backtrackMode = false;
@@ -66,7 +70,9 @@ export function order(
 
 			if (backtrackMode) {
 				collection.back();
-				btLog('🔙◀BACK');
+				if (btEnabled) {
+					btLog('🔙◀BACK');
+				}
 				backtrackMode = false;
 				afterBacktrack = true;
 				continue;
@@ -78,14 +84,16 @@ export function order(
 				throw new Error('Unreachable code');
 			}
 
-			orderLog(
-				'Result (%s): %s%s',
-				result.type,
-				collection.toString(true),
-				barelyMatchedResult.hint.missing?.barelyMatchedElements == null
-					? ''
-					: `; But ${barelyMatchedResult.hint.missing.barelyMatchedElements} elements hit out of pattern`,
-			);
+			if (orderEnabled) {
+				orderLog(
+					'Result (%s): %s%s',
+					result.type,
+					collection.toString(true),
+					barelyMatchedResult.hint.missing?.barelyMatchedElements == null
+						? ''
+						: `; But ${barelyMatchedResult.hint.missing.barelyMatchedElements} elements hit out of pattern`,
+				);
+			}
 
 			return {
 				type: barelyMatchedResult.type,
@@ -117,7 +125,9 @@ export function order(
 	}
 
 	if (collection.unmatched.length > 0) {
-		orderLog('Result (UNEXPECTED_EXTRA_NODE): %s', collection.toString(true));
+		if (orderEnabled) {
+			orderLog('Result (UNEXPECTED_EXTRA_NODE): %s', collection.toString(true));
+		}
 		return {
 			type: 'UNEXPECTED_EXTRA_NODE',
 			matched: collection.matched,
@@ -130,7 +140,9 @@ export function order(
 
 	const resultType = collection.matched.length > 0 ? 'MATCHED' : 'MATCHED_ZERO';
 
-	orderLog('Result (%s): %s', resultType, collection.toString(true));
+	if (orderEnabled) {
+		orderLog('Result (%s): %s', resultType, collection.toString(true));
+	}
 
 	return {
 		type: resultType,

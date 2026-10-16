@@ -452,8 +452,10 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 	async #createCore(fabric: MLFabric) {
 		fileLog('Get source code');
 		const sourceCode = await this.#file.getCode();
-		fileLog('Source code path: %s', this.#file.path);
-		fileLog('Source code size: %dbyte', sourceCode.length);
+		if (fileLog.enabled) {
+			fileLog('Source code path: %s', this.#file.path);
+			fileLog('Source code size: %dbyte', sourceCode.length);
+		}
 		this.emit('code', this.#file.path, sourceCode);
 
 		const core = new MLCore({
@@ -662,10 +664,12 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 			return this.#failConfig(error);
 		}
 
-		fileLog('Fetched Config files: %O', configSet.files);
-		fileLog('Resolved Config: %O', configSet.config);
-		fileLog('Resolved Plugins: %O', configSet.plugins);
-		fileLog('Resolve Errors: %O', configSet.errs);
+		if (fileLog.enabled) {
+			fileLog('Fetched Config files: %O', configSet.files);
+			fileLog('Resolved Config: %O', configSet.config);
+			fileLog('Resolved Plugins: %O', configSet.plugins);
+			fileLog('Resolve Errors: %O', configSet.errs);
+		}
 
 		const loadError = configSet.errs.find(error => error instanceof ConfigLoadError);
 		if (loadError) {

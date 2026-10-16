@@ -14,7 +14,9 @@ export function checkKeywordType(value: string, type: KeywordDefinedType, defs: 
 	if (cache) {
 		const cachedResult = resultCache.get(key);
 		if (cachedResult) {
-			log('Restore cache: %s / %s', value, type);
+			if (log.enabled) {
+				log('Restore cache: %s / %s', value, type);
+			}
 			return cachedResult;
 		}
 	}
@@ -38,12 +40,16 @@ export function checkKeywordType(value: string, type: KeywordDefinedType, defs: 
 function _checkKeywordType(value: string, type: KeywordDefinedType, defs: Defs): Result {
 	const def = defs[type];
 	if (!def) {
-		log('The "%s" type is not defined in custom type identifier markuplint specified', type);
+		if (log.enabled) {
+			log('The "%s" type is not defined in custom type identifier markuplint specified', type);
+		}
 		try {
 			return cssSyntaxMatch(value, type as CssSyntax);
 		} catch (error) {
 			if (error instanceof Error && error.message === 'MARKUPLINT_TYPE_NO_EXIST') {
-				log("Allow all of any value because the type doesn't exist");
+				if (log.enabled) {
+					log("Allow all of any value because the type doesn't exist");
+				}
 				return matched();
 			}
 			throw error;
