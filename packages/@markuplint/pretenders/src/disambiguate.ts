@@ -1,25 +1,26 @@
 /**
  * @module disambiguate
  *
- * Resolves selector collisions in a flat `Pretender[]` list — the same thing
+ * Decides, in a flat `Pretender[]` list, which candidates the file actually
+ * being linted refers to: it resolves selector collisions — the same thing
  * {@link ./dependency-mapper.js} does while a scanner builds its output, but
- * applied here at lint time to the file actually being linted. This is what
- * closes the other half of issue #3951: even once the generated pretenders
- * JSON carries independent entries for two same-named components declared in
- * different files, `MLElement.pretending()` still matches by CSS selector
- * alone — it has no file context, so it can't tell them apart on its own.
+ * applied here at lint time — and rules out the candidates of a name that the
+ * file imports from a package. This is what closes the other half of issue
+ * #3951: even once the generated pretenders JSON carries independent entries
+ * for two same-named components declared in different files,
+ * `MLElement.pretending()` still matches by CSS selector alone — it has no
+ * file context, so it can't tell them apart on its own.
  *
  * This module inspects the lint target's own declarations and imports to
  * pick, among several same-named candidates, the one the file actually
- * refers to — falling back to leaving the list untouched whenever that can't
- * be confirmed, so lint output never gets worse than the pre-existing
- * first-match behavior.
+ * refers to. It leaves the list untouched whenever that can't be confirmed,
+ * with one exception: a name confirmed to come from a package (installed or
+ * not, directly or through a re-export) is none of the project's components,
+ * so every candidate of that name is dropped, even a lone one. Left in,
+ * `MLElement.pretending()` would take the first for the package's component.
  *
- * A name the file imports from a package (installed or not) is confirmed to be
- * none of the project's components, so every candidate of that name is dropped,
- * even a lone one: left in, `MLElement.pretending()` would take the first for
- * the package's component. Only a selector the source text names is looked at,
- * so a file that renders none of the scanned components costs no import analysis.
+ * Only a selector the source text names is looked at, so a file that renders
+ * none of the scanned components costs no import analysis.
  */
 
 import type { ImportBinding } from './import-resolver/types.js';
@@ -38,7 +39,8 @@ const RE_IDENTIFIER = /[\w$-]+/g;
 
 /**
  * What {@link resolveWinner} returns for a name confirmed to come from a package: unlike
- * `null` ("could not confirm"), it rules out every candidate.
+ * `null` ("could not confirm"), it rules out every candidate. Not the symbol of the same
+ * name in `dependency-mapper.ts`, which stays in that module.
  */
 const FROM_PACKAGE = Symbol('from-package');
 
@@ -70,7 +72,8 @@ export interface DisambiguateOptions {
  *   use as-is. Entries without a `filePath`, or whose `selector` isn't a
  *   plain identifier, are never touched.
  * @param options - The file being linted, used to resolve which same-selector
- *   candidate it actually refers to.
+ *   candidate it actually refers to. A name it imports from a package drops
+ *   every candidate of that name, a lone one included.
  * @returns The disambiguated pretender list, or `pretenders` itself (same
  *   reference) when there was nothing to resolve or nothing could be confirmed.
  */
@@ -180,17 +183,9 @@ function resolveWinner(
 	if (direct) {
 		return direct;
 	}
-	// A candidate declared in a package (a scan that reached into `node_modules`) is what the
-	// file renders when it imports that package: dropping it for the package's sake would drop it
-	// for being itself.
-	const fromPackage = candidates.some(c =>
-		isPackageFile(parsePretenderFilePath(c.filePath!)?.path ?? c.filePath!, cwd),
-	)
-		? null
-		: FROM_PACKAGE;
 	// Before the export table: a package's own is not built (see `resolveDeclarationFile`).
 	if (isPackageFile(resolvedAbs, cwd)) {
-		return fromPackage;
+		return fromPackage(candidates, cwd);
 	}
 
 	// The lint target can be part of a re-export chain, so its unsaved text
@@ -214,8 +209,20 @@ function resolveWinner(
 	}
 	return (
 		candidates.find(c => matchesFile(c.filePath!, declarationAbs)) ??
-		(isPackageFile(declarationAbs, cwd) ? fromPackage : null)
+		(isPackageFile(declarationAbs, cwd) ? fromPackage(candidates, cwd) : null)
 	);
+}
+
+/**
+ * What {@link resolveWinner} returns once the name is known to lead into a package. A candidate
+ * that is itself declared in a package (a scan that reached into `node_modules`) is the component
+ * the file renders, so nothing is ruled out then: `null`, as when nothing could be confirmed.
+ */
+function fromPackage(candidates: readonly Pretender[], cwd: string | undefined): typeof FROM_PACKAGE | null {
+	const declaredInPackage = candidates.some(c =>
+		isPackageFile(parsePretenderFilePath(c.filePath!)?.path ?? c.filePath!, cwd),
+	);
+	return declaredInPackage ? null : FROM_PACKAGE;
 }
 
 function matchesFile(pretenderFilePath: string, targetAbsPath: string): boolean {

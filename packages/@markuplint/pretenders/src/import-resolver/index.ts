@@ -254,6 +254,13 @@ export function resolveComponentImport(
 	return undefined;
 }
 
+/**
+ * Converts a kebab-case name to PascalCase (`my-button` → `MyButton`): the name a Vue-style
+ * script imports a kebab-case component as. A name without `-` is returned as it is.
+ *
+ * @param str - The name to convert
+ * @returns The PascalCase name
+ */
 export function kebabToPascalCase(str: string): string {
 	if (!str.includes('-')) {
 		return str;

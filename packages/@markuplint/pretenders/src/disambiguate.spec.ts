@@ -434,6 +434,65 @@ describe('disambiguatePretenders', () => {
 			expect(result).toStrictEqual([]);
 		});
 
+		test('drops the candidates for a default import of the installed package', async () => {
+			await install();
+
+			const result = await disambiguatePretenders(
+				both(),
+				target("import Button from 'ui-lib';\nexport const P = () => <Button />;"),
+			);
+
+			expect(result).toStrictEqual([]);
+		});
+
+		test('drops the candidates for a name aliased on import from the installed package', async () => {
+			await install();
+
+			const result = await disambiguatePretenders(
+				both(),
+				target("import { Card as Button } from 'ui-lib';\nexport const P = () => <Button />;"),
+			);
+
+			expect(result).toStrictEqual([]);
+		});
+
+		test('drops the candidates when a barrel re-exports the name from the installed package', async () => {
+			await install();
+			await writeFile(path.join(root, 'barrel.ts'), "export { Button } from 'ui-lib';");
+
+			const result = await disambiguatePretenders(
+				both(),
+				target("import { Button } from './barrel';\nexport const P = () => <Button />;"),
+			);
+
+			expect(result).toStrictEqual([]);
+		});
+
+		test('drops the candidates when a barrel star re-exports the installed package', async () => {
+			await install();
+			await writeFile(path.join(root, 'barrel.ts'), "export * from 'ui-lib';");
+
+			const result = await disambiguatePretenders(
+				both(),
+				target("import { Button } from './barrel';\nexport const P = () => <Button />;"),
+			);
+
+			expect(result).toStrictEqual([]);
+		});
+
+		test('drops nothing from a group that holds a candidate declared in the package, as it may be the one rendered', async () => {
+			await install();
+			const own: Pretender = {
+				selector: 'Button',
+				as: 'button',
+				filePath: `${path.join(root, 'node_modules', 'ui-lib', 'Button.js')}:1:14`,
+			};
+
+			const result = await disambiguatePretenders([own, ...only()], target());
+
+			expect(result).toStrictEqual([own, ...only()]);
+		});
+
 		test('keeps a candidate that is itself declared in the package, as it is the component the file renders', async () => {
 			await install();
 			const own: Pretender = {

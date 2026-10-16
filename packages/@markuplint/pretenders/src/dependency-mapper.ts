@@ -208,6 +208,10 @@ const FROM_PACKAGE = Symbol('from-package');
  * so a project that itself sits under `node_modules` is not taken for a package.
  *
  * It judges the path as given, so it takes the real path that {@link resolveModule} returns.
+ *
+ * @param fileAbs - Absolute path of the file
+ * @param root - The base directory of the paths the project is scanned under
+ * @returns `true` if the file is under a `node_modules` directory below `root`
  */
 export function isPackageFile(fileAbs: string, root?: string): boolean {
 	const target = root === undefined ? fileAbs : path.relative(root, fileAbs);
