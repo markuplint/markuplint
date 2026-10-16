@@ -20,7 +20,11 @@ import { describe, test, expect } from 'vitest';
  * Two Yarn projects are covered: the root workspace (its hoisted tree plus
  * every workspace-local `node_modules`) and `website/`, a separate project
  * that inherits the root `.yarnrc.yml` because Yarn merges the rc files of
- * every ancestor directory.
+ * every ancestor directory. A project is checked only where its tree is
+ * installed: `yarn test` in the root installs nothing under `website/`, so
+ * the website cases run where `cd website && yarn install` has run — locally,
+ * and in `.github/workflows/website.yml`, which runs this file for that
+ * reason.
  */
 
 const rootDir = path.resolve(import.meta.dirname, '../../../..');
@@ -167,7 +171,11 @@ describe('.yarnrc.yml keeps the hardened install defaults', () => {
 	});
 });
 
-describe.each([project('.'), project('website')])(
+const installedProjects = ['.', 'website']
+	.filter(dir => existsSync(path.join(rootDir, dir, 'node_modules')))
+	.map(dir => project(dir));
+
+describe.each(installedProjects)(
 	'$dir: dependenciesMeta lists every installed package that Yarn would build',
 	({ dir, trees, manifest }) => {
 		const packagesNeedingBuild = new Map<string, string>();
