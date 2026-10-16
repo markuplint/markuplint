@@ -6,6 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 
 import { ConfigProvider } from '@markuplint/file-resolver';
+import { Document } from '@markuplint/ml-core';
 import { afterEach, beforeEach, describe, it, expect, vi } from 'vitest';
 
 import { MLEngine } from './ml-engine.js';
@@ -32,6 +33,34 @@ describe('Event notification', () => {
 			'markuplint:recommended',
 			path.resolve('test/fixture/.markuplintrc'),
 		]);
+	});
+});
+
+describe('#4267 the AST mapping is built only for a lint listener', () => {
+	afterEach(() => {
+		vi.restoreAllMocks();
+	});
+
+	it('builds the mapping and passes it to the lint listener', async () => {
+		const spy = vi.spyOn(Document.prototype, 'debugMap');
+		const file = await MLEngine.toMLFile({ sourceCode: '<div></div>', name: 'a.html' });
+		const engine = new MLEngine(file!, { noSearchConfig: true, config: {} });
+		const debugPromise = new Promise<readonly string[] | null>(resolve => {
+			engine.on('lint', (_, __, ___, ____, debug) => resolve(debug));
+		});
+		await engine.exec();
+		const debug = await debugPromise;
+		expect(spy).toHaveBeenCalledTimes(1);
+		expect(debug).not.toBeNull();
+		expect(debug?.length).toBeGreaterThan(0);
+	});
+
+	it('skips building the mapping when no lint listener is registered', async () => {
+		const spy = vi.spyOn(Document.prototype, 'debugMap');
+		const file = await MLEngine.toMLFile({ sourceCode: '<div></div>', name: 'a.html' });
+		const engine = new MLEngine(file!, { noSearchConfig: true, config: {} });
+		await engine.exec();
+		expect(spy).not.toHaveBeenCalled();
 	});
 });
 
