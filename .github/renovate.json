@@ -10,6 +10,7 @@
 	],
 	"baseBranchPatterns": [
 		"dev",
+		"v6",
 		"v4"
 	],
 	"lockFileMaintenance": {
@@ -69,6 +70,12 @@
 		{
 			"matchPackageNames": ["node"],
 			"matchManagers": ["dockerfile"],
+			"enabled": false
+		},
+		{
+			"description": "Renovate reads this file from the default branch only, so it also governs the Cargo workspace that exists only on v6. Lock file maintenance regenerates Cargo.lock with every crate at its newest version and bypasses minimumReleaseAge; npm closes that gap inside the package manager (npmMinimalAgeGate in .yarnrc.yml), Cargo has no equivalent until registry.global-min-publish-age (Rust 1.100) is configured on v6. Re-enable once it is.",
+			"matchManagers": ["cargo"],
+			"matchUpdateTypes": ["lockFileMaintenance"],
 			"enabled": false
 		},
 		{
