@@ -33,6 +33,9 @@ import { normalizePath } from './import-resolver/resolve-module-file.js';
 
 const RE_SIMPLE_COMPONENT_NAME = /^[A-Z][\w$-]*$/i;
 
+/** A whole identifier, kebab-case included: what a selector of {@link RE_SIMPLE_COMPONENT_NAME} is made of. */
+const RE_IDENTIFIER = /[\w$-]+/g;
+
 /**
  * What {@link resolveWinner} returns for a name confirmed to come from a package: unlike
  * `null` ("could not confirm"), it rules out every candidate.
@@ -112,10 +115,8 @@ export async function disambiguatePretenders(
  * {@link resolveComponentImport} looks for). A selector the source does not name has no
  * binding in the file, so nothing could be resolved for it.
  */
-function namesSelector(sourceCode: string, selector: string): boolean {
-	const names = new Set([selector, kebabToPascalCase(selector)]);
-	const alternatives = [...names].map(name => name.replaceAll(/[$-]/g, String.raw`\$&`)).join('|');
-	return new RegExp(String.raw`(?<![\w$-])(?:${alternatives})(?![\w$-])`).test(sourceCode);
+function namesSelector(identifiers: ReadonlySet<string>, selector: string): boolean {
+	return identifiers.has(selector) || identifiers.has(kebabToPascalCase(selector));
 }
 
 /**
@@ -124,18 +125,14 @@ function namesSelector(sourceCode: string, selector: string): boolean {
  */
 function groupCandidates(pretenders: readonly Pretender[], sourceCode: string): Map<string, Pretender[]> {
 	const bySelector = new Map<string, Pretender[]>();
-	const named = new Map<string, boolean>();
+	// Tokenized once: a scan can hold thousands of candidates, and this runs for every linted file.
+	const identifiers = new Set<string>(sourceCode.match(RE_IDENTIFIER));
 
 	for (const pretender of pretenders) {
 		if (!pretender.filePath || !RE_SIMPLE_COMPONENT_NAME.test(pretender.selector)) {
 			continue;
 		}
-		let isNamed = named.get(pretender.selector);
-		if (isNamed === undefined) {
-			isNamed = namesSelector(sourceCode, pretender.selector);
-			named.set(pretender.selector, isNamed);
-		}
-		if (!isNamed) {
+		if (!namesSelector(identifiers, pretender.selector)) {
 			continue;
 		}
 		const list = bySelector.get(pretender.selector);
