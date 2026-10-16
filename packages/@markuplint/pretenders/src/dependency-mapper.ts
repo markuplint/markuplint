@@ -209,7 +209,7 @@ const FROM_PACKAGE = Symbol('from-package');
  *
  * It judges the path as given, so it takes the real path that {@link resolveModule} returns.
  */
-function isPackageFile(fileAbs: string, root?: string): boolean {
+export function isPackageFile(fileAbs: string, root?: string): boolean {
 	const target = root === undefined ? fileAbs : path.relative(root, fileAbs);
 	return `/${normalizePath(target)}`.includes('/node_modules/');
 }

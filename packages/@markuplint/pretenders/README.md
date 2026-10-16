@@ -187,6 +187,8 @@ Barrel file re-exports can be resolved with `resolveBarrelExport`, which maps a 
 
 When the same component name is declared in more than one scanned file (e.g., two unrelated `Item` components rendering different elements), the generated pretenders keep independent entries for each — but `markuplint`'s lint pipeline still needs to know, for the specific file being linted, which one it actually refers to. `disambiguatePretenders` resolves this from the lint target's own declarations and imports, following an imported barrel file's re-exports (`export { X } from`, `export * from`) to the file that declares the component; it's normally invoked automatically by `markuplint`'s config resolution, not called directly.
 
+A name the file imports from a package (installed or not, directly or through a re-export) is none of the project's components, so every scanned component of that name is dropped for that file — even when there is only one. Without this, a `Button` imported from a package would be linted as the project's own `Button`. To give a package's component a pretender, write the entry by hand in the config (an entry without a `filePath` is never touched).
+
 In long-running hosts (watch mode, editor extensions) that keep re-resolving pretenders across file edits, call `clearPretenderCaches()` after each edit — otherwise a renamed export or a newly valid tsconfig `paths` alias keeps resolving as it did before the change for the rest of the process's lifetime.
 
 ## API

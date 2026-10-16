@@ -254,7 +254,7 @@ export function resolveComponentImport(
 	return undefined;
 }
 
-function kebabToPascalCase(str: string): string {
+export function kebabToPascalCase(str: string): string {
 	if (!str.includes('-')) {
 		return str;
 	}
