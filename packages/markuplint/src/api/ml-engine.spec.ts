@@ -6,6 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 
 import { ConfigProvider } from '@markuplint/file-resolver';
+import { Document } from '@markuplint/ml-core';
 import { afterEach, beforeEach, describe, it, expect, vi } from 'vitest';
 
 import { MLEngine } from './ml-engine.js';
@@ -32,6 +33,48 @@ describe('Event notification', () => {
 			'markuplint:recommended',
 			path.resolve('test/fixture/.markuplintrc'),
 		]);
+	});
+});
+
+describe('AST mapping for the lint event', () => {
+	afterEach(() => {
+		vi.restoreAllMocks();
+	});
+
+	it('builds the mapping and passes it to the lint listener', async () => {
+		const spy = vi.spyOn(Document.prototype, 'debugMap');
+		const file = await MLEngine.toMLFile({ sourceCode: '<div></div>', name: 'a.html' });
+		const engine = new MLEngine(file!, { noSearchConfig: true, config: {} });
+		let debug: readonly string[] | null | undefined;
+		engine.on('lint', (_, __, ___, ____, payload) => {
+			debug = payload;
+		});
+		await engine.exec();
+		expect(spy).toHaveBeenCalledTimes(1);
+		expect(debug).not.toBeNull();
+		expect(debug?.join('\n')).toContain('DIV: <div>');
+	});
+
+	it('counts a once listener as a lint listener', async () => {
+		const file = await MLEngine.toMLFile({ sourceCode: '<div></div>', name: 'a.html' });
+		const engine = new MLEngine(file!, { noSearchConfig: true, config: {} });
+		let debug: readonly string[] | null | undefined;
+		engine.once('lint', (_, __, ___, ____, payload) => {
+			debug = payload;
+		});
+		await engine.exec();
+		expect(debug?.join('\n')).toContain('DIV: <div>');
+	});
+
+	it('skips building the mapping when no lint listener is registered', async () => {
+		// The spy is known to observe the engine's document: the first test in
+		// this block asserts a call through the same `Document` class, so a
+		// zero here is not vacuous.
+		const spy = vi.spyOn(Document.prototype, 'debugMap');
+		const file = await MLEngine.toMLFile({ sourceCode: '<div></div>', name: 'a.html' });
+		const engine = new MLEngine(file!, { noSearchConfig: true, config: {} });
+		await engine.exec();
+		expect(spy).not.toHaveBeenCalled();
 	});
 });
 

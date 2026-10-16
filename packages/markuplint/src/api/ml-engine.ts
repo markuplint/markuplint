@@ -322,7 +322,8 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		}
 
 		const { violations, fixedCode, fixSummary } = verifyResult;
-		const debugMap = 'debugMap' in core.document ? core.document.debugMap() : null;
+		const debugMap =
+			this.listenerCount('lint') > 0 && 'debugMap' in core.document ? core.document.debugMap() : null;
 
 		const resolvedFixedCode = fixedCode ?? sourceCode;
 		this.emit('lint', this.#file.path, sourceCode, violations, resolvedFixedCode, debugMap, fixSummary ?? null);

@@ -39,6 +39,12 @@ export type MLEngineEventMap = {
 		sourceCode: string,
 		violations: readonly Violation[],
 		fixedCode: string,
+		/**
+		 * The AST mapping dump. It is built only when a `lint` listener is
+		 * registered at the time the engine emits, because the dump costs a
+		 * full walk of the document that `exec()` callers never read. Without
+		 * a listener, or when the parser has no mapping, it is `null`.
+		 */
 		debug: readonly string[] | null,
 		fixSummary: FixSummary | null,
 	];
