@@ -270,18 +270,21 @@ async function appendAutoPretenders(
 }
 
 /**
- * Resolves selector collisions in `pretenders` for the specific file about
- * to be linted, deferring to `@markuplint/pretenders`' `disambiguatePretenders`
- * only when there's actually a same-selector, file-backed collision to
- * resolve — this keeps the common case (no ambiguity) free of both the
- * dynamic import and any file/AST work.
+ * Resolves, for the specific file about to be linted, which of the
+ * file-backed `pretenders` it actually refers to — a selector shared by
+ * several of them, and a name it imports from a package (a lone entry
+ * included, as it may be a package's component that shares the name) — by
+ * deferring to `@markuplint/pretenders`' `disambiguatePretenders`. Without a
+ * file-backed entry there is nothing to resolve, which keeps that common case
+ * free of the dynamic import; `disambiguatePretenders` itself skips the
+ * file/AST work for a source that names none of them.
  *
  * @param filePath - Absolute path of the file being linted
  * @param sourceCode - Full source text of the file being linted
  * @param pretenders - The flat pretender list {@link resolvePretenders} produced
  * @param options - Where to report the files the result depends on
  * @returns The disambiguated pretender list, or `pretenders` itself (same
- *   reference) when there was no collision to resolve
+ *   reference) when there was nothing to resolve
  */
 export async function disambiguatePretendersForFile(
 	filePath: string,
@@ -289,7 +292,7 @@ export async function disambiguatePretendersForFile(
 	pretenders: readonly Pretender[],
 	options?: ResolvePretendersOptions,
 ): Promise<readonly Pretender[]> {
-	if (!hasResolvableCollision(pretenders)) {
+	if (!pretenders.some(pretender => pretender.filePath)) {
 		return pretenders;
 	}
 
@@ -304,16 +307,12 @@ export async function disambiguatePretendersForFile(
 }
 
 /**
- * Deliberately gates on selector+filePath duplication alone — NOT on the
- * selector name shape `@markuplint/pretenders`' `disambiguatePretenders`
- * actually resolves (plain identifiers only). Duplicating that name-shape
- * check here would let the two independently maintained filters drift out
- * of sync: if the real filter is ever loosened without updating this one,
- * this fast-path gate would keep skipping the dynamic import for cases the
- * real logic would now handle, silently disabling disambiguation for them.
- * Being a strict superset costs at most an unnecessary dynamic import for
- * selectors the real logic ends up not touching — never a missed one.
+ * Whether two or more `filePath`-backed entries share a selector, whatever the
+ * selector name shape.
  *
+ * @deprecated Nothing in markuplint calls it any more, and it has no replacement:
+ *   {@link disambiguatePretendersForFile} decides by itself whether there is anything
+ *   to resolve. To be removed in the next major version.
  * @param pretenders - The flat pretender list to check
  * @returns `true` if some `selector` is shared by two or more `filePath`-backed entries
  */

@@ -1,7 +1,7 @@
 import type { Pretender } from '@markuplint/ml-config';
 
 import fs from 'node:fs';
-import { mkdir, mkdtemp, readFile, rm, symlink, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, realpath, rm, symlink, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
@@ -310,6 +310,292 @@ describe('disambiguatePretenders', () => {
 			});
 
 			expect(result.map(p => p.as)).toStrictEqual(['button']);
+		});
+	});
+
+	describe('with a name imported from a package', () => {
+		// `page.tsx` renders the `Button` of `ui-lib`, a package. The project has components of the
+		// same name, which it does not refer to: none of them may stand for it.
+		let root: string;
+
+		beforeEach(async () => {
+			root = await realpath(await mkdtemp(path.join(os.tmpdir(), 'disambiguate-package-')));
+			await mkdir(path.join(root, 'ui', 'A'), { recursive: true });
+			await mkdir(path.join(root, 'ui', 'B'), { recursive: true });
+			await writeFile(path.join(root, 'ui', 'A', 'Button.tsx'), 'export const Button = () => <a />;');
+			await writeFile(path.join(root, 'ui', 'B', 'Button.tsx'), 'export const Button = () => <i />;');
+		});
+
+		afterEach(async () => {
+			await rm(root, { recursive: true, force: true });
+			clearExportTableCache();
+		});
+
+		const install = async () => {
+			const pkg = path.join(root, 'node_modules', 'ui-lib');
+			await mkdir(pkg, { recursive: true });
+			await writeFile(path.join(pkg, 'package.json'), '{"name":"ui-lib","main":"index.js","types":"index.d.ts"}');
+			await writeFile(path.join(pkg, 'index.js'), 'exports.Button = () => null;');
+			await writeFile(path.join(pkg, 'index.d.ts'), 'export declare const Button: () => null;');
+		};
+		const both = (): Pretender[] => [
+			{ selector: 'Button', as: 'a', filePath: `${path.join(root, 'ui', 'A', 'Button.tsx')}:1:14` },
+			{ selector: 'Button', as: 'i', filePath: `${path.join(root, 'ui', 'B', 'Button.tsx')}:1:14` },
+		];
+		const only = (): Pretender[] => [both()[0]!];
+		const target = (sourceCode = "import { Button } from 'ui-lib';\nexport const P = () => <Button />;") => ({
+			filePath: path.join(root, 'page.tsx'),
+			sourceCode,
+			cwd: root,
+		});
+
+		test('drops every same-named candidate when the package is installed', async () => {
+			await install();
+
+			const result = await disambiguatePretenders(both(), target());
+
+			expect(result).toStrictEqual([]);
+		});
+
+		test('drops every same-named candidate when the package is not installed', async () => {
+			const result = await disambiguatePretenders(both(), target());
+
+			expect(result).toStrictEqual([]);
+		});
+
+		test('drops the only candidate of that name when the package is installed', async () => {
+			await install();
+
+			const result = await disambiguatePretenders(only(), target());
+
+			expect(result).toStrictEqual([]);
+		});
+
+		test('drops the only candidate of that name when the package is not installed', async () => {
+			const result = await disambiguatePretenders(only(), target());
+
+			expect(result).toStrictEqual([]);
+		});
+
+		test('drops the candidates for a default import of the package', async () => {
+			const result = await disambiguatePretenders(
+				both(),
+				target("import Button from 'ui-lib';\nexport const P = () => <Button />;"),
+			);
+
+			expect(result).toStrictEqual([]);
+		});
+
+		test('drops the candidates for a name aliased on import', async () => {
+			const result = await disambiguatePretenders(
+				both(),
+				target("import { Card as Button } from 'ui-lib';\nexport const P = () => <Button />;"),
+			);
+
+			expect(result).toStrictEqual([]);
+		});
+
+		test('drops the candidates when a barrel re-exports the name from the package', async () => {
+			await writeFile(path.join(root, 'barrel.ts'), "export { Button } from 'ui-lib';");
+
+			const result = await disambiguatePretenders(
+				both(),
+				target("import { Button } from './barrel';\nexport const P = () => <Button />;"),
+			);
+
+			expect(result).toStrictEqual([]);
+		});
+
+		test('drops the candidates when a barrel star re-exports the package', async () => {
+			await writeFile(path.join(root, 'barrel.ts'), "export * from 'ui-lib';");
+
+			const result = await disambiguatePretenders(
+				both(),
+				target("import { Button } from './barrel';\nexport const P = () => <Button />;"),
+			);
+
+			expect(result).toStrictEqual([]);
+		});
+
+		test('drops them in a project that itself sits under a directory named node_modules', async () => {
+			const project = path.join(root, 'node_modules', 'app');
+			await mkdir(project, { recursive: true });
+			await writeFile(path.join(project, 'Button.tsx'), 'export const Button = () => <a />;');
+
+			const result = await disambiguatePretenders(
+				[{ selector: 'Button', as: 'a', filePath: `${path.join(project, 'Button.tsx')}:1:14` }],
+				{
+					filePath: path.join(project, 'page.tsx'),
+					sourceCode: "import { Button } from 'ui-lib';\nexport const P = () => <Button />;",
+					cwd: project,
+				},
+			);
+
+			expect(result).toStrictEqual([]);
+		});
+
+		test('drops the candidates for a default import of the installed package', async () => {
+			await install();
+
+			const result = await disambiguatePretenders(
+				both(),
+				target("import Button from 'ui-lib';\nexport const P = () => <Button />;"),
+			);
+
+			expect(result).toStrictEqual([]);
+		});
+
+		test('drops the candidates for a name aliased on import from the installed package', async () => {
+			await install();
+
+			const result = await disambiguatePretenders(
+				both(),
+				target("import { Card as Button } from 'ui-lib';\nexport const P = () => <Button />;"),
+			);
+
+			expect(result).toStrictEqual([]);
+		});
+
+		test('drops the candidates when a barrel re-exports the name from the installed package', async () => {
+			await install();
+			await writeFile(path.join(root, 'barrel.ts'), "export { Button } from 'ui-lib';");
+
+			const result = await disambiguatePretenders(
+				both(),
+				target("import { Button } from './barrel';\nexport const P = () => <Button />;"),
+			);
+
+			expect(result).toStrictEqual([]);
+		});
+
+		test('drops the candidates when a barrel star re-exports the installed package', async () => {
+			await install();
+			await writeFile(path.join(root, 'barrel.ts'), "export * from 'ui-lib';");
+
+			const result = await disambiguatePretenders(
+				both(),
+				target("import { Button } from './barrel';\nexport const P = () => <Button />;"),
+			);
+
+			expect(result).toStrictEqual([]);
+		});
+
+		test('drops nothing from a group that holds a candidate declared in the package, as it may be the one rendered', async () => {
+			await install();
+			const own: Pretender = {
+				selector: 'Button',
+				as: 'button',
+				filePath: `${path.join(root, 'node_modules', 'ui-lib', 'Button.js')}:1:14`,
+			};
+
+			const result = await disambiguatePretenders([own, ...only()], target());
+
+			expect(result).toStrictEqual([own, ...only()]);
+		});
+
+		test('keeps a candidate that is itself declared in the package, as it is the component the file renders', async () => {
+			await install();
+			const own: Pretender = {
+				selector: 'Button',
+				as: 'button',
+				filePath: `${path.join(root, 'node_modules', 'ui-lib', 'Button.js')}:1:14`,
+			};
+
+			const result = await disambiguatePretenders([own], target());
+
+			expect(result).toStrictEqual([own]);
+		});
+
+		test('keeps a candidate that is itself declared in the package, when a barrel re-exports it', async () => {
+			await install();
+			await writeFile(path.join(root, 'barrel.ts'), "export { Button } from 'ui-lib';");
+			const own: Pretender = {
+				selector: 'Button',
+				as: 'button',
+				filePath: `${path.join(root, 'node_modules', 'ui-lib', 'Button.js')}:1:14`,
+			};
+
+			const result = await disambiguatePretenders(
+				[own],
+				target("import { Button } from './barrel';\nexport const P = () => <Button />;"),
+			);
+
+			expect(result).toStrictEqual([own]);
+		});
+
+		test('finds a kebab-case selector by the PascalCase name the script imports it as', async () => {
+			const kebab: Pretender = {
+				selector: 'my-button',
+				as: 'a',
+				filePath: `${path.join(root, 'ui', 'A', 'Button.tsx')}:1:14`,
+			};
+
+			const result = await disambiguatePretenders(
+				[kebab],
+				target("import MyButton from 'ui-lib';\nexport default { components: { MyButton } };"),
+			);
+
+			expect(result).toStrictEqual([]);
+		});
+
+		test('keeps an entry without a filePath, as it is not the project’s scanned component', async () => {
+			const handWritten: Pretender = { selector: 'Button', as: 'b' };
+
+			const result = await disambiguatePretenders([handWritten, ...both()], target());
+
+			expect(result).toStrictEqual([handWritten]);
+		});
+
+		test('drops only the group of the name imported from the package', async () => {
+			await writeFile(path.join(root, 'ui', 'Card.tsx'), 'export const Card = () => <section />;');
+			const card: Pretender = {
+				selector: 'Card',
+				as: 'section',
+				filePath: `${path.join(root, 'ui', 'Card.tsx')}:1:14`,
+			};
+
+			const result = await disambiguatePretenders(
+				[...both(), card],
+				target(
+					"import { Button } from 'ui-lib';\nimport { Card } from './ui/Card';\nexport const P = () => <Button><Card /></Button>;",
+				),
+			);
+
+			expect(result).toStrictEqual([card]);
+		});
+
+		test('keeps the candidate that the file imports from the project, beside a package import of another name', async () => {
+			const result = await disambiguatePretenders(
+				only(),
+				target(
+					"import { Card } from 'ui-lib';\nimport { Button } from './ui/A/Button';\nexport const P = () => <Card><Button /></Card>;",
+				),
+			);
+
+			expect(result).toStrictEqual(only());
+		});
+
+		test('keeps the candidate when the file does not import the name at all', async () => {
+			const result = await disambiguatePretenders(only(), target('export const P = () => <Button />;'));
+
+			expect(result).toStrictEqual(only());
+		});
+
+		test('keeps the candidate when the name is imported from a path alias it cannot rule out', async () => {
+			const result = await disambiguatePretenders(
+				only(),
+				target("import { Button } from '@/ui/Button';\nexport const P = () => <Button />;"),
+			);
+
+			expect(result).toStrictEqual(only());
+		});
+
+		test('returns the same list when the source never names the selector', async () => {
+			const list = only();
+
+			const result = await disambiguatePretenders(list, target('export const P = () => <div />;'));
+
+			expect(result).toBe(list);
 		});
 	});
 });
