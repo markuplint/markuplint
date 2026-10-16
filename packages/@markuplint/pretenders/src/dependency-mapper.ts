@@ -196,12 +196,44 @@ const FROM_PACKAGE = Symbol('from-package');
  * of the paths the project is scanned under), only the part of the path below it counts,
  * so a project that itself sits under `node_modules` is not taken for a package.
  *
- * A symlink is not followed: module resolution already gives the real path of a workspace
- * package, except with `preserveSymlinks`, where it stays under `node_modules`.
+ * It judges the path as given, so it takes the real path that {@link resolveModule} returns.
  */
 function isPackageFile(fileAbs: string, root?: string): boolean {
 	const target = root === undefined ? fileAbs : path.relative(root, fileAbs);
 	return `/${normalizePath(target)}`.includes('/node_modules/');
+}
+
+/**
+ * {@link resolveModuleFile} with the symlinks followed. A workspace package is linked into
+ * `node_modules`: module resolution gives its real path by default, but with `preserveSymlinks`
+ * it keeps the path under `node_modules`, where it would be taken for an installed package
+ * and would not match the map's keys. Only a path that looks like a package's is followed: any
+ * other is left as it is, as the project root is not necessarily a real path (`os.tmpdir()` is a
+ * link on macOS), and so is a path that does not exist. A real path below the root is returned
+ * as a path below the root as it is written, so the keys of the map, made from it, still match.
+ */
+function resolveModule(
+	importerAbs: string,
+	source: string,
+	env: DeclarationEnv & { readonly cwd?: string },
+): string | null {
+	const resolved = resolveModuleFile(importerAbs, source, env.dependencies);
+	if (!resolved || !isPackageFile(resolved, env.cwd)) {
+		return resolved;
+	}
+	try {
+		const real = fs.realpathSync(resolved);
+		if (env.cwd === undefined) {
+			return normalizePath(real);
+		}
+		const below = path.relative(fs.realpathSync(env.cwd), real);
+		return normalizePath(below.startsWith('..') || path.isAbsolute(below) ? real : path.join(env.cwd, below));
+	} catch (error) {
+		if (isFatalError(error)) {
+			throw error;
+		}
+		return resolved;
+	}
 }
 
 /**
@@ -229,7 +261,7 @@ function resolveThroughImport(
 	}
 
 	const importerAbs = path.resolve(env.cwd, currentFile);
-	const resolvedAbs = resolveModuleFile(importerAbs, binding.source, env.dependencies);
+	const resolvedAbs = resolveModule(importerAbs, binding.source, env);
 	if (!resolvedAbs) {
 		return null;
 	}
@@ -349,7 +381,7 @@ function resolveThroughStarReExports(
 
 	let found: Declaration | null = null;
 	for (const source of starSources) {
-		const nextAbs = resolveModuleFile(fileAbs, source, env.dependencies);
+		const nextAbs = resolveModule(fileAbs, source, env);
 		// A template component exports `default` only, which `export *` skips. A
 		// package holds no scanned component (the walk does not enter
 		// `node_modules` either), and its own star re-exports can be wide and deep
@@ -384,7 +416,7 @@ function resolveReExport(
 		return null;
 	}
 
-	const nextAbs = resolveModuleFile(fileAbs, entry.source, env.dependencies);
+	const nextAbs = resolveModule(fileAbs, entry.source, env);
 	if (!nextAbs) {
 		return null;
 	}

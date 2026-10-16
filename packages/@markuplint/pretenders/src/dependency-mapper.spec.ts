@@ -7,7 +7,7 @@ import path from 'node:path';
 
 import { describe, test, expect, afterEach, beforeEach, vi } from 'vitest';
 
-import { clearExportTableCache, dependencyMapper } from './dependency-mapper.js';
+import { clearExportTableCache, dependencyMapper, resolveDeclarationFile } from './dependency-mapper.js';
 import { normalizePath } from './import-resolver/resolve-module-file.js';
 
 const fixtureDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures', 'dependency-mapper');
@@ -641,6 +641,79 @@ describe('dependencyMapper', () => {
 
 		test('still resolves a same-named component when the import itself cannot be resolved, as a path alias may hide it', () => {
 			expect(resolveCard('@/ui/button')).toStrictEqual({ selector: 'Card', as: 'section', _via: ['Button'] });
+		});
+
+		describe('with a workspace package linked into node_modules', () => {
+			// `c.tsx` renders `Item` imported from `@org/ui`, which `node_modules/@org/ui` links to `packages/ui`.
+			// Module resolution returns real paths, so the project root has to be one too (`os.tmpdir()` is a link on macOS).
+			const resolveC = () => {
+				const map: PretenderDirectorMap = new Map([
+					['packages/ui/index.tsx#Item', ['Item', 'button', undefined, 'packages/ui/index.tsx']],
+					['c.tsx#C', ['C', 'Item', undefined, 'c.tsx']],
+				]);
+				const importsByFile = new Map([
+					['c.tsx', [{ localName: 'Item', importedName: 'Item', source: '@org/ui', type: 'named' as const }]],
+				]);
+				const result = dependencyMapper(map, new Map(), { importsByFile, cwd: fs.realpathSync(tmpDir) });
+				return result.find(p => p.selector === 'C');
+			};
+
+			beforeEach(async () => {
+				const uiDir = path.join(tmpDir, 'packages', 'ui');
+				await mkdir(uiDir, { recursive: true });
+				await writeFile(path.join(uiDir, 'package.json'), '{"name":"@org/ui","main":"index.tsx"}');
+				await writeFile(path.join(uiDir, 'index.tsx'), 'export const Item = () => <button />;');
+				await mkdir(path.join(tmpDir, 'node_modules', '@org'), { recursive: true });
+				await fs.promises.symlink(uiDir, path.join(tmpDir, 'node_modules', '@org', 'ui'), 'junction');
+			});
+
+			test('resolves the component by default, as module resolution gives the real path', () => {
+				expect(resolveC()).toStrictEqual({ selector: 'C', as: 'button', _via: ['Item'] });
+			});
+
+			test('resolves the component with preserveSymlinks, where the path stays under node_modules', async () => {
+				await writeFile(path.join(tmpDir, 'tsconfig.json'), '{"compilerOptions":{"preserveSymlinks":true}}');
+				expect(resolveC()).toStrictEqual({ selector: 'C', as: 'button', _via: ['Item'] });
+			});
+
+			test('reports the declaring file of a re-export through the link by its real path, with preserveSymlinks', async () => {
+				await writeFile(path.join(tmpDir, 'tsconfig.json'), '{"compilerOptions":{"preserveSymlinks":true}}');
+				await writeFile(path.join(tmpDir, 'barrel.ts'), "export * from '@org/ui';");
+				expect(resolveDeclarationFile(path.join(tmpDir, 'barrel.ts'), 'Item')).toBe(
+					normalizePath(path.join(fs.realpathSync(tmpDir), 'packages', 'ui', 'index.tsx')),
+				);
+			});
+
+			test('resolves the component with preserveSymlinks when the project root is itself a link', async () => {
+				await writeFile(path.join(tmpDir, 'tsconfig.json'), '{"compilerOptions":{"preserveSymlinks":true}}');
+				const linkedRoot = `${tmpDir}-link`;
+				await fs.promises.symlink(tmpDir, linkedRoot, 'junction');
+				try {
+					const map: PretenderDirectorMap = new Map([
+						['packages/ui/index.tsx#Item', ['Item', 'button', undefined, 'packages/ui/index.tsx']],
+						['c.tsx#C', ['C', 'Item', undefined, 'c.tsx']],
+					]);
+					const importsByFile = new Map([
+						[
+							'c.tsx',
+							[{ localName: 'Item', importedName: 'Item', source: '@org/ui', type: 'named' as const }],
+						],
+					]);
+					const result = dependencyMapper(map, new Map(), { importsByFile, cwd: linkedRoot });
+					expect(result.find(p => p.selector === 'C')).toStrictEqual({
+						selector: 'C',
+						as: 'button',
+						_via: ['Item'],
+					});
+				} finally {
+					await fs.promises.unlink(linkedRoot);
+				}
+			});
+
+			test('still ends the chain at a package that is really installed, with preserveSymlinks', async () => {
+				await writeFile(path.join(tmpDir, 'tsconfig.json'), '{"compilerOptions":{"preserveSymlinks":true}}');
+				expect(resolveCard('some-lib')).toStrictEqual({ selector: 'Card', as: 'Button' });
+			});
 		});
 	});
 
