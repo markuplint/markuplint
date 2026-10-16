@@ -8,7 +8,7 @@ description: >
   the right labels and an As is / To be / Why / How body backed by primary
   sources. Use when asked to file, create, or open an issue, or when the `pr`
   skill hands over a leftover. Trigger keywords: create issue, file an issue,
-  open an issue, 起票, Issue にして.
+  open an issue, report a bug as an issue.
 ---
 
 Problem to file: $ARGUMENTS
