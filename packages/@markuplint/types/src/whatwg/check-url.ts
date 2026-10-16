@@ -331,7 +331,9 @@ function isSpecialOrSchemeless(value: string): boolean {
  */
 export const checkURL: CustomSyntaxChecker = () =>
 	function checkURL(value) {
-		log('CHECK: url');
+		if (log.enabled) {
+			log('CHECK: url');
+		}
 
 		const trimmed = stripAsciiWhitespace(value);
 

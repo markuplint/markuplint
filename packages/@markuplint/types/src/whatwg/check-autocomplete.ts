@@ -173,7 +173,9 @@ export const checkAutoComplete: CustomSyntaxChecker<CheckAutoCompleteOptions> =
 			ref: URL_AUTOCOMPLETE,
 		});
 		if (!listingChecked.matched) {
-			acLog('Unmatch: %s', listingChecked.reason);
+			if (acLog.enabled) {
+				acLog('Unmatch: %s', listingChecked.reason);
+			}
 			return listingChecked;
 		}
 
@@ -192,7 +194,9 @@ export const checkAutoComplete: CustomSyntaxChecker<CheckAutoCompleteOptions> =
 		if (options.anchorMantle) {
 			const onOffToken = identTokens.find(t => t.matches(['on', 'off'], true));
 			if (onOffToken) {
-				acLog('[Unmatched ("%s")] on/off keyword rejected in autofill anchor mantle', value);
+				if (acLog.enabled) {
+					acLog('[Unmatched ("%s")] on/off keyword rejected in autofill anchor mantle', value);
+				}
 				return onOffToken.unmatched({
 					reason: 'unexpected-token',
 					expects: [{ type: 'common', value: 'autofill field name' }],
@@ -206,7 +210,9 @@ export const checkAutoComplete: CustomSyntaxChecker<CheckAutoCompleteOptions> =
 		// Check for "on" / "off"
 		if (firstToken.matches(['on', 'off'], true)) {
 			if (identTokens[1]) {
-				acLog('[Unmatched ("%s")] Unexpected pair with "on" or "off": "%s"', value, identTokens[1].value);
+				if (acLog.enabled) {
+					acLog('[Unmatched ("%s")] Unexpected pair with "on" or "off": "%s"', value, identTokens[1].value);
+				}
 				return identTokens[1].unmatched({
 					reason: 'extra-token',
 					expects: [
@@ -224,7 +230,9 @@ export const checkAutoComplete: CustomSyntaxChecker<CheckAutoCompleteOptions> =
 		// Check for "on" / "off" appearing as the last token in a multi-token context
 		const lastIdentToken = identTokens.at(-1)!;
 		if (lastIdentToken.matches(['on', 'off'], true) && identTokens.length > 1) {
-			acLog('[Unmatched ("%s")] Extra token "on"/"off" at end: "%s"', value, lastIdentToken.value);
+			if (acLog.enabled) {
+				acLog('[Unmatched ("%s")] Extra token "on"/"off" at end: "%s"', value, lastIdentToken.value);
+			}
 			return lastIdentToken.unmatched({
 				reason: 'extra-token',
 				expects: [
@@ -273,7 +281,9 @@ export const checkAutoComplete: CustomSyntaxChecker<CheckAutoCompleteOptions> =
 				}
 			}
 
-			acLog('[Unmatched ("%s")] Unexpected token: "%s"', value, lastToken.value);
+			if (acLog.enabled) {
+				acLog('[Unmatched ("%s")] Unexpected token: "%s"', value, lastToken.value);
+			}
 			return lastToken.unmatched({
 				reason: 'unexpected-token',
 				expects,
@@ -293,7 +303,9 @@ export const checkAutoComplete: CustomSyntaxChecker<CheckAutoCompleteOptions> =
 			// with a spec-cited unexpected-token result so the diagnostic
 			// distinguishes it from a generic unknown field name.
 			if (options.noWebauthn) {
-				acLog('[Unmatched ("%s")] webauthn is not valid on this element', value);
+				if (acLog.enabled) {
+					acLog('[Unmatched ("%s")] webauthn is not valid on this element', value);
+				}
 				return lastToken.unmatched({
 					reason: 'unexpected-token',
 					expects: [{ type: 'common', value: 'autofill field name' }],
@@ -311,7 +323,9 @@ export const checkAutoComplete: CustomSyntaxChecker<CheckAutoCompleteOptions> =
 					index--;
 				} else if (reResult && reResult.category === 'Credential') {
 					// webauthn webauthn — duplicate caught by TokenCollection.check unique
-					acLog('[Unmatched ("%s")] Duplicate webauthn', value);
+					if (acLog.enabled) {
+						acLog('[Unmatched ("%s")] Duplicate webauthn', value);
+					}
 					return preWebauthnToken.unmatched({
 						reason: 'extra-token',
 						expects: [{ type: 'format', value: 'autocomplete' }],
@@ -321,7 +335,13 @@ export const checkAutoComplete: CustomSyntaxChecker<CheckAutoCompleteOptions> =
 					// Token before webauthn is not a valid field name
 					const allFieldNames = [...autofillFieldNames, ...contactableFieldNames];
 					const candidate = getCandidate(preWebauthnToken.value, allFieldNames);
-					acLog('[Unmatched ("%s")] Unexpected token before webauthn: "%s"', value, preWebauthnToken.value);
+					if (acLog.enabled) {
+						acLog(
+							'[Unmatched ("%s")] Unexpected token before webauthn: "%s"',
+							value,
+							preWebauthnToken.value,
+						);
+					}
 					return preWebauthnToken.unmatched({
 						reason: 'unexpected-token',
 						expects: [{ type: 'common', value: 'autofill field name' }],
@@ -333,7 +353,9 @@ export const checkAutoComplete: CustomSyntaxChecker<CheckAutoCompleteOptions> =
 				// Spec: "The webauthn token must not be the only token in the
 				// autocomplete attribute's value."
 				// https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete-webauthn
-				acLog('[Unmatched ("%s")] Standalone webauthn rejected', value);
+				if (acLog.enabled) {
+					acLog('[Unmatched ("%s")] Standalone webauthn rejected', value);
+				}
 				return lastToken.unmatched({
 					reason: 'unexpected-token',
 					expects: [{ type: 'common', value: 'autofill field name' }],
@@ -367,7 +389,9 @@ export const checkAutoComplete: CustomSyntaxChecker<CheckAutoCompleteOptions> =
 		if (category === 'Normal') {
 			const currentToken = identTokens[index]!;
 			if (currentToken.matches(contactingTokens, true)) {
-				acLog('[Unmatched ("%s")] Contacting token not valid for Normal field', value, currentToken.value);
+				if (acLog.enabled) {
+					acLog('[Unmatched ("%s")] Contacting token not valid for Normal field', value, currentToken.value);
+				}
 				return currentToken.unmatched({
 					reason: 'unexpected-token',
 					expects: [
@@ -455,7 +479,9 @@ export const checkAutoComplete: CustomSyntaxChecker<CheckAutoCompleteOptions> =
 
 			const ref = !hasPartOfAddress && !hasNamedGroup ? URL_AUTOFILL_FIELD : URL_NAMED_GROUP;
 
-			acLog('[Unmatched ("%s")] Extra token: "%s"', value, extraToken.value);
+			if (acLog.enabled) {
+				acLog('[Unmatched ("%s")] Extra token: "%s"', value, extraToken.value);
+			}
 			return extraToken.unmatched({
 				reason: 'unexpected-token',
 				expects: extraExpects,

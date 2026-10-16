@@ -10,7 +10,9 @@ import { datetimeTokenCheck } from './datetime-tokens.js';
  */
 export const checkWeekString: CustomSyntaxChecker = () =>
 	function checkWeekString(value) {
-		log('CHECK: week-string');
+		if (log.enabled) {
+			log('CHECK: week-string');
+		}
 
 		const tokens = TokenCollection.fromPatterns(value, [
 			// YYYY
@@ -23,7 +25,9 @@ export const checkWeekString: CustomSyntaxChecker = () =>
 			/.\d*/,
 		]);
 
-		log('Week: "%s" => %O', tokens.value, tokens);
+		if (log.enabled) {
+			log('Week: "%s" => %O', tokens.value, tokens);
+		}
 
 		const res = tokens.eachCheck(
 			datetimeTokenCheck.year,
@@ -33,7 +37,7 @@ export const checkWeekString: CustomSyntaxChecker = () =>
 			datetimeTokenCheck.extra,
 		);
 
-		if (!res.matched) {
+		if (!res.matched && log.enabled) {
 			log('Failed: %O', res);
 		}
 
