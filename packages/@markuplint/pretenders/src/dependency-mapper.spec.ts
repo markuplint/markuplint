@@ -645,7 +645,8 @@ describe('dependencyMapper', () => {
 
 		describe('with a workspace package linked into node_modules', () => {
 			// `c.tsx` renders `Item` imported from `@org/ui`, which `node_modules/@org/ui` links to `packages/ui`.
-			// Module resolution returns real paths, so the project root has to be one too (`os.tmpdir()` is a link on macOS).
+			// Module resolution returns real paths, so the project root has to be one too (`os.tmpdir()` is a link on
+			// macOS, and a short `RUNNER~1` name on Windows, which only the `native` variant expands as it does).
 			const resolveC = () => {
 				const map: PretenderDirectorMap = new Map([
 					['packages/ui/index.tsx#Item', ['Item', 'button', undefined, 'packages/ui/index.tsx']],
@@ -654,7 +655,10 @@ describe('dependencyMapper', () => {
 				const importsByFile = new Map([
 					['c.tsx', [{ localName: 'Item', importedName: 'Item', source: '@org/ui', type: 'named' as const }]],
 				]);
-				const result = dependencyMapper(map, new Map(), { importsByFile, cwd: fs.realpathSync(tmpDir) });
+				const result = dependencyMapper(map, new Map(), {
+					importsByFile,
+					cwd: fs.realpathSync.native(tmpDir),
+				});
 				return result.find(p => p.selector === 'C');
 			};
 
