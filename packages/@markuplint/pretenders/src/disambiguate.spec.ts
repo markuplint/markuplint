@@ -447,6 +447,23 @@ describe('disambiguatePretenders', () => {
 			expect(result).toStrictEqual([own]);
 		});
 
+		test('keeps a candidate that is itself declared in the package, when a barrel re-exports it', async () => {
+			await install();
+			await writeFile(path.join(root, 'barrel.ts'), "export { Button } from 'ui-lib';");
+			const own: Pretender = {
+				selector: 'Button',
+				as: 'button',
+				filePath: `${path.join(root, 'node_modules', 'ui-lib', 'Button.js')}:1:14`,
+			};
+
+			const result = await disambiguatePretenders(
+				[own],
+				target("import { Button } from './barrel';\nexport const P = () => <Button />;"),
+			);
+
+			expect(result).toStrictEqual([own]);
+		});
+
 		test('finds a kebab-case selector by the PascalCase name the script imports it as', async () => {
 			const kebab: Pretender = {
 				selector: 'my-button',
