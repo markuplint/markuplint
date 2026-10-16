@@ -3445,7 +3445,10 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	}
 
 	#ruleMapping(ruleset: Ruleset) {
-		if (docLog.enabled) {
+		// Read once: the per-node loop below would otherwise hit the `enabled` getter for every node.
+		const docEnabled = docLog.enabled;
+		const ruleEnabled = ruleLog.enabled;
+		if (docEnabled) {
 			docLog('Rule Mapping: %O', Object.keys(ruleset.rules));
 		}
 
@@ -3467,7 +3470,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 
 		// add rules to node
 		for (const node of this.nodeList) {
-			if (docLog.enabled) {
+			if (docEnabled) {
 				docLog('Add rules to node <%s>', node.nodeName);
 			}
 
@@ -3509,7 +3512,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 					continue;
 				}
 
-				if (docLog.enabled) {
+				if (docEnabled) {
 					docLog('Matched nodeRule: <%s>(%s)', node.nodeName, matches.selector || '*');
 				}
 
@@ -3551,7 +3554,9 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 					const globalRule = ruleset.rules[ruleName];
 					const mergedRule = globalRule == null ? convertedRule : mergeRule(globalRule, convertedRule);
 
-					ruleLog('↑ nodeRule (%s): %O', ruleName, mergedRule);
+					if (ruleEnabled) {
+						ruleLog('↑ nodeRule (%s): %O', ruleName, mergedRule);
+					}
 
 					ruleMapper.set(node, ruleName, {
 						from: 'nodeRules',
@@ -3624,7 +3629,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 						continue;
 					}
 
-					if (docLog.enabled) {
+					if (docEnabled) {
 						docLog(
 							'Matched childNodeRule: <%s>(%s), inheritance: %o',
 							selectorTarget.nodeName,
@@ -3673,7 +3678,9 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 						const globalRule = ruleset.rules[ruleName];
 						const mergedRule = globalRule == null ? convertedRule : mergeRule(globalRule, convertedRule);
 
-						ruleLog('↑ childNodeRule (%s): %O', ruleName, mergedRule);
+						if (ruleEnabled) {
+							ruleLog('↑ childNodeRule (%s): %O', ruleName, mergedRule);
+						}
 
 						for (const descendant of targetDescendants) {
 							ruleMapper.set(descendant, ruleName, {

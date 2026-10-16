@@ -64,17 +64,19 @@ export class NodeStore {
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		node: MLNode<T, O, A>,
 	) {
-		if (!astNode.uuid) {
+		if (!astNode.uuid && nodeStoreError.enabled) {
 			nodeStoreError('UUID is invalid: %s (%s: "%s")', astNode.uuid, astNode.nodeName, astNode.raw);
 			nodeStoreError('Invalid node: %O', node);
 		}
 
-		nodeStoreLog(
-			'Mapped: %s (%s: "%s")',
-			astNode.uuid,
-			astNode.nodeName,
-			astNode.raw.replaceAll('\n', '⏎').replaceAll('\t', '→'),
-		);
+		if (nodeStoreLog.enabled) {
+			nodeStoreLog(
+				'Mapped: %s (%s: "%s")',
+				astNode.uuid,
+				astNode.nodeName,
+				astNode.raw.replaceAll('\n', '⏎').replaceAll('\t', '→'),
+			);
+		}
 		this.#store.set(astNode.uuid, node);
 	}
 }
