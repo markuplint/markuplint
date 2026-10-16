@@ -86,4 +86,4 @@ deterministic at `--concurrency 1`.
 | `Port 28888 already allocated` | Stop the conflicting container, or edit `DEFAULT_PORT` in `bench/docker.ts`. |
 | `yarn bench:verify` / `yarn bench:compare` "no snapshots found" | Raw trees are gitignored on a fresh clone. Run `yarn bench:update`. |
 | One or two snapshot files flip between runs | Expected nu parallelism flicker. Rerun with `--concurrency 1` when reproducibility matters. |
-| Unexpected diffs after a submodule bump | Check `meta.json` for image-digest / markuplint-version changes. |
+| Unexpected diffs after a submodule bump | Check `tests/external/snapshots/meta.json` for image-digest / markuplint-version changes. |

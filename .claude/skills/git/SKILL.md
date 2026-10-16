@@ -17,7 +17,7 @@ Check the current branch before any commit:
 git branch --show-current
 ```
 
-On `dev`, `v6`, or `main`, stop. `dev` and `v6` are rejected by husky; `main` is unguarded only so `lerna version` can write release commits. Branch work happens in a Claude Code–managed worktree (Branch Topology and Branch & Worktree Policy in the root `CLAUDE.md`).
+On `dev`, `v6`, `v4`, `main`, or a prerelease branch (`v5-rc` and the like), stop. `dev` and `v6` are rejected by husky; `main` and the prerelease branches are unguarded only so `lerna version` can write release commits. The one exception is the `release` skill's recovery commit in its "Version bump" step (finishing Lerna's last two steps by hand on the release branch). Branch work happens in a Claude Code–managed worktree (Branch Topology and Branch & Worktree Policy in the root `CLAUDE.md`).
 
 On a topic branch, proceed. The verification gates below differ between the two lines, so tell them apart from the working tree (a `crates/` directory means the v6 line), not the branch name.
 
@@ -97,13 +97,12 @@ When committing changes that span multiple packages, always commit **from leaves
 
 # Commit message safety guidelines
 
-- For breaking changes or complex commit messages, use heredoc format (see below)
-- For simple, single-line commits, use single quotes (')
+- For simple, single-line commits, use single quotes (`git commit -m 'type(scope): subject line'`)
 - Do not use multiple -m flags for breaking changes (causes commitlint parse errors)
 
-## Heredoc Format (REQUIRED for Breaking Changes)
+## Heredoc Format (every multi-line message, REQUIRED for Breaking Changes)
 
-Use heredoc with command substitution to pass multi-line commit messages. This ensures:
+Use heredoc with command substitution to pass any multi-line commit message. This ensures:
 
 - Special characters (like exclamation marks) are preserved correctly
 - Multi-line messages are properly formatted
@@ -128,18 +127,7 @@ EOF
 
 - Use `<<'EOF'` (with quotes) to prevent variable expansion
 - Close with `)` after `EOF` to complete command substitution
-- Do NOT use multiple `-m` flags for breaking changes
 - The entire message must be wrapped in `"$(cat <<'EOF' ... EOF)"`
-
-## Simple Commits (Non-Breaking)
-
-For simple, single-line commits without breaking changes:
-
-```bash
-git commit -m 'type(scope): subject line'
-```
-
-For multi-line non-breaking commits, use heredoc format as well to ensure proper formatting
 
 # Pre-commit verification for spec changes
 
@@ -147,8 +135,10 @@ When committing changes to spec packages (Tier 2–3), run the full test suite:
 
 ```bash
 yarn test
-yarn lint
+yarn lint-check
 ```
+
+`yarn lint` auto-fixes files, and the fixes would land unstaged; use the non-mutating `yarn lint-check` here.
 
 Spec data propagates to `@markuplint/rules` and `@markuplint/ml-spec` tests.
 Package-level tests alone will miss cross-package regressions.

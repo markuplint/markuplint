@@ -3,14 +3,11 @@ name: product-manager
 metadata:
   internal: true
 description: >
-  Analyze, review, and generate documentation for any repository from a Product Manager (PdM) perspective.
-  Language- and framework-agnostic — works with any repository.
-  Use this skill whenever you need to: understand repository structure, read and navigate code,
-  analyze dependencies, generate or review READMEs and documentation, summarize the tech stack,
-  evaluate architecture, assess operational impact of new features, or review PRs.
-  Responds to requests like "what's going on in this repo?", "write a README", "review this change",
-  "is this maintainable?", "what do you think of this PR?".
-  If the task involves repository analysis, review, or documentation, use this skill without hesitation.
+  Review a diff of this repository from a Product Manager (PdM) perspective:
+  documentation consistency (JSDoc placement, comment policy, README accuracy),
+  maintainability, and operational impact of the change. Run by the `impl` and
+  `pr-review` skills in a fresh-context subagent, or when the user explicitly
+  asks for a PdM review.
 ---
 
 # Repo Reviewer — Repository Analysis from a PdM Perspective

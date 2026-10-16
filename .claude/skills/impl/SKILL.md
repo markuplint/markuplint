@@ -5,8 +5,8 @@ metadata:
 description: >
   Implementation orchestrator — takes an agreed plan through implementation,
   code review, security review, QA, docs consistency, lint/test, commit, and
-  PR creation. Use when the user says "implement it", "go ahead", or "/impl"
-  after a plan has been agreed (e.g. via grill-me or the issue skill).
+  PR creation. Invoke with `/impl` once a plan has been agreed (e.g. via
+  grill-me or the issue skill).
 disable-model-invocation: true
 ---
 

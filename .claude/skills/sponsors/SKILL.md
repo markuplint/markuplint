@@ -26,9 +26,9 @@ Match the markup of the existing entries in each file. Corporate entries are ren
 
 | Tier | Monthly | Incentive |
 |---|---|---|
-| Corporate | $100/mo | Company logo on README + website |
-| Personal | $10/mo | Personal avatar on README + website |
-| Badge | $5/mo | GitHub badge only (no README/website listing) |
+| Corporate | USD 100/mo | Company logo on README + website |
+| Personal | USD 10/mo | Personal avatar on README + website |
+| Badge | USD 5/mo | GitHub badge only (no README/website listing) |
 
 ## Fetching Active Sponsors (GitHub GraphQL API)
 
@@ -68,7 +68,7 @@ gh api graphql -f query='
 3. **Identify differences:**
    - New sponsors (in API but not listed) -> Add
    - Ended sponsors (listed but not in API) -> Move to Past sponsors
-   - Tier changes ($10 -> $5, etc.) -> Add or remove from listings
+   - Tier changes (USD 10 -> USD 5, etc.) -> Add or remove from listings
 4. **Update all 4 files in sync** (never update just one and forget the others)
 5. **Moving to Past sponsors:**
    - README: Remove the line only (no Past sponsors section)
@@ -77,5 +77,5 @@ gh api graphql -f query='
 ## Notes
 
 - The Japanese website version has no Corporate sponsors section (English only)
-- $5/mo Badge tier sponsors are NOT listed on README/website
+- USD 5/mo Badge tier sponsors are NOT listed on README/website
 - Add new entries to the top of the Past sponsors list

@@ -9,14 +9,14 @@ description: >
   branch, gh pr create.
 ---
 
-1. Ensure that you are on a topic branch that is not `dev`, `v6`, or `main`.
-2. **Determine the base branch.** Two major lines are developed in parallel (Branch Topology in the root `CLAUDE.md`); a v6 topic branch opened against `dev` diffs against the wrong tree and merges in the wrong direction. Take the base from the branch's upstream:
+1. Ensure that you are on a topic branch — not `dev`, `v6`, `v4`, `main`, or a prerelease branch, as in the branch guard of the `git` skill.
+2. **Determine the base branch.** Two major lines are developed in parallel (Branch Topology in the root `CLAUDE.md`); a v6 topic branch opened against `dev` diffs against the wrong tree and merges in the wrong direction. If a PR already exists for the branch, take the base from it (the command errors when there is none — treat that as "no PR"):
 
    ```bash
-   git rev-parse --abbrev-ref '@{upstream}'   # e.g. origin/v6
+   gh pr view --json baseRefName --jq .baseRefName
    ```
 
-   If the branch has no upstream yet, a `crates/` directory in the working tree means the base is `v6`; otherwise `dev`. Write `<base>` for the result below, and always pass it explicitly: `gh pr create --base <base>`.
+   Otherwise a `crates/` directory in the working tree means the base is `v6`, else `dev`; ask the user for `v4` maintenance work. Do not derive the base from `@{upstream}`: after the first `git push -u`, it is the topic branch's own remote ref. Write `<base>` for the result below, and always pass it explicitly: `gh pr create --base <base>`.
 3. **Base tracking (conflict prevention)**: run `git fetch origin <base>`, then `git log HEAD..origin/<base> --oneline`. If the base has advanced, sync with `git merge origin/<base>` before pushing — never rebase (see Branch & Worktree Policy in the root `CLAUDE.md`).
 4. **Pre-flight checks:**
    - If `yarn lint-check`, `yarn build`, and `yarn test` have not already been run and passed in this session, run them **now** before proceeding. Re-run after any base sync.
