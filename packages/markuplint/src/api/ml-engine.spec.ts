@@ -36,7 +36,7 @@ describe('Event notification', () => {
 	});
 });
 
-describe('#4267 the AST mapping is built only for a lint listener', () => {
+describe('AST mapping for the lint event', () => {
 	afterEach(() => {
 		vi.restoreAllMocks();
 	});
@@ -45,17 +45,31 @@ describe('#4267 the AST mapping is built only for a lint listener', () => {
 		const spy = vi.spyOn(Document.prototype, 'debugMap');
 		const file = await MLEngine.toMLFile({ sourceCode: '<div></div>', name: 'a.html' });
 		const engine = new MLEngine(file!, { noSearchConfig: true, config: {} });
-		const debugPromise = new Promise<readonly string[] | null>(resolve => {
-			engine.on('lint', (_, __, ___, ____, debug) => resolve(debug));
+		let debug: readonly string[] | null | undefined;
+		engine.on('lint', (_, __, ___, ____, payload) => {
+			debug = payload;
 		});
 		await engine.exec();
-		const debug = await debugPromise;
 		expect(spy).toHaveBeenCalledTimes(1);
 		expect(debug).not.toBeNull();
-		expect(debug?.length).toBeGreaterThan(0);
+		expect(debug?.join('\n')).toContain('DIV: <div>');
+	});
+
+	it('counts a once listener as a lint listener', async () => {
+		const file = await MLEngine.toMLFile({ sourceCode: '<div></div>', name: 'a.html' });
+		const engine = new MLEngine(file!, { noSearchConfig: true, config: {} });
+		let debug: readonly string[] | null | undefined;
+		engine.once('lint', (_, __, ___, ____, payload) => {
+			debug = payload;
+		});
+		await engine.exec();
+		expect(debug?.join('\n')).toContain('DIV: <div>');
 	});
 
 	it('skips building the mapping when no lint listener is registered', async () => {
+		// The spy is known to observe the engine's document: the first test in
+		// this block asserts a call through the same `Document` class, so a
+		// zero here is not vacuous.
 		const spy = vi.spyOn(Document.prototype, 'debugMap');
 		const file = await MLEngine.toMLFile({ sourceCode: '<div></div>', name: 'a.html' });
 		const engine = new MLEngine(file!, { noSearchConfig: true, config: {} });
