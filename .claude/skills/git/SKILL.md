@@ -28,8 +28,6 @@ Start every commit from a fresh `git status` — the staging area may have chang
 - If files are already staged, the user prepared that set. Do not `git add`, `git restore`, or otherwise touch the staging area; read `git diff --staged` and write the message from those files alone, then run `git commit` (the user approves the command).
 - If nothing is staged, stage by the granularity below — one commit per package, dependencies first (`npx lerna list --graph` when the order is unclear).
 
-After each commit, stop: re-read `git status` and `git diff`, and wait for the user before starting the next one. Do not carry forward assumptions about what remains.
-
 If the OS, application settings, or context suggest a language other than English is being used, give a translation and explanation of the commit message in that language immediately before running the commit command.
 
 # Pre-commit content check
