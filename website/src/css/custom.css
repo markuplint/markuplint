@@ -6,242 +6,242 @@
 
 /* You can override the default Infima variables here. */
 :root {
-  /**
+	/**
    * Branding colors:
    * https://markuplint.dev/community/branding
    */
-  --ml-blue: #1572eb;
-  --ml-blue-lightest: #d0e6fb;
-  --ml-ink: #333;
+	--ml-blue: #1572eb;
+	--ml-blue-lightest: #d0e6fb;
+	--ml-ink: #333;
 
-  /**
+	/**
    * Colors other than brand colors are determined by the tool:
    * https://docusaurus.io/docs/styling-layout#styling-your-site-with-infima
    * Adjustment values: (light) -80/-50/-25/0/10/25/50, (dark) -30/-20/-10/0/10/25/50
    */
-  --ifm-color-primary-lightest: var(--ml-blue-lightest);
-  --ifm-color-primary-lighter: #8bb9f5;
-  --ifm-color-primary-light: #5096f0;
+	--ifm-color-primary-lightest: var(--ml-blue-lightest);
+	--ifm-color-primary-lighter: #8bb9f5;
+	--ifm-color-primary-light: #5096f0;
 
-  /* Contrast AA (primary: 4.52, primary-dark: 5.36) */
-  --ifm-color-primary: var(--ml-blue);
-  --ifm-color-primary-dark: #1267d4;
+	/* Contrast AA (primary: 4.52, primary-dark: 5.36) */
+	--ifm-color-primary: var(--ml-blue);
+	--ifm-color-primary-dark: #1267d4;
 
-  /* Contrast AAA (primary-darker: 7.1, primary-darkest: 11.29) */
-  --ifm-color-primary-darker: #0f55b1;
-  --ifm-color-primary-darkest: #0a3976;
-  --ifm-link-color: var(--ifm-color-primary-darker);
-  --docusaurus-highlighted-code-line-bg: rgb(0 0 0 / 10%);
-  --ifm-code-font-size: 95%;
-  --ifm-h2-font-size: 2rem;
-  --ifm-h3-font-size: 1.5rem;
+	/* Contrast AAA (primary-darker: 7.1, primary-darkest: 11.29) */
+	--ifm-color-primary-darker: #0f55b1;
+	--ifm-color-primary-darkest: #0a3976;
+	--ifm-link-color: var(--ifm-color-primary-darker);
+	--docusaurus-highlighted-code-line-bg: rgb(0 0 0 / 10%);
+	--ifm-code-font-size: 95%;
+	--ifm-h2-font-size: 2rem;
+	--ifm-h3-font-size: 1.5rem;
 }
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
 [data-theme='dark'] {
-  /* Contrast AAA (primary: 8.63, lighter colors have higher values) */
+	/* Contrast AAA (primary: 8.63, lighter colors have higher values) */
 
-  /* Additionally, primary has Lc-61.5 for the background color of #1b1b1d in APCA */
-  --ifm-color-primary-lightest: #f5f9fe;
-  --ifm-color-primary-lighter: #d2e4fb;
-  --ifm-color-primary-light: #aecef8;
-  --ifm-color-primary: #8bb9f5;
+	/* Additionally, primary has Lc-61.5 for the background color of #1b1b1d in APCA */
+	--ifm-color-primary-lightest: #f5f9fe;
+	--ifm-color-primary-lighter: #d2e4fb;
+	--ifm-color-primary-light: #aecef8;
+	--ifm-color-primary: #8bb9f5;
 
-  /* Contrast AA (primary-dark: 6.82, primary-darker: 4.72) */
-  --ifm-color-primary-dark: #68a4f2;
-  --ifm-color-primary-darker: #3384ed;
-  --ifm-color-primary-darkest: #0f55b1;
-  --ifm-link-color: var(--ifm-color-primary-light);
-  --docusaurus-highlighted-code-line-bg: rgb(0 0 0 / 30%);
+	/* Contrast AA (primary-dark: 6.82, primary-darker: 4.72) */
+	--ifm-color-primary-dark: #68a4f2;
+	--ifm-color-primary-darker: #3384ed;
+	--ifm-color-primary-darkest: #0f55b1;
+	--ifm-link-color: var(--ifm-color-primary-light);
+	--docusaurus-highlighted-code-line-bg: rgb(0 0 0 / 30%);
 }
 
 .theme-code-block {
-  /**
+	/**
    * For the choice of hue, referred to color univarsal design
    * https://jfly.uni-koeln.de/colorset/
    */
-  --code-color-red-light: hsl(18deg 100% 70%);
-  --code-color-red-dark: hsl(18deg 100% 40%);
-  --code-color-yellow-light: hsl(57deg 70% 80%);
-  --code-color-yellow-dark: hsl(57deg 80% 25%);
-  --code-color-green-light: hsl(162deg 67% 60%);
-  --code-color-green-dark: hsl(162deg 100% 25%);
-  --code-color-blue-light: hsl(219deg 80% 70%);
-  --code-color-blue-dark: hsl(219deg 100% 40%);
-  --code-color-sky-light: hsl(200deg 100% 82%);
-  --code-color-sky-dark: hsl(200deg 100% 35%);
-  --code-color-orange-light: hsl(41deg 90% 70%);
-  --code-color-orange-dark: hsl(41deg 100% 30%);
-  --code-color-purple-light: hsl(300deg 50% 75%);
-  --code-color-purple-dark: hsl(300deg 100% 30%);
-  --code-color-lime-light: hsl(100deg 40% 50%);
-  --code-color-lime-dark: hsl(100deg 80% 25%);
-  --code-label-padding-block: 0.25rem;
-  --code-label-padding-right: 0.8em;
-  --code-label-icon-size: 1rem;
-  --code-label-background-height: calc(var(--code-label-icon-size) + var(--code-label-padding-block) * 2);
+	--code-color-red-light: hsl(18deg 100% 70%);
+	--code-color-red-dark: hsl(18deg 100% 40%);
+	--code-color-yellow-light: hsl(57deg 70% 80%);
+	--code-color-yellow-dark: hsl(57deg 80% 25%);
+	--code-color-green-light: hsl(162deg 67% 60%);
+	--code-color-green-dark: hsl(162deg 100% 25%);
+	--code-color-blue-light: hsl(219deg 80% 70%);
+	--code-color-blue-dark: hsl(219deg 100% 40%);
+	--code-color-sky-light: hsl(200deg 100% 82%);
+	--code-color-sky-dark: hsl(200deg 100% 35%);
+	--code-color-orange-light: hsl(41deg 90% 70%);
+	--code-color-orange-dark: hsl(41deg 100% 30%);
+	--code-color-purple-light: hsl(300deg 50% 75%);
+	--code-color-purple-dark: hsl(300deg 100% 30%);
+	--code-color-lime-light: hsl(100deg 40% 50%);
+	--code-color-lime-dark: hsl(100deg 80% 25%);
+	--code-label-padding-block: 0.25rem;
+	--code-label-padding-right: 0.8em;
+	--code-label-icon-size: 1rem;
+	--code-label-background-height: calc(var(--code-label-icon-size) + var(--code-label-padding-block) * 2);
 
-  overflow: hidden;
+	overflow: hidden;
 }
 
 .theme-code-block.config {
-  --code-background-color: hsl(214deg 70% 98%);
-  --code-label-color: var(--ifm-color-primary-darkest);
-  --code-label-background-color: var(--ifm-color-primary-lightest);
-  --code-label-image: url('/img/icon-gear.svg');
+	--code-background-color: hsl(214deg 70% 98%);
+	--code-label-color: var(--ifm-color-primary-darkest);
+	--code-label-background-color: var(--ifm-color-primary-lightest);
+	--code-label-image: url('/img/icon-gear.svg');
 }
 
 [data-theme='dark'] .theme-code-block.config {
-  --code-background-color: hsl(214deg 30% 13%);
-  --code-label-color: var(--ifm-color-primary-lightest);
-  --code-label-background-color: var(--ifm-color-primary-darkest);
+	--code-background-color: hsl(214deg 30% 13%);
+	--code-label-color: var(--ifm-color-primary-lightest);
+	--code-label-background-color: var(--ifm-color-primary-darkest);
 }
 
 .theme-code-block.config pre {
-  padding-top: var(--code-label-background-height);
-  background-color: var(--code-background-color) !important;
+	padding-top: var(--code-label-background-height);
+	background-color: var(--code-background-color) !important;
 }
 
 .theme-code-block.config pre::before {
-  position: absolute;
-  top: 0;
-  left: 0;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  min-height: var(--code-label-background-height);
-  padding: var(--code-label-padding-block) var(--code-label-padding-right) var(--code-label-padding-block)
-    calc(var(--code-label-icon-size) + 0.6em);
-  font-family: var(--ifm-font-family-base);
-  font-size: 0.9em;
-  font-weight: bold;
-  line-height: 1;
-  color: var(--code-label-color);
-  content: 'Configuration';
-  background-color: var(--code-label-background-color);
-  border-bottom-right-radius: var(--code-label-padding-right) 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
+	box-sizing: border-box;
+	display: flex;
+	align-items: center;
+	min-height: var(--code-label-background-height);
+	padding: var(--code-label-padding-block) var(--code-label-padding-right) var(--code-label-padding-block)
+		calc(var(--code-label-icon-size) + 0.6em);
+	font-family: var(--ifm-font-family-base);
+	font-size: 0.9em;
+	font-weight: bold;
+	line-height: 1;
+	color: var(--code-label-color);
+	content: 'Configuration';
+	background-color: var(--code-label-background-color);
+	border-bottom-right-radius: var(--code-label-padding-right) 100%;
 }
 
 .theme-code-block.config pre:lang(ja)::before {
-  content: '設定ファイル';
+	content: '設定ファイル';
 }
 
 .theme-code-block.config pre::after {
-  position: absolute;
-  top: var(--code-label-padding-block);
-  left: var(--code-label-padding-block);
-  width: var(--code-label-icon-size);
-  height: var(--code-label-icon-size);
-  color: var(--code-label-color);
-  content: '';
-  background-color: currentColor;
-  mask-image: var(--code-label-image);
-  mask-repeat: no-repeat;
-  mask-position: center;
-  mask-size: contain;
+	position: absolute;
+	top: var(--code-label-padding-block);
+	left: var(--code-label-padding-block);
+	width: var(--code-label-icon-size);
+	height: var(--code-label-icon-size);
+	color: var(--code-label-color);
+	content: '';
+	background-color: currentColor;
+	mask-image: var(--code-label-image);
+	mask-repeat: no-repeat;
+	mask-position: center;
+	mask-size: contain;
 }
 
 .iconLink {
-  display: inline-flex;
-  column-gap: 8px;
-  align-items: center;
+	display: inline-flex;
+	column-gap: 8px;
+	align-items: center;
 }
 
 .iconLink::before {
-  display: inline-block;
-  width: 24px;
-  height: 24px;
-  content: '';
-  background-color: currentColor;
-  mask-repeat: no-repeat;
-  mask-position: center;
+	display: inline-block;
+	width: 24px;
+	height: 24px;
+	content: '';
+	background-color: currentColor;
+	mask-repeat: no-repeat;
+	mask-position: center;
 }
 
 .iconLink.iconLink--home::before {
-  mask-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M575.8 255.5c0 18-15 32.1-32 32.1h-32l.7 160.2c0 2.7-.2 5.4-.5 8.1V472c0 22.1-17.9 40-40 40H456c-1.1 0-2.2 0-3.3-.1c-1.4 .1-2.8 .1-4.2 .1H416 392c-22.1 0-40-17.9-40-40V448 384c0-17.7-14.3-32-32-32H256c-17.7 0-32 14.3-32 32v64 24c0 22.1-17.9 40-40 40H160 128.1c-1.5 0-3-.1-4.5-.2c-1.2 .1-2.4 .2-3.6 .2H104c-22.1 0-40-17.9-40-40V360c0-.9 0-1.9 .1-2.8V287.6H32c-18 0-32-14-32-32.1c0-9 3-17 10-24L266.4 8c7-7 15-8 22-8s15 2 21 7L564.8 231.5c8 7 12 15 11 24z"/></svg>');
+	mask-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M575.8 255.5c0 18-15 32.1-32 32.1h-32l.7 160.2c0 2.7-.2 5.4-.5 8.1V472c0 22.1-17.9 40-40 40H456c-1.1 0-2.2 0-3.3-.1c-1.4 .1-2.8 .1-4.2 .1H416 392c-22.1 0-40-17.9-40-40V448 384c0-17.7-14.3-32-32-32H256c-17.7 0-32 14.3-32 32v64 24c0 22.1-17.9 40-40 40H160 128.1c-1.5 0-3-.1-4.5-.2c-1.2 .1-2.4 .2-3.6 .2H104c-22.1 0-40-17.9-40-40V360c0-.9 0-1.9 .1-2.8V287.6H32c-18 0-32-14-32-32.1c0-9 3-17 10-24L266.4 8c7-7 15-8 22-8s15 2 21 7L564.8 231.5c8 7 12 15 11 24z"/></svg>');
 }
 
 .iconLink.iconLink--github::before {
-  mask-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 24 24"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.6.11.793-.26.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.09-.745.083-.73.083-.73 1.205.085 1.84 1.238 1.84 1.238 1.07 1.834 2.806 1.304 3.49.997.108-.776.42-1.306.763-1.605-2.665-.305-5.467-1.334-5.467-5.93 0-1.312.47-2.382 1.236-3.222-.125-.303-.536-1.524.116-3.176 0 0 1.008-.322 3.3 1.23A11.51 11.51 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.29-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.236 1.91 1.236 3.22 0 4.61-2.807 5.625-5.48 5.922.43.372.824 1.102.824 2.222v3.293c0 .32.192.694.8.576C20.567 21.796 24 17.3 24 12c0-6.627-5.373-12-12-12z" /></svg>');
+	mask-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 24 24"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.6.11.793-.26.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.09-.745.083-.73.083-.73 1.205.085 1.84 1.238 1.84 1.238 1.07 1.834 2.806 1.304 3.49.997.108-.776.42-1.306.763-1.605-2.665-.305-5.467-1.334-5.467-5.93 0-1.312.47-2.382 1.236-3.222-.125-.303-.536-1.524.116-3.176 0 0 1.008-.322 3.3 1.23A11.51 11.51 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.29-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.236 1.91 1.236 3.22 0 4.61-2.807 5.625-5.48 5.922.43.372.824 1.102.824 2.222v3.293c0 .32.192.694.8.576C20.567 21.796 24 17.3 24 12c0-6.627-5.373-12-12-12z" /></svg>');
 }
 
 .iconLink.iconLink--twitter::before {
-  mask-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 24 24"><path d="M24 4.557a9.83 9.83 0 0 1-2.828.775 4.932 4.932 0 0 0 2.165-2.724 9.864 9.864 0 0 1-3.127 1.195 4.916 4.916 0 0 0-3.594-1.555c-3.18 0-5.515 2.966-4.797 6.045A13.978 13.978 0 0 1 1.67 3.15a4.93 4.93 0 0 0 1.524 6.573 4.903 4.903 0 0 1-2.23-.616c-.053 2.28 1.582 4.415 3.95 4.89a4.935 4.935 0 0 1-2.224.084 4.928 4.928 0 0 0 4.6 3.42A9.9 9.9 0 0 1 0 19.54a13.94 13.94 0 0 0 7.548 2.212c9.142 0 14.307-7.72 13.995-14.646A10.025 10.025 0 0 0 24 4.556z" /></svg>');
+	mask-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 24 24"><path d="M24 4.557a9.83 9.83 0 0 1-2.828.775 4.932 4.932 0 0 0 2.165-2.724 9.864 9.864 0 0 1-3.127 1.195 4.916 4.916 0 0 0-3.594-1.555c-3.18 0-5.515 2.966-4.797 6.045A13.978 13.978 0 0 1 1.67 3.15a4.93 4.93 0 0 0 1.524 6.573 4.903 4.903 0 0 1-2.23-.616c-.053 2.28 1.582 4.415 3.95 4.89a4.935 4.935 0 0 1-2.224.084 4.928 4.928 0 0 0 4.6 3.42A9.9 9.9 0 0 1 0 19.54a13.94 13.94 0 0 0 7.548 2.212c9.142 0 14.307-7.72 13.995-14.646A10.025 10.025 0 0 0 24 4.556z" /></svg>');
 }
 
 .hidden {
-  display: none;
+	display: none;
 }
 
 .visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  white-space: nowrap;
-  clip: rect(0 0 0 0);
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	white-space: nowrap;
+	clip: rect(0 0 0 0);
 }
 
 .navbar__toggle {
-  margin-right: 1rem;
+	margin-right: 1rem;
 }
 
 :where(.navbar__items:not(.navbar__items--right)) .navbar__link {
-  padding-inline: min(1%, var(--ifm-navbar-item-padding-horizontal));
+	padding-inline: min(1%, var(--ifm-navbar-item-padding-horizontal));
 }
 
 .markdown {
-  --ifm-link-decoration: underline;
+	--ifm-link-decoration: underline;
 }
 
 .markdown img {
-  max-width: 100%;
-  height: auto;
-  border-radius: var(--ifm-global-radius);
+	max-width: 100%;
+	height: auto;
+	border-radius: var(--ifm-global-radius);
 }
 
 .DocSearch {
-  --docsearch-searchbox-background: var(--ifm-navbar-background-color);
-  --docsearch-muted-color: var(--ifm-color-content-secondary);
-  --docsearch-hit-active-color: var(--ifm-color-content-inverse);
+	--docsearch-searchbox-background: var(--ifm-navbar-background-color);
+	--docsearch-muted-color: var(--ifm-color-content-secondary);
+	--docsearch-hit-active-color: var(--ifm-color-content-inverse);
 }
 
 .DocSearch-Form {
-  --docsearch-searchbox-shadow: inset 0 0 0 1px var(--ifm-color-emphasis-300);
+	--docsearch-searchbox-shadow: inset 0 0 0 1px var(--ifm-color-emphasis-300);
 }
 
 .DocSearch-Form:focus-within:not(:has(.DocSearch-Reset:focus-visible)) {
-  --docsearch-searchbox-shadow: inset 0 0 0 2px var(--docsearch-primary-color);
+	--docsearch-searchbox-shadow: inset 0 0 0 2px var(--docsearch-primary-color);
 }
 
 .DocSearch-Hit a {
-  outline-offset: -1px;
+	outline-offset: -1px;
 }
 
 .DocSearch-Button {
-  box-shadow: inset 0 0 0 1px var(--ifm-color-emphasis-300);
+	box-shadow: inset 0 0 0 1px var(--ifm-color-emphasis-300);
 }
 
 @media (max-width: 1200px) {
-  .navbar :is(.DocSearch-Button-Placeholder, .DocSearch-Button-Keys) {
-    display: none;
-  }
+	.navbar :is(.DocSearch-Button-Placeholder, .DocSearch-Button-Keys) {
+		display: none;
+	}
 }
 
 .footer {
-  --ifm-footer-link-hover-color: var(--ifm-color-primary-lighter);
-  --ifm-link-color: var(--ifm-footer-link-color);
-  --ifm-link-hover-color: var(--ifm-footer-link-hover-color);
+	--ifm-footer-link-hover-color: var(--ifm-color-primary-lighter);
+	--ifm-link-color: var(--ifm-footer-link-color);
+	--ifm-link-hover-color: var(--ifm-footer-link-hover-color);
 }
 
 .footer__links {
-  display: grid;
-  grid-auto-flow: column;
-  column-gap: 20px;
-  align-items: center;
-  justify-content: center;
+	display: grid;
+	grid-auto-flow: column;
+	column-gap: 20px;
+	align-items: center;
+	justify-content: center;
 }
 
 .footer__link-separator {
-  display: none;
+	display: none;
 }

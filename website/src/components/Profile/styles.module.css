@@ -1,46 +1,46 @@
 .profile {
-  display: block;
-  padding: 1em 2em;
-  color: inherit;
-  background-color: var(--ifm-breadcrumb-item-background-active);
-  border-radius: 0.5em;
+	display: block;
+	padding: 1em 2em;
+	color: inherit;
+	background-color: var(--ifm-breadcrumb-item-background-active);
+	border-radius: 0.5em;
 }
 
 .profile figure {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 0;
-  margin: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 0;
+	margin: 0;
 }
 
 .profile figcaption {
-  padding: 0;
-  margin: 0;
-  font-weight: bold;
-  text-align: center;
+	padding: 0;
+	margin: 0;
+	font-weight: bold;
+	text-align: center;
 }
 
 .profile p {
-  padding: 0;
-  margin: 0 0 0.5em;
-  text-align: center;
+	padding: 0;
+	margin: 0 0 0.5em;
+	text-align: center;
 }
 
 .sns {
-  display: flex;
-  gap: 0.5em;
+	display: flex;
+	gap: 0.5em;
 }
 
 .sns a {
-  display: flex;
-  flex: 1 0 auto;
-  justify-content: center;
-  padding: 0.4em 2em;
-  background-color: var(--ifm-breadcrumb-item-background-active);
-  border-radius: 0.5em;
+	display: flex;
+	flex: 1 0 auto;
+	justify-content: center;
+	padding: 0.4em 2em;
+	background-color: var(--ifm-breadcrumb-item-background-active);
+	border-radius: 0.5em;
 }
 
 .sns a:is(:hover, :focus)::before {
-  background-color: var(--ifm-link-hover-color);
+	background-color: var(--ifm-link-hover-color);
 }

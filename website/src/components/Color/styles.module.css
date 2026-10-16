@@ -1,49 +1,49 @@
 .color > p:first-child {
-  margin: 0;
-  font-size: 1.2em;
-  font-weight: bold;
+	margin: 0;
+	font-size: 1.2em;
+	font-weight: bold;
 }
 
 .color figure {
-  display: flex;
-  align-items: stretch;
-  padding: 0;
-  margin: 0;
+	display: flex;
+	align-items: stretch;
+	padding: 0;
+	margin: 0;
 }
 
 .pallet {
-  width: 5em;
-  height: auto;
-  border: 1px solid var(--ifm-toc-border-color);
-  border-radius: 0.5em;
+	width: 5em;
+	height: auto;
+	border: 1px solid var(--ifm-toc-border-color);
+	border-radius: 0.5em;
 }
 
 .color figcaption {
-  padding: 1em;
-  margin: 0;
+	padding: 1em;
+	margin: 0;
 }
 
 .color dl {
-  display: grid;
-  grid-template-columns: auto auto;
-  padding: 0;
-  margin: 0;
+	display: grid;
+	grid-template-columns: auto auto;
+	padding: 0;
+	margin: 0;
 }
 
 .color dl > div {
-  display: contents;
+	display: contents;
 }
 
 .color dt {
-  padding: 0;
-  margin: 0;
+	padding: 0;
+	margin: 0;
 }
 
 .color dd {
-  padding: 0;
-  margin: 0;
+	padding: 0;
+	margin: 0;
 }
 
 .color dd::before {
-  content: ': ';
+	content: ': ';
 }

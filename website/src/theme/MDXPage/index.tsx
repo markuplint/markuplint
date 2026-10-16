@@ -6,10 +6,10 @@ import React from 'react';
 
 // For MDX pages
 export default function MDXPageWrapper(props: Props) {
-  return (
-    <>
-      <OgImg title={props.content.metadata.title ?? ''} />
-      <MDXPage {...props} />
-    </>
-  );
+	return (
+		<>
+			<OgImg title={props.content.metadata.title ?? ''} />
+			<MDXPage {...props} />
+		</>
+	);
 }
