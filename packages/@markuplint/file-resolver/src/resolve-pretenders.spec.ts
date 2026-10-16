@@ -256,6 +256,26 @@ test('disambiguatePretendersForFile follows a star re-export when the working di
 	}
 });
 
+test('disambiguatePretendersForFile drops the only scanned component of a name that the file imports from a package', async () => {
+	const tmpDir = await mkdtemp(path.join(os.tmpdir(), 'disambiguate-for-file-package-'));
+	const cwd = vi.spyOn(process, 'cwd').mockReturnValue(tmpDir);
+	try {
+		await writeFile(path.join(tmpDir, 'Button.tsx'), 'export const Button = () => <a />;');
+		const pretenders = [{ selector: 'Button', as: 'a', filePath: `${path.join(tmpDir, 'Button.tsx')}:1:14` }];
+
+		const result = await disambiguatePretendersForFile(
+			path.join(tmpDir, 'page.tsx'),
+			"import { Button } from 'ui-lib';\nexport const Page = () => <Button />;",
+			pretenders,
+		);
+
+		expect(result).toStrictEqual([]);
+	} finally {
+		cwd.mockRestore();
+		await rm(tmpDir, { recursive: true, force: true });
+	}
+});
+
 describe('auto (on-demand import-graph resolution)', () => {
 	let tmpDir: string;
 
