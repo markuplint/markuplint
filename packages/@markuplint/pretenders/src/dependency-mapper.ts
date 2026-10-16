@@ -49,11 +49,15 @@ type ResolveEnv = {
 
 /**
  * What following re-exports needs: the in-memory overrides of file content, and
- * the sink for the files read on the way.
+ * the sink for the files read on the way. `cwd` is the project root, `undefined`
+ * where the caller has none to give ({@link resolveDeclarationFile} without `cwd`): a
+ * file is then judged to be a package's by its whole path, so in a project under
+ * `node_modules` a star re-export chain is not followed.
  */
 type DeclarationEnv = {
 	readonly sources: ReadonlyMap<string, string> | undefined;
 	readonly dependencies: Set<string> | undefined;
+	readonly cwd: string | undefined;
 };
 
 /**
@@ -214,11 +218,7 @@ function isPackageFile(fileAbs: string, root?: string): boolean {
  * `native` is what TypeScript uses: on Windows it also expands a short `8.3` name, which the
  * other one leaves in the target of a junction.
  */
-function resolveModule(
-	importerAbs: string,
-	source: string,
-	env: DeclarationEnv & { readonly cwd?: string },
-): string | null {
+export function resolveModule(importerAbs: string, source: string, env: DeclarationEnv): string | null {
 	const resolved = resolveModuleFile(importerAbs, source, env.dependencies);
 	if (!resolved || !isPackageFile(resolved, env.cwd)) {
 		return resolved;
@@ -291,18 +291,27 @@ function resolveThroughImport(
  *
  * @param fileAbs - Absolute path of the module the name is imported from
  * @param exportedName - The imported name (`'default'` for a default import)
- * @param options - In-memory content overrides (keyed by normalized absolute path) and the dependency sink
+ * @param options - In-memory content overrides (keyed by normalized absolute path), the dependency
+ *   sink, and the project root (see {@link DeclarationEnv})
  * @returns The declaring file's absolute path, or `null`
  */
 export function resolveDeclarationFile(
 	fileAbs: string,
 	exportedName: string,
-	options?: { readonly sources?: ReadonlyMap<string, string>; readonly dependencies?: Set<string> },
+	options?: {
+		readonly sources?: ReadonlyMap<string, string>;
+		readonly dependencies?: Set<string>;
+		readonly cwd?: string;
+	},
 ): string | null {
 	if (isTemplateComponentFile(fileAbs)) {
 		return fileAbs;
 	}
-	const env: DeclarationEnv = { sources: options?.sources, dependencies: options?.dependencies };
+	const env: DeclarationEnv = {
+		sources: options?.sources,
+		dependencies: options?.dependencies,
+		cwd: options?.cwd,
+	};
 	return resolveExportedName(fileAbs, exportedName, new Set(), env)?.fileAbs ?? null;
 }
 
@@ -388,7 +397,7 @@ function resolveThroughStarReExports(
 		// package holds no scanned component (the walk does not enter
 		// `node_modules` either), and its own star re-exports can be wide and deep
 		// enough to search on every miss of a name.
-		if (!nextAbs || isTemplateComponentFile(nextAbs) || isPackageFile(nextAbs)) {
+		if (!nextAbs || isTemplateComponentFile(nextAbs) || isPackageFile(nextAbs, env.cwd)) {
 			continue;
 		}
 		const declaration = resolveExportedName(nextAbs, exportedName, new Set(visited), env);

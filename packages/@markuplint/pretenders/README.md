@@ -357,6 +357,7 @@ const resolved = await disambiguatePretenders(pretenders, {
 | `options.filePath`     | `string`               | Absolute path of the file being linted                                                                       |
 | `options.sourceCode`   | `string`               | Full source text of the file being linted                                                                    |
 | `options.dependencies` | `Set<string>`          | A set to add the `tsconfig.json` files the imports were resolved with to (see [Dependencies](#dependencies)) |
+| `options.cwd`          | `string`               | The project root. Give it when the project itself sits under a `node_modules` directory                      |
 
 #### Returns
 

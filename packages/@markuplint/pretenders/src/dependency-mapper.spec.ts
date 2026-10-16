@@ -639,6 +639,23 @@ describe('dependencyMapper', () => {
 			expect(result.find(p => p.selector === 'C')).toStrictEqual({ selector: 'C', as: 'button', _via: ['Item'] });
 		});
 
+		test('follows a star re-export chain in a project that itself sits under a directory named node_modules', async () => {
+			const root = path.join(tmpDir, 'node_modules', 'app');
+			await mkdir(root, { recursive: true });
+			await writeFile(path.join(root, 'a.tsx'), 'export const Item = () => <button />;');
+			await writeFile(path.join(root, 'barrel.ts'), "export * from './a';");
+			const map: PretenderDirectorMap = new Map([
+				['a.tsx#Item', ['Item', 'button', undefined, 'a.tsx']],
+				['c.tsx#C', ['C', 'Item', undefined, 'c.tsx']],
+			]);
+			const importsByFile = new Map([
+				['c.tsx', [{ localName: 'Item', importedName: 'Item', source: './barrel', type: 'named' as const }]],
+			]);
+
+			const result = dependencyMapper(map, new Map(), { importsByFile, cwd: root });
+			expect(result.find(p => p.selector === 'C')).toStrictEqual({ selector: 'C', as: 'button', _via: ['Item'] });
+		});
+
 		test('still resolves a same-named component when the import itself cannot be resolved, as a path alias may hide it', () => {
 			expect(resolveCard('@/ui/button')).toStrictEqual({ selector: 'Card', as: 'section', _via: ['Button'] });
 		});
