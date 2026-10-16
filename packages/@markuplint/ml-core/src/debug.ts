@@ -3,7 +3,9 @@ import debug from 'debug';
 const CLI_NS = 'markuplint-cli';
 /**
  * Read `.enabled` at call time; never cache it at module load. `debug.enable()` (including via `verbosely()` /
- * `enableDebug()`) can switch a namespace on after import.
+ * `enableDebug()`) can switch a namespace on after import. A verify or fix run reads it once on entry to decide
+ * whether to build log arguments. Enabling debug mid-run is not seen until the next run; disabling takes effect at
+ * once because the logger itself re-checks.
  */
 export const log = debug('ml-core');
 
