@@ -110,7 +110,8 @@ async function extractScriptSource(
 }
 
 /**
- * Analyzes a component file's source text and extracts all static import bindings.
+ * Analyzes a component file's source text and extracts all import bindings, including
+ * dynamic `import('...')` calls with a string literal specifier.
  * Automatically detects the framework type from the file extension and delegates
  * script source extraction to the appropriate component scanner.
  *
