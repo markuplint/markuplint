@@ -50,6 +50,7 @@ BEMのように定義されたCSSクラス名に従っている場合。
 
 [`class-naming`](/docs/rules/class-naming)ルールと[`regexSelector`](/docs/configuration/properties#regexselector)を使います。
 
+<!-- prettier-ignore -->
 ```json class=config
 {
   "rules": {

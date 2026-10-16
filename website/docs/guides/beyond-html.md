@@ -72,11 +72,10 @@ It's not able to support syntaxes if one's attribute is complex.
 <div attr="{{ value }}"></div>
 ```
 
-<!-- prettier-ignore-start -->
+<!-- prettier-ignore -->
 ```html
 <div attr='{{ value }}'></div>
 ```
-<!-- prettier-ignore-end -->
 
 ```html
 <div attr="{{ value }}-{{ value2 }}-{{ value3 }}"></div>
@@ -86,11 +85,10 @@ It's not able to support syntaxes if one's attribute is complex.
 
 If it doesn't nest by quotations.
 
-<!-- prettier-ignore-start -->
+<!-- prettier-ignore -->
 ```html
 <div attr={{ value }}></div>
 ```
-<!-- prettier-ignore-end -->
 
 **PULL REQUEST WANTED**: This problem is recognized by developers and created as an issue [#240](https://github.com/markuplint/markuplint/issues/240).
 
@@ -185,7 +183,7 @@ In **React**, **Vue**, and more, custom components cannot be evaluated as HTML e
 Pretenders apply to **custom components only** — web components, JSX/Vue/Svelte authored components, and HTML-parsed names that have no spec entry. Targeting a standard HTML element (`<marquee>`, `<button>`, etc.) is a no-op so that deprecation, ARIA, and browser-support rules keyed on the original tag are not silently masked.
 :::
 
-<!-- prettier-ignore-start -->
+<!-- prettier-ignore -->
 ```jsx
 <List>{/* No evaluate as native HTML Element */}
   <Item />{/* No evaluate as native HTML Element */}
@@ -193,7 +191,6 @@ Pretenders apply to **custom components only** — web components, JSX/Vue/Svelt
   <Item />{/* No evaluate as native HTML Element */}
 </List>
 ```
-<!-- prettier-ignore-end -->
 
 The **Pretenders** feature resolves that by telling Markuplint what each component renders as.
 
@@ -216,7 +213,7 @@ You can manually specify a [selector](./selectors) for each component and the HT
 }
 ```
 
-<!-- prettier-ignore-start -->
+<!-- prettier-ignore -->
 ```jsx
 <List>{/* Evaluate as <ul> */}
   <Item />{/* Evaluate as <li> */}
@@ -224,7 +221,6 @@ You can manually specify a [selector](./selectors) for each component and the HT
   <Item />{/* Evaluate as <li> */}
 </List>
 ```
-<!-- prettier-ignore-end -->
 
 This works well for small projects, but manually maintaining the list becomes tedious as your component library grows. That's where **dynamic scanning** comes in.
 
@@ -342,7 +338,7 @@ See [`pretenders.scan`](/docs/configuration/properties#pretenders/scan) for the 
 
 If a component has the `as` attribute, it is evaluated as the element specified by this attribute.
 
-<!-- prettier-ignore-start -->
+<!-- prettier-ignore -->
 ```html
 <x-ul as="ul"><!-- Evaluate as <ul> -->
   <x-li as="li"></x-li><!-- Evaluate as <li> -->
@@ -350,16 +346,14 @@ If a component has the `as` attribute, it is evaluated as the element specified 
   <x-li as="li"></x-li><!-- Evaluate as <li> -->
 </x-ul>
 ```
-<!-- prettier-ignore-end -->
 
 This evaluation also applies to its attributes that are inherited from the component.
 
-<!-- prettier-ignore-start -->
+<!-- prettier-ignore -->
 ```html
 <!-- Evaluate as <img src="image.png" alt="image"> -->
 <x-img src="image.png" alt="image">
 ```
-<!-- prettier-ignore-end -->
 
 ## Next steps
 
