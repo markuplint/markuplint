@@ -1,23 +1,23 @@
 {
-  "item.label.Guides": {
-    "message": "ガイド"
-  },
-  "item.label.Rules": {
-    "message": "ルール"
-  },
-  "item.label.Configuration": {
-    "message": "設定"
-  },
-  "item.label.API": {
-    "message": "API"
-  },
-  "item.label.Migration": {
-    "message": "マイグレーション"
-  },
-  "item.label.Community": {
-    "message": "コミュニティ"
-  },
-  "item.label.Playground": {
-    "message": "試してみる"
-  }
+	"item.label.Guides": {
+		"message": "ガイド"
+	},
+	"item.label.Rules": {
+		"message": "ルール"
+	},
+	"item.label.Configuration": {
+		"message": "設定"
+	},
+	"item.label.API": {
+		"message": "API"
+	},
+	"item.label.Migration": {
+		"message": "マイグレーション"
+	},
+	"item.label.Community": {
+		"message": "コミュニティ"
+	},
+	"item.label.Playground": {
+		"message": "試してみる"
+	}
 }

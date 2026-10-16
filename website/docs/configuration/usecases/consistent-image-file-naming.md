@@ -32,6 +32,7 @@ Suppose defining the following rule:
 
 Use [`no-invalid-attr-value`](/docs/rules/no-invalid-attr-value) rule with [`regexSelector`](/docs/configuration/properties#regexselector).
 
+<!-- prettier-ignore -->
 ```json class=config
 {
   "rules": {

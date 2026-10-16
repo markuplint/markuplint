@@ -26,7 +26,7 @@ v5 では属性値以外の検証もいくつか厳格化されています（[`
 - **`no-prohibited-naming`**: 明示的な `role` を持たない自律型カスタム要素（`<x-y>`、`is=` なし）は、`aria-label` / `aria-labelledby` / `aria-braillelabel` を持てなくなりました。ナーミングをサポートする role を付けるか、属性を外してください。
 - **`element-supports-aria-prop`**: 3 つの文脈依存 ARIA 制約（[#3735](https://github.com/markuplint/markuplint/issues/3735)）— html-spec の定義で `properties: false` になっている要素（例: `<input type="hidden">`）はすべての `aria-*` 属性が禁止に、`button[popovertarget]`（状態は暗黙的に提供される）と `details` 内の `summary` では `aria-expanded` が禁止になりました。
 - **`permitted-contents`**: MathML 要素は子要素数の厳密なチェックが入ります（例: `mfrac` はちょうど2個の子要素が必要）。SVG の `<a>` の自己ネストは禁止（SVG2 §17.6）。`<dl>` 内の `<div>` は `dt`+/`dd`+ のグループを1つだけ許容します — 複数グループにする場合は `<dl>` 直下に並べ、`<div>` はグループごとに1つにしてください。
-  :::
+:::
 
 ## 手順
 
