@@ -7,6 +7,7 @@ import path from 'node:path';
 
 import { ConfigProvider } from '@markuplint/file-resolver';
 import { Document } from '@markuplint/ml-core';
+import debug from 'debug';
 import { afterEach, beforeEach, describe, it, expect, vi } from 'vitest';
 
 import { MLEngine } from './ml-engine.js';
@@ -1232,5 +1233,37 @@ describe('config that cannot be loaded (#4113)', () => {
 
 		expect(result?.violations.find(v => v.ruleId === 'config-error')?.severity).toBe('warning');
 		expect(result?.violations.some(v => v.ruleId === 'permitted-contents')).toBe(true);
+	});
+});
+
+describe('debug option of the constructor', () => {
+	afterEach(() => {
+		debug.disable();
+	});
+
+	it('enables the debug output', async () => {
+		debug.disable();
+		const file = await MLEngine.toMLFile({ sourceCode: '<div></div>', name: 'a.html' });
+
+		new MLEngine(file!, { debug: true, noSearchConfig: true, config: {} });
+
+		expect(debug.enabled('markuplint-cli')).toBe(true);
+	});
+
+	it('enables the debug output through fromCode', async () => {
+		debug.disable();
+
+		await MLEngine.fromCode('<div></div>', { debug: true, noSearchConfig: true, config: {} });
+
+		expect(debug.enabled('markuplint-cli')).toBe(true);
+	});
+
+	it('leaves the debug output off without the option', async () => {
+		debug.disable();
+		const file = await MLEngine.toMLFile({ sourceCode: '<div></div>', name: 'a.html' });
+
+		new MLEngine(file!, { noSearchConfig: true, config: {} });
+
+		expect(debug.enabled('markuplint-cli')).toBe(false);
 	});
 });

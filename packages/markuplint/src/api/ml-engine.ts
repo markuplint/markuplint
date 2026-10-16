@@ -220,7 +220,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 	constructor(file: Readonly<MLFile>, options?: APIOptions & MLEngineOptions) {
 		super();
 
-		if (this.#options?.debug) {
+		if (options?.debug) {
 			verbosely();
 		}
 
