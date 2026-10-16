@@ -684,7 +684,7 @@ describe('dependencyMapper', () => {
 				await writeFile(path.join(tmpDir, 'tsconfig.json'), '{"compilerOptions":{"preserveSymlinks":true}}');
 				await writeFile(path.join(tmpDir, 'barrel.ts'), "export * from '@org/ui';");
 				expect(resolveDeclarationFile(path.join(tmpDir, 'barrel.ts'), 'Item')).toBe(
-					normalizePath(path.join(fs.realpathSync(tmpDir), 'packages', 'ui', 'index.tsx')),
+					normalizePath(path.join(fs.realpathSync.native(tmpDir), 'packages', 'ui', 'index.tsx')),
 				);
 			});
 

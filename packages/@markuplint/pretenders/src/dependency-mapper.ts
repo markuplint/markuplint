@@ -211,6 +211,8 @@ function isPackageFile(fileAbs: string, root?: string): boolean {
  * other is left as it is, as the project root is not necessarily a real path (`os.tmpdir()` is a
  * link on macOS), and so is a path that does not exist. A real path below the root is returned
  * as a path below the root as it is written, so the keys of the map, made from it, still match.
+ * `native` is what TypeScript uses: on Windows it also expands a short `8.3` name, which the
+ * other one leaves in the target of a junction.
  */
 function resolveModule(
 	importerAbs: string,
@@ -222,11 +224,11 @@ function resolveModule(
 		return resolved;
 	}
 	try {
-		const real = fs.realpathSync(resolved);
+		const real = fs.realpathSync.native(resolved);
 		if (env.cwd === undefined) {
 			return normalizePath(real);
 		}
-		const below = path.relative(fs.realpathSync(env.cwd), real);
+		const below = path.relative(fs.realpathSync.native(env.cwd), real);
 		return normalizePath(below.startsWith('..') || path.isAbsolute(below) ? real : path.join(env.cwd, below));
 	} catch (error) {
 		if (isFatalError(error)) {
