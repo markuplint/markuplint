@@ -37,18 +37,6 @@ Repo-wide meta specs directly under `src/` (e.g. `mirrors-parse-error-codes.spec
 - When adding a new test, assign the next available number in the appropriate category
 - Run `/list-rule-test` (or `node .claude/skills/list-rule-test/scripts/list-rule-test.mjs --no-id`) to check for missing IDs — the only expected hits are the exempt meta specs noted above
 
-## Sample identifiers in specs
-
-<!-- cspell:ignore myform mymap -->
-
-Sample `id` / `name` values in test markup must be kebab-case (`my-form`), suffixed with a digit
-(`form1`), or a plain dictionary word (`target`). Never a camelCase coinage (`myform`, `mymap`,
-`targetEl`): CSpell decomposes compound words only when every part is at least three characters,
-so a two-letter prefix glued to a word is looked up whole, misses the dictionary, and fails the
-lint — on the `dev` line the same one-line fix has been made in four separate PRs (#3826, #3831,
-#3833, #3932). The v6 line has no CSpell, so a coinage introduced there surfaces only once the
-branch merges somewhere that does.
-
 ## Writing a rule's README and `schema.json` description
 
 Both files feed the website build (`website/scripts/prebuild/rule-content.mts` injects the

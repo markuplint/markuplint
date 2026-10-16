@@ -662,7 +662,7 @@ input(data-json=\`
 div(class='div-class' (click)='play()')
 				`,
 			);
-		}).toThrow('Syntax Error: Assigning to rvalue'); // cspell:disable-line
+		}).toThrow('Syntax Error: Assigning to rvalue');
 	});
 
 	test('Quoted Attributes', () => {
@@ -1348,7 +1348,7 @@ p Interpolation works with #{'#{interpolation}'} too!`,
   #[em ignored].
 p.
   And here's an example of an interpolated tag with an attribute:
-  #[q(lang="es") ¡Hola Mundo!]`, // cspell:disable-line
+  #[q(lang="es") ¡Hola Mundo!]`,
 		);
 		const map = nodeListToDebugMaps(doc.nodeList, true);
 		expect(map).toStrictEqual([
@@ -1374,7 +1374,7 @@ p.
 			'  [7:15]>[7:16](243,244)eQ: "',
 			'  isDirective: false',
 			'  isDynamicValue: false',
-			'[7:18]>[7:30](246,258)#text: ¡Hola␣Mundo!', // cspell:disable-line
+			'[7:18]>[7:30](246,258)#text: ¡Hola␣Mundo!',
 		]);
 	});
 

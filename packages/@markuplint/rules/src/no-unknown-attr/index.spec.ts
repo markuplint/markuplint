@@ -514,7 +514,6 @@ test('[no-unknown-attr-issue-1487-001] suggests similar attribute name for typo'
 	]);
 });
 
-// cspell:ignore clss
 test('[no-unknown-attr-issue-1487-002] suggests similar attribute name for class typo', async () => {
 	const { violations } = await mlRuleTest(rule, '<div clss="test"></div>');
 	expect(violations).toStrictEqual([

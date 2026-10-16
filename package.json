@@ -12,12 +12,11 @@
 		"dev": "lerna run --parallel dev",
 		"test": "vitest --typecheck run",
 		"test:coverage": "vitest run --coverage",
-		"lint": "run-p lint:oxlint lint:format lint:spellcheck lint:github-actions",
+		"lint": "run-p lint:oxlint lint:format lint:github-actions",
 		"lint:oxlint": "oxlint --fix -c .oxlintrc.json packages vscode",
 		"lint:format": "oxfmt --write \"./{packages,vscode}/**/*.{ts,tsx,js,cjs,mjs,json,rc,md}\"",
-		"lint:spellcheck": "cspell --no-progress --show-suggestions \"**\"",
 		"lint:github-actions": "actionlint",
-		"lint-check": "run-p lint-check:oxlint lint-check:format lint:spellcheck",
+		"lint-check": "run-p lint-check:oxlint lint-check:format",
 		"lint-check:oxlint": "oxlint -c .oxlintrc.json packages vscode",
 		"lint-check:format": "oxfmt --check \"./{packages,vscode}/**/*.{ts,tsx,js,cjs,mjs,json,rc,md}\"",
 		"up": "run-s up:deps up:gen up:schema",
@@ -65,9 +64,6 @@
 		],
 		".github/workflows/*.yml": [
 			"actionlint"
-		],
-		"**": [
-			"cspell --no-must-find-files --no-progress --show-suggestions"
 		]
 	},
 	"workspaces": [
@@ -82,7 +78,6 @@
 		"@commitlint/config-conventional": "21.2.3",
 		"@commitlint/config-lerna-scopes": "21.2.0",
 		"commitizen": "4.3.2",
-		"cspell": "10.3.6",
 		"cz-conventional-changelog": "3.3.0",
 		"eslint-plugin-regexp": "3.3.1",
 		"husky": "9.1.7",

@@ -155,7 +155,7 @@ export function regexParser(regexpLikeString: string): RegExp | null {
 		// Early return if the string does not start with a slash.
 		return null;
 	}
-	const match = regexpLikeString.match(/^\/(?<pattern>.+)\/(?<flags>[dgimsuvy]*)$/); // cspell: disable-line
+	const match = regexpLikeString.match(/^\/(?<pattern>.+)\/(?<flags>[dgimsuvy]*)$/);
 	if (!match) {
 		return null;
 	}
