@@ -2,6 +2,7 @@ import type { SelectorElement, SelectorMatchedResult, SelectorNode, SelectorResu
 import type { ReadonlyDeep, Writable } from 'type-fest';
 
 import { resolveNamespace } from '@markuplint/ml-spec';
+import debug from 'debug';
 import parser from 'postcss-selector-parser';
 
 import { compareSpecificity } from './compare-specificity.js';
@@ -11,6 +12,23 @@ import { isElement, isNonDocumentTypeChildNode, isPureHTMLElement } from './is.j
 
 const selLog = coreLog.extend('selector');
 const resLog = coreLog.extend('result');
+
+let flagsKey: unknown;
+let flags = { core: false, sel: false, res: false };
+
+/**
+ * The `enabled` state of the three loggers `Ruleset.match()` uses, which runs for every node and selector.
+ * Reading three `enabled` getters per call showed up in profiles, so the result is reused until `debug.enable()` or
+ * `debug.disable()` runs: both replace `debug.names`, which makes its identity the cache key. Setting
+ * `logger.enabled` by hand does not replace it and is therefore not picked up.
+ */
+function readFlags() {
+	if (debug.names !== flagsKey) {
+		flagsKey = debug.names;
+		flags = { core: coreLog.enabled, sel: selLog.enabled, res: resLog.enabled };
+	}
+	return flags;
+}
 
 /**
  * Registry of extended pseudo-class handlers keyed by pseudo-class name.
@@ -113,10 +131,7 @@ class Ruleset {
 	}
 
 	match(el: SelectorNode, scope: SelectorNode | null): SelectorResult[] {
-		// Read once per call, not per selector: every read goes through the `enabled` getter, and this runs for every node.
-		const coreEnabled = coreLog.enabled;
-		const selEnabled = selLog.enabled;
-		const resEnabled = resLog.enabled;
+		const { core: coreEnabled, sel: selEnabled, res: resEnabled } = readFlags();
 		if (coreEnabled) {
 			coreLog(
 				'<%s> (%s)',

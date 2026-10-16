@@ -4,7 +4,8 @@ const CLI_NS = 'markuplint-cli';
 
 /**
  * Read `.enabled` at call time; never cache it at module load. `debug.enable()` (including via `verbosely()` /
- * `enableDebug()`) can switch a namespace on after import.
+ * `enableDebug()`) can switch a namespace on after import. The one exception is `Ruleset.match()`, which reuses the
+ * flags until `debug.enable()` / `debug.disable()` runs (see `readFlags()` in `selector.ts`).
  */
 export const log = debug('selector');
 
