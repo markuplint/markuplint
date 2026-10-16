@@ -31,7 +31,7 @@ Two major lines are developed in parallel:
 | `v4`   | v4 maintenance.                                                                    |
 
 - Merges go `dev` → `v6` only; `v6` is never merged into `dev`.
-- `Fixes #N` closes the issue only when the PR merges into the default branch (`dev`). After a PR into `v6` merges, check each linked issue with `gh issue view <n> --json state` and close the open ones by hand (`gh issue close <n> --reason completed --comment "Fixed by #<PR> (merged into v6)."`). A v6 PR is not done until its issues are closed.
+- `Fixes #N` closes the issue only when the PR merges into the default branch (`dev`). After a PR into `v6` merges, check each linked issue with `gh issue view <n> --json state` and close the open ones by hand with `gh issue close <n> --reason completed`. Add `--comment "Fixed by #<PR> (merged into v6)."` only when someone other than the maintainer filed the issue — the same condition the `pr` skill applies to its post-merge report. A v6 PR is not done until its issues are closed.
 - The lines have diverged in which linters run, what the test gate covers, and which packages exist. Read the current branch's `package.json` before stating any of these; a fact from the other branch is not evidence.
 - Guidance that applies to both lines lives in a shared file, worded with its condition explicit so it stays true on both. Guidance for one line lives in a file only that line has (`crates/CLAUDE.md`). Divergent copies of the same paragraph conflict on every `dev` → `v6` merge, so do not create them.
 
