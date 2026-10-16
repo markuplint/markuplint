@@ -2,88 +2,88 @@
  * @returns {string} Rewrote content
  */
 export function rewriteRuleContent(
-  content: string,
-  name: string,
-  value: string,
-  options: object,
-  severity: string,
-  lang?: string,
-  fixable?: boolean,
+	content: string,
+	name: string,
+	value: string,
+	options: object,
+	severity: string,
+	lang?: string,
+	fixable?: boolean,
 ): string {
-  // Replace internal page URL
-  content = content.replaceAll('(https://markuplint.dev/', '(/');
+	// Replace internal page URL
+	content = content.replaceAll('(https://markuplint.dev/', '(/');
 
-  const separator = /\n\n---\n\n/;
-  const target = content.search(separator) === -1 ? /$/ : separator;
+	const separator = /\n\n---\n\n/;
+	const target = content.search(separator) === -1 ? /$/ : separator;
 
-  if (fixable) {
-    const fixableNote =
-      lang === 'ja'
-        ? ':::info\n🔧 このルールは `--fix` オプションによる[自動修正](/docs/guides/cli)に対応しています。\n:::'
-        : ':::info\n🔧 This rule supports [auto-fix](/docs/guides/cli) with the `--fix` option.\n:::';
-    content = content.replace(/(#[^\n]+\n)/, '$1\n' + fixableNote + '\n');
-  }
+	if (fixable) {
+		const fixableNote =
+			lang === 'ja'
+				? ':::info\n🔧 このルールは `--fix` オプションによる[自動修正](/docs/guides/cli)に対応しています。\n:::'
+				: ':::info\n🔧 This rule supports [auto-fix](/docs/guides/cli) with the `--fix` option.\n:::';
+		content = content.replace(/(#[^\n]+\n)/, '$1\n' + fixableNote + '\n');
+	}
 
-  content = content.replace(
-    target,
-    [
-      '\n\n',
-      '## Interface',
-      '```ts',
-      '{',
-      `  "${name}": ${type(value)}`,
-      '}',
-      '```',
-      ...valueDoc(value, lang),
-      ...optionDoc(name, options, lang),
-      '## Default Severity',
-      `\`${severity}\``,
-      '\n',
-    ].join('\n'),
-  );
+	content = content.replace(
+		target,
+		[
+			'\n\n',
+			'## Interface',
+			'```ts',
+			'{',
+			`  "${name}": ${type(value)}`,
+			'}',
+			'```',
+			...valueDoc(value, lang),
+			...optionDoc(name, options, lang),
+			'## Default Severity',
+			`\`${severity}\``,
+			'\n',
+		].join('\n'),
+	);
 
-  // Replace relative paths and strip README filenames for Docusaurus compatibility
-  content = content.replaceAll('](../', '](./');
-  content = content.replaceAll('/README.md)', ')');
-  content = content.replaceAll('/README.ja.md)', ')');
+	// Replace relative paths and strip README filenames for Docusaurus compatibility
+	content = content.replaceAll('](../', '](./');
+	content = content.replaceAll('/README.md)', ')');
+	content = content.replaceAll('/README.ja.md)', ')');
 
-  return content;
+	return content;
 }
 
 function type(value: any, escape = false): string {
-  const verticalBar = escape ? ' &#x7C;<wbr /> ' : ' | ';
+	const verticalBar = escape ? ' &#x7C;<wbr /> ' : ' | ';
 
-  if (value.oneOf) {
-    return value.oneOf.map((v: any) => type(v, escape)).join(verticalBar);
-  }
+	if (value.oneOf) {
+		return value.oneOf.map((v: any) => type(v, escape)).join(verticalBar);
+	}
 
-  if (value.type === 'array') {
-    const needWrap = !!value.items.enum || !!value.items.oneOf;
-    return (
-      (needWrap ? '(' : '') +
-      // Recursive
-      type(value.items, escape) +
-      (needWrap ? ')' : '') +
-      '[]'
-    );
-  }
+	if (value.type === 'array') {
+		const needWrap = !!value.items.enum || !!value.items.oneOf;
+		return (
+			(needWrap ? '(' : '') +
+			// Recursive
+			type(value.items, escape) +
+			(needWrap ? ')' : '') +
+			'[]'
+		);
+	}
 
-  if (value.type === 'string' && value.enum) {
-    return value.enum.map((e: string) => `"${e}"`).join(verticalBar);
-  }
+	if (value.type === 'string' && value.enum) {
+		return value.enum.map((e: string) => `"${e}"`).join(verticalBar);
+	}
 
-  if (value.type === 'object') {
-    if (typeof value._type === 'string') {
-      let result = value._type.replaceAll('<', '&lt;').replaceAll('>', '&gt;');
-      if (escape) {
-        result = result.replaceAll('|', '&#x7C;<wbr />');
-      }
-      return result;
-    }
-    return value._type ?? 'Object';
-  }
+	if (value.type === 'object') {
+		if (typeof value._type === 'string') {
+			let result = value._type.replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+			if (escape) {
+				result = result.replaceAll('|', '&#x7C;<wbr />');
+			}
+			return result;
+		}
+		return value._type ?? 'Object';
+	}
 
-  return value.type;
+	return value.type;
 }
 
 /**
@@ -95,81 +95,81 @@ function escapeMdx(text: string): string {
 }
 
 function code(value: any, escape = false): string {
-  const arraySeparator = escape ? ',<wbr />' : ',';
+	const arraySeparator = escape ? ',<wbr />' : ',';
 
-  if (Array.isArray(value)) {
-    return '[' + value.map((item: any) => code(item, escape)).join(arraySeparator) + ']';
-  }
+	if (Array.isArray(value)) {
+		return '[' + value.map((item: any) => code(item, escape)).join(arraySeparator) + ']';
+	}
 
-  if (typeof value === 'string') {
-    return `"${value}"`;
-  }
+	if (typeof value === 'string') {
+		return `"${value}"`;
+	}
 
-  return value;
+	return value;
 }
 
 function valueDoc(value: any, lang?: string): string[] {
-  if (value.enum && value._description) {
-    const table = [
-      //
-      'Value|Default|Description',
-      '---|---|---',
-    ];
+	if (value.enum && value._description) {
+		const table = [
+			//
+			'Value|Default|Description',
+			'---|---|---',
+		];
 
-    table.push(
-      ...value.enum.map((e: string) => {
-        const desc = value[`_description:${lang}`]?.[e] ?? value._description[e];
-        return `\`"${e}"\`|${value.default === e ? '✓' : ''}|${desc}`;
-      }),
-    );
+		table.push(
+			...value.enum.map((e: string) => {
+				const desc = value[`_description:${lang}`]?.[e] ?? value._description[e];
+				return `\`"${e}"\`|${value.default === e ? '✓' : ''}|${desc}`;
+			}),
+		);
 
-    return table;
-  }
+		return table;
+	}
 
-  const desc = value[`description:${lang}`] ?? value.description;
+	const desc = value[`description:${lang}`] ?? value.description;
 
-  if (desc) {
-    return [escapeMdx(desc)];
-  }
+	if (desc) {
+		return [escapeMdx(desc)];
+	}
 
-  return [];
+	return [];
 }
 
 function optionDoc(name: string, options: any, lang?: string): string[] {
-  if (!options) {
-    return [];
-  }
+	if (!options) {
+		return [];
+	}
 
-  const props = Object.entries(options.properties).map(([k, v]) => {
-    return `"${k}"?: ${type(v)}`;
-  });
+	const props = Object.entries(options.properties).map(([k, v]) => {
+		return `"${k}"?: ${type(v)}`;
+	});
 
-  const table = Object.entries(options.properties).map(([k, v]: readonly [string, any]) => {
-    const desc = v[`description:${lang}`] ?? v.description;
-    return `\`${k}\`|<code>${type(v, true)}</code>|<code>${code(v.default, true)}</code>|${desc}`;
-  });
+	const table = Object.entries(options.properties).map(([k, v]: readonly [string, any]) => {
+		const desc = v[`description:${lang}`] ?? v.description;
+		return `\`${k}\`|<code>${type(v, true)}</code>|<code>${code(v.default, true)}</code>|${desc}`;
+	});
 
-  const additionalDescription = options[`description:${lang}`] ?? options.description ?? '';
+	const additionalDescription = options[`description:${lang}`] ?? options.description ?? '';
 
-  return [
-    //
-    '',
-    '### Options',
-    '',
-    '```ts',
-    '{',
-    `  "${name}": {`,
-    '    "options": {',
-    ...props.map(prop => `      ${prop}`),
-    '    }',
-    '  }',
-    '}',
-    '```',
-    '',
-    additionalDescription,
-    '',
-    'Property|Type|Default Value|Description',
-    '---|---|---|---',
-    ...table,
-  ];
+	return [
+		//
+		'',
+		'### Options',
+		'',
+		'```ts',
+		'{',
+		`  "${name}": {`,
+		'    "options": {',
+		...props.map(prop => `      ${prop}`),
+		'    }',
+		'  }',
+		'}',
+		'```',
+		'',
+		additionalDescription,
+		'',
+		'Property|Type|Default Value|Description',
+		'---|---|---|---',
+		...table,
+	];
 }
