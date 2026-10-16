@@ -1,8 +1,8 @@
 {
-  "extends": "@docusaurus/tsconfig",
-  "compilerOptions": {
-    "baseUrl": ".",
-    "strictNullChecks": true,
-    "lib": ["ESNext"]
-  }
+	"extends": "@docusaurus/tsconfig",
+	"compilerOptions": {
+		"baseUrl": ".",
+		"strictNullChecks": true,
+		"lib": ["ESNext"]
+	}
 }

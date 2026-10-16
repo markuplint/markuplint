@@ -73,11 +73,10 @@ npm install -D @markuplint/vue-parser @markuplint/vue-spec
 <div attr="{{ value }}"></div>
 ```
 
-<!-- prettier-ignore-start -->
+<!-- prettier-ignore -->
 ```html
 <div attr='{{ value }}'></div>
 ```
-<!-- prettier-ignore-end -->
 
 ```html
 <div attr="{{ value }}-{{ value2 }}-{{ value3 }}"></div>
@@ -87,11 +86,10 @@ npm install -D @markuplint/vue-parser @markuplint/vue-spec
 
 クォーテーションで囲われていないコード。
 
-<!-- prettier-ignore-start -->
+<!-- prettier-ignore -->
 ```html
 <div attr={{ value }}></div>
 ```
-<!-- prettier-ignore-end -->
 
 **プルリクエスト募集中**: この問題は、開発者は認識しており、Issue [#240](https://github.com/markuplint/markuplint/issues/240)として作られています。
 
@@ -186,7 +184,7 @@ const Component = ({ list }) => {
 プリテンダーは**カスタムコンポーネントのみ**を対象とします — Web Components、JSX/Vue/Svelte 等の authored component、および HTML パースで spec エントリが存在しない名前です。標準 HTML 要素（`<marquee>`、`<button>` など）を指定しても何も起きません。これにより、元タグに紐づく deprecation・ARIA・ブラウザサポートルールが暗黙に隠されることを防いでいます。
 :::
 
-<!-- prettier-ignore-start -->
+<!-- prettier-ignore -->
 ```jsx
 <List>{/* ネイティブのHTML要素として評価できない */}
   <Item />{/* ネイティブのHTML要素として評価できない */}
@@ -194,7 +192,6 @@ const Component = ({ list }) => {
   <Item />{/* ネイティブのHTML要素として評価できない */}
 </List>
 ```
-<!-- prettier-ignore-end -->
 
 **プリテンダー**機能は、各コンポーネントが何としてレンダリングされるかをMarkuplintに伝えることでこれを解決します。
 
@@ -217,7 +214,7 @@ const Component = ({ list }) => {
 }
 ```
 
-<!-- prettier-ignore-start -->
+<!-- prettier-ignore -->
 ```jsx
 <List>{/* <ul>として評価 */}
   <Item />{/* <li>として評価 */}
@@ -225,7 +222,6 @@ const Component = ({ list }) => {
   <Item />{/* <li>として評価 */}
 </List>
 ```
-<!-- prettier-ignore-end -->
 
 小規模プロジェクトではこの方法で十分ですが、コンポーネントライブラリが大きくなるにつれて手動でリストを管理するのは面倒になります。そこで**動的スキャン**が活躍します。
 
@@ -343,7 +339,7 @@ const ProfileCard = ({ children }) => {
 
 コンポーネントに`as`属性が指定されている場合、その属性の値として指定された要素として評価されます。
 
-<!-- prettier-ignore-start -->
+<!-- prettier-ignore -->
 ```html
 <x-ul as="ul"><!-- <ul> として評価される -->
   <x-li as="li"></x-li><!-- <li> として評価される -->
@@ -351,16 +347,14 @@ const ProfileCard = ({ children }) => {
   <x-li as="li"></x-li><!-- <li> として評価される -->
 </x-ul>
 ```
-<!-- prettier-ignore-end -->
 
 これは、コンポーネントから継承された属性に対しても同様に評価されます。
 
-<!-- prettier-ignore-start -->
+<!-- prettier-ignore -->
 ```html
 <!-- <img src="image.png" alt="image"> として評価される -->
 <x-img src="image.png" alt="image">
 ```
-<!-- prettier-ignore-end -->
 
 ## 次のステップ
 
