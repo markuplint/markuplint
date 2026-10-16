@@ -7,17 +7,17 @@ import Layout from '@theme-original/Layout';
 import React from 'react';
 
 export default function LayoutWrapper(props: Props) {
-  const { i18n } = useDocusaurusContext();
-  const location = useLocation();
-  const isFrontPage =
-    location.pathname === (i18n.currentLocale === i18n.defaultLocale ? '/' : `/${i18n.currentLocale}/`);
-  return (
-    <>
-      {
-        // For JSX pages
-        !isFrontPage && props.title && <OgImg title={props.title} />
-      }
-      <Layout {...props} />
-    </>
-  );
+	const { i18n } = useDocusaurusContext();
+	const location = useLocation();
+	const isFrontPage =
+		location.pathname === (i18n.currentLocale === i18n.defaultLocale ? '/' : `/${i18n.currentLocale}/`);
+	return (
+		<>
+			{
+				// For JSX pages
+				!isFrontPage && props.title && <OgImg title={props.title} />
+			}
+			<Layout {...props} />
+		</>
+	);
 }

@@ -1,31 +1,31 @@
 .logoContainer {
-  padding: 0;
-  margin: 0;
-  overflow: hidden;
-  border: 1px solid var(--ifm-toc-border-color);
-  border-radius: 0.5em;
+	padding: 0;
+	margin: 0;
+	overflow: hidden;
+	border: 1px solid var(--ifm-toc-border-color);
+	border-radius: 0.5em;
 }
 
 .logo {
-  padding: 15%;
+	padding: 15%;
 }
 
 .logo > img {
-  width: 100%;
-  height: auto;
+	width: 100%;
+	height: auto;
 }
 
 .logoContainer > figcaption {
-  padding: 0.4em 1em;
-  font-weight: bold;
-  text-align: center;
-  border-top: 1px solid var(--ifm-toc-border-color);
+	padding: 0.4em 1em;
+	font-weight: bold;
+	text-align: center;
+	border-top: 1px solid var(--ifm-toc-border-color);
 }
 
 .logo[data-mode='light'] {
-  background-color: white;
+	background-color: white;
 }
 
 .logo[data-mode='dark'] {
-  background-color: black;
+	background-color: black;
 }
