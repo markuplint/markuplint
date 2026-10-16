@@ -26,12 +26,11 @@ Operating policy (not derivable from code):
   `tests/external/spec/`, verified by `yarn bench:verify`
   (`vitest.nu-validator.config.ts`) — this does NOT run as part of
   `yarn test`.
-- When diff results surprise you, check `snapshots/diff/meta.json`
+- When diff results surprise you, check `snapshots/meta.json`
   first (submodule SHA, nu image digest, markuplint version, Node
   version).
 
-Operating phase: the `nu-only` backlog reached **zero on 2026-08-13**;
-the bench is in steady-state operation. The standing invariant is that
+The standing invariant is that
 `snapshots/diff/nu-only.json` stays empty after every refresh — a new
 entry is a regression, a stale exclusion, or new upstream coverage,
 never a backlog item to sit on (`bench-maintain` has the decision
@@ -40,7 +39,7 @@ feature-completeness claim: `deferred-<spec>` markers in
 `excluded-ids.json` park out-of-scope specs behind OPEN tracking
 Issues.
 
-The per-fixture operation is unchanged: read the spec and drive the
+The per-fixture operation: read the spec and drive the
 verdict to `match-error`, `match-clean`, or `nu-over` by either fixing
 markuplint or recording an `excluded-ids.json` entry (`bench-triage`).
 

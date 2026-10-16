@@ -64,7 +64,7 @@ Every `test()` in rule spec files under `packages/@markuplint/rules/src/<rule-na
 
 Direct commits to `dev` and `v6` are rejected by the husky pre-commit hook; all work happens on a topic branch. `main` and the prerelease branches are unguarded because `lerna version` writes its release commit there — that is not a licence to commit to them by hand.
 
-The main working directory stays on `dev`: do not `git checkout` / `git switch` / create a branch there. Branch work happens in a Claude Code–managed worktree (`claude --worktree` / the harness worktree feature), not one created by hand. The one standing exception is `.worktree/v6`, a long-lived worktree on `v6`; leave it in place and do not commit to it directly.
+Except while the `release` skill runs, the main working directory stays on `dev`: do not `git checkout` / `git switch` / create a branch there. Branch work happens in a Claude Code–managed worktree (`claude --worktree` / the harness worktree feature), not one created by hand. The one standing exception is `.worktree/v6`, a long-lived worktree on `v6`; leave it in place and do not commit to it directly. The `release` skill runs in the main checkout, which must have the release branch (`main` or a prerelease branch) checked out for `yarn release`.
 
 The harness cuts a new worktree from the default branch (`dev`). For v6 work, re-point it first — `git fetch origin v6`, then `git reset --hard origin/v6` — and open the PR against `v6`.
 

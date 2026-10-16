@@ -42,10 +42,10 @@ Three consequences that matter:
 
 ## Releasing while two lines are live
 
-`dev` (v5, the shipped major) and `v6` (the next major) are developed in parallel. Every one of the following is unresolved as of this skill's last revision — **treat a request to release anything from the v6 line as blocked until the user has decided each point explicitly**, and say so rather than improvising:
+`dev` (v5, the shipped major) and `v6` (the next major) are developed in parallel. Every one of the following is an open decision — **treat a request to release anything from the v6 line as blocked until the user has decided each point explicitly**, and say so rather than improvising:
 
 - **`publish.yml` does not build the native addon.** It runs `yarn build`, and `@markuplint/core` has no `build` script — only `build:napi` / `build:napi:debug` — so `lerna publish from-git` would ship `@markuplint/core` without its `*.node` binary, and no per-platform packages at all. Publishing cannot be undone, so a v6 publish is blocked until `publish.yml` cross-builds napi.
-- **The version namespace is shared.** `lerna.json` is at the same version on both branches and versioning is fixed-mode, so both lines derive their next version from conventional commits into the same `v*` tag namespace and the same CHANGELOG lineage. The v6 line cannot rely on automatic derivation to reach `6.0.0`; the target version is a decision, not an inference — the "do NOT ask the user to choose a release type" rule in step 4 applies to the v5 line only.
+- **The version namespace is shared.** `lerna.json` is at the same version on both branches and versioning is fixed-mode, so both lines derive their next version from conventional commits into the same `v*` tag namespace and the same CHANGELOG lineage. The v6 line cannot rely on automatic derivation to reach `6.0.0`; the target version is a decision, not an inference — the automatic derivation in step 4 applies to the v5 line only.
 - **dist-tags are a single slot per name.** The tag comes from the version string alone (`-alpha.*` → `alpha`, and so on), so a v6 prerelease and a v5 prerelease using the same suffix overwrite each other's tag. Run `npm dist-tag ls markuplint` before any prerelease and confirm which line owns which tag.
 - **Merging `v6` into `main` retires the v5 line in one step.** Per [What the `main` merge switches over](#what-the-main-merge-switches-over), that merge flips the production docs, the JSON Schema `$ref` URLs, and VS Code completion to v6 for every existing v5 user simultaneously. There is no staged path. Do not merge `v6` into `main` for a prerelease — use a dedicated prerelease branch, which leaves `main` alone.
 
@@ -66,7 +66,7 @@ Website changes therefore reach production in the same step. Confirm with the us
 
 ## 1. Determine the release type and target branch
 
-Ask the user for the release type if it is not already clear, then pick the branch from [Branch model](#branch-model). Everything below writes `<release-branch>` for that branch.
+Ask the user only for the release channel (stable / rc / beta / alpha) if it is not already clear — the semver bump is derived, see step 4 — then pick the branch from [Branch model](#branch-model). Everything below writes `<release-branch>` for that branch.
 
 `git status` must be clean. Anything dirty: report and wait for instructions.
 
@@ -97,11 +97,11 @@ gh pr list --base <source-branch> --state open
 `yarn lint-check`, `yarn build`, `yarn test` must all pass **in this session, on the release branch after the merge**. This is the only real gate:
 
 - On a release branch with a `crates/` directory, `yarn test` is not the whole gate: add `cargo fmt --check`, `cargo clippy --locked -- -D warnings`, and `cargo test --locked` (what `.github/workflows/rust.yml` enforces), and confirm `@markuplint/core` was built with `yarn build:napi` — `yarn build` alone does not produce the addon.
-- `.github/workflows/test.yml` also triggers on `push` to `dev` (added alongside this skill's rewrite), so `gh run list --branch dev --workflow=test.yml` is real evidence for `dev`. It is not evidence for `main` or a prerelease branch — those still need this session's own `yarn lint-check && yarn build && yarn test`. For the v6 line, `test.yml` alone is not evidence either; `rust.yml` and `cargo-deny.yml` must be green too.
+- `.github/workflows/test.yml` also triggers on `push` to `dev`, so `gh run list --branch dev --workflow=test.yml` is real evidence for `dev`. It is not evidence for `main` or a prerelease branch — those still need this session's own `yarn lint-check`, `yarn build`, and `yarn test`, each run as its own command. For the v6 line, `test.yml` alone is not evidence either; `rust.yml` and `cargo-deny.yml` must be green too.
 - Yarn 4 does not run arbitrary pre/post lifecycle hooks, so the root `prerelease` script (build + test) is NOT executed by any `yarn release*` variant.
 - `publish.yml` does not run tests either — it installs, builds, and publishes.
 
-If the release touches any rule the benchmark covers, also run `yarn bench:xref --audit` (see the `bench-xref` skill).
+If the release touches any rule the benchmark covers, also run the pre-release checklist in the `bench-xref` skill (including its `--dry-run` review before `--write`).
 
 ## 4. Present release contents
 
@@ -110,14 +110,22 @@ git describe --tags --abbrev=0
 git log --oneline <last-tag>..HEAD
 ```
 
-Show the current version (`lerna.json`). `yarn release` derives the next version from conventional commits automatically, so do **NOT** ask the user to choose a release type — present the diff only as a "what's going in" check.
+Show the current version (`lerna.json`). `yarn release` derives the next version from conventional commits automatically, so do **NOT** ask the user to choose a version bump — present the diff only as a "what's going in" check.
 
 ## 5. Version bump (user-executed)
 
 Before handing over, remove `vscode/package-lock.json` if it exists. It is a gitignored leftover of an npm-based extension build (`vscode/scripts/install.mjs` deletes it only on success; a manual `vsce package` or an interrupted build leaves it behind). `lerna version` updates every per-package `package-lock.json` it finds and passes it to `git add`, which refuses ignored paths — the run then dies after every manifest and CHANGELOG has been rewritten and staged, one step short of the commit (v5.0.1).
 
 ```bash
-ls vscode/package-lock.json && rm vscode/package-lock.json
+ls vscode/package-lock.json
+```
+
+(No output and a non-zero exit mean there is nothing to remove; that is the normal case.)
+
+If it exists, remove it:
+
+```bash
+rm vscode/package-lock.json
 ```
 
 If the run does fail there anyway, nothing needs recomputing: the staged tree is exactly what Lerna was about to commit, so finish its last two steps by hand and continue with step 6.
@@ -198,7 +206,7 @@ npm view markuplint dist-tags
 npm view @markuplint/rules dist-tags
 ```
 
-- Version must match step 5; dist-tag must match the release type (`latest` / `rc` / `beta` / `alpha`).
+- Version must match step 5; dist-tag must match the release channel (`latest` / `rc` / `beta` / `alpha`).
 - Fixed mode can still partially publish. Spot-check core packages; if ANY mismatch is found, enumerate every public package (`npx lerna list --json`) and check each.
 - Confirm provenance attestations are present (`npm view markuplint --json` → `dist.attestations`).
 
@@ -214,11 +222,10 @@ npm view @markuplint/rules dist-tags
 
 Create a GitHub Release for the tag. All content in **English**.
 
+Write the notes to a file in the scratchpad directory, then pass it with `--notes-file` (inline notes invite escaping bugs):
+
 ```bash
-gh release create v<VERSION> --title "v<VERSION>" --notes "$(cat <<'EOF'
-<release notes body>
-EOF
-)"
+gh release create v<VERSION> --title "v<VERSION>" --notes-file "<path>"
 ```
 
 Format:

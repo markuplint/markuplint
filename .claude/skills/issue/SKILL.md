@@ -71,4 +71,4 @@ Present the plan to the user and wait for approval.
 
 ## Step 5: Hand Off to /impl
 
-Once the plan is approved, continue with the `impl` skill — it owns the implementation pipeline (implement → review → QA → lint/test → commit → PR). Do not re-negotiate the agreed scope there.
+Once the plan is approved, tell the user to run `/impl` — it owns the implementation pipeline (implement → review → QA → lint/test → commit → PR) and cannot be invoked by Claude. Do not re-negotiate the agreed scope there.

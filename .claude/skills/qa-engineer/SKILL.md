@@ -3,14 +3,11 @@ name: qa-engineer
 metadata:
   internal: true
 description: >
-  A skill for performing code reviews and test quality checks as a QA engineer.
-  Improves code coverage, detects test-faking code, catches swallowed exceptions,
-  flags conditional logic in tests, promotes hardcoded assertions, and checks
-  cross-platform/cross-runtime compatibility (Windows, Deno, Bun).
-  Language- and framework-agnostic — works with any repository.
-  Trigger this skill on keywords: code review, test, coverage, QA, quality check,
-  test generation, refactoring.
-  Always use this skill when the user requests a PR review or test improvement.
+  Review a diff of this repository as a QA engineer: test quality (coverage,
+  test-faking code, swallowed exceptions, conditional logic in tests, hardcoded
+  assertions) and cross-platform/cross-runtime compatibility (Windows, Deno,
+  Bun). Run by the `impl` and `pr-review` skills in a fresh-context subagent,
+  or when the user explicitly asks for a QA review.
 ---
 
 # QA Engineer Skill
