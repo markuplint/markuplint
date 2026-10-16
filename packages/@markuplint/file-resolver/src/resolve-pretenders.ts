@@ -314,8 +314,11 @@ export async function disambiguatePretendersForFile(
  *
  * {@link disambiguatePretendersForFile} no longer gates on it: a lone entry
  * may be a package's component that shares the name, so any `filePath`-backed
- * entry is worth the dynamic import. It stays exported as public API.
+ * entry is worth the dynamic import.
  *
+ * @deprecated Nothing in markuplint calls it any more, and it has no replacement:
+ *   {@link disambiguatePretendersForFile} decides by itself whether there is anything
+ *   to resolve. To be removed in the next major version.
  * @param pretenders - The flat pretender list to check
  * @returns `true` if some `selector` is shared by two or more `filePath`-backed entries
  */
