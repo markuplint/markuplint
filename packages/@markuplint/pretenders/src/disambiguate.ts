@@ -21,9 +21,9 @@ import type { Pretender } from '@markuplint/ml-config';
 
 import { parsePretenderFilePath } from '@markuplint/ml-config';
 
-import { resolveDeclarationFile } from './dependency-mapper.js';
+import { resolveDeclarationFile, resolveModule } from './dependency-mapper.js';
 import { analyzeImports, resolveComponentImport } from './import-resolver/index.js';
-import { normalizePath, resolveModuleFile } from './import-resolver/resolve-module-file.js';
+import { normalizePath } from './import-resolver/resolve-module-file.js';
 
 const RE_SIMPLE_COMPONENT_NAME = /^[A-Z][\w$-]*$/i;
 
@@ -42,6 +42,12 @@ export interface DisambiguateOptions {
 	 * The target file itself is not recorded: the caller already holds it.
 	 */
 	readonly dependencies?: Set<string>;
+	/**
+	 * The project root, the base directory the pretenders' paths were scanned under.
+	 * Without it, a file is judged to be a package's by its whole path, so in a project
+	 * that itself sits under `node_modules` a star re-export chain is not followed.
+	 */
+	readonly cwd?: string;
 }
 
 /**
@@ -122,7 +128,7 @@ function groupAmbiguousCandidates(pretenders: readonly Pretender[]): Map<string,
  */
 function resolveWinner(
 	candidates: readonly Pretender[],
-	{ filePath, sourceCode, dependencies }: DisambiguateOptions,
+	{ filePath, sourceCode, dependencies, cwd }: DisambiguateOptions,
 	bindings: readonly ImportBinding[],
 ): Pretender | null {
 	const local = candidates.find(c => matchesFile(c.filePath!, filePath));
@@ -135,7 +141,7 @@ function resolveWinner(
 		return null;
 	}
 
-	const resolvedAbs = resolveModuleFile(filePath, binding.source, dependencies);
+	const resolvedAbs = resolveModule(filePath, binding.source, { sources: undefined, dependencies, cwd });
 	if (!resolvedAbs) {
 		return null;
 	}
@@ -151,7 +157,11 @@ function resolveWinner(
 	const targetKey = normalizePath(filePath);
 	const sources = new Map([[targetKey, sourceCode]]);
 	const read = new Set<string>();
-	const declarationAbs = resolveDeclarationFile(resolvedAbs, binding.importedName, { sources, dependencies: read });
+	const declarationAbs = resolveDeclarationFile(resolvedAbs, binding.importedName, {
+		sources,
+		dependencies: read,
+		cwd,
+	});
 	for (const file of read) {
 		if (file !== targetKey) {
 			dependencies?.add(file);

@@ -1,6 +1,7 @@
 import type { Pretender } from '@markuplint/ml-config';
 
-import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import fs from 'node:fs';
+import { mkdir, mkdtemp, readFile, rm, symlink, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
@@ -196,6 +197,18 @@ describe('disambiguatePretenders', () => {
 			expect(result.map(p => p.as)).toStrictEqual(['button']);
 		});
 
+		test('a star re-export resolves when the project root sits under a directory named node_modules', async () => {
+			const root = path.join(tmpDir, 'node_modules', 'app');
+			await mkdir(root, { recursive: true });
+			await writeFile(path.join(root, 'a.tsx'), 'export const Item = () => <button />;');
+			await writeFile(path.join(root, 'b.tsx'), 'export const Item = () => <li />;');
+			await writeFile(path.join(root, 'barrel.ts'), "export * from './a';");
+
+			const result = await disambiguatePretenders(candidates(root), { ...target(root), cwd: root });
+
+			expect(result.map(p => p.as)).toStrictEqual(['button']);
+		});
+
 		test('a re-exported template component resolves to its file', async () => {
 			await writeFile(path.join(tmpDir, 'Item.vue'), '<template><em /></template>');
 			await writeFile(path.join(tmpDir, 'barrel.ts'), "export { default as Item } from './Item.vue';");
@@ -237,6 +250,66 @@ describe('disambiguatePretenders', () => {
 
 			expect(result.map(p => p.as)).toStrictEqual(['button']);
 			expect(dependencies).not.toContain(normalizePath(filePath));
+		});
+	});
+
+	describe('with a workspace package linked into node_modules', () => {
+		// `page.tsx` imports `Item` from `@org/ui`, which `node_modules/@org/ui` links to `packages/ui`. The
+		// pretenders carry real paths, so the root is a real path too (`os.tmpdir()` is a link on macOS).
+		let root: string;
+
+		beforeEach(async () => {
+			const tmpDir = await mkdtemp(path.join(os.tmpdir(), 'disambiguate-link-'));
+			// `native`, as module resolution does: on Windows only it expands a short `RUNNER~1` name.
+			root = fs.realpathSync.native(tmpDir);
+			const uiDir = path.join(root, 'packages', 'ui');
+			await mkdir(uiDir, { recursive: true });
+			await writeFile(path.join(uiDir, 'package.json'), '{"name":"@org/ui","main":"index.tsx"}');
+			await writeFile(path.join(uiDir, 'index.tsx'), 'export const Item = () => <button />;');
+			await writeFile(path.join(root, 'other.tsx'), 'export const Item = () => <li />;');
+			await mkdir(path.join(root, 'node_modules', '@org'), { recursive: true });
+			await symlink(uiDir, path.join(root, 'node_modules', '@org', 'ui'), 'junction');
+		});
+
+		afterEach(async () => {
+			await rm(root, { recursive: true, force: true });
+			clearExportTableCache();
+		});
+
+		const pretenders = (): Pretender[] => [
+			{ selector: 'Item', as: 'li', filePath: `${path.join(root, 'other.tsx')}:1:14` },
+			{ selector: 'Item', as: 'button', filePath: `${path.join(root, 'packages', 'ui', 'index.tsx')}:1:14` },
+		];
+		const target = () => ({
+			filePath: path.join(root, 'page.tsx'),
+			sourceCode: "import { Item } from '@org/ui';\nexport const Page = () => <Item />;",
+			cwd: root,
+		});
+
+		test('resolves to the package by default, as module resolution gives the real path', async () => {
+			const result = await disambiguatePretenders(pretenders(), target());
+
+			expect(result.map(p => p.as)).toStrictEqual(['button']);
+		});
+
+		test('resolves to the package with preserveSymlinks, where the path stays under node_modules', async () => {
+			await writeFile(path.join(root, 'tsconfig.json'), '{"compilerOptions":{"preserveSymlinks":true}}');
+
+			const result = await disambiguatePretenders(pretenders(), target());
+
+			expect(result.map(p => p.as)).toStrictEqual(['button']);
+		});
+
+		test('resolves a star re-export of the package with preserveSymlinks', async () => {
+			await writeFile(path.join(root, 'tsconfig.json'), '{"compilerOptions":{"preserveSymlinks":true}}');
+			await writeFile(path.join(root, 'barrel.ts'), "export * from '@org/ui';");
+
+			const result = await disambiguatePretenders(pretenders(), {
+				...target(),
+				sourceCode: "import { Item } from './barrel';\nexport const Page = () => <Item />;",
+			});
+
+			expect(result.map(p => p.as)).toStrictEqual(['button']);
 		});
 	});
 });

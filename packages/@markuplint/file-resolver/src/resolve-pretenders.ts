@@ -294,7 +294,13 @@ export async function disambiguatePretendersForFile(
 	}
 
 	const { disambiguatePretenders } = await import('@markuplint/pretenders');
-	return disambiguatePretenders(pretenders, { filePath, sourceCode, dependencies: options?.dependencies });
+	// The same base the scanned pretenders' paths were made absolute from (see `rebasePretenderFilePaths`).
+	return disambiguatePretenders(pretenders, {
+		filePath,
+		sourceCode,
+		dependencies: options?.dependencies,
+		cwd: process.cwd(),
+	});
 }
 
 /**
