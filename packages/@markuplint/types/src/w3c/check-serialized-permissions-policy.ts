@@ -29,7 +29,7 @@ import { TokenCollection } from '../token/index.js';
 export const checkSerializedPermissionsPolicy: CustomSyntaxChecker = () => value => {
 	const res = _checkSerializedPermissionsPolicy(value);
 
-	if (!res.matched) {
+	if (!res.matched && log.enabled) {
 		log('Failed: %O', res);
 	}
 
@@ -57,7 +57,9 @@ function _checkSerializedPermissionsPolicy(value: string) {
 	const tokens = TokenCollection.fromPatterns(value, patterns, { repeat: true });
 	const serializedPolicyDirectives = tokens.chunk(patterns.length);
 
-	log('Serialized Permissions Policy: %s => %O', value, serializedPolicyDirectives);
+	if (log.enabled) {
+		log('Serialized Permissions Policy: %s => %O', value, serializedPolicyDirectives);
+	}
 
 	for (const [serializedPolicyDirective] of serializedPolicyDirectives) {
 		if (!serializedPolicyDirective || !serializedPolicyDirective.value) {
@@ -92,12 +94,14 @@ function _checkSerializedPermissionsPolicy(value: string) {
 			/.*/,
 		]);
 
-		log('Serialized Policy Directive: %s => %O', serializedPolicyDirective.value, {
-			aw,
-			featureIdentifier,
-			rws,
-			allowListValue,
-		});
+		if (log.enabled) {
+			log('Serialized Policy Directive: %s => %O', serializedPolicyDirective.value, {
+				aw,
+				featureIdentifier,
+				rws,
+				allowListValue,
+			});
+		}
 
 		/**
 		 * > ```abnf
@@ -137,7 +141,9 @@ function _checkSerializedPermissionsPolicy(value: string) {
 		const allowListTokens = TokenCollection.fromPatterns(allowListValue, allowListPatterns, { repeat: true });
 		const allowList = allowListTokens.chunk(allowListPatterns.length);
 
-		log('Allow List: %s => %O', allowListTokens.value, allowList);
+		if (log.enabled) {
+			log('Allow List: %s => %O', allowListTokens.value, allowList);
+		}
 
 		for (const [allow] of allowList) {
 			if (!allow || !allow.value) {
@@ -204,7 +210,9 @@ function _checkSerializedPermissionsPolicy(value: string) {
 function checkSerializedOrigin(token: Readonly<Token>) {
 	const url = parseUrl(token.value);
 
-	log('Parse URL: "%s" => %O', token.value, url);
+	if (log.enabled) {
+		log('Parse URL: "%s" => %O', token.value, url);
+	}
 
 	if (!url) {
 		return token.unmatched({

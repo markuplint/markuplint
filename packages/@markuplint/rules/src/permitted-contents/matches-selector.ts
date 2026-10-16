@@ -3,7 +3,7 @@ import type { Category } from '@markuplint/ml-spec';
 
 import { contentModelCategoryToTagNames } from '@markuplint/ml-spec';
 
-import { cmLog } from './debug.js';
+import { depthLog } from './debug.js';
 import { cleanObject, matches } from './utils.js';
 
 /**
@@ -54,13 +54,16 @@ export function matchesSelector(
 	depth: number,
 	mode: Mode,
 ): SelectorResult {
-	const nodeLog = cmLog.extend(`node#${depth}`);
+	const nodeLog = depthLog('node', depth);
+	const nodeEnabled = nodeLog.enabled;
 
 	const { selector, hasText, hasNonEmptyText, hasCustom } = optCondition(query, specs);
 
 	if (childNode == null) {
 		if (hasText) {
-			nodeLog('<#text>.matches(%s) => ""', query);
+			if (nodeEnabled) {
+				nodeLog('<#text>.matches(%s) => ""', query);
+			}
 			return {
 				type: 'MATCHED_ZERO',
 				matched: [],
@@ -84,7 +87,9 @@ export function matchesSelector(
 	if (childNode.is(childNode.TEXT_NODE)) {
 		if (hasNonEmptyText) {
 			if (childNode.isWhitespace()) {
-				nodeLog('<#nonEmptyText>.matches(%s) => WHITESPACE (rejected)', query);
+				if (nodeEnabled) {
+					nodeLog('<#nonEmptyText>.matches(%s) => WHITESPACE (rejected)', query);
+				}
 				return {
 					type: 'MISSING_NODE',
 					matched: [],
@@ -94,7 +99,9 @@ export function matchesSelector(
 					hint: {},
 				};
 			}
-			nodeLog('<#nonEmptyText>.matches(%s) => "%s"', query, childNode.raw.trim());
+			if (nodeEnabled) {
+				nodeLog('<#nonEmptyText>.matches(%s) => "%s"', query, childNode.raw.trim());
+			}
 			return {
 				type: 'MATCHED',
 				matched: [childNode],
@@ -106,7 +113,9 @@ export function matchesSelector(
 		}
 
 		if (hasText) {
-			nodeLog('<#text>.matches(%s) => "%s"', query, childNode.raw.trim());
+			if (nodeEnabled) {
+				nodeLog('<#text>.matches(%s) => "%s"', query, childNode.raw.trim());
+			}
 			return {
 				type: 'MATCHED',
 				matched: [childNode],
@@ -118,7 +127,9 @@ export function matchesSelector(
 		}
 
 		if (childNode.isWhitespace()) {
-			nodeLog('<#text>.matches(%s) => WHITESPACE', query);
+			if (nodeEnabled) {
+				nodeLog('<#text>.matches(%s) => WHITESPACE', query);
+			}
 			return {
 				type: 'MATCHED',
 				matched: [childNode],
@@ -141,7 +152,9 @@ export function matchesSelector(
 	}
 
 	if (childNode.is(childNode.MARKUPLINT_PREPROCESSOR_BLOCK)) {
-		nodeLog('%s.matches(%s) => PBlock', childNode.raw, query);
+		if (nodeEnabled) {
+			nodeLog('%s.matches(%s) => PBlock', childNode.raw, query);
+		}
 		return {
 			type: 'MATCHED',
 			matched: [childNode],
@@ -154,7 +167,9 @@ export function matchesSelector(
 
 	if (childNode.is(childNode.ELEMENT_NODE)) {
 		if (hasCustom && isTreatedAsCustom(childNode, mode)) {
-			nodeLog('%s.matches(%s) => CustomElement', childNode.raw, query);
+			if (nodeEnabled) {
+				nodeLog('%s.matches(%s) => CustomElement', childNode.raw, query);
+			}
 			return {
 				type: 'MATCHED',
 				matched: [childNode],
@@ -166,7 +181,9 @@ export function matchesSelector(
 		}
 
 		const result = matches(selector, childNode, specs, mode);
-		nodeLog('%s.matches(%s) => %s', childNode.raw, query, result.matched);
+		if (nodeEnabled) {
+			nodeLog('%s.matches(%s) => %s', childNode.raw, query, result.matched);
+		}
 
 		if (result.matched) {
 			return {

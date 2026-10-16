@@ -82,7 +82,9 @@ export default createRule<boolean, Option>({
 				if (!attrSpecs) {
 					return;
 				}
-				log('Checking %s[%s="%s"]', attr.nodeName, name, value);
+				if (log.enabled) {
+					log('Checking %s[%s="%s"]', attr.nodeName, name, value);
+				}
 				const eligibility = resolveAttrEligibility(name, attr.ownerElement, attrSpecs);
 				if (eligibility.status !== 'ok') {
 					return;

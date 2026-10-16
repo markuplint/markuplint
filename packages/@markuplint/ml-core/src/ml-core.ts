@@ -352,7 +352,10 @@ export class MLCore {
 		const options: VerifyOptions = typeof fixOrOptions === 'boolean' ? { fix: fixOrOptions } : (fixOrOptions ?? {});
 		const fix = options.fix ?? false;
 
-		log('verify: start');
+		const logEnabled = log.enabled;
+		if (logEnabled) {
+			log('verify: start');
+		}
 		const violations: Violation[] = [];
 		if (this.#document instanceof ParserError) {
 			const parseError = this.#createParseError(
@@ -367,7 +370,9 @@ export class MLCore {
 			}
 
 			violations.push(parseError);
-			log('verify: error %o', this.#document.message);
+			if (logEnabled) {
+				log('verify: error %o', this.#document.message);
+			}
 			return { violations, fixedCode: fix ? this.#sourceCode : undefined };
 		}
 
@@ -500,7 +505,9 @@ export class MLCore {
 			}
 		}
 
-		log('verify: end');
+		if (logEnabled) {
+			log('verify: end');
+		}
 		return { violations, fixedCode, fixSummary };
 	}
 
@@ -695,6 +702,7 @@ export class MLCore {
 	async #multiPassFix(initialViolations: readonly Violation[]): Promise<{ code: string; summary: FixSummary }> {
 		// Same safety cap as ESLint's SourceCodeFixer (10 passes).
 		const MAX_FIX_PASSES = 10;
+		const logEnabled = log.enabled;
 		let currentCode = this.#sourceCode;
 		let fixes = extractFixes(initialViolations);
 
@@ -717,7 +725,9 @@ export class MLCore {
 
 		let pass = 0;
 		for (; pass < MAX_FIX_PASSES; pass++) {
-			log('fix pass %d: %d fixes', pass, fixes.length);
+			if (logEnabled) {
+				log('fix pass %d: %d fixes', pass, fixes.length);
+			}
 			const result = applyFixes(currentCode, fixes);
 
 			totalApplied += result.applied.length;
@@ -727,12 +737,16 @@ export class MLCore {
 			}
 
 			if (result.applied.length === 0) {
-				log('fix pass %d: no fixes applied, stopping', pass);
+				if (logEnabled) {
+					log('fix pass %d: no fixes applied, stopping', pass);
+				}
 				break;
 			}
 
 			if (result.output === currentCode) {
-				log('fix pass %d: output unchanged, stopping', pass);
+				if (logEnabled) {
+					log('fix pass %d: output unchanged, stopping', pass);
+				}
 				break;
 			}
 
@@ -740,12 +754,14 @@ export class MLCore {
 			// fixes are oscillating (A → B → A, A → B → C → A, ...) and will never converge.
 			const cycleStart = codeHistory.get(result.output);
 			if (cycleStart !== undefined) {
-				log(
-					'fix pass %d: cycle detected (output matches the input of pass %d, cycle length %d), stopping',
-					pass,
-					cycleStart,
-					pass + 1 - cycleStart,
-				);
+				if (logEnabled) {
+					log(
+						'fix pass %d: cycle detected (output matches the input of pass %d, cycle length %d), stopping',
+						pass,
+						cycleStart,
+						pass + 1 - cycleStart,
+					);
+				}
 				currentCode = result.output;
 				latestViolations = undefined;
 				break;
@@ -763,7 +779,9 @@ export class MLCore {
 			this.#createDocument();
 
 			if (this.#document instanceof ParserError) {
-				log('fix pass %d: produced unparsable code, reverting to the previous parsable code', pass);
+				if (logEnabled) {
+					log('fix pass %d: produced unparsable code, reverting to the previous parsable code', pass);
+				}
 				currentCode = lastParsableCode;
 				totalApplied -= result.applied.length;
 				if (pass === 0) {
@@ -774,24 +792,30 @@ export class MLCore {
 			lastParsableCode = currentCode;
 
 			if (result.skipped.length === 0) {
-				log('fix pass %d: all fixes applied, stopping', pass);
+				if (logEnabled) {
+					log('fix pass %d: all fixes applied, stopping', pass);
+				}
 				break;
 			}
 
 			// --- Multi-pass path (only when overlapping fixes exist) ---
-			log('fix pass %d: %d skipped, re-running rules for next pass', pass, result.skipped.length);
+			if (logEnabled) {
+				log('fix pass %d: %d skipped, re-running rules for next pass', pass, result.skipped.length);
+			}
 
 			const newViolations = await this.#runAllRules(true);
 			latestViolations = newViolations;
 			fixes = extractFixes(newViolations);
 			if (fixes.length === 0) {
-				log('fix pass %d: no more fixable violations, stopping', pass);
+				if (logEnabled) {
+					log('fix pass %d: no more fixable violations, stopping', pass);
+				}
 				break;
 			}
 		}
 
 		const reachedMaxPasses = pass === MAX_FIX_PASSES;
-		if (reachedMaxPasses) {
+		if (reachedMaxPasses && logEnabled) {
 			log('fix: reached maximum number of passes (%d), some fixes may not have been applied', MAX_FIX_PASSES);
 		}
 
@@ -833,6 +857,7 @@ export class MLCore {
 	}
 
 	async #runAllRules(fix: boolean): Promise<Violation[]> {
+		const logEnabled = log.enabled;
 		const violations: Violation[] = [];
 		if (this.#document instanceof ParserError) {
 			return violations;
@@ -858,7 +883,9 @@ export class MLCore {
 				continue;
 			}
 
-			log('%s Rule: verify', rule.name);
+			if (logEnabled) {
+				log('%s Rule: verify', rule.name);
+			}
 			const results = await rule.verify(this.#document, this.#locale, fix).catch(error => {
 				if (error instanceof ParserError) {
 					return error;
@@ -869,13 +896,17 @@ export class MLCore {
 			if (results instanceof ParserError) {
 				const parseError = this.#createParseError(results.message, results.line, results.col, results.raw);
 				if (parseError) {
-					log('%s Rule: verify error %o', rule.name, results.message);
+					if (logEnabled) {
+						log('%s Rule: verify error %o', rule.name, results.message);
+					}
 					violations.push(parseError);
 				}
 			} else {
 				violations.push(...results);
 			}
-			log('%s Rule: verify end', rule.name);
+			if (logEnabled) {
+				log('%s Rule: verify end', rule.name);
+			}
 		}
 		return violations;
 	}
@@ -884,7 +915,9 @@ export class MLCore {
 		try {
 			this.#ast = this.#parser.parse(this.#sourceCode, this.#parserOptions);
 		} catch (error) {
-			log('Caught the parse error: %O', error);
+			if (log.enabled) {
+				log('Caught the parse error: %O', error);
+			}
 			this.#ast = null;
 			if (error instanceof ParserError) {
 				this.#document = error;

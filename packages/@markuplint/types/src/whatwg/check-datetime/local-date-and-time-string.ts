@@ -10,7 +10,9 @@ import { datetimeTokenCheck } from './datetime-tokens.js';
  */
 export const checkLocalDateAndTimeString: CustomSyntaxChecker = () =>
 	function checkLocalDateAndTimeString(value) {
-		log('CHECK: local-date-and-time-string');
+		if (log.enabled) {
+			log('CHECK: local-date-and-time-string');
+		}
 
 		const tokens = TokenCollection.fromPatterns(value, [
 			// YYYY
@@ -41,7 +43,9 @@ export const checkLocalDateAndTimeString: CustomSyntaxChecker = () =>
 			/.\d*/,
 		]);
 
-		log('Local Date and Time: "%s" => %O', tokens.value, tokens);
+		if (log.enabled) {
+			log('Local Date and Time: "%s" => %O', tokens.value, tokens);
+		}
 
 		const res = tokens.eachCheck(
 			datetimeTokenCheck.year,
@@ -60,7 +64,7 @@ export const checkLocalDateAndTimeString: CustomSyntaxChecker = () =>
 			datetimeTokenCheck.extra,
 		);
 
-		if (!res.matched) {
+		if (!res.matched && log.enabled) {
 			log('Failed: %O', res);
 		}
 
@@ -72,7 +76,9 @@ export const checkLocalDateAndTimeString: CustomSyntaxChecker = () =>
  */
 export const checkNormalizedLocalDateAndTimeString: CustomSyntaxChecker = () =>
 	function checkNormalizedLocalDateAndTimeString(value) {
-		log('CHECK: normalized-local-date-and-time-string');
+		if (log.enabled) {
+			log('CHECK: normalized-local-date-and-time-string');
+		}
 
 		const tokens = TokenCollection.fromPatterns(value, [
 			// YYYY
@@ -103,7 +109,9 @@ export const checkNormalizedLocalDateAndTimeString: CustomSyntaxChecker = () =>
 			/.\d*/,
 		]);
 
-		log('Normalized Local Date and Time: "%s" => %O', tokens.value, tokens);
+		if (log.enabled) {
+			log('Normalized Local Date and Time: "%s" => %O', tokens.value, tokens);
+		}
 
 		const res = tokens.eachCheck(
 			datetimeTokenCheck.year,
@@ -123,7 +131,9 @@ export const checkNormalizedLocalDateAndTimeString: CustomSyntaxChecker = () =>
 		);
 
 		if (!res.matched) {
-			log('Failed: %O', res);
+			if (log.enabled) {
+				log('Failed: %O', res);
+			}
 			return res;
 		}
 
@@ -137,21 +147,27 @@ export const checkNormalizedLocalDateAndTimeString: CustomSyntaxChecker = () =>
 		const fp = tokens[12];
 
 		if (!second || !fp) {
-			log('Failed: %O', res);
+			if (log.enabled) {
+				log('Failed: %O', res);
+			}
 			return res;
 		}
 
 		const _second = second.toNumber();
 		const _fp = fp.toNumber();
 
-		log('Omitting the seconds component: "%s.%s" => %d, %d', second?.value, fp?.value, _second, _fp);
+		if (log.enabled) {
+			log('Omitting the seconds component: "%s.%s" => %d, %d', second?.value, fp?.value, _second, _fp);
+		}
 
 		if (second.value && _second === 0 && (!fp.value || (fp.value && _fp === 0))) {
 			const res = second.unmatched({
 				partName: 'second',
 				reason: 'extra-token',
 			});
-			log('Failed: %O', res);
+			if (log.enabled) {
+				log('Failed: %O', res);
+			}
 			return res;
 		}
 
@@ -160,10 +176,14 @@ export const checkNormalizedLocalDateAndTimeString: CustomSyntaxChecker = () =>
 				partName: 'fractional part',
 				reason: 'extra-token',
 			});
-			log('Failed: %O', res);
+			if (log.enabled) {
+				log('Failed: %O', res);
+			}
 			return res;
 		}
 
-		log('Failed: %O', res);
+		if (log.enabled) {
+			log('Failed: %O', res);
+		}
 		return res;
 	};

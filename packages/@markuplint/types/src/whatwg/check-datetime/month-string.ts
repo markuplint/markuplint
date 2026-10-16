@@ -10,11 +10,15 @@ import { datetimeTokenCheck } from './datetime-tokens.js';
  */
 export const checkMonthString: CustomSyntaxChecker = () =>
 	function checkMonthString(value) {
-		log('CHECK: month-string');
+		if (log.enabled) {
+			log('CHECK: month-string');
+		}
 
 		const tokens = TokenCollection.fromPatterns(value, [/[^-]*/, /\D?/, /.\d*/]);
 
-		log('Month: "%s" => %O', tokens.value, tokens);
+		if (log.enabled) {
+			log('Month: "%s" => %O', tokens.value, tokens);
+		}
 
 		const res = tokens.eachCheck(
 			datetimeTokenCheck.year,
@@ -23,7 +27,7 @@ export const checkMonthString: CustomSyntaxChecker = () =>
 			datetimeTokenCheck.extra,
 		);
 
-		if (!res.matched) {
+		if (!res.matched && log.enabled) {
 			log('Failed: %O', res);
 		}
 

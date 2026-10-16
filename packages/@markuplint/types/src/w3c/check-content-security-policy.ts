@@ -220,7 +220,9 @@ function trimToken(token: Readonly<Token>): Token {
  */
 export const checkContentSecurityPolicy: CustomSyntaxChecker = () =>
 	function checkContentSecurityPolicy(value) {
-		log('CHECK: meta http-equiv="content-security-policy" content');
+		if (log.enabled) {
+			log('CHECK: meta http-equiv="content-security-policy" content');
+		}
 
 		// See ASCII_ONLY above. A non-ASCII authority (e.g. an IDN host written
 		// as Unicode rather than punycode) fails here first.

@@ -2,6 +2,7 @@ import type { SelectorElement, SelectorMatchedResult, SelectorNode, SelectorResu
 import type { ReadonlyDeep, Writable } from 'type-fest';
 
 import { resolveNamespace } from '@markuplint/ml-spec';
+import debug from 'debug';
 import parser from 'postcss-selector-parser';
 
 import { compareSpecificity } from './compare-specificity.js';
@@ -11,6 +12,23 @@ import { isElement, isNonDocumentTypeChildNode, isPureHTMLElement } from './is.j
 
 const selLog = coreLog.extend('selector');
 const resLog = coreLog.extend('result');
+
+let flagsKey: unknown;
+let flags = { core: false, sel: false, res: false };
+
+/**
+ * The `enabled` state of the three loggers `Ruleset.match()` uses, which runs for every node and selector.
+ * Reading three `enabled` getters per call showed up in profiles, so the result is reused until `debug.enable()` or
+ * `debug.disable()` runs: both replace `debug.names`, which makes its identity the cache key. Setting
+ * `logger.enabled` by hand does not replace it and is therefore not picked up.
+ */
+function readFlags() {
+	if (debug.names !== flagsKey) {
+		flagsKey = debug.names;
+		flags = { core: coreLog.enabled, sel: selLog.enabled, res: resLog.enabled };
+	}
+	return flags;
+}
 
 /**
  * Registry of extended pseudo-class handlers keyed by pseudo-class name.
@@ -113,7 +131,8 @@ class Ruleset {
 	}
 
 	match(el: SelectorNode, scope: SelectorNode | null): SelectorResult[] {
-		if (coreLog.enabled) {
+		const { core: coreEnabled, sel: selEnabled, res: resEnabled } = readFlags();
+		if (coreEnabled) {
 			coreLog(
 				'<%s> (%s)',
 				isElement(el) ? el.localName : el.nodeName,
@@ -121,11 +140,11 @@ class Ruleset {
 			);
 		}
 		return this.#selectorGroup.map(selector => {
-			if (selLog.enabled) {
+			if (selEnabled) {
 				selLog('"%s"', selector.selector);
 			}
-			const res = selector.match(el, scope);
-			if (resLog.enabled) {
+			const res = selector.match(el, scope, selEnabled);
+			if (resEnabled) {
 				resLog('%s "%s" => %o', isElement(el) ? el.localName : el.nodeName, selector.selector, res);
 			}
 			return res;
@@ -176,8 +195,8 @@ class StructuredSelector {
 		return this.#selector.nodes.join('');
 	}
 
-	match(el: SelectorNode, scope: SelectorNode | null): SelectorResult {
-		return this.#edge.match(el, scope, 0);
+	match(el: SelectorNode, scope: SelectorNode | null, logEnabled: boolean): SelectorResult {
+		return this.#edge.match(el, scope, 0, logEnabled);
 	}
 }
 
@@ -240,9 +259,13 @@ class SelectorTarget {
 		this.#combinedFrom = { target, combinator };
 	}
 
-	match(el: SelectorNode, scope: SelectorNode | null, count: number): SelectorResult {
-		const result = this.#match(el, scope, count);
-		if (selLog.enabled) {
+	/**
+	 * @param logEnabled - `selLog.enabled`, read once by `Ruleset.match` and threaded through the recursion
+	 * so that each combinator step and ancestor does not pay the `enabled` getter again.
+	 */
+	match(el: SelectorNode, scope: SelectorNode | null, count: number, logEnabled: boolean): SelectorResult {
+		const result = this.#match(el, scope, count, logEnabled);
+		if (logEnabled) {
 			const nodeName = el.nodeName;
 			const selector = this.#combinedFrom?.target.toString() ?? this.toString();
 			const combinator = result.combinator ? ` ${result.combinator}` : '';
@@ -265,7 +288,12 @@ class SelectorTarget {
 		].join('');
 	}
 
-	#match(el: SelectorNode, scope: SelectorNode | null, count: number): SelectorResult & { combinator?: string } {
+	#match(
+		el: SelectorNode,
+		scope: SelectorNode | null,
+		count: number,
+		logEnabled: boolean,
+	): SelectorResult & { combinator?: string } {
 		const unitCheck = this.#matchWithoutCombineChecking(el, scope);
 		if (!unitCheck.matched) {
 			return unitCheck;
@@ -286,7 +314,7 @@ class SelectorTarget {
 				let ancestor = el.parentElement;
 				let specificity: Specificity | undefined = undefined;
 				while (ancestor) {
-					const res = target.match(ancestor, scope, count + 1);
+					const res = target.match(ancestor, scope, count + 1, logEnabled);
 					if (!specificity) {
 						specificity = [
 							unitCheck.specificity[0] + res.specificity[0],
@@ -305,7 +333,7 @@ class SelectorTarget {
 					ancestor = ancestor.parentElement;
 				}
 				if (!specificity) {
-					const res = target.match(el, scope, count + 1);
+					const res = target.match(el, scope, count + 1, logEnabled);
 					specificity = [
 						unitCheck.specificity[0] + res.specificity[0],
 						unitCheck.specificity[1] + res.specificity[1],
@@ -337,7 +365,7 @@ class SelectorTarget {
 				const parentNode = el.parentElement;
 
 				if (parentNode) {
-					const res = target.match(parentNode, scope, count + 1);
+					const res = target.match(parentNode, scope, count + 1, logEnabled);
 					specificity[0] += res.specificity[0];
 					specificity[1] += res.specificity[1];
 					specificity[2] += res.specificity[2];
@@ -350,7 +378,7 @@ class SelectorTarget {
 						}
 					}
 				} else {
-					const res = target.match(el, scope, count + 1);
+					const res = target.match(el, scope, count + 1, logEnabled);
 					specificity[0] += res.specificity[0];
 					specificity[1] += res.specificity[1];
 					specificity[2] += res.specificity[2];
@@ -379,7 +407,7 @@ class SelectorTarget {
 				const specificity: Writable<Specificity> = [...unitCheck.specificity];
 
 				if (el.previousElementSibling) {
-					const res = target.match(el.previousElementSibling, scope, count + 1);
+					const res = target.match(el.previousElementSibling, scope, count + 1, logEnabled);
 					specificity[0] += res.specificity[0];
 					specificity[1] += res.specificity[1];
 					specificity[2] += res.specificity[2];
@@ -392,7 +420,7 @@ class SelectorTarget {
 						}
 					}
 				} else {
-					const res = target.match(el, scope, count + 1);
+					const res = target.match(el, scope, count + 1, logEnabled);
 					specificity[0] += res.specificity[0];
 					specificity[1] += res.specificity[1];
 					specificity[2] += res.specificity[2];
@@ -421,7 +449,7 @@ class SelectorTarget {
 				let prev = el.previousElementSibling;
 				let specificity: Specificity | undefined = undefined;
 				while (prev) {
-					const res = target.match(prev, scope, count + 1);
+					const res = target.match(prev, scope, count + 1, logEnabled);
 					if (!specificity) {
 						specificity = [
 							unitCheck.specificity[0] + res.specificity[0],
@@ -440,7 +468,7 @@ class SelectorTarget {
 					prev = prev.previousElementSibling;
 				}
 				if (!specificity) {
-					const res = target.match(el, scope, count + 1);
+					const res = target.match(el, scope, count + 1, logEnabled);
 					specificity = [
 						unitCheck.specificity[0] + res.specificity[0],
 						unitCheck.specificity[1] + res.specificity[1],
