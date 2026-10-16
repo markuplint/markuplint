@@ -73,6 +73,8 @@ The walk follows up to 8 import hops from the linted file. A re-export (`export 
 }
 ```
 
+A name imported from a package is not looked up among the components of the project, whether or not the package is installed. An import that cannot be resolved counts as such a package when its specifier has the form of a package name (lower case, so not `@/x` or `~/x`), no `paths` pattern of the `tsconfig.json` matches it, and the `tsconfig.json` has no `baseUrl`, no `references` and no `jsconfig.json` is near. So an alias that only a bundler knows (Vite's `resolve.alias`) is not told from a package: declare it in `paths` of the `tsconfig.json`.
+
 In watch mode or an editor session, the component files `auto` (and `scan`) read are watched along with the config file, so editing one re-lints the files that use it. What is not watched, so a change to it is picked up only when the config changes: a component file that does not exist yet (including a new match of a `scan` glob, and a file that was removed and comes back), files under `node_modules`, and the files of `files` and `imports`. Edits to the linted file itself — adding, removing, or changing an import — are reflected on the next lint of that file.
 
 ## How It Works
