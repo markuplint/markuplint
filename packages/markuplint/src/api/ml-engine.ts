@@ -454,7 +454,6 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		const sourceCode = await this.#file.getCode();
 		if (fileLog.enabled) {
 			fileLog('Source code path: %s', this.#file.path);
-			// cspell: disable-next-line
 			fileLog('Source code size: %dbyte', sourceCode.length);
 		}
 		this.emit('code', this.#file.path, sourceCode);

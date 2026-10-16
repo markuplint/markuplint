@@ -50,7 +50,6 @@ Two major lines are developed in parallel:
 
 - Check only: `yarn lint-check` (no arguments). Auto-fix: `yarn lint` (no arguments), which also runs actionlint over workflow files
 - Which linters these run is defined by `package.json` `scripts.lint` and differs between branches. Do not run linters individually (`npx oxlint ...`) — the root scripts are the only way to run the full set
-- On branches that have a `cspell.json`, register new spec terminology (ABNF symbols such as `DQUOTE`, `OWS`) in its `Specs` section before using the term. In a worktree whose `.git` is a file, the CSpell step can pass having scanned zero files — if a lint run finishes suspiciously fast after new identifiers were added, confirm it actually scanned before pushing
 
 ### Build
 
