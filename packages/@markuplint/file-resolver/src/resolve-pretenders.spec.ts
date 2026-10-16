@@ -256,6 +256,18 @@ test('disambiguatePretendersForFile follows a star re-export when the working di
 	}
 });
 
+test('disambiguatePretendersForFile returns a list of hand-written entries as it is, as nothing in it is scanned', async () => {
+	const pretenders = [{ selector: 'Button', as: 'button' }];
+
+	const result = await disambiguatePretendersForFile(
+		'/project/page.tsx',
+		"import { Button } from 'ui-lib';\nexport const Page = () => <Button />;",
+		pretenders,
+	);
+
+	expect(result).toBe(pretenders);
+});
+
 test('disambiguatePretendersForFile drops the only scanned component of a name that the file imports from a package', async () => {
 	const tmpDir = await mkdtemp(path.join(os.tmpdir(), 'disambiguate-for-file-package-'));
 	const cwd = vi.spyOn(process, 'cwd').mockReturnValue(tmpDir);

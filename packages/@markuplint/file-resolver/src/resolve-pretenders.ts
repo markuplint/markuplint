@@ -308,13 +308,7 @@ export async function disambiguatePretendersForFile(
 
 /**
  * Whether two or more `filePath`-backed entries share a selector, whatever the
- * selector name shape (`@markuplint/pretenders`' `disambiguatePretenders`
- * resolves plain identifiers only; keeping a copy of that filter here would let
- * the two drift out of sync).
- *
- * {@link disambiguatePretendersForFile} no longer gates on it: a lone entry
- * may be a package's component that shares the name, so any `filePath`-backed
- * entry is worth the dynamic import.
+ * selector name shape.
  *
  * @deprecated Nothing in markuplint calls it any more, and it has no replacement:
  *   {@link disambiguatePretendersForFile} decides by itself whether there is anything
