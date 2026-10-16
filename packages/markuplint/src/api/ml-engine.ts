@@ -33,6 +33,9 @@ const fileLog = log.extend('file');
 const configLog = log.extend('config');
 
 type MLEngineOptions = {
+	/**
+	 * Enables verbose logging and populates the `debug` payload of the `lint` event.
+	 */
 	readonly debug?: boolean;
 	readonly watch?: boolean;
 	/**
@@ -220,7 +223,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 	constructor(file: Readonly<MLFile>, options?: APIOptions & MLEngineOptions) {
 		super();
 
-		if (this.#options?.debug) {
+		if (options?.debug) {
 			verbosely();
 		}
 
@@ -322,8 +325,11 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		}
 
 		const { violations, fixedCode, fixSummary } = verifyResult;
+		// The AST mapping is a debugging aid: the language server listens to every
+		// lint but only reads the payload when the user asked for debugging, so
+		// a listener alone is no reason to walk the whole document.
 		const debugMap =
-			this.listenerCount('lint') > 0 && 'debugMap' in core.document ? core.document.debugMap() : null;
+			this.#options?.debug && this.listenerCount('lint') > 0 ? (this.document?.debugMap() ?? null) : null;
 
 		const resolvedFixedCode = fixedCode ?? sourceCode;
 		this.emit('lint', this.#file.path, sourceCode, violations, resolvedFixedCode, debugMap, fixSummary ?? null);

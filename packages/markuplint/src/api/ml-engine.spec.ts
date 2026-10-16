@@ -7,6 +7,7 @@ import path from 'node:path';
 
 import { ConfigProvider } from '@markuplint/file-resolver';
 import { Document } from '@markuplint/ml-core';
+import debug from 'debug';
 import { afterEach, beforeEach, describe, it, expect, vi } from 'vitest';
 
 import { MLEngine } from './ml-engine.js';
@@ -39,6 +40,8 @@ describe('Event notification', () => {
 describe('AST mapping for the lint event', () => {
 	afterEach(() => {
 		vi.restoreAllMocks();
+		// `debug: true` enables the namespaces process-wide.
+		debug.disable();
 	});
 
 	it('builds the mapping and passes it to the lint listener', async () => {
@@ -50,9 +53,12 @@ describe('AST mapping for the lint event', () => {
 			debug = payload;
 		});
 		await engine.exec();
-		expect(spy).toHaveBeenCalledTimes(1);
-		expect(debug).not.toBeNull();
-		expect(debug?.join('\n')).toContain('DIV: <div>');
+		// Without the `debug` option nobody reads the dump, so the walk is skipped.
+		// expect(spy).toHaveBeenCalledTimes(1);
+		// expect(debug).not.toBeNull();
+		// expect(debug?.join('\n')).toContain('DIV: <div>');
+		expect(spy).not.toHaveBeenCalled();
+		expect(debug).toBeNull();
 	});
 
 	it('counts a once listener as a lint listener', async () => {
@@ -63,7 +69,40 @@ describe('AST mapping for the lint event', () => {
 			debug = payload;
 		});
 		await engine.exec();
-		expect(debug?.join('\n')).toContain('DIV: <div>');
+		// expect(debug?.join('\n')).toContain('DIV: <div>');
+		expect(debug).toBeNull();
+	});
+
+	it('builds the mapping for a lint listener when the debug option is on', async () => {
+		const spy = vi.spyOn(Document.prototype, 'debugMap');
+		const file = await MLEngine.toMLFile({ sourceCode: '<div></div>', name: 'a.html' });
+		const engine = new MLEngine(file!, { debug: true, noSearchConfig: true, config: {} });
+		let mapping: readonly string[] | null | undefined;
+		engine.on('lint', (_, __, ___, ____, payload) => {
+			mapping = payload;
+		});
+		await engine.exec();
+		expect(spy).toHaveBeenCalledTimes(1);
+		expect(mapping?.join('\n')).toContain('DIV: <div>');
+	});
+
+	it('counts a once listener as a lint listener when the debug option is on', async () => {
+		const file = await MLEngine.toMLFile({ sourceCode: '<div></div>', name: 'a.html' });
+		const engine = new MLEngine(file!, { debug: true, noSearchConfig: true, config: {} });
+		let mapping: readonly string[] | null | undefined;
+		engine.once('lint', (_, __, ___, ____, payload) => {
+			mapping = payload;
+		});
+		await engine.exec();
+		expect(mapping?.join('\n')).toContain('DIV: <div>');
+	});
+
+	it('skips building the mapping when the debug option is on but no lint listener is registered', async () => {
+		const spy = vi.spyOn(Document.prototype, 'debugMap');
+		const file = await MLEngine.toMLFile({ sourceCode: '<div></div>', name: 'a.html' });
+		const engine = new MLEngine(file!, { debug: true, noSearchConfig: true, config: {} });
+		await engine.exec();
+		expect(spy).not.toHaveBeenCalled();
 	});
 
 	it('skips building the mapping when no lint listener is registered', async () => {
@@ -1232,5 +1271,37 @@ describe('config that cannot be loaded (#4113)', () => {
 
 		expect(result?.violations.find(v => v.ruleId === 'config-error')?.severity).toBe('warning');
 		expect(result?.violations.some(v => v.ruleId === 'permitted-contents')).toBe(true);
+	});
+});
+
+describe('debug option of the constructor', () => {
+	afterEach(() => {
+		debug.disable();
+	});
+
+	it('enables the debug output', async () => {
+		debug.disable();
+		const file = await MLEngine.toMLFile({ sourceCode: '<div></div>', name: 'a.html' });
+
+		new MLEngine(file!, { debug: true, noSearchConfig: true, config: {} });
+
+		expect(debug.enabled('markuplint-cli')).toBe(true);
+	});
+
+	it('enables the debug output through fromCode', async () => {
+		debug.disable();
+
+		await MLEngine.fromCode('<div></div>', { debug: true, noSearchConfig: true, config: {} });
+
+		expect(debug.enabled('markuplint-cli')).toBe(true);
+	});
+
+	it('leaves the debug output off without the option', async () => {
+		debug.disable();
+		const file = await MLEngine.toMLFile({ sourceCode: '<div></div>', name: 'a.html' });
+
+		new MLEngine(file!, { noSearchConfig: true, config: {} });
+
+		expect(debug.enabled('markuplint-cli')).toBe(false);
 	});
 });
