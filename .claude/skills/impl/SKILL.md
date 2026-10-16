@@ -45,8 +45,9 @@ Copy this checklist into your response and check items off as you go.
 - [ ] 8. product-manager (fresh-context subagent) — findings fixed
 - [ ] 9. yarn lint clean
 - [ ] 10. yarn test green (+ cargo checks if crates/ touched)
-- [ ] 11. Committed (git skill)
-- [ ] 12. PR created (pr skill)
+- [ ] 11. Deferred-items audit — nothing postponed is still open
+- [ ] 12. Committed (git skill)
+- [ ] 13. PR created (pr skill)
 ```
 
 1. Confirm that implementation scope, approach, and trade-offs are agreed in the conversation. A plan approved through the `issue` skill counts as agreed. If agreement is missing, run the `grill-me` skill and reach it before continuing. If a plan document is being written, apply the Plan contract rule.
@@ -59,5 +60,6 @@ Copy this checklist into your response and check items off as you go.
 8. **`product-manager` in a fresh context**: same method as step 7 with `.claude/skills/product-manager/SKILL.md` (documentation consistency — JSDoc placement, comment policy). Steps 7 and 8 are independent; launch both subagents in the same message.
 9. Run `yarn lint`; fix all errors. Which linters this runs differs between branches — `package.json` is the source of truth, never another branch's set.
 10. Run `yarn test`; fix all failures. If the change touches `crates/`, also run `cargo fmt --check`, `cargo clippy --locked -- -D warnings`, and `cargo test --locked`: `yarn test` does not reach the Rust workspace and neither does lint-staged.
-11. Commit following the `git` skill.
-12. Create the PR following the `pr` skill.
+11. **Deferred-items audit**: list in your response everything this run postponed, skipped, or noted "for later", and close each item. Go through, in order: (a) every verification step the plan or the conversation named beyond lint and test (a reproduction, a manual check, a dry run) — the ones not yet executed get executed now, with their output shown; (b) every review finding from steps 5–8 — each is fixed, or the user has explicitly decided to leave it; (c) every out-of-scope finding — each was asked about, and the ones left are on the carry-over list for the PR body; (d) every assumption made without checking (a command's output format, a tool's availability, a field name) — check it now; (e) the one trace a deferral leaves in the diff: run `git diff origin/<base> | grep -nE '^\+.*(TODO|FIXME|XXX|\.skip\(|\.todo\(|skipIf\()'` and show the output, which must be empty. An empty list is reported as such, naming what was checked. If closing an item changes code, steps 9–10 run again. Nothing is committed with an open item.
+12. Commit following the `git` skill.
+13. Create the PR following the `pr` skill.
