@@ -45,6 +45,7 @@ export function order(
 	const orderLog = depthLog('order', depth);
 	const btLog = depthLog('backtrack', depth);
 	const orderEnabled = orderLog.enabled;
+	const btEnabled = btLog.enabled;
 
 	const patterns = deepCopy(contents);
 	const collection = new Collection(childNodes);
@@ -69,7 +70,7 @@ export function order(
 
 			if (backtrackMode) {
 				collection.back();
-				if (btLog.enabled) {
+				if (btEnabled) {
 					btLog('🔙◀BACK');
 				}
 				backtrackMode = false;

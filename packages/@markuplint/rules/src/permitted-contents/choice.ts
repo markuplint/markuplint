@@ -77,6 +77,8 @@ export function choice(
 		unmatchedResults.push(result);
 		collection.addMatched(result.matched);
 
+		// Log-only bookkeeping. The `indexes.get()` below is guarded by the same `choiceEnabled`
+		// snapshot, so the two stay in step.
 		if (choiceEnabled) {
 			indexes.set(result, i);
 		}
