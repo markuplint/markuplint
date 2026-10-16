@@ -245,13 +245,15 @@ export function representTransparentNodes(
 			// Cap exceeded (#3895): fall back to the conservative
 			// over-approximation documented on MAX_PATTERNS. False negatives
 			// are possible beyond this point, so leave a debug trace.
-			cmLog(
-				'Transparent pattern cap exceeded on <%s> (%d patterns x %d branches > %d): merging all branch children into every pattern; false negatives are possible',
-				childNode.nodeName,
-				patterns.length,
-				branchGroups.length,
-				MAX_PATTERNS,
-			);
+			if (cmLog.enabled) {
+				cmLog(
+					'Transparent pattern cap exceeded on <%s> (%d patterns x %d branches > %d): merging all branch children into every pattern; false negatives are possible',
+					childNode.nodeName,
+					patterns.length,
+					branchGroups.length,
+					MAX_PATTERNS,
+				);
+			}
 			const allChildren = branchGroups.flat();
 			for (const p of patterns) {
 				p.push(childNode, ...allChildren);
