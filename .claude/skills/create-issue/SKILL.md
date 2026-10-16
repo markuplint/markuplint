@@ -49,8 +49,8 @@ This skill posts to GitHub, yet Claude may invoke it (the `pr` skill does), so t
 7. **Create the issue.** Write the body to a file in the scratchpad directory and run:
 
    ```bash
-   gh issue create --title "<title>" --label "<label>" --label "<label>" --assignee "<owner>" --body-file "<path>"
+   gh issue create --title "<title>" --label "<label>" --label "<label>" --body-file "<path>"
    ```
 
-   `--body-file` avoids the escaping bugs an inline `--body` invites. `<owner>` is the repository owner (`gh repo view --json owner`), matching what the issue templates assign.
+   `--body-file` avoids the escaping bugs an inline `--body` invites. No `--assignee`: it fails for a session whose token is not a collaborator, and the maintainer assigns during triage.
 8. **Report** the created issue's number and URL. Issues and PRs share one number sequence, so read the number from the output rather than predicting it.
