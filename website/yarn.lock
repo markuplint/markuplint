@@ -9888,6 +9888,11 @@ __metadata:
     tsx: "npm:4.23.15"
     typescript: "npm:6.0.3"
     unist-util-visit: "npm:5.1.0"
+  dependenciesMeta:
+    core-js:
+      built: false
+    esbuild:
+      built: true
   languageName: unknown
   linkType: soft
 
