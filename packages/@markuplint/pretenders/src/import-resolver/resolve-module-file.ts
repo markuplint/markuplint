@@ -137,6 +137,30 @@ function getModuleResolutionCache(configPath: string, compilerOptions: ts.Compil
 }
 
 /**
+ * Finds the `tsconfig.json` that governs `importerDir` and reports it, with what it `extends`,
+ * to `dependencies` (a cache hit too).
+ */
+function loadCompilerOptions(
+	importerDir: string,
+	dependencies: Set<string> | undefined,
+): {
+	readonly configPath: string | undefined;
+	readonly compilerOptions: ts.CompilerOptions;
+	readonly projectReferences: readonly unknown[] | undefined;
+} {
+	const configPath = ts.findConfigFile(importerDir, ts.sys.fileExists);
+	const config = configPath ? getParsedConfig(configPath) : null;
+	for (const file of config?.files ?? []) {
+		recordDependency(dependencies, file);
+	}
+	return {
+		configPath,
+		compilerOptions: config?.parsed?.options ?? DEFAULT_COMPILER_OPTIONS,
+		projectReferences: config?.parsed?.projectReferences,
+	};
+}
+
+/**
  * Resolves a static import specifier found in `importerAbsPath` to an
  * absolute file path.
  *
@@ -155,12 +179,7 @@ export function resolveModuleFile(
 	dependencies?: Set<string>,
 ): string | null {
 	const importerDir = path.dirname(importerAbsPath);
-	const configPath = ts.findConfigFile(importerDir, ts.sys.fileExists);
-	const config = configPath ? getParsedConfig(configPath) : null;
-	for (const file of config?.files ?? []) {
-		recordDependency(dependencies, file);
-	}
-	const compilerOptions = config?.parsed?.options ?? DEFAULT_COMPILER_OPTIONS;
+	const { configPath, compilerOptions } = loadCompilerOptions(importerDir, dependencies);
 	const cache = getModuleResolutionCache(configPath ?? '__default__', compilerOptions);
 
 	const result = ts.resolveModuleName(specifier, importerAbsPath, compilerOptions, ts.sys, cache);
@@ -173,6 +192,64 @@ export function resolveModuleFile(
 	}
 
 	return null;
+}
+
+const RE_PACKAGE_SPECIFIER = /^(?:@[a-z0-9][a-z0-9._~-]*\/)?[a-z0-9][a-z0-9._~-]*(?:\/.*)?$/;
+
+/**
+ * Whether `specifier`, which {@link resolveModuleFile} could not resolve, can only be a package
+ * that is not installed. A specifier is taken for one when nothing could stand for it but a
+ * package: it has the form of a package name (so not `@/x`, `~/x`, `#x` or `node:x`), no `paths`
+ * pattern of the `tsconfig.json` matches it, and the `tsconfig.json` has no `baseUrl` (which makes
+ * any bare specifier a path below it). The part of an alias that module resolution cannot follow
+ * (a `.vue` file) is what stays unresolved, so these are left to the caller's fallback, as is
+ * every specifier when the `tsconfig.json` only delegates (`references`) or a `jsconfig.json` is
+ * near: the aliases there are not read. The name must be lower case, as npm requires of a new
+ * package: a capitalized bare specifier is more likely a bundler alias than a legacy package.
+ *
+ * A bare alias that only a bundler knows (Vite's `resolve.alias`) is not told from a package: it
+ * is taken for one, as `tsc` reports such an import as unresolved too.
+ *
+ * @param importerAbsPath - Absolute path of the file containing the import
+ * @param specifier - The module specifier text
+ * @param dependencies - A sink for the `tsconfig.json` the decision was made with (see {@link resolveModuleFile})
+ * @returns `true` when the specifier can only be a package
+ */
+export function isPackageSpecifier(importerAbsPath: string, specifier: string, dependencies?: Set<string>): boolean {
+	if (
+		!RE_PACKAGE_SPECIFIER.test(specifier) ||
+		specifier.split('/').some(segment => segment === '.' || segment === '..')
+	) {
+		return false;
+	}
+	const importerDir = path.dirname(importerAbsPath);
+	const { compilerOptions, projectReferences } = loadCompilerOptions(importerDir, dependencies);
+	// What a solution-style `tsconfig.json` (`references`) delegates to, and a `jsconfig.json`, are
+	// not read by `resolveModuleFile`, so the aliases they hold cannot be ruled out.
+	if (
+		compilerOptions.baseUrl !== undefined ||
+		(projectReferences?.length ?? 0) > 0 ||
+		ts.findConfigFile(importerDir, ts.sys.fileExists, 'jsconfig.json') !== undefined
+	) {
+		return false;
+	}
+	return !Object.keys(compilerOptions.paths ?? {}).some(pattern => matchesPathsPattern(pattern, specifier));
+}
+
+/**
+ * A `paths` key is an exact specifier, or has one `*` that stands for any text
+ * (https://www.typescriptlang.org/tsconfig/#paths).
+ */
+function matchesPathsPattern(pattern: string, specifier: string): boolean {
+	const star = pattern.indexOf('*');
+	if (star === -1) {
+		return pattern === specifier;
+	}
+	const prefix = pattern.slice(0, star);
+	const suffix = pattern.slice(star + 1);
+	return (
+		specifier.length >= prefix.length + suffix.length && specifier.startsWith(prefix) && specifier.endsWith(suffix)
+	);
 }
 
 function resolveRelativeFallback(importerDir: string, specifier: string): string | null {

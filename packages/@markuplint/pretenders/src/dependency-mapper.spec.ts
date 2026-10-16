@@ -8,7 +8,7 @@ import path from 'node:path';
 import { describe, test, expect, afterEach, beforeEach, vi } from 'vitest';
 
 import { clearExportTableCache, dependencyMapper, resolveDeclarationFile } from './dependency-mapper.js';
-import { normalizePath } from './import-resolver/resolve-module-file.js';
+import { clearModuleResolutionCaches, normalizePath } from './import-resolver/resolve-module-file.js';
 
 const fixtureDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures', 'dependency-mapper');
 
@@ -552,6 +552,102 @@ describe('dependencyMapper', () => {
 			await writeFile(path.join(tmpDir, 'barrel.ts'), lines.join('\n'));
 
 			expect(resolveC('Item', 'named')).toStrictEqual({ selector: 'C', as: 'button', _via: ['Item'] });
+		});
+	});
+
+	describe('a name imported from a package that is not installed', () => {
+		let tmpDir: string;
+
+		beforeEach(async () => {
+			tmpDir = await mkdtemp(path.join(os.tmpdir(), 'dependency-mapper-uninstalled-'));
+			await mkdir(path.join(tmpDir, 'ui'), { recursive: true });
+			await writeFile(path.join(tmpDir, 'ui', 'Button.vue'), '<template><section /></template>');
+		});
+
+		afterEach(async () => {
+			await rm(tmpDir, { recursive: true, force: true });
+			clearExportTableCache();
+			clearModuleResolutionCaches();
+		});
+
+		// `card.tsx` renders `Button` imported from `source`, and `ui/Button.vue` declares another,
+		// unrelated `Button` that the name index points at: what a lookup falls back to when it
+		// cannot tell where the import leads.
+		const resolveCard = (source: string) => {
+			const map: PretenderDirectorMap = new Map([
+				['ui/Button.vue', ['Button', 'section', undefined, 'ui/Button.vue']],
+				['card.tsx#Card', ['Card', 'Button', undefined, 'card.tsx']],
+			]);
+			const nameIndex = new Map([['Button', 'ui/Button.vue']]);
+			const importsByFile = new Map([
+				['card.tsx', [{ localName: 'Button', importedName: 'Button', source, type: 'named' as const }]],
+			]);
+			const result = dependencyMapper(map, nameIndex, { importsByFile, cwd: tmpDir });
+			return result.find(p => p.selector === 'Card');
+		};
+
+		const FELL_BACK = { selector: 'Card', as: 'section', _via: ['Button'] };
+		const STOPPED = { selector: 'Card', as: 'Button' };
+
+		test('does not resolve to a same-named component of the project', () => {
+			expect(resolveCard('ui-lib')).toStrictEqual(STOPPED);
+		});
+
+		test('does not resolve to a same-named component of the project for a scoped package', () => {
+			expect(resolveCard('@org/ui')).toStrictEqual(STOPPED);
+		});
+
+		test('does not resolve to a same-named component of the project for a path inside the package', () => {
+			expect(resolveCard('ui-lib/button')).toStrictEqual(STOPPED);
+		});
+
+		test('does not resolve to a same-named component of the project when it comes through a barrel', async () => {
+			await writeFile(path.join(tmpDir, 'barrel.ts'), "export { Button } from 'ui-lib';");
+			expect(resolveCard('./barrel')).toStrictEqual(STOPPED);
+		});
+
+		test('does not resolve to a same-named component of the project when it comes through a star re-export', async () => {
+			await writeFile(path.join(tmpDir, 'barrel.ts'), "export * from 'ui-lib';");
+			expect(resolveCard('./barrel')).toStrictEqual(STOPPED);
+		});
+
+		test('resolves a name that another star re-export supplies, beside a star re-export of the package', async () => {
+			await writeFile(path.join(tmpDir, 'a.tsx'), 'export const Button = () => <button />;');
+			await writeFile(path.join(tmpDir, 'barrel.ts'), "export * from 'ui-lib';\nexport * from './a';");
+			const map: PretenderDirectorMap = new Map([
+				['ui/Button.vue', ['Button', 'section', undefined, 'ui/Button.vue']],
+				['a.tsx#Button', ['Button', 'button', undefined, 'a.tsx']],
+				['card.tsx#Card', ['Card', 'Button', undefined, 'card.tsx']],
+			]);
+			const importsByFile = new Map([
+				[
+					'card.tsx',
+					[{ localName: 'Button', importedName: 'Button', source: './barrel', type: 'named' as const }],
+				],
+			]);
+			const result = dependencyMapper(map, new Map(), { importsByFile, cwd: tmpDir });
+			expect(result.find(p => p.selector === 'Card')).toStrictEqual({
+				selector: 'Card',
+				as: 'button',
+				_via: ['Button'],
+			});
+		});
+
+		test('still resolves a same-named component for a specifier that cannot be a package name', () => {
+			expect(resolveCard('@/ui/Button')).toStrictEqual(FELL_BACK);
+		});
+
+		test('still resolves a same-named component for a tsconfig `paths` alias that module resolution cannot follow', async () => {
+			await writeFile(
+				path.join(tmpDir, 'tsconfig.json'),
+				JSON.stringify({ compilerOptions: { paths: { 'widgets/*': ['./ui/*'] } } }),
+			);
+			expect(resolveCard('widgets/Button.vue')).toStrictEqual(FELL_BACK);
+		});
+
+		test('still resolves a same-named component for a bare specifier when the tsconfig has a `baseUrl`', async () => {
+			await writeFile(path.join(tmpDir, 'tsconfig.json'), JSON.stringify({ compilerOptions: { baseUrl: '.' } }));
+			expect(resolveCard('ui/Button.vue')).toStrictEqual(FELL_BACK);
 		});
 	});
 

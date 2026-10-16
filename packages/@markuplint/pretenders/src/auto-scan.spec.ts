@@ -133,6 +133,27 @@ describe('autoScan', () => {
 		expect(result.find(p => p.selector === 'Ambient')).toBeUndefined();
 	});
 
+	test('a component rendering a name imported from a package that is not installed does not resolve to a same-named component of the project', async () => {
+		await mkdir(path.join(tmpDir, 'ui'));
+		await writeFile(path.join(tmpDir, 'ui', 'Button.tsx'), 'export const Button = () => <section>text</section>;');
+		await writeFile(
+			path.join(tmpDir, 'Card.tsx'),
+			"import { Button } from 'ui-lib';\nexport const Card = () => <Button />;",
+		);
+		const entrySource = [
+			"import { Button } from './ui/Button';",
+			"import { Card } from './Card';",
+			'export const Page = () => <p><Button /><Card /></p>;',
+		].join('\n');
+
+		const result = await autoScan(path.join(tmpDir, 'Page.tsx'), entrySource);
+
+		expect(result.find(p => p.selector === 'Button')).toMatchObject({
+			as: expect.objectContaining({ element: 'section' }),
+		});
+		expect(result.find(p => p.selector === 'Card')).toMatchObject({ as: { element: 'Button', slots: null } });
+	});
+
 	test('does not traverse into node_modules', async () => {
 		const entryPath = path.join(tmpDir, 'entry.tsx');
 		const libDir = path.join(tmpDir, 'node_modules', 'some-lib');
