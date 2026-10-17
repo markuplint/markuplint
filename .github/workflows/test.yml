@@ -15,8 +15,10 @@ on:
             - '.github/workflows/test.yml'
             - 'vitest.config.ts'
             - 'vitest.cross-os.config.ts'
+            - 'vitest.e2e.config.ts'
             - 'package.json'
             - 'packages/**'
+            - 'crates/**'
             - '!**/*.md'
             - 'packages/@markuplint/config-presets/src/README.md'
             - 'test/**'
@@ -33,8 +35,10 @@ on:
             - '.github/workflows/test.yml'
             - 'vitest.config.ts'
             - 'vitest.cross-os.config.ts'
+            - 'vitest.e2e.config.ts'
             - 'package.json'
             - 'packages/**'
+            - 'crates/**'
             - '!**/*.md'
             - 'packages/@markuplint/config-presets/src/README.md'
             - 'test/**'
@@ -374,6 +378,13 @@ jobs:
                   max_attempts: 3
                   shell: bash
                   command: npx vitest run
+
+            # Only in this job: test-cross-os would load the Linux addon from the
+            # production cache on macOS / Windows, and whether bun and deno load a
+            # Node-API addon through createRequire is a question this step does
+            # not take on. See the module JSDoc of e2e.spec.ts.
+            - name: Test (napi end-to-end)
+              run: npx vitest run --config vitest.e2e.config.ts
 
     test-cross-os:
         # Implicitly skipped when cross-os-setup is skipped (Renovate devDeps PRs).

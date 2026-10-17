@@ -1,10 +1,30 @@
 /**
  * E2E test: TS html-parser → MLAST JSON → Rust MLDOM (via napi) → TS
+ *
+ * Loads the built addon (`./index.cjs` and its `*.node`), which `yarn build`
+ * does not produce, so `vitest.config.ts` excludes this file and it runs
+ * through `vitest.e2e.config.ts` instead: locally after
+ * `yarn workspace @markuplint/core run build:napi:debug`, and in CI in the
+ * `test` job of `.github/workflows/test.yml`, which restores the addon the
+ * `build` job compiled. A dedicated config rather than a `skipIf` on the
+ * addon's presence: a skip would turn a missing addon in CI into a silent
+ * pass, while this file failing to load is the signal wanted. CI runs it in
+ * that one job only: the cross-OS jobs restore the same cache and would load
+ * the Linux addon on macOS / Windows, and whether bun and deno load a
+ * Node-API addon through `createRequire` is a separate question this spec
+ * does not answer.
  */
 
+import { existsSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { parser } from '@markuplint/html-parser';
 import { describe, it, expect } from 'vitest';
+
+if (!existsSync(new URL('index.cjs', import.meta.url))) {
+	throw new Error(
+		'The napi addon is not built: run `yarn workspace @markuplint/core run build:napi:debug` before this spec.',
+	);
+}
 
 const require_ = createRequire(import.meta.url);
 const { NapiDom, lint, matchCssSyntax, matchCssProperty } = require_('./index.cjs');
@@ -353,7 +373,7 @@ describe('Rust lint() E2E', () => {
 		expect(violations).toHaveLength(1);
 		expect(violations[0].ruleId).toBe('no-duplicate-attr');
 		expect(violations[0].severity).toBe('error');
-		expect(violations[0].message).toContain('class');
+		expect(violations[0].message).toBe('The attribute name is duplicated');
 		expect(violations[0].line).toBe(1);
 		expect(violations[0].col).toBeGreaterThan(1);
 	});
