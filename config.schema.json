@@ -421,6 +421,14 @@
 							}
 						}
 					]
+				},
+				"filePath": {
+					"type": "string",
+					"description": "@experimental Where the component is declared, as `<path>:<line>:<column>`. Written by the pretenders scanner; a lint tells same-selector entries apart by it."
+				},
+				"localName": {
+					"type": "string",
+					"description": "@experimental The name the component is declared under in the file of `filePath` (`default` for a default export without a name of its own). Written by the pretenders scanner."
 				}
 			}
 		},
