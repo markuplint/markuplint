@@ -210,7 +210,12 @@ function uncombinedRegexSelect(el: SelectorNode, selector: RegexSelectorWithoutC
 	const specifiedAttr = new Map<string, string>();
 
 	if (selector.nodeName) {
-		const matchedNodeName = regexSelectorMatches(selector.nodeName, el.localName, isPureHTMLElement(el));
+		const matchedNodeName = regexSelectorMatches(
+			selector.nodeName,
+			el.localName,
+			// The same as a type selector: see `SelectorElement#tagNameCaseSensitive`.
+			isPureHTMLElement(el) && !el.tagNameCaseSensitive,
+		);
 		if (matchedNodeName) {
 			// `$0` is the whole-match capture — redundant with the element name
 			// itself, so it is dropped from the exposed data.

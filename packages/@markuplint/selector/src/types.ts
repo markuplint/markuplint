@@ -45,6 +45,13 @@ export interface SelectorElement extends SelectorNode {
 	 * (a plain DOM) never matches `#custom`.
 	 */
 	readonly isCustomElement?: boolean;
+	/**
+	 * Whether the document this element is in tells the case of a tag name apart (JSX, Svelte, Astro
+	 * and MDX do: `<foobar>` and `<FooBar>` are not the same element). A type selector, and the `nodeName`
+	 * of a regular expression selector, are then compared with `localName` as it is, even for an element
+	 * that HTML names case-insensitively. Absent means it does not: a plain DOM follows HTML.
+	 */
+	readonly tagNameCaseSensitive?: boolean;
 	readonly parentElement: SelectorElement | null;
 	readonly previousElementSibling: SelectorElement | null;
 	readonly nextElementSibling: SelectorElement | null;

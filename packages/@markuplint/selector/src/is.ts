@@ -20,9 +20,15 @@ export function isNonDocumentTypeChildNode(node: SelectorNode): node is Selector
  *
  * Per HTML LS / Selectors Level 4, tag and attribute name comparisons are
  * ASCII case-insensitive only for HTML elements. Any new logic that compares
- * names against an element must route through this guard; otherwise SVG
+ * attribute names against an element must route through this guard; otherwise SVG
  * content like `viewBox` and HTML content like `CHARSET` will start drifting
  * in opposite directions.
+ *
+ * A comparison of tag names needs the document too (`SelectorElement#tagNameCaseSensitive`):
+ * a parser that tells the case of a tag name apart (JSX) gives `<foobar>` the same
+ * `localName` / `nodeName` pair as any HTML element, though `<foobar>` is not `<FooBar>`
+ * there. So it asks both, and the guard alone is enough only for attribute names:
+ * Svelte and Astro tell the case of a tag name apart but not that of an attribute name.
  *
  * @see https://www.w3.org/TR/selectors-4/
  */
