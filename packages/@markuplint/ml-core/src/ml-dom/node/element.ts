@@ -120,6 +120,18 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	/**
+	 * Whether the document tells the case of a tag name apart (see {@link MLDocument.tagNameCaseSensitive}).
+	 * A type selector reads it, as {@link localName} alone cannot tell it: an element that HTML names
+	 * case-insensitively (`<foobar>`) has a lowercase-folded pair of `localName` / `nodeName` in
+	 * every document, but in JSX it is not `<FooBar>`.
+	 *
+	 * @implements `SelectorElement#tagNameCaseSensitive` of `@markuplint/selector`
+	 */
+	get tagNameCaseSensitive(): boolean {
+		return this.ownerMLDocument.tagNameCaseSensitive;
+	}
+
+	/**
 	 * Whether this element was implicitly created (e.g., an omitted `<body>` tag in HTML).
 	 */
 	readonly isOmitted: boolean;
