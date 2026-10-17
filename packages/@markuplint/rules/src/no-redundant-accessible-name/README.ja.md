@@ -162,7 +162,7 @@ AccName 1.2 アルゴリズムは以下の優先順位でアクセシブル名�
 <button id="delete-button" aria-label="削除" aria-labelledby="delete-button file-name"></button>
 ```
 
-アクセシブルネームは「削除 Documentation.pdf」になる（仕様の[Example 5](https://www.w3.org/TR/accname-1.2/#comp_label)と同じ形）ため、報告されません。同じ要素で `aria-label` が content を上書きするなど、ほかの上書きは引き続き報告されます。
+アクセシブルネームは「削除 Documentation.pdf」になる（仕様の[Example 5](https://www.w3.org/TR/accname-1.2/#comp_label)と同じ形）ため、報告されません。チェック対象から外れるのは `aria-labelledby` だけで、要素のほかのソースは通常どおり優先順位で評価します。上のボタンにテキストコンテンツがあれば、`aria-labelledby` のないボタンと同じく、`aria-label` がそのコンテンツを上書きすると報告されます。
 
 ## 既知の制限事項
 

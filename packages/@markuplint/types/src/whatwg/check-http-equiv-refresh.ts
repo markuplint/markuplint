@@ -45,7 +45,9 @@ function isAsciiDigit(ch: string): boolean {
  */
 export const checkHTTPEquivRefresh: CustomSyntaxChecker = () =>
 	function checkHTTPEquivRefresh(value) {
-		log('CHECK: meta http-equiv="refresh" content');
+		if (log.enabled) {
+			log('CHECK: meta http-equiv="refresh" content');
+		}
 
 		let i = 0;
 		const len = value.length;

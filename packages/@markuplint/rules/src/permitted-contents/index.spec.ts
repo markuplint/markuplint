@@ -2733,3 +2733,83 @@ describe('#4099 (pretender inside a content model that includes #custom)', () =>
 		expect(violations).toStrictEqual([]);
 	});
 });
+
+describe('a pretender whose target is a component name that could not be resolved', () => {
+	const jsxConfig = {
+		parser: { '.*': '@markuplint/jsx-parser' },
+	};
+
+	test.each(['Tabs.Root', 'motion.div', 'Comp', 'ExternalDialog'])(
+		'[permitted-contents-issue-4231-001] div accepts a pretender that stands for the component "%s"',
+		async target => {
+			const { violations } = await mlRuleTest(rule, '<div><MyTabs/></div>', {
+				...jsxConfig,
+				pretenders: [{ selector: 'MyTabs', as: target }],
+			});
+			expect(violations).toStrictEqual([]);
+		},
+	);
+
+	test('[permitted-contents-issue-4231-002] p accepts a pretender that stands for a component, as it accepts the component itself', async () => {
+		const { violations } = await mlRuleTest(rule, '<p><MyTabs/></p>', {
+			...jsxConfig,
+			pretenders: [{ selector: 'MyTabs', as: 'Tabs.Root' }],
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4231-003] a document that ignores the case of tag names accepts a pretender that stands for a component', async () => {
+		const { violations } = await mlRuleTest(rule, '<template><p><MyTabs></MyTabs></p></template>', {
+			parser: { '.*': '@markuplint/vue-parser' },
+			pretenders: [{ selector: 'MyTabs', as: 'RouterLink' }],
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4231-004] HTML accepts a pretender that stands for a component', async () => {
+		const { violations } = await mlRuleTest(rule, '<p><MyTabs></MyTabs></p>', {
+			pretenders: [{ selector: 'MyTabs', as: 'Tabs.Root' }],
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4231-005] the children given to a pretender that stands for a component are still checked against its slot wrapper', async () => {
+		const { violations } = await mlRuleTest(rule, '<MyList><div/></MyList>', {
+			...jsxConfig,
+			pretenders: [{ selector: 'MyList', as: { element: 'ScrollArea.Root', slots: [{ element: 'ul' }] } }],
+		});
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 9,
+				raw: '<div/>',
+				message: 'The "div" element is not allowed in the "ul" element in this context',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-4231-006] a slot wrapper that stands for a component accepts what it is given', async () => {
+		const { violations } = await mlRuleTest(rule, '<MyList><div/></MyList>', {
+			...jsxConfig,
+			pretenders: [{ selector: 'MyList', as: { element: 'div', slots: [{ element: 'Tooltip' }] } }],
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4231-007] a pretender that stands for an HTML element is still checked as that element', async () => {
+		const { violations } = await mlRuleTest(rule, '<p><MyTabs/></p>', {
+			...jsxConfig,
+			pretenders: [{ selector: 'MyTabs', as: 'div' }],
+		});
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 4,
+				raw: '<MyTabs/>',
+				message: 'The "div" element is not allowed in the "p" element in this context',
+			},
+		]);
+	});
+});

@@ -13,7 +13,12 @@ import { composeIdentity } from './compose-identity.js';
 import { getExportTable } from './export-table.js';
 import { scriptKindForPath } from './import-resolver/analyze-jsx-imports.js';
 import { resolveComponentImport } from './import-resolver/index.js';
-import { normalizePath, recordDependency, resolveModuleFile } from './import-resolver/resolve-module-file.js';
+import {
+	isPackageSpecifier,
+	normalizePath,
+	recordDependency,
+	resolveModuleFile,
+} from './import-resolver/resolve-module-file.js';
 
 import type { ExportEntry } from './export-table.js';
 
@@ -49,11 +54,15 @@ type ResolveEnv = {
 
 /**
  * What following re-exports needs: the in-memory overrides of file content, and
- * the sink for the files read on the way.
+ * the sink for the files read on the way. `cwd` is the project root, `undefined`
+ * where the caller has none to give ({@link resolveDeclarationFile} without `cwd`): a
+ * file is then judged to be a package's by its whole path, so in a project under
+ * `node_modules` a star re-export chain is not followed.
  */
 type DeclarationEnv = {
 	readonly sources: ReadonlyMap<string, string> | undefined;
 	readonly dependencies: Set<string> | undefined;
+	readonly cwd: string | undefined;
 };
 
 /**
@@ -74,11 +83,20 @@ type Declaration = {
  * 2. The file's recorded import bindings, resolved to the actual declaration file
  *    via TypeScript module resolution and the target file's export table.
  * 3. The legacy name-based index, for backward compatibility when no file context
- *    is available (or the reference can't be resolved through it).
+ *    is available (or the reference can't be resolved through it). Not for a name
+ *    imported from a package: the import says where it leads, so a component of the
+ *    project that happens to have the same name is not what it renders. The chain
+ *    ends there, as the walk does not enter `node_modules`.
  *
  * (1) and (2) are what let same-named components declared in different files
  * (e.g., two unrelated `Item` components) resolve independently instead of the
  * first-registered one silently winning for every reference — see issue #3951.
+ *
+ * An import that cannot be resolved still falls back to the name index, as a path alias
+ * the module resolution does not know may hide a file of the project, unless it can only
+ * be a package that is not installed (see `isPackageSpecifier`, issue #4264). Known
+ * limitation: a bare alias that only a bundler knows, not the `tsconfig.json`, is taken
+ * for such a package.
  *
  * Each hop composes the `slots` / `contents` and the attributes of the component so far
  * into those of the component it renders (`composeIdentity`, issue #4057); the rest of the
@@ -164,6 +182,10 @@ function resolveHop(
 		}
 
 		const viaImport = resolveThroughImport(elName, currentFile, importsByFile, env);
+		if (viaImport === FROM_PACKAGE) {
+			// A name that no key stands for: the chain ends here.
+			return elName;
+		}
 		if (viaImport && map.has(viaImport)) {
 			return viaImport;
 		}
@@ -175,17 +197,82 @@ function resolveHop(
 const MAX_RE_EXPORT_DEPTH = 8;
 
 /**
+ * What {@link resolveThroughImport} returns for a name that is imported from a
+ * package (a file under `node_modules`), as no key of the map can stand for it.
+ */
+const FROM_PACKAGE = Symbol('from-package');
+
+/**
+ * Whether the file is under a `node_modules` directory. With `root` (the base directory
+ * of the paths the project is scanned under), only the part of the path below it counts,
+ * so a project that itself sits under `node_modules` is not taken for a package.
+ *
+ * It judges the path as given, so it takes the real path that {@link resolveModule} returns.
+ *
+ * @param fileAbs - Absolute path of the file
+ * @param root - The base directory of the paths the project is scanned under
+ * @returns `true` if the file is under a `node_modules` directory below `root`
+ */
+export function isPackageFile(fileAbs: string, root?: string): boolean {
+	const target = root === undefined ? fileAbs : path.relative(root, fileAbs);
+	return `/${normalizePath(target)}`.includes('/node_modules/');
+}
+
+/**
+ * {@link resolveModuleFile} with the symlinks followed. A workspace package is linked into
+ * `node_modules`: module resolution gives its real path by default, but with `preserveSymlinks`
+ * it keeps the path under `node_modules`, where it would be taken for an installed package
+ * and would not match the map's keys. Only a path that looks like a package's is followed: any
+ * other is left as it is, as the project root is not necessarily a real path (`os.tmpdir()` is a
+ * link on macOS), and so is a path that does not exist. A real path below the root is returned
+ * as a path below the root as it is written, so the keys of the map, made from it, still match.
+ * `native` is what TypeScript uses: on Windows it also expands a short `8.3` name, which the
+ * other one leaves in the target of a junction.
+ *
+ * A package that is not installed (see {@link isPackageSpecifier}) gets the path it would have if
+ * it were: under `node_modules` next to the importer. It names no file, but it is judged by
+ * {@link isPackageFile} as any package is, so the chain ends there instead of falling back to a
+ * same-named component of the project (issue #4264).
+ */
+export function resolveModule(importerAbs: string, source: string, env: DeclarationEnv): string | null {
+	const resolved = resolveModuleFile(importerAbs, source, env.dependencies);
+	if (!resolved) {
+		return isPackageSpecifier(importerAbs, source, env.dependencies)
+			? normalizePath(path.join(path.dirname(importerAbs), 'node_modules', source))
+			: null;
+	}
+	if (!isPackageFile(resolved, env.cwd)) {
+		return resolved;
+	}
+	try {
+		const real = fs.realpathSync.native(resolved);
+		if (env.cwd === undefined) {
+			return normalizePath(real);
+		}
+		const below = path.relative(fs.realpathSync.native(env.cwd), real);
+		return normalizePath(below.startsWith('..') || path.isAbsolute(below) ? real : path.join(env.cwd, below));
+	} catch (error) {
+		if (isFatalError(error)) {
+			throw error;
+		}
+		return resolved;
+	}
+}
+
+/**
  * Resolves `elName` through the import bindings recorded for `currentFile`,
  * returning the map key of the file/name it actually refers to, or `null`
  * when it can't be confirmed (bare/namespace/dynamic specifiers, unresolved
- * modules, or export tables that don't confirm the binding).
+ * modules, or export tables that don't confirm the binding). `FROM_PACKAGE`
+ * when it is confirmed to lead into a package, directly or through a re-export:
+ * unlike `null`, it rules out the name-based fallback.
  */
 function resolveThroughImport(
 	elName: string,
 	currentFile: string,
 	importsByFile: ReadonlyMap<string, readonly ImportBinding[]> | undefined,
 	env: ResolveEnv,
-): string | null {
+): string | typeof FROM_PACKAGE | null {
 	const bindings = importsByFile?.get(currentFile);
 	if (!bindings) {
 		return null;
@@ -197,14 +284,21 @@ function resolveThroughImport(
 	}
 
 	const importerAbs = path.resolve(env.cwd, currentFile);
-	const resolvedAbs = resolveModuleFile(importerAbs, binding.source, env.dependencies);
+	const resolvedAbs = resolveModule(importerAbs, binding.source, env);
 	if (!resolvedAbs) {
 		return null;
+	}
+	// Before the export table: a package's own is not built (see `resolveThroughStarReExports`).
+	if (isPackageFile(resolvedAbs, env.cwd)) {
+		return FROM_PACKAGE;
 	}
 
 	const declaration = isTemplateComponentFile(resolvedAbs)
 		? { fileAbs: resolvedAbs, localName: null }
 		: resolveExportedName(resolvedAbs, binding.importedName, new Set(), env);
+	if (declaration && isPackageFile(declaration.fileAbs, env.cwd)) {
+		return FROM_PACKAGE;
+	}
 	return declaration && declarationKey(declaration, env.cwd);
 }
 
@@ -218,18 +312,29 @@ function resolveThroughImport(
  *
  * @param fileAbs - Absolute path of the module the name is imported from
  * @param exportedName - The imported name (`'default'` for a default import)
- * @param options - In-memory content overrides (keyed by normalized absolute path) and the dependency sink
- * @returns The declaring file's absolute path, or `null`
+ * @param options - In-memory content overrides (keyed by normalized absolute path), the dependency
+ *   sink, and the project root (see {@link DeclarationEnv})
+ * @returns The declaring file's absolute path, or `null`. A name re-exported from a package ends the
+ *   chain at the package: the path returned is under `node_modules` (see {@link resolveModule}), and
+ *   it names no file when the package is not installed.
  */
 export function resolveDeclarationFile(
 	fileAbs: string,
 	exportedName: string,
-	options?: { readonly sources?: ReadonlyMap<string, string>; readonly dependencies?: Set<string> },
+	options?: {
+		readonly sources?: ReadonlyMap<string, string>;
+		readonly dependencies?: Set<string>;
+		readonly cwd?: string;
+	},
 ): string | null {
 	if (isTemplateComponentFile(fileAbs)) {
 		return fileAbs;
 	}
-	const env: DeclarationEnv = { sources: options?.sources, dependencies: options?.dependencies };
+	const env: DeclarationEnv = {
+		sources: options?.sources,
+		dependencies: options?.dependencies,
+		cwd: options?.cwd,
+	};
 	return resolveExportedName(fileAbs, exportedName, new Set(), env)?.fileAbs ?? null;
 }
 
@@ -309,13 +414,19 @@ function resolveThroughStarReExports(
 	}
 
 	let found: Declaration | null = null;
+	let fromPackage: Declaration | null = null;
 	for (const source of starSources) {
-		const nextAbs = resolveModuleFile(fileAbs, source, env.dependencies);
-		// A template component exports `default` only, which `export *` skips. A
-		// package holds no scanned component (the walk does not enter
-		// `node_modules` either), and its own star re-exports can be wide and deep
-		// enough to search on every miss of a name.
-		if (!nextAbs || isTemplateComponentFile(nextAbs) || normalizePath(nextAbs).includes('/node_modules/')) {
+		const nextAbs = resolveModule(fileAbs, source, env);
+		if (nextAbs && isPackageFile(nextAbs, env.cwd)) {
+			// A package holds no scanned component (the walk does not enter `node_modules`
+			// either), and its own star re-exports can be wide and deep enough to search on
+			// every miss of a name. So it is not searched: the name may come from it, which
+			// `fromPackage` stands for if no other star supplies the name.
+			fromPackage = { fileAbs: nextAbs, localName: null };
+			continue;
+		}
+		// A template component exports `default` only, which `export *` skips.
+		if (!nextAbs || isTemplateComponentFile(nextAbs)) {
 			continue;
 		}
 		const declaration = resolveExportedName(nextAbs, exportedName, new Set(visited), env);
@@ -331,7 +442,7 @@ function resolveThroughStarReExports(
 		}
 		found = declaration;
 	}
-	return found;
+	return found ?? fromPackage;
 }
 
 function resolveReExport(
@@ -345,9 +456,15 @@ function resolveReExport(
 		return null;
 	}
 
-	const nextAbs = resolveModuleFile(fileAbs, entry.source, env.dependencies);
+	const nextAbs = resolveModule(fileAbs, entry.source, env);
 	if (!nextAbs) {
 		return null;
+	}
+
+	if (isPackageFile(nextAbs, env.cwd)) {
+		// The chain ends at the package, as for a direct import. A package that is not installed has no
+		// file to read, and an installed one holds no scanned component (see `resolveThroughStarReExports`).
+		return { fileAbs: nextAbs, localName: null };
 	}
 
 	if (isTemplateComponentFile(nextAbs)) {

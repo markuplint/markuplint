@@ -5,17 +5,17 @@ import ImgixClient from '@imgix/js-core';
 const client = new ImgixClient({ domain: 'markuplint.imgix.net' });
 
 const fonts: Record<string, [label: string, title: string]> = {
-  en: ['DIN Alternate,Bold', 'PT Sans,Bold'],
-  ja: ['Hiragino Sans W5', 'Hiragino Sans W5'],
+	en: ['DIN Alternate,Bold', 'PT Sans,Bold'],
+	ja: ['Hiragino Sans W5', 'Hiragino Sans W5'],
 };
 
 const getTextWidth = (text: string): number => {
-  let count = 0;
-  for (const element of text) {
-    const charLength = /[\u0020-\u007E]/.test(element) ? 1 : 2;
-    count += charLength;
-  }
-  return count;
+	let count = 0;
+	for (const element of text) {
+		const charLength = /[\u0020-\u007E]/.test(element) ? 1 : 2;
+		count += charLength;
+	}
+	return count;
 };
 
 /**
@@ -40,45 +40,45 @@ const TEXTBOX_HEIGHT = 560;
  * @returns
  */
 export function getOgImgUrl(labelText: string | undefined, title: string, lang = 'en') {
-  const text = client.buildURL('~text', {
-    txt: title,
-    'txt-align': 'left,middle',
-    'txt-color': '333333',
-    'txt-font': fonts[lang]?.[1] ?? fonts.en[1],
-    'txt-size': 150,
-    'txt-clip': 'ellipsis',
-    w: TEXTBOX_WIDTH,
-    h: TEXTBOX_HEIGHT,
-    // bg: 'FF0000',
-  });
-  const label = labelText
-    ? client.buildURL('~text', {
-        txt: labelText,
-        'txt-align': 'center,middle',
-        'txt-color': '000000',
-        'txt-font': fonts[lang]?.[0] ?? fonts.en[0],
-        'txt-size': 80,
-        'txt-fit': 'max',
-        w: getTextWidth(labelText) * 40 + 50,
-        bg: 'F4F4F4',
-        mask: 'corner',
-        'corner-radius': '20,20,20,20',
-      })
-    : undefined;
-  const url = client.buildURL('og-img-base.png', {
-    mark: text,
-    'mark-x': PAD_LEFT,
-    'mark-y': PAD_TOP + 40,
-    ...(label
-      ? {
-          blend: label,
-          'blend-mode': 'normal',
-          'blend-x': PAD_LEFT,
-          'blend-y': PAD_TOP - 20,
-        }
-      : {}),
-    w: IMAGE_WIDTH,
-    h: IMAGE_HEIGHT,
-  });
-  return url;
+	const text = client.buildURL('~text', {
+		txt: title,
+		'txt-align': 'left,middle',
+		'txt-color': '333333',
+		'txt-font': fonts[lang]?.[1] ?? fonts.en[1],
+		'txt-size': 150,
+		'txt-clip': 'ellipsis',
+		w: TEXTBOX_WIDTH,
+		h: TEXTBOX_HEIGHT,
+		// bg: 'FF0000',
+	});
+	const label = labelText
+		? client.buildURL('~text', {
+				txt: labelText,
+				'txt-align': 'center,middle',
+				'txt-color': '000000',
+				'txt-font': fonts[lang]?.[0] ?? fonts.en[0],
+				'txt-size': 80,
+				'txt-fit': 'max',
+				w: getTextWidth(labelText) * 40 + 50,
+				bg: 'F4F4F4',
+				mask: 'corner',
+				'corner-radius': '20,20,20,20',
+			})
+		: undefined;
+	const url = client.buildURL('og-img-base.png', {
+		mark: text,
+		'mark-x': PAD_LEFT,
+		'mark-y': PAD_TOP + 40,
+		...(label
+			? {
+					blend: label,
+					'blend-mode': 'normal',
+					'blend-x': PAD_LEFT,
+					'blend-y': PAD_TOP - 20,
+				}
+			: {}),
+		w: IMAGE_WIDTH,
+		h: IMAGE_HEIGHT,
+	});
+	return url;
 }

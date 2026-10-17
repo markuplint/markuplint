@@ -11,7 +11,9 @@ import { datetimeTokenCheck } from './datetime-tokens.js';
  */
 export const checkDurationISO8601LikeString: CustomSyntaxChecker = () =>
 	function checkDurationISO8601LikeString(value) {
-		log('CHECK: duration-string (ISO8601 like)');
+		if (log.enabled) {
+			log('CHECK: duration-string (ISO8601 like)');
+		}
 
 		// PnDTnHnMnS
 		const tokens = TokenCollection.fromPatterns(value, [
@@ -25,7 +27,9 @@ export const checkDurationISO8601LikeString: CustomSyntaxChecker = () =>
 			/.*/,
 		]);
 
-		log('Duration ISO8601: "%s" => %O', tokens.value, tokens);
+		if (log.enabled) {
+			log('Duration ISO8601: "%s" => %O', tokens.value, tokens);
+		}
 
 		const res = tokens.eachCheck(
 			p => {
@@ -55,7 +59,9 @@ export const checkDurationISO8601LikeString: CustomSyntaxChecker = () =>
 					return;
 				}
 
-				log('Date part: "%s" => %O', d.value, { num, sign });
+				if (log.enabled) {
+					log('Date part: "%s" => %O', d.value, { num, sign });
+				}
 
 				if (!num.matches(/^\d+$/)) {
 					return num.unmatched({
@@ -122,7 +128,9 @@ export const checkDurationISO8601LikeString: CustomSyntaxChecker = () =>
 					/\d+(\.\d*)?\D?/,
 				]);
 
-				log('Time part: "%s" => %O', timeTokens.value, timeTokens);
+				if (log.enabled) {
+					log('Time part: "%s" => %O', timeTokens.value, timeTokens);
+				}
 
 				const [h, m, s] = timeTokens;
 
@@ -155,7 +163,9 @@ export const checkDurationISO8601LikeString: CustomSyntaxChecker = () =>
 						continue;
 					}
 
-					log('Time part (h|m|s): "%s" => %O', t.value, { num, dpfp, sign });
+					if (log.enabled) {
+						log('Time part (h|m|s): "%s" => %O', t.value, { num, dpfp, sign });
+					}
 
 					if (!num.matches(/^\d+$/)) {
 						return num.unmatched({
@@ -172,7 +182,9 @@ export const checkDurationISO8601LikeString: CustomSyntaxChecker = () =>
 							continue;
 						}
 
-						log('Second fractional part (h|m|s): "%s" => %O', dpfp.value, { dp, fp });
+						if (log.enabled) {
+							log('Second fractional part (h|m|s): "%s" => %O', dpfp.value, { dp, fp });
+						}
 
 						if (!dp.matches('.')) {
 							return dp.unmatched({
@@ -245,7 +257,7 @@ export const checkDurationISO8601LikeString: CustomSyntaxChecker = () =>
 			datetimeTokenCheck.extra,
 		);
 
-		if (!res.matched) {
+		if (!res.matched && log.enabled) {
 			log('Failed: %O', res);
 		}
 
@@ -257,7 +269,9 @@ export const checkDurationISO8601LikeString: CustomSyntaxChecker = () =>
  */
 export const checkDurationComponentListString: CustomSyntaxChecker = () =>
 	function checkDurationComponentListString(value) {
-		log('CHECK: duration-string (duration component list)');
+		if (log.enabled) {
+			log('CHECK: duration-string (duration component list)');
+		}
 
 		if (!value) {
 			return unmatched('', 'empty-token', {
@@ -291,7 +305,9 @@ export const checkDurationComponentListString: CustomSyntaxChecker = () =>
 		const specified = new Set<'w' | 'd' | 'h' | 'm' | 's'>();
 
 		for (const component of components) {
-			log('Duration Component: "%s" => %O', component.value, component);
+			if (log.enabled) {
+				log('Duration Component: "%s" => %O', component.value, component);
+			}
 
 			const dpfp = component[2];
 			const unit = component[4];
@@ -405,7 +421,9 @@ export const checkDurationComponentListString: CustomSyntaxChecker = () =>
 			);
 
 			if (!res.matched) {
-				log('Failed: %O', res);
+				if (log.enabled) {
+					log('Failed: %O', res);
+				}
 
 				return res;
 			}

@@ -5,7 +5,12 @@ import path from 'node:path';
 
 import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
 
-import { resolveModuleFile, normalizePath, clearModuleResolutionCaches } from './resolve-module-file.js';
+import {
+	clearModuleResolutionCaches,
+	isPackageSpecifier,
+	normalizePath,
+	resolveModuleFile,
+} from './resolve-module-file.js';
 
 const fixtureDir = path.resolve(import.meta.dirname, '..', '..', 'test', 'fixtures', 'module-resolution');
 
@@ -91,6 +96,115 @@ describe('Tier 1 (fatal) errors during the relative fallback file search', () =>
 		} finally {
 			spy.mockRestore();
 		}
+	});
+});
+
+describe('isPackageSpecifier', () => {
+	let tmpDir: string;
+	let importer: string;
+
+	beforeEach(async () => {
+		tmpDir = await mkdtemp(path.join(os.tmpdir(), 'resolve-module-file-package-'));
+		importer = path.join(tmpDir, 'src', 'Page.tsx');
+	});
+
+	afterEach(async () => {
+		await rm(tmpDir, { recursive: true, force: true });
+		clearModuleResolutionCaches();
+	});
+
+	const writeConfig = (compilerOptions: object) =>
+		writeFile(path.join(tmpDir, 'tsconfig.json'), JSON.stringify({ compilerOptions }));
+
+	test.each(['ui-lib', 'ui-lib/button', '@org/ui', '@org/ui/button', 'components/Card.vue'])(
+		'takes %s for a package when nothing in the tsconfig could stand for it',
+		async specifier => {
+			await writeConfig({});
+			expect(isPackageSpecifier(importer, specifier)).toBe(true);
+		},
+	);
+
+	test('takes a specifier for a package when there is no tsconfig.json at all', () => {
+		expect(isPackageSpecifier(importer, 'ui-lib')).toBe(true);
+	});
+
+	test.each([
+		'./a',
+		'../a',
+		'/abs/a',
+		'@/ui/button',
+		'~/ui/button',
+		'#internal',
+		'node:fs',
+		'virtual:icons',
+		'Upper/Case',
+	])('does not take %s for a package, as its form is not a package name', async specifier => {
+		await writeConfig({});
+		expect(isPackageSpecifier(importer, specifier)).toBe(false);
+	});
+
+	test('does not take a specifier for a package when a `paths` pattern matches it', async () => {
+		await writeConfig({ paths: { 'widgets/*': ['./ui/*'], shared: ['./shared'] } });
+		expect(isPackageSpecifier(importer, 'widgets/Button.vue')).toBe(false);
+		expect(isPackageSpecifier(importer, 'shared')).toBe(false);
+	});
+
+	test('matches a `paths` pattern by its prefix and suffix around the `*`', async () => {
+		await writeConfig({ paths: { 'lib-*/dist': ['./x'] } });
+		expect(isPackageSpecifier(importer, 'lib-core/dist')).toBe(false);
+		expect(isPackageSpecifier(importer, 'lib-core/src')).toBe(true);
+		expect(isPackageSpecifier(importer, 'lib-/dist')).toBe(false);
+	});
+
+	test('a `paths` pattern of a lone `*` matches every specifier', async () => {
+		await writeConfig({ paths: { '*': ['./types/*'] } });
+		expect(isPackageSpecifier(importer, 'ui-lib')).toBe(false);
+	});
+
+	test('takes a specifier for a package when no `paths` pattern matches it', async () => {
+		await writeConfig({ paths: { 'widgets/*': ['./ui/*'], shared: ['./shared'] } });
+		expect(isPackageSpecifier(importer, 'ui-lib')).toBe(true);
+		expect(isPackageSpecifier(importer, 'shared/extra')).toBe(true);
+	});
+
+	test('does not take a bare specifier for a package when the tsconfig has a `baseUrl`', async () => {
+		await writeConfig({ baseUrl: '.' });
+		expect(isPackageSpecifier(importer, 'ui-lib')).toBe(false);
+	});
+
+	test('does not take a bare specifier for a package when an extended tsconfig has a `baseUrl`', async () => {
+		await writeFile(path.join(tmpDir, 'tsconfig.base.json'), JSON.stringify({ compilerOptions: { baseUrl: '.' } }));
+		await writeFile(path.join(tmpDir, 'tsconfig.json'), JSON.stringify({ extends: './tsconfig.base.json' }));
+		expect(isPackageSpecifier(importer, 'ui-lib')).toBe(false);
+	});
+
+	test('does not take a bare specifier for a package when the tsconfig only delegates with `references`', async () => {
+		await writeFile(
+			path.join(tmpDir, 'tsconfig.json'),
+			JSON.stringify({ files: [], references: [{ path: './tsconfig.app.json' }] }),
+		);
+		await writeFile(
+			path.join(tmpDir, 'tsconfig.app.json'),
+			JSON.stringify({ compilerOptions: { composite: true, paths: { 'components/*': ['./src/*'] } } }),
+		);
+		expect(isPackageSpecifier(importer, 'components/Button.vue')).toBe(false);
+	});
+
+	test('does not take a bare specifier for a package when a jsconfig.json is near', async () => {
+		await writeFile(path.join(tmpDir, 'jsconfig.json'), JSON.stringify({ compilerOptions: {} }));
+		expect(isPackageSpecifier(importer, 'ui-lib')).toBe(false);
+	});
+
+	test('does not take a specifier for a package when it has a `..` segment', async () => {
+		await writeConfig({});
+		expect(isPackageSpecifier(importer, 'ui-lib/../../x')).toBe(false);
+	});
+
+	test('records the tsconfig the decision was made with', async () => {
+		await writeConfig({});
+		const dependencies = new Set<string>();
+		isPackageSpecifier(importer, 'ui-lib', dependencies);
+		expect([...dependencies]).toStrictEqual([normalizePath(path.join(tmpDir, 'tsconfig.json'))]);
 	});
 });
 

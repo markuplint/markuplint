@@ -19,8 +19,10 @@ export function checkMultiTypes(value: string, checks: readonly CustomSyntaxChec
 		// @ts-ignore
 		res._fn = check.name;
 
-		// @ts-ignore
-		log('%s(%d) vs %s(%d)', unmatched?._fn, unmatched?.passCount, res._fn, res.passCount);
+		if (log.enabled) {
+			// @ts-ignore
+			log('%s(%d) vs %s(%d)', unmatched?._fn, unmatched?.passCount, res._fn, res.passCount);
+		}
 		const passedA = unmatched?.passCount ?? 0;
 		const passedB = res.passCount ?? 0;
 		const offsetA = unmatched?.offset ?? 0;
@@ -33,7 +35,9 @@ export function checkMultiTypes(value: string, checks: readonly CustomSyntaxChec
 
 	const result = unmatched ?? matched();
 
-	log('%d checks result: %O', checks.length, result);
+	if (log.enabled) {
+		log('%d checks result: %O', checks.length, result);
+	}
 
 	return result;
 }

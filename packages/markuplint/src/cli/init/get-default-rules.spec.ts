@@ -2,6 +2,14 @@ import { test, expect } from 'vitest';
 
 import { getDefaultRules } from './get-default-rules.js';
 
+/**
+ * The expected object is written out by hand on purpose. Deriving it from the
+ * rule registry would make this test pass for any rule set, including a rule
+ * that was added with `defaultValue: true` by accident. Adding or removing a
+ * rule is supposed to fail here, so that a person decides whether it belongs
+ * in the `init` defaults and with which value, and records that decision in
+ * this list.
+ */
 test('default-rules', () => {
 	const defaultRules = getDefaultRules();
 	expect(defaultRules).toStrictEqual({

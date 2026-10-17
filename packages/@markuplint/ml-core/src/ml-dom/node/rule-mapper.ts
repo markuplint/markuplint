@@ -39,21 +39,29 @@ export class RuleMapper {
 	}
 
 	apply() {
-		ruleMapperLog('ruleTree:');
+		if (ruleMapperLog.enabled) {
+			ruleMapperLog('ruleTree:');
+		}
+		const nodeEnabled = ruleMapperNodeLog.enabled;
+		const nodeRuleEnabled = ruleMapperNodeRuleLog.enabled;
 
 		for (const node of this.#nodeList) {
 			const rules = this.#ruleMap.get(node.uuid);
 			if (!rules) {
 				continue;
 			}
-			ruleMapperNodeLog('<%s>', node.nodeName);
+			if (nodeEnabled) {
+				ruleMapperNodeLog('<%s>', node.nodeName);
+			}
 			for (const ruleName of Object.keys(rules)) {
 				const rule = rules[ruleName];
 				if (!rule) {
 					continue;
 				}
 				node.rules[ruleName] = rule.rule;
-				ruleMapperNodeRuleLog('[from: %s(%s)] %s: %o', rule.from, rule.specificity, ruleName, rule.rule);
+				if (nodeRuleEnabled) {
+					ruleMapperNodeRuleLog('[from: %s(%s)] %s: %o', rule.from, rule.specificity, ruleName, rule.rule);
+				}
 			}
 		}
 	}
@@ -64,18 +72,25 @@ export class RuleMapper {
 		ruleName: string,
 		rule: MappingLayer,
 	) {
+		const enabled = ruleMapperLog.enabled;
 		const rules = this.#ruleMap.get(node.uuid) ?? {};
 		const currentRule = rules[ruleName];
 		if (currentRule) {
 			const order = compareSpecificity(currentRule.specificity, rule.specificity);
 			if (order === 1) {
-				ruleMapperLog("Don't set %o ([%s] vs [%s])", rule, currentRule.specificity, rule.specificity);
+				if (enabled) {
+					ruleMapperLog("Don't set %o ([%s] vs [%s])", rule, currentRule.specificity, rule.specificity);
+				}
 				return;
 			}
-			ruleMapperLog('Unset %o from %s', currentRule, node);
+			if (enabled) {
+				ruleMapperLog('Unset %o from %s', currentRule, node);
+			}
 		}
 		rules[ruleName] = rule;
 		this.#ruleMap.set(node.uuid, rules);
-		ruleMapperLog('Set to %s from %s (%o): %O', node.nodeName, rule.from, rule.specificity, rule.rule);
+		if (enabled) {
+			ruleMapperLog('Set to %s from %s (%o): %O', node.nodeName, rule.from, rule.specificity, rule.rule);
+		}
 	}
 }

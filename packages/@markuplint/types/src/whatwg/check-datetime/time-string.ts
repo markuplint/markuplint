@@ -10,7 +10,9 @@ import { datetimeTokenCheck } from './datetime-tokens.js';
  */
 export const checkTimeString: CustomSyntaxChecker = () =>
 	function checkTimeString(value) {
-		log('CHECK: time-string');
+		if (log.enabled) {
+			log('CHECK: time-string');
+		}
 
 		const tokens = TokenCollection.fromPatterns(value, [
 			// hh
@@ -29,7 +31,9 @@ export const checkTimeString: CustomSyntaxChecker = () =>
 			/.\d*/,
 		]);
 
-		log('Time: "%s" => %O', tokens.value, tokens);
+		if (log.enabled) {
+			log('Time: "%s" => %O', tokens.value, tokens);
+		}
 
 		const res = tokens.eachCheck(
 			datetimeTokenCheck.hour,
@@ -41,7 +45,7 @@ export const checkTimeString: CustomSyntaxChecker = () =>
 			datetimeTokenCheck.secondFractionalPart,
 		);
 
-		if (!res.matched) {
+		if (!res.matched && log.enabled) {
 			log('Failed: %O', res);
 		}
 

@@ -9,14 +9,14 @@ description: >
   branch, gh pr create.
 ---
 
-1. Ensure that you are on a topic branch that is not `dev`, `v6`, or `main`.
-2. **Determine the base branch.** Two major lines are developed in parallel (Branch Topology in the root `CLAUDE.md`); a v6 topic branch opened against `dev` diffs against the wrong tree and merges in the wrong direction. Take the base from the branch's upstream:
+1. Ensure that you are on a topic branch — not `dev`, `v6`, `v4`, `main`, or a prerelease branch, as in the branch guard of the `git` skill.
+2. **Determine the base branch.** Two major lines are developed in parallel (Branch Topology in the root `CLAUDE.md`); a v6 topic branch opened against `dev` diffs against the wrong tree and merges in the wrong direction. If a PR already exists for the branch, take the base from it (the command errors when there is none — treat that as "no PR"):
 
    ```bash
-   git rev-parse --abbrev-ref '@{upstream}'   # e.g. origin/v6
+   gh pr view --json baseRefName --jq .baseRefName
    ```
 
-   If the branch has no upstream yet, a `crates/` directory in the working tree means the base is `v6`; otherwise `dev`. Write `<base>` for the result below, and always pass it explicitly: `gh pr create --base <base>`.
+   Otherwise a `crates/` directory in the working tree means the base is `v6`, else `dev`; ask the user for `v4` maintenance work. Do not derive the base from `@{upstream}`: after the first `git push -u`, it is the topic branch's own remote ref. Write `<base>` for the result below, and always pass it explicitly: `gh pr create --base <base>`.
 3. **Base tracking (conflict prevention)**: run `git fetch origin <base>`, then `git log HEAD..origin/<base> --oneline`. If the base has advanced, sync with `git merge origin/<base>` before pushing — never rebase (see Branch & Worktree Policy in the root `CLAUDE.md`).
 4. **Pre-flight checks:**
    - If `yarn lint-check`, `yarn build`, and `yarn test` have not already been run and passed in this session, run them **now** before proceeding. Re-run after any base sync.
@@ -35,3 +35,8 @@ description: >
      4. Commit, push, and run `gh pr checks <PR_NUMBER> --watch` again.
      5. Repeat until all checks pass.
    - **If all checks pass:** re-run `gh pr view <PR_NUMBER> --json mergeable,mergeStateStatus` — the base may have advanced during the CI run and introduced a new conflict. If `CONFLICTING` / `DIRTY`, return to step 7's resolution path. Otherwise open the PR in the browser with `gh pr view <PR_NUMBER> --web` and report to the user that it is ready to merge.
+9. **After the user says the PR is merged** — confirm with `gh pr view <PR_NUMBER> --json state,mergedAt`, then work through the three items below in order. Each one posts to GitHub, so show its text to the user and post it once they agree. Two of them hinge on who the author is. "Owner" below means the maintainer running this session: get the login once with `gh api user --jq .login` and compare it with `gh pr view <PR_NUMBER> --json author --jq .author.login` / `gh issue view <n> --json author --jq .author.login`. That login is whoever the active `gh` token belongs to (`GH_TOKEN`, a bot, another account), so state the resolved login when you show the text to post. Do not use `gh repo view --json owner` — it returns the organization, not a person. A bot author (`--jq .author.is_bot` is `true`, e.g. Renovate) is treated like the owner: nobody is waiting for a comment.
+   1. **Completion comment on the PR only when someone other than the owner authored it:** what landed, what was deliberately left out, and where the result differs from the plan. The PR body is written before review; this comment records what the merged PR actually is. An owner-authored PR gets no comment: the PR body and the conversation already carry that record.
+   2. **Report comment on a linked issue only when someone other than the owner filed it.** The comment says what was done and which PR did it. An issue the owner filed gets no report: the PR already says it, and the owner is not waiting to hear back.
+      - When the PR merged into a branch other than the default branch (a `v6` PR), `Fixes #N` did not close the issue; check `gh issue view <n> --json state` and close the open ones with `gh issue close <n> --reason completed`. For an issue that gets a report, fold it into the close: `--comment "Fixed by #<PR> (merged into <base>)."`.
+   3. **File each leftover as its own issue with the `create-issue` skill** — one invocation per limitation, untested site or follow-up named in the PR body's "Not covered here". A leftover that lives only in the PR body or in memory is lost. Hand over only what is reproduced and has an identified cause; `create-issue` does the investigation, labelling, drafting, and the confirmation before posting. Put the new issue numbers in the completion comment in 9.1 when that comment is posted after them; when 9.1 is skipped, report the numbers to the user instead.

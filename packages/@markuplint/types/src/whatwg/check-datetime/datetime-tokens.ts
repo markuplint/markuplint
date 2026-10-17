@@ -38,7 +38,9 @@ export const datetimeTokenCheck: Record<
 	 * > Four or more ASCII digits, representing year, where year > 0
 	 */
 	year(year) {
-		log('Parsing Datetime Year: "%s"', year?.value);
+		if (log.enabled) {
+			log('Parsing Datetime Year: "%s"', year?.value);
+		}
 
 		this._year = null;
 
@@ -80,7 +82,9 @@ export const datetimeTokenCheck: Record<
 	 * > Two ASCII digits, representing the month month, in the range 1 ≤ month ≤ 12
 	 */
 	month(month) {
-		log('Parsing Datetime Month: "%s"', month?.value);
+		if (log.enabled) {
+			log('Parsing Datetime Month: "%s"', month?.value);
+		}
 
 		this._month = null;
 
@@ -131,7 +135,9 @@ export const datetimeTokenCheck: Record<
 	 * > then the day can be 29, as if the year was a leap year.
 	 */
 	date(date) {
-		log('Parsing Datetime Date: "%s"', date?.value);
+		if (log.enabled) {
+			log('Parsing Datetime Date: "%s"', date?.value);
+		}
 
 		if (!date || !date.value) {
 			return unmatched('', 'missing-token', {
@@ -163,8 +169,10 @@ export const datetimeTokenCheck: Record<
 		const dayOfMonth = (daysOfMonth[month] ?? 0) + (month === 2 && isLeap ? 1 : 0);
 		const _date = date.toNumber();
 
-		log('Temporary Year and Month: %s, %s', this._year, this._month);
-		log('Computed Year, Month, and Day of Month: %s, %s, %s', year, month, dayOfMonth);
+		if (log.enabled) {
+			log('Temporary Year and Month: %s, %s', this._year, this._month);
+			log('Computed Year, Month, and Day of Month: %s, %s, %s', year, month, dayOfMonth);
+		}
 
 		if (!(1 <= _date && _date <= dayOfMonth)) {
 			return date.unmatched({
@@ -179,7 +187,9 @@ export const datetimeTokenCheck: Record<
 	 * > Two ASCII digits, representing hour, in the range 0 ≤ hour ≤ 23
 	 */
 	hour(hour) {
-		log('Parsing Datetime Hour: "%s"', hour?.value);
+		if (log.enabled) {
+			log('Parsing Datetime Hour: "%s"', hour?.value);
+		}
 
 		if (!hour || !hour.value) {
 			return unmatched('', 'missing-token', {
@@ -219,7 +229,9 @@ export const datetimeTokenCheck: Record<
 	 * > Two ASCII digits, representing minute, in the range 0 ≤ minute ≤ 59
 	 */
 	minute(minute) {
-		log('Parsing Datetime Minute: "%s"', minute?.value);
+		if (log.enabled) {
+			log('Parsing Datetime Minute: "%s"', minute?.value);
+		}
 
 		if (!minute || !minute.value) {
 			return unmatched('', 'missing-token', {
@@ -259,7 +271,9 @@ export const datetimeTokenCheck: Record<
 	 * > Two ASCII digits, representing the integer part of second, in the range 0 ≤ s ≤ 59
 	 */
 	second(second) {
-		log('Parsing Datetime Second: "%s"', second?.value);
+		if (log.enabled) {
+			log('Parsing Datetime Second: "%s"', second?.value);
+		}
 
 		if (!second || !second.value) {
 			return unmatched('', 'missing-token', {
@@ -299,7 +313,9 @@ export const datetimeTokenCheck: Record<
 	 * > One, two, or three ASCII digits, representing the fractional part of second
 	 */
 	secondFractionalPart(secondFP) {
-		log('Parsing Datetime Second Fractional Part: "%s"', secondFP?.value);
+		if (log.enabled) {
+			log('Parsing Datetime Second Fractional Part: "%s"', secondFP?.value);
+		}
 
 		if (!secondFP || !secondFP.value) {
 			return unmatched('', 'missing-token', {
@@ -329,7 +345,9 @@ export const datetimeTokenCheck: Record<
 	 * > Two ASCII digits, representing the week week, in the range 1 ≤ week ≤ maxweek, where maxweek is the week number of the last day of week-year year
 	 */
 	week(week) {
-		log('Parsing Datetime Week: "%s"', week?.value);
+		if (log.enabled) {
+			log('Parsing Datetime Week: "%s"', week?.value);
+		}
 
 		if (!week || !week.value) {
 			return unmatched('', 'missing-token', {
@@ -370,7 +388,9 @@ export const datetimeTokenCheck: Record<
 	 * > A U+002D HYPHEN-MINUS character (-)
 	 */
 	hyphen(hyphen) {
-		log('Parsing Datetime hyphen: "%s"', hyphen?.value);
+		if (log.enabled) {
+			log('Parsing Datetime hyphen: "%s"', hyphen?.value);
+		}
 
 		if (!hyphen || !hyphen.value) {
 			return unmatched('', 'missing-token', {
@@ -392,7 +412,9 @@ export const datetimeTokenCheck: Record<
 	 * > A U+003A COLON character (:)
 	 */
 	colon(colon) {
-		log('Parsing Datetime colon: "%s"', colon?.value);
+		if (log.enabled) {
+			log('Parsing Datetime colon: "%s"', colon?.value);
+		}
 
 		if (!colon || !colon.value) {
 			return unmatched('', 'missing-token', {
@@ -450,7 +472,9 @@ export const datetimeTokenCheck: Record<
 	 * > A U+0054 LATIN CAPITAL LETTER T character (T) or a U+0020 SPACE character
 	 */
 	localDateTimeSeparator(sep) {
-		log('Parsing Datetime Local-Date-Time separator: "%s"', sep?.value);
+		if (log.enabled) {
+			log('Parsing Datetime Local-Date-Time separator: "%s"', sep?.value);
+		}
 
 		if (!sep || !sep.value) {
 			return unmatched('', 'missing-token', {
@@ -476,7 +500,9 @@ export const datetimeTokenCheck: Record<
 	 * > A U+0054 LATIN CAPITAL LETTER T character (T)
 	 */
 	normalizedlocalDateTimeSeparator(sep) {
-		log('Parsing Datetime Normalized-Local-Date-Time separator: %s', sep?.value);
+		if (log.enabled) {
+			log('Parsing Datetime Normalized-Local-Date-Time separator: %s', sep?.value);
+		}
 
 		if (!sep || !sep.value) {
 			return unmatched('', 'missing-token', {
@@ -524,7 +550,9 @@ export const datetimeTokenCheck: Record<
 	 * > A U+0057 LATIN CAPITAL LETTER W character (W)
 	 */
 	weekSign(weekSign) {
-		log('Parsing Datetime W sign: "%s"', weekSign?.value);
+		if (log.enabled) {
+			log('Parsing Datetime W sign: "%s"', weekSign?.value);
+		}
 
 		if (!weekSign || !weekSign.value) {
 			return unmatched('', 'missing-token', {
@@ -543,7 +571,9 @@ export const datetimeTokenCheck: Record<
 	},
 
 	extra(extra) {
-		log('Parsing Datetime EXTRA STRING: "%s"', extra?.value);
+		if (log.enabled) {
+			log('Parsing Datetime EXTRA STRING: "%s"', extra?.value);
+		}
 
 		if (extra && extra.value) {
 			return extra.unmatched({

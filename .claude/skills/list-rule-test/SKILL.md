@@ -7,12 +7,13 @@ description: >
   coverage, finding missing [rule-name-category-NNN] prefixes, or picking the
   next available ID number. Trigger keywords: test id, test ids, rule test
   list, missing id prefix, list-rule-test.
+argument-hint: "[--rule <name>] [--category <name>] [--no-id] [--stats] [--json]"
 ---
 
-List all test IDs from `packages/@markuplint/rules/src/**/*.spec.ts`:
+List all test IDs from `packages/@markuplint/rules/src/**/*.spec.ts`. Run from the repository root — the script resolves `packages/@markuplint/rules/src` relative to the working directory. Pass the user's arguments (`$ARGUMENTS`) as the options — only the documented flags, nothing else:
 
 ```bash
-node .claude/skills/list-rule-test/scripts/list-rule-test.mjs [options]
+node .claude/skills/list-rule-test/scripts/list-rule-test.mjs $ARGUMENTS
 ```
 
 Options (`--rule`, `--category`, `--no-id`, `--stats`, `--json`, combinable) are documented in the script's header comment — read it before choosing flags.

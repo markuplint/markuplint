@@ -9,6 +9,19 @@ Constraints and judgment rules for editing spec data. None of this is derivable 
 - Run the full `yarn test` suite before committing — spec data changes propagate to `@markuplint/rules` and `@markuplint/ml-spec` tests.
 - `yarn up:gen` also refreshes the MDN-scraped data, so the regenerated `index.json` can carry changes to elements the branch did not touch (a `nonStandard` flag on `<font>`, a reworded `<html xmlns>` description). Those belong in their own PR: they bloat the review and can trip unrelated rule tests. Keep only the touched elements by merging per element against the base — write `git show HEAD:packages/@markuplint/html-spec/index.json` to a scratch file, load both JSON files, replace every entry in `specs` whose `name` is not one you changed with the base entry (names carry the namespace prefix, e.g. `mml:mfrac`), and write it back with tab indentation. Then confirm `git diff --stat` on `index.json` covers only your elements. The flag-transition check below still applies when the drift itself looks like a scraper regression.
 
+## The scheduled regeneration PR
+
+`.github/workflows/update-html-spec.yml` regenerates `index.json` from a fresh `dev` checkout on a schedule and, only when `yarn up:gen` changed something against that `dev`, force-pushes the result to the reused branch `auto/update-html-spec` and opens or updates a single PR. A run that produces no diff pushes nothing, so the open PR keeps the snapshot of an earlier run, and its own diff view (`gh pr diff`, the GitHub UI) compares against that stale merge-base, not against the current `dev` tip. A scraper or generator fix merged into `dev` after the snapshot is invisible there. If that fix changed the generator but not the same lines of `index.json` (a scraper fix usually leaves the committed data alone), the bot PR merges cleanly and reapplies the stale output; only a fix that touched the same lines surfaces as a conflict.
+
+Before merging one, diff the branch against `dev` directly:
+
+```bash
+git fetch origin dev auto/update-html-spec
+git diff origin/dev origin/auto/update-html-spec -- packages/@markuplint/html-spec/index.json
+```
+
+If that diff mostly removes fields `dev` already has, close the PR; the next scheduled run regenerates from the current `dev`. A mass flag removal that reads as a legitimate update in the PR view is the mirror image of the scraper regression described under "Flag transitions" below.
+
 ## Editing hazards
 
 - `index.json` contains WAI-ARIA 1.1 / 1.2 / 1.3 role definitions, so many strings appear three times. Do not use `replace_all` on it; target the specific version block.

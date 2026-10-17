@@ -24,7 +24,7 @@ Spec domains by package:
 ## Method
 
 1. Extract every externally checkable claim: spec URLs, ABNF grammar blocks, RFC numbers, numeric claims (e.g., "46 names", "13 void elements"), regex patterns claimed to match a spec definition, CSS value definition syntax references, ARIA algorithm descriptions (role computation, presentational conflict resolution), implicit-role mappings, accessibility-tree inclusion rules, content-model category claims, and "implements X" statements.
-2. Group claims by spec domain and verify each domain in a parallel subagent: fetch the authoritative spec via WebSearch, compare claim vs spec vs source code, and assign a verdict — PASS (accurate), FAIL (inaccurate), WARN (technically correct but misleading or incomplete).
+2. Group claims by spec domain and verify each domain in a parallel subagent: fetch the authoritative spec with the web search and fetch tools available in the session, compare claim vs spec vs source code, and assign a verdict — PASS (accurate), FAIL (inaccurate), WARN (technically correct but misleading or incomplete).
 3. Report a consolidated verdict table. For each FAIL, produce a concrete correction: file, line, current text, corrected text, reason. For WARN, an advisory suggestion only.
 
 ## Judgment rules
@@ -34,4 +34,4 @@ Spec domains by package:
 - Numeric claims must be exact: count the arrays, enum values, union members, and Set entries in source.
 - ABNF and regex patterns presented as spec quotes must be character-for-character accurate.
 - Algorithm descriptions must match the actual step order, condition checks, and branching.
-- Always fetch the live spec via WebSearch — never rely on cached knowledge.
+- Always fetch the live spec with the web search and fetch tools available in the session — never rely on cached knowledge.

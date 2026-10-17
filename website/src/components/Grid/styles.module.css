@@ -1,16 +1,16 @@
 .vertical,
 .grid {
-  display: grid;
-  gap: 2em;
+	display: grid;
+	gap: 2em;
 }
 
 .flex {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2em;
-  justify-content: flex-start;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 2em;
+	justify-content: flex-start;
 }
 
 .flex > * {
-  flex: 0 0 auto;
+	flex: 0 0 auto;
 }

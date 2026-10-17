@@ -1,14 +1,14 @@
 {
-  "extends": ["stylelint-config-standard", "stylelint-config-recess-order"],
-  "plugins": ["stylelint-order"],
-  "rules": {
-    "selector-class-pattern": null,
-    "value-keyword-case": [
-      "lower",
-      {
-        "camelCaseSvgKeywords": true
-      }
-    ],
-    "media-feature-range-notation": null
-  }
+	"extends": ["stylelint-config-standard", "stylelint-config-recess-order"],
+	"plugins": ["stylelint-order"],
+	"rules": {
+		"selector-class-pattern": null,
+		"value-keyword-case": [
+			"lower",
+			{
+				"camelCaseSvgKeywords": true
+			}
+		],
+		"media-feature-range-notation": null
+	}
 }

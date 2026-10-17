@@ -28,7 +28,7 @@ import type { ARIAVersion } from '@markuplint/ml-spec';
 
 import { getSpecByTagName, resolveNamespace } from '@markuplint/ml-spec';
 import { pretenderNamespaceToURI } from '@markuplint/ml-config';
-import { getChildNamespace } from '@markuplint/parser-utils';
+import { getChildNamespace, isComponentName } from '@markuplint/parser-utils';
 import type { SelectorMatches } from '@markuplint/selector';
 import { matchSelector } from '@markuplint/selector';
 
@@ -101,16 +101,20 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * they are separate on purpose, as `isTreatedAsCustom` also serves the `'origin'` mode.
 	 *
 	 * Like {@link localName}, it follows the pretender, since a selector sees the element
-	 * the component renders. A pretender target is always created with `elementType: 'html'`,
-	 * so it is a custom element only when its own name has a hyphen.
+	 * the component renders. A pretender target is created with `elementType: 'html'`, so it
+	 * is a custom element when its own name has a hyphen. A target whose name is a component
+	 * (`Tabs.Root`, see `isComponentName`) is created as `'authored'` and counts like one
+	 * written directly: the scanners of `pretenders.auto` end a chain at such a name when
+	 * they cannot resolve it, and what that component renders is not known.
 	 *
-	 * Known limitation: that test is only the hyphen. A pretender target named after a reserved
+	 * Known limitation: the hyphen test is only the hyphen. A pretender target named after a reserved
 	 * hyphenated name (`annotation-xml`, `font-face`, ...) counts as custom here, whereas the same
 	 * element written directly does not. `isTreatedAsCustom` shares the limitation.
 	 */
 	get isCustomElement(): boolean {
 		if (this.pretenderContext?.type === 'pretender') {
-			return this.pretenderContext.as.localName.includes('-');
+			const { as } = this.pretenderContext;
+			return as.elementType === 'authored' || as.localName.includes('-');
 		}
 		return this.elementType !== 'html';
 	}
@@ -4070,7 +4074,8 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 
 	/**
 	 * The namespace of an element named `name` rendered where this element is, for the
-	 * element this element pretends to be.
+	 * element this element pretends to be. `null` for what is not an element, a
+	 * component.
 	 *
 	 * Where this element is has the namespace of this element, so the element gets the
 	 * namespace an element written there gets. For a component, it is taken from the
@@ -4078,7 +4083,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * the namespace may have taken it for an element (`<Svg>`, `<Math>`: the names are
 	 * compared in lowercase).
 	 */
-	#getNamespaceInPlace(name: string, renderedParent: MLElement<T, O> | null | undefined): NamespaceURI {
+	#getNamespaceInPlace(name: string | null, renderedParent: MLElement<T, O> | null | undefined): NamespaceURI {
 		let here = this.#namespaceURI;
 		if (this.elementType === 'authored' && renderedParent !== undefined) {
 			here = renderedParent ? renderedParent.#getChildNamespace(null) : HTML_NAMESPACE;
@@ -4146,10 +4151,13 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 
 		const slots = typeof pretenderElement === 'string' ? undefined : pretenderElement.slots;
 
+		// A component is given no name for the namespace, as `#resolveNamespace` does:
+		// `getChildNamespace` compares names in lowercase, so `Svg` would enter SVG.
+		const isComponent = isComponentName(nodeName);
 		const namespace =
 			typeof pretenderElement !== 'string' && pretenderElement.namespace
 				? pretenderNamespaceToURI(pretenderElement.namespace)
-				: this.#getNamespaceInPlace(nodeName, renderedParent);
+				: this.#getNamespaceInPlace(isComponent ? null : nodeName, renderedParent);
 
 		const as = new MLElement<T, O>(
 			{
@@ -4158,7 +4166,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 				raw: `<${nodeName}>`,
 				nodeName,
 				namespace,
-				elementType: 'html',
+				elementType: isComponent ? 'authored' : 'html',
 				attributes,
 			},
 			this.ownerMLDocument,
@@ -4293,6 +4301,13 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		if (spec.attrs) {
 			attributes.push(...this.#createPretenderAttrs(spec.attrs, uuid));
 		}
+		const isComponent = isComponentName(spec.element);
+		let elementType: ElementType = 'html';
+		if (isComponent) {
+			elementType = 'authored';
+		} else if (spec.element.includes('-')) {
+			elementType = 'web-component';
+		}
 		const virtual = new MLElement<T, O>(
 			{
 				...this._astToken,
@@ -4301,8 +4316,8 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 				nodeName: spec.element,
 				namespace: spec.namespace
 					? pretenderNamespaceToURI(spec.namespace)
-					: renderedIn.#getChildNamespace(spec.element),
-				elementType: spec.element.includes('-') ? 'web-component' : 'html',
+					: renderedIn.#getChildNamespace(isComponent ? null : spec.element),
+				elementType,
 				attributes,
 				childNodes: [],
 				pairNodeUuid: null,

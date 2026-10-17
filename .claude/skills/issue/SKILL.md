@@ -37,26 +37,7 @@ Follow these steps in order:
 
 > This step runs ONLY when no Issue URL was provided in Step 1.
 
-Based on the information gathered from the user, create a GitHub Issue.
-Use the repository's existing Issue templates (`.github/ISSUE_TEMPLATE/`) as the format reference:
-
-1. **Determine the Issue type** and match to an existing template:
-   - Bug → `bug_report.md` format (label: `Bug`)
-   - Feature request → `feature.md` format (label: `Features: Proposal`)
-   - Spec update → `update_specs.md` format (label: `Specs`)
-2. **Fetch available labels** to avoid typos:
-   ```bash
-   gh label list --limit 50
-   ```
-3. **Verify referenced paths and libraries exist** (check paths with `ls`, packages with `npm view`) before putting them in the Issue body
-4. **Draft the Issue content** following the matched template's structure — read the template file itself for the section layout
-5. **Show the draft to the user** and ask for confirmation before creating
-6. **Create the Issue**:
-   ```bash
-   gh issue create --title "<title>" --body "<body>" --label "<label>"
-   ```
-7. **Capture the Issue number and URL** from the output for use in subsequent steps
-8. From this point forward, treat the newly created Issue the same as if it had been provided via URL
+Run the `create-issue` skill with the problem description gathered in Step 1. It owns the investigation, labelling, drafting, the confirmation before posting, and the `gh issue create` call. Take the Issue number and URL from its report, and from this point forward treat the new Issue the same as if it had been provided via URL.
 
 ## Step 2: Ensure You Are in a Worktree
 
@@ -90,4 +71,4 @@ Present the plan to the user and wait for approval.
 
 ## Step 5: Hand Off to /impl
 
-Once the plan is approved, continue with the `impl` skill — it owns the implementation pipeline (implement → review → QA → lint/test → commit → PR). Do not re-negotiate the agreed scope there.
+Once the plan is approved, tell the user to run `/impl` — it owns the implementation pipeline (implement → review → QA → lint/test → commit → PR) and cannot be invoked by Claude. Do not re-negotiate the agreed scope there.

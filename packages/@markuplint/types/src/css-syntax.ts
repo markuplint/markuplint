@@ -18,7 +18,9 @@ const MIMIC_TAG_R = '---mimiccases';
 const MIMIC_LENGTH = (MIMIC_TAG_L + MIMIC_TAG_R).length;
 
 export function cssSyntaxMatch(value: string, type: CssSyntax | CustomCssSyntax): Result {
-	log('Search CSS Syntax: "%s"', type);
+	if (log.enabled) {
+		log('Search CSS Syntax: "%s"', type);
+	}
 
 	const origin = value;
 	let defName: `<${string}>`;
@@ -85,7 +87,9 @@ export function cssSyntaxMatch(value: string, type: CssSyntax | CustomCssSyntax)
 	// @ts-ignore
 	const matcher = isProp ? lexer.properties[name] : lexer.types[name];
 	if (!matcher) {
-		log('"%s" CSS syntax not found', defName);
+		if (log.enabled) {
+			log('"%s" CSS syntax not found', defName);
+		}
 		throw new Error('MARKUPLINT_TYPE_NO_EXIST');
 	}
 
@@ -102,7 +106,9 @@ export function cssSyntaxMatch(value: string, type: CssSyntax | CustomCssSyntax)
 
 	const result = lexer.match(defName, value);
 
-	log('css-tree/result: %O', result);
+	if (log.enabled) {
+		log('css-tree/result: %O', result);
+	}
 	// eslint-disable-next-line no-console
 	console.warn = _w;
 
@@ -135,7 +141,9 @@ export function cssSyntaxMatch(value: string, type: CssSyntax | CustomCssSyntax)
 		error.mismatchLength = mismatchLength < 0 ? error.mismatchLength : mismatchLength;
 	}
 
-	log('css-tree/SyntaxMatchError: %O', error);
+	if (log.enabled) {
+		log('css-tree/SyntaxMatchError: %O', error);
+	}
 
 	return {
 		matched: false,

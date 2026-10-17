@@ -32,6 +32,7 @@ img要素とsource要素のファイル名を一致させたい場合。
 
 [`no-invalid-attr-value`](/docs/rules/no-invalid-attr-value)ルールと[`regexSelector`](/docs/configuration/properties#regexselector)を使います。
 
+<!-- prettier-ignore -->
 ```json class=config
 {
   "rules": {

@@ -2,7 +2,7 @@ import { mkdir, readFile, realpath, writeFile, mkdtemp, rm } from 'node:fs/promi
 import os from 'node:os';
 import path from 'node:path';
 
-import { test, expect, describe, beforeEach, afterEach } from 'vitest';
+import { test, expect, describe, beforeEach, afterEach, vi } from 'vitest';
 
 import {
 	createPretenderResolver,
@@ -198,10 +198,9 @@ test('disambiguatePretendersForFile leaves an unambiguous list untouched (same r
 	expect(result).toBe(pretenders);
 });
 
-test('hasResolvableCollision does not filter by selector name shape (must stay a superset of the real disambiguation filter)', () => {
-	// `disambiguatePretenders` (the real logic) only resolves plain-identifier
-	// selectors, but this fast-path gate must trigger regardless of shape — see
-	// the JSDoc on `hasResolvableCollision` for why the two must not be kept in sync.
+test('hasResolvableCollision (deprecated, no longer a gate) keeps reporting a collision whatever the selector name shape', () => {
+	// `disambiguatePretendersForFile` no longer gates on it, but it is public API: its
+	// result stays as it was until it is removed in the next major version.
 	const pretenders = [
 		{ selector: '123-not-a-plain-identifier', as: 'div', filePath: '/a.tsx:1:1' },
 		{ selector: '123-not-a-plain-identifier', as: 'span', filePath: '/b.tsx:1:1' },
@@ -227,6 +226,65 @@ test('disambiguatePretendersForFile resolves a collision via the target file imp
 	const result = await disambiguatePretendersForFile(cFile, sourceCode, pretenders);
 	expect(result).toHaveLength(1);
 	expect(result[0]!.as).toStrictEqual({ element: 'button', slots: true, inheritAttrs: true });
+});
+
+test('disambiguatePretendersForFile follows a star re-export when the working directory sits under node_modules', async () => {
+	const tmpDir = await mkdtemp(path.join(os.tmpdir(), 'disambiguate-for-file-'));
+	const root = path.join(tmpDir, 'node_modules', 'app');
+	const cwd = vi.spyOn(process, 'cwd').mockReturnValue(root);
+	try {
+		await mkdir(root, { recursive: true });
+		await writeFile(path.join(root, 'a.tsx'), 'export const Item = () => <button />;');
+		await writeFile(path.join(root, 'b.tsx'), 'export const Item = () => <li />;');
+		await writeFile(path.join(root, 'barrel.ts'), "export * from './a';");
+		const pretenders = [
+			{ selector: 'Item', as: 'li', filePath: `${path.join(root, 'b.tsx')}:1:14` },
+			{ selector: 'Item', as: 'button', filePath: `${path.join(root, 'a.tsx')}:1:14` },
+		];
+
+		const result = await disambiguatePretendersForFile(
+			path.join(root, 'page.tsx'),
+			"import { Item } from './barrel';\nexport const Page = () => <Item />;",
+			pretenders,
+		);
+
+		expect(result.map(p => p.as)).toStrictEqual(['button']);
+	} finally {
+		cwd.mockRestore();
+		await rm(tmpDir, { recursive: true, force: true });
+	}
+});
+
+test('disambiguatePretendersForFile returns a list of hand-written entries as it is, as nothing in it is scanned', async () => {
+	const pretenders = [{ selector: 'Button', as: 'button' }];
+
+	const result = await disambiguatePretendersForFile(
+		'/project/page.tsx',
+		"import { Button } from 'ui-lib';\nexport const Page = () => <Button />;",
+		pretenders,
+	);
+
+	expect(result).toBe(pretenders);
+});
+
+test('disambiguatePretendersForFile drops the only scanned component of a name that the file imports from a package', async () => {
+	const tmpDir = await mkdtemp(path.join(os.tmpdir(), 'disambiguate-for-file-package-'));
+	const cwd = vi.spyOn(process, 'cwd').mockReturnValue(tmpDir);
+	try {
+		await writeFile(path.join(tmpDir, 'Button.tsx'), 'export const Button = () => <a />;');
+		const pretenders = [{ selector: 'Button', as: 'a', filePath: `${path.join(tmpDir, 'Button.tsx')}:1:14` }];
+
+		const result = await disambiguatePretendersForFile(
+			path.join(tmpDir, 'page.tsx'),
+			"import { Button } from 'ui-lib';\nexport const Page = () => <Button />;",
+			pretenders,
+		);
+
+		expect(result).toStrictEqual([]);
+	} finally {
+		cwd.mockRestore();
+		await rm(tmpDir, { recursive: true, force: true });
+	}
 });
 
 describe('auto (on-demand import-graph resolution)', () => {

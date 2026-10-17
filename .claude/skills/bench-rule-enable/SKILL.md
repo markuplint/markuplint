@@ -46,7 +46,7 @@ nu-validator capability. Use this checklist:
    - nu-validator currently fires on the same markup pattern, OR
    - the spec the rule cites contains MUST / MUST NOT language and
      the discrepancy in nu's coverage is documented in
-     `bench-triage`'s audit log.
+     `bench-triage`'s [audit log](../bench-triage/audit-log.md).
 
 If both nu and the spec are silent, do **not** enable the rule in
 the bench — it would inflate `ml-only` without producing a

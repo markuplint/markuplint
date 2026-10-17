@@ -70,4 +70,121 @@ describe('collectImportBindings', () => {
 			{ localName: 'B', importedName: 'B', source: './b', type: 'named' },
 		]);
 	});
+
+	describe('dynamic imports', () => {
+		test('a string literal specifier inside `lazy(() => import(...))` is a dynamic binding', () => {
+			const bindings = collectImportBindings(
+				sourceFile("const Item = lazy(() => import('./Item'));\nexport const W = () => <Item />;"),
+			);
+			expect(bindings).toStrictEqual([{ localName: '*', importedName: '*', source: './Item', type: 'dynamic' }]);
+		});
+
+		test('a dynamic import nested in a function body is collected', () => {
+			const bindings = collectImportBindings(
+				sourceFile('export async function load() {\n\tconst m = await import("./Item");\n\treturn m;\n}'),
+			);
+			expect(bindings).toStrictEqual([{ localName: '*', importedName: '*', source: './Item', type: 'dynamic' }]);
+		});
+
+		test('a template literal specifier is excluded', () => {
+			const bindings = collectImportBindings(sourceFile('const A = lazy(() => import(`./${name}`));'));
+			expect(bindings).toStrictEqual([]);
+		});
+
+		test('a template literal specifier without substitutions is excluded, as for Vue', () => {
+			const bindings = collectImportBindings(sourceFile('const A = lazy(() => import(`./Item`));'));
+			expect(bindings).toStrictEqual([]);
+		});
+
+		test('an `import(...).then(...)` chain is collected through the inner call', () => {
+			const bindings = collectImportBindings(
+				sourceFile("const A = lazy(() => import('./a').then(m => ({ default: m.A })));"),
+			);
+			expect(bindings).toStrictEqual([{ localName: '*', importedName: '*', source: './a', type: 'dynamic' }]);
+		});
+
+		test('a dynamic import inside a class method is collected', () => {
+			const bindings = collectImportBindings(
+				sourceFile("class Loader {\n\tload() {\n\t\treturn import('./a');\n\t}\n}"),
+			);
+			expect(bindings).toStrictEqual([{ localName: '*', importedName: '*', source: './a', type: 'dynamic' }]);
+		});
+
+		test('a dynamic import with an import attributes argument is collected', () => {
+			const bindings = collectImportBindings(
+				sourceFile("const A = import('./a.json', { with: { type: 'json' } });"),
+			);
+			expect(bindings).toStrictEqual([
+				{ localName: '*', importedName: '*', source: './a.json', type: 'dynamic' },
+			]);
+		});
+
+		test('the same specifier imported twice yields one binding per call', () => {
+			const bindings = collectImportBindings(sourceFile("const A = import('./a');\nconst B = import('./a');"));
+			expect(bindings).toStrictEqual([
+				{ localName: '*', importedName: '*', source: './a', type: 'dynamic' },
+				{ localName: '*', importedName: '*', source: './a', type: 'dynamic' },
+			]);
+		});
+
+		test('a static binding of the same name is kept next to the dynamic one', () => {
+			const bindings = collectImportBindings(
+				sourceFile("import { Item } from './x';\nconst L = lazy(() => import('./Item'));"),
+			);
+			expect(bindings).toStrictEqual([
+				{ localName: 'Item', importedName: 'Item', source: './x', type: 'named' },
+				{ localName: '*', importedName: '*', source: './Item', type: 'dynamic' },
+			]);
+		});
+
+		test('a dynamic import in a JSX attribute expression is collected', () => {
+			const bindings = collectImportBindings(
+				sourceFile("export const A = () => <Suspense fallback={import('./Spinner')}>x</Suspense>;"),
+			);
+			expect(bindings).toStrictEqual([
+				{ localName: '*', importedName: '*', source: './Spinner', type: 'dynamic' },
+			]);
+		});
+
+		test('a dynamic import in an `export default` expression is collected', () => {
+			const bindings = collectImportBindings(sourceFile("export default lazy(() => import('./Item'));"));
+			expect(bindings).toStrictEqual([{ localName: '*', importedName: '*', source: './Item', type: 'dynamic' }]);
+		});
+
+		test('an `import()` without a string literal argument is excluded', () => {
+			expect(collectImportBindings(sourceFile('const A = import();'))).toStrictEqual([]);
+			expect(collectImportBindings(sourceFile('const A = import(1);'))).toStrictEqual([]);
+		});
+
+		test('a variable specifier is excluded', () => {
+			const bindings = collectImportBindings(sourceFile('const A = lazy(() => import(path));'));
+			expect(bindings).toStrictEqual([]);
+		});
+
+		test('a concatenated specifier is excluded', () => {
+			const bindings = collectImportBindings(sourceFile("const A = lazy(() => import('./' + name));"));
+			expect(bindings).toStrictEqual([]);
+		});
+
+		test('a type-position `typeof import()` is excluded', () => {
+			const bindings = collectImportBindings(sourceFile("type T = typeof import('./a');"));
+			expect(bindings).toStrictEqual([]);
+		});
+
+		test('`import.meta` is excluded', () => {
+			const bindings = collectImportBindings(sourceFile('const url = import.meta.url;'));
+			expect(bindings).toStrictEqual([]);
+		});
+
+		test('static and dynamic imports are collected in source order', () => {
+			const bindings = collectImportBindings(
+				sourceFile("import A from './a';\nconst B = lazy(() => import('./b'));\nimport { C } from './c';"),
+			);
+			expect(bindings).toStrictEqual([
+				{ localName: 'A', importedName: 'default', source: './a', type: 'default' },
+				{ localName: '*', importedName: '*', source: './b', type: 'dynamic' },
+				{ localName: 'C', importedName: 'C', source: './c', type: 'named' },
+			]);
+		});
+	});
 });

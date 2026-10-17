@@ -138,7 +138,6 @@ describe('Issues', () => {
 			(
 				await mlRuleTest(
 					rule,
-					/* cSpell:disable */
 					`
 						<a href="#apple%3Aorange">apple:orange</a>
 						<p id="apple:orange">apple:orange</p>
@@ -149,7 +148,6 @@ describe('Issues', () => {
 						<a href="#apple%26lemon">apple&amp;lemon</a>
 						<p id="apple&lemon">apple&amp;lemon</p>
 					`,
-					/* cSpell:enable */
 					{
 						parser: {
 							'.*': '@markuplint/php-parser',

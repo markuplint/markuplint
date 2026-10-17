@@ -10,7 +10,9 @@ import { datetimeTokenCheck } from './datetime-tokens.js';
  */
 export const checkDateString: CustomSyntaxChecker = () =>
 	function checkDateString(value) {
-		log('CHECK: date-string');
+		if (log.enabled) {
+			log('CHECK: date-string');
+		}
 
 		const tokens = TokenCollection.fromPatterns(value, [
 			// YYYY
@@ -25,7 +27,9 @@ export const checkDateString: CustomSyntaxChecker = () =>
 			/.\d*/,
 		]);
 
-		log('Date: "%s" => %O', tokens.value, tokens);
+		if (log.enabled) {
+			log('Date: "%s" => %O', tokens.value, tokens);
+		}
 
 		const res = tokens.eachCheck(
 			datetimeTokenCheck.year,
@@ -36,7 +40,7 @@ export const checkDateString: CustomSyntaxChecker = () =>
 			datetimeTokenCheck.extra,
 		);
 
-		if (!res.matched) {
+		if (!res.matched && log.enabled) {
 			log('Failed: %O', res);
 		}
 

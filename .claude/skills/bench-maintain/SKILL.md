@@ -3,24 +3,21 @@ name: bench-maintain
 metadata:
   internal: true
 description: >
-  Steady-state maintenance of the nu-validator coverage benchmark now
-  that the nu-only backlog is zero: defend the invariants (nu-only = 0,
-  orphan = 0, xref audit green), follow up a nu-validator upstream
+  Maintenance of the nu-validator coverage benchmark: defend the
+  invariants (nu-only = 0, xref audit green), follow up a nu-validator upstream
   update (submodule bump / Docker image drift), and regression-check
   after markuplint rule or spec changes. Use when updating the
   validator submodule, when a bench refresh surfaces new nu-only
   entries, when excluded-ids entries go stale, or for the periodic
   health check. Trigger keywords: bench maintain, bench maintenance,
   nu update, submodule bump, validator update, bench refresh, nu-only
-  regression, stale excluded-ids, image digest, steady state bench.
+  regression, stale excluded-ids, image digest.
 ---
 
 # nu-validator Bench Maintenance Skill
 
-The nu-only backlog reached zero on 2026-08-13. From that point the
-bench is in steady-state operation: the job is no longer to reduce a
-backlog but to **defend invariants** across upstream updates and
-markuplint changes. Per-fixture verdict work is still `bench-triage`;
+The job is not to reduce a backlog but to **defend invariants**
+across upstream updates and markuplint changes. Per-fixture verdict work is still `bench-triage`;
 environment recovery is still `bench-setup`; issue-body sync is still
 `bench-xref`. This skill is the loop around them.
 
@@ -42,7 +39,7 @@ owner action.
 ## Two upstream update axes
 
 nu-validator updates reach the bench on two independent axes; know
-which one moved before interpreting a diff (`snapshots/diff/meta.json`
+which one moved before interpreting a diff (`tests/external/snapshots/meta.json`
 records both — compare against the committed previous version):
 
 - **Fixture corpus** — the `tests/external/validator` submodule
@@ -73,7 +70,7 @@ is the audit trail.
    yarn bench:update
    ```
 
-3. Diff `snapshots/diff/meta.json` against the committed version:
+3. Diff `tests/external/snapshots/meta.json` against the committed version:
    which axis moved (`submoduleSha`, `nuValidatorImage`), and do the
    totals (`totalFilesNu`, `totalNuMessages`) shift plausibly with it?
 
@@ -97,11 +94,19 @@ is the audit trail.
 
    ```
    yarn bench:xref --audit
+   yarn bench:xref --all --dry-run --write
+   ```
+
+   `--write` edits GitHub Issue bodies. Show the user the previewed
+   new bodies and get their go-ahead, then apply (`--audit` rejects
+   `--dry-run` / `--write`, so it stays a separate command):
+
+   ```
    yarn bench:xref --all --write
    ```
 
-7. Commit `snapshots/diff/*`, `snapshots/excluded-ids.json`, the
-   submodule pointer, and any `issue-xref.config.ts` edits as a
+7. Commit `snapshots/diff/*`, `snapshots/meta.json`,
+   `snapshots/excluded-ids.json`, the submodule pointer, and any `issue-xref.config.ts` edits as a
    `test:` commit describing what moved (submodule range and/or image
    digest). Raw snapshot trees stay gitignored.
 

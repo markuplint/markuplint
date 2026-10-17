@@ -110,7 +110,8 @@ async function extractScriptSource(
 }
 
 /**
- * Analyzes a component file's source text and extracts all static import bindings.
+ * Analyzes a component file's source text and extracts all import bindings, including
+ * dynamic `import('...')` calls with a string literal specifier.
  * Automatically detects the framework type from the file extension and delegates
  * script source extraction to the appropriate component scanner.
  *
@@ -254,7 +255,14 @@ export function resolveComponentImport(
 	return undefined;
 }
 
-function kebabToPascalCase(str: string): string {
+/**
+ * Converts a kebab-case name to PascalCase (`my-button` → `MyButton`): the name a Vue-style
+ * script imports a kebab-case component as. A name without `-` is returned as it is.
+ *
+ * @param str - The name to convert
+ * @returns The PascalCase name
+ */
+export function kebabToPascalCase(str: string): string {
 	if (!str.includes('-')) {
 		return str;
 	}
