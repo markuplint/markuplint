@@ -5,7 +5,7 @@ import { dependencyMapper } from './dependency-mapper.js';
 
 export type PretenderDirectorMap = Map<
 	string,
-	[identifier: Identifier, identity: Identity, filePath?: string, sourceFile?: string]
+	[identifier: Identifier, identity: Identity, filePath?: string, sourceFile?: string, localName?: string]
 >;
 
 /**
@@ -14,7 +14,6 @@ export type PretenderDirectorMap = Map<
  */
 export class PretenderDirector {
 	#map: PretenderDirectorMap = new Map();
-	#nameIndex: Map<Identifier, string> = new Map();
 	#importsByFile: Map<string, readonly ImportBinding[]> = new Map();
 
 	/**
@@ -28,6 +27,7 @@ export class PretenderDirector {
 		line: number,
 		col: number,
 		importPath?: ImportPath,
+		localName?: string,
 	) {
 		const key = importPath ?? identifier;
 
@@ -35,11 +35,7 @@ export class PretenderDirector {
 			return;
 		}
 
-		this.#map.set(key, [identifier, identity, `${filePath}:${line}:${col}`, filePath]);
-
-		if (!this.#nameIndex.has(identifier)) {
-			this.#nameIndex.set(identifier, key);
-		}
+		this.#map.set(key, [identifier, identity, `${filePath}:${line}:${col}`, filePath, localName]);
 	}
 
 	/**
@@ -70,7 +66,7 @@ export class PretenderDirector {
 		dependencies?: Set<string>,
 		entry?: PretenderScanEntry,
 	) {
-		return dependencyMapper(this.#map, this.#nameIndex, {
+		return dependencyMapper(this.#map, undefined, {
 			importsByFile: this.#importsByFile,
 			cwd,
 			sources,

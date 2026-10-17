@@ -83,7 +83,7 @@ In watch mode or an editor session, the component files `auto` (and `scan`) read
 
 ### JSX Scanner
 
-The JSX scanner analyzes components defined in files using the TypeScript compiler API. It searches for functions or function objects that return elements and maps their function names or the variable names holding these function objects. For example, if a function object named `Foo` returns a `<div>`, the component `Foo` is considered as pretending to be a `div`.
+The JSX scanner analyzes components defined in files using the TypeScript compiler API. It searches for functions or function objects that return elements and maps their function names or the variable names holding these function objects. For example, if a function object named `Foo` returns a `<div>`, the component `Foo` is considered as pretending to be a `div`. A default export without a name of its own (`export default () => …`, `export default function () {…}`, `export default memo(() => …)`) is named after its file, as a template component is (see [Template Scanner](#template-scanner)).
 
 ```jsx
 const Foo = () => <div />;
@@ -142,6 +142,8 @@ Known limitations:
 
 The template scanner delegates to each parser package's `component-scanner` subpath export (e.g., `@markuplint/vue-parser/component-scanner`). Each parser's component-scanner uses its own MLAST parser to extract the root element at depth=0, detect attributes (an attribute whose value is an expression, such as `:type` in Vue or `type={kind}` in Svelte and Astro, is recorded as `{ "dynamic": true }` under its own name; event handlers and other directives are not attributes), slot/children usage, and extract script source blocks. This keeps framework-specific scanning logic co-located with the parser that understands the framework best.
 
+A template component is named after its file in PascalCase (`button-group.vue` is `ButtonGroup`; an `index` file takes the name of its directory). A file whose name does not make a JavaScript identifier (`[id].vue`, `+page.svelte`, `Button.client.vue`) gives no name, so it gets no pretender.
+
 The scanner reads the script (`<script setup>` of Vue, the instance script of Svelte, the frontmatter of Astro) for the props the component declares, and an attribute whose expression is just one of them (`:aria-label="label"` after `defineProps(['label'])`, `aria-label={label}` after `let { label } = $props()`, `export let label`, or `const { label } = Astro.props`) is `{ "fromAttr": "label", "omitIfMissing": true }`. Not read: the Options API `props`, a type that is not a literal (`defineProps<Props>()`), and a prop with a default value. A Boolean-typed Vue prop that the usage site omits is `false`, not `undefined`, so the attribute it is passed to is rendered with `"false"`; the scanner omits it, as no type is resolved. `inheritAttrs` is set when the root spreads the props (`{...rest}` of a destructuring, `{...$$restProps}`, `{...Astro.props}`). Vue falls the attributes through to the root of a template that has one root, so it is set for such a component unless it says `inheritAttrs: false` or declares props (the props are not attributes, and `inheritAttrs` cannot say which ones are); `v-bind="$attrs"` on the root sets it as well.
 
 ```vue
@@ -190,6 +192,8 @@ Barrel file re-exports can be resolved with `resolveBarrelExport`, which maps a 
 ### Lint-time Disambiguation
 
 When the same component name is declared in more than one scanned file (e.g., two unrelated `Item` components rendering different elements), the generated pretenders keep independent entries for each — but `markuplint`'s lint pipeline still needs to know, for the specific file being linted, which one it actually refers to. `disambiguatePretenders` resolves this from the lint target's own declarations and imports, following an imported barrel file's re-exports (`export { X } from`, `export * from`) to the file that declares the component; it's normally invoked automatically by `markuplint`'s config resolution, not called directly. A component loaded with `lazy(() => import('./b/Item'))` is matched to `b/Item` as a static `import` of it is.
+
+A JSX/TSX default export without a name of its own is named after its file, so one file can hold two components of one name (`export const Button` and `export default () => …` in `Button.tsx`). Each scanned JSX/TSX entry carries `localName`, the name it is declared under (`default` for such a default export), and the import picks the entry of the declaration it resolves to: a default import the default export, a named import the named one. A default export never stands for a tag in its own file.
 
 A name the file imports from a package (installed or not, directly or through a re-export) is none of the project's components, so every scanned component of that name is dropped for that file — even when there is only one. Without this, a `Button` imported from a package would be linted as the project's own `Button`. To give a package's component a pretender, write the entry by hand in the config (an entry without a `filePath` is never touched).
 

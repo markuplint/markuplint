@@ -303,6 +303,21 @@ export type Pretender = {
 	 * @experimental
 	 */
 	readonly filePath?: string;
+
+	/**
+	 * The name the component is declared under in the file of `filePath`: `default` for a
+	 * default export without a name of its own, whose `selector` is derived from the file
+	 * name. Absent for a component that is a whole file (Vue, Svelte, Astro), for an entry
+	 * written by hand, and in a list scanned before this field was added; such an entry is
+	 * told apart by its file alone.
+	 *
+	 * Two components of one file can share a `selector` (`export const Button` and an
+	 * anonymous default export of `Button.tsx`), so `disambiguatePretenders` keeps the entry
+	 * of the declaration the import resolves to, not just one of its file.
+	 *
+	 * @experimental
+	 */
+	readonly localName?: string;
 };
 
 export type OriginalNode = {

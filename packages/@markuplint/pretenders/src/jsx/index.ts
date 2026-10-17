@@ -12,7 +12,7 @@ import type { Draft } from './create-identify.js';
 import type { PropResolver } from './resolve-prop.js';
 import type { PretenderScanJSXOptions } from './types.js';
 import type { Pretender } from '@markuplint/ml-config';
-import type { FunctionDeclaration, JSDoc, Node, SourceFile, VariableDeclaration } from 'typescript';
+import type { ExportAssignment, FunctionDeclaration, JSDoc, Node, SourceFile, VariableDeclaration } from 'typescript';
 
 import path from 'node:path';
 
@@ -20,9 +20,11 @@ import { getPosition } from '@markuplint/parser-utils/location';
 import ts from 'typescript';
 
 import { createScanner } from '../create-scanner.js';
+import { DEFAULT_LOCAL_NAME, wrappedIdentifier } from '../export-table.js';
 import { collectImportBindings } from '../import-resolver/analyze-jsx-imports.js';
 import { normalizePath, recordDependency } from '../import-resolver/resolve-module-file.js';
 import { PretenderDirector } from '../pretender-director.js';
+import { componentNameOfFile } from '../template/derive-name.js';
 
 import { collectReturnExpressions, findComponentFunction, resolveRoots } from './collect-roots.js';
 import { createCachingCompilerHost } from './compiler-host.js';
@@ -36,6 +38,7 @@ const {
 	createProgram,
 	forEachChild,
 	isCallExpression,
+	isExportAssignment,
 	isFunctionDeclaration,
 	isTaggedTemplateExpression,
 	isVariableDeclaration,
@@ -102,6 +105,13 @@ const defaultOptions: Required<Omit<PretenderScanJSXOptions, 'sources' | 'depend
  * - HOC / wrapper function patterns
  * - Fragment and provider component transparency
  * - `@pretends null` JSDoc tag to opt out a component
+ *
+ * A default export without a name of its own (`export default () => ...`,
+ * `export default function () {...}`, `export default memo(() => ...)`) can be imported
+ * under any name, so it is named after its file as a Vue/Svelte/Astro component is
+ * (`componentNameOfFile`), unless the file name makes no component name. Its local
+ * name is `default` (`Pretender.localName`), which no local binding can be named, so a
+ * declaration in the same file whose name is the same as the file stays a component of its own.
  *
  * @param files - Absolute file paths to scan (relative paths cause a `ReferenceError`)
  * @param options - JSX scanner configuration (fragment patterns, styled-components, wrappers, etc.)
@@ -207,6 +217,14 @@ export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 			 * ```
 			 */
 			find(root, isFunctionDeclaration, define);
+
+			/**
+			 * ```
+			 * export default () => ...
+			 * ^
+			 * ```
+			 */
+			find(root, isExportAssignment, defineDefault);
 		}
 
 		function define(
@@ -216,22 +234,21 @@ export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 			sourceFile: SourceFile,
 		) {
 			if (!dec.name) {
+				/**
+				 * ```
+				 * export default function () {...}
+				 * ^
+				 * ```
+				 */
+				if (isFunctionDeclaration(dec)) {
+					defineDefault(dec, sourceFile);
+				}
 				return;
 			}
 			const variableName = dec.name.getText(sourceFile);
 
-			if (ignoreComponentNames.includes(variableName)) {
+			if (ignoreComponentNames.includes(variableName) || optsOut(dec)) {
 				return;
-			}
-
-			if ('jsDoc' in dec && dec.jsDoc) {
-				const jsDoc = dec.jsDoc as JSDoc[];
-				const pretendsTag = jsDoc
-					.flatMap(doc => doc.tags ?? [])
-					.find(doc => doc.tagName.text.toLowerCase() === 'pretends');
-				if (pretendsTag && pretendsTag.comment === 'null') {
-					return;
-				}
 			}
 
 			const { line, column } = getPosition(sourceFile.text, dec.name.pos);
@@ -248,6 +265,28 @@ export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 			findBody(dec, variableName, sourceFile, line, column);
 		}
 
+		function defineDefault(
+			// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+			dec: ExportAssignment | FunctionDeclaration,
+			// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+			sourceFile: SourceFile,
+		) {
+			// `export = ...` is not a default export, and `export default Component` or
+			// `export default memo(Component)` stands for a declaration that `define` takes
+			// (see `wrappedIdentifier`).
+			if (isExportAssignment(dec) && (dec.isExportEquals || wrappedIdentifier(dec.expression) != null)) {
+				return;
+			}
+
+			const name = componentNameOfFile(sourceFile.fileName);
+			if (name == null || ignoreComponentNames.includes(name) || optsOut(dec)) {
+				return;
+			}
+
+			const { line, column } = getPosition(sourceFile.text, dec.getStart(sourceFile));
+			findBody(dec, name, sourceFile, line, column, DEFAULT_LOCAL_NAME);
+		}
+
 		function findBody(
 			// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 			root: Node,
@@ -256,8 +295,11 @@ export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 			sourceFile: SourceFile,
 			line: number,
 			col: number,
+			localName = name,
 		) {
 			const filePath = normalizePath(path.relative(cwd, sourceFile.fileName));
+			// The same key as `dependency-mapper` builds from the export table.
+			const key = `${filePath}#${localName}`;
 			const find = finder(sourceFile);
 
 			/**
@@ -269,7 +311,9 @@ export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 			 * Only the component's own return points decide which element it is, so
 			 * a nested function (`items.map(i => <li />)`) is not one of them.
 			 */
-			const fn = findComponentFunction(isVariableDeclaration(root) ? root.initializer : root);
+			const fn = findComponentFunction(
+				isVariableDeclaration(root) ? root.initializer : isExportAssignment(root) ? root.expression : root,
+			);
 			if (fn) {
 				const drafts: Draft[] = [];
 				let representable = true;
@@ -288,7 +332,7 @@ export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 
 				const merged = representable ? mergeDrafts(drafts) : undefined;
 				if (merged) {
-					director.add(name, createIdentity(merged), filePath, line, col, `${filePath}#${name}`);
+					director.add(name, createIdentity(merged), filePath, line, col, key, localName);
 				}
 			}
 
@@ -320,7 +364,8 @@ export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 						filePath,
 						line,
 						col,
-						`${filePath}#${name}`,
+						key,
+						localName,
 					);
 				}
 			});
@@ -376,7 +421,8 @@ export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 						filePath,
 						line,
 						col,
-						`${filePath}#${name}`,
+						key,
+						localName,
 					);
 				}
 			});
@@ -385,6 +431,22 @@ export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 		return Promise.resolve(director.getPretenders(cwd, sources, dependencies, entry));
 	},
 );
+
+/**
+ * Whether the JSDoc of the declaration carries `@pretends null`.
+ */
+function optsOut(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	dec: Node,
+) {
+	if (!('jsDoc' in dec) || !dec.jsDoc) {
+		return false;
+	}
+	const pretendsTag = (dec.jsDoc as JSDoc[])
+		.flatMap(doc => doc.tags ?? [])
+		.find(doc => doc.tagName.text.toLowerCase() === 'pretends');
+	return pretendsTag?.comment === 'null';
+}
 
 function toRegexp(pattern: string) {
 	const matched = pattern.match(/^\/(.+)\/([gi]*)$/i);

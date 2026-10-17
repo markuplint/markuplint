@@ -1112,4 +1112,66 @@ describe('dependencyMapper: the names the entry file gives its imports', () => {
 			expect(dependencies).toContain(normalizePath(barrel));
 		});
 	});
+
+	describe('an import resolved to a key the map does not hold (issue #4289)', () => {
+		test('a key of the scan that spells the same file otherwise is that file', async () => {
+			const tmpDir = await mkdtemp(path.join(os.tmpdir(), 'dependency-mapper-spelling-'));
+			try {
+				await mkdir(path.join(tmpDir, 'real'));
+				await writeFile(path.join(tmpDir, 'real', 'a.tsx'), 'export const Item = () => <button />;');
+				// The scan reached `real/a.tsx` through a link, as an import spells a file by another
+				// case on a case-insensitive file system.
+				await fs.promises.symlink(path.join(tmpDir, 'real'), path.join(tmpDir, 'alias'), 'junction');
+				const map: PretenderDirectorMap = new Map([
+					['other.tsx#Item', ['Item', 'li', undefined, 'other.tsx', 'Item']],
+					['alias/a.tsx#Item', ['Item', 'button', undefined, 'alias/a.tsx', 'Item']],
+					['c.tsx#C', ['C', 'Item', undefined, 'c.tsx', 'C']],
+				]);
+				const importsByFile = new Map([
+					[
+						'c.tsx',
+						[{ localName: 'Item', importedName: 'Item', source: './real/a', type: 'named' as const }],
+					],
+				]);
+
+				const result = dependencyMapper(map, undefined, { importsByFile, cwd: tmpDir });
+				expect(result.find(p => p.selector === 'C')).toStrictEqual({
+					selector: 'C',
+					as: 'button',
+					localName: 'C',
+					_via: ['Item'],
+				});
+			} finally {
+				await rm(tmpDir, { recursive: true, force: true });
+			}
+		});
+
+		test('a declaration without a component resolves to no component of the same name', () => {
+			const map: PretenderDirectorMap = new Map([
+				['other.tsx#Item', ['Item', 'li', undefined, 'other.tsx', 'Item']],
+				['c.tsx#C', ['C', 'Item', undefined, 'c.tsx']],
+			]);
+			// `a.tsx` declares `Item`, which the map has no component of.
+			const importsByFile = new Map([
+				['c.tsx', [{ localName: 'Item', importedName: 'Item', source: './a', type: 'named' as const }]],
+			]);
+
+			const result = dependencyMapper(map, undefined, { importsByFile, cwd: fixtureDir });
+			expect(result.find(p => p.selector === 'C')).toStrictEqual({ selector: 'C', as: 'Item' });
+		});
+
+		test('a name not imported does not resolve to the default export without a name of its own file', () => {
+			const map: PretenderDirectorMap = new Map([
+				['Card/index.tsx#default', ['Card', 'section', undefined, 'Card/index.tsx', 'default']],
+				['Card/index.tsx#Wrapper', ['Wrapper', 'Card', undefined, 'Card/index.tsx', 'Wrapper']],
+			]);
+
+			const result = dependencyMapper(map, undefined, { cwd: fixtureDir });
+			expect(result.find(p => p.selector === 'Wrapper')).toStrictEqual({
+				selector: 'Wrapper',
+				as: 'Card',
+				localName: 'Wrapper',
+			});
+		});
+	});
 });
