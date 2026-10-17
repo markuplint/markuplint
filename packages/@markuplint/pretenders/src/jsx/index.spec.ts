@@ -34,6 +34,8 @@ describe('jsxScanner', () => {
 					slots: null,
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/001.tsx:1:6'),
+				// #4289: the name the component is declared under, not output before
+				localName: 'NodeA',
 			},
 			{
 				selector: 'NodeB',
@@ -43,6 +45,8 @@ describe('jsxScanner', () => {
 					slots: null,
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/001.tsx:11:6'),
+				// #4289: the name the component is declared under, not output before
+				localName: 'NodeB',
 			},
 			{
 				selector: 'NodeC',
@@ -52,6 +56,8 @@ describe('jsxScanner', () => {
 					contents: [{ element: 'span' }],
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/001.tsx:15:6'),
+				// #4289: the name the component is declared under, not output before
+				localName: 'NodeC',
 			},
 			{
 				selector: 'NodeD',
@@ -59,36 +65,48 @@ describe('jsxScanner', () => {
 				// as: 'DReturns', // pre-#4082 baseline
 				as: { element: 'DReturns', slots: null },
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/001.tsx:25:6'),
+				// #4289: the name the component is declared under, not output before
+				localName: 'NodeD',
 			},
 			{
 				selector: 'NodeE',
 				// as: 'EReturns', // pre-#4082 baseline
 				as: { element: 'EReturns', slots: null },
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/001.tsx:27:6'),
+				// #4289: the name the component is declared under, not output before
+				localName: 'NodeE',
 			},
 			{
 				selector: 'NodeF',
 				// as: 'FReturns', // pre-#4082 baseline
 				as: { element: 'FReturns', slots: null },
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/001.tsx:33:9'),
+				// #4289: the name the component is declared under, not output before
+				localName: 'NodeF',
 			},
 			{
 				selector: 'NodeG',
 				// as: 'GReturns', // pre-#4082 baseline
 				as: { element: 'GReturns', slots: null },
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/001.tsx:38:16'),
+				// #4289: the name the component is declared under, not output before
+				localName: 'NodeG',
 			},
 			{
 				selector: 'NodeH',
 				// as: 'HReturns', // pre-#4082 baseline
 				as: { element: 'HReturns', slots: null },
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/001.tsx:42:24'),
+				// #4289: the name the component is declared under, not output before
+				localName: 'NodeH',
 			},
 			{
 				selector: 'NodeI',
 				// as: 'IReturns', // pre-#4082 baseline
 				as: { element: 'IReturns', slots: null },
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/001.tsx:46:9'),
+				// #4289: the name the component is declared under, not output before
+				localName: 'NodeI',
 			},
 		]);
 	});
@@ -111,6 +129,8 @@ describe('jsxScanner', () => {
 					inheritAttrs: true,
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/003.tsx:2:6'),
+				// #4289: the name the component is declared under, not output before
+				localName: 'Button',
 			},
 			{
 				selector: 'MyComponent2',
@@ -123,6 +143,8 @@ describe('jsxScanner', () => {
 				// BREAKING CHANGE: the `filePath` is where the component is declared, not where the component it renders is.
 				// filePath: _('packages/@markuplint/pretenders/test/fixtures/003.tsx:2:6'),
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/003.tsx:12:6'),
+				// #4289: the name the component is declared under, not output before
+				localName: 'MyComponent2',
 			},
 		]);
 
@@ -139,6 +161,8 @@ describe('jsxScanner', () => {
 					inheritAttrs: true,
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/003.tsx:7:6'),
+				// #4289: the name the component is declared under, not output before
+				localName: 'MyComponent',
 			},
 		]);
 	});
@@ -163,6 +187,8 @@ describe('jsxScanner', () => {
 					inheritAttrs: true,
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/004.tsx:2:6'),
+				// #4289: the name the component is declared under, not output before
+				localName: 'AnyPrimaryButton',
 			},
 			{
 				selector: 'SecondaryButton',
@@ -172,6 +198,8 @@ describe('jsxScanner', () => {
 					inheritAttrs: true,
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/004.tsx:1:6'),
+				// #4289: the name the component is declared under, not output before
+				localName: 'SecondaryButton',
 			},
 		]);
 	});
@@ -186,6 +214,8 @@ describe('jsxScanner', () => {
 					slots: null,
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/005.tsx:32:6'),
+				// #4289: the name the component is declared under, not output before
+				localName: 'AttrOnlyChildren',
 			},
 			{
 				selector: 'NestedChildren',
@@ -194,6 +224,8 @@ describe('jsxScanner', () => {
 					slots: [{ element: 'main' }],
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/005.tsx:22:6'),
+				// #4289: the name the component is declared under, not output before
+				localName: 'NestedChildren',
 			},
 			{
 				selector: 'StaticContent',
@@ -201,6 +233,8 @@ describe('jsxScanner', () => {
 				// as: 'p', // pre-#4082 baseline
 				as: { element: 'p', slots: null },
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/005.tsx:17:6'),
+				// #4289: the name the component is declared under, not output before
+				localName: 'StaticContent',
 			},
 			{
 				selector: 'TernaryChildren',
@@ -209,6 +243,8 @@ describe('jsxScanner', () => {
 					slots: true,
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/005.tsx:37:6'),
+				// #4289: the name the component is declared under, not output before
+				localName: 'TernaryChildren',
 			},
 			{
 				selector: 'VoidComponent',
@@ -220,6 +256,8 @@ describe('jsxScanner', () => {
 					slots: null,
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/005.tsx:12:6'),
+				// #4289: the name the component is declared under, not output before
+				localName: 'VoidComponent',
 			},
 			{
 				selector: 'WithChildren',
@@ -229,6 +267,8 @@ describe('jsxScanner', () => {
 					slots: true,
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/005.tsx:2:6'),
+				// #4289: the name the component is declared under, not output before
+				localName: 'WithChildren',
 			},
 			{
 				selector: 'WithPropsChildren',
@@ -237,6 +277,8 @@ describe('jsxScanner', () => {
 					slots: true,
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/005.tsx:7:6'),
+				// #4289: the name the component is declared under, not output before
+				localName: 'WithPropsChildren',
 			},
 		]);
 	});

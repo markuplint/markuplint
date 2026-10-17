@@ -69,6 +69,93 @@ describe('getExportTable', () => {
 		expect(table.byName.get('default')).toStrictEqual({ kind: 'local', localName: 'A' });
 	});
 
+	describe('a default export without a local name is recorded under the local name `default`', () => {
+		test('an arrow function', () => {
+			const table = getExportTable(sourceFile('export default () => <Item />;'));
+			expect(table.byName.get('default')).toStrictEqual({ kind: 'local', localName: 'default' });
+		});
+
+		test('a function declaration without a name', () => {
+			const table = getExportTable(sourceFile('export default function () { return null; }'));
+			expect(table.byName.get('default')).toStrictEqual({ kind: 'local', localName: 'default' });
+		});
+
+		test.each([
+			['memo(Item)', 'Item'],
+			['memo(Item as FC)', 'Item'],
+			['memo(Item, areEqual)', 'Item'],
+			['connect(mapState)(Item)', 'Item'],
+			['withStyles(theme => ({ root: theme }))(Item)', 'Item'],
+			['withLayout(Layout)(Page)', 'Page'],
+			['withRouter(memo(forwardRef(Item)))', 'Item'],
+			['Object.assign(Root, { Item })', 'Root'],
+		])('`export default %s` wraps %s', (expression, wrapped) => {
+			const table = getExportTable(sourceFile(`export default ${expression};`));
+			expect(table.byName.get('default')).toStrictEqual({
+				kind: 'local',
+				localName: 'default',
+				wraps: { kind: 'local', localName: wrapped },
+			});
+		});
+
+		test.each(['memo(() => <Item />)', 'Object.assign(Item.Root, { Part: Item.Part })', 'create()'])(
+			'`export default %s` wraps no binding',
+			expression => {
+				const table = getExportTable(sourceFile(`export default ${expression};`));
+				expect(table.byName.get('default')).toStrictEqual({ kind: 'local', localName: 'default' });
+			},
+		);
+
+		test('a wrapped binding the file imports is a re-export of what it imports', () => {
+			const table = getExportTable(
+				sourceFile("import Button from './Button';\nexport default withTheme(Button);"),
+			);
+			expect(table.byName.get('default')).toStrictEqual({
+				kind: 'local',
+				localName: 'default',
+				wraps: { kind: 're-export', source: './Button', importedName: 'default', viaImport: true },
+			});
+		});
+
+		test('a named export next to it stays its own entry', () => {
+			const table = getExportTable(sourceFile('export const Item = () => null;\nexport default () => null;'));
+			expect(table.byName.get('Item')).toStrictEqual({ kind: 'local', localName: 'Item' });
+			expect(table.byName.get('default')).toStrictEqual({ kind: 'local', localName: 'default' });
+		});
+
+		test('`export =` is not a default export', () => {
+			const table = getExportTable(sourceFile('export = () => null;'));
+			expect(table.byName.has('default')).toBe(false);
+		});
+	});
+
+	describe('a binding the file imports and exports again is a re-export of what it imports', () => {
+		test('export default of a default import', () => {
+			const table = getExportTable(sourceFile("import Item from './Item';\nexport default Item;"));
+			expect(table.byName.get('default')).toStrictEqual({
+				kind: 're-export',
+				source: './Item',
+				importedName: 'default',
+				viaImport: true,
+			});
+		});
+
+		test('export { X } of a named import under another name', () => {
+			const table = getExportTable(sourceFile("import { Base as Item } from './Base';\nexport { Item };"));
+			expect(table.byName.get('Item')).toStrictEqual({
+				kind: 're-export',
+				source: './Base',
+				importedName: 'Base',
+				viaImport: true,
+			});
+		});
+
+		test('a type-only import is not followed', () => {
+			const table = getExportTable(sourceFile("import type { Item } from './Item';\nexport { Item };"));
+			expect(table.byName.get('Item')).toStrictEqual({ kind: 'local', localName: 'Item' });
+		});
+	});
+
 	describe('type-only exports carry no component and are not recorded', () => {
 		test('export type { X } from', () => {
 			const table = getExportTable(sourceFile("export type { Props } from './a';"));

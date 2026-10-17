@@ -14,7 +14,7 @@ import { PretenderDirector } from '../pretender-director.js';
 import { getScanner } from '../scanner-loader.js';
 
 import { analyzeScript, createTemplatePropResolver } from './analyze-script.js';
-import { deriveName } from './derive-name.js';
+import { componentNameOfFile } from './derive-name.js';
 import { deriveSlotInfo, toAttrs } from './slot-info.js';
 
 const FRAMEWORKS: Readonly<Record<string, Framework>> = {
@@ -88,9 +88,9 @@ export const templateScanner = createScanner<PretenderScanTemplateOptions>(async
 	const director = new PretenderDirector();
 
 	for (const filePath of files) {
-		const componentName = deriveName(filePath);
+		const componentName = componentNameOfFile(filePath);
 
-		if (ignoreComponentNames.includes(componentName)) {
+		if (componentName == null || ignoreComponentNames.includes(componentName)) {
 			continue;
 		}
 
