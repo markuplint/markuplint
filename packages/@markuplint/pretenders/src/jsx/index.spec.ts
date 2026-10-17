@@ -34,7 +34,7 @@ describe('jsxScanner', () => {
 					slots: null,
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/001.tsx:1:6'),
-				// #4289: the name the component is declared under, not output before
+				// Behavior change: the entry carries `localName`, the name the component is declared under.
 				localName: 'NodeA',
 			},
 			{
@@ -45,7 +45,7 @@ describe('jsxScanner', () => {
 					slots: null,
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/001.tsx:11:6'),
-				// #4289: the name the component is declared under, not output before
+				// Behavior change: the entry carries `localName`, the name the component is declared under.
 				localName: 'NodeB',
 			},
 			{
@@ -56,7 +56,7 @@ describe('jsxScanner', () => {
 					contents: [{ element: 'span' }],
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/001.tsx:15:6'),
-				// #4289: the name the component is declared under, not output before
+				// Behavior change: the entry carries `localName`, the name the component is declared under.
 				localName: 'NodeC',
 			},
 			{
@@ -65,7 +65,7 @@ describe('jsxScanner', () => {
 				// as: 'DReturns', // pre-#4082 baseline
 				as: { element: 'DReturns', slots: null },
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/001.tsx:25:6'),
-				// #4289: the name the component is declared under, not output before
+				// Behavior change: the entry carries `localName`, the name the component is declared under.
 				localName: 'NodeD',
 			},
 			{
@@ -73,7 +73,7 @@ describe('jsxScanner', () => {
 				// as: 'EReturns', // pre-#4082 baseline
 				as: { element: 'EReturns', slots: null },
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/001.tsx:27:6'),
-				// #4289: the name the component is declared under, not output before
+				// Behavior change: the entry carries `localName`, the name the component is declared under.
 				localName: 'NodeE',
 			},
 			{
@@ -81,7 +81,7 @@ describe('jsxScanner', () => {
 				// as: 'FReturns', // pre-#4082 baseline
 				as: { element: 'FReturns', slots: null },
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/001.tsx:33:9'),
-				// #4289: the name the component is declared under, not output before
+				// Behavior change: the entry carries `localName`, the name the component is declared under.
 				localName: 'NodeF',
 			},
 			{
@@ -89,7 +89,7 @@ describe('jsxScanner', () => {
 				// as: 'GReturns', // pre-#4082 baseline
 				as: { element: 'GReturns', slots: null },
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/001.tsx:38:16'),
-				// #4289: the name the component is declared under, not output before
+				// Behavior change: the entry carries `localName`, the name the component is declared under.
 				localName: 'NodeG',
 			},
 			{
@@ -97,7 +97,7 @@ describe('jsxScanner', () => {
 				// as: 'HReturns', // pre-#4082 baseline
 				as: { element: 'HReturns', slots: null },
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/001.tsx:42:24'),
-				// #4289: the name the component is declared under, not output before
+				// Behavior change: the entry carries `localName`, the name the component is declared under.
 				localName: 'NodeH',
 			},
 			{
@@ -105,7 +105,7 @@ describe('jsxScanner', () => {
 				// as: 'IReturns', // pre-#4082 baseline
 				as: { element: 'IReturns', slots: null },
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/001.tsx:46:9'),
-				// #4289: the name the component is declared under, not output before
+				// Behavior change: the entry carries `localName`, the name the component is declared under.
 				localName: 'NodeI',
 			},
 		]);
@@ -129,7 +129,7 @@ describe('jsxScanner', () => {
 					inheritAttrs: true,
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/003.tsx:2:6'),
-				// #4289: the name the component is declared under, not output before
+				// Behavior change: the entry carries `localName`, the name the component is declared under.
 				localName: 'Button',
 			},
 			{
@@ -143,7 +143,7 @@ describe('jsxScanner', () => {
 				// Behavior change: the `filePath` is where the component is declared, not where the component it renders is.
 				// filePath: _('packages/@markuplint/pretenders/test/fixtures/003.tsx:2:6'), // previous
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/003.tsx:12:6'),
-				// #4289: the name the component is declared under, not output before
+				// Behavior change: the entry carries `localName`, the name the component is declared under.
 				localName: 'MyComponent2',
 			},
 		]);
@@ -161,7 +161,7 @@ describe('jsxScanner', () => {
 					inheritAttrs: true,
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/003.tsx:7:6'),
-				// #4289: the name the component is declared under, not output before
+				// Behavior change: the entry carries `localName`, the name the component is declared under.
 				localName: 'MyComponent',
 			},
 		]);
@@ -187,7 +187,7 @@ describe('jsxScanner', () => {
 					inheritAttrs: true,
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/004.tsx:2:6'),
-				// #4289: the name the component is declared under, not output before
+				// Behavior change: the entry carries `localName`, the name the component is declared under.
 				localName: 'AnyPrimaryButton',
 			},
 			{
@@ -198,7 +198,7 @@ describe('jsxScanner', () => {
 					inheritAttrs: true,
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/004.tsx:1:6'),
-				// #4289: the name the component is declared under, not output before
+				// Behavior change: the entry carries `localName`, the name the component is declared under.
 				localName: 'SecondaryButton',
 			},
 		]);
@@ -214,7 +214,7 @@ describe('jsxScanner', () => {
 					slots: null,
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/005.tsx:32:6'),
-				// #4289: the name the component is declared under, not output before
+				// Behavior change: the entry carries `localName`, the name the component is declared under.
 				localName: 'AttrOnlyChildren',
 			},
 			{
@@ -224,7 +224,7 @@ describe('jsxScanner', () => {
 					slots: [{ element: 'main' }],
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/005.tsx:22:6'),
-				// #4289: the name the component is declared under, not output before
+				// Behavior change: the entry carries `localName`, the name the component is declared under.
 				localName: 'NestedChildren',
 			},
 			{
@@ -233,7 +233,7 @@ describe('jsxScanner', () => {
 				// as: 'p', // pre-#4082 baseline
 				as: { element: 'p', slots: null },
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/005.tsx:17:6'),
-				// #4289: the name the component is declared under, not output before
+				// Behavior change: the entry carries `localName`, the name the component is declared under.
 				localName: 'StaticContent',
 			},
 			{
@@ -243,7 +243,7 @@ describe('jsxScanner', () => {
 					slots: true,
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/005.tsx:37:6'),
-				// #4289: the name the component is declared under, not output before
+				// Behavior change: the entry carries `localName`, the name the component is declared under.
 				localName: 'TernaryChildren',
 			},
 			{
@@ -256,7 +256,7 @@ describe('jsxScanner', () => {
 					slots: null,
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/005.tsx:12:6'),
-				// #4289: the name the component is declared under, not output before
+				// Behavior change: the entry carries `localName`, the name the component is declared under.
 				localName: 'VoidComponent',
 			},
 			{
@@ -267,7 +267,7 @@ describe('jsxScanner', () => {
 					slots: true,
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/005.tsx:2:6'),
-				// #4289: the name the component is declared under, not output before
+				// Behavior change: the entry carries `localName`, the name the component is declared under.
 				localName: 'WithChildren',
 			},
 			{
@@ -277,7 +277,7 @@ describe('jsxScanner', () => {
 					slots: true,
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/005.tsx:7:6'),
-				// #4289: the name the component is declared under, not output before
+				// Behavior change: the entry carries `localName`, the name the component is declared under.
 				localName: 'WithPropsChildren',
 			},
 		]);

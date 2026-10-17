@@ -26,7 +26,7 @@ describe('scan', () => {
 					// as: 'div', // pre-#4082 baseline
 					as: { element: 'div', slots: null },
 					filePath: _('packages/@markuplint/pretenders/test/fixtures/002.tsx:1:6'),
-					// #4289: the name the component is declared under, not output before
+					// Behavior change: the entry carries `localName`, the name the component is declared under.
 					localName: 'FooBar',
 				},
 			]);
