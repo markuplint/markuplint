@@ -21,6 +21,11 @@
  * names it re-exports: otherwise a component imported through a barrel file
  * would never be reached. A re-export in a Vue / Svelte / Astro script block
  * is not followed.
+ *
+ * A component is referenced by the name the importing file gives it, which the file that declares
+ * it does not know (`import { Named as A }`). So the entry's import bindings go to the scan as
+ * `PretenderScanEntry`, and each scanner adds the pretenders under those names. A `scan()` of a
+ * fixed set of files has no entry, and gives only the declared names.
  */
 
 import type { Pretender } from '@markuplint/ml-config';
@@ -30,7 +35,7 @@ import path from 'node:path';
 
 import { isFatalError } from '@markuplint/shared';
 
-import { collectReferencedModules } from './import-resolver/index.js';
+import { analyzeImports, collectReferencedModules } from './import-resolver/index.js';
 import { normalizePath, recordDependency, resolveModuleFile } from './import-resolver/resolve-module-file.js';
 import { scan } from './scan.js';
 
@@ -184,9 +189,14 @@ export async function autoScan(
 		frontier = nextFrontier;
 	}
 
+	// The names the entry gives its imports: a scan of the collected files cannot know them,
+	// and a component is looked up by them at lint time (see `PretenderScanEntry`).
+	const analysis = await analyzeImports(entryAbsPath, sourceCode);
+	const entry = analysis ? { filePath: entryAbsPath, bindings: analysis.bindings } : undefined;
+
 	// `followImports: false`: this walk already decided which files belong, so
 	// the TypeScript program must not add more of them (see `DEFAULT_DEPTH`).
-	const pretenders = await scan(collected, { sources, followImports: false, dependencies });
+	const pretenders = await scan(collected, { sources, followImports: false, dependencies, entry });
 	resultCache.set(entryKey, { sourceCode, depth: maxDepth, pretenders, dependencies });
 	for (const dependency of dependencies) {
 		options?.dependencies?.add(dependency);

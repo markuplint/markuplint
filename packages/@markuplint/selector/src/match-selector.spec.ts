@@ -363,3 +363,35 @@ describe('Issues', () => {
 		});
 	});
 });
+
+describe('nodeName of a regular expression selector in a document that is case-sensitive about tag names', () => {
+	// What `MLElement` is for a parser with `tagNameCaseSensitive` (JSX, Svelte, Astro, MDX):
+	// `<foobar>` has the `localName` / `nodeName` pair of any HTML element.
+	const mockElement = (tagNameCaseSensitive?: boolean) => ({
+		nodeType: 1,
+		nodeName: 'FOOBAR',
+		localName: 'foobar',
+		id: '',
+		namespaceURI: 'http://www.w3.org/1999/xhtml',
+		classList: { contains: () => false },
+		attributes: [],
+		parentNode: null,
+		parentElement: null,
+		previousElementSibling: null,
+		nextElementSibling: null,
+		children: [],
+		...(tagNameCaseSensitive === undefined ? {} : { tagNameCaseSensitive }),
+	});
+
+	test('a pattern in another case does not match', () => {
+		expect(matchSelector(mockElement(true), { nodeName: '/^FooBar$/' }).matched).toBe(false);
+	});
+
+	test('a pattern in the case of the tag matches', () => {
+		expect(matchSelector(mockElement(true), { nodeName: '/^foobar$/' }).matched).toBe(true);
+	});
+
+	test.each([false, undefined])('the case is not told apart when tagNameCaseSensitive is %s', flag => {
+		expect(matchSelector(mockElement(flag), { nodeName: '/^FooBar$/' }).matched).toBe(true);
+	});
+});

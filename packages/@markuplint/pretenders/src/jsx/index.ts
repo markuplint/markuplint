@@ -51,10 +51,10 @@ const COMPILER_OPTIONS: ts.CompilerOptions = {
 	types: [],
 };
 
-// `sources` and `dependencies` have no meaningful default (they are per-call
+// `sources`, `dependencies` and `entry` have no meaningful default (they are per-call
 // inputs / sinks), so they're excluded from the Required<> defaults and read
 // straight off `options`.
-const defaultOptions: Required<Omit<PretenderScanJSXOptions, 'sources' | 'dependencies'>> = {
+const defaultOptions: Required<Omit<PretenderScanJSXOptions, 'sources' | 'dependencies' | 'entry'>> = {
 	cwd: process.cwd(),
 	asFragment: [/(?:^|\.)provider$/i],
 	ignoreComponentNames: [],
@@ -119,6 +119,7 @@ export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 			followImports = defaultOptions.followImports,
 			sources,
 			dependencies,
+			entry,
 		} = options;
 
 		const director = new PretenderDirector();
@@ -381,7 +382,7 @@ export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 			});
 		}
 
-		return Promise.resolve(director.getPretenders(cwd, sources, dependencies));
+		return Promise.resolve(director.getPretenders(cwd, sources, dependencies, entry));
 	},
 );
 

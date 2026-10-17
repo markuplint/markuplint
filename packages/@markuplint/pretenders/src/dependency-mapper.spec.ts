@@ -1,3 +1,4 @@
+import type { ImportBinding } from './import-resolver/types.js';
 import type { PretenderDirectorMap } from './pretender-director.js';
 
 import fs from 'node:fs';
@@ -903,6 +904,177 @@ describe('dependencyMapper', () => {
 				spy.mockRestore();
 				clearExportTableCache();
 			}
+		});
+	});
+});
+
+describe('dependencyMapper: the names the entry file gives its imports', () => {
+	const entry = (...bindings: ImportBinding[]) => ({ filePath: path.join(fixtureDir, 'entry.tsx'), bindings });
+	const named = (localName: string, importedName: string, source: string): ImportBinding => ({
+		localName,
+		importedName,
+		source,
+		type: 'named',
+	});
+	const defaultImport = (localName: string, source: string): ImportBinding => ({
+		localName,
+		importedName: 'default',
+		source,
+		type: 'default',
+	});
+	const itemMap = (): PretenderDirectorMap => new Map([['a.tsx#Item', ['Item', 'button', 'a.tsx:1:14', 'a.tsx']]]);
+
+	test('adds a pretender under the local name of a renamed named import', () => {
+		const result = dependencyMapper(itemMap(), undefined, {
+			cwd: fixtureDir,
+			entry: entry(named('A', 'Item', './a')),
+		});
+
+		expect(result).toStrictEqual([
+			{ selector: 'A', as: 'button', filePath: 'a.tsx:1:14' },
+			{ selector: 'Item', as: 'button', filePath: 'a.tsx:1:14' },
+		]);
+	});
+
+	test('adds a pretender under the local name of a default import of any name', () => {
+		const map: PretenderDirectorMap = new Map([['d.tsx#Item', ['Item', 'button', 'd.tsx:1:25', 'd.tsx']]]);
+
+		const result = dependencyMapper(map, undefined, { cwd: fixtureDir, entry: entry(defaultImport('B', './d')) });
+
+		expect(result.map(pretender => pretender.selector)).toStrictEqual(['B', 'Item']);
+		expect(result.find(pretender => pretender.selector === 'B')).toStrictEqual({
+			selector: 'B',
+			as: 'button',
+			filePath: 'd.tsx:1:25',
+		});
+	});
+
+	test('adds nothing for an import that is not renamed', () => {
+		const withoutEntry = dependencyMapper(itemMap(), undefined, { cwd: fixtureDir });
+
+		const result = dependencyMapper(itemMap(), undefined, {
+			cwd: fixtureDir,
+			entry: entry(named('Item', 'Item', './a')),
+		});
+
+		expect(result).toStrictEqual(withoutEntry);
+	});
+
+	test('keeps a component of the same name as the alias, for the lint to choose by the import', () => {
+		const map: PretenderDirectorMap = new Map([
+			['a.tsx#Item', ['Item', 'button', 'a.tsx:1:14', 'a.tsx']],
+			['other.tsx#A', ['A', 'li', 'other.tsx:1:14', 'other.tsx']],
+		]);
+
+		const result = dependencyMapper(map, undefined, { cwd: fixtureDir, entry: entry(named('A', 'Item', './a')) });
+
+		expect(result.filter(pretender => pretender.selector === 'A')).toStrictEqual([
+			{ selector: 'A', as: 'li', filePath: 'other.tsx:1:14' },
+			{ selector: 'A', as: 'button', filePath: 'a.tsx:1:14' },
+		]);
+	});
+
+	describe('a component that wraps another one', () => {
+		const wrapperMap = (): PretenderDirectorMap =>
+			new Map([
+				['wrapper-a.tsx#Base', ['Base', 'div', 'wrapper-a.tsx:1:14', 'wrapper-a.tsx']],
+				['wrapper-a.tsx#Wrapper', ['Wrapper', 'Base', 'wrapper-a.tsx:2:14', 'wrapper-a.tsx']],
+			]);
+
+		test('is found where it is declared, not where the component it renders is', () => {
+			const result = dependencyMapper(wrapperMap(), undefined, { cwd: fixtureDir });
+
+			expect(result.find(pretender => pretender.selector === 'Wrapper')).toStrictEqual({
+				selector: 'Wrapper',
+				as: 'div',
+				filePath: 'wrapper-a.tsx:2:14',
+				_via: ['Base'],
+			});
+		});
+
+		test('keeps what it renders and where it is declared under an alias', () => {
+			const result = dependencyMapper(wrapperMap(), undefined, {
+				cwd: fixtureDir,
+				entry: entry(named('W', 'Wrapper', './wrapper-a')),
+			});
+
+			expect(result.find(pretender => pretender.selector === 'W')).toStrictEqual({
+				selector: 'W',
+				as: 'div',
+				filePath: 'wrapper-a.tsx:2:14',
+				_via: ['Base'],
+			});
+		});
+	});
+
+	test.each([
+		['a dynamic import', { localName: '*', importedName: '*', source: './a', type: 'dynamic' as const }],
+		['a namespace import', { localName: 'A', importedName: '*', source: './a', type: 'namespace' as const }],
+		['an import from a package', named('A', 'Item', 'not-installed-package')],
+		['an import of a name that is not a component of the map', named('A', 'helper', './a')],
+		['a local name that is not capitalized', named('item', 'Item', './a')],
+	])('adds nothing for %s', (_, binding) => {
+		const withoutEntry = dependencyMapper(itemMap(), undefined, { cwd: fixtureDir });
+
+		const result = dependencyMapper(itemMap(), undefined, { cwd: fixtureDir, entry: entry(binding) });
+
+		expect(result).toStrictEqual(withoutEntry);
+	});
+
+	describe('with files that are not in the fixture directory', () => {
+		let tmpDir: string;
+
+		beforeEach(async () => {
+			tmpDir = await mkdtemp(path.join(os.tmpdir(), 'ml-entry-alias-'));
+			clearModuleResolutionCaches();
+			clearExportTableCache();
+		});
+
+		afterEach(async () => {
+			await rm(tmpDir, { recursive: true, force: true });
+		});
+
+		test('adds a pretender under the local name of a template component imported under another name', async () => {
+			await writeFile(path.join(tmpDir, 'Item.vue'), '<template><img src="x.png" /></template>');
+			const map: PretenderDirectorMap = new Map([['Item.vue', ['Item', 'img', 'Item.vue:1:11', 'Item.vue']]]);
+
+			const result = dependencyMapper(map, undefined, {
+				cwd: tmpDir,
+				entry: {
+					filePath: path.join(tmpDir, 'Page.tsx'),
+					bindings: [defaultImport('Foo', './Item.vue')],
+				},
+			});
+
+			expect(result.find(pretender => pretender.selector === 'Foo')).toStrictEqual({
+				selector: 'Foo',
+				as: 'img',
+				filePath: 'Item.vue:1:11',
+			});
+		});
+
+		test('follows a renamed re-export of a barrel, and reports the barrel as read', async () => {
+			await writeFile(path.join(tmpDir, 'a.tsx'), 'export const Item = () => null;\n');
+			const barrel = path.join(tmpDir, 'barrel.ts');
+			await writeFile(barrel, "export { Item as Renamed } from './a';\n");
+			const map: PretenderDirectorMap = new Map([['a.tsx#Item', ['Item', 'button', 'a.tsx:1:14', 'a.tsx']]]);
+			const dependencies = new Set<string>();
+
+			const result = dependencyMapper(map, undefined, {
+				cwd: tmpDir,
+				dependencies,
+				entry: {
+					filePath: path.join(tmpDir, 'Page.tsx'),
+					bindings: [named('R', 'Renamed', './barrel')],
+				},
+			});
+
+			expect(result.find(pretender => pretender.selector === 'R')).toStrictEqual({
+				selector: 'R',
+				as: 'button',
+				filePath: 'a.tsx:1:14',
+			});
+			expect(dependencies).toContain(normalizePath(barrel));
 		});
 	});
 });

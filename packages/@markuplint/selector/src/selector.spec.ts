@@ -372,3 +372,47 @@ describe('search', () => {
 		expect(createSelector(':has(button)').search(el)[0].has?.[0].nodes?.[0].nodeName).toBe('BUTTON');
 	});
 });
+
+describe('type selector of an element of a document that is case-sensitive about tag names', () => {
+	// What `MLElement` is for a parser with `tagNameCaseSensitive` (JSX, Svelte, Astro, MDX):
+	// `<foobar>` is not a component, so `nodeName` is upper-cased and `localName` is as written,
+	// which `isPureHTMLElement` takes for the case-insensitive convention of HTML.
+	const mockElement = (localName: string, tagNameCaseSensitive?: boolean) => ({
+		nodeType: 1,
+		nodeName: localName.toUpperCase(),
+		localName,
+		id: '',
+		namespaceURI: 'http://www.w3.org/1999/xhtml',
+		classList: { contains: () => false },
+		attributes: [],
+		parentNode: null,
+		parentElement: null,
+		previousElementSibling: null,
+		nextElementSibling: null,
+		children: [],
+		...(tagNameCaseSensitive === undefined ? {} : { tagNameCaseSensitive }),
+	});
+
+	test('a selector with another case does not match', () => {
+		expect(createSelector('FooBar').match(mockElement('foobar', true))).toBe(false);
+		expect(createSelector('DIV').match(mockElement('div', true))).toBe(false);
+	});
+
+	test('a selector with the same case matches', () => {
+		expect(createSelector('foobar').match(mockElement('foobar', true))).toBeTruthy();
+		expect(createSelector('div').match(mockElement('div', true))).toBeTruthy();
+	});
+
+	test.each([false, undefined])('the case is not told apart when tagNameCaseSensitive is %s', flag => {
+		expect(createSelector('FooBar').match(mockElement('foobar', flag))).toBeTruthy();
+		expect(createSelector('DIV').match(mockElement('div', flag))).toBeTruthy();
+	});
+
+	test('the case of an attribute name is still not told apart', () => {
+		const el = {
+			...mockElement('meta', true),
+			attributes: [{ name: 'CHARSET', localName: 'CHARSET', value: 'utf-8', namespaceURI: null }],
+		};
+		expect(createSelector('meta[charset]').match(el)).toBeTruthy();
+	});
+});

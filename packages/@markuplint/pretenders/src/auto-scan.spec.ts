@@ -8,6 +8,7 @@ import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
 import { normalizePath } from './import-resolver/resolve-module-file.js';
 
 import { autoScan, clearAutoScanCache } from './auto-scan.js';
+import { disambiguatePretenders } from './disambiguate.js';
 
 describe('autoScan', () => {
 	let tmpDir: string;
@@ -530,5 +531,139 @@ describe('autoScan', () => {
 
 			expect(dependencies).toContain(normalizePath(path.join(uiDir, 'Base.tsx')));
 		});
+	});
+});
+
+describe('autoScan: the names the entry file gives its imports', () => {
+	let tmpDir: string;
+
+	const img = { element: 'img', slots: null };
+
+	beforeEach(async () => {
+		tmpDir = await mkdtemp(path.join(os.tmpdir(), 'auto-scan-alias-'));
+		await writeFile(path.join(tmpDir, 'Named.tsx'), 'export const Named = () => <img src="x.png" />;');
+		await writeFile(
+			path.join(tmpDir, 'DefNamed.tsx'),
+			'const DefNamed = () => <img src="x.png" />;\nexport default DefNamed;',
+		);
+		await writeFile(path.join(tmpDir, 'Item.vue'), '<template><img src="x.png" /></template>');
+	});
+
+	afterEach(async () => {
+		await rm(tmpDir, { recursive: true, force: true });
+		clearAutoScanCache();
+	});
+
+	test('a .tsx entry resolves a named import under the name it gives it', async () => {
+		const entrySource = "import { Named as A } from './Named';\nexport const P = () => <div><A /></div>;";
+
+		const result = await autoScan(path.join(tmpDir, 'entry.tsx'), entrySource);
+
+		expect(result.find(p => p.selector === 'A')).toMatchObject({ as: img });
+		expect(result.find(p => p.selector === 'Named')).toMatchObject({ as: img });
+	});
+
+	test('a .tsx entry resolves a default import under any name', async () => {
+		const entrySource = "import B from './DefNamed';\nexport const P = () => <div><B /></div>;";
+
+		const result = await autoScan(path.join(tmpDir, 'entry.tsx'), entrySource);
+
+		expect(result.find(p => p.selector === 'B')).toMatchObject({ as: img });
+	});
+
+	test('a .tsx entry resolves a template component under the name it gives it', async () => {
+		const entrySource = "import Foo from './Item.vue';\nexport const P = () => <div><Foo /></div>;";
+
+		const result = await autoScan(path.join(tmpDir, 'entry.tsx'), entrySource);
+
+		expect(result.find(p => p.selector === 'Foo')).toMatchObject({ as: img });
+	});
+
+	test('a .vue entry resolves a .tsx import under the name it gives it', async () => {
+		const entrySource = [
+			'<script setup>',
+			"import { Named as A } from './Named';",
+			'</script>',
+			'<template><div><A /></div></template>',
+		].join('\n');
+
+		const result = await autoScan(path.join(tmpDir, 'Page.vue'), entrySource);
+
+		expect(result.find(p => p.selector === 'A')).toMatchObject({ as: img });
+	});
+
+	test('a .vue entry with several roots resolves a renamed import as well', async () => {
+		const entrySource = [
+			'<script setup>',
+			"import { Named as A } from './Named';",
+			'</script>',
+			'<template><A /><p>text</p></template>',
+		].join('\n');
+
+		const result = await autoScan(path.join(tmpDir, 'Page.vue'), entrySource);
+
+		expect(result.find(p => p.selector === 'A')).toMatchObject({ as: img });
+	});
+
+	test('an .astro entry resolves a .tsx import under the name it gives it', async () => {
+		const entrySource = ['---', "import { Named as A } from './Named';", '---', '<div><A /></div>'].join('\n');
+
+		const result = await autoScan(path.join(tmpDir, 'Page.astro'), entrySource);
+
+		expect(result.find(p => p.selector === 'A')).toMatchObject({ as: img });
+	});
+
+	test('an .mdx entry, which is not scanned itself, resolves a .tsx import under the name it gives it', async () => {
+		const entrySource = "import { Named as A } from './Named'\n\n<A />\n";
+
+		const result = await autoScan(path.join(tmpDir, 'Page.mdx'), entrySource);
+
+		expect(result.find(p => p.selector === 'A')).toMatchObject({ as: img });
+	});
+
+	test('an import that is not renamed gives no second pretender', async () => {
+		const entrySource = "import { Named } from './Named';\nexport const P = () => <div><Named /></div>;";
+
+		const result = await autoScan(path.join(tmpDir, 'entry.tsx'), entrySource);
+
+		expect(result.filter(p => p.selector === 'Named')).toHaveLength(1);
+	});
+
+	test('two components of the same name that wrap another one are told apart at lint time', async () => {
+		for (const dir of ['x', 'y']) {
+			await mkdir(path.join(tmpDir, dir));
+			await writeFile(
+				path.join(tmpDir, dir, 'Item.tsx'),
+				"import { Base } from './Base';\nexport const Item = () => <Base />;",
+			);
+		}
+		await writeFile(path.join(tmpDir, 'x', 'Base.tsx'), 'export const Base = () => <img src="x.png" />;');
+		await writeFile(path.join(tmpDir, 'y', 'Base.tsx'), 'export const Base = () => <span />;');
+		// `x/Item` is scanned first, so the first `Item` is not the one the entry uses.
+		const entryPath = path.join(tmpDir, 'entry.tsx');
+		const entrySource = [
+			"import { Item as Legacy } from './x/Item';",
+			"import { Item } from './y/Item';",
+			'export const P = () => <div><Legacy /><Item /></div>;',
+		].join('\n');
+
+		const scanned = await autoScan(entryPath, entrySource);
+		// `autoScan` reports the `filePath` relative to `process.cwd()`.
+		const absolute = scanned.map(p => (p.filePath ? { ...p, filePath: path.resolve(p.filePath) } : p));
+		const picked = await disambiguatePretenders(absolute, { filePath: entryPath, sourceCode: entrySource });
+
+		expect(picked.filter(p => p.selector === 'Item')).toMatchObject([{ as: { element: 'span' } }]);
+	});
+
+	test('the name the entry gives is part of the cached result', async () => {
+		const entryPath = path.join(tmpDir, 'entry.tsx');
+		const source = (name: string) =>
+			`import { Named as ${name} } from './Named';\nexport const P = () => <div><${name} /></div>;`;
+
+		await autoScan(entryPath, source('A'));
+		const result = await autoScan(entryPath, source('Z'));
+
+		expect(result.find(p => p.selector === 'Z')).toMatchObject({ as: img });
+		expect(result.find(p => p.selector === 'A')).toBeUndefined();
 	});
 });

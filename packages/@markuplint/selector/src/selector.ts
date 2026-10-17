@@ -571,7 +571,9 @@ class SelectorTarget {
 			let a = this.tag.value;
 			let b = el.localName;
 
-			if (isPureHTMLElement(el)) {
+			// HTML names its elements case-insensitively, but a parser that tells the case of a
+			// tag name apart (`tagNameCaseSensitive`) has `<foobar>` and `<FooBar>` as two names.
+			if (isPureHTMLElement(el) && !el.tagNameCaseSensitive) {
 				a = a.toLowerCase();
 				b = b.toLowerCase();
 			}
