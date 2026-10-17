@@ -45,6 +45,7 @@ Two major lines are developed in parallel:
 - Do not use `npx tsc --noEmit` — it does not work in this monorepo (no root `include`; `composite` conflicts with `--noEmit` in build mode)
 - `yarn test` covers the TypeScript workspace only; a branch with `crates/` has a separate gate in `crates/CLAUDE.md`
 - CI additionally runs cross-OS (`vitest.cross-os.config.ts` on macOS/Windows) and alternative runtimes/package managers (bun, deno, pnpm, npm) — a green local `yarn test` does not cover those paths
+- A failure on the 10 s `testTimeout` (`vitest.config.ts`) is not evidence by itself: the CLI specs spawn processes, and the first run after `yarn install` / `yarn build` loads the Vue / Svelte / Astro scanners cold, so a loaded machine pushes them past the limit. Check `uptime`, re-run the failed spec alone, and confirm the change is on that spec's code path before concluding anything. Still suspect the current change first; load is the explanation only once the isolated re-run passes
 
 ### Lint
 

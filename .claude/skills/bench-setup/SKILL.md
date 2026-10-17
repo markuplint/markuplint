@@ -48,6 +48,18 @@ This pulls the nu-validator Docker image
 fixtures, and writes the snapshot trees, diffs, and generated spec.
 Takes ~2 minutes at default concurrency.
 
+A worktree can skip the Docker leg when another checkout on the same
+machine already holds the raw trees for the same nu inputs. Compare
+`tests/external/snapshots/meta.json` in both checkouts first: the same
+`submoduleSha` and `nuValidatorImage` mean the nu tree there is the one
+this worktree would produce. Then copy the gitignored nu tree and
+regenerate the markuplint side against this worktree's build:
+
+```
+cp -r <other-checkout>/tests/external/snapshots/nu-validator tests/external/snapshots/
+yarn bench:update:ml
+```
+
 ## Routine refresh after dev sync
 
 ```

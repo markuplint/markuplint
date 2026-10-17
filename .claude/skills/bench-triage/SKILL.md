@@ -176,6 +176,15 @@ yarn bench:compare
 If the verdict flipped, the original observation was parallel-run
 flicker, not a real signal.
 
+`bench:update` rewrites `snapshots/meta.json` from the run it just
+did: the side it ran gets that run's counts, the other side keeps the
+previous values. After the filtered `--target nu` run above,
+`totalFilesNu` and `totalNuMessages` therefore describe the filtered
+subset, not the corpus, and `meta.json` is tracked. If the filtered
+run was only this pin check, restore the file with
+`git checkout -- tests/external/snapshots/meta.json`; if anything
+else moved, run an unfiltered `yarn bench:update` before committing.
+
 ## Step 7: Fact-check the Issue body before filing
 
 When the verdict points at "open or extend an Issue" and the Issue
