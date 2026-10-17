@@ -12,7 +12,9 @@ import { datetimeTokenCheck } from './datetime-tokens.js';
  */
 export const checkTimeZoneOffsetString: CustomSyntaxChecker = () =>
 	function checkTimeZoneOffsetString(value) {
-		log('CHECK: time-zone-offset-string');
+		if (log.enabled) {
+			log('CHECK: time-zone-offset-string');
+		}
 
 		return parseTimeZone(value);
 	};
@@ -31,7 +33,9 @@ export function parseTimeZone(zone: string | Readonly<Token>) {
 		/.\d*/,
 	]);
 
-	log('Time-zone Part: "%s" => %O', value, zoneTokens);
+	if (log.enabled) {
+		log('Time-zone Part: "%s" => %O', value, zoneTokens);
+	}
 
 	const res = zoneTokens.eachCheck(
 		(sign, tail) => {
@@ -87,7 +91,7 @@ export function parseTimeZone(zone: string | Readonly<Token>) {
 		datetimeTokenCheck.extra,
 	);
 
-	if (!res.matched) {
+	if (!res.matched && log.enabled) {
 		log('Failed: %O', res);
 	}
 

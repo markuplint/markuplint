@@ -21,7 +21,9 @@ export function transparent(
 	childNodes: readonly ChildNode[],
 ): Result {
 	if (childNodes.length === 0 || childNodes[0]?.parentElement?.parentElement) {
-		transparentLog('Skipped');
+		if (transparentLog.enabled) {
+			transparentLog('Skipped');
+		}
 		return {
 			type: childNodes.length === 0 ? 'MATCHED_ZERO' : 'MATCHED',
 			matched: [...childNodes],
@@ -32,7 +34,9 @@ export function transparent(
 		};
 	}
 
-	transparentLog('Transparent model element is component root');
+	if (transparentLog.enabled) {
+		transparentLog('Transparent model element is component root');
+	}
 
 	return {
 		type: 'MATCHED',

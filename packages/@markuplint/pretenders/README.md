@@ -73,6 +73,8 @@ The walk follows up to 8 import hops from the linted file. A re-export (`export 
 }
 ```
 
+A name imported from a package is not looked up among the components of the project, whether or not the package is installed. An import that cannot be resolved counts as such a package when its specifier has the form of a package name (lower case, so not `@/x` or `~/x`), no `paths` pattern of the `tsconfig.json` matches it, and the `tsconfig.json` has no `baseUrl`, no `references` and no `jsconfig.json` is near. So an alias that only a bundler knows (Vite's `resolve.alias`) is not told from a package: declare it in `paths` of the `tsconfig.json`.
+
 In watch mode or an editor session, the component files `auto` (and `scan`) read are watched along with the config file, so editing one re-lints the files that use it. What is not watched, so a change to it is picked up only when the config changes: a component file that does not exist yet (including a new match of a `scan` glob, and a file that was removed and comes back), files under `node_modules`, and the files of `files` and `imports`. Edits to the linted file itself — adding, removing, or changing an import — are reflected on the next lint of that file.
 
 ## How It Works
@@ -184,6 +186,8 @@ Barrel file re-exports can be resolved with `resolveBarrelExport`, which maps a 
 ### Lint-time Disambiguation
 
 When the same component name is declared in more than one scanned file (e.g., two unrelated `Item` components rendering different elements), the generated pretenders keep independent entries for each — but `markuplint`'s lint pipeline still needs to know, for the specific file being linted, which one it actually refers to. `disambiguatePretenders` resolves this from the lint target's own declarations and imports, following an imported barrel file's re-exports (`export { X } from`, `export * from`) to the file that declares the component; it's normally invoked automatically by `markuplint`'s config resolution, not called directly.
+
+A name the file imports from a package (installed or not, directly or through a re-export) is none of the project's components, so every scanned component of that name is dropped for that file — even when there is only one. Without this, a `Button` imported from a package would be linted as the project's own `Button`. To give a package's component a pretender, write the entry by hand in the config (an entry without a `filePath` is never touched).
 
 In long-running hosts (watch mode, editor extensions) that keep re-resolving pretenders across file edits, call `clearPretenderCaches()` after each edit — otherwise a renamed export or a newly valid tsconfig `paths` alias keeps resolving as it did before the change for the rest of the process's lifetime.
 
@@ -357,6 +361,7 @@ const resolved = await disambiguatePretenders(pretenders, {
 | `options.filePath`     | `string`               | Absolute path of the file being linted                                                                       |
 | `options.sourceCode`   | `string`               | Full source text of the file being linted                                                                    |
 | `options.dependencies` | `Set<string>`          | A set to add the `tsconfig.json` files the imports were resolved with to (see [Dependencies](#dependencies)) |
+| `options.cwd`          | `string`               | The project root. Give it when the project itself sits under a `node_modules` directory                      |
 
 #### Returns
 

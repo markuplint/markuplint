@@ -2234,7 +2234,7 @@ __metadata:
     "@markuplint/selector": "npm:5.2.0"
     "@markuplint/shared": "npm:5.2.0"
     "@markuplint/types": "npm:5.2.0"
-    "@mdn/browser-compat-data": "npm:^8.1.4"
+    "@mdn/browser-compat-data": "npm:^8.1.5"
     "@types/debug": "npm:^4.1.13"
     ansi-colors: "npm:^4.1.3"
     browserslist: "npm:^4.29.3"
@@ -2314,7 +2314,7 @@ __metadata:
   dependencies:
     "@esbuild/linux-x64": "npm:0.28.2"
     "@esbuild/win32-x64": "npm:0.28.2"
-    "@rollup/rollup-linux-x64-gnu": "npm:4.64.2"
+    "@rollup/rollup-linux-x64-gnu": "npm:4.64.3"
     "@vitest/coverage-v8": "npm:4.1.11"
     browser-resolve: "npm:2.0.0"
     coveralls: "npm:3.1.1"
@@ -2370,10 +2370,10 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mdn/browser-compat-data@npm:^8.1.4":
-  version: 8.1.4
-  resolution: "@mdn/browser-compat-data@npm:8.1.4"
-  checksum: 10c0/904fd8c96b9854d5a9e17551672ef71b96e25d0d7f65304d66ff20f04a60c21e0d6781ef070fef4251b80902efb202cb6bbb26e208c27a0aef207531d675042d
+"@mdn/browser-compat-data@npm:^8.1.5":
+  version: 8.1.5
+  resolution: "@mdn/browser-compat-data@npm:8.1.5"
+  checksum: 10c0/fe8894fd2c5654894f47d0a2e2bbcdcc2d21eea3b54c032a22a4bbf0307e7928a575c96484acf0f0161761d7816885788b02a707dc089cf442cf49a883c9c8de
   languageName: node
   linkType: hard
 
@@ -4148,9 +4148,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rollup/rollup-linux-x64-gnu@npm:4.64.2":
-  version: 4.64.2
-  resolution: "@rollup/rollup-linux-x64-gnu@npm:4.64.2"
+"@rollup/rollup-linux-x64-gnu@npm:4.64.3":
+  version: 4.64.3
+  resolution: "@rollup/rollup-linux-x64-gnu@npm:4.64.3"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
@@ -10818,8 +10818,6 @@ __metadata:
     "@vscode/vsce-sign":
       built: true
     esbuild:
-      built: true
-    keytar:
       built: true
     nx:
       built: true

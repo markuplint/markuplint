@@ -162,7 +162,7 @@ When `aria-labelledby` includes the element's own `id`, the accessible name comp
 <button id="delete-button" aria-label="Delete" aria-labelledby="delete-button file-name"></button>
 ```
 
-The accessible name is "Delete Documentation.pdf" ([Example 5](https://www.w3.org/TR/accname-1.2/#comp_label) of the specification), so nothing is reported. Other overrides on the same element, such as `aria-label` overriding content, are still reported.
+The accessible name is "Delete Documentation.pdf" ([Example 5](https://www.w3.org/TR/accname-1.2/#comp_label) of the specification), so nothing is reported. Only `aria-labelledby` is left out of the check; the element's other sources are still ranked as usual. If the button above had text content, `aria-label` overriding that content would be reported, exactly as on a button without `aria-labelledby`.
 
 ## Known Limitations
 

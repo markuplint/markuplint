@@ -64,10 +64,13 @@ Before cutting a markuplint release that touches any rule the
 benchmark covers:
 
 ```
-yarn bench:xref --audit     # prune CLOSED issues from the config
-yarn bench:update           # regenerate coverage.json (Docker required)
-yarn bench:xref --all --write
+yarn bench:xref --audit                   # prune CLOSED issues from the config
+yarn bench:update                         # regenerate coverage.json (Docker required)
+yarn bench:xref --all --dry-run --write   # preview the new issue bodies
 ```
+
+`--write` edits GitHub Issue bodies: show the preview to the user and get
+their go-ahead, then run `yarn bench:xref --all --write`.
 
 `--audit` is the cheapest gate; running it first prevents stale
 xref blocks from being pushed to issues that closed between

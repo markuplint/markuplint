@@ -42,6 +42,9 @@ const fileLog = log.extend('file');
 const configLog = log.extend('config');
 
 type MLEngineOptions = {
+	/**
+	 * Enables verbose logging and populates the `debug` payload of the `lint` event.
+	 */
 	readonly debug?: boolean;
 	readonly watch?: boolean;
 	/**
@@ -235,7 +238,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 	constructor(file: Readonly<MLFile>, options?: APIOptions & MLEngineOptions) {
 		super();
 
-		if (this.#options?.debug) {
+		if (options?.debug) {
 			verbosely();
 		}
 
@@ -366,7 +369,11 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		}
 
 		const { violations, fixedCode, fixSummary } = verifyResult;
-		const debugMap = 'debugMap' in core.document ? core.document.debugMap() : null;
+		// The AST mapping is a debugging aid: the language server listens to every
+		// lint but only reads the payload when the user asked for debugging, so
+		// a listener alone is no reason to walk the whole document.
+		const debugMap =
+			this.#options?.debug && this.listenerCount('lint') > 0 ? (this.document?.debugMap() ?? null) : null;
 
 		const resolvedFixedCode = fixedCode ?? sourceCode;
 		this.emit('lint', this.#file.path, sourceCode, violations, resolvedFixedCode, debugMap, fixSummary ?? null);
@@ -662,8 +669,10 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 	async #createCore(fabric: MLFabric) {
 		fileLog('Get source code');
 		const sourceCode = await this.#file.getCode();
-		fileLog('Source code path: %s', this.#file.path);
-		fileLog('Source code size: %dbyte', sourceCode.length);
+		if (fileLog.enabled) {
+			fileLog('Source code path: %s', this.#file.path);
+			fileLog('Source code size: %dbyte', sourceCode.length);
+		}
 		this.emit('code', this.#file.path, sourceCode);
 
 		const core = new MLCore({
@@ -872,10 +881,12 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 			return this.#failConfig(error);
 		}
 
-		fileLog('Fetched Config files: %O', configSet.files);
-		fileLog('Resolved Config: %O', configSet.config);
-		fileLog('Resolved Plugins: %O', configSet.plugins);
-		fileLog('Resolve Errors: %O', configSet.errs);
+		if (fileLog.enabled) {
+			fileLog('Fetched Config files: %O', configSet.files);
+			fileLog('Resolved Config: %O', configSet.config);
+			fileLog('Resolved Plugins: %O', configSet.plugins);
+			fileLog('Resolve Errors: %O', configSet.errs);
+		}
 
 		const loadError = configSet.errs.find(error => error instanceof ConfigLoadError);
 		if (loadError) {

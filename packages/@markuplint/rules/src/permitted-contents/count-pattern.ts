@@ -7,7 +7,7 @@ import type {
 } from '@markuplint/ml-spec';
 import type { ReadonlyDeep } from 'type-fest';
 
-import { cmLog } from './debug.js';
+import { cmLog, depthLog } from './debug.js';
 import { recursiveBranch } from './recursive-branch.js';
 import { Collection, mergeHints, modelLog, normalizeModel } from './utils.js';
 
@@ -46,12 +46,15 @@ export function countPattern(
 	depth: number,
 	mode: Mode,
 ): Result {
-	const ptLog = cmLog.extend(`countPattern#${depth}`);
+	const ptLog = depthLog('countPattern', depth);
+	const ptEnabled = ptLog.enabled;
 	const collection = new Collection(childNodes);
 
 	const { model, min, max, repeat, missingType } = normalizeModel(pattern);
 
-	ptLog('Model:\n  RegEx: %s\n  Schema: %o', modelLog(model, repeat), pattern);
+	if (ptEnabled) {
+		ptLog('Model:\n  RegEx: %s\n  Schema: %o', modelLog(model, repeat), pattern);
+	}
 
 	let prevResult: Result | null = null;
 	let barelyResult: Result | null = null;
@@ -59,19 +62,23 @@ export function countPattern(
 
 	while (true) {
 		loopCount++;
-		ptLog('Check#%s: %s', loopCount, collection);
+		if (ptEnabled) {
+			ptLog('Check#%s: %s', loopCount, collection);
+		}
 		const result = recursiveBranch(model, collection.unmatched, rules, specs, options, depth, mode);
 		const added = collection.addMatched(result.matched);
 		const { matchedCount } = collection;
 
 		if (result.type === 'UNMATCHED_SELECTOR_BUT_MAY_EMPTY') {
-			ptLog(
-				'MATCHED_ZERO:\n  model: %s\n  max: %s\n  collection: %s\n  matched element: %s',
-				modelLog(model, repeat),
-				max,
-				collection,
-				matchedCount,
-			);
+			if (ptEnabled) {
+				ptLog(
+					'MATCHED_ZERO:\n  model: %s\n  max: %s\n  collection: %s\n  matched element: %s',
+					modelLog(model, repeat),
+					max,
+					collection,
+					matchedCount,
+				);
+			}
 
 			return compereResult(
 				{
@@ -88,13 +95,15 @@ export function countPattern(
 
 		if (max < collection.matchedCount) {
 			collection.max(max);
-			ptLog(
-				'UNEXPECTED_EXTRA_NODE:\n  model: %s\n  max: %s\n  collection: %s\n  matched element: %s',
-				modelLog(model, repeat),
-				max,
-				collection,
-				matchedCount,
-			);
+			if (ptEnabled) {
+				ptLog(
+					'UNEXPECTED_EXTRA_NODE:\n  model: %s\n  max: %s\n  collection: %s\n  matched element: %s',
+					modelLog(model, repeat),
+					max,
+					collection,
+					matchedCount,
+				);
+			}
 			return compereResult(
 				{
 					type: 'UNEXPECTED_EXTRA_NODE',
@@ -114,7 +123,9 @@ export function countPattern(
 				result.type === 'MISSING_NODE_REQUIRED' ||
 				result.type === 'TRANSPARENT_MODEL_DISALLOWS'
 			) {
-				ptLog('%s(continued): %s; Needs', result.type, collection, result.query);
+				if (ptEnabled) {
+					ptLog('%s(continued): %s; Needs', result.type, collection, result.query);
+				}
 				return compereResult(
 					{
 						type: result.type,
@@ -128,7 +139,9 @@ export function countPattern(
 				);
 			}
 
-			ptLog('%s(continued): %s', prevResult.type, collection);
+			if (ptEnabled) {
+				ptLog('%s(continued): %s', prevResult.type, collection);
+			}
 			return compereResult(prevResult, barelyResult);
 		}
 
@@ -143,7 +156,9 @@ export function countPattern(
 					hint: result.hint,
 				};
 			}
-			ptLog('continue⤴️');
+			if (ptEnabled) {
+				ptLog('continue⤴️');
+			}
 			continue;
 		}
 
@@ -155,7 +170,9 @@ export function countPattern(
 					? result.type
 					: (missingType ?? 'MISSING_NODE_REQUIRED');
 
-			ptLog('%s(in %s); Needs %s', resultType, missingType, result.query);
+			if (ptEnabled) {
+				ptLog('%s(in %s); Needs %s', resultType, missingType, result.query);
+			}
 
 			return compereResult(
 				{
@@ -194,18 +211,22 @@ export function countPattern(
 
 		if (collection.unmatched.length > 0) {
 			prevResult = matchedResult;
-			ptLog('continue⤴️ (add prev)');
+			if (ptEnabled) {
+				ptLog('continue⤴️ (add prev)');
+			}
 			continue;
 		}
 
-		ptLog(
-			'%s:\n  model: %s\n  max: %s\n  collection: %s\n  matched element: %s',
-			resultType,
-			modelLog(model, repeat),
-			max,
-			collection,
-			matchedCount,
-		);
+		if (ptEnabled) {
+			ptLog(
+				'%s:\n  model: %s\n  max: %s\n  collection: %s\n  matched element: %s',
+				resultType,
+				modelLog(model, repeat),
+				max,
+				collection,
+				matchedCount,
+			);
+		}
 
 		// When min=0 and no elements were consumed, the pattern legitimately
 		// matched zero times — don't propagate the inner sequence's failure.
@@ -250,7 +271,9 @@ function compereResult(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	b: Readonly<Result> | null,
 ): Result {
-	cLog('current: %s %O\nbarely: %s %O', a.type, a.hint, b?.type, b?.hint);
+	if (cLog.enabled) {
+		cLog('current: %s %O\nbarely: %s %O', a.type, a.hint, b?.type, b?.hint);
+	}
 
 	if (b == null) {
 		return a;

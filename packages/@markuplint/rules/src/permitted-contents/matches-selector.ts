@@ -3,7 +3,7 @@ import type { Category } from '@markuplint/ml-spec';
 
 import { contentModelCategoryToTagNames } from '@markuplint/ml-spec';
 
-import { cmLog } from './debug.js';
+import { depthLog } from './debug.js';
 import { cleanObject, matches } from './utils.js';
 
 /**
@@ -54,13 +54,16 @@ export function matchesSelector(
 	depth: number,
 	mode: Mode,
 ): SelectorResult {
-	const nodeLog = cmLog.extend(`node#${depth}`);
+	const nodeLog = depthLog('node', depth);
+	const nodeEnabled = nodeLog.enabled;
 
 	const { selector, hasText, hasNonEmptyText, hasCustom } = optCondition(query, specs);
 
 	if (childNode == null) {
 		if (hasText) {
-			nodeLog('<#text>.matches(%s) => ""', query);
+			if (nodeEnabled) {
+				nodeLog('<#text>.matches(%s) => ""', query);
+			}
 			return {
 				type: 'MATCHED_ZERO',
 				matched: [],
@@ -84,7 +87,9 @@ export function matchesSelector(
 	if (childNode.is(childNode.TEXT_NODE)) {
 		if (hasNonEmptyText) {
 			if (childNode.isWhitespace()) {
-				nodeLog('<#nonEmptyText>.matches(%s) => WHITESPACE (rejected)', query);
+				if (nodeEnabled) {
+					nodeLog('<#nonEmptyText>.matches(%s) => WHITESPACE (rejected)', query);
+				}
 				return {
 					type: 'MISSING_NODE',
 					matched: [],
@@ -94,7 +99,9 @@ export function matchesSelector(
 					hint: {},
 				};
 			}
-			nodeLog('<#nonEmptyText>.matches(%s) => "%s"', query, childNode.raw.trim());
+			if (nodeEnabled) {
+				nodeLog('<#nonEmptyText>.matches(%s) => "%s"', query, childNode.raw.trim());
+			}
 			return {
 				type: 'MATCHED',
 				matched: [childNode],
@@ -106,7 +113,9 @@ export function matchesSelector(
 		}
 
 		if (hasText) {
-			nodeLog('<#text>.matches(%s) => "%s"', query, childNode.raw.trim());
+			if (nodeEnabled) {
+				nodeLog('<#text>.matches(%s) => "%s"', query, childNode.raw.trim());
+			}
 			return {
 				type: 'MATCHED',
 				matched: [childNode],
@@ -118,7 +127,9 @@ export function matchesSelector(
 		}
 
 		if (childNode.isWhitespace()) {
-			nodeLog('<#text>.matches(%s) => WHITESPACE', query);
+			if (nodeEnabled) {
+				nodeLog('<#text>.matches(%s) => WHITESPACE', query);
+			}
 			return {
 				type: 'MATCHED',
 				matched: [childNode],
@@ -141,7 +152,9 @@ export function matchesSelector(
 	}
 
 	if (childNode.is(childNode.MARKUPLINT_PREPROCESSOR_BLOCK)) {
-		nodeLog('%s.matches(%s) => PBlock', childNode.raw, query);
+		if (nodeEnabled) {
+			nodeLog('%s.matches(%s) => PBlock', childNode.raw, query);
+		}
 		return {
 			type: 'MATCHED',
 			matched: [childNode],
@@ -154,7 +167,9 @@ export function matchesSelector(
 
 	if (childNode.is(childNode.ELEMENT_NODE)) {
 		if (hasCustom && isTreatedAsCustom(childNode, mode)) {
-			nodeLog('%s.matches(%s) => CustomElement', childNode.raw, query);
+			if (nodeEnabled) {
+				nodeLog('%s.matches(%s) => CustomElement', childNode.raw, query);
+			}
 			return {
 				type: 'MATCHED',
 				matched: [childNode],
@@ -166,7 +181,9 @@ export function matchesSelector(
 		}
 
 		const result = matches(selector, childNode, specs, mode);
-		nodeLog('%s.matches(%s) => %s', childNode.raw, query, result.matched);
+		if (nodeEnabled) {
+			nodeLog('%s.matches(%s) => %s', childNode.raw, query, result.matched);
+		}
 
 		if (result.matched) {
 			return {
@@ -222,9 +239,13 @@ export function matchesSelector(
  * pretended, so a component that stands for `<section>` would still look
  * authored and slip through `<p>`, `<span>` and `<button>`. In `'pretended'`
  * mode such an element is judged by what it stands for instead, exactly as if
- * the user had written that element. The pretender target is always created
- * with `elementType: 'html'`, so a target that is itself a custom element
- * (its name contains a hyphen) is recognised by name.
+ * the user had written that element, and that comes first: a parser that cannot
+ * tell a component from an element (HTML sees `<MyTabs>` as `html`) still gives a
+ * pretender. The pretender target is created with `elementType: 'html'`, so a
+ * target that is itself a custom element (its name contains a hyphen) is
+ * recognised by name. A target that is a component name (`Tabs.Root`, where
+ * the chain of `pretenders.auto` stopped) is `'authored'`, and what that
+ * component renders is not known, so it is accepted like one written directly.
  *
  * In `'origin'` mode the pretender context is suppressed while matching (see
  * {@link matches}) and the element is seen under its authored name, so it stays
@@ -238,14 +259,12 @@ function isTreatedAsCustom(
 	element: Element,
 	mode: Mode,
 ): boolean {
-	if (element.elementType === 'html') {
-		return false;
-	}
 	const pretenderContext = element.pretenderContext;
 	if (mode === 'pretended' && pretenderContext?.type === 'pretender') {
-		return pretenderContext.as.localName.includes('-');
+		const { as } = pretenderContext;
+		return as.elementType === 'authored' || as.localName.includes('-');
 	}
-	return true;
+	return element.elementType !== 'html';
 }
 
 /**

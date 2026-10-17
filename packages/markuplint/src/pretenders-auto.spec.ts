@@ -1,4 +1,4 @@
-import { writeFile, mkdtemp, rm } from 'node:fs/promises';
+import { writeFile, mkdir, mkdtemp, rm } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
@@ -130,5 +130,178 @@ describe('pretenders.auto integration', () => {
 		});
 
 		expect(violations.filter(v => v.ruleId === 'permitted-contents')).toStrictEqual([]);
+	});
+});
+
+/**
+ * A component loaded with `React.lazy(() => import('./X'))` is a module reference
+ * like a static `import`, so the file behind it is scanned.
+ */
+describe('pretenders.auto with a lazily loaded component', () => {
+	let tmpDir: string;
+
+	beforeEach(async () => {
+		tmpDir = await mkdtemp(path.join(os.tmpdir(), 'pretenders-auto-lazy-'));
+	});
+
+	afterEach(async () => {
+		await rm(tmpDir, { recursive: true, force: true });
+	});
+
+	test('a lazy component that pretends to be a void element is checked against its children', async () => {
+		await writeFile(
+			path.join(tmpDir, 'Item.tsx'),
+			'export const Item = () => <img src="x.png" />;\nexport default Item;',
+		);
+		const wrapperPath = path.join(tmpDir, 'Wrapper.tsx');
+		await writeFile(
+			wrapperPath,
+			[
+				"import { lazy } from 'react';",
+				"const Item = lazy(() => import('./Item'));",
+				'export const Wrapper = () => <div><Item><span>c</span></Item></div>;',
+			].join('\n'),
+		);
+
+		const { violations } = await mlTestFile(wrapperPath, {
+			...jsxParserConfig,
+			pretenders: { auto: true },
+			rules: { 'permitted-contents': true },
+		});
+
+		expect(violations).toStrictEqual([
+			expect.objectContaining({ ruleId: 'permitted-contents', severity: 'error', raw: '<Item>' }),
+		]);
+	});
+
+	test('a lazy component that renders what its parent requires is not reported', async () => {
+		await writeFile(path.join(tmpDir, 'Row.tsx'), 'export const Row = () => <li>row</li>;\nexport default Row;');
+		const listPath = path.join(tmpDir, 'List.tsx');
+		await writeFile(
+			listPath,
+			[
+				"import { lazy } from 'react';",
+				"const Row = lazy(() => import('./Row'));",
+				'export const List = () => <ul><Row /></ul>;',
+			].join('\n'),
+		);
+
+		const { violations } = await mlTestFile(listPath, {
+			...jsxParserConfig,
+			pretenders: { auto: true },
+			rules: { 'permitted-contents': true },
+		});
+
+		expect(violations).toStrictEqual([]);
+	});
+});
+
+/**
+ * The chain of a wrapper ends at a component the scanner cannot resolve: it does
+ * not traverse `node_modules`, so `Tabs.Root` of a package is the last name it
+ * has. That name must not be checked as an HTML element.
+ */
+describe('pretenders.auto with a component that cannot be resolved', () => {
+	let tmpDir: string;
+
+	beforeEach(async () => {
+		tmpDir = await mkdtemp(path.join(os.tmpdir(), 'pretenders-auto-unresolved-'));
+	});
+
+	afterEach(async () => {
+		await rm(tmpDir, { recursive: true, force: true });
+	});
+
+	test('a wrapper of a member expression of a package is not reported as an unknown element', async () => {
+		await writeFile(
+			path.join(tmpDir, 'MyTabs.tsx'),
+			"import { Tabs } from 'tabs-library';\nexport const MyTabs = ({ children }) => <Tabs.Root>{children}</Tabs.Root>;",
+		);
+		const pagePath = path.join(tmpDir, 'Page.tsx');
+		await writeFile(
+			pagePath,
+			"import { MyTabs } from './MyTabs';\nexport const Page = () => <div><MyTabs>text</MyTabs></div>;",
+		);
+
+		const { violations } = await mlTestFile(pagePath, {
+			...jsxParserConfig,
+			pretenders: { auto: true },
+			rules: { 'permitted-contents': true },
+		});
+
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('a wrapper of a component of a package is not reported as an unknown element', async () => {
+		await writeFile(
+			path.join(tmpDir, 'MyDialog.tsx'),
+			"import { Dialog } from 'dialog-library';\nexport const MyDialog = ({ children }) => <Dialog>{children}</Dialog>;",
+		);
+		const pagePath = path.join(tmpDir, 'Page.tsx');
+		await writeFile(
+			pagePath,
+			"import { MyDialog } from './MyDialog';\nexport const Page = () => <p><MyDialog>text</MyDialog></p>;",
+		);
+
+		const { violations } = await mlTestFile(pagePath, {
+			...jsxParserConfig,
+			pretenders: { auto: true },
+			rules: { 'permitted-contents': true },
+		});
+
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('a wrapper of a component of an installed package is not resolved to a same-named component of the project', async () => {
+		const libDir = path.join(tmpDir, 'node_modules', 'button-library');
+		await mkdir(libDir, { recursive: true });
+		await writeFile(path.join(libDir, 'package.json'), '{"name":"button-library","main":"index.js"}');
+		await writeFile(path.join(libDir, 'index.js'), 'export const Button = () => null;');
+		await mkdir(path.join(tmpDir, 'ui'));
+		await writeFile(path.join(tmpDir, 'ui', 'Button.tsx'), 'export const Button = () => <section>text</section>;');
+		await writeFile(
+			path.join(tmpDir, 'Card.tsx'),
+			"import { Button } from 'button-library';\nexport const Card = ({ children }) => <Button>{children}</Button>;",
+		);
+		const pagePath = path.join(tmpDir, 'Page.tsx');
+		await writeFile(
+			pagePath,
+			"import { Card } from './Card';\nimport { Button } from './ui/Button';\nexport const Page = () => <p><Card>text</Card></p>;",
+		);
+
+		const { violations } = await mlTestFile(pagePath, {
+			...jsxParserConfig,
+			pretenders: { auto: true },
+			rules: { 'permitted-contents': true },
+		});
+
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('the HTML written inside such a wrapper is still checked against what the wrapper renders around it', async () => {
+		await writeFile(
+			path.join(tmpDir, 'MyList.tsx'),
+			"import { ScrollArea } from 'scroll-library';\nexport const MyList = ({ children }) => <ScrollArea.Root><ul>{children}</ul></ScrollArea.Root>;",
+		);
+		const pagePath = path.join(tmpDir, 'Page.tsx');
+		await writeFile(
+			pagePath,
+			"import { MyList } from './MyList';\nexport const Page = () => <MyList><div /></MyList>;",
+		);
+
+		const { violations } = await mlTestFile(pagePath, {
+			...jsxParserConfig,
+			pretenders: { auto: true },
+			rules: { 'permitted-contents': true },
+		});
+
+		expect(violations).toStrictEqual([
+			expect.objectContaining({
+				ruleId: 'permitted-contents',
+				severity: 'error',
+				raw: '<div />',
+				message: 'The "div" element is not allowed in the "ul" element in this context',
+			}),
+		]);
 	});
 });

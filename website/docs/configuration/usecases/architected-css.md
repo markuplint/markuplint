@@ -50,6 +50,7 @@ Suppose defining the following rule:
 
 Use [`class-naming`](/docs/rules/class-naming) rule with [`regexSelector`](/docs/configuration/properties#regexselector).
 
+<!-- prettier-ignore -->
 ```json class=config
 {
   "rules": {

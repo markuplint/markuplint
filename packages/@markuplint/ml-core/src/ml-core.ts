@@ -317,7 +317,10 @@ export class MLCore {
 		const options: VerifyOptions = typeof fixOrOptions === 'boolean' ? { fix: fixOrOptions } : (fixOrOptions ?? {});
 		const fix = options.fix ?? false;
 
-		log('verify: start');
+		const logEnabled = log.enabled;
+		if (logEnabled) {
+			log('verify: start');
+		}
 		const violations: Violation[] = [];
 		if (this.#document instanceof ParserError) {
 			const parseError = this.#createParseError(
@@ -332,7 +335,9 @@ export class MLCore {
 			}
 
 			violations.push(parseError);
-			log('verify: error %o', this.#document.message);
+			if (logEnabled) {
+				log('verify: error %o', this.#document.message);
+			}
 			return { violations, fixedCode: fix ? this.#sourceCode : undefined };
 		}
 
@@ -453,7 +458,9 @@ export class MLCore {
 			}
 		}
 
-		log('verify: end');
+		if (logEnabled) {
+			log('verify: end');
+		}
 		return { violations, fixedCode, fixSummary };
 	}
 
@@ -646,6 +653,7 @@ export class MLCore {
 	}
 
 	async #runAllRules(fix: boolean): Promise<Violation[]> {
+		const logEnabled = log.enabled;
 		const violations: Violation[] = [];
 		if (this.#document instanceof ParserError) {
 			return violations;
@@ -671,7 +679,9 @@ export class MLCore {
 				continue;
 			}
 
-			log('%s Rule: verify', rule.name);
+			if (logEnabled) {
+				log('%s Rule: verify', rule.name);
+			}
 			const results = await rule.verify(this.#document, this.#locale, fix).catch(error => {
 				if (error instanceof ParserError) {
 					return error;
@@ -682,13 +692,17 @@ export class MLCore {
 			if (results instanceof ParserError) {
 				const parseError = this.#createParseError(results.message, results.line, results.col, results.raw);
 				if (parseError) {
-					log('%s Rule: verify error %o', rule.name, results.message);
+					if (logEnabled) {
+						log('%s Rule: verify error %o', rule.name, results.message);
+					}
 					violations.push(parseError);
 				}
 			} else {
 				violations.push(...results);
 			}
-			log('%s Rule: verify end', rule.name);
+			if (logEnabled) {
+				log('%s Rule: verify end', rule.name);
+			}
 		}
 		return violations;
 	}
@@ -697,7 +711,9 @@ export class MLCore {
 		try {
 			this.#ast = this.#parser.parse(this.#sourceCode, this.#parserOptions);
 		} catch (error) {
-			log('Caught the parse error: %O', error);
+			if (log.enabled) {
+				log('Caught the parse error: %O', error);
+			}
 			this.#ast = null;
 			if (error instanceof ParserError) {
 				this.#document = error;

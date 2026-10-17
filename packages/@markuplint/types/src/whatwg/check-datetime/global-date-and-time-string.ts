@@ -12,7 +12,9 @@ import { parseTimeZone } from './time-zone-offset-string.js';
  */
 export const checkGlobalDateAndTimeString: CustomSyntaxChecker = () =>
 	function checkGlobalDateAndTimeString(value) {
-		log('CHECK: global-date-and-time-string');
+		if (log.enabled) {
+			log('CHECK: global-date-and-time-string');
+		}
 
 		const tokens = TokenCollection.fromPatterns(value, [
 			// YYYY
@@ -41,7 +43,9 @@ export const checkGlobalDateAndTimeString: CustomSyntaxChecker = () =>
 			/.*/,
 		]);
 
-		log('Global Date and Time "%s" => %O', tokens.value, tokens);
+		if (log.enabled) {
+			log('Global Date and Time "%s" => %O', tokens.value, tokens);
+		}
 
 		const res = tokens.eachCheck(
 			datetimeTokenCheck.year,
@@ -60,7 +64,9 @@ export const checkGlobalDateAndTimeString: CustomSyntaxChecker = () =>
 
 				const secondTokens = TokenCollection.fromPatterns(second, [/:?/, /\d*/, /\.?/, /\d*/]);
 
-				log('Second Part: "%s" => %O', secondTokens.value, secondTokens);
+				if (log.enabled) {
+					log('Second Part: "%s" => %O', secondTokens.value, secondTokens);
+				}
 
 				const res = secondTokens.eachCheck(
 					datetimeTokenCheck.colon,
@@ -90,7 +96,7 @@ export const checkGlobalDateAndTimeString: CustomSyntaxChecker = () =>
 			datetimeTokenCheck.extra,
 		);
 
-		if (!res.matched) {
+		if (!res.matched && log.enabled) {
 			log('Failed: %O', res);
 		}
 

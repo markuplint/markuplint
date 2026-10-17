@@ -175,6 +175,20 @@ const Dialog = import('./Dialog.vue')
 			expect(result!.bindings[1]).toMatchObject({ source: './Dialog.vue', type: 'dynamic' });
 		});
 
+		test('extracts dynamic import from a TSX file (React.lazy)', async () => {
+			const source = [
+				"import { lazy } from 'react';",
+				"const Item = lazy(() => import('./Item'));",
+				'export const W = () => <div><Item><span>c</span></Item></div>;',
+			].join('\n');
+			const result = await analyzeImports('App.tsx', source);
+			expect(result).not.toBeNull();
+			expect(result!.bindings).toStrictEqual([
+				{ localName: 'lazy', importedName: 'lazy', source: 'react', type: 'named' },
+				{ localName: '*', importedName: '*', source: './Item', type: 'dynamic' },
+			]);
+		});
+
 		test('excludes import type from bindings', async () => {
 			const source = `<script setup lang="ts">
 import Button from './Button.vue'
@@ -390,6 +404,22 @@ describe('collectReferencedModules', () => {
 		].join('\n');
 
 		expect(await collectReferencedModules('App.vue', source)).toStrictEqual(['./A.vue']);
+	});
+
+	test('lists the specifier of a dynamic import in a plain JS file', async () => {
+		const source = "export const load = () => import('./Item.js');";
+
+		expect(await collectReferencedModules('loader.js', source)).toStrictEqual(['./Item.js']);
+	});
+
+	test('lists the specifier of a dynamic import in a TSX file (React.lazy)', async () => {
+		const source = [
+			"import { lazy } from 'react';",
+			"const Item = lazy(() => import('./Item'));",
+			'export const W = () => <Item />;',
+		].join('\n');
+
+		expect(await collectReferencedModules('App.tsx', source)).toStrictEqual(['react', './Item']);
 	});
 
 	test('returns null for an unsupported file type', async () => {

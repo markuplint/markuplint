@@ -760,7 +760,14 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	/**
 	 * Traverses a list of child nodes under the given parent, appending the resulting
 	 * child AST nodes to the parent and returning any sibling nodes that belong
-	 * to ancestor levels. Skips traversal for raw text elements (e.g., `<script>`, `<style>`).
+	 * to ancestor levels.
+	 *
+	 * Children of a raw-text element (`rawTextElements`; `style` and `script` by
+	 * default) are dropped on purpose. Their body is CSS or JavaScript, not markup,
+	 * so it gets no text node and the element reads as empty downstream
+	 * (`textContent === ''`, no `childNodes`, no `Text` visit). A rule that needs the
+	 * body reads it from the document source between the element's `endOffset` and
+	 * its `closeTag.startOffset`, when a close tag is present.
 	 *
 	 * @param children - The language-specific child AST nodes to traverse
 	 * @param parentNode - The parent markuplint AST node to which children will be appended

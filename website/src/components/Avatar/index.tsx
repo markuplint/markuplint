@@ -3,14 +3,14 @@ import React from 'react';
 import styles from './styles.module.css';
 
 type Props = {
-  src: string;
-  alt: string;
+	src: string;
+	alt: string;
 };
 
 export default function Avatar({ src, alt }: Props) {
-  return (
-    <div className={styles.avatar}>
-      <img src={src} alt={alt} width="1" height="1" decoding="async" loading="lazy" />
-    </div>
-  );
+	return (
+		<div className={styles.avatar}>
+			<img src={src} alt={alt} width="1" height="1" decoding="async" loading="lazy" />
+		</div>
+	);
 }

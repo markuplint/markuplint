@@ -56,6 +56,23 @@ describe('componentScanner (Vue)', () => {
 			expect(result!.rootElement).toBe('BaseButton');
 		});
 
+		test.each([
+			['a dynamic component', '<component :is="tag"><slot /></component>'],
+			['a slot', '<slot />'],
+		])('returns null when the root is %s, which is neither a component name nor an element', (_, source) => {
+			const result = componentScanner.scanComponent(`<template>${source}</template>`);
+			expect(result).toBeNull();
+		});
+
+		test.each(['Transition', 'KeepAlive', 'router-link'])(
+			'extracts the built-in or hyphenated "%s" as rootElement without filtering',
+			name => {
+				const result = componentScanner.scanComponent(`<template><${name}><div /></${name}></template>`);
+				expect(result).not.toBeNull();
+				expect(result!.rootElement).toBe(name);
+			},
+		);
+
 		test('detects SVG namespace', () => {
 			const source = `<template>
 	<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" /></svg>

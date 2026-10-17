@@ -78,6 +78,10 @@ function collectNamingSources<V extends RuleConfigValue, O extends PlainData>(
 	// node's own name with the other referenced elements, so it is not a competing source.
 	// https://www.w3.org/TR/accname-1.2/#comp_labelledby (see Example 5 under 2D)
 	//
+	// The remaining sources are still ranked as usual: inside the self-referencing traversal,
+	// aria-label (2D) still wins over a label (2E) or content (2F), so those are reported exactly
+	// as on an element without aria-labelledby. A self-reference is not an exemption from that.
+	//
 	// Known limitation: step 2C (Embedded Control) is not modeled, so a self-referencing
 	// textbox, combobox, listbox or range is treated like any other element.
 	const ariaLabelledby = el.getAttribute('aria-labelledby');

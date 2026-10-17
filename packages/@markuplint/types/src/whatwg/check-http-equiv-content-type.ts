@@ -22,7 +22,9 @@ const CONTENT_TYPE_RE = /^text\/html;[\t\n\f\r ]*charset=utf-8$/i;
  */
 export const checkHTTPEquivContentType: CustomSyntaxChecker = () =>
 	function checkHTTPEquivContentType(value) {
-		log('CHECK: meta http-equiv="content-type" content');
+		if (log.enabled) {
+			log('CHECK: meta http-equiv="content-type" content');
+		}
 		if (!CONTENT_TYPE_RE.test(value)) {
 			return unmatched(value, 'syntax-error', {
 				expects: [

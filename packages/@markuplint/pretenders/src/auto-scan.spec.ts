@@ -34,6 +34,23 @@ describe('autoScan', () => {
 		expect(result.find(p => p.selector === 'Child')).toMatchObject({ as: { element: 'button', slots: null } });
 	});
 
+	test('a .tsx entry resolves a component it loads with `lazy(() => import(...))`', async () => {
+		const entryPath = path.join(tmpDir, 'entry.tsx');
+		await writeFile(
+			path.join(tmpDir, 'Item.tsx'),
+			'export const Item = () => <img src="x.png" />;\nexport default Item;',
+		);
+		const entrySource = [
+			"import { lazy } from 'react';",
+			"const Item = lazy(() => import('./Item'));",
+			'export const W = () => <div><Item><span>c</span></Item></div>;',
+		].join('\n');
+
+		const result = await autoScan(entryPath, entrySource);
+
+		expect(result.find(p => p.selector === 'Item')).toMatchObject({ as: { element: 'img', slots: null } });
+	});
+
 	test('a .tsx entry resolves a .vue import (BFS is extension-agnostic)', async () => {
 		const entryPath = path.join(tmpDir, 'entry.tsx');
 		const childPath = path.join(tmpDir, 'Child.vue');
@@ -131,6 +148,27 @@ describe('autoScan', () => {
 		const result = await autoScan(entryPath, entrySource);
 
 		expect(result.find(p => p.selector === 'Ambient')).toBeUndefined();
+	});
+
+	test('a component rendering a name imported from a package that is not installed does not resolve to a same-named component of the project', async () => {
+		await mkdir(path.join(tmpDir, 'ui'));
+		await writeFile(path.join(tmpDir, 'ui', 'Button.tsx'), 'export const Button = () => <section>text</section>;');
+		await writeFile(
+			path.join(tmpDir, 'Card.tsx'),
+			"import { Button } from 'ui-lib';\nexport const Card = () => <Button />;",
+		);
+		const entrySource = [
+			"import { Button } from './ui/Button';",
+			"import { Card } from './Card';",
+			'export const Page = () => <p><Button /><Card /></p>;',
+		].join('\n');
+
+		const result = await autoScan(path.join(tmpDir, 'Page.tsx'), entrySource);
+
+		expect(result.find(p => p.selector === 'Button')).toMatchObject({
+			as: expect.objectContaining({ element: 'section' }),
+		});
+		expect(result.find(p => p.selector === 'Card')).toMatchObject({ as: { element: 'Button', slots: null } });
 	});
 
 	test('does not traverse into node_modules', async () => {

@@ -84,6 +84,7 @@ export async function multiPassFix(
 	initialViolations: readonly Violation[],
 	host: MultiPassFixHost,
 ): Promise<{ code: string; summary: FixSummary }> {
+	const logEnabled = log.enabled;
 	let currentCode = sourceCode;
 	let fixes = extractFixes(initialViolations);
 
@@ -109,7 +110,9 @@ export async function multiPassFix(
 
 	let pass = 0;
 	for (; pass < MAX_FIX_PASSES; pass++) {
-		log('fix pass %d: %d fixes', pass, fixes.length);
+		if (logEnabled) {
+			log('fix pass %d: %d fixes', pass, fixes.length);
+		}
 		const result = applyFixes(currentCode, fixes);
 
 		totalApplied += result.applied.length;
@@ -119,12 +122,16 @@ export async function multiPassFix(
 		}
 
 		if (result.applied.length === 0) {
-			log('fix pass %d: no fixes applied, stopping', pass);
+			if (logEnabled) {
+				log('fix pass %d: no fixes applied, stopping', pass);
+			}
 			break;
 		}
 
 		if (result.output === currentCode) {
-			log('fix pass %d: output unchanged, stopping', pass);
+			if (logEnabled) {
+				log('fix pass %d: output unchanged, stopping', pass);
+			}
 			break;
 		}
 
@@ -132,12 +139,14 @@ export async function multiPassFix(
 		// fixes are oscillating (A → B → A, A → B → C → A, ...) and will never converge.
 		const cycleStart = codeHistory.get(result.output);
 		if (cycleStart !== undefined) {
-			log(
-				'fix pass %d: cycle detected (output matches the input of pass %d, cycle length %d), stopping',
-				pass,
-				cycleStart,
-				pass + 1 - cycleStart,
-			);
+			if (logEnabled) {
+				log(
+					'fix pass %d: cycle detected (output matches the input of pass %d, cycle length %d), stopping',
+					pass,
+					cycleStart,
+					pass + 1 - cycleStart,
+				);
+			}
 			currentCode = result.output;
 			latestViolations = undefined;
 			break;
@@ -154,7 +163,9 @@ export async function multiPassFix(
 		const parsable = await host.load(currentCode);
 
 		if (!parsable) {
-			log('fix pass %d: produced unparsable code, reverting to the previous parsable code', pass);
+			if (logEnabled) {
+				log('fix pass %d: produced unparsable code, reverting to the previous parsable code', pass);
+			}
 			currentCode = lastParsableCode;
 			totalApplied -= result.applied.length;
 			if (pass === 0) {
@@ -165,24 +176,30 @@ export async function multiPassFix(
 		lastParsableCode = currentCode;
 
 		if (result.skipped.length === 0) {
-			log('fix pass %d: all fixes applied, stopping', pass);
+			if (logEnabled) {
+				log('fix pass %d: all fixes applied, stopping', pass);
+			}
 			break;
 		}
 
 		// --- Multi-pass path (only when overlapping fixes exist) ---
-		log('fix pass %d: %d skipped, re-running rules for next pass', pass, result.skipped.length);
+		if (logEnabled) {
+			log('fix pass %d: %d skipped, re-running rules for next pass', pass, result.skipped.length);
+		}
 
 		const newViolations = await host.lint();
 		latestViolations = newViolations;
 		fixes = extractFixes(newViolations);
 		if (fixes.length === 0) {
-			log('fix pass %d: no more fixable violations, stopping', pass);
+			if (logEnabled) {
+				log('fix pass %d: no more fixable violations, stopping', pass);
+			}
 			break;
 		}
 	}
 
 	const reachedMaxPasses = pass === MAX_FIX_PASSES;
-	if (reachedMaxPasses) {
+	if (reachedMaxPasses && logEnabled) {
 		log('fix: reached maximum number of passes (%d), some fixes may not have been applied', MAX_FIX_PASSES);
 	}
 

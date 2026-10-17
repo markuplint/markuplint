@@ -53,7 +53,9 @@ export function attrCheck(
 
 	// Existence
 	if (!spec) {
-		log('The "%s" attribute DOES\'NT EXIST in the spec', name);
+		if (log.enabled) {
+			log('The "%s" attribute DOES\'NT EXIST in the spec', name);
+		}
 		const baseMessage = t('{0} is {1:c}', t('the "{0*}" {1}', name, 'attribute'), 'disallowed');
 		const candidate = allAttrNames ? getCandidate(name, allAttrNames) : undefined;
 		if (candidate) {
@@ -70,7 +72,9 @@ export function attrCheck(
 
 	const nameCaseSensitive = /[A-Z]/.test(spec.name);
 	if (nameCaseSensitive && name !== spec.name) {
-		log('The "%s" attribute name is unmatched in case-sensitive', name);
+		if (log.enabled) {
+			log('The "%s" attribute name is unmatched in case-sensitive', name);
+		}
 		return {
 			invalidType: 'non-existent',
 			message:
@@ -90,7 +94,9 @@ export function attrCheck(
 	// Safety net: In normal flow, `isValidAttr()` resolves ConditionalAttributeType[]
 	// before calling this function (#3598). This guard handles direct calls.
 	if (isConditionalAttributeTypeArray(spec.type)) {
-		log('The "%s" attribute uses ConditionalAttributeType[] — unresolved, treating as valid', name);
+		if (log.enabled) {
+			log('The "%s" attribute uses ConditionalAttributeType[] — unresolved, treating as valid', name);
+		}
 		return false;
 	}
 

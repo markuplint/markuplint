@@ -31,7 +31,7 @@ Two major lines are developed in parallel:
 | `v4`   | v4 maintenance.                                                                    |
 
 - Merges go `dev` → `v6` only; `v6` is never merged into `dev`.
-- `Fixes #N` closes the issue only when the PR merges into the default branch (`dev`). After a PR into `v6` merges, check each linked issue with `gh issue view <n> --json state` and close the open ones by hand (`gh issue close <n> --reason completed --comment "Fixed by #<PR> (merged into v6)."`). A v6 PR is not done until its issues are closed.
+- `Fixes #N` closes the issue only when the PR merges into the default branch (`dev`). After a PR into `v6` merges, check each linked issue with `gh issue view <n> --json state` and close the open ones by hand with `gh issue close <n> --reason completed`. Add `--comment "Fixed by #<PR> (merged into v6)."` only when someone other than the maintainer filed the issue — the same condition the `pr` skill applies to its post-merge report. A v6 PR is not done until its issues are closed.
 - The lines have diverged in which linters run, what the test gate covers, and which packages exist. Read the current branch's `package.json` before stating any of these; a fact from the other branch is not evidence.
 - Guidance that applies to both lines lives in a shared file, worded with its condition explicit so it stays true on both. Guidance for one line lives in a file only that line has (`crates/CLAUDE.md`). Divergent copies of the same paragraph conflict on every `dev` → `v6` merge, so do not create them.
 
@@ -45,12 +45,12 @@ Two major lines are developed in parallel:
 - Do not use `npx tsc --noEmit` — it does not work in this monorepo (no root `include`; `composite` conflicts with `--noEmit` in build mode)
 - `yarn test` covers the TypeScript workspace only; a branch with `crates/` has a separate gate in `crates/CLAUDE.md`
 - CI additionally runs cross-OS (`vitest.cross-os.config.ts` on macOS/Windows) and alternative runtimes/package managers (bun, deno, pnpm, npm) — a green local `yarn test` does not cover those paths
+- A failure on the 10 s `testTimeout` (`vitest.config.ts`) is not evidence by itself: the CLI specs spawn processes, and the first run after `yarn install` / `yarn build` loads the Vue / Svelte / Astro scanners cold, so a loaded machine pushes them past the limit. Check `uptime`, re-run the failed spec alone, and confirm the change is on that spec's code path before concluding anything. Still suspect the current change first; load is the explanation only once the isolated re-run passes
 
 ### Lint
 
 - Check only: `yarn lint-check` (no arguments). Auto-fix: `yarn lint` (no arguments), which also runs actionlint over workflow files
 - Which linters these run is defined by `package.json` `scripts.lint` and differs between branches. Do not run linters individually (`npx oxlint ...`) — the root scripts are the only way to run the full set
-- On branches that have a `cspell.json`, register new spec terminology (ABNF symbols such as `DQUOTE`, `OWS`) in its `Specs` section before using the term. In a worktree whose `.git` is a file, the CSpell step can pass having scanned zero files — if a lint run finishes suspiciously fast after new identifiers were added, confirm it actually scanned before pushing
 
 ### Build
 
@@ -65,7 +65,7 @@ Every `test()` in rule spec files under `packages/@markuplint/rules/src/<rule-na
 
 Direct commits to `dev` and `v6` are rejected by the husky pre-commit hook; all work happens on a topic branch. `main` and the prerelease branches are unguarded because `lerna version` writes its release commit there — that is not a licence to commit to them by hand.
 
-The main working directory stays on `dev`: do not `git checkout` / `git switch` / create a branch there. Branch work happens in a Claude Code–managed worktree (`claude --worktree` / the harness worktree feature), not one created by hand. The one standing exception is `.worktree/v6`, a long-lived worktree on `v6`; leave it in place and do not commit to it directly.
+Except while the `release` skill runs, the main working directory stays on `dev`: do not `git checkout` / `git switch` / create a branch there. Branch work happens in a Claude Code–managed worktree (`claude --worktree` / the harness worktree feature), not one created by hand. The one standing exception is `.worktree/v6`, a long-lived worktree on `v6`; leave it in place and do not commit to it directly. The `release` skill runs in the main checkout, which must have the release branch (`main` or a prerelease branch) checked out for `yarn release`.
 
 The harness cuts a new worktree from the default branch (`dev`). For v6 work, re-point it first — `git fetch origin v6`, then `git reset --hard origin/v6` — and open the PR against `v6`.
 
@@ -103,4 +103,5 @@ The harness cuts a new worktree from the default branch (`dev`). For v6 work, re
 - `npx` is acceptable only for packages already installed in `node_modules` (e.g. `npx vitest`); never for a package that would be fetched from the registry
 - Version specifiers when adding dependencies: third-party `dependencies` of a published package take a caret range (`yarn add foo@^1.2.3`); `devDependencies`, private packages, and `@markuplint/*` siblings pin exact versions. An exact pin in a published package does not reach its dependencies' own dependencies, and it blocks consumers from taking upstream fixes until we release again. Supply-chain defence for what consumers install rests with their lockfile and package manager; this repo relies on `yarn.lock`, `npmMinimalAgeGate`, and Renovate's `minimumReleaseAge`
   - Exceptions in published `dependencies`: a package that ships breaking API changes in minor releases takes a tilde range; packages that must resolve to the same version as each other pin exact. The exceptions are enumerated, and the policy enforced, in `packages/@markuplint/test-tools/src/dependency-ranges.spec.ts` — add a new exception there
+- Dependency install scripts are opt-in: `enableScripts: false` in `.yarnrc.yml`, and every dependency that has one is listed by name under `dependenciesMeta` in its project's `package.json` (the root workspace, or `website/` — a separate Yarn project that inherits the same `.yarnrc.yml`) with `built: true` to run it or `built: false` to skip it on purpose. `packages/@markuplint/test-tools/src/install-scripts.spec.ts` fails when an installed package with an install script has no entry or an entry has gone stale — add or remove the entry there; do not flip the setting
 - Check a new package's trustworthiness first; do not hand-edit `yarn.lock`

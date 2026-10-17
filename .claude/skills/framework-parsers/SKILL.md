@@ -33,5 +33,5 @@ The parser hierarchy, extension points, and design rationale are documented in t
 3. **Spec packages must only export an `ExtendedSpec` object** — no parsing logic.
 4. **Use `potentialName` for attribute mapping** — it tells markuplint which standard HTML attribute a framework attribute corresponds to.
 5. **Test with `nodeListToDebugMaps`** — the standard assertion pattern across all parsers.
-6. **Full framework parsers must ship a `component-scanner` subpath export** (`"./component-scanner"` in `package.json` `exports`) — `@markuplint/pretenders` dynamically imports it at runtime for auto scan. Without it, the framework's components are not detected.
+6. **Parsers for formats that define components in the template file (vue, svelte, astro) must ship a `component-scanner` subpath export** (`"./component-scanner"` in `package.json` `exports`) — `@markuplint/pretenders` dynamically imports it at runtime for auto scan. Without it, the framework's components are not detected. `jsx-parser` and `pug-parser` ship none: their components are not declared in the template file.
 7. **Never import from `@markuplint/pretenders` inside component-scanner** — define local types structurally compatible with its `ComponentScanner` interface. Importing pretenders creates a circular dependency in the lerna build graph.
