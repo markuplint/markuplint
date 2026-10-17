@@ -85,6 +85,10 @@ Markuplint supports the **`:has` selector**. Combined with combinator operators,
 
 :::
 
+### Case of tag names
+
+A type selector compares tag names case-insensitively for HTML elements, as CSS does. In a language whose parser tells the case of a tag name apart — JSX, Svelte, Astro, and MDX — it compares them as written: `FooBar` matches `<FooBar>` but not `<foobar>`, and `DIV` does not match `<div>`. The same goes for `nodeName` of a [regular expression selector](#regular-expression-selector). Write the selector in the case of the tag.
+
 ## Specificity
 
 Markuplint applies **specificity** the same way as **CSS Selectors**, allowing you to control the priority of rule application.
