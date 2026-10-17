@@ -184,6 +184,8 @@ git push origin dev
 
 If the hook has dropped `MERGE_HEAD` and the commit has one parent, rebuild it with `git commit-tree <tree> -p <main> -p <dev>`. If the push is rejected because `dev` moved (Renovate lands often), `git fetch origin dev`, merge it in, and push again.
 
+When carrying `dev` into `v6` afterwards, check for `@markuplint/*` dependencies still pinned to the previous version: a package that exists only on `v6` is never seen by Lerna on the release branch, so an exact pin on a workspace sibling there is not bumped by the release. If that sibling is private (`@markuplint/test-tools` and the like), the next `yarn install` fails with `@markuplint/<name>@npm:<old-version>: Package not found`. Run `grep -rn '"@markuplint/[a-z0-9-]*": "<old-version>"' --include=package.json packages` on the merged tree (the digit in the class matters: `@markuplint/i18n` is pinned exactly by several packages) and set any hit to the released version by hand before committing the merge.
+
 Do this before step 8 so a failure in verification does not leave the branches diverged.
 
 ## 8. Watch the publish workflow
@@ -282,6 +284,7 @@ Formatting rules:
 - `Other Changes` uses a flat bullet list (no subheadings)
 - `Updated Packages` lists only packages with version bumps in this release
 - Omit sections that have no entries
+- Check every numeric claim ("N rules", "M packages", "K new rules") against the tree at the tag before publishing the notes: count the directories under `packages/@markuplint/rules/src/` that have a `README.md` (the loose `.ts` files and the helper directories without one are not rules), and `npx lerna list` minus the private packages (`@markuplint/test-tools`) for packages. A count carried over from a draft or a CHANGELOG summary has been wrong before
 
 ## 12. X (Twitter) post
 

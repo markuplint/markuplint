@@ -46,6 +46,14 @@ was scoped but not adopted — there is no `vscode-marketplace` GitHub
 Environment and no Azure-related repo secret. Publishing still uses the PAT
 via `vsce`'s interactive login (`yarn vscode:login`).
 
+`vsce` keeps that PAT in the OS credential store, which a non-interactive
+shell — the one Claude Code runs commands in — cannot open: `yarn
+vscode:release` from there fails with `Failed to open credential store`
+followed by `TF400813 … not authorized`. Run `yarn vscode:login` in your own
+terminal first; `vsce` then falls back to its clear-text store and the publish
+can be driven from either side. Any step that prompts for the PAT belongs in
+the user's terminal.
+
 ## Build modes
 
 `vscode/scripts/install.mjs [mode]` only accepts `package` and `release`
