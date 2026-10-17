@@ -288,11 +288,17 @@ export type Pretender = {
 	readonly as: string | OriginalNode;
 
 	/**
-	 * Where the component was found, as `<path>:<line>:<column>`. Metadata only —
-	 * nothing in linting reads it to influence pretender matching (matching is by
-	 * `selector` alone). `@markuplint/pretenders` scanners emit `<path>` relative
-	 * to the JSON file this entry will be written into, not the scan-time cwd, so
-	 * it stays resolvable regardless of where the file is later loaded from.
+	 * Where the component is declared, as `<path>:<line>:<column>`: not where a component
+	 * it renders is, however many it wraps.
+	 *
+	 * Matching a pretender to an element is by `selector` alone. When several entries share
+	 * a selector, though, the lint of a file keeps the one declared in the file that its
+	 * import of that name resolves to (`disambiguatePretenders` of `@markuplint/pretenders`);
+	 * an entry without `filePath` can never be told apart that way.
+	 *
+	 * `@markuplint/pretenders` scanners emit `<path>` relative to the JSON file this entry
+	 * will be written into, not the scan-time cwd, so it stays resolvable regardless of
+	 * where the file is later loaded from.
 	 *
 	 * @experimental
 	 */
