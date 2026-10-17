@@ -62,6 +62,8 @@ For a stable release, merging into `main` flips four user-facing surfaces at onc
 
 Website changes therefore reach production in the same step. Confirm with the user that the website is in a shippable state before merging.
 
+The merge also makes `crates/` part of the stable line. The `no-breaking-change-on-stable-line` rule of `.commitlintrc.js` tells the lines apart by `crates/Cargo.toml`, so from then on it is silent in every checkout: re-key it to whatever marks the next major before the first commit on the new stable line.
+
 # Steps
 
 ## 1. Determine the release type and target branch
@@ -111,6 +113,15 @@ git log --oneline <last-tag>..HEAD
 ```
 
 Show the current version (`lerna.json`). `yarn release` derives the next version from conventional commits automatically, so do **NOT** ask the user to choose a version bump — present the diff only as a "what's going in" check.
+
+On the stable line, also scan the range for a breaking-change marker. The `no-breaking-change-on-stable-line` rule of `.commitlintrc.js` blocks it at commit time only; for a commit merged on GitHub this scan is the one gate, and one hit makes `yarn release` cut a major, the number the next-major line owns:
+
+```bash
+git log <last-tag>..HEAD --format=%s | grep -E '^[a-z]+(\([^)]*\))?!:'
+git log <last-tag>..HEAD --format=%B | grep -iE '^(\* +)?BREAKING[ -]CHANGE:'
+```
+
+Stop and present any hit. If the user decides to release anyway, pass the bump explicitly — `yarn release minor` (or `patch`): `lerna version` takes a positional bump over the recommendation of `--conventional-commits` and still generates the changelog. That changelog carries a "BREAKING CHANGES" section from the commit's note, so the minor release announces a breaking change; say so when presenting the choice.
 
 ## 5. Version bump (user-executed)
 
@@ -236,6 +247,12 @@ Format:
 ## Highlights
 
 - One-line summary of each major change (3-5 bullet points)
+
+---
+
+## Behavior changes
+
+- What changed for a user, and what to do about it — one bullet per `Behavior change (…): …` paragraph in `git log <last-tag>..HEAD --grep='^Behavior change'`, an approved exception for a stable API first. Omit the section when there is none.
 
 ---
 
