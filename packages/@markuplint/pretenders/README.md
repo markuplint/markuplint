@@ -62,7 +62,9 @@ Instead of the CLI, you can configure dynamic scanning directly in your markupli
 }
 ```
 
-The walk follows up to 8 import hops from the linted file. A re-export (`export ... from`) in a JS/TS file (or in the linted file itself when it is MDX) is followed like an import, so components imported through a barrel file are found, and passing through the barrel takes a hop. `auto` also accepts an object to change the limit:
+The walk follows up to 8 import hops from the linted file. A re-export (`export ... from`) in a JS/TS file (or in the linted file itself when it is MDX) is followed like an import, so components imported through a barrel file are found, and passing through the barrel takes a hop. A component is resolved under the name the linted file gives it (`import { Named as A }`, `import B from './DefNamed'`, or a component renamed by a barrel file), in addition to the name it is declared under. A namespace import (`<UI.Button>`) and a component that `lazy()` or a dynamic `import()` assigns to a variable of another name are not. Nor is a name with a lowercase initial (`import myButton from './Foo'`): in JSX, MDX, Svelte, and Astro a tag with a lowercase initial is an HTML element, not a reference to the variable, so a component under that name would turn `<myButton>` into the component.
+
+`auto` also accepts an object to change the limit:
 
 ```jsonc
 // .markuplintrc
@@ -209,12 +211,13 @@ const pretenders = await scan([
 
 #### Parameters
 
-| Parameter                      | Type                | Description                                                                                                                                       |
-| ------------------------------ | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `files`                        | `readonly string[]` | Absolute file paths to scan                                                                                                                       |
-| `options.ignoreComponentNames` | `readonly string[]` | Component names to exclude from results                                                                                                           |
-| `options.followImports`        | `boolean`           | Whether the JSX scanner also scans the files the given JS/TS files import (default `true`; `autoScan` passes `false` to keep its own depth limit) |
-| `options.dependencies`         | `Set<string>`       | A set the scan adds the files its result depends on to (see [Dependencies](#dependencies))                                                        |
+| Parameter                      | Type                 | Description                                                                                                                                                                                                                                       |
+| ------------------------------ | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `files`                        | `readonly string[]`  | Absolute file paths to scan                                                                                                                                                                                                                       |
+| `options.ignoreComponentNames` | `readonly string[]`  | Component names to exclude from results                                                                                                                                                                                                           |
+| `options.followImports`        | `boolean`            | Whether the JSX scanner also scans the files the given JS/TS files import (default `true`; `autoScan` passes `false` to keep its own depth limit)                                                                                                 |
+| `options.dependencies`         | `Set<string>`        | A set the scan adds the files its result depends on to (see [Dependencies](#dependencies))                                                                                                                                                        |
+| `options.entry`                | `PretenderScanEntry` | The file being linted, `{ filePath: string; bindings: readonly ImportBinding[] }` (`filePath` is absolute): the names it gives the components it imports are added as pretenders. `autoScan` passes it; a `scan` of a fixed set of files has none |
 
 ### `jsxScanner(files, options)`
 

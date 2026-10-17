@@ -1,5 +1,5 @@
 import type { ImportBinding } from './import-resolver/types.js';
-import type { Identifier, Identity, ImportPath } from './types.js';
+import type { Identifier, Identity, ImportPath, PretenderScanEntry } from './types.js';
 
 import { dependencyMapper } from './dependency-mapper.js';
 
@@ -61,13 +61,21 @@ export class PretenderDirector {
 	 *   falling back to disk.
 	 * @param dependencies - A sink for the files read while chasing imports
 	 *   (see `PretenderScanOptions#dependencies`)
+	 * @param entry - The file being linted, whose names for its imports are added
+	 *   as pretenders (see {@link PretenderScanEntry})
 	 */
-	getPretenders(cwd?: string, sources?: ReadonlyMap<string, string>, dependencies?: Set<string>) {
+	getPretenders(
+		cwd?: string,
+		sources?: ReadonlyMap<string, string>,
+		dependencies?: Set<string>,
+		entry?: PretenderScanEntry,
+	) {
 		return dependencyMapper(this.#map, this.#nameIndex, {
 			importsByFile: this.#importsByFile,
 			cwd,
 			sources,
 			dependencies,
+			entry,
 		});
 	}
 }

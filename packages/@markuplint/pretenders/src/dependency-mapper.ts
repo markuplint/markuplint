@@ -1,11 +1,12 @@
 import type { PretenderDirectorMap } from './pretender-director.js';
-import type { Identifier, Identity } from './types.js';
+import type { Identifier, Identity, PretenderScanEntry } from './types.js';
 import type { ImportBinding } from './import-resolver/types.js';
 import type { Pretender } from '@markuplint/ml-config';
 
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { isComponentName } from '@markuplint/parser-utils';
 import { isFatalError } from '@markuplint/shared';
 import ts from 'typescript';
 
@@ -42,6 +43,12 @@ export interface DependencyMapperContext {
 	 * with. See `PretenderScanOptions#dependencies`.
 	 */
 	readonly dependencies?: Set<string>;
+	/**
+	 * The file being linted. The names it gives its imports are the names the
+	 * pretenders are looked up by at lint time, which the declared names of the
+	 * components do not tell: see {@link aliasEntryImports}.
+	 */
+	readonly entry?: PretenderScanEntry;
 }
 
 /**
@@ -101,6 +108,13 @@ type Declaration = {
  * Each hop composes the `slots` / `contents` and the attributes of the component so far
  * into those of the component it renders (`composeIdentity`, issue #4057); the rest of the
  * identity is the last hop's.
+ *
+ * The `filePath` is where the component itself is declared, not where the component it
+ * renders is: the lint of a file tells same-named candidates apart by the file it imports the
+ * name from (see {@link ./disambiguate.js}), and that is the file that declares the wrapper.
+ *
+ * With `context.entry`, the pretenders also come under the names the entry file gives its
+ * imports (see {@link aliasEntryImports}).
  */
 export function dependencyMapper(
 	map: Readonly<PretenderDirectorMap>,
@@ -111,11 +125,10 @@ export function dependencyMapper(
 	const importsByFile = context?.importsByFile;
 	const cwd = context?.cwd ?? process.cwd();
 	const env: ResolveEnv = { cwd, sources: context?.sources, dependencies: context?.dependencies };
-	const linkedPretenders: Pretender[] = [];
+	const linkedByKey = new Map<string, Pretender>();
 
-	for (const [key, [identifier, _identity, _filePath, _sourceFile]] of map) {
+	for (const [key, [identifier, _identity, filePath, _sourceFile]] of map) {
 		let identity = _identity;
-		let filePath = _filePath;
 		let elName = getElName(identity);
 		let currentFile = _sourceFile;
 		const via: string[] = [];
@@ -127,8 +140,6 @@ export function dependencyMapper(
 			if (!mappedPretender) {
 				break;
 			}
-
-			filePath = mappedPretender[2];
 
 			if (visited.has(lookupKey)) {
 				// Back at a component already passed: the result is that component as it is
@@ -155,10 +166,75 @@ export function dependencyMapper(
 			Object.assign(pretender, { _via: via });
 		}
 
-		linkedPretenders.push(pretender);
+		linkedByKey.set(key, pretender);
 	}
 
-	return linkedPretenders.toSorted(propSort('selector'));
+	const aliases = context?.entry ? aliasEntryImports(context.entry, map, linkedByKey, env) : [];
+
+	return [...linkedByKey.values(), ...aliases].toSorted(propSort('selector'));
+}
+
+/**
+ * The pretenders for the names the entry file gives the components it imports under another
+ * name than they are declared by (`import { Named as A }`, `import B from './DefNamed'`, a
+ * template component under any name, a re-export renamed by a barrel): the linked pretender of
+ * the declaration, under the local name. A name only the importer chooses, so it is the
+ * entry's alone. It is not a name that a scan of files could know.
+ *
+ * It is added even when another component is declared under the local name: the lint then
+ * tells them apart by the import, which is why the alias keeps the declaration's own `filePath`,
+ * as {@link ./disambiguate.js} matches the file the import leads to against it.
+ *
+ * None for a namespace or a dynamic binding (no single component), a name that leads into a
+ * package (the same-named components of the project are not what it renders, see
+ * `FROM_PACKAGE`), and one the map has no component for.
+ *
+ * None either for a local name that is not a component name (`isComponentName`: a capital
+ * initial, or a `.`), whatever it is imported from. A tag written with a lowercase initial is
+ * an HTML element in JSX, MDX, Svelte and Astro, so `import myButton from './Foo'` is not what
+ * `<myButton>` renders there, and a pretender named `myButton` would turn that element into
+ * the component:
+ *
+ * - React: component names must start with a capital letter; a lowercase tag is an HTML tag
+ *   (https://react.dev/learn/your-first-component).
+ * - Svelte: a lowercase tag is an HTML element; a capitalised tag or one with dot notation is a
+ *   component (https://svelte.dev/docs/svelte/basic-markup).
+ * - Astro: a variable used as a tag must be capitalized, or it is rendered as a literal HTML tag
+ *   (https://docs.astro.build/en/reference/astro-syntax/).
+ *
+ * Vue resolves a kebab-case tag to a component imported in PascalCase, and recommends PascalCase
+ * (https://vuejs.org/guide/components/registration.html#component-name-casing). The parser of
+ * `@markuplint/vue-parser` takes only a capital initial for a component too, so a lowercase local
+ * name has no tag to be matched with, and the kebab-case tag of a PascalCase name is not matched
+ * either: both are known limitations, to be solved on the side of the tag name, not here.
+ */
+function aliasEntryImports(
+	entry: PretenderScanEntry,
+	map: Readonly<PretenderDirectorMap>,
+	linkedByKey: ReadonlyMap<string, Pretender>,
+	env: ResolveEnv,
+): Pretender[] {
+	const aliases: Pretender[] = [];
+	const aliased = new Set<string>();
+
+	for (const binding of entry.bindings) {
+		if (binding.type === 'namespace' || binding.type === 'dynamic' || !isComponentName(binding.localName)) {
+			continue;
+		}
+
+		const key = resolveImportBinding(binding, path.resolve(env.cwd, entry.filePath), env);
+		const declared = typeof key === 'string' ? map.get(key) : undefined;
+		const linked = typeof key === 'string' ? linkedByKey.get(key) : undefined;
+		if (!declared || !linked || declared[0] === binding.localName || aliased.has(binding.localName)) {
+			continue;
+		}
+
+		aliased.add(binding.localName);
+		// A copy, so that the alias and the pretender of the declaration do not share `as` and `_via`.
+		aliases.push({ ...structuredClone(linked), selector: binding.localName });
+	}
+
+	return aliases;
 }
 
 /**
@@ -283,7 +359,18 @@ function resolveThroughImport(
 		return null;
 	}
 
-	const importerAbs = path.resolve(env.cwd, currentFile);
+	return resolveImportBinding(binding, path.resolve(env.cwd, currentFile), env);
+}
+
+/**
+ * Resolves one import binding of the file at `importerAbs` to the map key of the declaration
+ * it leads to. The result is what {@link resolveThroughImport} says of it.
+ */
+function resolveImportBinding(
+	binding: ImportBinding,
+	importerAbs: string,
+	env: ResolveEnv,
+): string | typeof FROM_PACKAGE | null {
 	const resolvedAbs = resolveModule(importerAbs, binding.source, env);
 	if (!resolvedAbs) {
 		return null;

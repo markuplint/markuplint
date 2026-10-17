@@ -1,3 +1,4 @@
+import type { PretenderScanEntry } from '../types.js';
 import type { PretenderScanOptions } from '@markuplint/ml-config';
 
 /**
@@ -17,6 +18,11 @@ export interface PretenderScanJSXOptions extends PretenderScanOptions {
 	 * through the `ts.Program`.
 	 */
 	followImports?: boolean;
+	/**
+	 * The file being linted, whose names for the components it imports are added as pretenders.
+	 * Only `autoScan` has one.
+	 */
+	entry?: PretenderScanEntry;
 	/** Patterns matching component names to treat as transparent fragments (children are scanned instead) */
 	asFragment?: readonly (Readonly<RegExp> | string)[];
 	/** Patterns matching tagged template expressions for CSS-in-JS libraries (e.g., styled.button) */

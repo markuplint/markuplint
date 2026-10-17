@@ -120,7 +120,9 @@ describe('jsxScanner', () => {
 					slots: true,
 					inheritAttrs: true,
 				},
-				filePath: _('packages/@markuplint/pretenders/test/fixtures/003.tsx:2:6'),
+				// BREAKING CHANGE: the `filePath` is where the component is declared, not where the component it renders is.
+				// filePath: _('packages/@markuplint/pretenders/test/fixtures/003.tsx:2:6'),
+				filePath: _('packages/@markuplint/pretenders/test/fixtures/003.tsx:12:6'),
 			},
 		]);
 
@@ -304,7 +306,9 @@ describe('jsxScanner', () => {
 				_via: ['Item'],
 			});
 			expect(c?.as).not.toHaveProperty('inheritAttrs');
-			expect(c?.filePath).toMatch(/^a\.tsx:/);
+			// BREAKING CHANGE: the `filePath` is where the component is declared, not where the component it renders is.
+			// expect(c?.filePath).toMatch(/^a\.tsx:/);
+			expect(c?.filePath).toMatch(/^c\.tsx:/);
 		});
 
 		test('a default import resolves via the target file export table, not the first-registered same-named one', async () => {

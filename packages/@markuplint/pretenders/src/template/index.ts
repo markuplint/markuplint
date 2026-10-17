@@ -155,5 +155,5 @@ export const templateScanner = createScanner<PretenderScanTemplateOptions>(async
 		}
 	}
 
-	return director.getPretenders(cwd, options?.sources, options?.dependencies);
+	return director.getPretenders(cwd, options?.sources, options?.dependencies, options?.entry);
 });

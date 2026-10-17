@@ -84,7 +84,9 @@ describe('PretenderDirector', () => {
 			{
 				selector: 'MyButton',
 				as: 'button',
-				filePath: 'lib/Button.vue:1:0',
+				// BREAKING CHANGE: the `filePath` is where the component is declared, not where the component it renders is.
+				// filePath: 'lib/Button.vue:1:0',
+				filePath: 'app/MyButton.vue:1:0',
 				_via: ['Button'],
 			},
 		]);
@@ -103,7 +105,9 @@ describe('PretenderDirector', () => {
 		expect(myButton).toStrictEqual({
 			selector: 'MyButton',
 			as: 'button',
-			filePath: 'A/Button.vue:1:0',
+			// BREAKING CHANGE: see 'chain resolution through nameIndex with import paths'.
+			// filePath: 'A/Button.vue:1:0',
+			filePath: 'MyButton.vue:1:0',
 			_via: ['Button'],
 		});
 	});
@@ -153,7 +157,9 @@ describe('PretenderDirector', () => {
 			{
 				selector: 'CardButton',
 				as: 'button',
-				filePath: 'Button.vue:1:0',
+				// BREAKING CHANGE: see 'chain resolution through nameIndex with import paths'.
+				// filePath: 'Button.vue:1:0',
+				filePath: 'CardButton.tsx:1:0',
 				_via: ['Button'],
 			},
 		]);

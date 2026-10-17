@@ -1,3 +1,4 @@
+import type { PretenderScanEntry } from './types.js';
 import type { Pretender } from '@markuplint/ml-config';
 
 import { propSort } from './dependency-mapper.js';
@@ -30,6 +31,13 @@ export interface ScanOptions {
 	 * (see `PretenderScanOptions#dependencies`).
 	 */
 	readonly dependencies?: Set<string>;
+
+	/**
+	 * The file being linted, whose names for the components it imports are added as
+	 * pretenders (see {@link PretenderScanEntry}). `autoScan` passes it; a `scan` of a
+	 * fixed set of files has no entry file, so it gives no such names.
+	 */
+	readonly entry?: PretenderScanEntry;
 }
 
 /**
@@ -51,13 +59,14 @@ export async function scan(files: readonly string[], options?: ScanOptions): Pro
 	const sources = options?.sources;
 	const followImports = options?.followImports;
 	const dependencies = options?.dependencies;
+	const entry = options?.entry;
 
 	const [jsxPretenders, templatePretenders] = await Promise.all([
 		jsxFiles.length > 0
-			? jsxScanner(jsxFiles, { ignoreComponentNames, sources, followImports, dependencies })
+			? jsxScanner(jsxFiles, { ignoreComponentNames, sources, followImports, dependencies, entry })
 			: Promise.resolve([]),
 		templateFiles.length > 0
-			? templateScanner(templateFiles, { ignoreComponentNames, sources, dependencies })
+			? templateScanner(templateFiles, { ignoreComponentNames, sources, dependencies, entry })
 			: Promise.resolve([]),
 	]);
 
