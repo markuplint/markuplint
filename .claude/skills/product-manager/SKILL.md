@@ -22,7 +22,15 @@ Every new feature is a direct increase in maintenance cost. Sustaining quality r
 - **Reference URLs** for the latest information (docs pages, official sources) are recorded
 - **Search keywords** are shared — so anyone can find what they need to know
 
-**Compatibility policy:** breaking changes in major version bumps are welcome, but minor releases must preserve backward compatibility.
+**Compatibility policy.** Whether a change breaks intended usage is judged per PR on semver's terms, and the judgment is written in the PR body's `## Behavior changes` section (the `pr` skill). Where a change may land:
+
+| The change | Stable line (`dev`; ships as minor or patch) | Next-major line (`v6`) |
+| --- | --- | --- |
+| Alters an `@experimental` API, option or output (`@experimental` in JSDoc, "experimental" in the docs) — judgment `experimental` | Allowed; the PR body's section and the feature's website page say what changed and what a user does | Allowed |
+| Breaks a stable API, option or output — judgment `breaking` | Not allowed, unless the user approves the exception on that PR; then the commit's paragraph is `Behavior change (stable, approved): …` and a migration guide is in the PR body's section and on the website | Allowed, with the breaking-change marker in the commit |
+| Breaks nothing a user relies on — judgment `not breaking` | Allowed | Allowed |
+
+A `!` or a `BREAKING CHANGE:` footer is never written on the stable line: `lerna version --conventional-commits` would cut a major from it (the `git` skill).
 
 ## Operational Assessment Criteria
 
@@ -32,6 +40,7 @@ When analyzing a repository or change, assess:
 - **Maintainability**: comments explain "why" (not just "what"); no undocumented magic numbers or implicit assumptions; adequate error handling (silent failures are an operational hazard); production-ready logging
 - **Testing & QA**: coverage breadth, what CI checks, pre-release checklist
 - **Compatibility & Migration** (versioning and CHANGELOG are automated — focus on what requires human effort):
+  - A diff of the kind the `pr` skill lists for a `## Behavior changes` section has that section in the PR body, with one of its three judgments — `experimental`, `not breaking`, `breaking` — per change. Before the PR exists (the `impl` skill runs this review first), read the commits' `Behavior change (…):` paragraphs or the draft body instead. Flag the PR when the section is missing or a change in the diff has no judgment.
   - Breaking changes **must** ship with a migration guide. No guide = does not pass review.
   - A migration guide must include: the list of affected APIs/configs/data structures; concrete before → after rewrite examples; step-by-step procedure (including intermediate states when bulk migration isn't feasible); instructions for any automated migration scripts.
   - Deprecations must document the target removal version and migration destination.
@@ -42,7 +51,7 @@ When analyzing a repository or change, assess:
 
 1. **How much does this change increase maintenance cost?** New dependencies, new configuration parameters, new monitoring/alert needs.
 2. **Is the knowledge needed to understand this change shared?** Sufficient PR description, "why" comments, related docs updated.
-3. **Do breaking changes come with a migration guide?** Breaking changes in a minor version → flag. No guide = no merge. For deprecations, removal version and migration path documented.
+3. **Do breaking changes come with a migration guide?** Read the PR body's `## Behavior changes` section (before the PR exists, the commits' `Behavior change (…):` paragraphs). A breaking change of a stable API on the stable line → flag, and ask for the user's recorded approval of the exception. No guide = no merge. An experimental change needs the section's before → after and the user's step, not a guide. For deprecations, removal version and migration path documented.
 4. **Is the code built to accommodate change?** Hardcoded values that should be configurable; configuration externalized; flexible for future change without over-abstraction.
 
 ## Review Output Format

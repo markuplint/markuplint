@@ -94,13 +94,16 @@ When committing changes that span multiple packages, always commit **from leaves
     - Scope is optional — omit it when changes span multiple packages or don't belong to one
 - The message body's lines must not be longer than 100 characters
 - The subject must not be sentence-case, start-case, pascal-case, upper-case
+- A breaking-change marker — a `!` after the type, or a `BREAKING CHANGE:` / `BREAKING-CHANGE:` footer — is written only on the next-major line (`v6`: a checkout with `crates/Cargo.toml`). On the stable line (`dev`) `yarn release` runs `lerna version --conventional-commits` on a fixed-version workspace, so one such commit since the last tag makes the next release a major, the number the next-major line owns; the `no-breaking-change-on-stable-line` rule in `.commitlintrc.js` rejects it at commit time, and the breaking-change question of `yarn commit` (commitizen) is answered "no" there
+  - A change to what an `@experimental` API, option or output does may ship from the stable line (the compatibility policy in the `product-manager` skill). Say so in the last paragraph of the body, which starts with `Behavior change (experimental): ` and names the affected data and the before → after in one or two sentences. The `release` skill collects these paragraphs with `git log --grep` for the release notes, and conventional-changelog does not read the phrase as breaking
+  - A breaking change of a stable API is made on the next-major line, with the marker. When the user has approved the exception of shipping one from the stable line (the same policy), the paragraph starts with `Behavior change (stable, approved): ` instead — still without the marker — and the migration guide is in the PR body and on the website
 
 # Commit message safety guidelines
 
 - For simple, single-line commits, use single quotes (`git commit -m 'type(scope): subject line'`)
-- Do not use multiple -m flags for breaking changes (causes commitlint parse errors)
+- Do not use multiple -m flags for a multi-line message (causes commitlint parse errors)
 
-## Heredoc Format (every multi-line message, REQUIRED for Breaking Changes)
+## Heredoc Format (every multi-line message)
 
 Use heredoc with command substitution to pass any multi-line commit message. This ensures:
 
@@ -108,7 +111,21 @@ Use heredoc with command substitution to pass any multi-line commit message. Thi
 - Multi-line messages are properly formatted
 - commitlint can parse the message correctly
 
-**Format:**
+**Format — a behavior change of an experimental API on the stable line:**
+
+```bash
+git commit -m "$(cat <<'EOF'
+fix(scope): subject line
+
+What changed and why, as in any commit.
+
+Behavior change (experimental): the `filePath` of a wrapper component in the pretenders
+JSON is now the component's own location, not the last hop's. Regenerate committed JSON.
+EOF
+)"
+```
+
+**Format — a breaking change on the next-major line:**
 
 ```bash
 git commit -m "$(cat <<'EOF'
