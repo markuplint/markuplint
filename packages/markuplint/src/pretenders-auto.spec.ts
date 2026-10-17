@@ -432,3 +432,92 @@ import { Named as A } from './Named';
 		expect(await lint('Page.tsx')).toStrictEqual([]);
 	});
 });
+
+describe('pretenders.auto with a component that is an anonymous default export', () => {
+	let tmpDir: string;
+
+	async function lint(file: string) {
+		const { violations } = await mlTestFile(path.join(tmpDir, file), {
+			...jsxParserConfig,
+			pretenders: { auto: true },
+			rules: { 'permitted-contents': true },
+		});
+		return violations.map(v => `${v.ruleId}: ${v.raw}`);
+	}
+
+	async function write(files: Record<string, string>) {
+		for (const [file, content] of Object.entries(files)) {
+			await writeFile(path.join(tmpDir, file), content);
+		}
+	}
+
+	beforeEach(async () => {
+		tmpDir = await mkdtemp(path.join(os.tmpdir(), 'pretenders-auto-anon-default-'));
+		await write({
+			'AnonArrow.tsx': 'export default () => <img src="x.png" />;',
+			'AnonFn.tsx': 'export default function () { return <img src="x.png" />; }',
+			'MemoAnon.tsx': 'import { memo } from \'react\';\nexport default memo(() => <img src="x.png" />);',
+		});
+	});
+
+	afterEach(async () => {
+		await rm(tmpDir, { recursive: true, force: true });
+	});
+
+	test.each(['AnonArrow', 'AnonFn', 'MemoAnon'])('%s imported under its file name', async name => {
+		await write({
+			'Page.tsx': `import ${name} from './${name}';\nexport const Page = () => <div><${name}><span>c</span></${name}></div>;`,
+		});
+
+		expect(await lint('Page.tsx')).toStrictEqual([`permitted-contents: <${name}>`]);
+	});
+
+	test('imported under another name', async () => {
+		await write({
+			'Page.tsx': "import X from './AnonArrow';\nexport const Page = () => <div><X><span>c</span></X></div>;",
+		});
+
+		expect(await lint('Page.tsx')).toStrictEqual(['permitted-contents: <X>']);
+	});
+
+	test('a named export of the same name in the same file is not taken for it', async () => {
+		await write({
+			'Button.tsx': 'export const Button = () => <div />;\nexport default () => <img src="x.png" />;',
+			'Page.tsx': [
+				"import Button from './Button';",
+				'export const Page = () => <div><Button><span>c</span></Button></div>;',
+			].join('\n'),
+		});
+
+		expect(await lint('Page.tsx')).toStrictEqual(['permitted-contents: <Button>']);
+	});
+
+	test('nor is it taken for a named export that has no component', async () => {
+		await write({
+			'Button.tsx': [
+				'/** @pretends null */',
+				'export function Button() { return <div />; }',
+				'export default () => <img src="x.png" />;',
+			].join('\n'),
+			'Page.tsx': [
+				"import B, { Button } from './Button';",
+				'export const Page = () => <div><Button><span>c</span></Button><B><span>c</span></B></div>;',
+			].join('\n'),
+		});
+
+		// `<B>` is the default export, which is resolved: the scan ran, and `<Button>` alone has none.
+		expect(await lint('Page.tsx')).toStrictEqual(['permitted-contents: <B>']);
+	});
+
+	test('nor is it taken for the named export', async () => {
+		await write({
+			'Button.tsx': 'export const Button = () => <img src="x.png" />;\nexport default () => <div />;',
+			'Page.tsx': [
+				"import { Button } from './Button';",
+				'export const Page = () => <div><Button><span>c</span></Button></div>;',
+			].join('\n'),
+		});
+
+		expect(await lint('Page.tsx')).toStrictEqual(['permitted-contents: <Button>']);
+	});
+});
