@@ -305,3 +305,130 @@ describe('pretenders.auto with a component that cannot be resolved', () => {
 		]);
 	});
 });
+
+describe('pretenders.auto with a component imported under another name', () => {
+	let tmpDir: string;
+
+	const parserConfig = {
+		parser: {
+			'\\.tsx$': '@markuplint/jsx-parser',
+			'\\.vue$': '@markuplint/vue-parser',
+			'\\.astro$': '@markuplint/astro-parser',
+		},
+	};
+
+	async function lint(file: string) {
+		const { violations } = await mlTestFile(path.join(tmpDir, file), {
+			...parserConfig,
+			pretenders: { auto: true },
+			rules: { 'permitted-contents': true },
+		});
+		return violations.map(v => `${v.ruleId}: ${v.raw}`);
+	}
+
+	async function write(files: Record<string, string>) {
+		for (const [file, content] of Object.entries(files)) {
+			await mkdir(path.dirname(path.join(tmpDir, file)), { recursive: true });
+			await writeFile(path.join(tmpDir, file), content);
+		}
+	}
+
+	beforeEach(async () => {
+		tmpDir = await mkdtemp(path.join(os.tmpdir(), 'pretenders-auto-alias-'));
+		await write({
+			'Named.tsx': 'export const Named = () => <img src="x.png" />;',
+			'DefNamed.tsx': 'const DefNamed = () => <img src="x.png" />;\nexport default DefNamed;',
+			'Item.vue': '<template><img src="x.png" /></template>\n',
+		});
+	});
+
+	afterEach(async () => {
+		await rm(tmpDir, { recursive: true, force: true });
+	});
+
+	test('a named import under another name', async () => {
+		await write({
+			'Page.tsx':
+				"import { Named as A } from './Named';\nexport const Page = () => <div><A><span>c</span></A></div>;",
+		});
+
+		expect(await lint('Page.tsx')).toStrictEqual(['permitted-contents: <A>']);
+	});
+
+	test('a default import under another name', async () => {
+		await write({
+			'Page.tsx': "import B from './DefNamed';\nexport const Page = () => <div><B><span>c</span></B></div>;",
+		});
+
+		expect(await lint('Page.tsx')).toStrictEqual(['permitted-contents: <B>']);
+	});
+
+	test('a Vue component imported under another name', async () => {
+		await write({
+			'Page.vue': `<script setup>
+import Foo from './Item.vue';
+</script>
+<template><div><Foo><span>c</span></Foo></div></template>
+`,
+		});
+
+		expect(await lint('Page.vue')).toStrictEqual(['permitted-contents: <Foo>']);
+	});
+
+	test('a component of a .tsx file imported by an Astro page under another name', async () => {
+		await write({
+			'Page.astro': `---
+import { Named as A } from './Named';
+---
+<div><A><span>c</span></A></div>
+`,
+		});
+
+		expect(await lint('Page.astro')).toStrictEqual(['permitted-contents: <A>']);
+	});
+
+	test('the component the import leads to is used, not a same-named one of the project', async () => {
+		await write({
+			'Item.tsx': 'export const Item = () => <div />;',
+			'Card.tsx': "import { Item } from './Item';\nexport const Card = () => <Item />;",
+			'Page.tsx': [
+				"import { Card } from './Card';",
+				"import { Named as Item } from './Named';",
+				'export const Page = () => <div><Card /><Item><span>c</span></Item></div>;',
+			].join('\n'),
+		});
+
+		expect(await lint('Page.tsx')).toStrictEqual(['permitted-contents: <Item>']);
+	});
+
+	test('the same, when the component it leads to wraps another one', async () => {
+		await write({
+			'Img.tsx': 'export const Img = () => <img src="x.png" />;',
+			'Wrapped.tsx': "import { Img } from './Img';\nexport const Wrapped = () => <Img />;",
+			'Item.tsx': 'export const Item = () => <div />;',
+			'Card.tsx': "import { Item } from './Item';\nexport const Card = () => <Item />;",
+			'Page.tsx': [
+				"import { Card } from './Card';",
+				"import { Wrapped as Item } from './Wrapped';",
+				'export const Page = () => <div><Card /><Item><span>c</span></Item></div>;',
+			].join('\n'),
+		});
+
+		expect(await lint('Page.tsx')).toStrictEqual(['permitted-contents: <Item>']);
+	});
+
+	test('an import of a package under another name is not resolved to a component of the project', async () => {
+		await write({
+			'node_modules/button-library/package.json': '{"name":"button-library","main":"index.js"}',
+			'node_modules/button-library/index.js': 'export const Button = () => null;',
+			'ui/Button.tsx': 'export const Button = () => <img src="x.png" />;',
+			'Other.tsx': "import { Button } from './ui/Button';\nexport const Other = () => <Button />;",
+			'Page.tsx': [
+				"import { Button as B } from 'button-library';",
+				"import { Other } from './Other';",
+				'export const Page = () => <div><Other /><B><span>c</span></B></div>;',
+			].join('\n'),
+		});
+		expect(await lint('Page.tsx')).toStrictEqual([]);
+	});
+});
