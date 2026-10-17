@@ -1,5 +1,7 @@
 import { describe, test, expect } from 'vitest';
 
+import ts from 'typescript';
+
 import { parseImports } from './parse-imports.js';
 
 describe('parseImports', () => {
@@ -243,6 +245,62 @@ describe('parseImports', () => {
 			expect(result).toStrictEqual([
 				{ localName: 'Button', importedName: 'default', source: './Button.vue', type: 'default' },
 			]);
+		});
+
+		test('a dynamic import assigned by `defineAsyncComponent` is named after the variable', async () => {
+			const source = [
+				"import { defineAsyncComponent } from 'vue'",
+				"const Item = defineAsyncComponent(() => import('./Item.vue'))",
+				"const Other = defineAsyncComponent({ loader: () => import('./Other.vue'), delay: 200 })",
+				"const bare = import('./Bare.vue')",
+			].join('\n');
+			const result = await parseImports(source);
+			expect(result.slice(1)).toStrictEqual([
+				{ localName: 'Item', importedName: 'default', source: './Item.vue', type: 'dynamic' },
+				{ localName: 'Other', importedName: 'default', source: './Other.vue', type: 'dynamic' },
+				{ localName: '*', importedName: '*', source: './Bare.vue', type: 'dynamic' },
+			]);
+		});
+
+		test('a `.then` that reads one export names the binding after that export', async () => {
+			const source = "const Item = defineAsyncComponent(() => import('./Item.vue').then(m => m.Named))";
+			expect(await parseImports(source)).toStrictEqual([
+				{ localName: 'Item', importedName: 'Named', source: './Item.vue', type: 'dynamic' },
+			]);
+		});
+
+		test('names are matched to the imports by position, whatever precedes them', async () => {
+			const source = [
+				"import A from './A.vue'",
+				'const text = "import(\'./Fake.vue\')"',
+				"const B = defineAsyncComponent(() => import('./B.vue'))",
+				"const C = defineAsyncComponent(() => import('./C.vue'))",
+			].join('\n');
+			const result = await parseImports(source);
+			expect(result.map(b => [b.localName, b.source])).toStrictEqual([
+				['A', './A.vue'],
+				['B', './B.vue'],
+				['C', './C.vue'],
+			]);
+		});
+
+		test('names are matched when a comment precedes the import and two share a line', async () => {
+			const source =
+				"const A = lazy(() => /* c */ import('./A.vue')), B = lazy(() => import('./B.vue')), C = import('./C.vue')";
+			const result = await parseImports(source);
+			expect(result.map(b => [b.localName, b.source])).toStrictEqual([
+				['A', './A.vue'],
+				['B', './B.vue'],
+				['*', './C.vue'],
+			]);
+		});
+
+		test('TypeScript syntax is read, and JSX only as TSX', async () => {
+			const typed = "const Item: Component = defineAsyncComponent((): Promise<unknown> => import('./Item.vue'))";
+			expect(await parseImports(typed)).toMatchObject([{ localName: 'Item', type: 'dynamic' }]);
+
+			const jsx = "export const meta = <X />;\nconst Item = lazy(() => import('./Item'))";
+			expect(await parseImports(jsx, ts.ScriptKind.TSX)).toMatchObject([{ localName: 'Item', type: 'dynamic' }]);
 		});
 
 		test('multiple dynamic imports', async () => {

@@ -151,6 +151,51 @@ export default defineComponent({
 		const result = extractVueOptionsApiComponents(source);
 		expect(result).toStrictEqual(['Button', 'Card']);
 	});
+
+	test('extracts the key of a component loaded with defineAsyncComponent', () => {
+		const source = `
+export default {
+  components: {
+    Item: defineAsyncComponent(() => import('./Item.vue')),
+    Other: defineAsyncComponent({ loader: () => import('./Other.vue'), delay: 200 }),
+    Card
+  }
+}`;
+		expect(extractVueOptionsApiComponents(source)).toStrictEqual(['Item', 'Other', 'Card']);
+	});
+
+	test('gives no name for a value that is neither an identifier nor loads a module', () => {
+		const source = `
+export default {
+  components: { A: markRaw(Foo), B: () => 1, C: Ns.C, D }
+}`;
+		expect(extractVueOptionsApiComponents(source)).toStrictEqual(['D']);
+	});
+
+	// Behavior change: a value that is neither an identifier nor loads a module gives no name, and a spread is skipped
+	// (a value such as `markRaw(MyButton)` used to be returned as its text, which no import is named after)
+	test('skips a spread and a method, and gives no name for a call that loads no module', () => {
+		const source = `
+export default {
+  components: { ...mixin, render() {}, Btn: markRaw(MyButton), Card }
+}`;
+		expect(extractVueOptionsApiComponents(source)).toStrictEqual(['Card']);
+	});
+
+	test('keeps entries after a value that holds braces', () => {
+		const source = `
+export default {
+  components: { A: wrap({ loader: () => import('./A.vue') }), B }
+}`;
+		expect(extractVueOptionsApiComponents(source)).toStrictEqual(['A', 'B']);
+	});
+
+	test('reads the first components registration, and not a property of another name', () => {
+		const source = `
+const other = { subcomponents: { X } }
+export default { components: { Button }, nested: { components: { Y } } }`;
+		expect(extractVueOptionsApiComponents(source)).toStrictEqual(['Button']);
+	});
 });
 
 describe('extractMdxEsm', () => {

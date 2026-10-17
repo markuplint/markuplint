@@ -14,6 +14,8 @@
  * | `extractMdxEsm`                  | MDX top-level ESM (no parser package for MDX)        |
  */
 
+import ts from 'typescript';
+
 export interface ScriptSourceBlock {
 	readonly content: string;
 	/** The offset (in characters) of the content start within the original source */
@@ -53,42 +55,68 @@ export function extractVueScript(source: string): ScriptSourceBlock | null {
 
 /**
  * For aliased forms (`{ Btn: MyButton }`), returns the value (the import name),
- * not the key (the template name).
+ * not the key (the template name). For a value that is not an identifier but
+ * holds a dynamic `import()` (`{ Item: defineAsyncComponent(() => import('./Item.vue')) }`)
+ * it returns the key, the name the lazily loaded component is bound under. Any other
+ * value gives no name.
  */
 export function extractVueOptionsApiComponents(scriptContent: string): string[] {
 	if (!scriptContent) {
 		return [];
 	}
 
-	// Match `components: { ... }` allowing for multiline
-	const re = /\bcomponents\s*:\s*\{([^}]*)\}/;
-	const match = re.exec(scriptContent);
-	if (!match?.[1]) {
+	const sourceFile = ts.createSourceFile('script.ts', scriptContent, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+	const registry = findComponentsObject(sourceFile);
+	if (!registry) {
 		return [];
 	}
 
 	const names: string[] = [];
-	for (const entry of match[1].split(',')) {
-		const trimmed = entry.trim();
-		if (!trimmed) {
-			continue;
-		}
-
-		// Split on first colon only to handle values containing colons
-		const colonIdx = trimmed.indexOf(':');
-		if (colonIdx === -1) {
+	for (const property of registry.properties) {
+		if (ts.isShorthandPropertyAssignment(property)) {
 			// Shorthand: `Button` → use as-is
-			names.push(trimmed);
-		} else {
-			// Aliased form: `Btn: MyButton` → use value `MyButton`
-			const value = trimmed.slice(colonIdx + 1).trim();
-			if (value) {
-				names.push(value);
+			names.push(property.name.text);
+		} else if (ts.isPropertyAssignment(property)) {
+			const key = ts.isIdentifier(property.name) || ts.isStringLiteral(property.name) ? property.name.text : null;
+			const value = property.initializer;
+			if (ts.isIdentifier(value)) {
+				// Aliased form: `Btn: MyButton` → use value `MyButton`
+				names.push(value.text);
+			} else if (key && containsDynamicImport(value)) {
+				// A value that loads a module (`Item: defineAsyncComponent(() => import('./Item.vue'))`)
+				// is bound under the key, as `dynamicImportName` names that import.
+				names.push(key);
 			}
 		}
 	}
 
 	return names;
+}
+
+function containsDynamicImport(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	node: ts.Node,
+): boolean {
+	return (
+		(ts.isCallExpression(node) && node.expression.kind === ts.SyntaxKind.ImportKeyword) ||
+		(ts.forEachChild(node, child => containsDynamicImport(child) || undefined) ?? false)
+	);
+}
+
+/** The object literal of the first `components: { ... }` in source order. */
+function findComponentsObject(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	node: ts.Node,
+): ts.ObjectLiteralExpression | null {
+	if (
+		ts.isPropertyAssignment(node) &&
+		(ts.isIdentifier(node.name) || ts.isStringLiteral(node.name)) &&
+		node.name.text === 'components' &&
+		ts.isObjectLiteralExpression(node.initializer)
+	) {
+		return node.initializer;
+	}
+	return ts.forEachChild(node, findComponentsObject) ?? null;
 }
 
 /**

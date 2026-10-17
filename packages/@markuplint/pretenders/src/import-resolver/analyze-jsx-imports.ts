@@ -13,7 +13,8 @@
  * a `type: 'dynamic'` binding, as {@link ./parse-imports.js}
  * does for Vue, Svelte, Astro and MDX. React presents
  * `lazy(() => import('./X'))` as the replacement of the static `import` of the
- * same component, so the file behind it must be reachable for `pretenders.auto`.
+ * same component, so the file behind it must be reachable for `pretenders.auto`,
+ * and the component is matched to that file under the name it is assigned to.
  */
 
 import type { ImportBinding } from './types.js';
@@ -23,15 +24,19 @@ import path from 'node:path';
 
 import ts from 'typescript';
 
+import { dynamicImportName } from './dynamic-import-name.js';
+
 /**
  * Collects the import bindings of `source` in source order: the static imports
  * declared at its top level, and dynamic `import('...')` calls with a string
  * literal specifier anywhere in it (a function body, `lazy(() => import(...))`).
  * Type-only imports (`import type { ... }`) and their inline equivalents
- * (`import { type X }`) are excluded, as are side-effect-only imports. Dynamic
- * imports have no local name, so they use the `'*'` sentinel with
- * `type: 'dynamic'`; template literal, variable and concatenated specifiers,
- * `import.meta` and type-position `typeof import('...')` are excluded.
+ * (`import { type X }`) are excluded, as are side-effect-only imports. A dynamic
+ * import is bound under the name {@link dynamicImportName} gives it (the variable
+ * `lazy(() => import('./X'))` is assigned to) with `type: 'dynamic'`, and has no
+ * local name otherwise, where it uses the `'*'` sentinel; template literal,
+ * variable and concatenated specifiers, `import.meta` and type-position
+ * `typeof import('...')` are excluded.
  *
  * @param source - The parsed TypeScript source file to inspect
  * @returns The import bindings found in `source`
@@ -67,7 +72,13 @@ function collectDynamicImports(
 	if (ts.isCallExpression(node) && node.expression.kind === ts.SyntaxKind.ImportKeyword) {
 		const specifier = node.arguments[0];
 		if (specifier && ts.isStringLiteral(specifier)) {
-			bindings.push({ localName: '*', importedName: '*', source: specifier.text, type: 'dynamic' });
+			bindings.push({
+				localName: '*',
+				importedName: '*',
+				...dynamicImportName(node),
+				source: specifier.text,
+				type: 'dynamic',
+			});
 		}
 	}
 	ts.forEachChild(node, child => collectDynamicImports(child, bindings));

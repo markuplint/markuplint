@@ -19,9 +19,10 @@
  * ## Dynamic imports
  *
  * Dynamic imports with string literal specifiers (`import('./path')`) are
- * included in the bindings with `type: 'dynamic'`. These bindings use
- * `localName: '*'` as a sentinel since dynamic imports have no local binding.
- * Template literal and variable specifiers are excluded.
+ * included in the bindings with `type: 'dynamic'`. A dynamic import is bound under the
+ * name it is assigned to, as `./dynamic-import-name.ts` decides (`const X = lazy(() => import('./X'))`
+ * is `X`), so a lookup by name finds it like a default import. One that is not assigned to a
+ * name uses `localName: '*'` as a sentinel. Template literal and variable specifiers are excluded.
  *
  * ## Barrel file resolution
  *
@@ -146,7 +147,8 @@ export async function analyzeImports(filePath: string, source: string): Promise<
 		return { bindings: [] };
 	}
 
-	const bindings = await parseImports(scriptSource.content);
+	// MDX's ESM may hold JSX (`export const meta = <X />`), so it is read as TSX.
+	const bindings = await parseImports(scriptSource.content, framework === 'mdx' ? ts.ScriptKind.TSX : undefined);
 	return { bindings };
 }
 

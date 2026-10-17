@@ -199,7 +199,10 @@ function resolveWinner(
 	}
 
 	const binding = resolveComponentImport(candidates[0]!.selector, bindings);
-	if (!binding || binding.type === 'namespace' || binding.type === 'dynamic') {
+	// A dynamic binding found by name is one that `lazy(() => import('./X'))` assigned the name to
+	// (see `dynamicImportName`), so it resolves like a default import; one without a name is
+	// `'*'` and found by none.
+	if (!binding || binding.type === 'namespace') {
 		return null;
 	}
 

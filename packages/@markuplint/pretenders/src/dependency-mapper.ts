@@ -225,7 +225,8 @@ export function dependencyMapper(
  * tells them apart by the import, which is why the alias keeps the declaration's own `filePath`,
  * as {@link ./disambiguate.js} matches the file the import leads to against it.
  *
- * None for a namespace or a dynamic binding (no single component), a name that leads into a
+ * None for a namespace or a dynamic binding (no single component; a dynamic one has a name only
+ * when `lazy()` and the like assign it to one, which is not aliased yet), a name that leads into a
  * package (the same-named components of the project are not what it renders, see
  * `FROM_PACKAGE`), and one the map has no component for.
  *
@@ -431,8 +432,9 @@ export function resolveModule(importerAbs: string, source: string, env: Declarat
 /**
  * Resolves `elName` through the import bindings recorded for `currentFile`,
  * returning the map key of the file/name it actually refers to, or `null`
- * when it can't be confirmed (bare/namespace/dynamic specifiers, unresolved
- * modules, or export tables that don't confirm the binding). `FROM_PACKAGE`
+ * when it can't be confirmed (bare/namespace specifiers, a dynamic import that is not assigned to
+ * a name, unresolved modules, or export tables that don't confirm the binding). A dynamic import
+ * that is (`const X = lazy(() => import('./X'))`) is resolved like a default import. `FROM_PACKAGE`
  * when it is confirmed to lead into a package, directly or through a re-export:
  * unlike `null`, it rules out the name-based fallback.
  */
@@ -449,7 +451,7 @@ function resolveThroughImport(
 	}
 
 	const binding = resolveComponentImport(elName, bindings);
-	if (!binding || binding.type === 'namespace' || binding.type === 'dynamic') {
+	if (!binding || binding.type === 'namespace') {
 		return null;
 	}
 

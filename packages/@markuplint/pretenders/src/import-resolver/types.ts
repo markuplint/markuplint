@@ -6,13 +6,18 @@ export interface ImportBinding {
 	/**
 	 * The local name used in the file (e.g., `MyButton`, `default as Btn` → `Btn`).
 	 *
-	 * For dynamic imports (`type === 'dynamic'`), this is set to `'*'` as a sentinel
-	 * value because dynamic imports have no local binding name. Use the `type` field
-	 * to distinguish dynamic imports from namespace imports (which also use `'*'`
-	 * for `importedName`).
+	 * A dynamic import (`type === 'dynamic'`) has a local binding name only when it is
+	 * assigned to one: the variable of `const X = lazy(() => import('./X'))`, or the key
+	 * of `components: { X: defineAsyncComponent(() => import('./X.vue')) }`. Otherwise this
+	 * is set to `'*'` as a sentinel value. Use the `type` field to tell a dynamic import
+	 * from a namespace import (which also uses `'*'` for `importedName`).
 	 */
 	readonly localName: string;
-	/** The imported name from the source module (e.g., `default`, `MyButton`, or `*` for namespace/dynamic) */
+	/**
+	 * The imported name from the source module (e.g., `default`, `MyButton`, or `*` for
+	 * namespace and for a dynamic import that is not assigned to a name). A named dynamic
+	 * import is `default`, or the export `.then(m => m.X)` / `.then(m => ({ default: m.X }))` reads.
+	 */
 	readonly importedName: string;
 	/** The module specifier string (e.g., `./components/Button.vue`, `@/lib/utils`) */
 	readonly source: string;
