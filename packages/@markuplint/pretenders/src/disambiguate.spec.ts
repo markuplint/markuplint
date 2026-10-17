@@ -76,6 +76,43 @@ describe('disambiguatePretenders', () => {
 		expect(result[0]!.as).toStrictEqual({ element: 'span', slots: true, inheritAttrs: true });
 	});
 
+	describe('a component loaded with a dynamic import', () => {
+		const pretenders: Pretender[] = [
+			{ selector: 'Item', as: 'button', filePath: `${abs('a.tsx')}:3:14` },
+			{ selector: 'Item', as: 'li', filePath: `${abs('b.tsx')}:3:14` },
+			{ selector: 'Item', as: 'span', filePath: `${abs('d.tsx')}:3:7` },
+		];
+		const lint = async (code: string) =>
+			(await disambiguatePretenders(pretenders, { filePath: abs('c.tsx'), sourceCode: code })).map(p => p.as);
+
+		test('resolves to the file of its default export, as a default import does', async () => {
+			const code = "const Item = lazy(() => import('./d'));\nexport const C = () => <Item />;";
+			expect(await lint(code)).toStrictEqual(['span']);
+		});
+
+		test('resolves to the file of the export `.then` reads, as a named import does', async () => {
+			const code =
+				"const Item = lazy(() => import('./b').then(m => ({ default: m.Item })));\nexport const C = () => <Item />;";
+			expect(await lint(code)).toStrictEqual(['li']);
+		});
+
+		test('resolves a loader of an options object', async () => {
+			const code =
+				"const Item = defineAsyncComponent({ loader: () => import('./a').then(m => m.Item) });\nexport const C = () => <Item />;";
+			expect(await lint(code)).toStrictEqual(['button']);
+		});
+
+		test('leaves the list as it is when the import is not assigned to a name', async () => {
+			const code = "export default lazy(() => import('./b'));\nexport const C = () => <Item />;";
+			expect(await lint(code)).toStrictEqual(['button', 'li', 'span']);
+		});
+
+		test('leaves the list as it is when the module declares no candidate and has no such export', async () => {
+			const code = "const Item = lazy(() => import('./c'));\nexport const C = () => <Item />;";
+			expect(await lint(code)).toStrictEqual(['button', 'li', 'span']);
+		});
+	});
+
 	test('resolves via a tsconfig `paths` alias', async () => {
 		const withAliasDir = path.resolve(moduleResolutionDir, 'with-alias');
 		const filePath = path.resolve(withAliasDir, 'src', 'pages', 'Page.tsx');

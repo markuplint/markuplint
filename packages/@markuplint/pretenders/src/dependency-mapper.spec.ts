@@ -428,6 +428,41 @@ describe('dependencyMapper', () => {
 			expect(e).toStrictEqual({ selector: 'E', as: 'button', _via: ['Item'] });
 		});
 
+		test.each([
+			['default of a dynamic import assigned to the name', 'default', './d', 'span'],
+			['the export `.then` reads from a dynamic import', 'Item', './a', 'button'],
+		])('resolves %s to the actual declaration file, as an import does', (_, importedName, source, element) => {
+			const map: PretenderDirectorMap = new Map([
+				['a.tsx#Item', ['Item', 'button', undefined, 'a.tsx']],
+				['d.tsx#Item', ['Item', 'span', undefined, 'd.tsx']],
+				['other.tsx#Item', ['Item', 'li', undefined, 'other.tsx']],
+				['c.tsx#C', ['C', 'Item', undefined, 'c.tsx']],
+			]);
+			const nameIndex = new Map([['Item', 'other.tsx#Item']]);
+			const importsByFile = new Map([
+				['c.tsx', [{ localName: 'Item', importedName, source, type: 'dynamic' as const }]],
+			]);
+
+			const result = dependencyMapper(map, nameIndex, { importsByFile, cwd: fixtureDir });
+			const c = result.find(p => p.selector === 'C');
+			expect(c).toStrictEqual({ selector: 'C', as: element, _via: ['Item'] });
+		});
+
+		test('falls back to the name index for a dynamic import that is assigned to no name', () => {
+			const map: PretenderDirectorMap = new Map([
+				['a.tsx#Item', ['Item', 'button', undefined, 'a.tsx']],
+				['other.tsx#Item', ['Item', 'li', undefined, 'other.tsx']],
+				['c.tsx#C', ['C', 'Item', undefined, 'c.tsx']],
+			]);
+			const nameIndex = new Map([['Item', 'other.tsx#Item']]);
+			const importsByFile = new Map([
+				['c.tsx', [{ localName: '*', importedName: '*', source: './a', type: 'dynamic' as const }]],
+			]);
+
+			const result = dependencyMapper(map, nameIndex, { importsByFile, cwd: fixtureDir });
+			expect(result.find(p => p.selector === 'C')).toStrictEqual({ selector: 'C', as: 'li', _via: ['Item'] });
+		});
+
 		test('carries the resolved file forward across multiple hops, even when a same-named collision exists', () => {
 			const map: PretenderDirectorMap = new Map([
 				['wrapper-a.tsx#Base', ['Base', 'div', undefined, 'wrapper-a.tsx']],

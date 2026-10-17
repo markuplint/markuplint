@@ -87,6 +87,76 @@ export default {
 			});
 		});
 
+		test('Options API with a component registered by defineAsyncComponent', async () => {
+			const source = `<template><Item /><Other /></template>
+
+<script>
+import { defineAsyncComponent } from 'vue'
+export default {
+  components: {
+    Item: defineAsyncComponent(() => import('./Item.vue')),
+    Other: defineAsyncComponent({ loader: () => import('./Other.vue') })
+  }
+}
+</script>`;
+			const result = await analyzeImports('App.vue', source);
+			expect(result!.bindings).toStrictEqual([
+				{ localName: 'Item', importedName: 'default', source: './Item.vue', type: 'dynamic' },
+				{ localName: 'Other', importedName: 'default', source: './Other.vue', type: 'dynamic' },
+			]);
+		});
+
+		test('<script setup> with a component loaded by defineAsyncComponent is named after the variable', async () => {
+			const source = `<script setup>
+import { defineAsyncComponent } from 'vue'
+const Item = defineAsyncComponent(() => import('./Item.vue'))
+</script>
+
+<template><Item /></template>`;
+			const result = await analyzeImports('App.vue', source);
+			expect(result!.bindings.at(-1)).toStrictEqual({
+				localName: 'Item',
+				importedName: 'default',
+				source: './Item.vue',
+				type: 'dynamic',
+			});
+		});
+
+		test('a Svelte script names a dynamic import after the variable', async () => {
+			const source = `<script>
+const Item = lazy(() => import('./Item.svelte'))
+</script>
+
+<Item />`;
+			const result = await analyzeImports('App.svelte', source);
+			expect(result!.bindings).toStrictEqual([
+				{ localName: 'Item', importedName: 'default', source: './Item.svelte', type: 'dynamic' },
+			]);
+		});
+
+		test('an Astro frontmatter names a dynamic import after the variable', async () => {
+			const source = `---
+const Item = lazy(() => import('./Item.astro'))
+---
+
+<Item />`;
+			const result = await analyzeImports('Page.astro', source);
+			expect(result!.bindings).toStrictEqual([
+				{ localName: 'Item', importedName: 'default', source: './Item.astro', type: 'dynamic' },
+			]);
+		});
+
+		test('an MDX ESM block with JSX still names a dynamic import after the variable', async () => {
+			const source = `export const meta = <X />
+export const Item = lazy(() => import('./Item'))
+
+# Title`;
+			const result = await analyzeImports('Doc.mdx', source);
+			expect(result!.bindings).toStrictEqual([
+				{ localName: 'Item', importedName: 'default', source: './Item', type: 'dynamic' },
+			]);
+		});
+
 		test('Options API with defineComponent wrapper', async () => {
 			const source = `<template><Button /></template>
 
@@ -185,7 +255,9 @@ const Dialog = import('./Dialog.vue')
 			expect(result).not.toBeNull();
 			expect(result!.bindings).toStrictEqual([
 				{ localName: 'lazy', importedName: 'lazy', source: 'react', type: 'named' },
-				{ localName: '*', importedName: '*', source: './Item', type: 'dynamic' },
+				// Behavior change: the binding is named after the variable `lazy()` is assigned to
+				{ localName: 'Item', importedName: 'default', source: './Item', type: 'dynamic' },
+				// { localName: '*', importedName: '*', source: './Item', type: 'dynamic' }, // previous
 			]);
 		});
 
