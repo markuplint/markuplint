@@ -13,6 +13,7 @@ const schema = JSON.parse(
 	readFileSync(fileURLToPath(new URL('../../../../config.schema.json', import.meta.url)), 'utf8'),
 ) as {
 	readonly definitions: {
+		readonly pretender: SchemaObject;
 		readonly pretenderAttr: {
 			readonly properties: { readonly value: { readonly oneOf: readonly SchemaObject[] } };
 		};
@@ -28,5 +29,12 @@ describe('config.schema.json', () => {
 		expect(fromAttrVariant?.additionalProperties).toBe(false);
 		expect(Object.keys(fromAttrVariant?.properties ?? {})).toStrictEqual(['fromAttr', 'omitIfMissing']);
 		expect(fromAttrVariant?.properties?.omitIfMissing).toStrictEqual({ const: true });
+	});
+
+	test('pretender accepts every property of `Pretender`, the ones the scanner writes included (issue #4289)', () => {
+		const pretender = schema.definitions.pretender;
+
+		expect(pretender.additionalProperties).toBe(false);
+		expect(Object.keys(pretender.properties ?? {})).toStrictEqual(['selector', 'as', 'filePath', 'localName']);
 	});
 });

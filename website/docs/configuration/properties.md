@@ -1219,6 +1219,8 @@ File extensions determine the scanner:
 - `.js`, `.jsx`, `.ts`, `.tsx` → JSX scanner
 - `.vue`, `.svelte`, `.astro` → template scanner
 
+A component is named by its declaration (`export const Button = …`, `function Button() {…}`). A component with no name of its own — a Vue, Svelte, or Astro file, or a JSX/TSX default export without a name (`export default () => …`, `export default function () {…}`, `export default memo(() => …)`) — is named after its file in PascalCase: `button-group.tsx` is `ButtonGroup`, and an `index` file takes the name of its directory (`Card/index.tsx` is `Card`). A file whose name does not make a JavaScript identifier (`[id].vue`, `+page.svelte`, `404.tsx`, `Button.client.vue`) gives such a component no name, so it gets no pretender.
+
 ```json class=config
 {
   "pretenders": {
@@ -1241,7 +1243,7 @@ A glob pattern (or an array of glob patterns) for component files to scan. It's 
 
 ##### `scan[].ignoreComponentNames`
 
-An array of component names to exclude from scanning results. It's optional.
+An array of component names to exclude from scanning results, names given after a file included. It's optional.
 
 #### `data` (object form) {#pretenders/data}
 
@@ -1296,7 +1298,7 @@ Unlike `scan`, which pre-scans a configured set of files once, `auto` runs per l
 - In watch mode or an editor session, the component files `auto` (and `scan`) read are watched along with the config file, so editing one re-lints the files that use it. What is not watched, so a change to it is picked up only when the config changes: a component file that does not exist yet (including a new match of a `scan` glob, and a file that was removed and comes back), files under `node_modules`, and the files of `files` and `imports`. Edits to the linted file itself — adding, removing, or changing an import — are reflected on the next lint of that file.
 - Only the **object form** of `pretenders` can express `auto`; the array shorthand cannot.
 
-A component is resolved under the name the linted file gives it: a renamed named import (`import { Named as A }`), a default import under any name (`import B from './DefNamed'`), and a component renamed by a barrel file. A namespace import (`<UI.Button>`) and a component held in a variable that `lazy()` or a dynamic `import()` assigns under another name are not. A name with a lowercase initial gets none (`import myButton from './Foo'`): in JSX, MDX, Svelte, and Astro a tag with a lowercase initial is an HTML element, not a reference to the variable, so a component under that name would turn `<myButton>` into the component. Vue resolves a kebab-case tag to a component imported in PascalCase and recommends PascalCase, so a lowercase name is not covered there either. `scan` has no linted file, so the names it gives are the names the components are declared under.
+A component is resolved under the name the linted file gives it: a renamed named import (`import { Named as A }`), a default import under any name (`import B from './DefNamed'`), and a component renamed by a barrel file. A namespace import (`<UI.Button>`) and a component held in a variable that `lazy()` or a dynamic `import()` assigns under another name are not. A name with a lowercase initial gets none (`import myButton from './Foo'`): in JSX, MDX, Svelte, and Astro a tag with a lowercase initial is an HTML element, not a reference to the variable, so a component under that name would turn `<myButton>` into the component. Vue resolves a kebab-case tag to a component imported in PascalCase and recommends PascalCase, so a lowercase name is not covered there either. `scan` has no linted file, so the names it gives are the names the components are declared under (see [`scan`](#pretenders/scan) for a component that has none).
 
 When the walk ends at a component it cannot resolve (one from `node_modules` such as `Tabs.Root`, or one beyond the `depth` limit), what that component renders is unknown. The wrapper is then treated like a component written directly, not as an HTML element of that name. This applies to any name with a capital initial or a `.`, including `as` you write by hand: write the names of HTML elements in lowercase.
 

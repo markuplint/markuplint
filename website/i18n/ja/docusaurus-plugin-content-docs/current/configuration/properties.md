@@ -1177,6 +1177,8 @@ const Details = ({ children }) => <details>{children}</details>;
 - `.js`, `.jsx`, `.ts`, `.tsx` → JSXスキャナー
 - `.vue`, `.svelte`, `.astro` → テンプレートスキャナー
 
+コンポーネントは宣言の名前（`export const Button = …`、`function Button() {…}`）で名前がつきます。名前を持たないコンポーネント、つまりVue・Svelte・Astroのファイルと、JSX/TSXの名前のないdefault export（`export default () => …`、`export default function () {…}`、`export default memo(() => …)`）は、ファイル名をPascalCaseにした名前になります。`button-group.tsx`は`ButtonGroup`になり、`index`ファイルはディレクトリ名をとります（`Card/index.tsx`は`Card`）。ファイル名がJavaScriptの識別子にならない場合（`[id].vue`、`+page.svelte`、`404.tsx`、`Button.client.vue`）、そのコンポーネントは名前を持たず、pretenderになりません。
+
 ```json class=config
 {
   "pretenders": {
@@ -1199,7 +1201,7 @@ const Details = ({ children }) => <details>{children}</details>;
 
 ##### `scan[].ignoreComponentNames`
 
-スキャン結果から除外するコンポーネント名の配列。省略可能です。
+スキャン結果から除外するコンポーネント名の配列。ファイル名からつけた名前も対象です。省略可能です。
 
 #### `data`（オブジェクト形式） {#pretenders/data}
 
@@ -1254,7 +1256,7 @@ importをたどる段数は、lint対象ファイルから最大8段です。JS/
 - watchモードやエディタセッションでは、`auto`（と`scan`）が読み込んだコンポーネントファイルも設定ファイルとあわせて監視されるため、いずれかを編集すると、それを使っているファイルが再lintされます。監視されないため、設定を変更するまで反映されないのは、まだ存在しないコンポーネントファイル（`scan`のglobに新しく一致したファイル、削除後に戻ってきたファイルを含みます）、`node_modules`配下のファイル、`files`と`imports`のファイルです。lint対象のファイル自身の編集（importの追加・削除・変更）は、そのファイルの次回のlintに反映されます。
 - `auto`を指定できるのは`pretenders`の**オブジェクト形式**のみです。配列形式の省略記法では指定できません。
 
-コンポーネントは、lint対象のファイルがつけた名前で解決されます。名前を変えたnamed import（`import { Named as A }`）、任意の名前で受けたdefault import（`import B from './DefNamed'`）、barrelファイルで名前を変えて再exportされたコンポーネントが対象です。namespace import（`<UI.Button>`）と、`lazy()`や動的`import()`の結果を別名の変数に代入したコンポーネントは対象外です。小文字で始まる名前（`import myButton from './Foo'`）には適用されません。JSX・MDX・Svelte・Astroでは、小文字で始まるタグは変数への参照ではなくHTML要素であり、その名前でコンポーネントを登録すると`<myButton>`がコンポーネントとして扱われてしまうためです。Vueはkebab-caseのタグをPascalCaseでimportしたコンポーネントに解決し、PascalCaseを推奨しているため、小文字の名前はVueでも対象外です。`scan`にはlint対象のファイルがないため、その名前は、コンポーネントが宣言されている名前になります。
+コンポーネントは、lint対象のファイルがつけた名前で解決されます。名前を変えたnamed import（`import { Named as A }`）、任意の名前で受けたdefault import（`import B from './DefNamed'`）、barrelファイルで名前を変えて再exportされたコンポーネントが対象です。namespace import（`<UI.Button>`）と、`lazy()`や動的`import()`の結果を別名の変数に代入したコンポーネントは対象外です。小文字で始まる名前（`import myButton from './Foo'`）には適用されません。JSX・MDX・Svelte・Astroでは、小文字で始まるタグは変数への参照ではなくHTML要素であり、その名前でコンポーネントを登録すると`<myButton>`がコンポーネントとして扱われてしまうためです。Vueはkebab-caseのタグをPascalCaseでimportしたコンポーネントに解決し、PascalCaseを推奨しているため、小文字の名前はVueでも対象外です。`scan`にはlint対象のファイルがないため、その名前は、コンポーネントが宣言されている名前になります（名前を持たないコンポーネントは[`scan`](#pretenders/scan)を参照）。
 
 たどった先で解決できないコンポーネント（`Tabs.Root`のように`node_modules`にあるもの、`depth`の上限より先にあるもの）に行き当たった場合、そのコンポーネントが何を描画するかは分かりません。そのため、ラッパーは同じ名前のHTML要素としてではなく、直接書かれたコンポーネントと同じように扱われます。これは、先頭が大文字、または`.`を含むすべての名前に適用され、手書きの`as`も含みます。HTML要素の名前は小文字で書いてください。
 

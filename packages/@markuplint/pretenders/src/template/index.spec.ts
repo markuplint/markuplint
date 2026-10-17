@@ -303,4 +303,11 @@ describe('templateScanner', () => {
 			});
 		});
 	});
+
+	test('a file whose name makes no component name (a route file) gives no pretender', async () => {
+		const files = [resolve('[id].vue'), resolve('+page.svelte'), resolve('[...slug].astro')];
+		const sources = new Map(files.map(file => [normalizePath(file), '<template><article /></template>']));
+
+		expect(await templateScanner(files, { sources })).toStrictEqual([]);
+	});
 });

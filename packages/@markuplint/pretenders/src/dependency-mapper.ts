@@ -11,7 +11,7 @@ import { isFatalError } from '@markuplint/shared';
 import ts from 'typescript';
 
 import { composeIdentity } from './compose-identity.js';
-import { getExportTable } from './export-table.js';
+import { DEFAULT_LOCAL_NAME, getExportTable } from './export-table.js';
 import { scriptKindForPath } from './import-resolver/analyze-jsx-imports.js';
 import { resolveComponentImport } from './import-resolver/index.js';
 import {
@@ -62,7 +62,7 @@ type ResolveEnv = {
 /**
  * What following re-exports needs: the in-memory overrides of file content, and
  * the sink for the files read on the way. `cwd` is the project root, `undefined`
- * where the caller has none to give ({@link resolveDeclarationFile} without `cwd`): a
+ * where the caller has none to give ({@link resolveDeclaration} without `cwd`): a
  * file is then judged to be a package's by its whole path, so in a project under
  * `node_modules` a star re-export chain is not followed.
  */
@@ -76,10 +76,31 @@ type DeclarationEnv = {
  * The declaration an exported name resolves to. `localName` is `null` for a
  * template component (Vue/Svelte/Astro), which is the file itself.
  */
-type Declaration = {
+export type Declaration = {
 	readonly fileAbs: string;
 	readonly localName: string | null;
+	/**
+	 * For a default export without a name of its own, the declaration of the binding it
+	 * wraps (`memo(Item)`), resolved as far as an import of it leads. Its component is the
+	 * one of the default export when the scanner finds none of the default export's own.
+	 */
+	readonly wraps?: Declaration;
 };
+
+/**
+ * The declaration and, after it, the ones it wraps, in that order: the declarations whose
+ * component can be what an import of `declaration` renders.
+ *
+ * @param declaration - A resolved declaration
+ * @returns `declaration`, then what it wraps
+ */
+export function declarationChain(declaration: Declaration): readonly Declaration[] {
+	const chain: Declaration[] = [];
+	for (let current: Declaration | undefined = declaration; current; current = current.wraps) {
+		chain.push(current);
+	}
+	return chain;
+}
 
 /**
  * Follows chains where one component wraps another (e.g., MyButton -> Button -> button)
@@ -103,7 +124,11 @@ type Declaration = {
  * the module resolution does not know may hide a file of the project, unless it can only
  * be a package that is not installed (see `isPackageSpecifier`, issue #4264). Known
  * limitation: a bare alias that only a bundler knows, not the `tsconfig.json`, is taken
- * for such a package.
+ * for such a package. An import that resolves to a declaration without a component
+ * (`@pretends null`, a file name that makes no component name, one the scanner cannot
+ * describe) ends the chain instead: a component of the same name elsewhere is not what it
+ * renders. A default export without a component of its own resolves to the one of the
+ * binding it wraps (`export default memo(Item)`, see `ExportEntry` of `export-table`).
  *
  * Each hop composes the `slots` / `contents` and the attributes of the component so far
  * into those of the component it renders (`composeIdentity`, issue #4057); the rest of the
@@ -115,6 +140,10 @@ type Declaration = {
  *
  * With `context.entry`, the pretenders also come under the names the entry file gives its
  * imports (see {@link aliasEntryImports}).
+ *
+ * `nameIndex` overrides the name index for a test. Without it, the index is built from `map`
+ * by {@link buildNameIndex}, which puts a component declared under a name before a default
+ * export named after its file; a given index is used as it is.
  */
 export function dependencyMapper(
 	map: Readonly<PretenderDirectorMap>,
@@ -124,10 +153,11 @@ export function dependencyMapper(
 	const resolvedNameIndex = nameIndex ?? buildNameIndex(map);
 	const importsByFile = context?.importsByFile;
 	const cwd = context?.cwd ?? process.cwd();
+	const keyOfSameFile = sameFileKeyFinder(map, cwd);
 	const env: ResolveEnv = { cwd, sources: context?.sources, dependencies: context?.dependencies };
 	const linkedByKey = new Map<string, Pretender>();
 
-	for (const [key, [identifier, _identity, filePath, _sourceFile]] of map) {
+	for (const [key, [identifier, _identity, filePath, _sourceFile, localName]] of map) {
 		let identity = _identity;
 		let elName = getElName(identity);
 		let currentFile = _sourceFile;
@@ -135,7 +165,16 @@ export function dependencyMapper(
 		const visited = new Set<string>([key]);
 
 		while (true) {
-			const lookupKey = resolveHop(elName, currentFile, key, map, importsByFile, resolvedNameIndex, env);
+			const lookupKey = resolveHop(
+				elName,
+				currentFile,
+				key,
+				map,
+				importsByFile,
+				resolvedNameIndex,
+				keyOfSameFile,
+				env,
+			);
 			const mappedPretender = map.get(lookupKey);
 			if (!mappedPretender) {
 				break;
@@ -161,6 +200,7 @@ export function dependencyMapper(
 			selector: identifier,
 			as: identity,
 			...(filePath ? { filePath } : {}),
+			...(localName == null ? {} : { localName }),
 		};
 		if (via.length > 0) {
 			Object.assign(pretender, { _via: via });
@@ -222,7 +262,7 @@ function aliasEntryImports(
 			continue;
 		}
 
-		const key = resolveImportBinding(binding, path.resolve(env.cwd, entry.filePath), env);
+		const key = resolveImportBinding(binding, path.resolve(env.cwd, entry.filePath), env, map);
 		const declared = typeof key === 'string' ? map.get(key) : undefined;
 		const linked = typeof key === 'string' ? linkedByKey.get(key) : undefined;
 		if (!declared || !linked || declared[0] === binding.localName || aliased.has(binding.localName)) {
@@ -249,6 +289,7 @@ function resolveHop(
 	map: Readonly<PretenderDirectorMap>,
 	importsByFile: ReadonlyMap<string, readonly ImportBinding[]> | undefined,
 	resolvedNameIndex: Readonly<Map<Identifier, string>>,
+	keyOfSameFile: (key: string) => string | undefined,
 	env: ResolveEnv,
 ): string {
 	if (currentFile) {
@@ -257,17 +298,69 @@ function resolveHop(
 			return sameFileKey;
 		}
 
-		const viaImport = resolveThroughImport(elName, currentFile, importsByFile, env);
-		if (viaImport === FROM_PACKAGE) {
+		const resolved = resolveThroughImport(elName, currentFile, importsByFile, env, map);
+		if (resolved === FROM_PACKAGE) {
 			// A name that no key stands for: the chain ends here.
 			return elName;
 		}
-		if (viaImport && map.has(viaImport)) {
-			return viaImport;
+		if (resolved != null) {
+			// The key, or the key of the same file spelled otherwise (see `sameFileKeyFinder`).
+			// Else a declaration that has no component (`@pretends null`, a file name that makes
+			// no component name, or one the scanner cannot describe): no other key stands for it,
+			// so the chain ends here.
+			return map.has(resolved) ? resolved : (keyOfSameFile(resolved) ?? elName);
 		}
 	}
 
-	return resolvedNameIndex.get(elName) ?? elName;
+	const byName = resolvedNameIndex.get(elName);
+	const byNameEntry = byName == null ? undefined : map.get(byName);
+	// A tag of a file never names the default export without a name of that file itself.
+	if (byNameEntry?.[4] === DEFAULT_LOCAL_NAME && byNameEntry[3] === currentFile) {
+		return elName;
+	}
+	return byName ?? elName;
+}
+
+/**
+ * Finds the key of `map` for the same declaration in the same file as `key`, the file spelled
+ * otherwise: an import can name a file by another case than the scan found it by, on a
+ * case-insensitive file system, or through a symbolic link. The files are compared by their
+ * real paths, so two files of a case-sensitive file system stay two. The real paths of the keys
+ * are taken on the first miss only.
+ */
+function sameFileKeyFinder(map: Readonly<PretenderDirectorMap>, cwd: string): (key: string) => string | undefined {
+	let byRealPath: Map<string, string> | undefined;
+	const realCwd = realPathOf(cwd) ?? cwd;
+	const realKey = (key: string) => {
+		const hash = key.lastIndexOf('#');
+		const file = hash === -1 ? key : key.slice(0, hash);
+		const real = realPathOf(path.resolve(cwd, file));
+		return real == null ? undefined : normalizePath(path.relative(realCwd, real)) + key.slice(file.length);
+	};
+	return key => {
+		byRealPath ??= new Map(
+			[...map.keys()].flatMap(mapKey => {
+				const real = realKey(mapKey);
+				return real == null ? [] : [[real, mapKey] as const];
+			}),
+		);
+		const real = realKey(key);
+		return real == null ? undefined : byRealPath.get(real);
+	};
+}
+
+/**
+ * The real path of a file, spelled as the file system has it, or `undefined` when it does not exist.
+ */
+function realPathOf(filePath: string): string | undefined {
+	try {
+		return fs.realpathSync.native(filePath);
+	} catch (error) {
+		if (isFatalError(error)) {
+			throw error;
+		}
+		return undefined;
+	}
 }
 
 const MAX_RE_EXPORT_DEPTH = 8;
@@ -348,6 +441,7 @@ function resolveThroughImport(
 	currentFile: string,
 	importsByFile: ReadonlyMap<string, readonly ImportBinding[]> | undefined,
 	env: ResolveEnv,
+	map: Readonly<PretenderDirectorMap>,
 ): string | typeof FROM_PACKAGE | null {
 	const bindings = importsByFile?.get(currentFile);
 	if (!bindings) {
@@ -359,7 +453,7 @@ function resolveThroughImport(
 		return null;
 	}
 
-	return resolveImportBinding(binding, path.resolve(env.cwd, currentFile), env);
+	return resolveImportBinding(binding, path.resolve(env.cwd, currentFile), env, map);
 }
 
 /**
@@ -370,6 +464,7 @@ function resolveImportBinding(
 	binding: ImportBinding,
 	importerAbs: string,
 	env: ResolveEnv,
+	map?: Readonly<PretenderDirectorMap>,
 ): string | typeof FROM_PACKAGE | null {
 	const resolvedAbs = resolveModule(importerAbs, binding.source, env);
 	if (!resolvedAbs) {
@@ -386,24 +481,30 @@ function resolveImportBinding(
 	if (declaration && isPackageFile(declaration.fileAbs, env.cwd)) {
 		return FROM_PACKAGE;
 	}
-	return declaration && declarationKey(declaration, env.cwd);
+	if (!declaration) {
+		return null;
+	}
+	const key = declarationKey(declaration, env.cwd);
+	if (!map) {
+		return key;
+	}
+	// A default export without a component of its own: the component of what it wraps, if any.
+	for (const wrapped of declarationChain(declaration)) {
+		const wrappedKey = declarationKey(wrapped, env.cwd);
+		if (map.has(wrappedKey)) {
+			return wrappedKey;
+		}
+	}
+	return key;
 }
 
 /**
- * Resolves `exportedName` of the module at `fileAbs` to the absolute path of
- * the file that declares it, following re-exports the same way scan-time
- * resolution does (`export { X } from` and `export * from` chains). Returns
- * `null` when that cannot be confirmed: an unreadable file, a name the export
- * tables do not confirm, a namespace re-export, or a name that two star
- * re-exports supply differently.
+ * The file of {@link resolveDeclaration}.
  *
  * @param fileAbs - Absolute path of the module the name is imported from
  * @param exportedName - The imported name (`'default'` for a default import)
- * @param options - In-memory content overrides (keyed by normalized absolute path), the dependency
- *   sink, and the project root (see {@link DeclarationEnv})
- * @returns The declaring file's absolute path, or `null`. A name re-exported from a package ends the
- *   chain at the package: the path returned is under `node_modules` (see {@link resolveModule}), and
- *   it names no file when the package is not installed.
+ * @param options - As {@link resolveDeclaration} takes them
+ * @returns The declaring file's absolute path, or `null` where {@link resolveDeclaration} returns `null`
  */
 export function resolveDeclarationFile(
 	fileAbs: string,
@@ -414,15 +515,45 @@ export function resolveDeclarationFile(
 		readonly cwd?: string;
 	},
 ): string | null {
+	return resolveDeclaration(fileAbs, exportedName, options)?.fileAbs ?? null;
+}
+
+/**
+ * Resolves `exportedName` of the module at `fileAbs` to the declaration it stands for: the
+ * file that declares it and its local name there (matched against `Pretender.localName`),
+ * following re-exports the same way scan-time resolution does (`export { X } from`,
+ * `export * from`, and a binding the module imports and exports again). For a default export
+ * without a name of its own, `wraps` is the declaration of what it wraps.
+ *
+ * Returns `null` when that cannot be confirmed: an unreadable file, a name the export tables do
+ * not confirm, a namespace re-export, or a name that two star re-exports supply differently.
+ *
+ * @param fileAbs - Absolute path of the module the name is imported from
+ * @param exportedName - The imported name (`'default'` for a default import)
+ * @param options - In-memory content overrides (keyed by normalized absolute path), the dependency
+ *   sink, and the project root (see {@link DeclarationEnv})
+ * @returns The declaration, or `null`. A name re-exported from a package ends the chain at the
+ *   package: the file is under `node_modules` (see {@link resolveModule}), with no local name, and
+ *   it names no file when the package is not installed.
+ */
+export function resolveDeclaration(
+	fileAbs: string,
+	exportedName: string,
+	options?: {
+		readonly sources?: ReadonlyMap<string, string>;
+		readonly dependencies?: Set<string>;
+		readonly cwd?: string;
+	},
+): Declaration | null {
 	if (isTemplateComponentFile(fileAbs)) {
-		return fileAbs;
+		return { fileAbs, localName: null };
 	}
 	const env: DeclarationEnv = {
 		sources: options?.sources,
 		dependencies: options?.dependencies,
 		cwd: options?.cwd,
 	};
-	return resolveExportedName(fileAbs, exportedName, new Set(), env)?.fileAbs ?? null;
+	return resolveExportedName(fileAbs, exportedName, new Set(), env);
 }
 
 const TEMPLATE_COMPONENT_EXTENSIONS = new Set(['.vue', '.svelte', '.astro']);
@@ -474,11 +605,20 @@ function resolveExportedName(
 		return resolveThroughStarReExports(fileAbs, table.starReExportSources, exportedName, visited, env);
 	}
 
-	if (entry.kind === 'local') {
-		return { fileAbs, localName: entry.localName };
-	}
+	return resolveEntry(fileAbs, entry, visited, env);
+}
 
-	return resolveReExport(fileAbs, entry, visited, env);
+function resolveEntry(
+	fileAbs: string,
+	entry: ExportEntry,
+	visited: Set<string>,
+	env: DeclarationEnv,
+): Declaration | null {
+	if (entry.kind === 're-export') {
+		return resolveReExport(fileAbs, entry, visited, env);
+	}
+	const wraps = entry.wraps ? resolveEntry(fileAbs, entry.wraps, new Set(visited), env) : null;
+	return wraps ? { fileAbs, localName: entry.localName, wraps } : { fileAbs, localName: entry.localName };
 }
 
 /**
@@ -678,12 +818,16 @@ function buildExportTable(fileAbs: string, text: string) {
 
 /**
  * For backward-compatible name-based lookup.
- * First definition wins when multiple entries share the same identifier.
+ * First definition wins when multiple entries share the same identifier, except that a
+ * component declared under the name comes before a default export named after its file,
+ * which a tag can only name through an import of that default export.
  */
 function buildNameIndex(map: Readonly<PretenderDirectorMap>): Map<Identifier, string> {
 	const index = new Map<Identifier, string>();
-	for (const [key, [identifier]] of map) {
-		if (!index.has(identifier)) {
+	for (const [key, entry] of map) {
+		const [identifier] = entry;
+		const indexed = index.get(identifier);
+		if (indexed == null || (map.get(indexed)?.[4] === DEFAULT_LOCAL_NAME && entry[4] !== DEFAULT_LOCAL_NAME)) {
 			index.set(identifier, key);
 		}
 	}

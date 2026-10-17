@@ -1,0 +1,26 @@
+import A from './AnonArrow';
+import Fn from './AnonFn';
+import M from './MemoAnon';
+import C from './Card';
+import B, { Button } from './Button';
+import { OptedNamed } from './OptedNamed';
+import BI from './barrel';
+import WS from './WithStyles';
+import WL from './WithLayout';
+import TB from './Themed';
+import L from './List';
+import LO from './LayoutOpted';
+
+export const UsesArrow = () => <A />;
+export const UsesFn = () => <Fn />;
+export const UsesMemo = () => <M />;
+export const UsesCard = () => <C />;
+export const UsesDefaultOfButton = () => <B />;
+export const UsesNamedButton = () => <Button />;
+export const UsesOptedNamed = () => <OptedNamed />;
+export const UsesBarrel = () => <BI />;
+export const UsesWithStyles = () => <WS />;
+export const UsesWithLayout = () => <WL />;
+export const UsesThemed = () => <TB />;
+export const UsesList = () => <L />;
+export const UsesLayoutOpted = () => <LO />;
