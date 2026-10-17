@@ -170,5 +170,6 @@ jobs:
 
             # Rust lint pipeline smoke test requires TS build (html-parser, html-spec).
             # Run locally: node packages/@markuplint/core/smoke-lint.mjs
-            # CI coverage: napi-smoke builds .node binary; TS CI (test job) runs
-            # e2e.spec.ts which imports lint() and verifies end-to-end.
+            # CI coverage: this job builds and loads the .node binary on each OS;
+            # the `test` job of test.yml runs e2e.spec.ts (vitest.e2e.config.ts),
+            # which drives lint() through the addon against the TS build.
