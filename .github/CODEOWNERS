@@ -15,3 +15,5 @@ package.json
 yarn.lock
 website/package.json
 website/yarn.lock
+crates/Cargo.lock
+crates/**/Cargo.toml
