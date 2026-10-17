@@ -22,6 +22,14 @@ cargo test --locked
 - **Keep the local toolchain current** (`rustup update stable`). Nothing in the repo pins a Rust version, and CI installs whatever stable is current, so clippy's lint set moves even when no code changes — a stale local toolchain reports clean on exactly the code CI rejects. When CI names a lint that does not reproduce locally, compare `rustc --version` before looking for anything subtler.
 - `--locked` everywhere, and the `cargo metadata` line first: the napi build's internal `cargo metadata` can rewrite `Cargo.lock`, and CI asserts the lock is unchanged after building the addon (`test.yml`, "Assert Cargo.lock unchanged"). `cargo fmt` has no `--locked` flag, so the metadata call is what fails fast on a stale lock.
 - Dependency changes also pass `cargo-deny` in CI (`deny.toml`, `.github/workflows/cargo-deny.yml`) — licences and advisories. Adding a crate means satisfying `deny.toml`.
+- A change under `crates/` also starts `.github/workflows/test.yml`, which rebuilds the addon and runs the TypeScript suite plus the napi end-to-end spec against it (`npx vitest run --config vitest.e2e.config.ts` after `build:napi:debug`, locally).
+
+## Supply chain
+
+The root `CLAUDE.md` names three defences for npm: the lockfile, the package manager's publish-age gate, and Renovate's `minimumReleaseAge`. For crates the picture is:
+
+- `Cargo.lock` is committed, and the cargo build and test steps in CI run `--locked` (the Verification gate above has the one exception and its workaround), so a crate version changes only through a reviewed diff.
+- Renovate opens per-crate update PRs for this workspace with its 7-day `minimumReleaseAge` (`.github/renovate.json` is read from `dev` and lists `v6` as a base branch; the crate datasource reports release timestamps). Lock file maintenance is off for cargo there, for the reason given in that rule's `description`; #4304 tracks the Cargo-side publish-age gate that lets it be turned on.
 
 ## Commit scope and order
 
