@@ -140,8 +140,8 @@ describe('jsxScanner', () => {
 					slots: true,
 					inheritAttrs: true,
 				},
-				// BREAKING CHANGE: the `filePath` is where the component is declared, not where the component it renders is.
-				// filePath: _('packages/@markuplint/pretenders/test/fixtures/003.tsx:2:6'),
+				// Behavior change: the `filePath` is where the component is declared, not where the component it renders is.
+				// filePath: _('packages/@markuplint/pretenders/test/fixtures/003.tsx:2:6'), // previous
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/003.tsx:12:6'),
 				// #4289: the name the component is declared under, not output before
 				localName: 'MyComponent2',
@@ -348,8 +348,8 @@ describe('jsxScanner', () => {
 				_via: ['Item'],
 			});
 			expect(c?.as).not.toHaveProperty('inheritAttrs');
-			// BREAKING CHANGE: the `filePath` is where the component is declared, not where the component it renders is.
-			// expect(c?.filePath).toMatch(/^a\.tsx:/);
+			// Behavior change: the `filePath` is where the component is declared, not where the component it renders is.
+			// expect(c?.filePath).toMatch(/^a\.tsx:/); // previous
 			expect(c?.filePath).toMatch(/^c\.tsx:/);
 		});
 
