@@ -1,6 +1,6 @@
 ---
 id: sizes-auto-requires-lazy-loading
-description: Requires loading="lazy" wherever sizes="auto" is used.
+description: Requires loading="lazy" wherever sizes="auto" is used, and sizes="auto" on the img that a source relies on.
 ---
 
 # `sizes-auto-requires-lazy-loading`

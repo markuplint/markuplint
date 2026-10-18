@@ -267,6 +267,17 @@ describe('source[sizes=auto]: the following img must allow auto-sizes', () => {
 		).toStrictEqual([]);
 	});
 
+	test('[sizes-auto-requires-lazy-loading-valid-017] source[sizes="auto 100vw"] is not auto: the following img is not checked', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					'<picture><source srcset="s.webp 480w" sizes="auto 100vw"><img src="s.jpg" alt="p"></picture>',
+				)
+			).violations,
+		).toStrictEqual([]);
+	});
+
 	test('[sizes-auto-requires-lazy-loading-invalid-010] img[sizes=auto] without loading=lazy → the loading message', async () => {
 		const { violations } = await mlRuleTest(
 			rule,

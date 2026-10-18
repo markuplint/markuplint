@@ -1,6 +1,6 @@
 ---
 id: sizes-auto-requires-lazy-loading
-description: sizes="auto"を使用する箇所では loading="lazy" を必須とします。
+description: sizes="auto"を使用する箇所では loading="lazy" を必須とし、source が前提にする img にも sizes="auto" を必須とします。
 ---
 
 # `sizes-auto-requires-lazy-loading`
