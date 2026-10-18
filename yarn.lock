@@ -9731,6 +9731,7 @@ __metadata:
     "@commitlint/cli": "npm:21.2.3"
     "@commitlint/config-conventional": "npm:21.2.3"
     "@commitlint/config-lerna-scopes": "npm:21.2.0"
+    cheerio: "npm:1.2.0"
     commitizen: "npm:4.3.2"
     cz-conventional-changelog: "npm:3.3.0"
     eslint-plugin-regexp: "npm:3.3.1"
