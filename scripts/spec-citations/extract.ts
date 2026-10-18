@@ -19,7 +19,9 @@ export type Page = {
 	/**
 	 * The page is a ReSpec source that the browser would still render:
 	 * ids such as `dfn-naming-prohibited` do not exist in its markup yet, so
-	 * an anchor check against it would report phantom failures.
+	 * an anchor check against it would report phantom failures. It is told
+	 * from a rendered page by the respec script still being there and no
+	 * heading having been numbered: rendering removes the one and adds the other.
 	 */
 	readonly unprocessed: boolean;
 };
@@ -54,7 +56,7 @@ export function parsePage(html: string): Page {
 			ids.set(name, el);
 		}
 	});
-	return { $, ids, headings, order, unprocessed: $('script[src*="respec"]').length > 0 };
+	return { $, ids, headings, order, unprocessed: $('script[src*="respec"]').length > 0 && $('.secno').length === 0 };
 }
 
 const pageTexts = new WeakMap<Page, string>();

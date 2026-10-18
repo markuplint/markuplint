@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 
-import { containsQuote, containsText, hashText, normalizeSpecText, quoteParts } from './normalize.ts';
+import { containsQuote, hashText, matchesDirective, normalizeSpecText, quoteParts } from './normalize.ts';
 
 describe('normalizeSpecText', () => {
 	test('[normalize-001] collapses whitespace and non-breaking spaces', () => {
@@ -46,7 +46,7 @@ describe('rendering differences', () => {
 		expect(containsQuote(dom, 'An end-of-file token: Stop parsing. Anything else: Parse error.')).toBe(true);
 		const withColon = normalizeSpecText('Elements that can fire an event, including: Elements that are focused.');
 		expect(containsQuote(withColon, 'can fire an event, including Elements that are focused')).toBe(true);
-		expect(containsText('token Stop parsing', 'token: Stop')).toBe(true);
+		expect(matchesDirective('token Stop parsing', { start: 'token: Stop' })).toBe(true);
 	});
 
 	test('[normalize-014] ignores a colon that ends a quote or one of its parts', () => {
@@ -86,10 +86,34 @@ describe('containsQuote', () => {
 	});
 });
 
-describe('containsText', () => {
+describe('matchesDirective', () => {
 	test('[normalize-010] compares case-insensitively like a text fragment', () => {
-		expect(containsText('Attributes have a name and a value', 'ATTRIBUTES have a')).toBe(true);
-		expect(containsText('Attributes have a name', 'upper alphas')).toBe(false);
+		expect(matchesDirective('Attributes have a name and a value', { start: 'ATTRIBUTES have a' })).toBe(true);
+		expect(matchesDirective('Attributes have a name', { start: 'upper alphas' })).toBe(false);
+	});
+
+	test('[normalize-015] needs the end after the start, not anywhere on the page', () => {
+		const page = 'It ends here. Then it starts. Some words, and then the end.';
+		expect(matchesDirective(page, { start: 'it starts', end: 'the end.' })).toBe(true);
+		expect(matchesDirective(page, { start: 'it starts', end: 'ends here' })).toBe(false);
+	});
+
+	test('[normalize-016] needs the prefix just before the start and the suffix just after the match', () => {
+		const page = 'Alpha beta gamma. Delta beta epsilon.';
+		expect(matchesDirective(page, { prefix: 'delta', start: 'beta' })).toBe(true);
+		expect(matchesDirective(page, { prefix: 'gamma', start: 'beta' })).toBe(false);
+		expect(matchesDirective(page, { start: 'beta', suffix: 'epsilon' })).toBe(true);
+		expect(matchesDirective(page, { start: 'beta', end: 'gamma', suffix: 'epsilon' })).toBe(false);
+	});
+
+	test('[normalize-017] finds a later occurrence of the start when an earlier one has the wrong context', () => {
+		expect(
+			matchesDirective('one beta two. three beta four.', { prefix: 'three', start: 'beta', suffix: 'four' }),
+		).toBe(true);
+	});
+
+	test('[normalize-018] never matches an empty start', () => {
+		expect(matchesDirective('anything', { start: '' })).toBe(false);
 	});
 });
 

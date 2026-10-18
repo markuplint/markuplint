@@ -182,6 +182,18 @@ describe('check', () => {
 		expect(next).toStrictEqual(lock);
 	});
 
+	test('[check-020] reports a page that no longer exists as a finding, and keeps its lock entries', () => {
+		const lock = lockOf({ [`${PAGE}#sec`]: { text: SEC_UNIT } });
+		const citations = [cite(), cite({ line: 20, fragment: 'next', url: `${PAGE}#next` })];
+		const { problems, lock: next } = run(
+			citations,
+			{ [PAGE]: { status: 'failed', message: 'HTTP 404', permanent: true } },
+			lock,
+		);
+		expect(problems.map(p => [p.kind, p.citation?.line])).toStrictEqual([['page-missing', 8]]);
+		expect(next).toStrictEqual(lock);
+	});
+
 	test('[check-015] reports an unprocessed ReSpec source once and does not check its anchors', () => {
 		const html =
 			'<script class="remove" src="https://www.w3.org/Tools/respec/respec-w3c"></script><h2 id="other">x</h2>';

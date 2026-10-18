@@ -16,6 +16,9 @@ export type FetchOptions = {
 	readonly concurrency?: number;
 };
 
+/** A page that is gone. 403, 429 and the 5xx may pass; these will not. */
+const PERMANENT = new Set([404, 410]);
+
 const USER_AGENT = 'markuplint-spec-citations (https://github.com/markuplint/markuplint)';
 
 const defaultFetch: FetchLike = (url, init) => globalThis.fetch(url, init);
@@ -30,7 +33,8 @@ function describe(error: unknown): string {
 
 /**
  * Fetches one page, retrying a failure that may pass (a 5xx, a throttled
- * request, a dropped connection) and giving up at once on a 404. A body that is cut off
+ * request, a dropped connection) and giving up at once on a page that is gone (404, 410), which is reported
+ * as such rather than as a failure to fetch. A body that is cut off
  * part-way is a dropped connection too, and is retried.
  *
  * The `catch` below does not guard with `isFatalError()`, deliberately: Node's
@@ -55,8 +59,8 @@ export async function fetchPage(url: string, options: FetchOptions = {}): Promis
 				return { status: 'ok', html: await response.text() };
 			}
 			message = `HTTP ${response.status}`;
-			if (response.status === 404) {
-				break;
+			if (PERMANENT.has(response.status)) {
+				return { status: 'failed', message, permanent: true };
 			}
 		} catch (error) {
 			message = describe(error);

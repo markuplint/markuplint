@@ -21,6 +21,7 @@ export type RenderedReport = {
 
 const HEADINGS: Readonly<Record<ProblemKind, string>> = {
 	'unprocessed-source': 'Cited ReSpec source is not rendered',
+	'page-missing': 'Page no longer exists',
 	'anchor-missing': 'Anchor not found',
 	'anchor-empty': 'Anchor has no text',
 	'quote-mismatch': 'Quoted text not found in the cited section',

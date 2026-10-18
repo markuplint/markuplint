@@ -37,8 +37,34 @@ describe('fetchPage', () => {
 		await expect(fetchPage('https://example.com/a', { fetchImpl, sleep: noSleep })).resolves.toStrictEqual({
 			status: 'failed',
 			message: 'HTTP 404',
+			permanent: true,
 		});
 		expect(calls).toBe(1);
+	});
+
+	test('[fetch-008] treats 410 Gone like 404, and a 403 or a 429 as something that may pass', async () => {
+		let calls = 0;
+		const status = { current: 410 };
+		const fetchImpl: FetchLike = () => {
+			calls++;
+			return answer(status.current);
+		};
+		await expect(fetchPage('https://example.com/a', { fetchImpl, sleep: noSleep })).resolves.toStrictEqual({
+			status: 'failed',
+			message: 'HTTP 410',
+			permanent: true,
+		});
+		expect(calls).toBe(1);
+
+		for (const code of [403, 429]) {
+			calls = 0;
+			status.current = code;
+			await expect(fetchPage('https://example.com/a', { fetchImpl, sleep: noSleep })).resolves.toStrictEqual({
+				status: 'failed',
+				message: `HTTP ${code}`,
+			});
+			expect(calls).toBe(3);
+		}
 	});
 
 	test('[fetch-003] retries a server error with a growing delay and then succeeds', async () => {

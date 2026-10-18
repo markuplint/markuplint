@@ -3,7 +3,7 @@ import type { Citation, Lock, LockEntry, PageResult, Problem, ProblemKind, Quote
 
 import { splitSentences, unifiedDiff } from './diff.ts';
 import { extractSection, pageText, parsePage } from './extract.ts';
-import { containsQuote, containsText, hashText } from './normalize.ts';
+import { containsQuote, hashText, matchesDirective } from './normalize.ts';
 
 export type CheckInput = {
 	readonly citations: readonly Citation[];
@@ -28,6 +28,7 @@ export type CheckResult = {
  */
 const PRIORITY: readonly ProblemKind[] = [
 	'unprocessed-source',
+	'page-missing',
 	'anchor-missing',
 	'anchor-empty',
 	'quote-mismatch',
@@ -60,7 +61,15 @@ export function check(input: CheckInput): CheckResult {
 	const parsed = new Map<string, Page | null>();
 	for (const [url, result] of pages) {
 		if (result.status === 'failed') {
-			problems.push({ kind: 'fetch-failed', citation: null, message: `${url}: ${result.message}` });
+			problems.push(
+				result.permanent === true
+					? {
+							kind: 'page-missing',
+							citation: citations.find(c => c.page === url) ?? null,
+							message: `${url} no longer exists (${result.message})`,
+						}
+					: { kind: 'fetch-failed', citation: null, message: `${url}: ${result.message}` },
+			);
 			parsed.set(url, null);
 		} else {
 			parsed.set(url, parsePage(result.html));
@@ -134,18 +143,12 @@ export function check(input: CheckInput): CheckResult {
 		}
 
 		const directive = citation.textDirective;
-		if (directive !== null) {
-			const text = pageText(page);
-			if (
-				!containsText(text, directive.start) ||
-				(directive.end !== undefined && !containsText(text, directive.end))
-			) {
-				problems.push({
-					kind: 'directive-missing',
-					citation,
-					message: `The text fragment \`${directive.start}${directive.end === undefined ? '' : `…${directive.end}`}\` is no longer on the page`,
-				});
-			}
+		if (directive !== null && !matchesDirective(pageText(page), directive)) {
+			problems.push({
+				kind: 'directive-missing',
+				citation,
+				message: `The text fragment \`${directive.start}${directive.end === undefined ? '' : `…${directive.end}`}\` is no longer on the page`,
+			});
 		}
 
 		if (citation.secno !== null && section.secno !== null && !secnoMatches(citation.secno, section.secno)) {

@@ -37,6 +37,12 @@ describe('parsePage', () => {
 		).toBe(true);
 		expect(parsePage(RESPEC).unprocessed).toBe(false);
 	});
+
+	test('[extract-016] does not take a numbered page for an unrendered source because it loads a respec script', () => {
+		const html =
+			'<script src="https://example.com/respec-highlight.js"></script><h2 id="a"><span class="secno">1</span> A</h2>';
+		expect(parsePage(html).unprocessed).toBe(false);
+	});
 });
 
 describe('extractSection on a flat page', () => {

@@ -1,3 +1,5 @@
+import type { TextDirective } from './types.ts';
+
 import { createHash } from 'node:crypto';
 
 // Ideographic and full-width punctuation is spelled out rather than given as a range of code points.
@@ -73,10 +75,58 @@ export function containsQuote(scope: string, quote: string): boolean {
 	return true;
 }
 
-/** Case-insensitive containment of already-decoded text, as a `:~:text=` directive matches. */
-export function containsText(haystack: string, needle: string): boolean {
-	const n = foldQuotes(normalizeSpecText(needle)).toLowerCase();
-	return n !== '' && foldQuotes(normalizeSpecText(haystack)).toLowerCase().includes(n);
+function fold(text: string): string {
+	return foldQuotes(normalizeSpecText(text)).toLowerCase();
+}
+
+/**
+ * Whether a `:~:text=` directive matches the text of a page, as a browser matches it: the start
+ * is found with the prefix just before it, the end is found after the start, and the suffix
+ * follows the match. Case is ignored, as the Text Fragments spec does.
+ *
+ * @see https://wicg.github.io/scroll-to-text-fragment/#text-fragments
+ */
+export function matchesDirective(page: string, directive: TextDirective): boolean {
+	const haystack = fold(page);
+	const start = fold(directive.start);
+	if (start === '') {
+		return false;
+	}
+	const prefix = directive.prefix === undefined ? undefined : fold(directive.prefix);
+	const end = directive.end === undefined ? undefined : fold(directive.end);
+	const suffix = directive.suffix === undefined ? undefined : fold(directive.suffix);
+	// Whitespace is collapsed to single spaces, so a little slack around a context string is enough.
+	const slack = 16;
+	for (let at = haystack.indexOf(start); at !== -1; at = haystack.indexOf(start, at + 1)) {
+		if (
+			prefix !== undefined &&
+			!haystack
+				.slice(Math.max(0, at - prefix.length - slack), at)
+				.trimEnd()
+				.endsWith(prefix)
+		) {
+			continue;
+		}
+		let to = at + start.length;
+		if (end !== undefined) {
+			const endAt = haystack.indexOf(end, to);
+			if (endAt === -1) {
+				continue;
+			}
+			to = endAt + end.length;
+		}
+		if (
+			suffix !== undefined &&
+			!haystack
+				.slice(to, to + suffix.length + slack)
+				.trimStart()
+				.startsWith(suffix)
+		) {
+			continue;
+		}
+		return true;
+	}
+	return false;
 }
 
 export function hashText(text: string): string {

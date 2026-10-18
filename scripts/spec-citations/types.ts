@@ -74,10 +74,16 @@ export type Lock = {
 
 export type PageResult =
 	| { readonly status: 'ok'; readonly html: string }
-	| { readonly status: 'failed'; readonly message: string };
+	| {
+			readonly status: 'failed';
+			readonly message: string;
+			/** The page is gone (404, 410), not unreachable for now: a finding, not something to try again. */
+			readonly permanent?: boolean;
+	  };
 
 export type ProblemKind =
 	| 'unprocessed-source'
+	| 'page-missing'
 	| 'anchor-missing'
 	| 'anchor-empty'
 	| 'quote-mismatch'
