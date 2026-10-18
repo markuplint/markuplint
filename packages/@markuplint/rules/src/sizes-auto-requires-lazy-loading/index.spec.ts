@@ -52,7 +52,7 @@ describe('No violations', () => {
 				raw: 'auto',
 			},
 		]);
-		// expect((await mlRuleTest(rule, '...')).violations).toStrictEqual([]); // previous
+		// expect(violations).toStrictEqual([]); // previous
 	});
 
 	test('[sizes-auto-requires-lazy-loading-valid-006] source[sizes=auto] with non-adjacent sibling img[loading=lazy]', async () => {
@@ -71,7 +71,7 @@ describe('No violations', () => {
 				raw: 'auto',
 			},
 		]);
-		// expect((await mlRuleTest(rule, '...')).violations).toStrictEqual([]); // previous
+		// expect(violations).toStrictEqual([]); // previous
 	});
 });
 
@@ -166,7 +166,7 @@ describe('sizes=auto on source requires sibling img[loading=lazy]', () => {
 				raw: 'auto',
 			},
 		]);
-		// expect((await mlRuleTest(rule, '...')).violations).toStrictEqual([]); // previous
+		// expect(violations).toStrictEqual([]); // previous
 	});
 
 	test('[sizes-auto-requires-lazy-loading-invalid-007] source[sizes=auto] with no following img → violation', async () => {
@@ -191,7 +191,7 @@ describe('sizes=auto on source requires sibling img[loading=lazy]', () => {
 				raw: 'auto',
 			},
 		]);
-		// expect((await mlRuleTest(rule, '...')).violations).toStrictEqual([]); // previous
+		// expect(violations).toStrictEqual([]); // previous
 	});
 });
 
