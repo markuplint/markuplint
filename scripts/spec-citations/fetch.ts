@@ -30,7 +30,8 @@ function describe(error: unknown): string {
 
 /**
  * Fetches one page, retrying a failure that may pass (a 5xx, a throttled
- * request, a dropped connection) and giving up at once on a 404.
+ * request, a dropped connection) and giving up at once on a 404. A body that is cut off
+ * part-way is a dropped connection too, and is retried.
  *
  * The `catch` below does not guard with `isFatalError()`, deliberately: Node's
  * `fetch` reports a network failure as a `TypeError` ("fetch failed"), which

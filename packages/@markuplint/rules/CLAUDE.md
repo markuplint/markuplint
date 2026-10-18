@@ -68,7 +68,7 @@ A README, a source comment, `meta.ts` and `schema.json` cite the passage that ju
 - Quote a spec sentence verbatim, as a blockquote in a README or as `>` lines in a source comment, and name its source: in a README the `Cite: [..](url)` line after the quote (`[..](url)より引用` in Japanese), in a comment an `@see` URL in the same comment. Never quote inline in double quotes: the monitor cannot check it. `[…]` marks what the quote leaves out.
 - Cite a section by its fragment. A `§4.10.7` beside the link is compared with the section the fragment is in; the number of an ancestor section is accepted.
 - `README.ja.md` cites the HTML Living Standard through its translation (`https://momdo.github.io/html/…`, the same page and anchor as the English README) and quotes the translation's own text. That text stays English where the translation is behind the original, and the monitor reports it once the translation catches up. For WCAG, the translation is waic.jp's.
-- Cite W3C specs at an edition-less URL (`https://w3c.github.io/accname/`, `https://w3c.github.io/aria/`, `https://www.w3.org/TR/WCAG/`, `https://www.w3.org/TR/html-aria/`). Not `w3c.github.io/html-aria/`: that is unrendered ReSpec source whose anchors exist only after a browser builds them.
+- Cite W3C specs at an edition-less URL (`https://w3c.github.io/accname/`, `https://w3c.github.io/aria/`, `https://www.w3.org/TR/WCAG/`, `https://www.w3.org/TR/html-aria/`). WCAG's Techniques and Understanding pages have no edition-less URL; cite the latest edition (`https://www.w3.org/WAI/WCAG22/…`). Not `w3c.github.io/html-aria/`: that is unrendered ReSpec source whose anchors exist only after a browser builds them.
 
 ## Assertion Convention
 

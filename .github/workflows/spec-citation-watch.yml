@@ -36,7 +36,7 @@ jobs:
     check:
         if: github.event_name == 'pull_request'
         runs-on: ubuntu-latest
-        timeout-minutes: 30
+        timeout-minutes: 60
         steps:
             - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
@@ -56,11 +56,21 @@ jobs:
             - name: Check citations
               run: |
                   set +e
-                  yarn spec-citations --report report.md
-                  status=$?
+                  # A page that could not be fetched (status 2) may be an outage that passes: run again, up to
+                  # three more times, five minutes apart. The report is removed first so that a run that crashes
+                  # is not mistaken for the previous one.
+                  for attempt in 1 2 3 4; do
+                      rm -f report.md
+                      yarn spec-citations --report report.md
+                      status=$?
+                      if [ "$status" -ne 2 ] || [ "$attempt" -eq 4 ]; then
+                          break
+                      fi
+                      sleep 300
+                  done
                   # 0: nothing to report, 1: findings. Neither is this pull request's fault.
-                  # 2: a page could not be fetched. This job exists to show that the runner can reach the
-                  #    spec hosts (the script retries each page), so it fails.
+                  # 2: a page still could not be fetched. This job exists to show that the runner can reach the
+                  #    spec hosts, so it fails.
                   # No report file: the script crashed.
                   if [ ! -f report.md ] || [ "$status" -ge 2 ]; then
                       exit 1
@@ -70,7 +80,7 @@ jobs:
     watch:
         if: github.event_name != 'pull_request'
         runs-on: ubuntu-latest
-        timeout-minutes: 30
+        timeout-minutes: 60
         permissions:
             contents: write
             issues: write
@@ -100,8 +110,17 @@ jobs:
               id: check
               run: |
                   set +e
-                  yarn spec-citations --update --report report.md --report-full report-full.md
-                  status=$?
+                  # Same as the pull request job: a page that could not be fetched (status 2) is tried again, up to
+                  # three more times, five minutes apart, so that one outage does not skip the month for that page.
+                  for attempt in 1 2 3 4; do
+                      rm -f report.md report-full.md
+                      yarn spec-citations --update --report report.md --report-full report-full.md
+                      status=$?
+                      if [ "$status" -ne 2 ] || [ "$attempt" -eq 4 ]; then
+                          break
+                      fi
+                      sleep 300
+                  done
                   {
                       echo "status=$status"
                       if [ -f report.md ]; then echo "completed=true"; else echo "completed=false"; fi
