@@ -492,20 +492,19 @@ function resolveThroughImport(
 		return null;
 	}
 
-	const [head = '', ...members] = elName.split('.');
-	if (members.length > 0) {
-		const memberBinding = resolveComponentImport(head, bindings);
-		return memberBinding && memberBinding.type !== 'dynamic'
-			? resolveMemberTag(memberBinding, members, path.resolve(env.cwd, currentFile), env, map)
-			: null;
-	}
-
 	const binding = resolveComponentImport(elName, bindings);
-	if (!binding || binding.type === 'namespace') {
-		return null;
+	if (binding) {
+		return binding.type === 'namespace'
+			? null
+			: resolveImportBinding(binding, path.resolve(env.cwd, currentFile), env, map);
 	}
 
-	return resolveImportBinding(binding, path.resolve(env.cwd, currentFile), env, map);
+	// A name that no binding has as a whole may be a member tag: `UI.Item`, the name `UI` and what follows.
+	const [head = '', ...members] = elName.split('.');
+	const memberBinding = members.length > 0 ? resolveComponentImport(head, bindings) : undefined;
+	return memberBinding && memberBinding.type !== 'dynamic'
+		? resolveMemberTag(memberBinding, members, path.resolve(env.cwd, currentFile), env, map)
+		: null;
 }
 
 /**

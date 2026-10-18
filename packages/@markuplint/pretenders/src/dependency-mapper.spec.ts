@@ -1518,6 +1518,31 @@ describe('dependencyMapper: a component reached through a member tag or a lazy v
 		});
 	});
 
+	test('a name with a dot that an import has as a whole resolves through that import', async () => {
+		await writeFile(path.join(tmpDir, 'a.tsx'), 'export const Item = () => <button />;\n');
+		const map: PretenderDirectorMap = new Map([
+			['a.tsx#Item', ['Item', 'button', 'a.tsx:1:14', 'a.tsx', 'Item']],
+			['w.tsx#W', ['W', 'my.item', 'w.tsx:2:14', 'w.tsx', 'W']],
+		]);
+		const importsByFile = new Map([
+			['w.tsx', [{ localName: 'my.item', importedName: 'Item', source: './a', type: 'named' as const }]],
+		]);
+
+		const result = dependencyMapper(map, undefined, { importsByFile, cwd: tmpDir });
+
+		expect(result.find(pretender => pretender.selector === 'W')).toMatchObject({ as: 'button' });
+	});
+
+	test('a star re-export of a package next to a star re-export of the project does not drop a member', async () => {
+		await writeFile(path.join(tmpDir, 'a.tsx'), 'export const Item = () => <button />;\n');
+		await writeFile(
+			path.join(tmpDir, 'barrel.ts'),
+			"export * from './a';\nexport * from 'not-installed-package';\n",
+		);
+
+		expect(selectorsOf([namespace('UI', './barrel')])).toStrictEqual([String.raw`UI\.Item`]);
+	});
+
 	test('a member tag of a namespace that leads into a package ends the chain there', async () => {
 		await writeFile(path.join(tmpDir, 'barrel.ts'), "export * as UI from 'not-installed-package';\n");
 		const map: PretenderDirectorMap = new Map([

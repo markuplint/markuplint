@@ -84,6 +84,25 @@ describe('autoScan', () => {
 		});
 	});
 
+	test('two entries that name different namespaces `UI` each get the member tag of their own', async () => {
+		await mkdir(path.join(tmpDir, 'a'));
+		await mkdir(path.join(tmpDir, 'b'));
+		await writeFile(path.join(tmpDir, 'a', 'ui.tsx'), 'export const Item = () => <img src="x.png" />;');
+		await writeFile(path.join(tmpDir, 'b', 'ui.tsx'), 'export const Item = () => <br />;');
+		const source = "import * as UI from './ui';\nexport const W = () => <UI.Item />;";
+
+		const forA = await autoScan(path.join(tmpDir, 'a', 'entry.tsx'), source);
+		const forB = await autoScan(path.join(tmpDir, 'b', 'entry.tsx'), source);
+
+		const members = (list: typeof forA) => list.filter(p => p.selector === String.raw`UI\.Item`);
+		expect(members(forA)).toStrictEqual([
+			expect.objectContaining({ as: expect.objectContaining({ element: 'img' }) }),
+		]);
+		expect(members(forB)).toStrictEqual([
+			expect.objectContaining({ as: expect.objectContaining({ element: 'br' }) }),
+		]);
+	});
+
 	test('a .tsx entry resolves a .vue import (BFS is extension-agnostic)', async () => {
 		const entryPath = path.join(tmpDir, 'entry.tsx');
 		const childPath = path.join(tmpDir, 'Child.vue');
