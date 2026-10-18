@@ -71,7 +71,7 @@ When permitted roles include `img`, `image` is accepted (`<embed>`, `<iframe>`).
 
 ## "No role permitted" is strict
 
-When [ARIA in HTML](https://w3c.github.io/html-aria/) says no role is permitted, v5 forbids **any** explicit `role`, including a value equal to the implicit role. v4 allowed that match.
+When [ARIA in HTML](https://www.w3.org/TR/html-aria/) says no role is permitted, v5 forbids **any** explicit `role`, including a value equal to the implicit role. v4 allowed that match.
 
 ```html
 <img src="spacer.png" alt="" role="presentation" /> <img src="spacer.png" alt="" role="none" />

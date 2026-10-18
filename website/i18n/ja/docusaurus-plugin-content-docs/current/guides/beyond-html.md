@@ -306,7 +306,7 @@ const ProfileCard = ({ children }) => {
 }
 ```
 
-これにより、Markuplintは`<ProfileCard>`が[フローコンテンツ](https://html.spec.whatwg.org/multipage/dom.html#flow-content-2)のみを含むことを正しく検証でき（`<article>`と同様）、`<p>`の中に`<ProfileCard>`をネストすることが不正であると判定できます。
+これにより、Markuplintは`<ProfileCard>`が[フローコンテンツ](https://momdo.github.io/html/dom.html#flow-content-2)のみを含むことを正しく検証でき（`<article>`と同様）、`<p>`の中に`<ProfileCard>`をネストすることが不正であると判定できます。
 
 #### スキャンと手動定義の併用
 
