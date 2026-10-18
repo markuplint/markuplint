@@ -11,8 +11,8 @@ import meta from './meta.js';
  * > reprocess the token.
  *
  * Whitespace characters (U+0009/000A/000C/000D/0020) have their own case one
- * step above ("process using the rules for the 'in body' insertion mode"
- * without the parse error), so a trailing newline after `</body>` is normal
+ * step above (they are processed with the rules of the 'in body' insertion
+ * mode, without the parse error), so a trailing newline after `</body>` is normal
  * and out of scope here — only a start tag or non-whitespace text reaching
  * this insertion mode is the "Anything else" parse error. Because the
  * reprocessing switches back to "in body", the offending content still ends

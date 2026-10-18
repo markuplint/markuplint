@@ -5,7 +5,7 @@ description: multiple属性を持たないselect要素の配下に、selected属
 
 # `no-extra-selected-options`
 
-[HTML Living Standard §4.10.7 (the select element)](https://html.spec.whatwg.org/multipage/form-elements.html#the-select-element) では、`multiple` 属性を持たない `<select>` の "list of options" のうち `selected` 属性が付いている `<option>` は最大1個までと定められています。
+[HTML Living Standard §4.10.7 (the select element)](https://momdo.github.io/html/form-elements.html#the-select-element) では、`multiple` 属性を持たない `<select>` の "list of options" のうち `selected` 属性が付いている `<option>` は最大1個までと定められています。
 
 ここでの "list of options" は、`<select>` の直接の `<option>` 子要素と、`<optgroup>` 子要素配下の `<option>` 要素のことです。
 

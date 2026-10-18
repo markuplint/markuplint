@@ -6,13 +6,16 @@ import { defaultOptions } from '../wai-aria/default-options.js';
 import meta from './meta.js';
 
 /**
- * ARIA in HTML §"Rules of ARIA attribute usage by HTML feature", the `hidden` row:
- * "authors MUST NOT use `aria-hidden="true"` on any element which also has the
- * `hidden` attribute specified in the Hidden Until Found state." Content revealed
- * by the browser's find-in-page feature would otherwise stay excluded from the
- * accessibility tree, silently breaking that reveal for assistive technology users.
+ * ARIA in HTML, section Rules of ARIA attribute usage by HTML feature, the `hidden` row:
  *
- * @see https://w3c.github.io/html-aria/#att-hidden
+ * > Authors MUST NOT use `aria-hidden="true"` on any element which also has the `hidden` attribute specified in the
+ * > Hidden Until Found state.
+ *
+ * Content revealed by the browser's find-in-page feature would otherwise stay
+ * excluded from the accessibility tree, silently breaking that reveal for
+ * assistive technology users.
+ *
+ * @see https://www.w3.org/TR/html-aria/#att-hidden
  */
 export default createRule<boolean, Options>({
 	meta,

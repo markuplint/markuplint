@@ -36,7 +36,7 @@ By default, [`no-unescaped-char`](/docs/rules/no-unescaped-char) only flags a li
 
 ### Warned by `require-accessible-name` rule
 
-You can provide [accessible names](https://www.w3.org/TR/wai-aria-1.2/#dfn-accessible-name) using `aria-label`, but you _SHOULD NOT_ use it as your first solution. The [accessible name computation](https://www.w3.org/TR/accname-1.2/) is complex — the preferred source depends on the element:
+You can provide [accessible names](https://w3c.github.io/accname/#dfn-accessible-name) using `aria-label`, but you _SHOULD NOT_ use it as your first solution. The [accessible name computation](https://w3c.github.io/accname/) is complex — the preferred source depends on the element:
 
 | Element    | Preferred name source | Using `aria-label`         |
 | ---------- | --------------------- | -------------------------- |

@@ -1,13 +1,21 @@
 ---
 id: no-input-file-value
-description: HTML LS §4.10.5.1.18 に従い、`<input type="file">` の value 属性は省略または空文字列のみ許容します。
+description: '`<input type="file">` の value 属性が空文字列でないときに警告します。value 属性をその値によらず報告する no-disallowed-attr に置き換わりました。'
 ---
 
 # `no-input-file-value`
 
-[HTML Living Standard §4.10.5.1.18 (File Upload state)](<https://html.spec.whatwg.org/multipage/input.html#file-upload-state-(type=file)>) によれば、`<input type="file">` には空文字列以外の `value` 属性を指定できません。
+`<input type="file">` の `value` 属性が空文字列でないときに警告します。
 
-> The `value` attribute, if specified, must have a value that is the empty string.
+:::caution
+このルールは [`no-disallowed-attr`](/docs/rules/no-disallowed-attr) に置き換わりました。HTML Living Standard は `<input type="file">` に `value` 属性を指定することを、空文字列であっても認めていません。`no-disallowed-attr` はそのすべてを報告しますが、このルールが報告するのは空文字列でない場合だけです。このルールは、設定に名前を書いている場合のために残してあり、v6 で削除します。
+:::
+
+<!-- textlint-disable ja-technical-writing/ja-no-mixed-period, ja-technical-writing/no-unmatched-pair -->
+
+> 要素のvalue属性は省略しなければならない。
+
+[HTML Living Standard 4.10.5.1.17 File Upload状態 (type=file)](<https://momdo.github.io/html/input.html#file-upload-state-(type=file)>)より引用
 
 ❌ このルールに適合しない**誤った**コードの例
 
@@ -18,5 +26,5 @@ description: HTML LS §4.10.5.1.18 に従い、`<input type="file">` の value �
 ✅ このルールに適合する**正しい**コードの例
 
 ```html
-<input type="file" /> <input type="file" value="" />
+<input type="file" />
 ```

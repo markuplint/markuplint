@@ -1,18 +1,22 @@
 ---
 id: sizes-auto-requires-lazy-loading
-description: sizes="auto"を使用する箇所では loading="lazy" を必須とします。
+description: sizes="auto"を使用する箇所では loading="lazy" を必須とし、source が前提にする img にも sizes="auto" を必須とします。
 ---
 
 # `sizes-auto-requires-lazy-loading`
 
-[HTML Living Standard](https://html.spec.whatwg.org/multipage/embedded-content.html#the-img-element) に基づき、`<img>` および `<source>` 要素で `sizes="auto"` を使用する箇所では `loading="lazy"` を必須とします。
+[HTML Living Standard](https://momdo.github.io/html/embedded-content.html#the-img-element) に基づき、`<img>` および `<source>` 要素で `sizes="auto"` を使用する箇所では `loading="lazy"` を必須とします。`<source>` では、後続兄弟の `<img>` が自動サイズを許可する（`sizes="auto"` も持つ）必要もあります。
+
+> img要素は、次の場合に自動サイズを許可する：そのloading属性がLazy状態であり、かつ、そのsizes属性の値が"auto"（ASCII大文字・小文字不区別）である、または"auto,"（ASCII大文字・小文字不区別）で始まる。
+
+[HTML Living Standard: img要素の自動サイズの許可](https://momdo.github.io/html/embedded-content.html#allows-auto-sizes)より引用
 
 旧`srcset-sizes-constraint`ルールから、[`no-unpaired-srcset-sizes`](/docs/rules/no-unpaired-srcset-sizes)、[`no-mixed-srcset-descriptors`](/docs/rules/no-mixed-srcset-descriptors)、[`no-always-matching-source`](/docs/rules/no-always-matching-source)とともに分割されました。
 
-| #   | 制約                                                                           | 対象                       |
-| --- | ------------------------------------------------------------------------------ | -------------------------- |
-| 1   | `<img>` の `sizes="auto"` には `loading="lazy"` が必須                         | `img`                      |
-| 2   | `<source>` の `sizes="auto"` には後続兄弟の `<img>` に `loading="lazy"` が必須 | `source`（`<picture>` 内） |
+| #   | 制約                                                                                             | 対象                       |
+| --- | ------------------------------------------------------------------------------------------------ | -------------------------- |
+| 1   | `<img>` の `sizes="auto"` には `loading="lazy"` が必須                                           | `img`                      |
+| 2   | `<source>` の `sizes="auto"` には後続兄弟の `<img>` に `loading="lazy"` と `sizes="auto"` が必須 | `source`（`<picture>` 内） |
 
 <!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
 
@@ -20,7 +24,7 @@ description: sizes="auto"を使用する箇所では loading="lazy" を必須と
 
 - `<img>` と `<picture>` 内の `<source>` 要素のみ、かつ `srcset` 属性がある場合のみチェックします。
 - 動的な属性値（Vue の `:sizes`、JSX の `sizes={...}` など）やスプレッド属性を持つ要素はスキップされます。
-- `sizes="auto"` は、属性値の先頭に `auto` がある場合に認識されます（大文字小文字不区別）。例えば `sizes="auto, 100vw"` は auto として扱われますが、`sizes="100vw, auto"` は auto として認識されません。
+- `sizes="auto"` は、属性値が `auto` であるか `auto,` で始まる場合に認識されます（大文字小文字不区別）。例えば `sizes="auto, 100vw"` は auto として扱われますが、`sizes="100vw, auto"` は auto として認識されません。
 
 ❌ 間違ったコード例
 
@@ -31,6 +35,11 @@ description: sizes="auto"を使用する箇所では loading="lazy" を必須と
   <source srcset="a.webp 480w" sizes="auto" />
   <img src="a.jpg" alt="写真" />
 </picture>
+
+<picture>
+  <source srcset="a.webp 480w" sizes="auto" />
+  <img src="a.jpg" loading="lazy" alt="写真" />
+</picture>
 ```
 
 ✅ 正しいコード例
@@ -40,7 +49,7 @@ description: sizes="auto"を使用する箇所では loading="lazy" を必須と
 
 <picture>
   <source srcset="a.webp 480w" sizes="auto" />
-  <img src="a.jpg" loading="lazy" alt="写真" />
+  <img src="a.jpg" loading="lazy" sizes="auto" alt="写真" />
 </picture>
 ```
 
@@ -48,5 +57,6 @@ description: sizes="auto"を使用する箇所では loading="lazy" を必須と
 
 ## 参照
 
-- [HTML Living Standard - The img element](https://html.spec.whatwg.org/multipage/embedded-content.html#the-img-element)
-- [HTML Living Standard - The source element](https://html.spec.whatwg.org/multipage/embedded-content.html#the-source-element)
+- [HTML Living Standard - The img element](https://momdo.github.io/html/embedded-content.html#the-img-element)
+- [HTML Living Standard - The source element](https://momdo.github.io/html/embedded-content.html#the-source-element)
+- [HTML Living Standard - An img element allows auto-sizes](https://momdo.github.io/html/embedded-content.html#allows-auto-sizes)

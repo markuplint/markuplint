@@ -42,7 +42,7 @@ ReactとVueに関してはスペックプラグインにより、各構文固有
 
 ### `require-accessible-name`ルールで怒られます
 
-[アクセシブルな名前](https://momdo.github.io/wai-aria-1.2/#dfn-accessible-name)は`aria-label`で解決できますが、最初の解決手段としてそれを使用するのは**避けましょう**。[アクセシブルな名前の計算](https://www.w3.org/TR/accname-1.2/)は複雑で、要素によって得られる場所が異なります:
+[アクセシブルな名前](https://momdo.github.io/wai-aria-1.2/#dfn-accessible-name)は`aria-label`で解決できますが、最初の解決手段としてそれを使用するのは**避けましょう**。[アクセシブルな名前の計算](https://w3c.github.io/accname/)は複雑で、要素によって得られる場所が異なります:
 
 | 要素       | 主な名前が得られる場所 | `aria-label`の使用     |
 | ---------- | ---------------------- | ---------------------- |

@@ -67,7 +67,7 @@ v5 は ARIA 1.3 を追加し、既定にします（v4 は 1.2）。v4 の `wai-
 
 ## 「ロール禁止」が厳密
 
-[ARIA in HTML](https://w3c.github.io/html-aria/) がロール禁止とするとき、v5 は暗黙ロールと同じ値でも明示 `role` を禁止します。v4 は一致を許していました。属性を外してください。暗黙ロールは残ります。[issue #3641](https://github.com/markuplint/markuplint/issues/3641)。
+[ARIA in HTML](https://www.w3.org/TR/html-aria/) がロール禁止とするとき、v5 は暗黙ロールと同じ値でも明示 `role` を禁止します。v4 は一致を許していました。属性を外してください。暗黙ロールは残ります。[issue #3641](https://github.com/markuplint/markuplint/issues/3641)。
 
 ## `wai-aria` 傘ルール {#傘ルールの削除}
 

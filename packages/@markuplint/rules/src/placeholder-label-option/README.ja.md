@@ -8,7 +8,7 @@ description: select要素にプレースホルダーラベルオプションが�
 
 `select`要素に**プレースホルダーラベルオプション**が必要か確認します。
 
-> select要素がrequired属性を指定され、multiple属性を指定されず、1である表示サイズを持つ場合、および（もしあれば）select要素の選択肢のリストで最初のoptionの値が空文字列であり、そのoption要素の親ノードがselect要素（かつoptgroup要素でない）場合、そのoptionは、select要素のプレースホルダーのラベルオプションである。
+> If a select element has a required attribute specified, and has a display size of 1; and if the value of the first option element in the select element's list of options (if any) is the empty string, and that option element does not have an ancestor optgroup in between itself and the select element, then that option is the select element's placeholder label option.
 >
 > select要素がrequired属性を指定され、multiple属性を指定されず、1である表示サイズを持つ場合、そのselect要素は、プレースホルダーのラベルオプションを持たなければならない。
 
@@ -32,13 +32,19 @@ description: select要素にプレースホルダーラベルオプションが�
   <option value="option2">オプション2</option>
 </select>
 
-<!-- 不正: 最初のoption要素の親がoptgroup要素 -->
+<!-- 不正: 最初のoption要素がoptgroup要素の子孫 -->
 <select required>
   <optgroup label="グループ">
     <option value="">プレースホルダー</option>
   </optgroup>
   <option value="option1">オプション1</option>
   <option value="option2">オプション2</option>
+</select>
+
+<!-- 不正: 最初のoption要素にvalue属性がないので、そのテキストが値になる -->
+<select required>
+  <option>選択してください</option>
+  <option>オプション1</option>
 </select>
 
 <!-- 不正: option要素がない -->
@@ -53,6 +59,12 @@ description: select要素にプレースホルダーラベルオプションが�
   <option value="">プレースホルダー</option>
   <option value="option1">オプション1</option>
   <option value="option2">オプション2</option>
+</select>
+
+<!-- 妥当: 最初のoption要素にvalue属性もテキストもないので、値が空文字列になる -->
+<select required>
+  <option></option>
+  <option value="option1">オプション1</option>
 </select>
 
 <!-- 妥当: プレースホルダーラベルオプションを持っていないが、multiple属性を持っている -->

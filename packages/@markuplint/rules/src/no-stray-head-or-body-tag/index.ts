@@ -23,13 +23,15 @@ const DUPLICATE_BODY_START_TAG = /<body(?=[\s/>])/i;
  * > A start tag whose tag name is "body": Parse error. If the stack of open
  * > elements has only one node on it, or if the second element on the stack
  * > of open elements is not a body element, or if there is a template
- * > element on the stack of open elements, then ignore the token […].
- * > Otherwise, set the frameset-ok flag to "not ok" […]
+ * > element on the stack of open elements, then ignore the token. […]
+ * > Otherwise: Set the frameset-ok flag to "not ok" […]
  *
  * "in body" insertion mode, "Any other end tag":
  *
- * > Initialize node to be the current node […]. If node's tag name […] is
- * > not the same as the tag name of the token, then this is a parse error.
+ * > Initialize node to be the current node (the bottommost node of the
+ * > stack). Loop: If node is an HTML element with the same tag name as the
+ * > token: […] Otherwise, if node is in the special category, then this is a
+ * > parse error; ignore the token, and return.
  *
  * Neither of these fires by the presence of disallowed `<head>` content
  * itself (the "in head" insertion mode's own "Anything else" clause that

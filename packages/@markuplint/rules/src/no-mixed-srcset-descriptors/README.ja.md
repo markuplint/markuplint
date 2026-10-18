@@ -5,7 +5,7 @@ description: srcset属性内で幅ディスクリプタとピクセル密度デ�
 
 # `no-mixed-srcset-descriptors`
 
-[HTML Living Standard](https://html.spec.whatwg.org/multipage/images.html#srcset-attributes) に基づき、`<img>` および `<source>` 要素の単一の `srcset` 属性内で **幅**（`w`）と **ピクセル密度**（`x`）のディスクリプタを混在させることを禁止します。
+[HTML Living Standard](https://momdo.github.io/html/images.html#srcset-attributes) に基づき、`<img>` および `<source>` 要素の単一の `srcset` 属性内で **幅**（`w`）と **ピクセル密度**（`x`）のディスクリプタを混在させることを禁止します。
 
 旧`srcset-sizes-constraint`ルールから、[`no-unpaired-srcset-sizes`](/docs/rules/no-unpaired-srcset-sizes)、[`sizes-auto-requires-lazy-loading`](/docs/rules/sizes-auto-requires-lazy-loading)、[`no-always-matching-source`](/docs/rules/no-always-matching-source)とともに分割されました。
 
@@ -41,4 +41,4 @@ description: srcset属性内で幅ディスクリプタとピクセル密度デ�
 
 ## 参照
 
-- [HTML Living Standard - Srcset attributes](https://html.spec.whatwg.org/multipage/images.html#srcset-attributes)
+- [HTML Living Standard - Srcset attributes](https://momdo.github.io/html/images.html#srcset-attributes)

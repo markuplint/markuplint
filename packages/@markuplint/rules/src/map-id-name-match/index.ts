@@ -4,9 +4,9 @@ import meta from './meta.js';
 
 /**
  * Require that a `<map>` element's `id` attribute, when present, has
- * the same value as its `name` attribute. Per HTML LS §4.8.13:
- * "If the id attribute is also specified, both attributes must have
- * the same value."
+ * the same value as its `name` attribute. Per HTML LS §4.8.12:
+ *
+ * > If the id attribute is also specified, both attributes must have the same value.
  *
  * @see https://html.spec.whatwg.org/multipage/image-maps.html#the-map-element
  */

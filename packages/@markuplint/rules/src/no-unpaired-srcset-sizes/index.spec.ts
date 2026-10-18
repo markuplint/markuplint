@@ -153,7 +153,18 @@ describe('Width descriptors require sizes', () => {
 			rule,
 			'<picture><source srcset="s.webp 480w, l.webp 1024w"><img src="l.jpg" alt="p" loading="lazy"></picture>',
 		);
-		expect(violations).toStrictEqual([]);
+		// Behavior change: the img allows auto-sizes only with loading="lazy" and sizes="auto", so the source still needs sizes
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 10,
+				message:
+					'The "sizes" attribute is required when the "srcset" attribute uses width descriptors, unless the following sibling "img" element has loading="lazy" and sizes="auto"',
+				raw: '<source srcset="s.webp 480w, l.webp 1024w">',
+			},
+		]);
+		// expect(violations).toStrictEqual([]); // previous
 	});
 });
 
@@ -242,6 +253,133 @@ describe('Dynamic values', () => {
 				await mlRuleTest(rule, '<img {...props} srcset="s.png 480w" src="s.png" alt="p" />', {
 					parser: { '.*': '@markuplint/jsx-parser' },
 				})
+			).violations,
+		).toStrictEqual([]);
+	});
+});
+
+describe('source with width descriptors: the following img must allow auto-sizes', () => {
+	const GENERIC = 'The "sizes" attribute is required when the "srcset" attribute uses width descriptors';
+	const HINT = `${GENERIC}, unless the following sibling "img" element has loading="lazy" and sizes="auto"`;
+	const source = '<source srcset="s.webp 480w, l.webp 1024w">';
+	const vue = { parser: { '.*': '@markuplint/vue-parser' }, specs: { '.*': '@markuplint/vue-spec' } };
+
+	test('[no-unpaired-srcset-sizes-valid-014] img[loading=lazy][sizes=auto] → no violation', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					`<picture>${source}<img src="l.jpg" alt="p" loading="lazy" sizes="auto"></picture>`,
+				)
+			).violations,
+		).toStrictEqual([]);
+	});
+
+	test('[no-unpaired-srcset-sizes-valid-015] img sizes "AUTO" with loading="LAZY" is auto (ASCII case-insensitive)', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					`<picture>${source}<img src="l.jpg" alt="p" loading="LAZY" sizes="AUTO"></picture>`,
+				)
+			).violations,
+		).toStrictEqual([]);
+	});
+
+	test('[no-unpaired-srcset-sizes-valid-016] img sizes "auto, 100vw" is auto', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					`<picture>${source}<img src="l.jpg" alt="p" loading="lazy" sizes="auto, 100vw"></picture>`,
+				)
+			).violations,
+		).toStrictEqual([]);
+	});
+
+	test('[no-unpaired-srcset-sizes-invalid-008] img[sizes=auto] without loading=lazy → violation', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			`<picture>${source}<img src="l.jpg" alt="p" sizes="auto"></picture>`,
+		);
+		expect(violations.map(v => v.message)).toStrictEqual([GENERIC]);
+	});
+
+	test('[no-unpaired-srcset-sizes-invalid-009] img[loading=lazy][sizes=100vw] → violation that names what would allow it', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			`<picture>${source}<img src="l.jpg" alt="p" loading="lazy" sizes="100vw"></picture>`,
+		);
+		expect(violations.map(v => v.message)).toStrictEqual([HINT]);
+	});
+
+	test('[no-unpaired-srcset-sizes-invalid-010] img[loading=lazy][sizes="auto 100vw"] is not auto → violation', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			`<picture>${source}<img src="l.jpg" alt="p" loading="lazy" sizes="auto 100vw"></picture>`,
+		);
+		expect(violations.map(v => v.message)).toStrictEqual([HINT]);
+	});
+
+	test('[no-unpaired-srcset-sizes-invalid-011] img[loading=" lazy"] (the keyword is not trimmed) → violation', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			`<picture>${source}<img src="l.jpg" alt="p" loading=" lazy" sizes="auto"></picture>`,
+		);
+		expect(violations.length).toBe(1);
+	});
+
+	test('[no-unpaired-srcset-sizes-invalid-012] the first following img decides', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			`<picture>${source}<img src="a.jpg" alt="p"><img src="b.jpg" alt="p" loading="lazy" sizes="auto"></picture>`,
+		);
+		expect(violations.length).toBe(1);
+	});
+
+	test('[no-unpaired-srcset-sizes-parser-004] Vue dynamic loading on the img → no violation', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					`<template><picture>${source}<img src="l.jpg" alt="p" :loading="l" sizes="auto"></picture></template>`,
+					vue,
+				)
+			).violations,
+		).toStrictEqual([]);
+	});
+
+	test('[no-unpaired-srcset-sizes-parser-005] Vue dynamic sizes on the img → no violation', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					`<template><picture>${source}<img src="l.jpg" alt="p" loading="lazy" :sizes="s"></picture></template>`,
+					vue,
+				)
+			).violations,
+		).toStrictEqual([]);
+	});
+
+	test('[no-unpaired-srcset-sizes-parser-006] Vue dynamic loading with a known sizes that is not auto → violation', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			`<template><picture>${source}<img src="l.jpg" alt="p" :loading="l" sizes="100vw"></picture></template>`,
+			vue,
+		);
+		expect(violations.length).toBe(1);
+	});
+
+	test('[no-unpaired-srcset-sizes-parser-007] JSX spread props on the img → no violation', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					`<picture>${source.replace('>', ' />')}<img {...p} src="l.jpg" alt="p" /></picture>`,
+					{
+						parser: { '.*': '@markuplint/jsx-parser' },
+					},
+				)
 			).violations,
 		).toStrictEqual([]);
 	});

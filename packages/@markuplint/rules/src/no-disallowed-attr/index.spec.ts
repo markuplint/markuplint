@@ -845,3 +845,97 @@ test('[no-disallowed-attr-invalid-007] picture > source[sizes] without srcset is
 	const { violations } = await mlRuleTest(rule, '<picture><source sizes="100vw"><img src="x.jpg" alt="x"></picture>');
 	expect(violations.some(v => typeof v.message === 'string' && v.message.includes('sizes'))).toBe(true);
 });
+
+// https://html.spec.whatwg.org/multipage/input.html#file-upload-state-(type=file)
+// > The element's value attribute must be omitted.
+test('[no-disallowed-attr-invalid-008] input[type=file] must omit the value attribute, even an empty one', async () => {
+	const { violations } = await mlRuleTest(rule, '<input type="file" value="">');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 20,
+			message: 'The "value" attribute is disallowed',
+			raw: 'value',
+		},
+	]);
+});
+
+// https://html.spec.whatwg.org/multipage/input.html#image-button-state-(type=image)
+// > The element's value attribute must be omitted.
+test('[no-disallowed-attr-invalid-009] input[type=image] must omit the value attribute', async () => {
+	const { violations } = await mlRuleTest(rule, '<input type="image" value="go">');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 21,
+			message: 'The "value" attribute is disallowed',
+			raw: 'value',
+		},
+	]);
+});
+
+// https://html.spec.whatwg.org/multipage/input.html#hidden-state-(type=hidden)
+// > If the name attribute is present and has a value that is an ASCII case-insensitive match for "_charset_",
+// > then the element's value attribute must be omitted.
+test('[no-disallowed-attr-invalid-010] input[type=hidden][name=_charset_] must omit the value attribute, whatever the case', async () => {
+	const { violations } = await mlRuleTest(rule, '<input type="hidden" name="_charset_" value="x">');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 39,
+			message: 'The "value" attribute is disallowed',
+			raw: 'value',
+		},
+	]);
+	const upper = await mlRuleTest(rule, '<input TYPE="HIDDEN" NAME="_CHARSET_" VALUE="x">');
+	expect(upper.violations.map(v => v.raw)).toStrictEqual(['VALUE']);
+});
+
+test('[no-disallowed-attr-valid-005] input accepts value everywhere else, and a file input without it', async () => {
+	for (const html of [
+		'<input type="file">',
+		'<input type="text" value="x">',
+		'<input value="x">',
+		'<input type="submit" value="Go">',
+		'<input type="checkbox" value="1">',
+		'<input type="hidden" name="token" value="x">',
+		'<input type="hidden" name="_charset_">',
+	]) {
+		const { violations } = await mlRuleTest(rule, html);
+		expect(violations, html).toStrictEqual([]);
+	}
+});
+
+test('[no-disallowed-attr-invalid-011] the type of an input is matched without regard to case', async () => {
+	for (const type of ['IMAGE', 'File']) {
+		const { violations } = await mlRuleTest(rule, `<input type="${type}" value="x">`);
+		expect(
+			violations.map(v => v.raw),
+			type,
+		).toStrictEqual(['value']);
+	}
+});
+
+test('[no-disallowed-attr-parser-007] Vue: a type that is an expression does not decide whether value is allowed', async () => {
+	const { violations } = await mlRuleTest(rule, '<template><input :type="t" value="x"></template>', {
+		parser: {
+			'.*': '@markuplint/vue-parser',
+		},
+		specs: {
+			'.*': '@markuplint/vue-spec',
+		},
+	});
+	expect(violations).toStrictEqual([]);
+});
+
+test('[no-disallowed-attr-parser-008] JSX: a type that is an expression does not decide whether value is allowed', async () => {
+	const { violations } = await mlRuleTest(rule, '<input type={t} value="x" />', {
+		parser: {
+			'.*': '@markuplint/jsx-parser',
+		},
+	});
+	expect(violations).toStrictEqual([]);
+});

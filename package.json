@@ -13,12 +13,12 @@
 		"test": "vitest --typecheck run",
 		"test:coverage": "vitest run --coverage",
 		"lint": "run-p lint:oxlint lint:format lint:github-actions",
-		"lint:oxlint": "oxlint --fix -c .oxlintrc.json packages vscode",
-		"lint:format": "oxfmt --write \"./{packages,vscode,website}/**/*.{ts,tsx,mts,js,cjs,mjs,json,rc,md,mdx,css}\"",
+		"lint:oxlint": "oxlint --fix -c .oxlintrc.json packages vscode scripts",
+		"lint:format": "oxfmt --write \"./{packages,vscode,website,scripts}/**/*.{ts,tsx,mts,js,cjs,mjs,json,rc,md,mdx,css}\"",
 		"lint:github-actions": "actionlint",
 		"lint-check": "run-p lint-check:oxlint lint-check:format",
-		"lint-check:oxlint": "oxlint -c .oxlintrc.json packages vscode",
-		"lint-check:format": "oxfmt --check \"./{packages,vscode,website}/**/*.{ts,tsx,mts,js,cjs,mjs,json,rc,md,mdx,css}\"",
+		"lint-check:oxlint": "oxlint -c .oxlintrc.json packages vscode scripts",
+		"lint-check:format": "oxfmt --check \"./{packages,vscode,website,scripts}/**/*.{ts,tsx,mts,js,cjs,mjs,json,rc,md,mdx,css}\"",
 		"up": "run-s up:deps up:gen up:schema",
 		"up:deps": "npx npm-check-updates --interactive --workspaces --format group",
 		"up:gen": "cd packages/\\@markuplint/html-spec/ && yarn run gen",
@@ -50,13 +50,14 @@
 		"bench:generate-spec": "node --experimental-strip-types tests/external/bench/generate-spec.ts",
 		"bench:report": "node --experimental-strip-types tests/external/bench/report.ts",
 		"bench:verify": "vitest run --config vitest.nu-validator.config.ts",
-		"bench:xref": "node --experimental-strip-types tests/external/bench/xref-issue.ts"
+		"bench:xref": "node --experimental-strip-types tests/external/bench/xref-issue.ts",
+		"spec-citations": "node --experimental-strip-types scripts/spec-citations/cli.ts"
 	},
 	"lint-staged": {
-		"./{{packages,website,vscode}/**/*,*}.{ts,tsx,mts,js,cjs,mjs,json,md,mdx,css}": [
+		"./{{packages,website,vscode,scripts}/**/*,*}.{ts,tsx,mts,js,cjs,mjs,json,md,mdx,css}": [
 			"oxfmt --write"
 		],
-		"./{packages,vscode}/**/*.{ts,mjs,cjs,spec.js}": [
+		"./{packages,vscode,scripts}/**/*.{ts,mjs,cjs,spec.js}": [
 			"oxlint --fix -c .oxlintrc.json"
 		],
 		"./test/**/*.{pug,html}": [
@@ -77,6 +78,7 @@
 		"@commitlint/cli": "21.2.3",
 		"@commitlint/config-conventional": "21.2.3",
 		"@commitlint/config-lerna-scopes": "21.2.0",
+		"cheerio": "1.2.0",
 		"commitizen": "4.3.2",
 		"cz-conventional-changelog": "3.3.0",
 		"eslint-plugin-regexp": "3.3.1",

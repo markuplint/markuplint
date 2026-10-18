@@ -1,34 +1,34 @@
 # `no-redundant-accessible-name`
 
-[Accessible Name and Description Computation (AccName) 1.2](https://www.w3.org/TR/accname-1.2/) アルゴリズムに基づき、**複数のアクセシブル名ソース**が存在し、高優先度のソースが低優先度のソースを上書きしている要素を検出します。
+[Accessible Name and Description Computation (AccName)](https://w3c.github.io/accname/) アルゴリズムに基づき、**複数のアクセシブル名ソース**が存在し、高優先度のソースが低優先度のソースを上書きしている要素を検出します。
 
 1つの要素に複数の命名メカニズムが存在する場合、最も優先度の高いソースのみが使用されます。上書きされたソースはデッドコードとなり、開発者がその要素のアクセシブル名を提供していると誤解する可能性があります。
 
-例えば、`<label>` に「名前」と記載しつつ `aria-labelledby` で別の要素を参照した場合、目の見えるユーザーには「名前」と表示されますが、スクリーンリーダーには別の名前が伝わります。この不一致は [WCAG 2.5.3: Label in Name](https://www.w3.org/WAI/WCAG21/Understanding/label-in-name.html) 違反となり、支援技術のユーザーに混乱を引き起こします。
+例えば、`<label>` に「名前」と記載しつつ `aria-labelledby` で別の要素を参照した場合、目の見えるユーザーには「名前」と表示されますが、スクリーンリーダーには別の名前が伝わります。この不一致は [WCAG 2.5.3: Label in Name](https://waic.jp/translations/WCAG22/Understanding/label-in-name.html) 違反となり、支援技術のユーザーに混乱を引き起こします。
 
 > [!WARNING]
 > デフォルトの重大度は `warning` です。
 
 ## 優先順位
 
-AccName 1.2 アルゴリズムは以下の優先順位でアクセシブル名を解決します:
+AccName アルゴリズムは以下の優先順位でアクセシブル名を解決します:
 
-| 優先度 | ソース             | AccName ステップ                                                  | 例                                 |
-| ------ | ------------------ | ----------------------------------------------------------------- | ---------------------------------- |
-| 1      | `aria-labelledby`  | [2B](https://www.w3.org/TR/accname-1.2/#comp_labelledby)          | `<input aria-labelledby="ref">`    |
-| 2      | `aria-label`       | [2C](https://www.w3.org/TR/accname-1.2/#comp_aria_label)          | `<input aria-label="Name">`        |
-| 3      | `<label>`          | [2D](https://www.w3.org/TR/accname-1.2/#comp_host_language_label) | `<label for="x">Name</label>`      |
-| 4      | `alt`              | [2D](https://www.w3.org/TR/accname-1.2/#comp_host_language_label) | `<img alt="Photo">`                |
-| 5      | テキストコンテンツ | [2F](https://www.w3.org/TR/accname-1.2/#comp_name_from_content)   | `<button>Click</button>`           |
-| 6      | `value`            | [2D](https://www.w3.org/TR/accname-1.2/#comp_host_language_label) | `<input type="submit" value="Go">` |
-| 7      | `<legend>`         | [2D](https://www.w3.org/TR/accname-1.2/#comp_host_language_label) | `<fieldset><legend>Group</legend>` |
-| 8      | `<caption>`        | [2D](https://www.w3.org/TR/accname-1.2/#comp_host_language_label) | `<table><caption>Title</caption>`  |
-| 9\*    | `title`            | [2I](https://www.w3.org/TR/accname-1.2/#comp_tooltip)             | `<input title="Hint">`             |
-| 10\*   | `placeholder`      | [2I](https://www.w3.org/TR/accname-1.2/#comp_tooltip)             | `<input placeholder="Hint">`       |
+| 優先度 | ソース             | AccName ステップ                                              | 例                                 |
+| ------ | ------------------ | ------------------------------------------------------------- | ---------------------------------- |
+| 1      | `aria-labelledby`  | [2B](https://w3c.github.io/accname/#comp_labelledby)          | `<input aria-labelledby="ref">`    |
+| 2      | `aria-label`       | [2D](https://w3c.github.io/accname/#comp_label)               | `<input aria-label="Name">`        |
+| 3      | `<label>`          | [2E](https://w3c.github.io/accname/#comp_host_language_label) | `<label for="x">Name</label>`      |
+| 4      | `alt`              | [2E](https://w3c.github.io/accname/#comp_host_language_label) | `<img alt="Photo">`                |
+| 5      | テキストコンテンツ | [2F](https://w3c.github.io/accname/#comp_name_from_content)   | `<button>Click</button>`           |
+| 6      | `value`            | [2E](https://w3c.github.io/accname/#comp_host_language_label) | `<input type="submit" value="Go">` |
+| 7      | `<legend>`         | [2E](https://w3c.github.io/accname/#comp_host_language_label) | `<fieldset><legend>Group</legend>` |
+| 8      | `<caption>`        | [2E](https://w3c.github.io/accname/#comp_host_language_label) | `<table><caption>Title</caption>`  |
+| 9\*    | `title`            | [2I](https://w3c.github.io/accname/#comp_tooltip)             | `<input title="Hint">`             |
+| 10\*   | `placeholder`      | [2I](https://w3c.github.io/accname/#comp_tooltip)             | `<input placeholder="Hint">`       |
 
 \* 対応するオプションが有効な場合のみチェックされます。
 
-> **注意:** このテーブルは本ルールの検出優先度を示しています。同じ AccName ステップに属するソース（例: `label`、`alt`、`legend`、`caption` はすべて Step 2D）は、典型的な適用範囲に基づいて順序付けされており、アルゴリズムの厳密な優先順位とは異なります。
+> **注意:** このテーブルは本ルールの検出優先度を示しています。同じ AccName ステップに属するソース（例: `label`、`alt`、`legend`、`caption` はすべて Step 2E）は、典型的な適用範囲に基づいて順序付けされており、アルゴリズムの厳密な優先順位とは異なります。
 
 ## ルール詳細
 
@@ -71,7 +71,7 @@ AccName 1.2 アルゴリズムは以下の優先順位でアクセシブル名�
 
 ## WCAG 2.5.3: Label in Name との関連
 
-`aria-label` が視覚的なラベルと異なる文字列を提供する場合、[WCAG 2.5.3: Label in Name](https://www.w3.org/WAI/WCAG21/Understanding/label-in-name.html) 違反となる可能性があります。この達成基準では、アクセシブル名に視覚的なラベルテキストを含めることが求められます。不一致する文字列による冗長な上書きはこの要件を破ります。
+`aria-label` が視覚的なラベルと異なる文字列を提供する場合、[WCAG 2.5.3: Label in Name](https://waic.jp/translations/WCAG22/Understanding/label-in-name.html) 違反となる可能性があります。この達成基準では、アクセシブル名に視覚的なラベルテキストを含めることが求められます。不一致する文字列による冗長な上書きはこの要件を破ります。
 
 本ルールは上書き自体を検出することで、このような不一致を早期に発見する助けとなります。
 
@@ -155,25 +155,25 @@ AccName 1.2 アルゴリズムは以下の優先順位でアクセシブル名�
 
 ### 自分自身を参照する `aria-labelledby`
 
-`aria-labelledby` が要素自身の `id` を含む場合、アクセシブルネームの算出ではその要素に対して[ステップ 2B](https://www.w3.org/TR/accname-1.2/#comp_labelledby)をスキップし、要素自身の `aria-label`・ネイティブのソース・コンテンツで名前が決まります。この `aria-labelledby` は、要素自身の名前と参照先の要素を組み合わせるだけなので、本ルールは何かを上書きする命名ソースとは扱いません:
+`aria-labelledby` が要素自身の `id` を含む場合、アクセシブルネームの算出ではその要素に対して[ステップ 2B](https://w3c.github.io/accname/#comp_labelledby)をスキップし、要素自身の `aria-label`・ネイティブのソース・コンテンツで名前が決まります。この `aria-labelledby` は、要素自身の名前と参照先の要素を組み合わせるだけなので、本ルールは何かを上書きする命名ソースとは扱いません:
 
 ```html
 <span id="file-name">Documentation.pdf</span>
 <button id="delete-button" aria-label="削除" aria-labelledby="delete-button file-name"></button>
 ```
 
-アクセシブルネームは「削除 Documentation.pdf」になる（仕様の[Example 5](https://www.w3.org/TR/accname-1.2/#comp_label)と同じ形）ため、報告されません。チェック対象から外れるのは `aria-labelledby` だけで、要素のほかのソースは通常どおり優先順位で評価します。上のボタンにテキストコンテンツがあれば、`aria-labelledby` のないボタンと同じく、`aria-label` がそのコンテンツを上書きすると報告されます。
+アクセシブルネームは「削除 Documentation.pdf」になる（仕様の[Example 5](https://w3c.github.io/accname/#comp_label)と同じ形）ため、報告されません。チェック対象から外れるのは `aria-labelledby` だけで、要素のほかのソースは通常どおり優先順位で評価します。上のボタンにテキストコンテンツがあれば、`aria-labelledby` のないボタンと同じく、`aria-label` がそのコンテンツを上書きすると報告されます。
 
 ## 既知の制限事項
 
 - **CSS 生成コンテンツ**: `::before` / `::after` 疑似要素からのコンテンツは静的解析では検出できず、名前ソースのチェックに含まれません。
 - **SVG `<title>`**: SVG の `<title>` 子要素は SVG 要素のアクセシブル名を提供しますが、HTML の `title` 属性とは異なり、本ルールでは現在対象外です。
-- **自分自身を参照する埋め込みコントロール**: [ステップ 2C（Embedded Control）](https://www.w3.org/TR/accname-1.2/#comp_embedded_control)はモデル化していないため、`textbox`・`combobox`・`listbox`・range ウィジェットが自分自身を参照する `aria-labelledby` は、ほかの要素と同じ扱いになります。
+- **自分自身を参照する埋め込みコントロール**: [ステップ 2C（Embedded Control）](https://w3c.github.io/accname/#comp_embedded_control)はモデル化していないため、`textbox`・`combobox`・`listbox`・range ウィジェットが自分自身を参照する `aria-labelledby` は、ほかの要素と同じ扱いになります。
 - **`aria-describedby`**: 本ルールはアクセシブル「名前」ソースのみをチェックします。アクセシブル「説明」（`aria-describedby`）は別の概念であり、対象外です。
 
 ## 関連
 
 - [Issue #1478](https://github.com/markuplint/markuplint/issues/1478)
 - [`require-accessible-name`](../require-accessible-name/README.md)
-- [Accessible Name and Description Computation 1.2](https://www.w3.org/TR/accname-1.2/)
-- [WCAG 2.5.3: Label in Name](https://www.w3.org/WAI/WCAG21/Understanding/label-in-name.html)
+- [Accessible Name and Description Computation](https://w3c.github.io/accname/)
+- [WCAG 2.5.3: Label in Name](https://waic.jp/translations/WCAG22/Understanding/label-in-name.html)

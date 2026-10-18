@@ -5,7 +5,7 @@ description: Enforce HTML LS inequalities for the progress element (value ≤ ma
 
 # `progress-value-bounds`
 
-Enforce the inequalities required by [HTML Living Standard §4.10.14 (the progress element)](https://html.spec.whatwg.org/multipage/form-elements.html#the-progress-element):
+Enforce the inequalities required by [HTML Living Standard §4.10.13 (the progress element)](https://html.spec.whatwg.org/multipage/form-elements.html#the-progress-element):
 
 - `value ≤ max` when both attributes are present.
 - `value ≤ 1` when only `value` is specified (the implicit maximum).

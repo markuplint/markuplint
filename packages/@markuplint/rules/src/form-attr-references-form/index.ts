@@ -24,9 +24,12 @@ const FORM_ASSOCIATED_SELECTOR = [
 
 /**
  * Require the `form` attribute on a form-associated element to reference
- * an actual `<form>` element by ID. Per HTML LS §4.10.18.6: "If
- * specified, the value must be the ID of a form element in the
- * element's tree." Existence of the ID itself is the responsibility of
+ * an actual `<form>` element by ID. Per HTML LS §4.10.18.3:
+ *
+ * > If a listed form-associated element has a form attribute specified, then that attribute's value must be the ID of a
+ * > form element in the element's tree.
+ *
+ * Existence of the ID itself is the responsibility of
  * `no-refer-to-non-existent-id`; this rule only checks the element type
  * when the ID resolves.
  *

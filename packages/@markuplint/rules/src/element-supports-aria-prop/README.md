@@ -5,7 +5,7 @@ description: Warns when an ARIA property or state is disallowed by an element-sp
 
 # `element-supports-aria-prop`
 
-Warns when an `aria-*` attribute is disallowed by an element-specific restriction defined by [ARIA in HTML](https://w3c.github.io/html-aria/), regardless of the element's computed role:
+Warns when an `aria-*` attribute is disallowed by an element-specific restriction defined by [ARIA in HTML](https://www.w3.org/TR/html-aria/), regardless of the element's computed role:
 
 1. **Element-specific prohibitions** — every `aria-*` attribute is forbidden on certain element states (e.g. `<input type="hidden">`), and individual attributes may be forbidden when another attribute is present or when the element sits in a specific parent context (e.g. `aria-expanded` on `<button popovertarget>` or `<button commandfor>` because the popover / Invoker Commands API manages the state automatically; `aria-expanded` and `aria-pressed` on the first `<summary>` inside `<details>` because the expanded state maps to the `open` attribute).
 2. **Element-specific whitelist** — some elements accept only a small set of `aria-*` attributes (e.g. `<br>` and `<wbr>` accept only `aria-hidden`); any attribute outside the whitelist is rejected.

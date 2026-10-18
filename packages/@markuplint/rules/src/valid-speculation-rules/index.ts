@@ -19,7 +19,7 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
  * corpus. When the spec changes, update this set/the SR_* sets below, the error
  * message strings, and the README tables.
  *
- * @see https://html.spec.whatwg.org/multipage/speculative-loading.html
+ * @see https://html.spec.whatwg.org/multipage/speculative-loading.html#speculation-rules
  */
 // Valid keys per HTML LS § 7.6.1.2 "parse a speculation rule" / the rule-set
 // object grammar. Unknown keys are rejected by the spec (the rule returns null),

@@ -5,7 +5,7 @@ description: Require that an input element's `list` attribute references an actu
 
 # `input-list-references-datalist`
 
-Per [HTML Living Standard §4.10.5.2](https://html.spec.whatwg.org/multipage/input.html#the-list-attribute), the `list` attribute on an `<input>` element identifies the element that lists predefined options to suggest to the user. If present, its value must be the ID of a `<datalist>` element in the same tree.
+Per [HTML Living Standard §4.10.5.3.9](https://html.spec.whatwg.org/multipage/input.html#the-list-attribute), the `list` attribute on an `<input>` element identifies the element that lists predefined options to suggest to the user. If present, its value must be the ID of a `<datalist>` element in the same tree.
 
 ID existence itself is the responsibility of [`no-refer-to-non-existent-id`](../no-refer-to-non-existent-id/). This rule fires only when the referenced ID resolves to a non-`<datalist>` element.
 

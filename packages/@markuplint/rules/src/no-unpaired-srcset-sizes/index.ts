@@ -1,7 +1,7 @@
 import { createRule } from '@markuplint/ml-core';
 
 import { parseSrcset } from '../srcset-sizes-constraint/parse-srcset.js';
-import { findFollowingImg } from '../srcset-sizes-constraint/sibling-helpers.js';
+import { allowsAutoSizes, findFollowingImg, isLazyLoading } from '../srcset-sizes-constraint/sibling-helpers.js';
 
 import meta from './meta.js';
 
@@ -12,8 +12,9 @@ import meta from './meta.js';
  * one constraint.
  *
  * `<source>`'s direction (Check 5) is conditional: `sizes` "may" be omitted
- * when the following sibling `<img>` has `loading="lazy"` (auto-sizes
- * support). `<img>`'s direction (Check 1) has no such escape.
+ * when the following sibling `<img>` allows auto-sizes (`loading="lazy"` and
+ * `sizes="auto"`; see `allowsAutoSizes`). `<img>`'s direction (Check 1) has no
+ * such escape.
  */
 export default createRule<boolean>({
 	meta,
@@ -61,26 +62,30 @@ export default createRule<boolean>({
 
 			// img / source-in-picture with w descriptors → sizes required.
 			//
-			// HTML LS § img srcset: unconditional — "the sizes attribute must
-			// also be present" when any candidate uses a width descriptor.
+			// HTML LS § img srcset: unconditional — the sizes attribute must
+			// also be present when any candidate uses a width descriptor.
 			//
-			// HTML LS § source: conditional — sizes "may" be present with w
-			// descriptors, but the following sibling img must support
-			// auto-sizes for it to be omittable. img supports auto-sizes when
-			// loading=lazy (the dimensionsAttribute condition is also part of
-			// the spec but the lazy attribute is the user-facing trigger).
+			// HTML LS § source: conditional — sizes may be omitted only when
+			// the following sibling img allows auto-sizes (loading=lazy and
+			// sizes=auto; the same condition is the second source of truth for
+			// `sizes-auto-requires-lazy-loading`).
+			//
+			// @see https://html.spec.whatwg.org/multipage/embedded-content.html#allows-auto-sizes
 			if (parsed && parsed.hasWidth && !sizesAttr) {
 				// For `<source>`, `findFollowingImg` may return null (malformed
-				// <picture> with no img). Optional chaining short-circuits to
-				// undefined, and `undefined === 'lazy'` is false → sizes is
-				// required. That's the correct fail-closed behaviour: an absent
-				// img cannot supply auto-sizes for the source.
-				const siblingImgLazy =
-					localName === 'source' && findFollowingImg(el)?.getAttribute('loading') === 'lazy';
-				if (!siblingImgLazy) {
+				// <picture> with no img): an absent img cannot supply
+				// auto-sizes, so sizes is required (fail-closed). A dynamic
+				// `loading` / `sizes` on the img is not known → not reported.
+				const img = localName === 'source' ? findFollowingImg(el) : null;
+				if (!img || allowsAutoSizes(img) === false) {
+					// A lazy img that is not auto-sized is the case a reader
+					// least expects to be rejected: name what would allow it.
+					const needsImgSizes = img != null && isLazyLoading(img) === true;
 					report({
 						scope: el,
-						message: 'The "sizes" attribute is required when the "srcset" attribute uses width descriptors',
+						message: needsImgSizes
+							? 'The "sizes" attribute is required when the "srcset" attribute uses width descriptors, unless the following sibling "img" element has loading="lazy" and sizes="auto"'
+							: 'The "sizes" attribute is required when the "srcset" attribute uses width descriptors',
 					});
 				}
 			}

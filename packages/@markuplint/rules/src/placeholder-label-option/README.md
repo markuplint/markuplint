@@ -7,7 +7,7 @@ description: Checking whether the select element needs the placeholder label opt
 
 Checking whether the `select` element needs the **placeholder label option**.
 
-> If a select element has a required attribute specified, does not have a multiple attribute specified, and has a display size of 1; and if the value of the first option element in the select element's list of options (if any) is the empty string, and that option element's parent node is the select element (and not an optgroup element), then that option is the select element's placeholder label option.
+> If a select element has a required attribute specified, and has a display size of 1; and if the value of the first option element in the select element's list of options (if any) is the empty string, and that option element does not have an ancestor optgroup in between itself and the select element, then that option is the select element's placeholder label option.
 >
 > If a select element has a required attribute specified, does not have a multiple attribute specified, and has a display size of 1, then the select element must have a placeholder label option.
 
@@ -31,13 +31,19 @@ Cite: [HTML Living Standard 4.10.7 The select element](https://html.spec.whatwg.
   <option value="option2">Option 2</option>
 </select>
 
-<!-- Invalid: first option element's parent is optgroup -->
+<!-- Invalid: first option element has an optgroup ancestor -->
 <select required>
   <optgroup label="Group">
     <option value="">Placeholder</option>
   </optgroup>
   <option value="option1">Option 1</option>
   <option value="option2">Option 2</option>
+</select>
+
+<!-- Invalid: first option element has no value attribute, so its text is its value -->
+<select required>
+  <option>Choose</option>
+  <option>Option 1</option>
 </select>
 
 <!-- Invalid: no option element -->
@@ -52,6 +58,12 @@ Cite: [HTML Living Standard 4.10.7 The select element](https://html.spec.whatwg.
   <option value="">Placeholder</option>
   <option value="option1">Option 1</option>
   <option value="option2">Option 2</option>
+</select>
+
+<!-- Valid: the first option element has no value attribute and no text, so its value is the empty string -->
+<select required>
+  <option></option>
+  <option value="option1">Option 1</option>
 </select>
 
 <!-- Valid: Doesn't have placeholder label option but has multiple attribute -->

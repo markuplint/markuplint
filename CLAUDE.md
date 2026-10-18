@@ -39,8 +39,8 @@ Two major lines are developed in parallel:
 
 ### Test
 
-- Full test: `yarn test` (no arguments) — includes `--typecheck` (TypeScript type-checking of spec files)
-- Single file/directory: `npx vitest run <path>` (runtime tests only); `npx vitest --typecheck run <path>` for type-checking too
+- Full test: `yarn test` (no arguments), which runs `vitest --typecheck run`. Vitest's type checking only covers `*.spec-d.ts` files and the repository has none, so a type error in a `*.spec.ts` is not reported by it (a spec with `const n: number = 'x'` passes with "Type Errors no errors"); the package builds exclude spec files as well. No gate type-checks a spec file
+- Single file/directory: `npx vitest run <path>`
 - Do not use `npx lerna run test`, `yarn test --scope @markuplint/*`, or other variants
 - Do not use `npx tsc --noEmit` — it does not work in this monorepo (no root `include`; `composite` conflicts with `--noEmit` in build mode)
 - `yarn test` covers the TypeScript workspace only; a branch with `crates/` has a separate gate in `crates/CLAUDE.md`

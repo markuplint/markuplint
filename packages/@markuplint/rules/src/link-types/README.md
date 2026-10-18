@@ -57,7 +57,7 @@ default: `true`
 
 Controls whether [Microformats](https://microformats.org/wiki/existing-rel-values) link type keywords are allowed, in addition to the WHATWG standard keywords. The Microformats keyword list is based on the [microformats.org wiki](https://microformats.org/wiki/existing-rel-values) registered keywords.
 
-The default is `true`: [HTML Living Standard §4.6.6 the rel attribute](https://html.spec.whatwg.org/multipage/links.html#linkTypes) requires conformance checkers to accept keywords registered on the microformats wiki (proposed or ratified) as extensions to the spec, so rejecting them would itself be non-conformant.
+The default is `true`: [HTML Living Standard §4.6.8 the rel attribute](https://html.spec.whatwg.org/multipage/links.html#linkTypes) requires conformance checkers to accept keywords registered on the microformats wiki (proposed or ratified) as extensions to the spec, so rejecting them would itself be non-conformant.
 
 Even when Microformats keywords are allowed, element context is still enforced. For example, keywords defined only for `<a>` are rejected on `<link>`. Microformats keywords are always rejected on `<form>` because the Microformats registry does not define form context.
 

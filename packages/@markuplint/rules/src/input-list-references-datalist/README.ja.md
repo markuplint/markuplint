@@ -5,7 +5,7 @@ description: '`input` 要素の `list` 属性は、実在する `datalist` 要�
 
 # `input-list-references-datalist`
 
-[HTML Living Standard §4.10.5.2](https://html.spec.whatwg.org/multipage/input.html#the-list-attribute) によれば、`<input>` 要素の `list` 属性はユーザーへ提示する候補一覧を持つ要素を指すために用いられ、指定された場合、その値は同じツリー内の `<datalist>` 要素の ID でなければなりません。
+[HTML Living Standard §4.10.5.3.9](https://momdo.github.io/html/input.html#the-list-attribute) によれば、`<input>` 要素の `list` 属性はユーザーへ提示する候補一覧を持つ要素を指すために用いられ、指定された場合、その値は同じツリー内の `<datalist>` 要素の ID でなければなりません。
 
 ID の存在自体は [`no-refer-to-non-existent-id`](../no-refer-to-non-existent-id/) ルールが扱います。本ルールは ID が存在し、かつ参照先が `<datalist>` 以外の要素の場合にのみ発火します。
 

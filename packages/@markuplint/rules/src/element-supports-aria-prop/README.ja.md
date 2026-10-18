@@ -5,7 +5,7 @@ description: ARIA in HTML の要素固有の制約により ARIA プロパティ
 
 # `element-supports-aria-prop`
 
-要素の計算されたロールに関わらず、[ARIA in HTML](https://w3c.github.io/html-aria/) が定める要素固有の制約により `aria-*` 属性が禁止されている場合に警告します。
+要素の計算されたロールに関わらず、[ARIA in HTML](https://www.w3.org/TR/html-aria/) が定める要素固有の制約により `aria-*` 属性が禁止されている場合に警告します。
 
 1. **要素固有の禁止** — 一部の要素状態(例: `<input type="hidden">`)ではすべての `aria-*` 属性が禁止され、他の属性が存在する場合や特定の親コンテキストにある場合に個別の属性が禁止されることがあります(例: popover / Invoker Commands API が状態を自動管理するため `<button popovertarget>` や `<button commandfor>` 上の `aria-expanded`、展開状態が `open` 属性にマッピングされるため `<details>` 内の最初の `<summary>` 上の `aria-expanded` と `aria-pressed`)。
 2. **要素固有のホワイトリスト** — 一部の要素は少数の `aria-*` 属性のみを受け入れます(例: `<br>` と `<wbr>` は `aria-hidden` のみを受け入れる)。ホワイトリスト外の属性は拒否されます。

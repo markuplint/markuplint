@@ -8,9 +8,9 @@ description: itemprop が必ずアイテムに属していることを要求し�
 
 どのアイテムにも property を貢献していない `itemprop` 属性を警告します。
 
-> 文書には、その文書のアイテムのいずれの property としても見つからない `itemprop` 属性を持つ要素を含めてはならない。
+> A document must not contain any elements that have an itemprop attribute that would not be found to be a property of any of the items in that document were their properties all to be determined.
 
-[HTML Living Standard §5.2.5 — Associating names with items](https://html.spec.whatwg.org/multipage/microdata.html#associating-names-with-items) より引用 (拙訳)。`itemprop` 属性自体の定義は [§5.2.3 — Names: the itemprop attribute](https://html.spec.whatwg.org/multipage/microdata.html#names:-the-itemprop-attribute) にあります。
+[HTML Living Standard §5.2.5 — Associating names with items](https://momdo.github.io/html/microdata.html#associating-names-with-items) より引用。`itemprop` 属性自体の定義は [§5.2.3 — Names: the itemprop attribute](https://momdo.github.io/html/microdata.html#names:-the-itemprop-attribute) にあります。
 
 要素がアイテムに属しているのは、次の **いずれか** を満たす場合です:
 

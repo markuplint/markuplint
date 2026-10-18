@@ -57,7 +57,8 @@ export default createRule<boolean, Option>({
 			const attrName = attr.nameNode;
 
 			// https://html.spec.whatwg.org/multipage/custom-elements.html#attr-is
-			// "The is attribute must not be specified on an autonomous custom element"
+			// > The exception is the is attribute, which must not be specified on an autonomous custom element (and which will
+			// > have no effect if it is).
 			if (name === 'is' && attr.ownerElement.elementType === 'web-component') {
 				report({
 					scope: attr,

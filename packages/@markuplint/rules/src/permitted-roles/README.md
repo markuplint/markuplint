@@ -13,7 +13,7 @@ Warns when a role is not permitted on the element according to ARIA in HTML.
 <select role="textbox"></select>
 ```
 
-When [ARIA in HTML](https://w3c.github.io/html-aria/) declares "No role permitted" for an element state, even a value matching the implicit role is rejected. For example, `<img alt="">` has the implicit role `presentation`, but an explicit `role` attribute is never allowed:
+When [ARIA in HTML](https://www.w3.org/TR/html-aria/) declares "No role permitted" for an element state, even a value matching the implicit role is rejected. For example, `<img alt="">` has the implicit role `presentation`, but an explicit `role` attribute is never allowed:
 
 ```html
 <img src="spacer.png" alt="" role="presentation" /> <img src="spacer.png" alt="" role="none" />

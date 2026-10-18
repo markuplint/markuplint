@@ -5,7 +5,7 @@ description: Validate the body of `<script type="speculationrules">` elements ag
 
 # `valid-speculation-rules`
 
-Validate the body of `<script type="speculationrules">` elements against [HTML Living Standard § 7.6 Speculation rules](https://html.spec.whatwg.org/multipage/speculative-loading.html) (the feature originated as the WICG `nav-speculation` draft, which now redirects to the HTML Standard). `type` attribute matching is ASCII case-insensitive, matching how user agents look up the script's effective MIME type.
+Validate the body of `<script type="speculationrules">` elements against [HTML Living Standard § 7.6.1 Speculation rules](https://html.spec.whatwg.org/multipage/speculative-loading.html#speculation-rules) (the feature originated as the WICG `nav-speculation` draft, which now redirects to the HTML Standard). `type` attribute matching is ASCII case-insensitive, matching how user agents look up the script's effective MIME type.
 
 Split out of the former `script-content` rule, alongside [`valid-importmap`](/docs/rules/valid-importmap) for `type="importmap"`.
 
