@@ -4,12 +4,14 @@ import meta from './meta.js';
 
 /**
  * Require the `list` attribute on an `<input>` element to reference an
- * actual `<datalist>` element by ID. Per HTML LS §4.10.5.2: "The `list`
- * content attribute is used to identify an element that lists predefined
- * options to suggest to the user. If present, its value must be the ID of
- * a `datalist` element in the same tree." Existence of the ID itself is
- * the responsibility of `no-refer-to-non-existent-id`; this rule only
- * checks the element type when the ID resolves.
+ * actual `<datalist>` element by ID. Per HTML LS §4.10.5.3.9:
+ *
+ * > The list attribute is used to identify an element that lists predefined options suggested to the user. If present,
+ * > its value must be the ID of a datalist element in the same tree.
+ *
+ * Existence of the ID itself is the responsibility of
+ * `no-refer-to-non-existent-id`; this rule only checks the element type
+ * when the ID resolves.
  *
  * @see https://html.spec.whatwg.org/multipage/input.html#the-list-attribute
  */

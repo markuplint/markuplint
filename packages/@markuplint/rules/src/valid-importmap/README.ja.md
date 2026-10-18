@@ -5,7 +5,7 @@ description: '`<script type="importmap">` 要素の本文を、インポート�
 
 # `valid-importmap`
 
-`<script type="importmap">` 要素の本文を、[HTML Living Standard § Parse an import map string](https://html.spec.whatwg.org/multipage/webappapis.html#parse-an-import-map-string) に従って検証します。`type` 属性は ASCII 大文字小文字を区別せずに照合します（ユーザーエージェントの MIME タイプ判定に整合）。
+`<script type="importmap">` 要素の本文を、[HTML Living Standard § Parse an import map string](https://momdo.github.io/html/webappapis.html#parse-an-import-map-string) に従って検証します。`type` 属性は ASCII 大文字小文字を区別せずに照合します（ユーザーエージェントの MIME タイプ判定に整合）。
 
 旧`script-content`ルールから、`type="speculationrules"`を担う[`valid-speculation-rules`](/docs/rules/valid-speculation-rules)とともに分割されました。
 

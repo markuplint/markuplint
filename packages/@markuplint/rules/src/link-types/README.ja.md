@@ -7,12 +7,12 @@ description: WHATWG標準に対して`rel`属性のリンクタイプキーワ�
 
 <!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
 
-`<link>`、`<a>`、`<area>`、`<form>`要素の`rel`属性のリンクタイプキーワードを[WHATWG標準](https://html.spec.whatwg.org/multipage/links.html#linkTypes)に対して検証します。
+`<link>`、`<a>`、`<area>`、`<form>`要素の`rel`属性のリンクタイプキーワードを[WHATWG標準](https://momdo.github.io/html/links.html#linkTypes)に対して検証します。
 
 このルールは以下をチェックします:
 
 - キーワードが特定の要素で許可されているかどうか（例: `bookmark`は`<a>`では許可されているが`<link>`では不許可）
-- `<body>`内の`<link>`要素が[body-ok](https://html.spec.whatwg.org/multipage/links.html#body-ok)キーワードのみを使用しているかどうか
+- `<body>`内の`<link>`要素が[body-ok](https://momdo.github.io/html/links.html#body-ok)キーワードのみを使用しているかどうか
 - キーワードがMicroformatsレジストリで[ドロップ、リジェクト、または非HTML](https://microformats.org/wiki/existing-rel-values)とされたキーワードかどうか
 
 :::note
@@ -59,7 +59,7 @@ description: WHATWG標準に対して`rel`属性のリンクタイプキーワ�
 
 WHATWG標準キーワードに加えて、[Microformats](https://microformats.org/wiki/existing-rel-values)リンクタイプキーワードを許可するかどうかを制御します。Microformatsキーワードリストは[microformats.org wiki](https://microformats.org/wiki/existing-rel-values)の登録済みキーワードに基づいています。
 
-デフォルトは`true`です。[HTML Living Standard §4.6.6 the rel attribute](https://html.spec.whatwg.org/multipage/links.html#linkTypes)は、適合性チェッカーに対し microformats wiki に登録された(proposed または ratified の)キーワードを仕様への拡張として受理することを要求しており、これらを拒否すること自体が非適合となるためです。
+デフォルトは`true`です。[HTML Living Standard §4.6.8 the rel attribute](https://momdo.github.io/html/links.html#linkTypes)は、適合性チェッカーに対し microformats wiki に登録された(proposed または ratified の)キーワードを仕様への拡張として受理することを要求しており、これらを拒否すること自体が非適合となるためです。
 
 Microformatsキーワードが許可されている場合でも、要素コンテキストの検証は適用されます。例えば、`<a>`専用のキーワードは`<link>`では拒否されます。Microformatsレジストリはフォームコンテキストを定義していないため、`<form>`ではMicroformatsキーワードは常に拒否されます。
 

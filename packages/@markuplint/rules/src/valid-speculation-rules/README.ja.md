@@ -5,7 +5,7 @@ description: '`<script type="speculationrules">` 要素の本文を、Speculatio
 
 # `valid-speculation-rules`
 
-`<script type="speculationrules">` 要素の本文を、[HTML Living Standard § 7.6 Speculation rules](https://html.spec.whatwg.org/multipage/speculative-loading.html) に従って検証します（元は WICG `nav-speculation` ドラフトで、現在は HTML Standard へリダイレクトされます）。`type` 属性は ASCII 大文字小文字を区別せずに照合します（ユーザーエージェントの MIME タイプ判定に整合）。
+`<script type="speculationrules">` 要素の本文を、[HTML Living Standard § 7.6.1 Speculation rules](https://momdo.github.io/html/speculative-loading.html#speculation-rules) に従って検証します（元は WICG `nav-speculation` ドラフトで、現在は HTML Standard へリダイレクトされます）。`type` 属性は ASCII 大文字小文字を区別せずに照合します（ユーザーエージェントの MIME タイプ判定に整合）。
 
 旧`script-content`ルールから、`type="importmap"`を担う[`valid-importmap`](/docs/rules/valid-importmap)とともに分割されました。
 

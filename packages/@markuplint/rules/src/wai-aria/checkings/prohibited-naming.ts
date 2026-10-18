@@ -8,7 +8,7 @@ import { ARIA_RECOMMENDED_VERSION, getARIA } from '@markuplint/ml-spec';
  * ARIA naming attributes subject to the "naming prohibition" constraint
  * defined by ARIA in HTML.
  *
- * @see https://w3c.github.io/html-aria/#dfn-naming-prohibited
+ * @see https://www.w3.org/TR/html-aria/#dfn-naming-prohibited
  */
 const NAMING_ATTRS = new Set(['aria-label', 'aria-labelledby', 'aria-braillelabel']);
 

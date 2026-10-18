@@ -5,7 +5,7 @@ description: Warns when an ARIA property's value contradicts an equivalent nativ
 
 # `no-contradictory-aria-prop`
 
-Warns when an ARIA property's value contradicts the current or implicit value of an equivalent native HTML attribute, per [ARIA in HTML §6](https://w3c.github.io/html-aria/#docconformance): native HTML attributes must take precedence over their ARIA equivalents.
+Warns when an ARIA property's value contradicts the current or implicit value of an equivalent native HTML attribute, per [ARIA in HTML §4](https://www.w3.org/TR/html-aria/#docconformance): native HTML attributes must take precedence over their ARIA equivalents.
 
 Split out of the former `wai-aria-implicit-props` rule, alongside [`no-redundant-aria-prop`](/docs/rules/no-redundant-aria-prop). This half is `must`-level (`error`); the redundant half stays `should`-level (`warning`).
 

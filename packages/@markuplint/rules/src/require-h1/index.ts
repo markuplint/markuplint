@@ -18,7 +18,7 @@ export interface Options {
  * technique, not the criterion itself, so this rule's default severity is
  * `warning`.
  *
- * @see https://www.w3.org/WAI/WCAG21/Techniques/html/H42
+ * @see https://www.w3.org/WAI/WCAG22/Techniques/html/H42
  */
 export default createRule<boolean, Options>({
 	meta: meta,

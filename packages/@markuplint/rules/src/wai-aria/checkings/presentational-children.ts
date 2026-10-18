@@ -10,14 +10,14 @@ import { ARIA_RECOMMENDED_VERSION, getComputedRole } from '@markuplint/ml-spec';
  *
  * Presentational Children
  *
- * @see https://www.w3.org/TR/wai-aria/#childrenArePresentational
+ * @see https://w3c.github.io/aria/#childrenArePresentational
  * @see https://w3c.github.io/aria/#childrenArePresentational
  *
- * > The DOM descendants are presentational.
+ * > Indicates whether DOM descendants are presentational.
  * > user agents SHOULD NOT expose descendants of
  * > this element through the platform accessibility API.
  * > If user agents do not hide the descendant nodes,
- * > some information may be read twice.
+ * > some information might be read twice.
  *
  * @see https://w3c.github.io/aria/#tree_exclusion
  *
@@ -30,7 +30,7 @@ import { ARIA_RECOMMENDED_VERSION, getComputedRole } from '@markuplint/ml-spec';
  * @see https://w3c.github.io/aria/#tree_inclusion
  *
  * > Text equivalents for hidden referenced objects
- * > may still be used in the name and description computation
+ * > can still be used in the name and description computation
  * > even when not included in the accessibility tree.
  *
  * @param el - The element node to inspect for presentational ancestor context.

@@ -5,7 +5,7 @@ description: sizes="auto"を使用する箇所では loading="lazy" を必須と
 
 # `sizes-auto-requires-lazy-loading`
 
-[HTML Living Standard](https://html.spec.whatwg.org/multipage/embedded-content.html#the-img-element) に基づき、`<img>` および `<source>` 要素で `sizes="auto"` を使用する箇所では `loading="lazy"` を必須とします。
+[HTML Living Standard](https://momdo.github.io/html/embedded-content.html#the-img-element) に基づき、`<img>` および `<source>` 要素で `sizes="auto"` を使用する箇所では `loading="lazy"` を必須とします。
 
 旧`srcset-sizes-constraint`ルールから、[`no-unpaired-srcset-sizes`](/docs/rules/no-unpaired-srcset-sizes)、[`no-mixed-srcset-descriptors`](/docs/rules/no-mixed-srcset-descriptors)、[`no-always-matching-source`](/docs/rules/no-always-matching-source)とともに分割されました。
 
@@ -48,5 +48,5 @@ description: sizes="auto"を使用する箇所では loading="lazy" を必須と
 
 ## 参照
 
-- [HTML Living Standard - The img element](https://html.spec.whatwg.org/multipage/embedded-content.html#the-img-element)
-- [HTML Living Standard - The source element](https://html.spec.whatwg.org/multipage/embedded-content.html#the-source-element)
+- [HTML Living Standard - The img element](https://momdo.github.io/html/embedded-content.html#the-img-element)
+- [HTML Living Standard - The source element](https://momdo.github.io/html/embedded-content.html#the-source-element)

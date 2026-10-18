@@ -5,7 +5,7 @@ description: HTML Living Standardが非準拠かつ廃止された機能とし�
 
 # `no-obsolete-attr`
 
-[HTML Living Standard](https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features)が非準拠かつ廃止された機能としてマークしている属性がある場合に警告します。作者はこれを使用してはいけません。
+[HTML Living Standard](https://momdo.github.io/html/obsolete.html#non-conforming-features)が非準拠かつ廃止された機能としてマークしている属性がある場合に警告します。作者はこれを使用してはいけません。
 
 仕様からまだ削除されておらず、非推奨とマークされているだけの属性は[`no-deprecated-attr`](/docs/rules/no-deprecated-attr)の担当です。
 

@@ -1,34 +1,34 @@
 # `no-redundant-accessible-name`
 
-Detects elements with **multiple accessible name sources** where a higher-priority source overrides a lower-priority one according to the [Accessible Name and Description Computation (AccName) 1.2](https://www.w3.org/TR/accname-1.2/) algorithm.
+Detects elements with **multiple accessible name sources** where a higher-priority source overrides a lower-priority one according to the [Accessible Name and Description Computation (AccName)](https://w3c.github.io/accname/) algorithm.
 
 When multiple naming mechanisms are present on a single element, only the highest-priority source is used. The overridden sources are dead code that may mislead developers into thinking they provide the element's accessible name.
 
-For example, if a `<label>` says "Name" but an `aria-labelledby` attribute references a different element, sighted users see "Name" while screen reader users hear something else — a discrepancy that violates [WCAG 2.5.3: Label in Name](https://www.w3.org/WAI/WCAG21/Understanding/label-in-name.html) and creates a confusing experience for assistive technology users.
+For example, if a `<label>` says "Name" but an `aria-labelledby` attribute references a different element, sighted users see "Name" while screen reader users hear something else — a discrepancy that violates [WCAG 2.5.3: Label in Name](https://www.w3.org/WAI/WCAG22/Understanding/label-in-name.html) and creates a confusing experience for assistive technology users.
 
 > [!WARNING]
 > Default severity is `warning`.
 
 ## Priority Order
 
-The AccName 1.2 algorithm resolves the accessible name in this priority order:
+The AccName algorithm resolves the accessible name in this priority order:
 
-| Priority | Source            | AccName Step                                                      | Example                            |
-| -------- | ----------------- | ----------------------------------------------------------------- | ---------------------------------- |
-| 1        | `aria-labelledby` | [2B](https://www.w3.org/TR/accname-1.2/#comp_labelledby)          | `<input aria-labelledby="ref">`    |
-| 2        | `aria-label`      | [2C](https://www.w3.org/TR/accname-1.2/#comp_aria_label)          | `<input aria-label="Name">`        |
-| 3        | `<label>`         | [2D](https://www.w3.org/TR/accname-1.2/#comp_host_language_label) | `<label for="x">Name</label>`      |
-| 4        | `alt`             | [2D](https://www.w3.org/TR/accname-1.2/#comp_host_language_label) | `<img alt="Photo">`                |
-| 5        | Text content      | [2F](https://www.w3.org/TR/accname-1.2/#comp_name_from_content)   | `<button>Click</button>`           |
-| 6        | `value`           | [2D](https://www.w3.org/TR/accname-1.2/#comp_host_language_label) | `<input type="submit" value="Go">` |
-| 7        | `<legend>`        | [2D](https://www.w3.org/TR/accname-1.2/#comp_host_language_label) | `<fieldset><legend>Group</legend>` |
-| 8        | `<caption>`       | [2D](https://www.w3.org/TR/accname-1.2/#comp_host_language_label) | `<table><caption>Title</caption>`  |
-| 9\*      | `title`           | [2I](https://www.w3.org/TR/accname-1.2/#comp_tooltip)             | `<input title="Hint">`             |
-| 10\*     | `placeholder`     | [2I](https://www.w3.org/TR/accname-1.2/#comp_tooltip)             | `<input placeholder="Hint">`       |
+| Priority | Source            | AccName Step                                                  | Example                            |
+| -------- | ----------------- | ------------------------------------------------------------- | ---------------------------------- |
+| 1        | `aria-labelledby` | [2B](https://w3c.github.io/accname/#comp_labelledby)          | `<input aria-labelledby="ref">`    |
+| 2        | `aria-label`      | [2D](https://w3c.github.io/accname/#comp_label)               | `<input aria-label="Name">`        |
+| 3        | `<label>`         | [2E](https://w3c.github.io/accname/#comp_host_language_label) | `<label for="x">Name</label>`      |
+| 4        | `alt`             | [2E](https://w3c.github.io/accname/#comp_host_language_label) | `<img alt="Photo">`                |
+| 5        | Text content      | [2F](https://w3c.github.io/accname/#comp_name_from_content)   | `<button>Click</button>`           |
+| 6        | `value`           | [2E](https://w3c.github.io/accname/#comp_host_language_label) | `<input type="submit" value="Go">` |
+| 7        | `<legend>`        | [2E](https://w3c.github.io/accname/#comp_host_language_label) | `<fieldset><legend>Group</legend>` |
+| 8        | `<caption>`       | [2E](https://w3c.github.io/accname/#comp_host_language_label) | `<table><caption>Title</caption>`  |
+| 9\*      | `title`           | [2I](https://w3c.github.io/accname/#comp_tooltip)             | `<input title="Hint">`             |
+| 10\*     | `placeholder`     | [2I](https://w3c.github.io/accname/#comp_tooltip)             | `<input placeholder="Hint">`       |
 
 \* Only checked when the corresponding option is enabled.
 
-> **Note:** This table reflects the detection priority used by this rule. Sources at the same AccName step (e.g., `label`, `alt`, `legend`, and `caption` are all Step 2D) are ordered by their typical applicability scope, not by strict algorithm precedence.
+> **Note:** This table reflects the detection priority used by this rule. Sources at the same AccName step (e.g., `label`, `alt`, `legend`, and `caption` are all Step 2E) are ordered by their typical applicability scope, not by strict algorithm precedence.
 
 ## Rule Details
 
@@ -71,7 +71,7 @@ The AccName 1.2 algorithm resolves the accessible name in this priority order:
 
 ## WCAG 2.5.3: Label in Name
 
-When `aria-label` provides a different string from the visible text, it can violate [WCAG 2.5.3: Label in Name](https://www.w3.org/WAI/WCAG21/Understanding/label-in-name.html). This success criterion requires that the accessible name includes the visible label text. A redundant override with a mismatched string breaks this requirement.
+When `aria-label` provides a different string from the visible text, it can violate [WCAG 2.5.3: Label in Name](https://www.w3.org/WAI/WCAG22/Understanding/label-in-name.html). This success criterion requires that the accessible name includes the visible label text. A redundant override with a mismatched string breaks this requirement.
 
 This rule helps catch such mismatches by flagging the override itself.
 
@@ -155,25 +155,25 @@ This rule reports this as a violation because `aria-labelledby` overrides `label
 
 ### Self-Referencing `aria-labelledby`
 
-When `aria-labelledby` includes the element's own `id`, the accessible name computation skips [step 2B](https://www.w3.org/TR/accname-1.2/#comp_labelledby) for that element and continues with its own `aria-label`, native sources, and content. `aria-labelledby` then only combines the element's own name with the other referenced elements, so this rule does not treat it as a naming source that overrides anything:
+When `aria-labelledby` includes the element's own `id`, the accessible name computation skips [step 2B](https://w3c.github.io/accname/#comp_labelledby) for that element and continues with its own `aria-label`, native sources, and content. `aria-labelledby` then only combines the element's own name with the other referenced elements, so this rule does not treat it as a naming source that overrides anything:
 
 ```html
 <span id="file-name">Documentation.pdf</span>
 <button id="delete-button" aria-label="Delete" aria-labelledby="delete-button file-name"></button>
 ```
 
-The accessible name is "Delete Documentation.pdf" ([Example 5](https://www.w3.org/TR/accname-1.2/#comp_label) of the specification), so nothing is reported. Only `aria-labelledby` is left out of the check; the element's other sources are still ranked as usual. If the button above had text content, `aria-label` overriding that content would be reported, exactly as on a button without `aria-labelledby`.
+The accessible name is "Delete Documentation.pdf" ([Example 5](https://w3c.github.io/accname/#comp_label) of the specification), so nothing is reported. Only `aria-labelledby` is left out of the check; the element's other sources are still ranked as usual. If the button above had text content, `aria-label` overriding that content would be reported, exactly as on a button without `aria-labelledby`.
 
 ## Known Limitations
 
 - **CSS generated content**: Content from `::before` / `::after` pseudo-elements is not detectable by static analysis and is not included in the naming source check.
 - **SVG `<title>`**: The `<title>` child element of SVG provides an accessible name for SVG elements, but this is distinct from the HTML `title` attribute and is not currently covered by this rule.
-- **Self-referencing embedded controls**: [Step 2C (Embedded Control)](https://www.w3.org/TR/accname-1.2/#comp_embedded_control) is not modeled, so a self-referencing `aria-labelledby` on a `textbox`, `combobox`, `listbox` or range widget is treated like any other element.
+- **Self-referencing embedded controls**: [Step 2C (Embedded Control)](https://w3c.github.io/accname/#comp_embedded_control) is not modeled, so a self-referencing `aria-labelledby` on a `textbox`, `combobox`, `listbox` or range widget is treated like any other element.
 - **`aria-describedby`**: This rule only checks accessible _name_ sources. The accessible _description_ (`aria-describedby`) is a separate concept and is not in scope.
 
 ## See Also
 
 - [Issue #1478](https://github.com/markuplint/markuplint/issues/1478)
 - [`require-accessible-name`](../require-accessible-name/README.md)
-- [Accessible Name and Description Computation 1.2](https://www.w3.org/TR/accname-1.2/)
-- [WCAG 2.5.3: Label in Name](https://www.w3.org/WAI/WCAG21/Understanding/label-in-name.html)
+- [Accessible Name and Description Computation](https://w3c.github.io/accname/)
+- [WCAG 2.5.3: Label in Name](https://www.w3.org/WAI/WCAG22/Understanding/label-in-name.html)

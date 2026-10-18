@@ -5,7 +5,7 @@ description: "Warns when a literal less-than sign (or, in strict mode, a greater
 
 # `no-unescaped-char`
 
-Warns when a literal `<` appears unescaped in a text node or attribute value. [HTML Living Standard §13.1.2.3–4](https://html.spec.whatwg.org/multipage/syntax.html#syntax-charref) requires authors to escape a literal `<` and an "ambiguous ampersand" — everything else (`>`, `"`, and a bare `&` that isn't shaped like a reference attempt) is conforming as-is.
+Warns when a literal `<` appears unescaped in a text node or attribute value. [HTML Living Standard §13.1.4–4](https://html.spec.whatwg.org/multipage/syntax.html#syntax-charref) requires authors to escape a literal `<` and an "ambiguous ampersand" — everything else (`>`, `"`, and a bare `&` that isn't shaped like a reference attempt) is conforming as-is.
 
 A `&name;`-shaped sequence with an unrecognized name is [`no-malformed-character-reference`](/docs/rules/no-malformed-character-reference)'s concern, not this rule's — it mirrors parse5's own detection of that case.
 

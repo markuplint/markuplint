@@ -19,7 +19,7 @@ export interface Options {
  * severity is `warning`. The former rule's `expected-once` option gated this
  * check; disabling this rule entirely is how to opt out now.
  *
- * @see https://www.w3.org/WAI/WCAG21/Techniques/html/H42
+ * @see https://www.w3.org/WAI/WCAG22/Techniques/html/H42
  */
 export default createRule<boolean, Options>({
 	meta: meta,

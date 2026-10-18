@@ -13,7 +13,7 @@ function parseFloatAttr(raw: string | undefined): number | null {
 }
 
 /**
- * Enforce HTML LS §4.10.14 inequalities for `<progress>`:
+ * Enforce HTML LS §4.10.13 inequalities for `<progress>`:
  * `value ≤ max` when both attributes are present, and `value ≤ 1` when
  * `max` is absent. Authored-but-unparsable values, out-of-range `max`
  * (≤ 0), and negative `value` are deferred to `no-invalid-attr-value`.

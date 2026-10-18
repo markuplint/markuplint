@@ -21,7 +21,7 @@ Warns when required ARIA properties for a role are missing.
 
 :::note Conditional required: `separator`
 
-For the `separator` role, `aria-valuenow` is required only when the element is focusable (e.g. has `tabindex`, or is interactive content like `<button>` / `<a href>`). A non-focusable `<div role="separator">` is treated as a static structural separator per [WAI-ARIA](https://www.w3.org/TR/wai-aria/#separator) and does not require `aria-valuenow`.
+For the `separator` role, `aria-valuenow` is required only when the element is focusable (e.g. has `tabindex`, or is interactive content like `<button>` / `<a href>`). A non-focusable `<div role="separator">` is treated as a static structural separator per [WAI-ARIA](https://w3c.github.io/aria/#separator) and does not require `aria-valuenow`.
 
 ```html
 <!-- ✅ Static structural separator -->

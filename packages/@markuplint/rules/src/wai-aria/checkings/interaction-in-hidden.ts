@@ -9,7 +9,7 @@ import { mayBeFocusable } from '@markuplint/ml-spec';
  * Including Elements in the Accessibility Tree
  *
  * @see https://w3c.github.io/aria/#tree_inclusion
- * > Elements that are not hidden and may fire an accessibility API event, including:
+ * > Elements that are not hidden and can fire an accessibility API event, including:
  * > - Elements that are currently focused, even if the element or one of its ancestor elements has its aria-hidden attribute set to true.
  * > - Elements that are a valid target of an aria-activedescendant attribute.
  *

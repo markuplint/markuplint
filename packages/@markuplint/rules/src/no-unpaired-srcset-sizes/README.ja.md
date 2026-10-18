@@ -5,7 +5,7 @@ description: srcsetの幅ディスクリプタとsizes属性の相互必須関�
 
 # `no-unpaired-srcset-sizes`
 
-[HTML Living Standard](https://html.spec.whatwg.org/multipage/images.html#srcset-attributes) に基づき、`<img>` および `<source>` 要素の `srcset` の幅ディスクリプタと `sizes` 属性の相互必須関係をチェックします。
+[HTML Living Standard](https://momdo.github.io/html/images.html#srcset-attributes) に基づき、`<img>` および `<source>` 要素の `srcset` の幅ディスクリプタと `sizes` 属性の相互必須関係をチェックします。
 
 旧`srcset-sizes-constraint`ルールから、[`no-mixed-srcset-descriptors`](/docs/rules/no-mixed-srcset-descriptors)、[`sizes-auto-requires-lazy-loading`](/docs/rules/sizes-auto-requires-lazy-loading)、[`no-always-matching-source`](/docs/rules/no-always-matching-source)とともに分割されました。
 
@@ -59,6 +59,6 @@ description: srcsetの幅ディスクリプタとsizes属性の相互必須関�
 
 ## 参照
 
-- [HTML Living Standard - Srcset attributes](https://html.spec.whatwg.org/multipage/images.html#srcset-attributes)
-- [HTML Living Standard - The img element](https://html.spec.whatwg.org/multipage/embedded-content.html#the-img-element)
-- [HTML Living Standard - The source element](https://html.spec.whatwg.org/multipage/embedded-content.html#the-source-element)
+- [HTML Living Standard - Srcset attributes](https://momdo.github.io/html/images.html#srcset-attributes)
+- [HTML Living Standard - The img element](https://momdo.github.io/html/embedded-content.html#the-img-element)
+- [HTML Living Standard - The source element](https://momdo.github.io/html/embedded-content.html#the-source-element)

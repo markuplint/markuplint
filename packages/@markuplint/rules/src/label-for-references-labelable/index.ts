@@ -28,11 +28,14 @@ const LABELABLE_SELECTOR = [
 
 /**
  * Require the `for` attribute on a `<label>` element to reference an
- * actual labelable element by ID. Per HTML LS §4.10.4: "If the attribute
- * is specified, the attribute's value must be the ID of a labelable
- * element in the same tree as the label element." Existence of the ID
- * itself is the responsibility of `no-refer-to-non-existent-id`; this
- * rule only checks the element type when the ID resolves.
+ * actual labelable element by ID. Per HTML LS §4.10.4:
+ *
+ * > If the attribute is specified, the attribute's value must be the ID of a labelable element in the same tree as the
+ * > label element.
+ *
+ * Existence of the ID itself is the responsibility of
+ * `no-refer-to-non-existent-id`; this rule only checks the element type
+ * when the ID resolves.
  *
  * @see https://html.spec.whatwg.org/multipage/forms.html#attr-label-for
  */
