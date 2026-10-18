@@ -392,7 +392,15 @@
 		// The value type depends on the `type` attribute.
 		// Types not listed here (text, search, tel, password, hidden, checkbox, radio,
 		// file, submit, image, reset, button) have no value constraints and fall back to Any.
+		//
+		// The attribute is not allowed on three inputs, each of which the spec words as
+		// "The element's value attribute must be omitted":
+		// - type=file: https://html.spec.whatwg.org/multipage/input.html#file-upload-state-(type=file)
+		// - type=image: https://html.spec.whatwg.org/multipage/input.html#image-button-state-(type=image)
+		// - type=hidden with a name that is an ASCII case-insensitive match for "_charset_":
+		//   https://html.spec.whatwg.org/multipage/input.html#hidden-state-(type=hidden)
 		"value": {
+			"condition": ":not([type='file' i]):not([type='image' i]):not([type='hidden' i][name='_charset_' i])",
 			"type": [
 				{ "condition": "[type='color' i]", "type": "SimpleColor" },
 				{ "condition": "[type='url' i]", "type": "AbsoluteURLOrEmpty" },

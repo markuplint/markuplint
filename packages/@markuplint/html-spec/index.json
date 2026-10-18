@@ -52695,6 +52695,7 @@
 				},
 				"value": {
 					"description": "The input control's value. When specified in the HTML, this is the initial value, and from then on it can be altered or retrieved at any time using JavaScript to access the respective HTMLInputElement object's value property. The value attribute is always optional, though should be considered mandatory for checkbox, radio, and hidden.",
+					"condition": ":not([type='file' i]):not([type='image' i]):not([type='hidden' i][name='_charset_' i])",
 					"type": [
 						{
 							"condition": "[type='color' i]",
