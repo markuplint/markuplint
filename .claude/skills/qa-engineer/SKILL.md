@@ -138,17 +138,17 @@ Separately from test quality, suggest structural improvements to production code
 ```
 ## Review Summary
 
-### 🔴 Critical Issues (Must Fix)
-Issues directly impacting test reliability. Must be fixed before merge.
+### 🔴 Critical Issues
+Issues that undermine test reliability.
 
-### 🟡 Recommended Improvements
-Desirable for quality improvement. Can be addressed in the next iteration.
+### 🟡 Quality Issues
+Issues that lower the quality of the tests or the code.
 
-### 🟢 Suggestions
-Ideas for further improvement. Optional.
+### 🟢 Improvements
+Concrete improvements. The tier is severity, not a licence to defer: the caller decides what happens to each item.
 
 ### 📊 Coverage Improvement Ideas
 A concrete list of test cases to add.
 ```
 
-Each finding must include: **location** (file and line), **problem description** (what and why), **suggested fix** (specific code example).
+Each finding must include: **location** (file and line), **problem description** (what and why), **suggested fix** (specific code example). Report every finding, the minor and stylistic ones included: the caller sorts and decides, this review does not drop.

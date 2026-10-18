@@ -79,7 +79,7 @@ Migration guide availability and quality, deprecation handling
 
 ## Recommended Actions
 Prioritized list of specific improvement proposals.
-Each item includes "why it matters (from an operational cost perspective)."
+Each item includes "why it matters (from an operational cost perspective)" and a `file:line`. List every item, the minor ones included: the caller sorts and decides, this review does not drop.
 
 ## Reference Links
 - URLs to follow for the latest information about this repository
