@@ -160,10 +160,20 @@ function defaultEntry(
 /**
  * The entry of a local binding exported by name: a re-export when the binding is an import,
  * so that resolution follows it to the module that declares it.
+ *
+ * @param localName - The local binding that is exported
+ * @param imports - The bindings the file imports
+ * @param namespaces - Whether a namespace import is a re-export of its module (`export { B }`):
+ *   a default export of it, or the argument of a wrapper call, is no component to follow
+ * @returns The export entry of the binding
  */
-function localEntry(localName: string, imports: ReadonlyMap<string, ImportedBinding>): ExportEntry {
+function localEntry(localName: string, imports: ReadonlyMap<string, ImportedBinding>, namespaces = false): ExportEntry {
 	const imported = imports.get(localName);
-	return imported ? { kind: 're-export', ...imported, viaImport: true } : { kind: 'local', localName };
+	// A namespace import is a re-export only where it is exported by name (`export { B }`): a default
+	// export of it, or a wrapper's argument, is no component to follow.
+	return imported && (namespaces || imported.importedName !== '*')
+		? { kind: 're-export', ...imported, viaImport: true }
+		: { kind: 'local', localName };
 }
 
 /**
@@ -212,8 +222,9 @@ export function wrappedIdentifier(
 type ImportedBinding = { readonly source: string; readonly importedName: string };
 
 /**
- * The local names the file imports, other than namespace and type-only imports, each with
- * the module and name it is imported from.
+ * The local names the file imports, other than type-only imports, each with the module and
+ * name it is imported from (`'*'` for a namespace import, which `export { B }` then re-exports
+ * as a namespace, as `export * as B from` does).
  */
 function collectImports(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -233,6 +244,9 @@ function collectImports(
 		const { name, namedBindings } = node.importClause;
 		if (name) {
 			imports.set(name.text, { source: from, importedName: 'default' });
+		}
+		if (namedBindings && ts.isNamespaceImport(namedBindings)) {
+			imports.set(namedBindings.name.text, { source: from, importedName: '*' });
 		}
 		if (namedBindings && ts.isNamedImports(namedBindings)) {
 			for (const element of namedBindings.elements) {
@@ -290,7 +304,7 @@ function collectExportDeclaration(
 			byName.set(exportedName, { kind: 're-export', source, importedName: originalName });
 		} else {
 			// `export { Item }` / `export { Item as ListItem }` — re-exporting a local binding
-			byName.set(exportedName, localEntry(originalName, imports));
+			byName.set(exportedName, localEntry(originalName, imports, exportedName !== 'default'));
 		}
 	}
 }

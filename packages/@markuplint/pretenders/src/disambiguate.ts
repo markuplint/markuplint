@@ -29,7 +29,13 @@ import type { Pretender } from '@markuplint/ml-config';
 
 import { parsePretenderFilePath } from '@markuplint/ml-config';
 
-import { declarationChain, isPackageFile, resolveDeclaration, resolveModule } from './dependency-mapper.js';
+import {
+	FROM_PACKAGE,
+	declarationChain,
+	isPackageFile,
+	resolveDeclaration,
+	resolveModule,
+} from './dependency-mapper.js';
 import { DEFAULT_LOCAL_NAME } from './export-table.js';
 import { analyzeImports, kebabToPascalCase, resolveComponentImport } from './import-resolver/index.js';
 import { normalizePath } from './import-resolver/resolve-module-file.js';
@@ -44,13 +50,6 @@ const RE_SIMPLE_COMPONENT_NAME = /^[\p{ID_Start}$_][\p{ID_Continue}\p{Join_Contr
 
 /** A whole identifier, kebab-case included: what a selector of {@link RE_SIMPLE_COMPONENT_NAME} is made of. */
 const RE_IDENTIFIER = /[\p{ID_Continue}\p{Join_Control}$-]+/gu;
-
-/**
- * What {@link resolveWinner} returns for a name confirmed to come from a package: unlike
- * `null` ("could not confirm"), it rules out every candidate. Not the symbol of the same
- * name in `dependency-mapper.ts`, which stays in that module.
- */
-const FROM_PACKAGE = Symbol('from-package');
 
 /**
  * Identifies the file to disambiguate pretenders against.
