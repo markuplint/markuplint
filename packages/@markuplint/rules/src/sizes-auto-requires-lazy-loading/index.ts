@@ -1,7 +1,7 @@
 import { createRule } from '@markuplint/ml-core';
 
 import { hasSizesAuto } from '../srcset-sizes-constraint/parse-srcset.js';
-import { allowsAutoSizes, findFollowingImg, isLazyLoading } from '../srcset-sizes-constraint/sibling-helpers.js';
+import { findFollowingImg, isAutoSizes, isLazyLoading } from '../srcset-sizes-constraint/sibling-helpers.js';
 
 import meta from './meta.js';
 
@@ -49,42 +49,46 @@ export default createRule<boolean>({
 			const sizesIsDynamic = sizesAttr?.isDynamicValue;
 
 			// img[sizes=auto] → loading=lazy required
-			if (localName === 'img' && sizesValue != null && !sizesIsDynamic && hasSizesAuto(sizesValue)) {
-				const loading = el.getAttribute('loading');
-				if (loading !== 'lazy') {
-					report({
-						scope: el,
-						line: sizesAttr!.valueNode?.startLine,
-						col: sizesAttr!.valueNode?.startCol,
-						raw: sizesAttr!.valueNode?.raw,
-						message: 'The "sizes" attribute with "auto" requires the "loading" attribute to be "lazy"',
-					});
-				}
+			// The keyword is matched ASCII case-insensitively; a dynamic
+			// `loading` is not known and is not reported.
+			if (
+				localName === 'img' &&
+				sizesValue != null &&
+				!sizesIsDynamic &&
+				hasSizesAuto(sizesValue) &&
+				isLazyLoading(el) === false
+			) {
+				report({
+					scope: el,
+					line: sizesAttr!.valueNode?.startLine,
+					col: sizesAttr!.valueNode?.startCol,
+					raw: sizesAttr!.valueNode?.raw,
+					message: 'The "sizes" attribute with "auto" requires the "loading" attribute to be "lazy"',
+				});
 			}
 
 			// source[sizes=auto] → the following sibling img must allow
-			// auto-sizes: loading=lazy and sizes=auto (HTML LS § sizes
-			// attributes). A dynamic loading / sizes on the img is not known.
+			// auto-sizes: loading=lazy and sizes=auto (HTML LS §
+			// allows-auto-sizes, see `allowsAutoSizes`). A dynamic loading / sizes on the img is not known.
 			if (localName === 'source' && sizesValue != null && !sizesIsDynamic && hasSizesAuto(sizesValue)) {
 				const img = findFollowingImg(el);
 				const lazy = img ? isLazyLoading(img) : false;
-				if (lazy === false) {
+				const auto = img ? isAutoSizes(img) : false;
+				if (lazy === false || auto === false) {
+					// Say everything that is missing at once, so that fixing
+					// one does not reveal the other.
+					const missing = [lazy === false && 'loading="lazy"', auto === false && 'sizes="auto"'].filter(
+						Boolean,
+					);
 					report({
 						scope: el,
 						line: sizesAttr!.valueNode?.startLine,
 						col: sizesAttr!.valueNode?.startCol,
 						raw: sizesAttr!.valueNode?.raw,
 						message:
-							'The "source" element with sizes="auto" requires the following sibling "img" element to have loading="lazy"',
-					});
-				} else if (img && allowsAutoSizes(img) === false) {
-					report({
-						scope: el,
-						line: sizesAttr!.valueNode?.startLine,
-						col: sizesAttr!.valueNode?.startCol,
-						raw: sizesAttr!.valueNode?.raw,
-						message:
-							'The "source" element with sizes="auto" requires the following sibling "img" element to have sizes="auto"',
+							!img || (missing.length === 1 && lazy === false)
+								? 'The "source" element with sizes="auto" requires the following sibling "img" element to have loading="lazy"'
+								: `The "source" element with sizes="auto" requires the following sibling "img" element to have ${missing.join(' and ')}`,
 					});
 				}
 			}

@@ -5,7 +5,11 @@ description: sizes="auto"を使用する箇所では loading="lazy" を必須と
 
 # `sizes-auto-requires-lazy-loading`
 
-[HTML Living Standard](https://momdo.github.io/html/embedded-content.html#the-img-element) に基づき、`<img>` および `<source>` 要素で `sizes="auto"` を使用する箇所では `loading="lazy"` を必須とします。
+[HTML Living Standard](https://momdo.github.io/html/embedded-content.html#the-img-element) に基づき、`<img>` および `<source>` 要素で `sizes="auto"` を使用する箇所では `loading="lazy"` を必須とします。`<source>` では、後続兄弟の `<img>` が自動サイズを許可する（`sizes="auto"` も持つ）必要もあります。
+
+> img要素は、次の場合に自動サイズを許可する：そのloading属性がLazy状態であり、かつ、そのsizes属性の値が"auto"（ASCII大文字・小文字不区別）である、または"auto,"（ASCII大文字・小文字不区別）で始まる。
+
+[HTML Living Standard: img要素の自動サイズの許可](https://momdo.github.io/html/embedded-content.html#allows-auto-sizes)より引用
 
 旧`srcset-sizes-constraint`ルールから、[`no-unpaired-srcset-sizes`](/docs/rules/no-unpaired-srcset-sizes)、[`no-mixed-srcset-descriptors`](/docs/rules/no-mixed-srcset-descriptors)、[`no-always-matching-source`](/docs/rules/no-always-matching-source)とともに分割されました。
 

@@ -7,6 +7,10 @@ description: Enforces the mutual requirement between the srcset width descriptor
 
 Enforces the mutual requirement between `srcset` width descriptors and the `sizes` attribute on `<img>` and `<source>` elements, per the [HTML Living Standard](https://html.spec.whatwg.org/multipage/images.html#srcset-attributes).
 
+> An img element allows auto-sizes if: its loading attribute is in the Lazy state, and its sizes attribute's value is "auto" (ASCII case-insensitive), or starts with "auto," (ASCII case-insensitive).
+
+Cite: [HTML Living Standard: An img element allows auto-sizes](https://html.spec.whatwg.org/multipage/embedded-content.html#allows-auto-sizes)
+
 Split out of the former `srcset-sizes-constraint` rule, alongside [`no-mixed-srcset-descriptors`](/docs/rules/no-mixed-srcset-descriptors), [`sizes-auto-requires-lazy-loading`](/docs/rules/sizes-auto-requires-lazy-loading), and [`no-always-matching-source`](/docs/rules/no-always-matching-source).
 
 | #   | Constraint                                                                                              | Target                    |
@@ -20,6 +24,7 @@ Split out of the former `srcset-sizes-constraint` rule, alongside [`no-mixed-src
 - Only `<img>` and `<source>` elements inside `<picture>` are checked.
 - Dynamic attribute values (e.g., Vue `:srcset`, JSX `srcset={...}`) and elements with spread attributes are skipped.
 - A descriptor-less image candidate (e.g., `image.png` without `480w` or `2x`) does not count as a width descriptor.
+- The `sizes` of the following `<img>` is `auto` only when its value is `auto` or starts with `auto,` (case-insensitive, not trimmed). `auto 100vw` is not `auto`.
 
 ❌ Examples of **incorrect** code for this rule
 

@@ -5,7 +5,11 @@ description: Requires loading="lazy" wherever sizes="auto" is used.
 
 # `sizes-auto-requires-lazy-loading`
 
-Requires `loading="lazy"` wherever `sizes="auto"` is used on `<img>` and `<source>` elements, per the [HTML Living Standard](https://html.spec.whatwg.org/multipage/embedded-content.html#the-img-element).
+Requires `loading="lazy"` wherever `sizes="auto"` is used on `<img>` and `<source>` elements, per the [HTML Living Standard](https://html.spec.whatwg.org/multipage/embedded-content.html#the-img-element). A `<source>` also needs the following sibling `<img>` to have `sizes="auto"`, because only such an `<img>` allows auto-sizes.
+
+> An img element allows auto-sizes if: its loading attribute is in the Lazy state, and its sizes attribute's value is "auto" (ASCII case-insensitive), or starts with "auto," (ASCII case-insensitive).
+
+Cite: [HTML Living Standard: An img element allows auto-sizes](https://html.spec.whatwg.org/multipage/embedded-content.html#allows-auto-sizes)
 
 Split out of the former `srcset-sizes-constraint` rule, alongside [`no-unpaired-srcset-sizes`](/docs/rules/no-unpaired-srcset-sizes), [`no-mixed-srcset-descriptors`](/docs/rules/no-mixed-srcset-descriptors), and [`no-always-matching-source`](/docs/rules/no-always-matching-source).
 

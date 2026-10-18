@@ -80,15 +80,28 @@ export function allowsAutoSizes(
 	img: Element<boolean>,
 ): boolean | null {
 	const lazy = isLazyLoading(img);
-	if (lazy === false) {
+	const auto = isAutoSizes(img);
+	if (lazy === false || auto === false) {
 		return false;
 	}
+	return lazy === null || auto === null ? null : true;
+}
+
+/**
+ * Whether an `<img>`'s `sizes` attribute is `auto` or starts with `auto,`
+ * (the `sizes` half of "allows auto-sizes"; see `hasSizesAuto`).
+ *
+ * @param img - The `<img>` element
+ * @returns `true` / `false`, or `null` when it cannot be known statically (a
+ *   dynamic `sizes` value, or spread attributes that may supply it)
+ */
+export function isAutoSizes(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	img: Element<boolean>,
+): boolean | null {
 	const sizes = img.getAttributeNode('sizes');
 	if (sizes?.isDynamicValue || (!sizes && img.hasSpreadAttr)) {
 		return null;
 	}
-	if (!sizes || !hasSizesAuto(sizes.value)) {
-		return false;
-	}
-	return lazy;
+	return sizes != null && hasSizesAuto(sizes.value);
 }
