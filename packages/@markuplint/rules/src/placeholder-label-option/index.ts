@@ -1,6 +1,7 @@
 import type { Element } from '@markuplint/ml-core';
 
 import { createRule } from '@markuplint/ml-core';
+import { decodeEntities } from '@markuplint/shared';
 
 import meta from './meta.js';
 
@@ -207,7 +208,8 @@ function optionValue(
 ): string | null {
 	const valueAttr = option.getAttributeNode('value');
 	if (valueAttr) {
-		return valueAttr.value;
+		// A value given by an expression (`:value="v"`, `value={v}`) is not known until the template runs.
+		return valueAttr.isDynamicValue ? null : valueAttr.value;
 	}
 	const text = htmlAwareTextContent(option);
 	return text === null ? null : stripAndCollapseAsciiWhitespace(text);
@@ -229,7 +231,8 @@ function htmlAwareTextContent(
 	let text = '';
 	for (const child of element.childNodes) {
 		if (child.is(child.TEXT_NODE)) {
-			text += child.textContent ?? '';
+			// The node holds the source text; a character reference such as `&#32;` has to be decoded first.
+			text += decodeEntities(child.textContent ?? '');
 		} else if (child.is(child.ELEMENT_NODE)) {
 			const inner = htmlAwareTextContent(child);
 			if (inner === null) {

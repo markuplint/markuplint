@@ -930,3 +930,12 @@ test('[no-disallowed-attr-parser-007] Vue: a type that is an expression does not
 	});
 	expect(violations).toStrictEqual([]);
 });
+
+test('[no-disallowed-attr-parser-008] JSX: a type that is an expression does not decide whether value is allowed', async () => {
+	const { violations } = await mlRuleTest(rule, '<input type={t} value="x" />', {
+		parser: {
+			'.*': '@markuplint/jsx-parser',
+		},
+	});
+	expect(violations).toStrictEqual([]);
+});

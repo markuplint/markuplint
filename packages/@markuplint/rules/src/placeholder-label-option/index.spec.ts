@@ -230,6 +230,7 @@ test('[placeholder-label-option-valid-001] Valid: a first option element whose v
 		'<select required><option>\n\t</option><option>A</option></select>',
 		'<select required><option value>Placeholder</option><option>A</option></select>',
 		'<select required><option value="">Placeholder</option><option>A</option></select>',
+		'<select required><option>&#32;</option><option>A</option></select>',
 	]) {
 		expect((await mlRuleTest(rule, html)).violations, html).toStrictEqual([]);
 	}
@@ -286,5 +287,27 @@ test('[placeholder-label-option-parser-002] Vue and JSX: a size that is an expre
 	);
 	expect(viaVue.violations).toStrictEqual([]);
 	const viaJsx = await mlRuleTest(rule, '<select required size={n}><option value="a">A</option></select>', jsx);
+	expect(viaJsx.violations).toStrictEqual([]);
+});
+
+test('[placeholder-label-option-parser-003] Vue and JSX: a value that is an expression is not known to be non-empty', async () => {
+	const viaVue = await mlRuleTest(
+		rule,
+		'<template><select required><option :value="v">A</option><option value="b">B</option></select></template>',
+		{
+			parser: {
+				'.*': '@markuplint/vue-parser',
+			},
+			specs: {
+				'.*': '@markuplint/vue-spec',
+			},
+		},
+	);
+	expect(viaVue.violations).toStrictEqual([]);
+	const viaJsx = await mlRuleTest(
+		rule,
+		'<select required><option value={v}>A</option><option value="b">B</option></select>',
+		jsx,
+	);
 	expect(viaJsx.violations).toStrictEqual([]);
 });
