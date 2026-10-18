@@ -222,6 +222,28 @@ describe('pretenders.auto with a lazily loaded component', () => {
 		]);
 	});
 
+	test('a member tag of a namespace whose name has a `$` is checked against its children', async () => {
+		await writeFile(path.join(tmpDir, 'Item.tsx'), 'export const Item = () => <img src="x.png" />;');
+		const wrapperPath = path.join(tmpDir, 'Wrapper.tsx');
+		await writeFile(
+			wrapperPath,
+			[
+				"import * as Ui$ from './Item';",
+				'export const Wrapper = () => <div><Ui$.Item><span>c</span></Ui$.Item></div>;',
+			].join('\n'),
+		);
+
+		const { violations } = await mlTestFile(wrapperPath, {
+			...jsxParserConfig,
+			pretenders: { auto: true },
+			rules: { 'permitted-contents': true },
+		});
+
+		expect(violations).toStrictEqual([
+			expect.objectContaining({ ruleId: 'permitted-contents', severity: 'error', raw: '<Ui$.Item>' }),
+		]);
+	});
+
 	test('a member tag of a namespace import that renders what its parent requires is not reported', async () => {
 		await writeFile(path.join(tmpDir, 'Row.tsx'), 'export const Row = () => <li>row</li>;');
 		const listPath = path.join(tmpDir, 'List.tsx');
