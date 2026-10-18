@@ -31,7 +31,7 @@ Two major lines are developed in parallel:
 | `v4`   | v4 maintenance.                                                                    |
 
 - Merges go `dev` → `v6` only; `v6` is never merged into `dev`.
-- `Fixes #N` closes the issue only when the PR merges into the default branch (`dev`). After a PR into `v6` merges, check each linked issue with `gh issue view <n> --json state` and close the open ones by hand with `gh issue close <n> --reason completed`. Add `--comment "Fixed by #<PR> (merged into v6)."` only when someone other than the maintainer filed the issue — the same condition the `pr` skill applies to its post-merge report. A v6 PR is not done until its issues are closed.
+- `Fixes #N` closes the issue only when the PR merges into the default branch (`dev`). After a PR into `v6` merges, check each linked issue with `gh issue view <n> --json state` and close the open ones by hand with `gh issue close <n> --reason completed`. Add `--comment "Fixed by #<PR> (merged into v6)."` only when someone other than the maintainer filed the issue — the same condition the `merged` skill applies to its post-merge report. A v6 PR is not done until its issues are closed.
 - The lines have diverged in which linters run, what the test gate covers, and which packages exist. Read the current branch's `package.json` before stating any of these; a fact from the other branch is not evidence.
 - Guidance that applies to both lines lives in a shared file, worded with its condition explicit so it stays true on both. Guidance for one line lives in a file only that line has (`crates/CLAUDE.md`). Divergent copies of the same paragraph conflict on every `dev` → `v6` merge, so do not create them.
 
@@ -87,7 +87,9 @@ The harness cuts a new worktree from the default branch (`dev`). For v6 work, re
 # Pull Requests & Issues
 
 - Reviewing an external contributor's PR: sort every finding into "must be fixed before merge" or "not asked for in this PR" (then do not comment on it) before presenting the review. A "non-blocking, but…" remark hands the decision to the contributor and the owner both. A pre-existing problem outside the PR's scope goes into a separate issue, not into the review.
-- A small number of affected cases, or a low estimated impact, is never a reason to skip an issue or a fix. The criterion is whether the spec requires it; if it does, do it; if the spec is silent, report that instead.
+- **Decision criteria.** Two things decide whether a change, a fix or a review finding is adopted: what a linter should be — the behavior the HTML, ARIA and other specs require — and accuracy — fewer false positives and fewer misses. For a change that is not lint behavior (tooling, docs, CI, skills), the criteria are correctness against the stated intent and consistency with the code. Implementation cost, diff size, the number of affected cases and "minor" are not criteria, and never a reason to skip, defer or ask.
+- What the criteria decide is done without asking. A question is for what they do not decide and for a write outside the repository; the `impl` skill names the kinds. Claude does not decide to carry over, skip or leave something as is: those exist only as the user's answers to such a question, and a response, PR body or commit that says "later", "separate PR" or "intentionally unchanged" can point at the question and the answer.
+- A review finding is fixed, or put to the user with the evidence. "False positive", "pre-existing" and "as intended" are claims made to the user, never a way to close a finding alone.
 
 # Security
 
