@@ -9,11 +9,11 @@ description: srcsetの幅ディスクリプタとsizes属性の相互必須関�
 
 旧`srcset-sizes-constraint`ルールから、[`no-mixed-srcset-descriptors`](/docs/rules/no-mixed-srcset-descriptors)、[`sizes-auto-requires-lazy-loading`](/docs/rules/sizes-auto-requires-lazy-loading)、[`no-always-matching-source`](/docs/rules/no-always-matching-source)とともに分割されました。
 
-| #   | 制約                                                                                | 対象                       |
-| --- | ----------------------------------------------------------------------------------- | -------------------------- |
-| 1   | `sizes` がある場合、`srcset` は **幅ディスクリプタ**（`w`）のみ使用する             | `img`, `source`            |
-| 2   | `srcset` に幅ディスクリプタがある場合、`sizes` が必須                               | `img`                      |
-| 3   | 2 と同じ、ただし後続兄弟 `<img>` に `loading="lazy"`（auto-sizes 対応）があれば除外 | `source`（`<picture>` 内） |
+| #   | 制約                                                                                                    | 対象                       |
+| --- | ------------------------------------------------------------------------------------------------------- | -------------------------- |
+| 1   | `sizes` がある場合、`srcset` は **幅ディスクリプタ**（`w`）のみ使用する                                 | `img`, `source`            |
+| 2   | `srcset` に幅ディスクリプタがある場合、`sizes` が必須                                                   | `img`                      |
+| 3   | 2 と同じ、ただし後続兄弟 `<img>` が auto-sizes を許す（`loading="lazy"` かつ `sizes="auto"`）場合は除外 | `source`（`<picture>` 内） |
 
 <!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
 
@@ -37,6 +37,12 @@ description: srcsetの幅ディスクリプタとsizes属性の相互必須関�
   <source srcset="a.webp 480w, b.webp 1024w" />
   <img src="a.jpg" alt="写真" />
 </picture>
+
+<!-- sourceで幅ディスクリプタがあるのにsizesがなく、兄弟imgはlazyだがsizesがautoではない -->
+<picture>
+  <source srcset="a.webp 480w, b.webp 1024w" />
+  <img src="a.jpg" loading="lazy" alt="写真" />
+</picture>
 ```
 
 ✅ 正しいコード例
@@ -48,10 +54,10 @@ description: srcsetの幅ディスクリプタとsizes属性の相互必須関�
 <!-- sizesなしの密度ディスクリプタ -->
 <img srcset="a.png 1x, b.png 2x" src="a.png" alt="写真" />
 
-<!-- sourceで幅ディスクリプタとsizesなし、ただし兄弟imgがlazy -->
+<!-- sourceで幅ディスクリプタとsizesなし、ただし兄弟imgがauto-sizesを許す -->
 <picture>
   <source srcset="a.webp 480w, b.webp 1024w" />
-  <img src="a.jpg" loading="lazy" alt="写真" />
+  <img src="a.jpg" loading="lazy" sizes="auto" alt="写真" />
 </picture>
 ```
 
@@ -62,3 +68,4 @@ description: srcsetの幅ディスクリプタとsizes属性の相互必須関�
 - [HTML Living Standard - Srcset attributes](https://momdo.github.io/html/images.html#srcset-attributes)
 - [HTML Living Standard - The img element](https://momdo.github.io/html/embedded-content.html#the-img-element)
 - [HTML Living Standard - The source element](https://momdo.github.io/html/embedded-content.html#the-source-element)
+- [HTML Living Standard - An img element allows auto-sizes](https://momdo.github.io/html/embedded-content.html#allows-auto-sizes)

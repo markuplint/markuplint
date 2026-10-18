@@ -37,25 +37,41 @@ describe('No violations', () => {
 	});
 
 	test('[sizes-auto-requires-lazy-loading-valid-005] source[sizes=auto] with sibling img[loading=lazy]', async () => {
-		expect(
-			(
-				await mlRuleTest(
-					rule,
-					'<picture><source srcset="s.webp 480w, l.webp 1024w" sizes="auto"><img src="l.jpg" loading="lazy" alt="photo"></picture>',
-				)
-			).violations,
-		).toStrictEqual([]);
+		const { violations } = await mlRuleTest(
+			rule,
+			'<picture><source srcset="s.webp 480w, l.webp 1024w" sizes="auto"><img src="l.jpg" loading="lazy" alt="photo"></picture>',
+		);
+		// Behavior change: the img allows auto-sizes only with loading="lazy" and sizes="auto"
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 60,
+				message:
+					'The "source" element with sizes="auto" requires the following sibling "img" element to have sizes="auto"',
+				raw: 'auto',
+			},
+		]);
+		// expect((await mlRuleTest(rule, '...')).violations).toStrictEqual([]); // previous
 	});
 
 	test('[sizes-auto-requires-lazy-loading-valid-006] source[sizes=auto] with non-adjacent sibling img[loading=lazy]', async () => {
-		expect(
-			(
-				await mlRuleTest(
-					rule,
-					'<picture><source srcset="a.webp 480w" sizes="auto" type="image/webp"><source srcset="a.jpg 480w" sizes="100vw"><img src="a.jpg" loading="lazy" alt="p"></picture>',
-				)
-			).violations,
-		).toStrictEqual([]);
+		const { violations } = await mlRuleTest(
+			rule,
+			'<picture><source srcset="a.webp 480w" sizes="auto" type="image/webp"><source srcset="a.jpg 480w" sizes="100vw"><img src="a.jpg" loading="lazy" alt="p"></picture>',
+		);
+		// Behavior change: the img allows auto-sizes only with loading="lazy" and sizes="auto"
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 46,
+				message:
+					'The "source" element with sizes="auto" requires the following sibling "img" element to have sizes="auto"',
+				raw: 'auto',
+			},
+		]);
+		// expect((await mlRuleTest(rule, '...')).violations).toStrictEqual([]); // previous
 	});
 });
 
@@ -135,14 +151,22 @@ describe('sizes=auto on source requires sibling img[loading=lazy]', () => {
 	});
 
 	test('[sizes-auto-requires-lazy-loading-valid-010] source[sizes=auto] + img[loading=lazy] → no violation', async () => {
-		expect(
-			(
-				await mlRuleTest(
-					rule,
-					'<picture><source srcset="s.webp 480w" sizes="auto"><img src="s.jpg" loading="lazy" alt="p"></picture>',
-				)
-			).violations,
-		).toStrictEqual([]);
+		const { violations } = await mlRuleTest(
+			rule,
+			'<picture><source srcset="s.webp 480w" sizes="auto"><img src="s.jpg" loading="lazy" alt="p"></picture>',
+		);
+		// Behavior change: the img allows auto-sizes only with loading="lazy" and sizes="auto"
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 46,
+				message:
+					'The "source" element with sizes="auto" requires the following sibling "img" element to have sizes="auto"',
+				raw: 'auto',
+			},
+		]);
+		// expect((await mlRuleTest(rule, '...')).violations).toStrictEqual([]); // previous
 	});
 
 	test('[sizes-auto-requires-lazy-loading-invalid-007] source[sizes=auto] with no following img → violation', async () => {
@@ -152,14 +176,22 @@ describe('sizes=auto on source requires sibling img[loading=lazy]', () => {
 
 	test('[sizes-auto-requires-lazy-loading-valid-011] source + source + img[loading=lazy] → no violation', async () => {
 		// The escape checks the *following img*, not the immediately next sibling.
-		expect(
-			(
-				await mlRuleTest(
-					rule,
-					'<picture><source srcset="a.webp 480w" sizes="auto" media="(min-width: 600px)"><source srcset="b.jpg 480w"><img src="b.jpg" loading="lazy" alt="p"></picture>',
-				)
-			).violations,
-		).toStrictEqual([]);
+		const { violations } = await mlRuleTest(
+			rule,
+			'<picture><source srcset="a.webp 480w" sizes="auto" media="(min-width: 600px)"><source srcset="b.jpg 480w"><img src="b.jpg" loading="lazy" alt="p"></picture>',
+		);
+		// Behavior change: the img allows auto-sizes only with loading="lazy" and sizes="auto"
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 46,
+				message:
+					'The "source" element with sizes="auto" requires the following sibling "img" element to have sizes="auto"',
+				raw: 'auto',
+			},
+		]);
+		// expect((await mlRuleTest(rule, '...')).violations).toStrictEqual([]); // previous
 	});
 });
 
@@ -180,5 +212,63 @@ describe('Edge cases', () => {
 				})
 			).violations,
 		).toStrictEqual([]);
+	});
+});
+
+describe('source[sizes=auto]: the following img must allow auto-sizes', () => {
+	test('[sizes-auto-requires-lazy-loading-valid-012] source[sizes=auto] + img[loading=lazy][sizes=auto] → no violation', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					'<picture><source srcset="s.webp 480w" sizes="auto"><img src="s.jpg" srcset="s.jpg 480w" loading="lazy" sizes="auto" alt="p"></picture>',
+				)
+			).violations,
+		).toStrictEqual([]);
+	});
+
+	test('[sizes-auto-requires-lazy-loading-valid-013] sizes "AUTO, 100vw" on the img → no violation', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					'<picture><source srcset="s.webp 480w" sizes="auto"><img src="s.jpg" loading="LAZY" sizes="AUTO, 100vw" alt="p"></picture>',
+				)
+			).violations,
+		).toStrictEqual([]);
+	});
+
+	test('[sizes-auto-requires-lazy-loading-invalid-010] img[sizes=auto] without loading=lazy → the loading message', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<picture><source srcset="s.webp 480w" sizes="auto"><img src="s.jpg" loading="eager" sizes="auto" alt="p"></picture>',
+		);
+		expect(violations.map(v => v.message)).toStrictEqual([
+			'The "source" element with sizes="auto" requires the following sibling "img" element to have loading="lazy"',
+		]);
+	});
+
+	test('[sizes-auto-requires-lazy-loading-invalid-011] img[loading=lazy][sizes=100vw] → the sizes message', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<picture><source srcset="s.webp 480w" sizes="auto"><img src="s.jpg" loading="lazy" sizes="100vw" alt="p"></picture>',
+		);
+		expect(violations.map(v => v.message)).toStrictEqual([
+			'The "source" element with sizes="auto" requires the following sibling "img" element to have sizes="auto"',
+		]);
+	});
+
+	test('[sizes-auto-requires-lazy-loading-parser-001] Vue dynamic loading or sizes on the img → no violation', async () => {
+		for (const attr of [':loading="l" sizes="auto"', 'loading="lazy" :sizes="s"']) {
+			expect(
+				(
+					await mlRuleTest(
+						rule,
+						`<template><picture><source srcset="s.webp 480w" sizes="auto"><img src="s.jpg" alt="p" ${attr}></picture></template>`,
+						{ parser: { '.*': '@markuplint/vue-parser' }, specs: { '.*': '@markuplint/vue-spec' } },
+					)
+				).violations,
+			).toStrictEqual([]);
+		}
 	});
 });

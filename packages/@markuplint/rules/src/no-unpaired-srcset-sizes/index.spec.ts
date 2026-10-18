@@ -153,7 +153,17 @@ describe('Width descriptors require sizes', () => {
 			rule,
 			'<picture><source srcset="s.webp 480w, l.webp 1024w"><img src="l.jpg" alt="p" loading="lazy"></picture>',
 		);
-		expect(violations).toStrictEqual([]);
+		// Behavior change: the img allows auto-sizes only with loading="lazy" and sizes="auto", so the source still needs sizes
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 10,
+				message: 'The "sizes" attribute is required when the "srcset" attribute uses width descriptors',
+				raw: '<source srcset="s.webp 480w, l.webp 1024w">',
+			},
+		]);
+		// expect(violations).toStrictEqual([]); // previous
 	});
 });
 
@@ -244,5 +254,61 @@ describe('Dynamic values', () => {
 				})
 			).violations,
 		).toStrictEqual([]);
+	});
+});
+
+describe('source with width descriptors: the following img must allow auto-sizes', () => {
+	test('[no-unpaired-srcset-sizes-valid-014] img[loading=lazy][sizes=auto] → no violation', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					'<picture><source srcset="s.webp 480w, l.webp 1024w"><img src="l.jpg" alt="p" loading="lazy" sizes="auto"></picture>',
+				)
+			).violations,
+		).toStrictEqual([]);
+	});
+
+	test('[no-unpaired-srcset-sizes-valid-015] sizes "AUTO" and "auto, 100vw" on the img are auto', async () => {
+		for (const sizes of ['AUTO', 'auto, 100vw']) {
+			expect(
+				(
+					await mlRuleTest(
+						rule,
+						`<picture><source srcset="s.webp 480w, l.webp 1024w"><img src="l.jpg" alt="p" loading="LAZY" sizes="${sizes}"></picture>`,
+					)
+				).violations,
+			).toStrictEqual([]);
+		}
+	});
+
+	test('[no-unpaired-srcset-sizes-invalid-008] img[sizes=auto] without loading=lazy → violation', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<picture><source srcset="s.webp 480w, l.webp 1024w"><img src="l.jpg" alt="p" sizes="auto"></picture>',
+		);
+		expect(violations.length).toBe(1);
+	});
+
+	test('[no-unpaired-srcset-sizes-invalid-009] img[loading=lazy][sizes=100vw] → violation', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<picture><source srcset="s.webp 480w, l.webp 1024w"><img src="l.jpg" alt="p" loading="lazy" sizes="100vw"></picture>',
+		);
+		expect(violations.length).toBe(1);
+	});
+
+	test('[no-unpaired-srcset-sizes-parser-004] Vue dynamic loading or sizes on the img → no violation', async () => {
+		for (const attr of [':loading="l" sizes="auto"', 'loading="lazy" :sizes="s"']) {
+			expect(
+				(
+					await mlRuleTest(
+						rule,
+						`<template><picture><source srcset="s.webp 480w, l.webp 1024w"><img src="l.jpg" alt="p" ${attr}></picture></template>`,
+						{ parser: { '.*': '@markuplint/vue-parser' }, specs: { '.*': '@markuplint/vue-spec' } },
+					)
+				).violations,
+			).toStrictEqual([]);
+		}
 	});
 });

@@ -1,7 +1,7 @@
 import { createRule } from '@markuplint/ml-core';
 
 import { hasSizesAuto } from '../srcset-sizes-constraint/parse-srcset.js';
-import { findFollowingImg } from '../srcset-sizes-constraint/sibling-helpers.js';
+import { allowsAutoSizes, findFollowingImg, isLazyLoading } from '../srcset-sizes-constraint/sibling-helpers.js';
 
 import meta from './meta.js';
 
@@ -11,7 +11,9 @@ import meta from './meta.js';
  * image starts loading — so it only makes sense together with
  * `loading="lazy"`, which the spec requires. Split out of the former
  * `srcset-sizes-constraint` rule's Checks 3 (`<img>`) and 4 (`<source>`, which
- * checks the following sibling `<img>` instead of itself).
+ * checks the following sibling `<img>` instead of itself). For the `<source>`,
+ * the sibling `<img>` must allow auto-sizes: `loading="lazy"` and a `sizes` of
+ * `auto` (`allowsAutoSizes`), not `loading="lazy"` alone.
  *
  * Gated on `srcset` being present, matching the source rule this was split
  * from: `sizes="auto"` has nothing to auto-size without candidates to choose
@@ -60,10 +62,13 @@ export default createRule<boolean>({
 				}
 			}
 
-			// source[sizes=auto] → following sibling img must have loading=lazy
+			// source[sizes=auto] → the following sibling img must allow
+			// auto-sizes: loading=lazy and sizes=auto (HTML LS § sizes
+			// attributes). A dynamic loading / sizes on the img is not known.
 			if (localName === 'source' && sizesValue != null && !sizesIsDynamic && hasSizesAuto(sizesValue)) {
 				const img = findFollowingImg(el);
-				if (!img || img.getAttribute('loading') !== 'lazy') {
+				const lazy = img ? isLazyLoading(img) : false;
+				if (lazy === false) {
 					report({
 						scope: el,
 						line: sizesAttr!.valueNode?.startLine,
@@ -71,6 +76,15 @@ export default createRule<boolean>({
 						raw: sizesAttr!.valueNode?.raw,
 						message:
 							'The "source" element with sizes="auto" requires the following sibling "img" element to have loading="lazy"',
+					});
+				} else if (img && allowsAutoSizes(img) === false) {
+					report({
+						scope: el,
+						line: sizesAttr!.valueNode?.startLine,
+						col: sizesAttr!.valueNode?.startCol,
+						raw: sizesAttr!.valueNode?.raw,
+						message:
+							'The "source" element with sizes="auto" requires the following sibling "img" element to have sizes="auto"',
 					});
 				}
 			}

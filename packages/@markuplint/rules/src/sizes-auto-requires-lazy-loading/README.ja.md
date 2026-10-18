@@ -9,10 +9,10 @@ description: sizes="auto"を使用する箇所では loading="lazy" を必須と
 
 旧`srcset-sizes-constraint`ルールから、[`no-unpaired-srcset-sizes`](/docs/rules/no-unpaired-srcset-sizes)、[`no-mixed-srcset-descriptors`](/docs/rules/no-mixed-srcset-descriptors)、[`no-always-matching-source`](/docs/rules/no-always-matching-source)とともに分割されました。
 
-| #   | 制約                                                                           | 対象                       |
-| --- | ------------------------------------------------------------------------------ | -------------------------- |
-| 1   | `<img>` の `sizes="auto"` には `loading="lazy"` が必須                         | `img`                      |
-| 2   | `<source>` の `sizes="auto"` には後続兄弟の `<img>` に `loading="lazy"` が必須 | `source`（`<picture>` 内） |
+| #   | 制約                                                                                             | 対象                       |
+| --- | ------------------------------------------------------------------------------------------------ | -------------------------- |
+| 1   | `<img>` の `sizes="auto"` には `loading="lazy"` が必須                                           | `img`                      |
+| 2   | `<source>` の `sizes="auto"` には後続兄弟の `<img>` に `loading="lazy"` と `sizes="auto"` が必須 | `source`（`<picture>` 内） |
 
 <!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
 
@@ -31,6 +31,11 @@ description: sizes="auto"を使用する箇所では loading="lazy" を必須と
   <source srcset="a.webp 480w" sizes="auto" />
   <img src="a.jpg" alt="写真" />
 </picture>
+
+<picture>
+  <source srcset="a.webp 480w" sizes="auto" />
+  <img src="a.jpg" loading="lazy" alt="写真" />
+</picture>
 ```
 
 ✅ 正しいコード例
@@ -40,7 +45,7 @@ description: sizes="auto"を使用する箇所では loading="lazy" を必須と
 
 <picture>
   <source srcset="a.webp 480w" sizes="auto" />
-  <img src="a.jpg" loading="lazy" alt="写真" />
+  <img src="a.jpg" loading="lazy" sizes="auto" alt="写真" />
 </picture>
 ```
 
@@ -50,3 +55,4 @@ description: sizes="auto"を使用する箇所では loading="lazy" を必須と
 
 - [HTML Living Standard - The img element](https://momdo.github.io/html/embedded-content.html#the-img-element)
 - [HTML Living Standard - The source element](https://momdo.github.io/html/embedded-content.html#the-source-element)
+- [HTML Living Standard - An img element allows auto-sizes](https://momdo.github.io/html/embedded-content.html#allows-auto-sizes)
