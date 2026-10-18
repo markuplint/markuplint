@@ -1477,6 +1477,47 @@ describe('dependencyMapper: a component reached through a member tag or a lazy v
 		expect(result.some(pretender => pretender.selector === 'R')).toBe(resolved);
 	});
 
+	test('the default export of a namespace is no member', async () => {
+		await writeFile(path.join(tmpDir, 'a.tsx'), 'export const Item = () => <button />;\nexport default Item;\n');
+
+		expect(selectorsOf([namespace('UI', './a')])).toStrictEqual([String.raw`UI\.Item`]);
+	});
+
+	describe.each([
+		[7, true],
+		[8, false],
+	])('%i nested namespaces', (levels, resolved) => {
+		const writeNested = async () => {
+			await writeFile(path.join(tmpDir, 'a.tsx'), 'export const Item = () => <button />;\n');
+			for (let index = 1; index <= levels; index++) {
+				const next = index === levels ? './a' : `./b${index + 1}`;
+				await writeFile(path.join(tmpDir, `b${index}.ts`), `export * as S${index} from '${next}';\n`);
+			}
+		};
+
+		test(`give an alias for the component: ${resolved}`, async () => {
+			await writeNested();
+
+			const result = selectorsOf([namespace('UI', './b1')]);
+
+			expect(result.length > 0).toBe(resolved);
+		});
+
+		test(`resolve the member tag of the component: ${resolved}`, async () => {
+			await writeNested();
+			const tag = ['UI', ...Array.from({ length: levels }, (_, index) => `S${index + 1}`), 'Item'].join('.');
+			const map: PretenderDirectorMap = new Map([
+				['a.tsx#Item', ['Item', 'button', 'a.tsx:1:14', 'a.tsx', 'Item']],
+				['w.tsx#W', ['W', tag, 'w.tsx:2:14', 'w.tsx', 'W']],
+			]);
+			const importsByFile = new Map([['w.tsx', [namespace('UI', './b1')]]]);
+
+			const result = dependencyMapper(map, undefined, { importsByFile, cwd: tmpDir });
+
+			expect(result.find(pretender => pretender.selector === 'W')?.as === 'button').toBe(resolved);
+		});
+	});
+
 	test('a member tag of a namespace that leads into a package ends the chain there', async () => {
 		await writeFile(path.join(tmpDir, 'barrel.ts'), "export * as UI from 'not-installed-package';\n");
 		const map: PretenderDirectorMap = new Map([

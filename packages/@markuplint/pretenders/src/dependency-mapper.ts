@@ -530,7 +530,7 @@ function resolveMemberTag(
 		return FROM_PACKAGE;
 	}
 	const last = members.at(-1);
-	const declaration = current && last ? resolveExportedName(current, last, new Set(), env) : null;
+	const declaration = current && last ? resolveExportedName(current, last, visited, env) : null;
 	if (!declaration) {
 		return null;
 	}
