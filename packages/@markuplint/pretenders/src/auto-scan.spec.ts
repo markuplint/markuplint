@@ -52,6 +52,38 @@ describe('autoScan', () => {
 		expect(result.find(p => p.selector === 'Item')).toMatchObject({ as: { element: 'img', slots: null } });
 	});
 
+	test('a .tsx entry resolves a component it loads with `lazy()` into a variable of another name', async () => {
+		const entryPath = path.join(tmpDir, 'entry.tsx');
+		await writeFile(
+			path.join(tmpDir, 'Item.tsx'),
+			'export const Item = () => <img src="x.png" />;\nexport default Item;',
+		);
+		const entrySource = [
+			"import { lazy } from 'react';",
+			"const Foo = lazy(() => import('./Item'));",
+			'export const W = () => <div><Foo><span>c</span></Foo></div>;',
+		].join('\n');
+
+		const result = await autoScan(entryPath, entrySource);
+
+		expect(result.find(p => p.selector === 'Foo')).toMatchObject({ as: { element: 'img', slots: null } });
+	});
+
+	test('a .tsx entry resolves a member tag of a namespace import', async () => {
+		const entryPath = path.join(tmpDir, 'entry.tsx');
+		await writeFile(path.join(tmpDir, 'Item.tsx'), 'export const Item = () => <img src="x.png" />;');
+		const entrySource = [
+			"import * as UI from './Item';",
+			'export const W = () => <div><UI.Item><span>c</span></UI.Item></div>;',
+		].join('\n');
+
+		const result = await autoScan(entryPath, entrySource);
+
+		expect(result.find(p => p.selector === String.raw`UI\.Item`)).toMatchObject({
+			as: { element: 'img', slots: null },
+		});
+	});
+
 	test('a .tsx entry resolves a .vue import (BFS is extension-agnostic)', async () => {
 		const entryPath = path.join(tmpDir, 'entry.tsx');
 		const childPath = path.join(tmpDir, 'Child.vue');
@@ -414,9 +446,7 @@ describe('autoScan', () => {
 		});
 
 		test('the walk reaches the module behind a namespace re-export', async () => {
-			// Only the walk is checked: matching `<Base.Link>` to the `Link`
-			// pretender is a separate concern, and fails for a direct
-			// `import * as Base` as well.
+			// Only the walk is checked: the pretender of `<Base.Link>` is the next test's.
 			await writeUiBarrel(tmpDir, "export * as Base from './Base';");
 
 			const result = await autoScan(
@@ -425,6 +455,19 @@ describe('autoScan', () => {
 			);
 
 			expect(result.find(p => p.selector === 'Link')).toMatchObject({
+				as: expect.objectContaining({ element: 'a' }),
+			});
+		});
+
+		test('a member tag of a namespace re-exported by a barrel is resolved', async () => {
+			await writeUiBarrel(tmpDir, "export * as Base from './Base';");
+
+			const result = await autoScan(
+				path.join(tmpDir, 'App.tsx'),
+				"import { Base } from './ui';\nexport const App = () => <Base.Link />;",
+			);
+
+			expect(result.find(p => p.selector === String.raw`Base\.Link`)).toMatchObject({
 				as: expect.objectContaining({ element: 'a' }),
 			});
 		});

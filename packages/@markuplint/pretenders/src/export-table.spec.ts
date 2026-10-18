@@ -150,6 +150,41 @@ describe('getExportTable', () => {
 			});
 		});
 
+		test('export { X } of a namespace import is a namespace re-export', () => {
+			const table = getExportTable(sourceFile("import * as Base from './Base';\nexport { Base };"));
+			expect(table.byName.get('Base')).toStrictEqual({
+				kind: 're-export',
+				source: './Base',
+				importedName: '*',
+				viaImport: true,
+			});
+		});
+
+		test('a namespace import next to a default import is a namespace re-export', () => {
+			const table = getExportTable(sourceFile("import Base, * as NS from './Base';\nexport { NS };"));
+			expect(table.byName.get('NS')).toStrictEqual({
+				kind: 're-export',
+				source: './Base',
+				importedName: '*',
+				viaImport: true,
+			});
+		});
+
+		test('export { X as default } of a namespace import is no re-export', () => {
+			const table = getExportTable(sourceFile("import * as Base from './Base';\nexport { Base as default };"));
+			expect(table.byName.get('default')).toStrictEqual({ kind: 'local', localName: 'Base' });
+		});
+
+		test('a type-only namespace import is not followed', () => {
+			const table = getExportTable(sourceFile("import type * as NS from './Base';\nexport { NS };"));
+			expect(table.byName.get('NS')).toStrictEqual({ kind: 'local', localName: 'NS' });
+		});
+
+		test('export default of a namespace import is no re-export', () => {
+			const table = getExportTable(sourceFile("import * as Base from './Base';\nexport default Base;"));
+			expect(table.byName.get('default')).toStrictEqual({ kind: 'local', localName: 'Base' });
+		});
+
 		test('a type-only import is not followed', () => {
 			const table = getExportTable(sourceFile("import type { Item } from './Item';\nexport { Item };"));
 			expect(table.byName.get('Item')).toStrictEqual({ kind: 'local', localName: 'Item' });
