@@ -429,18 +429,6 @@
 		},
 
 		/**
-		 * `<input type="file">` value must be empty when specified
-		 *
-		 * @see https://html.spec.whatwg.org/multipage/input.html#file-upload-state-(type=file)
-		 */
-		"html-standard/input-file-empty-value": {
-			"specConformance": "normative",
-			"rules": {
-				"no-input-file-value": true
-			}
-		},
-
-		/**
 		 * `<input list>` must reference a `<datalist>` element by ID
 		 *
 		 * @see https://html.spec.whatwg.org/multipage/input.html#the-list-attribute

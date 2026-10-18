@@ -87,7 +87,6 @@ Specify required attr| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [Require a distinguishing `media` or `type` on a `<source>` with a following srcset-bearing sibling](https://html.spec.whatwg.org/multipage/embedded-content.html#the-source-element)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [Validate link type keywords](https://html.spec.whatwg.org/multipage/links.html#linkTypes)|Validates that `rel` attribute keywords are allowed on the given element and context (e.g., body-ok for `<link>` inside `<body>`).|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [Form-associated `form` attribute must reference a form element](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fae-form)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
-[`<input type="file">` value must be empty when specified](https://html.spec.whatwg.org/multipage/input.html#file-upload-state-(type=file))| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [`<input list>` must reference a `<datalist>` element by ID](https://html.spec.whatwg.org/multipage/input.html#the-list-attribute)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [`<label for>` must reference a labelable element by ID](https://html.spec.whatwg.org/multipage/forms.html#attr-label-for)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [`<label>` descendant-control constraints (at most one form-control descendant; none when `for` targets an external labelable element)](https://html.spec.whatwg.org/multipage/forms.html#the-label-element)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
