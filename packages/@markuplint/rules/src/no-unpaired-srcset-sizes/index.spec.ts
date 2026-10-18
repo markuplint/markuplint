@@ -311,4 +311,12 @@ describe('source with width descriptors: the following img must allow auto-sizes
 			).toStrictEqual([]);
 		}
 	});
+
+	test('[no-unpaired-srcset-sizes-invalid-010] img[loading=lazy][sizes="auto 100vw"] is not auto → violation', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<picture><source srcset="s.webp 480w, l.webp 1024w"><img src="l.jpg" alt="p" loading="lazy" sizes="auto 100vw"></picture>',
+		);
+		expect(violations.length).toBe(1);
+	});
 });

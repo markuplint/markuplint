@@ -18,7 +18,7 @@ Split out of the former `srcset-sizes-constraint` rule, alongside [`no-unpaired-
 
 - Only `<img>` and `<source>` elements inside `<picture>` are checked, and only when the element has a `srcset` attribute.
 - Dynamic attribute values (e.g., Vue `:sizes`, JSX `sizes={...}`) and elements with spread attributes are skipped.
-- `sizes="auto"` is recognized when `auto` appears at the start of the attribute value (case-insensitive). For example, `sizes="auto, 100vw"` is treated as auto, but `sizes="100vw, auto"` is not.
+- `sizes="auto"` is recognized when the attribute value is `auto` or starts with `auto,` (case-insensitive). For example, `sizes="auto, 100vw"` is treated as auto, but `sizes="100vw, auto"` is not.
 
 ❌ Examples of **incorrect** code for this rule
 

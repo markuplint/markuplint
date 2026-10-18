@@ -77,17 +77,18 @@ export function parseSrcset(value: string): ParseResult {
 }
 
 /**
- * Check whether a `sizes` attribute value starts with `auto`.
+ * Check whether a `sizes` attribute value is `auto` or starts with `auto,`.
  *
- * Per the spec, `auto` is only valid as the first entry in a sizes list.
- * Examples: `"auto"`, `"auto, 100vw"`, `"AUTO"`.
+ * HTML LS § allows-auto-sizes: the value is "auto" (ASCII case-insensitive),
+ * or starts with "auto," (ASCII case-insensitive). The value is not trimmed.
+ * Examples: `"auto"`, `"auto, 100vw"`, `"AUTO,100vw"`. Not: `"auto 100vw"`.
  *
  * @param value - The raw `sizes` attribute value string
- * @returns `true` if the value starts with `auto` (case-insensitive)
- * @see https://html.spec.whatwg.org/multipage/embedded-content.html#the-img-element
+ * @returns `true` if the value is `auto` or starts with `auto,`
+ * @see https://html.spec.whatwg.org/multipage/embedded-content.html#allows-auto-sizes
  */
 
 export function hasSizesAuto(value: string): boolean {
-	const v = value.trim().toLowerCase();
-	return v === 'auto' || /^auto[\s,]/.test(v);
+	const v = value.toLowerCase();
+	return v === 'auto' || v.startsWith('auto,');
 }

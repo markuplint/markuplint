@@ -271,4 +271,11 @@ describe('source[sizes=auto]: the following img must allow auto-sizes', () => {
 			).toStrictEqual([]);
 		}
 	});
+
+	test('[sizes-auto-requires-lazy-loading-valid-014] sizes="auto 100vw" is not auto: nothing to require', async () => {
+		// HTML LS § allows-auto-sizes: the value is "auto" or starts with "auto,".
+		expect(
+			(await mlRuleTest(rule, '<img srcset="a.png 480w" sizes="auto 100vw" src="a.png" alt="p">')).violations,
+		).toStrictEqual([]);
+	});
 });

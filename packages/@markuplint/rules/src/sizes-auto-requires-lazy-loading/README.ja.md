@@ -20,7 +20,7 @@ description: sizes="auto"を使用する箇所では loading="lazy" を必須と
 
 - `<img>` と `<picture>` 内の `<source>` 要素のみ、かつ `srcset` 属性がある場合のみチェックします。
 - 動的な属性値（Vue の `:sizes`、JSX の `sizes={...}` など）やスプレッド属性を持つ要素はスキップされます。
-- `sizes="auto"` は、属性値の先頭に `auto` がある場合に認識されます（大文字小文字不区別）。例えば `sizes="auto, 100vw"` は auto として扱われますが、`sizes="100vw, auto"` は auto として認識されません。
+- `sizes="auto"` は、属性値が `auto` であるか `auto,` で始まる場合に認識されます（大文字小文字不区別）。例えば `sizes="auto, 100vw"` は auto として扱われますが、`sizes="100vw, auto"` は auto として認識されません。
 
 ❌ 間違ったコード例
 
