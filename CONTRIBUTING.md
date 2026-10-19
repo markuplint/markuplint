@@ -16,6 +16,27 @@ You can contribute to:
 
 Its purpose is all developers are able to better markup and fit each of diverse their projects. So we want you to contribute. Your thought leads to diversity.
 
+## Before you open a pull request
+
+Pull requests that do not meet the conditions below may be closed without review. Opening many pull requests across many repositories in a short time is treated as spam, and those pull requests are closed regardless of their content.
+
+### Which issues accept a pull request
+
+Open a pull request only for an issue that has the `Pull Request Wanted` label.
+
+Other issues are usually being worked on by a maintainer already, and a pull request for them duplicates that work. If there is no issue for your change, open one first. The only exception is a change that does not alter behavior, such as a typo fix.
+
+### What the pull request body must contain
+
+1. **The issue** — `Fixes #N`. For a change with no issue (the typo-fix exception above), say that the change does not alter behavior.
+2. **The cause** — why the problem happened, in your own words. A description of what the diff changes is not a cause.
+3. **Verification** — how you reproduced the problem before the change, and which tests you ran after it.
+4. **AI assistance** — whether you used AI tools; if you did, what you used them for (code, tests, the description) and what review you had them do on the change. Write "None" if you did not.
+
+### Using AI tools
+
+You may use AI tools. You are responsible for the change all the same: you must understand every line of it and be able to answer review questions in your own words. A pull request whose author cannot explain the change will be closed.
+
 ## Code contribution
 
 You need:
@@ -30,11 +51,7 @@ When you wrote code then:
 - Format and lint code through `yarn lint`.
 - Check to build successfully through `yarn build`.
 - Test your code through `yarn test` (this also runs TypeScript type-checking on spec files).
-- Push to the topic branch and open a pull request.
-- Assign reviewer:
-  - For the improved code: @yusukehirao
-  - For plugins: @yusukehirao
-  - For documents/website: @yusukehirao, @kagankan
+- Push to the topic branch and open a pull request against `dev` (against `v6` when the issue has only the `v6` label) with the body described in [What the pull request body must contain](#what-the-pull-request-body-must-contain). Reviewers are assigned automatically.
 
 ### nu-validator compatibility benchmark
 

@@ -5,8 +5,8 @@
  * of its body.
  *
  * Usage:
- *   node .claude/skills/merged/scripts/leftovers.mjs status <pr-number-or-url>
- *   node .claude/skills/merged/scripts/leftovers.mjs mark <pr-number-or-url> <index> "<marker>" [--dry-run]
+ *   node .claude/skills/impl/scripts/leftovers.mjs status <pr-number-or-url>
+ *   node .claude/skills/impl/scripts/leftovers.mjs mark <pr-number-or-url> <index> "<marker>" [--dry-run]
  *
  * `status` prints the PR's state and, numbered from 1, the bullets of the
  * section whose last line carries no marker. `mark` appends ` — <marker>` to
@@ -22,15 +22,12 @@
  * WHY the ledger is the PR body: it is the one place that survives `/clear`,
  * context compaction and the removal of the worktree, and the maintainer reads
  * it on GitHub. The `impl` skill writes the section with every bullet already
- * marked `Filed as #n`; this script is the safety net for a bullet that
- * slipped through, and the `merged` skill loops on `status` until it prints
- * `(none)`.
+ * marked `Filed as #n` before the commit; after the merge, its last step runs
+ * `status` until it prints `(none)`, which catches a bullet that slipped
+ * through or was added to the body during review.
  *
- * WHY the exit code is always 0: the `merged` skill injects the output of
- * `status` into its own content with the `!`command`` syntax, and Claude Code
- * aborts the whole skill invocation on a non-zero exit, so an error has to be
- * reported in the output. `mark` follows the same rule so that both read
- * alike; its output starts with `error:` when nothing was written.
+ * An error is printed as a line starting with `error:` and exits with 1;
+ * `mark` writes nothing in that case.
  *
  * WHY the body is patched one line at a time: regenerating the body from the
  * model is the step most likely to drop another section (`## Left as is on
@@ -70,9 +67,11 @@ try {
 		console.log(
 			'error: usage: leftovers.mjs status <pr-number> | mark <pr-number> <index> "<marker>" [--dry-run] (no other arguments are accepted)',
 		);
+		process.exitCode = 1;
 	}
 } catch (error) {
 	console.log(`error: ${error instanceof Error ? error.message : String(error)}`);
+	process.exitCode = 1;
 }
 
 /**
