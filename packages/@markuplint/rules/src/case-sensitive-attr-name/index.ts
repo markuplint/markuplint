@@ -52,7 +52,7 @@ export default createRule<Value>({
 						line: nameNode?.startLine,
 						col: nameNode?.startCol,
 						raw: nameNode?.raw,
-						message,
+						message: t(`{0} ${ms} be {1}`, t('the "{0*}" {1}', name, 'attribute'), `"${spec.name}"`),
 						fix: nameNode ? fixer => fixer.replaceText(nameNode, spec.name) : undefined, // eslint-disable-line @typescript-eslint/strict-boolean-expressions
 					});
 				}

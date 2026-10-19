@@ -144,7 +144,7 @@ describe('foreign elements', () => {
 				line: 1,
 				col: 6,
 				raw: 'viewbox',
-				message: 'Attribute names of HTML elements should be lowercase',
+				message: 'The "viewbox" attribute should be "viewBox"',
 			},
 		]);
 	});
@@ -157,7 +157,7 @@ describe('foreign elements', () => {
 				line: 1,
 				col: 6,
 				raw: 'VIEWBOX',
-				message: 'Attribute names of HTML elements should be uppercase',
+				message: 'The "VIEWBOX" attribute should be "viewBox"',
 			},
 		]);
 		const fixedUpper = await mlRuleTest(rule, '<svg VIEWBOX="0 0 1 1"></svg>', { rule: 'upper' }, true);
@@ -176,7 +176,7 @@ describe('foreign elements', () => {
 				line: 1,
 				col: 6,
 				raw: 'CLASS',
-				message: 'Attribute names of HTML elements should be uppercase',
+				message: 'The "CLASS" attribute should be "class"',
 			},
 		]);
 		const { fixedCode } = await mlRuleTest(rule, '<svg CLASS="a"></svg>', { rule: 'upper' }, true);
@@ -193,7 +193,7 @@ describe('foreign elements', () => {
 				line: 1,
 				col: 6,
 				raw: 'VIEWBOX',
-				message: 'Attribute names of HTML elements should be lowercase',
+				message: 'The "VIEWBOX" attribute should be "viewBox"',
 			},
 		]);
 	});
@@ -209,7 +209,7 @@ describe('foreign elements', () => {
 				line: 1,
 				col: 6,
 				raw: 'viewbox',
-				message: 'Attribute names of HTML elements should be lowercase',
+				message: 'The "viewbox" attribute should be "viewBox"',
 			},
 		]);
 	});
