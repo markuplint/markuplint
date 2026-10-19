@@ -1,3 +1,4 @@
+import { isAriaAttr } from '../../helpers.js';
 import type { Options } from '../types.js';
 import type { AttrChecker } from '@markuplint/ml-core';
 import type { ARIAProperty, ARIARole } from '@markuplint/ml-spec';
@@ -27,7 +28,7 @@ export const checkingElementSupportsAriaProp: AttrChecker<
 > =
 	({ attr, role, propSpecs }) =>
 	t => {
-		if (!/^aria-/i.test(attr.name)) {
+		if (!isAriaAttr(attr)) {
 			return;
 		}
 
@@ -35,7 +36,7 @@ export const checkingElementSupportsAriaProp: AttrChecker<
 			attr.rule.options?.version ??
 			attr.ownerMLDocument.ruleCommonSettings?.ariaVersion ??
 			ARIA_RECOMMENDED_VERSION;
-		const propSpec = propSpecs.find(p => p.name === attr.name);
+		const propSpec = propSpecs.find(p => p.name === attr.nameKey);
 		const elAriaSpec = getARIA(
 			attr.ownerMLDocument.specs,
 			attr.ownerElement.localName,
@@ -79,7 +80,7 @@ export const checkingElementSupportsAriaProp: AttrChecker<
 		// already implemented in the `properties.without` branch below.
 		if (elAriaSpec?.properties !== false && elAriaSpec?.properties?.only) {
 			const onlyNames = elAriaSpec.properties.only.map(o => (typeof o === 'string' ? o : o.name));
-			if (!onlyNames.includes(attr.name)) {
+			if (!onlyNames.includes(attr.nameKey)) {
 				return {
 					scope: attr,
 					message: t(
@@ -97,7 +98,7 @@ export const checkingElementSupportsAriaProp: AttrChecker<
 
 		if (elAriaSpec?.properties !== false && elAriaSpec?.properties?.without) {
 			for (const ignore of elAriaSpec.properties.without) {
-				if (ignore.name === attr.name) {
+				if (ignore.name === attr.nameKey) {
 					const hasNativeAttr =
 						ignore.alt?.method === 'set-attr' && attr.ownerElement.hasAttribute(ignore.alt.target);
 

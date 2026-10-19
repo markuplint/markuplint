@@ -1,12 +1,12 @@
 import type { Translator } from '@markuplint/i18n';
 import type { PlainData } from '@markuplint/ml-config';
-import type { Element, RuleConfigValue } from '@markuplint/ml-core';
+import type { Attr, Element, RuleConfigValue } from '@markuplint/ml-core';
 import type { Attribute } from '@markuplint/ml-spec';
 
 import { isConditionalAttributeTypeArray } from '@markuplint/ml-spec';
 import { getCandidate } from '@markuplint/types';
 
-import { attrMatches, conditionDependsOnDynamicAttr } from './helpers.js';
+import { attrMatches, conditionDependsOnDynamicAttr, findAttrSpec, namespaceKeyOf } from './helpers.js';
 
 /**
  * Attribute namespaces that are exempt from spec-based name/eligibility
@@ -19,7 +19,7 @@ const EXEMPT_NAME_PATTERN = /^(?:data-.+|adapt-.+|aria-.+|role)$/;
 /**
  * Result of resolving whether an attribute name is known to the spec and,
  * if so, whether it currently applies. Shared by `no-unknown-attr` (acts on
- * `unknown`/`case-mismatch`), `no-disallowed-attr` (acts on `no-use`/
+ * `unknown`), `no-disallowed-attr` (acts on `no-use`/
  * `condition-not-met`), and `no-invalid-attr-value` (acts on `ok`, using the
  * resolved `spec.type` for value-checking). Splitting this into one function
  * keeps the three rules' notion of "what the spec says about this name" in
@@ -28,7 +28,6 @@ const EXEMPT_NAME_PATTERN = /^(?:data-.+|adapt-.+|aria-.+|role)$/;
 export type AttrEligibility =
 	| { readonly status: 'exempt' }
 	| { readonly status: 'unknown'; readonly candidate: string | undefined }
-	| { readonly status: 'case-mismatch'; readonly expectedName: string }
 	| { readonly status: 'no-use' }
 	| { readonly status: 'condition-not-met' }
 	| { readonly status: 'ok'; readonly spec: Attribute };
@@ -36,20 +35,33 @@ export type AttrEligibility =
 /**
  * Resolves an attribute name against the element's `attrSpecs`, following
  * the same order the pre-split `invalid-attr` rule used: existence, then
- * case-sensitivity, then `noUse`, then `condition` (with
- * `ConditionalAttributeType[]` resolved to a concrete type first, per #3598).
+ * `noUse`, then `condition` (with `ConditionalAttributeType[]` resolved to a
+ * concrete type first).
+ *
+ * Whether a spelling is the name of a spec is up to the attribute, and the DOM decides it
+ * (`MLAttr#isNamedBy`): `viewbox` is `viewBox` where the HTML parser reads it, and is not where
+ * code sets the name. Ask with the attribute (`attr`); without it, `name` is a name of the spec
+ * and is looked up as written, which is what a rule does for the native attribute of an ARIA one.
+ *
+ * @param name - The attribute name (a name of the spec when `attr` is not given)
+ * @param node - The element
+ * @param attrSpecs - The specs of the attributes of the element
+ * @param attr - The attribute that is being resolved
  */
 export function resolveAttrEligibility<T extends RuleConfigValue, O extends PlainData>(
 	name: string,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	node: Element<T, O>,
 	attrSpecs: readonly Attribute[],
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	attr?: Attr<T, O>,
 ): AttrEligibility {
-	if (EXEMPT_NAME_PATTERN.test(name)) {
+	// The name that the DOM gives the attribute is what a pattern of a namespace is tested against
+	if (EXEMPT_NAME_PATTERN.test(attr ? namespaceKeyOf(attr) : name)) {
 		return { status: 'exempt' };
 	}
 
-	let spec = attrSpecs.find(s => s.name.toLowerCase() === name.toLowerCase());
+	let spec = attr ? findAttrSpec(attrSpecs, attr) : attrSpecs.find(s => s.name === name);
 
 	if (!spec) {
 		const candidate = getCandidate(
@@ -57,11 +69,6 @@ export function resolveAttrEligibility<T extends RuleConfigValue, O extends Plai
 			attrSpecs.map(s => s.name),
 		);
 		return { status: 'unknown', candidate };
-	}
-
-	const nameCaseSensitive = /[A-Z]/.test(spec.name);
-	if (nameCaseSensitive && name !== spec.name) {
-		return { status: 'case-mismatch', expectedName: spec.name };
 	}
 
 	if (spec.noUse) {

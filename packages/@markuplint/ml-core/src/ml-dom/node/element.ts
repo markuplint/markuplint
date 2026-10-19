@@ -47,7 +47,7 @@ import { MLElementCloseTag } from './element-close-tag.js';
 import { toNamedNodeMap } from './named-node-map.js';
 import { toHTMLCollection, toNodeList } from './node-list.js';
 import { MLParentNode } from './parent-node.js';
-import { UnexpectedCallError, vuePropKey } from '@markuplint/shared';
+import { UnexpectedCallError, asciiLowerCase, vuePropKey } from '@markuplint/shared';
 
 const HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml';
 
@@ -90,6 +90,39 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 */
 	get isForeignElement(): boolean {
 		return this.#namespaceURI !== HTML_NAMESPACE;
+	}
+
+	/**
+	 * Whether two names would be one attribute on this element, for names that no attribute of the
+	 * element stands behind (the names of a spec, of an option or of a rule value, where the
+	 * attribute may be missing). It is {@link MLAttr.isNamedBy} without an attribute.
+	 *
+	 * The HTML syntax folds the ASCII case. A name that code sets through the DOM API is folded
+	 * only on an element of the HTML namespace: on an SVG or MathML element it keeps its spelling,
+	 * and a name with a capital letter is a prop of the framework. The props of a component are
+	 * not folded, except that Vue camelizes them.
+	 *
+	 * With no attribute, whether the name is set through the DOM API is up to the parser alone: the
+	 * attribute is not dynamic, so Svelte's name is read as the HTML parser reads it.
+	 *
+	 * @see https://dom.spec.whatwg.org/#dom-element-setattribute
+	 * @see https://html.spec.whatwg.org/multipage/parsing.html#attribute-name-state
+	 *
+	 * @param a - A name
+	 * @param b - The other name
+	 * @returns `true` if both names are one attribute on this element
+	 */
+	isSameAttrName(a: string, b: string): boolean {
+		if (a === b) {
+			return true;
+		}
+		if (this.elementType === 'authored') {
+			return this.ownerMLDocument.componentNameVariants && vuePropKey(a) === vuePropKey(b);
+		}
+		if (this.ownerMLDocument.attrNameRoute === 'dom-api' && (this.isForeignElement || /[A-Z]/.test(a + b))) {
+			return false;
+		}
+		return asciiLowerCase(a) === asciiLowerCase(b);
 	}
 
 	/**
@@ -947,6 +980,11 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	/**
+	 * Every attribute written on the tag, the second of two spellings of one name too: unlike a DOM
+	 * element, which keeps one of them, a rule checks each attribute that the author wrote, and
+	 * `no-duplicate-attr` reports the second. Which of them the DOM keeps is what {@link getAttribute}
+	 * returns.
+	 *
 	 * @implements DOM API: `Element`
 	 * @see https://dom.spec.whatwg.org/#dom-element-attributes
 	 */
@@ -954,27 +992,12 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		const origin =
 			this.pretenderContext?.type === 'pretender' ? this.pretenderContext.as.#attributes : this.#attributes;
 
-		if (this.#normalizedAttrs.has(origin)) {
-			return this.#normalizedAttrs.get(origin)!;
+		const cached = this.#normalizedAttrs.get(origin);
+		if (cached) {
+			return cached;
 		}
 
-		const names = new Set<string>();
-		const attrs: MLAttr<T, O>[] = [];
-
-		for (const attr of origin) {
-			if (names.has(attr.name)) {
-				/**
-				 * Skips a duplicated attribute
-				 *
-				 *@see https://html.spec.whatwg.org/#parse-error-duplicate-attribute
-				 */
-				continue;
-			}
-
-			attrs.push(attr);
-		}
-
-		const map = toNamedNodeMap(attrs);
+		const map = toNamedNodeMap(origin);
 		this.#normalizedAttrs.set(origin, map);
 		return map;
 	}
@@ -3597,16 +3620,31 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	/**
+	 * Whether `attrName` is the name of an attribute of this element is what {@link MLAttr.isNamedBy}
+	 * says: `ROLE` is `role` on a `<div>` and, in JSX, is not on an `<svg>`. `hasAttribute`,
+	 * `getAttributeToken`, `getAttributePretended`, a pretender's `fromAttr` and `getNamedItem` ask the same.
+	 *
 	 * @implements DOM API: `Element`
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-element-getattribute%E2%91%A0
 	 */
 	getAttribute(attrName: string) {
+		let first: MLAttr<T, O> | null = null;
+		let lastSetByCode: MLAttr<T, O> | null = null;
 		for (const attr of this.attributes) {
-			if (attr.name.toLowerCase() === attrName.toLowerCase()) {
-				return attr.value;
+			if (!attr.isNamedBy(attrName)) {
+				continue;
+			}
+			first ??= attr;
+			// A directive, and an attribute that may be written twice (`class` and `:class`), are not
+			// two spellings of one name: the first is the one that is asked for
+			if (attr.isSetThroughDOMAPI && !attr.isDirective && !attr.isDuplicatable) {
+				lastSetByCode = attr;
 			}
 		}
-		return null;
+		// Of two attributes of one name, the HTML parser keeps the first and drops the second, while code
+		// that sets them one after another (`setAttribute`) lets the second overwrite the first.
+		// @see https://html.spec.whatwg.org/#parse-error-duplicate-attribute
+		return (lastSetByCode ?? first)?.value ?? null;
 	}
 
 	/**
@@ -3656,12 +3694,12 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * the original component element, not on the virtual pretender element.
 	 *
 	 * @implements `@markuplint/ml-core` API: `MLElement`
-	 * @param attrName - The attribute name to look up (case-insensitive)
+	 * @param attrName - The attribute name to look up (see {@link MLAttr.isNamedBy} for how its case is compared)
 	 * @returns The attribute value, or null if the attribute is not found
 	 */
 	getAttributePretended(attrName: string) {
 		for (const attr of this.#attributes) {
-			if (attr.name.toLowerCase() === attrName.toLowerCase()) {
+			if (attr.isNamedBy(attrName)) {
 				return attr.value;
 			}
 		}
@@ -3673,14 +3711,13 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * Unlike `getAttribute`, this returns the full `MLAttr` token objects.
 	 *
 	 * @implements `@markuplint/ml-core` API: `MLElement`
-	 * @param attrName - The attribute name to look up (case-insensitive)
+	 * @param attrName - The attribute name to look up (see {@link MLAttr.isNamedBy} for how its case is compared)
 	 * @returns An array of matching attribute tokens
 	 */
 	getAttributeToken(attrName: string) {
 		const attrs: MLAttr<T, O>[] = [];
-		attrName = attrName.toLowerCase();
 		for (const attr of this.getAttributeTokens()) {
-			if (attr.name.toLowerCase() === attrName) {
+			if (attr.isNamedBy(attrName)) {
 				attrs.push(attr);
 			}
 		}
@@ -4288,14 +4325,15 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 			if (typeof value === 'string') {
 				_value = value;
 			} else if (value != null && 'fromAttr' in value) {
-				// Vue gives a prop the attribute of the usage site by the camelCase of its name: `my-label`
-				// and `myLabel` are the prop `myLabel`, and the prop declared as `'my-label'` is the same one, so both
-				// sides are read so. Elsewhere a name is its own.
-				const propNameOf = this.ownerMLDocument.componentNameVariants
-					? (name: string) => vuePropKey(name)
-					: (name: string) => name.toLowerCase();
-				const fromAttr = propNameOf(value.fromAttr);
-				const origin = this.#attributes.find(attr => propNameOf(attr.name) === fromAttr);
+				// The attribute of the usage site that the prop is. Vue gives a prop the attribute by the camelCase
+				// of its name (`my-label` and `myLabel` are the prop `myLabel`, and `mylabel` is another),
+				// and the prop declared as `'my-label'` is the same one, so both sides are read so. Elsewhere
+				// the attribute is read as the DOM or the framework reads it (`isNamedBy`).
+				const { fromAttr } = value;
+				const isVue = this.ownerMLDocument.componentNameVariants;
+				const origin = this.#attributes.find(attr =>
+					isVue ? vuePropKey(attr.name) === vuePropKey(fromAttr) : attr.isNamedBy(fromAttr),
+				);
 				if (!origin && value.omitIfMissing) {
 					return [];
 				}

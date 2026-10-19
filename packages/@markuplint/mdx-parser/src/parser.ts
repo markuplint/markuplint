@@ -40,6 +40,7 @@ class MDXParser extends MarkdownAwareParser {
 			booleanish: true,
 			tagNameCaseSensitive: true,
 			attrNameCaseSensitive: true,
+			attrNameRoute: 'dom-api',
 		});
 	}
 

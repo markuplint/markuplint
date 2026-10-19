@@ -511,6 +511,14 @@ export type PretenderAttr = {
 	 * not write it, which is what a component that forwards an optional prop renders
 	 * (`<button type={kind}>` omits `type` when `kind` is `undefined`); without it, the
 	 * attribute is present and empty.
+	 *
+	 * `fromAttr` finds the attribute by the rules of the framework that renders the usage
+	 * site. In Vue, `my-label` and `myLabel` are the same prop and `mylabel` is not. In JSX,
+	 * a prop is matched exactly, so `Label` is not `label`. In an HTML-based syntax, the
+	 * name is compared as the DOM compares attribute names (ASCII case-insensitive). Write
+	 * the name the way the component declares its prop.
+	 *
+	 * @experimental How `fromAttr` finds the attribute may change in future releases.
 	 */
 	readonly value?:
 		| string

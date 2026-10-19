@@ -1,6 +1,6 @@
 import { createRule, getAttrSpecs } from '@markuplint/ml-core';
 
-import { removeAttr, toNormalizedValue } from '../helpers.js';
+import { findAttrSpec, removeAttr, toNormalizedValue } from '../helpers.js';
 
 import meta from './meta.js';
 
@@ -15,7 +15,7 @@ export default createRule({
 				return;
 			}
 
-			const spec = attrSpec.find(s => s.name === attr.name);
+			const spec = findAttrSpec(attrSpec, attr);
 
 			if (!spec) {
 				return;

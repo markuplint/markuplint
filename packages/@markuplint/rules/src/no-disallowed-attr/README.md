@@ -39,6 +39,8 @@ const Component = (props) => {
 
 ## Details
 
+Attribute names are compared as the DOM compares them, which depends on the syntax and on the element: `TABINDEX` is `tabindex` in the HTML syntax, and `IS` on an autonomous custom element is the `is` attribute. See [Attribute name case](/docs/rules/no-unknown-attr#attribute-name-case) for the details. The names and prefixes in the options (`allowAttrs`, `ignoreAttrNamePrefix`) are compared the same way.
+
 ### Setting `allowAttrs` option {#setting-allow-attrs-option}
 
 Shares its shape with [`no-unknown-attr`](/docs/rules/no-unknown-attr#setting-allow-attrs-option)'s option of the same name — see that rule for the full description. Set the same `allowAttrs` on both rules so the two stay in sync.

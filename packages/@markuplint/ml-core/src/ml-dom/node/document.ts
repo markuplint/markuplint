@@ -10,7 +10,7 @@ import type { Ruleset } from '../../ruleset/index.js';
 import type { MLSchema } from '../../types.js';
 import type { Walker } from '../helper/walkers.js';
 import type { MLToken } from '../token/token.js';
-import type { EndTagType, MLASTDocument, MLASTNodeTreeItem, MLASTParseError } from '@markuplint/ml-ast';
+import type { AttrNameRoute, EndTagType, MLASTDocument, MLASTNodeTreeItem, MLASTParseError } from '@markuplint/ml-ast';
 import type { PlainData, Pretender, RuleCommonSettings, RuleConfigValue } from '@markuplint/ml-config';
 import type { ARIAVersion, MLMLSpec } from '@markuplint/ml-spec';
 
@@ -167,15 +167,24 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	readonly isComponentName: (name: string) => boolean;
 
 	/**
-	 * Whether attribute names are case-sensitive in the source language (JSX props).
-	 * When false (default for HTML), attribute names are compared case-insensitively.
+	 * Whether attribute names are JavaScript identifiers in the source language (JSX props such as
+	 * `onClick`), which the `case-sensitive-attr-name` rule does not ask to be lower case.
 	 *
-	 * Known limitation: only the `case-sensitive-attr-name` rule honors this flag.
-	 * Attribute lookup, attribute selectors and duplicate-attribute detection still
-	 * compare names case-insensitively, unlike {@link MLDocument.tagNameCaseSensitive},
-	 * which also drives element selector matching.
+	 * It says nothing about whether two spellings of a name are one attribute: that is up to how the
+	 * name gets into the DOM ({@link MLDocument.attrNameRoute}) and to the element, and is decided by
+	 * {@link MLAttr.nameKey}. Svelte and Astro tell the case of a tag name apart but not of an
+	 * attribute name, and Vue sets its attributes through the DOM API though a template is still
+	 * checked for the case of a name.
 	 */
 	readonly attrNameCaseSensitive: boolean;
+
+	/**
+	 * How the name of an attribute gets into the DOM of the browser (`MLParser#attrNameRoute`, see
+	 * `AttrNameRoute`). It decides whether `VIEWBOX` and `viewBox` are one attribute, which is a matter of the
+	 * DOM and so of the element and the attribute as well; this is what the parser says about its language.
+	 * `"html-parser"` when the parser does not say.
+	 */
+	readonly attrNameRoute: AttrNameRoute;
 
 	/**
 	 * Common settings applied globally to all rules, such as the ARIA version.
@@ -203,6 +212,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 			readonly componentNameVariants?: boolean;
 			readonly isComponentName?: (name: string) => boolean;
 			readonly attrNameCaseSensitive?: boolean;
+			readonly attrNameRoute?: AttrNameRoute;
 			readonly pretenders?: readonly Pretender[];
 		},
 	) {
@@ -218,6 +228,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		this.componentNameVariants = options?.componentNameVariants ?? false;
 		this.isComponentName = options?.isComponentName ?? isComponentName;
 		this.attrNameCaseSensitive = options?.attrNameCaseSensitive ?? false;
+		this.attrNameRoute = options?.attrNameRoute ?? 'html-parser';
 		this.ruleCommonSettings = ruleCommonSettings;
 
 		// Build UUID → AST node map for cross-reference lookups (e.g., pairNodeUuid)

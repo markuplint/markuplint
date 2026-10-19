@@ -576,7 +576,34 @@ export interface MLParser {
 	 * Currently consumed only by the `case-sensitive-attr-name` rule.
 	 */
 	attrNameCaseSensitive?: boolean;
+
+	/**
+	 * How the name of an attribute gets into the DOM of the browser, which decides whether another
+	 * spelling of the name is the same attribute (see {@link AttrNameRoute}). Absent means the HTML
+	 * parser of the browser reads it.
+	 */
+	attrNameRoute?: AttrNameRoute;
 }
+
+/**
+ * How the name of an attribute gets into the DOM of the browser.
+ *
+ * - `"html-parser"`: The HTML parser reads it from an HTML string. It lower-cases the name, and restores
+ *   the case of the names of SVG and MathML ([HTML LS 13.2.5.33, 13.2.6.1]), so `VIEWBOX` and `viewbox`
+ *   on an `<svg>` are both `viewBox`. The `.html` file, and the static attribute of Svelte.
+ * - `"dom-api"`: Code sets it under the name as written (`setAttribute`, which lower-cases a name only on
+ *   an element of the HTML namespace). So `ROLE` on an `<svg>` stays `ROLE`, which is not `role`. JSX and MDX;
+ *   Vue, whose compiler makes an element by `setAttribute` unless it can put the whole static tree into an
+ *   HTML string, and does so only when every attribute name in the tree is one it knows by its exact
+ *   spelling. A name like that reads the same through the HTML parser, so a name that differs from the
+ *   spelling of the specification only in case is always set by `setAttribute` and keeps its case.
+ * - `"dom-api-when-dynamic"`: A static attribute is in an HTML string (`"html-parser"`) and a dynamic one is
+ *   set by code (`"dom-api"`). Svelte.
+ *
+ * @see https://html.spec.whatwg.org/multipage/parsing.html#attribute-name-state
+ * @see https://dom.spec.whatwg.org/#dom-element-setattribute
+ */
+export type AttrNameRoute = 'html-parser' | 'dom-api' | 'dom-api-when-dynamic';
 
 /**
  * A module that exports a parser. Used for dynamic parser resolution.

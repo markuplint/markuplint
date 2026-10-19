@@ -14,8 +14,7 @@ export default createRule({
 				if (attr.isDuplicatable) {
 					continue;
 				}
-				const attrName = attr.name;
-				const name = node.elementType === 'html' ? attrName.toLowerCase() : attrName;
+				const name = attr.nameKey;
 				if (attrNameStack.includes(name)) {
 					const scope = attr.nameNode ?? attr;
 					report({

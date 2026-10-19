@@ -2091,3 +2091,113 @@ test('[no-invalid-attr-value-valid-048] a value is never checked for an attribut
 	const { violations } = await mlRuleTest(rule, '<div itemtype="not-absolute"></div>');
 	expect(violations).toStrictEqual([]);
 });
+
+test('[no-invalid-attr-value-issue-4309-001] HTML: allowAttrs checks the value of the name in any spelling the DOM makes the same', async () => {
+	const violation = {
+		severity: 'error',
+		line: 1,
+		col: 14,
+		message: 'It includes unexpected characters. the "X-ATTR" attribute expects integer',
+		raw: 'a',
+	};
+	expect(
+		(
+			await mlRuleTest(rule, '<div X-ATTR="a"></div>', {
+				rule: { options: { allowAttrs: [{ name: 'x-attr', value: 'Int' }] } },
+			})
+		).violations,
+	).toStrictEqual([violation]);
+	expect(
+		(await mlRuleTest(rule, '<div X-ATTR="a"></div>', { rule: { options: { allowAttrs: { 'x-attr': 'Int' } } } }))
+			.violations,
+	).toStrictEqual([violation]);
+	expect(
+		(
+			await mlRuleTest(rule, '<div x-attr="a"></div>', {
+				rule: { options: { allowAttrs: [{ name: 'X-ATTR', value: 'Int' }] } },
+			})
+		).violations,
+	).toStrictEqual([
+		{ ...violation, message: 'It includes unexpected characters. the "x-attr" attribute expects integer' },
+	]);
+	expect(
+		(await mlRuleTest(rule, '<div X-ATTR="1"></div>', { rule: { options: { allowAttrs: { 'x-attr': 'Int' } } } }))
+			.violations,
+	).toStrictEqual([]);
+});
+
+test('[no-invalid-attr-value-issue-4309-002] HTML: a bare name of allowAttrs accepts any value whatever its spelling', async () => {
+	expect(
+		(await mlRuleTest(rule, '<div X-ATTR="a"></div>', { rule: { options: { allowAttrs: ['x-attr'] } } }))
+			.violations,
+	).toStrictEqual([]);
+});
+
+test('[no-invalid-attr-value-issue-4309-003] HTML: the value of an upper-case spec attribute is checked', async () => {
+	expect((await mlRuleTest(rule, '<input TYPE="bogus">')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 14,
+			message:
+				'The "TYPE" attribute expects either "hidden", "text", "search", "tel", "url", "email", "password", "date", "month", "week", "time", "datetime-local", "number", "range", "color", "checkbox", "radio", "file", "submit", "image", "reset", "button"',
+			raw: 'bogus',
+		},
+	]);
+});
+
+test('[no-invalid-attr-value-issue-4309-004] JSX: allowAttrs folds the name on an HTML element', async () => {
+	const parser = { '.*': '@markuplint/jsx-parser' };
+	expect(
+		(
+			await mlRuleTest(rule, '<div X-ATTR="1" />', {
+				parser,
+				rule: { options: { allowAttrs: { 'x-attr': 'Int' } } },
+			})
+		).violations,
+	).toStrictEqual([]);
+	expect(
+		(
+			await mlRuleTest(rule, '<div X-ATTR="a" />', {
+				parser,
+				rule: { options: { allowAttrs: { 'x-attr': 'Int' } } },
+			})
+		).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 14,
+			message: 'It includes unexpected characters. the "X-ATTR" attribute expects integer',
+			raw: 'a',
+		},
+	]);
+});
+
+test('[no-invalid-attr-value-issue-4309-005] JSX: allowAttrs keeps the name as written on an SVG element', async () => {
+	const parser = { '.*': '@markuplint/jsx-parser' };
+	expect(
+		(
+			await mlRuleTest(rule, '<svg X-ATTR="a" />', {
+				parser,
+				rule: { options: { allowAttrs: { 'x-attr': 'Int' } } },
+			})
+		).violations,
+	).toStrictEqual([]);
+	expect(
+		(
+			await mlRuleTest(rule, '<svg X-ATTR="a" />', {
+				parser,
+				rule: { options: { allowAttrs: { 'X-ATTR': 'Int' } } },
+			})
+		).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 14,
+			message: 'It includes unexpected characters. the "X-ATTR" attribute expects integer',
+			raw: 'a',
+		},
+	]);
+});

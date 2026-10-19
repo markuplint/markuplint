@@ -23,7 +23,12 @@ type Attr = {
  * Configuration options for the `require-attr` rule.
  */
 type Options = {
-	/** Attribute names to exclude from require-attribute checks. */
+	/**
+	 * Attribute names to exclude from require-attribute checks, compared as the DOM compares attribute
+	 * names.
+	 *
+	 * @see https://markuplint.dev/docs/rules/no-unknown-attr#attribute-name-case
+	 */
 	readonly ignoreAttrs?: readonly string[];
 };
 
@@ -39,7 +44,8 @@ export default createRule<RequiredAttributes, Options>({
 
 			const customRequiredAttrs = typeof el.rule.value === 'string' ? [el.rule.value] : el.rule.value;
 			const attrSpec = getAttrSpecs(el, document.specs);
-			const ignoreAttrs = new Set(el.rule.options.ignoreAttrs);
+			const ignoreAttrs = el.rule.options.ignoreAttrs ?? [];
+			const isIgnored = (name: string) => ignoreAttrs.some(ignored => el.isSameAttrName(ignored, name));
 
 			const attributeSpecs: Record<
 				string,
@@ -74,6 +80,14 @@ export default createRule<RequiredAttributes, Options>({
 					}
 				}
 
+				// A name of the rule value that the spec table names too is one requirement, and the
+				// rule value's is the one that counts
+				for (const specName of Object.keys(attributeSpecs)) {
+					if (el.isSameAttrName(specName, name)) {
+						delete attributeSpecs[specName];
+					}
+				}
+
 				attributeSpecs[name] = {
 					name,
 					values,
@@ -82,9 +96,9 @@ export default createRule<RequiredAttributes, Options>({
 			}
 
 			for (const spec of Object.values(attributeSpecs)) {
-				if (ignoreAttrs.has(spec.name)) {
+				if (isIgnored(spec.name)) {
 					if (spec.requiredEither) {
-						const activeCandidates = spec.requiredEither.filter(n => !ignoreAttrs.has(n));
+						const activeCandidates = spec.requiredEither.filter(n => !isIgnored(n));
 						if (activeCandidates.length > 0) {
 							const invalid = !activeCandidates.some(attrName => el.hasAttribute(attrName));
 							if (invalid) {
@@ -121,7 +135,7 @@ export default createRule<RequiredAttributes, Options>({
 				if (spec.requiredEither) {
 					candidate.push(...spec.requiredEither);
 
-					const activeCandidates = candidate.filter(n => !ignoreAttrs.has(n));
+					const activeCandidates = candidate.filter(n => !isIgnored(n));
 					invalid = !activeCandidates.some(attrName => el.hasAttribute(attrName));
 				} else if (spec.required === true) {
 					invalid = attrMatches(el, spec.condition) && didntHave;
@@ -130,7 +144,7 @@ export default createRule<RequiredAttributes, Options>({
 					invalid = el.matches(selector) && didntHave;
 				}
 
-				const sortedCandidate = candidate.filter(n => !ignoreAttrs.has(n)).toSorted();
+				const sortedCandidate = candidate.filter(n => !isIgnored(n)).toSorted();
 
 				if (invalid) {
 					const expects =

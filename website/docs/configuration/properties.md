@@ -1034,6 +1034,12 @@ It accepts an attribute value. It's optional. If it is omitted, the attribute is
 - **`{ "fromAttr": "name", "omitIfMissing": true }`**: The same, except that the element does not have the attribute if the component does not have it. It is what a component that passes an optional prop on renders (`<button type={kind}>` has no `type` when `kind` is `undefined`).
 - **`{ "dynamic": true }`**: The attribute exists but its value is not known until the component renders, such as `tabIndex={selected ? 0 : -1}`. Rules treat it as a dynamic value and do not validate it.
 
+`fromAttr` finds the attribute at the usage site by the rules of the framework that renders it. In Vue, `my-label` and `myLabel` are the same prop, but `mylabel` is not. In JSX, a prop is matched exactly, so `Label` is not `label`. In an HTML-based syntax, the name is compared as the DOM compares attribute names, without regard to ASCII case. Write the name in `fromAttr` the way the component declares its prop.
+
+:::caution[Experimental]
+How `fromAttr` finds the attribute is **experimental** and may change in future releases.
+:::
+
 #### `as.aria`
 
 It accepts Object as **ARIA Properties**. It has only `name` field currently. It's optional.

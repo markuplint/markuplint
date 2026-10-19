@@ -59,6 +59,9 @@ class VueParser extends Parser<ASTNode, State> {
 				endTagType: 'xml',
 				// Vue resolves `<FooBar>`, `<fooBar>` and `<foo-bar>` to the same component.
 				componentNameVariants: true,
+				// The compiler of Vue makes an element by `setAttribute` unless it can put the whole static tree into
+				// an HTML string, which it does only for a name it knows by its exact spelling.
+				attrNameRoute: 'dom-api',
 			},
 			{
 				comments: [],

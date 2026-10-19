@@ -131,3 +131,40 @@ describe('fix with parsers', () => {
 		expect(fixedCode).toBe('Some text\n\n<input disabled />\n');
 	});
 });
+
+test('[no-boolean-attr-value-issue-4309-001] an upper-case name is the boolean attribute in HTML', async () => {
+	const { violations } = await mlRuleTest(rule, '<input REQUIRED="required">');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 16,
+			raw: '="required"',
+			message: 'The "REQUIRED" attribute is a boolean attribute. It doesn\'t need the value',
+		},
+	]);
+});
+
+test('[no-boolean-attr-value-issue-4309-002] an HTML element in JSX folds the name', async () => {
+	const options = { parser: { '.*': '@markuplint/jsx-parser' } };
+	const upper = await mlRuleTest(rule, '<input REQUIRED="required" />', options);
+	expect(upper.violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 16,
+			raw: '="required"',
+			message: 'The "REQUIRED" attribute is a boolean attribute. It doesn\'t need the value',
+		},
+	]);
+	const lower = await mlRuleTest(rule, '<input required="required" />', options);
+	expect(lower.violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 16,
+			raw: '="required"',
+			message: 'The "required" attribute is a boolean attribute. It doesn\'t need the value',
+		},
+	]);
+});

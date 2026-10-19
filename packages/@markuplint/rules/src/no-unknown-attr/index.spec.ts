@@ -758,3 +758,239 @@ test('[no-unknown-attr-issue-3803] base rule still flags unknown attributes on m
 	});
 	expect(violations.some(v => v.raw === 'bogus')).toBe(true);
 });
+
+test('[no-unknown-attr-issue-4309-001] HTML: an upper-case data-*, aria-* and role are exempt as their lower-case spellings are', async () => {
+	expect(
+		(await mlRuleTest(rule, '<div DATA-VALUE="1" ARIA-LABEL="label" ROLE="button"></div>')).violations,
+	).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<div DATA-VALUE ARIA-LABEL ROLE BOGUS></div>')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 33,
+			message: 'The "BOGUS" attribute is disallowed',
+			raw: 'BOGUS',
+		},
+	]);
+});
+
+test('[no-unknown-attr-issue-4309-002] HTML: VIEWBOX and viewbox are viewBox on an SVG element', async () => {
+	expect((await mlRuleTest(rule, '<svg VIEWBOX="0 0 1 1" viewbox="0 0 1 1"></svg>')).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<svg VIEWBOX="0 0 1 1" BOGUS></svg>')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 24,
+			message: 'The "BOGUS" attribute is disallowed',
+			raw: 'BOGUS',
+		},
+	]);
+});
+
+test('[no-unknown-attr-issue-4309-003] JSX: an HTML element folds an upper-case data-*', async () => {
+	const parser = { '.*': '@markuplint/jsx-parser' };
+	expect((await mlRuleTest(rule, '<div DATA-VALUE="1" />', { parser })).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<div DATA-VALUE="1" BOGUS />', { parser })).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 21,
+			message: 'The "BOGUS" attribute is disallowed',
+			raw: 'BOGUS',
+		},
+	]);
+});
+
+test('[no-unknown-attr-issue-4309-004] JSX: an SVG element keeps the name as written, so ROLE is not role', async () => {
+	expect(
+		(await mlRuleTest(rule, '<svg ROLE="img" />', { parser: { '.*': '@markuplint/jsx-parser' } })).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 6,
+			message: 'The "ROLE" attribute is disallowed. Did you mean "role"?',
+			raw: 'ROLE',
+		},
+	]);
+});
+
+test('[no-unknown-attr-issue-4309-005] JSX: an SVG element keeps the name as written, so VIEWBOX is not viewBox', async () => {
+	const parser = { '.*': '@markuplint/jsx-parser' };
+	expect((await mlRuleTest(rule, '<svg viewBox="0 0 1 1" />', { parser })).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<svg VIEWBOX="0 0 1 1" />', { parser })).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 6,
+			message: 'The "VIEWBOX" attribute is disallowed. Did you mean "viewBox"?',
+			raw: 'VIEWBOX',
+		},
+	]);
+});
+
+test('[no-unknown-attr-issue-4309-006] HTML: allowAttrs matches the name in any spelling the DOM makes the same', async () => {
+	expect(
+		(await mlRuleTest(rule, '<div X-ATTR></div>', { rule: { options: { allowAttrs: ['x-attr'] } } })).violations,
+	).toStrictEqual([]);
+	expect(
+		(await mlRuleTest(rule, '<div x-attr></div>', { rule: { options: { allowAttrs: ['X-ATTR'] } } })).violations,
+	).toStrictEqual([]);
+	expect(
+		(
+			await mlRuleTest(rule, '<div X-ATTR></div>', {
+				rule: { options: { allowAttrs: [{ name: 'x-attr', value: 'Int' }] } },
+			})
+		).violations,
+	).toStrictEqual([]);
+	expect(
+		(await mlRuleTest(rule, '<div X-ATTR></div>', { rule: { options: { allowAttrs: { 'x-attr': 'Int' } } } }))
+			.violations,
+	).toStrictEqual([]);
+	expect(
+		(await mlRuleTest(rule, '<div X-OTHER></div>', { rule: { options: { allowAttrs: ['x-attr'] } } })).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 6,
+			message: 'The "X-OTHER" attribute is disallowed',
+			raw: 'X-OTHER',
+		},
+	]);
+});
+
+test('[no-unknown-attr-issue-4309-007] HTML: ignoreAttrNamePrefix matches the name in any spelling the DOM makes the same', async () => {
+	expect(
+		(
+			await mlRuleTest(rule, '<div V-BIND:TITLE="a"></div>', {
+				rule: { options: { ignoreAttrNamePrefix: ['v-bind:'] } },
+			})
+		).violations,
+	).toStrictEqual([]);
+	expect(
+		(
+			await mlRuleTest(rule, '<div v-bind:title="a"></div>', {
+				rule: { options: { ignoreAttrNamePrefix: 'V-BIND:' } },
+			})
+		).violations,
+	).toStrictEqual([]);
+	expect(
+		(
+			await mlRuleTest(rule, '<div V-ON:CLICK="a"></div>', {
+				rule: { options: { ignoreAttrNamePrefix: ['v-bind:'] } },
+			})
+		).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 6,
+			message: 'The "V-ON:CLICK" attribute is disallowed. Did you mean "onclick"?',
+			raw: 'V-ON:CLICK',
+		},
+	]);
+});
+
+test('[no-unknown-attr-issue-4309-008] JSX: the options keep the name as written on an SVG element', async () => {
+	const parser = { '.*': '@markuplint/jsx-parser' };
+	expect(
+		(
+			await mlRuleTest(rule, '<svg X-ATTR V-BIND:TITLE />', {
+				parser,
+				rule: { options: { allowAttrs: ['X-ATTR'], ignoreAttrNamePrefix: ['V-BIND:'] } },
+			})
+		).violations,
+	).toStrictEqual([]);
+	expect(
+		(
+			await mlRuleTest(rule, '<svg X-ATTR V-BIND:TITLE />', {
+				parser,
+				rule: { options: { allowAttrs: ['x-attr'], ignoreAttrNamePrefix: ['v-bind:'] } },
+			})
+		).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 6,
+			message: 'The "X-ATTR" attribute is disallowed',
+			raw: 'X-ATTR',
+		},
+		{
+			severity: 'error',
+			line: 1,
+			col: 13,
+			message: 'The "V-BIND:TITLE" attribute is disallowed',
+			raw: 'V-BIND:TITLE',
+		},
+	]);
+});
+
+test('[no-unknown-attr-issue-4309-009] Vue: an HTML element folds an upper-case data-*', async () => {
+	const options = { parser: { '.*': '@markuplint/vue-parser' }, specs: { '.*': '@markuplint/vue-spec' } };
+	expect((await mlRuleTest(rule, '<template><div DATA-X="1"></div></template>', options)).violations).toStrictEqual(
+		[],
+	);
+	// The control: the rule reports an unknown name in the same document
+	expect((await mlRuleTest(rule, '<template><div BOGUS="1"></div></template>', options)).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 16,
+			message: 'The "BOGUS" attribute is disallowed',
+			raw: 'BOGUS',
+		},
+	]);
+});
+
+test('[no-unknown-attr-issue-4309-010] Vue: an SVG element keeps the name as written, so ROLE is not role', async () => {
+	const options = { parser: { '.*': '@markuplint/vue-parser' }, specs: { '.*': '@markuplint/vue-spec' } };
+	expect((await mlRuleTest(rule, '<template><svg ROLE="img"></svg></template>', options)).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 16,
+			message: 'The "ROLE" attribute is disallowed. Did you mean "role"?',
+			raw: 'ROLE',
+		},
+	]);
+});
+
+test('[no-unknown-attr-issue-4309-011] Svelte: a static name is read by the HTML parser, a dynamic one is set by code', async () => {
+	const options = { parser: { '.*': '@markuplint/svelte-parser' }, specs: { '.*': '@markuplint/svelte-spec' } };
+	// Static: `VIEWBOX` is `viewBox`
+	expect((await mlRuleTest(rule, '<svg VIEWBOX="0 0 1 1"></svg>', options)).violations).toStrictEqual([]);
+	// Dynamic: the name stays as written, which is not `viewBox`
+	expect((await mlRuleTest(rule, '<svg VIEWBOX={x}></svg>', options)).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 6,
+			message: 'The "VIEWBOX" attribute is disallowed. Did you mean "viewBox"?',
+			raw: 'VIEWBOX',
+		},
+	]);
+});
+
+test('[no-unknown-attr-issue-4309-012] the suggested name of a property is an attribute name and is not translated', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<svg ROLE="img"></svg>',
+		{
+			parser: { '.*': '@markuplint/jsx-parser' },
+			specs: { '.*': '@markuplint/react-spec' },
+		},
+		false,
+		'ja',
+	);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 6,
+			message: '属性「ROLE」は許可されていません。「role」ではありませんか？',
+			raw: 'ROLE',
+		},
+	]);
+});

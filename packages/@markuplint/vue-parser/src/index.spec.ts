@@ -8,6 +8,14 @@ import { parser } from './parser.js';
 const parse = parser.parse.bind(parser);
 
 describe('parser', () => {
+	test('says that an attribute name reaches the DOM through the DOM API, and keeps the style rules for it', () => {
+		// The compiler of Vue makes an element by `setAttribute` unless the name is a known one
+		// that it can put into an HTML string, so a name written in another case stays as written.
+		expect(parser.attrNameRoute).toBe('dom-api');
+		// The names are not JavaScript identifiers: `case-sensitive-attr-name` still reads a template.
+		expect(parser.attrNameCaseSensitive).toBe(false);
+	});
+
 	test('empty', () => {
 		const doc = parse('');
 		expect(doc.nodeList).toStrictEqual([]);

@@ -170,6 +170,21 @@ describe('1.2', () => {
 		);
 	});
 
+	test('a global prop is read through the lookups of the element, whatever case its source spells', () => {
+		// `MLElement` keeps the source spelling in `attributes` and folds in `hasAttribute`.
+		const el = _('<h1 role="presentation" aria-describedby="comment-1"> Sample Content </h1>');
+		Object.defineProperty(el, 'attributes', {
+			value: [
+				{ name: 'role', localName: 'role', value: 'presentation', namespaceURI: null },
+				{ name: 'ARIA-DESCRIBEDBY', localName: 'ARIA-DESCRIBEDBY', value: 'comment-1', namespaceURI: null },
+			],
+		});
+		expect(getComputedRole(specs, el, '1.2').role?.name).toBe('heading');
+		// Control: no global prop, so the presentational role is kept
+		const control = _('<h1 role="presentation" aria-level="2"> Sample Content </h1>');
+		expect(getComputedRole(specs, control, '1.2').role?.name).toBe('presentation');
+	});
+
 	test('Presentational Roles Conflict Resolution with generic wrapper', () => {
 		// In 1.2, generic <div> is NOT transparent. The non-presentational
 		// ancestor is <div> (generic), which has no requiredOwnedElements.

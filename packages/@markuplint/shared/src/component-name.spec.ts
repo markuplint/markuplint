@@ -31,12 +31,12 @@ describe('camelize / capitalize / pascalize', () => {
 
 describe('vuePropKey', () => {
 	test.each([
-		['my-label', 'mylabel'],
-		['myLabel', 'mylabel'],
+		['my-label', 'myLabel'],
+		['myLabel', 'myLabel'],
 		['mylabel', 'mylabel'],
-		['data-id', 'dataid'],
-		['dataId', 'dataid'],
-		['aria-label', 'arialabel'],
+		['data-id', 'dataId'],
+		['dataId', 'dataId'],
+		['aria-label', 'ariaLabel'],
 	])('%s is %s', (name, key) => {
 		expect(vuePropKey(name)).toBe(key);
 	});

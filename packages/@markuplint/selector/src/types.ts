@@ -9,6 +9,23 @@ export interface SelectorAttr {
 	readonly localName: string;
 	readonly value: string;
 	readonly namespaceURI: string | null;
+	/**
+	 * Whether the DOM makes this name the same attribute under another ASCII case: an attribute set
+	 * on an HTML element is (`setAttribute` lower-cases the name), one on an SVG or MathML element is
+	 * not, and neither is a prop of a component. Absent means the host does not say, and the element
+	 * decides by its namespace: only a pure HTML element folds (see `isPureHTMLElement`).
+	 */
+	readonly nameCaseInsensitive?: boolean;
+	/**
+	 * The name the attribute has in the DOM, which a selector is matched with: the HTML parser
+	 * restores `viewBox` for `<svg VIEWBOX>`. Absent means `localName`.
+	 */
+	readonly domName?: string;
+	/**
+	 * Whether the framework makes the name of a selector the same prop as `domName` once it is
+	 * camelized (Vue: `my-label` and `myLabel` are one prop). Absent means it does not.
+	 */
+	readonly nameIsCamelized?: boolean;
 }
 
 /**

@@ -127,7 +127,25 @@ describe('resolveDirective', () => {
 		const compiled = compileDirectivePatterns(patterns);
 
 		const result = resolveDirective('@Click', compiled);
-		expect(result?.potentialName).toBe('onclick');
+		expect(result?.potentialName).toBe('onClick');
+	});
+
+	test('keeps the spelling of a captured name', () => {
+		const patterns = [
+			{
+				pattern: '^(?:v-bind:|:)([^.]+)$',
+				potentialName: '$1',
+				isDirective: false as const,
+				isDynamicValue: true as const,
+				isDuplicatable: ['class', 'style'],
+			},
+		];
+		const compiled = compileDirectivePatterns(patterns);
+
+		// Whether `viewBox` is `viewbox` is up to the element the attribute is on
+		expect(resolveDirective(':viewBox', compiled)?.potentialName).toBe('viewBox');
+		expect(resolveDirective('v-bind:Foo', compiled)?.potentialName).toBe('Foo');
+		expect(resolveDirective(':class', compiled)?.isDuplicatable).toBe(true);
 	});
 
 	test('first matching pattern wins', () => {

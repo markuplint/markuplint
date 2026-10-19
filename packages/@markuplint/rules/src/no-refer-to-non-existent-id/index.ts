@@ -4,6 +4,8 @@ import { createRule, getAttrSpecs, ariaSpecs } from '@markuplint/ml-core';
 import { ARIA_RECOMMENDED_VERSION } from '@markuplint/ml-spec';
 import { decodeEntities } from '@markuplint/shared';
 
+import { findAttrSpec } from '../helpers.js';
+
 import meta from './meta.js';
 
 export default createRule({
@@ -49,15 +51,13 @@ export default createRule({
 				return;
 			}
 
-			const name = attr.name;
-
-			if (name.toLowerCase() === 'id') {
+			if (attr.nameKey === 'id') {
 				return;
 			}
 
 			const value = attr.value;
 
-			const spec = attrSpec.find(s => s.name === name);
+			const spec = findAttrSpec(attrSpec, attr);
 
 			if (spec) {
 				// DOMID and DOMID List do not become in the array type.
@@ -100,7 +100,7 @@ export default createRule({
 				attr.rule.options.ariaVersion ?? document.ruleCommonSettings?.ariaVersion ?? ARIA_RECOMMENDED_VERSION,
 			);
 
-			const aria = props.find(prop => prop.name === name);
+			const aria = props.find(prop => prop.name === attr.nameKey);
 			if (aria) {
 				if (aria.value === 'ID reference' && !idList.has(value)) {
 					report({

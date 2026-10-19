@@ -86,3 +86,31 @@ describe('MLCore#setCode', () => {
 		expect(violations.filter(v => v.message === configError.message)).toHaveLength(1);
 	});
 });
+
+describe('MLCore document: how an attribute name gets into the DOM', () => {
+	test('is the route the parser says, and the HTML parser when it says none', async () => {
+		const jsx = await import('@markuplint/jsx-parser');
+		const create = (usedParser: MLCoreParams['parser']) => {
+			const core = new MLCore({
+				parser: usedParser,
+				sourceCode: '<div></div>',
+				ruleset: convertRuleset({}),
+				rules: [],
+				locale: { locale: 'en' },
+				schemas: [spec as unknown as MLMLSpec, {}],
+				ruleCommonSettings: {},
+				parserOptions: {},
+				severity: {},
+				pretenders: [],
+				filename: 'test',
+			});
+			if (core.document instanceof Error) {
+				throw core.document;
+			}
+			return core.document;
+		};
+
+		expect(create(parser).attrNameRoute).toBe('html-parser');
+		expect(create(jsx.parser).attrNameRoute).toBe('dom-api');
+	});
+});

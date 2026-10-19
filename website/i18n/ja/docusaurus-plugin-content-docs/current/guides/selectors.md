@@ -99,6 +99,10 @@
 
 Vueのテンプレートには独自の規則があります。Vueはタグをどの表記でもコンポーネントに解決するためです（[Component Name Casing](https://vuejs.org/guide/components/registration.html#component-name-casing)）。コンポーネントのタイプセレクタは、どの表記にも一致します。`FooBar`・`fooBar`・`foo-bar`は、`<FooBar>`・`<fooBar>`・`<foo-bar>`のどれにも一致し、`<foobar>`にはどれも一致しません。1語のセレクタは、書かれたとおりの名前か、先頭を大文字にした名前に一致するので、`Transition`は`<transition>`に一致します。HTML要素は小文字の名前で判別します。`button`は`<button>`に一致しますが`<Button>`には一致せず、`Button`は`<Button>`に一致しますが`<button>`には一致しません。正規表現セレクタは正規化せず、書かれたとおりの名前に照合します。
 
+### 属性名の大文字小文字
+
+属性セレクタは、ブラウザのDOMと同じ名前で比較します。ソースの綴りではなく、ページが持つ属性に対してセレクタが働くということです。HTML要素とカスタム要素では大文字小文字を区別しません。`[role]`は`<div ROLE>`に、`[DATA-VALUE]`は`<div data-value>`に一致します。SVG・MathML要素では、DOMが属性に与える名前を、CSSと同じく完全一致で比較します。ブラウザのHTMLパーサーが名前を読む場合（HTML・Pug・Astro・Svelteの静的な属性）、DOMは仕様の綴りを持つので、`[viewBox]`は`<svg VIEWBOX>`に一致し、`[viewbox]`は一致しません。コードがDOM APIで名前を設定する場合（JSX・MDX・Vue・Svelteの動的な属性）、SVG・MathML要素は書かれたとおりの名前のままなので、`[ROLE]`は`<svg ROLE>`に一致し、`[role]`は一致しません。コンポーネントのpropsは書かれたとおりに比較します。Vueでは`[my-label]`と`[myLabel]`は同じpropです。属性名に対する[正規表現セレクタ](#正規表現セレクタ)は、DOMが属性に与える名前（Vueのpropは、どちらの綴りでも）に照合し、属性セレクタが大文字小文字を区別しない場合は区別しません。
+
 ## 詳細度
 
 **CSSセレクタ**と同じく**詳細度**が適用されます。これにより、ルールを適用する優先順位を制御できます。

@@ -210,3 +210,91 @@ describe('pretender gap (issue #3740)', () => {
 		expect(violations[0]?.raw).toBe('<dialog>');
 	});
 });
+
+describe('attribute name case', () => {
+	const options = { browserslist: 'ie 11' };
+	const elementViolation = (col: number, raw: string) => ({
+		severity: 'warning',
+		line: 1,
+		col,
+		raw,
+		message: 'The "dialog" element is not supported in Internet Explorer (not supported)',
+	});
+	const attrViolation = (col: number, raw: string, name: string) => ({
+		severity: 'warning',
+		line: 1,
+		col,
+		raw,
+		message: `The "${name}" attribute is not supported in Internet Explorer (not supported)`,
+	});
+
+	test('[no-unsupported-browser-features-issue-4309-001] HTML: an attribute written in upper case is the one of BCD', async () => {
+		const { violations } = await mlRuleTest(rule, '<dialog OPEN></dialog>', { rule: { options } });
+		expect(violations).toStrictEqual([elementViolation(1, '<dialog OPEN>'), attrViolation(9, 'OPEN', 'OPEN')]);
+	});
+
+	test('[no-unsupported-browser-features-issue-4309-002] HTML: ignoreFeatures keys match in any spelling', async () => {
+		const attrUpper = await mlRuleTest(rule, '<dialog open></dialog>', {
+			rule: { options: { ...options, ignoreFeatures: ['dialog', 'dialog[OPEN]'] } },
+		});
+		expect(attrUpper.violations).toStrictEqual([]);
+		const elementUpper = await mlRuleTest(rule, '<dialog OPEN></dialog>', {
+			rule: { options: { ...options, ignoreFeatures: ['DIALOG', 'dialog[open]'] } },
+		});
+		expect(elementUpper.violations).toStrictEqual([]);
+		const control = await mlRuleTest(rule, '<dialog OPEN></dialog>', {
+			rule: { options: { ...options, ignoreFeatures: ['dialog', 'dialog[other]'] } },
+		});
+		expect(control.violations).toStrictEqual([attrViolation(9, 'OPEN', 'OPEN')]);
+	});
+
+	test('[no-unsupported-browser-features-issue-4309-003] HTML: the ignoreFeatures of an element replaces that of the rule, each element keeping its own', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<dialog class="a" OPEN></dialog><dialog class="b" OPEN></dialog><dialog class="c" OPEN></dialog>',
+			{
+				rule: { options: { ...options, ignoreFeatures: ['dialog', 'dialog[open]'] } },
+				nodeRule: [
+					{
+						selector: '.b',
+						rule: { options: { ...options, ignoreFeatures: ['dialog'] } },
+					},
+					{
+						selector: '.c',
+						rule: { options: { ...options, ignoreFeatures: ['DIALOG', 'Dialog[Open]'] } },
+					},
+				],
+			},
+		);
+		expect(violations).toStrictEqual([attrViolation(51, 'OPEN', 'OPEN')]);
+	});
+
+	test('[no-unsupported-browser-features-issue-4309-004] Svelte: the element part is exact and the attribute part folds', async () => {
+		const parser = { '.*': '@markuplint/svelte-parser' };
+		const { violations } = await mlRuleTest(rule, '<dialog OPEN></dialog>', {
+			parser,
+			rule: { options: { ...options, ignoreFeatures: ['DIALOG', 'dialog[OPEN]'] } },
+		});
+		// `DIALOG` is not `<dialog>` in Svelte, and `dialog[OPEN]` is its `open`
+		expect(violations).toStrictEqual([elementViolation(1, '<dialog OPEN>')]);
+		const reported = await mlRuleTest(rule, '<dialog OPEN></dialog>', {
+			parser,
+			rule: { options: { ...options, ignoreFeatures: ['dialog'] } },
+		});
+		expect(reported.violations).toStrictEqual([attrViolation(9, 'OPEN', 'OPEN')]);
+	});
+
+	test('[no-unsupported-browser-features-issue-4309-005] JSX: an HTML element folds the attribute names', async () => {
+		const parser = { '.*': '@markuplint/jsx-parser' };
+		const reported = await mlRuleTest(rule, '<dialog OPEN />', { parser, rule: { options } });
+		expect(reported.violations).toStrictEqual([
+			elementViolation(1, '<dialog OPEN />'),
+			attrViolation(9, 'OPEN', 'OPEN'),
+		]);
+		const ignored = await mlRuleTest(rule, '<dialog OPEN />', {
+			parser,
+			rule: { options: { ...options, ignoreFeatures: ['dialog', 'dialog[open]'] } },
+		});
+		expect(ignored.violations).toStrictEqual([]);
+	});
+});

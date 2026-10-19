@@ -332,6 +332,8 @@ You can use `scan` alongside manual `data` definitions. This is useful when the 
 }
 ```
 
+`fromAttr` finds the attribute at the usage site by the rules of the framework: in Vue, `my-label` and `myLabel` are the same prop; in JSX, a prop is matched exactly, so `Label` is not `label`. Write the name the way the component declares its prop. This is experimental, like the scan itself.
+
 See [`pretenders.scan`](/docs/configuration/properties#pretenders/scan) for the full configuration reference.
 
 ### The `as` attribute

@@ -525,3 +525,257 @@ describe('edge cases', () => {
 		]);
 	});
 });
+
+describe('attribute name case', () => {
+	test('[attr-order-issue-4309-001] HTML: alphabetical order compares the names as the DOM gives them', async () => {
+		// `class` < `id` by key, though `I` sorts before `c` as written
+		const { violations } = await mlRuleTest(rule, '<div class="b" ID="a"></div>');
+		expect(violations).toStrictEqual([]);
+		const reversed = await mlRuleTest(rule, '<div ID="a" class="b"></div>');
+		expect(reversed.violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 13,
+				raw: 'class',
+				message: '"class" should be before "ID"',
+			},
+		]);
+		const control = await mlRuleTest(rule, '<div style="a" CLASS="b"></div>');
+		expect(control.violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 16,
+				raw: 'CLASS',
+				message: '"CLASS" should be before "style"',
+			},
+		]);
+	});
+
+	test('[attr-order-issue-4309-002] HTML: upper-case names belong to the predefined groups', async () => {
+		const { violations } = await mlRuleTest(rule, '<div ARIA-LABEL="x" ID="a"></div>', {
+			rule: { value: [{ group: 'global' }, { group: 'aria' }] },
+		});
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 21,
+				raw: 'ID',
+				message: '"ID" should be before "ARIA-LABEL"',
+			},
+		]);
+	});
+
+	test('[attr-order-issue-4309-003] HTML: upper-case names belong to the event, role and data groups', async () => {
+		const { violations } = await mlRuleTest(rule, '<div DATA-X="1" ROLE="button" ONCLICK="f()"></div>', {
+			rule: { value: [{ group: 'event' }, { group: 'role' }, { group: 'data' }] },
+		});
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 31,
+				raw: 'ONCLICK',
+				message: '"ONCLICK" should be before "DATA-X"',
+			},
+		]);
+	});
+
+	test('[attr-order-issue-4309-004] HTML: a name entry matches in either spelling, on either side', async () => {
+		const sourceUpper = await mlRuleTest(rule, '<div CLASS="a" ID="b"></div>', {
+			rule: { value: ['id', { name: 'class' }] },
+		});
+		expect(sourceUpper.violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 16,
+				raw: 'ID',
+				message: '"ID" should be before "CLASS"',
+			},
+		]);
+		const configUpper = await mlRuleTest(rule, '<div class="a" id="b"></div>', {
+			rule: { value: ['ID', { name: 'CLASS' }] },
+		});
+		expect(configUpper.violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 16,
+				raw: 'id',
+				message: '"id" should be before "class"',
+			},
+		]);
+	});
+
+	test('[attr-order-issue-4309-005] HTML: an order array matches in either spelling, on either side', async () => {
+		const sourceUpper = await mlRuleTest(rule, '<div CLASS="a" ID="b"></div>', {
+			rule: { value: [{ group: 'global', order: ['id', 'class'] }] },
+		});
+		expect(sourceUpper.violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 16,
+				raw: 'ID',
+				message: '"ID" should be before "CLASS"',
+			},
+		]);
+		const configUpper = await mlRuleTest(rule, '<div class="a" id="b"></div>', {
+			rule: { value: [{ group: 'global', order: ['ID', 'CLASS'] }] },
+		});
+		expect(configUpper.violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 16,
+				raw: 'id',
+				message: '"id" should be before "class"',
+			},
+		]);
+	});
+
+	test('[attr-order-issue-4309-006] HTML: names with equal keys keep their source order', async () => {
+		const plain = await mlRuleTest(rule, '<div id="a" ID="b"></div>');
+		expect(plain.violations).toStrictEqual([]);
+		const grouped = await mlRuleTest(rule, '<div A-FOO="c" ID="a" id="b"></div>', {
+			rule: { value: [{ group: 'global' }] },
+		});
+		expect(grouped.violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 16,
+				raw: 'ID',
+				message: '"ID" should be before "A-FOO"',
+			},
+		]);
+	});
+
+	test('[attr-order-issue-4309-007] HTML: a pattern entry matches the name as written', async () => {
+		const exact = await mlRuleTest(rule, '<div ID="a" class="b"></div>', {
+			rule: { value: [{ pattern: '^id$' }, { pattern: '^class$' }] },
+		});
+		expect(exact.violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 13,
+				raw: 'class',
+				message: '"class" should be before "ID"',
+			},
+		]);
+		const both = await mlRuleTest(rule, '<div CLASS="a" ID="b"></div>', {
+			rule: { value: [{ pattern: '^[Ii][Dd]$' }, { pattern: '^[Cc][Ll][Aa][Ss][Ss]$' }] },
+		});
+		expect(both.violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 16,
+				raw: 'ID',
+				message: '"ID" should be before "CLASS"',
+			},
+		]);
+	});
+
+	test('[attr-order-issue-4309-008] HTML: fix keeps the spelling of the names', async () => {
+		const { fixedCode } = await mlRuleTest(
+			rule,
+			'<div ARIA-LABEL="x" ID="a"></div>',
+			{
+				rule: { value: [{ group: 'global' }, { group: 'aria' }] },
+			},
+			true,
+		);
+		expect(fixedCode).toBe('<div ID="a" ARIA-LABEL="x"></div>');
+	});
+
+	test('[attr-order-issue-4309-009] JSX: an HTML element folds the names', async () => {
+		const folded = await mlRuleTest(rule, '<div className="a" ID="b"></div>', {
+			parser: { '.*': '@markuplint/jsx-parser' },
+		});
+		expect(folded.violations).toStrictEqual([]);
+		const control = await mlRuleTest(rule, '<div ID="a" className="b"></div>', {
+			parser: { '.*': '@markuplint/jsx-parser' },
+		});
+		expect(control.violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 13,
+				raw: 'className',
+				message: '"className" should be before "ID"',
+			},
+		]);
+		const group = await mlRuleTest(rule, '<div DATA-X="1" ROLE="button"></div>', {
+			parser: { '.*': '@markuplint/jsx-parser' },
+			rule: { value: [{ group: 'role' }, { group: 'data' }] },
+		});
+		expect(group.violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 17,
+				raw: 'ROLE',
+				message: '"ROLE" should be before "DATA-X"',
+			},
+		]);
+	});
+
+	test('[attr-order-issue-4309-010] JSX: an SVG element keeps the names as written', async () => {
+		const exact = await mlRuleTest(rule, '<svg id="a" ID="b"></svg>', {
+			parser: { '.*': '@markuplint/jsx-parser' },
+		});
+		expect(exact.violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 13,
+				raw: 'ID',
+				message: '"ID" should be before "id"',
+			},
+		]);
+		const html = await mlRuleTest(rule, '<svg id="a" ID="b"></svg>');
+		expect(html.violations).toStrictEqual([]);
+	});
+
+	test('[attr-order-issue-4309-012] Vue: the props of a component are sorted by the name as written', async () => {
+		// `aA` would come first by the camelized name of `a-b` (`aB`), and `a-b` comes first as written
+		const { violations } = await mlRuleTest(rule, '<template><MyComp aA="1" a-b="2" /></template>', {
+			parser: { '.*': '@markuplint/vue-parser' },
+		});
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 26,
+				raw: 'a-b',
+				message: '"a-b" should be before "aA"',
+			},
+		]);
+	});
+
+	test('[attr-order-issue-4309-011] Vue: the props of a component belong to the groups as written', async () => {
+		const options = {
+			parser: { '.*': '@markuplint/vue-parser' },
+			rule: { value: [{ group: 'data' }, { group: 'aria' }, { group: 'global' }] },
+		};
+		const { violations } = await mlRuleTest(
+			rule,
+			'<template><MyComp id="a" aria-label="b" data-x="1" /></template>',
+			options,
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 41,
+				raw: 'data-x',
+				message: '"data-x" should be before "id"',
+			},
+		]);
+	});
+});

@@ -24,6 +24,9 @@ export class SvelteParser extends Parser<SvelteNode> {
 		super({
 			endTagType: 'xml',
 			tagNameCaseSensitive: true,
+			// A static attribute is in the HTML string that the compiler hands to the browser's parser,
+			// and a dynamic one is set by `set_attribute` under the name as written.
+			attrNameRoute: 'dom-api-when-dynamic',
 			ignoreTags: [
 				// Fixed(Resolved) #2505
 				// The script tag needs to be passed with the lang attribute to the parser,

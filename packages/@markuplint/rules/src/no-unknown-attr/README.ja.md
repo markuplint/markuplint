@@ -29,6 +29,16 @@ description: 属性がその要素の仕様(あるいはカスタムルール)�
 
 ## 詳細
 
+### 属性名の大文字・小文字 {#attribute-name-case}
+
+2つの綴りが同じ属性かどうかはDOMが決めることで、名前がどのようにDOMに入るかによって変わります。
+
+- HTML構文では、属性名はASCIIの大文字・小文字を区別しません。`DATA-VALUE`は`data-value`であり、`<svg VIEWBOX>`は`viewBox`です。
+- コードがDOM APIを通して名前を設定する場合(JSX、MDX、Vue、Svelteの動的な属性)、HTML要素は名前を小文字に揃えるため、`<div DATA-VALUE>`は`data-value`です。SVG要素とMathML要素は書かれたままの名前を保つため、`<svg ROLE>`は`role`ではなく、未知の属性として報告されます。
+- コンポーネントのpropsは小文字に揃えません。Vueでは`my-label`と`myLabel`は同じpropです。
+
+オプション(`allowAttrs`、`ignoreAttrNamePrefix`)の名前と接頭辞も同じ方法で比較します。DOMが2つの名前を同じ属性にするとき、そのエントリはその属性に一致します。
+
 ### `allowAttrs`オプションの設定 {#setting-allow-attrs-option}
 
 配列には**文字列**と**オブジェクト**の両方の要素を含めることができます。

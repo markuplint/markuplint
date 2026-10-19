@@ -38,18 +38,25 @@ export function createTestDocument<T extends RuleConfigValue = any, O extends Pl
 	sourceCode: string,
 	options?: CreateTestOptions,
 ): MLDocument<T, O> {
-	const ast = options?.parser
-		? 'parser' in options.parser
-			? options.parser.parser.parse(sourceCode, options.config?.parserOptions)
-			: options.parser.parse(sourceCode, options.config?.parserOptions)
-		: parser.parse(sourceCode, options?.config?.parserOptions);
+	const usedParser = options?.parser ? ('parser' in options.parser ? options.parser.parser : options.parser) : parser;
+	const ast = usedParser.parse(sourceCode, options?.config?.parserOptions);
 	const ruleset = convertRuleset(options?.config);
 	const document = new MLDocument<T, O>(
 		ast,
 		ruleset,
 		[options?.specs ?? (spec as unknown as MLMLSpec), {}],
 		{ ariaVersion: ARIA_RECOMMENDED_VERSION },
-		options?.pretenders ? { pretenders: options.pretenders } : undefined,
+		{
+			// The settings of the language are what the parser says, as `MLCore` hands them to the document
+			endTag: usedParser.endTag,
+			booleanish: usedParser.booleanish,
+			tagNameCaseSensitive: usedParser.tagNameCaseSensitive,
+			componentNameVariants: usedParser.componentNameVariants,
+			isComponentName: usedParser.isComponentName?.bind(usedParser),
+			attrNameCaseSensitive: usedParser.attrNameCaseSensitive,
+			attrNameRoute: usedParser.attrNameRoute,
+			...(options?.pretenders ? { pretenders: options.pretenders } : {}),
+		},
 	);
 	return document;
 }

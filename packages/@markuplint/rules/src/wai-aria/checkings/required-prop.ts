@@ -49,10 +49,7 @@ export const checkingRequiredProp: ElementChecker<
 			return true;
 		});
 		for (const { name: requiredProp } of requiredProps) {
-			const has = el.attributes.some(attr => {
-				const attrName = attr.name.toLowerCase();
-				return attrName === requiredProp;
-			});
+			const has = el.attributes.some(attr => attr.nameKey === requiredProp);
 			if (!has) {
 				const propSpec = propSpecs.find(p => p.name === requiredProp);
 
