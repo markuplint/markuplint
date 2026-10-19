@@ -275,6 +275,14 @@ export type PretenderFileData = {
 export type Pretender = {
 	/**
 	 * Target node selectors
+	 *
+	 * In a Vue template a component is referred to by any spelling of its name, so a type selector
+	 * of a component stands for each of them: `FooBar` is `<FooBar>`, `<fooBar>` and `<foo-bar>`, and
+	 * `foo-bar` is the same (a selector of one word is the name as written or capitalized, so `Transition`
+	 * is `<transition>`). It is not `<foobar>`, nor `<button>` for `Button`: an HTML element
+	 * is told by its name in lower case. A regular expression selector (`regexSelector` of `nodeRules`) is
+	 * matched with the name as it is written and is not normalized, so `/^FooBar$/` is `<FooBar>` only.
+	 * No other language resolves a tag so.
 	 */
 	readonly selector: string;
 
@@ -327,8 +335,9 @@ export type OriginalNode = {
 	 * Write the name of an HTML element in lowercase. A name with a capital initial or a `.`
 	 * (`Tabs.Root`) is a component, not an element, and the target is treated like a
 	 * component written directly. `pretenders.auto` emits such a name where it could not
-	 * resolve a component; it is not meant to be an element. `isComponentName` of
-	 * `@markuplint/parser-utils` decides it.
+	 * resolve a component; it is not meant to be an element. The parser of the document
+	 * decides it (`Parser#isComponentName` of `@markuplint/parser-utils`): it differs in the
+	 * details by language.
 	 */
 	readonly element: string;
 
@@ -545,7 +554,9 @@ export type PretenderScanConfig = {
 	readonly files: string | readonly string[];
 
 	/**
-	 * Component names to exclude from scanning results.
+	 * Component names to exclude from scanning results. For a file of Vue, Svelte or Astro, which names
+	 * a component after its file, a name is read as PascalCase: `base-button`, `baseButton` and `BaseButton`
+	 * are one name.
 	 */
 	readonly ignoreComponentNames?: readonly string[];
 };
@@ -562,7 +573,9 @@ export interface PretenderScanOptions {
 	readonly cwd?: string;
 
 	/**
-	 * Component names to exclude from scanning results.
+	 * Component names to exclude from scanning results. For a file of Vue, Svelte or Astro, which names
+	 * a component after its file, a name is read as PascalCase: `base-button`, `baseButton` and `BaseButton`
+	 * are one name.
 	 */
 	readonly ignoreComponentNames?: readonly string[];
 
