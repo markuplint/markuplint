@@ -42,7 +42,7 @@ test('[no-obsolete-attr-issue-4180-001] an attribute name written in upper case 
 	]);
 });
 
-test('[no-obsolete-attr-parser-001] a mixed-case JSX prop is not the obsolete HTML attribute', async () => {
+test('[no-obsolete-attr-parser-001] a mixed-case JSX prop of an HTML element is the obsolete HTML attribute', async () => {
 	const { violations } = await mlRuleTest(rule, '<link rel="made" href="/author" Rev="made" />', {
 		parser: { '.*': '@markuplint/jsx-parser' },
 	});

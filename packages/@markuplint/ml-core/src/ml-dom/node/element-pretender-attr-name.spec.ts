@@ -41,7 +41,7 @@ describe('a prop of a pretender and the attribute at the usage site of a compone
 		['my-label', 'Hi'],
 		['myLabel', 'Hi'],
 		['mylabel', null],
-	])('the attribute %s is the prop myLabel', (name, label) => {
+	])('the attribute %s gives the prop myLabel the value %j', (name, label) => {
 		expect(labelOf(`<x-comp ${name}="Hi"></x-comp>`, true)).toBe(label);
 	});
 
@@ -50,7 +50,7 @@ describe('a prop of a pretender and the attribute at the usage site of a compone
 		['my-label', 'Hi'],
 		['myLabel', 'Hi'],
 		['mylabel', null],
-	])('the attribute %s is the prop my-label', (name, label) => {
+	])('the attribute %s gives the prop my-label the value %j', (name, label) => {
 		expect(labelOf(`<x-comp ${name}="Hi"></x-comp>`, true, 'my-label')).toBe(label);
 	});
 
