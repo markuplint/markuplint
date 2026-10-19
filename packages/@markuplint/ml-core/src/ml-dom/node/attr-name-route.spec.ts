@@ -314,3 +314,84 @@ describe('whether two names are one for an element', () => {
 		expect(vue?.isSameAttrName('mylabel', 'myLabel')).toBe(false);
 	});
 });
+
+describe('the fromAttr of a pretender of a component in JSX', () => {
+	const labelOf = async (source: string) => {
+		const jsxParser = await import('@markuplint/jsx-parser');
+		const document = new MLDocument(
+			jsxParser.parser.parse(source),
+			convertRuleset(),
+			[spec as unknown as MLMLSpec, {}],
+			{ ariaVersion: ARIA_RECOMMENDED_VERSION },
+			{
+				tagNameCaseSensitive: true,
+				attrNameCaseSensitive: true,
+				attrNameRoute: 'dom-api',
+				pretenders: [
+					{
+						selector: 'Comp',
+						as: {
+							element: 'button',
+							attrs: [{ name: 'aria-label', value: { fromAttr: 'label', omitIfMissing: true } }],
+						},
+					},
+				],
+			},
+		);
+		const el = document.querySelector('Comp');
+		return (el?.pretenderContext as { as: { getAttribute(name: string): string | null } } | null)?.as.getAttribute(
+			'aria-label',
+		);
+	};
+
+	test('[ml-attr-name-route-025] reads the prop by the spelling of the pretender only', async () => {
+		expect(await labelOf('<Comp label="a" />')).toBe('a');
+		expect(await labelOf('<Comp Label="a" />')).toBeNull();
+	});
+});
+
+describe('the named items of the attributes of an element', () => {
+	test('[ml-attr-name-route-026] are found by the name that the DOM gives, on an element that the HTML parser reads', () => {
+		const svg = html('<svg VIEWBOX="0 0 1 1"></svg>').querySelector('svg');
+		expect(svg?.attributes.getNamedItem('VIEWBOX')?.value).toBe('0 0 1 1');
+		expect(svg?.attributes.getNamedItem('viewBox')?.value).toBe('0 0 1 1');
+		expect(svg?.attributes.getNamedItem('viewbox')?.value).toBe('0 0 1 1');
+		expect(svg?.attributes.getNamedItem('role')).toBeNull();
+		const div = html('<div ROLE="x"></div>').querySelector('div');
+		expect(div?.attributes.getNamedItem('role')?.value).toBe('x');
+		expect(div?.attributes.getNamedItem('ROLE')?.value).toBe('x');
+	});
+
+	test('[ml-attr-name-route-027] are found by the spelling that code sets, on an SVG element', async () => {
+		const svg = (await jsx('<svg VIEWBOX="0 0 1 1" viewBox="0 0 2 2" />')).querySelector('svg');
+		expect(svg?.attributes.getNamedItem('VIEWBOX')?.value).toBe('0 0 1 1');
+		expect(svg?.attributes.getNamedItem('viewBox')?.value).toBe('0 0 2 2');
+		expect(svg?.attributes.getNamedItem('viewbox')).toBeNull();
+		const div = (await jsx('<div ROLE="x" />')).querySelector('div');
+		expect(div?.attributes.getNamedItem('role')?.value).toBe('x');
+	});
+});
+
+describe('the value of an attribute of a Vue template', () => {
+	const vueDiv = async (source: string) => {
+		const vueParser = await import('@markuplint/vue-parser');
+		const { createTestDocument } = await import('../../test/index.js');
+		const vueSpec = await import('@markuplint/vue-spec');
+		// The directives (`:class`) are told by the patterns of the spec of the framework
+		const specs = { ...(spec as unknown as MLMLSpec), directivePatterns: vueSpec.default.directivePatterns };
+		return createTestDocument(source, { parser: vueParser, specs }).querySelector('div');
+	};
+
+	test('[ml-attr-name-route-028] is the first of a duplicatable name and is not the directive that binds it', async () => {
+		const el = await vueDiv('<template><div class="a" :class="b"></div></template>');
+		expect(el?.getAttributeToken('class')).toHaveLength(2);
+		expect(el?.getAttribute('class')).toBe('a');
+		const reversed = await vueDiv('<template><div :class="b" class="a"></div></template>');
+		expect(reversed?.getAttribute('class')).toBe('a');
+	});
+
+	test('[ml-attr-name-route-029] is the last of two plain spellings of a name', async () => {
+		const el = await vueDiv('<template><div id="a" ID="b"></div></template>');
+		expect(el?.getAttribute('id')).toBe('b');
+	});
+});

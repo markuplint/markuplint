@@ -367,3 +367,51 @@ test('[helpers-issue-4309-008] createIgnoreFeaturesLookup gives a copy of an opt
 	expect(lookup.isAttrIgnored(['div[open]'], 'div', attr)).toBe(true);
 	expect(lookup.isAttrIgnored(['div[open]'], 'div', attr)).toBe(true);
 });
+
+test('[helpers-issue-4309-009] createIgnoreFeaturesLookup parses the option once for every copy of its content', () => {
+	let parsed = 0;
+	// The parser walks the option with `for...of`, so the count is the number of times an option is read
+	const copyOf = (features: readonly string[]) => {
+		const copy = [...features];
+		Object.defineProperty(copy, Symbol.iterator, {
+			value: function* (this: string[]) {
+				parsed++;
+				yield* Array.prototype[Symbol.iterator].call(this);
+			},
+		});
+		return copy;
+	};
+	const lookup = createIgnoreFeaturesLookup(false);
+	const attr = attrsOf('<div OPEN></div>')[0]!;
+	expect(lookup.isElementIgnored(copyOf(['span', 'div[open]']), 'span')).toBe(true);
+	expect(lookup.isElementIgnored(copyOf(['span', 'div[open]']), 'span')).toBe(true);
+	expect(lookup.isAttrIgnored(copyOf(['span', 'div[open]']), 'div', attr)).toBe(true);
+	expect(parsed).toBe(1);
+	expect(lookup.isElementIgnored(copyOf(['p']), 'p')).toBe(true);
+	expect(parsed).toBe(2);
+});
+
+test('[helpers-issue-4309-010] findAttrSpec takes the first spec of a name that is listed twice', () => {
+	const first: Attribute = { name: 'viewBox', type: 'Any' };
+	const second: Attribute = { name: 'viewBox', type: 'Int' };
+	const klassFirst: Attribute = { name: 'class', type: 'Any' };
+	const klassSecond: Attribute = { name: 'class', type: 'Int' };
+	const specs = [first, klassFirst, second, klassSecond];
+	// The exact spelling
+	expect(findAttrSpec(specs, attrsOf('<svg viewBox></svg>')[0]!)).toBe(first);
+	expect(findAttrSpec(specs, attrsOf('<div class></div>')[0]!)).toBe(klassFirst);
+	// Another spelling that the DOM makes the same attribute
+	expect(findAttrSpec(specs, attrsOf('<svg VIEWBOX></svg>')[0]!)).toBe(first);
+	expect(findAttrSpec(specs, attrsOf('<div CLASS></div>')[0]!)).toBe(klassFirst);
+});
+
+test('[helpers-issue-4309-011] createNameOptionLookup prefers the entry written as the attribute and otherwise the last one', () => {
+	const lookup = createNameOptionLookup<string>('Any');
+	const upper = attrsOf('<div X-ATTR></div>')[0]!;
+	// The entry spelled as the attribute wins, whichever side of the other spelling it stands
+	expect(lookup(['X-ATTR', { name: 'x-attr', value: 'Int' }], upper)).toBe('Any');
+	expect(lookup([{ name: 'x-attr', value: 'Int' }, 'X-ATTR'], upper)).toBe('Any');
+	// Without one, the last entry that the attribute says it is wins
+	expect(lookup(['x-attr', { name: 'X-Attr', value: 'Int' }], upper)).toBe('Int');
+	expect(lookup([{ name: 'X-Attr', value: 'Int' }, 'x-attr'], upper)).toBe('Any');
+});

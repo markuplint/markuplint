@@ -304,3 +304,24 @@ test('[no-duplicate-attr-issue-4309-005] U+212A KELVIN SIGN is not the letter k'
 	const different = await mlRuleTest(rule, `<div k ${kelvin}></div>`);
 	expect(different.violations).toStrictEqual([]);
 });
+
+test('[no-duplicate-attr-issue-4309-006] Vue: class and :class are not duplicates, id and :id are', async () => {
+	const options = { parser: { '.*': '@markuplint/vue-parser' }, specs: { '.*': '@markuplint/vue-spec' } };
+	expect(
+		(await mlRuleTest(rule, '<template><div class="a" :class="b"></div></template>', options)).violations,
+	).toStrictEqual([]);
+	expect(
+		(await mlRuleTest(rule, '<template><div :class="b" class="a"></div></template>', options)).violations,
+	).toStrictEqual([]);
+	expect(
+		(await mlRuleTest(rule, '<template><div id="a" :id="b"></div></template>', options)).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 23,
+			raw: ':id',
+			message: 'The attribute name is duplicated',
+		},
+	]);
+});

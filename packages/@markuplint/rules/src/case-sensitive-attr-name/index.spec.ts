@@ -213,4 +213,36 @@ describe('foreign elements', () => {
 			},
 		]);
 	});
+
+	test('[case-sensitive-attr-name-issue-4309-006] Svelte: a static name is checked, a dynamic one is set by code and is not', async () => {
+		const options = { parser: { '.*': '@markuplint/svelte-parser' } };
+		expect((await mlRuleTest(rule, '<svg VIEWBOX="0 0 1 1"></svg>', options)).violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 6,
+				raw: 'VIEWBOX',
+				message: 'The "VIEWBOX" attribute should be "viewBox"',
+			},
+		]);
+		expect((await mlRuleTest(rule, '<svg VIEWBOX={x}></svg>', options)).violations).toStrictEqual([]);
+	});
+
+	test('[case-sensitive-attr-name-issue-4309-007] Vue: an upper-case name on an HTML element is reported, as in HTML', async () => {
+		const options = { parser: { '.*': '@markuplint/vue-parser' } };
+		expect(
+			(await mlRuleTest(rule, '<template><div DATA-X="1"></div></template>', options)).violations,
+		).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 16,
+				raw: 'DATA-X',
+				message: 'Attribute names of HTML elements should be lowercase',
+			},
+		]);
+		expect(
+			(await mlRuleTest(rule, '<template><svg ROLE="img"></svg></template>', options)).violations,
+		).toStrictEqual([]);
+	});
 });

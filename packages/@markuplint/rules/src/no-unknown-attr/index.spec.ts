@@ -926,3 +926,49 @@ test('[no-unknown-attr-issue-4309-008] JSX: the options keep the name as written
 		},
 	]);
 });
+
+test('[no-unknown-attr-issue-4309-009] Vue: an HTML element folds an upper-case data-*', async () => {
+	const options = { parser: { '.*': '@markuplint/vue-parser' }, specs: { '.*': '@markuplint/vue-spec' } };
+	expect((await mlRuleTest(rule, '<template><div DATA-X="1"></div></template>', options)).violations).toStrictEqual(
+		[],
+	);
+	// The control: the rule reports an unknown name in the same document
+	expect((await mlRuleTest(rule, '<template><div BOGUS="1"></div></template>', options)).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 16,
+			message: 'The "BOGUS" attribute is disallowed',
+			raw: 'BOGUS',
+		},
+	]);
+});
+
+test('[no-unknown-attr-issue-4309-010] Vue: an SVG element keeps the name as written, so ROLE is not role', async () => {
+	const options = { parser: { '.*': '@markuplint/vue-parser' }, specs: { '.*': '@markuplint/vue-spec' } };
+	expect((await mlRuleTest(rule, '<template><svg ROLE="img"></svg></template>', options)).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 16,
+			message: 'The "ROLE" attribute is disallowed. Did you mean "role"?',
+			raw: 'ROLE',
+		},
+	]);
+});
+
+test('[no-unknown-attr-issue-4309-011] Svelte: a static name is read by the HTML parser, a dynamic one is set by code', async () => {
+	const options = { parser: { '.*': '@markuplint/svelte-parser' }, specs: { '.*': '@markuplint/svelte-spec' } };
+	// Static: `VIEWBOX` is `viewBox`
+	expect((await mlRuleTest(rule, '<svg VIEWBOX="0 0 1 1"></svg>', options)).violations).toStrictEqual([]);
+	// Dynamic: the name stays as written, which is not `viewBox`
+	expect((await mlRuleTest(rule, '<svg VIEWBOX={x}></svg>', options)).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 6,
+			message: 'The "VIEWBOX" attribute is disallowed. Did you mean "viewBox"?',
+			raw: 'VIEWBOX',
+		},
+	]);
+});
