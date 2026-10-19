@@ -196,12 +196,9 @@ function isIncluding(
 		if (role && !role.isImplicit) {
 			results.push(true);
 		}
-		// Has a global WAI-ARIA attribute
-		for (const attr of el.attributes) {
-			if (globalAria.some(aria => aria.name === attr.localName)) {
-				results.push(true);
-				break;
-			}
+		// Has a global WAI-ARIA attribute (asked of the element: whether `ARIA-BUSY` is `aria-busy` is up to it)
+		if (globalAria.some(aria => el.hasAttribute(aria.name))) {
+			results.push(true);
 		}
 	}
 

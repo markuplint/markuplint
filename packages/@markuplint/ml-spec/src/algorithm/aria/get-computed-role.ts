@@ -296,13 +296,13 @@ function computeRole(
 	 * > and an explicit non-presentational role is applied.
 	 */
 	const { props } = ariaSpecs(specs, version);
-	for (const attr of el.attributes) {
-		if (props.find(p => p.name === attr.name)?.isGlobal) {
-			return {
-				...implicitRole,
-				errorType: 'GLOBAL_PROP_MUST_NOT_BE_PRESENTATIONAL',
-			};
-		}
+	// Asks the element, not its attribute list: whether `ARIA-LABEL` is `aria-label` is up to the element
+	// (a document of the HTML syntax folds the name, one that sets it under the name written does not).
+	if (props.some(p => p.isGlobal && el.hasAttribute(p.name))) {
+		return {
+			...implicitRole,
+			errorType: 'GLOBAL_PROP_MUST_NOT_BE_PRESENTATIONAL',
+		};
 	}
 
 	return computedRole;
