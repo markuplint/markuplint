@@ -333,6 +333,8 @@ const ProfileCard = ({ children }) => {
 }
 ```
 
+`fromAttr`は、使用箇所の属性をフレームワークの規則で探します。Vueでは`my-label`と`myLabel`は同じpropです。JSXではpropを完全一致で照合するため、`Label`と`label`は別のpropです。名前は、コンポーネントがpropを宣言している綴りのとおりに書いてください。これはスキャンと同じく実験的です。
+
 [`pretenders.scan`](/docs/configuration/properties#pretenders/scan)で設定リファレンスの全体を参照してください。
 
 ### `as`属性について

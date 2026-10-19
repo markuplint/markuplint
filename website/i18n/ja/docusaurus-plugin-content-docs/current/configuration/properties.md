@@ -994,6 +994,12 @@ const MyPicture = () => {
 - **`{ "fromAttr": "name", "omitIfMissing": true }`**: 同上ですが、コンポーネントがその属性を持たない場合、要素もその属性を持ちません。省略可能なpropをそのまま渡すコンポーネントが描画する結果です（`<button type={kind}>`は`kind`が`undefined`のとき`type`を持ちません）。
 - **`{ "dynamic": true }`**: 属性は存在しますが、値はコンポーネントがレンダリングされるまで分からない場合（例：`tabIndex={selected ? 0 : -1}`）に指定します。ルールは動的な値として扱い、検証しません。
 
+`fromAttr`は、使用箇所の属性を、それを描画するフレームワークの規則で探します。Vueでは`my-label`と`myLabel`は同じpropですが、`mylabel`は別のpropです。JSXではpropを完全一致で照合するため、`Label`と`label`は別のpropです。HTMLベースの構文では、DOMが属性名を比較するのと同じく、ASCIIの大文字・小文字を区別せずに比較します。`fromAttr`には、コンポーネントがpropを宣言している綴りのとおりに名前を書いてください。
+
+:::caution[実験的機能]
+`fromAttr`が属性を探す方法は**実験的**であり、将来のリリースで変更される可能性があります。
+:::
+
 #### `as.aria`
 
 ARIAのプロパティをObjectで受け取ります。現在段階では`name`フィールドしかありません。省略可能です。
