@@ -59,6 +59,18 @@ describe('MDXParser', () => {
 			const startTag = doc.nodeList.find(n => n?.type === 'starttag');
 			expect(startTag?.elementType).toBe('html');
 		});
+
+		test.each([
+			['<$Ui />', '$Ui'],
+			['<_Ui />', '_Ui'],
+			['<Éa />', 'Éa'],
+			['<$ui.Item />', '$ui.Item'],
+		])('a name that starts with no lowercase ASCII letter is authored element: %s', (code, name) => {
+			const doc = parse(code);
+			const startTag = doc.nodeList.find(n => n?.type === 'starttag');
+			expect(startTag?.nodeName).toBe(name);
+			expect(startTag?.elementType).toBe('authored');
+		});
 	});
 
 	describe('Expressions', () => {

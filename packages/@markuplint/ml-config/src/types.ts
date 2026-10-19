@@ -324,8 +324,8 @@ export type OriginalNode = {
 	/**
 	 * Element name
 	 *
-	 * Write the name of an HTML element in lowercase. A name with a capital initial or a `.`
-	 * (`Tabs.Root`) is a component, not an element, and the target is treated like a
+	 * Write the name of an HTML element in lowercase. A name with an initial other than a
+	 * lowercase ASCII letter (`Foo`, `$ui`) or a `.` (`Tabs.Root`) is a component, not an element, and the target is treated like a
 	 * component written directly. `pretenders.auto` emits such a name where it could not
 	 * resolve a component; it is not meant to be an element. `isComponentName` of
 	 * `@markuplint/parser-utils` decides it.

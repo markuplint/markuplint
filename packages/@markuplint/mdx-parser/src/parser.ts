@@ -4,6 +4,7 @@ import type { RootContent } from 'mdast';
 import type { MdxJsxFlowElement, MdxJsxTextElement } from 'mdast-util-mdx-jsx';
 
 import { MarkdownAwareParser } from '@markuplint/markdown-parser';
+import { componentNamePattern } from '@markuplint/parser-utils';
 import remarkFrontmatter from 'remark-frontmatter';
 import remarkGfm from 'remark-gfm';
 import remarkMdx from 'remark-mdx';
@@ -185,13 +186,13 @@ class MDXParser extends MarkdownAwareParser {
 	}
 
 	/**
-	 * MDX components use uppercase or dot notation following React's convention.
+	 * MDX components follow the rule of JSX ({@link componentNamePattern}).
 	 *
 	 * @param nodeName - The element name to classify.
 	 * @returns The element type (`'html'` or `'authored'`).
 	 */
 	detectElementType(nodeName: string) {
-		return super.detectElementType(nodeName, /^[A-Z]|\./);
+		return super.detectElementType(nodeName, componentNamePattern);
 	}
 
 	#visitJsxElement(

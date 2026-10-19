@@ -1652,7 +1652,10 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 					break;
 				}
 				case TagState.FirstCharOfTagName: {
-					if (/[a-z]/i.test(char)) {
+					// An IdentifierStart, not only an ASCII letter: a JSX tag name is an identifier
+					// (`<$ui.Item>`, `<_Ui>`, `<Éa>`). HTML's `<$a>` is text to parse5 already, and the
+					// HTML parser keeps a text it finds a start tag in as text (`invalidTagAsText`).
+					if (/^[$_\p{ID_Start}]$/u.test(char)) {
 						tagName += char;
 						state = TagState.TagName;
 						break;

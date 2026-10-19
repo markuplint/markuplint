@@ -2,7 +2,7 @@ import type { JSXComment, JSXNode } from './jsx.js';
 import type { MLASTBlockBehavior, MLASTNodeTreeItem, MLASTParentNode } from '@markuplint/ml-ast';
 import type { ChildToken, Token } from '@markuplint/parser-utils';
 
-import { Parser, ParserError } from '@markuplint/parser-utils';
+import { Parser, ParserError, componentNamePattern } from '@markuplint/parser-utils';
 
 import { jsxParser, attrParser, getName } from './jsx.js';
 import { extractJSXFromCall } from './extract-jsx-from-call.js';
@@ -317,10 +317,13 @@ class JSXParser extends Parser<JSXNode, State> {
 	 * > If you do have a component that starts with a lowercase letter,
 	 * > assign it to a capitalized variable before using it in JSX.
 	 *
+	 * The compilers take any name but one with a lowercase ASCII initial for a component
+	 * ({@link componentNamePattern}), so `<$ui.Item>`, `<_Ui>` and `<Éa>` are components too.
+	 *
 	 * @see https://reactjs.org/docs/jsx-in-depth.html#user-defined-components-must-be-capitalized
 	 */
 	detectElementType(nodeName: string) {
-		return super.detectElementType(nodeName, /^[A-Z]|\./);
+		return super.detectElementType(nodeName, componentNamePattern);
 	}
 }
 

@@ -234,8 +234,8 @@ export function dependencyMapper(
  * components of the project are not what it renders, see `FROM_PACKAGE`), and one the map has no
  * component for.
  *
- * None either for a local name that is not a component name (`isComponentName`: a capital
- * initial, or a `.`), whatever it is imported from. A tag written with a lowercase initial is
+ * None either for a local name that is not a component name (`isComponentName`: no lowercase
+ * ASCII initial, or a `.`), whatever it is imported from. A tag written with a lowercase initial is
  * an HTML element in JSX, MDX, Svelte and Astro, so `import myButton from './Foo'` is not what
  * `<myButton>` renders there, and a pretender named `myButton` would turn that element into
  * the component:

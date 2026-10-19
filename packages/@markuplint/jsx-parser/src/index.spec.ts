@@ -597,6 +597,32 @@ key
 		expect(parse('<svg><feBlend/></svg>').nodeList[1].elementType).toBe('html');
 	});
 
+	test.each([
+		['<$Ui/>', '$Ui'],
+		['<_Ui/>', '_Ui'],
+		['<$ui/>', '$ui'],
+		['<_ui/>', '_ui'],
+		['<Éa/>', 'Éa'],
+		['<éa/>', 'éa'],
+		['<$ui.Item/>', '$ui.Item'],
+	])('a tag that starts with no lowercase ASCII letter is a component: %s', (code, name) => {
+		const [el] = parse(code).nodeList;
+		expect(el.nodeName).toBe(name);
+		expect(el.isFragment).toBe(false);
+		expect(el.elementType).toBe('authored');
+	});
+
+	test('a component tag that starts with `$` pairs with its end tag', () => {
+		const map = nodeListToDebugMaps(parse('<$Ui><_Ui>x</_Ui></$Ui>').nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:6](0,5)$Ui: <$Ui>',
+			'[1:6]>[1:11](5,10)_Ui: <_Ui>',
+			'[1:11]>[1:12](10,11)#text: x',
+			'[1:12]>[1:18](11,17)_Ui: </_Ui>',
+			'[1:18]>[1:24](17,23)$Ui: </$Ui>',
+		]);
+	});
+
 	test('Comment', () => {
 		const ast = parse(`// comment 1
 /* comment 2 */`);

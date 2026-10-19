@@ -16,4 +16,15 @@ describe('isComponentName', () => {
 			expect(isComponentName(name)).toBe(false);
 		},
 	);
+
+	test.each(['$Ui', '_Ui', '$ui', '_ui', 'Éa', 'éa', '$ui.Item'])(
+		'"%s", which starts with no lowercase ASCII letter, is a component name',
+		name => {
+			expect(isComponentName(name)).toBe(true);
+		},
+	);
+
+	test.each(['', '3d', ':foo'])('"%s", which starts with no IdentifierStart, is not a component name', name => {
+		expect(isComponentName(name)).toBe(false);
+	});
 });
