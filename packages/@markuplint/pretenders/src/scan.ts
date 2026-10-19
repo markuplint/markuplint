@@ -1,15 +1,21 @@
 import type { PretenderScanEntry } from './types.js';
 import type { Pretender } from '@markuplint/ml-config';
 
+import path from 'node:path';
+
 import { propSort } from './dependency-mapper.js';
 import { jsxScanner } from './jsx/index.js';
+import { loadComponentNameRule } from './scanner-loader.js';
 import { templateScanner } from './template/index.js';
 
 /**
  * Options for the unified {@link scan} function.
  */
 export interface ScanOptions {
-	/** Component names to exclude from scanning results */
+	/**
+	 * Component names to exclude from scanning results. For a file of Vue, Svelte or Astro, which names a
+	 * component after its file, a name is read as PascalCase (`base-button` is `BaseButton`).
+	 */
 	readonly ignoreComponentNames?: readonly string[];
 
 	/**
@@ -60,6 +66,11 @@ export async function scan(files: readonly string[], options?: ScanOptions): Pro
 	const followImports = options?.followImports;
 	const dependencies = options?.dependencies;
 	const entry = options?.entry;
+	if (entry) {
+		// The bindings of the entry are judged by the rule of the parser of its language, which is loaded
+		// by `analyzeImports` for the bindings it reports; an entry that was made otherwise has it loaded here.
+		await loadComponentNameRule(path.extname(entry.filePath).toLowerCase());
+	}
 
 	const [jsxPretenders, templatePretenders] = await Promise.all([
 		jsxFiles.length > 0

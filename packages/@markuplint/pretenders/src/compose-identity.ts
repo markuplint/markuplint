@@ -1,9 +1,22 @@
 import type { Identity } from './types.js';
 import type { PretenderAttr, PretenderContent, Slot } from '@markuplint/ml-config';
 
+import { vuePropKey } from '@markuplint/shared';
+
 import { isTrivialContents } from './contents.js';
 
 type DetailedIdentity = Exclude<Identity, string>;
+
+/**
+ * What the composition needs to know of the files the identities are from.
+ */
+export type ComposeOptions = {
+	/**
+	 * Whether the outer component is written in a Vue template, where an attribute reaches a prop of the
+	 * inner component by the camelCase of its name.
+	 */
+	readonly vue?: boolean;
+};
 
 /**
  * Describes a component (`outer`) whose root is another component (`inner`) as the
@@ -49,8 +62,8 @@ type DetailedIdentity = Exclude<Identity, string>;
  * The result is again a description of the element that `inner` renders, so a longer
  * chain composes one hop at a time, from the outermost component inward.
  */
-export function composeIdentity(outer: Identity, inner: Identity): Identity {
-	const composedInner = typeof inner === 'string' ? inner : composeAttrs(outer, inner);
+export function composeIdentity(outer: Identity, inner: Identity, options?: ComposeOptions): Identity {
+	const composedInner = typeof inner === 'string' ? inner : composeAttrs(outer, inner, options);
 	if (typeof outer === 'string') {
 		return composedInner;
 	}
@@ -134,12 +147,12 @@ function build(
  * its element: the attributes of the root, those of the wrappers of its slots and of
  * its contents, and `inheritAttrs`. The rules are in {@link composeIdentity}.
  */
-function composeAttrs(outer: Identity, inner: DetailedIdentity): DetailedIdentity {
+function composeAttrs(outer: Identity, inner: DetailedIdentity, options?: ComposeOptions): DetailedIdentity {
 	const outerAttrs = typeof outer === 'string' ? [] : (outer.attrs ?? []);
 	const isOuterSpread = typeof outer !== 'string' && outer.inheritAttrs === true;
 	const isInnerSpread = inner.inheritAttrs === true;
 	const resolve = (attrs: readonly PretenderAttr[] | undefined) =>
-		(attrs ?? []).flatMap(attr => resolveAttr(attr, outerAttrs, isOuterSpread));
+		(attrs ?? []).flatMap(attr => resolveAttr(attr, outerAttrs, isOuterSpread, options?.vue === true));
 
 	const rootAttrs = isInnerSpread ? addAttrs(resolve(inner.attrs), outerAttrs) : resolve(inner.attrs);
 	const { slots, contents } = inner;
@@ -196,14 +209,19 @@ function resolveAttr(
 	attr: PretenderAttr,
 	outerAttrs: readonly PretenderAttr[],
 	isOuterSpread: boolean,
+	isVue: boolean,
 ): PretenderAttr[] {
 	const { value } = attr;
 	if (typeof value !== 'object' || !('fromAttr' in value)) {
 		return [attr];
 	}
 
-	const propName = value.fromAttr.toLowerCase();
-	const written = outerAttrs.find(outerAttr => isSameName(outerAttr.name, propName));
+	// In a Vue template an attribute reaches a prop by the camelCase of its name (`my-label` is `myLabel`, and
+	// the prop declared as `'my-label'` is the same one), so both sides are read so.
+	const propName = isVue ? vuePropKey(value.fromAttr) : value.fromAttr.toLowerCase();
+	const written = outerAttrs.find(outerAttr =>
+		isVue ? vuePropKey(outerAttr.name) === propName : isSameName(outerAttr.name, propName),
+	);
 	if (written) {
 		const writtenValue = written.value;
 		if (

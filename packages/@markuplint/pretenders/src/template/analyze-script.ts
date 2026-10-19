@@ -142,14 +142,20 @@ export type TemplatePropResolver = (expression: string | undefined) => string | 
  * `label`, `props.label`, `$props.label`, `Astro.props.label`. Anything else
  * (`label ?? 'x'`, `props?.label`, a call) is not one.
  *
- * Vue lowercases the name of an attribute at the usage site (`myLabel` and `my-label`
- * are not found by the name of the prop), so a prop with an uppercase letter is not one there.
+ * Vue gives a prop the attribute of the usage site by the camelCase of its name, so the prop
+ * `myLabel` is the attribute `myLabel` as well as `my-label`: the lookup of the prop reads it
+ * so (`#createPretenderAttrs` of `@markuplint/ml-core`, `composeIdentity` of `./compose-identity.ts`).
  *
  * Known limitation: Vue gives a Boolean-typed prop that the usage site omits the value
  * `false`, so `:aria-hidden="flag"` renders `aria-hidden="false"`, while the attribute
  * is omitted here, as for any prop. No type is resolved to tell them apart.
+ *
+ * @param _framework - The language of the template. No language reads the name of a prop differently now, so it is
+ *   not used; it stays in the signature of the exported function.
+ * @param props - The props the script declares
+ * @returns The resolver of an expression
  */
-export function createTemplatePropResolver(framework: Framework, props: ScriptProps): TemplatePropResolver {
+export function createTemplatePropResolver(_framework: Framework, props: ScriptProps): TemplatePropResolver {
 	return expression => {
 		const text = expression?.trim();
 		if (!text || !PATH.test(text)) {
@@ -164,7 +170,7 @@ export function createTemplatePropResolver(framework: Framework, props: ScriptPr
 					? text.slice(dot + 1)
 					: undefined;
 
-		if (prop === undefined || prop === 'children' || (framework === 'vue' && /[A-Z]/.test(prop))) {
+		if (prop === undefined || prop === 'children') {
 			return;
 		}
 		return prop;

@@ -11,10 +11,10 @@ import { createScanner } from '../create-scanner.js';
 import { analyzeImports } from '../import-resolver/index.js';
 import { normalizePath, recordDependency } from '../import-resolver/resolve-module-file.js';
 import { PretenderDirector } from '../pretender-director.js';
-import { getScanner } from '../scanner-loader.js';
+import { getScanner, loadComponentNameRule } from '../scanner-loader.js';
 
 import { analyzeScript, createTemplatePropResolver } from './analyze-script.js';
-import { componentNameOfFile } from './derive-name.js';
+import { componentNameOfFile, toPascalCase } from './derive-name.js';
 import { deriveSlotInfo, toAttrs } from './slot-info.js';
 
 const FRAMEWORKS: Readonly<Record<string, Framework>> = {
@@ -84,13 +84,21 @@ function isInheritingAttrs(
  */
 export const templateScanner = createScanner<PretenderScanTemplateOptions>(async (files, options) => {
 	const cwd = options?.cwd ?? process.cwd();
-	const ignoreComponentNames = options?.ignoreComponentNames ?? [];
+	// A component is named after its file (`base-button.vue` is `BaseButton`), so a name to ignore is
+	// read the same way: `base-button`, `baseButton` and `BaseButton` are one.
+	const ignoreComponentNames = new Set((options?.ignoreComponentNames ?? []).map(name => toPascalCase(name)));
 	const director = new PretenderDirector();
+
+	// How a tag of a Vue template is resolved to a component depends on the Vue parser (`isNativeTag`), which
+	// has to be loaded before the dependency mapper runs, whichever file it reads first.
+	if (files.some(filePath => path.extname(filePath).toLowerCase() === '.vue')) {
+		await loadComponentNameRule('.vue');
+	}
 
 	for (const filePath of files) {
 		const componentName = componentNameOfFile(filePath);
 
-		if (componentName == null || ignoreComponentNames.includes(componentName)) {
+		if (componentName == null || ignoreComponentNames.has(componentName)) {
 			continue;
 		}
 
