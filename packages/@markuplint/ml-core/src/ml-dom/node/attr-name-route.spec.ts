@@ -195,6 +195,46 @@ describe('an attribute name of a component', () => {
 	});
 });
 
+describe('the prefix of a name', () => {
+	test('[ml-attr-name-route-017] is read as the DOM reads the name, or as written', async () => {
+		const attr = attrOf(html('<div DATA-X="1"></div>'), 'div');
+		expect(attr.isPrefixedBy('data-')).toBe(true);
+		expect(attr.isPrefixedBy('DATA-')).toBe(true);
+		expect(attr.isPrefixedBy('aria-')).toBe(false);
+		// The attribute of a prop is its name as written
+		const prop = attrOf(await jsx('<Comp fooBar="1" />'), 'Comp');
+		expect(prop.isPrefixedBy('foo')).toBe(true);
+		expect(prop.isPrefixedBy('FOO')).toBe(false);
+		// On an SVG element that code sets, a name is as written
+		const svg = attrOf(await jsx('<svg DATA-X="1" />'), 'svg');
+		expect(svg.isPrefixedBy('DATA-')).toBe(true);
+		expect(svg.isPrefixedBy('data-')).toBe(false);
+		// A prefix with a capital letter, on an HTML element that code sets, is the prefix of a name of the framework
+		const html5 = attrOf(await jsx('<div dataX="1" />'), 'div');
+		expect(html5.isPrefixedBy('data')).toBe(true);
+		expect(html5.isPrefixedBy('DATA')).toBe(false);
+	});
+});
+
+describe('the suggestion of the framework for a name', () => {
+	test('[ml-attr-name-route-018] is made for a spelling of another case as well', async () => {
+		const jsxParser = await import('@markuplint/jsx-parser');
+		const document = new MLDocument(
+			jsxParser.parser.parse('<div tabindex="0" TABINDEX="1" tabIndex="2" />'),
+			convertRuleset(),
+			[{ ...(spec as unknown as MLMLSpec), acceptedAttrNames: 'idl' }, {}],
+			{ ariaVersion: ARIA_RECOMMENDED_VERSION },
+			{ tagNameCaseSensitive: true, attrNameCaseSensitive: true, attrNameRoute: 'dom-api' },
+		);
+		const el = document.querySelector('div');
+		expect(el?.getAttributeToken('tabindex').map(attr => attr.candidate)).toStrictEqual([
+			'tabIndex',
+			'tabIndex',
+			undefined,
+		]);
+	});
+});
+
 describe('an attribute selector', () => {
 	test('[ml-attr-name-route-015] matches the name that the DOM gives the attribute', () => {
 		const document = html('<svg VIEWBOX="0 0 1 1"></svg><div ROLE="x"></div><x-a DATA-A="1"></x-a>');

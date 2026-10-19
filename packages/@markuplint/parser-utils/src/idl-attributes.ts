@@ -456,3 +456,32 @@ export function searchIDLAttribute(name: string) {
 		contentAttrName,
 	};
 }
+
+// The IDL property that a name of another spelling suggests, by the lower-case of its IDL name, of its
+// content name, and of its hyphenated form. The first entry of the list wins.
+const suggestions = new Map<string, string>();
+for (const [idlPropName, contentAttrName] of list) {
+	for (const key of [
+		idlPropName.toLowerCase(),
+		contentAttrName.toLowerCase(),
+		idlPropName.replaceAll(/[A-Z]/g, c => `-${c.toLowerCase()}`),
+	]) {
+		if (!suggestions.has(key)) {
+			suggestions.set(key, idlPropName);
+		}
+	}
+}
+
+/**
+ * Finds the IDL property that a name suggests whatever the case it is written in: `TABINDEX`,
+ * `tab-index` and `tabindex` suggest `tabIndex`. It is for a message that says how the framework
+ * spells the name (a suggestion), not for the name of an attribute: that is
+ * {@link searchIDLAttribute}, which reads a spelling exactly.
+ *
+ * @param name - The attribute name, in any case
+ * @returns The IDL property name, undefined if no name of the mapping is like it
+ */
+export function suggestIDLAttribute(name: string): string | undefined {
+	const lower = name.toLowerCase();
+	return suggestions.get(lower) ?? suggestions.get(lower.replaceAll(/[:-]/g, ''));
+}

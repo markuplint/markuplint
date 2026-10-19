@@ -1,6 +1,6 @@
 import { test, expect } from 'vitest';
 
-import { searchIDLAttribute } from './idl-attributes.js';
+import { searchIDLAttribute, suggestIDLAttribute } from './idl-attributes.js';
 
 test('basic', () => {
 	expect(searchIDLAttribute('class')).toStrictEqual({
@@ -51,6 +51,16 @@ test('basic', () => {
 		idlPropName: undefined,
 		contentAttrName: undefined,
 	});
+});
+
+test('suggestIDLAttribute reads the spelling of a name without regard to case, to suggest the property', () => {
+	expect(suggestIDLAttribute('tabIndex')).toBe('tabIndex');
+	expect(suggestIDLAttribute('tabindex')).toBe('tabIndex');
+	expect(suggestIDLAttribute('TABINDEX')).toBe('tabIndex');
+	expect(suggestIDLAttribute('tab-index')).toBe('tabIndex');
+	expect(suggestIDLAttribute('Stroke-Width')).toBe('strokeWidth');
+	expect(suggestIDLAttribute('Y1')).toBe('y1');
+	expect(suggestIDLAttribute('not-an-attribute')).toBeUndefined();
 });
 
 test('a name is mapped by its exact spelling, in the case it is written', () => {

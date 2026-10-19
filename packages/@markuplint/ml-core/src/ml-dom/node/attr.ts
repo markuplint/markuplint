@@ -4,7 +4,7 @@ import type { MLASTAttr } from '@markuplint/ml-ast';
 import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
 import { resolveNamespace, compileDirectivePatterns, resolveDirective } from '@markuplint/ml-spec';
-import { searchIDLAttribute } from '@markuplint/parser-utils';
+import { searchIDLAttribute, suggestIDLAttribute } from '@markuplint/parser-utils';
 
 import { adjustForeignAttrName } from '../helper/foreign-attr-names.js';
 import { MLToken } from '../token/token.js';
@@ -173,10 +173,12 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 				}
 				// Set candidate for IDL naming suggestions (e.g., tabindex → tabIndex in JSX).
 				// Only in 'idl' mode (React). In 'both' mode (Svelte), both content and IDL names are accepted.
-				if (!resolution && idlPropName && ownElement.ownerMLDocument.specs.acceptedAttrNames === 'idl') {
+				if (!resolution && ownElement.ownerMLDocument.specs.acceptedAttrNames === 'idl') {
+					// The property of a spelling that is not its own (`TABINDEX`) is suggested as well
+					const suggested = idlPropName ?? suggestIDLAttribute(this.#potentialName);
 					const rawName = this.nameNode?.raw ?? '';
-					if (rawName !== idlPropName) {
-						this.candidate = idlPropName;
+					if (suggested && rawName !== suggested) {
+						this.candidate = suggested;
 					}
 				}
 			}
@@ -268,7 +270,7 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 	 *
 	 * A name with a capital letter that code sets on an element of the HTML namespace is a prop of
 	 * the framework (`defaultValue` of React), not an attribute of the DOM: only its exact spelling
-	 * is it, and `defaultvalue` is not.
+	 * is it, and `defaultvalue` is not (see {@link MLAttr.isPrefixedBy} for a prefix).
 	 *
 	 * @param name - A name of a spec, an option or a lookup
 	 */
@@ -276,11 +278,38 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 		if (name === this.#potentialName) {
 			return true;
 		}
-		const el = this.ownerElement;
-		if (el.elementType !== 'authored' && !el.isForeignElement && this.isSetThroughDOMAPI && /[A-Z]/.test(name)) {
+		if (this.#isFrameworkPropName(name)) {
 			return false;
 		}
 		return this.keyOf(name) === this.nameKey;
+	}
+
+	/**
+	 * Whether the name of this attribute starts with `prefix`, a prefix of an option
+	 * (`ignoreAttrNamePrefix`): as it is written, or as the DOM gives the name ({@link MLAttr.keyOf}).
+	 * A prefix with a capital letter that code sets on an element of the HTML namespace is the prefix
+	 * of a name of the framework, and only its exact spelling is it, as for {@link MLAttr.isNamedBy}.
+	 *
+	 * @param prefix - A prefix of an option
+	 */
+	isPrefixedBy(prefix: string): boolean {
+		if (this.#potentialName.startsWith(prefix)) {
+			return true;
+		}
+		if (this.#isFrameworkPropName(prefix)) {
+			return false;
+		}
+		return this.nameKey.startsWith(this.keyOf(prefix));
+	}
+
+	/**
+	 * A name with a capital letter that code sets on an element of the HTML namespace is a prop of the
+	 * framework (`defaultValue` of React), not an attribute of the DOM: the DOM folds what `setAttribute`
+	 * is given, and a prop is read as it is written.
+	 */
+	#isFrameworkPropName(name: string): boolean {
+		const el = this.ownerElement;
+		return el.elementType !== 'authored' && !el.isForeignElement && this.isSetThroughDOMAPI && /[A-Z]/.test(name);
 	}
 
 	/**
