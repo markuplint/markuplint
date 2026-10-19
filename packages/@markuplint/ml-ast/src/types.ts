@@ -594,7 +594,9 @@ export interface MLParser {
  * - `"dom-api"`: Code sets it under the name as written (`setAttribute`, which lower-cases a name only on
  *   an element of the HTML namespace). So `ROLE` on an `<svg>` stays `ROLE`, which is not `role`. JSX and MDX;
  *   Vue, whose compiler makes an element by `setAttribute` unless it can put the whole static tree into an
- *   HTML string, and does so only for a name it knows by its exact spelling.
+ *   HTML string, and does so only when every attribute name in the tree is one it knows by its exact
+ *   spelling. A name like that reads the same through the HTML parser, so a name that differs from the
+ *   spelling of the specification only in case is always set by `setAttribute` and keeps its case.
  * - `"dom-api-when-dynamic"`: A static attribute is in an HTML string (`"html-parser"`) and a dynamic one is
  *   set by code (`"dom-api"`). Svelte.
  *
