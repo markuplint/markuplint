@@ -6,7 +6,7 @@ import type { Attribute } from '@markuplint/ml-spec';
 import { isConditionalAttributeTypeArray } from '@markuplint/ml-spec';
 import { getCandidate } from '@markuplint/types';
 
-import { attrMatches, conditionDependsOnDynamicAttr, findAttrSpec } from './helpers.js';
+import { attrMatches, conditionDependsOnDynamicAttr, findAttrSpec, namespaceKeyOf } from './helpers.js';
 
 /**
  * Attribute namespaces that are exempt from spec-based name/eligibility
@@ -57,7 +57,7 @@ export function resolveAttrEligibility<T extends RuleConfigValue, O extends Plai
 	attr?: Attr<T, O>,
 ): AttrEligibility {
 	// The name that the DOM gives the attribute is what a pattern of a namespace is tested against
-	if (EXEMPT_NAME_PATTERN.test(attr ? attr.nameKey : name)) {
+	if (EXEMPT_NAME_PATTERN.test(attr ? namespaceKeyOf(attr) : name)) {
 		return { status: 'exempt' };
 	}
 

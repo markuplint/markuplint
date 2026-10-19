@@ -4,6 +4,7 @@ import type { Attribute } from '@markuplint/ml-spec';
 import type { WritableDeep } from 'type-fest';
 
 import { escapeCSS } from '@markuplint/ml-spec';
+import { asciiLowerCase } from '@markuplint/shared';
 
 /** A `null`/`undefined` condition means the attribute applies unconditionally. */
 export function attrMatches<T extends RuleConfigValue, O extends PlainData>(
@@ -117,12 +118,25 @@ export function findAttrSpec<T extends RuleConfigValue, O extends PlainData>(
 	return exactSpecsOf(attrSpecs).get(attr.name) ?? attrSpecs.find(spec => attr.isNamedBy(spec.name));
 }
 
+/**
+ * The name that a namespace of names is told by (`data-*`, `aria-*`, the predefined groups of
+ * `attr-order`): the name that the DOM gives the attribute, and for the prop of a component the name as
+ * written, because `nameKey` camelizes it in Vue (`data-x` is `dataX`) and a prefix cannot be told then.
+ */
+export function namespaceKeyOf(
+	attr: Pick<Attr<RuleConfigValue, PlainData>, 'name' | 'nameKey'> & {
+		readonly ownerElement: { readonly elementType: string };
+	},
+): string {
+	return attr.ownerElement.elementType === 'authored' ? asciiLowerCase(attr.name) : attr.nameKey;
+}
+
 /** Whether the attribute is an `aria-*` one, by the name that the DOM gives it. */
 export function isAriaAttr<T extends RuleConfigValue, O extends PlainData>(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	attr: Attr<T, O>,
 ): boolean {
-	return attr.nameKey.startsWith('aria-');
+	return namespaceKeyOf(attr).startsWith('aria-');
 }
 
 /**
@@ -463,11 +477,6 @@ export function removeAttrValue(
 		return [];
 	}
 	return fixer.removeRange(range);
-}
-
-function asciiLowerCase(name: string): string {
-	// A name that is lower case already is the common case: skip the replace (and its allocation) for it
-	return /[A-Z]/.test(name) ? name.replaceAll(/[A-Z]/g, c => c.toLowerCase()) : name;
 }
 
 /** The parts of the keys of `ignoreFeatures`: `dialog` is an element, `img[loading]` an attribute of one. */

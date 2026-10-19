@@ -172,7 +172,7 @@ export function regexParser(regexpLikeString: string): RegExp | null {
  * attribute name.
  * `toLowerCase` also folds letters outside ASCII, such as U+212A KELVIN SIGN into `k`, which turns
  * two names the DOM keeps apart into one. Decide *whether* to fold by the syntax and the element
- * (see `MLElement#attrNameCaseInsensitive` of `@markuplint/ml-core`); this only does the folding.
+ * (see `MLAttr#nameKey` of `@markuplint/ml-core`); this only does the folding.
  *
  * @see https://html.spec.whatwg.org/multipage/parsing.html#attribute-name-state
  * @param name - A name as written

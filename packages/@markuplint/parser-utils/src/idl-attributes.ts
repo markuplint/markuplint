@@ -441,7 +441,7 @@ for (const entry of list) {
  * content attribute name (`tabindex`, `stroke-width`). A spelling in another case (`TABINDEX`) is
  * another name here, because a framework reads its own property names as they are written (JSX
  * `onClick` is a JavaScript identifier). Whether such a name is still the same attribute in the DOM is
- * decided by `MLElement#attrNameCaseInsensitive` of `@markuplint/ml-core`, not here. An event handler
+ * decided by `MLAttr#isNamedBy` of `@markuplint/ml-core`, not here. An event handler
  * (`onclick`) is its own name in lower case.
  *
  * @param name - The attribute name to look up (the IDL or the content spelling, exactly)

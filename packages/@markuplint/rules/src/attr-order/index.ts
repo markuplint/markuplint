@@ -2,6 +2,8 @@ import type { FixToken } from '@markuplint/ml-config';
 
 import { createRule } from '@markuplint/ml-core';
 
+import { namespaceKeyOf } from '../helpers.js';
+
 import meta from './meta.js';
 
 type PredefinedGroup = 'global' | 'event' | 'aria' | 'role' | 'data' | 'spread';
@@ -42,6 +44,7 @@ interface AttrToken {
 interface NamedAttr {
 	readonly name: string;
 	readonly nameKey: string;
+	readonly ownerElement: { readonly elementType: string };
 	isNamedBy(name: string): boolean;
 }
 
@@ -169,35 +172,35 @@ function compileEntries(
 					return {
 						entryIndex,
 						order: groupOrder,
-						match: (attr: NamedAttr) => globalAttrs.has(attr.nameKey),
+						match: (attr: NamedAttr) => globalAttrs.has(namespaceKeyOf(attr)),
 					};
 				}
 				case 'event': {
 					return {
 						entryIndex,
 						order: groupOrder,
-						match: (attr: NamedAttr) => eventAttrs.has(attr.nameKey),
+						match: (attr: NamedAttr) => eventAttrs.has(namespaceKeyOf(attr)),
 					};
 				}
 				case 'aria': {
 					return {
 						entryIndex,
 						order: groupOrder,
-						match: (attr: NamedAttr) => /^aria-.+$/.test(attr.nameKey),
+						match: (attr: NamedAttr) => /^aria-.+$/.test(namespaceKeyOf(attr)),
 					};
 				}
 				case 'role': {
 					return {
 						entryIndex,
 						order: groupOrder,
-						match: (attr: NamedAttr) => attr.nameKey === 'role',
+						match: (attr: NamedAttr) => namespaceKeyOf(attr) === 'role',
 					};
 				}
 				case 'data': {
 					return {
 						entryIndex,
 						order: groupOrder,
-						match: (attr: NamedAttr) => /^data-.+$/.test(attr.nameKey),
+						match: (attr: NamedAttr) => /^data-.+$/.test(namespaceKeyOf(attr)),
 					};
 				}
 				case 'spread': {

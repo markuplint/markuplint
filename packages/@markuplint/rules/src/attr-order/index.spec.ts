@@ -741,4 +741,25 @@ describe('attribute name case (issue #4309)', () => {
 		const html = await mlRuleTest(rule, '<svg id="a" ID="b"></svg>');
 		expect(html.violations).toStrictEqual([]);
 	});
+
+	test('[attr-order-issue-4309-011] Vue: the props of a component belong to the groups as written', async () => {
+		const options = {
+			parser: { '.*': '@markuplint/vue-parser' },
+			rule: { value: [{ group: 'data' }, { group: 'aria' }, { group: 'global' }] },
+		};
+		const { violations } = await mlRuleTest(
+			rule,
+			'<template><MyComp id="a" aria-label="b" data-x="1" /></template>',
+			options,
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 41,
+				raw: 'data-x',
+				message: '"data-x" should be before "id"',
+			},
+		]);
+	});
 });
