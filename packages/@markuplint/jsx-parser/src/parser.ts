@@ -28,6 +28,7 @@ class JSXParser extends Parser<JSXNode, State> {
 				booleanish: true,
 				tagNameCaseSensitive: true,
 				attrNameCaseSensitive: true,
+				attrNameRoute: 'dom-api',
 			},
 			{
 				comments: [],

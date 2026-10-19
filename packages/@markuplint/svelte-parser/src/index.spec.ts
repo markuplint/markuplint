@@ -8,6 +8,13 @@ import { parser } from './parser.js';
 const parse = parser.parse.bind(parser);
 
 describe('parser', () => {
+	test('says that only a dynamic attribute name reaches the DOM through the DOM API', () => {
+		// A static attribute is in the HTML string that the compiler hands to the browser's parser, and
+		// a dynamic one is set by `set_attribute`, under the name as written.
+		expect(parser.attrNameRoute).toBe('dom-api-when-dynamic');
+		expect(parser.attrNameCaseSensitive).toBe(false);
+	});
+
 	test('syntax error', () => {
 		expect(() => {
 			parse('<div></div\nattr>');

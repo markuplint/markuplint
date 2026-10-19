@@ -15,6 +15,10 @@ describe('MDXParser', () => {
 			expect(parser.attrNameCaseSensitive).toBe(true);
 		});
 
+		test('says that every attribute name reaches the DOM through the DOM API', () => {
+			expect(parser.attrNameRoute).toBe('dom-api');
+		});
+
 		test('self-closing component', () => {
 			const doc = parse('<MyComponent prop="value" />');
 			const maps = nodeListToDebugMaps(doc.nodeList);

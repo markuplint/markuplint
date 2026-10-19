@@ -10,7 +10,7 @@ import type { Ruleset } from '../../ruleset/index.js';
 import type { MLSchema } from '../../types.js';
 import type { Walker } from '../helper/walkers.js';
 import type { MLToken } from '../token/token.js';
-import type { EndTagType, MLASTDocument, MLASTNodeTreeItem, MLASTParseError } from '@markuplint/ml-ast';
+import type { AttrNameRoute, EndTagType, MLASTDocument, MLASTNodeTreeItem, MLASTParseError } from '@markuplint/ml-ast';
 import type { PlainData, Pretender, RuleCommonSettings, RuleConfigValue } from '@markuplint/ml-config';
 import type { ARIAVersion, MLMLSpec } from '@markuplint/ml-spec';
 
@@ -178,6 +178,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	readonly attrNameCaseSensitive: boolean;
 
 	/**
+	 * How the name of an attribute gets into the DOM of the browser (`MLParser#attrNameRoute`, see
+	 * `AttrNameRoute`). It decides whether `VIEWBOX` and `viewBox` are one attribute, which is a matter of the
+	 * DOM and so of the element and the attribute as well; this is what the parser says about its language.
+	 * `"html-parser"` when the parser does not say.
+	 */
+	readonly attrNameRoute: AttrNameRoute;
+
+	/**
 	 * Common settings applied globally to all rules, such as the ARIA version.
 	 * Rules use this as a fallback when their own options do not specify a value.
 	 */
@@ -203,6 +211,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 			readonly componentNameVariants?: boolean;
 			readonly isComponentName?: (name: string) => boolean;
 			readonly attrNameCaseSensitive?: boolean;
+			readonly attrNameRoute?: AttrNameRoute;
 			readonly pretenders?: readonly Pretender[];
 		},
 	) {
@@ -218,6 +227,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		this.componentNameVariants = options?.componentNameVariants ?? false;
 		this.isComponentName = options?.isComponentName ?? isComponentName;
 		this.attrNameCaseSensitive = options?.attrNameCaseSensitive ?? false;
+		this.attrNameRoute = options?.attrNameRoute ?? 'html-parser';
 		this.ruleCommonSettings = ruleCommonSettings;
 
 		// Build UUID → AST node map for cross-reference lookups (e.g., pairNodeUuid)

@@ -25,6 +25,10 @@ describe('parse', () => {
 		expect(parser.attrNameCaseSensitive).toBe(true);
 	});
 
+	test('says that every attribute name reaches the DOM through the DOM API', () => {
+		expect(parser.attrNameRoute).toBe('dom-api');
+	});
+
 	test('Element only', () => {
 		const ast = parse('<div></div>');
 		const maps = nodeListToDebugMaps(ast.nodeList);

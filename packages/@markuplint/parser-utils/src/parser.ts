@@ -10,6 +10,7 @@ import type {
 	ValueType,
 } from './types.js';
 import type {
+	AttrNameRoute,
 	EndTagType,
 	MLASTDocument,
 	MLASTParentNode,
@@ -90,6 +91,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	readonly #tagNameCaseSensitive: boolean = false;
 	readonly #componentNameVariants: boolean = false;
 	readonly #attrNameCaseSensitive: boolean = false;
+	readonly #attrNameRoute: AttrNameRoute = 'html-parser';
 	readonly #selfCloseType: SelfCloseType = 'html';
 	readonly #spaceChars: readonly string[] = defaultSpaces;
 	readonly #rawTextElements: readonly string[] = ['style', 'script'];
@@ -135,6 +137,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		this.#tagNameCaseSensitive = options?.tagNameCaseSensitive ?? this.#tagNameCaseSensitive;
 		this.#componentNameVariants = options?.componentNameVariants ?? this.#componentNameVariants;
 		this.#attrNameCaseSensitive = options?.attrNameCaseSensitive ?? this.#attrNameCaseSensitive;
+		this.#attrNameRoute = options?.attrNameRoute ?? this.#attrNameRoute;
 		this.#selfCloseType = options?.selfCloseType ?? this.#selfCloseType;
 		this.#spaceChars = options?.spaceChars ?? this.#spaceChars;
 		this.#rawTextElements = options?.rawTextElements ?? this.#rawTextElements;
@@ -208,6 +211,17 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	 */
 	get attrNameCaseSensitive() {
 		return this.#attrNameCaseSensitive;
+	}
+
+	/**
+	 * How the name of an attribute gets into the DOM of the browser (see `AttrNameRoute`), which decides
+	 * whether another spelling of the name is the same attribute. Independent of
+	 * {@link Parser.attrNameCaseSensitive}, which is about the style rules: Vue sets its attributes through
+	 * the DOM API, but its names are not JavaScript identifiers, so a template is still checked for the
+	 * case of a name. The HTML parser of the browser by default.
+	 */
+	get attrNameRoute(): AttrNameRoute {
+		return this.#attrNameRoute;
 	}
 
 	/**
