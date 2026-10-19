@@ -211,7 +211,7 @@ describe('pretender gap (issue #3740)', () => {
 	});
 });
 
-describe('attribute name case (issue #4309)', () => {
+describe('attribute name case', () => {
 	const options = { browserslist: 'ie 11' };
 	const elementViolation = (col: number, raw: string) => ({
 		severity: 'warning',

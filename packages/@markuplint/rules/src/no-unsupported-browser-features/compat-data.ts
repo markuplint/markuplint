@@ -1,3 +1,5 @@
+import type { PlainData } from '@markuplint/ml-config';
+import type { Attr, RuleConfigValue } from '@markuplint/ml-core';
 import type {
 	BrowserName,
 	CompatData,
@@ -5,6 +7,8 @@ import type {
 	SimpleSupportStatement,
 	SupportStatement,
 } from '@mdn/browser-compat-data';
+
+import { asciiLowerCase } from '@markuplint/shared';
 
 import { memoizeByObject } from '../helpers.js';
 
@@ -249,14 +253,7 @@ export async function checkElementSupport(
  * What the lookup of an attribute asks of the attribute: its name as the DOM gives it, and whether a
  * key of BCD is its name (`MLAttr#nameKey`, `MLAttr#isNamedBy`).
  */
-export interface CompatAttr {
-	readonly nameKey: string;
-	isNamedBy(name: string): boolean;
-}
-
-function asciiLowerCase(name: string): string {
-	return /[A-Z]/.test(name) ? name.replaceAll(/[A-Z]/g, c => c.toLowerCase()) : name;
-}
+export type CompatAttr = Pick<Attr<RuleConfigValue, PlainData>, 'nameKey' | 'isNamedBy'>;
 
 /**
  * The keys of an element identifier by the key in ASCII lower case. BCD spells a few keys in camel

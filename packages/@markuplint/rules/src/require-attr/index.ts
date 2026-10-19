@@ -25,8 +25,9 @@ type Attr = {
 type Options = {
 	/**
 	 * Attribute names to exclude from require-attribute checks, compared as the DOM compares attribute
-	 * names: ASCII case-insensitive in the HTML syntax and for an HTML element that code sets through the
-	 * DOM API (JSX, MDX, Vue), exact for an SVG/MathML element there, and a component's props are not folded.
+	 * names.
+	 *
+	 * @see https://markuplint.dev/docs/rules/no-unknown-attr#attribute-name-case
 	 */
 	readonly ignoreAttrs?: readonly string[];
 };

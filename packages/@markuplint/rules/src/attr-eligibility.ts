@@ -36,7 +36,7 @@ export type AttrEligibility =
  * Resolves an attribute name against the element's `attrSpecs`, following
  * the same order the pre-split `invalid-attr` rule used: existence, then
  * `noUse`, then `condition` (with `ConditionalAttributeType[]` resolved to a
- * concrete type first, per #3598).
+ * concrete type first).
  *
  * Whether a spelling is the name of a spec is up to the attribute, and the DOM decides it
  * (`MLAttr#isNamedBy`): `viewbox` is `viewBox` where the HTML parser reads it, and is not where

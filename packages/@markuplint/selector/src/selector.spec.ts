@@ -471,7 +471,7 @@ describe('attribute name of an element that says how its names are compared', ()
 		expect(createSelector('[mylabel]').match(el)).toBe(false);
 	});
 
-	test('without that information the element is told by its namespace, as before', () => {
+	test('without that information an HTML element folds the case of a name and an SVG element does not', () => {
 		expect(createSelector('[role]').match(createElement(HTML, { name: 'ROLE' }))).toBeTruthy();
 		expect(createSelector('[role]').match(createElement(SVG, { name: 'ROLE' }))).toBe(false);
 	});

@@ -17,10 +17,9 @@ type Option = {
 	 * The value type is used by `no-invalid-attr-value` to validate the
 	 * attribute's value; here it only determines whether the name is known.
 	 *
-	 * A name is compared as the DOM compares attribute names, so it is ASCII case-insensitive in the
-	 * HTML syntax and for an HTML element that code sets through the DOM API (JSX, MDX, Vue), exact for an
-	 * SVG/MathML element there, and a component's props are not folded.
+	 * A name is compared as the DOM compares attribute names.
 	 *
+	 * @see https://markuplint.dev/docs/rules/no-unknown-attr#attribute-name-case
 	 * @since 3.7.0
 	 */
 	allowAttrs?: (string | Attr)[] | Record<string, AttributeType | Pattern>;

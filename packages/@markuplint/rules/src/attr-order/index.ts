@@ -1,4 +1,5 @@
-import type { FixToken } from '@markuplint/ml-config';
+import type { FixToken, PlainData } from '@markuplint/ml-config';
+import type { Attr, RuleConfigValue } from '@markuplint/ml-core';
 
 import { createRule } from '@markuplint/ml-core';
 
@@ -41,12 +42,9 @@ interface AttrToken {
  * gives it (`nameKey`: alphabetical order and the predefined groups, whose sets are of lower-case
  * names), and whether a name of the configuration is this attribute (`isNamedBy`).
  */
-interface NamedAttr {
-	readonly name: string;
-	readonly nameKey: string;
+type NamedAttr = Pick<Attr<RuleConfigValue, PlainData>, 'name' | 'nameKey' | 'isNamedBy'> & {
 	readonly ownerElement: { readonly elementType: string };
-	isNamedBy(name: string): boolean;
-}
+};
 
 interface AttrInfo {
 	readonly attr: NamedAttr;

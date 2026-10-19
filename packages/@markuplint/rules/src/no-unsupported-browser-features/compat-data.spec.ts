@@ -227,7 +227,7 @@ describe('checkAttributeSupport', () => {
 	});
 });
 
-describe('checkAttributeSupport with the attribute (issue #4309)', () => {
+describe('checkAttributeSupport with the attribute', () => {
 	// BCD spells `privateToken` of `iframe` in camel case, and Chrome added it in 117
 	const targets: readonly TargetBrowser[] = [{ browser: 'chrome', version: '100', displayName: 'Chrome' }];
 	const attrOf = (code: string, jsx = false) =>

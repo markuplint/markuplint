@@ -13,7 +13,7 @@ export interface SelectorAttr {
 	 * Whether the DOM makes this name the same attribute under another ASCII case: an attribute set
 	 * on an HTML element is (`setAttribute` lower-cases the name), one on an SVG or MathML element is
 	 * not, and neither is a prop of a component. Absent means the host does not say, and the element
-	 * decides as it always did: only a pure HTML element folds (see `isPureHTMLElement`).
+	 * decides by its namespace: only a pure HTML element folds (see `isPureHTMLElement`).
 	 */
 	readonly nameCaseInsensitive?: boolean;
 	/**

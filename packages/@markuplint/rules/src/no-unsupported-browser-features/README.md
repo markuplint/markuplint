@@ -36,7 +36,7 @@ Reads the project's browserslist configuration and checks whether each HTML elem
 
 ### `ignoreFeatures` Format
 
-Uses exact string matching (no glob or wildcard patterns), except for the case of letters, which is compared as the source does.
+Uses exact string matching (no glob or wildcard patterns), except for the case of letters. The element part is compared as the tag names of the language are: case-sensitively where the parser tells the case of a tag name apart (JSX, Svelte, Astro, MDX), and without regard to ASCII case otherwise. The attribute part is compared as the DOM compares the name of that attribute (see [Attribute name case](/docs/rules/no-unknown-attr#attribute-name-case)).
 
 - `"dialog"` — Ignores the `<dialog>` element. The element name is compared as the document compares tag names: without regard to ASCII case in HTML, and exactly in a syntax that tells tag names apart (JSX, Svelte), where `DIALOG` is not `<dialog>`.
 - `"input[list]"` — Ignores the `list` attribute on `<input>` elements. The attribute name is compared as the DOM compares it with the attribute that is checked: `LIST` is the same attribute in HTML, and on an HTML element in JSX or Svelte, but on an `<svg>` element that JSX sets, only the same spelling is.

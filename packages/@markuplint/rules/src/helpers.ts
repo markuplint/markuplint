@@ -51,6 +51,9 @@ export function conditionDependsOnDynamicAttr<T extends RuleConfigValue, O exten
  * Memoizes `fn` by the identity of its argument. Use it for an object that is one object for every
  * caller, such as the array `getAttrSpecs` hands out for an element name. The options of the
  * elements a `nodeRule` selects are not: each element gets a copy, so use {@link memoizeByContent} for them.
+ *
+ * @param fn - The function to memoize
+ * @returns The function that computes `fn` once per object
  */
 export function memoizeByObject<K extends object, V>(fn: (key: K) => V): (key: K) => V {
 	const cache = new WeakMap<K, V>();
@@ -73,6 +76,9 @@ export function memoizeByObject<K extends object, V>(fn: (key: K) => V): (key: K
  * options of one document. Two contents that differ only in key order are two entries, which is
  * harmless for a table read by name. JSON keeps `['a', 'b']` and `['a\0b']` apart, which a joined
  * string would not.
+ *
+ * @param fn - The function to memoize
+ * @returns The function that computes `fn` once per content
  */
 export function memoizeByContent<K extends object, V>(fn: (key: K) => V): (key: K) => V {
 	const byContent = new Map<string, V>();
@@ -98,16 +104,16 @@ const exactSpecsOf = memoizeByObject((attrSpecs: readonly Attribute[]) => {
 });
 
 /**
- * Finds the spec of an attribute by its name: the spec named as the attribute is written, and
- * otherwise the first one that the attribute says it is (`MLAttr#isNamedBy`: another spelling that
- * the DOM makes the same attribute, `viewbox` for `viewBox` where the HTML parser reads it). The case
- * of a name is decided by the attribute, so the rules that look an attribute up share one answer.
+ * Finds the spec of an attribute: the spec named as the attribute is written, and otherwise the
+ * first one that the attribute says it is (`MLAttr#isNamedBy`). The case of a name is decided by
+ * the attribute, so the rules that look an attribute up share one answer.
  *
  * `getAttrSpecs` hands out the same array for every element of a name, so the exact names are
  * indexed once per array and the scan runs only for a name that is not written as the spec spells it.
  *
  * @param attrSpecs - The specs of the attributes of the element
  * @param attr - The attribute
+ * @returns The spec, or `undefined` if the attribute has none
  */
 export function findAttrSpec<T extends RuleConfigValue, O extends PlainData>(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -119,9 +125,13 @@ export function findAttrSpec<T extends RuleConfigValue, O extends PlainData>(
 }
 
 /**
- * The name that a namespace of names is told by (`data-*`, `aria-*`, the predefined groups of
- * `attr-order`): the name that the DOM gives the attribute, and for the prop of a component the name as
- * written, because `nameKey` camelizes it in Vue (`data-x` is `dataX`) and a prefix cannot be told then.
+ * The name that a namespace of names (`data-*`, `aria-*`, the predefined groups of `attr-order`)
+ * is told by: the name that the DOM gives the attribute (`nameKey`). For the prop of a component it
+ * is the name as written in ASCII lower case instead, because
+ * `nameKey` camelizes it in Vue (`data-x` is `dataX`) and a prefix cannot be told then.
+ *
+ * @param attr - The attribute, with the element type of its owner
+ * @returns The name to test against a namespace
  */
 export function namespaceKeyOf(
 	attr: Pick<Attr<RuleConfigValue, PlainData>, 'name' | 'nameKey'> & {
@@ -131,7 +141,12 @@ export function namespaceKeyOf(
 	return attr.ownerElement.elementType === 'authored' ? asciiLowerCase(attr.name) : attr.nameKey;
 }
 
-/** Whether the attribute is an `aria-*` one, by the name that the DOM gives it. */
+/**
+ * Whether the attribute is an `aria-*` one, told by {@link namespaceKeyOf}.
+ *
+ * @param attr - The attribute
+ * @returns `true` if the attribute is an `aria-*` one
+ */
 export function isAriaAttr<T extends RuleConfigValue, O extends PlainData>(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	attr: Attr<T, O>,
@@ -146,11 +161,19 @@ export function isAriaAttr<T extends RuleConfigValue, O extends PlainData>(
 type NameValueOption<V> = (string | { readonly name: string; readonly value: V })[] | Record<string, V>;
 
 /**
- * Creates a lookup of an attribute in a `NameValueOption`: the value of the entry named as the
- * attribute is written, and otherwise of the last entry that the attribute says it is
- * (`MLAttr#isNamedBy`). The table of an option is built once per content (`memoizeByContent`).
+ * Creates a lookup of an attribute in a `NameValueOption`.
+ *
+ * A name of an option is compared as the DOM compares attribute names (`MLAttr#isNamedBy`): ASCII
+ * case-insensitive in the HTML syntax and for an HTML element that code sets through the DOM API
+ * (JSX, MDX, Vue), exact for an SVG or MathML element there, and the props of a component are not
+ * folded. The README of `no-unknown-attr` states it for users.
+ *
+ * Among the entries, one spelled as the attribute is written wins over any other, and the last of
+ * the same spelling wins. With no such entry, the last entry that the attribute accepts wins.
+ * The table of an option is built once per content (`memoizeByContent`).
  *
  * @param stringValue - The value of a bare name
+ * @returns The lookup, which gives the value for the attribute, or `undefined` if no entry names it
  */
 export function createNameOptionLookup<V>(stringValue: V): <T extends RuleConfigValue, O extends PlainData>(
 	option: NameValueOption<V> | undefined,
@@ -161,7 +184,8 @@ export function createNameOptionLookup<V>(stringValue: V): <T extends RuleConfig
 		const entries: [string, V][] = Array.isArray(option)
 			? option.map(entry => (typeof entry === 'string' ? [entry, stringValue] : [entry.name, entry.value]))
 			: Object.entries(option);
-		// A later entry of a name wins
+		// `new Map` keeps the later of two entries of one spelling. Across spellings, the exact
+		// spelling is looked up first and the scan below keeps the last that the attribute accepts.
 		return { entries, exact: new Map(entries) };
 	});
 	return (option, attr) => {
@@ -184,7 +208,9 @@ export function createNameOptionLookup<V>(stringValue: V): <T extends RuleConfig
 
 /**
  * Creates a test of whether an attribute has one of the prefixes of an option
- * (`ignoreAttrNamePrefix`): as `MLAttr#isPrefixedBy` reads a prefix.
+ * (`ignoreAttrNamePrefix`), which `MLAttr#isPrefixedBy` decides.
+ *
+ * @returns The test, which takes the prefixes of the option and the attribute
  */
 export function createPrefixMatcher(): <T extends RuleConfigValue, O extends PlainData>(
 	prefixes: string | readonly string[] | undefined,
@@ -518,11 +544,10 @@ function parseIgnoreFeatures(features: readonly string[]): IgnoreFeaturesTable {
 
 /**
  * Creates the lookup of `ignoreFeatures`, whose keys are an element (`dialog`) or an attribute of
- * an element (`img[loading]`). The element part of a key means what the same spelling means in the
- * source: it is compared as the document compares tag names (`tagNameCaseSensitive`: exact when it
- * tells the case apart, ASCII-folded when not), so `DIALOG` is not `<dialog>` in Svelte. The attribute
- * part is compared with the attribute that is checked (`MLAttr#isNamedBy`), which knows how its
- * name reached the DOM. An element key does not ignore the attributes of the element.
+ * an element (`img[loading]`). The element part of a key is compared as the document compares tag
+ * names (`tagNameCaseSensitive`), so `DIALOG` is not `<dialog>` in Svelte. The attribute part is
+ * compared by the attribute that is checked (`MLAttr#isNamedBy`). An element key does not ignore
+ * the attributes of the element.
  *
  * The option of an element replaces the option of the rule for that element. The options of the
  * elements a `nodeRule` selects arrive as a copy for each element, so the table of an option is built
@@ -530,6 +555,7 @@ function parseIgnoreFeatures(features: readonly string[]): IgnoreFeaturesTable {
  *
  * @param tagNameCaseSensitive - `MLDocument#tagNameCaseSensitive`
  * @param ruleOption - `ignoreFeatures` of the rule
+ * @returns The lookup for an element and for an attribute of an element
  */
 export function createIgnoreFeaturesLookup(
 	tagNameCaseSensitive: boolean,

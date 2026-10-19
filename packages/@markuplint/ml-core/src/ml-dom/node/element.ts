@@ -93,20 +93,24 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	/**
-	 * Whether two names are one attribute name for this element when neither is the name of an
-	 * attribute it has (a name of a spec, of an option and of a rule value: the attribute may be
-	 * missing). It is {@link MLAttr.isNamedBy} without an attribute: the HTML syntax folds the ASCII
-	 * case; code that sets the name through the DOM API folds it only on an element of the HTML
-	 * namespace, so an SVG or MathML element keeps the spelling there and a name with a capital
-	 * letter is a prop of the framework; the props of a component are not folded, except that Vue
-	 * camelizes them.
+	 * Whether two names would be one attribute on this element, for names that no attribute of the
+	 * element stands behind (the names of a spec, of an option or of a rule value, where the
+	 * attribute may be missing). It is {@link MLAttr.isNamedBy} without an attribute.
 	 *
-	 * Where the name of an attribute that this element would have is set through the DOM API is up
-	 * to the parser; the attribute is missing, so it is not dynamic, and Svelte's static name is
-	 * the one the HTML parser reads.
+	 * The HTML syntax folds the ASCII case. A name that code sets through the DOM API is folded
+	 * only on an element of the HTML namespace: on an SVG or MathML element it keeps its spelling,
+	 * and a name with a capital letter is a prop of the framework. The props of a component are
+	 * not folded, except that Vue camelizes them.
+	 *
+	 * With no attribute, whether the name is set through the DOM API is up to the parser alone: the
+	 * attribute is not dynamic, so Svelte's name is read as the HTML parser reads it.
 	 *
 	 * @see https://dom.spec.whatwg.org/#dom-element-setattribute
 	 * @see https://html.spec.whatwg.org/multipage/parsing.html#attribute-name-state
+	 *
+	 * @param a - A name
+	 * @param b - The other name
+	 * @returns `true` if both names are one attribute on this element
 	 */
 	isSameAttrName(a: string, b: string): boolean {
 		if (a === b) {

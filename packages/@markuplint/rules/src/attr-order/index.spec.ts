@@ -526,7 +526,7 @@ describe('edge cases', () => {
 	});
 });
 
-describe('attribute name case (issue #4309)', () => {
+describe('attribute name case', () => {
 	test('[attr-order-issue-4309-001] HTML: alphabetical order compares the names as the DOM gives them', async () => {
 		// `class` < `id` by key, though `I` sorts before `c` as written
 		const { violations } = await mlRuleTest(rule, '<div class="b" ID="a"></div>');

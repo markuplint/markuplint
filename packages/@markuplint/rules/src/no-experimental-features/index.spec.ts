@@ -52,7 +52,7 @@ describe('pretender gap (issue #3740)', () => {
 	});
 });
 
-describe('attribute name case (issue #4309)', () => {
+describe('attribute name case', () => {
 	test('[no-experimental-features-issue-4309-001] HTML: an attribute written in upper case is the experimental one', async () => {
 		const { violations } = await mlRuleTest(rule, '<iframe CREDENTIALLESS></iframe>', { rule: true });
 		expect(violations).toStrictEqual([

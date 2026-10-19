@@ -248,10 +248,11 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 	 * `name` is this attribute when its key is {@link MLAttr.nameKey}. Only the ASCII letters fold,
 	 * as the HTML syntax says (`toLowerCase` also turns U+212A KELVIN SIGN into `k`).
 	 *
-	 * It is read when asked, not kept: the namespace of the element can change while a pretender
-	 * is resolved.
+	 * It is computed when asked, not stored by the constructor: it reads the owner element (its
+	 * type and namespace) and the document, which are complete only after the attribute is built.
 	 *
 	 * @param name - A name as written
+	 * @returns The key that two spellings of one attribute share
 	 */
 	keyOf(name: string): string {
 		const el = this.ownerElement;
@@ -277,6 +278,7 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 	 * is it, and `defaultvalue` is not (see {@link MLAttr.isPrefixedBy} for a prefix).
 	 *
 	 * @param name - A name of a spec, an option or a lookup
+	 * @returns `true` if `name` is this attribute
 	 */
 	isNamedBy(name: string): boolean {
 		if (name === this.#potentialName) {
@@ -295,6 +297,7 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 	 * of a name of the framework, and only its exact spelling is it, as for {@link MLAttr.isNamedBy}.
 	 *
 	 * @param prefix - A prefix of an option
+	 * @returns `true` if the name of this attribute starts with `prefix`
 	 */
 	isPrefixedBy(prefix: string): boolean {
 		if (this.#potentialName.startsWith(prefix)) {

@@ -38,7 +38,7 @@ describe('default severity', () => {
 	});
 });
 
-describe('attribute name case (issue #4309)', () => {
+describe('attribute name case', () => {
 	const message = 'The "MOZ-OPAQUE" attribute is non-standard';
 
 	test('[no-nonstandard-features-issue-4309-001] HTML: an attribute written in upper case is the non-standard one', async () => {
