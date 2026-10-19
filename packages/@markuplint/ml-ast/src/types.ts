@@ -552,6 +552,26 @@ export interface MLParser {
 	tagNameCaseSensitive?: boolean;
 
 	/**
+	 * Whether a component is referred to by any spelling of its name: as it is written,
+	 * in camelCase, in PascalCase or in kebab-case (`<FooBar>`, `<fooBar>` and `<foo-bar>`
+	 * are one component). Vue is the one framework that resolves a tag so
+	 * (https://vuejs.org/guide/components/registration.html#component-name-casing); in JSX, MDX,
+	 * Svelte and Astro a tag with a lowercase initial is an HTML element.
+	 *
+	 * A type selector reads it to compare the name of the selector with the name of a
+	 * component. `localName`, `nodeName` and `rawName` are not rewritten.
+	 */
+	componentNameVariants?: boolean;
+
+	/**
+	 * Whether a name is a reference to a component, not the name of an element, judged by its form
+	 * alone in the language of this parser (`Tabs.Root` is, `div` is not). A pretender's target
+	 * (`as.element`) is typed by it. A parser without it is taken to name components as most
+	 * languages do: a capital initial or a `.`.
+	 */
+	isComponentName?(name: string): boolean;
+
+	/**
 	 * Whether attribute names should be treated as case-sensitive (e.g. JSX props such as `onClick`).
 	 * Currently consumed only by the `case-sensitive-attr-name` rule.
 	 */
