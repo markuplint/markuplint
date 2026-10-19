@@ -101,34 +101,70 @@ export function resolveContentModel(
 	mode: Mode,
 ): ReadonlyDeep<ContentModel['contents']> | null {
 	if (mode === 'origin' && el.pretenderContext?.type === 'pretender') {
-		const userRule = rules.find(r => r.tag === el.rawName);
+		const userRule = rules.find(r => hasTagRule(el, r));
 		return userRule?.contents ?? null;
 	}
-	return getContentModel(el, specs.specs);
+	const model = getContentModel(el, specs.specs);
+	if (model != null || el.pretenderContext?.type === 'pretender') {
+		return model;
+	}
+	// A rule written for a component under another spelling of its name (`FooBar` for `<foo-bar>`):
+	// the lookup of the spec is by the name as written, which the element does not have.
+	const userRule = rules.find(r => el.matchesTagNameVariant(r.tag));
+	if (!userRule) {
+		return null;
+	}
+	return userRule.conditional?.find(({ condition }) => el.matches(condition))?.contents ?? userRule.contents;
 }
 
 /**
- * Cache for merged specs keyed by the JSON-serialized tag rules.
+ * Whether the user's tag rule is written for the element: the name of the rule is the name
+ * the element is written with, or another spelling of it that the document resolves to the
+ * same component (see `MLElement#matchesTagNameVariant`).
+ *
+ * @param el - The element
+ * @param rule - The user's tag rule
+ * @returns Whether the rule is written for the element
+ */
+export function hasTagRule(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element,
+	rule: TagRule,
+): boolean {
+	return rule.tag === el.rawName || el.matchesTagNameVariant(rule.tag);
+}
+
+/**
+ * Cache for merged specs: for each base spec of a document, keyed by the JSON-serialized tag rules.
  * Avoids re-merging the same set of user-defined tag rules on every element check.
  */
-const caches = new Map<string, Specs>();
+const caches = new WeakMap<MLMLSpec, Map<string, Specs>>();
 
 /**
  * Returns a Specs object that merges the base ML spec with user-defined
- * tag rules. Results are cached by the serialized rules to avoid redundant merging.
+ * tag rules. Results are cached by the specs of the document and the serialized rules to avoid redundant
+ * merging: the specs differ by document (the `specs` of the config is by file), so what is merged
+ * for one must not be given to another.
+ *
+ * Exported for the spec of the cache.
  *
  * @param specs - The base ML spec from the document.
  * @param rules - User-defined tag rules to merge.
  * @returns The merged Specs, either from cache or freshly computed.
  */
-function cachedSpecs(specs: MLMLSpec, rules: readonly TagRule[]): Specs {
+export function cachedSpecs(specs: MLMLSpec, rules: readonly TagRule[]): Specs {
 	if (rules.length === 0) {
 		return specs;
 	}
 
 	const key = JSON.stringify(rules);
 
-	const cached = caches.get(key);
+	let cache = caches.get(specs);
+	if (!cache) {
+		cache = new Map<string, Specs>();
+		caches.set(specs, cache);
+	}
+	const cached = cache.get(key);
 	if (cached) {
 		return cached;
 	}
@@ -144,7 +180,7 @@ function cachedSpecs(specs: MLMLSpec, rules: readonly TagRule[]): Specs {
 		],
 	};
 
-	caches.set(key, merged);
+	cache.set(key, merged);
 
 	return merged;
 }

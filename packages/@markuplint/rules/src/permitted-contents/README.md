@@ -101,7 +101,7 @@ Specify the target element for which you want to set a rule as an array. In the 
 - Type: `string`
 - Required
 
-Specify the target element (tag) name. Case is not significant.
+Specify the target element (tag) name. Case is not significant. In a Vue template a component is referred to by any spelling of its name, so `FooBar` also stands for `<foo-bar>` and `<fooBar>`.
 
 #### `contents`
 
