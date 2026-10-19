@@ -1,6 +1,12 @@
 import { test, expect } from 'vitest';
 
-import { toNoEmptyStringArrayFromStringOrArray, decodeEntities, branchesToPatterns, regexParser } from './functions.js';
+import {
+	toNoEmptyStringArrayFromStringOrArray,
+	decodeEntities,
+	branchesToPatterns,
+	regexParser,
+	asciiLowerCase,
+} from './functions.js';
 
 test('toArrayFromStringOrArray', () => {
 	expect(toNoEmptyStringArrayFromStringOrArray('')).toStrictEqual([]);
@@ -94,4 +100,16 @@ test('regexParser', () => {
 	expect(regexParser('[a-z]/')).toBeNull();
 	expect(regexParser(' ')).toBeNull();
 	expect(regexParser(' // ')).toBeNull();
+});
+
+test('asciiLowerCase', () => {
+	expect(asciiLowerCase('ARIA-Label')).toBe('aria-label');
+	expect(asciiLowerCase('viewBox')).toBe('viewbox');
+	// Nothing to fold: the same string
+	expect(asciiLowerCase('data-x')).toBe('data-x');
+	expect(asciiLowerCase('')).toBe('');
+	// Only A-Z fold: U+212A KELVIN SIGN is not an ASCII `K`, and a non-ASCII upper-case letter stays
+	const kelvin = String.fromCodePoint(8490);
+	expect(asciiLowerCase(`x-${kelvin}`)).toBe(`x-${kelvin}`);
+	expect(asciiLowerCase('\u00C9A')).toBe('\u00C9a');
 });

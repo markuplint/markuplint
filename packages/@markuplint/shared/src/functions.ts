@@ -166,3 +166,19 @@ export function regexParser(regexpLikeString: string): RegExp | null {
 	// Throws an error if `pattern` or `flags` is invalid.
 	return new RegExp(pattern, flags);
 }
+
+/**
+ * Lower-cases only the ASCII letters `A-Z` of a name, as the HTML syntax does when it reads an
+ * attribute name.
+ * `toLowerCase` also folds letters outside ASCII, such as U+212A KELVIN SIGN into `k`, which turns
+ * two names the DOM keeps apart into one. Decide *whether* to fold by the syntax and the element
+ * (see `MLElement#attrNameCaseInsensitive` of `@markuplint/ml-core`); this only does the folding.
+ *
+ * @see https://html.spec.whatwg.org/multipage/parsing.html#attribute-name-state
+ * @param name - A name as written
+ * @returns The name with `A-Z` lower-cased, the same string when there is nothing to fold
+ */
+export function asciiLowerCase(name: string): string {
+	// Most names are lower case already, so skip the replace (and its allocation) for them.
+	return /[A-Z]/.test(name) ? name.replaceAll(/[A-Z]/g, c => c.toLowerCase()) : name;
+}
