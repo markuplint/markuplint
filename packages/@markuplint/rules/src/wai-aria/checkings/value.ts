@@ -30,7 +30,7 @@ export const checkingValue: AttrChecker<
 		if (attr.isDynamicValue) {
 			return;
 		}
-		const propSpec = propSpecs.find(p => p.name === attr.name);
+		const propSpec = propSpecs.find(p => p.name === attr.nameKey);
 
 		const result = checkAria(propSpec, attr.value, role?.name, booleanish);
 		if (result.isValid) {

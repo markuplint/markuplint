@@ -33,7 +33,7 @@ export const checkingContradictoryAriaProp: AttrChecker<
 		if (attr.isDynamicValue) {
 			return;
 		}
-		const propSpec = propSpecs.find(p => p.name === attr.name);
+		const propSpec = propSpecs.find(p => p.name === attr.nameKey);
 		if (!propSpec?.equivalentHtmlAttrs) {
 			return;
 		}
@@ -41,15 +41,11 @@ export const checkingContradictoryAriaProp: AttrChecker<
 			const htmlAttrSpec = attrSpecs.find(a => a.name === equivalentHtmlAttr.htmlAttrName);
 			const eligibility = resolveAttrEligibility(equivalentHtmlAttr.htmlAttrName, attr.ownerElement, attrSpecs);
 			// Skip only when the native attribute doesn't apply to this element at all
-			// (unknown name, case mismatch, or an unmet condition) — mirrors the old
+			// (unknown name or an unmet condition) — mirrors the old
 			// `invalidType === 'non-existent'` check. `noUse` still proceeds: an
 			// explicitly-forbidden native attribute can still be "implicit" for
 			// equivalence purposes.
-			if (
-				eligibility.status === 'unknown' ||
-				eligibility.status === 'case-mismatch' ||
-				eligibility.status === 'condition-not-met'
-			) {
+			if (eligibility.status === 'unknown' || eligibility.status === 'condition-not-met') {
 				continue;
 			}
 

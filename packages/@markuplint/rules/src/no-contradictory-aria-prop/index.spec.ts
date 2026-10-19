@@ -25,3 +25,31 @@ test('[no-contradictory-aria-prop-invalid-001] aria-checked contradicts native c
 		},
 	]);
 });
+
+test('[no-contradictory-aria-prop-issue-4309-001] an upper-case aria-* is reported like the lower-case one', async () => {
+	const { violations } = await mlRuleTest(rule, '<input type="checkbox" checked ARIA-CHECKED="false" />');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 32,
+			message: 'The "ARIA-CHECKED" ARIA state contradicts the current "checked" attribute',
+			raw: 'ARIA-CHECKED="false"',
+		},
+	]);
+});
+
+test('[no-contradictory-aria-prop-issue-4309-002] JSX: an upper-case aria-* on an HTML element is reported', async () => {
+	const { violations } = await mlRuleTest(rule, '<input type="checkbox" checked ARIA-CHECKED="false" />', {
+		parser: { '.*': '@markuplint/jsx-parser' },
+	});
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 32,
+			message: 'The "ARIA-CHECKED" ARIA state contradicts the current "checked" attribute',
+			raw: 'ARIA-CHECKED="false"',
+		},
+	]);
+});

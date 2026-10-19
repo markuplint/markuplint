@@ -79,3 +79,62 @@ test('[require-aria-prop-issue-3682-009] separator with contenteditable requires
 	expect(violations.length).toBeGreaterThanOrEqual(1);
 	expect(violations[0]!.message).toContain('aria-valuenow');
 });
+
+test('[require-aria-prop-issue-4309-001] upper-case required props satisfy the requirement like lower-case ones', async () => {
+	expect(
+		(await mlRuleTest(rule, '<div role="slider" ARIA-VALUENOW="50" ARIA-VALUEMIN="0" ARIA-VALUEMAX="100"></div>'))
+			.violations,
+	).toStrictEqual([]);
+});
+
+test('[require-aria-prop-issue-4309-002] a missing required prop is reported with an upper-case unrelated aria-*', async () => {
+	const { violations } = await mlRuleTest(rule, '<div role="slider" ARIA-LABEL="x"></div>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: 'Require the "aria-valuenow" ARIA property on the "slider" role',
+			raw: '<div role="slider" ARIA-LABEL="x">',
+		},
+	]);
+});
+
+test('[require-aria-prop-issue-4309-003] JSX: an upper-case required prop on an HTML element satisfies the requirement', async () => {
+	const parser = { '.*': '@markuplint/jsx-parser' };
+	expect(
+		(await mlRuleTest(rule, '<div role="separator" tabindex="0" ARIA-VALUENOW="50" />', { parser })).violations,
+	).toStrictEqual([]);
+
+	// Control: without the prop the same element is reported
+	const { violations } = await mlRuleTest(rule, '<div role="separator" tabindex="0" />', { parser });
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: 'Require the "aria-valuenow" ARIA property on the "separator" role',
+			raw: '<div role="separator" tabindex="0" />',
+		},
+	]);
+});
+
+test('[require-aria-prop-issue-4309-004] JSX: an upper-case required prop on an svg element does not satisfy the requirement', async () => {
+	const parser = { '.*': '@markuplint/jsx-parser' };
+	const { violations } = await mlRuleTest(rule, '<svg role="separator" tabindex="0" ARIA-VALUENOW="50" />', {
+		parser,
+	});
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: 'Require the "aria-valuenow" ARIA property on the "separator" role',
+			raw: '<svg role="separator" tabindex="0" ARIA-VALUENOW="50" />',
+		},
+	]);
+
+	// Control: the lower-case name satisfies it on the same element
+	const control = await mlRuleTest(rule, '<svg role="separator" tabindex="0" aria-valuenow="50" />', { parser });
+	expect(control.violations).toStrictEqual([]);
+});

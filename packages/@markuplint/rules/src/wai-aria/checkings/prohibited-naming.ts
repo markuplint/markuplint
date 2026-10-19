@@ -1,3 +1,4 @@
+import { isAriaAttr } from '../../helpers.js';
 import type { Options } from '../types.js';
 import type { AttrChecker } from '@markuplint/ml-core';
 import type { ARIAProperty, ARIARole } from '@markuplint/ml-spec';
@@ -50,11 +51,11 @@ export const checkingProhibitedNaming: AttrChecker<
 > =
 	({ attr, role, propSpecs }) =>
 	t => {
-		if (!/^aria-/i.test(attr.name)) {
+		if (!isAriaAttr(attr)) {
 			return;
 		}
 
-		if (!NAMING_ATTRS.has(attr.name)) {
+		if (!NAMING_ATTRS.has(attr.nameKey)) {
 			return;
 		}
 
@@ -87,7 +88,7 @@ export const checkingProhibitedNaming: AttrChecker<
 			return;
 		}
 
-		const propSpec = propSpecs.find(p => p.name === attr.name);
+		const propSpec = propSpecs.find(p => p.name === attr.nameKey);
 		return {
 			scope: attr,
 			message: t(

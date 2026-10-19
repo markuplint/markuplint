@@ -10,6 +10,8 @@ description: ARIA in HTML の要素固有の制約により ARIA プロパティ
 1. **要素固有の禁止** — 一部の要素状態(例: `<input type="hidden">`)ではすべての `aria-*` 属性が禁止され、他の属性が存在する場合や特定の親コンテキストにある場合に個別の属性が禁止されることがあります(例: popover / Invoker Commands API が状態を自動管理するため `<button popovertarget>` や `<button commandfor>` 上の `aria-expanded`、展開状態が `open` 属性にマッピングされるため `<details>` 内の最初の `<summary>` 上の `aria-expanded` と `aria-pressed`)。
 2. **要素固有のホワイトリスト** — 一部の要素は少数の `aria-*` 属性のみを受け入れます(例: `<br>` と `<wbr>` は `aria-hidden` のみを受け入れる)。ホワイトリスト外の属性は拒否されます。
 
+ARIA 属性の名前は、[`no-unknown-attr`](/docs/rules/no-unknown-attr#attribute-name-case) が属性名を比較するのと同じ方法(同ルールの「Attribute name case」節を参照)で比較されます。DOM が属性名の大文字・小文字を区別しない場合(HTML 要素など)は `ARIA-LABEL` と `aria-label` は同じ属性として扱われ、区別する場合(JSX の `<svg>` 要素など)は別の属性として扱われます。
+
 旧`wai-aria-disallowed-props`ルールから、[`no-prohibited-naming`](/docs/rules/no-prohibited-naming)、[`role-supports-aria-prop`](/docs/rules/role-supports-aria-prop)とともに分割されました。旧ルールの`disallowSetImplicitProps`オプションはこのチェックを制御していましたが、今後はこのルール自体を無効化することがオプトアウトの方法になります。
 
 ❌ 間違ったコード例

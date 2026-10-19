@@ -1,6 +1,6 @@
 import { createRule, getSpec } from '@markuplint/ml-core';
 
-import { Collection } from '../helpers.js';
+import { Collection, isAriaAttr } from '../helpers.js';
 import meta from './meta.js';
 
 /**
@@ -25,7 +25,7 @@ export default createRule({
 			}
 
 			const roleAttr = el.getAttributeNode('role');
-			const propAttrs = el.attributes.filter(attr => /^aria-/i.test(attr.name));
+			const propAttrs = el.attributes.filter(attr => isAriaAttr(attr));
 			const ariaAttrs = new Collection(roleAttr, ...propAttrs);
 
 			for (const ariaAttr of ariaAttrs) {

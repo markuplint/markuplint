@@ -19,7 +19,7 @@ export const checkingDefaultValue: AttrChecker<boolean, Options, { propSpecs: re
 		if (attr.isDynamicValue) {
 			return;
 		}
-		const propSpec = propSpecs.find(p => p.name === attr.name);
+		const propSpec = propSpecs.find(p => p.name === attr.nameKey);
 		const value = attr.value.trim().toLowerCase();
 		if (propSpec?.defaultValue != null && propSpec.defaultValue === value) {
 			return {

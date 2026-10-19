@@ -10,6 +10,8 @@ Warns when an `aria-*` attribute is disallowed by an element-specific restrictio
 1. **Element-specific prohibitions** — every `aria-*` attribute is forbidden on certain element states (e.g. `<input type="hidden">`), and individual attributes may be forbidden when another attribute is present or when the element sits in a specific parent context (e.g. `aria-expanded` on `<button popovertarget>` or `<button commandfor>` because the popover / Invoker Commands API manages the state automatically; `aria-expanded` and `aria-pressed` on the first `<summary>` inside `<details>` because the expanded state maps to the `open` attribute).
 2. **Element-specific whitelist** — some elements accept only a small set of `aria-*` attributes (e.g. `<br>` and `<wbr>` accept only `aria-hidden`); any attribute outside the whitelist is rejected.
 
+The names of ARIA attributes are compared as [`no-unknown-attr`](/docs/rules/no-unknown-attr#attribute-name-case) compares names (see its "Attribute name case" section): `ARIA-LABEL` is the same attribute as `aria-label` where the DOM treats attribute names as case-insensitive, such as on an HTML element, and a different one where it does not, such as on an `<svg>` element in JSX.
+
 Split out of the former `wai-aria-disallowed-props` rule, alongside [`no-prohibited-naming`](/docs/rules/no-prohibited-naming) and [`role-supports-aria-prop`](/docs/rules/role-supports-aria-prop). The former rule's `disallowSetImplicitProps` option gated this check; disabling this rule entirely is how to opt out now.
 
 ❌ Examples of **incorrect** code for this rule
