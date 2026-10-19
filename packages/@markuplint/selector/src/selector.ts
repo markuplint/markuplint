@@ -2,7 +2,7 @@ import type { SelectorElement, SelectorMatchedResult, SelectorNode, SelectorResu
 import type { ReadonlyDeep, Writable } from 'type-fest';
 
 import { resolveNamespace } from '@markuplint/ml-spec';
-import { asciiLowerCase, camelize } from '@markuplint/shared';
+import { asciiLowerCase, vuePropKey } from '@markuplint/shared';
 import debug from 'debug';
 import parser from 'postcss-selector-parser';
 
@@ -635,7 +635,7 @@ function attrMatch(
 	return [...el.attributes].some(attrOfEl => {
 		const elAttrName = attrOfEl.domName ?? attrOfEl.localName;
 		const isCaseInsensitive = attrOfEl.nameCaseInsensitive ?? isHTML;
-		const selectorName = attrOfEl.nameIsCamelized ? camelize(attr.attribute) : attr.attribute;
+		const selectorName = attrOfEl.nameIsCamelized ? vuePropKey(attr.attribute) : attr.attribute;
 		const fold = (name: string) => (isCaseInsensitive ? asciiLowerCase(name) : name);
 		// A prefixed attribute (`xlink:href`) is also named by its local name, which is what
 		// the namespace of a selector (`[xlink|href]`, `[*|href]`) qualifies

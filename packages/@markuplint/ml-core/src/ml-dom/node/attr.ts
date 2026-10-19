@@ -11,7 +11,7 @@ import { MLToken } from '../token/token.js';
 
 import { MLDomTokenList } from './dom-token-list.js';
 import { MLNode } from './node.js';
-import { UnexpectedCallError, asciiLowerCase, camelize } from '@markuplint/shared';
+import { UnexpectedCallError, asciiLowerCase, vuePropKey } from '@markuplint/shared';
 
 /**
  * Represents a DOM Attr (attribute) node wrapper in the markuplint DOM tree.
@@ -257,7 +257,7 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 	keyOf(name: string): string {
 		const el = this.ownerElement;
 		if (el.elementType === 'authored') {
-			return el.ownerMLDocument.componentNameVariants ? camelize(name) : name;
+			return el.ownerMLDocument.componentNameVariants ? vuePropKey(name) : name;
 		}
 		if (!el.isForeignElement) {
 			return asciiLowerCase(name);

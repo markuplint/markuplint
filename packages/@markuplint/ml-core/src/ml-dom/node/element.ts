@@ -47,7 +47,7 @@ import { MLElementCloseTag } from './element-close-tag.js';
 import { toNamedNodeMap } from './named-node-map.js';
 import { toHTMLCollection, toNodeList } from './node-list.js';
 import { MLParentNode } from './parent-node.js';
-import { UnexpectedCallError, asciiLowerCase, camelize } from '@markuplint/shared';
+import { UnexpectedCallError, asciiLowerCase, vuePropKey } from '@markuplint/shared';
 
 const HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml';
 
@@ -117,7 +117,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 			return true;
 		}
 		if (this.elementType === 'authored') {
-			return this.ownerMLDocument.componentNameVariants && camelize(a) === camelize(b);
+			return this.ownerMLDocument.componentNameVariants && vuePropKey(a) === vuePropKey(b);
 		}
 		if (this.ownerMLDocument.attrNameRoute === 'dom-api' && (this.isForeignElement || /[A-Z]/.test(a + b))) {
 			return false;
@@ -4332,7 +4332,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 				const { fromAttr } = value;
 				const isVue = this.ownerMLDocument.componentNameVariants;
 				const origin = this.#attributes.find(attr =>
-					isVue ? camelize(attr.name) === camelize(fromAttr) : attr.isNamedBy(fromAttr),
+					isVue ? vuePropKey(attr.name) === vuePropKey(fromAttr) : attr.isNamedBy(fromAttr),
 				);
 				if (!origin && value.omitIfMissing) {
 					return [];
