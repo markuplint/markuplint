@@ -239,11 +239,11 @@ function uncombinedRegexSelect(el: SelectorNode, selector: RegexSelectorWithoutC
 	if (selector.attrName || selector.attrValue) {
 		const matchedAttrList: MatchedAttr[] = [...el.attributes]
 			.map<MatchedAttr | null>(attr => {
-				const matchedAttrName = regexSelectorMatches(
-					selector.attrName,
-					attr.domName ?? attr.name,
-					attr.nameCaseInsensitive ?? isPure,
-				);
+				const ignoreCase = attr.nameCaseInsensitive ?? isPure;
+				// A prop that the framework camelizes has two spellings, the DOM's and the one written
+				const matchedAttrName =
+					regexSelectorMatches(selector.attrName, attr.domName ?? attr.name, ignoreCase) ??
+					(attr.nameIsCamelized ? regexSelectorMatches(selector.attrName, attr.name, ignoreCase) : null);
 				if (selector.attrName && !matchedAttrName) {
 					return null;
 				}

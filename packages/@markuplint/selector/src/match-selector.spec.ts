@@ -422,8 +422,29 @@ describe('attrName of an attribute that says how its name is compared', () => {
 		expect(matchSelector(el, { attrName: 'viewbox' }).matched).toBe(false);
 	});
 
-	test('without that information a name on an SVG element is matched exactly, as before', () => {
+	test('without that information a name on an SVG element is matched exactly', () => {
 		expect(matchSelector(mockElement({}), { attrName: 'viewbox' }).matched).toBe(false);
 		expect(matchSelector(mockElement({}), { attrName: 'VIEWBOX' }).matched).toBe(true);
+	});
+
+	test('a prop that the framework camelizes is matched by either spelling', () => {
+		const el = {
+			...mockElement({}),
+			attributes: [
+				{
+					name: 'my-label',
+					localName: 'my-label',
+					value: '',
+					namespaceURI: null,
+					nameCaseInsensitive: false,
+					domName: 'myLabel',
+					nameIsCamelized: true,
+				},
+			],
+		};
+		expect(matchSelector(el, { attrName: 'myLabel' }).matched).toBe(true);
+		expect(matchSelector(el, { attrName: 'my-label' }).matched).toBe(true);
+		expect(matchSelector(el, { attrName: '/^my-/' }).matched).toBe(true);
+		expect(matchSelector(el, { attrName: 'mylabel' }).matched).toBe(false);
 	});
 });
