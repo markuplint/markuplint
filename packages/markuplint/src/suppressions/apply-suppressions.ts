@@ -89,8 +89,8 @@ function matchesSegment(node: ScopedNode, segment: string): boolean {
 		return id.length > 0 && node.id === id;
 	}
 
-	// tag[attr="value"]
-	const attrMatch = /^([a-z-]+)\[([a-z-]+)="([^"]+)"\]$/.exec(segment);
+	// tag[attr="value"]: the tag is the `localName` as it is, with a capital letter (`FooBar`) or a digit (`h1`)
+	const attrMatch = /^([^[\]"]+)\[([a-z-]+)="([^"]+)"\]$/.exec(segment);
 	if (attrMatch) {
 		const [, tag, attrName, attrValue] = attrMatch;
 		if (node.localName !== tag) {

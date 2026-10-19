@@ -24,12 +24,16 @@ export function isPotentialCustomElementName(tagName: string) {
  * `.` is valid only in a custom element name, which a hyphen and a lowercase start
  * give away. So the form of the name tells, however the chain stopped.
  *
- * The case sensitivity of the document is not part of the criterion: a Vue template
- * ignores the case of tag names, yet its components are written in PascalCase just
- * the same. Neither is a parser's pattern for authored names (`authoredElementName`):
- * it is the parser's own, and the scanners and ml-core must agree on this one.
+ * This is the form that most languages share, and the default of `Parser#isComponentName`.
+ * A parser of a language that names its components otherwise overrides that method, and what asks
+ * (the scanners, `ml-core`, `pretenders`) asks the parser, not this function. It is called by name for a
+ * parser that says nothing and for a file of a language that has no parser to ask.
+ *
+ * The case sensitivity of the document is not part of the criterion, nor is the user's pattern for
+ * authored names (`authoredElementName`): the scanners and ml-core must agree on the rule of the language.
  *
  * @param name - A tag name as written, case kept
+ * @returns Whether the name is a component's
  */
 export function isComponentName(name: string): boolean {
 	return /^[A-Z]|\./.test(name) && !isPotentialCustomElementName(name);

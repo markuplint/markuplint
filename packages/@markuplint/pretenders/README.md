@@ -21,10 +21,10 @@ $ npx @markuplint/pretenders "./src/**/*.{jsx,tsx,vue,svelte,astro}" --out "./pr
 
 The CLI accepts glob patterns covering any combination of the supported frameworks. It dispatches files to the appropriate scanner based on file extension, runs them in parallel, and writes the merged results as JSON.
 
-| Flag          | Description                                        |
-| ------------- | -------------------------------------------------- |
-| `-O`, `--out` | Output file path (required)                        |
-| `--ignore`    | Comma-separated list of component names to exclude |
+| Flag          | Description                                                                                                                                    |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `-O`, `--out` | Output file path (required)                                                                                                                    |
+| `--ignore`    | Comma-separated list of component names to exclude (`base-button`, `baseButton` and `BaseButton` are one name for a Vue, Svelte or Astro file) |
 
 ### Configuration-based Scanning
 
@@ -62,7 +62,7 @@ Instead of the CLI, you can configure dynamic scanning directly in your markupli
 }
 ```
 
-The walk follows up to 8 import hops from the linted file. A re-export (`export ... from`) in a JS/TS file (or in the linted file itself when it is MDX) is followed like an import, so components imported through a barrel file are found, and passing through the barrel takes a hop. A component is resolved under the name the linted file gives it (`import { Named as A }`, `import B from './DefNamed'`, or a component renamed by a barrel file), in addition to the name it is declared under. A component that `lazy()`, `defineAsyncComponent()` or a dynamic `import()` assigns to a variable (or to a Vue `components` key) is matched to the file it loads under that name, as a default import is, whatever the variable is called as long as it is a component name (see below for a lowercase initial). A namespace import (`import * as UI`, or a namespace that a module exports with `export * as UI from`) gets a pretender per component it exports, under the member tag (`<UI.Button>`, `<UI.Sub.Button>` for a nested namespace); the selector is written `UI\.Button`, as a selector reads a `.` as the start of a class. A namespace is found when it is exported again as `import * as UI from './ui'; export { UI }` as well. A tag with a dot is a component whatever the case of the first letter, so the name of a namespace is not judged by it. A name that is not a namespace and has a lowercase initial (`import myButton from './Foo'`) gets none: in JSX, MDX, Svelte, and Astro a tag with a lowercase initial is an HTML element, not a reference to the variable, so a component under that name would turn `<myButton>` into the component. A name is resolved through at most 7 chained re-exports (`export { X } from`, `export * from`, `export * as X from`; the file that declares it is the 8th file of the chain), and one behind more is not resolved. The limit is fixed and is not the `depth` of the walk.
+The walk follows up to 8 import hops from the linted file. A re-export (`export ... from`) in a JS/TS file (or in the linted file itself when it is MDX) is followed like an import, so components imported through a barrel file are found, and passing through the barrel takes a hop. A component is resolved under the name the linted file gives it (`import { Named as A }`, `import B from './DefNamed'`, or a component renamed by a barrel file), in addition to the name it is declared under. A component that `lazy()`, `defineAsyncComponent()` or a dynamic `import()` assigns to a variable (or to a Vue `components` key) is matched to the file it loads under that name, as a default import is, whatever the variable is called as long as it is a component name (see below for a lowercase initial). A namespace import (`import * as UI`, or a namespace that a module exports with `export * as UI from`) gets a pretender per component it exports, under the member tag (`<UI.Button>`, `<UI.Sub.Button>` for a nested namespace); the selector is written `UI\.Button`, as a selector reads a `.` as the start of a class. A namespace is found when it is exported again as `import * as UI from './ui'; export { UI }` as well. A tag with a dot is a component whatever the case of the first letter, so the name of a namespace is not judged by it. A name that is not a namespace and is not a component name in the language of the file (`import myButton from './Foo'` in JSX, MDX, Svelte, and Astro) gets none: a tag with a lowercase initial is an HTML element there, not a reference to the variable, so a component under that name would turn `<myButton>` into the component. What a component name is is the rule of the parser of the language (`_Layout` is one in JSX, only a capital initial is in Astro). A Vue file is the exception: Vue resolves a tag to a component imported under it as written, camelized, or capitalized after camelizing, so `import myButton` gets a pretender, and the selector `myButton` stands for `<myButton>`, `<my-button>` and `<MyButton>` alike. A component registered by the Options API of Vue (`components: { 'foo-bar': Foo }`, `Btn: MyButton`) is named by its key (`foo-bar`, `Btn`), as the template names it. A name is resolved through at most 7 chained re-exports (`export { X } from`, `export * from`, `export * as X from`; the file that declares it is the 8th file of the chain), and one behind more is not resolved. The limit is fixed and is not the `depth` of the walk.
 
 `auto` also accepts an object to change the limit:
 
@@ -144,6 +144,8 @@ The template scanner delegates to each parser package's `component-scanner` subp
 
 A template component is named after its file in PascalCase (`button-group.vue` is `ButtonGroup`; an `index` file takes the name of its directory). A file whose name does not make a JavaScript identifier (`[id].vue`, `+page.svelte`, `Button.client.vue`) gives no name, so it gets no pretender.
 
+In a Vue template an attribute reaches a prop by the camelCase of its name, so the prop `myLabel` takes `my-label` and `myLabel` at the usage site alike (and the prop declared as `'my-label'` is the same one); the same holds for an attribute that a Vue component writes on the component it renders.
+
 The scanner reads the script (`<script setup>` of Vue, the instance script of Svelte, the frontmatter of Astro) for the props the component declares, and an attribute whose expression is just one of them (`:aria-label="label"` after `defineProps(['label'])`, `aria-label={label}` after `let { label } = $props()`, `export let label`, or `const { label } = Astro.props`) is `{ "fromAttr": "label", "omitIfMissing": true }`. Not read: the Options API `props`, a type that is not a literal (`defineProps<Props>()`), and a prop with a default value. A Boolean-typed Vue prop that the usage site omits is `false`, not `undefined`, so the attribute it is passed to is rendered with `"false"`; the scanner omits it, as no type is resolved. `inheritAttrs` is set when the root spreads the props (`{...rest}` of a destructuring, `{...$$restProps}`, `{...Astro.props}`). Vue falls the attributes through to the root of a template that has one root, so it is set for such a component unless it says `inheritAttrs: false` or declares props (the props are not attributes, and `inheritAttrs` cannot say which ones are); `v-bind="$attrs"` on the root sets it as well.
 
 ```vue
@@ -220,7 +222,7 @@ const pretenders = await scan([
 | Parameter                      | Type                 | Description                                                                                                                                                                                                                                       |
 | ------------------------------ | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `files`                        | `readonly string[]`  | Absolute file paths to scan                                                                                                                                                                                                                       |
-| `options.ignoreComponentNames` | `readonly string[]`  | Component names to exclude from results                                                                                                                                                                                                           |
+| `options.ignoreComponentNames` | `readonly string[]`  | Component names to exclude from results (for a Vue, Svelte or Astro file a name is read as PascalCase: `base-button` is `BaseButton`)                                                                                                             |
 | `options.followImports`        | `boolean`            | Whether the JSX scanner also scans the files the given JS/TS files import (default `true`; `autoScan` passes `false` to keep its own depth limit)                                                                                                 |
 | `options.dependencies`         | `Set<string>`        | A set the scan adds the files its result depends on to (see [Dependencies](#dependencies))                                                                                                                                                        |
 | `options.entry`                | `PretenderScanEntry` | The file being linted, `{ filePath: string; bindings: readonly ImportBinding[] }` (`filePath` is absolute): the names it gives the components it imports are added as pretenders. `autoScan` passes it; a `scan` of a fixed set of files has none |
@@ -243,14 +245,14 @@ const pretenders = await jsxScanner(['/absolute/path/to/Component.jsx'], {
 
 #### Parameters
 
-| Parameter                        | Type                                                             | Description                                                |
-| -------------------------------- | ---------------------------------------------------------------- | ---------------------------------------------------------- |
-| `files`                          | `readonly string[]`                                              | Absolute file paths to scan                                |
-| `options.cwd`                    | `string`                                                         | Current working directory                                  |
-| `options.asFragment`             | `readonly (RegExp \| string)[]`                                  | Patterns for components treated as transparent fragments   |
-| `options.ignoreComponentNames`   | `readonly string[]`                                              | Component names to ignore                                  |
-| `options.taggedStylingComponent` | `readonly (RegExp \| string)[]`                                  | Patterns for styled-components tagged template expressions |
-| `options.extendingWrapper`       | `readonly (string \| RegExp \| ExtendingWrapperCallerOptions)[]` | Patterns for HOC/wrapper components                        |
+| Parameter                        | Type                                                             | Description                                                                    |
+| -------------------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `files`                          | `readonly string[]`                                              | Absolute file paths to scan                                                    |
+| `options.cwd`                    | `string`                                                         | Current working directory                                                      |
+| `options.asFragment`             | `readonly (RegExp \| string)[]`                                  | Patterns for components treated as transparent fragments                       |
+| `options.ignoreComponentNames`   | `readonly string[]`                                              | Component names to ignore (read as PascalCase for a Vue, Svelte or Astro file) |
+| `options.taggedStylingComponent` | `readonly (RegExp \| string)[]`                                  | Patterns for styled-components tagged template expressions                     |
+| `options.extendingWrapper`       | `readonly (string \| RegExp \| ExtendingWrapperCallerOptions)[]` | Patterns for HOC/wrapper components                                            |
 
 ### `templateScanner(files, options)`
 
@@ -269,11 +271,11 @@ const pretenders = await templateScanner(
 
 #### Parameters
 
-| Parameter                      | Type                | Description                                    |
-| ------------------------------ | ------------------- | ---------------------------------------------- |
-| `files`                        | `readonly string[]` | Absolute file paths to scan                    |
-| `options.cwd`                  | `string`            | Current working directory (for relative paths) |
-| `options.ignoreComponentNames` | `readonly string[]` | Component names to exclude from results        |
+| Parameter                      | Type                | Description                                                                                                                           |
+| ------------------------------ | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `files`                        | `readonly string[]` | Absolute file paths to scan                                                                                                           |
+| `options.cwd`                  | `string`            | Current working directory (for relative paths)                                                                                        |
+| `options.ignoreComponentNames` | `readonly string[]` | Component names to exclude from results (for a Vue, Svelte or Astro file a name is read as PascalCase: `base-button` is `BaseButton`) |
 
 ### `analyzeImports(filePath, source)`
 
@@ -299,23 +301,24 @@ const result = await analyzeImports('App.vue', source);
 
 `Promise<ImportAnalysisResult | null>` — The analysis result with all import bindings, or `null` if the framework is not supported.
 
-### `resolveComponentImport(componentName, bindings)`
+### `resolveComponentImport(componentName, bindings, filePath?)`
 
-Resolves a component name used in a template to its import binding. Handles Vue's kebab-case to PascalCase normalization (e.g., `<my-button>` resolves to `MyButton`).
+Resolves a component name used in a template to its import binding. A name is looked up as it is or, if it is kebab-case, as its PascalCase (e.g., `<my-button>` resolves to `MyButton`). In a Vue file (pass its path) it is looked up as Vue does: as written, then camelized, then capitalized after camelizing, so `<my-button>`, `<myButton>` and `<MyButton>` resolve to the binding `MyButton`, and `<my-button>` and `<myButton>` resolve to `myButton`.
 
 ```ts
 import { resolveComponentImport } from '@markuplint/pretenders';
 
-const binding = resolveComponentImport('my-button', bindings);
+const binding = resolveComponentImport('my-button', bindings, 'App.vue');
 // binding: { localName: 'MyButton', importedName: 'default', source: './components/MyButton.vue', type: 'default' }
 ```
 
 #### Parameters
 
-| Parameter       | Type                       | Description                            |
-| --------------- | -------------------------- | -------------------------------------- |
-| `componentName` | `string`                   | Component name as used in the template |
-| `bindings`      | `readonly ImportBinding[]` | Import bindings from `analyzeImports`  |
+| Parameter       | Type                       | Description                                                                |
+| --------------- | -------------------------- | -------------------------------------------------------------------------- |
+| `componentName` | `string`                   | Component name as used in the template                                     |
+| `bindings`      | `readonly ImportBinding[]` | Import bindings from `analyzeImports`                                      |
+| `filePath`      | `string` (optional)        | The file the template is in; a Vue file is looked up as Vue itself does it |
 
 #### Returns
 

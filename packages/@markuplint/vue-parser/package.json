@@ -35,6 +35,7 @@
 		"@markuplint/html-parser": "5.2.0",
 		"@markuplint/ml-ast": "5.1.1",
 		"@markuplint/parser-utils": "5.2.0",
+		"@vue/shared": "^3.5.30",
 		"vue-eslint-parser": "^10.4.1"
 	}
 }

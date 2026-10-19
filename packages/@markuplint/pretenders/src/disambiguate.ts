@@ -28,6 +28,7 @@ import type { ImportBinding } from './import-resolver/types.js';
 import type { Pretender } from '@markuplint/ml-config';
 
 import { parsePretenderFilePath } from '@markuplint/ml-config';
+import { capitalize, pascalize } from '@markuplint/shared';
 
 import {
 	FROM_PACKAGE,
@@ -37,7 +38,13 @@ import {
 	resolveModule,
 } from './dependency-mapper.js';
 import { DEFAULT_LOCAL_NAME } from './export-table.js';
-import { analyzeImports, kebabToPascalCase, resolveComponentImport } from './import-resolver/index.js';
+import {
+	analyzeImports,
+	isComponentBinding,
+	isVueFile,
+	kebabToPascalCase,
+	resolveSelectorImport,
+} from './import-resolver/index.js';
 import { normalizePath } from './import-resolver/resolve-module-file.js';
 
 /**
@@ -88,7 +95,7 @@ export async function disambiguatePretenders(
 	pretenders: readonly Pretender[],
 	options: DisambiguateOptions,
 ): Promise<readonly Pretender[]> {
-	const groups = groupCandidates(pretenders, options.sourceCode);
+	const groups = groupCandidates(pretenders, options.sourceCode, options.filePath);
 	if (groups.size === 0) {
 		// Fast path: no file-backed candidate's selector appears in the source,
 		// so there's nothing to resolve — skip import analysis entirely.
@@ -140,27 +147,55 @@ export async function disambiguatePretenders(
 /**
  * Whether the source names the selector as a whole identifier: the selector itself, or the
  * PascalCase name a Vue-style script imports a kebab-case one as (the one
- * {@link resolveComponentImport} looks for). A selector the source does not name has no
+ * {@link resolveSelectorImport} looks for). A selector the source does not name has no
  * binding in the file, so nothing could be resolved for it.
+ *
+ * In a Vue file the names are the ones of `vueTagNameMatches`, which is for the selector to be named
+ * as a tag (`<foo-bar>`, `<fooBar>`) or as a binding (`fooBar`) of any spelling: `names` holds each
+ * identifier of the source as it is, capitalized and in PascalCase, and the selector is looked up as
+ * it is and in PascalCase. It is a wide filter, as `resolveWinner` decides on the binding.
  */
-function namesSelector(identifiers: ReadonlySet<string>, selector: string): boolean {
-	return identifiers.has(selector) || identifiers.has(kebabToPascalCase(selector));
+function namesSelector(
+	identifiers: ReadonlySet<string>,
+	selector: string,
+	getVueNames?: () => ReadonlySet<string>,
+): boolean {
+	if (identifiers.has(selector) || identifiers.has(kebabToPascalCase(selector))) {
+		return true;
+	}
+	if (!getVueNames) {
+		return false;
+	}
+	const vueNames = getVueNames();
+	return vueNames.has(selector) || vueNames.has(pascalize(selector));
 }
 
 /**
  * Groups the file-backed candidates by selector, for the selectors the source text names.
  * A lone candidate is a group too: it may be a package's component that shares the name.
  */
-function groupCandidates(pretenders: readonly Pretender[], sourceCode: string): Map<string, Pretender[]> {
+function groupCandidates(
+	pretenders: readonly Pretender[],
+	sourceCode: string,
+	filePath: string,
+): Map<string, Pretender[]> {
 	const bySelector = new Map<string, Pretender[]>();
 	// Tokenized once: a scan can hold thousands of candidates, and this runs for every linted file.
 	const identifiers = new Set<string>(sourceCode.match(RE_IDENTIFIER));
+	// Built when a selector is not named as it is, and then once: most files name what they use as they write it.
+	let vueNames: ReadonlySet<string> | undefined;
+	const getVueNames = isVueFile(filePath)
+		? () =>
+				(vueNames ??= new Set(
+					[...identifiers].flatMap(identifier => [identifier, capitalize(identifier), pascalize(identifier)]),
+				))
+		: undefined;
 
 	for (const pretender of pretenders) {
 		if (!pretender.filePath || !RE_SIMPLE_COMPONENT_NAME.test(pretender.selector)) {
 			continue;
 		}
-		if (!namesSelector(identifiers, pretender.selector)) {
+		if (!namesSelector(identifiers, pretender.selector, getVueNames)) {
 			continue;
 		}
 		const list = bySelector.get(pretender.selector);
@@ -197,7 +232,12 @@ function resolveWinner(
 		return local;
 	}
 
-	const binding = resolveComponentImport(candidates[0]!.selector, bindings);
+	// A binding that a tag cannot refer to in the language of the file is not looked at (`isComponentBinding`).
+	const binding = resolveSelectorImport(
+		candidates[0]!.selector,
+		bindings.filter(b => isComponentBinding(b, filePath)),
+		filePath,
+	);
 	// A dynamic binding found by name is one that `lazy(() => import('./X'))` assigned the name to
 	// (see `dynamicImportName`), so it resolves like a default import; one without a name is
 	// `'*'` and found by none.

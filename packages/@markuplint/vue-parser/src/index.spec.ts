@@ -389,7 +389,9 @@ describe('parser', () => {
 		expect(parse('<template><component/></template>').nodeList[0].elementType).toBe('authored');
 		expect(parse('<template><slot/></template>').nodeList[0].elementType).toBe('authored');
 		expect(parse('<template><Transition/></template>').nodeList[0].elementType).toBe('authored');
-		expect(parse('<template><transition/></template>').nodeList[0].elementType).toBe('html');
+		// Behavior change: <transition> is the built-in component Transition, as Vue resolves it
+		expect(parse('<template><transition/></template>').nodeList[0].elementType).toBe('authored');
+		// expect(parse('<template><transition/></template>').nodeList[0].elementType).toBe('html'); // previous
 	});
 
 	test('Directives', () => {

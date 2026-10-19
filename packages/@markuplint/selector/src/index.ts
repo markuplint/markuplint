@@ -5,4 +5,5 @@ export { createSelector } from './create-selector.js';
 export { Selector } from './selector.js';
 export type { ExtendedPseudoClass } from './selector.js';
 export { InvalidSelectorError } from './invalid-selector-error.js';
+export { typeNameMatches } from './type-name.js';
 export type * from './types.js';

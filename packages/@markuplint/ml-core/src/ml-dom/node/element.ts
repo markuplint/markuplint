@@ -28,9 +28,9 @@ import type { ARIAVersion } from '@markuplint/ml-spec';
 
 import { getSpecByTagName, resolveNamespace } from '@markuplint/ml-spec';
 import { pretenderNamespaceToURI } from '@markuplint/ml-config';
-import { getChildNamespace, isComponentName } from '@markuplint/parser-utils';
+import { getChildNamespace } from '@markuplint/parser-utils';
 import type { SelectorMatches } from '@markuplint/selector';
-import { matchSelector } from '@markuplint/selector';
+import { matchSelector, typeNameMatches } from '@markuplint/selector';
 
 import { getAccname } from '../helper/accname.js';
 import {
@@ -47,7 +47,7 @@ import { MLElementCloseTag } from './element-close-tag.js';
 import { toNamedNodeMap } from './named-node-map.js';
 import { toHTMLCollection, toNodeList } from './node-list.js';
 import { MLParentNode } from './parent-node.js';
-import { UnexpectedCallError } from '@markuplint/shared';
+import { UnexpectedCallError, vuePropKey } from '@markuplint/shared';
 
 const HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml';
 
@@ -103,8 +103,8 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * Like {@link localName}, it follows the pretender, since a selector sees the element
 	 * the component renders. A pretender target is created with `elementType: 'html'`, so it
 	 * is a custom element when its own name has a hyphen. A target whose name is a component
-	 * (`Tabs.Root`, see `isComponentName`) is created as `'authored'` and counts like one
-	 * written directly: the scanners of `pretenders.auto` end a chain at such a name when
+	 * (`Tabs.Root`; the rule is the parser's, see {@link MLDocument.isComponentName}) is created as
+	 * `'authored'` and counts like one written directly: the scanners of `pretenders.auto` end a chain at such a name when
 	 * they cannot resolve it, and what that component renders is not known.
 	 *
 	 * Known limitation: the hyphen test is only the hyphen. A pretender target named after a reserved
@@ -129,6 +129,67 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 */
 	get tagNameCaseSensitive(): boolean {
 		return this.ownerMLDocument.tagNameCaseSensitive;
+	}
+
+	/**
+	 * What this element is for a type selector, in a document that resolves a component by any
+	 * spelling of its name (Vue, see {@link MLDocument.componentNameVariants}); `undefined` in any other.
+	 *
+	 * - `component`: not an HTML element (`<FooBar>`, `<foo-bar>`), which {@link localName} names as written
+	 * - `native`: an HTML element that has a specification (`<button>`), the guard of {@link pretending}
+	 * - `unknown-html`: an HTML element that has none (`<foobar>`)
+	 *
+	 * Like {@link localName}, it follows the pretender, since a selector sees the element the component
+	 * renders. An element of the SVG or MathML namespace has none: it keeps the case of its name.
+	 *
+	 * @implements `SelectorElement#tagNameKind` of `@markuplint/selector`
+	 */
+	get tagNameKind(): 'component' | 'native' | 'unknown-html' | undefined {
+		const document = this.ownerMLDocument;
+		if (!document.componentNameVariants) {
+			return;
+		}
+		const target = this.pretenderContext?.type === 'pretender' ? this.pretenderContext.as : this;
+		if (target.isForeignElement) {
+			return;
+		}
+		if (target.elementType !== 'html') {
+			return 'component';
+		}
+		return getSpecByTagName(document.specs.specs, target.localName, target.namespaceURI)
+			? 'native'
+			: 'unknown-html';
+	}
+
+	/**
+	 * Whether a name that a user writes for an element (the `tag` of a rule option, as against the
+	 * type name of a selector, which {@link matches} takes) stands for this element, written as it is,
+	 * in a document that resolves a component by any spelling of its name (Vue, see
+	 * {@link MLDocument.componentNameVariants}): `FooBar` stands for `<foo-bar>` and `<fooBar>`.
+	 *
+	 * It is `false` in any other document, so that a caller that compares a name as it is can ask
+	 * it as well without changing what it does there. It ignores the pretender: the name is the one
+	 * the element is written with. To ask so, it hides the pretender of this element for the length of the
+	 * call (as {@link matchMLSelector} does for its second try), so nothing in it may be async.
+	 *
+	 * @param name - The name as the user wrote it
+	 * @returns Whether the name stands for this element
+	 */
+	matchesTagNameVariant(name: string): boolean {
+		if (!this.ownerMLDocument.componentNameVariants) {
+			return false;
+		}
+		const pretenderContext = this.pretenderContext;
+		if (pretenderContext?.type !== 'pretender') {
+			return this.tagNameKind !== undefined && typeNameMatches(name, this);
+		}
+		// The element as written, not as the pretender makes it: as `matchMLSelector` does for its second try
+		this.pretenderContext = null;
+		try {
+			return this.tagNameKind !== undefined && typeNameMatches(name, this);
+		} finally {
+			this.pretenderContext = pretenderContext;
+		}
 	}
 
 	/**
@@ -4165,7 +4226,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 
 		// A component is given no name for the namespace, as `#resolveNamespace` does:
 		// `getChildNamespace` compares names in lowercase, so `Svg` would enter SVG.
-		const isComponent = isComponentName(nodeName);
+		const isComponent = this.ownerMLDocument.isComponentName(nodeName);
 		const namespace =
 			typeof pretenderElement !== 'string' && pretenderElement.namespace
 				? pretenderNamespaceToURI(pretenderElement.namespace)
@@ -4227,8 +4288,14 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 			if (typeof value === 'string') {
 				_value = value;
 			} else if (value != null && 'fromAttr' in value) {
-				const fromAttr = value.fromAttr.toLowerCase();
-				const origin = this.#attributes.find(attr => attr.name.toLowerCase() === fromAttr);
+				// Vue gives a prop the attribute of the usage site by the camelCase of its name: `my-label`
+				// and `myLabel` are the prop `myLabel`, and the prop declared as `'my-label'` is the same one, so both
+				// sides are read so. Elsewhere a name is its own.
+				const propNameOf = this.ownerMLDocument.componentNameVariants
+					? (name: string) => vuePropKey(name)
+					: (name: string) => name.toLowerCase();
+				const fromAttr = propNameOf(value.fromAttr);
+				const origin = this.#attributes.find(attr => propNameOf(attr.name) === fromAttr);
 				if (!origin && value.omitIfMissing) {
 					return [];
 				}
@@ -4313,7 +4380,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		if (spec.attrs) {
 			attributes.push(...this.#createPretenderAttrs(spec.attrs, uuid));
 		}
-		const isComponent = isComponentName(spec.element);
+		const isComponent = this.ownerMLDocument.isComponentName(spec.element);
 		let elementType: ElementType = 'html';
 		if (isComponent) {
 			elementType = 'authored';

@@ -97,6 +97,8 @@
 
 タイプセレクタは、CSSと同じくHTML要素のタグ名を大文字小文字を区別せずに比較します。JSX・Svelte・Astro・MDXのように、パーサーがタグ名の大文字小文字を区別する言語では、書かれたとおりに比較します。`FooBar`は`<FooBar>`に一致しますが`<foobar>`には一致せず、`DIV`は`<div>`に一致しません。[正規表現セレクタ](#正規表現セレクタ)の`nodeName`も同様です。セレクタはタグと同じ大文字小文字で書いてください。
 
+Vueのテンプレートには独自の規則があります。Vueはタグをどの表記でもコンポーネントに解決するためです（[Component Name Casing](https://vuejs.org/guide/components/registration.html#component-name-casing)）。コンポーネントのタイプセレクタは、どの表記にも一致します。`FooBar`・`fooBar`・`foo-bar`は、`<FooBar>`・`<fooBar>`・`<foo-bar>`のどれにも一致し、`<foobar>`にはどれも一致しません。1語のセレクタは、書かれたとおりの名前か、先頭を大文字にした名前に一致するので、`Transition`は`<transition>`に一致します。HTML要素は小文字の名前で判別します。`button`は`<button>`に一致しますが`<Button>`には一致せず、`Button`は`<Button>`に一致しますが`<button>`には一致しません。正規表現セレクタは正規化せず、書かれたとおりの名前に照合します。
+
 ## 詳細度
 
 **CSSセレクタ**と同じく**詳細度**が適用されます。これにより、ルールを適用する優先順位を制御できます。

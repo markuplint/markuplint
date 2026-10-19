@@ -42,6 +42,7 @@ import { isVoidElement as detectVoidElement } from '@markuplint/ml-spec';
 import { attrTokenizer } from './attr-tokenizer.js';
 import { defaultSpaces } from './const.js';
 import { domLog, PerformanceTimer } from './debug.js';
+import { isComponentName } from './decision.js';
 import { detectElementType } from './detect-element-type.js';
 import { AttrState, TagState } from './enums.js';
 import { getEndCol, getEndLine, getOffsetsFromCode, getPosition } from './get-location.js';
@@ -87,6 +88,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	readonly #ignoreTags: readonly IgnoreTag[] = [];
 	readonly #maskChar?: string;
 	readonly #tagNameCaseSensitive: boolean = false;
+	readonly #componentNameVariants: boolean = false;
 	readonly #attrNameCaseSensitive: boolean = false;
 	readonly #selfCloseType: SelfCloseType = 'html';
 	readonly #spaceChars: readonly string[] = defaultSpaces;
@@ -131,6 +133,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		this.#ignoreTags = options?.ignoreTags ?? this.#ignoreTags;
 		this.#maskChar = options?.maskChar ?? this.#maskChar;
 		this.#tagNameCaseSensitive = options?.tagNameCaseSensitive ?? this.#tagNameCaseSensitive;
+		this.#componentNameVariants = options?.componentNameVariants ?? this.#componentNameVariants;
 		this.#attrNameCaseSensitive = options?.attrNameCaseSensitive ?? this.#attrNameCaseSensitive;
 		this.#selfCloseType = options?.selfCloseType ?? this.#selfCloseType;
 		this.#spaceChars = options?.spaceChars ?? this.#spaceChars;
@@ -186,6 +189,15 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	 */
 	get tagNameCaseSensitive() {
 		return this.#tagNameCaseSensitive;
+	}
+
+	/**
+	 * Whether a component is referred to by any spelling of its name (`<FooBar>`, `<fooBar>`
+	 * and `<foo-bar>` are one component). Only Vue resolves a tag so; see
+	 * {@link MLParser.componentNameVariants} in `@markuplint/ml-ast`.
+	 */
+	get componentNameVariants() {
+		return this.#componentNameVariants;
 	}
 
 	/**
@@ -1190,6 +1202,26 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	 */
 	detectElementType(nodeName: string, defaultPattern?: ParserAuthoredElementNameDistinguishing): ElementType {
 		return detectElementType(nodeName, this.#authoredElementName, defaultPattern);
+	}
+
+	/**
+	 * Whether a name is a reference to a component, not the name of an element, judged by its form
+	 * alone in the language this parser reads. The scanners of `pretenders` end a chain of what a
+	 * component renders at a name they cannot resolve (`Tabs.Root`, a variable) and emit it as it is,
+	 * and a pretender's target (`as.element`) is typed by it, so what the scanners and `ml-core` take
+	 * for a component has to be the parser's own answer.
+	 *
+	 * The default is the form that most languages share: a capital initial or a `.` in a name that
+	 * is not that of a custom element (the `isComponentName` function of `./decision.ts`). A parser of a language that
+	 * names its components otherwise overrides this, as it overrides {@link detectElementType}; this
+	 * class names no language. The user's `authoredElementName` is not part of the answer: it is
+	 * the user's choice of what to call an authored element in a document, not the language's rule.
+	 *
+	 * @param name - A tag name as written, case kept
+	 * @returns Whether the name is a component's
+	 */
+	isComponentName(name: string): boolean {
+		return isComponentName(name);
 	}
 
 	/**
