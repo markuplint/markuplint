@@ -47,7 +47,12 @@ export function createTestDocument<T extends RuleConfigValue = any, O extends Pl
 		[options?.specs ?? (spec as unknown as MLMLSpec), {}],
 		{ ariaVersion: ARIA_RECOMMENDED_VERSION },
 		{
-			// How the names of an attribute get into the DOM is what the parser of the language says
+			// The settings of the language are what the parser says, as `MLCore` hands them to the document
+			endTag: usedParser.endTag,
+			booleanish: usedParser.booleanish,
+			tagNameCaseSensitive: usedParser.tagNameCaseSensitive,
+			componentNameVariants: usedParser.componentNameVariants,
+			isComponentName: usedParser.isComponentName?.bind(usedParser),
 			attrNameCaseSensitive: usedParser.attrNameCaseSensitive,
 			attrNameRoute: usedParser.attrNameRoute,
 			...(options?.pretenders ? { pretenders: options.pretenders } : {}),
