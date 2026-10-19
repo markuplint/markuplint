@@ -4,7 +4,7 @@ description: 属性名が大文字小文字のどちらかに統一されてい�
 
 # `case-sensitive-attr-name`
 
-**属性名**が大文字小文字のどちらかに統一されていないと警告します。HTMLは大文字小文字を区別しませんが、外来要素（SVGやMathML）はその限りではないのでこのルールの対象外です。
+**属性名**が大文字小文字のどちらかに統一されていないと警告します。外来要素（SVGやMathML）の属性名はDOMで大文字小文字を区別するので、オプションの大文字小文字は適用しません。仕様上の名前と大文字小文字だけが異なる名前（`<svg>`の`viewBox`に対する`viewbox`や`VIEWBOX`）を報告し、オプションの値にかかわらず仕様どおりの表記に修正します。仕様に名前がない属性は対象外です。
 
 <!-- textlint-disable ja-technical-writing/ja-no-mixed-period, ja-technical-writing/no-unmatched-pair -->
 

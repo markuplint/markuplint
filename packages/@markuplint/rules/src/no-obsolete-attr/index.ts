@@ -1,5 +1,7 @@
 import { createRule, getAttrSpecs } from '@markuplint/ml-core';
 
+import { findAttrSpec } from '../helpers.js';
+
 import meta from './meta.js';
 
 export default createRule({
@@ -12,9 +14,7 @@ export default createRule({
 				return;
 			}
 
-			// A case-sensitive parser (JSX/MDX) treats `Align` as a distinct prop, not the HTML attribute.
-			const name = document.attrNameCaseSensitive ? attr.name : attr.name.toLowerCase();
-			const attrSpec = attrSpecs.find(item => item.name === name);
+			const attrSpec = findAttrSpec(attrSpecs, attr);
 			if (!attrSpec) {
 				return;
 			}
@@ -24,7 +24,7 @@ export default createRule({
 					line: attr.nameNode?.startLine,
 					col: attr.nameNode?.startCol,
 					raw: attr.nameNode?.raw,
-					message: t('{0} is {1:c}', t('the "{0*}" {1}', name, 'attribute'), 'obsolete'),
+					message: t('{0} is {1:c}', t('the "{0*}" {1}', attrSpec.name, 'attribute'), 'obsolete'),
 				});
 			}
 		});

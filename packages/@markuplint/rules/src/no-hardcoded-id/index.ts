@@ -10,7 +10,7 @@ export default createRule({
 			return;
 		}
 		await document.walkOn('Attr', attr => {
-			if (attr.name.toLowerCase() === 'id' && !attr.isDynamicValue && attr.valueType !== 'code') {
+			if (attr.nameKey === 'id' && !attr.isDynamicValue && attr.valueType !== 'code') {
 				report({
 					scope: attr,
 					line: attr.startLine,

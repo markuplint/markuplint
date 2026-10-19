@@ -220,3 +220,87 @@ describe('fix with parsers', () => {
 		expect(fixedCode).toBe('<template><div class="a"></div></template>');
 	});
 });
+
+test('[no-duplicate-attr-issue-4309-001] names that differ in case are one attribute in HTML', async () => {
+	const { violations } = await mlRuleTest(rule, '<div id ID></div>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 9,
+			raw: 'ID',
+			message: 'The attribute name is duplicated',
+		},
+	]);
+});
+
+test('[no-duplicate-attr-issue-4309-002] a custom element folds the name too', async () => {
+	const { violations } = await mlRuleTest(rule, '<x-foo ID id></x-foo>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 11,
+			raw: 'id',
+			message: 'The attribute name is duplicated',
+		},
+	]);
+});
+
+test('[no-duplicate-attr-issue-4309-003] an HTML element in JSX folds the name, an SVG element does not', async () => {
+	const options = { parser: { '.*': '@markuplint/jsx-parser' } };
+	const html = await mlRuleTest(rule, '<div id ID />', options);
+	expect(html.violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 9,
+			raw: 'ID',
+			message: 'The attribute name is duplicated',
+		},
+	]);
+	const svgSame = await mlRuleTest(rule, '<svg id id />', options);
+	expect(svgSame.violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 9,
+			raw: 'id',
+			message: 'The attribute name is duplicated',
+		},
+	]);
+	const svgDifferent = await mlRuleTest(rule, '<svg id ID />', options);
+	expect(svgDifferent.violations).toStrictEqual([]);
+});
+
+test('[no-duplicate-attr-issue-4309-004] a prop of a component keeps its spelling', async () => {
+	const options = { parser: { '.*': '@markuplint/jsx-parser' } };
+	const same = await mlRuleTest(rule, '<Foo fooBar fooBar />', options);
+	expect(same.violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 13,
+			raw: 'fooBar',
+			message: 'The attribute name is duplicated',
+		},
+	]);
+	const different = await mlRuleTest(rule, '<Foo fooBar foobar />', options);
+	expect(different.violations).toStrictEqual([]);
+});
+
+test('[no-duplicate-attr-issue-4309-005] U+212A KELVIN SIGN is not the letter k', async () => {
+	const same = await mlRuleTest(rule, '<div k K></div>');
+	expect(same.violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 8,
+			raw: 'K',
+			message: 'The attribute name is duplicated',
+		},
+	]);
+	const kelvin = String.fromCodePoint(8490);
+	const different = await mlRuleTest(rule, `<div k ${kelvin}></div>`);
+	expect(different.violations).toStrictEqual([]);
+});

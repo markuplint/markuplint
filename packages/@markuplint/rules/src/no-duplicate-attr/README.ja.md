@@ -6,6 +6,8 @@ description: 属性がひとつの要素の中で重複していたら警告し�
 
 **属性**がひとつの要素の中で重複していたら警告します。大文字小文字を区別しません。
 
+名前はDOMが比較するとおりに比較します。HTML要素とカスタム要素の属性名はASCIIの大文字小文字を区別せずに、JSXなどフレームワークがDOM APIで設定するSVG・MathML要素の属性名とコンポーネントのpropsは書かれたとおりに比較します（`<Foo fooBar foobar />`は重複ではありません）。
+
 <!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
 
 > 名前が互いにASCII大文字・小文字不区別で一致する同じ開始タグで2つ以上の属性があってはならない。

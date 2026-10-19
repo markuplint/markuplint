@@ -1,6 +1,7 @@
 import { createRule, getAttrSpecs } from '@markuplint/ml-core';
 
 import { valueCheck } from '../attr-check.js';
+import { findAttrSpec } from '../helpers.js';
 
 import meta from './meta.js';
 
@@ -19,7 +20,7 @@ export default createRule<boolean>({
 				return;
 			}
 
-			const attrSpec = attrSpecs.find(spec => spec.name === attr.name);
+			const attrSpec = findAttrSpec(attrSpecs, attr);
 
 			if (attrSpec?.type !== 'NavigableTargetNameOrKeyword' && attrSpec?.type !== 'NavigableTargetName') {
 				return;

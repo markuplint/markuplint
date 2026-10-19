@@ -140,3 +140,68 @@ describe('Issues', () => {
 		]);
 	});
 });
+
+test('[no-refer-to-non-existent-id-issue-4309-001] an upper-case name is the attribute in HTML', async () => {
+	const { violations } = await mlRuleTest(rule, '<label FOR="foo"></label>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 13,
+			raw: 'foo',
+			message: 'Missing "foo" ID',
+		},
+	]);
+});
+
+test('[no-refer-to-non-existent-id-issue-4309-002] an upper-case ARIA property is the property in HTML', async () => {
+	const { violations } = await mlRuleTest(rule, '<div ARIA-LABELLEDBY="foo"></div>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 23,
+			raw: 'foo',
+			message: 'Missing "foo" ID',
+		},
+	]);
+});
+
+test('[no-refer-to-non-existent-id-issue-4309-003] an upper-case id is the id', async () => {
+	const found = await mlRuleTest(rule, '<div ID="foo"></div><label for="foo"></label>');
+	expect(found.violations).toStrictEqual([]);
+	const missing = await mlRuleTest(rule, '<div ID="foo"></div><label for="bar"></label>');
+	expect(missing.violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 33,
+			raw: 'bar',
+			message: 'Missing "bar" ID',
+		},
+	]);
+});
+
+test('[no-refer-to-non-existent-id-issue-4309-004] an HTML element in JSX folds the name', async () => {
+	const options = { parser: { '.*': '@markuplint/jsx-parser' } };
+	const upper = await mlRuleTest(rule, '<label FOR="foo" />', options);
+	expect(upper.violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 13,
+			raw: 'foo',
+			message: 'Missing "foo" ID',
+		},
+	]);
+	const lower = await mlRuleTest(rule, '<label for="foo" />', options);
+	expect(lower.violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 13,
+			raw: 'foo',
+			message: 'Missing "foo" ID',
+		},
+	]);
+});

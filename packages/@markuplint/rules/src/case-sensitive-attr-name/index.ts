@@ -1,5 +1,7 @@
 import { createRule, getAttrSpecs } from '@markuplint/ml-core';
 
+import { findAttrSpec } from '../helpers.js';
+
 import meta from './meta.js';
 
 /** The enforced letter case for attribute names. */
@@ -17,7 +19,7 @@ export default createRule<Value>({
 		}
 		await document.walkOn('Attr', attr => {
 			const el = attr.ownerElement;
-			if (el.isForeignElement || el.elementType !== 'html') {
+			if (el.elementType !== 'html') {
 				return;
 			}
 
@@ -39,11 +41,26 @@ export default createRule<Value>({
 
 			const name = attr.name;
 
-			if (attrSpecs) {
-				const spec = attrSpecs.find(spec => spec.name === name);
-				if (spec && spec.caseSensitive) {
-					return;
+			const spec = attrSpecs ? findAttrSpec(attrSpecs, attr) : undefined;
+
+			if (el.isForeignElement) {
+				// What the browser has for the name is the spelling of the spec, whatever the option says.
+				if (spec && spec.name !== name) {
+					const nameNode = attr.nameNode;
+					report({
+						scope: attr,
+						line: nameNode?.startLine,
+						col: nameNode?.startCol,
+						raw: nameNode?.raw,
+						message,
+						fix: nameNode ? fixer => fixer.replaceText(nameNode, spec.name) : undefined, // eslint-disable-line @typescript-eslint/strict-boolean-expressions
+					});
 				}
+				return;
+			}
+
+			if (spec?.caseSensitive) {
+				return;
 			}
 
 			if (deny.test(name)) {
