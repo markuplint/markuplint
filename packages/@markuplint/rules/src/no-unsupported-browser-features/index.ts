@@ -2,6 +2,7 @@ import type { UnsupportedResult } from './compat-data.js';
 
 import { createRule } from '@markuplint/ml-core';
 
+import { createIgnoreFeaturesLookup } from '../helpers.js';
 import { checkAttributeSupport, checkElementSupport } from './compat-data.js';
 import meta from './meta.js';
 import { clearBrowserslistCache, resolveTargetBrowsers } from './resolve-browsers.js';
@@ -16,7 +17,11 @@ type Options = {
 	readonly browserslistConfig?: string;
 	/** Browserslist environment name (e.g., "production"). */
 	readonly browserslistEnv?: string;
-	/** Features to ignore. Element name ("dialog") or attribute pattern ("input[list]"). */
+	/**
+	 * Features to ignore: an element name ("dialog") or an attribute of an element ("input[list]"). The
+	 * element name is compared as the document compares tag names, the attribute name as the DOM
+	 * compares it with the attribute that is checked.
+	 */
 	readonly ignoreFeatures?: readonly string[];
 };
 
@@ -37,7 +42,7 @@ export default createRule<boolean, Options>({
 			return;
 		}
 
-		const ignoreFeatures = new Set(options.ignoreFeatures);
+		const ignored = createIgnoreFeaturesLookup(document.tagNameCaseSensitive, options.ignoreFeatures);
 
 		await document.walkOn('Element', async el => {
 			// Web components and authored elements (JSX/Vue/Svelte) reach this rule
@@ -51,10 +56,9 @@ export default createRule<boolean, Options>({
 			}
 
 			const elName = el.localName;
-			const elOptions = el.rule.options;
-			const elIgnoreFeatures = new Set(elOptions.ignoreFeatures ?? ignoreFeatures);
+			const elIgnoreFeatures = el.rule.options.ignoreFeatures;
 
-			if (!elIgnoreFeatures.has(elName)) {
+			if (!ignored.isElementIgnored(elIgnoreFeatures, elName)) {
 				const unsupported = await checkElementSupport(elName, targetBrowsers);
 				if (unsupported.length > 0) {
 					report({
@@ -70,13 +74,12 @@ export default createRule<boolean, Options>({
 				}
 
 				const attrName = attr.name;
-				const ignoreKey = `${elName}[${attrName}]`;
 
-				if (elIgnoreFeatures.has(ignoreKey)) {
+				if (ignored.isAttrIgnored(elIgnoreFeatures, elName, attr)) {
 					continue;
 				}
 
-				const unsupported = await checkAttributeSupport(elName, attrName, targetBrowsers);
+				const unsupported = await checkAttributeSupport(elName, attrName, targetBrowsers, attr);
 				if (unsupported.length > 0) {
 					report({
 						scope: attr,

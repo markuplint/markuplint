@@ -6,6 +6,8 @@ import type {
 	SupportStatement,
 } from '@mdn/browser-compat-data';
 
+import { memoizeByObject } from '../helpers.js';
+
 /**
  * Target browser with name and minimum version.
  */
@@ -244,11 +246,68 @@ export async function checkElementSupport(
 }
 
 /**
+ * What the lookup of an attribute asks of the attribute: its name as the DOM gives it, and whether a
+ * key of BCD is its name (`MLAttr#nameKey`, `MLAttr#isNamedBy`).
+ */
+export interface CompatAttr {
+	readonly nameKey: string;
+	isNamedBy(name: string): boolean;
+}
+
+function asciiLowerCase(name: string): string {
+	return /[A-Z]/.test(name) ? name.replaceAll(/[A-Z]/g, c => c.toLowerCase()) : name;
+}
+
+/**
+ * The keys of an element identifier by the key in ASCII lower case. BCD spells a few keys in camel
+ * case (`iframe.privateToken`), and the DOM can make a written name one of them (`PRIVATETOKEN` that
+ * the HTML parser folds), so the keys that a written name can be are found by this index and then
+ * asked of the attribute. It is built once per identifier, which BCD hands out as one object.
+ */
+const foldedKeysOf = memoizeByObject((identifier: Identifier) => {
+	const folded = new Map<string, string[]>();
+	for (const key of Object.keys(identifier)) {
+		if (key === '__compat') {
+			continue;
+		}
+		const lower = asciiLowerCase(key);
+		const keys = folded.get(lower);
+		if (keys) {
+			keys.push(key);
+		} else {
+			folded.set(lower, [key]);
+		}
+	}
+	return folded;
+});
+
+/**
+ * Finds the identifier of an attribute in the identifier of its element. The key as written comes
+ * first. With the attribute, another key is the attribute when the attribute says its name is that
+ * key; without it, only the name in lower case is tried, as there is nothing to ask.
+ */
+function findAttrIdentifier(identifier: Identifier, attrName: string, attr: CompatAttr | undefined) {
+	const exact = identifier[attrName] as Identifier | undefined;
+	if (exact?.__compat) {
+		return exact;
+	}
+	if (!attr) {
+		return identifier[asciiLowerCase(attrName)] as Identifier | undefined;
+	}
+	const key = foldedKeysOf(identifier)
+		.get(asciiLowerCase(attr.nameKey))
+		?.find(key => attr.isNamedBy(key));
+	return key === undefined ? undefined : (identifier[key] as Identifier | undefined);
+}
+
+/**
  * Check browser support for an HTML attribute on a specific element.
  *
  * @param elementName - The HTML element name (e.g., "input")
- * @param attrName - The attribute name (e.g., "list")
+ * @param attrName - The attribute name (e.g., "list"), as written
  * @param targets - Array of target browsers to check
+ * @param attr - The attribute, which decides whether a key of BCD that is spelled in another case is
+ *   the attribute (the DOM folds a name that the HTML parser reads, and not a prop of a framework)
  * @returns Array of unsupported results (empty if all supported)
  */
 
@@ -256,13 +315,14 @@ export async function checkAttributeSupport(
 	elementName: string,
 	attrName: string,
 	targets: readonly TargetBrowser[],
+	attr?: CompatAttr,
 ): Promise<readonly UnsupportedResult[]> {
 	const identifier = await getElementIdentifier(elementName);
 	if (!identifier) {
 		return [];
 	}
 
-	const attrIdentifier = identifier[attrName] as Identifier | undefined;
+	const attrIdentifier = findAttrIdentifier(identifier, attrName, attr);
 	if (!attrIdentifier?.__compat) {
 		return [];
 	}

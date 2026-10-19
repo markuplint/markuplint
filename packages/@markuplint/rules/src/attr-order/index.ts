@@ -34,7 +34,19 @@ interface AttrToken {
 	readonly endQuote: FixToken | null;
 }
 
+/**
+ * What the order reads of an attribute: the name as written (`pattern`, messages), the name the DOM
+ * gives it (`nameKey`: alphabetical order and the predefined groups, whose sets are of lower-case
+ * names), and whether a name of the configuration is this attribute (`isNamedBy`).
+ */
+interface NamedAttr {
+	readonly name: string;
+	readonly nameKey: string;
+	isNamedBy(name: string): boolean;
+}
+
 interface AttrInfo {
+	readonly attr: NamedAttr;
 	readonly name: string;
 	readonly index: number;
 	readonly isSpread: boolean;
@@ -98,7 +110,7 @@ function getAttrRange(attrs: readonly AttrInfo[]): readonly [number, number] | n
 interface CompiledEntry {
 	readonly entryIndex: number;
 	readonly order: SortOrder;
-	readonly match: (name: string, isSpread: boolean) => boolean;
+	readonly match: (attr: NamedAttr, isSpread: boolean) => boolean;
 }
 
 function compileEntries(
@@ -114,17 +126,18 @@ function compileEntries(
 			return {
 				entryIndex,
 				order: 'alphabetical' as const,
-				match: (name: string) => name === entry,
+				match: (attr: NamedAttr) => attr.isNamedBy(entry),
 			};
 		}
 
 		const order = entry.order ?? 'alphabetical';
 
 		if (entry.name != null) {
+			const entryName = entry.name;
 			return {
 				entryIndex,
 				order,
-				match: (name: string) => name === entry.name,
+				match: (attr: NamedAttr) => attr.isNamedBy(entryName),
 			};
 		}
 
@@ -143,7 +156,8 @@ function compileEntries(
 			return {
 				entryIndex,
 				order,
-				match: (name: string) => re.test(name),
+				// The name as written: a pattern takes no flags, so it is not folded
+				match: (attr: NamedAttr) => re.test(attr.name),
 			};
 		}
 
@@ -155,42 +169,42 @@ function compileEntries(
 					return {
 						entryIndex,
 						order: groupOrder,
-						match: (name: string) => globalAttrs.has(name),
+						match: (attr: NamedAttr) => globalAttrs.has(attr.nameKey),
 					};
 				}
 				case 'event': {
 					return {
 						entryIndex,
 						order: groupOrder,
-						match: (name: string) => eventAttrs.has(name),
+						match: (attr: NamedAttr) => eventAttrs.has(attr.nameKey),
 					};
 				}
 				case 'aria': {
 					return {
 						entryIndex,
 						order: groupOrder,
-						match: (name: string) => /^aria-.+$/.test(name),
+						match: (attr: NamedAttr) => /^aria-.+$/.test(attr.nameKey),
 					};
 				}
 				case 'role': {
 					return {
 						entryIndex,
 						order: groupOrder,
-						match: (name: string) => name === 'role',
+						match: (attr: NamedAttr) => attr.nameKey === 'role',
 					};
 				}
 				case 'data': {
 					return {
 						entryIndex,
 						order: groupOrder,
-						match: (name: string) => /^data-.+$/.test(name),
+						match: (attr: NamedAttr) => /^data-.+$/.test(attr.nameKey),
 					};
 				}
 				case 'spread': {
 					return {
 						entryIndex,
 						order: groupOrder,
-						match: (_name: string, isSpread: boolean) => isSpread,
+						match: (_attr: NamedAttr, isSpread: boolean) => isSpread,
 					};
 				}
 			}
@@ -207,12 +221,12 @@ function compileEntries(
 function matchEntry(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	compiledEntries: readonly CompiledEntry[],
-	name: string,
+	attr: NamedAttr,
 	isSpread: boolean,
 	fallbackIndex: number,
 ): { entryIndex: number; order: SortOrder } {
 	for (const entry of compiledEntries) {
-		if (entry.match(name, isSpread)) {
+		if (entry.match(attr, isSpread)) {
 			return { entryIndex: entry.entryIndex, order: entry.order };
 		}
 	}
@@ -222,21 +236,21 @@ function matchEntry(
 // eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 function compareWithinGroup(a: AttrInfo, b: AttrInfo, order: SortOrder): number {
 	if (order === 'alphabetical') {
-		return compareStrings(a.name, b.name);
+		return compareStrings(a.attr.nameKey, b.attr.nameKey);
 	}
 	if (order === 'source-order') {
 		return a.index - b.index;
 	}
 	if (Array.isArray(order)) {
-		const ai = order.indexOf(a.name);
-		const bi = order.indexOf(b.name);
+		const ai = order.findIndex(name => a.attr.isNamedBy(name));
+		const bi = order.findIndex(name => b.attr.isNamedBy(name));
 		const aIdx = ai === -1 ? order.length : ai;
 		const bIdx = bi === -1 ? order.length : bi;
 		if (aIdx !== bIdx) {
 			return aIdx - bIdx;
 		}
 		if (ai === -1 && bi === -1) {
-			return compareStrings(a.name, b.name);
+			return compareStrings(a.attr.nameKey, b.attr.nameKey);
 		}
 		return 0;
 	}
@@ -252,7 +266,7 @@ function sortAttrs(
 	const fallbackIndex = compiledEntries.length;
 
 	const tagged = attrInfos.map(info => {
-		const { entryIndex, order } = matchEntry(compiledEntries, info.name, info.isSpread, fallbackIndex);
+		const { entryIndex, order } = matchEntry(compiledEntries, info.attr, info.isSpread, fallbackIndex);
 		return { info, entryIndex, order };
 	});
 
@@ -263,7 +277,9 @@ function sortAttrs(
 			}
 			const isFallback = a.entryIndex === fallbackIndex;
 			if (isFallback) {
-				return alphabetical ? compareStrings(a.info.name, b.info.name) : a.info.index - b.info.index;
+				return alphabetical
+					? compareStrings(a.info.attr.nameKey, b.info.attr.nameKey)
+					: a.info.index - b.info.index;
 			}
 			return compareWithinGroup(a.info, b.info, a.order);
 		})
@@ -326,6 +342,7 @@ export default createRule<Value, Options>({
 			const attrInfos: AttrInfo[] = attrs.map((attr, i) => {
 				const nameNode = attr.nameNode;
 				return {
+					attr,
 					name: attr.name,
 					index: i,
 					isSpread: nameNode == null,
@@ -338,7 +355,7 @@ export default createRule<Value, Options>({
 
 			const sorted = isAlphabeticalOnly
 				? alphabetical
-					? [...attrInfos].toSorted((a, b) => compareStrings(a.name, b.name))
+					? [...attrInfos].toSorted((a, b) => compareStrings(a.attr.nameKey, b.attr.nameKey))
 					: attrInfos
 				: sortAttrs(attrInfos, compiledEntries, alphabetical);
 
