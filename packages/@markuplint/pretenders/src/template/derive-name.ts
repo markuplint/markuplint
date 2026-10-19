@@ -39,7 +39,15 @@ export function componentNameOfFile(filePath: string): string | null {
 	return RE_COMPONENT_IDENTIFIER.test(name) ? name : null;
 }
 
-function toPascalCase(str: string): string {
+/**
+ * The name written in PascalCase: `base-button` and `baseButton` are `BaseButton`. It is what a file name is
+ * turned into by {@link deriveName}, so that a name that a user gives for a component is read the
+ * same way.
+ *
+ * @param str - A name in kebab-case, camelCase or PascalCase
+ * @returns The name in PascalCase
+ */
+export function toPascalCase(str: string): string {
 	if (str.includes('-')) {
 		return str
 			.split('-')

@@ -3,7 +3,7 @@ import type { Translator } from '@markuplint/i18n';
 
 import { createRule } from '@markuplint/ml-core';
 
-import { contentModel } from './content-model.js';
+import { contentModel, hasTagRule } from './content-model.js';
 import meta from './meta.js';
 import { transparentMode } from './represent-transparent-nodes.js';
 import { getContentOwner, getReportScope, isContentMutable } from './slot-content.js';
@@ -23,7 +23,7 @@ export default createRule<TagRule[], Options>({
 			// that user-defined custom-tag rules are not silently bypassed by pretending
 			// (see issue #3739).
 			const modes: Mode[] = ['pretended'];
-			if (el.pretenderContext?.type === 'pretender' && el.rule.value.some(r => r.tag === el.rawName)) {
+			if (el.pretenderContext?.type === 'pretender' && el.rule.value.some(r => hasTagRule(el, r))) {
 				modes.push('origin');
 			}
 

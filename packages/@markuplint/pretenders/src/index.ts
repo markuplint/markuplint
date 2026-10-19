@@ -15,8 +15,9 @@
  *
  * - {@link analyzeImports} — Extracts import bindings from component script blocks
  *   (Vue `<script setup>`, Vue Options API, Svelte, Astro, MDX)
- * - {@link resolveComponentImport} — Resolves a component name to its import binding,
- *   including Vue kebab-case → PascalCase normalization
+ * - {@link resolveComponentImport} — Resolves a component name to its import binding. In a Vue
+ *   file (pass its path) a tag is looked up as Vue does: as written, camelized, then capitalized
+ *   (`<foo-bar>` and `<fooBar>` are `import FooBar`); elsewhere a kebab-case name is looked up as its PascalCase
  * - {@link resolveBarrelExport} — Resolves barrel file (`index.ts`/`index.js`) re-exports
  *   to original source modules. Call this separately after `analyzeImports` when an import
  *   source points to a directory with a barrel index.

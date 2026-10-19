@@ -43,6 +43,8 @@
 	},
 	"optionalDependencies": {
 		"@markuplint/astro-parser": "5.2.0",
+		"@markuplint/jsx-parser": "5.2.0",
+		"@markuplint/mdx-parser": "5.2.0",
 		"@markuplint/svelte-parser": "5.2.0",
 		"@markuplint/vue-parser": "5.2.0"
 	}

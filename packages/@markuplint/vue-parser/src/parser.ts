@@ -1,13 +1,33 @@
 import type { ASTNode, ASTComment } from './vue-parser/index.js';
 import type { MLASTParentNode, MLASTNodeTreeItem } from '@markuplint/ml-ast';
 
-import { ParserError, Parser } from '@markuplint/parser-utils';
+import { ParserError, Parser, isPotentialCustomElementName, isSVGElement } from '@markuplint/parser-utils';
+import { isHTMLTag, isMathMLTag, isSVGTag } from '@vue/shared';
 
 import { vueParse } from './vue-parser/index.js';
 
 type State = {
 	comments: readonly ASTComment[];
 };
+
+/**
+ * The built-in components, as written or in kebab-case: `isBuiltInType(tag, name)` of Vue is
+ * `tag === name || tag === hyphenate(name)`.
+ *
+ * @see https://vuejs.org/api/built-in-components.html
+ */
+const BUILT_IN_COMPONENTS: readonly string[] = [
+	'Transition',
+	'transition',
+	'TransitionGroup',
+	'transition-group',
+	'KeepAlive',
+	'keep-alive',
+	'Teleport',
+	'teleport',
+	'Suspense',
+	'suspense',
+];
 
 /**
  * Directive resolution is intentionally not performed by this parser:
@@ -37,6 +57,8 @@ class VueParser extends Parser<ASTNode, State> {
 				// Vue SFC is a compiled format that uses explicit XML-style
 				// closing tags (including `/>`), not HTML void-element rules.
 				endTagType: 'xml',
+				// Vue resolves `<FooBar>`, `<fooBar>` and `<foo-bar>` to the same component.
+				componentNameVariants: true,
 			},
 			{
 				comments: [],
@@ -193,24 +215,86 @@ class VueParser extends Parser<ASTNode, State> {
 	 * > Vue SFC is a compiled format so we are able to use case-sensitive tag names in it.
 	 * > We are also able to use `/>` to close a tag.
 	 *
+	 * A tag that is not a native one is a component to Vue, however it is written: Vue resolves
+	 * the tag `T` to a component registered as `T`, `camelize(T)` or `capitalize(camelize(T))`,
+	 * so `<fooBar>` and `<foo-bar>` are the component `FooBar`, and `<foobar>` is not. Here
+	 * a name is a component, `authored`, when it
+	 *
+	 * - is a built-in component, as written (`Transition`) or in kebab-case (`transition-group`),
+	 * - is a special element that renders what it is given (`component`, `slot`), which is `authored`
+	 *   but is no component's name for {@link isComponentName},
+	 * - has a capital initial (`FooBar`), a capital letter after a lowercase letter or a digit
+	 *   (`fooBar`), or a `.` (`ui.Item`, a member of a namespace import of `<script setup>`).
+	 *
+	 * `foo-bar` is a `web-component`: the name of a custom element is also the kebab-case of a component,
+	 * and markuplint does not know `compilerOptions.isCustomElement` of the project. Like the others it is
+	 * matched by `FooBar` (see `MLParser.componentNameVariants`).
+	 *
+	 * A camelCase name of SVG (`clipPath`, `foreignObject`) is an element: Vue's `isNativeTag` takes
+	 * it, and `isSVGElement` is case-sensitive.
+	 *
+	 * The user's `authoredElementName` replaces all of this, as it replaces any default of a parser.
+	 *
 	 * @see https://vuejs.org/guide/essentials/component-basics#using-a-component
 	 * @see https://vuejs.org/api/built-in-components.html
 	 * @see https://vuejs.org/api/built-in-special-elements.html#built-in-special-elements
+	 * @see https://github.com/vuejs/core/blob/main/packages/compiler-core/src/parser.ts (`isComponent`)
 	 */
 	detectElementType(nodeName: string) {
 		return super.detectElementType(nodeName, [
 			// Built-in components
-			'Transition',
-			'TransitionGroup',
-			'KeepAlive',
-			'Teleport',
-			'Suspense',
+			...BUILT_IN_COMPONENTS,
 			// Special elements
 			'component',
 			'slot',
 			// Backward compatibility
 			/^[A-Z]/,
+			// A member of a namespace import
+			/\./,
+			// camelCase
+			name => /[a-z\d][A-Z]/.test(name) && !isSVGElement(name),
 		]);
+	}
+
+	/**
+	 * Whether Vue takes a tag name for a native element: the lists of the HTML, SVG and MathML elements
+	 * of `@vue/shared` that `isNativeTag` of `@vue/compiler-dom` is made of. Vue resolves any other tag to a
+	 * component (`<card>` is the component `Card`), unless `compilerOptions.isCustomElement` of the project
+	 * says it is a custom element, which markuplint does not know.
+	 *
+	 * The lists are Vue's own and the names are case-sensitive, as Vue's: an obsolete element that they
+	 * do not hold (`marquee`) is no native tag to Vue, though markuplint has a specification for it. It is not
+	 * the rule of {@link isComponentName}, which tells by the form of a name alone whether it is a
+	 * component's, for the target of a pretender and the root a scanner reads: `as: 'marquee'` is meant
+	 * as the element there.
+	 *
+	 * @param name - A tag name as written, case kept
+	 * @returns Whether the name is a native tag
+	 */
+	isNativeTag(name: string): boolean {
+		return isHTMLTag(name) || isSVGTag(name) || isMathMLTag(name);
+	}
+
+	/**
+	 * A name that Vue takes for a component (see {@link detectElementType}) and that names no special
+	 * element: a built-in component as written or in kebab-case (`Transition`, `transition-group`), a capital
+	 * initial (`FooBar`), a capital letter after a lowercase letter or a digit (`fooBar`), or a `.`
+	 * (`ui.Item`). `foo-bar` is not one, as it may be a custom element, nor are `component` and `slot`, which render
+	 * what they are given: they have no element to pretend to be.
+	 *
+	 * @param name - A tag name as written, case kept
+	 * @returns Whether the name is a component's
+	 */
+	isComponentName(name: string): boolean {
+		// `<transition>` is `<Transition>`, and a tag with a `.` is resolved by the name before it (`my-widget.v2` by
+		// `my-widget`): a component by Vue, whatever a custom element name would say of it
+		if (BUILT_IN_COMPONENTS.includes(name) || name.includes('.')) {
+			return true;
+		}
+		if (isPotentialCustomElementName(name)) {
+			return false;
+		}
+		return /^[A-Z]/.test(name) || (/[a-z\d][A-Z]/.test(name) && !isSVGElement(name));
 	}
 }
 

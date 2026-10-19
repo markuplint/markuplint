@@ -6,14 +6,19 @@ import type { Pretender } from '@markuplint/ml-config';
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { isComponentName } from '@markuplint/parser-utils';
 import { isFatalError } from '@markuplint/shared';
 import ts from 'typescript';
 
 import { composeIdentity } from './compose-identity.js';
 import { DEFAULT_LOCAL_NAME, getExportTable } from './export-table.js';
 import { scriptKindForPath } from './import-resolver/analyze-jsx-imports.js';
-import { resolveComponentImport } from './import-resolver/index.js';
+import {
+	isComponentBinding,
+	isVueFile,
+	registeredName,
+	resolveComponentImport,
+	vueSetupNames,
+} from './import-resolver/index.js';
 import {
 	isPackageSpecifier,
 	normalizePath,
@@ -189,7 +194,9 @@ export function dependencyMapper(
 				via.push('...[Recursive]');
 				break;
 			}
-			identity = composeIdentity(identity, mappedPretender[1]);
+			// What the outer component writes on the inner one is written in its own file, `currentFile`:
+			// in a Vue template an attribute reaches a prop by the camelCase of its name.
+			identity = composeIdentity(identity, mappedPretender[1], { vue: isVueFile(currentFile) });
 			visited.add(lookupKey);
 			via.push(elName);
 			elName = getElName(identity);
@@ -234,8 +241,8 @@ export function dependencyMapper(
  * components of the project are not what it renders, see `FROM_PACKAGE`), and one the map has no
  * component for.
  *
- * None either for a local name that is not a component name (`isComponentName`: a capital
- * initial, or a `.`), whatever it is imported from. A tag written with a lowercase initial is
+ * None either for a local name that a tag cannot refer to in the language of the file
+ * (`isComponentBinding`), whatever it is imported from. A tag written with a lowercase initial is
  * an HTML element in JSX, MDX, Svelte and Astro, so `import myButton from './Foo'` is not what
  * `<myButton>` renders there, and a pretender named `myButton` would turn that element into
  * the component:
@@ -247,11 +254,12 @@ export function dependencyMapper(
  * - Astro: a variable used as a tag must be capitalized, or it is rendered as a literal HTML tag
  *   (https://docs.astro.build/en/reference/astro-syntax/).
  *
- * Vue resolves a kebab-case tag to a component imported in PascalCase, and recommends PascalCase
- * (https://vuejs.org/guide/components/registration.html#component-name-casing). The parser of
- * `@markuplint/vue-parser` takes only a capital initial for a component too, so a lowercase local
- * name has no tag to be matched with, and the kebab-case tag of a PascalCase name is not matched
- * either: both are known limitations, to be solved on the side of the tag name, not here.
+ * Vue resolves a tag to a component imported under it as written, camelized, or capitalized
+ * after camelizing, so `import myButton` is `<myButton>` and `<my-button>` as well as `<MyButton>` is
+ * `import MyButton` (https://vuejs.org/guide/components/registration.html#component-name-casing).
+ * `@markuplint/vue-parser` takes such a tag for a component, and a type selector `myButton` stands
+ * for each of them (`@markuplint/selector`'s `typeNameMatches`), so a Vue file's binding is aliased
+ * under the name it has, whatever its initial is.
  */
 function aliasEntryImports(
 	entry: PretenderScanEntry,
@@ -276,7 +284,7 @@ function aliasEntryImports(
 	};
 
 	for (const binding of entry.bindings) {
-		const isComponent = binding.type !== 'namespace' && isComponentName(binding.localName);
+		const isComponent = binding.type !== 'namespace' && isComponentBinding(binding, entry.filePath);
 		const key = isComponent ? resolveImportBinding(binding, importerAbs, env, map) : null;
 		// A namespace is no component, so a binding that leads to one is looked at only when it did not.
 		const namespaceAbs =
@@ -293,7 +301,9 @@ function aliasEntryImports(
 		}
 
 		if (isComponent) {
-			addAlias(binding.localName, key);
+			// The name the file's template refers to the component by: the key of the Options API of Vue
+			// that registers it (`Btn` of `Btn: MyButton`), or the name the import gives
+			addAlias(registeredName(binding), key);
 		}
 	}
 
@@ -343,13 +353,37 @@ function resolveHop(
 		}
 	}
 
-	const byName = resolvedNameIndex.get(elName);
+	const byName = lookupNameIndex(resolvedNameIndex, elName, currentFile);
 	const byNameEntry = byName == null ? undefined : map.get(byName);
 	// A tag of a file never names the default export without a name of that file itself.
 	if (byNameEntry?.[4] === DEFAULT_LOCAL_NAME && byNameEntry[3] === currentFile) {
 		return elName;
 	}
 	return byName ?? elName;
+}
+
+/**
+ * Looks a rendered name up in the index of the names of the project's components. In a Vue file the
+ * name is a tag, which Vue resolves to a component registered globally as the tag as written, camelized,
+ * or capitalized after camelizing (`resolveAsset` of `@vue/runtime-core`): `<foo-bar>` and `<fooBar>` are
+ * the component `FooBar`. In any other file the name is looked up as it is.
+ */
+function lookupNameIndex(
+	index: Readonly<Map<Identifier, string>>,
+	elName: string,
+	currentFile: string | undefined,
+): string | undefined {
+	const exact = index.get(elName);
+	if (exact !== undefined || currentFile === undefined || !isVueFile(currentFile)) {
+		return exact;
+	}
+	for (const name of vueSetupNames(elName)) {
+		const found = index.get(name);
+		if (found !== undefined) {
+			return found;
+		}
+	}
+	return undefined;
 }
 
 /**
@@ -492,7 +526,12 @@ function resolveThroughImport(
 		return null;
 	}
 
-	const binding = resolveComponentImport(elName, bindings);
+	// A binding that a tag cannot refer to in the language of the file is not looked at (`isComponentBinding`).
+	const binding = resolveComponentImport(
+		elName,
+		bindings.filter(b => isComponentBinding(b, currentFile)),
+		currentFile,
+	);
 	if (binding) {
 		return binding.type === 'namespace'
 			? null
@@ -501,7 +540,7 @@ function resolveThroughImport(
 
 	// A name that no binding has as a whole may be a member tag: `UI.Item`, the name `UI` and what follows.
 	const [head = '', ...members] = elName.split('.');
-	const memberBinding = members.length > 0 ? resolveComponentImport(head, bindings) : undefined;
+	const memberBinding = members.length > 0 ? resolveComponentImport(head, bindings, currentFile) : undefined;
 	return memberBinding && memberBinding.type !== 'dynamic'
 		? resolveMemberTag(memberBinding, members, path.resolve(env.cwd, currentFile), env, map)
 		: null;

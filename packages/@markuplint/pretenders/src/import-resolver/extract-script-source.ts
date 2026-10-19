@@ -54,13 +54,44 @@ export function extractVueScript(source: string): ScriptSourceBlock | null {
 }
 
 /**
+ * The names of the bindings that `components: { ... }` registers, which the imports of the script are
+ * filtered by: the `name` of each of {@link extractVueOptionsApiRegistrations}.
+ *
  * For aliased forms (`{ Btn: MyButton }`), returns the value (the import name),
  * not the key (the template name). For a value that is not an identifier but
  * holds a dynamic `import()` (`{ Item: defineAsyncComponent(() => import('./Item.vue')) }`)
  * it returns the key, the name the lazily loaded component is bound under. Any other
  * value gives no name.
+ *
+ * @param scriptContent - The source of the script block
+ * @returns The names of the bindings
  */
 export function extractVueOptionsApiComponents(scriptContent: string): string[] {
+	return extractVueOptionsApiRegistrations(scriptContent).map(({ name }) => name);
+}
+
+/**
+ * A component of `components: { ... }`: the `key` the template names it by, and the `name` of
+ * the binding that holds it, which an import gives (`Btn: MyButton` is the key `Btn` and the name
+ * `MyButton`; `'foo-bar': Foo`, the key `foo-bar` and the name `Foo`). They are one for a shorthand
+ * (`Button`) and for a value that loads a module (`Item: defineAsyncComponent(() => import(...))`).
+ */
+export type VueComponentRegistration = {
+	readonly key: string;
+	readonly name: string;
+};
+
+/**
+ * The components that `components: { ... }` registers, each with the key the template names it
+ * by (see {@link VueComponentRegistration}): Vue resolves a tag to a registration by that key, and
+ * by none of the names that an import gives.
+ *
+ * A value that is neither an identifier nor holds a dynamic `import()` gives no name, so its key
+ * is left out.
+ *
+ * @param scriptContent - The source of the script block
+ */
+export function extractVueOptionsApiRegistrations(scriptContent: string): VueComponentRegistration[] {
 	if (!scriptContent) {
 		return [];
 	}
@@ -71,26 +102,26 @@ export function extractVueOptionsApiComponents(scriptContent: string): string[] 
 		return [];
 	}
 
-	const names: string[] = [];
+	const registrations: VueComponentRegistration[] = [];
 	for (const property of registry.properties) {
 		if (ts.isShorthandPropertyAssignment(property)) {
 			// Shorthand: `Button` → use as-is
-			names.push(property.name.text);
+			registrations.push({ key: property.name.text, name: property.name.text });
 		} else if (ts.isPropertyAssignment(property)) {
 			const key = ts.isIdentifier(property.name) || ts.isStringLiteral(property.name) ? property.name.text : null;
 			const value = property.initializer;
 			if (ts.isIdentifier(value)) {
-				// Aliased form: `Btn: MyButton` → use value `MyButton`
-				names.push(value.text);
+				// Aliased form: `Btn: MyButton` → the binding is `MyButton`, registered as `Btn`
+				registrations.push({ key: key ?? value.text, name: value.text });
 			} else if (key && containsDynamicImport(value)) {
 				// A value that loads a module (`Item: defineAsyncComponent(() => import('./Item.vue'))`)
 				// is bound under the key, as `dynamicImportName` names that import.
-				names.push(key);
+				registrations.push({ key, name: key });
 			}
 		}
 	}
 
-	return names;
+	return registrations;
 }
 
 function containsDynamicImport(

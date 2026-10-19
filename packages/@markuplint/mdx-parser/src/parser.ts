@@ -4,6 +4,7 @@ import type { RootContent } from 'mdast';
 import type { MdxJsxFlowElement, MdxJsxTextElement } from 'mdast-util-mdx-jsx';
 
 import { MarkdownAwareParser } from '@markuplint/markdown-parser';
+import { isPotentialCustomElementName } from '@markuplint/parser-utils';
 import remarkFrontmatter from 'remark-frontmatter';
 import remarkGfm from 'remark-gfm';
 import remarkMdx from 'remark-mdx';
@@ -192,6 +193,22 @@ class MDXParser extends MarkdownAwareParser {
 	 */
 	detectElementType(nodeName: string) {
 		return super.detectElementType(nodeName, /^[A-Z]|\./);
+	}
+
+	/**
+	 * An MDX component is a JSX element, so a name is a component unless it starts with a lowercase
+	 * ASCII letter or has a `-`; a `.` makes it a member expression. The rule is the one of
+	 * `@markuplint/jsx-parser` (see `JSXParser#isComponentName` there for the grounds), which this
+	 * package does not depend on: keep the two in step.
+	 *
+	 * @param name - A tag name as written, case kept
+	 * @returns Whether the name is a component's
+	 */
+	isComponentName(name: string): boolean {
+		if (isPotentialCustomElementName(name)) {
+			return false;
+		}
+		return name.includes('.') || (/^[\p{ID_Start}$_]/u.test(name) && !/^[a-z]/.test(name) && !name.includes('-'));
 	}
 
 	#visitJsxElement(

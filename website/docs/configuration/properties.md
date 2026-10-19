@@ -216,6 +216,8 @@ If you use **React**, **Vue**, or more, Markuplint's parser detects a component 
 In most cases, components should start naming upper case, but each syntax parser plugin may has a specific pattern (Ex. Vue: [Built-in Special Elements](https://vuejs.org/api/built-in-special-elements.html)).
 If you need different naming patterns, You can specify the `authoredElementName` option to resolve. Default is `undefined`.
 
+The patterns you specify **replace** the parser's own patterns, not add to them: with `["custom"]`, a tag that the parser took for a component by its own pattern (such as `<FooBar>` in Vue) is not one unless a pattern of yours matches it too. A string is a name and matches the whole tag name (`"custom"` is `<custom>`, not `<my-custom>`); a string in the form of a regular expression literal (`"/^My/"`, with the flags `g` and `i` at most) is that regular expression, and a `RegExp` or a function can be given in a JavaScript config file. A string used to be read as a regular expression that matches any part of the tag name: if you wrote `"^My"` for that, write `"/^My/"` now.
+
 ```json class=config
 {
   "parserOptions": {

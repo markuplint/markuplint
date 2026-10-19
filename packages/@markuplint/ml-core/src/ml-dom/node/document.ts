@@ -24,7 +24,7 @@ import {
 	ARIA_RECOMMENDED_VERSION,
 } from '@markuplint/ml-spec';
 
-import { ConfigParserError } from '@markuplint/parser-utils';
+import { ConfigParserError, isComponentName } from '@markuplint/parser-utils';
 import { InvalidSelectorError } from '@markuplint/selector';
 
 import { log as coreLog } from '../../debug.js';
@@ -151,6 +151,22 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	readonly tagNameCaseSensitive: boolean;
 
 	/**
+	 * Whether a component is referred to by any spelling of its name: `<FooBar>`, `<fooBar>` and
+	 * `<foo-bar>` are one component (Vue). A type selector reads it through
+	 * {@link MLElement.tagNameKind}.
+	 */
+	readonly componentNameVariants: boolean;
+
+	/**
+	 * Whether a name is a reference to a component, not the name of an element, judged by its form
+	 * alone in the language of the parser (`Tabs.Root` is, `div` is not). The target of a pretender
+	 * is typed by it. It is the rule of the parser (`MLParser#isComponentName`, a method of the parser's
+	 * class, not of this one); the form that most languages share (`isComponentName` of
+	 * `@markuplint/parser-utils`) when the parser has none.
+	 */
+	readonly isComponentName: (name: string) => boolean;
+
+	/**
 	 * Whether attribute names are case-sensitive in the source language (JSX props).
 	 * When false (default for HTML), attribute names are compared case-insensitively.
 	 *
@@ -184,6 +200,8 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 			readonly endTag?: 'xml' | 'omittable' | 'never';
 			readonly booleanish?: boolean;
 			readonly tagNameCaseSensitive?: boolean;
+			readonly componentNameVariants?: boolean;
+			readonly isComponentName?: (name: string) => boolean;
 			readonly attrNameCaseSensitive?: boolean;
 			readonly pretenders?: readonly Pretender[];
 		},
@@ -197,6 +215,8 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		this.endTag = options?.endTag ?? 'omittable';
 		this.#filename = options?.filename;
 		this.tagNameCaseSensitive = options?.tagNameCaseSensitive ?? false;
+		this.componentNameVariants = options?.componentNameVariants ?? false;
+		this.isComponentName = options?.isComponentName ?? isComponentName;
 		this.attrNameCaseSensitive = options?.attrNameCaseSensitive ?? false;
 		this.ruleCommonSettings = ruleCommonSettings;
 

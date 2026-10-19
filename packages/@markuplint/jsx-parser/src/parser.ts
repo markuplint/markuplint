@@ -2,7 +2,7 @@ import type { JSXComment, JSXNode } from './jsx.js';
 import type { MLASTBlockBehavior, MLASTNodeTreeItem, MLASTParentNode } from '@markuplint/ml-ast';
 import type { ChildToken, Token } from '@markuplint/parser-utils';
 
-import { Parser, ParserError } from '@markuplint/parser-utils';
+import { Parser, ParserError, isPotentialCustomElementName } from '@markuplint/parser-utils';
 
 import { jsxParser, attrParser, getName } from './jsx.js';
 import { extractJSXFromCall } from './extract-jsx-from-call.js';
@@ -321,6 +321,29 @@ class JSXParser extends Parser<JSXNode, State> {
 	 */
 	detectElementType(nodeName: string) {
 		return super.detectElementType(nodeName, /^[A-Z]|\./);
+	}
+
+	/**
+	 * A JSX element name is a component, a reference to a variable, unless it starts with a lowercase
+	 * ASCII letter or has a `-`; a `.` makes it a member expression. That is what the JSX compilers
+	 * decide (`isIntrinsicJsxName` of TypeScript is `ch >= 'a' && ch <= 'z' || name.includes('-')`), so
+	 * `_Layout`, `$Ui` and `Ärger` are components, though `detectElementType` above takes only a capital
+	 * ASCII letter for one: the tag scanner of `@markuplint/parser-utils` reads a tag only when it starts with
+	 * an ASCII letter, so none of these names reaches it as a tag, while an import of such a name is a
+	 * binding that a tag may name.
+	 *
+	 * A name of a custom element (`my-widget.v2`) and the name of a fragment (`#jsx-fragment`) are not.
+	 *
+	 * Kept in step with `@markuplint/mdx-parser`, which has the same rule.
+	 *
+	 * @see https://www.typescriptlang.org/docs/handbook/jsx.html#intrinsic-elements
+	 * @see https://facebook.github.io/jsx/#prod-JSXIdentifier
+	 */
+	isComponentName(name: string): boolean {
+		if (isPotentialCustomElementName(name)) {
+			return false;
+		}
+		return name.includes('.') || (/^[\p{ID_Start}$_]/u.test(name) && !/^[a-z]/.test(name) && !name.includes('-'));
 	}
 }
 
