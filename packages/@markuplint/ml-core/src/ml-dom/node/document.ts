@@ -167,13 +167,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	readonly isComponentName: (name: string) => boolean;
 
 	/**
-	 * Whether attribute names are case-sensitive in the source language (JSX props).
-	 * When false (default for HTML), attribute names are compared case-insensitively.
+	 * Whether attribute names are JavaScript identifiers in the source language (JSX props such as
+	 * `onClick`), which the `case-sensitive-attr-name` rule does not ask to be lower case.
 	 *
-	 * Known limitation: only the `case-sensitive-attr-name` rule honors this flag.
-	 * Attribute lookup, attribute selectors and duplicate-attribute detection still
-	 * compare names case-insensitively, unlike {@link MLDocument.tagNameCaseSensitive},
-	 * which also drives element selector matching.
+	 * It says nothing about whether two spellings of a name are one attribute: that is up to how the
+	 * name gets into the DOM ({@link MLDocument.attrNameRoute}) and to the element, and is decided by
+	 * {@link MLAttr.nameKey}. Svelte and Astro tell the case of a tag name apart but not of an
+	 * attribute name, and Vue sets its attributes through the DOM API though a template is still
+	 * checked for the case of a name.
 	 */
 	readonly attrNameCaseSensitive: boolean;
 

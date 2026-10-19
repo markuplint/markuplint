@@ -46,15 +46,18 @@ export function pascalize(name: string): string {
 
 /**
  * The key by which a Vue template gives a prop the attribute of the usage site: the camelCase of the name,
- * without regard to case (the attribute names of a document are compared so). `my-label`, `myLabel` and
- * `mylabel` are one key; so are `data-id` and `dataId`, as they are one prop to Vue, so when a usage site
- * writes both the first one written is the one that is found.
+ * and nothing else. `my-label` and `myLabel` are one key, and `mylabel` is another, as Vue resolves them
+ * (a prop is a JavaScript identifier, and `camelize` is all that a template does to the name of an
+ * attribute). `data-id` and `dataId` are one prop to Vue, so when a usage site writes both the
+ * first one written is the one that is found.
+ *
+ * @see https://vuejs.org/guide/components/props.html#prop-name-casing
  *
  * @param name - The name of an attribute at the usage site, or of a prop
  * @returns The key
  */
 export function vuePropKey(name: string): string {
-	return camelize(name).toLowerCase();
+	return camelize(name);
 }
 
 /**

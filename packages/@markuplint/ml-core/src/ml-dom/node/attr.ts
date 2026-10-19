@@ -6,11 +6,12 @@ import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 import { resolveNamespace, compileDirectivePatterns, resolveDirective } from '@markuplint/ml-spec';
 import { searchIDLAttribute } from '@markuplint/parser-utils';
 
+import { adjustForeignAttrName } from '../helper/foreign-attr-names.js';
 import { MLToken } from '../token/token.js';
 
 import { MLDomTokenList } from './dom-token-list.js';
 import { MLNode } from './node.js';
-import { UnexpectedCallError } from '@markuplint/shared';
+import { UnexpectedCallError, asciiLowerCase, camelize } from '@markuplint/shared';
 
 /**
  * Represents a DOM Attr (attribute) node wrapper in the markuplint DOM tree.
@@ -215,6 +216,102 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 	 */
 	get name(): string {
 		return this.#potentialName;
+	}
+
+	/**
+	 * The name that the DOM gives this attribute, which two spellings of a name share when they are
+	 * one attribute (`ID` and `id` on a `<div>`, `VIEWBOX` and `viewbox` on an `<svg>` that the
+	 * HTML parser reads). `name` keeps the spelling of the source for a message, and for
+	 * `case-sensitive-attr-name`.
+	 *
+	 * It depends on how the name gets into the DOM (`MLDocument#attrNameRoute`) and on the element:
+	 * the HTML parser lower-cases a name, and restores the case of the names of SVG and MathML;
+	 * `setAttribute` lower-cases a name only on an element of the HTML namespace, so `ROLE` on an
+	 * `<svg>` that code sets is `ROLE`, which is not `role`. The attribute of a component is a prop,
+	 * which keeps its spelling, except in Vue where `my-label` and `myLabel` are one prop.
+	 *
+	 * @see https://dom.spec.whatwg.org/#dom-element-setattribute
+	 * @see https://html.spec.whatwg.org/multipage/parsing.html#attribute-name-state
+	 */
+	get nameKey(): string {
+		return this.keyOf(this.#potentialName);
+	}
+
+	/**
+	 * The key of `name`, a name of a spec, of an option or of a lookup, as this attribute is keyed:
+	 * `name` is this attribute when its key is {@link MLAttr.nameKey}. Only the ASCII letters fold,
+	 * as the HTML syntax says (`toLowerCase` also turns U+212A KELVIN SIGN into `k`).
+	 *
+	 * It is read when asked, not kept: the namespace of the element can change while a pretender
+	 * is resolved.
+	 *
+	 * @param name - A name as written
+	 */
+	keyOf(name: string): string {
+		const el = this.ownerElement;
+		if (el.elementType === 'authored') {
+			return el.ownerMLDocument.componentNameVariants ? camelize(name) : name;
+		}
+		if (!el.isForeignElement) {
+			return asciiLowerCase(name);
+		}
+		if (this.isSetThroughDOMAPI) {
+			return name;
+		}
+		return adjustForeignAttrName(asciiLowerCase(name), el.namespaceURI);
+	}
+
+	/**
+	 * Whether `name` is the name of this attribute: the spelling it is written in, or another that
+	 * the DOM makes the same attribute ({@link MLAttr.keyOf}). A spec, an option and the lookups of
+	 * the element ask this, so the case of a name is decided here and not in each of them.
+	 *
+	 * A name with a capital letter that code sets on an element of the HTML namespace is a prop of
+	 * the framework (`defaultValue` of React), not an attribute of the DOM: only its exact spelling
+	 * is it, and `defaultvalue` is not.
+	 *
+	 * @param name - A name of a spec, an option or a lookup
+	 */
+	isNamedBy(name: string): boolean {
+		if (name === this.#potentialName) {
+			return true;
+		}
+		const el = this.ownerElement;
+		if (el.elementType !== 'authored' && !el.isForeignElement && this.isSetThroughDOMAPI && /[A-Z]/.test(name)) {
+			return false;
+		}
+		return this.keyOf(name) === this.nameKey;
+	}
+
+	/**
+	 * Whether the name of this attribute reaches the DOM through the DOM API (`setAttribute`) and
+	 * not through the HTML parser of the browser: what the parser says of its language
+	 * (`MLDocument#attrNameRoute`), and for a parser that says it of a dynamic attribute only
+	 * (Svelte), whether this one is dynamic.
+	 */
+	get isSetThroughDOMAPI(): boolean {
+		const route = this.ownerElement.ownerMLDocument.attrNameRoute;
+		return route === 'dom-api' || (route === 'dom-api-when-dynamic' && this.isDynamicValue === true);
+	}
+
+	/**
+	 * Whether a selector matches the name of this attribute without regard to ASCII case: the DOM
+	 * does so for an element of the HTML namespace and not for one of SVG or MathML, nor for a prop.
+	 *
+	 * @implements `SelectorAttr#nameCaseInsensitive` of `@markuplint/selector`
+	 */
+	get nameCaseInsensitive(): boolean {
+		const el = this.ownerElement;
+		return el.elementType !== 'authored' && !el.isForeignElement;
+	}
+
+	/**
+	 * The name that a selector is matched with.
+	 *
+	 * @implements `SelectorAttr#domName` of `@markuplint/selector`
+	 */
+	get domName(): string {
+		return this.nameKey;
 	}
 
 	/**

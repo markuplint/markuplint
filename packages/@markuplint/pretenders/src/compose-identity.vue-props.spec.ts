@@ -12,14 +12,25 @@ describe('a prop of the inner component that the outer component writes in a Vue
 		slots: true as const,
 	};
 
-	test.each(['my-label', 'myLabel', 'mylabel'])('the attribute %s is the prop myLabel', name => {
+	const found = { element: 'button', attrs: [{ name: 'aria-label', value: 'Save' }], slots: true };
+	const omitted = { element: 'button', slots: true };
+
+	test.each([
+		['my-label', found],
+		['myLabel', found],
+		['mylabel', omitted],
+	])('the attribute %s is the prop myLabel', (name, expected) => {
 		expect(
 			composeIdentity({ element: 'Base', attrs: [{ name, value: 'Save' }], slots: true }, inner, { vue: true }),
-		).toStrictEqual({ element: 'button', attrs: [{ name: 'aria-label', value: 'Save' }], slots: true });
+		).toStrictEqual(expected);
 	});
 
 	// A prop declared by a string key (`defineProps({ 'my-label': String })`) is the same prop
-	test.each(['my-label', 'myLabel', 'mylabel'])('the attribute %s is the prop my-label', name => {
+	test.each([
+		['my-label', found],
+		['myLabel', found],
+		['mylabel', omitted],
+	])('the attribute %s is the prop my-label', (name, expected) => {
 		const kebabInner = {
 			element: 'button',
 			attrs: [{ name: 'aria-label', value: { fromAttr: 'my-label', omitIfMissing: true as const } }],
@@ -29,7 +40,7 @@ describe('a prop of the inner component that the outer component writes in a Vue
 			composeIdentity({ element: 'Base', attrs: [{ name, value: 'Save' }], slots: true }, kebabInner, {
 				vue: true,
 			}),
-		).toStrictEqual({ element: 'button', attrs: [{ name: 'aria-label', value: 'Save' }], slots: true });
+		).toStrictEqual(expected);
 	});
 
 	test('another name is not, and the attribute is omitted', () => {

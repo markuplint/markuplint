@@ -37,13 +37,21 @@ function labelOf(sourceCode: string, componentNameVariants: boolean, fromAttr = 
 // Vue passes an attribute of the usage site to a prop by the camelCase of its name:
 // `<Comp my-label="x">` and `<Comp myLabel="x">` give the prop `myLabel`.
 describe('a prop of a pretender and the attribute at the usage site of a component of Vue', () => {
-	test.each(['my-label', 'myLabel', 'mylabel'])('the attribute %s is the prop myLabel', name => {
-		expect(labelOf(`<x-comp ${name}="Hi"></x-comp>`, true)).toBe('Hi');
+	test.each([
+		['my-label', 'Hi'],
+		['myLabel', 'Hi'],
+		['mylabel', null],
+	])('the attribute %s is the prop myLabel', (name, label) => {
+		expect(labelOf(`<x-comp ${name}="Hi"></x-comp>`, true)).toBe(label);
 	});
 
 	// A prop declared by a string key (`defineProps({ 'my-label': String })`) is the same prop
-	test.each(['my-label', 'myLabel', 'mylabel'])('the attribute %s is the prop my-label', name => {
-		expect(labelOf(`<x-comp ${name}="Hi"></x-comp>`, true, 'my-label')).toBe('Hi');
+	test.each([
+		['my-label', 'Hi'],
+		['myLabel', 'Hi'],
+		['mylabel', null],
+	])('the attribute %s is the prop my-label', (name, label) => {
+		expect(labelOf(`<x-comp ${name}="Hi"></x-comp>`, true, 'my-label')).toBe(label);
 	});
 
 	test('another name is not', () => {
