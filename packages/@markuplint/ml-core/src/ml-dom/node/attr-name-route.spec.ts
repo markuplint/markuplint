@@ -314,6 +314,14 @@ describe('whether two names are one for an element', () => {
 		expect(set?.isSameAttrName('viewBox', 'viewBox')).toBe(true);
 	});
 
+	test('[ml-attr-name-route-031] reads a name that no attribute has as a static one where only dynamic attributes are set by code', async () => {
+		const svelteLike = (await jsx('<svg></svg>', { route: 'dom-api-when-dynamic' })).querySelector('svg');
+		expect(svelteLike?.isSameAttrName('viewbox', 'viewBox')).toBe(true);
+		// Control: where every name is set by code, the same pair is two names
+		const domApi = (await jsx('<svg></svg>', { route: 'dom-api' })).querySelector('svg');
+		expect(domApi?.isSameAttrName('viewbox', 'viewBox')).toBe(false);
+	});
+
 	test('[ml-attr-name-route-021] compares a prop of a component as the framework does', async () => {
 		const plain = (await jsx('<Foo />')).querySelector('Foo');
 		expect(plain?.isSameAttrName('fooBar', 'foobar')).toBe(false);
