@@ -190,13 +190,17 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 			this.isDuplicatable = this._astToken.isDuplicatable;
 		}
 
-		const ns = resolveNamespace(this.#potentialName, ownElement.namespaceURI);
+		// The HTML parser lower-cases the name before it adjusts a foreign attribute, so `XLINK:HREF`
+		// is `xlink:href` there; a name that code sets keeps the case of its prefix.
+		const prefixed = this.#potentialName.includes(':') && !this.isSetThroughDOMAPI;
+		const nameWithPrefix = prefixed ? asciiLowerCase(this.#potentialName) : this.#potentialName;
+		const ns = resolveNamespace(nameWithPrefix, ownElement.namespaceURI);
 		this.#localName = ns.localName;
 		// An attribute does not inherit the namespace of its element, so only a known prefix
 		// gives it one. `ns.namespace` equals the prefix exactly when the prefix is a known
 		// one; for an unknown prefix it falls back to the element's namespace.
-		const hasPrefix = ns.localName !== this.#potentialName;
-		const prefix = this.#potentialName.split(':')[0];
+		const hasPrefix = ns.localName !== nameWithPrefix;
+		const prefix = nameWithPrefix.split(':')[0];
 		this.#namespaceURI = hasPrefix && ns.namespace === prefix ? ns.namespaceURI : null;
 	}
 
@@ -341,6 +345,16 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 	 */
 	get domName(): string {
 		return this.nameKey;
+	}
+
+	/**
+	 * Whether a name of a selector is this prop once it is camelized: the props of a Vue component.
+	 *
+	 * @implements `SelectorAttr#nameIsCamelized` of `@markuplint/selector`
+	 */
+	get nameIsCamelized(): boolean {
+		const el = this.ownerElement;
+		return el.elementType === 'authored' && el.ownerMLDocument.componentNameVariants;
 	}
 
 	/**

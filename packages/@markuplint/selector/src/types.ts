@@ -21,6 +21,11 @@ export interface SelectorAttr {
 	 * restores `viewBox` for `<svg VIEWBOX>`. Absent means `localName`.
 	 */
 	readonly domName?: string;
+	/**
+	 * Whether the framework makes the name of a selector the same prop as `domName` once it is
+	 * camelized (Vue: `my-label` and `myLabel` are one prop). Absent means it does not.
+	 */
+	readonly nameIsCamelized?: boolean;
 }
 
 /**

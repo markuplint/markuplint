@@ -420,7 +420,7 @@ describe('type selector of an element of a document that is case-sensitive about
 describe('attribute name of an element that says how its names are compared', () => {
 	const createElement = (
 		namespaceURI: string,
-		attr: { name: string; domName?: string; nameCaseInsensitive?: boolean },
+		attr: { name: string; domName?: string; nameCaseInsensitive?: boolean; nameIsCamelized?: boolean },
 	) => ({
 		nodeType: 1,
 		// A pure HTML element has a `nodeName` in upper case; SVG, MathML and custom elements do not
@@ -457,6 +457,18 @@ describe('attribute name of an element that says how its names are compared', ()
 		expect(createSelector('[viewBox]').match(el)).toBeTruthy();
 		expect(createSelector('[viewbox]').match(el)).toBe(false);
 		expect(createSelector('[VIEWBOX]').match(el)).toBe(false);
+	});
+
+	test('a name of a prop that the framework camelizes is matched by either spelling', () => {
+		const el = createElement(HTML, {
+			name: 'my-label',
+			domName: 'myLabel',
+			nameCaseInsensitive: false,
+			nameIsCamelized: true,
+		});
+		expect(createSelector('[myLabel]').match(el)).toBeTruthy();
+		expect(createSelector('[my-label]').match(el)).toBeTruthy();
+		expect(createSelector('[mylabel]').match(el)).toBe(false);
 	});
 
 	test('without that information the element is told by its namespace, as before', () => {

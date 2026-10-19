@@ -256,6 +256,36 @@ describe('an attribute selector', () => {
 	});
 });
 
+describe('an attribute selector on a component', () => {
+	test('[ml-attr-name-route-024] matches the prop as the framework names it', async () => {
+		const plain = (await jsx('<Foo fooBar="a" />')).querySelector('Foo');
+		expect(plain?.matches('[fooBar]')).toBe(true);
+		expect(plain?.matches('[foobar]')).toBe(false);
+		const vue = (await jsx('<Foo my-label="a" />', { componentNameVariants: true })).querySelector('Foo');
+		expect(vue?.matches('[myLabel]')).toBe(true);
+		expect(vue?.matches('[my-label]')).toBe(true);
+		expect(vue?.matches('[mylabel]')).toBe(false);
+	});
+});
+
+describe('the namespace of a prefixed attribute name', () => {
+	test('[ml-attr-name-route-022] is that of the prefix however the HTML parser reads its case', () => {
+		const document = html('<svg XLINK:HREF="#a" xlink:title="b"></svg>');
+		const upper = attrOf(document, 'svg', 0);
+		const lower = attrOf(document, 'svg', 1);
+		expect(upper.namespaceURI).toBe('http://www.w3.org/1999/xlink');
+		expect(upper.localName).toBe('href');
+		expect(lower.namespaceURI).toBe('http://www.w3.org/1999/xlink');
+		expect(lower.localName).toBe('title');
+	});
+
+	test('[ml-attr-name-route-023] is none for a prefix that code sets in another case', async () => {
+		const document = await jsx('<svg XLINK:HREF="#a" xlink:title="b"></svg>');
+		expect(attrOf(document, 'svg', 0).namespaceURI).toBeNull();
+		expect(attrOf(document, 'svg', 1).namespaceURI).toBe('http://www.w3.org/1999/xlink');
+	});
+});
+
 describe('whether two names are one for an element', () => {
 	test('[ml-attr-name-route-019] follows the HTML parser and the DOM API on an HTML element', async () => {
 		const parsed = html('<div></div>').querySelector('div');

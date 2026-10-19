@@ -2,7 +2,7 @@ import type { SelectorElement, SelectorMatchedResult, SelectorNode, SelectorResu
 import type { ReadonlyDeep, Writable } from 'type-fest';
 
 import { resolveNamespace } from '@markuplint/ml-spec';
-import { asciiLowerCase } from '@markuplint/shared';
+import { asciiLowerCase, camelize } from '@markuplint/shared';
 import debug from 'debug';
 import parser from 'postcss-selector-parser';
 
@@ -635,8 +635,9 @@ function attrMatch(
 	return [...el.attributes].some(attrOfEl => {
 		const elAttrName = attrOfEl.domName ?? attrOfEl.localName;
 		const isCaseInsensitive = attrOfEl.nameCaseInsensitive ?? isHTML;
+		const selectorName = attrOfEl.nameIsCamelized ? camelize(attr.attribute) : attr.attribute;
 		if (
-			(isCaseInsensitive ? asciiLowerCase(attr.attribute) : attr.attribute) !==
+			(isCaseInsensitive ? asciiLowerCase(selectorName) : selectorName) !==
 			(isCaseInsensitive ? asciiLowerCase(elAttrName) : elAttrName)
 		) {
 			return false;
