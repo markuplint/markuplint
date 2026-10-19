@@ -29,6 +29,16 @@ This rule checks name eligibility only. A defined attribute that isn't allowed i
 
 ## Details
 
+### Attribute name case {#attribute-name-case}
+
+Whether two spellings of a name are one attribute is what the DOM says, and it depends on how the name gets into the DOM:
+
+- In the HTML syntax, attribute names are ASCII case-insensitive. `DATA-VALUE` is `data-value`, and `<svg VIEWBOX>` is `viewBox`.
+- Where code sets the name through the DOM API (JSX, MDX, Vue, and a dynamic attribute of Svelte), an HTML element folds the name, so `<div DATA-VALUE>` is `data-value`. An SVG or MathML element keeps the name as written, so `<svg ROLE>` is not `role` and is reported as unknown.
+- The props of a component are not folded. In Vue, `my-label` and `myLabel` are one prop.
+
+The names and prefixes in the options (`allowAttrs`, `ignoreAttrNamePrefix`) are compared the same way: an entry matches an attribute when the DOM makes the two names the same attribute.
+
 ### Setting `allowAttrs` option {#setting-allow-attrs-option}
 
 The array can contain elements of both **string** and **object** types.

@@ -102,6 +102,8 @@ const Component = (props) => {
 
 `ignoreAttrs` オプションを使うと、特定の属性を必須属性チェックから除外できます。ルール全体を無効にせずに、フレームワークが処理する属性や意図的に省略する属性を無視したい場合に便利です。
 
+名前はDOMが比較するのと同じ方法で比較します([属性名の大文字・小文字](/docs/rules/no-unknown-attr#attribute-name-case)を参照)。HTML構文では、`ALT`は必須の`alt`を満たし、`"ignoreAttrs": ["viewbox"]`は`<svg>`の必須の`viewBox`を無視します。JSXではSVG要素が書かれたままの名前を保つため、無視しません。
+
 ```json class=config
 {
   "nodeRules": [

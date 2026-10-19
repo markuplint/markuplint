@@ -25,6 +25,8 @@ This rule has no default behavior — configure `disallowAttrs` to use it.
 
 ## Details
 
+Attribute names are compared as the DOM compares them, which depends on the syntax and on the element: with `"disallowAttrs": ["accesskey"]`, `ACCESSKEY` in the HTML syntax is disallowed too, while `<svg ACCESSKEY>` in JSX is not. See [Attribute name case](/docs/rules/no-unknown-attr#attribute-name-case) for the details.
+
 ### Setting `disallowAttrs` option {#setting-disallow-attrs-option}
 
 The array can contain elements of both **string** and **object** types.

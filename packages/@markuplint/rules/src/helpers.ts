@@ -1,5 +1,5 @@
 import type { FixToken, IRuleFixer, PlainData, TextEdit } from '@markuplint/ml-config';
-import type { Element, RuleConfigValue, Document } from '@markuplint/ml-core';
+import type { Attr, Element, RuleConfigValue, Document } from '@markuplint/ml-core';
 import type { Attribute } from '@markuplint/ml-spec';
 import type { WritableDeep } from 'type-fest';
 
@@ -38,11 +38,151 @@ export function conditionDependsOnDynamicAttr<T extends RuleConfigValue, O exten
 		for (const matched of selector.matchAll(/\[\s*([^\s\]=~|^$*]+)/g)) {
 			const name = matched[1];
 			if (name) {
-				referencedNames.add(name.toLowerCase());
+				referencedNames.add(name);
 			}
 		}
 	}
-	return node.attributes.some(attr => attr.isDynamicValue && referencedNames.has(attr.localName.toLowerCase()));
+	// Whether the attribute is the one that the selector names is up to the attribute (`isNamedBy`)
+	return node.attributes.some(attr => attr.isDynamicValue && [...referencedNames].some(name => attr.isNamedBy(name)));
+}
+
+/**
+ * Memoizes `fn` by the identity of its argument. Use it for an object that is one object for every
+ * caller, such as the array `getAttrSpecs` hands out for an element name. The options of the
+ * elements a `nodeRule` selects are not: each element gets a copy, so use {@link memoizeByContent} for them.
+ */
+export function memoizeByObject<K extends object, V>(fn: (key: K) => V): (key: K) => V {
+	const cache = new WeakMap<K, V>();
+	return key => {
+		if (cache.has(key)) {
+			return cache.get(key) as V;
+		}
+		const value = fn(key);
+		cache.set(key, value);
+		return value;
+	};
+}
+
+/**
+ * Memoizes `fn` by the content of its argument, which must be JSON data (a rule option is). The
+ * options of the elements a `nodeRule` selects arrive as a copy for each element, so keying by
+ * identity alone would rebuild the table for every element; identity stays as the first, cheap
+ * lookup, and the content is serialised only for an object not seen before. The cache lives as long
+ * as the memoized function, which a rule creates once per `verify` call, so it is bounded by the
+ * options of one document. Two contents that differ only in key order are two entries, which is
+ * harmless for a table read by name. JSON keeps `['a', 'b']` and `['a\0b']` apart, which a joined
+ * string would not.
+ */
+export function memoizeByContent<K extends object, V>(fn: (key: K) => V): (key: K) => V {
+	const byContent = new Map<string, V>();
+	return memoizeByObject((key: K) => {
+		const content = JSON.stringify(key);
+		if (byContent.has(content)) {
+			return byContent.get(content) as V;
+		}
+		const value = fn(key);
+		byContent.set(content, value);
+		return value;
+	});
+}
+
+const exactSpecsOf = memoizeByObject((attrSpecs: readonly Attribute[]) => {
+	const exact = new Map<string, Attribute>();
+	for (const spec of attrSpecs) {
+		if (!exact.has(spec.name)) {
+			exact.set(spec.name, spec);
+		}
+	}
+	return exact;
+});
+
+/**
+ * Finds the spec of an attribute by its name: the spec named as the attribute is written, and
+ * otherwise the first one that the attribute says it is (`MLAttr#isNamedBy`: another spelling that
+ * the DOM makes the same attribute, `viewbox` for `viewBox` where the HTML parser reads it). The case
+ * of a name is decided by the attribute, so the rules that look an attribute up share one answer.
+ *
+ * `getAttrSpecs` hands out the same array for every element of a name, so the exact names are
+ * indexed once per array and the scan runs only for a name that is not written as the spec spells it.
+ *
+ * @param attrSpecs - The specs of the attributes of the element
+ * @param attr - The attribute
+ */
+export function findAttrSpec<T extends RuleConfigValue, O extends PlainData>(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	attrSpecs: readonly Attribute[],
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	attr: Attr<T, O>,
+): Attribute | undefined {
+	return exactSpecsOf(attrSpecs).get(attr.name) ?? attrSpecs.find(spec => attr.isNamedBy(spec.name));
+}
+
+/** Whether the attribute is an `aria-*` one, by the name that the DOM gives it. */
+export function isAriaAttr<T extends RuleConfigValue, O extends PlainData>(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	attr: Attr<T, O>,
+): boolean {
+	return attr.nameKey.startsWith('aria-');
+}
+
+/**
+ * The shape of an option that lists attributes (`allowAttrs`, `disallowAttrs`): bare names, which
+ * carry no value of their own, `{ name, value }` pairs, or a record of name to value.
+ */
+type NameValueOption<V> = (string | { readonly name: string; readonly value: V })[] | Record<string, V>;
+
+/**
+ * Creates a lookup of an attribute in a `NameValueOption`: the value of the entry named as the
+ * attribute is written, and otherwise of the last entry that the attribute says it is
+ * (`MLAttr#isNamedBy`). The table of an option is built once per content (`memoizeByContent`).
+ *
+ * @param stringValue - The value of a bare name
+ */
+export function createNameOptionLookup<V>(stringValue: V): <T extends RuleConfigValue, O extends PlainData>(
+	option: NameValueOption<V> | undefined,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	attr: Attr<T, O>,
+) => V | undefined {
+	const tableOf = memoizeByContent((option: NameValueOption<V>) => {
+		const entries: [string, V][] = Array.isArray(option)
+			? option.map(entry => (typeof entry === 'string' ? [entry, stringValue] : [entry.name, entry.value]))
+			: Object.entries(option);
+		// A later entry of a name wins
+		return { entries, exact: new Map(entries) };
+	});
+	return (option, attr) => {
+		if (!option) {
+			return;
+		}
+		const { entries, exact } = tableOf(option);
+		if (exact.has(attr.name)) {
+			return exact.get(attr.name);
+		}
+		let found: V | undefined;
+		for (const [name, value] of entries) {
+			if (attr.isNamedBy(name)) {
+				found = value;
+			}
+		}
+		return found;
+	};
+}
+
+/**
+ * Creates a test of whether an attribute has one of the prefixes of an option
+ * (`ignoreAttrNamePrefix`): as `MLAttr#isPrefixedBy` reads a prefix.
+ */
+export function createPrefixMatcher(): <T extends RuleConfigValue, O extends PlainData>(
+	prefixes: string | readonly string[] | undefined,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	attr: Attr<T, O>,
+) => boolean {
+	return (prefixes, attr) => {
+		if (prefixes == null) {
+			return false;
+		}
+		return (typeof prefixes === 'string' ? [prefixes] : prefixes).some(prefix => attr.isPrefixedBy(prefix));
+	};
 }
 
 /** `pattern` is a regex literal of the form `/pattern/flags` if it matches that shape, otherwise an exact string. */
@@ -323,4 +463,91 @@ export function removeAttrValue(
 		return [];
 	}
 	return fixer.removeRange(range);
+}
+
+function asciiLowerCase(name: string): string {
+	// A name that is lower case already is the common case: skip the replace (and its allocation) for it
+	return /[A-Z]/.test(name) ? name.replaceAll(/[A-Z]/g, c => c.toLowerCase()) : name;
+}
+
+/** The parts of the keys of `ignoreFeatures`: `dialog` is an element, `img[loading]` an attribute of one. */
+interface IgnoreFeaturesTable {
+	/** The element parts of the keys that name an element, as written and ASCII-folded. */
+	readonly elements: { readonly exact: ReadonlySet<string>; readonly folded: ReadonlySet<string> };
+	/** The attribute parts of the keys that name an attribute, by the element part, as written and ASCII-folded. */
+	readonly attrs: {
+		readonly exact: ReadonlyMap<string, readonly string[]>;
+		readonly folded: ReadonlyMap<string, readonly string[]>;
+	};
+}
+
+function parseIgnoreFeatures(features: readonly string[]): IgnoreFeaturesTable {
+	const elements = { exact: new Set<string>(), folded: new Set<string>() };
+	const attrs = { exact: new Map<string, string[]>(), folded: new Map<string, string[]>() };
+	const push = (map: Map<string, string[]>, element: string, attrName: string) => {
+		const names = map.get(element);
+		if (names) {
+			names.push(attrName);
+		} else {
+			map.set(element, [attrName]);
+		}
+	};
+	for (const feature of features) {
+		const open = feature.indexOf('[');
+		if (open === -1 || !feature.endsWith(']')) {
+			elements.exact.add(feature);
+			elements.folded.add(asciiLowerCase(feature));
+			continue;
+		}
+		const element = feature.slice(0, open);
+		const attrName = feature.slice(open + 1, -1);
+		push(attrs.exact, element, attrName);
+		push(attrs.folded, asciiLowerCase(element), attrName);
+	}
+	return { elements, attrs };
+}
+
+/**
+ * Creates the lookup of `ignoreFeatures`, whose keys are an element (`dialog`) or an attribute of
+ * an element (`img[loading]`). The element part of a key means what the same spelling means in the
+ * source: it is compared as the document compares tag names (`tagNameCaseSensitive`: exact when it
+ * tells the case apart, ASCII-folded when not), so `DIALOG` is not `<dialog>` in Svelte. The attribute
+ * part is compared with the attribute that is checked (`MLAttr#isNamedBy`), which knows how its
+ * name reached the DOM. An element key does not ignore the attributes of the element.
+ *
+ * The option of an element replaces the option of the rule for that element. The options of the
+ * elements a `nodeRule` selects arrive as a copy for each element, so the table of an option is built
+ * once per content (`memoizeByContent`).
+ *
+ * @param tagNameCaseSensitive - `MLDocument#tagNameCaseSensitive`
+ * @param ruleOption - `ignoreFeatures` of the rule
+ */
+export function createIgnoreFeaturesLookup(
+	tagNameCaseSensitive: boolean,
+	ruleOption: readonly string[] | undefined,
+): {
+	/** Whether the element is ignored. */
+	isElementIgnored(elementOption: readonly string[] | undefined, elementName: string): boolean;
+	/** Whether the attribute of the element is ignored. */
+	isAttrIgnored<T extends RuleConfigValue, O extends PlainData>(
+		elementOption: readonly string[] | undefined,
+		elementName: string,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		attr: Attr<T, O>,
+	): boolean;
+} {
+	const tableOf = memoizeByContent(parseIgnoreFeatures);
+	const ruleTable = tableOf(ruleOption ?? []);
+	const pick = (elementOption: readonly string[] | undefined) => (elementOption ? tableOf(elementOption) : ruleTable);
+	return {
+		isElementIgnored(elementOption, elementName) {
+			const { exact, folded } = pick(elementOption).elements;
+			return tagNameCaseSensitive ? exact.has(elementName) : folded.has(asciiLowerCase(elementName));
+		},
+		isAttrIgnored(elementOption, elementName, attr) {
+			const { exact, folded } = pick(elementOption).attrs;
+			const names = tagNameCaseSensitive ? exact.get(elementName) : folded.get(asciiLowerCase(elementName));
+			return names?.some(name => attr.isNamedBy(name)) ?? false;
+		},
+	};
 }

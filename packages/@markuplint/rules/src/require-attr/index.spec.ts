@@ -955,3 +955,136 @@ test('[require-attr-valid-010] link rel="stylesheet" alone does not require titl
 	const { violations } = await mlRuleTest(rule, '<link rel="stylesheet" href="style.css">');
 	expect(violations).toStrictEqual([]);
 });
+
+test('[require-attr-issue-4309-001] HTML: an attribute written in upper case satisfies the required attribute', async () => {
+	const nodeRule = [{ selector: 'img', rule: { severity: 'error' as const, value: 'alt' } }];
+	expect(
+		(await mlRuleTest(rule, '<img ALT="text" src="/path/to/image.png">', { nodeRule })).violations,
+	).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<img src="/path/to/image.png">', { nodeRule })).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: 'The "img" element expects the "alt" attribute',
+			raw: '<img src="/path/to/image.png">',
+		},
+	]);
+});
+
+test('[require-attr-issue-4309-002] HTML: ignoreAttrs matches a name of the spec table in any spelling the DOM makes the same', async () => {
+	const violation = {
+		severity: 'error',
+		line: 1,
+		col: 1,
+		message: 'The "input" element expects the "alt" attribute',
+		raw: '<input type="image" src="button.png">',
+	};
+	expect(
+		(
+			await mlRuleTest(rule, '<input type="image" src="button.png">', {
+				rule: { options: { ignoreAttrs: ['ALT'] } },
+			})
+		).violations,
+	).toStrictEqual([]);
+	expect(
+		(
+			await mlRuleTest(rule, '<input type="image" src="button.png">', {
+				rule: { options: { ignoreAttrs: ['title'] } },
+			})
+		).violations,
+	).toStrictEqual([violation]);
+});
+
+test('[require-attr-issue-4309-003] HTML: a name of the rule value that the spec table names too is one requirement', async () => {
+	expect(
+		(
+			await mlRuleTest(rule, '<input type="image" src="button.png">', {
+				nodeRule: [{ selector: 'input', rule: { severity: 'error', value: 'ALT' } }],
+			})
+		).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: 'The "input" element expects the "ALT" attribute',
+			raw: '<input type="image" src="button.png">',
+		},
+	]);
+});
+
+test('[require-attr-issue-4309-004] HTML: viewbox is viewBox on an SVG element', async () => {
+	const nodeRule = [{ selector: 'svg', rule: { severity: 'error' as const, value: 'viewBox' } }];
+	expect((await mlRuleTest(rule, '<svg viewbox="0 0 1 1"></svg>', { nodeRule })).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<svg VIEWBOX="0 0 1 1"></svg>', { nodeRule })).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<svg></svg>', { nodeRule })).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: 'The "svg" element expects the "viewBox" attribute',
+			raw: '<svg>',
+		},
+	]);
+});
+
+test('[require-attr-issue-4309-005] JSX: an HTML element folds the name, an SVG element keeps it as written', async () => {
+	const parser = { '.*': '@markuplint/jsx-parser' };
+	const imgRule = [{ selector: 'img', rule: { severity: 'error' as const, value: 'alt' } }];
+	expect(
+		(await mlRuleTest(rule, '<img ALT="text" src="a" />', { parser, nodeRule: imgRule })).violations,
+	).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<img src="a" />', { parser, nodeRule: imgRule })).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: 'The "img" element expects the "alt" attribute',
+			raw: '<img src="a" />',
+		},
+	]);
+	const svgRule = [{ selector: 'svg', rule: { severity: 'error' as const, value: 'viewBox' } }];
+	expect(
+		(await mlRuleTest(rule, '<svg viewBox="0 0 1 1" />', { parser, nodeRule: svgRule })).violations,
+	).toStrictEqual([]);
+	expect(
+		(await mlRuleTest(rule, '<svg viewbox="0 0 1 1" />', { parser, nodeRule: svgRule })).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: 'The "svg" element expects the "viewBox" attribute',
+			raw: '<svg viewbox="0 0 1 1" />',
+		},
+	]);
+});
+
+test('[require-attr-issue-4309-006] ignoreAttrs compares an SVG name as the DOM does', async () => {
+	const nodeRule = [{ selector: 'svg', rule: { severity: 'error' as const, value: 'viewBox' } }];
+	const violation = {
+		severity: 'error',
+		line: 1,
+		col: 1,
+		message: 'The "svg" element expects the "viewBox" attribute',
+		raw: '<svg>',
+	};
+	expect(
+		(await mlRuleTest(rule, '<svg></svg>', { nodeRule, rule: { options: { ignoreAttrs: ['viewbox'] } } }))
+			.violations,
+	).toStrictEqual([]);
+	expect(
+		(await mlRuleTest(rule, '<svg></svg>', { nodeRule, rule: { options: { ignoreAttrs: ['title'] } } })).violations,
+	).toStrictEqual([violation]);
+
+	const parser = { '.*': '@markuplint/jsx-parser' };
+	expect(
+		(await mlRuleTest(rule, '<svg />', { parser, nodeRule, rule: { options: { ignoreAttrs: ['viewBox'] } } }))
+			.violations,
+	).toStrictEqual([]);
+	expect(
+		(await mlRuleTest(rule, '<svg />', { parser, nodeRule, rule: { options: { ignoreAttrs: ['viewbox'] } } }))
+			.violations,
+	).toStrictEqual([{ ...violation, raw: '<svg />' }]);
+});

@@ -939,3 +939,151 @@ test('[no-disallowed-attr-parser-008] JSX: a type that is an expression does not
 	});
 	expect(violations).toStrictEqual([]);
 });
+
+test('[no-disallowed-attr-issue-4309-001] HTML: an upper-case data-*, aria-*, role and viewBox are not reported', async () => {
+	expect(
+		(await mlRuleTest(rule, '<div DATA-VALUE="1" ARIA-LABEL="label" ROLE="button"></div>')).violations,
+	).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<svg VIEWBOX="0 0 1 1" viewbox="0 0 1 1"></svg>')).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<dialog TABINDEX="-1"></dialog>')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 9,
+			message: 'The "TABINDEX" attribute is disallowed',
+			raw: 'TABINDEX="-1"',
+		},
+	]);
+});
+
+test('[no-disallowed-attr-issue-4309-002] JSX: an HTML element folds the name, so TABINDEX is tabindex', async () => {
+	const parser = { '.*': '@markuplint/jsx-parser' };
+	expect((await mlRuleTest(rule, '<div DATA-VALUE="1" />', { parser })).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<dialog TABINDEX="-1" />', { parser })).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 9,
+			message: 'The "TABINDEX" attribute is disallowed',
+			raw: 'TABINDEX="-1"',
+		},
+	]);
+});
+
+test('[no-disallowed-attr-issue-4309-003] HTML: the is attribute on an autonomous custom element in any spelling', async () => {
+	expect((await mlRuleTest(rule, '<x-el is="x-el2"></x-el>')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 7,
+			message: 'The "is" attribute must not be specified on an autonomous custom element',
+			raw: 'is',
+		},
+	]);
+	expect((await mlRuleTest(rule, '<x-el IS="x-el2"></x-el>')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 7,
+			message: 'The "is" attribute must not be specified on an autonomous custom element',
+			raw: 'IS',
+		},
+	]);
+});
+
+test('[no-disallowed-attr-issue-4309-004] HTML: allowAttrs matches the name in any spelling the DOM makes the same', async () => {
+	expect(
+		(await mlRuleTest(rule, '<dialog TABINDEX="0"></dialog>', { rule: { options: { allowAttrs: ['tabindex'] } } }))
+			.violations,
+	).toStrictEqual([]);
+	expect(
+		(await mlRuleTest(rule, '<dialog tabindex="0"></dialog>', { rule: { options: { allowAttrs: ['TABINDEX'] } } }))
+			.violations,
+	).toStrictEqual([]);
+	expect(
+		(
+			await mlRuleTest(rule, '<dialog TABINDEX="0"></dialog>', {
+				rule: { options: { allowAttrs: { tabindex: 'Int' } } },
+			})
+		).violations,
+	).toStrictEqual([]);
+	expect(
+		(
+			await mlRuleTest(rule, '<dialog TABINDEX="0"></dialog>', {
+				rule: { options: { allowAttrs: [{ name: 'tabindex', value: 'Int' }] } },
+			})
+		).violations,
+	).toStrictEqual([]);
+	expect(
+		(await mlRuleTest(rule, '<dialog TABINDEX="0"></dialog>', { rule: { options: { allowAttrs: ['title'] } } }))
+			.violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 9,
+			message: 'The "TABINDEX" attribute is disallowed',
+			raw: 'TABINDEX="0"',
+		},
+	]);
+});
+
+test('[no-disallowed-attr-issue-4309-005] HTML: ignoreAttrNamePrefix matches the name in any spelling the DOM makes the same', async () => {
+	expect(
+		(
+			await mlRuleTest(rule, '<dialog TABINDEX="0"></dialog>', {
+				rule: { options: { ignoreAttrNamePrefix: 'tab' } },
+			})
+		).violations,
+	).toStrictEqual([]);
+	expect(
+		(
+			await mlRuleTest(rule, '<dialog tabindex="0"></dialog>', {
+				rule: { options: { ignoreAttrNamePrefix: ['TAB'] } },
+			})
+		).violations,
+	).toStrictEqual([]);
+	expect(
+		(
+			await mlRuleTest(rule, '<dialog TABINDEX="0"></dialog>', {
+				rule: { options: { ignoreAttrNamePrefix: 'x-' } },
+			})
+		).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 9,
+			message: 'The "TABINDEX" attribute is disallowed',
+			raw: 'TABINDEX="0"',
+		},
+	]);
+});
+
+test('[no-disallowed-attr-issue-4309-006] JSX: allowAttrs folds the name on an HTML element', async () => {
+	const parser = { '.*': '@markuplint/jsx-parser' };
+	expect(
+		(
+			await mlRuleTest(rule, '<dialog TABINDEX="0" />', {
+				parser,
+				rule: { options: { allowAttrs: ['tabindex'] } },
+			})
+		).violations,
+	).toStrictEqual([]);
+	expect(
+		(
+			await mlRuleTest(rule, '<dialog TABINDEX="0" />', {
+				parser,
+				rule: { options: { allowAttrs: ['title'] } },
+			})
+		).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 9,
+			message: 'The "TABINDEX" attribute is disallowed',
+			raw: 'TABINDEX="0"',
+		},
+	]);
+});

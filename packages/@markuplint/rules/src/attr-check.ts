@@ -70,20 +70,6 @@ export function attrCheck(
 		};
 	}
 
-	const nameCaseSensitive = /[A-Z]/.test(spec.name);
-	if (nameCaseSensitive && name !== spec.name) {
-		if (log.enabled) {
-			log('The "%s" attribute name is unmatched in case-sensitive', name);
-		}
-		return {
-			invalidType: 'non-existent',
-			message:
-				t('{0} is {1:c}', t('the "{0*}" {1}', name, 'attribute'), 'disallowed') +
-				t('. ') +
-				t('Did you mean "{0*}"?', spec.name),
-		};
-	}
-
 	if (spec.noUse) {
 		return {
 			invalidType: 'disallowed-attr',

@@ -4,6 +4,7 @@ import type { Pattern } from '@markuplint/types';
 import { createRule, getAttrSpecs, getSpec } from '@markuplint/ml-core';
 
 import { resolveAttrEligibility } from '../attr-eligibility.js';
+import { createNameOptionLookup, createPrefixMatcher } from '../helpers.js';
 
 import meta from './meta.js';
 
@@ -16,11 +17,18 @@ type Option = {
 	 * defines. Shares its shape with `no-unknown-attr`'s option of the same
 	 * name — see that rule for the full description.
 	 *
+	 * A name is compared as the DOM compares attribute names, so it is ASCII case-insensitive in the
+	 * HTML syntax and for an HTML element that code sets through the DOM API (JSX, MDX, Vue), exact for an
+	 * SVG/MathML element there, and a component's props are not folded.
+	 *
 	 * @since 3.7.0
 	 */
 	allowAttrs?: (string | Attr)[] | Record<string, AttributeType | Pattern>;
 
-	/** Attribute name prefix(es) to ignore during validation. */
+	/**
+	 * Attribute name prefix(es) to ignore during validation, compared as the DOM compares attribute
+	 * names, like `allowAttrs`.
+	 */
 	ignoreAttrNamePrefix?: string | string[];
 };
 
@@ -34,20 +42,15 @@ type Attr = {
 	value: AttributeType | Pattern;
 };
 
-function allowedNames(allowAttrs: Option['allowAttrs']): Set<string> {
-	if (!allowAttrs) {
-		return new Set();
-	}
-	if (Array.isArray(allowAttrs)) {
-		return new Set(allowAttrs.map(a => (typeof a === 'string' ? a : a.name)));
-	}
-	return new Set(Object.keys(allowAttrs));
-}
-
 export default createRule<boolean, Option>({
 	meta: meta,
 	defaultOptions: {},
 	async verify({ document, report, t }) {
+		// Whether an entry of the options is the attribute is up to the attribute: the DOM decides
+		// whether two spellings are one name (`MLAttr#isNamedBy`, `MLAttr#isPrefixedBy`).
+		const lookupAllowed = createNameOptionLookup<AttributeType | Pattern>('Any');
+		const hasIgnoredPrefix = createPrefixMatcher();
+
 		await document.walkOn('Attr', attr => {
 			if (attr.isDirective) {
 				return;
@@ -59,7 +62,7 @@ export default createRule<boolean, Option>({
 			// https://html.spec.whatwg.org/multipage/custom-elements.html#attr-is
 			// > The exception is the is attribute, which must not be specified on an autonomous custom element (and which will
 			// > have no effect if it is).
-			if (name === 'is' && attr.ownerElement.elementType === 'web-component') {
+			if (attr.nameKey === 'is' && attr.ownerElement.elementType === 'web-component') {
 				report({
 					scope: attr,
 					line: attrName?.startLine,
@@ -70,16 +73,12 @@ export default createRule<boolean, Option>({
 				return;
 			}
 
-			if (attr.rule.options.ignoreAttrNamePrefix != null) {
-				const prefixes = Array.isArray(attr.rule.options.ignoreAttrNamePrefix)
-					? attr.rule.options.ignoreAttrNamePrefix
-					: [attr.rule.options.ignoreAttrNamePrefix];
-				if (prefixes.some(prefix => name.indexOf(prefix) === 0)) {
-					return;
-				}
+			if (hasIgnoredPrefix(attr.rule.options.ignoreAttrNamePrefix, attr)) {
+				return;
 			}
 
-			if (allowedNames(attr.rule.options.allowAttrs).has(name)) {
+			// A name listed in `allowAttrs` is allowed whatever its value
+			if (lookupAllowed(attr.rule.options.allowAttrs, attr) !== undefined) {
 				return;
 			}
 
@@ -92,7 +91,7 @@ export default createRule<boolean, Option>({
 				return;
 			}
 
-			const eligibility = resolveAttrEligibility(name, attr.ownerElement, attrSpecs);
+			const eligibility = resolveAttrEligibility(name, attr.ownerElement, attrSpecs, attr);
 
 			if (eligibility.status === 'no-use') {
 				report({

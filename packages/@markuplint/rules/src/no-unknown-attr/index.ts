@@ -4,6 +4,7 @@ import type { Pattern } from '@markuplint/types';
 import { createRule, getAttrSpecs, getSpec } from '@markuplint/ml-core';
 
 import { resolveAttrEligibility, suggestionSuffix } from '../attr-eligibility.js';
+import { createNameOptionLookup, createPrefixMatcher } from '../helpers.js';
 
 import meta from './meta.js';
 
@@ -16,11 +17,18 @@ type Option = {
 	 * The value type is used by `no-invalid-attr-value` to validate the
 	 * attribute's value; here it only determines whether the name is known.
 	 *
+	 * A name is compared as the DOM compares attribute names, so it is ASCII case-insensitive in the
+	 * HTML syntax and for an HTML element that code sets through the DOM API (JSX, MDX, Vue), exact for an
+	 * SVG/MathML element there, and a component's props are not folded.
+	 *
 	 * @since 3.7.0
 	 */
 	allowAttrs?: (string | Attr)[] | Record<string, AttributeType | Pattern>;
 
-	/** Attribute name prefix(es) to ignore during validation. */
+	/**
+	 * Attribute name prefix(es) to ignore during validation, compared as the DOM compares attribute
+	 * names, like `allowAttrs`.
+	 */
 	ignoreAttrNamePrefix?: string | string[];
 
 	/** Whether to allow additional properties for pretender elements (defaults to `true`). */
@@ -37,20 +45,15 @@ type Attr = {
 	value: AttributeType | Pattern;
 };
 
-function allowedNames(allowAttrs: Option['allowAttrs']): Set<string> {
-	if (!allowAttrs) {
-		return new Set();
-	}
-	if (Array.isArray(allowAttrs)) {
-		return new Set(allowAttrs.map(a => (typeof a === 'string' ? a : a.name)));
-	}
-	return new Set(Object.keys(allowAttrs));
-}
-
 export default createRule<boolean, Option>({
 	meta: meta,
 	defaultOptions: {},
 	async verify({ document, report, t }) {
+		// Whether an entry of the options is the attribute is up to the attribute: the DOM decides
+		// whether two spellings are one name (`MLAttr#isNamedBy`, `MLAttr#isPrefixedBy`).
+		const lookupAllowed = createNameOptionLookup<AttributeType | Pattern>('Any');
+		const hasIgnoredPrefix = createPrefixMatcher();
+
 		await document.walkOn('Attr', attr => {
 			if (attr.isDirective) {
 				return;
@@ -76,16 +79,12 @@ export default createRule<boolean, Option>({
 				return;
 			}
 
-			if (attr.rule.options.ignoreAttrNamePrefix != null) {
-				const prefixes = Array.isArray(attr.rule.options.ignoreAttrNamePrefix)
-					? attr.rule.options.ignoreAttrNamePrefix
-					: [attr.rule.options.ignoreAttrNamePrefix];
-				if (prefixes.some(prefix => name.indexOf(prefix) === 0)) {
-					return;
-				}
+			if (hasIgnoredPrefix(attr.rule.options.ignoreAttrNamePrefix, attr)) {
+				return;
 			}
 
-			if (allowedNames(attr.rule.options.allowAttrs).has(name)) {
+			// A name listed in `allowAttrs` is allowed whatever its value
+			if (lookupAllowed(attr.rule.options.allowAttrs, attr) !== undefined) {
 				return;
 			}
 
@@ -98,7 +97,7 @@ export default createRule<boolean, Option>({
 				return;
 			}
 
-			const eligibility = resolveAttrEligibility(name, attr.ownerElement, attrSpecs);
+			const eligibility = resolveAttrEligibility(name, attr.ownerElement, attrSpecs, attr);
 
 			let message: string | undefined;
 			switch (eligibility.status) {
@@ -106,12 +105,6 @@ export default createRule<boolean, Option>({
 					message =
 						t('{0} is {1:c}', t('the "{0*}" {1}', name, 'attribute'), 'disallowed') +
 						suggestionSuffix(t, eligibility.candidate);
-					break;
-				}
-				case 'case-mismatch': {
-					message =
-						t('{0} is {1:c}', t('the "{0*}" {1}', name, 'attribute'), 'disallowed') +
-						suggestionSuffix(t, eligibility.expectedName);
 					break;
 				}
 				default: {

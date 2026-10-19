@@ -101,6 +101,8 @@ Example configuration that `alt` attribute must be required on `<img>` element:
 
 You can use the `ignoreAttrs` option to exclude specific attributes from require-attribute checks. This is useful when you want to keep the rule enabled but ignore certain attributes that are handled by a framework or are intentionally omitted.
 
+Names are compared as the DOM compares them (see [Attribute name case](/docs/rules/no-unknown-attr#attribute-name-case)): `ALT` satisfies a required `alt` in the HTML syntax, and `"ignoreAttrs": ["viewbox"]` ignores a required `viewBox` of an `<svg>` there, but not in JSX, where an SVG element keeps the name as written.
+
 ```json class=config
 {
   "nodeRules": [

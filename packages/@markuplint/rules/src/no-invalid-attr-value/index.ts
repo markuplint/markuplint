@@ -6,6 +6,7 @@ import { createRule, getAttrSpecs } from '@markuplint/ml-core';
 import { attrCheck } from '../attr-check.js';
 import { resolveAttrEligibility } from '../attr-eligibility.js';
 import { log as ruleLog } from '../debug.js';
+import { createNameOptionLookup } from '../helpers.js';
 
 import meta from './meta.js';
 
@@ -20,6 +21,10 @@ type Option = {
 	 * the type or pattern their value must match. Shares its shape with
 	 * `no-unknown-attr`'s option of the same name — the name-eligibility half
 	 * lives there, this rule only consumes the value constraint.
+	 *
+	 * A name is compared as the DOM compares attribute names, so it is ASCII case-insensitive in the
+	 * HTML syntax and for an HTML element that code sets through the DOM API (JSX, MDX, Vue), exact for an
+	 * SVG/MathML element there, and a component's props are not folded.
 	 *
 	 * @since 3.7.0
 	 */
@@ -36,31 +41,14 @@ type Attr = {
 	value: AttributeType | Pattern;
 };
 
-function allowedTypes(allowAttrs: Option['allowAttrs']): Map<string, AttributeType | Pattern> {
-	const map = new Map<string, AttributeType | Pattern>();
-	if (!allowAttrs) {
-		return map;
-	}
-	if (Array.isArray(allowAttrs)) {
-		for (const allowAttr of allowAttrs) {
-			if (typeof allowAttr === 'string') {
-				map.set(allowAttr, 'Any');
-				continue;
-			}
-			map.set(allowAttr.name, allowAttr.value);
-		}
-	} else {
-		for (const [name, type] of Object.entries(allowAttrs)) {
-			map.set(name, type);
-		}
-	}
-	return map;
-}
-
 export default createRule<boolean, Option>({
 	meta: meta,
 	defaultOptions: {},
 	async verify({ document, report, t }) {
+		// Whether an entry of `allowAttrs` is the attribute is up to the attribute: the DOM decides
+		// whether two spellings are one name (`MLAttr#isNamedBy`).
+		const lookupAllowed = createNameOptionLookup<AttributeType | Pattern>('Any');
+
 		await document.walkOn('Attr', attr => {
 			if (attr.isDirective) {
 				return;
@@ -70,7 +58,7 @@ export default createRule<boolean, Option>({
 			const value = attr.value;
 			const valueNode = attr.valueNode;
 
-			const allowType = allowedTypes(attr.rule.options.allowAttrs).get(name);
+			const allowType = lookupAllowed(attr.rule.options.allowAttrs, attr);
 
 			let invalid: ReturnType<typeof attrCheck> = false;
 
@@ -85,7 +73,7 @@ export default createRule<boolean, Option>({
 				if (log.enabled) {
 					log('Checking %s[%s="%s"]', attr.nodeName, name, value);
 				}
-				const eligibility = resolveAttrEligibility(name, attr.ownerElement, attrSpecs);
+				const eligibility = resolveAttrEligibility(name, attr.ownerElement, attrSpecs, attr);
 				if (eligibility.status !== 'ok') {
 					return;
 				}
