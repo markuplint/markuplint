@@ -96,3 +96,34 @@ test('[no-ambiguous-navigable-target-names-issue-4309-002] an HTML element in JS
 		},
 	]);
 });
+
+test('[no-ambiguous-navigable-target-names-issue-4309-003] an upper-case name on an svg a element is not target in JSX, and is in HTML', async () => {
+	const parser = { '.*': '@markuplint/jsx-parser' };
+	expect(
+		(await mlRuleTest(rule, '<svg><a href="path/to" TARGET="blank"></a></svg>', { parser })).violations,
+	).toStrictEqual([]);
+
+	// Control: the lower-case name is reported on the same element
+	const lower = await mlRuleTest(rule, '<svg><a href="path/to" target="blank"></a></svg>', { parser });
+	expect(lower.violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 32,
+			message: 'Don\'t use a ambiguous navigable target name. Did you mean "_blank"?',
+			raw: 'blank',
+		},
+	]);
+
+	// The HTML parser folds the name, so the upper-case one is the attribute
+	const html = await mlRuleTest(rule, '<svg><a href="path/to" TARGET="blank"></a></svg>');
+	expect(html.violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 32,
+			message: 'Don\'t use a ambiguous navigable target name. Did you mean "_blank"?',
+			raw: 'blank',
+		},
+	]);
+});
