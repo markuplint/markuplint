@@ -52,6 +52,19 @@ export interface SelectorElement extends SelectorNode {
 	 * that HTML names case-insensitively. Absent means it does not: a plain DOM follows HTML.
 	 */
 	readonly tagNameCaseSensitive?: boolean;
+	/**
+	 * What the element is for a type selector, in a document that resolves a component by any
+	 * spelling of its name (Vue: `<FooBar>`, `<fooBar>` and `<foo-bar>` are one component). Absent
+	 * means the document does not, and the type selector is compared as `tagNameCaseSensitive` says.
+	 *
+	 * - `component`: a component, which `localName` names as written
+	 * - `native`: an HTML element that has a specification (`<button>`)
+	 * - `unknown-html`: an HTML element that has none (`<foobar>`)
+	 *
+	 * An element that a pretender stands for is what the pretender makes it, as `localName` is.
+	 * An element of the SVG or MathML namespace has none: it keeps the case of its name.
+	 */
+	readonly tagNameKind?: 'component' | 'native' | 'unknown-html';
 	readonly parentElement: SelectorElement | null;
 	readonly previousElementSibling: SelectorElement | null;
 	readonly nextElementSibling: SelectorElement | null;

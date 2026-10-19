@@ -9,6 +9,7 @@ import { compareSpecificity } from './compare-specificity.js';
 import { log as coreLog } from './debug.js';
 import { InvalidSelectorError } from './invalid-selector-error.js';
 import { isElement, isNonDocumentTypeChildNode, isPureHTMLElement } from './is.js';
+import { typeNameMatches } from './type-name.js';
 
 const selLog = coreLog.extend('selector');
 const resLog = coreLog.extend('result');
@@ -568,17 +569,7 @@ class SelectorTarget {
 		if (matched && this.tag && this.tag.type === 'tag') {
 			specificity[2] += 1;
 
-			let a = this.tag.value;
-			let b = el.localName;
-
-			// HTML names its elements case-insensitively, but a parser that tells the case of a
-			// tag name apart (`tagNameCaseSensitive`) has `<foobar>` and `<FooBar>` as two names.
-			if (isPureHTMLElement(el) && !el.tagNameCaseSensitive) {
-				a = a.toLowerCase();
-				b = b.toLowerCase();
-			}
-
-			if (a !== b) {
+			if (!typeNameMatches(this.tag.value, el)) {
 				matched = false;
 			}
 		}
