@@ -39,8 +39,9 @@ interface AttrToken {
 
 /**
  * What the order reads of an attribute: the name as written (`pattern`, messages), the name the DOM
- * gives it (`nameKey`: alphabetical order and the predefined groups, whose sets are of lower-case
- * names), and whether a name of the configuration is this attribute (`isNamedBy`).
+ * gives it (`namespaceKeyOf`: alphabetical order and the predefined groups, whose sets are of
+ * lower-case names; the name as written for the prop of a component, which `nameKey` camelizes in
+ * Vue), and whether a name of the configuration is this attribute (`isNamedBy`).
  */
 type NamedAttr = Pick<Attr<RuleConfigValue, PlainData>, 'name' | 'nameKey' | 'isNamedBy'> & {
 	readonly ownerElement: { readonly elementType: string };
@@ -237,7 +238,7 @@ function matchEntry(
 // eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 function compareWithinGroup(a: AttrInfo, b: AttrInfo, order: SortOrder): number {
 	if (order === 'alphabetical') {
-		return compareStrings(a.attr.nameKey, b.attr.nameKey);
+		return compareStrings(namespaceKeyOf(a.attr), namespaceKeyOf(b.attr));
 	}
 	if (order === 'source-order') {
 		return a.index - b.index;
@@ -251,7 +252,7 @@ function compareWithinGroup(a: AttrInfo, b: AttrInfo, order: SortOrder): number 
 			return aIdx - bIdx;
 		}
 		if (ai === -1 && bi === -1) {
-			return compareStrings(a.attr.nameKey, b.attr.nameKey);
+			return compareStrings(namespaceKeyOf(a.attr), namespaceKeyOf(b.attr));
 		}
 		return 0;
 	}
@@ -279,7 +280,7 @@ function sortAttrs(
 			const isFallback = a.entryIndex === fallbackIndex;
 			if (isFallback) {
 				return alphabetical
-					? compareStrings(a.info.attr.nameKey, b.info.attr.nameKey)
+					? compareStrings(namespaceKeyOf(a.info.attr), namespaceKeyOf(b.info.attr))
 					: a.info.index - b.info.index;
 			}
 			return compareWithinGroup(a.info, b.info, a.order);
@@ -356,7 +357,7 @@ export default createRule<Value, Options>({
 
 			const sorted = isAlphabeticalOnly
 				? alphabetical
-					? [...attrInfos].toSorted((a, b) => compareStrings(a.attr.nameKey, b.attr.nameKey))
+					? [...attrInfos].toSorted((a, b) => compareStrings(namespaceKeyOf(a.attr), namespaceKeyOf(b.attr)))
 					: attrInfos
 				: sortAttrs(attrInfos, compiledEntries, alphabetical);
 

@@ -742,6 +742,22 @@ describe('attribute name case', () => {
 		expect(html.violations).toStrictEqual([]);
 	});
 
+	test('[attr-order-issue-4309-012] Vue: the props of a component are sorted by the name as written', async () => {
+		// `aA` would come first by the camelized name of `a-b` (`aB`), and `a-b` comes first as written
+		const { violations } = await mlRuleTest(rule, '<template><MyComp aA="1" a-b="2" /></template>', {
+			parser: { '.*': '@markuplint/vue-parser' },
+		});
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 26,
+				raw: 'a-b',
+				message: '"a-b" should be before "aA"',
+			},
+		]);
+	});
+
 	test('[attr-order-issue-4309-011] Vue: the props of a component belong to the groups as written', async () => {
 		const options = {
 			parser: { '.*': '@markuplint/vue-parser' },
