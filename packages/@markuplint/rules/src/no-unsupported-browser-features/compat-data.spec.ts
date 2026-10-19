@@ -261,14 +261,14 @@ describe('checkAttributeSupport with the attribute', () => {
 		expect(await checkAttributeSupport('video', 'CONTROLSLIST', targets)).toEqual([]);
 	});
 
-	test('[no-unsupported-browser-features-issue-4309-004] JSX: the key of BCD is found as written, and a name that differs in case is a prop that is not it', async () => {
+	test('[no-unsupported-browser-features-issue-4309-004] JSX: an HTML element makes the name the key of BCD in any spelling, as the DOM folds it', async () => {
+		// `setAttribute` lower-cases the name on an HTML element, so all of these are `privatetoken` for the browser
 		const exact = attrOf('<iframe privateToken />', true);
 		const folded = attrOf('<iframe PRIVATETOKEN />', true);
-		const prop = attrOf('<iframe privatetoken />', true);
+		const lower = attrOf('<iframe privatetoken />', true);
 		expect((await checkAttributeSupport('iframe', exact.name, targets, exact)).length).toBe(1);
-		// A key of BCD with a capital letter is a prop of the framework on an HTML element: only its exact spelling is it
-		expect(await checkAttributeSupport('iframe', folded.name, targets, folded)).toEqual([]);
-		expect(await checkAttributeSupport('iframe', prop.name, targets, prop)).toEqual([]);
+		expect((await checkAttributeSupport('iframe', folded.name, targets, folded)).length).toBe(1);
+		expect((await checkAttributeSupport('iframe', lower.name, targets, lower)).length).toBe(1);
 	});
 
 	test('[no-unsupported-browser-features-issue-4309-005] JSX: an HTML element folds the name of a key of BCD in lower case', async () => {

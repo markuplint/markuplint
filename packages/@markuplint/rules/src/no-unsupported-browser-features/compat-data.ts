@@ -250,10 +250,14 @@ export async function checkElementSupport(
 }
 
 /**
- * What the lookup of an attribute asks of the attribute: its name as the DOM gives it, and whether a
- * key of BCD is its name (`MLAttr#nameKey`, `MLAttr#isNamedBy`).
+ * What the lookup of an attribute asks of the attribute: its name as the DOM gives it, and the name
+ * the DOM would give a key of BCD (`MLAttr#nameKey`, `MLAttr#keyOf`).
+ *
+ * It does not ask `MLAttr#isNamedBy`: that reads a name with a capital letter as the prop of a
+ * framework (`defaultValue`) and matches only its exact spelling, but a key of BCD is the spelling of
+ * an attribute of the browser, which the DOM folds (`privateToken` is `privatetoken`).
  */
-export type CompatAttr = Pick<Attr<RuleConfigValue, PlainData>, 'nameKey' | 'isNamedBy'>;
+export type CompatAttr = Pick<Attr<RuleConfigValue, PlainData>, 'nameKey' | 'keyOf'>;
 
 /**
  * The keys of an element identifier by the key in ASCII lower case. BCD spells a few keys in camel
@@ -293,7 +297,7 @@ function findAttrIdentifier(identifier: Identifier, attrName: string, attr: Comp
 	}
 	const key = foldedKeysOf(identifier)
 		.get(asciiLowerCase(attr.nameKey))
-		?.find(key => attr.isNamedBy(key));
+		?.find(key => attr.keyOf(key) === attr.nameKey);
 	return key === undefined ? undefined : (identifier[key] as Identifier | undefined);
 }
 
