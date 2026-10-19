@@ -102,6 +102,43 @@ describe('disambiguatePretenders', () => {
 			expect(await lint(code)).toStrictEqual(['button']);
 		});
 
+		test('resolves an import that the loader passes through a call', async () => {
+			const code = "const Item = lazy(() => delayForDemo(import('./d')));\nexport const C = () => <Item />;";
+			expect(await lint(code)).toStrictEqual(['span']);
+		});
+
+		test('resolves an export that an awaited import is destructured into', async () => {
+			const code = "const { Item } = await import('./b');\nexport const C = () => <Item />;";
+			expect(await lint(code)).toStrictEqual(['li']);
+		});
+
+		test('resolves a loader imported under another name', async () => {
+			const code =
+				"import { lazy as l } from 'react';\nconst Item = l(() => import('./d'));\nexport const C = () => <Item />;";
+			expect(await lint(code)).toStrictEqual(['span']);
+		});
+
+		test('resolves the export that a `.then` destructures', async () => {
+			const code =
+				"const Item = lazy(() => import('./b').then(({ Item }) => ({ default: Item })));\nexport const C = () => <Item />;";
+			expect(await lint(code)).toStrictEqual(['li']);
+		});
+
+		test('resolves the default export that an awaited import is read from', async () => {
+			const code = "const Item = (await import('./d')).default;\nexport const C = () => <Item />;";
+			expect(await lint(code)).toStrictEqual(['span']);
+		});
+
+		test('resolves a lazy component inside `memo()`', async () => {
+			const code = "const Item = memo(lazy(() => import('./d')));\nexport const C = () => <Item />;";
+			expect(await lint(code)).toStrictEqual(['span']);
+		});
+
+		test('leaves the list as it is when a call that is not a component loader takes the import', async () => {
+			const code = "const Item = useMemo(() => import('./d'), []);\nexport const C = () => <Item />;";
+			expect(await lint(code)).toStrictEqual(['button', 'li', 'span']);
+		});
+
 		test('leaves the list as it is when the import is not assigned to a name', async () => {
 			const code = "export default lazy(() => import('./b'));\nexport const C = () => <Item />;";
 			expect(await lint(code)).toStrictEqual(['button', 'li', 'span']);

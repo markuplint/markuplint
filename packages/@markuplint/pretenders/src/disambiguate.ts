@@ -238,9 +238,10 @@ function resolveWinner(
 		bindings.filter(b => isComponentBinding(b, filePath)),
 		filePath,
 	);
-	// A dynamic binding found by name is one that `lazy(() => import('./X'))` assigned the name to
-	// (see `dynamicImportName`), so it resolves like a default import; one without a name is
-	// `'*'` and found by none.
+	// A dynamic binding found by name is one that `lazy(() => import('./X'))` assigned the name to,
+	// or that `const { X } = await import('./X')` declared (see `dynamicImportName`), so it
+	// resolves like the static import of the export it names; one without a name is `'*'` and
+	// found by none.
 	if (!binding || binding.type === 'namespace') {
 		return null;
 	}

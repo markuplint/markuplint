@@ -33,10 +33,10 @@ import { dynamicImportName } from './dynamic-import-name.js';
  * Type-only imports (`import type { ... }`) and their inline equivalents
  * (`import { type X }`) are excluded, as are side-effect-only imports. A dynamic
  * import is bound under the name {@link dynamicImportName} gives it (the variable
- * `lazy(() => import('./X'))` is assigned to) with `type: 'dynamic'`, and has no
- * local name otherwise, where it uses the `'*'` sentinel; template literal,
- * variable and concatenated specifiers, `import.meta` and type-position
- * `typeof import('...')` are excluded.
+ * `lazy(() => import('./X'))` is assigned to, or the awaited import is read into)
+ * with `type: 'dynamic'`, and has no local name otherwise, where it uses the
+ * `'*'` sentinel; template literal, variable and concatenated specifiers,
+ * `import.meta` and type-position `typeof import('...')` are excluded.
  *
  * @param source - The parsed TypeScript source file to inspect
  * @returns The import bindings found in `source`

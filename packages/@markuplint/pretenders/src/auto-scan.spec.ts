@@ -69,6 +69,36 @@ describe('autoScan', () => {
 		expect(result.find(p => p.selector === 'Foo')).toMatchObject({ as: { element: 'img', slots: null } });
 	});
 
+	test('a .tsx entry resolves a component it loads with `memo(lazy(() => import(...)))`', async () => {
+		const entryPath = path.join(tmpDir, 'entry.tsx');
+		await writeFile(
+			path.join(tmpDir, 'Item.tsx'),
+			'export const Item = () => <img src="x.png" />;\nexport default Item;',
+		);
+		const entrySource = [
+			"import { lazy, memo } from 'react';",
+			"const Foo = memo(lazy(() => import('./Item')));",
+			'export const W = () => <div><Foo><span>c</span></Foo></div>;',
+		].join('\n');
+
+		const result = await autoScan(entryPath, entrySource);
+
+		expect(result.find(p => p.selector === 'Foo')).toMatchObject({ as: { element: 'img', slots: null } });
+	});
+
+	test('a .tsx entry resolves a component an awaited dynamic import is destructured into', async () => {
+		const entryPath = path.join(tmpDir, 'entry.tsx');
+		await writeFile(path.join(tmpDir, 'Item.tsx'), 'export const Item = () => <img src="x.png" />;');
+		const entrySource = [
+			"const { Item } = await import('./Item');",
+			'export const W = () => <div><Item><span>c</span></Item></div>;',
+		].join('\n');
+
+		const result = await autoScan(entryPath, entrySource);
+
+		expect(result.find(p => p.selector === 'Item')).toMatchObject({ as: { element: 'img', slots: null } });
+	});
+
 	test('a .tsx entry resolves a member tag of a namespace import', async () => {
 		const entryPath = path.join(tmpDir, 'entry.tsx');
 		await writeFile(path.join(tmpDir, 'Item.tsx'), 'export const Item = () => <img src="x.png" />;');

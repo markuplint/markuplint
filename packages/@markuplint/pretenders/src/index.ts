@@ -23,8 +23,9 @@
  *   source points to a directory with a barrel index.
  *
  * Dynamic imports (`import('./path')`) are included in bindings with `type: 'dynamic'`.
- * One that is assigned to a name (`const Item = lazy(() => import('./Item'))`) is bound
- * under that name; otherwise `localName` is the sentinel `'*'`. Check `type === 'dynamic'`
+ * One that is assigned to a name (`const Item = lazy(() => import('./Item'))`) or read into
+ * a variable (`const { Item } = await import('./Item')`) is bound under that name; otherwise
+ * `localName` is the sentinel `'*'`. Check `type === 'dynamic'`
  * to distinguish from namespace imports.
  *
  * ## Lint-time disambiguation

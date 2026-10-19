@@ -20,9 +20,11 @@
  *
  * Dynamic imports with string literal specifiers (`import('./path')`) are
  * included in the bindings with `type: 'dynamic'`. A dynamic import is bound under the
- * name it is assigned to, as `./dynamic-import-name.ts` decides (`const X = lazy(() => import('./X'))`
- * is `X`), so a lookup by name finds it like a default import. One that is not assigned to a
- * name uses `localName: '*'` as a sentinel. Template literal and variable specifiers are excluded.
+ * name it is assigned to or read into, as `./dynamic-import-name.ts` decides
+ * (`const X = lazy(() => import('./X'))` is `X`, and so is
+ * `const { X } = await import('./X')`), so a lookup by name finds it like the
+ * static import of that export. One that is not named uses `localName: '*'` as a
+ * sentinel. Template literal and variable specifiers are excluded.
  *
  * ## Barrel file resolution
  *
