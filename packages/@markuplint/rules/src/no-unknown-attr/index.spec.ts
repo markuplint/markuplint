@@ -972,3 +972,25 @@ test('[no-unknown-attr-issue-4309-011] Svelte: a static name is read by the HTML
 		},
 	]);
 });
+
+test('[no-unknown-attr-issue-4309-012] the suggested name of a property is an attribute name and is not translated', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<svg ROLE="img"></svg>',
+		{
+			parser: { '.*': '@markuplint/jsx-parser' },
+			specs: { '.*': '@markuplint/react-spec' },
+		},
+		false,
+		'ja',
+	);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 6,
+			message: '属性「ROLE」は許可されていません。「role」ではありませんか？',
+			raw: 'ROLE',
+		},
+	]);
+});

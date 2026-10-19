@@ -73,7 +73,7 @@ export default createRule<boolean, Option>({
 					message:
 						t('{0} is {1:c}', t('the "{0*}" {1}', name, 'attribute'), 'disallowed') +
 						t('. ') +
-						t('Did you mean "{0}"?', attr.candidate),
+						t('Did you mean "{0*}"?', attr.candidate),
 				});
 				return;
 			}
