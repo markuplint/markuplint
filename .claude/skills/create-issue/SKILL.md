@@ -7,15 +7,15 @@ description: >
   Investigate a problem to its root cause and file it as a GitHub Issue with
   the right labels and an As is / To be / Why / How body backed by primary
   sources. Use when asked to file, create, or open an issue, or when the
-  `impl` or `merged` skill hands over a carry-over. Trigger keywords: create
+  `impl` skill hands over a carry-over. Trigger keywords: create
   issue, file an issue, open an issue, report a bug as an issue.
 ---
 
 Problem to file: $ARGUMENTS
 
-This skill posts to GitHub, yet Claude may invoke it (the `impl` and `merged` skills do), so the side effect is gated by step 6: nothing is posted before the user approves the draft.
+This skill posts to GitHub, yet Claude may invoke it (the `impl`, `pr` and `pr-review` skills do), so the side effect is gated by step 6: nothing is posted before the user approves the draft.
 
-A problem handed over from a carry-over ledger — a bullet of the plan file's `Carry-over` heading (`impl` step 12) or of a PR body's `## Not covered here` (`merged`) — already records its reproduction: the minimal input, the observed output, the suspected cause and its file. That record satisfies step 2; do not investigate again what the bullet states, only what it lacks. Through `merged`, the approval of step 6 covers two writes at once — creating the issue and marking the bullet in the PR body — and says so.
+A problem handed over from a carry-over ledger — a bullet of the plan file's `Carry-over` heading (`impl` step 12) or of a merged PR body's `## Not covered here` (`impl` step 15) — already records its reproduction: the minimal input, the observed output, the suspected cause and its file. That record satisfies step 2; do not investigate again what the bullet states, only what it lacks. Through `impl` step 15, the approval of step 6 covers two writes at once — creating the issue and marking the bullet in the PR body — and says so.
 
 # Steps
 

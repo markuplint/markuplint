@@ -5,9 +5,11 @@ metadata:
 description: >
   Implementation orchestrator — takes an agreed plan through implementation,
   carry-over approval, code review, security review, QA, docs consistency,
-  lint/test, carry-over filing, commit, and PR creation. Invoke with `/impl`
+  lint/test, carry-over filing, commit, PR creation, and the post-merge
+  carry-over check. Invoke with `/impl`
   once a plan has been agreed (e.g. via grill-me or the issue skill).
 disable-model-invocation: true
+allowed-tools: Bash(node ${CLAUDE_SKILL_DIR}/scripts/leftovers.mjs *)
 ---
 
 # Rules
@@ -26,9 +28,9 @@ These hold for the whole run, not just the step where they first apply. The ones
 - **Review results in the user's language**: `/code-review` and `/security-review` report in English. Translate their findings into the user's language when reporting them, then fix.
 - **Plan contract**: the run has two phases, and the plan file is the hand-off between them — the user may switch the model and the permission mode after approval, and the conversation may be compacted or cleared in between.
   - Phase A, planning (plan mode): steps 1–3, plus every decision that can be made before code is written: list the out-of-scope problems already visible in the code the plan touches and ask about each one (scope question); ask the spec-silent choices the plan contains; write every answer under a `Decisions` heading in the plan file (fix / carry over / leave as is, with the reason). Embed the full Steps checklist, a reference to these Rules and to the Decision criteria, and empty `Carry-over` and `Findings` headings.
-  - Phase B, execution (after approval): first run `echo "$CLAUDE_EFFORT"` and write one line, in the user's language, that names the model your system prompt names and the effort the command printed, so that the user sees which model and effort the run starts on (there is no `$CLAUDE_MODEL`; the model comes from your own system prompt). No level is required: the line is there to be noticed, not to stop. Then re-read the plan file and run steps 4–14. Apply the `Decisions` as they stand and ask only for a decision the plan does not have. Re-read the plan file again at step 12.
+  - Phase B, execution (after approval): first run `echo "$CLAUDE_EFFORT"` and write one line, in the user's language, that names the model your system prompt names and the effort the command printed, so that the user sees which model and effort the run starts on (there is no `$CLAUDE_MODEL`; the model comes from your own system prompt). No level is required: the line is there to be noticed, not to stop. Then re-read the plan file and run steps 4–15. Apply the `Decisions` as they stand and ask only for a decision the plan does not have. Re-read the plan file again at step 12.
   - For a multi-PR plan, state that every PR repeats the checklist and that the run pauses after each PR (next rule).
-- **Multi-PR plans**: when the plan spans more than one PR, finishing the `pr` skill for one PR (including the `merged` skill after the merge) does **not** start the next PR. Do the hand-off below, report, and wait for the user to say resume. The user clears or compacts context between PRs (`/exit`, `/clear`, `/compact`), so nothing may depend on this conversation surviving.
+- **Multi-PR plans**: when the plan spans more than one PR, finishing step 15 for one PR does **not** start the next PR. Do the hand-off below, report, and wait for the user to say resume. The user clears or compacts context between PRs (`/exit`, `/clear`, `/compact`), so nothing may depend on this conversation surviving.
 
 ## Hand-off before pausing (multi-PR plans only)
 
@@ -56,6 +58,7 @@ Copy this checklist into your response and check items off as you go.
 - [ ] 12. Deferred-items audit — nothing postponed is still open; every Carry-over bullet filed as an issue
 - [ ] 13. Committed (git skill)
 - [ ] 14. PR created (pr skill)
+- [ ] 15. After merge: merged skill run; leftovers.mjs status prints (none)
 ```
 
 1. Confirm that implementation scope, approach, and trade-offs are agreed in the conversation. A plan approved through the `issue` skill counts as agreed. If agreement is missing, run the `grill-me` skill and reach it before continuing. If a plan document is being written, apply the Plan contract rule (Phase A).
@@ -72,3 +75,4 @@ Copy this checklist into your response and check items off as you go.
 12. **Deferred-items audit**: re-read the plan file. List in your response everything this run postponed, skipped, or noted "for later", and close each item against a tool result from this session — an item with no result to point at stays open. Go through, in order: (a) every verification step the plan or the conversation named beyond lint and test (a reproduction, a manual check, a dry run) — the ones not yet executed get executed now, with their output shown; when one cannot be executed (no real input exists for it), say so and ask the user to waive it or to keep the PR open, and record a waiver where the next session will find it; (b) every finding in the `Findings` ledger is in a `fixed` or `user:` state; (c) every out-of-scope finding from steps 6–9 that is not yet in the `Carry-over` ledger is asked about as step 5 does; then **every bullet of the `Carry-over` ledger is filed as its own issue with the `create-issue` skill** — the bullet is the reproduction, and `create-issue` confirms each draft with `AskUserQuestion` — and the bullet gets ` — Filed as #N` appended in the plan file; while any bullet has no `Filed as #N`, step 13 does not start; (d) every assumption made without checking (a command's output format, a tool's availability, a field name) — check it now; (e) the one trace a deferral leaves in the diff: run `git diff origin/<base> | grep -nE '^\+.*(TODO|FIXME|XXX|\.skip\(|\.todo\(|skipIf\()'` and show the output, which must be empty. An empty list is reported as such, naming what was checked. If closing an item changes code, steps 10–11 run again. Nothing is committed with an open item.
 13. Commit following the `git` skill.
 14. Create the PR following the `pr` skill. Its `## Not covered here` is the `Carry-over` ledger copied as is, markers included, and its `## Left as is on purpose` is the `leave as is` entries of `Decisions`.
+15. **After the user says the PR is merged**: run the `merged` skill as the `pr` skill's last step says, then check the carry-over ledger on the merged PR — review may have added a bullet to the body, and a bullet may have lost its marker. Run `node ${CLAUDE_SKILL_DIR}/scripts/leftovers.mjs status <n>` and show its output. While it lists a bullet: file it with the `create-issue` skill (the bullet is the reproduction; the approval of the draft also covers marking the bullet in the PR body, and says so), then run `node ${CLAUDE_SKILL_DIR}/scripts/leftovers.mjs mark <n> <index> "Filed as #<issue>"` — `<index>` is the number in the most recent output, and the script prints the remaining list, renumbered. A bullet the user decides not to file gets `mark <n> <index> "Not filed: <the user's reason>"`; Claude does not decide that. When the output ends with a `warning:` line, read the section with `gh pr view <n> --json body` and resolve it the same way. The step is done when the script prints `(none)` and that output is shown.
