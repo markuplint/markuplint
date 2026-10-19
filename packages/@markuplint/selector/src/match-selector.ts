@@ -239,7 +239,11 @@ function uncombinedRegexSelect(el: SelectorNode, selector: RegexSelectorWithoutC
 	if (selector.attrName || selector.attrValue) {
 		const matchedAttrList: MatchedAttr[] = [...el.attributes]
 			.map<MatchedAttr | null>(attr => {
-				const matchedAttrName = regexSelectorMatches(selector.attrName, attr.name, isPure);
+				const matchedAttrName = regexSelectorMatches(
+					selector.attrName,
+					attr.domName ?? attr.name,
+					attr.nameCaseInsensitive ?? isPure,
+				);
 				if (selector.attrName && !matchedAttrName) {
 					return null;
 				}

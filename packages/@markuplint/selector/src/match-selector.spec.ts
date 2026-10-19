@@ -395,3 +395,35 @@ describe('nodeName of a regular expression selector in a document that is case-s
 		expect(matchSelector(mockElement(flag), { nodeName: '/^FooBar$/' }).matched).toBe(true);
 	});
 });
+
+describe('attrName of an attribute that says how its name is compared', () => {
+	const mockElement = (attr: { domName?: string; nameCaseInsensitive?: boolean }) => ({
+		nodeType: 1,
+		nodeName: 'x',
+		localName: 'x',
+		id: '',
+		namespaceURI: 'http://www.w3.org/2000/svg',
+		classList: { contains: () => false },
+		parentNode: null,
+		parentElement: null,
+		previousElementSibling: null,
+		nextElementSibling: null,
+		children: [],
+		attributes: [{ name: 'VIEWBOX', localName: 'VIEWBOX', value: '', namespaceURI: null, ...attr }],
+	});
+
+	test('an attribute that the element folds is matched without regard to case', () => {
+		expect(matchSelector(mockElement({ nameCaseInsensitive: true }), { attrName: 'viewbox' }).matched).toBe(true);
+	});
+
+	test('an attribute that the element does not fold is matched by the name it has in the DOM', () => {
+		const el = mockElement({ nameCaseInsensitive: false, domName: 'viewBox' });
+		expect(matchSelector(el, { attrName: 'viewBox' }).matched).toBe(true);
+		expect(matchSelector(el, { attrName: 'viewbox' }).matched).toBe(false);
+	});
+
+	test('without that information a name on an SVG element is matched exactly, as before', () => {
+		expect(matchSelector(mockElement({}), { attrName: 'viewbox' }).matched).toBe(false);
+		expect(matchSelector(mockElement({}), { attrName: 'VIEWBOX' }).matched).toBe(true);
+	});
+});
