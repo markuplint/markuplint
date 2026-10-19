@@ -255,3 +255,32 @@ describe('an attribute selector', () => {
 		expect(svg?.matches('[ROLE]')).toBe(true);
 	});
 });
+
+describe('whether two names are one for an element', () => {
+	test('[ml-attr-name-route-019] follows the HTML parser and the DOM API on an HTML element', async () => {
+		const parsed = html('<div></div>').querySelector('div');
+		expect(parsed?.isSameAttrName('ALT', 'alt')).toBe(true);
+		expect(parsed?.isSameAttrName('alt', 'title')).toBe(false);
+		const set = (await jsx('<div></div>')).querySelector('div');
+		expect(set?.isSameAttrName('title', 'title')).toBe(true);
+		expect(set?.isSameAttrName('TITLE', 'title')).toBe(false);
+		expect(set?.isSameAttrName('defaultValue', 'defaultvalue')).toBe(false);
+	});
+
+	test('[ml-attr-name-route-020] keeps the spelling that code sets on an SVG element, and folds what the parser reads', async () => {
+		const parsed = html('<svg></svg>').querySelector('svg');
+		expect(parsed?.isSameAttrName('viewbox', 'viewBox')).toBe(true);
+		const set = (await jsx('<svg></svg>')).querySelector('svg');
+		expect(set?.isSameAttrName('viewbox', 'viewBox')).toBe(false);
+		expect(set?.isSameAttrName('viewBox', 'viewBox')).toBe(true);
+	});
+
+	test('[ml-attr-name-route-021] compares a prop of a component as the framework does', async () => {
+		const plain = (await jsx('<Foo />')).querySelector('Foo');
+		expect(plain?.isSameAttrName('fooBar', 'foobar')).toBe(false);
+		expect(plain?.isSameAttrName('fooBar', 'fooBar')).toBe(true);
+		const vue = (await jsx('<Foo />', { componentNameVariants: true })).querySelector('Foo');
+		expect(vue?.isSameAttrName('my-label', 'myLabel')).toBe(true);
+		expect(vue?.isSameAttrName('mylabel', 'myLabel')).toBe(false);
+	});
+});

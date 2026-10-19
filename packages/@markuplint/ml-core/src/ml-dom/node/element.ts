@@ -47,7 +47,7 @@ import { MLElementCloseTag } from './element-close-tag.js';
 import { toNamedNodeMap } from './named-node-map.js';
 import { toHTMLCollection, toNodeList } from './node-list.js';
 import { MLParentNode } from './parent-node.js';
-import { UnexpectedCallError, camelize } from '@markuplint/shared';
+import { UnexpectedCallError, asciiLowerCase, camelize } from '@markuplint/shared';
 
 const HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml';
 
@@ -90,6 +90,35 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 */
 	get isForeignElement(): boolean {
 		return this.#namespaceURI !== HTML_NAMESPACE;
+	}
+
+	/**
+	 * Whether two names are one attribute name for this element when neither is the name of an
+	 * attribute it has (a name of a spec, of an option and of a rule value: the attribute may be
+	 * missing). It is {@link MLAttr.isNamedBy} without an attribute: the HTML syntax folds the ASCII
+	 * case; code that sets the name through the DOM API folds it only on an element of the HTML
+	 * namespace, so an SVG or MathML element keeps the spelling there and a name with a capital
+	 * letter is a prop of the framework; the props of a component are not folded, except that Vue
+	 * camelizes them.
+	 *
+	 * Where the name of an attribute that this element would have is set through the DOM API is up
+	 * to the parser; the attribute is missing, so it is not dynamic, and Svelte's static name is
+	 * the one the HTML parser reads.
+	 *
+	 * @see https://dom.spec.whatwg.org/#dom-element-setattribute
+	 * @see https://html.spec.whatwg.org/multipage/parsing.html#attribute-name-state
+	 */
+	isSameAttrName(a: string, b: string): boolean {
+		if (a === b) {
+			return true;
+		}
+		if (this.elementType === 'authored') {
+			return this.ownerMLDocument.componentNameVariants && camelize(a) === camelize(b);
+		}
+		if (this.ownerMLDocument.attrNameRoute === 'dom-api' && (this.isForeignElement || /[A-Z]/.test(a + b))) {
+			return false;
+		}
+		return asciiLowerCase(a) === asciiLowerCase(b);
 	}
 
 	/**

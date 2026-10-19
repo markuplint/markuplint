@@ -1,7 +1,5 @@
 import type { Attribute } from '@markuplint/html-spec';
 
-import type { Element } from '@markuplint/ml-core';
-
 import { createRule, getAttrSpecs } from '@markuplint/ml-core';
 
 import { attrMatches, match } from '../helpers.js';
@@ -33,42 +31,6 @@ type Options = {
 	readonly ignoreAttrs?: readonly string[];
 };
 
-/**
- * Whether two names, neither of them an attribute of the element (a name of the spec table, of the
- * rule value and of `ignoreAttrs`: the attribute may be missing, which is what the rule reports),
- * are one name by the DOM. It is `MLAttr#isNamedBy` without an attribute: the HTML syntax folds the
- * ASCII case of a name; code that sets the name through the DOM API folds it only on an element of
- * the HTML namespace, so an SVG/MathML element keeps it as written, and a name with a capital letter
- * is a prop of the framework there; the props of a component are not folded.
- *
- * @see https://dom.spec.whatwg.org/#dom-element-setattribute
- * @see https://html.spec.whatwg.org/multipage/parsing.html#attribute-name-state
- */
-function isSameAttrName(
-	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Element<RequiredAttributes, Options>,
-	a: string,
-	b: string,
-): boolean {
-	if (a === b) {
-		return true;
-	}
-	if (el.elementType === 'authored') {
-		return false;
-	}
-	// Whether the name of an attribute that this element would have is set through the DOM API
-	// is up to the parser; a missing attribute is not dynamic, so Svelte's static name is parsed.
-	const throughDOMAPI = el.ownerMLDocument.attrNameRoute === 'dom-api';
-	if (throughDOMAPI && (el.isForeignElement || /[A-Z]/.test(a) || /[A-Z]/.test(b))) {
-		return false;
-	}
-	return asciiLowerCase(a) === asciiLowerCase(b);
-}
-
-function asciiLowerCase(name: string): string {
-	return name.replaceAll(/[A-Z]/g, char => char.toLowerCase());
-}
-
 export default createRule<RequiredAttributes, Options>({
 	meta: meta,
 	defaultValue: [],
@@ -82,7 +44,7 @@ export default createRule<RequiredAttributes, Options>({
 			const customRequiredAttrs = typeof el.rule.value === 'string' ? [el.rule.value] : el.rule.value;
 			const attrSpec = getAttrSpecs(el, document.specs);
 			const ignoreAttrs = el.rule.options.ignoreAttrs ?? [];
-			const isIgnored = (name: string) => ignoreAttrs.some(ignored => isSameAttrName(el, ignored, name));
+			const isIgnored = (name: string) => ignoreAttrs.some(ignored => el.isSameAttrName(ignored, name));
 
 			const attributeSpecs: Record<
 				string,
@@ -120,7 +82,7 @@ export default createRule<RequiredAttributes, Options>({
 				// A name of the rule value that the spec table names too is one requirement, and the
 				// rule value's is the one that counts
 				for (const specName of Object.keys(attributeSpecs)) {
-					if (isSameAttrName(el, specName, name)) {
+					if (el.isSameAttrName(specName, name)) {
 						delete attributeSpecs[specName];
 					}
 				}
