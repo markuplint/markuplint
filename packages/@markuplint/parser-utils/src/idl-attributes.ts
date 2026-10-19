@@ -421,35 +421,38 @@ const idlContentMap = {
 
 const list = Object.entries(idlContentMap);
 
+// The first entry of a name wins. They are built once: a name is looked up for every attribute of a document.
+const byIdlPropName = new Map<string, readonly [string, string]>();
+const byContentAttrName = new Map<string, readonly [string, string]>();
+for (const entry of list) {
+	if (!byIdlPropName.has(entry[0])) {
+		byIdlPropName.set(entry[0], entry);
+	}
+	if (!byContentAttrName.has(entry[1])) {
+		byContentAttrName.set(entry[1], entry);
+	}
+}
+
 /**
  * Searches the IDL-to-content-attribute mapping to find the corresponding
  * IDL property name and content attribute name for a given attribute name.
- * Handles camelCase IDL names, lowercase content attribute names, hyphenated names,
- * and event handler attributes (e.g., `onclick`).
  *
- * @param name - The attribute name to look up (can be IDL, content, or hyphenated form)
+ * A name is mapped by its exact spelling: the IDL property name (`tabIndex`, `strokeWidth`) or the
+ * content attribute name (`tabindex`, `stroke-width`). A spelling in another case (`TABINDEX`) is
+ * another name here, because a framework reads its own property names as they are written (JSX
+ * `onClick` is a JavaScript identifier). Whether such a name is still the same attribute in the DOM is
+ * decided by `MLElement#attrNameCaseInsensitive` of `@markuplint/ml-core`, not here. An event handler
+ * (`onclick`) is its own name in lower case.
+ *
+ * @param name - The attribute name to look up (the IDL or the content spelling, exactly)
  * @returns An object with the matching `idlPropName` and `contentAttrName`, both undefined if no match is found
  */
 export function searchIDLAttribute(name: string) {
-	const camelizedName = camelize(name);
 	const [idlPropName, contentAttrName] = /^on[a-z]/.test(name)
 		? [name.toLowerCase(), name.toLowerCase()]
-		: (list.find(
-				([idlPropName, contentAttrName]) =>
-					idlPropName.toLowerCase() === camelizedName.toLowerCase() ||
-					contentAttrName.toLowerCase() === name.toLowerCase() ||
-					hyphenize(idlPropName) === name.toLowerCase(),
-			) ?? []);
+		: (byIdlPropName.get(name) ?? byContentAttrName.get(name) ?? []);
 	return {
 		idlPropName,
 		contentAttrName,
 	};
-}
-
-function camelize(str: string) {
-	return str.replaceAll(/[:-][a-z]/g, $0 => $0[1]?.toUpperCase() ?? '');
-}
-
-function hyphenize(str: string) {
-	return str.replaceAll(/[A-Z]/g, $0 => `-${$0.toLowerCase()}`);
 }
