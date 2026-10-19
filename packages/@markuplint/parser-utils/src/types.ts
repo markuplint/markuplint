@@ -15,6 +15,7 @@ export type ParserOptions = {
 	readonly ignoreTags?: readonly IgnoreTag[];
 	readonly maskChar?: string;
 	readonly tagNameCaseSensitive?: boolean;
+	readonly componentNameVariants?: boolean;
 	readonly attrNameCaseSensitive?: boolean;
 	readonly selfCloseType?: SelfCloseType;
 	readonly spaceChars?: readonly string[];
