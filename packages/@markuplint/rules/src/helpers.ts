@@ -44,7 +44,8 @@ export function conditionDependsOnDynamicAttr<T extends RuleConfigValue, O exten
 		}
 	}
 	// Whether the attribute is the one that the selector names is up to the attribute (`isNamedBy`)
-	return node.attributes.some(attr => attr.isDynamicValue && [...referencedNames].some(name => attr.isNamedBy(name)));
+	const names = [...referencedNames];
+	return node.attributes.some(attr => attr.isDynamicValue && names.some(name => attr.isNamedBy(name)));
 }
 
 /**

@@ -636,10 +636,13 @@ function attrMatch(
 		const elAttrName = attrOfEl.domName ?? attrOfEl.localName;
 		const isCaseInsensitive = attrOfEl.nameCaseInsensitive ?? isHTML;
 		const selectorName = attrOfEl.nameIsCamelized ? camelize(attr.attribute) : attr.attribute;
-		if (
-			(isCaseInsensitive ? asciiLowerCase(selectorName) : selectorName) !==
-			(isCaseInsensitive ? asciiLowerCase(elAttrName) : elAttrName)
-		) {
+		const fold = (name: string) => (isCaseInsensitive ? asciiLowerCase(name) : name);
+		// A prefixed attribute (`xlink:href`) is also named by its local name, which is what
+		// the namespace of a selector (`[xlink|href]`, `[*|href]`) qualifies
+		const named =
+			fold(selectorName) === fold(elAttrName) ||
+			(attrOfEl.namespaceURI != null && fold(selectorName) === fold(attrOfEl.localName));
+		if (!named) {
 			return false;
 		}
 		if (attr.namespace != null && attr.namespace !== true && attr.namespace !== '*') {

@@ -459,6 +459,27 @@ describe('attribute name of an element that says how its names are compared', ()
 		expect(createSelector('[VIEWBOX]').match(el)).toBe(false);
 	});
 
+	test('a prefixed name is matched by its local name, with or without the namespace of the selector', () => {
+		const XLINK = 'http://www.w3.org/1999/xlink';
+		const el = {
+			...createElement(SVG, { name: 'xlink:href' }),
+			attributes: [
+				{
+					name: 'xlink:href',
+					localName: 'href',
+					value: '#a',
+					namespaceURI: XLINK,
+					nameCaseInsensitive: false,
+					domName: 'xlink:href',
+				},
+			],
+		};
+		expect(createSelector('[xlink|href]').match(el)).toBeTruthy();
+		expect(createSelector('[*|href]').match(el)).toBeTruthy();
+		expect(createSelector('[href]').match(el)).toBeTruthy();
+		expect(createSelector('[xml|href]').match(el)).toBe(false);
+	});
+
 	test('a name of a prop that the framework camelizes is matched by either spelling', () => {
 		const el = createElement(HTML, {
 			name: 'my-label',

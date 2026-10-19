@@ -256,6 +256,15 @@ describe('an attribute selector', () => {
 	});
 });
 
+describe('an attribute selector with a namespace', () => {
+	test('[ml-attr-name-route-030] matches the local name of a prefixed attribute', () => {
+		const svg = html('<svg XLINK:HREF="#a"></svg>').querySelector('svg');
+		expect(svg?.matches('[xlink|href]')).toBe(true);
+		expect(svg?.matches('[*|href]')).toBe(true);
+		expect(svg?.matches('[xml|href]')).toBe(false);
+	});
+});
+
 describe('an attribute selector on a component', () => {
 	test('[ml-attr-name-route-024] matches the prop as the framework names it', async () => {
 		const plain = (await jsx('<Foo fooBar="a" />')).querySelector('Foo');
