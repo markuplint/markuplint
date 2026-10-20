@@ -169,8 +169,11 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * spelling of its name (Vue, see {@link MLDocument.componentNameVariants}); `undefined` in any other.
 	 *
 	 * - `component`: not an HTML element (`<FooBar>`, `<foo-bar>`), which {@link localName} names as written
-	 * - `native`: an HTML element that has a specification (`<button>`), the guard of {@link pretending}
-	 * - `unknown-html`: an HTML element that has none (`<foobar>`)
+	 * - `native`: an HTML element that the document takes for native (`<button>`, see {@link MLDocument.isNativeTag}:
+	 *   the parser's rule, as Vue's `isNativeTag`, else the specification), the guard of {@link pretending}.
+	 *   The element that a pretender stands for is judged by the specification alone
+	 * - `unknown-html`: an HTML element that it does not (`<foobar>`; in Vue also `<marquee>`, which has a
+	 *   specification but resolves to a component when one is imported)
 	 *
 	 * Like {@link localName}, it follows the pretender, since a selector sees the element the component
 	 * renders. An element of the SVG or MathML namespace has none: it keeps the case of its name.
@@ -189,9 +192,12 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		if (target.elementType !== 'html') {
 			return 'component';
 		}
-		return getSpecByTagName(document.specs.specs, target.localName, target.namespaceURI)
-			? 'native'
-			: 'unknown-html';
+		// A tag as written is the language's to resolve; the name a pretender gives (`as`) is the element itself
+		const isNative =
+			target === this
+				? document.isNativeTag(target.localName, target.namespaceURI)
+				: getSpecByTagName(document.specs.specs, target.localName, target.namespaceURI) != null;
+		return isNative ? 'native' : 'unknown-html';
 	}
 
 	/**
@@ -4217,15 +4223,16 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		// mask spec-driven rules — deprecation, ARIA role restrictions, browser support —
 		// keyed on the original tag. See issue #3740.
 		//
+		// What is recognised is what the document says (`MLDocument#isNativeTag`): the specification, unless
+		// the parser has a rule of its own. Vue's rule does not hold `<marquee>`, which Vue resolves to a
+		// component when one is imported, so there it is pretender-eligible. See issue #4351.
+		//
 		// Names that the HTML parser cannot distinguish from typos (PascalCase JSX-like
 		// usage in plain HTML such as `<SimpleButton>`) get `elementType === 'html'`
 		// from the parser but have no spec entry; those remain pretender-eligible
 		// (this is what `pretenders.scan` relies on). The legacy "no inline `as=` on
 		// HTML elements" guard is preserved further down for that case.
-		if (
-			this.elementType === 'html' &&
-			getSpecByTagName(this.ownerMLDocument.specs.specs, this.localName, this.namespaceURI) != null
-		) {
+		if (this.elementType === 'html' && this.ownerMLDocument.isNativeTag(this.localName, this.namespaceURI)) {
 			return;
 		}
 		const pretenderConfig = pretenders?.find(option => this.matches(option.selector));

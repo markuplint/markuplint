@@ -21,6 +21,7 @@ import {
 	mayBeFocusable,
 	getComputedAriaProps,
 	isExposed,
+	getSpecByTagName,
 	ARIA_RECOMMENDED_VERSION,
 } from '@markuplint/ml-spec';
 
@@ -85,6 +86,8 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	readonly #astNodeMap: ReadonlyMap<string, MLASTNodeTreeItem>;
 
 	readonly #filename?: string;
+
+	readonly #isNativeTagRule?: (name: string) => boolean;
 
 	/**
 	 * Whether this document represents a fragment rather than a complete document.
@@ -167,6 +170,27 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	readonly isComponentName: (name: string) => boolean;
 
 	/**
+	 * Whether a tag is a native element: the rule of the parser (`MLParser#isNativeTag`) when it has one, which
+	 * takes the name as written and knows no namespace, else the specification (`getSpecByTagName`) of the
+	 * name in its namespace. {@link MLElement.tagNameKind} and the guard of {@link MLElement.pretending}
+	 * read it, so that a type selector and a pretender agree on what a tag is.
+	 *
+	 * Rules keyed on the specification (deprecated / obsolete elements) do not read it. Nor does the
+	 * element that a pretender stands for (`as`): the name is the element itself there, not a tag to resolve,
+	 * so it is judged by the specification and never passes through this method.
+	 *
+	 * @param localName - The name of the tag as the author wrote it, never the `as` of a pretender
+	 * @param namespaceURI - The namespace of the element; not read when the parser has a rule, as Vue's is the same for every namespace
+	 * @returns Whether the document takes the tag for a native element
+	 */
+	isNativeTag(localName: string, namespaceURI: string): boolean {
+		if (this.#isNativeTagRule) {
+			return this.#isNativeTagRule(localName);
+		}
+		return getSpecByTagName(this.specs.specs, localName, namespaceURI) != null;
+	}
+
+	/**
 	 * Whether attribute names are JavaScript identifiers in the source language (JSX props such as
 	 * `onClick`), which the `case-sensitive-attr-name` rule does not ask to be lower case.
 	 *
@@ -211,6 +235,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 			readonly tagNameCaseSensitive?: boolean;
 			readonly componentNameVariants?: boolean;
 			readonly isComponentName?: (name: string) => boolean;
+			readonly isNativeTag?: (name: string) => boolean;
 			readonly attrNameCaseSensitive?: boolean;
 			readonly attrNameRoute?: AttrNameRoute;
 			readonly pretenders?: readonly Pretender[];
@@ -227,6 +252,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		this.tagNameCaseSensitive = options?.tagNameCaseSensitive ?? false;
 		this.componentNameVariants = options?.componentNameVariants ?? false;
 		this.isComponentName = options?.isComponentName ?? isComponentName;
+		this.#isNativeTagRule = options?.isNativeTag;
 		this.attrNameCaseSensitive = options?.attrNameCaseSensitive ?? false;
 		this.attrNameRoute = options?.attrNameRoute ?? 'html-parser';
 		this.ruleCommonSettings = ruleCommonSettings;

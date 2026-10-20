@@ -12,7 +12,11 @@ import { MLDocument } from './document.js';
 
 function createDocument(
 	sourceCode: string,
-	options?: { readonly componentNameVariants?: boolean; readonly pretenders?: readonly Pretender[] },
+	options?: {
+		readonly componentNameVariants?: boolean;
+		readonly isNativeTag?: (name: string) => boolean;
+		readonly pretenders?: readonly Pretender[];
+	},
 ) {
 	return new MLDocument(
 		parser.parse(sourceCode),
@@ -135,5 +139,97 @@ describe('MLElement#matchesTagNameVariant', () => {
 		expect(el?.matchesTagNameVariant('img')).toBe(false);
 		// The pretender is back after the question
 		expect(el?.matches('img')).toBe(true);
+	});
+});
+
+// Vue resolves the tag that its `isNativeTag` does not take (`<marquee>`, `<search>`) to a component, whatever the
+// specification says; a document whose parser says nothing takes the specification as native.
+describe('A parser that says which tags are native (MLParser#isNativeTag)', () => {
+	const vueLike = new Set(['button', 'div', 'svg', 'mesh']);
+	const isNativeTag = (name: string) => vueLike.has(name);
+	const options = { componentNameVariants: true, isNativeTag };
+
+	test.each([
+		['<button></button>', 'button', 'native'],
+		['<marquee></marquee>', 'marquee', 'unknown-html'],
+		['<search></search>', 'search', 'unknown-html'],
+	])('%s is %s for tagNameKind', (html, selector, expected) => {
+		const el = createDocument(html, options).querySelector(selector);
+
+		expect(el?.tagNameKind).toBe(expected);
+	});
+
+	test('without it the specification decides: <marquee> is native', () => {
+		const el = createDocument('<marquee></marquee>', { componentNameVariants: true }).querySelector('marquee');
+
+		expect(el?.tagNameKind).toBe('native');
+	});
+
+	test.each([
+		['<marquee></marquee>', 'marquee', 'Marquee', true],
+		['<marquee></marquee>', 'marquee', 'marquee', true],
+		['<search></search>', 'search', 'Search', true],
+		['<button></button>', 'button', 'Button', false],
+	])('%s: the selector %s -> %s matches: %s', (html, query, selector, expected) => {
+		const el = createDocument(html, options).querySelector(query);
+
+		expect(el?.matches(selector)).toBe(expected);
+	});
+
+	test('without the rule of the parser a pretender does not apply to an element of MathML that has a specification', () => {
+		const document = createDocument('<math><mi></mi></math>', {
+			componentNameVariants: true,
+			pretenders: [{ selector: 'mi', as: 'img' }],
+		});
+
+		expect(document.querySelector('mi')?.pretenderContext).toBeNull();
+	});
+
+	test('a pretender applies to a tag that it does not take for native', () => {
+		const document = createDocument('<marquee><span>c</span></marquee>', {
+			...options,
+			pretenders: [{ selector: 'marquee', as: 'img' }],
+		});
+
+		expect(document.querySelector('marquee')?.pretenderContext?.type).toBe('pretender');
+	});
+
+	test('a pretender does not apply to a tag that it takes for native', () => {
+		const document = createDocument('<button></button>', {
+			...options,
+			pretenders: [{ selector: 'button', as: 'img' }],
+		});
+
+		expect(document.querySelector('button')?.pretenderContext).toBeNull();
+	});
+
+	test('a pretender does not apply to a native tag that has no specification, which the parser knows', () => {
+		const document = createDocument('<svg><mesh></mesh></svg>', {
+			...options,
+			pretenders: [{ selector: 'mesh', as: 'img' }],
+		});
+
+		expect(document.querySelector('mesh')?.pretenderContext).toBeNull();
+	});
+
+	// `as` names the element, not a tag to resolve: `as: 'marquee'` is the element whatever the parser's list holds
+	test('the element a pretender stands for is judged by the specification', () => {
+		const document = createDocument('<foo-bar></foo-bar>', {
+			...options,
+			pretenders: [{ selector: 'foo-bar', as: 'marquee' }],
+		});
+		const el = document.querySelector('marquee');
+
+		expect(el?.tagNameKind).toBe('native');
+		expect(el?.matches('Marquee')).toBe(false);
+	});
+
+	test('without it the specification guards the pretender: <marquee> is left as it is', () => {
+		const document = createDocument('<marquee></marquee>', {
+			componentNameVariants: true,
+			pretenders: [{ selector: 'marquee', as: 'img' }],
+		});
+
+		expect(document.querySelector('marquee')?.pretenderContext).toBeNull();
 	});
 });

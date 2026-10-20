@@ -53,6 +53,8 @@ export function createTestDocument<T extends RuleConfigValue = any, O extends Pl
 			tagNameCaseSensitive: usedParser.tagNameCaseSensitive,
 			componentNameVariants: usedParser.componentNameVariants,
 			isComponentName: usedParser.isComponentName?.bind(usedParser),
+			// Only a parser with a list of its own (Vue) has it, as against `isComponentName` that the base class has
+			isNativeTag: 'isNativeTag' in usedParser ? usedParser.isNativeTag?.bind(usedParser) : undefined,
 			attrNameCaseSensitive: usedParser.attrNameCaseSensitive,
 			attrNameRoute: usedParser.attrNameRoute,
 			...(options?.pretenders ? { pretenders: options.pretenders } : {}),
