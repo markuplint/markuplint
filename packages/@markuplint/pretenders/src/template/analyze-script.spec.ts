@@ -1,5 +1,7 @@
 import { describe, expect, test } from 'vitest';
 
+import ts from 'typescript';
+
 import { analyzeScript, createTemplatePropResolver } from './analyze-script.js';
 
 const locals = (framework: 'vue' | 'svelte' | 'astro', source: string) => [
@@ -7,6 +9,20 @@ const locals = (framework: 'vue' | 'svelte' | 'astro', source: string) => [
 ];
 
 describe('analyzeScript: Vue <script setup>', () => {
+	test.each([
+		['a list', 'const render = () => <ul><li>x</li></ul>'],
+		['an arrow function in children', 'const render = () => <ul>{items.map(i => <li key={i}>{i}</li>)}</ul>'],
+		['a fragment', 'const render = () => <><A /></>'],
+	])('reads defineProps after JSX (%s) of a script with lang="tsx" (issue #4322)', (_, jsx) => {
+		const props = analyzeScript('vue', `${jsx}\ndefineProps<{ label: string }>()`, ts.ScriptKind.TSX);
+		expect([...props.locals.entries()]).toStrictEqual([['label', 'label']]);
+	});
+
+	test('reads the declarations that follow JSX in a script of the kind it is given, for `jsx` too', () => {
+		const props = analyzeScript('vue', 'const r = () => <><A /></>\ndefineProps(["label"])', ts.ScriptKind.JSX);
+		expect([...props.locals.entries()]).toStrictEqual([['label', 'label']]);
+	});
+
 	test('the array form of defineProps', () => {
 		expect(locals('vue', "defineProps(['label', 'title'])")).toStrictEqual([
 			['label', 'label'],

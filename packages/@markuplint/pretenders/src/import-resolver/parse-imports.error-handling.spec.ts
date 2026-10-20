@@ -68,6 +68,47 @@ describe('parseImports error handling', () => {
 			await expect(parseImports('# Hello')).resolves.toStrictEqual([]);
 		});
 
+		test('a source the lexer cannot read is read with the TypeScript parser instead', async () => {
+			lexer.parse.mockImplementation(() => {
+				throw Object.assign(new Error('Parse error @:1:3'), { idx: 2 });
+			});
+			const parseImports = await loadParseImports();
+
+			await expect(
+				parseImports(
+					"const n: number = 1\nimport Item from './Item.vue'\nconst Slow = lazy(() => import('./Slow.vue'))",
+				),
+			).resolves.toStrictEqual([
+				{ localName: 'Item', importedName: 'default', source: './Item.vue', type: 'default' },
+				{ localName: 'Slow', importedName: 'default', source: './Slow.vue', type: 'dynamic' },
+			]);
+		});
+
+		test('a source the TypeScript parser finds a syntax error in has no bindings', async () => {
+			lexer.parse.mockImplementation(() => {
+				throw Object.assign(new Error('Parse error @:1:3'), { idx: 2 });
+			});
+			const parseImports = await loadParseImports();
+
+			await expect(parseImports("import Item from './Item.vue'\nconst = ;")).resolves.toStrictEqual([]);
+		});
+
+		test('the TypeScript parser reads JSX when the script kind says so', async () => {
+			lexer.parse.mockImplementation(() => {
+				throw Object.assign(new Error('Parse error @:1:3'), { idx: 2 });
+			});
+			const [parseImports, { default: ts }] = await Promise.all([loadParseImports(), import('typescript')]);
+
+			await expect(
+				parseImports(
+					"const r = () => <>{a.map(i => <b />)}</>\nimport Item from './Item.vue'",
+					ts.ScriptKind.TSX,
+				),
+			).resolves.toStrictEqual([
+				{ localName: 'Item', importedName: 'default', source: './Item.vue', type: 'default' },
+			]);
+		});
+
 		test.each([
 			['TypeError', new TypeError('broken invariant')],
 			['ReferenceError', new ReferenceError('broken invariant')],

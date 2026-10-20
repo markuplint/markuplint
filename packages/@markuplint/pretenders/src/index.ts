@@ -101,4 +101,5 @@ export type {
 	ComponentScanResult,
 	ComponentScanAttr,
 	ComponentScanScriptSource,
+	ComponentScanTemplateImport,
 } from './component-scanner.js';

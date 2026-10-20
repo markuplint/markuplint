@@ -63,6 +63,12 @@ export interface ComponentScanSlotWrapper {
 export interface ComponentScanScriptSource {
 	readonly content: string;
 	readonly offset: number;
+	/**
+	 * The `lang` attribute of the block as written (`tsx`, `ts`). The language a block is written in is
+	 * the block's own declaration (https://vuejs.org/api/sfc-spec.html#pre-processors), which decides
+	 * whether the script holds JSX. Absent when the block has none.
+	 */
+	readonly lang?: string;
 }
 
 function extractComponentInfo(
@@ -364,10 +370,32 @@ function extractVueScriptSetup(source: string): ComponentScanScriptSource | null
 		return null;
 	}
 
+	const lang = langOf(startTag);
+
 	return {
 		content: remaining.slice(0, endMatch.index),
 		offset: contentStart,
+		...(lang ? { lang } : {}),
 	};
+}
+
+/**
+ * The value of the `lang` attribute of a start tag. The attributes are read one by one, so that
+ * ` lang='tsx'` inside the quoted value of another attribute is not one.
+ *
+ * `@markuplint/pretenders` reads the `lang` of the other `<script>` block with the same function
+ * (`extractVueScript`), which it cannot import from here (a parser package is loaded by it
+ * dynamically, never imported), so a change to one is a change to the other.
+ */
+function langOf(startTag: string): string | undefined {
+	for (const [, name, double, single, bare] of startTag.matchAll(
+		/\s([^\s"'<>/=]+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+)))?/g,
+	)) {
+		if (name?.toLowerCase() === 'lang') {
+			return double ?? single ?? bare;
+		}
+	}
+	return undefined;
 }
 
 /**

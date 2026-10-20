@@ -80,8 +80,17 @@ export type ScriptProps = {
  *
  * A script that is missing or cannot be read says nothing: its template attributes
  * stay `{ dynamic: true }`.
+ *
+ * @param framework - The language of the component file
+ * @param source - The source of its script block
+ * @param scriptKind - How to read the script: a block that declares `lang="tsx"` or `lang="jsx"` holds
+ *   JSX, which `ScriptKind.TS` reads into a tree that has lost what follows it
  */
-export function analyzeScript(framework: Framework, source: string | undefined): ScriptProps {
+export function analyzeScript(
+	framework: Framework,
+	source: string | undefined,
+	scriptKind: ts.ScriptKind = ScriptKind.TS,
+): ScriptProps {
 	const locals = new Map<string, string>();
 	const objects = new Set<string>(BUILTIN_OBJECTS[framework]);
 	const rests = new Set<string>(BUILTIN_REST[framework]);
@@ -91,7 +100,7 @@ export function analyzeScript(framework: Framework, source: string | undefined):
 		return { locals, objects, rests };
 	}
 
-	const sourceFile = createSourceFile('component-script.ts', source, ScriptTarget.Latest, false, ScriptKind.TS);
+	const sourceFile = createSourceFile('component-script', source, ScriptTarget.Latest, false, scriptKind);
 
 	for (const statement of sourceFile.statements) {
 		if (isExpressionStatement(statement)) {

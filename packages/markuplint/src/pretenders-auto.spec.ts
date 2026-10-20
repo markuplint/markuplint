@@ -281,6 +281,110 @@ describe('pretenders.auto with a lazily loaded component', () => {
 
 		expect(violations).toStrictEqual([]);
 	});
+
+	test('a lazy component whose loader function is held in a variable is checked against its children (issue #4359)', async () => {
+		await writeFile(
+			path.join(tmpDir, 'Item.tsx'),
+			'export const Item = () => <img src="x.png" />;\nexport default Item;',
+		);
+		const wrapperPath = path.join(tmpDir, 'Wrapper.tsx');
+		await writeFile(
+			wrapperPath,
+			[
+				"import { lazy } from 'react';",
+				"const load = () => import('./Item');",
+				'const Foo = lazy(load);',
+				'export const Wrapper = () => <div><Foo><span>c</span></Foo></div>;',
+			].join('\n'),
+		);
+
+		const { violations } = await mlTestFile(wrapperPath, {
+			...jsxParserConfig,
+			pretenders: { auto: true },
+			rules: { 'permitted-contents': true },
+		});
+
+		expect(violations).toStrictEqual([
+			expect.objectContaining({ ruleId: 'permitted-contents', severity: 'error', raw: '<Foo>' }),
+		]);
+	});
+
+	test('a lazy component whose loader function is a declaration that two components share is checked under both names (issue #4359)', async () => {
+		await writeFile(
+			path.join(tmpDir, 'Item.tsx'),
+			'export const Item = () => <img src="x.png" />;\nexport default Item;',
+		);
+		const wrapperPath = path.join(tmpDir, 'Wrapper.tsx');
+		await writeFile(
+			wrapperPath,
+			[
+				"import { lazy } from 'react';",
+				"function load() { return import('./Item'); }",
+				'const A = lazy(load);',
+				'const B = lazy(load);',
+				'export const Wrapper = () => <div><A><span>c</span></A><B><span>c</span></B></div>;',
+			].join('\n'),
+		);
+
+		const { violations } = await mlTestFile(wrapperPath, {
+			...jsxParserConfig,
+			pretenders: { auto: true },
+			rules: { 'permitted-contents': true },
+		});
+
+		expect(violations).toStrictEqual([
+			expect.objectContaining({ ruleId: 'permitted-contents', severity: 'error', raw: '<A>' }),
+			expect.objectContaining({ ruleId: 'permitted-contents', severity: 'error', raw: '<B>' }),
+		]);
+	});
+
+	test('a component loaded with `{#await import(...)}` in a Svelte template is checked against its children (issue #4327)', async () => {
+		await writeFile(path.join(tmpDir, 'Item.svelte'), '<img src="x.png" />');
+		const appPath = path.join(tmpDir, 'App.svelte');
+		await writeFile(
+			appPath,
+			[
+				"{#await import('./Item.svelte') then { default: Item }}",
+				'  <Item><span>c</span></Item>',
+				'{/await}',
+			].join('\n'),
+		);
+
+		const { violations } = await mlTestFile(appPath, {
+			parser: { '\\.svelte$': '@markuplint/svelte-parser' },
+			pretenders: { auto: true },
+			rules: { 'permitted-contents': true },
+		});
+
+		expect(violations).toStrictEqual([
+			expect.objectContaining({ ruleId: 'permitted-contents', severity: 'error', raw: '<Item>' }),
+		]);
+	});
+
+	test('a component imported in a Vue script with `lang="tsx"` that holds JSX is checked against its children (issue #4322)', async () => {
+		await writeFile(path.join(tmpDir, 'Item.vue'), '<template><img src="x.png" /></template>');
+		const appPath = path.join(tmpDir, 'App.vue');
+		await writeFile(
+			appPath,
+			[
+				'<script setup lang="tsx">',
+				"import Item from './Item.vue'",
+				'const render = () => <ul>{[1].map(i => <li key={i}>{i}</li>)}</ul>',
+				'</script>',
+				'<template><div><Item><span>c</span></Item></div></template>',
+			].join('\n'),
+		);
+
+		const { violations } = await mlTestFile(appPath, {
+			parser: { '\\.vue$': '@markuplint/vue-parser' },
+			pretenders: { auto: true },
+			rules: { 'permitted-contents': true },
+		});
+
+		expect(violations).toStrictEqual([
+			expect.objectContaining({ ruleId: 'permitted-contents', severity: 'error', raw: '<Item>' }),
+		]);
+	});
 });
 
 /**

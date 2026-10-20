@@ -8,6 +8,7 @@ import path from 'node:path';
 
 import { isTrivialContents } from '../contents.js';
 import { createScanner } from '../create-scanner.js';
+import { scriptKindForJsxLang } from '../import-resolver/analyze-jsx-imports.js';
 import { analyzeImports } from '../import-resolver/index.js';
 import { normalizePath, recordDependency } from '../import-resolver/resolve-module-file.js';
 import { PretenderDirector } from '../pretender-director.js';
@@ -136,7 +137,11 @@ export const templateScanner = createScanner<PretenderScanTemplateOptions>(async
 
 		const relFilePath = normalizePath(path.relative(cwd, filePath));
 
-		const props = analyzeScript(framework, scan.scriptSource?.content);
+		const props = analyzeScript(
+			framework,
+			scan.scriptSource?.content,
+			scriptKindForJsxLang(scan.scriptSource?.lang) ?? undefined,
+		);
 		const resolveProp = createTemplatePropResolver(framework, props);
 		const isInherit = isInheritingAttrs(framework, scan, props, sourceCode);
 

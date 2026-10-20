@@ -7,12 +7,18 @@
  *
  * Uses es-module-lexer (WASM-based) to identify import specifiers, then
  * supplements with regex parsing on statement slices to extract local names.
+ * es-module-lexer does not read every JSX, so a script block that declares `lang="tsx"` /
+ * `"jsx"` is read with the TypeScript parser from the start, as a `.tsx` file is, and a source the
+ * lexer rejects (MDX's ESM that holds JSX, markdown) is read with it when it finds no syntax error.
  *
  * ## Supported frameworks
  *
  * - Vue `<script setup>` (via `@markuplint/vue-parser/component-scanner`)
  * - Vue Options API `components` property (fallback; uses built-in regex extraction)
- * - Svelte `<script>` tags (via `@markuplint/svelte-parser/component-scanner`)
+ * - Svelte `<script>` tags (via `@markuplint/svelte-parser/component-scanner`), and the
+ *   `{#await import('./C.svelte') then { default: C }}` blocks of the template (its scanner's
+ *   `extractTemplateImports`), read as the `const { default: C } = await import('./C.svelte')`
+ *   they stand for
  * - Astro frontmatter (via `@markuplint/astro-parser/component-scanner`)
  * - MDX top-level ESM (built-in extraction — no parser package)
  *
@@ -65,7 +71,7 @@ import {
 	loadComponentNameRule,
 } from '../scanner-loader.js';
 
-import { collectImportBindings, scriptKindForPath } from './analyze-jsx-imports.js';
+import { collectImportBindings, scriptKindForJsxLang, scriptKindForPath } from './analyze-jsx-imports.js';
 import { extractVueScript, extractVueOptionsApiRegistrations, extractMdxEsm } from './extract-script-source.js';
 import { parseImports } from './parse-imports.js';
 export { resolveBarrelExport } from './resolve-barrel.js';
@@ -122,6 +128,20 @@ async function extractScriptSource(
 }
 
 /**
+ * The bindings of a script block. A block that declares `lang="tsx"` or `lang="jsx"` holds JSX,
+ * which es-module-lexer cannot read whatever the JSX is, so it is read with the TypeScript parser
+ * as a `.tsx` file is; any other block goes to {@link parseImports}.
+ */
+function parseScript(
+	block: Readonly<{ content: string; lang?: string }>,
+): Promise<readonly ImportBinding[]> | readonly ImportBinding[] {
+	const scriptKind = scriptKindForJsxLang(block.lang);
+	return scriptKind === null
+		? parseImports(block.content)
+		: collectImportBindings(ts.createSourceFile('script', block.content, ts.ScriptTarget.Latest, true, scriptKind));
+}
+
+/**
  * Analyzes a component file's source text and extracts all import bindings, including
  * dynamic `import('...')` calls with a string literal specifier.
  * Automatically detects the framework type from the file extension and delegates
@@ -153,18 +173,46 @@ export async function analyzeImports(filePath: string, source: string): Promise<
 		if (!scriptSource) {
 			return analyzeVueOptionsApi(source);
 		}
-		const bindings = await parseImports(scriptSource.content);
+		const bindings = await parseScript(scriptSource);
 		return { bindings };
 	}
 
 	const scriptSource = await extractScriptSource(filePath, source, framework);
+	// The imports of the template (Svelte's `{#await import(...)}`) come after those of the script,
+	// which a file may not have.
+	const templateBindings = await analyzeTemplateImports(filePath, source);
 	if (!scriptSource) {
-		return { bindings: [] };
+		return { bindings: templateBindings };
 	}
 
 	// MDX's ESM may hold JSX (`export const meta = <X />`), so it is read as TSX.
 	const bindings = await parseImports(scriptSource.content, framework === 'mdx' ? ts.ScriptKind.TSX : undefined);
-	return { bindings };
+	return { bindings: [...bindings, ...templateBindings] };
+}
+
+/**
+ * The bindings of the expressions of the template that load a module (`{#await import('./C.svelte') then
+ * { default: C }}`), for a language whose scanner reports them (`extractTemplateImports`). Each is read
+ * as the script it stands for, `const { default: C } = await import('./C.svelte')`, so that the names
+ * come out of the one rule that reads them there (`dynamicImportNames` of `./dynamic-import-name.ts`), and one at a time, so that
+ * two blocks that bind the same name do not declare it twice. The statement sits in an `async` function
+ * so that `await` is one wherever the expression starts.
+ */
+async function analyzeTemplateImports(filePath: string, source: string): Promise<readonly ImportBinding[]> {
+	const scanner = await getScanner(path.extname(filePath).toLowerCase());
+	const blocks = scanner?.extractTemplateImports?.(source) ?? [];
+	return blocks.flatMap(({ expression, value }) => {
+		const statement = value === undefined ? `await ${expression};` : `const ${value} = await ${expression};`;
+		return collectImportBindings(
+			ts.createSourceFile(
+				'template',
+				`(async () => { ${statement} });`,
+				ts.ScriptTarget.Latest,
+				true,
+				ts.ScriptKind.TS,
+			),
+		);
+	});
 }
 
 /**
@@ -200,7 +248,7 @@ export async function collectReferencedModules(filePath: string, source: string)
 			if (!esm) {
 				return [];
 			}
-			const bindings = await parseImports(esm.content);
+			const bindings = await parseImports(esm.content, ts.ScriptKind.TSX);
 			// MDX ESM may hold JSX (`export const meta = <X />`), so it is parsed as TSX.
 			return distinct([...bindings.map(b => b.source), ...reExportSources(parseJsLike('esm.tsx', esm.content))]);
 		}
@@ -232,8 +280,11 @@ async function analyzeVueOptionsApi(source: string): Promise<ImportAnalysisResul
 		return { bindings: [] };
 	}
 
-	const allBindings = await parseImports(scriptBlock.content);
-	const registrations = extractVueOptionsApiRegistrations(scriptBlock.content);
+	const allBindings = await parseScript(scriptBlock);
+	const registrations = extractVueOptionsApiRegistrations(
+		scriptBlock.content,
+		scriptKindForJsxLang(scriptBlock.lang) ?? undefined,
+	);
 
 	if (registrations.length === 0) {
 		return { bindings: [] };

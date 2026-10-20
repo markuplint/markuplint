@@ -4,6 +4,14 @@
  * Extracts import bindings from ESM source text using es-module-lexer.
  * Since es-module-lexer provides specifier positions but not local binding names,
  * regex parsing on the statement slices supplements the extraction.
+ *
+ * es-module-lexer reads JavaScript and TypeScript (`enum`, annotations and `satisfies` pass
+ * through), but not JSX: it throws on a source whose JSX it cannot tokenize (`{items.map(i =>
+ * <li />)}`, a fragment, an apostrophe in JSX text), and on markdown in MDX
+ * (https://github.com/guybedford/es-module-lexer#readme). A source it rejects is read with the
+ * TypeScript parser (`collectImportBindings`) when that finds no syntax error, under the script
+ * kind the caller gives (`ts.ScriptKind.TSX` for JSX), so the imports are not lost to the lexer's
+ * limits; a source that is broken, or JSX read as TypeScript, has no bindings.
  */
 
 import type { DynamicImportName } from './dynamic-import-name.js';
@@ -13,7 +21,8 @@ import { isFatalError } from '@markuplint/shared';
 import { init, parse } from 'es-module-lexer';
 import ts from 'typescript';
 
-import { dynamicImportName } from './dynamic-import-name.js';
+import { collectImportBindings } from './analyze-jsx-imports.js';
+import { dynamicBindings, dynamicImportNames } from './dynamic-import-name.js';
 
 /** Matches `import type` — TypeScript type-only import (no runtime binding) */
 const RE_TYPE_ONLY_IMPORT = /^import\s+type\s/;
@@ -167,21 +176,67 @@ function extractBindingsFromStatement(statementText: string, source: string): Im
 }
 
 /**
- * The names {@link dynamicImportName} gives the dynamic `import()` calls of `source`, by the
+ * The extension of the file name that tells the TypeScript parser how to read the source, for the
+ * script kinds this module is given (`ts.ScriptKind.TS` by default, `TSX` for MDX, and `TSX` / `JSX`
+ * of a script block's `lang`); any other kind reads as `.ts`.
+ */
+const EXTENSIONS: ReadonlyMap<ts.ScriptKind, string> = new Map([
+	[ts.ScriptKind.TS, '.ts'],
+	[ts.ScriptKind.TSX, '.tsx'],
+	[ts.ScriptKind.JS, '.js'],
+	[ts.ScriptKind.JSX, '.jsx'],
+]);
+
+/**
+ * The source parsed by the TypeScript parser, or `null` when it finds a syntax error in it. The
+ * syntactic diagnostics are asked of a program that holds that one file (no library, nothing
+ * resolved), which is the public way to get them (`parseDiagnostics` of the source file is internal)
+ * and parses the source once. It runs only for a source the lexer has rejected, which is the
+ * exception except for MDX, whose markdown the lexer rejects whenever the file has any.
+ */
+function parseWithoutSyntaxError(source: string, scriptKind: ts.ScriptKind): ts.SourceFile | null {
+	const fileName = `script${EXTENSIONS.get(scriptKind) ?? '.ts'}`;
+	const sourceFile = ts.createSourceFile(fileName, source, ts.ScriptTarget.Latest, true, scriptKind);
+	const program = ts.createProgram({
+		rootNames: [fileName],
+		options: {
+			noLib: true,
+			noResolve: true,
+			allowJs: true,
+			jsx: ts.JsxEmit.Preserve,
+			target: ts.ScriptTarget.Latest,
+		},
+		host: {
+			getSourceFile: name => (name === fileName ? sourceFile : undefined),
+			getDefaultLibFileName: () => 'lib.d.ts',
+			writeFile: () => {},
+			getCurrentDirectory: () => '',
+			getCanonicalFileName: name => name,
+			useCaseSensitiveFileNames: () => true,
+			getNewLine: () => '\n',
+			fileExists: name => name === fileName,
+			readFile: () => {},
+		},
+	});
+	return program.getSyntacticDiagnostics(sourceFile).length === 0 ? sourceFile : null;
+}
+
+/**
+ * The names {@link dynamicImportNames} gives the dynamic `import()` calls of `source`, by the
  * position of their `import` keyword, which is where es-module-lexer reports them (`importStart`).
  * es-module-lexer has no notion of what a call is assigned to, so the source is read once more,
  * with the TypeScript parser: it is done only for a source that has a dynamic import to name.
  */
-function dynamicImportNames(source: string, scriptKind: ts.ScriptKind): ReadonlyMap<number, DynamicImportName> {
-	const names = new Map<number, DynamicImportName>();
+function namesOfDynamicImports(
+	source: string,
+	scriptKind: ts.ScriptKind,
+): ReadonlyMap<number, readonly DynamicImportName[]> {
+	const names = new Map<number, readonly DynamicImportName[]>();
 	const sourceFile = ts.createSourceFile('script', source, ts.ScriptTarget.Latest, true, scriptKind);
 
 	const visit = (node: ts.Node) => {
 		if (ts.isCallExpression(node) && node.expression.kind === ts.SyntaxKind.ImportKeyword) {
-			const name = dynamicImportName(node);
-			if (name) {
-				names.set(node.getStart(sourceFile), name);
-			}
+			names.set(node.getStart(sourceFile), dynamicImportNames(node));
 		}
 		ts.forEachChild(node, visit);
 	};
@@ -212,13 +267,16 @@ export async function parseImports(
 		if (isFatalError(error)) {
 			throw error;
 		}
-		// Source may contain non-JS content (e.g., MDX with markdown); the lexer reports
-		// that as a plain `Error`. Return empty bindings rather than propagating it.
-		return [];
+		// The lexer reports what it cannot read as a plain `Error`: non-JS content (MDX with
+		// markdown), JSX it cannot tokenize, or source that is broken. The TypeScript parser reads
+		// the JSX (for the `scriptKind` that allows it), so those bindings are not dropped for the
+		// lexer's sake; a source it finds a syntax error in has no bindings, as a lexer error always had.
+		const sourceFile = parseWithoutSyntaxError(source, scriptKind);
+		return sourceFile ? collectImportBindings(sourceFile) : [];
 	}
 
 	const bindings: ImportBinding[] = [];
-	let namesOfDynamicImports: ReadonlyMap<number, DynamicImportName> | undefined;
+	let namesByPosition: ReadonlyMap<number, readonly DynamicImportName[]> | undefined;
 
 	for (const imp of imports) {
 		if (imp.type === 'import-meta') {
@@ -240,17 +298,11 @@ export async function parseImports(
 
 		if (imp.type === 'dynamic') {
 			// Dynamic import with a string literal specifier (e.g., `import('./Foo.vue')`)
-			// It has a local binding name only when it is assigned to one (see `dynamicImportName`);
+			// It has a local binding name only when it is assigned to one (see `dynamicImportNames`);
 			// otherwise we use '*' as a sentinel with `type: 'dynamic'`. The whole module read into a
 			// variable (`const UI = await import('./ui')`) is a `type: 'namespace'` binding.
-			namesOfDynamicImports ??= dynamicImportNames(source, scriptKind);
-			bindings.push({
-				localName: '*',
-				importedName: '*',
-				type: 'dynamic',
-				...namesOfDynamicImports.get(imp.importStart),
-				source: imp.specifier,
-			});
+			namesByPosition ??= namesOfDynamicImports(source, scriptKind);
+			bindings.push(...dynamicBindings(namesByPosition.get(imp.importStart) ?? [], imp.specifier));
 			continue;
 		}
 
