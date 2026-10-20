@@ -12,6 +12,12 @@ type State = {
 };
 
 /**
+ * ECMAScript `IdentifierStart`, as `JSXIdentifier` starts (https://facebook.github.io/jsx/#prod-JSXIdentifier).
+ * `@markuplint/mdx-parser` has the same constant: keep the two in step.
+ */
+const JSX_IDENTIFIER_START = /^[\p{ID_Start}$_]/u;
+
+/**
  * Unlike most framework parsers, this extends the base `Parser` class directly
  * rather than `HtmlParser`: tokenization is done by
  * `@typescript-eslint/typescript-estree` instead of parse5, so the HTML-specific
@@ -318,20 +324,32 @@ class JSXParser extends Parser<JSXNode, State> {
 	 * > If you do have a component that starts with a lowercase letter,
 	 * > assign it to a capitalized variable before using it in JSX.
 	 *
+	 * A name is a component's by `isComponentName` below, which also takes `$`, `_` and a non-ASCII
+	 * initial, and not a name with a `-`.
+	 *
 	 * @see https://reactjs.org/docs/jsx-in-depth.html#user-defined-components-must-be-capitalized
 	 */
 	detectElementType(nodeName: string) {
-		return super.detectElementType(nodeName, /^[A-Z]|\./);
+		return super.detectElementType(nodeName, (name: string) => this.isComponentName(name));
+	}
+
+	/**
+	 * A JSX element name starts with an ECMAScript `IdentifierStart`: `$`, `_` and a letter of any
+	 * script, not only an ASCII letter. The tag scanner of `@markuplint/parser-utils` reads a tag
+	 * only after this says so, so `<$Ui>`, `<_Ui>` and `<Éa>` are elements named as written.
+	 *
+	 * @see https://facebook.github.io/jsx/#prod-JSXIdentifier
+	 */
+	isTagNameStart(char: string): boolean {
+		return JSX_IDENTIFIER_START.test(char);
 	}
 
 	/**
 	 * A JSX element name is a component, a reference to a variable, unless it starts with a lowercase
 	 * ASCII letter or has a `-`; a `.` makes it a member expression. That is what the JSX compilers
 	 * decide (`isIntrinsicJsxName` of TypeScript is `ch >= 'a' && ch <= 'z' || name.includes('-')`), so
-	 * `_Layout`, `$Ui` and `Ärger` are components, though `detectElementType` above takes only a capital
-	 * ASCII letter for one: the tag scanner of `@markuplint/parser-utils` reads a tag only when it starts with
-	 * an ASCII letter, so none of these names reaches it as a tag, while an import of such a name is a
-	 * binding that a tag may name.
+	 * `_Layout`, `$Ui` and `Ärger` are components, and `detectElementType` above asks this method, so
+	 * the element type of a tag and the binding of an import of the same name agree.
 	 *
 	 * A name of a custom element (`my-widget.v2`) and the name of a fragment (`#jsx-fragment`) are not.
 	 *
@@ -344,7 +362,7 @@ class JSXParser extends Parser<JSXNode, State> {
 		if (isPotentialCustomElementName(name)) {
 			return false;
 		}
-		return name.includes('.') || (/^[\p{ID_Start}$_]/u.test(name) && !/^[a-z]/.test(name) && !name.includes('-'));
+		return name.includes('.') || (JSX_IDENTIFIER_START.test(name) && !/^[a-z]/.test(name) && !name.includes('-'));
 	}
 }
 
