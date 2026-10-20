@@ -3,7 +3,7 @@ import type { Violation } from '@markuplint/ml-config';
 import type { PositionedNode, ScopedNode } from './compute-scope.js';
 import type { SuppressionEntry, SuppressionsData } from './types.js';
 
-import { findNodeAtPosition } from './compute-scope.js';
+import { findNodeAtPosition, splitScopeIdents } from './compute-scope.js';
 import { toRelativePath } from './suppressions-file.js';
 
 /**
@@ -43,13 +43,16 @@ function isViolationInScope(
 		return false;
 	}
 
+	// The scope is read once, not once per ancestor
+	const segments = scope.split(' > ').map(segment => parseSegment(segment));
+
 	// Check the node itself and walk up ancestors
-	if (matchesScopeSelector(violationNode, scope)) {
+	if (matchesScopeSelector(violationNode, segments)) {
 		return true;
 	}
 	let current = violationNode.parentElement;
 	while (current) {
-		if (matchesScopeSelector(current, scope)) {
+		if (matchesScopeSelector(current, segments)) {
 			return true;
 		}
 		current = current.parentElement;
@@ -58,9 +61,61 @@ function isViolationInScope(
 	return false;
 }
 
+/**
+ * A segment of a scope as it is read.
+ *
+ * - `id`: `#id`
+ * - `attr`: `tag[attr="value"]`
+ * - `compound`: `tag.classA.classB` with an optional `:nth-of-type(n)`
+ * - `null`: an empty segment, which matches no node
+ */
+type ScopeSegment =
+	| { readonly kind: 'id'; readonly id: string }
+	| { readonly kind: 'attr'; readonly tag: string; readonly attrName: string; readonly attrValue: string }
+	| {
+			readonly kind: 'compound';
+			readonly tag: string;
+			readonly classes: readonly string[];
+			readonly nth: number | null;
+	  }
+	| null;
+
+function parseSegment(segment: string): ScopeSegment {
+	if (segment.length === 0) {
+		return null;
+	}
+
+	// #id
+	if (segment.startsWith('#')) {
+		return { kind: 'id', id: segment.slice(1) };
+	}
+
+	// tag[attr="value"]: the tag is the `localName` with a capital letter (`FooBar`), a digit (`h1`) or an escaped `.`
+	// The tag is a run of: an escape pair (`\.`, `\#`, `\[`, `\\`), a `\` that is no escape (a file written before
+	// the escape: `Foo\bar`), or any other character but `[`, `]` and `"`. So `Foo\[x="y"]` is no attribute: its `[` is escaped.
+	const attrMatch = /^((?:\\[.#[\\]|\\(?![.#[\\])|[^[\\\]"])+)\[([a-z-]+)="([^"]+)"\]$/.exec(segment);
+	if (attrMatch) {
+		const [, tag, attrName, attrValue] = attrMatch;
+		return { kind: 'attr', tag: splitScopeIdents(tag!).join('.'), attrName: attrName!, attrValue: attrValue! };
+	}
+
+	// Extract :nth-of-type(n) if present
+	const nthMatch = /:nth-of-type\((\d+)\)$/.exec(segment);
+	const baseSegment = nthMatch ? segment.slice(0, nthMatch.index) : segment;
+
+	// tag.classA.classB
+	// A `.` of a name is escaped (`Tabs\.Root`), so only an unescaped one starts a class.
+	const [tag, ...classes] = splitScopeIdents(baseSegment);
+	return {
+		kind: 'compound',
+		tag: tag!,
+		classes,
+		nth: nthMatch ? Number.parseInt(nthMatch[1]!, 10) : null,
+	};
+}
+
 // eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-function matchesScopeSelector(node: ScopedNode, scope: string): boolean {
-	const segments = scope.split(' > ');
+function matchesScopeSelector(node: ScopedNode, segments: readonly ScopeSegment[]): boolean {
 	let current: ScopedNode | null = node;
 
 	// Match segments from right (most specific) to left (ancestors)
@@ -78,55 +133,36 @@ function matchesScopeSelector(node: ScopedNode, scope: string): boolean {
 }
 
 // eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-function matchesSegment(node: ScopedNode, segment: string): boolean {
-	if (segment.length === 0) {
+function matchesSegment(node: ScopedNode, segment: ScopeSegment): boolean {
+	if (segment === null) {
 		return false;
 	}
 
-	// #id
-	if (segment.startsWith('#')) {
-		const id = segment.slice(1);
-		return id.length > 0 && node.id === id;
+	if (segment.kind === 'id') {
+		return segment.id.length > 0 && node.id === segment.id;
 	}
 
-	// tag[attr="value"]: the tag is the `localName` as it is, with a capital letter (`FooBar`) or a digit (`h1`)
-	const attrMatch = /^([^[\]"]+)\[([a-z-]+)="([^"]+)"\]$/.exec(segment);
-	if (attrMatch) {
-		const [, tag, attrName, attrValue] = attrMatch;
-		if (node.localName !== tag) {
+	if (segment.kind === 'attr') {
+		if (node.localName !== segment.tag) {
 			return false;
 		}
 		for (const attr of node.attributes) {
-			if (attr.name === attrName && attr.value === attrValue) {
+			if (attr.name === segment.attrName && attr.value === segment.attrValue) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	// Extract :nth-of-type(n) if present
-	const nthMatch = /:nth-of-type\((\d+)\)$/.exec(segment);
-	const baseSegment = nthMatch ? segment.slice(0, nthMatch.index) : segment;
-
-	// tag.classA.classB
-	const dotIndex = baseSegment.indexOf('.');
-	let tagMatches: boolean;
-	if (dotIndex === -1) {
-		// tag only
-		tagMatches = node.localName === baseSegment;
-	} else {
-		const tag = baseSegment.slice(0, dotIndex);
-		const classes = baseSegment.slice(dotIndex + 1).split('.');
-		tagMatches = node.localName === tag && classes.every(cls => node.classList.contains(cls));
-	}
+	const tagMatches = node.localName === segment.tag && segment.classes.every(cls => node.classList.contains(cls));
 
 	if (!tagMatches) {
 		return false;
 	}
 
 	// Check nth-of-type position
-	if (nthMatch) {
-		const expectedPosition = Number.parseInt(nthMatch[1]!, 10);
+	if (segment.nth !== null) {
+		const expectedPosition = segment.nth;
 		const parent = node.parentElement;
 		if (!parent) {
 			return false;

@@ -302,6 +302,79 @@ describe('compute-scope', () => {
 			const nav = find(multiClassTree, 'nav')!;
 			expect(generateUniqueSelector(nav)).toBe('nav.main.sticky');
 		});
+
+		it('escapes a `.` of an element name, as CSS does', () => {
+			const dotted = buildTree({
+				tag: 'html',
+				children: [{ tag: 'body', children: [{ tag: 'div', children: [{ tag: 'Tabs.Root' }] }] }],
+			});
+			expect(generateUniqueSelector(find(dotted, 'Tabs.Root')!)).toBe(String.raw`div > Tabs\.Root`);
+		});
+
+		it('escapes a `.` of an element name that has a class', () => {
+			const dotted = buildTree({
+				tag: 'html',
+				children: [{ tag: 'body', children: [{ tag: 'Tabs.Root', classes: ['active'] }] }],
+			});
+			expect(generateUniqueSelector(find(dotted, 'Tabs.Root')!)).toBe(String.raw`Tabs\.Root.active`);
+		});
+
+		it('escapes a `.` of a class name', () => {
+			const dotted = buildTree({
+				tag: 'html',
+				children: [{ tag: 'body', children: [{ tag: 'div', classes: ['py-1.5'] }] }],
+			});
+			expect(generateUniqueSelector(find(dotted, 'div')!)).toBe(String.raw`div.py-1\.5`);
+		});
+
+		it('escapes a `\\` of an element name, the escape itself', () => {
+			const backslash = buildTree({
+				tag: 'html',
+				children: [{ tag: 'body', children: [{ tag: String.raw`Foo\bar` }] }],
+			});
+			expect(generateUniqueSelector(find(backslash, String.raw`Foo\bar`)!)).toBe(String.raw`Foo\\bar`);
+		});
+
+		it('escapes a `#` of an element name, which a scope reads as an id when it starts a segment', () => {
+			const fragment = buildTree({
+				tag: 'html',
+				children: [{ tag: 'body', children: [{ tag: 'div', children: [{ tag: '#jsx-fragment' }] }] }],
+			});
+			expect(generateUniqueSelector(find(fragment, '#jsx-fragment')!)).toBe(String.raw`div > \#jsx-fragment`);
+		});
+
+		it('escapes a `[` of a class name, as `[state="open"]` ends a segment as an attribute', () => {
+			const bracket = buildTree({
+				tag: 'html',
+				children: [{ tag: 'body', children: [{ tag: 'div', classes: ['group-[x="y"]'] }] }],
+			});
+			expect(generateUniqueSelector(find(bracket, 'div')!)).toBe(String.raw`div.group-\[x="y"]`);
+		});
+
+		it('does not use an attribute whose value a scope cannot hold: `"` and ` > `', () => {
+			const quoted = buildTree({
+				tag: 'html',
+				children: [
+					{
+						tag: 'body',
+						children: [
+							{ tag: 'div', attrs: { role: 'a"b' } },
+							{ tag: 'p', attrs: { role: 'a > b' } },
+						],
+					},
+				],
+			});
+			expect(generateUniqueSelector(find(quoted, 'div')!)).toBe('div');
+			expect(generateUniqueSelector(find(quoted, 'p')!)).toBe('p');
+		});
+
+		it('escapes a `.` of an element name in `tag[attr="value"]`', () => {
+			const dotted = buildTree({
+				tag: 'html',
+				children: [{ tag: 'body', children: [{ tag: 'Tabs.Root', attrs: { role: 'tablist' } }] }],
+			});
+			expect(generateUniqueSelector(find(dotted, 'Tabs.Root')!)).toBe(String.raw`Tabs\.Root[role="tablist"]`);
+		});
 	});
 
 	describe('findNodeAtPosition', () => {

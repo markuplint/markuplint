@@ -52,6 +52,53 @@ export interface PositionedNode extends ScopedNode {
 
 const BODY_HTML_TAGS = new Set(['body', 'html']);
 
+/**
+ * @experimental
+ * Escapes the characters of a tag name or a class name that the scope reads as syntax: `.` starts a
+ * class (`Tabs.Root` is the element `Tabs` with the class `Root`), `#` at the start of a segment is an
+ * id (`#jsx-fragment` is the name of a JSX fragment), `[` starts an attribute (`group-[x="y"]` is a
+ * class of Tailwind), and `\` is the escape itself. The same escape as CSS (`Tabs\.Root`), so that
+ * what `generateUniqueSelector` writes and what {@link splitScopeIdents} reads are one form: an element
+ * named `Tabs.Root` (a member tag of JSX, MDX or Svelte) and a class such as Tailwind's `py-1.5` match
+ * the element they were made for.
+ *
+ * A scope file written before the escape holds these characters unescaped, and they still read as
+ * the syntax, because every scope that ever matched was written so. A scope for a name with a `.`
+ * never matched, except in the form `tag[attr="value"]`, whose tag has always been read as a name.
+ */
+function escapeScopeIdent(name: string): string {
+	return name.replaceAll(/[\\.#[]/g, String.raw`\$&`);
+}
+
+/** The characters that `\` escapes in a scope: the ones {@link escapeScopeIdent} writes. */
+const SCOPE_ESCAPED_CHARS = new Set(['\\', '.', '#', '[']);
+
+/**
+ * @experimental
+ * Splits a compound scope segment (`tag.classA.classB`) at its unescaped `.` and unescapes each part,
+ * the reading side of {@link generateUniqueSelector}. The first part is the tag, the rest are classes.
+ */
+export function splitScopeIdents(segment: string): string[] {
+	const parts: string[] = [''];
+	for (let i = 0; i < segment.length; i++) {
+		const char = segment[i]!;
+		// Only what is written is an escape: a file written before the escape may hold a `\` that is part of a name.
+		if (char === '\\' && SCOPE_ESCAPED_CHARS.has(segment[i + 1] ?? '')) {
+			parts[parts.length - 1] += segment[++i]!;
+		} else if (char === '.') {
+			parts.push('');
+		} else {
+			parts[parts.length - 1] += char;
+		}
+	}
+	return parts;
+}
+
+// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+function tagWithClasses(node: ScopedNode, classes: readonly string[]): string {
+	return [node.localName, ...classes].map(name => escapeScopeIdent(name)).join('.');
+}
+
 // eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 export function getAncestorChain(node: ScopedNode): ScopedNode[] {
 	const chain: ScopedNode[] = [];
@@ -142,7 +189,7 @@ export function generateUniqueSelector(node: ScopedNode): string | undefined {
 	// If this node has classes, use tag.classA.classB (all classes)
 	const classes = [...node.classList];
 	if (classes.length > 0) {
-		return `${node.localName}.${classes.join('.')}`;
+		return tagWithClasses(node, classes);
 	}
 
 	// If this node has a distinguishing attribute (role, or type for input),
@@ -163,7 +210,7 @@ export function generateUniqueSelector(node: ScopedNode): string | undefined {
 		}
 		const currentClasses = [...current.classList];
 		if (currentClasses.length > 0) {
-			parts.unshift(`${current.localName}.${currentClasses.join('.')}`);
+			parts.unshift(tagWithClasses(current, currentClasses));
 			break;
 		}
 		const currentAttr = getDistinguishingAttrSelector(current);
@@ -196,8 +243,9 @@ function getDistinguishingAttrSelector(node: ScopedNode): string | undefined {
 
 	for (const attrName of attrsToCheck) {
 		for (const attr of node.attributes) {
-			if (attr.name === attrName && attr.value) {
-				return `${node.localName}[${attrName}="${attr.value}"]`;
+			// A value with `"` or ` > ` cannot be held by `tag[attr="value"]`: a scope ends the value at `"` and splits at ` > `.
+			if (attr.name === attrName && attr.value && !attr.value.includes('"') && !attr.value.includes(' > ')) {
+				return `${escapeScopeIdent(node.localName)}[${attrName}="${attr.value}"]`;
 			}
 		}
 	}
@@ -208,8 +256,9 @@ function getDistinguishingAttrSelector(node: ScopedNode): string | undefined {
 // eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 function buildSegmentWithNth(node: ScopedNode): string {
 	const parent = node.parentElement;
+	const name = escapeScopeIdent(node.localName);
 	if (!parent) {
-		return node.localName;
+		return name;
 	}
 
 	// Count same-tag siblings and find this node's position
@@ -225,10 +274,10 @@ function buildSegmentWithNth(node: ScopedNode): string {
 	}
 
 	if (sameTagCount > 1) {
-		return `${node.localName}:nth-of-type(${position})`;
+		return `${name}:nth-of-type(${position})`;
 	}
 
-	return node.localName;
+	return name;
 }
 
 /**
