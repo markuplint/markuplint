@@ -1999,6 +1999,7 @@ __metadata:
     "@markuplint/html-parser": "npm:5.2.0"
     "@markuplint/ml-ast": "npm:5.1.1"
     "@markuplint/parser-utils": "npm:5.2.0"
+    "@markuplint/shared": "npm:5.2.0"
     svelte: "npm:^5.57.2"
   languageName: unknown
   linkType: soft

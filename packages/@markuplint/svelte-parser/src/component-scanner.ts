@@ -1,8 +1,12 @@
 import type { MLASTChildNode, MLASTDocument, MLASTElement, NamespaceURI } from '@markuplint/ml-ast';
 
+import type { SvelteAwaitBlock } from './svelte-parser/index.js';
+
 import { getNamespaceBelow } from '@markuplint/parser-utils';
+import { isFatalError } from '@markuplint/shared';
 
 import { parser } from './parser.js';
+import { svelteParse } from './svelte-parser/index.js';
 
 /**
  * Result of scanning a single component file for its root element information.
@@ -398,6 +402,87 @@ function extractSvelteScript(source: string): ComponentScanScriptSource | null {
 }
 
 /**
+ * An expression of the template that is read as script, with the pattern that binds its result:
+ * the `import('./C.svelte')` of `{#await import('./C.svelte') then { default: C }}`, as the source
+ * text of each.
+ *
+ * It has the shape of the type of the same name of `@markuplint/pretenders`
+ * (`ComponentScanner#extractTemplateImports`), which this package cannot import (the scanner is
+ * loaded by it dynamically); keep the two the same.
+ */
+export interface ComponentScanTemplateImport {
+	readonly expression: string;
+	/** The pattern of the `then` of the block (`{ default: C }`, `m`); absent when the block has none */
+	readonly value?: string;
+}
+
+/**
+ * The source text of a node of the script AST that Svelte parses an expression or a pattern of the
+ * template into. The types of its nodes (`estree`) do not declare the offsets, though the parser
+ * (acorn) sets them on every node.
+ */
+function textOf(source: string, node: object): string {
+	const { start, end } = node as { readonly start: number; readonly end: number };
+	return source.slice(start, end);
+}
+
+/**
+ * The `#await` blocks of the template, in source order, wherever they are (in another block, an
+ * element, a component, a snippet). Svelte documents `{#await import('./C.svelte') then { default: C }}`
+ * as the way to render a component lazily (https://svelte.dev/docs/svelte/await), and the script block
+ * does not hold it: whatever the expression of a block is, it is returned as written, and the
+ * reader decides whether it loads a module.
+ */
+function extractAwaitBlocks(source: string): ComponentScanTemplateImport[] {
+	// A source with no `{#await` has none, and is not parsed a second time for that
+	if (!/\{\s*#await\b/.test(source)) {
+		return [];
+	}
+
+	let nodes: unknown;
+	try {
+		nodes = svelteParse(source);
+	} catch (error: unknown) {
+		if (isFatalError(error)) {
+			throw error;
+		}
+		// The source is not Svelte (the compiler reports it as an `Error` of its own),
+		// which `scanComponent` reports as no component
+		return [];
+	}
+
+	const found: [start: number, block: ComponentScanTemplateImport][] = [];
+	const visit = (node: unknown) => {
+		if (Array.isArray(node)) {
+			for (const child of node) {
+				visit(child);
+			}
+			return;
+		}
+		if (typeof node !== 'object' || node === null) {
+			return;
+		}
+		const block = node as Partial<SvelteAwaitBlock>;
+		if (block.type === 'AwaitBlock' && block.expression) {
+			const { value } = block;
+			found.push([
+				(block as { readonly start: number }).start,
+				{
+					expression: textOf(source, block.expression),
+					...(value ? { value: textOf(source, value) } : {}),
+				},
+			]);
+		}
+		for (const child of Object.values(node)) {
+			visit(child);
+		}
+	};
+	visit(nodes);
+
+	return found.toSorted(([a], [b]) => a - b).map(([, block]) => block);
+}
+
+/**
  * Component scanner for Svelte component files.
  *
  * Parses a Svelte component using markuplint's Svelte parser, extracts the root
@@ -429,5 +514,9 @@ export const componentScanner = {
 
 	extractScriptSource(sourceCode: string): ComponentScanScriptSource | null {
 		return extractSvelteScript(sourceCode);
+	},
+
+	extractTemplateImports(sourceCode: string): ComponentScanTemplateImport[] {
+		return extractAwaitBlocks(sourceCode);
 	},
 };
