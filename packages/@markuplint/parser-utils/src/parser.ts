@@ -1211,11 +1211,29 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	 * given tag name, using the parser's authored element name distinguishing pattern.
 	 *
 	 * @param nodeName - The tag name to classify
-	 * @param defaultPattern - A fallback pattern if no authored element name pattern is set
+	 * @param defaultPattern - A fallback pattern if no authored element name pattern is set: a regular
+	 *   expression, a name, or a function (a parser of a language that decides by a rule passes
+	 *   `name => this.isComponentName(name)`)
 	 * @returns The element type classification
 	 */
 	detectElementType(nodeName: string, defaultPattern?: ParserAuthoredElementNameDistinguishing): ElementType {
 		return detectElementType(nodeName, this.#authoredElementName, defaultPattern);
+	}
+
+	/**
+	 * Whether a character can be the first of a tag name, where the tag scanner reads a `<` followed by it as a
+	 * start tag. Anything else after a `<` leaves it as text (`a < b`, `<3`).
+	 *
+	 * The default is an ASCII letter, the rule of the HTML tokenizer ("tag open state") that most
+	 * languages share. A parser of a language whose element names start otherwise overrides this
+	 * (JSX: `$`, `_` and a letter of any script).
+	 *
+	 * @param char - The character that follows `<`
+	 * @returns Whether it starts a tag name
+	 * @see https://html.spec.whatwg.org/multipage/parsing.html#tag-open-state
+	 */
+	isTagNameStart(char: string): boolean {
+		return /[a-z]/i.test(char);
 	}
 
 	/**
@@ -1698,7 +1716,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 					break;
 				}
 				case TagState.FirstCharOfTagName: {
-					if (/[a-z]/i.test(char)) {
+					if (this.isTagNameStart(char)) {
 						tagName += char;
 						state = TagState.TagName;
 						break;
