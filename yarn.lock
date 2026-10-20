@@ -2074,7 +2074,7 @@ __metadata:
     "@markuplint/html-parser": "npm:5.2.0"
     "@markuplint/ml-ast": "npm:5.1.1"
     "@markuplint/parser-utils": "npm:5.2.0"
-    "@vue/shared": "npm:^3.5.30"
+    "@vue/shared": "npm:^3.5.44"
     vue-eslint-parser: "npm:^10.4.1"
   languageName: unknown
   linkType: soft
@@ -4355,10 +4355,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vue/shared@npm:^3.5.30":
-  version: 3.5.43
-  resolution: "@vue/shared@npm:3.5.43"
-  checksum: 10c0/2925261c79d49957523060a8e6c92e29a588301d22ee3f978d09d1aba881256a703285ae0108f7b50d76dd10b054ca31a0c1f1ed8696afbef7bf58e862782b4b
+"@vue/shared@npm:^3.5.44":
+  version: 3.5.44
+  resolution: "@vue/shared@npm:3.5.44"
+  checksum: 10c0/d33082cb159b1c8c38fb7e7d9747d9ba1909f80f5883b82dd0000412366048aa369b96acfa332cb32bfeeeee504b7c96f1103eb45b9b4543e95ec360b0047342
   languageName: node
   linkType: hard
 
