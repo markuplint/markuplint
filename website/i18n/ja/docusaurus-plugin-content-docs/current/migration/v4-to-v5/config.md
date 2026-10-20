@@ -52,7 +52,7 @@ HTML LS / Selectors L4 では、要素が HTML 名前空間に属する場合、
 
 ## 標準タグへの pretender {#pretender-が標準-html-要素には適用されなくなった}
 
-認識された HTML/SVG 要素への pretender は無視されます（[issue #3740](https://github.com/markuplint/markuplint/issues/3740)）。黙らせるならルールの disable / severity を使ってください。
+認識された HTML/SVG/MathML 要素への pretender は無視されます（[issue #3740](https://github.com/markuplint/markuplint/issues/3740)）。黙らせるならルールの disable / severity を使ってください。Vue ドキュメントでは、Vue のネイティブタグのリストにないタグ（`<marquee>`、`<search>`）はコンポーネントなので、pretender が適用されます。
 
 ## `:closest()` 非推奨
 
