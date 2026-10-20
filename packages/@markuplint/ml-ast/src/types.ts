@@ -572,6 +572,21 @@ export interface MLParser {
 	isComponentName?(name: string): boolean;
 
 	/**
+	 * Whether the language takes a tag name for a native element, as against a reference to a component,
+	 * by its own list of names (Vue: `isNativeTag` of `@vue/compiler-dom`, which resolves any other tag
+	 * to a component). Name as written, case kept; it knows no namespace.
+	 *
+	 * What a tag resolves to is the language's to say, so a type selector (`Marquee` for `<marquee>`)
+	 * and the guard that keeps a pretender off a native element read it, not the specification: the
+	 * two lists differ (`<marquee>` has a specification, and Vue resolves it to a component when one
+	 * is imported). A parser without it leaves the answer to the specification: Vue is the one that has
+	 * it, as the other languages that tell a component by its name (JSX, Svelte, Astro) take a lowercase
+	 * tag for an HTML element. It is asked of a tag as the author wrote it; the name that a pretender
+	 * gives (`as`) is the element itself and is judged by the specification.
+	 */
+	isNativeTag?(name: string): boolean;
+
+	/**
 	 * Whether attribute names should be treated as case-sensitive (e.g. JSX props such as `onClick`).
 	 * Currently consumed only by the `case-sensitive-attr-name` rule.
 	 */
