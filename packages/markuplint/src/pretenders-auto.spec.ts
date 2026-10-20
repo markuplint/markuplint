@@ -361,6 +361,57 @@ describe('pretenders.auto with a lazily loaded component', () => {
 		]);
 	});
 
+	test.each([
+		[
+			'import * as m from',
+			"<script>import * as m from './Item.svelte'</script>\n<m.default><span>c</span></m.default>",
+		],
+		[
+			'await import() into a name',
+			"<script>const m = await import('./Item.svelte')</script>\n<m.default><span>c</span></m.default>",
+		],
+		[
+			'{#await import() then m}',
+			"{#await import('./Item.svelte') then m}\n  <m.default><span>c</span></m.default>\n{/await}",
+		],
+	])(
+		'a member tag `<m.default>` of a namespace of a Svelte file is checked against its children: %s (issue #4361)',
+		async (_, source) => {
+			await writeFile(path.join(tmpDir, 'Item.svelte'), '<img src="x.png" />');
+			const appPath = path.join(tmpDir, 'App.svelte');
+			await writeFile(appPath, source);
+
+			const { violations } = await mlTestFile(appPath, {
+				parser: { '\\.svelte$': '@markuplint/svelte-parser' },
+				pretenders: { auto: true },
+				rules: { 'permitted-contents': true },
+			});
+
+			expect(violations).toStrictEqual([
+				expect.objectContaining({ ruleId: 'permitted-contents', severity: 'error', raw: '<m.default>' }),
+			]);
+		},
+	);
+
+	test('a tag of a JSX file whose name starts with `$` is an element that is checked (issue #4344)', async () => {
+		await writeFile(path.join(tmpDir, 'Item.tsx'), 'export const Item = () => <img src="x.png" />;');
+		const wrapperPath = path.join(tmpDir, 'Wrapper.tsx');
+		await writeFile(
+			wrapperPath,
+			"import * as $ui from './Item';\nexport const Wrapper = () => <div><$ui.Item><span>c</span></$ui.Item></div>;",
+		);
+
+		const { violations } = await mlTestFile(wrapperPath, {
+			...jsxParserConfig,
+			pretenders: { auto: true },
+			rules: { 'permitted-contents': true },
+		});
+
+		expect(violations).toStrictEqual([
+			expect.objectContaining({ ruleId: 'permitted-contents', severity: 'error', raw: '<$ui.Item>' }),
+		]);
+	});
+
 	test('a component imported in a Vue script with `lang="tsx"` that holds JSX is checked against its children (issue #4322)', async () => {
 		await writeFile(path.join(tmpDir, 'Item.vue'), '<template><img src="x.png" /></template>');
 		const appPath = path.join(tmpDir, 'App.vue');

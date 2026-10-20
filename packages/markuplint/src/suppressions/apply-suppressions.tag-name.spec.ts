@@ -67,3 +67,52 @@ describe('a scope of the form tag[attr="value"]', () => {
 		expect(isSuppressed('FooBar[role="x"]', 'FooBar', [{ name: 'role', value: 'y' }])).toBe(false);
 	});
 });
+
+describe('a scope that names an element whose name has a `.`', () => {
+	it.each([
+		[String.raw`Tabs\.Root`, 'Tabs.Root'],
+		[String.raw`Tabs\.Root[role="x"]`, 'Tabs.Root'],
+	])('%s matches the element it was made for', (scope, tag) => {
+		expect(isSuppressed(scope, tag, [{ name: 'role', value: 'x' }])).toBe(true);
+	});
+
+	it('does not match an element of the name before the `.` or of a longer name', () => {
+		expect(isSuppressed(String.raw`Tabs\.Root`, 'Tabs')).toBe(false);
+		expect(isSuppressed(String.raw`Tabs\.Root`, 'Tabs.Rootx')).toBe(false);
+	});
+
+	it('reads a `\\` that is not an escape as a part of the name, as a file written before the escape holds it', () => {
+		expect(isSuppressed(String.raw`Foo\bar`, String.raw`Foo\bar`)).toBe(true);
+		expect(isSuppressed(String.raw`Foo\\bar`, String.raw`Foo\bar`)).toBe(true);
+	});
+
+	it('keeps reading an unescaped `.` as the start of a class', () => {
+		expect(isSuppressed('div.active', 'div')).toBe(false);
+		// A scope written before the escape for `<Tabs.Root>` never matched it
+		expect(isSuppressed('Tabs.Root', 'Tabs.Root')).toBe(false);
+	});
+
+	it('keeps matching a scope written before the escape in the form `tag[attr="value"]`', () => {
+		expect(isSuppressed('Tabs.Root[role="x"]', 'Tabs.Root', [{ name: 'role', value: 'x' }])).toBe(true);
+	});
+
+	it.each([
+		[String.raw`\#jsx-fragment`, '#jsx-fragment'],
+		[String.raw`\#jsx-fragment[role="x"]`, '#jsx-fragment'],
+		[String.raw`Foo\[x]`, 'Foo[x]'],
+		[String.raw`Foo\\\.bar`, String.raw`Foo\.bar`],
+	])('%s is the name %s', (scope, tag) => {
+		expect(isSuppressed(scope, tag, [{ name: 'role', value: 'x' }])).toBe(true);
+	});
+
+	it('reads an escaped `[` as a part of the name, not as the start of an attribute', () => {
+		expect(isSuppressed(String.raw`Foo\[role="x"]`, 'Foo', [{ name: 'role', value: 'x' }])).toBe(false);
+	});
+
+	it('holds a value that has `]` or `\\` in `tag[attr="value"]`', () => {
+		expect(isSuppressed('main[role="a]b"]', 'main', [{ name: 'role', value: 'a]b' }])).toBe(true);
+		expect(isSuppressed(String.raw`main[role="a\b"]`, 'main', [{ name: 'role', value: String.raw`a\b` }])).toBe(
+			true,
+		);
+	});
+});

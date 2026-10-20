@@ -1417,6 +1417,108 @@ describe('dependencyMapper: a component reached through a member tag or a lazy v
 		);
 	});
 
+	describe('the member `default` of a namespace', () => {
+		const withTemplate = (): PretenderDirectorMap =>
+			new Map([
+				['a.tsx#Item', ['Item', 'button', 'a.tsx:1:14', 'a.tsx']],
+				['Item.svelte', ['Item', 'img', 'Item.svelte:1:1', 'Item.svelte']],
+			]);
+		const selectors = (bindings: ImportBinding[]) =>
+			dependencyMapper(withTemplate(), undefined, {
+				cwd: tmpDir,
+				entry: { filePath: path.join(tmpDir, 'App.svelte'), bindings },
+			})
+				.map(pretender => pretender.selector)
+				.filter(selector => selector !== 'Item');
+
+		test.each(['Item.svelte', 'Item.vue', 'Item.astro'])(
+			'a namespace of %s has its component as `default`',
+			async file => {
+				await writeFile(path.join(tmpDir, file), '<img src="x.png" />');
+				const map = withTemplate();
+				map.set(file, ['Item', 'img', `${file}:1:1`, file]);
+
+				const result = dependencyMapper(map, undefined, {
+					cwd: tmpDir,
+					entry: { filePath: path.join(tmpDir, 'App.svelte'), bindings: [namespace('m', `./${file}`)] },
+				});
+
+				expect(
+					result.map(pretender => pretender.selector).filter(selector => selector !== 'Item'),
+				).toStrictEqual([String.raw`m\.default`]);
+			},
+		);
+
+		test('a template component file has no member but `default`', async () => {
+			await writeFile(path.join(tmpDir, 'Item.svelte'), '<img src="x.png" />');
+			const importsByFile = new Map([['App.svelte', [namespace('m', './Item.svelte')]]]);
+			const withTag = (tag: string): PretenderDirectorMap => {
+				const map = withTemplate();
+				map.set('App.svelte', ['App', tag, 'App.svelte:1:1', 'App.svelte', 'App']);
+				return map;
+			};
+			const asOf = (tag: string) =>
+				dependencyMapper(withTag(tag), undefined, { importsByFile, cwd: tmpDir }).find(
+					pretender => pretender.selector === 'App',
+				)?.as;
+
+			expect(asOf('m.default')).toBe('img');
+			expect(asOf('m.Item')).toBe('m.Item');
+			expect(asOf('m.default.x')).toBe('m.default.x');
+		});
+
+		test('a namespace re-export of a template component file nests `default`', async () => {
+			await writeFile(path.join(tmpDir, 'Item.svelte'), '<img src="x.png" />');
+			await writeFile(path.join(tmpDir, 'barrel.ts'), "export * as Sub from './Item.svelte';\n");
+
+			expect(selectors([namespace('UI', './barrel')])).toStrictEqual([String.raw`UI\.Sub\.default`]);
+		});
+
+		test('a namespace of a module has its default export as `default`', async () => {
+			await writeFile(
+				path.join(tmpDir, 'a.tsx'),
+				'export const Item = () => <button />;\nexport default Item;\n',
+			);
+
+			expect(selectors([namespace('m', './a')]).toSorted()).toStrictEqual([
+				String.raw`m\.Item`,
+				String.raw`m\.default`,
+			]);
+		});
+
+		test('a template component reached by a namespace re-export behind a plain star re-export keeps `default`', async () => {
+			await writeFile(path.join(tmpDir, 'Item.svelte'), '<img src="x.png" />');
+			await writeFile(path.join(tmpDir, 'x.ts'), "export * as Sub from './Item.svelte';\n");
+			await writeFile(path.join(tmpDir, 'barrel.ts'), "export * from './x';\n");
+
+			expect(selectors([namespace('UI', './barrel')])).toStrictEqual([String.raw`UI\.Sub\.default`]);
+		});
+
+		test('a plain star re-export does not pass `default` on', async () => {
+			await writeFile(
+				path.join(tmpDir, 'a.tsx'),
+				'export const Item = () => <button />;\nexport default Item;\n',
+			);
+			await writeFile(path.join(tmpDir, 'barrel.ts'), "export * from './a';\n");
+
+			expect(selectors([namespace('UI', './barrel')])).toStrictEqual([String.raw`UI\.Item`]);
+		});
+
+		test('a namespace re-export of a module reached by a plain star re-export keeps its `default`', async () => {
+			await writeFile(
+				path.join(tmpDir, 'a.tsx'),
+				'export const Item = () => <button />;\nexport default Item;\n',
+			);
+			await writeFile(path.join(tmpDir, 'x.ts'), "export * as Sub from './a';\n");
+			await writeFile(path.join(tmpDir, 'barrel.ts'), "export * from './x';\n");
+
+			expect(selectors([namespace('UI', './barrel')]).toSorted()).toStrictEqual([
+				String.raw`UI\.Sub\.Item`,
+				String.raw`UI\.Sub\.default`,
+			]);
+		});
+	});
+
 	test('a default export of a namespace import is no namespace', async () => {
 		await writeFile(path.join(tmpDir, 'a.tsx'), 'export const Item = () => <button />;\n');
 		await writeFile(path.join(tmpDir, 'barrel.ts'), "import * as NS from './a';\nexport default NS;\n");
@@ -1477,10 +1579,12 @@ describe('dependencyMapper: a component reached through a member tag or a lazy v
 		expect(result.some(pretender => pretender.selector === 'R')).toBe(resolved);
 	});
 
-	test('the default export of a namespace is no member', async () => {
+	test('the default export of a namespace is a member', async () => {
 		await writeFile(path.join(tmpDir, 'a.tsx'), 'export const Item = () => <button />;\nexport default Item;\n');
 
-		expect(selectorsOf([namespace('UI', './a')])).toStrictEqual([String.raw`UI\.Item`]);
+		// Behavior change: `default` of a namespace is a member, so `<UI.default />` gets a pretender too
+		expect(selectorsOf([namespace('UI', './a')])).toStrictEqual([String.raw`UI\.default`, String.raw`UI\.Item`]);
+		// expect(selectorsOf([namespace('UI', './a')])).toStrictEqual([String.raw`UI\.Item`]); // previous
 	});
 
 	describe.each([

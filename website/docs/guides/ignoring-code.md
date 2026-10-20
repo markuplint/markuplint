@@ -158,6 +158,8 @@ The scope selector narrows suppression to a specific part of the document. It is
 3. **`tag[role="..."]`** — if the ancestor has a `role` attribute (or `type` for `<input>`)
 4. **`tag:nth-of-type(n)`** — to disambiguate same-tag siblings
 
+A `.`, `#`, `[` or `\` in a tag name or a class name is written with a `\` before it, as CSS does (`Tabs\.Root` for `<Tabs.Root>`, `div.py-1\.5` for `class="py-1.5"`), so that `.` in `Tabs.Root` is not read as the start of a class. A scope in the file that has none of those escapes is still read as it was written. A `role` or `type` value that holds a `"` or `>` is not used for the scope.
+
 If the scope cannot be narrowed (e.g., violations span the entire document), the suppression applies to the whole file.
 
 When a scope selector no longer matches any element (e.g., after refactoring), the suppression remains active and `--prune-suppressions` will recommend cleanup. **Broken scopes never cause new violations to be hidden.**
