@@ -75,8 +75,9 @@ export interface SelectorElement extends SelectorNode {
 	 * means the document does not, and the type selector is compared as `tagNameCaseSensitive` says.
 	 *
 	 * - `component`: a component, which `localName` names as written
-	 * - `native`: an HTML element that has a specification (`<button>`)
-	 * - `unknown-html`: an HTML element that has none (`<foobar>`)
+	 * - `native`: an HTML element that the document takes for native (`<button>`): the rule of the parser
+	 *   when it has one (`MLParser#isNativeTag`; Vue's lists differ from the specification), else the specification
+	 * - `unknown-html`: an HTML element that it does not (`<foobar>`, and in Vue `<marquee>`)
 	 *
 	 * An element that a pretender stands for is what the pretender makes it, as `localName` is.
 	 * An element of the SVG or MathML namespace has none: it keeps the case of its name.
