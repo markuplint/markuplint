@@ -269,6 +269,26 @@ describe('parseImports', () => {
 			]);
 		});
 
+		test('an awaited import destructured into a variable names the binding after the export', async () => {
+			const source = [
+				"const { default: Item } = await import('./Item.vue')",
+				"const { Named: Other } = await import('./Other.vue')",
+				"const Whole = await import('./Whole.vue')",
+			].join('\n');
+			expect(await parseImports(source)).toStrictEqual([
+				{ localName: 'Item', importedName: 'default', source: './Item.vue', type: 'dynamic' },
+				{ localName: 'Other', importedName: 'Named', source: './Other.vue', type: 'dynamic' },
+				{ localName: '*', importedName: '*', source: './Whole.vue', type: 'dynamic' },
+			]);
+		});
+
+		test('a call that is not a component loader does not name the import', async () => {
+			const source = "const Item = useMemo(() => import('./Item.vue'), [])";
+			expect(await parseImports(source)).toStrictEqual([
+				{ localName: '*', importedName: '*', source: './Item.vue', type: 'dynamic' },
+			]);
+		});
+
 		test('names are matched to the imports by position, whatever precedes them', async () => {
 			const source = [
 				"import A from './A.vue'",
