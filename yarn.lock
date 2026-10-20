@@ -2034,7 +2034,7 @@ __metadata:
     "@vitest/coverage-v8": "npm:4.1.11"
     browser-resolve: "npm:2.0.0"
     coveralls: "npm:3.1.1"
-    execa: "npm:10.1.0"
+    execa: "npm:10.1.1"
     glob: "npm:13.0.6"
     jsdom: "npm:30.1.2"
     textlint-rule-prh: "npm:6.1.0"
@@ -6783,9 +6783,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"execa@npm:10.1.0":
-  version: 10.1.0
-  resolution: "execa@npm:10.1.0"
+"execa@npm:10.1.1":
+  version: 10.1.1
+  resolution: "execa@npm:10.1.1"
   dependencies:
     "@sindresorhus/merge-streams": "npm:^4.0.0"
     figures: "npm:^6.1.0"
@@ -6799,7 +6799,7 @@ __metadata:
     strip-final-newline: "npm:^4.0.0"
     which-command: "npm:^0.1.0"
     yoctocolors: "npm:^2.2.0"
-  checksum: 10c0/15c7ad5d4a7a17c3b722d8b6566661ee0af7ac5bea6cc9ded9177b50473c536b9eac534087d1125689056fa2cac378f472787496698c4f37c9fb3823a7f9c576
+  checksum: 10c0/6f9efc13c0142a7136f02affa605383e464581dff35dc3386c4f480a06e04a4541232b48e0564fd7fc25a52aa65a2f1a57a0f4669188887a3d0d34ecb7a1eb5b
   languageName: node
   linkType: hard
 
