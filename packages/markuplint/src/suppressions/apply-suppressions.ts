@@ -3,7 +3,13 @@ import type { Violation } from '@markuplint/ml-config';
 import type { PositionedNode, ScopedNode } from './compute-scope.js';
 import type { SuppressionEntry, SuppressionsData } from './types.js';
 
-import { findNodeAtPosition, splitScopeIdents } from './compute-scope.js';
+import {
+	findNodeAtPosition,
+	splitScopeAttr,
+	splitScopeIdents,
+	splitScopeNth,
+	unescapeIdentifier,
+} from './compute-scope.js';
 import { toRelativePath } from './suppressions-file.js';
 
 /**
@@ -36,15 +42,12 @@ function isViolationInScope(
 	nodeList: readonly PositionedNode[],
 
 	violation: Violation,
-	scope: string,
+	segments: readonly ScopeSegment[],
 ): boolean {
 	const violationNode = findNodeAtPosition(nodeList, violation.line, violation.col);
 	if (!violationNode) {
 		return false;
 	}
-
-	// The scope is read once, not once per ancestor
-	const segments = scope.split(' > ').map(segment => parseSegment(segment));
 
 	// Check the node itself and walk up ancestors
 	if (matchesScopeSelector(violationNode, segments)) {
@@ -87,21 +90,23 @@ function parseSegment(segment: string): ScopeSegment {
 
 	// #id
 	if (segment.startsWith('#')) {
-		return { kind: 'id', id: segment.slice(1) };
+		return { kind: 'id', id: unescapeIdentifier(segment.slice(1)) };
 	}
 
-	// tag[attr="value"]: the tag is the `localName` with a capital letter (`FooBar`), a digit (`h1`) or an escaped `.`
-	// The tag is a run of: an escape pair (`\.`, `\#`, `\[`, `\\`), a `\` that is no escape (a file written before
-	// the escape: `Foo\bar`), or any other character but `[`, `]` and `"`. So `Foo\[x="y"]` is no attribute: its `[` is escaped.
-	const attrMatch = /^((?:\\[.#[\\]|\\(?![.#[\\])|[^[\\\]"])+)\[([a-z-]+)="([^"]+)"\]$/.exec(segment);
-	if (attrMatch) {
-		const [, tag, attrName, attrValue] = attrMatch;
-		return { kind: 'attr', tag: splitScopeIdents(tag!).join('.'), attrName: attrName!, attrValue: attrValue! };
+	// tag[attr="value"]: the tag is the `localName` with a capital letter (`FooBar`), a digit (`h1`) or an escaped character
+	// A segment with no `[` has no attribute, so it is not scanned for one
+	const attr = segment.includes('[') ? splitScopeAttr(segment) : null;
+	if (attr) {
+		return {
+			kind: 'attr',
+			tag: splitScopeIdents(attr.tag).join('.'),
+			attrName: attr.attrName,
+			attrValue: attr.attrValue,
+		};
 	}
 
-	// Extract :nth-of-type(n) if present
-	const nthMatch = /:nth-of-type\((\d+)\)$/.exec(segment);
-	const baseSegment = nthMatch ? segment.slice(0, nthMatch.index) : segment;
+	// Extract :nth-of-type(n) if present and unescaped
+	const { base: baseSegment, nth } = segment.includes(':') ? splitScopeNth(segment) : { base: segment, nth: null };
 
 	// tag.classA.classB
 	// A `.` of a name is escaped (`Tabs\.Root`), so only an unescaped one starts a class.
@@ -110,7 +115,7 @@ function parseSegment(segment: string): ScopeSegment {
 		kind: 'compound',
 		tag: tag!,
 		classes,
-		nth: nthMatch ? Number.parseInt(nthMatch[1]!, 10) : null,
+		nth,
 	};
 }
 
@@ -292,13 +297,19 @@ function getScopedErrorInfo(
 	let count = 0;
 	const indices: number[] = [];
 
+	// The scope is read once, not once per violation.
+	// It is split at ` > ` without looking at escapes: `serializeIdentifier` writes every `>` of a name as `\>`
+	// (and a space as `\ `), so the only ` > ` of a scope is a separator.
+	const segments =
+		entry.scope && nodeList ? entry.scope.split(' > ').map(segment => parseSegment(segment)) : undefined;
+
 	for (const [i, violation] of violations.entries()) {
 		const v = violation;
 		if (v.severity !== 'error' || v.ruleId !== ruleId) {
 			continue;
 		}
-		if (entry.scope && nodeList) {
-			if (isViolationInScope(nodeList, v, entry.scope)) {
+		if (segments && nodeList) {
+			if (isViolationInScope(nodeList, v, segments)) {
 				count++;
 				indices.push(i);
 			}
