@@ -14,6 +14,12 @@ import { unified } from 'unified';
 type MdastNode = RootContent;
 
 /**
+ * ECMAScript `IdentifierStart`, as `JSXIdentifier` starts (https://facebook.github.io/jsx/#prod-JSXIdentifier).
+ * `@markuplint/jsx-parser` has the same constant: keep the two in step.
+ */
+const JSX_IDENTIFIER_START = /^[\p{ID_Start}$_]/u;
+
+/**
  * Parser for MDX files that maps JSX elements to markuplint's AST.
  *
  * Uses remark-parse + remark-mdx to produce an MDX-extended mdast,
@@ -187,13 +193,26 @@ class MDXParser extends MarkdownAwareParser {
 	}
 
 	/**
-	 * MDX components use uppercase or dot notation following React's convention.
+	 * An MDX element is `authored` when its name is a component's (`isComponentName` below: a name that
+	 * does not start with a lowercase ASCII letter, or a member expression), a web component when it
+	 * is a custom element name, and `html` otherwise.
 	 *
 	 * @param nodeName - The element name to classify.
-	 * @returns The element type (`'html'` or `'authored'`).
+	 * @returns The element type (`'html'`, `'web-component'` or `'authored'`).
 	 */
 	detectElementType(nodeName: string) {
-		return super.detectElementType(nodeName, /^[A-Z]|\./);
+		return super.detectElementType(nodeName, (name: string) => this.isComponentName(name));
+	}
+
+	/**
+	 * An MDX element name starts with an ECMAScript `IdentifierStart` as a JSX one does (see
+	 * `JSXParser#isTagNameStart` in `@markuplint/jsx-parser`): keep the two in step.
+	 *
+	 * @param char - The character that follows `<`
+	 * @returns Whether it starts a tag name
+	 */
+	isTagNameStart(char: string): boolean {
+		return JSX_IDENTIFIER_START.test(char);
 	}
 
 	/**
@@ -209,7 +228,7 @@ class MDXParser extends MarkdownAwareParser {
 		if (isPotentialCustomElementName(name)) {
 			return false;
 		}
-		return name.includes('.') || (/^[\p{ID_Start}$_]/u.test(name) && !/^[a-z]/.test(name) && !name.includes('-'));
+		return name.includes('.') || (JSX_IDENTIFIER_START.test(name) && !/^[a-z]/.test(name) && !name.includes('-'));
 	}
 
 	#visitJsxElement(
