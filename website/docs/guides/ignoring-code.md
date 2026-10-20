@@ -158,7 +158,7 @@ The scope selector narrows suppression to a specific part of the document. It is
 3. **`tag[role="..."]`** — if the ancestor has a `role` attribute (or `type` for `<input>`)
 4. **`tag:nth-of-type(n)`** — to disambiguate same-tag siblings
 
-A `.`, `#`, `[` or `\` in a tag name or a class name is written with a `\` before it, as CSS does (`Tabs\.Root` for `<Tabs.Root>`, `div.py-1\.5` for `class="py-1.5"`), so that `.` in `Tabs.Root` is not read as the start of a class. A scope in the file that has none of those escapes is still read as it was written. A `role` or `type` value that holds a `"` or `>` is not used for the scope.
+A tag name, a class name and an `id` are written as an identifier of CSS (the way [`CSS.escape()`](https://drafts.csswg.org/cssom/#serialize-an-identifier) serializes one): a character that is not a letter, a digit, `-`, `_` or a non-ASCII letter has a `\` before it (`Tabs\.Root` for `<Tabs.Root>`, `div.py-1\.5` for `class="py-1.5"`, `div.hover\:bg-x` for `class="hover:bg-x"`, `#a\ \>\ b` for `id="a > b"`), and a digit at the start is written as a hex escape (`div.\32 xl\:flex` for `class="2xl:flex"`), so that a name is not read as the syntax of a scope. A scope is read with the escapes of CSS: a `\` is followed by 1 to 6 hex digits (and one whitespace that ends them) or by the character itself. A scope in the file that has no `\` is still read as it was written. A `role` or `type` value that holds a `"` or `>` is not used for the scope.
 
 If the scope cannot be narrowed (e.g., violations span the entire document), the suppression applies to the whole file.
 

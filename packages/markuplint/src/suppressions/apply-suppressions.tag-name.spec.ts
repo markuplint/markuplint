@@ -82,7 +82,9 @@ describe('a scope that names an element whose name has a `.`', () => {
 	});
 
 	it('reads a `\\` that is not an escape as a part of the name, as a file written before the escape holds it', () => {
-		expect(isSuppressed(String.raw`Foo\bar`, String.raw`Foo\bar`)).toBe(true);
+		// Behavior change: `\ba` is a hex escape of CSS (U+00BA), so `Foo\bar` is the name `Fooºr`, not `Foo\bar`
+		expect(isSuppressed(String.raw`Foo\bar`, 'Fooºr')).toBe(true);
+		// expect(isSuppressed(String.raw`Foo\bar`, String.raw`Foo\bar`)).toBe(true); // previous
 		expect(isSuppressed(String.raw`Foo\\bar`, String.raw`Foo\bar`)).toBe(true);
 	});
 
@@ -114,5 +116,36 @@ describe('a scope that names an element whose name has a `.`', () => {
 		expect(isSuppressed(String.raw`main[role="a\b"]`, 'main', [{ name: 'role', value: String.raw`a\b` }])).toBe(
 			true,
 		);
+	});
+});
+
+describe('a scope that names an element with the escapes of CSS', () => {
+	it.each([
+		[String.raw`foo\:nth-of-type(2)`, 'foo:nth-of-type(2)'],
+		[String.raw`foo\:nth-of-type(2)[role="x"]`, 'foo:nth-of-type(2)'],
+		// `\:` is `:` wherever it is, as in CSS
+		[String.raw`Foo\:bar`, 'Foo:bar'],
+		[String.raw`Foo\:nth-of-type(x)`, 'Foo:nth-of-type(x)'],
+		// An escaped `\` before the `[` of an attribute
+		[String.raw`foo\\[role="x"]`, 'foo\\'],
+		// A hex escape, and the whitespace that ends it
+		[String.raw`\31 a`, '1a'],
+		[String.raw`\31 a[role="x"]`, '1a'],
+		[String.raw`Foo\ba`, 'Fooº'],
+		[String.raw`Foo\3a bar`, 'Foo:bar'],
+	])('%s is the name %j', (scope, tag) => {
+		expect(isSuppressed(scope, tag, [{ name: 'role', value: 'x' }])).toBe(true);
+	});
+
+	it('reads `\\ba` as the hex escape U+00BA, as CSS does, not as a `\\` and `ba`', () => {
+		expect(isSuppressed(String.raw`Foo\ba`, String.raw`Foo\ba`)).toBe(false);
+	});
+
+	it('does not read the escaped name as a position of the name before it', () => {
+		expect(isSuppressed(String.raw`foo\:nth-of-type(2)`, 'foo')).toBe(false);
+	});
+
+	it('keeps reading an unescaped trailing `:nth-of-type(n)` as a position, not as a name', () => {
+		expect(isSuppressed('foo:nth-of-type(2)', 'foo:nth-of-type(2)')).toBe(false);
 	});
 });
