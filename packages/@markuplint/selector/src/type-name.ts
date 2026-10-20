@@ -16,11 +16,13 @@ import { isPureHTMLElement } from './is.js';
  * element decides:
  *
  * - `component`: the rule of `vueTagNameMatches`. `localName` of a component is the name as written.
- * - `native`: an HTML element that has a specification. A tag with a capital letter is a component
+ * - `native`: an HTML element that the document takes for native: the rule of the parser when it has one
+ *   (Vue's own list), else the specification. A tag with a capital letter is a component
  *   in such a document, and a native element is not registered under a name, so only the name in
  *   lower case stands for it: `button` stands for `<button>`, and neither `Button` nor `BUTTON` does
  *   (a selector of an HTML element is compared case-insensitively elsewhere, which this narrows in such a document).
- * - `unknown-html`: an HTML element that has no specification, `<foobar>`. A name of more than one
+ * - `unknown-html`: an HTML element that the document does not take for native, `<foobar>` (in Vue
+ *   `<marquee>` too, which has a specification). A name of more than one
  *   word is not it (`FooBar` is not `<foobar>`), and the case of any other name is not told apart:
  *   `Foobar` is the name `<foobar>` resolves to. The case an element was written in is lost to `localName`
  *   (it is lower case), so this is told by the selector alone: a camelCase selector (`clipPath`) is

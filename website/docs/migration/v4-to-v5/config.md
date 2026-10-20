@@ -89,7 +89,7 @@ Per HTML LS / Selectors L4, attribute names are ASCII case-insensitive when the 
 
 ## Pretenders on standard tags {#pretenders-no-longer-apply-to-standard-html-tags}
 
-A pretender whose selector is a recognized HTML/SVG element is ignored ([issue #3740](https://github.com/markuplint/markuplint/issues/3740)). Use per-rule disable/severity to silence a built-in tag; do not masquerade it as another element.
+A pretender whose selector is a recognized HTML/SVG/MathML element is ignored ([issue #3740](https://github.com/markuplint/markuplint/issues/3740)). Use per-rule disable/severity to silence a built-in tag; do not masquerade it as another element. In a Vue document, a tag that is not in Vue's list of native tags (`<marquee>`, `<search>`) is a component, so a pretender applies to it.
 
 ## `overrides` with multiple matching globs
 

@@ -901,7 +901,9 @@ The value can be either an **array** of pretender definitions or an **object** w
 It accepts [**Selector**](/docs/guides/selectors) to matche the target component. It's required.
 
 :::caution Standard HTML elements are excluded
-A pretender entry whose selector resolves to a standard HTML or SVG element is silently ignored. Pretenders apply only to custom components — web components, JSX/Vue/Svelte authored components, or unknown HTML-parsed names with no spec entry. Targeting `<button>`, `<marquee>`, etc. is a no-op (see [migration notes](/docs/migration/v4-to-v5/config#pretenders-no-longer-apply-to-standard-html-tags)).
+A pretender entry whose selector resolves to a standard HTML, SVG, or MathML element is silently ignored. Pretenders apply only to custom components — web components, JSX/Vue/Svelte authored components, or unknown HTML-parsed names with no spec entry. Targeting `<button>`, `<h1>`, etc. is a no-op (see [migration notes](/docs/migration/v4-to-v5/config#pretenders-no-longer-apply-to-standard-html-tags)).
+
+In a Vue document, what counts as standard is Vue's own list of native tags: a tag that the list does not hold (`<marquee>`, `<search>`) is resolved by Vue to a component when one is imported or registered, so a pretender applies to it.
 :::
 
 #### `as`
