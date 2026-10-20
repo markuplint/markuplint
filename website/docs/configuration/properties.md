@@ -218,6 +218,8 @@ If you need different naming patterns, You can specify the `authoredElementName`
 
 The patterns you specify **replace** the parser's own patterns, not add to them: with `["custom"]`, a tag that the parser took for a component by its own pattern (such as `<FooBar>` in Vue) is not one unless a pattern of yours matches it too. A string is a name and matches the whole tag name (`"custom"` is `<custom>`, not `<my-custom>`); a string in the form of a regular expression literal (`"/^My/"`, with the flags `g` and `i` at most) is that regular expression, and a `RegExp` or a function can be given in a JavaScript config file. A string used to be read as a regular expression that matches any part of the tag name: if you wrote `"^My"` for that, write `"/^My/"` now.
 
+In JSX and MDX a name is a component unless it starts with a lowercase ASCII letter or has a `-`, as the JSX compilers decide, and a `.` makes it a member expression: `<$Ui>`, `<_Ui>`, `<Éa>` and `<Tabs.Root>` are components. A name with a `-` is the name of an intrinsic element: `<Foo-bar>` is an HTML element and `<my-widget.v2>` is a custom element, where an earlier version took both for components. To keep the earlier answer, give the earlier rule to `authoredElementName`, which replaces the one of the parser: `["/^[A-Z]|\\./"]` takes a name that starts with a capital letter or has a `.` for a component.
+
 ```json class=config
 {
   "parserOptions": {
