@@ -2,11 +2,26 @@ import { describe, test, expect } from 'vitest';
 
 import ts from 'typescript';
 
-import { collectImportBindings } from './analyze-jsx-imports.js';
+import { collectImportBindings, scriptKindForJsxLang } from './analyze-jsx-imports.js';
 
 function sourceFile(code: string) {
 	return ts.createSourceFile('test.tsx', code, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
 }
+
+describe('scriptKindForJsxLang', () => {
+	test.each([
+		['tsx', ts.ScriptKind.TSX],
+		['TSX', ts.ScriptKind.TSX],
+		['jsx', ts.ScriptKind.JSX],
+		['Jsx', ts.ScriptKind.JSX],
+		['ts', null],
+		['js', null],
+		['', null],
+		[undefined, null],
+	])('lang %j is the script kind %j', (lang, kind) => {
+		expect(scriptKindForJsxLang(lang)).toBe(kind);
+	});
+});
 
 describe('collectImportBindings', () => {
 	test('default import', () => {
@@ -716,6 +731,157 @@ describe('collectImportBindings', () => {
 				),
 			);
 			expect(bindings).toStrictEqual([named('A', 'B')]);
+		});
+	});
+
+	describe('the name of a dynamic import in a loader function that is held by a name', () => {
+		const named = (localName: string, importedName = 'default') => ({
+			localName,
+			importedName,
+			source: './a',
+			type: 'dynamic',
+		});
+		const unnamed = { localName: '*', importedName: '*', source: './a', type: 'dynamic' };
+
+		test.each([
+			['a variable of an arrow', "const load = () => import('./a');\nconst A = lazy(load);"],
+			[
+				'a variable of a function expression',
+				"const load = function () { return import('./a'); };\nconst A = lazy(load);",
+			],
+			['a variable of an `async` arrow', "const load = async () => import('./a');\nconst A = lazy(load);"],
+			['a function declaration', "function load() { return import('./a'); }\nconst A = lazy(load);"],
+			[
+				'an `async` function declaration',
+				"async function load() { return await import('./a'); }\nconst A = lazy(load);",
+			],
+			[
+				'a variable used before it is declared by a function',
+				"const A = lazy(load);\nfunction load() { return import('./a'); }",
+			],
+			[
+				'a variable typed with an annotation',
+				"const load: () => Promise<never> = () => import('./a');\nconst A = lazy(load);",
+			],
+			[
+				'a loader of an options object',
+				"const load = () => import('./a');\nconst A = defineAsyncComponent({ loader: load });",
+			],
+			['a loader inside another call', "const load = () => import('./a');\nconst A = memo(lazy(load));"],
+			['a member loader', "const load = () => import('./a');\nconst A = React.lazy(load);"],
+			['a variable in parentheses', "const load = () => import('./a');\nconst A = lazy((load));"],
+			[
+				'a reference in a function body',
+				"const load = () => import('./a');\nfunction f() {\n\tconst A = lazy(load);\n}",
+			],
+			[
+				'a variable that is an alias of another',
+				"const load = () => import('./a');\nconst again = load;\nconst A = lazy(again);",
+			],
+			[
+				'a loader that reads the module in a statement',
+				"const load = async () => { const m = await import('./a'); return m.default; };\nconst A = lazy(load);",
+			],
+		])('is the variable assigned to, for %s', (_, code) => {
+			expect(collectImportBindings(sourceFile(code))).toStrictEqual([named('A')]);
+		});
+
+		test('is the key of a component registered in a `components` option', () => {
+			const bindings = collectImportBindings(
+				sourceFile(
+					"const load = () => import('./a');\nexport default { components: { Item: defineAsyncComponent(load) } };",
+				),
+			);
+			expect(bindings).toStrictEqual([named('Item')]);
+		});
+
+		test('is the export `.then` reads', () => {
+			const bindings = collectImportBindings(
+				sourceFile("const load = () => import('./a').then(m => m.B);\nconst A = lazy(load);"),
+			);
+			expect(bindings).toStrictEqual([named('A', 'B')]);
+		});
+
+		test('names the import once under each variable of the loader calls that take the function', () => {
+			const bindings = collectImportBindings(
+				sourceFile("const load = () => import('./a');\nconst A = lazy(load);\nconst B = lazy(load);"),
+			);
+			expect(bindings).toStrictEqual([named('A'), named('B')]);
+		});
+
+		test('names the import under the variable of a wrapped loader call too, for a function declaration', () => {
+			const bindings = collectImportBindings(
+				sourceFile(
+					"function load() { return import('./a'); }\nconst A = lazy(load);\nconst B = memo(lazy(load));",
+				),
+			);
+			expect(bindings).toStrictEqual([named('A'), named('B')]);
+		});
+
+		test('names the import under the call that takes the function, and leaves another use of it', () => {
+			const bindings = collectImportBindings(
+				sourceFile("const load = () => import('./a');\nconst A = lazy(load);\nconst p = load();"),
+			);
+			expect(bindings).toStrictEqual([named('A')]);
+		});
+
+		test.each([
+			[
+				'a `let` that is assigned another function',
+				"let load = () => import('./a');\nload = () => import('./b');\nconst A = lazy(load);",
+			],
+			[
+				'a `var` that is assigned with an operator',
+				"var load = () => import('./a');\nload ||= () => import('./b');\nconst A = lazy(load);",
+			],
+			[
+				'a function declaration that is assigned another function',
+				"function load() { return import('./a'); }\nload = () => import('./b');\nconst A = lazy(load);",
+			],
+		])('names neither import for %s', (_, code) => {
+			expect(collectImportBindings(sourceFile(code)).map(b => [b.localName, b.source])).toStrictEqual([
+				['*', './a'],
+				['*', './b'],
+			]);
+		});
+
+		test('names the import of a `let` that is declared with the function and never assigned again', () => {
+			const bindings = collectImportBindings(
+				sourceFile("let load = () => import('./a');\nconst A = lazy(load);\nconst other = 1;"),
+			);
+			expect(bindings).toStrictEqual([named('A')]);
+		});
+
+		test.each([
+			['a call that is not a loader', "const load = () => import('./a');\nconst A = useMemo(load, []);"],
+			['a function that is not taken by any call', "const load = () => import('./a');"],
+			['a call of the function', "const load = () => import('./a');\nconst A = lazy(load());"],
+			[
+				'a call that is not the initializer of a variable',
+				"const load = () => import('./a');\nrender(lazy(load));",
+			],
+			[
+				'a function that is not the first argument',
+				"const load = () => import('./a');\nconst A = lazy(false, load);",
+			],
+			[
+				'a name that is assigned later (it is not followed)',
+				"let load;\nload = () => import('./a');\nconst A = lazy(load);",
+			],
+			[
+				'a function that does more than return the import',
+				"const load = () => { init(); return import('./a'); };\nconst A = lazy(load);",
+			],
+			[
+				'a name that a function of the same name declares inside',
+				"const load = () => import('./a');\nfunction f(load) {\n\tconst A = lazy(load);\n}",
+			],
+			[
+				'a name that a block of the same name declares inside',
+				"const load = () => import('./a');\n{\n\tconst load = other;\n\tconst A = lazy(load);\n}",
+			],
+		])('is not named for %s', (_, code) => {
+			expect(collectImportBindings(sourceFile(code))).toStrictEqual([unnamed]);
 		});
 	});
 });

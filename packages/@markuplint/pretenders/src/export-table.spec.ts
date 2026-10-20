@@ -215,6 +215,82 @@ describe('getExportTable', () => {
 				expect(table.byName.get('L')).toStrictEqual({ kind: 'local', localName: 'L' });
 			});
 
+			test.each([
+				['a variable of an arrow', 'const load = () => import("./b/Item");\nexport default lazy(load);'],
+				[
+					'a function declaration',
+					'function load() { return import("./b/Item"); }\nexport default lazy(load);',
+				],
+				[
+					'a variable of another variable',
+					'const load = () => import("./b/Item");\nconst again = load;\nexport default lazy(again);',
+				],
+				[
+					'a loader of an options object',
+					'const load = () => import("./b/Item");\nexport default defineAsyncComponent({ loader: load });',
+				],
+				[
+					'a shorthand loader of an options object',
+					'const loader = () => import("./b/Item");\nexport default defineAsyncComponent({ loader });',
+				],
+				[
+					'a function declared after the call',
+					'export default memo(lazy(load));\nfunction load() { return import("./b/Item"); }',
+				],
+			])('`export default` of a loader call that takes the function held by a name: %s', (_, code) => {
+				const table = getExportTable(sourceFile(code));
+				expect(table.byName.get('default')).toStrictEqual({
+					kind: 'local',
+					localName: 'default',
+					wraps: wrapsLoaded('default'),
+				});
+			});
+
+			test('a variable of a loader call that takes a function held by a name', () => {
+				const table = getExportTable(
+					sourceFile('const load = () => import("./b/Item").then(m => m.X);\nexport const L = lazy(load);'),
+				);
+				expect(table.byName.get('L')).toStrictEqual({
+					kind: 'local',
+					localName: 'L',
+					wraps: wrapsLoaded('X'),
+				});
+			});
+
+			test('a loader call that takes a name that holds no function loads no module', () => {
+				const table = getExportTable(
+					sourceFile('function f(load) {}\nconst load = other;\nexport default lazy(load);'),
+				);
+				// The variable is wrapped as `memo(L)` wraps one, and it has no module behind it
+				expect(table.byName.get('default')).toStrictEqual({
+					kind: 'local',
+					localName: 'default',
+					wraps: { kind: 'local', localName: 'load' },
+				});
+			});
+
+			test('a name that is assigned another function loads no module', () => {
+				const table = getExportTable(
+					sourceFile(
+						'let load = () => import("./b/Item");\nload = () => import("./b/Other");\nexport default lazy(load);',
+					),
+				);
+				expect(table.byName.get('default')).toStrictEqual({
+					kind: 'local',
+					localName: 'default',
+					wraps: { kind: 'local', localName: 'load' },
+				});
+			});
+
+			test('names that initialize each other end the lookup of the function', () => {
+				const table = getExportTable(sourceFile('const a = b;\nconst b = a;\nexport default lazy(a);'));
+				expect(table.byName.get('default')).toStrictEqual({
+					kind: 'local',
+					localName: 'default',
+					wraps: { kind: 'local', localName: 'a' },
+				});
+			});
+
 			test('an alias of a loader is a loader', () => {
 				const table = getExportTable(
 					sourceFile('const l = React.lazy;\nexport default l(() => import("./b/Item"));'),

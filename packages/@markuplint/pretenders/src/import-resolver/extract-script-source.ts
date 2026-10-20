@@ -20,6 +20,8 @@ export interface ScriptSourceBlock {
 	readonly content: string;
 	/** The offset (in characters) of the content start within the original source */
 	readonly offset: number;
+	/** The `lang` attribute of the start tag as written, when it has one */
+	readonly lang?: string;
 }
 
 /**
@@ -44,13 +46,32 @@ export function extractVueScript(source: string): ScriptSourceBlock | null {
 			continue;
 		}
 
+		const lang = langOf(startTag);
+
 		return {
 			content: remaining.slice(0, endMatch.index),
 			offset: contentStart,
+			...(lang ? { lang } : {}),
 		};
 	}
 
 	return null;
+}
+
+/**
+ * The value of the `lang` attribute of a start tag. The attributes are read one by one, so that
+ * ` lang='tsx'` inside the quoted value of another attribute is not one. (`@markuplint/vue-parser`
+ * reads the `<script setup>` block the same way; this package reads the other one.)
+ */
+function langOf(startTag: string): string | undefined {
+	for (const [, name, double, single, bare] of startTag.matchAll(
+		/\s([^\s"'<>/=]+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+)))?/g,
+	)) {
+		if (name?.toLowerCase() === 'lang') {
+			return double ?? single ?? bare;
+		}
+	}
+	return undefined;
 }
 
 /**
@@ -90,13 +111,17 @@ export type VueComponentRegistration = {
  * is left out.
  *
  * @param scriptContent - The source of the script block
+ * @param scriptKind - How to read it; JSX before the registration breaks the tree of `ts.ScriptKind.TS`
  */
-export function extractVueOptionsApiRegistrations(scriptContent: string): VueComponentRegistration[] {
+export function extractVueOptionsApiRegistrations(
+	scriptContent: string,
+	scriptKind: ts.ScriptKind = ts.ScriptKind.TS,
+): VueComponentRegistration[] {
 	if (!scriptContent) {
 		return [];
 	}
 
-	const sourceFile = ts.createSourceFile('script.ts', scriptContent, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+	const sourceFile = ts.createSourceFile('script', scriptContent, ts.ScriptTarget.Latest, true, scriptKind);
 	const registry = findComponentsObject(sourceFile);
 	if (!registry) {
 		return [];
@@ -115,7 +140,7 @@ export function extractVueOptionsApiRegistrations(scriptContent: string): VueCom
 				registrations.push({ key: key ?? value.text, name: value.text });
 			} else if (key && containsDynamicImport(value)) {
 				// A value that loads a module (`Item: defineAsyncComponent(() => import('./Item.vue'))`)
-				// is bound under the key, as `dynamicImportName` names that import.
+				// is bound under the key, as `dynamicImportNames` names that import.
 				registrations.push({ key, name: key });
 			}
 		}

@@ -27,10 +27,20 @@
  * is taken for one: the name is not traced to the module it comes from, as the import may be
  * missing altogether (auto-imports of Nuxt).
  *
+ * The loader function need not be written in the call: a name that holds it (`const load = () =>
+ * import('./X')`, `function load() {…}`) is followed to the loader calls that take the name
+ * (`lazy(load)`, {@link wrapperCalls}), through a variable initialized with it. Each variable such a
+ * call is assigned to names the import, because every one of them renders the same export, so one
+ * import can have several names; a name that is assigned a value after its declaration (`let load;
+ * load = …`, or `let load = …; load = …`, {@link isReassigned}) is not followed, as it stands for
+ * more than one function, and {@link isLoaderValue} reads only the initializer either.
+ *
  * The name of a call is that of the nearest declaration in the lexical scopes around it, so a
  * parameter or a variable of a function that is called `lazy` or holds something else shadows the
  * loader of the file. A name that no scope declares is a loader only when {@link LOADERS} has it.
  */
+
+import type { ImportBinding } from './types.js';
 
 import ts from 'typescript';
 
@@ -86,6 +96,10 @@ const LOADER_MODULES: ReadonlySet<string> = new Set(['next/dynamic', '@loadable/
  * - `const X = memo(lazy(() => import('./a')))`: the call that holds the loader may be the first
  *   argument of another
  * - `defineAsyncComponent({ loader: () => import('./a') })`: as the function form
+ * - `const load = () => import('./a'); const X = lazy(load)` and `function load() { return import('./a'); }`:
+ *   a loader function that a name holds is named after each variable a loader call that takes the
+ *   name is assigned to (`lazy(load)`, `{ loader: load }`, `{ loader }`), as the function written in place
+ *   is: `X` and, for a second `const Y = lazy(load)`, `Y` too, since both render the same export
  * - `components: { X: defineAsyncComponent(() => import('./a')) }`: `X`
  * - `const X = (await import('./a')).default`, `const { default: X } = await import('./a')` and
  *   `const { Y: X } = await import('./a')`: `X` as `default`, `default` and `Y`; no loader call
@@ -93,18 +107,19 @@ const LOADER_MODULES: ReadonlySet<string> = new Set(['next/dynamic', '@loadable/
  * - `const UI = await import('./a')` and `const UI = await import('./a').then(m => m)`: `UI` as
  *   the whole module (`importedName: '*'`, `type: 'namespace'`)
  *
- * `null` for any other shape (a call that is not a loader, one that is not the initializer of a
+ * None for any other shape (a call that is not a loader, one that is not the initializer of a
  * variable, a `.then` that does more than read one export, a function that does more than return
- * the import), where the module is not known to be bound to a single name.
+ * the import, a name that is assigned the function after its declaration), where the module is not
+ * known to be bound to a name.
  *
  * @param call - A dynamic `import()` call (its `expression` is the `import` keyword), in a
  *   source file parsed with its parent nodes set
- * @returns The names to bind the import under, or `null`
+ * @returns The names to bind the import under, in source order; empty when it has none
  */
-export function dynamicImportName(
+export function dynamicImportNames(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	call: ts.CallExpression,
-): DynamicImportName | null {
+): readonly DynamicImportName[] {
 	let loaded: ts.Node = call;
 	let importedName = 'default';
 
@@ -112,20 +127,56 @@ export function dynamicImportName(
 	if (thenCall) {
 		const exportName = namedExportOfThen(thenCall);
 		if (exportName === null) {
-			return null;
+			return [];
 		}
 		importedName = exportName;
 		loaded = thenCall;
 	}
 
 	const loader = loaderFunction(loaded);
-	const wrapper = loader && wrapperCall(loader);
-	const localName = wrapper && assignedName(wrapper);
-	if (localName) {
-		return { localName, importedName };
+	const assigned = loader ? namesAssignedTo(wrapperCalls(loader), importedName) : [];
+	if (assigned.length > 0) {
+		return assigned;
 	}
 
-	return (thenCall ? null : statementLoaderName(call)) ?? declaredName(loaded, thenCall);
+	const statement = thenCall ? [] : statementLoaderNames(call);
+	if (statement.length > 0) {
+		return statement;
+	}
+	const declared = declaredName(loaded, thenCall);
+	return declared ? [declared] : [];
+}
+
+/**
+ * The bindings of a dynamic import of `source`: one for each of its names, or, for an import that
+ * has none, one with the `'*'` sentinel as its `localName`.
+ *
+ * @param names - What {@link dynamicImportNames} gave for the import
+ * @param source - The specifier of the import
+ */
+export function dynamicBindings(names: readonly DynamicImportName[], source: string): ImportBinding[] {
+	if (names.length === 0) {
+		return [{ localName: '*', importedName: '*', type: 'dynamic', source }];
+	}
+	return names.map(name => ({ type: 'dynamic', ...name, source }));
+}
+
+/**
+ * The names the calls are assigned to, each as `importedName`, without repeats.
+ */
+function namesAssignedTo(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	calls: readonly ts.CallExpression[],
+	importedName: string,
+): DynamicImportName[] {
+	const names = new Set<string>();
+	for (const call of calls) {
+		const name = assignedName(call);
+		if (name) {
+			names.add(name);
+		}
+	}
+	return [...names].map(localName => ({ localName, importedName }));
 }
 
 /**
@@ -343,11 +394,27 @@ function isFunctionLike(
 	return ts.isArrowFunction(node) || ts.isFunctionExpression(node);
 }
 
+/**
+ * A function that can be the loader a loader call takes: written in place, or held by a name (a
+ * variable's initializer, or a declaration), which {@link wrapperCalls} follows to its uses.
+ */
+type LoaderFunction = ts.ArrowFunction | ts.FunctionExpression | ts.FunctionDeclaration;
+
+function isLoaderFunction(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	node: ts.Node,
+): node is LoaderFunction {
+	return isFunctionLike(node) || ts.isFunctionDeclaration(node);
+}
+
 /** What the function returns when that is all it does: an expression body, or `{ return …; }`. */
 function returnedExpression(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	fn: ts.ArrowFunction | ts.FunctionExpression,
+	fn: LoaderFunction,
 ): ts.Expression | null {
+	if (!fn.body) {
+		return null;
+	}
 	if (!ts.isBlock(fn.body)) {
 		return fn.body;
 	}
@@ -373,7 +440,7 @@ function callTaking(
 function loaderFunction(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	node: ts.Node,
-): ts.ArrowFunction | ts.FunctionExpression | null {
+): LoaderFunction | null {
 	let returned = node;
 	for (let holding = callTaking(returned); holding; holding = callTaking(returned)) {
 		returned = holding;
@@ -386,24 +453,28 @@ function loaderFunction(
 		const body = returnedExpression(parent);
 		return body && skipParentheses(body) === returned ? parent : null;
 	}
-	if (ts.isReturnStatement(parent) && ts.isBlock(parent.parent) && isFunctionLike(parent.parent.parent)) {
+	if (ts.isReturnStatement(parent) && ts.isBlock(parent.parent) && isLoaderFunction(parent.parent.parent)) {
 		return returnedExpression(parent.parent.parent) === parent.expression ? parent.parent.parent : null;
 	}
 	return null;
 }
 
 /**
- * The call of a loader ({@link LOADERS}) that takes the loader function as its first argument, or
- * as the `loader` of its options.
+ * The call of a loader ({@link LOADERS}) that takes the loader function, or a name that stands for
+ * it (`lazy(load)`), as its first argument, or as the `loader` of its options (`{ loader }` too).
  */
 function wrapperCall(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	loader: ts.ArrowFunction | ts.FunctionExpression,
+	loader: ts.Node,
 ): ts.CallExpression | null {
 	let holder: ts.Node | undefined = outer(loader).parent;
 	let argument: ts.Node = outer(loader);
 
-	if (holder && ts.isPropertyAssignment(holder) && propertyKey(holder.name) === 'loader') {
+	if (
+		holder &&
+		((ts.isPropertyAssignment(holder) && propertyKey(holder.name) === 'loader') ||
+			(ts.isShorthandPropertyAssignment(holder) && holder.name.text === 'loader'))
+	) {
 		const options = holder.parent;
 		argument = options;
 		holder = options.parent;
@@ -412,6 +483,167 @@ function wrapperCall(
 	return holder && ts.isCallExpression(holder) && holder.arguments[0] === argument && isLoaderCall(holder)
 		? holder
 		: null;
+}
+
+/**
+ * The calls of a loader that take the loader function: the one it is written in (`lazy(() => …)`),
+ * or, for a function that a name holds (`const load = () => import('./a')`, `function load() {…}`),
+ * the ones that take that name (`lazy(load)`), in source order. A name is followed to the
+ * references the nearest declaration decides ({@link lookup}), through a variable that is
+ * initialized with it (`const again = load`); one that is assigned later (`let load; load = …`) is
+ * not followed, as {@link isLoaderValue} reads only the initializer either.
+ */
+function wrapperCalls(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	loader: LoaderFunction,
+): ts.CallExpression[] {
+	const direct = wrapperCall(loader);
+	if (direct) {
+		return [direct];
+	}
+	const held = heldBinding(loader);
+	return held ? callsTaking(held, new Set()) : [];
+}
+
+/** A name that holds a function: what it stands for, how it is written and where to look for its uses. */
+interface Held {
+	readonly binding: Binding;
+	readonly name: string;
+	readonly root: ts.Node;
+}
+
+/** The name that holds the function: the variable it initializes, or the one a declaration gives it. */
+function heldBinding(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	fn: LoaderFunction,
+): Held | null {
+	if (ts.isFunctionDeclaration(fn)) {
+		return fn.name ? heldOf(fn.name.text, fn.parent, fn) : null;
+	}
+	const target = outer(fn);
+	const holder = target.parent;
+	return holder && ts.isVariableDeclaration(holder) && holder.initializer === target && ts.isIdentifier(holder.name)
+		? heldOf(holder.name.text, holder.parent, holder)
+		: null;
+}
+
+function heldOf(
+	name: string,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	scope: ts.Node,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	declaration: ts.Node,
+): Held | null {
+	const binding = lookupFrom(scope, name);
+	return binding ? { binding, name, root: declaration.getSourceFile() } : null;
+}
+
+/**
+ * The loader calls that take the name, or a variable that is initialized with it. `visiting` ends a
+ * chain of variables that loops.
+ */
+function callsTaking(held: Held, visiting: Set<Binding>): ts.CallExpression[] {
+	if (visiting.has(held.binding) || isReassigned(held)) {
+		return [];
+	}
+	visiting.add(held.binding);
+
+	const calls: ts.CallExpression[] = [];
+	for (const reference of referencesTo(held)) {
+		const call = wrapperCall(reference);
+		if (call) {
+			calls.push(call);
+			continue;
+		}
+		const alias = aliasOf(reference);
+		const aliased = alias && heldOf(alias.name, alias.declaration.parent, alias.declaration);
+		if (aliased) {
+			calls.push(...callsTaking(aliased, visiting));
+		}
+	}
+	return calls;
+}
+
+/**
+ * Whether the name is assigned a value after its declaration (`load = other`, `load ||= other`): it
+ * then stands for more than one function, and which one a use sees is not known, so none is
+ * followed. A `const` and a function that is declared and never assigned are not.
+ */
+function isReassigned(held: Held): boolean {
+	return referencesTo(held).some(reference => {
+		const target = outer(reference);
+		const parent = target.parent;
+		return (
+			!!parent &&
+			ts.isBinaryExpression(parent) &&
+			parent.left === target &&
+			parent.operatorToken.kind >= ts.SyntaxKind.FirstAssignment &&
+			parent.operatorToken.kind <= ts.SyntaxKind.LastAssignment
+		);
+	});
+}
+
+/** The variable that the reference initializes (`again` of `const again = load`). */
+function aliasOf(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	reference: ts.Identifier,
+): { readonly name: string; readonly declaration: ts.VariableDeclaration } | null {
+	const target = outer(reference);
+	const holder = target.parent;
+	return holder && ts.isVariableDeclaration(holder) && holder.initializer === target && ts.isIdentifier(holder.name)
+		? { name: holder.name.text, declaration: holder }
+		: null;
+}
+
+/**
+ * The references that {@link referencesTo} found, kept per binding. A binding object is made for one
+ * declaration of one parsed file ({@link bindingsOf}), so its name and the file to look in are the
+ * same for every caller; a binding shared by declarations (a constant such as `DECLARED`) must not be
+ * a key, and none is: only the binding of a held variable or function is asked for.
+ */
+const referencesOfBinding = new WeakMap<Binding, readonly ts.Identifier[]>();
+
+/**
+ * The identifiers of the file that the name stands for, in source order: those that
+ * {@link lookup} resolves to the same declaration, so a name that a function, a block or a
+ * parameter declares again is left out. A property name (`x.load`, `{ load: 1 }`) is no reference.
+ */
+function referencesTo(held: Held): readonly ts.Identifier[] {
+	const cached = referencesOfBinding.get(held.binding);
+	if (cached) {
+		return cached;
+	}
+	const found: ts.Identifier[] = [];
+	const visit = (node: ts.Node) => {
+		if (
+			ts.isIdentifier(node) &&
+			node.text === held.name &&
+			!isPropertyName(node) &&
+			lookup(node) === held.binding
+		) {
+			found.push(node);
+		}
+		ts.forEachChild(node, visit);
+	};
+	visit(held.root);
+	referencesOfBinding.set(held.binding, found);
+	return found;
+}
+
+function isPropertyName(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	identifier: ts.Identifier,
+): boolean {
+	const parent = identifier.parent;
+	return (
+		((ts.isPropertyAccessExpression(parent) ||
+			ts.isPropertyAssignment(parent) ||
+			ts.isMethodDeclaration(parent) ||
+			ts.isPropertyDeclaration(parent) ||
+			ts.isJsxAttribute(parent)) &&
+			parent.name === identifier) ||
+		(ts.isBindingElement(parent) && parent.propertyName === identifier)
+	);
 }
 
 /**
@@ -436,6 +668,8 @@ function isLoaderCall(
 type Binding =
 	| { readonly kind: 'loader' }
 	| { readonly kind: 'declared' }
+	/** A function declaration: no loader, but its own declaration, which the uses of its name are told apart by. */
+	| { readonly kind: 'function'; readonly declaration: ts.FunctionDeclaration }
 	| {
 			readonly kind: 'variable';
 			readonly name: string;
@@ -552,8 +786,17 @@ function lookup(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	identifier: ts.Identifier,
 ): Binding | null {
-	for (let node: ts.Node | undefined = identifier.parent; node; node = node.parent) {
-		const binding = bindingsOf(node)?.get(identifier.text);
+	return lookupFrom(identifier.parent, identifier.text);
+}
+
+/** {@link lookup} for a name as it is seen from inside `scope`, which is the node it is written in. */
+function lookupFrom(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	scope: ts.Node | undefined,
+	name: string,
+): Binding | null {
+	for (let node = scope; node; node = node.parent) {
+		const binding = bindingsOf(node)?.get(name);
 		if (binding) {
 			return binding;
 		}
@@ -634,12 +877,9 @@ function declareStatements(
 	bindings: Map<string, Binding>,
 ): void {
 	for (const statement of statements) {
-		if (
-			(ts.isFunctionDeclaration(statement) ||
-				ts.isClassDeclaration(statement) ||
-				ts.isEnumDeclaration(statement)) &&
-			statement.name
-		) {
+		if (ts.isFunctionDeclaration(statement) && statement.name) {
+			bindings.set(statement.name.text, { kind: 'function', declaration: statement });
+		} else if ((ts.isClassDeclaration(statement) || ts.isEnumDeclaration(statement)) && statement.name) {
 			bindings.set(statement.name.text, DECLARED);
 		} else if (ts.isVariableStatement(statement) && statement.declarationList.flags & ts.NodeFlags.BlockScoped) {
 			for (const declaration of statement.declarationList.declarations) {
@@ -856,8 +1096,8 @@ function loaderBodyOf(
 	const block = statement.parent;
 	return ts.isVariableStatement(statement) &&
 		ts.isBlock(block) &&
-		isFunctionLike(block.parent) &&
-		wrapperCall(block.parent)
+		isLoaderFunction(block.parent) &&
+		wrapperCalls(block.parent).length > 0
 		? block
 		: null;
 }
@@ -868,22 +1108,21 @@ function loaderBodyOf(
  * read as the `.then` callback is ({@link exportRead}). A loader with anything else in it is not
  * named.
  */
-function statementLoaderName(
+function statementLoaderNames(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	call: ts.CallExpression,
-): DynamicImportName | null {
+): readonly DynamicImportName[] {
 	const loader = statementLoader(call);
-	const localName = loader && assignedName(loader.wrapper);
-	return loader && localName ? { localName, importedName: loader.importedName } : null;
+	return loader ? namesAssignedTo(loader.wrappers, loader.importedName) : [];
 }
 
-/** The loader call that an import is the one of, and the export of the module that it reads. */
+/** The loader calls that an import is the one of, and the export of the module that it reads. */
 interface LoaderImport {
-	readonly wrapper: ts.CallExpression;
+	readonly wrappers: readonly ts.CallExpression[];
 	readonly importedName: string;
 }
 
-/** The loader call and the export of {@link statementLoaderName}, whatever the call is assigned to. */
+/** The loader calls and the export of {@link statementLoaderNames}, whatever the calls are assigned to. */
 function statementLoader(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	call: ts.CallExpression,
@@ -913,13 +1152,13 @@ function statementLoader(
 		return null;
 	}
 
-	const wrapper = wrapperCall(block.parent as ts.ArrowFunction | ts.FunctionExpression);
+	const wrappers = wrapperCalls(block.parent as LoaderFunction);
 	const importedName = exportRead(declaration.name, second.expression, true);
-	return wrapper && importedName ? { wrapper, importedName } : null;
+	return wrappers.length > 0 && importedName ? { wrappers, importedName } : null;
 }
 
 /**
- * The loader call that takes the function the import is returned from, and the export of the
+ * The loader calls that take the function the import is returned from, and the export of the
  * module that the loader hands on: `default`, or what the `.then` reads. `null` for an import that
  * no loader call takes.
  */
@@ -941,9 +1180,9 @@ function loaderOf(
 	}
 
 	const loader = loaderFunction(loaded);
-	const wrapper = loader && wrapperCall(loader);
-	if (wrapper) {
-		return { wrapper, importedName };
+	const wrappers = loader ? wrapperCalls(loader) : [];
+	if (wrappers.length > 0) {
+		return { wrappers, importedName };
 	}
 	return thenCall ? null : statementLoader(call);
 }
@@ -956,7 +1195,7 @@ function loaderOf(
  *
  * @param expression - An expression in a source file parsed with its parent nodes set
  * @returns The module and the export, or `null` for any other expression, a loader whose import is
- *   not a string literal, and one that is not read as {@link dynamicImportName} reads it
+ *   not a string literal, and one that is not read as {@link dynamicImportNames} reads it
  */
 export function loadedExport(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -1007,7 +1246,7 @@ function findLoadedModule(
 		if (ts.isCallExpression(node) && node.expression.kind === ts.SyntaxKind.ImportKeyword) {
 			const specifier = node.arguments[0];
 			const loader = specifier && ts.isStringLiteral(specifier) ? loaderOf(node) : null;
-			if (loader?.wrapper === loaderCall && specifier && ts.isStringLiteral(specifier)) {
+			if (loader?.wrappers.includes(loaderCall) && specifier && ts.isStringLiteral(specifier)) {
 				found = { source: specifier.text, importedName: loader.importedName };
 				return;
 			}
@@ -1015,7 +1254,78 @@ function findLoadedModule(
 		ts.forEachChild(node, visit);
 	};
 	ts.forEachChild(loaderCall, visit);
+	// The function may be held by a name the call takes (`lazy(load)`), written elsewhere in the file.
+	const held = heldFunction(loaderCall);
+	if (!found && held) {
+		visit(held);
+	}
 	return found;
+}
+
+/**
+ * The function that a loader call takes by a name (`lazy(load)`, `{ loader: load }`, `{ loader }`):
+ * the one the name is initialized with or declares, through a variable that is initialized with
+ * another name. `null` for a function written in the call, and for a name that holds no function.
+ */
+function heldFunction(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	loaderCall: ts.CallExpression,
+): LoaderFunction | null {
+	const argument = loaderArgument(loaderCall);
+	return argument && ts.isIdentifier(argument) ? functionOf(argument, new Set()) : null;
+}
+
+/** The first argument of a loader call, or the `loader` of its options. */
+function loaderArgument(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	loaderCall: ts.CallExpression,
+): ts.Expression | null {
+	const [first] = loaderCall.arguments;
+	const argument = first && skipParentheses(first);
+	if (!argument || !ts.isObjectLiteralExpression(argument)) {
+		return argument ?? null;
+	}
+	for (const property of argument.properties) {
+		if (ts.isPropertyAssignment(property) && propertyKey(property.name) === 'loader') {
+			return skipParentheses(property.initializer);
+		}
+		if (ts.isShorthandPropertyAssignment(property) && property.name.text === 'loader') {
+			return property.name;
+		}
+	}
+	return null;
+}
+
+/**
+ * The function the name stands for where it is written: the initializer of its variable, the
+ * declaration, or what a variable initialized with another name stands for. `visiting` ends a
+ * chain of variables that loops.
+ */
+function functionOf(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	identifier: ts.Identifier,
+	visiting: Set<Binding>,
+): LoaderFunction | null {
+	const binding = lookup(identifier);
+	if (
+		!binding ||
+		visiting.has(binding) ||
+		isReassigned({ binding, name: identifier.text, root: identifier.getSourceFile() })
+	) {
+		return null;
+	}
+	visiting.add(binding);
+	if (binding.kind === 'function') {
+		return binding.declaration;
+	}
+	if (binding.kind !== 'variable' || binding.key !== undefined || !binding.initializer) {
+		return null;
+	}
+	const initializer = skipParentheses(binding.initializer);
+	if (isFunctionLike(initializer)) {
+		return initializer;
+	}
+	return ts.isIdentifier(initializer) ? functionOf(initializer, visiting) : null;
 }
 
 /**

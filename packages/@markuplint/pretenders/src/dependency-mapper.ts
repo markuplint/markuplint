@@ -233,7 +233,7 @@ export function dependencyMapper(
  * as {@link ./disambiguate.js} matches the file the import leads to against it.
  *
  * A dynamic binding that has a name (`const Foo = lazy(() => import('./Item'))`, see
- * {@link ./import-resolver/dynamic-import-name.js#dynamicImportName}) is aliased like a default
+ * {@link ./import-resolver/dynamic-import-name.js#dynamicImportNames}) is aliased like a default
  * import. A namespace is aliased per component it exports, under the member tag (see
  * {@link namespaceMembers}).
  *

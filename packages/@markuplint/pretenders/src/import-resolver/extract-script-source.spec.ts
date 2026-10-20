@@ -2,6 +2,24 @@ import { describe, test, expect } from 'vitest';
 
 import { extractVueScript, extractVueOptionsApiComponents, extractMdxEsm } from './extract-script-source.js';
 
+describe('extractVueScript: the `lang` of the block', () => {
+	test.each([
+		['<script lang="tsx">', 'tsx'],
+		["<script lang='jsx'>", 'jsx'],
+		['<script lang=ts>', 'ts'],
+		['<script data-x="a lang=\'tsx\'" lang="ts">', 'ts'],
+	])('is read from %s', (startTag, lang) => {
+		expect(extractVueScript(`${startTag}\nexport default {}\n</script>`)?.lang).toBe(lang);
+	});
+
+	test.each([['<script>'], ['<script data-lang="tsx">'], ['<script lang>'], ['<script data-x="a lang=\'tsx\'">']])(
+		'is absent for %s',
+		startTag => {
+			expect(extractVueScript(`${startTag}\nexport default {}\n</script>`)).not.toHaveProperty('lang');
+		},
+	);
+});
+
 describe('extractVueScript', () => {
 	test('extracts regular <script> content', () => {
 		const source = `<template><div /></template>

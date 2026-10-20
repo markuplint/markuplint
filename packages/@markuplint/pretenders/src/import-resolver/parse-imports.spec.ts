@@ -396,6 +396,43 @@ describe('parseImports', () => {
 		});
 	});
 
+	// The lexer throws on JSX it cannot tokenize (the real one, not a mock), so the source is read with the
+	// TypeScript parser, as the script kind the caller gives
+	describe('a source the lexer rejects', () => {
+		const item = { localName: 'Item', importedName: 'default', source: './Item.vue', type: 'default' };
+
+		test.each([
+			[
+				'a `.map` with an arrow function in children',
+				'const r = () => <ul>{items.map(i => <li key={i}>{i}</li>)}</ul>',
+			],
+			['a fragment', 'const r = () => <><A /></>'],
+			['an apostrophe in the text', "const r = () => <p>it's</p>"],
+		])('is read as TSX when the script kind says so, for %s', async (_, jsx) => {
+			expect(await parseImports(`import Item from './Item.vue'\n${jsx}`, ts.ScriptKind.TSX)).toStrictEqual([
+				item,
+			]);
+		});
+
+		test('is read as TSX, whatever the JSX is before the import', async () => {
+			const source = `const r = () => <><A /></>\nimport Item from './Item.vue'`;
+			expect(await parseImports(source, ts.ScriptKind.TSX)).toStrictEqual([item]);
+		});
+
+		test('has no bindings when it is JSX and is read as TypeScript, which is not JSX', async () => {
+			expect(await parseImports(`import Item from './Item.vue'\nconst r = () => <><A /></>`)).toStrictEqual([]);
+		});
+
+		test('has no bindings when the TypeScript parser finds a syntax error too', async () => {
+			expect(
+				await parseImports(
+					`import Item from './Item.vue'\nconst r = () => <><A /></>\nconst = ;`,
+					ts.ScriptKind.TSX,
+				),
+			).toStrictEqual([]);
+		});
+	});
+
 	describe('TypeScript type-only imports', () => {
 		test('import type statement is excluded from bindings', async () => {
 			const source = ["import Button from './Button.vue'", "import type { ButtonProps } from './types'"].join(
