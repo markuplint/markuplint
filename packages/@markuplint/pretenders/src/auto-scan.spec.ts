@@ -99,6 +99,108 @@ describe('autoScan', () => {
 		expect(result.find(p => p.selector === 'Item')).toMatchObject({ as: { element: 'img', slots: null } });
 	});
 
+	test('a .tsx entry resolves a component loaded by a loader aliased with an assignment', async () => {
+		const entryPath = path.join(tmpDir, 'entry.tsx');
+		await writeFile(
+			path.join(tmpDir, 'Item.tsx'),
+			'export const Item = () => <img src="x.png" />;\nexport default Item;',
+		);
+		const entrySource = [
+			"import React from 'react';",
+			'const l = React.lazy;',
+			"const Foo = l(() => import('./Item'));",
+			'export const W = () => <div><Foo><span>c</span></Foo></div>;',
+		].join('\n');
+
+		const result = await autoScan(entryPath, entrySource);
+
+		expect(result.find(p => p.selector === 'Foo')).toMatchObject({ as: { element: 'img', slots: null } });
+	});
+
+	test('a .tsx entry resolves a member tag of a module read whole with `await import(...)`', async () => {
+		const entryPath = path.join(tmpDir, 'entry.tsx');
+		await writeFile(path.join(tmpDir, 'ui.tsx'), 'export const Button = () => <button type="button" />;');
+		const entrySource = [
+			"const UI = await import('./ui');",
+			'export const W = () => <div><UI.Button><span>c</span></UI.Button></div>;',
+		].join('\n');
+
+		const result = await autoScan(entryPath, entrySource);
+
+		expect(result.find(p => p.selector === String.raw`UI\.Button`)).toMatchObject({
+			as: { element: 'button', slots: null },
+		});
+	});
+
+	test('a .tsx entry resolves a component whose default export is a lazy component, under another name', async () => {
+		const entryPath = path.join(tmpDir, 'Page.tsx');
+		await mkdir(path.join(tmpDir, 'b'));
+		await writeFile(path.join(tmpDir, 'b', 'Item.tsx'), 'export const Item = () => <div />;\nexport default Item;');
+		await writeFile(
+			path.join(tmpDir, 'Lazy.tsx'),
+			"import { lazy } from 'react';\nexport default lazy(() => import('./b/Item'));",
+		);
+		const entrySource = ["import Foo from './Lazy';", 'export const Page = () => <Foo><span>c</span></Foo>;'].join(
+			'\n',
+		);
+
+		const result = await autoScan(entryPath, entrySource);
+
+		expect(result.find(p => p.selector === 'Foo')).toMatchObject({ as: { element: 'div', slots: null } });
+	});
+
+	test('a .tsx entry gets no component for a lazy default export that loads a module of a package', async () => {
+		const entryPath = path.join(tmpDir, 'Page.tsx');
+		await writeFile(
+			path.join(tmpDir, 'Lazy.tsx'),
+			"import { lazy } from 'react';\nexport default lazy(() => import('some-package'));",
+		);
+		const entrySource = ["import Foo from './Lazy';", 'export const Page = () => <Foo><span>c</span></Foo>;'].join(
+			'\n',
+		);
+
+		const result = await autoScan(entryPath, entrySource);
+
+		expect(result.find(p => p.selector === 'Foo')).toBeUndefined();
+	});
+
+	test('a .tsx entry ends the walk when two lazy default exports load each other', async () => {
+		const entryPath = path.join(tmpDir, 'Page.tsx');
+		await writeFile(
+			path.join(tmpDir, 'A.tsx'),
+			"import { lazy } from 'react';\nexport default lazy(() => import('./B'));",
+		);
+		await writeFile(
+			path.join(tmpDir, 'B.tsx'),
+			"import { lazy } from 'react';\nexport default lazy(() => import('./A'));",
+		);
+		const entrySource = ["import Foo from './A';", 'export const Page = () => <Foo><span>c</span></Foo>;'].join(
+			'\n',
+		);
+
+		const result = await autoScan(entryPath, entrySource);
+
+		expect(result.find(p => p.selector === 'Foo')).toBeUndefined();
+	});
+
+	test('a .tsx entry resolves a component whose export is a variable of a lazy component', async () => {
+		const entryPath = path.join(tmpDir, 'Page.tsx');
+		await mkdir(path.join(tmpDir, 'b'));
+		await writeFile(path.join(tmpDir, 'b', 'Item.tsx'), 'export const Item = () => <div />;\nexport default Item;');
+		await writeFile(
+			path.join(tmpDir, 'Lazy.tsx'),
+			"import { lazy } from 'react';\nexport const Slow = lazy(() => import('./b/Item'));",
+		);
+		const entrySource = [
+			"import { Slow as Foo } from './Lazy';",
+			'export const Page = () => <Foo><span>c</span></Foo>;',
+		].join('\n');
+
+		const result = await autoScan(entryPath, entrySource);
+
+		expect(result.find(p => p.selector === 'Foo')).toMatchObject({ as: { element: 'div', slots: null } });
+	});
+
 	test('a .tsx entry resolves a member tag of a namespace import', async () => {
 		const entryPath = path.join(tmpDir, 'entry.tsx');
 		await writeFile(path.join(tmpDir, 'Item.tsx'), 'export const Item = () => <img src="x.png" />;');
