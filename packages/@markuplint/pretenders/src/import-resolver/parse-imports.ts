@@ -241,15 +241,15 @@ export async function parseImports(
 		if (imp.type === 'dynamic') {
 			// Dynamic import with a string literal specifier (e.g., `import('./Foo.vue')`)
 			// It has a local binding name only when it is assigned to one (see `dynamicImportName`);
-			// otherwise we use '*' as a sentinel.
-			// Consumers should check `type === 'dynamic'` to distinguish from namespace imports.
+			// otherwise we use '*' as a sentinel with `type: 'dynamic'`. The whole module read into a
+			// variable (`const UI = await import('./ui')`) is a `type: 'namespace'` binding.
 			namesOfDynamicImports ??= dynamicImportNames(source, scriptKind);
 			bindings.push({
 				localName: '*',
 				importedName: '*',
+				type: 'dynamic',
 				...namesOfDynamicImports.get(imp.importStart),
 				source: imp.specifier,
-				type: 'dynamic',
 			});
 			continue;
 		}

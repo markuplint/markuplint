@@ -13,7 +13,14 @@
  * export default Item`) is recorded as a re-export of what it imports, as the
  * file declares no component under that name.
  *
- * Only top-level export and import syntax is inspected; this module does not resolve
+ * A default export or a top-level variable that a loader call initializes
+ * (`export default lazy(() => import('./b/Item'))`) declares no component either: it is the
+ * component of the module it loads. It is recorded as wrapping a re-export of that module, so that
+ * another file importing it under any name is resolved to the component that is loaded, as it
+ * would be for the static `import` of it.
+ *
+ * Only top-level export and import syntax, and the initializers of top-level variables, are
+ * inspected; this module does not resolve
  * across files (that is `resolve-module-file`'s job) or follow
  * `export * from` chains — a star re-export is recorded as-is, and any
  * caller doing multi-file resolution must decide how far to follow it.
@@ -24,9 +31,12 @@
  * read this one table, so they agree on which statements lead anywhere.
  */
 
+import type { LoadedExport } from './import-resolver/dynamic-import-name.js';
 import type { SourceFile } from 'typescript';
 
 import ts from 'typescript';
+
+import { loadedExport } from './import-resolver/dynamic-import-name.js';
 
 /**
  * Where a single exported name resolves to: a declaration in the same file,
@@ -38,9 +48,11 @@ export type ExportEntry =
 			readonly localName: string;
 			/**
 			 * For a default export that is no binding ({@link DEFAULT_LOCAL_NAME}), the binding
-			 * it wraps (`memo(Item)` wraps `Item`, see {@link wrappedIdentifier}). When the
-			 * scanner finds no component of its own in the default export, it is the
-			 * component of this binding, if that has one.
+			 * it wraps (`memo(Item)` wraps `Item`, see {@link wrappedIdentifier}), or for a
+			 * binding that a loader call initializes, the export of the module the call loads
+			 * (`lazy(() => import('./b/Item'))` wraps the default export of `./b/Item`, as a
+			 * re-export). When the scanner finds no component of its own in the default
+			 * export, it is the component of this binding, if that has one.
 			 */
 			readonly wraps?: ExportEntry;
 	  }
@@ -49,8 +61,9 @@ export type ExportEntry =
 			readonly source: string;
 			readonly importedName: string;
 			/**
-			 * The file exports a binding it imports (`import X from`, then `export default X`).
-			 * The import statement already leads `autoScan`'s walk there, so
+			 * The file exports a binding it imports (`import X from`, then `export default X`),
+			 * or a loader call that loads the module (`lazy(() => import('./b/Item'))`). The
+			 * import statement or the `import()` already leads `autoScan`'s walk there, so
 			 * {@link getReExportSources} leaves it out.
 			 */
 			readonly viaImport?: true;
@@ -86,19 +99,19 @@ export function getExportTable(
 ): ExportTable {
 	const byName = new Map<string, ExportEntry>();
 	const starReExportSources: string[] = [];
-	const imports = collectImports(source);
+	const scope: FileScope = { imports: collectImports(source), loads: collectLoads(source) };
 
 	for (const node of source.statements) {
 		if (ts.isExportAssignment(node)) {
 			if (node.isExportEquals) {
 				continue;
 			}
-			byName.set('default', defaultEntry(node.expression, imports));
+			byName.set('default', defaultEntry(node.expression, scope));
 			continue;
 		}
 
 		if (ts.isExportDeclaration(node)) {
-			collectExportDeclaration(node, byName, starReExportSources, imports);
+			collectExportDeclaration(node, byName, starReExportSources, scope);
 			continue;
 		}
 
@@ -110,7 +123,7 @@ export function getExportTable(
 		if (ts.isVariableStatement(node) && hasExportModifier(node)) {
 			for (const declaration of node.declarationList.declarations) {
 				if (ts.isIdentifier(declaration.name)) {
-					byName.set(declaration.name.text, { kind: 'local', localName: declaration.name.text });
+					byName.set(declaration.name.text, declaredEntry(declaration.name.text, scope));
 				}
 			}
 		}
@@ -141,20 +154,26 @@ export function getReExportSources(table: ExportTable): string[] {
 /**
  * The entry of `export default <expression>`. An identifier names its declaration, or
  * the binding it imports. Any other expression is a value without a name of its own:
- * {@link DEFAULT_LOCAL_NAME}, with the binding it wraps, if any, as `wraps`.
+ * {@link DEFAULT_LOCAL_NAME}, with the binding it wraps, if any, as `wraps`; for a loader call
+ * (`lazy(() => import('./b/Item'))`) that is the export of the module it loads (see
+ * {@link loadedEntry}).
  */
 function defaultEntry(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	expression: ts.Expression,
-	imports: ReadonlyMap<string, ImportedBinding>,
+	scope: FileScope,
 ): ExportEntry {
 	if (ts.isIdentifier(expression)) {
-		return localEntry(expression.text, imports);
+		return localEntry(expression.text, scope);
+	}
+	const loaded = loadedExport(expression);
+	if (loaded) {
+		return { kind: 'local', localName: DEFAULT_LOCAL_NAME, wraps: loadedEntry(loaded) };
 	}
 	const wrapped = wrappedIdentifier(expression);
 	return wrapped == null
 		? { kind: 'local', localName: DEFAULT_LOCAL_NAME }
-		: { kind: 'local', localName: DEFAULT_LOCAL_NAME, wraps: localEntry(wrapped, imports) };
+		: { kind: 'local', localName: DEFAULT_LOCAL_NAME, wraps: localEntry(wrapped, scope) };
 }
 
 /**
@@ -162,18 +181,69 @@ function defaultEntry(
  * so that resolution follows it to the module that declares it.
  *
  * @param localName - The local binding that is exported
- * @param imports - The bindings the file imports
+ * @param scope - The bindings the file imports, and the variables it initializes with a loader call
  * @param namespaces - Whether a namespace import is a re-export of its module (`export { B }`):
  *   a default export of it, or the argument of a wrapper call, is no component to follow
  * @returns The export entry of the binding
  */
-function localEntry(localName: string, imports: ReadonlyMap<string, ImportedBinding>, namespaces = false): ExportEntry {
-	const imported = imports.get(localName);
+function localEntry(localName: string, scope: FileScope, namespaces = false): ExportEntry {
+	const imported = scope.imports.get(localName);
 	// A namespace import is a re-export only where it is exported by name (`export { B }`): a default
 	// export of it, or a wrapper's argument, is no component to follow.
 	return imported && (namespaces || imported.importedName !== '*')
 		? { kind: 're-export', ...imported, viaImport: true }
-		: { kind: 'local', localName };
+		: declaredEntry(localName, scope);
+}
+
+/** The entry of a binding the file declares: with the module it loads, when it is a loader call. */
+function declaredEntry(localName: string, scope: FileScope): ExportEntry {
+	const loaded = scope.loads.get(localName);
+	return loaded ? { kind: 'local', localName, wraps: loadedEntry(loaded) } : { kind: 'local', localName };
+}
+
+/**
+ * The entry for what a loader call loads: a re-export of that export of the module, which
+ * resolution follows as it follows `import Item from './b/Item'; export default memo(Item)`.
+ * {@link getReExportSources} leaves it out (`viaImport`), as the `import()` already leads
+ * `autoScan`'s walk to the module.
+ */
+function loadedEntry(loaded: LoadedExport): ExportEntry {
+	return { kind: 're-export', source: loaded.source, importedName: loaded.importedName, viaImport: true };
+}
+
+/**
+ * What the top level of a file knows about its names: the ones it imports, and the variables that
+ * are initialized with a loader call, with the module the call loads.
+ */
+interface FileScope {
+	readonly imports: ReadonlyMap<string, ImportedBinding>;
+	readonly loads: ReadonlyMap<string, LoadedExport>;
+}
+
+/**
+ * The top-level variables that a loader call initializes (`const Item = lazy(() => import('./b/Item'))`),
+ * each with the module it loads: a component of the file that is neither declared nor imported in it.
+ */
+function collectLoads(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	source: SourceFile,
+): Map<string, LoadedExport> {
+	const loads = new Map<string, LoadedExport>();
+	for (const node of source.statements) {
+		if (!ts.isVariableStatement(node)) {
+			continue;
+		}
+		for (const declaration of node.declarationList.declarations) {
+			const loaded =
+				ts.isIdentifier(declaration.name) && declaration.initializer
+					? loadedExport(declaration.initializer)
+					: null;
+			if (loaded && ts.isIdentifier(declaration.name)) {
+				loads.set(declaration.name.text, loaded);
+			}
+		}
+	}
+	return loads;
 }
 
 /**
@@ -192,7 +262,8 @@ function localEntry(localName: string, imports: ReadonlyMap<string, ImportedBind
  *
  * The JSX scanner takes no component of its own from a default export that wraps a binding,
  * so that a function written in the configuration (`withLayout(({ children }) => …)(Page)`)
- * is not taken for the component: it is the component of `Page`.
+ * is not taken for the component: it is the component of `Page`. A loader call wraps no binding
+ * either (`undefined`); the module it loads is {@link loadedExport}'s.
  *
  * @param node - The expression of `export default`
  * @returns The name of the wrapped binding, or `undefined`
@@ -266,7 +337,7 @@ function collectExportDeclaration(
 	node: ts.ExportDeclaration,
 	byName: Map<string, ExportEntry>,
 	starReExportSources: string[],
-	imports: ReadonlyMap<string, ImportedBinding>,
+	scope: FileScope,
 ) {
 	if (node.isTypeOnly) {
 		// `export type { X } from` / `export type * from` — a type carries no component
@@ -304,7 +375,7 @@ function collectExportDeclaration(
 			byName.set(exportedName, { kind: 're-export', source, importedName: originalName });
 		} else {
 			// `export { Item }` / `export { Item as ListItem }` — re-exporting a local binding
-			byName.set(exportedName, localEntry(originalName, imports, exportedName !== 'default'));
+			byName.set(exportedName, localEntry(originalName, scope, exportedName !== 'default'));
 		}
 	}
 }

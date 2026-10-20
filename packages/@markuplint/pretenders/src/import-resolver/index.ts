@@ -23,7 +23,9 @@
  * name it is assigned to or read into, as `./dynamic-import-name.ts` decides
  * (`const X = lazy(() => import('./X'))` is `X`, and so is
  * `const { X } = await import('./X')`), so a lookup by name finds it like the
- * static import of that export. One that is not named uses `localName: '*'` as a
+ * static import of that export. The whole module read into a variable
+ * (`const UI = await import('./ui')`) is a `type: 'namespace'` binding, like
+ * `import * as UI from './ui'`. One that is not named uses `localName: '*'` as a
  * sentinel. Template literal and variable specifiers are excluded.
  *
  * ## Barrel file resolution

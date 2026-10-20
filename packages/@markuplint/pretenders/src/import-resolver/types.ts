@@ -11,7 +11,9 @@ export interface ImportBinding {
 	 * of `components: { X: defineAsyncComponent(() => import('./X.vue')) }`, or the variable
 	 * an awaited import is read into (`const { X } = await import('./X')`). Otherwise this
 	 * is set to `'*'` as a sentinel value. Use the `type` field to tell a dynamic import
-	 * from a namespace import (which also uses `'*'` for `importedName`).
+	 * from a namespace import (which also uses `'*'` for `importedName`). The whole module
+	 * read into a variable (`const UI = await import('./ui')`) is a namespace binding under
+	 * that variable.
 	 */
 	readonly localName: string;
 	/**
@@ -34,7 +36,7 @@ export interface ImportBinding {
 	 * The type of import binding:
 	 * - `'default'` — `import X from '...'`
 	 * - `'named'` — `import { X } from '...'`
-	 * - `'namespace'` — `import * as X from '...'`
+	 * - `'namespace'` — `import * as X from '...'`, or `const X = await import('...')`
 	 * - `'dynamic'` — `import('...')` with a string literal specifier
 	 */
 	readonly type: 'default' | 'named' | 'namespace' | 'dynamic';

@@ -278,7 +278,45 @@ describe('parseImports', () => {
 			expect(await parseImports(source)).toStrictEqual([
 				{ localName: 'Item', importedName: 'default', source: './Item.vue', type: 'dynamic' },
 				{ localName: 'Other', importedName: 'Named', source: './Other.vue', type: 'dynamic' },
-				{ localName: '*', importedName: '*', source: './Whole.vue', type: 'dynamic' },
+				// Behavior change: the whole module read into a variable is bound as a namespace under that variable
+				{ localName: 'Whole', importedName: '*', source: './Whole.vue', type: 'namespace' },
+				// { localName: '*', importedName: '*', source: './Whole.vue', type: 'dynamic' }, // previous
+			]);
+		});
+
+		test('a loader aliased by an assignment names the import after the variable', async () => {
+			const source = [
+				"import { lazy } from 'react'",
+				'const l = lazy',
+				"const A = l(() => import('./A'))",
+				'const { defineAsyncComponent: define } = Vue',
+				"const B = define(() => import('./B.vue'))",
+				"const d = require('next/dynamic')",
+				"const C = d(() => import('./C'))",
+			].join('\n');
+			expect((await parseImports(source)).map(b => [b.localName, b.source])).toStrictEqual([
+				['lazy', 'react'],
+				['A', './A'],
+				['B', './B.vue'],
+				['C', './C'],
+			]);
+		});
+
+		test('an alias that a parameter shadows names nothing', async () => {
+			const source = ['const l = React.lazy', "function f(l) { return l(() => import('./A')) }"].join('\n');
+			expect(await parseImports(source)).toStrictEqual([
+				{ localName: '*', importedName: '*', source: './A', type: 'dynamic' },
+			]);
+		});
+
+		test('an awaited import read into a variable as a whole is a namespace', async () => {
+			const source = [
+				"const UI = await import('./ui')",
+				"const Other = await import('./other').then(m => m)",
+			].join('\n');
+			expect(await parseImports(source)).toStrictEqual([
+				{ localName: 'UI', importedName: '*', source: './ui', type: 'namespace' },
+				{ localName: 'Other', importedName: '*', source: './other', type: 'namespace' },
 			]);
 		});
 

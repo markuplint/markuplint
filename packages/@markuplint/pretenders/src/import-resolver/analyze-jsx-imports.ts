@@ -34,8 +34,9 @@ import { dynamicImportName } from './dynamic-import-name.js';
  * (`import { type X }`) are excluded, as are side-effect-only imports. A dynamic
  * import is bound under the name {@link dynamicImportName} gives it (the variable
  * `lazy(() => import('./X'))` is assigned to, or the awaited import is read into)
- * with `type: 'dynamic'`, and has no local name otherwise, where it uses the
- * `'*'` sentinel; template literal, variable and concatenated specifiers,
+ * with `type: 'dynamic'`, or with `type: 'namespace'` when it is the whole module read into a
+ * variable. One that has no name is `type: 'dynamic'` with the `'*'` sentinel as its
+ * `localName`. Template literal, variable and concatenated specifiers,
  * `import.meta` and type-position `typeof import('...')` are excluded.
  *
  * @param source - The parsed TypeScript source file to inspect
@@ -75,9 +76,9 @@ function collectDynamicImports(
 			bindings.push({
 				localName: '*',
 				importedName: '*',
+				type: 'dynamic',
 				...dynamicImportName(node),
 				source: specifier.text,
-				type: 'dynamic',
 			});
 		}
 	}
