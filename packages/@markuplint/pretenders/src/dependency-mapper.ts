@@ -562,13 +562,26 @@ function resolveMemberTag(
 	// One chain for all the members, as `namespaceMembers` counts the files of one chain.
 	const visited = new Set<string>();
 	for (const member of members.slice(0, -1)) {
-		current = typeof current === 'string' ? namespaceOfExport(current, member, visited, env) : current;
+		// A template component has `default` only, which is no namespace.
+		current =
+			typeof current === 'string'
+				? isTemplateComponentFile(current)
+					? null
+					: namespaceOfExport(current, member, visited, env)
+				: current;
 	}
 	if (current === FROM_PACKAGE) {
 		return FROM_PACKAGE;
 	}
 	const last = members.at(-1);
-	const declaration = current && last ? resolveExportedName(current, last, visited, env) : null;
+	let declaration: Declaration | null = null;
+	if (current && last) {
+		declaration = isTemplateComponentFile(current)
+			? last === 'default'
+				? { fileAbs: current, localName: null }
+				: null
+			: resolveExportedName(current, last, visited, env);
+	}
 	if (!declaration) {
 		return null;
 	}
@@ -578,8 +591,9 @@ function resolveMemberTag(
 /**
  * The module a binding stands for as a namespace: the module of `import * as UI`, or the module
  * that `export * as UI from` (or `import * as UI; export { UI }`) of the imported one names, for a
- * named or default import of it. `null` for a binding that is no namespace, and for a template
- * component, which has no member to name; `FROM_PACKAGE` for one that is a package's namespace.
+ * named or default import of it. `null` for a binding that is no namespace, and for a named or
+ * default import of a template component (see {@link isNamespaceModule}: only `import * as m` of
+ * one is a namespace); `FROM_PACKAGE` for one that is a package's namespace.
  */
 function namespaceModuleOf(
 	binding: ImportBinding,
@@ -589,6 +603,9 @@ function namespaceModuleOf(
 	const moduleAbs = resolveModule(importerAbs, binding.source, env);
 	if (moduleAbs && isPackageFile(moduleAbs, env.cwd)) {
 		return FROM_PACKAGE;
+	}
+	if (moduleAbs && isTemplateComponentFile(moduleAbs)) {
+		return binding.type === 'namespace' ? moduleAbs : null;
 	}
 	if (!isScannedModule(moduleAbs, env)) {
 		return null;
@@ -601,6 +618,18 @@ function namespaceModuleOf(
 /** A module whose export table is read: not a package's, and not a template component (`default` only). */
 function isScannedModule(fileAbs: string | null, env: DeclarationEnv): fileAbs is string {
 	return fileAbs != null && !isPackageFile(fileAbs, env.cwd) && !isTemplateComponentFile(fileAbs);
+}
+
+/**
+ * A module that a namespace stands for: any module that is not a package's. A template component is
+ * one as well, though it has no export table (see {@link declarationKey}): its one member is `default`,
+ * the file's own component, which a template names as `<m.default />` (a tag with a dot is a component
+ * in Svelte, https://svelte.dev/docs/svelte/basic-markup). A name of a template component that is
+ * looked up in a table would be looked up in the text of the file, so only `import * as m` of it, and
+ * `export * as Sub from` it, are namespaces.
+ */
+function isNamespaceModule(fileAbs: string | null, env: DeclarationEnv): fileAbs is string {
+	return fileAbs != null && !isPackageFile(fileAbs, env.cwd);
 }
 
 /**
@@ -661,10 +690,10 @@ function namespaceOfExport(
 	if (nextAbs && isPackageFile(nextAbs, env.cwd)) {
 		return FROM_PACKAGE;
 	}
-	if (!isScannedModule(nextAbs, env)) {
-		return null;
+	if (entry.importedName === '*') {
+		return isNamespaceModule(nextAbs, env) ? nextAbs : null;
 	}
-	return entry.importedName === '*' ? nextAbs : namespaceOfExport(nextAbs, entry.importedName, visited, env);
+	return isScannedModule(nextAbs, env) ? namespaceOfExport(nextAbs, entry.importedName, visited, env) : null;
 }
 
 /**
@@ -682,6 +711,11 @@ function namespaceOfExport(
  * and Astro take only a capital initial for a component: there an alias under a lowercase
  * namespace name is made and matches no tag.
  *
+ * `default` is a member too (`UI.default`: a namespace object has it, and the tag with a dot is a
+ * component), except through a plain `export *`, which does not pass it on (ECMAScript); `export * as
+ * Sub from` is a namespace of its own, so `Sub.default` is one. A template component, which has no export
+ * table, has `default` as its only member: the file's own component.
+ *
  * A pretender for it is selected by the name written with `\.` (see {@link escapeSelectorIdent}):
  * a selector is CSS, where `UI.Item` is the type `UI` with the class `Item`, and `UI\.Item` is the
  * one name of the tag.
@@ -697,7 +731,30 @@ function namespaceMembers(
 	// The module that a star re-export gives a nested namespace, `null` once two give it differently.
 	const starNamespaces = new Map<string, string | null>();
 
-	const collect = (fileAbs: string, prefix: readonly string[], visited: ReadonlySet<string>, own: boolean) => {
+	// `own`: the module declares the names itself, not a star's. `star`: `fileAbs` was reached by a plain
+	// `export *`, which passes every name on but `default` (a plain star never reaches a template component).
+	const collect = (
+		fileAbs: string,
+		prefix: readonly string[],
+		visited: ReadonlySet<string>,
+		{ own, star }: { readonly own: boolean; readonly star: boolean },
+	) => {
+		if (isTemplateComponentFile(fileAbs)) {
+			// No export table: the one member is `default`, the file's own component.
+			const members = [...prefix, 'default'];
+			const id = members.join('.');
+			if (!visited.has(fileAbs) && visited.size < MAX_RE_EXPORT_DEPTH) {
+				if (own) {
+					ownIds.add(id);
+				}
+				if (own || !ownIds.has(id)) {
+					const key = keyOfDeclaration({ fileAbs, localName: null }, env, map);
+					const previous = found.get(id);
+					found.set(id, { members, key: previous && !own && previous.key !== key ? null : key });
+				}
+			}
+			return;
+		}
 		const table = getExportTableForFile(fileAbs, env);
 		if (!table || visited.has(fileAbs) || visited.size >= MAX_RE_EXPORT_DEPTH) {
 			return;
@@ -707,7 +764,7 @@ function namespaceMembers(
 		for (const [name, entry] of table.byName) {
 			const members = [...prefix, name];
 			const id = members.join('.');
-			if (name === 'default') {
+			if (name === 'default' && star) {
 				continue;
 			}
 			if (own) {
@@ -718,7 +775,7 @@ function namespaceMembers(
 
 			if (entry.kind === 're-export' && entry.importedName === '*') {
 				const nextAbs = resolveModule(fileAbs, entry.source, env);
-				if (!isScannedModule(nextAbs, env)) {
+				if (!isNamespaceModule(nextAbs, env)) {
 					continue;
 				}
 				if (!own) {
@@ -728,7 +785,8 @@ function namespaceMembers(
 						continue;
 					}
 				}
-				collect(nextAbs, members, chain, own);
+				// A namespace is a module of its own: `default` of it is a member, however `fileAbs` was reached.
+				collect(nextAbs, members, chain, { own, star: false });
 				continue;
 			}
 
@@ -743,11 +801,11 @@ function namespaceMembers(
 		for (const source of table.starReExportSources) {
 			const nextAbs = resolveModule(fileAbs, source, env);
 			if (isScannedModule(nextAbs, env)) {
-				collect(nextAbs, prefix, chain, false);
+				collect(nextAbs, prefix, chain, { own: false, star: true });
 			}
 		}
 	};
-	collect(moduleAbs, [], new Set(), true);
+	collect(moduleAbs, [], new Set(), { own: true, star: false });
 
 	const ambiguous = [...starNamespaces].flatMap(([id, from]) => (from == null ? [id] : []));
 	return [...found].flatMap(([id, { members, key }]) =>

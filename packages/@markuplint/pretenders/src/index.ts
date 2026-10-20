@@ -28,6 +28,10 @@
  * `localName` is the sentinel `'*'`. Check `type === 'dynamic'`
  * to distinguish from namespace imports. The whole module read into a variable
  * (`const UI = await import('./ui')`) is a `type: 'namespace'` binding, as `import * as UI` is.
+ * Its members are the member tags `UI.Item`, and `UI.default` for a default export. A namespace of a
+ * template component file (`import * as m from './Item.svelte'`, `{#await import('./Item.svelte') then m}`)
+ * has one member, `m.default`, the file's own component: a tag with a dot is a component, and the file
+ * has no export table to name another.
  *
  * ## Lint-time disambiguation
  *
