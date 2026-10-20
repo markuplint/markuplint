@@ -266,9 +266,15 @@ class VueParser extends Parser<ASTNode, State> {
 	 * says it is a custom element, which markuplint does not know.
 	 *
 	 * The lists are Vue's own and the names are case-sensitive, as Vue's: an obsolete element that they
-	 * do not hold (`marquee`) is no native tag to Vue, though markuplint has a specification for it. It is not
-	 * the rule of {@link isComponentName}, which tells by the form of a name alone whether it is a
-	 * component's, for the target of a pretender and the root a scanner reads: `as: 'marquee'` is meant
+	 * do not hold (`marquee`) is no native tag to Vue, though markuplint has a specification for it.
+	 *
+	 * It is `MLParser#isNativeTag`, so what Vue resolves is what the document takes for native. The type
+	 * selector (`Marquee` stands for `<marquee>`) reads it, and so does the guard that keeps a pretender off
+	 * a native element, as `@markuplint/pretenders` does. The rules keyed on the specification still see
+	 * `<marquee>`.
+	 *
+	 * It is not the rule of {@link isComponentName}, which tells by the form of a name alone whether it is
+	 * a component's, for the target of a pretender and the root a scanner reads: `as: 'marquee'` is meant
 	 * as the element there.
 	 *
 	 * @param name - A tag name as written, case kept
