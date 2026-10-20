@@ -331,6 +331,162 @@ https://svelte.dev/e/expected_token
 		]);
 	});
 
+	// The shorthand `{#await expression then name}` has the `then` in the head of the block, so the
+	// content that follows it belongs to the block and no `{:then}` marks it.
+	test('await then in the head (12)', () => {
+		const r = parse('{#await p then x}<b>t</b>{/await}');
+		const map = nodeListToDebugMaps(r.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:18](0,17)#ps:await (await): {#await␣p␣then␣x}',
+			'[1:18]>[1:21](17,20)b: <b>',
+			'[1:21]>[1:22](20,21)#text: t',
+			'[1:22]>[1:26](21,25)b: </b>',
+			'[1:26]>[1:34](25,33)#ps:/await (end): {/await}',
+		]);
+	});
+
+	test('await then in the head, without a name (13)', () => {
+		const r = parse('{#await p then}<b>t</b>{/await}');
+		const map = nodeListToDebugMaps(r.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:16](0,15)#ps:await (await): {#await␣p␣then}',
+			'[1:16]>[1:19](15,18)b: <b>',
+			'[1:19]>[1:20](18,19)#text: t',
+			'[1:20]>[1:24](19,23)b: </b>',
+			'[1:24]>[1:32](23,31)#ps:/await (end): {/await}',
+		]);
+	});
+
+	test('await then in the head, then catch (14)', () => {
+		const r = parse('{#await p then x}<b>t</b>{:catch e}<i>f</i>{/await}');
+		const map = nodeListToDebugMaps(r.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:18](0,17)#ps:await (await): {#await␣p␣then␣x}',
+			'[1:18]>[1:21](17,20)b: <b>',
+			'[1:21]>[1:22](20,21)#text: t',
+			'[1:22]>[1:26](21,25)b: </b>',
+			'[1:26]>[1:36](25,35)#ps:await:catch (await:catch): {:catch␣e}',
+			'[1:36]>[1:39](35,38)i: <i>',
+			'[1:39]>[1:40](38,39)#text: f',
+			'[1:40]>[1:44](39,43)i: </i>',
+			'[1:44]>[1:52](43,51)#ps:/await (end): {/await}',
+		]);
+	});
+
+	test('await then in the head, a block in the content, then catch (18)', () => {
+		const r = parse('{#await p then x}{#if a}b{/if}{:catch f}<i>f</i>{/await}');
+		const map = nodeListToDebugMaps(r.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:18](0,17)#ps:await (await): {#await␣p␣then␣x}',
+			'[1:18]>[1:25](17,24)#ps:if (if): {#if␣a}',
+			'[1:25]>[1:26](24,25)#text: b',
+			'[1:26]>[1:31](25,30)#ps:/if (end): {/if}',
+			'[1:31]>[1:41](30,40)#ps:await:catch (await:catch): {:catch␣f}',
+			'[1:41]>[1:44](40,43)i: <i>',
+			'[1:44]>[1:45](43,44)#text: f',
+			'[1:45]>[1:49](44,48)i: </i>',
+			'[1:49]>[1:57](48,56)#ps:/await (end): {/await}',
+		]);
+	});
+
+	// The tokens of the clauses are cut at their own place when the block is not at the start of the file
+	test('await then catch statement, after other content (19)', () => {
+		const r = parse('<p>a</p>{#await q}w{:then x}t{:catch e}c{/await}');
+		const map = nodeListToDebugMaps(r.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:4](0,3)p: <p>',
+			'[1:4]>[1:5](3,4)#text: a',
+			'[1:5]>[1:9](4,8)p: </p>',
+			'[1:9]>[1:19](8,18)#ps:await (await): {#await␣q}',
+			'[1:19]>[1:20](18,19)#text: w',
+			'[1:20]>[1:29](19,28)#ps:await:then (await:then): {:then␣x}',
+			'[1:29]>[1:30](28,29)#text: t',
+			'[1:30]>[1:40](29,39)#ps:await:catch (await:catch): {:catch␣e}',
+			'[1:40]>[1:41](39,40)#text: c',
+			'[1:41]>[1:49](40,48)#ps:/await (end): {/await}',
+		]);
+	});
+
+	test('await then in the head, then catch, after other content (20)', () => {
+		const r = parse('<p>a</p>{#await q then x}<b>t</b>{:catch e}<i>f</i>{/await}');
+		const map = nodeListToDebugMaps(r.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:4](0,3)p: <p>',
+			'[1:4]>[1:5](3,4)#text: a',
+			'[1:5]>[1:9](4,8)p: </p>',
+			'[1:9]>[1:26](8,25)#ps:await (await): {#await␣q␣then␣x}',
+			'[1:26]>[1:29](25,28)b: <b>',
+			'[1:29]>[1:30](28,29)#text: t',
+			'[1:30]>[1:34](29,33)b: </b>',
+			'[1:34]>[1:44](33,43)#ps:await:catch (await:catch): {:catch␣e}',
+			'[1:44]>[1:47](43,46)i: <i>',
+			'[1:47]>[1:48](46,47)#text: f',
+			'[1:48]>[1:52](47,51)i: </i>',
+			'[1:52]>[1:60](51,59)#ps:/await (end): {/await}',
+		]);
+	});
+
+	test('await then catch statements in a block and nested (21)', () => {
+		const r = parse('{#if a}{#await q}{:then x}t{/await}{/if}');
+		const map = nodeListToDebugMaps(r.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:8](0,7)#ps:if (if): {#if␣a}',
+			'[1:8]>[1:18](7,17)#ps:await (await): {#await␣q}',
+			'[1:18]>[1:27](17,26)#ps:await:then (await:then): {:then␣x}',
+			'[1:27]>[1:28](26,27)#text: t',
+			'[1:28]>[1:36](27,35)#ps:/await (end): {/await}',
+			'[1:36]>[1:41](35,40)#ps:/if (end): {/if}',
+		]);
+	});
+
+	test('await then catch statement, an await with its own catch in the then (22)', () => {
+		const r = parse('{#await p}{:then x}{#await q}{:catch e}c{/await}{:catch f}<i>f</i>{/await}');
+		const map = nodeListToDebugMaps(r.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:11](0,10)#ps:await (await): {#await␣p}',
+			'[1:11]>[1:20](10,19)#ps:await:then (await:then): {:then␣x}',
+			'[1:20]>[1:30](19,29)#ps:await (await): {#await␣q}',
+			'[1:30]>[1:40](29,39)#ps:await:catch (await:catch): {:catch␣e}',
+			'[1:40]>[1:41](39,40)#text: c',
+			'[1:41]>[1:49](40,48)#ps:/await (end): {/await}',
+			'[1:49]>[1:59](48,58)#ps:await:catch (await:catch): {:catch␣f}',
+			'[1:59]>[1:62](58,61)i: <i>',
+			'[1:62]>[1:63](61,62)#text: f',
+			'[1:63]>[1:67](62,66)i: </i>',
+			'[1:67]>[1:75](66,74)#ps:/await (end): {/await}',
+		]);
+	});
+
+	test('await catch in the head (15)', () => {
+		const r = parse('{#await p catch e}<i>f</i>{/await}');
+		const map = nodeListToDebugMaps(r.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:19](0,18)#ps:await (await): {#await␣p␣catch␣e}',
+			'[1:19]>[1:22](18,21)i: <i>',
+			'[1:22]>[1:23](21,22)#text: f',
+			'[1:23]>[1:27](22,26)i: </i>',
+			'[1:27]>[1:35](26,34)#ps:/await (end): {/await}',
+		]);
+	});
+
+	test('await then in the head, with no content (16)', () => {
+		const r = parse('{#await p then x}{/await}');
+		const map = nodeListToDebugMaps(r.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:18](0,17)#ps:await (await): {#await␣p␣then␣x}',
+			'[1:18]>[1:26](17,25)#ps:/await (end): {/await}',
+		]);
+	});
+
+	test('await then in the head, the element is a child of the block (17)', () => {
+		const r = parse('{#await p then x}<b>t</b>{/await}');
+		const block = r.nodeList.find(n => n.nodeName === '#ps:await');
+		const b = r.nodeList.find(n => n.type === 'starttag' && n.nodeName === 'b');
+		expect(b.depth).toBe(1);
+		expect(b.parentNodeUuid).toBe(block.uuid);
+		expect(block.childNodes.filter(n => n.type === 'starttag').map(n => n.nodeName)).toStrictEqual(['b']);
+	});
+
 	// https://svelte-5-preview.vercel.app/docs/snippets
 	test('snippet', () => {
 		const r = parse('{#snippet name(param)}<div />{/snippet}');
