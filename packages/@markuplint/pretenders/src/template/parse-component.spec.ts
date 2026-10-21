@@ -55,6 +55,7 @@ describe('isModuleNotFoundError', () => {
 
 	test('returns false for non-Error values', () => {
 		expect(isModuleNotFoundError(null)).toBe(false);
+		// @ts-expect-error the error argument is intentionally omitted
 		expect(isModuleNotFoundError()).toBe(false);
 		expect(isModuleNotFoundError('ERR_MODULE_NOT_FOUND')).toBe(false);
 		expect(isModuleNotFoundError({ code: 'ERR_MODULE_NOT_FOUND' })).toBe(false);
