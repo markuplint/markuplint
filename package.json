@@ -111,7 +111,8 @@
 	},
 	"packageManager": "yarn@4.18.1",
 	"resolutions": {
-		"markuplint": "workspace:*"
+		"markuplint": "workspace:*",
+		"undici@npm:7.29.0": "7.29.1"
 	},
 	"dependenciesMeta": {
 		"@vscode/vsce-sign": {
