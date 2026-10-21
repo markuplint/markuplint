@@ -146,14 +146,13 @@ describe('Width descriptors require sizes', () => {
 		]);
 	});
 
-	test('[no-unpaired-srcset-sizes-valid-009] source with w descriptors without sizes (sibling img lazy) → no violation', async () => {
-		// HTML LS § source: img with loading="lazy" supports auto-sizes, so
-		// the source's sizes attribute may be omitted even with w descriptors.
+	test('[no-unpaired-srcset-sizes-valid-009] source with w descriptors without sizes (sibling img lazy, without sizes=auto) → fires', async () => {
+		// HTML LS § source: the sizes attribute may be omitted only when the following
+		// img allows auto-sizes, which takes sizes="auto" as well as loading="lazy".
 		const { violations } = await mlRuleTest(
 			rule,
 			'<picture><source srcset="s.webp 480w, l.webp 1024w"><img src="l.jpg" alt="p" loading="lazy"></picture>',
 		);
-		// Behavior change: the img allows auto-sizes only with loading="lazy" and sizes="auto", so the source still needs sizes
 		expect(violations).toStrictEqual([
 			{
 				severity: 'error',
@@ -164,7 +163,6 @@ describe('Width descriptors require sizes', () => {
 				raw: '<source srcset="s.webp 480w, l.webp 1024w">',
 			},
 		]);
-		// expect(violations).toStrictEqual([]); // previous
 	});
 });
 
@@ -297,7 +295,18 @@ describe('source with width descriptors: the following img must allow auto-sizes
 		).toStrictEqual([]);
 	});
 
-	test('[no-unpaired-srcset-sizes-invalid-008] img[sizes=auto] without loading=lazy → violation', async () => {
+	test('[no-unpaired-srcset-sizes-valid-017] the following img decides, not the next sibling', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					`<picture>${source}<source srcset="m.jpg 480w" sizes="100vw"><img src="l.jpg" alt="p" loading="lazy" sizes="auto"></picture>`,
+				)
+			).violations,
+		).toStrictEqual([]);
+	});
+
+	test('[no-unpaired-srcset-sizes-invalid-013] img[sizes=auto] without loading=lazy → violation', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`<picture>${source}<img src="l.jpg" alt="p" sizes="auto"></picture>`,
@@ -305,7 +314,7 @@ describe('source with width descriptors: the following img must allow auto-sizes
 		expect(violations.map(v => v.message)).toStrictEqual([GENERIC]);
 	});
 
-	test('[no-unpaired-srcset-sizes-invalid-009] img[loading=lazy][sizes=100vw] → violation that names what would allow it', async () => {
+	test('[no-unpaired-srcset-sizes-invalid-014] img[loading=lazy][sizes=100vw] → violation that names what would allow it', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`<picture>${source}<img src="l.jpg" alt="p" loading="lazy" sizes="100vw"></picture>`,

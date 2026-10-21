@@ -102,7 +102,7 @@ export function resolveContentModel(
 ): ReadonlyDeep<ContentModel['contents']> | null {
 	if (mode === 'origin' && el.pretenderContext?.type === 'pretender') {
 		const userRule = rules.find(r => hasTagRule(el, r));
-		return userRule?.contents ?? null;
+		return userRule ? contentsOfTagRule(el, userRule) : null;
 	}
 	const model = getContentModel(el, specs.specs);
 	if (model != null || el.pretenderContext?.type === 'pretender') {
@@ -114,7 +114,24 @@ export function resolveContentModel(
 	if (!userRule) {
 		return null;
 	}
-	return userRule.conditional?.find(({ condition }) => el.matches(condition))?.contents ?? userRule.contents;
+	return contentsOfTagRule(el, userRule);
+}
+
+/**
+ * The contents of a user's tag rule for the element: those of the first `conditional` entry whose
+ * condition the element meets, or else the rule's own, as `getContentModel` of `@markuplint/ml-spec`
+ * reads a spec. It is for the lookups that find the rule without `getContentModel`.
+ *
+ * @param el - The element
+ * @param rule - The user's tag rule written for the element
+ * @returns The contents that apply to the element
+ */
+function contentsOfTagRule(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element,
+	rule: TagRule,
+): ReadonlyDeep<ContentModel['contents']> {
+	return rule.conditional?.find(({ condition }) => el.matches(condition))?.contents ?? rule.contents;
 }
 
 /**

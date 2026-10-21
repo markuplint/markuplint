@@ -77,7 +77,7 @@ async function importParser(ext: string): Promise<LoadedParser | null> {
 		// A parser that is not installed is for the caller to do without: the scanner of the same package
 		// has said so (`getScanner`), and a language with no scanner has no parser the user meant to use.
 		// Only the parser package itself missing is that: a module the parser needs that is missing is a fault.
-		if (isModuleNotFoundError(error) && error instanceof Error && error.message.includes(pkg)) {
+		if (isModuleNotFoundError(error) && error instanceof Error && missingPackageOf(error) === pkg) {
 			return null;
 		}
 		// A fault may pass (a build that was not done yet), so it is not kept: the next call tries again, and
@@ -135,6 +135,18 @@ export function getLoadedComponentNameRule(ext: string): NameRule | undefined {
  */
 export function getLoadedNativeTagRule(ext: string): NameRule | undefined {
 	return loadedParsers.get(ext)?.isNativeTag;
+}
+
+/**
+ * The package that an `ERR_MODULE_NOT_FOUND` of Node names as missing: `Cannot find package '<name>'
+ * imported from <path>`. The path is that of the module that imports it, which is inside the parser's own
+ * package when a dependency of the parser is missing, so the message as a whole names the parser either way.
+ *
+ * @param error - The error of the import
+ * @returns The name of the missing package, or `undefined` for another message (a missing file of a package)
+ */
+function missingPackageOf(error: Error): string | undefined {
+	return /^Cannot find package '([^']+)'/.exec(error.message)?.[1];
 }
 
 function isModuleNotFoundError(error: unknown): boolean {

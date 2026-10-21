@@ -12,26 +12,32 @@ function violation(line: number, col: number): Violation {
 	return { ruleId: 'rule-a', severity: 'error', message: 'test', line, col, raw: '' };
 }
 
+/** A node whose tree a spec builds: the parent and the children are set after it is made. */
+type MutableNode = { -readonly [K in keyof PositionedNode]: PositionedNode[K] };
+
 function element(
 	tag: string,
 	line: number,
 	col: number,
 	attributes: readonly { name: string; value: string }[] = [],
-): PositionedNode {
+	classes: readonly string[] = [],
+): MutableNode {
 	return {
 		nodeType: 1,
 		localName: tag,
 		id: '',
 		classList: {
-			contains: () => false,
-			[Symbol.iterator]: function* () {},
+			contains: (cls: string) => classes.includes(cls),
+			[Symbol.iterator]: function* () {
+				yield* classes;
+			},
 		},
 		attributes: attributes.map(({ name, value }) => ({ name, value })),
 		parentElement: null,
 		children: [],
 		startLine: line,
 		startCol: col,
-	} as unknown as PositionedNode;
+	} as unknown as MutableNode;
 }
 
 /** Whether the violation of the element is suppressed by the scope. */
@@ -81,10 +87,8 @@ describe('a scope that names an element whose name has a `.`', () => {
 		expect(isSuppressed(String.raw`Tabs\.Root`, 'Tabs.Rootx')).toBe(false);
 	});
 
-	it('reads a `\\` that is not an escape as a part of the name, as a file written before the escape holds it', () => {
-		// Behavior change: `\ba` is a hex escape of CSS (U+00BA), so `Foo\bar` is the name `Fooºr`, not `Foo\bar`
+	it('reads the `\\ba` of `Foo\\bar` as a hex escape, and an escaped `\\` as a part of the name', () => {
 		expect(isSuppressed(String.raw`Foo\bar`, 'Fooºr')).toBe(true);
-		// expect(isSuppressed(String.raw`Foo\bar`, String.raw`Foo\bar`)).toBe(true); // previous
 		expect(isSuppressed(String.raw`Foo\\bar`, String.raw`Foo\bar`)).toBe(true);
 	});
 
@@ -147,5 +151,73 @@ describe('a scope that names an element with the escapes of CSS', () => {
 
 	it('keeps reading an unescaped trailing `:nth-of-type(n)` as a position, not as a name', () => {
 		expect(isSuppressed('foo:nth-of-type(2)', 'foo:nth-of-type(2)')).toBe(false);
+	});
+});
+
+describe('a scope that names an element whose name has a capital letter or a digit, with a class or a position', () => {
+	function node(tag: string, line: number, classes: readonly string[] = []) {
+		return element(tag, line, 1, [], classes);
+	}
+
+	/** Whether the violation of `target`, one of `children` of a `div`, is suppressed by the scope. */
+	function isSuppressedAmong(scope: string, children: readonly MutableNode[], target: MutableNode) {
+		const parent = node('div', 1);
+		parent.children = children;
+		for (const child of children) {
+			child.parentElement = parent;
+		}
+		const { filtered } = applySuppressions(
+			new Map([[file, [violation(target.startLine, 1)]]]),
+			{ 'src/a.vue': { 'rule-a': { count: 1, scope } } },
+			suppressionsPath,
+			{ nodeLists: new Map([[file, [parent, ...children]]]) },
+		);
+		return filtered.get(file)?.length === 0;
+	}
+
+	it.each([
+		['FooBar.cls', 'FooBar'],
+		['fooBar.cls', 'fooBar'],
+		['h1.cls', 'h1'],
+		['Tabs2.cls', 'Tabs2'],
+	])('%s matches the element of the class', (scope, tag) => {
+		const target = node(tag, 2, ['cls']);
+		expect(isSuppressedAmong(scope, [target], target)).toBe(true);
+	});
+
+	it.each([
+		['FooBar.cls', 'FooBar', ['other']],
+		['FooBar.cls', 'foobar', ['cls']],
+		['h1.cls', 'h1', []],
+		['h1.cls', 'h2', ['cls']],
+	] as const)('%s does not match <%s> of the classes %j', (scope, tag, classes) => {
+		const target = node(tag, 2, classes);
+		expect(isSuppressedAmong(scope, [target], target)).toBe(false);
+	});
+
+	it.each([
+		['h1:nth-of-type(2)', 'h1'],
+		['FooBar:nth-of-type(2)', 'FooBar'],
+		['Tabs2:nth-of-type(2)', 'Tabs2'],
+		['FooBar.cls:nth-of-type(2)', 'FooBar'],
+	])('%s matches the second element of the name, not the first', (scope, tag) => {
+		const first = node(tag, 2, ['cls']);
+		const second = node(tag, 3, ['cls']);
+		expect(isSuppressedAmong(scope, [first, second], second)).toBe(true);
+		expect(isSuppressedAmong(scope, [first, second], first)).toBe(false);
+	});
+
+	it('counts the position among the elements of the same name only', () => {
+		const heading2 = node('h2', 2);
+		const firstH1 = node('h1', 3);
+		const secondH1 = node('h1', 4);
+		expect(isSuppressedAmong('h1:nth-of-type(2)', [heading2, firstH1, secondH1], secondH1)).toBe(true);
+		expect(isSuppressedAmong('h1:nth-of-type(2)', [heading2, firstH1, secondH1], firstH1)).toBe(false);
+	});
+
+	it('does not count an element whose name differs only in case', () => {
+		const lowercase = node('foobar', 2);
+		const component = node('FooBar', 3);
+		expect(isSuppressedAmong('FooBar:nth-of-type(2)', [lowercase, component], component)).toBe(false);
 	});
 });

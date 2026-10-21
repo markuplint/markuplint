@@ -35,7 +35,9 @@ Repo-wide meta specs directly under `src/` (e.g. `mirrors-parse-error-codes.spec
 - IDs go on `test()` blocks only (not `describe()`)
 - Numbers are sequential per category per file, starting at `001`
 - Multiple tests for the same issue: `[rule-name-issue-NNNN-001]`, `[rule-name-issue-NNNN-002]`
+- The number is that of the issue whose behavior the test guards. A test added later for that behavior — by an issue that only asks for tests, or with a fix found while writing them — continues its numbers, next to its earlier tests
 - When adding a new test, assign the next available number in the appropriate category
+- An existing test whose assertion was flipped keeps its ID, category included (`.claude/rules/spec-files.md`)
 - Run `/list-rule-test` (or `node .claude/skills/list-rule-test/scripts/list-rule-test.mjs --no-id`) to check for missing IDs — the only expected hits are the exempt meta specs noted above
 
 ## Writing a rule's README and `schema.json` description

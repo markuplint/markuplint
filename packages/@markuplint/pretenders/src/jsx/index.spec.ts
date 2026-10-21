@@ -34,7 +34,6 @@ describe('jsxScanner', () => {
 					slots: null,
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/001.tsx:1:6'),
-				// Behavior change: the entry carries `localName`, the name the component is declared under.
 				localName: 'NodeA',
 			},
 			{
@@ -45,7 +44,6 @@ describe('jsxScanner', () => {
 					slots: null,
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/001.tsx:11:6'),
-				// Behavior change: the entry carries `localName`, the name the component is declared under.
 				localName: 'NodeB',
 			},
 			{
@@ -56,56 +54,42 @@ describe('jsxScanner', () => {
 					contents: [{ element: 'span' }],
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/001.tsx:15:6'),
-				// Behavior change: the entry carries `localName`, the name the component is declared under.
 				localName: 'NodeC',
 			},
 			{
 				selector: 'NodeD',
-				// BREAKING CHANGE (#4082): `slots: null` is kept instead of collapsing to the bare tag name.
-				// as: 'DReturns', // pre-#4082 baseline
 				as: { element: 'DReturns', slots: null },
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/001.tsx:25:6'),
-				// Behavior change: the entry carries `localName`, the name the component is declared under.
 				localName: 'NodeD',
 			},
 			{
 				selector: 'NodeE',
-				// as: 'EReturns', // pre-#4082 baseline
 				as: { element: 'EReturns', slots: null },
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/001.tsx:27:6'),
-				// Behavior change: the entry carries `localName`, the name the component is declared under.
 				localName: 'NodeE',
 			},
 			{
 				selector: 'NodeF',
-				// as: 'FReturns', // pre-#4082 baseline
 				as: { element: 'FReturns', slots: null },
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/001.tsx:33:9'),
-				// Behavior change: the entry carries `localName`, the name the component is declared under.
 				localName: 'NodeF',
 			},
 			{
 				selector: 'NodeG',
-				// as: 'GReturns', // pre-#4082 baseline
 				as: { element: 'GReturns', slots: null },
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/001.tsx:38:16'),
-				// Behavior change: the entry carries `localName`, the name the component is declared under.
 				localName: 'NodeG',
 			},
 			{
 				selector: 'NodeH',
-				// as: 'HReturns', // pre-#4082 baseline
 				as: { element: 'HReturns', slots: null },
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/001.tsx:42:24'),
-				// Behavior change: the entry carries `localName`, the name the component is declared under.
 				localName: 'NodeH',
 			},
 			{
 				selector: 'NodeI',
-				// as: 'IReturns', // pre-#4082 baseline
 				as: { element: 'IReturns', slots: null },
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/001.tsx:46:9'),
-				// Behavior change: the entry carries `localName`, the name the component is declared under.
 				localName: 'NodeI',
 			},
 		]);
@@ -129,7 +113,6 @@ describe('jsxScanner', () => {
 					inheritAttrs: true,
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/003.tsx:2:6'),
-				// Behavior change: the entry carries `localName`, the name the component is declared under.
 				localName: 'Button',
 			},
 			{
@@ -140,10 +123,7 @@ describe('jsxScanner', () => {
 					slots: true,
 					inheritAttrs: true,
 				},
-				// Behavior change: the `filePath` is where the component is declared, not where the component it renders is.
-				// filePath: _('packages/@markuplint/pretenders/test/fixtures/003.tsx:2:6'), // previous
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/003.tsx:12:6'),
-				// Behavior change: the entry carries `localName`, the name the component is declared under.
 				localName: 'MyComponent2',
 			},
 		]);
@@ -161,7 +141,6 @@ describe('jsxScanner', () => {
 					inheritAttrs: true,
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/003.tsx:7:6'),
-				// Behavior change: the entry carries `localName`, the name the component is declared under.
 				localName: 'MyComponent',
 			},
 		]);
@@ -187,7 +166,6 @@ describe('jsxScanner', () => {
 					inheritAttrs: true,
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/004.tsx:2:6'),
-				// Behavior change: the entry carries `localName`, the name the component is declared under.
 				localName: 'AnyPrimaryButton',
 			},
 			{
@@ -198,7 +176,6 @@ describe('jsxScanner', () => {
 					inheritAttrs: true,
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/004.tsx:1:6'),
-				// Behavior change: the entry carries `localName`, the name the component is declared under.
 				localName: 'SecondaryButton',
 			},
 		]);
@@ -214,7 +191,6 @@ describe('jsxScanner', () => {
 					slots: null,
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/005.tsx:32:6'),
-				// Behavior change: the entry carries `localName`, the name the component is declared under.
 				localName: 'AttrOnlyChildren',
 			},
 			{
@@ -224,16 +200,12 @@ describe('jsxScanner', () => {
 					slots: [{ element: 'main' }],
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/005.tsx:22:6'),
-				// Behavior change: the entry carries `localName`, the name the component is declared under.
 				localName: 'NestedChildren',
 			},
 			{
 				selector: 'StaticContent',
-				// BREAKING CHANGE (#4082): `slots: null` is kept instead of collapsing to the bare tag name.
-				// as: 'p', // pre-#4082 baseline
 				as: { element: 'p', slots: null },
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/005.tsx:17:6'),
-				// Behavior change: the entry carries `localName`, the name the component is declared under.
 				localName: 'StaticContent',
 			},
 			{
@@ -243,7 +215,6 @@ describe('jsxScanner', () => {
 					slots: true,
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/005.tsx:37:6'),
-				// Behavior change: the entry carries `localName`, the name the component is declared under.
 				localName: 'TernaryChildren',
 			},
 			{
@@ -256,7 +227,6 @@ describe('jsxScanner', () => {
 					slots: null,
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/005.tsx:12:6'),
-				// Behavior change: the entry carries `localName`, the name the component is declared under.
 				localName: 'VoidComponent',
 			},
 			{
@@ -267,7 +237,6 @@ describe('jsxScanner', () => {
 					slots: true,
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/005.tsx:2:6'),
-				// Behavior change: the entry carries `localName`, the name the component is declared under.
 				localName: 'WithChildren',
 			},
 			{
@@ -277,7 +246,6 @@ describe('jsxScanner', () => {
 					slots: true,
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/005.tsx:7:6'),
-				// Behavior change: the entry carries `localName`, the name the component is declared under.
 				localName: 'WithPropsChildren',
 			},
 		]);
@@ -312,11 +280,9 @@ describe('jsxScanner', () => {
 			});
 			// `A` renders `<Item>` without spreading its own props, so the
 			// attributes written at the usage site of `A` do not reach the `button`. `inheritAttrs` of
-			// `Item` is no longer carried over to `A`.
+			// `Item` is not carried over to `A`.
 			expect(a).toMatchObject({
 				selector: 'A',
-				// BREAKING CHANGE (#4082): the component renders `<Item>` without its own children, so `slots: null`.
-				// as: { element: 'button', slots: true, inheritAttrs: true }, // pre-#4082 baseline
 				as: { element: 'button', slots: null },
 				_via: ['Item'],
 			});
@@ -342,14 +308,10 @@ describe('jsxScanner', () => {
 			// See the `A` case above.
 			expect(c).toMatchObject({
 				selector: 'C',
-				// BREAKING CHANGE (#4082): the component renders `<Item>` without its own children, so `slots: null`.
-				// as: { element: 'button', slots: true, inheritAttrs: true }, // pre-#4082 baseline
 				as: { element: 'button', slots: null },
 				_via: ['Item'],
 			});
 			expect(c?.as).not.toHaveProperty('inheritAttrs');
-			// Behavior change: the `filePath` is where the component is declared, not where the component it renders is.
-			// expect(c?.filePath).toMatch(/^a\.tsx:/); // previous
 			expect(c?.filePath).toMatch(/^c\.tsx:/);
 		});
 
@@ -367,8 +329,6 @@ describe('jsxScanner', () => {
 			// See the `A` case above.
 			expect(e).toMatchObject({
 				selector: 'E',
-				// BREAKING CHANGE (#4082): the component renders `<Item>` without its own children, so `slots: null`.
-				// as: { element: 'span', slots: true, inheritAttrs: true }, // pre-#4082 baseline
 				as: { element: 'span', slots: null },
 				_via: ['Item'],
 			});
@@ -383,8 +343,6 @@ describe('jsxScanner', () => {
 
 			const result = await jsxScanner([filePath], { sources });
 
-			// BREAKING CHANGE (#4082): `slots: null` is kept instead of collapsing to the bare tag name.
-			// expect(result).toStrictEqual([expect.objectContaining({ selector: 'InMemoryOnly', as: 'span' })]); // pre-#4082 baseline
 			expect(result).toStrictEqual([
 				expect.objectContaining({ selector: 'InMemoryOnly', as: { element: 'span', slots: null } }),
 			]);
@@ -397,8 +355,6 @@ describe('jsxScanner', () => {
 
 			const result = await jsxScanner([overriddenPath, diskPath], { sources });
 
-			// BREAKING CHANGE (#4082): `slots: null` is kept instead of collapsing to the bare tag name.
-			// expect(result.find(p => p.selector === 'Overridden')).toMatchObject({ as: 'span' }); // pre-#4082 baseline
 			expect(result.find(p => p.selector === 'Overridden')).toMatchObject({
 				as: { element: 'span', slots: null },
 			});
@@ -406,7 +362,7 @@ describe('jsxScanner', () => {
 		});
 	});
 
-	describe('a component that renders no children (issue #4082)', () => {
+	describe('a component that renders no children', () => {
 		test('an element without attributes keeps `slots: null` instead of collapsing to its name', async () => {
 			const filePath = path.resolve(testDir, '001.tsx');
 			const sources = new Map([[normalizePath(filePath), 'export const Bare = () => <span></span>;']]);

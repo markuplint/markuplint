@@ -91,22 +91,18 @@ describe('collectImportBindings', () => {
 			const bindings = collectImportBindings(
 				sourceFile("const Item = lazy(() => import('./Item'));\nexport const W = () => <Item />;"),
 			);
-			// Behavior change: the binding is named after the variable `lazy()` is assigned to
 			expect(bindings).toStrictEqual([
 				{ localName: 'Item', importedName: 'default', source: './Item', type: 'dynamic' },
 			]);
-			// expect(bindings).toStrictEqual([{ localName: '*', importedName: '*', source: './Item', type: 'dynamic' }]); // previous
 		});
 
 		test('a dynamic import nested in a function body is collected', () => {
 			const bindings = collectImportBindings(
 				sourceFile('export async function load() {\n\tconst m = await import("./Item");\n\treturn m;\n}'),
 			);
-			// Behavior change: the whole module read into a variable is bound as a namespace under that variable
 			expect(bindings).toStrictEqual([
 				{ localName: 'm', importedName: '*', source: './Item', type: 'namespace' },
 			]);
-			// expect(bindings).toStrictEqual([{ localName: '*', importedName: '*', source: './Item', type: 'dynamic' }]); // previous
 		});
 
 		test('a template literal specifier is excluded', () => {
@@ -123,9 +119,7 @@ describe('collectImportBindings', () => {
 			const bindings = collectImportBindings(
 				sourceFile("const A = lazy(() => import('./a').then(m => ({ default: m.A })));"),
 			);
-			// Behavior change: the binding is named after the variable, and imports the export `.then` reads
 			expect(bindings).toStrictEqual([{ localName: 'A', importedName: 'A', source: './a', type: 'dynamic' }]);
-			// expect(bindings).toStrictEqual([{ localName: '*', importedName: '*', source: './a', type: 'dynamic' }]); // previous
 		});
 
 		test('a dynamic import inside a class method is collected', () => {
@@ -158,9 +152,7 @@ describe('collectImportBindings', () => {
 			);
 			expect(bindings).toStrictEqual([
 				{ localName: 'Item', importedName: 'Item', source: './x', type: 'named' },
-				// Behavior change: the binding is named after the variable `lazy()` is assigned to
 				{ localName: 'L', importedName: 'default', source: './Item', type: 'dynamic' },
-				// { localName: '*', importedName: '*', source: './Item', type: 'dynamic' }, // previous
 			]);
 		});
 
@@ -209,9 +201,7 @@ describe('collectImportBindings', () => {
 			);
 			expect(bindings).toStrictEqual([
 				{ localName: 'A', importedName: 'default', source: './a', type: 'default' },
-				// Behavior change: the binding is named after the variable `lazy()` is assigned to
 				{ localName: 'B', importedName: 'default', source: './b', type: 'dynamic' },
-				// { localName: '*', importedName: '*', source: './b', type: 'dynamic' }, // previous
 				{ localName: 'C', importedName: 'C', source: './c', type: 'named' },
 			]);
 		});
@@ -228,8 +218,6 @@ describe('collectImportBindings', () => {
 
 		test.each([
 			['`React.lazy`', "const A = React.lazy(() => import('./a'));"],
-			// Behavior change: the call is judged by its name, so a known loader other than `lazy` is named
-			// ['any wrapper call, judged by its shape', "const A = dynamic(() => import('./a'));"], // previous
 			['a known loader, `dynamic`', "const A = dynamic(() => import('./a'));"],
 			['an `async` arrow', "const A = lazy(async () => import('./a'));"],
 			['a parenthesized import', "const A = lazy(() => (import('./a')));"],
@@ -246,13 +234,8 @@ describe('collectImportBindings', () => {
 				'a loader option next to others',
 				"const A = defineAsyncComponent({ delay: 200, loader: () => import('./a') });",
 			],
-			// Behavior change: only a known loader names the import, so `useMemo` does not
-			// ['a call that is not a lazy wrapper (shape only)', "const A = useMemo(() => import('./a'), []);"], // previous
-			// Behavior change: a wrapper inside another call is named after the variable the outer call is assigned to
 			['a wrapper inside another call', "const A = memo(lazy(() => import('./a')));"],
-			// Behavior change: a `.then` that returns the module as it is reads the default export
 			['a `.then` that returns the module as it is', "const A = lazy(() => import('./a').then(m => m));"],
-			// Behavior change: a loader that reads the module in a statement is read as a `.then` is
 			[
 				'a loader that reads the module in a statement',
 				"const A = lazy(async () => { const m = await import('./a'); return m.default; });",
@@ -283,7 +266,6 @@ describe('collectImportBindings', () => {
 			expect(collectImportBindings(sourceFile(code))).toStrictEqual([named('A', 'B')]);
 		});
 
-		// Behavior change: a `.then` that destructures the module reads the destructured export
 		test('is the export `.then` reads, for a destructured parameter', () => {
 			const bindings = collectImportBindings(
 				sourceFile("const A = lazy(() => import('./a').then(({ B }) => ({ default: B })));"),
@@ -317,25 +299,16 @@ describe('collectImportBindings', () => {
 			['a bare import', "const A = import('./a');"],
 			['a destructuring declaration', "const { A } = lazy(() => import('./a'));"],
 			['an object property that is not `components`', "const o = { A: lazy(() => import('./a')) };"],
-			// Behavior change: a wrapper inside another call is named after the variable the outer call is assigned to
-			// ['a wrapper inside another call', "const A = memo(lazy(() => import('./a')));"], // previous
 			[
 				'a loader that does more than return the import',
 				"const A = lazy(() => { init(); return import('./a'); });",
 			],
 			['a loader that is not the first argument', "const A = lazy(false, () => import('./a'));"],
-			// Behavior change: a `.then` that destructures the module reads the destructured export
-			// [
-			// 	'a `.then` that destructures the module',
-			// 	"const A = lazy(() => import('./a').then(({ B }) => ({ default: B })));",
-			// ], // previous
 			['a `.then` that reads a computed member', "const A = lazy(() => import('./a').then(m => m['B']));"],
 			[
 				'a `.then` with a default that is not a member',
 				"const A = lazy(() => import('./a').then(m => ({ default: B })));",
 			],
-			// Behavior change: a `.then` that returns the module as it is reads the default export
-			// ['a `.then` that returns the module as it is', "const A = lazy(() => import('./a').then(m => m));"], // previous
 			['a call whose result is used, not returned', "const A = lazy(() => (use(import('./a')), null));"],
 			[
 				'a loader that is a shorthand method',
@@ -348,12 +321,6 @@ describe('collectImportBindings', () => {
 			['a `.then` callback with two parameters', "const A = lazy(() => import('./a').then((m, n) => m.B));"],
 			['a `.then` without a callback', "const A = lazy(() => import('./a').then());"],
 			['a `.then` followed by a `.catch`', "const A = lazy(() => import('./a').then(m => m.B).catch(fallback));"],
-			// Behavior change: a loader that reads the module in a statement is read as a `.then` is
-			// [
-			// 	'a loader that reads the module in a statement',
-			// 	"const A = lazy(async () => { const m = await import('./a'); return m.default; });",
-			// ], // previous
-			// Behavior change: only a known loader names the import, so `useMemo` does not
 			['a call that is not a loader', "const A = useMemo(() => import('./a'), []);"],
 		])('is none for %s', (_, code) => {
 			expect(collectImportBindings(sourceFile(code))).toStrictEqual([unnamed]);
@@ -548,8 +515,6 @@ describe('collectImportBindings', () => {
 		});
 
 		test.each([
-			// Behavior change: the whole module read into a variable is bound as a namespace
-			// ['the whole module', "const A = await import('./a');"], // previous
 			['two exports destructured', "const { B, C } = await import('./a');"],
 			['a rest destructured', "const { ...rest } = await import('./a');"],
 			['a nested pattern', "const { B: { C } } = await import('./a');"],
@@ -558,8 +523,6 @@ describe('collectImportBindings', () => {
 			['an array pattern', "const [A] = await import('./a');"],
 			['a computed property read', "const A = (await import('./a'))['B'];"],
 			['a call on the module', "const A = (await import('./a')).B();"],
-			// Behavior change: a `.then` that returns the module as it is gives a namespace
-			// ['a `.then` that returns the module', "const A = await import('./a').then(m => m);"], // previous
 			[
 				'a `.then` that returns an object with a default',
 				"const A = await import('./a').then(m => ({ default: m.B }));",

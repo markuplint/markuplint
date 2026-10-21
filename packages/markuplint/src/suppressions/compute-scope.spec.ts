@@ -352,9 +352,7 @@ describe('compute-scope', () => {
 				tag: 'html',
 				children: [{ tag: 'body', children: [{ tag: 'div', classes: ['group-[x="y"]'] }] }],
 			});
-			// Behavior change: a class is written as `CSS.escape` does, so the `=`, `"` and `]` are escaped too
 			expect(generateUniqueSelector(find(bracket, 'div')!)).toBe(String.raw`div.group-\[x\=\"y\"\]`);
-			// expect(generateUniqueSelector(find(bracket, 'div')!)).toBe(String.raw`div.group-\[x="y"]`); // previous
 		});
 
 		it('does not use an attribute whose value a scope cannot hold: `"` and ` > `', () => {

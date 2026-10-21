@@ -4,9 +4,16 @@ import { beforeAll, describe, expect, test } from 'vitest';
 
 import { loadComponentNameRule } from '../scanner-loader.js';
 
-import { isComponentBinding, resolveComponentImport, resolveSelectorImport, vueSetupNames } from './index.js';
+import {
+	analyzeImports,
+	isComponentBinding,
+	resolveComponentImport,
+	resolveSelectorImport,
+	vueSetupNames,
+} from './index.js';
 
-// `analyzeImports` and `scan` load the Vue parser when they read a Vue file; these specs do not read one.
+// `analyzeImports` and `scan` load the Vue parser when they read a Vue file; most specs here resolve
+// bindings they are given without reading one, so the parser is loaded for them first.
 beforeAll(async () => {
 	await loadComponentNameRule('.vue');
 });
@@ -75,6 +82,30 @@ describe('resolveComponentImport of a tag in a Vue file', () => {
 		expect(resolveComponentImport('foo-bar', [pascal, camel, written], vue)).toBe(written);
 		expect(resolveComponentImport('foo-bar', [pascal, camel], vue)).toBe(camel);
 		expect(resolveComponentImport('foo-bar', [pascal], vue)).toBe(pascal);
+	});
+
+	test('a dotted tag is the binding registered under it in the components of the Options API', async () => {
+		const { bindings } = (await analyzeImports(
+			vue,
+			`<script>
+import Item from './Item.vue'
+export default { components: { 'ui.Item': Item } }
+</script>`,
+		))!;
+
+		expect(bindings).toStrictEqual([
+			{
+				localName: 'Item',
+				importedName: 'default',
+				source: './Item.vue',
+				type: 'default',
+				registeredAs: 'ui.Item',
+			},
+		]);
+		expect(resolveComponentImport('ui.Item', bindings, vue)).toBe(bindings[0]);
+		// Not by the name of the binding, which the template does not know
+		expect(resolveComponentImport('Item', bindings, vue)).toBeUndefined();
+		expect(resolveComponentImport('ui.item', bindings, vue)).toBeUndefined();
 	});
 
 	test('a file of another language is looked up as before', () => {

@@ -80,4 +80,73 @@ describe('a tag rule of a component in a Vue template', () => {
 		});
 		expect(violations).toStrictEqual([]);
 	});
+
+	const conditionalRule = {
+		...tagRule,
+		conditional: [{ condition: '[open]', contents: [{ require: 'y-item' }] }],
+	};
+
+	test.each(['FooBar', 'fooBar', 'foo-bar'])(
+		'[permitted-contents-issue-4314-006] the conditional contents of the rule of FooBar apply to <%s> that meets the condition',
+		async tag => {
+			const { violations } = await mlRuleTest(
+				rule,
+				`<template><div><${tag} open><x-item /></${tag}></div></template>`,
+				{ ...vue, rule: [conditionalRule] },
+			);
+			expect(violations).toStrictEqual([
+				{
+					severity: 'error',
+					line: 1,
+					col: 16,
+					raw: `<${tag} open>`,
+					message: 'Require an element. (Need "y-item")',
+				},
+			]);
+		},
+	);
+
+	test.each(['FooBar', 'fooBar', 'foo-bar'])(
+		'[permitted-contents-issue-4314-007] <%s> that meets the condition and has what the conditional contents require is valid',
+		async tag => {
+			const { violations } = await mlRuleTest(
+				rule,
+				`<template><div><${tag} open><y-item /></${tag}></div></template>`,
+				{ ...vue, rule: [conditionalRule] },
+			);
+			expect(violations).toStrictEqual([]);
+		},
+	);
+
+	test.each(['FooBar', 'fooBar', 'foo-bar'])(
+		'[permitted-contents-issue-4314-008] the conditional contents of the rule of FooBar apply to <%s> that a pretender is made of',
+		async tag => {
+			const { violations } = await mlRuleTest(
+				rule,
+				`<template><div><${tag} open><y-item /></${tag}></div></template>`,
+				{ ...vue, pretenders: [{ selector: 'FooBar', as: 'section' }], rule: [conditionalRule] },
+			);
+			expect(violations).toStrictEqual([]);
+		},
+	);
+
+	test.each(['FooBar', 'fooBar', 'foo-bar'])(
+		'[permitted-contents-issue-4314-009] <%s> that does not meet the condition is checked against the contents of the rule',
+		async tag => {
+			const { violations } = await mlRuleTest(
+				rule,
+				`<template><div><${tag}><y-item /></${tag}></div></template>`,
+				{ ...vue, rule: [conditionalRule] },
+			);
+			expect(violations).toStrictEqual([
+				{
+					severity: 'error',
+					line: 1,
+					col: 16,
+					raw: `<${tag}>`,
+					message: 'Require an element. (Need "x-item")',
+				},
+			]);
+		},
+	);
 });

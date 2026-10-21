@@ -13,13 +13,13 @@ describe('cachedSpecs', () => {
 		({ specs: names.map(name => ({ name })), def: {}, cites: [] }) as unknown as MLMLSpec;
 	const rules: TagRule[] = [{ tag: 'x-a', contents: [{ require: 'x-b' }] }];
 
-	test('merges the tag rules into the specs of the document', () => {
+	test('[permitted-contents-issue-4314-010] merges the tag rules into the specs of the document', () => {
 		const merged = cachedSpecs(specsOf('a'), rules);
 
 		expect(merged.specs.map(spec => spec.name)).toStrictEqual(['a', 'x-a']);
 	});
 
-	test('two documents with different specs and the same rules do not share what is merged', () => {
+	test('[permitted-contents-issue-4314-011] two documents with different specs and the same rules do not share what is merged', () => {
 		const first = specsOf('a');
 		const second = specsOf('b');
 
@@ -28,14 +28,14 @@ describe('cachedSpecs', () => {
 		expect(cachedSpecs(first, rules).specs.map(spec => spec.name)).toStrictEqual(['a', 'x-a']);
 	});
 
-	test('the same specs and the same rules give the merged specs again', () => {
+	test('[permitted-contents-issue-4314-012] the same specs and the same rules give the merged specs again', () => {
 		const specs = specsOf('a');
 
 		expect(cachedSpecs(specs, [...rules])).toBe(cachedSpecs(specs, [...rules]));
 		expect(cachedSpecs(specs, [{ tag: 'x-c', contents: [] }])).not.toBe(cachedSpecs(specs, rules));
 	});
 
-	test('without rules the specs are returned as they are', () => {
+	test('[permitted-contents-issue-4314-013] without rules the specs are returned as they are', () => {
 		const specs = specsOf('a');
 
 		expect(cachedSpecs(specs, [])).toBe(specs);
