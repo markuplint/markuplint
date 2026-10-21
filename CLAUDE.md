@@ -39,10 +39,10 @@ Two major lines are developed in parallel:
 
 ### Test
 
-- Full test: `yarn test` (no arguments), which runs `vitest --typecheck run`. Vitest's type checking only covers `*.spec-d.ts` files and the repository has none, so a type error in a `*.spec.ts` is not reported by it (a spec with `const n: number = 'x'` passes with "Type Errors no errors"); the package builds exclude spec files as well. No gate type-checks a spec file
-- Single file/directory: `npx vitest run <path>`
+- Full test: `yarn test` (no arguments), which type-checks the specs (`yarn test:types`) before running them. Vitest itself does not type-check a `*.spec.ts` (its `--typecheck` covers only `*.spec-d.ts`, of which there are none) and the package builds exclude specs, so `yarn test:types` is the only gate for a type error in a spec. It reads the built `lib/*.d.ts` of the packages the specs import: run `yarn build` first (without it `tsc` reports a wall of unrelated TS2307 "cannot find module" errors)
+- Single file/directory: `npx vitest run <path>` — this does not type-check; only `yarn test` / `yarn test:types` do, and `tsc` runs over every spec at once
 - Do not use `npx lerna run test`, `yarn test --scope @markuplint/*`, or other variants
-- Do not use `npx tsc --noEmit` — it does not work in this monorepo (no root `include`; `composite` conflicts with `--noEmit` in build mode)
+- Do not use `npx tsc --noEmit` against the root `tsconfig.json` — it does not work in this monorepo (no root `include`; `composite` conflicts with `--noEmit` in build mode). The spec check goes through `yarn test:types`, whose `tsconfig.spec.json` sets its own `include` and `noEmit`
 - `yarn test` covers the TypeScript workspace only; a branch with `crates/` has a separate gate in `crates/CLAUDE.md`
 - CI additionally runs cross-OS (`vitest.cross-os.config.ts` on macOS/Windows) and alternative runtimes/package managers (bun, deno, pnpm, npm) — a green local `yarn test` does not cover those paths
 - A failure on the 10 s `testTimeout` (`vitest.config.ts`) is not evidence by itself: the CLI specs spawn processes, and the first run after `yarn install` / `yarn build` loads the Vue / Svelte / Astro scanners cold, so a loaded machine pushes them past the limit. Check `uptime`, re-run the failed spec alone, and confirm the change is on that spec's code path before concluding anything. Still suspect the current change first; load is the explanation only once the isolated re-run passes

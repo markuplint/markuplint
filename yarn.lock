@@ -2039,6 +2039,7 @@ __metadata:
     jsdom: "npm:30.1.2"
     textlint-rule-prh: "npm:6.1.0"
     type-fest: "npm:5.10.0"
+    typescript: "npm:6.0.3"
     vitest: "npm:4.1.11"
   dependenciesMeta:
     "@esbuild/linux-x64":

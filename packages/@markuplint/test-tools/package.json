@@ -39,5 +39,8 @@
 		"@esbuild/linux-x64": "0.28.2",
 		"@esbuild/win32-x64": "0.28.2",
 		"@rollup/rollup-linux-x64-gnu": "4.64.6"
+	},
+	"devDependencies": {
+		"typescript": "6.0.3"
 	}
 }
