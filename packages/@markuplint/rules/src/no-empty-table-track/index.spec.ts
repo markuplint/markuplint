@@ -184,10 +184,9 @@ describe('Table model errors', () => {
 </table>
 `,
 		);
-		// BREAKING CHANGE (#3915): HTML LS §4.9.12.1 Step 20 forbids a column that only holds
-		// slots without a cell anchored to them, and the four columns to the right of the anchor
-		// never get one. nu-validator reports the same table. The pre-#3915 baseline reported no
-		// violation here.
+		// HTML LS §4.9.12.1 Step 20 forbids a column that only holds slots without a cell anchored
+		// to them, and the four columns to the right of the anchor never get one. nu-validator
+		// reports the same table.
 		// https://html.spec.whatwg.org/multipage/tables.html#forming-a-table
 		expect(violations).toStrictEqual([
 			{

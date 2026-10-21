@@ -181,14 +181,10 @@ test('[no-invalid-attr-value-valid-003] URL attribute', async () => {
 	const { violations: violations2 } = await mlRuleTest(rule, '<img src="//sample.com/path/to">');
 	expect(violations2.length).toBe(0);
 
-	// BREAKING CHANGE (URL LS invalid-credentials, #3848 / PR #3867):
-	// `//user:pass@sample.com/path/to` now produces a violation. The original
-	// 0-violations assertion is preserved as a comment so this breaking change
-	// is visible in the test source itself, not only in git history.
-	// Positive coverage of the new behaviour lives in [invalid-attr-invalid-044].
+	// `//user:pass@sample.com/path/to` has credentials, which the URL Standard reports as
+	// invalid-credentials.
 	// https://url.spec.whatwg.org/#invalid-credentials
 	const { violations: violations3 } = await mlRuleTest(rule, '<img src="//user:pass@sample.com/path/to">');
-	// expect(violations3.length).toBe(0); // pre-URL-LS-strict baseline
 	expect(violations3.length).toBe(1);
 
 	const { violations: violations4 } = await mlRuleTest(rule, '<img src="/path/to">');
@@ -220,8 +216,8 @@ test('[no-invalid-attr-value-valid-003] URL attribute', async () => {
 });
 
 test('[no-invalid-attr-value-invalid-009] URL Living Standard validation errors', async () => {
-	// invalid-credentials with non-empty userinfo (`http://user:pass@host`) is
-	// already asserted in [invalid-attr-valid-007] violations3 — we do not
+	// invalid-credentials with non-empty userinfo (`//user:pass@host`) is
+	// already asserted in [no-invalid-attr-value-valid-003] violations3 — we do not
 	// duplicate it here. The empty-userinfo variant below exercises a separate
 	// regex branch (`SPECIAL_SCHEME_AUTHORITY_HAS_AT_SIGN` matching `@` without
 	// any chars before it), so it is covered here.
@@ -259,10 +255,8 @@ test('[no-invalid-attr-value-invalid-009] URL Living Standard validation errors'
 	expect(multipleHash.length).toBe(1);
 });
 
-test('[no-invalid-attr-value-invalid-010] URL Living Standard Phase 2 categories', async () => {
-	// `BaseURL` now delegates to `checkURL` after the existing data:/javascript:
-	// scheme filter; previously it accepted everything else without further
-	// validation. Regression guard for #3868.
+test('[no-invalid-attr-value-invalid-010] URL types other than a plain URL are validated by the URL Living Standard', async () => {
+	// `BaseURL` validates by `checkURL` what passes its data:/javascript: scheme filter.
 	// https://html.spec.whatwg.org/multipage/semantics.html#set-the-frozen-base-url
 	const { violations: baseHrefCredentials } = await mlRuleTest(rule, '<base href="http://user:pass@example.com/">');
 	expect(baseHrefCredentials.length).toBe(1);
@@ -293,7 +287,7 @@ test('[no-invalid-attr-value-invalid-010] URL Living Standard Phase 2 categories
 	const { violations: dataNoComma } = await mlRuleTest(rule, '<a href="data:/example.com/"></a>');
 	expect(dataNoComma.length).toBe(1);
 
-	// `AbsoluteURL` now delegates to `checkURL` — itemtype tokens get the
+	// `AbsoluteURL` validates by `checkURL`, so itemtype tokens get the
 	// URL LS validation surface (multi-hash etc.).
 	const { violations: itemtypeMultiHash } = await mlRuleTest(
 		rule,
@@ -1708,8 +1702,8 @@ test('[no-invalid-attr-value-invalid-038] del[datetime] rejects a duration compo
 
 test('[no-invalid-attr-value-invalid-039] del[datetime] rejects a comma fraction separator', async () => {
 	// Mirrors html/elements/del/global-date-and-time-bad-fraction-separator-novalid.html.
-	// Also locks down the parallel fix in `checkGlobalDateAndTimeString` so the
-	// catch-all `DateTime` type no longer accepts comma as a fraction separator.
+	// `checkGlobalDateAndTimeString` rejects it too, so the catch-all `DateTime`
+	// type does not accept a comma as a fraction separator.
 	const { violations } = await mlRuleTest(rule, '<del datetime="2011-11-12T14:54:39,929+0000">x</del>');
 	expect(violations.length).toBeGreaterThan(0);
 });
