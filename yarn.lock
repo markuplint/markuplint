@@ -1953,7 +1953,7 @@ __metadata:
     "@types/debug": "npm:^4.1.13"
     ansi-colors: "npm:^4.1.3"
     browserslist: "npm:^4.29.3"
-    chrono-node: "npm:^2.10.2"
+    chrono-node: "npm:^2.10.3"
     debug: "npm:^4.4.3"
     image-size: "npm:^2.0.4"
     type-fest: "npm:^5.10.0"
@@ -5303,10 +5303,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chrono-node@npm:^2.10.2":
-  version: 2.10.2
-  resolution: "chrono-node@npm:2.10.2"
-  checksum: 10c0/81e5d24077e51743a97d1608dcc5149f72b029782255a4408e229e2c99824d43a39d964abadd124eb44f1523cc2399b28e038d70a1d785688300a97859dd163d
+"chrono-node@npm:^2.10.3":
+  version: 2.10.3
+  resolution: "chrono-node@npm:2.10.3"
+  checksum: 10c0/612aee720148dc692456fb022eeb16808333f364ca55270af8c4ad3069b531c57fc9cb5aa47bf3085eae324027e386a5a20fb9477d6b51c6b86179fb17988214
   languageName: node
   linkType: hard
 
