@@ -45,6 +45,12 @@
 			"automerge": true
 		},
 		{
+			"description": "Exempt lock file maintenance from the repository-wide PR limits. Major updates waiting for review keep the concurrent limit full, which held back lock file maintenance on dev from 2026-03 onward; it is the only update that refreshes transitive dependencies, because for yarn.lock Renovate's vulnerabilityAlerts PRs cover direct dependencies only",
+			"matchUpdateTypes": ["lockFileMaintenance"],
+			"prConcurrentLimit": 0,
+			"prHourlyLimit": 0
+		},
+		{
 			"matchFileNames": ["vscode/*"],
 			"ignoreDeps": ["@types/node", "@types/vscode"]
 		},
