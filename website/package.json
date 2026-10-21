@@ -37,7 +37,7 @@
 		"@types/glob": "9.0.0",
 		"eslint-plugin-react": "7.37.5",
 		"eslint-plugin-react-hooks": "7.1.1",
-		"oxfmt": "0.72.0",
+		"oxfmt": "0.73.0",
 		"stylelint": "17.16.0",
 		"stylelint-config-recess-order": "7.8.0",
 		"stylelint-config-standard": "40.0.0",
