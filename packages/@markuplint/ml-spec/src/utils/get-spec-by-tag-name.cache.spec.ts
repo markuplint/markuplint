@@ -19,8 +19,8 @@ describe('getSpecByTagName keeps its results for each list of specs', () => {
 		const first = [{ name: 'Foo', note: 'first' }];
 		const second = [{ name: 'Foo', note: 'second' }];
 
-		expect(getSpecByTagName(first, 'Foo', null)).toStrictEqual({ name: 'Foo', note: 'first' });
-		expect(getSpecByTagName(second, 'Foo', null)).toStrictEqual({ name: 'Foo', note: 'second' });
+		expect(getSpecByTagName<never>(first, 'Foo', null)).toStrictEqual({ name: 'Foo', note: 'first' });
+		expect(getSpecByTagName<never>(second, 'Foo', null)).toStrictEqual({ name: 'Foo', note: 'second' });
 	});
 
 	test('a stable list is searched once for a name, whether it is found or not', () => {

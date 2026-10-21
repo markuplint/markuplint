@@ -381,6 +381,7 @@ test('[helpers-issue-4309-009] createIgnoreFeaturesLookup parses the option once
 		});
 		return copy;
 	};
+	// @ts-expect-error The rule option is omitted on purpose
 	const lookup = createIgnoreFeaturesLookup(false);
 	const attr = attrsOf('<div OPEN></div>')[0]!;
 	expect(lookup.isElementIgnored(copyOf(['span', 'div[open]']), 'span')).toBe(true);

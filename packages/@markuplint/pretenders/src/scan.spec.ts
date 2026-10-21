@@ -199,7 +199,7 @@ describe('scan', () => {
 			const result = await jsxScanner([jsxFixture('002.tsx')], { cwd: customCwd });
 			const pretender = result[0];
 			// filePath must start with "fixtures/" (relative to customCwd), not an absolute path
-			expect(pretender.filePath).toMatch(/^fixtures[/\\]002\.tsx:/);
+			expect(pretender!.filePath).toMatch(/^fixtures[/\\]002\.tsx:/);
 		});
 
 		test('template scanner uses custom cwd for relative file paths in output', async () => {
@@ -207,7 +207,7 @@ describe('scan', () => {
 			const result = await templateScanner([templateFixture('SimpleButton.vue')], { cwd: customCwd });
 			const pretender = result[0];
 			// filePath must start with "template/" (relative to customCwd), not an absolute path
-			expect(pretender.filePath).toMatch(/^template[/\\]SimpleButton\.vue:/);
+			expect(pretender!.filePath).toMatch(/^template[/\\]SimpleButton\.vue:/);
 		});
 	});
 

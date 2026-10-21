@@ -2,6 +2,8 @@ import { mkdir, readFile, realpath, writeFile, mkdtemp, rm } from 'node:fs/promi
 import os from 'node:os';
 import path from 'node:path';
 
+import type { Pretender } from '@markuplint/ml-config';
+
 import { test, expect, describe, beforeEach, afterEach, vi } from 'vitest';
 
 import {
@@ -211,7 +213,7 @@ test('hasResolvableCollision (deprecated, no longer a gate) keeps reporting a co
 test('disambiguatePretendersForFile resolves a collision via the target file import', async () => {
 	const cFile = path.resolve(collisionDir, 'c.tsx');
 	const sourceCode = await readFileForTest(cFile);
-	const pretenders = [
+	const pretenders: Pretender[] = [
 		{
 			selector: 'Item',
 			as: { element: 'button', slots: true, inheritAttrs: true },
@@ -538,6 +540,7 @@ describe('createPretenderResolver (one lint target across edits)', () => {
 	});
 
 	test('resolves to nothing when the pretenders section is absent', async () => {
+		// @ts-expect-error the options argument is intentionally omitted
 		const resolver = createPretenderResolver();
 
 		expect(await resolver.resolve({ filePath: path.join(tmpDir, 'entry.tsx'), sourceCode: '' })).toStrictEqual([]);

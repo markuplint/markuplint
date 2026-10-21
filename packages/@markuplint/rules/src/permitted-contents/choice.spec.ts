@@ -3,10 +3,11 @@ import { createTestElement } from '@markuplint/ml-core';
 import { test, expect, describe } from 'vitest';
 
 import { choice } from './choice.js';
+import type { Options } from './types.js';
 
 function c(models: any, innerHtml: string) {
 	const el = createTestElement(`<div>${innerHtml}</div>`);
-	return choice(models, [...el.childNodes], [], specs, { ignoreHasMutableChildren: true }, 0, 'pretended');
+	return choice(models, [...el.childNodes], [], specs, { ignoreHasMutableChildren: true } as Options, 0, 'pretended');
 }
 
 test('[permitted-contents-invalid-001] ordered requires', () => {

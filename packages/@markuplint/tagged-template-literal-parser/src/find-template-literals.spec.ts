@@ -6,28 +6,28 @@ describe('findTemplateLiterals', () => {
 	test('finds a simple html tagged template', () => {
 		const results = findTemplateLiterals('const t = html`<div></div>`;');
 		expect(results).toHaveLength(1);
-		expect(results[0].tagName).toBe('html');
-		expect(results[0].htmlContent).toBe('<div></div>');
-		expect(results[0].contentStart).toBe(15);
-		expect(results[0].contentEnd).toBe(26);
-		expect(results[0].expressions).toHaveLength(0);
+		expect(results[0]!.tagName).toBe('html');
+		expect(results[0]!.htmlContent).toBe('<div></div>');
+		expect(results[0]!.contentStart).toBe(15);
+		expect(results[0]!.contentEnd).toBe(26);
+		expect(results[0]!.expressions).toHaveLength(0);
 	});
 
 	test('extracts expression positions', () => {
 		const code = 'const t = html`<div>${name}</div>`;';
 		const results = findTemplateLiterals(code);
 		expect(results).toHaveLength(1);
-		expect(results[0].expressions).toHaveLength(1);
-		expect(results[0].expressions[0].raw).toBe('${name}');
+		expect(results[0]!.expressions).toHaveLength(1);
+		expect(results[0]!.expressions[0]!.raw).toBe('${name}');
 	});
 
 	test('extracts multiple expressions', () => {
 		const code = 'const t = html`${a} ${b} ${c}`;';
 		const results = findTemplateLiterals(code);
-		expect(results[0].expressions).toHaveLength(3);
-		expect(results[0].expressions[0].raw).toBe('${a}');
-		expect(results[0].expressions[1].raw).toBe('${b}');
-		expect(results[0].expressions[2].raw).toBe('${c}');
+		expect(results[0]!.expressions).toHaveLength(3);
+		expect(results[0]!.expressions[0]!.raw).toBe('${a}');
+		expect(results[0]!.expressions[1]!.raw).toBe('${b}');
+		expect(results[0]!.expressions[2]!.raw).toBe('${c}');
 	});
 
 	test('ignores untagged template literals', () => {
@@ -43,21 +43,21 @@ describe('findTemplateLiterals', () => {
 	test('supports custom tag names', () => {
 		const results = findTemplateLiterals('const t = svg`<circle />`;', ['svg']);
 		expect(results).toHaveLength(1);
-		expect(results[0].tagName).toBe('svg');
+		expect(results[0]!.tagName).toBe('svg');
 	});
 
 	test('supports multiple custom tag names simultaneously', () => {
 		const code = 'const a = html`<div></div>`; const b = svg`<circle />`;';
 		const results = findTemplateLiterals(code, ['html', 'svg']);
 		expect(results).toHaveLength(2);
-		expect(results[0].tagName).toBe('html');
-		expect(results[1].tagName).toBe('svg');
+		expect(results[0]!.tagName).toBe('html');
+		expect(results[1]!.tagName).toBe('svg');
 	});
 
 	test('supports member expression tags', () => {
 		const results = findTemplateLiterals('const t = LitElement.html`<div></div>`;');
 		expect(results).toHaveLength(1);
-		expect(results[0].tagName).toBe('html');
+		expect(results[0]!.tagName).toBe('html');
 	});
 
 	test('computed member expression tag resolves property name', () => {
@@ -65,7 +65,7 @@ describe('findTemplateLiterals', () => {
 		// is an Identifier with name 'html', so it resolves to 'html'
 		const results = findTemplateLiterals('const t = obj[html]`<div></div>`;');
 		expect(results).toHaveLength(1);
-		expect(results[0].tagName).toBe('html');
+		expect(results[0]!.tagName).toBe('html');
 	});
 
 	test('call expression tag is ignored', () => {
@@ -78,8 +78,8 @@ describe('findTemplateLiterals', () => {
 const b = html\`<span></span>\`;`;
 		const results = findTemplateLiterals(code);
 		expect(results).toHaveLength(2);
-		expect(results[0].htmlContent).toBe('<div></div>');
-		expect(results[1].htmlContent).toBe('<span></span>');
+		expect(results[0]!.htmlContent).toBe('<div></div>');
+		expect(results[1]!.htmlContent).toBe('<span></span>');
 	});
 
 	test('handles multiline template literal', () => {
@@ -90,8 +90,8 @@ const b = html\`<span></span>\`;`;
 \`;`;
 		const results = findTemplateLiterals(code);
 		expect(results).toHaveLength(1);
-		expect(results[0].htmlContent).toContain('<div>');
-		expect(results[0].htmlContent).toContain('</div>');
+		expect(results[0]!.htmlContent).toContain('<div>');
+		expect(results[0]!.htmlContent).toContain('</div>');
 	});
 
 	test('returns empty for non-JS content', () => {
@@ -111,14 +111,14 @@ const b = html\`<span></span>\`;`;
 	test('expression start/end include ${ and }', () => {
 		const code = 'const t = html`${name}`;';
 		const results = findTemplateLiterals(code);
-		const expr = results[0].expressions[0];
+		const expr = results[0]!.expressions[0]!;
 		expect(code.slice(expr.start, expr.end)).toBe('${name}');
 	});
 
 	test('complex expression', () => {
 		const code = 'const t = html`${items.map(i => i.name)}`;';
 		const results = findTemplateLiterals(code);
-		expect(results[0].expressions[0].raw).toBe('${items.map(i => i.name)}');
+		expect(results[0]!.expressions[0]!.raw).toBe('${items.map(i => i.name)}');
 	});
 
 	test('template literal in function body', () => {
@@ -156,6 +156,6 @@ const b = html\`<span></span>\`;`;
 		const code = 'const t: TemplateResult<1> = html`<div></div>`;';
 		const results = findTemplateLiterals(code);
 		expect(results).toHaveLength(1);
-		expect(results[0].htmlContent).toBe('<div></div>');
+		expect(results[0]!.htmlContent).toBe('<div></div>');
 	});
 });

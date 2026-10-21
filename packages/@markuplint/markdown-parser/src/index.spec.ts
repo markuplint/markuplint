@@ -1,5 +1,12 @@
 import { describe, test, expect } from 'vitest';
 
+import type {
+	MLASTComment,
+	MLASTElement,
+	MLASTHTMLAttr,
+	MLASTPreprocessorSpecificBlock,
+	MLASTText,
+} from '@markuplint/ml-ast';
 import { nodeListToDebugMaps } from '@markuplint/parser-utils';
 
 import { parser } from './parser.js';
@@ -66,56 +73,70 @@ describe('MarkdownParser', () => {
 
 		test('link', () => {
 			const doc = parse('[link text](https://example.com)');
-			const startTag = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'a');
+			const startTag = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'a');
 			expect(startTag).toBeDefined();
-			const href = startTag!.attributes.find(a => a.type === 'attr' && a.name.raw === 'href');
+			const href = startTag!.attributes.find(
+				(a): a is MLASTHTMLAttr => a.type === 'attr' && a.name.raw === 'href',
+			);
 			expect(href).toBeDefined();
 			expect(href!.value.raw).toBe('https://example.com');
 		});
 
 		test('link with title', () => {
 			const doc = parse('[link](https://example.com "title text")');
-			const startTag = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'a');
+			const startTag = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'a');
 			expect(startTag).toBeDefined();
-			const title = startTag!.attributes.find(a => a.type === 'attr' && a.name.raw === 'title');
+			const title = startTag!.attributes.find(
+				(a): a is MLASTHTMLAttr => a.type === 'attr' && a.name.raw === 'title',
+			);
 			expect(title).toBeDefined();
 			expect(title!.value.raw).toBe('title text');
 		});
 
 		test('link without title does NOT have title attribute', () => {
 			const doc = parse('[link](https://example.com)');
-			const startTag = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'a');
+			const startTag = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'a');
 			expect(startTag).toBeDefined();
-			const title = startTag!.attributes.find(a => a.type === 'attr' && a.name.raw === 'title');
+			const title = startTag!.attributes.find(
+				(a): a is MLASTHTMLAttr => a.type === 'attr' && a.name.raw === 'title',
+			);
 			expect(title).toBeUndefined();
 		});
 
 		test('image', () => {
 			const doc = parse('![alt text](image.png)');
-			const startTag = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'img');
+			const startTag = doc.nodeList.find(
+				(n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'img',
+			);
 			expect(startTag).toBeDefined();
-			const src = startTag!.attributes.find(a => a.type === 'attr' && a.name.raw === 'src');
+			const src = startTag!.attributes.find((a): a is MLASTHTMLAttr => a.type === 'attr' && a.name.raw === 'src');
 			expect(src).toBeDefined();
 			expect(src!.value.raw).toBe('image.png');
-			const alt = startTag!.attributes.find(a => a.type === 'attr' && a.name.raw === 'alt');
+			const alt = startTag!.attributes.find((a): a is MLASTHTMLAttr => a.type === 'attr' && a.name.raw === 'alt');
 			expect(alt).toBeDefined();
 			expect(alt!.value.raw).toBe('alt text');
 		});
 
 		test('image with empty alt', () => {
 			const doc = parse('![](image.png)');
-			const startTag = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'img');
+			const startTag = doc.nodeList.find(
+				(n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'img',
+			);
 			expect(startTag).toBeDefined();
-			const alt = startTag!.attributes.find(a => a.type === 'attr' && a.name.raw === 'alt');
+			const alt = startTag!.attributes.find((a): a is MLASTHTMLAttr => a.type === 'attr' && a.name.raw === 'alt');
 			expect(alt).toBeDefined();
 			expect(alt!.value.raw).toBe('');
 		});
 
 		test('image without title does NOT have title attribute', () => {
 			const doc = parse('![alt](image.png)');
-			const startTag = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'img');
+			const startTag = doc.nodeList.find(
+				(n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'img',
+			);
 			expect(startTag).toBeDefined();
-			const title = startTag!.attributes.find(a => a.type === 'attr' && a.name.raw === 'title');
+			const title = startTag!.attributes.find(
+				(a): a is MLASTHTMLAttr => a.type === 'attr' && a.name.raw === 'title',
+			);
 			expect(title).toBeUndefined();
 			// Verify exactly 2 attributes: src and alt
 			expect(startTag!.attributes.length).toBe(2);
@@ -123,9 +144,13 @@ describe('MarkdownParser', () => {
 
 		test('image with title has title attribute', () => {
 			const doc = parse('![alt](image.png "my title")');
-			const startTag = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'img');
+			const startTag = doc.nodeList.find(
+				(n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'img',
+			);
 			expect(startTag).toBeDefined();
-			const title = startTag!.attributes.find(a => a.type === 'attr' && a.name.raw === 'title');
+			const title = startTag!.attributes.find(
+				(a): a is MLASTHTMLAttr => a.type === 'attr' && a.name.raw === 'title',
+			);
 			expect(title).toBeDefined();
 			expect(title!.value.raw).toBe('my title');
 			// Verify exactly 3 attributes: src, alt, title
@@ -134,32 +159,32 @@ describe('MarkdownParser', () => {
 
 		test('unordered list', () => {
 			const doc = parse('- item 1\n- item 2\n');
-			const ul = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'ul');
+			const ul = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'ul');
 			expect(ul).toBeDefined();
-			const lis = doc.nodeList.filter(n => n?.type === 'starttag' && n.nodeName === 'li');
+			const lis = doc.nodeList.filter((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'li');
 			expect(lis.length).toBe(2);
 		});
 
 		test('ordered list', () => {
 			const doc = parse('1. item 1\n2. item 2\n');
-			const ol = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'ol');
+			const ol = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'ol');
 			expect(ol).toBeDefined();
 		});
 
 		test('ordered list with custom start', () => {
 			const doc = parse('5. item 5\n6. item 6\n');
-			const ol = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'ol');
+			const ol = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'ol');
 			expect(ol).toBeDefined();
-			const start = ol!.attributes.find(a => a.type === 'attr' && a.name.raw === 'start');
+			const start = ol!.attributes.find((a): a is MLASTHTMLAttr => a.type === 'attr' && a.name.raw === 'start');
 			expect(start).toBeDefined();
 			expect(start!.value.raw).toBe('5');
 		});
 
 		test('ordered list starting at 1 does NOT have start attribute', () => {
 			const doc = parse('1. first\n2. second\n');
-			const ol = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'ol');
+			const ol = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'ol');
 			expect(ol).toBeDefined();
-			const start = ol!.attributes.find(a => a.type === 'attr' && a.name.raw === 'start');
+			const start = ol!.attributes.find((a): a is MLASTHTMLAttr => a.type === 'attr' && a.name.raw === 'start');
 			expect(start).toBeUndefined();
 		});
 
@@ -181,72 +206,76 @@ describe('MarkdownParser', () => {
 
 		test('inline code', () => {
 			const doc = parse('`code here`');
-			const code = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'code');
+			const code = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'code');
 			expect(code).toBeDefined();
 			expect(code!.childNodes.length).toBe(1);
-			expect(code!.childNodes[0].type).toBe('text');
-			expect(code!.childNodes[0].raw).toBe('code here');
+			expect(code!.childNodes[0]!.type).toBe('text');
+			expect(code!.childNodes[0]!.raw).toBe('code here');
 		});
 
 		test('inline code with double backticks', () => {
 			// remark parses `` code `` as inlineCode with value "code"
 			// The remaining " here ``" is a separate text node
 			const doc = parse('`` code `` here ``');
-			const code = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'code');
+			const code = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'code');
 			expect(code).toBeDefined();
 			expect(code!.childNodes.length).toBe(1);
-			expect(code!.childNodes[0].raw).toBe('code');
+			expect(code!.childNodes[0]!.raw).toBe('code');
 		});
 
 		test('code block becomes pre>code elements', () => {
 			const doc = parse('```html\n<div>not parsed</div>\n```\n');
-			const pre = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'pre');
+			const pre = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'pre');
 			expect(pre).toBeDefined();
-			const code = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'code');
+			const code = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'code');
 			expect(code).toBeDefined();
-			const langAttr = code!.attributes.find(a => a.type === 'attr' && a.name.raw === 'class');
+			const langAttr = code!.attributes.find(
+				(a): a is MLASTHTMLAttr => a.type === 'attr' && a.name.raw === 'class',
+			);
 			expect(langAttr).toBeDefined();
 			expect(langAttr!.value.raw).toBe('language-html');
 		});
 
 		test('code block without language', () => {
 			const doc = parse('```\nsome code\n```\n');
-			const pre = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'pre');
+			const pre = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'pre');
 			expect(pre).toBeDefined();
-			const code = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'code');
+			const code = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'code');
 			expect(code).toBeDefined();
 			expect(code!.attributes.length).toBe(0);
 		});
 
 		test('code block text content is preserved', () => {
 			const doc = parse('```js\nconst x = 1;\n```\n');
-			const code = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'code');
+			const code = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'code');
 			expect(code).toBeDefined();
 			expect(code!.childNodes.length).toBe(1);
-			expect(code!.childNodes[0].type).toBe('text');
-			expect(code!.childNodes[0].raw).toBe('const x = 1;');
+			expect(code!.childNodes[0]!.type).toBe('text');
+			expect(code!.childNodes[0]!.raw).toBe('const x = 1;');
 		});
 
 		test('code block with empty content has no text child', () => {
 			const doc = parse('```\n```\n');
-			const code = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'code');
+			const code = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'code');
 			expect(code).toBeDefined();
 			expect(code!.childNodes.length).toBe(0);
 		});
 
 		test('hard line break (two trailing spaces) becomes <br>', () => {
 			const doc = parse('line one  \nline two\n');
-			const br = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'br');
+			const br = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'br');
 			expect(br).toBeDefined();
 		});
 
 		test('nested markdown: bold link', () => {
 			const doc = parse('**[bold link](url)**');
-			const strong = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'strong');
+			const strong = doc.nodeList.find(
+				(n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'strong',
+			);
 			expect(strong).toBeDefined();
-			const link = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'a');
+			const link = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'a');
 			expect(link).toBeDefined();
-			const href = link!.attributes.find(a => a.type === 'attr' && a.name.raw === 'href');
+			const href = link!.attributes.find((a): a is MLASTHTMLAttr => a.type === 'attr' && a.name.raw === 'href');
 			expect(href!.value.raw).toBe('url');
 		});
 	});
@@ -254,24 +283,32 @@ describe('MarkdownParser', () => {
 	describe('Link and image references', () => {
 		test('linkReference resolves to <a> element', () => {
 			const doc = parse('[link text][ref]\n\n[ref]: https://example.com "Example"\n');
-			const a = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'a');
+			const a = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'a');
 			expect(a).toBeDefined();
-			const href = a!.attributes.find(attr => attr.type === 'attr' && attr.name.raw === 'href');
+			const href = a!.attributes.find(
+				(attr): attr is MLASTHTMLAttr => attr.type === 'attr' && attr.name.raw === 'href',
+			);
 			expect(href).toBeDefined();
 			expect(href!.value.raw).toBe('https://example.com');
-			const title = a!.attributes.find(attr => attr.type === 'attr' && attr.name.raw === 'title');
+			const title = a!.attributes.find(
+				(attr): attr is MLASTHTMLAttr => attr.type === 'attr' && attr.name.raw === 'title',
+			);
 			expect(title).toBeDefined();
 			expect(title!.value.raw).toBe('Example');
 		});
 
 		test('imageReference resolves to <img> element', () => {
 			const doc = parse('![alt text][img]\n\n[img]: image.png "Title"\n');
-			const img = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'img');
+			const img = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'img');
 			expect(img).toBeDefined();
-			const src = img!.attributes.find(attr => attr.type === 'attr' && attr.name.raw === 'src');
+			const src = img!.attributes.find(
+				(attr): attr is MLASTHTMLAttr => attr.type === 'attr' && attr.name.raw === 'src',
+			);
 			expect(src).toBeDefined();
 			expect(src!.value.raw).toBe('image.png');
-			const alt = img!.attributes.find(attr => attr.type === 'attr' && attr.name.raw === 'alt');
+			const alt = img!.attributes.find(
+				(attr): attr is MLASTHTMLAttr => attr.type === 'attr' && attr.name.raw === 'alt',
+			);
 			expect(alt).toBeDefined();
 			expect(alt!.value.raw).toBe('alt text');
 		});
@@ -280,46 +317,52 @@ describe('MarkdownParser', () => {
 			// remark-parse does not produce linkReference nodes when definition is missing;
 			// it treats the syntax as literal text in a paragraph.
 			const doc = parse('[text][missing]\n');
-			const p = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'p');
+			const p = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'p');
 			expect(p).toBeDefined();
-			const text = doc.nodeList.find(n => n?.type === 'text');
+			const text = doc.nodeList.find((n): n is MLASTText => n?.type === 'text');
 			expect(text).toBeDefined();
 			expect(text!.raw).toContain('[text][missing]');
 		});
 
 		test('unresolved imageReference is treated as plain text by remark', () => {
 			const doc = parse('![alt][missing]\n');
-			const p = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'p');
+			const p = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'p');
 			expect(p).toBeDefined();
-			const text = doc.nodeList.find(n => n?.type === 'text');
+			const text = doc.nodeList.find((n): n is MLASTText => n?.type === 'text');
 			expect(text).toBeDefined();
 			expect(text!.raw).toContain('![alt][missing]');
 		});
 
 		test('shortcut linkReference [ref] resolves using identifier as label', () => {
 			const doc = parse('[example]\n\n[example]: https://example.com\n');
-			const a = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'a');
+			const a = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'a');
 			expect(a).toBeDefined();
-			const href = a!.attributes.find(attr => attr.type === 'attr' && attr.name.raw === 'href');
+			const href = a!.attributes.find(
+				(attr): attr is MLASTHTMLAttr => attr.type === 'attr' && attr.name.raw === 'href',
+			);
 			expect(href).toBeDefined();
 			expect(href!.value.raw).toBe('https://example.com');
 		});
 
 		test('linkReference title from definition is passed to <a>', () => {
 			const doc = parse('[link text][ref]\n\n[ref]: https://example.com "Example"\n');
-			const a = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'a');
+			const a = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'a');
 			expect(a).toBeDefined();
 			expect(a!.attributes.length).toBe(2);
-			const title = a!.attributes.find(attr => attr.type === 'attr' && attr.name.raw === 'title');
+			const title = a!.attributes.find(
+				(attr): attr is MLASTHTMLAttr => attr.type === 'attr' && attr.name.raw === 'title',
+			);
 			expect(title).toBeDefined();
 			expect(title!.value.raw).toBe('Example');
 		});
 
 		test('linkReference without title in definition does NOT have title attribute', () => {
 			const doc = parse('[link text][ref]\n\n[ref]: https://example.com\n');
-			const a = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'a');
+			const a = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'a');
 			expect(a).toBeDefined();
-			const title = a!.attributes.find(attr => attr.type === 'attr' && attr.name.raw === 'title');
+			const title = a!.attributes.find(
+				(attr): attr is MLASTHTMLAttr => attr.type === 'attr' && attr.name.raw === 'title',
+			);
 			expect(title).toBeUndefined();
 			// Only href attribute
 			expect(a!.attributes.length).toBe(1);
@@ -329,17 +372,17 @@ describe('MarkdownParser', () => {
 	describe('GFM extensions', () => {
 		test('GFM table becomes table>tr>th/td elements', () => {
 			const doc = parse('| A | B |\n| - | - |\n| 1 | 2 |\n');
-			const table = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'table');
+			const table = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'table');
 			expect(table).toBeDefined();
-			const ths = doc.nodeList.filter(n => n?.type === 'starttag' && n.nodeName === 'th');
+			const ths = doc.nodeList.filter((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'th');
 			expect(ths.length).toBe(2);
-			const tds = doc.nodeList.filter(n => n?.type === 'starttag' && n.nodeName === 'td');
+			const tds = doc.nodeList.filter((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'td');
 			expect(tds.length).toBe(2);
 		});
 
 		test('GFM table header cells contain correct text', () => {
 			const doc = parse('| Name | Age |\n| - | - |\n| Alice | 30 |\n');
-			const ths = doc.nodeList.filter(n => n?.type === 'starttag' && n.nodeName === 'th');
+			const ths = doc.nodeList.filter((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'th');
 			expect(ths.length).toBe(2);
 			// Verify text content of header cells
 			const thTexts = ths.map(th => th.childNodes.find(c => c.type === 'text')?.raw);
@@ -348,7 +391,7 @@ describe('MarkdownParser', () => {
 
 		test('GFM table data cells contain correct text', () => {
 			const doc = parse('| A | B |\n| - | - |\n| 1 | 2 |\n| 3 | 4 |\n');
-			const tds = doc.nodeList.filter(n => n?.type === 'starttag' && n.nodeName === 'td');
+			const tds = doc.nodeList.filter((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'td');
 			expect(tds.length).toBe(4);
 			const tdTexts = tds.map(td => td.childNodes.find(c => c.type === 'text')?.raw);
 			expect(tdTexts).toStrictEqual(['1', '2', '3', '4']);
@@ -356,21 +399,21 @@ describe('MarkdownParser', () => {
 
 		test('GFM table with only header row has 0 td cells', () => {
 			const doc = parse('| A | B |\n| - | - |\n');
-			const ths = doc.nodeList.filter(n => n?.type === 'starttag' && n.nodeName === 'th');
+			const ths = doc.nodeList.filter((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'th');
 			expect(ths.length).toBe(2);
-			const tds = doc.nodeList.filter(n => n?.type === 'starttag' && n.nodeName === 'td');
+			const tds = doc.nodeList.filter((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'td');
 			expect(tds.length).toBe(0);
 		});
 
 		test('GFM strikethrough becomes <del> element', () => {
 			const doc = parse('~~deleted~~\n');
-			const del = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'del');
+			const del = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'del');
 			expect(del).toBeDefined();
 		});
 
 		test('GFM strikethrough contains correct text content', () => {
 			const doc = parse('~~deleted text~~\n');
-			const del = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'del');
+			const del = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'del');
 			expect(del).toBeDefined();
 			const text = del!.childNodes.find(c => c.type === 'text');
 			expect(text).toBeDefined();
@@ -392,10 +435,10 @@ describe('MarkdownParser', () => {
 		test('HTML block in markdown', () => {
 			const doc = parse('# Heading\n\n<div class="note">\n  <p>content</p>\n</div>\n');
 			// Heading is now an h1 element
-			const h1 = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'h1');
+			const h1 = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'h1');
 			expect(h1).toBeDefined();
 			// HTML block div is still present
-			const div = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'div');
+			const div = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'div');
 			expect(div).toBeDefined();
 		});
 
@@ -407,9 +450,9 @@ describe('MarkdownParser', () => {
 
 		test('inline HTML in paragraph', () => {
 			const doc = parse('This is <em>emphasized</em> text');
-			const p = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'p');
+			const p = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'p');
 			expect(p).toBeDefined();
-			const em = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'em');
+			const em = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'em');
 			expect(em).toBeDefined();
 		});
 
@@ -423,9 +466,11 @@ describe('MarkdownParser', () => {
 	describe('Front matter', () => {
 		test('YAML front matter becomes psblock', () => {
 			const doc = parse('---\ntitle: Test\n---\n\n<div>content</div>\n');
-			const yaml = doc.nodeList.find(n => n?.type === 'psblock' && n.nodeName === '#ps:yaml');
+			const yaml = doc.nodeList.find(
+				(n): n is MLASTPreprocessorSpecificBlock => n?.type === 'psblock' && n.nodeName === '#ps:yaml',
+			);
 			expect(yaml).toBeDefined();
-			const div = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'div');
+			const div = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'div');
 			expect(div).toBeDefined();
 		});
 	});
@@ -433,9 +478,9 @@ describe('MarkdownParser', () => {
 	describe('Adjacent HTML blocks', () => {
 		test('remark splits adjacent HTML blocks separated by blank lines', () => {
 			const doc = parse('<div class="wrapper">\n\n<p>paragraph inside div</p>\n\n</div>\n');
-			const div = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'div');
+			const div = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'div');
 			expect(div).toBeDefined();
-			const p = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'p');
+			const p = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'p');
 			expect(p).toBeDefined();
 		});
 	});
@@ -443,7 +488,7 @@ describe('MarkdownParser', () => {
 	describe('Multiple HTML comments', () => {
 		test('consecutive comments are parsed', () => {
 			const doc = parse('<!-- TODO: fix this -->\n<!-- NOTE: this is a note -->\n');
-			const comments = doc.nodeList.filter(n => n?.type === 'comment');
+			const comments = doc.nodeList.filter((n): n is MLASTComment => n?.type === 'comment');
 			expect(comments.length).toBe(2);
 		});
 	});
@@ -451,9 +496,9 @@ describe('MarkdownParser', () => {
 	describe('HTML with entities', () => {
 		test('HTML entities in HTML blocks are preserved', () => {
 			const doc = parse('<p>&amp; &lt; &gt;</p>\n');
-			const p = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'p');
+			const p = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'p');
 			expect(p).toBeDefined();
-			const text = doc.nodeList.find(n => n?.type === 'text' && n.raw.includes('&amp;'));
+			const text = doc.nodeList.find((n): n is MLASTText => n?.type === 'text' && n.raw.includes('&amp;'));
 			expect(text).toBeDefined();
 		});
 	});
@@ -461,9 +506,9 @@ describe('MarkdownParser', () => {
 	describe('Multiple void elements', () => {
 		test('consecutive void elements with newlines between them', () => {
 			const doc = parse('<br>\n<hr>\n<img src="test.png" alt="test">\n');
-			const br = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'br');
-			const hr = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'hr');
-			const img = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'img');
+			const br = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'br');
+			const hr = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'hr');
+			const img = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'img');
 			expect(br).toBeDefined();
 			expect(hr).toBeDefined();
 			expect(img).toBeDefined();
@@ -474,14 +519,14 @@ describe('MarkdownParser', () => {
 		test('definitions do not leak across parse() calls', () => {
 			// First parse: define [ref]
 			const doc1 = parse('[link][ref]\n\n[ref]: https://example.com\n');
-			const a = doc1.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'a');
+			const a = doc1.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'a');
 			expect(a).toBeDefined();
 
 			// Second parse: [ref] without definition — should NOT resolve
 			const doc2 = parse('[link][ref]\n');
-			const a2 = doc2.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'a');
+			const a2 = doc2.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'a');
 			expect(a2).toBeUndefined();
-			const text = doc2.nodeList.find(n => n?.type === 'text');
+			const text = doc2.nodeList.find((n): n is MLASTText => n?.type === 'text');
 			expect(text).toBeDefined();
 			expect(text!.raw).toContain('[link][ref]');
 		});
@@ -489,14 +534,14 @@ describe('MarkdownParser', () => {
 		test('table header state does not leak across parse() calls', () => {
 			// First parse: table with header
 			const doc1 = parse('| A |\n| - |\n| 1 |\n');
-			const ths1 = doc1.nodeList.filter(n => n?.type === 'starttag' && n.nodeName === 'th');
+			const ths1 = doc1.nodeList.filter((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'th');
 			expect(ths1.length).toBe(1);
 
 			// Second parse: different table
 			const doc2 = parse('| B |\n| - |\n| 2 |\n');
-			const ths2 = doc2.nodeList.filter(n => n?.type === 'starttag' && n.nodeName === 'th');
+			const ths2 = doc2.nodeList.filter((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'th');
 			expect(ths2.length).toBe(1);
-			const tds2 = doc2.nodeList.filter(n => n?.type === 'starttag' && n.nodeName === 'td');
+			const tds2 = doc2.nodeList.filter((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'td');
 			expect(tds2.length).toBe(1);
 		});
 	});
@@ -504,11 +549,13 @@ describe('MarkdownParser', () => {
 	describe('Multiple tables in one document', () => {
 		test('two GFM tables both have correct th/td', () => {
 			const doc = parse('| A | B |\n| - | - |\n| 1 | 2 |\n\n| C | D |\n| - | - |\n| 3 | 4 |\n');
-			const tables = doc.nodeList.filter(n => n?.type === 'starttag' && n.nodeName === 'table');
+			const tables = doc.nodeList.filter(
+				(n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'table',
+			);
 			expect(tables.length).toBe(2);
-			const ths = doc.nodeList.filter(n => n?.type === 'starttag' && n.nodeName === 'th');
+			const ths = doc.nodeList.filter((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'th');
 			expect(ths.length).toBe(4);
-			const tds = doc.nodeList.filter(n => n?.type === 'starttag' && n.nodeName === 'td');
+			const tds = doc.nodeList.filter((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'td');
 			expect(tds.length).toBe(4);
 		});
 	});
@@ -516,9 +563,11 @@ describe('MarkdownParser', () => {
 	describe('collectDefinitions duplicate identifier', () => {
 		test('first definition wins for duplicate identifiers (CommonMark spec)', () => {
 			const doc = parse('[link][ref]\n\n[ref]: https://first.com\n[ref]: https://second.com\n');
-			const a = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'a');
+			const a = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'a');
 			expect(a).toBeDefined();
-			const href = a!.attributes.find(attr => attr.type === 'attr' && attr.name.raw === 'href');
+			const href = a!.attributes.find(
+				(attr): attr is MLASTHTMLAttr => attr.type === 'attr' && attr.name.raw === 'href',
+			);
 			expect(href).toBeDefined();
 			expect(href!.value.raw).toBe('https://first.com');
 		});
@@ -527,9 +576,11 @@ describe('MarkdownParser', () => {
 	describe('Empty link', () => {
 		test('empty link text [](url) produces <a> element', () => {
 			const doc = parse('[](https://example.com)\n');
-			const a = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'a');
+			const a = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'a');
 			expect(a).toBeDefined();
-			const href = a!.attributes.find(attr => attr.type === 'attr' && attr.name.raw === 'href');
+			const href = a!.attributes.find(
+				(attr): attr is MLASTHTMLAttr => attr.type === 'attr' && attr.name.raw === 'href',
+			);
 			expect(href).toBeDefined();
 			expect(href!.value.raw).toBe('https://example.com');
 		});
@@ -538,7 +589,10 @@ describe('MarkdownParser', () => {
 	describe('Footnotes', () => {
 		test('footnoteReference becomes psblock with correct raw', () => {
 			const doc = parse('Text with a note[^1]\n\n[^1]: Footnote content\n');
-			const fnRef = doc.nodeList.find(n => n?.type === 'psblock' && n.nodeName === '#ps:footnoteReference');
+			const fnRef = doc.nodeList.find(
+				(n): n is MLASTPreprocessorSpecificBlock =>
+					n?.type === 'psblock' && n.nodeName === '#ps:footnoteReference',
+			);
 			expect(fnRef).toBeDefined();
 			expect(fnRef!.nodeName).toBe('#ps:footnoteReference');
 			expect(fnRef!.raw).toBe('[^1]');
@@ -546,7 +600,10 @@ describe('MarkdownParser', () => {
 
 		test('footnoteDefinition becomes psblock with correct raw', () => {
 			const doc = parse('Text with a note[^1]\n\n[^1]: Footnote content\n');
-			const fnDef = doc.nodeList.find(n => n?.type === 'psblock' && n.nodeName === '#ps:footnoteDefinition');
+			const fnDef = doc.nodeList.find(
+				(n): n is MLASTPreprocessorSpecificBlock =>
+					n?.type === 'psblock' && n.nodeName === '#ps:footnoteDefinition',
+			);
 			expect(fnDef).toBeDefined();
 			expect(fnDef!.nodeName).toBe('#ps:footnoteDefinition');
 			expect(fnDef!.raw).toContain('Footnote content');
@@ -557,11 +614,11 @@ describe('MarkdownParser', () => {
 		test('table with alignment syntax produces correct th/td', () => {
 			// TODO: GFM align attribute is not yet mapped to HTML align attribute
 			const doc = parse('| Left | Center | Right |\n| :--- | :---: | ---: |\n| a | b | c |\n');
-			const table = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'table');
+			const table = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'table');
 			expect(table).toBeDefined();
-			const ths = doc.nodeList.filter(n => n?.type === 'starttag' && n.nodeName === 'th');
+			const ths = doc.nodeList.filter((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'th');
 			expect(ths.length).toBe(3);
-			const tds = doc.nodeList.filter(n => n?.type === 'starttag' && n.nodeName === 'td');
+			const tds = doc.nodeList.filter((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'td');
 			expect(tds.length).toBe(3);
 			const thTexts = ths.map(th => th.childNodes.find(c => c.type === 'text')?.raw);
 			expect(thTexts).toStrictEqual(['Left', 'Center', 'Right']);
@@ -571,15 +628,19 @@ describe('MarkdownParser', () => {
 	describe('Deep nesting', () => {
 		test('blockquote > list > emphasis > link', () => {
 			const doc = parse('> - *[link text](https://example.com)*\n');
-			const blockquote = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'blockquote');
+			const blockquote = doc.nodeList.find(
+				(n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'blockquote',
+			);
 			expect(blockquote).toBeDefined();
-			const ul = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'ul');
+			const ul = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'ul');
 			expect(ul).toBeDefined();
-			const em = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'em');
+			const em = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'em');
 			expect(em).toBeDefined();
-			const a = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'a');
+			const a = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'a');
 			expect(a).toBeDefined();
-			const href = a!.attributes.find(attr => attr.type === 'attr' && attr.name.raw === 'href');
+			const href = a!.attributes.find(
+				(attr): attr is MLASTHTMLAttr => attr.type === 'attr' && attr.name.raw === 'href',
+			);
 			expect(href!.value.raw).toBe('https://example.com');
 		});
 	});
@@ -587,9 +648,11 @@ describe('MarkdownParser', () => {
 	describe('GFM autolink (email)', () => {
 		test('plain email address is autolinked to <a> with mailto href', () => {
 			const doc = parse('user@example.com');
-			const a = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'a');
+			const a = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'a');
 			expect(a).toBeDefined();
-			const href = a!.attributes.find(attr => attr.type === 'attr' && attr.name.raw === 'href');
+			const href = a!.attributes.find(
+				(attr): attr is MLASTHTMLAttr => attr.type === 'attr' && attr.name.raw === 'href',
+			);
 			expect(href).toBeDefined();
 			expect(href!.value.raw).toBe('mailto:user@example.com');
 			// Should have text child with the email address
@@ -600,10 +663,11 @@ describe('MarkdownParser', () => {
 
 		test('email address in list item is autolinked', () => {
 			const doc = parse('- user@example.com or admin@example.org');
-			const links = doc.nodeList.filter(n => n?.type === 'starttag' && n.nodeName === 'a');
+			const links = doc.nodeList.filter((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'a');
 			expect(links.length).toBe(2);
 			const hrefValues = links.map(
-				l => l.attributes.find(a => a.type === 'attr' && a.name.raw === 'href')?.value.raw,
+				l =>
+					l.attributes.find((a): a is MLASTHTMLAttr => a.type === 'attr' && a.name.raw === 'href')?.value.raw,
 			);
 			expect(hrefValues).toStrictEqual(['mailto:user@example.com', 'mailto:admin@example.org']);
 		});
@@ -631,9 +695,11 @@ describe('MarkdownParser', () => {
 	describe('Attributes with special characters', () => {
 		test('attributes containing spaces are preserved in HTML blocks', () => {
 			const doc = parse('<div data-value="hello world" class="foo bar">content</div>\n');
-			const div = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'div');
+			const div = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'div');
 			expect(div).toBeDefined();
-			const dataValue = div!.attributes.find(a => a.type === 'attr' && a.name.raw === 'data-value');
+			const dataValue = div!.attributes.find(
+				(a): a is MLASTHTMLAttr => a.type === 'attr' && a.name.raw === 'data-value',
+			);
 			expect(dataValue).toBeDefined();
 			expect(dataValue!.value.raw).toBe('hello world');
 		});
@@ -642,11 +708,13 @@ describe('MarkdownParser', () => {
 	describe('Nested HTML elements', () => {
 		test('deeply nested HTML elements are fully parsed', () => {
 			const doc = parse('<div>\n  <span>\n    <strong>deep</strong>\n  </span>\n</div>\n');
-			const div = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'div');
+			const div = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'div');
 			expect(div).toBeDefined();
-			const span = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'span');
+			const span = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'span');
 			expect(span).toBeDefined();
-			const strong = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'strong');
+			const strong = doc.nodeList.find(
+				(n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'strong',
+			);
 			expect(strong).toBeDefined();
 		});
 	});
@@ -654,11 +722,11 @@ describe('MarkdownParser', () => {
 	describe('Multiple separate HTML blocks in markdown', () => {
 		test('HTML blocks separated by markdown content', () => {
 			const doc = parse('# Heading 1\n\n<div>block 1</div>\n\nSome text.\n\n<div>block 2</div>\n');
-			const h1 = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'h1');
+			const h1 = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'h1');
 			expect(h1).toBeDefined();
-			const p = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'p');
+			const p = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'p');
 			expect(p).toBeDefined();
-			const divs = doc.nodeList.filter(n => n?.type === 'starttag' && n.nodeName === 'div');
+			const divs = doc.nodeList.filter((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'div');
 			expect(divs.length).toBe(2);
 		});
 	});
@@ -666,9 +734,11 @@ describe('MarkdownParser', () => {
 	describe('HTML immediately after front matter', () => {
 		test('HTML on the line immediately after front matter closing fence', () => {
 			const doc = parse('---\ntitle: Test\n---\n<div>immediately after</div>\n');
-			const yaml = doc.nodeList.find(n => n?.type === 'psblock' && n.nodeName === '#ps:yaml');
+			const yaml = doc.nodeList.find(
+				(n): n is MLASTPreprocessorSpecificBlock => n?.type === 'psblock' && n.nodeName === '#ps:yaml',
+			);
 			expect(yaml).toBeDefined();
-			const div = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'div');
+			const div = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'div');
 			expect(div).toBeDefined();
 		});
 	});
@@ -676,11 +746,13 @@ describe('MarkdownParser', () => {
 	describe('Mixed inline HTML tags', () => {
 		test('inline HTML tags within paragraph', () => {
 			const doc = parse('This has <em>emphasis</em> and <strong>strong</strong> text\n');
-			const p = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'p');
+			const p = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'p');
 			expect(p).toBeDefined();
-			const em = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'em');
+			const em = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'em');
 			expect(em).toBeDefined();
-			const strong = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'strong');
+			const strong = doc.nodeList.find(
+				(n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'strong',
+			);
 			expect(strong).toBeDefined();
 		});
 	});
@@ -701,9 +773,11 @@ describe('MarkdownParser', () => {
 	describe('imageReference edge cases', () => {
 		test('imageReference without title in definition does NOT have title attribute', () => {
 			const doc = parse('![alt text][img]\n\n[img]: image.png\n');
-			const img = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'img');
+			const img = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'img');
 			expect(img).toBeDefined();
-			const title = img!.attributes.find(attr => attr.type === 'attr' && attr.name.raw === 'title');
+			const title = img!.attributes.find(
+				(attr): attr is MLASTHTMLAttr => attr.type === 'attr' && attr.name.raw === 'title',
+			);
 			expect(title).toBeUndefined();
 			// Only src and alt attributes
 			expect(img!.attributes.length).toBe(2);
@@ -711,26 +785,34 @@ describe('MarkdownParser', () => {
 
 		test('imageReference with empty alt ![][ref]', () => {
 			const doc = parse('![][img]\n\n[img]: image.png\n');
-			const img = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'img');
+			const img = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'img');
 			expect(img).toBeDefined();
-			const alt = img!.attributes.find(attr => attr.type === 'attr' && attr.name.raw === 'alt');
+			const alt = img!.attributes.find(
+				(attr): attr is MLASTHTMLAttr => attr.type === 'attr' && attr.name.raw === 'alt',
+			);
 			expect(alt).toBeDefined();
 			expect(alt!.value.raw).toBe('');
-			const src = img!.attributes.find(attr => attr.type === 'attr' && attr.name.raw === 'src');
+			const src = img!.attributes.find(
+				(attr): attr is MLASTHTMLAttr => attr.type === 'attr' && attr.name.raw === 'src',
+			);
 			expect(src).toBeDefined();
 			expect(src!.value.raw).toBe('image.png');
 		});
 
 		test('same definition used by multiple imageReferences', () => {
 			const doc = parse('![first][img]\n\n![second][img]\n\n[img]: photo.png\n');
-			const imgs = doc.nodeList.filter(n => n?.type === 'starttag' && n.nodeName === 'img');
+			const imgs = doc.nodeList.filter((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'img');
 			expect(imgs.length).toBe(2);
 			const alts = imgs.map(
-				img => img.attributes.find(a => a.type === 'attr' && a.name.raw === 'alt')?.value.raw,
+				img =>
+					img.attributes.find((a): a is MLASTHTMLAttr => a.type === 'attr' && a.name.raw === 'alt')?.value
+						.raw,
 			);
 			expect(alts).toStrictEqual(['first', 'second']);
 			const srcValues = imgs.map(
-				img => img.attributes.find(a => a.type === 'attr' && a.name.raw === 'src')?.value.raw,
+				img =>
+					img.attributes.find((a): a is MLASTHTMLAttr => a.type === 'attr' && a.name.raw === 'src')?.value
+						.raw,
 			);
 			expect(srcValues).toStrictEqual(['photo.png', 'photo.png']);
 		});
@@ -745,7 +827,7 @@ describe('MarkdownParser', () => {
 			expect(doc2.nodeList).toStrictEqual([]);
 
 			const doc3 = parse('# Another heading');
-			const h1 = doc3.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'h1');
+			const h1 = doc3.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'h1');
 			expect(h1).toBeDefined();
 		});
 	});

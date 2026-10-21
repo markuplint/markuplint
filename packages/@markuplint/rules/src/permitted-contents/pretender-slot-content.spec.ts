@@ -386,20 +386,18 @@ describe('Pretender slot content: parent-side evaluation (issue #4054)', () => {
 			},
 		] as const;
 
-		const { violations: satisfied } = await mlRuleTest(
-			rule,
-			'<Details></Details>',
-			{ ...jsxRuleOn, pretenders },
-			{ options },
-		);
+		const { violations: satisfied } = await mlRuleTest(rule, '<Details></Details>', {
+			...jsxRuleOn,
+			pretenders,
+			rule: { options },
+		});
 		expect(satisfied).toStrictEqual([]);
 
-		const { violations: duplicated } = await mlRuleTest(
-			rule,
-			'<Details><summary></summary></Details>',
-			{ ...jsxRuleOn, pretenders },
-			{ options },
-		);
+		const { violations: duplicated } = await mlRuleTest(rule, '<Details><summary></summary></Details>', {
+			...jsxRuleOn,
+			pretenders,
+			rule: { options },
+		});
 		expect(duplicated).toStrictEqual([
 			{
 				severity: 'error',

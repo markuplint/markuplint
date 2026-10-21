@@ -7,15 +7,15 @@ describe('compileDirectivePatterns', () => {
 		const patterns = [{ pattern: '^x-data$', isDirective: true as const }];
 		const compiled = compileDirectivePatterns(patterns);
 		expect(compiled).toHaveLength(1);
-		expect(compiled[0].regex).toBeInstanceOf(RegExp);
-		expect(compiled[0].regex.source).toBe('^x-data$');
-		expect(compiled[0].regex.flags).toBe('i');
+		expect(compiled[0]!.regex).toBeInstanceOf(RegExp);
+		expect(compiled[0]!.regex.source).toBe('^x-data$');
+		expect(compiled[0]!.regex.flags).toBe('i');
 	});
 
 	test('respects custom flags', () => {
 		const patterns = [{ pattern: '^x-data$', flags: '' }];
 		const compiled = compileDirectivePatterns(patterns);
-		expect(compiled[0].regex.flags).toBe('');
+		expect(compiled[0]!.regex.flags).toBe('');
 	});
 
 	test('caches compiled patterns by reference', () => {
@@ -140,6 +140,7 @@ describe('resolveDirective', () => {
 				isDuplicatable: ['class', 'style'],
 			},
 		];
+		// @ts-expect-error `isDirective: false` is outside the declared type on purpose
 		const compiled = compileDirectivePatterns(patterns);
 
 		// Whether `viewBox` is `viewbox` is up to the element the attribute is on

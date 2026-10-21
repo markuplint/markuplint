@@ -516,7 +516,10 @@ describe('composeIdentity', () => {
 			);
 
 			expect(result.map(pretender => pretender.selector)).toStrictEqual(['A', 'B']);
-			expect(result.map(pretender => pretender._via?.at(-1))).toStrictEqual(['...[Recursive]', '...[Recursive]']);
+			expect(result.map(pretender => (pretender as { _via?: readonly string[] })._via?.at(-1))).toStrictEqual([
+				'...[Recursive]',
+				'...[Recursive]',
+			]);
 		});
 
 		test('Hero -> Pic: the img that Hero always renders is in the contents', () => {

@@ -101,7 +101,7 @@ test('[require-owned-elements-issue-4068-003] children given at the usage site s
 				selector: 'List',
 				as: { element: 'ul', slots: true, contents: [{ element: 'div' }, { slot: true }] },
 			},
-		],
+		] as const,
 	};
 	expect((await mlRuleTest(rule, '<List><li>a</li></List>', config)).violations).toStrictEqual([]);
 	expect((await mlRuleTest(rule, '<List />', config)).violations).toStrictEqual([
@@ -230,11 +230,11 @@ test('[require-owned-elements-issue-4068-010] a fragment component supplies the 
 test('[require-owned-elements-issue-4068-011] a transparent component whose content is unknown may supply the owned element', async () => {
 	const config = {
 		...jsx,
-		rule: { options: { version: '1.3' } },
+		rule: { options: { version: '1.3' as const } },
 		pretenders: [
 			{ selector: 'List', as: 'ul' },
 			{ selector: 'Wrap', as: { element: 'div', contents: [{ dynamic: true }] } },
-		],
+		] as const,
 	};
 	expect((await mlRuleTest(rule, '<List><Wrap /></List>', config)).violations).toStrictEqual([]);
 });

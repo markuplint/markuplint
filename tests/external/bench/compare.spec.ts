@@ -1,8 +1,8 @@
 import { describe, expect, test } from 'vitest';
 
 import { compare } from './compare.ts';
+import type { CompareInputs } from './compare.ts';
 import type {
-	CompareInputs,
 	MarkuplintSnapshot,
 	NuMessage,
 	NuValidatorSnapshot,
@@ -181,7 +181,7 @@ describe('compare', () => {
 			),
 		);
 		expect(out.coverage.entries[0]?.verdict).toBe('nu-over');
-		expect(out.coverage.entries[0]?.excludedIds.sort()).toEqual(['nv-first', 'nv-second']);
+		expect(out.coverage.entries[0]?.excludedIds.toSorted()).toEqual(['nv-first', 'nv-second']);
 	});
 
 	test('non-error nu messages (warnings/info) do not count as an error', () => {

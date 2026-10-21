@@ -87,6 +87,7 @@ describe('analyzeScript: Vue <script setup>', () => {
 
 	test('a script that is missing says nothing', () => {
 		expect(locals('vue', '')).toStrictEqual([]);
+		// @ts-expect-error the source argument is intentionally omitted
 		expect([...analyzeScript('vue').locals]).toStrictEqual([]);
 	});
 
@@ -160,6 +161,7 @@ describe('createTemplatePropResolver (template)', () => {
 		expect(vue('props?.label')).toBeUndefined();
 		expect(vue('other')).toBeUndefined();
 		expect(vue('')).toBeUndefined();
+		// @ts-expect-error the expression argument is intentionally omitted
 		expect(vue()).toBeUndefined();
 	});
 

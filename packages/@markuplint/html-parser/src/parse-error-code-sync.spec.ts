@@ -1,6 +1,6 @@
 import type { MLASTParseErrorCode } from '@markuplint/ml-ast';
 
-import type { ERR } from 'parse5/dist/common/error-codes.js';
+import type { ErrorCodes } from 'parse5';
 import { describe, expectTypeOf, test } from 'vitest';
 
 /**
@@ -16,7 +16,7 @@ import { describe, expectTypeOf, test } from 'vitest';
  */
 describe('MLASTParseErrorCode stays in sync with parse5 ERR enum (compile-time)', () => {
 	test('every parse5 ERR value is a MLASTParseErrorCode', () => {
-		expectTypeOf<(typeof ERR)[keyof typeof ERR]>().toExtend<MLASTParseErrorCode>();
+		expectTypeOf<(typeof ErrorCodes)[keyof typeof ErrorCodes]>().toExtend<MLASTParseErrorCode>();
 	});
 
 	test('every MLASTParseErrorCode is currently present in parse5 ERR (no orphaned codes)', () => {
@@ -24,6 +24,6 @@ describe('MLASTParseErrorCode stays in sync with parse5 ERR enum (compile-time)'
 		// after parse5 *removes* a code. If parse5 deprecates a code, this
 		// assertion fails and someone must consciously decide whether to keep
 		// the alias for backwards compatibility or drop it from ml-ast.
-		expectTypeOf<MLASTParseErrorCode>().toExtend<(typeof ERR)[keyof typeof ERR]>();
+		expectTypeOf<MLASTParseErrorCode>().toExtend<`${(typeof ErrorCodes)[keyof typeof ErrorCodes]}`>();
 	});
 });

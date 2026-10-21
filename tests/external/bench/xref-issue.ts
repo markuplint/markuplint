@@ -469,7 +469,7 @@ export async function runAudit(
 export function processOne(
 	mapping: XrefMapping,
 	ctx: RenderContext,
-	opts: CliOptions,
+	opts: Omit<CliOptions, 'audit' | 'json'>,
 	gh: GhClient,
 	log: Pick<Console, 'log'> = console,
 ): void {
