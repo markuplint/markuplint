@@ -1412,8 +1412,8 @@ describe('experimentalRustCore fixes the file', () => {
 			const rust = await exec(sourceCode, config, { rust: true, fix: true });
 			const typescript = await exec(sourceCode, config, { rust: false, fix: true });
 
-			expect(typescript?.fixedCode).toBe('<p>日本語😀</p>\n<div class="a"\n  style = "x"></div>');
-			expect(rust?.fixedCode).toBe('<p>日本語😀</p>\n<div class="a"\n  style = "x"></div>');
+			expect(typescript?.fixedCode).toBe('<p>日本語😀</p>\n<div class="a" style = "x"></div>');
+			expect(rust?.fixedCode).toBe('<p>日本語😀</p>\n<div class="a" style = "x"></div>');
 		},
 	);
 });

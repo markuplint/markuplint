@@ -1,4 +1,4 @@
-import type { MLASTDocument, MLASTHTMLAttr } from '@markuplint/ml-ast';
+import type { AttrNameRoute, MLASTDocument, MLASTHTMLAttr } from '@markuplint/ml-ast';
 import type { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
 
 import { resolveAttrNames } from '@markuplint/ml-core';
@@ -16,6 +16,8 @@ type MLASTForRustOptions = {
 		readonly booleanish?: boolean;
 		readonly tagNameCaseSensitive?: boolean;
 		readonly attrNameCaseSensitive?: boolean;
+		readonly attrNameRoute?: AttrNameRoute;
+		readonly componentNameVariants?: boolean;
 	};
 };
 
@@ -31,9 +33,9 @@ type MLASTForRustOptions = {
  * - The name an attribute goes by, and whether it is a directive or has a dynamic value, are
  *   resolved from the spec. This is `resolveAttrNames`, the function `MLAttr` is built with, so
  *   the two cannot disagree.
- * - `endTag`, `booleanish`, `tagNameCaseSensitive` and `attrNameCaseSensitive` of the parser are
- *   sent next to the nodes (`DocumentSettings` on the Rust side), as `MLCore` hands them to
- *   `Document`.
+ * - `endTag`, `booleanish`, `tagNameCaseSensitive`, `attrNameCaseSensitive`, `attrNameRoute` and
+ *   `componentNameVariants` of the parser are sent next to the nodes (`DocumentSettings` on the
+ *   Rust side), as `MLCore` hands them to `Document`.
  *
  * @param ast - What the parser returned; it is not modified.
  * @returns The JSON `lint()` takes as its first argument.
@@ -61,6 +63,8 @@ export function mlastForRust(ast: MLASTDocument, { spec, parser }: MLASTForRustO
 			booleanish: parser.booleanish,
 			tagNameCaseSensitive: parser.tagNameCaseSensitive,
 			attrNameCaseSensitive: parser.attrNameCaseSensitive,
+			attrNameRoute: parser.attrNameRoute,
+			componentNameVariants: parser.componentNameVariants,
 		},
 		(_key, value: unknown) => (isHTMLAttr(value) ? resolveAttr(value) : value),
 	);
