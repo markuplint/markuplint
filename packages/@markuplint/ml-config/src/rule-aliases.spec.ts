@@ -46,9 +46,12 @@ test('[rule-aliases-invalid-002] a 1:N split copies the resolved configuration t
 test('[rule-aliases-invalid-003] a split can conditionally omit a replacement based on the old configuration', () => {
 	const table: RuleAliasTable = {
 		'old-rule-with-suboption': {
-			expand: rule => {
+			expand: (rule): Record<string, true> => {
 				const hasSubOption =
-					typeof rule === 'object' && rule !== null && !Array.isArray(rule) && rule.options === true;
+					typeof rule === 'object' &&
+					rule !== null &&
+					!Array.isArray(rule) &&
+					(rule as { options?: unknown }).options === true;
 				return hasSubOption ? { 'main-check': true, 'sub-check': true } : { 'main-check': true };
 			},
 			targets: ['main-check', 'sub-check'],
