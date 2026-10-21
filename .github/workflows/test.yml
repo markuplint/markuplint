@@ -430,16 +430,6 @@ jobs:
               id: yarn-cache-dir-path
               run: echo "dir=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
 
-            # Add step to remove packageManager field using jq for pnpm tests
-            - name: Remove packageManager field from package.json
-              if: matrix.pm == 'pnpm'
-              run: |
-                  echo 'Removing packageManager field...'
-                  jq 'del(.packageManager)' package.json > package.json.tmp && mv package.json.tmp package.json
-                  echo 'package.json content after removal:'
-                  cat package.json
-              shell: bash
-
             - name: Cache Restore devDependencies
               uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
               with:
