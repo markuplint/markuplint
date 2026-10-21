@@ -8990,9 +8990,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lerna@npm:10.1.0":
-  version: 10.1.0
-  resolution: "lerna@npm:10.1.0"
+"lerna@npm:10.1.1":
+  version: 10.1.1
+  resolution: "lerna@npm:10.1.1"
   dependencies:
     "@npmcli/arborist": "npm:10.0.3"
     "@npmcli/package-json": "npm:8.0.0"
@@ -9042,7 +9042,7 @@ __metadata:
     yargs: "npm:18.2.0"
   bin:
     lerna: dist/cli.js
-  checksum: 10c0/6c7ca998c5d6c81e88664e74bcf7cda3c5101323084983cc41d2d307a417bb5bdae2399114e3dd87c7a9a0ecb4f0d41f791dd8f3f10e12e2f77d3cb4952ec07b
+  checksum: 10c0/f496cd55d815ebdaacf2efd194e08e25dcbc68f2fcbe990c56b3eb3b917cb7bd09804779c8845d7aea1656f76c5c23aea5ad987813a1c75d1f21f12bc997e37e
   languageName: node
   linkType: hard
 
@@ -9607,7 +9607,7 @@ __metadata:
     cz-conventional-changelog: "npm:3.3.0"
     eslint-plugin-regexp: "npm:3.3.1"
     husky: "npm:9.1.7"
-    lerna: "npm:10.1.0"
+    lerna: "npm:10.1.1"
     lint-staged: "npm:17.6.0"
     npm-run-all2: "npm:9.0.3"
     oxfmt: "npm:0.72.0"
