@@ -10,6 +10,7 @@ import { describe, test, expect, afterEach, beforeEach, vi } from 'vitest';
 
 import { clearExportTableCache, dependencyMapper, resolveDeclarationFile } from './dependency-mapper.js';
 import { clearModuleResolutionCaches, normalizePath } from './import-resolver/resolve-module-file.js';
+import { loadComponentNameRule } from './scanner-loader.js';
 
 const fixtureDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures', 'dependency-mapper');
 
@@ -1044,8 +1045,6 @@ describe('dependencyMapper: the names the entry file gives its imports', () => {
 
 	test.each([
 		['a dynamic import', { localName: '*', importedName: '*', source: './a', type: 'dynamic' as const }],
-		// Behavior change: a namespace import gets a pretender per exported component, under `A\.Item`
-		// ['a namespace import', { localName: 'A', importedName: '*', source: './a', type: 'namespace' as const }], // previous
 		['an import from a package', named('A', 'Item', 'not-installed-package')],
 		['an import of a name that is not a component of the map', named('A', 'helper', './a')],
 		['a local name that is not capitalized', named('item', 'Item', './a')],
@@ -1349,6 +1348,40 @@ describe('dependencyMapper: a component reached through a member tag or a lazy v
 		expect(selectorsOf([namespace('$ui', './a')])).toStrictEqual([String.raw`\$ui\.Item`]);
 	});
 
+	test('a key of the Options API of Vue with a dot is escaped as a selector: `ui.Item` gives `ui\\.Item`', async () => {
+		await writeFile(path.join(tmpDir, 'a.tsx'), 'export const Item = () => <button />;\nexport default Item;\n');
+
+		const result = dependencyMapper(itemMap(), undefined, {
+			cwd: tmpDir,
+			entry: {
+				filePath: path.join(tmpDir, 'Page.vue'),
+				bindings: [
+					{
+						localName: 'Item',
+						importedName: 'default',
+						source: './a',
+						type: 'default',
+						registeredAs: 'ui.Item',
+					},
+				],
+			},
+		});
+
+		expect(result.map(pretender => pretender.selector).filter(selector => selector !== 'Item')).toStrictEqual([
+			String.raw`ui\.Item`,
+		]);
+	});
+
+	test('a local name is escaped as a selector: `$Btn` gives `\\$Btn`', async () => {
+		await writeFile(path.join(tmpDir, 'a.tsx'), 'export const Item = () => <button />;\nexport default Item;\n');
+		// `$Btn` is a component to the JSX parser, whose rule `analyzeImports` loads when it reads the file
+		await loadComponentNameRule('.tsx');
+
+		expect(
+			selectorsOf([{ localName: '$Btn', importedName: 'default', source: './a', type: 'default' }]),
+		).toStrictEqual([String.raw`\$Btn`]);
+	});
+
 	test('a lowercase namespace name is not judged: a tag with a dot is a component', async () => {
 		await writeFile(path.join(tmpDir, 'a.tsx'), 'export const Item = () => <button />;\n');
 
@@ -1582,9 +1615,7 @@ describe('dependencyMapper: a component reached through a member tag or a lazy v
 	test('the default export of a namespace is a member', async () => {
 		await writeFile(path.join(tmpDir, 'a.tsx'), 'export const Item = () => <button />;\nexport default Item;\n');
 
-		// Behavior change: `default` of a namespace is a member, so `<UI.default />` gets a pretender too
 		expect(selectorsOf([namespace('UI', './a')])).toStrictEqual([String.raw`UI\.default`, String.raw`UI\.Item`]);
-		// expect(selectorsOf([namespace('UI', './a')])).toStrictEqual([String.raw`UI\.Item`]); // previous
 	});
 
 	describe.each([

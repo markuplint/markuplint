@@ -271,10 +271,13 @@ function aliasEntryImports(
 	const aliased = new Set<string>();
 	const importerAbs = path.resolve(env.cwd, entry.filePath);
 
-	const addAlias = (selector: string, key: string | typeof FROM_PACKAGE | null) => {
+	// `name` is the tag name as written (`UI.Item`); the selector is it escaped (`UI\.Item`), as in CSS `.`
+	// starts a class.
+	const addAlias = (name: string, key: string | typeof FROM_PACKAGE | null) => {
 		const declared = typeof key === 'string' ? map.get(key) : undefined;
 		const linked = typeof key === 'string' ? linkedByKey.get(key) : undefined;
-		if (!declared || !linked || declared[0] === selector || aliased.has(selector)) {
+		const selector = escapeSelectorIdent(name);
+		if (!declared || !linked || declared[0] === name || aliased.has(selector)) {
 			return;
 		}
 
@@ -290,19 +293,16 @@ function aliasEntryImports(
 		const namespaceAbs =
 			key == null && binding.type !== 'dynamic' ? namespaceModuleOf(binding, importerAbs, env) : null;
 		if (typeof namespaceAbs === 'string') {
-			// A member tag is one name that the selector has to be told so: `.` starts a class there.
+			// A member tag is one name, which `addAlias` escapes as such.
 			for (const member of namespaceMembers(namespaceAbs, env, map)) {
-				addAlias(
-					[binding.localName, ...member.members].map(escapeSelectorIdent).join(String.raw`\.`),
-					member.key,
-				);
+				addAlias([binding.localName, ...member.members].join('.'), member.key);
 			}
 			continue;
 		}
 
 		if (isComponent) {
 			// The name the file's template refers to the component by: the key of the Options API of Vue
-			// that registers it (`Btn` of `Btn: MyButton`), or the name the import gives
+			// that registers it (`Btn` of `Btn: MyButton`, or `'ui.Item'` for `<ui.Item>`), or the name the import gives
 			addAlias(registeredName(binding), key);
 		}
 	}
@@ -311,8 +311,9 @@ function aliasEntryImports(
 }
 
 /**
- * Escapes what is no part of a CSS identifier, so that a name made of identifiers of the source
- * (`UI`, `Item`) is written as one type selector when the pieces are joined by an escaped `.`.
+ * Escapes what is no part of a CSS identifier, so that a tag name is written as one type selector:
+ * a member tag (`UI.Item` as `UI\.Item`), a key of the Options API of Vue (`'ui.Item'`), and a name of
+ * the source with a character such as `$` (`$Btn` as `\$Btn`).
  */
 function escapeSelectorIdent(name: string): string {
 	return name.replaceAll(/[^\p{ID_Continue}-]/gu, String.raw`\$&`);
