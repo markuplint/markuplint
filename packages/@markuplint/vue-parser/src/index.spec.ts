@@ -355,12 +355,12 @@ describe('parser', () => {
 			'<template><div v-if="bool" data-attr v-bind:data-attr2="variable" @click.once="event" v-on:click.foobar="event"></div></template>',
 		);
 		expect(doc.nodeList[0].attributes[0].raw).toBe('v-if="bool"');
-		// Directive resolution now handled by vue-spec's directivePatterns, not parser
+		// Directive resolution is handled by vue-spec's directivePatterns, not parser
 		expect(doc.nodeList[0].attributes[0].isDirective).toBeUndefined();
 		expect(doc.nodeList[0].attributes[1].raw).toBe('data-attr');
 		expect(doc.nodeList[0].attributes[1].isDirective).toBeUndefined();
 		expect(doc.nodeList[0].attributes[2].raw).toBe('v-bind:data-attr2="variable"');
-		// potentialName resolution now handled by vue-spec's directivePatterns
+		// potentialName resolution is handled by vue-spec's directivePatterns
 		expect(doc.nodeList[0].attributes[2].potentialName).toBeUndefined();
 		expect(doc.nodeList[0].attributes[3].isDirective).toBeUndefined();
 		expect(doc.nodeList[0].attributes[4].isDirective).toBeUndefined();
@@ -397,9 +397,7 @@ describe('parser', () => {
 		expect(parse('<template><component/></template>').nodeList[0].elementType).toBe('authored');
 		expect(parse('<template><slot/></template>').nodeList[0].elementType).toBe('authored');
 		expect(parse('<template><Transition/></template>').nodeList[0].elementType).toBe('authored');
-		// Behavior change: <transition> is the built-in component Transition, as Vue resolves it
 		expect(parse('<template><transition/></template>').nodeList[0].elementType).toBe('authored');
-		// expect(parse('<template><transition/></template>').nodeList[0].elementType).toBe('html'); // previous
 	});
 
 	test('Directives', () => {
@@ -619,17 +617,16 @@ h3 {
 		]);
 	});
 
-	test('#1451', () => {
+	test('the element type of an HTML element, a custom element and a component', () => {
 		expect(parse('<template><div></div></template>').nodeList[0].elementType).toBe('html');
 		expect(parse('<template><x-div></x-div></template>').nodeList[0].elementType).toBe('web-component');
 		expect(parse('<template><Div></Div></template>').nodeList[0].elementType).toBe('authored');
 	});
 
-	// Pins the cross-package impact of Issue #3594's default change.
-	// Vue parser relies on the default `endOfUnquotedValueChars` from parser-utils.
-	// After the fix, `/` is no longer a terminator, so unquoted values in Vue
-	// templates inherit the HTML-spec behavior: `/` is part of the value.
-	test('#3594 Vue inherits HTML-spec unquoted "/" handling', () => {
+	// Vue parser relies on the default `endOfUnquotedValueChars` from parser-utils,
+	// where `/` is not a terminator, so unquoted values in Vue templates follow
+	// the HTML-spec behavior: `/` is part of the value.
+	test('Vue inherits HTML-spec unquoted "/" handling', () => {
 		expect(() => parse('<template><img src=/a/b.png alt=x></template>')).not.toThrow();
 		const doc = parse('<template><img src=/a/b.png alt=x></template>');
 		const img = doc.nodeList.find(n => n.nodeName === 'img');
