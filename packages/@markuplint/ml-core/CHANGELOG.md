@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.3.0](https://github.com/markuplint/markuplint/compare/v5.2.0...v5.3.0) (2026-10-21)
+
+### Bug Fixes
+
+* make published packages loadable from require() and put types first ([723106f](https://github.com/markuplint/markuplint/commit/723106f51aac4e60dc02db2c1a894617368b0253)), closes [#4198](https://github.com/markuplint/markuplint/issues/4198)
+* **ml-core:** add MLElement.isCustomElement so :model() matches #custom ([befdf3b](https://github.com/markuplint/markuplint/commit/befdf3be6623331b4fc5dca773df6ba745ea10ee)), closes [#custom](https://github.com/markuplint/markuplint/issues/custom)
+* **ml-core:** decide by the name that the DOM gives an attribute ([68f732c](https://github.com/markuplint/markuplint/commit/68f732ce3eec1203fbed479af1f1488e5f272a47))
+* **ml-core:** make the type selector and the pretender guard read `isNativeTag` of the parser ([9f7877f](https://github.com/markuplint/markuplint/commit/9f7877f10a02d86e5efe5254b414ef232f08c2a6))
+* **ml-core:** match attribute names case-insensitively in getAttributeToken ([418e627](https://github.com/markuplint/markuplint/commit/418e627d6f7402136654ed6f1007b06ad6da3d86)), closes [#4180](https://github.com/markuplint/markuplint/issues/4180)
+* **ml-core:** read a prefixed name as the HTML parser does and match Vue props by either spelling ([fe6cd8f](https://github.com/markuplint/markuplint/commit/fe6cd8f949fd28212e2123e4129c8dc3d7b0404f))
+* **ml-core:** tell the selector whether the document tells the case of a tag name apart ([f0a9c17](https://github.com/markuplint/markuplint/commit/f0a9c1783bd237f307647f0b3cb978edeb814037))
+* **ml-core:** treat a pretender target that is a component name as a component ([f20dc1b](https://github.com/markuplint/markuplint/commit/f20dc1be225e2f2e90f2c721bc2c10e8847b9809))
+* **rules:** compare attribute names as the DOM does in the rules that list attributes ([51faee6](https://github.com/markuplint/markuplint/commit/51faee6f13a8f09f136438873991f0581071012a))
+* **selector:** match a prefixed attribute by its local name as well ([a9beb11](https://github.com/markuplint/markuplint/commit/a9beb112b87bf9ade372ede0fe0d7958d05027fc))
+
+### Features
+
+* **ml-core:** ask whether a name is a prefix of an attribute, and keep suggesting the property ([bd195ef](https://github.com/markuplint/markuplint/commit/bd195ef6ededb80482c642a86360c5f932f8b91b))
+* **ml-core:** expose attrNameCaseSensitive on MLDocument ([d73a2fd](https://github.com/markuplint/markuplint/commit/d73a2fdc337425e6203da696abe785172f7b277d)), closes [#4229](https://github.com/markuplint/markuplint/issues/4229)
+* **ml-core:** read the parser's name rules through the document ([b4f03ea](https://github.com/markuplint/markuplint/commit/b4f03eaff13f52421993bbec490330a4039ee850)), closes [MLElement#tagNameKind](https://github.com/MLElement/issues/tagNameKind)
+* **parser-utils:** let a parser say how an attribute name gets into the DOM ([abd81e5](https://github.com/markuplint/markuplint/commit/abd81e5d20f4ffeb0ba878e77fd4122c1a803a9f))
+
+### Performance Improvements
+
+* **ml-core:** guard debug logging on the rule mapper and verify paths ([1a6249f](https://github.com/markuplint/markuplint/commit/1a6249f333e2dc75d65607b5059f9d8d647e7b3b))
+
+
 # [5.2.0](https://github.com/markuplint/markuplint/compare/v5.1.1...v5.2.0) (2026-10-13)
 
 ### Bug Fixes

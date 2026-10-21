@@ -3,6 +3,47 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.3.0](https://github.com/markuplint/markuplint/compare/v5.2.0...v5.3.0) (2026-10-21)
+
+### Bug Fixes
+
+* **github:** retry unreachable spec pages before failing the check ([02c7d35](https://github.com/markuplint/markuplint/commit/02c7d353037f9cf0c04bb11aa3c5827c129a7231))
+* make published packages loadable from require() and put types first ([723106f](https://github.com/markuplint/markuplint/commit/723106f51aac4e60dc02db2c1a894617368b0253)), closes [#4198](https://github.com/markuplint/markuplint/issues/4198)
+* **rules:** accept a pretender that stands for a component in permitted-contents ([0efc2c9](https://github.com/markuplint/markuplint/commit/0efc2c9b2ef423a9b9e72128f3d6e2eb4ba4dd22))
+* **rules:** apply a tag rule of permitted-contents to every spelling of a Vue component ([f3f96dc](https://github.com/markuplint/markuplint/commit/f3f96dcff5cbd514b3aeb55fc387297fa7af6f5a))
+* **rules:** apply the conditional contents of a tag rule to the component of a pretender ([df96f58](https://github.com/markuplint/markuplint/commit/df96f58af9be0ee20ca04f3cc22d17a681ba674e)), closes [#4352](https://github.com/markuplint/markuplint/issues/4352)
+* **rules:** check upper-case ARIA attributes as the DOM names them ([29eaf3b](https://github.com/markuplint/markuplint/commit/29eaf3bfbfd40dc74977f0940a83e6f90eb7ddc6))
+* **rules:** compare attribute names as the DOM does in the rules that list attributes ([51faee6](https://github.com/markuplint/markuplint/commit/51faee6f13a8f09f136438873991f0581071012a))
+* **rules:** do not count a self-referencing aria-labelledby as a naming source ([84efeb1](https://github.com/markuplint/markuplint/commit/84efeb136260bcf0dd7161b38d69a9fadccb7834)), closes [#4217](https://github.com/markuplint/markuplint/issues/4217)
+* **rules:** do not report a placeholder option whose value is not known ([edfc526](https://github.com/markuplint/markuplint/commit/edfc5262a9e784ed80ec0d1a5000f7ed55b94583)), closes [#32](https://github.com/markuplint/markuplint/issues/32)
+* **rules:** do not translate the suggested property name in no-unknown-attr ([bb22ae2](https://github.com/markuplint/markuplint/commit/bb22ae2e4a1ac5ef9b36e922892e8f608e363940))
+* **rules:** find a compat key by the name the DOM gives it, in any spelling ([a5b286b](https://github.com/markuplint/markuplint/commit/a5b286b57afba6ef7a33073e650b983df1d8cc46))
+* **rules:** fix case-sensitive attribute lookup, duplicate landmarks and raw text scan ([a98b850](https://github.com/markuplint/markuplint/commit/a98b850cd64f4a277e4fd65ff5b7bb20c170d38b)), closes [#4180](https://github.com/markuplint/markuplint/issues/4180)
+* **rules:** follow the spec's definition of the placeholder label option ([4797eec](https://github.com/markuplint/markuplint/commit/4797eec2f2b7a45d3ffdb251f2401f977327725a))
+* **rules:** judge loading and sizes of the img the same way in both directions ([9cdab16](https://github.com/markuplint/markuplint/commit/9cdab1618e923f6271dea95998c42fbe260848b5))
+* **rules:** keep ranking the other sources of a self-referencing aria-labelledby element ([33563fb](https://github.com/markuplint/markuplint/commit/33563fbc76e46d26562e230bec9d378a8d564e1b)), closes [#4251](https://github.com/markuplint/markuplint/issues/4251) [#4251](https://github.com/markuplint/markuplint/issues/4251) [#4250](https://github.com/markuplint/markuplint/issues/4250) [#4217](https://github.com/markuplint/markuplint/issues/4217)
+* **rules:** look attributes up in the spec as the DOM names them ([149d3fd](https://github.com/markuplint/markuplint/commit/149d3fd63b762ff334307977ec3059dc839ccbc3))
+* **rules:** name the spelling in the case-sensitive-attr-name report on foreign elements ([b63ebf4](https://github.com/markuplint/markuplint/commit/b63ebf4c0de648428dbf72220dda321e594b8728))
+* **rules:** order attributes and match ignoreFeatures keys as the DOM names them ([f955369](https://github.com/markuplint/markuplint/commit/f955369505bb3a7fc739c99cf8b32827a4e10e46))
+* **rules:** recognize sizes="auto" the way the spec defines it ([91cfae3](https://github.com/markuplint/markuplint/commit/91cfae3ef8fccc7d7139a3c523d9f7f1bc99c386))
+* **rules:** require the img after a source to allow auto-sizes, not only to load lazily ([9774217](https://github.com/markuplint/markuplint/commit/977421797466a13028f59228c8b40a521f3a6e82))
+* **rules:** skip case-sensitive-attr-name for case-sensitive languages ([238f011](https://github.com/markuplint/markuplint/commit/238f011b8393644057a6258cc5444101f3d18deb)), closes [#4229](https://github.com/markuplint/markuplint/issues/4229)
+* **rules:** skip class-naming when no pattern is configured ([7387c16](https://github.com/markuplint/markuplint/commit/7387c167dbb0a22e480924b556e1fae62635ffc4)), closes [#4202](https://github.com/markuplint/markuplint/issues/4202)
+* **rules:** skip no-redundant-accessible-name for a self-referencing aria-labelledby with aria-label ([a46715f](https://github.com/markuplint/markuplint/commit/a46715f0c46283709274cbf16d5484089236dec1)), closes [#4217](https://github.com/markuplint/markuplint/issues/4217) [#4250](https://github.com/markuplint/markuplint/issues/4250) [#4217](https://github.com/markuplint/markuplint/issues/4217)
+* **rules:** sort the props of a component in attr-order by the name as written ([a2d3b48](https://github.com/markuplint/markuplint/commit/a2d3b48c810b5800dbf718975d4758461656b588))
+* **rules:** tell the namespace of a component's prop by the name as written ([157f434](https://github.com/markuplint/markuplint/commit/157f434b9dc4bb0f51c3fb77b219f38ef4035dd8))
+* **selector:** match a prefixed attribute by its local name as well ([a9beb11](https://github.com/markuplint/markuplint/commit/a9beb112b87bf9ade372ede0fe0d7958d05027fc))
+* supersede no-input-file-value with no-disallowed-attr ([2450fa1](https://github.com/markuplint/markuplint/commit/2450fa11c6cd0c32271ccfaed237fbd3b4b31953))
+
+### Features
+
+* **github:** watch the spec passages that rules cite ([c0203d1](https://github.com/markuplint/markuplint/commit/c0203d14d9db3168d9720375c08edaeed2691aa0))
+
+### Performance Improvements
+
+* **rules:** guard debug logging in permitted-contents and attribute checks ([db3281e](https://github.com/markuplint/markuplint/commit/db3281e048cdecfae6a51cb50b3bfb2f19a73e5c))
+
+
 # [5.2.0](https://github.com/markuplint/markuplint/compare/v5.1.1...v5.2.0) (2026-10-13)
 
 ### Bug Fixes

@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.3.0](https://github.com/markuplint/markuplint/compare/v5.2.0...v5.3.0) (2026-10-21)
+
+### Bug Fixes
+
+* make published packages loadable from require() and put types first ([723106f](https://github.com/markuplint/markuplint/commit/723106f51aac4e60dc02db2c1a894617368b0253)), closes [#4198](https://github.com/markuplint/markuplint/issues/4198)
+* **ml-core:** decide by the name that the DOM gives an attribute ([68f732c](https://github.com/markuplint/markuplint/commit/68f732ce3eec1203fbed479af1f1488e5f272a47))
+* **rules:** tell the namespace of a component's prop by the name as written ([157f434](https://github.com/markuplint/markuplint/commit/157f434b9dc4bb0f51c3fb77b219f38ef4035dd8))
+
+### Features
+
+* **shared:** add asciiLowerCase ([c040680](https://github.com/markuplint/markuplint/commit/c040680b6818500f82657bfc2cea4dc169c1d27c))
+* **shared:** add the name rules of a component in a Vue template ([fea50ef](https://github.com/markuplint/markuplint/commit/fea50ef09a4c66412603aa1e2bf2a3afc29566ed))
+
+
 # [5.2.0](https://github.com/markuplint/markuplint/compare/v5.1.1...v5.2.0) (2026-10-13)
 
 ### Bug Fixes

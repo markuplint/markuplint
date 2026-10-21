@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.3.0](https://github.com/markuplint/markuplint/compare/v5.2.0...v5.3.0) (2026-10-21)
+
+### Bug Fixes
+
+* make lint-check pass under oxfmt 0.72.0 ([7b7144f](https://github.com/markuplint/markuplint/commit/7b7144fdee46c522e54bc2af1700580f966e6121))
+* make published packages loadable from require() and put types first ([723106f](https://github.com/markuplint/markuplint/commit/723106f51aac4e60dc02db2c1a894617368b0253)), closes [#4198](https://github.com/markuplint/markuplint/issues/4198)
+
+### Performance Improvements
+
+* **types:** guard debug logging so a disabled logger builds no arguments ([eb6d82a](https://github.com/markuplint/markuplint/commit/eb6d82a9d368e12015db8a1ae97e2655ce818f89))
+
+
 # [5.2.0](https://github.com/markuplint/markuplint/compare/v5.1.1...v5.2.0) (2026-10-13)
 
 ### Bug Fixes

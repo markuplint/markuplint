@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.3.0](https://github.com/markuplint/markuplint/compare/v5.2.0...v5.3.0) (2026-10-21)
+
+### Bug Fixes
+
+* supersede no-input-file-value with no-disallowed-attr ([2450fa1](https://github.com/markuplint/markuplint/commit/2450fa11c6cd0c32271ccfaed237fbd3b4b31953))
+
+
 # [5.2.0](https://github.com/markuplint/markuplint/compare/v5.1.1...v5.2.0) (2026-10-13)
 
 **Note:** Version bump only for package @markuplint/config-presets

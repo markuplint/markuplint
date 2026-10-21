@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.3.0](https://github.com/markuplint/markuplint/compare/v5.2.0...v5.3.0) (2026-10-21)
+
+### Bug Fixes
+
+* **astro-parser:** detect a frontmatter fence with trailing spaces and pin the guard boundaries ([23e6e0c](https://github.com/markuplint/markuplint/commit/23e6e0c3628ed3c9b3bad20d9381a505919146b1))
+* **astro-parser:** do not report a root that is neither a component nor an element ([fdf141b](https://github.com/markuplint/markuplint/commit/fdf141b02eb0c9bb26812c4be748feac1c1584d6))
+* **astro-parser:** migrate to astro-eslint-parser v3 ([f76792a](https://github.com/markuplint/markuplint/commit/f76792a01f823bb4e29103d1b4ce7ef6e33c8bda))
+* make published packages loadable from require() and put types first ([723106f](https://github.com/markuplint/markuplint/commit/723106f51aac4e60dc02db2c1a894617368b0253)), closes [#4198](https://github.com/markuplint/markuplint/issues/4198)
+
+### Features
+
+* **astro-parser:** answer what a component name is by the rule of Astro ([5399070](https://github.com/markuplint/markuplint/commit/5399070fa1797cbd502379e9c469aba51693b92b))
+
+
 # [5.2.0](https://github.com/markuplint/markuplint/compare/v5.1.1...v5.2.0) (2026-10-13)
 
 ### Bug Fixes

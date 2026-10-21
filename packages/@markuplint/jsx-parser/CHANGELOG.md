@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.3.0](https://github.com/markuplint/markuplint/compare/v5.2.0...v5.3.0) (2026-10-21)
+
+### Bug Fixes
+
+* **jsx-parser:** read a tag whose name starts with `$`, `_` or a non-ASCII letter ([ff9f42e](https://github.com/markuplint/markuplint/commit/ff9f42e7b601ac49a82caee56dbfbc0305f26ef9))
+* make published packages loadable from require() and put types first ([723106f](https://github.com/markuplint/markuplint/commit/723106f51aac4e60dc02db2c1a894617368b0253)), closes [#4198](https://github.com/markuplint/markuplint/issues/4198)
+
+### Features
+
+* **jsx-parser:** answer what a component name is by the rule of JSX compilers ([a2d2b8e](https://github.com/markuplint/markuplint/commit/a2d2b8e07d1c049cebece7e276fbc7d19142f973))
+* **jsx-parser:** declare attribute names as case-sensitive ([6aa2da0](https://github.com/markuplint/markuplint/commit/6aa2da0b93680b089ecaf0a36720ebb8b9f71e97)), closes [#4229](https://github.com/markuplint/markuplint/issues/4229)
+* **parser-utils:** let a parser say how an attribute name gets into the DOM ([abd81e5](https://github.com/markuplint/markuplint/commit/abd81e5d20f4ffeb0ba878e77fd4122c1a803a9f))
+
+
 # [5.2.0](https://github.com/markuplint/markuplint/compare/v5.1.1...v5.2.0) (2026-10-13)
 
 **Note:** Version bump only for package @markuplint/jsx-parser

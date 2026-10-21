@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.3.0](https://github.com/markuplint/markuplint/compare/v5.2.0...v5.3.0) (2026-10-21)
+
+### Bug Fixes
+
+* make published packages loadable from require() and put types first ([723106f](https://github.com/markuplint/markuplint/commit/723106f51aac4e60dc02db2c1a894617368b0253)), closes [#4198](https://github.com/markuplint/markuplint/issues/4198)
+* **ml-core:** read a prefixed name as the HTML parser does and match Vue props by either spelling ([fe6cd8f](https://github.com/markuplint/markuplint/commit/fe6cd8f949fd28212e2123e4129c8dc3d7b0404f))
+* **selector:** compare a type name with a Vue component by the spelling-free rule ([60ab690](https://github.com/markuplint/markuplint/commit/60ab69090c53daf42be95320705ce137bd84656e)), closes [SelectorElement#tagNameKind](https://github.com/SelectorElement/issues/tagNameKind)
+* **selector:** compare tag names as written in documents that tell their case apart ([5c86cad](https://github.com/markuplint/markuplint/commit/5c86cada9b5a446500cfe446eff1ed7c64f367bc))
+* **selector:** match a prefixed attribute by its local name as well ([a9beb11](https://github.com/markuplint/markuplint/commit/a9beb112b87bf9ade372ede0fe0d7958d05027fc))
+* **selector:** match a Vue prop by either spelling in a regular expression selector ([5a5cf2d](https://github.com/markuplint/markuplint/commit/5a5cf2dad45d609d58cc689129544228dfdf7e38))
+* **selector:** read #custom of :model() from SelectorElement.isCustomElement ([45b1e38](https://github.com/markuplint/markuplint/commit/45b1e38893d08206a7dcd52039781b1f0ba0cea5)), closes [#custom](https://github.com/markuplint/markuplint/issues/custom) [#custom](https://github.com/markuplint/markuplint/issues/custom)
+
+### Features
+
+* **selector:** match an attribute name as the host says the DOM does ([23cc921](https://github.com/markuplint/markuplint/commit/23cc921c364705b059f96b10ac836fac234dfbd3))
+
+### Performance Improvements
+
+* **selector:** read the debug flag once per match and pass it down ([1e99fc0](https://github.com/markuplint/markuplint/commit/1e99fc095aa57c9cadf08a55e109a1f75c0b31ca))
+* **selector:** reuse the logger flags until debug is enabled or disabled ([2812ec0](https://github.com/markuplint/markuplint/commit/2812ec09b39006a66eca9702a242266cb951ae6d))
+
+
 # [5.2.0](https://github.com/markuplint/markuplint/compare/v5.1.1...v5.2.0) (2026-10-13)
 
 ### Bug Fixes

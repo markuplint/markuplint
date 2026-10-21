@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.3.0](https://github.com/markuplint/markuplint/compare/v5.2.0...v5.3.0) (2026-10-21)
+
+### Bug Fixes
+
+* make published packages loadable from require() and put types first ([723106f](https://github.com/markuplint/markuplint/commit/723106f51aac4e60dc02db2c1a894617368b0253)), closes [#4198](https://github.com/markuplint/markuplint/issues/4198)
+* **ml-core:** decide by the name that the DOM gives an attribute ([68f732c](https://github.com/markuplint/markuplint/commit/68f732ce3eec1203fbed479af1f1488e5f272a47))
+* **pretenders:** count the nested namespaces the same for the alias and the member tag ([73dcd4a](https://github.com/markuplint/markuplint/commit/73dcd4ae3b02f0e0dedd932debfc796a5c914e52))
+* **pretenders:** do not resolve a name imported from a package to a same-named component ([bf78213](https://github.com/markuplint/markuplint/commit/bf782137eff6acc4602518dd084dba5f3fa65781))
+* **pretenders:** do not take a missing dependency of a parser for the parser not installed ([b631323](https://github.com/markuplint/markuplint/commit/b631323e9fb9ad04b2d26bfe3ae9298d80b5bd92)), closes [#4352](https://github.com/markuplint/markuplint/issues/4352)
+* **pretenders:** drop the scanned components of a name imported from a package ([4fd028c](https://github.com/markuplint/markuplint/commit/4fd028cc50d81580bf09b4926d02a3b0f305f14b))
+* **pretenders:** end the chain at a package that is not installed ([7490215](https://github.com/markuplint/markuplint/commit/749021595b031b0dc05664d58e1bf95efbe48ee1)), closes [#4264](https://github.com/markuplint/markuplint/issues/4264)
+* **pretenders:** escape every name of an alias as one tag name in its selector ([24f1f58](https://github.com/markuplint/markuplint/commit/24f1f587bdf49dbeefa18e304219c862a92b0a33)), closes [#4352](https://github.com/markuplint/markuplint/issues/4352)
+* **pretenders:** follow dynamic import() in JSX/TSX during auto scan ([5a2e2e9](https://github.com/markuplint/markuplint/commit/5a2e2e98875451afebba21ab9e10b5a074edd47c))
+* **pretenders:** follow star re-exports in a project under node_modules ([70df060](https://github.com/markuplint/markuplint/commit/70df060e90b7996ffef4d0ac1a14d4f72500f38e)), closes [#4269](https://github.com/markuplint/markuplint/issues/4269)
+* **pretenders:** follow the symlink of a workspace package under node_modules ([5fece6b](https://github.com/markuplint/markuplint/commit/5fece6bdbf97363329c9187094b5afa74b376e69)), closes [#4265](https://github.com/markuplint/markuplint/issues/4265)
+* **pretenders:** give a pretender to a lazy variable and a namespace member tag ([ff47d09](https://github.com/markuplint/markuplint/commit/ff47d097f4fc699cc38024ff9a019e3b82fef95b)), closes [#4315](https://github.com/markuplint/markuplint/issues/4315)
+* **pretenders:** judge a package file only by the path below the project root ([c472c01](https://github.com/markuplint/markuplint/commit/c472c01dd5fc22771e33dcb753f75e6ede86fb6d))
+* **pretenders:** match a lazily loaded component to the file it loads ([5f1a358](https://github.com/markuplint/markuplint/commit/5f1a3584923ea187eca81076dcbbc556b29273d6)), closes [#4292](https://github.com/markuplint/markuplint/issues/4292)
+* **pretenders:** migrate parse-imports to the es-module-lexer v3 API ([7f445f3](https://github.com/markuplint/markuplint/commit/7f445f30b83a0f869e4b984db12edba6e8bdab78))
+* **pretenders:** name a dynamic import by its loader's name and by the awaited import it is read in ([1322d31](https://github.com/markuplint/markuplint/commit/1322d31ccc646585983205a361ef9c80761240b7)), closes [#4323](https://github.com/markuplint/markuplint/issues/4323) [#4324](https://github.com/markuplint/markuplint/issues/4324) [#4325](https://github.com/markuplint/markuplint/issues/4325) [#4328](https://github.com/markuplint/markuplint/issues/4328) [#4330](https://github.com/markuplint/markuplint/issues/4330)
+* **pretenders:** resolve `<m.default />` of a namespace to its component ([7b27881](https://github.com/markuplint/markuplint/commit/7b2788142e01480f867857498b4de5bff940caa3)), closes [#await](https://github.com/markuplint/markuplint/issues/await)
+* **pretenders:** resolve a component under the name the linted file imports it as ([7b0a73c](https://github.com/markuplint/markuplint/commit/7b0a73cbd6fb56d3771d504c13f9147d0b8ee855))
+* **pretenders:** resolve a dotted tag through an import that has the whole name first ([b4642f2](https://github.com/markuplint/markuplint/commit/b4642f2775b1146ba5cc956fcc653a35ca0dfaa3))
+* **pretenders:** resolve a Vue tag to a component the way Vue does ([94c2cdb](https://github.com/markuplint/markuplint/commit/94c2cdbb212955071ed0580a583f16190f58afd0)), closes [VueParser#isNativeTag](https://github.com/VueParser/issues/isNativeTag)
+* **pretenders:** resolve aliased loaders, awaited whole modules and exported lazy components ([20be254](https://github.com/markuplint/markuplint/commit/20be254356a92d5ae0c3b7eed85a45bb9da68484))
+* **pretenders:** resolve the imports that a held loader, a Svelte await block and a tsx script make ([73f51a6](https://github.com/markuplint/markuplint/commit/73f51a663a12d4aaa9884db2936c80cbf5e77676)), closes [#await](https://github.com/markuplint/markuplint/issues/await) [#4322](https://github.com/markuplint/markuplint/issues/4322) [#4327](https://github.com/markuplint/markuplint/issues/4327) [#4359](https://github.com/markuplint/markuplint/issues/4359)
+* **pretenders:** resolve the real path of a package link as TypeScript does ([d444b12](https://github.com/markuplint/markuplint/commit/d444b129c2585cd2570737830e599ee9950d20d7))
+* **pretenders:** retry failed lexer init and rethrow fatal parse errors ([04f65ae](https://github.com/markuplint/markuplint/commit/04f65ae7732423647416bab831cd0818d86e2ada))
+
+### Features
+
+* **pretenders:** give a pretender to a default export without a name ([25ab448](https://github.com/markuplint/markuplint/commit/25ab44886e64bdd6dbd5dbeceaa65cd9d0210737)), closes [#4289](https://github.com/markuplint/markuplint/issues/4289)
+
+### Performance Improvements
+
+* **pretenders:** tokenize the source once to find the scanned components it names ([6f82630](https://github.com/markuplint/markuplint/commit/6f826306424c6bbb849b27c1f18f79a2dcd09e77))
+
+
 # [5.2.0](https://github.com/markuplint/markuplint/compare/v5.1.1...v5.2.0) (2026-10-13)
 
 ### Bug Fixes
