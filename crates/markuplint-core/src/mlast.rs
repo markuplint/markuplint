@@ -16,12 +16,30 @@ pub enum EndTagType {
     Never,
 }
 
+/// TS `AttrNameRoute`: how the name of an attribute gets into the DOM of the browser, which
+/// decides whether another spelling of the name is the same attribute.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Deserialize)]
+pub enum AttrNameRoute {
+    /// The HTML parser of the browser reads the name: it lower-cases it and restores the case of
+    /// the names of SVG and `MathML`. Absent means this.
+    #[default]
+    #[serde(rename = "html-parser")]
+    HtmlParser,
+    /// Code sets the name as written (`setAttribute`): JSX, MDX and Vue.
+    #[serde(rename = "dom-api")]
+    DomApi,
+    /// A static attribute is in an HTML string and a dynamic one is set by code: Svelte.
+    #[serde(rename = "dom-api-when-dynamic")]
+    DomApiWhenDynamic,
+}
+
 /// What the TS `Document` takes from the parser besides its nodes (`MLParser.endTag`,
-/// `booleanish`, `tagNameCaseSensitive`, `attrNameCaseSensitive`). The TS engine sends them next
-/// to the `MLASTDocument` fields in the same JSON, and every field may be absent, as it is for
-/// the HTML parser.
+/// `booleanish`, `tagNameCaseSensitive`, `attrNameCaseSensitive`, `attrNameRoute`,
+/// `componentNameVariants`). The TS engine sends them next to the `MLASTDocument` fields in the
+/// same JSON, and every field may be absent, as it is for the HTML parser.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Deserialize)]
 #[serde(rename_all = "camelCase")]
+#[allow(clippy::struct_excessive_bools)] // one flag per option of the TS `MLParser`, read as the JSON has them
 pub struct DocumentSettings {
     #[serde(default)]
     pub end_tag: EndTagType,
@@ -33,6 +51,13 @@ pub struct DocumentSettings {
     /// JSX and MDX: `onClick` is a distinct prop, not the HTML attribute `onclick`.
     #[serde(default)]
     pub attr_name_case_sensitive: bool,
+    /// How the name of an attribute gets into the DOM (TS `MLParser.attrNameRoute`).
+    #[serde(default)]
+    pub attr_name_route: AttrNameRoute,
+    /// A component is referred to by any spelling of its name, and the attribute of its usage
+    /// site is a prop that Vue camelizes (TS `MLParser.componentNameVariants`).
+    #[serde(default)]
+    pub component_name_variants: bool,
 }
 
 /// Corresponds to `MLASTDocument` in TS.

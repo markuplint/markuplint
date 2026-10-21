@@ -11,6 +11,7 @@ use markuplint_types::spec::types::MLMLSpec;
 use serde_json::Value;
 
 use crate::aria_check::attr_name;
+use crate::attr_name_key::AttrNames;
 use crate::fix::Fix;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::{Severity, Violation};
@@ -52,7 +53,13 @@ struct CompiledEntry<'s> {
 
 /// TS `AttrInfo`.
 struct AttrInfo<'a> {
+    /// The name as written (`pattern`, messages).
     name: &'a str,
+    /// TS `namespaceKeyOf`: the name the DOM gives the attribute, which the alphabetical order
+    /// and the predefined groups go by.
+    key: String,
+    /// What the DOM makes of the names of the configuration (TS `MLAttr#isNamedBy`).
+    names: &'a AttrNames<'a>,
     index: usize,
     is_spread: bool,
     /// TS `scopeNode` (`nameNode ?? spacesBeforeName`) as `(line, col, raw)`: absent
@@ -64,6 +71,12 @@ struct AttrInfo<'a> {
 }
 
 impl AttrInfo<'_> {
+    /// TS `attr.isNamedBy(name)`: a spread attribute is named `#spread`.
+    fn is_named_by(&self, name: &str) -> bool {
+        self.tokens
+            .map_or(name == "#spread", |attr| self.names.is_named_by(attr, name))
+    }
+
     /// TS `spacing`: the whitespace before the name.
     fn spacing(&self) -> &str {
         self.tokens.map_or("", |attr| attr.spaces_before_name.raw.as_str())
@@ -157,6 +170,7 @@ impl Rule for AttrOrder {
             let entries: &[Value] = rule_config.value.as_array().map_or(&[], Vec::as_slice);
             let compiled = compile_entries(entries, &global_attrs, &event_attrs);
 
+            let names = AttrNames::new(el, arena.settings());
             let infos: Vec<AttrInfo<'_>> = el
                 .attributes
                 .iter()
@@ -164,6 +178,8 @@ impl Rule for AttrOrder {
                 .map(|(index, attr)| match attr {
                     MLASTAttr::HTMLAttr(html_attr) => AttrInfo {
                         name: attr_name(html_attr),
+                        key: names.namespace_key_of(html_attr),
+                        names: &names,
                         index,
                         is_spread: false,
                         scope: Some((
@@ -176,6 +192,8 @@ impl Rule for AttrOrder {
                     // TS `MLAttr.name` of a spread attribute.
                     MLASTAttr::Spread(_) => AttrInfo {
                         name: "#spread",
+                        key: "#spread".to_owned(),
+                        names: &names,
                         index,
                         is_spread: true,
                         scope: None,
@@ -187,7 +205,7 @@ impl Rule for AttrOrder {
             let sorted: Vec<usize> = if compiled.is_empty() {
                 let mut order: Vec<usize> = (0..infos.len()).collect();
                 if alphabetical {
-                    order.sort_by(|&a, &b| compare_strings(infos[a].name, infos[b].name));
+                    order.sort_by(|&a, &b| compare_strings(&infos[a].key, &infos[b].key));
                 }
                 order
             } else {
@@ -324,15 +342,18 @@ fn compile_entries<'s>(
 
 impl Matcher<'_> {
     fn matches(&self, info: &AttrInfo<'_>) -> bool {
+        // The name as written for a `pattern`, which takes no flags and so is not folded; the name
+        // the DOM gives the attribute for a group (TS `namespaceKeyOf`).
         let name = info.name;
+        let key = info.key.as_str();
         match self {
-            Self::Name(n) => name == n,
+            Self::Name(n) => info.is_named_by(n),
             Self::Pattern(re) => re.is_match(name).unwrap_or(false),
-            Self::InSet(names) => names.contains(name),
+            Self::InSet(names) => names.contains(key),
             // TS `/^aria-.+$/` and `/^data-.+$/`.
-            Self::Aria => prefixed_by(name, "aria-"),
-            Self::Role => name == "role",
-            Self::Data => prefixed_by(name, "data-"),
+            Self::Aria => prefixed_by(key, "aria-"),
+            Self::Role => key == "role",
+            Self::Data => prefixed_by(key, "data-"),
             Self::Spread => info.is_spread,
             Self::Never => false,
         }
@@ -349,18 +370,22 @@ fn prefixed_by(name: &str, prefix: &str) -> bool {
 /// TS `compareWithinGroup`.
 fn compare_within_group(a: &AttrInfo<'_>, b: &AttrInfo<'_>, order: &SortOrder) -> Ordering {
     match order {
-        SortOrder::Alphabetical => compare_strings(a.name, b.name),
+        SortOrder::Alphabetical => compare_strings(&a.key, &b.key),
         SortOrder::SourceOrder => a.index.cmp(&b.index),
         SortOrder::Fixed(list) => {
-            let position = |name: &str| list.iter().position(|n| n.as_deref() == Some(name));
-            let (ai, bi) = (position(a.name), position(b.name));
+            // TS `order.findIndex(name => attr.isNamedBy(name))`.
+            let position = |info: &AttrInfo<'_>| {
+                list.iter()
+                    .position(|n| n.as_deref().is_some_and(|name| info.is_named_by(name)))
+            };
+            let (ai, bi) = (position(a), position(b));
             let a_idx = ai.unwrap_or(list.len());
             let b_idx = bi.unwrap_or(list.len());
             if a_idx != b_idx {
                 return a_idx.cmp(&b_idx);
             }
             if ai.is_none() && bi.is_none() {
-                return compare_strings(a.name, b.name);
+                return compare_strings(&a.key, &b.key);
             }
             Ordering::Equal
         }
@@ -394,7 +419,7 @@ fn sort_attrs(infos: &[AttrInfo<'_>], compiled: &[CompiledEntry<'_>], alphabetic
         }
         let (a, b) = (&infos[a], &infos[b]);
         match a_order {
-            None if alphabetical => compare_strings(a.name, b.name),
+            None if alphabetical => compare_strings(&a.key, &b.key),
             None => a.index.cmp(&b.index),
             Some(order) => compare_within_group(a, b, order),
         }

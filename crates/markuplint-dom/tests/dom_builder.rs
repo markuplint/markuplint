@@ -597,3 +597,34 @@ fn document_settings_read_attr_name_case_sensitive_from_the_json() {
     assert!(settings.attr_name_case_sensitive);
     assert!(!settings.tag_name_case_sensitive);
 }
+
+#[test]
+fn document_settings_read_the_attr_name_route_and_the_component_name_variants_from_the_json() {
+    use markuplint_core::mlast::AttrNameRoute;
+
+    let read = |route: Option<&str>, variants: Option<bool>| {
+        let mut value: serde_json::Value = serde_json::from_str(&load_fixture("simple")).unwrap();
+        let object = value.as_object_mut().unwrap();
+        if let Some(route) = route {
+            object.insert("attrNameRoute".into(), route.into());
+        }
+        if let Some(variants) = variants {
+            object.insert("componentNameVariants".into(), variants.into());
+        }
+        builder::build_from_json(&value.to_string()).unwrap().settings()
+    };
+
+    let absent = read(None, None);
+    assert_eq!(absent.attr_name_route, AttrNameRoute::HtmlParser);
+    assert!(!absent.component_name_variants);
+    assert_eq!(
+        read(Some("html-parser"), None).attr_name_route,
+        AttrNameRoute::HtmlParser
+    );
+    assert_eq!(read(Some("dom-api"), None).attr_name_route, AttrNameRoute::DomApi);
+    assert_eq!(
+        read(Some("dom-api-when-dynamic"), None).attr_name_route,
+        AttrNameRoute::DomApiWhenDynamic
+    );
+    assert!(read(None, Some(true)).component_name_variants);
+}

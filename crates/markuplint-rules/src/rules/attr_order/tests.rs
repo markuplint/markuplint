@@ -63,6 +63,9 @@
 //!   v6_attr_order_015  — Rust-only: each position keeps its whitespace; non-ASCII text before the fix
 //!   v6_attr_order_016  — Rust-only: a spread attribute leaves the violation without a fix
 //!   v6_attr_order_017  — Rust-only: CRLF line endings between attributes are kept
+//!   v6_attr_order_018  — Rust-only: an HTML element's names are ordered by the name the DOM gives them
+//!   v6_attr_order_019  — Rust-only: an SVG name is ordered by the case the HTML parser restores
+//!   v6_attr_order_020  — Rust-only: an SVG name that code sets keeps its case, an HTML one does not
 
 use markuplint_core::mlast::{MLASTAttr, MLASTSpreadAttr};
 
@@ -807,4 +810,50 @@ fn v6_attr_order_014() {
         run_with("<div b a></div>", rule),
         [brief(Severity::Info, 1, 8, r#""a" should be before "b""#, "a")]
     );
+}
+
+/// Expected values from the TS rule on the same input: the HTML parser lower-cases the name, so
+/// `ID` is `id` and comes after `class`, though `I` is before `c` in a byte order.
+#[test]
+fn v6_attr_order_018() {
+    assert_eq!(run("<div class ID></div>"), []);
+    assert_eq!(
+        run("<div ID class></div>"),
+        [warning(1, 9, r#""class" should be before "ID""#, "class")]
+    );
+}
+
+/// Expected values from the TS rule on the same input: the HTML parser restores `viewBox` of an
+/// SVG element, which is before `view_x` (`B` is before `_`), while `viewbox` would be after it.
+#[test]
+fn v6_attr_order_019() {
+    assert_eq!(run("<svg viewbox view_x></svg>"), []);
+    assert_eq!(
+        run("<svg view_x viewbox></svg>"),
+        [warning(1, 13, r#""viewbox" should be before "view_x""#, "viewbox")]
+    );
+}
+
+/// Expected values from the TS rule on the same input (JSX): code sets the name of an SVG element
+/// as written, so `ROLE` is not `role` and is before it; an HTML element folds the name.
+#[test]
+fn v6_attr_order_020() {
+    use markuplint_core::mlast::{AttrNameRoute, DocumentSettings};
+    let run_dom_api = |html: &str| {
+        crate::test_util::lint_brief_with_settings(
+            "attr-order",
+            html,
+            serde_json::json!({ "rules": { "attr-order": true } }),
+            DocumentSettings {
+                attr_name_route: AttrNameRoute::DomApi,
+                ..DocumentSettings::default()
+            },
+        )
+    };
+    assert_eq!(
+        run_dom_api("<svg role ROLE></svg>"),
+        [warning(1, 11, r#""ROLE" should be before "role""#, "ROLE")]
+    );
+    assert_eq!(run_dom_api("<svg ROLE role></svg>"), []);
+    assert_eq!(run_dom_api("<div role ROLE></div>"), []);
 }
