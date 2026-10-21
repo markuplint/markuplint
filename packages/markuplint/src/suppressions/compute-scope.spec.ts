@@ -49,7 +49,7 @@ function buildTree(structure: {
 		(child as { parentElement: ScopedNode | null }).parentElement = node;
 		children.push(child);
 	}
-	(node as { children: ScopedNode[] }).children = children;
+	(node as unknown as { children: ScopedNode[] }).children = children;
 
 	return node;
 }
