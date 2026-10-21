@@ -8,6 +8,7 @@ import { normalizeSpecText } from './normalize.ts';
 
 type Cheerio = ReturnType<CheerioAPI>;
 type El = Cheerio[number];
+type Tag = Extract<El, { tagName: string }>;
 
 export type Page = {
 	readonly $: CheerioAPI;
@@ -41,17 +42,17 @@ export function parsePage(html: string): Page {
 	let index = 0;
 	$('*').each((_, el) => {
 		order.set(el, index++);
-		const id = el.attribs['id'];
+		const id = (el as Tag).attribs['id'];
 		if (id !== undefined && !ids.has(id)) {
 			ids.set(id, el);
 		}
-		if (HEADING.test(el.tagName)) {
+		if (HEADING.test((el as Tag).tagName)) {
 			headings.push(el);
 		}
 	});
 	// An anchor named by `name` is a target too, but only when no element has that id (the HTML fragment-navigation rule); old W3C Recommendations use nothing else.
 	$('a[name]').each((_, el) => {
-		const name = el.attribs['name'];
+		const name = (el as Tag).attribs['name'];
 		if (name !== undefined && !ids.has(name)) {
 			ids.set(name, el);
 		}
@@ -115,7 +116,7 @@ function ownProse($: CheerioAPI, section: El): string {
 }
 
 function levelOf(heading: El): number {
-	return Number(heading.tagName.slice(1));
+	return Number((heading as Tag).tagName.slice(1));
 }
 
 function extractHeading($: CheerioAPI, heading: El): { unit: string; scope: string; secno: string | null } {
@@ -175,7 +176,7 @@ export function extractSection(page: Page, fragment: string): Section {
 	if (enclosingHeading !== undefined) {
 		return { status: 'found', ...extractHeading($, enclosingHeading) };
 	}
-	if (el.tagName === 'section') {
+	if ((el as Tag).tagName === 'section') {
 		const heading = $(el).find('h1, h2, h3, h4, h5, h6').first()[0];
 		return {
 			status: 'found',
@@ -189,6 +190,6 @@ export function extractSection(page: Page, fragment: string): Section {
 	const block = algorithm ?? $(el).closest(BLOCK)[0] ?? el;
 	const heading = headingBefore(page, el);
 	const context = heading === null ? null : extractHeading($, heading);
-	const unit = block.tagName === 'section' ? ownProse($, block) : textOf($, [block]);
+	const unit = (block as Tag).tagName === 'section' ? ownProse($, block) : textOf($, [block]);
 	return { status: 'found', unit, scope: context?.scope ?? unit, secno: context?.secno ?? null };
 }
