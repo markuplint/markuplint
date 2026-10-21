@@ -15,6 +15,8 @@
  * does not answer.
  */
 
+import type * as Addon from './index.js';
+
 import { existsSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { parser } from '@markuplint/html-parser';
@@ -27,10 +29,10 @@ if (!existsSync(new URL('index.cjs', import.meta.url))) {
 }
 
 const require_ = createRequire(import.meta.url);
-const { NapiDom, lint, matchCssSyntax, matchCssProperty } = require_('./index.cjs');
+const { NapiDom, lint, matchCssSyntax, matchCssProperty } = require_('./index.cjs') as typeof Addon;
 const htmlSpec = require_('@markuplint/html-spec');
 
-function buildDom(html: string): NapiDom {
+function buildDom(html: string): Addon.NapiDom {
 	const ast = parser.parse(html);
 	const json = JSON.stringify(ast);
 	return new NapiDom(json);
@@ -93,13 +95,13 @@ describe('NapiDom E2E', () => {
 		const first = elementChildren[0];
 		const second = elementChildren[1];
 
-		const next = dom.getNextSibling(first.id);
+		const next = dom.getNextSibling(first!.id);
 		expect(next).toBeDefined();
-		expect(next!.id).toBe(second.id);
+		expect(next!.id).toBe(second!.id);
 
-		const prev = dom.getPrevSibling(second.id);
+		const prev = dom.getPrevSibling(second!.id);
 		expect(prev).toBeDefined();
-		expect(prev!.id).toBe(first.id);
+		expect(prev!.id).toBe(first!.id);
 	});
 
 	it('returns ancestors in strict bottom-up order', () => {
@@ -113,14 +115,14 @@ describe('NapiDom E2E', () => {
 		expect(ancestors.length).toBeGreaterThanOrEqual(2);
 
 		// First ancestor is immediate parent (span), last is document
-		expect(ancestors[0].nodeName).toBe('span');
-		expect(ancestors.at(-1).nodeType).toBe('document');
+		expect(ancestors[0]!.nodeName).toBe('span');
+		expect(ancestors.at(-1)!.nodeType).toBe('document');
 
 		// Verify strict bottom-up: each ancestor must be parent of previous
 		for (let i = 1; i < ancestors.length; i++) {
-			const parent = dom.getParent(ancestors[i - 1].id);
+			const parent = dom.getParent(ancestors[i - 1]!.id);
 			expect(parent).toBeDefined();
-			expect(parent!.id).toBe(ancestors[i].id);
+			expect(parent!.id).toBe(ancestors[i]!.id);
 		}
 	});
 
@@ -371,11 +373,11 @@ describe('Rust lint() E2E', () => {
 			'no-duplicate-attr': true,
 		});
 		expect(violations).toHaveLength(1);
-		expect(violations[0].ruleId).toBe('no-duplicate-attr');
-		expect(violations[0].severity).toBe('error');
-		expect(violations[0].message).toBe('The attribute name is duplicated');
-		expect(violations[0].line).toBe(1);
-		expect(violations[0].col).toBeGreaterThan(1);
+		expect(violations[0]!.ruleId).toBe('no-duplicate-attr');
+		expect(violations[0]!.severity).toBe('error');
+		expect(violations[0]!.message).toBe('The attribute name is duplicated');
+		expect(violations[0]!.line).toBe(1);
+		expect(violations[0]!.col).toBeGreaterThan(1);
 	});
 
 	it('reports no violations for clean HTML', () => {
@@ -397,7 +399,7 @@ describe('Rust lint() E2E', () => {
 			'no-duplicate-attr': 'warning',
 		});
 		expect(violations).toHaveLength(1);
-		expect(violations[0].severity).toBe('warning');
+		expect(violations[0]!.severity).toBe('warning');
 	});
 
 	it('handles empty HTML', () => {
@@ -412,7 +414,7 @@ describe('Rust lint() E2E', () => {
 			'no-duplicate-attr': true,
 		});
 		expect(violations).toHaveLength(2);
-		expect(violations[0].ruleId).toBe('no-duplicate-attr');
-		expect(violations[1].ruleId).toBe('no-duplicate-attr');
+		expect(violations[0]!.ruleId).toBe('no-duplicate-attr');
+		expect(violations[1]!.ruleId).toBe('no-duplicate-attr');
 	});
 });
