@@ -22,11 +22,8 @@ describe('scan', () => {
 			expect(result).toStrictEqual([
 				{
 					selector: 'FooBar',
-					// BREAKING CHANGE (#4082): `slots: null` is kept instead of collapsing to the bare tag name.
-					// as: 'div', // pre-#4082 baseline
 					as: { element: 'div', slots: null },
 					filePath: _('packages/@markuplint/pretenders/test/fixtures/002.tsx:1:6'),
-					// Behavior change: the entry carries `localName`, the name the component is declared under.
 					localName: 'FooBar',
 				},
 			]);
@@ -92,9 +89,7 @@ describe('scan', () => {
 			expect(typeof voidComp!.as).toBe('object');
 			expect((voidComp!.as as any).slots).toBe(null);
 
-			// Static content with no attrs returns bare string — slots info implicit
-			// BREAKING CHANGE (#4082): `slots: null` is kept instead of collapsing to the bare tag name.
-			// expect(typeof staticComp!.as).toBe('string'); // pre-#4082 baseline
+			// Static content with no attrs is an object too, which holds its slots
 			expect(typeof staticComp!.as).toBe('object');
 		});
 
@@ -120,8 +115,6 @@ describe('scan', () => {
 	describe('file extension dispatch for non-tsx extensions', () => {
 		test('.js files are dispatched to the JSX scanner', async () => {
 			const result = await scan([jsxFixture('006.js')]);
-			// BREAKING CHANGE (#4082): `slots: null` is kept instead of collapsing to the bare tag name.
-			// expect(result).toStrictEqual([expect.objectContaining({ selector: 'JsButton', as: 'button' })]); // pre-#4082 baseline
 			expect(result).toStrictEqual([
 				expect.objectContaining({ selector: 'JsButton', as: { element: 'button', slots: null } }),
 			]);
@@ -142,8 +135,6 @@ describe('scan', () => {
 
 		test('.jsx files are dispatched to the JSX scanner', async () => {
 			const result = await scan([jsxFixture('008.jsx')]);
-			// BREAKING CHANGE (#4082): `slots: null` is kept instead of collapsing to the bare tag name.
-			// expect(result).toStrictEqual([expect.objectContaining({ selector: 'JsxCard', as: 'article' })]); // pre-#4082 baseline
 			expect(result).toStrictEqual([
 				expect.objectContaining({ selector: 'JsxCard', as: { element: 'article', slots: null } }),
 			]);

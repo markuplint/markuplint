@@ -278,9 +278,7 @@ describe('parseImports', () => {
 			expect(await parseImports(source)).toStrictEqual([
 				{ localName: 'Item', importedName: 'default', source: './Item.vue', type: 'dynamic' },
 				{ localName: 'Other', importedName: 'Named', source: './Other.vue', type: 'dynamic' },
-				// Behavior change: the whole module read into a variable is bound as a namespace under that variable
 				{ localName: 'Whole', importedName: '*', source: './Whole.vue', type: 'namespace' },
-				// { localName: '*', importedName: '*', source: './Whole.vue', type: 'dynamic' }, // previous
 			]);
 		});
 

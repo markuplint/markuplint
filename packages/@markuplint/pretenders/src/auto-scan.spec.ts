@@ -30,8 +30,6 @@ describe('autoScan', () => {
 
 		const result = await autoScan(entryPath, entrySource);
 
-		// BREAKING CHANGE (#4082): `slots: null` is kept instead of collapsing to the bare tag name.
-		// expect(result.find(p => p.selector === 'Child')).toMatchObject({ as: 'button' }); // pre-#4082 baseline
 		expect(result.find(p => p.selector === 'Child')).toMatchObject({ as: { element: 'button', slots: null } });
 	});
 
@@ -261,8 +259,6 @@ describe('autoScan', () => {
 
 		const result = await autoScan(entryPath, entrySource);
 
-		// BREAKING CHANGE (#4082): `slots: null` is kept instead of collapsing to the bare tag name.
-		// expect(result.find(p => p.selector === 'Child')).toMatchObject({ as: 'em' }); // pre-#4082 baseline
 		expect(result.find(p => p.selector === 'Child')).toMatchObject({ as: { element: 'em', slots: null } });
 	});
 
@@ -317,10 +313,7 @@ describe('autoScan', () => {
 
 		const result = await autoScan(entryPath, entrySource);
 
-		// BREAKING CHANGE (#4082): `slots: null` is kept instead of collapsing to the bare tag name.
-		// expect(result.find(p => p.selector === 'Helper')).toMatchObject({ as: 'span' }); // pre-#4082 baseline
 		expect(result.find(p => p.selector === 'Helper')).toMatchObject({ as: { element: 'span', slots: null } });
-		// expect(result.find(p => p.selector === 'Widget')).toMatchObject({ as: 'span' }); // pre-#4082 baseline
 		expect(result.find(p => p.selector === 'Widget')).toMatchObject({ as: { element: 'span', slots: null } });
 	});
 
@@ -456,8 +449,6 @@ describe('autoScan', () => {
 
 		const result = await autoScan(entryPath, entrySource);
 
-		// BREAKING CHANGE (#4082): `slots: null` is kept instead of collapsing to the bare tag name.
-		// expect(result.find(p => p.selector === 'Wrapped')).toMatchObject({ as: 'button' }); // pre-#4082 baseline
 		expect(result.find(p => p.selector === 'Wrapped')).toMatchObject({ as: { element: 'button', slots: null } });
 	});
 
@@ -468,8 +459,6 @@ describe('autoScan', () => {
 
 		const result = await autoScan(entryPath, entrySource);
 
-		// BREAKING CHANGE (#4082): `slots: null` is kept instead of collapsing to the bare tag name.
-		// expect(result.find(p => p.selector === 'Child')).toMatchObject({ as: 'button' }); // pre-#4082 baseline
 		expect(result.find(p => p.selector === 'Child')).toMatchObject({ as: { element: 'button', slots: null } });
 	});
 
@@ -495,8 +484,6 @@ describe('autoScan', () => {
 		const second = await autoScan(entryPath, entrySource);
 
 		expect(second).toStrictEqual(first);
-		// BREAKING CHANGE (#4082): `slots: null` is kept instead of collapsing to the bare tag name.
-		// expect(second.find(p => p.selector === 'Child')).toMatchObject({ as: 'button' }); // pre-#4082 baseline
 		expect(second.find(p => p.selector === 'Child')).toMatchObject({ as: { element: 'button', slots: null } });
 	});
 
@@ -512,7 +499,7 @@ describe('autoScan', () => {
 			// BFS reads the file once to keep walking its imports; both
 			// jsxScanner's own file read (via the caching CompilerHost) and its
 			// dependency-mapper module (export-table construction for
-			// same-selector disambiguation) now consult `sources` first, so
+			// same-selector disambiguation) consult `sources` first, so
 			// neither re-reads the same file from disk.
 			//
 			// Both sides go through normalizePath: the recorded call arguments come
@@ -551,8 +538,6 @@ describe('autoScan', () => {
 		clearAutoScanCache();
 		const result = await autoScan(entryPath, entrySource);
 
-		// BREAKING CHANGE (#4082): `slots: null` is kept instead of collapsing to the bare tag name.
-		// expect(result.find(p => p.selector === 'Child')).toMatchObject({ as: 'span' }); // pre-#4082 baseline
 		expect(result.find(p => p.selector === 'Child')).toMatchObject({ as: { element: 'span', slots: null } });
 	});
 	describe('re-exports (barrel files)', () => {

@@ -255,9 +255,7 @@ const Dialog = import('./Dialog.vue')
 			expect(result).not.toBeNull();
 			expect(result!.bindings).toStrictEqual([
 				{ localName: 'lazy', importedName: 'lazy', source: 'react', type: 'named' },
-				// Behavior change: the binding is named after the variable `lazy()` is assigned to
 				{ localName: 'Item', importedName: 'default', source: './Item', type: 'dynamic' },
-				// { localName: '*', importedName: '*', source: './Item', type: 'dynamic' }, // previous
 			]);
 		});
 

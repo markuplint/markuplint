@@ -84,8 +84,6 @@ describe('PretenderDirector', () => {
 			{
 				selector: 'MyButton',
 				as: 'button',
-				// Behavior change: the `filePath` is where the component is declared, not where the component it renders is.
-				// filePath: 'lib/Button.vue:1:0', // previous
 				filePath: 'app/MyButton.vue:1:0',
 				_via: ['Button'],
 			},
@@ -105,8 +103,6 @@ describe('PretenderDirector', () => {
 		expect(myButton).toStrictEqual({
 			selector: 'MyButton',
 			as: 'button',
-			// Behavior change: see 'chain resolution through nameIndex with import paths'.
-			// filePath: 'A/Button.vue:1:0', // previous
 			filePath: 'MyButton.vue:1:0',
 			_via: ['Button'],
 		});
@@ -157,8 +153,6 @@ describe('PretenderDirector', () => {
 			{
 				selector: 'CardButton',
 				as: 'button',
-				// Behavior change: see 'chain resolution through nameIndex with import paths'.
-				// filePath: 'Button.vue:1:0', // previous
 				filePath: 'CardButton.tsx:1:0',
 				_via: ['Button'],
 			},

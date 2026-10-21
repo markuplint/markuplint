@@ -190,8 +190,6 @@ export default {
 		expect(extractVueOptionsApiComponents(source)).toStrictEqual(['D']);
 	});
 
-	// Behavior change: a value that is neither an identifier nor loads a module gives no name, and a spread is skipped
-	// (a value such as `markRaw(MyButton)` used to be returned as its text, which no import is named after)
 	test('skips a spread and a method, and gives no name for a call that loads no module', () => {
 		const source = `
 export default {

@@ -169,14 +169,6 @@ describe('createTemplatePropResolver (template)', () => {
 		expect(vue('props.children')).toBeUndefined();
 	});
 
-	test('Vue lowercases the names of the attributes, so a prop written in camelCase is not matched at the usage site', () => {
-		// Behavior change: a prop written in camelCase is matched at the usage site, which Vue camelizes
-		expect(vue('myLabel')).toBe('myLabel');
-		// expect(vue('myLabel')).toBeUndefined(); // previous
-		expect(vue('props.myLabel')).toBe('myLabel');
-		// expect(vue('props.myLabel')).toBeUndefined(); // previous
-	});
-
 	test('Vue camelizes the name of an attribute at the usage site, so a prop written in camelCase is matched there', () => {
 		expect(vue('myLabel')).toBe('myLabel');
 		expect(vue('props.myLabel')).toBe('myLabel');
