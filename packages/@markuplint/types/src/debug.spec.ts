@@ -39,10 +39,12 @@ test('[types-debug-002] `enabled` is read at call time, so enabling later emits 
 });
 
 test('[types-debug-003] the not-found branch logs only while the logger is enabled', () => {
+	// @ts-expect-error An unknown CSS syntax name is passed on purpose
 	expect(() => cssSyntaxMatch('x', '<no-such-type>')).toThrow('MARKUPLINT_TYPE_NO_EXIST');
 	expect(mocks.log).not.toHaveBeenCalled();
 
 	mocks.log.enabled = true;
+	// @ts-expect-error An unknown CSS syntax name is passed on purpose
 	expect(() => cssSyntaxMatch('x', '<no-such-type>')).toThrow('MARKUPLINT_TYPE_NO_EXIST');
 	expect(mocks.log).toHaveBeenCalledWith('"%s" CSS syntax not found', '<no-such-type>');
 });
