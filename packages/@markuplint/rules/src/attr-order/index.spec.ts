@@ -762,7 +762,7 @@ describe('attribute name case', () => {
 		const options = {
 			parser: { '.*': '@markuplint/vue-parser' },
 			rule: { value: [{ group: 'data' }, { group: 'aria' }, { group: 'global' }] },
-		};
+		} as const;
 		const { violations } = await mlRuleTest(
 			rule,
 			'<template><MyComp id="a" aria-label="b" data-x="1" /></template>',

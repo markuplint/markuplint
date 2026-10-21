@@ -8,6 +8,7 @@ import { cmLog, depthLog } from './debug.js';
 import { order } from './order.js';
 import { representTransparentNodes } from './represent-transparent-nodes.js';
 import { Collection } from './utils.js';
+import type { Options } from './types.js';
 
 type Overridable = { enabled: boolean | null; log?: unknown };
 
@@ -56,7 +57,15 @@ function exceedPatternCap() {
  */
 function run(depth: number) {
 	const el = createTestElement('<div><a></a><b></b></div>');
-	return order([{ require: 'a' }, { require: 'b' }], [...el.childNodes], [], specs, {}, depth, 'pretended');
+	return order(
+		[{ require: 'a' }, { require: 'b' }],
+		[...el.childNodes],
+		[],
+		specs,
+		{} as Options,
+		depth,
+		'pretended',
+	);
 }
 
 test('[permitted-contents-debug-001] depthLog returns one logger per name and depth', () => {
@@ -96,7 +105,15 @@ test('[permitted-contents-debug-003] an enabled logger still emits its output', 
  */
 function runBacktrack(depth: number) {
 	const el = createTestElement('<div><b></b></div>');
-	return order([{ optional: 'b' }, { require: 'b' }], [...el.childNodes], [], specs, {}, depth, 'pretended');
+	return order(
+		[{ optional: 'b' }, { require: 'b' }],
+		[...el.childNodes],
+		[],
+		specs,
+		{} as Options,
+		depth,
+		'pretended',
+	);
 }
 
 test('[permitted-contents-debug-007] an enabled backtrack logger still emits when order() backtracks', () => {

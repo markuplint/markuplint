@@ -566,8 +566,8 @@ test('[no-invalid-attr-value-valid-004] Booleanish', async () => {
 test('[no-invalid-attr-value-invalid-017] HTML: contenteditable="inherit" is invalid (no spec override)', async () => {
 	const { violations } = await mlRuleTest(rule, '<div contenteditable="inherit"></div>');
 	expect(violations.length).toBe(1);
-	expect(violations[0].raw).toBe('inherit');
-	expect(violations[0].message).toMatch(/contenteditable/);
+	expect(violations[0]!.raw).toBe('inherit');
+	expect(violations[0]!.message).toMatch(/contenteditable/);
 });
 
 test('[no-invalid-attr-value-parser-001] React: contentEditable="inherit" is valid via react-spec override', async () => {
@@ -592,8 +592,8 @@ test('[no-invalid-attr-value-parser-002] React: contentEditable="banana" is stil
 		},
 	});
 	expect(violations.length).toBe(1);
-	expect(violations[0].raw).toBe('banana');
-	expect(violations[0].message).toMatch(/contenteditable/);
+	expect(violations[0]!.raw).toBe('banana');
+	expect(violations[0]!.message).toMatch(/contenteditable/);
 });
 
 test('[no-invalid-attr-value-parser-003] Svelte: contentEditable="inherit" is valid via svelte-spec override', async () => {

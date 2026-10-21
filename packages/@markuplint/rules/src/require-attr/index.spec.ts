@@ -618,7 +618,7 @@ describe('MDX parser', () => {
 			],
 		});
 		expect(violations.length).toBe(1);
-		expect(violations[0].message).toContain('alt');
+		expect(violations[0]!.message).toContain('alt');
 	});
 
 	test('[require-attr-parser-005] MDX img with alt passes require-attr', async () => {
@@ -693,9 +693,9 @@ describe('Markdown parser', () => {
 			],
 		});
 		expect(violations.length).toBe(1);
-		expect(violations[0].line).toBe(3);
-		expect(violations[0].col).toBe(1);
-		expect(violations[0].raw).toBe('![alt](img.png)');
+		expect(violations[0]!.line).toBe(3);
+		expect(violations[0]!.col).toBe(1);
+		expect(violations[0]!.raw).toBe('![alt](img.png)');
 	});
 });
 

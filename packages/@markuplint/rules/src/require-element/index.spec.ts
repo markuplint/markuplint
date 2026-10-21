@@ -113,7 +113,7 @@ describe('ghost/omitted elements', () => {
 			],
 		});
 		expect(violations.length).toBe(1);
-		expect(violations[0].message).toBe('Require the "tbody" element');
+		expect(violations[0]!.message).toBe('Require the "tbody" element');
 	});
 
 	test('[require-element-valid-003] ignoreOmittedElements: true — explicit tbody satisfies the requirement', async () => {

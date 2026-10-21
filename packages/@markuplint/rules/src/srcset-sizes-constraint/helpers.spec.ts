@@ -31,7 +31,7 @@ describe('hasSizesAuto', () => {
 const run = async (
 	html: string,
 	pick: (img: Parameters<typeof allowsAutoSizes>[0]) => boolean | null,
-	options?: Parameters<typeof mlRuleTest>[2],
+	options?: Parameters<typeof mlRuleTest<boolean, undefined>>[2],
 ) => {
 	const seen: (boolean | null)[] = [];
 	const probe = createRule<boolean>({
