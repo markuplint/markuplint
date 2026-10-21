@@ -451,10 +451,9 @@ describe('Edge Cases', () => {
 </table>
 `,
 		);
-		// BREAKING CHANGE (#3915): the table is conforming. HTML LS §4.9.12.1 Step 6 anchors each
-		// cell of the second and third rows past the slot the `rowspan` still occupies, so every
-		// row is three slots wide and every column has a cell anchored to it. The former report
-		// was a false positive of the pre-#3915 grid model, which counted cells instead of slots.
+		// The table is conforming. HTML LS §4.9.12.1 Step 6 anchors each cell of the second and
+		// third rows past the slot the `rowspan` still occupies, so every row is three slots wide
+		// and every column has a cell anchored to it.
 		// https://html.spec.whatwg.org/multipage/tables.html#forming-a-table
 		expect(violations).toStrictEqual([]);
 	});

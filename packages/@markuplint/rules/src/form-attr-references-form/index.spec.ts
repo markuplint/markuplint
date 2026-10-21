@@ -43,7 +43,7 @@ test('[form-attr-references-form-invalid-001] form attribute references non-form
 });
 
 test('[form-attr-references-form-invalid-002] applies to all form-associated elements', async () => {
-	const cases = [
+	const cases: [string, string][] = [
 		['button', '<div id="x">x</div><button form="x">b</button>'],
 		['fieldset', '<div id="x">x</div><fieldset form="x"></fieldset>'],
 		['select', '<div id="x">x</div><select form="x"><option>a</option></select>'],

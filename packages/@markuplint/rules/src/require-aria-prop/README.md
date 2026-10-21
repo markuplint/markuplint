@@ -7,6 +7,8 @@ description: Warns when required ARIA properties for a role are missing.
 
 Warns when required ARIA properties for a role are missing.
 
+The names of ARIA attributes are compared as [`no-unknown-attr`](/docs/rules/no-unknown-attr#attribute-name-case) compares names (see its "Attribute name case" section): `ARIA-LABEL` is the same attribute as `aria-label` where the DOM treats attribute names as case-insensitive, such as on an HTML element, and a different one where it does not, such as on an `<svg>` element in JSX.
+
 ❌ Examples of **incorrect** code for this rule
 
 ```html
@@ -21,7 +23,7 @@ Warns when required ARIA properties for a role are missing.
 
 :::note Conditional required: `separator`
 
-For the `separator` role, `aria-valuenow` is required only when the element is focusable (e.g. has `tabindex`, or is interactive content like `<button>` / `<a href>`). A non-focusable `<div role="separator">` is treated as a static structural separator per [WAI-ARIA](https://www.w3.org/TR/wai-aria/#separator) and does not require `aria-valuenow`.
+For the `separator` role, `aria-valuenow` is required only when the element is focusable (e.g. has `tabindex`, or is interactive content like `<button>` / `<a href>`). A non-focusable `<div role="separator">` is treated as a static structural separator per [WAI-ARIA](https://w3c.github.io/aria/#separator) and does not require `aria-valuenow`.
 
 ```html
 <!-- ✅ Static structural separator -->

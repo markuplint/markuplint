@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.3.0](https://github.com/markuplint/markuplint/compare/v5.2.0...v5.3.0) (2026-10-21)
+
+### Bug Fixes
+
+* make published packages loadable from require() and put types first ([723106f](https://github.com/markuplint/markuplint/commit/723106f51aac4e60dc02db2c1a894617368b0253)), closes [#4198](https://github.com/markuplint/markuplint/issues/4198)
+* **markuplint:** build the lint AST mapping only when debug is on ([abdbfeb](https://github.com/markuplint/markuplint/commit/abdbfeb9f88ca11e07b47c279a9d793cc46c47c2))
+* **markuplint:** honor the debug option in the MLEngine constructor ([d33d3c8](https://github.com/markuplint/markuplint/commit/d33d3c87a1c8e0c04ee921945ed7488a51ab79c4)), closes [this.#options](https://github.com/this./issues/options)
+* **markuplint:** match a suppression scope of the form tag[attr] with a capital or a digit ([372f313](https://github.com/markuplint/markuplint/commit/372f3138addfbd700b076871e38e1b4fd64e4430))
+* **markuplint:** write and read a scope of a suppression for a name with a `.` ([62c0f3c](https://github.com/markuplint/markuplint/commit/62c0f3c451b45a74491b46be5dc645cbe8b60f18))
+* **markuplint:** write and read the names of a scope as identifiers of CSS ([447fee3](https://github.com/markuplint/markuplint/commit/447fee3362774f273b045fa7996846aa4294360a))
+
+### Performance Improvements
+
+* **markuplint:** group the engine debug calls under one guard ([15c0888](https://github.com/markuplint/markuplint/commit/15c088879400cf1aa0355c260c63a8eb3af4e86a))
+* **markuplint:** skip debug maps without lint listeners ([205bff7](https://github.com/markuplint/markuplint/commit/205bff712bb4a7d42d92b6927ebef5eeb7401dd5))
+
+
 # [5.2.0](https://github.com/markuplint/markuplint/compare/v5.1.1...v5.2.0) (2026-10-13)
 
 ### Bug Fixes

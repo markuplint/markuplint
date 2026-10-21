@@ -3,6 +3,6 @@ export default {
 	specConformance: {
 		sources: ['aria-in-html'],
 		level: 'must',
-		cites: ['https://w3c.github.io/html-aria/#att-hidden'],
+		cites: ['https://www.w3.org/TR/html-aria/#att-hidden'],
 	},
 } as const;

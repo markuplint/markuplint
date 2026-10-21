@@ -121,6 +121,7 @@ describe('applySeverityMap', () => {
 	];
 
 	test('returns the diagnostics unchanged without a map', () => {
+		// @ts-expect-error the map argument is intentionally omitted
 		expect(applySeverityMap(diagnostics)).toStrictEqual(diagnostics);
 	});
 

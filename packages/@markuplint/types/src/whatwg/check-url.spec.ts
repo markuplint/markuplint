@@ -160,8 +160,7 @@ test('data: scheme', () => {
 // Each block below targets a specific URL LS validation error category that
 // `new URL()` silently auto-corrects. The fixtures listed under each block
 // are pulled from `tests/external/validator/tests/html/elements/a/href/`
-// and `tests/external/validator/tests/html/microdata/itemid/` (see
-// Issue #3848).
+// and `tests/external/validator/tests/html/microdata/itemid/`.
 
 // invalid-credentials
 // https://url.spec.whatwg.org/#invalid-credentials

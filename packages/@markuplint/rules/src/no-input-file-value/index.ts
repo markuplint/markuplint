@@ -3,10 +3,16 @@ import { createRule } from '@markuplint/ml-core';
 import meta from './meta.js';
 
 /**
- * `<input type="file">` may carry the `value` attribute only when its
- * value is the empty string. Per HTML LS §4.10.5.1.18 (File Upload
- * state): "The value attribute, if specified, must have a value that
- * is the empty string."
+ * Reports a non-empty `value` attribute on `<input type="file">`.
+ *
+ * Superseded by `no-disallowed-attr`: HTML LS §4.10.5.1.17 (File Upload
+ * state) does not allow the attribute at all, an empty one included.
+ * This rule was written against a sentence that is not in the spec
+ * (that the attribute, if specified, must have a value that is the empty
+ * string) and so lets `value=""` through. Its behavior is kept for configurations that
+ * name it; it is removed in v6.
+ *
+ * > The element's value attribute must be omitted.
  *
  * @see https://html.spec.whatwg.org/multipage/input.html#file-upload-state-(type=file)
  */

@@ -5,7 +5,7 @@ description: progress要素の属性値について HTML LS 仕様で定めら�
 
 # `progress-value-bounds`
 
-[HTML Living Standard §4.10.14 (the progress element)](https://html.spec.whatwg.org/multipage/form-elements.html#the-progress-element) が定める不等式を検証します。
+[HTML Living Standard §4.10.13 (the progress element)](https://momdo.github.io/html/form-elements.html#the-progress-element) が定める不等式を検証します。
 
 - `value ≤ max`（両方指定されているとき）
 - `value ≤ 1`（`max` が省略されているとき）

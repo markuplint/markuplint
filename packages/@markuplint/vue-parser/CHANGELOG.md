@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.3.0](https://github.com/markuplint/markuplint/compare/v5.2.0...v5.3.0) (2026-10-21)
+
+### Bug Fixes
+
+* make published packages loadable from require() and put types first ([723106f](https://github.com/markuplint/markuplint/commit/723106f51aac4e60dc02db2c1a894617368b0253)), closes [#4198](https://github.com/markuplint/markuplint/issues/4198)
+* **vue-parser:** do not report a root that is neither a component nor an element ([325825f](https://github.com/markuplint/markuplint/commit/325825ffa5a3e7d23f4b38fc1d5d80cf9fbeeacc))
+* **vue-parser:** take every tag that Vue resolves to a component for one ([0e79724](https://github.com/markuplint/markuplint/commit/0e79724b292344c0cf2dc0ca82d173d0e0add462))
+
+### Features
+
+* **parser-utils:** let a parser say how an attribute name gets into the DOM ([abd81e5](https://github.com/markuplint/markuplint/commit/abd81e5d20f4ffeb0ba878e77fd4122c1a803a9f))
+* **vue-parser:** report the lang of the script setup block from the component scanner ([45a8273](https://github.com/markuplint/markuplint/commit/45a827388329cc4beb8c245e23c500d267648412))
+
+
 # [5.2.0](https://github.com/markuplint/markuplint/compare/v5.1.1...v5.2.0) (2026-10-13)
 
 ### Bug Fixes

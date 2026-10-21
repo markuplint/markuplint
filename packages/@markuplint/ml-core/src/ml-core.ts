@@ -478,7 +478,12 @@ export class MLCore {
 				endTag: this.#parser.endTag,
 				booleanish: this.#parser.booleanish,
 				tagNameCaseSensitive: this.#parser.tagNameCaseSensitive,
+				componentNameVariants: this.#parser.componentNameVariants,
+				// The parser's own rule, called on the parser: a method of a class that reads its own state
+				isComponentName: this.#parser.isComponentName?.bind(this.#parser),
+				isNativeTag: this.#parser.isNativeTag?.bind(this.#parser),
 				attrNameCaseSensitive: this.#parser.attrNameCaseSensitive,
+				attrNameRoute: this.#parser.attrNameRoute,
 				pretenders: this.#pretenders,
 			});
 			// Collect errors from rule mapping (e.g., invalid wildcard usage).

@@ -5,7 +5,7 @@ description: 'テキストノードや属性値でリテラルの小なり記号
 
 # `no-unescaped-char`
 
-テキストノードや属性値でリテラルの`<`が未エスケープのまま出現する場合に警告します。[HTML Living Standard §13.1.2.3–4](https://html.spec.whatwg.org/multipage/syntax.html#syntax-charref)が作者にエスケープを要求しているのはリテラルの`<`と「あいまいなアンパサンド」のみで、それ以外(`>`、`"`、参照の形をしていない素の`&`)はそのままでも仕様に準拠しています。
+テキストノードや属性値でリテラルの`<`が未エスケープのまま出現する場合に警告します。[HTML Living Standard §13.1.4–4](https://momdo.github.io/html/syntax.html#syntax-charref)が作者にエスケープを要求しているのはリテラルの`<`と「あいまいなアンパサンド」のみで、それ以外(`>`、`"`、参照の形をしていない素の`&`)はそのままでも仕様に準拠しています。
 
 `&name;`の形をしていて名前が未知(不正)なものは[`no-malformed-character-reference`](/docs/rules/no-malformed-character-reference)の担当であり、このルールの対象ではありません — parse5自身の検出をミラーしています。
 

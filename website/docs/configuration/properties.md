@@ -216,6 +216,10 @@ If you use **React**, **Vue**, or more, Markuplint's parser detects a component 
 In most cases, components should start naming upper case, but each syntax parser plugin may has a specific pattern (Ex. Vue: [Built-in Special Elements](https://vuejs.org/api/built-in-special-elements.html)).
 If you need different naming patterns, You can specify the `authoredElementName` option to resolve. Default is `undefined`.
 
+The patterns you specify **replace** the parser's own patterns, not add to them: with `["custom"]`, a tag that the parser took for a component by its own pattern (such as `<FooBar>` in Vue) is not one unless a pattern of yours matches it too. A string is a name and matches the whole tag name (`"custom"` is `<custom>`, not `<my-custom>`); a string in the form of a regular expression literal (`"/^My/"`, with the flags `g` and `i` at most) is that regular expression, and a `RegExp` or a function can be given in a JavaScript config file. A string used to be read as a regular expression that matches any part of the tag name: if you wrote `"^My"` for that, write `"/^My/"` now.
+
+In JSX and MDX a name is a component unless it starts with a lowercase ASCII letter or has a `-`, as the JSX compilers decide, and a `.` makes it a member expression: `<$Ui>`, `<_Ui>`, `<Éa>` and `<Tabs.Root>` are components. A name with a `-` is the name of an intrinsic element: `<Foo-bar>` is an HTML element and `<my-widget.v2>` is a custom element, where an earlier version took both for components. To keep the earlier answer, give the earlier rule to `authoredElementName`, which replaces the one of the parser: `["/^[A-Z]|\\./"]` takes a name that starts with a capital letter or has a `.` for a component.
+
 ```json class=config
 {
   "parserOptions": {
@@ -897,7 +901,9 @@ The value can be either an **array** of pretender definitions or an **object** w
 It accepts [**Selector**](/docs/guides/selectors) to matche the target component. It's required.
 
 :::caution Standard HTML elements are excluded
-A pretender entry whose selector resolves to a standard HTML or SVG element is silently ignored. Pretenders apply only to custom components — web components, JSX/Vue/Svelte authored components, or unknown HTML-parsed names with no spec entry. Targeting `<button>`, `<marquee>`, etc. is a no-op (see [migration notes](/docs/migration/v4-to-v5/config#pretenders-no-longer-apply-to-standard-html-tags)).
+A pretender entry whose selector resolves to a standard HTML, SVG, or MathML element is silently ignored. Pretenders apply only to custom components — web components, JSX/Vue/Svelte authored components, or unknown HTML-parsed names with no spec entry. Targeting `<button>`, `<h1>`, etc. is a no-op (see [migration notes](/docs/migration/v4-to-v5/config#pretenders-no-longer-apply-to-standard-html-tags)).
+
+In a Vue document, what counts as standard is Vue's own list of native tags: a tag that the list does not hold (`<marquee>`, `<search>`) is resolved by Vue to a component when one is imported or registered, so a pretender applies to it.
 :::
 
 #### `as`
@@ -1031,6 +1037,12 @@ It accepts an attribute value. It's optional. If it is omitted, the attribute is
 - **`{ "fromAttr": "name" }`**: The value of the attribute that the component has. If that attribute is an expression (`<MyButton kind={kind} />`), the value is dynamic too. If the component does not have the attribute, the element has the attribute with an empty value.
 - **`{ "fromAttr": "name", "omitIfMissing": true }`**: The same, except that the element does not have the attribute if the component does not have it. It is what a component that passes an optional prop on renders (`<button type={kind}>` has no `type` when `kind` is `undefined`).
 - **`{ "dynamic": true }`**: The attribute exists but its value is not known until the component renders, such as `tabIndex={selected ? 0 : -1}`. Rules treat it as a dynamic value and do not validate it.
+
+`fromAttr` finds the attribute at the usage site by the rules of the framework that renders it. In Vue, `my-label` and `myLabel` are the same prop, but `mylabel` is not. In JSX, a prop is matched exactly, so `Label` is not `label`. In an HTML-based syntax, the name is compared as the DOM compares attribute names, without regard to ASCII case. Write the name in `fromAttr` the way the component declares its prop.
+
+:::caution[Experimental]
+How `fromAttr` finds the attribute is **experimental** and may change in future releases.
+:::
 
 #### `as.aria`
 
@@ -1219,6 +1231,8 @@ File extensions determine the scanner:
 - `.js`, `.jsx`, `.ts`, `.tsx` → JSX scanner
 - `.vue`, `.svelte`, `.astro` → template scanner
 
+A component is named by its declaration (`export const Button = …`, `function Button() {…}`). A component with no name of its own — a Vue, Svelte, or Astro file, or a JSX/TSX default export without a name (`export default () => …`, `export default function () {…}`, `export default memo(() => …)`) — is named after its file in PascalCase: `button-group.tsx` is `ButtonGroup`, and an `index` file takes the name of its directory (`Card/index.tsx` is `Card`). A file whose name does not make a JavaScript identifier (`[id].vue`, `+page.svelte`, `404.tsx`, `Button.client.vue`) gives such a component no name, so it gets no pretender.
+
 ```json class=config
 {
   "pretenders": {
@@ -1241,7 +1255,7 @@ A glob pattern (or an array of glob patterns) for component files to scan. It's 
 
 ##### `scan[].ignoreComponentNames`
 
-An array of component names to exclude from scanning results. It's optional.
+An array of component names to exclude from scanning results, names given after a file included. It's optional.
 
 #### `data` (object form) {#pretenders/data}
 
@@ -1295,6 +1309,8 @@ Unlike `scan`, which pre-scans a configured set of files once, `auto` runs per l
 
 - In watch mode or an editor session, the component files `auto` (and `scan`) read are watched along with the config file, so editing one re-lints the files that use it. What is not watched, so a change to it is picked up only when the config changes: a component file that does not exist yet (including a new match of a `scan` glob, and a file that was removed and comes back), files under `node_modules`, and the files of `files` and `imports`. Edits to the linted file itself — adding, removing, or changing an import — are reflected on the next lint of that file.
 - Only the **object form** of `pretenders` can express `auto`; the array shorthand cannot.
+
+A component is resolved under the name the linted file gives it: a renamed named import (`import { Named as A }`), a default import under any name (`import B from './DefNamed'`), and a component renamed by a barrel file. A component that `lazy()`, `defineAsyncComponent()`, `dynamic()`, `loadable()` or `Loadable()` assigns to a variable (or to a Vue `components` key, or through another call such as `memo(lazy(...))`), or that an awaited dynamic `import()` is read into (`const { Item } = await import('./Item')`), is matched to the file it loads under that name, as the static import of that export is (the default export, unless the variable is read from one named export), whatever the variable is called as long as it is a component name (see below for a lowercase initial). A call that is not one of those loaders, such as `useMemo(() => import('./Item'), [])`, names nothing, and neither does a helper a project writes itself (`lazyWithRetry`): load the component with one of the loaders, or read it from an awaited import, to have it matched by name. A loader may be called as a member (`React.lazy()`), or under another name that the file imports it as (`import { lazy as l } from 'react'`, or the default import of `next/dynamic` and `@loadable/component` under any name). Its loader function may pass the `import()` through a call that takes it first (`lazy(() => delayForDemo(import('./Item')))`), return one export (`.then(m => m.Item)`, `.then(({ Item }) => ({ default: Item }))`; `.then(m => m)` is the default export; a `.then` with a rejection handler as its second argument names nothing), or read the module in its first statement and return it in its second (`async () => { const m = await import('./Item'); return m; }`). The loader function may also be held by a name that a loader call takes (`const load = () => import('./Item'); const Foo = lazy(load);`, `function load() { return import('./Item'); }`, or `{ loader: load }`): the component is named after each variable such a call is assigned to, so two calls that take the same function name it twice, and a name that is assigned a value after its declaration (`let load; load = () => import('./Item')`, or `let load = …; load = …`) is not followed. In a Svelte template, `{#await import('./Item.svelte') then { default: Item }}` binds `Item` as `const { default: Item } = await import('./Item.svelte')` does, and `then m` binds the whole module as `const m = await import('./Item.svelte')` does. The script of a Vue file that declares `lang="tsx"` or `lang="jsx"` is read as a `.tsx` file is, so its imports are found whatever JSX it holds. The ESM of an MDX file that holds JSX es-module-lexer cannot read is read with the TypeScript parser as TSX, unless that finds a syntax error in it; a script that is broken has no imports. A loader is recognized by its name alone (`x.lazy(...)` counts, and the module it is imported from is not checked), so a function of another library that is called `lazy` or `dynamic` is taken for one. A loader that the file calls under another name is followed to where that name comes from: an alias made by an assignment (`const l = React.lazy`, `const { lazy: l } = React`, `const d = require('next/dynamic')`) is a loader as `import { lazy as l }` is. The name is that of the nearest declaration around the call, so a function, a parameter or a variable that holds something else under such a name (`function dynamic(...) {}`, in the file or in a function) is not a loader. A component that a file exports as a loader call (`export default lazy(() => import('./b/Item'))`, `export const Slow = lazy(...)`) is resolved to the component of the module it loads, whatever name another file imports it under. A namespace import (`import * as UI`, the whole module read into a variable with `const UI = await import('./ui')`, or a namespace that a module exports with `export * as UI from`) gets a pretender per component it exports, under the member tag (`<UI.Button>`, `<UI.Sub.Button>` for a nested namespace); the selector is written `UI\.Button`, as a selector reads a `.` as the start of a class. `default` is a member as well (`<UI.default>` for a module with a default export, which a plain `export *` does not pass on), and a namespace of a Svelte, Vue, or Astro file (`import * as m from './Item.svelte'`) has the one component of the file as `<m.default>`. A namespace is found when it is exported again as `import * as UI from './ui'; export { UI }` as well. A tag with a dot is a component whatever the case of the first letter, so the name of a namespace is not judged by it. A name that is not a namespace and has a lowercase initial gets none (`import myButton from './Foo'`): in JSX, MDX, Svelte, and Astro a tag with a lowercase initial is an HTML element, not a reference to the variable, so a component under that name would turn `<myButton>` into the component. Vue resolves a kebab-case tag to a component imported in PascalCase and recommends PascalCase, so a lowercase name is not covered there either. A name is resolved through at most 7 chained re-exports (`export { X } from`, `export * from`, `export * as X from`; the file that declares it is the 8th file of the chain), and one behind more is not resolved. The limit is fixed and is not the `depth` of the walk. `scan` has no linted file, so the names it gives are the names the components are declared under (see [`scan`](#pretenders/scan) for a component that has none).
 
 When the walk ends at a component it cannot resolve (one from `node_modules` such as `Tabs.Root`, or one beyond the `depth` limit), what that component renders is unknown. The wrapper is then treated like a component written directly, not as an HTML element of that name. This applies to any name with a capital initial or a `.`, including `as` you write by hand: write the names of HTML elements in lowercase.
 

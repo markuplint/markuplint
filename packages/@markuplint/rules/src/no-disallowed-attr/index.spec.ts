@@ -845,3 +845,245 @@ test('[no-disallowed-attr-invalid-007] picture > source[sizes] without srcset is
 	const { violations } = await mlRuleTest(rule, '<picture><source sizes="100vw"><img src="x.jpg" alt="x"></picture>');
 	expect(violations.some(v => typeof v.message === 'string' && v.message.includes('sizes'))).toBe(true);
 });
+
+// https://html.spec.whatwg.org/multipage/input.html#file-upload-state-(type=file)
+// > The element's value attribute must be omitted.
+test('[no-disallowed-attr-invalid-008] input[type=file] must omit the value attribute, even an empty one', async () => {
+	const { violations } = await mlRuleTest(rule, '<input type="file" value="">');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 20,
+			message: 'The "value" attribute is disallowed',
+			raw: 'value',
+		},
+	]);
+});
+
+// https://html.spec.whatwg.org/multipage/input.html#image-button-state-(type=image)
+// > The element's value attribute must be omitted.
+test('[no-disallowed-attr-invalid-009] input[type=image] must omit the value attribute', async () => {
+	const { violations } = await mlRuleTest(rule, '<input type="image" value="go">');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 21,
+			message: 'The "value" attribute is disallowed',
+			raw: 'value',
+		},
+	]);
+});
+
+// https://html.spec.whatwg.org/multipage/input.html#hidden-state-(type=hidden)
+// > If the name attribute is present and has a value that is an ASCII case-insensitive match for "_charset_",
+// > then the element's value attribute must be omitted.
+test('[no-disallowed-attr-invalid-010] input[type=hidden][name=_charset_] must omit the value attribute, whatever the case', async () => {
+	const { violations } = await mlRuleTest(rule, '<input type="hidden" name="_charset_" value="x">');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 39,
+			message: 'The "value" attribute is disallowed',
+			raw: 'value',
+		},
+	]);
+	const upper = await mlRuleTest(rule, '<input TYPE="HIDDEN" NAME="_CHARSET_" VALUE="x">');
+	expect(upper.violations.map(v => v.raw)).toStrictEqual(['VALUE']);
+});
+
+test('[no-disallowed-attr-valid-005] input accepts value everywhere else, and a file input without it', async () => {
+	for (const html of [
+		'<input type="file">',
+		'<input type="text" value="x">',
+		'<input value="x">',
+		'<input type="submit" value="Go">',
+		'<input type="checkbox" value="1">',
+		'<input type="hidden" name="token" value="x">',
+		'<input type="hidden" name="_charset_">',
+	]) {
+		const { violations } = await mlRuleTest(rule, html);
+		expect(violations, html).toStrictEqual([]);
+	}
+});
+
+test('[no-disallowed-attr-invalid-011] the type of an input is matched without regard to case', async () => {
+	for (const type of ['IMAGE', 'File']) {
+		const { violations } = await mlRuleTest(rule, `<input type="${type}" value="x">`);
+		expect(
+			violations.map(v => v.raw),
+			type,
+		).toStrictEqual(['value']);
+	}
+});
+
+test('[no-disallowed-attr-parser-007] Vue: a type that is an expression does not decide whether value is allowed', async () => {
+	const { violations } = await mlRuleTest(rule, '<template><input :type="t" value="x"></template>', {
+		parser: {
+			'.*': '@markuplint/vue-parser',
+		},
+		specs: {
+			'.*': '@markuplint/vue-spec',
+		},
+	});
+	expect(violations).toStrictEqual([]);
+});
+
+test('[no-disallowed-attr-parser-008] JSX: a type that is an expression does not decide whether value is allowed', async () => {
+	const { violations } = await mlRuleTest(rule, '<input type={t} value="x" />', {
+		parser: {
+			'.*': '@markuplint/jsx-parser',
+		},
+	});
+	expect(violations).toStrictEqual([]);
+});
+
+test('[no-disallowed-attr-issue-4309-001] HTML: an upper-case data-*, aria-*, role and viewBox are not reported', async () => {
+	expect(
+		(await mlRuleTest(rule, '<div DATA-VALUE="1" ARIA-LABEL="label" ROLE="button"></div>')).violations,
+	).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<svg VIEWBOX="0 0 1 1" viewbox="0 0 1 1"></svg>')).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<dialog TABINDEX="-1"></dialog>')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 9,
+			message: 'The "TABINDEX" attribute is disallowed',
+			raw: 'TABINDEX="-1"',
+		},
+	]);
+});
+
+test('[no-disallowed-attr-issue-4309-002] JSX: an HTML element folds the name, so TABINDEX is tabindex', async () => {
+	const parser = { '.*': '@markuplint/jsx-parser' };
+	expect((await mlRuleTest(rule, '<div DATA-VALUE="1" />', { parser })).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<dialog TABINDEX="-1" />', { parser })).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 9,
+			message: 'The "TABINDEX" attribute is disallowed',
+			raw: 'TABINDEX="-1"',
+		},
+	]);
+});
+
+test('[no-disallowed-attr-issue-4309-003] HTML: the is attribute on an autonomous custom element in any spelling', async () => {
+	expect((await mlRuleTest(rule, '<x-el is="x-el2"></x-el>')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 7,
+			message: 'The "is" attribute must not be specified on an autonomous custom element',
+			raw: 'is',
+		},
+	]);
+	expect((await mlRuleTest(rule, '<x-el IS="x-el2"></x-el>')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 7,
+			message: 'The "is" attribute must not be specified on an autonomous custom element',
+			raw: 'IS',
+		},
+	]);
+});
+
+test('[no-disallowed-attr-issue-4309-004] HTML: allowAttrs matches the name in any spelling the DOM makes the same', async () => {
+	expect(
+		(await mlRuleTest(rule, '<dialog TABINDEX="0"></dialog>', { rule: { options: { allowAttrs: ['tabindex'] } } }))
+			.violations,
+	).toStrictEqual([]);
+	expect(
+		(await mlRuleTest(rule, '<dialog tabindex="0"></dialog>', { rule: { options: { allowAttrs: ['TABINDEX'] } } }))
+			.violations,
+	).toStrictEqual([]);
+	expect(
+		(
+			await mlRuleTest(rule, '<dialog TABINDEX="0"></dialog>', {
+				rule: { options: { allowAttrs: { tabindex: 'Int' } } },
+			})
+		).violations,
+	).toStrictEqual([]);
+	expect(
+		(
+			await mlRuleTest(rule, '<dialog TABINDEX="0"></dialog>', {
+				rule: { options: { allowAttrs: [{ name: 'tabindex', value: 'Int' }] } },
+			})
+		).violations,
+	).toStrictEqual([]);
+	expect(
+		(await mlRuleTest(rule, '<dialog TABINDEX="0"></dialog>', { rule: { options: { allowAttrs: ['title'] } } }))
+			.violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 9,
+			message: 'The "TABINDEX" attribute is disallowed',
+			raw: 'TABINDEX="0"',
+		},
+	]);
+});
+
+test('[no-disallowed-attr-issue-4309-005] HTML: ignoreAttrNamePrefix matches the name in any spelling the DOM makes the same', async () => {
+	expect(
+		(
+			await mlRuleTest(rule, '<dialog TABINDEX="0"></dialog>', {
+				rule: { options: { ignoreAttrNamePrefix: 'tab' } },
+			})
+		).violations,
+	).toStrictEqual([]);
+	expect(
+		(
+			await mlRuleTest(rule, '<dialog tabindex="0"></dialog>', {
+				rule: { options: { ignoreAttrNamePrefix: ['TAB'] } },
+			})
+		).violations,
+	).toStrictEqual([]);
+	expect(
+		(
+			await mlRuleTest(rule, '<dialog TABINDEX="0"></dialog>', {
+				rule: { options: { ignoreAttrNamePrefix: 'x-' } },
+			})
+		).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 9,
+			message: 'The "TABINDEX" attribute is disallowed',
+			raw: 'TABINDEX="0"',
+		},
+	]);
+});
+
+test('[no-disallowed-attr-issue-4309-006] JSX: allowAttrs folds the name on an HTML element', async () => {
+	const parser = { '.*': '@markuplint/jsx-parser' };
+	expect(
+		(
+			await mlRuleTest(rule, '<dialog TABINDEX="0" />', {
+				parser,
+				rule: { options: { allowAttrs: ['tabindex'] } },
+			})
+		).violations,
+	).toStrictEqual([]);
+	expect(
+		(
+			await mlRuleTest(rule, '<dialog TABINDEX="0" />', {
+				parser,
+				rule: { options: { allowAttrs: ['title'] } },
+			})
+		).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 9,
+			message: 'The "TABINDEX" attribute is disallowed',
+			raw: 'TABINDEX="0"',
+		},
+	]);
+});

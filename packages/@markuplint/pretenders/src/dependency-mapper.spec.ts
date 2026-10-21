@@ -1,3 +1,4 @@
+import type { ImportBinding } from './import-resolver/types.js';
 import type { PretenderDirectorMap } from './pretender-director.js';
 
 import fs from 'node:fs';
@@ -9,6 +10,7 @@ import { describe, test, expect, afterEach, beforeEach, vi } from 'vitest';
 
 import { clearExportTableCache, dependencyMapper, resolveDeclarationFile } from './dependency-mapper.js';
 import { clearModuleResolutionCaches, normalizePath } from './import-resolver/resolve-module-file.js';
+import { loadComponentNameRule } from './scanner-loader.js';
 
 const fixtureDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures', 'dependency-mapper');
 
@@ -425,6 +427,41 @@ describe('dependencyMapper', () => {
 			const result = dependencyMapper(map, nameIndex, { importsByFile, cwd: fixtureDir });
 			const e = result.find(p => p.selector === 'E');
 			expect(e).toStrictEqual({ selector: 'E', as: 'button', _via: ['Item'] });
+		});
+
+		test.each([
+			['default of a dynamic import assigned to the name', 'default', './d', 'span'],
+			['the export `.then` reads from a dynamic import', 'Item', './a', 'button'],
+		])('resolves %s to the actual declaration file, as an import does', (_, importedName, source, element) => {
+			const map: PretenderDirectorMap = new Map([
+				['a.tsx#Item', ['Item', 'button', undefined, 'a.tsx']],
+				['d.tsx#Item', ['Item', 'span', undefined, 'd.tsx']],
+				['other.tsx#Item', ['Item', 'li', undefined, 'other.tsx']],
+				['c.tsx#C', ['C', 'Item', undefined, 'c.tsx']],
+			]);
+			const nameIndex = new Map([['Item', 'other.tsx#Item']]);
+			const importsByFile = new Map([
+				['c.tsx', [{ localName: 'Item', importedName, source, type: 'dynamic' as const }]],
+			]);
+
+			const result = dependencyMapper(map, nameIndex, { importsByFile, cwd: fixtureDir });
+			const c = result.find(p => p.selector === 'C');
+			expect(c).toStrictEqual({ selector: 'C', as: element, _via: ['Item'] });
+		});
+
+		test('falls back to the name index for a dynamic import that is assigned to no name', () => {
+			const map: PretenderDirectorMap = new Map([
+				['a.tsx#Item', ['Item', 'button', undefined, 'a.tsx']],
+				['other.tsx#Item', ['Item', 'li', undefined, 'other.tsx']],
+				['c.tsx#C', ['C', 'Item', undefined, 'c.tsx']],
+			]);
+			const nameIndex = new Map([['Item', 'other.tsx#Item']]);
+			const importsByFile = new Map([
+				['c.tsx', [{ localName: '*', importedName: '*', source: './a', type: 'dynamic' as const }]],
+			]);
+
+			const result = dependencyMapper(map, nameIndex, { importsByFile, cwd: fixtureDir });
+			expect(result.find(p => p.selector === 'C')).toStrictEqual({ selector: 'C', as: 'li', _via: ['Item'] });
 		});
 
 		test('carries the resolved file forward across multiple hops, even when a same-named collision exists', () => {
@@ -904,5 +941,787 @@ describe('dependencyMapper', () => {
 				clearExportTableCache();
 			}
 		});
+	});
+});
+
+describe('dependencyMapper: the names the entry file gives its imports', () => {
+	const entry = (...bindings: ImportBinding[]) => ({ filePath: path.join(fixtureDir, 'entry.tsx'), bindings });
+	const named = (localName: string, importedName: string, source: string): ImportBinding => ({
+		localName,
+		importedName,
+		source,
+		type: 'named',
+	});
+	const defaultImport = (localName: string, source: string): ImportBinding => ({
+		localName,
+		importedName: 'default',
+		source,
+		type: 'default',
+	});
+	const itemMap = (): PretenderDirectorMap => new Map([['a.tsx#Item', ['Item', 'button', 'a.tsx:1:14', 'a.tsx']]]);
+
+	test('adds a pretender under the local name of a renamed named import', () => {
+		const result = dependencyMapper(itemMap(), undefined, {
+			cwd: fixtureDir,
+			entry: entry(named('A', 'Item', './a')),
+		});
+
+		expect(result).toStrictEqual([
+			{ selector: 'A', as: 'button', filePath: 'a.tsx:1:14' },
+			{ selector: 'Item', as: 'button', filePath: 'a.tsx:1:14' },
+		]);
+	});
+
+	test('adds a pretender under the local name of a default import of any name', () => {
+		const map: PretenderDirectorMap = new Map([['d.tsx#Item', ['Item', 'button', 'd.tsx:1:25', 'd.tsx']]]);
+
+		const result = dependencyMapper(map, undefined, { cwd: fixtureDir, entry: entry(defaultImport('B', './d')) });
+
+		expect(result.map(pretender => pretender.selector)).toStrictEqual(['B', 'Item']);
+		expect(result.find(pretender => pretender.selector === 'B')).toStrictEqual({
+			selector: 'B',
+			as: 'button',
+			filePath: 'd.tsx:1:25',
+		});
+	});
+
+	test('adds nothing for an import that is not renamed', () => {
+		const withoutEntry = dependencyMapper(itemMap(), undefined, { cwd: fixtureDir });
+
+		const result = dependencyMapper(itemMap(), undefined, {
+			cwd: fixtureDir,
+			entry: entry(named('Item', 'Item', './a')),
+		});
+
+		expect(result).toStrictEqual(withoutEntry);
+	});
+
+	test('keeps a component of the same name as the alias, for the lint to choose by the import', () => {
+		const map: PretenderDirectorMap = new Map([
+			['a.tsx#Item', ['Item', 'button', 'a.tsx:1:14', 'a.tsx']],
+			['other.tsx#A', ['A', 'li', 'other.tsx:1:14', 'other.tsx']],
+		]);
+
+		const result = dependencyMapper(map, undefined, { cwd: fixtureDir, entry: entry(named('A', 'Item', './a')) });
+
+		expect(result.filter(pretender => pretender.selector === 'A')).toStrictEqual([
+			{ selector: 'A', as: 'li', filePath: 'other.tsx:1:14' },
+			{ selector: 'A', as: 'button', filePath: 'a.tsx:1:14' },
+		]);
+	});
+
+	describe('a component that wraps another one', () => {
+		const wrapperMap = (): PretenderDirectorMap =>
+			new Map([
+				['wrapper-a.tsx#Base', ['Base', 'div', 'wrapper-a.tsx:1:14', 'wrapper-a.tsx']],
+				['wrapper-a.tsx#Wrapper', ['Wrapper', 'Base', 'wrapper-a.tsx:2:14', 'wrapper-a.tsx']],
+			]);
+
+		test('is found where it is declared, not where the component it renders is', () => {
+			const result = dependencyMapper(wrapperMap(), undefined, { cwd: fixtureDir });
+
+			expect(result.find(pretender => pretender.selector === 'Wrapper')).toStrictEqual({
+				selector: 'Wrapper',
+				as: 'div',
+				filePath: 'wrapper-a.tsx:2:14',
+				_via: ['Base'],
+			});
+		});
+
+		test('keeps what it renders and where it is declared under an alias', () => {
+			const result = dependencyMapper(wrapperMap(), undefined, {
+				cwd: fixtureDir,
+				entry: entry(named('W', 'Wrapper', './wrapper-a')),
+			});
+
+			expect(result.find(pretender => pretender.selector === 'W')).toStrictEqual({
+				selector: 'W',
+				as: 'div',
+				filePath: 'wrapper-a.tsx:2:14',
+				_via: ['Base'],
+			});
+		});
+	});
+
+	test.each([
+		['a dynamic import', { localName: '*', importedName: '*', source: './a', type: 'dynamic' as const }],
+		['an import from a package', named('A', 'Item', 'not-installed-package')],
+		['an import of a name that is not a component of the map', named('A', 'helper', './a')],
+		['a local name that is not capitalized', named('item', 'Item', './a')],
+	])('adds nothing for %s', (_, binding) => {
+		const withoutEntry = dependencyMapper(itemMap(), undefined, { cwd: fixtureDir });
+
+		const result = dependencyMapper(itemMap(), undefined, { cwd: fixtureDir, entry: entry(binding) });
+
+		expect(result).toStrictEqual(withoutEntry);
+	});
+
+	test('adds a pretender per exported component for a namespace import', () => {
+		const namespaceImport: ImportBinding = { localName: 'A', importedName: '*', source: './a', type: 'namespace' };
+
+		const result = dependencyMapper(itemMap(), undefined, { cwd: fixtureDir, entry: entry(namespaceImport) });
+
+		expect(result.find(pretender => pretender.selector === String.raw`A\.Item`)).toStrictEqual({
+			selector: String.raw`A\.Item`,
+			as: 'button',
+			filePath: 'a.tsx:1:14',
+		});
+	});
+
+	describe('with files that are not in the fixture directory', () => {
+		let tmpDir: string;
+
+		beforeEach(async () => {
+			tmpDir = await mkdtemp(path.join(os.tmpdir(), 'ml-entry-alias-'));
+			clearModuleResolutionCaches();
+			clearExportTableCache();
+		});
+
+		afterEach(async () => {
+			await rm(tmpDir, { recursive: true, force: true });
+		});
+
+		test('adds a pretender under the local name of a template component imported under another name', async () => {
+			await writeFile(path.join(tmpDir, 'Item.vue'), '<template><img src="x.png" /></template>');
+			const map: PretenderDirectorMap = new Map([['Item.vue', ['Item', 'img', 'Item.vue:1:11', 'Item.vue']]]);
+
+			const result = dependencyMapper(map, undefined, {
+				cwd: tmpDir,
+				entry: {
+					filePath: path.join(tmpDir, 'Page.tsx'),
+					bindings: [defaultImport('Foo', './Item.vue')],
+				},
+			});
+
+			expect(result.find(pretender => pretender.selector === 'Foo')).toStrictEqual({
+				selector: 'Foo',
+				as: 'img',
+				filePath: 'Item.vue:1:11',
+			});
+		});
+
+		test('follows a renamed re-export of a barrel, and reports the barrel as read', async () => {
+			await writeFile(path.join(tmpDir, 'a.tsx'), 'export const Item = () => null;\n');
+			const barrel = path.join(tmpDir, 'barrel.ts');
+			await writeFile(barrel, "export { Item as Renamed } from './a';\n");
+			const map: PretenderDirectorMap = new Map([['a.tsx#Item', ['Item', 'button', 'a.tsx:1:14', 'a.tsx']]]);
+			const dependencies = new Set<string>();
+
+			const result = dependencyMapper(map, undefined, {
+				cwd: tmpDir,
+				dependencies,
+				entry: {
+					filePath: path.join(tmpDir, 'Page.tsx'),
+					bindings: [named('R', 'Renamed', './barrel')],
+				},
+			});
+
+			expect(result.find(pretender => pretender.selector === 'R')).toStrictEqual({
+				selector: 'R',
+				as: 'button',
+				filePath: 'a.tsx:1:14',
+			});
+			expect(dependencies).toContain(normalizePath(barrel));
+		});
+	});
+
+	describe('an import resolved to a key the map does not hold (issue #4289)', () => {
+		test('a key of the scan that spells the same file otherwise is that file', async () => {
+			const tmpDir = await mkdtemp(path.join(os.tmpdir(), 'dependency-mapper-spelling-'));
+			try {
+				await mkdir(path.join(tmpDir, 'real'));
+				await writeFile(path.join(tmpDir, 'real', 'a.tsx'), 'export const Item = () => <button />;');
+				// The scan reached `real/a.tsx` through a link, as an import spells a file by another
+				// case on a case-insensitive file system.
+				await fs.promises.symlink(path.join(tmpDir, 'real'), path.join(tmpDir, 'alias'), 'junction');
+				const map: PretenderDirectorMap = new Map([
+					['other.tsx#Item', ['Item', 'li', undefined, 'other.tsx', 'Item']],
+					['alias/a.tsx#Item', ['Item', 'button', undefined, 'alias/a.tsx', 'Item']],
+					['c.tsx#C', ['C', 'Item', undefined, 'c.tsx', 'C']],
+				]);
+				const importsByFile = new Map([
+					[
+						'c.tsx',
+						[{ localName: 'Item', importedName: 'Item', source: './real/a', type: 'named' as const }],
+					],
+				]);
+
+				const result = dependencyMapper(map, undefined, { importsByFile, cwd: tmpDir });
+				expect(result.find(p => p.selector === 'C')).toStrictEqual({
+					selector: 'C',
+					as: 'button',
+					localName: 'C',
+					_via: ['Item'],
+				});
+			} finally {
+				await rm(tmpDir, { recursive: true, force: true });
+			}
+		});
+
+		test('a declaration without a component resolves to no component of the same name', () => {
+			const map: PretenderDirectorMap = new Map([
+				['other.tsx#Item', ['Item', 'li', undefined, 'other.tsx', 'Item']],
+				['c.tsx#C', ['C', 'Item', undefined, 'c.tsx']],
+			]);
+			// `a.tsx` declares `Item`, which the map has no component of.
+			const importsByFile = new Map([
+				['c.tsx', [{ localName: 'Item', importedName: 'Item', source: './a', type: 'named' as const }]],
+			]);
+
+			const result = dependencyMapper(map, undefined, { importsByFile, cwd: fixtureDir });
+			expect(result.find(p => p.selector === 'C')).toStrictEqual({ selector: 'C', as: 'Item' });
+		});
+
+		test('a name not imported does not resolve to the default export without a name of its own file', () => {
+			const map: PretenderDirectorMap = new Map([
+				['Card/index.tsx#default', ['Card', 'section', undefined, 'Card/index.tsx', 'default']],
+				['Card/index.tsx#Wrapper', ['Wrapper', 'Card', undefined, 'Card/index.tsx', 'Wrapper']],
+			]);
+
+			const result = dependencyMapper(map, undefined, { cwd: fixtureDir });
+			expect(result.find(p => p.selector === 'Wrapper')).toStrictEqual({
+				selector: 'Wrapper',
+				as: 'Card',
+				localName: 'Wrapper',
+			});
+		});
+	});
+});
+
+describe('dependencyMapper: a component reached through a member tag or a lazy variable of another name', () => {
+	let tmpDir: string;
+
+	beforeEach(async () => {
+		tmpDir = await mkdtemp(path.join(os.tmpdir(), 'ml-member-tag-'));
+		clearModuleResolutionCaches();
+		clearExportTableCache();
+	});
+
+	afterEach(async () => {
+		await rm(tmpDir, { recursive: true, force: true });
+	});
+
+	const itemMap = (): PretenderDirectorMap => new Map([['a.tsx#Item', ['Item', 'button', 'a.tsx:1:14', 'a.tsx']]]);
+	const selectorsOf = (bindings: ImportBinding[]) =>
+		dependencyMapper(itemMap(), undefined, {
+			cwd: tmpDir,
+			entry: { filePath: path.join(tmpDir, 'Page.tsx'), bindings },
+		})
+			.map(pretender => pretender.selector)
+			.filter(selector => selector !== 'Item');
+	const namespace = (localName: string, source: string): ImportBinding => ({
+		localName,
+		importedName: '*',
+		source,
+		type: 'namespace',
+	});
+
+	test('a lazy component held in a variable of another name gets a pretender under it', async () => {
+		await writeFile(path.join(tmpDir, 'a.tsx'), 'export const Item = () => <button />;\nexport default Item;\n');
+
+		const result = dependencyMapper(itemMap(), undefined, {
+			cwd: tmpDir,
+			entry: {
+				filePath: path.join(tmpDir, 'Page.tsx'),
+				bindings: [{ localName: 'Foo', importedName: 'default', source: './a', type: 'dynamic' }],
+			},
+		});
+
+		expect(result.find(pretender => pretender.selector === 'Foo')).toStrictEqual({
+			selector: 'Foo',
+			as: 'button',
+			filePath: 'a.tsx:1:14',
+		});
+	});
+
+	test('a lazy component that loads a named export gets a pretender under the variable', async () => {
+		await writeFile(path.join(tmpDir, 'a.tsx'), 'export const Item = () => <button />;\n');
+
+		const result = dependencyMapper(itemMap(), undefined, {
+			cwd: tmpDir,
+			entry: {
+				filePath: path.join(tmpDir, 'Page.tsx'),
+				bindings: [{ localName: 'Foo', importedName: 'Item', source: './a', type: 'dynamic' }],
+			},
+		});
+
+		expect(result.find(pretender => pretender.selector === 'Foo')).toMatchObject({ selector: 'Foo', as: 'button' });
+	});
+
+	test('a namespace import gets a pretender per component of the module behind a star re-export', async () => {
+		await writeFile(path.join(tmpDir, 'a.tsx'), 'export const Item = () => <button />;\n');
+		await writeFile(path.join(tmpDir, 'barrel.ts'), "export * from './a';\n");
+
+		expect(selectorsOf([namespace('UI', './barrel')])).toStrictEqual([String.raw`UI\.Item`]);
+	});
+
+	test('a namespace re-export nests the members: `UI.Sub.Item`', async () => {
+		await writeFile(path.join(tmpDir, 'a.tsx'), 'export const Item = () => <button />;\n');
+		await writeFile(path.join(tmpDir, 'barrel.ts'), "export * as Sub from './a';\n");
+
+		expect(selectorsOf([namespace('UI', './barrel')])).toStrictEqual([String.raw`UI\.Sub\.Item`]);
+	});
+
+	test('a named import of a namespace re-export is a namespace', async () => {
+		await writeFile(path.join(tmpDir, 'a.tsx'), 'export const Item = () => <button />;\n');
+		await writeFile(path.join(tmpDir, 'barrel.ts'), "export * as Base from './a';\n");
+
+		expect(
+			selectorsOf([{ localName: 'Base', importedName: 'Base', source: './barrel', type: 'named' }]),
+		).toStrictEqual([String.raw`Base\.Item`]);
+	});
+
+	test('a named import of a namespace import that the module exports again is a namespace', async () => {
+		await writeFile(path.join(tmpDir, 'a.tsx'), 'export const Item = () => <button />;\n');
+		await writeFile(path.join(tmpDir, 'barrel.ts'), "import * as B from './a';\nexport { B };\n");
+
+		expect(selectorsOf([{ localName: 'B', importedName: 'B', source: './barrel', type: 'named' }])).toStrictEqual([
+			String.raw`B\.Item`,
+		]);
+	});
+
+	test('a namespace of a package gets no pretender', () => {
+		expect(selectorsOf([namespace('UI', 'not-installed-package')])).toStrictEqual([]);
+	});
+
+	test('a member that is no component of the map gets no pretender', async () => {
+		await writeFile(
+			path.join(tmpDir, 'a.tsx'),
+			'export const Item = () => <button />;\nexport const helper = 1;\n',
+		);
+
+		expect(selectorsOf([namespace('UI', './a')])).toStrictEqual([String.raw`UI\.Item`]);
+	});
+
+	test('a member the module declares itself wins over the one of a star re-export', async () => {
+		await writeFile(path.join(tmpDir, 'a.tsx'), 'export const Item = () => <button />;\n');
+		await writeFile(path.join(tmpDir, 'b.tsx'), 'export const Item = () => <li />;\n');
+		await writeFile(path.join(tmpDir, 'barrel.ts'), "export { Item } from './a';\nexport * from './b';\n");
+		const map: PretenderDirectorMap = new Map([
+			['a.tsx#Item', ['Item', 'button', 'a.tsx:1:14', 'a.tsx', 'Item']],
+			['b.tsx#Item', ['Item', 'li', 'b.tsx:1:14', 'b.tsx', 'Item']],
+		]);
+
+		const result = dependencyMapper(map, undefined, {
+			cwd: tmpDir,
+			entry: { filePath: path.join(tmpDir, 'Page.tsx'), bindings: [namespace('UI', './barrel')] },
+		});
+
+		expect(result.find(pretender => pretender.selector === String.raw`UI\.Item`)).toMatchObject({ as: 'button' });
+	});
+
+	test('a member that two star re-exports supply differently gets no pretender', async () => {
+		await writeFile(path.join(tmpDir, 'a.tsx'), 'export const Item = () => <button />;\n');
+		await writeFile(path.join(tmpDir, 'b.tsx'), 'export const Item = () => <li />;\n');
+		await writeFile(path.join(tmpDir, 'barrel.ts'), "export * from './a';\nexport * from './b';\n");
+		const map: PretenderDirectorMap = new Map([
+			['a.tsx#Item', ['Item', 'button', 'a.tsx:1:14', 'a.tsx', 'Item']],
+			['b.tsx#Item', ['Item', 'li', 'b.tsx:1:14', 'b.tsx', 'Item']],
+		]);
+
+		const result = dependencyMapper(map, undefined, {
+			cwd: tmpDir,
+			entry: { filePath: path.join(tmpDir, 'Page.tsx'), bindings: [namespace('UI', './barrel')] },
+		});
+
+		expect(result.map(pretender => pretender.selector)).toStrictEqual(['Item', 'Item']);
+	});
+
+	test('a dotted tag of an import that is no namespace resolves as it did, by the name', async () => {
+		await writeFile(path.join(tmpDir, 'a.tsx'), 'export const Item = () => <button />;\n');
+		const map: PretenderDirectorMap = new Map([
+			['a.tsx#Item', ['Item', 'button', 'a.tsx:1:14', 'a.tsx', 'Item']],
+			['w.tsx#W', ['W', 'Item.Sub', 'w.tsx:2:14', 'w.tsx', 'W']],
+		]);
+		const importsByFile = new Map([
+			['w.tsx', [{ localName: 'Item', importedName: 'Item', source: './a', type: 'named' as const }]],
+		]);
+
+		const result = dependencyMapper(map, undefined, { importsByFile, cwd: tmpDir });
+
+		expect(result.find(pretender => pretender.selector === 'W')).toMatchObject({ as: 'Item.Sub' });
+	});
+
+	test('a namespace name is escaped as a selector: `$ui` gives `\\$ui\\.Item`', async () => {
+		await writeFile(path.join(tmpDir, 'a.tsx'), 'export const Item = () => <button />;\n');
+
+		expect(selectorsOf([namespace('$ui', './a')])).toStrictEqual([String.raw`\$ui\.Item`]);
+	});
+
+	test('a key of the Options API of Vue with a dot is escaped as a selector: `ui.Item` gives `ui\\.Item`', async () => {
+		await writeFile(path.join(tmpDir, 'a.tsx'), 'export const Item = () => <button />;\nexport default Item;\n');
+
+		const result = dependencyMapper(itemMap(), undefined, {
+			cwd: tmpDir,
+			entry: {
+				filePath: path.join(tmpDir, 'Page.vue'),
+				bindings: [
+					{
+						localName: 'Item',
+						importedName: 'default',
+						source: './a',
+						type: 'default',
+						registeredAs: 'ui.Item',
+					},
+				],
+			},
+		});
+
+		expect(result.map(pretender => pretender.selector).filter(selector => selector !== 'Item')).toStrictEqual([
+			String.raw`ui\.Item`,
+		]);
+	});
+
+	test('a local name is escaped as a selector: `$Btn` gives `\\$Btn`', async () => {
+		await writeFile(path.join(tmpDir, 'a.tsx'), 'export const Item = () => <button />;\nexport default Item;\n');
+		// `$Btn` is a component to the JSX parser, whose rule `analyzeImports` loads when it reads the file
+		await loadComponentNameRule('.tsx');
+
+		expect(
+			selectorsOf([{ localName: '$Btn', importedName: 'default', source: './a', type: 'default' }]),
+		).toStrictEqual([String.raw`\$Btn`]);
+	});
+
+	test('a lowercase namespace name is not judged: a tag with a dot is a component', async () => {
+		await writeFile(path.join(tmpDir, 'a.tsx'), 'export const Item = () => <button />;\n');
+
+		expect(selectorsOf([namespace('ui', './a')])).toStrictEqual([String.raw`ui\.Item`]);
+	});
+
+	test('a namespace that the module declares itself is not replaced by one of a star re-export', async () => {
+		await writeFile(path.join(tmpDir, 'a.tsx'), 'export const Item = () => <button />;\n');
+		await writeFile(path.join(tmpDir, 'x.ts'), "export * as Sub from './a';\n");
+		await writeFile(path.join(tmpDir, 'barrel.ts'), "export const Sub = 1;\nexport * from './x';\n");
+
+		expect(selectorsOf([namespace('UI', './barrel')])).toStrictEqual([]);
+	});
+
+	test('a namespace that the module exports itself shadows the whole one of a star re-export', async () => {
+		await writeFile(path.join(tmpDir, 'a.tsx'), 'export const Item = () => <button />;\n');
+		await writeFile(path.join(tmpDir, 'b.tsx'), 'export const Extra = () => <li />;\n');
+		await writeFile(path.join(tmpDir, 'x.ts'), "export * as Sub from './b';\n");
+		await writeFile(path.join(tmpDir, 'barrel.ts'), "export * as Sub from './a';\nexport * from './x';\n");
+		const map: PretenderDirectorMap = new Map([
+			['a.tsx#Item', ['Item', 'button', 'a.tsx:1:14', 'a.tsx', 'Item']],
+			['b.tsx#Extra', ['Extra', 'li', 'b.tsx:1:14', 'b.tsx', 'Extra']],
+		]);
+
+		const result = dependencyMapper(map, undefined, {
+			cwd: tmpDir,
+			entry: { filePath: path.join(tmpDir, 'Page.tsx'), bindings: [namespace('UI', './barrel')] },
+		});
+
+		expect(result.map(pretender => pretender.selector)).toStrictEqual(['Extra', 'Item', String.raw`UI\.Sub\.Item`]);
+	});
+
+	test('a namespace that two star re-exports supply differently gets no pretender', async () => {
+		await writeFile(path.join(tmpDir, 'a.tsx'), 'export const Item = () => <button />;\n');
+		await writeFile(path.join(tmpDir, 'b.tsx'), 'export const Other = () => <li />;\n');
+		await writeFile(path.join(tmpDir, 'x.ts'), "export * as Sub from './a';\n");
+		await writeFile(path.join(tmpDir, 'y.ts'), "export * as Sub from './b';\n");
+		await writeFile(path.join(tmpDir, 'barrel.ts'), "export * from './x';\nexport * from './y';\n");
+		const map: PretenderDirectorMap = new Map([
+			['a.tsx#Item', ['Item', 'button', 'a.tsx:1:14', 'a.tsx', 'Item']],
+			['b.tsx#Other', ['Other', 'li', 'b.tsx:1:14', 'b.tsx', 'Other']],
+		]);
+
+		const result = dependencyMapper(map, undefined, {
+			cwd: tmpDir,
+			entry: { filePath: path.join(tmpDir, 'Page.tsx'), bindings: [namespace('UI', './barrel')] },
+		});
+
+		expect(result.map(pretender => pretender.selector)).toStrictEqual(['Item', 'Other']);
+	});
+
+	test('mutual star re-exports are searched once and still give their members', async () => {
+		await writeFile(path.join(tmpDir, 'a.tsx'), 'export const Item = () => <button />;\n');
+		await writeFile(path.join(tmpDir, 'other.ts'), "export * from './barrel';\n");
+		await writeFile(path.join(tmpDir, 'barrel.ts'), "export * from './other';\nexport * from './a';\n");
+
+		expect(selectorsOf([namespace('UI', './barrel')])).toStrictEqual([String.raw`UI\.Item`]);
+	});
+
+	test('a template component behind `export * as UI` has no member to name', async () => {
+		await writeFile(path.join(tmpDir, 'Item.vue'), '<template><button /></template>');
+		await writeFile(path.join(tmpDir, 'barrel.ts'), "export * as UI from './Item.vue';\n");
+
+		expect(selectorsOf([{ localName: 'UI', importedName: 'UI', source: './barrel', type: 'named' }])).toStrictEqual(
+			[],
+		);
+	});
+
+	describe('the member `default` of a namespace', () => {
+		const withTemplate = (): PretenderDirectorMap =>
+			new Map([
+				['a.tsx#Item', ['Item', 'button', 'a.tsx:1:14', 'a.tsx']],
+				['Item.svelte', ['Item', 'img', 'Item.svelte:1:1', 'Item.svelte']],
+			]);
+		const selectors = (bindings: ImportBinding[]) =>
+			dependencyMapper(withTemplate(), undefined, {
+				cwd: tmpDir,
+				entry: { filePath: path.join(tmpDir, 'App.svelte'), bindings },
+			})
+				.map(pretender => pretender.selector)
+				.filter(selector => selector !== 'Item');
+
+		test.each(['Item.svelte', 'Item.vue', 'Item.astro'])(
+			'a namespace of %s has its component as `default`',
+			async file => {
+				await writeFile(path.join(tmpDir, file), '<img src="x.png" />');
+				const map = withTemplate();
+				map.set(file, ['Item', 'img', `${file}:1:1`, file]);
+
+				const result = dependencyMapper(map, undefined, {
+					cwd: tmpDir,
+					entry: { filePath: path.join(tmpDir, 'App.svelte'), bindings: [namespace('m', `./${file}`)] },
+				});
+
+				expect(
+					result.map(pretender => pretender.selector).filter(selector => selector !== 'Item'),
+				).toStrictEqual([String.raw`m\.default`]);
+			},
+		);
+
+		test('a template component file has no member but `default`', async () => {
+			await writeFile(path.join(tmpDir, 'Item.svelte'), '<img src="x.png" />');
+			const importsByFile = new Map([['App.svelte', [namespace('m', './Item.svelte')]]]);
+			const withTag = (tag: string): PretenderDirectorMap => {
+				const map = withTemplate();
+				map.set('App.svelte', ['App', tag, 'App.svelte:1:1', 'App.svelte', 'App']);
+				return map;
+			};
+			const asOf = (tag: string) =>
+				dependencyMapper(withTag(tag), undefined, { importsByFile, cwd: tmpDir }).find(
+					pretender => pretender.selector === 'App',
+				)?.as;
+
+			expect(asOf('m.default')).toBe('img');
+			expect(asOf('m.Item')).toBe('m.Item');
+			expect(asOf('m.default.x')).toBe('m.default.x');
+		});
+
+		test('a namespace re-export of a template component file nests `default`', async () => {
+			await writeFile(path.join(tmpDir, 'Item.svelte'), '<img src="x.png" />');
+			await writeFile(path.join(tmpDir, 'barrel.ts'), "export * as Sub from './Item.svelte';\n");
+
+			expect(selectors([namespace('UI', './barrel')])).toStrictEqual([String.raw`UI\.Sub\.default`]);
+		});
+
+		test('a namespace of a module has its default export as `default`', async () => {
+			await writeFile(
+				path.join(tmpDir, 'a.tsx'),
+				'export const Item = () => <button />;\nexport default Item;\n',
+			);
+
+			expect(selectors([namespace('m', './a')]).toSorted()).toStrictEqual([
+				String.raw`m\.Item`,
+				String.raw`m\.default`,
+			]);
+		});
+
+		test('a template component reached by a namespace re-export behind a plain star re-export keeps `default`', async () => {
+			await writeFile(path.join(tmpDir, 'Item.svelte'), '<img src="x.png" />');
+			await writeFile(path.join(tmpDir, 'x.ts'), "export * as Sub from './Item.svelte';\n");
+			await writeFile(path.join(tmpDir, 'barrel.ts'), "export * from './x';\n");
+
+			expect(selectors([namespace('UI', './barrel')])).toStrictEqual([String.raw`UI\.Sub\.default`]);
+		});
+
+		test('a plain star re-export does not pass `default` on', async () => {
+			await writeFile(
+				path.join(tmpDir, 'a.tsx'),
+				'export const Item = () => <button />;\nexport default Item;\n',
+			);
+			await writeFile(path.join(tmpDir, 'barrel.ts'), "export * from './a';\n");
+
+			expect(selectors([namespace('UI', './barrel')])).toStrictEqual([String.raw`UI\.Item`]);
+		});
+
+		test('a namespace re-export of a module reached by a plain star re-export keeps its `default`', async () => {
+			await writeFile(
+				path.join(tmpDir, 'a.tsx'),
+				'export const Item = () => <button />;\nexport default Item;\n',
+			);
+			await writeFile(path.join(tmpDir, 'x.ts'), "export * as Sub from './a';\n");
+			await writeFile(path.join(tmpDir, 'barrel.ts'), "export * from './x';\n");
+
+			expect(selectors([namespace('UI', './barrel')]).toSorted()).toStrictEqual([
+				String.raw`UI\.Sub\.Item`,
+				String.raw`UI\.Sub\.default`,
+			]);
+		});
+	});
+
+	test('a default export of a namespace import is no namespace', async () => {
+		await writeFile(path.join(tmpDir, 'a.tsx'), 'export const Item = () => <button />;\n');
+		await writeFile(path.join(tmpDir, 'barrel.ts'), "import * as NS from './a';\nexport default NS;\n");
+
+		expect(
+			selectorsOf([{ localName: 'UI', importedName: 'default', source: './barrel', type: 'default' }]),
+		).toStrictEqual([]);
+	});
+
+	test('a member tag of a namespace behind a star re-export of a package ends the chain there', async () => {
+		await writeFile(path.join(tmpDir, 'barrel.ts'), "export * from 'not-installed-package';\n");
+		const map: PretenderDirectorMap = new Map([
+			['x.tsx#UI.Sub.Item', ['UI.Sub.Item', 'li', 'x.tsx:1:14', 'x.tsx', 'UI.Sub.Item']],
+			['w.tsx#W', ['W', 'UI.Sub.Item', 'w.tsx:2:14', 'w.tsx', 'W']],
+		]);
+		const importsByFile = new Map([['w.tsx', [namespace('UI', './barrel')]]]);
+
+		const result = dependencyMapper(map, undefined, { importsByFile, cwd: tmpDir });
+
+		expect(result.find(pretender => pretender.selector === 'W')).toMatchObject({ as: 'UI.Sub.Item' });
+	});
+
+	test('a dotted tag of a name imported from a package ends the chain there', () => {
+		const map: PretenderDirectorMap = new Map([
+			['x.tsx#Item.Sub', ['Item.Sub', 'li', 'x.tsx:1:14', 'x.tsx', 'Item.Sub']],
+			['w.tsx#W', ['W', 'Item.Sub', 'w.tsx:2:14', 'w.tsx', 'W']],
+		]);
+		const importsByFile = new Map([
+			[
+				'w.tsx',
+				[{ localName: 'Item', importedName: 'Item', source: 'not-installed-package', type: 'named' as const }],
+			],
+		]);
+
+		const result = dependencyMapper(map, undefined, { importsByFile, cwd: tmpDir });
+
+		expect(result.find(pretender => pretender.selector === 'W')).toMatchObject({ as: 'Item.Sub' });
+	});
+
+	test.each([
+		[7, true],
+		[8, false],
+	])('a name behind %i re-exporting files is resolved: %s', async (barrels, resolved) => {
+		await writeFile(path.join(tmpDir, 'a.tsx'), 'export const Item = () => <button />;\n');
+		for (let index = 1; index <= barrels; index++) {
+			const next = index === barrels ? './a' : `./b${index + 1}`;
+			await writeFile(path.join(tmpDir, `b${index}.ts`), `export { Item } from '${next}';\n`);
+		}
+
+		const result = dependencyMapper(itemMap(), undefined, {
+			cwd: tmpDir,
+			entry: {
+				filePath: path.join(tmpDir, 'Page.tsx'),
+				bindings: [{ localName: 'R', importedName: 'Item', source: './b1', type: 'named' }],
+			},
+		});
+
+		expect(result.some(pretender => pretender.selector === 'R')).toBe(resolved);
+	});
+
+	test('the default export of a namespace is a member', async () => {
+		await writeFile(path.join(tmpDir, 'a.tsx'), 'export const Item = () => <button />;\nexport default Item;\n');
+
+		expect(selectorsOf([namespace('UI', './a')])).toStrictEqual([String.raw`UI\.default`, String.raw`UI\.Item`]);
+	});
+
+	describe.each([
+		[7, true],
+		[8, false],
+	])('%i nested namespaces', (levels, resolved) => {
+		const writeNested = async () => {
+			await writeFile(path.join(tmpDir, 'a.tsx'), 'export const Item = () => <button />;\n');
+			for (let index = 1; index <= levels; index++) {
+				const next = index === levels ? './a' : `./b${index + 1}`;
+				await writeFile(path.join(tmpDir, `b${index}.ts`), `export * as S${index} from '${next}';\n`);
+			}
+		};
+
+		test(`give an alias for the component: ${resolved}`, async () => {
+			await writeNested();
+
+			const result = selectorsOf([namespace('UI', './b1')]);
+
+			expect(result.length > 0).toBe(resolved);
+		});
+
+		test(`resolve the member tag of the component: ${resolved}`, async () => {
+			await writeNested();
+			const tag = ['UI', ...Array.from({ length: levels }, (_, index) => `S${index + 1}`), 'Item'].join('.');
+			const map: PretenderDirectorMap = new Map([
+				['a.tsx#Item', ['Item', 'button', 'a.tsx:1:14', 'a.tsx', 'Item']],
+				['w.tsx#W', ['W', tag, 'w.tsx:2:14', 'w.tsx', 'W']],
+			]);
+			const importsByFile = new Map([['w.tsx', [namespace('UI', './b1')]]]);
+
+			const result = dependencyMapper(map, undefined, { importsByFile, cwd: tmpDir });
+
+			expect(result.find(pretender => pretender.selector === 'W')?.as === 'button').toBe(resolved);
+		});
+	});
+
+	test('a name with a dot that an import has as a whole resolves through that import', async () => {
+		await writeFile(path.join(tmpDir, 'a.tsx'), 'export const Item = () => <button />;\n');
+		const map: PretenderDirectorMap = new Map([
+			['a.tsx#Item', ['Item', 'button', 'a.tsx:1:14', 'a.tsx', 'Item']],
+			['w.tsx#W', ['W', 'my.item', 'w.tsx:2:14', 'w.tsx', 'W']],
+		]);
+		const importsByFile = new Map([
+			['w.tsx', [{ localName: 'my.item', importedName: 'Item', source: './a', type: 'named' as const }]],
+		]);
+
+		const result = dependencyMapper(map, undefined, { importsByFile, cwd: tmpDir });
+
+		expect(result.find(pretender => pretender.selector === 'W')).toMatchObject({ as: 'button' });
+	});
+
+	test('a star re-export of a package next to a star re-export of the project does not drop a member', async () => {
+		await writeFile(path.join(tmpDir, 'a.tsx'), 'export const Item = () => <button />;\n');
+		await writeFile(
+			path.join(tmpDir, 'barrel.ts'),
+			"export * from './a';\nexport * from 'not-installed-package';\n",
+		);
+
+		expect(selectorsOf([namespace('UI', './barrel')])).toStrictEqual([String.raw`UI\.Item`]);
+	});
+
+	test('a member tag of a namespace that leads into a package ends the chain there', async () => {
+		await writeFile(path.join(tmpDir, 'barrel.ts'), "export * as UI from 'not-installed-package';\n");
+		const map: PretenderDirectorMap = new Map([
+			// A component of the project that is declared under the very name of the tag.
+			['x.tsx#UI.Item', ['UI.Item', 'li', 'x.tsx:1:14', 'x.tsx', 'UI.Item']],
+			['w.tsx#W', ['W', 'UI.Item', 'w.tsx:2:14', 'w.tsx', 'W']],
+		]);
+		const importsByFile = new Map([
+			['w.tsx', [{ localName: 'UI', importedName: 'UI', source: './barrel', type: 'named' as const }]],
+		]);
+
+		const result = dependencyMapper(map, undefined, { importsByFile, cwd: tmpDir });
+
+		expect(result.find(pretender => pretender.selector === 'W')).toMatchObject({ as: 'UI.Item' });
+	});
+
+	test('a component that renders a member tag resolves it through the namespace import', async () => {
+		await writeFile(path.join(tmpDir, 'a.tsx'), 'export const Item = () => <button />;\n');
+		const map: PretenderDirectorMap = new Map([
+			['a.tsx#Item', ['Item', 'button', 'a.tsx:1:14', 'a.tsx', 'Item']],
+			['w.tsx#W', ['W', 'UI.Item', 'w.tsx:2:14', 'w.tsx', 'W']],
+		]);
+		const importsByFile = new Map([['w.tsx', [namespace('UI', './a')]]]);
+
+		const result = dependencyMapper(map, undefined, { importsByFile, cwd: tmpDir });
+
+		expect(result.find(pretender => pretender.selector === 'W')).toMatchObject({
+			as: 'button',
+			filePath: 'w.tsx:2:14',
+			_via: ['UI.Item'],
+		});
+	});
+
+	test('a member tag of a namespace through a re-export resolves to the component it names', async () => {
+		await writeFile(path.join(tmpDir, 'a.tsx'), 'export const Item = () => <button />;\n');
+		await writeFile(path.join(tmpDir, 'barrel.ts'), "export * as Sub from './a';\n");
+		const map: PretenderDirectorMap = new Map([
+			['a.tsx#Item', ['Item', 'button', 'a.tsx:1:14', 'a.tsx', 'Item']],
+			['w.tsx#W', ['W', 'UI.Sub.Item', 'w.tsx:2:14', 'w.tsx', 'W']],
+		]);
+		const importsByFile = new Map([['w.tsx', [namespace('UI', './barrel')]]]);
+
+		const result = dependencyMapper(map, undefined, { importsByFile, cwd: tmpDir });
+
+		expect(result.find(pretender => pretender.selector === 'W')).toMatchObject({ as: 'button' });
 	});
 });

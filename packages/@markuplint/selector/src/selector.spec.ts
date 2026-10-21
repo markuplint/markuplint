@@ -372,3 +372,135 @@ describe('search', () => {
 		expect(createSelector(':has(button)').search(el)[0].has?.[0].nodes?.[0].nodeName).toBe('BUTTON');
 	});
 });
+
+describe('type selector of an element of a document that is case-sensitive about tag names', () => {
+	// What `MLElement` is for a parser with `tagNameCaseSensitive` (JSX, Svelte, Astro, MDX):
+	// `<foobar>` is not a component, so `nodeName` is upper-cased and `localName` is as written,
+	// which `isPureHTMLElement` takes for the case-insensitive convention of HTML.
+	const mockElement = (localName: string, tagNameCaseSensitive?: boolean) => ({
+		nodeType: 1,
+		nodeName: localName.toUpperCase(),
+		localName,
+		id: '',
+		namespaceURI: 'http://www.w3.org/1999/xhtml',
+		classList: { contains: () => false },
+		attributes: [],
+		parentNode: null,
+		parentElement: null,
+		previousElementSibling: null,
+		nextElementSibling: null,
+		children: [],
+		...(tagNameCaseSensitive === undefined ? {} : { tagNameCaseSensitive }),
+	});
+
+	test('a selector with another case does not match', () => {
+		expect(createSelector('FooBar').match(mockElement('foobar', true))).toBe(false);
+		expect(createSelector('DIV').match(mockElement('div', true))).toBe(false);
+	});
+
+	test('a selector with the same case matches', () => {
+		expect(createSelector('foobar').match(mockElement('foobar', true))).toBeTruthy();
+		expect(createSelector('div').match(mockElement('div', true))).toBeTruthy();
+	});
+
+	test.each([false, undefined])('the case is not told apart when tagNameCaseSensitive is %s', flag => {
+		expect(createSelector('FooBar').match(mockElement('foobar', flag))).toBeTruthy();
+		expect(createSelector('DIV').match(mockElement('div', flag))).toBeTruthy();
+	});
+
+	test('the case of an attribute name is still not told apart', () => {
+		const el = {
+			...mockElement('meta', true),
+			attributes: [{ name: 'CHARSET', localName: 'CHARSET', value: 'utf-8', namespaceURI: null }],
+		};
+		expect(createSelector('meta[charset]').match(el)).toBeTruthy();
+	});
+});
+
+describe('attribute name of an element that says how its names are compared', () => {
+	const createElement = (
+		namespaceURI: string,
+		attr: { name: string; domName?: string; nameCaseInsensitive?: boolean; nameIsCamelized?: boolean },
+	) => ({
+		nodeType: 1,
+		// A pure HTML element has a `nodeName` in upper case; SVG, MathML and custom elements do not
+		nodeName: namespaceURI === 'http://www.w3.org/1999/xhtml' ? 'X' : 'x',
+		localName: 'x',
+		id: '',
+		namespaceURI,
+		classList: { contains: () => false },
+		parentNode: null,
+		parentElement: null,
+		previousElementSibling: null,
+		nextElementSibling: null,
+		children: [],
+		attributes: [{ localName: attr.name, value: '', namespaceURI: null, ...attr }],
+	});
+	const HTML = 'http://www.w3.org/1999/xhtml';
+	const SVG = 'http://www.w3.org/2000/svg';
+
+	test('a name that the element folds is matched without regard to ASCII case', () => {
+		const el = createElement(SVG, { name: 'ROLE', nameCaseInsensitive: true });
+		expect(createSelector('[role]').match(el)).toBeTruthy();
+		expect(createSelector('[ROLE]').match(el)).toBeTruthy();
+	});
+
+	test('a name that the element does not fold is matched exactly, even on an HTML element', () => {
+		const el = createElement(HTML, { name: 'ROLE', nameCaseInsensitive: false });
+		expect(createSelector('[ROLE]').match(el)).toBeTruthy();
+		expect(createSelector('[role]').match(el)).toBe(false);
+	});
+
+	test('the name the attribute has in the DOM is the one that a selector is matched with', () => {
+		// The HTML parser restores `viewBox` for `<svg VIEWBOX>`; an SVG element keeps the case of its names
+		const el = createElement(SVG, { name: 'VIEWBOX', domName: 'viewBox', nameCaseInsensitive: false });
+		expect(createSelector('[viewBox]').match(el)).toBeTruthy();
+		expect(createSelector('[viewbox]').match(el)).toBe(false);
+		expect(createSelector('[VIEWBOX]').match(el)).toBe(false);
+	});
+
+	test('a prefixed name is matched by its local name, with or without the namespace of the selector', () => {
+		const XLINK = 'http://www.w3.org/1999/xlink';
+		const el = {
+			...createElement(SVG, { name: 'xlink:href' }),
+			attributes: [
+				{
+					name: 'xlink:href',
+					localName: 'href',
+					value: '#a',
+					namespaceURI: XLINK,
+					nameCaseInsensitive: false,
+					domName: 'xlink:href',
+				},
+			],
+		};
+		expect(createSelector('[xlink|href]').match(el)).toBeTruthy();
+		expect(createSelector('[*|href]').match(el)).toBeTruthy();
+		expect(createSelector('[href]').match(el)).toBeTruthy();
+		expect(createSelector('[xml|href]').match(el)).toBe(false);
+	});
+
+	test('a name of a prop that the framework camelizes is matched by either spelling', () => {
+		const el = createElement(HTML, {
+			name: 'my-label',
+			domName: 'myLabel',
+			nameCaseInsensitive: false,
+			nameIsCamelized: true,
+		});
+		expect(createSelector('[myLabel]').match(el)).toBeTruthy();
+		expect(createSelector('[my-label]').match(el)).toBeTruthy();
+		expect(createSelector('[mylabel]').match(el)).toBe(false);
+	});
+
+	test('without that information an HTML element folds the case of a name and an SVG element does not', () => {
+		expect(createSelector('[role]').match(createElement(HTML, { name: 'ROLE' }))).toBeTruthy();
+		expect(createSelector('[role]').match(createElement(SVG, { name: 'ROLE' }))).toBe(false);
+	});
+
+	test('only the ASCII letters are folded', () => {
+		const kelvin = String.fromCodePoint(8490);
+		const el = createElement(HTML, { name: `x-${kelvin}`, nameCaseInsensitive: true });
+		expect(createSelector(`[x-${kelvin}]`).match(el)).toBeTruthy();
+		expect(createSelector('[x-k]').match(el)).toBe(false);
+	});
+});

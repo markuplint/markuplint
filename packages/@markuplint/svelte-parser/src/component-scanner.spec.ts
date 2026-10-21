@@ -125,4 +125,67 @@ export const meta = { title: 'Page' };
 			expect(result).toBeNull();
 		});
 	});
+
+	describe('extractTemplateImports', () => {
+		test('returns the expression and the pattern of `then` of an `#await` block', () => {
+			const source = "{#await import('./C.svelte') then { default: C }}<C />{/await}";
+			expect(componentScanner.extractTemplateImports(source)).toStrictEqual([
+				{ expression: "import('./C.svelte')", value: '{ default: C }' },
+			]);
+		});
+
+		test('returns the pattern of a `{:then}` block', () => {
+			const source = "{#await import('./C.svelte')}<p>wait</p>{:then m}<m.default />{/await}";
+			expect(componentScanner.extractTemplateImports(source)).toStrictEqual([
+				{ expression: "import('./C.svelte')", value: 'm' },
+			]);
+		});
+
+		test('returns no value for a block without a pattern', () => {
+			const source = "{#await import('./C.svelte')}<p>wait</p>{/await}";
+			expect(componentScanner.extractTemplateImports(source)).toStrictEqual([
+				{ expression: "import('./C.svelte')" },
+			]);
+		});
+
+		test('returns the blocks in source order, the nested ones and those in other blocks too', () => {
+			const source = `<script>let ok = true</script>
+{#if ok}
+	{#await import('./A.svelte') then { default: A }}
+		{#each [1] as n}
+			{#await import('./B.svelte') then { default: B }}<B />{/await}
+		{/each}
+	{/await}
+{:else}
+	<div>{#await import('./C.svelte') then c}<c.default />{/await}</div>
+{/if}`;
+			expect(componentScanner.extractTemplateImports(source)).toStrictEqual([
+				{ expression: "import('./A.svelte')", value: '{ default: A }' },
+				{ expression: "import('./B.svelte')", value: '{ default: B }' },
+				{ expression: "import('./C.svelte')", value: 'c' },
+			]);
+		});
+
+		test('returns the blocks inside a component, an element, a snippet and a key block', () => {
+			const source = `<Layout><div>{#await import('./A.svelte') then a}{/await}</div></Layout>
+{#snippet s()}{#await import('./B.svelte') then b}{/await}{/snippet}
+{#key k}{#await import('./C.svelte') then c}{/await}{/key}`;
+			expect(componentScanner.extractTemplateImports(source).map(b => b.value)).toStrictEqual(['a', 'b', 'c']);
+		});
+
+		test('returns the expression as written, whether it is an import or not', () => {
+			const source = '{#await load(x) then v}{v}{/await}';
+			expect(componentScanner.extractTemplateImports(source)).toStrictEqual([
+				{ expression: 'load(x)', value: 'v' },
+			]);
+		});
+
+		test('returns nothing for a source without an `#await` block', () => {
+			expect(componentScanner.extractTemplateImports('<script>let a = 1</script><p>{a}</p>')).toStrictEqual([]);
+		});
+
+		test('returns nothing for a source the Svelte parser rejects', () => {
+			expect(componentScanner.extractTemplateImports('{#await import(')).toStrictEqual([]);
+		});
+	});
 });

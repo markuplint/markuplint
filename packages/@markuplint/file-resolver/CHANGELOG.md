@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.3.0](https://github.com/markuplint/markuplint/compare/v5.2.0...v5.3.0) (2026-10-21)
+
+### Bug Fixes
+
+* **file-resolver:** cache the auto-load promise so a mid-load cache clear is not undone ([1f1b40e](https://github.com/markuplint/markuplint/commit/1f1b40e4020dfe51310f73e7c89bc887a4ad04d4))
+* **file-resolver:** pass the working directory to the lint-time disambiguation ([542cc62](https://github.com/markuplint/markuplint/commit/542cc6272ab8922116bda7d87bb4c9ccb984c3f1)), closes [#4269](https://github.com/markuplint/markuplint/issues/4269)
+* **file-resolver:** resolve a lone scanned component against the file's imports ([c37e922](https://github.com/markuplint/markuplint/commit/c37e922eed92876dd963dd74e9990a4a0da68ccc))
+* make published packages loadable from require() and put types first ([723106f](https://github.com/markuplint/markuplint/commit/723106f51aac4e60dc02db2c1a894617368b0253)), closes [#4198](https://github.com/markuplint/markuplint/issues/4198)
+
+### Performance Improvements
+
+* **file-resolver:** cache auto-load misses to skip repeated module resolution ([91931ca](https://github.com/markuplint/markuplint/commit/91931caf078c815c0e456dde51f0230b6d782c9d))
+* **file-resolver:** group the config search debug calls under one guard ([0353e02](https://github.com/markuplint/markuplint/commit/0353e029f79471b8b5495a4ae83edea58ab8cfe3))
+
+
 # [5.2.0](https://github.com/markuplint/markuplint/compare/v5.1.1...v5.2.0) (2026-10-13)
 
 ### Bug Fixes

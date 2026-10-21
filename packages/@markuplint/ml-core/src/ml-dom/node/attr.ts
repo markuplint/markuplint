@@ -5,12 +5,13 @@ import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
 import { resolveNamespace } from '@markuplint/ml-spec';
 
+import { adjustForeignAttrName } from '../helper/foreign-attr-names.js';
 import { resolveAttrNames } from '../helper/resolve-attr-names.js';
 import { MLToken } from '../token/token.js';
 
 import { MLDomTokenList } from './dom-token-list.js';
 import { MLNode } from './node.js';
-import { UnexpectedCallError } from '@markuplint/shared';
+import { UnexpectedCallError, asciiLowerCase, vuePropKey } from '@markuplint/shared';
 
 /**
  * Represents a DOM Attr (attribute) node wrapper in the markuplint DOM tree.
@@ -148,13 +149,17 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 			this.valueType = resolved.valueType;
 		}
 
-		const ns = resolveNamespace(this.#potentialName, ownElement.namespaceURI);
+		// The HTML parser lower-cases the name before it adjusts a foreign attribute, so `XLINK:HREF`
+		// is `xlink:href` there; a name that code sets keeps the case of its prefix.
+		const prefixed = this.#potentialName.includes(':') && !this.isSetThroughDOMAPI;
+		const nameWithPrefix = prefixed ? asciiLowerCase(this.#potentialName) : this.#potentialName;
+		const ns = resolveNamespace(nameWithPrefix, ownElement.namespaceURI);
 		this.#localName = ns.localName;
 		// An attribute does not inherit the namespace of its element, so only a known prefix
 		// gives it one. `ns.namespace` equals the prefix exactly when the prefix is a known
 		// one; for an unknown prefix it falls back to the element's namespace.
-		const hasPrefix = ns.localName !== this.#potentialName;
-		const prefix = this.#potentialName.split(':')[0];
+		const hasPrefix = ns.localName !== nameWithPrefix;
+		const prefix = nameWithPrefix.split(':')[0];
 		this.#namespaceURI = hasPrefix && ns.namespace === prefix ? ns.namespaceURI : null;
 	}
 
@@ -176,6 +181,142 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 	 */
 	get name(): string {
 		return this.#potentialName;
+	}
+
+	/**
+	 * The name that the DOM gives this attribute, which two spellings of a name share when they are
+	 * one attribute (`ID` and `id` on a `<div>`, `VIEWBOX` and `viewbox` on an `<svg>` that the
+	 * HTML parser reads). `name` keeps the spelling of the source for a message, and for
+	 * `case-sensitive-attr-name`.
+	 *
+	 * It depends on how the name gets into the DOM (`MLDocument#attrNameRoute`) and on the element:
+	 * the HTML parser lower-cases a name, and restores the case of the names of SVG and MathML;
+	 * `setAttribute` lower-cases a name only on an element of the HTML namespace, so `ROLE` on an
+	 * `<svg>` that code sets is `ROLE`, which is not `role`. The attribute of a component is a prop,
+	 * which keeps its spelling, except in Vue where `my-label` and `myLabel` are one prop.
+	 *
+	 * @see https://dom.spec.whatwg.org/#dom-element-setattribute
+	 * @see https://html.spec.whatwg.org/multipage/parsing.html#attribute-name-state
+	 */
+	get nameKey(): string {
+		return this.keyOf(this.#potentialName);
+	}
+
+	/**
+	 * The key of `name`, a name of a spec, of an option or of a lookup, as this attribute is keyed:
+	 * `name` is this attribute when its key is {@link MLAttr.nameKey}. Only the ASCII letters fold,
+	 * as the HTML syntax says (`toLowerCase` also turns U+212A KELVIN SIGN into `k`).
+	 *
+	 * It is computed when asked, not stored by the constructor: it reads the owner element (its
+	 * type and namespace) and the document, which are complete only after the attribute is built.
+	 *
+	 * @param name - A name as written
+	 * @returns The key that two spellings of one attribute share
+	 */
+	keyOf(name: string): string {
+		const el = this.ownerElement;
+		if (el.elementType === 'authored') {
+			return el.ownerMLDocument.componentNameVariants ? vuePropKey(name) : name;
+		}
+		if (!el.isForeignElement) {
+			return asciiLowerCase(name);
+		}
+		if (this.isSetThroughDOMAPI) {
+			return name;
+		}
+		return adjustForeignAttrName(asciiLowerCase(name), el.namespaceURI);
+	}
+
+	/**
+	 * Whether `name` is the name of this attribute: the spelling it is written in, or another that
+	 * the DOM makes the same attribute ({@link MLAttr.keyOf}). A spec, an option and the lookups of
+	 * the element ask this, so the case of a name is decided here and not in each of them.
+	 *
+	 * A name with a capital letter that code sets on an element of the HTML namespace is a prop of
+	 * the framework (`defaultValue` of React), not an attribute of the DOM: only its exact spelling
+	 * is it, and `defaultvalue` is not (see {@link MLAttr.isPrefixedBy} for a prefix).
+	 *
+	 * @param name - A name of a spec, an option or a lookup
+	 * @returns `true` if `name` is this attribute
+	 */
+	isNamedBy(name: string): boolean {
+		if (name === this.#potentialName) {
+			return true;
+		}
+		if (this.#isFrameworkPropName(name)) {
+			return false;
+		}
+		return this.keyOf(name) === this.nameKey;
+	}
+
+	/**
+	 * Whether the name of this attribute starts with `prefix`, a prefix of an option
+	 * (`ignoreAttrNamePrefix`): as it is written, or as the DOM gives the name ({@link MLAttr.keyOf}).
+	 * A prefix with a capital letter that code sets on an element of the HTML namespace is the prefix
+	 * of a name of the framework, and only its exact spelling is it, as for {@link MLAttr.isNamedBy}.
+	 *
+	 * @param prefix - A prefix of an option
+	 * @returns `true` if the name of this attribute starts with `prefix`
+	 */
+	isPrefixedBy(prefix: string): boolean {
+		if (this.#potentialName.startsWith(prefix)) {
+			return true;
+		}
+		if (this.#isFrameworkPropName(prefix)) {
+			return false;
+		}
+		return this.nameKey.startsWith(this.keyOf(prefix));
+	}
+
+	/**
+	 * A name with a capital letter that code sets on an element of the HTML namespace is a prop of the
+	 * framework (`defaultValue` of React), not an attribute of the DOM: the DOM folds what `setAttribute`
+	 * is given, and a prop is read as it is written.
+	 */
+	#isFrameworkPropName(name: string): boolean {
+		const el = this.ownerElement;
+		return el.elementType !== 'authored' && !el.isForeignElement && this.isSetThroughDOMAPI && /[A-Z]/.test(name);
+	}
+
+	/**
+	 * Whether the name of this attribute reaches the DOM through the DOM API (`setAttribute`) and
+	 * not through the HTML parser of the browser: what the parser says of its language
+	 * (`MLDocument#attrNameRoute`), and for a parser that says it of a dynamic attribute only
+	 * (Svelte), whether this one is dynamic.
+	 */
+	get isSetThroughDOMAPI(): boolean {
+		const route = this.ownerElement.ownerMLDocument.attrNameRoute;
+		return route === 'dom-api' || (route === 'dom-api-when-dynamic' && this.isDynamicValue === true);
+	}
+
+	/**
+	 * Whether a selector matches the name of this attribute without regard to ASCII case: the DOM
+	 * does so for an element of the HTML namespace and not for one of SVG or MathML, nor for a prop.
+	 *
+	 * @implements `SelectorAttr#nameCaseInsensitive` of `@markuplint/selector`
+	 */
+	get nameCaseInsensitive(): boolean {
+		const el = this.ownerElement;
+		return el.elementType !== 'authored' && !el.isForeignElement;
+	}
+
+	/**
+	 * The name that a selector is matched with.
+	 *
+	 * @implements `SelectorAttr#domName` of `@markuplint/selector`
+	 */
+	get domName(): string {
+		return this.nameKey;
+	}
+
+	/**
+	 * Whether a name of a selector is this prop once it is camelized: the props of a Vue component.
+	 *
+	 * @implements `SelectorAttr#nameIsCamelized` of `@markuplint/selector`
+	 */
+	get nameIsCamelized(): boolean {
+		const el = this.ownerElement;
+		return el.elementType === 'authored' && el.ownerMLDocument.componentNameVariants;
 	}
 
 	/**

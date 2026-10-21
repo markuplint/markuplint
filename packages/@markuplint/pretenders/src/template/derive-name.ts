@@ -14,7 +14,40 @@ export function deriveName(filePath: string): string {
 	return toPascalCase(nameToConvert);
 }
 
-function toPascalCase(str: string): string {
+/**
+ * A JavaScript identifier (https://tc39.es/ecma262/#prod-IdentifierName): what a tag
+ * names a component by. A file name with `[`, `+`, `.`, or a digit at its start makes
+ * none. ZWNJ and ZWJ, which an identifier may continue with, are `Join_Control`.
+ * `RE_SIMPLE_COMPONENT_NAME` of `disambiguate` takes the same names, kebab-case added:
+ * change the two together.
+ */
+const RE_COMPONENT_IDENTIFIER = /^[\p{ID_Start}$_][\p{ID_Continue}\p{Join_Control}$]*$/u;
+
+/**
+ * The name a component that has none of its own (a Vue/Svelte/Astro file, a JSX/TSX
+ * default export without a name) is given: {@link deriveName}, when that is a
+ * JavaScript identifier. A file name such as those of the routes of a framework
+ * (`[id].vue`, `+page.svelte`, `404.tsx`, `posts.$id.tsx`) makes none: as a selector,
+ * `[id]` would match every element with an `id` attribute, `Posts.$id` would be a tag
+ * with a class, and the others are no selector of a tag at all.
+ *
+ * @param filePath - The path of the file
+ * @returns The name, or `null` when the file name makes no component name
+ */
+export function componentNameOfFile(filePath: string): string | null {
+	const name = deriveName(filePath);
+	return RE_COMPONENT_IDENTIFIER.test(name) ? name : null;
+}
+
+/**
+ * The name written in PascalCase: `base-button` and `baseButton` are `BaseButton`. It is what a file name is
+ * turned into by {@link deriveName}, so that a name that a user gives for a component is read the
+ * same way.
+ *
+ * @param str - A name in kebab-case, camelCase or PascalCase
+ * @returns The name in PascalCase
+ */
+export function toPascalCase(str: string): string {
 	if (str.includes('-')) {
 		return str
 			.split('-')

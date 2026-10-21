@@ -181,7 +181,7 @@ const Component = ({ list }) => {
 **React**や**Vue**などでは、カスタムコンポーネントをHTML要素として評価ができません。つまり、markuplintのコンテンツモデルルール — [`permitted-contents`](/docs/rules/permitted-contents)など — は、コンポーネントが実際に何をレンダリングするか知る手段がありません。この情報がないと、`<button>`要素をレンダリングする`<Button>`コンポーネントは未知の要素として扱われ、`<a><Button /></a>`（インタラクティブコンテンツの中にインタラクティブコンテンツ）のような不正なネストが検出されません。
 
 :::note 適用範囲
-プリテンダーは**カスタムコンポーネントのみ**を対象とします — Web Components、JSX/Vue/Svelte 等の authored component、および HTML パースで spec エントリが存在しない名前です。標準 HTML 要素（`<marquee>`、`<button>` など）を指定しても何も起きません。これにより、元タグに紐づく deprecation・ARIA・ブラウザサポートルールが暗黙に隠されることを防いでいます。
+プリテンダーは**カスタムコンポーネントのみ**を対象とします — Web Components、JSX/Vue/Svelte 等の authored component、および HTML パースで spec エントリが存在しない名前です。標準の HTML / SVG / MathML 要素（`<button>`、`<h1>` など）を指定しても何も起きません。これにより、元タグに紐づく deprecation・ARIA・ブラウザサポートルールが暗黙に隠されることを防いでいます。Vue ドキュメントでは、何が標準かは Vue 自身のネイティブタグのリストで決まるため、`<marquee>` や `<search>` は、コンポーネントがインポートまたは登録されていればコンポーネントです。
 :::
 
 <!-- prettier-ignore -->
@@ -306,7 +306,7 @@ const ProfileCard = ({ children }) => {
 }
 ```
 
-これにより、Markuplintは`<ProfileCard>`が[フローコンテンツ](https://html.spec.whatwg.org/multipage/dom.html#flow-content-2)のみを含むことを正しく検証でき（`<article>`と同様）、`<p>`の中に`<ProfileCard>`をネストすることが不正であると判定できます。
+これにより、Markuplintは`<ProfileCard>`が[フローコンテンツ](https://momdo.github.io/html/dom.html#flow-content-2)のみを含むことを正しく検証でき（`<article>`と同様）、`<p>`の中に`<ProfileCard>`をネストすることが不正であると判定できます。
 
 #### スキャンと手動定義の併用
 
@@ -332,6 +332,8 @@ const ProfileCard = ({ children }) => {
   }
 }
 ```
+
+`fromAttr`は、使用箇所の属性をフレームワークの規則で探します。Vueでは`my-label`と`myLabel`は同じpropです。JSXではpropを完全一致で照合するため、`Label`と`label`は別のpropです。名前は、コンポーネントがpropを宣言している綴りのとおりに書いてください。これはスキャンと同じく実験的です。
 
 [`pretenders.scan`](/docs/configuration/properties#pretenders/scan)で設定リファレンスの全体を参照してください。
 

@@ -23,9 +23,9 @@ export const checkingDeprecatedProps: AttrChecker<
 		if (!role) {
 			return;
 		}
-		const props = role.ownedProperties.find(p => p.name === attr.name);
+		const props = role.ownedProperties.find(p => p.name === attr.nameKey);
 		if (props?.deprecated) {
-			const propSpec = propSpecs.find(p => p.name === attr.name);
+			const propSpec = propSpecs.find(p => p.name === attr.nameKey);
 			return {
 				scope: attr,
 				message: t(

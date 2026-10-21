@@ -76,6 +76,80 @@ describe('disambiguatePretenders', () => {
 		expect(result[0]!.as).toStrictEqual({ element: 'span', slots: true, inheritAttrs: true });
 	});
 
+	describe('a component loaded with a dynamic import', () => {
+		const pretenders: Pretender[] = [
+			{ selector: 'Item', as: 'button', filePath: `${abs('a.tsx')}:3:14` },
+			{ selector: 'Item', as: 'li', filePath: `${abs('b.tsx')}:3:14` },
+			{ selector: 'Item', as: 'span', filePath: `${abs('d.tsx')}:3:7` },
+		];
+		const lint = async (code: string) =>
+			(await disambiguatePretenders(pretenders, { filePath: abs('c.tsx'), sourceCode: code })).map(p => p.as);
+
+		test('resolves to the file of its default export, as a default import does', async () => {
+			const code = "const Item = lazy(() => import('./d'));\nexport const C = () => <Item />;";
+			expect(await lint(code)).toStrictEqual(['span']);
+		});
+
+		test('resolves to the file of the export `.then` reads, as a named import does', async () => {
+			const code =
+				"const Item = lazy(() => import('./b').then(m => ({ default: m.Item })));\nexport const C = () => <Item />;";
+			expect(await lint(code)).toStrictEqual(['li']);
+		});
+
+		test('resolves a loader of an options object', async () => {
+			const code =
+				"const Item = defineAsyncComponent({ loader: () => import('./a').then(m => m.Item) });\nexport const C = () => <Item />;";
+			expect(await lint(code)).toStrictEqual(['button']);
+		});
+
+		test('resolves an import that the loader passes through a call', async () => {
+			const code = "const Item = lazy(() => delayForDemo(import('./d')));\nexport const C = () => <Item />;";
+			expect(await lint(code)).toStrictEqual(['span']);
+		});
+
+		test('resolves an export that an awaited import is destructured into', async () => {
+			const code = "const { Item } = await import('./b');\nexport const C = () => <Item />;";
+			expect(await lint(code)).toStrictEqual(['li']);
+		});
+
+		test('resolves a loader imported under another name', async () => {
+			const code =
+				"import { lazy as l } from 'react';\nconst Item = l(() => import('./d'));\nexport const C = () => <Item />;";
+			expect(await lint(code)).toStrictEqual(['span']);
+		});
+
+		test('resolves the export that a `.then` destructures', async () => {
+			const code =
+				"const Item = lazy(() => import('./b').then(({ Item }) => ({ default: Item })));\nexport const C = () => <Item />;";
+			expect(await lint(code)).toStrictEqual(['li']);
+		});
+
+		test('resolves the default export that an awaited import is read from', async () => {
+			const code = "const Item = (await import('./d')).default;\nexport const C = () => <Item />;";
+			expect(await lint(code)).toStrictEqual(['span']);
+		});
+
+		test('resolves a lazy component inside `memo()`', async () => {
+			const code = "const Item = memo(lazy(() => import('./d')));\nexport const C = () => <Item />;";
+			expect(await lint(code)).toStrictEqual(['span']);
+		});
+
+		test('leaves the list as it is when a call that is not a component loader takes the import', async () => {
+			const code = "const Item = useMemo(() => import('./d'), []);\nexport const C = () => <Item />;";
+			expect(await lint(code)).toStrictEqual(['button', 'li', 'span']);
+		});
+
+		test('leaves the list as it is when the import is not assigned to a name', async () => {
+			const code = "export default lazy(() => import('./b'));\nexport const C = () => <Item />;";
+			expect(await lint(code)).toStrictEqual(['button', 'li', 'span']);
+		});
+
+		test('leaves the list as it is when the module declares no candidate and has no such export', async () => {
+			const code = "const Item = lazy(() => import('./c'));\nexport const C = () => <Item />;";
+			expect(await lint(code)).toStrictEqual(['button', 'li', 'span']);
+		});
+	});
+
 	test('resolves via a tsconfig `paths` alias', async () => {
 		const withAliasDir = path.resolve(moduleResolutionDir, 'with-alias');
 		const filePath = path.resolve(withAliasDir, 'src', 'pages', 'Page.tsx');
@@ -156,6 +230,194 @@ describe('disambiguatePretenders', () => {
 
 		const result = await disambiguatePretenders(pretenders, { filePath, sourceCode });
 		expect(result).toStrictEqual(pretenders);
+	});
+
+	describe('two candidates of one file: a named declaration and an anonymous default export (issue #4289)', () => {
+		const dir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures', 'issue-4289');
+		const filePath = path.resolve(dir, 'Page.tsx');
+		const named: Pretender = {
+			selector: 'Button',
+			as: { element: 'div', slots: null },
+			filePath: `${path.resolve(dir, 'Button.tsx')}:1:13`,
+			localName: 'Button',
+		};
+		const anonymous: Pretender = {
+			selector: 'Button',
+			as: { element: 'img', slots: null },
+			filePath: `${path.resolve(dir, 'Button.tsx')}:3:1`,
+			localName: 'default',
+		};
+		const elsewhere: Pretender = {
+			selector: 'Button',
+			as: { element: 'span', slots: null },
+			filePath: `${path.resolve(dir, 'AnonArrow.tsx')}:1:1`,
+			localName: 'Button',
+		};
+
+		test('a default import picks the anonymous default export', async () => {
+			const sourceCode = "import Button from './Button';\nexport const P = () => <Button />;";
+			const result = await disambiguatePretenders([named, anonymous], { filePath, sourceCode });
+			expect(result).toStrictEqual([anonymous]);
+		});
+
+		test('a named import picks the named declaration', async () => {
+			const sourceCode = "import { Button } from './Button';\nexport const P = () => <Button />;";
+			const result = await disambiguatePretenders([anonymous, named], { filePath, sourceCode });
+			expect(result).toStrictEqual([named]);
+		});
+
+		test('a named import of a declaration without a candidate drops the anonymous default export of its file', async () => {
+			const sourceCode = "import { Button } from './Button';\nexport const P = () => <Button />;";
+			const result = await disambiguatePretenders([anonymous, elsewhere], { filePath, sourceCode });
+			expect(result).toStrictEqual([]);
+		});
+
+		test('a default import of a file whose default export has no candidate drops the named one', async () => {
+			const sourceCode = "import Button from './Button';\nexport const P = () => <Button />;";
+			const result = await disambiguatePretenders([named, elsewhere], { filePath, sourceCode });
+			expect(result).toStrictEqual([]);
+		});
+
+		test('a named import the file does not export does not pick its anonymous default export', async () => {
+			const sourceCode = "import { Missing as Button } from './Button';\nexport const P = () => <Button />;";
+			const result = await disambiguatePretenders([anonymous, elsewhere], { filePath, sourceCode });
+			expect(result).toStrictEqual([elsewhere]);
+		});
+
+		test('a named import re-exported from a declaration without a candidate drops the group, the anonymous default export of the importing module too', async () => {
+			const reexported: Pretender = {
+				...anonymous,
+				filePath: `${path.resolve(dir, 'reexport', 'Button.tsx')}:3:1`,
+			};
+			const sourceCode = "import { Button } from './reexport/Button';\nexport const P = () => <Button />;";
+			const result = await disambiguatePretenders([reexported, elsewhere], { filePath, sourceCode });
+			expect(result).toStrictEqual([]);
+		});
+
+		test('a default import through a module that imports and exports it again resolves to the anonymous default export', async () => {
+			const item: Pretender = {
+				selector: 'Item',
+				as: { element: 'li', slots: null },
+				filePath: `${path.resolve(dir, 'barrel', 'Item.tsx')}:1:1`,
+				localName: 'default',
+			};
+			const other: Pretender = { ...item, as: { element: 'div', slots: null }, filePath: elsewhere.filePath };
+			const sourceCode = "import Item from './barrel';\nexport const P = () => <Item />;";
+			const result = await disambiguatePretenders([other, item], { filePath, sourceCode });
+			expect(result).toStrictEqual([item]);
+		});
+
+		test('a default export that wraps a named component with a function next to it resolves to it', async () => {
+			const withStyles: Pretender = {
+				selector: 'WithStyles',
+				as: { element: 'li', slots: null },
+				filePath: `${path.resolve(dir, 'WithStyles.tsx')}:3:7`,
+				localName: 'WithStyles',
+			};
+			const other: Pretender = {
+				...withStyles,
+				as: { element: 'div', slots: null },
+				filePath: elsewhere.filePath,
+			};
+			const sourceCode = "import WithStyles from './WithStyles';\nexport const P = () => <WithStyles />;";
+			const result = await disambiguatePretenders([other, withStyles], { filePath, sourceCode });
+			expect(result).toStrictEqual([withStyles]);
+		});
+
+		test('a selector of letters other than ASCII is told apart too', async () => {
+			const namedOne: Pretender = { ...named, selector: 'Ärger' };
+			const defaultOne: Pretender = { ...anonymous, selector: 'Ärger' };
+			const sourceCode = "import { Button as Ärger } from './Button';\nexport const P = () => <Ärger />;";
+			const result = await disambiguatePretenders([defaultOne, namedOne], { filePath, sourceCode });
+			expect(result).toStrictEqual([namedOne]);
+		});
+
+		test('a default import of a package whose file the scan reached picks its default export', async () => {
+			const root = await mkdtemp(path.join(os.tmpdir(), 'disambiguate-package-default-'));
+			try {
+				await mkdir(path.join(root, 'node_modules', 'ui'), { recursive: true });
+				await writeFile(
+					path.join(root, 'node_modules', 'ui', 'package.json'),
+					'{"name":"ui","main":"index.js"}',
+				);
+				await writeFile(path.join(root, 'node_modules', 'ui', 'index.js'), 'export const Ui = () => null;');
+				const packageFile = path.join(root, 'node_modules', 'ui', 'index.js');
+				const namedUi: Pretender = {
+					selector: 'Ui',
+					as: { element: 'div', slots: null },
+					filePath: `${packageFile}:1:13`,
+					localName: 'Ui',
+				};
+				const defaultUi: Pretender = { ...namedUi, as: { element: 'img', slots: null }, localName: 'default' };
+				const sourceCode = "import Ui from 'ui';\nexport const P = () => <Ui />;";
+				const result = await disambiguatePretenders([namedUi, defaultUi], {
+					filePath: path.join(root, 'Page.tsx'),
+					sourceCode,
+					cwd: root,
+				});
+				expect(result).toStrictEqual([defaultUi]);
+			} finally {
+				await rm(root, { recursive: true, force: true });
+			}
+		});
+
+		test('a name that does not start with a Latin capital is told apart too', async () => {
+			const layoutFile = path.resolve(dir, '_Layout.tsx');
+			const namedLayout: Pretender = {
+				selector: '_Layout',
+				as: { element: 'div', slots: null },
+				filePath: `${layoutFile}:1:13`,
+				localName: '_Layout',
+			};
+			const defaultLayout: Pretender = {
+				...namedLayout,
+				as: { element: 'main', slots: null },
+				filePath: `${layoutFile}:3:1`,
+				localName: 'default',
+			};
+			const sourceCode = "import { _Layout } from './_Layout';\nexport const P = () => <_Layout />;";
+			const result = await disambiguatePretenders([defaultLayout, namedLayout], { filePath, sourceCode });
+			expect(result).toStrictEqual([namedLayout]);
+		});
+
+		test('a default import the export table does not confirm prefers the default export of the file', async () => {
+			// legacy/Card.tsx has no default export: the list is of an earlier version of it.
+			const cardFile = path.resolve(dir, 'legacy', 'Card.tsx');
+			const namedCard: Pretender = {
+				selector: 'Card',
+				as: { element: 'div', slots: null },
+				filePath: `${cardFile}:1:13`,
+				localName: 'Card',
+			};
+			const defaultCard: Pretender = { ...namedCard, as: { element: 'img', slots: null }, localName: 'default' };
+			const sourceCode = "import Card from './legacy/Card';\nexport const P = () => <Card />;";
+			const result = await disambiguatePretenders([namedCard, defaultCard], { filePath, sourceCode });
+			expect(result).toStrictEqual([defaultCard]);
+		});
+
+		test('a default export that wraps a named component resolves to it', async () => {
+			const memoNamed: Pretender = {
+				selector: 'MemoNamed',
+				as: { element: 'img', slots: null },
+				filePath: `${path.resolve(dir, 'MemoNamed.tsx')}:3:7`,
+				localName: 'MemoNamed',
+			};
+			const other: Pretender = {
+				...memoNamed,
+				as: { element: 'div', slots: null },
+				filePath: elsewhere.filePath,
+			};
+			const sourceCode = "import MemoNamed from './MemoNamed';\nexport const P = () => <MemoNamed />;";
+			const result = await disambiguatePretenders([other, memoNamed], { filePath, sourceCode });
+			expect(result).toStrictEqual([memoNamed]);
+		});
+
+		test('the anonymous default export of the lint target itself is not what its tags name', async () => {
+			const own: Pretender = { ...anonymous, filePath: `${filePath}:1:1` };
+			const sourceCode = "import { Button } from './Button';\nexport const P = () => <Button />;";
+			const result = await disambiguatePretenders([own, named], { filePath, sourceCode });
+			expect(result).toStrictEqual([named]);
+		});
 	});
 
 	describe('through a barrel file', () => {

@@ -69,6 +69,314 @@ describe('getExportTable', () => {
 		expect(table.byName.get('default')).toStrictEqual({ kind: 'local', localName: 'A' });
 	});
 
+	describe('a default export without a local name is recorded under the local name `default`', () => {
+		test('an arrow function', () => {
+			const table = getExportTable(sourceFile('export default () => <Item />;'));
+			expect(table.byName.get('default')).toStrictEqual({ kind: 'local', localName: 'default' });
+		});
+
+		test('a function declaration without a name', () => {
+			const table = getExportTable(sourceFile('export default function () { return null; }'));
+			expect(table.byName.get('default')).toStrictEqual({ kind: 'local', localName: 'default' });
+		});
+
+		test.each([
+			['memo(Item)', 'Item'],
+			['memo(Item as FC)', 'Item'],
+			['memo(Item, areEqual)', 'Item'],
+			['connect(mapState)(Item)', 'Item'],
+			['withStyles(theme => ({ root: theme }))(Item)', 'Item'],
+			['withLayout(Layout)(Page)', 'Page'],
+			['withRouter(memo(forwardRef(Item)))', 'Item'],
+			['Object.assign(Root, { Item })', 'Root'],
+		])('`export default %s` wraps %s', (expression, wrapped) => {
+			const table = getExportTable(sourceFile(`export default ${expression};`));
+			expect(table.byName.get('default')).toStrictEqual({
+				kind: 'local',
+				localName: 'default',
+				wraps: { kind: 'local', localName: wrapped },
+			});
+		});
+
+		test.each(['memo(() => <Item />)', 'Object.assign(Item.Root, { Part: Item.Part })', 'create()'])(
+			'`export default %s` wraps no binding',
+			expression => {
+				const table = getExportTable(sourceFile(`export default ${expression};`));
+				expect(table.byName.get('default')).toStrictEqual({ kind: 'local', localName: 'default' });
+			},
+		);
+
+		test('a wrapped binding the file imports is a re-export of what it imports', () => {
+			const table = getExportTable(
+				sourceFile("import Button from './Button';\nexport default withTheme(Button);"),
+			);
+			expect(table.byName.get('default')).toStrictEqual({
+				kind: 'local',
+				localName: 'default',
+				wraps: { kind: 're-export', source: './Button', importedName: 'default', viaImport: true },
+			});
+		});
+
+		describe('a loader call wraps the export of the module it loads', () => {
+			const wrapsLoaded = (importedName: string) => ({
+				kind: 're-export',
+				source: './b/Item',
+				importedName,
+				viaImport: true,
+			});
+
+			test.each([
+				['lazy(() => import("./b/Item"))', 'default'],
+				['React.lazy(() => import("./b/Item"))', 'default'],
+				['memo(lazy(() => import("./b/Item")))', 'default'],
+				['lazy(() => import("./b/Item").then(m => m.X))', 'X'],
+				['lazy(() => import("./b/Item").then(m => ({ default: m.X })))', 'X'],
+				['lazy(async () => { const m = await import("./b/Item"); return m; })', 'default'],
+				['defineAsyncComponent({ loader: () => import("./b/Item") })', 'default'],
+			])('`export default %s`', (expression, importedName) => {
+				const table = getExportTable(sourceFile(`export default ${expression};`));
+				expect(table.byName.get('default')).toStrictEqual({
+					kind: 'local',
+					localName: 'default',
+					wraps: wrapsLoaded(importedName),
+				});
+			});
+
+			test.each([
+				'useMemo(() => import("./b/Item"), [])',
+				'lazy(() => import(path))',
+				'lazy(() => { init(); return import("./b/Item"); })',
+				'lazy(() => import("./b/Item").then(m => m["X"]))',
+			])('`export default %s` loads no module', expression => {
+				const table = getExportTable(sourceFile(`export default ${expression};`));
+				expect(table.byName.get('default')).toStrictEqual({ kind: 'local', localName: 'default' });
+			});
+
+			test('a variable of a loader call that is exported as the default', () => {
+				const table = getExportTable(
+					sourceFile('const L = lazy(() => import("./b/Item"));\nexport default L;'),
+				);
+				expect(table.byName.get('default')).toStrictEqual({
+					kind: 'local',
+					localName: 'L',
+					wraps: wrapsLoaded('default'),
+				});
+			});
+
+			test('a variable of a loader call that is exported by its declaration', () => {
+				const table = getExportTable(sourceFile('export const L = lazy(() => import("./b/Item"));'));
+				expect(table.byName.get('L')).toStrictEqual({
+					kind: 'local',
+					localName: 'L',
+					wraps: wrapsLoaded('default'),
+				});
+			});
+
+			test('a variable of a loader call that is exported by name and under another name', () => {
+				const table = getExportTable(
+					sourceFile('const L = lazy(() => import("./b/Item"));\nexport { L, L as Item };'),
+				);
+				expect(table.byName.get('L')).toStrictEqual({
+					kind: 'local',
+					localName: 'L',
+					wraps: wrapsLoaded('default'),
+				});
+				expect(table.byName.get('Item')).toStrictEqual({
+					kind: 'local',
+					localName: 'L',
+					wraps: wrapsLoaded('default'),
+				});
+			});
+
+			test('a variable of a loader call that is exported as the default by name', () => {
+				const table = getExportTable(
+					sourceFile('const L = lazy(() => import("./b/Item"));\nexport { L as default };'),
+				);
+				expect(table.byName.get('default')).toStrictEqual({
+					kind: 'local',
+					localName: 'L',
+					wraps: wrapsLoaded('default'),
+				});
+			});
+
+			test('a variable of a loader call that a wrapper call exports as the default wraps it through the wrapper', () => {
+				const table = getExportTable(
+					sourceFile('const L = lazy(() => import("./b/Item"));\nexport default memo(L);'),
+				);
+				expect(table.byName.get('default')).toStrictEqual({
+					kind: 'local',
+					localName: 'default',
+					wraps: { kind: 'local', localName: 'L', wraps: wrapsLoaded('default') },
+				});
+			});
+
+			test('a variable of a call that is not a loader wraps nothing', () => {
+				const table = getExportTable(sourceFile('export const L = useMemo(() => import("./b/Item"), []);'));
+				expect(table.byName.get('L')).toStrictEqual({ kind: 'local', localName: 'L' });
+			});
+
+			test.each([
+				['a variable of an arrow', 'const load = () => import("./b/Item");\nexport default lazy(load);'],
+				[
+					'a function declaration',
+					'function load() { return import("./b/Item"); }\nexport default lazy(load);',
+				],
+				[
+					'a variable of another variable',
+					'const load = () => import("./b/Item");\nconst again = load;\nexport default lazy(again);',
+				],
+				[
+					'a loader of an options object',
+					'const load = () => import("./b/Item");\nexport default defineAsyncComponent({ loader: load });',
+				],
+				[
+					'a shorthand loader of an options object',
+					'const loader = () => import("./b/Item");\nexport default defineAsyncComponent({ loader });',
+				],
+				[
+					'a function declared after the call',
+					'export default memo(lazy(load));\nfunction load() { return import("./b/Item"); }',
+				],
+			])('`export default` of a loader call that takes the function held by a name: %s', (_, code) => {
+				const table = getExportTable(sourceFile(code));
+				expect(table.byName.get('default')).toStrictEqual({
+					kind: 'local',
+					localName: 'default',
+					wraps: wrapsLoaded('default'),
+				});
+			});
+
+			test('a variable of a loader call that takes a function held by a name', () => {
+				const table = getExportTable(
+					sourceFile('const load = () => import("./b/Item").then(m => m.X);\nexport const L = lazy(load);'),
+				);
+				expect(table.byName.get('L')).toStrictEqual({
+					kind: 'local',
+					localName: 'L',
+					wraps: wrapsLoaded('X'),
+				});
+			});
+
+			test('a loader call that takes a name that holds no function loads no module', () => {
+				const table = getExportTable(
+					sourceFile('function f(load) {}\nconst load = other;\nexport default lazy(load);'),
+				);
+				// The variable is wrapped as `memo(L)` wraps one, and it has no module behind it
+				expect(table.byName.get('default')).toStrictEqual({
+					kind: 'local',
+					localName: 'default',
+					wraps: { kind: 'local', localName: 'load' },
+				});
+			});
+
+			test('a name that is assigned another function loads no module', () => {
+				const table = getExportTable(
+					sourceFile(
+						'let load = () => import("./b/Item");\nload = () => import("./b/Other");\nexport default lazy(load);',
+					),
+				);
+				expect(table.byName.get('default')).toStrictEqual({
+					kind: 'local',
+					localName: 'default',
+					wraps: { kind: 'local', localName: 'load' },
+				});
+			});
+
+			test('names that initialize each other end the lookup of the function', () => {
+				const table = getExportTable(sourceFile('const a = b;\nconst b = a;\nexport default lazy(a);'));
+				expect(table.byName.get('default')).toStrictEqual({
+					kind: 'local',
+					localName: 'default',
+					wraps: { kind: 'local', localName: 'a' },
+				});
+			});
+
+			test('an alias of a loader is a loader', () => {
+				const table = getExportTable(
+					sourceFile('const l = React.lazy;\nexport default l(() => import("./b/Item"));'),
+				);
+				expect(table.byName.get('default')).toStrictEqual({
+					kind: 'local',
+					localName: 'default',
+					wraps: wrapsLoaded('default'),
+				});
+			});
+		});
+
+		test('a named export next to it stays its own entry', () => {
+			const table = getExportTable(sourceFile('export const Item = () => null;\nexport default () => null;'));
+			expect(table.byName.get('Item')).toStrictEqual({ kind: 'local', localName: 'Item' });
+			expect(table.byName.get('default')).toStrictEqual({ kind: 'local', localName: 'default' });
+		});
+
+		test('`export =` is not a default export', () => {
+			const table = getExportTable(sourceFile('export = () => null;'));
+			expect(table.byName.has('default')).toBe(false);
+		});
+	});
+
+	describe('a binding the file imports and exports again is a re-export of what it imports', () => {
+		test('export default of a default import', () => {
+			const table = getExportTable(sourceFile("import Item from './Item';\nexport default Item;"));
+			expect(table.byName.get('default')).toStrictEqual({
+				kind: 're-export',
+				source: './Item',
+				importedName: 'default',
+				viaImport: true,
+			});
+		});
+
+		test('export { X } of a named import under another name', () => {
+			const table = getExportTable(sourceFile("import { Base as Item } from './Base';\nexport { Item };"));
+			expect(table.byName.get('Item')).toStrictEqual({
+				kind: 're-export',
+				source: './Base',
+				importedName: 'Base',
+				viaImport: true,
+			});
+		});
+
+		test('export { X } of a namespace import is a namespace re-export', () => {
+			const table = getExportTable(sourceFile("import * as Base from './Base';\nexport { Base };"));
+			expect(table.byName.get('Base')).toStrictEqual({
+				kind: 're-export',
+				source: './Base',
+				importedName: '*',
+				viaImport: true,
+			});
+		});
+
+		test('a namespace import next to a default import is a namespace re-export', () => {
+			const table = getExportTable(sourceFile("import Base, * as NS from './Base';\nexport { NS };"));
+			expect(table.byName.get('NS')).toStrictEqual({
+				kind: 're-export',
+				source: './Base',
+				importedName: '*',
+				viaImport: true,
+			});
+		});
+
+		test('export { X as default } of a namespace import is no re-export', () => {
+			const table = getExportTable(sourceFile("import * as Base from './Base';\nexport { Base as default };"));
+			expect(table.byName.get('default')).toStrictEqual({ kind: 'local', localName: 'Base' });
+		});
+
+		test('a type-only namespace import is not followed', () => {
+			const table = getExportTable(sourceFile("import type * as NS from './Base';\nexport { NS };"));
+			expect(table.byName.get('NS')).toStrictEqual({ kind: 'local', localName: 'NS' });
+		});
+
+		test('export default of a namespace import is no re-export', () => {
+			const table = getExportTable(sourceFile("import * as Base from './Base';\nexport default Base;"));
+			expect(table.byName.get('default')).toStrictEqual({ kind: 'local', localName: 'Base' });
+		});
+
+		test('a type-only import is not followed', () => {
+			const table = getExportTable(sourceFile("import type { Item } from './Item';\nexport { Item };"));
+			expect(table.byName.get('Item')).toStrictEqual({ kind: 'local', localName: 'Item' });
+		});
+	});
+
 	describe('type-only exports carry no component and are not recorded', () => {
 		test('export type { X } from', () => {
 			const table = getExportTable(sourceFile("export type { Props } from './a';"));
@@ -123,6 +431,10 @@ describe('getReExportSources', () => {
 		expect(
 			sources("export type { Props } from './a';\nexport type * from './b';\nexport { type Props2 } from './c';"),
 		).toStrictEqual([]);
+	});
+
+	test('the module a loader call loads is not a re-export source, as the dynamic import already leads there', () => {
+		expect(sources('export default lazy(() => import("./b/Item"));')).toStrictEqual([]);
 	});
 
 	test('local exports and imports contribute nothing', () => {

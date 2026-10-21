@@ -5,7 +5,9 @@ description: ARIA プロパティが等価なネイティブ HTML 属性と同�
 
 # `no-redundant-aria-prop`
 
-[ARIA in HTML §6](https://w3c.github.io/html-aria/#docconformance) はネイティブ属性を優先するよう推奨しています。この推奨に反して、ARIA プロパティが等価なネイティブ HTML 属性と同じ値(または属性がない場合の暗黙のデフォルト値)を持っている場合に警告します。
+[ARIA in HTML §4](https://www.w3.org/TR/html-aria/#docconformance) はネイティブ属性を優先するよう推奨しています。この推奨に反して、ARIA プロパティが等価なネイティブ HTML 属性と同じ値(または属性がない場合の暗黙のデフォルト値)を持っている場合に警告します。
+
+ARIA 属性の名前は、[`no-unknown-attr`](/docs/rules/no-unknown-attr#attribute-name-case) が属性名を比較するのと同じ方法(同ルールの「属性名の大文字・小文字」節を参照)で比較されます。DOM が属性名の大文字・小文字を区別しない場合(HTML 要素など)は `ARIA-LABEL` と `aria-label` は同じ属性として扱われ、区別する場合(JSX の `<svg>` 要素など)は別の属性として扱われます。
 
 旧`wai-aria-implicit-props`ルールから、[`no-contradictory-aria-prop`](/docs/rules/no-contradictory-aria-prop)とともに分割されました。この冗長側は`should`レベル(`warning`)のままですが、矛盾側は`must`レベル(`error`)です。
 

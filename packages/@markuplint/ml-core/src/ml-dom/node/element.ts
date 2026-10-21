@@ -28,9 +28,9 @@ import type { ARIAVersion } from '@markuplint/ml-spec';
 
 import { getSpecByTagName, resolveNamespace } from '@markuplint/ml-spec';
 import { pretenderNamespaceToURI } from '@markuplint/ml-config';
-import { getChildNamespace, isComponentName } from '@markuplint/parser-utils';
+import { getChildNamespace } from '@markuplint/parser-utils';
 import type { SelectorMatches } from '@markuplint/selector';
-import { matchSelector } from '@markuplint/selector';
+import { matchSelector, typeNameMatches } from '@markuplint/selector';
 
 import { getAccname } from '../helper/accname.js';
 import {
@@ -47,7 +47,7 @@ import { MLElementCloseTag } from './element-close-tag.js';
 import { toNamedNodeMap } from './named-node-map.js';
 import { toHTMLCollection, toNodeList } from './node-list.js';
 import { MLParentNode } from './parent-node.js';
-import { UnexpectedCallError } from '@markuplint/shared';
+import { UnexpectedCallError, asciiLowerCase, vuePropKey } from '@markuplint/shared';
 
 const HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml';
 
@@ -93,6 +93,39 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	/**
+	 * Whether two names would be one attribute on this element, for names that no attribute of the
+	 * element stands behind (the names of a spec, of an option or of a rule value, where the
+	 * attribute may be missing). It is {@link MLAttr.isNamedBy} without an attribute.
+	 *
+	 * The HTML syntax folds the ASCII case. A name that code sets through the DOM API is folded
+	 * only on an element of the HTML namespace: on an SVG or MathML element it keeps its spelling,
+	 * and a name with a capital letter is a prop of the framework. The props of a component are
+	 * not folded, except that Vue camelizes them.
+	 *
+	 * With no attribute, whether the name is set through the DOM API is up to the parser alone: the
+	 * attribute is not dynamic, so Svelte's name is read as the HTML parser reads it.
+	 *
+	 * @see https://dom.spec.whatwg.org/#dom-element-setattribute
+	 * @see https://html.spec.whatwg.org/multipage/parsing.html#attribute-name-state
+	 *
+	 * @param a - A name
+	 * @param b - The other name
+	 * @returns `true` if both names are one attribute on this element
+	 */
+	isSameAttrName(a: string, b: string): boolean {
+		if (a === b) {
+			return true;
+		}
+		if (this.elementType === 'authored') {
+			return this.ownerMLDocument.componentNameVariants && vuePropKey(a) === vuePropKey(b);
+		}
+		if (this.ownerMLDocument.attrNameRoute === 'dom-api' && (this.isForeignElement || /[A-Z]/.test(a + b))) {
+			return false;
+		}
+		return asciiLowerCase(a) === asciiLowerCase(b);
+	}
+
+	/**
 	 * Whether the `#custom` entry of a content model category (`:model(flow)` etc.) covers this element.
 	 *
 	 * Anything that is not a native HTML element counts, an authored component (`<Foo />`)
@@ -103,8 +136,8 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * Like {@link localName}, it follows the pretender, since a selector sees the element
 	 * the component renders. A pretender target is created with `elementType: 'html'`, so it
 	 * is a custom element when its own name has a hyphen. A target whose name is a component
-	 * (`Tabs.Root`, see `isComponentName`) is created as `'authored'` and counts like one
-	 * written directly: the scanners of `pretenders.auto` end a chain at such a name when
+	 * (`Tabs.Root`; the rule is the parser's, see {@link MLDocument.isComponentName}) is created as
+	 * `'authored'` and counts like one written directly: the scanners of `pretenders.auto` end a chain at such a name when
 	 * they cannot resolve it, and what that component renders is not known.
 	 *
 	 * Known limitation: the hyphen test is only the hyphen. A pretender target named after a reserved
@@ -117,6 +150,85 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 			return as.elementType === 'authored' || as.localName.includes('-');
 		}
 		return this.elementType !== 'html';
+	}
+
+	/**
+	 * Whether the document tells the case of a tag name apart (see {@link MLDocument.tagNameCaseSensitive}).
+	 * A type selector reads it, as {@link localName} alone cannot tell it: an element that HTML names
+	 * case-insensitively (`<foobar>`) has a lowercase-folded pair of `localName` / `nodeName` in
+	 * every document, but in JSX it is not `<FooBar>`.
+	 *
+	 * @implements `SelectorElement#tagNameCaseSensitive` of `@markuplint/selector`
+	 */
+	get tagNameCaseSensitive(): boolean {
+		return this.ownerMLDocument.tagNameCaseSensitive;
+	}
+
+	/**
+	 * What this element is for a type selector, in a document that resolves a component by any
+	 * spelling of its name (Vue, see {@link MLDocument.componentNameVariants}); `undefined` in any other.
+	 *
+	 * - `component`: not an HTML element (`<FooBar>`, `<foo-bar>`), which {@link localName} names as written
+	 * - `native`: an HTML element that the document takes for native (`<button>`, see {@link MLDocument.isNativeTag}:
+	 *   the parser's rule, as Vue's `isNativeTag`, else the specification), the guard of {@link pretending}.
+	 *   The element that a pretender stands for is judged by the specification alone
+	 * - `unknown-html`: an HTML element that it does not (`<foobar>`; in Vue also `<marquee>`, which has a
+	 *   specification but resolves to a component when one is imported)
+	 *
+	 * Like {@link localName}, it follows the pretender, since a selector sees the element the component
+	 * renders. An element of the SVG or MathML namespace has none: it keeps the case of its name.
+	 *
+	 * @implements `SelectorElement#tagNameKind` of `@markuplint/selector`
+	 */
+	get tagNameKind(): 'component' | 'native' | 'unknown-html' | undefined {
+		const document = this.ownerMLDocument;
+		if (!document.componentNameVariants) {
+			return;
+		}
+		const target = this.pretenderContext?.type === 'pretender' ? this.pretenderContext.as : this;
+		if (target.isForeignElement) {
+			return;
+		}
+		if (target.elementType !== 'html') {
+			return 'component';
+		}
+		// A tag as written is the language's to resolve; the name a pretender gives (`as`) is the element itself
+		const isNative =
+			target === this
+				? document.isNativeTag(target.localName, target.namespaceURI)
+				: getSpecByTagName(document.specs.specs, target.localName, target.namespaceURI) != null;
+		return isNative ? 'native' : 'unknown-html';
+	}
+
+	/**
+	 * Whether a name that a user writes for an element (the `tag` of a rule option, as against the
+	 * type name of a selector, which {@link matches} takes) stands for this element, written as it is,
+	 * in a document that resolves a component by any spelling of its name (Vue, see
+	 * {@link MLDocument.componentNameVariants}): `FooBar` stands for `<foo-bar>` and `<fooBar>`.
+	 *
+	 * It is `false` in any other document, so that a caller that compares a name as it is can ask
+	 * it as well without changing what it does there. It ignores the pretender: the name is the one
+	 * the element is written with. To ask so, it hides the pretender of this element for the length of the
+	 * call (as {@link matchMLSelector} does for its second try), so nothing in it may be async.
+	 *
+	 * @param name - The name as the user wrote it
+	 * @returns Whether the name stands for this element
+	 */
+	matchesTagNameVariant(name: string): boolean {
+		if (!this.ownerMLDocument.componentNameVariants) {
+			return false;
+		}
+		const pretenderContext = this.pretenderContext;
+		if (pretenderContext?.type !== 'pretender') {
+			return this.tagNameKind !== undefined && typeNameMatches(name, this);
+		}
+		// The element as written, not as the pretender makes it: as `matchMLSelector` does for its second try
+		this.pretenderContext = null;
+		try {
+			return this.tagNameKind !== undefined && typeNameMatches(name, this);
+		} finally {
+			this.pretenderContext = pretenderContext;
+		}
 	}
 
 	/**
@@ -874,6 +986,11 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	/**
+	 * Every attribute written on the tag, the second of two spellings of one name too: unlike a DOM
+	 * element, which keeps one of them, a rule checks each attribute that the author wrote, and
+	 * `no-duplicate-attr` reports the second. Which of them the DOM keeps is what {@link getAttribute}
+	 * returns.
+	 *
 	 * @implements DOM API: `Element`
 	 * @see https://dom.spec.whatwg.org/#dom-element-attributes
 	 */
@@ -881,27 +998,12 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		const origin =
 			this.pretenderContext?.type === 'pretender' ? this.pretenderContext.as.#attributes : this.#attributes;
 
-		if (this.#normalizedAttrs.has(origin)) {
-			return this.#normalizedAttrs.get(origin)!;
+		const cached = this.#normalizedAttrs.get(origin);
+		if (cached) {
+			return cached;
 		}
 
-		const names = new Set<string>();
-		const attrs: MLAttr<T, O>[] = [];
-
-		for (const attr of origin) {
-			if (names.has(attr.name)) {
-				/**
-				 * Skips a duplicated attribute
-				 *
-				 *@see https://html.spec.whatwg.org/#parse-error-duplicate-attribute
-				 */
-				continue;
-			}
-
-			attrs.push(attr);
-		}
-
-		const map = toNamedNodeMap(attrs);
+		const map = toNamedNodeMap(origin);
 		this.#normalizedAttrs.set(origin, map);
 		return map;
 	}
@@ -3524,16 +3626,31 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	/**
+	 * Whether `attrName` is the name of an attribute of this element is what {@link MLAttr.isNamedBy}
+	 * says: `ROLE` is `role` on a `<div>` and, in JSX, is not on an `<svg>`. `hasAttribute`,
+	 * `getAttributeToken`, `getAttributePretended`, a pretender's `fromAttr` and `getNamedItem` ask the same.
+	 *
 	 * @implements DOM API: `Element`
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-element-getattribute%E2%91%A0
 	 */
 	getAttribute(attrName: string) {
+		let first: MLAttr<T, O> | null = null;
+		let lastSetByCode: MLAttr<T, O> | null = null;
 		for (const attr of this.attributes) {
-			if (attr.name.toLowerCase() === attrName.toLowerCase()) {
-				return attr.value;
+			if (!attr.isNamedBy(attrName)) {
+				continue;
+			}
+			first ??= attr;
+			// A directive, and an attribute that may be written twice (`class` and `:class`), are not
+			// two spellings of one name: the first is the one that is asked for
+			if (attr.isSetThroughDOMAPI && !attr.isDirective && !attr.isDuplicatable) {
+				lastSetByCode = attr;
 			}
 		}
-		return null;
+		// Of two attributes of one name, the HTML parser keeps the first and drops the second, while code
+		// that sets them one after another (`setAttribute`) lets the second overwrite the first.
+		// @see https://html.spec.whatwg.org/#parse-error-duplicate-attribute
+		return (lastSetByCode ?? first)?.value ?? null;
 	}
 
 	/**
@@ -3583,12 +3700,12 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * the original component element, not on the virtual pretender element.
 	 *
 	 * @implements `@markuplint/ml-core` API: `MLElement`
-	 * @param attrName - The attribute name to look up (case-insensitive)
+	 * @param attrName - The attribute name to look up (see {@link MLAttr.isNamedBy} for how its case is compared)
 	 * @returns The attribute value, or null if the attribute is not found
 	 */
 	getAttributePretended(attrName: string) {
 		for (const attr of this.#attributes) {
-			if (attr.name.toLowerCase() === attrName.toLowerCase()) {
+			if (attr.isNamedBy(attrName)) {
 				return attr.value;
 			}
 		}
@@ -3600,14 +3717,13 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * Unlike `getAttribute`, this returns the full `MLAttr` token objects.
 	 *
 	 * @implements `@markuplint/ml-core` API: `MLElement`
-	 * @param attrName - The attribute name to look up (case-insensitive)
+	 * @param attrName - The attribute name to look up (see {@link MLAttr.isNamedBy} for how its case is compared)
 	 * @returns An array of matching attribute tokens
 	 */
 	getAttributeToken(attrName: string) {
 		const attrs: MLAttr<T, O>[] = [];
-		attrName = attrName.toLowerCase();
 		for (const attr of this.getAttributeTokens()) {
-			if (attr.name.toLowerCase() === attrName) {
+			if (attr.isNamedBy(attrName)) {
 				attrs.push(attr);
 			}
 		}
@@ -4107,15 +4223,16 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		// mask spec-driven rules — deprecation, ARIA role restrictions, browser support —
 		// keyed on the original tag. See issue #3740.
 		//
+		// What is recognised is what the document says (`MLDocument#isNativeTag`): the specification, unless
+		// the parser has a rule of its own. Vue's rule does not hold `<marquee>`, which Vue resolves to a
+		// component when one is imported, so there it is pretender-eligible. See issue #4351.
+		//
 		// Names that the HTML parser cannot distinguish from typos (PascalCase JSX-like
 		// usage in plain HTML such as `<SimpleButton>`) get `elementType === 'html'`
 		// from the parser but have no spec entry; those remain pretender-eligible
 		// (this is what `pretenders.scan` relies on). The legacy "no inline `as=` on
 		// HTML elements" guard is preserved further down for that case.
-		if (
-			this.elementType === 'html' &&
-			getSpecByTagName(this.ownerMLDocument.specs.specs, this.localName, this.namespaceURI) != null
-		) {
+		if (this.elementType === 'html' && this.ownerMLDocument.isNativeTag(this.localName, this.namespaceURI)) {
 			return;
 		}
 		const pretenderConfig = pretenders?.find(option => this.matches(option.selector));
@@ -4153,7 +4270,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 
 		// A component is given no name for the namespace, as `#resolveNamespace` does:
 		// `getChildNamespace` compares names in lowercase, so `Svg` would enter SVG.
-		const isComponent = isComponentName(nodeName);
+		const isComponent = this.ownerMLDocument.isComponentName(nodeName);
 		const namespace =
 			typeof pretenderElement !== 'string' && pretenderElement.namespace
 				? pretenderNamespaceToURI(pretenderElement.namespace)
@@ -4215,8 +4332,15 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 			if (typeof value === 'string') {
 				_value = value;
 			} else if (value != null && 'fromAttr' in value) {
-				const fromAttr = value.fromAttr.toLowerCase();
-				const origin = this.#attributes.find(attr => attr.name.toLowerCase() === fromAttr);
+				// The attribute of the usage site that the prop is. Vue gives a prop the attribute by the camelCase
+				// of its name (`my-label` and `myLabel` are the prop `myLabel`, and `mylabel` is another),
+				// and the prop declared as `'my-label'` is the same one, so both sides are read so. Elsewhere
+				// the attribute is read as the DOM or the framework reads it (`isNamedBy`).
+				const { fromAttr } = value;
+				const isVue = this.ownerMLDocument.componentNameVariants;
+				const origin = this.#attributes.find(attr =>
+					isVue ? vuePropKey(attr.name) === vuePropKey(fromAttr) : attr.isNamedBy(fromAttr),
+				);
 				if (!origin && value.omitIfMissing) {
 					return [];
 				}
@@ -4301,7 +4425,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		if (spec.attrs) {
 			attributes.push(...this.#createPretenderAttrs(spec.attrs, uuid));
 		}
-		const isComponent = isComponentName(spec.element);
+		const isComponent = this.ownerMLDocument.isComponentName(spec.element);
 		let elementType: ElementType = 'html';
 		if (isComponent) {
 			elementType = 'authored';

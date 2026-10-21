@@ -363,3 +363,88 @@ describe('Issues', () => {
 		});
 	});
 });
+
+describe('nodeName of a regular expression selector in a document that is case-sensitive about tag names', () => {
+	// What `MLElement` is for a parser with `tagNameCaseSensitive` (JSX, Svelte, Astro, MDX):
+	// `<foobar>` has the `localName` / `nodeName` pair of any HTML element.
+	const mockElement = (tagNameCaseSensitive?: boolean) => ({
+		nodeType: 1,
+		nodeName: 'FOOBAR',
+		localName: 'foobar',
+		id: '',
+		namespaceURI: 'http://www.w3.org/1999/xhtml',
+		classList: { contains: () => false },
+		attributes: [],
+		parentNode: null,
+		parentElement: null,
+		previousElementSibling: null,
+		nextElementSibling: null,
+		children: [],
+		...(tagNameCaseSensitive === undefined ? {} : { tagNameCaseSensitive }),
+	});
+
+	test('a pattern in another case does not match', () => {
+		expect(matchSelector(mockElement(true), { nodeName: '/^FooBar$/' }).matched).toBe(false);
+	});
+
+	test('a pattern in the case of the tag matches', () => {
+		expect(matchSelector(mockElement(true), { nodeName: '/^foobar$/' }).matched).toBe(true);
+	});
+
+	test.each([false, undefined])('the case is not told apart when tagNameCaseSensitive is %s', flag => {
+		expect(matchSelector(mockElement(flag), { nodeName: '/^FooBar$/' }).matched).toBe(true);
+	});
+});
+
+describe('attrName of an attribute that says how its name is compared', () => {
+	const mockElement = (attr: { domName?: string; nameCaseInsensitive?: boolean }) => ({
+		nodeType: 1,
+		nodeName: 'x',
+		localName: 'x',
+		id: '',
+		namespaceURI: 'http://www.w3.org/2000/svg',
+		classList: { contains: () => false },
+		parentNode: null,
+		parentElement: null,
+		previousElementSibling: null,
+		nextElementSibling: null,
+		children: [],
+		attributes: [{ name: 'VIEWBOX', localName: 'VIEWBOX', value: '', namespaceURI: null, ...attr }],
+	});
+
+	test('an attribute that the element folds is matched without regard to case', () => {
+		expect(matchSelector(mockElement({ nameCaseInsensitive: true }), { attrName: 'viewbox' }).matched).toBe(true);
+	});
+
+	test('an attribute that the element does not fold is matched by the name it has in the DOM', () => {
+		const el = mockElement({ nameCaseInsensitive: false, domName: 'viewBox' });
+		expect(matchSelector(el, { attrName: 'viewBox' }).matched).toBe(true);
+		expect(matchSelector(el, { attrName: 'viewbox' }).matched).toBe(false);
+	});
+
+	test('without that information a name on an SVG element is matched exactly', () => {
+		expect(matchSelector(mockElement({}), { attrName: 'viewbox' }).matched).toBe(false);
+		expect(matchSelector(mockElement({}), { attrName: 'VIEWBOX' }).matched).toBe(true);
+	});
+
+	test('a prop that the framework camelizes is matched by either spelling', () => {
+		const el = {
+			...mockElement({}),
+			attributes: [
+				{
+					name: 'my-label',
+					localName: 'my-label',
+					value: '',
+					namespaceURI: null,
+					nameCaseInsensitive: false,
+					domName: 'myLabel',
+					nameIsCamelized: true,
+				},
+			],
+		};
+		expect(matchSelector(el, { attrName: 'myLabel' }).matched).toBe(true);
+		expect(matchSelector(el, { attrName: 'my-label' }).matched).toBe(true);
+		expect(matchSelector(el, { attrName: '/^my-/' }).matched).toBe(true);
+		expect(matchSelector(el, { attrName: 'mylabel' }).matched).toBe(false);
+	});
+});

@@ -5,7 +5,7 @@ description: srcset付きの後続兄弟を持つsource要素にmediaまたはty
 
 # `no-always-matching-source`
 
-[HTML Living Standard](https://html.spec.whatwg.org/multipage/embedded-content.html#the-source-element) に基づき、`<source>` 要素が `srcset` 属性を持つ後続の兄弟 `<source>` や `<img>` 要素を持つ場合、有効な `media` および/または `type` 属性を必須とします。これがない場合、その `<source>` は「常にマッチ」し、後続の候補を隠してしまいます。
+[HTML Living Standard](https://momdo.github.io/html/embedded-content.html#the-source-element) に基づき、`<source>` 要素が `srcset` 属性を持つ後続の兄弟 `<source>` や `<img>` 要素を持つ場合、有効な `media` および/または `type` 属性を必須とします。これがない場合、その `<source>` は「常にマッチ」し、後続の候補を隠してしまいます。
 
 旧`srcset-sizes-constraint`ルールから、[`no-unpaired-srcset-sizes`](/docs/rules/no-unpaired-srcset-sizes)、[`no-mixed-srcset-descriptors`](/docs/rules/no-mixed-srcset-descriptors)、[`sizes-auto-requires-lazy-loading`](/docs/rules/sizes-auto-requires-lazy-loading)とともに分割されました。
 
@@ -55,4 +55,4 @@ description: srcset付きの後続兄弟を持つsource要素にmediaまたはty
 
 ## 参照
 
-- [HTML Living Standard - The source element](https://html.spec.whatwg.org/multipage/embedded-content.html#the-source-element)
+- [HTML Living Standard - The source element](https://momdo.github.io/html/embedded-content.html#the-source-element)

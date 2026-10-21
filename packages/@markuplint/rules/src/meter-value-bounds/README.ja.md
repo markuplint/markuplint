@@ -5,7 +5,7 @@ description: meter要素の属性 (min, max, value, low, high, optimum) 間の H
 
 # `meter-value-bounds`
 
-[HTML Living Standard §4.10.14 (the meter element)](https://html.spec.whatwg.org/multipage/form-elements.html#the-meter-element) が定める不等式を検証します。
+[HTML Living Standard §4.10.14 (the meter element)](https://momdo.github.io/html/form-elements.html#the-meter-element) が定める不等式を検証します。
 
 - `min ≤ value ≤ max`
 - `min ≤ low ≤ max`（`low` 指定時）

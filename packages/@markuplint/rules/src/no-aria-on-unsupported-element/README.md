@@ -5,7 +5,9 @@ description: Disallows ARIA attributes on elements that don't support ARIA at al
 
 # `no-aria-on-unsupported-element`
 
-Disallows the `role` attribute and any `aria-*` attribute on an element whose HTML specification data marks it as not supporting ARIA attributes at all, per [ARIA in HTML's document conformance requirements](https://w3c.github.io/html-aria/#docconformance).
+Disallows the `role` attribute and any `aria-*` attribute on an element whose HTML specification data marks it as not supporting ARIA attributes at all, per [ARIA in HTML's document conformance requirements](https://www.w3.org/TR/html-aria/#docconformance).
+
+The names of ARIA attributes are compared as [`no-unknown-attr`](/docs/rules/no-unknown-attr#attribute-name-case) compares names (see its "Attribute name case" section): `ARIA-LABEL` is the same attribute as `aria-label` where the DOM treats attribute names as case-insensitive, such as on an HTML element, and a different one where it does not, such as on an `<svg>` element in JSX.
 
 :::info
 

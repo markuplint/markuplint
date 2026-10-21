@@ -15,15 +15,23 @@
  *
  * - {@link analyzeImports} — Extracts import bindings from component script blocks
  *   (Vue `<script setup>`, Vue Options API, Svelte, Astro, MDX)
- * - {@link resolveComponentImport} — Resolves a component name to its import binding,
- *   including Vue kebab-case → PascalCase normalization
+ * - {@link resolveComponentImport} — Resolves a component name to its import binding. In a Vue
+ *   file (pass its path) a tag is looked up as Vue does: as written, camelized, then capitalized
+ *   (`<foo-bar>` and `<fooBar>` are `import FooBar`); elsewhere a kebab-case name is looked up as its PascalCase
  * - {@link resolveBarrelExport} — Resolves barrel file (`index.ts`/`index.js`) re-exports
  *   to original source modules. Call this separately after `analyzeImports` when an import
  *   source points to a directory with a barrel index.
  *
- * Dynamic imports (`import('./path')`) are included in bindings with `type: 'dynamic'`
- * and `localName: '*'` as a sentinel. Check `type === 'dynamic'` to distinguish from
- * namespace imports.
+ * Dynamic imports (`import('./path')`) are included in bindings with `type: 'dynamic'`.
+ * One that is assigned to a name (`const Item = lazy(() => import('./Item'))`) or read into
+ * a variable (`const { Item } = await import('./Item')`) is bound under that name; otherwise
+ * `localName` is the sentinel `'*'`. Check `type === 'dynamic'`
+ * to distinguish from namespace imports. The whole module read into a variable
+ * (`const UI = await import('./ui')`) is a `type: 'namespace'` binding, as `import * as UI` is.
+ * Its members are the member tags `UI.Item`, and `UI.default` for a default export. A namespace of a
+ * template component file (`import * as m from './Item.svelte'`, `{#await import('./Item.svelte') then m}`)
+ * has one member, `m.default`, the file's own component: a tag with a dot is a component, and the file
+ * has no export table to name another.
  *
  * ## Lint-time disambiguation
  *
@@ -97,4 +105,5 @@ export type {
 	ComponentScanResult,
 	ComponentScanAttr,
 	ComponentScanScriptSource,
+	ComponentScanTemplateImport,
 } from './component-scanner.js';

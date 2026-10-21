@@ -2,7 +2,7 @@ import type { MLASTHTMLAttr } from '@markuplint/ml-ast';
 import type { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
 
 import { compileDirectivePatterns, resolveDirective } from '@markuplint/ml-spec';
-import { searchIDLAttribute } from '@markuplint/parser-utils';
+import { searchIDLAttribute, suggestIDLAttribute } from '@markuplint/parser-utils';
 
 /**
  * What an attribute of the AST turns out to be once the spec is applied to it.
@@ -63,8 +63,12 @@ export function resolveAttrNames(
 		}
 		// Set candidate for IDL naming suggestions (e.g., tabindex → tabIndex in JSX).
 		// Only in 'idl' mode (React). In 'both' mode (Svelte), both content and IDL names are accepted.
-		if (!resolution && idlPropName && specs.acceptedAttrNames === 'idl' && rawName !== idlPropName) {
-			candidate = idlPropName;
+		if (!resolution && specs.acceptedAttrNames === 'idl') {
+			// The property of a spelling that is not its own (`TABINDEX`) is suggested as well
+			const suggested = idlPropName ?? suggestIDLAttribute(potentialName);
+			if (suggested && rawName !== suggested) {
+				candidate = suggested;
+			}
 		}
 	}
 

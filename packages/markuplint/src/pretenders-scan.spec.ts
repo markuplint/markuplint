@@ -1,6 +1,8 @@
+import { mkdir, mkdtemp, realpath, rm, writeFile } from 'node:fs/promises';
+import os from 'node:os';
 import path from 'node:path';
 
-import { describe, test, expect } from 'vitest';
+import { afterEach, beforeEach, describe, test, expect } from 'vitest';
 
 import { setGlobal } from './global-settings.js';
 import { mlTest, mlTestFile } from './testing-tool/index.js';
@@ -300,5 +302,141 @@ describe('pretenders.scan integration', () => {
 			});
 			expect(violations.filter(v => v.ruleId === 'permitted-contents')).toStrictEqual([]);
 		});
+	});
+});
+
+/**
+ * A component loaded with `lazy(() => import('./b/Item'))` is matched to the file it loads, as a
+ * static `import { Item } from './b/Item'` is, when same-named components are known up front.
+ * `a/Item.tsx` is a void element (`<img>`), `b/Item.tsx` a `<div>`: children are a
+ * `permitted-contents` violation for the first only.
+ */
+describe('pretenders.scan with a lazily loaded component of a shared name (issue #4292)', () => {
+	const jsxParserConfig = { parser: { '\\.tsx$': '@markuplint/jsx-parser' } };
+	let tmpDir: string;
+
+	beforeEach(async () => {
+		// A real path: module resolution returns one, and macOS' tmpdir is a symlink (Windows' may be an 8.3 name).
+		tmpDir = await realpath(await mkdtemp(path.join(os.tmpdir(), 'pretenders-scan-lazy-')));
+		await mkdir(path.join(tmpDir, 'a'));
+		await mkdir(path.join(tmpDir, 'b'));
+		await writeFile(
+			path.join(tmpDir, 'a', 'Item.tsx'),
+			'export const Item = () => <img src="x.png" />;\nexport default Item;',
+		);
+		await writeFile(path.join(tmpDir, 'b', 'Item.tsx'), 'export const Item = () => <div />;\nexport default Item;');
+	});
+
+	afterEach(async () => {
+		await rm(tmpDir, { recursive: true, force: true });
+	});
+
+	async function lint(lines: readonly string[]) {
+		const target = path.join(tmpDir, 'Page.tsx');
+		await writeFile(
+			target,
+			[...lines, 'export const Page = () => <div><Item><span>c</span></Item></div>;'].join('\n'),
+		);
+		const { violations } = await mlTestFile(target, {
+			...jsxParserConfig,
+			// One entry per file: a pattern built with `path.join` has backslashes on Windows, which a glob reads as escapes.
+			pretenders: {
+				scan: [{ files: path.join(tmpDir, 'a', 'Item.tsx') }, { files: path.join(tmpDir, 'b', 'Item.tsx') }],
+			},
+			rules: { 'permitted-contents': true },
+		});
+		return violations.filter(v => v.ruleId === 'permitted-contents');
+	}
+
+	test('a static import of b/Item is not reported', async () => {
+		expect(await lint(["import { Item } from './b/Item';"])).toStrictEqual([]);
+	});
+
+	test('a static import of a/Item is reported', async () => {
+		expect(await lint(["import { Item } from './a/Item';"])).toStrictEqual([
+			expect.objectContaining({ raw: '<Item>' }),
+		]);
+	});
+
+	test('lazy of b/Item is not reported, as the static import', async () => {
+		expect(
+			await lint(["import { lazy } from 'react';", "const Item = lazy(() => import('./b/Item'));"]),
+		).toStrictEqual([]);
+	});
+
+	test('lazy of a/Item is reported, as the static import', async () => {
+		expect(
+			await lint(["import { lazy } from 'react';", "const Item = lazy(() => import('./a/Item'));"]),
+		).toStrictEqual([expect.objectContaining({ raw: '<Item>' })]);
+	});
+
+	test('lazy of b/Item through `.then` of its named export is not reported', async () => {
+		expect(
+			await lint([
+				"import { lazy } from 'react';",
+				"const Item = lazy(() => import('./b/Item').then(m => ({ default: m.Item })));",
+			]),
+		).toStrictEqual([]);
+	});
+});
+
+/**
+ * The same for Vue: `defineAsyncComponent(() => import('./b/Item.vue'))` is matched to `b/Item.vue`.
+ * `a/Item.vue` renders a void element (`<img>`), `b/Item.vue` a `<div>` with a slot.
+ */
+describe('pretenders.scan with an async Vue component of a shared name (issue #4292)', () => {
+	const vueParserConfig = { parser: { '\\.vue$': '@markuplint/vue-parser' } };
+	let tmpDir: string;
+
+	beforeEach(async () => {
+		tmpDir = await realpath(await mkdtemp(path.join(os.tmpdir(), 'pretenders-scan-async-')));
+		await mkdir(path.join(tmpDir, 'a'));
+		await mkdir(path.join(tmpDir, 'b'));
+		await writeFile(path.join(tmpDir, 'a', 'Item.vue'), '<template><img src="x.png" /></template>');
+		await writeFile(path.join(tmpDir, 'b', 'Item.vue'), '<template><div><slot /></div></template>');
+	});
+
+	afterEach(async () => {
+		await rm(tmpDir, { recursive: true, force: true });
+	});
+
+	async function lint(script: string) {
+		const target = path.join(tmpDir, 'Page.vue');
+		await writeFile(
+			target,
+			`<script setup>\n${script}\n</script>\n\n<template><div><Item><span>c</span></Item></div></template>`,
+		);
+		const { violations } = await mlTestFile(target, {
+			...vueParserConfig,
+			pretenders: {
+				scan: [{ files: path.join(tmpDir, 'a', 'Item.vue') }, { files: path.join(tmpDir, 'b', 'Item.vue') }],
+			},
+			rules: { 'permitted-contents': true },
+		});
+		return violations.filter(v => v.ruleId === 'permitted-contents');
+	}
+
+	// The same Vue file scanned from both entries: a positive control that the scan finds the files, so
+	// that the "not reported" assertions below cannot pass because no pretender exists.
+	test('an async component of a/Item.vue is reported', async () => {
+		expect(await lint("const Item = defineAsyncComponent(() => import('./a/Item.vue'))")).toStrictEqual([
+			expect.objectContaining({ raw: '<Item>' }),
+		]);
+	});
+
+	test('an async component of b/Item.vue is not reported', async () => {
+		expect(await lint("const Item = defineAsyncComponent(() => import('./b/Item.vue'))")).toStrictEqual([]);
+	});
+
+	test('an async component of a/Item.vue is reported', async () => {
+		expect(await lint("const Item = defineAsyncComponent(() => import('./a/Item.vue'))")).toStrictEqual([
+			expect.objectContaining({ raw: '<Item>' }),
+		]);
+	});
+
+	test('the loader option form of b/Item.vue is not reported', async () => {
+		expect(await lint("const Item = defineAsyncComponent({ loader: () => import('./b/Item.vue') })")).toStrictEqual(
+			[],
+		);
 	});
 });

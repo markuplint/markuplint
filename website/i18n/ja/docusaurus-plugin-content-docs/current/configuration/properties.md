@@ -198,6 +198,10 @@ prop: value
 
 **React**や**Vue**などを使っている場合、Markuplintのパーサーはコンポーネントに小文字の名前を付けると、ネイティブのHTML要素として検出します。ほとんどの場合、コンポーネントは大文字から命名する必要がありますが、パーサプラグインごとに特定のパターンがあります（例：Vue: [Built-in Special Elements](https://vuejs.org/api/built-in-special-elements.html)）。もし、異なる命名パターンが必要な場合は、`authoredElementName`オプションを指定することで解決できます。デフォルトは`undefined`です。
 
+指定したパターンはパーサ自身のパターンに**追加されるのではなく、置き換わります**。たとえば`["custom"]`を指定すると、パーサが自身のパターンでコンポーネントとみなしていたタグ（Vueの`<FooBar>`など）は、指定したパターンにも一致しない限り、コンポーネントではなくなります。文字列は名前として扱い、タグ名全体に一致します（`"custom"`は`<custom>`に一致し、`<my-custom>`には一致しません）。正規表現リテラルの形式の文字列（`"/^My/"`。フラグは`g`と`i`まで）はその正規表現として扱います。JavaScriptの設定ファイルでは、`RegExp`や関数も指定できます。以前は、文字列をタグ名の一部に一致する正規表現として扱っていました。そのつもりで`"^My"`と書いていた場合は、`"/^My/"`と書き直してください。
+
+JSXとMDXでは、JSXコンパイラの判定どおり、小文字のASCII文字で始まる名前か、`-`を含む名前でなければコンポーネントです。`.`を含む名前はメンバー式です。`<$Ui>`・`<_Ui>`・`<Éa>`・`<Tabs.Root>`はコンポーネントです。`-`を含む名前は組み込み要素の名前です。`<Foo-bar>`はHTML要素、`<my-widget.v2>`はカスタム要素で、以前のバージョンはどちらもコンポーネントとみなしていました。以前の判定を保ちたい場合は、パーサーの規則を置き換える`authoredElementName`に、以前の規則を指定してください。`["/^[A-Z]|\\./"]`は、大文字で始まる名前と`.`を含む名前をコンポーネントとみなします。
+
 ```json class=config
 {
   "parserOptions": {
@@ -859,7 +863,9 @@ interface Config {
 対象コンポーネントにマッチさせるための[**セレクタ**](/docs/guides/selectors)を受け取ります。必須です。
 
 :::caution 標準 HTML 要素は対象外
-セレクタが標準 HTML / SVG 要素にマッチする pretender エントリは暗黙的に無視されます。pretender は custom component（Web Components、JSX/Vue/Svelte 等の authored component、または HTML パースで spec エントリがない不明な名前）のみが対象です。`<button>` や `<marquee>` を指定しても何も起きません（[移行ガイド](/docs/migration/v4-to-v5/config#pretender-が標準-html-要素には適用されなくなった)を参照）。
+セレクタが標準 HTML / SVG / MathML 要素にマッチする pretender エントリは暗黙的に無視されます。pretender は custom component（Web Components、JSX/Vue/Svelte 等の authored component、または HTML パースで spec エントリがない不明な名前）のみが対象です。`<button>` や `<h1>` を指定しても何も起きません（[移行ガイド](/docs/migration/v4-to-v5/config#pretender-が標準-html-要素には適用されなくなった)を参照）。
+
+Vue ドキュメントでは、何が標準かは Vue 自身のネイティブタグのリストで決まります。リストにないタグ（`<marquee>`、`<search>`）は、コンポーネントがインポートまたは登録されていれば Vue がコンポーネントとして解決するため、pretender が適用されます。
 :::
 
 #### `as`
@@ -991,6 +997,12 @@ const MyPicture = () => {
 - **`{ "fromAttr": "name" }`**: コンポーネントが持つ属性の値です。その属性が式（`<MyButton kind={kind} />`）であれば、値も動的になります。コンポーネントがその属性を持たない場合、要素はその属性を空の値で持ちます。
 - **`{ "fromAttr": "name", "omitIfMissing": true }`**: 同上ですが、コンポーネントがその属性を持たない場合、要素もその属性を持ちません。省略可能なpropをそのまま渡すコンポーネントが描画する結果です（`<button type={kind}>`は`kind`が`undefined`のとき`type`を持ちません）。
 - **`{ "dynamic": true }`**: 属性は存在しますが、値はコンポーネントがレンダリングされるまで分からない場合（例：`tabIndex={selected ? 0 : -1}`）に指定します。ルールは動的な値として扱い、検証しません。
+
+`fromAttr`は、使用箇所の属性を、それを描画するフレームワークの規則で探します。Vueでは`my-label`と`myLabel`は同じpropですが、`mylabel`は別のpropです。JSXではpropを完全一致で照合するため、`Label`と`label`は別のpropです。HTMLベースの構文では、DOMが属性名を比較するのと同じく、ASCIIの大文字・小文字を区別せずに比較します。`fromAttr`には、コンポーネントがpropを宣言している綴りのとおりに名前を書いてください。
+
+:::caution[実験的機能]
+`fromAttr`が属性を探す方法は**実験的**であり、将来のリリースで変更される可能性があります。
+:::
 
 #### `as.aria`
 
@@ -1177,6 +1189,8 @@ const Details = ({ children }) => <details>{children}</details>;
 - `.js`, `.jsx`, `.ts`, `.tsx` → JSXスキャナー
 - `.vue`, `.svelte`, `.astro` → テンプレートスキャナー
 
+コンポーネントは宣言の名前（`export const Button = …`、`function Button() {…}`）で名前がつきます。名前を持たないコンポーネント、つまりVue・Svelte・Astroのファイルと、JSX/TSXの名前のないdefault export（`export default () => …`、`export default function () {…}`、`export default memo(() => …)`）は、ファイル名をPascalCaseにした名前になります。`button-group.tsx`は`ButtonGroup`になり、`index`ファイルはディレクトリ名をとります（`Card/index.tsx`は`Card`）。ファイル名がJavaScriptの識別子にならない場合（`[id].vue`、`+page.svelte`、`404.tsx`、`Button.client.vue`）、そのコンポーネントは名前を持たず、pretenderになりません。
+
 ```json class=config
 {
   "pretenders": {
@@ -1199,7 +1213,7 @@ const Details = ({ children }) => <details>{children}</details>;
 
 ##### `scan[].ignoreComponentNames`
 
-スキャン結果から除外するコンポーネント名の配列。省略可能です。
+スキャン結果から除外するコンポーネント名の配列。ファイル名からつけた名前も対象です。省略可能です。
 
 #### `data`（オブジェクト形式） {#pretenders/data}
 
@@ -1253,6 +1267,8 @@ importをたどる段数は、lint対象ファイルから最大8段です。JS/
 
 - watchモードやエディタセッションでは、`auto`（と`scan`）が読み込んだコンポーネントファイルも設定ファイルとあわせて監視されるため、いずれかを編集すると、それを使っているファイルが再lintされます。監視されないため、設定を変更するまで反映されないのは、まだ存在しないコンポーネントファイル（`scan`のglobに新しく一致したファイル、削除後に戻ってきたファイルを含みます）、`node_modules`配下のファイル、`files`と`imports`のファイルです。lint対象のファイル自身の編集（importの追加・削除・変更）は、そのファイルの次回のlintに反映されます。
 - `auto`を指定できるのは`pretenders`の**オブジェクト形式**のみです。配列形式の省略記法では指定できません。
+
+コンポーネントは、lint対象のファイルがつけた名前で解決されます。名前を変えたnamed import（`import { Named as A }`）、任意の名前で受けたdefault import（`import B from './DefNamed'`）、barrelファイルで名前を変えて再exportされたコンポーネントが対象です。`lazy()`・`defineAsyncComponent()`・`dynamic()`・`loadable()`・`Loadable()`の結果を変数（またはVueの`components`のキー、あるいは`memo(lazy(...))`のような別の呼び出しを経由して）に代入したコンポーネント、および、`await`した動的`import()`を変数に受けたコンポーネント（`const { Item } = await import('./Item')`）は、そのexportをstatic importしたときと同じように（`lazy()`などはdefault export、`await`した`import()`は受けたexport）、その名前で、読み込むファイルに対応づけられます。`useMemo(() => import('./Item'), [])`のように、これらのローダーではない呼び出しは、名前を付けません。プロジェクト独自のヘルパー（`lazyWithRetry`など）も同じです。名前で対応づけたいときは、これらのローダーで読み込むか、`await`した`import()`から受けてください。ローダーは、メンバーとして呼び出された場合（`React.lazy()`）や、ファイルがimportで別名を付けた場合（`import { lazy as l } from 'react'`、または`next/dynamic`・`@loadable/component`のdefault importを任意の名前で受けた場合）も対象です。ローダー関数は、`import()`を第1引数に取る呼び出しを経由してもよく（`lazy(() => delayForDemo(import('./Item')))`）、1つのexportを返してもよく（`.then(m => m.Item)`、`.then(({ Item }) => ({ default: Item }))`。`.then(m => m)`はdefault export。第2引数に拒否ハンドラーがある`.then`は名前を付けません）、最初の文でモジュールを読み、2番目の文で返してもかまいません（`async () => { const m = await import('./Item'); return m; }`）。ローダー関数は、ローダーの呼び出しが受け取る名前に保持されていてもかまいません（`const load = () => import('./Item'); const Foo = lazy(load);`、`function load() { return import('./Item'); }`、`{ loader: load }`）。その場合、コンポーネントは、そのような呼び出しの結果を代入した変数のそれぞれの名前で解決されます。同じ関数を受け取る呼び出しが2つあれば、2つの名前が付きます。宣言のあとで値を代入する名前（`let load; load = () => import('./Item')`、または`let load = …; load = …`）はたどりません。Svelteのテンプレートでは、`{#await import('./Item.svelte') then { default: Item }}`は`const { default: Item } = await import('./Item.svelte')`と同じように`Item`を対応づけ、`then m`は`const m = await import('./Item.svelte')`と同じようにモジュール全体を対応づけます。Vueのファイルで`lang="tsx"`または`lang="jsx"`を宣言したスクリプトは`.tsx`ファイルと同じように読まれるため、JSXを含んでいてもimportが見つかります。MDXファイルのESMに、es-module-lexerで読めないJSXが含まれている場合は、TypeScriptパーサーがTSXとして読みます。ただし、TypeScriptパーサーが構文エラーを見つけたスクリプトは、importがないものとして扱われます。ローダーは名前だけで判定されます（`x.lazy(...)`も対象で、importしているモジュールは確認しません）。そのため、他のライブラリの`lazy`や`dynamic`という名前の関数も、ローダーとみなされます。ファイルが別の名前で呼び出すローダーは、その名前の出どころまでたどられます。代入で作った別名（`const l = React.lazy`、`const { lazy: l } = React`、`const d = require('next/dynamic')`）は、`import { lazy as l }`と同じようにローダーです。名前は呼び出しを囲む最も近い宣言で判断されるため、そのような名前で別のものを保持する関数・引数・変数（`function dynamic(...) {}`。ファイル直下でも関数の中でも）は、ローダーとみなされません。ファイルがローダーの呼び出しをexportしている場合（`export default lazy(() => import('./b/Item'))`、`export const Slow = lazy(...)`）、別のファイルがどの名前でimportしても、読み込み先のモジュールのコンポーネントに解決されます。変数の名前は、コンポーネント名として使える名前（小文字で始まる名前は下記のとおり対象外）であれば何でもかまいません。namespace import（`import * as UI`、`const UI = await import('./ui')`のようにモジュール全体を変数に受けたもの、またはモジュールが`export * as UI from`でexportするnamespace）は、そのnamespaceがexportするコンポーネントごとに、メンバータグ（`<UI.Button>`、入れ子のnamespaceなら`<UI.Sub.Button>`）の名前で対応づけられます。セレクタでは`.`がクラスの始まりと解釈されるため、セレクタは`UI\.Button`と書かれます。`default`もメンバーです（defaultエクスポートを持つモジュールでは`<UI.default>`。素の`export *`は`default`を引き継ぎません）。Svelte・Vue・Astroのファイルのnamespace（`import * as m from './Item.svelte'`）では、そのファイルのただ1つのコンポーネントが`<m.default>`になります。`import * as UI from './ui'; export { UI }`のように再exportされたnamespaceも対象です。ドットを含むタグは頭文字の大小にかかわらずコンポーネントなので、namespaceの名前は頭文字では判断されません。namespaceではなく小文字で始まる名前（`import myButton from './Foo'`）には適用されません。JSX・MDX・Svelte・Astroでは、小文字で始まるタグは変数への参照ではなくHTML要素であり、その名前でコンポーネントを登録すると`<myButton>`がコンポーネントとして扱われてしまうためです。Vueはkebab-caseのタグをPascalCaseでimportしたコンポーネントに解決し、PascalCaseを推奨しているため、小文字の名前はVueでも対象外です。名前は、最大7段の再export（`export { X } from`、`export * from`、`export * as X from`の連鎖。宣言しているファイルが連鎖の8番目のファイルです）をたどって解決されます。それより先にある名前は解決されません。この上限は固定で、たどる範囲の`depth`とは別です。`scan`にはlint対象のファイルがないため、その名前は、コンポーネントが宣言されている名前になります（名前を持たないコンポーネントは[`scan`](#pretenders/scan)を参照）。
 
 たどった先で解決できないコンポーネント（`Tabs.Root`のように`node_modules`にあるもの、`depth`の上限より先にあるもの）に行き当たった場合、そのコンポーネントが何を描画するかは分かりません。そのため、ラッパーは同じ名前のHTML要素としてではなく、直接書かれたコンポーネントと同じように扱われます。これは、先頭が大文字、または`.`を含むすべての名前に適用され、手書きの`as`も含みます。HTML要素の名前は小文字で書いてください。
 

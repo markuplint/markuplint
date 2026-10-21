@@ -5,6 +5,7 @@ import { createRule } from '@markuplint/ml-core';
 import { check, isEnum, isPattern } from '@markuplint/types';
 
 import { attrCheck } from '../attr-check.js';
+import { createNameOptionLookup } from '../helpers.js';
 
 import meta from './meta.js';
 
@@ -17,6 +18,10 @@ type Option = {
 	 * by `no-unknown-attr` / `no-disallowed-attr` / `no-invalid-attr-value`)
 	 * already restricts. This is the rule's only concern — narrow, purely
 	 * user-defined denylisting, independent of spec conformance.
+	 *
+	 * A name is compared as the DOM compares attribute names, so it is ASCII case-insensitive in the
+	 * HTML syntax and for an HTML element that code sets through the DOM API (JSX, MDX, Vue), exact for an
+	 * SVG/MathML element there, and a component's props are not folded.
 	 *
 	 * @since 3.7.0
 	 */
@@ -33,31 +38,14 @@ type Attr = {
 	value: AttributeType | Pattern;
 };
 
-function disallowedTypes(disallowAttrs: Option['disallowAttrs']): Map<string, AttributeType | Pattern | 'Any'> {
-	const map = new Map<string, AttributeType | Pattern | 'Any'>();
-	if (!disallowAttrs) {
-		return map;
-	}
-	if (Array.isArray(disallowAttrs)) {
-		for (const disallowAttr of disallowAttrs) {
-			if (typeof disallowAttr === 'string') {
-				map.set(disallowAttr, 'Any');
-				continue;
-			}
-			map.set(disallowAttr.name, disallowAttr.value);
-		}
-	} else {
-		for (const [name, type] of Object.entries(disallowAttrs)) {
-			map.set(name, type);
-		}
-	}
-	return map;
-}
-
 export default createRule<boolean, Option>({
 	meta: meta,
 	defaultOptions: {},
 	async verify({ document, report, t }) {
+		// Whether an entry of `disallowAttrs` is the attribute is up to the attribute: the DOM decides
+		// whether two spellings are one name (`MLAttr#isNamedBy`).
+		const lookupDisallowed = createNameOptionLookup<AttributeType | Pattern | 'Any'>('Any');
+
 		await document.walkOn('Attr', attr => {
 			if (attr.isDirective) {
 				return;
@@ -68,7 +56,7 @@ export default createRule<boolean, Option>({
 			const valueNode = attr.valueNode;
 			const attrName = attr.nameNode;
 
-			const disallowValue = disallowedTypes(attr.rule.options.disallowAttrs).get(name);
+			const disallowValue = lookupDisallowed(attr.rule.options.disallowAttrs, attr);
 			if (disallowValue === undefined) {
 				return;
 			}

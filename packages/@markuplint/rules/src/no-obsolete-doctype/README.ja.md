@@ -22,7 +22,7 @@ DOCTYPEが完全に欠落している場合は[`require-doctype`](/docs/rules/re
 ```
 
 :::note
-[HTML Living Standard §13.1.1](https://html.spec.whatwg.org/multipage/syntax.html#the-doctype)は、システムによる古いパーサーとの互換性のために、以下のlegacy文字列の1形式のみを準拠する例外として許容しています:
+[HTML Living Standard §13.1.1](https://momdo.github.io/html/syntax.html#the-doctype)は、システムによる古いパーサーとの互換性のために、以下のlegacy文字列の1形式のみを準拠する例外として許容しています:
 
 ```html
 <!DOCTYPE html SYSTEM "about:legacy-compat">

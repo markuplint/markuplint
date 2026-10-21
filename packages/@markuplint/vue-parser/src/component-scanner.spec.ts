@@ -142,6 +142,33 @@ import { ref } from 'vue';
 			expect(result!.content).toContain("import { ref } from 'vue'");
 		});
 
+		test.each([
+			['<script setup lang="tsx">', 'tsx'],
+			["<script setup lang='jsx'>", 'jsx'],
+			['<script lang=ts setup>', 'ts'],
+			['<script setup  lang = "tsx" >', 'tsx'],
+		])('reports the `lang` of %s', (startTag, lang) => {
+			const result = componentScanner.extractScriptSource(`${startTag}\nconst a = 1;\n</script>`);
+			expect(result!.lang).toBe(lang);
+		});
+
+		test.each([
+			['<script setup>'],
+			['<script setup data-lang="tsx">'],
+			['<script setup lang>'],
+			['<script setup data-x="a lang=\'tsx\' b">'],
+			['<script setup data-x=\'a lang="tsx"\'>'],
+		])('reports no `lang` for %s', startTag => {
+			const result = componentScanner.extractScriptSource(`${startTag}\nconst a = 1;\n</script>`);
+			expect(result).not.toBeNull();
+			expect(result).not.toHaveProperty('lang');
+		});
+
+		test('reports the `lang` in the scan result too', () => {
+			const source = '<script setup lang="tsx">\nconst a = 1;\n</script>\n<template><div /></template>';
+			expect(componentScanner.scanComponent(source)!.scriptSource!.lang).toBe('tsx');
+		});
+
 		test('returns null when no <script setup> exists', () => {
 			const source = '<template><div /></template>';
 			const result = componentScanner.extractScriptSource(source);

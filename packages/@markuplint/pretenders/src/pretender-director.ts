@@ -1,11 +1,11 @@
 import type { ImportBinding } from './import-resolver/types.js';
-import type { Identifier, Identity, ImportPath } from './types.js';
+import type { Identifier, Identity, ImportPath, PretenderScanEntry } from './types.js';
 
 import { dependencyMapper } from './dependency-mapper.js';
 
 export type PretenderDirectorMap = Map<
 	string,
-	[identifier: Identifier, identity: Identity, filePath?: string, sourceFile?: string]
+	[identifier: Identifier, identity: Identity, filePath?: string, sourceFile?: string, localName?: string]
 >;
 
 /**
@@ -14,7 +14,6 @@ export type PretenderDirectorMap = Map<
  */
 export class PretenderDirector {
 	#map: PretenderDirectorMap = new Map();
-	#nameIndex: Map<Identifier, string> = new Map();
 	#importsByFile: Map<string, readonly ImportBinding[]> = new Map();
 
 	/**
@@ -28,6 +27,7 @@ export class PretenderDirector {
 		line: number,
 		col: number,
 		importPath?: ImportPath,
+		localName?: string,
 	) {
 		const key = importPath ?? identifier;
 
@@ -35,11 +35,7 @@ export class PretenderDirector {
 			return;
 		}
 
-		this.#map.set(key, [identifier, identity, `${filePath}:${line}:${col}`, filePath]);
-
-		if (!this.#nameIndex.has(identifier)) {
-			this.#nameIndex.set(identifier, key);
-		}
+		this.#map.set(key, [identifier, identity, `${filePath}:${line}:${col}`, filePath, localName]);
 	}
 
 	/**
@@ -61,13 +57,21 @@ export class PretenderDirector {
 	 *   falling back to disk.
 	 * @param dependencies - A sink for the files read while chasing imports
 	 *   (see `PretenderScanOptions#dependencies`)
+	 * @param entry - The file being linted, whose names for its imports are added
+	 *   as pretenders (see {@link PretenderScanEntry})
 	 */
-	getPretenders(cwd?: string, sources?: ReadonlyMap<string, string>, dependencies?: Set<string>) {
-		return dependencyMapper(this.#map, this.#nameIndex, {
+	getPretenders(
+		cwd?: string,
+		sources?: ReadonlyMap<string, string>,
+		dependencies?: Set<string>,
+		entry?: PretenderScanEntry,
+	) {
+		return dependencyMapper(this.#map, undefined, {
 			importsByFile: this.#importsByFile,
 			cwd,
 			sources,
 			dependencies,
+			entry,
 		});
 	}
 }

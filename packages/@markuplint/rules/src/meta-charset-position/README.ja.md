@@ -5,7 +5,7 @@ description: 文字エンコーディング宣言がドキュメント先頭1024
 
 # `meta-charset-position`
 
-[HTML Living Standard §4.2.5.4 (Specifying the document's character encoding)](https://html.spec.whatwg.org/multipage/semantics.html#charset) により、文字エンコーディング宣言を含む要素（`charset` 属性を持つ `meta` 要素、または Encoding declaration state にある `http-equiv` 属性を持つ `meta` 要素）は、ドキュメントの先頭1024バイト以内に完全にシリアライズされていなければなりません。
+[HTML Living Standard §4.2.5.4 (Specifying the document's character encoding)](https://momdo.github.io/html/semantics.html#charset) により、文字エンコーディング宣言を含む要素（`charset` 属性を持つ `meta` 要素、または Encoding declaration state にある `http-equiv` 属性を持つ `meta` 要素）は、ドキュメントの先頭1024バイト以内に完全にシリアライズされていなければなりません。
 
 この上限は文字数ではなくバイト数です。宣言より前のコンテンツは UTF-8 エンコード後のバイト数で計測されるため、マルチバイト文字は実際のエンコードサイズ分としてカウントされます。
 

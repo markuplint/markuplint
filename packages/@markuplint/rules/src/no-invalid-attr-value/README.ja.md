@@ -33,6 +33,8 @@ description: 属性の値が仕様(あるいはカスタムルール)が要求�
 
 ## 詳細
 
+属性名はDOMが比較するのと同じ方法で比較します。これは構文と要素によって変わり、HTML構文では`TYPE`は`type`です。詳細は[属性名の大文字・小文字](/docs/rules/no-unknown-attr#attribute-name-case)を参照してください。`allowAttrs`の名前も同じ方法で比較します。
+
 ### `allowAttrs`オプションの設定 {#setting-allow-attrs-option}
 
 [`no-unknown-attr`](/docs/rules/no-unknown-attr#setting-allow-attrs-option)が受け取る同名のオプションと同じ形式です。このルールは、そこで指定された`value`の型・パターンを使って属性値を検証します。両方のルールに同じ`allowAttrs`を設定してください。

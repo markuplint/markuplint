@@ -10,7 +10,7 @@ import type { Ruleset } from '../../ruleset/index.js';
 import type { MLSchema } from '../../types.js';
 import type { Walker } from '../helper/walkers.js';
 import type { MLToken } from '../token/token.js';
-import type { EndTagType, MLASTDocument, MLASTNodeTreeItem, MLASTParseError } from '@markuplint/ml-ast';
+import type { AttrNameRoute, EndTagType, MLASTDocument, MLASTNodeTreeItem, MLASTParseError } from '@markuplint/ml-ast';
 import type { PlainData, Pretender, RuleCommonSettings, RuleConfigValue } from '@markuplint/ml-config';
 import type { ARIAVersion, MLMLSpec } from '@markuplint/ml-spec';
 
@@ -21,10 +21,11 @@ import {
 	mayBeFocusable,
 	getComputedAriaProps,
 	isExposed,
+	getSpecByTagName,
 	ARIA_RECOMMENDED_VERSION,
 } from '@markuplint/ml-spec';
 
-import { ConfigParserError } from '@markuplint/parser-utils';
+import { ConfigParserError, isComponentName } from '@markuplint/parser-utils';
 import { InvalidSelectorError } from '@markuplint/selector';
 
 import { log as coreLog } from '../../debug.js';
@@ -85,6 +86,8 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	readonly #astNodeMap: ReadonlyMap<string, MLASTNodeTreeItem>;
 
 	readonly #filename?: string;
+
+	readonly #isNativeTagRule?: (name: string) => boolean;
 
 	/**
 	 * Whether this document represents a fragment rather than a complete document.
@@ -151,15 +154,61 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	readonly tagNameCaseSensitive: boolean;
 
 	/**
-	 * Whether attribute names are case-sensitive in the source language (JSX props).
-	 * When false (default for HTML), attribute names are compared case-insensitively.
+	 * Whether a component is referred to by any spelling of its name: `<FooBar>`, `<fooBar>` and
+	 * `<foo-bar>` are one component (Vue). A type selector reads it through
+	 * {@link MLElement.tagNameKind}.
+	 */
+	readonly componentNameVariants: boolean;
+
+	/**
+	 * Whether a name is a reference to a component, not the name of an element, judged by its form
+	 * alone in the language of the parser (`Tabs.Root` is, `div` is not). The target of a pretender
+	 * is typed by it. It is the rule of the parser (`MLParser#isComponentName`, a method of the parser's
+	 * class, not of this one); the form that most languages share (`isComponentName` of
+	 * `@markuplint/parser-utils`) when the parser has none.
+	 */
+	readonly isComponentName: (name: string) => boolean;
+
+	/**
+	 * Whether a tag is a native element: the rule of the parser (`MLParser#isNativeTag`) when it has one, which
+	 * takes the name as written and knows no namespace, else the specification (`getSpecByTagName`) of the
+	 * name in its namespace. {@link MLElement.tagNameKind} and the guard of {@link MLElement.pretending}
+	 * read it, so that a type selector and a pretender agree on what a tag is.
 	 *
-	 * Known limitation: only the `case-sensitive-attr-name` rule honors this flag.
-	 * Attribute lookup, attribute selectors and duplicate-attribute detection still
-	 * compare names case-insensitively, unlike {@link MLDocument.tagNameCaseSensitive},
-	 * which also drives element selector matching.
+	 * Rules keyed on the specification (deprecated / obsolete elements) do not read it. Nor does the
+	 * element that a pretender stands for (`as`): the name is the element itself there, not a tag to resolve,
+	 * so it is judged by the specification and never passes through this method.
+	 *
+	 * @param localName - The name of the tag as the author wrote it, never the `as` of a pretender
+	 * @param namespaceURI - The namespace of the element; not read when the parser has a rule, as Vue's is the same for every namespace
+	 * @returns Whether the document takes the tag for a native element
+	 */
+	isNativeTag(localName: string, namespaceURI: string): boolean {
+		if (this.#isNativeTagRule) {
+			return this.#isNativeTagRule(localName);
+		}
+		return getSpecByTagName(this.specs.specs, localName, namespaceURI) != null;
+	}
+
+	/**
+	 * Whether attribute names are JavaScript identifiers in the source language (JSX props such as
+	 * `onClick`), which the `case-sensitive-attr-name` rule does not ask to be lower case.
+	 *
+	 * It says nothing about whether two spellings of a name are one attribute: that is up to how the
+	 * name gets into the DOM ({@link MLDocument.attrNameRoute}) and to the element, and is decided by
+	 * {@link MLAttr.nameKey}. Svelte and Astro tell the case of a tag name apart but not of an
+	 * attribute name, and Vue sets its attributes through the DOM API though a template is still
+	 * checked for the case of a name.
 	 */
 	readonly attrNameCaseSensitive: boolean;
+
+	/**
+	 * How the name of an attribute gets into the DOM of the browser (`MLParser#attrNameRoute`, see
+	 * `AttrNameRoute`). It decides whether `VIEWBOX` and `viewBox` are one attribute, which is a matter of the
+	 * DOM and so of the element and the attribute as well; this is what the parser says about its language.
+	 * `"html-parser"` when the parser does not say.
+	 */
+	readonly attrNameRoute: AttrNameRoute;
 
 	/**
 	 * Common settings applied globally to all rules, such as the ARIA version.
@@ -184,7 +233,11 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 			readonly endTag?: 'xml' | 'omittable' | 'never';
 			readonly booleanish?: boolean;
 			readonly tagNameCaseSensitive?: boolean;
+			readonly componentNameVariants?: boolean;
+			readonly isComponentName?: (name: string) => boolean;
+			readonly isNativeTag?: (name: string) => boolean;
 			readonly attrNameCaseSensitive?: boolean;
+			readonly attrNameRoute?: AttrNameRoute;
 			readonly pretenders?: readonly Pretender[];
 		},
 	) {
@@ -197,7 +250,11 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		this.endTag = options?.endTag ?? 'omittable';
 		this.#filename = options?.filename;
 		this.tagNameCaseSensitive = options?.tagNameCaseSensitive ?? false;
+		this.componentNameVariants = options?.componentNameVariants ?? false;
+		this.isComponentName = options?.isComponentName ?? isComponentName;
+		this.#isNativeTagRule = options?.isNativeTag;
 		this.attrNameCaseSensitive = options?.attrNameCaseSensitive ?? false;
+		this.attrNameRoute = options?.attrNameRoute ?? 'html-parser';
 		this.ruleCommonSettings = ruleCommonSettings;
 
 		// Build UUID → AST node map for cross-reference lookups (e.g., pairNodeUuid)

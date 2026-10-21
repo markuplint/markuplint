@@ -68,6 +68,12 @@ Attributes matching the list are placed first in the specified order. Unmatched 
 }
 ```
 
+A pattern is matched against the attribute name **as written** in the source, and takes no flags. It does not fold the case of the name: `^id$` matches `id` but not `ID`, and `[Ii][Dd]` matches both spellings.
+
+### Attribute name case
+
+Attribute names are compared as the DOM compares them: `ID` and `id` on an HTML element are the same attribute, so `<div ID class>` is already in alphabetical order (`class` before `id`). This applies to the alphabetical order, the predefined groups, `name` entries, and `order` arrays within a group. Names that are the same attribute keep their source order, and a fix keeps the spelling of each name. On an element that a syntax sets through the DOM API without folding the case (an `<svg>` in JSX, for example), a name is compared exactly as it is written. The `pattern` entry is the exception described above.
+
 ### Group-internal sort order
 
 ```json

@@ -552,11 +552,73 @@ export interface MLParser {
 	tagNameCaseSensitive?: boolean;
 
 	/**
+	 * Whether a component is referred to by any spelling of its name: as it is written,
+	 * in camelCase, in PascalCase or in kebab-case (`<FooBar>`, `<fooBar>` and `<foo-bar>`
+	 * are one component). Vue is the one framework that resolves a tag so
+	 * (https://vuejs.org/guide/components/registration.html#component-name-casing); in JSX, MDX,
+	 * Svelte and Astro a tag with a lowercase initial is an HTML element.
+	 *
+	 * A type selector reads it to compare the name of the selector with the name of a
+	 * component. `localName`, `nodeName` and `rawName` are not rewritten.
+	 */
+	componentNameVariants?: boolean;
+
+	/**
+	 * Whether a name is a reference to a component, not the name of an element, judged by its form
+	 * alone in the language of this parser (`Tabs.Root` is, `div` is not). A pretender's target
+	 * (`as.element`) is typed by it. A parser without it is taken to name components as most
+	 * languages do: a capital initial or a `.`.
+	 */
+	isComponentName?(name: string): boolean;
+
+	/**
+	 * Whether the language takes a tag name for a native element, as against a reference to a component,
+	 * by its own list of names (Vue: `isNativeTag` of `@vue/compiler-dom`, which resolves any other tag
+	 * to a component). Name as written, case kept; it knows no namespace.
+	 *
+	 * What a tag resolves to is the language's to say, so a type selector (`Marquee` for `<marquee>`)
+	 * and the guard that keeps a pretender off a native element read it, not the specification: the
+	 * two lists differ (`<marquee>` has a specification, and Vue resolves it to a component when one
+	 * is imported). A parser without it leaves the answer to the specification: Vue is the one that has
+	 * it, as the other languages that tell a component by its name (JSX, Svelte, Astro) take a lowercase
+	 * tag for an HTML element. It is asked of a tag as the author wrote it; the name that a pretender
+	 * gives (`as`) is the element itself and is judged by the specification.
+	 */
+	isNativeTag?(name: string): boolean;
+
+	/**
 	 * Whether attribute names should be treated as case-sensitive (e.g. JSX props such as `onClick`).
 	 * Currently consumed only by the `case-sensitive-attr-name` rule.
 	 */
 	attrNameCaseSensitive?: boolean;
+
+	/**
+	 * How the name of an attribute gets into the DOM of the browser, which decides whether another
+	 * spelling of the name is the same attribute (see {@link AttrNameRoute}). Absent means the HTML
+	 * parser of the browser reads it.
+	 */
+	attrNameRoute?: AttrNameRoute;
 }
+
+/**
+ * How the name of an attribute gets into the DOM of the browser.
+ *
+ * - `"html-parser"`: The HTML parser reads it from an HTML string. It lower-cases the name, and restores
+ *   the case of the names of SVG and MathML ([HTML LS 13.2.5.33, 13.2.6.1]), so `VIEWBOX` and `viewbox`
+ *   on an `<svg>` are both `viewBox`. The `.html` file, and the static attribute of Svelte.
+ * - `"dom-api"`: Code sets it under the name as written (`setAttribute`, which lower-cases a name only on
+ *   an element of the HTML namespace). So `ROLE` on an `<svg>` stays `ROLE`, which is not `role`. JSX and MDX;
+ *   Vue, whose compiler makes an element by `setAttribute` unless it can put the whole static tree into an
+ *   HTML string, and does so only when every attribute name in the tree is one it knows by its exact
+ *   spelling. A name like that reads the same through the HTML parser, so a name that differs from the
+ *   spelling of the specification only in case is always set by `setAttribute` and keeps its case.
+ * - `"dom-api-when-dynamic"`: A static attribute is in an HTML string (`"html-parser"`) and a dynamic one is
+ *   set by code (`"dom-api"`). Svelte.
+ *
+ * @see https://html.spec.whatwg.org/multipage/parsing.html#attribute-name-state
+ * @see https://dom.spec.whatwg.org/#dom-element-setattribute
+ */
+export type AttrNameRoute = 'html-parser' | 'dom-api' | 'dom-api-when-dynamic';
 
 /**
  * A module that exports a parser. Used for dynamic parser resolution.

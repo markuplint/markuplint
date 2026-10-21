@@ -23,26 +23,40 @@
  * none of the scanned components costs no import analysis.
  */
 
+import type { Declaration } from './dependency-mapper.js';
 import type { ImportBinding } from './import-resolver/types.js';
 import type { Pretender } from '@markuplint/ml-config';
 
 import { parsePretenderFilePath } from '@markuplint/ml-config';
+import { capitalize, pascalize } from '@markuplint/shared';
 
-import { isPackageFile, resolveDeclarationFile, resolveModule } from './dependency-mapper.js';
-import { analyzeImports, kebabToPascalCase, resolveComponentImport } from './import-resolver/index.js';
+import {
+	FROM_PACKAGE,
+	declarationChain,
+	isPackageFile,
+	resolveDeclaration,
+	resolveModule,
+} from './dependency-mapper.js';
+import { DEFAULT_LOCAL_NAME } from './export-table.js';
+import {
+	analyzeImports,
+	isComponentBinding,
+	isVueFile,
+	kebabToPascalCase,
+	resolveSelectorImport,
+} from './import-resolver/index.js';
 import { normalizePath } from './import-resolver/resolve-module-file.js';
 
-const RE_SIMPLE_COMPONENT_NAME = /^[A-Z][\w$-]*$/i;
+/**
+ * A JavaScript identifier, kebab-case included: the selector of a scanned component, the name
+ * of a file (`componentNameOfFile`) among them. ZWNJ and ZWJ are `Join_Control`. It is the
+ * identifier of `RE_COMPONENT_IDENTIFIER` in `template/derive-name`, kebab-case added: change
+ * the two together.
+ */
+const RE_SIMPLE_COMPONENT_NAME = /^[\p{ID_Start}$_][\p{ID_Continue}\p{Join_Control}$-]*$/u;
 
 /** A whole identifier, kebab-case included: what a selector of {@link RE_SIMPLE_COMPONENT_NAME} is made of. */
-const RE_IDENTIFIER = /[\w$-]+/g;
-
-/**
- * What {@link resolveWinner} returns for a name confirmed to come from a package: unlike
- * `null` ("could not confirm"), it rules out every candidate. Not the symbol of the same
- * name in `dependency-mapper.ts`, which stays in that module.
- */
-const FROM_PACKAGE = Symbol('from-package');
+const RE_IDENTIFIER = /[\p{ID_Continue}\p{Join_Control}$-]+/gu;
 
 /**
  * Identifies the file to disambiguate pretenders against.
@@ -81,7 +95,7 @@ export async function disambiguatePretenders(
 	pretenders: readonly Pretender[],
 	options: DisambiguateOptions,
 ): Promise<readonly Pretender[]> {
-	const groups = groupCandidates(pretenders, options.sourceCode);
+	const groups = groupCandidates(pretenders, options.sourceCode, options.filePath);
 	if (groups.size === 0) {
 		// Fast path: no file-backed candidate's selector appears in the source,
 		// so there's nothing to resolve — skip import analysis entirely.
@@ -93,9 +107,27 @@ export async function disambiguatePretenders(
 
 	const losers = new Set<Pretender>();
 
-	for (const candidates of groups.values()) {
+	for (const group of groups.values()) {
+		// A tag never names a default export of its own file that has no name: in that file the
+		// name is another binding or none, and only an import gives the default export a name.
+		const candidates = group.filter(c => {
+			const own = c.localName === DEFAULT_LOCAL_NAME && matchesFile(c.filePath!, options.filePath);
+			if (own) {
+				losers.add(c);
+			}
+			return !own;
+		});
+		if (candidates.length === 0) {
+			continue;
+		}
 		const winner = resolveWinner(candidates, options, bindings);
 		if (!winner) {
+			continue;
+		}
+		if (typeof winner === 'object' && 'exclude' in winner) {
+			for (const candidate of winner.exclude) {
+				losers.add(candidate);
+			}
 			continue;
 		}
 		for (const candidate of candidates) {
@@ -115,27 +147,55 @@ export async function disambiguatePretenders(
 /**
  * Whether the source names the selector as a whole identifier: the selector itself, or the
  * PascalCase name a Vue-style script imports a kebab-case one as (the one
- * {@link resolveComponentImport} looks for). A selector the source does not name has no
+ * {@link resolveSelectorImport} looks for). A selector the source does not name has no
  * binding in the file, so nothing could be resolved for it.
+ *
+ * In a Vue file the names are the ones of `vueTagNameMatches`, which is for the selector to be named
+ * as a tag (`<foo-bar>`, `<fooBar>`) or as a binding (`fooBar`) of any spelling: `names` holds each
+ * identifier of the source as it is, capitalized and in PascalCase, and the selector is looked up as
+ * it is and in PascalCase. It is a wide filter, as `resolveWinner` decides on the binding.
  */
-function namesSelector(identifiers: ReadonlySet<string>, selector: string): boolean {
-	return identifiers.has(selector) || identifiers.has(kebabToPascalCase(selector));
+function namesSelector(
+	identifiers: ReadonlySet<string>,
+	selector: string,
+	getVueNames?: () => ReadonlySet<string>,
+): boolean {
+	if (identifiers.has(selector) || identifiers.has(kebabToPascalCase(selector))) {
+		return true;
+	}
+	if (!getVueNames) {
+		return false;
+	}
+	const vueNames = getVueNames();
+	return vueNames.has(selector) || vueNames.has(pascalize(selector));
 }
 
 /**
  * Groups the file-backed candidates by selector, for the selectors the source text names.
  * A lone candidate is a group too: it may be a package's component that shares the name.
  */
-function groupCandidates(pretenders: readonly Pretender[], sourceCode: string): Map<string, Pretender[]> {
+function groupCandidates(
+	pretenders: readonly Pretender[],
+	sourceCode: string,
+	filePath: string,
+): Map<string, Pretender[]> {
 	const bySelector = new Map<string, Pretender[]>();
 	// Tokenized once: a scan can hold thousands of candidates, and this runs for every linted file.
 	const identifiers = new Set<string>(sourceCode.match(RE_IDENTIFIER));
+	// Built when a selector is not named as it is, and then once: most files name what they use as they write it.
+	let vueNames: ReadonlySet<string> | undefined;
+	const getVueNames = isVueFile(filePath)
+		? () =>
+				(vueNames ??= new Set(
+					[...identifiers].flatMap(identifier => [identifier, capitalize(identifier), pascalize(identifier)]),
+				))
+		: undefined;
 
 	for (const pretender of pretenders) {
 		if (!pretender.filePath || !RE_SIMPLE_COMPONENT_NAME.test(pretender.selector)) {
 			continue;
 		}
-		if (!namesSelector(identifiers, pretender.selector)) {
+		if (!namesSelector(identifiers, pretender.selector, getVueNames)) {
 			continue;
 		}
 		const list = bySelector.get(pretender.selector);
@@ -156,21 +216,33 @@ function groupCandidates(pretenders: readonly Pretender[], sourceCode: string): 
  * of the candidates, through its re-exports to the declaring file. Returns
  * `FROM_PACKAGE` when the name is confirmed to come from a package, directly or
  * through a re-export: the caller drops the whole group, since none of the
- * candidates is what the file renders. Returns `null` when nothing confirms a
- * candidate, so the caller leaves the whole group untouched.
+ * candidates is what the file renders, and `{ exclude }` of the whole group when it
+ * leads to a declaration that has no candidate (see {@link pickDeclared}) — or `{ exclude }`
+ * when it confirms only that some of them are not it: a default export named after
+ * its file is the component of no import but one that leads to it. Returns `null`
+ * when nothing confirms a candidate, so the caller leaves the whole group untouched.
  */
 function resolveWinner(
 	candidates: readonly Pretender[],
 	{ filePath, sourceCode, dependencies, cwd }: DisambiguateOptions,
 	bindings: readonly ImportBinding[],
-): Pretender | typeof FROM_PACKAGE | null {
+): Pretender | typeof FROM_PACKAGE | { readonly exclude: readonly Pretender[] } | null {
 	const local = candidates.find(c => matchesFile(c.filePath!, filePath));
 	if (local) {
 		return local;
 	}
 
-	const binding = resolveComponentImport(candidates[0]!.selector, bindings);
-	if (!binding || binding.type === 'namespace' || binding.type === 'dynamic') {
+	// A binding that a tag cannot refer to in the language of the file is not looked at (`isComponentBinding`).
+	const binding = resolveSelectorImport(
+		candidates[0]!.selector,
+		bindings.filter(b => isComponentBinding(b, filePath)),
+		filePath,
+	);
+	// A dynamic binding found by name is one that `lazy(() => import('./X'))` assigned the name to,
+	// or that `const { X } = await import('./X')` declared (see `dynamicImportNames`), so it
+	// resolves like the static import of the export it names; one without a name is `'*'` and
+	// found by none.
+	if (!binding || binding.type === 'namespace') {
 		return null;
 	}
 
@@ -179,13 +251,29 @@ function resolveWinner(
 		return null;
 	}
 
-	const direct = candidates.find(c => matchesFile(c.filePath!, resolvedAbs));
-	if (direct) {
-		return direct;
+	// No import names a default export without a name of its own file but a default import:
+	// `export { default as X }` without `from` is no valid syntax.
+	const direct = candidates.filter(
+		c =>
+			matchesFile(c.filePath!, resolvedAbs) &&
+			(binding.importedName === 'default' || c.localName !== DEFAULT_LOCAL_NAME),
+	);
+	// Without a local name there is nothing for the export table to tell apart: a template
+	// component is its file, and a list scanned before `localName` names none. The only
+	// candidate declared under the imported name (or the default export, for a default import)
+	// is it, as it was before `localName`.
+	if (
+		direct.length === 1 &&
+		(direct[0]!.localName == null ||
+			direct[0]!.localName === (binding.importedName === 'default' ? DEFAULT_LOCAL_NAME : binding.importedName))
+	) {
+		return direct[0]!;
 	}
-	// Before the export table: a package's own is not built (see `resolveDeclarationFile`).
+	// Before the export table: a package's own is not built (see `resolveDeclaration`). A
+	// candidate of the package itself (a scan that reached into `node_modules`) is matched by
+	// its file, as before `localName`.
 	if (isPackageFile(resolvedAbs, cwd)) {
-		return fromPackage(candidates, cwd);
+		return preferDefaultExport(direct, binding.importedName) ?? fromPackage(candidates, cwd);
 	}
 
 	// The lint target can be part of a re-export chain, so its unsaved text
@@ -194,7 +282,7 @@ function resolveWinner(
 	const targetKey = normalizePath(filePath);
 	const sources = new Map([[targetKey, sourceCode]]);
 	const read = new Set<string>();
-	const declarationAbs = resolveDeclarationFile(resolvedAbs, binding.importedName, {
+	const declaration = resolveDeclaration(resolvedAbs, binding.importedName, {
 		sources,
 		dependencies: read,
 		cwd,
@@ -204,13 +292,66 @@ function resolveWinner(
 			dependencies?.add(file);
 		}
 	}
-	if (!declarationAbs) {
-		return null;
+	if (!declaration) {
+		// Nothing confirmed: the file is matched as before, without the default exports a named
+		// import cannot lead to (`direct` leaves them out). When none is left, the group is left
+		// as it is but for those default exports.
+		return preferDefaultExport(direct, binding.importedName) ?? excludeOwnDefaultExports(candidates, resolvedAbs);
 	}
-	return (
-		candidates.find(c => matchesFile(c.filePath!, declarationAbs)) ??
-		(isPackageFile(declarationAbs, cwd) ? fromPackage(candidates, cwd) : null)
-	);
+	const chain = declarationChain(declaration);
+	if (
+		isPackageFile(declaration.fileAbs, cwd) &&
+		!candidates.some(c => matchesFile(c.filePath!, declaration.fileAbs))
+	) {
+		return fromPackage(candidates, cwd);
+	}
+	// The import is confirmed to lead to `declaration`: none of the group is what it names
+	// unless one is the component of the declaration, or of what it wraps.
+	return pickDeclared(candidates, chain) ?? { exclude: candidates };
+}
+
+/**
+ * The candidate of the imported file that the import names, for a match by its file: its
+ * default export for a default import, otherwise the first.
+ */
+function preferDefaultExport(direct: readonly Pretender[], importedName: string): Pretender | undefined {
+	return (importedName === 'default' ? direct.find(c => c.localName === DEFAULT_LOCAL_NAME) : undefined) ?? direct[0];
+}
+
+/**
+ * Rules out the default exports without a name of their own of the imported module (a named
+ * import cannot lead to them, `direct` leaves them out), and leaves the rest of the group as
+ * it is.
+ */
+function excludeOwnDefaultExports(
+	candidates: readonly Pretender[],
+	resolvedAbs: string,
+): { readonly exclude: readonly Pretender[] } | null {
+	const exclude = candidates.filter(c => c.localName === DEFAULT_LOCAL_NAME && matchesFile(c.filePath!, resolvedAbs));
+	return exclude.length > 0 ? { exclude } : null;
+}
+
+/**
+ * Picks the candidate of the declaration, or else of what it wraps (`export default memo(Named)`,
+ * see `ExportEntry` of `export-table`): a component declared under a name and a default export
+ * named after the file can share a selector, and `localName` tells them apart. A candidate
+ * without `localName` (a template component, or a list scanned before it was added) is matched
+ * by its file, as before.
+ *
+ * `undefined` when none is: the declaration has no component (`@pretends null`, a file name that
+ * makes no component name, or one the scanner cannot describe).
+ */
+function pickDeclared(candidates: readonly Pretender[], chain: readonly Declaration[]): Pretender | undefined {
+	for (const declaration of chain) {
+		const declared = candidates.filter(c => matchesFile(c.filePath!, declaration.fileAbs));
+		const match =
+			declared.find(c => c.localName == null) ??
+			(declaration.localName == null ? declared[0] : declared.find(c => c.localName === declaration.localName));
+		if (match) {
+			return match;
+		}
+	}
+	return undefined;
 }
 
 /**

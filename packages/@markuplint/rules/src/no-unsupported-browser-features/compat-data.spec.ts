@@ -1,6 +1,9 @@
 import type { SupportStatement } from '@mdn/browser-compat-data';
 
+import { createTestElement } from '@markuplint/ml-core';
 import { describe, test, expect } from 'vitest';
+
+import * as jsxParser from '@markuplint/jsx-parser';
 
 import type { TargetBrowser } from './compat-data.js';
 
@@ -221,5 +224,58 @@ describe('checkAttributeSupport', () => {
 		const targets: readonly TargetBrowser[] = [{ browser: 'chrome', version: '100', displayName: 'Chrome' }];
 		const results = await checkAttributeSupport('div', 'data-unknown', targets);
 		expect(results).toEqual([]);
+	});
+});
+
+describe('checkAttributeSupport with the attribute', () => {
+	// BCD spells `privateToken` of `iframe` in camel case, and Chrome added it in 117
+	const targets: readonly TargetBrowser[] = [{ browser: 'chrome', version: '100', displayName: 'Chrome' }];
+	const attrOf = (code: string, jsx = false) =>
+		createTestElement(code, jsx ? { parser: jsxParser } : undefined).getAttributeTokens()[0]!;
+
+	test('[no-unsupported-browser-features-issue-4309-001] the key of BCD is found by the name as written', async () => {
+		const results = await checkAttributeSupport('iframe', 'privateToken', targets);
+		expect(results.length).toBe(1);
+		const withAttr = await checkAttributeSupport(
+			'iframe',
+			'privateToken',
+			targets,
+			attrOf('<iframe privateToken></iframe>'),
+		);
+		expect(withAttr.length).toBe(1);
+	});
+
+	test('[no-unsupported-browser-features-issue-4309-002] the HTML parser folds the name, so the attribute is the key of BCD in any spelling', async () => {
+		const lower = attrOf('<iframe privatetoken></iframe>');
+		const upper = attrOf('<iframe PRIVATETOKEN></iframe>');
+		expect((await checkAttributeSupport('iframe', lower.name, targets, lower)).length).toBe(1);
+		expect((await checkAttributeSupport('iframe', upper.name, targets, upper)).length).toBe(1);
+		// Without the attribute only the name is known, and it is not the key
+		expect(await checkAttributeSupport('iframe', 'privatetoken', targets)).toEqual([]);
+	});
+
+	test('[no-unsupported-browser-features-issue-4309-003] a name without the attribute is looked up as written, then in lower case', async () => {
+		const old: readonly TargetBrowser[] = [{ browser: 'chrome', version: '30', displayName: 'Chrome' }];
+		expect((await checkAttributeSupport('video', 'CONTROLSLIST', old)).length).toBe(1);
+		expect((await checkAttributeSupport('video', 'ControlsList', old)).length).toBe(1);
+		expect(await checkAttributeSupport('video', 'CONTROLSLIST', targets)).toEqual([]);
+	});
+
+	test('[no-unsupported-browser-features-issue-4309-004] JSX: an HTML element makes the name the key of BCD in any spelling, as the DOM folds it', async () => {
+		// `setAttribute` lower-cases the name on an HTML element, so all of these are `privatetoken` for the browser
+		const exact = attrOf('<iframe privateToken />', true);
+		const folded = attrOf('<iframe PRIVATETOKEN />', true);
+		const lower = attrOf('<iframe privatetoken />', true);
+		expect((await checkAttributeSupport('iframe', exact.name, targets, exact)).length).toBe(1);
+		expect((await checkAttributeSupport('iframe', folded.name, targets, folded)).length).toBe(1);
+		expect((await checkAttributeSupport('iframe', lower.name, targets, lower)).length).toBe(1);
+	});
+
+	test('[no-unsupported-browser-features-issue-4309-005] JSX: an HTML element folds the name of a key of BCD in lower case', async () => {
+		const old: readonly TargetBrowser[] = [{ browser: 'chrome', version: '30', displayName: 'Chrome' }];
+		const upper = attrOf('<video CONTROLSLIST />', true);
+		expect((await checkAttributeSupport('video', upper.name, old, upper)).length).toBe(1);
+		const unknown = attrOf('<video DATA-UNKNOWN />', true);
+		expect(await checkAttributeSupport('video', unknown.name, old, unknown)).toEqual([]);
 	});
 });

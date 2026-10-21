@@ -52,3 +52,56 @@ test('[no-deprecated-attr-valid-001] no deprecated attribute', async () => {
 	const { violations } = await mlRuleTest(rule, '<img src="path/to" alt="any picture">');
 	expect(violations).toStrictEqual([]);
 });
+
+test('[no-deprecated-attr-issue-4309-001] an upper-case name is the attribute in HTML', async () => {
+	const { violations } = await mlRuleTest(rule, '<img ALIGN="top">');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 6,
+			raw: 'ALIGN',
+			message: 'The "ALIGN" attribute is deprecated',
+		},
+	]);
+});
+
+test('[no-deprecated-attr-issue-4309-002] an HTML element in JSX folds the name', async () => {
+	const options = { parser: { '.*': '@markuplint/jsx-parser' } };
+	const upper = await mlRuleTest(rule, '<img ALIGN="top" />', options);
+	expect(upper.violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 6,
+			raw: 'ALIGN',
+			message: 'The "ALIGN" attribute is deprecated',
+		},
+	]);
+	const lower = await mlRuleTest(rule, '<img align="top" />', options);
+	expect(lower.violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 6,
+			raw: 'align',
+			message: 'The "align" attribute is deprecated',
+		},
+	]);
+});
+
+test('[no-deprecated-attr-issue-4309-003] an SVG element in JSX keeps the name as written', async () => {
+	const options = { parser: { '.*': '@markuplint/jsx-parser' } };
+	const exact = await mlRuleTest(rule, '<svg><a xlink:href="/" /></svg>', options);
+	expect(exact.violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 9,
+			raw: 'xlink:href',
+			message: 'The "xlink:href" attribute is deprecated',
+		},
+	]);
+	const upper = await mlRuleTest(rule, '<svg><a XLINK:HREF="/" /></svg>', options);
+	expect(upper.violations).toStrictEqual([]);
+});

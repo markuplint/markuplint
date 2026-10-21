@@ -5,7 +5,7 @@ description: map要素にidとnameの両方が指定されているとき、両�
 
 # `map-id-name-match`
 
-[HTML Living Standard §4.8.13 (the map element)](https://html.spec.whatwg.org/multipage/image-maps.html#the-map-element) によれば、`<map>` 要素に `id` 属性と `name` 属性の両方が指定されている場合、それらの値は同じでなければなりません。
+[HTML Living Standard §4.8.12 (the map element)](https://momdo.github.io/html/image-maps.html#the-map-element) によれば、`<map>` 要素に `id` 属性と `name` 属性の両方が指定されている場合、それらの値は同じでなければなりません。
 
 比較は **大文字小文字を区別** します。仕様の "same value" を strict string equality として解釈するため、`<map id="Foo" name="foo">` も検知されます。なお `<map>` の `name` 属性自体は `<img usemap>` とのマッチングでは case-insensitive ですが、これは本ルールとは別の仕様です。
 

@@ -180,7 +180,7 @@ In addition, **spec plugins** include definitions for framework-specific attribu
 In **React**, **Vue**, and more, custom components cannot be evaluated as HTML elements. This means Markuplint's content model rules — such as [`permitted-contents`](/docs/rules/permitted-contents) — have no way of knowing what a component actually renders. Without this information, a `<Button>` component that renders a `<button>` element is treated as an unknown element, and invalid nesting like `<a><Button /></a>` (interactive content inside interactive content) goes undetected.
 
 :::note Scope
-Pretenders apply to **custom components only** — web components, JSX/Vue/Svelte authored components, and HTML-parsed names that have no spec entry. Targeting a standard HTML element (`<marquee>`, `<button>`, etc.) is a no-op so that deprecation, ARIA, and browser-support rules keyed on the original tag are not silently masked.
+Pretenders apply to **custom components only** — web components, JSX/Vue/Svelte authored components, and HTML-parsed names that have no spec entry. Targeting a standard HTML, SVG, or MathML element (`<button>`, `<h1>`, etc.) is a no-op so that deprecation, ARIA, and browser-support rules keyed on the original tag are not silently masked. In a Vue document, what counts as standard is Vue's own list of native tags, so `<marquee>` and `<search>` are components there when one is imported or registered.
 :::
 
 <!-- prettier-ignore -->
@@ -331,6 +331,8 @@ You can use `scan` alongside manual `data` definitions. This is useful when the 
   }
 }
 ```
+
+`fromAttr` finds the attribute at the usage site by the rules of the framework: in Vue, `my-label` and `myLabel` are the same prop; in JSX, a prop is matched exactly, so `Label` is not `label`. Write the name the way the component declares its prop. This is experimental, like the scan itself.
 
 See [`pretenders.scan`](/docs/configuration/properties#pretenders/scan) for the full configuration reference.
 

@@ -15,7 +15,7 @@ import type { ARIAProperty } from '@markuplint/ml-spec';
 export const checkingNoGlobalProp: AttrChecker<boolean, Options, { propSpecs: readonly ARIAProperty[] }> =
 	({ attr, propSpecs }) =>
 	t => {
-		const propSpec = propSpecs.find(prop => prop.name === attr.name);
+		const propSpec = propSpecs.find(prop => prop.name === attr.nameKey);
 		if (propSpec && !propSpec.isGlobal) {
 			return {
 				scope: attr,

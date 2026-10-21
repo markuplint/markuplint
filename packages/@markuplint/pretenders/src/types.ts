@@ -1,3 +1,4 @@
+import type { ImportBinding } from './import-resolver/types.js';
 import type { PretenderScanOptions, Pretender } from '@markuplint/ml-config';
 
 /**
@@ -34,6 +35,20 @@ export type Identity = Pretender['as'];
  * (e.g., `../A/Button.vue` vs `../B/Button.vue`).
  */
 export type ImportPath = string;
+
+/**
+ * The file being linted, as far as the names it gives its imports go. A component is
+ * referenced by the name the importing file chooses (`import { Named as A }`, a default
+ * import under any name), which the file that declares it does not know. So only a scan
+ * that has an entry file can resolve a component under that name. `autoScan` has one and
+ * passes it; a `scan` of a fixed set of files (the `scan` option of the config) has none.
+ */
+export interface PretenderScanEntry {
+	/** Absolute path of the entry file. */
+	readonly filePath: string;
+	/** The import bindings of the entry file, as `analyzeImports` reports them. */
+	readonly bindings: readonly ImportBinding[];
+}
 
 /**
  * Represents an attribute found on a JSX element during scanning.

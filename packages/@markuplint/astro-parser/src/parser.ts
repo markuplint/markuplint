@@ -2,7 +2,7 @@ import type { Node } from './to-nodes.js';
 import type { MLASTNodeTreeItem, MLASTParentNode } from '@markuplint/ml-ast';
 import type { ChildToken, Token } from '@markuplint/parser-utils';
 
-import { AttrState, Parser, ParserError } from '@markuplint/parser-utils';
+import { AttrState, Parser, ParserError, isPotentialCustomElementName } from '@markuplint/parser-utils';
 
 import { astroParse } from './astro-parser.js';
 import { detectBlockBehavior } from './detect-block-behavior.js';
@@ -365,6 +365,18 @@ class AstroParser extends Parser<Node> {
 	 */
 	detectElementType(nodeName: string) {
 		return super.detectElementType(nodeName, /^[A-Z]/);
+	}
+
+	/**
+	 * A variable used as a tag must be capitalized in Astro, as `detectElementType` takes it. Unlike the
+	 * default of the base class, a `.` alone does not make a name a component: `<ui.Item>` is an
+	 * HTML element there.
+	 *
+	 * @param name - A tag name as written, case kept
+	 * @returns Whether the name is a component's
+	 */
+	isComponentName(name: string): boolean {
+		return /^[A-Z]/.test(name) && !isPotentialCustomElementName(name);
 	}
 }
 

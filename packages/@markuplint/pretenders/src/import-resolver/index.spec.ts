@@ -87,6 +87,76 @@ export default {
 			});
 		});
 
+		test('Options API with a component registered by defineAsyncComponent', async () => {
+			const source = `<template><Item /><Other /></template>
+
+<script>
+import { defineAsyncComponent } from 'vue'
+export default {
+  components: {
+    Item: defineAsyncComponent(() => import('./Item.vue')),
+    Other: defineAsyncComponent({ loader: () => import('./Other.vue') })
+  }
+}
+</script>`;
+			const result = await analyzeImports('App.vue', source);
+			expect(result!.bindings).toStrictEqual([
+				{ localName: 'Item', importedName: 'default', source: './Item.vue', type: 'dynamic' },
+				{ localName: 'Other', importedName: 'default', source: './Other.vue', type: 'dynamic' },
+			]);
+		});
+
+		test('<script setup> with a component loaded by defineAsyncComponent is named after the variable', async () => {
+			const source = `<script setup>
+import { defineAsyncComponent } from 'vue'
+const Item = defineAsyncComponent(() => import('./Item.vue'))
+</script>
+
+<template><Item /></template>`;
+			const result = await analyzeImports('App.vue', source);
+			expect(result!.bindings.at(-1)).toStrictEqual({
+				localName: 'Item',
+				importedName: 'default',
+				source: './Item.vue',
+				type: 'dynamic',
+			});
+		});
+
+		test('a Svelte script names a dynamic import after the variable', async () => {
+			const source = `<script>
+const Item = lazy(() => import('./Item.svelte'))
+</script>
+
+<Item />`;
+			const result = await analyzeImports('App.svelte', source);
+			expect(result!.bindings).toStrictEqual([
+				{ localName: 'Item', importedName: 'default', source: './Item.svelte', type: 'dynamic' },
+			]);
+		});
+
+		test('an Astro frontmatter names a dynamic import after the variable', async () => {
+			const source = `---
+const Item = lazy(() => import('./Item.astro'))
+---
+
+<Item />`;
+			const result = await analyzeImports('Page.astro', source);
+			expect(result!.bindings).toStrictEqual([
+				{ localName: 'Item', importedName: 'default', source: './Item.astro', type: 'dynamic' },
+			]);
+		});
+
+		test('an MDX ESM block with JSX still names a dynamic import after the variable', async () => {
+			const source = `export const meta = <X />
+export const Item = lazy(() => import('./Item'))
+
+# Title`;
+			const result = await analyzeImports('Doc.mdx', source);
+			expect(result!.bindings).toStrictEqual([
+				{ localName: 'Item', importedName: 'default', source: './Item', type: 'dynamic' },
+			]);
+		});
+
 		test('Options API with defineComponent wrapper', async () => {
 			const source = `<template><Button /></template>
 
@@ -185,7 +255,7 @@ const Dialog = import('./Dialog.vue')
 			expect(result).not.toBeNull();
 			expect(result!.bindings).toStrictEqual([
 				{ localName: 'lazy', importedName: 'lazy', source: 'react', type: 'named' },
-				{ localName: '*', importedName: '*', source: './Item', type: 'dynamic' },
+				{ localName: 'Item', importedName: 'default', source: './Item', type: 'dynamic' },
 			]);
 		});
 
@@ -200,6 +270,91 @@ import type { ButtonProps } from './types'
 			expect(result).not.toBeNull();
 			expect(result!.bindings).toHaveLength(1);
 			expect(result!.bindings[0]).toMatchObject({ localName: 'Button' });
+		});
+
+		describe('a script with `lang="tsx"` or `lang="jsx"` (issue #4322)', () => {
+			const item = { localName: 'Item', importedName: 'default', source: './Item.vue', type: 'default' };
+			const vue = (lang: string, body: string, setup = ' setup') =>
+				`<script${setup} lang="${lang}">\nimport Item from "./Item.vue"\n${body}\n</script>\n<template><Item /></template>`;
+
+			test.each([
+				['a list', 'const render = () => <ul><li>x</li></ul>'],
+				['JSX as an attribute value', 'const render = () => <A x={<C />} />'],
+				[
+					'an expression with an arrow function in children',
+					'const render = () => <ul>{items.map(i => <li key={i}>{i}</li>)}</ul>',
+				],
+				['a fragment', 'const render = () => <><A /></>'],
+			])('reads the imports whatever JSX it holds, for %s', async (_, body) => {
+				const result = await analyzeImports('App.vue', vue('tsx', body));
+				expect(result!.bindings).toStrictEqual([item]);
+			});
+
+			test('reads the imports of `lang="jsx"` too', async () => {
+				const result = await analyzeImports('App.vue', vue('jsx', 'const render = () => <><A /></>'));
+				expect(result!.bindings).toStrictEqual([item]);
+			});
+
+			test('reads an import that comes after the JSX', async () => {
+				const source = `<script setup lang="tsx">
+const render = () => <ul>{items.map(i => <li key={i}>{i}</li>)}</ul>
+import Item from "./Item.vue"
+</script>`;
+				const result = await analyzeImports('App.vue', source);
+				expect(result!.bindings).toStrictEqual([item]);
+			});
+
+			test('reads a dynamic import that the script holds', async () => {
+				const result = await analyzeImports(
+					'App.vue',
+					vue(
+						'tsx',
+						"const Slow = defineAsyncComponent(() => import('./Slow.vue'))\nconst r = () => <><A /></>",
+					),
+				);
+				expect(result!.bindings).toStrictEqual([
+					item,
+					{ localName: 'Slow', importedName: 'default', source: './Slow.vue', type: 'dynamic' },
+				]);
+			});
+
+			test('does not read an import that only appears in the text of JSX', async () => {
+				const result = await analyzeImports(
+					'App.vue',
+					vue('tsx', "const r = () => <p>import Fake from './Fake.vue'</p>"),
+				);
+				expect(result!.bindings).toStrictEqual([item]);
+			});
+
+			test('reads the components of the Options API in a script that holds JSX', async () => {
+				const source = `<script lang="tsx">
+import Item from "./Item.vue"
+import Other from "./Other.vue"
+const render = () => <ul>{items.map(i => <li key={i}>{i}</li>)}</ul>
+export default { components: { Item } }
+</script>`;
+				const result = await analyzeImports('App.vue', source);
+				expect(result!.bindings).toStrictEqual([item]);
+			});
+
+			test('reads the Options API registration that comes after JSX', async () => {
+				const source = `<script lang="jsx">
+import Item from "./Item.vue"
+export default { render: () => <><A /></>, components: { Item } }
+</script>`;
+				const result = await analyzeImports('App.vue', source);
+				expect(result!.bindings).toStrictEqual([item]);
+			});
+
+			test('a script that declares no `lang` is not read as JSX, whatever another attribute says', async () => {
+				// `data-lang` is no `lang`: the lexer rejects the JSX, and the TypeScript parser reads JSX as TypeScript
+				const source = `<script setup data-lang="tsx">
+import Item from "./Item.vue"
+const r = () => <><A /></>
+</script>`;
+				const result = await analyzeImports('App.vue', source);
+				expect(result!.bindings).toStrictEqual([]);
+			});
 		});
 	});
 
@@ -232,6 +387,131 @@ import Button from './Button.svelte'
 			expect(result).not.toBeNull();
 			expect(result!.bindings).toHaveLength(1);
 			expect(result!.bindings[0]).toMatchObject({ localName: 'Button', source: './Button.svelte' });
+		});
+
+		describe('`{#await import(...)}` in the template (issue #4327)', () => {
+			test('binds the component of `then { default: C }` as the default export, as a script does', async () => {
+				const source = `<script>
+  let show = true
+</script>
+
+{#await import('./Component.svelte') then { default: Component }}
+  <Component />
+{/await}`;
+				const result = await analyzeImports('App.svelte', source);
+				expect(result!.bindings).toStrictEqual([
+					{ localName: 'Component', importedName: 'default', source: './Component.svelte', type: 'dynamic' },
+				]);
+			});
+
+			test('binds the export that `then { Foo }` takes', async () => {
+				const source = "{#await import('./ui.svelte') then { Foo }}<Foo />{/await}";
+				const result = await analyzeImports('App.svelte', source);
+				expect(result!.bindings).toStrictEqual([
+					{ localName: 'Foo', importedName: 'Foo', source: './ui.svelte', type: 'dynamic' },
+				]);
+			});
+
+			test('binds the export that `then { Foo: Bar }` takes under the name it is given', async () => {
+				const source = "{#await import('./ui.svelte') then { Foo: Bar }}<Bar />{/await}";
+				const result = await analyzeImports('App.svelte', source);
+				expect(result!.bindings).toStrictEqual([
+					{ localName: 'Bar', importedName: 'Foo', source: './ui.svelte', type: 'dynamic' },
+				]);
+			});
+
+			test('binds the whole module of `then m` as a namespace', async () => {
+				const source = "{#await import('./ui.svelte')}<p>wait</p>{:then m}<m.default />{/await}";
+				const result = await analyzeImports('App.svelte', source);
+				expect(result!.bindings).toStrictEqual([
+					{ localName: 'm', importedName: '*', source: './ui.svelte', type: 'namespace' },
+				]);
+			});
+
+			test('leaves the import unnamed for a block without a pattern', async () => {
+				const source = "{#await import('./Component.svelte')}<p>wait</p>{/await}";
+				const result = await analyzeImports('App.svelte', source);
+				expect(result!.bindings).toStrictEqual([
+					{ localName: '*', importedName: '*', source: './Component.svelte', type: 'dynamic' },
+				]);
+			});
+
+			test('reads the blocks even when the file has no script', async () => {
+				const source = "<div>{#await import('./A.svelte') then { default: A }}<A />{/await}</div>";
+				const result = await analyzeImports('App.svelte', source);
+				expect(result!.bindings).toStrictEqual([
+					{ localName: 'A', importedName: 'default', source: './A.svelte', type: 'dynamic' },
+				]);
+			});
+
+			test('puts the imports of the script first, then those of the blocks in source order, nested ones too', async () => {
+				const source = `<script>
+import Button from './Button.svelte'
+</script>
+{#if ok}
+  {#await import('./A.svelte') then { default: A }}
+    {#await import('./B.svelte') then { default: B }}<B />{/await}
+  {/await}
+{/if}`;
+				const result = await analyzeImports('App.svelte', source);
+				expect(result!.bindings).toStrictEqual([
+					{ localName: 'Button', importedName: 'default', source: './Button.svelte', type: 'default' },
+					{ localName: 'A', importedName: 'default', source: './A.svelte', type: 'dynamic' },
+					{ localName: 'B', importedName: 'default', source: './B.svelte', type: 'dynamic' },
+				]);
+			});
+
+			test('a block that binds the name an import of the script binds is read next to it', async () => {
+				const source = `<script>
+import C from './A.svelte'
+</script>
+{#await import('./B.svelte') then { default: C }}<C />{/await}`;
+				const result = await analyzeImports('App.svelte', source);
+				expect(result!.bindings.map(b => [b.localName, b.source, b.type])).toStrictEqual([
+					['C', './A.svelte', 'default'],
+					['C', './B.svelte', 'dynamic'],
+				]);
+			});
+
+			test('binds the export of a block whose expression is an import with a `.then`', async () => {
+				const source = "{#await import('./ui.svelte').then(m => m.Item) then C}<C />{/await}";
+				const result = await analyzeImports('App.svelte', source);
+				expect(result!.bindings).toStrictEqual([
+					{ localName: 'C', importedName: 'Item', source: './ui.svelte', type: 'dynamic' },
+				]);
+			});
+
+			test('two blocks that bind the same name are both read', async () => {
+				const source = `{#await import('./A.svelte') then { default: C }}<C />{/await}
+{#await import('./B.svelte') then { default: C }}<C />{/await}`;
+				const result = await analyzeImports('App.svelte', source);
+				expect(result!.bindings.map(b => [b.localName, b.source])).toStrictEqual([
+					['C', './A.svelte'],
+					['C', './B.svelte'],
+				]);
+			});
+
+			test.each([
+				['a call that is not an import', '{#await fetchUser(id) then user}{user}{/await}'],
+				['an import with a variable specifier', '{#await import(path) then { default: C }}<C />{/await}'],
+				[
+					'an import with a template literal specifier',
+					'{#await import(`./${name}.svelte`) then { default: C }}<C />{/await}',
+				],
+			])('reads no binding for %s', async (_, source) => {
+				const result = await analyzeImports('App.svelte', source);
+				expect(result!.bindings).toStrictEqual([]);
+			});
+
+			test('reads the script of a file whose template the Svelte parser rejects, and no block', async () => {
+				const result = await analyzeImports(
+					'App.svelte',
+					"<script>import A from './A.svelte'</script>{#await import(",
+				);
+				expect(result!.bindings).toStrictEqual([
+					{ localName: 'A', importedName: 'default', source: './A.svelte', type: 'default' },
+				]);
+			});
 		});
 	});
 
@@ -271,6 +551,19 @@ import { Card } from './ui'
 			expect(result!.bindings).toHaveLength(2);
 			expect(result!.bindings[0]).toMatchObject({ localName: 'Button', source: './Button' });
 			expect(result!.bindings[1]).toMatchObject({ localName: 'Card', source: './ui' });
+		});
+
+		test('reads the imports of an ESM that holds JSX the lexer cannot read, as TSX', async () => {
+			const source = `import Button from './Button'
+export const meta = <p>it's</p>
+
+# Hello World
+
+<Button>Click me</Button>`;
+			const result = await analyzeImports('page.mdx', source);
+			expect(result!.bindings).toStrictEqual([
+				{ localName: 'Button', importedName: 'default', source: './Button', type: 'default' },
+			]);
 		});
 
 		test('returns empty bindings for MDX without imports', async () => {
@@ -392,6 +685,18 @@ describe('collectReferencedModules', () => {
 		expect(await collectReferencedModules('page.mdx', source)).toStrictEqual(['./a', './Callout', './c']);
 	});
 
+	test('lists the imports of the ESM of an MDX file that holds JSX the lexer cannot read, as `analyzeImports` reads them', async () => {
+		const source = [
+			"import { A } from './a';",
+			"export { Callout } from './Callout';",
+			"export const meta = <p>it's</p>;",
+			'',
+			'# Title',
+		].join('\n');
+
+		expect(await collectReferencedModules('page.mdx', source)).toStrictEqual(['./a', './Callout']);
+	});
+
 	test('does not list a re-export in a Vue script block', async () => {
 		const source = [
 			'<script setup>',
@@ -404,6 +709,26 @@ describe('collectReferencedModules', () => {
 		].join('\n');
 
 		expect(await collectReferencedModules('App.vue', source)).toStrictEqual(['./A.vue']);
+	});
+
+	test('lists the specifier of a `{#await import(...)}` block of a Svelte file (issue #4327)', async () => {
+		const source = [
+			'<script>',
+			"import Button from './Button.svelte';",
+			'</script>',
+			"{#await import('./Component.svelte') then { default: Component }}<Component />{/await}",
+		].join('\n');
+
+		expect(await collectReferencedModules('App.svelte', source)).toStrictEqual([
+			'./Button.svelte',
+			'./Component.svelte',
+		]);
+	});
+
+	test('lists the specifier of a `{#await import(...)}` block of a Svelte file that has no script', async () => {
+		const source = "{#await import('./Component.svelte') then { default: Component }}<Component />{/await}";
+
+		expect(await collectReferencedModules('App.svelte', source)).toStrictEqual(['./Component.svelte']);
 	});
 
 	test('lists the specifier of a dynamic import in a plain JS file', async () => {

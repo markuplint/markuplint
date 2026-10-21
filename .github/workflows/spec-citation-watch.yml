@@ -1,0 +1,235 @@
+name: Spec citation watch
+
+# Checks the specification passages that rule READMEs, rule sources and the
+# website cite against the live specifications, and opens an Issue when one
+# changed (see the module comment of `scripts/spec-citations/cli.ts`).
+# Nothing is fixed automatically: a maintainer decides whether the rule, its
+# README (both languages) or `@markuplint/html-spec` has to follow.
+#
+# A pull request that touches the script runs the check read-only, which
+# proves that the runner can install, run the script and reach the spec hosts.
+# Findings do not fail it: the specs move on their own.
+
+on:
+    schedule:
+        - cron: '0 3 1 * *' # Monthly on the 1st at 12:00 JST
+    workflow_dispatch:
+    pull_request:
+        branches:
+            - dev
+        paths:
+            - 'scripts/spec-citations/**'
+            - '.github/workflows/spec-citation-watch.yml'
+
+permissions:
+    contents: read
+
+concurrency:
+    group: spec-citation-watch-${{ github.event_name == 'pull_request' && github.ref || 'scheduled' }}
+    cancel-in-progress: false
+
+env:
+    BRANCH_NAME: auto/spec-citation-lock
+    NODE_BUILD_VERSION: 26
+
+jobs:
+    check:
+        if: github.event_name == 'pull_request'
+        runs-on: ubuntu-latest
+        timeout-minutes: 60
+        steps:
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+            - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
+              uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+              with:
+                  node-version: ${{ env.NODE_BUILD_VERSION }}
+
+            - name: Enable Corepack and setup Yarn v4
+              run: |
+                  corepack enable
+                  yarn --version
+
+            - name: Install dependencies
+              run: yarn install --immutable
+
+            - name: Check citations
+              run: |
+                  set +e
+                  # A page that could not be fetched (status 2) may be an outage that passes: run again, up to
+                  # three more times, five minutes apart. The report is removed first so that a run that crashes
+                  # is not mistaken for the previous one.
+                  for attempt in 1 2 3 4; do
+                      rm -f report.md
+                      yarn spec-citations --report report.md
+                      status=$?
+                      if [ "$status" -ne 2 ] || [ "$attempt" -eq 4 ]; then
+                          break
+                      fi
+                      sleep 300
+                  done
+                  # 0: nothing to report, 1: findings. Neither is this pull request's fault.
+                  # 2: a page still could not be fetched. This job exists to show that the runner can reach the
+                  #    spec hosts, so it fails.
+                  # No report file: the script crashed.
+                  if [ ! -f report.md ] || [ "$status" -ge 2 ]; then
+                      exit 1
+                  fi
+                  cat report.md >> "$GITHUB_STEP_SUMMARY"
+
+    watch:
+        if: github.event_name != 'pull_request'
+        runs-on: ubuntu-latest
+        timeout-minutes: 60
+        permissions:
+            contents: write
+            issues: write
+            pull-requests: write
+        steps:
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+              with:
+                  ref: dev
+
+            - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
+              uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+              with:
+                  node-version: ${{ env.NODE_BUILD_VERSION }}
+
+            - name: Enable Corepack and setup Yarn v4
+              run: |
+                  corepack enable
+                  yarn --version
+
+            - name: Install dependencies
+              run: yarn install --immutable
+
+            # The script's exit status is kept, not propagated: a finding or a
+            # crash must still reach the Issue step below. A crash is told from a
+            # finding by the missing report file (both exit with 1).
+            - name: Check citations
+              id: check
+              run: |
+                  set +e
+                  # Same as the pull request job: a page that could not be fetched (status 2) is tried again, up to
+                  # three more times, five minutes apart, so that one outage does not skip the month for that page.
+                  for attempt in 1 2 3 4; do
+                      rm -f report.md report-full.md
+                      yarn spec-citations --update --report report.md --report-full report-full.md
+                      status=$?
+                      if [ "$status" -ne 2 ] || [ "$attempt" -eq 4 ]; then
+                          break
+                      fi
+                      sleep 300
+                  done
+                  {
+                      echo "status=$status"
+                      if [ -f report.md ]; then echo "completed=true"; else echo "completed=false"; fi
+                  } >> "$GITHUB_OUTPUT"
+                  exit 0
+
+            - name: Publish the full report
+              if: steps.check.outputs.completed == 'true'
+              run: |
+                  # A job summary is limited to 1 MiB. `iconv -c` drops a character that the cut left half-written.
+                  head -c 900000 report-full.md | iconv -c -f UTF-8 -t UTF-8 >> "$GITHUB_STEP_SUMMARY"
+
+            - name: Compose the crash report
+              if: steps.check.outputs.completed == 'false'
+              env:
+                  RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+              run: |
+                  {
+                      echo "<!-- spec-citation-watch -->"
+                      echo "## Specification citations: the check crashed"
+                      echo ""
+                      echo "The monthly check stopped before it could report. See the log: $RUN_URL"
+                  } > report.md
+
+            # One open Issue collects the reports: the first run opens it, and a
+            # later run adds a comment, so a finding nobody has dealt with yet is
+            # not overwritten. The Issue is found by the marker on its first line
+            # rather than by a text search, which is fuzzy and lags the index, and
+            # without a label filter, so an Issue opened without labels is found too.
+            # Status 2 (only fetch failures) is left to the job summary: a page that
+            # was throttled once is not worth an Issue.
+            - name: Report in an Issue
+              if: steps.check.outputs.status == '1'
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  # The open Issues number far fewer than this limit; past it a duplicate could be opened.
+                  NUMBER=$(gh issue list --state open --limit 200 --json number,body \
+                      --jq '[.[] | select(.body | startswith("<!-- spec-citation-watch -->"))] | .[0].number // empty')
+                  if [ -n "$NUMBER" ]; then
+                      gh issue comment "$NUMBER" --body-file report.md
+                  elif ! gh issue create \
+                      --title "Specification citations need a look" \
+                      --label "Specs" \
+                      --label "Documentation" \
+                      --body-file report.md; then
+                      # A label that no longer exists must not lose the report.
+                      gh issue create --title "Specification citations need a look" --body-file report.md
+                  fi
+
+            - name: Check for lock changes
+              id: lock
+              run: |
+                  if git diff --quiet -- scripts/spec-citations/spec-citations.lock.json; then
+                      echo "has_changes=false" >> "$GITHUB_OUTPUT"
+                  else
+                      echo "has_changes=true" >> "$GITHUB_OUTPUT"
+                  fi
+
+            - name: Check for existing open PR
+              if: steps.lock.outputs.has_changes == 'true'
+              id: existing-pr
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  PR_NUMBER=$(gh pr list --head "$BRANCH_NAME" --state open --json number --jq '.[0].number // empty')
+                  if [ -n "$PR_NUMBER" ]; then
+                      echo "pr_exists=true" >> "$GITHUB_OUTPUT"
+                      echo "pr_number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+                  else
+                      echo "pr_exists=false" >> "$GITHUB_OUTPUT"
+                  fi
+
+            - name: Commit and push the lock
+              if: steps.lock.outputs.has_changes == 'true'
+              run: |
+                  git config user.name "github-actions[bot]"
+                  git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+                  git checkout -B "$BRANCH_NAME"
+                  git add scripts/spec-citations/spec-citations.lock.json
+                  git commit -m "chore: refresh the spec citation lock"
+                  git push --force origin "$BRANCH_NAME"
+
+            - name: Compose PR body
+              if: steps.lock.outputs.has_changes == 'true'
+              run: |
+                  {
+                      echo "Automated refresh of \`scripts/spec-citations/spec-citations.lock.json\`."
+                      echo ""
+                      echo "This PR was created by the **Spec citation watch** workflow. It records the cited passages as they are now, so that the next run reports only what changed after this one."
+                      echo ""
+                      echo "Merge it once the findings in the open **Specification citations need a look** Issue have been dealt with. Merging it first hides them."
+                  } > pr-body.md
+
+            - name: Create PR
+              if: steps.lock.outputs.has_changes == 'true' && steps.existing-pr.outputs.pr_exists == 'false'
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  gh pr create \
+                      --base dev \
+                      --head "$BRANCH_NAME" \
+                      --title "chore: refresh the spec citation lock" \
+                      --body-file pr-body.md \
+                      --label "Specs"
+
+            - name: Update existing PR body
+              if: steps.lock.outputs.has_changes == 'true' && steps.existing-pr.outputs.pr_exists == 'true'
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  PR_NUMBER: ${{ steps.existing-pr.outputs.pr_number }}
+              run: gh pr edit "$PR_NUMBER" --body-file pr-body.md

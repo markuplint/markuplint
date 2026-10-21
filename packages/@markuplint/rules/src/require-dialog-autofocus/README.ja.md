@@ -8,11 +8,11 @@ description: show-modal コマンドで表示される dialog 要素に autofocu
 
 `show-modal` コマンドで表示される `<dialog>` 要素に、`autofocus` 属性を持つ子孫要素（または自身）が必要です。
 
-[`showModal()`](https://html.spec.whatwg.org/multipage/interactive-elements.html#dom-dialog-showmodal) でモーダルダイアログが表示される際、ブラウザは[ダイアログフォーカスステップ](https://html.spec.whatwg.org/multipage/interactive-elements.html#dialog-focusing-steps)を実行します。`autofocus` がない場合、`<dialog>` 要素自体にフォーカスがフォールバックします。動作上は問題ありませんが、アクセシビリティ上望ましくありません。スクリーンリーダーのユーザーがダイアログの内容を見落とす可能性があり、キーボードユーザーはインタラクティブな要素に到達するために余分なタブ操作が必要になります。
+[`showModal()`](https://momdo.github.io/html/interactive-elements.html#dom-dialog-showmodal) でモーダルダイアログが表示される際、ブラウザは[ダイアログフォーカスステップ](https://momdo.github.io/html/interactive-elements.html#dialog-focusing-steps)を実行します。`autofocus` がない場合、`<dialog>` 要素自体にフォーカスがフォールバックします。動作上は問題ありませんが、アクセシビリティ上望ましくありません。スクリーンリーダーのユーザーがダイアログの内容を見落とす可能性があり、キーボードユーザーはインタラクティブな要素に到達するために余分なタブ操作が必要になります。
 
-> 著者は、ダイアログが開いた後にユーザーがすぐに操作することが期待される子孫要素に、autofocus属性を使用すべきである。
+> そのため、著者は、ダイアログが開いた後にユーザーがすぐに対話することが期待されるダイアログの子孫要素に対して、autofocus属性を使用すべきである。そのような要素がない場合、著者はdialog要素自体にautofocus属性を使用すべきである。
 
-[HTML Living Standard: dialog要素](https://html.spec.whatwg.org/multipage/interactive-elements.html#the-dialog-element)より引用
+[HTML Living Standard: dialog要素](https://momdo.github.io/html/interactive-elements.html#the-dialog-element)より引用
 
 このルールは [Invoker Commands API](https://open-ui.org/components/invokers.explainer/) を使用してモーダルダイアログを静的に検出します。`command="show-modal"` と `commandfor` で `<dialog>` 要素を参照する `<button>` がある場合、そのダイアログがモーダルとして表示されることを示します。
 
@@ -78,8 +78,8 @@ JavaScript で `showModal()` を呼び出してプログラム的に開かれる
 ## 関連
 
 - [Issue #689](https://github.com/markuplint/markuplint/issues/689)
-- [HTML Living Standard: dialog 要素](https://html.spec.whatwg.org/multipage/interactive-elements.html#the-dialog-element)
-- [HTML Living Standard: ダイアログフォーカスステップ](https://html.spec.whatwg.org/multipage/interactive-elements.html#dialog-focusing-steps)
+- [HTML Living Standard: dialog 要素](https://momdo.github.io/html/interactive-elements.html#the-dialog-element)
+- [HTML Living Standard: ダイアログフォーカスステップ](https://momdo.github.io/html/interactive-elements.html#dialog-focusing-steps)
 - [WAI-ARIA APG: モーダルダイアログパターン](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/)
 - [Invoker Commands API Explainer](https://open-ui.org/components/invokers.explainer/)
 - [MDN: autofocus](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/autofocus)

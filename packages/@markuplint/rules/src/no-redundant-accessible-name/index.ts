@@ -76,7 +76,7 @@ function collectNamingSources<V extends RuleConfigValue, O extends PlainData>(
 	// traversal reaches the node again, accname step 2B is skipped and the name falls through
 	// to 2D–2F (aria-label, native sources, content). aria-labelledby then only composes the
 	// node's own name with the other referenced elements, so it is not a competing source.
-	// https://www.w3.org/TR/accname-1.2/#comp_labelledby (see Example 5 under 2D)
+	// https://w3c.github.io/accname/#comp_labelledby (see Example 5 under 2D)
 	//
 	// The remaining sources are still ranked as usual: inside the self-referencing traversal,
 	// aria-label (2D) still wins over a label (2E) or content (2F), so those are reported exactly

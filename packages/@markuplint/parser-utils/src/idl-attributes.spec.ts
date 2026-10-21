@@ -1,6 +1,6 @@
 import { test, expect } from 'vitest';
 
-import { searchIDLAttribute } from './idl-attributes.js';
+import { searchIDLAttribute, suggestIDLAttribute } from './idl-attributes.js';
 
 test('basic', () => {
 	expect(searchIDLAttribute('class')).toStrictEqual({
@@ -24,12 +24,12 @@ test('basic', () => {
 		contentAttrName: 'tabindex',
 	});
 	expect(searchIDLAttribute('tab-index')).toStrictEqual({
-		idlPropName: 'tabIndex',
-		contentAttrName: 'tabindex',
+		idlPropName: undefined,
+		contentAttrName: undefined,
 	});
 	expect(searchIDLAttribute('TabIndex')).toStrictEqual({
-		idlPropName: 'tabIndex',
-		contentAttrName: 'tabindex',
+		idlPropName: undefined,
+		contentAttrName: undefined,
 	});
 	expect(searchIDLAttribute('x')).toStrictEqual({
 		idlPropName: 'x',
@@ -48,7 +48,42 @@ test('basic', () => {
 		contentAttrName: 'y2',
 	});
 	expect(searchIDLAttribute('attribute-name')).toStrictEqual({
-		idlPropName: 'attributeName',
-		contentAttrName: 'attributeName',
+		idlPropName: undefined,
+		contentAttrName: undefined,
 	});
+});
+
+test('suggestIDLAttribute reads the spelling of a name without regard to case, to suggest the property', () => {
+	expect(suggestIDLAttribute('tabIndex')).toBe('tabIndex');
+	expect(suggestIDLAttribute('tabindex')).toBe('tabIndex');
+	expect(suggestIDLAttribute('TABINDEX')).toBe('tabIndex');
+	expect(suggestIDLAttribute('tab-index')).toBe('tabIndex');
+	expect(suggestIDLAttribute('Stroke-Width')).toBe('strokeWidth');
+	expect(suggestIDLAttribute('Y1')).toBe('y1');
+	expect(suggestIDLAttribute('not-an-attribute')).toBeUndefined();
+});
+
+test('a name is mapped by its exact spelling, in the case it is written', () => {
+	// The IDL name, and the content name
+	expect(searchIDLAttribute('tabIndex')).toStrictEqual({ idlPropName: 'tabIndex', contentAttrName: 'tabindex' });
+	expect(searchIDLAttribute('readOnly')).toStrictEqual({ idlPropName: 'readOnly', contentAttrName: 'readonly' });
+	expect(searchIDLAttribute('readonly')).toStrictEqual({ idlPropName: 'readOnly', contentAttrName: 'readonly' });
+	expect(searchIDLAttribute('strokeWidth')).toStrictEqual({
+		idlPropName: 'strokeWidth',
+		contentAttrName: 'stroke-width',
+	});
+	expect(searchIDLAttribute('stroke-width')).toStrictEqual({
+		idlPropName: 'strokeWidth',
+		contentAttrName: 'stroke-width',
+	});
+	// Another case is not that name: `TABINDEX`, `READONLY`, `Class` and `FOR` map to nothing
+	const none = { idlPropName: undefined, contentAttrName: undefined };
+	expect(searchIDLAttribute('TABINDEX')).toStrictEqual(none);
+	expect(searchIDLAttribute('READONLY')).toStrictEqual(none);
+	expect(searchIDLAttribute('Class')).toStrictEqual(none);
+	expect(searchIDLAttribute('FOR')).toStrictEqual(none);
+	expect(searchIDLAttribute('Y1')).toStrictEqual(none);
+	// An event handler is its own name in lower case
+	expect(searchIDLAttribute('onclick')).toStrictEqual({ idlPropName: 'onclick', contentAttrName: 'onclick' });
+	expect(searchIDLAttribute('onClick')).toStrictEqual(none);
 });

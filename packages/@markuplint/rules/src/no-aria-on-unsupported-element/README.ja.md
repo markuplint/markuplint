@@ -4,7 +4,9 @@ description: ARIA属性を全くサポートしない要素へのARIA属性指�
 
 # `no-aria-on-unsupported-element`
 
-HTML仕様データがARIA属性を全くサポートしないとマークしている要素上の `role` 属性や `aria-*` 属性を、[ARIA in HTMLの文書適合性要件](https://w3c.github.io/html-aria/#docconformance)に基づき禁止します。
+HTML仕様データがARIA属性を全くサポートしないとマークしている要素上の `role` 属性や `aria-*` 属性を、[ARIA in HTMLの文書適合性要件](https://www.w3.org/TR/html-aria/#docconformance)に基づき禁止します。
+
+ARIA 属性の名前は、[`no-unknown-attr`](/docs/rules/no-unknown-attr#attribute-name-case) が属性名を比較するのと同じ方法(同ルールの「属性名の大文字・小文字」節を参照)で比較されます。DOM が属性名の大文字・小文字を区別しない場合(HTML 要素など)は `ARIA-LABEL` と `aria-label` は同じ属性として扱われ、区別する場合(JSX の `<svg>` 要素など)は別の属性として扱われます。
 
 :::info
 

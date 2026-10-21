@@ -2,6 +2,7 @@ import type { SelectorElement, SelectorMatchedResult, SelectorNode, SelectorResu
 import type { ReadonlyDeep, Writable } from 'type-fest';
 
 import { resolveNamespace } from '@markuplint/ml-spec';
+import { asciiLowerCase, vuePropKey } from '@markuplint/shared';
 import debug from 'debug';
 import parser from 'postcss-selector-parser';
 
@@ -9,6 +10,7 @@ import { compareSpecificity } from './compare-specificity.js';
 import { log as coreLog } from './debug.js';
 import { InvalidSelectorError } from './invalid-selector-error.js';
 import { isElement, isNonDocumentTypeChildNode, isPureHTMLElement } from './is.js';
+import { typeNameMatches } from './type-name.js';
 
 const selLog = coreLog.extend('selector');
 const resLog = coreLog.extend('result');
@@ -568,15 +570,7 @@ class SelectorTarget {
 		if (matched && this.tag && this.tag.type === 'tag') {
 			specificity[2] += 1;
 
-			let a = this.tag.value;
-			let b = el.localName;
-
-			if (isPureHTMLElement(el)) {
-				a = a.toLowerCase();
-				b = b.toLowerCase();
-			}
-
-			if (a !== b) {
+			if (!typeNameMatches(this.tag.value, el)) {
 				matched = false;
 			}
 		}
@@ -632,14 +626,23 @@ function attrMatch(
 ) {
 	// HTML LS / Selectors L4: attribute names are ASCII case-insensitive when
 	// the element is in the HTML namespace. SVG, MathML, and custom elements
-	// keep case-sensitive matching (e.g. SVG `viewBox`). The `isPureHTMLElement`
+	// keep case-sensitive matching (e.g. SVG `viewBox`). A host that knows what the DOM does
+	// with each name says so on the attribute (`SelectorAttr#nameCaseInsensitive`, and
+	// `domName` for the name an SVG attribute has); otherwise the `isPureHTMLElement`
 	// guard mirrors the same convention used for tag-name matching in
 	// SelectorTarget#matchWithoutCombineChecking.
 	const isHTML = isPureHTMLElement(el);
-	const selectorAttrName = isHTML ? attr.attribute.toLowerCase() : attr.attribute;
 	return [...el.attributes].some(attrOfEl => {
-		const elAttrName = isHTML ? attrOfEl.localName.toLowerCase() : attrOfEl.localName;
-		if (selectorAttrName !== elAttrName) {
+		const elAttrName = attrOfEl.domName ?? attrOfEl.localName;
+		const isCaseInsensitive = attrOfEl.nameCaseInsensitive ?? isHTML;
+		const selectorName = attrOfEl.nameIsCamelized ? vuePropKey(attr.attribute) : attr.attribute;
+		const fold = (name: string) => (isCaseInsensitive ? asciiLowerCase(name) : name);
+		// A prefixed attribute (`xlink:href`) is also named by its local name, which is what
+		// the namespace of a selector (`[xlink|href]`, `[*|href]`) qualifies
+		const named =
+			fold(selectorName) === fold(elAttrName) ||
+			(attrOfEl.namespaceURI != null && fold(selectorName) === fold(attrOfEl.localName));
+		if (!named) {
 			return false;
 		}
 		if (attr.namespace != null && attr.namespace !== true && attr.namespace !== '*') {

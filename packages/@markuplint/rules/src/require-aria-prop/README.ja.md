@@ -6,6 +6,8 @@ description: ロールに必須のARIAプロパティが指定されていない
 
 ロールに必須のARIAプロパティが指定されていない場合に警告します。
 
+ARIA 属性の名前は、[`no-unknown-attr`](/docs/rules/no-unknown-attr#attribute-name-case) が属性名を比較するのと同じ方法(同ルールの「属性名の大文字・小文字」節を参照)で比較されます。DOM が属性名の大文字・小文字を区別しない場合(HTML 要素など)は `ARIA-LABEL` と `aria-label` は同じ属性として扱われ、区別する場合(JSX の `<svg>` 要素など)は別の属性として扱われます。
+
 <!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
 
 ❌ 間違ったコード例
@@ -24,7 +26,7 @@ description: ロールに必須のARIAプロパティが指定されていない
 
 :::note 条件付き必須: `separator`
 
-`separator`ロールにおいて、`aria-valuenow`は要素がフォーカス可能な場合（`tabindex`を持つ、`<button>`や`<a href>`などのインタラクティブコンテンツである等）にのみ必須となります。フォーカス不能な`<div role="separator">`は[WAI-ARIA](https://www.w3.org/TR/wai-aria/#separator)に従い静的な構造的セパレーターとして扱われ、`aria-valuenow`は不要です。
+`separator`ロールにおいて、`aria-valuenow`は要素がフォーカス可能な場合（`tabindex`を持つ、`<button>`や`<a href>`などのインタラクティブコンテンツである等）にのみ必須となります。フォーカス不能な`<div role="separator">`は[WAI-ARIA](https://w3c.github.io/aria/#separator)に従い静的な構造的セパレーターとして扱われ、`aria-valuenow`は不要です。
 
 <!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
 

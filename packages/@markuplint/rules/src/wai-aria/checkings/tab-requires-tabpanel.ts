@@ -11,8 +11,9 @@ import { ARIA_RECOMMENDED_VERSION, getComputedRole } from '@markuplint/ml-spec';
  * express it: the tab's `aria-controls` idref list points to a `tabpanel`, or some
  * `tabpanel` element's `aria-labelledby` idref list points back at the tab's own `id`.
  *
- * @see https://www.w3.org/TR/wai-aria-1.3/#tab — "Authors MUST ensure that if a tab
- * is active, a corresponding tabpanel that represents the active tab is rendered."
+ * > Authors MUST ensure that if a tab is active, a corresponding tabpanel that represents the active tab is rendered.
+ *
+ * @see https://w3c.github.io/aria/#tab
  * @param el - The element node to inspect.
  * @param role - The computed ARIA role of the element.
  * @returns A violation if the active tab has no corresponding tabpanel.

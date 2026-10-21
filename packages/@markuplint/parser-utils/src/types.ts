@@ -1,4 +1,5 @@
 import type {
+	AttrNameRoute,
 	EndTagType,
 	MLASTParentNode,
 	MLASTParseError,
@@ -15,7 +16,9 @@ export type ParserOptions = {
 	readonly ignoreTags?: readonly IgnoreTag[];
 	readonly maskChar?: string;
 	readonly tagNameCaseSensitive?: boolean;
+	readonly componentNameVariants?: boolean;
 	readonly attrNameCaseSensitive?: boolean;
+	readonly attrNameRoute?: AttrNameRoute;
 	readonly selfCloseType?: SelfCloseType;
 	readonly spaceChars?: readonly string[];
 	readonly rawTextElements?: readonly string[];

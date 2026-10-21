@@ -219,3 +219,68 @@ test('[element-supports-aria-prop-valid-006] aria-expanded on non-first summary 
 		).violations,
 	).toStrictEqual([]);
 });
+
+test('[element-supports-aria-prop-issue-4309-001] an upper-case aria-hidden is in the properties.only whitelist', async () => {
+	expect((await mlRuleTest(rule, '<br ARIA-HIDDEN="true">')).violations).toStrictEqual([]);
+});
+
+test('[element-supports-aria-prop-issue-4309-002] an upper-case aria-* outside the properties.only whitelist is reported by the spelling written', async () => {
+	const { violations } = await mlRuleTest(rule, '<br ARIA-ATOMIC="true">');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 5,
+			message: 'The "ARIA-ATOMIC" ARIA property is disallowed on the "br" element',
+			raw: 'ARIA-ATOMIC="true"',
+		},
+	]);
+});
+
+test('[element-supports-aria-prop-issue-4309-003] an upper-case aria-* is matched with properties.without', async () => {
+	const { violations } = await mlRuleTest(rule, '<button popovertarget="p" ARIA-EXPANDED="false">x</button>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 27,
+			message:
+				'The "ARIA-EXPANDED" ARIA state must not use on the "button" element. As its state is already provided by the "popovertarget" attribute',
+			raw: 'ARIA-EXPANDED="false"',
+		},
+	]);
+});
+
+test('[element-supports-aria-prop-issue-4309-004] JSX: an upper-case aria-hidden on an HTML element is in the whitelist', async () => {
+	const parser = { '.*': '@markuplint/jsx-parser' };
+	expect((await mlRuleTest(rule, '<br ARIA-HIDDEN="true" />', { parser })).violations).toStrictEqual([]);
+
+	// Control: an aria-* outside the whitelist is reported on the same element
+	const { violations } = await mlRuleTest(rule, '<br ARIA-ATOMIC="true" />', { parser });
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 5,
+			message: 'The "ARIA-ATOMIC" ARIA property is disallowed on the "br" element',
+			raw: 'ARIA-ATOMIC="true"',
+		},
+	]);
+});
+
+test('[element-supports-aria-prop-issue-4309-005] JSX: an upper-case aria-* on an svg element is not an ARIA attribute', async () => {
+	const parser = { '.*': '@markuplint/jsx-parser' };
+	expect((await mlRuleTest(rule, '<svg><circle ARIA-LABEL="x" /></svg>', { parser })).violations).toStrictEqual([]);
+
+	// Control: the lower-case name is reported on the same element (it takes no aria-*)
+	const { violations } = await mlRuleTest(rule, '<svg><circle aria-label="x" /></svg>', { parser });
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 14,
+			message: 'The "aria-label" ARIA property is disallowed on the "circle" element',
+			raw: 'aria-label="x"',
+		},
+	]);
+});

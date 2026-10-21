@@ -113,3 +113,70 @@ describe('fix with parsers', () => {
 		expect(fixedCode).toBe('input()');
 	});
 });
+
+test('[no-default-value-issue-4309-001] an upper-case name is the attribute in HTML', async () => {
+	const { violations } = await mlRuleTest(rule, '<canvas WIDTH="300"></canvas>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 16,
+			raw: '300',
+			message: 'It is the default value',
+		},
+	]);
+});
+
+test('[no-default-value-issue-4309-002] an HTML element in JSX folds the name', async () => {
+	const options = { parser: { '.*': '@markuplint/jsx-parser' } };
+	const upper = await mlRuleTest(rule, '<canvas WIDTH="300" />', options);
+	expect(upper.violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 16,
+			raw: '300',
+			message: 'It is the default value',
+		},
+	]);
+	const lower = await mlRuleTest(rule, '<canvas width="300" />', options);
+	expect(lower.violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 16,
+			raw: '300',
+			message: 'It is the default value',
+		},
+	]);
+});
+
+test('[no-default-value-issue-4309-003] an SVG attribute that the HTML parser reads gets its case back', async () => {
+	const { violations } = await mlRuleTest(rule, '<svg><image PRESERVEASPECTRATIO="xMidYMid meet" /></svg>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 34,
+			raw: 'xMidYMid meet',
+			message: 'It is the default value',
+		},
+	]);
+});
+
+test('[no-default-value-issue-4309-004] an SVG element in JSX keeps the name as written', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<svg><image PRESERVEASPECTRATIO="xMidYMid meet" /><image preserveAspectRatio="xMidYMid meet" /></svg>',
+		{ parser: { '.*': '@markuplint/jsx-parser' } },
+	);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 79,
+			raw: 'xMidYMid meet',
+			message: 'It is the default value',
+		},
+	]);
+});

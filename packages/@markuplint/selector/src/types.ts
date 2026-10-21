@@ -9,6 +9,23 @@ export interface SelectorAttr {
 	readonly localName: string;
 	readonly value: string;
 	readonly namespaceURI: string | null;
+	/**
+	 * Whether the DOM makes this name the same attribute under another ASCII case: an attribute set
+	 * on an HTML element is (`setAttribute` lower-cases the name), one on an SVG or MathML element is
+	 * not, and neither is a prop of a component. Absent means the host does not say, and the element
+	 * decides by its namespace: only a pure HTML element folds (see `isPureHTMLElement`).
+	 */
+	readonly nameCaseInsensitive?: boolean;
+	/**
+	 * The name the attribute has in the DOM, which a selector is matched with: the HTML parser
+	 * restores `viewBox` for `<svg VIEWBOX>`. Absent means `localName`.
+	 */
+	readonly domName?: string;
+	/**
+	 * Whether the framework makes the name of a selector the same prop as `domName` once it is
+	 * camelized (Vue: `my-label` and `myLabel` are one prop). Absent means it does not.
+	 */
+	readonly nameIsCamelized?: boolean;
 }
 
 /**
@@ -45,6 +62,27 @@ export interface SelectorElement extends SelectorNode {
 	 * (a plain DOM) never matches `#custom`.
 	 */
 	readonly isCustomElement?: boolean;
+	/**
+	 * Whether the document this element is in tells the case of a tag name apart (JSX, Svelte, Astro
+	 * and MDX do: `<foobar>` and `<FooBar>` are not the same element). A type selector, and the `nodeName`
+	 * of a regular expression selector, are then compared with `localName` as it is, even for an element
+	 * that HTML names case-insensitively. Absent means it does not: a plain DOM follows HTML.
+	 */
+	readonly tagNameCaseSensitive?: boolean;
+	/**
+	 * What the element is for a type selector, in a document that resolves a component by any
+	 * spelling of its name (Vue: `<FooBar>`, `<fooBar>` and `<foo-bar>` are one component). Absent
+	 * means the document does not, and the type selector is compared as `tagNameCaseSensitive` says.
+	 *
+	 * - `component`: a component, which `localName` names as written
+	 * - `native`: an HTML element that the document takes for native (`<button>`): the rule of the parser
+	 *   when it has one (`MLParser#isNativeTag`; Vue's lists differ from the specification), else the specification
+	 * - `unknown-html`: an HTML element that it does not (`<foobar>`, and in Vue `<marquee>`)
+	 *
+	 * An element that a pretender stands for is what the pretender makes it, as `localName` is.
+	 * An element of the SVG or MathML namespace has none: it keeps the case of its name.
+	 */
+	readonly tagNameKind?: 'component' | 'native' | 'unknown-html';
 	readonly parentElement: SelectorElement | null;
 	readonly previousElementSibling: SelectorElement | null;
 	readonly nextElementSibling: SelectorElement | null;

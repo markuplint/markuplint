@@ -134,3 +134,115 @@ describe('fix', () => {
 		expect(fixedCode).toBe('<DIV DATA-LOWERCASE></DIV>');
 	});
 });
+
+describe('foreign elements', () => {
+	test('[case-sensitive-attr-name-issue-4309-001] an SVG attribute is checked against the case of its spec', async () => {
+		const { violations } = await mlRuleTest(rule, '<svg viewbox="0 0 1 1"></svg>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 6,
+				raw: 'viewbox',
+				message: 'The "viewbox" attribute should be "viewBox"',
+			},
+		]);
+	});
+
+	test('[case-sensitive-attr-name-issue-4309-002] the case of the spec is what the fix writes, whatever the option says', async () => {
+		const upper = await mlRuleTest(rule, '<svg VIEWBOX="0 0 1 1"></svg>', { rule: 'upper' });
+		expect(upper.violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 6,
+				raw: 'VIEWBOX',
+				message: 'The "VIEWBOX" attribute should be "viewBox"',
+			},
+		]);
+		const fixedUpper = await mlRuleTest(rule, '<svg VIEWBOX="0 0 1 1"></svg>', { rule: 'upper' }, true);
+		expect(fixedUpper.fixedCode).toBe('<svg viewBox="0 0 1 1"></svg>');
+		const fixedLower = await mlRuleTest(rule, '<svg VIEWBOX="0 0 1 1"></svg>', undefined, true);
+		expect(fixedLower.fixedCode).toBe('<svg viewBox="0 0 1 1"></svg>');
+		const fixedLowerCase = await mlRuleTest(rule, '<svg viewbox="0 0 1 1"></svg>', undefined, true);
+		expect(fixedLowerCase.fixedCode).toBe('<svg viewBox="0 0 1 1"></svg>');
+	});
+
+	test('[case-sensitive-attr-name-issue-4309-003] an HTML attribute on an SVG element is fixed to the case of the spec', async () => {
+		const { violations } = await mlRuleTest(rule, '<svg CLASS="a"></svg>', { rule: 'upper' });
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 6,
+				raw: 'CLASS',
+				message: 'The "CLASS" attribute should be "class"',
+			},
+		]);
+		const { fixedCode } = await mlRuleTest(rule, '<svg CLASS="a"></svg>', { rule: 'upper' }, true);
+		expect(fixedCode).toBe('<svg class="a"></svg>');
+	});
+
+	test('[case-sensitive-attr-name-issue-4309-004] the spelling of the spec is valid, as is a name that has no spec', async () => {
+		const spelled = await mlRuleTest(rule, '<svg viewBox="0 0 1 1" class="a" data-Foo="b"></svg>');
+		expect(spelled.violations).toStrictEqual([]);
+		const control = await mlRuleTest(rule, '<svg VIEWBOX="0 0 1 1" class="a" data-Foo="b"></svg>');
+		expect(control.violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 6,
+				raw: 'VIEWBOX',
+				message: 'The "VIEWBOX" attribute should be "viewBox"',
+			},
+		]);
+	});
+
+	test('[case-sensitive-attr-name-issue-4309-005] JSX is still skipped', async () => {
+		const options = { parser: { '.*': '@markuplint/jsx-parser' } };
+		const jsx = await mlRuleTest(rule, '<svg viewbox="0 0 1 1"></svg>', options);
+		expect(jsx.violations).toStrictEqual([]);
+		const control = await mlRuleTest(rule, '<svg viewbox="0 0 1 1"></svg>');
+		expect(control.violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 6,
+				raw: 'viewbox',
+				message: 'The "viewbox" attribute should be "viewBox"',
+			},
+		]);
+	});
+
+	test('[case-sensitive-attr-name-issue-4309-006] Svelte: a static name is checked, a dynamic one is set by code and is not', async () => {
+		const options = { parser: { '.*': '@markuplint/svelte-parser' } };
+		expect((await mlRuleTest(rule, '<svg VIEWBOX="0 0 1 1"></svg>', options)).violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 6,
+				raw: 'VIEWBOX',
+				message: 'The "VIEWBOX" attribute should be "viewBox"',
+			},
+		]);
+		expect((await mlRuleTest(rule, '<svg VIEWBOX={x}></svg>', options)).violations).toStrictEqual([]);
+	});
+
+	test('[case-sensitive-attr-name-issue-4309-007] Vue: an upper-case name on an HTML element is reported, as in HTML', async () => {
+		const options = { parser: { '.*': '@markuplint/vue-parser' } };
+		expect(
+			(await mlRuleTest(rule, '<template><div DATA-X="1"></div></template>', options)).violations,
+		).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 16,
+				raw: 'DATA-X',
+				message: 'Attribute names of HTML elements should be lowercase',
+			},
+		]);
+		expect(
+			(await mlRuleTest(rule, '<template><svg ROLE="img"></svg></template>', options)).violations,
+		).toStrictEqual([]);
+	});
+});

@@ -10,6 +10,7 @@ import type {
 	ValueType,
 } from './types.js';
 import type {
+	AttrNameRoute,
 	EndTagType,
 	MLASTDocument,
 	MLASTParentNode,
@@ -42,6 +43,7 @@ import { isVoidElement as detectVoidElement } from '@markuplint/ml-spec';
 import { attrTokenizer } from './attr-tokenizer.js';
 import { defaultSpaces } from './const.js';
 import { domLog, PerformanceTimer } from './debug.js';
+import { isComponentName } from './decision.js';
 import { detectElementType } from './detect-element-type.js';
 import { AttrState, TagState } from './enums.js';
 import { getEndCol, getEndLine, getOffsetsFromCode, getPosition } from './get-location.js';
@@ -87,7 +89,9 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	readonly #ignoreTags: readonly IgnoreTag[] = [];
 	readonly #maskChar?: string;
 	readonly #tagNameCaseSensitive: boolean = false;
+	readonly #componentNameVariants: boolean = false;
 	readonly #attrNameCaseSensitive: boolean = false;
+	readonly #attrNameRoute: AttrNameRoute = 'html-parser';
 	readonly #selfCloseType: SelfCloseType = 'html';
 	readonly #spaceChars: readonly string[] = defaultSpaces;
 	readonly #rawTextElements: readonly string[] = ['style', 'script'];
@@ -131,7 +135,9 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		this.#ignoreTags = options?.ignoreTags ?? this.#ignoreTags;
 		this.#maskChar = options?.maskChar ?? this.#maskChar;
 		this.#tagNameCaseSensitive = options?.tagNameCaseSensitive ?? this.#tagNameCaseSensitive;
+		this.#componentNameVariants = options?.componentNameVariants ?? this.#componentNameVariants;
 		this.#attrNameCaseSensitive = options?.attrNameCaseSensitive ?? this.#attrNameCaseSensitive;
+		this.#attrNameRoute = options?.attrNameRoute ?? this.#attrNameRoute;
 		this.#selfCloseType = options?.selfCloseType ?? this.#selfCloseType;
 		this.#spaceChars = options?.spaceChars ?? this.#spaceChars;
 		this.#rawTextElements = options?.rawTextElements ?? this.#rawTextElements;
@@ -189,6 +195,15 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	}
 
 	/**
+	 * Whether a component is referred to by any spelling of its name (`<FooBar>`, `<fooBar>`
+	 * and `<foo-bar>` are one component). Only Vue resolves a tag so; see
+	 * {@link MLParser.componentNameVariants} in `@markuplint/ml-ast`.
+	 */
+	get componentNameVariants() {
+		return this.#componentNameVariants;
+	}
+
+	/**
 	 * Whether attribute names are case-sensitive in this language (JSX props such as
 	 * `onClick`). Independent of {@link Parser.tagNameCaseSensitive}: Svelte and Astro
 	 * distinguish components by tag-name case but lowercase or pass through HTML
@@ -196,6 +211,17 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	 */
 	get attrNameCaseSensitive() {
 		return this.#attrNameCaseSensitive;
+	}
+
+	/**
+	 * How the name of an attribute gets into the DOM of the browser (see `AttrNameRoute`), which decides
+	 * whether another spelling of the name is the same attribute. Independent of
+	 * {@link Parser.attrNameCaseSensitive}, which is about the style rules: Vue sets its attributes through
+	 * the DOM API, but its names are not JavaScript identifiers, so a template is still checked for the
+	 * case of a name. The HTML parser of the browser by default.
+	 */
+	get attrNameRoute(): AttrNameRoute {
+		return this.#attrNameRoute;
 	}
 
 	/**
@@ -1185,11 +1211,49 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	 * given tag name, using the parser's authored element name distinguishing pattern.
 	 *
 	 * @param nodeName - The tag name to classify
-	 * @param defaultPattern - A fallback pattern if no authored element name pattern is set
+	 * @param defaultPattern - A fallback pattern if no authored element name pattern is set: a regular
+	 *   expression, a name, or a function (a parser of a language that decides by a rule passes
+	 *   `name => this.isComponentName(name)`)
 	 * @returns The element type classification
 	 */
 	detectElementType(nodeName: string, defaultPattern?: ParserAuthoredElementNameDistinguishing): ElementType {
 		return detectElementType(nodeName, this.#authoredElementName, defaultPattern);
+	}
+
+	/**
+	 * Whether a character can be the first of a tag name, where the tag scanner reads a `<` followed by it as a
+	 * start tag. Anything else after a `<` leaves it as text (`a < b`, `<3`).
+	 *
+	 * The default is an ASCII letter, the rule of the HTML tokenizer ("tag open state") that most
+	 * languages share. A parser of a language whose element names start otherwise overrides this
+	 * (JSX: `$`, `_` and a letter of any script).
+	 *
+	 * @param char - The character that follows `<`
+	 * @returns Whether it starts a tag name
+	 * @see https://html.spec.whatwg.org/multipage/parsing.html#tag-open-state
+	 */
+	isTagNameStart(char: string): boolean {
+		return /[a-z]/i.test(char);
+	}
+
+	/**
+	 * Whether a name is a reference to a component, not the name of an element, judged by its form
+	 * alone in the language this parser reads. The scanners of `pretenders` end a chain of what a
+	 * component renders at a name they cannot resolve (`Tabs.Root`, a variable) and emit it as it is,
+	 * and a pretender's target (`as.element`) is typed by it, so what the scanners and `ml-core` take
+	 * for a component has to be the parser's own answer.
+	 *
+	 * The default is the form that most languages share: a capital initial or a `.` in a name that
+	 * is not that of a custom element (the `isComponentName` function of `./decision.ts`). A parser of a language that
+	 * names its components otherwise overrides this, as it overrides {@link detectElementType}; this
+	 * class names no language. The user's `authoredElementName` is not part of the answer: it is
+	 * the user's choice of what to call an authored element in a document, not the language's rule.
+	 *
+	 * @param name - A tag name as written, case kept
+	 * @returns Whether the name is a component's
+	 */
+	isComponentName(name: string): boolean {
+		return isComponentName(name);
 	}
 
 	/**
@@ -1652,7 +1716,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 					break;
 				}
 				case TagState.FirstCharOfTagName: {
-					if (/[a-z]/i.test(char)) {
+					if (this.isTagNameStart(char)) {
 						tagName += char;
 						state = TagState.TagName;
 						break;

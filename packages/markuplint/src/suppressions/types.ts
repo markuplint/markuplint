@@ -10,6 +10,9 @@ export type SuppressionEntry = {
 	 * CSS selector identifying the LCA (Lowest Common Ancestor) subtree
 	 * that contains all violations for this rule. Uses id/class/attr for
 	 * precise matching. When absent, suppression applies to the entire file.
+	 *
+	 * A `.`, `#`, `[` or `\` in a tag name or a class name is escaped with a `\` (`Tabs\.Root`),
+	 * as CSS does. A scope written before the escape has none, and is read as it was written.
 	 */
 	readonly scope?: string;
 };

@@ -24,6 +24,9 @@ export class SvelteParser extends Parser<SvelteNode> {
 		super({
 			endTagType: 'xml',
 			tagNameCaseSensitive: true,
+			// A static attribute is in the HTML string that the compiler hands to the browser's parser,
+			// and a dynamic one is set by `set_attribute` under the name as written.
+			attrNameRoute: 'dom-api-when-dynamic',
 			ignoreTags: [
 				// Fixed(Resolved) #2505
 				// The script tag needs to be passed with the lang attribute to the parser,
@@ -455,8 +458,17 @@ export class SvelteParser extends Parser<SvelteNode> {
 			} else {
 				thenExpEndCharOffset = thenExpStart + rawPendingNodesBelow.indexOf('}') + 1;
 			}
-			thenToken = this.sliceFragment(token.offset + thenExpStart, thenExpEndCharOffset);
+			// `thenExpStart` is a position in the whole source, as `thenExpEndCharOffset` is
+			thenToken = this.sliceFragment(thenExpStart, thenExpEndCharOffset);
 		}
+
+		/**
+		 * `{#await expression then name}...{:catch name}...{/await}`
+		 *
+		 * The `then` is in the head of the block (the shorthand), so no `{:then}` marks it: Svelte
+		 * reads what follows the head as the `then` fragment, which then belongs to the head.
+		 */
+		const hasThenInHead = !thenToken && !!originBlockNode.then;
 
 		let catchToken: Token | null = null;
 
@@ -468,10 +480,17 @@ export class SvelteParser extends Parser<SvelteNode> {
 		 *
 		 * `{#await expression}...{:catch name}...{/await}`
 		 *                 find___^
+		 *
+		 * If `then` is in the head of the block:
+		 *
+		 * `{#await expression then name}...{:catch name}...{/await}`
+		 *                           find___^
 		 */
 		const catchExpStart = thenToken
 			? (thenEnd ?? thenToken.offset + thenToken.raw.length)
-			: (pendingEnd ?? awaitExpEnd);
+			: hasThenInHead
+				? (thenEnd ?? awaitExpEnd)
+				: (pendingEnd ?? awaitExpEnd);
 
 		/**
 		 * `{:catch name}...{/await}`
@@ -492,8 +511,19 @@ export class SvelteParser extends Parser<SvelteNode> {
 			} else {
 				catchExpEndCharOffset = catchExpStart + rawThenNodesBelow.indexOf('}') + 1;
 			}
-			catchToken = this.sliceFragment(token.offset + catchExpStart, catchExpEndCharOffset);
+			// `catchExpStart` is a position in the whole source, as `catchExpEndCharOffset` is
+			catchToken = this.sliceFragment(catchExpStart, catchExpEndCharOffset);
 		}
+
+		/**
+		 * What follows the head of the block when no `{:then}` or `{:catch}` marks it: the `then` or the
+		 * `catch` of the shorthand (`{#await expression then name}`, `{#await expression catch name}`).
+		 */
+		const headContent = hasThenInHead
+			? originBlockNode.then?.nodes
+			: !thenToken && !catchToken
+				? originBlockNode.catch?.nodes
+				: undefined;
 
 		const expressions: MLASTPreprocessorSpecificBlock[] = [
 			this.visitPsBlock(
@@ -504,7 +534,7 @@ export class SvelteParser extends Parser<SvelteNode> {
 					nodeName: 'await',
 					isFragment: false,
 				},
-				originBlockNode.pending?.nodes,
+				originBlockNode.pending?.nodes ?? headContent,
 				{
 					type: 'await',
 					expression: awaitExpToken.raw,

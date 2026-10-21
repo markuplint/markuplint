@@ -8,6 +8,7 @@ import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
 import { normalizePath } from './import-resolver/resolve-module-file.js';
 
 import { autoScan, clearAutoScanCache } from './auto-scan.js';
+import { disambiguatePretenders } from './disambiguate.js';
 
 describe('autoScan', () => {
 	let tmpDir: string;
@@ -29,8 +30,6 @@ describe('autoScan', () => {
 
 		const result = await autoScan(entryPath, entrySource);
 
-		// BREAKING CHANGE (#4082): `slots: null` is kept instead of collapsing to the bare tag name.
-		// expect(result.find(p => p.selector === 'Child')).toMatchObject({ as: 'button' }); // pre-#4082 baseline
 		expect(result.find(p => p.selector === 'Child')).toMatchObject({ as: { element: 'button', slots: null } });
 	});
 
@@ -49,6 +48,189 @@ describe('autoScan', () => {
 		const result = await autoScan(entryPath, entrySource);
 
 		expect(result.find(p => p.selector === 'Item')).toMatchObject({ as: { element: 'img', slots: null } });
+	});
+
+	test('a .tsx entry resolves a component it loads with `lazy()` into a variable of another name', async () => {
+		const entryPath = path.join(tmpDir, 'entry.tsx');
+		await writeFile(
+			path.join(tmpDir, 'Item.tsx'),
+			'export const Item = () => <img src="x.png" />;\nexport default Item;',
+		);
+		const entrySource = [
+			"import { lazy } from 'react';",
+			"const Foo = lazy(() => import('./Item'));",
+			'export const W = () => <div><Foo><span>c</span></Foo></div>;',
+		].join('\n');
+
+		const result = await autoScan(entryPath, entrySource);
+
+		expect(result.find(p => p.selector === 'Foo')).toMatchObject({ as: { element: 'img', slots: null } });
+	});
+
+	test('a .tsx entry resolves a component it loads with `memo(lazy(() => import(...)))`', async () => {
+		const entryPath = path.join(tmpDir, 'entry.tsx');
+		await writeFile(
+			path.join(tmpDir, 'Item.tsx'),
+			'export const Item = () => <img src="x.png" />;\nexport default Item;',
+		);
+		const entrySource = [
+			"import { lazy, memo } from 'react';",
+			"const Foo = memo(lazy(() => import('./Item')));",
+			'export const W = () => <div><Foo><span>c</span></Foo></div>;',
+		].join('\n');
+
+		const result = await autoScan(entryPath, entrySource);
+
+		expect(result.find(p => p.selector === 'Foo')).toMatchObject({ as: { element: 'img', slots: null } });
+	});
+
+	test('a .tsx entry resolves a component an awaited dynamic import is destructured into', async () => {
+		const entryPath = path.join(tmpDir, 'entry.tsx');
+		await writeFile(path.join(tmpDir, 'Item.tsx'), 'export const Item = () => <img src="x.png" />;');
+		const entrySource = [
+			"const { Item } = await import('./Item');",
+			'export const W = () => <div><Item><span>c</span></Item></div>;',
+		].join('\n');
+
+		const result = await autoScan(entryPath, entrySource);
+
+		expect(result.find(p => p.selector === 'Item')).toMatchObject({ as: { element: 'img', slots: null } });
+	});
+
+	test('a .tsx entry resolves a component loaded by a loader aliased with an assignment', async () => {
+		const entryPath = path.join(tmpDir, 'entry.tsx');
+		await writeFile(
+			path.join(tmpDir, 'Item.tsx'),
+			'export const Item = () => <img src="x.png" />;\nexport default Item;',
+		);
+		const entrySource = [
+			"import React from 'react';",
+			'const l = React.lazy;',
+			"const Foo = l(() => import('./Item'));",
+			'export const W = () => <div><Foo><span>c</span></Foo></div>;',
+		].join('\n');
+
+		const result = await autoScan(entryPath, entrySource);
+
+		expect(result.find(p => p.selector === 'Foo')).toMatchObject({ as: { element: 'img', slots: null } });
+	});
+
+	test('a .tsx entry resolves a member tag of a module read whole with `await import(...)`', async () => {
+		const entryPath = path.join(tmpDir, 'entry.tsx');
+		await writeFile(path.join(tmpDir, 'ui.tsx'), 'export const Button = () => <button type="button" />;');
+		const entrySource = [
+			"const UI = await import('./ui');",
+			'export const W = () => <div><UI.Button><span>c</span></UI.Button></div>;',
+		].join('\n');
+
+		const result = await autoScan(entryPath, entrySource);
+
+		expect(result.find(p => p.selector === String.raw`UI\.Button`)).toMatchObject({
+			as: { element: 'button', slots: null },
+		});
+	});
+
+	test('a .tsx entry resolves a component whose default export is a lazy component, under another name', async () => {
+		const entryPath = path.join(tmpDir, 'Page.tsx');
+		await mkdir(path.join(tmpDir, 'b'));
+		await writeFile(path.join(tmpDir, 'b', 'Item.tsx'), 'export const Item = () => <div />;\nexport default Item;');
+		await writeFile(
+			path.join(tmpDir, 'Lazy.tsx'),
+			"import { lazy } from 'react';\nexport default lazy(() => import('./b/Item'));",
+		);
+		const entrySource = ["import Foo from './Lazy';", 'export const Page = () => <Foo><span>c</span></Foo>;'].join(
+			'\n',
+		);
+
+		const result = await autoScan(entryPath, entrySource);
+
+		expect(result.find(p => p.selector === 'Foo')).toMatchObject({ as: { element: 'div', slots: null } });
+	});
+
+	test('a .tsx entry gets no component for a lazy default export that loads a module of a package', async () => {
+		const entryPath = path.join(tmpDir, 'Page.tsx');
+		await writeFile(
+			path.join(tmpDir, 'Lazy.tsx'),
+			"import { lazy } from 'react';\nexport default lazy(() => import('some-package'));",
+		);
+		const entrySource = ["import Foo from './Lazy';", 'export const Page = () => <Foo><span>c</span></Foo>;'].join(
+			'\n',
+		);
+
+		const result = await autoScan(entryPath, entrySource);
+
+		expect(result.find(p => p.selector === 'Foo')).toBeUndefined();
+	});
+
+	test('a .tsx entry ends the walk when two lazy default exports load each other', async () => {
+		const entryPath = path.join(tmpDir, 'Page.tsx');
+		await writeFile(
+			path.join(tmpDir, 'A.tsx'),
+			"import { lazy } from 'react';\nexport default lazy(() => import('./B'));",
+		);
+		await writeFile(
+			path.join(tmpDir, 'B.tsx'),
+			"import { lazy } from 'react';\nexport default lazy(() => import('./A'));",
+		);
+		const entrySource = ["import Foo from './A';", 'export const Page = () => <Foo><span>c</span></Foo>;'].join(
+			'\n',
+		);
+
+		const result = await autoScan(entryPath, entrySource);
+
+		expect(result.find(p => p.selector === 'Foo')).toBeUndefined();
+	});
+
+	test('a .tsx entry resolves a component whose export is a variable of a lazy component', async () => {
+		const entryPath = path.join(tmpDir, 'Page.tsx');
+		await mkdir(path.join(tmpDir, 'b'));
+		await writeFile(path.join(tmpDir, 'b', 'Item.tsx'), 'export const Item = () => <div />;\nexport default Item;');
+		await writeFile(
+			path.join(tmpDir, 'Lazy.tsx'),
+			"import { lazy } from 'react';\nexport const Slow = lazy(() => import('./b/Item'));",
+		);
+		const entrySource = [
+			"import { Slow as Foo } from './Lazy';",
+			'export const Page = () => <Foo><span>c</span></Foo>;',
+		].join('\n');
+
+		const result = await autoScan(entryPath, entrySource);
+
+		expect(result.find(p => p.selector === 'Foo')).toMatchObject({ as: { element: 'div', slots: null } });
+	});
+
+	test('a .tsx entry resolves a member tag of a namespace import', async () => {
+		const entryPath = path.join(tmpDir, 'entry.tsx');
+		await writeFile(path.join(tmpDir, 'Item.tsx'), 'export const Item = () => <img src="x.png" />;');
+		const entrySource = [
+			"import * as UI from './Item';",
+			'export const W = () => <div><UI.Item><span>c</span></UI.Item></div>;',
+		].join('\n');
+
+		const result = await autoScan(entryPath, entrySource);
+
+		expect(result.find(p => p.selector === String.raw`UI\.Item`)).toMatchObject({
+			as: { element: 'img', slots: null },
+		});
+	});
+
+	test('two entries that name different namespaces `UI` each get the member tag of their own', async () => {
+		await mkdir(path.join(tmpDir, 'a'));
+		await mkdir(path.join(tmpDir, 'b'));
+		await writeFile(path.join(tmpDir, 'a', 'ui.tsx'), 'export const Item = () => <img src="x.png" />;');
+		await writeFile(path.join(tmpDir, 'b', 'ui.tsx'), 'export const Item = () => <br />;');
+		const source = "import * as UI from './ui';\nexport const W = () => <UI.Item />;";
+
+		const forA = await autoScan(path.join(tmpDir, 'a', 'entry.tsx'), source);
+		const forB = await autoScan(path.join(tmpDir, 'b', 'entry.tsx'), source);
+
+		const members = (list: typeof forA) => list.filter(p => p.selector === String.raw`UI\.Item`);
+		expect(members(forA)).toStrictEqual([
+			expect.objectContaining({ as: expect.objectContaining({ element: 'img' }) }),
+		]);
+		expect(members(forB)).toStrictEqual([
+			expect.objectContaining({ as: expect.objectContaining({ element: 'br' }) }),
+		]);
 	});
 
 	test('a .tsx entry resolves a .vue import (BFS is extension-agnostic)', async () => {
@@ -77,8 +259,6 @@ describe('autoScan', () => {
 
 		const result = await autoScan(entryPath, entrySource);
 
-		// BREAKING CHANGE (#4082): `slots: null` is kept instead of collapsing to the bare tag name.
-		// expect(result.find(p => p.selector === 'Child')).toMatchObject({ as: 'em' }); // pre-#4082 baseline
 		expect(result.find(p => p.selector === 'Child')).toMatchObject({ as: { element: 'em', slots: null } });
 	});
 
@@ -133,10 +313,7 @@ describe('autoScan', () => {
 
 		const result = await autoScan(entryPath, entrySource);
 
-		// BREAKING CHANGE (#4082): `slots: null` is kept instead of collapsing to the bare tag name.
-		// expect(result.find(p => p.selector === 'Helper')).toMatchObject({ as: 'span' }); // pre-#4082 baseline
 		expect(result.find(p => p.selector === 'Helper')).toMatchObject({ as: { element: 'span', slots: null } });
-		// expect(result.find(p => p.selector === 'Widget')).toMatchObject({ as: 'span' }); // pre-#4082 baseline
 		expect(result.find(p => p.selector === 'Widget')).toMatchObject({ as: { element: 'span', slots: null } });
 	});
 
@@ -272,8 +449,6 @@ describe('autoScan', () => {
 
 		const result = await autoScan(entryPath, entrySource);
 
-		// BREAKING CHANGE (#4082): `slots: null` is kept instead of collapsing to the bare tag name.
-		// expect(result.find(p => p.selector === 'Wrapped')).toMatchObject({ as: 'button' }); // pre-#4082 baseline
 		expect(result.find(p => p.selector === 'Wrapped')).toMatchObject({ as: { element: 'button', slots: null } });
 	});
 
@@ -284,8 +459,6 @@ describe('autoScan', () => {
 
 		const result = await autoScan(entryPath, entrySource);
 
-		// BREAKING CHANGE (#4082): `slots: null` is kept instead of collapsing to the bare tag name.
-		// expect(result.find(p => p.selector === 'Child')).toMatchObject({ as: 'button' }); // pre-#4082 baseline
 		expect(result.find(p => p.selector === 'Child')).toMatchObject({ as: { element: 'button', slots: null } });
 	});
 
@@ -311,8 +484,6 @@ describe('autoScan', () => {
 		const second = await autoScan(entryPath, entrySource);
 
 		expect(second).toStrictEqual(first);
-		// BREAKING CHANGE (#4082): `slots: null` is kept instead of collapsing to the bare tag name.
-		// expect(second.find(p => p.selector === 'Child')).toMatchObject({ as: 'button' }); // pre-#4082 baseline
 		expect(second.find(p => p.selector === 'Child')).toMatchObject({ as: { element: 'button', slots: null } });
 	});
 
@@ -328,7 +499,7 @@ describe('autoScan', () => {
 			// BFS reads the file once to keep walking its imports; both
 			// jsxScanner's own file read (via the caching CompilerHost) and its
 			// dependency-mapper module (export-table construction for
-			// same-selector disambiguation) now consult `sources` first, so
+			// same-selector disambiguation) consult `sources` first, so
 			// neither re-reads the same file from disk.
 			//
 			// Both sides go through normalizePath: the recorded call arguments come
@@ -367,8 +538,6 @@ describe('autoScan', () => {
 		clearAutoScanCache();
 		const result = await autoScan(entryPath, entrySource);
 
-		// BREAKING CHANGE (#4082): `slots: null` is kept instead of collapsing to the bare tag name.
-		// expect(result.find(p => p.selector === 'Child')).toMatchObject({ as: 'span' }); // pre-#4082 baseline
 		expect(result.find(p => p.selector === 'Child')).toMatchObject({ as: { element: 'span', slots: null } });
 	});
 	describe('re-exports (barrel files)', () => {
@@ -413,9 +582,7 @@ describe('autoScan', () => {
 		});
 
 		test('the walk reaches the module behind a namespace re-export', async () => {
-			// Only the walk is checked: matching `<Base.Link>` to the `Link`
-			// pretender is a separate concern, and fails for a direct
-			// `import * as Base` as well.
+			// Only the walk is checked: the pretender of `<Base.Link>` is the next test's.
 			await writeUiBarrel(tmpDir, "export * as Base from './Base';");
 
 			const result = await autoScan(
@@ -424,6 +591,19 @@ describe('autoScan', () => {
 			);
 
 			expect(result.find(p => p.selector === 'Link')).toMatchObject({
+				as: expect.objectContaining({ element: 'a' }),
+			});
+		});
+
+		test('a member tag of a namespace re-exported by a barrel is resolved', async () => {
+			await writeUiBarrel(tmpDir, "export * as Base from './Base';");
+
+			const result = await autoScan(
+				path.join(tmpDir, 'App.tsx'),
+				"import { Base } from './ui';\nexport const App = () => <Base.Link />;",
+			);
+
+			expect(result.find(p => p.selector === String.raw`Base\.Link`)).toMatchObject({
 				as: expect.objectContaining({ element: 'a' }),
 			});
 		});
@@ -530,5 +710,139 @@ describe('autoScan', () => {
 
 			expect(dependencies).toContain(normalizePath(path.join(uiDir, 'Base.tsx')));
 		});
+	});
+});
+
+describe('autoScan: the names the entry file gives its imports', () => {
+	let tmpDir: string;
+
+	const img = { element: 'img', slots: null };
+
+	beforeEach(async () => {
+		tmpDir = await mkdtemp(path.join(os.tmpdir(), 'auto-scan-alias-'));
+		await writeFile(path.join(tmpDir, 'Named.tsx'), 'export const Named = () => <img src="x.png" />;');
+		await writeFile(
+			path.join(tmpDir, 'DefNamed.tsx'),
+			'const DefNamed = () => <img src="x.png" />;\nexport default DefNamed;',
+		);
+		await writeFile(path.join(tmpDir, 'Item.vue'), '<template><img src="x.png" /></template>');
+	});
+
+	afterEach(async () => {
+		await rm(tmpDir, { recursive: true, force: true });
+		clearAutoScanCache();
+	});
+
+	test('a .tsx entry resolves a named import under the name it gives it', async () => {
+		const entrySource = "import { Named as A } from './Named';\nexport const P = () => <div><A /></div>;";
+
+		const result = await autoScan(path.join(tmpDir, 'entry.tsx'), entrySource);
+
+		expect(result.find(p => p.selector === 'A')).toMatchObject({ as: img });
+		expect(result.find(p => p.selector === 'Named')).toMatchObject({ as: img });
+	});
+
+	test('a .tsx entry resolves a default import under any name', async () => {
+		const entrySource = "import B from './DefNamed';\nexport const P = () => <div><B /></div>;";
+
+		const result = await autoScan(path.join(tmpDir, 'entry.tsx'), entrySource);
+
+		expect(result.find(p => p.selector === 'B')).toMatchObject({ as: img });
+	});
+
+	test('a .tsx entry resolves a template component under the name it gives it', async () => {
+		const entrySource = "import Foo from './Item.vue';\nexport const P = () => <div><Foo /></div>;";
+
+		const result = await autoScan(path.join(tmpDir, 'entry.tsx'), entrySource);
+
+		expect(result.find(p => p.selector === 'Foo')).toMatchObject({ as: img });
+	});
+
+	test('a .vue entry resolves a .tsx import under the name it gives it', async () => {
+		const entrySource = [
+			'<script setup>',
+			"import { Named as A } from './Named';",
+			'</script>',
+			'<template><div><A /></div></template>',
+		].join('\n');
+
+		const result = await autoScan(path.join(tmpDir, 'Page.vue'), entrySource);
+
+		expect(result.find(p => p.selector === 'A')).toMatchObject({ as: img });
+	});
+
+	test('a .vue entry with several roots resolves a renamed import as well', async () => {
+		const entrySource = [
+			'<script setup>',
+			"import { Named as A } from './Named';",
+			'</script>',
+			'<template><A /><p>text</p></template>',
+		].join('\n');
+
+		const result = await autoScan(path.join(tmpDir, 'Page.vue'), entrySource);
+
+		expect(result.find(p => p.selector === 'A')).toMatchObject({ as: img });
+	});
+
+	test('an .astro entry resolves a .tsx import under the name it gives it', async () => {
+		const entrySource = ['---', "import { Named as A } from './Named';", '---', '<div><A /></div>'].join('\n');
+
+		const result = await autoScan(path.join(tmpDir, 'Page.astro'), entrySource);
+
+		expect(result.find(p => p.selector === 'A')).toMatchObject({ as: img });
+	});
+
+	test('an .mdx entry, which is not scanned itself, resolves a .tsx import under the name it gives it', async () => {
+		const entrySource = "import { Named as A } from './Named'\n\n<A />\n";
+
+		const result = await autoScan(path.join(tmpDir, 'Page.mdx'), entrySource);
+
+		expect(result.find(p => p.selector === 'A')).toMatchObject({ as: img });
+	});
+
+	test('an import that is not renamed gives no second pretender', async () => {
+		const entrySource = "import { Named } from './Named';\nexport const P = () => <div><Named /></div>;";
+
+		const result = await autoScan(path.join(tmpDir, 'entry.tsx'), entrySource);
+
+		expect(result.filter(p => p.selector === 'Named')).toHaveLength(1);
+	});
+
+	test('two components of the same name that wrap another one are told apart at lint time', async () => {
+		for (const dir of ['x', 'y']) {
+			await mkdir(path.join(tmpDir, dir));
+			await writeFile(
+				path.join(tmpDir, dir, 'Item.tsx'),
+				"import { Base } from './Base';\nexport const Item = () => <Base />;",
+			);
+		}
+		await writeFile(path.join(tmpDir, 'x', 'Base.tsx'), 'export const Base = () => <img src="x.png" />;');
+		await writeFile(path.join(tmpDir, 'y', 'Base.tsx'), 'export const Base = () => <span />;');
+		// `x/Item` is scanned first, so the first `Item` is not the one the entry uses.
+		const entryPath = path.join(tmpDir, 'entry.tsx');
+		const entrySource = [
+			"import { Item as Legacy } from './x/Item';",
+			"import { Item } from './y/Item';",
+			'export const P = () => <div><Legacy /><Item /></div>;',
+		].join('\n');
+
+		const scanned = await autoScan(entryPath, entrySource);
+		// `autoScan` reports the `filePath` relative to `process.cwd()`.
+		const absolute = scanned.map(p => (p.filePath ? { ...p, filePath: path.resolve(p.filePath) } : p));
+		const picked = await disambiguatePretenders(absolute, { filePath: entryPath, sourceCode: entrySource });
+
+		expect(picked.filter(p => p.selector === 'Item')).toMatchObject([{ as: { element: 'span' } }]);
+	});
+
+	test('the name the entry gives is part of the cached result', async () => {
+		const entryPath = path.join(tmpDir, 'entry.tsx');
+		const source = (name: string) =>
+			`import { Named as ${name} } from './Named';\nexport const P = () => <div><${name} /></div>;`;
+
+		await autoScan(entryPath, source('A'));
+		const result = await autoScan(entryPath, source('Z'));
+
+		expect(result.find(p => p.selector === 'Z')).toMatchObject({ as: img });
+		expect(result.find(p => p.selector === 'A')).toBeUndefined();
 	});
 });

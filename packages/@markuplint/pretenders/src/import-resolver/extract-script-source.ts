@@ -14,10 +14,14 @@
  * | `extractMdxEsm`                  | MDX top-level ESM (no parser package for MDX)        |
  */
 
+import ts from 'typescript';
+
 export interface ScriptSourceBlock {
 	readonly content: string;
 	/** The offset (in characters) of the content start within the original source */
 	readonly offset: number;
+	/** The `lang` attribute of the start tag as written, when it has one */
+	readonly lang?: string;
 }
 
 /**
@@ -42,9 +46,12 @@ export function extractVueScript(source: string): ScriptSourceBlock | null {
 			continue;
 		}
 
+		const lang = langOf(startTag);
+
 		return {
 			content: remaining.slice(0, endMatch.index),
 			offset: contentStart,
+			...(lang ? { lang } : {}),
 		};
 	}
 
@@ -52,43 +59,120 @@ export function extractVueScript(source: string): ScriptSourceBlock | null {
 }
 
 /**
+ * The value of the `lang` attribute of a start tag. The attributes are read one by one, so that
+ * ` lang='tsx'` inside the quoted value of another attribute is not one. (`@markuplint/vue-parser`
+ * reads the `<script setup>` block the same way; this package reads the other one.)
+ */
+function langOf(startTag: string): string | undefined {
+	for (const [, name, double, single, bare] of startTag.matchAll(
+		/\s([^\s"'<>/=]+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+)))?/g,
+	)) {
+		if (name?.toLowerCase() === 'lang') {
+			return double ?? single ?? bare;
+		}
+	}
+	return undefined;
+}
+
+/**
+ * The names of the bindings that `components: { ... }` registers, which the imports of the script are
+ * filtered by: the `name` of each of {@link extractVueOptionsApiRegistrations}.
+ *
  * For aliased forms (`{ Btn: MyButton }`), returns the value (the import name),
- * not the key (the template name).
+ * not the key (the template name). For a value that is not an identifier but
+ * holds a dynamic `import()` (`{ Item: defineAsyncComponent(() => import('./Item.vue')) }`)
+ * it returns the key, the name the lazily loaded component is bound under. Any other
+ * value gives no name.
+ *
+ * @param scriptContent - The source of the script block
+ * @returns The names of the bindings
  */
 export function extractVueOptionsApiComponents(scriptContent: string): string[] {
+	return extractVueOptionsApiRegistrations(scriptContent).map(({ name }) => name);
+}
+
+/**
+ * A component of `components: { ... }`: the `key` the template names it by, and the `name` of
+ * the binding that holds it, which an import gives (`Btn: MyButton` is the key `Btn` and the name
+ * `MyButton`; `'foo-bar': Foo`, the key `foo-bar` and the name `Foo`). They are one for a shorthand
+ * (`Button`) and for a value that loads a module (`Item: defineAsyncComponent(() => import(...))`).
+ */
+export type VueComponentRegistration = {
+	readonly key: string;
+	readonly name: string;
+};
+
+/**
+ * The components that `components: { ... }` registers, each with the key the template names it
+ * by (see {@link VueComponentRegistration}): Vue resolves a tag to a registration by that key, and
+ * by none of the names that an import gives.
+ *
+ * A value that is neither an identifier nor holds a dynamic `import()` gives no name, so its key
+ * is left out.
+ *
+ * @param scriptContent - The source of the script block
+ * @param scriptKind - How to read it; JSX before the registration breaks the tree of `ts.ScriptKind.TS`
+ */
+export function extractVueOptionsApiRegistrations(
+	scriptContent: string,
+	scriptKind: ts.ScriptKind = ts.ScriptKind.TS,
+): VueComponentRegistration[] {
 	if (!scriptContent) {
 		return [];
 	}
 
-	// Match `components: { ... }` allowing for multiline
-	const re = /\bcomponents\s*:\s*\{([^}]*)\}/;
-	const match = re.exec(scriptContent);
-	if (!match?.[1]) {
+	const sourceFile = ts.createSourceFile('script', scriptContent, ts.ScriptTarget.Latest, true, scriptKind);
+	const registry = findComponentsObject(sourceFile);
+	if (!registry) {
 		return [];
 	}
 
-	const names: string[] = [];
-	for (const entry of match[1].split(',')) {
-		const trimmed = entry.trim();
-		if (!trimmed) {
-			continue;
-		}
-
-		// Split on first colon only to handle values containing colons
-		const colonIdx = trimmed.indexOf(':');
-		if (colonIdx === -1) {
+	const registrations: VueComponentRegistration[] = [];
+	for (const property of registry.properties) {
+		if (ts.isShorthandPropertyAssignment(property)) {
 			// Shorthand: `Button` → use as-is
-			names.push(trimmed);
-		} else {
-			// Aliased form: `Btn: MyButton` → use value `MyButton`
-			const value = trimmed.slice(colonIdx + 1).trim();
-			if (value) {
-				names.push(value);
+			registrations.push({ key: property.name.text, name: property.name.text });
+		} else if (ts.isPropertyAssignment(property)) {
+			const key = ts.isIdentifier(property.name) || ts.isStringLiteral(property.name) ? property.name.text : null;
+			const value = property.initializer;
+			if (ts.isIdentifier(value)) {
+				// Aliased form: `Btn: MyButton` → the binding is `MyButton`, registered as `Btn`
+				registrations.push({ key: key ?? value.text, name: value.text });
+			} else if (key && containsDynamicImport(value)) {
+				// A value that loads a module (`Item: defineAsyncComponent(() => import('./Item.vue'))`)
+				// is bound under the key, as `dynamicImportNames` names that import.
+				registrations.push({ key, name: key });
 			}
 		}
 	}
 
-	return names;
+	return registrations;
+}
+
+function containsDynamicImport(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	node: ts.Node,
+): boolean {
+	return (
+		(ts.isCallExpression(node) && node.expression.kind === ts.SyntaxKind.ImportKeyword) ||
+		(ts.forEachChild(node, child => containsDynamicImport(child) || undefined) ?? false)
+	);
+}
+
+/** The object literal of the first `components: { ... }` in source order. */
+function findComponentsObject(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	node: ts.Node,
+): ts.ObjectLiteralExpression | null {
+	if (
+		ts.isPropertyAssignment(node) &&
+		(ts.isIdentifier(node.name) || ts.isStringLiteral(node.name)) &&
+		node.name.text === 'components' &&
+		ts.isObjectLiteralExpression(node.initializer)
+	) {
+		return node.initializer;
+	}
+	return ts.forEachChild(node, findComponentsObject) ?? null;
 }
 
 /**

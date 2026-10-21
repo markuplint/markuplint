@@ -1,5 +1,5 @@
 import type { PretenderDirectorMap } from './pretender-director.js';
-import type { Identifier, Identity } from './types.js';
+import type { Identifier, Identity, PretenderScanEntry } from './types.js';
 import type { ImportBinding } from './import-resolver/types.js';
 import type { Pretender } from '@markuplint/ml-config';
 
@@ -10,9 +10,15 @@ import { isFatalError } from '@markuplint/shared';
 import ts from 'typescript';
 
 import { composeIdentity } from './compose-identity.js';
-import { getExportTable } from './export-table.js';
+import { DEFAULT_LOCAL_NAME, getExportTable } from './export-table.js';
 import { scriptKindForPath } from './import-resolver/analyze-jsx-imports.js';
-import { resolveComponentImport } from './import-resolver/index.js';
+import {
+	isComponentBinding,
+	isVueFile,
+	registeredName,
+	resolveComponentImport,
+	vueSetupNames,
+} from './import-resolver/index.js';
 import {
 	isPackageSpecifier,
 	normalizePath,
@@ -42,6 +48,12 @@ export interface DependencyMapperContext {
 	 * with. See `PretenderScanOptions#dependencies`.
 	 */
 	readonly dependencies?: Set<string>;
+	/**
+	 * The file being linted. The names it gives its imports are the names the
+	 * pretenders are looked up by at lint time, which the declared names of the
+	 * components do not tell: see {@link aliasEntryImports}.
+	 */
+	readonly entry?: PretenderScanEntry;
 }
 
 /**
@@ -55,7 +67,7 @@ type ResolveEnv = {
 /**
  * What following re-exports needs: the in-memory overrides of file content, and
  * the sink for the files read on the way. `cwd` is the project root, `undefined`
- * where the caller has none to give ({@link resolveDeclarationFile} without `cwd`): a
+ * where the caller has none to give ({@link resolveDeclaration} without `cwd`): a
  * file is then judged to be a package's by its whole path, so in a project under
  * `node_modules` a star re-export chain is not followed.
  */
@@ -69,10 +81,31 @@ type DeclarationEnv = {
  * The declaration an exported name resolves to. `localName` is `null` for a
  * template component (Vue/Svelte/Astro), which is the file itself.
  */
-type Declaration = {
+export type Declaration = {
 	readonly fileAbs: string;
 	readonly localName: string | null;
+	/**
+	 * For a default export without a name of its own, the declaration of the binding it
+	 * wraps (`memo(Item)`), resolved as far as an import of it leads. Its component is the
+	 * one of the default export when the scanner finds none of the default export's own.
+	 */
+	readonly wraps?: Declaration;
 };
+
+/**
+ * The declaration and, after it, the ones it wraps, in that order: the declarations whose
+ * component can be what an import of `declaration` renders.
+ *
+ * @param declaration - A resolved declaration
+ * @returns `declaration`, then what it wraps
+ */
+export function declarationChain(declaration: Declaration): readonly Declaration[] {
+	const chain: Declaration[] = [];
+	for (let current: Declaration | undefined = declaration; current; current = current.wraps) {
+		chain.push(current);
+	}
+	return chain;
+}
 
 /**
  * Follows chains where one component wraps another (e.g., MyButton -> Button -> button)
@@ -96,11 +129,26 @@ type Declaration = {
  * the module resolution does not know may hide a file of the project, unless it can only
  * be a package that is not installed (see `isPackageSpecifier`, issue #4264). Known
  * limitation: a bare alias that only a bundler knows, not the `tsconfig.json`, is taken
- * for such a package.
+ * for such a package. An import that resolves to a declaration without a component
+ * (`@pretends null`, a file name that makes no component name, one the scanner cannot
+ * describe) ends the chain instead: a component of the same name elsewhere is not what it
+ * renders. A default export without a component of its own resolves to the one of the
+ * binding it wraps (`export default memo(Item)`, see `ExportEntry` of `export-table`).
  *
  * Each hop composes the `slots` / `contents` and the attributes of the component so far
  * into those of the component it renders (`composeIdentity`, issue #4057); the rest of the
  * identity is the last hop's.
+ *
+ * The `filePath` is where the component itself is declared, not where the component it
+ * renders is: the lint of a file tells same-named candidates apart by the file it imports the
+ * name from (see {@link ./disambiguate.js}), and that is the file that declares the wrapper.
+ *
+ * With `context.entry`, the pretenders also come under the names the entry file gives its
+ * imports (see {@link aliasEntryImports}).
+ *
+ * `nameIndex` overrides the name index for a test. Without it, the index is built from `map`
+ * by {@link buildNameIndex}, which puts a component declared under a name before a default
+ * export named after its file; a given index is used as it is.
  */
 export function dependencyMapper(
 	map: Readonly<PretenderDirectorMap>,
@@ -110,25 +158,32 @@ export function dependencyMapper(
 	const resolvedNameIndex = nameIndex ?? buildNameIndex(map);
 	const importsByFile = context?.importsByFile;
 	const cwd = context?.cwd ?? process.cwd();
+	const keyOfSameFile = sameFileKeyFinder(map, cwd);
 	const env: ResolveEnv = { cwd, sources: context?.sources, dependencies: context?.dependencies };
-	const linkedPretenders: Pretender[] = [];
+	const linkedByKey = new Map<string, Pretender>();
 
-	for (const [key, [identifier, _identity, _filePath, _sourceFile]] of map) {
+	for (const [key, [identifier, _identity, filePath, _sourceFile, localName]] of map) {
 		let identity = _identity;
-		let filePath = _filePath;
 		let elName = getElName(identity);
 		let currentFile = _sourceFile;
 		const via: string[] = [];
 		const visited = new Set<string>([key]);
 
 		while (true) {
-			const lookupKey = resolveHop(elName, currentFile, key, map, importsByFile, resolvedNameIndex, env);
+			const lookupKey = resolveHop(
+				elName,
+				currentFile,
+				key,
+				map,
+				importsByFile,
+				resolvedNameIndex,
+				keyOfSameFile,
+				env,
+			);
 			const mappedPretender = map.get(lookupKey);
 			if (!mappedPretender) {
 				break;
 			}
-
-			filePath = mappedPretender[2];
 
 			if (visited.has(lookupKey)) {
 				// Back at a component already passed: the result is that component as it is
@@ -139,7 +194,9 @@ export function dependencyMapper(
 				via.push('...[Recursive]');
 				break;
 			}
-			identity = composeIdentity(identity, mappedPretender[1]);
+			// What the outer component writes on the inner one is written in its own file, `currentFile`:
+			// in a Vue template an attribute reaches a prop by the camelCase of its name.
+			identity = composeIdentity(identity, mappedPretender[1], { vue: isVueFile(currentFile) });
 			visited.add(lookupKey);
 			via.push(elName);
 			elName = getElName(identity);
@@ -150,15 +207,116 @@ export function dependencyMapper(
 			selector: identifier,
 			as: identity,
 			...(filePath ? { filePath } : {}),
+			...(localName == null ? {} : { localName }),
 		};
 		if (via.length > 0) {
 			Object.assign(pretender, { _via: via });
 		}
 
-		linkedPretenders.push(pretender);
+		linkedByKey.set(key, pretender);
 	}
 
-	return linkedPretenders.toSorted(propSort('selector'));
+	const aliases = context?.entry ? aliasEntryImports(context.entry, map, linkedByKey, env) : [];
+
+	return [...linkedByKey.values(), ...aliases].toSorted(propSort('selector'));
+}
+
+/**
+ * The pretenders for the names the entry file gives the components it imports under another
+ * name than they are declared by (`import { Named as A }`, `import B from './DefNamed'`, a
+ * template component under any name, a re-export renamed by a barrel): the linked pretender of
+ * the declaration, under the local name. A name only the importer chooses, so it is the
+ * entry's alone. It is not a name that a scan of files could know.
+ *
+ * It is added even when another component is declared under the local name: the lint then
+ * tells them apart by the import, which is why the alias keeps the declaration's own `filePath`,
+ * as {@link ./disambiguate.js} matches the file the import leads to against it.
+ *
+ * A dynamic binding that has a name (`const Foo = lazy(() => import('./Item'))`, see
+ * {@link ./import-resolver/dynamic-import-name.js#dynamicImportNames}) is aliased like a default
+ * import. A namespace is aliased per component it exports, under the member tag (see
+ * {@link namespaceMembers}).
+ *
+ * None for a binding that is assigned to no name, a name that leads into a package (the same-named
+ * components of the project are not what it renders, see `FROM_PACKAGE`), and one the map has no
+ * component for.
+ *
+ * None either for a local name that a tag cannot refer to in the language of the file
+ * (`isComponentBinding`), whatever it is imported from. A tag written with a lowercase initial is
+ * an HTML element in JSX, MDX, Svelte and Astro, so `import myButton from './Foo'` is not what
+ * `<myButton>` renders there, and a pretender named `myButton` would turn that element into
+ * the component:
+ *
+ * - React: component names must start with a capital letter; a lowercase tag is an HTML tag
+ *   (https://react.dev/learn/your-first-component).
+ * - Svelte: a lowercase tag is an HTML element; a capitalised tag or one with dot notation is a
+ *   component (https://svelte.dev/docs/svelte/basic-markup).
+ * - Astro: a variable used as a tag must be capitalized, or it is rendered as a literal HTML tag
+ *   (https://docs.astro.build/en/reference/astro-syntax/).
+ *
+ * Vue resolves a tag to a component imported under it as written, camelized, or capitalized
+ * after camelizing, so `import myButton` is `<myButton>` and `<my-button>` as well as `<MyButton>` is
+ * `import MyButton` (https://vuejs.org/guide/components/registration.html#component-name-casing).
+ * `@markuplint/vue-parser` takes such a tag for a component, and a type selector `myButton` stands
+ * for each of them (`@markuplint/selector`'s `typeNameMatches`), so a Vue file's binding is aliased
+ * under the name it has, whatever its initial is.
+ */
+function aliasEntryImports(
+	entry: PretenderScanEntry,
+	map: Readonly<PretenderDirectorMap>,
+	linkedByKey: ReadonlyMap<string, Pretender>,
+	env: ResolveEnv,
+): Pretender[] {
+	const aliases: Pretender[] = [];
+	const aliased = new Set<string>();
+	const importerAbs = path.resolve(env.cwd, entry.filePath);
+
+	// `name` is the tag name as written (`UI.Item`); the selector is it escaped (`UI\.Item`), as in CSS `.`
+	// starts a class.
+	const addAlias = (name: string, key: string | typeof FROM_PACKAGE | null) => {
+		const declared = typeof key === 'string' ? map.get(key) : undefined;
+		const linked = typeof key === 'string' ? linkedByKey.get(key) : undefined;
+		const selector = escapeSelectorIdent(name);
+		if (!declared || !linked || declared[0] === name || aliased.has(selector)) {
+			return;
+		}
+
+		aliased.add(selector);
+		// A copy, so that the alias and the pretender of the declaration do not share `as` and `_via`.
+		aliases.push({ ...structuredClone(linked), selector });
+	};
+
+	for (const binding of entry.bindings) {
+		const isComponent = binding.type !== 'namespace' && isComponentBinding(binding, entry.filePath);
+		const key = isComponent ? resolveImportBinding(binding, importerAbs, env, map) : null;
+		// A namespace is no component, so a binding that leads to one is looked at only when it did not.
+		const namespaceAbs =
+			key == null && binding.type !== 'dynamic' ? namespaceModuleOf(binding, importerAbs, env) : null;
+		if (typeof namespaceAbs === 'string') {
+			// A member tag is one name, which `addAlias` escapes as such.
+			for (const member of namespaceMembers(namespaceAbs, env, map)) {
+				addAlias([binding.localName, ...member.members].join('.'), member.key);
+			}
+			continue;
+		}
+
+		if (isComponent) {
+			// The name the file's template refers to the component by: the key of the Options API of Vue
+			// that registers it (`Btn` of `Btn: MyButton`, or `'ui.Item'` for `<ui.Item>`), or the name the import gives
+			addAlias(registeredName(binding), key);
+		}
+	}
+
+	return aliases;
+}
+
+/**
+ * Escapes what is no part of a CSS identifier, so that a tag name is written as one type selector:
+ * a member tag (`UI.Item` as `UI\.Item`), a key of the Options API of Vue (`'ui.Item'`), and a name of
+ * the source with a character such as `$` (`$Btn` as `\$Btn`).
+ */
+function escapeSelectorIdent(name: string): string {
+	return name.replaceAll(/[^\p{ID_Continue}-]/gu, String.raw`\$&`);
 }
 
 /**
@@ -173,6 +331,7 @@ function resolveHop(
 	map: Readonly<PretenderDirectorMap>,
 	importsByFile: ReadonlyMap<string, readonly ImportBinding[]> | undefined,
 	resolvedNameIndex: Readonly<Map<Identifier, string>>,
+	keyOfSameFile: (key: string) => string | undefined,
 	env: ResolveEnv,
 ): string {
 	if (currentFile) {
@@ -181,26 +340,112 @@ function resolveHop(
 			return sameFileKey;
 		}
 
-		const viaImport = resolveThroughImport(elName, currentFile, importsByFile, env);
-		if (viaImport === FROM_PACKAGE) {
+		const resolved = resolveThroughImport(elName, currentFile, importsByFile, env, map);
+		if (resolved === FROM_PACKAGE) {
 			// A name that no key stands for: the chain ends here.
 			return elName;
 		}
-		if (viaImport && map.has(viaImport)) {
-			return viaImport;
+		if (resolved != null) {
+			// The key, or the key of the same file spelled otherwise (see `sameFileKeyFinder`).
+			// Else a declaration that has no component (`@pretends null`, a file name that makes
+			// no component name, or one the scanner cannot describe): no other key stands for it,
+			// so the chain ends here.
+			return map.has(resolved) ? resolved : (keyOfSameFile(resolved) ?? elName);
 		}
 	}
 
-	return resolvedNameIndex.get(elName) ?? elName;
+	const byName = lookupNameIndex(resolvedNameIndex, elName, currentFile);
+	const byNameEntry = byName == null ? undefined : map.get(byName);
+	// A tag of a file never names the default export without a name of that file itself.
+	if (byNameEntry?.[4] === DEFAULT_LOCAL_NAME && byNameEntry[3] === currentFile) {
+		return elName;
+	}
+	return byName ?? elName;
 }
 
+/**
+ * Looks a rendered name up in the index of the names of the project's components. In a Vue file the
+ * name is a tag, which Vue resolves to a component registered globally as the tag as written, camelized,
+ * or capitalized after camelizing (`resolveAsset` of `@vue/runtime-core`): `<foo-bar>` and `<fooBar>` are
+ * the component `FooBar`. In any other file the name is looked up as it is.
+ */
+function lookupNameIndex(
+	index: Readonly<Map<Identifier, string>>,
+	elName: string,
+	currentFile: string | undefined,
+): string | undefined {
+	const exact = index.get(elName);
+	if (exact !== undefined || currentFile === undefined || !isVueFile(currentFile)) {
+		return exact;
+	}
+	for (const name of vueSetupNames(elName)) {
+		const found = index.get(name);
+		if (found !== undefined) {
+			return found;
+		}
+	}
+	return undefined;
+}
+
+/**
+ * Finds the key of `map` for the same declaration in the same file as `key`, the file spelled
+ * otherwise: an import can name a file by another case than the scan found it by, on a
+ * case-insensitive file system, or through a symbolic link. The files are compared by their
+ * real paths, so two files of a case-sensitive file system stay two. The real paths of the keys
+ * are taken on the first miss only.
+ */
+function sameFileKeyFinder(map: Readonly<PretenderDirectorMap>, cwd: string): (key: string) => string | undefined {
+	let byRealPath: Map<string, string> | undefined;
+	const realCwd = realPathOf(cwd) ?? cwd;
+	const realKey = (key: string) => {
+		const hash = key.lastIndexOf('#');
+		const file = hash === -1 ? key : key.slice(0, hash);
+		const real = realPathOf(path.resolve(cwd, file));
+		return real == null ? undefined : normalizePath(path.relative(realCwd, real)) + key.slice(file.length);
+	};
+	return key => {
+		byRealPath ??= new Map(
+			[...map.keys()].flatMap(mapKey => {
+				const real = realKey(mapKey);
+				return real == null ? [] : [[real, mapKey] as const];
+			}),
+		);
+		const real = realKey(key);
+		return real == null ? undefined : byRealPath.get(real);
+	};
+}
+
+/**
+ * The real path of a file, spelled as the file system has it, or `undefined` when it does not exist.
+ */
+function realPathOf(filePath: string): string | undefined {
+	try {
+		return fs.realpathSync.native(filePath);
+	} catch (error) {
+		if (isFatalError(error)) {
+			throw error;
+		}
+		return undefined;
+	}
+}
+
+/**
+ * How many files one chain of re-exports (`export { X } from`, `export * from`,
+ * `export * as X from`) may pass to find where a name is declared, the file that declares it
+ * included: a name behind 7 re-exports is found and one behind 8 is not. It stops a cycle or a
+ * runaway chain and is not a measured limit: a barrel nested this deep is not expected. A name
+ * beyond it is treated as one that cannot be resolved. It is not the `depth` of `pretenders.auto`,
+ * which counts the import hops of the walk.
+ */
 const MAX_RE_EXPORT_DEPTH = 8;
 
 /**
- * What {@link resolveThroughImport} returns for a name that is imported from a
- * package (a file under `node_modules`), as no key of the map can stand for it.
+ * What {@link resolveThroughImport} and the lint-time disambiguation ({@link ./disambiguate.js})
+ * return for a name that is imported from a package (a file under `node_modules`), as no key of the
+ * map and no candidate can stand for it. Unlike `null` ("could not confirm"), it rules out the
+ * name-based fallback. One symbol for both, so that a result passed from one to the other is told.
  */
-const FROM_PACKAGE = Symbol('from-package');
+export const FROM_PACKAGE = Symbol('from-package');
 
 /**
  * Whether the file is under a `node_modules` directory. With `root` (the base directory
@@ -262,8 +507,11 @@ export function resolveModule(importerAbs: string, source: string, env: Declarat
 /**
  * Resolves `elName` through the import bindings recorded for `currentFile`,
  * returning the map key of the file/name it actually refers to, or `null`
- * when it can't be confirmed (bare/namespace/dynamic specifiers, unresolved
- * modules, or export tables that don't confirm the binding). `FROM_PACKAGE`
+ * when it can't be confirmed (a bare namespace name, a dynamic import that is not assigned to
+ * a name, unresolved modules, or export tables that don't confirm the binding). A dynamic import
+ * that is (`const X = lazy(() => import('./X'))`) is resolved like a default import. A member tag
+ * (`UI.Item`, `UI.Sub.Item`) is resolved through the namespace its first name stands for: the
+ * module of `import * as UI`, or the one a re-export names (see {@link resolveMemberTag}). `FROM_PACKAGE`
  * when it is confirmed to lead into a package, directly or through a re-export:
  * unlike `null`, it rules out the name-based fallback.
  */
@@ -272,18 +520,310 @@ function resolveThroughImport(
 	currentFile: string,
 	importsByFile: ReadonlyMap<string, readonly ImportBinding[]> | undefined,
 	env: ResolveEnv,
+	map: Readonly<PretenderDirectorMap>,
 ): string | typeof FROM_PACKAGE | null {
 	const bindings = importsByFile?.get(currentFile);
 	if (!bindings) {
 		return null;
 	}
 
-	const binding = resolveComponentImport(elName, bindings);
-	if (!binding || binding.type === 'namespace' || binding.type === 'dynamic') {
+	// A binding that a tag cannot refer to in the language of the file is not looked at (`isComponentBinding`).
+	const binding = resolveComponentImport(
+		elName,
+		bindings.filter(b => isComponentBinding(b, currentFile)),
+		currentFile,
+	);
+	if (binding) {
+		return binding.type === 'namespace'
+			? null
+			: resolveImportBinding(binding, path.resolve(env.cwd, currentFile), env, map);
+	}
+
+	// A name that no binding has as a whole may be a member tag: `UI.Item`, the name `UI` and what follows.
+	const [head = '', ...members] = elName.split('.');
+	const memberBinding = members.length > 0 ? resolveComponentImport(head, bindings, currentFile) : undefined;
+	return memberBinding && memberBinding.type !== 'dynamic'
+		? resolveMemberTag(memberBinding, members, path.resolve(env.cwd, currentFile), env, map)
+		: null;
+}
+
+/**
+ * Resolves a member tag (`UI.Sub.Item`, the `members` after the name `binding` imports) to the map
+ * key of the component it names, through the namespaces the binding and the re-exports lead to. The
+ * result is what {@link resolveThroughImport} says of it.
+ */
+function resolveMemberTag(
+	binding: ImportBinding,
+	members: readonly string[],
+	importerAbs: string,
+	env: ResolveEnv,
+	map: Readonly<PretenderDirectorMap>,
+): string | typeof FROM_PACKAGE | null {
+	let current: string | typeof FROM_PACKAGE | null = namespaceModuleOf(binding, importerAbs, env);
+	// One chain for all the members, as `namespaceMembers` counts the files of one chain.
+	const visited = new Set<string>();
+	for (const member of members.slice(0, -1)) {
+		// A template component has `default` only, which is no namespace.
+		current =
+			typeof current === 'string'
+				? isTemplateComponentFile(current)
+					? null
+					: namespaceOfExport(current, member, visited, env)
+				: current;
+	}
+	if (current === FROM_PACKAGE) {
+		return FROM_PACKAGE;
+	}
+	const last = members.at(-1);
+	let declaration: Declaration | null = null;
+	if (current && last) {
+		declaration = isTemplateComponentFile(current)
+			? last === 'default'
+				? { fileAbs: current, localName: null }
+				: null
+			: resolveExportedName(current, last, visited, env);
+	}
+	if (!declaration) {
+		return null;
+	}
+	return isPackageFile(declaration.fileAbs, env.cwd) ? FROM_PACKAGE : keyOfDeclaration(declaration, env, map);
+}
+
+/**
+ * The module a binding stands for as a namespace: the module of `import * as UI`, or the module
+ * that `export * as UI from` (or `import * as UI; export { UI }`) of the imported one names, for a
+ * named or default import of it. `null` for a binding that is no namespace, and for a named or
+ * default import of a template component (see {@link isNamespaceModule}: only `import * as m` of
+ * one is a namespace); `FROM_PACKAGE` for one that is a package's namespace.
+ */
+function namespaceModuleOf(
+	binding: ImportBinding,
+	importerAbs: string,
+	env: ResolveEnv,
+): string | typeof FROM_PACKAGE | null {
+	const moduleAbs = resolveModule(importerAbs, binding.source, env);
+	if (moduleAbs && isPackageFile(moduleAbs, env.cwd)) {
+		return FROM_PACKAGE;
+	}
+	if (moduleAbs && isTemplateComponentFile(moduleAbs)) {
+		return binding.type === 'namespace' ? moduleAbs : null;
+	}
+	if (!isScannedModule(moduleAbs, env)) {
+		return null;
+	}
+	return binding.type === 'namespace'
+		? moduleAbs
+		: namespaceOfExport(moduleAbs, binding.importedName, new Set(), env);
+}
+
+/** A module whose export table is read: not a package's, and not a template component (`default` only). */
+function isScannedModule(fileAbs: string | null, env: DeclarationEnv): fileAbs is string {
+	return fileAbs != null && !isPackageFile(fileAbs, env.cwd) && !isTemplateComponentFile(fileAbs);
+}
+
+/**
+ * A module that a namespace stands for: any module that is not a package's. A template component is
+ * one as well, though it has no export table (see {@link declarationKey}): its one member is `default`,
+ * the file's own component, which a template names as `<m.default />` (a tag with a dot is a component
+ * in Svelte, https://svelte.dev/docs/svelte/basic-markup). A name of a template component that is
+ * looked up in a table would be looked up in the text of the file, so only `import * as m` of it, and
+ * `export * as Sub from` it, are namespaces.
+ */
+function isNamespaceModule(fileAbs: string | null, env: DeclarationEnv): fileAbs is string {
+	return fileAbs != null && !isPackageFile(fileAbs, env.cwd);
+}
+
+/**
+ * The module that `exportedName` of `fileAbs` stands for as a namespace, following the re-exports
+ * (`export * as Sub from`, a name of a star re-export) up to the same depth as
+ * {@link resolveExportedName}. `null` when it is no namespace, `FROM_PACKAGE` when it is one of a
+ * package.
+ */
+function namespaceOfExport(
+	fileAbs: string,
+	exportedName: string,
+	visited: Set<string>,
+	env: DeclarationEnv,
+): string | typeof FROM_PACKAGE | null {
+	const visitKey = `${fileAbs}#${exportedName}`;
+	if (visited.size >= MAX_RE_EXPORT_DEPTH || visited.has(visitKey)) {
+		return null;
+	}
+	visited.add(visitKey);
+
+	const table = getExportTableForFile(fileAbs, env);
+	if (!table) {
+		return null;
+	}
+	const entry = table.byName.get(exportedName);
+	if (!entry) {
+		// As in ECMAScript, `default` never passes through `export *`, and a name that two of them
+		// supply differently is ambiguous. A package is not searched: the name may come from it, which
+		// `fromPackage` stands for if no other star supplies it (see `resolveThroughStarReExports`).
+		let found: string | null = null;
+		let fromPackage = false;
+		for (const source of exportedName === 'default' ? [] : table.starReExportSources) {
+			const nextAbs = resolveModule(fileAbs, source, env);
+			if (nextAbs && isPackageFile(nextAbs, env.cwd)) {
+				fromPackage = true;
+				continue;
+			}
+			if (!isScannedModule(nextAbs, env)) {
+				continue;
+			}
+			const next = namespaceOfExport(nextAbs, exportedName, new Set(visited), env);
+			if (next === FROM_PACKAGE) {
+				fromPackage = true;
+			} else if (next != null) {
+				if (found != null && found !== next) {
+					return null;
+				}
+				found = next;
+			}
+		}
+		return found ?? (fromPackage ? FROM_PACKAGE : null);
+	}
+	if (entry.kind !== 're-export') {
 		return null;
 	}
 
-	const importerAbs = path.resolve(env.cwd, currentFile);
+	const nextAbs = resolveModule(fileAbs, entry.source, env);
+	if (nextAbs && isPackageFile(nextAbs, env.cwd)) {
+		return FROM_PACKAGE;
+	}
+	if (entry.importedName === '*') {
+		return isNamespaceModule(nextAbs, env) ? nextAbs : null;
+	}
+	return isScannedModule(nextAbs, env) ? namespaceOfExport(nextAbs, entry.importedName, visited, env) : null;
+}
+
+/**
+ * The components a namespace exports (`import * as UI`, a named import of a namespace the module
+ * exports with `export * as UI from`, or with `import * as UI; export { UI }`), each as the names
+ * that lead to it (`['Item']`, or `['Sub', 'Item']` below a nested namespace) and the map key of its
+ * declaration. A name that two star re-exports supply differently is left out, as
+ * {@link resolveThroughStarReExports} does; a name the module declares itself wins over a star's,
+ * as in ECMAScript.
+ *
+ * A component is used through the namespace as the member tag `UI.Item` (`UI.Sub.Item`). A tag with
+ * a dot is a component whatever the case of its first letter in JSX, Svelte and MDX
+ * (https://legacy.reactjs.org/docs/jsx-in-depth.html#using-dot-notation-for-jsx-type,
+ * https://svelte.dev/docs/svelte/basic-markup), so the namespace's own name is not judged. Vue
+ * and Astro take only a capital initial for a component: there an alias under a lowercase
+ * namespace name is made and matches no tag.
+ *
+ * `default` is a member too (`UI.default`: a namespace object has it, and the tag with a dot is a
+ * component), except through a plain `export *`, which does not pass it on (ECMAScript); `export * as
+ * Sub from` is a namespace of its own, so `Sub.default` is one. A template component, which has no export
+ * table, has `default` as its only member: the file's own component.
+ *
+ * A pretender for it is selected by the name written with `\.` (see {@link escapeSelectorIdent}):
+ * a selector is CSS, where `UI.Item` is the type `UI` with the class `Item`, and `UI\.Item` is the
+ * one name of the tag.
+ */
+function namespaceMembers(
+	moduleAbs: string,
+	env: ResolveEnv,
+	map: Readonly<PretenderDirectorMap>,
+): { readonly members: readonly string[]; readonly key: string }[] {
+	const found = new Map<string, { members: string[]; key: string | null }>();
+	// The names (members, or a nested namespace) that the module declares itself, which a star's does not replace.
+	const ownIds = new Set<string>();
+	// The module that a star re-export gives a nested namespace, `null` once two give it differently.
+	const starNamespaces = new Map<string, string | null>();
+
+	// `own`: the module declares the names itself, not a star's. `star`: `fileAbs` was reached by a plain
+	// `export *`, which passes every name on but `default` (a plain star never reaches a template component).
+	const collect = (
+		fileAbs: string,
+		prefix: readonly string[],
+		visited: ReadonlySet<string>,
+		{ own, star }: { readonly own: boolean; readonly star: boolean },
+	) => {
+		if (isTemplateComponentFile(fileAbs)) {
+			// No export table: the one member is `default`, the file's own component.
+			const members = [...prefix, 'default'];
+			const id = members.join('.');
+			if (!visited.has(fileAbs) && visited.size < MAX_RE_EXPORT_DEPTH) {
+				if (own) {
+					ownIds.add(id);
+				}
+				if (own || !ownIds.has(id)) {
+					const key = keyOfDeclaration({ fileAbs, localName: null }, env, map);
+					const previous = found.get(id);
+					found.set(id, { members, key: previous && !own && previous.key !== key ? null : key });
+				}
+			}
+			return;
+		}
+		const table = getExportTableForFile(fileAbs, env);
+		if (!table || visited.has(fileAbs) || visited.size >= MAX_RE_EXPORT_DEPTH) {
+			return;
+		}
+		const chain = new Set(visited).add(fileAbs);
+
+		for (const [name, entry] of table.byName) {
+			const members = [...prefix, name];
+			const id = members.join('.');
+			if (name === 'default' && star) {
+				continue;
+			}
+			if (own) {
+				ownIds.add(id);
+			} else if (ownIds.has(id)) {
+				continue;
+			}
+
+			if (entry.kind === 're-export' && entry.importedName === '*') {
+				const nextAbs = resolveModule(fileAbs, entry.source, env);
+				if (!isNamespaceModule(nextAbs, env)) {
+					continue;
+				}
+				if (!own) {
+					const previous = starNamespaces.get(id);
+					starNamespaces.set(id, previous === undefined || previous === nextAbs ? nextAbs : null);
+					if (previous === nextAbs) {
+						continue;
+					}
+				}
+				// A namespace is a module of its own: `default` of it is a member, however `fileAbs` was reached.
+				collect(nextAbs, members, chain, { own, star: false });
+				continue;
+			}
+
+			const declaration = resolveExportedName(fileAbs, name, new Set(), env);
+			const key =
+				declaration && !isPackageFile(declaration.fileAbs, env.cwd)
+					? keyOfDeclaration(declaration, env, map)
+					: null;
+			const previous = found.get(id);
+			found.set(id, { members, key: previous && !own && previous.key !== key ? null : key });
+		}
+		for (const source of table.starReExportSources) {
+			const nextAbs = resolveModule(fileAbs, source, env);
+			if (isScannedModule(nextAbs, env)) {
+				collect(nextAbs, prefix, chain, { own: false, star: true });
+			}
+		}
+	};
+	collect(moduleAbs, [], new Set(), { own: true, star: false });
+
+	const ambiguous = [...starNamespaces].flatMap(([id, from]) => (from == null ? [id] : []));
+	return [...found].flatMap(([id, { members, key }]) =>
+		key == null || ambiguous.some(name => id.startsWith(`${name}.`)) ? [] : [{ members, key }],
+	);
+}
+
+/**
+ * Resolves one import binding of the file at `importerAbs` to the map key of the declaration
+ * it leads to. The result is what {@link resolveThroughImport} says of it.
+ */
+function resolveImportBinding(
+	binding: ImportBinding,
+	importerAbs: string,
+	env: ResolveEnv,
+	map?: Readonly<PretenderDirectorMap>,
+): string | typeof FROM_PACKAGE | null {
 	const resolvedAbs = resolveModule(importerAbs, binding.source, env);
 	if (!resolvedAbs) {
 		return null;
@@ -299,24 +839,37 @@ function resolveThroughImport(
 	if (declaration && isPackageFile(declaration.fileAbs, env.cwd)) {
 		return FROM_PACKAGE;
 	}
-	return declaration && declarationKey(declaration, env.cwd);
+	if (!declaration) {
+		return null;
+	}
+	return keyOfDeclaration(declaration, env, map);
 }
 
 /**
- * Resolves `exportedName` of the module at `fileAbs` to the absolute path of
- * the file that declares it, following re-exports the same way scan-time
- * resolution does (`export { X } from` and `export * from` chains). Returns
- * `null` when that cannot be confirmed: an unreadable file, a name the export
- * tables do not confirm, a namespace re-export, or a name that two star
- * re-exports supply differently.
+ * The map key of a declaration: its own, or for a default export without a component of its own,
+ * the key of what it wraps, if that has one. Without `map` the declaration's own.
+ */
+function keyOfDeclaration(declaration: Declaration, env: ResolveEnv, map?: Readonly<PretenderDirectorMap>): string {
+	const key = declarationKey(declaration, env.cwd);
+	if (!map) {
+		return key;
+	}
+	for (const wrapped of declarationChain(declaration)) {
+		const wrappedKey = declarationKey(wrapped, env.cwd);
+		if (map.has(wrappedKey)) {
+			return wrappedKey;
+		}
+	}
+	return key;
+}
+
+/**
+ * The file of {@link resolveDeclaration}.
  *
  * @param fileAbs - Absolute path of the module the name is imported from
  * @param exportedName - The imported name (`'default'` for a default import)
- * @param options - In-memory content overrides (keyed by normalized absolute path), the dependency
- *   sink, and the project root (see {@link DeclarationEnv})
- * @returns The declaring file's absolute path, or `null`. A name re-exported from a package ends the
- *   chain at the package: the path returned is under `node_modules` (see {@link resolveModule}), and
- *   it names no file when the package is not installed.
+ * @param options - As {@link resolveDeclaration} takes them
+ * @returns The declaring file's absolute path, or `null` where {@link resolveDeclaration} returns `null`
  */
 export function resolveDeclarationFile(
 	fileAbs: string,
@@ -327,15 +880,45 @@ export function resolveDeclarationFile(
 		readonly cwd?: string;
 	},
 ): string | null {
+	return resolveDeclaration(fileAbs, exportedName, options)?.fileAbs ?? null;
+}
+
+/**
+ * Resolves `exportedName` of the module at `fileAbs` to the declaration it stands for: the
+ * file that declares it and its local name there (matched against `Pretender.localName`),
+ * following re-exports the same way scan-time resolution does (`export { X } from`,
+ * `export * from`, and a binding the module imports and exports again). For a default export
+ * without a name of its own, `wraps` is the declaration of what it wraps.
+ *
+ * Returns `null` when that cannot be confirmed: an unreadable file, a name the export tables do
+ * not confirm, a namespace re-export, or a name that two star re-exports supply differently.
+ *
+ * @param fileAbs - Absolute path of the module the name is imported from
+ * @param exportedName - The imported name (`'default'` for a default import)
+ * @param options - In-memory content overrides (keyed by normalized absolute path), the dependency
+ *   sink, and the project root (see {@link DeclarationEnv})
+ * @returns The declaration, or `null`. A name re-exported from a package ends the chain at the
+ *   package: the file is under `node_modules` (see {@link resolveModule}), with no local name, and
+ *   it names no file when the package is not installed.
+ */
+export function resolveDeclaration(
+	fileAbs: string,
+	exportedName: string,
+	options?: {
+		readonly sources?: ReadonlyMap<string, string>;
+		readonly dependencies?: Set<string>;
+		readonly cwd?: string;
+	},
+): Declaration | null {
 	if (isTemplateComponentFile(fileAbs)) {
-		return fileAbs;
+		return { fileAbs, localName: null };
 	}
 	const env: DeclarationEnv = {
 		sources: options?.sources,
 		dependencies: options?.dependencies,
 		cwd: options?.cwd,
 	};
-	return resolveExportedName(fileAbs, exportedName, new Set(), env)?.fileAbs ?? null;
+	return resolveExportedName(fileAbs, exportedName, new Set(), env);
 }
 
 const TEMPLATE_COMPONENT_EXTENSIONS = new Set(['.vue', '.svelte', '.astro']);
@@ -387,11 +970,20 @@ function resolveExportedName(
 		return resolveThroughStarReExports(fileAbs, table.starReExportSources, exportedName, visited, env);
 	}
 
-	if (entry.kind === 'local') {
-		return { fileAbs, localName: entry.localName };
-	}
+	return resolveEntry(fileAbs, entry, visited, env);
+}
 
-	return resolveReExport(fileAbs, entry, visited, env);
+function resolveEntry(
+	fileAbs: string,
+	entry: ExportEntry,
+	visited: Set<string>,
+	env: DeclarationEnv,
+): Declaration | null {
+	if (entry.kind === 're-export') {
+		return resolveReExport(fileAbs, entry, visited, env);
+	}
+	const wraps = entry.wraps ? resolveEntry(fileAbs, entry.wraps, new Set(visited), env) : null;
+	return wraps ? { fileAbs, localName: entry.localName, wraps } : { fileAbs, localName: entry.localName };
 }
 
 /**
@@ -591,12 +1183,16 @@ function buildExportTable(fileAbs: string, text: string) {
 
 /**
  * For backward-compatible name-based lookup.
- * First definition wins when multiple entries share the same identifier.
+ * First definition wins when multiple entries share the same identifier, except that a
+ * component declared under the name comes before a default export named after its file,
+ * which a tag can only name through an import of that default export.
  */
 function buildNameIndex(map: Readonly<PretenderDirectorMap>): Map<Identifier, string> {
 	const index = new Map<Identifier, string>();
-	for (const [key, [identifier]] of map) {
-		if (!index.has(identifier)) {
+	for (const [key, entry] of map) {
+		const [identifier] = entry;
+		const indexed = index.get(identifier);
+		if (indexed == null || (map.get(indexed)?.[4] === DEFAULT_LOCAL_NAME && entry[4] !== DEFAULT_LOCAL_NAME)) {
 			index.set(identifier, key);
 		}
 	}

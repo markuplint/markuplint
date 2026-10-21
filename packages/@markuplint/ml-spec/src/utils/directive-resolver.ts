@@ -49,9 +49,7 @@ export function resolveDirective(
 
 		let potentialName: string | undefined;
 		if (pattern.potentialName != null) {
-			potentialName = pattern.potentialName.replaceAll(/\$(\d+)/g, (_, idx: string) =>
-				(match[Number(idx)] ?? '').toLowerCase(),
-			);
+			potentialName = pattern.potentialName.replaceAll(/\$(\d+)/g, (_, idx: string) => match[Number(idx)] ?? '');
 		}
 
 		let isDuplicatable: boolean | undefined;

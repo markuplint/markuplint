@@ -3,10 +3,19 @@ import { createTestElement } from '@markuplint/ml-core';
 import { test, expect, describe } from 'vitest';
 
 import { countPattern } from './count-pattern.js';
+import type { Options } from './types.js';
 
 function c(models: any, innerHtml: string) {
 	const el = createTestElement(`<div>${innerHtml}</div>`);
-	return countPattern(models, [...el.childNodes], [], specs, { ignoreHasMutableChildren: true }, 0, 'pretended');
+	return countPattern(
+		models,
+		[...el.childNodes],
+		[],
+		specs,
+		{ ignoreHasMutableChildren: true } as Options,
+		0,
+		'pretended',
+	);
 }
 
 test('[permitted-contents-invalid-001] require: a', () => {

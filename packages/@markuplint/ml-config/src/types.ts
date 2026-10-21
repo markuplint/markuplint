@@ -275,6 +275,14 @@ export type PretenderFileData = {
 export type Pretender = {
 	/**
 	 * Target node selectors
+	 *
+	 * In a Vue template a component is referred to by any spelling of its name, so a type selector
+	 * of a component stands for each of them: `FooBar` is `<FooBar>`, `<fooBar>` and `<foo-bar>`, and
+	 * `foo-bar` is the same (a selector of one word is the name as written or capitalized, so `Transition`
+	 * is `<transition>`). It is not `<foobar>`, nor `<button>` for `Button`: an HTML element
+	 * is told by its name in lower case. A regular expression selector (`regexSelector` of `nodeRules`) is
+	 * matched with the name as it is written and is not normalized, so `/^FooBar$/` is `<FooBar>` only.
+	 * No other language resolves a tag so.
 	 */
 	readonly selector: string;
 
@@ -288,15 +296,36 @@ export type Pretender = {
 	readonly as: string | OriginalNode;
 
 	/**
-	 * Where the component was found, as `<path>:<line>:<column>`. Metadata only —
-	 * nothing in linting reads it to influence pretender matching (matching is by
-	 * `selector` alone). `@markuplint/pretenders` scanners emit `<path>` relative
-	 * to the JSON file this entry will be written into, not the scan-time cwd, so
-	 * it stays resolvable regardless of where the file is later loaded from.
+	 * Where the component is declared, as `<path>:<line>:<column>`: not where a component
+	 * it renders is, however many it wraps.
+	 *
+	 * Matching a pretender to an element is by `selector` alone. When several entries share
+	 * a selector, though, the lint of a file keeps the one declared in the file that its
+	 * import of that name resolves to (`disambiguatePretenders` of `@markuplint/pretenders`);
+	 * an entry without `filePath` can never be told apart that way.
+	 *
+	 * `@markuplint/pretenders` scanners emit `<path>` relative to the JSON file this entry
+	 * will be written into, not the scan-time cwd, so it stays resolvable regardless of
+	 * where the file is later loaded from.
 	 *
 	 * @experimental
 	 */
 	readonly filePath?: string;
+
+	/**
+	 * The name the component is declared under in the file of `filePath`: `default` for a
+	 * default export without a name of its own, whose `selector` is derived from the file
+	 * name. Absent for a component that is a whole file (Vue, Svelte, Astro), for an entry
+	 * written by hand, and in a list scanned before this field was added; such an entry is
+	 * told apart by its file alone.
+	 *
+	 * Two components of one file can share a `selector` (`export const Button` and an
+	 * anonymous default export of `Button.tsx`), so `disambiguatePretenders` keeps the entry
+	 * of the declaration the import resolves to, not just one of its file.
+	 *
+	 * @experimental
+	 */
+	readonly localName?: string;
 };
 
 export type OriginalNode = {
@@ -306,8 +335,9 @@ export type OriginalNode = {
 	 * Write the name of an HTML element in lowercase. A name with a capital initial or a `.`
 	 * (`Tabs.Root`) is a component, not an element, and the target is treated like a
 	 * component written directly. `pretenders.auto` emits such a name where it could not
-	 * resolve a component; it is not meant to be an element. `isComponentName` of
-	 * `@markuplint/parser-utils` decides it.
+	 * resolve a component; it is not meant to be an element. The parser of the document
+	 * decides it (`Parser#isComponentName` of `@markuplint/parser-utils`): it differs in the
+	 * details by language.
 	 */
 	readonly element: string;
 
@@ -481,6 +511,14 @@ export type PretenderAttr = {
 	 * not write it, which is what a component that forwards an optional prop renders
 	 * (`<button type={kind}>` omits `type` when `kind` is `undefined`); without it, the
 	 * attribute is present and empty.
+	 *
+	 * `fromAttr` finds the attribute by the rules of the framework that renders the usage
+	 * site. In Vue, `my-label` and `myLabel` are the same prop and `mylabel` is not. In JSX,
+	 * a prop is matched exactly, so `Label` is not `label`. In an HTML-based syntax, the
+	 * name is compared as the DOM compares attribute names (ASCII case-insensitive). Write
+	 * the name the way the component declares its prop.
+	 *
+	 * @experimental How `fromAttr` finds the attribute may change in future releases.
 	 */
 	readonly value?:
 		| string
@@ -524,7 +562,9 @@ export type PretenderScanConfig = {
 	readonly files: string | readonly string[];
 
 	/**
-	 * Component names to exclude from scanning results.
+	 * Component names to exclude from scanning results. For a file of Vue, Svelte or Astro, which names
+	 * a component after its file, a name is read as PascalCase: `base-button`, `baseButton` and `BaseButton`
+	 * are one name.
 	 */
 	readonly ignoreComponentNames?: readonly string[];
 };
@@ -541,7 +581,9 @@ export interface PretenderScanOptions {
 	readonly cwd?: string;
 
 	/**
-	 * Component names to exclude from scanning results.
+	 * Component names to exclude from scanning results. For a file of Vue, Svelte or Astro, which names
+	 * a component after its file, a name is read as PascalCase: `base-button`, `baseButton` and `BaseButton`
+	 * are one name.
 	 */
 	readonly ignoreComponentNames?: readonly string[];
 

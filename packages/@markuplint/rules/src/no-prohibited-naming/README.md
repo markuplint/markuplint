@@ -5,7 +5,9 @@ description: Warns when aria-label, aria-labelledby, or aria-braillelabel is use
 
 # `no-prohibited-naming`
 
-Warns when `aria-label`, `aria-labelledby`, or `aria-braillelabel` is used on an element where [ARIA in HTML](https://w3c.github.io/html-aria/#dfn-naming-prohibited) prohibits naming: elements without an implicit role (`<cite>`, `<abbr>`, `<figcaption>`, etc.) and autonomous custom elements (`<my-widget>`, etc.) must not use these attributes unless an explicit naming-supported role is set. Customised-built-in elements (`<button is="x-y">`) inherit the host element's spec data and follow the regular path.
+Warns when `aria-label`, `aria-labelledby`, or `aria-braillelabel` is used on an element where [ARIA in HTML](https://www.w3.org/TR/html-aria/#dfn-naming-prohibited) prohibits naming: elements without an implicit role (`<cite>`, `<abbr>`, `<figcaption>`, etc.) and autonomous custom elements (`<my-widget>`, etc.) must not use these attributes unless an explicit naming-supported role is set. Customised-built-in elements (`<button is="x-y">`) inherit the host element's spec data and follow the regular path.
+
+The names of ARIA attributes are compared as [`no-unknown-attr`](/docs/rules/no-unknown-attr#attribute-name-case) compares names (see its "Attribute name case" section): `ARIA-LABEL` is the same attribute as `aria-label` where the DOM treats attribute names as case-insensitive, such as on an HTML element, and a different one where it does not, such as on an `<svg>` element in JSX.
 
 Split out of the former `wai-aria-disallowed-props` rule, alongside [`element-supports-aria-prop`](/docs/rules/element-supports-aria-prop) and [`role-supports-aria-prop`](/docs/rules/role-supports-aria-prop).
 

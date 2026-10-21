@@ -1,0 +1,32 @@
+{
+	// Type-checks the specs that `yarn test` runs, and what they import (`yarn test:types`).
+	// vitest transpiles a spec without checking its types.
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"noEmit": true,
+		// vitest runs every spec as ESM whatever the package's `type`, so the
+		// specs use `import.meta` even in packages without `"type": "module"`;
+		// NodeNext would take those for CommonJS (TS1470).
+		"module": "preserve",
+		// `tests/` and `scripts/` run under Node's type stripping, which needs
+		// the `.ts` extension in an import path.
+		"allowImportingTsExtensions": true
+	},
+	// The `.ts` part of `test.include` in `vitest.config.ts`: `.js` / `.mjs`
+	// specs are not type-checked. `packages/@markuplint/test-tools/src/spec-typecheck.spec.ts`
+	// fails when the two drift apart.
+	"include": [
+		"packages/**/*.spec.ts",
+		"vscode/scripts/**/*.spec.ts",
+		"tests/external/bench/*.spec.ts",
+		"scripts/**/*.spec.ts"
+	],
+	"exclude": [
+		"**/node_modules/**",
+		"**/lib/**",
+		// Templates: placeholders such as `'__category__'` are substituted when a
+		// rule is generated, so the unsubstituted source cannot type-check.
+		// `NOT_TYPE_CHECKED` in the spec above lists the same directory.
+		"packages/@markuplint/create-rule/scaffold/**"
+	]
+}

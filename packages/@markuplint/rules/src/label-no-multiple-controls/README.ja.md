@@ -5,7 +5,7 @@ description: HTML LS §4.10.4 が定める `label` 要素の子孫コントロ�
 
 # `label-no-multiple-controls`
 
-[HTML Living Standard §4.10.4 (the label element)](https://html.spec.whatwg.org/multipage/forms.html#the-label-element) のコンテンツモデルは _「the label element's labeled control でない限り labelable な子孫は許可しない」_ と規定しています。ここから以下の2分岐が導かれます。
+[HTML Living Standard §4.10.4 (the label element)](https://momdo.github.io/html/forms.html#the-label-element) のコンテンツモデルは _「the label element's labeled control でない限り labelable な子孫は許可しない」_ と規定しています。ここから以下の2分岐が導かれます。
 
 - `for` 属性が外部の labelable 要素を参照している場合、その外部要素が labeled control になるため、`<label>` 内部にフォームコントロールを含めてはなりません。
 - それ以外の場合は、フォームコントロール（`button`, `input`, `meter`, `output`, `progress`, `select`, `textarea`）の子孫は最大1個まで。tree order で最初の要素が labeled control となります。

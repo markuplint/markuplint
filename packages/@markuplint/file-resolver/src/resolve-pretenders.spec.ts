@@ -2,6 +2,8 @@ import { mkdir, readFile, realpath, writeFile, mkdtemp, rm } from 'node:fs/promi
 import os from 'node:os';
 import path from 'node:path';
 
+import type { Pretender } from '@markuplint/ml-config';
+
 import { test, expect, describe, beforeEach, afterEach, vi } from 'vitest';
 
 import {
@@ -211,7 +213,7 @@ test('hasResolvableCollision (deprecated, no longer a gate) keeps reporting a co
 test('disambiguatePretendersForFile resolves a collision via the target file import', async () => {
 	const cFile = path.resolve(collisionDir, 'c.tsx');
 	const sourceCode = await readFileForTest(cFile);
-	const pretenders = [
+	const pretenders: Pretender[] = [
 		{
 			selector: 'Item',
 			as: { element: 'button', slots: true, inheritAttrs: true },
@@ -306,8 +308,6 @@ describe('auto (on-demand import-graph resolution)', () => {
 
 		const pretenders = await resolvePretenders({ auto: true }, { filePath: entryPath, sourceCode });
 
-		// BREAKING CHANGE (#4082): `slots: null` is kept instead of collapsing to the bare tag name.
-		// expect(pretenders.find(p => p.selector === 'Child')).toMatchObject({ as: 'button' }); // pre-#4082 baseline
 		expect(pretenders.find(p => p.selector === 'Child')).toMatchObject({ as: { element: 'button', slots: null } });
 	});
 
@@ -424,8 +424,6 @@ describe('invalidatePretenderResolutionCaches (long-running processes)', () => {
 		await writeFile(importerFile, "import Item from './target';\nexport const E = () => <Item>x</Item>;");
 
 		const before = await resolvePretenders({ scan: [{ files: [targetFile, importerFile] }] });
-		// BREAKING CHANGE (#4082): `slots: null` is kept instead of collapsing to the bare tag name.
-		// expect(before.find(p => p.selector === 'E')?.as).toBe('button'); // pre-#4082 baseline
 		expect(before.find(p => p.selector === 'E')?.as).toStrictEqual({ element: 'button', slots: null });
 
 		// Rename the default-exported declaration without invalidating caches: the
@@ -433,13 +431,11 @@ describe('invalidatePretenderResolutionCaches (long-running processes)', () => {
 		// which no longer exists after the rename, leaving `E` unresolved.
 		await writeFile(targetFile, 'export default function Widget() { return <span>x</span>; }');
 		const stale = await resolvePretenders({ scan: [{ files: [targetFile, importerFile] }] });
-		// expect(stale.find(p => p.selector === 'E')?.as).toBe('Item'); // pre-#4082 baseline
 		expect(stale.find(p => p.selector === 'E')?.as).toStrictEqual({ element: 'Item', slots: null });
 
 		await invalidatePretenderResolutionCaches();
 
 		const fresh = await resolvePretenders({ scan: [{ files: [targetFile, importerFile] }] });
-		// expect(fresh.find(p => p.selector === 'E')?.as).toBe('span'); // pre-#4082 baseline
 		expect(fresh.find(p => p.selector === 'E')?.as).toStrictEqual({ element: 'span', slots: null });
 	});
 });
@@ -468,10 +464,7 @@ describe('createPretenderResolver (one lint target across edits)', () => {
 			filePath: entryPath,
 			sourceCode: "import { Child } from './Child';\nexport const Entry = () => <Child />;",
 		});
-		// BREAKING CHANGE (#4082): `slots: null` is kept instead of collapsing to the bare tag name.
-		// expect(withImport.find(p => p.selector === 'Child')).toMatchObject({ as: 'button' }); // pre-#4082 baseline
 		expect(withImport.find(p => p.selector === 'Child')).toMatchObject({ as: { element: 'button', slots: null } });
-		// expect(withImport.find(p => p.selector === 'Scanned')).toMatchObject({ as: 'button' }); // pre-#4082 baseline
 		expect(withImport.find(p => p.selector === 'Scanned')).toMatchObject({
 			as: { element: 'button', slots: null },
 		});
@@ -487,7 +480,6 @@ describe('createPretenderResolver (one lint target across edits)', () => {
 			sourceCode: 'export const Entry = () => <div />;',
 		});
 		expect(withoutImport.find(p => p.selector === 'Child')).toBeUndefined();
-		// expect(withoutImport.find(p => p.selector === 'Scanned')).toMatchObject({ as: 'button' }); // pre-#4082 baseline
 		expect(withoutImport.find(p => p.selector === 'Scanned')).toMatchObject({
 			as: { element: 'button', slots: null },
 		});
@@ -498,7 +490,6 @@ describe('createPretenderResolver (one lint target across edits)', () => {
 			filePath: entryPath,
 			sourceCode: 'export const Entry = () => <div />;',
 		});
-		// expect(fresh.find(p => p.selector === 'Scanned')).toMatchObject({ as: 'span' }); // pre-#4082 baseline
 		expect(fresh.find(p => p.selector === 'Scanned')).toMatchObject({ as: { element: 'span', slots: null } });
 	});
 
@@ -538,6 +529,7 @@ describe('createPretenderResolver (one lint target across edits)', () => {
 	});
 
 	test('resolves to nothing when the pretenders section is absent', async () => {
+		// @ts-expect-error the options argument is intentionally omitted
 		const resolver = createPretenderResolver();
 
 		expect(await resolver.resolve({ filePath: path.join(tmpDir, 'entry.tsx'), sourceCode: '' })).toStrictEqual([]);

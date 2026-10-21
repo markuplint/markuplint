@@ -6,8 +6,12 @@ import meta from './meta.js';
 
 /**
  * HTML LS [§4.9.12.1 *Forming a table*](https://html.spec.whatwg.org/multipage/tables.html#forming-a-table)
- * Step 20: "if a column or a row does not have at least one cell anchored to it, that also
- * constitutes a table model error" — covers both a `<tr>` with no cell anchored in it and a
+ * Step 20:
+ *
+ * > If there exists a row or column in the table containing only slots that do not have a cell anchored to them, then
+ * > this is a table model error.
+ *
+ * Covers both a `<tr>` with no cell anchored in it and a
  * column that no cell (nor a `<col>` / `<colgroup>` it belongs to) ever anchors a cell to.
  *
  * Split from the original `table-row-column-alignment` rule. Skips a table that

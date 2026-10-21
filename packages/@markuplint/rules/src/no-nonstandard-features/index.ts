@@ -1,12 +1,17 @@
 import { createRule, getAttrSpecs, getSpec } from '@markuplint/ml-core';
 
+import { createIgnoreFeaturesLookup, findAttrSpec } from '../helpers.js';
 import meta from './meta.js';
 
 /**
  * Options for the `no-nonstandard-features` rule.
  */
 type Options = {
-	/** Features to ignore. Element name ("dialog") or attribute pattern ("input[list]"). */
+	/**
+	 * Features to ignore: an element name ("dialog") or an attribute of an element ("input[list]"). The
+	 * element name is compared as the document compares tag names, the attribute name as the DOM
+	 * compares it with the attribute that is checked.
+	 */
 	readonly ignoreFeatures?: readonly string[];
 };
 
@@ -15,8 +20,7 @@ export default createRule<boolean, Options>({
 	defaultSeverity: 'warning',
 	defaultOptions: {},
 	async verify({ document, report, t }) {
-		const options = document.rule.options;
-		const ignoreFeatures = new Set(options.ignoreFeatures);
+		const ignored = createIgnoreFeaturesLookup(document.tagNameCaseSensitive, document.rule.options.ignoreFeatures);
 
 		await document.walkOn('Element', el => {
 			// Web components and authored elements (JSX/Vue/Svelte) reach this rule
@@ -30,10 +34,9 @@ export default createRule<boolean, Options>({
 			}
 
 			const elName = el.localName;
-			const elOptions = el.rule.options;
-			const elIgnoreFeatures = new Set(elOptions.ignoreFeatures ?? ignoreFeatures);
+			const elIgnoreFeatures = el.rule.options.ignoreFeatures;
 
-			if (!elIgnoreFeatures.has(elName)) {
+			if (!ignored.isElementIgnored(elIgnoreFeatures, elName)) {
 				const spec = getSpec(el, document.specs.specs);
 				if (spec?.nonStandard) {
 					report({
@@ -51,13 +54,12 @@ export default createRule<boolean, Options>({
 				}
 
 				const attrName = attr.name;
-				const ignoreKey = `${elName}[${attrName}]`;
 
-				if (elIgnoreFeatures.has(ignoreKey)) {
+				if (ignored.isAttrIgnored(elIgnoreFeatures, elName, attr)) {
 					continue;
 				}
 
-				const attrSpec = attrSpecs?.find(s => s.name === attrName);
+				const attrSpec = attrSpecs && findAttrSpec(attrSpecs, attr);
 
 				if (attrSpec?.nonStandard) {
 					report({

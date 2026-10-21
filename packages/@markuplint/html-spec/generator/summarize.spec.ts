@@ -36,7 +36,7 @@ function spec(elements: readonly string[], cites: readonly string[] = ['https://
 			'#contentModels': {},
 		},
 		specs: elements.map(name => ({ name, description: `The ${name} element.` })),
-	} as ExtendedSpec;
+	} as unknown as ExtendedSpec;
 }
 
 describe('summarizeChanges', () => {
@@ -71,7 +71,7 @@ describe('summarizeChanges', () => {
 					'1.3': aria(['button', 'link', 'switch']),
 				},
 			},
-		} as ExtendedSpec;
+		} as unknown as ExtendedSpec;
 		const result = summarizeChanges(previous, next);
 		expect(result).toContain('### ARIA changes');
 		expect(result).toContain('**ARIA 1.3**: +1 roles');
@@ -92,7 +92,7 @@ describe('summarizeChanges', () => {
 					'1.3': aria(['button', 'link']),
 				},
 			},
-		} as ExtendedSpec;
+		} as unknown as ExtendedSpec;
 		const result = summarizeChanges(previous, next);
 		expect(result).toContain('**ARIA 1.2**: +1 props');
 		expect(result).toContain('props added: `aria-braillelabel`');
@@ -110,7 +110,7 @@ describe('summarizeChanges', () => {
 					'1.3': aria(['button', 'link'], [], ['graphics-symbol'], ['doc-chapter']),
 				},
 			},
-		} as ExtendedSpec;
+		} as unknown as ExtendedSpec;
 		const result = summarizeChanges(previous, next);
 		expect(result).toContain('**ARIA 1.3**: +1 graphics roles, +1 dpub roles');
 		expect(result).toContain('graphics roles added: `graphics-symbol`');
@@ -132,7 +132,7 @@ describe('summarizeChanges', () => {
 				{ name: 'div', description: 'A changed description.' },
 				{ name: 'span', description: 'Another changed description.' },
 			],
-		} as ExtendedSpec;
+		} as unknown as ExtendedSpec;
 		const result = summarizeChanges(previous, next);
 		expect(result).toContain('No structural changes');
 	});

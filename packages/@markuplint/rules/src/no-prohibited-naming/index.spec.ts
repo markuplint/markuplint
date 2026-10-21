@@ -182,3 +182,50 @@ test('[no-prohibited-naming-issue-3630-015] custom element + non-naming aria doe
 	});
 	expect(r.violations).toStrictEqual([]);
 });
+
+test('[no-prohibited-naming-issue-4309-001] an upper-case aria-label on cite is prohibited like the lower-case one', async () => {
+	const { violations } = await mlRuleTest(rule, '<cite ARIA-LABEL="x">y</cite>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 7,
+			message: 'The "ARIA-LABEL" ARIA property is prohibited on the "cite" element',
+			raw: 'ARIA-LABEL="x"',
+		},
+	]);
+});
+
+test('[no-prohibited-naming-issue-4309-002] an upper-case aria-hidden on cite is allowed (not a naming attribute)', async () => {
+	expect((await mlRuleTest(rule, '<cite ARIA-HIDDEN="true">y</cite>')).violations).toStrictEqual([]);
+});
+
+test('[no-prohibited-naming-issue-4309-003] JSX: an upper-case aria-label on an HTML element is prohibited', async () => {
+	const { violations } = await mlRuleTest(rule, '<cite ARIA-LABEL="x">y</cite>', {
+		parser: { '.*': '@markuplint/jsx-parser' },
+	});
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 7,
+			message: 'The "ARIA-LABEL" ARIA property is prohibited on the "cite" element',
+			raw: 'ARIA-LABEL="x"',
+		},
+	]);
+});
+
+test('[no-prohibited-naming-issue-4309-004] JSX: an upper-case aria-label on an autonomous custom element is checked as the lower-case one', async () => {
+	const { violations } = await mlRuleTest(rule, '<my-widget ARIA-LABEL="x">y</my-widget>', {
+		parser: { '.*': '@markuplint/jsx-parser' },
+	});
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 12,
+			message: 'The "ARIA-LABEL" ARIA property is prohibited on the "my-widget" element',
+			raw: 'ARIA-LABEL="x"',
+		},
+	]);
+});

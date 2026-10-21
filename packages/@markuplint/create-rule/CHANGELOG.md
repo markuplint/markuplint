@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.3.0](https://github.com/markuplint/markuplint/compare/v5.2.0...v5.3.0) (2026-10-21)
+
+### Bug Fixes
+
+* make published packages loadable from require() and put types first ([723106f](https://github.com/markuplint/markuplint/commit/723106f51aac4e60dc02db2c1a894617368b0253)), closes [#4198](https://github.com/markuplint/markuplint/issues/4198)
+
+### Features
+
+* **create-rule:** add the package entry point for the programmatic API ([1b2b1c0](https://github.com/markuplint/markuplint/commit/1b2b1c0fa7ccc959cc69787103e19e475544e621))
+
+
 # [5.2.0](https://github.com/markuplint/markuplint/compare/v5.1.1...v5.2.0) (2026-10-13)
 
 ### Bug Fixes

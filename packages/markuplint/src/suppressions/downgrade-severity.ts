@@ -146,6 +146,6 @@ function filterByScope(
 	// fall back to file-level filtering (treats all violations as in-scope).
 	// This is the safe direction — more violations may be downgraded than intended,
 	// but no new violations are hidden.
-	// TODO(#3536): Export isViolationInScope from apply-suppressions.ts and reuse here.
+	// TODO(#3536): Export the scope matching of apply-suppressions.ts (`parseSegment` and `isViolationInScope`) and reuse here.
 	return group;
 }

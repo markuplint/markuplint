@@ -5,7 +5,7 @@ description: '`label` 要素の `for` 属性は、実在するラベル付け可
 
 # `label-for-references-labelable`
 
-[HTML Living Standard §4.10.4](https://html.spec.whatwg.org/multipage/forms.html#attr-label-for) によれば、`<label>` 要素の `for` 属性はラベル対象のコントロールを指すために用いられ、指定された場合、その値は同じツリー内の[ラベル付け可能要素](https://html.spec.whatwg.org/multipage/forms.html#category-label) — `button`、`input`（ただし `type="hidden"` を除く）、`meter`、`output`、`progress`、`select`、`textarea` — の ID でなければなりません。
+[HTML Living Standard §4.10.4](https://momdo.github.io/html/forms.html#attr-label-for) によれば、`<label>` 要素の `for` 属性はラベル対象のコントロールを指すために用いられ、指定された場合、その値は同じツリー内の[ラベル付け可能要素](https://momdo.github.io/html/forms.html#category-label) — `button`、`input`（ただし `type="hidden"` を除く）、`meter`、`output`、`progress`、`select`、`textarea` — の ID でなければなりません。
 
 ID の存在自体は [`no-refer-to-non-existent-id`](../no-refer-to-non-existent-id/) ルールが扱います。本ルールは ID が存在し、かつ参照先がラベル付け可能要素以外の場合にのみ発火します。
 

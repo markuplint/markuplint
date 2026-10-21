@@ -2,6 +2,24 @@ import { describe, test, expect } from 'vitest';
 
 import { extractVueScript, extractVueOptionsApiComponents, extractMdxEsm } from './extract-script-source.js';
 
+describe('extractVueScript: the `lang` of the block', () => {
+	test.each([
+		['<script lang="tsx">', 'tsx'],
+		["<script lang='jsx'>", 'jsx'],
+		['<script lang=ts>', 'ts'],
+		['<script data-x="a lang=\'tsx\'" lang="ts">', 'ts'],
+	])('is read from %s', (startTag, lang) => {
+		expect(extractVueScript(`${startTag}\nexport default {}\n</script>`)?.lang).toBe(lang);
+	});
+
+	test.each([['<script>'], ['<script data-lang="tsx">'], ['<script lang>'], ['<script data-x="a lang=\'tsx\'">']])(
+		'is absent for %s',
+		startTag => {
+			expect(extractVueScript(`${startTag}\nexport default {}\n</script>`)).not.toHaveProperty('lang');
+		},
+	);
+});
+
 describe('extractVueScript', () => {
 	test('extracts regular <script> content', () => {
 		const source = `<template><div /></template>
@@ -150,6 +168,49 @@ export default defineComponent({
 })`;
 		const result = extractVueOptionsApiComponents(source);
 		expect(result).toStrictEqual(['Button', 'Card']);
+	});
+
+	test('extracts the key of a component loaded with defineAsyncComponent', () => {
+		const source = `
+export default {
+  components: {
+    Item: defineAsyncComponent(() => import('./Item.vue')),
+    Other: defineAsyncComponent({ loader: () => import('./Other.vue'), delay: 200 }),
+    Card
+  }
+}`;
+		expect(extractVueOptionsApiComponents(source)).toStrictEqual(['Item', 'Other', 'Card']);
+	});
+
+	test('gives no name for a value that is neither an identifier nor loads a module', () => {
+		const source = `
+export default {
+  components: { A: markRaw(Foo), B: () => 1, C: Ns.C, D }
+}`;
+		expect(extractVueOptionsApiComponents(source)).toStrictEqual(['D']);
+	});
+
+	test('skips a spread and a method, and gives no name for a call that loads no module', () => {
+		const source = `
+export default {
+  components: { ...mixin, render() {}, Btn: markRaw(MyButton), Card }
+}`;
+		expect(extractVueOptionsApiComponents(source)).toStrictEqual(['Card']);
+	});
+
+	test('keeps entries after a value that holds braces', () => {
+		const source = `
+export default {
+  components: { A: wrap({ loader: () => import('./A.vue') }), B }
+}`;
+		expect(extractVueOptionsApiComponents(source)).toStrictEqual(['A', 'B']);
+	});
+
+	test('reads the first components registration, and not a property of another name', () => {
+		const source = `
+const other = { subcomponents: { X } }
+export default { components: { Button }, nested: { components: { Y } } }`;
+		expect(extractVueOptionsApiComponents(source)).toStrictEqual(['Button']);
 	});
 });
 

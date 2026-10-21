@@ -5,8 +5,8 @@ import { createRule } from '@markuplint/ml-core';
 import meta from './meta.js';
 
 /**
- * The HTML Living Standard scopes autofocus uniqueness to the "nearest ancestor
- * autofocus scoping root element" — the element itself if it is a `dialog` or
+ * The HTML Living Standard scopes autofocus uniqueness to the nearest ancestor
+ * autofocus scoping root element — the element itself if it is a `dialog` or
  * has a `popover` attribute, otherwise the nearest such ancestor, otherwise the
  * document as a whole. Two `autofocus` elements only conflict when they share
  * the same scoping root; two `dialog`/`popover` elements can each carry their

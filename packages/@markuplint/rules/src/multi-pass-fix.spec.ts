@@ -1,3 +1,5 @@
+import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
+
 import { MLRule } from '@markuplint/ml-core';
 import { mlTest } from 'markuplint';
 import { describe, test, expect } from 'vitest';
@@ -7,7 +9,7 @@ import { describe, test, expect } from 'vitest';
  * the given map (e.g., `{ a: 'b', b: 'a' }`), producing oscillating fixes.
  */
 function createFlipRule(cycleMap: Readonly<Record<string, string>>) {
-	return new MLRule({
+	return new MLRule<RuleConfigValue, PlainData>({
 		name: 'test-flip',
 		defaultValue: null,
 		defaultOptions: null,
@@ -36,7 +38,7 @@ function createFlipRule(cycleMap: Readonly<Record<string, string>>) {
  * inside the value), so one fix is skipped every pass and the multi-pass loop
  * keeps running.
  */
-const overlapRule = new MLRule({
+const overlapRule = new MLRule<RuleConfigValue, PlainData>({
 	name: 'test-overlap',
 	defaultValue: null,
 	defaultOptions: null,
@@ -62,7 +64,7 @@ const overlapRule = new MLRule({
  * code that no longer parses (used with the JSX parser, which raises a
  * fatal parse error on an unterminated string).
  */
-const breakRule = new MLRule({
+const breakRule = new MLRule<RuleConfigValue, PlainData>({
 	name: 'test-break',
 	defaultValue: null,
 	defaultOptions: null,

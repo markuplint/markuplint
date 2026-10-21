@@ -13,6 +13,8 @@ on:
             - next
         paths:
             - '.github/workflows/test.yml'
+            - 'tsconfig.json'
+            - 'tsconfig.spec.json'
             - 'vitest.config.ts'
             - 'vitest.cross-os.config.ts'
             - 'vitest.e2e.config.ts'
@@ -21,6 +23,10 @@ on:
             - 'crates/**'
             - '!**/*.md'
             - 'packages/@markuplint/config-presets/src/README.md'
+            - 'packages/@markuplint/rules/src/*/README*.md'
+            - 'website/docs/**/*.md*'
+            - 'website/i18n/ja/docusaurus-plugin-content-docs/**/*.md*'
+            - 'scripts/**'
             - 'test/**'
             - 'tests/external/bench/**'
             - 'yarn.lock'
@@ -33,6 +39,8 @@ on:
             - dev
         paths:
             - '.github/workflows/test.yml'
+            - 'tsconfig.json'
+            - 'tsconfig.spec.json'
             - 'vitest.config.ts'
             - 'vitest.cross-os.config.ts'
             - 'vitest.e2e.config.ts'
@@ -41,6 +49,10 @@ on:
             - 'crates/**'
             - '!**/*.md'
             - 'packages/@markuplint/config-presets/src/README.md'
+            - 'packages/@markuplint/rules/src/*/README*.md'
+            - 'website/docs/**/*.md*'
+            - 'website/i18n/ja/docusaurus-plugin-content-docs/**/*.md*'
+            - 'scripts/**'
             - 'test/**'
             - 'tests/external/bench/**'
             - 'yarn.lock'
@@ -370,6 +382,12 @@ jobs:
 
             - name: Install dependencies
               run: yarn install --immutable
+
+            # The result does not depend on the Node.js version or the OS, so one
+            # run is enough. It needs the built `lib/*.d.ts` the specs import.
+            - name: Type-check spec files
+              if: matrix.node == env.NODE_BUILD_VERSION
+              run: yarn test:types
 
             - name: Test
               uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4

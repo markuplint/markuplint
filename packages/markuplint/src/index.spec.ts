@@ -1,3 +1,5 @@
+import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
+
 import { MLRule } from '@markuplint/ml-core';
 import { describe, it, test, expect } from 'vitest';
 
@@ -286,7 +288,7 @@ describe('async and sync rules', () => {
 		raw: 'content',
 	};
 
-	const asyncRule = new MLRule({
+	const asyncRule = new MLRule<RuleConfigValue, PlainData>({
 		name: 'test-async-rule',
 		defaultValue: null,
 		defaultOptions: null,
@@ -296,7 +298,7 @@ describe('async and sync rules', () => {
 		},
 	});
 
-	const syncRule = new MLRule({
+	const syncRule = new MLRule<RuleConfigValue, PlainData>({
 		name: 'test-sync-rule',
 		defaultValue: null,
 		defaultOptions: null,
@@ -457,6 +459,7 @@ describe('Built-in parse-error channel (#3844)', () => {
 	test('default off — malformed HTML produces no parse-error violation', async () => {
 		// `<div a a a>` triggers parse5 `duplicate-attribute` twice, but with
 		// the channel off (default) those events do not surface as violations.
+		// @ts-expect-error The config is omitted on purpose to exercise the default
 		const { violations } = await mlTest('<div a a a></div>');
 		expect(violations.filter(v => v.ruleId === 'parse-error')).toStrictEqual([]);
 	});

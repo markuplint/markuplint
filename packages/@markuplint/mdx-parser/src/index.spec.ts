@@ -1,5 +1,12 @@
 import { describe, test, expect } from 'vitest';
 
+import type {
+	MLASTElement,
+	MLASTHTMLAttr,
+	MLASTPreprocessorSpecificBlock,
+	MLASTTag,
+	MLASTText,
+} from '@markuplint/ml-ast';
 import { nodeListToDebugMaps } from '@markuplint/parser-utils';
 
 import { parser } from './parser.js';
@@ -15,6 +22,10 @@ describe('MDXParser', () => {
 			expect(parser.attrNameCaseSensitive).toBe(true);
 		});
 
+		test('says that every attribute name reaches the DOM through the DOM API', () => {
+			expect(parser.attrNameRoute).toBe('dom-api');
+		});
+
 		test('self-closing component', () => {
 			const doc = parse('<MyComponent prop="value" />');
 			const maps = nodeListToDebugMaps(doc.nodeList);
@@ -23,8 +34,12 @@ describe('MDXParser', () => {
 
 		test('component named like svg or math does not enter the namespace', () => {
 			const doc = parse('<div><Svg><g /></Svg></div>');
-			const svg = doc.nodeList.find(node => node.nodeName === 'Svg');
-			const g = doc.nodeList.find(node => node.nodeName === 'g');
+			const svg = doc.nodeList.find(
+				(node): node is MLASTElement => node.type === 'starttag' && node.nodeName === 'Svg',
+			);
+			const g = doc.nodeList.find(
+				(node): node is MLASTElement => node.type === 'starttag' && node.nodeName === 'g',
+			);
 			expect(svg?.namespace).toBe('http://www.w3.org/1999/xhtml');
 			expect(g?.namespace).toBe('http://www.w3.org/1999/xhtml');
 		});
@@ -50,13 +65,13 @@ describe('MDXParser', () => {
 	describe('Component detection', () => {
 		test('uppercase name is authored element', () => {
 			const doc = parse('<MyComponent />');
-			const startTag = doc.nodeList.find(n => n?.type === 'starttag');
+			const startTag = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag');
 			expect(startTag?.elementType).toBe('authored');
 		});
 
 		test('lowercase name is HTML element', () => {
 			const doc = parse('<div>x</div>');
-			const startTag = doc.nodeList.find(n => n?.type === 'starttag');
+			const startTag = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag');
 			expect(startTag?.elementType).toBe('html');
 		});
 	});
@@ -84,7 +99,7 @@ describe('MDXParser', () => {
 	describe('Markdown content', () => {
 		test('heading becomes h1 element', () => {
 			const doc = parse('# Hello');
-			const h1 = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'h1');
+			const h1 = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'h1');
 			expect(h1).toBeDefined();
 			expect(h1!.elementType).toBe('html');
 		});
@@ -97,20 +112,20 @@ describe('MDXParser', () => {
 			['###### H6', 'h6'],
 		] as const)('heading %s becomes %s element', (md, tag) => {
 			const doc = parse(md);
-			const el = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === tag);
+			const el = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === tag);
 			expect(el).toBeDefined();
 			expect(el!.elementType).toBe('html');
 		});
 
 		test('paragraph becomes p element', () => {
 			const doc = parse('Some text here.');
-			const p = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'p');
+			const p = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'p');
 			expect(p).toBeDefined();
 		});
 
 		test('emphasis becomes em element', () => {
 			const doc = parse('*emphasized*');
-			const em = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'em');
+			const em = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'em');
 			expect(em).toBeDefined();
 			const text = em!.childNodes.find(c => c.type === 'text');
 			expect(text).toBeDefined();
@@ -119,7 +134,9 @@ describe('MDXParser', () => {
 
 		test('strong becomes strong element', () => {
 			const doc = parse('**bold**');
-			const strong = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'strong');
+			const strong = doc.nodeList.find(
+				(n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'strong',
+			);
 			expect(strong).toBeDefined();
 			const text = strong!.childNodes.find(c => c.type === 'text');
 			expect(text).toBeDefined();
@@ -128,20 +145,26 @@ describe('MDXParser', () => {
 
 		test('link becomes <a> with href', () => {
 			const doc = parse('[link](https://example.com)');
-			const a = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'a');
+			const a = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'a');
 			expect(a).toBeDefined();
-			const href = a!.attributes.find(attr => attr.type === 'attr' && attr.name.raw === 'href');
+			const href = a!.attributes.find(
+				(attr): attr is MLASTHTMLAttr => attr.type === 'attr' && attr.name.raw === 'href',
+			);
 			expect(href).toBeDefined();
 			expect(href!.value.raw).toBe('https://example.com');
 		});
 
 		test('image becomes <img> with src and alt', () => {
 			const doc = parse('![alt text](image.png)');
-			const img = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'img');
+			const img = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'img');
 			expect(img).toBeDefined();
-			const src = img!.attributes.find(attr => attr.type === 'attr' && attr.name.raw === 'src');
+			const src = img!.attributes.find(
+				(attr): attr is MLASTHTMLAttr => attr.type === 'attr' && attr.name.raw === 'src',
+			);
 			expect(src!.value.raw).toBe('image.png');
-			const alt = img!.attributes.find(attr => attr.type === 'attr' && attr.name.raw === 'alt');
+			const alt = img!.attributes.find(
+				(attr): attr is MLASTHTMLAttr => attr.type === 'attr' && attr.name.raw === 'alt',
+			);
 			expect(alt!.value.raw).toBe('alt text');
 		});
 	});
@@ -201,7 +224,7 @@ describe('MDXParser', () => {
 
 		test('fragment starttag has nodeName #jsx-fragment', () => {
 			const doc = parse('<>\n  <div>inside fragment</div>\n</>');
-			const startTag = doc.nodeList.find(n => n?.type === 'starttag');
+			const startTag = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag');
 			expect(startTag?.nodeName).toBe('#jsx-fragment');
 		});
 	});
@@ -219,7 +242,7 @@ describe('MDXParser', () => {
 
 		test('dot notation elementType is authored', () => {
 			const doc = parse('<Layout.Header>content</Layout.Header>');
-			const startTag = doc.nodeList.find(n => n?.type === 'starttag');
+			const startTag = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag');
 			expect(startTag?.elementType).toBe('authored');
 		});
 	});
@@ -227,17 +250,17 @@ describe('MDXParser', () => {
 	describe('Expression attributes', () => {
 		test('curly-brace attribute values are marked as dynamic', () => {
 			const doc = parse('<Component data={value} style={{ color: "red" }} />');
-			const startTag = doc.nodeList.find(n => n?.type === 'starttag');
+			const startTag = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag');
 			expect(startTag).toBeDefined();
 			const attrs = startTag!.attributes;
 			expect(attrs).toHaveLength(2);
 
-			const dataAttr = attrs.find(a => a.type === 'attr' && a.name.raw === 'data');
+			const dataAttr = attrs.find((a): a is MLASTHTMLAttr => a.type === 'attr' && a.name.raw === 'data');
 			expect(dataAttr).toBeDefined();
 			expect(dataAttr!.isDynamicValue).toBe(true);
 			expect(dataAttr!.value.raw).toBe('value');
 
-			const styleAttr = attrs.find(a => a.type === 'attr' && a.name.raw === 'style');
+			const styleAttr = attrs.find((a): a is MLASTHTMLAttr => a.type === 'attr' && a.name.raw === 'style');
 			expect(styleAttr).toBeDefined();
 			expect(styleAttr!.isDynamicValue).toBe(true);
 			expect(styleAttr!.value.raw).toBe('{ color: "red" }');
@@ -255,12 +278,12 @@ describe('MDXParser', () => {
 	describe('Spread attributes', () => {
 		test('spread attribute is detected as spread type', () => {
 			const doc = parse('<Component {...props} />');
-			const startTag = doc.nodeList.find(n => n?.type === 'starttag');
+			const startTag = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag');
 			expect(startTag).toBeDefined();
 			const attrs = startTag!.attributes;
 			expect(attrs).toHaveLength(1);
-			expect(attrs[0].type).toBe('spread');
-			expect(attrs[0].raw).toBe('{...props}');
+			expect(attrs[0]!.type).toBe('spread');
+			expect(attrs[0]!.raw).toBe('{...props}');
 		});
 
 		test('debug map for spread attribute element', () => {
@@ -287,7 +310,9 @@ describe('MDXParser', () => {
 
 		test('outer element types are authored', () => {
 			const doc = parse('<Outer>\n  <Inner>content</Inner>\n</Outer>');
-			const outerStart = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'Outer');
+			const outerStart = doc.nodeList.find(
+				(n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'Outer',
+			);
 			expect(outerStart?.elementType).toBe('authored');
 		});
 	});
@@ -307,7 +332,7 @@ describe('MDXParser', () => {
 
 		test('inline JSX component is authored element', () => {
 			const doc = parse('Text with <Badge color="blue">inline</Badge> component.');
-			const badge = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'Badge');
+			const badge = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'Badge');
 			expect(badge?.elementType).toBe('authored');
 		});
 	});
@@ -343,7 +368,7 @@ describe('MDXParser', () => {
 			const doc = parse(
 				'import { Alert } from "./Alert"\nimport { Badge } from "./Badge"\n\n<Alert type="warning">\n  <Badge>NEW</Badge>\n</Alert>',
 			);
-			const alert = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'Alert');
+			const alert = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'Alert');
 			expect(alert?.elementType).toBe('authored');
 		});
 	});
@@ -367,14 +392,14 @@ describe('MDXParser', () => {
 
 		test('heading is an h1 element', () => {
 			const doc = parse('# Heading\n\nSome paragraph text.\n\n<Card>content</Card>\n\nMore paragraph text.');
-			const heading = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'h1');
+			const heading = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'h1');
 			expect(heading).toBeDefined();
 			expect(heading!.type).toBe('starttag');
 		});
 
 		test('Card element is authored', () => {
 			const doc = parse('# Heading\n\nSome paragraph text.\n\n<Card>content</Card>\n\nMore paragraph text.');
-			const card = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'Card');
+			const card = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'Card');
 			expect(card?.elementType).toBe('authored');
 		});
 	});
@@ -382,20 +407,20 @@ describe('MDXParser', () => {
 	describe('Boolean attributes in JSX', () => {
 		test('boolean attributes have empty value', () => {
 			const doc = parse('<Input disabled required name="email" />');
-			const startTag = doc.nodeList.find(n => n?.type === 'starttag');
+			const startTag = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag');
 			expect(startTag).toBeDefined();
 			const attrs = startTag!.attributes;
 			expect(attrs).toHaveLength(3);
 
-			const disabled = attrs.find(a => a.type === 'attr' && a.name.raw === 'disabled');
+			const disabled = attrs.find((a): a is MLASTHTMLAttr => a.type === 'attr' && a.name.raw === 'disabled');
 			expect(disabled).toBeDefined();
 			expect(disabled!.value.raw).toBe('');
 
-			const required = attrs.find(a => a.type === 'attr' && a.name.raw === 'required');
+			const required = attrs.find((a): a is MLASTHTMLAttr => a.type === 'attr' && a.name.raw === 'required');
 			expect(required).toBeDefined();
 			expect(required!.value.raw).toBe('');
 
-			const name = attrs.find(a => a.type === 'attr' && a.name.raw === 'name');
+			const name = attrs.find((a): a is MLASTHTMLAttr => a.type === 'attr' && a.name.raw === 'name');
 			expect(name).toBeDefined();
 			expect(name!.value.raw).toBe('email');
 		});
@@ -420,9 +445,9 @@ describe('MDXParser', () => {
 
 		test('void elements are html type', () => {
 			const doc = parse('<br />\n<hr />\n<img src="test.png" alt="test" />');
-			const br = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'br');
-			const hr = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'hr');
-			const img = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'img');
+			const br = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'br');
+			const hr = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'hr');
+			const img = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'img');
 			expect(br?.elementType).toBe('html');
 			expect(hr?.elementType).toBe('html');
 			expect(img?.elementType).toBe('html');
@@ -430,15 +455,15 @@ describe('MDXParser', () => {
 
 		test('img element has attributes', () => {
 			const doc = parse('<br />\n<hr />\n<img src="test.png" alt="test" />');
-			const img = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'img');
+			const img = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'img');
 			expect(img).toBeDefined();
 			expect(img!.attributes).toHaveLength(2);
 
-			const src = img!.attributes.find(a => a.type === 'attr' && a.name.raw === 'src');
+			const src = img!.attributes.find((a): a is MLASTHTMLAttr => a.type === 'attr' && a.name.raw === 'src');
 			expect(src).toBeDefined();
 			expect(src!.value.raw).toBe('test.png');
 
-			const alt = img!.attributes.find(a => a.type === 'attr' && a.name.raw === 'alt');
+			const alt = img!.attributes.find((a): a is MLASTHTMLAttr => a.type === 'attr' && a.name.raw === 'alt');
 			expect(alt).toBeDefined();
 			expect(alt!.value.raw).toBe('test');
 		});
@@ -453,14 +478,14 @@ describe('MDXParser', () => {
 
 		test('empty component is authored element', () => {
 			const doc = parse('<Spacer />');
-			const startTag = doc.nodeList.find(n => n?.type === 'starttag');
+			const startTag = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag');
 			expect(startTag?.elementType).toBe('authored');
 			expect(startTag?.nodeName).toBe('Spacer');
 		});
 
 		test('empty component has no attributes', () => {
 			const doc = parse('<Spacer />');
-			const startTag = doc.nodeList.find(n => n?.type === 'starttag');
+			const startTag = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag');
 			expect(startTag).toBeDefined();
 			expect(startTag!.attributes).toHaveLength(0);
 		});
@@ -469,51 +494,61 @@ describe('MDXParser', () => {
 	describe('Link and image references', () => {
 		test('linkReference resolves to <a> element', () => {
 			const doc = parse('[link text][ref]\n\n[ref]: https://example.com "Example"\n');
-			const a = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'a');
+			const a = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'a');
 			expect(a).toBeDefined();
-			const href = a!.attributes.find(attr => attr.type === 'attr' && attr.name.raw === 'href');
+			const href = a!.attributes.find(
+				(attr): attr is MLASTHTMLAttr => attr.type === 'attr' && attr.name.raw === 'href',
+			);
 			expect(href).toBeDefined();
 			expect(href!.value.raw).toBe('https://example.com');
-			const title = a!.attributes.find(attr => attr.type === 'attr' && attr.name.raw === 'title');
+			const title = a!.attributes.find(
+				(attr): attr is MLASTHTMLAttr => attr.type === 'attr' && attr.name.raw === 'title',
+			);
 			expect(title).toBeDefined();
 			expect(title!.value.raw).toBe('Example');
 		});
 
 		test('linkReference without title does NOT have title attribute', () => {
 			const doc = parse('[link text][ref]\n\n[ref]: https://example.com\n');
-			const a = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'a');
+			const a = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'a');
 			expect(a).toBeDefined();
-			const title = a!.attributes.find(attr => attr.type === 'attr' && attr.name.raw === 'title');
+			const title = a!.attributes.find(
+				(attr): attr is MLASTHTMLAttr => attr.type === 'attr' && attr.name.raw === 'title',
+			);
 			expect(title).toBeUndefined();
 			expect(a!.attributes.length).toBe(1);
 		});
 
 		test('imageReference resolves to <img> element with alt', () => {
 			const doc = parse('![alt text][img]\n\n[img]: image.png\n');
-			const img = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'img');
+			const img = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'img');
 			expect(img).toBeDefined();
-			const src = img!.attributes.find(attr => attr.type === 'attr' && attr.name.raw === 'src');
+			const src = img!.attributes.find(
+				(attr): attr is MLASTHTMLAttr => attr.type === 'attr' && attr.name.raw === 'src',
+			);
 			expect(src).toBeDefined();
 			expect(src!.value.raw).toBe('image.png');
-			const alt = img!.attributes.find(attr => attr.type === 'attr' && attr.name.raw === 'alt');
+			const alt = img!.attributes.find(
+				(attr): attr is MLASTHTMLAttr => attr.type === 'attr' && attr.name.raw === 'alt',
+			);
 			expect(alt).toBeDefined();
 			expect(alt!.value.raw).toBe('alt text');
 		});
 
 		test('unresolved linkReference is treated as plain text', () => {
 			const doc = parse('[text][missing]\n');
-			const a = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'a');
+			const a = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'a');
 			expect(a).toBeUndefined();
-			const text = doc.nodeList.find(n => n?.type === 'text');
+			const text = doc.nodeList.find((n): n is MLASTText => n?.type === 'text');
 			expect(text).toBeDefined();
 			expect(text!.raw).toContain('[text][missing]');
 		});
 
 		test('unresolved imageReference is treated as plain text', () => {
 			const doc = parse('![alt][missing]\n');
-			const img = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'img');
+			const img = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'img');
 			expect(img).toBeUndefined();
-			const text = doc.nodeList.find(n => n?.type === 'text');
+			const text = doc.nodeList.find((n): n is MLASTText => n?.type === 'text');
 			expect(text).toBeDefined();
 			expect(text!.raw).toContain('![alt][missing]');
 		});
@@ -522,9 +557,11 @@ describe('MDXParser', () => {
 	describe('Blockquote with JSX', () => {
 		test('JSX inside blockquote is parsed correctly', () => {
 			const doc = parse('> <Badge>test</Badge>\n');
-			const blockquote = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'blockquote');
+			const blockquote = doc.nodeList.find(
+				(n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'blockquote',
+			);
 			expect(blockquote).toBeDefined();
-			const badge = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'Badge');
+			const badge = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'Badge');
 			expect(badge).toBeDefined();
 			expect(badge!.elementType).toBe('authored');
 			const text = badge!.childNodes.find(c => c.type === 'text');
@@ -541,7 +578,7 @@ describe('MDXParser', () => {
 
 		test('JSX comment is valid alternative to HTML comment', () => {
 			const doc = parse('{/* comment */}\n');
-			const psblock = doc.nodeList.find(n => n?.type === 'psblock');
+			const psblock = doc.nodeList.find((n): n is MLASTPreprocessorSpecificBlock => n?.type === 'psblock');
 			expect(psblock).toBeDefined();
 			expect(psblock!.raw).toContain('/* comment */');
 		});
@@ -550,7 +587,10 @@ describe('MDXParser', () => {
 	describe('Footnotes', () => {
 		test('footnoteReference becomes psblock with correct raw', () => {
 			const doc = parse('Text with a note[^1]\n\n[^1]: Footnote content\n');
-			const fnRef = doc.nodeList.find(n => n?.type === 'psblock' && n.nodeName === '#ps:footnoteReference');
+			const fnRef = doc.nodeList.find(
+				(n): n is MLASTPreprocessorSpecificBlock =>
+					n?.type === 'psblock' && n.nodeName === '#ps:footnoteReference',
+			);
 			expect(fnRef).toBeDefined();
 			expect(fnRef!.nodeName).toBe('#ps:footnoteReference');
 			expect(fnRef!.raw).toBe('[^1]');
@@ -558,7 +598,10 @@ describe('MDXParser', () => {
 
 		test('footnoteDefinition becomes psblock with correct raw', () => {
 			const doc = parse('Text with a note[^1]\n\n[^1]: Footnote content\n');
-			const fnDef = doc.nodeList.find(n => n?.type === 'psblock' && n.nodeName === '#ps:footnoteDefinition');
+			const fnDef = doc.nodeList.find(
+				(n): n is MLASTPreprocessorSpecificBlock =>
+					n?.type === 'psblock' && n.nodeName === '#ps:footnoteDefinition',
+			);
 			expect(fnDef).toBeDefined();
 			expect(fnDef!.nodeName).toBe('#ps:footnoteDefinition');
 			expect(fnDef!.raw).toContain('Footnote content');
@@ -569,27 +612,27 @@ describe('MDXParser', () => {
 		test('definitions do not leak across MDX parse() calls', () => {
 			// First parse: define [ref]
 			const doc1 = parse('[link][ref]\n\n[ref]: https://example.com\n');
-			const a1 = doc1.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'a');
+			const a1 = doc1.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'a');
 			expect(a1).toBeDefined();
 
 			// Second parse: [ref] without definition — should NOT resolve
 			const doc2 = parse('[link][ref]\n');
-			const a2 = doc2.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'a');
+			const a2 = doc2.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'a');
 			expect(a2).toBeUndefined();
-			const text = doc2.nodeList.find(n => n?.type === 'text');
+			const text = doc2.nodeList.find((n): n is MLASTText => n?.type === 'text');
 			expect(text).toBeDefined();
 			expect(text!.raw).toContain('[link][ref]');
 		});
 
 		test('table header state does not leak across MDX parse() calls', () => {
 			const doc1 = parse('| A |\n| - |\n| 1 |\n');
-			const ths1 = doc1.nodeList.filter(n => n?.type === 'starttag' && n.nodeName === 'th');
+			const ths1 = doc1.nodeList.filter((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'th');
 			expect(ths1.length).toBe(1);
 
 			const doc2 = parse('| B |\n| - |\n| 2 |\n');
-			const ths2 = doc2.nodeList.filter(n => n?.type === 'starttag' && n.nodeName === 'th');
+			const ths2 = doc2.nodeList.filter((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'th');
 			expect(ths2.length).toBe(1);
-			const tds2 = doc2.nodeList.filter(n => n?.type === 'starttag' && n.nodeName === 'td');
+			const tds2 = doc2.nodeList.filter((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'td');
 			expect(tds2.length).toBe(1);
 		});
 	});
@@ -597,14 +640,17 @@ describe('MDXParser', () => {
 	describe('Inline expression in paragraph (flattenMdastChildren)', () => {
 		test('paragraph with inline expression is unwrapped', () => {
 			const doc = parse('Text {variable} more text');
-			const expr = doc.nodeList.find(n => n?.type === 'psblock' && n.nodeName === '#ps:mdxTextExpression');
+			const expr = doc.nodeList.find(
+				(n): n is MLASTPreprocessorSpecificBlock =>
+					n?.type === 'psblock' && n.nodeName === '#ps:mdxTextExpression',
+			);
 			expect(expr).toBeDefined();
 			expect(expr!.raw).toBe('{variable}');
 		});
 
 		test('paragraph without JSX or expressions is preserved as <p>', () => {
 			const doc = parse('Just plain paragraph text.');
-			const p = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'p');
+			const p = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'p');
 			expect(p).toBeDefined();
 			// No unwrapping happened — text is inside <p>
 			const text = p!.childNodes.find(c => c.type === 'text');
@@ -616,37 +662,43 @@ describe('MDXParser', () => {
 	describe('MDX inline code and code blocks', () => {
 		test('inline code in MDX produces <code> element', () => {
 			const doc = parse('Use `const x = 1` here');
-			const code = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'code');
+			const code = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'code');
 			expect(code).toBeDefined();
 			expect(code!.childNodes.length).toBe(1);
-			expect(code!.childNodes[0].raw).toBe('const x = 1');
+			expect(code!.childNodes[0]!.raw).toBe('const x = 1');
 		});
 
 		test('fenced code block in MDX produces pre>code elements', () => {
 			const doc = parse('```typescript\nconst x: number = 1;\n```\n');
-			const pre = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'pre');
+			const pre = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'pre');
 			expect(pre).toBeDefined();
-			const code = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'code');
+			const code = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'code');
 			expect(code).toBeDefined();
-			const langAttr = code!.attributes.find(a => a.type === 'attr' && a.name.raw === 'class');
+			const langAttr = code!.attributes.find(
+				(a): a is MLASTHTMLAttr => a.type === 'attr' && a.name.raw === 'class',
+			);
 			expect(langAttr).toBeDefined();
 			expect(langAttr!.value.raw).toBe('language-typescript');
 			expect(code!.childNodes.length).toBe(1);
-			expect(code!.childNodes[0].raw).toBe('const x: number = 1;');
+			expect(code!.childNodes[0]!.raw).toBe('const x: number = 1;');
 		});
 	});
 
 	describe('Export default', () => {
 		test('export default function becomes mdxjsEsm psblock', () => {
 			const doc = parse('export default function Layout() {}\n');
-			const esm = doc.nodeList.find(n => n?.type === 'psblock' && n.nodeName === '#ps:mdxjsEsm');
+			const esm = doc.nodeList.find(
+				(n): n is MLASTPreprocessorSpecificBlock => n?.type === 'psblock' && n.nodeName === '#ps:mdxjsEsm',
+			);
 			expect(esm).toBeDefined();
 			expect(esm!.raw).toContain('export default function Layout');
 		});
 
 		test('export default object expression', () => {
 			const doc = parse("export default { title: 'My Page' }\n");
-			const esm = doc.nodeList.find(n => n?.type === 'psblock' && n.nodeName === '#ps:mdxjsEsm');
+			const esm = doc.nodeList.find(
+				(n): n is MLASTPreprocessorSpecificBlock => n?.type === 'psblock' && n.nodeName === '#ps:mdxjsEsm',
+			);
 			expect(esm).toBeDefined();
 			expect(esm!.raw).toContain('export default');
 		});
@@ -667,17 +719,25 @@ describe('MDXParser', () => {
 	describe('Multi-line JSX attributes', () => {
 		test('attributes spanning multiple lines are parsed correctly', () => {
 			const doc = parse('<Component\n  name="test"\n  value={42}\n  disabled\n/>\n');
-			const startTag = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'Component');
+			const startTag = doc.nodeList.find(
+				(n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'Component',
+			);
 			expect(startTag).toBeDefined();
 			expect(startTag!.attributes.length).toBe(3);
-			const name = startTag!.attributes.find(a => a.type === 'attr' && a.name.raw === 'name');
+			const name = startTag!.attributes.find(
+				(a): a is MLASTHTMLAttr => a.type === 'attr' && a.name.raw === 'name',
+			);
 			expect(name).toBeDefined();
 			expect(name!.value.raw).toBe('test');
-			const value = startTag!.attributes.find(a => a.type === 'attr' && a.name.raw === 'value');
+			const value = startTag!.attributes.find(
+				(a): a is MLASTHTMLAttr => a.type === 'attr' && a.name.raw === 'value',
+			);
 			expect(value).toBeDefined();
 			expect(value!.isDynamicValue).toBe(true);
 			expect(value!.value.raw).toBe('42');
-			const disabled = startTag!.attributes.find(a => a.type === 'attr' && a.name.raw === 'disabled');
+			const disabled = startTag!.attributes.find(
+				(a): a is MLASTHTMLAttr => a.type === 'attr' && a.name.raw === 'disabled',
+			);
 			expect(disabled).toBeDefined();
 			expect(disabled!.value.raw).toBe('');
 		});
@@ -686,13 +746,17 @@ describe('MDXParser', () => {
 	describe('JSX children templates', () => {
 		test('nested component structure (Card > CardHeader + CardBody)', () => {
 			const doc = parse('<Card>\n  <CardHeader>Title</CardHeader>\n  <CardBody>Content</CardBody>\n</Card>\n');
-			const card = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'Card');
+			const card = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'Card');
 			expect(card).toBeDefined();
 			expect(card!.elementType).toBe('authored');
-			const header = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'CardHeader');
+			const header = doc.nodeList.find(
+				(n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'CardHeader',
+			);
 			expect(header).toBeDefined();
 			expect(header!.elementType).toBe('authored');
-			const body = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'CardBody');
+			const body = doc.nodeList.find(
+				(n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'CardBody',
+			);
 			expect(body).toBeDefined();
 			expect(body!.elementType).toBe('authored');
 		});
@@ -701,11 +765,13 @@ describe('MDXParser', () => {
 	describe('Markdown inside JSX', () => {
 		test('Markdown heading inside JSX component', () => {
 			const doc = parse('<Callout>\n\n## Warning\n\nBe careful\n\n</Callout>\n');
-			const callout = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'Callout');
+			const callout = doc.nodeList.find(
+				(n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'Callout',
+			);
 			expect(callout).toBeDefined();
-			const h2 = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'h2');
+			const h2 = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'h2');
 			expect(h2).toBeDefined();
-			const p = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'p');
+			const p = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'p');
 			expect(p).toBeDefined();
 		});
 	});
@@ -713,7 +779,9 @@ describe('MDXParser', () => {
 	describe('Multiple inline JSX in paragraph', () => {
 		test('multiple JSX elements in same paragraph', () => {
 			const doc = parse('<Badge>A</Badge> and <Badge>B</Badge>\n');
-			const badges = doc.nodeList.filter(n => n?.type === 'starttag' && n.nodeName === 'Badge');
+			const badges = doc.nodeList.filter(
+				(n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'Badge',
+			);
 			expect(badges.length).toBe(2);
 			const texts = badges.map(b => b.childNodes.find(c => c.type === 'text')?.raw);
 			expect(texts).toStrictEqual(['A', 'B']);
@@ -723,14 +791,16 @@ describe('MDXParser', () => {
 	describe('Empty open/close tags (no children)', () => {
 		test('element with explicit closing tag but no children', () => {
 			const doc = parse('<div></div>\n');
-			const div = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'div');
+			const div = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'div');
 			expect(div).toBeDefined();
 			expect(div!.elementType).toBe('html');
 		});
 
 		test('authored component with explicit closing tag but no children', () => {
 			const doc = parse('<Container></Container>\n');
-			const el = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'Container');
+			const el = doc.nodeList.find(
+				(n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'Container',
+			);
 			expect(el).toBeDefined();
 			expect(el!.elementType).toBe('authored');
 		});
@@ -739,9 +809,13 @@ describe('MDXParser', () => {
 	describe('Expression attribute with complex value', () => {
 		test('ternary expression in attribute value', () => {
 			const doc = parse('<Component value={isActive ? "yes" : "no"} />\n');
-			const startTag = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'Component');
+			const startTag = doc.nodeList.find(
+				(n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'Component',
+			);
 			expect(startTag).toBeDefined();
-			const attr = startTag!.attributes.find(a => a.type === 'attr' && a.name.raw === 'value');
+			const attr = startTag!.attributes.find(
+				(a): a is MLASTHTMLAttr => a.type === 'attr' && a.name.raw === 'value',
+			);
 			expect(attr).toBeDefined();
 			expect(attr!.isDynamicValue).toBe(true);
 			expect(attr!.value.raw).toBe('isActive ? "yes" : "no"');
@@ -749,9 +823,13 @@ describe('MDXParser', () => {
 
 		test('array expression in attribute value', () => {
 			const doc = parse('<Component items={[1, 2, 3]} />\n');
-			const startTag = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'Component');
+			const startTag = doc.nodeList.find(
+				(n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'Component',
+			);
 			expect(startTag).toBeDefined();
-			const attr = startTag!.attributes.find(a => a.type === 'attr' && a.name.raw === 'items');
+			const attr = startTag!.attributes.find(
+				(a): a is MLASTHTMLAttr => a.type === 'attr' && a.name.raw === 'items',
+			);
 			expect(attr).toBeDefined();
 			expect(attr!.isDynamicValue).toBe(true);
 			expect(attr!.value.raw).toBe('[1, 2, 3]');
@@ -761,9 +839,11 @@ describe('MDXParser', () => {
 	describe('IDL attribute name conversion', () => {
 		test('className is kept as-is (IDL resolution handled by ml-core)', () => {
 			const doc = parse('<div className="test">text</div>\n');
-			const div = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'div');
+			const div = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'div');
 			expect(div).toBeDefined();
-			const attr = div!.attributes.find(a => a.type === 'attr' && a.name.raw === 'className');
+			const attr = div!.attributes.find(
+				(a): a is MLASTHTMLAttr => a.type === 'attr' && a.name.raw === 'className',
+			);
 			expect(attr).toBeDefined();
 			// potentialName is not set by the parser; IDL resolution is handled by ml-core's acceptedAttrNames
 			expect(attr!.potentialName).toBeUndefined();
@@ -771,9 +851,11 @@ describe('MDXParser', () => {
 
 		test('htmlFor is kept as-is (IDL resolution handled by ml-core)', () => {
 			const doc = parse('<label htmlFor="input-id">Label</label>\n');
-			const label = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'label');
+			const label = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'label');
 			expect(label).toBeDefined();
-			const attr = label!.attributes.find(a => a.type === 'attr' && a.name.raw === 'htmlFor');
+			const attr = label!.attributes.find(
+				(a): a is MLASTHTMLAttr => a.type === 'attr' && a.name.raw === 'htmlFor',
+			);
 			expect(attr).toBeDefined();
 			// potentialName is not set by the parser; IDL resolution is handled by ml-core's acceptedAttrNames
 			expect(attr!.potentialName).toBeUndefined();
@@ -781,9 +863,9 @@ describe('MDXParser', () => {
 
 		test('class in JSX is kept as-is (IDL resolution handled by ml-core)', () => {
 			const doc = parse('<div class="test">text</div>\n');
-			const div = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'div');
+			const div = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'div');
 			expect(div).toBeDefined();
-			const attr = div!.attributes.find(a => a.type === 'attr' && a.name.raw === 'class');
+			const attr = div!.attributes.find((a): a is MLASTHTMLAttr => a.type === 'attr' && a.name.raw === 'class');
 			expect(attr).toBeDefined();
 			// candidate is not set by the parser; IDL resolution is handled by ml-core's acceptedAttrNames
 			expect(attr!.candidate).toBeUndefined();
@@ -793,21 +875,21 @@ describe('MDXParser', () => {
 	describe('MDX Markdown elements', () => {
 		test('unordered list in MDX', () => {
 			const doc = parse('- item 1\n- item 2\n');
-			const ul = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'ul');
+			const ul = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'ul');
 			expect(ul).toBeDefined();
-			const lis = doc.nodeList.filter(n => n?.type === 'starttag' && n.nodeName === 'li');
+			const lis = doc.nodeList.filter((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'li');
 			expect(lis.length).toBe(2);
 		});
 
 		test('thematicBreak in MDX (with content around it to avoid frontmatter)', () => {
 			const doc = parse('Text above\n\n---\n\nText below\n');
-			const hr = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'hr');
+			const hr = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'hr');
 			expect(hr).toBeDefined();
 		});
 
 		test('hard line break in MDX (two trailing spaces)', () => {
 			const doc = parse('line one  \nline two\n');
-			const br = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'br');
+			const br = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'br');
 			expect(br).toBeDefined();
 		});
 	});
@@ -815,9 +897,11 @@ describe('MDXParser', () => {
 	describe('List with JSX content', () => {
 		test('list items containing JSX components', () => {
 			const doc = parse('- <Badge>item 1</Badge>\n- <Badge>item 2</Badge>\n');
-			const ul = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'ul');
+			const ul = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'ul');
 			expect(ul).toBeDefined();
-			const badges = doc.nodeList.filter(n => n?.type === 'starttag' && n.nodeName === 'Badge');
+			const badges = doc.nodeList.filter(
+				(n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'Badge',
+			);
 			expect(badges.length).toBe(2);
 		});
 	});
@@ -825,9 +909,9 @@ describe('MDXParser', () => {
 	describe('Heading with JSX', () => {
 		test('heading containing inline JSX component', () => {
 			const doc = parse('# Hello <Badge>New</Badge>\n');
-			const h1 = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'h1');
+			const h1 = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'h1');
 			expect(h1).toBeDefined();
-			const badge = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'Badge');
+			const badge = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'Badge');
 			expect(badge).toBeDefined();
 			expect(badge!.elementType).toBe('authored');
 		});
@@ -836,9 +920,9 @@ describe('MDXParser', () => {
 	describe('Deep nesting JSX', () => {
 		test('three levels of nested JSX components', () => {
 			const doc = parse('<Level1>\n  <Level2>\n    <Level3>deep</Level3>\n  </Level2>\n</Level1>\n');
-			const l1 = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'Level1');
-			const l2 = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'Level2');
-			const l3 = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'Level3');
+			const l1 = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'Level1');
+			const l2 = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'Level2');
+			const l3 = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'Level3');
 			expect(l1).toBeDefined();
 			expect(l2).toBeDefined();
 			expect(l3).toBeDefined();
@@ -853,16 +937,16 @@ describe('MDXParser', () => {
 			const doc = parse('{a}\n\n{b}\n\n{c}\n');
 			const exprs = doc.nodeList.filter(n => n?.type === 'psblock' && n.raw.startsWith('{'));
 			expect(exprs.length).toBe(3);
-			expect(exprs[0].raw).toBe('{a}');
-			expect(exprs[1].raw).toBe('{b}');
-			expect(exprs[2].raw).toBe('{c}');
+			expect(exprs[0]!.raw).toBe('{a}');
+			expect(exprs[1]!.raw).toBe('{b}');
+			expect(exprs[2]!.raw).toBe('{c}');
 		});
 	});
 
 	describe('Empty expression', () => {
 		test('expression with only a comment', () => {
 			const doc = parse('{/* empty */}\n');
-			const expr = doc.nodeList.find(n => n?.type === 'psblock');
+			const expr = doc.nodeList.find((n): n is MLASTPreprocessorSpecificBlock => n?.type === 'psblock');
 			expect(expr).toBeDefined();
 			expect(expr!.raw).toBe('{/* empty */}');
 		});
@@ -871,11 +955,13 @@ describe('MDXParser', () => {
 	describe('GFM autolink with JSX', () => {
 		test('autolink URL and JSX component in same paragraph', () => {
 			const doc = parse('Visit https://example.com and <Badge>click</Badge>\n');
-			const badge = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'Badge');
+			const badge = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'Badge');
 			expect(badge).toBeDefined();
-			const a = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'a');
+			const a = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'a');
 			expect(a).toBeDefined();
-			const href = a!.attributes.find(attr => attr.type === 'attr' && attr.name.raw === 'href');
+			const href = a!.attributes.find(
+				(attr): attr is MLASTHTMLAttr => attr.type === 'attr' && attr.name.raw === 'href',
+			);
 			expect(href).toBeDefined();
 			expect(href!.value.raw).toBe('https://example.com');
 		});
@@ -884,9 +970,9 @@ describe('MDXParser', () => {
 	describe('flattenMdastChildren: expression-only paragraph', () => {
 		test('paragraph containing only an expression is unwrapped (no <p>)', () => {
 			const doc = parse('{variable}\n');
-			const expr = doc.nodeList.find(n => n?.type === 'psblock');
+			const expr = doc.nodeList.find((n): n is MLASTPreprocessorSpecificBlock => n?.type === 'psblock');
 			expect(expr).toBeDefined();
-			const p = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'p');
+			const p = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'p');
 			expect(p).toBeUndefined();
 		});
 	});
@@ -894,17 +980,17 @@ describe('MDXParser', () => {
 	describe('GFM extensions', () => {
 		test('GFM table produces table>tr>th/td elements', () => {
 			const doc = parse('| A | B |\n| - | - |\n| 1 | 2 |\n');
-			const table = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'table');
+			const table = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'table');
 			expect(table).toBeDefined();
-			const ths = doc.nodeList.filter(n => n?.type === 'starttag' && n.nodeName === 'th');
+			const ths = doc.nodeList.filter((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'th');
 			expect(ths.length).toBe(2);
-			const tds = doc.nodeList.filter(n => n?.type === 'starttag' && n.nodeName === 'td');
+			const tds = doc.nodeList.filter((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'td');
 			expect(tds.length).toBe(2);
 		});
 
 		test('GFM table header cells contain correct text', () => {
 			const doc = parse('| Name | Age |\n| - | - |\n| Alice | 30 |\n');
-			const ths = doc.nodeList.filter(n => n?.type === 'starttag' && n.nodeName === 'th');
+			const ths = doc.nodeList.filter((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'th');
 			expect(ths.length).toBe(2);
 			const thTexts = ths.map(th => th.childNodes.find(c => c.type === 'text')?.raw);
 			expect(thTexts).toStrictEqual(['Name', 'Age']);
@@ -912,21 +998,21 @@ describe('MDXParser', () => {
 
 		test('GFM table with only header row has 0 td cells', () => {
 			const doc = parse('| A | B |\n| - | - |\n');
-			const ths = doc.nodeList.filter(n => n?.type === 'starttag' && n.nodeName === 'th');
+			const ths = doc.nodeList.filter((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'th');
 			expect(ths.length).toBe(2);
-			const tds = doc.nodeList.filter(n => n?.type === 'starttag' && n.nodeName === 'td');
+			const tds = doc.nodeList.filter((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'td');
 			expect(tds.length).toBe(0);
 		});
 
 		test('GFM strikethrough becomes <del> element', () => {
 			const doc = parse('~~deleted~~\n');
-			const del = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'del');
+			const del = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'del');
 			expect(del).toBeDefined();
 		});
 
 		test('GFM strikethrough contains correct text content', () => {
 			const doc = parse('~~deleted text~~\n');
-			const del = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'del');
+			const del = doc.nodeList.find((n): n is MLASTElement => n?.type === 'starttag' && n.nodeName === 'del');
 			expect(del).toBeDefined();
 			const text = del!.childNodes.find(c => c.type === 'text');
 			expect(text).toBeDefined();
@@ -944,7 +1030,7 @@ describe('MDXParser', () => {
 
 		test('script body wrapped in template literal expression child', () => {
 			const doc = parse('# title\n\n<div><script>{`const t = s.replace(/<br\\s*\\/?>/gi, " ");`}</script></div>');
-			const tags = doc.nodeList.filter(n => n?.type === 'starttag' || n?.type === 'endtag');
+			const tags = doc.nodeList.filter((n): n is MLASTTag => n?.type === 'starttag' || n?.type === 'endtag');
 			const tagSig = tags.map(t => `${t!.type}:${t!.nodeName}`);
 			expect(tagSig).toContain('starttag:script');
 			expect(tagSig).toContain('endtag:script');
@@ -952,7 +1038,7 @@ describe('MDXParser', () => {
 
 		test('style body wrapped in template literal expression child', () => {
 			const doc = parse('# title\n\n<div><style>{`/* <br = */ a{color:red}`}</style></div>');
-			const tags = doc.nodeList.filter(n => n?.type === 'starttag' || n?.type === 'endtag');
+			const tags = doc.nodeList.filter((n): n is MLASTTag => n?.type === 'starttag' || n?.type === 'endtag');
 			const tagSig = tags.map(t => `${t!.type}:${t!.nodeName}`);
 			expect(tagSig).toContain('starttag:style');
 			expect(tagSig).toContain('endtag:style');

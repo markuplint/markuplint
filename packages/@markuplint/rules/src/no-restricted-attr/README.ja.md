@@ -25,6 +25,8 @@ HTML仕様とは無関係に、プロジェクトのルールで禁止する特�
 
 ## 詳細
 
+属性名はDOMが比較するのと同じ方法で比較します。これは構文と要素によって変わり、`"disallowAttrs": ["accesskey"]`のとき、HTML構文の`ACCESSKEY`も禁止されますが、JSXの`<svg ACCESSKEY>`は禁止されません。詳細は[属性名の大文字・小文字](/docs/rules/no-unknown-attr#attribute-name-case)を参照してください。
+
 ### `disallowAttrs`オプションの設定 {#setting-disallow-attrs-option}
 
 配列には**文字列**と**オブジェクト**の両方の要素を含めることができます。

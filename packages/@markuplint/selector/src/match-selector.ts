@@ -210,7 +210,12 @@ function uncombinedRegexSelect(el: SelectorNode, selector: RegexSelectorWithoutC
 	const specifiedAttr = new Map<string, string>();
 
 	if (selector.nodeName) {
-		const matchedNodeName = regexSelectorMatches(selector.nodeName, el.localName, isPureHTMLElement(el));
+		const matchedNodeName = regexSelectorMatches(
+			selector.nodeName,
+			el.localName,
+			// The same as a type selector: see `SelectorElement#tagNameCaseSensitive`.
+			isPureHTMLElement(el) && !el.tagNameCaseSensitive,
+		);
 		if (matchedNodeName) {
 			// `$0` is the whole-match capture — redundant with the element name
 			// itself, so it is dropped from the exposed data.
@@ -234,7 +239,11 @@ function uncombinedRegexSelect(el: SelectorNode, selector: RegexSelectorWithoutC
 	if (selector.attrName || selector.attrValue) {
 		const matchedAttrList: MatchedAttr[] = [...el.attributes]
 			.map<MatchedAttr | null>(attr => {
-				const matchedAttrName = regexSelectorMatches(selector.attrName, attr.name, isPure);
+				const ignoreCase = attr.nameCaseInsensitive ?? isPure;
+				// A prop that the framework camelizes has two spellings, the DOM's and the one written
+				const matchedAttrName =
+					regexSelectorMatches(selector.attrName, attr.domName ?? attr.name, ignoreCase) ??
+					(attr.nameIsCamelized ? regexSelectorMatches(selector.attrName, attr.name, ignoreCase) : null);
 				if (selector.attrName && !matchedAttrName) {
 					return null;
 				}

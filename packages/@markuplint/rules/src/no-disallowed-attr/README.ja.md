@@ -39,6 +39,8 @@ const Component = (props) => {
 
 ## 詳細
 
+属性名はDOMが比較するのと同じ方法で比較します。これは構文と要素によって変わり、HTML構文では`TABINDEX`は`tabindex`であり、autonomous custom element上の`IS`は`is`属性です。詳細は[属性名の大文字・小文字](/docs/rules/no-unknown-attr#attribute-name-case)を参照してください。オプション(`allowAttrs`、`ignoreAttrNamePrefix`)の名前と接頭辞も同じ方法で比較します。
+
 ### `allowAttrs`オプションの設定 {#setting-allow-attrs-option}
 
 [`no-unknown-attr`](/docs/rules/no-unknown-attr#setting-allow-attrs-option)が受け取る同名のオプションと同じ形式です。詳細はそちらを参照してください。両方のルールに同じ`allowAttrs`を設定してください。

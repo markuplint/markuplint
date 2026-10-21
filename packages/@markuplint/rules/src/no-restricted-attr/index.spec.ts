@@ -345,3 +345,129 @@ describe('Disallow user-scalable=no in viewport meta (#716)', () => {
 		expect(violations).toStrictEqual([]);
 	});
 });
+
+test('[no-restricted-attr-issue-4309-001] HTML: a bare name of disallowAttrs matches the name in any spelling the DOM makes the same', async () => {
+	expect(
+		(await mlRuleTest(rule, '<div X-ATTR></div>', { rule: { options: { disallowAttrs: ['x-attr'] } } })).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 6,
+			message: 'The "X-ATTR" attribute is disallowed',
+			raw: 'X-ATTR',
+		},
+	]);
+	expect(
+		(await mlRuleTest(rule, '<div x-attr></div>', { rule: { options: { disallowAttrs: ['X-ATTR'] } } })).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 6,
+			message: 'The "x-attr" attribute is disallowed',
+			raw: 'x-attr',
+		},
+	]);
+	expect(
+		(await mlRuleTest(rule, '<div X-OTHER></div>', { rule: { options: { disallowAttrs: ['x-attr'] } } }))
+			.violations,
+	).toStrictEqual([]);
+});
+
+test('[no-restricted-attr-issue-4309-002] HTML: a { name, value } entry matches the name in any spelling the DOM makes the same', async () => {
+	expect(
+		(
+			await mlRuleTest(rule, '<div X-ATTR="b"></div>', {
+				rule: { options: { disallowAttrs: [{ name: 'x-attr', value: { enum: ['a', 'b'] } }] } },
+			})
+		).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 14,
+			message: 'The "X-ATTR" attribute is disallowed to accept the following values: "a", "b"',
+			raw: 'b',
+		},
+	]);
+	expect(
+		(
+			await mlRuleTest(rule, '<div x-attr="b"></div>', {
+				rule: { options: { disallowAttrs: [{ name: 'X-ATTR', value: { pattern: '/^b$/' } }] } },
+			})
+		).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 14,
+			message: 'The "x-attr" attribute is matched with the below disallowed patterns: /^b$/',
+			raw: 'b',
+		},
+	]);
+	expect(
+		(
+			await mlRuleTest(rule, '<div X-ATTR="c"></div>', {
+				rule: { options: { disallowAttrs: [{ name: 'x-attr', value: { enum: ['a', 'b'] } }] } },
+			})
+		).violations,
+	).toStrictEqual([]);
+});
+
+test('[no-restricted-attr-issue-4309-003] HTML: the record form matches the name in any spelling the DOM makes the same', async () => {
+	expect(
+		(
+			await mlRuleTest(rule, '<div X-ATTR="b"></div>', {
+				rule: { options: { disallowAttrs: { 'x-attr': { enum: ['a', 'b'] } } } },
+			})
+		).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 14,
+			message: 'The "X-ATTR" attribute is disallowed to accept the following values: "a", "b"',
+			raw: 'b',
+		},
+	]);
+	expect(
+		(
+			await mlRuleTest(rule, '<div x-attr="b"></div>', {
+				rule: { options: { disallowAttrs: { 'X-ATTR': { enum: ['a'] } } } },
+			})
+		).violations,
+	).toStrictEqual([]);
+});
+
+test('[no-restricted-attr-issue-4309-004] JSX: an HTML element folds the name, an SVG element keeps it as written', async () => {
+	const parser = { '.*': '@markuplint/jsx-parser' };
+	expect(
+		(await mlRuleTest(rule, '<div X-ATTR />', { parser, rule: { options: { disallowAttrs: ['x-attr'] } } }))
+			.violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 6,
+			message: 'The "X-ATTR" attribute is disallowed',
+			raw: 'X-ATTR',
+		},
+	]);
+	expect(
+		(await mlRuleTest(rule, '<svg X-ATTR />', { parser, rule: { options: { disallowAttrs: ['x-attr'] } } }))
+			.violations,
+	).toStrictEqual([]);
+	expect(
+		(await mlRuleTest(rule, '<svg X-ATTR />', { parser, rule: { options: { disallowAttrs: ['X-ATTR'] } } }))
+			.violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 6,
+			message: 'The "X-ATTR" attribute is disallowed',
+			raw: 'X-ATTR',
+		},
+	]);
+});

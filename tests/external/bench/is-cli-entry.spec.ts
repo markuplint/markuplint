@@ -8,7 +8,7 @@ describe('isCliEntry', () => {
 	const original = process.argv[1];
 
 	afterEach(() => {
-		process.argv[1] = original;
+		process.argv[1] = original!;
 	});
 
 	test('returns false when process.argv[1] is undefined', () => {

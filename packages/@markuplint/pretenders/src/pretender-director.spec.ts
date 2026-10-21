@@ -84,7 +84,7 @@ describe('PretenderDirector', () => {
 			{
 				selector: 'MyButton',
 				as: 'button',
-				filePath: 'lib/Button.vue:1:0',
+				filePath: 'app/MyButton.vue:1:0',
 				_via: ['Button'],
 			},
 		]);
@@ -92,18 +92,18 @@ describe('PretenderDirector', () => {
 
 	test('nameIndex resolves to first-registered component (first wins)', () => {
 		const director = new PretenderDirector();
-		// First Button registered → nameIndex maps 'Button' → './A/Button'
+		// First Button registered → the name index (`buildNameIndex` of dependencyMapper) maps 'Button' → './A/Button'
 		director.add('Button', 'button', 'A/Button.vue', 1, 0, './A/Button');
-		// Second Button registered → nameIndex still maps 'Button' → './A/Button'
+		// Second Button registered → the name index still maps 'Button' → './A/Button'
 		director.add('Button', 'div', 'B/Button.vue', 1, 0, './B/Button');
-		// MyButton wraps 'Button' → resolves through nameIndex to ./A/Button → 'button'
+		// MyButton wraps 'Button' → resolves through the name index to ./A/Button → 'button'
 		director.add('MyButton', 'Button', 'MyButton.vue', 1, 0, './MyButton');
 		const result = director.getPretenders();
 		const myButton = result.find(p => p.selector === 'MyButton');
 		expect(myButton).toStrictEqual({
 			selector: 'MyButton',
 			as: 'button',
-			filePath: 'A/Button.vue:1:0',
+			filePath: 'MyButton.vue:1:0',
 			_via: ['Button'],
 		});
 	});
@@ -153,7 +153,7 @@ describe('PretenderDirector', () => {
 			{
 				selector: 'CardButton',
 				as: 'button',
-				filePath: 'Button.vue:1:0',
+				filePath: 'CardButton.tsx:1:0',
 				_via: ['Button'],
 			},
 		]);

@@ -107,6 +107,12 @@ export interface ComponentScanScriptSource {
 	readonly content: string;
 	/** The character offset of the content start within the original source */
 	readonly offset: number;
+	/**
+	 * The `lang` attribute of the block as written (`tsx`, `ts`), for a language whose script block
+	 * declares one and whose parser reports it (Vue). It decides whether the script holds JSX, which
+	 * the import analysis reads with the TypeScript parser rather than with es-module-lexer.
+	 */
+	readonly lang?: string;
 }
 
 /**
@@ -130,4 +136,30 @@ export interface ComponentScanner {
 	 * @returns The extracted script block, or `null` if none found
 	 */
 	extractScriptSource?(sourceCode: string): ComponentScanScriptSource | null;
+
+	/**
+	 * Extracts the expressions of the template that are to be read as script, each with the
+	 * pattern that binds its result: `import('./C.svelte')` and `{ default: C }` of
+	 * `{#await import('./C.svelte') then { default: C }}`. The script block does not hold them,
+	 * so `extractScriptSource` does not see the imports they make, though Svelte documents the block as
+	 * the way to render a component lazily (https://svelte.dev/docs/svelte/await).
+	 * Optional — only a language whose template can load a module like that implements it (Svelte).
+	 *
+	 * The scanner reports the syntax as written and does not decide what an expression loads: the reader
+	 * reads each as `const <value> = await <expression>`, as it reads the same code in a script.
+	 *
+	 * @param sourceCode - The full source text of the component file
+	 * @returns The expressions in source order; none for a source that is not valid
+	 */
+	extractTemplateImports?(sourceCode: string): readonly ComponentScanTemplateImport[];
+}
+
+/**
+ * An expression of a template that is read as script (see {@link ComponentScanner.extractTemplateImports}),
+ * as the source text of it and of the pattern that binds its result.
+ */
+export interface ComponentScanTemplateImport {
+	readonly expression: string;
+	/** The pattern the result is bound to (`{ default: C }`, `m`); absent when the template binds none */
+	readonly value?: string;
 }

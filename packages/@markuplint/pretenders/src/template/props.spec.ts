@@ -26,6 +26,22 @@ describe('templateScanner: an attribute that forwards a prop of the component', 
 		});
 	});
 
+	test('[vue] defineProps in a script with lang="tsx" that holds JSX before it (issue #4322)', async () => {
+		expect(await scan('PropsLabelTsx.vue')).toStrictEqual({
+			element: 'button',
+			attrs: [forward('aria-label', 'label'), { name: 'data-size', value: { dynamic: true } }],
+			slots: true,
+		});
+	});
+
+	test('[vue] defineProps in a script with lang="jsx" that holds JSX before it (issue #4322)', async () => {
+		expect(await scan('PropsLabelJsx.vue')).toStrictEqual({
+			element: 'button',
+			attrs: [forward('aria-label', 'label'), { name: 'data-size', value: { dynamic: true } }],
+			slots: true,
+		});
+	});
+
 	test('[vue] the wrapper of the slot', async () => {
 		expect(await scan('PropsWrapper.vue')).toStrictEqual({
 			element: 'div',

@@ -29,3 +29,40 @@ describe('fix', () => {
 		expect(fixedCode).toBe('<script>const foo = "foo";</script>');
 	});
 });
+
+test('[no-ineffective-attr-issue-4309-001] an upper-case name is the attribute in HTML', async () => {
+	const { violations } = await mlRuleTest(rule, '<script DEFER>const foo = "foo";</script>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 9,
+			message: 'The "DEFER" attribute is ineffective. It doesn\'t need the attribute',
+			raw: 'DEFER',
+		},
+	]);
+});
+
+test('[no-ineffective-attr-issue-4309-002] an HTML element in JSX folds the name', async () => {
+	const options = { parser: { '.*': '@markuplint/jsx-parser' } };
+	const upper = await mlRuleTest(rule, '<script DEFER></script>', options);
+	expect(upper.violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 9,
+			message: 'The "DEFER" attribute is ineffective. It doesn\'t need the attribute',
+			raw: 'DEFER',
+		},
+	]);
+	const lower = await mlRuleTest(rule, '<script defer></script>', options);
+	expect(lower.violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 9,
+			message: 'The "defer" attribute is ineffective. It doesn\'t need the attribute',
+			raw: 'defer',
+		},
+	]);
+});

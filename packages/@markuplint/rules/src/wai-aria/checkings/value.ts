@@ -30,7 +30,7 @@ export const checkingValue: AttrChecker<
 		if (attr.isDynamicValue) {
 			return;
 		}
-		const propSpec = propSpecs.find(p => p.name === attr.name);
+		const propSpec = propSpecs.find(p => p.name === attr.nameKey);
 
 		const result = checkAria(propSpec, attr.value, role?.name, booleanish);
 		if (result.isValid) {
@@ -91,7 +91,7 @@ function checkAria(propSpec: ARIAProperty | undefined, currentValue: string, rol
  * Supports token, token list, string, ID reference, true/false, tristate,
  * true/false/undefined, integer, and number value types.
  *
- * @see https://www.w3.org/TR/wai-aria-1.2/#propcharacteristic_value
+ * @see https://w3c.github.io/aria/#propcharacteristic_value
  * @param type - The ARIA value type (e.g., `"token"`, `"true/false"`, `"integer"`).
  * @param value - The raw attribute value to validate.
  * @param tokenEnum - The list of allowed token values for token-based types.

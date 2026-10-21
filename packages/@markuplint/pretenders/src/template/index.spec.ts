@@ -70,7 +70,7 @@ describe('templateScanner', () => {
 			]);
 		});
 
-		test('scans Bare.vue — no attributes and no slot keep `slots: null` (issue #4082)', async () => {
+		test('scans Bare.vue — no attributes and no slot keep `slots: null`', async () => {
 			const result = await templateScanner([resolve('Bare.vue')]);
 			expect(result).toStrictEqual([
 				{
@@ -131,7 +131,7 @@ describe('templateScanner', () => {
 			]);
 		});
 
-		test('scans Bare.svelte — no attributes and no slot keep `slots: null` (issue #4082)', async () => {
+		test('scans Bare.svelte — no attributes and no slot keep `slots: null`', async () => {
 			const result = await templateScanner([resolve('Bare.svelte')]);
 			expect(result).toStrictEqual([
 				{
@@ -177,7 +177,7 @@ describe('templateScanner', () => {
 			]);
 		});
 
-		test('scans Bare.astro — no attributes and no slot keep `slots: null` (issue #4082)', async () => {
+		test('scans Bare.astro — no attributes and no slot keep `slots: null`', async () => {
 			const result = await templateScanner([resolve('Bare.astro')]);
 			expect(result).toStrictEqual([
 				{
@@ -302,5 +302,12 @@ describe('templateScanner', () => {
 				as: expect.objectContaining({ element: 'button' }),
 			});
 		});
+	});
+
+	test('a file whose name makes no component name (a route file) gives no pretender', async () => {
+		const files = [resolve('[id].vue'), resolve('+page.svelte'), resolve('[...slug].astro')];
+		const sources = new Map(files.map(file => [normalizePath(file), '<template><article /></template>']));
+
+		expect(await templateScanner(files, { sources })).toStrictEqual([]);
 	});
 });

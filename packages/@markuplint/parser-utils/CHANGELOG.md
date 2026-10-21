@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.3.0](https://github.com/markuplint/markuplint/compare/v5.2.0...v5.3.0) (2026-10-21)
+
+### Bug Fixes
+
+* make published packages loadable from require() and put types first ([723106f](https://github.com/markuplint/markuplint/commit/723106f51aac4e60dc02db2c1a894617368b0253)), closes [#4198](https://github.com/markuplint/markuplint/issues/4198)
+* **parser-utils:** map an IDL name by its exact spelling ([3eac033](https://github.com/markuplint/markuplint/commit/3eac033da5d20884bf00f4defeccb3be9c7d44bf))
+* **rules:** tell the namespace of a component's prop by the name as written ([157f434](https://github.com/markuplint/markuplint/commit/157f434b9dc4bb0f51c3fb77b219f38ef4035dd8))
+
+### Features
+
+* **ml-core:** ask whether a name is a prefix of an attribute, and keep suggesting the property ([bd195ef](https://github.com/markuplint/markuplint/commit/bd195ef6ededb80482c642a86360c5f932f8b91b))
+* **parser-utils:** add isComponentName to tell a component name from an element name ([3385e5b](https://github.com/markuplint/markuplint/commit/3385e5b874290ec6c9d23c769d50e8741a0ce8af))
+* **parser-utils:** add the attrNameCaseSensitive parser option ([d494501](https://github.com/markuplint/markuplint/commit/d49450161f5de6dfcd8e035db5b39eeb3815d396)), closes [#4229](https://github.com/markuplint/markuplint/issues/4229)
+* **parser-utils:** let a parser decide which character starts a tag name ([720022f](https://github.com/markuplint/markuplint/commit/720022ff33bd103c20827e232acb16a0da8230bc))
+* **parser-utils:** let a parser own the rule of its component names ([92d5048](https://github.com/markuplint/markuplint/commit/92d5048a174bfa39e0624ece4ec71e0b00a2bae0)), closes [Parser#isComponentName](https://github.com/Parser/issues/isComponentName)
+* **parser-utils:** let a parser say how an attribute name gets into the DOM ([abd81e5](https://github.com/markuplint/markuplint/commit/abd81e5d20f4ffeb0ba878e77fd4122c1a803a9f))
+
+### Performance Improvements
+
+* **parser-utils:** skip debug maps when logging is disabled ([47466b0](https://github.com/markuplint/markuplint/commit/47466b00d5d4c4fc121ed55d22e11540cd1ed0cd))
+* **selector:** read the debug flag once per match and pass it down ([1e99fc0](https://github.com/markuplint/markuplint/commit/1e99fc095aa57c9cadf08a55e109a1f75c0b31ca))
+
+
 # [5.2.0](https://github.com/markuplint/markuplint/compare/v5.1.1...v5.2.0) (2026-10-13)
 
 ### Bug Fixes
