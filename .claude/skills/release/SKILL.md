@@ -14,9 +14,10 @@ disable-model-invocation: true
 
 - **Fixed versioning**: all packages share one version (`lerna.json` `version`).
 - **The release branch is not the development branch.** See [Branch model](#branch-model) — getting this wrong is the single most common mistake in this repository.
-- Pushing a `v*` tag triggers `.github/workflows/publish.yml`, which runs `lerna publish from-git` with a dist-tag derived from the version string (`-alpha.*` → `alpha`, `-beta.*` → `beta`, `-rc.*` → `rc`, no prerelease suffix → `latest`) via npm OIDC Trusted Publishing.
+- Pushing a `v*` tag triggers `.github/workflows/publish.yml`, which runs `lerna publish from-git` with a dist-tag derived from the version string (`-alpha.*` → `alpha`, `-beta.*` → `beta`, `-rc.*` → `rc`) via npm OIDC Trusted Publishing. A stable version goes to `latest`, unless its major is below the major currently on `latest` (`npm view markuplint@latest version`): then it goes to `v<major>`, so a maintenance release never moves `latest` back (4.18.4 was the first, published under `v4`).
 - **Publishing cannot be undone.** Confirm with the user at each gate.
 - **Run this in the user's main checkout, not in a worktree.** The worktree rule in the root `CLAUDE.md` is for topic-branch work; a release needs `main` checked out where the user runs `yarn release`, and a worktree holding `main` blocks the main checkout from switching to it. If this skill is invoked from a worktree session, stop before any checkout or merge and hand the steps to the user for the main checkout.
+  - The exception is a maintenance release (see [Branch model](#branch-model)): it is cut on the line's own branch, so a worktree checked out on that branch works and keeps the main checkout on `dev`. In a worktree, `yarn release` needs the same prefix as `yarn build` — `NX_WORKSPACE_ROOT_PATH=<worktree-absolute-path> yarn release` — otherwise Lerna resolves the Nx workspace root to the main checkout and dies in `git diff --name-only <tag> -- ../../../packages/...` with "is outside repository".
 - The VS Code extension ships separately (`yarn vscode:package` to verify the VSIX build locally, then `yarn vscode:release`) and is out of scope here.
 
 # Branch model
@@ -25,7 +26,8 @@ disable-model-invocation: true
 | --- | --- | --- |
 | **Stable** (`X.Y.Z`) | `main` | Merge `dev` (or the prerelease branch) into `main` first, then run `yarn release` on `main` |
 | **Prerelease** (`-rc.N` / `-beta.N` / `-alpha.N`) | A dedicated branch, e.g. `v5-rc`, `v5-alpha` | Branch off **the line being released**, run `yarn release:rc` there, then merge that branch back into that line |
-| Development | `dev` (v5 line), `v6` (next major), `v4` (v4 maintenance) | — never released from directly |
+| **Maintenance** (`4.x.y`, a patch of a superseded major) | `v4` itself | Run `yarn release` on `v4`; `.husky/pre-commit` guards only `dev`, and `publish.yml` publishes it under the `v4` dist-tag. Nothing is merged back: `v4` is never merged into another line |
+| Development | `dev` (v5 line), `v6` (next major) | — never released from directly |
 
 Verify the claim rather than trusting this table if anything looks off:
 
@@ -153,8 +155,10 @@ git tag v<VERSION> -m v<VERSION>          # annotated, same as Lerna's gitTag
 3. Return to this conversation with `claude --continue`
 
 ```
-yarn release          # graduate (stable) — run on main
+yarn release          # graduate (stable) — run on main; on v4 for a maintenance release
 ```
+
+In a worktree (maintenance release), prefix it: `NX_WORKSPACE_ROOT_PATH=<worktree-absolute-path> yarn release` (see [Preconditions](#preconditions)).
 
 For a prerelease, on the dedicated branch:
 
@@ -183,6 +187,7 @@ git ls-remote --tags origin
 
 - **Stable**: merge `main` back into `dev` so the version commit is not lost. Then carry `dev` forward into `v6` — the version commit has to reach the next-major line too, and `dev` → `v6` is the only permitted direction.
 - **Prerelease**: merge the prerelease branch into the line it was cut from (`dev` or `v6`), then, if it was `dev`, carry `dev` forward into `v6`.
+- **Maintenance**: nothing. The version commit already sits on `v4`, which is never merged anywhere. Skip to step 8.
 
 The merge back is pushed directly, not through a PR. `dev` is protected, but the admin bypass lets the push through (the output says "Bypassed rule violations"); opening a PR for it only produces a conflict-prone merge PR. The merge commit itself has to be made with `--no-verify`, because lint-staged's `yarn cli` task always fails on the fixtures that are meant to contain errors (`test/fixture/027.html` and friends) — so run `yarn lint-check`, `yarn build`, and `yarn test` on the merged tree first, then:
 
@@ -219,7 +224,7 @@ npm view markuplint dist-tags
 npm view @markuplint/rules dist-tags
 ```
 
-- Version must match step 5; dist-tag must match the release channel (`latest` / `rc` / `beta` / `alpha`).
+- Version must match step 5; dist-tag must match the release channel (`latest` / `rc` / `beta` / `alpha`, or `v<major>` for a maintenance release). For a maintenance release also confirm `latest` still points at the current line.
 - Fixed mode can still partially publish. Spot-check core packages; if ANY mismatch is found, enumerate every public package (`npx lerna list --json`) and check each.
 - Confirm provenance attestations are present (`npm view markuplint --json` → `dist.attestations`).
 
@@ -229,6 +234,7 @@ npm view @markuplint/rules dist-tags
 
 - **Workflow failed before anything published**: fix the cause, `gh run rerun`.
 - **Partial publish**: published versions are immutable. Ask the user before retrying — options are `gh run rerun` (re-attempts the same tag) or a local `npx lerna publish from-package` (publishes only versions missing from the registry; requires local npm auth, which OIDC does not provide).
+  - `TLOG_CREATE_ENTRY_ERROR ... (409) an equivalent entry already exists in the transparency log` is the provenance step refusing to sign a package a second time. A package Lerna reported as `success published` shows up in `npm view <pkg>@<version>` only minutes later, and a rerun started before that re-signs it and fails with this 409 — so wait until every reported package resolves, then rerun; `lerna publish from-git` skips what the registry already has. v4.18.4 needed three reruns this way; `--concurrency 1` on the publish step is the suspected (unconfirmed) fix for the first failure.
 - **Wrong version published**: unpublish is generally impossible. Propose `npm deprecate <package>@<version> "<reason>"` plus a corrected follow-up release — only with the user's explicit approval.
 
 ## 11. GitHub Release notes
@@ -240,6 +246,8 @@ Write the notes to a file in the scratchpad directory, then pass it with `--note
 ```bash
 gh release create v<VERSION> --title "v<VERSION>" --notes-file "<path>"
 ```
+
+For a maintenance release add `--latest=false`: `gh release create` marks the new release as "Latest" by default, which would take the badge away from the current line's release.
 
 Format:
 
