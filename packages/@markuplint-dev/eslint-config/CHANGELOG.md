@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.18.4](https://github.com/markuplint/markuplint/compare/v4.18.3...v4.18.4) (2026-10-22)
+
+**Note:** Version bump only for package @markuplint-dev/eslint-config
+
 # [4.18.0](https://github.com/markuplint/markuplint/compare/v4.14.1...v4.18.0) (2026-04-22)
 
 ### Bug Fixes
