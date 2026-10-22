@@ -8575,7 +8575,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"follow-redirects@npm:1.16.1, follow-redirects@npm:^1.16.0":
+"follow-redirects@npm:1.16.1":
   version: 1.16.1
   resolution: "follow-redirects@npm:1.16.1"
   peerDependenciesMeta:
@@ -13231,7 +13231,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pacote@npm:21.5.1, pacote@npm:^21.0.0, pacote@npm:^21.0.2":
+"pacote@npm:21.5.1":
   version: 21.5.1
   resolution: "pacote@npm:21.5.1"
   dependencies:
@@ -14950,14 +14950,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"smol-toml@npm:1.9.0":
-  version: 1.9.0
-  resolution: "smol-toml@npm:1.9.0"
-  checksum: 10c0/9a15a7560e15d050961f12cffab502f8b42af9d9e4713218181d10d3bda5e0265c4c81a92d6877e7d4e73145fc44d7fbc7cce997d9317b855fea974fc3bbc238
-  languageName: node
-  linkType: hard
-
-"smol-toml@npm:^1.9.1":
+"smol-toml@npm:1.9.1":
   version: 1.9.1
   resolution: "smol-toml@npm:1.9.1"
   checksum: 10c0/8acccf7bbc063f29405f58f5014ab39bf4eb9d7f0e000e5e3f140f7d4d6ead5696681a7c15260d1f2910213012c0af43b31a05bf94f704b0bdf39989fba08c02
@@ -15512,7 +15505,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tar@npm:7.5.22, tar@npm:^7.4.3, tar@npm:^7.5.4, tar@npm:^7.5.7":
+"tar@npm:7.5.22":
   version: 7.5.22
   resolution: "tar@npm:7.5.22"
   dependencies:
