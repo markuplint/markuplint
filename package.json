@@ -108,6 +108,12 @@
 	"resolutions": {
 		"markuplint": "workspace:*",
 		"@isaacs/brace-expansion": "5.0.1",
-		"js-yaml": "^4.1.1"
+		"js-yaml": "^4.1.1",
+		"tar@npm:7.5.11": "7.5.22",
+		"pacote@npm:21.0.1": "21.5.1",
+		"axios@npm:1.18.1": "1.20.0",
+		"brace-expansion@npm:5.0.8": "5.0.12",
+		"follow-redirects@npm:1.16.0": "1.16.1",
+		"smol-toml@npm:1.6.1": "1.9.0"
 	}
 }
