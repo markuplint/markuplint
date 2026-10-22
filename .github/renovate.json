@@ -45,6 +45,13 @@
 			"automerge": true
 		},
 		{
+			"description": "v4 is a maintenance line that keeps Node 18.18+ support; a major update of a production dependency there drops it (meow 14 and os-locale 8 require Node 20), so Renovate must not propose them on that base branch",
+			"matchBaseBranches": ["v4"],
+			"matchDepTypes": ["dependencies"],
+			"matchUpdateTypes": ["major"],
+			"enabled": false
+		},
+		{
 			"description": "Exempt lock file maintenance from the repository-wide PR limits. Major updates waiting for review keep the concurrent limit full, which held back lock file maintenance on dev from 2026-03 onward; it is the only update that refreshes transitive dependencies, because for yarn.lock Renovate's vulnerabilityAlerts PRs cover direct dependencies only",
 			"matchUpdateTypes": ["lockFileMaintenance"],
 			"prConcurrentLimit": 0,
