@@ -51,7 +51,17 @@ jobs:
                     echo "::error::Unknown prerelease tag in version: $VERSION"
                     exit 1
                   else
-                    echo "tag=latest" >> "$GITHUB_OUTPUT"
+                    # A stable release from a maintenance line (its major is
+                    # below the major currently on `latest`) must not take
+                    # `latest` away from the current line: publish it under
+                    # the `v<major>` dist-tag instead.
+                    MAJOR="${VERSION%%.*}"
+                    LATEST_MAJOR="$(npm view markuplint@latest version | cut -d. -f1)"
+                    if [[ "$MAJOR" -lt "$LATEST_MAJOR" ]]; then
+                      echo "tag=v${MAJOR}" >> "$GITHUB_OUTPUT"
+                    else
+                      echo "tag=latest" >> "$GITHUB_OUTPUT"
+                    fi
                   fi
 
             - name: Publish
