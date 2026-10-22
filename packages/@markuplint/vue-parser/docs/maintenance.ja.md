@@ -117,9 +117,7 @@ expect(doc.nodeList[0].elementType).toBe('authored');
 4. AST 型が変更された場合、型エクスポートを更新:
    ```ts
    export type ASTNode =
-     | VueESLintParser.AST.VElement
-     | VueESLintParser.AST.VText
-     | VueESLintParser.AST.VExpressionContainer;
+     VueESLintParser.AST.VElement | VueESLintParser.AST.VText | VueESLintParser.AST.VExpressionContainer;
    ```
 5. ビルドとテスト: `yarn build --scope @markuplint/vue-parser && yarn test --scope @markuplint/vue-parser`
 

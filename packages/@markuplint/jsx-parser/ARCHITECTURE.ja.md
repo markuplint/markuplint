@@ -102,16 +102,16 @@ JSX 式とその包含要素間の親子関係を追跡するプライベート 
 
 ### オーバーライドメソッド
 
-| メソッド              | 用途                                                                                                     |
+| メソッド | 用途 |
 | --------------------- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
-| `tokenize()`          | `jsxParser()` を呼び出して TypeScript ESTree 経由でソースをパースし、コメントを state に抽出             |
-| `parseError()`        | TypeScript ESTree のパースエラー（`lineNumber`/`column` 付き）を `ParserError` に変換                    |
-| `nodeize()`           | JSX AST ノードを markuplint ノードに変換。コメント、テキスト、要素、フラグメント、psblock を処理         |
-| `afterTraverse()`     | `#parentIdMap` を使用して psblock ノードの親子関係を再構築                                               |
-| `afterFlattenNodes()` | `exposeWhiteSpace: false` と `exposeInvalidNode: false` で親メソッドを呼び出す                           |
-| `visitComment()`      | 全コメントノードを `isBogus: false` にマーク（JSX は HTML bogus コメントではなく JS コメント構文を使用） |
-| `visitAttr()`         | JSX 固有のクォート（`{}`）、IDL 属性マッピング、動的値検出を処理                                         |
-| `parseCodeFragment()` | `namelessFragment: true` で親メソッドに委譲                                                              |
+| `tokenize()` | `jsxParser()` を呼び出して TypeScript ESTree 経由でソースをパースし、コメントを state に抽出 |
+| `parseError()` | TypeScript ESTree のパースエラー（`lineNumber`/`column` 付き）を `ParserError` に変換 |
+| `nodeize()` | JSX AST ノードを markuplint ノードに変換。コメント、テキスト、要素、フラグメント、psblock を処理 |
+| `afterTraverse()` | `#parentIdMap` を使用して psblock ノードの親子関係を再構築 |
+| `afterFlattenNodes()` | `exposeWhiteSpace: false` と `exposeInvalidNode: false` で親メソッドを呼び出す |
+| `visitComment()` | 全コメントノードを `isBogus: false` にマーク（JSX は HTML bogus コメントではなく JS コメント構文を使用） |
+| `visitAttr()` | JSX 固有のクォート（`{}`）、IDL 属性マッピング、動的値検出を処理 |
+| `parseCodeFragment()` | `namelessFragment: true` で親メソッドに委譲 |
 | `detectElementType()` | `/^[A-Z]                                                                                                 | \./` 正規表現でコンポーネント vs HTML 要素を検出 |
 
 ## JSX AST 抽出（jsx.ts）

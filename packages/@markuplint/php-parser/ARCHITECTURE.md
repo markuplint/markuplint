@@ -18,11 +18,11 @@ This approach allows markuplint to lint the HTML structure without being confuse
 
 The `PHPParser` constructor defines three ignore patterns, ordered from most specific to least specific to ensure correct matching:
 
-| Type            | Start   | End   | Description              |
+| Type | Start | End | Description |
 | --------------- | ------- | ----- | ------------------------ | ------------------------------------------------------- |
-| `php-tag`       | `<?php` | `/\?> | $/`                      | Standard PHP code blocks (also matches unclosed at EOF) |
-| `php-echo`      | `<?=`   | `?>`  | Short echo / output tags |
-| `php-short-tag` | `<?`    | `/\?> | $/`                      | Short open tags (also matches unclosed at EOF)          |
+| `php-tag` | `<?php` | `/\?> | $/` | Standard PHP code blocks (also matches unclosed at EOF) |
+| `php-echo` | `<?=` | `?>` | Short echo / output tags |
+| `php-short-tag` | `<?` | `/\?> | $/` | Short open tags (also matches unclosed at EOF) |
 
 **EOF-unclosed tag handling:** The `php-tag` and `php-short-tag` patterns use a regex `/\?>|$/` for the end delimiter. The `$` alternative matches the end of the source, allowing PHP blocks that are never closed (e.g., `<?php include("path/to")` at the end of a file) to be correctly captured as a single `#ps:*` node rather than leaving unparsed content.
 

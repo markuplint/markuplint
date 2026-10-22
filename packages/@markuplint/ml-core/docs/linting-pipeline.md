@@ -222,8 +222,7 @@ type Pretender = {
 
 ```typescript
 type PretenderContext =
-  | { type: 'pretender'; as: MLElement; aria?: PretenderARIA }
-  | { type: 'origin'; pretender: MLElement };
+  { type: 'pretender'; as: MLElement; aria?: PretenderARIA } | { type: 'origin'; pretender: MLElement };
 ```
 
 ## Plugin System

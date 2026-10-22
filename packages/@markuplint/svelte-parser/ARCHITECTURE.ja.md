@@ -80,16 +80,16 @@ Parser<SvelteNode>  (@markuplint/parser-utils)
 
 ### オーバーライドメソッド
 
-| メソッド              | 用途                                                                                                 |
+| メソッド | 用途 |
 | --------------------- | ---------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| `tokenize()`          | `svelteParse()` を呼び出して Svelte AST を生成                                                       |
-| `parse()`             | `ignoreFrontMatter: false` で `super.parse()` に委譲                                                 |
-| `parseError()`        | Svelte コンパイラエラーをエラーフレーム付きの `ParserError` でラップ                                 |
-| `nodeize()`           | Svelte AST ノードを markuplint ノードに変換（テキスト、コメント、要素、式、制御フローブロック）      |
-| `visitText()`         | `researchTags: false` で `super.visitText()` を呼び出し、`<script>` テキストを Script psblock に変換 |
-| `visitPsBlock()`      | `super.visitPsBlock()` に委譲し、結果ノードが正確に1つであることを検証                               |
-| `visitChildren()`     | `super.visitChildren()` に委譲し、異なる階層レベルの兄弟ノードがないことを検証                       |
-| `visitAttr()`         | Svelte 固有の属性構文を処理: ディレクティブ、省略形、スプレッド、波括弧式                            |
+| `tokenize()` | `svelteParse()` を呼び出して Svelte AST を生成 |
+| `parse()` | `ignoreFrontMatter: false` で `super.parse()` に委譲 |
+| `parseError()` | Svelte コンパイラエラーをエラーフレーム付きの `ParserError` でラップ |
+| `nodeize()` | Svelte AST ノードを markuplint ノードに変換（テキスト、コメント、要素、式、制御フローブロック） |
+| `visitText()` | `researchTags: false` で `super.visitText()` を呼び出し、`<script>` テキストを Script psblock に変換 |
+| `visitPsBlock()` | `super.visitPsBlock()` に委譲し、結果ノードが正確に1つであることを検証 |
+| `visitChildren()` | `super.visitChildren()` に委譲し、異なる階層レベルの兄弟ノードがないことを検証 |
+| `visitAttr()` | Svelte 固有の属性構文を処理: ディレクティブ、省略形、スプレッド、波括弧式 |
 | `detectElementType()` | 正規表現 `/^[A-Z]                                                                                    | \./` でコンポーネント vs HTML 要素を判定（PascalCase またはドット付き名はコンポーネント） |
 
 ## tokenize()

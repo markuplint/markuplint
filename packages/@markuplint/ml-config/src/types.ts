@@ -313,9 +313,7 @@ export type Rule<T extends RuleConfigValue, O extends PlainData = undefined> = R
  * @deprecated
  */
 export type RuleV2<T extends RuleConfigValue, O extends PlainData = undefined> =
-	| RuleConfigV2<T, O>
-	| Readonly<T>
-	| boolean;
+	RuleConfigV2<T, O> | Readonly<T> | boolean;
 
 /**
  * A rule setting with any value and option types.
@@ -409,9 +407,7 @@ export type ChildNodeRule = {
  * @template O - The type of the rule's options
  */
 export type Report<T extends RuleConfigValue, O extends PlainData = undefined> =
-	| Report1<T, O>
-	| Report2
-	| (Report1<T, O> & Report2);
+	Report1<T, O> | Report2 | (Report1<T, O> & Report2);
 
 /**
  * A scope-based violation report, referencing the rule info and position via a {@link Scope}.

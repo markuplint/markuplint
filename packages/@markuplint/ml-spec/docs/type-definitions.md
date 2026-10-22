@@ -319,19 +319,11 @@ interface ARIA {
   implicitProperties?: ImplicitProperties;
   properties?: PermittedARIAProperties;
   conditions?: {
-    [selector: string]: {
-      /* per-condition overrides */
-    };
+    [selector: string]: {/* per-condition overrides */};
   };
-  '1.3'?: {
-    /* version-specific overrides */
-  };
-  '1.2'?: {
-    /* version-specific overrides */
-  };
-  '1.1'?: {
-    /* version-specific overrides */
-  };
+  '1.3'?: {/* version-specific overrides */};
+  '1.2'?: {/* version-specific overrides */};
+  '1.1'?: {/* version-specific overrides */};
 }
 ```
 
@@ -358,12 +350,8 @@ type PermittedARIAProperties =
   | {
       global?: true; // Allow global ARIA properties
       role?: true | string | [string, ...string[]]; // Properties applicable to allowed roles
-      only?: [
-        /* specific properties */
-      ]; // Whitelist of allowed properties
-      without?: [
-        /* prohibited properties with severity */
-      ]; // Blacklist with severity levels
+      only?: [/* specific properties */]; // Whitelist of allowed properties
+      without?: [/* prohibited properties with severity */]; // Blacklist with severity levels
     };
 ```
 

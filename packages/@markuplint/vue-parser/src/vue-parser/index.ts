@@ -16,9 +16,7 @@ export function vueParse(vueTemplate: string): VueTokens {
 
 /** Union of AST node types that can appear as children in a Vue template. */
 export type ASTNode =
-	| VueESLintParser.AST.VElement
-	| VueESLintParser.AST.VText
-	| VueESLintParser.AST.VExpressionContainer;
+	VueESLintParser.AST.VElement | VueESLintParser.AST.VText | VueESLintParser.AST.VExpressionContainer;
 
 /** Represents a comment token in the Vue template AST with location information. */
 export type ASTComment = VueESLintParser.AST.Token & VueESLintParser.AST.HasLocation;

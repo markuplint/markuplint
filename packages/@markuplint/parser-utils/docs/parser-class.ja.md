@@ -534,9 +534,7 @@ import type { ParserOptions, ParseOptions, Tokenized, ChildToken } from '@markup
 import type { MLASTParentNode, MLASTNodeTreeItem } from '@markuplint/ml-ast';
 
 // 言語固有の AST ノード型
-type MyNode = {
-  /* ... */
-};
+type MyNode = {/* ... */};
 
 class MyParser extends Parser<MyNode> {
   constructor() {

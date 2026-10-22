@@ -323,12 +323,12 @@ When `properties` is `false`, no ARIA properties are allowed (e.g., `input[type=
 
 ### Property Restrictions (`without`)
 
-| Field   | Type     | Description                                          |
+| Field | Type | Description |
 | ------- | -------- | ---------------------------------------------------- | ------------------------------------ |
-| `type`  | `string` | `"must-not"`, `"should-not"`, or `"not-recommended"` |
-| `name`  | `string` | ARIA property name (e.g., `"aria-checked"`)          |
-| `value` | `string` | Optional: restrict only for this specific value      |
-| `alt`   | `object` | Optional: `{ "method": "set-attr"                    | "remove-attr", "target": "<attr>" }` |
+| `type` | `string` | `"must-not"`, `"should-not"`, or `"not-recommended"` |
+| `name` | `string` | ARIA property name (e.g., `"aria-checked"`) |
+| `value` | `string` | Optional: restrict only for this specific value |
+| `alt` | `object` | Optional: `{ "method": "set-attr"                    | "remove-attr", "target": "<attr>" }` |
 
 ### Conditional ARIA (`conditions`)
 

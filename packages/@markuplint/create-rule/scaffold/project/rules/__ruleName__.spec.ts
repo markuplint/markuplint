@@ -8,9 +8,7 @@ import { __ruleName__c } from './__ruleName__.js';
  */
 test('It is test', async () => {
 	const { violations } = await mlRuleTest(
-		__ruleName__c({
-			/* Plugin settings */
-		}),
+		__ruleName__c({/* Plugin settings */}),
 		/**
 		 * Example: The target HTML that is evaluated
 		 */
