@@ -13,16 +13,7 @@
  * - `'spread'`    – A spread attribute (e.g. `{...props}` in JSX)
  */
 export type MLASTNodeType =
-	| 'doctype'
-	| 'starttag'
-	| 'endtag'
-	| 'comment'
-	| 'text'
-	| 'omittedtag'
-	| 'psblock'
-	| 'invalid'
-	| 'attr'
-	| 'spread';
+	'doctype' | 'starttag' | 'endtag' | 'comment' | 'text' | 'omittedtag' | 'psblock' | 'invalid' | 'attr' | 'spread';
 
 /**
  * Element type
@@ -37,13 +28,7 @@ export type ElementType = 'html' | 'web-component' | 'authored';
  * Union of every possible AST node type produced by a markuplint parser.
  */
 export type MLASTNode =
-	| MLASTDoctype
-	| MLASTTag
-	| MLASTComment
-	| MLASTText
-	| MLASTPreprocessorSpecificBlock
-	| MLASTInvalid
-	| MLASTAttr;
+	MLASTDoctype | MLASTTag | MLASTComment | MLASTText | MLASTPreprocessorSpecificBlock | MLASTInvalid | MLASTAttr;
 
 /**
  * Nodes that can act as a parent in the AST tree (i.e. contain child nodes).

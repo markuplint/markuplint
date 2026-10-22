@@ -16,10 +16,7 @@ import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
  * @see https://dom.spec.whatwg.org/#idl-index
  */
 export type MLChildNode<T extends RuleConfigValue, O extends PlainData = undefined> =
-	| MLDocumentType<T, O>
-	| MLCharacterData<T, O>
-	| MLElement<T, O>
-	| MLBlock<T, O>;
+	MLDocumentType<T, O> | MLCharacterData<T, O> | MLElement<T, O> | MLBlock<T, O>;
 
 /**
  * Determines whether the given node is a child node type

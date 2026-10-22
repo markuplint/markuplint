@@ -31,12 +31,7 @@ export type SvelteDirective = Directive | AST.Attribute | AST.SpreadAttribute;
 
 /** Union of all Svelte block types that have opening/closing tag syntax. */
 export type SvelteBlock =
-	| AST.EachBlock
-	| AST.IfBlock
-	| AST.AwaitBlock
-	| AST.KeyBlock
-	| AST.SnippetBlock
-	| AST.SvelteBoundary;
+	AST.EachBlock | AST.IfBlock | AST.AwaitBlock | AST.KeyBlock | AST.SnippetBlock | AST.SvelteBoundary;
 
 type Directive =
 	| AST.AnimateDirective

@@ -1318,16 +1318,7 @@ export interface GlobalAttributes {
 	 * @minItems 0
 	 */
 	'#HTMLEmbededAndMediaContentAttrs'?: (
-		| 'autoplay'
-		| 'controls'
-		| 'height'
-		| 'loop'
-		| 'muted'
-		| 'preload'
-		| 'sizes'
-		| 'src'
-		| 'srcset'
-		| 'width'
+		'autoplay' | 'controls' | 'height' | 'loop' | 'muted' | 'preload' | 'sizes' | 'src' | 'srcset' | 'width'
 	)[];
 	/**
 	 * @minItems 0
@@ -1373,15 +1364,7 @@ export interface GlobalAttributes {
 	 * @minItems 0
 	 */
 	'#SVGAnimationTimingAttrs'?: (
-		| 'begin'
-		| 'dur'
-		| 'end'
-		| 'min'
-		| 'max'
-		| 'restart'
-		| 'repeatCount'
-		| 'repeatDur'
-		| 'fill'
+		'begin' | 'dur' | 'end' | 'min' | 'max' | 'restart' | 'repeatCount' | 'repeatDur' | 'fill'
 	)[];
 	/**
 	 * @minItems 0
@@ -1407,16 +1390,7 @@ export interface GlobalAttributes {
 	 * @minItems 0
 	 */
 	'#SVGCoreAttrs'?: (
-		| 'id'
-		| 'tabindex'
-		| 'autofocus'
-		| 'lang'
-		| 'xml:space'
-		| 'class'
-		| 'style'
-		| 'xmlns'
-		| 'xml:lang'
-		| 'xml:base'
+		'id' | 'tabindex' | 'autofocus' | 'lang' | 'xml:space' | 'class' | 'style' | 'xmlns' | 'xml:lang' | 'xml:base'
 	)[];
 	/**
 	 * @minItems 0
@@ -1512,25 +1486,13 @@ export interface GlobalAttributes {
 	 * @minItems 0
 	 */
 	'#SVGTransferFunctionAttrs'?: (
-		| 'type'
-		| 'tableValues'
-		| 'slope'
-		| 'intercept'
-		| 'amplitude'
-		| 'exponent'
-		| 'offset'
+		'type' | 'tableValues' | 'slope' | 'intercept' | 'amplitude' | 'exponent' | 'offset'
 	)[];
 	/**
 	 * @minItems 0
 	 */
 	'#XLinkAttrs'?: (
-		| 'xlink:href'
-		| 'xlink:title'
-		| 'xlink:actuate'
-		| 'xlink:arcrole'
-		| 'xlink:role'
-		| 'xlink:show'
-		| 'xlink:type'
+		'xlink:href' | 'xlink:title' | 'xlink:actuate' | 'xlink:arcrole' | 'xlink:role' | 'xlink:show' | 'xlink:type'
 	)[];
 }
 export interface Attributes {

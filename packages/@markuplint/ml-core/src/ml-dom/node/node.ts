@@ -564,11 +564,7 @@ export abstract class MLNode<
 	 * @implements `@markuplint/ml-core` API: `MLNode`
 	 */
 	get syntacticalParentNode():
-		| MLDocument<any, any>
-		| MLDocumentFragment<any, any>
-		| MLElement<T, O>
-		| MLBlock<T, O>
-		| null {
+		MLDocument<any, any> | MLDocumentFragment<any, any> | MLElement<T, O> | MLBlock<T, O> | null {
 		if (this._astToken.type === 'attr' || this._astToken.type === 'spread') {
 			return null;
 		}

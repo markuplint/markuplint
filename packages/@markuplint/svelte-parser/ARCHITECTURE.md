@@ -80,16 +80,16 @@ Parser<SvelteNode>  (from @markuplint/parser-utils)
 
 ### Override Methods
 
-| Method                | Purpose                                                                                                 |
+| Method | Purpose |
 | --------------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
-| `tokenize()`          | Calls `svelteParse()` to produce the Svelte AST                                                         |
-| `parse()`             | Delegates to `super.parse()` with `ignoreFrontMatter: false`                                            |
-| `parseError()`        | Wraps Svelte compiler errors with `ParserError`, including the error frame                              |
-| `nodeize()`           | Converts Svelte AST nodes to markuplint nodes (text, comment, element, expression, control flow blocks) |
-| `visitText()`         | Calls `super.visitText()` with `researchTags: false`; converts `<script>` text to Script psblock        |
-| `visitPsBlock()`      | Delegates to `super.visitPsBlock()` and enforces exactly one result node                                |
-| `visitChildren()`     | Delegates to `super.visitChildren()` and validates no sibling nodes with differing hierarchy levels     |
-| `visitAttr()`         | Handles Svelte-specific attribute syntax: directives, shorthand, spread, curly-brace expressions        |
+| `tokenize()` | Calls `svelteParse()` to produce the Svelte AST |
+| `parse()` | Delegates to `super.parse()` with `ignoreFrontMatter: false` |
+| `parseError()` | Wraps Svelte compiler errors with `ParserError`, including the error frame |
+| `nodeize()` | Converts Svelte AST nodes to markuplint nodes (text, comment, element, expression, control flow blocks) |
+| `visitText()` | Calls `super.visitText()` with `researchTags: false`; converts `<script>` text to Script psblock |
+| `visitPsBlock()` | Delegates to `super.visitPsBlock()` and enforces exactly one result node |
+| `visitChildren()` | Delegates to `super.visitChildren()` and validates no sibling nodes with differing hierarchy levels |
+| `visitAttr()` | Handles Svelte-specific attribute syntax: directives, shorthand, spread, curly-brace expressions |
 | `detectElementType()` | Detects component vs HTML element using the regex `/^[A-Z]                                              | \./` (PascalCase or dotted names are components) |
 
 ## tokenize()

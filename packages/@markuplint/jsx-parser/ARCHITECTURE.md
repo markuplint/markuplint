@@ -102,16 +102,16 @@ A private `WeakMap` that tracks the parent-child relationships between JSX expre
 
 ### Override Methods
 
-| Method                | Purpose                                                                                                     |
+| Method | Purpose |
 | --------------------- | ----------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
-| `tokenize()`          | Invokes `jsxParser()` to parse source via TypeScript ESTree, extracts comments into state                   |
-| `parseError()`        | Converts TypeScript ESTree parse errors (with `lineNumber`/`column`) to `ParserError`                       |
-| `nodeize()`           | Converts JSX AST nodes to markuplint nodes, handling comments, text, elements, fragments, and psblock nodes |
-| `afterTraverse()`     | Rebuilds parent-child relationships for psblock nodes using `#parentIdMap`                                  |
-| `afterFlattenNodes()` | Calls parent with `exposeWhiteSpace: false` and `exposeInvalidNode: false`                                  |
-| `visitComment()`      | Marks all comment nodes as `isBogus: false` (JSX uses JS comment syntax, not HTML bogus comments)           |
-| `visitAttr()`         | Handles JSX-specific quoting (`{}`), IDL attribute mapping, and dynamic value detection                     |
-| `parseCodeFragment()` | Delegates to parent with `namelessFragment: true`                                                           |
+| `tokenize()` | Invokes `jsxParser()` to parse source via TypeScript ESTree, extracts comments into state |
+| `parseError()` | Converts TypeScript ESTree parse errors (with `lineNumber`/`column`) to `ParserError` |
+| `nodeize()` | Converts JSX AST nodes to markuplint nodes, handling comments, text, elements, fragments, and psblock nodes |
+| `afterTraverse()` | Rebuilds parent-child relationships for psblock nodes using `#parentIdMap` |
+| `afterFlattenNodes()` | Calls parent with `exposeWhiteSpace: false` and `exposeInvalidNode: false` |
+| `visitComment()` | Marks all comment nodes as `isBogus: false` (JSX uses JS comment syntax, not HTML bogus comments) |
+| `visitAttr()` | Handles JSX-specific quoting (`{}`), IDL attribute mapping, and dynamic value detection |
+| `parseCodeFragment()` | Delegates to parent with `namelessFragment: true` |
 | `detectElementType()` | Uses `/^[A-Z]                                                                                               | \./` regex to detect component vs HTML element |
 
 ## JSX AST Extraction (jsx.ts)

@@ -204,8 +204,6 @@ jobs:
                     - windows-latest
                 node: [24]
                 include:
-                    - node: 18
-                      os: ubuntu-latest
                     - node: 24
                       os: ubuntu-latest
         steps:
@@ -261,10 +259,10 @@ jobs:
                     - windows-latest
                 node: [24]
                 shard: [1/4, 2/4, 3/4, 4/4]
+                # Node 18 is not in this matrix: vitest 4 requires Node 20+.
+                # The v4 line still supports Node 18.18+ at runtime, which the
+                # isolated-env job verifies with the built CLI instead.
                 include:
-                    - node: 18
-                      os: ubuntu-latest
-                      shard: 1/1
                     - node: 24
                       os: ubuntu-latest
                       shard: 1/1
@@ -339,18 +337,27 @@ jobs:
             fail-fast: false
             matrix:
                 os: [ubuntu-latest]
+                node: [24]
                 pm: [npm, yarn, pnpm]
                 env: [esm, ts, ts-config-ts]
+                # The only Node 18 check on the v4 line: the unit tests cannot
+                # run there (vitest 4 requires Node 20+), so the built CLI is
+                # exercised on the oldest supported runtime here instead.
+                include:
+                    - os: ubuntu-latest
+                      node: 18
+                      pm: npm
+                      env: esm
         steps:
             - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
               with:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
 
-            - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
+            - name: Use Node.js ${{ matrix.node }}
               uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
               with:
-                  node-version: ${{ env.NODE_BUILD_VERSION }}
+                  node-version: ${{ matrix.node }}
 
             - name: Enable Corepack and setup Yarn v4
               run: |

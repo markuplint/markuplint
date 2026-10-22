@@ -106,8 +106,7 @@ export type NodeType =
  * @template O - The rule options type
  */
 export type PretenderContext<N extends MLElement<T, O>, T extends RuleConfigValue, O extends PlainData = undefined> =
-	| PretenderContextPretender<N, T, O>
-	| PretenderContextPretended<N, T, O>;
+	PretenderContextPretender<N, T, O> | PretenderContextPretended<N, T, O>;
 
 /**
  * Context for an element that is pretending to be another element.

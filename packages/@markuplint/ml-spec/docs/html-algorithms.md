@@ -414,12 +414,8 @@ interface PermittedContentChoice {
   choice:
     | [PermittedContentPattern[], PermittedContentPattern[]]
     | [PermittedContentPattern[], PermittedContentPattern[], PermittedContentPattern[]]
-    | [
-        /* 4 alternatives */
-      ]
-    | [
-        /* 5 alternatives */
-      ];
+    | [/* 4 alternatives */]
+    | [/* 5 alternatives */];
 }
 ```
 
