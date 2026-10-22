@@ -65,4 +65,11 @@ jobs:
                   fi
 
             - name: Publish
-              run: npx lerna publish from-git --dist-tag ${{ steps.dist-tag.outputs.tag }} --yes
+              # --concurrency 1: the v4.18.4 publish (run 39725467477) failed three
+              # times with TLOG_CREATE_ENTRY_ERROR 409 ("an equivalent entry already
+              # exists in the transparency log") on packages published in the same
+              # batch, and succeeded only after re-runs that skipped the already
+              # published ones. Publishing one package at a time is the suspected
+              # fix; it has not been confirmed on a release yet, and costs a few
+              # minutes for the ~35 packages.
+              run: npx lerna publish from-git --dist-tag ${{ steps.dist-tag.outputs.tag }} --yes --concurrency 1
