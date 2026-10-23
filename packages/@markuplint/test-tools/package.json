@@ -25,14 +25,14 @@
 		"clean": "tsc --build --clean tsconfig.build.json"
 	},
 	"dependencies": {
-		"@vitest/coverage-v8": "4.1.11",
+		"@vitest/coverage-v8": "5.0.5",
 		"browser-resolve": "2.0.0",
 		"execa": "10.1.1",
 		"glob": "13.0.6",
 		"jsdom": "30.1.3",
 		"textlint-rule-prh": "6.1.1",
 		"type-fest": "5.10.0",
-		"vitest": "4.1.11"
+		"vitest": "5.0.5"
 	},
 	"optionalDependencies": {
 		"@esbuild/linux-x64": "0.28.2",
