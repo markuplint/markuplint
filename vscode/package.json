@@ -201,7 +201,7 @@
 		"@vscode/test-electron": "3.1.0",
 		"@vscode/vsce": "4.0.0",
 		"esbuild": "0.28.2",
-		"typescript": "6.0.3"
+		"typescript": "7.0.2"
 	},
 	"dependencies": {
 		"@markuplint/language-server": "5.3.0",
