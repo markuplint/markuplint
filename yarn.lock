@@ -337,10 +337,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/helper-string-parser@npm:^7.29.7":
+  version: 7.29.7
+  resolution: "@babel/helper-string-parser@npm:7.29.7"
+  checksum: 10c0/194bc0f1716e396d5ffde56ad6119745fb9557662c98611590e5e454906783a4ccb21ce93056b8eb69a4909044834e45d96e50ac695bbe9e3221648fe033c06c
+  languageName: node
+  linkType: hard
+
 "@babel/helper-validator-identifier@npm:^7.28.5":
   version: 7.28.5
   resolution: "@babel/helper-validator-identifier@npm:7.28.5"
   checksum: 10c0/42aaebed91f739a41f3d80b72752d1f95fd7c72394e8e4bd7cdd88817e0774d80a432451bcba17c2c642c257c483bf1d409dd4548883429ea9493a3bc4ab0847
+  languageName: node
+  linkType: hard
+
+"@babel/helper-validator-identifier@npm:^7.29.7":
+  version: 7.29.7
+  resolution: "@babel/helper-validator-identifier@npm:7.29.7"
+  checksum: 10c0/4795354e7ae0dcafa72de1cd04ec51252dc1498517170beaf019e03effc5b7bf13c6b21a3949a77e07b8125be7f106ed1131350d8ebd4566ae874094a726d62b
   languageName: node
   linkType: hard
 
@@ -355,6 +369,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/parser@npm:^7.29.9":
+  version: 7.29.9
+  resolution: "@babel/parser@npm:7.29.9"
+  dependencies:
+    "@babel/types": "npm:^7.29.8"
+  bin:
+    parser: ./bin/babel-parser.js
+  checksum: 10c0/171b16eb4527cdbbb72cb98710f91acb22356e2c40196ba3b7a1b84efa8c55d0b0992f399c8c675c3e17f67fd133676c5c4118e5f20db243f427c8b29b0c3f40
+  languageName: node
+  linkType: hard
+
 "@babel/types@npm:^7.29.0":
   version: 7.29.0
   resolution: "@babel/types@npm:7.29.0"
@@ -362,6 +387,16 @@ __metadata:
     "@babel/helper-string-parser": "npm:^7.27.1"
     "@babel/helper-validator-identifier": "npm:^7.28.5"
   checksum: 10c0/23cc3466e83bcbfab8b9bd0edaafdb5d4efdb88b82b3be6728bbade5ba2f0996f84f63b1c5f7a8c0d67efded28300898a5f930b171bb40b311bca2029c4e9b4f
+  languageName: node
+  linkType: hard
+
+"@babel/types@npm:^7.29.8":
+  version: 7.29.8
+  resolution: "@babel/types@npm:7.29.8"
+  dependencies:
+    "@babel/helper-string-parser": "npm:^7.29.7"
+    "@babel/helper-validator-identifier": "npm:^7.29.7"
+  checksum: 10c0/be7c279f0abf2a086c633e21b49c7ca80275d05283cc5a268b67a708c9914bd0c944f1422b3eb3cb37682a2af5d560abf520ccf9b01b53ecbfe6b71fbc3fdde6
   languageName: node
   linkType: hard
 
@@ -2036,7 +2071,7 @@ __metadata:
     execa: "npm:10.1.1"
     glob: "npm:13.0.6"
     jsdom: "npm:30.1.3"
-    textlint-rule-prh: "npm:6.1.0"
+    textlint-rule-prh: "npm:6.1.1"
     type-fest: "npm:5.10.0"
     typescript: "npm:6.0.3"
     vitest: "npm:4.1.11"
@@ -3916,7 +3951,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/mocha@npm:10.0.10":
+"@types/mocha@npm:10.0.10, @types/mocha@npm:^10.0.10":
   version: 10.0.10
   resolution: "@types/mocha@npm:10.0.10"
   checksum: 10c0/d2b8c48138cde6923493e42b38e839695eb42edd04629abe480a8f34c0e3f50dd82a55832c2e8d2b6e6f9e4deb492d7d733e600fbbdd5a0ceccbcfc6844ff9d5
@@ -3955,7 +3990,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:24.19.2":
+"@types/node@npm:24.19.2, @types/node@npm:^24.19.2":
   version: 24.19.2
   resolution: "@types/node@npm:24.19.2"
   dependencies:
@@ -5422,6 +5457,13 @@ __metadata:
   version: 12.1.0
   resolution: "commander@npm:12.1.0"
   checksum: 10c0/6e1996680c083b3b897bfc1cfe1c58dfbcd9842fd43e1aaf8a795fbc237f65efcc860a3ef457b318e73f29a4f4a28f6403c3d653d021d960e4632dd45bde54a9
+  languageName: node
+  linkType: hard
+
+"commander@npm:^14.0.3":
+  version: 14.0.3
+  resolution: "commander@npm:14.0.3"
+  checksum: 10c0/755652564bbf56ff2ff083313912b326450d3f8d8c85f4b71416539c9a05c3c67dbd206821ca72635bf6b160e2afdefcb458e86b317827d5cb333b69ce7f1a24
   languageName: node
   linkType: hard
 
@@ -11711,6 +11753,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"prh@npm:^6.1.0":
+  version: 6.1.0
+  resolution: "prh@npm:6.1.0"
+  dependencies:
+    commander: "npm:^14.0.3"
+    diff: "npm:^9.0.0"
+    js-yaml: "npm:^4.1.0"
+  bin:
+    prh: bin/prh
+  checksum: 10c0/813cfe937ad91e7f4e3c7d77968d05150968cfaa5a3bb13f2be7389f45af356fb52c692dee0ccfb19676d1111d8f4868e69b2bef2af0c9d4c3784ad57fff1c2f
+  languageName: node
+  linkType: hard
+
 "proc-log@npm:^6.0.0":
   version: 6.1.0
   resolution: "proc-log@npm:6.1.0"
@@ -13148,7 +13203,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"textlint-rule-helper@npm:^2.0.0, textlint-rule-helper@npm:^2.1.1, textlint-rule-helper@npm:^2.2.1, textlint-rule-helper@npm:^2.2.4, textlint-rule-helper@npm:^2.3.0, textlint-rule-helper@npm:^2.3.1":
+"textlint-rule-helper@npm:^2.0.0, textlint-rule-helper@npm:^2.1.1, textlint-rule-helper@npm:^2.2.1, textlint-rule-helper@npm:^2.2.4, textlint-rule-helper@npm:^2.3.0, textlint-rule-helper@npm:^2.3.1, textlint-rule-helper@npm:^2.5.0":
   version: 2.5.0
   resolution: "textlint-rule-helper@npm:2.5.0"
   dependencies:
@@ -13558,14 +13613,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"textlint-rule-prh@npm:6.1.0, textlint-rule-prh@npm:^6.0.0":
-  version: 6.1.0
-  resolution: "textlint-rule-prh@npm:6.1.0"
+"textlint-rule-prh@npm:6.1.1":
+  version: 6.1.1
+  resolution: "textlint-rule-prh@npm:6.1.1"
   dependencies:
-    "@babel/parser": "npm:^7.27.0"
-    prh: "npm:^5.4.4"
-    textlint-rule-helper: "npm:^2.3.1"
-  checksum: 10c0/c9bd3a8a4e2af283b498a1a4659cff2ea000937e10fc4a148c4fbb2a6cebaddfc9abc499b1ff0fd238ba77f4f6cd9dcc3bb93fc7f0093297bd4a4af02f6c5b12
+    "@babel/parser": "npm:^7.29.9"
+    "@types/mocha": "npm:^10.0.10"
+    "@types/node": "npm:^24.19.2"
+    prh: "npm:^6.1.0"
+    textlint-rule-helper: "npm:^2.5.0"
+  checksum: 10c0/698396519262da5da8de320e29a9105b8adf66240feae3f9447cac2052503adbf7fa9e83bf57aecd85532de34985e7140ea54bd40fdcf7ed9a7779b26ca57a5b
   languageName: node
   linkType: hard
 
@@ -13578,6 +13635,17 @@ __metadata:
     textlint-rule-helper: "npm:^2.1.1"
     untildify: "npm:^3.0.3"
   checksum: 10c0/8478183723167855334a1ec4001017d3be8c186f6b3a5d0cf9cdabb2c02992f4fd08c8b01027ed2d62f9f06b9fca74456875083422e32b82f6f48c9527cc8315
+  languageName: node
+  linkType: hard
+
+"textlint-rule-prh@npm:^6.0.0":
+  version: 6.1.0
+  resolution: "textlint-rule-prh@npm:6.1.0"
+  dependencies:
+    "@babel/parser": "npm:^7.27.0"
+    prh: "npm:^5.4.4"
+    textlint-rule-helper: "npm:^2.3.1"
+  checksum: 10c0/c9bd3a8a4e2af283b498a1a4659cff2ea000937e10fc4a148c4fbb2a6cebaddfc9abc499b1ff0fd238ba77f4f6cd9dcc3bb93fc7f0093297bd4a4af02f6c5b12
   languageName: node
   linkType: hard
 
