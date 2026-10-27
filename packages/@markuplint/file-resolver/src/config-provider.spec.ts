@@ -1,5 +1,7 @@
 import type { ConfigLoadError } from './config-load-error.js';
 
+import fs from 'node:fs/promises';
+import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -335,4 +337,107 @@ test('A malformed configuration file in an ancestor directory is reported with i
 		name: 'ConfigParserError',
 		filePath: path.resolve(testDir, '013', '.markuplintrc'),
 	});
+});
+
+test('invalidate() drops a configuration registered with set() (#4415)', async () => {
+	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures');
+	const file = getFile(path.resolve(testDir, '002', 'target.html'));
+	const provider = new ConfigProvider();
+	const key = provider.set({ rules: { foo: true } });
+	provider.invalidate();
+	// A key that is not in the store is read as a file path, which a counter key is not.
+	await expect(provider.resolve(file, [key])).rejects.toBeInstanceOf(TypeError);
+});
+
+test('invalidate() makes the next resolve() read a changed configuration file again (#4415)', async () => {
+	const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'markuplint-4415-'));
+	try {
+		const configFile = path.join(dir, '.markuplintrc.json');
+		const file = getFile(path.join(dir, 'target.html'));
+		const provider = new ConfigProvider();
+		await fs.writeFile(configFile, JSON.stringify({ rules: { foo: true } }));
+		expect((await provider.resolve(file, [configFile])).config).toMatchObject({ rules: { foo: true } });
+
+		await fs.writeFile(configFile, JSON.stringify({ rules: { foo: false } }));
+		expect((await provider.resolve(file, [configFile])).config).toMatchObject({ rules: { foo: true } });
+
+		provider.invalidate();
+		expect((await provider.resolve(file, [configFile])).config).toMatchObject({ rules: { foo: false } });
+	} finally {
+		await fs.rm(dir, { recursive: true, force: true });
+	}
+});
+
+test('invalidate() makes the next resolve() read a changed file that is extended again (#4415)', async () => {
+	const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'markuplint-4415-'));
+	try {
+		const base = path.join(dir, 'base.json');
+		const configFile = path.join(dir, '.markuplintrc.json');
+		const file = getFile(path.join(dir, 'target.html'));
+		const provider = new ConfigProvider();
+		await fs.writeFile(base, JSON.stringify({ rules: { foo: true } }));
+		await fs.writeFile(configFile, JSON.stringify({ extends: ['./base.json'] }));
+		expect((await provider.resolve(file, [configFile])).config).toMatchObject({ rules: { foo: true } });
+
+		await fs.writeFile(base, JSON.stringify({ rules: { foo: false } }));
+		provider.invalidate();
+		expect((await provider.resolve(file, [configFile])).config).toMatchObject({ rules: { foo: false } });
+	} finally {
+		await fs.rm(dir, { recursive: true, force: true });
+	}
+});
+
+test('A configuration registered after invalidate() survives resolve() (#4415)', async () => {
+	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures');
+	const file = getFile(path.resolve(testDir, '002', 'target.html'));
+	const provider = new ConfigProvider();
+	provider.invalidate();
+	const key = provider.set({ rules: { foo: true } });
+	const configSet = await provider.resolve(file, [key]);
+	expect(configSet.config).toMatchObject({ rules: { foo: true } });
+});
+
+test('resolve() with cache=false still clears the store itself, as it did before (#4415)', async () => {
+	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures');
+	const file = getFile(path.resolve(testDir, '002', 'target.html'));
+	const provider = new ConfigProvider();
+	const key = provider.set({ rules: { foo: true } });
+	await expect(provider.resolve(file, [key], false)).rejects.toBeInstanceOf(TypeError);
+});
+
+test('runExclusive() runs overlapping calls one after the other (#4415)', async () => {
+	const provider = new ConfigProvider();
+	const order: string[] = [];
+	let releaseFirst!: () => void;
+	const firstGate = new Promise<void>(resolve => {
+		releaseFirst = resolve;
+	});
+	const first = provider.runExclusive(async () => {
+		order.push('first:start');
+		await firstGate;
+		order.push('first:end');
+		return 1;
+	});
+	const second = provider.runExclusive(() => {
+		order.push('second:start', 'second:end');
+		return Promise.resolve(2);
+	});
+	const third = provider.runExclusive(() => {
+		order.push('third');
+		return Promise.resolve(3);
+	});
+	// Let the queue start `first`; `second` and `third` must still be waiting.
+	await new Promise(resolve => setTimeout(resolve, 0));
+	expect(order).toStrictEqual(['first:start']);
+	releaseFirst();
+	expect(await Promise.all([first, second, third])).toStrictEqual([1, 2, 3]);
+	expect(order).toStrictEqual(['first:start', 'first:end', 'second:start', 'second:end', 'third']);
+});
+
+test('runExclusive() does not block the next call when one rejects (#4415)', async () => {
+	const provider = new ConfigProvider();
+	const first = provider.runExclusive(() => Promise.reject(new Error('failed')));
+	const second = provider.runExclusive(() => Promise.resolve('done'));
+	await expect(first).rejects.toThrow('failed');
+	await expect(second).resolves.toBe('done');
 });

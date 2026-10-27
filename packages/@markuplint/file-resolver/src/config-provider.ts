@@ -11,7 +11,7 @@ import { InvalidSelectorError, createSelector } from '@markuplint/selector';
 import { nonNullableFilter, toNoEmptyStringArrayFromStringOrArray } from '@markuplint/shared';
 
 import { ConfigLoadError } from './config-load-error.js';
-import { load as loadConfig, search } from './cosmiconfig.js';
+import { clearExplorerCache, load as loadConfig, search } from './cosmiconfig.js';
 import { log } from './debug.js';
 import { generalImport } from './general-import.js';
 import { getPreset } from './get-preset.js';
@@ -37,6 +37,61 @@ export class ConfigProvider {
 	#held = new Set<string>();
 	#recursiveLoadKeyAndDepth = new Map<string, number>();
 	#store = new Map<string, Config | ConfigLoadError>();
+
+	#queue: Promise<void> = Promise.resolve();
+
+	/**
+	 * Clears every cached and stored configuration: the resolved-config cache, the store of loaded
+	 * and registered configurations, the plugin-resolution cache and the shared explorer's caches.
+	 *
+	 * `resolve()` with `cache` set to `false` calls this as its first step. That is too late for a
+	 * caller that has just registered a configuration with {@link set}: the clearing discards it.
+	 * Such a caller that wants a fresh re-read calls this method first, then {@link set} and
+	 * {@link search}, then `resolve()` with `cache` left `true`: what was registered after the
+	 * clearing survives to `resolve()` (#4415).
+	 *
+	 * The plugin-resolution cache and the explorer are shared by every `ConfigProvider` in the
+	 * process, so clearing them here affects other instances too. They are only caches, and a
+	 * later call reads the files again.
+	 */
+	invalidate() {
+		this.#store.clear();
+		this.#cache.clear();
+		this.#held.clear();
+		cacheClear();
+		clearExplorerCache();
+	}
+
+	/**
+	 * Runs `fn` after every earlier `runExclusive()` call on this instance has settled. The queue
+	 * is this provider's own, held in `#queue`.
+	 *
+	 * Wrap a whole {@link invalidate} → {@link set} / {@link search} → `resolve()` sequence in it:
+	 * an overlapping call on the same provider (two watch-triggered re-resolves of one engine close
+	 * together, or callers that share one provider) can then not clear the configurations this call
+	 * has just registered and not yet consumed (#4415).
+	 *
+	 * Only calls that go through this method are serialized: a direct `set()`, `search()` or
+	 * `resolve()` call on the same provider is not queued. `fn` must not call `runExclusive()` on
+	 * the same provider and wait for it: the inner call waits for `fn` to settle, so it never ends.
+	 *
+	 * @template T - The type `fn` resolves to
+	 * @param fn - The sequence to run exclusively
+	 * @returns What `fn` resolves to; a rejection of `fn` does not block the next call
+	 */
+	async runExclusive<T>(fn: () => Promise<T>): Promise<T> {
+		const previous = this.#queue;
+		let release!: () => void;
+		this.#queue = new Promise<void>(resolve => {
+			release = resolve;
+		});
+		await previous;
+		try {
+			return await fn();
+		} finally {
+			release();
+		}
+	}
 
 	/**
 	 * Recursively loads a configuration and all its `extends` dependencies.
@@ -103,6 +158,11 @@ export class ConfigProvider {
 	 * Resolves the full configuration for a target file by merging all named configs,
 	 * resolving plugins, and applying file-specific overrides.
 	 *
+	 * With `cache` set to `false` it first clears the store, which also discards any configuration
+	 * the caller has just registered with {@link set}. A caller that registers inline
+	 * configurations and wants a fresh re-read calls {@link invalidate} before registering them and
+	 * passes `cache` as `true` (#4415).
+	 *
 	 * @param targetFile - The file being linted
 	 * @param names - Config file paths or module names to merge
 	 * @param cache - Whether to use cached results
@@ -110,9 +170,7 @@ export class ConfigProvider {
 	 */
 	async resolve(targetFile: Readonly<MLFile>, names: readonly Nullable<string>[], cache = true): Promise<ConfigSet> {
 		if (!cache) {
-			this.#store.clear();
-			this.#cache.clear();
-			cacheClear();
+			this.invalidate();
 		}
 
 		const keys = names.filter(nonNullableFilter);

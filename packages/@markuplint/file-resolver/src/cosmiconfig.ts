@@ -31,6 +31,17 @@ const explorer = cosmiconfig('markuplint', {
 type CosmiConfig = ReturnType<LoaderSync>;
 
 /**
+ * Clears the shared explorer's own search and load caches.
+ *
+ * `search()` and `load()` clear them only as a side effect of one call; this lets a caller
+ * clear them up front, before any `search()` or `load()`, so that the calls that follow read the
+ * current file content (see `ConfigProvider#invalidate`, #4415).
+ */
+export function clearExplorerCache() {
+	explorer.clearCaches();
+}
+
+/**
  * Yields `dir` and then each of its ancestors, ending with the file system root.
  *
  * @param dir - The directory to start from
