@@ -512,3 +512,42 @@ test('invalidate() clears the auto-load rule cache so a cached miss is probed ag
 	expect(reprobed.errors.length).toBe(2);
 	expect(reprobed.errors[0]).not.toBe(first.errors[0]);
 });
+
+test('Search goes up past a nested package.json without a markuplint field', async () => {
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures');
+	const file = getFile(path.resolve(testDir, '013', 'packages', 'a', 'target.html'));
+	const provider = new ConfigProvider();
+	const key = await provider.search(file);
+	expect(key).toBe(path.resolve(testDir, '013', '.markuplintrc'));
+	const configSet = await provider.resolve(file, [key]);
+	expect(configSet.config).toStrictEqual({ key: '013/.markuplintrc' });
+});
+
+test('Search stops at the nearest nested package.json that has a markuplint field', async () => {
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures');
+	const file = getFile(path.resolve(testDir, '013', 'packages', 'b', 'target.html'));
+	const provider = new ConfigProvider();
+	const key = await provider.search(file);
+	expect(key).toBe(path.resolve(testDir, '013', 'packages', 'b', 'package.json'));
+	const configSet = await provider.resolve(file, [key]);
+	expect(configSet.config).toStrictEqual({ key: '013/packages/b/package.json' });
+});
+
+test('Search goes up past a nested package.yaml', async () => {
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures');
+	const file = getFile(path.resolve(testDir, '013', 'packages', 'c', 'target.html'));
+	const key = await new ConfigProvider().search(file);
+	expect(key).toBe(path.resolve(testDir, '013', '.markuplintrc'));
+});
+
+test('A malformed configuration file in an ancestor directory is reported with its own path', async () => {
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures');
+	const file = getFile(path.resolve(testDir, '014', 'packages', 'a', 'target.html'));
+	// `014/.markuplintrc` is neither valid JSON nor valid YAML (an unclosed flow mapping), so the
+	// extensionless loader's YAML fallback throws; the error carries the path of that file, which
+	// `cacheConfigError` reports instead of the directory being searched.
+	await expect(new ConfigProvider().search(file)).rejects.toMatchObject({
+		name: 'ConfigParserError',
+		filePath: path.resolve(testDir, '014', '.markuplintrc'),
+	});
+});

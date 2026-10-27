@@ -302,7 +302,9 @@ export class ConfigProvider {
 	}
 
 	/**
-	 * Searches for a markuplint configuration file starting from the target file's directory.
+	 * Searches for a markuplint configuration file starting from the target file's directory
+	 * and going up through its ancestors; the nearest one wins. A `package.json` without a
+	 * `markuplint` field is not a configuration file, so the search passes over it.
 	 *
 	 * @param targetFile - The file whose directory to search from
 	 * @returns The file path of the found config, or `null` if none was found
