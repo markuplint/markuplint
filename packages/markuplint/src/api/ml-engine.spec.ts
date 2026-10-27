@@ -287,3 +287,93 @@ describe('Parse Error Severity', () => {
 		expect(boolFalse?.violations?.[0]?.severity).toBeUndefined();
 	});
 });
+
+describe('Disabling the configuration search (#4409)', () => {
+	const fixture = path.resolve(__dirname, '..', '..', 'test', 'no-search-config', 'index.html');
+
+	it('reports a malformed configuration file beside the target when the search is enabled', async () => {
+		const file = await MLEngine.toMLFile(fixture);
+		const engine = new MLEngine(file!);
+		const errors: Error[] = [];
+		engine.on('config-errors', (_, errs) => {
+			errors.push(...errs);
+		});
+
+		await engine.exec();
+
+		expect(errors).toHaveLength(1);
+		expect(errors[0]).toMatchObject({
+			name: 'ConfigParserError',
+			filePath: path.resolve(path.dirname(fixture), '.markuplintrc'),
+		});
+	});
+
+	it('does not read a malformed configuration file when noSearchConfig is set', async () => {
+		const file = await MLEngine.toMLFile(fixture);
+		const engine = new MLEngine(file!, { noSearchConfig: true });
+		const errors: Error[] = [];
+		engine.on('config-errors', (_, errs) => {
+			errors.push(...errs);
+		});
+
+		const logs = new Map<string, string>();
+		engine.on('log', (phase, message) => {
+			logs.set(phase, message);
+		});
+		let files: readonly string[] = [];
+		engine.once('config', (_, configSet) => {
+			files = [...configSet.files];
+		});
+
+		const result = await engine.exec();
+
+		expect(errors).toStrictEqual([]);
+		expect(result).not.toBeNull();
+		expect(files.some(file => file.endsWith('.markuplintrc'))).toBe(false);
+		expect(logs.get('targetConfig')).toBe('skipped (noSearchConfig)');
+	});
+
+	it('logs the key of the config option, not the searched configuration, in "option.config"', async () => {
+		const file = await MLEngine.toMLFile('test/fixture/001.html');
+		const withConfig = new MLEngine(file!, { config: { rules: { __hoge: true } } });
+		const withoutConfig = new MLEngine(file!);
+		const logsWith = new Map<string, string>();
+		const logsWithout = new Map<string, string>();
+		withConfig.on('log', (phase, message) => {
+			logsWith.set(phase, message);
+		});
+		withoutConfig.on('log', (phase, message) => {
+			logsWithout.set(phase, message);
+		});
+
+		await withConfig.exec();
+		await withoutConfig.exec();
+
+		// The key of the searched configuration is its file path.
+		expect(logsWith.get('configFilePathsFromTarget')).toBe(path.resolve('test/fixture/.markuplintrc'));
+		expect(logsWith.get('option.config')).not.toBe('N/A');
+		expect(logsWith.get('option.config')).not.toBe(logsWith.get('configFilePathsFromTarget'));
+		expect(logsWithout.get('option.config')).toBe('N/A');
+	});
+
+	it('still applies defaultConfig when noSearchConfig is set', async () => {
+		const file = await MLEngine.toMLFile(fixture);
+		const engine = new MLEngine(file!, {
+			noSearchConfig: true,
+			defaultConfig: { rules: { __hoge: true } },
+		});
+		const errors: Error[] = [];
+		engine.on('config-errors', (_, errs) => {
+			errors.push(...errs);
+		});
+		const configSets: ConfigSet[] = [];
+		engine.once('config', (_, configSet) => {
+			configSets.push(configSet);
+		});
+
+		await engine.exec();
+
+		expect(errors).toStrictEqual([]);
+		expect(configSets[0]?.config.rules?.__hoge).toBe(true);
+	});
+});
