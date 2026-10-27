@@ -367,6 +367,18 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		};
 	}
 
+	/**
+	 * Resolves the configuration for the target file: the configuration found by searching
+	 * upward from the file (else `defaultConfig`), then `configFile`, then `config`.
+	 * `markuplint:recommended` is used only when none of them is given.
+	 *
+	 * With `noSearchConfig` the search is not run at all, because it throws for a
+	 * configuration file that cannot be loaded anywhere up to the file system root.
+	 * `defaultConfig` still applies. `configFile` does not stop the search.
+	 *
+	 * @param cache - Whether to reuse cached configuration; `false` clears the caches first
+	 * @returns The merged configuration with the plugins, files and errors collected on the way
+	 */
 	async resolveConfig(cache: boolean) {
 		this.emit('log', 'resolveConfig', JSON.stringify(this.#configProvider, null, 2));
 		configLog('configProvider: %s', this.#configProvider);
@@ -376,18 +388,20 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		configLog('defaultConfigKey: %s', defaultConfigKey ?? 'N/A');
 		this.emit('log', 'defaultConfigKey', defaultConfigKey ?? 'N/A');
 
-		const targetConfig = await this.#configProvider.search(this.#file);
-		this.emit('log', 'targetConfig', targetConfig ?? 'N/A');
+		// Not searching at all (#4409), rather than discarding the result: the search throws for a
+		// configuration file that cannot be loaded anywhere up to the file system root.
+		const noSearch = !!this.#options?.noSearchConfig;
+		const targetConfig = noSearch ? null : await this.#configProvider.search(this.#file);
+		this.emit('log', 'targetConfig', noSearch ? 'skipped (noSearchConfig)' : (targetConfig ?? 'N/A'));
 
-		const configFilePathsFromTarget = this.#options?.noSearchConfig
-			? (defaultConfigKey ?? null)
-			: (targetConfig ?? defaultConfigKey);
+		// The configuration that stands in for the target's own: the search result, else `defaultConfig`.
+		const configFilePathsFromTarget = targetConfig ?? defaultConfigKey ?? null;
 		configLog('configFilePathsFromTarget: %s', configFilePathsFromTarget ?? 'N/A');
 		this.emit('log', 'configFilePathsFromTarget', configFilePathsFromTarget ?? 'N/A');
 
 		const configKey = this.#options?.config && this.#configProvider.set(mergeConfig(this.#options.config));
 		configLog('option.config: %s', configKey ?? 'N/A');
-		this.emit('log', 'option.config', configFilePathsFromTarget ?? 'N/A');
+		this.emit('log', 'option.config', configKey ?? 'N/A');
 
 		let defaultRecommended: string | null = null;
 		if (!defaultConfigKey && !configFilePathsFromTarget && !configKey) {

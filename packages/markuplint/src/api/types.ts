@@ -10,6 +10,11 @@ export type APIOptions = {
 	readonly configFile?: string;
 	readonly config?: Config;
 	readonly defaultConfig?: Config;
+	/**
+	 * Do not search for a configuration file from the target file. No configuration file is
+	 * read for the search, so a malformed one cannot affect the run. `defaultConfig`, `config`
+	 * and `configFile` still apply; `configFile` alone does not disable the search.
+	 */
 	readonly noSearchConfig?: boolean;
 	readonly locale?: string;
 	readonly fix?: boolean;

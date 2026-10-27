@@ -318,6 +318,22 @@ describe('Issues', () => {
 		]);
 		expect(stderr).toBe('');
 	});
+
+	test('--no-search-config does not read a malformed configuration file (#4409)', async () => {
+		const filePath = path.resolve(__dirname, '../../test/no-search-config/index.html');
+
+		const { stdout, stderr, exitCode } = await execa(
+			entryFilePath,
+			[escape(filePath), '--no-color', '--format', 'json', '--no-search-config'],
+			{
+				reject: false,
+			},
+		);
+
+		expect(JSON.parse(stdout)).toStrictEqual([]);
+		expect(stderr).toBe('');
+		expect(exitCode).toBe(0);
+	});
 });
 
 describe('--max-warnings option', () => {
