@@ -178,6 +178,73 @@ test('scan — filePath is rebased to be absolute, relative to the scan cwd', as
 	expect(pretenders[0]!.filePath?.startsWith(`${target}:`)).toBe(true);
 });
 
+test('scan — on Windows, a pattern with backslashes as the path separator matches, as an absolute path is written there', async () => {
+	const fixtureDir = path.resolve(
+		import.meta.dirname,
+		'..',
+		'..',
+		'..',
+		'@markuplint',
+		'pretenders',
+		'test',
+		'fixtures',
+	);
+	const target = path.resolve(fixtureDir, 'template', 'SimpleButton.vue');
+	const platform = Object.getOwnPropertyDescriptor(process, 'platform')!;
+	Object.defineProperty(process, 'platform', { ...platform, value: 'win32' });
+	try {
+		const pretenders = await resolvePretenders({
+			scan: [{ files: target.split(path.sep).join('\\') }],
+		});
+		expect(pretenders.map(p => p.selector)).toStrictEqual(['SimpleButton']);
+	} finally {
+		Object.defineProperty(process, 'platform', platform);
+	}
+});
+
+// Windows has no backslash escape in a glob: `\` is its path separator there.
+test.runIf(process.platform !== 'win32')(
+	'scan — elsewhere, a backslash in a pattern stays an escape, as in a directory named by brackets',
+	async () => {
+		const tmpDir = await realpath(await mkdtemp(path.join(os.tmpdir(), 'resolve-pretenders-escape-')));
+		try {
+			await mkdir(path.join(tmpDir, '[id]'));
+			await writeFile(path.join(tmpDir, '[id]', 'Item.tsx'), 'export const Item = () => <li>item</li>;');
+			const pretenders = await resolvePretenders({
+				scan: [{ files: `${tmpDir}/\\[id\\]/*.tsx` }],
+			});
+			expect(pretenders.map(p => p.selector)).toStrictEqual(['Item']);
+		} finally {
+			await rm(tmpDir, { recursive: true, force: true });
+		}
+	},
+);
+
+test('data — a relative filePath is rebased to be absolute, relative to the cwd, keeping its line and column', async () => {
+	const pretenders = await resolvePretenders({
+		data: [{ selector: 'Item', as: 'li', filePath: './Item.tsx:1:17' }],
+	});
+	expect(pretenders).toStrictEqual([{ selector: 'Item', as: 'li', filePath: `${path.resolve('Item.tsx')}:1:17` }]);
+});
+
+test('data — a relative filePath without a line and column is rebased as well', async () => {
+	const pretenders = await resolvePretenders({
+		data: [{ selector: 'Bare', as: 'li', filePath: './Bare.tsx' }],
+	});
+	expect(pretenders).toStrictEqual([{ selector: 'Bare', as: 'li', filePath: path.resolve('Bare.tsx') }]);
+});
+
+test('data — an absolute filePath is kept as it is', async () => {
+	const filePath = `${path.resolve('/abs/Abs.tsx')}:2:3`;
+	const pretenders = await resolvePretenders({ data: [{ selector: 'Abs', as: 'li', filePath }] });
+	expect(pretenders).toStrictEqual([{ selector: 'Abs', as: 'li', filePath }]);
+});
+
+test('data — an entry without a filePath is kept as it is', async () => {
+	const pretenders = await resolvePretenders({ data: [{ selector: 'NoPath', as: 'li' }] });
+	expect(pretenders).toStrictEqual([{ selector: 'NoPath', as: 'li' }]);
+});
+
 const collisionDir = path.resolve(
 	import.meta.dirname,
 	'..',

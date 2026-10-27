@@ -1,0 +1,9 @@
+{
+	"plugins": ["../../../plugins/003.js"],
+	"overrideMode": "merge",
+	"overrides": {
+		"./*.html": {
+			"plugins": ["../../../plugins/001.js"]
+		}
+	}
+}

@@ -1,0 +1,8 @@
+{
+	"plugins": ["../../../plugins/003.js"],
+	"overrides": {
+		"./*.html": {
+			"rules": { "foo": true }
+		}
+	}
+}
