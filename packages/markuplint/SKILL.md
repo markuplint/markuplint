@@ -88,7 +88,7 @@ Change how MLEngine resolves and merges configuration. Follow recipe #3 in `docs
 
 1. Read `src/api/ml-engine.ts` and locate `resolveConfig()`
 2. Current priority: options.config -> configFile -> search -> defaultConfig -> recommended
-3. Understand `ConfigProvider` methods: `search()`, `set()`, `resolve()` (from `@markuplint/file-resolver`)
+3. Understand `ConfigProvider` methods: `search()`, `set()`, `resolve()`, `invalidate()`, `runExclusive()` (from `@markuplint/file-resolver`); `resolve()` with `cache` `false` clears the store, including what `set()` has just registered
 
 ### Step 2: Modify the logic
 

@@ -119,7 +119,9 @@ expect(violations).toStrictEqual([
 3. `@markuplint/file-resolver` の `ConfigProvider` を理解:
    - `set(config)` で設定を登録しキーを返す
    - `search(file)` でターゲットに最も近い設定ファイルを検索
-   - `resolve(file, keys, cache)` で全設定レイヤーをマージ
+   - `resolve(file, keys, cache)` で全設定レイヤーをマージ。`cache` が `false` のときは最初にストアを消すため、直前に `set()` で登録した設定も消える
+   - `invalidate()` でストアとキャッシュを消す。インライン設定を残したまま読み直すには、`set()` の前に呼び、`cache` を `true` にして `resolve()` する（`resolveConfig(false)` がそうしている）
+   - `runExclusive(fn)` で `invalidate()` → `set()` / `search()` → `resolve()` の一連を、重なる呼び出しに割り込まれずに実行する
 4. イベント発行（`this.emit('config', ...)`）を保持しつつ `resolveConfig()` を変更
 5. 新しい API オプションを追加する場合、`src/api/types.ts` の `APIOptions` を更新
 6. `src/api/ml-engine.spec.ts` にテストを追加

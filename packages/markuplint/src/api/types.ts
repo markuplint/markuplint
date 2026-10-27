@@ -7,6 +7,10 @@ import type { AnyMLRule, MLSchema, Ruleset } from '@markuplint/ml-core';
  * Options for the markuplint API, controlling configuration, locale, rules, and behavior.
  */
 export type APIOptions = {
+	/**
+	 * The path of a configuration file. When it is given, `markuplint:recommended` is not added
+	 * after it as the fallback, so the file's own rules are not overridden (#4415).
+	 */
 	readonly configFile?: string;
 	readonly config?: Config;
 	readonly defaultConfig?: Config;
