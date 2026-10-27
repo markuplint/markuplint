@@ -170,7 +170,7 @@ flowchart TD
 2. options.configFile     -- 明示的な設定ファイルパス（--config フラグ）
 3. ConfigProvider.search()-- ファイル位置からの自動探索（--no-search-config でなければ）
 4. options.defaultConfig  -- フォールバック設定
-5. markuplint:recommended -- 設定が一切見つからない場合のデフォルト
+5. markuplint:recommended -- 設定が一切見つからない場合のデフォルト（`configFile` も指定されていない場合）
 ```
 
 これらは `ConfigProvider.resolve()` で結合され、`@markuplint/ml-config` の `mergeConfig()` を使用して全レイヤーをマージします。

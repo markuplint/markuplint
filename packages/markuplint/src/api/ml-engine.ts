@@ -376,47 +376,65 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 	 * configuration file that cannot be loaded anywhere up to the file system root.
 	 * `defaultConfig` still applies. `configFile` does not stop the search.
 	 *
-	 * @param cache - Whether to reuse cached configuration; `false` clears the caches first
+	 * `cache` set to `false` reads every configuration file again, and the inline configurations
+	 * (`defaultConfig`, `config` and the `markuplint:recommended` fallback) are kept (#4415).
+	 *
+	 * @param cache - Whether to reuse cached configuration; `false` reads the configuration files again
 	 * @returns The merged configuration with the plugins, files and errors collected on the way
 	 */
 	async resolveConfig(cache: boolean) {
 		this.emit('log', 'resolveConfig', JSON.stringify(this.#configProvider, null, 2));
 		configLog('configProvider: %s', this.#configProvider);
 
-		const defaultConfigKey =
-			this.#options?.defaultConfig && this.#configProvider.set(mergeConfig(this.#options?.defaultConfig));
-		configLog('defaultConfigKey: %s', defaultConfigKey ?? 'N/A');
-		this.emit('log', 'defaultConfigKey', defaultConfigKey ?? 'N/A');
+		// The whole invalidate → set → search → resolve sequence runs as one exclusive unit: an
+		// overlapping call on this engine's provider (a watch-triggered `provide(false)` while
+		// `exec()` or `--show-config` resolves) must not clear the configurations registered below
+		// before `resolve()` has used them (#4415).
+		const configSet = await this.#configProvider.runExclusive(async () => {
+			if (!cache) {
+				// Before any `set()` below. `resolve()` with `cache` set to `false` would clear the store
+				// itself, after the inline configurations were registered, and then fail to load their
+				// keys as file paths (#4415). Everything is cleared here instead, and `resolve()` is
+				// called with `cache` as `true`: what was cleared is read again.
+				this.#configProvider.invalidate();
+			}
 
-		// Not searching at all (#4409), rather than discarding the result: the search throws for a
-		// configuration file that cannot be loaded anywhere up to the file system root.
-		const noSearch = !!this.#options?.noSearchConfig;
-		const targetConfig = noSearch ? null : await this.#configProvider.search(this.#file);
-		this.emit('log', 'targetConfig', noSearch ? 'skipped (noSearchConfig)' : (targetConfig ?? 'N/A'));
+			const defaultConfigKey =
+				this.#options?.defaultConfig && this.#configProvider.set(mergeConfig(this.#options?.defaultConfig));
+			configLog('defaultConfigKey: %s', defaultConfigKey ?? 'N/A');
+			this.emit('log', 'defaultConfigKey', defaultConfigKey ?? 'N/A');
 
-		// The configuration that stands in for the target's own: the search result, else `defaultConfig`.
-		const configFilePathsFromTarget = targetConfig ?? defaultConfigKey ?? null;
-		configLog('configFilePathsFromTarget: %s', configFilePathsFromTarget ?? 'N/A');
-		this.emit('log', 'configFilePathsFromTarget', configFilePathsFromTarget ?? 'N/A');
+			// Not searching at all (#4409), rather than discarding the result: the search throws for a
+			// configuration file that cannot be loaded anywhere up to the file system root.
+			const noSearch = !!this.#options?.noSearchConfig;
+			const targetConfig = noSearch ? null : await this.#configProvider.search(this.#file);
+			this.emit('log', 'targetConfig', noSearch ? 'skipped (noSearchConfig)' : (targetConfig ?? 'N/A'));
 
-		const configKey = this.#options?.config && this.#configProvider.set(mergeConfig(this.#options.config));
-		configLog('option.config: %s', configKey ?? 'N/A');
-		this.emit('log', 'option.config', configKey ?? 'N/A');
+			// The configuration that stands in for the target's own: the search result, else `defaultConfig`.
+			const configFilePathsFromTarget = targetConfig ?? defaultConfigKey ?? null;
+			configLog('configFilePathsFromTarget: %s', configFilePathsFromTarget ?? 'N/A');
+			this.emit('log', 'configFilePathsFromTarget', configFilePathsFromTarget ?? 'N/A');
 
-		let defaultRecommended: string | null = null;
-		if (!defaultConfigKey && !configFilePathsFromTarget && !configKey) {
-			// No configured
-			// Default: set recommended
-			defaultRecommended = this.#configProvider.set({ extends: ['markuplint:recommended'] });
-		}
-		configLog('defaultRecommended: %s', defaultRecommended ?? 'N/A');
-		this.emit('log', 'defaultRecommended', defaultRecommended ?? 'N/A');
+			const configKey = this.#options?.config && this.#configProvider.set(mergeConfig(this.#options.config));
+			configLog('option.config: %s', configKey ?? 'N/A');
+			this.emit('log', 'option.config', configKey ?? 'N/A');
 
-		const configSet = await this.#configProvider.resolve(
-			this.#file,
-			[configFilePathsFromTarget, this.#options?.configFile, configKey, defaultRecommended],
-			cache,
-		);
+			let defaultRecommended: string | null = null;
+			if (!defaultConfigKey && !configFilePathsFromTarget && !configKey && !this.#options?.configFile) {
+				// No configured
+				// Default: set recommended
+				// Not with `configFile`: the preset is merged after it and would override its rules (#4415).
+				defaultRecommended = this.#configProvider.set({ extends: ['markuplint:recommended'] });
+			}
+			configLog('defaultRecommended: %s', defaultRecommended ?? 'N/A');
+			this.emit('log', 'defaultRecommended', defaultRecommended ?? 'N/A');
+
+			return this.#configProvider.resolve(
+				this.#file,
+				[configFilePathsFromTarget, this.#options?.configFile, configKey, defaultRecommended],
+				true,
+			);
+		});
 		this.emit('config', this.#file.path, configSet);
 
 		if (this.#options?.watch) {

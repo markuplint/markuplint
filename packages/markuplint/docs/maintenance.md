@@ -119,7 +119,9 @@ expect(violations).toStrictEqual([
 3. Understand `ConfigProvider` from `@markuplint/file-resolver`:
    - `set(config)` registers a config and returns a key
    - `search(file)` finds the nearest config file for a target
-   - `resolve(file, keys, cache)` merges all config layers
+   - `resolve(file, keys, cache)` merges all config layers; with `cache` `false` it first clears the store, which also discards what `set()` has just registered
+   - `invalidate()` clears the store and the caches; call it before `set()`, then `resolve()` with `cache` `true`, for a re-read that keeps the inline configs (`resolveConfig(false)` does)
+   - `runExclusive(fn)` runs a whole `invalidate()` → `set()` / `search()` → `resolve()` sequence without an overlapping call interleaving
 4. Make changes to `resolveConfig()`, preserving the event emissions (`this.emit('config', ...)`)
 5. If adding new API options, update `APIOptions` in `src/api/types.ts`
 6. Add tests in `src/api/ml-engine.spec.ts`

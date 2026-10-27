@@ -334,6 +334,84 @@ describe('Issues', () => {
 		expect(stderr).toBe('');
 		expect(exitCode).toBe(0);
 	});
+
+	test('--config is not overridden by the recommended preset (#4415)', async () => {
+		const filePath = path.resolve(__dirname, '../../test/no-search-config/no-h1.html');
+		const config = path.resolve(__dirname, '../../test/no-search-config/config.json');
+
+		const { stdout, stderr, exitCode } = await execa(
+			entryFilePath,
+			[escape(filePath), '--config', escape(config), '--no-color', '--format', 'json', '--no-search-config'],
+			{
+				reject: false,
+			},
+		);
+
+		expect(JSON.parse(stdout)).toStrictEqual([]);
+		expect(stderr).toBe('');
+		expect(exitCode).toBe(0);
+
+		// Control: the target is linted, and without `--config` the recommended preset reports it.
+		const control = await execa(
+			entryFilePath,
+			[escape(filePath), '--no-color', '--format', 'json', '--no-search-config'],
+			{
+				reject: false,
+			},
+		);
+		expect(JSON.parse(control.stdout)).toMatchObject([{ ruleId: 'required-h1' }]);
+	});
+
+	test('--show-config prints the recommended configuration when no configuration file applies (#4415)', async () => {
+		const filePath = path.resolve(__dirname, '../../test/no-search-config/index.html');
+
+		const { stdout, stderr, exitCode } = await execa(
+			entryFilePath,
+			[escape(filePath), '--no-color', '--no-search-config', '--show-config'],
+			{
+				reject: false,
+			},
+		);
+
+		expect(stderr).toBe('');
+		expect(exitCode).toBe(0);
+		expect(JSON.parse(stdout).rules['required-h1']).toBe(true);
+	});
+
+	test('--show-config with --config prints the configuration of the file (#4415)', async () => {
+		const filePath = path.resolve(__dirname, '../../test/no-search-config/index.html');
+		const config = path.resolve(__dirname, '../../test/no-search-config/config.json');
+
+		const { stdout, stderr, exitCode } = await execa(
+			entryFilePath,
+			[escape(filePath), '--config', escape(config), '--no-color', '--no-search-config', '--show-config'],
+			{
+				reject: false,
+			},
+		);
+
+		expect(stderr).toBe('');
+		expect(exitCode).toBe(0);
+		expect(JSON.parse(stdout).rules['required-h1']).toBe(false);
+	});
+
+	test('--show-config=details lists no error when no configuration file applies (#4415)', async () => {
+		const filePath = path.resolve(__dirname, '../../test/no-search-config/index.html');
+
+		const { stdout, stderr, exitCode } = await execa(
+			entryFilePath,
+			[escape(filePath), '--no-color', '--no-search-config', '--show-config=details'],
+			{
+				reject: false,
+			},
+		);
+
+		expect(stderr).toBe('');
+		expect(exitCode).toBe(0);
+		const data = JSON.parse(stdout);
+		expect(data.target).toBe(filePath);
+		expect(data.errors).toStrictEqual([]);
+	});
 });
 
 describe('--max-warnings option', () => {

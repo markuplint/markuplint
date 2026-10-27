@@ -170,7 +170,7 @@ The `resolveConfig()` method resolves configuration from multiple sources with t
 2. options.configFile     -- Explicit config file path (--config flag)
 3. ConfigProvider.search()-- Auto-discovery from file location (unless --no-search-config)
 4. options.defaultConfig  -- Fallback config
-5. markuplint:recommended -- Default when no config is found at all
+5. markuplint:recommended -- Default when no config is found at all (and no `configFile` is given)
 ```
 
 These are combined via `ConfigProvider.resolve()` which merges all layers using `@markuplint/ml-config`'s `mergeConfig()`.
