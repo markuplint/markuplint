@@ -191,7 +191,13 @@ test('scan — on Windows, a pattern with backslashes as the path separator matc
 	);
 	const target = path.resolve(fixtureDir, 'template', 'SimpleButton.vue');
 	const platform = Object.getOwnPropertyDescriptor(process, 'platform')!;
-	Object.defineProperty(process, 'platform', { ...platform, value: 'win32' });
+	// `platform` is a data property on Node and an accessor on Deno, so the replacement is spelled out.
+	Object.defineProperty(process, 'platform', {
+		value: 'win32',
+		writable: true,
+		enumerable: platform.enumerable,
+		configurable: true,
+	});
 	try {
 		const pretenders = await resolvePretenders({
 			scan: [{ files: target.split(path.sep).join('\\') }],
