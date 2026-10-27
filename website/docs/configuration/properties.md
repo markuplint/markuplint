@@ -63,6 +63,12 @@ First, it tries to import it as a package.
 If it fails, such as the package doesn't exist, or the strings are not a package, **it resolves strings as just a path**.
 If it is a relative path, the basis becomes the directory that has the configuration file.
 
+The same applies to these properties in the value of [`overrides`](#overrides),
+to the `files` of [`pretenders`](#pretenders) and the [`files` of its `scan`](#pretenders/scan),
+and to the `filePath` of an entry of [`pretenders.data`](#pretenders/data).
+The basis is the directory of the configuration file that declares them, even when another configuration `extends` it.
+A configuration given by the API without a file (the `config` and `defaultConfig` options) has no such directory, so the basis becomes the working directory.
+
 ## Details each property
 
 ### `extends`
@@ -1218,6 +1224,18 @@ Currently only `permitted-contents`, `require-owned-elements` and the accessible
 
 If the component renders several elements at its root, set `element` to `"#fragment"`. The component is not an element itself; its `contents` stand in its place in the parent.
 
+#### `filePath` {#pretenders/file-path}
+
+:::caution[Experimental]
+This property is **experimental** and may change in future releases.
+:::
+
+The file that declares the component, as `<path>:<line>:<column>`. The `:<line>:<column>` can be left out when you write it by hand. It is optional.
+
+Matching a pretender to an element is by [`selector`](#selector) alone. When several entries have the same selector, markuplint keeps the one whose `filePath` is the file that the linted file's import of that name resolves to. An entry without `filePath` can't be told apart that way.
+
+A scan (`scan`, `auto`) writes it for you. The base of a relative path you write is described in [Resolving specified paths](#resolving-specified-paths).
+
 #### `scan` {#pretenders/scan}
 
 :::caution[Experimental]
@@ -1252,6 +1270,7 @@ A component is named by its declaration (`export const Button = …`, `function 
 ##### `scan[].files`
 
 A glob pattern (or an array of glob patterns) for component files to scan. It's required.
+A relative pattern is based on the directory of the configuration file.
 
 ##### `scan[].ignoreComponentNames`
 
@@ -1332,6 +1351,7 @@ interface Config {
 type Pretender = {
   selector: string;
   as: string | OriginalNode;
+  filePath?: string; // @experimental
 };
 
 type OriginalNode = {
@@ -1438,6 +1458,8 @@ It can override the following properties:
 - [`nodeRules`](#noderules)
 - [`childNodeRules`](#childnoderules)
 - [`pretenders`](#pretenders)
+
+A relative path in these values is based on the directory of the configuration file that declares the `overrides` (see [Resolving specified paths](#resolving-specified-paths)).
 
 #### When more than one glob matches the same file
 

@@ -60,6 +60,8 @@
 
 まず、パッケージとしてインポートします。パッケージが存在しない、文字列がパッケージでないなど、失敗した場合は、**文字列を単なるパスとして解決します**。相対パスは、設定ファイルのあるディレクトリが基準となります。
 
+[`overrides`](#overrides)の値の中にあるこれらのプロパティ、[`pretenders`](#pretenders)の`files`と[`scan`の`files`](#pretenders/scan)、[`pretenders.data`](#pretenders/data)の各要素の`filePath`も同じです。基準は、それらを宣言した設定ファイルのあるディレクトリで、ほかの設定ファイルが`extends`で読み込む場合も変わりません。ファイルを持たない設定（APIの`config`オプションと`defaultConfig`オプション）には基準となるディレクトリがないため、作業ディレクトリが基準となります。
+
 ## 各プロパティの詳細
 
 ### `extends`
@@ -1176,6 +1178,18 @@ const Details = ({ children }) => <details>{children}</details>;
 
 コンポーネントがルートに複数の要素をレンダリングする場合は、`element`に`"#fragment"`を指定します。コンポーネント自身は要素ではなく、その`contents`が親の中でコンポーネントの位置に置かれます。
 
+#### `filePath` {#pretenders/file-path}
+
+:::caution[実験的機能]
+このプロパティは**実験的機能**であり、今後のリリースで変更される可能性があります。
+:::
+
+コンポーネントを宣言したファイルを`<path>:<line>:<column>`の形式で指定します。手で書く場合は`:<line>:<column>`を省略できます。省略可能です。
+
+プリテンダーと要素の対応づけは、[`selector`](#selector)だけで行います。同じセレクターのエントリが複数あるときは、リントするファイルがその名前でインポートしているファイルを`filePath`としているエントリを残します。`filePath`のないエントリは、この方法では区別できません。
+
+スキャン（`scan`、`auto`）は、この値を自動で書き込みます。手で書く相対パスの基準は、[パスの解決](#resolving-specified-paths)を参照してください。
+
 #### `scan` {#pretenders/scan}
 
 :::caution[実験的機能]
@@ -1210,6 +1224,7 @@ const Details = ({ children }) => <details>{children}</details>;
 ##### `scan[].files`
 
 スキャンするコンポーネントファイルのglobパターン（またはglobパターンの配列）。必須です。
+相対パターンは、設定ファイルのあるディレクトリが基準となります。
 
 ##### `scan[].ignoreComponentNames`
 
@@ -1290,6 +1305,7 @@ interface Config {
 type Pretender = {
   selector: string;
   as: string | OriginalNode;
+  filePath?: string; // @experimental
 };
 
 type OriginalNode = {
@@ -1390,6 +1406,8 @@ interface Config {
 - [`nodeRules`](#noderules)
 - [`childNodeRules`](#childnoderules)
 - [`pretenders`](#pretenders)
+
+これらの値の中にある相対パスは、`overrides`を宣言した設定ファイルのあるディレクトリが基準となります（[パスの解決](#resolving-specified-paths)を参照）。
 
 #### インターフェイス {#overrides/interface}
 
