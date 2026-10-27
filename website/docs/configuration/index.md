@@ -4,7 +4,7 @@
 
 The configuration file is for specifying the rules and options that apply to. That is usually automatic loading, but you also can load the config expected explicitly using CLI or API.
 
-The automatic loading is **recursively searching up from a directory that the target exists**. In other words, it applies the configuration files closest to each target.
+The automatic loading is **recursively searching up from a directory that the target exists**. In other words, it applies the configuration files closest to each target. A `package.json` that has no `markuplint` field is not a configuration file, so the search continues upward past it, for example from a package in a monorepo to the root of the repository.
 
 <FileTree>
 
