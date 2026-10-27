@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.18.5](https://github.com/markuplint/markuplint/compare/v4.18.4...v4.18.5) (2026-10-27)
+
+### Bug Fixes
+
+- **file-resolver:** add invalidate and runExclusive to ConfigProvider ([e8490a8](https://github.com/markuplint/markuplint/commit/e8490a8d19d37277f170be480cbca6a2a62b155c)), closes [#4415](https://github.com/markuplint/markuplint/issues/4415)
+- **file-resolver:** find the configuration above a nested package.json ([dbd077b](https://github.com/markuplint/markuplint/commit/dbd077bb13c0c3ed5f7febf77105917b411c42dd)), closes [#4405](https://github.com/markuplint/markuplint/issues/4405)
+- **markuplint:** do not search for a configuration file when noSearchConfig is set ([1163e16](https://github.com/markuplint/markuplint/commit/1163e16afc265b8f2fc05345f6ceed6d3232a105)), closes [#4409](https://github.com/markuplint/markuplint/issues/4409)
+- **markuplint:** keep inline configurations when the configuration is resolved again ([b0d5d0b](https://github.com/markuplint/markuplint/commit/b0d5d0bb449c695e563678cd5c3719c109edad7a)), closes [#4415](https://github.com/markuplint/markuplint/issues/4415)
+
 ## [4.18.4](https://github.com/markuplint/markuplint/compare/v4.18.3...v4.18.4) (2026-10-22)
 
 **Note:** Version bump only for package markuplint-packages

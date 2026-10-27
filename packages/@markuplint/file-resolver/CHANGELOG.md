@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.18.5](https://github.com/markuplint/markuplint/compare/v4.18.4...v4.18.5) (2026-10-27)
+
+### Bug Fixes
+
+- **file-resolver:** add invalidate and runExclusive to ConfigProvider ([e8490a8](https://github.com/markuplint/markuplint/commit/e8490a8d19d37277f170be480cbca6a2a62b155c)), closes [#4415](https://github.com/markuplint/markuplint/issues/4415)
+- **file-resolver:** find the configuration above a nested package.json ([dbd077b](https://github.com/markuplint/markuplint/commit/dbd077bb13c0c3ed5f7febf77105917b411c42dd)), closes [#4405](https://github.com/markuplint/markuplint/issues/4405)
+
 ## [4.18.4](https://github.com/markuplint/markuplint/compare/v4.18.3...v4.18.4) (2026-10-22)
 
 **Note:** Version bump only for package @markuplint/file-resolver

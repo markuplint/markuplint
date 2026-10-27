@@ -2372,7 +2372,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@markuplint/file-resolver@npm:4.18.4, @markuplint/file-resolver@workspace:packages/@markuplint/file-resolver":
+"@markuplint/file-resolver@npm:4.18.5, @markuplint/file-resolver@workspace:packages/@markuplint/file-resolver":
   version: 0.0.0-use.local
   resolution: "@markuplint/file-resolver@workspace:packages/@markuplint/file-resolver"
   dependencies:
@@ -2593,7 +2593,7 @@ __metadata:
   dependencies:
     "@markuplint/ml-core": "npm:4.18.4"
     "@textlint/kernel": "npm:15.8.0"
-    markuplint: "npm:4.18.4"
+    markuplint: "npm:4.18.5"
     textlint-plugin-html: "npm:1.0.1"
     textlint-rule-prh: "npm:6.1.0"
   languageName: unknown
@@ -11586,7 +11586,7 @@ __metadata:
   resolution: "markuplint@workspace:packages/markuplint"
   dependencies:
     "@markuplint/cli-utils": "npm:4.18.0"
-    "@markuplint/file-resolver": "npm:4.18.4"
+    "@markuplint/file-resolver": "npm:4.18.5"
     "@markuplint/html-parser": "npm:4.18.4"
     "@markuplint/html-spec": "npm:4.18.4"
     "@markuplint/i18n": "npm:4.18.0"
@@ -17196,7 +17196,7 @@ __metadata:
   resolution: "vscode-markuplint@workspace:vscode"
   dependencies:
     "@markuplint-dev/tsconfig": "npm:4.18.0"
-    "@markuplint/file-resolver": "npm:4.18.4"
+    "@markuplint/file-resolver": "npm:4.18.5"
     "@markuplint/i18n": "npm:4.18.0"
     "@markuplint/ml-spec": "npm:4.18.4"
     "@types/mocha": "npm:10.0.10"
@@ -17208,7 +17208,7 @@ __metadata:
     debug: "npm:4.4.3"
     esbuild: "npm:0.28.2"
     glob: "npm:13.0.6"
-    markuplint: "npm:4.18.4"
+    markuplint: "npm:4.18.5"
     mocha: "npm:11.8.0"
     semver: "npm:7.8.5"
     typescript: "npm:6.0.3"
