@@ -308,6 +308,13 @@ export type Pretender = {
 	 * will be written into, not the scan-time cwd, so it stays resolvable regardless of
 	 * where the file is later loaded from.
 	 *
+	 * An entry written by hand may leave out `:<line>:<column>`. It takes a relative `<path>`
+	 * from the directory of the configuration file that declares it, whether that file is the
+	 * one loaded or one it `extends`, and also in the value of an `overrides` entry. In a
+	 * configuration with no file behind it (`MLEngine`'s `config` / `defaultConfig` option, one
+	 * a plugin provides), it is read from the working directory. An entry of an npm package
+	 * listed in `pretenders.imports` is not rebased.
+	 *
 	 * @experimental
 	 */
 	readonly filePath?: string;
