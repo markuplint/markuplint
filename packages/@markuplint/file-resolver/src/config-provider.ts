@@ -189,7 +189,8 @@ export class ConfigProvider {
 	}
 
 	/**
-	 * Searches for a markuplint configuration file starting from the target file's directory.
+	 * Searches for a markuplint configuration file starting from the target file's directory
+	 * and going up through its ancestors; the nearest one wins (see `search` in `cosmiconfig.ts`).
 	 *
 	 * @param targetFile - The file whose directory to search from
 	 * @returns The file path of the found config, or `null` if none was found

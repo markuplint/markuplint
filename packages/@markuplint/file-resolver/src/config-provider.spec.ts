@@ -298,3 +298,41 @@ test('Overrides with OverrideMode', async () => {
 		bar: true,
 	});
 });
+
+test('Search upward past a nested package.json without a markuplint key (#4405)', async () => {
+	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures');
+	const file = getFile(path.resolve(testDir, '012', 'packages', 'a', 'target.html'));
+	const provider = new ConfigProvider();
+	const key = await provider.search(file);
+	expect(key).toBe(path.resolve(testDir, '012', '.markuplintrc'));
+	const configSet = await provider.resolve(file, [key]);
+	expect(configSet.config).toStrictEqual({ key: '012/.markuplintrc' });
+});
+
+test('Search stops at the nearest nested package.json that has a markuplint key (#4405)', async () => {
+	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures');
+	const file = getFile(path.resolve(testDir, '012', 'packages', 'b', 'target.html'));
+	const provider = new ConfigProvider();
+	const key = await provider.search(file);
+	expect(key).toBe(path.resolve(testDir, '012', 'packages', 'b', 'package.json'));
+	const configSet = await provider.resolve(file, [key]);
+	expect(configSet.config).toStrictEqual({ key: '012/packages/b/package.json' });
+});
+
+test('Search upward past a nested package.yaml without a markuplint key (#4405)', async () => {
+	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures');
+	const file = getFile(path.resolve(testDir, '012', 'packages', 'c', 'target.html'));
+	const key = await new ConfigProvider().search(file);
+	expect(key).toBe(path.resolve(testDir, '012', '.markuplintrc'));
+});
+
+test('A malformed configuration file in an ancestor directory is reported with its own path (#4405)', async () => {
+	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures');
+	const file = getFile(path.resolve(testDir, '013', 'packages', 'a', 'target.html'));
+	// `013/.markuplintrc` is neither valid JSON nor valid YAML (an unclosed flow mapping), so the
+	// extensionless loader's YAML fallback throws and cosmiconfig reports the file's own path.
+	await expect(new ConfigProvider().search(file)).rejects.toMatchObject({
+		name: 'ConfigParserError',
+		filePath: path.resolve(testDir, '013', '.markuplintrc'),
+	});
+});
