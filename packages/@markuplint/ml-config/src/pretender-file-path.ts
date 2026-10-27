@@ -5,8 +5,10 @@
  * Both `@markuplint/pretenders` and `@markuplint/file-resolver` need to parse
  * and rebase that string — the former to point at the eventual output JSON's
  * own location, the latter to make it absolute right after reading each
- * config source — so the format is owned here rather than re-implemented
- * (with a slightly different regex each time) in every consumer.
+ * config source (a pretenders JSON file, a scan result, and the configuration
+ * file that declares an entry by hand) — so the format is owned here rather
+ * than re-implemented (with a slightly different regex each time) in every
+ * consumer.
  */
 
 import type { Pretender } from './types.js';
@@ -66,4 +68,31 @@ export function rebasePretenderFilePath(
 	}
 
 	return { ...pretender, filePath: formatPretenderFilePath({ ...location, path: transform(location.path) }) };
+}
+
+/**
+ * Like {@link rebasePretenderFilePath}, for an entry written by hand: a scanner always emits
+ * `:<line>:<col>`, but a person may leave it out, and the match of an entry to the file an
+ * import resolves to takes the bare path as well (`disambiguatePretenders` of
+ * `@markuplint/pretenders`). A value without it is a path as a whole, so `transform` is
+ * applied to all of it; leaving it relative would discard the entry there as an unrelated one.
+ *
+ * @param pretender - The pretender whose `filePath` should be rebased
+ * @param transform - Maps the path portion of `filePath` to its rebased form
+ * @returns A new `Pretender` with the rebased `filePath`, or `pretender` itself (same
+ *   reference) when it has no `filePath`
+ */
+export function rebaseHandWrittenPretenderFilePath(
+	pretender: Readonly<Pretender>,
+	transform: (path: string) => string,
+): Pretender {
+	if (!pretender.filePath) {
+		return pretender;
+	}
+
+	if (parsePretenderFilePath(pretender.filePath)) {
+		return rebasePretenderFilePath(pretender, transform);
+	}
+
+	return { ...pretender, filePath: transform(pretender.filePath) };
 }

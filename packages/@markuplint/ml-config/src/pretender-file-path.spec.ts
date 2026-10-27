@@ -1,6 +1,11 @@
 import { describe, test, expect } from 'vitest';
 
-import { parsePretenderFilePath, formatPretenderFilePath, rebasePretenderFilePath } from './pretender-file-path.js';
+import {
+	parsePretenderFilePath,
+	formatPretenderFilePath,
+	rebasePretenderFilePath,
+	rebaseHandWrittenPretenderFilePath,
+} from './pretender-file-path.js';
 
 describe('parsePretenderFilePath', () => {
 	test('parses a well-formed location', () => {
@@ -51,5 +56,30 @@ describe('rebasePretenderFilePath', () => {
 	test('returns the same pretender unchanged when filePath does not match the expected format', () => {
 		const pretender = { selector: 'Button', as: 'button', filePath: 'not-a-location' };
 		expect(rebasePretenderFilePath(pretender, p => `/abs/${p}`)).toStrictEqual(pretender);
+	});
+});
+
+describe('rebaseHandWrittenPretenderFilePath', () => {
+	test('applies the transform to the path portion only, leaving line:col untouched', () => {
+		const pretender = { selector: 'Button', as: 'button', filePath: 'components/Button.tsx:12:4' };
+		expect(rebaseHandWrittenPretenderFilePath(pretender, p => `/abs/${p}`)).toStrictEqual({
+			selector: 'Button',
+			as: 'button',
+			filePath: '/abs/components/Button.tsx:12:4',
+		});
+	});
+
+	test('applies the transform to the whole value when it has no line:col', () => {
+		const pretender = { selector: 'Button', as: 'button', filePath: 'components/Button.tsx' };
+		expect(rebaseHandWrittenPretenderFilePath(pretender, p => `/abs/${p}`)).toStrictEqual({
+			selector: 'Button',
+			as: 'button',
+			filePath: '/abs/components/Button.tsx',
+		});
+	});
+
+	test('returns the same pretender unchanged when filePath is absent', () => {
+		const pretender = { selector: 'Button', as: 'button' };
+		expect(rebaseHandWrittenPretenderFilePath(pretender, p => `/abs/${p}`)).toBe(pretender);
 	});
 });

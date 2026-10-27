@@ -1,0 +1,20 @@
+{
+	"pretenders": [
+		{ "selector": "Item", "as": "li", "filePath": "./Item.tsx:1:17" },
+		{ "selector": "Bare", "as": "li", "filePath": "./Bare.tsx" },
+		{ "selector": "Plain", "as": "div" }
+	],
+	"overrides": {
+		"./*.html": {
+			"parser": { "\\.x$": "./parser.js", "\\.y$": "@markuplint/jsx-parser" },
+			"specs": { "\\.x$": "./spec.js" },
+			"plugins": [{ "name": "./plugin.js" }],
+			"excludeFiles": ["./ignored/**", "!./ignored/keep/**"],
+			"pretenders": {
+				"files": ["./pretenders.json"],
+				"scan": [{ "files": "./components/*.tsx" }, { "files": ["./ui/*.tsx", "./ui/*.jsx"] }],
+				"data": [{ "selector": "Over", "as": "li", "filePath": "./Over.tsx:3:4" }]
+			}
+		}
+	}
+}

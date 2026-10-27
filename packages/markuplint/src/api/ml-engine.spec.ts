@@ -1305,3 +1305,101 @@ describe('debug option of the constructor', () => {
 		expect(debug.enabled('markuplint-cli')).toBe(false);
 	});
 });
+
+describe('a relative filePath of an inline pretender is resolved from the configuration that declares it', () => {
+	const pretender = (filePath: string) => ({ selector: 'Item', as: 'li', filePath });
+
+	const createConfig = (filePath: string) => ({
+		parser: { '\\.tsx$': '@markuplint/jsx-parser' },
+		specs: { '\\.tsx$': '@markuplint/react-spec' },
+		pretenders: [pretender(filePath)],
+		rules: { 'require-owned-elements': true },
+	});
+
+	const lint = async (target: string, options: { configFile: string } | { config: Config }) => {
+		const file = (await MLEngine.toMLFile(target))!;
+		const engine = new MLEngine(file, { noSearchConfig: true, locale: 'en', ...options });
+		const result = await engine.exec();
+		// A file that is not linted at all has no violation either, which would pass for the component being kept.
+		expect(result).not.toBeNull();
+		return result!.violations;
+	};
+
+	let tmpDir: string;
+
+	beforeEach(async () => {
+		tmpDir = await fs.realpath(await fs.mkdtemp(path.join(os.tmpdir(), 'ml-engine-inline-filepath-')));
+		await fs.mkdir(path.join(tmpDir, 'app'));
+		await fs.writeFile(
+			path.join(tmpDir, 'app', 'Item.tsx'),
+			'export function Item() {\n\treturn <li>item</li>;\n}\n',
+		);
+		await fs.writeFile(
+			path.join(tmpDir, 'app', 'list.tsx'),
+			"import { Item } from './Item';\nexport const List = () => (\n\t<ul>\n\t\t<Item />\n\t</ul>\n);\n",
+		);
+		await fs.writeFile(
+			path.join(tmpDir, 'app', 'markuplint.config.json'),
+			JSON.stringify(createConfig('./Item.tsx:1:17')),
+		);
+	});
+
+	afterEach(async () => {
+		vi.restoreAllMocks();
+		await fs.rm(tmpDir, { recursive: true, force: true });
+	});
+
+	it('keeps the component when the configuration file is given', async () => {
+		const violations = await lint(path.join(tmpDir, 'app', 'list.tsx'), {
+			configFile: path.join(tmpDir, 'app', 'markuplint.config.json'),
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	it('keeps the component when the configuration file is extended from another directory', async () => {
+		await fs.mkdir(path.join(tmpDir, 'extending'));
+		await fs.writeFile(
+			path.join(tmpDir, 'extending', 'markuplint.config.json'),
+			JSON.stringify({ extends: ['../app/markuplint.config.json'] }),
+		);
+
+		const violations = await lint(path.join(tmpDir, 'app', 'list.tsx'), {
+			configFile: path.join(tmpDir, 'extending', 'markuplint.config.json'),
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	it('keeps the component when the pretender is in the value of an override', async () => {
+		const { pretenders, ...rest } = createConfig('./Item.tsx:1:17');
+		await fs.writeFile(
+			path.join(tmpDir, 'app', 'overridden.config.json'),
+			JSON.stringify({ ...rest, overrideMode: 'merge', overrides: { './list.tsx': { pretenders } } }),
+		);
+
+		const violations = await lint(path.join(tmpDir, 'app', 'list.tsx'), {
+			configFile: path.join(tmpDir, 'app', 'overridden.config.json'),
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	it('drops a component the filePath of which is another file than the one the import resolves to', async () => {
+		await fs.writeFile(
+			path.join(tmpDir, 'app', 'other.config.json'),
+			JSON.stringify(createConfig('./Other.tsx:1:17')),
+		);
+
+		const violations = await lint(path.join(tmpDir, 'app', 'list.tsx'), {
+			configFile: path.join(tmpDir, 'app', 'other.config.json'),
+		});
+		expect(violations.map(v => v.ruleId)).toStrictEqual(['require-owned-elements']);
+	});
+
+	it('reads the filePath of a configuration with no file behind it from the working directory', async () => {
+		vi.spyOn(process, 'cwd').mockReturnValue(path.join(tmpDir, 'app'));
+
+		const violations = await lint(path.join(tmpDir, 'app', 'list.tsx'), {
+			config: createConfig('./Item.tsx:1:17'),
+		});
+		expect(violations).toStrictEqual([]);
+	});
+});

@@ -4,7 +4,7 @@ import path from 'node:path';
 
 import { Ruleset } from '@markuplint/ml-core';
 
-import { test, expect, vi } from 'vitest';
+import { describe, test, expect, vi } from 'vitest';
 
 import { autoLoadRules } from './auto-load-rules.js';
 import { ConfigProvider } from './config-provider.js';
@@ -549,5 +549,100 @@ test('A malformed configuration file in an ancestor directory is reported with i
 	await expect(new ConfigProvider().search(file)).rejects.toMatchObject({
 		name: 'ConfigParserError',
 		filePath: path.resolve(testDir, '014', '.markuplintrc'),
+	});
+});
+
+describe('Relative paths are resolved from the directory of the configuration file that declares them', () => {
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures', '015');
+	const subDir = path.resolve(testDir, 'sub');
+
+	test('a relative filePath of an inline pretender, keeping its line and column, with or without them', async () => {
+		const file = getFile(path.resolve(subDir, 'other.txt'));
+		const configSet = await new ConfigProvider().resolve(file, [path.resolve(subDir, 'base.json')]);
+		expect(configSet.config.pretenders?.data).toStrictEqual([
+			{ selector: 'Item', as: 'li', filePath: `${path.resolve(subDir, 'Item.tsx')}:1:17` },
+			{ selector: 'Bare', as: 'li', filePath: path.resolve(subDir, 'Bare.tsx') },
+			{ selector: 'Plain', as: 'div' },
+		]);
+	});
+
+	test('a relative filePath of an inline pretender in a configuration that another one extends', async () => {
+		const file = getFile(path.resolve(subDir, 'other.txt'));
+		const configSet = await new ConfigProvider().resolve(file, [path.resolve(testDir, 'child.json')]);
+		// The base is `sub/`, where `base.json` declares it, not the directory of the extending `child.json`.
+		expect(configSet.config.pretenders?.data).toStrictEqual([
+			{ selector: 'Item', as: 'li', filePath: `${path.resolve(subDir, 'Item.tsx')}:1:17` },
+			{ selector: 'Bare', as: 'li', filePath: path.resolve(subDir, 'Bare.tsx') },
+			{ selector: 'Plain', as: 'div' },
+		]);
+	});
+
+	test('every path in the value of an override, while a module name is kept', async () => {
+		const file = getFile(path.resolve(subDir, 'target.html'));
+		const configSet = await new ConfigProvider().resolve(file, [path.resolve(testDir, 'child.json')]);
+		expect(configSet.appliedOverrides).toStrictEqual([path.resolve(subDir, '*.html')]);
+		// An override replaces the configuration outright in `reset` mode, so no key it does not hold may be added.
+		expect(Object.keys(configSet.config).toSorted()).toStrictEqual([
+			'excludeFiles',
+			'parser',
+			'plugins',
+			'pretenders',
+			'specs',
+		]);
+		expect(configSet.config).toMatchObject({
+			// A module name stays as it is; only a path is resolved.
+			parser: { '\\.x$': path.resolve(subDir, 'parser.js'), '\\.y$': '@markuplint/jsx-parser' },
+			specs: { '\\.x$': path.resolve(subDir, 'spec.js') },
+			plugins: [{ name: path.resolve(subDir, 'plugin.js') }],
+			excludeFiles: [path.resolve(subDir, 'ignored/**'), `!${path.resolve(subDir, 'ignored/keep/**')}`],
+			pretenders: {
+				files: [path.resolve(subDir, 'pretenders.json')],
+				scan: [
+					{ files: path.resolve(subDir, 'components/*.tsx') },
+					{ files: [path.resolve(subDir, 'ui/*.tsx'), path.resolve(subDir, 'ui/*.jsx')] },
+				],
+				data: [{ selector: 'Over', as: 'li', filePath: `${path.resolve(subDir, 'Over.tsx')}:3:4` }],
+			},
+		});
+	});
+});
+
+describe('Plugins in the value of an override are loaded for the file it applies to', () => {
+	const pluginsDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures', '015', 'plugins');
+	const resolveFor = (config: string, target: string) =>
+		new ConfigProvider().resolve(getFile(path.resolve(pluginsDir, target)), [path.resolve(pluginsDir, config)]);
+	const names = (configSet: Awaited<ReturnType<typeof resolveFor>>) => configSet.plugins.map(p => p.name);
+
+	test('a plugin that only the override declares', async () => {
+		const matched = await resolveFor('override-only.json', 'target.html');
+		expect(names(matched)).toStrictEqual(['foo']);
+		expect(matched.errs).toStrictEqual([]);
+	});
+
+	test('no plugin for a file that the override does not apply to', async () => {
+		const unmatched = await resolveFor('override-only.json', 'other.txt');
+		expect(names(unmatched)).toStrictEqual([]);
+	});
+
+	test('the plugins of the base remain when an override replaces the configuration without declaring plugins', async () => {
+		const matched = await resolveFor('reset-without-plugins.json', 'target.html');
+		expect(names(matched)).toStrictEqual(['base-plugin']);
+	});
+
+	test('the plugins of the base come first, then those of the override, when the configurations are merged', async () => {
+		const matched = await resolveFor('merge.json', 'target.html');
+		expect(names(matched)).toStrictEqual(['base-plugin', 'foo']);
+		expect(matched.errs).toStrictEqual([]);
+	});
+
+	test('a plugin of the override that is not found is reported for that file only', async () => {
+		const provider = new ConfigProvider();
+		const key = path.resolve(pluginsDir, 'missing.json');
+		const matched = await provider.resolve(getFile(path.resolve(pluginsDir, 'target.html')), [key]);
+		const unmatched = await provider.resolve(getFile(path.resolve(pluginsDir, 'other.txt')), [key]);
+		expect(matched.errs.map(e => e.message)).toStrictEqual([
+			`Plugin not found: ${path.resolve(pluginsDir, 'not-found.js')}`,
+		]);
+		expect(unmatched.errs).toStrictEqual([]);
 	});
 });
