@@ -37,7 +37,7 @@ See [Usecases](/docs/configuration/usecases) for more real-world examples, or th
 
 ## Configuration file
 
-Markuplint **automatically searches** for a configuration file by recursively looking upward from the directory of the target file. It applies the configuration file closest to each target.
+Markuplint **automatically searches** for a configuration file by recursively looking upward from the directory of the target file. It applies the configuration file closest to each target. A `package.json` that has no `markuplint` field is not a configuration file, so the search continues upward past it, for example from a package in a monorepo to the root of the repository.
 
 <FileTree>
 
