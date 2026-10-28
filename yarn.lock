@@ -1726,10 +1726,10 @@ __metadata:
   dependencies:
     "@markuplint/ml-spec": "npm:5.3.0"
     "@markuplint/test-tools": "npm:5.3.0"
-    "@types/cheerio": "npm:1.0.0"
     "@types/cli-progress": "npm:3.11.6"
     cheerio: "npm:1.2.0"
     cli-progress: "npm:3.12.0"
+    domhandler: "npm:5.0.3"
     glob: "npm:13.0.6"
     jsonc-parser: "npm:3.3.1"
     type-fest: "npm:5.10.0"
@@ -3808,15 +3808,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/cheerio@npm:1.0.0":
-  version: 1.0.0
-  resolution: "@types/cheerio@npm:1.0.0"
-  dependencies:
-    cheerio: "npm:*"
-  checksum: 10c0/6290af8750586d2b97532c177c99c2814a498b0848a42dc4505dc9dce425578fa02897775fa70444e4beae2957fd9d9f1fdc3924301f563ba0a49e048c3c7263
-  languageName: node
-  linkType: hard
-
 "@types/cli-progress@npm:3.11.6":
   version: 3.11.6
   resolution: "@types/cli-progress@npm:3.11.6"
@@ -5241,7 +5232,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cheerio@npm:*, cheerio@npm:1.2.0":
+"cheerio@npm:1.2.0":
   version: 1.2.0
   resolution: "cheerio@npm:1.2.0"
   dependencies:
@@ -6059,7 +6050,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"domhandler@npm:^5.0.2, domhandler@npm:^5.0.3":
+"domhandler@npm:5.0.3, domhandler@npm:^5.0.2, domhandler@npm:^5.0.3":
   version: 5.0.3
   resolution: "domhandler@npm:5.0.3"
   dependencies:
@@ -6794,9 +6785,9 @@ __metadata:
   linkType: hard
 
 "fast-uri@npm:^3.0.1":
-  version: 3.1.8
-  resolution: "fast-uri@npm:3.1.8"
-  checksum: 10c0/c9c47860a7f9110176d94bb30a02942182f0bfc8d6780e9702f320336dc2dadb83b1d9879cceaf8d4b439642d1ec6d78c317cb808ab155455551bd5d9d7c22d8
+  version: 3.1.9
+  resolution: "fast-uri@npm:3.1.9"
+  checksum: 10c0/052757540d8c0bbc16bb124a45b8f5cb5d0932f9b89f019221ee41cdb3cafc1db44b2e809d6b888b87922af3e5560a863124454e9d9193e1fc955887357b5add
   languageName: node
   linkType: hard
 
@@ -7771,9 +7762,9 @@ __metadata:
   linkType: hard
 
 "ip-address@npm:^10.0.1":
-  version: 10.7.3
-  resolution: "ip-address@npm:10.7.3"
-  checksum: 10c0/145d9848f315a0375437d206dee763e2dd654063e8c5d6270a329e249cfad30b4ae760b237bb1991abfe67276f542310a89fca891ddf76f934e397e0dda1bf3b
+  version: 10.7.4
+  resolution: "ip-address@npm:10.7.4"
+  checksum: 10c0/22401f5723acd96a8b261ff5b098857bee86a700f8f4f7e7afcf3645a5ddb74b961296577b03c53acbd3235c6424aab11087ff1da9dbce11a55e05af9dde5bbb
   languageName: node
   linkType: hard
 
@@ -9256,8 +9247,8 @@ __metadata:
   linkType: hard
 
 "markdown-it@npm:^14.3.0":
-  version: 14.3.2
-  resolution: "markdown-it@npm:14.3.2"
+  version: 14.3.3
+  resolution: "markdown-it@npm:14.3.3"
   dependencies:
     argparse: "npm:^2.0.1"
     entities: "npm:^4.5.0"
@@ -9267,7 +9258,7 @@ __metadata:
     uc.micro: "npm:^2.1.0"
   bin:
     markdown-it: bin/markdown-it.mjs
-  checksum: 10c0/51d03a244bbacc84aa7229fd784ccc16a76cb853cf93f668c4dfc1e9eb22d03138678e7743accac2304e03151a995068492fde56c7a9fbe6785b4169036cf590
+  checksum: 10c0/d6075ad320731d7fb9f127e496677f4e36cbdba839d7387dabf1f0d07b5c02bdffb46fb3969033817c04e60017e05d4269e4aa74bee58cc0a562a17cc0b6b8ff
   languageName: node
   linkType: hard
 
@@ -9323,7 +9314,6 @@ __metadata:
     tsx: "npm:4.23.15"
     typedoc: "npm:0.28.20"
     typedoc-plugin-mdn-links: "npm:5.1.1"
-    typedoc-plugin-resolve-crossmodule-references: "npm:0.3.3"
     typescript: "npm:6.0.3"
     vitest: "npm:4.1.12"
   dependenciesMeta:
@@ -11908,12 +11898,12 @@ __metadata:
   linkType: hard
 
 "qs@npm:^6.9.1":
-  version: 6.16.0
-  resolution: "qs@npm:6.16.0"
+  version: 6.16.1
+  resolution: "qs@npm:6.16.1"
   dependencies:
     es-define-property: "npm:^1.0.1"
     side-channel: "npm:^1.1.1"
-  checksum: 10c0/eb3e31992fbd70e31a1791e571ed817d70975de7d3bfcbbbec93d77d1dd305877e9e8fdbcc62303c228ee5c3606685622cd6231c042dbc4790bb4e7c65fcbe18
+  checksum: 10c0/84ee9124b251ab2953132fbea1d70c966aa6e6496cccabedbbb83afa412bf4177bddebc779ca3ddafe23da83b2f593d530b41be6a726e971404fabb20ff22c94
   languageName: node
   linkType: hard
 
@@ -12532,9 +12522,9 @@ __metadata:
   linkType: hard
 
 "serialize-javascript@npm:^7.1.1":
-  version: 7.1.2
-  resolution: "serialize-javascript@npm:7.1.2"
-  checksum: 10c0/568ea22e16893a26cd2506433b8d98bb82f4af37e149330a3deb042bd417516988e6ca9a5010739e1a8dc4866caae320f582dfd2a1a0f0ab69ba3c03f1e155ba
+  version: 7.1.4
+  resolution: "serialize-javascript@npm:7.1.4"
+  checksum: 10c0/aece56a71a7fc54d51af3c49ef18cc8c47caa2815210709ab585c0b5e72f1e90969bd6c7947cf95e2f8e93d15595ae80ce7137800465b5fa61812693bf7e63ac
   languageName: node
   linkType: hard
 
@@ -14103,15 +14093,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typedoc-plugin-resolve-crossmodule-references@npm:0.3.3":
-  version: 0.3.3
-  resolution: "typedoc-plugin-resolve-crossmodule-references@npm:0.3.3"
-  peerDependencies:
-    typedoc: ">=0.22 <=0.23"
-  checksum: 10c0/b5504dd37e1f083fc620cd6da3a19daeb6b4993244ac2520613b1f4d0531ecb3641346eff9c8a7685cc949e52d865647dd8100227c52e8f2c6c4b8c063225b59
-  languageName: node
-  linkType: hard
-
 "typedoc@npm:0.28.20":
   version: 0.28.20
   resolution: "typedoc@npm:0.28.20"
@@ -14219,24 +14200,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"undici@npm:8.12.2, undici@npm:^8.12.1":
-  version: 8.12.2
-  resolution: "undici@npm:8.12.2"
-  checksum: 10c0/25b0e0a69585b2b2e2678fdcd07942bbe15b14c6686d496712b0ee37ce15753af90ab7335ee42c8e65ec60b72bf3a21adc72bbabf86c1eaca74f27a3779532de
+"undici@npm:7.30.1, undici@npm:^7.19.0":
+  version: 7.30.1
+  resolution: "undici@npm:7.30.1"
+  checksum: 10c0/c838089b010e8e28a9a5358d4bf4621e0c8d7bb70058b23e819667349c4c0b6791a7c8bc9bbe94ff0923db132faae0d9d9592b9743eda4f2b49466fa57482213
   languageName: node
   linkType: hard
 
-"undici@npm:^7.19.0":
-  version: 7.30.0
-  resolution: "undici@npm:7.30.0"
-  checksum: 10c0/011a321a9198532b0f0504740faa43b9ab8fcc0e4f60104e5c9cb808a61faeb03e4be4aec4f0c65f47913d7c7d9d91591793a6cb9ab843f98ca2c3d711c4a34c
-  languageName: node
-  linkType: hard
-
-"undici@npm:^8.4.1":
-  version: 8.11.2
-  resolution: "undici@npm:8.11.2"
-  checksum: 10c0/106f6991178fb7562fd90cdec7993c5f807a9428682306091f0c4b27fc474ec291f868e29972c6252988bf061ad193df943b3b99e775be157a28d92bbb95699d
+"undici@npm:^8.12.1, undici@npm:^8.4.1":
+  version: 8.12.3
+  resolution: "undici@npm:8.12.3"
+  checksum: 10c0/714919e62b4160eea195fb35c7f5c4907235741e47bfde8a014ac58f6d24df13434e23400d7f48e2c455fd2b259d27f07fce514f04a5b4e99936ba62cbc4bb71
   languageName: node
   linkType: hard
 
@@ -15178,9 +15152,9 @@ __metadata:
   linkType: hard
 
 "zod@npm:^4.2.0":
-  version: 4.6.5
-  resolution: "zod@npm:4.6.5"
-  checksum: 10c0/32eb6c5e98becbe045675b2141c3611451c16ba567f9779231d79af41c4d651ca1c22f154aef7e6c6e77b929f23e43f1154ca05b82e119e922353725d6776af5
+  version: 4.6.7
+  resolution: "zod@npm:4.6.7"
+  checksum: 10c0/4ce2eb14034317b7254e347ca37b5ad591cf8333147030cf05b9b5d31692d45073f7f2747aa50cf8c6b29012194d2b22978cecc89969cf34a0d18e89d0ee7d7b
   languageName: node
   linkType: hard
 
