@@ -11,7 +11,7 @@ import { InvalidSelectorError, createSelector } from '@markuplint/selector';
 import { nonNullableFilter, toNoEmptyStringArrayFromStringOrArray, ConfigLoadError } from '@markuplint/shared';
 
 import { clearAutoLoadRulesCache } from './auto-load-rules.js';
-import { load as loadConfig, search, clearExplorerCache } from './cosmiconfig.js';
+import { load as loadConfig, search, clearExplorerCache, configLoadErrorFiles } from './cosmiconfig.js';
 import { log } from './debug.js';
 import { generalImport } from './general-import.js';
 import { getPreset } from './get-preset.js';
@@ -160,7 +160,14 @@ export class ConfigProvider {
 		}
 
 		if (config instanceof ConfigLoadError) {
-			stack.add(config.filePath);
+			// The files whose change can fix the error are recorded as well as `key`, as they can be
+			// ones that `key` imports through `$import`, or a target of it that does not exist yet.
+			// `key` is added last, so that it stays the file `#resolveBase` validates against, as when
+			// the load succeeds.
+			for (const filePath of configLoadErrorFiles(config)) {
+				stack.add(filePath);
+			}
+			stack.add(key);
 			return {
 				stack,
 				errs: [config],
