@@ -1,8 +1,9 @@
-import { readFile, writeFile } from 'node:fs/promises';
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import os from 'node:os';
 import path from 'node:path';
 
 import { execa } from '@markuplint/test-tools';
-import { describe, test, expect, beforeAll } from 'vitest';
+import { describe, test, expect, beforeAll, beforeEach, afterEach } from 'vitest';
 
 import { cli } from './bootstrap.js';
 
@@ -523,6 +524,55 @@ describe('config that cannot be loaded (#4113)', () => {
 		expect(stderr).toContain('config.json (config-error)');
 		expect(stderr).toContain('1 problem (1 error, 0 warnings) in 1 file');
 		expect(exitCode).toBe(1);
+	});
+});
+
+describe('a malformed config file the search would reach (#4409)', () => {
+	let tmpDir: string;
+	let filePath: string;
+	let validConfig: string;
+
+	beforeEach(async () => {
+		tmpDir = await mkdtemp(path.join(os.tmpdir(), 'markuplint-cli-no-search-'));
+		await writeFile(path.join(tmpDir, '.markuplintrc'), '{ "rules":');
+		filePath = path.join(tmpDir, 'index.html');
+		await writeFile(filePath, '<!doctype html><html lang="en"><title>a</title><p>a</p></html>');
+		validConfig = path.join(tmpDir, 'valid.json');
+		await writeFile(validConfig, JSON.stringify({ rules: {} }));
+	});
+
+	afterEach(async () => {
+		await rm(tmpDir, { recursive: true, force: true });
+	});
+
+	test('is reported while the search is enabled', async () => {
+		const { stderr, exitCode } = await execa(entryFilePath, [escape(filePath), '--no-color'], { reject: false });
+
+		expect(stderr).toContain('(config-error)');
+		expect(exitCode).toBe(1);
+	});
+
+	test('does not affect --no-search-config', async () => {
+		const { stderr, exitCode } = await execa(
+			entryFilePath,
+			[escape(filePath), '--no-color', '--no-search-config', '--config', escape(validConfig)],
+			{ reject: false },
+		);
+
+		expect(stderr).not.toContain('config-error');
+		expect(stderr).not.toContain('YAML Error');
+		expect(exitCode).toBe(0);
+	});
+
+	test('does not affect --config', async () => {
+		const { stderr, exitCode } = await execa(
+			entryFilePath,
+			[escape(filePath), '--no-color', '--config', escape(validConfig)],
+			{ reject: false },
+		);
+
+		expect(stderr).not.toContain('config-error');
+		expect(exitCode).toBe(0);
 	});
 });
 

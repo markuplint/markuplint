@@ -800,13 +800,18 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 			configLog('defaultConfigKey: %s', defaultConfigKey ?? 'N/A');
 			this.emit('log', 'defaultConfigKey', defaultConfigKey ?? 'N/A');
 
-			const targetConfig = await this.#configProvider.search(this.#file);
-			this.emit('log', 'targetConfig', targetConfig ?? 'N/A');
+			// Skipped, not run and discarded: the search reads and parses every
+			// config file it reaches, so a malformed one would still surface as a
+			// `config-error` in a run that asked not to search. See #4409.
+			let targetConfig: string | null = null;
+			if (this.#options?.noSearchConfig || this.#options?.configFile) {
+				this.emit('log', 'targetConfig', 'skipped (search is disabled)');
+			} else {
+				targetConfig = await this.#configProvider.search(this.#file);
+				this.emit('log', 'targetConfig', targetConfig ?? 'N/A');
+			}
 
-			const configFilePathsFromTarget =
-				this.#options?.noSearchConfig || this.#options?.configFile
-					? (defaultConfigKey ?? null)
-					: (targetConfig ?? defaultConfigKey);
+			const configFilePathsFromTarget = targetConfig ?? defaultConfigKey ?? null;
 			configLog('configFilePathsFromTarget: %s', configFilePathsFromTarget ?? 'N/A');
 			this.emit('log', 'configFilePathsFromTarget', configFilePathsFromTarget ?? 'N/A');
 
@@ -814,7 +819,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 				this.#options?.config &&
 				this.#configProvider.set(mergeConfig(this.#options.config), undefined, this.#options.config);
 			configLog('option.config: %s', configKey ?? 'N/A');
-			this.emit('log', 'option.config', configFilePathsFromTarget ?? 'N/A');
+			this.emit('log', 'option.config', configKey ?? 'N/A');
 
 			let defaultRecommended: string | null = null;
 			if (!defaultConfigKey && !configFilePathsFromTarget && !configKey && !this.#options?.configFile) {

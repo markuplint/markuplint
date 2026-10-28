@@ -1274,6 +1274,174 @@ describe('config that cannot be loaded (#4113)', () => {
 	});
 });
 
+describe('a malformed config file the search would reach (#4409)', () => {
+	let tmpDir: string;
+	let targetFile: string;
+	let validConfigFile: string;
+
+	let malformedConfigFile: string;
+	let foundConfigDir: string;
+
+	beforeEach(async () => {
+		// `realpath`: the search reports the path it found, and `os.tmpdir()` is a symlink on macOS.
+		tmpDir = await fs.realpath(await fs.mkdtemp(path.join(os.tmpdir(), 'ml-engine-no-search-')));
+		// The malformed file sits in the target's own directory, so the search
+		// reaches it before any configuration in an ancestor of `os.tmpdir()`.
+		await fs.mkdir(path.join(tmpDir, 'malformed'));
+		malformedConfigFile = path.join(tmpDir, 'malformed', '.markuplintrc');
+		await fs.writeFile(malformedConfigFile, '{ "rules":');
+		targetFile = path.join(tmpDir, 'malformed', 'index.html');
+		await fs.writeFile(targetFile, '<!doctype html><html lang="en"><title>a</title><p>a</p></html>');
+		validConfigFile = path.join(tmpDir, 'valid.json');
+		await fs.writeFile(validConfigFile, JSON.stringify({ rules: { 'no-duplicate-id': true } }));
+		foundConfigDir = path.join(tmpDir, 'found');
+		await fs.mkdir(foundConfigDir);
+		await fs.writeFile(
+			path.join(foundConfigDir, '.markuplintrc'),
+			JSON.stringify({ rules: { 'no-duplicate-id': true } }),
+		);
+		await fs.writeFile(path.join(foundConfigDir, 'index.html'), '<p>a</p>');
+	});
+
+	afterEach(async () => {
+		vi.restoreAllMocks();
+		await fs.rm(tmpDir, { recursive: true, force: true });
+	});
+
+	const configErrors = (violations?: readonly Violation[]) =>
+		(violations ?? []).filter(v => v.ruleId === 'config-error');
+
+	it('is reported when the search is enabled', async () => {
+		const file = await MLEngine.toMLFile(targetFile);
+		const engine = new MLEngine(file!);
+
+		const result = await engine.exec();
+
+		const errors = configErrors(result?.violations);
+		expect(errors).toHaveLength(1);
+		expect(errors[0]?.message).toContain(malformedConfigFile);
+	});
+
+	it('is searched once when the search is enabled', async () => {
+		const configProvider = new ConfigProvider();
+		const search = vi.spyOn(configProvider, 'search');
+		const file = await MLEngine.toMLFile(targetFile);
+		const engine = new MLEngine(file!, { configProvider });
+
+		await engine.exec();
+
+		expect(search).toHaveBeenCalledTimes(1);
+	});
+
+	it.each([
+		['config', () => ({ config: {} })],
+		['defaultConfig', () => ({ defaultConfig: {} })],
+		['no other option (the recommended fallback)', () => ({})],
+	])('does not affect a run with noSearchConfig and %s', async (_, createOptions) => {
+		const file = await MLEngine.toMLFile(targetFile);
+		const engine = new MLEngine(file!, { noSearchConfig: true, ...createOptions() });
+
+		const result = await engine.exec();
+
+		expect(result?.status).toBe('processed');
+		expect(configErrors(result?.violations)).toStrictEqual([]);
+	});
+
+	it('does not affect a run with configFile', async () => {
+		const file = await MLEngine.toMLFile(targetFile);
+		const engine = new MLEngine(file!, { configFile: validConfigFile });
+		let rules: unknown;
+		engine.once('config', (_, configSet) => {
+			rules = configSet.config.rules;
+		});
+
+		const result = await engine.exec();
+
+		expect(configErrors(result?.violations)).toStrictEqual([]);
+		expect(rules).toStrictEqual({ 'no-duplicate-id': true });
+	});
+
+	// The options are built by a function because `validConfigFile` is assigned in `beforeEach`.
+	it.each([
+		['noSearchConfig', () => ({ noSearchConfig: true, config: {} })],
+		['configFile', () => ({ configFile: validConfigFile })],
+	])('does not search for a config file with %s', async (_, createOptions) => {
+		const configProvider = new ConfigProvider();
+		const search = vi.spyOn(configProvider, 'search');
+		const file = await MLEngine.toMLFile(targetFile);
+		const engine = new MLEngine(file!, { configProvider, ...createOptions() });
+
+		const result = await engine.exec();
+
+		expect(result?.status).toBe('processed');
+		expect(search).not.toHaveBeenCalled();
+	});
+
+	it('does not search with both noSearchConfig and configFile', async () => {
+		const configProvider = new ConfigProvider();
+		const search = vi.spyOn(configProvider, 'search');
+		const file = await MLEngine.toMLFile(targetFile);
+		const engine = new MLEngine(file!, { configProvider, noSearchConfig: true, configFile: validConfigFile });
+
+		const result = await engine.exec();
+
+		expect(search).not.toHaveBeenCalled();
+		expect(configErrors(result?.violations)).toStrictEqual([]);
+	});
+
+	it('does not search when the config is resolved again without the cache', async () => {
+		const configProvider = new ConfigProvider();
+		const search = vi.spyOn(configProvider, 'search');
+		const file = await MLEngine.toMLFile(targetFile);
+		const engine = new MLEngine(file!, { configProvider, noSearchConfig: true, config: {} });
+
+		await engine.resolveConfig(true);
+		await engine.resolveConfig(false);
+
+		expect(search).not.toHaveBeenCalled();
+	});
+
+	const collectLogs = (engine: MLEngine) => {
+		const logs = new Map<string, string>();
+		engine.on('log', (phase, message) => {
+			logs.set(phase, message);
+		});
+		return logs;
+	};
+
+	it('logs that the search was skipped', async () => {
+		const file = await MLEngine.toMLFile(targetFile);
+		const engine = new MLEngine(file!, { noSearchConfig: true, config: {} });
+		const logs = collectLogs(engine);
+
+		await engine.resolveConfig(false);
+
+		expect(logs.get('targetConfig')).toBe('skipped (search is disabled)');
+	});
+
+	it('logs the config file the search found', async () => {
+		const file = await MLEngine.toMLFile(path.join(foundConfigDir, 'index.html'));
+		const engine = new MLEngine(file!);
+		const logs = collectLogs(engine);
+
+		const configSet = await engine.resolveConfig(false);
+
+		expect(logs.get('targetConfig')).toBe(path.join(foundConfigDir, '.markuplintrc'));
+		expect(configSet.files).toContain(logs.get('targetConfig'));
+	});
+
+	it('logs the key of the inline config under option.config', async () => {
+		const file = await MLEngine.toMLFile(targetFile);
+		const engine = new MLEngine(file!, { noSearchConfig: true, config: { rules: {} } });
+		const logs = collectLogs(engine);
+
+		const configSet = await engine.resolveConfig(false);
+
+		// The inline config is the only source, so its key is the only one resolved.
+		expect([...configSet.files]).toStrictEqual([logs.get('option.config')]);
+	});
+});
+
 describe('debug option of the constructor', () => {
 	afterEach(() => {
 		debug.disable();
