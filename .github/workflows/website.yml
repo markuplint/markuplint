@@ -74,8 +74,17 @@ jobs:
             - name: Install website dependencies
               run: cd website && yarn install --immutable
 
+            # site:build is split into its two halves so the type-check can run
+            # in between: src/components/Contributors imports contributors.json,
+            # which site:prebuild generates, and Docusaurus itself does not type-check.
+            - name: Prebuild
+              run: cd website && yarn site:prebuild
+
+            - name: Type-check
+              run: cd website && yarn tsc --noEmit -p tsconfig.json
+
             - name: Build
-              run: cd website && yarn site:build
+              run: cd website && yarn docusaurus build
 
     # The root test jobs never install website/node_modules, so the website
     # cases of install-scripts.spec.ts can only run where the website tree
