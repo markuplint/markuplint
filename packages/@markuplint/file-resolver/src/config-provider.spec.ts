@@ -1,5 +1,7 @@
 import type { ConfigLoadError } from '@markuplint/shared';
 
+import { mkdir, mkdtemp, realpath, rm, writeFile } from 'node:fs/promises';
+import os from 'node:os';
 import path from 'node:path';
 
 import { Ruleset } from '@markuplint/ml-core';
@@ -538,6 +540,60 @@ test('Search goes up past a nested package.yaml', async () => {
 	const file = getFile(path.resolve(testDir, '013', 'packages', 'c', 'target.html'));
 	const key = await new ConfigProvider().search(file);
 	expect(key).toBe(path.resolve(testDir, '013', '.markuplintrc'));
+});
+
+test('Search goes up from a target whose directory does not exist', async () => {
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures');
+	const file = getFile(path.resolve(testDir, '013', 'packages', 'missing', 'deeper', 'target.html'));
+	expect(await file.dirExists()).toBe(false);
+	const provider = new ConfigProvider();
+	const key = await provider.search(file);
+	expect(key).toBe(path.resolve(testDir, '013', '.markuplintrc'));
+	const configSet = await provider.resolve(file, [key]);
+	expect(configSet.config).toStrictEqual({ key: '013/.markuplintrc' });
+});
+
+test('Search from a missing directory stops at the nearest ancestor that has a configuration', async () => {
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures');
+	const file = getFile(path.resolve(testDir, '013', 'packages', 'b', 'missing', 'target.html'));
+	const provider = new ConfigProvider();
+	const key = await provider.search(file);
+	expect(key).toBe(path.resolve(testDir, '013', 'packages', 'b', 'package.json'));
+	const configSet = await provider.resolve(file, [key]);
+	expect(configSet.config).toStrictEqual({ key: '013/packages/b/package.json' });
+});
+
+test('A configuration created together with the missing directory is found by the next search without invalidate()', async () => {
+	const tmpDir = await realpath(await mkdtemp(path.join(os.tmpdir(), 'config-provider-missing-dir-')));
+	try {
+		const file = getFile(path.join(tmpDir, 'missing', 'target.html'));
+		const provider = new ConfigProvider();
+		// Whatever lies above the temporary directory, the missing directory gets what its existing
+		// parent gets.
+		const fromParent = await provider.search(getFile(path.join(tmpDir, 'target.html')));
+		expect(await provider.search(file)).toBe(fromParent);
+
+		const created = path.join(tmpDir, 'missing', '.markuplintrc');
+		await mkdir(path.join(tmpDir, 'missing'));
+		await writeFile(created, '{ "key": "created" }');
+
+		expect(await provider.search(file)).toBe(created);
+	} finally {
+		await rm(tmpDir, { recursive: true, force: true });
+	}
+});
+
+test('Search goes up from a target whose directory is below a regular file', async () => {
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures');
+	// `013/.markuplintrc` is a file, so `stat` on a directory below it fails with ENOTDIR on POSIX,
+	// the case this test is for. Windows reports ENOENT there, which the search skips like any
+	// missing directory, so on Windows this test passes without reaching the ENOTDIR branch.
+	const file = getFile(path.resolve(testDir, '013', '.markuplintrc', 'sub', 'target.html'));
+	const provider = new ConfigProvider();
+	const key = await provider.search(file);
+	expect(key).toBe(path.resolve(testDir, '013', '.markuplintrc'));
+	const configSet = await provider.resolve(file, [key]);
+	expect(configSet.config).toStrictEqual({ key: '013/.markuplintrc' });
 });
 
 test('A malformed configuration file in an ancestor directory is reported with its own path', async () => {

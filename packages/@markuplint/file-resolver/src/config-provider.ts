@@ -343,21 +343,17 @@ export class ConfigProvider {
 	/**
 	 * Searches for a markuplint configuration file starting from the target file's directory
 	 * and going up through its ancestors; the nearest one wins. A `package.json` without a
-	 * `markuplint` field is not a configuration file, so the search passes over it.
+	 * `markuplint` field is not a configuration file, so the search passes over it. A target
+	 * directory that does not exist yet, such as that of an unsaved editor buffer in a new folder,
+	 * does not end the search either: the search starts from that directory and goes on through
+	 * its ancestors, the missing ones yielding nothing.
 	 *
 	 * @param targetFile - The file whose directory to search from
 	 * @returns The file path of the found config, or `null` if none was found
 	 */
 	async search(targetFile: Readonly<MLFile>) {
-		const isExists = await targetFile.dirExists();
-
 		if (cpLog.enabled) {
 			cpLog('search: %s', targetFile.path);
-			cpLog('isExists: %s', isExists);
-		}
-
-		if (!isExists) {
-			return null;
 		}
 
 		const res = await search<Config>(targetFile.path, false);
