@@ -6,7 +6,7 @@ import styles from './styles.module.css';
 type FeatureItem = {
 	title: string;
 	symbol: string;
-	description: JSX.Element;
+	description: React.JSX.Element;
 };
 
 function Feature({ title, symbol, description }: FeatureItem) {
@@ -28,7 +28,7 @@ type Props = {
 	features: FeatureItem[];
 };
 
-export default function HomepageFeatures(props: Props): JSX.Element {
+export default function HomepageFeatures(props: Props): React.JSX.Element {
 	return (
 		<section className={styles.features}>
 			<div className="container">

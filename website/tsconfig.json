@@ -1,8 +1,19 @@
 {
 	"extends": "@docusaurus/tsconfig",
 	"compilerOptions": {
-		"baseUrl": ".",
+		// The `baseUrl` that @docusaurus/tsconfig sets is reported as deprecated (TS5101),
+		// so it is reset here. Without a `baseUrl`, inherited `paths` resolve against the directory
+		// of the config that declares them (node_modules/@docusaurus/tsconfig), so `@site/*` is
+		// declared again to resolve against this directory.
+		"baseUrl": null,
+		"paths": {
+			"@site/*": ["./*"]
+		},
 		"strictNullChecks": true,
-		"lib": ["ESNext"]
-	}
+		// Overriding `lib` replaces the inherited ["ES2022", "DOM"], so DOM is listed again.
+		"lib": ["ESNext", "DOM"]
+	},
+	// Setting `exclude` replaces the default one, so node_modules is listed again; `allowJs`
+	// (inherited) would otherwise pull in the generated JS of the Docusaurus build.
+	"exclude": ["node_modules", ".docusaurus", "build"]
 }
