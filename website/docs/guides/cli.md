@@ -18,7 +18,7 @@ With `--fix`, the exit code reflects the violations **remaining in the fixed out
 
 | Long Option                | Short Option | Argument                                 | Default                        | Description                                                                  |
 | -------------------------- | ------------ | ---------------------------------------- | ------------------------------ | ---------------------------------------------------------------------------- |
-| `--config`                 | `-c`         | File path                                | none                           | A configuration file path                                                    |
+| `--config`                 | `-c`         | File path                                | none                           | A configuration file path. Disables the automatic search.                    |
 | `--fix`                    | none         | none                                     | false                          | Fix target files if the rule supports.                                       |
 | `--fix-dry-run`            | none         | none                                     | false                          | Preview what `--fix` would change without modifying files.                   |
 | `--format`                 | `-f`         | `JSON`, `Simple`, `GitHub` or `Standard` | `Standard`                     | Select output format.                                                        |
