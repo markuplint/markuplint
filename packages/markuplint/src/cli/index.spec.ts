@@ -527,6 +527,33 @@ describe('config that cannot be loaded (#4113)', () => {
 	});
 });
 
+describe('a config file the search finds that throws when it is imported (#4413)', () => {
+	let tmpDir: string;
+
+	beforeEach(async () => {
+		tmpDir = await mkdtemp(path.join(os.tmpdir(), 'markuplint-cli-throwing-config-'));
+	});
+
+	afterEach(async () => {
+		await rm(tmpDir, { recursive: true, force: true });
+	});
+
+	test('is reported with its path and the location of the throw', async () => {
+		// Imported by Node.js itself here, not by Vitest's module runner, so the frame of the throw
+		// is the one users see.
+		const configFile = path.join(tmpDir, '.markuplintrc.mjs');
+		await writeFile(configFile, "// line 1\nthrow new Error('bad option');\n");
+		const filePath = path.join(tmpDir, 'index.html');
+		await writeFile(filePath, '<!doctype html><html lang="en"><title>a</title><p>a</p></html>');
+
+		const { stderr, exitCode } = await execa(entryFilePath, [escape(filePath), '--no-color'], { reject: false });
+
+		// The column differs between runtimes (Bun points at `Error`, Node.js at `new`).
+		expect(stderr).toMatch(new RegExp(`Failed to load ${RegExp.escape(configFile)}:2:\\d+: bad option in `));
+		expect(exitCode).toBe(1);
+	});
+});
+
 describe('a malformed config file the search would reach (#4409)', () => {
 	let tmpDir: string;
 	let filePath: string;

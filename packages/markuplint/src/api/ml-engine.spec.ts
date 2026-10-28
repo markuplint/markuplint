@@ -7,6 +7,7 @@ import path from 'node:path';
 
 import { ConfigProvider } from '@markuplint/file-resolver';
 import { Document } from '@markuplint/ml-core';
+import { FSWatcher } from 'chokidar';
 import debug from 'debug';
 import { afterEach, beforeEach, describe, it, expect, vi } from 'vitest';
 
@@ -1286,6 +1287,99 @@ describe('config that cannot be loaded (#4113)', () => {
 			await fs.writeFile(configFile, JSON.stringify({ extends: ['markuplint:html-standard'] }));
 			expect(hasPermittedContents(await recovered)).toBe(true);
 		} finally {
+			await engine?.close();
+			await fs.rm(tmpDir, { recursive: true, force: true });
+		}
+	});
+
+	it('lints in watch mode once a config file the search found broken is fixed', async () => {
+		const tmpDir = await fs.realpath(await fs.mkdtemp(path.join(os.tmpdir(), 'ml-engine-config-failure-')));
+		let engine: MLEngine | undefined;
+		try {
+			const configFile = path.join(tmpDir, '.markuplintrc.json');
+			const targetFile = path.join(tmpDir, 'a.html');
+			await fs.writeFile(configFile, '{');
+			await fs.writeFile(targetFile, '<dl><span>no</span></dl>');
+			const file = await MLEngine.toMLFile(targetFile);
+			const watched = new MLEngine(file!, { watch: true });
+			engine = watched;
+
+			const first = await watched.exec();
+			expect(first?.violations.map(v => [v.ruleId, v.severity])).toStrictEqual([['config-error', 'error']]);
+			expect(first?.violations[0]?.message).toContain(`JSON Error in ${configFile}:`);
+
+			const recovered = new Promise<readonly Violation[]>(resolve => {
+				watched.on('lint', (_, __, violations) => {
+					if (violations.some(v => v.ruleId === 'permitted-contents')) {
+						resolve(violations);
+					}
+				});
+			});
+			await fs.writeFile(configFile, JSON.stringify({ extends: ['markuplint:html-standard'] }));
+			expect((await recovered).filter(v => v.ruleId === 'config-error')).toStrictEqual([]);
+		} finally {
+			await engine?.close();
+			await fs.rm(tmpDir, { recursive: true, force: true });
+		}
+	});
+
+	it('lints in watch mode once the missing target of a `$import` is created', async () => {
+		const tmpDir = await fs.realpath(await fs.mkdtemp(path.join(os.tmpdir(), 'ml-engine-missing-import-')));
+		let engine: MLEngine | undefined;
+		try {
+			const configFile = path.join(tmpDir, '.markuplintrc.json');
+			const imported = path.join(tmpDir, 'base.json');
+			const targetFile = path.join(tmpDir, 'a.html');
+			await fs.writeFile(configFile, JSON.stringify({ $import: ['./base.json'] }));
+			await fs.writeFile(targetFile, '<dl><span>no</span></dl>');
+			const file = await MLEngine.toMLFile(targetFile);
+			const watched = new MLEngine(file!, { watch: true });
+			engine = watched;
+
+			const first = await watched.exec();
+			expect(first?.violations.map(v => [v.ruleId, v.severity])).toStrictEqual([['config-error', 'error']]);
+			expect(first?.violations[0]?.message).toContain(`Failed to load ${configFile}: Cannot import ./base.json:`);
+
+			const recovered = new Promise<readonly Violation[]>(resolve => {
+				watched.on('lint', (_, __, violations) => {
+					if (violations.some(v => v.ruleId === 'permitted-contents')) {
+						resolve(violations);
+					}
+				});
+			});
+			await fs.writeFile(imported, JSON.stringify({ extends: ['markuplint:html-standard'] }));
+			expect((await recovered).filter(v => v.ruleId === 'config-error')).toStrictEqual([]);
+		} finally {
+			await engine?.close();
+			await fs.rm(tmpDir, { recursive: true, force: true });
+		}
+	});
+
+	it('does not watch a directory that the search cannot examine', async () => {
+		const tmpDir = await fs.realpath(await fs.mkdtemp(path.join(os.tmpdir(), 'ml-engine-unexaminable-')));
+		const dirname = path.join(tmpDir, 'locked');
+		// `stat` of the directory fails with something other than "does not exist", as for a
+		// directory whose parent cannot be searched; mocked, as permissions do not work so on
+		// every platform.
+		const stat = fs.stat;
+		const statSpy = vi.spyOn(fs, 'stat').mockImplementation(((filePath: string, options?: object) =>
+			filePath === dirname
+				? Promise.reject(
+						Object.assign(new Error(`EACCES: permission denied, stat '${dirname}'`), {
+							code: 'EACCES',
+						}),
+					)
+				: stat(filePath, options)) as typeof fs.stat);
+		const add = vi.spyOn(FSWatcher.prototype, 'add');
+		let engine: MLEngine | undefined;
+		try {
+			engine = await MLEngine.fromCode('<div></div>', { name: 'a.html', dirname, watch: true });
+			const result = await engine.exec();
+			expect(result?.violations.map(v => v.ruleId)).toStrictEqual(['config-error']);
+			expect(add.mock.calls.flat().filter(watched => String(watched).startsWith(tmpDir))).toStrictEqual([]);
+		} finally {
+			add.mockRestore();
+			statSpy.mockRestore();
 			await engine?.close();
 			await fs.rm(tmpDir, { recursive: true, force: true });
 		}
