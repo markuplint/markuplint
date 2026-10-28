@@ -1,12 +1,13 @@
 import type { LoaderSync, Loader } from 'cosmiconfig';
 
+import fs from 'node:fs/promises';
 import path from 'node:path';
 
 import { ConfigParserError } from '@markuplint/parser-utils';
 import { cosmiconfig, defaultLoaders } from 'cosmiconfig';
 import { jsonc } from 'jsonc';
 
-import { ConfigLoadError } from '@markuplint/shared';
+import { ConfigLoadError, isFatalError } from '@markuplint/shared';
 import { log } from './debug.js';
 
 const searchLog = log.extend('search');
@@ -81,6 +82,34 @@ function* ancestorDirs(dir: string) {
 }
 
 /**
+ * Whether `dir` does not exist: ENOENT, or ENOTDIR when one of its ancestors is a regular file
+ * (POSIX; Windows reports that as ENOENT). Checked before cosmiconfig is asked, as its own
+ * directory check takes only ENOENT for missing and throws on ENOTDIR, and as a directory it
+ * never sees leaves no entry in its search cache: a configuration file created later together
+ * with the directory is found without `clearExplorerCache()`.
+ *
+ * Any other `stat` failure (EACCES, for one) is reported like a configuration file that cannot be
+ * loaded, as the walk cannot tell whether that directory holds the nearest configuration.
+ *
+ * @param dir - The directory to examine
+ * @param filePath - The target file, named in the error report
+ */
+async function isMissingDir(dir: string, filePath: string) {
+	try {
+		await fs.stat(dir);
+		return false;
+	} catch (error) {
+		if (isFatalError(error)) {
+			throw error;
+		}
+		if (error instanceof Error && 'code' in error && (error.code === 'ENOENT' || error.code === 'ENOTDIR')) {
+			return true;
+		}
+		return cacheConfigError(dir, filePath)(error);
+	}
+}
+
+/**
  * Searches for a configuration file in the directory of `filePath` and in each ancestor
  * directory up to the file system root, nearest first.
  *
@@ -93,9 +122,10 @@ function* ancestorDirs(dir: string) {
  *
  * A directory that has a `package.json` or `package.yaml` does not end the walk: a `package.json`
  * without a `markuplint` field is not a configuration file, and a `package.yaml` never is, as it
- * is not among the search places. An empty configuration is treated like no result and the walk
- * continues. A configuration file that cannot be loaded, at any level, makes the search throw
- * instead of being skipped. There is no upper bound below the file system root, so a
+ * is not among the search places. A directory that does not exist, the target's own included,
+ * is passed over (see {@link isMissingDir}). An empty configuration is treated like no result
+ * and the walk continues. A configuration file that cannot be loaded, at any level, makes the
+ * search throw instead of being skipped. There is no upper bound below the file system root, so a
  * configuration file in a directory outside the project applies when nothing nearer exists.
  *
  * @template T - The type of the configuration object
@@ -110,6 +140,10 @@ export async function search<T = CosmiConfig>(filePath: string, cacheClear: bool
 
 	for (const dir of ancestorDirs(path.dirname(filePath))) {
 		searchLog('Search dir: %s', dir);
+		if (await isMissingDir(dir, filePath)) {
+			searchLog('Missing: %s', dir);
+			continue;
+		}
 		const result = await explorer.search(dir).catch(cacheConfigError(dir, filePath));
 
 		searchLog('Search result: %O', result);

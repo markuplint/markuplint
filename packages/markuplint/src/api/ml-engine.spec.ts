@@ -428,6 +428,37 @@ describe('#1862 configFile skips default config search', () => {
 	});
 });
 
+describe('#4412 a source whose directory does not exist yet', () => {
+	let tmpDir: string;
+
+	beforeEach(async () => {
+		tmpDir = await fs.realpath(await fs.mkdtemp(path.join(os.tmpdir(), 'ml-engine-missing-dir-')));
+		await fs.writeFile(path.join(tmpDir, '.markuplintrc'), '{ "rules": { "__test-rule": true } }');
+	});
+
+	afterEach(async () => {
+		await fs.rm(tmpDir, { recursive: true, force: true });
+	});
+
+	it('gets the configuration file of an existing ancestor', async () => {
+		const dirname = path.join(tmpDir, 'missing', 'deeper');
+		const engine = await MLEngine.fromCode('<div></div>', { name: 'index.html', dirname });
+
+		const configSets: ConfigSet[] = [];
+		engine.once('config', (_, configSet) => {
+			configSets.push(configSet);
+		});
+		await engine.exec();
+
+		// The recommended configuration, applied when no configuration file is found, does not
+		// list the ancestor's file nor have `__test-rule`.
+		expect(configSets.map(configSet => configSet.files)).toStrictEqual([
+			new Set([path.join(tmpDir, '.markuplintrc')]),
+		]);
+		expect(configSets[0]?.config.rules?.['__test-rule']).toBe(true);
+	});
+});
+
 describe('#3900 config-error does not accumulate across setCode', () => {
 	it('reports the same config-error count on every re-evaluation of one engine', async () => {
 		const file = await MLEngine.toMLFile({ sourceCode: '<div id="a"></div>', name: 'a.html' });
