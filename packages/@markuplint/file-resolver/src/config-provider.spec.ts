@@ -705,6 +705,25 @@ describe('A JavaScript configuration file that throws', () => {
 		);
 	});
 
+	test('is not run again through require(), which some runtimes make rethrow a different error', async () => {
+		const configFile = path.join(tmpDir, '.markuplintrc.mjs');
+		const counter = `__markuplintConfigEvaluations_${path.basename(tmpDir).replaceAll('-', '_')}`;
+		await writeFile(
+			configFile,
+			`globalThis.${counter} = (globalThis.${counter} ?? 0) + 1;\nthrow new Error('bad option');\n`,
+		);
+		try {
+			const error = await new ConfigProvider()
+				.search(getFile(path.join(tmpDir, 'target.html')))
+				.catch((error: unknown) => error);
+			expect(error).toBeInstanceOf(ConfigLoadError);
+			expect(error).toMatchObject({ cause: { message: 'bad option' } });
+			expect(Reflect.get(globalThis, counter)).toBe(1);
+		} finally {
+			Reflect.deleteProperty(globalThis, counter);
+		}
+	});
+
 	test('a message that names a line of the file is not taken for the location of the throw', async () => {
 		const configFile = path.join(tmpDir, '.markuplintrc.mjs');
 		await writeFile(configFile, '// line 1\nthrow new Error(`bad option at ${import.meta.filename}:42`);\n');

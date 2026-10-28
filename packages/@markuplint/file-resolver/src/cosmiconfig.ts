@@ -53,6 +53,11 @@ const jsoncLoader: Loader = (path, content) => {
  * `require()` throws, which itself throws a `TypeError` when the configuration code throws `null`
  * or `undefined`, and the value is lost.
  *
+ * Unlike `loadJs`, what the configuration code itself threw while `import()` evaluated it is
+ * thrown as it is, without `require()`: see {@link isLoadingFailure}. Node.js's `require()` of
+ * such a module throws the same value again, but Deno's throws a new `Error` whose message is the
+ * stack of the original, which loses the value, its message and the location of the throw.
+ *
  * A value the configuration code throws that is not an `Error` is thrown as one, with the value as
  * its `cause`, so that it reaches {@link cacheConfigError} with the path of the file. cosmiconfig
  * assigns `filepath` to what a loader throws, and that assignment itself throws a `TypeError` on a
@@ -76,6 +81,9 @@ const jsLoader: Loader = async (filepath, content) => {
 			const module: unknown = await import(href);
 			return module && typeof module === 'object' && 'default' in module ? module.default : undefined;
 		} catch (importError: unknown) {
+			if (!isLoadingFailure(importError)) {
+				throw importError;
+			}
 			try {
 				return defaultLoadersSync['.js']!(filepath, content);
 			} catch (requireError: unknown) {
@@ -90,6 +98,28 @@ const jsLoader: Loader = async (filepath, content) => {
 		throw new Error(message, { cause: error });
 	}
 };
+
+/**
+ * Whether `import()` failed to load the module rather than the module's own code throwing: a
+ * `SyntaxError` (the file cannot be parsed as an ES module, but `require()` may take it as
+ * CommonJS, and reports the line of a syntax error that `import()` does not), or an error with a
+ * Node.js error code (`ERR_*`: a file extension or format that `import()` does not take, or a
+ * module that cannot be resolved). Anything else, an `Error` without such a code or a value that
+ * is not an `Error`, was thrown by the configuration code, and `require()` would only run it
+ * again.
+ *
+ * @param importError - What `import()` threw
+ * @returns `true` when `require()` is worth trying
+ */
+function isLoadingFailure(importError: unknown) {
+	return (
+		importError instanceof SyntaxError ||
+		(importError instanceof Error &&
+			'code' in importError &&
+			typeof importError.code === 'string' &&
+			importError.code.startsWith('ERR_'))
+	);
+}
 
 /**
  * Whether `require()` failed only because the file is an ES module, the same test as
