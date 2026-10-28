@@ -548,7 +548,8 @@ describe('a config file the search finds that throws when it is imported (#4413)
 
 		const { stderr, exitCode } = await execa(entryFilePath, [escape(filePath), '--no-color'], { reject: false });
 
-		expect(stderr).toContain(`Failed to load ${configFile}:2:7: bad option in `);
+		// The column differs between runtimes (Bun points at `Error`, Node.js at `new`).
+		expect(stderr).toMatch(new RegExp(`Failed to load ${RegExp.escape(configFile)}:2:\\d+: bad option in `));
 		expect(exitCode).toBe(1);
 	});
 });
