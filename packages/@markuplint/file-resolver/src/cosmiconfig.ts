@@ -543,7 +543,8 @@ async function locate(error: Error, filepath: string) {
  * Finds the location nearest the top of `stack` that names one of `filePaths`, by its path (a
  * CommonJS module) or by its `file:` URL (an ES module): a frame, `<path>:<line>:<column>`, or
  * the header that Node.js puts above a `SyntaxError` in a CommonJS module, `<path>:<line>`. A
- * `SyntaxError` in an ES module has neither.
+ * `SyntaxError` in an ES module has neither. A Windows path is also looked for with forward
+ * slashes (`C:/p/…`), as a module runner such as Vitest names the module it evaluates.
  *
  * A path only matches as a whole, at the start of a line or after whitespace or `(`, so that
  * another file whose path ends with the same characters does not.
@@ -553,7 +554,11 @@ async function locate(error: Error, filepath: string) {
  * @returns `:<line>:<column>`, `:<line>` for a header, or an empty string when there is neither
  */
 export function stackLocation(stack: string, filePaths: readonly string[]) {
-	const forms = filePaths.flatMap(filePath => [filePath, pathToFileURL(filePath).href]);
+	const forms = [
+		...new Set(
+			filePaths.flatMap(filePath => [filePath, filePath.replaceAll('\\', '/'), pathToFileURL(filePath).href]),
+		),
+	];
 	const location = new RegExp(
 		String.raw`(?:^|[\s(])(?:${forms.map(form => RegExp.escape(form)).join('|')}):(\d+)(?::(\d+))?`,
 		'm',

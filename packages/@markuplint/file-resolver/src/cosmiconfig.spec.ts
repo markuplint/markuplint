@@ -49,6 +49,11 @@ describe('stackLocation', () => {
 		expect(stackLocation(stack, [configFile])).toBe(':3');
 	});
 
+	test('a Windows path written with forward slashes, as a module runner such as Vitest names it', () => {
+		const stack = ['Error: x', '    at C:/q/p/.markuplintrc.js:1:7'].join('\n');
+		expect(stackLocation(stack, [String.raw`C:\q\p\.markuplintrc.js`])).toBe(':1:7');
+	});
+
 	test('a path whose URL is percent-encoded', () => {
 		const spaced = path.resolve('/p q', '.markuplintrc.js');
 		const stack = ['Error: x', `    at ${pathToFileURL(spaced).href}:4:2`].join('\n');
