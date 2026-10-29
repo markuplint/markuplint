@@ -37,7 +37,7 @@
 		"@markuplint/shared": "5.4.0",
 		"@types/css-tree": "^3.2.0",
 		"@types/debug": "^4.1.13",
-		"bcp-47": "^2.1.1",
+		"bcp-47": "^2.1.2",
 		"css-tree": "^3.2.1",
 		"debug": "^4.4.3",
 		"language-subtag-registry": "^0.4.2",
