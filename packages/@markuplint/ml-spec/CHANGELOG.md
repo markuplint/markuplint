@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.4.0](https://github.com/markuplint/markuplint/compare/v5.3.0...v5.4.0) (2026-10-29)
+
+### Bug Fixes
+
+* **ml-spec:** keep roles that are not permitted and align the accessible name with AccName ([6c38c60](https://github.com/markuplint/markuplint/commit/6c38c60971690edec8b6453e50c76146eb10deb2)), closes [#4408](https://github.com/markuplint/markuplint/issues/4408)
+
+
 # [5.3.0](https://github.com/markuplint/markuplint/compare/v5.2.0...v5.3.0) (2026-10-21)
 
 ### Bug Fixes

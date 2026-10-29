@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.4.0](https://github.com/markuplint/markuplint/compare/v5.3.0...v5.4.0) (2026-10-29)
+
+### Features
+
+* **shared:** keep the cause of a ConfigLoadError ([bc4da29](https://github.com/markuplint/markuplint/commit/bc4da2968f1fc0df094302196f652d1d22235659)), closes [#4413](https://github.com/markuplint/markuplint/issues/4413)
+
+
 # [5.3.0](https://github.com/markuplint/markuplint/compare/v5.2.0...v5.3.0) (2026-10-21)
 
 ### Bug Fixes

@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.4.0](https://github.com/markuplint/markuplint/compare/v5.3.0...v5.4.0) (2026-10-29)
+
+### Features
+
+* **ml-core:** expose what the accessible name computation reaches ([2a29d84](https://github.com/markuplint/markuplint/commit/2a29d84ca196ad1808ede49e75796df7c599d2e8)), closes [#4408](https://github.com/markuplint/markuplint/issues/4408)
+
+
 # [5.3.0](https://github.com/markuplint/markuplint/compare/v5.2.0...v5.3.0) (2026-10-21)
 
 ### Bug Fixes

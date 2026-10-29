@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.4.0](https://github.com/markuplint/markuplint/compare/v5.3.0...v5.4.0) (2026-10-29)
+
+### Bug Fixes
+
+* **markuplint:** skip the config search when it is disabled ([e2e8da9](https://github.com/markuplint/markuplint/commit/e2e8da9a81fb113b726fc30877b16cfab4d53736)), closes [#4409](https://github.com/markuplint/markuplint/issues/4409)
+* **markuplint:** watch a config file the search found broken ([1a51145](https://github.com/markuplint/markuplint/commit/1a51145b3eb34c18c0475205466b608787352b66)), closes [#4413](https://github.com/markuplint/markuplint/issues/4413)
+
+
 # [5.3.0](https://github.com/markuplint/markuplint/compare/v5.2.0...v5.3.0) (2026-10-21)
 
 ### Bug Fixes
