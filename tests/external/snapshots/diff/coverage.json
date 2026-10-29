@@ -529,23 +529,7 @@
 			"excludedIds": []
 		},
 		{
-			"path": "html-aria/author-requirements/574.html",
-			"category": "aria",
-			"nu": "error",
-			"ml": "error",
-			"verdict": "match-error",
-			"excludedIds": []
-		},
-		{
 			"path": "html-aria/author-requirements/575-novalid.html",
-			"category": "aria",
-			"nu": "error",
-			"ml": "error",
-			"verdict": "match-error",
-			"excludedIds": []
-		},
-		{
-			"path": "html-aria/author-requirements/575.html",
 			"category": "aria",
 			"nu": "error",
 			"ml": "error",
@@ -561,23 +545,7 @@
 			"excludedIds": []
 		},
 		{
-			"path": "html-aria/author-requirements/576.html",
-			"category": "aria",
-			"nu": "error",
-			"ml": "error",
-			"verdict": "match-error",
-			"excludedIds": []
-		},
-		{
 			"path": "html-aria/author-requirements/577-novalid.html",
-			"category": "aria",
-			"nu": "error",
-			"ml": "error",
-			"verdict": "match-error",
-			"excludedIds": []
-		},
-		{
-			"path": "html-aria/author-requirements/577.html",
 			"category": "aria",
 			"nu": "error",
 			"ml": "error",
@@ -798,14 +766,6 @@
 			"nu": "clean",
 			"ml": "error",
 			"verdict": "ml-only",
-			"excludedIds": []
-		},
-		{
-			"path": "html-aria/misc/aria-activedescendant-bad-value-haswarn.html",
-			"category": "aria",
-			"nu": "error",
-			"ml": "error",
-			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -1129,23 +1089,7 @@
 			"excludedIds": []
 		},
 		{
-			"path": "html-aria/misc/aria-controls-broken-idref-novalid.html",
-			"category": "aria",
-			"nu": "clean",
-			"ml": "error",
-			"verdict": "ml-only",
-			"excludedIds": []
-		},
-		{
 			"path": "html-aria/misc/aria-describedby-broken-idref-isvalid.html",
-			"category": "aria",
-			"nu": "clean",
-			"ml": "error",
-			"verdict": "ml-only",
-			"excludedIds": []
-		},
-		{
-			"path": "html-aria/misc/aria-describedby-broken-idref-novalid.html",
 			"category": "aria",
 			"nu": "clean",
 			"ml": "error",
@@ -1186,14 +1130,6 @@
 		},
 		{
 			"path": "html-aria/misc/aria-flowto-broken-idref-isvalid.html",
-			"category": "aria",
-			"nu": "clean",
-			"ml": "error",
-			"verdict": "ml-only",
-			"excludedIds": []
-		},
-		{
-			"path": "html-aria/misc/aria-flowto-broken-idref-novalid.html",
 			"category": "aria",
 			"nu": "clean",
 			"ml": "error",
@@ -1593,14 +1529,6 @@
 			"excludedIds": []
 		},
 		{
-			"path": "html-aria/misc/aria-labelledby-broken-idref-novalid.html",
-			"category": "aria",
-			"nu": "clean",
-			"ml": "error",
-			"verdict": "ml-only",
-			"excludedIds": []
-		},
-		{
 			"path": "html-aria/misc/aria-labelledby-caption-novalid.html",
 			"category": "aria",
 			"nu": "error",
@@ -1843,17 +1771,9 @@
 		{
 			"path": "html-aria/misc/aria-owns-broken-idref-isvalid.html",
 			"category": "aria",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "error",
-			"verdict": "match-error",
-			"excludedIds": []
-		},
-		{
-			"path": "html-aria/misc/aria-owns-broken-idref-novalid.html",
-			"category": "aria",
-			"nu": "error",
-			"ml": "error",
-			"verdict": "match-error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -2586,14 +2506,6 @@
 		},
 		{
 			"path": "html-aria/misc/unnecessary-role-listitem-haswarn.html",
-			"category": "aria",
-			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
-			"excludedIds": []
-		},
-		{
-			"path": "html-aria/misc/unnecessary-role-listitem-novalid.html",
 			"category": "aria",
 			"nu": "clean",
 			"ml": "clean",
@@ -3369,23 +3281,7 @@
 			"excludedIds": []
 		},
 		{
-			"path": "html-aria/presentational-children/testcase-839.html",
-			"category": "aria",
-			"nu": "clean",
-			"ml": "error",
-			"verdict": "ml-only",
-			"excludedIds": []
-		},
-		{
 			"path": "html-aria/presentational-children/testcase-840-haswarn.html",
-			"category": "aria",
-			"nu": "clean",
-			"ml": "error",
-			"verdict": "ml-only",
-			"excludedIds": []
-		},
-		{
-			"path": "html-aria/presentational-children/testcase-840.html",
 			"category": "aria",
 			"nu": "clean",
 			"ml": "error",
@@ -3401,14 +3297,6 @@
 			"excludedIds": []
 		},
 		{
-			"path": "html-aria/presentational-children/testcase-842.html",
-			"category": "aria",
-			"nu": "clean",
-			"ml": "error",
-			"verdict": "ml-only",
-			"excludedIds": []
-		},
-		{
 			"path": "html-aria/presentational-children/testcase-843-haswarn.html",
 			"category": "aria",
 			"nu": "clean",
@@ -3417,23 +3305,7 @@
 			"excludedIds": []
 		},
 		{
-			"path": "html-aria/presentational-children/testcase-843.html",
-			"category": "aria",
-			"nu": "clean",
-			"ml": "error",
-			"verdict": "ml-only",
-			"excludedIds": []
-		},
-		{
 			"path": "html-aria/presentational-children/testcase-844-haswarn.html",
-			"category": "aria",
-			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
-			"excludedIds": []
-		},
-		{
-			"path": "html-aria/presentational-children/testcase-844.html",
 			"category": "aria",
 			"nu": "clean",
 			"ml": "clean",
@@ -6554,14 +6426,6 @@
 		},
 		{
 			"path": "html-aria/setsize-posinset-level/testcase-769-isvalid.html",
-			"category": "aria",
-			"nu": "clean",
-			"ml": "error",
-			"verdict": "ml-only",
-			"excludedIds": []
-		},
-		{
-			"path": "html-aria/setsize-posinset-level/testcase-769.html",
 			"category": "aria",
 			"nu": "clean",
 			"ml": "error",
@@ -14513,14 +14377,6 @@
 			"excludedIds": []
 		},
 		{
-			"path": "html/attributes/data/not-xml-serializable-novalid.html",
-			"category": "global-attr",
-			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
-			"excludedIds": []
-		},
-		{
 			"path": "html/attributes/data/value-isvalid.html",
 			"category": "global-attr",
 			"nu": "clean",
@@ -17865,23 +17721,7 @@
 			"excludedIds": []
 		},
 		{
-			"path": "html/elements/base/href/host-192.0x00A80001-isvalid.html",
-			"category": "attribute-errors",
-			"nu": "error",
-			"ml": "error",
-			"verdict": "match-error",
-			"excludedIds": []
-		},
-		{
 			"path": "html/elements/base/href/host-192.0x00A80001-novalid.html",
-			"category": "attribute-errors",
-			"nu": "error",
-			"ml": "error",
-			"verdict": "match-error",
-			"excludedIds": []
-		},
-		{
-			"path": "html/elements/base/href/host-IP-address-broken-isvalid.html",
 			"category": "attribute-errors",
 			"nu": "error",
 			"ml": "error",
@@ -17897,23 +17737,7 @@
 			"excludedIds": []
 		},
 		{
-			"path": "html/elements/base/href/host-IP-address-fullwidth-isvalid.html",
-			"category": "attribute-errors",
-			"nu": "error",
-			"ml": "error",
-			"verdict": "match-error",
-			"excludedIds": []
-		},
-		{
 			"path": "html/elements/base/href/host-IP-address-fullwidth-novalid.html",
-			"category": "attribute-errors",
-			"nu": "error",
-			"ml": "error",
-			"verdict": "match-error",
-			"excludedIds": []
-		},
-		{
-			"path": "html/elements/base/href/host-IP-address-percent-encoded-isvalid.html",
 			"category": "attribute-errors",
 			"nu": "error",
 			"ml": "error",
@@ -26035,9 +25859,9 @@
 		{
 			"path": "html/elements/img/srcset-width-descriptor-loading-lazy-no-sizes-isvalid.html",
 			"category": "attribute-errors",
-			"nu": "clean",
+			"nu": "error",
 			"ml": "error",
-			"verdict": "ml-only",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -34859,9 +34683,9 @@
 		{
 			"path": "html/elements/picture/source-sizes-auto-with-img-loading-lazy-isvalid.html",
 			"category": "attribute-errors",
-			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"nu": "error",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
@@ -34915,9 +34739,9 @@
 		{
 			"path": "html/elements/picture/source-srcset-width-loading-lazy-no-sizes-isvalid.html",
 			"category": "attribute-errors",
-			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"nu": "error",
+			"ml": "error",
+			"verdict": "match-error",
 			"excludedIds": []
 		},
 		{
