@@ -1,22 +1,11 @@
 /* eslint-disable @typescript-eslint/prefer-readonly-parameter-types -- AccnameElement wraps mutable DOM types */
 
-import type { AccnameElement, AccnameNode, AccnameResolver, AccnameResult, AccnameSource } from './types.js';
+import type { AccnameComputeFn, AccnameElement, AccnameNode, AccnameResolver } from './types.js';
 
 import { ELEMENT_NODE, SVG_NAMESPACE, TEXT_NODE, TEXT_LIKE_INPUT_TYPES } from '../../../const/index.js';
+import { resolveAriaLabelledby } from './aria-steps.js';
 
 export { EMBEDDED_CONTROL_ROLES } from '../../../const/index.js';
-
-export function makeResult(name: string, source: AccnameSource | null): AccnameResult {
-	const trimmed = flattenText(name);
-	return {
-		name: trimmed,
-		source: trimmed ? source : null,
-	};
-}
-
-export function flattenText(text: string): string {
-	return text.replaceAll(/\s+/g, ' ').trim();
-}
 
 /**
  * Implements AccName 1.2 §4.3.2 Steps 2F and 2C:
@@ -41,12 +30,7 @@ export function resolveNameFromContent(
 	el: AccnameElement,
 	resolver: AccnameResolver,
 	visited: ReadonlySet<string>,
-	computeFn: (
-		el: AccnameElement,
-		resolver: AccnameResolver,
-		inLabelledbyTraversal: boolean,
-		visited: ReadonlySet<string>,
-	) => AccnameResult,
+	computeFn: AccnameComputeFn,
 	inLabelledbyTraversal: boolean,
 ): string {
 	const parts: string[] = [];
@@ -55,9 +39,12 @@ export function resolveNameFromContent(
 			parts.push(child.textContent ?? '');
 		} else if (child.nodeType === ELEMENT_NODE) {
 			const childEl = child as AccnameElement;
+			if (isSvgDescriptiveElement(childEl)) {
+				continue;
+			}
 			if (resolver.isEmbeddedControl(childEl)) {
 				// Step 2C: Embedded controls — use value directly, aria-label is ignored
-				parts.push(getEmbeddedControlValue(childEl, resolver));
+				parts.push(embeddedControlText(childEl, resolver, visited, computeFn, inLabelledbyTraversal));
 			} else {
 				const result = computeFn(childEl, resolver, inLabelledbyTraversal, visited);
 				if (result.name) {
@@ -93,12 +80,7 @@ function collectTextContent(
 	el: AccnameElement,
 	resolver: AccnameResolver,
 	visited: ReadonlySet<string>,
-	computeFn: (
-		el: AccnameElement,
-		resolver: AccnameResolver,
-		inLabelledbyTraversal: boolean,
-		visited: ReadonlySet<string>,
-	) => AccnameResult,
+	computeFn: AccnameComputeFn,
 	inLabelledbyTraversal: boolean,
 ): string {
 	if (resolver.isHidden(el)) {
@@ -110,8 +92,11 @@ function collectTextContent(
 			parts.push(child.textContent ?? '');
 		} else if (child.nodeType === ELEMENT_NODE) {
 			const childEl = child as AccnameElement;
+			if (isSvgDescriptiveElement(childEl)) {
+				continue;
+			}
 			if (resolver.isEmbeddedControl(childEl)) {
-				parts.push(getEmbeddedControlValue(childEl, resolver));
+				parts.push(embeddedControlText(childEl, resolver, visited, computeFn, inLabelledbyTraversal));
 			} else {
 				const result = computeFn(childEl, resolver, inLabelledbyTraversal, visited);
 				if (result.name) {
@@ -123,6 +108,38 @@ function collectTextContent(
 		}
 	}
 	return parts.join(' ');
+}
+
+/**
+ * The text an embedded control reached by name-from-content recursion
+ * contributes, in the order of AccName §4.3.2: nothing when it is hidden
+ * (Step 2A), the text of its `aria-labelledby` outside an ongoing
+ * `aria-labelledby` traversal (Step 2B), otherwise its value (Step 2C), as its
+ * `aria-label` is ignored (Step 2D).
+ *
+ * @see https://w3c.github.io/accname/#comp_label
+ *
+ * > If traversal of the current node is due to Name From Content descendant node recursion and the current node is an embedded control, ignore aria-label and skip to rule Embedded Control.
+ */
+export function embeddedControlText(
+	el: AccnameElement,
+	resolver: AccnameResolver,
+	visited: ReadonlySet<string>,
+	computeFn: AccnameComputeFn,
+	inLabelledbyTraversal: boolean,
+): string {
+	const hidden = resolver.isHidden(el);
+	resolver.onVisit?.(el, { hidden, embeddedControl: true, inLabelledbyTraversal });
+	if (hidden) {
+		return '';
+	}
+	if (!inLabelledbyTraversal) {
+		const labelledby = resolveAriaLabelledby(el, resolver, visited, computeFn);
+		if (labelledby) {
+			return labelledby.name;
+		}
+	}
+	return getEmbeddedControlValue(el, resolver);
 }
 
 /**
@@ -331,6 +348,18 @@ export function getInputType(el: AccnameElement): string {
 
 export function isSvgElement(el: AccnameElement): boolean {
 	return el.namespaceURI === SVG_NAMESPACE;
+}
+
+/**
+ * Whether the element is an SVG `title` or `desc`. They are never rendered,
+ * so their text is not content of the parent: a `title` gives the name only
+ * through Step 2E of its parent (`handleSvgElement`), which an element exposed
+ * as presentational skips.
+ *
+ * @see https://w3c.github.io/svgwg/svg2-draft/struct.html#TermNeverRenderedElement
+ */
+export function isSvgDescriptiveElement(el: AccnameElement): boolean {
+	return isSvgElement(el) && (el.localName === 'title' || el.localName === 'desc');
 }
 
 /**

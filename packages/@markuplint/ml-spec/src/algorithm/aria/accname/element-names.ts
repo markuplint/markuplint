@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/prefer-readonly-parameter-types -- AccnameElement wraps mutable DOM types */
 
-import type { AccnameElement, AccnameResolver, AccnameResult } from './types.js';
+import type { AccnameComputeFn, AccnameElement, AccnameResolver, AccnameResult } from './types.js';
 
 import {
 	DEFAULT_IMAGE_LABEL,
@@ -8,15 +8,9 @@ import {
 	DEFAULT_SUBMIT_LABEL,
 	TEXT_INPUT_TYPES,
 } from '../../../const/index.js';
-import {
-	findChildByLocalName,
-	getInputType,
-	getTextContent,
-	isSvgElement,
-	makeResult,
-	resolveNameFromContent,
-} from './helpers.js';
+import { findChildByLocalName, getInputType, getTextContent, isSvgElement, resolveNameFromContent } from './helpers.js';
 import { resolveLabelText } from './label-steps.js';
+import { makeResult } from './result.js';
 
 /**
  * Implements AccName 1.2 §4.3.2 Step 2E: for elements that have a native
@@ -33,12 +27,7 @@ export function getElementSpecificName(
 	el: AccnameElement,
 	resolver: AccnameResolver,
 	visited: ReadonlySet<string>,
-	computeFn: (
-		el: AccnameElement,
-		resolver: AccnameResolver,
-		inLabelledbyTraversal: boolean,
-		visited: ReadonlySet<string>,
-	) => AccnameResult,
+	computeFn: AccnameComputeFn,
 	inLabelledbyTraversal: boolean,
 ): AccnameResult | null {
 	if (isSvgElement(el)) {
@@ -105,12 +94,7 @@ function handleLabelableWithTitle(
 	el: AccnameElement,
 	resolver: AccnameResolver,
 	visited: ReadonlySet<string>,
-	computeFn: (
-		el: AccnameElement,
-		resolver: AccnameResolver,
-		inLabelledbyTraversal: boolean,
-		visited: ReadonlySet<string>,
-	) => AccnameResult,
+	computeFn: AccnameComputeFn,
 	inLabelledbyTraversal: boolean,
 ): AccnameResult | null {
 	const labelResult = resolveLabelText(el, resolver, visited, computeFn, inLabelledbyTraversal);
@@ -144,12 +128,7 @@ function handleInput(
 	el: AccnameElement,
 	resolver: AccnameResolver,
 	visited: ReadonlySet<string>,
-	computeFn: (
-		el: AccnameElement,
-		resolver: AccnameResolver,
-		inLabelledbyTraversal: boolean,
-		visited: ReadonlySet<string>,
-	) => AccnameResult,
+	computeFn: AccnameComputeFn,
 	inLabelledbyTraversal: boolean,
 ): AccnameResult | null {
 	const type = getInputType(el);
@@ -184,12 +163,7 @@ function handleInputButton(
 	type: string,
 	resolver: AccnameResolver,
 	visited: ReadonlySet<string>,
-	computeFn: (
-		el: AccnameElement,
-		resolver: AccnameResolver,
-		inLabelledbyTraversal: boolean,
-		visited: ReadonlySet<string>,
-	) => AccnameResult,
+	computeFn: AccnameComputeFn,
 	inLabelledbyTraversal: boolean,
 ): AccnameResult | null {
 	const labelResult = resolveLabelText(el, resolver, visited, computeFn, inLabelledbyTraversal);
@@ -227,12 +201,7 @@ function handleInputImage(
 	el: AccnameElement,
 	resolver: AccnameResolver,
 	visited: ReadonlySet<string>,
-	computeFn: (
-		el: AccnameElement,
-		resolver: AccnameResolver,
-		inLabelledbyTraversal: boolean,
-		visited: ReadonlySet<string>,
-	) => AccnameResult,
+	computeFn: AccnameComputeFn,
 	inLabelledbyTraversal: boolean,
 ): AccnameResult | null {
 	const labelResult = resolveLabelText(el, resolver, visited, computeFn, inLabelledbyTraversal);
@@ -262,12 +231,7 @@ function handleButton(
 	el: AccnameElement,
 	resolver: AccnameResolver,
 	visited: ReadonlySet<string>,
-	computeFn: (
-		el: AccnameElement,
-		resolver: AccnameResolver,
-		inLabelledbyTraversal: boolean,
-		visited: ReadonlySet<string>,
-	) => AccnameResult,
+	computeFn: AccnameComputeFn,
 	inLabelledbyTraversal: boolean,
 ): AccnameResult | null {
 	const labelResult = resolveLabelText(el, resolver, visited, computeFn, inLabelledbyTraversal);
@@ -297,12 +261,7 @@ function handleFieldset(
 	el: AccnameElement,
 	resolver: AccnameResolver,
 	visited: ReadonlySet<string>,
-	computeFn: (
-		el: AccnameElement,
-		resolver: AccnameResolver,
-		inLabelledbyTraversal: boolean,
-		visited: ReadonlySet<string>,
-	) => AccnameResult,
+	computeFn: AccnameComputeFn,
 	inLabelledbyTraversal: boolean,
 ): AccnameResult | null {
 	const legend = findChildByLocalName(el, 'legend', resolver);
@@ -330,12 +289,7 @@ function handleTable(
 	el: AccnameElement,
 	resolver: AccnameResolver,
 	visited: ReadonlySet<string>,
-	computeFn: (
-		el: AccnameElement,
-		resolver: AccnameResolver,
-		inLabelledbyTraversal: boolean,
-		visited: ReadonlySet<string>,
-	) => AccnameResult,
+	computeFn: AccnameComputeFn,
 	inLabelledbyTraversal: boolean,
 ): AccnameResult | null {
 	const caption = findChildByLocalName(el, 'caption', resolver);
@@ -417,12 +371,7 @@ function handleSummary(
 	el: AccnameElement,
 	resolver: AccnameResolver,
 	visited: ReadonlySet<string>,
-	computeFn: (
-		el: AccnameElement,
-		resolver: AccnameResolver,
-		inLabelledbyTraversal: boolean,
-		visited: ReadonlySet<string>,
-	) => AccnameResult,
+	computeFn: AccnameComputeFn,
 	inLabelledbyTraversal: boolean,
 ): AccnameResult | null {
 	const content = resolveNameFromContent(el, resolver, visited, computeFn, inLabelledbyTraversal);
@@ -447,12 +396,7 @@ function handleAnchor(
 	el: AccnameElement,
 	resolver: AccnameResolver,
 	visited: ReadonlySet<string>,
-	computeFn: (
-		el: AccnameElement,
-		resolver: AccnameResolver,
-		inLabelledbyTraversal: boolean,
-		visited: ReadonlySet<string>,
-	) => AccnameResult,
+	computeFn: AccnameComputeFn,
 	inLabelledbyTraversal: boolean,
 ): AccnameResult | null {
 	const content = resolveNameFromContent(el, resolver, visited, computeFn, inLabelledbyTraversal);
